@@ -74,11 +74,7 @@ BEGIN_EVENT_TABLE(SDIFrame, wxDocParentFrame)
 	EVT_MENU(SDIFRAME_EDIT_MAIN_PARS, SDIFrame::OnEditMainPars)
 	EVT_MENU(wxID_HELP, SDIFrame::OnHelp)
 	/*
-	EVT_MENU(MYFRAME_ID_EDIT_SIM_PARS, SDIFrame::OnEditSimPars)
-	EVT_MENU(wxID_OPEN, SDIFrame::OnLoadSimFile)
 	EVT_MENU(wxID_REVERT, SDIFrame::OnReloadSimFile)
-	EVT_MENU(wxID_EXIT, SDIFrame::OnQuit)
-	EVT_MENU(wxID_SAVEAS, SDIFrame::OnSaveSimPars)
 	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, SDIFrame::OnViewSimPars)
 	*/
 	EVT_MENU(SDIFRAME_SIM_THREAD_DISPLAY_EVENT, SDIFrame::OnSimThreadEvent)
@@ -494,40 +490,6 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 
 }
 
-/****************************** OnEditSimPars *********************************/
-
-void
-SDIFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
-{
-	ResetGUIDialogs();
-	printf("SDIFrame::OnEditSimPars: Open simulation view.\n");
-//	if (!wxGetApp().GetSimModuleDialog()) {
-//		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
-//		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(
-//		  GetPtr_AppInterface()->audModel), GetUniParListPtr_ModuleMgr(
-//		  GetPtr_AppInterface()->audModel)));
-//	}
-
-}
-
-/****************************** OnLoadSimFile *********************************/
-
-void
-SDIFrame::OnLoadSimFile(wxCommandEvent& event)
-{
-//	ResetGUIDialogs();
-//	wxString extension = (event.GetId() == MYFRAME_ID_LOAD_SIM_PAR_FILE)?
-//	  "All files|*.*|Sim. Par Files (*.spf)|*.spf|Sim. scripts (*.sim)|*.sim": "*.sim";
-//	wxFileDialog dialog(this, "Choose a file", wxGetApp().defaultDir, "",
-//	  extension);
-//	if (dialog.ShowModal() == wxID_OK) {
-//		wxGetApp().defaultDir = dialog.GetDirectory();
-//		wxGetApp().simFilePath = dialog.GetPath();
-//		SetSimFileAndLoad();
-//	}
-
-}
-
 /****************************** OnReloadSimFile *******************************/
 
 void
@@ -537,31 +499,6 @@ SDIFrame::OnReloadSimFile(wxCommandEvent& event)
 	ResetGUIDialogs();
 	SetSimFileAndLoad();
 
-}
-
-/****************************** OnSaveSimPars *********************************/
-
-void
-SDIFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
-{
-//	wxString newFilePath, fileName;
-//
-//	fileName = wxFileNameFromPath(wxGetApp().simFilePath).BeforeLast('.') +
-//	  ".spf";
-//	newFilePath = wxFileSelector("Simulation parameter file", wxPathOnly(
-//	  wxGetApp().simFilePath), fileName, "spf", "*.spf", wxSAVE |
-//	  wxOVERWRITE_PROMPT | wxHIDE_READONLY, this);
-//	if (!newFilePath)
-//		return;
-//	bool dialogOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->dialogOutputFlag);
-//	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-//	SetGUIDialogStatus(FALSE);
-//	SetParsFile_Common((char *) newFilePath.GetData(), OVERWRITE);
-//	ListParameters_AppInterface();
-//	fclose(GetDSAMPtr_Common()->parsFile);
-//	GetDSAMPtr_Common()->parsFile = oldFp;
-//	SetGUIDialogStatus(dialogOutputFlag);
-//
 }
 
 /****************************** OnViewSimPars *********************************/
