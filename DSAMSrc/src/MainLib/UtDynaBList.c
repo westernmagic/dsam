@@ -42,7 +42,7 @@ DynaBListPtr
 Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
-	static const char *funcName = "Insert_Utility_DynaList";
+	static const char *funcName = "Insert_Utility_DynaBList";
 	int		cmpResult;
 	DynaBListPtr	newNode;
 
