@@ -71,7 +71,7 @@ make)
 	echo Creating unix distribution directory ...
 	CVSConfigure > $TEMP_FILE
 	make dist > $TEMP_FILE
-	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d " " -f 5`
+	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d " " -f 7`
 	echo archiveName = $archiveName
 	rm -rf $archiveName
 	tar zxf $archiveName.tar.gz
