@@ -111,8 +111,9 @@ FreeChannels_SignalData(SignalDataPtr theData)
 
 	if (theData != NULL) {
 		if (theData->channel != NULL) {
-			for (i = 0; i < theData->numChannels; i++)
-				free(theData->channel[i]);
+			if (!theData->externalDataFlag)
+				for (i = 0; i < theData->numChannels; i++)
+					free(theData->channel[i]);
 			free(theData->channel);
 			theData->channel = NULL;
 		}
@@ -194,12 +195,16 @@ CheckInit_SignalData(SignalDataPtr theSignal, const char *callingFunction)
  * This method allocates memory space for all of a signal's channels.
  * It updates the numChannel counter, and returns TRUE if
  * successful.
+ * If the 'externalDataFlag' is set, then the pointers for the channels will be
+ * set, but the memory for each channel will be assumed to have come from
+ * elsewhere.
  * It also allocates space for the info channel labels.
  *
  */
 
 BOOLN
-InitChannels_SignalData(SignalDataPtr theData, uShort numChannels)
+InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
+  BOOLN externalDataFlag)
 {
 	static const char *funcName = "InitChannels_SignalData";
 	int			i, j;
@@ -216,18 +221,21 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels)
 		NotifyError("%s: Out of memory for channel pointers.", funcName);
 		return(FALSE);
 	}
-	for (i = 0; i < numChannels; i++)
-		if ((p[i] = (ChanData *) calloc(theData->length, sizeof(ChanData))) ==
-		  NULL) {
-			NotifyError("%s: Out of memory for channel[%d] data (length = %u).",
-			  funcName, i, theData->length);
-			for (j = 0; j < i - 1; j++)
-				free(p[j]);
-			free(p);
-			return(FALSE);
-		}
+	if (!externalDataFlag) {
+		for (i = 0; i < numChannels; i++)
+			if ((p[i] = (ChanData *) calloc(theData->length, sizeof(
+			  ChanData))) == NULL) {
+				NotifyError("%s: Out of memory for channel[%d] data (length = "
+				  "%u).", funcName, i, theData->length);
+				for (j = 0; j < i - 1; j++)
+					free(p[j]);
+				free(p);
+				return(FALSE);
+			}
+	}
 	theData->channel = p;
 	theData->numChannels = numChannels;
+	theData->externalDataFlag = externalDataFlag;
 	if ((theData->info.chanLabel = (double *) calloc(numChannels,
 	  sizeof(double))) == NULL) {
 		NotifyError("%s: Out of memory for channel info labels.", funcName);

@@ -332,7 +332,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		SetLength_SignalData(data->outSignal, length);
 		SetSamplingInterval_SignalData(data->outSignal, samplingInterval);
 		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
-		if (!InitChannels_SignalData(data->outSignal, numChannels)) {
+		if (!InitChannels_SignalData(data->outSignal, numChannels, FALSE)) {
 			NotifyError("%s: Cannot initialise output channels for "
 			  "EarObject '%s'.", funcName, data->processName);
 			Free_SignalData(&data->outSignal);

@@ -72,6 +72,7 @@ typedef struct {
 	BOOLN	rampFlag;		/* Checks that signals have been ramped. */
 	BOOLN	localInfoFlag;	/* Set if memory was created locally for info. */
 	BOOLN	staticTimeFlag;	/* Set to make _WorldTime_EarObject static. */
+	BOOLN	externalDataFlag;/* Set when channel memory comes from elsewhere. */
 	uShort	numChannels;	/* No. of channels for signal. */
 	uShort	interleaveLevel;/* For post BM binaural processing.*/
 	uShort	numWindowFrames;/* For frame processing modues. */
@@ -134,7 +135,8 @@ void	GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan,
 
 SignalDataPtr	Init_SignalData(const char *callingFunctionName);
 
-BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels);
+BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
+		  BOOLN externalDataFlag);
 	
 BOOLN	InitInfo_SignalData(SignalInfoPtr info);
 
