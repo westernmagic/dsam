@@ -91,6 +91,8 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
+	if (numColumns == 2)
+		SetInterleaveLevel_SignalData(data->outSignal, 2);
 	for (i = 0; i < data->timeIndex; i++)
 		if (fgets(line, MAXLINE_LARGE, fp) == NULL)
 			return(FALSE);

@@ -103,6 +103,8 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
+	if (dataFilePtr->numChannels == 2)
+		SetInterleaveLevel_SignalData(data->outSignal, 2);
 	if (fp != stdin)
 		SetPosition_UPortableIO(fp, (int32) ((dataFilePtr->timeOffsetIndex +
 		  data->timeIndex) * dataFilePtr->numChannels * dataFilePtr->wordSize),
