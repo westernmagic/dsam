@@ -202,12 +202,12 @@ ModuleParDialog::EnableControls(void)
 bool
 ModuleParDialog::CheckChangedValues(void)
 {
-	bool	ok;
+	bool	ok = true;
 	size_t	i;
 
 	for (i = 0; i < parListInfoList->list.Count(); i++) {
 		if (!parListInfoList->list[i]->CheckChangedValues())
-			ok = FALSE;
+			ok = false;
 		if (parListInfoList->list[i]->parList->updateFlag) {
 			parListInfoList->list[0]->parList->updateFlag = TRUE;
 			if(cancelBtn)
@@ -215,9 +215,9 @@ ModuleParDialog::CheckChangedValues(void)
 		}
 	}
 	if (ok && !CheckParList_UniParMgr(parListInfoList->list[0]->parList))
-		ok = FALSE;
+		ok = false;
 	if (ok && !UpdateParent())
-		ok = FALSE;
+		ok = false;
 	return(ok);
 
 }
