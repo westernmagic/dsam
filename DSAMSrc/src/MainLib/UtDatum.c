@@ -659,6 +659,8 @@ CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
  * It must be used after the EarObjects have been initialised, if the data
  * pointers are to be valid.
  * It returns FALSE if it fails in any way.
+ * Any errors here must always be reported, even if the error diagnostics had
+ * been turned off.
  */
 
 BOOLN
@@ -666,9 +668,11 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 {
 	static const char *funcName = "ResolveInstLabels_Utility_Datum";
 	BOOLN		ok;
+	FILE		*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	DatumPtr	pc;
 	DynaBListPtr	p;
-	
+
+	SetErrorsFile_Common("screen", OVERWRITE);
 	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
 		switch (pc->type) {
 		case RESET:
@@ -677,8 +681,8 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 				NotifyError("%s: Could not find label '%s' in the simulation "
 				  "script.", funcName, pc->u.string);
 				ok = FALSE;
-			}
-			pc->data = ((DatumPtr) p->data)->data;
+			} else
+				pc->data = ((DatumPtr) p->data)->data;
 			break;
 		case PROCESS:
 			if (pc->u.proc.outputList && !SetOutputConnections_Utility_Datum(
@@ -696,6 +700,7 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 		default:
 			;
 		}
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	return(ok);
 
 }
