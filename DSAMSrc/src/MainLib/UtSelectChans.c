@@ -441,42 +441,6 @@ SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
 
 }
 
-/****************************** ResizeSelectionArray **************************/
-
-/*
- * This routine resizes the selection array.
- * It assumes that the module has been correctly initialised.
- */
-
-BOOLN
-ResizeSelectionArray_Utility_SelectChannels(int numChannels)
-{
-	static const char *funcName = "ResizeSelectionArray_Utility_SelectChannels";
-	register double	*newArray, *oldArray;
-	int		i;
-	double	*savedArray = NULL;
-
-	if (numChannels == selectChanPtr->numChannels)
-		return(TRUE);
-	if (selectChanPtr->selectionArray)
-		savedArray = selectChanPtr->selectionArray;
-	if ((selectChanPtr->selectionArray = (double *) calloc(numChannels,
-	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
-		  funcName, numChannels);
-		return(FALSE);
-	}
-	if (savedArray) {
-		newArray = selectChanPtr->selectionArray;
-		oldArray = savedArray;
-		for (i = 0; i < selectChanPtr->numChannels; i++)
-			*newArray++ = *oldArray++;
-		free(savedArray);
-	}
-	selectChanPtr->numChannels = numChannels;
-	return(TRUE);
-}
-
 /****************************** SetIndividualSelection ************************/
 
 /*
@@ -507,7 +471,8 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 		return(FALSE);
 	}
 	if ((theIndex > selectChanPtr->numChannels - 1) &&
-	  !ResizeSelectionArray_Utility_SelectChannels(theIndex + 1)) {
+	  !ResizeDoubleArray_Common(&selectChanPtr->selectionArray,
+	    &selectChanPtr->numChannels, theIndex + 1)) {
 		NotifyError("%s: Could not resize the selection array.", funcName);
 		return(FALSE);
 	}
@@ -749,7 +714,8 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 		numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
 		  interleaveLevel;
 		if ((selectChanPtr->numChannels < numInChans) &&
-		  !ResizeSelectionArray_Utility_SelectChannels(numInChans)) {
+		  !ResizeDoubleArray_Common(&selectChanPtr->selectionArray,
+	      &selectChanPtr->numChannels, numInChans)) {
 			NotifyError("%s: Could not set selection array.", funcName);
 			return(FALSE);
 		}

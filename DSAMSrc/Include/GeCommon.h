@@ -353,6 +353,8 @@ void	ReadParsFromFile(char *fileName);		/* Used in test programs. */
 
 void	ResetGUIDialogs(void);
 
+BOOLN	ResizeDoubleArray_Common(double **array, int *oldLength, int length);
+
 void	SetDiagnosticsPrefix(char *prefix);
 
 void	SetDiagMode(DiagModeSpecifier mode);

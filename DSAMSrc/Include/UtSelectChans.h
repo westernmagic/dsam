@@ -121,8 +121,6 @@ BOOLN	Process_Utility_SelectChannels(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_SelectChannels(char *fileName);
 
-BOOLN	ResizeSelectionArray_Utility_SelectChannels(int numChannels);
-
 BOOLN	SetDefaulEnabledPars_Utility_SelectChannels(void);
 
 void	SetEnabledState_Utility_SelectChannels(void);

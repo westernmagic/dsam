@@ -772,3 +772,37 @@ SwitchGUILocking_Common(BOOLN on)
 
 }
 
+/****************************** ResizeDoubleArray *****************************/
+
+/*
+ * This routine resizes an array.
+ */
+
+BOOLN
+ResizeDoubleArray_Common(double **array, int *oldLength, int length)
+{
+	static const char *funcName = "ResizeDoubleArray_Common";
+	register double	*newArray, *oldArray;
+	int		i;
+	double	*savedArray = NULL;
+
+	if (length == *oldLength)
+		return(TRUE);
+	if (*array)
+		savedArray = *array;
+	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
+		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		  funcName, length);
+		return(FALSE);
+	}
+	if (savedArray) {
+		newArray = *array;
+		oldArray = savedArray;
+		for (i = 0; i < *oldLength; i++)
+			*newArray++ = *oldArray++;
+		free(savedArray);
+	}
+	*oldLength = length;
+	return(TRUE);
+}
+
