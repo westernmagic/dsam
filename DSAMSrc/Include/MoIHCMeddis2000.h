@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define IHC_MEDDIS2000_NUM_PARS		18
+#define IHC_MEDDIS2000_NUM_PARS		19
 #define  MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
 
 /******************************************************************************/
@@ -36,6 +36,7 @@ typedef enum {
 	IHC_MEDDIS2000_OPMODE,
 	IHC_MEDDIS2000_DIAGMODE,
 	IHC_MEDDIS2000_CACONDMODE,
+	IHC_MEDDIS2000_CLEFTREPLENISHMODE,
 	IHC_MEDDIS2000_RANSEED,
 	IHC_MEDDIS2000_CAVREV,
 	IHC_MEDDIS2000_BETACA,
@@ -81,20 +82,29 @@ typedef enum {
 
 } IHCCaCondModeSpecifier;
 
+typedef enum {
+
+	IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL,
+	IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY,
+	IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL
+
+} IHCCleftReplenishModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	opModeFlag, diagModeFlag, caCondModeFlag, ranSeedFlag, CaVrevFlag;
-	BOOLN	betaCaFlag, gammaCaFlag, pCaFlag, GCaMaxFlag, perm_Ca0Flag;
-	BOOLN	perm_zFlag, tauCaChanFlag, tauConcCaFlag, maxFreePool_MFlag;
-	BOOLN	replenishRate_yFlag, lossRate_lFlag, reprocessRate_xFlag;
-	BOOLN	recoveryRate_rFlag;
+	BOOLN	opModeFlag, diagModeFlag, caCondModeFlag, cleftReplenishModeFlag;
+	BOOLN	ranSeedFlag, CaVrevFlag, betaCaFlag, gammaCaFlag, pCaFlag;
+	BOOLN	GCaMaxFlag, perm_Ca0Flag, perm_zFlag, tauCaChanFlag, tauConcCaFlag;
+	BOOLN	maxFreePool_MFlag, replenishRate_yFlag, lossRate_lFlag;
+	BOOLN	reprocessRate_xFlag, recoveryRate_rFlag;
 	BOOLN	updateProcessVariablesFlag;
 
 	int		opMode;
 	int		diagMode;
 	int		caCondMode;
+	int		cleftReplenishMode;
 	long	ranSeed;
 	double	CaVrev;
 	double	betaCa;
@@ -115,6 +125,7 @@ typedef struct {
 	NameSpecifier	*opModeList;
 	NameSpecifier	*diagModeList;
 	NameSpecifier	*caCondModeList;
+	NameSpecifier	*cleftReplenishModeList;
 	UniParListPtr	parList;
 	HairCellVars2	*hCChannels;
 	char		diagFileName[MAX_FILE_PATH];
@@ -148,6 +159,8 @@ UniParListPtr	GetUniParListPtr_IHC_Meddis2000(void);
 
 BOOLN	InitCaCondModeList_IHC_Meddis2000(void);
 
+BOOLN	InitCleftReplenishModeList_IHC_Meddis2000(void);
+
 BOOLN	InitDiagModeList_IHC_Meddis2000(void);
 
 BOOLN	InitOpModeList_IHC_Meddis2000(void);
@@ -166,7 +179,11 @@ BOOLN	SetCaCondMode_IHC_Meddis2000(char * theCaCondMode);
 
 BOOLN	SetCaVrev_IHC_Meddis2000(double theCaVrev);
 
+BOOLN	SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode);
+
 BOOLN	SetDiagMode_IHC_Meddis2000(char * theDiagMode);
+
+void	SetEnabledPars_IHC_Meddis2000(void);
 
 BOOLN	SetGCaMax_IHC_Meddis2000(double theGCaMax);
 

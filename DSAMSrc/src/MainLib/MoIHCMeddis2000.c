@@ -110,6 +110,26 @@ InitCaCondModeList_IHC_Meddis2000(void)
 
 }
 
+/****************************** InitCleftReplenishModeList ********************/
+
+/*
+ * This function initialises the 'cleftReplenishMode' list array
+ */
+
+BOOLN
+InitCleftReplenishModeList_IHC_Meddis2000(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "ORIGINAL",	IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL },
+			{ "UNITY",		IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY },
+			{ "",			IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL },
+		};
+	hairCell2Ptr->cleftReplenishModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -145,6 +165,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->opModeFlag = TRUE;
 	hairCell2Ptr->diagModeFlag = TRUE;
 	hairCell2Ptr->caCondModeFlag = TRUE;
+	hairCell2Ptr->cleftReplenishModeFlag = TRUE;
 	hairCell2Ptr->ranSeedFlag = TRUE;
 	hairCell2Ptr->CaVrevFlag = TRUE;
 	hairCell2Ptr->betaCaFlag = TRUE;
@@ -163,6 +184,8 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->opMode = IHC_MEDDIS2000_OPMODE_PROB;
 	hairCell2Ptr->diagMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	hairCell2Ptr->caCondMode = IHC_MEDDIS2000_CACONDMODE_ORIGINAL;
+	hairCell2Ptr->cleftReplenishMode =
+	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL;
 	hairCell2Ptr->ranSeed = -1;
 	hairCell2Ptr->CaVrev = 0.066;
 	hairCell2Ptr->betaCa = 400.0;
@@ -181,6 +204,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 
 	InitOpModeList_IHC_Meddis2000();
 	InitCaCondModeList_IHC_Meddis2000();
+	InitCleftReplenishModeList_IHC_Meddis2000();
 
 	if ((hairCell2Ptr->diagModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), hairCell2Ptr->diagFileName)) == NULL)
@@ -191,6 +215,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 		Free_IHC_Meddis2000();
 		return(FALSE);
 	}
+	SetEnabledPars_IHC_Meddis2000();
 	strcpy(hairCell2Ptr->diagFileName, DEFAULT_FILE_NAME);
 	hairCell2Ptr->hCChannels = NULL;
 	return(TRUE);
@@ -233,6 +258,12 @@ SetUniParList_IHC_Meddis2000(void)
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->caCondMode, hairCell2Ptr->caCondModeList,
 	  (void * (*)) SetCaCondMode_IHC_Meddis2000);
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CLEFTREPLENISHMODE],
+	  "CLEFT_REPLENISH_MODE",
+	  "Cleft replenishment mode ('original' or 'unity').",
+	  UNIPAR_NAME_SPEC,
+	  &hairCell2Ptr->cleftReplenishMode, hairCell2Ptr->cleftReplenishModeList,
+	  (void * (*)) SetCleftReplenishMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], "RAN_SEED",
 	  "Random number seed (0 for different seed for each run).",
 	  UNIPAR_LONG,
@@ -310,6 +341,21 @@ SetUniParList_IHC_Meddis2000(void)
 	  (void * (*)) SetRecoveryRate_r_IHC_Meddis2000);
 	return(TRUE);
 
+}
+
+/****************************** SetEnabledPars *********************************/
+
+/*
+ * This routine sets the enabled parameters.
+ */
+
+void
+SetEnabledPars_IHC_Meddis2000(void)
+{
+	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_MAXFREEPOOL_M].enabled =
+	  (hairCell2Ptr->cleftReplenishMode ==
+	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL);
+	
 }
 
 /****************************** GetUniParListPtr ******************************/
@@ -480,6 +526,38 @@ SetCaCondMode_IHC_Meddis2000(char * theCaCondMode)
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
 	hairCell2Ptr->caCondModeFlag = TRUE;
 	hairCell2Ptr->caCondMode = specifier;
+	return(TRUE);
+
+}
+
+/****************************** SetCleftReplenishMode *************************/
+
+/*
+ * This function sets the module's cleftReplenishMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode)
+{
+	static const char	*funcName = "SetCleftReplenishMode_IHC_Meddis2000";
+	int		specifier;
+
+	if (hairCell2Ptr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theCleftReplenishMode,
+		hairCell2Ptr->cleftReplenishModeList)) == IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theCleftReplenishMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	hairCell2Ptr->cleftReplenishModeFlag = TRUE;
+	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
+	hairCell2Ptr->cleftReplenishMode = specifier;
+	SetEnabledPars_IHC_Meddis2000();
 	return(TRUE);
 
 }
@@ -892,6 +970,10 @@ CheckPars_IHC_Meddis2000(void)
 		NotifyError("%s: caCondMode variable not set.", funcName);
 		ok = FALSE;
 	}
+	if (!hairCell2Ptr->cleftReplenishModeFlag) {
+		NotifyError("%s: cleftReplenishMode variable not set.", funcName);
+		ok = FALSE;
+	}
 	if (!hairCell2Ptr->ranSeedFlag) {
 		NotifyError("%s: ranSeed variable not set.", funcName);
 		ok = FALSE;
@@ -979,6 +1061,8 @@ PrintPars_IHC_Meddis2000(void)
 	  hairCell2Ptr->diagModeList[hairCell2Ptr->diagMode].name);
 	DPrint("\tCalcium conductance mode = %s\n", hairCell2Ptr->caCondModeList[
 	  hairCell2Ptr->caCondMode].name);
+	DPrint("\tCleft replenishment mode = %s \n", hairCell2Ptr->
+	  cleftReplenishModeList[hairCell2Ptr->cleftReplenishMode].name);
 	DPrint("\tRandom Seed = %ld \n", hairCell2Ptr->ranSeed);
 	DPrint("\tCalcium reversal potential = %g (V)\n", hairCell2Ptr->CaVrev);
 	DPrint("\tBeta = %g \n", hairCell2Ptr->betaCa);
@@ -1160,7 +1244,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInSignal_EarObject(data, funcName))
+	if (!CheckInit_SignalData(data->inSignal[0], funcName))
 		return(FALSE);
 
 	/*** Put additional checks here. ***/
@@ -1225,7 +1309,6 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
  * transmitter relese function (CJS 1-2-2000).
  */
  
-
 BOOLN
 InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 {
@@ -1264,10 +1347,12 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 			ICa *= hC->tauConcCa;
 		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ? (hC->perm_z * (pow(-ICa, hC->
 		  pCa) - pow(hC->perm_Ca0,hC->pCa))) : 0; 
-		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y * spontPerm_k0 /
-		  (hC->replenishRate_y * (hC->lossRate_l + hC->recoveryRate_r) +
-		  spontPerm_k0 * hC->lossRate_l);
-		if (spontCleft_c0>0) {
+		spontCleft_c0 = (hairCell2Ptr->cleftReplenishMode ==
+		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? hC->maxFreePool_M *
+		  hC->replenishRate_y * spontPerm_k0 / (hC->replenishRate_y *
+		  (hC->lossRate_l + hC->recoveryRate_r) + spontPerm_k0 * hC->lossRate_l):
+		  hC->replenishRate_y / hC->lossRate_l;
+		if (spontCleft_c0 > 0.0) {
 		   if (hC->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
 		      spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
 		        hC->recoveryRate_r) / spontPerm_k0;
@@ -1428,7 +1513,9 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			switch(hairCell2Ptr->opMode) {
 				/* spike output mode */
 				case IHC_MEDDIS2000_OPMODE_SPIKE:
-					replenish = (hC->hCChannels[i].reservoirQ <
+					replenish = (hC->cleftReplenishMode ==
+					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? GeomDist_Random(
+					  ydt, 1): (hC->hCChannels[i].reservoirQ <
 					  hC->maxFreePool_M)? GeomDist_Random(ydt, (int) (
 					  hC->maxFreePool_M - hC->hCChannels[i].reservoirQ)): 0;
 
@@ -1456,9 +1543,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 
 				/* probability output mode */
 				case IHC_MEDDIS2000_OPMODE_PROB:
-					replenish = (hC->hCChannels[i].reservoirQ <
-					  hC->maxFreePool_M)? ydt * (hC->maxFreePool_M -
-					  hC->hCChannels[i].reservoirQ): 0.0;
+					replenish = (hC->cleftReplenishMode ==
+					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? ydt:
+					  (hC->hCChannels[i].reservoirQ < hC->maxFreePool_M)? ydt *
+					  (hC->maxFreePool_M - hC->hCChannels[i].reservoirQ): 0.0;
 		
 					ejected = kdt * hC->hCChannels[i].reservoirQ;
 		
