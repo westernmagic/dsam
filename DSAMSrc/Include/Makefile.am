@@ -22,6 +22,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
 				GrDialogList.h GrParListInfoList.h GrPrintDisp.h \
 				GrParControl.h GrSocket.h GrSimThread.h GrAxisScale.h dsam.rc
+				
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
@@ -29,7 +30,7 @@ Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
 				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h \
 				FlMultiBPass.h MoBMGammaC.h MoHCRPSham3StVIn.h \
-				MoBMZhang.h MoHCRPZhang.h MoIHCZhang.h
+				MoBMZhang.h MoHCRPZhang.h MoIHCZhang.h MoANSGMeddis02.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 

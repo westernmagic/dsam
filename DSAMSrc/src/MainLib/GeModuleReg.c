@@ -45,6 +45,7 @@ ModRegEntry	libraryModuleList[] = {
 	  InitModule_Analysis_SpikeRegularity },
 	{ "AN_SG_BINOMIAL", PROCESS_MODULE, InitModule_ANSpikeGen_Binomial },
 	{ "AN_SG_CARNEY", PROCESS_MODULE, InitModule_ANSpikeGen_Carney },
+	{ "AN_SG_MEDDIS02", PROCESS_MODULE, InitModule_ANSpikeGen_Meddis02 },
 	{ "AN_SG_SIMPLE", PROCESS_MODULE, InitModule_ANSpikeGen_Simple },
 	{ "BM_CARNEY", PROCESS_MODULE, InitModule_BasilarM_Carney },
 	{ "BM_COOKE", PROCESS_MODULE, InitModule_BasilarM_Cooke },

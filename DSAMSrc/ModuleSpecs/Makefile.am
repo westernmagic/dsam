@@ -21,7 +21,7 @@ Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
 				MoBMGammaC.mod MoHCRPSham3StVIn.mod MoBMZhang.mod \
-				MoHCRPZhang.mod MoIHCZhang.mod
+				MoHCRPZhang.mod MoIHCZhang.mod MoANSGMeddis02.mod
 
 Pa_Modules	= PaMaster1.mod
 
