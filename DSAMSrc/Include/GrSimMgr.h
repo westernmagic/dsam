@@ -67,6 +67,7 @@ enum {
 	MYFRAME_ID_EDIT_SIM_PARS,
 	MYFRAME_ID_LOAD_SIM_PAR_FILE,
 	MYFRAME_ID_LOAD_SIM_SCRIPT_FILE,
+	MYFRAME_ID_RELOAD_SIM_SCRIPT_FILE,
 	MYFRAME_ID_SAVE_SIM_PARS,
 	MYFRAME_ID_VIEW_SIM_PARS,
 	MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT = 100
@@ -131,6 +132,7 @@ class MyFrame: public wxFrame {
 	void	OnEditMainPars(wxCommandEvent& event);
 	void	OnEditSimPars(wxCommandEvent& event);
 	void	OnLoadSimFile(wxCommandEvent& event);
+	void	OnReloadSimFile(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
 	void	OnSaveSimPars(wxCommandEvent& event);
 	void	OnSimThreadEvent(wxCommandEvent& event);

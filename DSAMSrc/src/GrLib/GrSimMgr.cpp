@@ -818,6 +818,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(MYFRAME_ID_HELP, MyFrame::OnHelp)
 	EVT_MENU(MYFRAME_ID_LOAD_SIM_PAR_FILE, MyFrame::OnLoadSimFile)
 	EVT_MENU(MYFRAME_ID_LOAD_SIM_SCRIPT_FILE, MyFrame::OnLoadSimFile)
+	EVT_MENU(MYFRAME_ID_RELOAD_SIM_SCRIPT_FILE, MyFrame::OnReloadSimFile)
 	EVT_MENU(MYFRAME_ID_QUIT, MyFrame::OnQuit)
 	EVT_MENU(MYFRAME_ID_SAVE_SIM_PARS, MyFrame::OnSaveSimPars)
 	EVT_MENU(MYFRAME_ID_STOP_SIMULATION, MyFrame::OnStopSimulation)
@@ -864,11 +865,13 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	  "(*.spf)...\tCtrl-O", "Load Simulation parameter file.");
 	fileMenu->Append(MYFRAME_ID_LOAD_SIM_SCRIPT_FILE, "&Load script file "
 	  "(*.sim)...\tCtrl-L", "Load Simulation script file.");
+	fileMenu->Append(MYFRAME_ID_RELOAD_SIM_SCRIPT_FILE, "Reload simulation "
+	  "file", "Reload Simulation file.");
 	fileMenu->AppendSeparator();
 	fileMenu->Append(MYFRAME_ID_SAVE_SIM_PARS, "&Save Simulation Pars..."
 	  "\tCtrl-S", "Save simulation parameters...");
 	fileMenu->AppendSeparator();
-	fileMenu->Append(MYFRAME_ID_QUIT, "Q&uit\tCtrl-Q", "Quit from program.");
+	fileMenu->Append(MYFRAME_ID_QUIT, "&Quit\tCtrl-Q", "Quit from program.");
 
 	editMenu = new wxMenu("", wxMENU_TEAROFF);
 	editMenu->Append(MYFRAME_ID_EDIT_SIM_PARS, "Simulation parameters..."
@@ -1164,6 +1167,7 @@ MyFrame::OnStopSimulation(wxCommandEvent& WXUNUSED(event))
 	if (!wxGetApp().simThread)
 		return;
 	wxGetApp().DeleteSimThread();
+	wxLogWarning("Simulation terminated by user.");
 
 }
 
@@ -1287,6 +1291,25 @@ MyFrame::OnLoadSimFile(wxCommandEvent& event)
 		if (mainParDialog)
 			mainParDialog->parListInfoList->UpdateAllControlValues();
 	}
+
+}
+
+/****************************** OnReloadSimFile *******************************/
+
+void
+MyFrame::OnReloadSimFile(wxCommandEvent& event)
+{
+	static const char * funcName = "MyFrame::OnReloadSimFile";
+
+	ResetGUIDialogs();
+	if (!GetPtr_AppInterface()->audModel) {
+		wxLogError("%s: There is no simulation to reload.", funcName);
+		return;
+	}
+	GetPtr_AppInterface()->updateProcessVariablesFlag = TRUE;
+	ResetSimulation();
+	if (mainParDialog)
+		mainParDialog->parListInfoList->UpdateAllControlValues();
 
 }
 
