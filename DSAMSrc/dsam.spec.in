@@ -42,11 +42,8 @@ Header files for dsam %{ver} library.
 %prep
 %setup
 DSAM_FLAGS="--prefix=%{prefix} --enable-graphics --enable-shared"
-if [ ! -f configure ]; then
-  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./autogen.sh $DSAM_FLAGS
-else
-  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure $DSAM_FLAGS
-fi
+
+%configure $DSAM_FLAGS
 
 %build
 # Needed for snapshot releases.
