@@ -6,9 +6,11 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials/ImpulseResponse
 
-SimScripts	= impulseResponse.sim pureToneResponse.sim
+SimScripts	= fileInTest.sim impulseResponseFileIn.sim impulseResponse.sim
+				pureToneResponse.sim
 
-SPFFiles	= impulseResponse.spf pureToneResponse.spf
+SPFFiles	= impulseResponseFileIn.spf impulseResponse.spf
+				pureToneResponse.spf
 
 ParFiles	= BM_DRNLHumanALN.par dataFileInClick.par dataFileOut.par \
 				displayDRNL.par displayMiddleEar.par displayStimulus.par \
