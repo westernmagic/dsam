@@ -31,9 +31,7 @@
 /*************************** Constant definitions *****************************/
 /******************************************************************************/
 
-#define BASILARM_DRNL_TEST_NUM_PARS	11
-#define	LP_CUT_OFF_SCALE			2.5	/* LP cut-off = scale * CF */
-#define	DRNLT_WIDE_LP_APPLN			2	/* No. of times the filter is applied.*/
+#define BASILARM_DRNL_TEST_NUM_PARS	10
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -41,16 +39,15 @@
 
 typedef enum {
 
-	BASILARM_DRNL_TEST_ORDER,
+	BASILARM_DRNL_TEST_NONLINGTCASCADE,
+	BASILARM_DRNL_TEST_NONLINLPCASCADE,
 	BASILARM_DRNL_TEST_COMPRESSIONMODE,
-	BASILARM_DRNL_TEST_NARROWBROADENINGCOEFF,
 	BASILARM_DRNL_TEST_COMPRESSIONPARS,
-	BASILARM_DRNL_TEST_WIDEFORDER,
-	BASILARM_DRNL_TEST_WIDEFCENTREFREQ,
-	BASILARM_DRNL_TEST_WIDEFWIDTH,
-	BASILARM_DRNL_TEST_WIDEATTENUATION,
-	BASILARM_DRNL_TEST_WIDEFLPCUTOFFSCALE,
-	BASILARM_DRNL_TEST_OUTPUTSCALE,
+	BASILARM_DRNL_TEST_LINGTCASCADE,
+	BASILARM_DRNL_TEST_LINLPCASCADE,
+	BASILARM_DRNL_TEST_LINCF,
+	BASILARM_DRNL_TEST_LINBWIDTH,
+	BASILARM_DRNL_TEST_LINSCALER,
 	BASILARM_DRNL_TEST_THECFS
 
 } BM0DRNLParSpecifier;
@@ -69,33 +66,30 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	orderFlag;
-	BOOLN	nonLinearBroadeningCoeffFlag, *compressionParsFlag;
-	BOOLN	linearFCentreFreqFlag,linearFWidthFlag, linearAttenuationFlag;
-	BOOLN	linearFLPCutOffScaleFlag, outputScaleFlag, compressionModeFlag;
-	BOOLN	linearFOrderFlag;
+	BOOLN	nonLinGTCascadeFlag, nonLinLPCascadeFlag, compressionModeFlag;
+	BOOLN	*compressionParsFlag, linGTCascadeFlag, linLPCascadeFlag, linCFFlag;
+	BOOLN	linBwidthFlag, linScalerFlag;
 	BOOLN	updateProcessVariablesFlag;
-	int		order;					/* Total (nonLinear filter) line order. */
-	int		linearFOrder;			/* Linear filter line order. */
-	int		compressionMode;		/* To specify alternate modes. */
-	double	*compressionPars;		/* Adjusts compr. response */
-	double	nonLinearBroadeningCoeff;	/* NonLinear broadening coefficient */
-	double	linearFCentreFreq;		/* Linear filter centre frequency. */
-	double	linearFWidth;			/* High frequency cut-off.*/
-	double	linearAttenuation;		/* Linear filter attenuation. */
-	double	linearFLPCutOffScale;	/* - filter low-pass cut-off scale. */
-	double	outputScale;			/* - scales to experimental data. */
-	CFListPtr		theCFs;			/* Pointer to centre frequency structure. */
+	int		nonLinGTCascade;
+	int		nonLinLPCascade;
+	int		compressionMode;
+	double	*compressionPars;
+	int		linGTCascade;
+	int		linLPCascade;
+	double	linCF;
+	double	linBwidth;
+	double	linScaler;
+	CFListPtr	theCFs;
 
 	/* Private Members */
 	NameSpecifier *compressionModeList;
 	UniParListPtr	parList;
 	int		numChannels;
 	int		numCompressionPars;
-	double	*linearAttenuationdB;
 	GammaToneCoeffsPtr	*nonLinearGT1;
 	GammaToneCoeffsPtr	*nonLinearGT2;
 	GammaToneCoeffsPtr	*linearGT;
+	TwoPoleCoeffsPtr	*nonLinearLP;
 	TwoPoleCoeffsPtr	*linearLP;
 	EarObjectPtr	linearF;			/* Extra signal for linear filter. */
 
@@ -116,21 +110,23 @@ extern	BM0DRNLPtr	bM0DRNLPtr;
  */
 __BEGIN_DECLS
 
+BOOLN	CheckData_BasilarM_DRNL_Test(EarObjectPtr data);
+
 BOOLN	CheckPars_BasilarM_DRNL_Test(void);
+
+BOOLN	Free_BasilarM_DRNL_Test(void);
+
+void	FreeProcessVariables_BasilarM_DRNL_Test(void);
 
 CFListPtr	GetCFListPtr_BasilarM_DRNL_Test(void);
 
 UniParListPtr	GetUniParListPtr_BasilarM_DRNL_Test(void);
 
 BOOLN	Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec);
-		  
+
 BOOLN	InitCompressionModeList_BasilarM_DRNL_Test(void);
 
 BOOLN	InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data);
-
-BOOLN	Free_BasilarM_DRNL_Test(void);
-
-void	FreeProcessVariables_BasilarM_DRNL_Test(void);
 
 BOOLN	PrintPars_BasilarM_DRNL_Test(void);
 
@@ -138,42 +134,37 @@ BOOLN	ReadPars_BasilarM_DRNL_Test(char *fileName);
 
 BOOLN	RunModel_BasilarM_DRNL_Test(EarObjectPtr data);
 
-BOOLN	SetBandwidths_BasilarM_DRNL_Test(char *theBandwidthMode,
+BOOLN	SetBandWidths_BasilarM_DRNL_Test(char *theBandwidthMode,
 		  double *theBandwidths);
 
-BOOLN	SetCFList_BasilarM_DRNL_Test(CFList *theCFList);
+BOOLN	SetCFList_BasilarM_DRNL_Test(CFListPtr theCFList);
 
-BOOLN	SetCompressionMode_BasilarM_DRNL_Test(char *theCompressionMode);
+BOOLN	SetCompressionMode_BasilarM_DRNL_Test(char * theCompressionMode);
 
 BOOLN	SetCompressionPar_BasilarM_DRNL_Test(int index, double parameterValue);
 
 BOOLN	SetCompressionParsArray_BasilarM_DRNL_Test(int mode);
 
-BOOLN	SetNonLinearBroadeningCoeff_BasilarM_DRNL_Test(double 
-		  theNonLinearBroadeningCoeff);
+BOOLN	SetLinBwidth_BasilarM_DRNL_Test(double theLinBwidth);
 
-BOOLN	SetLinearFLPCutOffScale_BasilarM_DRNL_Test(
-		  double theLinearFLPCutOffScale);
+BOOLN	SetLinCF_BasilarM_DRNL_Test(double theLinCF);
 
-BOOLN	SetOrder_BasilarM_DRNL_Test(int theOrder);
+BOOLN	SetLinGTCascade_BasilarM_DRNL_Test(int theLinGTCascade);
 
-BOOLN	SetOutputScale_BasilarM_DRNL_Test(double theOutputScale);
+BOOLN	SetLinScaler_BasilarM_DRNL_Test(double theLinScaler);
 
-BOOLN	SetPars_BasilarM_DRNL_Test(int theOrder, int theLinearFOrder,
-		  double theNonLinearBroadeningCoeff, double *theCompressionParsArray,
-		  double linearFCentreFreq, double linearFWidth,
-		  double linearAttenuation, double linearFLPCutOffScale,
-		  CFListPtr theCFs, double outputScale, char *compressionMode);
+BOOLN	SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade);
+
+BOOLN	SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade);
+
+BOOLN	SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade);
+
+BOOLN	SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
+		  char * compressionMode, double *compressionParsArray,
+		  int linGTCascade, int linLPCascade, double linCF, double linBwidth,
+		  double linScaler, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_DRNL_Test(void);
-
-BOOLN	SetLinearAttenuation_BasilarM_DRNL_Test(double theLinearAttenuation);
-
-BOOLN	SetLinearFOrder_BasilarM_DRNL_Test(int theLinearFOrder);
-
-BOOLN	SetLinearFWidth_BasilarM_DRNL_Test(double theLinearFWidth);
-
-BOOLN	SetLinearFCentreFreq_BasilarM_DRNL_Test(double theLinearFCentreFreq);
 
 __END_DECLS
 
