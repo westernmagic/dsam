@@ -651,6 +651,8 @@ ProcessOptions_AppInterface(void)
 			appInterfacePtr->readAppParFileFlag = TRUE;
 			break;
 		case 's':
+			MarkIgnore_Options(appInterfacePtr->argc, appInterfacePtr->argv,
+			  "-s", OPTIONS_WITH_ARG);
 			if (!SetSimulationFile_AppInterface(argument))
 				ok = FALSE;
 			break;
@@ -1325,6 +1327,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			NotifyError("%s: Could not Initialise simulation.", funcName);
 			return(FALSE);
 		}
+		SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
+		  audModel));
 		if (GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel) && 
 		  !ReadProgParFile_AppInterface()) {
 			NotifyError("%s: Could not read the program settings in\nfile "

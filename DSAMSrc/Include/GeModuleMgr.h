@@ -159,6 +159,8 @@ void		FreeNull_ModuleMgr(void);
 void		FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle
 			  theHandle);
 
+char *		GetParsFilePath_ModuleMgr(EarObjectPtr data);
+
 double		GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential);
 
 EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);

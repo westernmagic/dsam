@@ -640,6 +640,31 @@ GetSimParFileFlag_ModuleMgr(EarObjectPtr data)
 
 }
 
+/*************************** GetParsFilePath **********************************/
+
+/*
+ * This function returns the parsFilePath for a simulation script.
+ * It also returns NULL if it fails, but in this case it prints an error
+ * messages.
+ * It is not being called in places where it will fail.
+ */
+
+char *
+GetParsFilePath_ModuleMgr(EarObjectPtr data)
+{
+	static const char *funcName = "GetParsFilePath_ModuleMgr";
+
+	if (!CheckData_ModuleMgr(data, funcName))
+		return(NULL);
+	if (data->module->specifier != SIMSCRIPT_MODULE) {
+		NotifyError("%s: This function can only be used with a simulation.",
+		  funcName);
+		return(NULL);
+	}
+	return(((SimScriptPtr) data->module->parsPtr)->parsFilePath);
+
+}
+
 /*************************** RunProcess ***************************************/
 
 /*
