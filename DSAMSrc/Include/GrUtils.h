@@ -1,7 +1,7 @@
 /**********************
  *
  * File:		GrUtils.h
- * Purpose: 	Routines for handling simple boxes.
+ * Purpose: 	Miscelaneous utilities.
  * Comments:	14-05-99 LPO: Added the 'FileSelector_' routine to cope with the
  *				deficiencies (!) of the 'wxFileSelector' routine's 'path'
  *				variable treatment.
