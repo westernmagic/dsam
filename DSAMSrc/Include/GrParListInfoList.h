@@ -21,6 +21,11 @@
 
 #define	PARLISTINFOLIST_ID_NOTEBOOK			1000
 #define	PARLISTINFOLIST_MAIN_ICLIST_PAGES	2
+#if defined(__SGI__)
+#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	56
+#else
+#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	28
+#endif
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -46,8 +51,7 @@ class ParListInfoList {
 
 	void	AddInfo(ParListInfo *theInfo)	{ list.Append(list.Number(),
 			  (wxObject *) theInfo); };
-	wxPanel *	UsingNotebook(DatumPtr pc, UniParListPtr parList,
-				  const wxString& title);
+	wxPanel *	UsingNotebook(UniParListPtr parList, const wxString& title);
 	ParListInfo *	GetInfo(int index)	{ return list.GetMember(index); }
 	wxWindow *	GetLastControl(void);
 	wxNotebook *	GetNotebook(void)	{ return notebook; }
@@ -57,9 +61,9 @@ class ParListInfoList {
 	bool	GetUseNotebookControls(void)	{ return useNotebookControls; }
 	void	SetStandardInfo(wxPanel *panel, DatumPtr pc, UniParListPtr parList,
 			  const wxString& title, int offset = 0, int numPars = -1);
-	void	SetDisplayModuleInfo(wxPanel *panel, DatumPtr pc,
+	void	SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 			  UniParListPtr parList, int offset = 0, int panelNum = 0);
-	void	SetSubParListInfo(ParListInfo *info, int offset);
+	void	SetSubParListInfo(ParListInfo *info);
 
 };
 
