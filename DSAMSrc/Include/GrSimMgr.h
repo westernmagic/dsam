@@ -49,6 +49,9 @@
 #define SIM_MANAGER_REG_DSAM_HELP_PATH	"DSAMHelp"
 #define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
 
+#define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	"Program parameters"
+#define SIM_MANAGER_REG_MAIN_PARS				"/MainPars"
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -58,11 +61,15 @@ enum {
 	MYFRAME_ID_QUIT = 1,
 	MYFRAME_ID_ABOUT,
 	MYFRAME_ID_EXECUTE,
+	MYFRAME_ID_STOP_SIMULATION,
 	MYFRAME_ID_HELP,
 	MYFRAME_ID_EDIT_MAIN_PARS,
 	MYFRAME_ID_EDIT_SIM_PARS,
+	MYFRAME_ID_LOAD_SIM_PAR_FILE,
+	MYFRAME_ID_LOAD_SIM_SCRIPT_FILE,
 	MYFRAME_ID_SAVE_SIM_PARS,
-	MYFRAME_ID_VIEW_SIM_PARS
+	MYFRAME_ID_VIEW_SIM_PARS,
+	MYFRAME_ID_DISPLAY_THREAD_EVENT = 100
 
 };
 
@@ -90,7 +97,7 @@ class MyFrame: public wxFrame {
 	char	**initStringPtrs;
 #	endif
 	int		helpCount;
-	wxMenu		*fileMenu, *editMenu, *viewMenu;
+	wxMenu	*fileMenu, *editMenu, *viewMenu;
 	wxConfigBase	*pConfig;
 
   public:
@@ -109,10 +116,13 @@ class MyFrame: public wxFrame {
 	void	OnHelp(wxCommandEvent& event);
 	void	OnEditMainPars(wxCommandEvent& event);
 	void	OnEditSimPars(wxCommandEvent& event);
+	void	OnLoadSimFile(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
 	void	OnSaveSimPars(wxCommandEvent& event);
+	void	OnStopSimulation(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
+	bool	ResetSimulation(void);
 
    private:
       wxHtmlHelpController help;
@@ -130,29 +140,42 @@ class MyApp: public wxApp {
 	uInt	serverId;
 	int		displayDefaultX, displayDefaultY, myArgc;
 	char	**myArgv;
-	wxString	serverName;
+	wxString	serverName, dataInstallDir, title;
 	MyFrame		*frame;
 	wxSocketServer	*myServer;
 	wxSocketClient	*myClient;
 
   public:
+	wxIcon		*icon;
+	wxCriticalSection	mainCritSect, displayCritSect;
 
 	MyApp(void);
-	
+
+	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
 	void	GetDefaultDisplayPos(int *x, int *y);
 	MyFrame *	GetFrame(void)	{ return frame; }
 	bool	InitArgv(int argc);
+	void	InitMain(void);
+	bool	InitRun(void);
+	void	ExitMain(void);
 	bool	OnInit(void);
-    int		OnExit(void);
+	int		OnExit(void);
 	void	OnServerEvent(wxSocketEvent& event);
 	void	OnSocketEvent(wxSocketEvent& event);
+	bool	ResetCommandArgs(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	void	RunInClientMode(void);
 	bool	RunSimulation(void);
+	void	SaveConfiguration(UniParListPtr	parList);
 	bool	SetArgvString(int index, char *string, int size);
 	bool	SetClientServerMode(void);
+	void	SetConfiguration(UniParListPtr	parList);
+	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
+	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
+	void	SetTitle(void);
+	bool	StatusChanged(void);
 
 	DECLARE_EVENT_TABLE()
 
@@ -183,8 +206,6 @@ void	PrintUsage_MyApp(void);
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
 /******************************************************************************/
-
-void	ButtonProc_SimMgr(wxButton& but, wxCommandEvent& event);
 
 #endif
 
