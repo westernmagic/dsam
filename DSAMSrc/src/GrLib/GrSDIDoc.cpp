@@ -205,7 +205,7 @@ SDIDocument::LoadObject(wxInputStream& stream)
 	else {
 		;
 		if (!diagram.LoadFile(diagFileName.GetFullPath()) ||
-		  !diagram.VerifyDiagram()) {
+		  !diagram.SetShapeHandlers() || !diagram.VerifyDiagram()) {
 			wxLogError("%s: Error loading diagram file - default layout "
 			  "used.\n", funcName);
 			diagram.DeleteAllShapes();

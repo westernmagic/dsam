@@ -100,7 +100,7 @@ EditorToolPalette::Set(void)
 	#ifdef __WXMSW__
 	wxBitmap PaletteAnaTool("ANALYSIS_TOOL");
 	wxBitmap PaletteCtrlTool("CONTROL_TOOL");
-	wxBitmap PaletteCtrlTool("DISPLAY_TOOL");
+	wxBitmap PaletteDisplayTool("DISPLAY_TOOL");
 	wxBitmap PaletteFiltTool("FILTER_TOOL");
 	wxBitmap PaletteIOTool("IO_TOOL");
 	wxBitmap PaletteArrow("ARROWTOOL");

@@ -274,8 +274,6 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 void
 SDIEvtHandler::ProcessProperties(double x, double y)
 {
-	printf("SDIEvtHandler::ProcessProperties: process type = %d\n",
-	  processType);
 	if (!pc) {
 		if (GetShape()->IsKindOf(CLASSINFO(wxLineShape)))
 			return;
@@ -372,7 +370,6 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 void
 SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 {
-	printf("SDIEvtHandler::OnLeftDoubleClick: Entered\n");
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 

@@ -400,6 +400,26 @@ SDIDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 }
 
 /******************************************************************************/
+/****************************** OnShapeLoad ***********************************/
+/******************************************************************************/
+
+bool
+SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
+{
+	wxDiagram::OnShapeLoad(db, shape, expr);
+	
+	char *label = NULL;
+	expr.AssignAttributeValue("label", &label);
+	SDIEvtHandler *handler = new SDIEvtHandler(&shape, &shape, wxString(label));
+	shape.SetEventHandler(handler);
+
+	if (label)
+		delete[] label;
+	return TRUE;
+
+}
+
+/******************************************************************************/
 /****************************** FindShapeDatum ********************************/
 /******************************************************************************/
 
@@ -415,6 +435,52 @@ SDIDiagram::FindShapeDatum(uInt id)
 			return (pc);
 	return(NULL);
 	
+}
+
+/******************************************************************************/
+/****************************** SetShapeHandlers ******************************/
+/******************************************************************************/
+
+/*
+ * Routine sets the fields for the shape handlers.
+ * It also checks that processes exist for each shape.
+ */
+
+bool
+SDIDiagram::SetShapeHandlers(void)
+{
+	const static char *funcName = "SDIDiagram::SetShapeHandlers";
+	DatumPtr	pc;
+	SDIEvtHandler	*myHandler;
+	wxNode *node = m_shapeList->First();
+
+	while (node) {
+		wxShape *shape = (wxShape *) node->Data();
+		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
+			if ((pc = FindShapeDatum((uInt) shape->GetId())) == NULL) {
+				wxLogError("%s: Could not find shape id = %ld", funcName,
+				  shape->GetId());
+				return(false);
+			}
+			SetProcessClientData(pc, shape);
+			myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+			myHandler->pc = pc;
+			switch (pc->type) {
+			case PROCESS:
+				myHandler->processType = pc->data->module->classSpecifier;
+				break;
+			case REPEAT:
+			case RESET:
+				myHandler->processType = CONTROL_MODULE_CLASS;
+				break;
+			default:
+				;
+			} /* switch */
+		}
+		node = node->Next();
+	}
+	return(true);
+			
 }
 
 /******************************************************************************/
@@ -436,17 +502,6 @@ SDIDiagram::VerifyDiagram(void)
 	EarObjRefPtr p;
 	wxNode *node = m_shapeList->First();
 
-	// Check processes exist for each shape.
-	while (node) {
-		wxShape *shape = (wxShape *) node->Data();
-		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
-			if ((pc = FindShapeDatum((uInt) shape->GetId())) == NULL)
-				return(FALSE);
-			SetProcessClientData(pc, shape);
-			SHAPE_PC(shape) = pc;
-		}
-		node = node->Next();
-	}
 	// Check processes exist for each shape line, and that the connection
 	// exists in the simulation
 	node = m_shapeList->First();
