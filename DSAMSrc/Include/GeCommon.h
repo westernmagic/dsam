@@ -105,7 +105,7 @@
 #ifndef GRAPHICS_SUPPORT
 #	define MainSimulation	main
 #endif
-#define	PROCESS_START_TIME		1
+#define	PROCESS_START_TIME		0
 
 /******************************************************************************/
 /*************************** Macro definitions ********************************/

@@ -443,6 +443,9 @@ void		SetPureTone_ModuleMgr(ModulePtr theModule);
 
 void		SetPureTone2_ModuleMgr(ModulePtr theModule);
 
+BOOLN		SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
+			  double value);
+
 BOOLN		SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value);
 
 void		SetSignalDisp_ModuleMgr(ModulePtr theModule);

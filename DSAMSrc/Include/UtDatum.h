@@ -131,7 +131,7 @@ BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
 DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 
-void	PrintIndentAndLabel_Utility_String(DatumPtr pc, int indentLevel);
+void	PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel);
 
 void	PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName,
 		  int indentLevel, char *prefix);
