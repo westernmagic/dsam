@@ -56,6 +56,7 @@
 typedef struct Datum {
 
 	BOOLN	connectedFlag;
+	BOOLN	onFlag;
 	int		type;
 	uInt	stepNumber;
 	union {
