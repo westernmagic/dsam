@@ -272,8 +272,8 @@ MyCanvas::InitData(EarObjectPtr data)
 		chanLength = signal->length;
 	} else {
 		offset = (ChanLen) floor(mySignalDispPtr->xOffset / signal->dt + 0.5);
-		chanLength = (mySignalDispPtr->xExtent < 0.0)? signal->length - offset:
-		  (ChanLen) floor((mySignalDispPtr->xExtent) / signal->dt +
+		chanLength = (mySignalDispPtr->xExtent < DBL_EPSILON)? signal->length -
+		  offset: (ChanLen) floor((mySignalDispPtr->xExtent) / signal->dt +
 		  0.5);
 	}
 		
