@@ -94,6 +94,10 @@ Init_Utility_PadSignal(ParameterSpecifier parSpec)
 		}
 	}
 	padSignalPtr->parSpec = parSpec;
+	padSignalPtr->beginDurationFlag = FALSE;
+	padSignalPtr->beginValueFlag = FALSE;
+	padSignalPtr->endDurationFlag = FALSE;
+	padSignalPtr->endValueFlag = FALSE;
 	padSignalPtr->beginDuration = 0.0;
 	padSignalPtr->beginValue = 0.0;
 	padSignalPtr->endDuration = 0.0;
@@ -200,6 +204,7 @@ SetBeginDuration_Utility_PadSignal(double theBeginDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
+	padSignalPtr->beginDurationFlag = TRUE;
 	padSignalPtr->beginDuration = theBeginDuration;
 	return(TRUE);
 
@@ -223,6 +228,7 @@ SetBeginValue_Utility_PadSignal(double theBeginValue)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
+	padSignalPtr->beginValueFlag = TRUE;
 	padSignalPtr->beginValue = theBeginValue;
 	return(TRUE);
 
@@ -251,6 +257,7 @@ SetEndDuration_Utility_PadSignal(double theEndDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
+	padSignalPtr->endDurationFlag = TRUE;
 	padSignalPtr->endDuration = theEndDuration;
 	return(TRUE);
 
@@ -274,6 +281,7 @@ SetEndValue_Utility_PadSignal(double theEndValue)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
+	padSignalPtr->endValueFlag = TRUE;
 	padSignalPtr->endValue = theEndValue;
 	return(TRUE);
 
@@ -292,14 +300,10 @@ SetEndValue_Utility_PadSignal(double theEndValue)
 BOOLN
 CheckPars_Utility_PadSignal(void)
 {
-	static const char	*funcName = "CheckPars_Utility_PadSignal";
+	/*static const char	*funcName = "CheckPars_Utility_PadSignal";*/
 	BOOLN	ok;
 
 	ok = TRUE;
-	if (padSignalPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
 	/*** Put parameter consistency checks here. ***/
 	return(ok);
 

@@ -37,6 +37,7 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
+	BOOLN	beginDurationFlag, beginValueFlag, endDurationFlag, endValueFlag;
 	double	beginDuration;
 	double	beginValue;
 	double	endDuration;
