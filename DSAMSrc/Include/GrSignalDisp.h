@@ -40,6 +40,10 @@
 #include "UtRedceChans.h"
 #include "UtNameSpecs.h"
 
+#if !defined(GRAPHICS_SUPPORT) || !defined(__cplusplus)
+#	include "StdSignalDisp.h"	
+#endif /* GRAPHICS_SUPPORT */
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -57,11 +61,13 @@
 #define DEFAULT_X_DEC_PLACES			0
 #define DEFAULT_Y_DEC_PLACES			0
 
-
 #define	DISPLAY_PROCESS_NAME				"DSAM Display"
 #define	DISPLAY_DEFAULT_FRAME_WIDTH			440
 #define	DISPLAY_DEFAULT_FRAME_HEIGHT		500
 #define	DISPLAY_DEFAULT_FRAME_DELAY			0.0
+
+#define	GRAPH_TOP_MARGIN_PERCENT			5.0
+#define	GRAPH_NUM_GREY_SCALES				10
 
 /******************************************************************************/
 /*************************** Pre-reference definitions ************************/
@@ -138,6 +144,14 @@ typedef	enum {
 
 } SignalDispyAxisModeSpecifier;
 
+typedef enum {
+
+	GRAPH_LINE_YNORM_MIDDLE_MODE,
+	GRAPH_LINE_YNORM_BOTTOM_MODE,
+	GRAPH_LINE_YNORM_MODE_NULL
+
+} SignalDispLineModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
@@ -187,6 +201,7 @@ typedef struct {
 	/* Private variables */
 	NameSpecifier	*modeList;
 	NameSpecifier	*yAxisModeList;
+	NameSpecifier	*yNormModeList;
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			redrawGraphFlag;
@@ -195,11 +210,9 @@ typedef struct {
 	EarObjectPtr	buffer;
 	EarObjectPtr	data;
 	EarObjectPtr	summary;
-#	if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 	DisplayS		*display;
 	DialogList		*dialog;
 	wxCriticalSection	*critSect;
-#	endif /* GRAPHICS_SUPPORT */
 
 } SignalDisp, *SignalDispPtr;
 
@@ -236,6 +249,8 @@ UniParListPtr	GetUniParListPtr_SignalDisp(void);
 BOOLN	Init_SignalDisp(ParameterSpecifier parSpec);
 
 BOOLN	InitBOOLNeanList_SignalDisp(void);
+
+BOOLN	InitYNormModeList_SignalDisp(void);
 
 BOOLN	InitModeList_SignalDisp(void);
 

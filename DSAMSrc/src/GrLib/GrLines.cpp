@@ -49,21 +49,15 @@
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
+#include "GeEarObject.h"
 #include "GrUtils.h"
 #include "GrLines.h"
 #include "GrBrushes.h"
+#include "GrSignalDisp.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
-
-NameSpecifier yNormModeList_Line[] = {
-
-						{"MIDDLE",		LINE_YNORM_MIDDLE_MODE },
-						{"BOTTOM",		LINE_YNORM_BOTTOM_MODE },
-						{"",			LINE_YNORM_MODE_NULL }
-
-					};
 
 /******************************************************************************/
 /****************************** GrLines Methods *******************************/
@@ -81,7 +75,7 @@ GrLines::GrLines(void)
 	minYRecord = NULL;
 	offset = 0;
 	length = 0;
-	yNormalisationMode = LINE_YNORM_MIDDLE_MODE;
+	yNormalisationMode = GRAPH_LINE_YNORM_MIDDLE_MODE;
 	redrawFlag = TRUE;
 	greyScaleMode = FALSE;
 	channelStep = -1;
@@ -228,7 +222,7 @@ GrLines::Rescale(wxRect& newRect)
 	channelScale = chanSpace / (maxY - minY);
 	if (greyScaleMode)
 		yOffset = (wxCoord) (rect.GetBottom() - chanSpace);
-	else if (yNormalisationMode == LINE_YNORM_MIDDLE_MODE)
+	else if (yNormalisationMode == GRAPH_LINE_YNORM_MIDDLE_MODE)
 		yOffset = (wxCoord) (rect.GetBottom() - chanSpace / 2.0);
 	else
 		yOffset = rect.GetBottom();
@@ -297,7 +291,7 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 	else
 		xIndex = (xResolution / xScale > 1.0)? (int) (xResolution / xScale): 1;
 	deltaX = xScale * xIndex;
-	yNormalOffset = (yNormalisationMode == LINE_YNORM_MIDDLE_MODE)? (maxY +
+	yNormalOffset = (yNormalisationMode == GRAPH_LINE_YNORM_MIDDLE_MODE)? (maxY +
 	  minY) / 2.0: minY;
 
 	xOffset = (wxCoord) (theXOffset + rect.GetLeft());

@@ -32,7 +32,6 @@
 /******************************************************************************/
 
 #define	GRAPH_RIGHT_MARGIN_SCALE			0.02
-#define	GRAPH_TOP_MARGIN_PERCENT			5.0
 
 #define	GRAPH_Y_TITLE_SCALE					0.025
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
@@ -63,7 +62,6 @@
 #define	GRAPH_Y_TICK_LENGTH_SCALE			0.04
 #define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
-#define	GRAPH_NUM_GREY_SCALES				10
 
 /* The following is needed because of errors in scale position - can't get
  * Get extent to work properly.
