@@ -1,0 +1,9 @@
+model.aif	Stimulus file name
+2		Default word size for sound data (1 or 2)
+0		Default (for format), big- or little-endian: 0, 1 or 2
+1		Number of Channels (only used for raw binary files)
+-1		Normalisation factor for writing (0 or -ve for automatic)
+20000		Default sample rate - used for raw binary and ASCII files
+-1		Maximum samples read (-1 = unlimited)
+0.0		Time offset (not used for output)
+0.0		Signal gain (not used for output)

@@ -14,7 +14,7 @@ ParFiles	= BMMdflt.par Compres1.par Intensity1.par NAPdflt.par SAIdflt.par \
 				gtfDflt.par gtfSmall.par lowpass.par lowpass1200.par \
 				medDflt.par midearDflt.par reduceDflt.par stiACdflt.par \
 				stiDflt.par strobeACdflt.par strobeDflt.par sumSAIdflt.par \
-				waveDflt.par LevelDFIn.par LevelDisp1.par
+				waveDflt.par outputDflt.par LevelDFIn.par LevelDisp1.par
 
 DataFiles	= cegc_br.raw PTone57dBSPL.aif
 
