@@ -54,6 +54,7 @@
 #include "UtDatum.h"
 #include "UtBandwidth.h"
 #include "UtCFList.h"
+#include "UtDynaList.h"
 #include "UtIonChanList.h"
 #include "UtNameSpecs.h"
 
@@ -167,8 +168,6 @@ typedef struct UniPar {
 		BOOLN	(* SetICList)(IonChanListPtr);
 		BOOLN	(* SetDatumPtr)(DatumPtr);
 
-		BOOLN	(* SetFileName)(char *);
-
 		BOOLN	(* SetCFListInt)(CFListPtr, int);
 		BOOLN	(* SetCFListReal)(CFListPtr, double);
 		BOOLN	(* SetCFListRealArrayElement)(CFListPtr, int, double);
@@ -239,7 +238,7 @@ BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
-BOOLN	ResetICListParList_UniParMgr(UniParListPtr *parList);
+BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
 
 BOOLN	SetGeneralListPar_UniParMgr(UniParListPtr parList, int specifier,
 		  char *parValue);
@@ -249,6 +248,8 @@ BOOLN	SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 
 BOOLN	SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index,
 		  char *parValue);
+
+BOOLN	SetICEnabled_IonChanList(IonChannelPtr theIC, char *theICEnabled);
 
 BOOLN	SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  char *parValue);
