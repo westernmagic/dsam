@@ -94,7 +94,6 @@ enum {
 
 /********************************** Pre-references ****************************/
 
-class SimModuleDialog;
 class ModuleParDialog;
 class EditorToolPalette;
 class SDICanvas;
@@ -121,7 +120,6 @@ class MyApp: public wxApp {
 	wxConfigBase	*pConfig;
 	wxSocketServer	*myServer;
 	wxSocketClient	*myClient;
-	SimModuleDialog	*simModuleDialog;
 	wxDocManager	*myDocManager;
 	wxHtmlHelpController help;
 
@@ -146,7 +144,6 @@ class MyApp: public wxApp {
 	void	AddToProcessList(wxStringList& list, const wxString& prefix);
 	void	CloseDiagWindow(void);
 	void	CreateProcessLists(void);
-	void	DeleteSimModuleDialog(void);
 	void	DeleteSimThread(void);
 	void	EnableSimParMenuOptions(bool on);
 	bool	GetAudModelLoadedFlag(void)		{ return audModelLoadedFlag; }
@@ -154,7 +151,6 @@ class MyApp: public wxApp {
 	DiagFrame *	GetDiagFrame(void)	{ return diagFrame; }
 	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
-	SimModuleDialog *	GetSimModuleDialog(void)	{ return simModuleDialog; }
 	bool	GetSuspendDiagnostics(void);
 	bool	InitArgv(int argc);
 	void	InitAppInterface(void);
@@ -180,7 +176,6 @@ class MyApp: public wxApp {
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
 	void	SetDiagLocks(bool on);
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
-	void	SetSimModuleDialog(SimModuleDialog *dlg) { simModuleDialog = dlg; }
 	void	SetTitle(void);
 	void	StartSimThread(void);
 	bool	StatusChanged(void);

@@ -208,9 +208,9 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		wxGetApp().GetDiagFrame()->Clear();
 	ResetGUIDialogs();
 	if (GetPtr_AppInterface()->Init) {
-		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
-		  )->CheckChangedValues())
-			return;
+//		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
+//		  )->CheckChangedValues())
+//			return;
 		if (!GetPtr_AppInterface()->audModel) {
 			NotifyError("%s: Simulation not initialised.", funcName);
 			return;
@@ -298,15 +298,16 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 void
 SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 {
-	printf("SDIFrame::OnEditMainPars: Entered\n");
 	if (!GetPtr_AppInterface()->parList)
 		return;
 
 	if (mainParDialog)
 		return;
-	mainParDialog = new ModuleParDialog(this, "Main Parameters",
-	  MODPARDIALOG_MAIN_PARENT_INFONUM, NULL, GetPtr_AppInterface()->parList,
-	  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
+	mainParDialog = new ModuleParDialog(this, "Main Parameters", NULL,
+	  GetPtr_AppInterface()->parList, NULL, 300, 300, 500, 500,
+	  wxDEFAULT_DIALOG_STYLE);
+	mainParDialog->SetNotebookSelection();
+	printf("SDIFrame::OnEditMainPars: dialog created\n");
 	mainParDialog->Show(TRUE);
 
 }
@@ -321,12 +322,13 @@ SDIFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
 		ResetStepCount_Utility_Datum();
 		wxGetApp().CheckInitialisation();
 	}
-	if (!wxGetApp().GetSimModuleDialog()) {
-		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
-		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(
-		  GetPtr_AppInterface()->audModel), GetUniParListPtr_ModuleMgr(
-		  GetPtr_AppInterface()->audModel)));
-	}
+	printf("SDIFrame::OnEditSimPars: Open simulation view.\n");
+//	if (!wxGetApp().GetSimModuleDialog()) {
+//		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
+//		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(
+//		  GetPtr_AppInterface()->audModel), GetUniParListPtr_ModuleMgr(
+//		  GetPtr_AppInterface()->audModel)));
+//	}
 
 }
 
@@ -433,6 +435,23 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
  
 }
   
+/******************************************************************************/
+/*************************** EditProcessMenu **********************************/
+/******************************************************************************/
+
+void
+SDIFrame::OnEditProcess(wxCommandEvent& event)
+{
+	wxMenu menu("Edit Process");
+
+	menu.Append(SDIFRAME_CUT, "&Cut");
+	menu.AppendSeparator();
+	menu.Append(SDIFRAME_EDIT_PROCESS_NAME, "&Process name");
+
+	PopupMenu(&menu, 0, 0);
+
+}
+
 /******************************************************************************/
 /*************************** OnSize *******************************************/
 /******************************************************************************/

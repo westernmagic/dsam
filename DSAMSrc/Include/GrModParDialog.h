@@ -59,19 +59,51 @@
 
 /*************************** ModuleParDialog **********************************/
 
-class ModuleParDialog: public DialogList {
+class ModuleParDialog: public wxDialog {
 
+	bool	updateParent, enableTextCtrlsFlag;
 	wxButton	*deleteICBtn, *addICBtn;
+	wxObject	*myHandler;
+	UniParListPtr	parList;
 
  public:
-	ModuleParDialog(wxWindow *parent, const wxString& title, int theInfoNum,
-	  DatumPtr pc, UniParListPtr theParList = NULL, int x = -1, int y = -1,
-	  int width = -1, int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
+	DatumPtr	pc;
+	wxButton	*okBtn, *cancelBtn, *quitBtn;
+	wxWindow	*lastControl;
+	ParListInfoList	*parListInfoList;
+
+	ModuleParDialog(wxWindow *parent, const wxString& title, DatumPtr pc,
+	  UniParListPtr theParList = NULL, wxObject *theHandler = NULL, int x =
+	 -1, int y = -1, int width = -1, int height = -1, long style =
+	  wxDEFAULT_DIALOG_STYLE);
+	~ModuleParDialog(void);
+
+	bool	UpdateParent(void) { updateParent = FALSE; return TRUE; }
 
 	void	DeleteDialog(void);
 	void	OnICButton(wxCommandEvent& event);
-	void	OnOk(wxCommandEvent& event);
 	void	OnPageChanged(wxNotebookEvent &event);
+
+	bool	CheckChangedValues(void);
+	bool	CheckDialogChangedValues(void);
+	void	DisableCancelBtn(void)	{ cancelBtn->Enable(FALSE); }
+	wxNode *	GetParListNode(wxNode *node, long tag);
+	bool	GetUpdateParent(void)	{ return updateParent; }
+	void	OnButton(wxCommandEvent& event);
+	void	OnCancel(wxCommandEvent& event);
+	void	OnCheckBox(wxCommandEvent& event);
+	void	OnChoice(wxCommandEvent& event);
+	void	OnComboBox(wxCommandEvent& event);
+	void	OnCloseWindow(wxCloseEvent& event);
+	void	OnListBox(wxCommandEvent& event) 	{
+				DPrint("DialogList::OnListBox called\n"); }
+	void	OnOk(wxCommandEvent& event);
+	void	OnQuit(wxCommandEvent& event);
+	void	OnSliderUpdate(wxCommandEvent& event);
+	void	OnText(wxCommandEvent& event);
+	void	SetNotebookPanel(int election);
+	void	SetUpdateParent(bool status)	{ updateParent = status; }
+	void	SetNotebookSelection(void);
 
 	DECLARE_EVENT_TABLE()
 

@@ -78,7 +78,6 @@ class ParListInfo {
 	DatumPtr	GetPC(void)			{ return pc; }
 	void	ResetControlValues(void);
 	void	SetEnabledControls(void);
-	void	SetModuleListBox(void);
 	void	SetParBoolean(UniParPtr par, int index);
 	void	SetParFileName(UniParPtr par, int index);
 	void	SetParGeneral(UniParPtr par, int index);

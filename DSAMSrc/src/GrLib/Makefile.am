@@ -22,13 +22,12 @@ INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 
 libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrLines.cpp GrCanvas.cpp GrDisplayS.cpp GrSignalDisp.cpp \
-				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrSimModDialog.cpp \
-				GrModParDialog.cpp GrParListInfo.cpp GrDialogInfo.cpp \
-				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \
-				GrSocket.cpp GrSimThread.cpp GrSDIDoc.cpp GrSDIPalette.cpp \
-				GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp GrSDIDiagram.cpp \
-				GrSDIEvtHandler.cpp GrSDICommand.cpp GrSDIShapes.cpp \
-				GrDiagFrame.cpp
+				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrModParDialog.cpp \
+				GrParListInfo.cpp GrDialogInfo.cpp GrParListInfoList.cpp \
+				GrParControl.cpp GrSocket.cpp GrSimThread.cpp GrSDIDoc.cpp \
+				GrSDIPalette.cpp GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp \
+				GrSDIDiagram.cpp GrSDIEvtHandler.cpp GrSDICommand.cpp \
+				GrSDIShapes.cpp GrDiagFrame.cpp
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 

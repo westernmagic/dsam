@@ -38,7 +38,7 @@
 
 /****************************** Constructor ***********************************/
 
-ParListInfoList::ParListInfoList(DialogList *theParent, DatumPtr pc,
+ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
   UniParListPtr parList)
 {
 	static const char *funcName = "ParListInfoList::ParListInfoList";
@@ -60,7 +60,8 @@ ParListInfoList::ParListInfoList(DialogList *theParent, DatumPtr pc,
 	if (notebook) {
 		if (parList->notebookPanel < 0)
 			parList->notebookPanel = notebookPanel;
-		notebook->SetSelection(parList->notebookPanel);
+		//*** this next line needs to be done later ***/
+		//notebook->SetSelection(parList->notebookPanel);
 		parent->SetSize(GetNotebookSize());
 	}
 
@@ -280,15 +281,15 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 				SetStandardInfo(panel, pc, parArray->parList, parArray->name);
 				break; }
 			case UNIPAR_SIMSCRIPT: {
-				DatumPtr	pc = *p->valuePtr.simScript.simulation;
-
-				info->SetModuleListBox();
-				for (; pc != NULL; pc = pc->next)
-					if (pc->type == PROCESS) {
-						parent->dialogList.Add(new DialogInfo((wxObject *) pc,
-						  (int) UNIPAR_SIMSCRIPT));
-					}
-				
+//				DatumPtr	pc = *p->valuePtr.simScript.simulation;
+//
+//				info->SetModuleListBox();
+//				for (; pc != NULL; pc = pc->next)
+//					if (pc->type == PROCESS) {
+//						parent->dialogList.Add(new DialogInfo((wxObject *) pc,
+//						  (int) UNIPAR_SIMSCRIPT));
+//					}
+//				
 				break; }
 			default:
 				NotifyError("%s: Unknown universal parameter type (%d).",

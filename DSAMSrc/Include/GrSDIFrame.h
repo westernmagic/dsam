@@ -33,7 +33,7 @@ enum {
 	SDIFRAME_ADD_LINE,
 
 	SDIFRAME_EDIT_MAIN_PARS,
-	SDIFRAME_EDIT_PROCESS,
+	SDIFRAME_EDIT_PROCESS_NAME,
 	
 	SDIFRAME_EXECUTE,
 	SDIFRAME_STOP_SIMULATION,
@@ -83,6 +83,7 @@ class SDIFrame: public wxDocParentFrame
 	void	OnDiagWindow(wxCommandEvent& event);
 	void	OnExecute(wxCommandEvent& event);
 	void	OnEditMainPars(wxCommandEvent& event);
+	void	OnEditProcess(wxCommandEvent& event);
 	void	OnEditSimPars(wxCommandEvent& event);
 	void	OnHelp(wxCommandEvent& event);
 	void	OnLoadSimFile(wxCommandEvent& event);

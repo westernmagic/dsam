@@ -115,7 +115,6 @@ MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 	dataInstallDir = DSAM_DATA_INSTALL_DIR;
 	icon = NULL;
 	busy = FALSE;
-	simModuleDialog = NULL;
 	simThread = NULL;
 	myDocManager = NULL;
 	diagFrame = NULL;
@@ -448,7 +447,7 @@ MyApp::CreateProcessLists(void)
 
 	InitKeyWords_Utility_SSSymbols(&symList);
 	for (p = symList; p; p = p->next) {
-		if ((p->type == STOP) || (p->type == BEGIN) || (p->type == REPEAT))
+		if ((p->type == STOP) || (p->type == BEGIN))
 			continue;
 		string.Printf("@%s", p->name);
 		AddToProcessList(ctrlList, string);
@@ -916,23 +915,6 @@ MyApp::StatusChanged(void)
 	
 }
 
-/****************************** DeleteSimModuleDialog *************************/
-
-/*
- * This routine deletes the simulation module dialog.
- */
-
-void
-MyApp::DeleteSimModuleDialog(void)
-{
-	if (simModuleDialog) {
-		delete simModuleDialog;
-		simModuleDialog = NULL;
-	}
-
-
-}
-
 /****************************** DeleteSimThread *******************************/
 
 /*
@@ -1002,7 +984,7 @@ MyApp::ResetSimulation(void)
 		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
 		return(FALSE);
 	}
-	DeleteSimModuleDialog();
+	//DeleteSimModuleDialog();
 
 	SwitchGUILocking_Common(FALSE);
 	if (!CheckInitialisation()) {

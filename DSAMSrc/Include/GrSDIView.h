@@ -48,12 +48,13 @@ class SDIView: public wxView
 	~SDIView(void) {};
 
 	SDICanvas *	CreateCanvas(wxView *view, wxFrame *parent);
+	wxShape	*FindSelectedShape(void);
 	bool	OnCreate(wxDocument *doc, long flags);
 	void	OnDraw(wxDC *dc);
 	void	OnUpdate(wxView *sender, wxObject *hint = NULL);
 	bool	OnClose(bool deleteWindow = TRUE);
 
-	wxShape	*FindSelectedShape(void);
+	void	ProcessListDialog(void);
 
 	//  void OnMenuCommand(int cmd);
 

@@ -93,14 +93,14 @@ SDICanvas::~SDICanvas(void)
 }
 
 /******************************************************************************/
-/*************************** OOnLeftClicknSize ********************************/
+/*************************** OnLeftClick **************************************/
 /******************************************************************************/
 
 void
 SDICanvas::OnLeftClick(double x, double y, int keys)
 {
-  EditorToolPalette *palette = ((SDIFrame *) parent)->palette;
-  wxClassInfo *info = NULL;
+	EditorToolPalette *palette = ((SDIFrame *) parent)->palette;
+	wxClassInfo *info = NULL;
 
 	switch (palette->currentlySelected) {
 	case PALETTE_ANALYSIS:
@@ -140,8 +140,14 @@ SDICanvas::OnLeftClick(double x, double y, int keys)
 	}
 }
 
-void SDICanvas::OnRightClick(double x, double y, int keys)
+/******************************************************************************/
+/*************************** OnRightClick *************************************/
+/******************************************************************************/
+
+void
+SDICanvas::OnRightClick(double x, double y, int keys)
 {
+
 }
 
 void SDICanvas::OnDragLeft(bool draw, double x, double y, int keys)

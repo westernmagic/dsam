@@ -31,6 +31,10 @@
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
+/********************************** Pre-references ****************************/
+
+class ModuleParDialog;
+
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
@@ -48,6 +52,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	int		processType;
 	wxString	label;
 	DatumPtr	pc;
+	ModuleParDialog	*dialog;
 
 	SDIEvtHandler(wxShapeEvtHandler *prev = NULL, wxShape *shape = NULL,
 	  const wxString& lab = "", int theProcessType = -1);
@@ -57,6 +62,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	bool	EditInstruction(void);
 	void	FreeInstruction(void);
 	bool	InitInstruction(void);
+	void	SetSelectedShape(wxClientDC &dc);
 
 	void	OnLeftClick(double x, double y, int keys = 0, int attachment = 0);
 	void	OnRightClick(double x, double y, int keys = 0, int attachment = 0);
@@ -67,6 +73,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	void	OnEndDragRight(double x, double y, int keys = 0, int attachment =
 			  0);
 	void	OnEndSize(double x, double y);
+	void	SetDialog(ModuleParDialog *dlg) { dialog = dlg; }
 
 };
 

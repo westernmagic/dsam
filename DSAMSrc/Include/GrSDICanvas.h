@@ -48,8 +48,9 @@ class SDICanvas: public wxShapeCanvas
 	  long style = wxRETAINED);
 	~SDICanvas(void);
 
-	void OnMouseEvent(wxMouseEvent& event);
-	void OnPaint(wxPaintEvent& event);
+	void	EditProcessMenu(double x = 0, double y = 0);
+	void	OnMouseEvent(wxMouseEvent& event);
+	void	OnPaint(wxPaintEvent& event);
 
 	virtual void OnLeftClick(double x, double y, int keys = 0);
 	virtual void OnRightClick(double x, double y, int keys = 0);

@@ -70,8 +70,37 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
     EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
     EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
-    EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
+    EVT_MENU(SDIFRAME_EDIT_PROCESS_NAME, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
+
+/******************************************************************************/
+/****************************** ProcessListDialog *****************************/
+/******************************************************************************/
+
+void
+SDIView::ProcessListDialog(void)
+{
+	wxShape *theShape = FindSelectedShape();
+
+	if (theShape) {
+		wxSingleChoiceDialog dialog(theShape->GetCanvas(), "Select a process",
+		  "Please select a process", *((SDIEvtHandler *) theShape->
+		  GetEventHandler())->GetProcessList());
+
+		dialog.SetSelection(2);
+
+		if (dialog.ShowModal() == wxID_OK) {
+			SDICanvas *canvas = (SDICanvas *) theShape->GetCanvas();
+			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
+			  new SDICommand("Edit process name", SDIFRAME_EDIT_PROCESS_NAME,
+			  (SDIDocument *) canvas->view->GetDocument(),
+			  dialog.GetStringSelection(), theShape));
+		
+		}
+		
+	}
+
+}
 
 /******************************************************************************/
 /****************************** OnCreate **************************************/
@@ -302,16 +331,9 @@ SDIView::OnChangeBackgroundColour(wxCommandEvent& event)
 /******************************************************************************/
 
 void
-SDIView::OnSetProcessLabel(wxCommandEvent& event)
+SDIView::OnSetProcessLabel(wxCommandEvent& WXUNUSED(event))
 {
-	wxShape *theShape = FindSelectedShape();
-	if (theShape) {
-		wxString newLabel = wxGetTextFromUser("Enter new label", "Shape Label",
-		 ((SDIEvtHandler *)theShape->GetEventHandler())->label);
-		GetDocument()->GetCommandProcessor()->Submit(new SDICommand("Edit "
-		  "label", SDIFRAME_EDIT_PROCESS, (SDIDocument*) GetDocument(),
-		  newLabel, theShape));
-	}
+	ProcessListDialog();
 
 }
 

@@ -44,6 +44,7 @@ SDIEvtHandler::SDIEvtHandler(wxShapeEvtHandler *prev, wxShape *shape,
 	label = lab;
 	processType = theProcessType;
 	pc = NULL;
+	dialog = NULL;
 
 }
 
@@ -195,6 +196,39 @@ SDIEvtHandler::FreeInstruction(void)
 }
 
 /******************************************************************************/
+/****************************** SetSelectedShape ******************************/
+/******************************************************************************/
+
+void
+SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
+{
+	if (GetShape()->Selected()) {
+		GetShape()->Select(FALSE, &dc);
+		// Redraw because bits of objects will be are missing
+		GetShape()->GetCanvas()->Redraw(dc);
+	} else {
+		// Ensure no other shape is selected, to simplify Undo/Redo code
+		bool redraw = FALSE;
+		wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
+		  )->First();
+		while (node) {
+			wxShape *eachShape = (wxShape *)node->Data();
+			if (eachShape->GetParent() == NULL) {
+				if (eachShape->Selected()) {
+					eachShape->Select(FALSE, &dc);
+					redraw = TRUE;
+				}
+			}
+			node = node->Next();
+		}
+		GetShape()->Select(TRUE, &dc);
+		if (redraw)
+			GetShape()->GetCanvas()->Redraw(dc);
+	}
+
+}
+
+/******************************************************************************/
 /****************************** Callbacks *************************************/
 /******************************************************************************/
 
@@ -213,33 +247,10 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
 	if (keys == 0) {
-		// Selection is a concept the library knows about
-		if (GetShape()->Selected()) {
-			GetShape()->Select(FALSE, &dc);
-			// Redraw because bits of objects will be are missing
-			GetShape()->GetCanvas()->Redraw(dc);
-		} else {
-			// Ensure no other shape is selected, to simplify Undo/Redo code
-			bool redraw = FALSE;
-			wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
-			  )->First();
-			while (node) {
-				wxShape *eachShape = (wxShape *)node->Data();
-				if (eachShape->GetParent() == NULL) {
-					if (eachShape->Selected()) {
-						eachShape->Select(FALSE, &dc);
-						redraw = TRUE;
-					}
-				}
-				node = node->Next();
-			}
-			GetShape()->Select(TRUE, &dc);
-			if (redraw)
-				GetShape()->GetCanvas()->Redraw(dc);
-		}
+		SetSelectedShape(dc);
 	} else 
 		if (keys & KEY_CTRL) {
-		// Do something for CONTROL
+			printf("Debug: ctrl left click.\n");
 		} else {
 			wxGetApp().GetFrame()->SetStatusText(label);
 		}
@@ -261,45 +272,31 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
 	if (keys == 0) {
-		// Selection is a concept the library knows about
-		if (GetShape()->Selected()) {
-			GetShape()->Select(FALSE, &dc);
-			// Redraw because bits of objects will be are missing
-			GetShape()->GetCanvas()->Redraw(dc);
-		} else {
-			// Ensure no other shape is selected, to simplify Undo/Redo code
-			bool redraw = FALSE;
-			wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
-			  )->First();
-			while (node) {
-				wxShape *eachShape = (wxShape *)node->Data();
-				if (eachShape->GetParent() == NULL) {
-					if (eachShape->Selected()) {
-						eachShape->Select(FALSE, &dc);
-						redraw = TRUE;
-					}
-				}
-				node = node->Next();
-			}
-			GetShape()->Select(TRUE, &dc);
-			if (redraw)
-				GetShape()->GetCanvas()->Redraw(dc);
-		}
-		wxSingleChoiceDialog dialog(GetShape()->GetCanvas(), "Select a process",
-		  "Please select a process", *GetProcessList());
+		SetSelectedShape(dc);
+		if (!dialog && pc) {
+			UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
+			wxString	title;
 
-		dialog.SetSelection(2);
-
-		if (dialog.ShowModal() == wxID_OK) {
-			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
-			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Edit Process", SDIFRAME_EDIT_PROCESS,
-			  (SDIDocument *) canvas->view->GetDocument(),
-			  dialog.GetStringSelection(), GetShape()));
+			switch (parList->mode) {
+			case UNIPAR_SET_SIMSPEC: {
+				printf("SDIEvtHandler::OnRightClick: Open child SDI window.\n");
+				break; }
+			default:
+				title = (pc->data->module->specifier == DISPLAY_MODULE)?
+				  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
+				  NameAndLabel_Utility_Datum(pc);
+				dialog = new ModuleParDialog(((SDICanvas *) GetShape()->
+				  GetCanvas())->parent, title, pc, parList, this,
+				  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
+				dialog->SetNotebookSelection();
+				dialog->Show(TRUE);
+			} /* switch */
 		}
 	} else 
 		if (keys & KEY_CTRL) {
-		// Do something for CONTROL
+			SetSelectedShape(dc);
+			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
+			((SDIView *) canvas->view)->ProcessListDialog();
 		} else {
 			wxGetApp().GetFrame()->SetStatusText(label);
 		}

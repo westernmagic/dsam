@@ -3,7 +3,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-include $(top_srcdir)/src/makeunix.env
+include $(top_srcdir)/src/mkunxinst.env
 
 if MPI
 MPI_INC = -I$(CHIMPHOME)/include

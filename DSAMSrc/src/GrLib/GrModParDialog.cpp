@@ -50,8 +50,17 @@
 /*************************** Event tables *************************************/
 /******************************************************************************/
 
-BEGIN_EVENT_TABLE(ModuleParDialog, DialogList)
-	EVT_BUTTON(wxID_OK, 		ModuleParDialog::OnOk)
+BEGIN_EVENT_TABLE(ModuleParDialog, wxDialog)
+	EVT_BUTTON(wxID_CANCEL,					ModuleParDialog::OnCancel)
+	EVT_BUTTON(wxID_OK, 					ModuleParDialog::OnOk)
+	EVT_BUTTON(-1 /* DL_ID_BUTTON */,		ModuleParDialog::OnButton)
+	EVT_CHECKBOX(-1 /* DL_ID_CHECK_BOX */,	ModuleParDialog::OnCheckBox) 
+	EVT_CHOICE(-1 /* DL_ID_CHOICE */,		ModuleParDialog::OnChoice) 
+	EVT_COMBOBOX(-1 /* DL_ID_COMBO_BOX */,	ModuleParDialog::OnComboBox)
+	EVT_LISTBOX(-1 /* DL_ID_LIST_BOX */,	ModuleParDialog::OnListBox)
+	EVT_SLIDER(-1 /* DL_ID_SLIDER */,		ModuleParDialog::OnSliderUpdate)
+	EVT_TEXT(DL_ID_TEXT,					ModuleParDialog::OnText)
+	EVT_CLOSE(ModuleParDialog::OnCloseWindow)
 //	EVT_BUTTON(DL_ID_ADD_IC,	ModuleParDialog::OnICButton)
 //	EVT_BUTTON(DL_ID_DELETE_IC,	ModuleParDialog::OnICButton)
 	EVT_NOTEBOOK_PAGE_CHANGED(PARLISTINFOLIST_ID_NOTEBOOK,
@@ -68,10 +77,23 @@ END_EVENT_TABLE()
  */
 
 ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
-  int theInfoNum, DatumPtr pc, UniParListPtr parList, int x, int y, int width,
-  int height, long style): DialogList(parent, title, theInfoNum, pc, parList,
-  wxPoint(x, y), wxSize(width, height), style)
+  DatumPtr thePC, UniParListPtr theParList, wxObject *theHandler, int x, int y,
+  int width, int height, long style): wxDialog(parent, -1, title,  wxPoint(x,
+  y), wxSize(width, height), style)
 {
+	updateParent = FALSE;
+	enableTextCtrlsFlag = FALSE;
+	pc = thePC;
+	okBtn = NULL;
+	cancelBtn = NULL;
+	quitBtn = NULL;
+	myHandler = theHandler;
+	parList = theParList;
+
+	parListInfoList = new ParListInfoList(this, pc, parList);
+	enableTextCtrlsFlag = TRUE;
+	lastControl = parListInfoList->GetLastControl();
+
 	/* static char *funcName = "ModuleParDialog::ModuleParDialog"; */
 	wxLayoutConstraints	*c;
 
@@ -130,27 +152,49 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 
 }
 
+/****************************** SetNotebookSelection **************************/
+
+/*
+ * This routine is a fudge because the default panel selection cannot be set
+ * within the constructor.
+ */
+
+void
+ModuleParDialog::SetNotebookSelection(void)
+{
+	if (parList && parListInfoList->notebook)
+		parListInfoList->notebook->SetSelection(parList->notebookPanel);
+
+}
+
 /****************************** DeleteDialog **********************************/
 
 void
 ModuleParDialog::DeleteDialog(void)
 {
-	switch (infoNum) {
-	case MODPARDIALOG_MAIN_PARENT_INFONUM:
-		wxGetApp().GetFrame()->SetMainParDialog(NULL);
-		break;
-	case MODPARDIALOG_DISPLAY_PARENT_INFONUM:
-		if (IsModal())
-			EndModal(wxID_CANCEL);
-		else
-			Close();
-		break;
-	default:
-		DialogList *parent = (DialogList *) GetParent();
+//	switch (infoNum) {
+//	case MODPARDIALOG_MAIN_PARENT_INFONUM:
+//		wxGetApp().GetFrame()->SetMainParDialog(NULL);
+//		break;
+//	case MODPARDIALOG_DISPLAY_PARENT_INFONUM:
+//		if (IsModal())
+//			EndModal(wxID_CANCEL);
+//		else
+//			Close();
+//		break;
+//	default:
+//		printf("ModuleParDialog::DeleteDialog: calling dialog pointer needs "
+//		  "to be set to NULL\n");
+//	}
 
-		if (pc && pc->data->module->specifier == DISPLAY_MODULE)
-			((SignalDispPtr) pc->data->module->parsPtr)->dialog = NULL;
-		parent->dialogList[infoNum]->dialog = NULL;
+	if (!pc)
+		wxGetApp().GetFrame()->SetMainParDialog(NULL);
+	else {
+		if (myHandler)
+			((SDIEvtHandler *) myHandler)->SetDialog(NULL);
+		else
+			printf("ModuleParDialog::DeleteDialog: calling dialog pointer "
+			  "needs to be set to NULL\n");
 	}
 
 }
@@ -252,6 +296,289 @@ ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 		  GetMemberData_Utility_DynaList(info->parList->handlePtr.iCs->
 		  ionChannels, index);
 	}
+
+}
+
+/****************************** Destructor ************************************/
+
+ModuleParDialog::~ModuleParDialog(void)
+{
+	if (parListInfoList)
+		delete parListInfoList;
+
+}
+
+/****************************** CheckChangedValues ****************************/
+
+/*
+ * This routine checks the changed values and returns false if any of them
+ * cannot be set.
+ * This routine also sets the main parList update flag (parListInfo[0]) to
+ * It assumes that there is at least one member in the list.
+ * TRUE if any of the sub-parList update flags are set to TRUE;
+ */
+
+bool
+ModuleParDialog::CheckChangedValues(void)
+{
+	bool	ok;
+	size_t	i;
+
+	ok = CheckDialogChangedValues();
+	for (i = 0; i < parListInfoList->list.Count(); i++) {
+		if (!parListInfoList->list[i]->CheckChangedValues())
+			ok = FALSE;
+		if (parListInfoList->list[i]->parList->updateFlag) {
+			parListInfoList->list[0]->parList->updateFlag = TRUE;
+			if(cancelBtn)
+				cancelBtn->Enable(FALSE);
+		}
+	}
+	if (ok && !CheckParList_UniParMgr(parListInfoList->list[0]->parList))
+		ok = FALSE;
+	if (ok && !UpdateParent())
+		ok = FALSE;
+	return(ok);
+
+}
+
+/****************************** CheckDialogChangedValues **********************/
+
+/*
+ * This routine checks the values for all of the dialogs and checks to see if
+ * they have been changed from the dialog without pressing <return>.
+ * It will return FALSE if it cannot set any change values.
+ */
+
+bool
+ModuleParDialog::CheckDialogChangedValues(void)
+{
+	bool	ok = TRUE;
+//	size_t	i;
+
+	printf("ModuleParDialog::CheckDialogChangedValues: debug called\n");
+//	for (i = 0; i < dialogList.Count(); i++)
+//		if (dialogList[i]->dialog) {
+//			if (!dialogList[i]->dialog->CheckChangedValues())
+//				ok = FALSE;
+//		}
+	return(ok);
+	
+
+}
+
+/****************************** GetParListNode ********************************/
+
+/*
+ * This routine recursively checks for the appropriate list for a tag.
+ */
+
+wxNode *
+ModuleParDialog::GetParListNode(wxNode *node, long tag)
+{
+	ParListInfo	*p = (ParListInfo *) node->Data();
+	
+	if ((tag - p->GetOffset()) > (p->parList->numPars - 1))
+		return(GetParListNode(node->Next(), tag));
+	return(node);
+
+}
+
+/****************************** SetNotebookPanel ******************************/
+
+/*
+ * This routine the main parlist 'notebookPanel' field.
+ */
+
+void
+ModuleParDialog::SetNotebookPanel(int selection)
+{
+	ParListInfo *info = parListInfoList->list[0];
+
+	info->parList->notebookPanel = selection;
+}
+
+/******************************************************************************/
+/****************************** Call backs ************************************/
+/******************************************************************************/
+
+/****************************** OnButton **************************************/
+
+void
+ModuleParDialog::OnButton(wxCommandEvent& event)
+{
+	wxButton *but = (wxButton *) event.GetEventObject();
+	ParControl *control = ((ParControlHandle *) but->GetClientData())->GetPtr();
+	UniParPtr	par = control->GetPar();
+
+	switch (par->type) {
+	case UNIPAR_NAME_SPEC_WITH_FPATH:
+	case UNIPAR_NAME_SPEC_WITH_FILE: {
+		wxComboBox *cB = control->GetComboBox();
+		wxString	path;
+
+		if (par->type == UNIPAR_NAME_SPEC_WITH_FPATH) {
+			wxDirDialog dialog(this, "Choose a directory", wxGetCwd());
+			if (dialog.ShowModal() != wxID_OK)
+				break;
+			path = dialog.GetPath();
+		} else {
+			wxFileDialog dialog(this, "Choose a file", wxGetCwd());
+			if (dialog.ShowModal() != wxID_OK)
+				break;
+			path = dialog.GetPath();
+		}
+		cB->Delete(cB->GetSelection());
+		cB->Append(path);
+		cB->SetSelection(cB->Number() - 1);
+		cB->SetInsertionPointEnd();
+		control->SetUpdateFlag(TRUE);
+		break; }
+	case UNIPAR_FILE_NAME: {
+		wxFileDialog dialog(this, "Choose a file", wxGetCwd(), "",
+		  par->valuePtr.file.defaultExtension);
+		if (dialog.ShowModal() != wxID_OK)
+			break;
+		wxTextCtrl *textCtrl = control->GetTextCtrl();
+		textCtrl->SetValue(dialog.GetPath());
+		textCtrl->SetInsertionPointEnd();
+		control->SetUpdateFlag(TRUE);
+		break; }
+	default:
+		;
+	}
+
+}
+
+/****************************** OnCancel **************************************/
+
+void
+ModuleParDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
+{
+	if (IsModal())
+		EndModal(wxID_CANCEL);
+	else
+		Close();
+
+}
+
+/****************************** OnCheckBox ************************************/
+
+void
+ModuleParDialog::OnCheckBox(wxCommandEvent& event)
+{
+	wxCheckBox *cB = (wxCheckBox *) event.GetEventObject();
+	ParControl *control = ((ParControlHandle *) cB->GetClientData())->GetPtr();
+	ParListInfo *info = parListInfoList->list[control->GetInfoNum()];
+
+	control->SetUpdateFlag(TRUE);
+	info->SetParValue(control);
+	info->CheckInterDependence();
+
+}
+
+/****************************** OnChoice **************************************/
+
+void
+ModuleParDialog::OnChoice(wxCommandEvent& event)
+{
+	wxChoice *c = (wxChoice *) event.GetEventObject();
+	ParControl *control = ((ParControlHandle *) c->GetClientData(0))->GetPtr();
+	ParListInfo *info = parListInfoList->list[control->GetInfoNum()];
+
+	control->SetUpdateFlag(TRUE);
+	info->SetParValue(control);
+	info->CheckInterDependence();
+	return;
+
+}
+
+/****************************** OnComboBox ************************************/
+
+void
+ModuleParDialog::OnComboBox(wxCommandEvent& event)
+{
+	wxComboBox *cB = (wxComboBox *) event.GetEventObject();
+	ParControl *control = ((ParControlHandle *) cB->GetClientData(0))->GetPtr();
+
+	control->SetUpdateFlag(TRUE);
+	switch (control->GetPar()->type) {
+	case UNIPAR_NAME_SPEC_WITH_FILE:
+	case UNIPAR_NAME_SPEC_WITH_FPATH: {
+		wxComboBox *cB = (wxComboBox *) event.GetEventObject();
+		control->GetButton()->Enable(cB->GetSelection() == (cB->Number() - 1));
+		cB->SetInsertionPointEnd();
+		break; }
+	default:
+		;
+	}
+
+}
+
+/****************************** OnSliderUpdate ********************************/
+
+void
+ModuleParDialog::OnSliderUpdate(wxCommandEvent& event)
+{
+	static const char *funcName = "ModuleParDialog::OnSliderUpdate";
+	int		i;
+
+	wxSlider	*slider = (wxSlider *) event.GetEventObject();
+	int			index = slider->GetValue();
+	ParControl	*control = ((ParControlHandle *) slider->GetClientData(
+				  ))->GetPtr();
+	ParControl	*infoCtrl;
+	ParListInfo	*info = parListInfoList->list[control->GetInfoNum()];
+
+	for (i = 0; i < info->GetNumPars(); i++) {
+		infoCtrl = info->GetParControl(i);
+		if (infoCtrl->GetSlider() == control->GetSlider()) {
+			if (infoCtrl->GetUpdateFlag() && !info->SetParValue(infoCtrl)) {
+				NotifyError("%s: Cannot update array value.", funcName);
+				return;
+			}
+			infoCtrl->GetPar()->valuePtr.array.index = index;
+			infoCtrl->ResetValue();
+			infoCtrl->SetUpdateFlag(FALSE);
+			if (cancelBtn)
+				cancelBtn->Enable(FALSE);
+		}
+	}
+
+}
+
+/****************************** OnText ****************************************/
+
+/*
+ * This routine returns as soon as a wxTextCtrl is set, so this has to be tested
+ * for, using the 'enableTextCtrlsFlag' flag.
+ * For now I have had to put back in the NULL handle test to cope with the -1
+ * ID for the handler allowing things like the wxFileDialog to call this
+ * routine.
+ */
+
+void
+ModuleParDialog::OnText(wxCommandEvent& event)
+{
+	wxTextCtrl *txt = (wxTextCtrl *) event.GetEventObject();
+
+	if (!enableTextCtrlsFlag)
+		return;
+
+	ParControlHandle *handle = (ParControlHandle *) txt->GetClientData();
+
+	if (handle->GetPtr()->GetPar()->enabled)
+		handle->GetPtr()->SetUpdateFlag(TRUE);
+
+}
+
+/****************************** OnCloseWindow *********************************/
+
+void 
+ModuleParDialog::OnCloseWindow(wxCloseEvent& WXUNUSED(event))
+{
+	DeleteDialog();
+	Destroy();
 
 }
 

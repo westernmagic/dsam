@@ -18,13 +18,11 @@ Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
-				GrSimMgr.h GrUtils.h GrSimModDialog.h \
-				GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
-				GrDialogList.h GrParListInfoList.h GrPrintDisp.h \
-				GrParControl.h GrSocket.h GrSimThread.h GrAxisScale.h dsam.rc \
-				GrSDIDoc.h GrSDIPalette.h GrSDIView.h GrSDIFrame.h \
-				GrSDICanvas.h GrSDIDiagram.h GrSDIEvtHandler.h GrSDICommand.h \
-				GrSDIShapes.h GrDiagFrame.h
+				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
+				GrParListInfoList.h GrPrintDisp.h GrParControl.h GrSocket.h \
+				GrSimThread.h GrAxisScale.h dsam.rc GrSDIDoc.h GrSDIPalette.h \
+				GrSDIView.h GrSDIFrame.h GrSDICanvas.h GrSDIDiagram.h \
+				GrSDIEvtHandler.h GrSDICommand.h GrSDIShapes.h GrDiagFrame.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \

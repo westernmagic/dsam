@@ -641,50 +641,6 @@ ParListInfo::AddModuleListBoxEntries(wxListBox *listBox)
 
 }
 
-/****************************** SetModuleListBox ******************************/
-
-/*
- * This routine creates the moduleNames list box and the associated program
- * pointer list.
- */
-
-void
-ParListInfo::SetModuleListBox(void)
-{
-	wxLayoutConstraints	*c;
-
-	wxListBox *moduleList = new wxListBox(parent, DL_ID_SIM_LIST_BOX,
-	  wxDefaultPosition, wxSize(SIM_MOD_DIALOG_MAX_LISTBOX_WIDTH, -1), 0, NULL,
-	  wxLB_NEEDED_SB | wxLB_SINGLE);
-	AddModuleListBoxEntries(moduleList);
-	moduleList->SetCursor(wxCursor(wxCURSOR_HAND));
-	moduleList->SetToolTip("Click on process name to edit parameters");
-
-	wxStaticText *labelText = new wxStaticText(parent, -1, "Processes");
-
-	controlList[0] = new ParControl(NULL, infoNum, moduleList, labelText);
-
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, 4);
-	else
-		c->top.SameAs(lastControl, wxBottom, 16);
-	c->width.AsIs();
-	c->height.PercentOf(parent, wxHeight, 60);
-	moduleList->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(moduleList, 4);
-	c->top.SameAs(moduleList, wxTop);
-	c->width.AsIs();
-	c->height.AsIs();
-	labelText->SetConstraints(c);
-
-	lastControl = labelText;
-
-}
-
 /****************************** GetParControl *********************************/
 
 /*

@@ -31,6 +31,10 @@
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
+/********************************** Pre-references ****************************/
+
+class ModuleParDialog;
+
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
@@ -45,20 +49,22 @@ class ParListInfoList {
 
 	bool	useNotebookControls;
 	int		notebookPanel;
-	DialogList	*parent;
-	wxNotebook	*notebook;
+	ModuleParDialog	*parent;
+	//wxNotebook	*notebook;
 
   public:
+	wxNotebook	*notebook;
 	wxArrayParListInfo	list;
 
-	ParListInfoList(DialogList *theParent, DatumPtr pc, UniParListPtr parList);
+	ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
+	  UniParListPtr parList);
 	~ParListInfoList(void);
 
 	wxPanel *	UsingNotebook(UniParListPtr parList, const wxString& title);
 	wxWindow *	GetLastControl(void);
 	wxNotebook *	GetNotebook(void)	{ return notebook; }
 	wxSize		GetNotebookSize(void) const;
-	DialogList *	GetParent(void)		{ return parent; }
+	ModuleParDialog *	GetParent(void)		{ return parent; }
 	bool	GetUseNotebookControls(void)	{ return useNotebookControls; }
 	void	SetStandardInfo(wxPanel *panel, DatumPtr pc, UniParListPtr parList,
 			  const wxString& title, int offset = 0, int numPars = -1);

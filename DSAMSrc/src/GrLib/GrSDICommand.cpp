@@ -335,7 +335,7 @@ SDICommand::Do(void)
 			doc->UpdateAllViews();
 		}
 		break; }
-	case SDIFRAME_EDIT_PROCESS: {
+	case SDIFRAME_EDIT_PROCESS_NAME: {
 		if (shape) {
 			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
 			  );
@@ -461,7 +461,7 @@ SDICommand::Undo(void)
 			doc->UpdateAllViews();
 		}
 		break; }
-	case SDIFRAME_EDIT_PROCESS: {
+	case SDIFRAME_EDIT_PROCESS_NAME: {
 		if (shape) {
 			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
 			  );
