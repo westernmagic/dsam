@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /D "_MBCS" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -69,17 +69,17 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D WXUSINGDLL=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
-# ADD RSC /l 0x809 /i "$(DSAMDIR)\src\GrLib" /i "$(WXWIN)\include" /d "_DEBUG"
+# ADD RSC /l 0x809 /i "$(DSAMDIR)/include" /i "$(WXWIN)/include" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wx22_7.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(DSAMDIR)\lib" /libpath:"$(WXWIN)\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib DSAM_d.lib DSAM_g_d.lib wx22_7.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(DSAMDIR)\lib" /libpath:"$(WXWIN)\lib"
 
 !ENDIF 
 
