@@ -44,6 +44,7 @@ StandardFunctions standardFunctions[] = {
 	{"Free",			PrintFreeRoutine},
 	{"InitList",		PrintNameSpecInitListRoutines},
 	{"GetNumXPars",		PrintGetNumXParsRoutines},
+	{"SetDefaultArrays",PrintSetDefaultArraysRoutine},
 	{"Init",			PrintInitRoutine},
 	{"SetUniParList",	PrintSetUniParListRoutine},
 	{"GetUniParListPtr",PrintGetUniParListPtrRoutine},
@@ -169,6 +170,75 @@ PrintNameSpecInitListRoutines(FILE *fp)
 
 }
 
+/****************************** SetDefaultArraysRoutine ***********************/
+
+/*
+ * This routine prints the Module SetDefaultArrays routine if required.
+ * It adds the function declaration to the main list.
+ */
+
+void
+PrintSetDefaultArraysRoutine(FILE *fp)
+{
+	char	function[MAXLINE];
+	char	*funcDeclaration, *funcName;
+	Token	*p, *identifierList[MAX_IDENTIFIERS], **list, *pStart, *arrayLimit;
+	Token	*type, *arrayType, *arrayIdentifierList[MAX_IDENTIFIERS];
+	Symbol	*limitSym;
+
+	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	  arrayLimit = arrayLimit->next) {
+		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
+		  arrayLimit);
+		limitSym = arrayIdentifierList[0]->sym;
+		sprintf(function, "SetDefault%sArrays", Capital(limitSym->name));
+		PrintLineCommentHeading(fp, function);
+		fprintf(fp,
+		  "/*\n"
+		  " * This function sets the default arrays and array values for the\n"
+		  " * '%s' variable.\n"
+		  " * It returns FALSE if it fails in any way.\n"
+		  " */\n\n",
+		  limitSym->name
+		  );
+		funcName = CreateFuncName(function, module, qualifier);
+		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
+		fprintf(fp, "%s\n{\n", funcDeclaration);
+		fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+
+		fprintf(fp, "\tint\t\ti;\n");
+		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
+		  p)) && ((type->inst != INT_AL)); )
+			for (list = identifierList; *list != 0; list++)
+				if ((*list)->inst == POINTER)
+					fprintf(fp, "\t%s\t%s[] = {/* default values here */};\n",
+					  type->sym->name, (*list)->sym->name);
+		fprintf(fp, "\n");
+
+		fprintf(fp, "\tif (!Alloc%s(/* Def. no. elements */)) {\n",
+		  CreateFuncName(Capital(limitSym->name), module, qualifier));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Could not allocate default arrays."
+		  "\", funcName);\n");
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	
+		fprintf(fp, "\tfor (i = 0; i < %s->%s; i++) {\n", ptrVar,
+		  limitSym->name);
+		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
+		  p)) && ((type->inst != INT_AL)); )
+			for (list = identifierList; *list != 0; list++)
+				if ((*list)->inst == POINTER)
+					fprintf(fp, "\t\t%s->%s[i] = %s[i];\n",  ptrVar,
+					  (*list)->sym->name, (*list)->sym->name);
+		fprintf(fp, "\t}\n");
+
+		fprintf(fp, "\treturn(TRUE);\n");
+		fprintf(fp, "\n}\n\n");
+		AddRoutine(funcDeclaration);
+	}
+
+}
+
 /****************************** PrintFreeRoutine ******************************/
 
 /*
@@ -243,10 +313,12 @@ void
 PrintInitRoutine(FILE *fp)
 {
 	static char	*function = "Init";
-	BOOLN	firstParArrayFlag = TRUE;
+	BOOLN	firstParArrayFlag = TRUE, printSetDefaults = FALSE;
 	char	*funcName, *funcDeclaration;
-	char	initListFunc[MAXLINE];
-	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
+	char	initListFunc[MAXLINE], defaultsFunction[MAXLINE];
+	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list, arrayLimit;
+	TokenPtr	pStart, arrayType, arrayIdentifierList[MAX_IDENTIFIERS];
+	Symbol	*limitSym;
 	
 	PrintLineCommentHeading(fp, function);
 	fprintf(fp,
@@ -320,6 +392,23 @@ PrintInitRoutine(FILE *fp)
 				  qualifier));
 				fprintf(fp, "\t\treturn(FALSE);\n");
 				fprintf(fp, "\t}\n");
+			} else if (type->sym->type == CFLISTPTR) {
+				Print(fp, "\t  ", "\tif ((");
+				Print(fp, "\t  ", ptrVar);
+				Print(fp, "\t  ", "->");
+				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", " = GenerateDefault_CFList(\n");
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_MODE_NAME, "
+				  "CFLIST_DEFAULT_CF_CHANNELS,\n");
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_LOW_FREQ, "
+				  "CFLIST_DEFAULT_CF_HIGH_FREQ,\n");
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_BW_MODE_NAME, "
+				  "CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {\n");
+				Print(fp, "", "");
+				fprintf(fp, "\t\tNotifyError(\"%%s: Could not set default "
+				  "CFList.\", funcName);\n");
+				fprintf(fp, "\t\treturn(FALSE);\n");
+				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == FILENAME)
 				fprintf(fp, "\tstrcpy(%s->%s, NO_FILE);\n", ptrVar, (*list)->
 				  sym->name);
@@ -335,7 +424,6 @@ PrintInitRoutine(FILE *fp)
 					case BOOLEAN_VAR:
 						fprintf(fp, "FALSE");
 						break;
-					case CFLISTPTR:
 					case PARARRAY:
 					case DATUMPTR:
 						fprintf(fp, "NULL");
@@ -347,6 +435,28 @@ PrintInitRoutine(FILE *fp)
 			}
 		}
 	fprintf(fp, "\n");
+
+	/* Default array settings. */
+	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	  arrayLimit = arrayLimit->next) {
+		printSetDefaults = TRUE;
+		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
+		  arrayLimit);
+		limitSym = arrayIdentifierList[0]->sym;
+		sprintf(defaultsFunction, "SetDefault%sArrays", Capital(
+		  limitSym->name));
+		fprintf(fp, "\tif (!%s()) {\n", CreateFuncName(defaultsFunction, module,
+		  qualifier));
+		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Could not set the default "
+		  "'");
+		Print(fp, "\t\t  ", limitSym->name);
+		Print(fp, "\t\t  ", "' arrays.\", funcName);\n");
+		Print(fp, "", "");
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	}
+	if (printSetDefaults)
+		fprintf(fp, "\n");
 
 	/* Name specifier list initialisation */
 	p = FindTokenType(STRUCT, pc);
@@ -899,7 +1009,7 @@ PrintAllocArraysRoutines(FILE *fp)
 		  p)) && ((type->inst != INT_AL)); )
 			for (list = identifierList; *list != 0; list++)
 				if ((*list)->inst == POINTER) {
-					sprintf(arrayPtrVar, "%s->%s",  ptrVar, (*list)->sym->name);
+					sprintf(arrayPtrVar, "%s->%s", ptrVar, (*list)->sym->name);
 					fprintf(fp, "\tif (%s)\n", arrayPtrVar);
 					fprintf(fp, "\t\tfree(%s);\n", arrayPtrVar);
 					Print(fp, "\t  ", "\tif ((");

@@ -100,6 +100,8 @@ void	PrintPrintParsRoutine(FILE *fp);
 
 void	PrintProcessRoutine(FILE *fp);
 
+void	PrintSetDefaultArraysRoutine(FILE *fp);
+
 void	PrintSetParsRoutine(FILE *fp);
 
 void	PrintSetParsPointerRoutine(FILE *fp);
