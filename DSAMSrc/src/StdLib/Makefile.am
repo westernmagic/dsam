@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## src directory makefile.
+## src/StdLib directory makefile.
 
 AUTOMAKE_OPTIONS = foreign
 

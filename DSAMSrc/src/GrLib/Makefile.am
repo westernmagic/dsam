@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## src directory makefile.
+## src/GrLib directory makefile.
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -15,7 +15,7 @@ endif
 lib_LTLIBRARIES = libdsam_g.la
 EXTRA_DIST		= makefile.b32
 
-INCLUDES		= $(MAIN_INC) $(WXINC) -I$(top_srcdir)/src/MainLib
+INCLUDES		= $(MAIN_INC) $(WXINC) -I$(top_srcdir)/src/MainLib -I../MainLib
 
 libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrLines.cpp GrCanvas.cpp GrSignalDisp.cpp GrDisplayS.cpp \

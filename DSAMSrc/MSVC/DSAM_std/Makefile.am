@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## Top directory makefile.
+## MSVC/DSAM_std directory makefile.
 
 AUTOMAKE_OPTIONS = foreign
 

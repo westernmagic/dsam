@@ -461,6 +461,10 @@ SOURCE=..\..\src\MainLib\UtLocalChans.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\UtMathOp.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtNameSpecs.c
 # End Source File
 # Begin Source File
@@ -1026,6 +1030,10 @@ SOURCE=..\..\Include\UtIterRipple.h
 # Begin Source File
 
 SOURCE=\projects\dsam\DSAMSrc\Include\UtLocalChans.h
+# End Source File
+# Begin Source File
+
+SOURCE=\projects\dsam\DSAMSrc\Include\UtMathOp.h
 # End Source File
 # Begin Source File
 

@@ -57,6 +57,7 @@
 #include "UtIonChanList.h"
 #include "UtIterRipple.h"
 #include "UtLocalChans.h"
+#include "UtMathOp.h"
 #include "UtNameSpecs.h"
 #include "UtOptions.h"
 #include "UtPadSignal.h"

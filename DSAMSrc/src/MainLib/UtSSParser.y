@@ -170,7 +170,7 @@ statement_specifier:
 				{ $$ = $3;
 				  $3->label = InitString_Utility_String($1->name); }
 		|	REPEAT { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr,
-					   REPEAT);}
+					   REPEAT); }
 		|	STRING '%' REPEAT
 				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
 				  $$->label = InitString_Utility_String($1->name); }

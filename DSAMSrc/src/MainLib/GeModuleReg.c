@@ -108,6 +108,7 @@ ModRegEntry	libraryModuleList[] = {
 	{ "UTIL_ITERATEDRIPPLE", PROCESS_MODULE,
 	  InitModule_Utility_IteratedRipple },
 	{ "UTIL_LOCALCHANS", PROCESS_MODULE, InitModule_Utility_LocalChans },
+	{ "UTIL_MATHOP", PROCESS_MODULE, InitModule_Utility_MathOp },
 	{ "UTIL_PADSIGNAL", PROCESS_MODULE, InitModule_Utility_PadSignal },
 	{ "UTIL_PAUSE", PROCESS_MODULE, InitModule_Utility_Pause },
 	{ "UTIL_REDUCECHANNELS", PROCESS_MODULE, InitModule_Utility_ReduceChannels
