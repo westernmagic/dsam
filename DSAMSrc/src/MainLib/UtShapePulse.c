@@ -404,7 +404,8 @@ InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 	
 	if (shapePulsePtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (shapePulsePtr->updateProcessVariablesFlag) {
+		if (shapePulsePtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 			FreeProcessVariables_Utility_ShapePulse();
 			if ((shapePulsePtr->remainingPulseTime = (double *)
 			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {

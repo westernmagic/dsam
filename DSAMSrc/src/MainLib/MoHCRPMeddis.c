@@ -536,7 +536,8 @@ InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 
 	if (meddisRPPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (meddisRPPtr->updateProcessVariablesFlag) {
+		if (meddisRPPtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Meddis();
 			if ((meddisRPPtr->lastOutput = (double *)
 			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
