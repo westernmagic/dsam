@@ -40,6 +40,10 @@
 * $Header$
 *
 * $Log$
+* Revision 1.7  2004/04/01 09:46:54  lowel
+* Fix: Corrected a signed/unsigned comparison in "SetPosition_..." - compiler
+* warning.
+*
 * Revision 1.6  2004/02/25 14:55:19  lowel
 * Bug fixes:  The configure.ac script has been changed so that the size of long
 * variables is checked.  This is required because it is different for 64 bit
@@ -584,7 +588,7 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 	}
 	switch (whence) {
 	case SEEK_SET:
-		if (offset > uPortableIOPtr->length) {
+		if (offset > (int32) uPortableIOPtr->length) {
 			fprintf(stderr, "%s: Attempt to read past end of memory.\n",
 			  funcName);
 			return(FALSE);
