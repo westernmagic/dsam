@@ -40,6 +40,12 @@
 * $Header$
 *
 * $Log$
+* Revision 1.2  2001/07/23 11:21:24  lowel
+* Bug fix: The word-reading routines were mixing upper order arithmetic with
+* lower order variables.  For instance, the 'Read16BitsHighLow' routine was doing
+* 32 bit arithmetic using 16 bit variables.  This was causing problems under
+* windows, but not under Linux.
+*
 * Revision 1.1  2001/07/13 14:31:49  lowel
 * Changes: I have moved the respective files into the 'MainLib', "StdLib' and
 * 'GrLib' directories.
@@ -183,7 +189,8 @@ Read8Bits(FILE *fp)
 int16
 Read16BitsLowHigh(FILE *fp)
 {
-	int16	first, second, result;
+	int16	first, second;
+	int32	result;
 
 	first = 0xff & ReadByte(fp);
 	second = 0xff & ReadByte(fp);
@@ -199,7 +206,8 @@ Read16BitsLowHigh(FILE *fp)
 int16
 Read16BitsHighLow(FILE *fp)
 {
-	int16	first, second, result;
+	int16	first, second;
+	int32	result;
 
 	first = ReadByte(fp) & 0xff;
 	second = 0xff & ReadByte(fp);
@@ -255,7 +263,8 @@ Read24BitsHighLow(FILE *fp)
 int32
 Read32BitsLowHigh(FILE *fp)
 {
-	int32	first, second, result;
+	int32	first, second;
+	long long	result;
 
 	first = 0xffff & Read16BitsLowHigh(fp);
  	second = 0xffff & Read16BitsLowHigh(fp); 
