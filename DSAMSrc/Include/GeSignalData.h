@@ -130,9 +130,9 @@ BOOLN	SameType_SignalData(SignalDataPtr a, SignalDataPtr b);
 BOOLN	SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 		  SignalDataPtr supplier);
 
-void	SetInfoCFArray_SignalData(SignalDataPtr theData, double cFs[]);
+void	SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs);
 
-void	SetInfoChannelLabels_SignalData(SignalDataPtr theData, double labels[]);
+void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels);
 
 BOOLN	SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index,
 		  double label);
