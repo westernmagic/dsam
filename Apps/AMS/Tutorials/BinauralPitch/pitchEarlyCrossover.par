@@ -1,0 +1,57 @@
+#pitchEarlyCrossover.sim
+
+# Simulation accepts a binaural input
+#  combines the spike probability input from both ears
+#  performs an acf on the combined input.
+  
+off			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode - \relative\ or \absolute\
+ 
+begin {
+
+#  Stimulus generation
+		DataFile_In 		< dataFileIn.par	
+#		Stim_Harmonic		< stimHarmonic.par
+
+#apply ramps to signal
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Display_Signal		< displayStimulus.par
+
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
+
+# convert to stapes velocity
+		Util_mathOp			< mathOPstapes.par
+
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
+
+# receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayRP.par
+
+# HSR spike probability
+ihc%		IHC_Meddis2000	(->swap, acc)	< IHC_Meddis2000HSR.par
+
+#create left right mirror image
+swap%			Util_swapLR			(ihc->acc)
+
+#average left/right ihc probabilities together
+acc%			Util_Accumulate	(ihc, swap-> )
+
+#autocorrelate
+		Ana_Acf			< acf.par
+		Display_Signal		< displayACFearly.par
+
+#create summary acf
+a%		Util_ReduceChannels	< UtRedChans.par
+		Display_Signal		< displayACF2.par
+
+		
+#write results to a data file	
+		DataFile_out		< dataFileOut.par
+		}
+
+

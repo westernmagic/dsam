@@ -1,0 +1,11 @@
+#		generateClick.sim
+  
+on		Diagnostics mode - \off\ or \on\
+relative	Parameter file path mode - \relative\ or \absolute\ 
+
+begin {
+#  Stimulus generation
+		Stim_Click			< stimClick1.par
+		Display_Signal	
+
+	}
