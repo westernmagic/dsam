@@ -549,10 +549,10 @@ Calc_Analysis_Averages(EarObjectPtr data)
 		return(FALSE);
 	}
 	dt = data->inSignal[0]->dt;
-	timeOffsetIndex = (ChanLen) (averagesPtr->timeOffset / dt + 0.5);
+	timeOffsetIndex = (ChanLen) floor(averagesPtr->timeOffset / dt + 0.5);
 	timeRangeIndex = (averagesPtr->timeRange <= 0.0)?
 	  data->inSignal[0]->length - timeOffsetIndex:
-	  (ChanLen) (averagesPtr->timeRange / dt + 0.5);
+	  (ChanLen) floor(averagesPtr->timeRange / dt + 0.5);
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
 		for (i = 0, sum = 0.0; i < timeRangeIndex; i++, inPtr++)
