@@ -45,8 +45,10 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "GeUniParMgr.h"
 #include "UtDynaList.h"
 #include "UtDatum.h"
+#include "GeModuleMgr.h"
 
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"

@@ -46,7 +46,7 @@
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"
-#include "ExtIPCServer.h"
+#include "GrIPCServer.h"
 #include "GrSDIPalette.h"
 #include "GrSDICanvas.h"
 #include "GrSDIFrame.h"

@@ -32,9 +32,9 @@
 #include <wx/wxexpr.h>
 
 #include "GeCommon.h"
-#include "ExtIPCServer.h"
 #include "GrDiagFrame.h"
 #include "GrFonts.h"
+#include "GrIPCServer.h"
 #include "GrSimMgr.h"
 
 /******************************************************************************/

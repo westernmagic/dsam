@@ -46,8 +46,7 @@
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
 
-#include "ExtIPCServer.h"
-
+#include "GrIPCServer.h"
 #include "GrSimMgr.h"
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"

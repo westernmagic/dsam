@@ -42,7 +42,7 @@
 #include "UtDatum.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
-#include "ExtIPCServer.h"
+#include "GrIPCServer.h"
 #include "GrSimMgr.h"
 #include "GrSDIPalette.h"
 #include "GrSDICanvas.h"

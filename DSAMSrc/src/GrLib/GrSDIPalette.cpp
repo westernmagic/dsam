@@ -42,7 +42,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
-#include "ExtIPCServer.h"
+#include "GrIPCServer.h"
 #include "GrSimMgr.h"
 //#include "GrSDIDoc.h"
 #include "GrSDIPalette.h"

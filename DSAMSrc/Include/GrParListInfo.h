@@ -13,7 +13,6 @@
 #ifndef _GRPARLISTINFO_H
 #define _GRPARLISTINFO_H 1
 
-#include "GeUniParMgr.h"
 #include "UtDatum.h"
 
 /******************************************************************************/
