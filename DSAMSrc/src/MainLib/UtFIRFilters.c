@@ -1,0 +1,180 @@
+/**********************
+ *
+ * File:		UtFIRFilter.c
+ * Purpose:		This contains the structures for the FIR Filter.
+ * Comments:	This module is to be put into UtFilters.
+ * Author:		L. P. O'Mard.
+ * Created:		04 Dec 2000
+ * Updated:	
+ * Copyright:	(c) 2000, CNBH University of Essex
+ *
+ *********************/
+
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "FiParFile.h"
+#include "UtRemez.h"
+#include "UtFIRFilters.h"
+#include "FlFIR.h"
+
+/******************************************************************************/
+/****************************** Global variables ******************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/****************************** Subroutines and functions *********************/
+/******************************************************************************/
+
+/**************************** InitFIRCoeffs ***********************************/
+
+/*
+ * This function initialises the FIR filter coefficents, and returns
+ * a pointer the the allocated structure.
+ * When the 'type' is -BANDPASS, then 'numBands' is sent to the 'remez' function
+ * as a negative number, to instruct 'remez' to use the arbitrary response
+ * algorithm revisions.
+ */
+ 
+FIRCoeffsPtr
+InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
+  double *bands, double *desired, double *weights, int type)
+{
+	static const char *funcName = "InitFIRCoeffs_FIRFilters";
+	int		i;
+	double	*scaledFreq, nyquestFreq;
+	FIRCoeffsPtr	p;
+	
+	if (numTaps < 1) {
+		NotifyError("%s: Illegal number of coefficients (%d).", funcName,
+		  numTaps);
+		return(NULL);
+	}
+	if (numBands < 3) {
+		NotifyError("%s: Illegal number of coefficients (%d).", funcName,
+		  numBands);
+		return(NULL);
+	}
+	if (numChannels < 1) {
+		NotifyError("%s: Illegal number of channels (%d).", funcName,
+		  numChannels);
+		return(NULL);
+	}
+	if ((p = (FIRCoeffsPtr) malloc(sizeof(FIRCoeffs))) == NULL) {
+		NotifyError("%s: Cannot allocate memory for FIR filter coefficients.",
+		  funcName);
+		return(NULL);
+	}
+	p->numChannels = numChannels;
+	if ((p->c = (double *) calloc(numTaps, sizeof(double))) == NULL) {
+		NotifyError("%s: Out of memory for coefficients!", funcName);
+		FreeFIRCoeffs_FIRFilters(&p);
+		return(NULL);
+	}
+	if ((p->state = (double *) calloc(numTaps * numChannels, sizeof(
+	  double))) == NULL) {
+		NotifyError("%s: Out of memory state variables!", funcName);
+		FreeFIRCoeffs_FIRFilters(&p);
+		return(NULL);
+	}
+	if (type < 0) {		/* Straight user coeffs. type */
+		for (i = 0; i < numTaps; i++)
+			p->c[i] = desired[i];
+		p->m = numTaps;
+	} else {
+		if ((scaledFreq = (double *) calloc(numTaps, sizeof(double))) == NULL) {
+			NotifyError("%s: Out of memory for frequency scale.", funcName);
+			FreeFIRCoeffs_FIRFilters(&p);
+			return(NULL);
+		}
+		nyquestFreq = bands[numBands - 1] * 2.0;
+		for (i = 0; i < numBands; i++) {
+			scaledFreq[i] = bands[i] / nyquestFreq;
+			/*printf("freq[%3d] = %g\n", i, scaledFreq[i]);*/
+		}
+		if (type == -BANDPASS) {
+			type = -type;
+			numBands = -numBands;
+		}
+		remez(p->c, numTaps, numBands, scaledFreq, desired, weights, type);
+		p->m = numTaps;
+		free(scaledFreq);
+	}
+	return(p);
+
+}
+
+/**************************** FreeFIRCoeffs ***********************************/
+
+/*
+ * This routine releases the memory allocated for the FIR coefficients.
+ * A custom routine is required because memory is allocated dynamically for
+ * the state vector, according to the filter cascade.
+ */
+
+void
+FreeFIRCoeffs_FIRFilters(FIRCoeffsPtr *p)
+{
+	if (*p == NULL)
+		return;
+	if ((*p)->c)
+		free((*p)->c);
+	if ((*p)->state)
+		free((*p)->state);
+	free(*p);
+	*p = NULL;
+
+}
+
+/**************************** FIR *********************************************/
+
+/*
+ * FIR filter application.
+ *
+ *         N
+ * y(n) = SUM c(k).x(n-k)
+ *        k=0
+ *
+ * It assumes that the EarObjectPtr 'data' has already been checked.
+ */
+
+void
+FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
+{
+	/*static const char *funcName = "FIR_FIRFilters";*/
+	int		chan;
+	ChanLen	i, j;
+	register ChanData	*yi, *xi, *xi2, *state, *c, *xStart, summ;
+	
+	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+		xi = xStart = data->inSignal[0]->channel[chan];
+		yi = data->outSignal->channel[chan];
+		for (i = data->outSignal->length; i ; i--, xi++, yi++) {
+			c = p->c;
+			for (j = p->m, xi2 = xi, summ = 0.0; j && (xi2 >= xStart); j--)
+				summ += *c++ * *xi2--;
+			state = p->state + p->numChannels * chan;
+			while (j) {
+				summ += *c++ * *state++;
+				j--;
+			}
+			*yi = summ;
+		}
+		state = p->state + p->numChannels * chan;
+		xi = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
+		  p->m ;
+		for (i = p->m; i; i--)
+			*state++ = *xi++;
+	}
+
+}
+
