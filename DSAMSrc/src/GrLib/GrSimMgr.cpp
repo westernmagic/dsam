@@ -763,10 +763,9 @@ MyApp::SetConfiguration(UniParListPtr parList)
 				indexedName.Printf("%s.%d", p->abbr, j);
 				parValue = pConfig->Read(indexedName, "");
 				if (parValue.Len() != 0) {
-					indexedParValue.Printf("%d:%s", j, (char *) parValue.
-					  GetData());
+					indexedParValue.Printf("%d:%s", j, parValue.c_str());
 					SetParValue_UniParMgr(&parList, i, (char *) indexedParValue.
-					  GetData());
+					  c_str());
 				}
 			}
 			break;

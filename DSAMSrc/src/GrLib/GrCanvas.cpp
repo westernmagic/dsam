@@ -408,8 +408,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
 
 	if (xAxisScale.GetSettingsChanged()) {
-		strcpy(mySignalDispPtr->xNumberFormat, (char *) xAxisScale.
-		  GetFormatString('x').GetData());
+		strcpy(mySignalDispPtr->xNumberFormat, xAxisScale.GetFormatString('x').
+		  c_str());
 		mySignalDispPtr->xTicks = xAxisScale.GetNumTicks();
 	}
 

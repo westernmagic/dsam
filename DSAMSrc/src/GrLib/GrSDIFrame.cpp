@@ -208,8 +208,8 @@ SDIFrame::SetSimFileAndLoad(void)
 	if (wxGetApp().GetDiagFrame())
 		wxGetApp().GetDiagFrame()->Clear();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().
-	  GetData()))
+	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().c_str(
+	    )))
 		return(FALSE);
 	if (!wxGetApp().ResetSimulation())
 		return(FALSE);

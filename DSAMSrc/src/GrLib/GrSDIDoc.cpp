@@ -97,8 +97,8 @@ SDIDocument::~SDIDocument(void)
 void
 SDIDocument::SetAppInterfaceFile(wxFileName &fileName)
 {
-	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
-	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
+	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
+	SetSimFileName_AppInterface((char *) fileName.GetFullName().c_str());
 
 }
 

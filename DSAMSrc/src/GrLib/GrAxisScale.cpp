@@ -255,7 +255,7 @@ AxisScale::GetFormatString(char formatChar)
 		format += '.';
 	for (i = 0; i < decPlaces; i++)
 		format += formatChar;
-	format.Printf("%se%d", (char *) format.GetData(), exponent);
+	format.Printf("%se%d", format.c_str(), exponent);
 	return(format);
 
 }

@@ -511,7 +511,7 @@ SDICommand::Undo(void)
 
 		wxString	oldLabel;
 		oldLabel = fromPc->u.string;
-		fromPc->u.string = (char *) shapeLabel.GetData();
+		fromPc->u.string = (char *) shapeLabel.c_str();
 		shapeLabel = oldLabel;
 
 		EarObjectPtr	oldData;
