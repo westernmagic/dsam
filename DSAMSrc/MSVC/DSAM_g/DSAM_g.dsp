@@ -113,7 +113,7 @@ SOURCE=..\..\src\GrLib\GrFonts.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\GrLib\GrLine.cpp
+SOURCE=..\..\src\GrLib\GrLines.cpp
 # End Source File
 # Begin Source File
 

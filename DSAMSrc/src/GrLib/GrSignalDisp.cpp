@@ -116,59 +116,11 @@ GetPanelList_SignalDisp(int index)
 
 				{ "Signal",		DISPLAY_AUTOMATIC_SCALING },
 				{ "Axis",		DISPLAY_Y_AXIS_TITLE },
-				{ "General",	DISPLAY_FRAME_DELAY },
+				{ "General",	DISPLAY_WINDOW_TITLE },
 				{ "", 			DISPLAY_NULL }
 			};
 	;
 	return(&list[index]);
-
-}
-
-/****************************** InitParNameList *******************************/
-
-/*
- * This routine intialises the parameter list array.
- */
-
-BOOLN
-InitParNameList_SignalDisp(void)
-{
-	static NameSpecifier	list[] = {
-
-					{ "AUTO_SCALING",	DISPLAY_AUTOMATIC_SCALING },
-					{ "CHANNEL_STEP",	DISPLAY_CHANNEL_STEP },
-					{ "MAGNIFICATION",	DISPLAY_MAGNIFICATION },
-					{ "MAXY",			DISPLAY_MAX_Y },
-					{ "MINY",			DISPLAY_MIN_Y },
-					{ "NUMGREYSCALES",	DISPLAY_NUMGREYSCALES },
-					{ "WIDTH",			DISPLAY_WIDTH },
-					{ "X_RESOLUTION",	DISPLAY_X_RESOLUTION },
-					{ "NORMALISATION",	DISPLAY_Y_NORMALISATION_MODE },
-
-					{ "Y_AXIS_TITLE",	DISPLAY_Y_AXIS_TITLE },
-					{ "Y_AXIS_MODE",	DISPLAY_Y_AXIS_MODE },
-					{ "Y_NUMBER_FORMAT",	DISPLAY_Y_NUMBER_FORMAT },
-					{ "Y_DEC_PLACES",	DISPLAY_Y_DEC_PLACES },
-					{ "Y_TICKS",		DISPLAY_Y_TICKS },
-					{ "Y_INSET_SCALE",	DISPLAY_Y_INSET_SCALE },
-					{ "X_AXIS_TITLE",	DISPLAY_X_AXIS_TITLE },
-					{ "X_NUMBER_FORMAT",	DISPLAY_X_NUMBER_FORMAT },
-					{ "X_DEC_PLACES",	DISPLAY_X_DEC_PLACES },
-					{ "X_TICKS",		DISPLAY_X_TICKS },
-
-					{ "FRAMEDELAY",		DISPLAY_FRAME_DELAY },
-					{ "MODE",			DISPLAY_MODE },
-					{ "SUMMARYDISPLAY",	DISPLAY_SUMMARY_DISPLAY },
-					{ "TOPMARGIN",		DISPLAY_TOP_MARGIN },
-					{ "WIN_HEIGHT",		DISPLAY_WINDOW_HEIGHT },
-					{ "WIN_TITLE",		DISPLAY_WINDOW_TITLE },
-					{ "WIN_WIDTH",		DISPLAY_WINDOW_WIDTH },
-					{ "WIN_X_POS",		DISPLAY_WINDOW_X_POS },
-					{ "WIN_Y_POS",		DISPLAY_WINDOW_Y_POS },
-					{ "",				DISPLAY_NULL }
-				};
-	signalDispPtr->parNameList = list;
-	return(TRUE);
 
 }
 
@@ -254,6 +206,9 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->xResolutionFlag = FALSE;
 	signalDispPtr->minYFlag = FALSE;
 	signalDispPtr->maxYFlag = FALSE;
+	signalDispPtr->xZoomFlag = FALSE;
+	signalDispPtr->xOffsetFlag = FALSE;
+	signalDispPtr->xExtentFlag = FALSE;
 	signalDispPtr->widthFlag = FALSE;
 	signalDispPtr->frameDelayFlag = FALSE;
 	signalDispPtr->frameHeightFlag = FALSE;
@@ -296,14 +251,18 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->yDecPlaces = DEFAULT_Y_DEC_PLACES;
 	signalDispPtr->yTicks = DEFAULT_Y_TICKS;
 	signalDispPtr->yInsetScale = GENERAL_BOOLEAN_ON;
+	signalDispPtr->maxY = 0.0;
+	signalDispPtr->minY = 0.0;
 	signalDispPtr->title[0] = '\0';
 	signalDispPtr->xAxisTitle[0] = '\0';
 	signalDispPtr->yAxisTitle[0] = '\0';
 	signalDispPtr->xResolution = DEFAULT_X_RESOLUTION;
+	signalDispPtr->xZoom = GENERAL_BOOLEAN_OFF;
+	signalDispPtr->xExtent = 0.0;
+	signalDispPtr->xOffset = 0.0;
 	
 	InitModeList_SignalDisp();
 	InitYAxisModeList_SignalDisp();
-	InitParNameList_SignalDisp();
 	if (!SetUniParList_SignalDisp()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_SignalDisp();
@@ -375,177 +334,190 @@ SetUniParList_SignalDisp(void)
 	  GetPanelList_SignalDisp);
 
 	pars = signalDispPtr->parList->pars;
-	SetPar_UniParMgr(&pars[DISPLAY_AUTOMATIC_SCALING],
-	  signalDispPtr->parNameList[DISPLAY_AUTOMATIC_SCALING].name,
+	SetPar_UniParMgr(&pars[DISPLAY_AUTOMATIC_SCALING], "AUTO_SCALING",
 	  "Automatic scaling ('on' or 'off').",
 	  UNIPAR_BOOL,
 	  &signalDispPtr->automaticYScaling, NULL,
 	  (void * (*)) SetAutomaticYScaling_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_CHANNEL_STEP], signalDispPtr->parNameList[
-	  DISPLAY_CHANNEL_STEP].name,
+	SetPar_UniParMgr(&pars[DISPLAY_CHANNEL_STEP], "CHANNEL_STEP",
 	  "Channel stepping mode.",
 	  UNIPAR_INT,
 	  &signalDispPtr->channelStep, NULL,
 	  (void * (*)) SetChannelStep_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_TITLE], signalDispPtr->parNameList[
-	  DISPLAY_WINDOW_TITLE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_TITLE], "WIN_TITLE",
 	  "Display window title.",
 	  UNIPAR_STRING,
 	  &signalDispPtr->title, NULL,
 	  (void * (*)) SetTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_FRAME_DELAY], signalDispPtr->parNameList[
-	  DISPLAY_FRAME_DELAY].name,
+	SetPar_UniParMgr(&pars[DISPLAY_FRAME_DELAY], "FRAMEDELAY",
 	  "Delay between display frames (s)",
 	  UNIPAR_REAL,
 	  &signalDispPtr->frameDelay, NULL,
 	  (void * (*)) SetFrameDelay_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MAGNIFICATION],
-	  signalDispPtr->parNameList[DISPLAY_MAGNIFICATION].name,
+	SetPar_UniParMgr(&pars[DISPLAY_MAGNIFICATION], "MAGNIFICATION",
 	  "Signal magnification.",
 	  UNIPAR_REAL,
 	  &signalDispPtr->magnification, NULL,
 	  (void * (*)) SetMagnification_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MAX_Y], signalDispPtr->parNameList[
-	  DISPLAY_MAX_Y].name,
+	SetPar_UniParMgr(&pars[DISPLAY_MAX_Y], "MAXY",
 	  "Maximum Y value (for manual scaling).",
 	  UNIPAR_REAL,
 	  &signalDispPtr->maxY, NULL,
 	  (void * (*)) SetMaxY_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MIN_Y], signalDispPtr->parNameList[
-	  DISPLAY_MIN_Y].name,
+	SetPar_UniParMgr(&pars[DISPLAY_MIN_Y],"MINY",
 	  "Minimum Y Value (for manual scaling).",
 	  UNIPAR_REAL,
 	  &signalDispPtr->minY, NULL,
 	  (void * (*)) SetMinY_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MODE], signalDispPtr->parNameList[
-	  DISPLAY_MODE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_MODE], "MODE",
 	  "Display mode ('off', 'line' or 'gray_scale').",
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->mode, signalDispPtr->modeList,
 	  (void * (*)) SetMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_NUMGREYSCALES], signalDispPtr->parNameList[
-	  DISPLAY_NUMGREYSCALES].name,
+	SetPar_UniParMgr(&pars[DISPLAY_NUMGREYSCALES], "NUMGREYSCALES",
 	  "Number of grey scales.",
 	  UNIPAR_INT,
 	  &signalDispPtr->numGreyScales, NULL,
 	  (void * (*)) SetNumGreyScales_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_SUMMARY_DISPLAY],signalDispPtr->parNameList[
-	  DISPLAY_SUMMARY_DISPLAY].name,
+	SetPar_UniParMgr(&pars[DISPLAY_SUMMARY_DISPLAY], "SUMMARYDISPLAY",
 	  "Summary display mode ('on' or 'off').",
 	  UNIPAR_BOOL,
 	  &signalDispPtr->summaryDisplay, NULL,
 	  (void * (*)) SetSummaryDisplay_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_TOP_MARGIN], signalDispPtr->parNameList[
-	  DISPLAY_TOP_MARGIN].name,
+	SetPar_UniParMgr(&pars[DISPLAY_TOP_MARGIN], "TOPMARGIN",
 	  "Top margin for display (percent of display height).",
 	  UNIPAR_REAL,
 	  &signalDispPtr->topMargin, NULL,
 	  (void * (*)) SetTopMargin_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WIDTH], signalDispPtr->parNameList[
-	  DISPLAY_WIDTH].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WIDTH], "WIDTH",
 	  "Displayed signal width (seconds or x units).",
 	  UNIPAR_REAL,
 	  &signalDispPtr->width, NULL,
 	  (void * (*)) SetWidth_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_HEIGHT], signalDispPtr->parNameList[
-	  DISPLAY_WINDOW_HEIGHT].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_HEIGHT], "WIN_HEIGHT",
 	  "Display frame height (pixel units).",
 	  UNIPAR_INT,
 	  &signalDispPtr->frameHeight, NULL,
 	  (void * (*)) SetFrameHeight_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_WIDTH], signalDispPtr->parNameList[
-	  DISPLAY_WINDOW_WIDTH].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_WIDTH], "WIN_WIDTH",
 	  "Display frame width (pixel units).",
 	  UNIPAR_INT,
 	  &signalDispPtr->frameWidth, NULL,
 	  (void * (*)) SetFrameWidth_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_X_POS], signalDispPtr->parNameList[
-	  DISPLAY_WINDOW_X_POS].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_X_POS], "WIN_X_POS",
 	  "Display frame X position (pixel units).",
 	  UNIPAR_INT,
 	  &signalDispPtr->frameXPos, NULL,
 	  (void * (*)) SetFrameXPos_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_Y_POS], signalDispPtr->parNameList[
-	  DISPLAY_WINDOW_Y_POS].name,
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_Y_POS], "WIN_Y_POS",
 	  "Display frame Y position (pixel units).",
 	  UNIPAR_INT,
 	  &signalDispPtr->frameYPos, NULL,
 	  (void * (*)) SetFrameYPos_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_RESOLUTION], signalDispPtr->parNameList[
-	  DISPLAY_X_RESOLUTION].name,
+	SetPar_UniParMgr(&pars[DISPLAY_X_RESOLUTION], "X_RESOLUTION",
 	  "Resolution of X scale (1 - low, fractions are higher).",
 	  UNIPAR_REAL,
 	  &signalDispPtr->xResolution, NULL,
 	  (void * (*)) SetXResolution_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_NORMALISATION_MODE],
-	  signalDispPtr->parNameList[DISPLAY_Y_NORMALISATION_MODE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_NORMALISATION_MODE], "NORMALISATION",
 	  "Y normalisation mode ('bottom' or 'middle').",
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yNormalisationMode, yNormModeList_Line,
 	  (void * (*)) SetYNormalisationMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_TITLE], signalDispPtr->parNameList[
-	  DISPLAY_Y_AXIS_TITLE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_TITLE], "Y_AXIS_TITLE",
 	  "Y-axis title.",
 	  UNIPAR_STRING,
 	  &signalDispPtr->yAxisTitle, NULL,
 	  (void * (*)) SetYAxisTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_MODE],
-	  signalDispPtr->parNameList[DISPLAY_Y_AXIS_MODE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_MODE], "Y_AXIS_MODE",
 	  "Y-axis mode ('channel' (No.) or 'scale').",
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yAxisMode, signalDispPtr->yAxisModeList,
 	  (void * (*)) SetYAxisMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_TICKS],
-	  signalDispPtr->parNameList[DISPLAY_X_TICKS].name,
-	  "X axis tick marks.",
-	  UNIPAR_INT,
-	  &signalDispPtr->xTicks, NULL,
-	  (void * (*)) SetXTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT],
-	  signalDispPtr->parNameList[DISPLAY_Y_NUMBER_FORMAT].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT], "Y_NUMBER_FORMAT",
 	  "Y axis scale number format, (e.g. x.xxe-3).",
 	  UNIPAR_STRING,
 	  &signalDispPtr->yNumberFormat, NULL,
 	  (void * (*)) SetYNumberFormat_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_DEC_PLACES],
-	  signalDispPtr->parNameList[DISPLAY_Y_DEC_PLACES].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_DEC_PLACES], "Y_DEC_PLACES",
 	  "Y axis scale decimal places.",
 	  UNIPAR_INT,
 	  &signalDispPtr->yDecPlaces, NULL,
 	  (void * (*)) SetYDecPlaces_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_TICKS],
-	  signalDispPtr->parNameList[DISPLAY_Y_TICKS].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_TICKS], "Y_TICKS",
 	  "Y axis tick marks.",
 	  UNIPAR_INT,
 	  &signalDispPtr->yTicks, NULL,
 	  (void * (*)) SetYTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_INSET_SCALE],
-	  signalDispPtr->parNameList[DISPLAY_Y_INSET_SCALE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_Y_INSET_SCALE], "Y_INSET_SCALE",
 	  "Y inset scale mode ('on' or 'off').",
 	  UNIPAR_BOOL,
 	  &signalDispPtr->yInsetScale, NULL,
 	  (void * (*)) SetYInsetScale_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], signalDispPtr->parNameList[
-	  DISPLAY_X_AXIS_TITLE].name,
+	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], "X_AXIS_TITLE",
 	  "X axis title.",
 	  UNIPAR_STRING,
 	  &signalDispPtr->xAxisTitle, NULL,
 	  (void * (*)) SetXAxisTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT],
-	  signalDispPtr->parNameList[DISPLAY_X_NUMBER_FORMAT].name,
+	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT], "X_NUMBER_FORMAT",
 	  "X axis scale number format, (e.g. x.xxe-3).",
 	  UNIPAR_STRING,
 	  &signalDispPtr->xNumberFormat, NULL,
 	  (void * (*)) SetXNumberFormat_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES],
-	  signalDispPtr->parNameList[DISPLAY_X_DEC_PLACES].name,
+	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES], "X_DEC_PLACES",
 	  "X axis scale decimal places.",
 	  UNIPAR_INT,
 	  &signalDispPtr->xDecPlaces, NULL,
 	  (void * (*)) SetXDecPlaces_SignalDisp);
-	pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
-	pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
+	SetPar_UniParMgr(&pars[DISPLAY_X_TICKS], "X_TICKS",
+	  "X axis tick marks.",
+	  UNIPAR_INT,
+	  &signalDispPtr->xTicks, NULL,
+	  (void * (*)) SetXTicks_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_ZOOM], "X_ZOOM",
+	  "Turn on diplay of a sub-section of the x-axis ('on' or 'off')",
+	  UNIPAR_BOOL,
+	  &signalDispPtr->xZoom, NULL,
+	  (void * (*)) SetXZoom_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_OFFSET], "X_OFFSET",
+	  "X offset for display in zoom mode (x units).",
+	  UNIPAR_REAL,
+	  &signalDispPtr->xOffset, NULL,
+	  (void * (*)) SetXOffset_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_EXTENT], "X_EXTENT",
+	  "X extent for display in zoom mode (x units).",
+	  UNIPAR_REAL,
+	  &signalDispPtr->xExtent, NULL,
+	  (void * (*)) SetXExtent_SignalDisp);
 
+	SetDefaulEnabledPars_SignalDisp();
+
+	return(TRUE);
+
+}
+
+/********************************* SetDefaulEnabledPars ***********************/
+
+/*
+ * This routine sets the parameter list so that the correct default parameters
+ * are enabled/disabled.
+ */
+
+BOOLN
+SetDefaulEnabledPars_SignalDisp(void)
+{
+	static const char *funcName = "SetDefaulEnabledPars_SignalDisp";
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	signalDispPtr->parList->pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
+	signalDispPtr->parList->pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
+	signalDispPtr->parList->pars[DISPLAY_WIDTH].enabled = FALSE;
+	
+	SetAutomaticYScaling_SignalDisp(BooleanList_NSpecLists(signalDispPtr->
+	  automaticYScaling)->name);
+	SetXZoom_SignalDisp(BooleanList_NSpecLists(signalDispPtr->xZoom)->name);
 	return(TRUE);
 
 }
@@ -986,7 +958,7 @@ SetWidth_SignalDisp(double width)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	signalDispPtr->width = width;
+	/* signalDispPtr->width = width; parameter to be removed. */
 	signalDispPtr->widthFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1182,6 +1154,95 @@ SetXNumberFormat_SignalDisp(char *xNumberFormat)
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
+}
+
+/****************************** SetXZoom **************************************/
+
+/*
+ * This function sets the module's xZoom parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetXZoom_SignalDisp(char *theXZoom)
+{
+	static const char	*funcName = "SetXZoom_SignalDisp";
+	int		specifier;
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theXZoom,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError("%s: Illegal switch state (%s).", funcName,
+		  theXZoom);
+		return(FALSE);
+	}
+	signalDispPtr->xZoom = specifier;
+	signalDispPtr->xZoomFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	if (signalDispPtr->xZoom) {
+		signalDispPtr->parList->pars[DISPLAY_X_OFFSET].enabled = TRUE;
+		signalDispPtr->parList->pars[DISPLAY_X_EXTENT].enabled = TRUE;
+	} else {
+		signalDispPtr->parList->pars[DISPLAY_X_OFFSET].enabled = FALSE;
+		signalDispPtr->parList->pars[DISPLAY_X_EXTENT].enabled = FALSE;
+	}
+	signalDispPtr->parList->updateFlag = TRUE;
+	return(TRUE);
+
+}
+
+/****************************** SetXOffset ************************************/
+
+/*
+ * This function sets the module's xOffset parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetXOffset_SignalDisp(double theXOffset)
+{
+	static const char	*funcName = "SetXOffset_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	signalDispPtr->xOffsetFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	signalDispPtr->xOffset = theXOffset;
+	return(TRUE);
+
+}
+
+/****************************** SetXExtent ************************************/
+
+/*
+ * This function sets the module's xExtent parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetXExtent_SignalDisp(double theXExtent)
+{
+	static const char	*funcName = "SetXExtent_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	signalDispPtr->xExtentFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	signalDispPtr->xExtent = theXExtent;
+	return(TRUE);
+
 }
 
 /**************************** SetYNumberFormat ********************************/
@@ -1394,10 +1455,6 @@ PrintPars_SignalDisp(void)
 	DPrint("\tSummary display mode: %s\n",
 	  BooleanList_NSpecLists(signalDispPtr->summaryDisplay)->name);
 	DPrint("\tSignal Y scale = %g.\n", signalDispPtr->magnification);
-	DPrint("\tX resolution = %g (<= 1.0)\n", signalDispPtr->xResolution);
-	DPrint("\tX axis title = %s\n", signalDispPtr->xAxisTitle);
-	DPrint("\tX axis ticks = %d\n", signalDispPtr->xTicks);
-	DPrint("\tX axis scale number format = %s\n", signalDispPtr->xNumberFormat);
 	DPrint("\tY axis title = %s\n", signalDispPtr->yAxisTitle);
 	DPrint("\tY-axis mode = %s,\n",
 	  signalDispPtr->yAxisModeList[signalDispPtr->yAxisMode].name);
@@ -1405,12 +1462,19 @@ PrintPars_SignalDisp(void)
 	DPrint("\tY axis ticks = %d\n", signalDispPtr->yTicks);
 	DPrint("\tY inste scale mode: %s\n",
 	  BooleanList_NSpecLists(signalDispPtr->yInsetScale)->name);
+	DPrint("\tX resolution = %g (<= 1.0)\n", signalDispPtr->xResolution);
+	DPrint("\tX axis title = %s\n", signalDispPtr->xAxisTitle);
+	DPrint("\tX axis ticks = %d\n", signalDispPtr->xTicks);
+	DPrint("\tX axis scale number format = %s\n", signalDispPtr->xNumberFormat);
+	if (!signalDispPtr->xZoom)
+		DPrint("\tOffset/extent X values: %g/%g units.\n",
+		  signalDispPtr->xOffset, signalDispPtr->xExtent);
 	DPrint("\tTop margin percentage = %g %%\n", signalDispPtr->topMargin);
 	DPrint("\tWidth = ");
-	if (signalDispPtr->width < 0.0)
+	/*if (signalDispPtr->width < 0.0)
 		DPrint("prev. signal length\n");
 	else
-		DPrint("%g ms\n", MILLI(signalDispPtr->width));
+		DPrint("%g ms\n", MILLI(signalDispPtr->width)); to be removed. */
 	DPrint("\tFrame: dimensions %d x %d\t", signalDispPtr->frameWidth,
 	  signalDispPtr->frameHeight);
 	DPrint("\tFrame: position %d x %d\t", signalDispPtr->frameXPos,
@@ -1530,13 +1594,12 @@ CheckData_SignalDisp(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_SignalDisp";
 
-	if ((signalDispPtr->width > 0.0) && ((ChanLen) floor(signalDispPtr->width /
-	  data->outSignal->dt + 0.5) < (data->outSignal->length /
-	  data->outSignal->numWindowFrames))) {
-		NotifyError("%s: Width window (%g ms) must not be less than the "
-		  "signal duration (%g ms).", funcName, MILLI(signalDispPtr->width),
-		  MILLI(_GetDuration_SignalData(data->outSignal)));
-		return(FALSE);
+	if (signalDispPtr->xZoom) {
+		if (signalDispPtr->xOffset < 0.0) {
+			NotifyError("%s: Cannot set the X offset cannot be less than zero"
+			  " (%g units).", funcName, signalDispPtr->xOffset);
+			return(FALSE);
+		}
 	}
 	/*** Put additional checks here. ***/
 	return(TRUE);
@@ -1571,7 +1634,9 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
-			if ((signalDispPtr->width > 0.0) || (signal->numWindowFrames !=
+			if ((signalDispPtr->xZoom && ((signalDispPtr->xOffset +
+			  signalDispPtr->xExtent) > _GetDuration_SignalData(signal))) ||
+			  (signal->numWindowFrames !=
 			  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)) {
 				if ((signalDispPtr->buffer = Init_EarObject("NULL")) == NULL) {
 					NotifyError("%s: Out of memory for buffer EarObject.",
@@ -1579,9 +1644,11 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 					return(FALSE);
 				}
 				if (signal->numWindowFrames !=
-				  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)
-					signalDispPtr->width = _GetDuration_SignalData(signal) /
-					  signal->numWindowFrames;
+				  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES) {
+					signalDispPtr->xExtent = _GetDuration_SignalData(signal) /
+				      signal->numWindowFrames;
+					signalDispPtr->xOffset = 0.0;
+				}
 			}
 			if (signalDispPtr->xAxisTitle[0] == '\0')
 				SetXAxisTitle_SignalDisp(data->outSignal->info.sampleTitle);
@@ -1593,9 +1660,9 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 		}
 		signalDispPtr->bufferCount = 0;
 		if (signalDispPtr->buffer) {
-			if (!InitOutSignal_EarObject(signalDispPtr->buffer,
-			  signal->numChannels, (ChanLen) floor(signalDispPtr->width /
-			  signal->dt + 0.5), signal->dt)) {
+			if (!InitOutSignal_EarObject(signalDispPtr->buffer, signal->
+			  numChannels, (ChanLen) floor((signalDispPtr->xOffset +
+			  signalDispPtr->xExtent) / signal->dt + 0.5), signal->dt)) {
 				NotifyError("%s: Could not initialise buffer signal.",
 				  funcName);
 				return(FALSE);
@@ -1696,9 +1763,9 @@ SetDisplay_SignalDisp(EarObjectPtr data)
 	SetPar_ModuleMgr(signalDispPtr->summary, "mode", "average");
 	SetPar_ModuleMgr(signalDispPtr->summary, "num_Channels", "1");
 	RunProcess_ModuleMgr(signalDispPtr->summary);
+	signalDispPtr->data = data;
 
 	signalDispPtr->redrawGraphFlag = TRUE;
-	signalDispPtr->data = (signalDispPtr->buffer)? signalDispPtr->buffer: data;
 
 }
 
@@ -1790,7 +1857,8 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 		}
 		signalDispPtr->drawCompletedFlag = FALSE;
 		signalDispPtr->critSect->Enter();
-		SetDisplay_SignalDisp(data);
+		SetDisplay_SignalDisp((signalDispPtr->buffer)? signalDispPtr->buffer:
+		  data);
 		signalDispPtr->critSect->Leave();
 		PostDisplayEvent_SignalDisp();
 	}

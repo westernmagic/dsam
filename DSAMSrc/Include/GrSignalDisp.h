@@ -44,14 +44,14 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			28
+#define DISPLAY_NUM_PARS			31
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
 #define	DEFAULT_WIDTH					-1.0
 #define	DEFAULT_CHANNEL_STEP			1
 #define	DEFAULT_X_NUMBER_FORMAT			"xe-3"
-#define	DEFAULT_Y_NUMBER_FORMAT			"x"
+#define	DEFAULT_Y_NUMBER_FORMAT			"y"
 #define	DEFAULT_X_TICKS					6
 #define	DEFAULT_Y_TICKS					15
 #define DEFAULT_X_DEC_PLACES			0
@@ -83,14 +83,17 @@ typedef	enum {
 
 	/* Signal Controls */
 	DISPLAY_AUTOMATIC_SCALING,
-	DISPLAY_CHANNEL_STEP,
-	DISPLAY_MAGNIFICATION,
 	DISPLAY_MAX_Y,
 	DISPLAY_MIN_Y,
-	DISPLAY_NUMGREYSCALES,
-	DISPLAY_WIDTH,
-	DISPLAY_X_RESOLUTION,
 	DISPLAY_Y_NORMALISATION_MODE,
+	DISPLAY_CHANNEL_STEP,
+	DISPLAY_MAGNIFICATION,
+	DISPLAY_NUMGREYSCALES,
+	DISPLAY_X_RESOLUTION,
+	DISPLAY_X_ZOOM,
+	DISPLAY_X_OFFSET,
+	DISPLAY_X_EXTENT,
+	DISPLAY_WIDTH,
 	/* Axis controls */
 	DISPLAY_Y_AXIS_TITLE,
 	DISPLAY_Y_AXIS_MODE,
@@ -103,12 +106,12 @@ typedef	enum {
 	DISPLAY_X_DEC_PLACES,
 	DISPLAY_X_TICKS,
 	/* General Controls */
-	DISPLAY_FRAME_DELAY,
+	DISPLAY_WINDOW_TITLE,
 	DISPLAY_MODE,
 	DISPLAY_SUMMARY_DISPLAY,
+	DISPLAY_FRAME_DELAY,
 	DISPLAY_TOP_MARGIN,
 	DISPLAY_WINDOW_HEIGHT,
-	DISPLAY_WINDOW_TITLE,
 	DISPLAY_WINDOW_WIDTH,
 	DISPLAY_WINDOW_X_POS,
 	DISPLAY_WINDOW_Y_POS,
@@ -137,47 +140,49 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	automaticYScalingFlag, channelStepFlag, frameHeightFlag;
-	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, yAxisModeFlag;
-	BOOLN	yNormalisationModeFlag, modeFlag, numGreyScalesFlag;
-	BOOLN	summaryDisplayFlag, xTicksFlag, xNumberFormatFlag;
-	BOOLN	yNumberFormatFlag, xDecPlacesFlag, yDecPlacesFlag;
-	BOOLN	yTicksFlag, yInsetScaleFlag, frameDelayFlag, titleFlag;
-	BOOLN	magnificationFlag, xResolutionFlag, minYFlag, maxYFlag;
-	BOOLN	topMarginFlag, widthFlag, xAxisTitleFlag, yAxisTitleFlag;
+	BOOLN	channelStepFlag, magnificationFlag, maxYFlag, minYFlag;
+	BOOLN	numGreyScalesFlag, widthFlag, xResolutionFlag, xExtentFlag;
+	BOOLN	yNormalisationModeFlag, yAxisModeFlag, yDecPlacesFlag, yTicksFlag;
+	BOOLN	yInsetScaleFlag, xDecPlacesFlag, xTicksFlag, xOffsetFlag;
+	BOOLN	modeFlag, frameDelayFlag, topMarginFlag, frameHeightFlag;
+	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, summaryDisplayFlag;
+	BOOLN	automaticYScalingFlag, titleFlag, xAxisTitleFlag, xNumberFormatFlag;
+	BOOLN	yAxisTitleFlag, yNumberFormatFlag, xZoomFlag;
 
 	BOOLN	updateProcessVariablesFlag;
-	char	title[MAXLINE];
-	char	xAxisTitle[MAXLINE];
-	char	yAxisTitle[MAXLINE];
-	char	xNumberFormat[MAXLINE];
-	char	yNumberFormat[MAXLINE];
-	int		automaticYScaling;
+	BOOLN	automaticYScaling;
 	int		channelStep;
+	double	magnification;
+	double	maxY;
+	double	minY;
+	int		numGreyScales;
+	double	width;
+	double	xResolution;
+	int		yNormalisationMode;
+	char	yAxisTitle[MAXLINE];
+	int		yAxisMode;
+	char	yNumberFormat[MAXLINE];
+	int		yDecPlaces;
+	int		yTicks;
+	int		yInsetScale;
+	char	xAxisTitle[MAXLINE];
+	char	xNumberFormat[MAXLINE];
+	int		xDecPlaces;
+	int		xTicks;
+	BOOLN	xZoom;
+	double	xOffset;
+	double	xExtent;
+	char	title[MAXLINE];
+	int		mode;
+	double	frameDelay;
+	double	topMargin;
 	int		frameHeight;
 	int		frameWidth;
 	int		frameXPos;
 	int		frameYPos;
-	int		yAxisMode;
-	int		xDecPlaces;
-	int		yDecPlaces;
-	int		yNormalisationMode;
-	int		mode;
-	int		numGreyScales;
 	int		summaryDisplay;
-	int		xTicks;
-	int		yTicks;
-	int		yInsetScale;
-	double	frameDelay;
-	double	magnification;
-	double	xResolution;
-	double	minY;
-	double	maxY;
-	double	topMargin;
-	double	width;
 	
 	/* Private variables */
-	NameSpecifier	*parNameList;
 	NameSpecifier	*modeList;
 	NameSpecifier	*yAxisModeList;
 	UniParListPtr	parList;
@@ -249,6 +254,8 @@ BOOLN	SetAutomaticYScaling_SignalDisp(char *theAutomaticYScaling);
 
 BOOLN	SetChannelStep_SignalDisp(int theChannelStep);
 
+BOOLN	SetDefaulEnabledPars_SignalDisp(void);
+
 BOOLN	SetFrameDelay_SignalDisp(double theFrameDelay);
 
 BOOLN	SetFrameHeight_SignalDisp(int theFrameHeight);
@@ -289,11 +296,17 @@ BOOLN	SetXAxisTitle_SignalDisp(char *xAxisTitle);
 
 BOOLN	SetXDecPlaces_SignalDisp(int xDecPlaces);
 
+BOOLN	SetXExtent_SignalDisp(double theMaxX);
+
 BOOLN	SetXResolution_SignalDisp(double xResolution);
 
 BOOLN	SetXNumberFormat_SignalDisp(char *xNumberFormat);
 
+BOOLN	SetXOffset_SignalDisp(double theXOffset);
+
 BOOLN	SetXTicks_SignalDisp(int xTicks);
+
+BOOLN	SetXZoom_SignalDisp(char *xZoom);
 
 BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
 

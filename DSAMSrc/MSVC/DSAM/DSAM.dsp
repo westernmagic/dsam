@@ -729,7 +729,7 @@ SOURCE=..\..\Include\GrFonts.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\GrLine.h
+SOURCE=..\..\Include\GrLines.h
 # End Source File
 # Begin Source File
 

@@ -3,31 +3,44 @@ mod_name		SignalDisp;
 proc_routine	ShowSignal;
 typedef struct {
 
-	char	*title;			/* [MAXLINE] */
-	int		automaticYScaling;
+	/* Signal Controls */
+	BOOLN	automaticYScaling;
 	int		channelStep;
+	double	magnification;
+	double	maxY;
+	double	minY;
+	int		numGreyScales;
+	double	width;
+	double	xResolution;
+	int		yNormalisationMode;
+	BOOLN	xZoom;
+	double	xOffset;
+	double	xExtent;
+
+	/* Axis controls */
+	char	*yAxisTitle;	/* MAXLINE */
+	int		yAxisMode;
+	char	*yNumberFormat;	/* MAXLINE */
+	int		yDecPlaces;
+	int		yTicks;
+	int		yInsetScale;
+
+	char	*xAxisTitle;	/* MAXLINE */
+	char	*xNumberFormat;	/* MAXLINE */
+	int		xDecPlaces;
+	int		xTicks;
+
+	/* General Controls */
+	char	*title;			/* [MAXLINE] */
+	int		mode;
+	double	frameDelay;
+	double	topMargin;
 	int		frameHeight;
 	int		frameWidth;
 	int		frameXPos;
 	int		frameYPos;
-	int		yAxisMode;
-	int		yNormalisationMode;
-	int		mode;
-	int		numGreyScales;
 	int		summaryDisplay;
-	int		xTicks;
-	int		xDecPlaces;
-	int		yDecPlaces;
-	int		yTicks;
-	int		yInsetScale;
 	
-	double	frameDelay;
-	double	magnification;
-	double	xResolution;
-	double	minY;
-	double	maxY;
-	double	topMargin;
-	double	width;
 
 } SignalDisp;
 	

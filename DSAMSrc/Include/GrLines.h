@@ -54,8 +54,7 @@ class GrLines
 	SignalDataPtr	signal;
 	
   public:
-	GrLines(SignalDataPtr theSignal, int theChannelStep, ChanLen offset,
-	  ChanLen length);
+	GrLines(void);
 	~GrLines(void);
 
 	void	CalcMaxMinLimits(void);
@@ -63,19 +62,23 @@ class GrLines
 	double	GetChannelScale(void)		{ return channelScale; }
 	double	GetChannelSpace(void)		{ return chanSpace; }
 	char *	GetLineLabel(int theLine);
+	ChanLen	GetLength(void)				{ return length; }
 	double	GetMaxY(void)				{ return(maxY); }
 	double	GetMinY(void)				{ return(minY); }
 	int		GetNumDisplayedLines(void)	{ return numDisplayedLines; }
 	int		GetNumLines(void)			{ return signal->numChannels; }
 	SignalDataPtr	GetSignalPtr(void)	{ return signal; }
 	void	Rescale(wxRect& newRect);
-	void	Reset(void);
+	void	Set(SignalDataPtr theSignal, ChanLen theOffset, ChanLen theLength);
 	void	SetChannelStep(int theChannelStep);
 	void	SetGreyScaleMode(bool status);
-	void	SetMaxY(double theMaxY)				{ maxY = theMaxY; }
-	void	SetMinY(double theMinY)				{ minY = theMinY; }
-	void	SetNumGreyScales(int theNumGS)	{ numGreyScales = theNumGS; }
+	void	SetLength(ChanLen theLength);
+	void	SetNumGreyScales(int theNumGS)		{ numGreyScales = theNumGS; }
+	void	SetOffset(ChanLen theOffset)		{ offset = theOffset; }
 	void	SetXResolution(double theXRes)		{ xResolution = theXRes; }
+	void	SetSignal(SignalDataPtr theSignal);
+	void	SetYLimits(double theMinY, double theMaxY)	{ minY = theMinY;
+			  maxY = theMaxY; }
 	void	SetYMagnification(double theYMagnification) { yMagnification = 
 			  theYMagnification; }
 	void	SetYNormalisationMode(int theYNormMode) { yNormalisationMode =

@@ -1158,13 +1158,13 @@ MyFrame::UpdateMainParDialog(void)
 void
 MyFrame::SetSimFileAndLoad(void)
 {
+	diagnosticsWindow->Clear();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
 	  APP_INT_SIMULATIONFILE, (char *) simFilePath.GetData()))
 		return;
 	ResetSimulation();
 	if (mainParDialog)
 		mainParDialog->parListInfoList->UpdateAllControlValues();
-	diagnosticsWindow->Clear();
 
 }
 

@@ -75,30 +75,22 @@ NameSpecifier yNormModeList_Line[] = {
  * It assumes that the signal has been correctly initialised.
  */
 
-GrLines::GrLines(SignalDataPtr theSignal, int theChannelStep, ChanLen theOffset,
-  ChanLen theLength)
+GrLines::GrLines(void)
 {
-	signal = theSignal;
-	if ((minYRecord = (wxCoord *) calloc(signal->length, sizeof(wxCoord))) ==
-	  NULL) {
-		wxMessageBox("GrLines::GrLines: out of memory for minYRecord.",
-		  "Client: Error", wxOK);
-		exit(1);
-	}
-	offset = theOffset;
-	length = theLength;
+	signal = NULL;
+	minYRecord = NULL;
+	offset = 0;
+	length = 0;
 	yNormalisationMode = LINE_YNORM_MIDDLE_MODE;
 	redrawFlag = TRUE;
 	greyScaleMode = FALSE;
-	channelStep = 1;
-	numDisplayedLines = signal->numChannels;
-	SetChannelStep(theChannelStep);
+	channelStep = -1;
+	numDisplayedLines = 1;
 	maxY = -(minY = FLT_MAX);
 	yOffset = 0;
 	yMagnification = 1.0;
 	xResolution = 1.0;
 	rect.SetWidth(-1);
-	Reset();
 
 }
 	
@@ -110,26 +102,23 @@ GrLines::~GrLines(void)
 	
 }
 
-/****************************** Reset *****************************************/
+/****************************** Set *******************************************/
 
 /*
- * This routine resets the signal ready for re-drawing.
+ * This routine resets the memory allocation and unsets the redraw flags.
  */
 
 void
-GrLines::Reset(void)
+GrLines::Set(SignalDataPtr theSignal, ChanLen theOffset, ChanLen theLength)
 {
-	wxCoord	*minYPtr;
-	ChanLen	i;
-
+	SetSignal(theSignal);
+	SetOffset(theOffset);
+	SetLength(theLength);
 	redrawFlag = TRUE;
-	for (i = offset, minYPtr = minYRecord; i < length; i++)
-		*minYPtr++ = LONG_MAX;		
-	
+
 }
 
 /****************************** SetGreyScaleMode ******************************/
-
 /*
  * This routine sets the GreyScaleMode.
  */
@@ -137,65 +126,10 @@ GrLines::Reset(void)
 void
 GrLines::SetGreyScaleMode(bool status)
 {
-	if (greyScaleMode == status)
-		return;
-	greyScaleMode = status;
-	Reset();
-
-}
-
-/****************************** Rescale ***************************************/
-
-/*
- * This routine re-scales the line space values, if required.
- * This routine only has meaning in the line graph mode.
- * The 'SetYSpacing' routine must always be called because the channel step
- * could have been changed.
- */
-
-void
-GrLines::Rescale(wxRect& newRect)
-{
-	if (!redrawFlag && (newRect.GetHeight() == rect.GetHeight()) && (newRect.
-	  GetWidth() == rect.GetWidth()))
-		return;
-	rect = newRect;
-	chanSpace = (double) rect.GetHeight() / numDisplayedLines;
-	channelScale = chanSpace / (maxY - minY);
-	if (greyScaleMode)
-		yOffset = (wxCoord) (rect.GetBottom() - chanSpace);
-	else if (yNormalisationMode == LINE_YNORM_MIDDLE_MODE)
-		yOffset = (wxCoord) (rect.GetBottom() - chanSpace / 2.0);
-	else
-		yOffset = rect.GetBottom();
-	Reset();
-
-}
-
-/****************************** CalcMaxMinLimits ******************************/
-
-/*
- * This method calculates the minY and MaxY members of each line, and the
- * overall minimum and maximum limits, using the specified signal.
- */
-
-void
-GrLines::CalcMaxMinLimits(void)
-{
-	int		j;
-	ChanLen	i;
-	ChanData	*p;
-
-	maxY = -(minY = DBL_MAX);
-	for (j = 0; j < signal->numChannels; j++) {
-		p = signal->channel[j];
-		for (i = offset; i < length; i++, p++) {
-			if (*p > maxY)
-				maxY = *p;
-			if (*p < minY)
-				minY = *p;
-		}
-	}
+        if (greyScaleMode == status)
+                return;
+        greyScaleMode = status;
+        redrawFlag = TRUE;
 
 }
 
@@ -228,14 +162,106 @@ GrLines::GetLineLabel(int theLine)
 void
 GrLines::SetChannelStep(int theChannelStep)
 {
-	if (theChannelStep != channelStep)
-		redrawFlag = TRUE;
+	if (theChannelStep == channelStep)
+		return;
 	channelStep = theChannelStep;
 	if (signal->numChannels >= channelStep)
 		numDisplayedLines = signal->numChannels / channelStep;
 	else {
 		numDisplayedLines = signal->numChannels;
 		channelStep = 1;
+	}
+	redrawFlag = TRUE;
+
+}
+
+/****************************** SetLength *************************************/
+
+/*
+ * This method sets the length parameter for the lines.
+ */
+
+void
+GrLines::SetLength(ChanLen theLength)
+{
+	if (theLength == length)
+		return;
+	length = theLength;
+	if (minYRecord)
+		free(minYRecord);
+	if ((minYRecord = (wxCoord *) calloc(length, sizeof(wxCoord))) == NULL) {
+		wxMessageBox("GrLines::GrLines: out of memory for minYRecord.",
+		  "Client: Error", wxOK);
+		exit(1);
+	}
+	redrawFlag = TRUE;
+
+}
+
+/****************************** SetSignal *************************************/
+
+/*
+ * This method sets the signal the lines.
+ */
+
+void
+GrLines::SetSignal(SignalDataPtr theSignal)
+{
+	if (theSignal == signal)
+		return;
+	signal = theSignal;
+	redrawFlag = TRUE;
+
+}
+
+/****************************** Rescale ***************************************/
+
+/*
+ * This routine re-scales the line space values, if required.
+ * This routine only has meaning in the line graph mode.
+ * The 'SetYSpacing' routine must always be called because the channel step
+ * could have been changed.
+ */
+
+void
+GrLines::Rescale(wxRect& newRect)
+{
+	rect = newRect;
+	chanSpace = (double) rect.GetHeight() / numDisplayedLines;
+	channelScale = chanSpace / (maxY - minY);
+	if (greyScaleMode)
+		yOffset = (wxCoord) (rect.GetBottom() - chanSpace);
+	else if (yNormalisationMode == LINE_YNORM_MIDDLE_MODE)
+		yOffset = (wxCoord) (rect.GetBottom() - chanSpace / 2.0);
+	else
+		yOffset = rect.GetBottom();
+	redrawFlag = TRUE;
+
+}
+
+/****************************** CalcMaxMinLimits ******************************/
+
+/*
+ * This method calculates the minY and MaxY members of each line, and the
+ * overall minimum and maximum limits, using the specified signal.
+ */
+
+void
+GrLines::CalcMaxMinLimits(void)
+{
+	int		j;
+	ChanLen	i;
+	ChanData	*p;
+
+	maxY = -(minY = DBL_MAX);
+	for (j = 0; j < signal->numChannels; j++) {
+		p = signal->channel[j] + offset;
+		for (i = 0; i < length; i++, p++) {
+			if (*p > maxY)
+				maxY = *p;
+			if (*p < minY)
+				minY = *p;
+		}
 	}
 
 }
@@ -266,8 +292,7 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 		dc.SetPen(*wxTRANSPARENT_PEN);
 	else
 		dc.SetPen(*wxBLACK_PEN);
-	xScale = (double) rect.GetWidth() / (length - offset - ((greyScaleMode)? 0:
-	  1));
+	xScale = (double) rect.GetWidth() / (length - ((greyScaleMode)? 0: 1));
 	yScale = (greyScaleMode)? (numGreyScales - 1) / (maxY - minY):
 	  yMagnification * channelScale;
 	if (xScale >= 1.0)
@@ -280,10 +305,12 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 
 	xOffset = (wxCoord) (theXOffset + rect.GetLeft());
 	yChan = theYOffset + yOffset;
+	for (i = 0, minYPtr = minYRecord; i < length; i++)
+		*minYPtr++ = LONG_MAX;		
 	for (chan = 0; chan < signal->numChannels; chan += channelStep) {
-		p = signal->channel[chan];
+		p = signal->channel[chan] + offset;
 		if (greyScaleMode) {
-			for (i = offset, x = 0; i < length; i += xIndex, p += xIndex, x +=
+			for (i = 0, x = 0; i < length; i += xIndex, p += xIndex, x +=
 			  deltaX) {
 				dc.SetBrush(*greyBrushes->GetBrush((int) floor((*p - minY) *
 				  yScale + 0.5)));
@@ -292,9 +319,10 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 			}
 		} else {
 			lastXCoord = X_COORD(0.0);
-			lastYCoord = Y_COORD(*p++);
-			for (i = offset + 1, x = deltaX, minYPtr = minYRecord; i < length;
-			  i += xIndex, p += xIndex, x += deltaX, minYPtr += xIndex) {
+			lastYCoord = Y_COORD(*p);
+			for (i = 1, p += xIndex, x = deltaX, minYPtr = minYRecord; i <
+			  length; i += xIndex, p += xIndex, x += deltaX, minYPtr +=
+			  xIndex) {
 		  		xCoord = X_COORD(x);
 				yCoord = Y_COORD(*p);
 				if (yCoord < *minYPtr) {
