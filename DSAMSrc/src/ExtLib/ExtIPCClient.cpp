@@ -373,8 +373,8 @@ IPCClient::SendInputProcess(void)
 	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;
 	length = (wxUint32) uIOPtr->length;
 	SendCommand(IPC_COMMAND_PUT);
- 	Write(&length, sizeof(length));
-	Write(uIOPtr->memStart, uIOPtr->length);
+	Write(&length, sizeof(length));
+	Write(uIOPtr->memStart, length);
 	if (Errors()) {
 		NotifyError("%s: Could not send input data.", funcName);
 		return(false);
