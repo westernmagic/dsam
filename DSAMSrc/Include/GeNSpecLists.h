@@ -11,8 +11,8 @@
  *
  *********************/
 
-#ifndef _UTGENNSLISTS_H
-#define _UTGENNSLISTS_H 1
+#ifndef _GENSPECLISTS_H
+#define _GENSPECLISTS_H 1
 
 #include "UtNameSpecs.h"
 
