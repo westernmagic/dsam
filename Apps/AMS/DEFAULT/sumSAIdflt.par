@@ -1,0 +1,10 @@
+Auto_Scaling		on	Automatic scaling ('on' or 'off').
+minY			0.0
+maxY			1.0
+Magnification		1
+Normalisation		bottom
+X_Resolution 		0.01
+win_height		400
+win_width		350
+y_axis_mode			linear
+y_dec_places	2

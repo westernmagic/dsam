@@ -1,0 +1,57 @@
+#AIMghs.sim    gammatone, HWR C LPF, sti
+ 
+on			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode ('relative', 'none' or <file path>).
+
+# Module Specifications
+
+begin {
+	
+	DataFile_In		< waveDflt.par
+	Trans_Gate		< gateDflt.par
+	Display_Signal		< dispDflt.par
+
+# L0: MIDDLE EAR (A) Butterworth Bandpass (B) MRG
+#  A: Butterworth Bandpass
+	Filt_BandPass		< midearDflt.par
+	Display_Signal		< dispDflt.par
+
+# L1: AUDITORY FILTERING (A) GAMMATONE (B) GAMMACHIRP (C) DRNL
+#  A: GAMMATONE
+	BM_GammaT	        < gtfSmall.par
+	Display_Signal		< BMMdflt.par
+
+# L2: TRANSDUCTION (A) MEDDIS HAIRCELL (B) HWR-COMP-LPF
+#  A: Meddis Haircell
+#	IHC_Meddis86		< medDflt.par
+#	Display_Signal		< NAPdflt.par
+#       Filt_lowpass            < lowpass.par
+#	Display_Signal		< NAPdflt.par
+
+#  B: HWR-Comp-LPF
+    Util_HalfWaveRectify
+    Util_Compression   	< Compres1.par
+    Filt_lowpass        < lowpass1200.par
+    Filt_lowpass        < lowpass1200.par
+    Display_Signal      < NAPdflt.par
+
+# L3: PATTERN STABILISATION (A) M&O AC (B) STI AC (C) STI 
+#  A: Autocorrelogram
+#    Ana_ACF                 < acfDflt.par 
+#    Display_Signal          < SAIdflt.par
+
+#  B: STI Autocorrelation (AUDITORY IMAGE negative slope, non-buffered)
+#	Ana_SAI			< stiACdflt.par  # strobeACdflt.par
+#	Display_Signal  < SAIdflt.par
+
+#  C: STROBED TEMPORAL INTEGRATION (AUDITORY IMAGE pos slope, buffered)
+	Ana_SAI				< stiDflt.par	# strobeDflt.par
+	Display_Signal		< SAIdflt.par
+
+    Util_ReduceChannels     < reduceDflt.par
+    Display_Signal			< sumSAIdflt.par
+
+#	 DataFile_Out
+
+}
+

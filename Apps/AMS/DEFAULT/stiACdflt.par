@@ -1,0 +1,11 @@
+#stiACdflt.par
+
+off			Diagnostic mode ("off" or "on").
+#
+AC				Integration mode.
+strobeACdflt.par	Strobe module specification file name.
+-5e-3			Negative frame width (s).
+35e-3			Positive frame width (s).
+-2.5e+3			Input decay rate (%/s).
+30e-3			Image decay half-life (s).
+

@@ -1,0 +1,4 @@
+power		Compression mode ("log" or "power").
+1.0		Signal multiplier (arbitrary units).
+0.5		Power exponent.
+0		Minimum module response (arbitrary units).
