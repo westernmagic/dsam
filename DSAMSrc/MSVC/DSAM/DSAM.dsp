@@ -225,6 +225,10 @@ SOURCE=..\..\src\MainLib\MoANSGCarney.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\MoANSGMeddis02.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\MoANSGSimple.c
 # End Source File
 # Begin Source File
@@ -802,6 +806,10 @@ SOURCE=..\..\Include\MoANSGBinom.h
 # Begin Source File
 
 SOURCE=..\..\Include\MoANSGCarney.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\MoANSGMeddis02.h
 # End Source File
 # Begin Source File
 
