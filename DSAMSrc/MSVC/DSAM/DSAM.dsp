@@ -417,6 +417,10 @@ SOURCE=..\..\src\MainLib\UtDelay.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\UtDynaBList.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtDynaList.c
 # End Source File
 # Begin Source File
@@ -958,6 +962,10 @@ SOURCE=..\..\Include\UtDebug.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtDelay.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\UtDynaBList.h
 # End Source File
 # Begin Source File
 

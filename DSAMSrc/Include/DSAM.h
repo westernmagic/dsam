@@ -40,6 +40,7 @@
 #include "UtBandwidth.h"
 #include "UtBinSignal.h"
 #include "UtDelay.h"
+#include "UtDynaBList.h"
 #include "UtDynaList.h"
 #include "UtCBinauralITD.h"
 #include "UtCFList.h"

@@ -48,7 +48,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
 				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
 				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h \
-				UtFIRFilters.h UtRemez.h
+				UtFIRFilters.h UtRemez.h UtDynaBList.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 

@@ -50,7 +50,8 @@ GetLastInst_Utility_DynaList(DynaListPtr head)
 
 /*
  * Add a new node to the end of the list.
- * The node must initially be set to NULL.
+ * The node must initially be set to NULL.  If NULL is poassed as the
+ * 'nodePtr' value, then the node returned will be the head of the list.
  * A NULL is returned if it fails in any way, otherwise it returns a pointer
  * to the new node.
  */
@@ -61,15 +62,20 @@ Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 	static const char *funcName = "Append_Utility_DynaList";
 	DynaListPtr	newNode;
 
-	if (*nodePtr && (*nodePtr)->next)
+	if (nodePtr && *nodePtr && (*nodePtr)->next)
 		return(Append_Utility_DynaList(&(*nodePtr)->next, data));
 	if ((newNode = (DynaListPtr) malloc(sizeof (DynaList))) == NULL) {
 		NotifyError("%s: Out of memory for DynaList.", funcName);
 		return(NULL);
 	}
 	newNode->data = data;
+	if (!nodePtr) {
+		newNode->previous = NULL;
+		newNode->next = NULL;
+		return(newNode);
+	}
 	newNode->previous = *nodePtr;
-	if (*nodePtr) {
+	if (newNode->previous) {
 		newNode->next = (*nodePtr)->next;
 		(*nodePtr)->next = newNode;
 	} else {
@@ -167,3 +173,59 @@ GetMemberData_Utility_DynaList(DynaListPtr list, int index)
 	return(NULL);
 
 }
+
+/****************************** FreeList **************************************/
+
+/*
+ * This routine removes all nodes from a list.  It does not free the memory
+ * for the data.  THe data should either not need deallocation or it should be
+ * deallocated elsewhere.
+ */
+
+void
+FreeList_Utility_DynaList(DynaListPtr *list)
+{
+	while (*list)
+		Pull_Utility_DynaList(list);
+
+}
+
+/****************************** GetNumElements ********************************/
+
+/*
+ * This function returns the number of elements in the list.
+ */
+
+int
+GetNumElements_Utility_DynaList(DynaListPtr list)
+{
+	int		count = 0;
+	DynaListPtr	node;
+
+	for (node = list; node != NULL; node = node->next)
+		count++;
+	return(count);
+
+}
+
+/****************************** FindElement ***********************************/
+
+/*
+ * This routine returns with a specified element from the list
+ */
+
+DynaListPtr
+FindElement_Utility_DynaList(DynaListPtr start, int (* CmpFunc)(void *,
+  void *), void *data)
+{
+	static const char *funcName = "FindElement_Utility_DynaList";
+	DynaListPtr	p;
+
+	for (p = start; p != NULL; p = p->next)
+		if (CmpFunc(p->data, data) == 0)
+			return(p);
+	NotifyError("%s: Element not found.", funcName);
+	return(NULL);
+
+}
+

@@ -50,11 +50,13 @@ int		yylex(void);
 	Symbol	*sym;
 	int		num;
 	Datum	*inst;
+	DynaListPtr	node;
 }
 %token	<sym>	_UTSSPARSER_H REPEAT BEGIN STOP STRING QUOTED_STRING RESET
 %token	<num>	NUMBER PROCESS
 %type	<inst>	process_specifier process statement_specifier reset
-%type	<inst>	simulation simulation_name
+%type	<inst>	simulation simulation_name labelled_process
+%type	<node>	connection_list
 %%
 list:		/* nothing */
 		|	list '\n'
@@ -68,7 +70,7 @@ simulation_list:
 simulation:
 			BEGIN '{' statement_list '}'
 			{ if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError("parser: error for simulation.");
+				NotifyError_Utility_SimScript("parser: error for simulation.");
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -77,7 +79,7 @@ simulation:
 		|	BEGIN simulation_name '{' statement_list '}'
 			{ $$ = $2;
 			  if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError("parser: error for simulation.");
+				NotifyError_Utility_SimScript("parser: error for simulation.");
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -130,20 +132,36 @@ process:
 				$$->u.proc.moduleName = InitString_Utility_String($2->name);
 				$$->onFlag = FALSE;
 			}
+	;
+labelled_process:
+			STRING '%' process
+			{ $$ = $3;
+			  $3->u.proc.label = InitString_Utility_String($1->name);
+			}
+	;	
+connection_list:
+			STRING
+			{	$$ = Append_Utility_DynaList(NULL, $1->name); }
+		|	connection_list ',' STRING
+			{	$$ = $1;
+				Append_Utility_DynaList(&$1, $3->name);
+			}
+	;
 process_specifier:
 			process
-		|	process '(' NUMBER '-' '>' ')'
+		|	labelled_process
+		|	labelled_process '(' connection_list '-' '>' ')'
 				{ $$ = $1;
-				  $1->u.proc.numInputs = $3;
+				  $1->u.proc.inputList = $3;
 				}
-		|	process '(' '-' '>' NUMBER ')'
+		|	labelled_process '(' '-' '>' connection_list ')'
 				{ $$ = $1;
-				  $1->u.proc.numOutputs = $5;
+				  $1->u.proc.outputList = $5;
 				}
-		|	process '(' NUMBER '-' '>' NUMBER ')'
+		|	labelled_process '(' connection_list '-' '>' connection_list ')'
 				{ $$ = $1;
-				  $1->u.proc.numInputs = $3;
-				  $1->u.proc.numOutputs = $6;
+				  $1->u.proc.inputList = $3;
+				  $1->u.proc.outputList = $6;
 				}
 		;
 statement_specifier:
@@ -233,15 +251,16 @@ yylex(void)
 		while ((c = fgetc(simScriptPtr->fp)) != '"' && (c != EOF)) {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
-				NotifyError("%s: String in quotes is too long (%s)", funcName,
-				  sbuf);
+				NotifyError_Utility_SimScript("%s: String in quotes is too "
+				  "long (%s)", funcName, sbuf);
 				exit(1);
 			}
 			*p++ = c;
 		}
 		*p = '\0';
 		if (c == EOF) {
-			NotifyError("%s: File ends before terminating quotes.", funcName);
+			NotifyError_Utility_SimScript("%s: File ends before terminating "
+			  "quotes.", funcName);
 			exit(1);
 		}
 		s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList, sbuf,
@@ -255,7 +274,8 @@ yylex(void)
 		do {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
-				NotifyError("%s: Name too long (%s)", funcName, sbuf);
+				NotifyError_Utility_SimScript("%s: Name too long (%s)",
+				  funcName, sbuf);
 				exit(1);
 			}
 			*p++ = c;

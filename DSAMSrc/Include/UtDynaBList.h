@@ -1,17 +1,18 @@
 /**********************
  *
- * File:		UtDynaList.h
- * Purpose:		This module contains the generic dynamic list management code.
+ * File:		UtDynaBList.h
+ * Purpose:		This module contains the generic dynamic binary list management
+ *				code.
  * Comments:	
  * Author:		L. P. O'Mard
- * Created:		01 Sep 1999
+ * Created:		23 Nov 2000
  * Updated:		
- * Copyright:	(c) 1999, University of Essex
+ * Copyright:	(c) 2000 CNBH, University of Essex
  *
  *********************/
 
-#ifndef _UTDYNALIST_H
-#define _UTDYNALIST_H 1
+#ifndef _UTDYNABLIST_H
+#define _UTDYNABLIST_H 1
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -21,13 +22,13 @@
 /****************************** Type definitions ******************************/
 /******************************************************************************/
 
-typedef struct DynaList {
+typedef struct DynaBList {
 
 	void			*data;
-	struct DynaList	*previous;			/* To link to next node */
-	struct DynaList	*next;				/* To link to next node */
+	struct DynaBList	*left;
+	struct DynaBList	*right;
 
-} DynaList, *DynaListPtr;
+} DynaBList, *DynaBListPtr;
 
 /******************************************************************************/
 /****************************** External variables ****************************/
@@ -43,22 +44,16 @@ typedef struct DynaList {
  */
 __BEGIN_DECLS
 
-DynaListPtr	Append_Utility_DynaList(DynaListPtr *nodePtr, void *data);
+DynaBListPtr	FindElement_Utility_DynaBList(DynaBListPtr nodePtr,
+				  int (* CmpFunc)(void *, void *), void *data);
 
-DynaListPtr	FindElement_Utility_DynaList(DynaListPtr start, int (* CmpFunc)(
-			  void *, void *), void *data);
+void	FreeList_Utility_DynaBList(DynaBListPtr *nodePtr);
 
-void		FreeList_Utility_DynaList(DynaListPtr *nodePtr);
+DynaBListPtr	Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(
+				  void *, void *), void *data);
 
-DynaListPtr	GetLastInst_Utility_DynaList(DynaListPtr head);
-
-void *		GetMemberData_Utility_DynaList(DynaListPtr list, int index);
-
-int			GetNumElements_Utility_DynaList(DynaListPtr list);
-
-void *		Pull_Utility_DynaList(DynaListPtr *nodePtr);
-
-BOOLN		Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr);
+void	PrintList_Utility_DynaBList(DynaBListPtr nodePtr, void (* PrintFunc)(
+		  void *));
 
 __END_DECLS
 

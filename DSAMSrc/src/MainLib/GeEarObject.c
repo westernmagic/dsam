@@ -532,13 +532,8 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		return(FALSE);
 	}
 	if (customer->numInSignals == customer->maxInSignals) {
-#		ifndef _NO_MODULEMGR
-		moduleName = "NULL";
-#		else
-		moduleName = customer->module->name;
-#		endif
 		NotifyError("%s: Maximum number of signals already connected to "\
-		  "customer EarObject (%s).", funcName, moduleName);
+		  "customer EarObject (%lu).", funcName, customer->handle);
 		return(FALSE);
 	}
 	inSignalRef = GetInSignalRef_EarObject(customer);

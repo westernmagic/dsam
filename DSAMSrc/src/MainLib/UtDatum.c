@@ -99,7 +99,6 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 		NotifyError("%s: Out of memory for Datum.", funcName);
 		return(NULL);
 	}
-	datum->connectedFlag = FALSE;
 	datum->onFlag = TRUE;
 	datum->type = type;
 	switch (type) {
@@ -107,8 +106,8 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 		datum->u.proc.label = NULL_STRING;
 		datum->u.proc.parFile = NULL_STRING;
 		datum->u.proc.moduleName = NULL_STRING;
-		datum->u.proc.numInputs = DATUM_DEFAULT_EAROBJECT_CONNECTIONS;
-		datum->u.proc.numOutputs = DATUM_DEFAULT_EAROBJECT_CONNECTIONS;
+		datum->u.proc.inputList = NULL;
+		datum->u.proc.outputList = NULL;
 		break;
 	case RESET:
 		datum->u.string = NULL_STRING;
@@ -154,6 +153,10 @@ FreeInstructions_Utility_Datum(DatumPtr *pc)
 				free(temp->u.proc.moduleName);
 			if (*temp->u.proc.label != '\0')
 				free(temp->u.proc.label);
+			if (temp->u.proc.inputList)
+				FreeList_Utility_DynaList(&temp->u.proc.inputList);
+			if (temp->u.proc.outputList)
+				FreeList_Utility_DynaList(&temp->u.proc.outputList);
 			Free_EarObject(&temp->data);
 			break;
 		case RESET:
@@ -167,43 +170,6 @@ FreeInstructions_Utility_Datum(DatumPtr *pc)
 		free(temp);
 	}
 	*pc = NULL;
-
-}
-
-/****************************** ResolveInstLabels *****************************/
-
-/*
- * This routine checks that the labels used in instructions (such as 'reset').
- * actually exist within the simulation script instructions.
- * It also sets the EarObject data pointer to that corresponding to the label,
- * So it must be used after the EarObjects have been initialised, if the data
- * pointers are to be valid.
- * It returns FALSE if it fails in any way.
- */
-
-BOOLN
-ResolveInstLabels_Utility_Datum(DatumPtr start)
-{
-	static const char *funcName = "ResolveInstLabels_Utility_Datum";
-	BOOLN		ok, found;
-	DatumPtr	pc1, pc2;
-	
-	for (pc1 = start, ok = TRUE; pc1 != NULL; pc1 = pc1->next)
-		if (pc1->type == RESET) {
-			for (pc2 = pc1->next, found = FALSE; pc2 != NULL; pc2 = pc2->next)
-				if ((pc2->type == PROCESS) && (strcmp(pc1->u.string,
-				  pc2->u.proc.label) == 0)) {
-					found = TRUE;
-					pc1->data = pc2->data;
-					break;
-				}
-			if (!found) {
-				NotifyError("%s: Could not find label '%s' in the simulation "
-				  "script.", funcName, pc1->u.string);
-				ok = FALSE;
-			}
-		}
-	return(ok);
 
 }
 
@@ -226,6 +192,25 @@ PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel)
 	  '\0')
 		DPrint("%s%%", pc->u.proc.label);
 	DPrint("\t");
+
+}
+
+/****************************** PrintConnections ******************************/
+
+/*
+ * This routine prints the connection labels in a dynamic array list.
+ */
+
+void
+PrintConnections_Utility_Datum(DynaListPtr list)
+{
+	DynaListPtr	node;
+
+	for (node = list; node != NULL; node = node->next) {
+		if (node != list)
+			DPrint(", ");
+		DPrint("%s", (char *) node->data);
+	}
 
 }
 
@@ -256,9 +241,13 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			if (!pc->data->module->onFlag)
 				DPrint("%c ", SIMSCRIPT_DISABLED_MODULE_CHAR);
 			DPrint("%s", pc->u.proc.moduleName);
-			if ((pc->u.proc.numInputs > 1) || (pc->u.proc.numOutputs > 1))
-				DPrint(" (%d->%d)", pc->u.proc.numInputs,
-				  pc->u.proc.numOutputs);
+			if (pc->u.proc.inputList || pc->u.proc.outputList) {
+				DPrint(" (");
+				PrintConnections_Utility_Datum(pc->u.proc.inputList);
+				DPrint("->");
+				PrintConnections_Utility_Datum(pc->u.proc.outputList);
+				DPrint(")");
+			}
 			if (strcmp(pc->u.proc.parFile, NO_FILE) == 0)
 				DPrint("\n");
 			else if (pc->data->module->specifier == SIMSCRIPT_MODULE)
@@ -301,76 +290,234 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 
 }
 
-/****************************** SetBackwardConnections ************************/
+/****************************** CmpProcessLabels ******************************/
 
 /*
- * This routine sets up the backward connection of EarObjects
- * when they have multiple inputs.
- * It only connects EarObjects with greater than 1 inputs.
+ * This function cmpares the labels of two process nodes.
+ * It returns a negative, zero, or postive integer values according to whether
+ * the labels are less than, equal or greater than respectively.
+ */
+
+int
+CmpProcessLabels_Utility_Datum(void *a, void *b)
+{
+	DatumPtr	aPtr = (DatumPtr) a, bPtr = (DatumPtr) b;
+
+	return (StrCmpNoCase_Utility_String(aPtr->u.proc.label, bPtr->u.proc.
+	  label));
+
+}
+
+/****************************** CmpProcessLabel *******************************/
+
+/*
+ * This function cmpares the labels of two process nodes.
+ * It returns a negative, zero, or postive integer values according to whether
+ * the labels are less than, equal or greater than respectively.
+ */
+
+int
+CmpProcessLabel_Utility_Datum(void *processNode, void *labelPtr)
+{
+	char	*label = (char *) labelPtr;
+	DatumPtr	ptr = (DatumPtr) processNode;
+
+	return (StrCmpNoCase_Utility_String(ptr->u.proc.label, label));
+
+}
+
+/****************************** CmpLabel **************************************/
+
+/*
+ * This function cmpares a two string labels, passed as void pointers.
+ * It returns a negative, zero, or postive integer values according to whether
+ * the labels are less than, equal or greater than respectively.
+ */
+
+int
+CmpLabel_Utility_Datum(void *a, void *b)
+{
+	char	*aLabel = (char *) a;
+	char	*bLabel = (char *) b;
+
+	return (StrCmpNoCase_Utility_String(aLabel, bLabel));
+
+}
+
+/****************************** PrintProcessLabel *****************************/
+
+/*
+ * This function cmpares the labels of two process nodes.
+ * It returns a negative, zero, or postive integer values according to whether
+ * the labels are less than, equal or greater than respectively.
+ */
+
+void
+PrintProcessLabel_Utility_Datum(void *ptr)
+{
+	DatumPtr	datumPtr = (DatumPtr) ptr;
+
+	printf("Debug: %s\n", datumPtr->u.proc.label);
+
+}
+
+/****************************** SetOutputConnections **************************/
+
+/*
+ * This function sets up the specified connections for a simulation.
  * It assumes that the list has been properly initialised.
  */
 
 BOOLN
-SetBackwardConnections_Utility_Datum(DatumPtr start)
+SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 {
-	static const char *funcName = "SetBackwardConnections_Utility_Datum";
-	int			i;
-	DatumPtr	pc1, pc2;
+	static const char *funcName = "SetOutputConnections_Utility_Datum";
+	char	*label;
+	DatumPtr	foundPC;
+	DynaListPtr	p;
+	DynaBListPtr	foundPtr;
 
-	for (pc1 = start; (pc1 != NULL); pc1 = pc1->next)
-		if ((pc1->type == PROCESS) && (pc1->u.proc.numInputs > 1)) {
-			for (i = 0, pc2 = pc1; i < pc1->u.proc.numInputs; i++)
-				for (pc2 = pc2->previous; (pc2 != NULL) && (pc2->type !=
-				  PROCESS); pc2 = pc2->previous)
-					;
-			if (pc2 == NULL) {
-				NotifyError("%s: Could not find %d EarObjects for input to "
-				  "EarObject (module '%s').", funcName, pc1->u.proc.numInputs,
-				  pc1->u.proc.moduleName);
-				return(FALSE);
-			}
-			for (i = 0; i < pc1->u.proc.numInputs; i++) {
-				ConnectOutSignalToIn_EarObject( pc2->data, pc1->data );
-				pc2->connectedFlag = TRUE;
-				for (pc2 = pc2->next; (pc2 != NULL) && (pc2->type != PROCESS);
-				  pc2 = pc2->next);
-					;
-			}
+	for (p = pc->u.proc.outputList; p != NULL; p = p->next) {
+		label = (char *) p->data;
+		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
+		  CmpProcessLabel_Utility_Datum, label)) == NULL) {
+			NotifyError("%s: Could not find process '%s%% %s.%lu' input "
+			  "labelled '%s' in the simulation script.", funcName,
+			  pc->u.proc.label, pc->data->module->name, pc->data->handle,
+			  label);
+			return(FALSE);
 		}
+		foundPC = (DatumPtr) foundPtr->data;
+		if (!FindElement_Utility_DynaList(foundPC->u.proc.inputList,
+		  CmpLabel_Utility_Datum, pc->u.proc.label)) {
+			NotifyError("%s: Could not find label '%s' in\nprocess "
+			  "'%s%% %s.%lu' inputs.", funcName, pc->u.proc.label, foundPC->
+			  u.proc.label, foundPC->data->module->name, foundPC->data->handle);
+			return(FALSE);
+		}
+		if (!ConnectOutSignalToIn_EarObject(pc->data, foundPC->data)) {
+			NotifyError("%s: Could not set '%s' connection for process %s.%lu.",
+			  funcName, label, pc->data->module->name, pc->data->handle);
+			return(FALSE);
+		}
+	}
 	return(TRUE);
 
 }
 
-/****************************** SetForwardConnections ************************/
+/****************************** CheckInputConnections *************************/
 
 /*
- * This routine sets up the forward connection of EarObjects and takes the
- * necessary action when they output to more than one EarObject.
- * It assumes that the list has been properly initialised.
- * For multiple outputs, it assumes that if the first connection has already
- * been made, then the connection should go to the next
+ * This function checks that specified input connections are correctly resolved.
  */
 
 BOOLN
-SetForwardConnections_Utility_Datum(DatumPtr start)
+CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 {
-	/* static const char *funcName = "SetForwardConnections_Utility_Datum"; */
-	int			i;
+	static const char *funcName = "CheckInputConnections_Utility_Datum";
+	char	*label;
+	DatumPtr	foundPC;
+	DynaListPtr	p;
+	DynaBListPtr	foundPtr;
+
+	for (p = pc->u.proc.inputList; p != NULL; p = p->next) {
+		label = (char *) p->data;
+		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
+		  CmpProcessLabel_Utility_Datum, label)) == NULL)  {
+			NotifyError("%s: Could not find process '%s%% %s.%lu' input "
+			  "labelled '%s' in the simulation script.", funcName,
+			  pc->u.proc.label, pc->data->module->name, pc->data->handle,
+			  label);
+			return(FALSE);
+		}
+		foundPC = (DatumPtr) foundPtr->data;
+		if (!FindElement_Utility_DynaList(foundPC->u.proc.outputList,
+		  CmpLabel_Utility_Datum, pc->u.proc.label)) {
+			NotifyError("%s: Could not find label '%s' in\nprocess "
+			  "'%s%% %s.%lu' outputs.", funcName, pc->u.proc.label, foundPC->
+			  u.proc.label, foundPC->data->module->name, foundPC->data->handle);
+			return(FALSE);
+		}
+	}
+	return(TRUE);
+
+}
+
+/****************************** ResolveInstLabels *****************************/
+
+/*
+ * This routine checks that the labels used in instructions actually exist
+ * within the simulation script instructions (such as reset, process connections
+ * etc.).
+ * It also sets the EarObject data pointer to that corresponding to the label,
+ * sets up the connections or whatever is the appropriate action.
+ * It must be used after the EarObjects have been initialised, if the data
+ * pointers are to be valid.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
+{
+	static const char *funcName = "ResolveInstLabels_Utility_Datum";
+	BOOLN		ok;
+	DatumPtr	pc;
+	DynaBListPtr	p;
+	
+	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
+		switch (pc->type) {
+		case RESET:
+			if ((p = FindElement_Utility_DynaBList(labelBList,
+			  CmpProcessLabel_Utility_Datum, pc->u.string)) == NULL) {
+				NotifyError("%s: Could not find label '%s' in the simulation "
+				  "script.", funcName, pc->u.string);
+				ok = FALSE;
+			}
+			pc->data = ((DatumPtr) p->data)->data;
+			break;
+		case PROCESS:
+			if (pc->u.proc.outputList && !SetOutputConnections_Utility_Datum(
+			  pc, labelBList)) {
+				NotifyError("%s: Failed to set output connections.", funcName);
+				ok = FALSE;
+			}
+			if (pc->u.proc.inputList && !CheckInputConnections_Utility_Datum(
+			  pc, labelBList)) {
+				NotifyError("%s: Failed to resolve input connections.",
+				  funcName);
+				ok = FALSE;
+			}
+			break;
+		default:
+			;
+		}
+	return(ok);
+
+}
+
+/****************************** SetDefaultConnections *************************/
+
+/*
+ * This routine sets up the default forward connection of EarObjects.
+ * It assumes that the list has been properly initialised.
+ * It assumes that if the next process has its input specified, then no
+ * connection should be made.
+ */
+
+BOOLN
+SetDefaultConnections_Utility_Datum(DatumPtr start)
+{
+	/* static const char *funcName = "SetDefaultConnections_Utility_Datum"; */
 	DatumPtr	pc1, pc2;
 
 	for (pc1 = start; (pc1 != NULL); pc1 = pc1->next)
-		if ((pc1->type == PROCESS) && !pc1->connectedFlag) {
-			for (i = 0, pc2 = pc1; (pc2 != NULL) && (i <
-			  pc1->u.proc.numOutputs); ) {
-				for (pc2 = pc2->next; (pc2 != NULL) && (pc2->type != PROCESS);
-				  pc2 = pc2->next)
-					;
-				if ((pc2 != NULL) && (pc2->data->numInSignals !=
-				  pc2->data->maxInSignals)) {
-					ConnectOutSignalToIn_EarObject( pc1->data, pc2->data );
-					i++;
-				}
-			}
+		if ((pc1->type == PROCESS) && !pc1->u.proc.outputList) {
+			for (pc2 = pc1->next; (pc2 != NULL) && (pc2->type != PROCESS);
+			  pc2 = pc2->next)
+				;
+			if ((pc2 != NULL) && !pc2->u.proc.inputList && (pc2->data->
+			  numInSignals != pc2->data->maxInSignals))
+				ConnectOutSignalToIn_EarObject( pc1->data, pc2->data );
 		}
 	return(TRUE);
 
@@ -389,33 +536,37 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start)
 	static const char	*funcName = "InitialiseEarObjects_Utility_Datum";
 	BOOLN	ok = TRUE;
 	DatumPtr	pc;
+	DynaBListPtr	labelBList = NULL;
 
 	if (start == NULL) {
 		NotifyError("%s: Simulation not initialised.\n", funcName);
 		return(FALSE);
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && (pc->data = Init_EarObject_MultiInput(
-		  pc->u.proc.moduleName, pc->u.proc.numInputs)) == NULL) {
-			NotifyError("%s: Could not initialise process with '%s'.",
-			  funcName, pc->u.proc.moduleName);
-			ok = FALSE;
+		if (pc->type == PROCESS) {
+			if ((pc->data = Init_EarObject_MultiInput(pc->u.proc.moduleName,
+			  (!pc->u.proc.inputList)? 1: GetNumElements_Utility_DynaList(
+			  pc->u.proc.inputList))) == NULL) {
+				NotifyError("%s: Could not initialise process with '%s'.",
+				  funcName, pc->u.proc.moduleName);
+				ok = FALSE;
+			}
+			if ((pc->u.proc.label[0] != '\0') && !Insert_Utility_DynaBList(
+			  &labelBList, CmpProcessLabels_Utility_Datum, pc)) {
+				NotifyError("%s: Cannot insert process labelled '%s' into "
+				  "connection list.", funcName, pc->u.proc.label);
+				ok = FALSE;
+			}
 		}
 	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(start);
-	if (!ok)
-		return(FALSE);
+		ok = ResolveInstLabels_Utility_Datum(start, labelBList);
 
-	/* Set up main simulation EarObject connections. */
-	if (!SetBackwardConnections_Utility_Datum(start)) {
-		NotifyError("%s Could not set backward connections.", funcName);
-		return(FALSE);
+	if (ok && !SetDefaultConnections_Utility_Datum(start)) {
+		NotifyError("%s Could not set default foward connections.", funcName);
+		ok = FALSE;
 	}
-	if (!SetForwardConnections_Utility_Datum(start)) {
-		NotifyError("%s Could not set backward connections.", funcName);
-		return(FALSE);
-	}
-	return (TRUE);
+	FreeList_Utility_DynaBList(&labelBList);
+	return (ok);
 
 }
 
@@ -556,6 +707,7 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 				  pc->stepNumber);
 				ok = (parList)? PrintPars_UniParMgr(parList, prefix, suffix):
 				  TRUE;
+				DPrint("\n");
 			}
 		}
 	return(ok);

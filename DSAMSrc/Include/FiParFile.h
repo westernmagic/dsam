@@ -63,6 +63,8 @@ BOOLN	Free_ParFile(void);
 
 char	*GetLine_ParFile(char *line, int maxChars, FILE *fp);
 
+int		GetLineCount_ParFile(void);
+
 BOOLN	GetPars_ParFile(FILE *fp, char *fmt, ...);
 
 int		IdentifyFormat_ParFile(char *fmt, char *extraFmt);

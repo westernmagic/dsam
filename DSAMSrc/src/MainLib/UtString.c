@@ -52,6 +52,34 @@ ToUpper_Utility_String(char *upperCaseString, char *string)
 
 }
 
+/****************************** StrCmpNoCase *********************************/
+
+/*
+ * This routine carries out the standard strcmp function, but it ignores the
+ * case of the operands by converting them both to uppercase.
+ */
+
+int
+StrCmpNoCase_Utility_String(char *s1, char *s2)
+{
+	static char *funcName = "StrNCmpNoCase_Utility_String";
+	char	upperString[2][LONG_STRING], *string[2];
+	int		i, len[2];
+
+	string[0] = s1;
+	string[1] = s2;
+	for (i = 0; i < 2; i++) {
+		if ((len[i] = strlen(string[i])) > LONG_STRING) {
+			NotifyError("%s: String '%s' exceeds current available length "
+			  "(%d).", funcName, string[i], LONG_STRING);
+			return (-1);
+		}
+		ToUpper_Utility_String(upperString[i], string[i]);
+	}
+	return(strcmp(upperString[0], upperString[1]));
+
+}
+
 /****************************** StrNCmpNoCase *********************************/
 
 /*

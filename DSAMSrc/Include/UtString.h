@@ -53,9 +53,9 @@ char *	QuotedString_Utility_String(char *string);
 
 void	ToUpper_Utility_String(char *upperCaseString, char *string);
 
-int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
+int		StrCmpNoCase_Utility_String(char *s1, char *s2);
 
-int		StrNCmpUpperCase_Utility_String(char *fullString, char *abbrevString);
+int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
 
 __END_DECLS
 

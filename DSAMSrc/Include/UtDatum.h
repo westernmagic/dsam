@@ -42,6 +42,9 @@
 #ifndef _UTDATUM_H
 #define _UTDATUM_H 1
 
+#include "UtDynaList.h"
+#include "UtDynaBList.h"
+
 /******************************************************************************/
 /****************************** Constant definitions **************************/
 /******************************************************************************/
@@ -55,7 +58,6 @@
 
 typedef struct Datum {
 
-	BOOLN	connectedFlag;
 	BOOLN	onFlag;
 	int		type;
 	uInt	stepNumber;
@@ -66,8 +68,8 @@ typedef struct Datum {
 			char	*parFile;
 			char	*moduleName;
 			char	*label;
-			int		numInputs;
-			int		numOutputs;
+			DynaListPtr		inputList;
+			DynaListPtr		outputList;
 		} proc;
 	} u;
 	EarObjectPtr	data;
@@ -92,7 +94,16 @@ extern uInt	datumStepCount;
  */
 __BEGIN_DECLS
 
-BOOLN		CheckParLists_Utility_Datum(DatumPtr start);
+BOOLN	CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
+		  labelBList);
+
+BOOLN	CheckParLists_Utility_Datum(DatumPtr start);
+
+int		CmpLabel_Utility_Datum(void *a, void *b);
+
+int		CmpProcessLabel_Utility_Datum(void *a, void *b);
+
+int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
 DatumPtr	Execute_Utility_Datum(DatumPtr start);
 
@@ -130,6 +141,8 @@ BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
 DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 
+void	PrintConnections_Utility_Datum(DynaListPtr list);
+
 void	PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel);
 
 void	PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName,
@@ -145,11 +158,13 @@ void	ResetSimulation_Utility_Datum(DatumPtr start);
 
 void	ResetStepCount_Utility_Datum(void);
 
-BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start);
+BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
+		  labelBList);
 
-BOOLN	SetBackwardConnections_Utility_Datum(DatumPtr start);
+BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
-BOOLN	SetForwardConnections_Utility_Datum(DatumPtr start);
+BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
+		  labelBList);
 
 BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, char *parName,
 		  char *parValue);

@@ -349,6 +349,9 @@ SetParFilePathMode_Utility_SimScript(char *theParFilePathMode)
 		snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, "%s",
 		  theParFilePathMode);
 		break;
+	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_NONE:
+		sprintf(simScriptPtr->parsFilePath, "./");
+		break;
 	default:
 		;
 	}
@@ -451,7 +454,7 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		ok = FALSE;
 	}
 	if (ok && !SetPars_Utility_SimScript(simulation, operationMode, "none")) {
-		NotifyError("%s: Could not set simulation script.", funcName);
+		NotifyError("%s: Could not set parameters.", funcName);
 		ok = FALSE;
 	}
 	SetEmptyLineMessage_ParFile(FALSE);
@@ -573,6 +576,7 @@ ReadSimScript_Utility_SimScript(char *filePath)
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%s", parFilePathMode))
 		ok = FALSE;
+	simScriptPtr->lineNumber = GetLineCount_ParFile();
 	if ((simulation = Read_Utility_SimScript(fp)) == NULL)
 		ok = FALSE;
 	fclose(fp);
@@ -705,10 +709,6 @@ Read_Utility_SimScript(FILE *fp)
 	localSimScriptPtr->simPtr = &localSimScriptPtr->simulation;
 	if (yyparse() != 0)
 		FreeSimulation_Utility_SimScript();
-	/*  Is this next bit  done twice? */
-	if (!ResolveInstLabels_Utility_Datum(
-	  localSimScriptPtr->simulation))
-		FreeSimulation_Utility_SimScript();
 	simScriptPtr = localSimScriptPtr;
 	return(simScriptPtr->simulation);
 
@@ -724,16 +724,14 @@ Read_Utility_SimScript(FILE *fp)
 void
 NotifyError_Utility_SimScript(char *format, ...)
 {
+	char	msg[LONG_STRING];
 	va_list	args;
 	
-	CheckInitErrorsFile_Common();
-	if (GetDSAMPtr_Common()->errorsFile == stderr)
-		fprintf(stderr, "\07");
 	va_start(args, format);
-	vfprintf(GetDSAMPtr_Common()->errorsFile, format, args);
+	vsnprintf(msg, LONG_STRING, format, args);
 	va_end(args);
-	fprintf(GetDSAMPtr_Common()->errorsFile, " [line %d]\n", simScriptPtr->
-	  lineNumber);
+	NotifyError("SimScript Parser: %s [line %d]\n", msg, simScriptPtr->
+	  lineNumber + 1);
 
 } /* NotifyError */
 

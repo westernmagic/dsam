@@ -154,10 +154,10 @@ CommentOrBlankLine_ParFile(char *line)
 	
 	for (p = line; (*p != '\0') && isspace(*p); p++)
 		;
-	if (strlen(p) == 0)
+	if ((strlen(p) == 0) || (*p == '#')) {
+		parFile->parLineCount++;
 		return(TRUE);
-	if (*p == '#')
-		return(TRUE);
+	}
 	return(FALSE);
 
 }
@@ -311,5 +311,22 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 	if (parFile->diagnosticsFlag)
 		DPrint("GetPars_ParFile: Read line: '%s'\n", line);
 	return(TRUE);
+
+}
+
+/****************************** GetLineCount **********************************/
+
+/*
+ * This function returns the current line count
+ */
+ 
+int
+GetLineCount_ParFile(void)
+{
+	static const char *funcName = "GetLineCount_ParFile";
+
+	if (!CheckInit_ParFile())
+		exit(1);
+	return(parFile->parLineCount);
 
 }
