@@ -100,7 +100,8 @@ typedef enum {
 	UNIPAR_CFLIST,
 	UNIPAR_ICLIST,
 	UNIPAR_SIMSCRIPT,
-	UNIPAR_FILE_NAME
+	UNIPAR_FILE_NAME,
+	UNIPAR_PARLIST
 
 } UniParTypeSpecifier;
 
@@ -131,6 +132,7 @@ typedef struct UniPar {
 		char *		s;
 		CFListPtr	*cFPtr;
 		IonChanListPtr	*iCPtr;
+		UniParListPtr	*parList;
 		struct {
 			int	*			specifier;
 			NameSpecifier	*list;

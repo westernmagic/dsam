@@ -179,6 +179,8 @@ BOOLN		SetNewOutSignal_EarObject(EarObjectPtr data, int numChannels,
 			
 void		SetTimeContinuity_EarObject(EarObjectPtr data);
 
+void		SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
+
 void		UpdateCustomers_EarObject(EarObjectPtr theObject);	
 			
 int			GetInSignalRef_EarObject(EarObjectPtr data);

@@ -30,6 +30,7 @@
 
 #include "UtAccumulate.h"
 #include "UtAmpMod.h"
+#include "UtAppInterface.h"
 #include "UtBandwidth.h"
 #include "UtBinSignal.h"
 #include "UtDelay.h"

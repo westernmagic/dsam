@@ -53,7 +53,7 @@ __BEGIN_DECLS
 void	MarkIgnore_Options(int argc, register char **argv, char *optionString,
 		  OptionsArgSpecifier state);
 
-int		Process_Options(int ac, register char **av, int *optind,
+int		Process_Options(int ac, register char **av, int *optind, int *optsub,
 		  char **argument, char *proto);
 
 __END_DECLS

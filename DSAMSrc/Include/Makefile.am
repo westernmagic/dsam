@@ -42,7 +42,8 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtRefractory.h UtSample.h UtSelectChans.h UtShapePulse.h \
 				UtSSSymbols.h UtSimScript.h UtSpikeList.h UtStddise.h \
 				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
-				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h
+				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
+				UtAppInterface.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 
