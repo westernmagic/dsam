@@ -50,6 +50,11 @@
 #include <stdarg.h>
 #include <limits.h>		/* - sort out DBL_MAX previously defined problems. */
 
+#ifdef DMALLOC
+#	include "dmalloc.h"
+#endif
+
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -181,6 +186,7 @@ typedef struct {
 	BOOLN	appInitialisedFlag;	/* TRUE when application initialised. */
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
+	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
 	BOOLN	noGUIOutputFlag;	/* TRUE, when forcing output to stdout. */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
@@ -272,6 +278,8 @@ void	SetSegmentedMode(BOOLN setting);
 void	SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);
+
+void	SwitchGUILocking_Common(BOOLN on);
 
 __END_DECLS
 
