@@ -15,8 +15,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define DSAM_DO_NOT_DEFINE_MYAPP	1
-
 #include "DSAM.h"
 
 /******************************************************************************/

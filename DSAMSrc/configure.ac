@@ -7,7 +7,7 @@ AC_REVISION($Revision: 2.13)
 AC_INIT(src/MainLib/GeCommon.c)
 AC_CONFIG_AUX_DIR(CfgTools)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 dnl we need to AC_DIVERT_PUSH/AC_DIVERT_POP these variable definitions so they
 dnl are available for $ac_help expansion (don't we all *love* autoconf?)
@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=6
-DSAM_MICRO_VERSION=34
-DSAM_INTERFACE_AGE=6
-DSAM_BINARY_AGE=6
+DSAM_MICRO_VERSION=36
+DSAM_INTERFACE_AGE=8
+DSAM_BINARY_AGE=8
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -126,7 +126,7 @@ AC_DEFUN(DSAM_CPP_BOOL,
         return 0;
       ],
       [
-        AC_DEFINE(HAVE_BOOL)
+        AC_DEFINE(HAVE_BOOL, "bool is defined for compiler")
         dsam_cv_cpp_bool=yes
       ],
       [
@@ -138,7 +138,7 @@ AC_DEFUN(DSAM_CPP_BOOL,
   ])
 
   if test "x$dsam_cv_cpp_bool" = xyes; then
-    AC_DEFINE(HAVE_BOOL)
+    AC_DEFINE(HAVE_BOOL, "bool is defined for compiler")
   fi
 ])
 
@@ -200,6 +200,12 @@ AC_ARG_ENABLE(debug,
 		no)		debug=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
 	esac], [debug=false])
+
+dnl ============================================================================
+dnl Checks for types
+dnl ============================================================================
+
+AC_CHECK_TYPES([int16, int32])
 
 dnl ============================================================================
 dnl Checks for programs.
@@ -311,6 +317,10 @@ if test x$wxwinAvailable = xyes; then
 	wx_ldflags=`$WX_CONFIG --libs`
 	wx_resflags="--include-dir `$WX_CONFIG --exec-prefix`/include \
 	  --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
+	AC_CHECK_HEADERS(wx/ogl/ogl.h, [ogl=true], [ogl=false])
+	if test x$ogl = xtrue; then
+		ogl_ldflags="-logl"
+	fi
 fi
 
 XINCLUDE=$wx_xinclude
@@ -319,7 +329,7 @@ WXINC=$wx_inc
 AC_SUBST(WXINC)
 WXBASEINC=$wx_baseinc
 AC_SUBST(WXBASEINC)
-WXLDFLAGS=$wx_ldflags
+WXLDFLAGS="$wx_ldflags $ogl_ldflags"
 AC_SUBST(WXLDFLAGS)
 
 case "${wxport}" in
@@ -363,7 +373,7 @@ AC_ARG_ENABLE(graphics,
 			;;
 		*)	graphics=false ;;
 	esac], [ graphics=false ])
-	AM_CONDITIONAL(DSAM_GRAPHICS, test x$graphics = x$true)
+AM_CONDITIONAL(DSAM_GRAPHICS, test x$graphics = xtrue)
 
 dnl ----------------------------------------------------------------------------
 dnl Parallel library option

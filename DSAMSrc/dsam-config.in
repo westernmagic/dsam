@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
 		echo_libs=yes
 		;;
 	--gui)
-		if [ -z "@WXWIN_TRUE@" ]; then
+		if [ -z "@DSAM_GRAPHICS_FALSE@" ]; then
 			echo Graphics support not installed.
 			exit 1
 		fi

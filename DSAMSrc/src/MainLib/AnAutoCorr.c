@@ -128,7 +128,7 @@ Init_Analysis_ACF(ParameterSpecifier parSpec)
 	autoCorrPtr->normalisationModeFlag = TRUE;
 	autoCorrPtr->timeOffsetFlag = TRUE;
 	autoCorrPtr->timeConstantFlag = TRUE;
-	autoCorrPtr->maxLagFlag = FALSE;
+	autoCorrPtr->maxLagFlag = TRUE;
 	autoCorrPtr->normalisationMode = ANALYSIS_NORM_MODE_STANDARD;
 	autoCorrPtr->timeOffset = -1.0;
 	autoCorrPtr->timeConstant = 0.0025;
@@ -677,7 +677,12 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	}
 	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
 	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
-	SetInfoSampleTitle_SignalData(data->outSignal, "Delay maxLag (s)");
+	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+	for (chan = 0; chan < data->outSignal->numChannels; chan++)
+		data->outSignal->info.cFArray[chan] =
+		  data->inSignal[0]->info.cFArray[chan];
+	SetInfoSampleTitle_SignalData(data->outSignal, "Delay Lag (s)");
 	if (!InitProcessVariables_Analysis_ACF(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);

@@ -8,7 +8,7 @@ include $(top_srcdir)/src/makeunix.env
 lib_LTLIBRARIES = libdsam_std.la
 EXTRA_DIST		= makefile.b32
 
-INCLUDES		= $(MAIN_INC)
+INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
 
 libdsam_std_la_SOURCES= StdMessage.c StdSignalDisp.c StdSimThread.c
 

@@ -46,8 +46,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DSAM_DO_NOT_DEFINE_MYAPP 1
-
 #include "DSAM.h"
 #include "UtSSParser.h"
 

@@ -43,6 +43,12 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.6  2002/11/10 13:35:09  lowel
+* Changes:  I have made changes to the compile configuration for both UNIX and
+* MSVC compilations.  The improvements include adding the 'LIBRARY_COMPILE'
+* #define which makes it simpler to differentiate between applications compiled
+* with and without the GUI support.
+*
 * Revision 1.5  2001/06/12 13:01:32  lowel
 * Cosmetic changes.
 *
@@ -143,9 +149,13 @@
 	typedef	int	BOOLN;
 #endif
 
-typedef	 short	int16;
+#ifndef HAVE_INT16
+	typedef	 short	int16;
+#endif
 
-typedef  long	int32;
+#ifndef HAVE_INT32
+	typedef  long	int32;
+#endif
 
 typedef struct {
 

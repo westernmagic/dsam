@@ -23,6 +23,17 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#ifdef _MSC_VER
+#	ifdef HAVE_STRINGS_H
+#		undef HAVE_STRINGS_H
+#	endif
+#endif
+
+#if defined(LIBRARY_COMPILE) && defined(GRAPHICS_SUPPORT)
+#	define DSAM_DO_NOT_DEFINE_MYAPP = 1
+#	define USE_GUI = 1
+#endif
+
 #include "GeCommon.h"
 #include "StdMessage.h"
 #include "GeSignalData.h"
@@ -114,6 +125,7 @@
 
 #include "MoANSGBinom.h"
 #include "MoANSGCarney.h"
+#include "MoANSGMeddis02.h"
 #include "MoANSGSimple.h"
 #include "MoBMDRNL.h"
 #include "MoBM0DRNL.h"
@@ -156,7 +168,7 @@
 
 #include "GrSignalDisp.h"
 
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
+#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus) && defined(USE_GUI)
 #/* --cplusplus ensures only included with c++ compile */
 #	undef TRUE			/* required because WxWin doesn't check. */
 #	undef FALSE

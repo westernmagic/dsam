@@ -27,8 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DSAM_DO_NOT_DEFINE_MYAPP	1
-
 #include "DSAM.h"
 #include "UtSSParser.h"
 

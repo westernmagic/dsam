@@ -814,7 +814,6 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 			 	  funcName);
 			 	return(FALSE);
 			}
-			SetGlobalSeed_Random(carneySGPtr->ranSeed);
 			carneySGPtr->updateProcessVariablesFlag = FALSE;
 		}
 		timeGreaterThanRefractoryPeriod = carneySGPtr->refractoryPeriod +
@@ -915,7 +914,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  p->dischargeCoeffC1 * exp(-excessTime /
 					  p->dischargeTConstS1));
 					if (((*inPtr - threshold) * dt) > Ran01_Random(
-					  &randomNumSeed)) {
+					  &p->ranSeed)) {
 						*remainingPulseTimePtr = pulseDuration;
 						*timerPtr = 0.0;
 					}

@@ -17,8 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DSAM_DO_NOT_DEFINE_MYAPP	1
-
 #include "DSAM.h"
 #include "UtSSParser.h"
 
@@ -56,9 +54,9 @@ ParListInfoList::ParListInfoList(DialogList *theParent, DatumPtr pc,
 		return;
 	}
 	if (parList->GetPanelList)
-		SetPanelledModuleInfo(parent, pc, parList);
+		SetPanelledModuleInfo((wxPanel *) parent, pc, parList);
 	else
-		SetStandardInfo(parent, pc, parList, "General");
+		SetStandardInfo((wxPanel *) parent, pc, parList, "General");
 	if (notebook) {
 		if (parList->notebookPanel < 0)
 			parList->notebookPanel = notebookPanel;
