@@ -843,8 +843,6 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	SetIcon(wxICON((wxGetApp().icon)? *wxGetApp().icon: dsam));
 	wxLayoutConstraints	*c;
 
-	defaultDir = wxGetCwd();
-
 	fileMenu = editMenu = viewMenu = NULL;
 	mainParDialog = NULL;
 
@@ -956,7 +954,9 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 		wxGetApp().InitMain();
 		simFilePath = GetParString_UniParMgr(&GetPtr_AppInterface()->parList->
 		  pars[APP_INT_SIMULATIONFILE]);
-	}
+		defaultDir = wxPathOnly(simFilePath);
+	} else 
+		defaultDir = wxGetCwd();
 
 	// Disable unusable menus
 	if (!GetPtr_AppInterface() || !GetPtr_AppInterface()->Init ||
@@ -1330,14 +1330,11 @@ MyFrame::OnReloadSimFile(wxCommandEvent& event)
 void
 MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 {
-	char *filePath, path[MAX_FILE_PATH], fileName[MAXLINE];
-	wxString newFilePath;
+	wxString newFilePath, fileName;
 
-	filePath = GetPtr_AppInterface()->parList->pars[APP_INT_SIMULATIONFILE].
-	  valuePtr.s;
-	FindFilePathAndName_Common(filePath, path, fileName);
-	newFilePath = FileSelector_Utils("Simulation parameter file", path,
-	  fileName, "spf", "*.spf", wxSAVE | wxOVERWRITE_PROMPT |
+	fileName = wxFileNameFromPath(simFilePath).BeforeLast('.') + ".spf";
+	newFilePath = wxFileSelector("Simulation parameter file", wxPathOnly(
+	  simFilePath), fileName, "spf", "*.spf", wxSAVE | wxOVERWRITE_PROMPT |
 	  wxHIDE_READONLY, this);
 	if (!newFilePath)
 		return;
@@ -1349,8 +1346,6 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	fclose(GetDSAMPtr_Common()->parsFile);
 	GetDSAMPtr_Common()->parsFile = oldFp;
 	SetGUIDialogStatus(dialogOutputFlag);
-	if (filePath)
-		snprintf(filePath,MAX_FILE_PATH, "%s", (char *) newFilePath.GetData());
 
 }
 
