@@ -57,6 +57,9 @@ int		StrCmpNoCase_Utility_String(char *s1, char *s2);
 
 int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
 
+char *	SubStrReplace_Utility_String(char *string, char *subString,
+		  char *repString);
+
 __END_DECLS
 
 #endif

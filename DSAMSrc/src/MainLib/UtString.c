@@ -212,3 +212,28 @@ RemoveChar_Utility_String(char *string, char c)
 
 }
 
+/**************************** SubStrReplace ***********************************/
+
+/*
+ * This routine substitutes a substring within a string.  It returns
+ * NULL if the sub-string is not found. otherwise it returns the position
+ * of the start of the substituted string.
+ * It expects the argument strings to be properly terminated with a null
+ * character.
+ * It expects the 'string' variable to be large enough to hold the newly created
+ * string.
+ */
+ 
+char *
+SubStrReplace_Utility_String(char *string, char *subString, char *repString)
+{
+	char	*s;
+	int		subSLen = strlen(subString), repSLen = strlen(repString);
+
+	if ((s = strstr(string, subString)) == NULL)
+		return(NULL);
+	memmove(s + repSLen, s + subSLen, strlen(s) - subSLen + 1);
+	memcpy(s, repString, repSLen);
+	return(string);
+
+}
