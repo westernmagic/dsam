@@ -30,7 +30,7 @@ St_Modules	= StPTone.mod StFMTone.mod StHarmonic.mod StPulseTrain.mod \
 				StMPTone.mod StMPPTone.mod StStepFun.mod StWhiteNoise.mod \
 				StClick.mod
 
-Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
+Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 				UtCBinauralITD.mod UtCompress.mod UtConvMonaural.mod \
 				UtCreateBinaural.mod UtDelay.mod UtIterRipple.mod \
 				UtRedceChans.mod UtReduceDt.mod UtRefractory.mod UtSample.mod \

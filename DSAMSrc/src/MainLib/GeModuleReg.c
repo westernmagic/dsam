@@ -315,6 +315,9 @@ LibraryList_ModuleReg(uShort index)
 	{ "UTIL_SWAPLR",
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_SwapLR },
+	{ "UTIL_Transpose",
+		UTILITY_MODULE_CLASS, PROCESS_MODULE,
+		InitModule_Utility_Transpose },
 
 	{ "",
 		0, MODULE_SPECIFIER_NULL,

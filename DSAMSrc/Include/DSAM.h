@@ -89,6 +89,7 @@
 #include "UtSwapLR.h"
 #include "UtParArray.h"
 #include "UtZhang.h"
+#include "UtTranspose.h"
 
 #include "AnALSR.h"
 #include "AnAutoCorr.h"
