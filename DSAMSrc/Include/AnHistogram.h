@@ -82,8 +82,10 @@ typedef struct {
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
 	BOOLN			*riseDetected;
+	ChanLen			numPeriods;
 	ChanLen			offsetIndex;
-	ChanData		*lastValue;
+	ChanLen			bufferSamples;
+	EarObjectPtr	dataBuffer;
 
 } Histogram, *HistogramPtr;
 
