@@ -20,13 +20,12 @@ ParFiles	= acf.par BM_DRNLHuman.par dataFileAif.par dataFileIn.par \
 				pitchEarlyCrossover.par rampDown.par rampUp.par \
 				stimHarmonic.par UtRedChans.par
 
-MatlabFiles	= Bern.m computeAMS.m dichoticHarmonicStimulus.m
-				dioticHarmonicStimulus.m oddHarmonics.m
+MatlabFiles	= Bern.m computeAMS.m dichoticHarmonicStimulus.m \
+				dioticHarmonicStimulus.m oddHarmonics.m \
+				dichoticHarmonicStimulus.asv dioticHarmonicStimulus.asv
 
-
-DataFiles	= dichoticF0100H13_22.wav dichoticF0100H3_12.wav
+DataFiles	= dichoticF0100H13_22.wav dichoticF0100H3_12.wav \
 				dioticF0100H13_22.wav dioticF0100H3_12.wav
-
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
 

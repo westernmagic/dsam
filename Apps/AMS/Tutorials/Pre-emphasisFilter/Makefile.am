@@ -6,12 +6,12 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials/Pre-emphasisFilter
 
-SimScripts	= auditoryNerveFileIn.sim auditoryNervePreemphFFT.sim
+SimScripts	= auditoryNerveFileIn.sim auditoryNervePreemphFFT.sim \
 				auditoryNerve.sim PreemphFFT.sim
 
 SPFFiles	= auditoryNervePreemphFFT.spf auditoryNerve.spf clickProblem.spf
 
-ParFiles	= binomial.par BM_DRNL_GP4.par dataFileIn.par dataFileOut.par
+ParFiles	= binomial.par BM_DRNL_GP4.par dataFileIn.par dataFileOut.par \
 				displayAN.par displayBM.par displayClick.par \
 				displayReceptorPotential.par displayStimulus.par \
 				filtFIRMoore.par filtIIRMoore.par filtMultiBandpass.par

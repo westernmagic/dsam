@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 AMS_MAJOR_VERSION=1
 AMS_MINOR_VERSION=1
-AMS_MICRO_VERSION=5
-AMS_INTERFACE_AGE=2
-AMS_BINARY_AGE=2
+AMS_MICRO_VERSION=6
+AMS_INTERFACE_AGE=3
+AMS_BINARY_AGE=3
 AMS_VERSION=$AMS_MAJOR_VERSION.$AMS_MINOR_VERSION.$AMS_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -274,16 +274,14 @@ AC_OUTPUT(
 	MSVC/AMS_ng/Makefile
 	Octave/Makefile
 	Tutorials/Makefile
-	Tutorials/ANfiberModels/Makefile
-	Tutorials/ANfiberModels/ANmodelISIH/Makefile
-	Tutorials/ANfiberModels/ANmodelPeriodH/Makefile
-	Tutorials/ANfiberModels/ANmodelPSTH/Makefile
-	Tutorials/ANfiberModels/ANspikeStream/Makefile
-	Tutorials/AuditoryNerve/Makefile
+	Tutorials/AuditoryPeriphery/Makefile
 	Tutorials/Autocorrelation/Makefile
 	Tutorials/BinauralPitch/Makefile
 	Tutorials/DRNLinputOutput/Makefile
+	Tutorials/GenerateStimulus/Makefile
 	Tutorials/ImpulseResponse/Makefile
 	Tutorials/Loudness/Makefile
-
+	Tutorials/MATLABdemo/Makefile
+	Tutorials/MeasureIntensity/Makefile
+	Tutorials/Pre-emphasisFilter/Makefile
 )

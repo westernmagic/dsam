@@ -5,9 +5,9 @@
 AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials
-SUBDIRS		= ANfiberModels AuditoryNerve Autocorrelation BinauralPitch \
-				DRNLinputOutput ImpulseResponse Loudness
-
+SUBDIRS		= AuditoryPeriphery Autocorrelation BinauralPitch DRNLinputOutput \
+				GenerateStimulus ImpulseResponse Loudness MATLABdemo \
+				MeasureIntensity PreemphasisFilter
 
 EXTRA_DIST	= AMStutorialNotes.doc
 

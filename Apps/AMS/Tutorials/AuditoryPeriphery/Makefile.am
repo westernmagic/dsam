@@ -21,7 +21,7 @@ ParFiles	= ANpsthBM.par ANrefractory.par BM_drnlGP1.par BM_drnlGP.par \
 
 MatlabFiles	= 
 
-DataFiles	= 
+DataFiles	= O_M_ear.xls Sumner_tables.doc
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
 

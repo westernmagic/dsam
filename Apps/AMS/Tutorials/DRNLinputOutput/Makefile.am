@@ -18,7 +18,7 @@ ParFiles	= BM_DRNLHuman.par dataFileOut.par displayDRNL.par \
 MatlabFiles	= DRNLinputOutput.m DRNLtest.m findEuclideanDistance.m \
 				getRmsFromFile.m impairedFilter.m
 
-DataFiles	= 
+DataFiles	= DRNLparams.xls
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
 
