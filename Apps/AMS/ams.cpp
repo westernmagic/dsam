@@ -66,10 +66,9 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-BOOLN	readMainParsFlag = FALSE, numberOfRunsFlag;
+BOOLN	numberOfRunsFlag;
 BOOLN	checkInitialisation = TRUE;
 
-char	parFileName[MAX_FILE_PATH];
 char	fileLockingMode[MAXLINE] = "off";
 
 int		numberOfRuns = 1, fileLockingModeSpecifier;
@@ -85,38 +84,6 @@ RunMgr	myRunMgr(Init);
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
 /******************************************************************************/
-
-/****************************** ReadMainParsFromFile **************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It expects there to be one parameter per line.
- */
- 
-BOOLN
-ReadMainParsFromFile(char *fileName)
-{
-	static const char *funcName = "ReadMainParsFromFile";
-	BOOLN	ok = TRUE;
-	FILE	*fp;
-	
-	if ((fp = fopen(fileName, "r")) == NULL) {
-		return(FALSE);
-	}
-	Init_ParFile();
-	if (!ReadPars_AppInterface(fp))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", fileLockingMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numberOfRuns))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok)
-		NotifyError("%s: Failed to read parameters.", funcName);
-	return(ok);
-	
-}
 
 /****************************** SetUniParList *********************************/
 
@@ -223,7 +190,6 @@ PrintUsage(void)
 {
 	fprintf(stderr, "\n"
 	  "%s specific options:\n"
-	  "\t-P <file name>\t: Use this main parameter file\n"
 	  "\t-r <x>        \t: Repeat the simulation 'x' times.\n"
 	  "\t-v            \t: Print program version\n",
 	  appInterfacePtr->appName);
@@ -249,7 +215,7 @@ ProcessOptions(int argc, char **argv, int *optInd)
 	int		optSub = 0;
 
 	while ((c = Process_Options(argc, argv, optInd, &optSub, &argument,
-	  "@#:P:r:v")))
+	  "@#:r:v")))
 		switch (c) {
 		case '@':
 		case '#':
@@ -263,14 +229,9 @@ ProcessOptions(int argc, char **argv, int *optInd)
 			numberOfRunsFlag = TRUE;
 			foundOption = TRUE;
 			break;
-		case 'P':
-			strcpy(parFileName, argument);
-			readMainParsFlag = TRUE;
-			foundOption = TRUE;
-			break;
 		case 'v':
 			fprintf(stderr, "Version %s, compile date %s, DSAM %s (dynamic), "
-			  "%s (compiled).\n", AMS_VERSION, __DATE__, dSAM.version,
+			  "%s (compiled).\n", AMS_VERSION, __DATE__, GetDSAMPtr_Common()->version,
 			  DSAM_VERSION);
 			exit(0);
 			break;
@@ -281,25 +242,39 @@ ProcessOptions(int argc, char **argv, int *optInd)
 
 }
 
-/****************************** SetAppInterfacePars ***************************/
+/****************************** ReadAppInterfacePars **************************/
 
 /*
  * This function sets the application interface parameters and is passed to the
  * application interface as a function pointer.
+ * It reads a specified number of parameters from a file.
+ * It expects there to be one parameter per line.
  */
 
 BOOLN
-SetAppInterfacePars(void)
+ReadAppInterfacePars(char *parFileName)
 {
-	static const char *funcName = "SetAppInterfacePars";
+	static const char *funcName = "ReadAppInterfacePars";
+	BOOLN	ok = TRUE;
+	FILE	*fp;
 
-	if (readMainParsFlag) {
-		if (!ReadMainParsFromFile(parFileName)) {
-			NotifyError("%s: Could not read parameters from '%s'", funcName, 
-			  parFileName);
-			return(FALSE);
-		}
-		readMainParsFlag = FALSE;
+	if ((fp = fopen(parFileName, "r")) == NULL) {
+		NotifyError("%s: Failed to read '%s' parameter file.", funcName,
+		  parFileName);
+		return(FALSE);
+	}
+	Init_ParFile();
+	if (!ReadPars_AppInterface(fp))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%s", fileLockingMode))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%d", &numberOfRuns))
+		ok = FALSE;
+	fclose(fp);
+	Free_ParFile();
+	if (!ok) {
+		NotifyError("%s: Failed to read parameters.", funcName);
+		return(FALSE);
 	}
 	return(TRUE);
 
@@ -364,7 +339,7 @@ Init(void)
 
 	SetAppPrintUsage_AppInterface(PrintUsage);
 	SetAppProcessOptions_AppInterface(ProcessOptions);
-	SetAppSetInitialPars_AppInterface(SetAppInterfacePars);
+	SetAppReadInitialPars_AppInterface(ReadAppInterfacePars);
 
 	checkInitialisation = FALSE;
 	return(TRUE);
@@ -386,7 +361,7 @@ int MainSimulation(MAIN_ARGS)
 	if (!InitProcessVariables_AppInterface(argc, argv))
 		return(1);
 
-	if (!dSAM.usingGUIFlag)
+	if (!GetDSAMPtr_Common()->usingGUIFlag)
 		PrintInitialDiagnostics();
 	PrintPars_ModuleMgr(appInterfacePtr->audModel);
 
