@@ -1,39 +1,27 @@
 /**********************
  *
- * File:		GrSDIDoc.h
- * Purpose: 	Simulation Design Interface base document class.
- * Comments:	Revised from Julian Smart's Ogledit/doc.h
+ * File:		GrSDIDocManager.h
+ * Purpose: 	Simulation Design Interface base document manager class.
+ * Comments:	This class allows me to define the "SaveAs" behaviour, etc.
  * Author:		L.P.O'Mard
- * Created:		04 Nov 2002
+ * Created:		10 Mar 2004
  * Updated:		
- * Copyright:	(c) 2002, University of Essex
+ * Copyright:	(c) 2004, University of Essex
  *
  **********************/
 
-#ifndef _GRSDIDOC_H
-#define _GRSDIDOC_H 1
+#ifndef _GRSDIDOCMANAGER_H
+#define _GRSDIDOCMANAGER_H 1
 
 #ifdef __GNUG__
 // #pragma interface
 #endif
 
 #include <wx/docview.h>
-#include <wx/string.h>
-#include <wx/wxexpr.h>
-#include <wx/filesys.h>
-
-#include <wx/ogl/ogl.h>
-
-#if wxUSE_STD_IOSTREAM
-class ostream;
-class istream;
-#endif
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
-
-#define	SDI_DOCUMENT_DIAGRAM_EXTENSION	"dia"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -47,32 +35,20 @@ class istream;
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** SDIDocument **************************************/
+/*************************** SDIDocManager ************************************/
 
-/*
- * A diagram document, which contains a diagram.
- */
- 
-class SDIDocument: public wxDocument
+class SDIDocManager: public wxDocManager
 {
-	DECLARE_DYNAMIC_CLASS(SDIDocument)
+	DECLARE_DYNAMIC_CLASS(SDIDocManager)
 
   private:
 
   public:
-	SDIDiagram diagram;
+	SDIDocManager(long flags = wxDEFAULT_DOCMAN_FLAGS, bool initialize = TRUE);
 
-	SDIDocument(void);
-	~SDIDocument(void);
+    void OnFileSaveAs(wxCommandEvent& event);
 
-	virtual wxOutputStream&	SaveObject(wxOutputStream& stream);
-	virtual wxInputStream&	LoadObject(wxInputStream& stream);
-
-	inline wxDiagram *	GetDiagram() { return &diagram; }
-
-	void	SetAppInterfaceFile(wxFileName &fileName);
-	bool	OnCloseDocument(void);
-	bool	OnNewDocument(void);
+    DECLARE_EVENT_TABLE()
 
 };
 

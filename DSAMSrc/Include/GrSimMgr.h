@@ -95,6 +95,7 @@ class SDIFrame;
 class DiagFrame;
 class GrMainApp;
 class GrIPCServer;
+class SDIDocManager;
 
 /*************************** wxArrayDisplay ***********************************/
 
@@ -113,7 +114,7 @@ class MyApp: public wxApp {
 	DiagFrame	*diagFrame;
 	GrIPCServer	*iPCServer;
 	wxConfigBase	*pConfig;
-	wxDocManager	*myDocManager;
+	SDIDocManager	*myDocManager;
 	wxHtmlHelpController help;
 
   public:

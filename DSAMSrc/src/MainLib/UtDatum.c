@@ -1501,18 +1501,20 @@ SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
 
 }
 
-/*************************** WriteSimFiles ************************************/
+/*************************** WriteParFiles ************************************/
 
 /*
- * This function prints a simulation as a ".sim" file with the associated
- * "*.par"files.
+ * This function prints a simulation's '.par' files and the simulation scripts
+ * of any sub-simulations.
+ * This separate routine is required because of the way that the GUI code works.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-WriteSimFiles_Datum(char  *fileName, DatumPtr start)
+WriteParFiles_Datum(char *filePath, DatumPtr start)
 {
-	static const char *funcName = "PrintSimFile_Datum";
+	static const char *funcName = "WriteParFiles_Datum";
+	char	fileName[MAX_FILE_PATH];
 	DatumPtr	pc;
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 	UniParListPtr	parList;
@@ -1525,17 +1527,52 @@ WriteSimFiles_Datum(char  *fileName, DatumPtr start)
 		if (pc->type != PROCESS)
 			continue;
 		if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
-			WriteSimFiles_Datum(pc->u.proc.parFile, GetSimulation_ModuleMgr(pc->
-			  data));
+			BOOLN ok = TRUE;
+			if (!WriteParFiles_Datum(filePath, GetSimulation_ModuleMgr(
+			  pc->data)))
+				ok = FALSE;
+			if (ok && !WriteSimScript_Datum(pc->u.proc.parFile,
+			  GetSimulation_ModuleMgr(pc->data)))
+				ok = FALSE;
+			if (!ok) {
+				NotifyError("%s: Failed to write sub-simulation '%s'.",
+				  funcName, pc->u.proc.parFile);
+				return(FALSE);
+			}
 			continue;
 		}
 		SET_PARS_POINTER(pc->data);
 		if ((parList = (* pc->data->module->GetUniParListPtr)()) == NULL)
 			return(TRUE);
 		SetDefaultProcessFileName_Utility_Datum(pc);
-		SetParsFile_Common(pc->u.proc.parFile, OVERWRITE);
+		snprintf(fileName, MAX_FILE_PATH, "%s/%s", filePath,
+		  pc->u.proc.parFile);
+		SetParsFile_Common(fileName, OVERWRITE);
 		PrintParList_UniParMgr(parList);
 		fclose(GetDSAMPtr_Common()->parsFile);
+		GetDSAMPtr_Common()->parsFile = oldFp;
+	}
+	return(TRUE);
+
+}
+
+/*************************** WriteSimScript ***********************************/
+
+/*
+ * This function prints a simulation as a ".sim" file.
+ * This separate routine is required because of the way that the GUI code works.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+WriteSimScript_Datum(char *fileName, DatumPtr start)
+{
+	static const char *funcName = "WriteSimScript_Datum";
+	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+
+	if (!start) {
+		NotifyError("%s: Simulation not initialised.", funcName);
+		return(FALSE);
 	}
 	SetParsFile_Common(fileName, OVERWRITE);
 	PrintSimScript_Utility_Datum(start, fileName, 0, "", FALSE);
@@ -1544,3 +1581,4 @@ WriteSimFiles_Datum(char  *fileName, DatumPtr start)
 	return(TRUE);
 
 }
+

@@ -79,6 +79,7 @@
 #include "GrSDISimDoc.h"
 #include "GrSDISPFDoc.h"
 #include "GrSDIView.h"
+#include "GrSDIDocManager.h"
 #include "GrDiagFrame.h"
 #include "ExtIPCUtils.h"
 #include "ExtSocket.h"
@@ -234,7 +235,7 @@ MyApp::OnInit(void)
 	InitHelp();
 
 	// Create a document manager
-	myDocManager = new wxDocManager;
+	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
 	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*."
 	  SDI_SPF_DOC_FILE_EXT, simFile.GetCwd(), SDI_SPF_DOC_FILE_EXT,

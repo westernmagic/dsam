@@ -23,7 +23,8 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrAxisScale.h dsam.rc GrSDIPalette.h GrMainApp.h \
 				GrSDIView.h GrSDIFrame.h GrSDICanvas.h GrSDIDiagram.h \
 				GrSDIEvtHandler.h GrSDICommand.h GrSDIShapes.h GrDiagFrame.h \
-				GrSDIDoc.h GrSDISimDoc.h GrSDISPFDoc.h GrIPCServer.h
+				GrSDIDoc.h GrSDISimDoc.h GrSDISPFDoc.h GrIPCServer.h \
+				GrSDIDocManager.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \

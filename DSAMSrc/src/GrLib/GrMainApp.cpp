@@ -54,8 +54,8 @@ GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
 	SetOnExecute_AppInterface(OnExecute_MyApp);
 	SetOnExit_AppInterface(OnExit_MyApp);
-	MainApp::InitMain();
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
+	InitMain();
 
 }
 
