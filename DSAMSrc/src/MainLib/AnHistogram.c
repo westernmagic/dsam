@@ -781,8 +781,6 @@ FreeProcessVariables_Analysis_Histogram(void)
  * re-used.
  */
 
-#define DBL_GREATER_OR_EQUAL(A, B) (((A) - (B)) > DBL_EPSILON)
-
 BOOLN
 Calc_Analysis_Histogram(EarObjectPtr data)
 {
@@ -871,5 +869,3 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	return(TRUE);
 
 }
-
-#undef DBL_GREATER_OR_EQUAL

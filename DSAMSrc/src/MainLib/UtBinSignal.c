@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <math.h>
 
 #ifdef HAVE_CONFIG_H
@@ -513,7 +514,7 @@ Process_Utility_BinSignal(EarObjectPtr data)
 		nextBinCutOff = binWidth;
 		for (i = 0, binSum = 0.0; i < data->inSignal[0]->length; i++) {
 			binSum += *(inPtr++);
-			if (((i + 1) * dt) >= nextBinCutOff) {
+			if (DBL_GREATER_OR_EQUAL((i + 1) * dt, nextBinCutOff)) {
 				if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
 				  data->outSignal->length)
 					*outPtr++ += (binSignalPtr->mode ==
@@ -528,4 +529,3 @@ Process_Utility_BinSignal(EarObjectPtr data)
 	return(TRUE);
 
 }
-

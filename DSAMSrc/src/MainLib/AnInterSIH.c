@@ -565,7 +565,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 	SetProcessName_EarObject(data, "Inter-Spike Interval Histogram (ISIH) "\
 	  "analysis");
 	maxIntervalIndex = (interSIHPtr->maxInterval > 0.0)?
-	  (ChanLen) (interSIHPtr->maxInterval / data->inSignal[0]->dt):
+	  (ChanLen) floor(interSIHPtr->maxInterval / data->inSignal[0]->dt + 0.5):
 	  data->inSignal[0]->length;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 	  maxIntervalIndex, data->inSignal[0]->dt)) {

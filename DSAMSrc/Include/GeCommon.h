@@ -188,6 +188,8 @@
 
 #define	MAXIMUM(A, B)			(((A) > (B))? (A): (B))
 
+#define DBL_GREATER_OR_EQUAL(A, B) (((A) - (B)) > DBL_EPSILON)
+
 /* This next definition is need for compiler niceties in MS Visual C++
  * otherwise it complains about "int being forces to 'true' or 'false'.
  */
