@@ -84,7 +84,6 @@ Free_AppInterface(void)
 		free(appInterfacePtr);
 		appInterfacePtr = NULL;
 	}
-	FreeNull_ModuleMgr();
 	CloseFiles();
 	return(TRUE);
 
@@ -1032,9 +1031,8 @@ InitSimFromSimScript_AppInterface(void)
 void
 FreeSim_AppInterface(void)
 {
-	FreeAll_EarObject();
+	Free_EarObject(&appInterfacePtr->audModel);
 	ResetStepCount_Utility_Datum();
-	appInterfacePtr->audModel = NULL;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 
 }
@@ -1437,6 +1435,19 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			return(FALSE);
 		if (!GetDSAMPtr_Common()->appInitialisedFlag) {
 			appInterfacePtr->Init = Init;
+			if (appInterfacePtr->RegisterUserModules) {
+				if (!InitUserModuleList_ModuleReg(appInterfacePtr->
+				  maxUserModules)) {
+					NotifyError("%s: Could not initialise user module list.",
+					  funcName);
+					return(FALSE);
+				}
+				if (!(* appInterfacePtr->RegisterUserModules)()) {
+					NotifyError("%s: Failed to register user modules.",
+					  funcName);
+					return(FALSE);
+				}
+			}
 			if (appInterfacePtr->SetUniParList)
 				(* appInterfacePtr->SetUniParList)(&appInterfacePtr->
 				  appParList);
@@ -1455,6 +1466,11 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 				(* appInterfacePtr->PrintUsage)();
 			exit(0);
 		}
+		DPrint("Starting %s Application version %s [DSAM Version: %s "
+		  "(dynamic),\n%s (compiled)]...\n", appInterfacePtr->appName,
+		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
+		  appInterfacePtr->compiledDSAMVersion);
+
 	}
 	if (appInterfacePtr->updateProcessVariablesFlag) {
 		if (appInterfacePtr->readAppParFileFlag) {
@@ -1465,23 +1481,6 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			}
 			appInterfacePtr->readAppParFileFlag = FALSE;
 		}
-		if (appInterfacePtr->RegisterUserModules) {
-			if (!InitUserModuleList_ModuleReg(appInterfacePtr->
-			  maxUserModules)) {
-				NotifyError("%s: Could not initialise user module list.",
-				  funcName);
-				return(FALSE);
-			}
-			if (!(* appInterfacePtr->RegisterUserModules)()) {
-				NotifyError("%s: Failed to register user modules.", funcName);
-				return(FALSE);
-			}
-		}
-		DPrint("Starting %s Application version %s [DSAM Version: %s "
-		  "(dynamic),\n%s (compiled)]...\n", appInterfacePtr->appName,
-		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
-		  appInterfacePtr->compiledDSAMVersion);
-
 		if (appInterfacePtr->canLoadSimulationFlag &&
 		  appInterfacePtr->simulationFileFlag) {
 			if (!InitSimulation_AppInterface()) {
@@ -1500,6 +1499,12 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			if (!ProcessParComs_AppInterface())
 				return(FALSE);
 		}
+		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
+		  PostInitFunc)()) {
+			NotifyError("%s: Failed to run post initialisation function.",
+			  funcName);
+			return(FALSE);
+		}
 
 		if (appInterfacePtr->listParsAndExit)
 			ListParsAndExit_AppInterface();
@@ -1508,12 +1513,6 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 
 		appInterfacePtr->updateProcessVariablesFlag = FALSE;
 
-		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
-		  PostInitFunc)()) {
-			NotifyError("%s: Failed to run post initialisation function.",
-			  funcName);
-			return(FALSE);
-		}
 	}
 	appInterfacePtr->checkMainInit = FALSE;
 	if (!ProcessParComs_AppInterface())
@@ -1532,10 +1531,10 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 BOOLN
 SetCanFreePtrFlag_AppInterface(BOOLN status)
 {
-	static const char *funcName = "SetCanFreePtrFlag_AppInterface";
+	/*static const char *funcName = "SetCanFreePtrFlag_AppInterface";*/
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		/*NotifyError("%s: Application interface not initialised.",funcName);*/
 		return(FALSE);
 	}
 	appInterfacePtr->canFreePtrFlag = status;
