@@ -37,8 +37,8 @@ class AxisScale
 
   public:
 
-	bool	CalculatPositionScale(void);
-	bool	CalculatValueScale(void);
+	bool	CalculatePositionScale(void);
+	bool	CalculateValueScale(void);
 	double	GetDecPlaces(void)		{ return decPlaces; }
 	int		GetExponent(void)		{ return exponent; }
 	int		GetNumTicks(void)		{ return numTicks; }
