@@ -8,7 +8,7 @@ AUTOMAKE_OPTIONS = foreign
 An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnExperiment.h AnFindBin.h AnFindNextIndex.h AnFourierT.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
-				AnModulusFT.h AnSpikeReg.h AnSynchIndex.h AnSAImage.h
+				AnSpikeReg.h AnSynchIndex.h AnSAImage.h
   
 Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 
@@ -43,7 +43,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtSSSymbols.h UtSimScript.h UtSpikeList.h UtStddise.h \
 				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
 				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
-				UtAppInterface.h
+				UtAppInterface.h UtFFT.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 

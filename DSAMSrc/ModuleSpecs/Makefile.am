@@ -7,16 +7,16 @@ AUTOMAKE_OPTIONS = foreign
 
 An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnFindBin.mod AnFindNextIndex.mod AnHistogram.mod \
-				 AnIntensity.mod AnInterSIH.mod AnModulusFT.mod \
-				 AnSpikeReg.mod AnSynchIndex.mod AnSAImage.mod
+				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
+				 AnSynchIndex.mod AnSAImage.mod
 
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoBMCarney.mod MoBMCooke.mod MoBMGammaT.mod MoBMDRNL.mod \
 				MoBM0DRNL.mod FlLowPass.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
 				MoHCRPShamma.mod MoIHCCarney.mod MoIHCCooke.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
-				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod FlBandPass.mod \
-				FlMultiBPass.mod
+				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
+				FlBandPass.mod FlMultiBPass.mod
 
 Pa_Modules	= PaMaster1.mod
 

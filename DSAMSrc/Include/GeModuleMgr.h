@@ -109,10 +109,10 @@ typedef enum {
 	ANA_CONVOLUTION,
 	ANA_FINDBIN,
 	ANA_FINDNEXTINDEX,
+	ANA_FOURIERT,
 	ANA_HISTOGRAM,
 	ANA_INTENSITY,
 	ANA_ISIH,
-	ANA_MODULUSFT,
 	ANA_SAI,
 	ANA_SPIKEREGULARITY,
 	ANA_SYNCHINDEX,
@@ -422,6 +422,7 @@ typedef struct moduleStruct {
 		FMTone		fMTone;
 		FindBin		findBin;
 		FindIndex	findIndex;
+		FourierT	fourierT;
 		Gate		gate;
 		HairCell	hairCell;
 		HairCell2	hairCell2;
@@ -440,7 +441,6 @@ typedef struct moduleStruct {
 
 		McGregor	mcGregor;
 		MeddisRP	meddisRP;
-		ModulusFT	modulusFT;
 		MPureTone	mPureTone;
 		Pause		pause;
 		MultiBPassF	multiBPassF;
@@ -561,13 +561,13 @@ void		SetAnalysis_FindBin_ModuleMgr(ModulePtr theModule);
 
 void		SetAnalysis_FindNextIndex_ModuleMgr(ModulePtr theModule);
 
+void		SetAnalysis_FourierT_ModuleMgr(ModulePtr theModule);
+
 void		SetAnalysis_Histogram_ModuleMgr(ModulePtr theModule);
 
 void		SetAnalysis_Intensity_ModuleMgr(ModulePtr theModule);
 
 void		SetAnalysis_ISIH_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_ModulusFT_ModuleMgr(ModulePtr theModule);
 
 void		SetAnalysis_SAI_ModuleMgr(ModulePtr theModule);
 
