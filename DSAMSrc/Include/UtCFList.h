@@ -1,6 +1,6 @@
 /**********************
  *
- * File:		UtCFList.c
+ * File:		UtCFList.h
  * Purpose:		This file contains the centre frequency management routines.
  * Comments:	The "bandWidth" field is set using the UtBandWidth module.
  *				06-10-98 LPO: The CFList type is now saved as the specifier,
@@ -21,6 +21,8 @@
  *				CFList's 'updateFlag' field when a frequency is set.  This is
  *				needed because modules, such as 'BM_Carney' need to know if the
  *				bandwidths need recalculating.
+ *				06-11-00 LPO: Implented the Greenwood function with the
+ *				functions and values provided by Steve D. Holmes.
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		17 Jun 1999
@@ -53,6 +55,11 @@ typedef enum {
 	CFLIST_LOG_MODE,		/* Freqs. spaced on a log10 scale. */
 	CFLIST_FOCAL_LOG_MODE,	/* Freqs. spaced on a log10 scale. */
 	CFLIST_LINEAR_MODE,		/* Freqs. spaced on a linear scale. */
+	CFLIST_CAT_MODE,		/* Freqs. spaced on BM for cats (Greenwood). */
+	CFLIST_CHINCHILLA_MODE,	/* - spaced on BM for chinchilla (Greenwood). */
+	CFLIST_GPIG_MODE,		/* - spaced on BM for guinea pig (Greenwood). */
+	CFLIST_HUMAN_MODE,		/* - spaced on BM for humans (Greenwood). */
+	CFLIST_MACAQUEM_MODE,	/* - spaced on BM for macaque monkey (Greenwood). */
 	CFLIST_NULL
 
 } CFListSpecifier;
@@ -79,7 +86,16 @@ typedef enum {
 
 } CFListCFParSpecifier;
 
-typedef struct CFList {
+typedef struct {
+
+	int		species;
+	double	aA;
+	double	k;
+	double	a;
+
+} GreenwoodPars, *GreenwoodParsPtr;
+
+typedef struct {
 
 	BOOLN	updateFlag;
 	CFListSpecifier			centreFreqMode;
@@ -127,6 +143,8 @@ BOOLN		GenerateERBn_CFList(CFListPtr theCFs);
 
 BOOLN		GenerateFocalLog_CFList(CFListPtr theCFs);
 
+BOOLN		GenerateGreenwood_CFList(CFListPtr theCFs);
+
 BOOLN		GenerateLinear_CFList(CFListPtr theCFs);
 
 CFListPtr	GenerateList_CFList(char *modeName, char *diagModeName,
@@ -140,6 +158,8 @@ BOOLN		GenerateUser_CFList(CFListPtr theCFs);
 double		GetBandwidth_CFList(CFListPtr theCFs, int channel);
 
 double		GetCF_CFList(CFListPtr theCFs, int channel);
+
+GreenwoodParsPtr	GetGreenwoodPars_CFList(int	species);
 
 CFListPtr	Init_CFList(const char *callingFunctionName);
 
