@@ -81,8 +81,8 @@ InitOpModeList_IHC_Meddis2000(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "spike",	IHC_MEDDIS2000_OPMODE_SPIKE },
-			{ "prob",	IHC_MEDDIS2000_OPMODE_PROB },
+			{ "SPIKE",	IHC_MEDDIS2000_OPMODE_SPIKE },
+			{ "PROB",	IHC_MEDDIS2000_OPMODE_PROB },
 			{ "",	IHC_MEDDIS2000_OPMODE_NULL },
 		};
 	hairCell2Ptr->opModeList = modeList;
