@@ -117,7 +117,9 @@ class MyCanvas: public wxWindow
 	void	DrawExponent(wxDC& dc, int exponent, int x, int y);
 	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
+	int		GetMinimumIntLog(double value);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
+	int		GetYExponent(MultiLine *lines);
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }

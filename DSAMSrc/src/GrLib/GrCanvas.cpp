@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 // For compilers that support precompilation, includes "wx.h".
@@ -491,14 +492,53 @@ MyCanvas::DrawExponent(wxDC& dc, int exponent, int x, int y)
 
 }
 
+/****************************** GetMinimumIntLog *******************************/
+
+/*
+ * This routine returns the  log result for a specified value, returning a value
+ * of zero if value is close to zero.
+ */
+
+int
+MyCanvas::GetMinimumIntLog(double value)
+{
+	double	absValue;
+
+	if ((absValue = fabs(value)) < DBL_EPSILON)
+		return 0;
+	return((int) floor(log10(absValue)));
+
+}
+
+/****************************** GetYExponent ***********************************/
+
+/*
+ * This routine returns a suitable exponent using the maximum and minimum Y
+ * values.
+ */
+
+int
+MyCanvas::GetYExponent(MultiLine *lines)
+{
+	int		exponent, bottomLog, topLog;
+
+	bottomLog = GetMinimumIntLog(lines->GetMinY());
+	topLog = GetMinimumIntLog(lines->GetMaxY());
+	exponent = (fabs(bottomLog) > fabs(topLog))? bottomLog: topLog;
+	if ((exponent < GRAPH_Y_SCALE_LOWER_EXP_LIMIT) || (exponent >
+	  GRAPH_Y_SCALE_UPPER_EXP_LIMIT))
+		return(exponent);
+	return(0);
+
+}
+
 /****************************** DrawYAxis *************************************/
 
 void
 MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
 	static const char *funcName = "MyCanvas::DrawYAxis";
-	int		i, j, numDisplayedChans, tickLength, exponent = 0, xPos, yPos;
-	int		exponentTest;
+	int		i, j, numDisplayedChans, tickLength, exponent, xPos, yPos;
 	long int	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, scale;
 	wxString format, label, space = " ";
@@ -533,10 +573,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
-		exponentTest = (int) floor(log10(signalLines->GetMaxY()));
-		if ((exponentTest < GRAPH_Y_SCALE_LOWER_EXP_LIMIT) || (exponentTest >
-		  GRAPH_Y_SCALE_UPPER_EXP_LIMIT))
-			exponent = exponentTest;
+		exponent = GetYExponent(signalLines);
 		scale = (signalLines->GetMaxY() - signalLines->GetMinY()) /
 		  (mySignalDispPtr->yTicks - 1);
 		yTickSpacing = chanSpacing / (mySignalDispPtr->yTicks - 1);
