@@ -59,6 +59,7 @@
 class SDIDiagram: public wxDiagram
 {
 	double	x, y;
+	DatumPtr	simulation;
 
   public:
 	SDIDiagram(void);
@@ -68,11 +69,15 @@ class SDIDiagram: public wxDiagram
 				  wxBrush *brush);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
 				  wxBrush *brush);
-	void	DrawSimConnections(DatumPtr start);
-	void	DrawSimShapes(DatumPtr start);
-	void	DrawSimulation(DatumPtr start);
+	void	DrawSimConnections(void);
+	void	DrawSimShapes(void);
+	void	DrawSimulation(void);
+	DatumPtr	FindShapeProcess(uInt id);
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
+	void	SetProcessClientData(DatumPtr pc, wxShape *shape);
+	void	SetSimulation(DatumPtr theSim)	{ simulation = theSim; }
+	bool	VerifyDiagram(void);
 
 };
 

@@ -67,6 +67,7 @@ SDIDiagram::SDIDiagram(void)
 {
 	x = 60.0;
 	y = 60.0;
+	simulation = NULL;
 
 }
 
@@ -85,6 +86,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
 	myHandler->ResetLabel();
 
 	shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH, DIAGRAM_DEFAULT_SHAPE_HEIGHT);
+	shape->SetId(pc->stepNumber);
 	AddShape(shape);
 	shape->Show(TRUE);
 	wxClientDC dc(shape->GetCanvas());
@@ -97,11 +99,29 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
 }
 
 /******************************************************************************/
+/****************************** SetProcessClientData **************************/
+/******************************************************************************/
+
+/*
+ * It assumes that the process, pc, is not NULL.
+ */
+
+void
+SDIDiagram::SetProcessClientData(DatumPtr pc, wxShape *shape)
+{
+	if (pc->data)
+		pc->data->clientData = shape;
+	else
+		pc->clientData = shape;
+
+}
+
+/******************************************************************************/
 /****************************** DrawSimShapes *********************************/
 /******************************************************************************/
 
 void
-SDIDiagram::DrawSimShapes(DatumPtr start)
+SDIDiagram::DrawSimShapes()
 {
 	printf("SDIDiagram::DrawSimShapes: Entered\n");
 	DatumPtr	pc;
@@ -109,9 +129,9 @@ SDIDiagram::DrawSimShapes(DatumPtr start)
 	wxShape		*shape;
 	SDICanvas	*canvas = (SDICanvas *) GetCanvas();
 
-	if (start == NULL)
+	if (simulation == NULL)
 		return;
-	for (pc = start; pc != NULL; pc = pc->next) {
+	for (pc = simulation; pc != NULL; pc = pc->next) {
 		shape = NULL;
 		switch (pc->type) {
 		case PROCESS: {
@@ -133,12 +153,8 @@ SDIDiagram::DrawSimShapes(DatumPtr start)
 			printf("SDIDiagram::DrawSimShapes: datum type %d not implemented."
 			  "\n", pc->type);
 		} /* switch */
-		if (shape) {
-			if (pc->data)
-				pc->data->clientData = shape;
-			else
-				pc->clientData = shape;
-		}
+		if (shape)
+			SetProcessClientData(pc, shape);
 	}
 }
 
@@ -185,17 +201,17 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
  */
 
 void
-SDIDiagram::DrawSimConnections(DatumPtr start)
+SDIDiagram::DrawSimConnections(void)
 {
 	printf("SDIDiagram::DrawSimConnections: Entered\n");
 	DatumPtr	pc, toPc;
 	DynaBListPtr labelBList;
 
-	if (start == NULL)
+	if (simulation == NULL)
 		return;
 	SET_PARS_POINTER(GetPtr_AppInterface()->audModel);
 	labelBList = GetLabelBList_Utility_SimScript();
-	for (pc = start; pc != NULL; pc = pc->next) {
+	for (pc = simulation; pc != NULL; pc = pc->next) {
 		if (pc->type == STOP)
 			continue;
 		wxShape *fromShape = (wxShape *) (GET_DATUM_CLIENT_DATA(pc));
@@ -240,11 +256,11 @@ SDIDiagram::DrawSimConnections(DatumPtr start)
 /******************************************************************************/
 
 void
-SDIDiagram::DrawSimulation(DatumPtr start)
+SDIDiagram::DrawSimulation(void)
 {
 	printf("SDIDiagram::DrawSimulation: Entered\n");
-	DrawSimShapes(start);
-	DrawSimConnections(start);
+	DrawSimShapes();
+	DrawSimConnections();
 
 }
 
@@ -281,14 +297,68 @@ SDIDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 }
 
 /******************************************************************************/
+/****************************** FindShapeProcess ******************************/
+/******************************************************************************/
+
+DatumPtr
+SDIDiagram::FindShapeProcess(uInt id)
+{
+	DatumPtr	pc;
+
+	if (simulation == NULL)
+		return(NULL);
+	for (pc = simulation; pc != NULL; pc = pc->next)
+		if ((pc->type == PROCESS) && (pc->stepNumber == id))
+			return (pc);
+	return(NULL);
+	
+}
+
+/******************************************************************************/
+/****************************** VerifyDiagram *********************************/
+/******************************************************************************/
+
+/*
+ * This function checks that the loaded diagram corresponds with the simulation.
+ */
+
+bool
+SDIDiagram::VerifyDiagram(void)
+{
+	wxNode *node = m_shapeList->First();
+
+	while (node) {
+		wxShape *shape = (wxShape *) node->Data();
+		if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
+			wxLineShape *lineShape = (wxLineShape *) shape;
+			wxShape *fromShape = lineShape->GetFrom();
+			wxShape *toShape = lineShape->GetTo();
+			if (!fromShape || !toShape)
+				return (FALSE);
+			if (!FindShapeProcess((uInt) fromShape->GetId()) ||
+			  !FindShapeProcess((uInt) toShape->GetId()))
+				return(FALSE);
+		} else {
+			DatumPtr pc = FindShapeProcess((uInt) shape->GetId());
+			if (pc)
+				SetProcessClientData(pc, shape);
+		}
+		node = node->Next();
+	}
+	return(TRUE);
+
+}
+
+
+/******************************************************************************/
 /****************************** OnShapeLoad ***********************************/
 /******************************************************************************/
 
 bool
 SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 {
-	printf("SDIDiagram::OnShapeLoad: Called.\n");
 	wxDiagram::OnShapeLoad(db, shape, expr);
+	
 	char *label = NULL;
 	expr.AssignAttributeValue("label", &label);
 	SDIEvtHandler *handler = new SDIEvtHandler(&shape, &shape, wxString(label));

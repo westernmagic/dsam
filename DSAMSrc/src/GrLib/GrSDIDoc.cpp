@@ -66,6 +66,7 @@ bool
 SDIDocument::OnCloseDocument(void)
 {
 	diagram.DeleteAllShapes();
+	diagram.SetSimulation(NULL);
 	return TRUE;
 
 }
@@ -177,6 +178,8 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
+	static const char *funcName = "SDIDocument::LoadObject";
+
 	wxDocument::LoadObject(stream);
 
 	wxFileName	fileName = GetFilename();
@@ -194,10 +197,19 @@ SDIDocument::LoadObject(wxInputStream& stream)
 
 	wxFileName	diagFileName = fileName;
 	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+	diagram.SetSimulation(GetSimulation_AppInterface());
 	if (!diagFileName.FileExists())
-		diagram.DrawSimulation(GetSimulation_AppInterface());
-	else
-		diagram.LoadFile(diagFileName.GetFullPath());
+		diagram.DrawSimulation();
+	else {
+		;
+		if (!diagram.LoadFile(diagFileName.GetFullPath()) ||
+		  !diagram.VerifyDiagram()) {
+			wxLogError("%s: Error loading diagram file - default layout "
+			  "used.\n", funcName);
+			diagram.DeleteAllShapes();
+			diagram.DrawSimulation();
+		}
+	}
 	wxRemoveFile(tempFileName);
 	wxGetApp().SetAudModelLoadedFlag(true);
 
