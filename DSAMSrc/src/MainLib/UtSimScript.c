@@ -345,7 +345,8 @@ SetParFilePathMode_Utility_SimScript(char *theParFilePathMode)
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH:
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL:
 		simScriptPtr->parFilePathMode = UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH;
-		strcpy(simScriptPtr->parsFilePath, theParFilePathMode);
+		CopyAndTrunc_Utility_String(simScriptPtr->parsFilePath,
+		  theParFilePathMode, MAX_FILE_PATH);
 		break;
 	default:
 		;
@@ -843,9 +844,9 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 
 	if (localSimScriptPtr->parFilePathMode ==
 	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {
-		strcpy(localSimScriptPtr->parsFilePath,
+		CopyAndTrunc_Utility_String(localSimScriptPtr->parsFilePath,
 		  localSimScriptPtr->parFilePathModeList[
-		  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name);
+		  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name, MAX_FILE_PATH);
 	}
 	for (pc = localSimScriptPtr->simulation; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {

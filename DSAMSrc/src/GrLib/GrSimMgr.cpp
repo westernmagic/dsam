@@ -1181,7 +1181,8 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	GetDSAMPtr_Common()->parsFile = oldFp;
 	GetDSAMPtr_Common()->noGUIOutputFlag = noGUIOutputFlag;
 	if (filePath)
-		strcpy(filePath, (char *) newFilePath.GetData());
+		CopyAndTrunc_Utility_String(filePath, (char *) newFilePath.GetData(),
+		  MAX_FILE_PATH);
 
 }
 

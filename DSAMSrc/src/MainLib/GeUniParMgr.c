@@ -499,7 +499,7 @@ PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_FILE_NAME:
-			if ((strlen(p->abbr) + strlen(suffix)) >= MAXLINE) {
+			if ((strlen(p->abbr) + strlen(suffix)) >= LONG_STRING) {
 				NotifyError("%s: Combined string '%s%s' is greater than %d.",
 				  funcName, p->abbr, suffix, MAXLINE);
 				return(FALSE);

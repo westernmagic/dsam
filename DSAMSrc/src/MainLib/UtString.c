@@ -136,8 +136,9 @@ GetSuffix_Utility_String(char *fileName)
 {
 	static char scanLine[MAXLINE]; /* - must be static so that memory is kept.*/
 	char	*token;
-	
-	strcpy(scanLine, fileName);	/* Remember, strtok clobbers scanLine. */
+
+	/* Remember, strtok clobbers scanLine. */
+	CopyAndTrunc_Utility_String(scanLine, fileName, MAXLINE);
 	strtok(scanLine, ".");		/* Initialisation */
 	token = strtok(NULL, " ");
 	if (token != NULL)
@@ -166,5 +167,21 @@ GetFileNameFPath_Utility_String(char *fileName)
 	if (p == NULL)
 		return(fileName);
 	return(++p);
-		
+
+}
+
+/**************************** CopyAndTrunc ************************************/
+
+/*
+ * This routine copies only n parameters from the src, and ensures that the
+ * destination is null terminated.
+ * 
+ */
+ 
+void
+CopyAndTrunc_Utility_String(char *dest, char *src, size_t n)
+{
+	strncpy(dest, src, n);
+	dest[n - 1] = '\0';
+
 }

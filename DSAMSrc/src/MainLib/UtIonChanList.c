@@ -45,6 +45,7 @@
 #include "FiParFile.h"
 #include "UtNameSpecs.h"
 #include "UtDynaList.h"
+#include "UtString.h"
 #include "UtIonChanList.h"
 
 /******************************************************************************/
@@ -138,7 +139,7 @@ Init_IonChanList(const char *callingFunctionName)
 	theICList->minVoltage = 0.0;
 	theICList->maxVoltage = 0.0;
 	theICList->dV = 0.0;
-	snprintf(theICList->diagFileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
+	strcpy(theICList->diagFileName, DEFAULT_FILE_NAME);
 
 	if ((theICList->printTablesModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), theICList->diagFileName)) == NULL) {
@@ -242,7 +243,7 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 	theIC->dV = 0.0;
 	InitICHHuxleyPars_IonChanList(&theIC->hHuxley);
 	InitICBoltzmannPars_IonChanList(&theIC->boltzmann);
-	snprintf(theIC->fileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
+	strcpy(theIC->fileName, DEFAULT_FILE_NAME);
 	theIC->parList = NULL;
 	if ((theIC->table = (ICTableEntry *) calloc(theIC->numTableEntries,
 	  sizeof(ICTableEntry))) == NULL) {
@@ -1279,7 +1280,7 @@ ReadICPars_IonChanList(IonChanListPtr theICs, FILE *fp)
 			GenerateHHuxley_IonChanList(theIC);
 		break;
 	case ICLIST_FILE_MODE:
-		strcpy(theIC->fileName, fileName);
+		CopyAndTrunc_Utility_String(theIC->fileName, fileName, MAX_FILE_PATH);
 		if (!ReadVoltageTable_IonChanList(theIC, fp)) {
 			NotifyError("%s: Failed to read ion channel from file '%s'.",
 			  funcName, fileName);
@@ -1347,7 +1348,7 @@ ReadPars_IonChanList(FILE *fp)
 	static const char	*funcName = "ReadPars_IonChanList";
 	int		i;
 	IonChanListPtr	theICs = NULL;
-	IonChannelPtr	theIC = NULL;
+	IonChannelPtr	theIC;
 
 	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
 		NotifyError("%s: Out of memory for ion channel list structure.",
@@ -1748,7 +1749,7 @@ SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription)
 		NotifyError("%s: Ion channel not initialised.", funcName);
 		return(FALSE);
 	}
-	snprintf(theIC->description, MAXLINE, theDescription);
+	CopyAndTrunc_Utility_String(theIC->description, theDescription, MAXLINE);
 	return(TRUE);
 
 }
@@ -2359,7 +2360,7 @@ SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName)
 		NotifyError("%s: Ion channel not initialised.", funcName);
 		return(FALSE);
 	}
-	strcpy(theIC->fileName, fileName);
+	CopyAndTrunc_Utility_String(theIC->fileName, fileName, MAX_FILE_PATH);
 	theIC->updateFlag = TRUE;
 	if (theIC->parList)
 		theIC->parList->updateFlag = TRUE;

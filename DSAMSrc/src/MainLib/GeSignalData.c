@@ -30,6 +30,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "GeCommon.h"
+#include "UtString.h"
 #include "GeSignalData.h"
 
 /******************************************************************************/
@@ -665,7 +666,8 @@ SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	CopyAndTrunc_Utility_String(theData->info.channelTitle, title,
+	  SIGNALDATA_MAX_TITLE);
 
 }
 
@@ -683,7 +685,8 @@ SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	CopyAndTrunc_Utility_String(theData->info.chanDataTitle, title,
+	  SIGNALDATA_MAX_TITLE);
 
 }
 
@@ -701,7 +704,8 @@ SetInfoSampleTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	CopyAndTrunc_Utility_String(theData->info.sampleTitle, title,
+	  SIGNALDATA_MAX_TITLE);
 
 }
 

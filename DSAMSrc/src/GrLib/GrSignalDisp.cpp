@@ -72,6 +72,7 @@
 #include "GeModuleMgr.h"
 #include "GeNSpecLists.h"
 #include "FiParFile.h"
+#include "UtString.h"
 
 #include "GrUtils.h"
 #include "GrSimMgr.h"
@@ -1031,7 +1032,7 @@ SetTitle_SignalDisp(char *title)
 		return(FALSE);
 	}
 	signalDispPtr->titleFlag = TRUE;
-	strcpy(signalDispPtr->title, title);
+	CopyAndTrunc_Utility_String(signalDispPtr->title, title, MAXLINE);
 	if (signalDispPtr->display)
 		signalDispPtr->display->SetTitle(title);
 	return(TRUE);

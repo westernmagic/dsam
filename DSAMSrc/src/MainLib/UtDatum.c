@@ -850,12 +850,12 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		NotifyError("%s: Illegal parameter name '%s'!", funcName, parSpecifier);
 		return(FALSE);
 	}
-	strcpy(parName, parSpecifier);
+	CopyAndTrunc_Utility_String(parName, parSpecifier, MAXLINE);
 	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL) {
 		procNum = -1;
 		processName[0] = '\0';
 	} else {
-		strcpy(processName, p + 1);
+		CopyAndTrunc_Utility_String(processName, p + 1, MAXLINE);
 		if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL) {
 			procNum = atoi(p + 1);
 			*p = '\0';
@@ -921,7 +921,7 @@ FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 		  processSpecifier);
 		return(FALSE);
 	}
-	strcpy(processName, processSpecifier);
+	CopyAndTrunc_Utility_String(processName, processSpecifier, MAXLINE);
 	if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) == NULL)
 		procNum = -1;
 	else

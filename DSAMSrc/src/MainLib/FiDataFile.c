@@ -819,7 +819,7 @@ SetFileName_DataFile(char *fileName)
 		NotifyError("%s: Illegal file name.", funcName);
 		return(FALSE);
 	}
-	strcpy(dataFilePtr->name, fileName);
+	CopyAndTrunc_Utility_String(dataFilePtr->name, fileName, MAX_FILE_PATH);
 	Format_DataFile(GetSuffix_Utility_String(fileName));
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);

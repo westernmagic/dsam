@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "GeCommon.h"
+#include "UtString.h"
 #include "FiParFile.h"
  
 /******************************************************************************/
@@ -271,8 +272,9 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 		; 
 	parFile->parLineCount++;
 	va_start(args, fmt);
-	strcpy(fmtScanLine, fmt);	/* This is needed because strtok bashes
-								 * its string argument. */
+
+	/* This next line is needed because strtok bashes its string argument. */
+	CopyAndTrunc_Utility_String(fmtScanLine, fmt, MAXLINE);
 	formatToken = strtok(fmtScanLine, FORMAT_DELIMITERS);
 	while ((formatToken != NULL) && (restOfLine != NULL) &&
 	  ((formatType = IdentifyFormat_ParFile(formatToken, extraFmt)) != EOF)) {

@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtPause.h"
 
 /******************************************************************************/
@@ -277,7 +278,7 @@ SetMessage_Utility_Pause(char *theMessage)
 	}
 	/*** Put any other required checks here. ***/
 	pausePtr->messageFlag = TRUE;
-	snprintf(pausePtr->message, LONG_STRING, "%s", theMessage);
+	CopyAndTrunc_Utility_String(pausePtr->message, theMessage, LONG_STRING);
 	return(TRUE);
 
 }

@@ -267,7 +267,8 @@ SetSimulationFile_AppInterface(char *theSimulationFile)
 		NotifyError("%s: Illegal zero length name.", funcName);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->simulationFile, theSimulationFile);
+	CopyAndTrunc_Utility_String(appInterfacePtr->simulationFile, 
+	  theSimulationFile, MAX_FILE_PATH);
 	appInterfacePtr->simulationFileFlag = TRUE;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -340,7 +341,8 @@ SetInstallDir_AppInterface(char *theInstallDir)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->installDir, theInstallDir);
+	CopyAndTrunc_Utility_String(appInterfacePtr->installDir, theInstallDir,
+	  MAX_FILE_PATH);
 	return(TRUE);
 
 }
@@ -365,7 +367,8 @@ SetAppParFile_AppInterface(char *fileName)
 		NotifyError("%s: illegal file name.", funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, fileName);
+	CopyAndTrunc_Utility_String(appInterfacePtr->appParFile, fileName,
+	  MAX_FILE_PATH);
 	appInterfacePtr->appParFileFlag = TRUE;
 	return(TRUE);
 
@@ -644,7 +647,8 @@ ProcessOptions_AppInterface(void)
 			}
 			break;
 		case 'P':
-			strcpy(appInterfacePtr->appParFile, argument);
+			CopyAndTrunc_Utility_String(appInterfacePtr->appParFile, argument,
+			  MAX_FILE_PATH);
 			appInterfacePtr->readAppParFileFlag = TRUE;
 			break;
 		case 's':
@@ -749,7 +753,7 @@ SetProgramParValue_AppInterface(char *parName, char *parValue)
 
 	localParFilePtr = parFile;
 	parFile = NULL;
-	strcpy(parNameCopy, parName);
+	CopyAndTrunc_Utility_String(parNameCopy, parName, MAXLINE);
 	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL)
 		*p = '\0';
 	parList = appInterfacePtr->parList;
@@ -1043,7 +1047,8 @@ SetAppName_AppInterface(char *appName)
 		return(FALSE);
 	}
 
-	strcpy(appInterfacePtr->appName, appName);
+	CopyAndTrunc_Utility_String(appInterfacePtr->appName, appName,
+	  MAX_FILE_PATH);
 	return(TRUE);
 
 } 
@@ -1106,7 +1111,7 @@ SetTitle_AppInterface(char *title)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->title, title);
+	CopyAndTrunc_Utility_String(appInterfacePtr->title, title, MAXLINE);
 	return(TRUE);
 
 } 

@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #ifdef HAVE_CONFIG_H
@@ -47,6 +48,7 @@
 #include "FiParFile.h"
 #include "UtDynaList.h"
 #include "UtIonChanList.h"
+#include "UtString.h"
 #include "MoNCHHuxley.h"
 
 #include "UtDebug.h"
@@ -195,7 +197,7 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 		Free_Neuron_HHuxley();
 		return(FALSE);
 	}
-	snprintf(hHuxleyNCPtr->diagFileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
+	strcpy(hHuxleyNCPtr->diagFileName, DEFAULT_FILE_NAME);
 	hHuxleyNCPtr->fp = NULL;
 	hHuxleyNCPtr->restingRun = FALSE;
 	hHuxleyNCPtr->numChannels = 0;

@@ -101,15 +101,14 @@ GetFitFuncPars_BasilarM_DRNL(int mode)
 	switch (mode) {
 	case GENERAL_FIT_FUNC_LOG_FUNC1_MODE:
 		return(2);
-		break;
 	case GENERAL_FIT_FUNC_POLY_FUNC1_MODE:
 		return(3);
-		break;
 	default:
 		NotifyError("%s: Mode not listed (%d), returning zero.", funcName,
 		  mode);
-		return(0);
 	}
+	return(0);
+
 }
 
 /****************************** GetFitFuncValue *******************************/
@@ -127,16 +126,15 @@ GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
 	switch (p->mode) {
 	case GENERAL_FIT_FUNC_LOG_FUNC1_MODE:
 		return(pow(10.0, p->params[0] + p->params[1] * log10(linCF)));
-		break;
 	case GENERAL_FIT_FUNC_POLY_FUNC1_MODE:
 		return(p->params[0] + p->params[1] * linCF + p->params[2] * linCF *
 		  linCF);
-		break;
 	default:
 		NotifyError("%s: Mode (%d) not listed, returning zero.", funcName,
 		  p->mode);
-		return(0.0);
 	}
+	return(0.0);
+
 }
 
 /****************************** Init ******************************************/
@@ -810,7 +808,7 @@ GetCFListPtr_BasilarM_DRNL(void)
 
 	if (bMDRNLPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
+		return(NULL);
 	}
 	if (bMDRNLPtr->theCFs == NULL) {
 		NotifyError("%s: CFList data structure has not been correctly set.  "

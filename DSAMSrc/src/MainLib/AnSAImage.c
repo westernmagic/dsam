@@ -54,6 +54,7 @@
 #include "GeModuleMgr.h"
 #include "GeNSpecLists.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnSAImage.h"
 
 /******************************************************************************/
@@ -179,7 +180,7 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 		Free_Analysis_SAI();
 		return(FALSE);
 	}
-	snprintf(sAImagePtr->diagnosticString, MAX_FILE_PATH, DEFAULT_FILE_NAME);
+	strcpy(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
 	sAImagePtr->inputDecay = NULL;
 	sAImagePtr->fp = NULL;
 	sAImagePtr->decayCount = NULL;
@@ -389,8 +390,8 @@ SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
 		return(FALSE);
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
-	snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, "%s",
-	  theStrobeSpecification);
+	CopyAndTrunc_Utility_String(sAImagePtr->strobeSpecification,
+	  theStrobeSpecification, MAX_FILE_PATH);
 	return(TRUE);
 
 }
