@@ -85,7 +85,7 @@ dnl
 dnl call AMS_CPP_BOOL - will define HAVE_BOOL if the compiler supports bool
 dnl ---------------------------------------------------------------------------
 
-AC_DEFUN(AMS_CPP_BOOL,
+AC_DEFUN([AMS_CPP_BOOL],
 [
   AC_CACHE_CHECK([if C++ compiler supports bool], wx_cv_cpp_bool,
   [
