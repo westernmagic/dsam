@@ -87,6 +87,7 @@ InitModeList_Utility_SelectChannels(void)
 
 					{ "ZERO",	SELECT_CHANS_ZERO_MODE },
 					{ "REMOVE",	SELECT_CHANS_REMOVE_MODE },
+					{ "EXPAND",	SELECT_CHANS_EXPAND_MODE },
 					{ "", 		SELECT_CHANS_NULL }
 				};
 	selectChanPtr->modeList = modeList;
@@ -163,12 +164,12 @@ SetUniParList_Utility_SelectChannels(void)
 	}
 	pars = selectChanPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_MODE], "MODE",
-	  "Selection mode - 'zero' or 'remove'.",
+	  "Selection mode - 'zero', 'remove' or 'expan'.",
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->mode, selectChanPtr->modeList,
 	  (void * (*)) SetMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], "NUM_CHANNELS",
-	  "No. of channels to be selected.",
+	  "No. of channels in selection field.",
 	  UNIPAR_INT,
 	  &selectChanPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
@@ -379,6 +380,11 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, int theSelection)
 		  funcName, selectChanPtr->numChannels - 1, theIndex);
 		return(FALSE);
 	}
+	if (theSelection < 0) {
+		NotifyError("%s: The selection values must be greater than zero ('%d'",
+		  funcName, theSelection);
+		return(FALSE);
+	}
 	/*** Put any other required checks here. ***/
 	selectChanPtr->selectionArray[theIndex] = theSelection;
 	return(TRUE);
@@ -574,6 +580,7 @@ BOOLN
 CheckData_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Utility_SelectChannels";
+	int		numInChans;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -582,10 +589,11 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 	if (!CheckInit_SignalData(data->inSignal[0],
 	  "CheckData_Utility_SelectChannels"))
 		return(FALSE);
-	if (selectChanPtr->numChannels < data->inSignal[0]->numChannels / 
-	  data->inSignal[0]->interleaveLevel) {
-		NotifyError("%s: The number of specified channels (%d) is less than\n"
-		  "the signal channels (%d, interleave level %d).", funcName,
+	numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
+	  interleaveLevel;
+	if (selectChanPtr->numChannels != numInChans) {
+		NotifyError("%s: The specified channel field (%d) is not the same\n"
+		  "as the input  signal channels (%d, interleave level %d).", funcName,
 		  selectChanPtr->numChannels, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->interleaveLevel);
 			return(FALSE);
@@ -613,9 +621,9 @@ BOOLN
 Process_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SelectChannels";
-	register	ChanData	 *inPtr, *outPtr, multiplier;
+	register	ChanData	 *inPtr, *outPtr;
 	uShort	numChannels = 0;
-	int		i, chan, inChanIndex;
+	int		i, k, l, chan, inChanIndex, multiplier;
 	ChanLen	j;
 
 	if (!CheckPars_Utility_SelectChannels())
@@ -630,10 +638,16 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		numChannels = data->inSignal[0]->numChannels;
 		break;
 	case SELECT_CHANS_REMOVE_MODE:
-	for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
-		if (selectChanPtr->selectionArray[i])
-			numChannels++;
-		numChannels *= data->inSignal[0]->interleaveLevel;
+		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
+			if (selectChanPtr->selectionArray[i])
+				numChannels++;
+			numChannels *= data->inSignal[0]->interleaveLevel;
+			break;
+	case SELECT_CHANS_EXPAND_MODE:
+		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
+			if (selectChanPtr->selectionArray[i])
+				numChannels += selectChanPtr->selectionArray[i];
+			numChannels *= data->inSignal[0]->interleaveLevel;
 		break;
 	} /* switch */
 	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
@@ -644,9 +658,9 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
 	  interleaveLevel);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++)
-		switch (selectChanPtr->mode) {
-		case SELECT_CHANS_ZERO_MODE:
+	switch (selectChanPtr->mode) {
+	case SELECT_CHANS_ZERO_MODE:
+		for (i = 0; i < data->inSignal[0]->numChannels; i++) {
 			outPtr = data->outSignal->channel[i];
 			if (selectChanPtr->selectionArray[i]) {
 				inPtr = data->inSignal[0]->channel[i];
@@ -655,16 +669,16 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 			} else
 				for (j = 0; j < data->outSignal->length; j++)
 					*outPtr++ = 0.0;
-			break;
-		case SELECT_CHANS_REMOVE_MODE:
+		}
+		break;
+	case SELECT_CHANS_REMOVE_MODE:
+		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 			if (selectChanPtr->selectionArray[inChanIndex]) {
-				data->outSignal->info.chanLabel[chan /
-				  data->inSignal[0]->interleaveLevel] = data->inSignal[
-				  0]->info.chanLabel[inChanIndex];
-				data->outSignal->info.cFArray[chan /
-				  data->inSignal[0]->interleaveLevel] = data->inSignal[
-				  0]->info.cFArray[inChanIndex];
+				SetInfoChannelLabel_SignalData(data->outSignal, chan, data->
+				  inSignal[0]->info.chanLabel[i]);
+				SetInfoCF_SignalData(data->outSignal, chan, data->inSignal[0]->
+				  info.cFArray[i]);
 				inPtr = data->inSignal[0]->channel[i];
 				outPtr = data->outSignal->channel[chan];
 				multiplier = selectChanPtr->selectionArray[inChanIndex];
@@ -672,8 +686,29 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 					*outPtr++ = *inPtr++ * multiplier;
 				chan++;
 			}
-			break;
-		} /* switch */
+		}
+		break;
+	case SELECT_CHANS_EXPAND_MODE:
+		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i += data->
+		  inSignal[0]->interleaveLevel) {
+			inChanIndex = i / data->inSignal[0]->interleaveLevel;
+			if (selectChanPtr->selectionArray[inChanIndex])
+				for (k = 0; k < selectChanPtr->selectionArray[inChanIndex];
+				  k++)
+					for (l = 0; l < data->outSignal->interleaveLevel; l++) {
+						SetInfoChannelLabel_SignalData(data->outSignal, chan,
+						  data->inSignal[0]->info.chanLabel[i + l]);
+						SetInfoCF_SignalData(data->outSignal, chan, data->
+						  inSignal[0]->info.cFArray[i + l]);
+						inPtr = data->inSignal[0]->channel[i + l];
+						outPtr = data->outSignal->channel[chan];
+						for (j = 0; j < data->outSignal->length; j++)
+							*outPtr++ = *inPtr++;
+						chan++;
+					}
+		}
+		break;
+	} /* switch */
 	SetUtilityProcessContinuity_EarObject(data);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
