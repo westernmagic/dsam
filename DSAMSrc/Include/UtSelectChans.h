@@ -71,7 +71,7 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 	int		mode;
 	int		selectionMode;
-	int		*selectionArray;
+	double	*selectionArray;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -128,7 +128,7 @@ BOOLN	SetDefaulEnabledPars_Utility_SelectChannels(void);
 void	SetEnabledState_Utility_SelectChannels(void);
 
 BOOLN	SetIndividualSelection_Utility_SelectChannels(int theIndex,
-		  int theSelection);
+		  double theSelection);
 
 BOOLN	SetMode_Utility_SelectChannels(char *theMode);
 
@@ -139,9 +139,9 @@ BOOLN	SetNumChannels_Utility_SelectChannels(int theNumChannels);
 BOOLN	SetParsPointer_Utility_SelectChannels(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_SelectChannels(char *mode, int numChannels,
-		  int *selectionArray);
+		  double *selectionArray);
 
-BOOLN	SetSelectionArray_Utility_SelectChannels(int *theSelectionArray);
+BOOLN	SetSelectionArray_Utility_SelectChannels(double *theSelectionArray);
 
 BOOLN	SetSelectionMode_Utility_SelectChannels(char * theSelectionMode);
 

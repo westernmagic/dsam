@@ -90,6 +90,26 @@ InitOpModeList_IHC_Meddis2000(void)
 
 }
 
+/****************************** InitCaCondModeList ****************************/
+
+/*
+ * This function initialises the 'caCondMode' list array
+ */
+
+BOOLN
+InitCaCondModeList_IHC_Meddis2000(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "ORIGINAL",	IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
+			{ "REVISION_1",	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
+			{ "",			IHC_MEDDIS2000_CACONDMODE_NULL },
+		};
+	hairCell2Ptr->caCondModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -124,6 +144,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->parSpec = parSpec;
 	hairCell2Ptr->opModeFlag = TRUE;
 	hairCell2Ptr->diagModeFlag = TRUE;
+	hairCell2Ptr->caCondModeFlag = TRUE;
 	hairCell2Ptr->ranSeedFlag = TRUE;
 	hairCell2Ptr->CaVrevFlag = TRUE;
 	hairCell2Ptr->betaCaFlag = TRUE;
@@ -141,6 +162,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->recoveryRate_rFlag = TRUE;
 	hairCell2Ptr->opMode = IHC_MEDDIS2000_OPMODE_PROB;
 	hairCell2Ptr->diagMode = GENERAL_DIAGNOSTIC_OFF_MODE;
+	hairCell2Ptr->caCondMode = IHC_MEDDIS2000_CACONDMODE_ORIGINAL;
 	hairCell2Ptr->ranSeed = -1;
 	hairCell2Ptr->CaVrev = 0.066;
 	hairCell2Ptr->betaCa = 400.0;
@@ -158,6 +180,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->recoveryRate_r = 6580.0;
 
 	InitOpModeList_IHC_Meddis2000();
+	InitCaCondModeList_IHC_Meddis2000();
 
 	if ((hairCell2Ptr->diagModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), hairCell2Ptr->diagFileName)) == NULL)
@@ -205,6 +228,11 @@ SetUniParList_IHC_Meddis2000(void)
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CACONDMODE], "CA_COND_MODE",
+	  "Calcium conductance mode ('original' or 'revision_1').",
+	  UNIPAR_NAME_SPEC,
+	  &hairCell2Ptr->caCondMode, hairCell2Ptr->caCondModeList,
+	  (void * (*)) SetCaCondMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], "RAN_SEED",
 	  "Random number seed (0 for different seed for each run).",
 	  UNIPAR_LONG,
@@ -421,6 +449,37 @@ SetDiagMode_IHC_Meddis2000(char * theDiagMode)
 	hairCell2Ptr->diagModeFlag = TRUE;
 	hairCell2Ptr->diagMode = IdentifyDiag_NSpecLists(theDiagMode,
 	  hairCell2Ptr->diagModeList);
+	return(TRUE);
+
+}
+
+/****************************** SetCaCondMode *********************************/
+
+/*
+ * This function sets the module's caCondMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetCaCondMode_IHC_Meddis2000(char * theCaCondMode)
+{
+	static const char	*funcName = "SetCaCondMode_IHC_Meddis2000";
+	int		specifier;
+
+	if (hairCell2Ptr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theCaCondMode,
+		hairCell2Ptr->caCondModeList)) == IHC_MEDDIS2000_CACONDMODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theCaCondMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
+	hairCell2Ptr->caCondModeFlag = TRUE;
+	hairCell2Ptr->caCondMode = specifier;
 	return(TRUE);
 
 }
@@ -829,6 +888,10 @@ CheckPars_IHC_Meddis2000(void)
 		NotifyError("%s: diagMode variable not set.", funcName);
 		ok = FALSE;
 	}
+	if (!hairCell2Ptr->caCondModeFlag) {
+		NotifyError("%s: caCondMode variable not set.", funcName);
+		ok = FALSE;
+	}
 	if (!hairCell2Ptr->ranSeedFlag) {
 		NotifyError("%s: ranSeed variable not set.", funcName);
 		ok = FALSE;
@@ -910,10 +973,12 @@ PrintPars_IHC_Meddis2000(void)
 		return(FALSE);
 	}
 	DPrint("Meddis 2000 IHC Module Parameters:-\n");
-	DPrint("\tOperational Mode = %s \n",
+	DPrint("\tOperational mode = %s \n",
 	  hairCell2Ptr->opModeList[hairCell2Ptr->opMode].name);
-	DPrint("\tDiagnostic Mode = %s \n",
+	DPrint("\tDiagnostic mode = %s \n",
 	  hairCell2Ptr->diagModeList[hairCell2Ptr->diagMode].name);
+	DPrint("\tCalcium conductance mode = %s\n", hairCell2Ptr->caCondModeList[
+	  hairCell2Ptr->caCondMode].name);
 	DPrint("\tRandom Seed = %ld \n", hairCell2Ptr->ranSeed);
 	DPrint("\tCalcium reversal potential = %g (V)\n", hairCell2Ptr->CaVrev);
 	DPrint("\tBeta = %g \n", hairCell2Ptr->betaCa);
@@ -1215,7 +1280,8 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			hC->hCChannels[i].actCa = ssactCa;
-			hC->hCChannels[i].concCa = -ICa;		
+			hC->hCChannels[i].concCa = (hairCell2Ptr->caCondMode ==
+			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)? -ICa: -ICa * hC->tauConcCa;
 			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
 			hC->hCChannels[i].cleftC = spontCleft_c0;
 			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
@@ -1341,9 +1407,11 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			ICa = hC->GCaMax * pow(hC->hCChannels[i].actCa, 3) * (Vin -
 			  hC->CaVrev);
 			
-			/* Calcium Ion accumulation and diffusion */
-			hC->hCChannels[i].concCa += (-ICa - hC->hCChannels[i].concCa) *
-			  dt / hC->tauConcCa;			
+			/* Calcium Ion accumulation and diffusion */			
+			hC->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
+			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
+			  (-ICa - hC->hCChannels[i].concCa) * dt / hC->tauConcCa:
+			  (-ICa - hC->hCChannels[i].concCa / hC->tauConcCa) * dt;
 
 			/* power law release function */
 			kdt = ( hC->hCChannels[i].concCa > hC->perm_Ca0 ) ? (zdt * (pow(

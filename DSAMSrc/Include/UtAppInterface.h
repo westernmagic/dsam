@@ -150,6 +150,8 @@ BOOLN	AddAppHelpBook_AppInterface(const char *bookName);
 
 BOOLN	Free_AppInterface(void);
 
+void	FreeSim_AppInterface(void);
+
 AppInterfacePtr	GetPtr_AppInterface(void);
 
 EarObjectPtr	GetEarObjectPtr_AppInterface(void);
@@ -157,6 +159,8 @@ EarObjectPtr	GetEarObjectPtr_AppInterface(void);
 char *	GetFilePath_AppInterface(char *filePath);
 
 DatumPtr *	GetSimPtr_AppInterface(void);
+
+EarObjectPtr	GetSimProcess_AppInterface(void);
 
 DatumPtr	GetSimulation_AppInterface(void);
 
@@ -181,6 +185,8 @@ BOOLN	ProcessParComs_AppInterface(void);
 
 BOOLN	ProcessOptions_AppInterface(void);
 
+BOOLN	PrintSimPars_AppInterface(void);
+
 void	PrintUsage_AppInterface(void);
 
 BOOLN	ReadPars_AppInterface(char *parFileName);
@@ -189,7 +195,9 @@ BOOLN	ReadProgParFile_AppInterface(void);
 
 void	ResetCommandArgFlags_AppInterface(void);
 
-void	ResetSimulation_AppInterface(void);
+BOOLN	ResetSim_AppInterface(void);
+
+BOOLN	RunSim_AppInterface(void);
 
 BOOLN	SetAppParFile_AppInterface(char *fileName);
 
@@ -226,13 +234,20 @@ BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
 BOOLN	SetParsFilePath_AppInterface(char * parsFilePath);
 
-BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue);
+BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue,
+		  BOOLN readSPF);
+
+BOOLN	SetRealArraySimPar_AppInterface(char *parName, int index, double value);
+
+BOOLN	SetRealSimPar_AppInterface(char *parName, double value);
 
 BOOLN	SetSegmentMode_AppInterface(char *theSegmentMode);
 
 BOOLN	SetSimFileName_AppInterface(char * simFileName);
 
 BOOLN	SetSimFileType_AppInterface(int simFileType);
+
+BOOLN	SetSimPar_AppInterface(char *parName, char *value);
 
 BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
 

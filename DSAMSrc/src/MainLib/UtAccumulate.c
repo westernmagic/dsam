@@ -95,7 +95,7 @@ BOOLN
 CheckData_Utility_Accumulate(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Utility_Accumulate";
-	BOOLN	ok;
+	BOOLN	ok = TRUE;
 	int		i;
 
 	if (data == NULL) {

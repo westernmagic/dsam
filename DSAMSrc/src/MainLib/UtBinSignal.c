@@ -511,7 +511,7 @@ Process_Utility_BinSignal(EarObjectPtr data)
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		nextBinCutOff = binWidth;
+		nextBinCutOff = binWidth - dt;
 		for (i = 0, binSum = 0.0; i < data->inSignal[0]->length; i++) {
 			binSum += *(inPtr++);
 			if (DBL_GREATER((i + 1) * dt, nextBinCutOff)) {

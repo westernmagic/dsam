@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define IHC_MEDDIS2000_NUM_PARS		17
+#define IHC_MEDDIS2000_NUM_PARS		18
 #define  MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
 
 /******************************************************************************/
@@ -35,6 +35,7 @@ typedef enum {
 
 	IHC_MEDDIS2000_OPMODE,
 	IHC_MEDDIS2000_DIAGMODE,
+	IHC_MEDDIS2000_CACONDMODE,
 	IHC_MEDDIS2000_RANSEED,
 	IHC_MEDDIS2000_CAVREV,
 	IHC_MEDDIS2000_BETACA,
@@ -72,12 +73,19 @@ typedef enum {
 
 } IHCOpModeSpecifier;
 
+typedef enum {
+
+	IHC_MEDDIS2000_CACONDMODE_ORIGINAL,
+	IHC_MEDDIS2000_CACONDMODE_REVISION1,
+	IHC_MEDDIS2000_CACONDMODE_NULL
+
+} IHCCaCondModeSpecifier;
 
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	opModeFlag, diagModeFlag, ranSeedFlag, CaVrevFlag;
+	BOOLN	opModeFlag, diagModeFlag, caCondModeFlag, ranSeedFlag, CaVrevFlag;
 	BOOLN	betaCaFlag, gammaCaFlag, pCaFlag, GCaMaxFlag, perm_Ca0Flag;
 	BOOLN	perm_zFlag, tauCaChanFlag, tauConcCaFlag, maxFreePool_MFlag;
 	BOOLN	replenishRate_yFlag, lossRate_lFlag, reprocessRate_xFlag;
@@ -86,6 +94,7 @@ typedef struct {
 
 	int		opMode;
 	int		diagMode;
+	int		caCondMode;
 	long	ranSeed;
 	double	CaVrev;
 	double	betaCa;
@@ -105,6 +114,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*opModeList;
 	NameSpecifier	*diagModeList;
+	NameSpecifier	*caCondModeList;
 	UniParListPtr	parList;
 	HairCellVars2	*hCChannels;
 	char		diagFileName[MAX_FILE_PATH];
@@ -136,6 +146,8 @@ BOOLN	Free_IHC_Meddis2000(void);
 
 UniParListPtr	GetUniParListPtr_IHC_Meddis2000(void);
 
+BOOLN	InitCaCondModeList_IHC_Meddis2000(void);
+
 BOOLN	InitDiagModeList_IHC_Meddis2000(void);
 
 BOOLN	InitOpModeList_IHC_Meddis2000(void);
@@ -149,6 +161,8 @@ BOOLN	ReadPars_IHC_Meddis2000(char *fileName);
 BOOLN	RunModel_IHC_Meddis2000(EarObjectPtr data);
 
 BOOLN	SetBetaCa_IHC_Meddis2000(double theBetaCa);
+
+BOOLN	SetCaCondMode_IHC_Meddis2000(char * theCaCondMode);
 
 BOOLN	SetCaVrev_IHC_Meddis2000(double theCaVrev);
 

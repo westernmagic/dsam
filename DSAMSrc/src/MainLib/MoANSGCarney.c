@@ -67,6 +67,26 @@ Free_ANSpikeGen_Carney(void)
 
 }
 
+/****************************** InitInputModeList *****************************/
+
+/*
+ * This function initialises the 'inputMode' list array
+ */
+
+BOOLN
+InitInputModeList_ANSpikeGen_Carney(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "CORRECTED",	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED },
+			{ "ORIGINAL",	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL },
+			{ "",			ANSPIKEGEN_CARNEY_INPUTMODE_NULL },
+		};
+	carneySGPtr->inputModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -99,6 +119,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	}
 	carneySGPtr->parSpec = parSpec;
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
+	carneySGPtr->inputModeFlag = TRUE;
 	carneySGPtr->ranSeedFlag = TRUE;
 	carneySGPtr->numFibresFlag = TRUE;
 	carneySGPtr->pulseDurationFlag = TRUE;
@@ -109,6 +130,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->dischargeCoeffC1Flag = TRUE;
 	carneySGPtr->dischargeTConstS0Flag = TRUE;
 	carneySGPtr->dischargeTConstS1Flag = TRUE;
+	carneySGPtr->inputMode = ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL;
 	carneySGPtr->ranSeed = -1;
 	carneySGPtr->numFibres = 1;
 	carneySGPtr->pulseDuration = -1.0;
@@ -120,6 +142,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->dischargeTConstS0 = 1e-3;
 	carneySGPtr->dischargeTConstS1 = 12.5e-3;
 
+	InitInputModeList_ANSpikeGen_Carney();
 	if (!SetUniParList_ANSpikeGen_Carney()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_ANSpikeGen_Carney();
@@ -151,6 +174,11 @@ SetUniParList_ANSpikeGen_Carney(void)
 		return(FALSE);
 	}
 	pars = carneySGPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_INPUTMODE], "INPUT_MODE",
+	  "Input mode, 'corrected' (2001), or 'original' (1993) setting.",
+	  UNIPAR_NAME_SPEC,
+	  &carneySGPtr->inputMode, carneySGPtr->inputModeList,
+	  (void * (*)) SetInputMode_ANSpikeGen_Carney);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_RANSEED], "RAN_SEED",
 	  "Random number seed (0 produces a different seed each run).",
 	  UNIPAR_LONG,
@@ -270,6 +298,36 @@ SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres, double pulseDuration,
 	if (!ok)
 		NotifyError("%s: Failed to set all module parameters." ,funcName);
 	return(ok);
+
+}
+
+/****************************** SetInputMode **********************************/
+
+/*
+ * This function sets the module's inputMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetInputMode_ANSpikeGen_Carney(char * theInputMode)
+{
+	static const char	*funcName = "SetInputMode_ANSpikeGen_Carney";
+	int		specifier;
+
+	if (carneySGPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theInputMode,
+		carneySGPtr->inputModeList)) == ANSPIKEGEN_CARNEY_INPUTMODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theInputMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	carneySGPtr->inputModeFlag = TRUE;
+	carneySGPtr->inputMode = specifier;
+	return(TRUE);
 
 }
 
@@ -540,6 +598,10 @@ CheckPars_ANSpikeGen_Carney(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
+	if (!carneySGPtr->inputModeFlag) {
+		NotifyError("%s: inputMode variable not set.", funcName);
+		ok = FALSE;
+	}
 	if (!carneySGPtr->ranSeedFlag) {
 		NotifyError("%s: ranSeed variable not set.", funcName);
 		ok = FALSE;
@@ -609,6 +671,8 @@ PrintPars_ANSpikeGen_Carney(void)
 	}
 	DPrint("Carney Post-Synaptic Firing Module "
 	  "Parameters:-\n");
+	DPrint("\tInput mode: %s,\n", carneySGPtr->inputModeList[carneySGPtr->
+	  inputMode].name);
 	DPrint("\tRandom number seed = %ld,",
 	  carneySGPtr->ranSeed);
 	DPrint("\tNumber of fibres = %d,\n", carneySGPtr->numFibres);
@@ -913,8 +977,9 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  exp(-excessTime / p->dischargeTConstS0) +
 					  p->dischargeCoeffC1 * exp(-excessTime /
 					  p->dischargeTConstS1));
-					if (((*inPtr - threshold) * dt) > Ran01_Random(
-					  &p->ranSeed)) {
+					if (((((p->inputMode ==
+					  ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL)? *inPtr / dt:
+					  *inPtr) - threshold) * dt) > Ran01_Random(&p->ranSeed)) {
 						*remainingPulseTimePtr = pulseDuration;
 						*timerPtr = 0.0;
 					}

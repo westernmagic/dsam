@@ -241,6 +241,7 @@ ParListInfo::SetParFileName(UniParPtr par, int index)
 	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxHSCROLL);
+
 	textCtrl->SetToolTip(par->desc);
 	textCtrl->SetInsertionPointEnd();
 
@@ -296,31 +297,17 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 
 	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
-	  PARLISTINFO_TEXT_ITEM_WIDTH, -1));
-	textCtrl->SetToolTip(par->desc);
+	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxTE_PROCESS_ENTER);
+	if (par->type != UNIPAR_INT_AL)
+		textCtrl->SetToolTip(par->desc);
+	else
+		textCtrl->SetToolTip((wxString) par->desc + "\nYou must press <return> "
+		  "after changing this parameter.");
 	textCtrl->SetInsertionPointEnd();
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
-
 	controlList[index] = new ParControl(par, infoNum, textCtrl, labelText);
 
-	if ((par->type == UNIPAR_INT_ARRAY) || (par->type == UNIPAR_REAL_ARRAY) ||
-	  (par->type == UNIPAR_STRING_ARRAY) || (par->type ==
-	  UNIPAR_NAME_SPEC_ARRAY))
-		SetSlider(index);
-
-	if (controlList[index]->FirstSlider()) {
-		c = new wxLayoutConstraints;
-		c->left.SameAs(parent, wxLeft, 4);
-		if (!lastControl)
-			c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-		else
-			c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-		c->width.AsIs();
-		c->height.AsIs();
-		controlList[index]->GetSlider()->SetConstraints(c);
-		lastControl = controlList[index]->GetSlider();
-	}
 	c = new wxLayoutConstraints;
 	c->left.SameAs(parent, wxLeft, 4);
 	if (!lastControl)
@@ -337,8 +324,27 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 	c->width.AsIs();
 	c->height.AsIs();
 	labelText->SetConstraints(c);
-
 	lastControl = labelText;
+	
+	switch (par->type) {
+	case UNIPAR_INT_AL: {
+		controlList[index]->SetSlider(CreateSlider(index, *(controlList[index]->
+		  GetPar()->valuePtr.array.numElements)));
+		break; }
+	case UNIPAR_INT_ARRAY:
+	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_STRING_ARRAY:
+	case UNIPAR_NAME_SPEC_ARRAY: {
+		int		i;
+		for (i = index - 1; i >= 0; i--)
+			if (controlList[i]->GetSlider() && (controlList[i]->GetPar(
+			  )->valuePtr.array.numElements == controlList[index]->GetPar(
+			  )->valuePtr.array.numElements))
+				controlList[index]->SetSlider(controlList[i]->GetSlider());
+		break; }
+	default:
+		;
+	}
 
 }
 
@@ -411,6 +417,7 @@ ParListInfo::SetParListIonChannel(void)
 	const int	numHHCols = ICLIST_IC_ALPHA_K - ICLIST_IC_ALPHA_A + 1;
 	int		i, index;
 	UniParPtr	par;
+	wxSlider	*slider;
 	wxString	heading;
 	wxTextCtrl	*hHuxleyAlphaTC[numHHCols], *hHuxleyBetaTC[numHHCols];
 	wxStaticText *hHuxleyLabel[numHHCols];
@@ -430,6 +437,8 @@ ParListInfo::SetParListIonChannel(void)
 
 		index = i + ICLIST_IC_ALPHA_A;
 		par = &parList->pars[index];
+		if (i == 0)
+			slider = CreateSlider(index, *par->valuePtr.array.numElements);
 		hHuxleyAlphaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT,
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 		  PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
@@ -437,7 +446,7 @@ ParListInfo::SetParListIonChannel(void)
 		controlList[index] = new ParControl(par, infoNum, hHuxleyAlphaTC[i],
 		  hHuxleyLabel[i]);
 		controlList[index]->SetEnable();
-		SetSlider(index);
+		controlList[index]->SetSlider(slider);
 	}
 	for (i = 0; i < numHHCols; i++) {
 		index = i + ICLIST_IC_BETA_A;
@@ -448,7 +457,7 @@ ParListInfo::SetParListIonChannel(void)
 		hHuxleyBetaTC[i]->SetToolTip(par->desc);
 		controlList[index] = new ParControl(par, infoNum, hHuxleyBetaTC[i],
 		  hHuxleyLabel[i]);
-		SetSlider(index);
+		controlList[index]->SetSlider(slider);
 		controlList[index]->SetEnable();
 
 	}
@@ -492,43 +501,29 @@ ParListInfo::SetParListIonChannel(void)
 	
 }
 
-/****************************** SetSlider *************************************/
+/****************************** CreateSlider **********************************/
 
 /*
- * This routine sets the slider for a particular parameter array index.
- * It assumes that any previous sliders having the same maximum value, will
- * use the same slider.
- * It returns "TRUE" if a new slider is set.
  */
 
-void
-ParListInfo::SetSlider(int index)
+wxSlider *
+ParListInfo::CreateSlider(int index, int numElements)
 {
-	int		i, minElement, maxElement;
+	wxSlider *slider = new wxSlider(parent, DL_ID_SLIDER + index, 1, 1,
+	  numElements, wxDefaultPosition, wxSize(PARLISTINFO_SILDER_ITEM_WIDTH,
+	  -1), wxSL_LABELS | wxSL_HORIZONTAL);
 
-//	Start a wxSaticBox here too?
-	for (i = index - 1; i >= 0; i--)
-		if (controlList[i]->GetSlider() && (controlList[i]->GetPar(
-		  )->valuePtr.array.numElements == controlList[index]->GetPar(
-		  )->valuePtr.array.numElements)) {
-			controlList[index]->SetSlider(controlList[i]->GetSlider());
-			return;
-		}
-#	ifdef __WXMSW__
-		minElement = 0;
-		maxElement = *(controlList[index]->GetPar()->valuePtr.array.
-		  numElements) - 1;
-#	else
-		minElement = 1;
-		maxElement = *(controlList[index]->GetPar()->valuePtr.array.
-		  numElements);
-#	endif
-	wxSlider *slider = new wxSlider(parent, DL_ID_SLIDER + index, minElement,
-	  minElement, maxElement, wxDefaultPosition, wxSize(
-	  PARLISTINFO_SILDER_ITEM_WIDTH, -1), wxSL_LABELS | wxSL_HORIZONTAL);
-
-	controlList[index]->SetSlider(slider);
-	controlList[index]->SetFirstSlider();
+	wxLayoutConstraints *c = new wxLayoutConstraints;
+	c->left.SameAs(parent, wxLeft, 4);
+	if (!lastControl)
+		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
+	else
+		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
+	c->width.AsIs();
+	c->height.AsIs();
+	slider->SetConstraints(c);
+	lastControl = slider;
+	return(slider);
 
 }
 

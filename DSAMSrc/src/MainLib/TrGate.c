@@ -147,6 +147,28 @@ InitTypeModeList_Transform_Gate(void)
 
 }
 
+/****************************** InitProcessModeList ***************************/
+
+/*
+ * This routine intialises the Type Mode list array.
+ */
+
+BOOLN
+InitProcessModeList_Transform_Gate(void)
+{
+	static NameSpecifier	modeList[] = {
+
+					{ "TRANS_GATE",	GATE_STANDARD_PROCESS_MODE},
+					{ "TRANS_RAMP",	GATE_RAMP_PROCESS_MODE},
+					{ "TRANS_DAMP",	GATE_DAMP_PROCESS_MODE},
+					{ "",			GATE_NULL_TYPE_MODE}
+
+				};
+	gatePtr->processModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -195,6 +217,7 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
 	InitPositionModeList_Transform_Gate();
 	InitOperationModeList_Transform_Gate();
 	InitTypeModeList_Transform_Gate();
+	InitProcessModeList_Transform_Gate();
 	if (!SetUniParList_Transform_Gate()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_Transform_Gate();
@@ -243,7 +266,7 @@ SetUniParList_Transform_Gate(void)
 	  UNIPAR_REAL, &gatePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Transform_Gate);
 	SetPar_UniParMgr(&pars[GATE_DURATION], "DURATION",
-	  "Ramp duration - negative assumes the end of the signal (s)", 
+	  "Ramp duration - negative assumes to the end of the signal (s)", 
 	  UNIPAR_REAL,
 	  &gatePtr->duration, NULL,
 	  (void * (*)) SetDuration_Transform_Gate);
@@ -252,6 +275,35 @@ SetUniParList_Transform_Gate(void)
 	  UNIPAR_REAL,
 	  &gatePtr->slopeParameter, NULL,
 	  (void * (*)) SetSlopeParameter_Transform_Gate);
+
+	SetDefaulEnabledPars_Transform_Gate();
+	return(TRUE);
+
+}
+
+/********************************* SetDefaulEnabledPars ***********************/
+
+/*
+ * This routine sets the parameter list so that the correct default parameters
+ * are enabled/disabled.
+ */
+
+BOOLN
+SetDefaulEnabledPars_Transform_Gate(void)
+{
+	static const char *funcName = "SetDefaulEnabledPars_Transform_Gate";
+
+	if (gatePtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	switch (gatePtr->typeMode) {
+	case GATE_EXP_DECAY_TYPE_MODE:
+		gatePtr->parList->pars[GATE_SLOPE_PARAMETER].enabled = TRUE;
+		break;
+	default:
+		gatePtr->parList->pars[GATE_SLOPE_PARAMETER].enabled = FALSE;
+	}
 	return(TRUE);
 
 }
@@ -356,6 +408,7 @@ SetPositionMode_Transform_Gate(char *thePositionMode)
 
 BOOLN
 SetOperationMode_Transform_Gate(char *theOperationMode)
+
 {
 	static const char	*funcName = "SetOperationMode_Transform_Gate";
 	int		specifier;
@@ -402,8 +455,7 @@ SetTypeMode_Transform_Gate(char *theTypeMode)
 	/*** Put any other required checks here. ***/
 	gatePtr->typeModeFlag = TRUE;
 	gatePtr->typeMode = specifier;
-	gatePtr->parList->pars[GATE_SLOPE_PARAMETER].enabled = (gatePtr->typeMode ==
-	  GATE_EXP_DECAY_TYPE_MODE);
+	SetDefaulEnabledPars_Transform_Gate();
 	gatePtr->parList->updateFlag = TRUE;
 	return(TRUE);
 
@@ -682,6 +734,20 @@ InitModule_Transform_Gate(ModulePtr theModule)
 	theModule->ReadPars = ReadPars_Transform_Gate;
 	theModule->RunProcess = Process_Transform_Gate;
 	theModule->SetParsPointer = SetParsPointer_Transform_Gate;
+	gatePtr->processMode = Identify_NameSpecifier(theModule->name, gatePtr->
+	  processModeList);
+	switch (gatePtr->processMode) {
+	case GATE_RAMP_PROCESS_MODE:
+		SetOperationMode_Transform_Gate("RAMP");
+		gatePtr->parList->pars[GATE_OPERATION_MODE].enabled = FALSE;
+		break;
+	case GATE_DAMP_PROCESS_MODE:
+		SetOperationMode_Transform_Gate("DAMP");
+		gatePtr->parList->pars[GATE_OPERATION_MODE].enabled = FALSE;
+		break;
+	default:
+		;
+	}
 	return(TRUE);
 
 }

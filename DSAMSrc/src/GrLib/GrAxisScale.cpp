@@ -83,10 +83,10 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
       0.5);
 	sigDigits = AXIS_SCALE_DEFAULT_SIG_DIGITS;
 	decPlaces = AXIS_SCALE_DEFAULT_DEC_PLACES;
-	exponent = dataExponent - sigDigits;
+	SetExponent(dataExponent - sigDigits, AXIS_SCALE_DELTA_EXPONENT);
 	autoScale = theAutoScale;
 	if (autoScale) {
-		numTicks = 10;
+		numTicks = AXIS_SCALE_DEFAULT_NUM_TICKS;
 	} else {
 		numTicks = theNumTicks;
 		if (!ParseNumberFormat(numberFormat)) {
@@ -136,13 +136,27 @@ AxisScale::ParseNumberFormat(char *format)
 		decPlaces = p2 - p1 - 1;
 	}
 	if (p2)
-		exponent = atoi(p2 + 1);
+		SetExponent(atoi(p2 + 1), 1);
 	else {
-		exponent = dataExponent - sigDigits;
+		SetExponent(dataExponent - sigDigits, AXIS_SCALE_DELTA_EXPONENT);
 		settingsChanged = !autoScale;
 	}
 	return(TRUE);
 
+}
+
+/****************************** SetExponent ***********************************/
+
+/*
+ * This sets the exponent with respect to the deltaExponent argument value.
+ */
+
+void
+AxisScale::SetExponent(int requestedExp, int deltaExp)
+{
+	exponent = requestedExp;
+	while (exponent % deltaExp)
+		exponent += SIGN(exponent);
 }
 
 /****************************** CalculateScales *******************************/
@@ -160,7 +174,7 @@ AxisScale::CalculateScales(void)
 	baseScale = (maxValue - minValue) / (numTicks - 1);
 	while (fabs(RoundedValue(baseScale * pow(10.0, -exponent)) < DBL_EPSILON)) {
 	  	settingsChanged = !autoScale;
-		exponent--;
+		exponent -= AXIS_SCALE_DELTA_EXPONENT;
 	}
 	powerScale = pow(10.0, -exponent);
 	positionScale = (maxPosition - minPosition) / (maxValue - minValue) /

@@ -154,6 +154,7 @@ typedef struct {
 	BOOLN	inputMode;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave support*/
 	double	normOffset;			/* Set for scaling: AIFF, Raw, MS Wave support*/
+	double	outputTimeOffset;
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
 	int32 	maxSamples;		/* This can be set to restrict the data size. */

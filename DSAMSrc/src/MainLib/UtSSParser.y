@@ -55,7 +55,7 @@ int		yylex(void);
 }
 %token	<sym>	_UTSSPARSER_H REPEAT BEGIN STOP STRING QUOTED_STRING RESET
 %token	<num>	NUMBER PROCESS
-%type	<inst>	process_specifier process statement_specifier reset
+%type	<inst>	process_specifier process statement_specifier repeat reset
 %type	<inst>	simulation simulation_name labelled_process
 %type	<node>	connection_list
 %%
@@ -144,12 +144,14 @@ statement:
 	;
 process:
 			STRING
-			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, PROCESS);
-				$$->u.proc.moduleName = InitString_Utility_String($1->name);
+			{	if (($$ = InstallProcessInst_Utility_SimScripts($1->name)) ==
+				  NULL)
+			       return 1;
 			}
 		| '@' STRING
-			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, PROCESS);
-				$$->u.proc.moduleName = InitString_Utility_String($2->name);
+			{	if (($$ = InstallProcessInst_Utility_SimScripts($2->name)) ==
+				  NULL)
+			       return 1;
 				$$->onFlag = FALSE;
 			}
 	;
@@ -188,15 +190,21 @@ statement_specifier:
 			process_specifier
 		|	STRING '%' process_specifier
 				{ $$ = $3;
-				  $3->label = InitString_Utility_String($1->name); }
-		|	REPEAT { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr,
-					   REPEAT); }
+				  $3->label = InitString_Utility_String($1->name);
+				}
+	;
+repeat:
+			REPEAT
+				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr,
+					   REPEAT); }	
 		|	STRING '%' REPEAT
 				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
-				  $$->label = InitString_Utility_String($1->name); }
+				  $$->label = InitString_Utility_String($1->name);
+				}
 	;
 reset:
-			RESET { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
+			RESET
+				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
 				}
 	;
 %%

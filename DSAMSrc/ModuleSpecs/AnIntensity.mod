@@ -8,5 +8,6 @@ proc_routine	Calc;
 typedef struct {
 
 	double	timeOffset;
+	double	extent;
 
 } Intensity;

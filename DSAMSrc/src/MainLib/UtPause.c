@@ -4,7 +4,7 @@
  * Purpose:		This module allows the processing of a simulation to be
  *				interrupted, producing a specified message.
  * Comments:	Written using ModuleProducer version 1.2.4 (May  7 1999).
- *				27-05-99 LPO: Added the 'bellMode' option.
+ *				27-05-99 LPO: Added the 'alertMode' option.
  * Author:		L. P. O'Mard
  * Created:		07 May 1999
  * Updated:		27 May 1999
@@ -99,10 +99,10 @@ Init_Utility_Pause(ParameterSpecifier parSpec)
 		}
 	}
 	pausePtr->parSpec = parSpec;
-	pausePtr->bellModeFlag = TRUE;
+	pausePtr->alertModeFlag = TRUE;
 	pausePtr->delayFlag = TRUE;
 	pausePtr->messageFlag = TRUE;
-	pausePtr->bellMode = GENERAL_BOOLEAN_ON;
+	pausePtr->alertMode = GENERAL_BOOLEAN_ON;
 	pausePtr->delay = -1;
 	sprintf(pausePtr->message, "Processing paused");
 
@@ -135,11 +135,11 @@ SetUniParList_Utility_Pause(void)
 		return(FALSE);
 	}
 	pars = pausePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_PAUSE_BELLMODE], "BELL_MODE",
+	SetPar_UniParMgr(&pars[UTILITY_PAUSE_ALERTMODE], "ALERT_MODE",
 	  "Bell mode ('on' or 'off').",
 	  UNIPAR_BOOL,
-	  &pausePtr->bellMode, NULL,
-	  (void * (*)) SetBellMode_Utility_Pause);
+	  &pausePtr->alertMode, NULL,
+	  (void * (*)) SetAlertMode_Utility_Pause);
 	SetPar_UniParMgr(&pars[UTILITY_PAUSE_DELAY], "DELAY",
 	  "Delay time: negative values mean indefinite period (s).",
 	  UNIPAR_INT,
@@ -187,13 +187,13 @@ GetUniParListPtr_Utility_Pause(void)
  */
 
 BOOLN
-SetPars_Utility_Pause(char * bellMode, int delay, char *message)
+SetPars_Utility_Pause(char * alertMode, int delay, char *message)
 {
 	static const char	*funcName = "SetPars_Utility_Pause";
 	BOOLN	ok;
 
 	ok = TRUE;
-	if (!SetBellMode_Utility_Pause(bellMode))
+	if (!SetAlertMode_Utility_Pause(alertMode))
 		ok = FALSE;
 	if (!SetDelay_Utility_Pause(delay))
 		ok = FALSE;
@@ -205,32 +205,32 @@ SetPars_Utility_Pause(char * bellMode, int delay, char *message)
 
 }
 
-/****************************** SetBellMode ***********************************/
+/****************************** SetAlertMode **********************************/
 
 /*
- * This function sets the module's bellMode parameter.
+ * This function sets the module's alertMode parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetBellMode_Utility_Pause(char * theBellMode)
+SetAlertMode_Utility_Pause(char * theAlertMode)
 {
-	static const char	*funcName = "SetBellMode_Utility_Pause";
+	static const char	*funcName = "SetAlertMode_Utility_Pause";
 	int		specifier;
 
 	if (pausePtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((specifier = Identify_NameSpecifier(theBellMode,
+	if ((specifier = Identify_NameSpecifier(theAlertMode,
 		BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theBellMode);
+		NotifyError("%s: Illegal name (%s).", funcName, theAlertMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	pausePtr->bellModeFlag = TRUE;
-	pausePtr->bellMode = specifier;
+	pausePtr->alertModeFlag = TRUE;
+	pausePtr->alertMode = specifier;
 	return(TRUE);
 
 }
@@ -304,8 +304,8 @@ CheckPars_Utility_Pause(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!pausePtr->bellModeFlag) {
-		NotifyError("%s: bellMode variable not set.", funcName);
+	if (!pausePtr->alertModeFlag) {
+		NotifyError("%s: alertMode variable not set.", funcName);
 		ok = FALSE;
 	}
 	if (!pausePtr->delayFlag) {
@@ -338,7 +338,7 @@ PrintPars_Utility_Pause(void)
 	}
 	DPrint("Pause Utility Module Parameters:-\n");
 	DPrint("\tBell mode = %s,", BooleanList_NSpecLists(
-	  pausePtr->bellMode)->name);
+	  pausePtr->alertMode)->name);
 	DPrint("\tdelay = ");
 	if (pausePtr->delay < 0)
 		DPrint("indefinite.\n");
@@ -360,7 +360,7 @@ ReadPars_Utility_Pause(char *fileName)
 {
 	static const char	*funcName = "ReadPars_Utility_Pause";
 	BOOLN	ok;
-	char	*filePath, bellMode[MAXLINE], message[LONG_STRING];
+	char	*filePath, alertMode[MAXLINE], message[LONG_STRING];
 	int		delay;
 	FILE	*fp;
 
@@ -372,7 +372,7 @@ ReadPars_Utility_Pause(char *fileName)
 	DPrint("%s: Reading from '%s':\n", funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", bellMode))
+	if (!GetPars_ParFile(fp, "%s", alertMode))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%d", &delay))
 		ok = FALSE;
@@ -385,7 +385,7 @@ ReadPars_Utility_Pause(char *fileName)
 		  "parameter file '%s'.", funcName, filePath);
 		return(FALSE);
 	}
-	if (!SetPars_Utility_Pause(bellMode, delay, message)) {
+	if (!SetPars_Utility_Pause(alertMode, delay, message)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
@@ -540,7 +540,7 @@ Process_Utility_Pause(EarObjectPtr data)
 	data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
 	data->outSignal = data->inSignal[0];
 
-	if (pausePtr->bellMode == GENERAL_BOOLEAN_ON)
+	if (pausePtr->alertMode == GENERAL_BOOLEAN_ON)
 		fprintf(stderr, "\07");
  	if (pausePtr->delay > 0.0) {
 		oldParsFile = GetDSAMPtr_Common()->parsFile;
@@ -549,9 +549,10 @@ Process_Utility_Pause(EarObjectPtr data)
 		DPrint("\n>> Pausing for %d seconds...\n", pausePtr->delay);
 		for (startTime = time(NULL); (difftime(time(NULL), startTime) <
 		  pausePtr->delay); )
- 			;
+ 			if (GetDSAMPtr_Common()->interruptRequestedFlag)
+				break;
 		GetDSAMPtr_Common()->parsFile = oldParsFile;
-	} else {
+	} else if (pausePtr->alertMode == GENERAL_BOOLEAN_ON) {
 		Notify_Utility_Pause("%s", pausePtr->message);
 	}
 	SetProcessContinuity_EarObject(data);

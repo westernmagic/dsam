@@ -34,7 +34,7 @@ typedef enum {
 
 	MULTIBPASS_NUMFILTERS,
 	MULTIBPASS_CASCADE,
-	MULTIBPASS_PREATTENUATION,
+	MULTIBPASS_GAIN,
 	MULTIBPASS_LOWERCUTOFFFREQ,
 	MULTIBPASS_UPPERCUFOFFFREQ
 
@@ -55,7 +55,7 @@ typedef struct {
 	BOOLN	numFiltersFlag;
 	int		numFilters;
 	int		*cascade;
-	double	*preAttenuation;
+	double	*gain;
 	double	*upperCutOffFreq;
 	double	*lowerCutOffFreq;
 
@@ -111,8 +111,8 @@ BOOLN	SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
 
 BOOLN	SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade);
 
-BOOLN	SetIndividualPreAttenuation_Filter_MultiBPass(int theIndex,
-		  double thePreAttenuation);
+BOOLN	SetIndividualGain_Filter_MultiBPass(int theIndex,
+		  double theGain);
 
 BOOLN	SetIndividualUpperCutOffFreq_Filter_MultiBPass(int theIndex,
 		  double theUpperCutOffFreq);
@@ -127,11 +127,10 @@ BOOLN	SetCascade_Filter_MultiBPass(int *theCascade);
 
 BOOLN	SetParsPointer_Filter_MultiBPass(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *cascade,
-		  double *preAttenuation, double *upperCutOffFreq,
-		  double *lowerCutOffFreq);
+BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
+		  double *upperCutOffFreq, double *lowerCutOffFreq);
 
-BOOLN	SetPreAttenuation_Filter_MultiBPass(double *thePreAttenuation);
+BOOLN	SetGain_Filter_MultiBPass(double *theGain);
 
 BOOLN	SetUniParList_Filter_MultiBPass(void);
 

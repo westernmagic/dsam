@@ -589,9 +589,9 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 		for (p1 = headSpikeList; p1 != currentSpikeSpec; p1 = p1->next)
 			for (p2 = p1->next; (p2 != NULL) && (p2 != currentSpikeSpec) &&
 			  (p2->number - p1->number <= maxSpikes); p2 = p2->next)
-				if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <=
+				if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
 				  maxIntervalIndex)
-					outPtr[spikeIntervalIndex - 1]++;
+					outPtr[spikeIntervalIndex]++;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

@@ -20,7 +20,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_CARNEY_NUM_PARS			10
+#define ANSPIKEGEN_CARNEY_NUM_PARS			11
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -28,6 +28,7 @@
 
 typedef enum {
 
+	ANSPIKEGEN_CARNEY_INPUTMODE,
 	ANSPIKEGEN_CARNEY_RANSEED,
 	ANSPIKEGEN_CARNEY_NUMFIBRES,
 	ANSPIKEGEN_CARNEY_PULSEDURATION,
@@ -41,14 +42,24 @@ typedef enum {
 
 } CarneySGParSpecifier;
 
+typedef enum {
+
+	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED,
+	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL,
+	ANSPIKEGEN_CARNEY_INPUTMODE_NULL
+
+} ANSpikeGenInputModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	ranSeedFlag, numFibresFlag, pulseDurationFlag, pulseMagnitudeFlag;
-	BOOLN	refractoryPeriodFlag, maxThresholdFlag, dischargeCoeffC0Flag;
-	BOOLN	dischargeCoeffC1Flag, dischargeTConstS0Flag, dischargeTConstS1Flag;
+	BOOLN	inputModeFlag, ranSeedFlag, numFibresFlag, pulseDurationFlag;
+	BOOLN	pulseMagnitudeFlag, refractoryPeriodFlag, maxThresholdFlag;
+	BOOLN	dischargeCoeffC0Flag, dischargeCoeffC1Flag, dischargeTConstS0Flag;
+	BOOLN	dischargeTConstS1Flag;
 	BOOLN	updateProcessVariablesFlag;
+	int		inputMode;
 	long	ranSeed;
 	int		numFibres;
 	double	pulseDuration;
@@ -61,6 +72,7 @@ typedef struct {
 	double	dischargeTConstS1;
 
 	/* Private members */
+	NameSpecifier	*inputModeList;
 	UniParListPtr	parList;
 	double	*timer;
 	double	*remainingPulseTime;
@@ -93,6 +105,8 @@ void	FreeProcessVariables_ANSpikeGen_Carney(void);
 
 UniParListPtr	GetUniParListPtr_ANSpikeGen_Carney(void);
 
+BOOLN	InitInputModeList_ANSpikeGen_Carney(void);
+
 BOOLN	InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data);
 
 BOOLN	Init_ANSpikeGen_Carney(ParameterSpecifier parSpec);
@@ -110,6 +124,8 @@ BOOLN	SetDischargeCoeffC1_ANSpikeGen_Carney(double theDischargeCoeffC1);
 BOOLN	SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0);
 
 BOOLN	SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1);
+
+BOOLN	SetInputMode_ANSpikeGen_Carney(char * theInputMode);
 
 BOOLN	SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold);
 

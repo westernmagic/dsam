@@ -138,7 +138,7 @@ SetUniParList_PulseTrain(void)
 	}
 	pars = pulseTrainPtr->parList->pars;
 	SetPar_UniParMgr(&pars[PULSETRAIN_PULSERATE], "RATE",
-	  "Pulse rate (s)",
+	  "Pulse rate (pulses/s)",
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->pulseRate, NULL,
 	  (void * (*)) SetPulseRate_PulseTrain);

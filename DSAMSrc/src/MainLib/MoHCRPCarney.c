@@ -871,8 +871,9 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 			*outPtr++ = *inPtr++;
 
 		outPtr = data->outSignal->channel[chan] + data->outSignal->length - 1;
-		for(i = cC->numLastSamples; i < data->outSignal->length; i++)
-			*outPtr-- =  *(outPtr - cC->numLastSamples);
+		for(i = cC->numLastSamples; i < data->outSignal->length; i++,
+		  outPtr--)
+			*outPtr = *(outPtr - cC->numLastSamples);
 
 		inPtr = cC->lastOutputSection;
 		outPtr = data->outSignal->channel[chan];

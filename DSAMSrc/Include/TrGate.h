@@ -81,6 +81,15 @@ typedef enum {
 
 } GateTypeModeSpecifier;
 
+typedef enum {
+
+	GATE_STANDARD_PROCESS_MODE,
+	GATE_RAMP_PROCESS_MODE,
+	GATE_DAMP_PROCESS_MODE,
+	GATE_NULL_PROCESS_MODE
+
+} GateProcessModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
@@ -95,10 +104,12 @@ typedef struct {
 	double	slopeParameter;
 
 	/* Private members */
+	GateProcessModeSpecifier	processMode;
 	UniParListPtr	parList;
 	NameSpecifier *positionModeList;
 	NameSpecifier *operationModeList;
 	NameSpecifier *typeModeList;
+	NameSpecifier *processModeList;
 
 } Gate, *GatePtr;
 
@@ -135,6 +146,8 @@ BOOLN	InitOperationModeList_Transform_Gate(void);
 
 BOOLN	InitPositionModeList_Transform_Gate(void);
 
+BOOLN	InitProcessModeList_Transform_Gate(void);
+
 BOOLN	InitTypeModeList_Transform_Gate(void);
 
 BOOLN	PrintPars_Transform_Gate(void);
@@ -150,6 +163,8 @@ double	GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
 BOOLN	ReadPars_Transform_Gate(char *fileName);
 
 BOOLN	InitModule_Transform_Gate(ModulePtr theModule);
+
+BOOLN	SetDefaulEnabledPars_Transform_Gate(void);
 
 BOOLN	SetOperationMode_Transform_Gate(char *theOperationMode);
 

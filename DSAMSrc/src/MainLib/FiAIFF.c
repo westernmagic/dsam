@@ -297,6 +297,7 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	dataFilePtr->wordSize = BITS_TO_BYTES(pars.sampleSize);
+	dataFilePtr->outputTimeOffset = pars.dSAMChunk.outputTimeOffset;
 	if (!InitProcessVariables_DataFile(data, pars.numSampleFrames,
 	  pars.sampleRate)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);

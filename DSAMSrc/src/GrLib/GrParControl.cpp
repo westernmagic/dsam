@@ -137,7 +137,6 @@ ParControl::Init(Tag theTag, int theInfoNum, UniParPtr thePar)
 	label = NULL;
 	button = NULL;
 	slider = NULL;
-	firstSlider = FALSE;
 
 }
 
@@ -289,9 +288,11 @@ ParControl::ResetValue(void)
 	switch (tag) {
 	case UNSET:
 	case SPECIAL:
-	case CHOICE:
 	case COMBO_BOX:
 	case LIST_BOX:
+		break;
+	case CHOICE:
+		choice->SetSelection(*par->valuePtr.nameList.specifier);
 		break;
 	case CHECK_BOX:
 		checkBox->SetValue(CXX_BOOL(*par->valuePtr.i));

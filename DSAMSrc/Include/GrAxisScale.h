@@ -19,6 +19,12 @@
 
 #define AXIS_SCALE_DEFAULT_SIG_DIGITS	1
 #define AXIS_SCALE_DEFAULT_DEC_PLACES	0
+#define AXIS_SCALE_DEFAULT_NUM_TICKS	5
+#define AXIS_SCALE_DELTA_EXPONENT		3
+
+/******************************************************************************/
+/****************************** Macro definitions *****************************/
+/******************************************************************************/
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -57,6 +63,7 @@ class AxisScale
 	double	RoundedValue(double value);
 	bool	Set(char *numberFormat, double minVal, double maxVal, int minPos,
 			  int maxPos, int theNumTicks, bool theAutoScale);
+	void	SetExponent(int requestedExp, int deltaExp);
 
 };
 

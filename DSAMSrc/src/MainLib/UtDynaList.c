@@ -124,7 +124,6 @@ BOOLN
 Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 {
 	static const char *funcName = "Remove_Utility_DynaList";
-	DynaListPtr	tempPtr;
 
 	if (!*list) {
 		NotifyError("%s: List is empty.", funcName);
@@ -134,15 +133,15 @@ Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 		NotifyError("%s: Node is NULL.", funcName);
 		return (FALSE);
 	}
-	tempPtr = ptr;
 	if (!ptr->previous) {
 		*list = ptr->next;
 		ptr->previous = NULL;
 	} else {
 		ptr->previous->next = ptr->next;
-		ptr->next->previous = ptr->previous;
+		if (ptr->next)
+			ptr->next->previous = ptr->previous;
 	}
-	free(tempPtr);
+	free(ptr);
 	return(TRUE);
 
 }

@@ -107,8 +107,8 @@ Init_PureTone_Binaural(ParameterSpecifier parSpec)
 	bPureTonePtr->dtFlag = TRUE;
 	bPureTonePtr->leftFrequency = 1000.0;
 	bPureTonePtr->rightFrequency = 1000.0;
-	bPureTonePtr->leftIntensity = 20.0;
-	bPureTonePtr->rightIntensity = 20.0;
+	bPureTonePtr->leftIntensity = DEFAULT_INTENSITY;
+	bPureTonePtr->rightIntensity = DEFAULT_INTENSITY;
 	bPureTonePtr->phaseDifference = 180.0;
 	bPureTonePtr->duration = 0.1;
 	bPureTonePtr->dt = DEFAULT_DT;

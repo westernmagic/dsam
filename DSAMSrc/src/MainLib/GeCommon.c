@@ -68,6 +68,7 @@ static DSAM	dSAM = {
 			FALSE,		/* usingGUIFlag */
 			FALSE,		/* lockGUIFlag */
 			FALSE,		/* dialogOutputFlag */
+			FALSE,		/* interruptRequestedFlag */
 			NULL,		/* diagnosticsPrefix */
 			VERSION,	/* version */
 			NULL,		/* parsFilePath */
@@ -410,6 +411,20 @@ SetUsingGUIStatus(BOOLN status)
 
 }
 
+/*************************** SetInterruptRequestStatus ************************/
+
+/*
+ * This routine sets the 'SetInterruptRequestStatus'.  This flag is set when
+ * an interrupt has been requested, and processing must be curtailed.
+ */
+
+void
+SetInterruptRequestStatus_Common(BOOLN status)
+{
+	dSAM.interruptRequestedFlag = status;
+
+}
+
 /*************************** SetParsFilePath **********************************/
 
 /*
@@ -626,3 +641,4 @@ SwitchGUILocking_Common(BOOLN on)
 	dSAM.lockGUIFlag = on;
 
 }
+

@@ -8,8 +8,10 @@ process_vars	true;
 typedef struct {
 
 	NameSpecifier	normalisationMode;
+	NameSpecifier	timeConstMode;
 	double	timeOffset;
 	double	timeConstant;
+	double	timeConstScale;
 	double	maxLag;
 
 } AutoCorr;

@@ -53,6 +53,7 @@ Free_AppInterface(void)
 		return(FALSE);
 	if (!appInterfacePtr->canFreePtrFlag)
 		return(TRUE);
+	GetDSAMPtr_Common()->appInitialisedFlag = FALSE;
 	if (appInterfacePtr->diagModeList)
 		free(appInterfacePtr->diagModeList);
 	if (appInterfacePtr->parList)
@@ -68,6 +69,7 @@ Free_AppInterface(void)
 		appInterfacePtr = NULL;
 	}
 	FreeNull_ModuleMgr();
+	CloseFiles();
 	return(TRUE);
 
 }
@@ -165,6 +167,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->appParList = NULL;
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	appInterfacePtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
+	appInterfacePtr->canFreePtrFlag = TRUE;
 	appInterfacePtr->FreeAppProcessVars = NULL;
 	appInterfacePtr->Init = NULL;
 	appInterfacePtr->PrintUsage = NULL;
@@ -512,7 +515,7 @@ SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
 void
 PrintPars_AppInterface(void)
 {
-	static const char *funcName = "PrintInitialDiagnostics_AppInterface";
+	static const char *funcName = "PrintPars_AppInterface";
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return;
@@ -588,7 +591,7 @@ ProcessParComs_AppInterface(void)
 	}
 	for (i = appInterfacePtr->initialCommand; i < appInterfacePtr->argc; i += 2)
 		if (!SetProgramParValue_AppInterface(appInterfacePtr->argv[i],
-		  appInterfacePtr->argv[i + 1]) && !SetUniParValue_Utility_Datum(
+		  appInterfacePtr->argv[i + 1], FALSE) && !SetUniParValue_Utility_Datum(
 		  simulation, appInterfacePtr->argv[i], appInterfacePtr->argv[i + 1])) {
 			NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
 			  appInterfacePtr->argv[i], appInterfacePtr->argv[i + 1]);
@@ -629,7 +632,7 @@ ProcessOptions_AppInterface(void)
 			break;
 		case 'd':
 			ok = SetProgramParValue_AppInterface(appInterfacePtr->parList->pars[
-			  APP_INT_DIAGNOSTICMODE].abbr, argument);
+			  APP_INT_DIAGNOSTICMODE].abbr, argument, FALSE);
 			break;
 		case 'h':
 			appInterfacePtr->printUsageFlag = TRUE;
@@ -700,45 +703,40 @@ GetFilePath_AppInterface(char *filePath)
 
 /*
  * This function sets a program parameter.
- * The 'localParFilePtr' pointer is required because the setting of the
- * program/simulation parameters can involve calling the 'Init_ParFile' routine.
- * It returns FALSE if it fails in any way.
  * A copy of the 'parList' must be taken, as the argument 'parList' it can be
  * changed by the 'FindUniPar_UniParMgr' routine.
  */
 
 BOOLN
-SetProgramParValue_AppInterface(char *parName, char *parValue)
+SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 {
-	BOOLN	ok = TRUE;
+	BOOLN	ok = TRUE, creatorApp = TRUE;
 	char	*p, parNameCopy[MAXLINE], appName[MAXLINE];
 	UniParPtr	par;
-	ParFilePtr	localParFilePtr;
 	UniParListPtr	parList;
 
-	localParFilePtr = parFile;
-	parFile = NULL;
 	snprintf(parNameCopy, MAXLINE, "%s", parName);
 	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL) {
 		*p = '\0';
 		snprintf(appName, MAXLINE, "%s", p + 1);
 		if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) != NULL)
 			*p = '\0';
-		if (StrNCmpNoCase_Utility_String(appInterfacePtr->appName, appName) !=
-		  0)
+		creatorApp = (StrNCmpNoCase_Utility_String(appInterfacePtr->appName,
+		  appName) == 0);
+		if (!creatorApp && !readSPF)
 			return(FALSE);
 	}
 	parList = appInterfacePtr->parList;
 	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy,
-	  UNIPAR_SEARCH_ABBR)) == NULL)
-		ok = FALSE;
-	else if (((parList != appInterfacePtr->parList) || (par->index !=
+	  UNIPAR_SEARCH_ABBR)) == NULL) {
+		if (creatorApp)
+			ok = FALSE;
+	} else if (((parList != appInterfacePtr->parList) || (par->index !=
 	  APP_INT_SIMULATIONFILE) || (appInterfacePtr->audModel &&
 	 (GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
 	 UTILITY_SIMSCRIPT_SPF_FILE))) && !SetParValue_UniParMgr(&parList,
 	 par->index, parValue))
 		ok = FALSE;
-	parFile = localParFilePtr;
 	return(ok);
 
 }
@@ -880,7 +878,7 @@ ReadPars_AppInterface(char *parFileName)
 
 /*
  * This routine reads the parameters, saved in the simulation parameter file,
-* which control the main program parameters.  These parameters are found
+ * which control the main program parameters.  These parameters are found
  * after the 'SIMSCRIPT_SIMPARFILE_DIVIDER' string, if one exists.
  * The 'filePath' variable must have storage space here, as setting one of the
  * parameter values may overwrite the 'static' storage for the
@@ -893,7 +891,7 @@ ReadPars_AppInterface(char *parFileName)
 BOOLN
 ReadProgParFile_AppInterface(void)
 {
-	static const char		*funcName = "ReadProgParFile_AppInterface";
+	static const char	*funcName = "ReadProgParFile_AppInterface";
 	static BOOLN	readProgParFileFlag = FALSE;
 	BOOLN	ok = TRUE, foundDivider = FALSE;
 	char	parName[MAXLINE], parValue[MAX_FILE_PATH], oldSPF[MAX_FILE_PATH];
@@ -924,7 +922,7 @@ ReadProgParFile_AppInterface(void)
 		return(TRUE);
 	}
 	while (ok && GetPars_ParFile(fp, "%s %s", parName, parValue))
-		ok = SetProgramParValue_AppInterface(parName, parValue);
+		ok = SetProgramParValue_AppInterface(parName, parValue, TRUE);
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
@@ -956,11 +954,11 @@ InitSimFromSimScript_AppInterface(void)
 		return(FALSE);
 	}
 	if (!appInterfacePtr->audModel) {
-		ResetSimulation_AppInterface();
+		FreeSim_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
 			NotifyError("%s: Could not initialise process.", funcName);
-			ResetSimulation_AppInterface();
+			FreeSim_AppInterface();
 			appInterfacePtr->checkMainInit = TRUE;
 			return(FALSE);
 		}
@@ -970,14 +968,14 @@ InitSimFromSimScript_AppInterface(void)
 
 }
 
-/****************************** ResetSimulation *******************************/
+/****************************** FreeSim ***************************************/
 
 /*
  * This routine resets the simulation.
  */
 
 void
-ResetSimulation_AppInterface(void)
+FreeSim_AppInterface(void)
 {
 	FreeAll_EarObject();
 	datumStepCount = 0;
@@ -1063,7 +1061,7 @@ InitSimulation_AppInterface(void)
 		return(FALSE);
 	}
 	if (!appInterfacePtr->audModel) {
-		ResetSimulation_AppInterface();
+		FreeSim_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
 			NotifyError("%s: Could not initialise process.", funcName);
@@ -1080,7 +1078,7 @@ InitSimulation_AppInterface(void)
 	  simulationFile))
 		ok = FALSE;
 	if (!ok) {
-		ResetSimulation_AppInterface();
+		FreeSim_AppInterface();
 		return(FALSE);
 	}
 
@@ -1539,3 +1537,150 @@ GetUniParPtr_AppInterface(char *parName)
 
 }
 
+/****************************** PrintSimPars **********************************/
+
+/*
+ * This function prints the parameters for the main auditory model simulation.
+ * It returns NULL if it fails in any way.
+ */
+
+BOOLN
+PrintSimPars_AppInterface(void)
+{
+	static const char *funcName = "PrintSimPars_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	return(PrintPars_ModuleMgr(appInterfacePtr->audModel));
+
+}
+
+/****************************** ResetSim **************************************/
+
+/*
+ * This routine resets the processes in the main auditory model simulation.
+ */
+
+BOOLN
+ResetSim_AppInterface(void)
+{
+	static const char *funcName = "ResetSim_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	ResetProcess_EarObject(appInterfacePtr->audModel);
+	return(TRUE);
+
+}
+
+/****************************** RunSim ****************************************/
+
+/*
+ * This routine runs the main auditory model simulation.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+RunSim_AppInterface(void)
+{
+	static const char *funcName = "RunSim_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	if (!RunProcess_ModuleMgr(appInterfacePtr->audModel)) {
+		NotifyError("%s: Could not run main auditory model simulation '%s'.",
+		  funcName, appInterfacePtr->simulationFile);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** GetSimProcess *********************************/
+
+/*
+ * This routine returns the main auditory model simulation process EarObject.
+ */
+
+EarObjectPtr
+GetSimProcess_AppInterface(void)
+{
+	static const char *funcName = "GetSimProcess_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(NULL);
+	}
+	return(appInterfacePtr->audModel);
+
+}
+
+/****************************** SetSimPar *************************************/
+
+/*
+ * This function sets a parameter in the main auditory model simulation
+ * process EarObject.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetSimPar_AppInterface(char *parName, char *value)
+{
+	static const char *funcName = "SetSimPar_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	return(SetPar_ModuleMgr(appInterfacePtr->audModel, parName, value));
+
+}
+
+/****************************** SetRealSimPar *********************************/
+
+/*
+ * This function sets a real parameter in the main auditory model simulation
+ * process EarObject.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetRealSimPar_AppInterface(char *parName, double value)
+{
+	static const char *funcName = "SetRealSimPar_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	return(SetRealPar_ModuleMgr(appInterfacePtr->audModel, parName, value));
+
+}
+
+/****************************** SetRealArraySimPar ****************************/
+
+/*
+ * This function sets a real array parameter element in the main auditory model
+ * simulation process EarObject.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetRealArraySimPar_AppInterface(char *parName, int index, double value)
+{
+	static const char *funcName = "SetRealArraySimPar_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	return(SetRealArrayPar_ModuleMgr(appInterfacePtr->audModel, parName, index,
+	  value));
+
+}

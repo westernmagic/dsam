@@ -420,6 +420,7 @@ SetThresholdDecayRate_Utility_Strobe(double theThresholdDecayRate)
 	/*** Put any other required checks here. ***/
 	strobePtr->thresholdDecayRateFlag = TRUE;
 	strobePtr->thresholdDecayRate = theThresholdDecayRate;
+	strobePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
 }
@@ -549,8 +550,8 @@ PrintPars_Utility_Strobe(void)
 	if ((strobePtr->typeMode == STROBE_PEAK_MODE) ||
 	  (strobePtr->typeMode == STROBE_PEAK_SHADOW_NEGATIVE_MODE) ||
 	  (strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE)) 
-		DPrint("\tThreshold decay rate = %g ms,\n",
-		  MSEC(strobePtr->thresholdDecayRate));
+		DPrint("\tThreshold decay rate = %g %/s,\n", strobePtr->
+		  thresholdDecayRate);
 	else
 		DPrint("\n");
 	if (strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) {
@@ -741,13 +742,16 @@ InitStateVariables_Utility_Strobe(ChanLen numLastSamples)
 		NotifyError("%s: Out of memory for state variables.", funcName);
 		return(NULL);
 	}
-	if ((p->lastInput = (ChanData *) calloc(numLastSamples + 1,
-	  sizeof(ChanData))) == NULL) {
-		NotifyError("%s: Out of memory for 'lastInput' array (%u elements).",
-		  funcName, numLastSamples);
-		FreeStateVariables_Utility_Strobe(&p);
-		return(NULL);
-	}
+	if (numLastSamples) {
+		if ((p->lastInput = (ChanData *) calloc(numLastSamples, sizeof(
+		  ChanData))) == NULL) {
+			NotifyError("%s: Out of memory for 'lastInput' array (%u "
+			  "elements).", funcName, numLastSamples);
+			FreeStateVariables_Utility_Strobe(&p);
+			return(NULL);
+		}
+	} else
+		p->lastInput = NULL;
 	p->gradient = FALSE;
 	p->strobeAlreadyPlaced = FALSE;
 	p->widthIndex = 0;
@@ -803,10 +807,10 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 				p->numLastSamples = 1;
 				break;
 			case STROBE_PEAK_SHADOW_POSITIVE_MODE:
-				p->numLastSamples = (ChanLen) (p->delay / data->outSignal->dt +
-				  0.5);
-				p->delayTimeoutSamples = (ChanLen) ((p->delayTimeout < 0.0)? 0:
-				  p->delayTimeout / data->outSignal->dt + 0.5);
+				p->numLastSamples = (ChanLen) floor(p->delay / data->outSignal->
+				  dt + 0.5);
+				p->delayTimeoutSamples = (ChanLen) floor((p->delayTimeout <
+				  0.0)? 0: p->delayTimeout / data->outSignal->dt + 0.5);
 				break;
 			default:
 				p->numLastSamples = 0;

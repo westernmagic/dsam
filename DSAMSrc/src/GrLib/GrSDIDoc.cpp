@@ -53,7 +53,7 @@ SDIDocument::SDIDocument(void)
 
 SDIDocument::~SDIDocument(void)
 {
-	ResetSimulation_AppInterface();
+	FreeSim_AppInterface();
 	wxGetApp().SetAudModelLoadedFlag(false);
 
 }
@@ -80,7 +80,7 @@ SDIDocument::OnNewDocument(void)
 	static const char *funcName = "DIDocument::OnNewDocument";
 
 	wxDocument::OnNewDocument();
-	ResetSimulation_AppInterface();
+	FreeSim_AppInterface();
 	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
 	  NULL) {
 		NotifyError("%s: Could not initialise process.", funcName);

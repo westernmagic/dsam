@@ -742,10 +742,10 @@ MyApp::GetDefaultDisplayPos(int *x, int *y)
 bool
 MyApp::SetArgvString(int index, char *string, int size)
 {
-	static char *funcName = "MyServer::SetArgv";
+	static const char *funcName = "MyServer::SetArgv";
 	
-	if ((myArgv[index] = (char *) malloc(size)) == NULL) {
-		NotifyError("%s: Out of memory for myArgv[%d].", funcName, argc);
+	if ((myArgv[index] = (char *) malloc(size + 1)) == NULL) {
+		NotifyError("%s: Out of memory for myArgv[%d].", funcName, index);
 		return(FALSE);
 	}
 	strcpy(myArgv[index], string);
@@ -762,7 +762,7 @@ MyApp::SetArgvString(int index, char *string, int size)
 bool
 MyApp::InitArgv(int argc)
 {
-	static char *funcName = "MyServer::InitArgv";
+	static const char *funcName = "MyServer::InitArgv";
 
 	if (!argc)
 		return(TRUE);

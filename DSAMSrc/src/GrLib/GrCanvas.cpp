@@ -378,8 +378,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	}
 	if (!xAxisScale.Set(mySignalDispPtr->xNumberFormat, outputTimeOffset +
 	  timeIndex * dt, outputTimeOffset + displayLength * dt, xAxis->GetLeft(),
-	  xAxis->GetRight(), mySignalDispPtr->xTicks, (mySignalDispPtr->
-	  autoXScale == TRUE))) {
+	  xAxis->GetRight(), mySignalDispPtr->xTicks, CXX_BOOL(mySignalDispPtr->
+	  autoXScale))) {
 		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
 		return;
 	}
@@ -582,7 +582,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		DrawYScale(dc, yAxisScale, yAxis, labelFont, mySignalDispPtr->
 		  yNumberFormat, theXOffset, theYOffset, mySignalDispPtr->yTicks,
 		  numDisplayedChans, signalLines.GetMinY(), signalLines.GetMaxY(),
-		  (mySignalDispPtr->autoYScale == TRUE));
+		  CXX_BOOL(mySignalDispPtr->autoYScale));
 		if (yAxisScale.GetSettingsChanged()) {
 			strcpy(mySignalDispPtr->yNumberFormat, (char *) yAxisScale.
 			  GetFormatString('y').GetData());

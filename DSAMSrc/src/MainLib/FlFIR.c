@@ -195,7 +195,7 @@ SetUniParList_Filter_FIR(void)
 	  (void * (*)) SetNumTaps_Filter_FIR);
 	SetPar_UniParMgr(&pars[FILTER_FIR_NUMBANDS], "NUM_BANDS",
 	  "No. of frequency bands.",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &fIRPtr->numBands, NULL,
 	  (void * (*)) SetNumBands_Filter_FIR);
 	SetPar_UniParMgr(&pars[FILTER_FIR_BANDFREQS], "BAND_FREQ",

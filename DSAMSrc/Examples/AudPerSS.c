@@ -23,78 +23,106 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PARAMETERS_FILE		"AudPerSS.par"	/* Name of paramters file.*/
-#define	NUM_CHANNELS		1				/* Number of signal channels. */
-#define	CHANNEL				0				/* Channel for testing. */
-#define	SIMULATION_SPEC_MOD_NAME	"Util_SimScript"
+#define	PROGRAM_NAME				"AudPerSS"
+#ifndef PROGRAM_VERSION
+#	define	PROGRAM_VERSION			"1.1.0"
+#endif
+#define	TEST_FREQUENCY				2000.0
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	simScriptFile[MAXLINE];
-
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
 /******************************************************************************/
 
-/****************************** ReadParsFromFile ******************************/
+/****************************** RegisterUserModules ***************************/
 
 /*
- * This program reads a specified number of parameters from a file.
- * It expects there to be one parameter per line.
+ * This routine registers my user modules.
  */
- 
-void
-ReadParsFromFile(char *fileName)
+
+BOOLN
+RegisterUserModules(void)
 {
-	FILE	*fp;
-	
-	if ((fp = fopen(fileName, "r")) == NULL) {
-		NotifyError("ReadTestPars: Cannot open data file '%s'.\n", fileName);
+	/*if (!RegEntry_ModuleReg("Test_Module", InitModule_User_Testmod))
+		return(FALSE);*/
+	return(TRUE);
+
+}
+
+/****************************** Init ******************************************/
+
+/*
+ * This routine carries out general initialisation tasks.
+ * It sets the initialCommand global variable.
+ */
+
+BOOLN
+Init(void)
+{
+	static char *funcName = PROGRAM_NAME": Init";
+
+	if (!GetPtr_AppInterface() && !Init_AppInterface(GLOBAL)) {
+		NotifyError("%s: Could not initialise the application interface.",
+		  funcName);
 		exit(1);
 	}
-	printf("Reading parameters from file: %s\n", fileName);
-	Init_ParFile();
-	GetPars_ParFile(fp, "%s", simScriptFile);
-	fclose(fp);
-	Free_ParFile();
-	
+
+	SetAppName_AppInterface(PROGRAM_NAME);
+	SetAppVersion_AppInterface(PROGRAM_VERSION);
+	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
+
+	SetTitle_AppInterface(PROGRAM_NAME);
+
+	SetAppRegisterUserModules_AppInterface(RegisterUserModules);
+	return(TRUE);
+
 }
 
 /******************************************************************************/
 /****************************** Main Body *************************************/
 /******************************************************************************/
 
-int MainSimulation(void)
+int MainSimulation(MAIN_ARGS)
 {
-	clock_t		startTime;
-	EarObjectPtr	audModel = NULL;
-	
-	DPrint("Starting Test Harness...\n");
-	
-	ReadParsFromFile(PARAMETERS_FILE);
-	DPrint("This test routine calculates the response of a model.\n");
-	DPrint("This simulation is run from the specification in file '%s'.\n",
-	  simScriptFile);
-	DPrint("\n");
-	
-	/* Initialise EarObjects. */
-	if (( audModel = Init_EarObject(SIMULATION_SPEC_MOD_NAME )) == NULL)
-		exit(1);
+	int		chan;
+	ChanData	*outPtr;
+	ChanLen	sample;
 
-	if (!ReadPars_ModuleMgr( audModel, simScriptFile ))
-		exit(1);
-	PrintPars_ModuleMgr( audModel );
+	EarObjectPtr	process;
+
+	if (!InitProcessVariables_AppInterface(Init, ARGC, ARGV))
+		return(1);
+
+	if (SetRealSimPar_AppInterface("frequency", TEST_FREQUENCY))
+		DPrint("%s: Frequency set to %g Hz by program\n", PROGRAM_NAME,
+		  TEST_FREQUENCY);
+	else
+		NotifyError("%s: Could not set frequency for simulation.",
+		  PROGRAM_NAME);
+	PrintSimPars_AppInterface();
+
+	DPrint("Starting process...\n");
+	ResetSim_AppInterface();
+
+	if (!RunSim_AppInterface())
+		return(0);
 	
-	DPrint("Starting test harness...\n");
-	startTime = clock();
-	RunProcess_ModuleMgr( audModel );
-	
-	DPrint("The process took %g CPU seconds to run.\n", (double) (clock() -
-	  startTime) / CLOCKS_PER_SEC);
-	FreeAll_EarObject();
-	
+	/* Uncomment the following lines to show how you can use the output from
+	 * the simulation.
+	 */
+	/*
+	process = GetSimProcess_AppInterface();
+	for (chan = 0; chan < process->outSignal->numChannels; chan++) {
+		outPtr = process->outSignal->channel[chan];
+		printf("Channel %d\n", chan);
+		for (sample = 0; sample < process->outSignal->length; sample++)
+			printf("%g\n", *outPtr++);
+	}
+	*/
+	Free_AppInterface();
 	DPrint("Finished test.\n");
 	return(0);
 	

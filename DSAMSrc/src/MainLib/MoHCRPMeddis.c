@@ -603,7 +603,8 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 		/* Probability calculation for the rest of the signal. */
 		for (i = 1; i < data->outSignal->length; i++) {
 			permeability_K = PERMEABILITY(*inPtr++);
-			*outPtr++ = LOWPASSFILTER(*(outPtr - 1));
+			*outPtr = LOWPASSFILTER(*(outPtr - 1));
+			outPtr++;	/* Compiler complains if things not done this way. */
 		}
 		meddisRPPtr->lastOutput[chan] = *(outPtr - 1);
 	}

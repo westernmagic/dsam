@@ -1067,7 +1067,8 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 			p->state[i].potential_V = p->restingPotential;
 			yPtr = p->state[i].y;
 			zPtr = p->state[i].z;
-			for (node = p->iCList->ionChannels; node; node = node->next) {
+			for (node = p->iCList->ionChannels; node; node = node->next, yPtr++,
+			  zPtr++) {
 				iC = (IonChannelPtr) node->data;
 				if (!iC->enabled)
 					continue;
@@ -1076,8 +1077,8 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 					NotifyError("%s: Could not find entry.", funcName);
 					return(FALSE);
 				}
-				*yPtr++ = e->yY;
-				*zPtr++ = e->zZ;
+				*yPtr = e->yY;
+				*zPtr = e->zZ;
 			}
 		}
 	}

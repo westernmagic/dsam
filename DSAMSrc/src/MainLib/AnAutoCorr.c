@@ -14,6 +14,9 @@
  *				30-06-98 LPO: Introduced use of the SignalData structure's
  *				'numWindowFrames' field.
  *				10-11-98 LPO: Normalisation mode now uses 'NameSpecifier'.
+ *				13 Jan 2003 LPO: Added options for the Weigrebe proportional
+ *				time constant (Wiegrebe L. (2001) "Searching for the time
+ *				constant of neural pitch extraction" JASA, 109, 1082-1091.
  * Author:		L. P. O'Mard
  * Created:		14 Nov 1995
  * Updated:		10 Nov 1998
@@ -84,11 +87,32 @@ InitNormalisationModeList_Analysis_ACF(void)
 {
 	static NameSpecifier	modeList[] = {
 
+			{ "NONE",		ANALYSIS_NORM_MODE_NONE },
 			{ "STANDARD",	ANALYSIS_NORM_MODE_STANDARD },
 			{ "UNITY",		ANALYSIS_NORM_MODE_UNITY },
 			{ "",			ANALYSIS_NORM_MODE_NULL }
 		};
 	autoCorrPtr->normalisationModeList = modeList;
+	return(TRUE);
+
+}
+
+/****************************** InitTimeConstModeList *************************/
+
+/*
+ * This function initialises the 'timeConstMode' list array
+ */
+
+BOOLN
+InitTimeConstModeList_Analysis_ACF(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "LICKLIDER",	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER },
+			{ "WIEGREBE",	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE },
+			{ "",			ANALYSIS_ACF_TIMECONSTMODE_NULL },
+		};
+	autoCorrPtr->timeConstModeList = modeList;
 	return(TRUE);
 
 }
@@ -126,15 +150,20 @@ Init_Analysis_ACF(ParameterSpecifier parSpec)
 	autoCorrPtr->parSpec = parSpec;
 	autoCorrPtr->updateProcessVariablesFlag = TRUE;
 	autoCorrPtr->normalisationModeFlag = TRUE;
+	autoCorrPtr->timeConstModeFlag = TRUE;
 	autoCorrPtr->timeOffsetFlag = TRUE;
 	autoCorrPtr->timeConstantFlag = TRUE;
+	autoCorrPtr->timeConstScaleFlag = TRUE;
 	autoCorrPtr->maxLagFlag = TRUE;
 	autoCorrPtr->normalisationMode = ANALYSIS_NORM_MODE_STANDARD;
+	autoCorrPtr->timeConstMode = ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER;
 	autoCorrPtr->timeOffset = -1.0;
 	autoCorrPtr->timeConstant = 0.0025;
+	autoCorrPtr->timeConstScale = 2.0;
 	autoCorrPtr->maxLag = 0.0075;
 
 	InitNormalisationModeList_Analysis_ACF();
+	InitTimeConstModeList_Analysis_ACF();
 	if (!SetUniParList_Analysis_ACF()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_Analysis_ACF();
@@ -166,22 +195,32 @@ SetUniParList_Analysis_ACF(void)
 	}
 	pars = autoCorrPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_ACF_NORMALISATIONMODE], "MODE",
-	  "Normalisation mode ('standard' or 'unity').",
+	  "Normalisation mode ('none', 'standard' or 'unity').",
 	  UNIPAR_NAME_SPEC,
 	  &autoCorrPtr->normalisationMode, autoCorrPtr->normalisationModeList,
 	  (void * (*)) SetNormalisationMode_Analysis_ACF);
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTMODE], "T_CONST_MODE",
+	  "Time constant mode ('Licklider' or 'Wiegrebe'.)",
+	  UNIPAR_NAME_SPEC,
+	  &autoCorrPtr->timeConstMode, autoCorrPtr->timeConstModeList,
+	  (void * (*)) SetTimeConstMode_Analysis_ACF);
 	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMEOFFSET], "OFFSET",
 	  "Time offset, t0 (if -ve the end of the signal is assumed) (s).",
 	  UNIPAR_REAL,
 	  &autoCorrPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_ACF);
 	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTANT], "TIME_CONST",
-	  "Time constant, tw (s).",
+	  "Time constant (or minimum time constant in 'Wiegrebe' mode) (s).",
 	  UNIPAR_REAL,
 	  &autoCorrPtr->timeConstant, NULL,
 	  (void * (*)) SetTimeConstant_Analysis_ACF);
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTSCALE], "T_CONST_SCALE",
+	  "Time constant scale (only used in 'Wiegrebe' mode).",
+	  UNIPAR_REAL,
+	  &autoCorrPtr->timeConstScale, NULL,
+	  (void * (*)) SetTimeConstScale_Analysis_ACF);
 	SetPar_UniParMgr(&pars[ANALYSIS_ACF_MAXLAG], "MAX_LAG",
-	  "Maximum autocorrelation lag, tau (s).",
+	  "Maximum autocorrelation lag (s).",
 	  UNIPAR_REAL,
 	  &autoCorrPtr->maxLag, NULL,
 	  (void * (*)) SetMaxLag_Analysis_ACF);
@@ -273,6 +312,38 @@ SetNormalisationMode_Analysis_ACF(char * theNormalisationMode)
 
 }
 
+/****************************** SetTimeConstMode ******************************/
+
+/*
+ * This function sets the module's timeConstMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetTimeConstMode_Analysis_ACF(char * theTimeConstMode)
+{
+	static const char	*funcName = "SetTimeConstMode_Analysis_ACF";
+	int		specifier;
+
+	if (autoCorrPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theTimeConstMode,
+		autoCorrPtr->timeConstModeList)) ==
+		  ANALYSIS_ACF_TIMECONSTMODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theTimeConstMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	autoCorrPtr->timeConstModeFlag = TRUE;
+	autoCorrPtr->updateProcessVariablesFlag = TRUE;
+	autoCorrPtr->timeConstMode = specifier;
+	return(TRUE);
+
+}
+
 /****************************** SetTimeOffset *********************************/
 
 /*
@@ -321,6 +392,35 @@ SetTimeConstant_Analysis_ACF(double theTimeConstant)
 	autoCorrPtr->timeConstantFlag = TRUE;
 	autoCorrPtr->updateProcessVariablesFlag = TRUE;
 	autoCorrPtr->timeConstant = theTimeConstant;
+	return(TRUE);
+
+}
+
+/****************************** SetTimeConstScale *****************************/
+
+/*
+ * This function sets the module's timeConstScale parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetTimeConstScale_Analysis_ACF(double theTimeConstScale)
+{
+	static const char	*funcName = "SetTimeConstScale_Analysis_ACF";
+
+	if (autoCorrPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if (theTimeConstScale < 0.0) {
+		NotifyError("%s: The time constant scale must be greater than zero "
+		  "(%g).", funcName, theTimeConstScale);
+		return(FALSE);
+	}
+	autoCorrPtr->timeConstScaleFlag = TRUE;
+	autoCorrPtr->updateProcessVariablesFlag = TRUE;
+	autoCorrPtr->timeConstScale = theTimeConstScale;
 	return(TRUE);
 
 }
@@ -378,12 +478,20 @@ CheckPars_Analysis_ACF(void)
 		NotifyError("%s: normalisationMode variable not set.", funcName);
 		ok = FALSE;
 	}
+	if (!autoCorrPtr->timeConstModeFlag) {
+		NotifyError("%s: timeConstMode variable not set.", funcName);
+		ok = FALSE;
+	}
 	if (!autoCorrPtr->timeOffsetFlag) {
 		NotifyError("%s: timeOffset variable not set.", funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->timeConstantFlag) {
 		NotifyError("%s: timeConstant variable not set.", funcName);
+		ok = FALSE;
+	}
+	if (!autoCorrPtr->timeConstScaleFlag) {
+		NotifyError("%s: timeConstScale variable not set.", funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->maxLagFlag) {
@@ -411,17 +519,23 @@ PrintPars_Analysis_ACF(void)
 		return(FALSE);
 	}
 	DPrint("Auto-correlation analysis module parameters:-\n");
-	DPrint("\tNormalisation mode = %s,\t",
+	DPrint("\tNormalisation mode = %s,",
 	  autoCorrPtr->normalisationModeList[autoCorrPtr->normalisationMode].name);
+	DPrint("\tTime constant mode = %s,\n", autoCorrPtr->timeConstModeList[
+	  autoCorrPtr->timeConstMode].name);
 	DPrint("\tTime offset = ");
 	if (autoCorrPtr->timeOffset < 0.0)
-		DPrint("end of signal\n");
+		DPrint("end of signal,\n");
 	else
-		DPrint("%g ms\n", MSEC(autoCorrPtr->timeOffset));
-	DPrint("\tTime constant = %g ms,\t",
-	   MSEC(autoCorrPtr->timeConstant));
-	DPrint("\tMaximum lag = %g ms,\n",
-	   MSEC(autoCorrPtr->maxLag));
+		DPrint("%g ms,\n", MSEC(autoCorrPtr->timeOffset));
+	if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+		DPrint("\tMinimum time constant = %g ms,", MSEC(autoCorrPtr->
+		  timeConstant));
+		DPrint("\tTime constant scale = %g (units),\n", autoCorrPtr->
+		  timeConstScale);
+	} else
+		DPrint("\tTime constant = %g ms,\n", MSEC(autoCorrPtr->timeConstant));
+	DPrint("\tMaximum lag = %g ms.\n", MSEC(autoCorrPtr->maxLag));
 	return(TRUE);
 
 }
@@ -549,7 +663,7 @@ BOOLN
 CheckData_Analysis_ACF(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Analysis_ACF";
-	double	signalDuration, summationLimit, timeOffset;
+	double	signalDuration, timeOffset;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -570,13 +684,54 @@ CheckData_Analysis_ACF(EarObjectPtr data)
 	}
 	timeOffset = (autoCorrPtr->timeOffset < 0.0)? signalDuration:
 	  autoCorrPtr->timeOffset;
-	summationLimit = autoCorrPtr->timeConstant * 3.0;
 	if (autoCorrPtr->maxLag > (timeOffset + DBL_EPSILON)) {
-		NotifyError("%s: Time offset (%g ms) too short maximum lag (%g ms).",
-		  funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->maxLag));
+		NotifyError("%s: Time offset (%g ms) too for short maximum lag (%g "
+		  "ms).", funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->
+		  maxLag));
 		return(FALSE);
-	}		
+	}
+	if ((autoCorrPtr->normalisationMode == ANALYSIS_NORM_MODE_UNITY) &&
+	  (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)) {
+		NotifyError("%s: The 'unity' normalisation mode cannot be used with "
+		  "the\n'Wiegrebe' tau mode.\n");
+		return(FALSE);
+	}
 	return(TRUE);
+
+}
+
+/**************************** TimeConstant ************************************/
+
+/*
+ * This function calculates the Wiegrebe proportional time constant.
+ * It assumes that the module has been correctly initialised.
+ */
+
+double
+TimeConstant_Analysis_ACF(double lag)
+{
+	double	 timeConstant = lag * autoCorrPtr->timeConstScale;
+	
+	return((timeConstant > autoCorrPtr->timeConstant)? timeConstant:
+	  autoCorrPtr->timeConstant);
+
+}
+
+/**************************** SunLimitIndex ***********************************/
+
+/*
+ * This function returns the summation limit index.
+ * It assumes that the data object have been correctly initialised.
+ */
+
+ChanLen
+SunLimitIndex_Analysis_ACF(EarObjectPtr data, double timeConstant)
+{
+	ChanLen	sumLimitIndex;
+
+	sumLimitIndex = (ChanLen) floor(timeConstant / data->outSignal->dt + 0.5);
+	return((sumLimitIndex < data->outSignal->length)? sumLimitIndex:
+	  data->outSignal->length);
 
 }
 
@@ -592,27 +747,39 @@ BOOLN
 InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_ACF";
-	register double	*expDtPtr, dt, dtOverTimeConst;
-	ChanLen	i, sumLimitIndex;
+	register double	*expDtPtr, dt;
+	int		chan;
+	double	minDecay;
+	ChanLen	i, maxLagIndex, minLagIndex;
 	
 	if (autoCorrPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_ACF();
-		dt = data->inSignal[0]->dt;
-		sumLimitIndex = (ChanLen) floor(3.0 * autoCorrPtr->timeConstant / dt +
-		  0.5);
-		autoCorrPtr->sumLimitIndex = (sumLimitIndex < data->outSignal->length)?
-		  sumLimitIndex: data->outSignal->length;
-		if ((autoCorrPtr->exponentDt = (double *) calloc(
-		  autoCorrPtr->sumLimitIndex, sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory for exponent lookup table.",
-			  funcName);
-			return(FALSE);
+		if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+			dt = data->inSignal[0]->dt;
+			maxLagIndex = (ChanLen) floor(autoCorrPtr->maxLag / dt + 0.5);
+			if ((autoCorrPtr->exponentDt = (double *) calloc(maxLagIndex,
+			  sizeof(double))) == NULL) {
+				NotifyError("%s: Out of memory for exponent lookup table.",
+				  funcName);
+				return(FALSE);
+			}
+			minLagIndex = (ChanLen) floor(autoCorrPtr->timeConstant / (dt *
+			  autoCorrPtr->timeConstScale) + 0.5);
+			minDecay = exp(-dt / autoCorrPtr->timeConstant);
+			for (i = 0, expDtPtr = autoCorrPtr->exponentDt; i < maxLagIndex;
+			  i++, expDtPtr++)
+				*expDtPtr = (i > minLagIndex)? exp(-1.0 / (i * autoCorrPtr->
+				  timeConstScale)): minDecay;
+			
 		}
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
+		for (chan = 0; chan < data->outSignal->numChannels; chan++)
+			data->outSignal->info.cFArray[chan] = data->inSignal[0]->info.
+			  cFArray[chan];
+		SetInfoSampleTitle_SignalData(data->outSignal, "Delay Lag (s)");
 		SetNumWindowFrames_SignalData(data->outSignal, 0);
-		dtOverTimeConst = -dt / autoCorrPtr->timeConstant;
-		for (i = 0, expDtPtr = autoCorrPtr->exponentDt; i <
-		  autoCorrPtr->sumLimitIndex; i++, expDtPtr++)
-			*expDtPtr = exp(i * dtOverTimeConst);
 		autoCorrPtr->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
@@ -634,6 +801,7 @@ FreeProcessVariables_Analysis_ACF(void)
 		autoCorrPtr->exponentDt = NULL;
 	}
 	autoCorrPtr->updateProcessVariablesFlag = TRUE;
+
 }
 
 /****************************** Calc ******************************************/
@@ -655,11 +823,11 @@ BOOLN
 Calc_Analysis_ACF(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_ACF";
-	register    double  *expDtPtr;
+	register    double  *expDtPtr = NULL;
 	register    ChanData    *inPtr, *outPtr;
 	int		chan;
-	double	dt;
-	ChanLen i, timeOffsetIndex, maxLagIndex, deltaT;
+	double	dt, wiegrebeTimeConst, expDecay;
+	ChanLen i, timeOffsetIndex, maxLagIndex, deltaT, sumLimitIndex;
 
 	if (!CheckPars_Analysis_ACF())
 		return(FALSE);
@@ -675,26 +843,39 @@ Calc_Analysis_ACF(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
-	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
-	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++)
-		data->outSignal->info.cFArray[chan] =
-		  data->inSignal[0]->info.cFArray[chan];
-	SetInfoSampleTitle_SignalData(data->outSignal, "Delay Lag (s)");
 	if (!InitProcessVariables_Analysis_ACF(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);
 		return(FALSE);
 	}
+	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
+	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
+	if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER) {
+		sumLimitIndex = SunLimitIndex_Analysis_ACF(data, autoCorrPtr->
+		  timeConstant * 3.0);
+		expDecay = exp(-dt / autoCorrPtr->timeConstant);
+		expDtPtr = &expDecay;
+	}
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		outPtr = data->outSignal->channel[chan];
+		if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
+			expDtPtr = autoCorrPtr->exponentDt;
 		for (deltaT = 0; deltaT < maxLagIndex; deltaT++, outPtr++) {
-			inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex - 1;
-			for (i = 0, *outPtr = 0.0, expDtPtr = autoCorrPtr->exponentDt; i <
-			  autoCorrPtr->sumLimitIndex; i++, expDtPtr++, inPtr--)
-				*outPtr += *inPtr * *(inPtr - deltaT) * *expDtPtr;
+			if (autoCorrPtr->timeConstMode ==
+			  ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+				wiegrebeTimeConst = TimeConstant_Analysis_ACF(deltaT * dt);
+				sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
+				  wiegrebeTimeConst);
+			}
+			inPtr = data->inSignal[0]->channel[chan] + (timeOffsetIndex -
+			  sumLimitIndex);
+			for (i = 0, *outPtr = 0.0; i < sumLimitIndex; i++, inPtr++)
+				*outPtr =  (*outPtr * *expDtPtr) + (*inPtr * *(inPtr - deltaT));
+			if (autoCorrPtr->timeConstMode ==
+			  ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+				expDtPtr++;
+				*outPtr /= wiegrebeTimeConst;
+			}
 			switch(autoCorrPtr->normalisationMode) {
 			case ANALYSIS_NORM_MODE_STANDARD:
 				*outPtr /= maxLagIndex;

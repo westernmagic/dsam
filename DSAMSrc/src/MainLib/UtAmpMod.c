@@ -177,15 +177,15 @@ SetUniParList_Utility_AmpMod(void)
 	pars = ampModPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_NUMFREQUENCIES], "NUM_FREQS",
 	  "Number of modulation frequencies.",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &ampModPtr->numFrequencies, NULL,
 	  (void * (*)) SetNumFrequencies_Utility_AmpMod);
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_MODULATIONDEPTHS], "FREQUENCY",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_MODULATIONDEPTHS], "DEPTH",
 	  "Modulation depths (%).",
 	  UNIPAR_REAL_ARRAY,
 	  &ampModPtr->modulationDepths, &ampModPtr->numFrequencies,
 	  (void * (*)) SetIndividualDepth_Utility_AmpMod);
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_FREQUENCIES], "DEPTH",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_FREQUENCIES], "FREQUENCY",
 	  "Modulation frequencies (Hz).",
 	  UNIPAR_REAL_ARRAY,
 	  &ampModPtr->frequencies, &ampModPtr->numFrequencies,

@@ -332,7 +332,6 @@ FreeInstructions_Utility_Datum(DatumPtr *pc)
 /*
  * This routine prints a specified number of tabs, with the label at the
  * previous tab level.
- * The minimum tab level is 1.
  */
 
 void
@@ -340,7 +339,7 @@ PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel)
 {
 	int		i;
 
-	for (i = 0; i < indentLevel - 1; i++)
+	for (i = 0; i < indentLevel; i++)
 		DPrint("\t");
 	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && pc->label && !pc->
 	  defaultLabelFlag && (pc->label[0] != '\0'))
@@ -398,23 +397,23 @@ GetProcessName_Utility_Datum(DatumPtr pc)
 
 }
 
-/****************************** PrintInstructions *****************************/
+/****************************** PrintSimScript ********************************/
 
 /*
- * This routine prints the simulation process instructions.
+ * This routine prints the supplied simulation script simulation script.
+ * It returns 'TRUE' if there are subsimulation scripts to print.
  */
 
-void
-PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
-  char *prefix)
+BOOLN
+PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
+  char *prefix, BOOLN checkForSubSimScripts)
 {
 	BOOLN	subSimScripts = FALSE;
 	int		i;
-	DatumPtr	start = pc;
 
-	if (!pc)
-		return;
-	DPrint("%sbegin %s {\n", prefix, scriptName);
+	if (pc == NULL)
+		return(subSimScripts);
+	DPrint("%sbegin %s {\n\n", prefix, scriptName);
 	for ( ; pc != NULL; pc = pc->next) {
 		DPrint("%s", prefix);
 		switch (pc->type) {
@@ -424,9 +423,9 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
 			if (!pc->data->module->onFlag)
 				DPrint("%c ", SIMSCRIPT_DISABLED_MODULE_CHAR);
-			DPrint("%s", GetProcessName_Utility_Datum(pc));
+			DPrint("%-16s", pc->u.proc.moduleName);
 			if (pc->u.proc.inputList || pc->u.proc.outputList) {
-				DPrint(" (");
+				DPrint("(");
 				PrintConnections_Utility_Datum(pc->u.proc.inputList);
 				DPrint("->");
 				PrintConnections_Utility_Datum(pc->u.proc.outputList);
@@ -434,10 +433,11 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			}
 			if (strcmp(pc->u.proc.parFile, NO_FILE) == 0)
 				DPrint("\n");
-			else if (pc->data->module->specifier == SIMSCRIPT_MODULE)
-				DPrint("\t<\t(%s)\n",  pc->u.proc.parFile);
+			else if (checkForSubSimScripts && (pc->data->module->specifier ==
+			  SIMSCRIPT_MODULE))
+				DPrint("\t< (%s)\n",  pc->u.proc.parFile);
 			else
-				DPrint("\t<\t%s\n",  pc->u.proc.parFile);
+				DPrint("\t< %s\n",  pc->u.proc.parFile);
 			break;
 		case REPEAT:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel++);
@@ -459,9 +459,30 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		} /* switch */
 	}
-	for (i = 0; i < indentLevel - 1; i++)
+	for (i = 0; i < indentLevel; i++)
 		DPrint("\t");
-	DPrint("%s}\n", prefix);
+	DPrint("\n%s}\n", prefix);
+	return(subSimScripts);
+
+}
+
+/****************************** PrintInstructions *****************************/
+
+/*
+ * This routine prints the simulation process instructions.
+ */
+
+void
+PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
+  char *prefix)
+{
+	BOOLN	subSimScripts = FALSE;
+	DatumPtr	start = pc;
+
+	if (pc == NULL)
+		return;
+	subSimScripts = PrintSimScript_Utility_Datum(pc, scriptName, indentLevel,
+	  prefix, TRUE);
 	if (!subSimScripts)
 		return;
 	DPrint("%s#Sub-simulation scripts\n", prefix);
@@ -918,7 +939,7 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 				  pc->data), prefix);
 			else {
 				snprintf(fmtParFileName, MAXLINE, "(%s)", pc->u.proc.parFile);
-				DPrint("\t##----- %-20s %20s -----##\n",
+				DPrint("##----- %-20s %20s -----##\n",
 				  NameAndLabel_Utility_Datum(pc), fmtParFileName);
 				snprintf(suffix, MAXLINE, ".%s", NameAndLabel_Utility_Datum(
 				  pc));

@@ -10,7 +10,7 @@ typedef struct {
 
 	int_al	numFilters;
 	int		*cascade;
-	double	*preAttenuation;
+	double	*gain;
 	double	*lowerCutOffFreq;
 	double	*upperCutOffFreq;
 

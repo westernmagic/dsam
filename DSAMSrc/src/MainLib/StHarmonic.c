@@ -120,10 +120,10 @@ Init_Harmonic(ParameterSpecifier parSpec)
 	harmonicPtr->mistuningFactor = 40.0;
 	harmonicPtr->phaseVariable = 1.0;
 	harmonicPtr->frequency = 100.0;
-	harmonicPtr->intensity = 30.0;
+	harmonicPtr->intensity = DEFAULT_INTENSITY;
 	harmonicPtr->duration = 0.1;
 	harmonicPtr->dt = DEFAULT_DT;
-	harmonicPtr->modulationFrequency = 0.0;
+	harmonicPtr->modulationFrequency = 1.0;
 	harmonicPtr->modulationPhase = 0.0;
 	harmonicPtr->modulationDepth = 0.0;
 	harmonicPtr->order = 0;
@@ -1085,8 +1085,8 @@ InitProcessVariables_Harmonic(EarObjectPtr data)
 				  harmonicPtr->mistuningFactor / 100.0;
 			harmonicPtr->modIndex[i] = (harmonicPtr->modulationDepth <
 			  DBL_EPSILON)? 0.0: (harmonicPtr->modulationDepth / 100.0) * 
-			  (harmonicPtr->harmonicFrequency[i] /
-			  harmonicPtr->modulationFrequency);
+			  (harmonicPtr->harmonicFrequency[i] / harmonicPtr->
+			  modulationFrequency);
 		}
 	}
 	return(TRUE);

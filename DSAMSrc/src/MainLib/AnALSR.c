@@ -104,8 +104,8 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 	aLSRPtr->lowerAveLimitFlag = TRUE;
 	aLSRPtr->upperAveLimitFlag = TRUE;
 	aLSRPtr->normaliseFlag = TRUE;
-	aLSRPtr->lowerAveLimit = -1.0;
-	aLSRPtr->upperAveLimit = 1.0;
+	aLSRPtr->lowerAveLimit = -0.25;
+	aLSRPtr->upperAveLimit = 0.25;
 	aLSRPtr->normalise = 1.0;
 
 	if (!SetUniParList_Analysis_ALSR()) {

@@ -164,6 +164,7 @@ InitYAxisModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
+					{ "AUTO",			GRAPH_Y_AXIS_MODE_AUTO },
 					{ "CHANNEL",		GRAPH_Y_AXIS_MODE_CHANNEL },
 					{ "LINEAR_SCALE",	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
 					{ "", 				GRAPH_Y_AXIS_MODE_NULL }
@@ -265,7 +266,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	wxGetApp().GetDefaultDisplayPos(&signalDispPtr->frameXPos, &signalDispPtr->
 	  frameYPos);
 #	endif
-	signalDispPtr->yAxisMode = GRAPH_Y_AXIS_MODE_CHANNEL;
+	signalDispPtr->yAxisMode = GRAPH_Y_AXIS_MODE_AUTO;
 	signalDispPtr->yNormalisationMode = GRAPH_LINE_YNORM_MIDDLE_MODE;
 	signalDispPtr->mode = GRAPH_MODE_LINE;
 	signalDispPtr->numGreyScales = GRAPH_NUM_GREY_SCALES;
@@ -1060,6 +1061,12 @@ SetMode_SignalDisp(char *theMode)
 		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
 		return(FALSE);
 	}
+	if ((specifier == GRAPH_MODE_GREY_SCALE) && (signalDispPtr->autoYScale ==
+	  GENERAL_BOOLEAN_OFF)) {
+		NotifyError("%s: Automatic Y scaling must be on to use the grey-scale "
+		  "mode.", funcName);
+		return(FALSE);
+	}
 	signalDispPtr->mode = specifier;
 	signalDispPtr->modeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
@@ -1293,6 +1300,11 @@ SetXOffset_SignalDisp(double theXOffset)
 
 	if (signalDispPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if (theXOffset < 0.0) {
+		NotifyError("%s: Cannot set the X offset less than zero (%g units).",
+		  funcName, theXOffset);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -1679,15 +1691,8 @@ InitModule_SignalDisp(ModulePtr theModule)
 BOOLN
 CheckData_SignalDisp(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_SignalDisp";
+	/*static const char	*funcName = "CheckData_SignalDisp"; */
 
-	if (!signalDispPtr->autoXScale) {
-		if (signalDispPtr->xOffset < 0.0) {
-			NotifyError("%s: Cannot set the X offset less than zero (%g "
-			  "units).", funcName, signalDispPtr->xOffset);
-			return(FALSE);
-		}
-	}
 	/*** Put additional checks here. ***/
 	return(TRUE);
 
@@ -1750,6 +1755,9 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				SetXAxisTitle_SignalDisp(data->outSignal->info.sampleTitle);
 			if (signalDispPtr->yAxisTitle[0] == '\0')
 				SetYAxisTitle_SignalDisp(data->outSignal->info.channelTitle);
+			if (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_AUTO)
+				signalDispPtr->yAxisMode = (data->outSignal->numChannels > 1)?
+				  GRAPH_Y_AXIS_MODE_CHANNEL: GRAPH_Y_AXIS_MODE_LINEAR_SCALE;
 			signalDispPtr->parList->updateFlag = TRUE;
 			signalDispPtr->updateProcessVariablesFlag = FALSE;
 			data->updateProcessFlag = FALSE;

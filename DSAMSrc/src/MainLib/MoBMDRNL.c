@@ -1180,10 +1180,10 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
-		SetInfoChannelLabels_SignalData(data->outSignal,
-		  bMDRNLPtr->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal,
-		  bMDRNLPtr->theCFs->frequency);
+		SetInfoChannelLabels_SignalData(data->outSignal, bMDRNLPtr->theCFs->
+		  frequency);
+		SetInfoCFArray_SignalData(data->outSignal, bMDRNLPtr->theCFs->
+		  frequency);
 		bMDRNLPtr->updateProcessVariablesFlag = FALSE;
 		bMDRNLPtr->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {

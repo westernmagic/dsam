@@ -131,8 +131,7 @@ DisplayS::OnMove(wxMoveEvent& event)
 	wxPoint pos = event.GetPosition();
 	GetSignalDispPtr()->frameXPos = pos.x;
 	GetSignalDispPtr()->frameYPos = pos.y;
-	canvas->GetSize(&GetSignalDispPtr()->frameWidth, &GetSignalDispPtr(
-	  )->frameHeight);
+	GetSize(&GetSignalDispPtr()->frameWidth, &GetSignalDispPtr()->frameHeight);
 
     event.Skip();
 

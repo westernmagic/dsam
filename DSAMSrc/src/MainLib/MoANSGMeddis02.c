@@ -104,7 +104,7 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	meddis02SGPtr->pulseMagnitudeFlag = TRUE;
 	meddis02SGPtr->refractoryPeriodFlag = TRUE;
 	meddis02SGPtr->recoveryTauFlag = TRUE;
-	meddis02SGPtr->ranSeed = -1;
+	meddis02SGPtr->ranSeed = 0;
 	meddis02SGPtr->numFibres = 1;
 	meddis02SGPtr->pulseDuration = -1.0;
 	meddis02SGPtr->pulseMagnitude = 1.0;

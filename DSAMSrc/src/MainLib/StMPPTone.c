@@ -98,7 +98,7 @@ Init_PureTone_MultiPulse(ParameterSpecifier parSpec)
 	pureTone4Ptr->repetitionPeriodFlag = TRUE;
 	pureTone4Ptr->numPulsesFlag = FALSE;
 	pureTone4Ptr->numPulses = 0;
-	pureTone4Ptr->intensity = 30.0;
+	pureTone4Ptr->intensity = DEFAULT_INTENSITY;
 	pureTone4Ptr->duration = 0.08;
 	pureTone4Ptr->dt = 0.1e-3;
 	pureTone4Ptr->beginPeriodDuration = 0.01;
@@ -169,7 +169,7 @@ SetUniParList_PureTone_MultiPulse(void)
 	pars = pureTone4Ptr->parList->pars;
 	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_NUMPULSES], "NUM_PULSES",
 	  "Number of Pulse Frequencies",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &pureTone4Ptr->numPulses, NULL,
 	  (void * (*)) SetNumPulses_PureTone_MultiPulse);
 	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_FREQUENCIES], "PULSE_FREQ",

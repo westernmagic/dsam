@@ -95,7 +95,9 @@ Init_Analysis_Intensity(ParameterSpecifier parSpec)
 	}
 	intensityPtr->parSpec = parSpec;
 	intensityPtr->timeOffsetFlag = TRUE;
+	intensityPtr->extentFlag = TRUE;
 	intensityPtr->timeOffset = 2.5e-3;
+	intensityPtr->extent = -1.0;
 
 	if (!SetUniParList_Analysis_Intensity()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -131,6 +133,12 @@ SetUniParList_Analysis_Intensity(void)
 	  UNIPAR_REAL,
 	  &intensityPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_Intensity);
+	SetPar_UniParMgr(&pars[ANALYSIS_INTENSITY_EXTENT], "EXTENT",
+	  "Time over which calculation is performed: -ve value assumes end of "
+	  "signal (s).",
+	  UNIPAR_REAL,
+	  &intensityPtr->extent, NULL,
+	  (void * (*)) SetExtent_Analysis_Intensity);
 	return(TRUE);
 
 }
@@ -210,6 +218,30 @@ SetTimeOffset_Analysis_Intensity(double theTimeOffset)
 
 }
 
+/****************************** SetExtent *************************************/
+
+/*
+ * This function sets the module's extent parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetExtent_Analysis_Intensity(double theExtent)
+{
+	static const char	*funcName = "SetExtent_Analysis_Intensity";
+
+	if (intensityPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	intensityPtr->extentFlag = TRUE;
+	intensityPtr->extent = theExtent;
+	return(TRUE);
+
+}
+
 /****************************** CheckPars *************************************/
 
 /*
@@ -235,6 +267,10 @@ CheckPars_Analysis_Intensity(void)
 		NotifyError("%s: timeOffset variable not set.", funcName);
 		ok = FALSE;
 	}
+	if (!intensityPtr->extentFlag) {
+		NotifyError("%s: extent variable not set.", funcName);
+		ok = FALSE;
+	}
 	return(ok);
 
 }
@@ -256,7 +292,13 @@ PrintPars_Analysis_Intensity(void)
 		return(FALSE);
 	}
 	DPrint("Intensity Analysis Module Parameters:-\n");
-	DPrint("\tTime offset = %g ms.\n", MSEC(intensityPtr->timeOffset));
+	DPrint("\tTime offset = %g ms,", MSEC(intensityPtr->timeOffset));
+	DPrint("\tTime extent = ");
+	if (intensityPtr->extent < 0.0)
+		DPrint("<end of signal>");
+	else
+		DPrint("%g ms\n", MSEC(intensityPtr->extent));
+	DPrint(".\n");
 	return(TRUE);
 
 }
@@ -370,6 +412,7 @@ BOOLN
 CheckData_Analysis_Intensity(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Analysis_Intensity";
+	double	duration;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -377,12 +420,26 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (intensityPtr->timeOffset >= _GetDuration_SignalData(data->inSignal[
-	  0])) {
+	duration =  _GetDuration_SignalData(data->inSignal[0]);
+	if (intensityPtr->timeOffset >= duration) {
 		NotifyError("%s: Time offset (%g ms) is longer than signal duration "
-		  "(%g ms).", funcName, MSEC(intensityPtr->timeOffset),
-		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
+		  "(%g ms).", funcName, MSEC(intensityPtr->timeOffset), MSEC(duration));
 		return(FALSE);
+	}
+	if (intensityPtr->extent > 0.0) {
+		if ((intensityPtr->timeOffset + intensityPtr->extent) > duration) {
+			NotifyError("%s: Time offset (%g ms) + extent (%g ms) is longer "
+			  "than signal duration (%g).", funcName,  MSEC(
+			  intensityPtr->timeOffset), MSEC(intensityPtr->extent), MSEC(
+			  duration));
+			return(FALSE);
+		}
+		if (intensityPtr->extent < data->inSignal[0]->dt) {
+			NotifyError("%s: Time extent is too small (%g ms).  It should be "
+			  "greater than the sampling interval (%g ms).", funcName, MSEC(
+			  intensityPtr->extent), MSEC(data->inSignal[0]->dt));
+			return(FALSE);
+		}
 	}
 	return(TRUE);
 
@@ -409,7 +466,7 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_Intensity";
 	register	ChanData	 *inPtr, sum;
 	int		chan;
-	ChanLen	i, timeOffsetIndex;
+	ChanLen	i, timeOffsetIndex, extent;
 
 	if (!CheckPars_Analysis_Intensity())
 		return(FALSE);
@@ -425,13 +482,15 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 	}
 	timeOffsetIndex = (ChanLen) (intensityPtr->timeOffset /
 	  data->inSignal[0]->dt + 0.5);
+	extent = (intensityPtr->extent < 0.0)? data->inSignal[0]->length -
+	  timeOffsetIndex: (ChanLen) (intensityPtr->extent / data->inSignal[0]->dt +
+	  0.5);
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
-		for (i = timeOffsetIndex, sum = 0.0; i < data->inSignal[0]->length;
-		  i++, inPtr++)
+		for (i = 0, sum = 0.0; i < extent; i++, inPtr++)
 			sum += *inPtr * *inPtr;
 		data->outSignal->channel[chan][0] = (ChanData) DB_SPL(sqrt(sum /
-		  (data->inSignal[0]->length - timeOffsetIndex)));
+		  extent));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

@@ -1,5 +1,4 @@
-on		Diagnostics mode ("off" or "on".
-relative	Parameter file path mode ('relative', 'none' or <file path>).
+DIAG_MODE on		Diagnostics mode ("off" or "on".
 
 # Module Specifications
 

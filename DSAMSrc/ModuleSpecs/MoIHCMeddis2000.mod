@@ -10,9 +10,8 @@ typedef struct {
 
 	NameSpecifier	opMode;	/* output probabiliy mode: spikes or probability */
 	NameSpecifier   diagMode;	/* output variables during run (no/filename) */
+	NameSpecifier	caCondMode;	/* Calcium conductance mode */
 	long	ranSeed;		/* seed for random number generator */
-
-	double recPotOffset;		/* Voltage correction for receptor potential */
 
 	double CaVrev;			/* Calcium reversal potential */
 	double betaCa; 			/* Boltzman function parameters */

@@ -32,7 +32,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_ACF_NUM_PARS			4
+#define ANALYSIS_ACF_NUM_PARS			6
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -41,36 +41,50 @@
 typedef enum {
 
 	ANALYSIS_ACF_NORMALISATIONMODE,
+	ANALYSIS_ACF_TIMECONSTMODE,
 	ANALYSIS_ACF_TIMEOFFSET,
 	ANALYSIS_ACF_TIMECONSTANT,
+	ANALYSIS_ACF_TIMECONSTSCALE,
 	ANALYSIS_ACF_MAXLAG
 
 } AutoCorrParSpecifier;
 
 typedef enum {
 
+	ANALYSIS_NORM_MODE_NONE,
 	ANALYSIS_NORM_MODE_STANDARD,
 	ANALYSIS_NORM_MODE_UNITY,
 	ANALYSIS_NORM_MODE_NULL
 
 } AnalysisNormalisationModeSpecifier;
 
+typedef enum {
+
+	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER,
+	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE,
+	ANALYSIS_ACF_TIMECONSTMODE_NULL
+
+} AnalysisTimeConstModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	normalisationModeFlag, timeOffsetFlag, timeConstantFlag, maxLagFlag;
+	BOOLN	normalisationModeFlag, timeConstModeFlag, timeOffsetFlag;
+	BOOLN	timeConstantFlag, timeConstScaleFlag, maxLagFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		normalisationMode;
+	int		timeConstMode;
 	double	timeOffset;
 	double	timeConstant;
+	double	timeConstScale;
 	double	maxLag;
 
 	/* Private members */
 	NameSpecifier	*normalisationModeList;
+	NameSpecifier	*timeConstModeList;
 	UniParListPtr	parList;
 	double	*exponentDt;
-	ChanLen	sumLimitIndex;
 
 } AutoCorr, *AutoCorrPtr;
 
@@ -123,11 +137,19 @@ BOOLN	SetParsPointer_Analysis_ACF(ModulePtr theModule);
 BOOLN	SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
 		  double timeConstant, double maxLag);
 
+BOOLN	SetTimeConstMode_Analysis_ACF(char * theTimeConstMode);
+
+BOOLN	SetTimeConstScale_Analysis_ACF(double theTimeConstScale);
+
 BOOLN	SetTimeConstant_Analysis_ACF(double theTimeConstant);
 
 BOOLN	SetTimeOffset_Analysis_ACF(double theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_ACF(void);
+
+ChanLen	SunLimitIndex_Analysis_ACF(EarObjectPtr data, double timeConstant);
+
+double	TimeConstant_Analysis_ACF(double lag);
 
 __END_DECLS
 

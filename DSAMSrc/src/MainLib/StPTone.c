@@ -70,7 +70,7 @@ Init_PureTone(ParameterSpecifier parSpec)
 	pureTonePtr->dtFlag = TRUE;
 	pureTonePtr->intensityFlag = TRUE;
 	pureTonePtr->frequency = 1000.0;
-	pureTonePtr->intensity = 30.0;
+	pureTonePtr->intensity = DEFAULT_INTENSITY;
 	pureTonePtr->duration = 0.1;
 	pureTonePtr->dt = DEFAULT_DT;
 	

@@ -86,7 +86,7 @@ FreeIonChannel_IonChanList(IonChannelPtr *theIC)
 /****************************** FreeIonChannels *******************************/
 
 /*
- * This function releases of the memory allocated for all ion channels.
+ * This function releases the memory allocated for all ion channels.
  */
 
 void
@@ -494,112 +494,112 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 	  &theIC->fileName, (char *) "*.par",
 	  (void * (*)) SetICFileName_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_A], "ALPHA_A",
-	 "Alpha 'a' parameter values for activtion and inactivation",
+	 "Alpha 'a' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aA.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaA_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_B], "ALPHA_B",
-	 "Alpha 'b' parameter values for activtion and inactivation",
+	 "Alpha 'b' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aB.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaB_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_C], "ALPHA_C",
-	 "Alpha 'c' parameter values for activtion and inactivation",
+	 "Alpha 'c' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aC.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaC_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_D], "ALPHA_D",
-	 "Alpha 'd' parameter values for activtion and inactivation",
+	 "Alpha 'd' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aD.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaD_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_E], "ALPHA_E",
-	 "Alpha 'e' parameter values for activtion and inactivation",
+	 "Alpha 'e' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aE.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaE_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_F], "ALPHA_F",
-	 "Alpha 'f' parameter values for activtion and inactivation",
+	 "Alpha 'f' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aF.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaF_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_G], "ALPHA_G",
-	 "Alpha 'g' parameter values for activtion and inactivation",
+	 "Alpha 'g' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aG.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaG_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_H], "ALPHA_H",
-	 "Alpha 'h' parameter values for activtion and inactivation",
+	 "Alpha 'h' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aH.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaH_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_I], "ALPHA_I",
-	 "Alpha 'i' parameter values for activtion and inactivation",
+	 "Alpha 'i' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aI.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaI_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_J], "ALPHA_J",
-	 "Alpha 'j' parameter values for activtion and inactivation",
+	 "Alpha 'j' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aJ.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaJ_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_K], "ALPHA_K",
-	 "Alpha 'k' parameter values for activtion and inactivation",
+	 "Alpha 'k' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aK.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaK_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_A], "BETA_A",
-	 "Beta 'a' parameter values for activtion and inactivation",
+	 "Beta 'a' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bA.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaA_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_B], "BETA_B",
-	 "Beta 'b' parameter values for activtion and inactivation",
+	 "Beta 'b' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bB.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaB_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_C], "BETA_C",
-	 "Beta 'c' parameter values for activtion and inactivation",
+	 "Beta 'c' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bC.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaC_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_D], "BETA_D",
-	 "Beta 'd' parameter values for activtion and inactivation",
+	 "Beta 'd' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bD.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaD_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_E], "BETA_E",
-	 "Beta 'e' parameter values for activtion and inactivation",
+	 "Beta 'e' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bE.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaE_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_F], "BETA_F",
-	 "Beta 'f' parameter values for activtion and inactivation",
+	 "Beta 'f' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bF.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaF_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_G], "BETA_G",
-	 "Beta 'g' parameter values for activtion and inactivation",
+	 "Beta 'g' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bG.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaG_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_H], "BETA_H",
-	 "Beta 'h' parameter values for activtion and inactivation",
+	 "Beta 'h' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bH.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaH_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_I], "BETA_I",
-	 "Beta 'i' parameter values for activtion and inactivation",
+	 "Beta 'i' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bI.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaI_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_J], "BETA_J",
-	 "Beta 'j' parameter values for activtion and inactivation",
+	 "Beta 'j' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bJ.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaJ_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_K], "BETA_K",
-	 "Beta 'k' parameter values for activtion and inactivation",
+	 "Beta 'k' parameter values for activation and inactivation",
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bK.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaK_IonChanList);
@@ -1515,7 +1515,7 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 	static const char	*funcName = "PrepareIonChannels_IonChanList";
 	int		i;
 	IonChannelPtr	theIC;
-	DynaListPtr		node;
+	DynaListPtr		node, previous;
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1528,8 +1528,14 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 		theICs->oldNumTableEntries = theICs->numTableEntries;
 	if (theICs->numChannels != theICs->oldNumChannels) {
 		if (theICs->numChannels < theICs->oldNumChannels) {
-			theIC = Pull_Utility_DynaList(&theICs->ionChannels);
-			FreeIonChannel_IonChanList(&theIC);
+			node = GetLastInst_Utility_DynaList(theICs->ionChannels);
+			for (i = theICs->numChannels; i < theICs->oldNumChannels; i++) {
+				theIC = node->data;
+				previous = node->previous;
+				Remove_Utility_DynaList(&theICs->ionChannels, node);
+				FreeIonChannel_IonChanList(&theIC);
+				node = previous;
+			}
 		} else {
 			for (i = theICs->oldNumChannels; i < theICs->numChannels; i++) {
 				if ((theIC = InitIonChannel_IonChanList(funcName, theICs->
@@ -1773,6 +1779,7 @@ BOOLN
 SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels)
 {
 	static const char *funcName = "SetNumChannels_IonChanList";
+	DynaListPtr	node;
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1782,6 +1789,9 @@ SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels)
 	}
 	theICs->numChannels = numChannels;
 	theICs->updateFlag = TRUE;
+	if (theICs->ionChannels)
+		for (node = theICs->ionChannels; node; node = node->next)
+			((IonChannelPtr) node->data)->description[0] = '\0';
 	return(TRUE);
 
 }

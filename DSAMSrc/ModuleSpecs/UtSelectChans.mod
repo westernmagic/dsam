@@ -11,6 +11,6 @@ typedef struct {
 	NameSpecifier	mode;
 	NameSpecifier	selectionMode;
 	int_al	numChannels;
-	int		*selectionArray;
+	double		*selectionArray;
 
 } SelectChan;

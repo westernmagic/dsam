@@ -514,18 +514,25 @@ PrintSimParFile_Utility_SimScript(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	DPrint("\t##--------------- Simulation script ----------------------##\n");
+	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE);
+	DPrint("## Simulation parameter file (SPF) written using DSAM version %s."
+	  "\n", GetDSAMPtr_Common()->version);
+	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE "\n");
+
+	DPrint("##--------------- Simulation script ----------------------##\n");
 	for (i = 0; i < UTILITY_SIMSCRIPT_NUM_PARS; i++)
 		if (simScriptPtr->parList->pars[i].index !=
 		  UTILITY_SIMSCRIPT_SIMULATION)
 			PrintPar_UniParMgr(&simScriptPtr->parList->pars[i], "", "\t");
 	DPrint("\n");
 	PrintInstructions_Utility_Datum(localSimScriptPtr->simulation, "",
-	  DATUM_INITIAL_INDENT_LEVEL, "\t");
+	  DATUM_INITIAL_INDENT_LEVEL, "");
 	DPrint("\n");
 	PrintParListModules_Utility_Datum(localSimScriptPtr->simulation, "");
-	DPrint("\n%s Simulation parameter file divider.\n\n",
+	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE);
+	DPrint("%s Simulation parameter file divider.\n",
 	  SIMSCRIPT_SIMPARFILE_DIVIDER);
+	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE "\n");
 	simScriptPtr = localSimScriptPtr;
 	return(TRUE);
 
@@ -543,7 +550,7 @@ ReadSimParFileOld_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimParFileOld_Utility_SimScript";
 	BOOLN	ok = TRUE, foundDivider = FALSE;
-	char	parName[MAXLINE], parValue[MAXLINE], operationMode[MAXLINE];
+	char	parName[MAXLINE], parValue[MAX_FILE_PATH], operationMode[MAXLINE];
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 	
@@ -597,7 +604,7 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimParFileOld_Utility_SimScript";
 	BOOLN	ok = TRUE, foundDivider = FALSE;
-	char	parName[MAXLINE], parValue[MAXLINE];
+	char	parName[MAXLINE], parValue[MAX_FILE_PATH];
 	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
@@ -1011,6 +1018,36 @@ NotifyError_Utility_SimScript(char *format, ...)
 	  lineNumber + 1);
 
 } /* NotifyError */
+
+/****************************** InstallProcessInst ****************************/
+
+/*
+ * This routine initialises the EarObjects in a simulation.
+ * It is called by the parser routine.
+ * A return value of -1 means that parsing should continue.
+ */
+
+DatumPtr
+InstallProcessInst_Utility_SimScripts(char *moduleName)
+{
+	static char *funcName = "InstallProcessInst_Utility_SimScripts";
+	DatumPtr	p;
+
+	if (!GetRegEntry_ModuleReg(moduleName)) {
+		NotifyError_Utility_SimScript("%s: process module '%s' not known.",
+		 funcName, moduleName);
+	   return(NULL);
+	}
+	if ((p = InstallInst_Utility_Datum(simScriptPtr->simPtr, PROCESS)) ==
+	  NULL) {
+		NotifyError_Utility_SimScript("%s: process module '%s' not known.",
+		  funcName, moduleName);
+		return(NULL);
+	}
+	p->u.proc.moduleName = InitString_Utility_String(moduleName);
+	return(p);
+
+}
 
 /****************************** InitialiseEarObjects **************************/
 

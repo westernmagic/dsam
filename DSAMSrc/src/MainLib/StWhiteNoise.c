@@ -75,7 +75,7 @@ Init_WhiteNoise(ParameterSpecifier parSpec)
 	whiteNoisePtr->randomizationIndexFlag = TRUE;
 	whiteNoisePtr->ranSeedFlag = TRUE;
 	whiteNoisePtr->numChannels = 1;
-	whiteNoisePtr->intensity = 30.0;
+	whiteNoisePtr->intensity = DEFAULT_INTENSITY;
 	whiteNoisePtr->duration = 0.1;
 	whiteNoisePtr->dt = DEFAULT_DT;
 	whiteNoisePtr->correlationDegree = 1;

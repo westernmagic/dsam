@@ -72,7 +72,7 @@ Init_PureTone_2(ParameterSpecifier parSpec)
 	pureTone2Ptr->beginPeriodDurationFlag = TRUE;
 	pureTone2Ptr->endPeriodDurationFlag = TRUE;
 	pureTone2Ptr->frequency = 1000.0;
-	pureTone2Ptr->intensity = 30.0;
+	pureTone2Ptr->intensity = DEFAULT_INTENSITY;
 	pureTone2Ptr->duration = 0.08;
 	pureTone2Ptr->dt = DEFAULT_DT;
 	pureTone2Ptr->beginPeriodDuration = 0.01;

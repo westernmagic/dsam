@@ -66,9 +66,9 @@ Free_Filter_MultiBPass(void)
 		free(multiBPassFPtr->cascade);
 		multiBPassFPtr->cascade = NULL;
 	}
-	if (multiBPassFPtr->preAttenuation) {
-		free(multiBPassFPtr->preAttenuation);
-		multiBPassFPtr->preAttenuation = NULL;
+	if (multiBPassFPtr->gain) {
+		free(multiBPassFPtr->gain);
+		multiBPassFPtr->gain = NULL;
 	}
 	if (multiBPassFPtr->upperCutOffFreq) {
 		free(multiBPassFPtr->upperCutOffFreq);
@@ -101,7 +101,7 @@ SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
 	  "SetDefaultNumFiltersArrays_Filter_MultiBPass";
 	int		i;
 	int		cascade[] = {2, 2, 2};
-	double	preAttenuation[] = {1.5, 6.0, -11.0};
+	double	gain[] = {1.5, 6.0, -11.0};
 	double	lowerCutOffFreq[] = {330.0, 1900.0, 7500.0};
 	double	upperCutOffFreq[] = {5500.0, 5000.0, 14000.0};
 
@@ -111,7 +111,7 @@ SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
 	}
 	for (i = 0; i < multiBPassFPtr->numFilters; i++) {
 		multiBPassFPtr->cascade[i] = cascade[i];
-		multiBPassFPtr->preAttenuation[i] = preAttenuation[i];
+		multiBPassFPtr->gain[i] = gain[i];
 		multiBPassFPtr->upperCutOffFreq[i] = upperCutOffFreq[i];
 		multiBPassFPtr->lowerCutOffFreq[i] = lowerCutOffFreq[i];
 	}
@@ -155,7 +155,7 @@ Init_Filter_MultiBPass(ParameterSpecifier parSpec)
 	multiBPassFPtr->numFiltersFlag = FALSE;
 	multiBPassFPtr->numFilters = 0;
 	multiBPassFPtr->cascade = NULL;
-	multiBPassFPtr->preAttenuation = NULL;
+	multiBPassFPtr->gain = NULL;
 	multiBPassFPtr->upperCutOffFreq = NULL;
 	multiBPassFPtr->lowerCutOffFreq = NULL;
 
@@ -198,7 +198,7 @@ SetUniParList_Filter_MultiBPass(void)
 	pars = multiBPassFPtr->parList->pars;
 	SetPar_UniParMgr(&pars[MULTIBPASS_NUMFILTERS], "NUM_FILTERS",
 	  "No. of parallel band pass filters.",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &multiBPassFPtr->numFilters, NULL,
 	  (void * (*)) SetNumFilters_Filter_MultiBPass);
 	SetPar_UniParMgr(&pars[MULTIBPASS_CASCADE], "CASCADE",
@@ -206,12 +206,11 @@ SetUniParList_Filter_MultiBPass(void)
 	  UNIPAR_INT_ARRAY,
 	  &multiBPassFPtr->cascade, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualCascade_Filter_MultiBPass);
-	SetPar_UniParMgr(&pars[MULTIBPASS_PREATTENUATION],
-	  "ATTENUATION",
+	SetPar_UniParMgr(&pars[MULTIBPASS_GAIN], "GAIN",
 	  "Filter pre-attentuation (dB SPL).",
 	  UNIPAR_REAL_ARRAY,
-	  &multiBPassFPtr->preAttenuation, &multiBPassFPtr->numFilters,
-	  (void * (*)) SetIndividualPreAttenuation_Filter_MultiBPass);
+	  &multiBPassFPtr->gain, &multiBPassFPtr->numFilters,
+	  (void * (*)) SetIndividualGain_Filter_MultiBPass);
 	SetPar_UniParMgr(&pars[MULTIBPASS_LOWERCUTOFFFREQ],
 	  "LOWER_FREQ",
 	  "Filter lower cut-off frequencies (Hz).",
@@ -224,6 +223,8 @@ SetUniParList_Filter_MultiBPass(void)
 	  UNIPAR_REAL_ARRAY,
 	  &multiBPassFPtr->upperCutOffFreq, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualUpperCutOffFreq_Filter_MultiBPass);
+
+	SetAltAbbreviation_UniParMgr(&pars[MULTIBPASS_GAIN], "ATTENUATION");
 	return(TRUE);
 
 }
@@ -279,11 +280,11 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
 		  numFilters);
 		return(FALSE);
 	}
-	if (multiBPassFPtr->preAttenuation)
-		free(multiBPassFPtr->preAttenuation);
-	if ((multiBPassFPtr->preAttenuation = (double *) calloc(numFilters,
+	if (multiBPassFPtr->gain)
+		free(multiBPassFPtr->gain);
+	if ((multiBPassFPtr->gain = (double *) calloc(numFilters,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' preAttenuation.",
+		NotifyError("%s: Cannot allocate memory for '%d' gain.",
 		  funcName, numFilters);
 		return(FALSE);
 	}
@@ -317,8 +318,8 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
  */
 
 BOOLN
-SetPars_Filter_MultiBPass(int numFilters, int *cascade,
-  double *preAttenuation, double *upperCutOffFreq, double *lowerCutOffFreq)
+SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
+  double *upperCutOffFreq, double *lowerCutOffFreq)
 {
 	static const char	*funcName = "SetPars_Filter_MultiBPass";
 	BOOLN	ok;
@@ -328,7 +329,7 @@ SetPars_Filter_MultiBPass(int numFilters, int *cascade,
 		ok = FALSE;
 	if (!SetCascade_Filter_MultiBPass(cascade))
 		ok = FALSE;
-	if (!SetPreAttenuation_Filter_MultiBPass(preAttenuation))
+	if (!SetGain_Filter_MultiBPass(gain))
 		ok = FALSE;
 	if (!SetUpperCutOffFreq_Filter_MultiBPass(upperCutOffFreq))
 		ok = FALSE;
@@ -426,56 +427,61 @@ SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade)
 		  funcName, multiBPassFPtr->numFilters - 1, theIndex);
 		return(FALSE);
 	}
+	if (theCascade < 1) {
+		NotifyError("%s: This value must be greater than 0 (%d).\n", funcName,
+		  theCascade);
+		return(FALSE);
+	}
 	/*** Put any other required checks here. ***/
 	multiBPassFPtr->cascade[theIndex] = theCascade;
 	return(TRUE);
 
 }
 
-/****************************** SetPreAttenuation *****************************/
+/****************************** SetGain ***************************************/
 
 /*
- * This function sets the module's preAttenuation array.
+ * This function sets the module's gain array.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetPreAttenuation_Filter_MultiBPass(double *thePreAttenuation)
+SetGain_Filter_MultiBPass(double *theGain)
 {
-	static const char	*funcName = "SetPreAttenuation_Filter_MultiBPass";
+	static const char	*funcName = "SetGain_Filter_MultiBPass";
 
 	if (multiBPassFPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	multiBPassFPtr->preAttenuation = thePreAttenuation;
+	multiBPassFPtr->gain = theGain;
 	return(TRUE);
 
 }
 
-/****************************** SetIndividualPreAttenuation *******************/
+/****************************** SetIndividualGain *****************************/
 
 /*
- * This function sets the module's preAttenuation array element.
+ * This function sets the module's gain array element.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetIndividualPreAttenuation_Filter_MultiBPass(int theIndex,
-  double thePreAttenuation)
+SetIndividualGain_Filter_MultiBPass(int theIndex,
+  double theGain)
 {
 	static const char *funcName =
-	  "SetIndividualPreAttenuation_Filter_MultiBPass";
+	  "SetIndividualGain_Filter_MultiBPass";
 
 	if (multiBPassFPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (multiBPassFPtr->preAttenuation == NULL) {
-		NotifyError("%s: PreAttenuation not set.", funcName);
+	if (multiBPassFPtr->gain == NULL) {
+		NotifyError("%s: Gain not set.", funcName);
 		return(FALSE);
 	}
 	if (theIndex > multiBPassFPtr->numFilters - 1) {
@@ -484,7 +490,7 @@ SetIndividualPreAttenuation_Filter_MultiBPass(int theIndex,
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	multiBPassFPtr->preAttenuation[theIndex] = thePreAttenuation;
+	multiBPassFPtr->gain[theIndex] = theGain;
 	return(TRUE);
 
 }
@@ -634,8 +640,8 @@ CheckPars_Filter_MultiBPass(void)
 		NotifyError("%s: cascade array not set.", funcName);
 		ok = FALSE;
 	}
-	if (multiBPassFPtr->preAttenuation == NULL) {
-		NotifyError("%s: preAttenuation array not set.", funcName);
+	if (multiBPassFPtr->gain == NULL) {
+		NotifyError("%s: gain array not set.", funcName);
 		ok = FALSE;
 	}
 	if (multiBPassFPtr->upperCutOffFreq == NULL) {
@@ -673,7 +679,7 @@ PrintPars_Filter_MultiBPass(void)
 	  " L. Cutoff", " H. Cutoff");
 	DPrint("\t%10s\t%10s\t%10s\t%10s\n", "(dB)", "", "(Hz)", "(Hz)");
 	for (i = 0; i < multiBPassFPtr->numFilters; i++)
-		DPrint("\t%10g\t%10d\t%10g\t%10g\n", multiBPassFPtr->preAttenuation[i],
+		DPrint("\t%10g\t%10d\t%10g\t%10g\n", multiBPassFPtr->gain[i],
 		  multiBPassFPtr->cascade[i], multiBPassFPtr->lowerCutOffFreq[i],
 		  multiBPassFPtr->upperCutOffFreq[i]);
 	return(TRUE);
@@ -712,8 +718,8 @@ ReadPars_Filter_MultiBPass(char *fileName)
 	}
 	for (i = 0; i < numFilters; i++)
 		if (!GetPars_ParFile(fp, "%d %lf %lf %lf", &multiBPassFPtr->cascade[i],
-		  &multiBPassFPtr->preAttenuation[i], &multiBPassFPtr->lowerCutOffFreq[
-		  i], &multiBPassFPtr->upperCutOffFreq[i]))
+		  &multiBPassFPtr->gain[i], &multiBPassFPtr->lowerCutOffFreq[i],
+		  &multiBPassFPtr->upperCutOffFreq[i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
@@ -723,8 +729,8 @@ ReadPars_Filter_MultiBPass(char *fileName)
 		return(FALSE);
 	}
 	if (!SetPars_Filter_MultiBPass(numFilters, multiBPassFPtr->cascade,
-	  multiBPassFPtr->preAttenuation, multiBPassFPtr->upperCutOffFreq,
-	  multiBPassFPtr->lowerCutOffFreq)) {
+	  multiBPassFPtr->gain, multiBPassFPtr->upperCutOffFreq, multiBPassFPtr->
+	  lowerCutOffFreq)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
@@ -972,9 +978,9 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		bPParsPtr = &multiBPassFPtr->bPassPars[i];
 		TempInputConnection_EarObject(data, bPParsPtr->data, 1);
 		InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
-		if (fabs(multiBPassFPtr->preAttenuation[i]) > DBL_EPSILON)
-			GaindB_SignalData(bPParsPtr->data->outSignal, multiBPassFPtr->
-			  preAttenuation[i]);
+		if (fabs(multiBPassFPtr->gain[i]) > DBL_EPSILON)
+			GaindB_SignalData(bPParsPtr->data->outSignal, multiBPassFPtr->gain[
+			  i]);
 		BandPass_Filters(bPParsPtr->data->outSignal, bPParsPtr->coefficients);
 	}
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {

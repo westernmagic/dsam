@@ -554,12 +554,18 @@ CheckData_Analysis_FindBin(EarObjectPtr data)
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
+	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->timeOffset +
+	  findBinPtr->binWidth >= signalDuration)) {
+		NotifyError("%s: Time offset + bin width (%g ms) must not "
+		  "exceed the signal duration (%g ms).", funcName, MSEC(findBinPtr->
+		  timeOffset + findBinPtr->binWidth), MSEC(signalDuration));
+		return(FALSE);
+	}
 	if ((findBinPtr->timeWidth > 0.0) && (findBinPtr->timeOffset +
 	  findBinPtr->timeWidth >= signalDuration)) {
 		NotifyError("%s: Time offset + range (%g ms) must not exceed the "
-		  "signal duration (%g ms).", funcName,
-		  MSEC(findBinPtr->timeOffset + findBinPtr->timeWidth),
-			MSEC(signalDuration));
+		  "signal duration (%g ms).", funcName, MSEC(findBinPtr->timeOffset +
+		  findBinPtr->timeWidth), MSEC(signalDuration));
 		return(FALSE);
 	}
 	return(TRUE);

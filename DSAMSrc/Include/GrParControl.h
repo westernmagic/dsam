@@ -44,7 +44,7 @@ class ParControl {
 				  LIST_BOX } tag;
 
   private:
-	bool	updateFlag, firstSlider;
+	bool	updateFlag;
 	int		infoNum;
 	UniParPtr	par;
 	union {
@@ -80,7 +80,6 @@ class ParControl {
 
 	void	Init(Tag theTag, int theInfoNum, UniParPtr thePar);
 
-	bool			FirstSlider(void)	{ return firstSlider; }
 	wxButton *		GetButton(void)		{ return button; }
 	wxCheckBox *	GetCheckBox(void)	{ Check(CHECK_BOX); return checkBox; }
 	wxChoice *		GetChoice(void)		{ Check(CHOICE); return choice; }
@@ -101,7 +100,6 @@ class ParControl {
 	void	ResetValue(void);
 	void	SetEnable(void);
 	void	SetButton(wxButton *theButton);
-	void	SetFirstSlider(void)				{ firstSlider = TRUE; }
 	void	SetSlider(wxSlider *theSlider);
 	void	SetUpdateFlag(bool state)			{ updateFlag = state; }
 

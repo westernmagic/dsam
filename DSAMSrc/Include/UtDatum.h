@@ -50,7 +50,7 @@
 /******************************************************************************/
 
 #define	DATUM_DEFAULT_EAROBJECT_CONNECTIONS		1
-#define DATUM_INITIAL_INDENT_LEVEL				1
+#define DATUM_INITIAL_INDENT_LEVEL				0
 
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
@@ -185,6 +185,9 @@ void	PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName,
 BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
+
+BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName,
+		  int indentLevel, char *prefix, BOOLN checkForSubSimScripts);
 
 char *	NameAndLabel_Utility_Datum(DatumPtr pc);
 

@@ -204,12 +204,12 @@ SetUniParList_Utility_SelectChannels(void)
 	  (void * (*)) SetSelectionMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], "NUM_CHANNELS",
 	  "No. of channels in selection field (This is no longer).",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &selectChanPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONARRAY], "ARRAY",
 	  "Selection array 0 = off, 1 = on.",
-	  UNIPAR_INT_ARRAY,
+	  UNIPAR_REAL_ARRAY,
 	  &selectChanPtr->selectionArray, &selectChanPtr->numChannels,
 	  (void * (*)) SetIndividualSelection_Utility_SelectChannels);
 
@@ -280,8 +280,8 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
 		return(TRUE);
 	if (selectChanPtr->selectionArray)
 		free(selectChanPtr->selectionArray);
-	if ((selectChanPtr->selectionArray = (int *) calloc(numChannels,
-	  sizeof(int))) == NULL) {
+	if ((selectChanPtr->selectionArray = (double *) calloc(numChannels,
+	  sizeof(double))) == NULL) {
 		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
 		  funcName, numChannels);
 		return(FALSE);
@@ -301,7 +301,7 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
 
 BOOLN
 SetPars_Utility_SelectChannels(char *mode, int numChannels,
-  int *selectionArray)
+  double *selectionArray)
 {
 	static const char	*funcName = "SetPars_Utility_SelectChannels";
 	BOOLN	ok;
@@ -427,7 +427,7 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
  */
 
 BOOLN
-SetSelectionArray_Utility_SelectChannels(int *theSelectionArray)
+SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
 {
 	static const char	*funcName = "SetSelectionArray_Utility_SelectChannels";
 
@@ -452,15 +452,16 @@ BOOLN
 ResizeSelectionArray_Utility_SelectChannels(int numChannels)
 {
 	static const char *funcName = "ResizeSelectionArray_Utility_SelectChannels";
-	register int	*newArray, *oldArray;
-	int		i, *savedArray = NULL;
+	register double	*newArray, *oldArray;
+	int		i;
+	double	*savedArray = NULL;
 
 	if (numChannels == selectChanPtr->numChannels)
 		return(TRUE);
 	if (selectChanPtr->selectionArray)
 		savedArray = selectChanPtr->selectionArray;
-	if ((selectChanPtr->selectionArray = (int *) calloc(numChannels,
-	  sizeof(int))) == NULL) {
+	if ((selectChanPtr->selectionArray = (double *) calloc(numChannels,
+	  sizeof(double))) == NULL) {
 		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
 		  funcName, numChannels);
 		return(FALSE);
@@ -485,7 +486,7 @@ ResizeSelectionArray_Utility_SelectChannels(int numChannels)
  */
 
 BOOLN
-SetIndividualSelection_Utility_SelectChannels(int theIndex, int theSelection)
+SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 {
 	static const char *funcName =
 	  "SetIndividualSelectionArray_Utility_SelectChannels";
@@ -500,8 +501,8 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, int theSelection)
 		  "mode.", funcName);
 		return(FALSE);
 	}
-	if (theSelection < 0) {
-		NotifyError("%s: The selection values must be greater than zero ('%d'",
+	if (theSelection < 0.0) {
+		NotifyError("%s: The selection values must be greater than zero ('%g'",
 		  funcName, theSelection);
 		return(FALSE);
 	}
@@ -576,8 +577,8 @@ PrintPars_Utility_SelectChannels(void)
 	DPrint("\t%10s\n", "Selection Array");
 	DPrint("\t%10s\n", "(state)");
 	for (i = 0; i < selectChanPtr->numChannels; i++)
-		if (selectChanPtr->selectionArray[i])
-			DPrint("\t    on * %d\n", selectChanPtr->selectionArray[i]);
+		if (selectChanPtr->selectionArray[i] > 0.0)
+			DPrint("\t    on * %g\n", selectChanPtr->selectionArray[i]);
 		else
 			DPrint("\t    off\n");
 	DPrint("\tMode = %s,", selectChanPtr->modeList[selectChanPtr->mode].name);
@@ -620,7 +621,7 @@ ReadPars_Utility_SelectChannels(char *fileName)
 		return(FALSE);
 	}
 	for (i = 0; i < selectChanPtr->numChannels; i++)
-		if (!GetPars_ParFile(fp, "%d", &selectChanPtr->selectionArray[i]))
+		if (!GetPars_ParFile(fp, "%lf", &selectChanPtr->selectionArray[i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
@@ -755,22 +756,22 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 		switch (selectChanPtr->selectionMode) {
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL:
 			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 1;
+				selectChanPtr->selectionArray[i] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE:
 			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0;
-			selectChanPtr->selectionArray[selectChanPtr->numChannels / 2] = 1;
+				selectChanPtr->selectionArray[i] = 0.0;
+			selectChanPtr->selectionArray[selectChanPtr->numChannels / 2] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST:
 			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0;
-			selectChanPtr->selectionArray[0] = 1;
+				selectChanPtr->selectionArray[i] = 0.0;
+			selectChanPtr->selectionArray[0] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST:
 			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0;
-			selectChanPtr->selectionArray[selectChanPtr->numChannels - 1] = 1;
+				selectChanPtr->selectionArray[i] = 0.0;
+			selectChanPtr->selectionArray[selectChanPtr->numChannels - 1] = 1.0;
 			break;
 		default:
 			;
@@ -800,9 +801,9 @@ BOOLN
 Process_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SelectChannels";
-	register	ChanData	 *inPtr, *outPtr;
+	register	ChanData	 *inPtr, *outPtr, multiplier;
 	uShort	numChannels = 0;
-	int		i, k, l, chan, inChanIndex, multiplier;
+	int		i, k, l, chan, inChanIndex;
 	ChanLen	j;
 
 	if (!CheckPars_Utility_SelectChannels())
@@ -823,14 +824,14 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		break;
 	case SELECT_CHANS_REMOVE_MODE:
 		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
-			if (selectChanPtr->selectionArray[i])
+			if (selectChanPtr->selectionArray[i] > 0.0)
 				numChannels++;
 			numChannels *= data->inSignal[0]->interleaveLevel;
 			break;
 	case SELECT_CHANS_EXPAND_MODE:
 		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
-			if (selectChanPtr->selectionArray[i])
-				numChannels += selectChanPtr->selectionArray[i];
+			if (selectChanPtr->selectionArray[i] > 0.0)
+				numChannels += (uShort) selectChanPtr->selectionArray[i];
 			numChannels *= data->inSignal[0]->interleaveLevel;
 		break;
 	} /* switch */
@@ -846,10 +847,12 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	case SELECT_CHANS_ZERO_MODE:
 		for (i = 0; i < data->inSignal[0]->numChannels; i++) {
 			outPtr = data->outSignal->channel[i];
-			if (selectChanPtr->selectionArray[i]) {
+			if (selectChanPtr->selectionArray[i] > 0.0) {
+			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 				inPtr = data->inSignal[0]->channel[i];
+				multiplier = selectChanPtr->selectionArray[inChanIndex];
 				for (j = 0; j < data->outSignal->length; j++)
-					*outPtr++ = *inPtr++;
+					*outPtr++ = *inPtr++ * multiplier;
 			} else
 				for (j = 0; j < data->outSignal->length; j++)
 					*outPtr++ = 0.0;
@@ -858,7 +861,7 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	case SELECT_CHANS_REMOVE_MODE:
 		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
-			if (selectChanPtr->selectionArray[inChanIndex]) {
+			if (selectChanPtr->selectionArray[inChanIndex] > 0.0) {
 				SetInfoChannelLabel_SignalData(data->outSignal, chan, data->
 				  inSignal[0]->info.chanLabel[i]);
 				SetInfoCF_SignalData(data->outSignal, chan, data->inSignal[0]->
@@ -876,7 +879,7 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i += data->
 		  inSignal[0]->interleaveLevel) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
-			if (selectChanPtr->selectionArray[inChanIndex])
+			if (selectChanPtr->selectionArray[inChanIndex] > 0.0)
 				for (k = 0; k < selectChanPtr->selectionArray[inChanIndex];
 				  k++)
 					for (l = 0; l < data->outSignal->interleaveLevel; l++) {

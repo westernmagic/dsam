@@ -334,7 +334,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
 		if (!InitChannels_SignalData(data->outSignal, numChannels, FALSE)) {
 			NotifyError("%s: Cannot initialise output channels for "
-			  "EarObject '%s'.", funcName, data->processName);
+			  "EarObject '%s'.", funcName, POSSIBLY_NULL_STRING_PTR(data->
+			  processName));
 			Free_SignalData(&data->outSignal);
 			data->localOutSignalFlag = FALSE;
 			return(FALSE);
@@ -427,7 +428,7 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 	
 	if (samplingInterval == 0.0) {
 		NotifyError("%s: Time step is zero for EarObject '%s'!", funcName,
-		  data->processName);
+		  POSSIBLY_NULL_STRING_PTR(data->processName));
 		return(FALSE);
 	}
 	if (!SetNewOutSignal_EarObject(data, numChannels, length,
@@ -484,7 +485,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 	}
 	if (!SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0])) {
 		NotifyError("%s: Cannot set output Channels for EarObject: '%s'.",
-		funcName, data->processName);
+		  funcName, POSSIBLY_NULL_STRING_PTR(data->processName));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -856,12 +857,12 @@ GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
 		exit(1);
 	if (channel >= data->outSignal->numChannels) {
 		NotifyError("%s: Illegal channel number (%u) for '%s' EarObject.",
-		  funcName, channel, data->processName);
+		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
 	if (sample >= data->outSignal->length) {
 		NotifyError("%s: Illegal sample number (%u) for '%s' EarObject.",
-		  funcName, sample, data->processName);
+		  funcName, sample, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
 	return(data->outSignal->channel[channel][sample]);
@@ -890,7 +891,7 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
 		exit(1);
 	if (channel >= data->outSignal->numChannels) {
 		NotifyError("%s: Illegal channel number (%u) for '%s' EarObject.",
-		  funcName, channel, data->processName);
+		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
 	if (data->outSignal->length < 1) {

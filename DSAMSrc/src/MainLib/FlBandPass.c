@@ -148,7 +148,7 @@ SetUniParList_Filter_BandPass(void)
 	  UNIPAR_INT,
 	  &bandPassFPtr->cascade, NULL,
 	  (void * (*)) SetCascade_Filter_BandPass);
-	SetPar_UniParMgr(&pars[BANDPASS_PREATTENUATION], "ATTENUATION",
+	SetPar_UniParMgr(&pars[BANDPASS_PREATTENUATION], "GAIN",
 	  "Pre-attenuation for filter (dB).",
 	  UNIPAR_REAL,
 	  &bandPassFPtr->preAttenuation, NULL,
@@ -164,6 +164,7 @@ SetUniParList_Filter_BandPass(void)
 	  &bandPassFPtr->upperCutOffFreq, NULL,
 	  (void * (*)) SetUpperCutOffFreq_Filter_BandPass);
 
+	SetAltAbbreviation_UniParMgr(&pars[BANDPASS_PREATTENUATION], "ATTENUATION");
 	return(TRUE);
 
 }

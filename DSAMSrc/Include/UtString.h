@@ -41,8 +41,6 @@
  */
 __BEGIN_DECLS
 
-void	CopyAndTrunc_Utility_String(char *dest, char *src, size_t n);
-
 char *	GetFileNameFPath_Utility_String(char *fileName);
 
 char *	GetSuffix_Utility_String(char *fileName);

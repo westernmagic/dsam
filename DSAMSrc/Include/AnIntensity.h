@@ -18,7 +18,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_INTENSITY_NUM_PARS			1
+#define ANALYSIS_INTENSITY_NUM_PARS			2
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -26,7 +26,8 @@
 
 typedef enum {
 
-	ANALYSIS_INTENSITY_TIMEOFFSET
+	ANALYSIS_INTENSITY_TIMEOFFSET,
+	ANALYSIS_INTENSITY_EXTENT
 
 } IntensityParSpecifier;
 
@@ -34,8 +35,9 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	timeOffsetFlag;
+	BOOLN	timeOffsetFlag, extentFlag;
 	double	timeOffset;
+	double	extent;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -75,6 +77,8 @@ BOOLN	PrintPars_Analysis_Intensity(void);
 BOOLN	ReadPars_Analysis_Intensity(char *fileName);
 
 BOOLN	InitModule_Analysis_Intensity(ModulePtr theModule);
+
+BOOLN	SetExtent_Analysis_Intensity(double theExtent);
 
 BOOLN	SetParsPointer_Analysis_Intensity(ModulePtr theModule);
 

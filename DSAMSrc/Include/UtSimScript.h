@@ -59,6 +59,8 @@
 #define SIMSCRIPT_SIMPARFILE_DIVIDER		"<<>>"
 #define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	"<()>"
 #define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'
+#define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE "#########################"\
+		  "#######################################################\n"
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -163,6 +165,8 @@ BOOLN	InitParFilePathModeList_Utility_SimScript(void);
 BOOLN	InitSimulation_Utility_SimScript(DatumPtr simulation);
 
 char *	InitString_Utility_SimScript(char *string);
+
+DatumPtr	InstallProcessInst_Utility_SimScripts(char *moduleName);
 
 void	NotifyError_Utility_SimScript(char *format, ...);
 

@@ -135,6 +135,9 @@ SetUniParList_Utility_ReduceDt(void)
 	  UNIPAR_INT,
 	  &reduceDtPtr->denominator, NULL,
 	  (void * (*)) SetDenominator_Utility_ReduceDt);
+
+	SetAltAbbreviation_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR],
+	  "DENOMINTOR");
 	return(TRUE);
 
 }

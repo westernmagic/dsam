@@ -1165,6 +1165,9 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
  * With repeated calls the Signal memory is only allocated once, then re-used.
  * The signalData process is "Manually" connected to the appropriate input
  * signal.
+ * The width of the frame must be "(positive - negative) / dt + 1".  The
+ * addtional 1 is necessary because of the zero.  Thank you God, for helping me
+ * to find that.
  */
 
 BOOLN
@@ -1186,7 +1189,7 @@ Process_Analysis_SAI(EarObjectPtr data)
 	dt = data->inSignal[0]->dt;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 	  (ChanLen) floor((sAImagePtr->positiveWidth - sAImagePtr->negativeWidth) /
-	    dt + 0.5), dt)) {
+	    dt + 1.5), dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
@@ -1221,6 +1224,11 @@ Process_Analysis_SAI(EarObjectPtr data)
 			} else if ((frameLength - positiveWidthIndex) < negativeWidthIndex)
 				negativeWidthIndex = frameLength - positiveWidthIndex;
 		}
+		if (sAImagePtr->strobeDataBuffer->outSignal->length < (sAImagePtr->
+		  zeroIndex + strobePtr->numLastSamples))
+			printf("%s: Oops! length = %lu, offset = %lu\n", funcName,
+			  sAImagePtr->strobeDataBuffer->outSignal->length, sAImagePtr->
+		  	  zeroIndex + strobePtr->numLastSamples);
 		ProcessFrameSection_Analysis_SAI(data,
 		  sAImagePtr->strobeDataBuffer->outSignal->channel,
 		  sAImagePtr->dataBuffer->outSignal->channel, sAImagePtr->zeroIndex +

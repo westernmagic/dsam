@@ -48,7 +48,7 @@ SetDefaultNumPTonesArrays_PureTone_Multi(void)
 {
 	static const char	*funcName = "SetDefaultNumPTonesArrays_PureTone_Multi";
 	int		i;
-	double	intensities[] = {20.0, 20.0};
+	double	intensities[] = {DEFAULT_INTENSITY, DEFAULT_INTENSITY};
 	double	frequencies[] = {100.0, 200.0};
 	double	phases[] = {0.0, 0.0};
 
@@ -172,7 +172,7 @@ SetUniParList_PureTone_Multi(void)
 	pars = mPureTonePtr->parList->pars;
 	SetPar_UniParMgr(&pars[PURETONE_MULTI_NUMPTONES], "NUM",
 	  "Number of pure tones.",
-	  UNIPAR_INT,
+	  UNIPAR_INT_AL,
 	  &mPureTonePtr->numPTones, NULL,
 	  (void * (*)) SetNumPTones_PureTone_Multi);
 	SetPar_UniParMgr(&pars[PURETONE_MULTI_FREQUENCIES], "FREQUENCY",

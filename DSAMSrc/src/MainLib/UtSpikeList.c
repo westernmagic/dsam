@@ -203,16 +203,10 @@ BOOLN
 ResetListSpec_SpikeList(SpikeListSpecPtr listSpec)
 {
 	static const char *funcName = "ResetListSpec_SpikeList";
-	int		i;
 
 	if (listSpec == NULL) {
 		NotifyError("%s: Attempt to reset NULL list specification.", funcName);
 		return(FALSE);
-	}
-	for (i = 0; i < listSpec->numChannels; i++) {
-		listSpec->current[i] = listSpec->head[i];
-		listSpec->riseDetected[i] = FALSE;
-		listSpec->lastValue[i] = 0.0;
 	}
 	listSpec->timeIndex = PROCESS_START_TIME;
 	return(TRUE);
@@ -243,11 +237,13 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 		return(FALSE);
 	}
 	for (chan = 0; chan < signal->numChannels; chan++) {
+		listSpec->current[chan] = listSpec->head[chan];
 		inPtr = signal->channel[chan];
 		riseDetected = listSpec->riseDetected + chan;
 		lastValue = listSpec->lastValue + chan;
 		if (listSpec->timeIndex == PROCESS_START_TIME) {
 			startTime = 1;
+			listSpec->riseDetected[chan] = FALSE;
 			*lastValue = *(inPtr++);
 		} else
 			startTime = 0;

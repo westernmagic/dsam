@@ -1,9 +1,9 @@
-100.0		Permeability constant A (units per second).
-6000.0		Permeability constant B (units per second).
-2000.0		Release rate (units per second).
-5.05		Replenishment rate (units per second).
-2500.0		Loss rate (units per second).
-66.31		Reprocessing rate (units per second).
-6580.0		Recovery rate (units per second).
-1.0			Max. no. of transmitter packets in free pool.
-50000.0		Firing rate (spikes per second).
+PERM_CONST_A	100	Permeability constant A (units/s).
+PERM_CONST_B	6000	Permeability constant B (units/s).
+RELEASE_G	2000	Release rate (units/s).
+REPLENISH_Y	5.05	Replenishment rate (units/s).
+LOSS_L	2500	Loss rate (units/s).
+REPROCESS_X	66.31	Reprocessing rate (units/s).
+RECOVERY_R	6580	Recovery rate (units/s).
+MAX_FREE_POOL_M	1	Max. no. of transmitter packets in free pool.
+FIRING_RATE_H	50000	Firing rate (spikes/s)

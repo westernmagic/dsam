@@ -166,6 +166,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	par->desc = description;
 	switch (type) {
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 	case UNIPAR_BOOL:
 		par->valuePtr.i = (int *) ptr1;
 		break;
@@ -239,6 +240,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_SET_SIMSPEC:
 		switch (type) {
 		case UNIPAR_INT:
+		case UNIPAR_INT_AL:
 			par->FuncPtr.SetInt = (BOOLN (*)(int)) Func;
 			break;
 		case UNIPAR_INT_ARRAY:
@@ -291,6 +293,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_SET_CFLIST:
 		switch (type) {
 		case UNIPAR_INT:
+		case UNIPAR_INT_AL:
 			par->FuncPtr.SetCFListInt = (BOOLN (*)(CFListPtr, int)) Func;
 			break;
 		case UNIPAR_REAL:
@@ -339,6 +342,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_SET_ICLIST:
 		switch (type) {
 		case UNIPAR_INT:
+		case UNIPAR_INT_AL:
 			par->FuncPtr.SetICListInt = (BOOLN (*)(IonChanListPtr, int)) Func;
 			break;
 		case UNIPAR_REAL:
@@ -362,6 +366,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_SET_IC:
 		switch (type) {
 		case UNIPAR_INT:
+		case UNIPAR_INT_AL:
 			par->FuncPtr.SetICInt = (BOOLN (*)(IonChannelPtr, int)) Func;
 			break;
 		case UNIPAR_REAL:
@@ -449,6 +454,7 @@ PrintValue_UniParMgr(UniParPtr p)
 		DPrint("%-10s\t", BooleanList_NSpecLists(*p->valuePtr.i)->name);
 		break;
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		DPrint("%-10d\t", *p->valuePtr.i);
 		break;
 	case UNIPAR_LONG:
@@ -540,6 +546,7 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	switch (p->type) {
 	case UNIPAR_BOOL:
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 	case UNIPAR_LONG:
 	case UNIPAR_REAL:
 	case UNIPAR_STRING:
@@ -793,6 +800,7 @@ GetParString_UniParMgr(UniParPtr p)
 		sprintf(string, "%s", BooleanList_NSpecLists(*p->valuePtr.i)->name);
 		break;
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		sprintf(string, "%d", *p->valuePtr.i);
 		break;
 	case UNIPAR_INT_ARRAY:
@@ -911,6 +919,7 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	p = &parList->pars[index];
 	switch (p->type) {
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		ok = (* p->FuncPtr.SetInt)(atoi(parValue));
 		break;
 	case UNIPAR_INT_ARRAY:
@@ -988,6 +997,7 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 	p = &(*parList)->pars[index];
 	switch (p->type) {
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		ok = (* p->FuncPtr.SetCFListInt)((*parList)->handlePtr.cFs,
 		  atoi(parValue));
 		break;
@@ -1122,6 +1132,7 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	p = &parList->pars[index];
 	switch (p->type) {
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, atoi(parValue));
 		break;
 	case UNIPAR_REAL:
@@ -1176,6 +1187,7 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 
 	switch (p->type) {
 	case UNIPAR_INT:
+	case UNIPAR_INT_AL:
 		ok = (* p->FuncPtr.SetICListInt)(theICs, atoi(parValue));
 		break;
 	case UNIPAR_REAL:
@@ -1194,6 +1206,8 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 		  "(%d).", funcName, p->type);
 		ok = FALSE;
 	}
+	if (ok && (*parList)->updateFlag)
+		ok = PrepareIonChannels_IonChanList(theICs);
 	return(ok);
 
 }

@@ -73,9 +73,9 @@ Init_PureTone_AM(ParameterSpecifier parSpec)
 	aMTonePtr->dtFlag = TRUE;
 	aMTonePtr->intensityFlag = TRUE;
 	aMTonePtr->frequency = 1000.0;
-	aMTonePtr->modulationFrequency = 200.0;
-	aMTonePtr->modulationDepth = 50.0;
-	aMTonePtr->intensity = 20.0;
+	aMTonePtr->modulationFrequency = 50.0;
+	aMTonePtr->modulationDepth = 100.0;
+	aMTonePtr->intensity = DEFAULT_INTENSITY;
 	aMTonePtr->duration = 0.1;
 	aMTonePtr->dt = 0.1e-5;
 

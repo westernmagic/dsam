@@ -67,6 +67,7 @@ class ParListInfo {
 	void	AddModuleListBoxEntries(wxListBox *listBox);
 	bool	CheckChangedValues(void);
 	void	CheckInterDependence(void);
+	wxSlider *	CreateSlider(int index, int numElements);
 	int		GetInfoNum(void)			{ return infoNum; }
 	wxWindow *	GetLastControl(void)	{ return lastControl; }
 	wxSize	GetSize(void) const			{ return wxSize(maxWidth, maxHeight); }
@@ -87,7 +88,6 @@ class ParListInfo {
 	void	SetParListStandard(void);
 	void	SetParListIonChannel(void);
 	bool	SetParValue(ParControl *control);
-	void	SetSlider(int index);
 	void	UpdateControlValues(void);
 
 };

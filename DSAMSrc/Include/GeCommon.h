@@ -91,7 +91,8 @@
 #define DEFAULT_PARS_FILE		stdout
 #define UNSET_FILE_PTR			(FILE *) -1
 #define NULL_MODULE_PROCESS_NAME	"Null process module"
-#define DEFAULT_DT				0.05e-3
+#define DEFAULT_DT				0.01e-3
+#define DEFAULT_INTENSITY		56.0
 
 #ifndef DSAM_DATA_INSTALL_DIR
 #	define	DSAM_DATA_INSTALL_DIR	"."	/* Used to find the DSAM help files. */
@@ -187,6 +188,7 @@
 #define NANO(VALUE)				((VALUE) * 1.0e+9)
 #define PICO(VALUE)				((VALUE) * 1.0e+12)
 
+#define SIGN(X)					(((X) < 0.0)? -1: 1)
 #define SQR(X) 					((X) * (X))
 
 #define	DEGREES_TO_RADS(DEGREES)	((DEGREES) * PI / 180.0)
@@ -265,6 +267,7 @@ typedef struct {
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
 	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
 	BOOLN	dialogOutputFlag;	/* TRUE, when forcing output to GUI dialog */
+	BOOLN	interruptRequestedFlag;	/* TRUE, when an interrupt is in process. */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
 	char	*parsFilePath;		/* File path for parameter files. */
@@ -347,6 +350,8 @@ void	SetDiagnosticsPrefix(char *prefix);
 void	SetErrorsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetGUIDialogStatus(BOOLN status);
+
+void	SetInterruptRequestStatus_Common(BOOLN status);
 
 void	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 

@@ -653,11 +653,11 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 	if (!theData->localInfoFlag)
 		return;
 	if (cFs)
-		for (i = 0; i < theData->numChannels / theData->interleaveLevel; i++)
-			theData->info.cFArray[i] = cFs[i];
+		for (i = 0; i < theData->numChannels; i++)
+			theData->info.cFArray[i] = cFs[i / theData->interleaveLevel];
 	else
 		for (i = 0; i < theData->numChannels / theData->interleaveLevel; i++)
-			theData->info.cFArray[i] = (double) i;
+			theData->info.cFArray[i] = (double) (i / theData->interleaveLevel);
 
 }
 

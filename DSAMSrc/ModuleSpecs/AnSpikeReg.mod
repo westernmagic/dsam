@@ -7,8 +7,9 @@ proc_routine	Calc;
 typedef struct {
 
 	double	eventThreshold;
-	double	binWidth;
+	double	windowWidth;
 	double	timeOffset;
 	double	timeRange;
+	double	deadTime;
 
 } SpikeReg;

@@ -4,8 +4,10 @@
 mod_name		ANSpikeGen;
 qualifier		Carney;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
+	NameSpecifier	inputMode; /* Use 'original' or 'DSAM' input mode. */
 	long	ranSeed;
 	int		numFibres;
 	double	pulseDuration;

@@ -203,6 +203,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	}
 	dataFilePtr->normalise = 0.0;
 	dataFilePtr->normOffset = 0.0;
+	dataFilePtr->outputTimeOffset = 0.0;
 	dataFilePtr->timeOffsetIndex = 0;
 	dataFilePtr->timeOffsetCount = 0;
 	dataFilePtr->maxSamples = 0;
@@ -1307,7 +1308,8 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
 			GaindB_SignalData(data->outSignal, dataFilePtr->gain);
 		if (!data->outSignal->staticTimeFlag)
 			SetOutputTimeOffset_SignalData(data->outSignal,
-			  dataFilePtr->timeOffsetIndex * data->outSignal->dt);
+			  dataFilePtr->timeOffsetIndex * data->outSignal->dt +
+			  dataFilePtr->outputTimeOffset);
 		data->outSignal->rampFlag = TRUE;	/* Let user sort out ramps */
 		SetProcessContinuity_EarObject(data);
 	}
@@ -1355,7 +1357,7 @@ WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data)
 	static const char *funcName = "WriteOutSignalMain_DataFile";
 	BOOLN	ok = FALSE;
 	
-	if (data == NULL) {
+	if (!data || !data->outSignal) {
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}

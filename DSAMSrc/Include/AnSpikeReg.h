@@ -26,7 +26,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_SPIKEREGULARITY_NUM_PARS		4
+#define ANALYSIS_SPIKEREGULARITY_NUM_PARS		5
 #define SPIKE_REG_NUM_RETURNS					3
 #define	SPIKE_REG_MEAN							0
 #define	SPIKE_REG_STANDARD_DEV					1
@@ -40,9 +40,10 @@
 typedef enum {
 
 	ANALYSIS_SPIKEREGULARITY_EVENTTHRESHOLD,
-	ANALYSIS_SPIKEREGULARITY_BINWIDTH,
+	ANALYSIS_SPIKEREGULARITY_WINDOWWIDTH,
 	ANALYSIS_SPIKEREGULARITY_TIMEOFFSET,
-	ANALYSIS_SPIKEREGULARITY_TIMERANGE
+	ANALYSIS_SPIKEREGULARITY_TIMERANGE,
+	ANALYSIS_SPIKEREGULARITY_DEADTIME
 
 } SpikeRegParSpecifier;
 
@@ -51,11 +52,13 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 	BOOLN	updateProcessVariablesFlag;
 
-	BOOLN	eventThresholdFlag, binWidthFlag, timeOffsetFlag, timeRangeFlag;
+	BOOLN	eventThresholdFlag, windowWidthFlag, timeOffsetFlag, timeRangeFlag;
+	BOOLN	deadTimeFlag;
 	double	eventThreshold;
-	double	binWidth;
+	double	windowWidth;
 	double	timeOffset;
 	double	timeRange;
+	double	deadTime;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -100,7 +103,11 @@ BOOLN	PrintPars_Analysis_SpikeRegularity(void);
 
 BOOLN	ReadPars_Analysis_SpikeRegularity(char *fileName);
 
-BOOLN	SetBinWidth_Analysis_SpikeRegularity(double theBinWidth);
+void	ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data);
+
+BOOLN	SetDeadTime_Analysis_SpikeRegularity(double theDeadTime);
+
+BOOLN	SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth);
 
 BOOLN	SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold);
 
@@ -108,8 +115,8 @@ BOOLN	InitModule_Analysis_SpikeRegularity(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_SpikeRegularity(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_SpikeRegularity(double eventThreshold, double binWidth,
-		  double timeOffset, double timeRange);
+BOOLN	SetPars_Analysis_SpikeRegularity(double eventThreshold,
+		  double windowWidth, double timeOffset, double timeRange);
 
 BOOLN	SetTimeOffset_Analysis_SpikeRegularity(double theTimeOffset);
 

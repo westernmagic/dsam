@@ -102,7 +102,7 @@ Init_PureTone_FM(ParameterSpecifier parSpec)
 	fMTonePtr->modulationFrequencyFlag = TRUE;
 	fMTonePtr->modulationPhaseFlag = TRUE;
 	fMTonePtr->frequency = 1000.0;
-	fMTonePtr->intensity = 30.0;
+	fMTonePtr->intensity = DEFAULT_INTENSITY;
 	fMTonePtr->duration = 0.1;
 	fMTonePtr->dt = DEFAULT_DT;
 	fMTonePtr->phase = 0.0;
