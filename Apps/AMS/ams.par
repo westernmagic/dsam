@@ -3,7 +3,7 @@
 #
 screen	Diagnostics mode specifier ("off", "screen" or filename).
 DEFAULT/AIM.sim	Simulation Specification file.
-DEFAULT/AIM.spf	Simulation paramater file mode ('off' or <file name>).
+off	Simulation paramater file mode ('off' or <file name>).
 
 # Misc. parameters
 on		Segmented or frame-base processing mode ('on' or 'off').

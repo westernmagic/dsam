@@ -60,7 +60,7 @@
 /******************************************************************************/
 
 char	progName[MAXLINE], parFileName[MAX_FILE_PATH];
-char	simScriptFile[MAX_FILE_PATH] = "AIM.sim";
+char	simScriptFile[MAX_FILE_PATH] = NO_FILE;
 char	segmentMode[MAXLINE] = "on";
 char	fileLockingMode[MAXLINE] = "off";
 char	simParFileMode[MAX_FILE_PATH] = "off";
@@ -70,6 +70,7 @@ char	diagnosticFile[MAX_FILE_PATH] = NO_FILE;
 BOOLN	readMainParsFlag = FALSE, simScriptFileFlag, numberOfRunsFlag;
 BOOLN	listCFListAndExit = FALSE, listParsAndExit = FALSE;
 BOOLN	simParFileModeFlag = FALSE;
+BOOLN	checkMainInit = TRUE;
 BOOLN	checkInitialisation = TRUE;
 BOOLN	gUIModeFlag = FALSE, parComsUsedFlag = FALSE;
 char 	**argv, *simFile;
@@ -106,10 +107,16 @@ MyRunMgr	myRunMgr;
 bool
 MyRunMgr::OnInit(void)
 {
+	static const char *funcName = "MyRunMgr::OnInit";
+
 	icon = new wxIcon(wxICON(ams));
 	appName = PROGRAM_NAME;
 	dataInstallDir = AMS_DATA_INSTALL_DIR;
 	gUIModeFlag	= TRUE;
+	if (!Init()) {
+		NotifyError("%s: Could not initialise program.", funcName);
+		return(FALSE);
+	}
 	return(TRUE);
 
 }
@@ -151,7 +158,7 @@ MyRunMgr::ResetCommandArgs(void)
 bool
 MyRunMgr::CheckProgInitialisation(void)
 {
-	return(Init());
+	return(InitProcess());
 
 }
 
@@ -378,6 +385,7 @@ SetDiagnosticMode(char *theDiagnosticMode)
 void
 FlagReinitialise(void)
 {
+	checkMainInit = TRUE;
 	checkInitialisation = TRUE;
 #	ifdef GRAPHICS_SUPPORT
 	myRunMgr.SetUpdateProgram(TRUE);
@@ -404,7 +412,7 @@ SetSimScriptFile(char *theSimScriptFile)
 	}
 	strcpy(simScriptFile, theSimScriptFile);
 	simScriptFileFlag = TRUE;
-	if (!checkInitialisation)
+	if (!checkMainInit)
 		SetSimParFileMode("off");
 	FlagReinitialise();
 	return(TRUE);
@@ -668,6 +676,7 @@ ProcessOptions(int argc, char **argv)
 			break;
 		case 'P':
 			strcpy(parFileName, argument);
+			readMainParsFlag = TRUE;
 			break;
 		case 'p':
 			strcpy(simParFileMode, argument);
@@ -956,10 +965,6 @@ Init(void)
 		return(FALSE);
 	}
 	initialCommand = ProcessOptions(argc, argv);
-	if (!readMainParsFlag) {
-		ReadMainParsFromFile(parFileName);
-		readMainParsFlag = TRUE;
-	}
 	if (!SetDiagnosticMode(diagnosticMode)) {
 		NotifyError("%s: Could not set diagnostic mode.", funcName);
 		return(FALSE);
@@ -1000,6 +1005,24 @@ Init(void)
 	  DSAM_VERSION);
 	DPrint("Parameters read from '%s' file.\n", parFileName);
 
+	checkMainInit = FALSE;
+	return(TRUE);
+
+}
+
+/****************************** InitProcess ***********************************/
+
+/*
+ * This function initialises the simulation process.
+ */
+
+BOOLN
+InitProcess(void)
+{
+	static char *funcName = PROGRAM_NAME": InitProcess";
+
+	if (checkMainInit && !Init())
+		return(FALSE);
 	if (!InitSimulation()) {
 		NotifyError("%s: Could not Initialise simulation.", funcName);
 		return(FALSE);
@@ -1131,7 +1154,7 @@ int MainSimulation(MAIN_ARGS)
 	int			i;
 
 	SetArgcAndArgV(argc, argv);
-	if (checkInitialisation && !Init())
+	if (checkInitialisation && !InitProcess())
 		return(1);	
 
 	if (listParsAndExit)

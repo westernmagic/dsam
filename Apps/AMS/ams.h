@@ -63,6 +63,8 @@
 #define	AMS_NUM_PARS				6		/* Number of main parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
+#define AMS_REG_SPF_FILE			"SPFFile"
+#define AMS_REG_SPF_FILE			"SPFFile"
 
 #ifndef GRAPHICS_SUPPORT
 #	define	MAIN_ARGS	int argc, char **argv
@@ -71,7 +73,7 @@
 #endif /* GRAPHICS_SUPPORT */
 
 #ifndef AMS_DATA_INSTALL_DIR
-#	define	AMS_DATA_INSTALL_DIR	"."		/* Used to find the DSAM help files. */
+#	define	AMS_DATA_INSTALL_DIR	"."	/* To find the DSAM help files, etc. */
 #endif
 
 /******************************************************************************/
@@ -149,6 +151,8 @@ void	FlagReinitialise(void);
 StatPtr	GetFileStatusPtr(char *fileName);
 
 BOOLN	Init(void);
+
+BOOLN	InitProcess(void);
 
 BOOLN	InitSimulation(void);
 
