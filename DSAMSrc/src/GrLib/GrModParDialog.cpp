@@ -137,16 +137,23 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 void
 ModuleParDialog::DeleteDialog(void)
 {
-	if (infoNum == MODPARDIALOG_MAIN_PARENT_INFONUM) {
+	switch (infoNum) {
+	case MODPARDIALOG_MAIN_PARENT_INFONUM:
 		wxGetApp().GetFrame()->SetMainParDialog(NULL);
-		return;
+		break;
+	case MODPARDIALOG_DISPLAY_PARENT_INFONUM:
+		if (IsModal())
+			EndModal(wxID_CANCEL);
+		else
+			Close();
+		break;
+	default:
+		DialogList *parent = (DialogList *) GetParent();
+
+		if (pc && pc->data->module->specifier == DISPLAY_MODULE)
+			((SignalDispPtr) pc->data->module->parsPtr)->dialog = NULL;
+		parent->dialogList[infoNum]->dialog = NULL;
 	}
-
-	DialogList *parent = (DialogList *) GetParent();
-
-	if (pc && pc->data->module->specifier == DISPLAY_MODULE)
-		((SignalDispPtr) pc->data->module->parsPtr)->dialog = NULL;
-	parent->dialogList[infoNum]->dialog = NULL;
 
 }
 

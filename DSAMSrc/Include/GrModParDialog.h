@@ -43,6 +43,7 @@
 
 #define	MODPARDIALOG_MAX_PARLISTS			6
 #define	MODPARDIALOG_MAIN_PARENT_INFONUM	-1
+#define	MODPARDIALOG_DISPLAY_PARENT_INFONUM	-2
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
