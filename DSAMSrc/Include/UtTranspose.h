@@ -1,13 +1,16 @@
 /**********************
  *
  * File:		UtTranspose.h
+ * File:		UtTranspose.c
  * Purpose:		This module takes an input signal and converts the n channels
  *				of m samples to m channels of n samples.
  * Comments:	Written using ModuleProducer version 1.4.2 (Dec 19 2003).
+ *				02-03-05 LPO: This module is not being thread enabled as the
+ *				number of input channels defines the channel processing.
  * Author:		L. P. O'Mard
  * Created:		13 Jul 2004
  * Updated:	
- * Copyright:	(c) 2004, CNBH, University of Essex
+ * Copyright:	(c) 2005, CNBH, University of Essex
  *
  *********************/
 
