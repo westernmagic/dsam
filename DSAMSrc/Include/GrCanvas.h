@@ -31,6 +31,7 @@
 /******************************************************************************/
 
 #define	GRAPH_RIGHT_MARGIN_SCALE			0.02
+#define	GRAPH_TOP_MARGIN_PERCENT			5.0
 #define	GRAPH_X_AXIS_SCALE					0.05
 #define	GRAPH_Y_AXIS_SCALE					0.12
 #define	GRAPH_X_TITLE_SCALE					0.04
@@ -100,7 +101,6 @@ class MyCanvas: public wxWindow
 	wxBitmap	*memBmp;
 	MultiLine	*signalLines, *summaryLine;
 	SignalDispPtr	mySignalDispPtr;
-	UniParListPtr	parList;
 
   public:
 
@@ -111,6 +111,7 @@ class MyCanvas: public wxWindow
 	void	DrawAxes(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawVerticalText(wxDC& dc, wxString& string, int x, int y);
+	MultiLine *GetSignalLines(void)		{ return signalLines; }
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }
@@ -124,6 +125,7 @@ class MyCanvas: public wxWindow
 
 	void	RescaleGraph(void);
 	void	SetGraphAreas(void);
+	void	SetGraphPars(void);
 	void	SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect);
 	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
 			  double xResolution);
