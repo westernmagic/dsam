@@ -40,6 +40,11 @@
 * $Header$
 *
 * $Log$
+* Revision 1.3  2001/07/23 14:36:39  lowel
+* Compile error (bcc32): Removed the 'long long' type in Read32Bits... routines as
+* bcc32 doesn't know about it.  The ifdef statements seem to only be required for
+* Crays.
+*
 * Revision 1.2  2001/07/23 11:21:24  lowel
 * Bug fix: The word-reading routines were mixing upper order arithmetic with
 * lower order variables.  For instance, the 'Read16BitsHighLow' routine was doing
@@ -259,12 +264,10 @@ Read24BitsHighLow(FILE *fp)
 }
 
 
-
 int32
 Read32BitsLowHigh(FILE *fp)
 {
-	int32	first, second;
-	long long	result;
+	int32	first, second, result;
 
 	first = 0xffff & Read16BitsLowHigh(fp);
  	second = 0xffff & Read16BitsLowHigh(fp); 
