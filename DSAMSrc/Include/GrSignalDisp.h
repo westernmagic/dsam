@@ -44,7 +44,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			18
+#define DISPLAY_NUM_PARS			19
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
@@ -94,6 +94,7 @@ typedef	enum {
 	DISPLAY_FRAME_DELAY,
 	DISPLAY_MODE,
 	DISPLAY_SUMMARY_DISPLAY,
+	DISPLAY_TOP_MARGIN,
 	DISPLAY_WINDOW_HEIGHT,
 	DISPLAY_WINDOW_TITLE,
 	DISPLAY_WINDOW_WIDTH,
@@ -109,7 +110,7 @@ typedef struct {
 	BOOLN	numGreyScalesFlag, summaryDisplayFlag, magnificationFlag;
 	BOOLN	xResolutionFlag, maxYFlag, minYFlag, widthFlag, frameWidthFlag;
 	BOOLN	frameHeightFlag, frameDelayFlag, titleFlag, channelStepFlag;
-	BOOLN	xTicksFlag, xDecPlacesFlag, yTicksFlag;
+	BOOLN	xTicksFlag, xDecPlacesFlag, yTicksFlag, topMarginFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	char	title[MAXLINE];
@@ -129,6 +130,7 @@ typedef struct {
 	double	xResolution;
 	double	minY;
 	double	maxY;
+	double	topMargin;
 	double	width;
 	
 	/* Private variables */
@@ -221,7 +223,7 @@ BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
 		  int channelStep, int theNumGreyScales, int theFrameHeight,
 		  int theFrameWidth, int theXDecPlaces, int theXticks, int theYticks,
 		  double theFrameDelay, double theMagnification, double theXResolution,
-		  double maxY, double minY, double width);
+		  double maxY, double minY, double topMargin, double width);
 
 BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
@@ -230,6 +232,8 @@ BOOLN	SetMagnification_SignalDisp(double magnification);
 BOOLN	SetSummaryDisplay_SignalDisp(char *summaryDisplay_SignalDis);
 
 BOOLN	SetTitle_SignalDisp(char *title);
+
+BOOLN	SetTopMargin_SignalDisp(double topMargin);
 
 BOOLN	SetUniParList_SignalDisp(void);
 
