@@ -115,7 +115,7 @@ GetPanelList_SignalDisp(int index)
 	static NameSpecifier	list[] = {
 
 				{ "Signal",		DISPLAY_AUTOMATIC_SCALING },
-				{ "Axis",		DISPLAY_X_AXIS_TITLE },
+				{ "Axis",		DISPLAY_Y_AXIS_TITLE },
 				{ "General",	DISPLAY_FRAME_DELAY },
 				{ "", 			DISPLAY_NULL }
 			};
@@ -145,16 +145,16 @@ InitParNameList_SignalDisp(void)
 					{ "X_RESOLUTION",	DISPLAY_X_RESOLUTION },
 					{ "NORMALISATION",	DISPLAY_Y_NORMALISATION_MODE },
 
-					{ "X_AXIS_TITLE",	DISPLAY_X_AXIS_TITLE },
-					{ "X_NUMBER_FORMAT",	DISPLAY_X_NUMBER_FORMAT },
-					{ "X_DEC_PLACES",	DISPLAY_X_DEC_PLACES },
-					{ "X_TICKS",		DISPLAY_X_TICKS },
 					{ "Y_AXIS_TITLE",	DISPLAY_Y_AXIS_TITLE },
 					{ "Y_AXIS_MODE",	DISPLAY_Y_AXIS_MODE },
 					{ "Y_NUMBER_FORMAT",	DISPLAY_Y_NUMBER_FORMAT },
 					{ "Y_DEC_PLACES",	DISPLAY_Y_DEC_PLACES },
 					{ "Y_TICKS",		DISPLAY_Y_TICKS },
 					{ "Y_INSET_SCALE",	DISPLAY_Y_INSET_SCALE },
+					{ "X_AXIS_TITLE",	DISPLAY_X_AXIS_TITLE },
+					{ "X_NUMBER_FORMAT",	DISPLAY_X_NUMBER_FORMAT },
+					{ "X_DEC_PLACES",	DISPLAY_X_DEC_PLACES },
+					{ "X_TICKS",		DISPLAY_X_TICKS },
 
 					{ "FRAMEDELAY",		DISPLAY_FRAME_DELAY },
 					{ "MODE",			DISPLAY_MODE },
@@ -501,24 +501,6 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_INT,
 	  &signalDispPtr->xTicks, NULL,
 	  (void * (*)) SetXTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], signalDispPtr->parNameList[
-	  DISPLAY_X_AXIS_TITLE].name,
-	  "X axis title.",
-	  UNIPAR_STRING,
-	  &signalDispPtr->xAxisTitle, NULL,
-	  (void * (*)) SetXAxisTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT],
-	  signalDispPtr->parNameList[DISPLAY_X_NUMBER_FORMAT].name,
-	  "X axis scale number format, (e.g. x.xxe-3).",
-	  UNIPAR_STRING,
-	  &signalDispPtr->xNumberFormat, NULL,
-	  (void * (*)) SetXNumberFormat_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES],
-	  signalDispPtr->parNameList[DISPLAY_X_DEC_PLACES].name,
-	  "X axis scale decimal places.",
-	  UNIPAR_INT,
-	  &signalDispPtr->xDecPlaces, NULL,
-	  (void * (*)) SetXDecPlaces_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT],
 	  signalDispPtr->parNameList[DISPLAY_Y_NUMBER_FORMAT].name,
 	  "Y axis scale number format, (e.g. x.xxe-3).",
@@ -543,6 +525,24 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_BOOL,
 	  &signalDispPtr->yInsetScale, NULL,
 	  (void * (*)) SetYInsetScale_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], signalDispPtr->parNameList[
+	  DISPLAY_X_AXIS_TITLE].name,
+	  "X axis title.",
+	  UNIPAR_STRING,
+	  &signalDispPtr->xAxisTitle, NULL,
+	  (void * (*)) SetXAxisTitle_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT],
+	  signalDispPtr->parNameList[DISPLAY_X_NUMBER_FORMAT].name,
+	  "X axis scale number format, (e.g. x.xxe-3).",
+	  UNIPAR_STRING,
+	  &signalDispPtr->xNumberFormat, NULL,
+	  (void * (*)) SetXNumberFormat_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES],
+	  signalDispPtr->parNameList[DISPLAY_X_DEC_PLACES].name,
+	  "X axis scale decimal places.",
+	  UNIPAR_INT,
+	  &signalDispPtr->xDecPlaces, NULL,
+	  (void * (*)) SetXDecPlaces_SignalDisp);
 	pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
 	pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
 
