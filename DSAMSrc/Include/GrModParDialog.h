@@ -66,7 +66,7 @@ class ModuleParDialog: public DialogList {
 	void	DeleteDialog(void);
 	void	ListBoxProc(wxListBox& list, wxCommandEvent& WXUNUSED(event));
 	void	SliderProc(wxSlider& slider, wxCommandEvent& WXUNUSED(event));
-	void	TextProc(wxText& text, wxCommandEvent& event);
+	void	TextProc(wxTextCtrl& text, wxCommandEvent& event);
 
 };
 

@@ -41,7 +41,7 @@
 // class wxButton;
 // class wxCheckBox;
 // class wxListBox;
-// class wxText;
+// class wxTextCtrl;
 // class wxMenu;
 // class wxCommandEvent;
 #endif // wx_mac
@@ -128,11 +128,11 @@ class MyApp: public wxApp {
 
 /*************************** MyTextWindow *************************************/
 
-class MyTextWindow: public wxTextWindow
+class MyTextWindow: public wxTextCtrl
 {
   public:
 	MyTextWindow(wxFrame *frame, int x=-1, int y=-1, int width=-1,
-	  int height=-1, long style=0): wxTextWindow(frame, x, y, width, height,
+	  int height=-1, long style=0): wxTextCtrl(frame, x, y, width, height,
 	  style) { DragAcceptFiles(TRUE); }
 
 	/* void OnChar(wxKeyEvent& event); */
@@ -148,15 +148,14 @@ class MyFrame: public wxFrame {
 #	endif	
 
   public:
-    wxPanel			*panel;
-    wxTextWindow	*diagnosticsWindow;
+    wxPanel		*panel;
+    wxTextCtrl	*diagnosticsWindow;
 
     MyFrame(wxFrame *frame, char *title, int x, int y, int w, int h, int type);
     ~MyFrame(void);
 
     Bool	OnClose(void);
-    void	OnMenuCommand(int id);
-	void	OnSize(int width, int height);
+ 	void	OnSize(int width, int height);
 
 };
 

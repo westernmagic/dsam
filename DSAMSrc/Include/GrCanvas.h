@@ -59,7 +59,7 @@
 
 // Define a new canvas which can receive some events
 
-class MyCanvas: public wxCanvas
+class MyCanvas: public wxScrolledWindow
 {
 	BOOLN	useTextAdjust;
 	char	xTitle[MAXLINE], yTitle[MAXLINE];
