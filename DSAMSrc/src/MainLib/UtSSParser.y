@@ -136,7 +136,7 @@ process:
 labelled_process:
 			STRING '%' process
 			{ $$ = $3;
-			  $3->u.proc.label = InitString_Utility_String($1->name);
+			  $3->label = InitString_Utility_String($1->name);
 			}
 	;	
 connection_list:
@@ -168,12 +168,12 @@ statement_specifier:
 			process_specifier
 		|	STRING '%' process_specifier
 				{ $$ = $3;
-				  $3->u.proc.label = InitString_Utility_String($1->name); }
+				  $3->label = InitString_Utility_String($1->name); }
 		|	REPEAT { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr,
 					   REPEAT);}
 		|	STRING '%' REPEAT
 				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
-				  $$->u.proc.label = InitString_Utility_String($1->name); }
+				  $$->label = InitString_Utility_String($1->name); }
 reset:
 			RESET { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
 				}

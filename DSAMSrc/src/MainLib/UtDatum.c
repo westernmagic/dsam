@@ -101,9 +101,10 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 	}
 	datum->onFlag = TRUE;
 	datum->type = type;
+	datum->label = NULL_STRING;
+	datum->defaultLabelFlag = FALSE;
 	switch (type) {
 	case PROCESS:
-		datum->u.proc.label = NULL_STRING;
 		datum->u.proc.parFile = NULL_STRING;
 		datum->u.proc.moduleName = NULL_STRING;
 		datum->u.proc.inputList = NULL;
@@ -112,10 +113,11 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 	case RESET:
 		datum->u.string = NULL_STRING;
 		break;
-	default:
-		datum->u.proc.label = NULL_STRING;
+	case REPEAT:
 		datum->u.var = 0;
 		break;
+	default:
+		;
 	} /* Switch */
 	datum->data = NULL;
 	datum->next = NULL;
@@ -145,14 +147,14 @@ FreeInstructions_Utility_Datum(DatumPtr *pc)
 	for ( ; *pc != NULL; ) {
 		temp = *pc;
 		*pc = (*pc)->next;
+		if (*temp->label != '\0')
+			free(temp->label);
 		switch (temp->type) {
 		case PROCESS:
 			if (*temp->u.proc.parFile != '\0')
 				free(temp->u.proc.parFile);
 			if (*temp->u.proc.moduleName != '\0')
 				free(temp->u.proc.moduleName);
-			if (*temp->u.proc.label != '\0')
-				free(temp->u.proc.label);
 			if (temp->u.proc.inputList)
 				FreeList_Utility_DynaList(&temp->u.proc.inputList);
 			if (temp->u.proc.outputList)
@@ -162,10 +164,10 @@ FreeInstructions_Utility_Datum(DatumPtr *pc)
 		case RESET:
 			free(temp->u.string);
 			break;
-		default:
-			if (*temp->u.proc.label != '\0')
-				free(temp->u.proc.label);
+		case REPEAT:
 			break;
+		default:
+			;
 		} /* switch */
 		free(temp);
 	}
@@ -188,9 +190,9 @@ PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel)
 
 	for (i = 0; i < indentLevel - 1; i++)
 		DPrint("\t");
-	if ((pc->type == PROCESS) && pc->u.proc.label && pc->u.proc.label[0] !=
-	  '\0')
-		DPrint("%s%%", pc->u.proc.label);
+	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && pc->label && !pc->
+	  defaultLabelFlag && (pc->label[0] != '\0'))
+		DPrint("%s%%", pc->label);
 	DPrint("\t");
 
 }
@@ -303,8 +305,7 @@ CmpProcessLabels_Utility_Datum(void *a, void *b)
 {
 	DatumPtr	aPtr = (DatumPtr) a, bPtr = (DatumPtr) b;
 
-	return (StrCmpNoCase_Utility_String(aPtr->u.proc.label, bPtr->u.proc.
-	  label));
+	return (StrCmpNoCase_Utility_String(aPtr->label, bPtr->label));
 
 }
 
@@ -322,7 +323,7 @@ CmpProcessLabel_Utility_Datum(void *processNode, void *labelPtr)
 	char	*label = (char *) labelPtr;
 	DatumPtr	ptr = (DatumPtr) processNode;
 
-	return (StrCmpNoCase_Utility_String(ptr->u.proc.label, label));
+	return (StrCmpNoCase_Utility_String(ptr->label, label));
 
 }
 
@@ -357,7 +358,7 @@ PrintProcessLabel_Utility_Datum(void *ptr)
 {
 	DatumPtr	datumPtr = (DatumPtr) ptr;
 
-	printf("Debug: %s\n", datumPtr->u.proc.label);
+	printf("Debug: %s\n", datumPtr->label);
 
 }
 
@@ -382,17 +383,16 @@ SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
 		  CmpProcessLabel_Utility_Datum, label)) == NULL) {
 			NotifyError("%s: Could not find process '%s%% %s.%lu' input "
-			  "labelled '%s' in the simulation script.", funcName,
-			  pc->u.proc.label, pc->data->module->name, pc->data->handle,
-			  label);
+			  "labelled '%s' in the simulation script.", funcName, pc->label,
+			  pc->data->module->name, pc->data->handle, label);
 			return(FALSE);
 		}
 		foundPC = (DatumPtr) foundPtr->data;
 		if (!FindElement_Utility_DynaList(foundPC->u.proc.inputList,
-		  CmpLabel_Utility_Datum, pc->u.proc.label)) {
+		  CmpLabel_Utility_Datum, pc->label)) {
 			NotifyError("%s: Could not find label '%s' in\nprocess "
-			  "'%s%% %s.%lu' inputs.", funcName, pc->u.proc.label, foundPC->
-			  u.proc.label, foundPC->data->module->name, foundPC->data->handle);
+			  "'%s%% %s.%lu' inputs.", funcName, pc->label, foundPC->label,
+			  foundPC->data->module->name, foundPC->data->handle);
 			return(FALSE);
 		}
 		if (!ConnectOutSignalToIn_EarObject(pc->data, foundPC->data)) {
@@ -425,17 +425,16 @@ CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
 		  CmpProcessLabel_Utility_Datum, label)) == NULL)  {
 			NotifyError("%s: Could not find process '%s%% %s.%lu' input "
-			  "labelled '%s' in the simulation script.", funcName,
-			  pc->u.proc.label, pc->data->module->name, pc->data->handle,
-			  label);
+			  "labelled '%s' in the simulation script.", funcName, pc->label,
+			  pc->data->module->name, pc->data->handle, label);
 			return(FALSE);
 		}
 		foundPC = (DatumPtr) foundPtr->data;
 		if (!FindElement_Utility_DynaList(foundPC->u.proc.outputList,
-		  CmpLabel_Utility_Datum, pc->u.proc.label)) {
+		  CmpLabel_Utility_Datum, pc->label)) {
 			NotifyError("%s: Could not find label '%s' in\nprocess "
-			  "'%s%% %s.%lu' outputs.", funcName, pc->u.proc.label, foundPC->
-			  u.proc.label, foundPC->data->module->name, foundPC->data->handle);
+			  "'%s%% %s.%lu' outputs.", funcName, pc->label, foundPC->label,
+			  foundPC->data->module->name, foundPC->data->handle);
 			return(FALSE);
 		}
 	}
@@ -523,6 +522,36 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
 
 }
 
+/****************************** SetDefaultLabels ******************************/
+
+/*
+ * This routine sets the default labels.
+ * If a label has not been defined for a process, then by default it is set to
+ * the process step number.
+ */
+
+BOOLN
+SetDefaultLabels_Utility_Datum(DatumPtr start)
+{
+	static const char *funcName = "SetDefaultLabels_Utility_Datum";
+	char		label[MAXLINE];
+	DatumPtr	pc;
+
+	for (pc = start; (pc != NULL); pc = pc->next)
+		if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
+		  '\0')) {
+			snprintf(label, MAXLINE, "%d", pc->stepNumber);
+			if ((pc->label = InitString_Utility_String(label)) == NULL) {
+				NotifyError("%s: Out of memory for label '%s'.", funcName,
+				  label);
+				return(FALSE);
+			}
+			pc->defaultLabelFlag = TRUE;
+		}
+	return(TRUE);
+
+}
+
 /****************************** InitialiseEarObjects **************************/
 
 /*
@@ -542,6 +571,10 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start)
 		NotifyError("%s: Simulation not initialised.\n", funcName);
 		return(FALSE);
 	}
+	if (!SetDefaultLabels_Utility_Datum(start)) {
+		NotifyError("%s: Could not set default labels.", funcName);
+		return(FALSE);
+	}
 	for (pc = start; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {
 			if ((pc->data = Init_EarObject_MultiInput(pc->u.proc.moduleName,
@@ -551,10 +584,10 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start)
 				  funcName, pc->u.proc.moduleName);
 				ok = FALSE;
 			}
-			if ((pc->u.proc.label[0] != '\0') && !Insert_Utility_DynaBList(
-			  &labelBList, CmpProcessLabels_Utility_Datum, pc)) {
+			if ((pc->label[0] != '\0') && !Insert_Utility_DynaBList(&labelBList,
+			  CmpProcessLabels_Utility_Datum, pc)) {
 				NotifyError("%s: Cannot insert process labelled '%s' into "
-				  "connection list.", funcName, pc->u.proc.label);
+				  "connection list.", funcName, pc->label);
 				ok = FALSE;
 			}
 		}
@@ -590,18 +623,18 @@ FreeEarObjects_Utility_Datum(DatumPtr start)
 
 
 
-/****************************** NameAndStepNumber *****************************/
+/****************************** NameAndLabel **********************************/
 
 /*
- * This routine routines a pointer to the proces name and step number for a
- * Datum structure.
+ * This routine returns a pointer to a string containing the proces name and
+ * label for a Datum structure.
  * A copy of this information should be used if a permanent string is required.
  */
 
 char *
-NameAndStepNumber_Utility_Datum(DatumPtr pc)
+NameAndLabel_Utility_Datum(DatumPtr pc)
 {
-	static const char	*funcName = "NameAndStepNumber_Utility_Datum";
+	static const char	*funcName = "NameAndLabel_Utility_Datum";
 	static char	string[MAXLINE];
 
 	if (!pc || (pc->type != PROCESS)) {
@@ -609,7 +642,7 @@ NameAndStepNumber_Utility_Datum(DatumPtr pc)
 		  funcName);
 		return(NULL);
 	}
-	snprintf(string, MAXLINE, "%s.%d", pc->u.proc.moduleName, pc->stepNumber);
+	snprintf(string, MAXLINE, "%s.%s", pc->u.proc.moduleName, pc->label);
 	return(string);
 
 }
@@ -640,7 +673,7 @@ InitialiseModules_Utility_Datum(DatumPtr start)
 			  specifier == DISPLAY_MODULE) && (GetUniParPtr_ModuleMgr(pc->data,
 			  "win_title")->valuePtr.s[0] == '\0')) {
 				SetPar_ModuleMgr(pc->data, "win_title",
-				  NameAndStepNumber_Utility_Datum(pc));
+				  NameAndLabel_Utility_Datum(pc));
 			}
 			if ((strcmp(pc->u.proc.parFile, NO_FILE) != 0) &&
 			  ((pc->data->module->specifier != SIMSCRIPT_MODULE) ||
@@ -701,10 +734,10 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 				  pc->data), prefix);
 			else {
 				snprintf(fmtParFileName, MAXLINE, "(%s)", pc->u.proc.parFile);
-				DPrint("\t##----- %-20s [%d] %20s -----##\n",
-				  pc->u.proc.moduleName, pc->stepNumber, fmtParFileName);
-				snprintf(suffix, MAXLINE, ".%s.%d", pc->u.proc.moduleName,
-				  pc->stepNumber);
+				DPrint("\t##----- %-20s %20s -----##\n",
+				  NameAndLabel_Utility_Datum(pc), fmtParFileName);
+				snprintf(suffix, MAXLINE, ".%s", NameAndLabel_Utility_Datum(
+				  pc));
 				ok = (parList)? PrintPars_UniParMgr(parList, prefix, suffix):
 				  TRUE;
 				DPrint("\n");
@@ -871,8 +904,8 @@ FindLabelledProcess_Utility_Datum(DatumPtr start, char *label)
 		return(NULL);
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && ((label[0] == '*') || (strcmp(label,
-		   pc->u.proc.label) == 0)))
+		if ((pc->type == PROCESS) && ((label[0] == '*') || (strcmp(label, pc->
+		  label) == 0)))
 			return(pc->data);
 	return(NULL);
 
@@ -900,8 +933,8 @@ FindLabelledProcessInst_Utility_Datum(DatumPtr start, char *label)
 		return(NULL);
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && ((label[0] == '*') || (strcmp(label,
-		  pc->u.proc.label) == 0)))
+		if ((pc->type == PROCESS) && ((label[0] == '*') || (strcmp(label, pc->
+		  label) == 0)))
 			return(pc);
 	return(NULL);
 
@@ -931,7 +964,7 @@ FindLabelledInst_Utility_Datum(DatumPtr start, char *label)
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
 		if (((pc->type == PROCESS) || (pc->type == REPEAT)) && ((label[0] ==
-		  '*') || (strcmp(label, pc->u.proc.label) == 0)))
+		  '*') || (strcmp(label, pc->label) == 0)))
 			return(pc);
 	return(NULL);
 
@@ -994,7 +1027,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 {
 	static const char *funcName = "FindModuleUniPar_Utility_Datum";
 	char		*p, parName[MAXLINE], processName[MAXLINE], processStr[MAXLINE];
-	int			procNum;
+	char		processLabel[MAXLINE];
 	DatumPtr	tempPc;
 	UniParPtr		par;
 	UniParListPtr	pList = NULL;
@@ -1005,15 +1038,14 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 	}
 	snprintf(parName, MAXLINE, "%s", parSpecifier);
 	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL) {
-		procNum = -1;
 		processName[0] = '\0';
 	} else {
 		snprintf(processName, MAXLINE, "%s", p + 1);
 		if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL) {
-			procNum = atoi(p + 1);
+			snprintf(processLabel, MAXLINE, "%s", p + 1);
 			*p = '\0';
 		} else
-			procNum = -1;
+			processLabel[0] = '\0';
 	}
 	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) != NULL)
 		*p = '\0';
@@ -1031,9 +1063,11 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 			}
 			if (((processName[0] == '\0') || (StrNCmpNoCase_Utility_String(
 			  (*pc)->data->module->name, processName) == 0)) && ((pList =
-			  GetUniParListPtr_ModuleMgr((*pc)->data)) != NULL) && ((procNum <
-			  0) || (procNum == (*pc)->stepNumber))) {
-				if ((par = FindUniPar_UniParMgr(&pList, parName)) != NULL) {
+			  GetUniParListPtr_ModuleMgr((*pc)->data)) != NULL) &&
+			  ((processLabel[0] == '\0') || (StrNCmpNoCase_Utility_String(
+			  (*pc)->label, processLabel) == 0))) {
+				if ((par = FindUniPar_UniParMgr(&pList, parName,
+				  UNIPAR_SEARCH_ABBR)) != NULL) {
 			  		*parList = pList;
 					*index = par->index;
 					return(TRUE);
@@ -1041,10 +1075,10 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 			}
 		}
 	if (diagnosticsOn && pList) {
-		if (procNum < 0)
+		if (processLabel[0] == '\0')
 			processStr[0] = '\0';
 		else
-			snprintf(processStr, MAXLINE, " for process [%d] ", procNum);
+			snprintf(processStr, MAXLINE, " for process [%s] ", processLabel);
 		NotifyError("%s: Could not find parameter '%s'%s in the simulation "
 		  "script.", funcName, parName, processStr);
 	}
@@ -1066,8 +1100,8 @@ EarObjectPtr
 FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 {
 	static const char *funcName = "FindProcess_Utility_Datum";
-	char		*p, processName[MAXLINE], processStr[MAXLINE];
-	int			procNum;
+	char	*p, processName[MAXLINE], processStr[MAXLINE];
+	char	processLabel[MAXLINE];
 
 	if (processSpecifier == NULL) {
 		NotifyError("%s: Illegal parameter name '%s'!", funcName,
@@ -1076,9 +1110,9 @@ FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 	}
 	snprintf(processName, MAXLINE, "%s", processSpecifier);
 	if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) == NULL)
-		procNum = -1;
+		processLabel[0] = '\0';
 	else
-		procNum = atoi(p + 1);
+		snprintf(processLabel, MAXLINE, "%s", p + 1);
 	if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL)
 		*p = '\0';
 	for ( ; pc != NULL; pc = pc->next)
@@ -1089,14 +1123,15 @@ FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 				  module->parsPtr)->simulation, processSpecifier));
 			}
 			if (((processName[0] == '\0') || (StrNCmpNoCase_Utility_String(
-			  pc->data->module->name, processName) == 0)) && ((procNum <
-			  0) || (procNum == pc->stepNumber)))
+			  pc->data->module->name, processName) == 0)) && ((processLabel[
+			  0] == '\0') || (StrNCmpNoCase_Utility_String(pc->label,
+			  processLabel) == 0)))
 				return(pc->data);
 		}
-	if (procNum < 0)
-		processStr[0] = '\0';
-	else
-		snprintf(processStr, MAXLINE, ", step [%d] ", procNum);
+		if (processLabel[0] == '\0')
+			processStr[0] = '\0';
+		else
+		snprintf(processStr, MAXLINE, ", label [%s] ", processLabel);
 	NotifyError("%s: Could not find process '%s'%s in the simulation "
 	  "script.", funcName, processName, processStr);
 	return(NULL);

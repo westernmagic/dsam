@@ -59,15 +59,16 @@
 typedef struct Datum {
 
 	BOOLN	onFlag;
+	BOOLN	defaultLabelFlag;
 	int		type;
 	uInt	stepNumber;
+	char	*label;
 	union {
 		int		var;				/* loop count, etc... */
 		char	*string;
 		struct {
 			char	*parFile;
 			char	*moduleName;
-			char	*label;
 			DynaListPtr		inputList;
 			DynaListPtr		outputList;
 		} proc;
@@ -152,7 +153,7 @@ BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 
-char *	NameAndStepNumber_Utility_Datum(DatumPtr pc);
+char *	NameAndLabel_Utility_Datum(DatumPtr pc);
 
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
@@ -162,6 +163,8 @@ BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 		  labelBList);
 
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
+
+BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
 
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);

@@ -43,10 +43,16 @@ Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
 	static const char *funcName = "Insert_Utility_DynaList";
+	int		cmpResult;
 	DynaBListPtr	newNode;
 
 	if (nodePtr && *nodePtr) {
-		if (CmpFunc((*nodePtr)->data, data) > 0)
+		cmpResult = CmpFunc((*nodePtr)->data, data);
+		if (cmpResult == 0) {
+			NotifyError("%s: Duplicated data.", funcName);
+			return(NULL);
+		}
+		if (cmpResult > 0)
 			return(Insert_Utility_DynaBList(&(*nodePtr)->right, CmpFunc, data));
 		else
 			return(Insert_Utility_DynaBList(&(*nodePtr)->left, CmpFunc, data));
