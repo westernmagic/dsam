@@ -198,16 +198,6 @@ SetUniParList_Harmonic(void)
 	  UNIPAR_INT,
 	  &harmonicPtr->highestHarmonic, NULL,
 	  (void * (*)) SetHighestHarmonic_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MISTUNEDHARMONIC], "MISTUNED_HARM",
-	  "Mistuned harmonic number (0 = F0, -ve implies none mistuned).",
-	  UNIPAR_INT,
-	  &harmonicPtr->mistunedHarmonic, NULL,
-	  (void * (*)) SetMistunedHarmonic_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_ORDER], "ORDER",
-	  "Filter order.",
-	  UNIPAR_INT,
-	  &harmonicPtr->order, NULL,
-	  (void * (*)) SetOrder_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_PHASEMODE], "PHASE_MODE",
 	  "Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).",
 	  UNIPAR_NAME_SPEC,
@@ -218,6 +208,11 @@ SetUniParList_Harmonic(void)
 	  UNIPAR_REAL,
 	  &harmonicPtr->phaseVariable, NULL,
 	  (void * (*)) SetPhaseVariable_Harmonic);
+	SetPar_UniParMgr(&pars[HARMONIC_MISTUNEDHARMONIC], "MISTUNED_HARM",
+	  "Mistuned harmonic number (0 = F0, -ve implies none mistuned).",
+	  UNIPAR_INT,
+	  &harmonicPtr->mistunedHarmonic, NULL,
+	  (void * (*)) SetMistunedHarmonic_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_MISTUNINGFACTOR], "MT_FACTOR",
 	  "Mistuning factor (%).",
 	  UNIPAR_REAL,
@@ -258,6 +253,11 @@ SetUniParList_Harmonic(void)
 	  UNIPAR_REAL,
 	  &harmonicPtr->modulationDepth, NULL,
 	  (void * (*)) SetModulationDepth_Harmonic);
+	SetPar_UniParMgr(&pars[HARMONIC_ORDER], "ORDER",
+	  "Filter order.",
+	  UNIPAR_INT,
+	  &harmonicPtr->order, NULL,
+	  (void * (*)) SetOrder_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_LOWERCUTOFFFREQ], "LOW_CUTOFF",
 	  "Lower cut off frequency 3 dB down (Hz).",
 	  UNIPAR_REAL,
