@@ -297,14 +297,14 @@ SDICommand::AddLineShape(int lineType)
 			break;
 		default:
 			lineShape->MakeLineControlPoints(2);
-			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
-			  10.0, 0.0, "Hollow circle");
+			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END, 10.0,
+			  0.0, "Hollow circle");
+			if (!ConnectInstructions(fromShape, toShape)) {
+				delete theShape;
+				shape = NULL;
+				return(false);
+			}
 		} /* switch */
-		if (!ConnectInstructions(fromShape, toShape)) {
-			delete theShape;
-			shape = NULL;
-			return(false);
-		}
 	}
 
 	doc->GetDiagram()->AddShape(theShape);

@@ -190,8 +190,6 @@ SDIEvtHandler::EditInstruction(void)
 		return(true);
 	switch (processType) {
 	case PALETTE_CONTROL: {
-		printf("%s: Debug: This routine also needs to ask for a process "
-		  "label\n", funcName);
 		switch (pc->type) {
 		case REPEAT: {
 			long	count;
@@ -492,7 +490,6 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 		return;
 
 	DatumPtr	pc = SHAPE_PC(GetShape());
-
 	if (pc && pc->next) {
 		switch (pc->type) {
 		case REPEAT:

@@ -42,7 +42,6 @@ IMPLEMENT_DYNAMIC_CLASS(SDIDocument, wxDocument)
 
 SDIDocument::SDIDocument(void)
 {
-	printf("SDIDocument::SDIDocument: Entered\n");
 
 }
 
@@ -52,7 +51,6 @@ SDIDocument::SDIDocument(void)
 
 SDIDocument::~SDIDocument(void)
 {
-	printf("SDIDocument::~SDIDocument: Entered\n");
 	ResetSimulation_AppInterface();
 	wxGetApp().SetAudModelLoadedFlag(false);
 
@@ -80,7 +78,6 @@ SDIDocument::OnNewDocument(void)
 	static const char *funcName = "DIDocument::OnNewDocument";
 
 	wxDocument::OnNewDocument();
-	printf("SDIDocument::OnNewDocument: Called\n");
 	ResetSimulation_AppInterface();
 	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
 	  NULL) {
