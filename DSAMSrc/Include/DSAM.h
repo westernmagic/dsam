@@ -172,8 +172,6 @@
 #	include "GrModParDialog.h"
 #	include "GrSimModDialog.h"
 #	include "GrRunMgr.h"
-#	include "GrRunParDialog.h"
-#	include "GrDisplayParDialog.h"
 #	include "GrSimMgr.h"
 #	include "GrLine.h"
 #	include "GrCanvas.h"
