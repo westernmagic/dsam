@@ -879,7 +879,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	int		i, chan;
 	double	dt, threshold, excessTime, pulseDuration;
 	ChanLen	j;
-	CarneySGPtr	p;
+	CarneySGPtr	p = carneySGPtr;
 	
 	if (!CheckPars_ANSpikeGen_Carney())
 		return(FALSE);
