@@ -87,11 +87,13 @@ typedef struct {
 
 	/* Private members */
 	BOOLN	simParFileFlag;
+	BOOLN	canFreePtrFlag;
 	NameSpecifier	*listingModeList;
 	NameSpecifier	*diagModeList;
 	UniParListPtr	appParList;
 	UniParListPtr	parList;
 	time_t	simLastModified;
+	BOOLN	(* Init)(void);
 	void	(* PrintUsage)(void);
 	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
@@ -135,7 +137,8 @@ DatumPtr	GetSimulation_AppInterface(void);
 
 BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
-BOOLN	InitProcessVariables_AppInterface(int theArgc, char **theArgv);
+BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
+		  char **theArgv);
 
 BOOLN	InitSimulation_AppInterface(void);
 
@@ -180,6 +183,8 @@ BOOLN	SetAppReadInitialPars_AppInterface(BOOLN (* ReadInitialPars)(char *));
 BOOLN	SetAppVersion_AppInterface(char *appVersion);
 
 void	SetArgcAndArgV_AppInterface(int theArgc, char **theArgv);
+
+BOOLN	SetCanFreePtrFlag_AppInterface(BOOLN status);
 
 BOOLN	SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion);
 
