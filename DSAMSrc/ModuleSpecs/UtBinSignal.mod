@@ -5,6 +5,7 @@ mod_name		Utility;
 qualifier		BinSignal;
 typedef struct {
 
+	NameSpecifier	mode;
 	double	binWidth;
 
 } BinSignal;
