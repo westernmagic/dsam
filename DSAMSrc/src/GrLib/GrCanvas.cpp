@@ -436,7 +436,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	int		i, tickLength, xTickSpacing, yPos, xPos;
 	long int	stringWidth, stringHeight;
 	double	interval, scale, timeOffsetMS, tempXAdjust, tempYAdjust;
-	double	roundingScaler;
+	double	roundingScaler, unitScale;
 	wxString stringNum, format, label, space = " ";
 
 	if (!xAxis)
@@ -449,7 +449,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	  xAxis->GetRight() + theXOffset, xAxis->GetTop() + theYOffset);
 	timeOffsetMS = MSEC(outputTimeOffset + timeIndex * dt) ;
 	roundingScaler = pow(10.0, mySignalDispPtr->xDecPlaces);
-	interval = floor(MSEC(((chanLength - 1) * dt) * roundingScaler) + 0.5) /
+	unitScale = (xTitle.Replace("(s)", "(ms)"))? 1000.0: 1.0;
+	interval = floor(unitScale * (chanLength - 1) * dt * roundingScaler + 0.5) /
 	  roundingScaler;
 	scale = interval / (mySignalDispPtr->xTicks - 1);
 	xTickSpacing = xAxis->GetWidth() / (mySignalDispPtr->xTicks - 1);
@@ -466,7 +467,6 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 		dc.DrawLine(xPos, xAxis->GetTop() - tickLength + theYOffset, xPos,
 		  xAxis->GetTop() + theYOffset);
 	}
-	xTitle.Replace("(s)", "(ms)");
 	dc.SetFont(*axisTitleFont);
 	dc.GetTextExtent(xTitle, &stringWidth, &stringHeight);
 	dc.DrawText(xTitle, (int) ((xAxis->GetWidth() + stringWidth * tempXAdjust) /
