@@ -165,6 +165,7 @@
 #	include "GrIPC.h"
 #	include "GrDSAMList.h"
 #	include "GrDialogInfo.h"
+#	include "GrParControl.h"
 #	include "GrParListInfo.h"
 #	include "GrParListInfoList.h"
 #	include "GrDialogList.h"
