@@ -34,10 +34,8 @@ lib_LTLIBRARIES = libDSAM.la libDSAMStd.la @LIBDSAMG@ @LIBDSAMM@@LIBDSAMMG@
 EXTRA_LTLIBRARIES= libDSAMm.la libDSAMg.la libDSAMmg.la 
 EXTRA_DIST		= makefile.b32 graphsup.dos dsam.rc
 
-MYCCCOMPILE		= $(CC) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir) \
-					$(MPI_INC) $(WXWININC)
-MYCXXCOMPILE	= $(CXX) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir) \
-					$(MPI_INC) $(WXWININC)
+MYCCCOMPILE		= $(CC) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir)
+MYCXXCOMPILE	= $(CXX) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir)
 YFLAGS			= -dl
 INCLUDES		= -I../Include $(MPI_INC) $(WXWININC)
 
