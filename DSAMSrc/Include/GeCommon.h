@@ -81,6 +81,10 @@
 #define UNSET_FILE_PTR			(FILE *) -1
 #define NULL_MODULE_PROCESS_NAME	"Null process module"
 
+#ifndef DSAM_DATA_INSTALL_DIR
+#	define	DSAM_DATA_INSTALL_DIR	"."	/* Used to find the DSAM help files. */
+#endif
+
 #ifndef TRUE
 #	define	TRUE		0xFFFF
 #endif

@@ -33,7 +33,8 @@ EXTRA_LTLIBRARIES= libdsam_m.la libdsam_g.la libdsam_mg.la
 EXTRA_DIST		= makefile.b32 graphsup.dos dsam.rc
 
 YFLAGS			= -dl
-INCLUDES		= -I$(top_srcdir)/Include @DSAM_DEFS@ $(MPI_INC) $(WXINC)
+INCLUDES		= -I$(top_srcdir)/Include @DSAM_DEFS@ $(MPI_INC) $(WXINC) \
+					-DDSAM_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
@@ -103,6 +104,6 @@ libdsam_mg_la_LDFLAGS= $(GenLaLDFLAGS)
 PaWorker1m_exe_SOURCES	= PaWorker1.c
 PaWorker1m_exe_LDADD	= libDSAMm.a -L$(CHIMP_LIB) -lmpi -lchimp -lm
 
-DSAMRes.o:	Makefile
+DSAMRes.o:	Makefile dsam.rc
 		$(WXWINRESCOMP) $(WXWINRESFLAGS) $(srcdir)/dsam.rc -o $@
 

@@ -33,6 +33,7 @@
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
 #	include <wx/socket.h>
+#	include <wx/wxhtml.h>
 #endif
 
 /* sccsid[] = "%W% %G%" */
@@ -43,6 +44,10 @@
 
 #define	DEFAULT_SERVER_NAME				"110773"
 #define	SIM_MANAGER_HELP_TOP_LEVEL		"DSAMHelp"
+#define SIM_MANAGER_HELP_DIR			"helpfiles"
+#define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
+#define SIM_MANAGER_REG_PATHS			"/Paths"
+#define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -104,6 +109,9 @@ class MyFrame: public wxFrame {
 	void	OnSaveSimPars(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
+
+   private:
+      wxHtmlHelpController help;
 
 	DECLARE_EVENT_TABLE()
 
