@@ -98,8 +98,8 @@ Init_Utility_ReduceDt(ParameterSpecifier parSpec)
 		}
 	}
 	reduceDtPtr->parSpec = parSpec;
-	reduceDtPtr->denominatorFlag = FALSE;
-	reduceDtPtr->denominator = 0;
+	reduceDtPtr->denominatorFlag = TRUE;
+	reduceDtPtr->denominator = 1;
 
 	if (!SetUniParList_Utility_ReduceDt()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -130,7 +130,7 @@ SetUniParList_Utility_ReduceDt(void)
 		return(FALSE);
 	}
 	pars = reduceDtPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR], "DENOMINTOR",
+	SetPar_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR], "DENOMINATOR",
 	  "Reduction denominator (integer).",
 	  UNIPAR_INT,
 	  &reduceDtPtr->denominator, NULL,
