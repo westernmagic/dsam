@@ -374,6 +374,11 @@ SetNumChannels_CFList(CFListPtr theCFs, int numChannels)
 		  numChannels);
 		return(FALSE);
 	}
+	if (theCFs->centreFreqMode == CFLIST_SINGLE_MODE) {
+		NotifyError("%s: You cannot set the number of channels when single "
+		  "mode is set.  First change the mode.", funcName);
+		return(FALSE);
+	}
 	theCFs->numChannels = numChannels;
 	if (theCFs->cFParList)
 		theCFs->cFParList->updateFlag = TRUE;
@@ -1232,7 +1237,8 @@ RatifyPars_CFList(CFListPtr theCFs)
 		theCFs->eRBDensity = theCFs->numChannels / (ERBRateFromF_Bandwidth(
 		  theCFs->maxCF) - ERBRateFromF_Bandwidth(theCFs->minCF));
 	if (theCFs->centreFreqMode != CFLIST_CF_FOCAL_FREQ)
-		theCFs->focalCF = theCFs->frequency[theCFs->numChannels / 2];
+		theCFs->focalCF = (theCFs->frequency[0] + theCFs->frequency[
+		  theCFs->numChannels - 1]) / 2.0;
 	return(TRUE);
 
 }
@@ -1325,11 +1331,6 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 		NotifyError("%s: Could not generate CFList for '%s' frequency "
 		  "mode.", funcName, CFModeList_CFList(theCFs->centreFreqMode)->name);
 		return(FALSE);
-	}
-	if (theCFs->centreFreqMode != CFLIST_FOCAL_LOG_MODE) {
-		theCFs->focalCF = (theCFs->numChannels == 1)? theCFs->frequency[0]:
-		  (theCFs->frequency[0] + theCFs->frequency[theCFs->numChannels - 1]) /
-		  2.0;
 	}
 	theCFs->oldNumChannels = theCFs->numChannels;
 	theCFs->updateFlag = TRUE;
