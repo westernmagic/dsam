@@ -1,0 +1,9 @@
+function sampleRate=ReadIEEE(fid);
+bytes=fread(fid,10,'uchar');
+expon=bytes(1) * 2^8 + bytes(2);
+hiMant=bytes(3) * 2^24 + bytes(4) * 2^16 + bytes(5) * 2^8 + bytes(6);
+loMant=bytes(7) * 2^24 + bytes(8) * 2^16 + bytes(9) * 2^8 + bytes(10);
+expon=expon-16383;
+sampleRate=hiMant*2^(expon-31);
+expon=expon-31;
+sampleRate=sampleRate+(loMant*2^(expon-32));
