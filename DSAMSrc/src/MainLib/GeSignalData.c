@@ -618,7 +618,7 @@ SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
 BOOLN
 SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
 {
-	static char *funcName = "SetInfoChannelLabel_SignalData";
+	static const char *funcName = "SetInfoChannelLabel_SignalData";
 
 	if (!CheckInit_SignalData(theData, funcName))
 		return(FALSE);
@@ -672,7 +672,7 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 BOOLN
 SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
 {
-	static char *funcName = "SetInfoCF_SignalData";
+	static const char *funcName = "SetInfoCF_SignalData";
 
 	if (!CheckInit_SignalData(theData, funcName))
 		return(FALSE);
@@ -979,7 +979,7 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 BOOLN
 Delay_SignalData(SignalDataPtr signal, double delay)
 {
-	static char *funcName = "Delay_SignalData";
+	static const char *funcName = "Delay_SignalData";
 	int			chan;
 	ChanLen		i, samplesDelay;
 	ChanData	*dataPtr;
