@@ -256,7 +256,7 @@ typedef struct moduleStruct {
 		ShapePulse	shapePulse;
 		SignalDisp	signalDisp;
 		SimpleSG	simpleSG;
-		SimScript		simScript;
+		SimScript	simScript;
 		SpikeReg	spikeReg;
 		StepFun		stepFun;
 		Strobe		strobe;
