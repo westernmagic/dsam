@@ -46,8 +46,6 @@ __BEGIN_DECLS
 
 int		Identify_NameSpecifier(char *name, NameSpecifierPtr list);
 
-int		IdentifyAbbrev_NameSpecifier(char *name, NameSpecifierPtr list);
-
 int		GetNullSpec_NameSpecifier(NameSpecifierPtr list);
 
 void	PrintList_NameSpecifier(NameSpecifierPtr list);
