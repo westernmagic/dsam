@@ -40,7 +40,8 @@ typedef enum {
 class ParControl {
 
   public:
-	enum	Tag { UNSET, SPECIAL, CHECK_BOX, TEXT_CTRL, CHOICE, COMBO_BOX } tag;
+	enum	Tag { UNSET, SPECIAL, CHECK_BOX, TEXT_CTRL, CHOICE, COMBO_BOX,
+				  LIST_BOX } tag;
 
   private:
 	bool	updateFlag, firstSlider;
@@ -49,9 +50,10 @@ class ParControl {
 	union {
 
 		wxCheckBox	*checkBox;
-		wxComboBox	*comboBox;
-		wxTextCtrl	*textCtrl;
 		wxChoice	*choice;
+		wxComboBox	*comboBox;
+		wxListBox	*listBox;
+		wxTextCtrl	*textCtrl;
 
 		ParListInfoTypeSpecifier	type;
 
@@ -72,6 +74,8 @@ class ParControl {
 	  wxStaticText *labelTC);
 	ParControl(UniParPtr thePar, int theInfoNum, wxComboBox *cB,
 	  wxStaticText *labelTC);
+	ParControl(UniParPtr thePar, int theInfoNum, wxListBox *lB,
+	  wxStaticText *labelTC);
 	ParControl(UniParPtr thePar, int theInfoNum, ParListInfoTypeSpecifier t);
 
 	void	Init(Tag theTag, int theInfoNum, UniParPtr thePar);
@@ -83,6 +87,7 @@ class ParControl {
 	wxComboBox *	GetComboBox(void)	{ Check(COMBO_BOX); return comboBox; }
 	wxControl *		GetControl(void);
 	int				GetInfoNum(void)	{ return infoNum; }
+	wxListBox *		GetListBox(void)	{ Check(LIST_BOX); return listBox; }
 	UniParPtr		GetPar(void)		{ return par; }
 	wxSize			GetSize(void) const;
 	wxSlider *		GetSlider(void)		{ return slider; }
