@@ -45,6 +45,8 @@ char *	InitString_Utility_String(char *string);
 
 void	ToUpper_Utility_String(char *upperCaseString, char *string);
 
+int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
+
 int		StrNCmpUpperCase_Utility_String(char *fullString, char *abbrevString);
 
 __END_DECLS
