@@ -88,14 +88,26 @@ PrintDisp::OnPrintPage(int page)
 	wxDC *dc = GetDC();
 
 	if (dc) {
-		char buf[LONG_STRING];
+		char	buf[LONG_STRING];
+		int		w, h, ppiScreenX, ppiScreenY, ppiPrinterX, ppiPrinterY;
+		int		pageWidth, pageHeight;
+		float	scale, overAllScale;
+
+		GetPPIScreen(&ppiScreenX, &ppiScreenY);
+		GetPPIPrinter(&ppiPrinterX, &ppiPrinterY);
+		GetPageSizePixels(&pageWidth, &pageHeight);
+		scale = (float) ppiPrinterX / ppiScreenX;
+		//canvas->SetUseTextAdjust(TRUE); - not needed at present.
+		dc->GetSize(&w, &h);
+		overAllScale = scale * (float) w / pageWidth;
+		dc->SetUserScale(PRINTDISP_X_SCALE * overAllScale, PRINTDISP_Y_SCALE *
+		  overAllScale);
+
 		snprintf(buf, LONG_STRING, "%s: %s", canvas->GetSignalDispPtr()->title,
 		  wxNow().GetData());
 		dc->DrawText(buf, (int) PRINTDISP_PS_X_OFFSET, (int)
 		  PRINTDISP_PS_Y_OFFSET);
 
-		//canvas->SetUseTextAdjust(TRUE); - not needed at present.
-		dc->SetUserScale(PRINTDISP_X_SCALE, PRINTDISP_Y_SCALE);
 		canvas->DrawGraph(*dc, (int) PRINTDISP_PS_X_OFFSET, (int) (
 		  PRINTDISP_PS_Y_OFFSET + PRINTDISP_HEADER_OFFSET));
 		//canvas->SetUseTextAdjust(FALSE);

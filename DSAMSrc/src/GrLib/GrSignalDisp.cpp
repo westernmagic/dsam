@@ -114,8 +114,9 @@ GetPanelList_SignalDisp(int index)
 {
 	static NameSpecifier	list[] = {
 
-				{ "Signal",		DISPLAY_AUTOMATIC_SCALING },
-				{ "Axis",		DISPLAY_Y_AXIS_TITLE },
+				{ "Signal",		DISPLAY_MAGNIFICATION },
+				{ "Y-axis",		DISPLAY_Y_AXIS_TITLE },
+				{ "X-axis",		DISPLAY_X_AXIS_TITLE },
 				{ "General",	DISPLAY_WINDOW_TITLE },
 				{ "", 			DISPLAY_NULL }
 			};
@@ -196,7 +197,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 		}
 	}
 	
-	signalDispPtr->automaticYScalingFlag = FALSE;
+	signalDispPtr->autoYScaleFlag = FALSE;
 	signalDispPtr->yAxisModeFlag = FALSE;
 	signalDispPtr->yNormalisationModeFlag = FALSE;
 	signalDispPtr->modeFlag = FALSE;
@@ -206,7 +207,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->xResolutionFlag = FALSE;
 	signalDispPtr->minYFlag = FALSE;
 	signalDispPtr->maxYFlag = FALSE;
-	signalDispPtr->xZoomFlag = FALSE;
+	signalDispPtr->autoXScaleFlag = FALSE;
 	signalDispPtr->xOffsetFlag = FALSE;
 	signalDispPtr->xExtentFlag = FALSE;
 	signalDispPtr->widthFlag = FALSE;
@@ -229,7 +230,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->yInsetScaleFlag = FALSE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	signalDispPtr->parSpec = parSpec;
-	signalDispPtr->automaticYScaling = GENERAL_BOOLEAN_ON;
+	signalDispPtr->autoYScale = GENERAL_BOOLEAN_ON;
 	signalDispPtr->frameDelay = DISPLAY_DEFAULT_FRAME_DELAY;
 	signalDispPtr->frameHeight = DISPLAY_DEFAULT_FRAME_HEIGHT;
 	signalDispPtr->frameWidth = DISPLAY_DEFAULT_FRAME_WIDTH;
@@ -257,7 +258,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->xAxisTitle[0] = '\0';
 	signalDispPtr->yAxisTitle[0] = '\0';
 	signalDispPtr->xResolution = DEFAULT_X_RESOLUTION;
-	signalDispPtr->xZoom = GENERAL_BOOLEAN_OFF;
+	signalDispPtr->autoXScale = GENERAL_BOOLEAN_ON;
 	signalDispPtr->xExtent = 0.0;
 	signalDispPtr->xOffset = 0.0;
 	
@@ -337,8 +338,13 @@ SetUniParList_SignalDisp(void)
 	SetPar_UniParMgr(&pars[DISPLAY_AUTOMATIC_SCALING], "AUTO_SCALING",
 	  "Automatic scaling ('on' or 'off').",
 	  UNIPAR_BOOL,
-	  &signalDispPtr->automaticYScaling, NULL,
-	  (void * (*)) SetAutomaticYScaling_SignalDisp);
+	  &signalDispPtr->autoYScale, NULL,
+	  (void * (*)) SetAutoYScale_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_AUTO_Y_SCALE], "AUTO_Y_SCALE",
+	  "Automatic y-axis scale ('on' or 'off').",
+	  UNIPAR_BOOL,
+	  &signalDispPtr->autoYScale, NULL,
+	  (void * (*)) SetAutoYScale_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_CHANNEL_STEP], "CHANNEL_STEP",
 	  "Channel stepping mode.",
 	  UNIPAR_INT,
@@ -435,7 +441,7 @@ SetUniParList_SignalDisp(void)
 	  &signalDispPtr->yAxisMode, signalDispPtr->yAxisModeList,
 	  (void * (*)) SetYAxisMode_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT], "Y_NUMBER_FORMAT",
-	  "Y axis scale number format, (e.g. x.xxe-3).",
+	  "Y axis scale number format, (e.g. y.yye-3).",
 	  UNIPAR_STRING,
 	  &signalDispPtr->yNumberFormat, NULL,
 	  (void * (*)) SetYNumberFormat_SignalDisp);
@@ -474,11 +480,11 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_INT,
 	  &signalDispPtr->xTicks, NULL,
 	  (void * (*)) SetXTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_ZOOM], "X_ZOOM",
-	  "Turn on diplay of a sub-section of the x-axis ('on' or 'off')",
+	SetPar_UniParMgr(&pars[DISPLAY_AUTO_X_SCALE], "AUTO_X_SCALE",
+	  "Autoscale option for x-axis ('on' or 'off')",
 	  UNIPAR_BOOL,
-	  &signalDispPtr->xZoom, NULL,
-	  (void * (*)) SetXZoom_SignalDisp);
+	  &signalDispPtr->autoXScale, NULL,
+	  (void * (*)) SetAutoXScale_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_X_OFFSET], "X_OFFSET",
 	  "X offset for display in zoom mode (x units).",
 	  UNIPAR_REAL,
@@ -514,10 +520,12 @@ SetDefaulEnabledPars_SignalDisp(void)
 	signalDispPtr->parList->pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_WIDTH].enabled = FALSE;
+	signalDispPtr->parList->pars[DISPLAY_AUTOMATIC_SCALING].enabled = FALSE;
 	
-	SetAutomaticYScaling_SignalDisp(BooleanList_NSpecLists(signalDispPtr->
-	  automaticYScaling)->name);
-	SetXZoom_SignalDisp(BooleanList_NSpecLists(signalDispPtr->xZoom)->name);
+	SetAutoYScale_SignalDisp(BooleanList_NSpecLists(signalDispPtr->autoYScale)->
+	  name);
+	SetAutoXScale_SignalDisp(BooleanList_NSpecLists(signalDispPtr->autoXScale)->
+	  name);
 	return(TRUE);
 
 }
@@ -545,8 +553,29 @@ GetUniParListPtr_SignalDisp(void)
 	return(signalDispPtr->parList);
 
 }
+/****************************** SetAutoYScaleParsState ************************/
 
-/**************************** SetAutomaticYScaling ****************************/
+/*
+ * This function sets enables or disables the auto Y scale relatated parameter.
+ */
+
+void
+SetAutoYScaleParsState_SignalDisp(BOOLN state)
+{
+	signalDispPtr->parList->pars[DISPLAY_MAX_Y].enabled = state;
+	signalDispPtr->parList->pars[DISPLAY_MIN_Y].enabled = state;
+	if (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_CHANNEL) {
+		signalDispPtr->parList->pars[DISPLAY_Y_NUMBER_FORMAT].enabled = FALSE;
+		signalDispPtr->parList->pars[DISPLAY_Y_TICKS].enabled = FALSE;
+	} else {
+		signalDispPtr->parList->pars[DISPLAY_Y_NUMBER_FORMAT].enabled = state;
+		signalDispPtr->parList->pars[DISPLAY_Y_TICKS].enabled = state;
+	}
+	signalDispPtr->parList->updateFlag = TRUE;
+
+}
+
+/**************************** SetAutoYScale ***********************************/
 
 /*
  * This routine sets the automatic scaling mode for the display.
@@ -555,32 +584,24 @@ GetUniParListPtr_SignalDisp(void)
  */
 
 BOOLN
-SetAutomaticYScaling_SignalDisp(char *theAutomaticYScaling)
+SetAutoYScale_SignalDisp(char *theAutoYScale)
 {
-	static const char *funcName = "SetAutomaticYScaling_SignalDisp";
+	static const char *funcName = "SetAutoYScale_SignalDisp";
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((specifier = Identify_NameSpecifier(theAutomaticYScaling,
+	if ((specifier = Identify_NameSpecifier(theAutoYScale,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
-		  theAutomaticYScaling);
+		NotifyError("%s: Illegal switch state (%s).", funcName, theAutoYScale);
 		return(FALSE);
 	}
-	signalDispPtr->automaticYScaling = specifier;
-	signalDispPtr->automaticYScalingFlag = TRUE;
+	signalDispPtr->autoYScale = specifier;
+	signalDispPtr->autoYScaleFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
-	if (!signalDispPtr->automaticYScaling) {
-		signalDispPtr->parList->pars[DISPLAY_MAX_Y].enabled = TRUE;
-		signalDispPtr->parList->pars[DISPLAY_MIN_Y].enabled = TRUE;
-	} else {
-		signalDispPtr->parList->pars[DISPLAY_MAX_Y].enabled = FALSE;
-		signalDispPtr->parList->pars[DISPLAY_MIN_Y].enabled = FALSE;
-	}
-	signalDispPtr->parList->updateFlag = TRUE;
+	SetAutoYScaleParsState_SignalDisp(!signalDispPtr->autoYScale);
 	return(TRUE);
 	
 }
@@ -752,6 +773,21 @@ SetYAxisTitle_SignalDisp(char *yAxisTitle)
 
 }
 
+/**************************** SetYAxisModeParsState ***************************/
+
+/*
+ * This routine sets the module's y-axis mode related parameters state.
+ */
+
+void
+SetYAxisModeParsState_SignalDisp(BOOLN state)
+{
+	SetAutoXScaleParsState_SignalDisp(!state);
+	signalDispPtr->parList->pars[DISPLAY_Y_INSET_SCALE].enabled = state;
+	signalDispPtr->parList->updateFlag = TRUE;
+
+}
+
 /**************************** SetYAxisMode ************************************/
 
 /*
@@ -777,8 +813,8 @@ SetYAxisMode_SignalDisp(char *theYAxisMode)
 	signalDispPtr->yAxisMode = specifier;
 	signalDispPtr->yAxisModeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
-	signalDispPtr->parList->pars[DISPLAY_Y_INSET_SCALE].enabled =
-	  (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_CHANNEL);
+	SetYAxisModeParsState_SignalDisp(signalDispPtr->yAxisMode ==
+	  GRAPH_Y_AXIS_MODE_CHANNEL);
 	return(TRUE);
 	
 }
@@ -1156,41 +1192,51 @@ SetXNumberFormat_SignalDisp(char *xNumberFormat)
 	
 }
 
-/****************************** SetXZoom **************************************/
+/****************************** SetAutoXScaleParsState ************************/
 
 /*
- * This function sets the module's xZoom parameter.
+ * This function sets enables or disables the auto scale relatated parameter.
+ */
+
+void
+SetAutoXScaleParsState_SignalDisp(BOOLN state)
+{
+	signalDispPtr->parList->pars[DISPLAY_X_NUMBER_FORMAT].enabled = state;
+	signalDispPtr->parList->pars[DISPLAY_X_TICKS].enabled = state;
+	signalDispPtr->parList->pars[DISPLAY_X_OFFSET].enabled = state;
+	signalDispPtr->parList->pars[DISPLAY_X_EXTENT].enabled = state;
+	signalDispPtr->parList->updateFlag = TRUE;
+
+}
+
+/****************************** SetAutoXScale *********************************/
+
+/*
+ * This function sets the module's autoXScale parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetXZoom_SignalDisp(char *theXZoom)
+SetAutoXScale_SignalDisp(char *theAutoXScale)
 {
-	static const char	*funcName = "SetXZoom_SignalDisp";
+	static const char	*funcName = "SetAutoXScale_SignalDisp";
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((specifier = Identify_NameSpecifier(theXZoom,
+	if ((specifier = Identify_NameSpecifier(theAutoXScale,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
 		NotifyError("%s: Illegal switch state (%s).", funcName,
-		  theXZoom);
+		  theAutoXScale);
 		return(FALSE);
 	}
-	signalDispPtr->xZoom = specifier;
-	signalDispPtr->xZoomFlag = TRUE;
+	signalDispPtr->autoXScale = specifier;
+	signalDispPtr->autoXScaleFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
-	if (signalDispPtr->xZoom) {
-		signalDispPtr->parList->pars[DISPLAY_X_OFFSET].enabled = TRUE;
-		signalDispPtr->parList->pars[DISPLAY_X_EXTENT].enabled = TRUE;
-	} else {
-		signalDispPtr->parList->pars[DISPLAY_X_OFFSET].enabled = FALSE;
-		signalDispPtr->parList->pars[DISPLAY_X_EXTENT].enabled = FALSE;
-	}
-	signalDispPtr->parList->updateFlag = TRUE;
+	SetAutoXScaleParsState_SignalDisp(!signalDispPtr->autoXScale);
 	return(TRUE);
 
 }
@@ -1405,18 +1451,23 @@ CheckPars_SignalDisp(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (signalDispPtr->automaticYScalingFlag && (signalDispPtr->
-	  automaticYScaling == GENERAL_BOOLEAN_OFF) && (!signalDispPtr->minYFlag ||
-	  !signalDispPtr->maxYFlag)) {
-		NotifyError("%s: When auto-scaling is on, the minimum and maximum "
-		  " Y value must also be set.", funcName);
+	if (signalDispPtr->autoYScaleFlag && !signalDispPtr->autoYScale &&
+	  (!signalDispPtr->minYFlag || !signalDispPtr->maxYFlag)) {
+		NotifyError("%s: When the automatic y scale is off, the minimum and"
+		  "maximum Y value must also be set.", funcName);
 		return(FALSE);
 	}
-	if (!signalDispPtr->automaticYScaling && (signalDispPtr->minY >=
-	  signalDispPtr->maxY)) {
+	if (!signalDispPtr->autoYScale && (signalDispPtr->minY >= signalDispPtr->
+	  maxY)) {
 		NotifyError("%s: the minimum y value (%g) should be less than than the "
 		  "maximum y value (%g).", funcName, signalDispPtr->minY,
 		  signalDispPtr->maxY);
+		return(FALSE);
+	}
+	if (signalDispPtr->autoXScaleFlag && !signalDispPtr->autoXScale &&
+	  (!signalDispPtr->xOffsetFlag || !signalDispPtr->xExtentFlag)) {
+		NotifyError("%s: When automatic x-scale is off, the minimum and "
+		  "maximum Y value must also be set.", funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1445,9 +1496,9 @@ PrintPars_SignalDisp(void)
 	if (signalDispPtr->mode == GRAPH_MODE_GREY_SCALE)
 		DPrint("\tNo. grey scales = %d.\n", signalDispPtr->numGreyScales);
 	DPrint("\tAutomatic scaling mode: %s\n",
-	  BooleanList_NSpecLists(signalDispPtr->automaticYScaling)->name);
+	  BooleanList_NSpecLists(signalDispPtr->autoYScale)->name);
 	DPrint("\tChannel step for display: %d\n", signalDispPtr->channelStep);
-	if (!signalDispPtr->automaticYScaling)
+	if (!signalDispPtr->autoYScale)
 		DPrint("\tMinimum/Maximum Y values: %g/%g units.\n",
 		  signalDispPtr->minY, signalDispPtr->maxY);
 	DPrint("\tY normalisation mode: %s\n",
@@ -1466,7 +1517,7 @@ PrintPars_SignalDisp(void)
 	DPrint("\tX axis title = %s\n", signalDispPtr->xAxisTitle);
 	DPrint("\tX axis ticks = %d\n", signalDispPtr->xTicks);
 	DPrint("\tX axis scale number format = %s\n", signalDispPtr->xNumberFormat);
-	if (!signalDispPtr->xZoom)
+	if (!signalDispPtr->autoXScale)
 		DPrint("\tOffset/extent X values: %g/%g units.\n",
 		  signalDispPtr->xOffset, signalDispPtr->xExtent);
 	DPrint("\tTop margin percentage = %g %%\n", signalDispPtr->topMargin);
@@ -1594,10 +1645,15 @@ CheckData_SignalDisp(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_SignalDisp";
 
-	if (signalDispPtr->xZoom) {
+	if (!signalDispPtr->autoXScale) {
 		if (signalDispPtr->xOffset < 0.0) {
-			NotifyError("%s: Cannot set the X offset cannot be less than zero"
-			  " (%g units).", funcName, signalDispPtr->xOffset);
+			NotifyError("%s: Cannot set the X offset less than zero (%g "
+			  "units).", funcName, signalDispPtr->xOffset);
+			return(FALSE);
+		}
+		if (signalDispPtr->xExtent < 0.0) {
+			NotifyError("%s:The X extent mut be greater than zero (%g units).",
+			  funcName, signalDispPtr->xExtent);
 			return(FALSE);
 		}
 	}
@@ -1634,7 +1690,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
-			if ((signalDispPtr->xZoom && ((signalDispPtr->xOffset +
+			if ((!signalDispPtr->autoXScale && ((signalDispPtr->xOffset +
 			  signalDispPtr->xExtent) > _GetDuration_SignalData(signal))) ||
 			  (signal->numWindowFrames !=
 			  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)) {

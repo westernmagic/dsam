@@ -54,7 +54,7 @@
 
 bool
 AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
-  int maxPos, int theNumTicks)
+  int maxPos, int theNumTicks, bool theAutoScale)
 {
 	static const char *funcName = "AxisScale::Set";
 
@@ -69,7 +69,7 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 		return(FALSE);
 	}
 	numberFormatChanged = FALSE;
-	if (fabs(maxVal - minVal) < DBL_EPSILON) {
+ 	if (fabs(maxVal - minVal) < DBL_EPSILON) {
 		minValue = minVal - 1.0;
 		maxValue = maxVal + 1.0;
 	} else {
@@ -78,14 +78,21 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 	}
 	minPosition = minPos;
 	maxPosition = maxPos;
-	numTicks = theNumTicks;
-	if (!ParseNumberFormat(numberFormat)) {
-		wxLogError("%s: Failed to recognise number format '%s'", funcName,
-		  numberFormat);
-		return(FALSE);
+	tickOffset = 0;
+	autoScale = theAutoScale;
+	if (autoScale) {
+		numTicks = 10;
+		exponent = 0;
+		decPlaces = 0;
+	} else {
+		numTicks = theNumTicks;
+		if (!ParseNumberFormat(numberFormat)) {
+			wxLogError("%s: Failed to recognise number format '%s'", funcName,
+			  numberFormat);
+			return(FALSE);
+		}
 	}
-	CalculateValueScale();
-	CalculatePositionScale();
+	CalculateScales();
 	outputFormat.Printf("%%.%df", decPlaces);
 	return(TRUE);
 
@@ -123,16 +130,16 @@ AxisScale::ParseNumberFormat(char *format)
 
 }
 
-/****************************** CalculateValueScale ***************************/
+/****************************** CalculateScales *******************************/
 
 /*
  * This determines the axis scalers.
  */
 
 bool
-AxisScale::CalculateValueScale(void)
+AxisScale::CalculateScales(void)
 {
-	double	baseScale, powerScale;
+	double	baseScale;
 
 	roundingScaler = pow(10.0, decPlaces);
 	baseScale = (maxValue - minValue) / (numTicks - 1);
@@ -141,24 +148,20 @@ AxisScale::CalculateValueScale(void)
 		exponent--;
 	}
 	powerScale = pow(10.0, -exponent);
-	valueScale = baseScale * powerScale;
+	positionScale = (maxPosition - minPosition) / (maxValue - minValue) /
+	  powerScale;
+	valueScale = RoundedValue(baseScale * powerScale);
 	minValueScaled = minValue * powerScale;
-	minTickValue = GetTickValue(0);
-	return(TRUE);
-
-}
-
-/****************************** CalculatePositionScale ************************/
-
-/*
- * This determines the axis scalers.
- */
-
-bool
-AxisScale::CalculatePositionScale(void)
-{
-	positionScale = (maxPosition - minPosition) / (GetTickValue(numTicks - 1) -
-	  GetTickValue(0));
+	maxValueScaled = maxValue * powerScale;
+	minValueScaledRounded = RoundedValue(minValueScaled);
+	if (autoScale) {
+		if (minValueScaledRounded < minValueScaled)
+			tickOffset++;
+		while ((maxValueScaled - GetTickValue(numTicks - 1)) > valueScale)
+			numTicks++;
+		while (GetTickValue(numTicks - 1) > maxValueScaled)
+			numTicks--;
+	}
 	return(TRUE);
 
 }
@@ -186,14 +189,7 @@ AxisScale::RoundedValue(double value)
 double
 AxisScale::GetTickValue(int i)
 {
-	static const char *funcName = "AxisScale::TickValue";
-
-	if ((i < 0) || (i >= numTicks)) {
-		wxLogError("%s: Tick number is not in range 0 - %d (%d), zero "
-		  "returned.", funcName, numTicks - 1, i);
-		return(0.0);
-	}
-	return(RoundedValue(minValueScaled + valueScale * i));
+	return(minValueScaledRounded + valueScale * (i + tickOffset));
 
 }
 
@@ -206,7 +202,7 @@ AxisScale::GetTickValue(int i)
 int
 AxisScale::GetTickPosition(double tickValue)
 {
-	return((int) (minPosition + positionScale * (tickValue - minTickValue)));
+	return((int) (minPosition + positionScale * (tickValue - minValueScaled)));
 
 }
 
@@ -217,16 +213,17 @@ AxisScale::GetTickPosition(double tickValue)
  */
 
 wxString
-AxisScale::GetFormatString(void)
+AxisScale::GetFormatString(char formatChar)
 {
 	int		i;
 	wxString	format;
 
-	format = (decPlaces)? "x.": "x";
+	format = formatChar;
+	if (decPlaces)
+		format += '.';
 	for (i = 0; i < decPlaces; i++)
-		format += "X";
+		format += formatChar;
 	format.Printf("%se%d", (char *) format.GetData(), exponent);
 	return(format);
 
 }
-

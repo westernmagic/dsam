@@ -229,7 +229,7 @@ MyCanvas::InitGraph(void)
 	summaryLine.SetChannelStep(1);
 	greyBrushes->SetGreyScales(mySignalDispPtr->numGreyScales);
 
-	if (mySignalDispPtr->automaticYScaling) {
+	if (mySignalDispPtr->autoYScale) {
 		signalLines.CalcMaxMinLimits();
 		mySignalDispPtr->minY = signalLines.GetMinY();
 		mySignalDispPtr->minYFlag = TRUE;
@@ -267,7 +267,7 @@ MyCanvas::InitData(EarObjectPtr data)
 {
 	SignalDataPtr signal = data->outSignal;
 
-	if (!mySignalDispPtr->xZoom) {
+	if (mySignalDispPtr->autoXScale) {
 		offset = 0;
 		chanLength = signal->length;
 	} else {
@@ -302,6 +302,7 @@ MyCanvas::SetLines(GrLines &lines)
 {
 
 	lines.SetGreyScaleMode(FALSE);
+	lines.SetXResolution(mySignalDispPtr->xResolution);
 	lines.SetYNormalisationMode(mySignalDispPtr->yNormalisationMode);
 
 }
@@ -363,7 +364,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	dc.DrawLine(xAxis->GetLeft() + theXOffset,  xAxis->GetTop() + theYOffset,
 	  xAxis->GetRight() + theXOffset, xAxis->GetTop() + theYOffset);
 	outputTimeOffset = signalLines.GetSignalPtr()->outputTimeOffset +
-	  ((mySignalDispPtr->xZoom)? mySignalDispPtr->xOffset: 0.0);
+	  ((mySignalDispPtr->autoXScale)? 0.0: mySignalDispPtr->xOffset);
 	displayLength = timeIndex + chanLength - 1;
 	if (mySignalDispPtr->mode == GRAPH_MODE_GREY_SCALE) {
 		outputTimeOffset -= dt;
@@ -371,14 +372,15 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	}
 	if (!xAxisScale.Set(mySignalDispPtr->xNumberFormat, outputTimeOffset +
 	  timeIndex * dt, outputTimeOffset + displayLength * dt, xAxis->GetLeft(),
-	  xAxis->GetRight(), mySignalDispPtr->xTicks)) {
+	  xAxis->GetRight(), mySignalDispPtr->xTicks, mySignalDispPtr->
+	  autoXScale)) {
 		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
 		return;
 	}
 	tickLength = (int) (xAxis->GetHeight() * GRAPH_X_TICK_LENGTH_SCALE);
 	yPos = (int) (xAxis->GetTop() + theYOffset + xAxis->GetHeight() *
 	  GRAPH_X_LABELS_Y_OFFSET_SCALE);
-	for (i = 0; i < mySignalDispPtr->xTicks; i++) {
+	for (i = 0; i < xAxisScale.GetNumTicks(); i++) {
 		xValue = xAxisScale.GetTickValue(i);
 		xPos = xAxisScale.GetTickPosition(xValue) + theXOffset;
 		stringNum.Printf(xAxisScale.GetOutputFormatString(), xValue);
@@ -401,7 +403,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 
 	if (xAxisScale.GetNumberFormatChanged())
 		strcpy(mySignalDispPtr->xNumberFormat, (char *) xAxisScale.
-		  GetFormatString().GetData());
+		  GetFormatString('x').GetData());
 
 }
 
@@ -474,7 +476,7 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 	chanSpacing = signalLines.GetChannelSpace() * chanDisplayScale *
 	  displayScale;
 	yAxisScale.Set(mySignalDispPtr->yNumberFormat, minYValue, maxYValue, 0,
-	  (int) chanSpacing, yTicks);
+	  (int) chanSpacing, yTicks, mySignalDispPtr->autoYScale);
 	tickLength = (int) (yAxisRect->GetWidth() * GRAPH_Y_TICK_LENGTH_SCALE);
 	dc.GetTextExtent(space, &charWidth, &stringHeight);
 	xPos = (int) (yAxisRect->GetRight() - tickLength + theXOffset - yAxisRect->
@@ -482,7 +484,7 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 	leftMostLabel = xPos;
 	for (j = 0; j < numDisplayedChans; j++) {
 		yOffset = yAxisRect->GetBottom() - j * chanSpacing + theYOffset;
-		for (i = 0; i < yTicks; i++) {
+		for (i = 0; i < yAxisScale.GetNumTicks(); i++) {
 			yValue = yAxisScale.GetTickValue(i);
 			yPos = (int) (yOffset - yAxisScale.GetTickPosition(yValue));
 			label.sprintf(yAxisScale.GetOutputFormatString(), yValue /
@@ -571,7 +573,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		  signalLines.GetMaxY());
 		if (yAxisScale.GetNumberFormatChanged())
 			strcpy(mySignalDispPtr->yNumberFormat, (char *) yAxisScale.
-			  GetFormatString().GetData());
+			  GetFormatString('y').GetData());
 		break;
 	default:
 		wxLogWarning("%s: Scale (%d) not implemented.", funcName,
@@ -788,13 +790,8 @@ MyCanvas::OnMouseMove(wxMouseEvent &event)
     parent->PrepareDC(dc);
 
     wxPoint pos = event.GetPosition();
-    long x = dc.DeviceToLogicalX( pos.x );
-    long y = dc.DeviceToLogicalY( pos.y );
-    //wxString str;
-    //str.Printf( "Current mouse position: %d,%d", (int)x, (int)y );
-    //parent->SetStatusText( str );
-    //printf("MyCanvas::OnMouseMove: Current mouse position: %d,%d\n", (int)x,
-	//  (int)y );
+    pointer.x = dc.DeviceToLogicalX( pos.x );
+    pointer.y = dc.DeviceToLogicalY( pos.y );
 
 }
 
