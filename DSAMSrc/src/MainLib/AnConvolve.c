@@ -98,9 +98,9 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (data->maxInSignals != 2) {
-		NotifyError("%s: EarObject must be initialised using "\
-		  "Init_EarObject_Multi(...) to accept 2 inputs.", funcName);
+	if (data->numInSignals != 2) {
+		NotifyError("%s: The process EarObject must have 2 inputs from other "
+		  "processes.", funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(data->inSignal[0]) ||

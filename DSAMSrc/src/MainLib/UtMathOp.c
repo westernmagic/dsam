@@ -386,7 +386,7 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 
 	if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 	  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT)) {
-		if (data->maxInSignals != 2) {
+		if (data->numInSignals != 2) {
 			NotifyError("%s: Process must be receive 2 inputs in '%s' mode.",
 			  funcName, mathOpPtr->operatorModeList[mathOpPtr-> operatorMode].
 			  name);
