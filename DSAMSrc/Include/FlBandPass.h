@@ -15,8 +15,8 @@
  *
  **********************/
 
-#ifndef	_FLMULTIBPASS_H
-#define _FLMULTIBPASS_H	1
+#ifndef	_FLBANDPASS_H
+#define _FLBANDPASS_H	1
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -30,7 +30,7 @@
 
 typedef enum {
 
-	BANDPASS_FILTERORDER,
+	BANDPASS_FILTERCASCADE,
 	BANDPASS_PREATTENUATION,
 	BANDPASS_LOWERCUTOFFFREQ,
 	BANDPASS_UPPERCUTOFFFREQ
@@ -41,10 +41,10 @@ typedef struct {
 	
 	ParameterSpecifier parSpec;
 	
-	BOOLN	orderFlag, upperCutOffFreqFlag, lowerCutOffFreqFlag;
+	BOOLN	cascadeFlag, upperCutOffFreqFlag, lowerCutOffFreqFlag;
 	BOOLN	preAttenuationFlag;
 	BOOLN	updateProcessVariablesFlag;
-	int		order;
+	int		cascade;
 	double	preAttenuation;			/* Pre-attenuation for filter. */
 	double	upperCutOffFreq, lowerCutOffFreq;
 	
@@ -91,11 +91,11 @@ BOOLN	RunModel_Filter_BandPass(EarObjectPtr data);
 
 BOOLN	SetLowerCutOffFreq_Filter_BandPass(double theLowerCutOffFreq);
 
-BOOLN	SetOrder_Filter_BandPass(int theOrder);
+BOOLN	SetCascade_Filter_BandPass(int theCascade);
 
 BOOLN	SetPreAttenuation_Filter_BandPass(double thePreAttenuation);
 		  
-BOOLN	SetPars_Filter_BandPass(int theOrder, double theLowerCutOffFreq,
+BOOLN	SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
 		  double theUpperCutOffFreq, double preAttenuation);
 
 BOOLN	SetUpperCutOffFreq_Filter_BandPass(double theUpperCutOffFreq);
