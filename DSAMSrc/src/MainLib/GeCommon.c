@@ -67,14 +67,16 @@ static DSAM	dSAM = {
 			FALSE,		/* segmentedMode */
 			FALSE,		/* usingGUIFlag */
 			FALSE,		/* lockGUIFlag */
-			FALSE,		/* dialogOutputFlag */
 			FALSE,		/* interruptRequestedFlag */
 			NULL,		/* diagnosticsPrefix */
 			VERSION,	/* version */
 			NULL,		/* parsFilePath */
 			UNSET_FILE_PTR,	/* warningsFile */
 			UNSET_FILE_PTR,	/* errorsFile */
-			UNSET_FILE_PTR	/* parsFile */
+			UNSET_FILE_PTR,	/* parsFile */
+			COMMON_CONSOLE_DIAG_MODE,	/* diagMode */
+			DPrintStandard,	/* DPrint */
+			NotifyStandard	/* Notify */
 
 		};
 
@@ -118,7 +120,7 @@ DPrint(char *format, ...)
 		return;
 	va_start(args, format);
 	if (dSAM.usingGUIFlag && (dSAM.parsFile == stdout)) {
-		DPrint_Message(format, args);
+		(* dSAM.DPrint)(format, args);
 		return;
 	}
 	DPrintStandard(format, args);
@@ -196,9 +198,9 @@ NotifyError(char *format, ...)
 		return;
 	va_start(args, format);
 	if ((dSAM.errorsFile == stderr) && (!dSAM.usingGUIFlag ||
-	  dSAM.dialogOutputFlag))
+	  (dSAM.diagMode == COMMON_DIALOG_DIAG_MODE)))
 		fprintf(stderr, "\07");
-	Notify_Message(format, args, COMMON_ERROR_DIAGNOSTIC);
+	(* dSAM.Notify)(format, args, COMMON_ERROR_DIAGNOSTIC);
 	va_end(args);
 
 } /* NotifyError */
@@ -220,7 +222,7 @@ NotifyWarning(char *format, ...)
 	if (!dSAM.warningsFile)
 		return;
 	va_start(args, format);
-	Notify_Message(format, args, COMMON_WARNING_DIAGNOSTIC);
+	(* dSAM.Notify)(format, args, COMMON_WARNING_DIAGNOSTIC);
 	va_end(args);
 
 } /* NotifyWarning */
@@ -372,18 +374,18 @@ CloseFiles(void)
 /*************************** ResetGUIDialogs **********************************/
 
 /*
- * This routine sets the 'dialogOutputFlag' to TRUE so that output is sent to
- * dialogs and not to the console.
+ * This routine sets the 'diagMode' to 'COMMON_DIALOG_DIAG_MODE' so that output
+ * is sent to dialogs and not to the console.
  */
 
 void
 ResetGUIDialogs(void)
 {
-	dSAM.dialogOutputFlag = TRUE;
+	dSAM.diagMode = COMMON_DIALOG_DIAG_MODE;
 
 }
 
-/*************************** SetGUIDialogStatus *******************************/
+/*************************** SetDiagMode **************************************/
 
 /*
  * This routine sets the 'dialogOutputFlag', defining if output is sent to
@@ -391,9 +393,35 @@ ResetGUIDialogs(void)
  */
 
 void
-SetGUIDialogStatus(BOOLN status)
+SetDiagMode(DiagModeSpecifier mode)
 {
-	dSAM.dialogOutputFlag = status;
+	dSAM.diagMode = mode;
+
+}
+
+/*************************** SetDPrintFunc ************************************/
+
+/*
+ * This routine sets the 'DPrintFunc', defining where diagnostic output is sent.
+ */
+
+void
+SetDPrintFunc(void (* Func)(char *, va_list))
+{
+	dSAM.DPrint = Func;
+
+}
+
+/*************************** SetNotifyFunc ************************************/
+
+/*
+ * This routine sets the 'DPrintFunc', defining where diagnostic output is sent.
+ */
+
+void
+SetNotifyFunc(void (* Func)(const char *, va_list, CommonDiagSpecifier))
+{
+	dSAM.Notify = Func;
 
 }
 

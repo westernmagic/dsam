@@ -186,7 +186,7 @@ BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 
-BOOLN	PrintSimFiles_Datum(char  *fileName, DatumPtr start);
+BOOLN	WriteSimFiles_Datum(char  *fileName, DatumPtr start);
 
 BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName,
 		  int indentLevel, char *prefix, BOOLN checkForSubSimScripts);

@@ -253,6 +253,15 @@ typedef enum {
 } ParameterSpecifier;
 
 typedef enum {
+
+	COMMON_OFF_DIAG_MODE,
+	COMMON_CONSOLE_DIAG_MODE,
+	COMMON_DIALOG_DIAG_MODE,
+	COMMON_SOCKET_DIAG_MODE
+
+} DiagModeSpecifier;
+
+typedef enum {
 	
 	COMMON_ERROR_DIAGNOSTIC,
 	COMMON_WARNING_DIAGNOSTIC,
@@ -266,7 +275,6 @@ typedef struct {
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
 	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
-	BOOLN	dialogOutputFlag;	/* TRUE, when forcing output to GUI dialog */
 	BOOLN	interruptRequestedFlag;	/* TRUE, when an interrupt is in process. */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
@@ -274,6 +282,9 @@ typedef struct {
 	FILE	*warningsFile;		/* File to which warnings should be sent. */
 	FILE	*errorsFile;		/* File to which errors should be sent. */
 	FILE	*parsFile;			/* File for parameter listings. */
+	DiagModeSpecifier	diagMode; /* Output form for diagnostics. */
+	void	(* DPrint)(char *, va_list);	/* Generic routine. */
+	void 	(* Notify)(const char *, va_list, CommonDiagSpecifier);/* Gen. Rtn*/
 
 } DSAM, *DSAMPtr;
 
@@ -347,11 +358,16 @@ void	ResetGUIDialogs(void);
 
 void	SetDiagnosticsPrefix(char *prefix);
 
+void	SetDiagMode(DiagModeSpecifier mode);
+
+void	SetDPrintFunc(void (* Func)(char *, va_list));
+
 void	SetErrorsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
-void	SetGUIDialogStatus(BOOLN status);
-
 void	SetInterruptRequestStatus_Common(BOOLN status);
+
+void	SetNotifyFunc(void (* Func)(const char *, va_list,
+		  CommonDiagSpecifier));
 
 void	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 

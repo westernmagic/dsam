@@ -1,7 +1,7 @@
 /**********************
  *
  * File:		GrSDIDoc.h
- * Purpose: 	Simulation Design Interface document classes.
+ * Purpose: 	Simulation Design Interface base document class.
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		04 Nov 2002
@@ -20,6 +20,7 @@
 #include <wx/docview.h>
 #include <wx/string.h>
 #include <wx/wxexpr.h>
+#include <wx/filesys.h>
 
 #include <wx/ogl/ogl.h>
 
@@ -74,10 +75,10 @@ class SDIDocument: public wxDocument
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }
 
+	void	SetAppInterfaceFile(wxFileName &fileName);
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
 
 };
 
 #endif
-  // _OGLSAMPLE_DOC_H_

@@ -1,7 +1,7 @@
 /**********************
  *
  * File:		GrSDIDoc.cpp
- * Purpose: 	Simulation Design Interface document classes.
+ * Purpose: 	Simulation Design Interface base document class.
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		04 Nov 2002
@@ -16,13 +16,41 @@
 
 #ifdef USE_WX_OGL
 
-#include "DSAM.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#if wxUSE_STD_IOSTREAM
-#include <iostream.h>
-#endif
+#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
 
-#include "wx/txtstrm.h"
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+// Any files included regardless of precompiled headers
+#	include "wx/txtstrm.h"
+#endif /* GRAPHICS_SUPPORT */
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+
+#include "UtDatum.h"
+#include "UtSSSymbols.h"
+#include "UtSimScript.h"
+#include "UtAppInterface.h"
+
+#include "ExtIPCServer.h"
+
+#include "GrSimMgr.h"
+#include "GrSDIDiagram.h"
+#include "GrSDIDoc.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -55,6 +83,22 @@ SDIDocument::~SDIDocument(void)
 {
 	FreeSim_AppInterface();
 	wxGetApp().SetAudModelLoadedFlag(false);
+
+}
+
+/******************************************************************************/
+/****************************** SetAppInterfaceFile ***************************/
+/******************************************************************************/
+
+/*
+ * Sets the application interface file and name.
+ */
+
+void
+SDIDocument::SetAppInterfaceFile(wxFileName &fileName)
+{
+	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
+	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
 
 }
 
@@ -100,75 +144,9 @@ SDIDocument::OnNewDocument(void)
 /****************************** SaveObject ************************************/
 /******************************************************************************/
 
-#if wxUSE_STD_IOSTREAM
-ostream&
-SDIDocument::SaveObject(ostream& stream)
-{
-	wxDocument::SaveObject(stream);
-
-	char buf[400];
-	(void) wxGetTempFileName("diag", buf);
-
-	diagram.SaveFile(buf);
-	wxTransferFileToStream(buf, stream);
-
-	wxRemoveFile(buf);
-
-	return stream;
-
-}
-
-/******************************************************************************/
-/****************************** LoadObject ************************************/
-/******************************************************************************/
-
-istream&
-SDIDocument::LoadObject(istream& stream)
-{
-	wxDocument::LoadObject(stream);
-
-	char buf[400];
-	(void) wxGetTempFileName("diag", buf);
-
-	wxTransferStreamToFile(stream, buf);
-
-	diagram.DeleteAllShapes();
-	diagram.LoadFile(buf);
-	wxRemoveFile(buf);
-
-	return stream;
-
-}
-
-#else
-
-/******************************************************************************/
-/****************************** SaveObject ************************************/
-/******************************************************************************/
-
 wxOutputStream&
 SDIDocument::SaveObject(wxOutputStream& stream)
 {
-	char tempFileName[MAX_FILE_PATH];
-
-	wxDocument::SaveObject(stream);
-	(void) wxGetTempFileName("diag", tempFileName);
-
-	bool dialogOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->dialogOutputFlag);
-	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-	SetGUIDialogStatus(FALSE);
-	SetParsFile_Common(tempFileName, OVERWRITE);
-	ListParameters_AppInterface();
-	fclose(GetDSAMPtr_Common()->parsFile);
-	GetDSAMPtr_Common()->parsFile = oldFp;
-	SetGUIDialogStatus(dialogOutputFlag);
-	wxTransferFileToStream(tempFileName, stream);
-	wxRemoveFile(tempFileName);
-
-	wxFileName	diagFileName = GetFilename();
-	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
-	diagram.SaveFile(diagFileName.GetFullPath());
-
 	return stream;
 
 }
@@ -180,46 +158,9 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
-	static const char *funcName = "SDIDocument::LoadObject";
-
-	wxDocument::LoadObject(stream);
-
-	wxFileName	fileName = GetFilename();
-	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
-	  fileName.GetExt().GetData()));
-
-	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
-	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
-	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
-	wxTransferStreamToFile(stream, tempFileName);
-
-	diagram.DeleteAllShapes();
-	wxGetApp().simFile = tempFileName;
-	if (!wxGetApp().GetFrame()->SetSimFileAndLoad())
-		return(stream);
-
-	wxFileName	diagFileName = fileName;
-	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
-	diagram.SetSimulation(GetSimulation_AppInterface());
-	if (!diagFileName.FileExists())
-		diagram.DrawSimulation();
-	else {
-		;
-		if (!diagram.LoadFile(diagFileName.GetFullPath()) ||
-		  !diagram.SetShapeHandlers() || !diagram.VerifyDiagram()) {
-			wxLogError("%s: Error loading diagram file - default layout "
-			  "used.\n", funcName);
-			diagram.DeleteAllShapes();
-			diagram.DrawSimulation();
-		}
-	}
-	wxRemoveFile(tempFileName);
-	wxGetApp().SetAudModelLoadedFlag(true);
 
 	return stream;
 
 }
-
-#endif
 
 #endif /* USE_WX_OGL */

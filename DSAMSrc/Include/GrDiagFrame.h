@@ -48,8 +48,13 @@ class DiagFrame: public wxFrame
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnSize(wxSizeEvent& event);
 
+
 	DECLARE_EVENT_TABLE()
 
 };
+
+/******************************************************************************/
+/*************************** Subroutine declarations **************************/
+/******************************************************************************/
 
 #endif

@@ -17,14 +17,14 @@
  *
  *********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
-
-#ifdef HAVE_CONFIG_H
-#	include "DSAMSetup.h"
-#endif /* HAVE_CONFIG */
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

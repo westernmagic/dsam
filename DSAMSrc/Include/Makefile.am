@@ -19,11 +19,11 @@ Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
-				GrParListInfoList.h GrPrintDisp.h GrParControl.h GrSocket.h \
-				GrSimThread.h GrAxisScale.h dsam.rc GrSDIDoc.h GrSDIPalette.h \
+				GrParListInfoList.h GrPrintDisp.h GrParControl.h \
+				GrSimThread.h GrAxisScale.h dsam.rc GrSDIPalette.h \
 				GrSDIView.h GrSDIFrame.h GrSDICanvas.h GrSDIDiagram.h \
 				GrSDIEvtHandler.h GrSDICommand.h GrSDIShapes.h GrDiagFrame.h \
-				GrDialogList.h
+				GrDialogList.h GrSDISimDoc.h GrSDISPFDoc.h 
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
@@ -39,7 +39,7 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
-Ext_Headers	= ExtIPCMgr.h
+Ext_Headers	= ExtIPCServer.h
 
 Std_Headers	= StdMessage.h StdSimThread.h StdSignalDisp.h
 

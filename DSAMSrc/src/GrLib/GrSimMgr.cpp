@@ -89,8 +89,8 @@ void CreateApp(void)
 /******************************************************************************/
 
 BEGIN_EVENT_TABLE(MyApp, wxApp)
-	EVT_SOCKET(MYAPP_SERVER_ID,	MyApp::OnServerEvent)
-	EVT_SOCKET(MYAPP_SOCKET_ID,	MyApp::OnSocketEvent)
+	EVT_SOCKET(IPCSERVER_APP_SERVER_ID,	MyApp::OnServerEvent)
+	EVT_SOCKET(IPCSERVER_APP_SOCKET_ID,	MyApp::OnSocketEvent)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -108,15 +108,14 @@ END_EVENT_TABLE()
 MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 {
 	GetDSAMPtr_Common()->usingGUIFlag = TRUE;
-	serverId = 0;
-	clientServerFlag = FALSE;
+	serverPort = 0;
+	serverFlag = FALSE;
 	displayDefaultX = 0;
 	displayDefaultY = 0;
 	myArgc = 0;
 	myArgv = NULL;
 	frame = NULL;
-	myServer = NULL;
-	myClient = NULL;
+	iPCServer = NULL;
 	dataInstallDir = DSAM_DATA_INSTALL_DIR;
 	icon = NULL;
 	busy = FALSE;
@@ -126,6 +125,8 @@ MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 	fileMenu = editMenu = viewMenu = programMenu = NULL;
 	helpCount = 0;
 	audModelLoadedFlag = false;
+	SetDPrintFunc(DPrint_MyApp);
+	SetNotifyFunc(Notify_MyApp);
 
 }
 
@@ -142,10 +143,8 @@ MyApp::OnExit(void)
 	wxOGLCleanUp();
 	delete printData;
 
-	if (myServer)
-		myServer->Destroy();
-	if (myClient)
-		myClient->Destroy();
+	if (iPCServer)
+		delete iPCServer;
 	if (myDocManager)
 		delete myDocManager;
 
@@ -190,16 +189,11 @@ MyApp::OnInit(void)
 
 	// Check call options
 	CheckOptions();
-	if (clientServerFlag) {
-		if (!SetClientServerMode())
+	if (serverFlag) {
+		if (!SetServerMode())
 			return(FALSE);
 	}
 	
-	if (myClient) {
-		RunInClientMode();
-		exit(0);
-	}
-
 	// Set brushes
 	greyBrushes = new GrBrushes();
 	
@@ -227,12 +221,14 @@ MyApp::OnInit(void)
 	// Create a document manager
 	myDocManager = new wxDocManager;
 	// Create templates relating drawing documents to their views
-	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*.spf",
-	  simFile.GetCwd(), "spf", "Simulation Design", "Simulation view",
-	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
-	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*.sim",
-	  simFile.GetCwd(), "sim", "Simulation Design", "Simulation view",
-	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*."
+	  SDI_SPF_DOC_FILE_EXT, simFile.GetCwd(), SDI_SPF_DOC_FILE_EXT,
+	  "Simulation Design", "Simulation view", CLASSINFO(SDISPFDocument),
+	  CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
+	  SDI_SIM_DOC_FILE_EXT, simFile.GetCwd(), SDI_SIM_DOC_FILE_EXT,
+	  "Simulation Design", "Simulation view", CLASSINFO(SDISimDocument),
+	  CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);
 
 	// Get frame position and size
@@ -249,6 +245,7 @@ MyApp::OnInit(void)
 	frame->SetMenuBar(CreateMenuBar());
 	frame->editMenu = editMenu;
 	myDocManager->FileHistoryUseMenu(fileMenu);
+	myDocManager->FileHistoryLoad(*pConfig);
 
 	frame->canvas = frame->CreateCanvas(NULL, frame);
 
@@ -260,15 +257,17 @@ MyApp::OnInit(void)
 	// Set up process lists for dialogs
 	CreateProcessLists();
 
-	myDocManager->CreateDocument("", wxDOC_NEW);
+	if (GetPtr_AppInterface()->simulationFileFlag)
+		myDocManager->CreateDocument(GetPtr_AppInterface()->simulationFile,
+		  wxDOC_SILENT);
+	else
+		myDocManager->CreateDocument("", wxDOC_NEW);
 
     // Show frame and tell the application that it's our main window
 
 	frame->Show(TRUE);
     //SetTopWindow(frame);
 
-	if (myServer)
-		StartSimThread();
 	// Essential - return the main frame window
 	return(TRUE);
 
@@ -286,7 +285,11 @@ MyApp::InitAppInterface(void)
 	InitRun();
 	if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
 		GetPtr_AppInterface()->PrintSimMgrUsage = PrintUsage_MyApp;
+		GetPtr_AppInterface()->OnExit = OnExit_MyApp;
+		GetPtr_AppInterface()->OnExecute = OnExecute_MyApp;
+		GetPtr_AppInterface()->canLoadSimulationFlag = FALSE;
 		InitMain();
+		GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
 		// ??
 		// The code below, and after the "else" needs to be done somewhere else.
 		//simFilePath = GetParString_UniParMgr(&GetPtr_AppInterface()->parList->
@@ -469,43 +472,22 @@ MyApp::EnableSimParMenuOptions(bool on)
 
 }
 
-/****************************** SetClientServerMode ***************************/
+/****************************** SetServerMode *********************************/
 
 /*
- * This routine sets up the general parameters for the client/server mode.
+ * This routine sets up the general parameters for the server mode.
  */
 
 bool
-MyApp::SetClientServerMode(void)
+MyApp::SetServerMode(void)
 {
-	static const char *funcName = "MyApp::SetClientServerMode";
+	static const char *funcName = "MyApp::SetServerMode";
 	char	userId[MAXLINE];
 	wxIPV4address	addr;
 
-	if (wxGetUserId(userId, MAXLINE))
-		serverName.sprintf("%u", Hash_Utils(userId) + serverId);
-	else
-		serverName = SIM_MANAGER_DEFAULT_SERVER_NAME;
-	addr.Hostname("localhost");
-	addr.Service(serverName);
-	myClient = new wxSocketClient();
-	myClient->SetEventHandler(*this, MYAPP_SOCKET_ID);
-	myClient->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG |
-	  wxSOCKET_LOST_FLAG);
-	myClient->Notify(TRUE);
-
-	if (myClient->Connect(addr, TRUE))
-		return(TRUE);
-
-	myClient = NULL;
-	myServer = new wxSocketServer(addr);
-	if (!myServer->Ok()) {
-		NotifyError("%s: Could not listen at specified port.", funcName);
-		return(FALSE);
-	}
-	myServer->SetEventHandler(*this, MYAPP_SERVER_ID);
-	myServer->SetNotify(wxSOCKET_CONNECTION_FLAG);
-	myServer->Notify(TRUE);
+	iPCServer = new IPCServer("", serverPort);
+	if (iPCServer->Ok())
+		iPCServer->SetNotification(this);
 	return(TRUE);
 			
 }
@@ -550,15 +532,15 @@ MyApp::CheckOptions(void)
 	char	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "SI:l:")))
+	  "Sp:l:")))
 		switch (c) {
 		case 'S':
-			clientServerFlag = TRUE;
+			serverFlag = TRUE;
 			MarkIgnore_Options(argc, argv, "-S", OPTIONS_NO_ARG);
 			break;
-		case 'I':
-			serverId = atoi(argument);
-			MarkIgnore_Options(argc, argv, "-I", OPTIONS_WITH_ARG);
+		case 'p':
+			serverPort = atoi(argument);
+			MarkIgnore_Options(argc, argv, "-p", OPTIONS_WITH_ARG);
 			break;
 		case 'l':
 			wxGetApp().InitRun();
@@ -638,6 +620,7 @@ MyApp::ExitMain(void)
 		pConfig->Write("y", (long) y);
 		pConfig->Write("w", (long) w);
 		pConfig->Write("h", (long) h);
+		myDocManager->FileHistorySave(*pConfig);
 	}
 
 }
@@ -662,32 +645,6 @@ MyApp::StartSimThread(void)
 
 	if (simThread->Run() != wxTHREAD_NO_ERROR)
 		wxLogError("%s: Cannot start simulation thread.", funcName);
-
-}
-
-/****************************** RunInClientMode *******************************/
-
-/*
- * This routine runs the simulation as a client.
- * A request is sent to the server to ensure that the connection is not
- * closed before the simulation is finished.
- */
-
-void
-MyApp::RunInClientMode(void)
-{
-	/* static const char *funcName = "MyApp::RunInClientMode"; */
-	char	c;
-	int		i;
-
-	busy = TRUE;
-	c = (char) argc;
-	myClient->Write(&c, 1);
-	for (i = 0; i < argc; i++)
-		myClient->WriteMsg(argv[i], strlen(argv[i]) + 1);
-	// myClient->Read(&c, 1);
-	// if (c != 0)
-	//	NotifyError("%s: Server simulation did not run.", funcName);
 
 }
 
@@ -879,28 +836,11 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 void
 MyApp::DeleteSimThread(void)
 {
-	SetGUIDialogStatus(FALSE);
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (simThread) {
 		simThread->SuspendDiagnostics();
 		simThread->Delete();
 	}
-
-}
-
-/****************************** GetSuspendDiagnostics *************************/
-
-/*
- * This function returns FALSE if there has been a request to suspend the
- * diagnotsics for the main simulation.
- * This is needed, for instance, when the thread is deleted.
- */
-
-bool
-MyApp::GetSuspendDiagnostics(void)
-{
-	if (!simThread)
-		return(FALSE);
-	return(simThread->GetSuspendDiagnostics());
 
 }
 
@@ -1004,18 +944,20 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 {
 	static const char *funcName = "MyApp::OnServerEvent";
 
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
 		NotifyError("%s: Unexpected socket event.", funcName);
 		return;
 	}
-	wxSocketBase *sock = myServer->Accept(FALSE);
+	wxSocketBase *sock = iPCServer->GetServer()->Accept(FALSE);
 	if (!sock) {
 		NotifyError("%s: Couldn't accept a new connection.\n");
 		return;
 	}
-	sock->SetEventHandler(*this, MYAPP_SOCKET_ID);
+	sock->SetEventHandler(*this, IPCSERVER_APP_SOCKET_ID);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
 	sock->Notify(TRUE);
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 
 }
 
@@ -1025,50 +967,31 @@ MyApp::OnServerEvent(wxSocketEvent& event)
  * Socket event handler routine.
  */
 
-#define MAX_MSG_SIZE	255
-
 void
 MyApp::OnSocketEvent(wxSocketEvent& event)
 {
 	static const char *funcName = "MyApp::OnSocketEvent";
 	wxSocketBase *sock = event.GetSocket();
 
+	SetDiagMode(COMMON_SOCKET_DIAG_MODE);
 	switch(event.GetSocketEvent()) {
 	case wxSOCKET_INPUT: {
-		unsigned char c;
-		char	msg[MAX_MSG_SIZE];
-		int		i, len;
-		sock->SetNotify(wxSOCKET_LOST_FLAG);
-		sock->Read((char *) &c, 1);
-		if (!InitArgv((int) c)) {
-			NotifyError("%s: Could not initialise local argv.", funcName);
-			return;
-		}
-		for (i = 0; i < myArgc; i++) {
-			len = sock->ReadMsg(msg, MAX_MSG_SIZE).LastCount();
-			SetArgvString(i, msg, len);
-		}
-		if (GetPtr_AppInterface() && myArgv) {
-			SetArgcAndArgV_AppInterface(myArgc, myArgv);
-			ResetGUIDialogs();
-			ResetCommandArgs();
-			StartSimThread();
-		}
-		sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT);
-		// sock->Write((char *) &c, 1);
+		iPCServer->ProcessInput(sock);
 		break; }
 	case wxSOCKET_LOST:
+		printf("%s: Socket lost\n", funcName);
 		sock->Destroy();
+		iPCServer->ResetCommandMode();
 		break;
 	case wxSOCKET_CONNECTION:
+		printf("%s: Socket connected\n", funcName);
 		break;
 	default:
 		;
 	}
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 
 }
-
-#undef MAX_MSG_SIZE
 
 /****************************** PrintUsage ************************************/
 
@@ -1083,7 +1006,185 @@ PrintUsage_MyApp(void)
 {
 	fprintf(stderr, "\n"
 	  "\t-S            \t: Run in server mode\n"
-	  "\t-I <x>        \t: Run using server ID <x>.\n"
+	  "\t-p <x>        \t: Run using ethernet port <x>.\n"
 	  );
 
 }
+
+/****************************** OnExit ****************************************/
+
+/*
+ * This routine posts an exit event.
+ * It expects to be called by the operating routine's "OnExit" routine.
+ * So it cannot be a member function.
+ */
+
+void
+OnExit_MyApp(void)
+{
+	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, wxID_EXIT);
+
+	wxPostEvent(wxGetApp().GetFrame(), event);
+
+}
+
+/****************************** OnExecute *************************************/
+
+/*
+ * This routine posts an execute event..
+ * It expects to be called by the operating routine's "RunSimulation" routine.
+ * So it cannot be a member function.
+ */
+
+void
+OnExecute_MyApp(void)
+{
+	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, SDIFRAME_EXECUTE);
+
+	wxPostEvent(wxGetApp().GetFrame(), event);
+
+}
+
+/*************************** EmptyDiagWinBuffer *******************************/
+
+/*
+ * This routine prints the print buffer, then resets its counter to zero.
+ * It expects the count 'c' to point beyond the last character.
+ */
+
+void
+EmptyDiagWinBuffer_MyApp(char *s, int *c)
+{
+	*(s + *c) = '\0';
+	*(wxGetApp().GetDiagFrame()->diagnosticsText) << s;
+	*c = 0;
+
+}
+
+/*************************** DPrint *******************************************/
+
+/*
+ * This routine prints out a diagnostic message, preceded by a bell sound.
+ * It is used in the same way as the printf statement.
+ * There are different versions for the different compile options.
+ * It assumes that all real values are 'double'.
+ * It does not check that the format string is less than SMALL_STRING
+ * characters.
+ * The 'buffer' string is used to retain control of the formatting, as WxWin
+ * does not yet have sufficient controls on the number output using the '<<'
+ * operator.
+ */
+ 
+void
+DPrint_MyApp(char *format, va_list args)
+{
+	static	const char *funcName = "DPrint";
+	bool	longVar;
+	char	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
+	int		i, c, tabPosition;
+
+	if (GetDSAMPtr_Common()->diagMode == COMMON_OFF_DIAG_MODE)
+		return;
+	if (!wxGetApp().GetDiagFrame())
+		return;
+	if (GetDSAMPtr_Common()->diagnosticsPrefix)
+		sprintf(buffer, "%s", GetDSAMPtr_Common()->diagnosticsPrefix);
+	else
+		*buffer = '\0';
+	if (GetDSAMPtr_Common()->lockGUIFlag)
+		wxMutexGuiEnter();
+	for (p = format, c = strlen(buffer); *p != '\0'; p++)
+		if (c >= LONG_STRING - 1)
+			EmptyDiagWinBuffer_MyApp(buffer, &c);
+		else if (*p == '%') {
+			EmptyDiagWinBuffer_MyApp(buffer, &c);
+			for (f = subFormat, *f++ = *p++; isdigit(*p) || (*p == '.') ||
+			  (*p == '-'); )
+				*f++ = *p++;
+			longVar = (*p == 'l');
+			if (longVar)
+				*f++ = *p++;
+			*f++ = *p;
+			*f = '\0';
+			switch (*p) {
+			case 'f':
+			case 'g':
+				sprintf(buffer, subFormat, va_arg(args, double));
+				break;
+			case 'd':
+				sprintf(buffer, subFormat, (longVar)? va_arg(args, long):
+				  va_arg(args, int));
+				break;
+			case 'u':
+				sprintf(buffer, subFormat, (longVar)? va_arg(args,
+				  unsigned long): va_arg(args, unsigned));
+				break;
+			case 'c':
+				sprintf(buffer, subFormat, va_arg(args, int));
+				break;
+			case 's':
+				s = va_arg(args, char *);
+				if (strlen(s) >= LONG_STRING) {
+					NotifyError("%s: Buffer(%d) is too small for string (%d).",
+					  funcName, LONG_STRING, strlen(s));
+					if (GetDSAMPtr_Common()->lockGUIFlag)
+						wxMutexGuiLeave();
+					return;
+				}
+				sprintf(buffer, subFormat, s);
+				break;
+			case '%':
+				sprintf(buffer, "%%");
+				break;
+			default:
+				sprintf(buffer, "%c", *p);
+				break;
+			}
+			c = strlen(buffer);
+		} else if (*p == '\t') {
+			tabPosition = TAB_SPACES * (c / TAB_SPACES + 1);
+			for (i = c; (i < tabPosition) && (c < LONG_STRING - 1); i++)
+				buffer[c++] = ' ';
+		} else {
+			buffer[c++] = *p;
+		}
+	if (c > 0)
+		EmptyDiagWinBuffer_MyApp(buffer, &c);
+	if (GetDSAMPtr_Common()->lockGUIFlag)
+		wxMutexGuiLeave();
+	
+}
+
+/***************************** Notify *****************************************/
+
+/*
+ * A message window dialog is opened when this routine is called.
+ * The '#ifdef' compile options are required because it seems that the
+ * 'wxMessageBox' is thread safe under windows, but not under Linux.
+ */
+
+void
+Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
+{
+	char	message[LONG_STRING], preface[MAXLINE];
+
+	if (GetDSAMPtr_Common()->diagMode == COMMON_DIALOG_DIAG_MODE) {
+		vsnprintf(message, LONG_STRING, format, args);
+#		ifndef __WXMSW__
+		if (GetDSAMPtr_Common()->lockGUIFlag)
+			wxMutexGuiEnter();
+#		endif
+		wxMessageBox(message, DiagnosticTitle(type), wxOK);
+#		ifndef __WXMSW__
+		if (GetDSAMPtr_Common()->lockGUIFlag)
+			wxMutexGuiLeave();
+#		endif
+		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+		snprintf(preface, MAXLINE, "\n%s diagnostics:-\n",
+		  DiagnosticTitle(type));
+	} else
+		*preface = '\0';
+	snprintf(message, LONG_STRING, "%s%s\n", preface, format);
+	(GetDSAMPtr_Common()->DPrint)(message, args);
+
+} /* NotifyMessage */

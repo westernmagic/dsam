@@ -409,11 +409,18 @@ PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
   char *prefix, BOOLN checkForSubSimScripts)
 {
 	BOOLN	subSimScripts = FALSE;
+	char	*p, *scriptNameNoPath;
 	int		i;
 
 	if (pc == NULL)
 		return(subSimScripts);
-	DPrint("%sbegin %s {\n\n", prefix, scriptName);
+	if ((p = strrchr(scriptName, '/')) != NULL)
+		scriptNameNoPath = p + 1;
+	else if ((p = strrchr(scriptName, '\\')) != NULL)
+		scriptNameNoPath = p + 1;
+	else
+		scriptNameNoPath = scriptName;
+	DPrint("%sbegin %s {\n\n", prefix, scriptNameNoPath);
 	for ( ; pc != NULL; pc = pc->next) {
 		DPrint("%s", prefix);
 		switch (pc->type) {
@@ -1470,7 +1477,8 @@ SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
 
 	if (pc->type != PROCESS)
 		return;
-	if (*pc->u.proc.parFile == '\0') {
+	if ((*pc->u.proc.parFile == '\0') || (strcmp(pc->u.proc.parFile, NO_FILE)
+	  == 0)) {
 		snprintf(fileName, MAXLINE, "%s_%d.par", pc->u.proc.moduleName,
 		  pc->stepNumber);
 		pc->u.proc.parFile = InitString_Utility_String(fileName);
@@ -1478,15 +1486,16 @@ SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
 
 }
 
-/*************************** PrintSimFiles ************************************/
+/*************************** WriteSimFiles ************************************/
 
 /*
- * This function prints the parameters for a simulation as a ".sim" files.
+ * This function prints a simulation as a ".sim" file with the associated
+ * "*.par"files.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-PrintSimFiles_Datum(char  *fileName, DatumPtr start)
+WriteSimFiles_Datum(char  *fileName, DatumPtr start)
 {
 	static const char *funcName = "PrintSimFile_Datum";
 	DatumPtr	pc;
@@ -1497,14 +1506,11 @@ PrintSimFiles_Datum(char  *fileName, DatumPtr start)
 		NotifyError("%s: Simulation not initialised.", funcName);
 		return(FALSE);
 	}
-	SetParsFile_Common(fileName, OVERWRITE);
-	PrintSimScript_Utility_Datum(start, fileName, 0, "", FALSE);
-	fclose(GetDSAMPtr_Common()->parsFile);
 	for (pc = start; pc; pc = pc->next) {
 		if (pc->type != PROCESS)
 			continue;
 		if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
-			PrintSimFiles_Datum(pc->u.proc.parFile, GetSimulation_ModuleMgr(pc->
+			WriteSimFiles_Datum(pc->u.proc.parFile, GetSimulation_ModuleMgr(pc->
 			  data));
 			continue;
 		}
@@ -1516,6 +1522,9 @@ PrintSimFiles_Datum(char  *fileName, DatumPtr start)
 		PrintParList_UniParMgr(parList);
 		fclose(GetDSAMPtr_Common()->parsFile);
 	}
+	SetParsFile_Common(fileName, OVERWRITE);
+	PrintSimScript_Utility_Datum(start, fileName, 0, "", FALSE);
+	fclose(GetDSAMPtr_Common()->parsFile);
 	GetDSAMPtr_Common()->parsFile = oldFp;
 	return(TRUE);
 

@@ -57,6 +57,7 @@
 #define	MAX_IDENTIFIERS						20
 #define	NULL_STRING							""
 #define SIMSCRIPT_SIMPARFILE_DIVIDER		"<<>>"
+#define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	"<()>"
 #define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'
 #define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE "#########################"\
 		  "#######################################################\n"

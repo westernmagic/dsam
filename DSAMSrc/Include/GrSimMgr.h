@@ -32,7 +32,6 @@
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
-#	include <wx/socket.h>
 #	include <wx/wxhtml.h>
 #	include <wx/docview.h>
 #endif
@@ -50,12 +49,11 @@
 #define SIM_MANAGER_REG_DSAM_HELP_PATH	"DSAMHelp"
 #define SIM_MANAGER_REG_DSAM_HELP_BOOK	"DSAMHelp"
 #define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
+#define SIM_MANAGER_REG_MAIN_PARS				"/MainPars"
+
 
 #define	SIM_MANAGER_DEFAULT_SERVER_NAME		"DSAM IPC Server"
-
 #define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	"Program parameters"
-#define SIM_MANAGER_REG_MAIN_PARS				"/MainPars"
-#define	DEFAULT_SERVER_NAME		"DSAM IPC Server"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -70,13 +68,6 @@ enum {
 	MYFRAME_ID_RELOAD_SIM_SCRIPT_FILE,
 	MYFRAME_ID_SAVE_SIM_PARS,
 	MYFRAME_ID_VIEW_SIM_PARS,
-
-};
-
-enum {
-
-	MYAPP_SOCKET_ID = 1,
-	MYAPP_SERVER_ID
 
 };
 
@@ -112,16 +103,15 @@ WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 // Define a new application
 class MyApp: public wxApp {
 
-	bool	clientServerFlag, busy, audModelLoadedFlag;
-	uInt	serverId;
+	bool	serverFlag, busy, audModelLoadedFlag;
+	uShort	serverPort;
 	int		displayDefaultX, displayDefaultY, myArgc, helpCount;
 	char	**myArgv;
-	wxString	serverName, dataInstallDir, title;
+	wxString	dataInstallDir, title;
 	SDIFrame	*frame;
 	DiagFrame	*diagFrame;
+	IPCServer	*iPCServer;
 	wxConfigBase	*pConfig;
-	wxSocketServer	*myServer;
-	wxSocketClient	*myClient;
 	wxDocManager	*myDocManager;
 	wxHtmlHelpController help;
 
@@ -129,7 +119,8 @@ class MyApp: public wxApp {
 	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu, *windowsMenu;
 	wxIcon	*icon;
 	wxFileName	simFile;
-	wxArrayString	anaList, ctrlList, displayList, filtList, ioList, modelsList;
+	wxArrayString	anaList, ctrlList, displayList, filtList, ioList,
+					  modelsList;
 	wxArrayString	transList, userList, utilList;
 	SimThread	*simThread;
 	wxArrayDisplay	displays;
@@ -154,7 +145,6 @@ class MyApp: public wxApp {
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
 	wxArrayString *	GetProcessList(int classSpecifier);
 
-	bool	GetSuspendDiagnostics(void);
 	bool	InitArgv(int argc);
 	void	InitAppInterface(void);
 	void	InitHelp(void);
@@ -170,11 +160,10 @@ class MyApp: public wxApp {
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	bool	ResetSimulation(void);
-	void	RunInClientMode(void);
 	void	SaveConfiguration(UniParListPtr	parList);
 	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
 	bool	SetArgvString(int index, char *string, int size);
-	bool	SetClientServerMode(void);
+	bool	SetServerMode(void);
 	void	SetConfiguration(UniParListPtr	parList);
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
 	void	SetDiagLocks(bool on);
@@ -203,7 +192,18 @@ extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
 
 void	CreateApp(void);
 
+void	OnExecute_MyApp(void);
+
+void	OnExit_MyApp(void);
+
 void	PrintUsage_MyApp(void);
+
+void	DPrint_MyApp(char *format, va_list args);
+
+void	EmptyDiagWinBuffer_MyApp(char *s, int *c);
+
+void	Notify_MyApp(const char *format, va_list args,
+		  CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

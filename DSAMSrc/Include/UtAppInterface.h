@@ -104,6 +104,8 @@ typedef struct {
 	int		simFileType;
 	BOOLN	(* FreeAppProcessVars)(void);
 	BOOLN	(* Init)(void);
+	void	(* OnExecute)(void);
+	void	(* OnExit)(void);
 	void	(* PrintUsage)(void);
 	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
@@ -178,6 +180,10 @@ void	ListCFListAndExit_AppInterface(void);
 BOOLN	ListParameters_AppInterface(void);
 
 void	ListParsAndExit_AppInterface(void);
+
+void	OnExecute_AppInterface(void);
+
+void	OnExit_AppInterface(void);
 
 void	PrintPars_AppInterface(void);
 

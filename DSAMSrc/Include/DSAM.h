@@ -187,6 +187,13 @@
 #			include <wx/wx.h>
 #		endif
 #	endif /* __WXWIN__ */
+
+#	if USE_EXTENSIONS_LIBRARY
+//		Any files included regardless of precompiled headers
+#		include <wx/socket.h>
+#		include "ExtIPCServer.h"
+#	endif /* USE_EXTENSIONS_LIBRARY */
+
 #	if defined(GRAPHICS_SUPPORT) && defined(USE_GUI)
 //		Any files included regardless of precompiled headers
 #		include <wx/notebook.h>
@@ -222,14 +229,13 @@
 #		include "GrSDIEvtHandler.h"
 #		include "GrSDIDiagram.h"
 #		include "GrSDIDoc.h"
+#		include "GrSDISimDoc.h"
+#		include "GrSDISPFDoc.h"
 #		include "GrSDICommand.h"
 #		include "GrSDIView.h"
 #		include "GrSDIPalette.h"
 
 #	endif /* GRAPHICS_SUPPORT */
-#	if USE_EXTENSIONS_LIBRARY
-#		include "ExtIPCMgr.h"
-#	endif /* USE_EXTENSIONS_LIBRARY */
 #endif /* __cplusplus */
 
 #ifdef MPI_SUPPORT

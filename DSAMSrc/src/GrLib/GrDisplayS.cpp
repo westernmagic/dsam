@@ -39,6 +39,8 @@
 #include "GeEarObject.h"
 #include "UtDatum.h"
 
+#include "ExtIPCServer.h"
+
 #include "GrUtils.h"
 #include "GrSimMgr.h"
 #include "GrLines.h"

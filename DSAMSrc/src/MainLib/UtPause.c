@@ -489,14 +489,14 @@ CheckData_Utility_Pause(EarObjectPtr data)
 void
 Notify_Utility_Pause(char *format, ...)
 {
-	BOOLN	oldDialogStatusFlag;
+	DiagModeSpecifier	oldDiagMode;
 	va_list	args;
 
 	va_start(args, format);
-	oldDialogStatusFlag = GetDSAMPtr_Common()->dialogOutputFlag;
-	Notify_Message(format, args, COMMON_GENERAL_DIAGNOSTIC);
-	SetGUIDialogStatus(oldDialogStatusFlag);
-	if (!GetDSAMPtr_Common()->dialogOutputFlag) {
+	oldDiagMode = GetDSAMPtr_Common()->diagMode;
+	(GetDSAMPtr_Common()->Notify)(format, args, COMMON_GENERAL_DIAGNOSTIC);
+	SetDiagMode(oldDiagMode);
+	if (GetDSAMPtr_Common()->diagMode == COMMON_CONSOLE_DIAG_MODE) {
 		printf("Press <return> to continue...");
 		getchar();
 	}

@@ -32,6 +32,7 @@
 #include <wx/wxexpr.h>
 
 #include "GeCommon.h"
+#include "ExtIPCServer.h"
 #include "GrDiagFrame.h"
 #include "GrFonts.h"
 #include "GrSimMgr.h"
@@ -102,4 +103,8 @@ DiagFrame::OnCloseWindow(wxCloseEvent& event)
 	wxGetApp().CloseDiagWindow();
 
 }
+
+/******************************************************************************/
+/************************ Subroutines and functions ***************************/
+/******************************************************************************/
 

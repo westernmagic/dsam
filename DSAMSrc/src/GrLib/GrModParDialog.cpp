@@ -93,8 +93,7 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 	parList = theParList;
 
 	parListInfoList = new ParListInfoList(this, pc, parList);
-	enableTextCtrlsFlag = TRUE;
-	enableNotebookPagingFlag = TRUE;
+	EnableControls();
 	lastControl = parListInfoList->GetLastControl();
 
 	/* static char *funcName = "ModuleParDialog::ModuleParDialog"; */
@@ -161,6 +160,21 @@ ModuleParDialog::~ModuleParDialog(void)
 {
 	if (parListInfoList)
 		delete parListInfoList;
+
+}
+
+/****************************** EnableControls ********************************/
+
+/*
+ * This routine enables the control call backs that should not start working
+ * until the necessary parameters are initialised.
+ */
+
+void
+ModuleParDialog::EnableControls(void)
+{
+	enableTextCtrlsFlag = TRUE;
+	enableNotebookPagingFlag = TRUE;
 
 }
 

@@ -169,8 +169,10 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	appInterfacePtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
 	appInterfacePtr->canFreePtrFlag = TRUE;
+	appInterfacePtr->OnExit = NULL;
 	appInterfacePtr->FreeAppProcessVars = NULL;
 	appInterfacePtr->Init = NULL;
+	appInterfacePtr->OnExecute = NULL;
 	appInterfacePtr->PrintUsage = NULL;
 	appInterfacePtr->PrintSimMgrUsage = NULL;
 	appInterfacePtr->ProcessOptions = NULL;
@@ -1316,7 +1318,7 @@ ListCFListAndExit_AppInterface(void)
 		NotifyError("%s: Simulation not initialised.", funcName);
 		exit(1);
 	}
-	SetGUIDialogStatus(FALSE);
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	SetParsFile_Common("screen", OVERWRITE);
 	if (((bMDatumPtr = FindModuleProcessInst_Utility_Datum(simulation,
 	  "BM_")) == NULL) || ((theBMCFs = *GetUniParPtr_ModuleMgr(bMDatumPtr->data,
@@ -1411,8 +1413,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		ProcessOptions_AppInterface();
 		if (appInterfacePtr->printUsageFlag) {
 			PrintUsage_AppInterface();
-			if (appInterfacePtr->PrintSimMgrUsage) (* appInterfacePtr->
-			  PrintSimMgrUsage)();
+			if (appInterfacePtr->PrintSimMgrUsage)
+				(* appInterfacePtr->PrintSimMgrUsage)();
 			if (appInterfacePtr->PrintUsage)
 				(* appInterfacePtr->PrintUsage)();
 			exit(0);
@@ -1699,4 +1701,32 @@ SetRealArraySimPar_AppInterface(char *parName, int index, double value)
 	return(SetRealArrayPar_ModuleMgr(appInterfacePtr->audModel, parName, index,
 	  value));
 
+}
+
+/****************************** OnExit ***************************************/
+
+/*
+ * This routine calls the application's exit routine, if on exists.
+ */
+
+void
+OnExit_AppInterface(void)
+{
+	if (appInterfacePtr->OnExit)
+		(* appInterfacePtr->OnExit)();
+}
+
+/****************************** OnExecute *************************************/
+
+/*
+ * This routine calls the application's OnExecute routine if one exists.
+ * This routine is used when the application interface needs to do various
+ * other things, i.e. under the GUI.
+ */
+
+void
+OnExecute_AppInterface(void)
+{
+	if (appInterfacePtr->OnExecute)
+		(* appInterfacePtr->OnExecute)();
 }
