@@ -1,7 +1,7 @@
 #
 # AMS main parameter file.
 #
-screen	Diagnostics mode specifier ("off", "screen" or filename).
+off	Diagnostics mode specifier ("off", "screen" or filename).
 DEFAULT/AIM.sim	Simulation Specification file.
 off	Simulation paramater file mode ('off' or <file name>).
 
