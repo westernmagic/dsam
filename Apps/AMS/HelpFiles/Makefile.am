@@ -6,7 +6,6 @@ AUTOMAKE_OPTIONS = foreign
 DIRECTORY	= HelpFiles
 
 EXTRA_DIST	= \
-	AMSHE.htm \
 	AMSHE000.gif \
 	AMSHE001.gif \
 	AMSHE001.htm \
@@ -28,7 +27,9 @@ EXTRA_DIST	= \
 	AMSHE009.htm \
 	AMSHE010.gif \
 	AMSHE010.htm \
+	AMSHE011.gif \
 	AMSHE011.htm \
+	AMSHE012.gif \
 	AMSHE012.htm \
 	AMSHE013.htm \
 	AMSHE014.htm \
@@ -41,7 +42,21 @@ EXTRA_DIST	= \
 	AMSHE021.htm \
 	AMSHE022.htm \
 	AMSHE023.htm \
-	AMSHE_c.htm \
+	AMSHE024.htm \
+	AMSHE025.htm \
+	AMSHE026.htm \
+	AMSHE027.htm \
+	AMSHE028.htm \
+	AMSHE029.htm \
+	AMSHE030.htm \
+	AMSHE031.htm \
+	AMSHE032.htm \
+	AMSHE033.htm \
+	AMSHE034.htm \
+	AMSHE035.htm \
+	AMSHE036.htm \
+	AMSHE037.htm \
+	AMSHE038.htm \
 	AMSHelp.hhc \
 	ams.hhp
 	
