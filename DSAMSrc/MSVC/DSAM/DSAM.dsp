@@ -369,7 +369,7 @@ SOURCE=..\..\src\MainLib\StWhiteNoise.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\MainLib\TrCollectChans.c
+SOURCE=..\..\src\MainLib\TrCollectSignals.c
 # End Source File
 # Begin Source File
 
@@ -1001,7 +1001,7 @@ SOURCE=..\..\Include\StWhiteNoise.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\TrCollectChans.h
+SOURCE=..\..\Include\TrCollectSignals.h
 # End Source File
 # Begin Source File
 
