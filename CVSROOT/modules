@@ -28,3 +28,4 @@ AMS				DSAM/AMS
 DSAMSrc			DSAM/DSAMSrc
 Documentation	DSAM/Documentation
 ModGen			DSAM/ModGen
+RunDSAMSim		DSAM/RunDSAMSim
