@@ -439,6 +439,7 @@ InitModule_Analysis_ISIH(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = interSIHPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_ISIH;
 	theModule->Free = Free_Analysis_ISIH;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ISIH;
@@ -552,43 +553,48 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_ISIH";
 	register	ChanData	 *outPtr;
-	int		chan, maxSpikes;
+	int		chan;
 	ChanLen	maxIntervalIndex, spikeIntervalIndex;
 	SpikeSpecPtr	p1, p2, headSpikeList, currentSpikeSpec;
+	InterSIHPtr	p = interSIHPtr;
 
-	if (!CheckPars_Analysis_ISIH())
-		return(FALSE);
-	if (!CheckData_Analysis_ISIH(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_ISIH())
+			return(FALSE);
+		if (!CheckData_Analysis_ISIH(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Inter-Spike Interval Histogram (ISIH) "
+		  "analysis");
+		maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
+		  maxInterval / data->inSignal[0]->dt + 0.5): data->inSignal[0]->length;
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  maxIntervalIndex, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		if (!InitProcessVariables_Analysis_ISIH(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data->
+		  inSignal[0]);
+		p->maxSpikes = (p->order > 0)? p->order: abs((int) data->inSignal[0]->
+		  length);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Inter-Spike Interval Histogram (ISIH) "\
-	  "analysis");
-	maxIntervalIndex = (interSIHPtr->maxInterval > 0.0)?
-	  (ChanLen) floor(interSIHPtr->maxInterval / data->inSignal[0]->dt + 0.5):
-	  data->inSignal[0]->length;
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  maxIntervalIndex, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-	if (!InitProcessVariables_Analysis_ISIH(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	GenerateList_SpikeList(interSIHPtr->spikeListSpec,
-	  interSIHPtr->eventThreshold, data->inSignal[0]);
-	maxSpikes = (interSIHPtr->order > 0)? interSIHPtr->order:
-	  abs((int) data->inSignal[0]->length);
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		outPtr = data->outSignal->channel[chan];
-		headSpikeList = interSIHPtr->spikeListSpec->head[chan];
-		currentSpikeSpec = interSIHPtr->spikeListSpec->current[chan];
+		headSpikeList = p->spikeListSpec->head[chan];
+		currentSpikeSpec = p->spikeListSpec->current[chan];
 		for (p1 = headSpikeList; p1 != currentSpikeSpec; p1 = p1->next)
 			for (p2 = p1->next; (p2 != NULL) && (p2 != currentSpikeSpec) &&
-			  (p2->number - p1->number <= maxSpikes); p2 = p2->next)
+			  (p2->number - p1->number <= p->maxSpikes); p2 = p2->next)
 				if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
 				  maxIntervalIndex)
 					outPtr[spikeIntervalIndex]++;

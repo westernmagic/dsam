@@ -5,14 +5,26 @@
  *				calculating the mean, standard deviation and covariance
  *				measures for a spike train.
  *				The results for each channel are stored in the order:
- *				 - mean, standard deviation, covariance.
+ *				 - mean, standard deviation, covariance'.
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
  *				See Hewitt M. J. & Meddis R. (1993) "Regularity of cochlear
  *				nucleus stellate cells: A computational Modeling study",
  *				J. of the Acoust. Soc. Am, 93, pp 3390-3399.
+ *				If the standard deviation results are only valid if the 
+ *				covariance measure is greater than 0.  This enables the case
+ *				when there are less than two counts to be marked.
+ *				10-1-97: LPO - added dead-time correction for
+ *				covariance CV' = S.D. / (mean - dead time) - see Rothman J. S.
+ *				Young E. D. and Manis P. B. "Convergence of Auditory Nerve
+ *				Fibers in the Ventral Cochlear Nucleus: Implications of a
+ *				Computational Model" J. of NeuroPhysiology, 70:2562-2583.
+ *				04-01-05: LPO: The 'countEarObj' EarObject does need to be
+ *				registered as a subprocess for the thread processing because
+ *				access to the channels is controlled by the main output process
+ *				channel access.
  * Author:		L. P. O'Mard
  * Created:		01 Apr 1996
- * Updated:		10 Jan 1997
+ * Updated:		20 Feb 1997
  * Copyright:	(c) 1998, University of Essex
 *
  *********************/
@@ -62,6 +74,8 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	double	dt, convertDt;
+	ChanLen	runningTimeOffsetIndex;
 	EarObjectPtr	countEarObj;
 	SpikeListSpecPtr	spikeListSpec;
 

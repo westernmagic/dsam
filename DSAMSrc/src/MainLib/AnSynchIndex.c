@@ -64,6 +64,7 @@ InitModule_Analysis_SynchIndex(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Analysis_SynchIndex"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Calc_Analysis_SynchIndex;
 	theModule->SetParsPointer = SetParsPointer_Analysis_SynchIndex;
 	return(TRUE);
@@ -123,17 +124,22 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 	double	theta, sineSum, cosineSum, rSum;
 	ChanLen	i;
 
-	if (!CheckData_Analysis_SynchIndex(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Analysis_SynchIndex(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Synchronisation Index Analysis");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		  1.0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Synchronisation Index Analysis");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-	  1.0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}	
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		sineSum = cosineSum = rSum = 0.0;
 		r = data->inSignal[0]->channel[chan];
 		for (i = 0; i < data->inSignal[0]->length; i++) {

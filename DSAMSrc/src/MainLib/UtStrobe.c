@@ -659,6 +659,7 @@ InitModule_Utility_Strobe(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = strobePtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_Strobe;
 	theModule->Free = Free_Utility_Strobe;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Strobe;
@@ -782,10 +783,9 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 	register ChanData	*lastInput, *outPtr;
 	int			i;
 	ChanLen		j;
-	StrobePtr	p;
 	StrobeStatePtr	statePtr;
+	StrobePtr	p = strobePtr;
 
-	p = strobePtr;
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -901,7 +901,8 @@ ProcessThesholdModes_Utility_Strobe(EarObjectPtr data)
 	int		chan;
 	ChanLen	i;
 
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->inSignal[0]->length; i++)
@@ -924,7 +925,7 @@ ProcessThesholdModes_Utility_Strobe(EarObjectPtr data)
 
 #define	_SetDecayStrobeTrigger()  \
 			s->threshold = *inPtr; \
-			s->deltaThreshold = *inPtr * strobePtr->thresholdDecay;
+			s->deltaThreshold = *inPtr * p->thresholdDecay;
 
 void
 ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
@@ -937,17 +938,19 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 	ChanLen		i, length, endProcessCount, endProcessLimitCount;
 	ChanData	nextSample, lastSample;
 	StrobeStatePtr	s;
+	StrobePtr	p = strobePtr;
 
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		s = strobePtr->stateVars[chan];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		s = p->stateVars[chan];
 		if (chanProcessSpecifier == STROBE_PROCESS_DATA_CHANNEL) {
 			inPtr = data->inSignal[0]->channel[chan];
-			outPtr = data->outSignal->channel[chan] + strobePtr->numLastSamples;
-			length = data->inSignal[0]->length - strobePtr->numLastSamples;
+			outPtr = data->outSignal->channel[chan] + p->numLastSamples;
+			length = data->inSignal[0]->length - p->numLastSamples;
 		} else {
 			inPtr = s->lastInput;
 			outPtr = data->outSignal->channel[chan];
-			length = strobePtr->numLastSamples;
+			length = p->numLastSamples;
 		}
 		for (i = 0; i < length; i++, inPtr++, outPtr++) {
 			*outPtr = 0.0;
@@ -959,7 +962,7 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 				  1): *(data->inSignal[0]->channel[chan]);
 				if (*inPtr > nextSample) {
 					if (*inPtr > s->threshold) {
-						switch (strobePtr->typeMode) {
+						switch (p->typeMode) {
 						case STROBE_PEAK_MODE:
 							*(outPtr - s->widthIndex / 2) = STROBE_SPIKE_UNIT;
 							break;
@@ -973,13 +976,13 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 								s->prevPeakHeight = *inPtr;
 								s->prevPeakIndex = (chanProcessSpecifier ==
 								  STROBE_PROCESS_BUFFER_CHANNEL)? i: i +
-								  strobePtr->numLastSamples;
-								s->delayCount = strobePtr->numLastSamples + 1;
+								  p->numLastSamples;
+								s->delayCount = p->numLastSamples + 1;
 								_SetDecayStrobeTrigger();
-								if (strobePtr->delayTimeoutSamples &&
-								  !s->delayTimeoutCount)
-									s->delayTimeoutCount =
-									  strobePtr->delayTimeoutSamples;
+								if (p->delayTimeoutSamples && !s->
+								  delayTimeoutCount)
+									s->delayTimeoutCount = p->
+									  delayTimeoutSamples;
 							}
 							break;
 						default: 
@@ -991,12 +994,12 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 				} else if (*inPtr == nextSample) /* - for flat troughs.*/
 					s->widthIndex++;
 			}
-			if (strobePtr->diagnosticMode)
-				fprintf(strobePtr->fp, "%g\t%g\n", (data->timeIndex + i) *
-				  data->outSignal->dt, s->threshold);
+			if (p->diagnosticMode)
+				fprintf(p->fp, "%g\t%g\n", (data->timeIndex + i) * data->
+				  outSignal->dt, s->threshold);
 			s->threshold -= s->deltaThreshold;
-			if (strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) {
-				delayTimeout = (strobePtr->delayTimeoutSamples &&
+			if (p->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) {
+				delayTimeout = (p->delayTimeoutSamples &&
 				  s->delayTimeoutCount && !--s->delayTimeoutCount);
 				if (s->delayCount && (!--s->delayCount || delayTimeout)) {
 					if (!s->strobeAlreadyPlaced)
@@ -1024,7 +1027,7 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 						gradient = FALSE;
 					}
 				}
-				delayTimeout = (strobePtr->delayTimeoutSamples &&
+				delayTimeout = (p->delayTimeoutSamples &&
 				  endProcessLimitCount && !--endProcessLimitCount);
 				lastSample = *inPtr++;
 			}
@@ -1058,7 +1061,8 @@ ProcessPeakModes_Utility_Strobe(EarObjectPtr data)
 	ProcessPeakChannel_Utility_Strobe(data, STROBE_PROCESS_BUFFER_CHANNEL);
 	ProcessPeakChannel_Utility_Strobe(data, STROBE_PROCESS_DATA_CHANNEL);
 	if (strobePtr->numLastSamples)
-		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
 			inPtr = data->inSignal[0]->channel[chan] +
 			  data->inSignal[0]->length - strobePtr->numLastSamples;
 			outPtr = strobePtr->stateVars[chan]->lastInput;
@@ -1088,25 +1092,29 @@ Process_Utility_Strobe(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_Strobe";
 
-	if (!CheckPars_Utility_Strobe())
-		return(FALSE);
-	if (!CheckData_Utility_Strobe(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Strobe())
+			return(FALSE);
+		if (!CheckData_Utility_Strobe(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Strobe Utility Module process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Utility_Strobe(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		SetOutputTimeOffset_SignalData(data->outSignal, -data->outSignal->dt *
+		 strobePtr->numLastSamples);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Strobe Utility Module process");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Utility_Strobe(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	SetOutputTimeOffset_SignalData(data->outSignal, -data->outSignal->dt *
-	 strobePtr->numLastSamples);
 	switch (strobePtr->typeMode) {
 	case STROBE_USER_MODE:
 	case STROBE_THRESHOLD_MODE:

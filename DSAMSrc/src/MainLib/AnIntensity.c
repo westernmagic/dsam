@@ -384,6 +384,7 @@ InitModule_Analysis_Intensity(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = intensityPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_Intensity;
 	theModule->Free = Free_Analysis_Intensity;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Intensity;
@@ -466,31 +467,36 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_Intensity";
 	register	ChanData	 *inPtr, sum;
 	int		chan;
-	ChanLen	i, timeOffsetIndex, extent;
+	ChanLen	i;
+	IntensityPtr	p = intensityPtr;
 
-	if (!CheckPars_Analysis_Intensity())
-		return(FALSE);
-	if (!CheckData_Analysis_Intensity(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_Intensity())
+			return(FALSE);
+		if (!CheckData_Analysis_Intensity(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Intensity Analysis Module");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		  1.0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		p->timeOffsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +
+		  0.5);
+		p->wExtent = (p->extent < 0.0)? data->inSignal[0]->length - p->
+		  timeOffsetIndex: (ChanLen) (p->extent / data->inSignal[0]->dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Intensity Analysis Module");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-	  1.0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	timeOffsetIndex = (ChanLen) (intensityPtr->timeOffset /
-	  data->inSignal[0]->dt + 0.5);
-	extent = (intensityPtr->extent < 0.0)? data->inSignal[0]->length -
-	  timeOffsetIndex: (ChanLen) (intensityPtr->extent / data->inSignal[0]->dt +
-	  0.5);
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
-		for (i = 0, sum = 0.0; i < extent; i++, inPtr++)
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
+		for (i = 0, sum = 0.0; i < p->wExtent; i++, inPtr++)
 			sum += *inPtr * *inPtr;
 		data->outSignal->channel[chan][0] = (ChanData) DB_SPL(sqrt(sum /
-		  extent));
+		  p->wExtent));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

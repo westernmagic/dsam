@@ -98,7 +98,7 @@ typedef struct {
 	int				strobeInSignalIndex;
 	double			*inputDecay;
 	FILE			*fp;
-	ChanLen			inputCount;
+	ChanLen			*inputCount;
 	ChanLen			zeroIndex;
 	ChanLen			positiveWidthIndex;
 	ChanLen			*decayCount;

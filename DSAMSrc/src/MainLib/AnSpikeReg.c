@@ -18,6 +18,10 @@
  *				Young E. D. and Manis P. B. "Convergence of Auditory Nerve
  *				Fibers in the Ventral Cochlear Nucleus: Implications of a
  *				Computational Model" J. of NeuroPhysiology, 70:2562-2583.
+ *				04-01-05: LPO: The 'countEarObj' EarObject does need to be
+ *				registered as a subprocess for the thread processing because
+ *				access to the channels is controlled by the main output process
+ *				channel access.
  * Author:		L. P. O'Mard
  * Created:		01 Apr 1996
  * Updated:		20 Feb 1997
@@ -542,6 +546,7 @@ InitModule_Analysis_SpikeRegularity(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = spikeRegPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_SpikeRegularity;
 	theModule->Free = Free_Analysis_SpikeRegularity;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SpikeRegularity;
@@ -613,8 +618,8 @@ ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data)
 	int		outChan, inChan;
 	ChanLen	i;
 
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
-	  SPIKE_REG_NUM_RETURNS) {
+	for (outChan = data->outSignal->offset; outChan <
+	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
 		countPtr = spikeRegPtr->countEarObj->outSignal->channel[inChan];
 		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
@@ -648,32 +653,31 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 	int		outChan, inChan;
 	ChanLen	i;
 	ChanData	oldMean;
+	SpikeRegPtr	p = spikeRegPtr;
 
-	if (spikeRegPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (spikeRegPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_SpikeRegularity();
-			if ((spikeRegPtr->spikeListSpec = InitListSpec_SpikeList(
-			  data->inSignal[0]->numChannels)) == NULL) {
+			if ((p->spikeListSpec = InitListSpec_SpikeList(data->inSignal[0]->
+			  numChannels)) == NULL) {
 				NotifyError("%s: Out of memory for spikeListSpec.", funcName);
 				return(FALSE);
 			}
-			spikeRegPtr->countEarObj = Init_EarObject("NULL");
-			spikeRegPtr->updateProcessVariablesFlag = FALSE;
+			p->countEarObj = Init_EarObject("NULL");
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		if (!InitOutSignal_EarObject(spikeRegPtr->countEarObj,
-		  data->inSignal[0]->numChannels, data->outSignal->length,
-		  data->outSignal->dt)) {
+		if (!InitOutSignal_EarObject(p->countEarObj, data->inSignal[0]->
+		  numChannels, data->outSignal->length, data->outSignal->dt)) {
 			NotifyError("%s: Cannot initialise countEarObj.", funcName);
 			return(FALSE);
 		}
-		ResetListSpec_SpikeList(spikeRegPtr->spikeListSpec);
+		ResetListSpec_SpikeList(p->spikeListSpec);
 		/* First recover previous sums from signal (when not in segment mode).*/
 		for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
 		  SPIKE_REG_NUM_RETURNS) {
 			inChan = outChan / SPIKE_REG_NUM_RETURNS;
-			countPtr = spikeRegPtr->countEarObj->outSignal->channel[inChan];
+			countPtr = p->countEarObj->outSignal->channel[inChan];
 			sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
 			sumSqrsPtr = data->outSignal->channel[outChan +
 			  SPIKE_REG_STANDARD_DEV];
@@ -733,65 +737,68 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_SpikeRegularity";
 	register ChanData	*sumPtr, *covarPtr, *sumSqrsPtr, *countPtr, diff;
 	int		outChan, inChan;
-	double	interval, dt, spikeTime, windowWidth, timeRange, signalDuration;
-	double	convertDt;
-	ChanLen	i, spikeTimeHistIndex, timeRangeIndex, runningTimeOffsetIndex;
+	double	interval, spikeTime, windowWidth, timeRange;
+	ChanLen	i, spikeTimeHistIndex, timeRangeIndex;
 	ChanLen	timeOffsetIndex;
-	SpikeSpecPtr	p, headSpikeList, currentSpikeSpec;
+	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
+	SpikeRegPtr	p = spikeRegPtr;
 
-	if (!CheckPars_Analysis_SpikeRegularity())
-		return(FALSE);
-	if (!CheckData_Analysis_SpikeRegularity(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_SpikeRegularity())
+			return(FALSE);
+		if (!CheckData_Analysis_SpikeRegularity(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Spike Regularity Analysis");
+		p->dt = data->inSignal[0]->dt;
+		timeRange = (p->timeRange > 0.0)? p->timeRange: _GetDuration_SignalData(
+		  data->inSignal[0]) - p->timeOffset;
+		windowWidth = (p->windowWidth > 0.0)? p->windowWidth: timeRange;
+		timeRangeIndex = (ChanLen) floor(timeRange / windowWidth + 0.5);
+		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+		  numChannels * SPIKE_REG_NUM_RETURNS), timeRangeIndex, windowWidth)) {
+			NotifyError("%s: Cannot initialise sumEarObj.", funcName);
+			return(FALSE);
+		}
+		SetOutputTimeOffset_SignalData(data->outSignal, p->timeOffset + data->
+		  outSignal->dt);
+		SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
+		  data->inSignal[0]->interleaveLevel * SPIKE_REG_NUM_RETURNS));
+		if (!InitProcessVariables_Analysis_SpikeRegularity(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		/* Add additional sums. */
+		p->runningTimeOffsetIndex = p->spikeListSpec->timeIndex;
+		timeOffsetIndex = (ChanLen) floor(p->timeOffset / p->dt + 0.5);
+		if (p->runningTimeOffsetIndex < timeOffsetIndex)
+			p->runningTimeOffsetIndex += timeOffsetIndex -
+			  p->runningTimeOffsetIndex;
+		p->convertDt = p->dt / data->outSignal->dt;
+		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data->
+		  inSignal[0]);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Spike Regularity Analysis");
-	dt = data->inSignal[0]->dt;
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
-	timeRange = (spikeRegPtr->timeRange > 0.0)? spikeRegPtr->timeRange:
-	  signalDuration - spikeRegPtr->timeOffset;
-	windowWidth = (spikeRegPtr->windowWidth > 0.0)? spikeRegPtr->windowWidth:
-	  timeRange;
-	timeRangeIndex = (ChanLen) floor(timeRange / windowWidth + 0.5);
-	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
-	  numChannels * SPIKE_REG_NUM_RETURNS), timeRangeIndex, windowWidth)) {
-		NotifyError("%s: Cannot initialise sumEarObj.", funcName);
-		return(FALSE);
-	}
-	SetOutputTimeOffset_SignalData(data->outSignal, spikeRegPtr->timeOffset
-	  + data->outSignal->dt);
-	SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
-	  data->inSignal[0]->interleaveLevel * SPIKE_REG_NUM_RETURNS));
-	if (!InitProcessVariables_Analysis_SpikeRegularity(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	/* Add additional sums. */
-	runningTimeOffsetIndex = spikeRegPtr->spikeListSpec->timeIndex;
-	timeOffsetIndex = (ChanLen) floor(spikeRegPtr->timeOffset / dt + 0.5);
-	if (runningTimeOffsetIndex < timeOffsetIndex)
-		runningTimeOffsetIndex += timeOffsetIndex - runningTimeOffsetIndex;
-	convertDt = dt / data->outSignal->dt;
-	GenerateList_SpikeList(spikeRegPtr->spikeListSpec, spikeRegPtr->
-	  eventThreshold, data->inSignal[0]);
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
-	  SPIKE_REG_NUM_RETURNS) {
+	for (outChan = data->outSignal->offset; outChan <
+	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = spikeRegPtr->countEarObj->outSignal->channel[inChan];
+		countPtr = p->countEarObj->outSignal->channel[inChan];
 		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
 		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		if ((headSpikeList = spikeRegPtr->spikeListSpec->head[inChan]) == NULL)
+		if ((headSpikeList = p->spikeListSpec->head[inChan]) == NULL)
 			continue;
-		currentSpikeSpec = spikeRegPtr->spikeListSpec->current[inChan];
-		for (p = headSpikeList; (p != NULL) && (p->next != NULL) && (p->next !=
-		  currentSpikeSpec); p = p->next) {
-			spikeTime = p->timeIndex * dt;
-			if (p->next && (spikeTime >= spikeRegPtr->timeOffset) &&
-			  ((spikeTimeHistIndex = (ChanLen) floor((p->timeIndex -
-				  runningTimeOffsetIndex) * convertDt)) <
+		currentSpikeSpec = p->spikeListSpec->current[inChan];
+		for (s = headSpikeList; (s != NULL) && (s->next != NULL) && (s->next !=
+		  currentSpikeSpec); s = s->next) {
+			spikeTime = s->timeIndex * p->dt;
+			if (s->next && (spikeTime >= p->timeOffset) &&
+			  ((spikeTimeHistIndex = (ChanLen) floor((s->timeIndex -
+				  p->runningTimeOffsetIndex) * p->convertDt)) <
 				  data->outSignal->length)) {
-				interval = p->next->timeIndex * dt - spikeTime;
+				interval = s->next->timeIndex * p->dt - spikeTime;
 				*(sumPtr + spikeTimeHistIndex) += interval;
 				*(sumSqrsPtr + spikeTimeHistIndex) += interval * interval;
 				*(countPtr + spikeTimeHistIndex) += 1.0;
@@ -799,10 +806,10 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 		}
 	}
 	/* Re-calculate statics */
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
-	  SPIKE_REG_NUM_RETURNS) {
+	for (outChan = data->outSignal->offset; outChan <
+	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = spikeRegPtr->countEarObj->outSignal->channel[inChan];
+		countPtr = p->countEarObj->outSignal->channel[inChan];
 		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
 		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
 		covarPtr = data->outSignal->channel[outChan + SPIKE_REG_CO_VARIANCE];
@@ -815,11 +822,11 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 					if (diff < 0.0)
 						diff = 0.0;
 					*sumSqrsPtr = sqrt(diff / (*countPtr - 1.0));
-					*covarPtr = *sumSqrsPtr / (*sumPtr - spikeRegPtr->deadTime);
+					*covarPtr = *sumSqrsPtr / (*sumPtr - p->deadTime);
 				}
 			}
 	}
-	SetProcessContinuity_EarObject(spikeRegPtr->countEarObj);
+	SetProcessContinuity_EarObject(p->countEarObj);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

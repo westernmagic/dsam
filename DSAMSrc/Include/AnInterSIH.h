@@ -56,6 +56,7 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	SpikeListSpecPtr	spikeListSpec;
+	int		maxSpikes;
 
 } InterSIH, *InterSIHPtr;
 

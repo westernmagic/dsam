@@ -41,6 +41,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	ChanLen	timeOffsetIndex, wExtent;
 
 } Intensity, *IntensityPtr;
 

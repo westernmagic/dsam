@@ -257,6 +257,10 @@ void	SetTestDestroy_ModuleMgr(BOOLN (* Func)(void));
 
 void *	TrueFunction_ModuleMgr(void);
 
+BOOLN	WriteSimParFile_ModuleMgr(char *fileName, EarObjectPtr data);
+
+BOOLN	WritePars_ModuleMgr(char *baseFileName, EarObjectPtr process);
+
 __END_DECLS
 
 #endif

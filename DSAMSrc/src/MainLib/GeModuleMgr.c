@@ -724,6 +724,56 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
 
 }
 
+/*************************** WriteSimParFile **********************************/
+
+/*
+ * This function prints a simulation as a ".spf" file.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+WriteSimParFile_ModuleMgr(char *fileName, EarObjectPtr data)
+{
+	/*static const char *funcName = "WriteSimParFile_ModuleMgr";*/
+	BOOLN	ok = TRUE;
+	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+
+	SetParsFile_Common(fileName, OVERWRITE);
+	ok = PrintSimParFile_ModuleMgr(data);
+	fclose(GetDSAMPtr_Common()->parsFile);
+	GetDSAMPtr_Common()->parsFile = oldFp;
+	return(ok);
+
+}
+
+/*************************** WritePars ****************************************/
+
+/*
+ * This function writes the parameters for a process.  If the process is a
+ * simulation then it will write an SPF file.
+ * The base file name is given, and the extension is added as appropriate.
+ */
+
+BOOLN
+WritePars_ModuleMgr(char *baseFileName, EarObjectPtr process)
+{
+	BOOLN	ok = TRUE;
+	char	filePath[MAX_FILE_PATH];
+
+	strcpy(filePath, GetParsFileFPath_Common(baseFileName));
+	if (process->module->specifier != SIMSCRIPT_MODULE) {
+		strcat(filePath, ".par");
+		ok = WriteParFile_UniParMgr(filePath, GetUniParListPtr_ModuleMgr(
+		  process));
+	} else {
+		strcat(filePath, ".spf");
+		ok = WriteSimParFile_ModuleMgr(filePath, process);
+	}
+	return(ok);
+
+}
+
+
 /*************************** GetSimParFileFlag ********************************/
 
 /*

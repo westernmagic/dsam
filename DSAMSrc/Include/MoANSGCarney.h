@@ -74,8 +74,10 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*inputModeList;
 	UniParListPtr	parList;
-	double	*timer;
-	double	*remainingPulseTime;
+	int		numThreads;
+	double	dt, wPulseDuration;
+	double	**timer;
+	double	**remainingPulseTime;
 
 } CarneySG, *CarneySGPtr;
 
