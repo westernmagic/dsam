@@ -128,7 +128,8 @@ IPCServer::InitConnection(bool wait)
 	sock->SetFlags(wxSOCKET_WAITALL);
 	myServer->GetLocal(addr);
 	salutation.Printf("Host %s running %s, DSAM version %s.\n", addr.Hostname(
-	  ).c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
+	  ).c_str(), EXTIPC_DEFAULT_SERVER_NAME,  GetPtr_AppInterface(
+	  )->compiledDSAMVersion);
 	sock->Write(salutation.GetData(), salutation.length());
 	return(sock);
 
