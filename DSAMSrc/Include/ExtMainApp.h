@@ -42,7 +42,7 @@ class SimThread;
 
 class MainApp {
 
-	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag;
+	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag, diagsOn;
 	char	**argv;
 	int		argc;
 	int		serverPort;
@@ -122,8 +122,11 @@ extern MainApp	*dSAMMainApp;
 
 #endif /* defined(EXTENSIONS_SUPPORT) && !defined(GRAPHICS_SUPPORT) */
 
-BOOLN	OnExecute_MainApp(void);
+void	DPrintSysLog_MainApp(char *format, va_list args);
+
 void	PrintUsage_MainApp(void);
+
+BOOLN	OnExecute_MainApp(void);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

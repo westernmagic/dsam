@@ -713,7 +713,7 @@ MyApp::OnSocketEvent(wxSocketEvent& event)
 {
 	wxSocketBase *sock = event.GetSocket();
 
-	SetDiagMode(COMMON_SOCKET_DIAG_MODE);
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	switch (event.GetSocketEvent()) {
 	case wxSOCKET_INPUT: {
 		iPCServer->ProcessInput();

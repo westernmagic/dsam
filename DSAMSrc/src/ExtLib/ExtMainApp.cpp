@@ -28,6 +28,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "GeNSpecLists.h"
 #include "GeModuleMgr.h"
 #include "UtString.h"
 #include "UtOptions.h"
@@ -71,6 +72,7 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	  TheExternalRunSimulation: TheExternalMain;
 	serverFlag = false;
 	superServerFlag = false;
+	diagsOn = false;
 	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
 	simThread = NULL;
 	dSAMMainApp = this;
@@ -130,6 +132,9 @@ MainApp::Main(void)
 /****************************** RunServer *************************************/
 
 /*
+ * This function runs the server.
+ * Note that the diagnostics are set to off by default.  Only the -d option
+ * can turn them on.
  */
 
 int
@@ -137,29 +142,30 @@ MainApp::RunServer(void)
 {
 	static const char *funcName = "MainApp::RunServer";
 
-	printf("MainApp::Main: Starting server operation.\n");
 	SetOnExecute_AppInterface(OnExecute_MainApp);
+	SetDPrintFunc(DPrintSysLog_MainApp);
+	if (diagsOn)
+		SetDiagMode(COMMON_DIALOG_DIAG_MODE);
+	else
+		SetDiagMode(COMMON_OFF_DIAG_MODE);
 	InitMain(FALSE);
 	IPCServer *server = new IPCServer("", serverPort, superServerFlag);
 	if (!server->Ok()) {
 		NotifyError("%s: Could not start server.\n", funcName);
 		return(false);
 	}
-	while (true) {
-		printf("%s: Debug: Waiting for connection on port %d\n", funcName,
-		  serverPort);
-		
-        SocketBase *socket = server->InitConnection();
+	for ( ; ; ) {
+       SocketBase *socket = server->InitConnection();
         if (!socket) {
             NotifyError("%s: Connection failed.", funcName);
             break;
         }
-		printf("%s: Debug: Got client\n", funcName);
 		while (socket->IsConnected()) {
 			while (server->ProcessInput())
 				;
-			printf("%s: Debug: Client lost.\n", funcName);
 			delete socket;
+			if (superServerFlag)
+				return(0);
 			break;
 		}
 
@@ -184,7 +190,7 @@ MainApp::CheckOptions(void)
 	char	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "SI:")))
+	  "SI:d:")))
 		switch (c) {
 		case 'S':
 			if (!serverFlag)
@@ -196,6 +202,17 @@ MainApp::CheckOptions(void)
 		case 'I':
 			serverPort = atoi(argument);
 			MarkIgnore_Options(argc, argv, "-I", OPTIONS_WITH_ARG);
+			break;
+		case 'd':
+			SetDiagMode_AppInterface(argument);
+			switch (GetPtr_AppInterface()->diagModeSpecifier) {
+			case GENERAL_DIAGNOSTIC_SCREEN_MODE:
+			case GENERAL_DIAGNOSTIC_ERROR_MODE:
+				diagsOn = true;
+				break;
+			default:
+				;
+			} /* switch */
 			break;
 		default:
 			;
@@ -530,5 +547,18 @@ PrintUsage_MainApp(void)
 	  "\t-I <x>        \t: Run using server ID <x>.\n"
 	  );
 
+}
+
+/*************************** DPrintSysLog *************************************/
+
+/*
+ * This routine prints out a diagnostic message to the system log.
+ */
+ 
+void
+DPrintSysLog_MainApp(char *format, va_list args)
+{
+	vsyslog(LOG_INFO, format, args);
+	
 }
 

@@ -48,6 +48,7 @@
 GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
   MainSimulation)
 {
+	dSAMMainApp = this;
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
