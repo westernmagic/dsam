@@ -11,8 +11,8 @@
  *
  *********************/
 
-#ifndef _GEAPPINTERFACE_H
-#define	_GEAPPINTERFACE_H 1
+#ifndef _UTAPPINTERFACE_H
+#define	_UTAPPINTERFACE_H 1
 
 #include <stdlib.h> 
 #include <stdio.h>
@@ -146,7 +146,7 @@ void	PrintUsage_AppInterface(void);
 
 BOOLN	ReadProgParFile_AppInterface(void);
 
-BOOLN	SetAppName_AppInterface(void);
+BOOLN	SetAppName_AppInterface(char *appName);
 
 BOOLN	SetAppParList_AppInterface(UniParListPtr appParList);
 
@@ -156,6 +156,8 @@ BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **,
 		  int *));
 
 BOOLN	SetAppSetInitialPars_AppInterface(BOOLN (* SetInitialPars)(void));
+
+BOOLN	SetAppVersion_AppInterface(char *appVersion);
 
 void	SetArgcAndArgV_AppInterface(int theArgc, char **theArgv);
 
