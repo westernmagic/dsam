@@ -154,16 +154,13 @@ GrLines::GetLineLabel(int theLine)
 /****************************** SetChannelStep ********************************/
 
 /*
- * This method sets the y spacing of lines for channels.  It sets the original
- * scaling and the Y offset of each line.
- * It also sets the 'yAdjustment' variable for use in re-scaling.
+ * This method sets the y channel step and the associated numDisplayedLines
+ * parameters.
  */
 
 void
 GrLines::SetChannelStep(int theChannelStep)
 {
-	if (theChannelStep == channelStep)
-		return;
 	channelStep = theChannelStep;
 	if (signal->numChannels >= channelStep)
 		numDisplayedLines = signal->numChannels / channelStep;

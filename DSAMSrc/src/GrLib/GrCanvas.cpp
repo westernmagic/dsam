@@ -647,6 +647,10 @@ MyCanvas::RedrawGraph(void)
 
 }
 
+/******************************************************************************/
+/****************************** Call backs ************************************/
+/******************************************************************************/
+
 /****************************** OnSize ****************************************/
 
 // This routine resises the canvas.
@@ -745,9 +749,9 @@ MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 		mySignalDispPtr->dialog->Raise();
 		return;
 	}
-	ModuleParDialog dialog(this, mySignalDispPtr->title, 0, NULL,
-	  mySignalDispPtr->parList, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE |
-	  wxDIALOG_MODAL);
+	ModuleParDialog dialog(this, mySignalDispPtr->title,
+	  MODPARDIALOG_DISPLAY_PARENT_INFONUM, NULL, mySignalDispPtr->parList, 300,
+	  300, 500, 500, wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
 
 	signalDispPtr = mySignalDispPtr;
 	if (dialog.ShowModal() == wxID_OK) {

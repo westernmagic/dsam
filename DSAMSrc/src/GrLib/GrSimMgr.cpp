@@ -1184,6 +1184,7 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
+	diagnosticsWindow->Clear();
 	ResetGUIDialogs();
 	if (GetPtr_AppInterface()->Init) {
 		if (wxGetApp().StatusChanged()) {
