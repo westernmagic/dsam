@@ -505,11 +505,8 @@ IPCServer::OnErrMsgs(int index)
 	if (index < 0) {
 		numNotifications = notificationList.GetCount();
 		sock->Write(&numNotifications, 1);
-		for (unsigned int i = 0; i < notificationList.GetCount(); i++) {
-			printf("IPCServer::OnErrMsgs: [%2d]: %s\n", i, notificationList[i].
-			  c_str());
+		for (unsigned int i = 0; i < notificationList.GetCount(); i++)
 			sock->Write(notificationList[i], notificationList[i].length());
-		}
 	} else {
 		numNotifications = 1;
 		sock->Write(&numNotifications, 1);
