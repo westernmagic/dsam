@@ -83,9 +83,10 @@ class SDICommand: public wxCommand
 	bool deleteShape;
 
 	// Storage for property commands
-	wxBrush *shapeBrush;
-	wxPen *shapePen;
-	wxString shapeLabel;
+	wxBrush	*shapeBrush;
+	wxPen	*shapePen;
+	wxString	shapeLabel;
+	void	*savedInfo;
 
   public:
 	// Multi-purpose constructor for creating, deleting shapes
@@ -112,8 +113,11 @@ class SDICommand: public wxCommand
 	inline wxClassInfo	*GetShapeInfo(void) { return shapeInfo; }
 	inline bool		GetSelected(void) { return selected; }
 
+	bool	AddLineShape(int lineType);
 	bool	ConnectInstructions(wxShape *fromShape, wxShape *toShape);
-	void	DisconnectInstructions(wxShape *fromShape, wxShape *toShape);
+	void	DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape);
+	void	DisconnectRepeatInst(wxShape *fromShape, wxShape *toShape);
+	void	RedrawShapeLabel(wxShape *shape);
 	void	RemoveLines(wxShape *shape);
 	void	SetBasic(int command, SDIDocument *ddoc, wxShape *theShape);
 

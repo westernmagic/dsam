@@ -206,43 +206,130 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 }
 
 /******************************************************************************/
-/****************************** DisconnectInstructions ************************/
+/****************************** DisconnectProcessInsts ************************/
 /******************************************************************************/
 
 /*
- * This routine connects two specified processes and inserts them into the
- * simulation.
+ * This routine disconnects two specified processes.
+ * The temporary 'pc' pointers are used because the
+ * 'FindNearestProcesses_Utility_Datum' routine changes the pointers passed as
+ * arguments.
  */
 
 void
-SDICommand::DisconnectInstructions(wxShape *fromShape, wxShape *toShape)
+SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 {
-	static const char *funcName = "SDICommand::DisconnectInstructions";
+	DatumPtr	tempToPc = SHAPE_PC(toShape);
+	DatumPtr	tempFromPc = SHAPE_PC(fromShape);
 
-	DatumPtr	toPc = SHAPE_PC(toShape);
-	DatumPtr	fromPc = SHAPE_PC(fromShape);
-	DatumPtr	*simPtr = GetSimPtr_AppInterface();
-	DatumPtr	origFromPc, origToPc;
-
-	if (!fromPc || !toPc) {
-		wxLogError("%s: Both processes must be set before a connection\n"
-		  "can be made.", funcName);
-		return;
-	}
-	switch (fromPc->type) {
-	case REPEAT: {
-		FreeInstruction_Utility_Datum(GetSimPtr_AppInterface(), toPc->next);
-		fromPc->u.loop.stopPlaced = FALSE;
-		break; }
-	default: {
-		origFromPc = fromPc;
-		origToPc = toPc;
-		if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
-			DisconnectOutSignalFromIn_EarObject(fromPc->data, toPc->data);
-		DisconnectInst_Utility_Datum(simPtr, origFromPc, origToPc);
-		}
-	} /* switch */
+	if (FindNearestProcesses_Utility_Datum(&tempFromPc, &tempToPc))
+		DisconnectOutSignalFromIn_EarObject(tempFromPc->data, tempToPc->data);
+	DisconnectInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(fromShape),
+	  SHAPE_PC(toShape));
 		
+}
+
+/******************************************************************************/
+/****************************** DisconnectRepeatInst **************************/
+/******************************************************************************/
+
+/*
+ * This routine disconnects a repeat connection.
+ */
+
+void
+SDICommand::DisconnectRepeatInst(wxShape *fromShape, wxShape *toShape)
+{
+	FreeInstruction_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(toShape)->
+	  next);
+	SHAPE_PC(fromShape)->u.loop.stopPlaced = FALSE;
+		
+}
+
+/******************************************************************************/
+/****************************** RedrawShapeLabel ******************************/
+/******************************************************************************/
+
+void
+SDICommand::RedrawShapeLabel(wxShape *shape)
+{
+	wxClientDC dc(shape->GetCanvas());
+	shape->GetCanvas()->PrepareDC(dc);
+    SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+
+	shape->FormatText(dc, (char*) (const char*) myHandler->label);
+	shape->Draw(dc);
+
+	doc->Modify(TRUE);
+	doc->UpdateAllViews();
+}
+
+/******************************************************************************/
+/****************************** AddLineShape **********************************/
+/******************************************************************************/
+
+bool
+SDICommand::AddLineShape(int lineType)
+{
+	wxShape *theShape = NULL;
+	if (shape)
+		theShape = shape; // Saved from undoing the line
+	else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
+		return(false);
+	else {
+		theShape = (wxShape *)shapeInfo->CreateObject();
+		theShape->AssignNewIds();
+		theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
+		  wxString(""), lineType));
+		theShape->SetPen(wxBLACK_PEN);
+		theShape->SetBrush(wxRED_BRUSH);
+
+		wxLineShape *lineShape = (wxLineShape *)theShape;
+
+		switch (lineType) {
+		case REPEAT:
+			lineShape->MakeLineControlPoints(4);
+			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, 10.0, 0.0,
+			  "Normal arrowhead");
+			AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			  toShape), InitInst_Utility_Datum(STOP));
+			SHAPE_PC(fromShape)->u.loop.stopPlaced = TRUE;
+			break;
+		default:
+			lineShape->MakeLineControlPoints(2);
+			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
+			  10.0, 0.0, "Hollow circle");
+		} /* switch */
+		if (!ConnectInstructions(fromShape, toShape)) {
+			delete theShape;
+			shape = NULL;
+			return(false);
+		}
+	}
+
+	doc->GetDiagram()->AddShape(theShape);
+
+	fromShape->AddLine((wxLineShape *)theShape, toShape);
+
+	theShape->Show(TRUE);
+
+	wxClientDC dc(theShape->GetCanvas());
+	theShape->GetCanvas()->PrepareDC(dc);
+
+	// It won't get drawn properly unless you move both
+	// connected images
+	fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
+	toShape->Move(dc, toShape->GetX(), toShape->GetY());
+
+	shape = theShape;
+	deleteShape = FALSE;
+
+	// Create processes if necessary and connect them
+
+	doc->Modify(TRUE);
+	doc->UpdateAllViews();
+	return(true);
+
 }
 
 /******************************************************************************/
@@ -255,6 +342,8 @@ SDICommand::Do(void)
 	switch (cmd) {
 	case SDIFRAME_CUT: {
 		if (shape) {
+			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
+			  );
 			deleteShape = TRUE;
 
 			shape->Select(FALSE);
@@ -267,10 +356,11 @@ SDICommand::Do(void)
 				wxLineShape *lineShape = (wxLineShape *)shape;
 				fromShape = lineShape->GetFrom();
 				toShape = lineShape->GetTo();
-				DisconnectInstructions(fromShape, toShape);
+				if (myHandler->processType == REPEAT)
+					DisconnectRepeatInst(fromShape, toShape);
+				else
+					DisconnectProcessInsts(fromShape, toShape);
 			} else {
-				SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->
-				  GetEventHandler();
 				myHandler->FreeInstruction();
 			}
 			shape->Unlink();
@@ -309,76 +399,12 @@ SDICommand::Do(void)
 		doc->UpdateAllViews();
 		break; }
 	case SDIFRAME_ADD_LINE: {
-		wxShape *theShape = NULL;
-		if (shape)
-			theShape = shape; // Saved from undoing the line
-		else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
+		if (!AddLineShape(-1))
 			return(false);
-		else {
-			bool	standardConnection = false;
-			theShape = (wxShape *)shapeInfo->CreateObject();
-			theShape->AssignNewIds();
-			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
-			  wxString("")));
-			theShape->SetPen(wxBLACK_PEN);
-			theShape->SetBrush(wxRED_BRUSH);
-
-			wxLineShape *lineShape = (wxLineShape *)theShape;
-
-			switch (SHAPE_PC(fromShape)->type) {
-			case REPEAT: {
-				printf("repeat exception\n");
-				if (!SHAPE_PC(fromShape)->previous || !SHAPE_PC(fromShape)->
-				  next) {
-					standardConnection = true;
-					break;
-				}
-				printf("Trying to add repeat line\n");
-				lineShape->MakeLineControlPoints(4);
-				lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, 10.0, 0.0,
-				  "Normal arrowhead");
-				AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
-				  toShape), InitInst_Utility_Datum(STOP));
-				SHAPE_PC(fromShape)->u.loop.stopPlaced = TRUE;
-				break; }
-			default:
-				standardConnection = true;
-			} /* switch */
-			if (standardConnection) {
-				// Yes, you can have more than 2 control points, in which case
-				// it becomes a multi-segment line.
-				lineShape->MakeLineControlPoints(2);
-				lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
-				  10.0, 0.0, "Hollow circle");
-				if (!ConnectInstructions(fromShape, toShape)) {
-					delete theShape;
-					shape = NULL;
-					return(false);
-				}
-			}
-		}
-
-		doc->GetDiagram()->AddShape(theShape);
-
-		fromShape->AddLine((wxLineShape *)theShape, toShape);
-
-		theShape->Show(TRUE);
-
-		wxClientDC dc(theShape->GetCanvas());
-		theShape->GetCanvas()->PrepareDC(dc);
-
-		// It won't get drawn properly unless you move both
-		// connected images
-		fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
-		toShape->Move(dc, toShape->GetX(), toShape->GetY());
-
-		shape = theShape;
-		deleteShape = FALSE;
-
-		// Create processes if necessary and connect them
-		
-		doc->Modify(TRUE);
-		doc->UpdateAllViews();
+		break; }
+	case SDIFRAME_ADD_REPEAT_LINE: {
+		if (!AddLineShape(REPEAT))
+			return(false);
 		break; }
 	case SDIFRAME_CHANGE_BACKGROUND_COLOUR: {
 		if (shape) {
@@ -406,14 +432,26 @@ SDICommand::Do(void)
 				myHandler->InitInstruction();
 			myHandler->EditInstruction();
 
-			wxClientDC dc(shape->GetCanvas());
-			shape->GetCanvas()->PrepareDC(dc);
+			RedrawShapeLabel(shape);
+		}
+		break; }
+	case SDIFRAME_SET_RESET: {
+		DatumPtr	toPc = SHAPE_PC(toShape);
+		DatumPtr	fromPc = SHAPE_PC(fromShape);
+		if (!toPc || (toPc->type != PROCESS))
+			return(false);
 
-			shape->FormatText(dc, (char*) (const char*) myHandler->label);
-			shape->Draw(dc);
-
-			doc->Modify(TRUE);
-			doc->UpdateAllViews();
+		savedInfo = fromPc->data;
+		shapeLabel = fromPc->u.string;
+		fromPc->u.string = toPc->label;
+		
+		fromPc->data = toPc->data;
+		((SDIEvtHandler *) fromShape->GetEventHandler())->ResetLabel();
+		RedrawShapeLabel(fromShape);
+		if (toPc->defaultLabelFlag) {
+			toPc->defaultLabelFlag = FALSE;
+			((SDIEvtHandler *) toShape->GetEventHandler())->ResetLabel();
+			RedrawShapeLabel(toShape);
 		}
 		break; }
 	}
@@ -464,7 +502,20 @@ SDICommand::Undo(void)
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
-			DisconnectInstructions(fromShape, toShape);
+			DisconnectProcessInsts(fromShape, toShape);
+			shape->Select(FALSE, &dc);
+			doc->GetDiagram()->RemoveShape(shape);
+			shape->Unlink();
+			deleteShape = TRUE;
+		}
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
+	case SDIFRAME_ADD_REPEAT_LINE: {
+		if (shape) {
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+			DisconnectRepeatInst(fromShape, toShape);
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);
 			shape->Unlink();
@@ -498,16 +549,26 @@ SDICommand::Undo(void)
 			if (myHandler->pc)
 				myHandler->FreeInstruction();
 
-			wxClientDC dc(shape->GetCanvas());
-			shape->GetCanvas()->PrepareDC(dc);
-
-			shape->FormatText(dc, (char*) (const char*) myHandler->label);
-			shape->Draw(dc);
-
-			doc->Modify(TRUE);
-			doc->UpdateAllViews();
+			RedrawShapeLabel(shape);
 		}
 
+		break; }
+	case SDIFRAME_SET_RESET: {
+		DatumPtr	fromPc = SHAPE_PC(fromShape);
+
+		wxString	oldLabel;
+		oldLabel = fromPc->u.string;
+		fromPc->u.string = (char *) shapeLabel.GetData();
+		shapeLabel = oldLabel;
+
+		EarObjectPtr	oldData;
+		oldData = fromPc->data;
+		fromPc->data = (EarObjectPtr) savedInfo;
+		savedInfo = oldData;
+
+		((SDIEvtHandler *) fromShape->GetEventHandler())->ResetLabel();
+		RedrawShapeLabel(fromShape);
+		
 		break; }
 	}
 	return TRUE;

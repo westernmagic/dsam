@@ -44,11 +44,12 @@ class SDICanvas: public wxShapeCanvas
   	wxWindow	*parent;
 
 	SDICanvas(wxView *view, wxWindow *theParent = NULL, wxWindowID id = -1,
-	  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-	  long style = wxRETAINED);
+	  const wxPoint& pos = wxDefaultPosition, const wxSize& size =
+	  wxDefaultSize, long style = wxRETAINED);
 	~SDICanvas(void);
 
 	void	EditProcessMenu(double x = 0, double y = 0);
+	void	OnEnableProcess(wxCommandEvent& event);
 	void	OnMouseEvent(wxMouseEvent& event);
 	void	OnPaint(wxPaintEvent& event);
 

@@ -63,6 +63,7 @@
  */
 
 BEGIN_EVENT_TABLE(SDICanvas, wxShapeCanvas)
+	EVT_MENU(SDIFRAME_EDIT_MENU_ENABLE, SDICanvas::OnEnableProcess)
     EVT_MOUSE_EVENTS(SDICanvas::OnMouseEvent)
     EVT_PAINT(SDICanvas::OnPaint)
 END_EVENT_TABLE()
@@ -186,10 +187,26 @@ SDICanvas::OnMouseEvent(wxMouseEvent& event)
     wxShapeCanvas::OnMouseEvent(event);
 }
 
-void SDICanvas::OnPaint(wxPaintEvent& event)
+/******************************************************************************/
+/*************************** OnPaint ******************************************/
+/******************************************************************************/
+
+void
+SDICanvas::OnPaint(wxPaintEvent& event)
 {
 //  if (GetDiagram())
     wxShapeCanvas::OnPaint(event);
+}
+
+/******************************************************************************/
+/*************************** OnEnableProcess **********************************/
+/******************************************************************************/
+
+void
+SDICanvas::OnEnableProcess(wxCommandEvent& event)
+{
+	printf("SDICanvas::OnEnableProcess: Called.\n");
+
 }
 
 #endif /* HAVE_WX_OGL_H */

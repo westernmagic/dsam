@@ -93,6 +93,41 @@ SDIEvtHandler::GetProcessList(void)
 }
 
 /******************************************************************************/
+/****************************** ResetLabel ************************************/
+/******************************************************************************/
+
+/*
+ * This routine resets the label using the various respective positions for
+ * the different elements.
+ */
+
+void
+SDIEvtHandler::ResetLabel(void)
+{
+	label.Empty();
+	if (!pc->defaultLabelFlag)
+		label.Printf("%s\n", pc->label);
+	switch (pc->type) {
+	case REPEAT: {
+		wxString strCount;
+		strCount.Printf("repeat\n%d", pc->u.loop.count);
+		label += strCount;
+		break; }
+	case RESET: {
+		wxString str;
+		str.Printf("reset\n%s", pc->u.string);
+		label += str;
+		break; }
+	case PROCESS:
+		label += pc->u.proc.moduleName;
+		break;
+	default:
+		label += "undefined";
+	}
+	
+}
+
+/******************************************************************************/
 /****************************** InitInstruction *******************************/
 /******************************************************************************/
 
@@ -126,12 +161,17 @@ SDIEvtHandler::InitInstruction(void)
 		if ((pc = InitInst_Utility_Datum(PROCESS)) == NULL) {
 			NotifyError("%s: Could not create new intruction for process '%s'.",
 			  funcName, (char *) label.GetData());
-			return(true);
+			return(false);
 		}
 		break;
 	default:
 		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
-		return(true);
+		return(false);
+	}
+	if (!SetDefaultLabel_Utility_Datum(pc)) {
+		NotifyError("%s: Could not create set the default process label.",
+		  funcName);
+		return(false);
 	}
 	return(true);
 
@@ -159,7 +199,7 @@ SDIEvtHandler::EditInstruction(void)
 			label.ToLong(&count);
 			if (count >= 1)
 				pc->u.loop.count = count;
-			label.Printf("repeat %d", pc->u.loop.count);
+			ResetLabel();
 			break; }
 		default:
 			;
@@ -312,15 +352,20 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 					printf("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
 					  "window.\n");
 					break; }
-				default:
+				default: {
+					int		winX, winY;
+					SDICanvas	*canvas = (SDICanvas *) GetShape()->GetCanvas();
+					canvas->parent->GetPosition(&winX, &winY);
+
 					title = (pc->data->module->specifier == DISPLAY_MODULE)?
 					  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
 					  NameAndLabel_Utility_Datum(pc);
-					dialog = new ModuleParDialog(((SDICanvas *) GetShape()->
-					  GetCanvas())->parent, title, pc, parList, this,
-					  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
+					dialog = new ModuleParDialog(canvas->parent, title, pc,
+					  parList, this, (int) (winX + x), (int) (winY + y), 500,
+					  500, wxDEFAULT_DIALOG_STYLE);
 					dialog->SetNotebookSelection();
 					dialog->Show(TRUE);
+					}
 				} /* switch */
 				break; }
 			case REPEAT: {
@@ -351,11 +396,22 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 void
 SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 {
-	wxClientDC dc(GetShape()->GetCanvas());
-	GetShape()->GetCanvas()->PrepareDC(dc);
+	SDICanvas *canvas = (SDICanvas *)GetShape()->GetCanvas();
+	wxClientDC dc(canvas);
+	canvas->PrepareDC(dc);
 
 	if (keys == 0) {
 		SetSelectedShape(dc);
+		wxMenu menu("Edit Process");
+		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, "&Enable", "Enable/disable "
+		  "process", TRUE);
+		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, "&Change process",
+		  "Change process");
+		menu.AppendSeparator();
+		menu.Append(SDIFRAME_EDIT_MENU_PROPERTIES, "&Properties...");
+
+		canvas->PopupMenu(&menu, (int) x, (int) y);
+		
 	} else 
 		if (keys & KEY_CTRL) {
 			printf("SDIEvtHandler::OnRightClick: Debug: ctrl left click.\n");
@@ -432,12 +488,36 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 	wxShape *otherShape = canvas->FindFirstSensitiveShape(x, y, &new_attachment,
 	  OP_DRAG_RIGHT);
 
-	if (otherShape && !otherShape->IsKindOf(CLASSINFO(wxLineShape))) {
-		canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-		new SDICommand("wxLineShape", SDIFRAME_ADD_LINE, (SDIDocument *)
-		  canvas->view->GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0,
-		  FALSE, NULL, GetShape(), otherShape));
+	if (!otherShape || otherShape->IsKindOf(CLASSINFO(wxLineShape)))
+		return;
+
+	DatumPtr	pc = SHAPE_PC(GetShape());
+
+	if (pc && pc->next) {
+		switch (pc->type) {
+		case REPEAT:
+			if (pc->u.loop.stopPlaced)	/* Existing repeat connection */
+				break;
+			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
+			  new SDICommand("'repeat' connection", SDIFRAME_ADD_REPEAT_LINE,
+			  (SDIDocument *) canvas->view->GetDocument(), CLASSINFO(
+			  wxLineShape), -1, 0.0, 0.0, FALSE, NULL, GetShape(), otherShape));
+			return;
+		case RESET:
+			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
+			  new SDICommand("Set 'reset'", SDIFRAME_SET_RESET, (SDIDocument *)
+			  canvas->view->GetDocument(), NULL,
+			  -1, 0.0, 0.0, FALSE, NULL, GetShape(), otherShape));
+			return;
+		default:
+			;
+		}
+		
 	}
+	canvas->view->GetDocument()->GetCommandProcessor()->Submit(new SDICommand(
+	  "process connection", SDIFRAME_ADD_LINE, (SDIDocument *) canvas->view->
+	  GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0, FALSE, NULL,
+	  GetShape(), otherShape));
 
 }
 
@@ -454,6 +534,5 @@ SDIEvtHandler::OnEndSize(double x, double y)
 	GetShape()->FormatText(dc, (char*) (const char*) label);
 
 }
-
 
 #endif /* HAVE_WX_OGL_OGL_H */

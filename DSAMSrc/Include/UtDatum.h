@@ -189,6 +189,8 @@ BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
+BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc);
+
 BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
 
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr

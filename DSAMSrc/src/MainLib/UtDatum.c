@@ -188,7 +188,6 @@ InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 void
 AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 {
-	printf("AppendInst_Utility_Datum: Called\n");
 	if (!*head) {	/* Start of simulation list */
 		*head = datum;
 		return;
@@ -650,6 +649,34 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
 
 }
 
+/****************************** SetDefaultLabel ******************************/
+
+/*
+ * This routine sets the default label for a process.
+ * If a label has not been defined for a process, then by default it is set to
+ * the process' step number.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetDefaultLabel_Utility_Datum(DatumPtr pc)
+{
+	static const char *funcName = "SetDefaultLabel_Utility_Datum";
+	char	label[MAXLINE];
+
+	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
+	  '\0')) {
+		snprintf(label, MAXLINE, "%d", pc->stepNumber);
+		if ((pc->label = InitString_Utility_String(label)) == NULL) {
+			NotifyError("%s: Out of memory for label '%s'.", funcName, label);
+			return(FALSE);
+		}
+		pc->defaultLabelFlag = TRUE;
+	}
+	return(TRUE);
+
+}
+
 /****************************** SetDefaultLabels ******************************/
 
 /*
@@ -662,19 +689,13 @@ BOOLN
 SetDefaultLabels_Utility_Datum(DatumPtr start)
 {
 	static const char *funcName = "SetDefaultLabels_Utility_Datum";
-	char		label[MAXLINE];
 	DatumPtr	pc;
 
 	for (pc = start; (pc != NULL); pc = pc->next)
-		if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
-		  '\0')) {
-			snprintf(label, MAXLINE, "%d", pc->stepNumber);
-			if ((pc->label = InitString_Utility_String(label)) == NULL) {
-				NotifyError("%s: Out of memory for label '%s'.", funcName,
-				  label);
-				return(FALSE);
-			}
-			pc->defaultLabelFlag = TRUE;
+		if (!SetDefaultLabel_Utility_Datum(pc)) {
+			NotifyError("%s: Could not set default label '%s' for process "
+			  "'%s'.", funcName, pc->stepNumber, pc->u.proc.moduleName);
+			return(FALSE);
 		}
 	return(TRUE);
 
