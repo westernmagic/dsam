@@ -10,6 +10,6 @@ typedef struct {
 	NameSpecifier	mode;
 	double	binWidth;
 	double	timeOffset;
-	double	timeRange;
+	double	timeWidth;
 
 } FindBin;
