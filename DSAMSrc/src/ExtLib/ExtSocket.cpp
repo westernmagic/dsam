@@ -39,6 +39,7 @@ SSSocket::SSSocket(void): SocketBase()
 	lastCount = 0;
 	inFile = new wxFile(wxFile::fd_stdin);
 	outFile = new wxFile(wxFile::fd_stdout);
+	outFile->Flush();
 
 }
 
