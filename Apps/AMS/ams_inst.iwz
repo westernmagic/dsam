@@ -38,7 +38,7 @@ DevTool=Generic Windows
 Platform=Win32
 DisksBuilt=1
 DisksDir=ams_inst\144MB\
-TabsVisit=1111001110000111100001
+TabsVisit=1111001110000111111101
 LangNum=451
 LangDir=LANG\ENG\
 
@@ -46,7 +46,7 @@ LangDir=LANG\ENG\
 AppName=AMS
 AppExe=[Program Files]\AMS.exe
 AppExeFile=
-Version=1.1.1-2.6.24
+Version=1.1.2-2.6.25
 Company=DSAM
 Title=DSAM AMS
 TitleType=1

@@ -149,13 +149,70 @@ SetNumberOfRuns(int theNumberOfRuns)
 {
 	static const char	*funcName = PROGRAM_NAME": SetNumberOfRuns";
 
-	if (theNumberOfRuns < 1) {
-		NotifyError("%s: Number of runs must be greater than zero (%d)",
-		  funcName, theNumberOfRuns);
-		return(FALSE);
-	}
 	numberOfRuns = theNumberOfRuns;
 	numberOfRunsFlag = TRUE;
+	if (numberOfRuns < 1)
+		AutoSetNumberOfRuns();
+	return(TRUE);
+
+}
+
+/****************************** AutoSetNumberOfRuns ***************************/
+
+/*
+ * This routine sets the number of runs according to a loaded simulation script
+ * which has a 'DataFile_In' process at the beginning.  This means it can
+ * only be used it the simulation has been initialised.
+ */
+
+BOOLN
+AutoSetNumberOfRuns(void)
+{
+	static char *funcName = PROGRAM_NAME": AutoSetNumberOfRuns";
+	double	totalDuration, segmentDuration;
+	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
+	EarObjectPtr	process;
+
+	if (numberOfRuns > 0)
+		return(TRUE);
+
+	if (!GetDSAMPtr_Common()->segmentedMode) {
+		numberOfRuns = 1;
+		return(TRUE);
+	}
+
+	SetErrorsFile_Common("off", OVERWRITE);
+	process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
+	  GetPtr_AppInterface()->audModel));
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
+	if (!process)
+		return(TRUE);
+	if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
+	  0) {
+		NotifyError("%s: Operation failed. First process is not DataFile_In.\n",
+		  funcName);
+		numberOfRuns = 1;
+		return(TRUE);
+	}
+	if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
+	  GetDuration)()) < 0.0) {
+		NotifyError("%s: Could not determine signal size for data file.",
+		  funcName);
+		return(FALSE);
+	}
+	segmentDuration = *GetUniParPtr_ModuleMgr(process, "duration")->valuePtr.r;
+	if (segmentDuration < 0.0) {
+		NotifyError("%s: Segment size must be set when using auto 'number of "
+		  "runs' mode.", funcName);
+		return(FALSE);
+	}
+	if (segmentDuration > totalDuration) {
+		NotifyError("%s: Segment size (%g ms) is larger than total signal "
+		  "duration (%g ms).", funcName, MILLI(segmentDuration), MILLI(
+		  totalDuration));
+		return(FALSE);
+	}
+	numberOfRuns = (int) floor(totalDuration / segmentDuration);
 	return(TRUE);
 
 }
@@ -262,6 +319,27 @@ SetLockFile(BOOLN on)
 
 }
 
+/****************************** PostInitFunc **********************************/
+
+/*
+ * This routine is run at the endi of the 'InitProcessVariables_UtAppInterface'
+ * routine.
+ */
+
+BOOLN
+PostInitFunc(void)
+{
+	static char *funcName = PROGRAM_NAME": PostInitFunc";
+
+	if (!AutoSetNumberOfRuns()) {
+		NotifyError("%s: Could not automatically set the number of runs.",
+		  funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -293,10 +371,12 @@ Init(void)
 
 	SetAppPrintUsage_AppInterface(PrintUsage);
 	SetAppProcessOptions_AppInterface(ProcessOptions);
+	SetAppPostInitFunc_AppInterface(PostInitFunc);
 
 	return(TRUE);
 
 }
+
 
 /******************************************************************************/
 /****************************** Main Body *************************************/
@@ -304,8 +384,8 @@ Init(void)
 
 int MainSimulation(MAIN_ARGS)
 {
-	clock_t		startTime;
-	int			i;
+	clock_t	startTime;
+	int		i;
 
 	if (!InitProcessVariables_AppInterface(Init, ARGC, ARGV))
 		return(1);

@@ -91,7 +91,11 @@ typedef enum {
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
+BOOLN	AutoSetNumberOfRuns(void);
+
 BOOLN	Init(void);
+
+BOOLN	PostInitFunc(void);
 
 void	PrintInitialDiagnostics(void);
 
