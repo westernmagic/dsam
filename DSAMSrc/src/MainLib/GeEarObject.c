@@ -174,8 +174,10 @@ Free_EarObject(EarObjectPtr *theObject)
 {
 	if (*theObject == NULL)
 		return;
-	free((*theObject)->inSignalFlag);
-	free((*theObject)->inSignal);
+	if ((*theObject)->inSignalFlag)
+		free((*theObject)->inSignalFlag);
+	if ((*theObject)->inSignal)
+		free((*theObject)->inSignal);
 	FreeOutSignal_EarObject(*theObject);
 	/* This next line unregisters the object from the main list. */
 	FreeEarObjRef_EarObject(&mainEarObjectList, (*theObject)->handle);
