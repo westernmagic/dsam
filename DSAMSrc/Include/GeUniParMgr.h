@@ -103,6 +103,7 @@ typedef enum {
 	UNIPAR_INT_ARRAY,
 	UNIPAR_REAL,
 	UNIPAR_REAL_ARRAY,
+	UNIPAR_REAL_DYN_ARRAY,
 	UNIPAR_STRING,
 	UNIPAR_STRING_ARRAY,
 	UNIPAR_LONG,
@@ -282,6 +283,8 @@ void	PrintSubParList_UniParMgr(UniParListPtr parList);
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
+
+BOOLN	ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length);
 
 void	SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr);
 

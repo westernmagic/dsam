@@ -182,6 +182,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		par->valuePtr.r = (double *) ptr1;
 		break;
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 		par->valuePtr.array.index = 0;
 		par->valuePtr.array.pPtr.r = (double **) ptr1;
 		par->valuePtr.array.numElements = (int *) ptr2;
@@ -253,6 +254,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 			par->FuncPtr.SetReal = (BOOLN (*)(double)) Func;
 			break;
 		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_REAL_DYN_ARRAY:
 			par->FuncPtr.SetRealArrayElement = (BOOLN (*)(int, double)) Func;
 			break;
 		case UNIPAR_BOOL:
@@ -888,7 +890,8 @@ ParseArrayValue_UniParMgr(UniParPtr par, char *parValue, char **parValuePtr,
 		index[i] = atoi(string);
 		s = p + 1;
 	}
-	if (index[0] >= *par->valuePtr.array.numElements) {
+	if ((par->type != UNIPAR_REAL_DYN_ARRAY) && (index[0] >=
+	  *par->valuePtr.array.numElements)) {
 		NotifyError("%s: Index range must be 0 - %d for '%s' (%d).", funcName,
 		  *par->valuePtr.array.numElements - 1, par->abbr, index[0]);
 		return(FALSE);
@@ -1515,5 +1518,39 @@ PrintParList_UniParMgr(UniParListPtr parList)
 	}
 	return(TRUE);
 
+}
+
+/****************************** ResizeDoubleArray *****************************/
+
+/*
+ * This routine resizes an array.
+ */
+
+BOOLN
+ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
+{
+	static const char *funcName = "ResizeDoubleArray_UniParMgr";
+	register double	*newArray, *oldArray;
+	int		i;
+	double	*savedArray = NULL;
+
+	if (length == *oldLength)
+		return(TRUE);
+	if (*array)
+		savedArray = *array;
+	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
+		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		  funcName, length);
+		return(FALSE);
+	}
+	if (savedArray) {
+		newArray = *array;
+		oldArray = savedArray;
+		for (i = 0; i < *oldLength; i++)
+			*newArray++ = *oldArray++;
+		free(savedArray);
+	}
+	*oldLength = length;
+	return(TRUE);
 }
 
