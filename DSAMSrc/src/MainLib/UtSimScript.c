@@ -53,8 +53,20 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "DSAM.h"
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
+#include "GeModuleReg.h"
+#include "GeNSpecLists.h"
+
+#include "FiParFile.h"
+
+#include "UtSSSymbols.h"
 #include "UtSSParser.h"
+#include "UtString.h"
+#include "UtSimScript.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/

@@ -19,8 +19,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DSAM.h"
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
+#include <wx/docview.h>
+#include <wx/cmdproc.h>
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "UtDynaList.h"
+#include "UtDatum.h"
+#include "GeModuleMgr.h"
+#include "UtSSSymbols.h"
 #include "UtSSParser.h"
+#include "UtSimScript.h"
+#include "UtString.h"
+
+#include "GrSDIFrame.h"
+#include "GrSDICanvas.h"
+#include "GrSDIDiagram.h"
+#include "GrSDIView.h"
+#include "GrSDICommand.h"
+#include "GrModParDialog.h"
+#include "GrIPCServer.h"
+#include "GrSimMgr.h"
+#include "GrSignalDisp.h"
+#include "GrSDIEvtHandler.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/

@@ -16,6 +16,22 @@
 
 #ifdef USE_WX_OGL
 
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
+#include <wx/docview.h>
+
 // define this to use XPMs everywhere (by default, BMPs are used under Win)
 #ifdef __WXMSW__
     #define USE_XPM_BITMAPS 0
@@ -36,7 +52,23 @@
     #error You need to enable XPM support to use XPM bitmaps with toolbar!
 #endif // USE_XPM_BITMAPS
 
-#include "DSAM.h"
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "UtDynaList.h"
+#include "UtAppInterface.h"
+
+#include "GrIPCServer.h"
+#include "GrSimMgr.h"
+#include "GrSDIPalette.h"
+#include "GrSDICanvas.h"
+#include "GrModParDialog.h"
+#include "GrSignalDisp.h"
+#include "GrDiagFrame.h"
+#include "GrDisplayS.h"
+#include "GrCanvas.h"
+#include "GrSDIFrame.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/

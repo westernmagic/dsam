@@ -47,8 +47,18 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "DSAM.h"
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
+
+#include "UtSSSymbols.h"
+#include "UtSimScript.h"
 #include "UtSSParser.h"
+#include "UtString.h"
+
+#include "UtDatum.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/

@@ -17,8 +17,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DSAM.h"
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
+
+#include "GeCommon.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
+#include "UtDynaList.h"
+#include "UtSSSymbols.h"
+#include "UtDatum.h"
 #include "UtSSParser.h"
+
+#include "GrModParDialog.h"
+
+#include "GrParListInfoList.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/

@@ -34,15 +34,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DSAM.h"
-#include "UtSSParser.h"
+#if defined(LIBRARY_COMPILE) && defined(GRAPHICS_SUPPORT)
+#	define DSAM_DO_NOT_DEFINE_MYAPP = 1
+#	define USE_GUI = 1
+#endif
 
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
 #include <wx/image.h>
 #include <wx/config.h>
 #include <wx/thread.h>
 #include <wx/dynarray.h>
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
+#include <wx/docview.h>
 
 #if !wxUSE_CONSTRAINTS
 #	error "You must set wxUSE_CONSTRAINTS to 1 in setup.h!"
@@ -59,6 +76,35 @@
 #if !wxUSE_DOC_VIEW_ARCHITECTURE
 #	error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in setup.h!
 #endif
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "UtDatum.h"
+#include "GeModuleMgr.h"
+#include "GeModuleReg.h"
+#include "UtSSSymbols.h"
+#include "UtSSParser.h"
+#include "UtAppInterface.h"
+#include "UtOptions.h"
+
+#include "GrSDIPalette.h"
+#include "GrSDIFrame.h"
+#include "GrSDIDiagram.h"
+#include "GrSDIDoc.h"
+#include "GrSDISimDoc.h"
+#include "GrSDISPFDoc.h"
+#include "GrSDIView.h"
+#include "GrDiagFrame.h"
+#include "GrIPCServer.h"
+#include "GrSimThread.h"
+#include "GrSignalDisp.h"
+#include "GrCanvas.h"
+#include "GrPrintDisp.h"
+#include "GrFonts.h"
+#include "GrBrushes.h"
+#include "GrSimMgr.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -258,8 +304,7 @@ MyApp::OnInit(void)
 	CreateProcessLists();
 
 	if (GetPtr_AppInterface()->simulationFileFlag)
-		myDocManager->CreateDocument(GetPtr_AppInterface()->simulationFile,
-		  wxDOC_SILENT);
+		CreateDocument(GetPtr_AppInterface()->simulationFile);
 	else
 		myDocManager->CreateDocument("", wxDOC_NEW);
 
@@ -286,7 +331,7 @@ MyApp::InitAppInterface(void)
 	if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
 		GetPtr_AppInterface()->PrintSimMgrUsage = PrintUsage_MyApp;
 		GetPtr_AppInterface()->OnExit = OnExit_MyApp;
-		GetPtr_AppInterface()->OnExecute = OnExecute_MyApp;
+		SetOnExecute_AppInterface(OnExecute_MyApp);
 		GetPtr_AppInterface()->canLoadSimulationFlag = FALSE;
 		InitMain();
 		GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
@@ -481,11 +526,9 @@ MyApp::EnableSimParMenuOptions(bool on)
 bool
 MyApp::SetServerMode(void)
 {
-	static const char *funcName = "MyApp::SetServerMode";
-	char	userId[MAXLINE];
 	wxIPV4address	addr;
 
-	iPCServer = new IPCServer("", serverPort);
+	iPCServer = new GrIPCServer("", serverPort);
 	if (iPCServer->Ok())
 		iPCServer->SetNotification(this);
 	return(TRUE);
@@ -622,6 +665,19 @@ MyApp::ExitMain(void)
 		pConfig->Write("h", (long) h);
 		myDocManager->FileHistorySave(*pConfig);
 	}
+
+}
+
+/****************************** CreatDocument *********************************/
+
+/*
+ */
+
+void
+MyApp::CreateDocument(const wxString& fileName)
+{
+	wxDocument *doc = myDocManager->CreateDocument(fileName, wxDOC_SILENT);
+	myDocManager->CreateView(doc);
 
 }
 
@@ -970,21 +1026,17 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 void
 MyApp::OnSocketEvent(wxSocketEvent& event)
 {
-	static const char *funcName = "MyApp::OnSocketEvent";
 	wxSocketBase *sock = event.GetSocket();
 
 	SetDiagMode(COMMON_SOCKET_DIAG_MODE);
-	switch(event.GetSocketEvent()) {
+	switch (event.GetSocketEvent()) {
 	case wxSOCKET_INPUT: {
 		iPCServer->ProcessInput(sock);
 		break; }
 	case wxSOCKET_LOST:
-		printf("%s: Socket lost\n", funcName);
 		sock->Destroy();
-		iPCServer->ResetCommandMode();
 		break;
 	case wxSOCKET_CONNECTION:
-		printf("%s: Socket connected\n", funcName);
 		break;
 	default:
 		;
@@ -1036,12 +1088,13 @@ OnExit_MyApp(void)
  * So it cannot be a member function.
  */
 
-void
+BOOLN
 OnExecute_MyApp(void)
 {
 	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, SDIFRAME_EXECUTE);
 
 	wxPostEvent(wxGetApp().GetFrame(), event);
+	return(TRUE);
 
 }
 
@@ -1100,7 +1153,6 @@ void
 Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 {
 	char	message[LONG_STRING], *heading;
-	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
 		vsnprintf(message, LONG_STRING, format, args);

@@ -18,7 +18,22 @@
 #include <time.h>
 #include <string.h>
 
-#include "DSAM.h"
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "GeNSpecLists.h"
+#include "GeModuleMgr.h"
+
+#include "UtSSSymbols.h"
+#include "UtSimScript.h"
+#include "UtOptions.h"
+#include "UtString.h"
+
+#include "FiParFile.h"
+
+#include "UtAppInterface.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -137,6 +152,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->appParFileFlag = FALSE;
 	appInterfacePtr->readAppParFileFlag = FALSE;
 	appInterfacePtr->printUsageFlag = FALSE;
+	appInterfacePtr->simulationFinishedFlag = TRUE;
 	strcpy(appInterfacePtr->appName, "No Name");
 	strcpy(appInterfacePtr->appParFile, NO_FILE);
 	strcpy(appInterfacePtr->appVersion, "?.?.?");
@@ -523,6 +539,28 @@ SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
 
 }
 
+/****************************** SetOnExecute **********************************/
+
+/*
+ * This functions sets the application's OnExecute routine.
+ * This routine is used by the application to hold it's execution routine.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
+{
+	static const char	*funcName = "SetOnExecute_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->OnExecute = OnExecute;
+	return(TRUE);
+
+}
+
 /****************************** PrintInitialDiagnostics ***********************/
 
 /*
@@ -814,30 +852,6 @@ GetSimPtr_AppInterface(void)
 		return(NULL);
 	}
 	return(simPtr);
-
-}
-
-/****************************** GetEarObjectPtr *******************************/
-
-/*
- * This function returns a pointer to the application interface's audModel
- * EarObject.
- */
-
-EarObjectPtr
-GetEarObjectPtr_AppInterface(void)
-{
-	static const char *funcName = "GetEarObjectPtr_AppInterface";
-
-	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(NULL);
-	}
-	if (!appInterfacePtr->audModel) {
-		NotifyError("%s: Simulation EarObject nod initialised.", funcName);
-		return(NULL);
-	}
-	return(appInterfacePtr->audModel);
 
 }
 
@@ -1635,6 +1649,10 @@ GetSimProcess_AppInterface(void)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(NULL);
 	}
+	if (!appInterfacePtr->audModel) {
+		NotifyError("%s: Simulation EarObject not initialised.", funcName);
+		return(NULL);
+	}
 	return(appInterfacePtr->audModel);
 
 }
@@ -1724,9 +1742,15 @@ OnExit_AppInterface(void)
  * other things, i.e. under the GUI.
  */
 
-void
+BOOLN
 OnExecute_AppInterface(void)
 {
-	if (appInterfacePtr->OnExecute)
-		(* appInterfacePtr->OnExecute)();
+	BOOLN	ok;
+
+	if (!appInterfacePtr->OnExecute)
+		return(FALSE);
+	appInterfacePtr->simulationFinishedFlag = FALSE;
+	ok = (* appInterfacePtr->OnExecute)();
+	return(ok);
+
 }
