@@ -131,6 +131,7 @@ Init_Utility_Delay(ParameterSpecifier parSpec)
 		Free_Utility_Delay();
 		return(FALSE);
 	}
+	SetEnabledPars_Utility_Delay();
 	return(TRUE);
 
 }
@@ -172,6 +173,20 @@ SetUniParList_Utility_Delay(void)
 	  (void * (*)) SetFinalDelay_Utility_Delay);
 	return(TRUE);
 
+}
+
+/****************************** SetEnabledPars *******************************/
+
+/*
+ * This routine sets the enabled parameters.
+ */
+
+void
+SetEnabledPars_Utility_Delay(void)
+{
+	delay2Ptr->parList->pars[UTILITY_DELAY_FINALDELAY].enabled = (delay2Ptr->
+	  mode == DELAY_LINEAR_MODE);
+	
 }
 
 /****************************** GetUniParListPtr ******************************/
@@ -251,6 +266,7 @@ SetMode_Utility_Delay(char *theMode)
 	/*** Put any other required checks here. ***/
 	delay2Ptr->modeFlag = TRUE;
 	delay2Ptr->mode = specifier;
+	SetEnabledPars_Utility_Delay();
 	return(TRUE);
 
 }

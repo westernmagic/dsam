@@ -95,6 +95,8 @@ BOOLN	Process_Utility_Delay(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_Delay(char *fileName);
 
+void	SetEnabledPars_Utility_Delay(void);
+
 BOOLN	SetFinalDelay_Utility_Delay(double theFinalDelay);
 
 BOOLN	SetInitialDelay_Utility_Delay(double theInitialDelay);
