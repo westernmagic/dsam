@@ -42,6 +42,7 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "GeUniParMgr.h"
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"

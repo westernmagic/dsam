@@ -53,6 +53,10 @@
 /******************************************************************************/
 
 /******************************************************************************/
+/*************************** Pre reference definitions ************************/
+/******************************************************************************/
+
+/******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
@@ -65,7 +69,7 @@
 class SDIDiagram: public wxDiagram
 {
 	double	x, y;
-	DatumPtr	simulation;
+	EarObjectPtr	simProcess;
 
   public:
 	SDIDiagram(void);
@@ -83,13 +87,15 @@ class SDIDiagram: public wxDiagram
 	void	DrawSimShapes(void);
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
+	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
 #	if wxUSE_PROLOGIO
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 #	endif
+	bool	SaveFile(const wxString& filename);
 	void	SetProcessClientData(DatumPtr pc, wxShape *shape);
 	bool	SetShapeHandlers(void);
-	void	SetSimulation(DatumPtr theSim)	{ simulation = theSim; }
+	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
 
 };

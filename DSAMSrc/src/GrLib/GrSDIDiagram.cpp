@@ -67,7 +67,7 @@ SDIDiagram::SDIDiagram(void)
 {
 	x = DIAGRAM_DEFAULT_INITIAL_X;
 	y = DIAGRAM_DEFAULT_INITIAL_Y;
-	simulation = NULL;
+	simProcess = NULL;
 
 }
 
@@ -189,9 +189,9 @@ SDIDiagram::DrawSimShapes()
 	wxShape		*shape;
 	SDICanvas	*canvas = (SDICanvas *) GetCanvas();
 
-	if (simulation == NULL)
+	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
 		return;
-	for (pc = simulation; pc != NULL; pc = pc->next) {
+	while (pc) {
 		shape = NULL;
 		switch (pc->type) {
 		case PROCESS: {
@@ -216,6 +216,7 @@ SDIDiagram::DrawSimShapes()
 		} /* switch */
 		if (shape)
 			SetProcessClientData(pc, shape);
+		pc = pc->next;
 	}
 }
 
@@ -282,6 +283,8 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
 /*
  * This routine draws all standard connections by going through the data
  * output connection lists.
+ * A "for" loop must be used here and not "while" because "continue" is used
+ * and we need pc = pc->next to always be executed.
  */
 
 void
@@ -290,11 +293,10 @@ SDIDiagram::DrawSimConnections(void)
 	DatumPtr	pc, toPc;
 	DynaBListPtr labelBList;
 
-	if (simulation == NULL)
+	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
 		return;
-	SET_PARS_POINTER(GetPtr_AppInterface()->audModel);
-	labelBList = GetLabelBList_Utility_SimScript();
-	for (pc = simulation; pc != NULL; pc = pc->next) {
+	labelBList = ((SimScriptPtr) simProcess->module->parsPtr)->labelBList;
+	for (; pc != NULL; pc = pc->next) {
 		if (pc->type == STOP)
 			continue;
 		wxShape *fromShape = (wxShape *) (GET_DATUM_CLIENT_DATA(pc));
@@ -431,11 +433,13 @@ SDIDiagram::FindShapeDatum(uInt id)
 {
 	DatumPtr	pc;
 
-	if (simulation == NULL)
+	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
 		return(NULL);
-	for (pc = simulation; pc != NULL; pc = pc->next)
+	while (pc) {
 		if (pc->stepNumber == id)
 			return (pc);
+		pc = pc->next;
+	}
 	return(NULL);
 	
 }
@@ -536,8 +540,10 @@ SDIDiagram::VerifyDiagram(void)
 		}
 		node = node->GetNext();
 	}
-	// Check if any undrawn connections or shapes
-	for (pc = simulation; pc != NULL; pc = pc->next) {
+	// Check if there are any undrawn connections or shapes
+	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
+		return(false);
+	while (pc) {
 		if (pc->type == PROCESS) {
 			if (!pc->clientData && (pc->data && !pc->data->clientData)) {
 				wxLogWarning("%s: Process has no description (step %d, label "
@@ -553,6 +559,7 @@ SDIDiagram::VerifyDiagram(void)
 			if (toPc)
 				numSimConnections++;
 		}
+		pc = pc->next;
 	}
 	if (numDiagConnections != numSimConnections) {
 		wxLogWarning("%s: The number of diagram lines (%d) does not "

@@ -76,8 +76,6 @@
 #include "GrSDIFrame.h"
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
-#include "GrSDISimDoc.h"
-#include "GrSDISPFDoc.h"
 #include "GrSDIView.h"
 #include "GrSDIDocManager.h"
 #include "GrDiagFrame.h"
@@ -237,13 +235,17 @@ MyApp::OnInit(void)
 	// Create a document manager
 	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
+	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
+	  SDI_DOCUMENT_XML_FILE_EXT, simFile.GetCwd(), SDI_DOCUMENT_XML_FILE_EXT,
+	  "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
+	  CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*."
 	  SDI_DOCUMENT_SPF_FILE_EXT, simFile.GetCwd(), SDI_DOCUMENT_SPF_FILE_EXT,
-	  "Simulation Design", "Simulation view", CLASSINFO(SDISPFDocument),
+	  "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
 	  CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
 	  SDI_DOCUMENT_SIM_FILE_EXT, simFile.GetCwd(), SDI_DOCUMENT_SIM_FILE_EXT,
-	  "Simulation Design", "Simulation view", CLASSINFO(SDISimDocument),
+	  "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
 	  CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);
 

@@ -25,18 +25,21 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
+#include "UtSSParser.h"
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
+#include "tinyxml.h"
 
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
+#include "GrSDIFrame.h"
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
-#include "GrSDIDoc.h"
-#include "GrSDIDoc.h"
+#include "GrSDIXMLDoc.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -96,7 +99,7 @@ bool
 SDIDocument::OnCloseDocument(void)
 {
 	diagram.DeleteAllShapes();
-	diagram.SetSimulation(NULL);
+	diagram.SetSimProcess(NULL);
 	return true;
 
 }
@@ -133,11 +136,13 @@ SDIDocument::OnNewDocument(void)
 wxOutputStream&
 SDIDocument::SaveObject(wxOutputStream& stream)
 {
-	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	wxFileName	tempFileName, fileName = GetFilename();
 
-
 	wxDocument::SaveObject(stream);
+	if (fileName.GetExt().IsSameAs(SDI_DOCUMENT_XML_FILE_EXT, FALSE))
+		return(SaveXMLObject(stream));
+
+	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	tempFileName.AssignTempFileName("diag");
 
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
@@ -159,10 +164,6 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 	wxTransferFileToStream(tempFileName.GetFullPath(), stream);
 	wxRemoveFile(tempFileName.GetFullPath());
 
-	fileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
-#	if wxUSE_PROLOGIO
-	diagram.SaveFile(fileName.GetFullPath());
-#	endif
 	return stream;
 
 }
@@ -174,8 +175,66 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
+	/*static const char *funcName = "SDIDocument::LoadObject";*/
+	printf("SDIDocument::LoadObject: Entered.\n");
+	wxDocument::LoadObject(stream);
 
+	wxFileName	fileName = GetFilename();
+	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
+	  fileName.GetExt().c_str()));
+
+	SetAppInterfaceFile(fileName);
+	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
+	wxTransferStreamToFile(stream, tempFileName);
+
+	diagram.DeleteAllShapes();
+	wxGetApp().simFile = tempFileName;
+	if (!wxGetApp().GetFrame()->SetSimFileAndLoad()) {
+		wxRemoveFile(tempFileName);
+		return(stream);
+	}
+
+#	if wxUSE_PROLOGIO
+	wxFileName	diagFileName = fileName;
+	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+	diagram.SetSimProcess(GetSimProcess_AppInterface());
+	if (!diagFileName.FileExists())
+		diagram.DrawSimulation();
+	else {
+		if (!diagram.LoadFile(diagFileName.GetFullPath()) ||
+		  !diagram.SetShapeHandlers() || !diagram.VerifyDiagram()) {
+			wxLogError("%s: Error loading diagram file - default layout "
+			  "used.\n", funcName);
+			diagram.DeleteAllShapes();
+			diagram.DrawSimulation();
+		}
+	}
+#	else
+	diagram.SetSimProcess(GetSimProcess_AppInterface());
+	diagram.DrawSimulation();
+#	endif
+	wxRemoveFile(tempFileName);
+	wxGetApp().SetAudModelLoadedFlag(true);
+	GetDocumentTemplate()->SetDirectory(fileName.GetPath());
+	wxSetWorkingDirectory(fileName.GetPath()); // Above line seems necessary.
 	return stream;
+
+}
+
+/******************************************************************************/
+/****************************** SaveXMLObject *********************************/
+/******************************************************************************/
+
+wxOutputStream&
+SDIDocument::SaveXMLObject(wxOutputStream& stream)
+{
+	static const char *funcName = "SDIDocument::SaveXMLObject";
+
+	printf("%s: Entered\n", funcName);
+	wxDocument::SaveObject(stream);
+	SDIXMLDocument	doc(diagram.GetSimProcess());
+	doc.SaveFile(GetFilename());
+	return(stream);
 
 }
 
