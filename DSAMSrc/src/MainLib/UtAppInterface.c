@@ -927,7 +927,7 @@ ReadProgParFile_AppInterface(void)
 	fclose(fp);
 	Free_ParFile();
 	readProgParFileFlag = FALSE;
-	if (!ok && (strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
+	if (!ok) {
 		NotifyError("%s: Invalid parameters in file '%s', program parameter "
 		  "section (%s).", funcName, GetFilePath_AppInterface(appInterfacePtr->
 		  simulationFile), parName);

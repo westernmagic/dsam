@@ -32,6 +32,8 @@ class istream;
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define	SDI_DOCUMENT_DIAGRAM_EXTENSION	"dia"
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -68,7 +70,6 @@ class SDIDocument: public wxDocument
 	#else
 	virtual wxOutputStream&	SaveObject(wxOutputStream& stream);
 	virtual wxInputStream&	LoadObject(wxInputStream& stream);
-	bool	GotDiagramInfo(wxInputStream& stream);
 	#endif
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }

@@ -145,37 +145,28 @@ SDIDocument::LoadObject(istream& stream)
 wxOutputStream&
 SDIDocument::SaveObject(wxOutputStream& stream)
 {
+	char tempFileName[MAX_FILE_PATH];
+
+	printf("SDIDocument::SaveObject: Entered\n");
 	wxDocument::SaveObject(stream);
-	char buf[400];
-	(void) wxGetTempFileName("diag", buf);
+	(void) wxGetTempFileName("diag", tempFileName);
 
-	diagram.SaveFile(buf);
+	bool dialogOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->dialogOutputFlag);
+	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+	SetGUIDialogStatus(FALSE);
+	SetParsFile_Common(tempFileName, OVERWRITE);
+	ListParameters_AppInterface();
+	fclose(GetDSAMPtr_Common()->parsFile);
+	GetDSAMPtr_Common()->parsFile = oldFp;
+	SetGUIDialogStatus(dialogOutputFlag);
+	wxTransferFileToStream(tempFileName, stream);
+	wxRemoveFile(tempFileName);
 
-	wxTransferFileToStream(buf, stream);
-
-	wxRemoveFile(buf);
+	wxFileName	diagFileName = GetFilename();
+	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+	diagram.SaveFile(diagFileName.GetFullPath());
 
 	return stream;
-
-}
-
-/******************************************************************************/
-/****************************** GotDiagramInfo ********************************/
-/******************************************************************************/
-
-/*
- * This routine returns TRUE if Diagram information can be found in the file.
- */
-
-bool
-SDIDocument::GotDiagramInfo(wxInputStream& stream)
-{
-	wxTextInputStream text(stream);
-
-	while (!stream.Eof())
-		if (text.ReadLine().Contains(SIMSCRIPT_SIMPARFILE_SDI_DIVIDER))
-			return(true);
-	return (false);
 
 }
 
@@ -186,29 +177,27 @@ SDIDocument::GotDiagramInfo(wxInputStream& stream)
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
-	printf("SDIDocument::LoadObject: Entered\n");
 	wxDocument::LoadObject(stream);
 
-	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
-	  GetDocumentTemplate()->GetDefaultExtension().GetData()));
 	wxFileName	fileName = GetFilename();
+	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
+	  fileName.GetExt().GetData()));
 
 	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
 	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
 	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
-	printf("SDIDocument::LoadObject: File name = '%s'\n", (char *) tempFileName.
-	  GetData());
-
 	wxTransferStreamToFile(stream, tempFileName);
 
 	diagram.DeleteAllShapes();
 	wxGetApp().simFile = tempFileName;
 	wxGetApp().GetFrame()->SetSimFileAndLoad();
 
-	if (!GotDiagramInfo(stream))
+	wxFileName	diagFileName = fileName;
+	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+	if (!diagFileName.FileExists())
 		diagram.DrawSimulation(GetSimulation_AppInterface());
-	else 
-		diagram.LoadFile(tempFileName);
+	else
+		diagram.LoadFile(diagFileName.GetFullPath());
 	wxRemoveFile(tempFileName);
 	wxGetApp().SetAudModelLoadedFlag(true);
 

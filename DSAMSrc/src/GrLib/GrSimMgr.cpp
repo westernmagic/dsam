@@ -377,9 +377,6 @@ MyApp::CreateMenuBar(void)
 		EnableSimParMenuOptions(FALSE);
 	}
 	programMenu->Enable(SDIFRAME_STOP_SIMULATION, FALSE);
-#	ifndef HAVE_WX_OGL_OGL_H
-	fileMenu->Enable(MYFRAME_ID_NEW_SIM, FALSE);
-#	endif
 
 	// Make a menubar
 	wxMenuBar *menuBar = new wxMenuBar((long) (wxMB_DOCKABLE));

@@ -287,6 +287,7 @@ SDIDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 bool
 SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 {
+	printf("SDIDiagram::OnShapeLoad: Called.\n");
 	wxDiagram::OnShapeLoad(db, shape, expr);
 	char *label = NULL;
 	expr.AssignAttributeValue("label", &label);

@@ -1147,10 +1147,6 @@ SetTitle_SignalDisp(char *title)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (*title == (char) NULL) {
-		NotifyError("%s: Illegal window title.", funcName);
-		return(FALSE);
-	}
 	signalDispPtr->titleFlag = TRUE;
 	snprintf(signalDispPtr->title, MAXLINE, "%s", title);
 	signalDispPtr->redrawGraphFlag = TRUE;

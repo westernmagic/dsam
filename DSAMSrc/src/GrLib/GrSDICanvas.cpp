@@ -105,7 +105,8 @@ SDICanvas::~SDICanvas(void)
 wxClassInfo *
 SDICanvas::GetClassInfo(int classSpecifier)
 {
-	static const char *funcName = "SDICanvas::GetClassInfo";
+	/*static const char *funcName = "SDICanvas::GetClassInfo";*/
+
 	switch (classSpecifier) {
 	case ANALYSIS_MODULE_CLASS:
 		return(CLASSINFO(wxRectangleShape));
