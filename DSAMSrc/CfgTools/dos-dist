@@ -40,6 +40,7 @@ cvsconfig)
 	./configure
 	(cd $MAINLIB; make UtSSParser.c)
 	cp $MAINLIB/UtSSParser.h $INCDIR
+	rm -f config.status config.cache
 	;;
 clean)
 	rm -rf lib bin $INCDIR/UtSSParser.h `find . -name '*.obj'`

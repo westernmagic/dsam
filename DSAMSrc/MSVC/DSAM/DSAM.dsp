@@ -469,6 +469,10 @@ SOURCE=..\..\src\MainLib\UtOptions.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\UtPadSignal.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtParArray.c
 # End Source File
 # Begin Source File
@@ -1030,6 +1034,10 @@ SOURCE=..\..\Include\UtNameSpecs.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtOptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\UtPadSignal.h
 # End Source File
 # Begin Source File
 
