@@ -6,8 +6,9 @@ mod_name		Analysis;
 qualifier		SAI;
 typedef struct {
 
-	int			diagnosticMode;
-	char		strobeSpecification;
+	NameSpecifier	diagnosticMode;
+	NameSpecifier	integrationMode;
+	char		*strobeSpecification;
 	double		negativeWidth;
 	double		positiveWidth;
 	double		inputDecayRate;
