@@ -477,7 +477,7 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Transform_CollectSignals";
 	register ChanData	 **outChannels;
-	int		i, chan, numChannels;
+	uShort	i, chan, numChannels;
 	double	*chanLabels, *userLabels;
 
 	if (data == NULL) {
