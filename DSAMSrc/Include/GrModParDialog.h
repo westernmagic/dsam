@@ -87,7 +87,6 @@ class ModuleParDialog: public wxDialog {
  public:
 	DatumPtr	pc;
 	wxButton	*okBtn, *cancelBtn, *quitBtn;
-	wxWindow	*lastControl;
 	ParListInfoList	*parListInfoList;
 
 	ModuleParDialog(wxWindow *parent, const wxString& title, DatumPtr pc,

@@ -61,7 +61,6 @@ class ParListInfoList {
 	~ParListInfoList(void);
 
 	wxPanel *	UsingNotebook(UniParListPtr parList, const wxString& title);
-	wxWindow *	GetLastControl(void);
 	wxNotebook *	GetNotebook(void)	{ return notebook; }
 	wxSize		GetNotebookSize(void) const;
 	ModuleParDialog *	GetParent(void)		{ return parent; }

@@ -64,7 +64,6 @@ MainApp	*dSAMMainApp = NULL;
 MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
-	printf("MainApp::MainApp: Entered.\n");
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;

@@ -26,7 +26,7 @@
 #define PARLISTINFO_DEFAULT_X_MARGIN	4
 #define PARLISTINFO_DEFAULT_Y_MARGIN	4
 #define PARLISTINFO_BROWSE_BUTTON_TEXT	"Browse"
-#define PARLISTINFO_BROWSE_BUTTON_WIDTH	50
+#define PARLISTINFO_BROWSE_BUTTON_WIDTH	55
 
 #if defined(wx_motif) || defined(wx_msw)
 #	define	PARLISTINFO_MAX_LABEL			40
@@ -54,7 +54,7 @@ class ParListInfo {
 	DatumPtr	pc;
 	wxPanel		*parent;
 	ParControl	**controlList;
-	wxWindow	*lastControl;
+	wxSizer		*sizer;
 
   public:
   	UniParListPtr	parList;
@@ -63,19 +63,18 @@ class ParListInfo {
 	  int theInfoNum, int theOffset = 0, int theNumPars = -1);
 	~ParListInfo(void);
 
-	void	AddModuleListBoxEntries(wxListBox *listBox);
 	bool	CheckChangedValues(void);
 	void	CheckInterDependence(void);
 	wxSlider *	CreateSlider(int index, int numElements);
 	int		GetInfoNum(void)			{ return infoNum; }
-	wxWindow *	GetLastControl(void)	{ return lastControl; }
-	wxSize	GetSize(void) const			{ return wxSize(maxWidth, maxHeight); }
 	int		GetNumPars(void)			{ return numPars; }
 	int		GetOffset(void)				{ return offset; }
 	ParControl * GetParControl(int i);
 	wxPanel *	GetParent(void)			{ return parent; }
 	UniParListPtr	GetParList(void)	{ return parList; }
 	DatumPtr	GetPC(void)			{ return pc; }
+	wxSize	GetSize(void) const			{ return wxSize(maxWidth, maxHeight); }
+	wxSizer *	GetSizer(void)				{ return sizer; }
 	void	ResetControlValues(void);
 	void	SetEnabledControls(void);
 	void	SetParBoolean(UniParPtr par, int index);

@@ -672,13 +672,7 @@ MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
 	if (GetPtr_AppInterface()) {
 		if (!helpFilePath.Len())
 			helpFilePath = defaultPath;
-		printf("MyApp::AddHelpBook: Debug: helpFilePath = '%s'\n", helpFilePath.
-		  c_str());
-		printf("MyApp::AddHelpBook: Debug: defaultPath = '%s'\n", defaultPath.
-		  c_str());
 		helpFile = wxFileName(helpFilePath, fileName, "zip");
-		printf("MyApp::AddHelpBook: Debug: helpFile = '%s'\n",
-		  helpFile.GetFullPath().c_str());
 	} else
 		helpFile = wxFileName(defaultPath, "DSAMApp.zip");
 	if (helpFile.FileExists() && help.AddBook(helpFile))

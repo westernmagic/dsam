@@ -78,7 +78,6 @@ ParListInfo::ParListInfo(wxPanel *theParent, DatumPtr thePC,
 	offset = theoffset;
 	maxWidth = maxHeight = -1;
 	numPars = (theNumPars < 0)? parList->numPars: theNumPars;
-	lastControl = NULL;
 
 	// Set Up parameters list.
 	if ((controlList = (ParControl **) calloc(numPars, sizeof(ParControl *))) ==
@@ -86,6 +85,9 @@ ParListInfo::ParListInfo(wxPanel *theParent, DatumPtr thePC,
 		NotifyError("%s: Out of memory for controlList", funcName);
 		return;
 	}
+	sizer = new wxBoxSizer(wxVERTICAL);
+	sizer->AddSpacer(3);
+
 	switch (parList->mode) {
 	case UNIPAR_SET_IC:
 		SetParListIonChannel();
@@ -127,25 +129,18 @@ ParListInfo::~ParListInfo(void)
 void
 ParListInfo::SetParBoolean(UniParPtr par, int index)
 {
-	wxLayoutConstraints	*c;
-
 	wxCheckBox *checkBox = new wxCheckBox(parent, DL_ID_CHECK_BOX + index,
 	  par->abbr);
 	checkBox->SetValue(CXX_BOOL(*par->valuePtr.i));
 	checkBox->SetToolTip(par->desc);
-	controlList[index] = new ParControl(par, infoNum, checkBox);
 
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-	else
-		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-	c->width.AsIs();
-	c->height.AsIs();
-	checkBox->SetConstraints(c);
+	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(1, PARCONTROL_VGAP,
+	  PARCONTROL_HGAP);
+	flexGridSizer->Add(checkBox, wxSizerFlags(1).Align(wxGROW |
+	  wxALIGN_CENTER_VERTICAL));
 
-	lastControl = checkBox;
+	controlList[index] = new ParControl(par, infoNum, flexGridSizer, checkBox);
+
 
 }
 
@@ -158,38 +153,27 @@ ParListInfo::SetParBoolean(UniParPtr par, int index)
 void
 ParListInfo::SetParNameList(UniParPtr par, int index)
 {
-	wxLayoutConstraints	*c;
 	NameSpecifierPtr list; 
 
-	wxChoice *choice = new wxChoice(parent, DL_ID_CHOICE + index,
-	  wxDefaultPosition, wxDefaultSize, 0, NULL);
+	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, "",
+	  wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
 	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
-		choice->Append(list->name);
-	choice->SetSelection(*par->valuePtr.nameList.specifier);
-	choice->SetToolTip(par->desc);
+		cBox->Append(list->name);
+	cBox->SetSelection(*par->valuePtr.nameList.specifier);
+	cBox->SetToolTip(par->desc);
 
 	wxStaticText *labelText = new wxStaticText(parent, -1, par->abbr);
 
-	controlList[index] = new ParControl(par, infoNum, choice, labelText);
+	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(2, PARCONTROL_VGAP,
+	  PARCONTROL_HGAP);
+	flexGridSizer->Add(cBox, wxSizerFlags(1).Align(wxGROW |
+	  wxALIGN_CENTER_VERTICAL));
+	flexGridSizer->Add(labelText, wxSizerFlags().Align(wxALIGN_RIGHT |
+	  wxALIGN_CENTER_VERTICAL));
 
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-	else
-		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-	c->width.PercentOf(parent, wxWidth, 45);
-	c->height.AsIs();
-	choice->SetConstraints(c);
+	controlList[index] = new ParControl(par, infoNum, flexGridSizer, cBox,
+	  labelText);
 
-	c = new wxLayoutConstraints;
-	c->left.RightOf(choice, 4);
-	c->centreY.SameAs(choice, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	labelText->SetConstraints(c);
-
-	lastControl = labelText;
 }
 
 /****************************** SetParNameListWithText ************************/
@@ -204,7 +188,6 @@ ParListInfo::SetParNameList(UniParPtr par, int index)
 void
 ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 {
-	wxLayoutConstraints	*c;
 	NameSpecifierPtr list; 
 
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, "",
@@ -223,34 +206,19 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
 
-	controlList[index] = new ParControl(par, infoNum, cBox, labelText);
+	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(3, PARCONTROL_VGAP,
+	  PARCONTROL_HGAP);
+	flexGridSizer->Add(cBox, wxSizerFlags(1).Align(wxGROW |
+	  wxALIGN_CENTER_VERTICAL));
+	flexGridSizer->Add(browseBtn, wxSizerFlags().Border(wxALL,
+	  PARCONTROL_BUTTON_MARGIN));
+	flexGridSizer->Add(labelText, wxSizerFlags().Align(wxALIGN_RIGHT |
+	  wxALIGN_CENTER_VERTICAL));
+
+	controlList[index] = new ParControl(par, infoNum, flexGridSizer, cBox,
+	  labelText);
 	controlList[index]->SetButton(browseBtn);
 
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-	else
-		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-	c->width.PercentOf(parent, wxWidth, 40);
-	c->height.AsIs();
-	cBox->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(cBox, 4);
-	c->centreY.SameAs(cBox, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	browseBtn->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(browseBtn, 4);
-	c->centreY.SameAs(browseBtn, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	labelText->SetConstraints(c);
-
-	lastControl = labelText;
 }
 
 /****************************** SetParFileName ********************************/
@@ -265,8 +233,6 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 void
 ParListInfo::SetParFileName(UniParPtr par, int index)
 {
-	wxLayoutConstraints	*c;
-
 	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxHSCROLL);
@@ -275,40 +241,24 @@ ParListInfo::SetParFileName(UniParPtr par, int index)
 	textCtrl->SetInsertionPointEnd();
 
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
-	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
+	  _T(PARLISTINFO_BROWSE_BUTTON_TEXT), wxDefaultPosition, wxSize(
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
-	browseBtn->SetToolTip("Click this button to browse for a file.");
+	browseBtn->SetToolTip(_T("Click this button to browse for a file."));
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
 
-	controlList[index] = new ParControl(par, infoNum, textCtrl, labelText);
+	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(3, PARCONTROL_VGAP,
+	  PARCONTROL_HGAP);
+	flexGridSizer->Add(textCtrl, wxSizerFlags(1).Align(wxGROW |
+	  wxALIGN_CENTER_VERTICAL));
+	flexGridSizer->Add(browseBtn, wxSizerFlags().Border(wxALL,
+	  PARCONTROL_BUTTON_MARGIN));
+	flexGridSizer->Add(labelText, wxSizerFlags().Align(wxALIGN_RIGHT |
+	  wxALIGN_CENTER_VERTICAL));
+
+	controlList[index] = new ParControl(par, infoNum, flexGridSizer, textCtrl,
+	  labelText);
 	controlList[index]->SetButton(browseBtn);
-
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-	else
-		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-	c->width.AsIs();
-	c->height.AsIs();
-	textCtrl->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(textCtrl, 4);
-	c->centreY.SameAs(textCtrl, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	browseBtn->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(browseBtn, 4);
-	c->centreY.SameAs(browseBtn, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	labelText->SetConstraints(c);
-
-	lastControl = labelText;
 
 }
 
@@ -322,7 +272,6 @@ ParListInfo::SetParFileName(UniParPtr par, int index)
 void
 ParListInfo::SetParStandard(UniParPtr par, int index)
 {
-	wxLayoutConstraints	*c;
 
 	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
@@ -330,31 +279,22 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 	if (par->type != UNIPAR_INT_AL)
 		textCtrl->SetToolTip(par->desc);
 	else
-		textCtrl->SetToolTip((wxString) par->desc + "\nYou must press <return> "
-		  "after changing this parameter.");
+		textCtrl->SetToolTip((wxString) par->desc + _T("\nYou must press "
+		  "<return> after changing this parameter."));
 	textCtrl->SetInsertionPointEnd();
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
-	controlList[index] = new ParControl(par, infoNum, textCtrl, labelText);
 
-	c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, 4);
-	else
-		c->top.SameAs(lastControl, wxBottom, 4);
-	c->width.AsIs();
-	c->height.AsIs();
-	textCtrl->SetConstraints(c);
+	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(2, PARCONTROL_VGAP,
+	  PARCONTROL_HGAP);
+	flexGridSizer->Add(textCtrl, wxSizerFlags(1).Align(wxGROW |
+	  wxALIGN_CENTER_VERTICAL));
+	flexGridSizer->Add(labelText, wxSizerFlags().Align(wxALIGN_RIGHT |
+	  wxALIGN_CENTER_VERTICAL));
 
-	c = new wxLayoutConstraints;
-	c->left.RightOf(textCtrl, 4);
-	c->centreY.SameAs(textCtrl, wxCentreY);
-	c->width.AsIs();
-	c->height.AsIs();
-	labelText->SetConstraints(c);
-	lastControl = labelText;
-	
+	controlList[index] = new ParControl(par, infoNum, flexGridSizer, textCtrl,
+	  labelText);
+
 	switch (par->type) {
 	case UNIPAR_INT_AL: {
 		controlList[index]->SetSlider(CreateSlider(index, *(controlList[index]->
@@ -394,7 +334,8 @@ ParListInfo::SetParGeneral(UniParPtr par, int index)
 	case UNIPAR_MODULE:
 	case UNIPAR_PARLIST:
 	case UNIPAR_PARARRAY:
-		controlList[index] = new ParControl(par, infoNum, PARLISTINFO_SUB_LIST);
+		controlList[index] = new ParControl(par, infoNum, NULL,
+		  PARCONTROL_SUB_LIST);
 		break;
 	case UNIPAR_BOOL:
 		SetParBoolean(par, index);
@@ -413,6 +354,8 @@ ParListInfo::SetParGeneral(UniParPtr par, int index)
 		SetParStandard(par, index);
 	}
 	controlList[index]->SetEnable();
+	sizer->Add(controlList[index]->GetSizer(), 0, wxALIGN_LEFT |
+	  wxALIGN_CENTER_VERTICAL);
 
 }
 
@@ -427,8 +370,13 @@ ParListInfo::SetParListStandard(void)
 {
 	int		i;
 
-	for (i = 0; i < numPars; i++)
+	for (i = 0; i < numPars; i++) {
 		SetParGeneral(&parList->pars[i + offset], i);
+		if ((i == 1) && (parList->mode == UNIPAR_SET_PARARRAY))
+			controlList[i]->SetSlider(CreateSlider(i, parList->handlePtr.
+			  parArray.ptr->numParams));
+
+	}
 
 }
 
@@ -450,7 +398,6 @@ ParListInfo::SetParListIonChannel(void)
 	wxString	heading;
 	wxTextCtrl	*hHuxleyAlphaTC[numHHCols], *hHuxleyBetaTC[numHHCols];
 	wxStaticText *hHuxleyLabel[numHHCols];
-	wxLayoutConstraints	*c;
 
 	maxHeight = 0;
 	for (i = 0; i <= ICLIST_IC_FILE_NAME; i++) {
@@ -472,8 +419,8 @@ ParListInfo::SetParListIonChannel(void)
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 		  PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
 		hHuxleyAlphaTC[i]->SetToolTip(par->desc);
-		controlList[index] = new ParControl(par, infoNum, hHuxleyAlphaTC[i],
-		  hHuxleyLabel[i]);
+		controlList[index] = new ParControl(par, infoNum, NULL, hHuxleyAlphaTC[
+		  i], hHuxleyLabel[i]);
 		controlList[index]->SetEnable();
 		controlList[index]->SetSlider(slider);
 	}
@@ -484,8 +431,8 @@ ParListInfo::SetParListIonChannel(void)
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 		  PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
 		hHuxleyBetaTC[i]->SetToolTip(par->desc);
-		controlList[index] = new ParControl(par, infoNum, hHuxleyBetaTC[i],
-		  hHuxleyLabel[i]);
+		controlList[index] = new ParControl(par, infoNum, NULL,
+		  hHuxleyBetaTC[i], hHuxleyLabel[i]);
 		controlList[index]->SetSlider(slider);
 		controlList[index]->SetEnable();
 
@@ -498,7 +445,7 @@ ParListInfo::SetParListIonChannel(void)
 	maxWidth = numHHCols * (GetParControl(ICLIST_IC_ALPHA_A)->GetSize(
 	  ).GetWidth() + PARLISTINFO_DEFAULT_X_MARGIN) + 2 *
 	  PARLISTINFO_DEFAULT_X_MARGIN;
-	for (i = 0; i < numHHCols; i++) {
+/* ?? 	for (i = 0; i < numHHCols; i++) {
 		c = new wxLayoutConstraints;
 		if (i == 0)
 			c->left.SameAs(parent, wxLeft, 4);
@@ -526,7 +473,7 @@ ParListInfo::SetParListIonChannel(void)
 		c->height.AsIs();
 		hHuxleyBetaTC[i]->SetConstraints(c);
 	}
-	lastControl = hHuxleyBetaTC[numHHCols - 1];
+*/
 	
 }
 
@@ -542,16 +489,7 @@ ParListInfo::CreateSlider(int index, int numElements)
 	  numElements, wxDefaultPosition, wxSize(PARLISTINFO_SILDER_ITEM_WIDTH,
 	  -1), wxSL_LABELS | wxSL_HORIZONTAL);
 
-	wxLayoutConstraints *c = new wxLayoutConstraints;
-	c->left.SameAs(parent, wxLeft, 4);
-	if (!lastControl)
-		c->top.SameAs(parent, wxTop, PARLISTINFO_DEFAULT_Y_MARGIN);
-	else
-		c->top.SameAs(lastControl, wxBottom, PARLISTINFO_DEFAULT_Y_MARGIN);
-	c->width.AsIs();
-	c->height.AsIs();
-	slider->SetConstraints(c);
-	lastControl = slider;
+	sizer->Add(slider, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
 	return(slider);
 
 }
@@ -637,31 +575,6 @@ ParListInfo::CheckChangedValues(void)
 				ok = FALSE;
 		}
 	return(ok);
-
-}
-
-/****************************** AddModuleListBoxEntries ***********************/
-
-/*
- * This routine adds the module list box entries.
- * It puts a 'x' infront of any module which is disabled.
- */
-
-void
-ParListInfo::AddModuleListBoxEntries(wxListBox *listBox)
-{
-	DatumPtr	p;
-
-	for (p = pc; p != NULL; p = p->next)
-		if (p->type == PROCESS) {
-			wxString moduleEntry;
-			if (p->data->module->onFlag)
-				moduleEntry.sprintf("  %s", NameAndLabel_Utility_Datum(p));
-			else
-				moduleEntry.sprintf("%c %s", SIMSCRIPT_DISABLED_MODULE_CHAR,
-				  NameAndLabel_Utility_Datum(p));
-			listBox->Append(moduleEntry.GetData());
-		}
 
 }
 

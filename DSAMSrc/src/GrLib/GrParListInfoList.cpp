@@ -77,6 +77,7 @@ ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
 		  "NULL.", funcName);
 		return;
 	}
+	
 	if (parList->GetPanelList)
 		SetPanelledModuleInfo((wxPanel *) parent, pc, parList);
 	else
@@ -84,7 +85,7 @@ ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
 	if (notebook) {
 		if (parList->notebookPanel < 0)
 			parList->notebookPanel = notebookPanel;
-		parent->SetSize(GetNotebookSize());
+//??		parent->SetSize(GetNotebookSize());
 	}
 
 }
@@ -184,18 +185,13 @@ ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 	if (useNotebook) {
 		notebook = new wxNotebook(parent, PARLISTINFOLIST_ID_NOTEBOOK);
 
-		wxLayoutConstraints* c = new wxLayoutConstraints;
-		c->left.SameAs(parent, wxLeft, 4);
-		c->right.SameAs(parent, wxRight, 4);
-		c->top.SameAs(parent, wxTop, 4);
-		c->bottom.SameAs(parent, wxBottom, 40);
-		notebook->SetConstraints(c);
-
-		notebook->SetAutoLayout(TRUE);
+		parent->GetSizer()->Add(notebook, 1, wxGROW);
+		notebook->SetAutoLayout(true);
 	}
 	if (notebook) {
 		panel = new wxPanel(notebook, -1);
-		panel->SetAutoLayout(TRUE);
+		panel->SetSizer(new wxBoxSizer(wxVERTICAL));
+		panel->SetAutoLayout(true);
 		if (parList->mode == UNIPAR_SET_CFLIST)
 			notebookPanel = notebook->GetPageCount() - 1;
 		notebook->AddPage(panel, title);
@@ -231,6 +227,7 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
 	  numPars);
 	list.Add(infoPtr);
+	panel->GetSizer()->Add(infoPtr->GetSizer(), 0, wxALIGN_CENTER_VERTICAL);
 	SetPanelledModuleInfo(panel, pc, parList, panelSpec2->specifier, panelNum +
 	  1);
 
@@ -255,7 +252,7 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 	for (i = 0; i < info->GetNumPars(); i++) {
 		control = info->GetParControl(i);
 		if ((control->GetTag() == ParControl::SPECIAL) &&
-		  (control->GetSpecialType() == PARLISTINFO_SUB_LIST)) {
+		  (control->GetSpecialType() == PARCONTROL_SUB_LIST)) {
 			p = control->GetPar();
 			switch (p->type) {
 			case UNIPAR_CFLIST: {
@@ -346,25 +343,9 @@ ParListInfoList::SetStandardInfo(wxPanel *panel, DatumPtr pc,
 	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
 	  numPars);
 	list.Add(infoPtr);
+	panel->GetSizer()->Add(infoPtr->GetSizer(), 0, wxALIGN_CENTER_VERTICAL);
 	parList->updateFlag = FALSE;
 	SetSubParListInfo(infoPtr);
-
-}
-
-/****************************** GetLastControl ********************************/
-
-/*
- * This function returns the last control so that the layout constraints can be
- * set up.
- */
-
-wxWindow *
-ParListInfoList::GetLastControl(void)
-{
-	if (notebook)
-		return ((wxWindow *) notebook);
-
-	return((list.Count() > 0)? list.Last()->GetLastControl(): NULL);
 
 }
 

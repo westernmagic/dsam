@@ -28,6 +28,7 @@
 #include <stdlib.h>
 
 #include "ExtCommon.h"
+#include "wx/statline.h"
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -103,35 +104,24 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 	myHandler = theHandler;
 	parList = theParList;
 
+	wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+	SetSizer(topSizer);
+	
 	parListInfoList = new ParListInfoList(this, pc, parList);
 	EnableControls();
-	lastControl = parListInfoList->GetLastControl();
 
-	/* static char *funcName = "ModuleParDialog::ModuleParDialog"; */
-	wxLayoutConstraints	*c;
+	topSizer->Add(new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxSize(3,
+	  3), wxHORIZONTAL), wxSizerFlags().Expand());
 
 	// Set up buttons
-	okBtn = new wxButton(this,  wxID_OK, "Ok");
-	cancelBtn = new wxButton(this, wxID_CANCEL, "Cancel");
+	wxBoxSizer *buttonBox = new wxBoxSizer( wxHORIZONTAL );
+	buttonBox->Add(new wxButton(this,  wxID_OK, _T("Ok")), wxSizerFlags().
+	  Border(wxALL, 7));
+	buttonBox->Add(new wxButton(this, wxID_CANCEL, _T("Cancel")), wxSizerFlags(
+	  ).Border(wxALL, 7));
+	topSizer->Add(buttonBox, wxSizerFlags().Center());
 
-	c = new wxLayoutConstraints;
-	c->centreX.PercentOf(this, wxWidth, 40);
-	if (lastControl)
-		c->top.Below(lastControl, 12);
-	else
-		c->bottom.SameAs(this, wxBottom, 4);
-	c->width.AsIs();
-	c->height.AsIs();
-	okBtn->SetConstraints(c);
-
-	c = new wxLayoutConstraints;
-	c->left.RightOf(okBtn, 4);
-	c->bottom.SameAs(okBtn, wxBottom);
-	c->width.AsIs();
-	c->height.AsIs();
-	cancelBtn->SetConstraints(c);
-
-	if (parListInfoList->GetUseNotebookControls()) {
+/*??	if (parListInfoList->GetUseNotebookControls()) {
 		addICBtn = new wxButton(this, DL_ID_ADD_IC, "Add IC");
 		addICBtn->Enable(FALSE);
 		addICBtn->SetToolTip("Press button to add an ion channel.");
@@ -158,10 +148,8 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 		addICBtn = NULL;
 		deleteICBtn = NULL;
 	}
-
-	SetAutoLayout(TRUE);
-	Layout();
-	Fit();
+*/
+	topSizer->SetSizeHints(this);
 
 }
 
@@ -538,7 +526,7 @@ ModuleParDialog::OnSliderUpdate(wxCommandEvent& event)
 				NotifyError("%s: Cannot update array value.", funcName);
 				return;
 			}
-			infoCtrl->GetPar()->valuePtr.array.index = index;
+			infoCtrl->GetPar()->valuePtr.array.index = index - 1;
 			infoCtrl->ResetValue();
 			infoCtrl->SetUpdateFlag(FALSE);
 			if (cancelBtn)

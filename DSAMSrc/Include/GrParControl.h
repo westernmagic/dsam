@@ -17,6 +17,10 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define PARCONTROL_VGAP				3
+#define PARCONTROL_HGAP				3
+#define PARCONTROL_BUTTON_MARGIN	3
+
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/
 /******************************************************************************/
@@ -27,9 +31,9 @@
 
 typedef enum {
 
-	PARLISTINFO_SUB_LIST
+	PARCONTROL_SUB_LIST
 
-} ParListInfoTypeSpecifier;
+} ParControlTypeSpecifier;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -47,6 +51,7 @@ class ParControl {
 	bool	updateFlag;
 	int		infoNum;
 	UniParPtr	par;
+	wxSizer	*sizer;
 	union {
 
 		wxCheckBox	*checkBox;
@@ -55,7 +60,7 @@ class ParControl {
 		wxListBox	*listBox;
 		wxTextCtrl	*textCtrl;
 
-		ParListInfoTypeSpecifier	type;
+		ParControlTypeSpecifier	type;
 
 	};
 	wxButton		*button;
@@ -67,18 +72,21 @@ class ParControl {
 
   public:
 
-	ParControl(UniParPtr thePar, int theInfoNum, wxCheckBox *cB);
-	ParControl(UniParPtr thePar, int theInfoNum, wxTextCtrl *tC,
-	  wxStaticText  *labelTC);
-	ParControl(UniParPtr thePar, int theInfoNum, wxChoice *c,
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+	  wxCheckBox *cB);
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+	  wxTextCtrl *tC, wxStaticText  *labelTC);
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer, wxChoice *c,
 	  wxStaticText *labelTC);
-	ParControl(UniParPtr thePar, int theInfoNum, wxComboBox *cB,
-	  wxStaticText *labelTC);
-	ParControl(UniParPtr thePar, int theInfoNum, wxListBox *lB,
-	  wxStaticText *labelTC);
-	ParControl(UniParPtr thePar, int theInfoNum, ParListInfoTypeSpecifier t);
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+	  wxComboBox *cB, wxStaticText *labelTC);
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+	  wxListBox *lB, wxStaticText *labelTC);
+	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+	  ParControlTypeSpecifier t);
 
-	void	Init(Tag theTag, int theInfoNum, UniParPtr thePar);
+	void	Init(Tag theTag, int theInfoNum, wxSizer *theSizer,
+			  UniParPtr thePar);
 
 	wxButton *		GetButton(void)		{ return button; }
 	wxCheckBox *	GetCheckBox(void)	{ Check(CHECK_BOX); return checkBox; }
@@ -89,8 +97,9 @@ class ParControl {
 	wxListBox *		GetListBox(void)	{ Check(LIST_BOX); return listBox; }
 	UniParPtr		GetPar(void)		{ return par; }
 	wxSize			GetSize(void) const;
+	wxSizer *		GetSizer(void)		{ return sizer; }
 	wxSlider *		GetSlider(void)		{ return slider; }
-	ParListInfoTypeSpecifier	GetSpecialType(void)
+	ParControlTypeSpecifier	GetSpecialType(void)
 										{ Check(SPECIAL); return type; }
 	Tag				GetTag(void)		{ return tag; }
 	wxTextCtrl *	GetTextCtrl(void)	{ Check(TEXT_CTRL); return textCtrl; }

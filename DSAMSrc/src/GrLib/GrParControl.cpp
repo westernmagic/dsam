@@ -66,57 +66,58 @@
 
 /****************************** Constructors **********************************/
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxCheckBox *cB)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  wxCheckBox *cB)
 {
-	Init(CHECK_BOX, theInfoNum, thePar);
+	Init(CHECK_BOX, theInfoNum, theSizer, thePar);
 	checkBox = cB;
 	PostInit();
 }
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxTextCtrl *tC,
-  wxStaticText  *labelTC)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  wxTextCtrl *tC, wxStaticText  *labelTC)
 {
-	Init(TEXT_CTRL, theInfoNum, thePar);
+	Init(TEXT_CTRL, theInfoNum, theSizer, thePar);
 	textCtrl = tC;
 	label = labelTC;
 	PostInit();
 
 }
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxChoice *c,
-  wxStaticText *labelTC)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  wxChoice *c, wxStaticText *labelTC)
 {
-	Init(CHOICE, theInfoNum, thePar);
+	Init(CHOICE, theInfoNum, theSizer, thePar);
 	choice = c;
 	label = labelTC;
 	PostInit();
 
 }
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxComboBox *cB,
-  wxStaticText *labelTC)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  wxComboBox *cB, wxStaticText *labelTC)
 {
-	Init(COMBO_BOX, theInfoNum, thePar);
+	Init(COMBO_BOX, theInfoNum, theSizer, thePar);
 	comboBox = cB;
 	label = labelTC;
 	PostInit();
 
 }
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxListBox *lB,
-  wxStaticText *labelTC)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  wxListBox *lB, wxStaticText *labelTC)
 {
-	Init(LIST_BOX, theInfoNum, thePar);
+	Init(LIST_BOX, theInfoNum, theSizer, thePar);
 	listBox = lB;
 	label = labelTC;
 	PostInit();
 
 }
 
-ParControl::ParControl(UniParPtr thePar, int theInfoNum,
-  ParListInfoTypeSpecifier t)
+ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
+  ParControlTypeSpecifier t)
 {
-	Init(SPECIAL, theInfoNum, thePar);
+	Init(SPECIAL, theInfoNum, theSizer, thePar);
 	type = t;
 
 }
@@ -128,7 +129,8 @@ ParControl::ParControl(UniParPtr thePar, int theInfoNum,
  */
 
 void
-ParControl::Init(Tag theTag, int theInfoNum, UniParPtr thePar)
+ParControl::Init(Tag theTag, int theInfoNum, wxSizer *theSizer,
+  UniParPtr thePar)
 {
 	tag = theTag;
 	infoNum = theInfoNum;
@@ -137,6 +139,7 @@ ParControl::Init(Tag theTag, int theInfoNum, UniParPtr thePar)
 	label = NULL;
 	button = NULL;
 	slider = NULL;
+	sizer = theSizer;
 
 }
 
