@@ -26,8 +26,6 @@
 #define	PARLISTINFO_SUB_MODULE_1		1
 #define	PARLISTINFO_INDEX_OFFSET		1000
 
-#define	PARLISTINFO_ID_NOTEBOOK			2000
-
 #if defined(wx_motif) || defined(wx_msw)
 #	define	PARLISTINFO_MAX_LABEL			40
 #else
@@ -45,6 +43,12 @@
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
+typedef enum {
+
+	PARLISTINFO_SUB_LIST
+
+} ParListInfoTypeSpecifier;
+
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
@@ -53,7 +57,7 @@
 
 class ParControl {
 
-	enum	Tag { CHECK_BOX, TEXT_CTRL, CHOICE, COMBO_BOX } tag;
+	enum	Tag { UNSET, SPECIAL, CHECK_BOX, TEXT_CTRL, CHOICE, COMBO_BOX } tag;
 	bool	updateFlag;
 	union {
 
@@ -62,29 +66,44 @@ class ParControl {
 		wxTextCtrl	*textCtrl;
 		wxChoice	*choice;
 
+		ParListInfoTypeSpecifier	type;
+
 	};
-	wxButton	*button;
+	wxButton		*button;
+	wxStaticText	*label;
 
 	void	Check(Tag t)	{ if (tag != t) wxMessageBox("GrParListInfo: "
 							  "Illegal ParControl"); }
 
   public:
 
+	ParControl(void)			{ Init(); tag = UNSET; }
 	ParControl(wxCheckBox *cB)	{ Init(); tag = CHECK_BOX; checkBox = cB; }
-	ParControl(wxTextCtrl *tC)	{ Init(); tag = TEXT_CTRL; textCtrl = tC; }
-	ParControl(wxChoice *c)		{ Init(); tag = CHOICE; choice = c; }
-	ParControl(wxComboBox *cB)	{ Init(); tag = COMBO_BOX; comboBox = cB; }
+	ParControl(wxTextCtrl *tC, wxStaticText  *labelTC)
+	  { Init(); tag = TEXT_CTRL; textCtrl = tC; label = labelTC; }
+	ParControl(wxChoice *c, wxStaticText *labelTC)
+	  { Init(); tag = CHOICE; choice = c; label = labelTC; }
+	ParControl(wxComboBox *cB, wxStaticText *labelTC)
+	  { Init(); tag = COMBO_BOX; comboBox = cB; label = labelTC; }
+	ParControl(ParListInfoTypeSpecifier t)	{ Init(); tag = SPECIAL; type = t; }
 
-	void	Init(void)	{ updateFlag = FALSE; }
+	void	Init(void);
 
+	void	Enable(bool state);
 	wxButton *		GetButton(void)		{ return button; }
 	wxCheckBox *	GetCheckBox(void)	{ Check(CHECK_BOX); return checkBox; }
 	wxChoice *		GetChoice(void)		{ Check(CHOICE); return choice; }
 	wxComboBox *	GetComboBox(void)	{ Check(COMBO_BOX); return comboBox; }
+	ParListInfoTypeSpecifier	GetSpecialType(void)
+										{ Check(SPECIAL); return type; }
 	Tag				GetTag(void)		{ return tag; }
 	wxTextCtrl *	GetTextCtrl(void)	{ Check(TEXT_CTRL); return textCtrl; }
+	wxWindow *		GetWindow(void);
 
 	void	SetButton(wxButton *theButton)	{ button = theButton; }
+	void	SetUpdateFlag(bool state)			{ updateFlag = state; }
+	bool	Special(void)	{ return (tag == SPECIAL); }
+	bool	UnSet(void)		{ return (tag == UNSET); }
 
 };
 		
@@ -92,39 +111,39 @@ class ParControl {
 
 class ParListInfo {
 
-	bool		*subParList;
 	char		*prefix;
-	int			offset;
+	int			offset, numPars;
 	DatumPtr	pc;
-	DialogList	*parent;
+	wxPanel		*parent;
 	ParControl	*controlList;
 	wxWindow	*lastControl;
-	wxNotebook	*notebook;
 	wxStringList	rothmanHeadings;
 
   public:
   	UniParListPtr	parList;
 
-	ParListInfo(DialogList *theParent, DatumPtr thePC, UniParListPtr theParList,
-	  int theOffset = 0, char *thePrefix = "");
+	ParListInfo(wxPanel *theParent, DatumPtr thePC, UniParListPtr theParList,
+	  int theOffset = 0, int theNumPars = -1, char *thePrefix = "");
 	~ParListInfo(void);
 
 	void	AddModuleListBoxEntries(DatumPtr pc, wxListBox& listBox);
 	bool	CheckChangedValues(void);
-	bool	SubParList(int i)		{ return subParList[i]; };
 	int		GetOffset(void)	{ return offset; };
 	wxWindow *	GetLastControl(void)	{ return lastControl; }
-	ParControl& GetParControl(int i)	{ return controlList[i]; }
+	int		GetNumPars(void)			{ return numPars; }
+	ParControl * GetParControl(int i)	{ return &controlList[i]; }
+	wxPanel *	GetParent(void)			{ return parent; }
+	UniParListPtr	GetParList(void)	{ return parList; }
+	DatumPtr	GetPC(void)			{ return pc; }
 	void	SetICListListBox(IonChanListPtr theICs, char *prefix);
 	void	SetModuleListBox(DatumPtr simulation);
-	void	SetParBoolean(int index);
-	void	SetParNameList(int index);
-	void	SetParNameListWithText(int index);
-	void	SetParStandard(wxPanel *parent, int index);
-	void	SetParListStandard(wxPanel *parent);
+	void	SetParBoolean(UniParPtr par, int index);
+	void	SetParNameList(UniParPtr par, int index);
+	void	SetParNameListWithText(UniParPtr par, int index);
+	void	SetParStandard(UniParPtr par, int index);
+	void	SetParListStandard(void);
 	void	SetParListIonChannel(void);
 	bool	SetParValue(int parNum, char *value);
-//T	void	SetUpdateFlag(int i, bool state)	{ updateFlagList[i] = state; };
 
 };
 

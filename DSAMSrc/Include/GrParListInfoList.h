@@ -17,6 +17,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define	PARLISTINFOLIST_ID_NOTEBOOK			1000
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
@@ -30,6 +32,7 @@
 class ParListInfoList {
 
 	DialogList	*parent;
+	wxNotebook	*notebook;
 
   public:
 	DSAMList<ParListInfo>	list;
@@ -39,10 +42,17 @@ class ParListInfoList {
 
 	void	AddInfo(ParListInfo *theInfo)	{ list.Append(list.Number(),
 			  (wxObject *) theInfo); };
+	wxPanel *	UsingNotebook(DatumPtr pc, UniParListPtr parList,
+				  const wxString& title);
 	wxWindow *	GetLastControl(void);
+	int		GetMaxControlsHeight(void);
 	int		GetNumDialogs(void)	{ return list.Number(); };
-	void	SetInfo(DatumPtr pc, UniParListPtr parList, int offset,
-			  char *prefix);
+	void	SetStandardInfo(wxPanel *panel, DatumPtr pc, UniParListPtr parList,
+			  const wxString& title, int offset = 0, int numPars = -1,
+			  char *prefix = "");
+	void	SetDisplayModuleInfo(wxPanel *panel, DatumPtr pc,
+			  UniParListPtr parList, int offset = 0, int panelNum = 0);
+	void	SetSubParListInfo(ParListInfo& info, int offset);
 
 };
 
