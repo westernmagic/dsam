@@ -603,6 +603,12 @@ PrintPars_ModuleMgr(EarObjectPtr data)
 
 /*
  * This function reads the parameters for a module.
+ * An attempt is made to use the new parameter file format first.  If that fails
+ * then the old parameter file format is used, if it exists.
+ * The test for the new parameter file format is done by assuming that the first
+ * 'parName' parameter read is a valid parameter name.  If it fails to find
+ * it then the it is assumed that the parameter file uses the old format.
+ * For the first parameter test, all error messages are turned off.
  * It returns FALSE if it fails in any way.
  */
 
@@ -612,7 +618,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	static const char *funcName = "ReadPars_ModuleMgr";
 	BOOLN	ok = TRUE, useOldReadPars = FALSE, firstParameter = TRUE;
 	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
-	FILE	*fp;
+	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	UniParPtr	par;
 	UniParListPtr	parList, tempParList;
 
@@ -633,8 +639,12 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
 		tempParList = parList;
-		if ((par = FindUniPar_UniParMgr(&tempParList, parName,
-		  UNIPAR_SEARCH_ABBR)) == NULL) {
+		if (firstParameter)
+			SetErrorsFile_Common("off", OVERWRITE);
+		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
+		if (firstParameter)
+			GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
+		if (!par) {
 		  	if (data->module->ReadPars) {
 				useOldReadPars = TRUE;
 				break;
