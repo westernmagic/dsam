@@ -67,12 +67,12 @@ Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
 	EarObjectPtr	data;
 
 	if (maxInSignals < 1) {
-		NotifyError("%s: Illegal number of input signals for EarObject - "\
+		NotifyError("%s: Illegal number of input signals for EarObject - "
 		  "used with the '%s' module.", funcName, moduleName);
 		return(NULL);
 	}
 	if ((data = (EarObjectPtr) malloc(sizeof(EarObject))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject - used with the '%s' "\
+		NotifyError("%s: Out of memory for EarObject - used with the '%s' "
 		  "module.", funcName, moduleName);
 		return(NULL);
 	}
@@ -86,7 +86,7 @@ Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
 	data->timeIndex = PROCESS_START_TIME;
 	if ((data->inSignalFlag = (BOOLN *) calloc(maxInSignals,
 	  sizeof(BOOLN))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject input signal flags - "\
+		NotifyError("%s: Out of memory for EarObject input signal flags - "
 		  "used with the '%s' module.", funcName, moduleName);
 		Free_EarObject(&data);
 		return(NULL);
@@ -95,7 +95,7 @@ Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
 		data->inSignalFlag[i] = FALSE;
 	if ((data->inSignal = (SignalDataPtr *) calloc(maxInSignals,
 	  sizeof(SignalDataPtr))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject input signals - used "\
+		NotifyError("%s: Out of memory for EarObject input signals - used "
 		  "with the '%s' module.", funcName, moduleName);
 		Free_EarObject(&data);
 		return(NULL);
@@ -307,8 +307,9 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		data->outSignal = Init_SignalData(funcName);
 		SetLength_SignalData(data->outSignal, length);
 		SetSamplingInterval_SignalData(data->outSignal, samplingInterval);
+		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
 		if (!InitChannels_SignalData(data->outSignal, numChannels)) {
-			NotifyError("%s: Cannot initialise output channels for "\
+			NotifyError("%s: Cannot initialise output channels for "
 			  "EarObject '%s'.", funcName, data->processName);
 			Free_SignalData(&data->outSignal);
 			data->localOutSignalFlag = FALSE;
@@ -531,7 +532,7 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		return(FALSE);
 	}
 	if (customer->numInSignals == customer->maxInSignals) {
-		NotifyError("%s: Maximum number of signals already connected to "\
+		NotifyError("%s: Maximum number of signals already connected to "
 		  "customer EarObject (%lu).", funcName, customer->handle);
 		return(FALSE);
 	}
