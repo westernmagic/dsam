@@ -64,7 +64,7 @@ while [ $# -gt 0 ]; do
 		echo_libs=yes
 		;;
 	--gui)
-		if [ -z "@WXWIN_FALSE@" ]; then
+		if [ -z "@WXWIN_TRUE@" ]; then
 			echo Graphics support not installed.
 			exit 1
 		fi
@@ -94,7 +94,7 @@ if test "$echo_cflags" = "yes"; then
 	if [ "$use_gui" = "yes" ]; then
 		cflags="$cflags @DSAM_GRAPHICS@ @WXINC@"
 	fi
-	if [ "$MINGW32" = "yes" -a "$use_debug" != "yes" ]; then
+	if [ "@MINGW32@" = "yes" -a "$use_debug" != "yes" ]; then
 		cflags="$cflags -mwindows"
 	fi
 	echo $cflags
