@@ -1,12 +1,13 @@
 /**********************
  *
  * File:		UtSwapLR.c
- * Purpose:		
+ * Purpose:		This utility module swaps the left and right channels of
+ *				binarual signals.
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
- * Author:		
+ * Author:		L. P. O'Mard
  * Created:		25 Jan 2002
  * Updated:	
- * Copyright:	(c) 2002, 
+ * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
 
@@ -123,7 +124,8 @@ Process_Utility_SwapLR(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SwapLR";
 	register ChanData	 *inPtr, *outPtr;
-	int		i, chan;
+	int		chan;
+	ChanLen	i;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
