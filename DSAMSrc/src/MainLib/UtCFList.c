@@ -557,7 +557,7 @@ SetCFUniParList_CFList(CFListPtr theCFs)
 	  (void * (*)) SetDiagnosticMode_CFList);
 	SetPar_UniParMgr(&pars[CFLIST_CF_MODE], "CF_MODE",
 	 "Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', "
-	 "'focal_log' or 'user'.",
+	 "'focal_log' or 'user').",
 	  UNIPAR_NAME_SPEC,
 	  &theCFs->centreFreqMode, cFListModeList,
 	  (void * (*)) SetCFMode_CFList);
