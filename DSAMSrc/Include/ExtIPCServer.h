@@ -32,6 +32,14 @@
 
 #define	EXTIPC_DEFAULT_SERVER_NAME		"DSAM IPC Server"
 
+#ifndef __WINDOWS__
+#	include <syslog.h>
+#else
+#	define syslog	fprintf
+#	define vsyslog	vfprintf
+#	define LOG_INFO	stderr
+#endif
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -74,7 +82,6 @@ class IPCServer {
 	SocketBase *	GetSocket(void)	{ return sock; };
 	SocketBase *	InitConnection(bool wait = true);
 	bool	InitInProcess(void);
-	bool	InitOutProcess(void);
 	void	OnInit(void);
 	void	OnExecute(void);
 	void	OnGet(void);
@@ -100,8 +107,6 @@ class IPCServer {
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
-
-void	DPrint_IPCServer(char *format, va_list args);
 
 void	EmptyDiagBuffer_IPCServer(char *s, int *c);
 

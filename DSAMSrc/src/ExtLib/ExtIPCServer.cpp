@@ -84,8 +84,6 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
 		  theServicePort);
 		ok = FALSE;
 	}
-	//SetDPrintFunc(DPrint_IPCServer); - send to a logging system?
-	SetDPrintFunc(NULL);
 	SetNotifyFunc(Notify_IPCServer);
 
 }
@@ -127,7 +125,6 @@ IPCServer::InitConnection(bool wait)
 		NotifyError("%s: Couldn't accept a new connection.\n", funcName);
 		return(NULL);
 	}
-	printf("%s: Got new client.\n", funcName);
 	sock->SetFlags(wxSOCKET_WAITALL);
 	myServer->GetLocal(addr);
 	salutation.Printf("Host %s running %s, DSAM version %s.\n", addr.Hostname(
@@ -177,13 +174,15 @@ IPCServer::OnInit(void)
 /****************************** OnPut *****************************************/
 
 /*
+ * Reads signal from client.
  */
 
 void
 IPCServer::OnPut(void)
 {
 	static const char *funcName = "IPCServer::OnPut";
-	wxUint32	length;
+	char	*p;
+	wxUint32	i, length;
 
  	sock->Read(&length, sizeof(length));
 	if (!iPCUtils.InitInputMemory(length)) {
@@ -191,7 +190,10 @@ IPCServer::OnPut(void)
 		  funcName);
 		return;
 	}
-	sock->Read(iPCUtils.GetInUIOPtr()->memStart, length);
+	p = iPCUtils.GetInUIOPtr()->memStart;
+	for (i = 0; i < length; i++)
+		sock->Read(p++, 1);
+	
 	if (!iPCUtils.InitInProcess()) {
 		NotifyError("%s: Could not initialise the input process.", funcName);
 		return;
@@ -305,8 +307,6 @@ IPCServer::OnGetFiles(void)
 		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
 			NotifyError("%s: Could not open '%s' for transfer.", funcName,
-			  list[i].c_str());
-			printf("%s: Could not open '%s' for transfer.", funcName,
 			  list[i].c_str());
 			return;
 		}
@@ -553,46 +553,6 @@ GetPtr_IPCServer(void)
 	}
 	return(iPCServer);
 
-}
-
-/*************************** EmptyDiagWinBuffer *******************************/
-
-/*
- * This routine prints the print buffer, then resets its counter to zero.
- * It expects the count 'c' to point beyond the last character.
- * It expects the socket to have been correctly initialised.
- */
-
-void
-EmptyDiagBuffer_IPCServer(char *s, int *c)
-{
-	*(s + *c) = '\0';
-	GetPtr_IPCServer()->GetSocket()->Write(s, *c);
-	*c = 0;
-
-}
-
-/*************************** DPrint *******************************************/
-
-/*
- * This routine prints out a diagnostic message, preceded by a bell sound.
- * It is used in the same way as the printf statement.
- * There are different versions for the different compile options.
- * It assumes that all real values are 'double'.
- * It does not check that the format string is less than SMALL_STRING
- * characters.
- * The 'buffer' string is used to retain control of the formatting, as WxWin
- * does not yet have sufficient controls on the number output using the '<<'
- * operator.
- */
- 
-void
-DPrint_IPCServer(char *format, va_list args)
-{
-	if (!GetPtr_IPCServer()->GetSocket())
-		return;
-	DPrintBuffer_Common(format, args, EmptyDiagBuffer_IPCServer);
-	
 }
 
 /***************************** Notify *****************************************/
