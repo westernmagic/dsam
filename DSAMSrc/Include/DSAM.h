@@ -17,6 +17,8 @@
 #ifndef _DSAMHEADERS_H
 #define	_DSAMHEADERS_H 1
 
+#include <stdio.h>
+
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
