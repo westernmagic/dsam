@@ -277,7 +277,7 @@ SetMessage_Utility_Pause(char *theMessage)
 	}
 	/*** Put any other required checks here. ***/
 	pausePtr->messageFlag = TRUE;
-	sprintf(pausePtr->message, "%s", theMessage);
+	snprintf(pausePtr->message, LONG_STRING, "%s", theMessage);
 	return(TRUE);
 
 }

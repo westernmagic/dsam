@@ -458,7 +458,7 @@ NameAndStepNumber_Utility_Datum(DatumPtr pc)
 		  funcName);
 		return(NULL);
 	}
-	sprintf(string, "%s.%d", pc->u.proc.moduleName, pc->stepNumber);
+	snprintf(string, MAXLINE, "%s.%d", pc->u.proc.moduleName, pc->stepNumber);
 	return(string);
 
 }
@@ -551,7 +551,7 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 			else {
 				DPrint("\t##--------------- %-20s [%d] ---------------##\n",
 				  pc->u.proc.moduleName, pc->stepNumber);
-				sprintf(suffix, ".%s.%d", pc->u.proc.moduleName,
+				snprintf(suffix, MAXLINE, ".%s.%d", pc->u.proc.moduleName,
 				  pc->stepNumber);
 				ok = (parList)? PrintPars_UniParMgr(parList, prefix, suffix):
 				  TRUE;
@@ -891,7 +891,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		if (procNum < 0)
 			processStr[0] = '\0';
 		else
-			sprintf(processStr, " for process [%d] ", procNum);
+			snprintf(processStr, MAXLINE, " for process [%d] ", procNum);
 		NotifyError("%s: Could not find parameter '%s'%s in the simulation "
 		  "script.", funcName, parName, processStr);
 	}
@@ -943,7 +943,7 @@ FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 	if (procNum < 0)
 		processStr[0] = '\0';
 	else
-		sprintf(processStr, ", step [%d] ", procNum);
+		snprintf(processStr, MAXLINE, ", step [%d] ", procNum);
 	NotifyError("%s: Could not find process '%s'%s in the simulation "
 	  "script.", funcName, processName, processStr);
 	return(NULL);

@@ -365,7 +365,7 @@ SetAppParFile_AppInterface(char *fileName)
 		NotifyError("%s: illegal file name.", funcName);
 		return(FALSE);
 	}
-	sprintf(appInterfacePtr->appParFile, fileName);
+	snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, fileName);
 	appInterfacePtr->appParFileFlag = TRUE;
 	return(TRUE);
 
@@ -1180,7 +1180,7 @@ ListParameters_AppInterface(void)
 		NotifyError("%s: Could not print simulation parameter file.", funcName);
 		return(FALSE);
 	}
-	sprintf(suffix, ".%s.0", appInterfacePtr->appName);
+	snprintf(suffix, MAXLINE, ".%s.0", appInterfacePtr->appName);
 	PrintPars_UniParMgr(appInterfacePtr->parList, "", suffix);
 	return(TRUE);
 

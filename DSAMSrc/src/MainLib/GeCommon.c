@@ -455,10 +455,16 @@ FindFilePathAndName_Common(char *filePath, char *path, char *name)
 char *
 GetParsFileFPath_Common(char *parFile)
 {
+	static const char *funcName = "GetParsFileFPath_Common";
 	static char filePath[MAX_FILE_PATH];
 	
 	if (!dSAM.parsFilePath)
 		return(parFile);
+	if (strlen(parFile) >= MAX_FILE_PATH) {
+		parFile[MAX_FILE_PATH - 1] = '\0';
+		NotifyWarning("%s: file path is too long, truncating to '%s'", funcName,
+		  parFile);
+	}
 	if ((parFile[0] == '/') || strstr(parFile, ":\\"))
 		strcpy(filePath, parFile);
 	else

@@ -513,8 +513,8 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 	SetInfoCFArray_SignalData(data->outSignal, NULL);
-	sprintf(channelTitle, "Channel summary (%d -> %d)", data->inSignal[
-	  0]->numChannels, data->outSignal->numChannels);
+	snprintf(channelTitle, MAXLINE, "Channel summary (%d -> %d)", data->
+	  inSignal[0]->numChannels, data->outSignal->numChannels);
 	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 	binRatio = data->inSignal[0]->numChannels / reduceChansPtr->numChannels;
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan +=

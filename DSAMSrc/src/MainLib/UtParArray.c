@@ -84,10 +84,11 @@ Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	p->parList = NULL;
 
 	ToUpper_Utility_String(workStr, name);
-	sprintf(p->abbr[PARARRAY_MODE], "%s_MODE", workStr);
-	sprintf(p->abbr[PARARRAY_PARAMETER], "%s_PARAMETER", workStr);
-	sprintf(p->desc[PARARRAY_MODE], "Variable '%s' mode (", name);
-	sprintf(p->desc[PARARRAY_PARAMETER], "Parameters for '%s' function", name);
+	snprintf(p->abbr[PARARRAY_MODE], MAXLINE, "%s_MODE", workStr);
+	snprintf(p->abbr[PARARRAY_PARAMETER], MAXLINE, "%s_PARAMETER", workStr);
+	snprintf(p->desc[PARARRAY_MODE], MAXLINE, "Variable '%s' mode (", name);
+	snprintf(p->desc[PARARRAY_PARAMETER], MAXLINE, "Parameters for '%s' "
+	  "function", name);
 	if (!SetMode_ParArray(p, p->modeList[0].name)) {
 		NotifyError("Could not set initial parameter array.", funcName);
 		Free_ParArray(&p);
@@ -190,7 +191,7 @@ SetMode_ParArray(ParArrayPtr parArray, char *modeName)
 		}
 	}
 	for (list = parArray->modeList; *list->name != '\0'; list++) {
-		sprintf(workStr, "'%s'", list->name);
+		snprintf(workStr, LONG_STRING, "'%s'", list->name);
 		strcat(parArray->desc[PARARRAY_MODE], workStr);
 		if (*(list + 2)->name == '\0')
 			strcat(parArray->desc[PARARRAY_MODE], " or ");

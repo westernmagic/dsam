@@ -478,7 +478,7 @@ PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 {
 	static const char *funcName = "PrintPars_UniParMgr";
 	BOOLN	ok = TRUE;
-	char	string[MAXLINE];
+	char	string[LONG_STRING];
 	int		i;
 	UniParPtr	p;
 	DynaListPtr	node;
@@ -504,7 +504,7 @@ PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 				  funcName, p->abbr, suffix, MAXLINE);
 				return(FALSE);
 			}
-			sprintf(string, "%s%s", p->abbr, suffix);
+			snprintf(string, LONG_STRING, "%s%s", p->abbr, suffix);
 			DPrint("\t%s%-25s\t", prefix, string);
 			PrintValue_UniParMgr(p);
 			DPrint("%s\n", p->desc);
@@ -727,22 +727,22 @@ GetParString_UniParMgr(UniParPtr p)
 		sprintf(string, "%g", *p->valuePtr.r);
 		break;
 	case UNIPAR_REAL_ARRAY:
-		sprintf(string, "%g", (*p->valuePtr.array.pPtr.r)[
-		  p->valuePtr.array.index]);
+		sprintf(string, "%g", (*p->valuePtr.array.pPtr.r)[p->valuePtr.array.
+		  index]);
 		break;
 	case UNIPAR_STRING:
-		sprintf(string, "%s", p->valuePtr.s);
+		snprintf(string, LONG_STRING, "%s", p->valuePtr.s);
 		break;
 	case UNIPAR_FILE_NAME:
-		sprintf(string, "%s", p->valuePtr.file.name);
+		snprintf(string, LONG_STRING, "%s", p->valuePtr.file.name);
 		break;
 	case UNIPAR_MODULE:
-		sprintf(string, "%s", p->valuePtr.module.parFile);
+		snprintf(string, LONG_STRING, "%s", p->valuePtr.module.parFile);
 		break;
 	case UNIPAR_NAME_SPEC:
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
-		sprintf(string, "%s", p->valuePtr.nameList.list[
+		snprintf(string, LONG_STRING, "%s", p->valuePtr.nameList.list[
 		  *p->valuePtr.nameList.specifier].name);
 		break;
 	default:

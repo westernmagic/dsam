@@ -172,7 +172,8 @@ IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list)
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
 	case GENERAL_DIAGNOSTIC_MODE_NULL:
 		specifier = GENERAL_DIAGNOSTIC_FILE_MODE;
-		sprintf(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, "%s", mode);
+		snprintf(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, MAX_FILE_PATH,
+		  "%s", mode);
 		break;
 	default:
 		;

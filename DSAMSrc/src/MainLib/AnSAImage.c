@@ -179,7 +179,7 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 		Free_Analysis_SAI();
 		return(FALSE);
 	}
-	sprintf(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
+	snprintf(sAImagePtr->diagnosticString, MAX_FILE_PATH, DEFAULT_FILE_NAME);
 	sAImagePtr->inputDecay = NULL;
 	sAImagePtr->fp = NULL;
 	sAImagePtr->decayCount = NULL;
@@ -389,7 +389,8 @@ SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
 		return(FALSE);
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
-	sprintf(sAImagePtr->strobeSpecification, "%s", theStrobeSpecification);
+	snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, "%s",
+	  theStrobeSpecification);
 	return(TRUE);
 
 }

@@ -138,7 +138,7 @@ Init_IonChanList(const char *callingFunctionName)
 	theICList->minVoltage = 0.0;
 	theICList->maxVoltage = 0.0;
 	theICList->dV = 0.0;
-	sprintf(theICList->diagFileName, DEFAULT_FILE_NAME);
+	snprintf(theICList->diagFileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
 
 	if ((theICList->printTablesModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), theICList->diagFileName)) == NULL) {
@@ -242,7 +242,7 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 	theIC->dV = 0.0;
 	InitICHHuxleyPars_IonChanList(&theIC->hHuxley);
 	InitICBoltzmannPars_IonChanList(&theIC->boltzmann);
-	sprintf(theIC->fileName, DEFAULT_FILE_NAME);
+	snprintf(theIC->fileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
 	theIC->parList = NULL;
 	if ((theIC->table = (ICTableEntry *) calloc(theIC->numTableEntries,
 	  sizeof(ICTableEntry))) == NULL) {
@@ -1748,7 +1748,7 @@ SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription)
 		NotifyError("%s: Ion channel not initialised.", funcName);
 		return(FALSE);
 	}
-	sprintf(theIC->description, theDescription);
+	snprintf(theIC->description, MAXLINE, theDescription);
 	return(TRUE);
 
 }

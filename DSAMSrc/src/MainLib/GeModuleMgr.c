@@ -719,7 +719,7 @@ SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value)
 	/* static const char *funcName = "SetRealPar_ModuleMgr"; */
 	char	stringValue[MAXLINE];
 
-	sprintf(stringValue, "%g", value);
+	snprintf(stringValue, MAXLINE, "%g", value);
 	return(SetPar_ModuleMgr(data, name, stringValue));
 
 }
@@ -739,7 +739,7 @@ SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
 	/* static const char *funcName = "SetRealPar_ModuleMgr"; */
 	char	arrayElementString[MAXLINE];
 
-	sprintf(arrayElementString, "%d:%g", index, value);
+	snprintf(arrayElementString, MAXLINE, "%d:%g", index, value);
 	return(SetPar_ModuleMgr(data, name, arrayElementString));
 
 }

@@ -49,9 +49,9 @@ InitInfo_SignalData(SignalInfoPtr info)
 {
 	info->chanLabel = NULL;
 	info->cFArray = NULL;
-	sprintf(info->channelTitle, "Channel Data");
-	sprintf(info->chanDataTitle, "Amplitude (uPa)");
-	sprintf(info->sampleTitle, "Time (s)");
+	snprintf(info->channelTitle, SIGNALDATA_MAX_TITLE, "Channel Data");
+	snprintf(info->chanDataTitle, SIGNALDATA_MAX_TITLE, "Amplitude (uPa)");
+	snprintf(info->sampleTitle, SIGNALDATA_MAX_TITLE, "Time (s)");
 	return(TRUE);
 
 }
@@ -159,9 +159,10 @@ ResetInfo_SignalData(SignalDataPtr signal)
 		return(FALSE);
 	SetInfoChannelLabels_SignalData(signal, NULL);
 	SetInfoCFArray_SignalData(signal, NULL);
-	sprintf(signal->info.channelTitle, "Channel Data");
-	sprintf(signal->info.chanDataTitle, "Amplitude (uPa)");
-	sprintf(signal->info.sampleTitle, "Time (s)");
+	snprintf(signal->info.channelTitle, SIGNALDATA_MAX_TITLE, "Channel Data");
+	snprintf(signal->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "Amplitude "
+	  "(uPa)");
+	snprintf(signal->info.sampleTitle, SIGNALDATA_MAX_TITLE, "Time (s)");
 	return(TRUE);
 
 }
@@ -664,7 +665,7 @@ SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	sprintf(theData->info.channelTitle, "%s", title);
+	snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 
@@ -682,7 +683,7 @@ SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	sprintf(theData->info.chanDataTitle, "%s", title);
+	snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 
@@ -700,7 +701,7 @@ SetInfoSampleTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	sprintf(theData->info.sampleTitle, "%s", title);
+	snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 

@@ -88,8 +88,8 @@ PrintDisp::OnPrintPage(int page)
 	wxDC *dc = GetDC();
 
 	if (dc) {
-		char buf[200];
-		sprintf(buf, "%s: %s", canvas->GetSignalDispPtr()->title,
+		char buf[LONG_STRING];
+		snprintf(buf, LONG_STRING, "%s: %s", canvas->GetSignalDispPtr()->title,
 		  wxNow().GetData());
 		dc->DrawText(buf, (int) PRINTDISP_PS_X_OFFSET, (int)
 		  PRINTDISP_PS_Y_OFFSET);

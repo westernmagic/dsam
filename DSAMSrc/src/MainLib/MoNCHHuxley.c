@@ -195,7 +195,7 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 		Free_Neuron_HHuxley();
 		return(FALSE);
 	}
-	sprintf(hHuxleyNCPtr->diagFileName, DEFAULT_FILE_NAME);
+	snprintf(hHuxleyNCPtr->diagFileName, MAX_FILE_PATH, DEFAULT_FILE_NAME);
 	hHuxleyNCPtr->fp = NULL;
 	hHuxleyNCPtr->restingRun = FALSE;
 	hHuxleyNCPtr->numChannels = 0;
