@@ -60,7 +60,7 @@
 	WIN_X_POS.Display_Signal.2	111       	Display frame X position (pixel units).
 	WIN_Y_POS.Display_Signal.2	242       	Display frame Y position (pixel units).
 	##--------------- Filt_BandPass        [3] ---------------##
-	ORDER.Filt_BandPass.3    	2         	Filter order.
+	CASCADE.Filt_BandPass.3    	2         	Filter CASCADE.
 	ATTENUATION.Filt_BandPass.3	0         	Pre-attenuation for filter (dB).
 	LOWER_FREQ.Filt_BandPass.3	450       	Lower, 3 dB down cut-off frequency (Hz).
 	UPPER_FREQ.Filt_BandPass.3	8500      	Upper, 3 dB down cut-off frequency (Hz).
@@ -89,7 +89,7 @@
 	WIN_X_POS.Display_Signal.4	474       	Display frame X position (pixel units).
 	WIN_Y_POS.Display_Signal.4	242       	Display frame Y position (pixel units).
 	##--------------- BM_GammaT            [5] ---------------##
-	ORDER.BM_GammaT.5        	4         	Filter order.
+	CASCADE.BM_GammaT.5        	4         	Filter CASCADE.
 	# CFList parameters:
 	  DIAG_MODE.BM_GammaT.5    	"PARAMETERS"	Diagnostic mode ('list' or 'parameters').
 	  CF_MODE.BM_GammaT.5      	"ERB"     	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log' or 'user'.
