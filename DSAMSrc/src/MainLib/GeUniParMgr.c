@@ -1153,7 +1153,7 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 /************************ FindUniPar ******************************************/
 
 /*
- * This function returns the index to a universal parameter specified by an
+ * This function returns a pointer to a universal parameter specified by an
  * abbreviation within a list.
  * It searches recursively down lists for 'UNIPAR_MODULE' types.
  * It searches recursively down lists for 'UNIPAR_PARLIST' types.
