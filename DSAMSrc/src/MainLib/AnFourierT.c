@@ -507,6 +507,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz)");
 	SetInfoChannelTitle_SignalData(data->outSignal, "Arbitrary Amplitude");
+	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 	/* Set up data and apply Lorch Window. */
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		fT = fourierTPtr->fT;
