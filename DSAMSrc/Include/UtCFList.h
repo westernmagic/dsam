@@ -168,6 +168,9 @@ BOOLN		SetBandwidthQuality_CFList(CFListPtr theCFs, double quality);
 
 BOOLN		SetBandwidthSpecifier_CFList(CFListPtr theCFs, char *specifierName);
 
+BOOLN		SetBandwidthsWithFunc_CFList(CFListPtr theCFs, char *modeName,
+			  double (* Func)(BandwidthModePtr, double));
+
 BOOLN		SetBandwidths_CFList(CFListPtr theCFs, char *modeName,
 			  double *theBandwidths);
 
