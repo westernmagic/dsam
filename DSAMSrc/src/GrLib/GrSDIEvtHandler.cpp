@@ -501,7 +501,7 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 	if (pc && pc->next) {
 		switch (pc->type) {
 		case REPEAT:
-			if (pc->u.loop.stopPlaced)	/* Existing repeat connection */
+			if (pc->u.loop.stopPC)	/* Existing repeat connection */
 				break;
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
 			  new SDICommand("'repeat' connection", SDIFRAME_ADD_REPEAT_LINE,

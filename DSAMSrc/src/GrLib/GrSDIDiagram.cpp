@@ -221,13 +221,14 @@ SDIDiagram::DrawSimShapes()
 }
 
 /******************************************************************************/
-/****************************** CreateLineShape *******************************/
+/****************************** AddLineShape **********************************/
 /******************************************************************************/
 
-void
+wxShape *
 SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 {
-	wxShape *shape = CreateBasicShape(CLASSINFO(wxLineShape), -1, wxRED_BRUSH);
+	wxShape *shape = CreateBasicShape(CLASSINFO(wxLineShape), lineType,
+	  wxRED_BRUSH);
 	wxLineShape *lineShape = (wxLineShape *) shape;
 	switch (lineType) {
 	case REPEAT:
@@ -250,6 +251,7 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 	// connected images
 	fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
 	toShape->Move(dc, toShape->GetX(), toShape->GetY());
+	return(shape);
 
 }
 

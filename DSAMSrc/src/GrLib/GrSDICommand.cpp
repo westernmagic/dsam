@@ -230,23 +230,6 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 }
 
 /******************************************************************************/
-/****************************** DisconnectRepeatInst **************************/
-/******************************************************************************/
-
-/*
- * This routine disconnects a repeat connection.
- */
-
-void
-SDICommand::DisconnectRepeatInst(wxShape *fromShape, wxShape *toShape)
-{
-	FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(toShape)->
-	  next);
-	SHAPE_PC(fromShape)->u.loop.stopPlaced = FALSE;
-		
-}
-
-/******************************************************************************/
 /****************************** RedrawShapeLabel ******************************/
 /******************************************************************************/
 
@@ -279,24 +262,16 @@ SDICommand::AddLineShape(int lineType)
 	else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
 		return(false);
 	else {
-		theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
-			  shapeInfo, lineType, wxRED_BRUSH);
-
-		wxLineShape *lineShape = (wxLineShape *)theShape;
+		theShape = ((SDIDiagram *) doc->GetDiagram())->AddLineShape(fromShape,
+		  toShape, lineType);
 
 		switch (lineType) {
 		case REPEAT:
-			lineShape->MakeLineControlPoints(4);
-			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_MIDDLE,
-			  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
+			SHAPE_PC(fromShape)->u.loop.stopPC = InitInst_Utility_Datum(STOP);
 			AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
-			  toShape), InitInst_Utility_Datum(STOP));
-			SHAPE_PC(fromShape)->u.loop.stopPlaced = TRUE;
+			  toShape), SHAPE_PC(fromShape)->u.loop.stopPC);
 			break;
 		default:
-			lineShape->MakeLineControlPoints(2);
-			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
-			  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 			if (!ConnectInstructions(fromShape, toShape)) {
 				delete theShape;
 				shape = NULL;
@@ -304,20 +279,6 @@ SDICommand::AddLineShape(int lineType)
 			}
 		} /* switch */
 	}
-
-	doc->GetDiagram()->AddShape(theShape);
-
-	fromShape->AddLine((wxLineShape *)theShape, toShape);
-
-	theShape->Show(TRUE);
-
-	wxClientDC dc(theShape->GetCanvas());
-	theShape->GetCanvas()->PrepareDC(dc);
-
-	// It won't get drawn properly unless you move both
-	// connected images
-	fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
-	toShape->Move(dc, toShape->GetX(), toShape->GetY());
 
 	shape = theShape;
 	deleteShape = FALSE;
@@ -355,7 +316,8 @@ SDICommand::Do(void)
 				fromShape = lineShape->GetFrom();
 				toShape = lineShape->GetTo();
 				if (myHandler->processType == REPEAT)
-					DisconnectRepeatInst(fromShape, toShape);
+					FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(),
+					  SHAPE_PC(fromShape)->u.loop.stopPC);
 				else
 					DisconnectProcessInsts(fromShape, toShape);
 			} else {
@@ -505,7 +467,8 @@ SDICommand::Undo(void)
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
-			DisconnectRepeatInst(fromShape, toShape);
+			FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			  fromShape)->u.loop.stopPC);
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);
 			shape->Unlink();

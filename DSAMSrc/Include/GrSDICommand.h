@@ -114,7 +114,7 @@ class SDICommand: public wxCommand
 	bool	AddLineShape(int lineType);
 	bool	ConnectInstructions(wxShape *fromShape, wxShape *toShape);
 	void	DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape);
-	void	DisconnectRepeatInst(wxShape *fromShape, wxShape *toShape);
+	void	DisconnectRepeatInst(wxShape *fromShape);
 	void	RedrawShapeLabel(wxShape *shape);
 	void	RemoveLines(wxShape *shape);
 	void	SetBasic(int command, SDIDocument *ddoc, wxShape *theShape);

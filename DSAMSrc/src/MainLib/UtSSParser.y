@@ -135,8 +135,8 @@ statement:
 			/* Ignore the QUOTED_STRING at present. */
 		|	repeat NUMBER statement
 			{	$1->u.loop.count = $2;
-				InstallInst_Utility_Datum(simScriptPtr->simPtr, STOP);
-				$1->u.loop.stopPlaced = TRUE;
+				$1->u.loop.stopPC = InstallInst_Utility_Datum(simScriptPtr->
+				  simPtr, STOP);
 			}
 		|	reset STRING
 			{ $1->u.string = InitString_Utility_String($2->name); }

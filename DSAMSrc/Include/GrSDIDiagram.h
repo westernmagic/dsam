@@ -70,7 +70,8 @@ class SDIDiagram: public wxDiagram
   public:
 	SDIDiagram(void);
 	
-	void	AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType);
+	wxShape *	AddLineShape(wxShape *fromShape, wxShape *toShape,
+				  int lineType);
 	void	AddShape(wxShape *shape);
 	void	AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,

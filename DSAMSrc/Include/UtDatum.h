@@ -81,7 +81,7 @@ typedef struct Datum {
 			DynaListPtr		outputList;
 		} proc;
 		struct {
-			BOOLN	stopPlaced;
+			struct Datum	*stopPC;
 			int		count;
 		} loop;
 	} u;

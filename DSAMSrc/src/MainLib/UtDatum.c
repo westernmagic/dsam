@@ -113,7 +113,7 @@ InitInst_Utility_Datum(int type)
 		break;
 	case REPEAT:
 		datum->u.loop.count = 1;
-		datum->u.loop.stopPlaced = FALSE;
+		datum->u.loop.stopPC = NULL;
 		break;
 	default:
 		;
@@ -1040,7 +1040,7 @@ Execute_Utility_Datum(DatumPtr start)
 				NotifyError("%s: Illegal zero 'repeat' count.", funcName);
 				return(NULL);
 			}
-			if (!pc->u.loop.stopPlaced) {
+			if (!pc->u.loop.stopPC) {
 				NotifyError("%s: Repeat has no end point.", funcName);
 				return(NULL);
 			}
