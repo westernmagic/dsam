@@ -134,7 +134,7 @@ CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction)
 
 }
 
-/********************************* SetGeneralUniParList ***********************/
+/********************************* SetUniParList ******************************/
 
 /*
  * This routine initialises and sets the ParArray's universal parameter list.
