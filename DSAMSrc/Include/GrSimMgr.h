@@ -138,6 +138,7 @@ class MyApp: public wxApp {
 
 	bool		clientServerFlag;
 	uInt		serverId;
+	int			displayDefaultX, displayDefaultY;
 	wxString	serverName;
 	MyFrame		*frame;
 	IPCOpModeSpecifier	operationMode;
@@ -147,10 +148,13 @@ class MyApp: public wxApp {
 	MyApp(void);
 
 	void	CheckOptions(void);
+	void	GetDefaultDisplayPos(int *x, int *y);
 	MyFrame *	GetFrame(void)	{ return frame; }
 	bool	OnInit(void);
     int		OnExit(void);
 	void	PrintUsage(void);
+	void	ResetDefaultDisplayPos(void)
+			  { displayDefaultX = 0; displayDefaultY = 0; }
 	void	RunInServerMode(void);
 	void	RunInClientMode(void);
 	bool	RunSimulation(void);
