@@ -48,7 +48,7 @@ class GrIPCServer: public IPCServer {
 	GrIPCServer(const wxString& hostName, uShort theServicePort);
 	~GrIPCServer(void);
 
-	void	LoadSimFile(const wxString& fileName);
+	bool	LoadSimFile(const wxString& fileName);
 	void	SetNotification(wxEvtHandler *theHandler);
 
 };

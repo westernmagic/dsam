@@ -66,10 +66,11 @@ GrIPCServer::~GrIPCServer(void)
  * this function.
  */
 
-void
+bool
 GrIPCServer::LoadSimFile(const wxString& fileName)
 {
 	wxGetApp().CreateDocument(fileName);
+	return(true);
 
 }
 

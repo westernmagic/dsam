@@ -145,6 +145,7 @@ IPCServer::OnInit(void)
 {
 	static const char *funcName = "IPCServer::OnInit";
 	unsigned char c;
+	bool	simLoaded;
 
 	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
 		return;
@@ -163,8 +164,12 @@ IPCServer::OnInit(void)
 	while (!sock->Read(&c, 1).Error() && (c != (unsigned char) EOF))
 		oStream->PutC(c);
 	delete oStream;
-	LoadSimFile(tempFileName);
+	simLoaded = LoadSimFile(tempFileName);
 	wxRemoveFile(tempFileName);
+	if (!simLoaded) {
+		NotifyError("%s: Could not load simulation.", funcName);
+		return;
+	}
 	iPCUtils.InitOutProcess();
 	iPCUtils.ConnectToOutProcess(GetSimProcess_AppInterface());
 	simulationInitialisedFlag = true;
@@ -500,8 +505,11 @@ IPCServer::OnErrMsgs(int index)
 	if (index < 0) {
 		numNotifications = notificationList.GetCount();
 		sock->Write(&numNotifications, 1);
-		for (unsigned int i = 0; i < notificationList.GetCount(); i++)
+		for (unsigned int i = 0; i < notificationList.GetCount(); i++) {
+			printf("IPCServer::OnErrMsgs: [%2d]: %s\n", i, notificationList[i].
+			  c_str());
 			sock->Write(notificationList[i], notificationList[i].length());
+		}
 	} else {
 		numNotifications = 1;
 		sock->Write(&numNotifications, 1);
@@ -518,14 +526,14 @@ IPCServer::OnErrMsgs(int index)
  * this function.
  */
 
-void
+bool
 IPCServer::LoadSimFile(const wxString& fileName)
 {
 	FreeSim_AppInterface();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
 	  APP_INT_SIMULATIONFILE, (char *) fileName.c_str()))
-		return;
-	dSAMMainApp->ResetSimulation();
+		return(false);
+	return(dSAMMainApp->ResetSimulation());
 
 }
 

@@ -149,8 +149,10 @@ IPCClient::CheckStatus(void)
 bool
 IPCClient::Errors(void)
 {
+	static const char *funcName = "IPCClient::Errors";
 	unsigned char	numErrors, c;
 	int		i;
+	wxString	errMsg;
 
 	SendCommand(IPC_COMMAND_ERRMSGS);
 	Read(&numErrors, 1);
@@ -158,8 +160,9 @@ IPCClient::Errors(void)
 		return(false);
 	for (i = 0; i < numErrors; i++) {
 		while (!Read(&c, 1).Error() && (c != '\n'))
-			DPrint("%c", c);
-		DPrint("\n");
+			errMsg += c;
+		NotifyError("%s: %s", funcName, errMsg.c_str());
+		errMsg.Empty();
 	}
 	return(true);
 
@@ -174,12 +177,17 @@ IPCClient::Errors(void)
 bool
 IPCClient::InitSimulation(const char *simulation)
 {
+	static const char *funcName = "IPCClient:::InitSimulation";
 	unsigned char	eof = (unsigned char) EOF;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_INIT);
 	Write(simulation, strlen(simulation));
 	Write(&eof, 1);
+	if (Errors()) {
+		NotifyError("%s: Could not initialise simulation.", funcName);
+		return(false);
+	}
 	return(true);
 
 }
@@ -265,6 +273,10 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 		Write(&byte, 1);
 	}
 	Write(&eof, 1);
+	if (Errors()) {
+		NotifyError("%s: Could not initialise simulation.", funcName);
+		return(false);
+	}
 	return(true);
 
 }

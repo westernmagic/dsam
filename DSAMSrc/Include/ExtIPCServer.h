@@ -73,7 +73,7 @@ class IPCServer {
 	  bool superServerFlag = false);
 	virtual	~IPCServer(void);
 
-	virtual void	LoadSimFile(const wxString& fileName);
+	virtual bool	LoadSimFile(const wxString& fileName);
 
 	void	AddNotification(wxString &s)	{ notificationList.Add(s); }
 	void	BuildFileList(wxArrayString &list, DatumPtr pc);
