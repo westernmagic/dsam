@@ -49,8 +49,8 @@ Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp \
 				GrSimMgr.cpp GrUtils.cpp GrIPC.cpp GrPrintDisp.cpp \
 				GrRunMgr.cpp GrSimModDialog.cpp GrModParDialog.cpp \
 				GrParListInfo.cpp GrDialogInfo.cpp GrDialogList.cpp \
-				GrParListInfoList.cpp GrRunParDialog.cpp GrParControl.cpp\
-				dsam.xpm
+				GrParListInfoList.cpp GrRunParDialog.cpp GrParControl.cpp \
+				GrDisplayParDialog.cpp dsam.xpm
   
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c MoDendrite.c \
