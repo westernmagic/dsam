@@ -63,7 +63,7 @@ make)
 
 	echo Copying extra files to include directory ...
 	cp $archiveName/$MAINLIB/UtSSParser.h $archiveName/$INCDIR
-	cp $archiveName/$GRLIB/dsam.rc $archiveName/$INCDIR
+	#cp $archiveName/$GRLIB/dsam.rc $archiveName/$INCDIR
 
 	echo Creating zip archive ...
 	newArchiveName=`echo $archiveName | tr -d ".-"`
