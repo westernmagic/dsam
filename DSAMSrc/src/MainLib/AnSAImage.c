@@ -84,8 +84,7 @@ Free_Analysis_SAI(void)
 	if (sAImagePtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_SAI();
-	strobePtr = &sAImagePtr->strobe;
-	Free_Utility_Strobe();
+	Free_EarObject(&sAImagePtr->strobeData);
 	if (sAImagePtr->diagnosticModeList)
 		free(sAImagePtr->diagnosticModeList);
 	if (sAImagePtr->parList)
@@ -165,26 +164,24 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 	sAImagePtr->inputDecayRate = 0.0;
 	sAImagePtr->imageDecayHalfLife = 0.0;
 
-	strobePtr = &sAImagePtr->strobe;
-	if (!Init_Utility_Strobe(LOCAL)) {
-		NotifyError("%s: Could not initialise local strobe utility module.",
-		  funcName);
-		return(FALSE);
-	}
 	if ((sAImagePtr->diagnosticModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), sAImagePtr->diagnosticString)) == NULL)
 		return(FALSE);
 	InitIntegrationModeList_Analysis_SAI();
+	if ((sAImagePtr->strobeData = Init_EarObject("Util_Strobe")) == NULL) {
+		NotifyError("%s: Could not initialise strobe data EarObject", funcName);
+		return(FALSE);
+	}
 	if (!SetUniParList_Analysis_SAI()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_Analysis_SAI();
 		return(FALSE);
 	}
 	strcpy(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
+	sAImagePtr->strobeInSignalIndex = -1;
 	sAImagePtr->inputDecay = NULL;
 	sAImagePtr->fp = NULL;
 	sAImagePtr->decayCount = NULL;
-	sAImagePtr->strobeData = NULL;
 	sAImagePtr->dataBuffer = NULL;
 	sAImagePtr->strobeDataBuffer = NULL;
 	return(TRUE);
@@ -224,7 +221,8 @@ SetUniParList_Analysis_SAI(void)
 	SetPar_UniParMgr(&pars[SAI_STROBE_SPECIFICATION], "STROBE_PAR_FILE",
 	  "Strobe module parameter file name.",
 	  UNIPAR_MODULE,
-	  &sAImagePtr->strobeSpecification, sAImagePtr->strobe.parList,
+	  &sAImagePtr->strobeSpecification, GetUniParListPtr_ModuleMgr(sAImagePtr->
+	  strobeData),
 	  (void * (*)) SetStrobeSpecification_Analysis_SAI);
 	SetPar_UniParMgr(&pars[SAI_NEGATIVE_WIDTH], "NWIDTH",
 	  "Negative width of auditory image (s).",
@@ -377,17 +375,22 @@ BOOLN
 SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
 {
 	static const char	*funcName = "SetStrobeSpecification_Analysis_SAI";
+	BOOLN	ok;
+	ParFilePtr	oldPtr = parFile;
 
 	if (sAImagePtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	strobePtr = &sAImagePtr->strobe;
-	if ((strcmp(theStrobeSpecification, NO_FILE) != 0) &&
-	  !ReadPars_Utility_Strobe(theStrobeSpecification)) {
-		NotifyError("%s: Could not read strobe utility module parameters.",
-		  funcName);
-		return(FALSE);
+	if (strcmp(theStrobeSpecification, NO_FILE) != 0) {
+		parFile = NULL;
+		ok = ReadPars_ModuleMgr(sAImagePtr->strobeData, theStrobeSpecification);
+		parFile = oldPtr;
+		if (!ok) {
+			NotifyError("%s: Could not read strobe utility module parameters.",
+			  funcName);
+			return(FALSE);
+		}
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
 	snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, "%s",
@@ -514,8 +517,8 @@ SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
 BOOLN
 SetDelay_Analysis_SAI(double theDelay)
 {
-	strobePtr = &sAImagePtr->strobe;
-	return(SetDelay_Utility_Strobe(theDelay));
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "strobe_lag",
+	  theDelay));
 
 }
 
@@ -529,8 +532,8 @@ SetDelay_Analysis_SAI(double theDelay)
 BOOLN
 SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
 {
-	strobePtr = &sAImagePtr->strobe;
-	return(SetDelayTimeout_Utility_Strobe(theDelayTimeout));
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "timeout",
+	  theDelayTimeout));
 
 }
 
@@ -544,8 +547,8 @@ SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
 BOOLN
 SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
 {
-	strobePtr = &sAImagePtr->strobe;
-	return(SetThresholdDecayRate_Utility_Strobe(theThresholdDecayRate));
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "threshold_decay",
+	  theThresholdDecayRate));
 
 }
 
@@ -559,8 +562,8 @@ SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
 BOOLN
 SetThreshold_Analysis_SAI(double theThreshold)
 {
-	strobePtr = &sAImagePtr->strobe;
-	return(SetThreshold_Utility_Strobe(theThreshold));
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "threshold",
+	  theThreshold));
 
 }
 
@@ -574,8 +577,7 @@ SetThreshold_Analysis_SAI(double theThreshold)
 BOOLN
 SetTypeMode_Analysis_SAI(char *theTypeMode)
 {
-	strobePtr = &sAImagePtr->strobe;
-	return(SetTypeMode_Utility_Strobe(theTypeMode));
+	return(SetPar_ModuleMgr(sAImagePtr->strobeData, "criterion", theTypeMode));
 
 }
 
@@ -651,8 +653,7 @@ PrintPars_Analysis_SAI(void)
 	DPrint("Stabilised Auditory Image Analysis Module Parameters:-\n");
 	DPrint("\tStrobeSpecification (%s):\n", sAImagePtr->strobeSpecification);
 	SetDiagnosticsPrefix("\t");
-	strobePtr = &sAImagePtr->strobe;
-	PrintPars_Utility_Strobe();
+	PrintPars_ModuleMgr(sAImagePtr->strobeData);
 	SetDiagnosticsPrefix(NULL);
 	DPrint("\tIntegration mode = %s,\n", sAImagePtr->integrationModeList[
 	  sAImagePtr->integrationMode].name);
@@ -793,6 +794,7 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Analysis_SAI";
 	double	width;
+	int		strobeType, strobeDelay;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -800,7 +802,9 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 	}
 	if (!CheckInit_SignalData(data->inSignal[0], funcName))
 		return(FALSE);
-	if (sAImagePtr->strobe.typeMode == STROBE_USER_MODE) {
+	strobeType = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData, "criterion")->
+	  valuePtr.nameList.specifier;
+	if (strobeType == STROBE_USER_MODE) {
 		if (data->numInSignals < 2) {
 			NotifyError("%s: In strobe 'USER' mode two input EarObjects are\n"
 			  "required (%d)", funcName, data->numInSignals);
@@ -824,11 +828,13 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 		  MSEC(sAImagePtr->negativeWidth), MSEC(sAImagePtr->positiveWidth));
 		return(FALSE);
 	}
-	if ((sAImagePtr->strobe.typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) &&
-	  (sAImagePtr->positiveWidth < sAImagePtr->strobe.delay)) {
+	strobeDelay = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData,
+	  "strobe_lag")->valuePtr.r;
+	if ((strobeType == STROBE_PEAK_SHADOW_POSITIVE_MODE) && (sAImagePtr->
+	  positiveWidth < strobeDelay)) {
 		NotifyError("%s: The positive width (%g ms) must be less than strobe "
 		  "delay (%g ms).", funcName, MSEC(sAImagePtr->positiveWidth),
-		  MSEC(sAImagePtr->strobe.delay));
+		  MSEC(strobeDelay));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -927,13 +933,8 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (sAImagePtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_SAI();
-			OpenDiagnostics_NSpecLists(&sAImagePtr->fp,
-			  sAImagePtr->diagnosticModeList, sAImagePtr->diagnosticMode);
-			if ((sAImagePtr->strobeData = Init_EarObject("NULL")) == NULL) {
-				NotifyError("%s: Could not initialise strobe data EarObject",
-				  funcName);
-				return(FALSE);
-			}
+			OpenDiagnostics_NSpecLists(&sAImagePtr->fp, sAImagePtr->
+			  diagnosticModeList, sAImagePtr->diagnosticMode);
 			if ((sAImagePtr->dataBuffer = Init_EarObject("NULL")) == NULL) {
 				NotifyError("%s: Could not initialise previous data EarObject",
 				  funcName);
@@ -960,6 +961,9 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
+			sAImagePtr->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(
+			  sAImagePtr->strobeData, "criterion")->valuePtr.nameList.
+			  specifier == STROBE_USER_MODE)? 1: 0;
 			sAImagePtr->updateProcessVariablesFlag = FALSE;
 		}
 		ResetProcess_EarObject(sAImagePtr->dataBuffer);
@@ -997,7 +1001,6 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_Analysis_SAI(void)
 {
-	Free_EarObject(&sAImagePtr->strobeData);
 	Free_EarObject(&sAImagePtr->dataBuffer);
 	Free_EarObject(&sAImagePtr->strobeDataBuffer);
 	if (sAImagePtr->inputDecay) {
@@ -1194,10 +1197,9 @@ Process_Analysis_SAI(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	sAImagePtr->strobeData->inSignal[0] = (sAImagePtr->strobe.typeMode ==
-	  STROBE_USER_MODE)? data->inSignal[1]: data->inSignal[0];
-	strobePtr = &sAImagePtr->strobe;
-	if (!Process_Utility_Strobe(sAImagePtr->strobeData)) {
+	sAImagePtr->strobeData->inSignal[0] = data->inSignal[sAImagePtr->
+	  strobeInSignalIndex];
+	if (!RunProcess_ModuleMgr(sAImagePtr->strobeData)) {
 		NotifyError("%s: Could not process strobe data .", funcName);
 		return(FALSE);
 	}

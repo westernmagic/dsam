@@ -95,9 +95,9 @@ typedef struct {
 	NameSpecifier	*integrationModeList;
 	UniParListPtr	parList;
 	char			diagnosticString[MAX_FILE_PATH];
+	int				strobeInSignalIndex;
 	double			*inputDecay;
 	FILE			*fp;
-	Strobe			strobe;
 	ChanLen			inputCount;
 	ChanLen			zeroIndex;
 	ChanLen			positiveWidthIndex;
