@@ -52,7 +52,6 @@ StandardFunctions standardFunctions[] = {
 	{"CheckPars",		PrintCheckParsRoutine},
 	{"Get",				PrintGetFunctions},
 	{"PrintPars",		PrintPrintParsRoutine},
-	{"ReadPars",		PrintReadParsRoutine},
 	{"SetParsPointer",	PrintSetParsPointerRoutine},
 	{"InitModule",		PrintInitModuleRoutine},
 	{"CheckData",		PrintCheckDataRoutine},
@@ -999,84 +998,6 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 
 }
 
-/****************************** PrintReadParsRoutine **************************/
-
-/*
- * This routine prints the Module ReadPars routine.
- * It adds the function declaration to the main list.
- * It doesn't expect the 'line' string to be larger than LONG_LINE.
- */
-
-void
-PrintReadParsRoutine(FILE *fp)
-{
-	static char	*function = "ReadPars";
-	char	*funcName, *funcDeclaration, mainFuncName[MAXLINE];
-	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list, arrayLimit;
-	
-	PrintLineCommentHeading(fp, function);
-	fprintf(fp,
-	  "/*\n"
-	  " * This program reads parameters from a file line by line.\n"
-	  " * Each line which is not a comment or blank should have at least a\n"
-	  " * parameter name and value.  Characters on the line following the\n"
-	  " * 'value' are ignored.\n"
-	  " * It returns FALSE if it fails in any way.\n"
-	  " */\n\n"
-	  );
-	funcName = CreateFuncName(function, module, qualifier);
-	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
-	  "char *fileName");
-	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
-	fprintf(fp, "\tBOOLN\tok = TRUE;\n");
-	fprintf(fp, "\tchar\t*filePath, parName[MAXLINE], parValue["
-	  "MAX_FILE_PATH];\n");
-	fprintf(fp, "\tFILE\t*fp;\n");
-	fprintf(fp, "\tUniParPtr\tpar;\n");
-	fprintf(fp, "\n");
-	fprintf(fp, "\tif (strcmp(fileName, NO_FILE) == 0)\n");
-	fprintf(fp, "\t\treturn(TRUE);\n");
-	fprintf(fp, "\tfilePath = GetParsFileFPath_Common(fileName);\n");
-	fprintf(fp, "\tif ((fp = fopen(filePath, \"r\")) == NULL) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot open data file '%%s'.\\n\", "
-	  "funcName, fileName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
-	fprintf(fp, "\tDPrint(\"%%s: Reading from '%%s':\\n\", funcName, "
-	  "fileName);\n");
-	fprintf(fp, "\tInit_ParFile();\n");
-	fprintf(fp, "\tSetEmptyLineMessage_ParFile(FALSE);\n");
-	fprintf(fp, "\twhile (GetPars_ParFile(fp, \"%%s %%s\", parName,"
-	  "parValue))\n");
-	fprintf(fp, "\t\tif ((par = FindUniPar_UniParMgr(&padSignalPtr->parList,"
-	  "parName,\n");
-	fprintf(fp, "\t\t  UNIPAR_SEARCH_ABBR)) == NULL) {\n");
-	fprintf(fp, "\t\t\tNotifyError(\"%%s: Unknown parameter '%%s' for "
-	  "module.\", funcName,\n");
-	fprintf(fp, "\t\t\t  parName);\n");
-	fprintf(fp, "\t\t\tok = FALSE;\n");
-	fprintf(fp, "\t\t} else {\n");
-	fprintf(fp, "\t\t\tif (!SetParValue_UniParMgr(&padSignalPtr->parList, par->"
-	  "index,\n");
-	fprintf(fp, "\t\t\t  parValue))\n");
-	fprintf(fp, "\t\t\t\tok = FALSE;\n");
-	fprintf(fp, "\t}\n");
-	fprintf(fp, "\tSetEmptyLineMessage_ParFile(TRUE);\n");
-	fprintf(fp, "\tfclose(fp);\n");
-	fprintf(fp, "\tFree_ParFile();\n");
-	fprintf(fp, "\tif (!ok) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Invalid parameters, in module "
-	  "parameter file '%%s'.\",\n");
-	fprintf(fp, "\t\t  funcName, fileName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
-	fprintf(fp, "\treturn(TRUE);\n");
-	fprintf(fp, "\n}\n\n");
-	AddRoutine(funcDeclaration);
-
-}
-
 /****************************** PrintSetParsPointerRoutine ********************/
 
 /*
@@ -1163,8 +1084,6 @@ PrintInitModuleRoutine(FILE *fp)
 	fprintf(fp, "\ttheModule->GetUniParListPtr = %s;\n", CreateFuncName(
 	  "GetUniParListPtr", module, qualifier));
 	fprintf(fp, "\ttheModule->PrintPars = %s;\n", CreateFuncName("PrintPars",
-	  module, qualifier));
-	fprintf(fp, "\ttheModule->ReadPars = %s;\n", CreateFuncName("ReadPars",
 	  module, qualifier));
 	fprintf(fp, "\ttheModule->RunProcess = %s;\n", CreateProcessFuncName(pc,
 	  module, qualifier));
