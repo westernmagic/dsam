@@ -186,6 +186,7 @@ typedef unsigned int	ModuleHandle;	/* For module management. */
 
 typedef struct moduleStruct {
 
+	BOOLN	onFlag;
 	char	name[MAX_MODULE_NAME];
 	ModuleSpecifier	specifier;
 	ModuleHandle	handle;				/* Reference handle for manager. */

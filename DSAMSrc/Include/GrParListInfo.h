@@ -48,9 +48,9 @@ class ParListInfo {
 	int			offset;
 	DatumPtr	pc;
 	DialogList	*parent;
-//	wxTextCtrl	**parTextList;
-//	wxSlider	**parSliderList;
-//	wxButton	**parButtonList;
+	wxTextCtrl	**parTextList;
+	wxSlider	**parSliderList;
+	wxButton	**parButtonList;
 	wxStringList	oldPars, labels, rothmanHeadings;
 
   public:
@@ -63,10 +63,10 @@ class ParListInfo {
 	bool	CheckChangedValues(void);
 	bool	SubParList(int i)		{ return subParList[i]; };
 	int		GetOffset(void)	{ return offset; };
-//	wxSlider *	SetSlider(int index);
-//	wxSlider *	GetSlider(int i)	{ return parSliderList[i]; };
+	wxSlider *	SetSlider(int index);
+	wxSlider *	GetSlider(int i)	{ return parSliderList[i]; };
 	char *	GetOldValue(int i)	{ return (char *) oldPars.Nth(i)->Data(); };
-//	wxTextCtrl *	GetParText(int i)	{ return parTextList[i]; };
+	wxTextCtrl *	GetParText(int i)	{ return parTextList[i]; };
 	void	ResetOldParText(int index);
 	void	ResetOldValue(int index);
 	void	ResetOldValues(void);

@@ -15,7 +15,7 @@
  *				and used in in all modules which need to store file names.
  *				29-01-99 LPO: Under the GRAPHICS mode the 'NotifyError' routine
  *				will produce a dialog the first time (if the 
- *				dSAM.'dontUseGUIFlag' flag is set to false).  After the first
+ *				dSAM.'noGUIOutputFlag' flag is set to false).  After the first
  *				dialog is created, then subsequent calls will send error
  *				messages to the console.
  *				04-02-99 LPO: Introduced the 'CloseFile' routine to prevent
@@ -35,6 +35,8 @@
  *				egcs 2.91.66 (gcc) because they are not constants.  The
  *				alternative would be to call a routine to initialise the dSAM
  *				global structure, but I do not want to do that.
+ *				15-10-99 LPO: The 'usingGUIFlag' is set when MyApp is
+ *				initialised.
  * Authors:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		08 Jul 1999
@@ -191,7 +193,8 @@ typedef enum {
 typedef struct {
 
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
-	BOOLN	dontUseGUIFlag;		/* TRUE, when forcing output to stdout. */
+	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
+	BOOLN	noGUIOutputFlag;	/* TRUE, when forcing output to stdout. */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
 	char	*parsFilePath;		/* File path for parameter files. */

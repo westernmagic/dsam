@@ -45,9 +45,9 @@
 /* The following is needed because of errors in scale position - can't get
  * Get extent to work properly.
  */
-#if defined(wx_gtk)
+#if defined(__WXGTK__)
 #	define CANVAS_TEXT_X_ADJUST		1.0
-#	define CANVAS_TEXT_Y_ADJUST		1.5
+#	define CANVAS_TEXT_Y_ADJUST		0.5
 #else
 #	define CANVAS_TEXT_X_ADJUST		1.0
 #	define CANVAS_TEXT_Y_ADJUST		1.0
@@ -90,7 +90,7 @@ class MyCanvas: public wxWindow
 	int		numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
-	wxRect		signal, summary, *originalCanvas, *xAxis, *yAxis;
+	wxRect		signal, summary, *xAxis, *yAxis;
 	wxFont  *labelFont, *axisTitleFont;
 	wxString	xTitle, yTitle;
 	wxMemoryDC	memDC;
@@ -101,14 +101,13 @@ class MyCanvas: public wxWindow
 
   public:
 
-	MyCanvas(wxFrame *frame, const wxPoint& pos =  wxDefaultPosition,
-	  const wxSize& size = wxDefaultSize, long style = 0);
+	MyCanvas(wxFrame *frame);
 	~MyCanvas(void);
 
 	void	CreateBackingBitmap(void);
-	void	DrawAxes(wxDC& dc, double theXOffset, double theYOffset);
-	void	DrawGraph(wxDC& dc, double theXOffset, double theYOffset);
-	void	DrawVerticalText(wxDC& dc, wxString& string, double x, double y);
+	void	DrawAxes(wxDC& dc, int theXOffset, int theYOffset);
+	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
+	void	DrawVerticalText(wxDC& dc, wxString& string, int x, int y);
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO,
 			  UniParListPtr theParList);
