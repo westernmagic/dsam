@@ -31,7 +31,7 @@
 #define DIAGRAM_DEFAULT_INITIAL_Y		60.0
 #define DIAGRAM_DEFAULT_X_SEPARATION	20.0
 #define DIAGRAM_DEFAULT_Y_SEPARATION	20.0
-#define	DIAGRAM_LABEL_WIDTH_MARGIN		5.0
+#define	DIAGRAM_LABEL_WIDTH_MARGIN		10.0
 #define	DIAGRAM_LABEL_HEIGHT_MARGIN		5.0
 #define	DIAGRAM_ARROW_TEXT				"Arrow head connection"
 #define DIAGRAM_ARROW_SIZE				10.0
@@ -77,10 +77,11 @@ class SDIDiagram: public wxDiagram
 				  wxBrush *brush);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
 				  wxBrush *brush);
+	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
 	void	DrawSimConnections(void);
 	void	DrawSimShapes(void);
 	void	DrawSimulation(void);
-	DatumPtr	FindShapeProcess(uInt id);
+	DatumPtr	FindShapeDatum(uInt id);
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	void	SetProcessClientData(DatumPtr pc, wxShape *shape);

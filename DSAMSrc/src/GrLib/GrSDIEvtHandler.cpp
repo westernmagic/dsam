@@ -54,6 +54,8 @@ SDIEvtHandler::SDIEvtHandler(wxShapeEvtHandler *prev, wxShape *shape,
 
 SDIEvtHandler::~SDIEvtHandler(void)
 {
+	if (dialog)
+		delete dialog;
 
 }
 
@@ -83,6 +85,16 @@ SDIEvtHandler::ResetLabel(void)
 		wxString str;
 		str.Printf("%s\n[ %s ]", GetProcessName_Utility_Datum(pc), pc->u.
 		  string);
+		label += str;
+		break; }
+	case PROCESS: {
+		if (pc->data->module->specifier != DISPLAY_MODULE) {
+			label += GetProcessName_Utility_Datum(pc);
+			break;
+		}
+		wxString str;
+		str.Printf("%s\n\"%s\"", GetProcessName_Utility_Datum(pc),
+		  GetUniParPtr_ModuleMgr(pc->data, "win_title")->valuePtr.s);
 		label += str;
 		break; }
 	default:
@@ -252,6 +264,65 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 }
 
 /******************************************************************************/
+/****************************** ProcessProperties *****************************/
+/******************************************************************************/
+
+/*
+ * This routine returns TRUE if the shape was already selected.
+ */
+
+void
+SDIEvtHandler::ProcessProperties(double x, double y)
+{
+	printf("SDIEvtHandler::ProcessProperties: process type = %d\n",
+	  processType);
+	if (!pc) {
+		if (GetShape()->IsKindOf(CLASSINFO(wxLineShape)))
+			return;
+		SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
+		((SDIView *) canvas->view)->ProcessListDialog();
+	} else if (!dialog) {
+		switch (pc->type) {
+		case PROCESS: {
+			UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
+			wxString	title;
+
+			if (!parList)
+				break;
+			switch (parList->mode) {
+			case UNIPAR_SET_SIMSPEC: {
+				printf("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
+				  "window.\n");
+				break; }
+			default: {
+				int		winX, winY;
+				SDICanvas	*canvas = (SDICanvas *) GetShape()->GetCanvas();
+				canvas->parent->GetPosition(&winX, &winY);
+
+				title = (pc->data->module->specifier == DISPLAY_MODULE)?
+				  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
+				  NameAndLabel_Utility_Datum(pc);
+				dialog = new ModuleParDialog(canvas->parent, title, pc,
+				  parList, this, (int) (winX + x), (int) (winY + y), 500,
+				  500, wxDEFAULT_DIALOG_STYLE);
+				wxGetApp().GetFrame()->AddToDialogList(dialog);
+				dialog->SetNotebookSelection();
+				dialog->Show(TRUE);
+				}
+			} /* switch */
+			break; }
+		case REPEAT: {
+			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
+			((SDIView *) canvas->view)->EditCtrlProperties();
+			break; }
+		default:
+			;
+		} /* switch */
+	}
+
+}
+
+/******************************************************************************/
 /****************************** Callbacks *************************************/
 /******************************************************************************/
 
@@ -307,47 +378,7 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 
 	if (keys == 0) {
 		SetSelectedShape(dc);
-		if (!pc) {
-			if (GetShape()->IsKindOf(CLASSINFO(wxLineShape)))
-				return;
-			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
-			((SDIView *) canvas->view)->ProcessListDialog();
-		} else if (!dialog) {
-			switch (pc->type) {
-			case PROCESS: {
-				UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
-				wxString	title;
-
-				switch (parList->mode) {
-				case UNIPAR_SET_SIMSPEC: {
-					printf("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
-					  "window.\n");
-					break; }
-				default: {
-					int		winX, winY;
-					SDICanvas	*canvas = (SDICanvas *) GetShape()->GetCanvas();
-					canvas->parent->GetPosition(&winX, &winY);
-
-					title = (pc->data->module->specifier == DISPLAY_MODULE)?
-					  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
-					  NameAndLabel_Utility_Datum(pc);
-					dialog = new ModuleParDialog(canvas->parent, title, pc,
-					  parList, this, (int) (winX + x), (int) (winY + y), 500,
-					  500, wxDEFAULT_DIALOG_STYLE);
-					wxGetApp().GetFrame()->AddToDialogList(dialog);
-					dialog->SetNotebookSelection();
-					dialog->Show(TRUE);
-					}
-				} /* switch */
-				break; }
-			case REPEAT: {
-				SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
-				((SDIView *) canvas->view)->EditCtrlProperties();
-				break; }
-			default:
-				;
-			} /* switch */
-		}
+		ProcessProperties(x, y);
 	} else 
 		if (keys & KEY_CTRL) {
  		   // Do something for CONTROL

@@ -725,8 +725,8 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc)
 	static const char *funcName = "SetDefaultLabel_Utility_Datum";
 	char	label[MAXLINE];
 
-	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
-	  '\0')) {
+	if (((pc->type == PROCESS) || (pc->type == REPEAT) || (pc->type ==
+	  RESET)) && (pc->label[0] == '\0')) {
 		snprintf(label, MAXLINE, "%s%d", DATUM_DEFAULT_LABEL_PREFIX,
 		  pc->stepNumber);
 		if ((pc->label = InitString_Utility_String(label)) == NULL) {

@@ -77,6 +77,7 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
     EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
     EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
+    EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
     EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
 
@@ -369,6 +370,21 @@ void
 SDIView::OnSetProcessLabel(wxCommandEvent& WXUNUSED(event))
 {
 	ProcessListDialog();
+
+}
+
+/******************************************************************************/
+/****************************** OnEditProperties ******************************/
+/******************************************************************************/
+
+void
+SDIView::OnEditProperties(wxCommandEvent& WXUNUSED(event))
+{
+	printf("SDIView::OnEditProperties: Entered\n");
+	wxShape *shape = FindSelectedShape();
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+
+	myHandler->ProcessProperties(shape->GetX(), shape->GetY());
 
 }
 

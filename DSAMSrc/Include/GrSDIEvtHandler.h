@@ -61,6 +61,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	bool	EditInstruction(void);
 	void	FreeInstruction(void);
 	bool	InitInstruction(void);
+	void	ProcessProperties(double x, double y);
 	void	ResetLabel(void);
 	bool	SetSelectedShape(wxClientDC &dc);
 

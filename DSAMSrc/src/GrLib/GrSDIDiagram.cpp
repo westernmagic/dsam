@@ -32,6 +32,7 @@
 #endif
 
 #include <wx/wxexpr.h>
+#include <wx/tokenzr.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -81,9 +82,16 @@ SDIDiagram::AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label)
 	bool	sizeChanged = FALSE;
 	double	boxWidth, boxHeight;
 	wxCoord	labelWidth, labelHeight;
+	wxString	longestStr = "", token;
 
 	label.MakeLower();
-	dc.GetTextExtent(label, &labelWidth, &labelHeight);
+	wxStringTokenizer	tkz(label, "\n");
+	while (tkz.HasMoreTokens()) {
+		token = tkz.GetNextToken();
+		if (token.Length() > longestStr.Length())
+			longestStr = token;
+	}
+	dc.GetTextExtent(longestStr, &labelWidth, &labelHeight);
 	shape->GetBoundingBoxMin(&boxWidth, &boxHeight);
 	if ((labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN) > boxWidth) {
 		boxWidth = labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN;
@@ -163,7 +171,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
 void
 SDIDiagram::SetProcessClientData(DatumPtr pc, wxShape *shape)
 {
-	if (pc->data)
+	if (pc->type == PROCESS)
 		pc->data->clientData = shape;
 	else
 		pc->clientData = shape;
@@ -193,6 +201,7 @@ SDIDiagram::DrawSimShapes()
 			  classSpecifier), module->classSpecifier, wxCYAN_BRUSH);
 			break; }
 		case REPEAT:
+		case RESET:
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(
 			  CONTROL_MODULE_CLASS), CONTROL_MODULE_CLASS, wxCYAN_BRUSH);
 			break;
@@ -245,6 +254,27 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 }
 
 /******************************************************************************/
+/****************************** DrawDefaultConnection *************************/
+/******************************************************************************/
+
+/*
+ * This routine draws all a line to the next datum which is not type "STOP".
+ */
+
+void
+SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
+{
+	DatumPtr 	toPc;
+
+	for (toPc = pc->next; toPc && (toPc->type == STOP); toPc = toPc->
+	  next)
+		;
+	if (toPc)
+		AddLineShape(shape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc), -1);
+
+}
+
+/******************************************************************************/
 /****************************** DrawSimConnections ****************************/
 /******************************************************************************/
 
@@ -278,10 +308,23 @@ SDIDiagram::DrawSimConnections(void)
 					  toPc), -1);
 				}
 			} else {
-				EarObjRefPtr	p;
-				for (p = pc->data->customerList; p != NULL; p = p->next)
-					AddLineShape(fromShape, (wxShape *) p->earObject->
-					  clientData, -1);
+				for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
+				  toPc->next)
+					;
+				if (!toPc)
+					continue;
+				switch (toPc->type) {
+				case RESET:
+				case REPEAT:
+					AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(
+					  toPc), -1);
+					break;
+				default:
+					EarObjRefPtr	p;
+					for (p = pc->data->customerList; p != NULL; p = p->next)
+						AddLineShape(fromShape, (wxShape *) p->earObject->
+						  clientData, -1);
+				} /* switch */
 			}
 			break;
 		case REPEAT: {
@@ -300,7 +343,11 @@ SDIDiagram::DrawSimConnections(void)
 				} /* switch */
 			AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
 			  REPEAT);
+			DrawDefaultConnection(pc, fromShape);
 			break; }
+		case RESET:
+			DrawDefaultConnection(pc, fromShape);
+			break;
 		default:
 			;
 		} /* switch */
@@ -353,18 +400,18 @@ SDIDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 }
 
 /******************************************************************************/
-/****************************** FindShapeProcess ******************************/
+/****************************** FindShapeDatum ********************************/
 /******************************************************************************/
 
 DatumPtr
-SDIDiagram::FindShapeProcess(uInt id)
+SDIDiagram::FindShapeDatum(uInt id)
 {
 	DatumPtr	pc;
 
 	if (simulation == NULL)
 		return(NULL);
 	for (pc = simulation; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && (pc->stepNumber == id))
+		if (pc->stepNumber == id)
 			return (pc);
 	return(NULL);
 	
@@ -384,7 +431,7 @@ SDIDiagram::VerifyDiagram(void)
 {
 	static const char *funcName = "SDIDiagram::VerifyDiagram";
 	int		numDiagConnections = 0, numSimConnections = 0;
-	DatumPtr	pc;
+	DatumPtr	pc, toPc;
 	EarObjectPtr	fromProcess, toProcess;
 	EarObjRefPtr p;
 	wxNode *node = m_shapeList->First();
@@ -393,7 +440,7 @@ SDIDiagram::VerifyDiagram(void)
 	while (node) {
 		wxShape *shape = (wxShape *) node->Data();
 		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
-			if ((pc = FindShapeProcess((uInt) shape->GetId())) == NULL)
+			if ((pc = FindShapeDatum((uInt) shape->GetId())) == NULL)
 				return(FALSE);
 			SetProcessClientData(pc, shape);
 			SHAPE_PC(shape) = pc;
@@ -414,15 +461,18 @@ SDIDiagram::VerifyDiagram(void)
 				  "process.", funcName);
 				return (FALSE);
 			}
-			fromProcess = SHAPE_PC(fromShape)->data;
-			toProcess = SHAPE_PC(toShape)->data;
-			for (p = fromProcess->customerList; (p != NULL) && (p->earObject->
-			  handle != toProcess->handle); p = p->next)
-				;
-			if (!p) {
-				wxLogWarning("%s: Diagram line does not correspond to a "
-				  "simulation connection.", funcName);
-				return(FALSE);
+			if ((SHAPE_PC(fromShape)->type == PROCESS) && (SHAPE_PC(toShape)->
+			  type == PROCESS)) {
+				fromProcess = SHAPE_PC(fromShape)->data;
+				toProcess = SHAPE_PC(toShape)->data;
+				for (p = fromProcess->customerList; (p != NULL) && (p->
+				  earObject->handle != toProcess->handle); p = p->next)
+					;
+				if (!p) {
+					wxLogWarning("%s: Diagram line does not correspond to a "
+					  "simulation connection.", funcName);
+					return(FALSE);
+				}
 			}
 			numDiagConnections++;
 		}
@@ -438,6 +488,12 @@ SDIDiagram::VerifyDiagram(void)
 			}
 			for (p = pc->data->customerList; (p != NULL); p = p->next)
 				numSimConnections++;
+		} else {
+			for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
+			  toPc->next)
+				;
+			if (toPc)
+				numSimConnections++;
 		}
 	}
 	if (numDiagConnections != numSimConnections) {
@@ -447,27 +503,6 @@ SDIDiagram::VerifyDiagram(void)
 		return(FALSE);
 	}
 	return(TRUE);
-
-}
-
-
-/******************************************************************************/
-/****************************** OnShapeLoad ***********************************/
-/******************************************************************************/
-
-bool
-SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-	wxDiagram::OnShapeLoad(db, shape, expr);
-	
-	char *label = NULL;
-	expr.AssignAttributeValue("label", &label);
-	SDIEvtHandler *handler = new SDIEvtHandler(&shape, &shape, wxString(label));
-	shape.SetEventHandler(handler);
-
-	if (label)
-		delete[] label;
-	return TRUE;
 
 }
 
