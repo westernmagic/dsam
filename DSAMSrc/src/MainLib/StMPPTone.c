@@ -808,8 +808,8 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 	repetitionPeriodIndex = (ChanLen) floor(pureTone4Ptr->repetitionPeriod /
 	  pureTone4Ptr->dt + 0.5);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		pureTone4Ptr->beginIndex =
-		  (ChanLen) (pureTone4Ptr->beginPeriodDuration / data->outSignal->dt);
+		pureTone4Ptr->beginIndex = (ChanLen) floor(pureTone4Ptr->
+		  beginPeriodDuration / data->outSignal->dt + 0.5);
 		pureTone4Ptr->pulseOn = TRUE;
 		pureTone4Ptr->pulseNumber = 0;
 		pureTone4Ptr->pulseCount = 0;
