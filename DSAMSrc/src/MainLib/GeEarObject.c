@@ -950,7 +950,7 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 
 	if (numInSignals > base->numInSignals) {
 		NotifyError("%s: Base process has only %d input signals (%d).",
-		  funcName, numInSignals);
+		  funcName, base->numInSignals);
 		return(FALSE);
 	}
 	if (supporting->numInSignals != numInSignals) {
