@@ -76,6 +76,8 @@ void	PrintFuncPrototypes(FILE *fp);
 
 void	PrintGetFunctions(FILE *fp);
 
+void	PrintGetNumXParsRoutines(FILE *fp);
+
 void	PrintGetUniParListPtrRoutine(FILE *fp);
 
 void	PrintGlobalVariables(FILE *fp);

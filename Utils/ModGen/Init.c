@@ -65,6 +65,7 @@ static struct {
 	{"int_al",		INT_AL},
 	{"NameSpecifier",	NAMESPECIFIER},
 	{"CFListPtr",	CFLISTPTR},
+	{"ParArrayPtr",	PARARRAY},
 	{0,		0}
 
 };

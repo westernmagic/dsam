@@ -31,7 +31,7 @@
 %token	<sym>	CONST VOLATILE
 %token	<sym>	STRUCT UNION
 %token	<sym>	MOD_NAME QUALIFIER PROC_ROUTINE
-%token	<sym>	POINTER STANDARD_TOKEN INT_AL NAMESPECIFIER CFLISTPTR
+%token	<sym>	POINTER STANDARD_TOKEN INT_AL NAMESPECIFIER CFLISTPTR PARARRAY
 %%
 list:		/* nothing */
 		|	list
@@ -77,6 +77,7 @@ type_specifier:
 	|	INT_AL				{	SetTokenInstRelCurrent(INT_AL, 0); }
 	|	NAMESPECIFIER		{ ; }
 	|	CFLISTPTR			{ ; }
+	|	PARARRAY			{ ; }
 	;
 typedef_name:
 		TYPEDEF_NAME		{ ; }

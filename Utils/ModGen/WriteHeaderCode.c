@@ -114,8 +114,8 @@ PrintParSpecifierEnumDefinition(FILE *fp)
 				fprintf(fp, ",\n");
 				placeComma = FALSE;
 			}
-			fprintf(fp, "\t%s_%s", baseModuleName,
-			  UpperCase(DT_TO_SAMPLING_INTERVAL((*list)->sym->name)));
+			fprintf(fp, "\t%s_%s", baseModuleName, UpperCase(
+			  DT_TO_SAMPLING_INTERVAL((*list)->sym->name)));
 			placeComma = (*(list + 1) != 0);
 				
 		}
@@ -144,14 +144,16 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if (type->sym->type == NAMESPECIFIER) {
+			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
+			  PARARRAY)) {
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
 				  qualifier, TRUE), UpperCase((*list)->sym->name));
 				fprintf(fp, "typedef enum {\n\n");
 				fprintf(fp, "\t%s\n", nameSpecBase);
 				fprintf(fp, "\t%sNULL\n", nameSpecBase);
 				fprintf(fp, "\n} %s", Capital(module));
-				fprintf(fp, "%sSpecifier;\n\n", Capital((*list)->sym->name));
+				fprintf(fp, "%s%sSpecifier;\n\n", Capital((*list)->sym->name),
+				  (type->sym->type == PARARRAY)? "Mode": "");
 			}
 
 }
@@ -214,8 +216,11 @@ PrintExpandedStructure(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if (type->sym->type == NAMESPECIFIER)
-				fprintf(fp, "\tNameSpecifier\t*%sList;\n", (*list)->sym->name);
+			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
+			  PARARRAY))
+				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n",
+				  (*list)->sym->name, (type->sym->type == PARARRAY)? "Mode":
+				   "");
 
 	fprintf(fp, "\tUniParListPtr	parList;\n");
 	fprintf(fp, "\n");

@@ -42,9 +42,10 @@ fi
 $MAKE
 
 %install
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 
-make prefix=$RPM_BUILD_ROOT%{prefix} install-strip
+%makeinstall
 
 %post
 
@@ -53,12 +54,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install-strip
 %preun
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
 
 %doc AUTHORS COPYING README NEWS ChangeLog
-%{prefix}/bin/*
-
+%{_bindir}/*
 

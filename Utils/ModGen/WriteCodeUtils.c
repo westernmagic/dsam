@@ -282,6 +282,7 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 		case DOUBLE:		return("UNIPAR_REAL");
 		case NAMESPECIFIER:	return("UNIPAR_NAME_SPEC");
 		case CFLISTPTR:		return("UNIPAR_CFLIST");
+		case PARARRAY:		return("UNIPAR_PARARRAY");
 		default:			return("UNIPAR_UNKNOWN");
 		} /* switch */
 	else
