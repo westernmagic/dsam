@@ -63,20 +63,31 @@ void
 SDIDiagram::DrawSimulation(DatumPtr start)
 {
 	printf("SDIDiagram::DrawSimulation: Entered\n");
+	double		x = 60.0, y = 60.0;
 	DatumPtr	pc;
+	ModulePtr	module;
 	SDICanvas	*canvas = (SDICanvas *) GetCanvas();
 
 	if (start == NULL)
 		return;
 	for (pc = start; pc != NULL; pc = pc->next) {
-		wxShape *theShape = CreateShape(canvas->GetClassInfo(pc->data->
-		  module->classSpecifier), pc->type, wxCYAN_BRUSH);
-		theShape->SetSize(60, 60);
-		AddShape(theShape);
-		theShape->Show(TRUE);
-		wxClientDC dc(theShape->GetCanvas());
-		theShape->GetCanvas()->PrepareDC(dc);
-		theShape->Move(dc, 0, 0);
+		module = pc->data->module;
+		wxShape *shape = CreateShape(canvas->GetClassInfo(module->
+		  classSpecifier), module->classSpecifier, wxCYAN_BRUSH);
+
+		SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+		myHandler->pc = pc;
+		myHandler->label = GetProcessName_Utility_Datum(pc);
+
+		shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
+		  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
+		AddShape(shape);
+		shape->Show(TRUE);
+		wxClientDC dc(shape->GetCanvas());
+		shape->FormatText(dc, (char*) (const char *) myHandler->label);
+		shape->GetCanvas()->PrepareDC(dc);
+		shape->Move(dc, x, y);
+		x += DIAGRAM_DEFAULT_SHAPE_WIDTH + 20;
 	}
 
 }

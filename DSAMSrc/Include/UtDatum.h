@@ -156,6 +156,8 @@ DatumPtr	GetLastInst_Utility_Datum(DatumPtr head);
 
 EarObjectPtr	GetLastProcess_Utility_Datum(DatumPtr start);
 
+char *	GetProcessName_Utility_Datum(DatumPtr pc);
+
 UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 
 BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,

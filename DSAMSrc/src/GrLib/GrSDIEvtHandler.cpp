@@ -75,19 +75,17 @@ SDIEvtHandler::ResetLabel(void)
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
-		strCount.Printf("repeat\n%d", pc->u.loop.count);
+		strCount.Printf("%s\n%d", GetProcessName_Utility_Datum(pc), pc->u.loop.
+		  count);
 		label += strCount;
 		break; }
 	case RESET: {
 		wxString str;
-		str.Printf("reset\n%s", pc->u.string);
+		str.Printf("%s\n%s", GetProcessName_Utility_Datum(pc), pc->u.string);
 		label += str;
 		break; }
-	case PROCESS:
-		label += pc->u.proc.moduleName;
-		break;
 	default:
-		label += "undefined";
+		label += GetProcessName_Utility_Datum(pc);
 	}
 	
 }

@@ -191,13 +191,7 @@ SDIDocument::LoadObject(wxInputStream& stream)
 
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  GetDocumentTemplate()->GetDefaultExtension().GetData()));
-	printf("SDIDocument::LoadObject: Here I need to set the directory and "
-	  "file name\n");
 	wxFileName	fileName = GetFilename();
-	printf("SDIDocument::LoadObject: directory = '%s'\n", (char *)
-	  fileName.GetPath().GetData());
-	printf("SDIDocument::LoadObject: file name = '%s'\n", (char *)
-	  fileName.GetFullName().GetData());
 
 	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
 	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
@@ -208,7 +202,6 @@ SDIDocument::LoadObject(wxInputStream& stream)
 	wxTransferStreamToFile(stream, tempFileName);
 
 	diagram.DeleteAllShapes();
-//	wxGetApp().simFile.SetCwd(GetDocumentTemplate()->GetDirectory());
 	wxGetApp().simFile = tempFileName;
 	wxGetApp().GetFrame()->SetSimFileAndLoad();
 

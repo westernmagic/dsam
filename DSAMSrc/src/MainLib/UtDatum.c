@@ -367,6 +367,36 @@ PrintConnections_Utility_Datum(DynaListPtr list)
 
 }
 
+/****************************** GetProcessName ********************************/
+
+/*
+ * This routine returns the process name.
+ */
+
+char *
+GetProcessName_Utility_Datum(DatumPtr pc)
+{
+	static const char *funcName = "GetProcessName_Utility_Datum";
+	static char		string[MAXLINE];
+
+	if (!pc) {
+		NotifyError("%s: Null process pointer given.", funcName);
+		return(NULL);
+	}
+	switch (pc->type) {
+	case PROCESS:
+		return(pc->u.proc.moduleName);
+	case REPEAT:
+		return("repeat");
+	case RESET:
+		return("reset");
+	default:
+		snprintf(string, MAXLINE, "default %d", pc->type);
+		return(string);
+	} /* switch */
+
+}
+
 /****************************** PrintInstructions *****************************/
 
 /*
@@ -381,7 +411,7 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 	int		i;
 	DatumPtr	start = pc;
 
-	if (pc == NULL)
+	if (!pc)
 		return;
 	DPrint("%sbegin %s {\n", prefix, scriptName);
 	for ( ; pc != NULL; pc = pc->next) {
@@ -393,7 +423,7 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
 			if (!pc->data->module->onFlag)
 				DPrint("%c ", SIMSCRIPT_DISABLED_MODULE_CHAR);
-			DPrint("%s", pc->u.proc.moduleName);
+			DPrint("%s", GetProcessName_Utility_Datum(pc));
 			if (pc->u.proc.inputList || pc->u.proc.outputList) {
 				DPrint(" (");
 				PrintConnections_Utility_Datum(pc->u.proc.inputList);
@@ -410,11 +440,12 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		case REPEAT:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel++);
-			DPrint("repeat %d {\n", pc->u.loop.count);
+			DPrint("%s %d {\n", GetProcessName_Utility_Datum(pc), pc->u.loop.
+			  count);
 			break;
 		case RESET:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
-			DPrint("reset\t%s\n", pc->u.string);
+			DPrint("%s\t%s\n", GetProcessName_Utility_Datum(pc), pc->u.string);
 			break;
 		case STOP:
 			PrintIndentAndLabel_Utility_Datum(pc, --indentLevel);
@@ -422,7 +453,8 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		default:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
-			DPrint("default %d\tvar = %d\n", pc->type, pc->u.loop.count);
+			DPrint("%s\tvar = %d\n", GetProcessName_Utility_Datum(pc), pc->u.
+			  loop.count);
 			break;
 		} /* switch */
 	}

@@ -260,7 +260,7 @@ MyApp::OnInit(void)
 	// Set up process lists for dialogs
 	CreateProcessLists();
 
-	myDocManager->CreateDocument("", wxDOC_SILENT);
+	myDocManager->CreateDocument("", wxDOC_NEW);
 
     // Show frame and tell the application that it's our main window
 
