@@ -30,6 +30,8 @@
  *				interface I have created the 'SetRealPar_', 'GetCFListPtr_' and
  *				'GetSimulation_' routines.  These routines will only work with
  *				modules that have these functions.
+ *				22-10-99 LPO: The global 'nullModule' is initialised by the
+ *				first call to 'Init_'.  Only one instance is ever initialised.
  * Authors:		L. P. O'Mard
  * Created:		29 Mar 1993
  * Updated:		02 Jun 1999
