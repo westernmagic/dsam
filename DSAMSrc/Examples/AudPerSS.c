@@ -26,13 +26,13 @@
 #define	PARAMETERS_FILE		"AudPerSS.par"	/* Name of paramters file.*/
 #define	NUM_CHANNELS		1				/* Number of signal channels. */
 #define	CHANNEL				0				/* Channel for testing. */
-#define	SIMULATION_SPEC_MOD_NAME	"Utility_SimScript"
+#define	SIMULATION_SPEC_MOD_NAME	"Util_SimScript"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	outputFile[MAXLINE], simScriptFile[MAXLINE];
+char	simScriptFile[MAXLINE];
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -56,7 +56,6 @@ ReadParsFromFile(char *fileName)
 	}
 	printf("Reading parameters from file: %s\n", fileName);
 	Init_ParFile();
-	GetPars_ParFile(fp, "%s", outputFile);
 	GetPars_ParFile(fp, "%s", simScriptFile);
 	fclose(fp);
 	Free_ParFile();
@@ -84,14 +83,13 @@ int MainSimulation(void)
 	if (( audModel = Init_EarObject(SIMULATION_SPEC_MOD_NAME )) == NULL)
 		exit(1);
 
-	if (!DoFun1( ReadPars, audModel, simScriptFile ))
+	if (!ReadPars_ModuleMgr( audModel, simScriptFile ))
 		exit(1);
-	DoFun( PrintPars, audModel );
+	PrintPars_ModuleMgr( audModel );
 	
 	DPrint("Starting test harness...\n");
 	startTime = clock();
-	DoProcess(audModel);
-	WriteOutSignal_DataFile(outputFile, audModel);
+	RunProcess_ModuleMgr( audModel );
 	
 	DPrint("The process took %g CPU seconds to run.\n", (double) (clock() -
 	  startTime) / CLOCKS_PER_SEC);

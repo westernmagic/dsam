@@ -30,10 +30,8 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	outputFile[MAXLINE], stParFile[MAXLINE], pEParFile[MAXLINE];
-char	bMParFile[MAXLINE], hCParFile[MAXLINE];
-
-double	rampInterval;
+char	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
+char	pEParFile[MAXLINE], bMParFile[MAXLINE], hCParFile[MAXLINE];
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -59,10 +57,10 @@ ReadParsFromFile(char *fileName)
 	Init_ParFile();
 	GetPars_ParFile(fp, "%s", outputFile);
 	GetPars_ParFile(fp, "%s", stParFile);
+	GetPars_ParFile(fp, "%s", trParFile);
 	GetPars_ParFile(fp, "%s", pEParFile);
 	GetPars_ParFile(fp, "%s", bMParFile);
 	GetPars_ParFile(fp, "%s", hCParFile);
-	GetPars_ParFile(fp, "%lf", &rampInterval);
 	fclose(fp);
 	Free_ParFile();
 	
@@ -74,21 +72,20 @@ ReadParsFromFile(char *fileName)
 
 int main(void)
 {
-	EarObjectPtr	stimulus = NULL, pEFilter = NULL, bMFilter = NULL;
-	EarObjectPtr	hairCell = NULL, intensity = NULL;
+	EarObjectPtr	stimulus = NULL, gate = NULL, pEFilter = NULL;
+	EarObjectPtr	bMFilter = NULL, hairCell = NULL, intensity = NULL;
 	
 	printf("Starting Test Harness...\n");
 	
 	ReadParsFromFile(PARAMETERS_FILE);
 	printf("\nIn this test a pure tone stimulus is presented to an\n");
 	printf("auditory periphery model.\n");
-	printf("A rise time of %g ms is applied to the stimulus.\n",
-	  MSEC(rampInterval));
 	printf("\n");
 	
 	/* Initialise EarObjects. */
 	
 	stimulus = Init_EarObject( "null" );
+	gate = Init_EarObject( "null" );
 	pEFilter = Init_EarObject( "null" );
 	bMFilter = Init_EarObject( "null" );
 	hairCell = Init_EarObject( "null" );
@@ -98,7 +95,8 @@ int main(void)
 	
 	ConnectOutSignalToIn_EarObject( stimulus, intensity );
 
-	ConnectOutSignalToIn_EarObject( stimulus, pEFilter );
+	ConnectOutSignalToIn_EarObject( stimulus, gate );
+	ConnectOutSignalToIn_EarObject( gate, pEFilter );
 	ConnectOutSignalToIn_EarObject( pEFilter, bMFilter );
 	ConnectOutSignalToIn_EarObject( bMFilter, hairCell );
 
@@ -109,6 +107,10 @@ int main(void)
 	Init_PureTone( GLOBAL );
 	ReadPars_PureTone( stParFile );
 	PrintPars_PureTone();
+
+	Init_Transform_Gate( GLOBAL );
+	ReadPars_Transform_Gate( trParFile );
+	PrintPars_Transform_Gate();
 
 	Init_Filter_BandPass( GLOBAL );
 	ReadPars_Filter_BandPass( pEParFile );
@@ -123,7 +125,7 @@ int main(void)
 	PrintPars_IHC_Meddis86();
 	
 	Init_Analysis_Intensity( GLOBAL );
-	SetTimeOffset_Analysis_Intensity( rampInterval );
+	SetTimeOffset_Analysis_Intensity( gatePtr->duration );
 	PrintPars_Analysis_Intensity();
 
 	/* Start main process and print diagonstics. */
@@ -131,16 +133,17 @@ int main(void)
 	printf("\nStarting main process...\n\n" );
 	GenerateSignal_PureTone( stimulus );
 	PrintProcessName_EarObject( "1-stimulus: '%s'.\n", stimulus );
-	RampUpOutSignal_Ramp( stimulus, Sine_Ramp, rampInterval );
+	Process_Transform_Gate( gate );
+	PrintProcessName_EarObject( "2-gate: '%s'.\n", gate );
 	Calc_Analysis_Intensity( intensity );
 	printf("\tStimulus intensity = %g dB SPL.\n",
 	  GetResult_EarObject(intensity, CHANNEL ));
 	RunModel_Filter_BandPass( pEFilter );
-	PrintProcessName_EarObject("2-Outer-/middle-ear: '%s'.\n", pEFilter );
+	PrintProcessName_EarObject("3-Outer-/middle-ear: '%s'.\n", pEFilter );
 	RunModel_BasilarM_GammaT( bMFilter );
-	PrintProcessName_EarObject("3-Basilar membrane: '%s'.\n", bMFilter );
+	PrintProcessName_EarObject("4-Basilar membrane: '%s'.\n", bMFilter );
 	RunModel_IHC_Meddis86( hairCell );
-	PrintProcessName_EarObject("4-Inner hair cell (IHC): '%s'.\n", hairCell );
+	PrintProcessName_EarObject("5-Inner hair cell (IHC): '%s'.\n", hairCell );
 	WriteOutSignal_DataFile(outputFile, hairCell );
 
 	FreeAll_EarObject();

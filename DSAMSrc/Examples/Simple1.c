@@ -18,9 +18,9 @@ int MainSimulation(void)
 	
 	/* Initialise EarObjects. */
 	
-	stimulus = Init_EarObject("click");
-	pEFilter = Init_EarObject("Filter_BandPass");
-	bMFilter = Init_EarObject("BasilarM_GammaT");
+	stimulus = Init_EarObject("Stim_click");
+	pEFilter = Init_EarObject("Filt_BandPass");
+	bMFilter = Init_EarObject("BM_GammaT");
 	hairCell = Init_EarObject("IHC_Meddis86");
 
 	/* Set up EarObject connections. */
@@ -33,27 +33,26 @@ int MainSimulation(void)
 
 	printf("Module parameters...\n\n" );
 
-	DoFun1( ReadPars, stimulus, "Click1.par");
-	DoFun( PrintPars, stimulus );
+	ReadPars_ModuleMgr( stimulus, "Click1.par");
+	PrintPars_ModuleMgr( stimulus );
 
-	DoFun1( ReadPars, pEFilter, "PreEmph1.par");
-	DoFun( PrintPars, pEFilter );
+	ReadPars_ModuleMgr( pEFilter, "PreEmph1.par");
+	PrintPars_ModuleMgr( pEFilter );
 
-	DoFun1( ReadPars, bMFilter, "GammaTLog.par");
-	DoFun( PrintPars, bMFilter );
+	ReadPars_ModuleMgr( bMFilter, "GammaTLog.par");
+	PrintPars_ModuleMgr( bMFilter );
 
-	DoFun1( ReadPars, hairCell, "Meddis86.par");
-	DoFun( PrintPars, hairCell );
+	ReadPars_ModuleMgr( hairCell, "Meddis86.par");
+	PrintPars_ModuleMgr( hairCell );
 
 
     /* Main simulation process */
 	
 	printf("\n");
-	DoProcess(stimulus);
-	RampUpOutSignal_Ramp(stimulus, Sine_Ramp, 2.5e-3);
-	DoProcess(pEFilter);
-	DoProcess(bMFilter);
-	DoProcess(hairCell);
+	RunProcess_ModuleMgr(stimulus);
+	RunProcess_ModuleMgr(pEFilter);
+	RunProcess_ModuleMgr(bMFilter);
+	RunProcess_ModuleMgr(hairCell);
 
 	WriteOutSignal_DataFile("output.dat", hairCell);
 	FreeAll_EarObject();

@@ -25,19 +25,18 @@
 #define	PARAMETERS_FILE		"AudPerGen.par"	/* Name of paramters file.*/
 #define	NUM_CHANNELS		1			/* No. of channels for the filter. */
 #define CHANNEL				0			/* Channel no. for test. */
-#define	INTENSITY_MOD_NAME	"Analysis_Intensity"
+#define	INTENSITY_MOD_NAME	"Ana_Intensity"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	outputFile[MAXLINE], stParFile[MAXLINE], pEParFile[MAXLINE];
-char	bMParFile[MAXLINE], rPParFile[MAXLINE], hCParFile[MAXLINE];
+char	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
+char	pEParFile[MAXLINE], bMParFile[MAXLINE], rPParFile[MAXLINE];
+char	hCParFile[MAXLINE];
 
-char	stModuleName[MAXLINE], pEModuleName[MAXLINE], bMModuleName[MAXLINE];
-char	rPModuleName[MAXLINE], hCModuleName[MAXLINE];
-
-double	rampInterval;
+char	stModuleName[MAXLINE], trModuleName[MAXLINE], pEModuleName[MAXLINE];
+char	bMModuleName[MAXLINE], rPModuleName[MAXLINE], hCModuleName[MAXLINE];
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -63,11 +62,11 @@ ReadParsFromFile(char *fileName)
 	Init_ParFile();
 	GetPars_ParFile(fp, "%s", outputFile);
 	GetPars_ParFile(fp, "%s %s", stParFile, stModuleName);
+	GetPars_ParFile(fp, "%s %s", trParFile, trModuleName);
 	GetPars_ParFile(fp, "%s %s", pEParFile, pEModuleName);
 	GetPars_ParFile(fp, "%s %s", bMParFile, bMModuleName);
 	GetPars_ParFile(fp, "%s %s", rPParFile, rPModuleName);
 	GetPars_ParFile(fp, "%s %s", hCParFile, hCModuleName);
-	GetPars_ParFile(fp, "%lf", &rampInterval);
 	fclose(fp);
 	Free_ParFile();
 	
@@ -79,18 +78,19 @@ ReadParsFromFile(char *fileName)
 
 int main(void)
 {
-	EarObjectPtr	stimulus = NULL, pEFilter = NULL, bMFilter = NULL;
-	EarObjectPtr	recptPotn = NULL, hairCell = NULL, intensity = NULL;
+	EarObjectPtr	stimulus = NULL, gate = NULL, pEFilter = NULL;
+	EarObjectPtr	bMFilter = NULL, recptPotn = NULL, hairCell = NULL;
+	EarObjectPtr	intensity = NULL;
+	UniParPtr		par = NULL;
 	
 	printf("Starting Test Harness...\n");
 	
 	ReadParsFromFile(PARAMETERS_FILE);
 	printf("\nIn this test a '%s' stimulus is presented to an\n", stModuleName);
 	printf("auditory periphery model.\n");
-	printf("If necessary, a rise time of %g ms is applied to the stimulus.\n",
-	  MSEC(rampInterval));
 	printf("The model process contains the following modules:\n\n");
 	printf("\tStimulus generation:\t%s\n", stModuleName);
+	printf("\tGate transformation:\t%s\n", trModuleName);
 	printf("\tOuter-/middle-ear:\t%s\n", pEModuleName);
 	printf("\tBasilar membrane:\t%s\n", bMModuleName);
 	printf("\tIHC receptor pot.:\t%s\n", rPModuleName);
@@ -100,6 +100,7 @@ int main(void)
 	/* Initialise EarObjects. */
 	
 	stimulus = Init_EarObject(stModuleName);
+	gate = Init_EarObject(trModuleName);
 	pEFilter = Init_EarObject(pEModuleName);
 	bMFilter = Init_EarObject(bMModuleName);
 	recptPotn = Init_EarObject(rPModuleName);
@@ -110,7 +111,8 @@ int main(void)
 	
 	ConnectOutSignalToIn_EarObject( stimulus, intensity );
 
-	ConnectOutSignalToIn_EarObject( stimulus, pEFilter );
+	ConnectOutSignalToIn_EarObject( stimulus, gate );
+	ConnectOutSignalToIn_EarObject( gate, pEFilter );
 	ConnectOutSignalToIn_EarObject( pEFilter, bMFilter );
 	ConnectOutSignalToIn_EarObject( bMFilter, recptPotn );
 	ConnectOutSignalToIn_EarObject( recptPotn, hairCell );
@@ -119,44 +121,46 @@ int main(void)
 
 	printf("Module parameters...\n\n" );
 
-	DoFun1( ReadPars, stimulus, stParFile);
-	DoFun( PrintPars, stimulus );
+	ReadPars_ModuleMgr( stimulus, stParFile);
+	PrintPars_ModuleMgr( stimulus );
 
-	DoFun1( ReadPars, pEFilter, pEParFile);
-	DoFun( PrintPars, pEFilter );
+	ReadPars_ModuleMgr( gate, trParFile);
+	PrintPars_ModuleMgr( gate );
 
-	DoFun1( ReadPars, bMFilter, bMParFile);
-	DoFun( PrintPars, bMFilter );
+	ReadPars_ModuleMgr( pEFilter, pEParFile);
+	PrintPars_ModuleMgr( pEFilter );
 
-	DoFun1( ReadPars, recptPotn, rPParFile);
-	DoFun( PrintPars, recptPotn );
+	ReadPars_ModuleMgr( bMFilter, bMParFile);
+	PrintPars_ModuleMgr( bMFilter );
+
+	ReadPars_ModuleMgr( recptPotn, rPParFile);
+	PrintPars_ModuleMgr( recptPotn );
 	
-	DoFun1( ReadPars, hairCell, hCParFile);
-	DoFun( PrintPars, hairCell );
-	
-	DoFun1(SetTimeOffset, intensity, rampInterval);
-	DoFun( PrintPars, intensity );
+	ReadPars_ModuleMgr( hairCell, hCParFile);
+	PrintPars_ModuleMgr( hairCell );
+
+	par = GetUniParPtr_ModuleMgr(gate, "duration");
+	SetRealPar_ModuleMgr(intensity, "offset", *par->valuePtr.r);
+	PrintPars_ModuleMgr( intensity );
 	
 	/* Start main process and print diagonstics. */
 	
 	printf("\nStarting main process...\n\n" );
-	DoProcess( stimulus );
+	RunProcess_ModuleMgr( stimulus );
 	PrintProcessName_EarObject("1-stimulus: '%s'.\n", stimulus );
-	if (!stimulus->outSignal->rampFlag ) {
-		RampUpOutSignal_Ramp(stimulus, Sine_Ramp, rampInterval );
-		printf("\tAudPerGen: Stimulus has been ramped.\n" );
-	}
-	DoProcess(intensity);
+	RunProcess_ModuleMgr( gate );
+	PrintProcessName_EarObject("2-gate: '%s'.\n", gate );
+	RunProcess_ModuleMgr( intensity );
 	printf("\tStimulus intensity = %g dB SPL.\n",
 	  GetResult_EarObject( intensity, CHANNEL ) );
-	DoProcess( pEFilter );
-	PrintProcessName_EarObject("2-Outer-/middle-ear: '%s'.\n", pEFilter );
-	DoProcess( bMFilter );
-	PrintProcessName_EarObject("3-Basilar membrane: '%s'.\n", bMFilter );
-	DoProcess( recptPotn );
+	RunProcess_ModuleMgr( pEFilter );
+	PrintProcessName_EarObject("3-Outer-/middle-ear: '%s'.\n", pEFilter );
+	RunProcess_ModuleMgr( bMFilter );
+	PrintProcessName_EarObject("5-Basilar membrane: '%s'.\n", bMFilter );
+	RunProcess_ModuleMgr( recptPotn );
 	PrintProcessName_EarObject("4-IHC Receptor potential: '%s'.\n", recptPotn );
-	DoProcess( hairCell );
-	PrintProcessName_EarObject("5-Inner hair cell (IHC): '%s'.\n", hairCell );
+	RunProcess_ModuleMgr( hairCell );
+	PrintProcessName_EarObject("6-Inner hair cell (IHC): '%s'.\n", hairCell );
 	WriteOutSignal_DataFile(outputFile, hairCell );
 
 	FreeAll_EarObject();
