@@ -237,9 +237,9 @@ AC_ARG_ENABLE(debug,
 	[  --enable-debug          Turn on full debugging options],
 	[case ${enableval} in
 		yes)
-			debugFlags="-ggdb3 -Wall -Wstrict-prototypes"
+			debugFlags="-ggdb3 -Wall"
 			debug=true
-			CFLAGS=${debugFlags}
+			CFLAGS="${debugFlags} -Wstrict-prototypes"
 			CXXFLAGS=${debugFlags}
 			;;
 		no)		debug=false ;;
