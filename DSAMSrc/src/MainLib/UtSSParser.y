@@ -55,7 +55,7 @@ int		yylex(void);
 }
 %token	<sym>	_UTSSPARSER_H REPEAT BEGIN STOP STRING QUOTED_STRING RESET
 %token	<num>	NUMBER PROCESS
-%type	<inst>	process_specifier process statement_specifier repeat reset
+%type	<inst>	process_specifier process reset repeat
 %type	<inst>	simulation simulation_name labelled_process
 %type	<node>	connection_list
 %%
@@ -122,18 +122,18 @@ statement_list:
 		|	statement_list statement
 	;
 statement:
-			statement_specifier
+			process_specifier
 			{ $1->u.proc.parFile = InitString_Utility_String(NO_FILE); }
-		|	statement_specifier '<' STRING
+		|	process_specifier '<' STRING
 			{ $1->u.proc.parFile = InitString_Utility_String($3->name); }
-		|	statement_specifier '<' '(' STRING ')'
+		|	process_specifier '<' '(' STRING ')'
 			{ $1->u.proc.parFile = InitString_Utility_String($4->name);
 			  Append_Utility_DynaList(&simScriptPtr->subSimList, $1);
 			}
-		|	statement_specifier '<' STRING QUOTED_STRING
+		|	process_specifier '<' STRING QUOTED_STRING
 			{ $1->u.proc.parFile = InitString_Utility_String($3->name); }
 			/* Ignore the QUOTED_STRING at present. */
-		|	statement_specifier NUMBER statement
+		|	repeat NUMBER statement
 			{	$1->u.loop.count = $2;
 				InstallInst_Utility_Datum(simScriptPtr->simPtr, STOP);
 				$1->u.loop.stopPlaced = TRUE;
@@ -185,27 +185,24 @@ process_specifier:
 				  $1->u.proc.inputList = $3;
 				  $1->u.proc.outputList = $6;
 				}
-		;
-statement_specifier:
-			process_specifier
-		|	STRING '%' process_specifier
-				{ $$ = $3;
-				  $3->label = InitString_Utility_String($1->name);
-				}
 	;
-repeat:
+repeat:	
 			REPEAT
-				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr,
-					   REPEAT); }	
+			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
+			}
 		|	STRING '%' REPEAT
-				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
-				  $$->label = InitString_Utility_String($1->name);
-				}
+			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
+				$$->label = InitString_Utility_String($1->name);
+			}
 	;
-reset:
+reset:	
 			RESET
-				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
-				}
+			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
+			}
+		|	STRING '%' RESET
+			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
+				$$->label = InitString_Utility_String($1->name);
+			}
 	;
 %%
 
