@@ -189,8 +189,6 @@ BOOLN		Free_DataFile(void);
 
 void		FreeProcessVariables_DataFile(void);
 
-char		*GetSuffix_DataFile(char *fileName);
-
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
 BOOLN		Init_DataFile(ParameterSpecifier parSpec);

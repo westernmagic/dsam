@@ -41,6 +41,8 @@
  */
 __BEGIN_DECLS
 
+char *	GetSuffix_Utility_String(char *fileName);
+
 char *	InitString_Utility_String(char *string);
 
 char *	QuotedString_Utility_String(char *string);
