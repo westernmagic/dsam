@@ -16,6 +16,26 @@
 
 #ifdef HAVE_WX_OGL_OGL_H
 
+// define this to use XPMs everywhere (by default, BMPs are used under Win)
+#ifdef __WXMSW__
+    #define USE_XPM_BITMAPS 0
+#else
+    #define USE_XPM_BITMAPS 1
+#endif
+
+#if USE_GENERIC_TBAR
+    #if !wxUSE_TOOLBAR_SIMPLE
+        #error wxToolBarSimple is not compiled in, set wxUSE_TOOLBAR_SIMPLE \
+               to 1 in setup.h and recompile the library.
+    #else
+        #include <wx/tbarsmpl.h>
+    #endif
+#endif // USE_GENERIC_TBAR
+
+#if USE_XPM_BITMAPS && defined(__WXMSW__) && !wxUSE_XPM_IN_MSW
+    #error You need to enable XPM support to use XPM bitmaps with toolbar!
+#endif // USE_XPM_BITMAPS
+
 #include "DSAM.h"
 
 /******************************************************************************/
@@ -26,8 +46,16 @@
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
-#include "Bitmaps/dsam.xpm"
+#if USE_XPM_BITMAPS
+#	include "Bitmaps/dsam.xpm"
+#	include "Bitmaps/new.xpm"
+#	include "Bitmaps/open.xpm"
+#	include "Bitmaps/save.xpm"
+#	include "Bitmaps/cut.xpm"
+#	include "Bitmaps/print.xpm"
+#	include "Bitmaps/play.xpm"
+#	include "Bitmaps/stop.xpm"
+#	include "Bitmaps/help.xpm"
 #endif
 
 /******************************************************************************/
@@ -72,6 +100,7 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 
 	canvas = NULL;
 	mainParDialog = NULL;
+	myToolBar = NULL;
 	
 #	ifdef MPI_SUPPORT
 	static const char *funcName = "SDIFrame::MyFrame";
@@ -85,6 +114,8 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	initStringPtrs[0] = (char *) funcName;
 	MPI_Init( &argc, &initStringPtrs );
 #	endif
+
+	CreateToolbar();
 
 	palette = new EditorToolPalette(this, wxPoint(0, 0), wxSize(-1,-1),
 	  wxTB_VERTICAL);
@@ -187,6 +218,99 @@ SDIFrame::SetSimFileAndLoad(void)
 		mainParDialog->parListInfoList->UpdateAllControlValues();
 
 }
+
+/****************************** CreateToolbar *********************************/
+
+void
+SDIFrame::CreateToolbar(void)
+{
+	// delete and recreate the toolbar
+	wxToolBarBase *toolBar = GetToolBar();
+	delete toolBar;
+
+	SetToolBar(NULL);
+
+	toolBar = CreateToolBar((long) (wxNO_BORDER | wxTB_FLAT | wxTB_DOCKABLE |
+	  wxTB_HORIZONTAL), SDIFRAME_ID_TOOLBAR);
+	toolBar->SetMargins( 4, 4 );
+
+	// Set up toolbar
+	#if USE_XPM_BITMAPS
+		wxBitmap newBitmap = wxBitmap(new_xpm);
+		wxBitmap openBitmap = wxBitmap(open_xpm);
+		wxBitmap saveBitmap = wxBitmap(save_xpm);
+		wxBitmap cutBitmap = wxBitmap(cut_xpm);
+		wxBitmap printBitmap = wxBitmap(print_xpm);
+		wxBitmap playBitmap = wxBitmap(play_xpm);
+		wxBitmap stopBitmap = wxBitmap(stop_xpm);
+		wxBitmap helpBitmap = wxBitmap(help_xpm);
+	#else // !USE_XPM_BITMAPS
+		wxBitmap newBitmap = wxBITMAP(new);
+		wxBitmap openBitmap = wxBITMAP(open);
+		wxBitmap saveBitmap = wxBITMAP(save);
+		wxBitmap cutBitmap = wxBITMAP(cut);
+		wxBitmap printBitmap = wxBITMAP(print);
+		wxBitmap playBitmap = wxBITMAP(play);
+		wxBitmap stopBitmap = wxBITMAP(stop);
+		wxBitmap helpBitmap = wxBITMAP(help);
+	#endif // USE_XPM_BITMAPS/!USE_XPM_BITMAPS
+
+	#ifdef __WXMSW__
+		int width = 24;
+	#else
+		int width = 16;
+	#endif
+
+	int currentX = 5;
+
+	toolBar->AddTool(wxID_NEW, newBitmap, wxNullBitmap, FALSE, currentX, -1,
+	  (wxObject *) NULL, "New simulation");
+	currentX += width + 5;
+	toolBar->AddTool(wxID_OPEN, openBitmap, wxNullBitmap, FALSE, currentX, -1,
+	  (wxObject *) NULL, "Open simulation");
+	currentX += width + 5;
+	toolBar->AddTool(wxID_SAVE, saveBitmap, wxNullBitmap, TRUE, currentX, -1,
+	  (wxObject *) NULL, "Save simulation");
+	currentX += width + 5;
+	toolBar->AddTool(wxID_CUT, cutBitmap, wxNullBitmap, FALSE, currentX, -1,
+	  (wxObject *) NULL, "Cut element");
+	currentX += width + 5;
+	toolBar->AddTool(wxID_PRINT, printBitmap, wxNullBitmap, FALSE, currentX, -1,
+	  (wxObject *) NULL, "Print simulation design");
+	currentX += width + 5;
+	toolBar->AddSeparator();
+	toolBar->AddTool(SDIFRAME_EXECUTE, playBitmap, wxNullBitmap, FALSE,
+	  currentX, -1, (wxObject *) NULL, "Play simulation");
+	currentX += width + 5;
+	toolBar->AddTool(SDIFRAME_STOP_SIMULATION, stopBitmap, wxNullBitmap, FALSE,
+	  currentX, -1, (wxObject *) NULL, "Stop simulation");
+	currentX += width + 5;
+	toolBar->AddSeparator();
+	toolBar->AddTool(wxID_HELP, helpBitmap, wxNullBitmap, FALSE, currentX, -1,
+	  (wxObject *) NULL, "Help button");
+
+	// after adding the buttons to the toolbar, must call Realize() to reflect
+	// the changes
+	toolBar->Realize();
+
+	toolBar->SetRows(10);
+
+}
+
+
+/****************************** OnCreateToolBar *******************************/
+
+#if USE_GENERIC_TBAR
+
+wxToolBar *
+SDIFrame::OnCreateToolBar(long style, wxWindowID id, const wxString& name)
+{
+	return (wxToolBar *)new wxToolBarSimple(this, id, wxDefaultPosition,
+	  wxDefaultSize, style, name);
+
+}
+
+#endif // USE_GENERIC_TBAR
 
 /******************************************************************************/
 /****************************** Call backs ************************************/
@@ -436,7 +560,7 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
 }
   
 /******************************************************************************/
-/*************************** EditProcessMenu **********************************/
+/*************************** OnEditProcess ************************************/
 /******************************************************************************/
 
 void
@@ -459,21 +583,31 @@ SDIFrame::OnEditProcess(wxCommandEvent& event)
 void
 SDIFrame::OnSize(wxSizeEvent& event)
 {
-	if (canvas && palette) {
-		int cw, ch;
-		GetClientSize(&cw, &ch);
+	int		canvasX, canvasY, canvasW, canvasH;
+	wxSize	size = GetClientSize();
+
+	if (!canvas) {
+		event.Skip();
+		return;
+	}
+	if (palette) {
 		int paletteX = 0;
 		int paletteY = 0;
 		int paletteW = 30;
-		int paletteH = ch;
-		int canvasX = paletteX + paletteW;
-		int canvasY = 0;
-		int canvasW = cw - paletteW;
-		int canvasH = ch;
+		int paletteH = size.GetHeight();
+		canvasX = paletteX + paletteW;
+		canvasY = 0;
+		canvasW = size.GetWidth() - paletteW;
+		canvasH = size.GetHeight();
 
 		palette->SetSize(paletteX, paletteY, paletteW, paletteH);
-		canvas->SetSize(canvasX, canvasY, canvasW, canvasH);
 	}
+	if (myToolBar) {
+		myToolBar->SetSize(-1, size.y);
+		myToolBar->Move(0, 0);
+
+	}
+	canvas->SetSize(canvasX, canvasY, canvasW, canvasH);
 
 }
 

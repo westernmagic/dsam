@@ -381,7 +381,7 @@ MyApp::CreateMenuBar(void)
 #	endif
 
 	// Make a menubar
-	wxMenuBar *menuBar = new wxMenuBar;
+	wxMenuBar *menuBar = new wxMenuBar((long) (wxMB_DOCKABLE));
 
 	menuBar->Append(fileMenu, "&File");
 	menuBar->Append(editMenu, "&Edit");

@@ -21,6 +21,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define	SDIFRAME_ID_TOOLBAR		500
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -75,12 +77,18 @@ class SDIFrame: public wxDocParentFrame
 	wxMenu *editMenu;
 
 	SDICanvas	*canvas;
+	wxToolBar	*myToolBar;
 	EditorToolPalette *palette;
 
 	SDIFrame(wxDocManager *manager, wxFrame *parent, const wxString& title,
 	  const wxPoint& pos = wxDefaultPosition, const wxSize& size =
 	  wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
 	~SDIFrame(void);
+
+	#if USE_GENERIC_TBAR
+    virtual wxToolBar *	OnCreateToolBar(long style, wxWindowID id, const 
+						  wxString& name );
+	#endif // USE_GENERIC_TBAR
 
 	SDICanvas *	CreateCanvas(wxView *view, wxFrame *parent);
 	void	DeleteMainParDialog(void);
@@ -100,6 +108,7 @@ class SDIFrame: public wxDocParentFrame
 	void	OnStopSimulation(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
+	void	CreateToolbar(void);
 	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
 	void	SetSimFileAndLoad(void);
 	void	UpdateMainParDialog(void);
