@@ -89,6 +89,7 @@ class ParListInfo {
 	void	SetParListIonChannel(void);
 	bool	SetParValue(ParControl *control);
 	void	SetSlider(int index);
+	void	UpdateControlValues(void);
 
 };
 

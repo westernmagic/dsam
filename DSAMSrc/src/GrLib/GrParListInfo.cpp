@@ -700,7 +700,7 @@ ParListInfo::GetParControl(int i)
 /****************************** ResetControlValues ****************************/
 
 /*
- * This function returns a parameter control.
+ * This routine resets all of the controls to their original values.
  */
 
 void
@@ -710,6 +710,24 @@ ParListInfo::ResetControlValues(void)
 
 	for (i = 0; i < numPars; i++)
 		controlList[i]->ResetValue();
+
+}
+
+/****************************** UpdateControlValues ***************************/
+
+/*
+ * This routine updates all of the controls to their original values, unless
+ * they have been set.
+ */
+
+void
+ParListInfo::UpdateControlValues(void)
+{
+	int		i;
+
+	for (i = 0; i < numPars; i++)
+		if (!controlList[i]->GetUpdateFlag())
+			controlList[i]->ResetValue();
 
 }
 
@@ -725,6 +743,6 @@ ParListInfo::CheckInterDependence(void)
 {
 	if (parList->updateFlag) {
 		SetEnabledControls();
-		ResetControlValues();
+		UpdateControlValues();
 	}
 }
