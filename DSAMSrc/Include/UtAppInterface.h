@@ -25,7 +25,7 @@
 /******************************************************************************/
 
 #define DEFAULT_ERRORS_MODE			"screen"
-#define	APP_INT_NUM_PARS			4		/* Number of main parameters. */
+#define	APP_INT_NUM_PARS			5		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
 
@@ -53,6 +53,7 @@ typedef enum {
 	APP_INT_DIAGNOSTICMODE,
 	APP_INT_SIMULATIONFILE,
 	APP_INT_SEGMENTMODE,
+	APP_INT_NUMTHREADS,
 	APP_INT_PARLIST
 
 } AppInteraceParSpecifier;
@@ -72,6 +73,7 @@ typedef struct {
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
 	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
 	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
+	BOOLN	numThreadsFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
@@ -93,6 +95,7 @@ typedef struct {
 	int		diagModeSpecifier;
 	int		maxUserModules;
 	int		numHelpBooks;
+	int		numThreads;
 	EarObjectPtr	audModel;
 
 	/* Private members */
@@ -238,6 +241,8 @@ BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
+
+BOOLN	SetNumThreads_AppInterface(int theNumThreads);
 
 BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
