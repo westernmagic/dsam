@@ -85,6 +85,7 @@ class SDIDiagram: public wxDiagram
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	void	SetProcessClientData(DatumPtr pc, wxShape *shape);
+	bool	SetShapeHandlers(void);
 	void	SetSimulation(DatumPtr theSim)	{ simulation = theSim; }
 	bool	VerifyDiagram(void);
 
