@@ -451,8 +451,8 @@ void
 MainApp::DeleteSimThread(void)
 {
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-	SetInterruptRequestStatus_Common(TRUE);
 	if (simThread) {
+		SetInterruptRequestStatus_Common(TRUE);
 		simThread->SuspendDiagnostics();
 		simThread->Delete();
 	}
@@ -484,6 +484,7 @@ MainApp::RunSimulation(void)
 {
 	static const char *funcName = "MainApp::RunSimulation";
 
+	SetInterruptRequestStatus_Common(FALSE);
 	if (!ExternalRunSimulation){
 		NotifyError("%s: External run simulation function not set.", funcName);
 		return(false);
