@@ -469,6 +469,7 @@ InitModule_IHCRP_Zhang(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = iHCRPZhangPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHCRP_Zhang;
 	theModule->Free = Free_IHCRP_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Zhang;
@@ -552,8 +553,7 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 	IHCRPZhangPtr	p = iHCRPZhangPtr;
 	THairCellPtr	hCRP;
 
-	if (iHCRPZhangPtr->updateProcessVariablesFlag || data->
-	  updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_IHCRP_Zhang();
 		if ((p->hCRP = (THairCell *) calloc(data->outSignal->numChannels,
@@ -561,7 +561,7 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 		 	NotifyError("%s: Out of memory for coefficients array.", funcName);
 		 	return(FALSE);
 		}
-		iHCRPZhangPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
@@ -619,33 +619,33 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	THairCellPtr	hCRP;
+	IHCRPZhangPtr	p = iHCRPZhangPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_IHCRP_Zhang())
-		return(FALSE);
-	if (!CheckData_IHCRP_Zhang(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Zhang et al. IHC Receptor Potential.");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHCRP_Zhang())
+			return(FALSE);
+		if (!CheckData_IHCRP_Zhang(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Zhang et al. IHC Receptor Potential.");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
 
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+		if (!InitProcessVariables_IHCRP_Zhang(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-
-	if (!InitProcessVariables_IHCRP_Zhang(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		hCRP = &iHCRPZhangPtr->hCRP[chan];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		hCRP = &p->hCRP[chan];
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		hCRP->hcnl.Run2(&hCRP->hcnl, inPtr, outPtr, data->outSignal->length);

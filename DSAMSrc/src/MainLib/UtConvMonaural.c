@@ -62,6 +62,7 @@ InitModule_Utility_ConvMonaural(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Utility_ConvMonaural"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_ConvMonaural;
 	theModule->SetParsPointer = SetParsPointer_Utility_ConvMonaural;
 	return(TRUE);
@@ -119,20 +120,25 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 	int		i, outChan, inChan;
 	ChanLen	j;
 
-	if (!CheckData_Utility_ConvMonaural(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_ConvMonaural(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Convert monaural -> binaural utility");
+		ResetProcess_EarObject(data);
+		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+		  numChannels / data->inSignal[0]->interleaveLevel), data->inSignal[0]->
+		  length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, 1);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Convert monaural -> binaural utility");
-	ResetProcess_EarObject(data);
-	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
-	  numChannels / data->inSignal[0]->interleaveLevel), data->inSignal[0]->
-	  length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, 1);
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan++) {
+	for (outChan = data->outSignal->offset; outChan < data->outSignal->
+	  numChannels; outChan++) {
 		inChan = outChan * data->inSignal[0]->interleaveLevel;
 		for (i = 0; i < data->inSignal[0]->interleaveLevel; i++) {
 			inPtr = data->inSignal[0]->channel[inChan + i];

@@ -231,8 +231,6 @@
 #		include "GrSDIEvtHandler.h"
 #		include "GrSDIDiagram.h"
 #		include "GrSDIDoc.h"
-#		include "GrSDISimDoc.h"
-#		include "GrSDISPFDoc.h"
 #		include "GrSDICommand.h"
 #		include "GrSDIView.h"
 #		include "GrSDIPalette.h"

@@ -623,6 +623,7 @@ InitModule_IHC_Zhang(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = zhangHCPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Zhang;
 	theModule->Free = Free_IHC_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Zhang;
@@ -692,20 +693,20 @@ RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in, double *out,
 	CLlast = pthis->CLlast;
 	PPIlast = pthis->PPIlast;
 
-	for (i = 0; i<length;i++){
+	for (i = 0; i < length; i++){
 		CInow = CIlast + (tdres / VI) * (( -PPIlast * CIlast) + PL * (CLlast -
 		  CIlast));
 		CLnow = CLlast + (tdres / VL) * (-PL * (CLlast - CIlast) + PG *(CG -
 		  CLlast));
-		PPIlast = in[i];
+		PPIlast = *in++;
 		CIlast = CInow;
 		CLlast = CLnow;
-		out[i] = CInow * PPIlast;
-	};
+		*out++ = CInow * PPIlast;
+	}
 
 	pthis->CIlast = CIlast;
 	pthis->CLlast = CLlast;
-	pthis->PPIlast = pthis->PPIlast;
+	pthis->PPIlast = PPIlast;
 
 }
 
@@ -802,7 +803,7 @@ RunIHCPPI_IHC_Zhang(TNonLinear* p, const double *in, double *out,
 	for (i = 0; i < length; i++) {
 		temp = p->p2 * in[i];
 		PPI = (temp < 400.0)? p->p1 * log(1.0 + exp(temp)): p->p1 * temp;
-		out[i] = PPI;
+		*out++ = PPI;
 	}
 	return;
 }
@@ -825,11 +826,11 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 	static const char	*funcName = "InitProcessVariables_IHC_Zhang";
 	int		i, cFIndex;
 	double	kKCF, temp, pst, psl, p2, p1;
-	ZhangHCPtr	p = zhangHCPtr;
 	TSynapsePtr	syn;
 	TNonLinearPtr	iHCPPI;
+	ZhangHCPtr	p = zhangHCPtr;
 
-	if (zhangHCPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_IHC_Zhang();
 		if ((p->iHCPPI = (TNonLinear *) calloc(data->outSignal->numChannels,
@@ -846,7 +847,7 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
-		zhangHCPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
@@ -936,34 +937,34 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 	int		chan;
 	TSynapsePtr	syn;
 	TNonLinearPtr	iHCPPI;
+	ZhangHCPtr	p = zhangHCPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_IHC_Zhang())
-		return(FALSE);
-	if (!CheckData_IHC_Zhang(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Module process ??");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Zhang())
+			return(FALSE);
+		if (!CheckData_IHC_Zhang(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Zhang IHC Module process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
 
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+		if (!InitProcessVariables_IHC_Zhang(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-
-	if (!InitProcessVariables_IHC_Zhang(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		syn = &zhangHCPtr->synapse[chan];
-		iHCPPI = &zhangHCPtr->iHCPPI[chan];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		syn = &p->synapse[chan];
+		iHCPPI = &p->iHCPPI[chan];
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		iHCPPI->Run2(iHCPPI, inPtr, outPtr, data->outSignal->length);

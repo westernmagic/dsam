@@ -594,6 +594,7 @@ InitModule_IHCRP_Carney(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = carneyRPPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHCRP_Carney;
 	theModule->Free = Free_IHCRP_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Carney;
@@ -732,12 +733,10 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_IHCRP_Carney";
 	int		i, cFIndex;
-	double	*ptr1, *ptr2, dt;
+	double	*ptr1, *ptr2, dt = data->outSignal->dt;
 	ChanLen	j;
-	CarneyRPPtr	p;
-	
-	p = carneyRPPtr;
-  	dt = data->outSignal->dt;
+	CarneyRPPtr	p = carneyRPPtr;
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -815,43 +814,49 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr, waveNow, iHCTemp;
 	register	ChanData	 temp;
 	int		chan;
-	double	c, c1LP, c2LP, aA;
+	double	c;
 	ChanLen	i;
-	CarneyRPPtr	p;
+	CarneyRPPtr	p = carneyRPPtr;
 	CarneyRPCoeffsPtr	cC;
 
-	if (!CheckPars_IHCRP_Carney())
-		return(FALSE);
-	if (!CheckData_IHCRP_Carney(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHCRP_Carney())
+			return(FALSE);
+		if (!CheckData_IHCRP_Carney(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Carney hair cell receptor potential");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_IHCRP_Carney(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		/* Main Processing. */
+		c = 2.0 / data->inSignal[0]->dt;
+		p->aA = p->maxHCVoltage / (1.0 + tanh(p->asymmetricalBias));
+		p->c1LP = (c - PIx2 * p->cutOffFrequency) / (c + PIx2 *
+		  p->cutOffFrequency);
+		p->c2LP = PIx2 * p->cutOffFrequency / (PIx2 * p->cutOffFrequency + c);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Carney hair cell receptor potential");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_IHCRP_Carney(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	/* Main Processing. */
-	p = carneyRPPtr;
-	c = 2.0 / data->inSignal[0]->dt;
-	aA = p->maxHCVoltage / (1.0 + tanh(p->asymmetricalBias));
-	c1LP = (c - PIx2 * p->cutOffFrequency) / (c + PIx2 * p->cutOffFrequency);
-	c2LP = PIx2 * p->cutOffFrequency / (PIx2 * p->cutOffFrequency + c);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		cC = *(p->coefficients + chan);
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for(i = 0; i < data->outSignal->length; i++, outPtr++) {
 			temp = 0.746 * *inPtr++ / p->hCOperatingPoint;
-			waveNow = aA * (tanh(temp - p->asymmetricalBias) +
+			waveNow = p->aA * (tanh(temp - p->asymmetricalBias) +
 			  tanh(p->asymmetricalBias));
-			*outPtr = c1LP * cC->waveTempLast + c2LP * (waveNow + cC->waveLast);
+			*outPtr = p->c1LP * cC->waveTempLast + p->c2LP * (waveNow +
+			  cC->waveLast);
 			cC->waveTempLast = *outPtr;
 			cC->waveLast = waveNow;
 		}
@@ -859,7 +864,8 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
  		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
 			iHCTemp = *outPtr;
-			*outPtr = c1LP * cC->iHCLast + c2LP * (*outPtr + cC->iHCTempLast);
+			*outPtr = p->c1LP * cC->iHCLast + p->c2LP * (*outPtr +
+			  cC->iHCTempLast);
 			cC->iHCTempLast = iHCTemp;
 			cC->iHCLast = *outPtr;
 		}

@@ -74,6 +74,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	double	dt, cG, pIMaxMinusPrest, pLMaxMinusPrest, pGMaxMinusPrest;
 	CarneyHCVars	*hCChannels;
 
 } CarneyHC, *CarneyHCPtr;

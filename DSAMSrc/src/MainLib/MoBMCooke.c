@@ -530,6 +530,7 @@ InitModule_BasilarM_Cooke(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bM0CookePtr;
+	/*theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;*/
 	theModule->CheckPars = CheckPars_BasilarM_Cooke;
 	theModule->Free = Free_BasilarM_Cooke;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_Cooke;
@@ -556,57 +557,56 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_BasilarM_Cooke";
 	
 	int		i;
-	unsigned long	j, intSampleRate;
+	unsigned long	j;
 	double	twoPiDt, phi, bandwidth;
 	CookeCoeffsPtr	c;
+	BM0CookePtr	p = bM0CookePtr;
 	
-	if (bM0CookePtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  bM0CookePtr->theCFs->updateFlag || (data->timeIndex ==
-	  PROCESS_START_TIME)) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
+	  updateFlag || (data->timeIndex == PROCESS_START_TIME)) {
 		twoPiDt = PIx2 * data->outSignal->dt;
-		if (bM0CookePtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag || bM0CookePtr->theCFs->updateFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->
+		  theCFs->updateFlag) {
 			FreeProcessVariables_BasilarM_Cooke();
-			if ((bM0CookePtr->coefficients = (CookeCoeffsPtr) calloc(
-			  bM0CookePtr->theCFs->numChannels, sizeof(CookeCoeffs))) == NULL) {
+			if ((p->coefficients = (CookeCoeffsPtr) calloc(p->theCFs->
+			  numChannels, sizeof(CookeCoeffs))) == NULL) {
 				NotifyError("%s: Out of memory for coeffients.", funcName);
 				return(FALSE);
 			}
-			intSampleRate = (unsigned long) ceil(1.0 / data->outSignal->dt);
-			if ((bM0CookePtr->sine = (double *) calloc(intSampleRate,
-			  sizeof(double))) == NULL) {
+			p->intSampleRate = (unsigned long) ceil(1.0 / data->outSignal->dt);
+			if ((p->sine = (double *) calloc(p->intSampleRate, sizeof(
+			  double))) == NULL) {
 				NotifyError("%s: Out of memory for sine table.", funcName);
 				return(FALSE);
 			}
-			if ((bM0CookePtr->cosine = (double *) calloc(intSampleRate,
-			  sizeof(double))) == NULL) {
+			if ((p->cosine = (double *) calloc(p->intSampleRate, sizeof(
+			  double))) == NULL) {
 				NotifyError("%s: Out of memory for cosine table.", funcName);
 				return(FALSE);
 			}
-			for (j = 0; j < intSampleRate; j++) {
+			for (j = 0; j < p->intSampleRate; j++) {
 				phi = (double) (j * twoPiDt);
-				bM0CookePtr->sine[j] = sin(phi);
-				bM0CookePtr->cosine[j] = cos(phi);
+				p->sine[j] = sin(phi);
+				p->cosine[j] = cos(phi);
 			}
-			c = bM0CookePtr->coefficients;
-			for (i = 0; i < bM0CookePtr->theCFs->numChannels; i++) {
-				bandwidth = bM0CookePtr->theCFs->bandwidth[i] *
-				  bM0CookePtr->broadeningCoeff;
+			c = p->coefficients;
+			for (i = 0; i < p->theCFs->numChannels; i++) {
+				bandwidth = p->theCFs->bandwidth[i] *
+				  p->broadeningCoeff;
 				c[i].z = exp(-twoPiDt * bandwidth);
 				c[i].gain = SQR(SQR(2 * PI * bandwidth * data->outSignal->dt)) /
 				  3.0;
 			}
 			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 			SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
-			SetInfoChannelLabels_SignalData(data->outSignal,
-			  bM0CookePtr->theCFs->frequency);
-			SetInfoCFArray_SignalData(data->outSignal,
-			  bM0CookePtr->theCFs->frequency);
-			bM0CookePtr->updateProcessVariablesFlag = FALSE;
-			bM0CookePtr->theCFs->updateFlag = FALSE;
+			SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->
+			  frequency);
+			SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+			p->updateProcessVariablesFlag = FALSE;
+			p->theCFs->updateFlag = FALSE;
 		}
-		c = bM0CookePtr->coefficients;
-		for (i = 0; i < bM0CookePtr->theCFs->numChannels; i++) {
+		c = p->coefficients;
+		for (i = 0; i < p->theCFs->numChannels; i++) {
 			c[i].p0 = c[i].p1 = c[i].p2 = c[i].p3 = c[i].p4 = 0.0;
 			c[i].q0 = c[i].q1 = c[i].q2 = c[i].q3 = c[i].q4 = 0.0;
 			c[i].u0 = 0.0;
@@ -655,62 +655,65 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 	static const char *funcName = "RunModel_BasilarM_Cooke";
 	uShort	totalChannels;
 	int		chan, cFIndex;
-	unsigned long	intSampleRate, tablePtr;
+	unsigned long	tablePtr;
 	ChanLen	i;
 	double	zz, pow, cosPtr;
 	register double	*inPtr, *outPtr;
 	CookeCoeffsPtr	c;
+	BM0CookePtr	p = bM0CookePtr;
  				
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckPars_BasilarM_Cooke())
-		return(FALSE);
-		
-	/* Initialise Variables and coefficients */
-	
-	SetProcessName_EarObject(data, "Cooke gammatone basilar membrane "
-	  "filtering");
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckPars_BasilarM_Cooke())
+			return(FALSE);
+
+		/* Initialise Variables and coefficients */
+
+		SetProcessName_EarObject(data, "Cooke gammatone basilar membrane "
+		  "filtering");
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Could not initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_BasilarM_Cooke(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	totalChannels = bM0CookePtr->theCFs->numChannels *
-	  data->inSignal[0]->numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Could not initialise output channels.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_BasilarM_Cooke(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	
-	/* Filter signal */
-	intSampleRate = (unsigned long) ceil(1.0 / data->inSignal[0]->dt);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		cFIndex = chan / data->outSignal->interleaveLevel;
-		c = bM0CookePtr->coefficients + cFIndex;
+		c = p->coefficients + cFIndex;
 		outPtr = inPtr = data->outSignal->channel[chan];
 		for (i = 0, cosPtr = 0.0; i < data->outSignal->length; i++, inPtr++,
 		  outPtr++) {
 			tablePtr = (unsigned long) cosPtr;
 			zz = c->z;
-			c->p0 = *inPtr * bM0CookePtr->cosine[tablePtr] + zz * (4.0 *
-			   c->p1 - zz * (6.0 * c->p2 - zz * (4.0 * c->p3 - zz * c->p4)));
-			c->q0 = -*inPtr * bM0CookePtr->sine[tablePtr] + zz * (4.0 *
-			  c->q1 - zz * (6.0 * c->q2 - zz * (4.0 * c->q3 - zz * c->q4)));
+			c->p0 = *inPtr * p->cosine[tablePtr] + zz * (4.0 * c->p1 - zz *
+			  (6.0 * c->p2 - zz * (4.0 * c->p3 - zz * c->p4)));
+			c->q0 = -*inPtr * p->sine[tablePtr] + zz * (4.0 * c->q1 - zz *
+			  (6.0 * c->q2 - zz * (4.0 * c->q3 - zz * c->q4)));
 			c->u0 = zz * (c->p1 + zz * (4.0 * c->p2 + zz * c->p3));
 			c->v0 = zz * (c->q1 + zz * (4.0 * c->q2 + zz * c->q3));
 			pow = SQR(c->u0) + SQR(c->v0);
-			switch (bM0CookePtr->outputMode) {
+			switch (p->outputMode) {
 			case BMCOOKE0_BM_DETAIL:
-				*outPtr = (c->u0 * bM0CookePtr->cosine[tablePtr] - c->v0 *
-				  bM0CookePtr->sine[tablePtr]) * c->gain;
+				*outPtr = (c->u0 * p->cosine[tablePtr] - c->v0 * p->sine[
+				  tablePtr]) * c->gain;
 				break;
 			case BMCOOKE0_POWER_SPEC:
 				*outPtr = pow;
@@ -723,9 +726,9 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 			}
 			c->p4 = c->p3; c->p3 = c->p2; c->p2 = c->p1; c->p1 = c->p0;
 			c->q4 = c->q3; c->q3 = c->q2; c->q2 = c->q1; c->q1 = c->q0;
-			cosPtr += bM0CookePtr->theCFs->frequency[cFIndex];
-			if (cosPtr >= intSampleRate)
-				cosPtr -= intSampleRate;
+			cosPtr += p->theCFs->frequency[cFIndex];
+			while (cosPtr >= p->intSampleRate)
+				cosPtr -= p->intSampleRate;
 		}
 	}
 

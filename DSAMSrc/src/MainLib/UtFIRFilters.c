@@ -150,7 +150,6 @@ FreeFIRCoeffs_FIRFilters(FIRCoeffsPtr *p)
 void
 ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 {
-	/*static const char *funcName = "FIR_FIRFilters";*/
 	int		chan;
 	ChanLen	i, stateSampleLen;
 	ChanData	*stateBuffer;
@@ -160,7 +159,8 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 		stateSampleLen = p->m;
 	else {
 		stateSampleLen = data->outSignal->length;
-		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
 			stateBuffer =  p->state + p->m * chan;
 			s = stateBuffer + p->m - 1;
 			s2 = s - stateSampleLen;
@@ -168,7 +168,8 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 				*s-- = *s2--;
 		}
 	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		s = p->state + p->m * chan;
 		xi = data->inSignal[0]->channel[chan] + stateSampleLen - 1;
 		for (i = 0; i < stateSampleLen; i++)
@@ -197,7 +198,8 @@ FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	ChanLen	i, j;
 	register ChanData	*yi, *xi, *xi2, *state, *c, *xStart, summ;
 	
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		xi = xStart = data->inSignal[0]->channel[chan];
 		yi = data->outSignal->channel[chan];
 		for (i = data->outSignal->length; i ; i--, xi++, yi++) {

@@ -112,8 +112,6 @@ extern MainApp	*dSAMMainApp;
 	int
 	main(int argc, char **argv)
 	{
-		wxApp::CheckBuildOptions(wxBuildOptions());
-
 		wxInitializer initializer;
 		if (!initializer) {
 			NotifyError("Failed to initialize the wxWindows library, "

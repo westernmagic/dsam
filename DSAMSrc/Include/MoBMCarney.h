@@ -84,8 +84,9 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	int		numChannels;
-	Complex	*f;
+	int		numChannels, numComplexCoeffs, numThreads;
+	double	c, aA, c1LP, c2LP, pix2xDt;
+	ComplexPtr *f;
 	CarneyGTCoeffsPtr	*coefficients;
 
 } BMCarney, *BMCarneyPtr;

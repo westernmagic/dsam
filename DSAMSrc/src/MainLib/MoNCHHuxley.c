@@ -1163,16 +1163,15 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	static const char	*funcName = "RunModel_Neuron_HHuxley";
 	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
 	register	double		deltaY, deltaZ;
-	BOOLN	debug;
 	int		i, inSignal;
-	double	*yPtr, *zPtr, dt, dtOverC, ionChanCurrentSum, currentSum;
+	double	*yPtr, *zPtr, ionChanCurrentSum, currentSum;
 	double	activation, conductance;
 	ChanLen	j;
 	DynaListPtr		node;
-	HHuxleyNCPtr	c;
 	HHuxleyStatePtr	s;
 	IonChannelPtr	iC;
 	ICTableEntryPtr	e;
+	HHuxleyNCPtr	p = hHuxleyNCPtr;
 
 	if (!CheckPars_Neuron_HHuxley())
 		return(FALSE);
@@ -1191,29 +1190,28 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	c = hHuxleyNCPtr;
-	dt = data->outSignal->dt;
-	dtOverC = dt / c->cellCapacitance;
-	debug = !c->restingRun && (c->diagnosticMode !=
+	p->dt = data->outSignal->dt;
+	p->dtOverC = p->dt / p->cellCapacitance;
+	p->debug = !p->restingRun && (p->diagnosticMode !=
 	  GENERAL_DIAGNOSTIC_OFF_MODE);
 
-	if (debug) {
+	if (p->debug) {
 		DynaListPtr	node;
 
-		fprintf(c->fp, "Time(s)\tVm (mV)\tIleak (nA)");
-		for (node = c->iCList->ionChannels; node; node = node->next) {
+		fprintf(p->fp, "Time(s)\tVm (mV)\tIleak (nA)");
+		for (node = p->iCList->ionChannels; node; node = node->next) {
 			iC = (IonChannelPtr) node->data;
 			if (!iC->enabled)
 				continue;
-			fprintf(c->fp, "\tG(%s)\tI(%s)", iC->description, iC->description);
+			fprintf(p->fp, "\tG(%s)\tI(%s)", iC->description, iC->description);
 		}
-		fprintf(c->fp, "\n");
+		fprintf(p->fp, "\n");
 	}
 
 	for (i = 0; i < data->outSignal->numChannels; i++) {
-		s = &c->state[i];
+		s = &p->state[i];
 		inSignal = 0;
-		injPtr = (c->injectionMode == HHUXLEYNC_INJECTION_OFF)?
+		injPtr = (p->injectionMode == HHUXLEYNC_INJECTION_OFF)?
 		  (ChanData *) NULL: data->inSignal[inSignal++]->channel[i];
 		gExPtr = (inSignal < data->numInSignals)?
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
@@ -1222,50 +1220,50 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		gSInPtr = (inSignal < data->numInSignals)?
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
 		outPtr = data->outSignal->channel[i];
-		switch (c->operationMode) {
+		switch (p->operationMode) {
 		case HHUXLEYNC_OPERATION_NORMAL_MODE:
 			for (j = 0; j < data->outSignal->length; j++, outPtr++) {
 				yPtr = s->y;
 				zPtr = s->z;
-				if (debug)
-				  	fprintf(c->fp, "%g\t%g\t%g",  MILLI(j * dt),
-					  MILLI(s->potential_V), NANO(c->iCList->leakageCond *
-					  (s->potential_V - c->iCList->leakagePot)));
+				if (p->debug)
+				  	fprintf(p->fp, "%g\t%g\t%g",  MILLI(j * p->dt),
+					  MILLI(s->potential_V), NANO(p->iCList->leakageCond *
+					  (s->potential_V - p->iCList->leakagePot)));
 				
-				for (node = c->iCList->ionChannels, ionChanCurrentSum = 0.0;
+				for (node = p->iCList->ionChannels, ionChanCurrentSum = 0.0;
 				  node; node = node->next, yPtr++, zPtr++) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
 					activation = iC->PowFunc(*yPtr, iC->activationExponent);
-					if (debug) {
+					if (p->debug) {
 						conductance = iC->maxConductance * activation * *zPtr;
-				  		fprintf(c->fp, "\t%g\t%g", NANO(conductance),
+				  		fprintf(p->fp, "\t%g\t%g", NANO(conductance),
 						  NANO(conductance * (s->potential_V -
 						  iC->equilibriumPot)));
 				  	}
 					ionChanCurrentSum += iC->maxConductance * activation *
 					  *zPtr * (s->potential_V - iC->equilibriumPot);
 				}
-				if (debug)
-					fprintf(c->fp, "\n");
-				currentSum = ionChanCurrentSum + c->iCList->leakageCond *
-				  (s->potential_V - c->iCList->leakagePot);
+				if (p->debug)
+					fprintf(p->fp, "\n");
+				currentSum = ionChanCurrentSum + p->iCList->leakageCond *
+				  (s->potential_V - p->iCList->leakagePot);
 				if (injPtr)
 					currentSum -= *injPtr++;
 				if (gExPtr)
 					currentSum += *gExPtr++ * (s->potential_V -
-					  c->excitatoryReversalPot);
+					  p->excitatoryReversalPot);
 				if (gInPtr)
 					currentSum += *gInPtr++ * (s->potential_V -
-					  c->inhibitoryReversalPot);
+					  p->inhibitoryReversalPot);
 				if (gSInPtr)
 					currentSum += *gSInPtr++ * (s->potential_V -
-					  c->shuntInhibitoryReversalPot);
-				*outPtr = s->potential_V - currentSum * dtOverC;
+					  p->shuntInhibitoryReversalPot);
+				*outPtr = s->potential_V - currentSum * p->dtOverC;
 				yPtr = s->y;
 				zPtr = s->z;
-				for (node = c->iCList->ionChannels; node; node = node->next) {
+				for (node = p->iCList->ionChannels; node; node = node->next) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
@@ -1273,8 +1271,8 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 						NotifyError("%s: Could not find entry.", funcName);
 						return(FALSE);
 					}
-					deltaY = (e->yY - *yPtr) * dt / e->ty;
-					deltaZ = (e->zZ - *zPtr) * dt / e->tz;
+					deltaY = (e->yY - *yPtr) * p->dt / e->ty;
+					deltaZ = (e->zZ - *zPtr) * p->dt / e->tz;
 					*yPtr++ += deltaY;
 					*zPtr++ += deltaZ;
 				}
@@ -1283,40 +1281,40 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 			break;
 		case HHUXLEYNC_OPERATION_VOLTAGE_CLAMP_MODE:
 			for (j = 0; j < data->outSignal->length; j++, outPtr++, injPtr++) {
-				if (debug)
-					fprintf(c->fp, "%g\t%g\t%g", MILLI(j * dt), MILLI(*injPtr),
-					  NANO(c->iCList->leakageCond * (*injPtr -
-					  c->iCList->leakagePot)));
+				if (p->debug)
+					fprintf(p->fp, "%g\t%g\t%g", MILLI(j * p->dt), MILLI(
+					  *injPtr), NANO(p->iCList->leakageCond * (*injPtr -
+					  p->iCList->leakagePot)));
 				yPtr = s->y;
 				zPtr = s->z;
-				for (node = c->iCList->ionChannels, ionChanCurrentSum = 0.0;
+				for (node = p->iCList->ionChannels, ionChanCurrentSum = 0.0;
 				  node; node = node->next, yPtr++, zPtr++) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
 					activation = iC->PowFunc(*yPtr, iC->activationExponent);
-					if (debug) {
+					if (p->debug) {
 						conductance = iC->maxConductance * activation * *zPtr;
-				  		fprintf(c->fp, "\t%g\t%g", NANO(conductance),
+				  		fprintf(p->fp, "\t%g\t%g", NANO(conductance),
 						  NANO(conductance * (*injPtr - iC->equilibriumPot)));
 				  	}
 					ionChanCurrentSum += iC->maxConductance *
 					  activation * *zPtr * (*injPtr - iC->equilibriumPot);
 				}
-				if (debug)
-					fprintf(c->fp, "\n");
-				*outPtr = -ionChanCurrentSum - c->iCList->leakageCond *
-				  (*injPtr - c->iCList->leakagePot);
+				if (p->debug)
+					fprintf(p->fp, "\n");
+				*outPtr = -ionChanCurrentSum - p->iCList->leakageCond *
+				  (*injPtr - p->iCList->leakagePot);
 				if (gExPtr)
-					*outPtr -= *gExPtr++ * (*injPtr - c->excitatoryReversalPot);
+					*outPtr -= *gExPtr++ * (*injPtr - p->excitatoryReversalPot);
 				if (gInPtr)
-					*outPtr -= *gInPtr++ * (*injPtr - c->inhibitoryReversalPot);
+					*outPtr -= *gInPtr++ * (*injPtr - p->inhibitoryReversalPot);
 				if (gSInPtr)
-					*outPtr -= *gSInPtr++ * (*injPtr - c->
+					*outPtr -= *gSInPtr++ * (*injPtr - p->
 					  shuntInhibitoryReversalPot);
 				yPtr = s->y;
 				zPtr = s->z;
-				for (node = c->iCList->ionChannels; node; node = node->next) {
+				for (node = p->iCList->ionChannels; node; node = node->next) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
@@ -1324,8 +1322,8 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 						NotifyError("%s: Could not find entry.", funcName);
 						return(FALSE);
 					}
-					deltaY = (e->yY - *yPtr) * dt / e->ty;
-					deltaZ = (e->zZ - *zPtr) * dt / e->tz;
+					deltaY = (e->yY - *yPtr) * p->dt / e->ty;
+					deltaZ = (e->zZ - *zPtr) * p->dt / e->tz;
 					*yPtr++ += deltaY;
 					*zPtr++ += deltaZ;
 				}

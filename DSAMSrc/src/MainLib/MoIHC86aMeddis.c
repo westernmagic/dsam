@@ -636,6 +636,7 @@ InitModule_IHC_Meddis86a(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = hairCell3Ptr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Meddis86a;
 	theModule->Free = Free_IHC_Meddis86a;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis86a;
@@ -726,35 +727,33 @@ InitProcessVariables_IHC_Meddis86a(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHC_Meddis86a";
 	int		i;
 	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
-	HairCell3Ptr	hC;
+	HairCell3Ptr	p = hairCell3Ptr;
 	
-	if (hairCell3Ptr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		hC = hairCell3Ptr;		/* Shorter variable for long formulae. */
-		if (hairCell3Ptr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Meddis86a();
-			if ((hC->hCChannels = (HairCellVars3Ptr) calloc(
+			if ((p->hCChannels = (HairCellVars3Ptr) calloc(
 			  data->outSignal->numChannels, sizeof (HairCellVars3))) == NULL) {
 				NotifyError("%s: Out of memory.", funcName);
 				return(FALSE);
 			}
-			hairCell3Ptr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		spontPerm_k0 = hC->permeabilityPZ_z * exp(hC->permeabilityPH_h *
+		spontPerm_k0 = p->permeabilityPZ_z * exp(p->permeabilityPH_h *
 		  data->inSignal[0]->channel[0][0]);
-		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y *
-		   spontPerm_k0 / (hC->replenishRate_y * (hC->lossRate_l +
-		   hC->recoveryRate_r) + spontPerm_k0 * hC->lossRate_l);
-		spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
-		  hC->recoveryRate_r) / spontPerm_k0;
-		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r /
-		  hC->reprocessRate_x;
+		spontCleft_c0 = p->maxFreePool_M * p->replenishRate_y *
+		   spontPerm_k0 / (p->replenishRate_y * (p->lossRate_l +
+		   p->recoveryRate_r) + spontPerm_k0 * p->lossRate_l);
+		spontFreePool_q0 = spontCleft_c0 * (p->lossRate_l +
+		  p->recoveryRate_r) / spontPerm_k0;
+		spontReprocess_w0 = spontCleft_c0 * p->recoveryRate_r /
+		  p->reprocessRate_x;
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			hC->hCChannels[i].cleftC = spontCleft_c0;
-			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
-			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
+			p->hCChannels[i].cleftC = spontCleft_c0;
+			p->hCChannels[i].reservoirQ = spontFreePool_q0;
+			p->hCChannels[i].reprocessedW = spontReprocess_w0;
 		}
 	}
 	return(TRUE);
@@ -793,60 +792,63 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 	BOOLN	clipped;
 	int		i;
 	ChanLen	j;
-	double	dt, ymdt, ydt, xdt, rdt, kdt, zdt, l_Plus_rdt, h2dt;
+	double	dt, kdt;
 	double	reUptake, reUptakeAndLost,replenish, reprocessed, ejected;
 	ChanData	*inPtr, *outPtr;
-	HairCell3Ptr	hC;
+	HairCell3Ptr	p = hairCell3Ptr;
 	
-	if (!CheckPars_IHC_Meddis86a())		
-		return(FALSE);
-	if (!CheckData_IHC_Meddis86a(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Meddis86a())		
+			return(FALSE);
+		if (!CheckData_IHC_Meddis86a(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Meddis 86a quantal hair cell");
+		if (!InitProcessVariables_IHC_Meddis86a(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dt = data->outSignal->dt;
+
+		p->ymdt = p->replenishRate_y * p->maxFreePool_M * dt;
+		p->xdt = p->reprocessRate_x * dt;
+		p->ydt = p->replenishRate_y * dt;
+		p->l_Plus_rdt = (p->lossRate_l + p->recoveryRate_r) * dt;
+		p->rdt = p->recoveryRate_r * dt;
+		p->zdt = p->permeabilityPZ_z * dt;
+		p->h2dt = p->firingRate_h2 * dt;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Meddis 86a quantal hair cell");
-	if (!InitProcessVariables_IHC_Meddis86a(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	hC = hairCell3Ptr;		/* Shorter name for use with long equations. */
-	
-	ymdt = hC->replenishRate_y * hC->maxFreePool_M * dt;
-	xdt = hC->reprocessRate_x * dt;
-	ydt = hC->replenishRate_y * dt;
-	l_Plus_rdt = (hC->lossRate_l + hC->recoveryRate_r) * dt;
-	rdt = hC->recoveryRate_r * dt;
-	zdt = hC->permeabilityPZ_z * dt;
-	h2dt = hC->firingRate_h2 * dt;
 	for (i = 0, clipped = FALSE; i < data->outSignal->numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
 		for (j = 0; j < data->outSignal->length; j++) {
-			kdt = zdt * exp(hC->permeabilityPH_h * *inPtr++);
+			kdt = p->zdt * exp(p->permeabilityPH_h * *inPtr++);
 			if (kdt >= 1.0) {
 				kdt = 0.99;
 				clipped = TRUE;
 			}
-			replenish = (hC->hCChannels[i].reservoirQ < hC->maxFreePool_M)?
-			  ymdt - ydt * hC->hCChannels[i].reservoirQ: 0.0;
-			reprocessed = xdt * hC->hCChannels[i].reprocessedW;
-			ejected = kdt * hC->hCChannels[i].reservoirQ;	
-			reUptake = rdt * hC->hCChannels[i].cleftC;
-			reUptakeAndLost = l_Plus_rdt * hC->hCChannels[i].cleftC;
+			replenish = (p->hCChannels[i].reservoirQ < p->maxFreePool_M)?
+			  p->ymdt - p->ydt * p->hCChannels[i].reservoirQ: 0.0;
+			reprocessed = p->xdt * p->hCChannels[i].reprocessedW;
+			ejected = kdt * p->hCChannels[i].reservoirQ;	
+			reUptake = p->rdt * p->hCChannels[i].cleftC;
+			reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
 
-			hC->hCChannels[i].reservoirQ += replenish - ejected + reprocessed;
-			hC->hCChannels[i].cleftC += ejected - reUptakeAndLost;
-			hC->hCChannels[i].reprocessedW += reUptake - reprocessed;
+			p->hCChannels[i].reservoirQ += replenish - ejected + reprocessed;
+			p->hCChannels[i].cleftC += ejected - reUptakeAndLost;
+			p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 
 			/* Spike prob. */
-			*outPtr++ = (ChanData) (h2dt * hC->hCChannels[i].cleftC);
+			*outPtr++ = (ChanData) (p->h2dt * p->hCChannels[i].cleftC);
 		}
 	}
 	/*if (clipped)

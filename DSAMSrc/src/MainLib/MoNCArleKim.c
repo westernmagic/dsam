@@ -863,6 +863,7 @@ InitModule_Neuron_ArleKim(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = arleKimPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Neuron_ArleKim;
 	theModule->Free = Free_Neuron_ArleKim;
 	theModule->GetData = GetPotentialResponse_Neuron_ArleKim;
@@ -911,26 +912,25 @@ InitProcessVariables_Neuron_ArleKim(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Neuron_ArleKim";
 	int		i;
+	ArleKimPtr	p = arleKimPtr;
 	
-	if (arleKimPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (arleKimPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||(data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_ArleKim();
-			if ((arleKimPtr->state =
-			  (ArleKimStatePtr) calloc(data->outSignal->numChannels,
-			   sizeof(ArleKimState))) == NULL) {
+			if ((p->state = (ArleKimStatePtr) calloc(data->outSignal->
+			  numChannels, sizeof(ArleKimState))) == NULL) {
 			 	NotifyError("%s: Out of memory.", funcName);
 			 	return(FALSE);
 			}
-			arleKimPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			arleKimPtr->state[i].potential_V = 0.0;
-			arleKimPtr->state[i].kConductance_Gk = 0.0;
-			arleKimPtr->state[i].bConductance_Gb = 0.0;
-			arleKimPtr->state[i].threshold_Th =
-			  arleKimPtr->restingThreshold_Th0;
-			arleKimPtr->state[i].lastSpikeState = 0;
+			p->state[i].potential_V = 0.0;
+			p->state[i].kConductance_Gk = 0.0;
+			p->state[i].bConductance_Gb = 0.0;
+			p->state[i].threshold_Th = p->restingThreshold_Th0;
+			p->state[i].lastSpikeState = 0;
 		}
 	}
 	return(TRUE);
@@ -973,70 +973,72 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_Neuron_ArleKim";
 	int			i, spikeState_s;
-	double		dt, kEquilibriumPot_Vk;
-	double		totalConductance_G, restingPotential_Er, bEquilibriumPot_Vb;
-	register double	dGk, dTh, dV, tmOverDt, tGkOverDt, tThOverDt, bOverDt;
+	double		dt;
+	register double	dGk, dTh, dV;
 	ChanLen		j;
 	ChanData	*inPtr, *outPtr;
-	ArleKimPtr	c;
+	ArleKimPtr	p = arleKimPtr;
 	
-	if (!CheckPars_Neuron_ArleKim())		
-		return(FALSE);
-	if (!CheckData_Neuron_ArleKim(data))
-		return(FALSE);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Neuron_ArleKim())		
+			return(FALSE);
+		if (!CheckData_Neuron_ArleKim(data))
+			return(FALSE);
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "ArleKim neural cell");
+		if (!InitProcessVariables_Neuron_ArleKim(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dt = data->outSignal->dt;
+
+		p->totalConductance_G = p->kRestingCond_gk + p->bRestingCond_gb;
+		p->restingPotential_Er = (p->kRestingCond_gk * p->kReversalPoten_Ek +
+		  p->bRestingCond_gb * p->bReversalPoten_Eb) / p->totalConductance_G;
+		p->kEquilibriumPot_Vk = p->kReversalPoten_Ek - p->restingPotential_Er;
+		p->bEquilibriumPot_Vb = p->bReversalPoten_Eb - p->restingPotential_Er;
+
+		p->tmOverDt  = p->membraneTConst_Tm / dt;
+		p->tGkOverDt = p->kDecayTConst_TGk / dt;
+		p->tThOverDt = p->thresholdTConst_TTh / dt;
+		p->bOverDt = p->delayedRectKCond_b / dt;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "ArleKim neural cell");
-	if (!InitProcessVariables_Neuron_ArleKim(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	c = arleKimPtr;
-	
-	totalConductance_G = c->kRestingCond_gk + c->bRestingCond_gb;
-	restingPotential_Er = (c->kRestingCond_gk * c->kReversalPoten_Ek +
-	  c->bRestingCond_gb * c->bReversalPoten_Eb) / totalConductance_G;
-	kEquilibriumPot_Vk = c->kReversalPoten_Ek - restingPotential_Er;
-	bEquilibriumPot_Vb = c->bReversalPoten_Eb - restingPotential_Er;
-	
-	tmOverDt  = c->membraneTConst_Tm / dt;
-	tGkOverDt = c->kDecayTConst_TGk / dt;
-	tThOverDt = c->thresholdTConst_TTh / dt;
-	bOverDt = c->delayedRectKCond_b / dt;
-	
 	for (i = 0; i < data->outSignal->numChannels; i++) {
-		spikeState_s = c->state[i].lastSpikeState;
+		spikeState_s = p->state[i].lastSpikeState;
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
 		for (j = 0; j < data->outSignal->length; j++, outPtr++) {
-			c->state[i].bConductance_Gb = c->bRestingCond_gb *
-			 (exp(c->state[i].potential_V / c->nonLinearVConst_Vnl) - 1.0);
-			dV =  (-c->state[i].potential_V + (*(inPtr++) +
-			  c->state[i].kConductance_Gk * (kEquilibriumPot_Vk -
-			  c->state[i].potential_V) + c->state[i].bConductance_Gb *
-			   (bEquilibriumPot_Vb - c->state[i].potential_V)) /
-			    totalConductance_G) / tmOverDt;
-			dTh = (-(c->state[i].threshold_Th - c->restingThreshold_Th0) +
-			  c->accomConst_c * c->state[i].potential_V ) / tThOverDt;	
-			*outPtr = (ChanData) (c->state[i].potential_V +
-			  restingPotential_Er);
+			p->state[i].bConductance_Gb = p->bRestingCond_gb *
+			 (exp(p->state[i].potential_V / p->nonLinearVConst_Vnl) - 1.0);
+			dV =  (-p->state[i].potential_V + (*(inPtr++) +
+			  p->state[i].kConductance_Gk * (p->kEquilibriumPot_Vk -
+			  p->state[i].potential_V) + p->state[i].bConductance_Gb *
+			   (p->bEquilibriumPot_Vb - p->state[i].potential_V)) /
+			    p->totalConductance_G) / p->tmOverDt;
+			dTh = (-(p->state[i].threshold_Th - p->restingThreshold_Th0) +
+			  p->accomConst_c * p->state[i].potential_V ) / p->tThOverDt;	
+			*outPtr = (ChanData) (p->state[i].potential_V +
+			  p->restingPotential_Er);
 			/* add increment to gk if at start of spike, otherwise allow decay*/
-			if (c->state[i].lastSpikeState < spikeState_s) {
-				dGk = (-c->state[i].kConductance_Gk + bOverDt) / tGkOverDt;
-				*outPtr += (ChanData) c->actionPotential;
+			if (p->state[i].lastSpikeState < spikeState_s) {
+				dGk = (-p->state[i].kConductance_Gk + p->bOverDt) / p->
+				  tGkOverDt;
+				*outPtr += (ChanData) p->actionPotential;
 			} else
-				dGk = -c->state[i].kConductance_Gk / tGkOverDt;
-			c->state[i].threshold_Th += dTh;
-			c->state[i].potential_V += dV;
-			c->state[i].kConductance_Gk += dGk;
-			c->state[i].lastSpikeState = spikeState_s;
-			spikeState_s = (c->state[i].potential_V <
-			  c->state[i].threshold_Th)? 0: 1;
+				dGk = -p->state[i].kConductance_Gk / p->tGkOverDt;
+			p->state[i].threshold_Th += dTh;
+			p->state[i].potential_V += dV;
+			p->state[i].kConductance_Gk += dGk;
+			p->state[i].lastSpikeState = spikeState_s;
+			spikeState_s = (p->state[i].potential_V < p->state[i].threshold_Th)?
+			  0: 1;
 		}
 	}
  	SetProcessContinuity_EarObject(data);

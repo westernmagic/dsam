@@ -471,6 +471,7 @@ InitModule_Filter_BandPass(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bandPassFPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Filter_BandPass;
 	theModule->Free = Free_Filter_BandPass;
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_BandPass;
@@ -495,19 +496,20 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 	BOOLN	ok = TRUE;
 	int		i, j;
 	double	*statePtr;
+	BandPassFPtr	p = bandPassFPtr;
 	
-	if (bandPassFPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_BandPass();
-		if ((bandPassFPtr->coefficients = (BandPassCoeffsPtr *) calloc(data->
-		  outSignal->numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
+		if ((p->coefficients = (BandPassCoeffsPtr *) calloc(data->outSignal->
+		  numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
 		 	NotifyError("%s: Out of memory.", funcName);
 		 	return(FALSE);
 		}
-		bandPassFPtr->numChannels = data->outSignal->numChannels;
+		p->numChannels = data->outSignal->numChannels;
 	 	for (i = 0; (i < data->outSignal->numChannels) && ok; i++)
-			if ((bandPassFPtr->coefficients[i] = InitBandPassCoeffs_Filters(
-			  bandPassFPtr->cascade, bandPassFPtr->lowerCutOffFreq,
-			  bandPassFPtr->upperCutOffFreq, data->inSignal[0]->dt)) == NULL) {
+			if ((p->coefficients[i] = InitBandPassCoeffs_Filters(p->cascade,
+			  p->lowerCutOffFreq, p->upperCutOffFreq, data->inSignal[0]->dt)) ==
+			  NULL) {
 				NotifyError("%s: Failed initialised filter channel %d.",
 				  funcName, i);
 				ok = FALSE;
@@ -516,12 +518,11 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 			FreeProcessVariables_Filter_BandPass();
 			return(FALSE);
 		}
-		bandPassFPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			statePtr = bandPassFPtr->coefficients[i]->state;
-			for (j = 0; j < bandPassFPtr->cascade *
-			  FILTERS_NUM_CONTBUTT2_STATE_VARS; j++)
+			statePtr = p->coefficients[i]->state;
+			for (j = 0; j < p->cascade * FILTERS_NUM_CONTBUTT2_STATE_VARS; j++)
 				*statePtr++ = 0.0;
 		}
 	}
@@ -565,36 +566,42 @@ BOOLN
 RunModel_Filter_BandPass(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_Filter_BandPass";
+	BandPassFPtr	p = bandPassFPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_Filter_BandPass())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Band pass filter module process");
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
-	}
-	if (!InitOutFromInSignal_EarObject(data, 0)) {
-		NotifyError("%s: Could not initialise the process output signal.",
-		  funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Filter_BandPass(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_Filter_BandPass())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Band pass filter module process");
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitOutFromInSignal_EarObject(data, 0)) {
+			NotifyError("%s: Could not initialise the process output signal.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Filter_BandPass(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 
 	/* Filter signal */
 	
-	if (fabs(bandPassFPtr->preAttenuation) > DBL_EPSILON)
-		GaindB_SignalData(data->outSignal, bandPassFPtr->preAttenuation);
-	BandPass_Filters(data->outSignal, bandPassFPtr->coefficients);
+	if (fabs(p->preAttenuation) > DBL_EPSILON)
+		GaindB_SignalData(data->outSignal, p->preAttenuation);
+	BandPass_Filters(data->outSignal, p->coefficients);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

@@ -931,7 +931,7 @@ GaindB_SignalData(SignalDataPtr d, double gaindB)
 	if (!CheckInit_SignalData(d, "GaindBIndividual_SignalData (theSignal)"))
 		return(FALSE);
 	scale = pow(10.0, gaindB / 20.0);
-	for (i = 0; i < d->numChannels; i++)
+	for (i = d->offset; i < d->numChannels; i++)
 		for (j = 0, dataPtr = d->channel[i]; j < d->length; j++)
 			*(dataPtr++) *= scale;
 	return(TRUE);
@@ -993,7 +993,7 @@ Delay_SignalData(SignalDataPtr signal, double delay)
 		return(FALSE);
 	}
 	if (delay > 0.0) {
-		for (chan = 0; chan < signal->numChannels; chan++) {
+		for (chan = signal->offset; chan < signal->numChannels; chan++) {
 			dataPtr = signal->channel[chan] + signal->length - samplesDelay - 1;
 			for (i = 0; i < signal->length - samplesDelay; i++, dataPtr--)
 				*(dataPtr + samplesDelay) = *dataPtr;
@@ -1002,7 +1002,7 @@ Delay_SignalData(SignalDataPtr signal, double delay)
 
 		}
 	} else {
-		for (chan = 0; chan < signal->numChannels; chan++) {
+		for (chan = signal->offset; chan < signal->numChannels; chan++) {
 			dataPtr = signal->channel[chan];
 			for (i = 0; i < signal->length - samplesDelay; i++, dataPtr++)
 				*dataPtr = *(dataPtr + samplesDelay);

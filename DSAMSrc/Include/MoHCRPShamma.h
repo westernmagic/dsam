@@ -72,9 +72,8 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*lastCiliaDisplacement_u;
-	double	*lastInput;
-	double	*lastOutput;
+	double	*lastCiliaDisplacement_u, *lastInput, *lastOutput;
+	double	leakageConductance_Ga, dtOverC, gkEpk, dtOverTc, cGain, max_u;
 	
 } Shamma, *ShammaPtr;
 

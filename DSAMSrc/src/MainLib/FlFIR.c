@@ -816,6 +816,7 @@ InitModule_Filter_FIR(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = fIRPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Filter_FIR;
 	theModule->Free = Free_Filter_FIR;
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_FIR;
@@ -955,27 +956,27 @@ RunProcess_Filter_FIR(EarObjectPtr data)
 {
 	static const char	*funcName = "RunProcess_Filter_FIR";
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Filter_FIR())
-		return(FALSE);
-	if (!CheckData_Filter_FIR(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "FIR filter module process");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise the process output signal.",
-		  funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Filter_FIR(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Filter_FIR())
+			return(FALSE);
+		if (!CheckData_Filter_FIR(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "FIR filter module process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise the process output signal.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Filter_FIR(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	FIR_FIRFilters(data, fIRPtr->coeffs);
 

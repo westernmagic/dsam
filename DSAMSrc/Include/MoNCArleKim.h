@@ -82,10 +82,12 @@ typedef struct  {
 	double	kReversalPoten_Ek;	/* Reversal pot. of the K conductance (mV). */
 	double	bReversalPoten_Eb;	/* Rev. pot. of all other conductances (mV) */
 	double	kRestingCond_gk;	/* Resting potassium conductance (nS). */
-	double	bRestingCond_gb;	/* Resting component for all other conds.(nS).*/	
+	double	bRestingCond_gb;	/* Resting component for all other conds.(nS).*/
 
 	/* Private members */
 	UniParListPtr	parList;
+	double	totalConductance_G, restingPotential_Er, bEquilibriumPot_Vb;
+	double	kEquilibriumPot_Vk, tmOverDt, tGkOverDt, tThOverDt, bOverDt;
 	ArleKimState	*state;
 
 } ArleKim, *ArleKimPtr;

@@ -660,7 +660,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
 		if (useOldReadPars) {
 			if (par) {
-				if (newParCount++ == MODULE_NUM_PARS_FOR_VALID_NEW_FORMAT) {
+				if (++newParCount == MODULE_NUM_PARS_FOR_VALID_NEW_FORMAT) {
 					useOldReadPars = FALSE;
 					GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 				}
@@ -669,7 +669,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 				strcpy(failedParName, parName);
 			}
 		}
-		if (!useOldReadPars) {
+		if (par || !useOldReadPars) {
 			if (!par) {
 				NotifyError("%s: Unknown parameter '%s' for module '%s'.",
 				  funcName, parName, data->module->name);

@@ -416,6 +416,7 @@ InitModule_Utility_BinSignal(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = binSignalPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_BinSignal;
 	theModule->Free = Free_Utility_BinSignal;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_BinSignal;
@@ -482,46 +483,51 @@ BOOLN
 Process_Utility_BinSignal(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_BinSignal";
-	register	ChanData	 *inPtr, *outPtr, binSum, dt, nextBinCutOff;
-	int		chan, numBins;
-	double duration, binWidth;
+	register	ChanData	 *inPtr, *outPtr, binSum, nextBinCutOff;
+	int		chan;
+	double duration;
 	ChanLen	i;
 	BinSignalPtr	p = binSignalPtr;
 
-	if (!CheckPars_Utility_BinSignal())
-		return(FALSE);
-	if (!CheckData_Utility_BinSignal(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_BinSignal())
+			return(FALSE);
+		if (!CheckData_Utility_BinSignal(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Signal binning routine");
+		duration = _GetDuration_SignalData(data->inSignal[0]);
+		p->dt = data->inSignal[0]->dt;
+		if (p->binWidth < 0.0)
+			p->wBinWidth = duration;
+		else if (p->binWidth == 0.0)
+			p->wBinWidth = p->dt;
+		else
+			p->wBinWidth = p->binWidth;
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  (ChanLen) floor(duration / p->wBinWidth + 0.5), p->wBinWidth)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		p->numBins = (int) floor(p->wBinWidth / p->dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Signal binning routine");
-	duration = _GetDuration_SignalData(data->inSignal[0]);
-	dt = data->inSignal[0]->dt;
-	if (p->binWidth < 0.0)
-		binWidth = duration;
-	else if (p->binWidth == 0.0)
-		binWidth = dt;
-	else
-		binWidth = p->binWidth;
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  (ChanLen) floor(duration / binWidth + 0.5), binWidth)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	numBins = (int) floor(binWidth / dt + 0.5);
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		nextBinCutOff = binWidth - dt;
+		nextBinCutOff = p->wBinWidth - p->dt;
 		for (i = 0, binSum = 0.0; i < data->inSignal[0]->length; i++) {
 			binSum += *(inPtr++);
-			if (DBL_GREATER((i + 1) * dt, nextBinCutOff)) {
+			if (DBL_GREATER((i + 1) * p->dt, nextBinCutOff)) {
 				if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
 				  data->outSignal->length)
-					*outPtr++ += (p->mode ==
-					  UTILITY_BINSIGNAL_AVERAGE_MODE)? binSum / numBins: binSum;
+					*outPtr++ += (p->mode == UTILITY_BINSIGNAL_AVERAGE_MODE)?
+					  binSum / p->numBins: binSum;
 				binSum = 0.0;
-				nextBinCutOff += binWidth;
+				nextBinCutOff += p->wBinWidth;
 			}
 		}
 	}

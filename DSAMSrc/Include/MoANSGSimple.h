@@ -51,8 +51,10 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*timer;
-	double	*remainingPulseTime;
+	int		numThreads;
+	double	dt;
+	double	**timer;
+	double	**remainingPulseTime;
 
 } SimpleSG, *SimpleSGPtr;
 

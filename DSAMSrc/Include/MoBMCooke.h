@@ -80,6 +80,7 @@ typedef struct {
 	NameSpecifier	*outputModeList;
 	UniParListPtr	parList;
 	int				numChannels;
+	unsigned long	intSampleRate;
 	CookeCoeffsPtr	coefficients;	
 	double			*sine;
 	double			*cosine;

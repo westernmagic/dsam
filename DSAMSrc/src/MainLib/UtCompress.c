@@ -103,7 +103,8 @@ Init_Utility_Compression(ParameterSpecifier parSpec)
 	if (parSpec == GLOBAL) {
 		if (compressionPtr != NULL)
 			Free_Utility_Compression();
-		if ((compressionPtr = (CompressionPtr) malloc(sizeof(Compression))) == NULL) {
+		if ((compressionPtr = (CompressionPtr) malloc(sizeof(Compression))) ==
+		  NULL) {
 			NotifyError("%s: Out of memory for 'global' pointer", funcName);
 			return(FALSE);
 		}
@@ -514,6 +515,7 @@ InitModule_Utility_Compression(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = compressionPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_Compression;
 	theModule->Free = Free_Utility_Compression;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Compression;
@@ -575,39 +577,43 @@ Process_Utility_Compression(EarObjectPtr data)
 	static const char	*funcName = "Process_Utility_Compression";
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
-	double	scale, minInput;
 	ChanLen	i;
+	CompressionPtr p = compressionPtr;
 
-	if (!CheckPars_Utility_Compression())
-		return(FALSE);
-	if (!CheckData_Utility_Compression(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Compression())
+			return(FALSE);
+		if (!CheckData_Utility_Compression(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Compression Utility Module");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}	
+		p->minInput = pow(10, p->minResponse);
+		p->scale = p->signalMultiplier / p->powerExponent;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Compression Utility Module");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}	
-	minInput = pow(10, compressionPtr->minResponse);
-	scale = compressionPtr->signalMultiplier / compressionPtr->powerExponent;
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		switch (compressionPtr->mode) {
+		switch (p->mode) {
 		case COMPRESS_LOG_MODE:
 			for (i = 0; i < data->inSignal[0]->length; i++) {
-				*outPtr = (minInput > *inPtr)? compressionPtr->minResponse:
-				   log10(*inPtr);
-				 *outPtr++ *= compressionPtr->signalMultiplier;
+				*outPtr = (p->minInput > *inPtr)? p->minResponse: log10(*inPtr);
+				 *outPtr++ *= p->signalMultiplier;
 				 inPtr++;
 			}
 			break;
 		case COMPRESS_POWER_MODE:
 			for (i = 0; i < data->inSignal[0]->length; i++)
 				*outPtr++ = pow(fabs(*inPtr++),
-				  compressionPtr->powerExponent) * scale;
+				  p->powerExponent) * p->scale;
 			break;
 		default:
 			;

@@ -55,6 +55,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
+	double	scale, minInput;
 
 } Compression, *CompressionPtr;
 

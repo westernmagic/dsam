@@ -32,9 +32,9 @@ class istream;
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	SDI_DOCUMENT_DIAGRAM_EXTENSION	"dia"
 #define SDI_DOCUMENT_SIM_FILE_EXT		"sim"
 #define SDI_DOCUMENT_SPF_FILE_EXT		"spf"
+#define SDI_DOCUMENT_XML_FILE_EXT		"xml"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -42,6 +42,10 @@ class istream;
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/*************************** Pre reference definitions ************************/
 /******************************************************************************/
 
 /******************************************************************************/
@@ -74,6 +78,7 @@ class SDIDocument: public wxDocument
 	void	SetAppInterfaceFile(wxFileName &fileName);
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
+	wxOutputStream&	SaveXMLObject(wxOutputStream& stream);
 
 };
 

@@ -385,7 +385,17 @@ if test x$WX_GTK = xyes; then
 		wx_gtk_available=yes
 		using_wxwin_gui=yes
 	else
-		wx_gtk_available=no
+		AC_MSG_RESULT($wx_gtk_available)
+		TMP_CONFIG=wxgtk2-$wx_version-config
+		AC_MSG_CHECKING(for wxGTK2 configuration shell script ($TMP_CONFIG))
+		if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
+			AC_DEFINE(wx_gtk, 1, [Use wxGTK library])
+			WX_CONFIG=$TMP_CONFIG
+			wx_gtk_available=yes
+			using_wxwin_gui=yes
+		else
+			wx_gtk_available=no
+		fi
 	fi
 	AC_MSG_RESULT($wx_gtk_available)
 fi
@@ -451,7 +461,7 @@ AC_ARG_ENABLE(parallel,
 	fi
 	], [ mpi=no ])
 
-DSAM_DEFS="$DSAM_GRAPHICS $DSAM_MPI -fPIC"
+DSAM_DEFS="$DSAM_GRAPHICS $DSAM_MPI -fPIC -DTIXML_USE_STL"
 AC_SUBST(DSAM_GRAPHICS)
 AC_SUBST(DSAM_MPI)
 AC_SUBST(DSAM_DEFS)
@@ -473,7 +483,7 @@ fi
 
 if test x$wx_base_available = xyes; then
 	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Using Extensions Support")
-	DSAMEXTINC="-DEXTENSIONS_SUPPORT -DTIXML_USE_STL"
+	DSAMEXTINC="-DEXTENSIONS_SUPPORT"
 	AC_SUBST(DSAMEXTINC)
 	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
 	AC_SUBST(DSAMEXTLIB)

@@ -56,6 +56,8 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
+	int		numBins;
+	double	wBinWidth, dt;
 
 } BinSignal, *BinSignalPtr;
 

@@ -800,6 +800,7 @@ InitModule_IHCRP_Shamma(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = shammaPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHCRP_Shamma;
 	theModule->Free = Free_IHCRP_Shamma;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma;
@@ -826,38 +827,38 @@ InitProcessVariables_IHCRP_Shamma(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHCRP_Shamma";
 	int		i;
 	double	restingPotential_V0;
+	ShammaPtr	p = shammaPtr;
 
-	if (shammaPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (shammaPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Shamma();
-			if ((shammaPtr->lastInput = (double *)
-			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastInput = (double *) calloc(data->outSignal->numChannels,
+			   sizeof(double))) == NULL) {
 			 	NotifyError("%s: Out of memory for 'lastInput'.", funcName);
 			 	return(FALSE);
 			}
-			if ((shammaPtr->lastOutput = (double *)
-			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
+			   sizeof(double))) == NULL) {
 			 	NotifyError("%s: Out of memory for 'lastOutput'.", funcName);
 			 	return(FALSE);
 			}
-			if ((shammaPtr->lastCiliaDisplacement_u = (double *)
-			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastCiliaDisplacement_u = (double *) calloc(data->
+			  outSignal->numChannels, sizeof(double))) == NULL) {
 			 	NotifyError("%s: Out of memory for 'lastCiliaDisplacement_u'.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			shammaPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		restingPotential_V0 = (shammaPtr->restingConductance_G0 *
-		  shammaPtr->endocochlearPot_Et + shammaPtr->kConductance_Gk *
-		  (shammaPtr->reversalPot_Ek + shammaPtr->endocochlearPot_Et *
-		  shammaPtr->reversalPotCorrection)) /
-		  (shammaPtr->restingConductance_G0 + shammaPtr->kConductance_Gk);
+		restingPotential_V0 = (p->restingConductance_G0 * p->
+		  endocochlearPot_Et + p->kConductance_Gk * (p->reversalPot_Ek +
+		  p->endocochlearPot_Et * p->reversalPotCorrection)) /
+		  (p->restingConductance_G0 + p->kConductance_Gk);
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			shammaPtr->lastInput[i] = 0.0;
-			shammaPtr->lastOutput[i] = restingPotential_V0;
-			shammaPtr->lastCiliaDisplacement_u[i] = 0.0;
+			p->lastInput[i] = 0.0;
+			p->lastOutput[i] = restingPotential_V0;
+			p->lastCiliaDisplacement_u[i] = 0.0;
 		}
 	}
 	return(TRUE);
@@ -909,75 +910,82 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	static const char *funcName = "RunModel_IHCRP_Shamma";
 	int		chan;
 	ChanLen	i;
-	double	leakageConductance_Ga, conductance_G, potential_V;
-	double	ciliaDisplacement_u, lastInput, max_u, denom_val;
-	register	double		dtOverC, gkEpk, dtOverTc, cGain, dt;
+	double	conductance_G, potential_V;
+	double	ciliaDisplacement_u, lastInput, denom_val;
+	register	double		dt;
 	register	ChanData	*inPtr, *outPtr;
+	ShammaPtr	p = shammaPtr;
 	
-	if (!CheckPars_IHCRP_Shamma()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHCRP_Shamma()) {
+			NotifyError("%s: Parameters have not been correctly set.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Shamma hair cell receptor potential");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_IHCRP_Shamma(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dt = data->outSignal->dt;
+		p->dtOverC = dt / p->totalCapacitance_C;
+		p->gkEpk = p->kConductance_Gk * (p->reversalPot_Ek + p->
+		  endocochlearPot_Et * p->reversalPotCorrection);
+		p->leakageConductance_Ga = p->restingConductance_G0 - p->
+		  maxMConductance_Gmax / (1.0 + 1.0 / p->beta);
+		p->cGain = pow(10.0, p->ciliaCouplingGain_C / 20.0);
+		p->dtOverTc = dt / p->ciliaTimeConst_tc;
+        p->max_u = log(HUGE_VAL);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Shamma hair cell receptor potential");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_IHCRP_Shamma(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	dtOverC = dt / shammaPtr->totalCapacitance_C;
-	gkEpk = shammaPtr->kConductance_Gk * (shammaPtr->reversalPot_Ek +
-	  shammaPtr->endocochlearPot_Et * shammaPtr->reversalPotCorrection);
-	leakageConductance_Ga = shammaPtr->restingConductance_G0 -
-	  shammaPtr->maxMConductance_Gmax / (1.0 + 1.0 / shammaPtr->beta);
-	cGain = pow(10.0, shammaPtr->ciliaCouplingGain_C / 20.0);
-	dtOverTc = dt / shammaPtr->ciliaTimeConst_tc;
-        max_u = log(HUGE_VAL);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		ciliaDisplacement_u = shammaPtr->lastCiliaDisplacement_u[chan];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		potential_V = shammaPtr->lastOutput[chan];
-		lastInput = shammaPtr->lastInput[chan];
-		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {       
-			ciliaDisplacement_u += cGain * (*inPtr - lastInput) - 
-			  ciliaDisplacement_u * dtOverTc;
+		potential_V = p->lastOutput[chan];
+		lastInput = p->lastInput[chan];
+		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
+			ciliaDisplacement_u += p->cGain * (*inPtr - lastInput) - 
+			  ciliaDisplacement_u *  p->dtOverTc;
 
-			denom_val = ((-shammaPtr->gamma * ciliaDisplacement_u) >= max_u)?
-			  1.0 + HUGE_VAL / shammaPtr->beta : 
-			  1.0 + exp(-shammaPtr->gamma * ciliaDisplacement_u) /
-			  shammaPtr->beta;
+			denom_val = ((-p->gamma * ciliaDisplacement_u) >= p->max_u)?
+			  1.0 + HUGE_VAL / p->beta: 1.0 + exp(-p->gamma *
+			  ciliaDisplacement_u) / p->beta;
 
-			conductance_G = shammaPtr->maxMConductance_Gmax / denom_val +
-			  leakageConductance_Ga;
+			conductance_G = p->maxMConductance_Gmax / denom_val +
+			  p->leakageConductance_Ga;
  
-			*outPtr = (ChanData) (potential_V - dtOverC * (conductance_G *
-			  (potential_V - shammaPtr->endocochlearPot_Et) +
-			  shammaPtr->kConductance_Gk * potential_V - gkEpk));
+			*outPtr = (ChanData) (potential_V - p->dtOverC * (conductance_G *
+			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *
+			  potential_V - p->gkEpk));
 			potential_V = *outPtr;
 			lastInput = *inPtr;
 		}
-		shammaPtr->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
-		shammaPtr->lastInput[chan] = lastInput;
-		shammaPtr->lastOutput[chan] = potential_V;
+		p->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
+		p->lastInput[chan] = lastInput;
+		p->lastOutput[chan] = potential_V;
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++)
-			*outPtr++ += shammaPtr->referencePot;
+			*outPtr++ += p->referencePot;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

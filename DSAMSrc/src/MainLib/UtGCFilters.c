@@ -537,7 +537,7 @@ AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, AsymCmpCoeffs *p[])
 	register	double		*ptr1, *ptr2, wn; /* Inner loop variables */
 	register	ChanData	*data;
 
-	for (nch = 0; nch < theSignal->numChannels; nch++) {
+	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) {
 		data = &theSignal->channel[nch][nsmpl];
 		wn = *data;		/* Temp variable */
 		*data *= p[nch]->numCoeffs[0];
@@ -584,7 +584,7 @@ ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
 	/* For the allocation of space to the state vector, the filter for all
 	 * channels are assumed to have the same cascade as the first. */
     
-	for (nch = 0; nch < theSignal->numChannels; nch++) {
+	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) {
 		data = theSignal->channel[nch];
 		for (nsmpl = 0; nsmpl < theSignal->length; nsmpl++, data++) {
 			ptr1 = p[nch]->stateVector;
@@ -769,7 +769,7 @@ CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
 	int nch;
 
 	
-	for (nch = 0; nch < theSignal->numChannels; nch++) 
+	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) 
 		cntlGammaC[nch]->outSignalLI = (MAX(theSignal->channel[nch][nsmpl], 0.0)
 							+ MAX(-theSignal->channel[nch][nsmpl], 0.0)) / 2.0;
 

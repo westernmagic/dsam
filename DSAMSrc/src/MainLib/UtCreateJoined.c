@@ -63,6 +63,7 @@ InitModule_Utility_CreateJoined(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Utility_CreateJoined"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_CreateJoined;
 	theModule->SetParsPointer = SetParsPointer_Utility_CreateJoined;
 	return(TRUE);
@@ -130,19 +131,24 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 	int		i, chan;
 	ChanLen	j, joinedLength;
 
-	if (!CheckData_Utility_CreateJoined(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_CreateJoined(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Create Joined Utility module process");
+		for (i = 0, joinedLength = 0; i < data->numInSignals; i++)
+			joinedLength += data->inSignal[i]->length;
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  joinedLength, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Create Joined Utility module process");
-	for (i = 0, joinedLength = 0; i < data->numInSignals; i++)
-		joinedLength += data->inSignal[i]->length;
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  joinedLength, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->numInSignals; i++) {
 			inPtr = data->inSignal[i]->channel[chan];

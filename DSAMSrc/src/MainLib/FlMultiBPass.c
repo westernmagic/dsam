@@ -779,6 +779,7 @@ InitModule_Filter_MultiBPass(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = multiBPassFPtr;
+	/*theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;*/
 	theModule->CheckPars = CheckPars_Filter_MultiBPass;
 	theModule->Free = Free_Filter_MultiBPass;
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_MultiBPass;
@@ -834,20 +835,21 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 	int		i, j, k;
 	double	*statePtr;
 	BPassParsPtr	bPParsPtr;
+	MultiBPassFPtr	p = multiBPassFPtr;
 	
-	if (multiBPassFPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_MultiBPass();
-		if ((multiBPassFPtr->bPassPars = (BPassParsPtr) calloc(multiBPassFPtr->
-		  numFilters, sizeof(BPassPars))) == NULL) {
+		p->numChannels = data->outSignal->numChannels;
+		if ((p->bPassPars = (BPassParsPtr) calloc(p->numFilters, sizeof(
+		  BPassPars))) == NULL) {
 			NotifyError("%s: Cannot allocate memory for bPassPars array.",
 			  funcName);
 			return(FALSE);
 		}
-		for (i = 0; i < multiBPassFPtr->numFilters; i++) {
-			bPParsPtr = &multiBPassFPtr->bPassPars[i];
+		for (i = 0; i < p->numFilters; i++) {
+			bPParsPtr = &p->bPassPars[i];
 			if ((bPParsPtr->coefficients = (BandPassCoeffsPtr *) calloc(
-			  data->outSignal->numChannels, sizeof(BandPassCoeffsPtr))) ==
-			  NULL) {
+			  p->numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
 		 		NotifyError("%s: Out of memory for filter %d's coefficients.",
 				  funcName, i);
 		 		return(FALSE);
@@ -863,14 +865,19 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			}
 			
 		}
-		multiBPassFPtr->numChannels = data->outSignal->numChannels;
-	 	for (i = 0; (i < multiBPassFPtr->numFilters) && ok; i++) {
-			bPParsPtr = &multiBPassFPtr->bPassPars[i];
+		if (!InitSubProcessList_EarObject(data, p->numFilters - 1)) {
+			NotifyError("%s: Could not initialise %d sub-process list for "
+			  "process.", funcName, p->numFilters);
+			return(FALSE);
+		}
+	 	for (i = 0; (i < p->numFilters) && ok; i++) {
+			bPParsPtr = &p->bPassPars[i];
+			if (i != 0)
+				data->subProcessList[i - 1] = bPParsPtr->data;
 	 		for (j = 0; j < data->outSignal->numChannels; j++)
 				if ((bPParsPtr->coefficients[j] = InitBandPassCoeffs_Filters(
-				  multiBPassFPtr->cascade[i], multiBPassFPtr->lowerCutOffFreq[
-				  i], multiBPassFPtr->upperCutOffFreq[i], data->inSignal[
-				  0]->dt)) == NULL) {
+				  p->cascade[i], p->lowerCutOffFreq[i], p->upperCutOffFreq[i],
+				  data->inSignal[0]->dt)) == NULL) {
 				  	NotifyError("%s: Failed initialised filter %d, channel %d.",
 					  funcName, i, j);
 					ok = FALSE;
@@ -880,13 +887,13 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			FreeProcessVariables_Filter_MultiBPass();
 			return(FALSE);
 		}
-		multiBPassFPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		for (k = 0; k < multiBPassFPtr->numFilters; k++) {
-			bPParsPtr = &multiBPassFPtr->bPassPars[k];
+		for (k = 0; k < p->numFilters; k++) {
+			bPParsPtr = &p->bPassPars[k];
 			for (i = 0; i < data->outSignal->numChannels; i++) {
 				statePtr = bPParsPtr->coefficients[i]->state;
-				for (j = 0; j < multiBPassFPtr->cascade[k] *
+				for (j = 0; j < p->cascade[k] *
 				  FILTERS_NUM_CONTBUTT2_STATE_VARS; j++)
 					*statePtr++ = 0.0;
 			}
@@ -950,42 +957,46 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 	int		i, chan;
 	ChanLen	j;
 	BPassParsPtr	bPParsPtr;
+	MultiBPassFPtr	p = multiBPassFPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Filter_MultiBPass())
+			return(FALSE);
+		if (!CheckData_Filter_MultiBPass(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Multiple Bandpass filter Module "
+		  "process.");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise the process output signal.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Filter_MultiBPass(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		for (i = 0; i < p->numFilters; i++) {
+			bPParsPtr = &p->bPassPars[i];
+			TempInputConnection_EarObject(data, bPParsPtr->data, 1);
+			InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckPars_Filter_MultiBPass())
-		return(FALSE);
-	if (!CheckData_Filter_MultiBPass(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Multiple Bandpass filter Module "
-	  "process.");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise the process output signal.",
-		  funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Filter_MultiBPass(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	for (i = 0; i < multiBPassFPtr->numFilters; i++) {
-		bPParsPtr = &multiBPassFPtr->bPassPars[i];
-		TempInputConnection_EarObject(data, bPParsPtr->data, 1);
-		InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
-		if (fabs(multiBPassFPtr->gain[i]) > DBL_EPSILON)
-			GaindB_SignalData(bPParsPtr->data->outSignal, multiBPassFPtr->gain[
-			  i]);
+	for (i = 0; i < p->numFilters; i++) {
+		bPParsPtr = &p->bPassPars[i];
+		if (fabs(p->gain[i]) > DBL_EPSILON)
+			GaindB_SignalData(bPParsPtr->data->outSignal, p->gain[i]);
 		BandPass_Filters(bPParsPtr->data->outSignal, bPParsPtr->coefficients);
 	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		for (i = 1; i < multiBPassFPtr->numFilters; i++) {
-			inPtr = multiBPassFPtr->bPassPars[i].data->outSignal->channel[chan];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		for (i = 1; i < p->numFilters; i++) {
+			inPtr = p->bPassPars[i].data->outSignal->channel[chan];
 			outPtr = data->outSignal->channel[chan];
 			for (j = 0; j < data->outSignal->length; j++)
 				*outPtr++ += *inPtr++;

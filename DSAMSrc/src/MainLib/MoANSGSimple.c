@@ -521,8 +521,8 @@ BOOLN
 InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_ANSpikeGen_Simple";
-	int		i, arrayLength;
-	double	timeGreaterThanRefractoryPeriod;
+	int		i, j, arrayLength;
+	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
 	SimpleSGPtr	p = simpleSGPtr;
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
@@ -532,24 +532,43 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 			FreeProcessVariables_ANSpikeGen_Simple();
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
-			if ((p->timer = (double *) calloc(arrayLength, sizeof(double))) ==
-			  NULL) {
-			 	NotifyError("%s: Out of memory for timer array.", funcName);
+			p->numThreads = data->numThreads;
+			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
+			  double*))) == NULL) {
+			 	NotifyError("%s: Out of memory for timer pointer array.",
+				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (double *) calloc(arrayLength, sizeof(
-			  double))) == NULL) {
-			 	NotifyError("%s: Out of memory for remainingPulseTime array.",
-			 	  funcName);
+			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
+			  sizeof(double*))) == NULL) {
+			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
+				  "array.", funcName);
 			 	return(FALSE);
+			}
+			for (i = 0; i < p->numThreads; i++) {
+				if ((p->timer[i] = (double *) calloc(arrayLength, sizeof(
+				  double))) == NULL) {
+			 		NotifyError("%s: Out of memory for timer array.", funcName);
+			 		return(FALSE);
+				}
+				if ((p->remainingPulseTime[i] = (double *) calloc(arrayLength,
+				  sizeof(double))) == NULL) {
+			 		NotifyError("%s: Out of memory for remainingPulseTime "
+					  "array.", funcName);
+			 		return(FALSE);
+				}
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
 		  outSignal->dt;
-		for (i = 0; i < arrayLength; i++) {
-			p->timer[i] = timeGreaterThanRefractoryPeriod;
-			p->remainingPulseTime[i] = 0.0;
+		for (i = 0; i < p->numThreads; i++) {
+			timerPtr = p->timer[i];
+			remainingPulseTimePtr = p->remainingPulseTime[i];
+			for (j = 0; j < arrayLength; j++) {
+				*timerPtr++ = timeGreaterThanRefractoryPeriod;
+				*remainingPulseTimePtr++ = 0.0;
+			}
 		}
 	}
 	return(TRUE);
@@ -566,13 +585,22 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 void
 FreeProcessVariables_ANSpikeGen_Simple(void)
 {
-	if (simpleSGPtr->timer) {
-		free(simpleSGPtr->timer);
-		simpleSGPtr->timer = NULL;
+	int		i;
+	SimpleSGPtr	p = simpleSGPtr;
+
+	if (p->timer) {
+		for (i = 0; i < p->numThreads; i++)
+			if (p->timer[i])
+				free(p->timer[i]);
+		free(p->timer);
+		p->timer = NULL;
 	}
-	if (simpleSGPtr->remainingPulseTime) {
-		free(simpleSGPtr->remainingPulseTime);
-		simpleSGPtr->remainingPulseTime = NULL;
+	if (p->remainingPulseTime) {
+		for (i = 0; i < p->numThreads; i++)
+			if (p->remainingPulseTime[i])
+				free(p->remainingPulseTime[i]);
+		free(p->remainingPulseTime);
+		p->remainingPulseTime = NULL;
 	}
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
 
@@ -619,6 +647,7 @@ InitModule_ANSpikeGen_Simple(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = simpleSGPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_ANSpikeGen_Simple;
 	theModule->Free = Free_ANSpikeGen_Simple;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Simple;
@@ -679,36 +708,40 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 	register	ChanData	*inPtr, *outPtr;
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
-	double	dt;
 	ChanLen	j;
 	SimpleSGPtr	p = simpleSGPtr;
 
-	if (!CheckPars_ANSpikeGen_Simple())
-		return(FALSE);
-	if (!CheckData_ANSpikeGen_Simple(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Simple Post-Synaptic Spike Firing");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_ANSpikeGen_Simple(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->inSignal[0]->dt;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		outPtr = data->outSignal->channel[chan];
-		for (j = 0; j < data->outSignal->length; j++)
-			*outPtr++ = 0.0;
-	}
-	for (i = 0, timerPtr = p->timer, remainingPulseTimePtr =
-	  p->remainingPulseTime; i < p->numFibres; i++)
+	if (!data->threadRunFlag) {
+		if (!CheckPars_ANSpikeGen_Simple())
+			return(FALSE);
+		if (!CheckData_ANSpikeGen_Simple(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Simple Post-Synaptic Spike Firing");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_ANSpikeGen_Simple(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		p->dt = data->inSignal[0]->dt;
 		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+			outPtr = data->outSignal->channel[chan];
+			for (j = 0; j < data->outSignal->length; j++)
+				*outPtr++ = 0.0;
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
+	}
+	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
+	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
 			inPtr = data->inSignal[0]->channel[chan];
 			outPtr = data->outSignal->channel[chan];
 			for (j = 0; j < data->outSignal->length; j++) {
@@ -717,11 +750,11 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 					*remainingPulseTimePtr = p->pulseDuration;
 					*timerPtr = 0.0;
 				}
-				if (*remainingPulseTimePtr >= dt) {
+				if (*remainingPulseTimePtr >= p->dt) {
 					*outPtr += p->pulseMagnitude;
-					*remainingPulseTimePtr -= dt;
+					*remainingPulseTimePtr -= p->dt;
 				};
-				*timerPtr += dt;
+				*timerPtr += p->dt;
 				inPtr++;
 				outPtr++;
 			}

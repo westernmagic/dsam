@@ -457,6 +457,7 @@ InitModule_IHCRP_Meddis(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = meddisRPPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHCRP_Meddis;
 	theModule->Free = Free_IHCRP_Meddis;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Meddis;
@@ -512,23 +513,23 @@ InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHCRP_Meddis";
 	int		i;
 	double	spontPerm_k0;
+	MeddisRPPtr p = meddisRPPtr;
 
-	if (meddisRPPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (meddisRPPtr->updateProcessVariablesFlag || data->
-		  updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Meddis();
-			if ((meddisRPPtr->lastOutput = (double *)
-			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
+			   sizeof(double))) == NULL) {
 			 	NotifyError("%s: Out of memory.", funcName);
 			 	return(FALSE);
 			}
-			meddisRPPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		spontPerm_k0 = meddisRPPtr->releaseRate_g * meddisRPPtr->permConst_A /
-		  (meddisRPPtr->permConst_A + meddisRPPtr->permConst_B);
+		spontPerm_k0 = p->releaseRate_g * p->permConst_A / (p->permConst_A +
+		  p->permConst_B);
 		for (i = 0; i < data->outSignal->numChannels; i++)
-			meddisRPPtr->lastOutput[i] = spontPerm_k0;
+			p->lastOutput[i] = spontPerm_k0;
 	}
 	return(TRUE);
 
@@ -561,54 +562,60 @@ FreeProcessVariables_IHCRP_Meddis(void)
  * correctly carried out by calling the appropriate checking routines.
  */
 
-#define	PERMEABILITY(INPUT)			(((st_Plus_A = (INPUT) + \
-		  meddisRPPtr->permConst_A) > 0.0)? meddisRPPtr->releaseRate_g * \
-		  st_Plus_A / (st_Plus_A + meddisRPPtr->permConst_B): 0.0)
+#define	PERMEABILITY(INPUT)			(((st_Plus_A = (INPUT) + p->permConst_A) \
+		  > 0.0)? p->releaseRate_g * st_Plus_A / (st_Plus_A + \
+		  meddisRPPtr->permConst_B): 0.0)
 
 #define LOWPASSFILTER(LASTOUTPUT)	((ChanData) ((LASTOUTPUT) + \
-		  (permeability_K - (LASTOUTPUT)) * dtOverTm))
+		  (permeability_K - (LASTOUTPUT)) * p->dtOverTm))
 
 BOOLN
 RunModel_IHCRP_Meddis(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_IHCRP_Meddis";
 	register ChanData	*inPtr, *outPtr;
-	register double		dtOverTm, permeability_K, st_Plus_A;
+	register double		permeability_K, st_Plus_A;
 	int		chan;
 	ChanLen	i;
+	MeddisRPPtr p = meddisRPPtr;
 	
-	if (!CheckPars_IHCRP_Meddis()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHCRP_Meddis()) {
+			NotifyError("%s: Parameters have not been correctly set.", funcName);
+			return(FALSE);
+		}
+		if (!CheckData_IHCRP_Meddis(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Hair cell receptor potential");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_IHCRP_Meddis(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		p->dtOverTm = data->outSignal->dt / p->mTimeConst_tm;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckData_IHCRP_Meddis(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Hair cell receptor potential");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_IHCRP_Meddis(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dtOverTm = data->outSignal->dt / meddisRPPtr->mTimeConst_tm;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		permeability_K = PERMEABILITY(*inPtr++);
-		*outPtr++ = LOWPASSFILTER(meddisRPPtr->lastOutput[chan]);
+		*outPtr++ = LOWPASSFILTER(p->lastOutput[chan]);
 		/* Probability calculation for the rest of the signal. */
 		for (i = 1; i < data->outSignal->length; i++) {
 			permeability_K = PERMEABILITY(*inPtr++);
 			*outPtr = LOWPASSFILTER(*(outPtr - 1));
 			outPtr++;	/* Compiler complains if things not done this way. */
 		}
-		meddisRPPtr->lastOutput[chan] = *(outPtr - 1);
+		p->lastOutput[chan] = *(outPtr - 1);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

@@ -70,6 +70,7 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels;
+	double	aA,c1LP, c2LP;
 	CarneyRPCoeffsPtr	*coefficients;
 
 } CarneyRP, *CarneyRPPtr;

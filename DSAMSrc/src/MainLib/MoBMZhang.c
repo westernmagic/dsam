@@ -970,6 +970,7 @@ InitModule_BasilarM_Zhang(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bMZhangPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_BasilarM_Zhang;
 	theModule->Free = Free_BasilarM_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_Zhang;
@@ -1416,8 +1417,8 @@ BOOLN
 InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 {
 	static const char	*funcName = "InitProcessVariables_BasilarM_Zhang";
-	BMZhangPtr	p = bMZhangPtr;
 	int		i, cFIndex;
+	BMZhangPtr	p = bMZhangPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->cFList->
 	  updateFlag) {
@@ -1564,37 +1565,38 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	uShort	totalChannels;
 	int		chan;
+	BMZhangPtr	p = bMZhangPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_BasilarM_Zhang())
-		return(FALSE);
-	if (!CheckData_BasilarM_Zhang(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Zhang et al. Non-linear BM filtering");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_BasilarM_Zhang())
+			return(FALSE);
+		if (!CheckData_BasilarM_Zhang(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Zhang et al. Non-linear BM filtering");
 
-	totalChannels = bMZhangPtr->cFList->numChannels * data->inSignal[0]->
-	  numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Cannot initialise output channel.", funcName);
-		return(FALSE);
-	}
+		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Cannot initialise output channel.", funcName);
+			return(FALSE);
+		}
 
-	if (!InitProcessVariables_BasilarM_Zhang(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+		if (!InitProcessVariables_BasilarM_Zhang(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
 		  interleaveLevel];
 		outPtr = data->outSignal->channel[chan];
-		Run2BasilarMembrane_BasilarM_Zhang(&bMZhangPtr->bM[chan],
-		  inPtr, outPtr, data->outSignal->length);
+		Run2BasilarMembrane_BasilarM_Zhang(&p->bM[chan], inPtr, outPtr,
+		  data->outSignal->length);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

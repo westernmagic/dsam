@@ -775,6 +775,7 @@ InitModule_BasilarM_GammaChirp(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bMGammaCPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_BasilarM_GammaChirp;
 	theModule->Free = Free_BasilarM_GammaChirp;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_GammaChirp;
@@ -1040,53 +1041,55 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 	double	sampleRate;
 	ChanLen	nsmpl;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_BasilarM_GammaChirp())
-		return(FALSE);
-	if (!CheckData_BasilarM_GammaChirp(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "GammaChirp basilar membrane filtering "
-	  "(Slaney GT)");
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
-	}
-	totalChannels = bMGammaCPtr->theCFs->numChannels * data->inSignal[
-	  0]->numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Cannot initialise output channel.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_BasilarM_GammaChirp(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	/* Beginig of GammaChirp_Filters */
+	if (!data->threadRunFlag) {
+		if (!CheckPars_BasilarM_GammaChirp())
+			return(FALSE);
+		if (!CheckData_BasilarM_GammaChirp(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "GammaChirp basilar membrane filtering "
+		  "(Slaney GT)");
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		totalChannels = bMGammaCPtr->theCFs->numChannels * data->inSignal[
+		  0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Cannot initialise output channel.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_BasilarM_GammaChirp(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		/* Beginig of GammaChirp_Filters */
 
-	for (nch = 0; nch < data->outSignal->numChannels; nch++) {
-		bMGammaCPtr->cntlGammaC[nch]->outSignalLI = 0.0;
-		bMGammaCPtr->cntlGammaC[nch]->aEst = 0.0;
-		bMGammaCPtr->cntlGammaC[nch]->psEst = 0.0;
-		if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_NOCONTROL)
-				 		/* opMode=1 -> "NC" */
-			bMGammaCPtr->cntlGammaC[nch]->cEst = bMGammaCPtr->cCoeff0;
-		else
-			bMGammaCPtr->cntlGammaC[nch]->cEst = 0.0;
-	}
+		for (nch = 0; nch < data->outSignal->numChannels; nch++) {
+			bMGammaCPtr->cntlGammaC[nch]->outSignalLI = 0.0;
+			bMGammaCPtr->cntlGammaC[nch]->aEst = 0.0;
+			bMGammaCPtr->cntlGammaC[nch]->psEst = 0.0;
+			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_NOCONTROL)
+				 			/* opMode=1 -> "NC" */
+				bMGammaCPtr->cntlGammaC[nch]->cEst = bMGammaCPtr->cCoeff0;
+			else
+				bMGammaCPtr->cntlGammaC[nch]->cEst = 0.0;
+		}
 
+		if (data->initThreadRunFlag)
+			return(TRUE);
+	}
 	if (bMGammaCPtr->cascade == 4)
 		ERBGammaTone_GCFilters(data->outSignal, bMGammaCPtr->coefficientsERBGT);
 	else
 		GammaTone_Filters(data->outSignal, bMGammaCPtr->coefficientsGT);
 
 	cEstCnt = 0;
-	for (nch = 0; nch < data->outSignal->numChannels; nch++)
+	for (nch = data->outSignal->offset; nch < data->outSignal->numChannels;
+	  nch++)
 		if (bMGammaCPtr->cntlGammaC[nch]->cEst != 0.0)
 			cEstCnt++;
 
@@ -1106,7 +1109,8 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 					bMGammaCPtr->coefficientsLI);
             }
 
-			for (nch = 0; nch < bMGammaCPtr->numChannels; nch++) {
+			for (nch = data->outSignal->offset; nch < data->outSignal->
+			  numChannels; nch++) {
 				cFIndex = nch / data->inSignal[0]->interleaveLevel;
 				CalcAsymCmpCoeffs_GCFilters(bMGammaCPtr->coefficientsAC[nch],
 					bMGammaCPtr->theCFs->frequency[cFIndex],

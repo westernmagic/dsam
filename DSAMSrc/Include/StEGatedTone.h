@@ -72,8 +72,8 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
-	ChanLen	cycleCount;
-	ChanLen	beginPeriodIndex;
+	double	cycleTimer;
+	double	nextCycle;
 
 } EGatedTone, *EGatedTonePtr;
 

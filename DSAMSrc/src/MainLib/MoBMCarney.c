@@ -607,6 +607,7 @@ InitModule_BasilarM_Carney(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bMCarneyPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_BasilarM_Carney;
 	theModule->Free = Free_BasilarM_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_Carney;
@@ -667,6 +668,8 @@ FreeProcessVariables_BasilarM_Carney(void)
 		bMCarneyPtr->coefficients = NULL;
 	}
 	if (bMCarneyPtr->f) {
+		for (i = 0; i < bMCarneyPtr->numThreads; i++)
+			free(bMCarneyPtr->f[i]);
 		free(bMCarneyPtr->f);
 		bMCarneyPtr->f= NULL;
 	}
@@ -735,24 +738,22 @@ BOOLN
 InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_BasilarM_Carney";
-	int		i, j, cFIndex, numComplexCoeffs, chan;
-	double	pix2xDt;
-	BMCarneyPtr	p;
-	
-	p = bMCarneyPtr;
+	int		i, j, cFIndex, chan;
+	BMCarneyPtr	p = bMCarneyPtr;
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  p->cFList->updateFlag || (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 		  p->cFList->updateFlag) {
 			FreeProcessVariables_BasilarM_Carney();
-			if ((p->coefficients = (CarneyGTCoeffsPtr *) calloc(
-			  data->outSignal->numChannels, sizeof(CarneyGTCoeffsPtr))) ==
-			    NULL) {
+			p->numThreads = data->numThreads;
+			p->numChannels = data->outSignal->numChannels;
+			if ((p->coefficients = (CarneyGTCoeffsPtr *) calloc(p->numChannels,
+			   sizeof(CarneyGTCoeffsPtr))) == NULL) {
 		 		NotifyError("%s: Out of memory for coefficients array.",
 		 		  funcName);
 		 		return(FALSE);
 			}
-			p->numChannels = data->outSignal->numChannels;
 			for (i = 0; i < data->outSignal->numChannels; i++) {
 				cFIndex = i / data->inSignal[0]->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyGTCoeffs_BasilarM_Carney(
@@ -763,14 +764,21 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 					return(FALSE);
 				}
 			}
-			numComplexCoeffs = p->cascade + 1;
-			if ((p->f = (Complex *) calloc(numComplexCoeffs,
-			  sizeof(Complex))) == NULL) {
-				NotifyError("%s: Out of memory for 'f' array (%d elements).",
-				  funcName, numComplexCoeffs);
-				FreeProcessVariables_BasilarM_Carney();
+			p->numComplexCoeffs = p->cascade + 1;
+			if ((p->f = (ComplexPtr *) calloc(p->numThreads, sizeof(
+			  ComplexPtr))) == NULL) {
+				NotifyError("%s: Out of memory for 'f' array pointers.",
+				  funcName);
 				return(FALSE);
 			}
+			for (i = 0; i < p->numThreads; i++)
+				if ((p->f[i] = (Complex *) calloc(p->numComplexCoeffs,
+				  sizeof(Complex))) == NULL) {
+					NotifyError("%s: Out of memory for 'f[%d]' array (%d "
+					  "elements).", funcName, i, p->numComplexCoeffs);
+					FreeProcessVariables_BasilarM_Carney();
+					return(FALSE);
+				}
 			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 			SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
 			SetInfoChannelLabels_SignalData(data->outSignal,
@@ -779,11 +787,11 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 			p->cFList->updateFlag = FALSE;
 		}
-		pix2xDt = PIx2 * data->inSignal[0]->dt;
+		p->pix2xDt = PIx2 * data->inSignal[0]->dt;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			chan = i % data->inSignal[0]->interleaveLevel;
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
-			RThetaSet_CmplxM(data->inSignal[0]->channel[chan][0], -pix2xDt *
+			RThetaSet_CmplxM(data->inSignal[0]->channel[chan][0], -p->pix2xDt *
 			  p->cFList->frequency[cFIndex], &p->coefficients[i]->fLast[0]);
 			for (j = 1; j < p->cascade + 1; j++)
 				RThetaSet_CmplxM(0.0, 0.0, &p->coefficients[i]->fLast[j]);
@@ -817,78 +825,82 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 	static const char	*funcName = "RunModel_BasilarM_Carney";
 	register	ChanData	 *inPtr, *outPtr;
 	uShort	totalChannels;
-	int		j, chan, numComplexCoeffs, cFIndex;
-	double	c, c1LP, c2LP, aCoeff, pix2xDt, pix2xDtxCF, cF, fF;
-	double	bCoeff, aA, oHCTemp, oHC;
+	int		j, chan, cFIndex;
+	double	aCoeff, pix2xDtxCF, cF, fF, bCoeff, oHCTemp, oHC;
 	ChanLen	i;
-	Complex	z;
-	BMCarneyPtr	p;
+	Complex	z, *f;
+	BMCarneyPtr	p = bMCarneyPtr;
 	CarneyGTCoeffsPtr	cC;
 
-	if (!CheckPars_BasilarM_Carney())
-		return(FALSE);
-	if (!CheckData_BasilarM_Carney(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_BasilarM_Carney())
+			return(FALSE);
+		if (!CheckData_BasilarM_Carney(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Carney non-linear basilar membrane "
+		  "filtering");
+		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Could not initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_BasilarM_Carney(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		/* Main Processing. */
+		p->c = 2.0 / data->inSignal[0]->dt;
+		p->aA = p->maxHCVoltage / (1.0 + tanh(p->asymmetricalBias));
+		p->c1LP = (p->c - PIx2 * p->cutOffFrequency) / (p->c + PIx2 *
+		  p->cutOffFrequency);
+		p->c2LP = PIx2 * p->cutOffFrequency / (PIx2 * p->cutOffFrequency +
+		  p->c);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Carney non-linear basilar membrane "
-	  "filtering");
-	p = bMCarneyPtr;
-	totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Could not initialise output channels.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_BasilarM_Carney(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	/* Main Processing. */
-	c = 2.0 / data->inSignal[0]->dt;
-	aA = p->maxHCVoltage / (1.0 + tanh(p->asymmetricalBias));
-	c1LP = (c - PIx2 * p->cutOffFrequency) / (c + PIx2 * p->cutOffFrequency);
-	c2LP = PIx2 * p->cutOffFrequency / (PIx2 * p->cutOffFrequency + c);
-	pix2xDt = PIx2 * data->inSignal[0]->dt;
-	numComplexCoeffs = p->cascade + 1;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	f = p->f[data->threadIndex];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		cFIndex = chan / data->outSignal->interleaveLevel;
 		cC = *(p->coefficients + chan);
-		aCoeff = BM_CARNEY_A(c, cC->tau0);
+		aCoeff = BM_CARNEY_A(p->c, cC->tau0);
 		cF = p->cFList->frequency[cFIndex];
-		pix2xDtxCF = pix2xDt * cF;
-		inPtr = data->inSignal[0]->channel[chan %
-		  data->inSignal[0]->interleaveLevel];
+		pix2xDtxCF = p->pix2xDt * cF;
+		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
+		  interleaveLevel];
 		outPtr = data->outSignal->channel[chan];
 		for(i = 0; i < data->outSignal->length; i++) {	
 			/* FREQUENCY SHIFT THE ARRAY BUF  */
-			RThetaSet_CmplxM(*inPtr++, -pix2xDtxCF * (i + 1), &p->f[0]);
+			RThetaSet_CmplxM(*inPtr++, -pix2xDtxCF * (i + 1), &f[0]);
 			fF = (cC->tau0 * 3.0 / 2.0 - (cC->tau0 / 2.0) * (cC->oHCLast /
 			  p->maxHCVoltage));
-			bCoeff = c * fF - 1.0;
-			for (j = 1; j < numComplexCoeffs; j++) {
-				p->f[j] = cC->fLast[j];
-				ScalerMult_CmplxM(&p->f[j], bCoeff);
-				Add_CmplxM(&p->f[j], &p->f[j - 1], &p->f[j]);
-				Add_CmplxM(&p->f[j], &cC->fLast[j - 1], &p->f[j]);
-				ScalerMult_CmplxM(&p->f[j], aCoeff);
+			bCoeff = p->c * fF - 1.0;
+			for (j = 1; j < p->numComplexCoeffs; j++) {
+				f[j] = cC->fLast[j];
+				ScalerMult_CmplxM(&f[j], bCoeff);
+				Add_CmplxM(&f[j], &f[j - 1], &f[j]);
+				Add_CmplxM(&f[j], &cC->fLast[j - 1], &f[j]);
+				ScalerMult_CmplxM(&f[j], aCoeff);
 			}
 			/* FREQUENCY SHIFT BACK UP  */
 			RThetaSet_CmplxM(1.0, pix2xDtxCF * (i + 1), &z);
-			Mult_CmplxM(&z, &p->f[p->cascade], &z);
+			Mult_CmplxM(&z, &f[p->cascade], &z);
 			*outPtr++ = oHCTemp = z.re;
 
 			/* Put through OHC saturating nonlinearity-  SO THAT 
 			 * Output=.5*vmaxd AT wave=operating point   */
-			oHCTemp = aA * (tanh(0.746 * oHCTemp / p->hCOperatingPoint -
+			oHCTemp = p->aA * (tanh(0.746 * oHCTemp / p->hCOperatingPoint -
 			  p->asymmetricalBias) + tanh(p->asymmetricalBias));
 
 			/* lowpass filter the feedback voltage   */
-			oHC = c1LP * cC->oHCLast + c2LP * (oHCTemp + cC->oHCTempLast);
+			oHC = p->c1LP * cC->oHCLast + p->c2LP * (oHCTemp + cC->oHCTempLast);
 
 			/* save all loop parameters */
-			for(j = 0; j < numComplexCoeffs; j++)
-				cC->fLast[j] = p->f[j];
+			for(j = 0; j < p->numComplexCoeffs; j++)
+				cC->fLast[j] = f[j];
 			cC->oHCLast = oHC;
 			cC->oHCTempLast = oHCTemp;
 		}    /* END of TIME LOOP */

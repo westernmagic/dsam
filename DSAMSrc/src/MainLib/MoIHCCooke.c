@@ -502,6 +502,7 @@ InitModule_IHC_Cooke91(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = cookeHCPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Cooke91;
 	theModule->Free = Free_IHC_Cooke91;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Cooke91;
@@ -551,31 +552,29 @@ InitProcessVariables_IHC_Cooke91(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHC_Cooke91";
 	int		i;
 	double	dt, vmin, k, l;
-	CookeHCPtr	hC;
+	CookeHCPtr	p = cookeHCPtr;		/* Shorter variable for long formulae. */;
 	
-	if (cookeHCPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		hC = cookeHCPtr;		/* Shorter variable for long formulae. */
-		if (cookeHCPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Cooke91();
-			if ((hC->hCChannels = (CookeHCVarsPtr) calloc(
-			  data->outSignal->numChannels, sizeof (CookeHCVars))) == NULL) {
+			if ((p->hCChannels = (CookeHCVarsPtr) calloc(data->outSignal->
+			  numChannels, sizeof (CookeHCVars))) == NULL) {
 				NotifyError("%s: Out of memory.", funcName);
 				return(FALSE);
 			}
-			cookeHCPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 		dt = data->outSignal->dt;
-		vmin = cookeHCPtr->spontRate / cookeHCPtr->maxSpikeRate;
-		k = cookeHCPtr->releaseFraction * dt;
-		l = cookeHCPtr->refillFraction * dt;
+		vmin = p->spontRate / p->maxSpikeRate;
+		k = p->releaseFraction * dt;
+		l = p->refillFraction * dt;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			hC->hCChannels[i].vimm = vmin;
-			hC->hCChannels[i].vrel = 0.0;
-			hC->hCChannels[i].crel = 0.0;
-			hC->hCChannels[i].vres = 1.0 - vmin;
-			hC->hCChannels[i].cimm = l / (vmin * k + l);
+			p->hCChannels[i].vimm = vmin;
+			p->hCChannels[i].vrel = 0.0;
+			p->hCChannels[i].crel = 0.0;
+			p->hCChannels[i].vres = 1.0 - vmin;
+			p->hCChannels[i].cimm = l / (vmin * k + l);
 		}
 	}
 	return(TRUE);
@@ -613,46 +612,49 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_IHC_Cooke91";
 	int		i;
-	double	dt, vmin, k, l, rateScale, rp, spmIn, rate, delta;
+	double	dt, rp, spmIn, rate, delta;
 	ChanLen	j;
 	ChanData	*inPtr, *outPtr;
-	CookeHCPtr	hC;
+	CookeHCPtr	p = cookeHCPtr; /* Shorter name for use with long equations. */
 	CookeHCVarsPtr	c;
 	
-	if (!CheckPars_IHC_Cooke91())		
-		return(FALSE);
-	if (!CheckData_IHC_Cooke91(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Cooke91())		
+			return(FALSE);
+		if (!CheckData_IHC_Cooke91(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Meddis 94 probabilistic hair cell");
+		if (!InitProcessVariables_IHC_Cooke91(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dt = data->outSignal->dt;
+		p->vmin = p->spontRate / p->maxSpikeRate;
+		p->k = p->releaseFraction * dt;
+		p->l = p->refillFraction * dt;
+		p->rateScale = p->maxSpikeRate / p->k;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Meddis 94 probabilistic hair cell");
-	if (!InitProcessVariables_IHC_Cooke91(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	hC = cookeHCPtr;		/* Shorter name for use with long equations. */
-	vmin = hC->spontRate / cookeHCPtr->maxSpikeRate;
-	k = hC->releaseFraction * dt;
-	l = hC->refillFraction * dt;
-	rateScale = hC->maxSpikeRate / k;
 		
-	for (i = 0; i < data->outSignal->numChannels; i++) {
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
-		c = &hC->hCChannels[i];
+		c = &p->hCChannels[i];
 		for (j = 0; j < data->outSignal->length; j++, inPtr++, outPtr++) {
-			rp = *inPtr / (*inPtr + hC->crawfordConst);
+			rp = *inPtr / (*inPtr + p->crawfordConst);
    			if (rp < 0.0)
    				rp = 0.0;
 			/* Adaptation */
-			spmIn = (rp < vmin)? vmin: rp;
+			spmIn = (rp < p->vmin)? p->vmin: rp;
 			if (spmIn > c->vimm) {
 				if (spmIn > (c->vimm + c->vrel)) {
 					delta = spmIn - (c->vrel + c->vimm);
@@ -675,12 +677,12 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			}
 			/* Compute output and refill */
 			c->vimm = spmIn;
-			rate = (k * c->cimm * c->vimm);
+			rate = (p->k * c->cimm * c->vimm);
 			c->cimm = c->cimm - rate;
-			c->cimm = c->cimm+l*(1.0-c->cimm);
+			c->cimm = c->cimm + p->l * (1.0 - c->cimm);
 			if (c->vrel > 0.000001)
-				c->crel = c->crel + l * (1.0 - c->crel);
-			*outPtr = rate * rateScale;
+				c->crel = c->crel + p->l * (1.0 - c->crel);
+			*outPtr = rate * p->rateScale;
 		}
 	}
 	SetProcessContinuity_EarObject(data);

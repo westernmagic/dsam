@@ -115,9 +115,9 @@ typedef struct {
 	UniParListPtr	parList;
 	char			diagFileName[MAX_FILE_PATH];
 	FILE			*fp;
-	BOOLN	restingRun;
+	BOOLN	restingRun, debug;
 	int		numChannels;
-	double	restingPot;
+	double	restingPot, dt, dtOverC;
 	HHuxleyState	*state;
 
 } HHuxleyNC, *HHuxleyNCPtr;

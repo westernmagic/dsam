@@ -59,6 +59,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	double	vmin, k, l, rateScale;
 	CookeHCVars	*hCChannels;
 
 } CookeHC, *CookeHCPtr;

@@ -1066,6 +1066,7 @@ InitModule_BasilarM_DRNL_Test(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bM0DRNLPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_BasilarM_DRNL_Test;
 	theModule->Free = Free_BasilarM_DRNL_Test;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_DRNL_Test;
@@ -1205,40 +1206,41 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_BasilarM_DRNL_Test";
 	int		i, j, cFIndex;
 	double	sampleRate, centreFreq;
+	BM0DRNLPtr	p = bM0DRNLPtr;
 	
-	if (bM0DRNLPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  bM0DRNLPtr->theCFs->updateFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
+	  updateFlag) {
 		FreeProcessVariables_BasilarM_DRNL_Test();
-		bM0DRNLPtr->linearF = Init_EarObject("NULL");
-		bM0DRNLPtr->numChannels = data->outSignal->numChannels;
-		if (bM0DRNLPtr->nonLinGTCascade) {
-			if ((bM0DRNLPtr->nonLinearGT1 = (GammaToneCoeffsPtr *) calloc(
-			  bM0DRNLPtr->numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
+		p->linearF = Init_EarObject("NULL");
+		p->numChannels = data->outSignal->numChannels;
+		if (p->nonLinGTCascade) {
+			if ((p->nonLinearGT1 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
+			  sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 		NotifyError("%s: Out of memory (nonLinearGT1).", funcName);
 		 		return(FALSE);
 			}
-			if ((bM0DRNLPtr->nonLinearGT2 = (GammaToneCoeffsPtr *) calloc(
-			  bM0DRNLPtr->numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
+			if ((p->nonLinearGT2 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
+			  sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 		NotifyError("%s: Out of memory (nonLinearGT2).", funcName);
 		 		return(FALSE);
 			}
 		}
-		if (bM0DRNLPtr->linGTCascade) {
-			if ((bM0DRNLPtr->linearGT = (GammaToneCoeffsPtr *) calloc(
-			  bM0DRNLPtr->numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
+		if (p->linGTCascade) {
+			if ((p->linearGT = (GammaToneCoeffsPtr *) calloc(p->numChannels,
+			  sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 		NotifyError("%s: Out of memory (linearGT).", funcName);
 		 		return(FALSE);
 			}
 		}
 
-		if (!InitLPFilterArray_BasilarM_DRNL_Test(&bM0DRNLPtr->nonLinearLP,
-		  bM0DRNLPtr->nonLinLPCascade)) {
+		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->nonLinearLP,
+		  p->nonLinLPCascade)) {
 			NotifyError("%s: Could not initialise nonlinear low-pass filter.",
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitLPFilterArray_BasilarM_DRNL_Test(&bM0DRNLPtr->linearLP,
-		  bM0DRNLPtr->linLPCascade)) {
+		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->linearLP,
+		  p->linLPCascade)) {
 			NotifyError("%s: Could not initialise linear low-pass filter.",
 			  funcName);
 			return(FALSE);
@@ -1247,41 +1249,40 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 		sampleRate = 1.0 / data->inSignal[0]->dt;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
-			centreFreq = bM0DRNLPtr->theCFs->frequency[cFIndex];
-			if (bM0DRNLPtr->nonLinearGT1) {
-				if ((bM0DRNLPtr->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(
-				  centreFreq, bM0DRNLPtr->theCFs->bandwidth[cFIndex],
-				  bM0DRNLPtr->nonLinGTCascade, sampleRate)) == NULL) {
+			centreFreq = p->theCFs->frequency[cFIndex];
+			if (p->nonLinearGT1) {
+				if ((p->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(
+				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
+				  sampleRate)) == NULL) {
 					NotifyError("%s: Could not initialise nonlinear GT 1 "
 					  "coefficients for channel %d.", funcName, i);
 					return(FALSE);
 				}
-				if ((bM0DRNLPtr->nonLinearGT2[i] = InitGammaToneCoeffs_Filters(
-				  centreFreq, bM0DRNLPtr->theCFs->bandwidth[cFIndex],
-				  bM0DRNLPtr->nonLinGTCascade, sampleRate)) == NULL) {
+				if ((p->nonLinearGT2[i] = InitGammaToneCoeffs_Filters(
+				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
+				  sampleRate)) == NULL) {
 					NotifyError("%s: Could not initialise nonlinear GT 2 "
 					  "coefficients for channel %d.", funcName, i);
 					return(FALSE);
 				}
 			}
-			if (bM0DRNLPtr->linearGT) {
-				if ((bM0DRNLPtr->linearGT[i] = InitGammaToneCoeffs_Filters(
-				  bM0DRNLPtr->linCF, bM0DRNLPtr->linBwidth, bM0DRNLPtr->
-				  linGTCascade, sampleRate)) == NULL) {
+			if (p->linearGT) {
+				if ((p->linearGT[i] = InitGammaToneCoeffs_Filters(p->linCF,
+				  p->linBwidth, p->linGTCascade, sampleRate)) == NULL) {
 					NotifyError("%s: Could not initialise nonlinear GT 2 "
 					  "coefficients for channel %d.", funcName, i);
 					return(FALSE);
 				}
 			}
 
-			if (!InitLPFilter_BasilarM_DRNL_Test(&bM0DRNLPtr->nonLinearLP, i,
-			  centreFreq, data->inSignal[0]->dt)) {
+			if (!InitLPFilter_BasilarM_DRNL_Test(&p->nonLinearLP, i, centreFreq,
+			  data->inSignal[0]->dt)) {
 				NotifyError("%s: Could not initialise low-pass filter.",
 				  funcName);
 				return(FALSE);
 			}
-			if (!InitLPFilter_BasilarM_DRNL_Test(&bM0DRNLPtr->linearLP, i,
-			  bM0DRNLPtr->linCF, data->inSignal[0]->dt)) {
+			if (!InitLPFilter_BasilarM_DRNL_Test(&p->linearLP, i, p->linCF,
+			  data->inSignal[0]->dt)) {
 				NotifyError("%s: Could not initialise low-pass filter.",
 				  funcName);
 				return(FALSE);
@@ -1289,25 +1290,23 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
-		SetInfoChannelLabels_SignalData(data->outSignal,
-		  bM0DRNLPtr->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal,
-		  bM0DRNLPtr->theCFs->frequency);
-		bM0DRNLPtr->updateProcessVariablesFlag = FALSE;
-		bM0DRNLPtr->theCFs->updateFlag = FALSE;
+		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
+		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+		p->updateProcessVariablesFlag = FALSE;
+		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			for (j = 0; j < bM0DRNLPtr->nonLinGTCascade * 
+			for (j = 0; j < p->nonLinGTCascade * 
 			  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER; j++) {
-				bM0DRNLPtr->nonLinearGT1[i]->stateVector[j] = 0.0;
-				bM0DRNLPtr->nonLinearGT2[i]->stateVector[j] = 0.0;
+				p->nonLinearGT1[i]->stateVector[j] = 0.0;
+				p->nonLinearGT2[i]->stateVector[j] = 0.0;
 			}
-			for (j = 0; j < bM0DRNLPtr->linGTCascade *
+			for (j = 0; j < p->linGTCascade *
 			  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER; j++)
-				bM0DRNLPtr->linearGT[i]->stateVector[j] = 0.0;
+				p->linearGT[i]->stateVector[j] = 0.0;
 		}
-		ResetLPFilter_BasilarM_DRNL_Test(&bM0DRNLPtr->nonLinearLP);
-		ResetLPFilter_BasilarM_DRNL_Test(&bM0DRNLPtr->linearLP);
+		ResetLPFilter_BasilarM_DRNL_Test(&p->nonLinearLP);
+		ResetLPFilter_BasilarM_DRNL_Test(&p->linearLP);
 	}
 	return(TRUE);
 
@@ -1427,77 +1426,79 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_BasilarM_DRNL_Test";
 	uShort	totalChannels;
+	BM0DRNLPtr	p = bM0DRNLPtr;
 				
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckPars_BasilarM_DRNL_Test())
-		return(FALSE);
-		
-	/* Initialise Variables and coefficients */
-	
-	SetProcessName_EarObject(data, "DRNL_Test Basilar Membrane Filtering");
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckPars_BasilarM_DRNL_Test())
+			return(FALSE);
+
+		/* Initialise Variables and coefficients */
+
+		SetProcessName_EarObject(data, "DRNL_Test Basilar Membrane Filtering");
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Cannot initialise output channel.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_BasilarM_DRNL_Test(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		TempInputConnection_EarObject(data, p->linearF, 1);
+		InitOutFromInSignal_EarObject(p->linearF, totalChannels);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	totalChannels = bM0DRNLPtr->theCFs->numChannels *
-	  data->inSignal[0]->numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Cannot initialise output channel.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_BasilarM_DRNL_Test(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	TempInputConnection_EarObject(data, bM0DRNLPtr->linearF, 1);
-	InitOutFromInSignal_EarObject(bM0DRNLPtr->linearF, totalChannels);
 	
 	/* Filter non-linear signal path */
-	if (bM0DRNLPtr->nonLinearGT1)
-		GammaTone_Filters(data->outSignal, bM0DRNLPtr->nonLinearGT1);
+	if (p->nonLinearGT1)
+		GammaTone_Filters(data->outSignal, p->nonLinearGT1);
 
-	switch (bM0DRNLPtr->compressionMode) {
+	switch (p->compressionMode) {
 	case DRNLT_COMPRESSION_MODE_ORIGINAL:
-		Compression_Filters(data->outSignal, bM0DRNLPtr->compressionPars[0],
-		  bM0DRNLPtr->compressionPars[1]);
+		Compression_Filters(data->outSignal, p->compressionPars[0],
+		  p->compressionPars[1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_INVPOWER:
-		InversePowerCompression_Filters(data->outSignal,
-		  bM0DRNLPtr->compressionPars[0], bM0DRNLPtr->compressionPars[1]);
+		InversePowerCompression_Filters(data->outSignal, p->compressionPars[0],
+		  p->compressionPars[1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_BROKENSTICK1:
-		BrokenStick1Compression_Filters(data->outSignal,
-		  bM0DRNLPtr->compressionPars[0], bM0DRNLPtr->compressionPars[1],
-		  bM0DRNLPtr->compressionPars[2]);
+		BrokenStick1Compression_Filters(data->outSignal, p->compressionPars[0],
+		  p->compressionPars[1], p->compressionPars[2]);
 		break;
 	case DRNLT_COMPRESSION_MODE_UPTON_BSTICK:
-		UptonBStick1Compression_Filters(data->outSignal,
-		  bM0DRNLPtr->compressionPars[0], bM0DRNLPtr->compressionPars[1],
-		  bM0DRNLPtr->compressionPars[2], bM0DRNLPtr->compressionPars[3]);
+		UptonBStick1Compression_Filters(data->outSignal, p->compressionPars[0],
+		  p->compressionPars[1], p->compressionPars[2], p->compressionPars[3]);
 		break;
 	default:
 		;
 	}
-	if (bM0DRNLPtr->nonLinearGT2)
-		GammaTone_Filters(data->outSignal, bM0DRNLPtr->nonLinearGT2);
+	if (p->nonLinearGT2)
+		GammaTone_Filters(data->outSignal, p->nonLinearGT2);
 
-	RunLPFilter_BasilarM_DRNL_Test(data->outSignal, &bM0DRNLPtr->nonLinearLP);
+	RunLPFilter_BasilarM_DRNL_Test(data->outSignal, &p->nonLinearLP);
 	
 	/* Filter linear signal path */
-	if (bM0DRNLPtr->linearGT)
-		GammaTone_Filters(bM0DRNLPtr->linearF->outSignal, bM0DRNLPtr->linearGT);
+	if (p->linearGT)
+		GammaTone_Filters(p->linearF->outSignal, p->linearGT);
 
-	RunLPFilter_BasilarM_DRNL_Test(bM0DRNLPtr->linearF->outSignal,
-	  &bM0DRNLPtr->linearLP);
+	RunLPFilter_BasilarM_DRNL_Test(p->linearF->outSignal, &p->linearLP);
 	
-	Scale_SignalData(bM0DRNLPtr->linearF->outSignal, bM0DRNLPtr->linScaler);
-	Add_SignalData(data->outSignal, bM0DRNLPtr->linearF->outSignal);
+	Scale_SignalData(p->linearF->outSignal, p->linScaler);
+	Add_SignalData(data->outSignal, p->linearF->outSignal);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

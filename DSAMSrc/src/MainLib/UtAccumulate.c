@@ -72,6 +72,7 @@ InitModule_Utility_Accumulate(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Utility_Accumulate"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_Accumulate;
 	theModule->SetParsPointer = SetParsPointer_Utility_Accumulate;
 	return(TRUE);
@@ -141,18 +142,23 @@ Process_Utility_Accumulate(EarObjectPtr data)
 	int			chan, input;
 	ChanLen	i;
 
-	if (!CheckData_Utility_Accumulate(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Signal accumulator.");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_Accumulate(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Signal accumulator.");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	for (input = 0; input < data->numInSignals; input++)
-		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
 			inPtr = data->inSignal[input]->channel[chan];
 			outPtr = data->outSignal->channel[chan];
 			for (i = 0; i < data->outSignal->length; i++)

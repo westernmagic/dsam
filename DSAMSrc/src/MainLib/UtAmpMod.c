@@ -669,6 +669,7 @@ InitModule_Utility_AmpMod(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = ampModPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_AmpMod;
 	theModule->Free = Free_Utility_AmpMod;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_AmpMod;
@@ -733,19 +734,24 @@ Process_Utility_AmpMod(EarObjectPtr data)
 	double	sum, time;
 	ChanLen	i, t;
 
-	if (!CheckPars_Utility_AmpMod())
-		return(FALSE);
-	if (!CheckData_Utility_AmpMod(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_AmpMod())
+			return(FALSE);
+		if (!CheckData_Utility_AmpMod(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Amplitude modulation utility module.");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Amplitude modulation utility module.");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++,

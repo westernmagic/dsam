@@ -49,7 +49,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*lastOutput;
+	double	*lastOutput, dtOverTm;
 	
 } MeddisRP, *MeddisRPPtr;
 

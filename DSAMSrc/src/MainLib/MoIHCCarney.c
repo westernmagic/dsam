@@ -733,6 +733,7 @@ InitModule_IHC_Carney(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = carneyHCPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Carney;
 	theModule->Free = Free_IHC_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Carney;
@@ -788,15 +789,14 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHC_Carney";
 	int		i;
 	double	restingImmediateConc_CI0, restingLocalConc_CL0;
-	CarneyHCPtr	hC;
+	CarneyHCPtr	p = carneyHCPtr;
 	
-	if (carneyHCPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		hC = carneyHCPtr;		/* Shorter variable for long formulae. */
-		if (carneyHCPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (carneyHCPtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 			FreeProcessVariables_IHC_Carney();
-			if ((hC->hCChannels = (CarneyHCVarsPtr) calloc(
+			if ((p->hCChannels = (CarneyHCVarsPtr) calloc(
 			  data->outSignal->numChannels, sizeof (CarneyHCVars))) == NULL) {
 				NotifyError("%s: Out of memory.", funcName);
 				return(FALSE);
@@ -808,10 +808,10 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 		restingLocalConc_CL0 = CARNEY_IHC_RESTING_LOCAL_CONC_FACTOR *
 		  restingImmediateConc_CI0;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			hC->hCChannels[i].vI = carneyHCPtr->minImmediateVolume;
-			hC->hCChannels[i].vL = carneyHCPtr->minLocalVolume;
-			hC->hCChannels[i].cI = restingImmediateConc_CI0;
-			hC->hCChannels[i].cL = restingLocalConc_CL0;
+			p->hCChannels[i].vI = carneyHCPtr->minImmediateVolume;
+			p->hCChannels[i].vL = carneyHCPtr->minLocalVolume;
+			p->hCChannels[i].cI = restingImmediateConc_CI0;
+			p->hCChannels[i].cL = restingLocalConc_CL0;
 		}
 	}
 	return(TRUE);
@@ -857,62 +857,65 @@ RunModel_IHC_Carney(EarObjectPtr data)
 	static const char	*funcName = "RunModel_IHC_Carney";
 	register	ChanData	 *inPtr, *outPtr;
 	int			chan;
-	double		dt, pIMaxMinusPrest, pLMaxMinusPrest, pGMaxMinusPrest;
-	double		cG, releaseProb, pI, pL, pG;
+	double		releaseProb, pI, pL, pG;
 	ChanLen		i;
-	CarneyHCPtr		hC;
+	CarneyHCPtr	p = carneyHCPtr;
 	CarneyHCVarsPtr	vPtr;
 
-	if (!CheckPars_IHC_Carney())
-		return(FALSE);
-	if (!CheckData_IHC_Carney(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Carney())
+			return(FALSE);
+		if (!CheckData_IHC_Carney(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Carney IHC Synapse");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_IHC_Carney(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		p->dt = data->outSignal->dt;
+		p->cG = CARNEY_IHC_RESTING_GLOBAL_CONC_FACTOR * p->restingReleaseRate /
+		  p->restingPerm;
+		p->pIMaxMinusPrest = p->maxImmediatePerm - p->restingPerm;
+		p->pLMaxMinusPrest = p->maxLocalPerm - p->restingPerm;
+		p->pGMaxMinusPrest = p->maxGlobalPerm - p->restingPerm;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Carney IHC Synapse");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_IHC_Carney(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	hC = carneyHCPtr;			/* Shorter variable for long formulae. */
-	cG = CARNEY_IHC_RESTING_GLOBAL_CONC_FACTOR * hC->restingReleaseRate /
-	  hC->restingPerm;
-	pIMaxMinusPrest = hC->maxImmediatePerm - hC->restingPerm;
-	pLMaxMinusPrest = hC->maxLocalPerm - hC->restingPerm;
-	pGMaxMinusPrest = hC->maxGlobalPerm - hC->restingPerm;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		vPtr = &hC->hCChannels[chan];
+		vPtr = &p->hCChannels[chan];
 		for (i = 0; i < data->outSignal->length; i++) {
-			releaseProb = *inPtr++ / hC->maxHCVoltage;
-			if ((pI = pIMaxMinusPrest * releaseProb + hC->restingPerm) < 0.0)
+			releaseProb = *inPtr++ / p->maxHCVoltage;
+			if ((pI = p->pIMaxMinusPrest * releaseProb + p->restingPerm) < 0.0)
 				pI = 0.0;
-			if ((pL = pLMaxMinusPrest * releaseProb + hC->restingPerm) < 0.0)
+			if ((pL = p->pLMaxMinusPrest * releaseProb + p->restingPerm) < 0.0)
 				pL = 0.0;
-			if ((pG = pGMaxMinusPrest * releaseProb + hC->restingPerm) < 0.0)
+			if ((pG = p->pGMaxMinusPrest * releaseProb + p->restingPerm) < 0.0)
 				pG = 0.0;
 
 			if (releaseProb < 0.0)
 				releaseProb = 0.0;
-			vPtr->vI += (hC->maxImmediateVolume - vPtr->vI) * releaseProb;
-			vPtr->vL += (hC->maxLocalVolume - vPtr->vL) * releaseProb;
+			vPtr->vI += (p->maxImmediateVolume - vPtr->vI) * releaseProb;
+			vPtr->vL += (p->maxLocalVolume - vPtr->vL) * releaseProb;
 
 			/* Use Euler Method to solve Diff EQ's */
-			vPtr->cI += dt / vPtr->vI * (-pI * vPtr->cI + pL * (vPtr->cL -
+			vPtr->cI += p->dt / vPtr->vI * (-pI * vPtr->cI + pL * (vPtr->cL -
 			  vPtr->cI));
-			vPtr->cL += dt / vPtr->vL * (-pL * (vPtr->cL - vPtr->cI) + pG *
-			  (cG - vPtr->cL));
+			vPtr->cL += p->dt / vPtr->vL * (-pL * (vPtr->cL - vPtr->cI) + pG *
+			  (p->cG - vPtr->cL));
 			
 			/* Spike prob. */
-			*outPtr++ = (ChanData) (vPtr->cI * pI * dt);
+			*outPtr++ = (ChanData) (vPtr->cI * pI * p->dt);
 		}
 	}
 
