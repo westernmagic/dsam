@@ -1,0 +1,41 @@
+#!/bin/sh
+##################
+#
+# File:		dosdist
+# Purpose:	This script runs all of the commands necessary for configuring DSAM
+#			from the CVS repository for dos compilation
+# Author:	L.P.O'Mard
+# Created:	13 Jul 2001
+# Updated:	
+# Copyright:(c) 2001, University of Essex
+#
+##################
+
+
+usage()
+{
+	cat <<EOF
+Usage: dos-dist command
+commands:
+    cvsconfig - configure the cvs source for compilation on windows platform.
+    clean     - remove all windows compilation created directories and files
+EOF
+	exit $1
+}
+
+if [ $# -eq 0 ]; then
+	usage 1 1>&2
+fi
+
+case  $1 in
+cvsconfig)
+	CfgTools/cvsconfigure
+	./configure
+	(cd src/MainLib; make UtSSParser.c)
+	;;
+clean)
+	rm -rf lib bin `find . -name '*.obj'`
+	;;
+*)
+	usage 1 1>&2
+esac
