@@ -40,9 +40,9 @@
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
 #include "FiDataFile.h"
-#include "FiAIFF.h"
 #include "UtSSParser.h"
 #include "ExtMainApp.h"
+#include "ExtIPCUtils.h"
 #include "ExtIPCServer.h"
 
 /******************************************************************************/
@@ -66,17 +66,15 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort)
 	ok = true;
 	simulationInitialisedFlag = false;
 	sock = NULL;
-	inProcess = NULL;
-	outProcess = NULL;
-	inUIOPtr = NULL;
-	outUIOPtr = NULL;
-	addr.Hostname((hostName.length())? hostName: "localhost");
-	addr.Service((!theServicePort)? EXTMAINAPP_DEFAULT_SERVER_PORT:
-	  theServicePort);
 
+	if (!hostName.IsEmpty())
+		addr.Hostname(hostName);
+	addr.Service((!theServicePort)? EXTIPCUTILS_DEFAULT_SERVER_PORT:
+	  theServicePort);
 	myServer = new wxSocketServer(addr);
 	if (!myServer->Ok()) {
-		NotifyError("%s: Could not listen at specified port.", funcName);
+		NotifyError("%s: Could not listen at port %u.", funcName,
+		  theServicePort);
 		ok = FALSE;
 	}
 	SetDPrintFunc(DPrint_IPCServer);
@@ -92,10 +90,6 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort)
 
 IPCServer::~IPCServer(void)
 {
-	if (inUIOPtr)
-		FreeMemory_UPortableIO(&inUIOPtr);
-	if (outUIOPtr)
-		FreeMemory_UPortableIO(&outUIOPtr);
 	if (myServer)
 		myServer->Destroy();
 	iPCServer = NULL;
@@ -105,29 +99,6 @@ IPCServer::~IPCServer(void)
 /******************************************************************************/
 /****************************** IPCServer Methods *****************************/
 /******************************************************************************/
-
-/****************************** CommandList ***********************************/
-
-NameSpecifier *
-IPCServer::CommandList(int index)
-{
-	static NameSpecifier	modeList[] = {
-
-					{ "QUIT",		IPCSERVER_COMMAND_QUIT},
-					{ "ERRMSGS",	IPCSERVER_COMMAND_ERRMSGS},
-					{ "GET",		IPCSERVER_COMMAND_GET},
-					{ "GETFILES",	IPCSERVER_COMMAND_GETFILES},
-					{ "INIT",		IPCSERVER_COMMAND_INIT},
-					{ "PUT",		IPCSERVER_COMMAND_PUT},
-					{ "RUN",		IPCSERVER_COMMAND_RUN},
-					{ "SET",		IPCSERVER_COMMAND_SET},
-					{ "STATUS",		IPCSERVER_COMMAND_STATUS},
-					{ "",		IPCSERVER_COMMAND_NULL},
-				
-				};
-	return (&modeList[index]);
-
-}
 
 /****************************** InitConnection ********************************/
 
@@ -148,155 +119,14 @@ IPCServer::InitConnection(bool wait)
 		NotifyError("%s: Couldn't accept a new connection.\n", funcName);
 		return(NULL);
 	}
+	printf("%s: Got new client.\n", funcName);
+	sock->SetFlags(wxSOCKET_WAITALL);
 	myServer->GetLocal(addr);
 	salutation.Printf("Host %s running %s, DSAM version %s.\n", addr.Hostname(
-	  ).c_str(), EXTIPCSERVER_DEFAULT_SERVER_NAME, DSAM_VERSION);
+	  ).c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
 	sock->Write(salutation.GetData(), salutation.length());
 	return(sock);
 
-
-}
-
-/****************************** InitInProcess *********************************/
-
-/*
- */
-
-bool
-IPCServer::InitInProcess(void)
-{
-	static const char *funcName = "IPCServer::InitInProcess";
-
-	if (!inProcess && ((inProcess = Init_EarObject("DataFile_In")) == NULL)) {
-		NotifyError("%s: Cannot initialised input process EarObject.", 
-		  funcName);
-		return(false);
-	}
-	SetPar_ModuleMgr(inProcess, "filename", EXTIPCSERVER_MEMORY_FILE_NAME);
-	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
-	ConnectOutSignalToIn_EarObject(inProcess, GetSimProcess_AppInterface());
-	return(true);
-
-}
-
-/****************************** InitOutProcess *********************************/
-
-/*
- */
-
-bool
-IPCServer::InitOutProcess(void)
-{
-	static const char *funcName = "IPCServer::InitOutProcess";
-
-	if (!outProcess && ((outProcess = Init_EarObject("DataFile_Out")) ==
-	  NULL)) {
-		NotifyError("%s: Cannot initialised input process EarObject.", 
-		  funcName);
-		return(false);
-	}
-	SetPar_ModuleMgr(outProcess, "filename", EXTIPCSERVER_MEMORY_FILE_NAME);
-	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = inUIOPtr;
-	ConnectOutSignalToIn_EarObject(GetSimProcess_AppInterface(), outProcess);
-	return(true);
-
-}
-
-/****************************** ResetInProcess ********************************/
-
-/*
- * This routine resets the input process ready for the new simulation.
- */
-
-void
-IPCServer::ResetInProcess(void)
-{
-	if (!inProcess)
-		return;
-		
-	DisconnectOutSignalFromIn_EarObject(inProcess, GetSimProcess_AppInterface(
-	  ));
-	Free_EarObject(&inProcess);
-
-}
-
-/****************************** ResetOutProcess *******************************/
-
-/*
- * This routine resets the output process ready for the new simulation.
- */
-
-void
-IPCServer::ResetOutProcess(void)
-{
-	if (!outProcess)
-		return;
-		
-	DisconnectOutSignalFromIn_EarObject(GetSimProcess_AppInterface(),
-	  outProcess);
-	Free_EarObject(&outProcess);
-
-}
-
-/****************************** RunInProcess **********************************/
-
-/*
- * This function runs the input process.  It assumes that the DataFile
- * process is GUI safe, and so temporarily unsets the 'usingGUIFlag'.
- * This avoids an attempted call to the "TestDestroy_SimThread" routine.
- */
-
-bool
-IPCServer::RunInProcess(void)
-{
-	static const char *funcName = "IPCServer::RunInProcess";
-	bool	ok = true;
-	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
-
-	ResetProcess_EarObject(inProcess);
-	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
-	if (!RunProcess_ModuleMgr(inProcess)) {
-		NotifyError("%s: Could not run input process.", funcName);
-		ok = false;
-	}
-	GetDSAMPtr_Common()->usingGUIFlag = oldUsingGUIFlag;
-	return(ok);
-
-}
-
-/****************************** RunOutProcess ********************************/
-
-/*
- * This function writes the simulation output to the 'memory file'.
- * This call is set up to ignore segment processing mode, as the memory
- * allocated for the output data does not grow.  Such growth would be in
- * appropriate for socket transfer.  The other side of the socket must sort this
- * out as required.
- */
-
-bool
-IPCServer::RunOutProcess(void)
-{
-	static const char *funcName = "IPCServer::RunOutProcess";
-	bool	ok = true;
-	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
-	BOOLN	oldSegmentedMode = GetDSAMPtr_Common()->segmentedMode;
-
-	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
-	  GetSimProcess_AppInterface()->outSignal, 0L))) {
-		NotifyError("%s: Could not prepare output data buffer.", funcName);
-		return(false);
-	}
-	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = outUIOPtr;
-	GetDSAMPtr_Common()->segmentedMode = FALSE;
-	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
-	if (!RunProcess_ModuleMgr(outProcess)) {
-		NotifyError("%s: Could not run output process.", funcName);
-		ok = false;
-	}
-	GetDSAMPtr_Common()->segmentedMode = oldSegmentedMode;
-	GetDSAMPtr_Common()->usingGUIFlag = oldUsingGUIFlag;
-	return(ok);
 
 }
 
@@ -314,8 +144,8 @@ IPCServer::OnInit(void)
 	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
 		return;
 	}
-	ResetInProcess();
-	ResetOutProcess();
+	iPCUtils.ResetInProcess();
+	iPCUtils.ResetOutProcess();
 	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
 	wxRemoveFile(tempFileName);
 	tempFileName.append(".spf");
@@ -330,9 +160,9 @@ IPCServer::OnInit(void)
 	delete oStream;
 	LoadSimFile(tempFileName);
 	wxRemoveFile(tempFileName);
-	if (inUIOPtr)
-		InitInProcess();
-	InitOutProcess();
+	iPCUtils.InitOutProcess();
+	iPCUtils.ConnectToOutProcess(GetSimProcess_AppInterface());
+	simulationInitialisedFlag = true;
 
 }
 
@@ -346,20 +176,44 @@ IPCServer::OnPut(void)
 {
 	static const char *funcName = "IPCServer::OnPut";
 	size_t	length;
-	UPortableIOPtr	oldUIOPtr = uPortableIOPtr;
 
-	sock->SetFlags(wxSOCKET_WAITALL);
  	sock->Read(&length, sizeof(length));
-	uPortableIOPtr = inUIOPtr;
-	if (!InitMemory_UPortableIO(&inUIOPtr, length)) {
+	if (!iPCUtils.InitInputMemory(length)) {
 		NotifyError("%s: Could not initialise memory for input process signal",
 		  funcName);
 		return;
 	}
-	sock->Read(inUIOPtr->memStart, length);
-	uPortableIOPtr = oldUIOPtr;
-	if (simulationInitialisedFlag)
-		InitInProcess();
+	sock->Read(iPCUtils.GetInUIOPtr()->memStart, length);
+	if (!iPCUtils.InitInProcess()) {
+		NotifyError("%s: Could not initialise the input process.", funcName);
+		return;
+	}
+
+}
+
+/****************************** OnPutArgs *************************************/
+
+/*
+ */
+
+void
+IPCServer::OnPutArgs(void)
+{
+	bool	ok = true;
+	unsigned char	c;
+	wxUint8	i, argc;
+	wxString	s;
+
+ 	sock->Read(&argc, sizeof(argc));
+	ok = dSAMMainApp->InitArgv(argc);
+	for (i = 0; i < argc; i++) {
+		s.Clear();
+		while (!sock->Read(&c, 1).Error() && (c != '\0'))
+			s += c;
+		s += '\0';
+		dSAMMainApp->SetArgvString(i, (char *) s.c_str(), s.length());
+	}
+	ResetCommandArgFlags_AppInterface();
 
 }
 
@@ -371,18 +225,18 @@ IPCServer::OnPut(void)
 void
 IPCServer::OnGet(void)
 {
-	UPortableIOPtr	uIOPtr;
-	ChanLen	length = 0;
 
-	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
+	if (!GetPtr_AppInterface()->simulationFinishedFlag ||
+	  !GetSimProcess_AppInterface()->outSignal) {
+		ChanLen	length = 0;
 		sock->Write(&length, sizeof(length));
 		return;
 	}
-	RunOutProcess();
-	uIOPtr = ((DataFilePtr) outProcess->module->parsPtr)->uIOPtr;
-	sock->SetFlags(wxSOCKET_WAITALL);
- 	sock->Write(&uIOPtr->length, sizeof(uIOPtr->length));
-	sock->Write(uIOPtr->memStart, uIOPtr->length);
+	iPCUtils.RunOutProcess();
+ 	sock->Write(&iPCUtils.GetOutUIOPtr()->length, sizeof(iPCUtils.GetOutUIOPtr(
+	  )->length));
+	sock->Write(iPCUtils.GetOutUIOPtr()->memStart, iPCUtils.GetOutUIOPtr()->
+	  length);
 
 }
 
@@ -433,10 +287,6 @@ IPCServer::OnGetFiles(void)
 	}
 	BuildFileList(list, GetSimulation_AppInterface());
 	numFiles = list.Count();
-	if (!numFiles) {
-		NotifyError("%s: No output files to transfer.\n", funcName);
-		return;
-	}
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
 		sock->Write(list[i], list[i].length());
@@ -505,13 +355,20 @@ IPCServer::OnSet(void)
 void
 IPCServer::OnExecute(void)
 {
+	static const char *funcName = "IPCServer::OnExecute";
+
 	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
 		return;
 	}
-	if (inProcess)
-		RunInProcess();
+	if (!simulationInitialisedFlag) {
+		NotifyError("%s: Simulation not initialised.", funcName);
+		return;
+	}
+	if (iPCUtils.GetInProcess() && !iPCUtils.InProcessConnected())
+		iPCUtils.ConnectToInProcess(GetSimProcess_AppInterface());
+
+	iPCUtils.RunInProcess();
 	OnExecute_AppInterface();
-		
 
 }
 
@@ -523,16 +380,16 @@ IPCServer::OnExecute(void)
 void
 IPCServer::OnStatus(void)
 {
-	unsigned char status = IPCSERVER_STATUS_READY;
+	unsigned char status = IPC_STATUS_READY;
 
 
 	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
-		status = IPCSERVER_STATUS_BUSY;
+		status = IPC_STATUS_BUSY;
 		sock->Write(&status, 1);
 		return;
 	}
 	if (notificationList.GetCount() > 0) {
-		status = IPCSERVER_STATUS_ERROR;
+		status = IPC_STATUS_ERROR;
 		sock->Write(&status, 1);
 		return;
 	}
@@ -558,42 +415,48 @@ IPCServer::ProcessInput(void)
 
 	sock->SetNotify(wxSOCKET_LOST_FLAG);
 	buffer.Clear();
-	while(((endProcessing = sock->Read(&c, 1).Error()) == false) && (c != '\n'))
+	while (((endProcessing = sock->Read(&c, 1).Error()) == false) && (c !=
+	  '\n'))
 		if (c != '\r')
 			buffer += c;
-	switch (Identify_NameSpecifier((char *) buffer.c_str(), CommandList(0))) {
-	case IPCSERVER_COMMAND_QUIT:
+	switch (Identify_NameSpecifier((char *) buffer.c_str(), iPCUtils.
+	  CommandList(0))) {
+	case IPC_COMMAND_QUIT:
 		endProcessing = true;
 		OnExit_AppInterface();
 		break;
-	case IPCSERVER_COMMAND_ERRMSGS:
+	case IPC_COMMAND_ERRMSGS:
 		OnErrMsgs();
 		notificationList.Clear();
 		break;
-	case IPCSERVER_COMMAND_GET:
+	case IPC_COMMAND_GET:
 		OnGet();
 		break;
-	case IPCSERVER_COMMAND_GETFILES:
+	case IPC_COMMAND_GETFILES:
 		OnGetFiles();
 		break;
-	case IPCSERVER_COMMAND_INIT:
+	case IPC_COMMAND_INIT:
 		OnInit();
 		break;
-	case IPCSERVER_COMMAND_PUT:
+	case IPC_COMMAND_PUT:
 		OnPut();
 		break; 
-	case IPCSERVER_COMMAND_RUN:
+	case IPC_COMMAND_PUT_ARGS:
+		OnPutArgs();
+		break; 
+	case IPC_COMMAND_RUN:
 		OnExecute();
 		break;
-	case IPCSERVER_COMMAND_SET:
+	case IPC_COMMAND_SET:
 		OnSet();
 		break;
-	case IPCSERVER_COMMAND_STATUS:
+	case IPC_COMMAND_STATUS:
 		OnStatus();
 		break;
 	default:
-		NotifyError("%s: Unknown command given (%s).", funcName, buffer.
-		  c_str());
+		if (buffer.Length())
+			NotifyError("%s: Unknown command given (%s).", funcName, buffer.
+			  c_str());
 	}
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
 	return(!endProcessing);

@@ -21,7 +21,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define EXTMAINAPP_DEFAULT_SERVER_PORT		3300
+#define MAINAPP_PARAMETER_STR_DELIMITERS	" ,\t"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -53,10 +53,11 @@ class MainApp {
 	SimThread	*simThread;
 	wxCriticalSection	mainCritSect;
 
-  	MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void) = NULL,
-	  int (* TheExternalRunSimulation)(void) = NULL);
+  	MainApp(int theArgc = 0, char **theArgv = NULL, int (* TheExternalMain)(
+	  void) = NULL, int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
+	virtual EarObjectPtr	GetSimProcess(void);
 	virtual bool	InitRun(void);
 	virtual int		Main(void);
 	virtual	bool	RunSimulation(void);
@@ -69,15 +70,22 @@ class MainApp {
 	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
 	void	DeleteSimThread(void);
-	EarObjectPtr	GetSimProcess(void);
+	void	FreeArgStrings(void);
+	int		GetArgc(void)	{ return argc; }
+	char **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
+	bool	InitArgv(int theArgc);
 	bool	InitMain(bool loadSimulationFlag = false);
+	void	RemoveCommands(int offset, char *prefix);
 	int		RunServer(void);
 	void	SetInitStatus(bool status)	{ initOk = status; }
 	void	StartSimThread(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(char **theArgv)	{ argv = theArgv; }
+	bool	SetArgvString(int index, char *string, int size);
+	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,
+			  bool countOnly);
 
 };
 

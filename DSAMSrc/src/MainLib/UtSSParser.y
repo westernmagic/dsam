@@ -107,7 +107,7 @@ simulation:
 simulation_name:
 			STRING
 			{ if (!simScriptPtr->subSimList) {
-			    $$ = simScriptPtr->simPtr;
+			    $$ = *simScriptPtr->simPtr;
 				strcpy(simScriptPtr->simFileName, $1->name);
 				
 			  } else {

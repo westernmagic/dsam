@@ -12,7 +12,8 @@ lib_LTLIBRARIES = libdsam_ext.la
 INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 					-I$(top_srcdir)/src/MainLib -I../MainLib
 
-libdsam_ext_la_SOURCES= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp 
+libdsam_ext_la_SOURCES= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp \
+						ExtIPCUtils.cpp ExtIPCClient.cpp
 
 libdsam_ext_la_LDFLAGS= $(GenLaLDFLAGS)
 

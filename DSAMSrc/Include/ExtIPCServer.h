@@ -24,50 +24,17 @@
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
 #include "UtDatum.h"
+#include "ExtIPCUtils.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	EXTIPCSERVER_DEFAULT_SERVER_NAME		"DSAM IPC Server"
-#define EXTIPCSERVER_MAX_COMMAND_CHAR			10
-#define EXTIPCSERVER_MEMORY_FILE_NAME			"+.aif"
+#define	EXTIPC_DEFAULT_SERVER_NAME		"DSAM IPC Server"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
-
-enum {
-
-	IPCSERVER_APP_SOCKET_ID = 1,
-	IPCSERVER_APP_SERVER_ID
-
-};
-
-enum {
-
-	IPCSERVER_COMMAND_QUIT,
-
-	IPCSERVER_COMMAND_ERRMSGS,
-	IPCSERVER_COMMAND_GET,
-	IPCSERVER_COMMAND_GETFILES,
-	IPCSERVER_COMMAND_INIT,
-	IPCSERVER_COMMAND_PUT,
-	IPCSERVER_COMMAND_RUN,
-	IPCSERVER_COMMAND_SET,
-	IPCSERVER_COMMAND_STATUS,
-
-	IPCSERVER_COMMAND_NULL
-
-};
-
-enum {
-
-	IPCSERVER_STATUS_READY = 0,
-	IPCSERVER_STATUS_BUSY,
-	IPCSERVER_STATUS_ERROR
-
-};
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -84,12 +51,11 @@ enum {
 class IPCServer {
 
 	bool	ok, simulationInitialisedFlag;
+	IPCUtils	iPCUtils;
 	wxString	buffer;
-	EarObjectPtr	inProcess, outProcess;
 	wxArrayString	notificationList;
 	wxSocketBase	*sock;
 	wxSocketServer	*myServer;
-	UPortableIOPtr	inUIOPtr, outUIOPtr;
 
   public:
 	IPCServer(const wxString& hostName, uShort theServicePort);
@@ -100,7 +66,6 @@ class IPCServer {
 	void	AddNotification(wxString &s)	{ notificationList.Add(s); }
 	void	BuildFileList(wxArrayString &list, DatumPtr pc);
 	void	ClearNotifications(void)	{ notificationList.Empty(); }
-	NameSpecifier *	CommandList(int index);
 	wxSocketServer	*	GetServer(void)	{ return myServer; }
 	wxSocketBase *	GetSocket(void)	{ return sock; };
 	wxSocketBase *	InitConnection(bool wait = true);
@@ -112,6 +77,7 @@ class IPCServer {
 	bool	Ok(void)	{ return ok; }
 	void	OnGetFiles(void);
 	void	OnPut(void);
+	void	OnPutArgs(void);
 	void	OnSet(void);
 	void	OnStatus(void);
 	void	OnErrMsgs(int index = -1);

@@ -24,8 +24,6 @@
 #include "GeEarObject.h"
 #include "UtDatum.h"
 
-#include "GrIPCServer.h"
-
 #include "GrUtils.h"
 #include "GrSimMgr.h"
 #include "GrLines.h"

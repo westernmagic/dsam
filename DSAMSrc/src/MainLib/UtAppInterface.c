@@ -669,13 +669,14 @@ ProcessParComs_AppInterface(void)
 	}
 	for (i = appInterfacePtr->initialCommand; i < appInterfacePtr->argc; i += 2)
 		if (!SetProgramParValue_AppInterface(appInterfacePtr->argv[i],
-		  appInterfacePtr->argv[i + 1], FALSE) && !SetUniParValue_Utility_Datum(
-		  simulation, appInterfacePtr->argv[i], appInterfacePtr->argv[i + 1])) {
+		  appInterfacePtr->argv[i + 1], FALSE) && simulation &&
+		  !SetUniParValue_Utility_Datum(simulation, appInterfacePtr->argv[i],
+		  appInterfacePtr->argv[i + 1])) {
 			NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
 			  appInterfacePtr->argv[i], appInterfacePtr->argv[i + 1]);
 			return(FALSE);
 		}
-	appInterfacePtr->useParComsFlag = FALSE;
+	appInterfacePtr->useParComsFlag = (!appInterfacePtr->audModel);
 	return(TRUE);
 
 }

@@ -80,6 +80,7 @@
 #include "GrSDISPFDoc.h"
 #include "GrSDIView.h"
 #include "GrDiagFrame.h"
+#include "ExtIPCUtils.h"
 #include "GrIPCServer.h"
 #include "GrSignalDisp.h"
 #include "GrCanvas.h"
@@ -119,8 +120,8 @@ void CreateApp(void)
 /******************************************************************************/
 
 BEGIN_EVENT_TABLE(MyApp, wxApp)
-	EVT_SOCKET(IPCSERVER_APP_SERVER_ID,	MyApp::OnServerEvent)
-	EVT_SOCKET(IPCSERVER_APP_SOCKET_ID,	MyApp::OnSocketEvent)
+	EVT_SOCKET(IPC_APP_SERVER_ID,	MyApp::OnServerEvent)
+	EVT_SOCKET(IPC_APP_SOCKET_ID,	MyApp::OnSocketEvent)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -692,7 +693,7 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 		NotifyError("%s: Couldn't initialise connection.\n");
 		return;
 	}
-	sock->SetEventHandler(*this, IPCSERVER_APP_SOCKET_ID);
+	sock->SetEventHandler(*this, IPC_APP_SOCKET_ID);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
 	sock->Notify(TRUE);
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);

@@ -34,7 +34,6 @@
 #endif
 
 #include "GeCommon.h"
-#include "StdMessage.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeNSpecLists.h"
@@ -188,6 +187,9 @@
 #	if USE_EXTENSIONS_LIBRARY
 //		Any files included regardless of precompiled headers
 #		include <wx/socket.h>
+#		include <wx/filesys.h>
+#		include "ExtIPCUtils.h"
+#		include "ExtIPCClient.h"
 #		include "ExtIPCServer.h"
 #		include "ExtMainApp.h"
 #		include "ExtSimThread.h"

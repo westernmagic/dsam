@@ -37,7 +37,6 @@
 #include "UtDatum.h"
 #include "GeModuleMgr.h"
 
-#include "GrIPCServer.h"
 #include "GrSimMgr.h"
 #include "GrSDIFrame.h"
 #include "GrSDIEvtHandler.h"

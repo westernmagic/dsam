@@ -22,7 +22,6 @@
 #include <time.h>
 
 #include "GeCommon.h"
-#include "StdMessage.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeNSpecLists.h"

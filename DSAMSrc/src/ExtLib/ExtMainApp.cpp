@@ -29,12 +29,14 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "UtString.h"
 #include "UtOptions.h"
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
 #include "ExtSimThread.h"
+#include "ExtIPCUtils.h"
 #include "ExtIPCServer.h"
 #include "ExtMainApp.h"
 
@@ -65,7 +67,7 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
 	serverFlag = false;
-	serverPort = EXTMAINAPP_DEFAULT_SERVER_PORT;
+	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
@@ -84,6 +86,7 @@ MainApp::~MainApp(void)
 {
 	DeleteSimThread();
 	
+	FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
 	Free_AppInterface();
 	dSAMMainApp = NULL;
@@ -149,7 +152,6 @@ MainApp::RunServer(void)
 		}
 
 	}
-	
 	return(0);
 
 }
@@ -181,6 +183,118 @@ MainApp::CheckOptions(void)
 		default:
 			;
 		} /* switch */
+
+}
+
+/****************************** InitArgv **************************************/
+
+/*
+ * This allocates the memory for the argv pointer.
+ */
+
+bool
+MainApp::InitArgv(int theArgc)
+{
+	static const char *funcName = "MainApp::InitArgv";
+
+	if (!theArgc)
+		return(TRUE);
+	argc = theArgc;
+	if ((argv = (char **) calloc(argc, sizeof(
+	  char *))) == NULL) {
+		NotifyError("%s: Out of memory for argv[%d] array.", funcName, argc);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** SetArgvString *********************************/
+
+bool
+MainApp::SetArgvString(int index, char *string, int size)
+{
+	static const char *funcName = "MainApp::SetArgvString";
+	
+	if ((argv[index] = (char *) malloc(size + 1)) == NULL) {
+		NotifyError("%s: Out of memory for argv[%d].", funcName, index);
+		return(FALSE);
+	}
+	strcpy(argv[index], string);
+	return(TRUE);
+
+}
+
+/****************************** SetParameterOptionArgs ************************/
+
+/*
+ * This function extracts the parameter options from a string.
+ * In the count mode it only counts the parameter options, it does not add it to
+ * the global argv list.
+ * It returns the number of parameters, or a negative number if an error occurs.
+ */
+
+int
+MainApp::SetParameterOptionArgs(int indexStart, char *parameterOptions,
+  bool countOnly)
+{
+	static const char *funcName = "MainApp::SetParameterOptionArgs";
+	char	*workStr, *token;
+	int		count = 0;
+
+	if ((workStr = (char *) malloc(strlen(parameterOptions) + 1)) == NULL) {
+		NotifyError("%s: Out of memory for workStr.", funcName);
+		return(-1);
+	}
+	strcpy(workStr, parameterOptions);
+	token = strtok(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
+	while (token) {
+		if (!countOnly)
+			SetArgvString(indexStart + count, token, strlen(token));
+		count++;
+		token = strtok(NULL, MAINAPP_PARAMETER_STR_DELIMITERS);
+	}
+	free(workStr);
+	return(count);
+}
+	
+/****************************** RemoveCommands ********************************/
+
+/*
+ * This routine removes the commands with a set prefix from the argv list by
+ * setting the first character to zero.
+ * It assumes that the argv list has a valid list of command pairs after the
+ * offset index;
+ */
+
+void
+MainApp::RemoveCommands(int offset, char *prefix)
+{
+	int		i;
+
+	for (i = offset; i < argc; i++)
+		if (StrNCmpNoCase_Utility_String(argv[i], prefix) == 0)
+			*argv[i] = *argv[i + 1] = '\0';
+
+}
+
+/****************************** FreeArgStrings ********************************/
+
+/*
+ * This routine frees the argument strings.
+ */
+
+void
+MainApp::FreeArgStrings(void)
+{
+	int		i;
+
+	if (argv) {
+		for (i = 0; i < argc; i++)
+			if (argv[i])
+				free(argv[i]);
+		free(argv);
+	}
 
 }
 
@@ -254,6 +368,8 @@ MainApp::CheckInitialisation(void)
 	}
 	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
 		ResetStepCount_Utility_Datum();
+	for (int i = 0; i < argc; i++)
+		printf("%2d: %s\n", i, argv[i]);
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
 		return(FALSE);
@@ -335,7 +451,7 @@ MainApp::RunSimulation(void)
 		NotifyError("%s: External run simulation function not set.", funcName);
 		return(false);
 	}
-	return((* ExternalRunSimulation)());
+	return(CXX_BOOL((* ExternalRunSimulation)()));
 
 }
 

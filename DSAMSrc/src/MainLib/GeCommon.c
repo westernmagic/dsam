@@ -55,7 +55,6 @@
 #include <ctype.h>
 
 #include "GeCommon.h"
-#include "StdMessage.h"
 #include "GeNSpecLists.h"
 
 /******************************************************************************/

@@ -24,6 +24,7 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "ExtIPCUtils.h"
 #include "ExtIPCServer.h"
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
@@ -79,7 +80,7 @@ GrIPCServer::LoadSimFile(const wxString& fileName)
 void
 GrIPCServer::SetNotification(wxEvtHandler *theHandler)
 {
-	GetServer()->SetEventHandler(*theHandler, IPCSERVER_APP_SERVER_ID);
+	GetServer()->SetEventHandler(*theHandler, IPC_APP_SERVER_ID);
 	GetServer()->SetNotify(wxSOCKET_CONNECTION_FLAG);
 	GetServer()->Notify(TRUE);
 

@@ -113,11 +113,15 @@ SOURCE=..\..\src\GrLib\GrFonts.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\GrLib\GrIPCServer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\GrLib\GrLines.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\GrLib\GrMessage.cpp
+SOURCE=..\..\src\GrLib\GrMainApp.cpp
 # End Source File
 # Begin Source File
 
@@ -173,6 +177,14 @@ SOURCE=..\..\src\GrLib\GrSDIShapes.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\GrLib\GrSDISimDoc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\GrLib\GrSDISPFDoc.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\GrLib\GrSDIView.cpp
 # End Source File
 # Begin Source File
@@ -182,14 +194,6 @@ SOURCE=..\..\src\GrLib\GrSignalDisp.cpp
 # Begin Source File
 
 SOURCE=..\..\src\GrLib\GrSimMgr.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\GrLib\GrSimThread.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\GrLib\GrSocket.cpp
 # End Source File
 # Begin Source File
 

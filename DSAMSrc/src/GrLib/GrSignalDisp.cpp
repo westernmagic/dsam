@@ -64,7 +64,6 @@
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/wxexpr.h>
 #	include "GrUtils.h"
-#	include "GrIPCServer.h"
 #	include "GrSimMgr.h"
 #	include "GrLines.h"
 #	include "GrSignalDisp.h"

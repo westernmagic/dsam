@@ -653,6 +653,30 @@ SOURCE=..\..\Include\DSAM.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\ExtCommon.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtIPCClient.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtIPCServer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtIPCUtils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtMainApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtSimThread.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\FiAIFF.h
 # End Source File
 # Begin Source File
@@ -750,6 +774,10 @@ SOURCE=..\..\Include\GrDSAMList.h
 # Begin Source File
 
 SOURCE=..\..\Include\GrFonts.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\GrIPCServer.h
 # End Source File
 # Begin Source File
 
