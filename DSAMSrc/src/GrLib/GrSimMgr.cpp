@@ -81,6 +81,8 @@
 #include "GrSDIView.h"
 #include "GrDiagFrame.h"
 #include "ExtIPCUtils.h"
+#include "ExtSocket.h"
+#include "ExtSocketServer.h"
 #include "GrIPCServer.h"
 #include "GrSignalDisp.h"
 #include "GrCanvas.h"
@@ -138,7 +140,7 @@ END_EVENT_TABLE()
 
 MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 {
-	GetDSAMPtr_Common()->usingGUIFlag = TRUE;
+	SetUsingGUIStatus(TRUE);
 	displayDefaultX = 0;
 	displayDefaultY = 0;
 	frame = NULL;
@@ -278,7 +280,7 @@ MyApp::OnInit(void)
     // Show frame and tell the application that it's our main window
 
 	frame->Show(TRUE);
-    //SetTopWindow(frame);
+   //SetTopWindow(frame);
 
 	// Essential - return the main frame window
 	return(TRUE);
@@ -688,7 +690,7 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 		NotifyError("%s: Unexpected socket event.", funcName);
 		return;
 	}
-	wxSocketBase *sock = iPCServer->InitConnection(false);
+	SocketBase *sock = iPCServer->InitConnection(false);
 	if (!sock) {
 		NotifyError("%s: Couldn't initialise connection.\n");
 		return;
