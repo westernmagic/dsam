@@ -641,8 +641,8 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
-	SetInterleaveLevel_SignalData(data->outSignal,
-	  data->inSignal[0]->interleaveLevel);
+	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+	  interleaveLevel);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++)
 		switch (selectChanPtr->mode) {
