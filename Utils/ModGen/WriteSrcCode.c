@@ -933,7 +933,7 @@ PrintReadParsRoutine(FILE *fp)
 	fprintf(fp, "\tFILE\t*fp;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "\tfilePath = GetParsFileFPath_Common(fileName);\n");
-	fprintf(fp, "\tif ((fp = fopen(fileName, \"r\")) == NULL) {\n");
+	fprintf(fp, "\tif ((fp = fopen(filePath, \"r\")) == NULL) {\n");
 	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot open data file '%%s'.\\n\", "
 	  "funcName, fileName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
