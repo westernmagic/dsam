@@ -1,12 +1,13 @@
 /**********************
  *
  * File:		UtPadSignal.c
- * Purpose:		
+ * Purpose:		This module produces an output signal which has been padded
+ *				at the beginning and end of the signal with a specified value.
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
- * Author:		
+ * Author:		L. P. O'Mard
  * Created:		14 Mar 2002
  * Updated:	
- * Copyright:	(c) 2002, 
+ * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
 

@@ -1,7 +1,7 @@
 /**********************
  *
  * File:		UtMathOp.h
- * Purpose:		This utility carries out simple mathematical OPERATORMODEs.
+ * Purpose:		This utility carries out simple mathematical operations.
  * Comments:	Written using ModuleProducer version 1.4.0 (Mar 14 2002).
  * Author:		L.  P. O'Mard
  * Created:		08 Jul 2002
