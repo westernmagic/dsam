@@ -15,7 +15,7 @@
  *				and used in in all modules which need to store file names.
  *				29-01-99 LPO: Under the GRAPHICS mode the 'NotifyError' routine
  *				will produce a dialog the first time (if the 
- *				dSAM.'noGUIOutputFlag' flag is set to false).  After the first
+ *				dSAM.'dialogOutputFlag' flag is set to TRUE).  After the first
  *				dialog is created, then subsequent calls will send error
  *				messages to the console.
  *				04-02-99 LPO: Introduced the 'CloseFile' routine to prevent
@@ -67,7 +67,7 @@ static DSAM	dSAM = {
 			FALSE,		/* segmentedMode */
 			FALSE,		/* usingGUIFlag */
 			FALSE,		/* lockGUIFlag */
-			TRUE,		/* noGUIOutputFlag */
+			FALSE,		/* dialogOutputFlag */
 			NULL,		/* diagnosticsPrefix */
 			VERSION,	/* version */
 			NULL,		/* parsFilePath */
@@ -102,7 +102,7 @@ DPrintStandard(char *format, va_list args)
 /*************************** DPrint *******************************************/
 
 /*
- * This routine prints out a diagnostic message, preceded by a bell sound.
+ * This routine prints out a diagnostic message.
  * It is used in the same way as the printf statement.
  * This is the standard version for ANSI C.
  */
@@ -116,7 +116,7 @@ DPrint(char *format, ...)
 	if (!dSAM.parsFile)
 		return;
 	va_start(args, format);
-	if (!dSAM.noGUIOutputFlag && (dSAM.parsFile == stdout)) {
+	if (dSAM.usingGUIFlag && (dSAM.parsFile == stdout)) {
 		DPrint_Message(format, args);
 		return;
 	}
@@ -194,13 +194,10 @@ NotifyError(char *format, ...)
 	if (!dSAM.errorsFile)
 		return;
 	va_start(args, format);
-	if (!dSAM.noGUIOutputFlag && (dSAM.errorsFile == stderr)) {
-		Notify_Message(format, args, COMMON_ERROR_DIAGNOSTIC);
-		return;
-	}
-	if (dSAM.errorsFile == stderr)
+	if ((dSAM.errorsFile == stderr) && (!dSAM.usingGUIFlag ||
+	  dSAM.dialogOutputFlag))
 		fprintf(stderr, "\07");
-	NotifyStandard(format, args, COMMON_ERROR_DIAGNOSTIC);
+	Notify_Message(format, args, COMMON_ERROR_DIAGNOSTIC);
 	va_end(args);
 
 } /* NotifyError */
@@ -222,12 +219,7 @@ NotifyWarning(char *format, ...)
 	if (!dSAM.warningsFile)
 		return;
 	va_start(args, format);
-	if (!dSAM.noGUIOutputFlag && (dSAM.warningsFile == stdout)) {
-		Notify_Message(format, args, COMMON_WARNING_DIAGNOSTIC);
-		dSAM.noGUIOutputFlag = TRUE;
-		return;
-	}
-	NotifyStandard(format, args, COMMON_WARNING_DIAGNOSTIC);
+	Notify_Message(format, args, COMMON_WARNING_DIAGNOSTIC);
 	va_end(args);
 
 } /* NotifyWarning */
@@ -379,28 +371,28 @@ CloseFiles(void)
 /*************************** ResetGUIDialogs **********************************/
 
 /*
- * This routine sets the 'noGUIOutputFlag' to FALSE so that output is sent to
+ * This routine sets the 'dialogOutputFlag' to TRUE so that output is sent to
  * dialogs and not to the console.
  */
 
 void
 ResetGUIDialogs(void)
 {
-	dSAM.noGUIOutputFlag = FALSE;
+	dSAM.dialogOutputFlag = TRUE;
 
 }
 
 /*************************** SetGUIDialogStatus *******************************/
 
 /*
- * This routine sets the 'noGUIOutputFlag' to FALSE so that output is sent to
+ * This routine sets the 'dialogOutputFlag', defining if output is sent to
  * dialogs and not to the console.
  */
 
 void
 SetGUIDialogStatus(BOOLN status)
 {
-	dSAM.noGUIOutputFlag = !status;
+	dSAM.dialogOutputFlag = status;
 
 }
 

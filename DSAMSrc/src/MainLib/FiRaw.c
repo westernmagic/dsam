@@ -98,8 +98,8 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 	}
 	if ((length = SetIOSectionLength_DataFile(data)) <= 0)
 		return(FALSE);
-	if (!InitOutSignal_EarObject(data, dataFilePtr->numChannels, length, 1.0 /
-	  dataFilePtr->defaultSampleRate) ) {
+	if (!InitOutSignal_EarObject(data, (uShort) dataFilePtr->numChannels,
+	  length, 1.0 / dataFilePtr->defaultSampleRate) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}

@@ -1141,7 +1141,7 @@ SetPars_AppInterface(char *diagMode, char *simulationFile, char *segmentMode)
 void
 ListParsAndExit_AppInterface(void)
 {	
-	GetDSAMPtr_Common()->noGUIOutputFlag = TRUE;
+	SetGUIDialogStatus(FALSE);
 	SetParsFile_Common("screen", OVERWRITE);
 	ListParameters_AppInterface();
 	exit(0);
@@ -1196,7 +1196,7 @@ ListCFListAndExit_AppInterface(void)
 		NotifyError("%s: Simulation not initialised.", funcName);
 		exit(1);
 	}
-	GetDSAMPtr_Common()->noGUIOutputFlag = TRUE;
+	SetGUIDialogStatus(FALSE);
 	SetParsFile_Common("screen", OVERWRITE);
 	if (((bMDatumPtr = FindModuleProcessInst_Utility_Datum(simulation,
 	  "BM_")) == NULL) || ((theBMCFs = *GetUniParPtr_ModuleMgr(bMDatumPtr->data,

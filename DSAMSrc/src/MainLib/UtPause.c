@@ -481,22 +481,22 @@ CheckData_Utility_Pause(EarObjectPtr data)
  * Output is always to 'stdou' or the GUI.
  * It uses the same format as 'NotifyError' etc. so that it can use the
  * 'Notify_Message' routine.
- * The 'oldDontUseGUIFlag' is needed because the GUI version of the
- * 'Notify_Message' changes GetDSAMPtr_Common()->noGUIOutputFlag.
+ * The 'oldDialogStatusFlag' is needed because the GUI version of the
+ * 'Notify_Message' changes GetDSAMPtr_Common()->dialogOutputFlag.
  * It expects a user response before returning.
  */
 
 void
 Notify_Utility_Pause(char *format, ...)
 {
-	BOOLN	oldDontUseGUIFlag;
+	BOOLN	oldDialogStatusFlag;
 	va_list	args;
 
 	va_start(args, format);
-	oldDontUseGUIFlag = GetDSAMPtr_Common()->noGUIOutputFlag;
+	oldDialogStatusFlag = GetDSAMPtr_Common()->dialogOutputFlag;
 	Notify_Message(format, args, COMMON_GENERAL_DIAGNOSTIC);
-	GetDSAMPtr_Common()->noGUIOutputFlag = oldDontUseGUIFlag;
-	if (GetDSAMPtr_Common()->noGUIOutputFlag) {
+	SetGUIDialogStatus(oldDialogStatusFlag);
+	if (!GetDSAMPtr_Common()->dialogOutputFlag) {
 		printf("Press <return> to continue...");
 		getchar();
 	}
