@@ -93,7 +93,7 @@ if test "$echo_cflags" = "yes"; then
 		cflags="$cflags -ggdb3 -DDMALLOC"
 	fi
 	if [ "$use_gui" = "yes" ]; then
-		cflags="$cflags @DSAM_GRAPHICS@ @WXINC@"
+		cflags="$cflags -DUSE_GUI @WXINC@"
 	fi
 	if [ "@MINGW32@" = "yes" -a "$use_debug" != "yes" ]; then
 		cflags="$cflags -mwindows"

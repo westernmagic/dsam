@@ -61,4 +61,4 @@ pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(Fi_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
 					$(Gr_Headers) $(Std_Headers)
-		touch DSAM.h
+		touch $(top_srcdir)/Include/DSAM.h

@@ -114,7 +114,7 @@
 #endif
 
 
-#ifndef GRAPHICS_SUPPORT
+#ifndef USE_GUI
 #	define MainSimulation	main
 #endif
 
