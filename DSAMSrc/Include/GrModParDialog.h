@@ -40,7 +40,18 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	MODULEPAR_DIALOG_MAX_PARLISTS		6
+#define	MODPARDIALOG_MAX_PARLISTS		6
+
+/******************************************************************************/
+/*************************** Enum definitions *********************************/
+/******************************************************************************/
+
+enum {
+
+	MODPARDIALOG_ID_ADD_IC = 1,
+	MODPARDIALOG_ID_DELETE_IC
+
+};
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -54,6 +65,8 @@
 
 class ModuleParDialog: public DialogList {
 
+	wxButton	*deleteICBtn, *addICBtn;
+
  public:
 	ModuleParDialog(wxWindow *parent, char *title, int theInfoNum, DatumPtr pc,
 	  UniParListPtr theParList = NULL, int x = -1, int y = -1, int width =
@@ -61,11 +74,10 @@ class ModuleParDialog: public DialogList {
 	~ModuleParDialog(void);
 
 	void	DeleteDialog(void);
-//T	void	ListBoxProc(wxListBox& list, wxCommandEvent& WXUNUSED(event));
-//T	void	SliderProc(wxSlider& slider, wxCommandEvent& WXUNUSED(event));
-//T	void	TextProc(wxTextCtrl& text, wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
+	void	OnICButton(wxCommandEvent& event);
 	void	OnOk(wxCommandEvent& event);
+	void	OnPageChanged(wxNotebookEvent &event);
 
     DECLARE_EVENT_TABLE()
 
