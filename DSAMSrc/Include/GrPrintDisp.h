@@ -20,6 +20,14 @@
 #define	PRINTDISP_PS_Y_OFFSET		50.0
 #define PRINTDISP_HEADER_OFFSET		20
 
+#if defined(__WXMSW__)
+#	define	PRINTDISP_X_SCALE				7.0
+#	define	PRINTDISP_Y_SCALE				7.0
+#else
+#	define	PRINTDISP_X_SCALE				1.0
+#	define	PRINTDISP_Y_SCALE				1.0
+#endif /* __WXMSW__ */
+
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
