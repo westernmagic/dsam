@@ -32,7 +32,7 @@ LIB		= $(STD_LIB)
 ##                     STD - DSAM library compilation                        ##
 ###############################################################################
 
-OBJS	= StdMessage.obj StdSignalDisp.obj
+OBJS	= StdMessage.obj StdSignalDisp.obj StdSimThread.obj
 
 $(LIB): $(OBJS)
 		@echo $(LIB) library updated.
@@ -41,6 +41,7 @@ StdMessage.obj: 	$(INCDIR)/StdMessage.h $(INCDIR)/GeCommon.h
 
 StdSignalDisp.obj: 	$(INCDIR)/GrSignalDisp.h $(GEN_HEADERS)
 
+StdSimThread.obj: 	$(INCDIR)/StdSimThread.h $(INCDIR)/GeCommon.h
 
 ###############################################################################
 ###############################################################################

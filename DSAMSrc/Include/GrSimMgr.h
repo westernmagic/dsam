@@ -69,7 +69,7 @@ enum {
 	MYFRAME_ID_LOAD_SIM_SCRIPT_FILE,
 	MYFRAME_ID_SAVE_SIM_PARS,
 	MYFRAME_ID_VIEW_SIM_PARS,
-	MYFRAME_ID_DISPLAY_THREAD_EVENT = 100
+	MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT = 100
 
 };
 
@@ -77,6 +77,12 @@ enum {
 
 	MYAPP_SOCKET_ID = 1,
 	MYAPP_SERVER_ID
+
+};
+
+enum {
+
+	MYAPP_THREAD_DRAW_GRAPH = 1
 
 };
 
@@ -112,7 +118,6 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
-	void	DeleteDisplays(DatumPtr pc);
 	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
 			  const wxString& fileName);
 	void	OnAbout(wxCommandEvent& event);
@@ -124,6 +129,7 @@ class MyFrame: public wxFrame {
 	void	OnLoadSimFile(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
 	void	OnSaveSimPars(wxCommandEvent& event);
+	void	OnSimThreadEvent(wxCommandEvent& event);
 	void	OnStopSimulation(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
@@ -135,6 +141,14 @@ class MyFrame: public wxFrame {
 	DECLARE_EVENT_TABLE()
 
 };
+
+/*************************** SimThread pre-reference **************************/
+
+class	SimThread;
+
+/*************************** wxArrayDisplay ***********************************/
+
+WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 
 /*************************** MyApp ********************************************/
 
@@ -153,16 +167,20 @@ class MyApp: public wxApp {
 
   public:
 	wxIcon		*icon;
-	wxCriticalSection	mainCritSect, displayCritSect;
+	SimThread	*simThread;
+	wxArrayDisplay	displays;
+	wxCriticalSection	mainCritSect;
 
 	MyApp(void);
 
 	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
 	void	DeleteSimModuleDialog(void);
+	void	DeleteSimThread(void);
 	void	GetDefaultDisplayPos(int *x, int *y);
 	MyFrame *	GetFrame(void)	{ return frame; }
 	SimModuleDialog *	GetSimModuleDialog(void)	{ return simModuleDialog; }
+	bool	GetSuspendDiagnostics(void);
 	bool	InitArgv(int argc);
 	void	InitMain(void);
 	bool	InitRun(void);
@@ -175,15 +193,16 @@ class MyApp: public wxApp {
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	void	RunInClientMode(void);
-	bool	RunSimulation(void);
 	void	SaveConfiguration(UniParListPtr	parList);
 	bool	SetArgvString(int index, char *string, int size);
 	bool	SetClientServerMode(void);
 	void	SetConfiguration(UniParListPtr	parList);
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
+	void	SetDiagLocks(bool on);
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
 	void	SetSimModuleDialog(SimModuleDialog *dlg) { simModuleDialog = dlg; }
 	void	SetTitle(void);
+	void	StartSimThread(void);
 	bool	StatusChanged(void);
 
 	DECLARE_EVENT_TABLE()
@@ -195,8 +214,6 @@ class MyApp: public wxApp {
 /******************************************************************************/
 
 DECLARE_APP(MyApp)
-
-extern wxList	myChildren;
 
 #ifdef MPI_SUPPORT
 	extern "C" MPI_Init(int *, char ***);

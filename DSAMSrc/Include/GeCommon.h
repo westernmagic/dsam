@@ -273,6 +273,8 @@ void	SetDiagnosticsPrefix(char *prefix);
 
 void	SetErrorsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
+void	SetGUIDialogStatus(BOOLN status);
+
 void	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetParsFilePath_Common(char *name);

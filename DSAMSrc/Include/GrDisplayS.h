@@ -47,17 +47,18 @@ class MyCanvas;
 
 class DisplayS: public wxFrame
 {
-	long	handle;
 	SignalDispPtr	mySignalDispPtr;
 
  public:
 	MyCanvas	*canvas;
 
-	DisplayS(wxFrame *frame, long theHandle, SignalDispPtr signalDispPtr,
-	  const wxString& title, const wxPoint& pos, const wxSize& size);
+	DisplayS(wxFrame *frame, SignalDispPtr signalDispPtr);
 	~DisplayS(void);
 
+	void	DeleteDisplay(void);
 	SignalDispPtr	GetSignalDispPtr(void) { return(mySignalDispPtr); }
+
+	void	SetDisplayTitle(void);
 
 	void	OnMove(wxMoveEvent& event);
 

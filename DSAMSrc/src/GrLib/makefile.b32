@@ -62,7 +62,8 @@ GRAPHICS_OBJS = GrBrushes.obj GrCanvas.obj GrDialogInfo.obj GrDialogList.obj \
 				GrDisplayS.obj GrFonts.obj GrLine.obj GrMessage.obj \
 				GrModParDialog.obj GrParControl.obj GrParListInfo.obj \
 				GrParListInfoList.obj GrPrintDisp.obj GrSignalDisp.obj \
-				GrSimMgr.obj GrSimModDialog.obj GrSocket.obj GrUtils.obj
+				GrSimMgr.obj GrSimModDialog.obj GrSocket.obj GrUtils.obj \
+				GrSimThread.obj
 
 $(LIB): 	$(MAIN_CFG) $(GR_CFG) $(GRAPHICS_OBJS) $(BINCCDSAMG)
 		@echo $(LIB) library updated.
@@ -126,7 +127,7 @@ GrCanvas.obj:	$(INCDIR)/GrCanvas.h  $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
 				  $(INCDIR)/GrModParDialog.h
 
 GrDialogInfo.obj:	$(INCDIR)/GrDialogInfo.h $(INCDIR)/GeCommon.h \
-					  $(INCDIR)/GrDSAMList.h $(INCDIR)/GrDialogInfo.h
+					  $(INCDIR)/GrDialogInfo.h
 
 GrDialogList.obj:	$(INCDIR)/*.h $(DSAMDIR)\src\$(MAIN_LIB_DIR)\UtSSParser.h
 
@@ -171,6 +172,12 @@ GrSocket.obj:	$(INCDIR)/GrSocket.h $(INCDIR)/GeCommon.h \
 				  $(INCDIR)/GeEarObject.h
 
 GrUtils.obj:	$(INCDIR)/GrUtils.h $(INCDIR)/GeCommon.h
+
+GrSimThread.obj:	$(INCDIR)/*.h $(DSAMDIR)/src/$(MAIN_LIB_DIR)/UtSSParser.h
+
+GrDisplayThread.obj:	$(INCDIR)/GrDisplayThread.h $(GEN_HEADERS) \
+						  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrSignalDisp.h \
+						  $(INCDIR)/GrDisplayS.h $(INCDIR)/GrCanvas.h
 
 $(RES):		$(INCDIR)/dsam.rc
 				brc32 -r /i$(BCCDIR)\include /i$(WXWIN)\include \

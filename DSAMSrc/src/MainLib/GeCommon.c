@@ -390,6 +390,20 @@ ResetGUIDialogs(void)
 
 }
 
+/*************************** SetGUIDialogStatus *******************************/
+
+/*
+ * This routine sets the 'noGUIOutputFlag' to FALSE so that output is sent to
+ * dialogs and not to the console.
+ */
+
+void
+SetGUIDialogStatus(BOOLN status)
+{
+	dSAM.noGUIOutputFlag = !status;
+
+}
+
 /*************************** SetParsFilePath **********************************/
 
 /*

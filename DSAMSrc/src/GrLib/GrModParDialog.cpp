@@ -131,22 +131,17 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 
 }
 
-/****************************** Destructor ************************************/
-
-ModuleParDialog::~ModuleParDialog(void)
-{
-}
-
 /****************************** DeleteDialog **********************************/
 
 void
 ModuleParDialog::DeleteDialog(void)
 {
+	printf("ModuleParDialog::DeleteDialog: Called.\n");
 	DialogList *parent = (DialogList *) GetParent();
 
-	parent->UnsetDialog(infoNum);
 	if (pc && pc->data->module->specifier == DISPLAY_MODULE)
 		((SignalDispPtr) pc->data->module->parsPtr)->dialog = NULL;
+	parent->dialogList[infoNum]->dialog = NULL;
 
 }
 
@@ -167,8 +162,8 @@ void
 ModuleParDialog::OnICButton(wxCommandEvent& event)
 {
 	static const char *funcName = "ModuleParDialog::OnICButton";
-	ParListInfo	*info = parListInfoList->GetInfo(
-				  PARLISTINFOLIST_MAIN_ICLIST_PAGES - 1);
+	ParListInfo	*info = parListInfoList->list[
+				  PARLISTINFOLIST_MAIN_ICLIST_PAGES - 1];
 	IonChanListPtr	theICs = info->parList->handlePtr.iCs;
 
 	ResetGUIDialogs();
@@ -240,8 +235,8 @@ ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 			return;
 		}
 		deleteICBtn->Enable(TRUE);
-		ParListInfo	*info = parListInfoList->GetInfo(index +
-		  PARLISTINFOLIST_MAIN_ICLIST_PAGES);
+		ParListInfo	*info = parListInfoList->list[index +
+		  PARLISTINFOLIST_MAIN_ICLIST_PAGES];
 		info->parList->handlePtr.iCs->index = index;
 	}
 

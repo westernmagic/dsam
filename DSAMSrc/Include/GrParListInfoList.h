@@ -35,6 +35,10 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
+/*************************** wxArrayParListInfo *******************************/
+
+WX_DEFINE_ARRAY(ParListInfo *, wxArrayParListInfo);
+
 /*************************** ParListInfoList **********************************/
 
 class ParListInfoList {
@@ -45,19 +49,15 @@ class ParListInfoList {
 	wxNotebook	*notebook;
 
   public:
-	DSAMList<ParListInfo>	list;
+	wxArrayParListInfo	list;
 
 	ParListInfoList(DialogList *theParent, DatumPtr pc, UniParListPtr parList);
 	~ParListInfoList(void);
 
-	void	AddInfo(ParListInfo *theInfo)	{ list.Append(list.Number(),
-			  (wxObject *) theInfo); };
 	wxPanel *	UsingNotebook(UniParListPtr parList, const wxString& title);
-	ParListInfo *	GetInfo(int index)	{ return list.GetMember(index); }
 	wxWindow *	GetLastControl(void);
 	wxNotebook *	GetNotebook(void)	{ return notebook; }
 	wxSize		GetNotebookSize(void) const;
-	int		GetNumDialogs(void)	{ return list.Number(); };
 	DialogList *	GetParent(void)		{ return parent; }
 	bool	GetUseNotebookControls(void)	{ return useNotebookControls; }
 	void	SetStandardInfo(wxPanel *panel, DatumPtr pc, UniParListPtr parList,

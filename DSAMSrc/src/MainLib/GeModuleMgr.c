@@ -654,8 +654,8 @@ RunProcess_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 
-	/*if (GetDSAMPtr_Common()->usingGUIFlag && TestDestroy_SimThread())
-		return(FALSE);*/
+	if (GetDSAMPtr_Common()->usingGUIFlag && TestDestroy_SimThread())
+		return(FALSE);
 
 	if (data->module->onFlag) {
 		(* data->module->SetParsPointer)(data->module);

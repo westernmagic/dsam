@@ -44,7 +44,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			23
+#define DISPLAY_NUM_PARS			24
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
@@ -68,6 +68,7 @@
 
 	class DisplayS;
 	class DialogList;
+	class wxCriticalSection;
 	
 #endif /* GRAPHICS_SUPPORT */
 
@@ -93,6 +94,7 @@ typedef	enum {
 	DISPLAY_Y_AXIS_MODE,
 	DISPLAY_Y_DEC_PLACES,
 	DISPLAY_Y_TICKS,
+	DISPLAY_Y_INSET_SCALE,
 	/* General Controls */
 	DISPLAY_FRAME_DELAY,
 	DISPLAY_MODE,
@@ -129,12 +131,13 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	automaticYScalingFlag, yNormalisationModeFlag, modeFlag;
-	BOOLN	numGreyScalesFlag, summaryDisplayFlag, magnificationFlag;
-	BOOLN	xResolutionFlag, maxYFlag, minYFlag, widthFlag, frameWidthFlag;
-	BOOLN	frameHeightFlag, frameDelayFlag, titleFlag, channelStepFlag;
-	BOOLN	xTicksFlag, xDecPlacesFlag, yTicksFlag, topMarginFlag;
-	BOOLN	frameXPosFlag, frameYPosFlag, yAxisModeFlag, yDecPlacesFlag;
+	BOOLN	automaticYScalingFlag, channelStepFlag, frameHeightFlag;
+	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, yAxisModeFlag;
+	BOOLN	yNormalisationModeFlag, modeFlag, numGreyScalesFlag;
+	BOOLN	summaryDisplayFlag, xTicksFlag, xDecPlacesFlag, yDecPlacesFlag;
+	BOOLN	yTicksFlag, yInsetScaleFlag, frameDelayFlag, titleFlag;
+	BOOLN	magnificationFlag, xResolutionFlag, minYFlag, maxYFlag;
+	BOOLN	topMarginFlag, widthFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	char	title[MAXLINE];
@@ -153,6 +156,7 @@ typedef struct {
 	int		xDecPlaces;
 	int		yDecPlaces;
 	int		yTicks;
+	int		yInsetScale;
 	double	frameDelay;
 	double	magnification;
 	double	xResolution;
@@ -168,16 +172,17 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			reduceChansInitialised;
-	BOOLN			registeredWithDisplayFlag;
-	BOOLN			displayCanDeleteFlag;
-	BOOLN			redrawFlag;
+	BOOLN			redrawGraphFlag;
+	BOOLN			resetTitleFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
+	EarObjectPtr	data;
 	EarObjectPtr	summary;
 	ReduceChans		reduceChans;
 #	if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 	DisplayS		*display;
 	DialogList		*dialog;
+	wxCriticalSection	*critSect;
 #	endif /* GRAPHICS_SUPPORT */
 
 } SignalDisp, *SignalDispPtr;
@@ -224,6 +229,8 @@ BOOLN	InitProcessVariables_SignalDisp(EarObjectPtr data);
 
 BOOLN	InitYAxisModeList_SignalDisp(void);
 
+void	PostDisplayEvent_SignalDisp(void);
+
 BOOLN	PrintPars_SignalDisp(void);
 
 void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
@@ -259,12 +266,12 @@ BOOLN	SetParsPointer_SignalDisp(ModulePtr theModule);
 
 BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
 		  char *theYNormalisationMode, char *theYAxisMode,
-		  char *theSummaryDisplay, char *theTitle, int channelStep,
-		  int theNumGreyScales, int theFrameHeight, int theFrameWidth,
-		  int theFrameXPos, int theFrameYPos, int theXDecPlaces, int theXticks,
-		  int theYDecPlaces, int theYticks, double theFrameDelay,
-		  double theMagnification, double theXResolution, double maxY,
-		  double minY, double topMargin, double width);
+		  char *theSummaryDisplay, char *theTitle, char *yInsetScale,
+		  int channelStep, int theNumGreyScales, int theFrameHeight,
+		  int theFrameWidth, int theFrameXPos, int theFrameYPos,
+		  int theXDecPlaces, int theXticks, int theYDecPlaces, int theYticks,
+		  double theFrameDelay, double theMagnification, double theXResolution,
+		  double maxY, double minY, double topMargin, double width);
 
 BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
@@ -289,6 +296,8 @@ BOOLN	SetXTicks_SignalDisp(int xTicks);
 BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
 
 BOOLN	SetYDecPlaces_SignalDisp(int yDecPlaces);
+
+BOOLN	SetYInsetScale_SignalDisp(char *yInsetScale);
 
 BOOLN	SetYNormalisationMode_SignalDisp(char *theYNormalisationMode);
 

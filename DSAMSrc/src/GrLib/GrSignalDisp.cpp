@@ -150,6 +150,7 @@ InitParNameList_SignalDisp(void)
 					{ "Y_AXIS_MODE", DISPLAY_Y_AXIS_MODE },
 					{ "Y_DEC_PLACES", DISPLAY_Y_DEC_PLACES },
 					{ "Y_TICKS", DISPLAY_Y_TICKS },
+					{ "Y_INSET_SCALE", DISPLAY_Y_INSET_SCALE },
 
 					{ "FRAMEDELAY", DISPLAY_FRAME_DELAY },
 					{ "MODE", DISPLAY_MODE },
@@ -263,6 +264,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->xDecPlacesFlag = FALSE;
 	signalDispPtr->yDecPlacesFlag = FALSE;
 	signalDispPtr->yTicksFlag = FALSE;
+	signalDispPtr->yInsetScaleFlag = FALSE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	signalDispPtr->parSpec = parSpec;
 	signalDispPtr->automaticYScaling = GENERAL_BOOLEAN_ON;
@@ -284,6 +286,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->xDecPlaces = DEFAULT_X_DEC_PLACES;
 	signalDispPtr->yDecPlaces = DEFAULT_Y_DEC_PLACES;
 	signalDispPtr->yTicks = DEFAULT_Y_TICKS;
+	signalDispPtr->yInsetScale = GENERAL_BOOLEAN_ON;
 	signalDispPtr->title[0] = '\0';
 	signalDispPtr->xResolution = DEFAULT_X_RESOLUTION;
 	
@@ -297,14 +300,15 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	}
 	signalDispPtr->bufferCount = 0;
 	signalDispPtr->buffer = NULL;
+	signalDispPtr->data = NULL;
 	signalDispPtr->summary = NULL;
 	signalDispPtr->inLineProcess = FALSE;
 	signalDispPtr->reduceChansInitialised = FALSE;
-	signalDispPtr->registeredWithDisplayFlag = FALSE;
-	signalDispPtr->displayCanDeleteFlag = FALSE;
-	signalDispPtr->redrawFlag = FALSE;
+	signalDispPtr->redrawGraphFlag = FALSE;
+	signalDispPtr->resetTitleFlag = FALSE;
 	signalDispPtr->display = NULL;
 	signalDispPtr->dialog = NULL;
+	signalDispPtr->critSect = NULL;
 
 	return(TRUE);
 
@@ -327,9 +331,8 @@ Free_SignalDisp(void)
 	if (signalDispPtr == NULL)
 		return(TRUE);
 	FreeProcessVariables_SignalDisp();
-	signalDispPtr->displayCanDeleteFlag = TRUE;
-	if (signalDispPtr->registeredWithDisplayFlag)
-		return(TRUE);
+	if (signalDispPtr->display)
+		delete signalDispPtr->display;
 	if (signalDispPtr->parList)
 		FreeList_UniParMgr(&signalDispPtr->parList);
 	if (signalDispPtr->parSpec == GLOBAL) {
@@ -500,6 +503,12 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_INT,
 	  &signalDispPtr->yTicks, NULL,
 	  (void * (*)) SetYTicks_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_Y_INSET_SCALE],
+	  signalDispPtr->parNameList[DISPLAY_Y_INSET_SCALE].name,
+	  "Y inset scale mode ('on' or 'off').",
+	  UNIPAR_BOOL,
+	  &signalDispPtr->yInsetScale, NULL,
+	  (void * (*)) SetYInsetScale_SignalDisp);
 
 	return(TRUE);
 
@@ -739,6 +748,8 @@ SetYAxisMode_SignalDisp(char *theYAxisMode)
 	signalDispPtr->yAxisMode = specifier;
 	signalDispPtr->yAxisModeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	signalDispPtr->parList->pars[DISPLAY_Y_INSET_SCALE].enabled =
+	  (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_CHANNEL);
 	return(TRUE);
 	
 }
@@ -1033,8 +1044,7 @@ SetTitle_SignalDisp(char *title)
 	}
 	signalDispPtr->titleFlag = TRUE;
 	CopyAndTrunc_Utility_String(signalDispPtr->title, title, MAXLINE);
-	if (signalDispPtr->display)
-		signalDispPtr->display->SetTitle(title);
+	signalDispPtr->resetTitleFlag = TRUE;
 	return(TRUE);
 
 }
@@ -1149,6 +1159,37 @@ SetYTicks_SignalDisp(int yTicks)
 	
 }
 
+/**************************** SetYInsetScale **********************************/
+
+/*
+ * This routine sets the y inste scale mode for the display.
+ * If set to true, the scaling will be direct and related only to the
+ * signal yScale parameter.
+ */
+
+BOOLN
+SetYInsetScale_SignalDisp(char *theYInsetScale)
+{
+	static const char *funcName = "SetYInsetScale_SignalDisp";
+	int		specifier;
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theYInsetScale,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError("%s: Illegal switch state (%s).", funcName,
+		  theYInsetScale);
+		return(FALSE);
+	}
+	signalDispPtr->yInsetScaleFlag = TRUE;
+	signalDispPtr->yInsetScale = specifier;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	return(TRUE);
+	
+}
+
 /********************************* CheckPars **********************************/
 
 /*
@@ -1180,11 +1221,11 @@ CheckPars_SignalDisp(void)
 BOOLN
 SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
   char *theYNormalisationMode, char *theYAxisMode, char *theSummaryDisplay,
-  char *theTitle, int theChannelStep, int theNumGreyScales, int theFrameHeight,
-  int theFrameWidth, int theFrameXPos, int theFrameYPos, int theXDecPlaces,
-  int theXTicks, int theYDecPlaces, int theYTicks, double theFrameDelay,
-  double theMagnification, double theXResolution, double theMaxY,
-  double theMinY, double theTopMargin, double theWidth)
+  char *theTitle, char *yInsetScale, int theChannelStep, int theNumGreyScales,
+  int theFrameHeight, int theFrameWidth, int theFrameXPos, int theFrameYPos,
+  int theXDecPlaces, int theXTicks, int theYDecPlaces, int theYTicks,
+  double theFrameDelay, double theMagnification, double theXResolution,
+  double theMaxY,  double theMinY, double theTopMargin, double theWidth)
 {
 	bool	ok;
 	
@@ -1235,6 +1276,8 @@ SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
 		ok = FALSE;
 	if (!SetYTicks_SignalDisp(theYTicks))
 		ok = FALSE;
+	if (!SetYInsetScale_SignalDisp(yInsetScale))
+		ok = FALSE;
 	return(ok);
 	
 }
@@ -1278,6 +1321,8 @@ PrintPars_SignalDisp(void)
 	  signalDispPtr->yAxisModeList[signalDispPtr->yAxisMode].name);
 	DPrint("\tY axis scale decimal places = %d\n", signalDispPtr->yDecPlaces);
 	DPrint("\tY axis ticks = %d\n", signalDispPtr->yTicks);
+	DPrint("\tY inste scale mode: %s\n",
+	  BooleanList_NSpecLists(signalDispPtr->yInsetScale)->name);
 	DPrint("\tTop margin percentage = %g %%\n", signalDispPtr->topMargin);
 	DPrint("\tWidth = ");
 	if (signalDispPtr->width < 0.0)
@@ -1418,7 +1463,11 @@ ReadPars_SignalDisp(char *parFileName)
 			if (!SetYTicks_SignalDisp(atoi(parValue)))
 				ok = FALSE;
 			break;
-	case DISPLAY_NULL:
+		case DISPLAY_Y_INSET_SCALE:
+			if (!SetYInsetScale_SignalDisp(parValue))
+				ok = FALSE;
+			break;
+		case DISPLAY_NULL:
 			NotifyError("%s: Illegal parameter name (%s).", funcName, parName);
 			ok = FALSE;
 			break;
@@ -1559,32 +1608,6 @@ CheckData_SignalDisp(EarObjectPtr data)
 
 }
 
-/**************************** CheckForDisplay *********************************/
-
-/*
- * This routine checks to see if a display already exists for the EarObject.
- * It will then delete the current signalDispPtr structure and replace it with
- * the stored pointer.
- * It checks to ensure that the current signalDispPtr does not point to a valid
- * existing structure, in which case it does nothing.
- */
-
-void
-CheckForDisplay_SignalDisp(long handle)
-{
-	wxNode	*myNode;
-	DisplayS	*display;
-
-	if ((myNode = myChildren.Find(handle)) == NULL)
-		return;
-	display = (DisplayS *) myNode->Data();
-	if (signalDispPtr == display->GetSignalDispPtr())
-		return;
-	Free_SignalDisp();
-	signalDispPtr = display->GetSignalDispPtr();
-
-}
-
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -1606,7 +1629,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 		if (signalDispPtr->updateProcessVariablesFlag ||
 		  data->updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
-			CheckForDisplay_SignalDisp((long) data->handle);
+			signalDispPtr->critSect = new wxCriticalSection();
 			if ((signalDispPtr->summary = Init_EarObject("NULL")) == NULL) {
 				NotifyError("%s: Out of memory for summary EarObject.",
 				  funcName);
@@ -1668,7 +1691,9 @@ FreeProcessVariables_SignalDisp(void)
 
  	Free_EarObject(&signalDispPtr->buffer);
  	Free_EarObject(&signalDispPtr->summary);
-		
+	if (signalDispPtr->critSect)
+		delete signalDispPtr->critSect;
+
 	if (signalDispPtr->reduceChansInitialised) {
  		reduceChansPtr = &signalDispPtr->reduceChans;
  		Free_Utility_ReduceChannels();
@@ -1741,9 +1766,26 @@ SetDisplay_SignalDisp(EarObjectPtr data)
 	SetNumChannels_Utility_ReduceChannels(1);
 	Process_Utility_ReduceChannels(signalDispPtr->summary);
 
-	signalDispPtr->redrawFlag = TRUE;
-	signalDispPtr->display->canvas->InitGraph((signalDispPtr->buffer)?
-	  signalDispPtr->buffer: data, signalDispPtr->summary);
+	signalDispPtr->redrawGraphFlag = TRUE;
+	signalDispPtr->data = (signalDispPtr->buffer)? signalDispPtr->buffer: data;
+
+}
+
+/****************************** PostDisplayEvent ******************************/
+
+/*
+ * This routine is used by a thread to post a display event in a thread-safe
+ * way.
+ */
+
+void
+PostDisplayEvent_SignalDisp(void)
+{
+	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,
+	  MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT);
+	event.SetInt(MYAPP_THREAD_DRAW_GRAPH);
+	event.SetClientData(signalDispPtr);
+	wxPostEvent( wxGetApp().GetFrame(), event);
 
 }
 
@@ -1806,18 +1848,10 @@ ShowSignal_SignalDisp(EarObjectPtr data)
   			startTime = time(NULL);
   		}
 #		endif
-		if (!signalDispPtr->display) {
-			// Create the signalDisp frame.
-			signalDispPtr->display = new DisplayS(wxGetApp().GetFrame(), (long)
-			  data->handle, signalDispPtr, signalDispPtr->title, wxPoint(
-			  signalDispPtr->frameXPos, signalDispPtr->frameYPos), wxSize(
-			  signalDispPtr->frameWidth, signalDispPtr->frameHeight));
-			SetDisplay_SignalDisp(data);
-			signalDispPtr->display->Show(TRUE);
-		} else {
-			SetDisplay_SignalDisp(data);
-			signalDispPtr->display->canvas->RedrawGraph();
-		}
+		signalDispPtr->critSect->Enter();
+		SetDisplay_SignalDisp(data);
+		signalDispPtr->critSect->Leave();
+		PostDisplayEvent_SignalDisp();
 	}
 	return(TRUE);
 

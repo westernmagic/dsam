@@ -31,7 +31,6 @@
 #include "UtCFList.h"
 #include "UtIonChanList.h"
 
-#include "GrDSAMList.h"
 #include "GrParControl.h"
 #include "GrDialogInfo.h"
 #include "GrParListInfo.h"
@@ -66,9 +65,6 @@ class ModuleParDialog: public DialogList {
 	ModuleParDialog(wxWindow *parent, const wxString& title, int theInfoNum,
 	  DatumPtr pc, UniParListPtr theParList = NULL, int x = -1, int y = -1,
 	  int width = -1, int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
-	~ModuleParDialog(void);
-
-	virtual void UnSetDialog(void)	{; }
 
 	void	DeleteDialog(void);
 	void	OnICButton(wxCommandEvent& event);

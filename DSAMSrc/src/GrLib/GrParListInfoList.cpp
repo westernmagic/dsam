@@ -89,17 +89,14 @@ wxSize
 ParListInfoList::GetNotebookSize(void) const
 {
 	int		i, maxWidth = 325, maxHeight = 0, heightSum, width, height;
+	size_t	j;
 	wxSize	infoSize, cSize, sSize;
-	wxNode	*node;
-	ParListInfo	*infoPtr;
 	ParControl	*control;
 
-	node = list.First();
-	while (node) {
-		infoPtr = (ParListInfo *) node->Data();
-		if (infoPtr->GetSize() == wxDefaultSize) {
-			for (i = 0, heightSum = 0; i < infoPtr->GetNumPars(); i++) {
-				control = infoPtr->GetParControl(i);
+	for (j = 0; j < list.Count(); j++) {
+		if (list[j]->GetSize() == wxDefaultSize) {
+			for (i = 0, heightSum = 0; i < list[j]->GetNumPars(); i++) {
+				control = list[j]->GetParControl(i);
 				cSize = control->GetSize();
 				heightSum += cSize.GetHeight() + PARLISTINFO_DEFAULT_Y_MARGIN;
 				if (control->GetSlider()) {
@@ -118,13 +115,12 @@ ParListInfoList::GetNotebookSize(void) const
 			if (heightSum > maxHeight)
 				maxHeight = heightSum;
 		} else {
-			infoSize = infoPtr->GetSize();
+			infoSize = list[j]->GetSize();
 			if (infoSize.GetWidth() > maxWidth)
 				maxWidth = infoSize.GetWidth();
 			if (infoSize.GetHeight() > maxHeight)
 				maxHeight = infoSize.GetHeight();
 		}
-		node = node->Next();
 	}
 	return(wxSize(maxWidth, maxHeight + PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT));
 
@@ -211,9 +207,9 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 		panel = newPanel;
 	panelSpec2 = ( *parList->GetPanelList)(panelNum + 1);
 	numPars = panelSpec2->specifier - panelSpec1->specifier;
-	infoPtr = new ParListInfo(panel, pc, parList, list.Number(), offset,
+	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
 	  numPars);
-	AddInfo(infoPtr);
+	list.Add(infoPtr);
 	SetPanelledModuleInfo(panel, pc, parList, panelSpec2->specifier, panelNum +
 	  1);
 
@@ -290,7 +286,7 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 				info->SetModuleListBox();
 				for (; pc != NULL; pc = pc->next)
 					if (pc->type == PROCESS) {
-						parent->AddDialogInfo(new DialogInfo((wxObject *) pc,
+						parent->dialogList.Add(new DialogInfo((wxObject *) pc,
 						  (int) UNIPAR_SIMSCRIPT));
 					}
 				
@@ -322,9 +318,9 @@ ParListInfoList::SetStandardInfo(wxPanel *panel, DatumPtr pc,
 
 	if ((newPanel = UsingNotebook(parList, title)) != NULL)
 		panel = newPanel;
-	infoPtr = new ParListInfo(panel, pc, parList, list.Number(), offset,
+	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
 	  numPars);
-	AddInfo(infoPtr);
+	list.Add(infoPtr);
 	parList->updateFlag = FALSE;
 	SetSubParListInfo(infoPtr);
 
@@ -343,8 +339,6 @@ ParListInfoList::GetLastControl(void)
 	if (notebook)
 		return ((wxWindow *) notebook);
 
-	ParListInfo *info = (ParListInfo *) (list.GetLast())->GetData();
-
-	return((info)? info->GetLastControl(): NULL);
+	return((list.Count() > 0)? list.Last()->GetLastControl(): NULL);
 
 }

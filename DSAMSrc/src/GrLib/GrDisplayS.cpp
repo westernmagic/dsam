@@ -77,18 +77,16 @@ END_EVENT_TABLE()
 
 /****************************** Constructor ***********************************/
 
-DisplayS::DisplayS(wxFrame *frame, long theHandle, SignalDispPtr signalDispPtr,
-  const wxString& title, const wxPoint& pos, const wxSize& size): wxFrame(frame,
-  -1, title, pos, size)
+DisplayS::DisplayS(wxFrame *frame, SignalDispPtr signalDispPtr): wxFrame(frame,
+  -1, signalDispPtr->title,  wxPoint(signalDispPtr->frameXPos, signalDispPtr->
+  frameYPos), wxSize(signalDispPtr->frameWidth, signalDispPtr->frameHeight))
 {
 	wxLayoutConstraints	*c;
 
 	// Load bitmaps and icons
 	SetIcon(wxICON(dsam));
 	
-	handle = theHandle;
 	mySignalDispPtr = signalDispPtr;
-	mySignalDispPtr->registeredWithDisplayFlag = TRUE;
 
 	// Create a new canvas
 	canvas = new MyCanvas(this, signalDispPtr);
@@ -102,7 +100,7 @@ DisplayS::DisplayS(wxFrame *frame, long theHandle, SignalDispPtr signalDispPtr,
 
 	canvas->SetConstraints(c);
 	
-	myChildren.Append(handle, this);
+	wxGetApp().displays.Add(this);
 
 }
 
@@ -111,19 +109,19 @@ DisplayS::DisplayS(wxFrame *frame, long theHandle, SignalDispPtr signalDispPtr,
 DisplayS::~DisplayS(void)
 {
 	delete canvas;
-	mySignalDispPtr->registeredWithDisplayFlag = FALSE;
-	if (mySignalDispPtr->displayCanDeleteFlag) {
-		if (mySignalDispPtr != signalDispPtr) {
-			SignalDispPtr oldPtr = signalDispPtr;
-			signalDispPtr = mySignalDispPtr;
-			Free_SignalDisp();
-			signalDispPtr = oldPtr;
-		} else
-			Free_SignalDisp();
-	} else
-		mySignalDispPtr->display = NULL;
-	myChildren.DeleteObject(this);
+	mySignalDispPtr->display = NULL;
+	wxGetApp().displays.Remove(this);
 
+}
+
+/****************************** SetDisplayTitle *******************************/
+
+void
+DisplayS::SetDisplayTitle(void)
+{
+	SetTitle(signalDispPtr->title);
+	signalDispPtr->resetTitleFlag = FALSE;
+	
 }
 
 /****************************** OnMove ****************************************/

@@ -34,7 +34,7 @@ cvsconfig)
 	(cd src/MainLib; make UtSSParser.c)
 	;;
 clean)
-	rm -rf lib bin `find . -name '*.obj'`
+	rm -rf lib bin Include\UtSSParser.h `find . -name '*.obj'`
 	;;
 *)
 	usage 1 1>&2

@@ -22,7 +22,7 @@ libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp \
 				GrUtils.cpp GrPrintDisp.cpp GrSimModDialog.cpp \
 				GrModParDialog.cpp GrParListInfo.cpp GrDialogInfo.cpp \
 				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \
-				dsam.xpm
+				GrSimThread.cpp dsam.xpm
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 

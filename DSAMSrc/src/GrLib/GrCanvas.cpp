@@ -113,9 +113,10 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 	memBmp = NULL;
 	CreateBackingBitmap();
 	
-	labelFont = new wxFont(15, wxROMAN, wxNORMAL, wxNORMAL);
-	superLabelFont = new wxFont(15, wxROMAN, wxNORMAL, wxNORMAL);
-	axisTitleFont = new wxFont(15, wxROMAN, wxNORMAL,
+	labelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
+	superLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
+	insetLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
+	axisTitleFont = new wxFont(14, wxROMAN, wxNORMAL,
 	  wxBOLD);
 	xAxis = new wxRect();
 	yAxis = new wxRect();
@@ -181,10 +182,10 @@ MyCanvas::SetGraphAreas(void)
 
 	// Graph element dimensions
 
-	xAxisSpace = (xAxis)? (int) (graph.GetHeight() * (GRAPH_X_AXIS_SCALE +
-	  GRAPH_X_TITLE_SCALE)): 0;
-	yAxisSpace = (yAxis)? (int) (graph.GetWidth() * (GRAPH_Y_AXIS_SCALE +
-	  GRAPH_Y_TITLE_SCALE)): 0;
+	xAxisSpace = (xAxis)? (int) floor(graph.GetHeight() * (GRAPH_X_AXIS_SCALE +
+	  GRAPH_X_TITLE_SCALE) + 0.5): 0;
+	yAxisSpace = (yAxis)? (int) floor(graph.GetWidth() * (GRAPH_Y_AXIS_SCALE +
+	  GRAPH_Y_TITLE_SCALE) + 0.5): 0;
 	summarySpace = (int) (graph.GetHeight() * GRAPH_SUMMARY_SIGNAL_SCALE);
 
 	if (xAxis) {
@@ -236,14 +237,14 @@ MyCanvas::SetGraphPars(void)
 /****************************** InitGraph *************************************/
 
 void
-MyCanvas::InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO)
+MyCanvas::InitGraph(void)
 {
 	SetGraphAreas();
-	InitData(data);
+	InitData(mySignalDispPtr->data);
 	SetGraphPars();
 
 	if (mySignalDispPtr->automaticYScaling) {
-		signalLines->CalcMaxMinLimits(data);
+		signalLines->CalcMaxMinLimits(mySignalDispPtr->data);
 		mySignalDispPtr->minY = signalLines->GetMinY();
 		mySignalDispPtr->maxY = signalLines->GetMaxY();
 	} else {
@@ -252,7 +253,7 @@ MyCanvas::InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO)
 	}
 	
 	if (mySignalDispPtr->automaticYScaling)
-		summaryLine->CalcMaxMinLimits(summaryEarO);
+		summaryLine->CalcMaxMinLimits(mySignalDispPtr->summary);
 	else {
 		summaryLine->SetMinY(mySignalDispPtr->minY);
 		summaryLine->SetMaxY(mySignalDispPtr->maxY);
@@ -260,13 +261,13 @@ MyCanvas::InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO)
 	summaryLine->SetYMagnification(1.0);
 	switch (mySignalDispPtr->mode) {
 	case GRAPH_MODE_LINE:
-		SetLines(signalLines, data, signal);
-		SetLines(summaryLine, summaryEarO, summary);
+		SetLines(signalLines, mySignalDispPtr->data, signal);
+		SetLines(summaryLine, mySignalDispPtr->summary, summary);
 		break;
 	case GRAPH_MODE_GREY_SCALE:
-		SetGreyScaleLines(signalLines, data, signal, mySignalDispPtr->
-		  xResolution);
-		SetGreyScaleLines(summaryLine, summaryEarO, summary, 1.0);
+		SetGreyScaleLines(signalLines, mySignalDispPtr->data, signal,
+		  mySignalDispPtr->xResolution);
+		SetGreyScaleLines(summaryLine, mySignalDispPtr->summary, summary, 1.0);
 		break;
 	} /* switch */
 	summaryLine->SetYSpacing(summary);
@@ -452,7 +453,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	  roundingScaler;
 	scale = interval / (mySignalDispPtr->xTicks - 1);
 	xTickSpacing = xAxis->GetWidth() / (mySignalDispPtr->xTicks - 1);
-	tickLength = (int) (xAxis->GetHeight() * GRAPH_TICK_LENGTH_SCALE);
+	tickLength = (int) (xAxis->GetHeight() * GRAPH_X_TICK_LENGTH_SCALE);
 	format.Printf("%%.%df", mySignalDispPtr->xDecPlaces);
 	yPos = (int) (xAxis->GetTop() + theYOffset + xAxis->GetHeight() *
 	  GRAPH_X_LABELS_Y_OFFSET_SCALE);
@@ -478,7 +479,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 /****************************** DrawExponent **********************************/
 
 void
-MyCanvas::DrawExponent(wxDC& dc, int exponent, int x, int y)
+MyCanvas::DrawExponent(wxDC& dc, wxFont *labelFont, int exponent, int x, int y)
 {
 	long int	stringWidth, stringHeight;
 	wxString	string("10");
@@ -534,17 +535,66 @@ MyCanvas::GetYExponent(MultiLine *lines)
 
 }
 
-/******************************* GetSignalYScale ******************************/
+/******************************* DrawYScale ***********************************/
 
 /*
- * This function returns the Y scale for a signal.
+ * This routine draws the y-scale.
+ * The (xOffset, yOffset) point defines the top of the scale indicator.
  */
 
-double
-MyCanvas::GetSignalYScale(void)
+void
+MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
+  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
+  double minYScale)
 {
-	return((signalLines->GetMaxY() - signalLines->GetMinY()) /
-	  (mySignalDispPtr->yTicks - 1));
+	/* static const char *funcName = "MyCanvas::DrawYScale"; */
+	int		i, j, tickLength, exponent = 0, xPos, yPos, top, xLabel;
+	int		leftMostLabel;
+	long int	stringWidth, stringHeight, charWidth;
+	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, scale;
+	double	displayScale, chanDisplayScale;
+	wxString format, label, space = " ";
+
+	dc.SetPen(*wxBLACK_PEN);
+	SetTextAdjust(&tempXAdjust, &tempYAdjust);
+	dc.SetFont(*labelFont);
+	top = yAxisRect->GetBottom() - (int) floor(yAxisRect->GetHeight() + 0.5);
+	dc.DrawLine(yAxisRect->GetRight() + theXOffset, top + theYOffset,
+	  yAxisRect->GetRight() + theXOffset, yAxisRect->GetBottom() + theYOffset);
+	displayScale = (double) yAxisRect->GetHeight() / yAxis->GetHeight();
+	chanDisplayScale = (double) signalLines->GetNumDisplayedLines() /
+	  numDisplayedChans;
+	chanSpacing = signalLines->GetChannelSpace() * chanDisplayScale;
+	tickLength = (int) (yAxisRect->GetWidth() * GRAPH_Y_TICK_LENGTH_SCALE);
+	dc.GetTextExtent(space, &charWidth, &stringHeight);
+	xPos = (int) (yAxisRect->GetRight() - tickLength + theXOffset - yAxisRect->
+	  GetWidth() * GRAPH_Y_LABELS_X_OFFSET_SCALE);
+	leftMostLabel = xPos;
+	exponent = GetYExponent(signalLines);
+	scale = (signalLines->GetMaxY() - signalLines->GetMinY()) * displayScale *
+	  chanDisplayScale / (yTicks - 1);
+	yTickSpacing = chanSpacing * displayScale / (yTicks - 1);
+	format.Printf("%%.%df", mySignalDispPtr->yDecPlaces);
+	for (j = 0; j < numDisplayedChans; j++) {
+		yOffset = yAxisRect->GetBottom() - j * chanSpacing + theYOffset;
+		for (i = 0; i < yTicks; i++) {
+			yPos = (int) (yOffset - i * yTickSpacing + 0.5);
+			label.sprintf(format, (i * scale + minYScale) * pow(10.0,
+			  -exponent));
+			dc.GetTextExtent(label, &stringWidth, &stringHeight);
+			xLabel = (int) (xPos - (stringWidth - charWidth / 2.0) *
+			  tempXAdjust);
+			if (xLabel < leftMostLabel)
+				leftMostLabel = xLabel;
+			dc.DrawText(label, xLabel, (int) (yPos - stringHeight *
+			  tempYAdjust / 2.0));
+			dc.DrawLine(yAxisRect->GetRight() - tickLength + theXOffset, yPos,
+			  yAxisRect->GetRight() + theXOffset, yPos);
+		}
+	}
+	if (exponent)
+		DrawExponent(dc, labelFont, exponent, leftMostLabel - charWidth * 8,
+		  top + theYOffset + stringHeight);
 
 }
 
@@ -554,9 +604,9 @@ void
 MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
 	static const char *funcName = "MyCanvas::DrawYAxis";
-	int		i, j, numDisplayedChans, tickLength, exponent = 0, xPos, yPos;
+	int		i, numDisplayedChans, tickLength, xPos, yPos;
 	long int	stringWidth, stringHeight, charWidth;
-	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, scale;
+	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset;
 	wxString format, label, space = " ";
 
 	if (!yAxis)
@@ -569,7 +619,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 	  yAxis->GetRight() + theXOffset, yAxis->GetBottom() + theYOffset);
 	numDisplayedChans = signalLines->GetNumDisplayedLines();
 	chanSpacing = signalLines->GetChannelSpace();
-	tickLength = (int) (yAxis->GetWidth() * GRAPH_TICK_LENGTH_SCALE);
+	tickLength = (int) (yAxis->GetWidth() * GRAPH_Y_TICK_LENGTH_SCALE);
 	dc.GetTextExtent(space, &charWidth, &stringHeight);
 	xPos = (int) (yAxis->GetRight() - tickLength + theXOffset - yAxis->GetWidth(
 	  ) * GRAPH_Y_LABELS_X_OFFSET_SCALE);
@@ -587,33 +637,26 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 			dc.DrawLine(yAxis->GetRight() - tickLength + theXOffset, yPos,
 			  yAxis->GetRight() + theXOffset, yPos);
 		}
+		if (mySignalDispPtr->yInsetScale) {
+			wxRect	yInset = *yAxis;
+			yInset.SetHeight((int) floor(yAxis->GetHeight() * 
+			  GRAPH_Y_INSET_SCALE_HEIGHT_SCALE + 0.5));
+			yInset.SetY(yInset.GetY() + yAxis->GetHeight() - yInset.GetHeight(
+			  ));
+			insetLabelFont->SetPointSize((int)(labelFont->GetPointSize() *
+			  GRAPH_INSET_VS_LABEL_SCALE));
+			DrawYScale(dc, &yInset, insetLabelFont, theXOffset - (int) floor(
+			  yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE + 0.5),
+			  theYOffset, 2, 1, 0.0);
+		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
-		exponent = GetYExponent(signalLines);
-		scale = GetSignalYScale();
-		yTickSpacing = chanSpacing / (mySignalDispPtr->yTicks - 1);
-		format.Printf("%%.%df", mySignalDispPtr->yDecPlaces);
-		for (j = 0; j < numDisplayedChans; j++) {
-			yOffset = yAxis->GetBottom() - j * chanSpacing + theYOffset;
-			for (i = 0; i < mySignalDispPtr->yTicks; i++) {
-				yPos = (int) (yOffset - i * yTickSpacing + 0.5);
-				label.sprintf(format, (i * scale + signalLines->GetMinY()) *
-				  pow(10.0, -exponent));
-				dc.GetTextExtent(label, &stringWidth, &stringHeight);
-				dc.DrawText(label, (int) (xPos - (stringWidth - charWidth /
-				  2.0) * tempXAdjust), (int) (yPos - stringHeight *
-				  tempYAdjust / 2.0));
-				dc.DrawLine(yAxis->GetRight() - tickLength + theXOffset, yPos,
-				  yAxis->GetRight() + theXOffset, yPos);
-			}
-		}
+		DrawYScale(dc, yAxis, labelFont, theXOffset, theYOffset,
+		  mySignalDispPtr->yTicks, numDisplayedChans, signalLines->GetMinY());
 		break;
 	default:
 		NotifyError("%s: Scale (%d) not implemented.", funcName);
 	}
-	if (exponent)
-		DrawExponent(dc, exponent, yAxis->GetLeft() + theXOffset,
-		  yAxis->GetTop() + theYOffset);
 	dc.SetFont(*axisTitleFont);
 	dc.GetTextExtent(yTitle, &stringWidth, &stringHeight);
 	dc.DrawRotatedText(yTitle, (int) (yAxis->GetLeft() + theXOffset +
@@ -671,9 +714,9 @@ MyCanvas::RedrawGraph(void)
 {
 	wxClientDC dc(this);
 
-	if (mySignalDispPtr->redrawFlag) {
+	if (mySignalDispPtr->redrawGraphFlag) {
 		DrawGraph(memDC, 0, 0);
-		mySignalDispPtr->redrawFlag = FALSE;
+		mySignalDispPtr->redrawGraphFlag = FALSE;
 	}
 	dc.Blit(0, 0, bitmapWidth, bitmapHeight, &memDC, 0, 0, wxCOPY);
 
@@ -692,7 +735,7 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 	}
 	CreateBackingBitmap();
 	RescaleGraph();
-	mySignalDispPtr->redrawFlag = TRUE;
+	mySignalDispPtr->redrawGraphFlag = TRUE;
 
 }
 
@@ -706,13 +749,15 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 void
 MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
+	//wxMutexGuiEnter();
 	wxPaintDC dc(this);
 
-	if (mySignalDispPtr->redrawFlag) {
+	if (mySignalDispPtr->redrawGraphFlag) {
 		DrawGraph(memDC, 0, 0);
-		mySignalDispPtr->redrawFlag = FALSE;
+		mySignalDispPtr->redrawGraphFlag = FALSE;
 	}
 	dc.Blit(0, 0, bitmapWidth, bitmapHeight, &memDC, 0, 0, wxCOPY);
+	//wxMutexGuiLeave();
 
 }
 
@@ -780,7 +825,7 @@ MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 
 	signalDispPtr = mySignalDispPtr;
 	if (dialog.ShowModal() == wxID_OK) {
-		GetSignalDispPtr()->redrawFlag = TRUE;
+		GetSignalDispPtr()->redrawGraphFlag = TRUE;
 		SetGraphPars();
 		RescaleGraph();
 		Refresh(FALSE);

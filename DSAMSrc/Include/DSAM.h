@@ -32,6 +32,8 @@
 #include "GeModuleMgr.h"
 #include "GeModuleReg.h"
 
+#include "StdSimThread.h"
+
 #include "UtAccumulate.h"
 #include "UtAmpMod.h"
 #include "UtAppInterface.h"
@@ -174,7 +176,6 @@
 
 #	include "GrUtils.h"
 #	include "GrFonts.h"
-#	include "GrDSAMList.h"
 #	include "GrDialogInfo.h"
 #	include "GrParControl.h"
 #	include "GrParListInfo.h"
@@ -182,6 +183,7 @@
 #	include "GrDialogList.h"
 #	include "GrModParDialog.h"
 #	include "GrSimModDialog.h"
+#	include "GrSimThread.h"
 #	include "GrSimMgr.h"
 #	include "GrLine.h"
 #	include "GrCanvas.h"

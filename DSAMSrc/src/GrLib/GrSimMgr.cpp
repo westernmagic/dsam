@@ -66,8 +66,6 @@
 
 int		grSimMgrPleaseLink = 0;
 
-wxList	myChildren(wxKEY_INTEGER);
-
 /* Create a new application object: this macro will allow wxWindows to
  * create the application object during program execution (it's better than
  * using a static object for many reasons) and also declares the accessor
@@ -123,6 +121,7 @@ MyApp::MyApp(void)
 	icon = NULL;
 	busy = FALSE;
 	simModuleDialog = NULL;
+	simThread = NULL;
 
 }
 
@@ -175,6 +174,7 @@ MyApp::OnInit(void)
 #	endif
 
 	ResetGUIDialogs();
+	SwitchGUILocking_Common(FALSE);
 
 	myArgc = argc;
 	myArgv = argv;
@@ -224,7 +224,7 @@ MyApp::OnInit(void)
     SetTopWindow(frame);
 
 	if (myServer)
-		RunSimulation();
+		StartSimThread();
 	// Essential - return the main frame window
 	return(TRUE);
 
@@ -386,9 +386,32 @@ MyApp::ExitMain(void)
 	if (appInterfacePtr)
 		SaveConfiguration(appInterfacePtr->parList);
 
+	DeleteSimThread();
+
 	SetCanFreePtrFlag_AppInterface(TRUE);
 	Free_AppInterface();
 	FreeAll_EarObject();
+
+}
+
+/****************************** StartSimThread ********************************/
+
+/*
+ * This routine starts the simulation thread.
+ */
+
+void
+MyApp::StartSimThread(void)
+{
+	static const char *funcName = "MyApp::StartSimThread";
+
+	SwitchGUILocking_Common(TRUE);
+	simThread = new SimThread();
+	if (simThread->Create() != wxTHREAD_NO_ERROR)
+		wxLogFatalError("%s: Can't create simulation thread!", funcName);
+
+	if (simThread->Run() != wxTHREAD_NO_ERROR)
+		wxLogError("%s: Cannot start simulation thread.", funcName);
 
 }
 
@@ -403,7 +426,7 @@ MyApp::ExitMain(void)
 void
 MyApp::RunInClientMode(void)
 {
-	static const char *funcName = "MyApp::RunInClientMode";
+	/* static const char *funcName = "MyApp::RunInClientMode"; */
 	char	c;
 	int		i;
 
@@ -412,23 +435,9 @@ MyApp::RunInClientMode(void)
 	myClient->Write(&c, 1);
 	for (i = 0; i < argc; i++)
 		myClient->WriteMsg(argv[i], strlen(argv[i]) + 1);
-	myClient->Read(&c, 1);
-	if (c != 0)
-		NotifyError("%s: Server simulation did not run.", funcName);
-
-}
-
-/****************************** RunSimulation *********************************/
-
-/*
- * This routine runs the simulation, it checks for an instance of runMgr.
- */
-
-bool
-MyApp::RunSimulation(void)
-{
-	ResetGUIDialogs();
-	return(MainSimulation());
+	// myClient->Read(&c, 1);
+	// if (c != 0)
+	//	NotifyError("%s: Server simulation did not run.", funcName);
 
 }
 
@@ -635,6 +644,64 @@ MyApp::DeleteSimModuleDialog(void)
 
 }
 
+/****************************** DeleteSimThread *******************************/
+
+/*
+ * This routine deletes the simulation thread.
+ * It first turns off the GUI output so that locking problems with exit
+ * diagnostics do not occur.
+ * It also waits until the simThread pointer is set to NULL.
+ */
+
+void
+MyApp::DeleteSimThread(void)
+{
+	SetGUIDialogStatus(FALSE);
+	if (simThread) {
+		simThread->SuspendDiagnostics();
+		simThread->Delete();
+	}
+
+}
+
+/****************************** GetSuspendDiagnostics *************************/
+
+/*
+ * This function returns FALSE if there has been a request to suspend the
+ * diagnotsics for the main simulation.
+ * This is needed, for instance, when the thread is deleted.
+ */
+
+bool
+MyApp::GetSuspendDiagnostics(void)
+{
+	if (!simThread)
+		return(FALSE);
+	return(simThread->GetSuspendDiagnostics());
+
+}
+
+/****************************** SetDiagLocks **********************************/
+
+/*
+ * This routine sets the dialog locking on and off.
+ */
+
+void
+MyApp::SetDiagLocks(bool on)
+{
+	if (!GetDSAMPtr_Common()->lockGUIFlag)
+		return;
+	if (on) {
+		simThread->diagsCritSect.Enter();
+		wxMutexGuiEnter();
+	} else {
+		simThread->diagsCritSect.Leave();
+		wxMutexGuiLeave();
+	}
+
+}
+
 /****************************** OnServerEvent *********************************/
 
 /*
@@ -694,11 +761,10 @@ MyApp::OnSocketEvent(wxSocketEvent& event)
 			SetArgcAndArgV_AppInterface(myArgc, myArgv);
 			ResetGUIDialogs();
 			ResetCommandArgs();
-			RunSimulation();
+			StartSimThread();
 		}
-		wxLogError("%s: Reset argc and argv then run", funcName);
 		sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT);
-		sock->Write((char *) &c, 1);
+		// sock->Write((char *) &c, 1);
 		break; }
 	case wxSOCKET_LOST:
 		sock->Destroy();
@@ -741,6 +807,7 @@ PrintUsage_MyApp(void)
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(MYFRAME_ID_ABOUT, MyFrame::OnAbout)
+	EVT_MENU(MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT, MyFrame::OnSimThreadEvent)
 	EVT_MENU(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)
 	EVT_MENU(MYFRAME_ID_EDIT_MAIN_PARS, MyFrame::OnEditMainPars)
 	EVT_MENU(MYFRAME_ID_EDIT_SIM_PARS, MyFrame::OnEditSimPars)
@@ -749,6 +816,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(MYFRAME_ID_LOAD_SIM_SCRIPT_FILE, MyFrame::OnLoadSimFile)
 	EVT_MENU(MYFRAME_ID_QUIT, MyFrame::OnQuit)
 	EVT_MENU(MYFRAME_ID_SAVE_SIM_PARS, MyFrame::OnSaveSimPars)
+	EVT_MENU(MYFRAME_ID_STOP_SIMULATION, MyFrame::OnStopSimulation)
 	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, MyFrame::OnViewSimPars)
 	EVT_BUTTON(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)
 	EVT_CLOSE(MyFrame::OnCloseWindow)
@@ -810,6 +878,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	wxMenu *programMenu = new wxMenu;
 	programMenu->Append(MYFRAME_ID_EXECUTE, "&Execute\tCtrl-G", "Execute "
 	  "simulation");
+	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-T",
+	  "Stop simulation execution.");
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MYFRAME_ID_ABOUT, _("&About...\tCtrl-A"),
@@ -916,15 +986,6 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 
 MyFrame::~MyFrame(void)
 {
-	/* Must close all clients in the register. */
-	wxNode *node = myChildren.First();
-	while (node) {
-		DisplayS *display = (DisplayS *)node->Data();
-		wxNode *next = node->Next();
-		delete display;
-		node = next;
-	}
-
 #	ifdef MPI_SUPPORT
 	int		i, myRank, numProcesses, ok = TRUE;
 
@@ -991,44 +1052,20 @@ MyFrame::EnableSimParMenuOptions(bool on)
 
 }
 
-/****************************** DeleteDisplays ********************************/
-
-// This routine recursively deletes all simulation displays.
-
-void
-MyFrame::DeleteDisplays(DatumPtr pc)
-{
-
-	while (pc) {
-		if (pc->type == PROCESS)
-			switch (pc->data->module->specifier) {
-			case DISPLAY_MODULE: {
-				SignalDispPtr ptr = (SignalDispPtr) pc->data->module->parsPtr;
-				if (ptr->display)
-					delete ptr->display;
-				break; }
-			case SIMSCRIPT_MODULE: {
-				SimScriptPtr ptr = (SimScriptPtr) pc->data->module->parsPtr;
-				DeleteDisplays(ptr->simulation);
-				break; }
-			}
-		pc = pc->next;
-	}
-
-}
-
 /****************************** ResetSimulation *******************************/
 
 bool
 MyFrame::ResetSimulation(void)
 {
-	/*static char *funcName = "MyFrame::ResetSimulation";*/
+	static char *funcName = "MyFrame::ResetSimulation";
 
+	if (wxGetApp().simThread) {
+		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
+		return(FALSE);
+	}
 	wxGetApp().DeleteSimModuleDialog();
 
-	if (appInterfacePtr->audModel)
-		DeleteDisplays(GetSimulation_ModuleMgr(appInterfacePtr->audModel));
-
+	SwitchGUILocking_Common(FALSE);
 	if (!wxGetApp().CheckInitialisation()) {
 		EnableSimParMenuOptions(FALSE);
 		return(FALSE);
@@ -1049,6 +1086,11 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 {
 	static char *funcName = "MyFrame::OnExecute";
 
+	if (wxGetApp().simThread) {
+		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
+		return;
+	}
+
 	ResetGUIDialogs();
 	if (appInterfacePtr->Init) {
 		if (wxGetApp().StatusChanged()) {
@@ -1065,7 +1107,19 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		}
 	}
 	ResetGUIDialogs();
-	wxGetApp().RunSimulation();
+	wxGetApp().StartSimThread();
+
+}
+
+/****************************** OnStopSimulation ******************************/
+
+void
+MyFrame::OnStopSimulation(wxCommandEvent& WXUNUSED(event))
+{
+
+	if (!wxGetApp().simThread)
+		return;
+	wxGetApp().DeleteSimThread();
 
 }
 
@@ -1228,6 +1282,32 @@ MyFrame::OnViewSimPars(wxCommandEvent& WXUNUSED(event))
 
 }
 
+/****************************** OnSimThreadEvent ******************************/
+
+void
+MyFrame::OnSimThreadEvent(wxCommandEvent& event)
+{
+ 	switch (event.GetInt()) {
+	case MYAPP_THREAD_DRAW_GRAPH: {
+		SignalDispPtr	signalDispPtr = (SignalDispPtr) event.GetClientData();
+
+		signalDispPtr->critSect->Enter();
+		if (!signalDispPtr->display) {
+			signalDispPtr->display = new DisplayS(this, signalDispPtr);
+			signalDispPtr->display->canvas->InitGraph();
+			signalDispPtr->display->Show(TRUE);
+		} else {
+			signalDispPtr->display->canvas->InitGraph();
+			signalDispPtr->display->canvas->RedrawGraph();
+		}
+		signalDispPtr->critSect->Leave();
+		break; }
+	default:
+		;
+	}
+
+}
+  
 /****************************** OnSize ****************************************/
 
 // Size the subwindows when the frame is resized.

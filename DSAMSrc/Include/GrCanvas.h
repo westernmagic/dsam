@@ -33,29 +33,34 @@
 #define	GRAPH_RIGHT_MARGIN_SCALE			0.02
 #define	GRAPH_TOP_MARGIN_PERCENT			5.0
 
-#define	GRAPH_Y_TITLE_SCALE					0.03
+#define	GRAPH_Y_TITLE_SCALE					0.025
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
 #define	GRAPH_Y_AXIS_SCALE					0.16
 #define	GRAPH_Y_LABELS_X_OFFSET_SCALE		0.04
+#define	GRAPH_Y_INSET_SCALE_OFFSET_SCALE	0.45
+#define	GRAPH_Y_INSET_SCALE_HEIGHT_SCALE	0.1
 #define GRAPH_Y_SCALE_LOWER_EXP_LIMIT		0
 #define GRAPH_Y_SCALE_UPPER_EXP_LIMIT		5
 
-#define	GRAPH_X_AXIS_SCALE					0.05
-#define	GRAPH_X_TITLE_SCALE					0.04
+#define	GRAPH_X_AXIS_SCALE					0.07
+#define	GRAPH_X_TITLE_SCALE					0.03
 #define	GRAPH_X_TITLE_MARGIN_SCALE			0.02
 #define	GRAPH_X_LABELS_Y_OFFSET_SCALE		0.04
 
 #define GRAPH_EXPONENT_VS_LABEL_SCALE		0.7
+#define GRAPH_INSET_VS_LABEL_SCALE			0.7
 
 #if defined(__WXMSW__)
-#	define	GRAPH_AXIS_TITLE_SCALE				0.3
-#	define	GRAPH_AXIS_LABEL_SCALE				0.3
+#	define	GRAPH_AXIS_TITLE_SCALE			0.3
+#	define	GRAPH_AXIS_LABEL_SCALE			0.3
 #else
-#	define	GRAPH_AXIS_TITLE_SCALE				0.40
-#	define	GRAPH_AXIS_LABEL_SCALE				0.45
+#	define	GRAPH_AXIS_TITLE_SCALE			0.40
+#	define	GRAPH_AXIS_LABEL_SCALE			0.45
 #endif /* __WXMSW__ */
-#	define	GRAPH_TICK_LENGTH_SCALE				0.08
-#	define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
+
+#define	GRAPH_X_TICK_LENGTH_SCALE			0.08
+#define	GRAPH_Y_TICK_LENGTH_SCALE			0.04
+#define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
 #define	GRAPH_NUM_GREY_SCALES				10
 
@@ -98,7 +103,7 @@ class MyCanvas: public wxWindow
 	int		numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
-	wxFont  *labelFont, *axisTitleFont, *superLabelFont;
+	wxFont  *labelFont, *insetLabelFont, *axisTitleFont, *superLabelFont;
 	wxRect	signal, summary, *xAxis, *yAxis;
 	wxFrame	*parent;
 	wxString	xTitle, yTitle;
@@ -114,16 +119,18 @@ class MyCanvas: public wxWindow
 
 	void	CreateBackingBitmap(void);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
-	void	DrawExponent(wxDC& dc, int exponent, int x, int y);
+	void	DrawExponent(wxDC& dc, wxFont *labelFont, int exponent, int x,
+			  int y);
 	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
-	void	DrawYScale(wxDC& dc, wxRect *yAxis, int theXOffset, int theYOffset);
+	void	DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
+			  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
+			  double minYScale);
 	int		GetMinimumIntLog(double value);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
-	double	GetSignalYScale(void);
 	int		GetYExponent(MultiLine *lines);
 	void	InitData(EarObjectPtr data);
-	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO);
+	void	InitGraph(void);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }
 
 	void	OnCloseWindow(wxCloseEvent& event);
