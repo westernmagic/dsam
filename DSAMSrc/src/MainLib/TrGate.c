@@ -709,7 +709,7 @@ CheckData_Transform_Gate(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	duration = (gatePtr->duration < 0.0)? signalDuration - gatePtr->timeOffset:

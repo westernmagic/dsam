@@ -420,7 +420,7 @@ CheckData_Transform_SetDBSPL(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (setDBSPLPtr->timeOffset >=
 	  _GetDuration_SignalData(data->inSignal[0])) {

@@ -800,7 +800,7 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	strobeType = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData, "criterion")->
 	  valuePtr.nameList.specifier;
@@ -1197,6 +1197,7 @@ Process_Analysis_SAI(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
+	TempInputConnection_EarObject(data, sAImagePtr->strobeData, 1);
 	sAImagePtr->strobeData->inSignal[0] = data->inSignal[sAImagePtr->
 	  strobeInSignalIndex];
 	if (!RunProcess_ModuleMgr(sAImagePtr->strobeData)) {

@@ -415,7 +415,7 @@ CheckData_Utility_Sample(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Utility_Sample"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if ((samplePtr->dt > 0.0) && (samplePtr->dt < dt)) {

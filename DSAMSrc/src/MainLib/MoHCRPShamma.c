@@ -922,6 +922,8 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}	
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);

@@ -562,6 +562,8 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 	/* Initialise Variables and coefficients */
 	
 	SetProcessName_EarObject(data, "Gamma tone basilar membrane filtering");
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);

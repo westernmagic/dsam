@@ -473,7 +473,7 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Analysis_ISIH"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = data->inSignal[0]->dt * data->inSignal[0]->length;
 	if (interSIHPtr->maxInterval > signalDuration) {

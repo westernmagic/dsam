@@ -165,14 +165,14 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 void
 FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc)
 {
-	static const char *funcName = "FreeInstruction_Utility_Datum";
-
 	if (!pc)
 		return;
 
-	if (!pc->previous)
+	if (!pc->previous) {
 		*start = pc->next;
-	else
+		if (*start)
+			(*start)->previous = NULL;
+	} else
 		pc->previous->next = pc->next;
 
 	if (*pc->label != '\0')
@@ -554,8 +554,7 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
 			for (pc2 = pc1->next; (pc2 != NULL) && (pc2->type != PROCESS);
 			  pc2 = pc2->next)
 				;
-			if ((pc2 != NULL) && !pc2->u.proc.inputList && (pc2->data->
-			  numInSignals != pc2->data->maxInSignals))
+			if ((pc2 != NULL) && !pc2->u.proc.inputList)
 				ConnectOutSignalToIn_EarObject( pc1->data, pc2->data );
 		}
 	return(TRUE);
@@ -616,9 +615,7 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {
-			if ((pc->data = Init_EarObject_MultiInput(pc->u.proc.moduleName,
-			  (!pc->u.proc.inputList)? 1: GetNumElements_Utility_DynaList(
-			  pc->u.proc.inputList))) == NULL) {
+			if ((pc->data = Init_EarObject(pc->u.proc.moduleName)) == NULL) {
 				NotifyError("%s: Could not initialise process with '%s'.",
 				  funcName, pc->u.proc.moduleName);
 				ok = FALSE;

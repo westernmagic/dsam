@@ -381,7 +381,7 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 
 	if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||

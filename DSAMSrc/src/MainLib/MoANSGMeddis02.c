@@ -517,7 +517,7 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration <
 	  data->inSignal[0]->dt)) {

@@ -491,7 +491,7 @@ CheckData_Analysis_Averages(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Analysis_Averages"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (averagesPtr->timeOffset > signalDuration) {

@@ -794,9 +794,6 @@ InitModule_BasilarM_GammaChirp(ModulePtr theModule)
  * It should also include checks that ensure that the module's
  * parameters are compatible with the signal parameters, i.e. dt is
  * not too small, etc...
- * The 'CheckRamp_SignalData()' can be used instead of the
- * 'CheckInit_SignalData()' routine if the signal must be ramped for
- * the process.
  */
 
 BOOLN
@@ -808,7 +805,7 @@ CheckData_BasilarM_GammaChirp(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	/*** Put additional checks here. ***/
 	return(TRUE);

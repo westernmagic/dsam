@@ -811,6 +811,8 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 	}	
 	if (!CheckPars_Neuron_McGregor())		
 		return(FALSE);
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0]))
 		return(FALSE);
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,

@@ -530,8 +530,7 @@ CheckData_Analysis_SpikeRegularity(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	   "CheckData_Analysis_SpikeRegularity"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((spikeRegPtr->binWidth > 0.0) && (spikeRegPtr->binWidth <
 	 data->inSignal[0]->dt)) {

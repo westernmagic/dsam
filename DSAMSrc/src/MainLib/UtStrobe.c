@@ -691,7 +691,7 @@ CheckData_Utility_Strobe(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) &&
 	  (_GetDuration_SignalData(data->inSignal[0]) <= strobePtr->delay)) {

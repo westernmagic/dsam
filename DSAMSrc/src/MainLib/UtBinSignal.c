@@ -455,7 +455,7 @@ CheckData_Utility_BinSignal(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Utility_BinSignal"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if (((binSignalPtr->binWidth > 0.0) && (binSignalPtr->binWidth < dt)) ||

@@ -45,7 +45,7 @@ EarObjRefPtr	mainEarObjectList = NULL;
 /********************************* Subroutines and functions ******************/
 /******************************************************************************/
 
-/**************************** Init_.._MultiInput ******************************/
+/**************************** Init ********************************************/
 
 /*
  * This routine takes care of the correct initialisation of an EarObject: the
@@ -55,22 +55,17 @@ EarObjRefPtr	mainEarObjectList = NULL;
  * is a change from the previous version.
  * The routine returns NULL if an error occurs.
  * All initialised EarObjects are registered in the main list.
- * This version sets up an EarObject so that it can have multiple input signals.
+ * This new version initialises the input signals array to NULL, then input
+ * signals are dynamically added when processes are connected.
  * 
  */
 
 EarObjectPtr
-Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
+Init_EarObject(char *moduleName)
 {
-	static const char *funcName = "Init_EarObject_MultiInput";
-	int		i;
+	static const char *funcName = "Init_EarObject";
 	EarObjectPtr	data;
 
-	if (maxInSignals < 1) {
-		NotifyError("%s: Illegal number of input signals for EarObject - "
-		  "used with the '%s' module.", funcName, moduleName);
-		return(NULL);
-	}
 	if ((data = (EarObjectPtr) malloc(sizeof(EarObject))) == NULL) {
 		NotifyError("%s: Out of memory for EarObject - used with the '%s' "
 		  "module.", funcName, moduleName);
@@ -81,30 +76,14 @@ Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
 	data->updateCustomersFlag = TRUE;
 	data->updateProcessFlag = TRUE;
 	data->firstSectionFlag = TRUE;
-	data->maxInSignals = maxInSignals;
 	data->numInSignals = 0;
 	data->timeIndex = PROCESS_START_TIME;
-	if ((data->inSignalFlag = (BOOLN *) calloc(maxInSignals,
-	  sizeof(BOOLN))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject input signal flags - "
-		  "used with the '%s' module.", funcName, moduleName);
-		Free_EarObject(&data);
-		return(NULL);
-	}
-	for (i = 0; i < maxInSignals; i++)
-		data->inSignalFlag[i] = FALSE;
-	if ((data->inSignal = (SignalDataPtr *) calloc(maxInSignals,
-	  sizeof(SignalDataPtr))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject input signals - used "
-		  "with the '%s' module.", funcName, moduleName);
-		Free_EarObject(&data);
-		return(NULL);
-	}
+	data->inSignal = NULL;
 	data->outSignal = NULL;
 	data->customerList = NULL;
 	data->supplierList = NULL;
 	data->handle = earObjectCount++;	/* Unique handle for each EarObject. */
-	if (!AddEarObjRef_EarObject(&mainEarObjectList, data, -1)) {
+	if (!AddEarObjRef_EarObject(&mainEarObjectList, data)) {
 		NotifyError("%s: Could not register new EarObject.", funcName);
 		Free_EarObject(&data);
 		return(NULL);
@@ -118,27 +97,92 @@ Init_EarObject_MultiInput(char *moduleName, int maxInSignals)
 #	endif
 	return(data);
 
-} /* Init_EarObject_MultiInput */
+} /* Init_EarObject */
 
-/**************************** Init ********************************************/
+/**************************** AddInSignal *************************************/
 
 /*
- * This routine takes care of the correct initialisation of an EarObject: the
- * input and output signals are set to NULL, as required later, and the
- * pointer to the prepared object is returned.
- * The Module connected with the process is supplied as an argument.  This
- * is a change from the previous version.
- * The routine returns NULL if an error occurs.
- * All initialised EarObjects are registered in the main list.
- * This is the single input version.
+ * This routine adds a new input signal to an EarObject.
  */
-
-EarObjectPtr
-Init_EarObject(char *moduleName)
+ 
+BOOLN
+AddInSignal_EarObject(EarObjectPtr data)
 {
-	return( Init_EarObject_MultiInput(moduleName, 1) );
+	static const char *funcName = "AddInSignal_EarObject";
+	SignalDataPtr	*signals;
 
-} /* Init_EarObject */
+	if (!data) {
+		NotifyError("%s: EarObject not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
+	  numInSignals + 1) * sizeof(SignalDataPtr)))) == NULL) {
+		NotifyError("%s: Out of memory for EarObject input signals (EarObject "
+		  "process %lu).", funcName, data->handle);
+		return(FALSE);
+	}
+	signals[data->numInSignals++] = NULL;
+	data->inSignal = signals;
+	return(TRUE);
+
+}
+
+/**************************** DelInSignal *************************************/
+
+/*
+ * This routine removes an input signal from an EarObject.
+ * The signal to be remove must be identified and moved to the end of the
+ * list so that it is lost with a call to realloc.
+ * This routine also updates all this EarObject's suppliers for which the input
+ * reference may have changed, i.e. all those below the deleted signal in the
+ * array.
+ */
+ 
+BOOLN
+DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
+{
+	static const char *funcName = "DelInSignal_EarObject";
+	BOOLN	found = FALSE;
+	int		i = 0, j;
+	SignalDataPtr	*signals;
+	EarObjRefPtr	p;	
+
+	if (!data) {
+		NotifyError("%s: EarObject not initialised.", funcName);
+		return(FALSE);
+	}
+	if (!data->numInSignals)
+		return(TRUE);
+	while (!found && (i < data->numInSignals))
+		found = (data->inSignal[i++] == signal);
+
+	if (!found) {
+		NotifyError("%s: Signal pointer not found for '%s' EarObject process.",
+		  funcName, data->processName);
+		return(FALSE);
+	}
+	for (j = i; j < data->numInSignals; j++)
+		data->inSignal[j - 1] = data->inSignal[j];
+
+	if (data->numInSignals == 1) {
+		free(data->inSignal);
+		data->inSignal = NULL;
+	} else {
+		if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
+		  numInSignals - 1) * sizeof(SignalDataPtr)))) == NULL) {
+			NotifyError("%s: memory reallocation problem for EarObject input "
+			  "signals ('%s' Earobject process).", funcName, data->processName);
+			return(FALSE);
+		}
+		data->inSignal = signals;
+	}
+	data->numInSignals--;
+	for (p = data->supplierList; p != NULL; p = p->next)
+		if (p->inSignalRef > data->numInSignals)
+			p->inSignalRef--;
+	return(TRUE);
+
+}
 
 /**************************** FreeOutSignal ***********************************/
 
@@ -174,8 +218,6 @@ Free_EarObject(EarObjectPtr *theObject)
 {
 	if (*theObject == NULL)
 		return;
-	if ((*theObject)->inSignalFlag)
-		free((*theObject)->inSignalFlag);
 	if ((*theObject)->inSignal)
 		free((*theObject)->inSignal);
 	FreeOutSignal_EarObject(*theObject);
@@ -188,7 +230,7 @@ Free_EarObject(EarObjectPtr *theObject)
 		free((*theObject)->processName);
 #	ifndef _NO_MODULEMGR
 	Free_ModuleMgr(&(*theObject)->module);
-#	endif	
+#	endif
 	FreeEarObjRefList_EarObject(&(*theObject)->customerList);
 	FreeEarObjRefList_EarObject(&(*theObject)->supplierList);
 	free(*theObject);
@@ -248,25 +290,6 @@ SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...)
 	strcpy(theObject->processName, string);
 
 } /* SetProcessName_EarObject */
-
-/**************************** SetMaxInSignals *********************************/
-
-/*
- * Sets the maximum number of signals for an EarObject.
- */
- 
-void
-SetMaxInSignals_EarObject(EarObjectPtr theObject, int maxInSignals)
-{
-	static const char *funcName = "SetMaxInSignals_EarObject";
-	
-	if (theObject == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		exit(1);
-	}
-	theObject->maxInSignals = maxInSignals;
-
-}
 
 /**************************** SetNewOutSignal *********************************/
 
@@ -347,7 +370,7 @@ ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
 		NotifyError("%s: Output signal not correctly set.", funcName);
 		exit(1);
 	}
-	if (data->inSignal[0] == NULL) {
+	if (!data->inSignal || (data->inSignal[0] == NULL)) {
 		if (oldOutSignal != NULL) {
 			data->outSignal->rampFlag = oldOutSignal->rampFlag;
 			data->outSignal->interleaveLevel = oldOutSignal->interleaveLevel;
@@ -441,22 +464,26 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
 	static const char *funcName = "InitOutFromInSignal_EarObject";
 	uShort	channelsToSet;
-	
+
+	if (!data->inSignal) {
+		NotifyError("%s: No connected input processes.", funcName);
+		return(FALSE);
+	}
 	if (!CheckPars_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
 		return(FALSE);
 	}
-    channelsToSet = (numChannels == 0) ? data->inSignal[0]->numChannels:
-      numChannels;
-      
+	channelsToSet = (numChannels == 0) ? data->inSignal[0]->numChannels:
+	  numChannels;
+
 	if (!SetNewOutSignal_EarObject(data, channelsToSet,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		data->inSignal[0]->length, data->inSignal[0]->dt)) {
 		NotifyError("%s: Could not set output signal.", funcName);
 		return(FALSE);
 	}
 	if (!SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0])) {
 		NotifyError("%s: Cannot set output Channels for EarObject: '%s'.",
-		  funcName, data->processName);
+		funcName, data->processName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -482,27 +509,6 @@ PrintProcessName_EarObject(char *message, EarObjectPtr data)
 		printf(message, "<no name set>");
 }
 
-/**************************** GetInSignalRef **********************************/
-
-/*
- * This routine updates an EarObject's input signals, returning the input
- * signal reference number.
- */
-
-int
-GetInSignalRef_EarObject(EarObjectPtr data)
-{
-	int		i;
-
-	for (i = 0; i < data->maxInSignals; i++)
-		if (!data->inSignalFlag[i])
-			break;
-	data->inSignalFlag[i] = TRUE;
-	data->numInSignals++;
-	return(i);
-
-}
-
 /**************************** ConnectOutSignalToIn ****************************/
 
 /*
@@ -517,7 +523,6 @@ BOOLN
 ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 {
 	static const char *funcName = "ConnectOutSignalToIn_EarObject";
-	int		inSignalRef;
 
 	if (supplier == NULL) {
 		NotifyError("%s: Supplier EarObject not initialised.", funcName);
@@ -531,35 +536,19 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		NotifyError("%s: Attempted to connect EarObject to itself!", funcName);
 		return(FALSE);
 	}
-	if (customer->numInSignals == customer->maxInSignals) {
-		NotifyError("%s: Maximum number of signals already connected to "
-		  "customer EarObject (%lu).", funcName, customer->handle);
+	if (!AddInSignal_EarObject(customer)) {
+		NotifyError("%s: Could not add input signal for customer (%lu).",
+		  funcName, customer->handle);
 		return(FALSE);
 	}
-	inSignalRef = GetInSignalRef_EarObject(customer);
-	if (!AddEarObjRef_EarObject(&supplier->customerList, customer, inSignalRef))
+	if (!AddEarObjRef_EarObject(&supplier->customerList, customer))
 		return(FALSE);
-	if (!AddEarObjRef_EarObject(&customer->supplierList, supplier, inSignalRef))
+	if (!AddEarObjRef_EarObject(&customer->supplierList, supplier))
 		return(FALSE);
 	if (supplier->outSignal != NULL)
-		customer->inSignal[inSignalRef] = supplier->outSignal;
+		customer->inSignal[customer->numInSignals - 1] = supplier->outSignal;
 	return(TRUE);
 	
-}
-
-/**************************** UnSetInSignal ***********************************/
-
-/*
- * This routine unsets the specified input signal for an EarObject.
- */
- 
-void
-UnSetInSignal_EarObject(EarObjectPtr data, int inSignalRef)
-{
-	data->inSignal[inSignalRef] = NULL;
-	data->inSignalFlag[inSignalRef] = FALSE;
-	data->numInSignals--;
-
 }
 
 /**************************** DisconnectOutSignalFromIn ***********************/
@@ -576,7 +565,6 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
   EarObjectPtr customer)
 {
 	static const char *funcName = "DisconnectOutSignalFromIn_EarObject";
-	int		inSignalRef;
 	
 	if (supplier == NULL) {
 		NotifyError("%s: Supplier EarObject not initialised.", funcName);
@@ -591,10 +579,13 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 		  funcName);
 		return(FALSE);
 	}
-	inSignalRef = FreeEarObjRef_EarObject(&supplier->customerList,
-	  customer->handle);
+	if (!DelInSignal_EarObject(customer, supplier->outSignal)) {
+		NotifyError("%s: Could not delete input signal for customer (%lu).",
+		  funcName, customer->handle);
+		return(FALSE);
+	}
+	FreeEarObjRef_EarObject(&supplier->customerList, customer->handle);
 	FreeEarObjRef_EarObject(&customer->supplierList, supplier->handle);
-	UnSetInSignal_EarObject(customer, inSignalRef);
 	supplier->updateCustomersFlag = FALSE;
 	return(TRUE);
 	
@@ -605,20 +596,21 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 /*
  * This function returns a pointer to an earObjRef node.
  * It returns NULL if it fails.
+ * The input signal is always the last signal created.
  */
  
 EarObjRefPtr
-CreateEarObjRef_EarObject(EarObjectPtr theObject, int inSignalRef)
+CreateEarObjRef_EarObject(EarObjectPtr theObject)
 {
 	static const char *funcName = "CreateEarObjRef_EarObject";
 	EarObjRef	*newNode;
-	
+
 	if ((newNode = (EarObjRef *) malloc(sizeof (EarObjRef))) == NULL) {
 		NotifyError("%s: Out of memory.", funcName);
 		return(NULL);
 	}
 	newNode->earObject = theObject;
-	newNode->inSignalRef = inSignalRef;
+	newNode->inSignalRef = theObject->numInSignals - 1;
 	newNode->next = NULL;
 	return(newNode);
 
@@ -634,14 +626,13 @@ CreateEarObjRef_EarObject(EarObjectPtr theObject, int inSignalRef)
  */
 
 BOOLN
-AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject,
-  int inSignalRef)
+AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 {
 	static const char *funcName = "AddEarObjRef_EarObject";
 	EarObjRefPtr	temp, p, last;
 
     if (*theList == NULL) {
-    	if ((*theList = CreateEarObjRef_EarObject(theObject, inSignalRef)) ==
+    	if ((*theList = CreateEarObjRef_EarObject(theObject)) ==
     	  NULL) {
     		NotifyError("%s: Could not create new node.", funcName);
     		return(FALSE);
@@ -657,7 +648,7 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject,
 		 */
 		return(TRUE);
 	}
-	if ((temp = CreateEarObjRef_EarObject(theObject, inSignalRef)) == NULL) {
+	if ((temp = CreateEarObjRef_EarObject(theObject)) == NULL) {
 		NotifyError("%s: Could not create temp node.", funcName);
 		return(FALSE);
 	}
@@ -906,5 +897,71 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
 		exit(1);
 	}
 	return(data->outSignal->channel[channel][0]);
+
+}
+
+/**************************** CheckInSignal ***********************************/
+
+/*
+ * This routine checks for the presence of input signals, and whether they are
+ * correctly initialised.
+ * It assumes that the EarObject process is correctly initialised.
+ * It returns FALSE if it fails in any way.
+ */
+ 
+BOOLN
+CheckInSignal_EarObject(EarObjectPtr data, const char *callingFuncName)
+{
+	static const char	*funcName = "CheckInSignal_EarObject";
+	int		i;
+
+	if (data->numInSignals < 1) {
+		NotifyError("%s: No connected input signals for process (called from "
+		  "'%s').", funcName,
+		  callingFuncName);
+		return(FALSE);
+	}
+	for (i = 0; i < data->numInSignals; i++)
+		if (!CheckInit_SignalData(data->inSignal[i], funcName)) {
+			NotifyError("%s: Signal %d not initialised.", funcName, i);
+			return(FALSE);
+		}
+	return(TRUE);
+
+}
+
+/**************************** TempInputConnection *****************************/
+
+/*
+ * This routine makes manual/temporary input connections between the input
+ * signal of a base EarObject process and another supporting EarObject process.
+ * It assumes that both EarObject processes are correctly initialised.
+ * It returns FALSE if it fails in any way.
+ */
+ 
+BOOLN
+TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
+  int numInSignals)
+{
+	static const char	*funcName = "TempInputConnection_EarObject";
+	int		i;
+
+	if (numInSignals > base->numInSignals) {
+		NotifyError("%s: Base process has only %d input signals (%d).",
+		  funcName, numInSignals);
+		return(FALSE);
+	}
+	if (supporting->numInSignals != numInSignals) {
+		if (supporting->inSignal) {
+			free(supporting->inSignal);
+			supporting->inSignal = NULL;
+			supporting->numInSignals = 0;
+		}
+		for (i = 0; i < numInSignals; i++)
+			AddInSignal_EarObject(supporting);
+	}
+		
+	for (i = 0; i < supporting->numInSignals; i++)
+		supporting->inSignal[i] = base->inSignal[i];
 
 }

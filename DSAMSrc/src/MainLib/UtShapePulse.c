@@ -514,7 +514,7 @@ CheckData_Utility_ShapePulse(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Utility_ShapePulse"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (shapePulsePtr->pulseDuration < data->inSignal[0]->dt) {
 		NotifyError("%s: Pulse duration is too small for sampling\n"

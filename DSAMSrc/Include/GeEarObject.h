@@ -72,11 +72,9 @@ typedef struct {
 	BOOLN		updateCustomersFlag;	/* This is set when an update is */
 										/* required */
 	BOOLN		updateProcessFlag;	/* Set when dt is changed for a signal. */
-	BOOLN			*inSignalFlag;	/* Record of active input signals. */
 	BOOLN			firstSectionFlag;/* Set for first signal section. */
 	EarObjHandle	handle;			/* Reference handle for manager. */
 	char			*processName;	/* The origins of the output stimulus */
-	int				maxInSignals;	/* Total number of input signals. */
 	int				numInSignals;	/* Count of input signals. */
 	ChanLen			timeIndex;		/* used in segmented mode processing */
 	SignalDataPtr	*inSignal;		/* The original signals */
@@ -122,72 +120,68 @@ void		Free_ModuleMgr(ModulePtr *theModule);
 
 /*************************** Main Functions ***********************************/
 
-BOOLN		AddEarObjRef_EarObject(EarObjRefPtr *theList,	
-			  EarObjectPtr theCustomer, int inSignalRef);
+BOOLN	AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theCustomer);
 			
-BOOLN		ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,	
-			  EarObjectPtr customer);
-			
-EarObjRefPtr	CreateEarObjRef_EarObject(EarObjectPtr theObject,
-				  int inSignalRef);		
-			
-BOOLN		DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
-			  EarObjectPtr customer);
+BOOLN	AddInSignal_EarObject(EarObjectPtr data);
 
-void		FreeAll_EarObject(void);	
-			
-void		FreeEarObjRefList_EarObject(EarObjRefPtr *theList);	
-			
-int			FreeEarObjRef_EarObject(EarObjRefPtr *theList, 	
-			  EarObjHandle theHandle);
+BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const char *callingFuncName);
 
-void		FreeOutSignal_EarObject(EarObjectPtr data);
+BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
+		  EarObjectPtr customer);
+			
+EarObjRefPtr	CreateEarObjRef_EarObject(EarObjectPtr theObject);		
+			
+BOOLN	DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal);
 
-void		Free_EarObject(EarObjectPtr *theObject);	
+BOOLN	DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
+		  EarObjectPtr customer);
+
+void	FreeAll_EarObject(void);	
+			
+void	FreeEarObjRefList_EarObject(EarObjRefPtr *theList);	
+			
+int		FreeEarObjRef_EarObject(EarObjRefPtr *theList, EarObjHandle theHandle);
+
+void	FreeOutSignal_EarObject(EarObjectPtr data);
+
+void	Free_EarObject(EarObjectPtr *theObject);	
 			
 EarObjectPtr	Init_EarObject(char *moduleName);		
 
-EarObjectPtr	Init_EarObject_MultiInput(char *moduleName, int maxInSignals);
+BOOLN	InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels);	
 			
-BOOLN		InitOutFromInSignal_EarObject(EarObjectPtr data,
-			  uShort numChannels);	
+BOOLN	InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, 	
+		  ChanLen length, double samplingInterval);
 			
-BOOLN		InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, 	
-			  ChanLen length, double samplingInterval);
+double	GetResult_EarObject(EarObjectPtr data, uShort channel);
+
+double	GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample);
+
+void	PrintProcessName_EarObject(char *message, EarObjectPtr data);	
+
+void	RemoveEarObjRefs_EarObject(EarObjectPtr theObject);	
 			
-int			GetInSignalRef_EarObject(EarObjectPtr data);
+void	ResetProcess_EarObject(EarObjectPtr theObject);
 
-double		GetResult_EarObject(EarObjectPtr data, uShort channel);
+void	ResetSignalContinuity_EarObject(EarObjectPtr data,
+		  SignalDataPtr oldOutSignal);
 
-double		GetSample_EarObject(EarObjectPtr data, uShort channel,
-			  ChanLen sample);
+void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
-void		PrintProcessName_EarObject(char *message, EarObjectPtr data);	
+void	SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
 			
-void		RemoveEarObjRefs_EarObject(EarObjectPtr theObject);	
+BOOLN	SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
+		  ChanLen length, double samplingInterval);
 			
-void		ResetProcess_EarObject(EarObjectPtr theObject);
+void	SetTimeContinuity_EarObject(EarObjectPtr data);
 
-void		ResetSignalContinuity_EarObject(EarObjectPtr data,
-			  SignalDataPtr oldOutSignal);
+void	SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
 
-void		SetProcessContinuity_EarObject(EarObjectPtr data);
+BOOLN	TempInputConnection_EarObject(EarObjectPtr base,
+		  EarObjectPtr supporting, int numInSignals);
 
-void		SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
+void	UpdateCustomers_EarObject(EarObjectPtr theObject);	
 			
-void		SetMaxInSignals_EarObject(EarObjectPtr theObject, int maxInSignals);
-
-BOOLN		SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
-			  ChanLen length, double samplingInterval);
-			
-void		SetTimeContinuity_EarObject(EarObjectPtr data);
-
-void		SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
-
-void		UpdateCustomers_EarObject(EarObjectPtr theObject);	
-			
-void		UnSetInSignal_EarObject(EarObjectPtr data, int inSignalRef);
-
 __END_DECLS
 
 #endif

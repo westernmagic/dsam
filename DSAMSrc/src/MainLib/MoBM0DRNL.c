@@ -1436,6 +1436,8 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 	/* Initialise Variables and coefficients */
 	
 	SetProcessName_EarObject(data, "DRNL_Test Basilar Membrane Filtering");
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);
@@ -1451,8 +1453,7 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	/* "Manual" connection of original input signal to the linear filter. */
-	bM0DRNLPtr->linearF->inSignal[0] = data->inSignal[0];
+	TempInputConnection_EarObject(data, bM0DRNLPtr->linearF, 1);
 	InitOutFromInSignal_EarObject(bM0DRNLPtr->linearF, totalChannels);
 	
 	/* Filter non-linear signal path */

@@ -770,7 +770,7 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration <
 	  data->inSignal[0]->dt)) {

@@ -102,12 +102,8 @@ CheckData_Utility_Accumulate(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	for (i = 0, ok = TRUE; i < data->numInSignals; i++)
-		if (!CheckPars_SignalData(data->inSignal[i])) {
-			NotifyError("%s: Input signal No. %d not correctly set.", funcName,
-			  i);		
-			ok = FALSE;
-		}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	for (i = 1; ok && (i < data->numInSignals); i++)
 		if (!SameType_SignalData_NoDiagnostics(data->inSignal[0],
 		  data->inSignal[i])) {

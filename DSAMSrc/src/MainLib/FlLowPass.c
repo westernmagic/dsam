@@ -550,6 +550,8 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 	SetProcessName_EarObject(data, "Low-pass filter process");
 	if (!CheckPars_Filter_LowPass())
 		return(FALSE);
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);

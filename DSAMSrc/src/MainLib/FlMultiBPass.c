@@ -792,9 +792,6 @@ InitModule_Filter_MultiBPass(ModulePtr theModule)
  * It should also include checks that ensure that the module's
  * parameters are compatible with the signal parameters, i.e. dt is
  * not too small, etc...
- * The 'CheckRamp_SignalData()' can be used instead of the
- * 'CheckInit_SignalData()' routine if the signal must be ramped for
- * the process.
  */
 
 BOOLN
@@ -806,6 +803,8 @@ CheckData_Filter_MultiBPass(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);
@@ -971,7 +970,7 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 	}
 	for (i = 0; i < multiBPassFPtr->numFilters; i++) {
 		bPParsPtr = &multiBPassFPtr->bPassPars[i];
-		bPParsPtr->data->inSignal[0] = data->inSignal[0];
+		TempInputConnection_EarObject(data, bPParsPtr->data, 1);
 		InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
 		if (fabs(multiBPassFPtr->preAttenuation[i]) > DBL_EPSILON)
 			GaindB_SignalData(bPParsPtr->data->outSignal, multiBPassFPtr->

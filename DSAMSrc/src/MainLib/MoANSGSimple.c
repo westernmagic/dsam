@@ -651,7 +651,7 @@ CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_ANSpikeGen_Simple"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (simpleSGPtr->pulseDuration < data->inSignal[0]->dt) {
 		NotifyError("%s: Pulse duration is too small for sampling\n"

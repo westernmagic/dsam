@@ -926,11 +926,8 @@ CheckData_Neuron_HHuxley(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	for (i = 0; i < data->numInSignals; i++)
-		if (!CheckInit_SignalData(data->inSignal[i], funcName)) {
-			NotifyError("%s: input signal %d not initialised.", funcName, i);
-			return(FALSE);
-		}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if ((hHuxleyNCPtr->injectionMode == HHUXLEYNC_INJECTION_OFF) &&
 	  ((hHuxleyNCPtr->operationMode ==
 	  HHUXLEYNC_OPERATION_VOLTAGE_CLAMP_MODE))) {

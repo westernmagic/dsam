@@ -877,9 +877,9 @@ InitModule_Neuron_ArleKim(ModulePtr theModule)
 /********************************* CheckData **********************************/
 
 /*
- * This routine checks that the input signal is correctly initialised
- * (using CheckRamp_SignalData), and determines whether the parameter values
- * are valid for the signal sampling interval.
+ * This routine checks that the input signal is correctly initialised, and
+ * determines whether the parameter values are valid for the signal sampling
+ * interval.
  */
 
 BOOLN
@@ -891,6 +891,8 @@ CheckData_Neuron_ArleKim(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}	
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0]))
 		return(FALSE);
 	return(TRUE);

@@ -626,9 +626,6 @@ InitModule_BasilarM_Carney(ModulePtr theModule)
  * It should also include checks that ensure that the module's
  * parameters are compatible with the signal parameters, i.e. dt is
  * not too small, etc...
- * The 'CheckRamp_SignalData()' can be used instead of the
- * 'CheckInit_SignalData()' routine if the signal must be ramped for
- * the process.
  */
 
 BOOLN
@@ -640,7 +637,7 @@ CheckData_BasilarM_Carney(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_BasilarM_Carney"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);

@@ -375,11 +375,10 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	  "CheckData_Analysis_Intensity"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (intensityPtr->timeOffset >=
-	  _GetDuration_SignalData(data->inSignal[0])) {
+	if (intensityPtr->timeOffset >= _GetDuration_SignalData(data->inSignal[
+	  0])) {
 		NotifyError("%s: Time offset (%g ms) is longer than signal duration "
 		  "(%g ms).", funcName, MSEC(intensityPtr->timeOffset),
 		  MSEC(_GetDuration_SignalData(data->inSignal[0])));

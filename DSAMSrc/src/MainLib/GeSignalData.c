@@ -260,7 +260,7 @@ CheckPars_SignalData(SignalDataPtr theSignal)
 {
 	static const char *funcName = "CheckPars_SignalData";
 
-	if (!CheckInit_SignalData(theSignal, "CheckPars_SignalData"))
+	if (!CheckInit_SignalData(theSignal, funcName))
 		return(FALSE);
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No Channels have been set.", funcName);
@@ -286,6 +286,7 @@ CheckPars_SignalData(SignalDataPtr theSignal)
  * processes require that signals should be ramped, so this facility allows a
  * warning to be given if a signal has not been ramped.  The flag is set in
  * the UtRamp module.
+ * It assumes that the signal has been correctly initialised.
  * It returns TRUE if the signal has been ramped.
  */
 
@@ -293,8 +294,7 @@ BOOLN
 CheckRamp_SignalData(SignalDataPtr theSignal)
 {
 	static const char *funcName = "CheckRamp_SignalData";
-	if (!CheckInit_SignalData(theSignal, "CheckRamp_SignalData"))
-		return(FALSE);
+
 	if (!theSignal->rampFlag)
 		NotifyWarning("%s: Signal is not ramped (see Trans_Gate).", funcName);
 	return(TRUE);

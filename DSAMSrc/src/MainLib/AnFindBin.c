@@ -539,8 +539,7 @@ CheckData_Analysis_FindBin(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	  "CheckData_Analysis_FindBin"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->binWidth < dt)) {

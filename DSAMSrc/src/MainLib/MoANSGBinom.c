@@ -563,7 +563,7 @@ CheckData_ANSpikeGen_Binomial(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (binomialSGPtr->pulseDuration < data->inSignal[0]->dt) {
 		NotifyError("%s: Pulse duration is too small for sampling\n"
@@ -701,7 +701,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	binomialSGPtr->refractAdjData->inSignal[0] = data->inSignal[0];
+	TempInputConnection_EarObject(data, binomialSGPtr->refractAdjData, 1);
 	refractAdjPtr = &binomialSGPtr->refractAdj;
 	Process_Utility_RefractoryAdjust(binomialSGPtr->refractAdjData);
 	dt = data->inSignal[0]->dt;

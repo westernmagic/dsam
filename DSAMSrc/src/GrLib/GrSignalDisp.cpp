@@ -1915,7 +1915,7 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 	}
 	if (!CheckPars_SignalDisp())
 		return(FALSE);
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!SetProcessMode_SignalDisp(data)) {
 		NotifyError("%s: Could not set process mode.", funcName);

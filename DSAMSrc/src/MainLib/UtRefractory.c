@@ -388,8 +388,7 @@ CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	  "CheckData_Utility_RefractoryAdjust"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(data->
 	  inSignal[0])) {

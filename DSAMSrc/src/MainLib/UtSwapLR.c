@@ -92,7 +92,7 @@ CheckData_Utility_SwapLR(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (data->inSignal[0]->interleaveLevel != 2) {
 		NotifyError("%s: This utility only works with binaural signals.",

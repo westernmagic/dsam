@@ -547,8 +547,7 @@ CheckData_Utility_Compression(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	  "CheckData_Utility_Compression"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	/*** Put additional checks here. ***/
 	return(TRUE);

@@ -392,7 +392,7 @@ CheckData_Analysis_ALSR(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (data->inSignal[0]->numChannels < 2) {
 		NotifyError("%s: This module expects multi-channel input.", funcName);
@@ -520,8 +520,7 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	/* "Manual" connection of original input signal to the linear filter. */
-	aLSRPtr->modulusFT->inSignal[0] = data->inSignal[0];
+	TempInputConnection_EarObject(data, aLSRPtr->modulusFT, 1);
 	if (!RunProcess_ModuleMgr(aLSRPtr->modulusFT)) {
 		NotifyError("%s: Could not run 'Ana_FourierT' process.", funcName);
 		return(FALSE);

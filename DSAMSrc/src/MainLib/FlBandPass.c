@@ -572,6 +572,8 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 	if (!CheckPars_Filter_BandPass())
 		return(FALSE);
 	SetProcessName_EarObject(data, "Band pass filter module process");
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);

@@ -1166,9 +1166,7 @@ Process_Utility_SimScript(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SimScript";
 	char	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
-	int		i;
 	SignalDataPtr	lastOutSignal;
-	EarObjectPtr	firstProcess;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (!CheckPars_Utility_SimScript())
@@ -1178,14 +1176,8 @@ Process_Utility_SimScript(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Simulation script");
-	firstProcess = GetFirstProcess_Utility_Datum(localSimScriptPtr->simulation);
-	for (i = 0; i < firstProcess->numInSignals; i++)
-		UnSetInSignal_EarObject(firstProcess, i);
-	for (i = 0; firstProcess->numInSignals < data->numInSignals; i++) {
-		if (data->inSignalFlag[i])
-			firstProcess->inSignal[GetInSignalRef_EarObject(firstProcess)] =
-			  data->inSignal[i];
-	}
+	TempInputConnection_EarObject(data, GetFirstProcess_Utility_Datum(
+	  simScriptPtr->simulation), data->numInSignals);
 	if (!CheckParLists_Utility_Datum(localSimScriptPtr->simulation)) {
 		NotifyError("%s: Universal parameter lists check failed.", funcName);
 		return(FALSE);

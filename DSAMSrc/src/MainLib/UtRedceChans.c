@@ -457,8 +457,7 @@ CheckData_Utility_ReduceChannels(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0],
-	  "CheckData_Utility_ReduceChannels"))
+	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((data->inSignal[0]->numChannels % reduceChansPtr->numChannels) != 0) {
 		NotifyError("%s: Cannot reduce %d channels to %d.\n", funcName,

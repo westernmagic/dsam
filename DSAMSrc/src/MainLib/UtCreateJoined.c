@@ -92,12 +92,9 @@ CheckData_Utility_CreateJoined(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	for (i = 0; i < data->numInSignals; i++) {
-		if (!CheckInit_SignalData(data->inSignal[i],
-		  "CheckData_Utility_CreateJoined")) {
-			NotifyError("%s: Failed for signal %d.", funcName, i);
-			return(FALSE);
-		}
 		if ((i != 0) && ((data->inSignal[0]->dt != data->inSignal[i]->dt) ||
 		  (data->inSignal[0]->numChannels != data->inSignal[i]->numChannels))) {
 			NotifyError("%s: All signals must of the same number of channels\n"
