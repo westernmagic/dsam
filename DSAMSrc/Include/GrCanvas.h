@@ -35,7 +35,7 @@
 #define	GRAPH_Y_AXIS_SCALE					0.12
 #define	GRAPH_X_TITLE_SCALE					0.04
 #define	GRAPH_Y_TITLE_SCALE					0.03
-#define GRAPH_SUMMARY_SIGNAL_SCALE			0.15
+#define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
 #define	GRAPH_LABEL_SIZE					13
 #define	GRAPH_AXIS_LABEL_SIZE				13
 #define	GRAPH_TICK_LENGTH_SCALE				0.08
@@ -90,7 +90,7 @@ class MyCanvas: public wxWindow
 	int		numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
-	Box		signal, summary, *originalCanvas, *xAxis, *yAxis;
+	wxRect		signal, summary, *originalCanvas, *xAxis, *yAxis;
 	wxFont  *labelFont, *axisTitleFont;
 	wxString	xTitle, yTitle;
 	wxMemoryDC	memDC;
@@ -121,8 +121,8 @@ class MyCanvas: public wxWindow
 	void	OnSize(wxSizeEvent& event);
 	
 	void	SetGraphAreas(void);
-	void	SetLines(MultiLine *lines, EarObjectPtr data, Box box);
-	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, Box box,
+	void	SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect);
+	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
 			  double xResolution);
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
 	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
