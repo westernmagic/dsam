@@ -16,7 +16,7 @@ INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
 
-SUBDIRS			= CfgTools DEFAULT
+SUBDIRS			= CfgTools DEFAULT HelpFiles
 
 ams.$(OBJEXT):		ams.cpp
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT)
