@@ -73,6 +73,7 @@ Init_EarObject(char *moduleName)
 	}
 	data->processName = NULL;
 	data->localOutSignalFlag = FALSE;
+	data->externalDataFlag = FALSE;
 	data->updateCustomersFlag = TRUE;
 	data->updateProcessFlag = TRUE;
 	data->firstSectionFlag = TRUE;
@@ -332,7 +333,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		SetLength_SignalData(data->outSignal, length);
 		SetSamplingInterval_SignalData(data->outSignal, samplingInterval);
 		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
-		if (!InitChannels_SignalData(data->outSignal, numChannels, FALSE)) {
+		if (!InitChannels_SignalData(data->outSignal, numChannels,
+		  data->externalDataFlag)) {
 			NotifyError("%s: Cannot initialise output channels for "
 			  "EarObject '%s'.", funcName, POSSIBLY_NULL_STRING_PTR(data->
 			  processName));
@@ -436,7 +438,7 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		NotifyError("%s: Could not set output signal.", funcName);
 		return(FALSE);
 	}
-	if (data->updateProcessFlag)
+	if (!data->externalDataFlag && data->updateProcessFlag)
 		for (i = 0; i < numChannels; i++)
 			for (j = 0, dataPtr = data->outSignal->channel[i]; j < length; j++)
 				*(dataPtr++) = 0.0;

@@ -69,6 +69,8 @@ typedef struct {
 
 	BOOLN		localOutSignalFlag;	/* EarObjects must only destroy their*/
 									/* own signals. */
+	BOOLN		externalDataFlag;	/* Set when channel pointers are set */
+									/* using external data. */
 	BOOLN		updateCustomersFlag;	/* This is set when an update is */
 										/* required */
 	BOOLN		updateProcessFlag;	/* Set when dt is changed for a signal. */
