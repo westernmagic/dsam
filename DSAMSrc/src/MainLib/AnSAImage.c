@@ -208,7 +208,7 @@ SetUniParList_Analysis_SAI(void)
 	}
 	pars = sAImagePtr->parList->pars;
 	SetPar_UniParMgr(&pars[SAI_DIAGNOSTIC_MODE], "DIAGNOSTICS",
-	  "Diagnostic mode ('on', 'off' or <file name>).",
+	  "Diagnostic mode ('off', 'screen', 'error' or <file name>).",
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &sAImagePtr->diagnosticMode, sAImagePtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_Analysis_SAI);

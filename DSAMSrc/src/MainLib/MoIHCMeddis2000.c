@@ -195,7 +195,7 @@ SetUniParList_IHC_Meddis2000(void)
 	}
 	pars = hairCell2Ptr->parList->pars;
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_OPMODE], "OP_MODE",
-	  "Operational mode: stochastic ('spike') or probability ('prob').",
+	  "Output mode: stochastic ('spike') or probability ('prob').",
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->opMode, hairCell2Ptr->opModeList,
 	  (void * (*)) SetOpMode_IHC_Meddis2000);
@@ -221,17 +221,17 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->CaVrev, NULL,
 	  (void * (*)) SetCaVrev_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_BETACA], "CA_BETA",
-	  "Beta, parameter for calcium channel Boltzmann function.",
+	  "Calcium channel Boltzmann function parameter, beta.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->betaCa, NULL,
 	  (void * (*)) SetBetaCa_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GAMMACA], "CA_GAMMA",
-	  "Gamma, parameter for calcium channel Boltzmann function.",
+	  "Calcium channel Boltzmann function parameter, gamma.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->gammaCa, NULL,
 	  (void * (*)) SetGammaCa_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PCA], "CA_POW",
-	  "Stoichiometric order for calcium channel (normally three).",
+	  "Calcium channel transmitter release exponent (power).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->pCa, NULL,
 	  (void * (*)) SetPCa_IHC_Meddis2000);
@@ -241,7 +241,7 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->GCaMax, NULL,
 	  (void * (*)) SetGCaMax_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "CA_CONCTHR",
-	  "Permeability in the absence of calcium (normally negative or zero).",
+	  "Calcium threshold.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_Ca0, NULL,
 	  (void * (*)) SetPerm_Ca0_IHC_Meddis2000);
@@ -251,12 +251,12 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->perm_z, NULL,
 	  (void * (*)) SetPerm_z_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCACHAN], "CA_CHAN_TAU",
-	  "Calcium channel time constant (seconds).",
+	  "Calcium channel time constant (s).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauCaChan, NULL,
 	  (void * (*)) SetTauCaChan_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCONCCA], "CA_ACCUM_TAU",
-	  "Time constant of calcium accumulation near the synapse (seconds).",
+	  "Calcium ion diffusion (accumulation) time constant (s).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauConcCa, NULL,
 	  (void * (*)) SetTauConcCa_IHC_Meddis2000);

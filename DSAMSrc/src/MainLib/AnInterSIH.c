@@ -140,7 +140,7 @@ SetUniParList_Analysis_ISIH(void)
 	}
 	pars = interSIHPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_ORDER], "ORDER",
-	  "Order of spike interactions (1 = 1st, 2 = 2nd, -1 = unlimited).",
+	  "Order of spike interactions (1 = 1st, 2 = 2nd, -1 = all order).",
 	  UNIPAR_INT,
 	  &interSIHPtr->order, NULL,
 	  (void * (*)) SetOrder_Analysis_ISIH);

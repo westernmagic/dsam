@@ -203,8 +203,8 @@ SetUniParList_Harmonic(void)
 	  UNIPAR_NAME_SPEC,
 	  &harmonicPtr->phaseMode, harmonicPtr->phaseModeList,
 	  (void * (*)) SetPhaseMode_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_RANSEED], "RAN_SEED",
-	  "Phase variable (Shroeder phase: C value, Random: random number seed).",
+	SetPar_UniParMgr(&pars[HARMONIC_PHASE_PAR], "PHASE_PAR",
+	  "Phase parameter (Shroeder phase: C value, Random: random number seed).",
 	  UNIPAR_REAL,
 	  &harmonicPtr->phaseVariable, NULL,
 	  (void * (*)) SetPhaseVariable_Harmonic);

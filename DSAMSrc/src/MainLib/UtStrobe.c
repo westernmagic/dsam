@@ -207,7 +207,7 @@ SetUniParList_Utility_Strobe(void)
 	  &strobePtr->typeMode, strobePtr->typeModeList,
 	  (void * (*)) SetTypeMode_Utility_Strobe);
 	SetPar_UniParMgr(&pars[STROBE_DIAGNOSTIC_MODE], "STROBE_DIAGNOSTICS",
-	  "Diagnostic mode ('on', 'off' or <file name>).",
+	  "Diagnostic mode ('off', 'screen', 'error' or <file name>).",
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &strobePtr->diagnosticMode, strobePtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_Utility_Strobe);

@@ -118,10 +118,10 @@ Init_Utility_Delay(ParameterSpecifier parSpec)
 		}
 	}
 	delay2Ptr->parSpec = parSpec;
-	delay2Ptr->modeFlag = FALSE;
-	delay2Ptr->initialDelayFlag = FALSE;
-	delay2Ptr->finalDelayFlag = FALSE;
-	delay2Ptr->mode = 0;
+	delay2Ptr->modeFlag = TRUE;
+	delay2Ptr->initialDelayFlag = TRUE;
+	delay2Ptr->finalDelayFlag = TRUE;
+	delay2Ptr->mode = DELAY_SINGLE_MODE;
 	delay2Ptr->initialDelay = 0.0;
 	delay2Ptr->finalDelay = 0.0;
 

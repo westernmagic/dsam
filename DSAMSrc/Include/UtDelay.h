@@ -12,7 +12,7 @@
  * Created:		08 Apr 1997
  * Updated:	
  * Copyright:	(c) 1998, University of Essex
-*
+ *
  *********************/
 
 #ifndef _UTDELAY_H

@@ -369,7 +369,7 @@ SetFloorMode_Stimulus_ExpGatedTone(char *theFloorMode)
 
 }
 
-/****************************** SetCarrierFrequency ****************************/
+/****************************** SetCarrierFrequency ***************************/
 
 /*
  * This function sets the module's carrierFrequency parameter.

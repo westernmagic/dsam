@@ -345,49 +345,6 @@ PrintPars_Analysis_ALSR(void)
 
 }
 
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_ALSR(char *fileName)
-{
-	static const char	*funcName = "ReadPars_Analysis_ALSR";
-	BOOLN	ok = TRUE;
-	char	*filePath;
-	double	lowerAveLimit, upperAveLimit, normalise;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
-	Init_ParFile();
-	if (!GetPars_ParFile(fp, "%lf", &lowerAveLimit))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &upperAveLimit))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &normalise))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_ALSR(lowerAveLimit, upperAveLimit, normalise)) {
-		NotifyError("%s: Could not set parameters.", funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -434,7 +391,6 @@ InitModule_Analysis_ALSR(ModulePtr theModule)
 	theModule->Free = Free_Analysis_ALSR;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ALSR;
 	theModule->PrintPars = PrintPars_Analysis_ALSR;
-	theModule->ReadPars = ReadPars_Analysis_ALSR;
 	theModule->RunProcess = Calc_Analysis_ALSR;
 	theModule->SetParsPointer = SetParsPointer_Analysis_ALSR;
 	return(TRUE);

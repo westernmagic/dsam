@@ -698,8 +698,8 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
-	modulationIndex = fMTonePtr->modulationDepth / 100.0 * fMTonePtr->frequency /
-	  fMTonePtr->modulationFrequency;
+	modulationIndex = fMTonePtr->modulationDepth / 100.0 * fMTonePtr->
+	  frequency / fMTonePtr->modulationFrequency;
 	amplitude = RMS_AMP(fMTonePtr->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++)
