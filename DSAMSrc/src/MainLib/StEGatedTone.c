@@ -128,7 +128,7 @@ Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 	eGatedTonePtr->durationFlag = TRUE;
 	eGatedTonePtr->dtFlag = TRUE;
 	eGatedTonePtr->typeMode = EGATED_TONE_RAMPED_MODE;
-	eGatedTonePtr->floorMode = GENERAL_BOOLEAN_ON;
+	eGatedTonePtr->floorMode = GENERAL_BOOLEAN_OFF;
 	eGatedTonePtr->carrierFrequency = 1000.0;
 	eGatedTonePtr->amplitude = 10000.0;
 	eGatedTonePtr->phase = 0.0;
@@ -145,8 +145,7 @@ Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 		Free_Stimulus_ExpGatedTone();
 		return(FALSE);
 	}
-	eGatedTonePtr->cycleCount = 0;
-	eGatedTonePtr->beginPeriodIndex = 0;
+	eGatedTonePtr->cycleTimer = 0.0;
 	return(TRUE);
 
 }
@@ -827,9 +826,9 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 {
 	static const char	*funcName = "GenerateSignal_Stimulus_ExpGatedTone";
 	register ChanData	 *outPtr;
-	register double		expFactor, dtx2xPi, phaseRads;
-	double		dt;
-	ChanLen		i, t, cyclePeriodIndex, cycleIndex;
+	register double		time, cycle, expFactor, phaseRads, dt, cyclePeriod;
+	ChanLen		i, t;
+	EGatedTonePtr	p = eGatedTonePtr;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -839,41 +838,38 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "Exponentially Gated Pure Tone Module "
 	  "Process");
-	dt = eGatedTonePtr->dt;
+	dt = p->dt;
 	if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
-	  (ChanLen) floor(eGatedTonePtr->duration / dt + 0.5), dt)) {
+	  (ChanLen) floor(p->duration / dt + 0.5), dt)) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
-	cyclePeriodIndex = (ChanLen) floor(1.0 / (eGatedTonePtr->repetitionRate *
-	  dt) + 0.5);
-	expFactor = -LN_2 / eGatedTonePtr->halfLife;
-	phaseRads = DEGREES_TO_RADS(eGatedTonePtr->phase);
-	dtx2xPi = dt * PIx2;
+	cyclePeriod = 1.0 / p->repetitionRate;
+	expFactor = -LN_2 / p->halfLife;
+	phaseRads = DEGREES_TO_RADS(p->phase);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		eGatedTonePtr->beginPeriodIndex = (ChanLen) floor(eGatedTonePtr->
-		  beginPeriodDuration / dt + 0.5);
-		eGatedTonePtr->cycleCount = cyclePeriodIndex;
+		p->cycleTimer = 0.0;
+		p->nextCycle = cyclePeriod;
 	}
 	outPtr = data->outSignal->channel[0];
 	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  outPtr++) {
-	  	if (t < eGatedTonePtr->beginPeriodIndex) {
+		time = t * dt;
+	  	if (time < p->beginPeriodDuration) {
 			*outPtr = 0.0;
 	  		continue;
 		}
-		cycleIndex = (eGatedTonePtr->typeMode == EGATED_TONE_DAMPED_MODE)?
-		  cyclePeriodIndex - eGatedTonePtr->cycleCount:
-		  eGatedTonePtr->cycleCount;
-		*outPtr = eGatedTonePtr->amplitude * sin(
-		  eGatedTonePtr->carrierFrequency * t * dtx2xPi + phaseRads) *
-		  exp(cycleIndex * dt * expFactor);
-		if (eGatedTonePtr->floorMode && (*outPtr < eGatedTonePtr->floor))
-			*outPtr = eGatedTonePtr->floor;
-		if (!eGatedTonePtr->cycleCount)
-			eGatedTonePtr->cycleCount = cyclePeriodIndex;
-		else
-			eGatedTonePtr->cycleCount--;
+		cycle = (p->typeMode == EGATED_TONE_RAMPED_MODE)? cyclePeriod -
+		  p->cycleTimer: p->cycleTimer;
+		*outPtr = p->amplitude * sin(p->carrierFrequency * p->cycleTimer *
+		  PIx2 + phaseRads) * exp(cycle * expFactor);
+		if (p->floorMode && (*outPtr < p->floor))
+			*outPtr = p->floor;
+		if (time >= p->nextCycle) {
+			p->cycleTimer = 0.0;
+			p->nextCycle += cyclePeriod;
+		} else
+			p->cycleTimer += dt;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
