@@ -117,7 +117,7 @@ QuotedString_Utility_String(char *string)
 {
 	static char		newString[LONG_STRING];
 
-	sprintf(newString, "\"%s\"", string);
+	snprintf(newString, LONG_STRING, "\"%s\"", string);
 	return (newString);
 
 }
@@ -144,5 +144,27 @@ GetSuffix_Utility_String(char *fileName)
 		return(token);
 	else 
 		return(fileName);
+		
+}
+
+/**************************** GetFileNameFPath ********************************/
+
+/*
+ * This routine returns the filename witht the path removed.
+ * It returns the entire file name if there is no file path.
+ * 
+ */
+ 
+char *
+GetFileNameFPath_Utility_String(char *fileName)
+{
+	char	*p;
+
+	p = strrchr(fileName, '/');
+	if (!p)
+		p = strrchr(fileName, '\\');
+	if (p == NULL)
+		return(fileName);
+	return(++p);
 		
 }
