@@ -638,7 +638,7 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	if (!CheckPars_WhiteNoise())
 		return(FALSE);
 	SetProcessName_EarObject(data, "White Noise stimulus");
-	if ( !InitOutSignal_EarObject(data, whiteNoisePtr->numChannels,
+	if ( !InitOutSignal_EarObject(data, (uShort) whiteNoisePtr->numChannels,
 	  (ChanLen) floor(whiteNoisePtr->duration / whiteNoisePtr->dt + 0.5),
 	  whiteNoisePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
@@ -646,7 +646,8 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	}
 	if (data->updateProcessFlag)
 		SetGlobalSeed_Random(whiteNoisePtr->ranSeed);
-	SetInterleaveLevel_SignalData(data->outSignal, whiteNoisePtr->numChannels);
+	SetInterleaveLevel_SignalData(data->outSignal, (uShort) whiteNoisePtr->
+	  numChannels);
 	amplitude = RMS_AMP(whiteNoisePtr->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0; i < data->outSignal->length; i++) {
