@@ -297,7 +297,7 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 	xOffset = (wxCoord) (theXOffset + rect.GetLeft());
 	yChan = theYOffset + yOffset;
 	for (i = 0, minYPtr = minYRecord; i < length; i++)
-		*minYPtr++ = LONG_MAX;		
+		*minYPtr++ = Y_COORD(minY * 0.99);		
 	for (chan = 0; chan < signal->numChannels; chan += channelStep) {
 		p = signal->channel[chan] + offset;
 		if (greyScaleMode) {
