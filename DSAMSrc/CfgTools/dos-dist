@@ -18,6 +18,8 @@ GRLIB=$SRCDIR/GrLib
 CFGTOOLS=CfgTools
 TEMP_FILE=file.tmp
 
+############################### Usage ##########################################
+
 usage()
 {
 	cat <<EOF
@@ -30,16 +32,26 @@ EOF
 	exit $1
 }
 
+############################### CVSConfigure ###################################
+
+CVSConfigure()
+{
+	$CFGTOOLS/cvsconfigure
+	./configure --enable-graphics
+	(cd $MAINLIB; make UtSSParser.c)
+	cp $MAINLIB/UtSSParser.h $INCDIR
+}
+
+############################### Main Script ####################################
+
 if [ $# -eq 0 ]; then
 	usage 1 1>&2
 fi
 
-case  $1 in
+case $1 in
 cvsconfig)
-	$CFGTOOLS/cvsconfigure
-	./configure
-	(cd $MAINLIB; make UtSSParser.c)
-	cp $MAINLIB/UtSSParser.h $INCDIR
+	CVSConfigure
+	rm -f config.status config.cache
 	;;
 clean)
 	rm -rf lib bin $INCDIR/UtSSParser.h `find . -name '*.obj'`
@@ -53,7 +65,7 @@ clean)
 	;;
 make)
 	echo Creating unix distribution directory ...
-	$0 cvsconfig > $TEMP_FILE
+	CVSConfigure > $TEMP_FILE
 	make dist > $TEMP_FILE
 	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d " " -f 5`
 	echo archiveName = $archiveName
