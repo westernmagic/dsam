@@ -150,8 +150,8 @@ BOOLN	PrintPars_Analysis_SAI(void);
 BOOLN	Process_Analysis_SAI(EarObjectPtr data);
 
 void	ProcessFrameSection_Analysis_SAI(EarObjectPtr data,
-		  ChanData **strobeStatePtrs, ChanLen strobeOffset, ChanLen frameOffset,
-		  ChanLen sectionLength);
+		  ChanData **strobeStatePtrs, ChanData **dataPtrs, ChanLen strobeOffset,
+		  ChanLen frameOffset, ChanLen sectionLength);
 
 void	PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength);
 
