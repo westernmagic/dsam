@@ -1,13 +1,10 @@
 /**********************
  *
- * File:		ExtIPCMgr.cpp
- * Purpose:		Inter-process communication manager.
- * Comments:	This code module was removed from the GrSimMgr.cpp code module.
- *				This server will probably not be directly available to the
- *				internet, however, it is being coded to avoid "buffer overrun"
- *				problems.
+ * File:		ExtIPCServer.h
+ * Purpose:		Inter-process communication server extension code module.
+ * Comments:	This code module was revised from the GrSimMgr.cpp code module.
  * Author:		L. P. O'Mard
- * Created:		06 Jan 1995
+ * Created:		06 Nov 2003
  * Updated:		
  * Copyright:	(c) 2003, University of Essex
  *
@@ -71,12 +68,13 @@ typedef enum {
 /********************************** Pre-references ****************************/
 
 
-/*************************** IPCMgr *******************************************/
+/*************************** IPCServer ****************************************/
 
 class IPCServer {
 
 	bool	ok;
 	wxString	buffer;
+	wxSocketBase	*sock;
 	wxSocketServer	*myServer;
 	wxEvtHandler	*handler;
 	IPCServerModeSpecifier	mode;
@@ -88,6 +86,8 @@ class IPCServer {
 	NameSpecifier *	CommandList(int index);
 	IPCServerModeSpecifier GetMode(void)	{ return mode; }
 	wxSocketServer	*	GetServer(void)	{ return myServer; }
+	wxSocketBase *	GetSocket(void)	{ return sock; };
+	wxSocketBase *	InitConnection(void);
 	bool	Ok(void)	{ return ok; }
 	void	ProcessInput(wxSocketBase *sock);
 	void	ResetCommandMode(void)	{ mode = IPCSERVER_COMMAND_MODE; }
@@ -102,6 +102,13 @@ class IPCServer {
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
+
+void	DPrint_IPCServer(char *format, va_list args);
+
+void	EmptyDiagBuffer_IPCServer(char *s, int *c);
+
+void	Notify_IPCServer(const char *format, va_list args,
+		  CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

@@ -943,21 +943,22 @@ void
 MyApp::OnServerEvent(wxSocketEvent& event)
 {
 	static const char *funcName = "MyApp::OnServerEvent";
+	wxString	salutation;
 
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
 		NotifyError("%s: Unexpected socket event.", funcName);
 		return;
 	}
-	wxSocketBase *sock = iPCServer->GetServer()->Accept(FALSE);
+	wxSocketBase *sock = iPCServer->InitConnection();
 	if (!sock) {
-		NotifyError("%s: Couldn't accept a new connection.\n");
+		NotifyError("%s: Couldn't initialise connection.\n");
 		return;
 	}
 	sock->SetEventHandler(*this, IPCSERVER_APP_SOCKET_ID);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
 	sock->Notify(TRUE);
-	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 
 }
 
@@ -1078,78 +1079,11 @@ EmptyDiagWinBuffer_MyApp(char *s, int *c)
 void
 DPrint_MyApp(char *format, va_list args)
 {
-	static	const char *funcName = "DPrint";
-	bool	longVar;
-	char	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
-	int		i, c, tabPosition;
-
-	if (GetDSAMPtr_Common()->diagMode == COMMON_OFF_DIAG_MODE)
-		return;
 	if (!wxGetApp().GetDiagFrame())
 		return;
-	if (GetDSAMPtr_Common()->diagnosticsPrefix)
-		sprintf(buffer, "%s", GetDSAMPtr_Common()->diagnosticsPrefix);
-	else
-		*buffer = '\0';
 	if (GetDSAMPtr_Common()->lockGUIFlag)
 		wxMutexGuiEnter();
-	for (p = format, c = strlen(buffer); *p != '\0'; p++)
-		if (c >= LONG_STRING - 1)
-			EmptyDiagWinBuffer_MyApp(buffer, &c);
-		else if (*p == '%') {
-			EmptyDiagWinBuffer_MyApp(buffer, &c);
-			for (f = subFormat, *f++ = *p++; isdigit(*p) || (*p == '.') ||
-			  (*p == '-'); )
-				*f++ = *p++;
-			longVar = (*p == 'l');
-			if (longVar)
-				*f++ = *p++;
-			*f++ = *p;
-			*f = '\0';
-			switch (*p) {
-			case 'f':
-			case 'g':
-				sprintf(buffer, subFormat, va_arg(args, double));
-				break;
-			case 'd':
-				sprintf(buffer, subFormat, (longVar)? va_arg(args, long):
-				  va_arg(args, int));
-				break;
-			case 'u':
-				sprintf(buffer, subFormat, (longVar)? va_arg(args,
-				  unsigned long): va_arg(args, unsigned));
-				break;
-			case 'c':
-				sprintf(buffer, subFormat, va_arg(args, int));
-				break;
-			case 's':
-				s = va_arg(args, char *);
-				if (strlen(s) >= LONG_STRING) {
-					NotifyError("%s: Buffer(%d) is too small for string (%d).",
-					  funcName, LONG_STRING, strlen(s));
-					if (GetDSAMPtr_Common()->lockGUIFlag)
-						wxMutexGuiLeave();
-					return;
-				}
-				sprintf(buffer, subFormat, s);
-				break;
-			case '%':
-				sprintf(buffer, "%%");
-				break;
-			default:
-				sprintf(buffer, "%c", *p);
-				break;
-			}
-			c = strlen(buffer);
-		} else if (*p == '\t') {
-			tabPosition = TAB_SPACES * (c / TAB_SPACES + 1);
-			for (i = c; (i < tabPosition) && (c < LONG_STRING - 1); i++)
-				buffer[c++] = ' ';
-		} else {
-			buffer[c++] = *p;
-		}
-	if (c > 0)
-		EmptyDiagWinBuffer_MyApp(buffer, &c);
+	DPrintBuffer_Common(format, args, EmptyDiagWinBuffer_MyApp);
 	if (GetDSAMPtr_Common()->lockGUIFlag)
 		wxMutexGuiLeave();
 	
@@ -1166,9 +1100,10 @@ DPrint_MyApp(char *format, va_list args)
 void
 Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 {
-	char	message[LONG_STRING], preface[MAXLINE];
+	char	message[LONG_STRING], *heading;
+	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 
-	if (GetDSAMPtr_Common()->diagMode == COMMON_DIALOG_DIAG_MODE) {
+	if (!GetDSAMPtr_Common()->notificationCount) {
 		vsnprintf(message, LONG_STRING, format, args);
 #		ifndef __WXMSW__
 		if (GetDSAMPtr_Common()->lockGUIFlag)
@@ -1180,11 +1115,10 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 			wxMutexGuiLeave();
 #		endif
 		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-		snprintf(preface, MAXLINE, "\n%s diagnostics:-\n",
-		  DiagnosticTitle(type));
+		heading = "\nDiagnostics:-\n";
 	} else
-		*preface = '\0';
-	snprintf(message, LONG_STRING, "%s%s\n", preface, format);
+		heading = "";
+	snprintf(message, LONG_STRING, "%s%s\n", heading, format);
 	(GetDSAMPtr_Common()->DPrint)(message, args);
 
 } /* NotifyMessage */

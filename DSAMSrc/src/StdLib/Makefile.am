@@ -10,7 +10,7 @@ EXTRA_DIST		= makefile.b32
 
 INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
 
-libdsam_std_la_SOURCES= StdMessage.c StdSignalDisp.c StdSimThread.c
+libdsam_std_la_SOURCES= StdSignalDisp.c StdSimThread.c
 
 libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
 

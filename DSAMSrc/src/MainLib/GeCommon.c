@@ -71,6 +71,7 @@ static DSAM	dSAM = {
 			NULL,		/* diagnosticsPrefix */
 			VERSION,	/* version */
 			NULL,		/* parsFilePath */
+			0,			/* notificationCount */
 			UNSET_FILE_PTR,	/* warningsFile */
 			UNSET_FILE_PTR,	/* errorsFile */
 			UNSET_FILE_PTR,	/* parsFile */
@@ -125,6 +126,91 @@ DPrint(char *format, ...)
 	}
 	DPrintStandard(format, args);
 	va_end(args);
+	
+}
+
+/*************************** DPrintBuffer *************************************/
+
+/*
+ * This routine formats the diagnostic output to a buffer, using the
+ * "EmptyDiagBuffer" print routine - which is specific to the output form.
+ */
+
+void
+DPrintBuffer_Common(char *format, va_list args,	void (* EmptyDiagBuffer)(char *,
+  int *))
+{
+	static	const char *funcName = "DPrintBuffer_Common";
+	BOOLN	longVar;
+	char	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
+	int		i, c, tabPosition;
+
+	if (dSAM.diagMode == COMMON_OFF_DIAG_MODE)
+		return;
+	if (!EmptyDiagBuffer) {
+		NotifyError("%s: The 'EmptyDiagBuffer' routine has not been set.",
+		  funcName);
+		return;
+	}
+	if (dSAM.diagnosticsPrefix)
+		sprintf(buffer, "%s", dSAM.diagnosticsPrefix);
+	else
+		*buffer = '\0';
+	for (p = format, c = strlen(buffer); *p != '\0'; p++)
+		if (c >= LONG_STRING - 1)
+			(* EmptyDiagBuffer)(buffer, &c);
+		else if (*p == '%') {
+			(* EmptyDiagBuffer)(buffer, &c);
+			for (f = subFormat, *f++ = *p++; isdigit(*p) || (*p == '.') ||
+			  (*p == '-'); )
+				*f++ = *p++;
+			longVar = (*p == 'l');
+			if (longVar)
+				*f++ = *p++;
+			*f++ = *p;
+			*f = '\0';
+			switch (*p) {
+			case 'f':
+			case 'g':
+				sprintf(buffer, subFormat, va_arg(args, double));
+				break;
+			case 'd':
+				sprintf(buffer, subFormat, (longVar)? va_arg(args, long):
+				  va_arg(args, int));
+				break;
+			case 'u':
+				sprintf(buffer, subFormat, (longVar)? va_arg(args,
+				  unsigned long): va_arg(args, unsigned));
+				break;
+			case 'c':
+				sprintf(buffer, subFormat, va_arg(args, int));
+				break;
+			case 's':
+				s = va_arg(args, char *);
+				if (strlen(s) >= LONG_STRING) {
+					NotifyError("%s: Buffer(%d) is too small for string (%d).",
+					  funcName, LONG_STRING, strlen(s));
+					return;
+				}
+				sprintf(buffer, subFormat, s);
+				break;
+			case '%':
+				sprintf(buffer, "%%");
+				break;
+			default:
+				sprintf(buffer, "%c", *p);
+				break;
+			}
+			c = strlen(buffer);
+		} else if (*p == '\t') {
+			tabPosition = TAB_SPACES * (c / TAB_SPACES + 1);
+			for (i = c; (i < tabPosition) && (c < LONG_STRING - 1); i++)
+				buffer[c++] = ' ';
+		} else {
+			buffer[c++] = *p;
+		}
+	if (c > 0)
+		(* EmptyDiagBuffer)(buffer, &c);
 	
 }
 
@@ -202,6 +288,7 @@ NotifyError(char *format, ...)
 		fprintf(stderr, "\07");
 	(* dSAM.Notify)(format, args, COMMON_ERROR_DIAGNOSTIC);
 	va_end(args);
+	dSAM.notificationCount++;
 
 } /* NotifyError */
 
@@ -224,6 +311,7 @@ NotifyWarning(char *format, ...)
 	va_start(args, format);
 	(* dSAM.Notify)(format, args, COMMON_WARNING_DIAGNOSTIC);
 	va_end(args);
+	dSAM.notificationCount++;
 
 } /* NotifyWarning */
 
@@ -381,7 +469,7 @@ CloseFiles(void)
 void
 ResetGUIDialogs(void)
 {
-	dSAM.diagMode = COMMON_DIALOG_DIAG_MODE;
+	dSAM.notificationCount = 0;
 
 }
 
@@ -660,7 +748,7 @@ GetDSAMPtr_Common(void)
 /*************************** SwitchGUILocking *********************************/
 
 /*
- * This return returns the global DSAMPtr structure pointer. 
+ * This routine turns the GUI locking on and off to avoid conflicts. 
  */
 
 void

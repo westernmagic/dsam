@@ -279,6 +279,7 @@ typedef struct {
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
 	char	*parsFilePath;		/* File path for parameter files. */
+	int		notificationCount;	/* Count of notification diagnostics. */ 
 	FILE	*warningsFile;		/* File to which warnings should be sent. */
 	FILE	*errorsFile;		/* File to which errors should be sent. */
 	FILE	*parsFile;			/* File for parameter listings. */
@@ -331,9 +332,10 @@ char *	DiagnosticTitle(CommonDiagSpecifier type);
 
 void	DPrint(char *format, ...);
 
-void	DPrintStandard(char *format, va_list args);
+void	DPrintBuffer_Common(char *format, va_list args,
+		  void (* EmptyDiagBuffer)(char *, int *));
 
-void	DPrintStandard_Message(char *format, va_list args);
+void	DPrintStandard(char *format, va_list args);
 
 void	FindFilePathAndName_Common(char *filePath, char *path, char *name);
 

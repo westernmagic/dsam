@@ -144,6 +144,7 @@ class MyApp: public wxApp {
 	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
 	wxArrayString *	GetProcessList(int classSpecifier);
+	wxSocketBase *	GetServerSocket(void)	{ return iPCServer->GetSocket(); }
 
 	bool	InitArgv(int argc);
 	void	InitAppInterface(void);
