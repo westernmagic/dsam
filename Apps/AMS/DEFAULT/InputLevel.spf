@@ -44,9 +44,8 @@
 <<>> Simulation parameter file divider.
 
 	DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
-	SIM_SCRIPT_FILE.ams.0    	"/home/lowel/projects/dsam/AMS/DEFAULT/InputLevel.sim"	Simulation script file.
-	SIM_PAR_FILE.ams.0       	"/home/lowel/projects/dsam/AMS/DEFAULT/InputLevel.spf"	Simulation parameter file mode ('off' or <file name>).
-	SEGMENT_MODE.ams.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	SIM_FILE.AMS.0    			"InputLevel.spf" 	Simulation script file.
+	SEGMENT_MODE.ams.0       	OFF        	Segmented or frame-base processing mode ('on' or 'off').
 	# Sub-parameter list: 
 	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
 	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

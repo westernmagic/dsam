@@ -1,5 +1,5 @@
 /* Main ams resources */
 
-ams		ICON "ams.ico"
+ams		ICON "amsicon.ico"
 
 #include "dsam.rc"
