@@ -25,6 +25,8 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "ExtIPCUtils.h"
+#include "ExtSocket.h"
+#include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
