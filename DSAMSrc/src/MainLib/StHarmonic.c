@@ -531,6 +531,7 @@ SetPhaseVariable_Harmonic(double thePhaseVariable)
 {
 
 	harmonicPtr->phaseVariableFlag = TRUE;
+	harmonicPtr->updateProcessVariablesFlag = TRUE;
 	harmonicPtr->phaseVariable = thePhaseVariable;
 	return(TRUE);
 
@@ -1023,69 +1024,65 @@ InitProcessVariables_Harmonic(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_Harmonic";
 	int		i, totalNumberOfHarmonics, harmonicNumber;
 	double	piOver2;
+	HarmonicPtr	p = harmonicPtr;
 	
-	totalNumberOfHarmonics = harmonicPtr->highestHarmonic -
-	  harmonicPtr->lowestHarmonic + 1;
-	if (harmonicPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
+	totalNumberOfHarmonics = p->highestHarmonic - p->lowestHarmonic + 1;
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (harmonicPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Harmonic();
-			if ((harmonicPtr->phase = (double *) calloc(totalNumberOfHarmonics,
-			  sizeof(double))) == NULL) {
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			if ((p->phase = (double *) calloc(totalNumberOfHarmonics, sizeof(
+			  double))) == NULL) {
 				NotifyError("%s: Out of memory for 'phase' array", funcName);
 				return(FALSE);
 			}
-			if ((harmonicPtr->harmonicFrequency = (double *)
-			  calloc(totalNumberOfHarmonics, sizeof(double))) == NULL) {
+			if ((p->harmonicFrequency = (double *) calloc(
+			  totalNumberOfHarmonics, sizeof(double))) == NULL) {
 				NotifyError("%s: Out of memory for 'harmonic frequencies' "
 				  "array", funcName);
 				return(FALSE);
 			}
-			if ((harmonicPtr->modIndex = (double *)
-			  calloc(totalNumberOfHarmonics, sizeof(double))) == NULL) {
+			if ((p->modIndex = (double *) calloc(totalNumberOfHarmonics, sizeof(
+			  double))) == NULL) {
 				NotifyError("%s: Out of memory for 'modIndex' array", funcName);
 				return(FALSE);
 			}
-			SetGlobalSeed_Random(harmonicPtr->ranSeed);
-			harmonicPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 		piOver2 = PI / 2.0;
 		for (i = 0; i < totalNumberOfHarmonics; i++) {
-			harmonicNumber = harmonicPtr->lowestHarmonic + i;
-			switch (harmonicPtr->phaseMode) {
+			harmonicNumber = p->lowestHarmonic + i;
+			switch (p->phaseMode) {
 				case HARMONIC_RANDOM:
-					harmonicPtr->ranSeed = (long) harmonicPtr->phaseVariable;
-					harmonicPtr->phase[i] = PIx2 *
-					   Ran01_Random(&randomNumSeed);
+					p->ranSeed = (long) p->phaseVariable;
+					p->phase[i] = PIx2 * Ran01_Random(data->randPars);
 					break;
 				case HARMONIC_SINE:
-					harmonicPtr->phase[i] = 0.0;
+					p->phase[i] = 0.0;
 					break;
 				case HARMONIC_COSINE:
-					harmonicPtr->phase[i] = PI / 2.0;
+					p->phase[i] = PI / 2.0;
 					break;
 				case HARMONIC_ALTERNATING:
-					harmonicPtr->phase[i] = ((i % 2) == 0)? 0.0: piOver2;
+					p->phase[i] = ((i % 2) == 0)? 0.0: piOver2;
 					break;
 				case HARMONIC_SCHROEDER:
-					harmonicPtr->phase[i] = harmonicPtr->phaseVariable * PI *
+					p->phase[i] = p->phaseVariable * PI *
 					  harmonicNumber * (harmonicNumber + 1) /
 					  totalNumberOfHarmonics;
 					break;
 				case HARMONIC_NULL:
-					harmonicPtr->phase[i] = 0.0;
+					p->phase[i] = 0.0;
 					break;
 			} /* switch */
-		  	harmonicPtr->harmonicFrequency[i] = harmonicPtr->frequency *
-		  	  harmonicNumber;
-			if (harmonicNumber == harmonicPtr->mistunedHarmonic)
-				harmonicPtr->harmonicFrequency[i] +=
-				  harmonicPtr->harmonicFrequency[i] *
-				  harmonicPtr->mistuningFactor / 100.0;
-			harmonicPtr->modIndex[i] = (harmonicPtr->modulationDepth <
-			  DBL_EPSILON)? 0.0: (harmonicPtr->modulationDepth / 100.0) * 
-			  (harmonicPtr->harmonicFrequency[i] / harmonicPtr->
+		  	p->harmonicFrequency[i] = p->frequency * harmonicNumber;
+			if (harmonicNumber == p->mistunedHarmonic)
+				p->harmonicFrequency[i] += p->harmonicFrequency[i] *
+				p->mistuningFactor / 100.0;
+			p->modIndex[i] = (p->modulationDepth < DBL_EPSILON)? 0.0:
+			  (p->modulationDepth / 100.0) * (p->harmonicFrequency[i] / p->
 			  modulationFrequency);
 		}
 	}

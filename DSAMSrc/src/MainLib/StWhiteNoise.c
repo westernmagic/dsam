@@ -630,6 +630,7 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	ChanLen		i;
 	register	double		amplitude, sum;
 	register	ChanData	*dataPtr, *dataPtrA, *dataPtrB;
+	WhiteNoisePtr	p = whiteNoisePtr;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -638,30 +639,28 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	if (!CheckPars_WhiteNoise())
 		return(FALSE);
 	SetProcessName_EarObject(data, "White Noise stimulus");
-	if ( !InitOutSignal_EarObject(data, (uShort) whiteNoisePtr->numChannels,
-	  (ChanLen) floor(whiteNoisePtr->duration / whiteNoisePtr->dt + 0.5),
-	  whiteNoisePtr->dt) ) {
+	if ( !InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
+	  floor(p->duration / p->dt + 0.5), p->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
-	if (data->updateProcessFlag)
-		SetGlobalSeed_Random(whiteNoisePtr->ranSeed);
-	SetInterleaveLevel_SignalData(data->outSignal, (uShort) whiteNoisePtr->
-	  numChannels);
-	amplitude = RMS_AMP(whiteNoisePtr->intensity) * SQRT_2;
+	if (data->updateProcessFlag && !SetRandPars_EarObject(data, p->ranSeed,
+	  funcName))
+		return(FALSE);
+	SetInterleaveLevel_SignalData(data->outSignal, (uShort) p->numChannels);
+	amplitude = RMS_AMP(p->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0; i < data->outSignal->length; i++) {
-		for (j = 0, sum = 0.0; j < whiteNoisePtr->randomizationIndex; j++)
-			sum += Ran01_Random(&randomNumSeed);
-		sum = sum - whiteNoisePtr->randomizationIndex / 2; 
-		*(dataPtr++) = amplitude * 
-		  (sum / sqrt(whiteNoisePtr->randomizationIndex / 12));
+		for (j = 0, sum = 0.0; j < p->randomizationIndex; j++)
+			sum += Ran01_Random(data->randPars);
+		sum = sum - p->randomizationIndex / 2; 
+		*(dataPtr++) = amplitude * (sum / sqrt(p->randomizationIndex / 12));
 	}
-	if (whiteNoisePtr->numChannels == 2) {
+	if (p->numChannels == 2) {
 		dataPtrA = data->outSignal->channel[0];
 		dataPtrB = data->outSignal->channel[1];
 		for (i = 0; i < data->outSignal->length; i++)
-		  *(dataPtrB++) = whiteNoisePtr->correlationDegree * *(dataPtrA++);
+		  *(dataPtrB++) = p->correlationDegree * *(dataPtrA++);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
