@@ -84,7 +84,8 @@ Init_Utility_ShapePulse(ParameterSpecifier parSpec)
 	if (parSpec == GLOBAL) {
 		if (shapePulsePtr != NULL)
 			Free_Utility_ShapePulse();
-		if ((shapePulsePtr = (ShapePulsePtr) malloc(sizeof(ShapePulse))) == NULL) {
+		if ((shapePulsePtr = (ShapePulsePtr) malloc(sizeof(ShapePulse))) ==
+		  NULL) {
 			NotifyError("%s: Out of memory for 'global' pointer", funcName);
 			return(FALSE);
 		}
@@ -401,22 +402,22 @@ InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Utility_ShapePulse";
 	int		i;
-	
-	if (shapePulsePtr->updateProcessVariablesFlag || data->updateProcessFlag ||
+	ShapePulsePtr	p = shapePulsePtr;
+
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (shapePulsePtr->updateProcessVariablesFlag || data->
-		  updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Utility_ShapePulse();
-			if ((shapePulsePtr->remainingPulseTime = (double *)
-			  calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->remainingPulseTime = (double *) calloc(data->outSignal->
+			  numChannels, sizeof(double))) == NULL) {
 			 	NotifyError("%s: Out of memory for remainingPulseTime array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			shapePulsePtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 		for (i = 0; i < data->outSignal->numChannels; i++)
-			shapePulsePtr->remainingPulseTime[i] = 0.0;
+			p->remainingPulseTime[i] = 0.0;
 	}
 	return(TRUE);
 
@@ -481,6 +482,7 @@ InitModule_Utility_ShapePulse(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = shapePulsePtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_ShapePulse;
 	theModule->Free = Free_Utility_ShapePulse;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ShapePulse;
@@ -546,33 +548,38 @@ BOOLN
 Process_Utility_ShapePulse(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_ShapePulse";
-	/* register */	ChanData	*inPtr, *outPtr, lastValue;
-	/* register */	double		*remainingPulseTimePtr;
+	register	ChanData	*inPtr, *outPtr, lastValue;
+	register	double		*remainingPulseTimePtr, dt;
 	BOOLN	riseDetected;
 	int		chan;
-	double	dt;
 	ChanLen	j;
 
-	if (!CheckPars_Utility_ShapePulse())
-		return(FALSE);
-	if (!CheckData_Utility_ShapePulse(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Shape Pulse Utility Process");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Utility_ShapePulse(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_ShapePulse())
+			return(FALSE);
+		if (!CheckData_Utility_ShapePulse(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Shape Pulse Utility Process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Utility_ShapePulse(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	dt = data->inSignal[0]->dt;
-	remainingPulseTimePtr = shapePulsePtr->remainingPulseTime;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	remainingPulseTimePtr = shapePulsePtr->remainingPulseTime + data->
+	  outSignal->offset;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		riseDetected = FALSE;
