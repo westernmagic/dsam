@@ -40,7 +40,7 @@ typedef	enum {
 
 typedef	enum {
 
-	GENERAL_BOOLEAN_OFF,
+	GENERAL_BOOLEAN_OFF = 0,
 	GENERAL_BOOLEAN_ON,
 	GENERAL_BOOLEAN_NULL
 
