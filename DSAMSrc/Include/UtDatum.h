@@ -139,6 +139,8 @@ BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 
+char *	NameAndStepNumber_Utility_Datum(DatumPtr pc);
+
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
 BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start);

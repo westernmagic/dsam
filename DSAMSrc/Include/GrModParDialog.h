@@ -26,11 +26,13 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "GeUniParMgr.h"
 #include "UtBandwidth.h"
 #include "UtCFList.h"
 #include "UtIonChanList.h"
 
 #include "GrDSAMList.h"
+#include "GrParControl.h"
 #include "GrDialogInfo.h"
 #include "GrParListInfo.h"
 #include "GrParListInfoList.h"
@@ -68,18 +70,18 @@ class ModuleParDialog: public DialogList {
 	wxButton	*deleteICBtn, *addICBtn;
 
  public:
-	ModuleParDialog(wxWindow *parent, char *title, int theInfoNum, DatumPtr pc,
-	  UniParListPtr theParList = NULL, int x = -1, int y = -1, int width =
-	  -1, int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
+	ModuleParDialog(wxWindow *parent, const wxString& title, int theInfoNum,
+	  DatumPtr pc, UniParListPtr theParList = NULL, long theStyle =
+	  DIALOGLIST_STYLE_DEFAULT, int x = -1, int y = -1, int width = -1,
+	  int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
 	~ModuleParDialog(void);
 
 	void	DeleteDialog(void);
-	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnICButton(wxCommandEvent& event);
 	void	OnOk(wxCommandEvent& event);
 	void	OnPageChanged(wxNotebookEvent &event);
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 
 };
 

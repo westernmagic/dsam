@@ -54,7 +54,6 @@ class ParListInfo {
 	wxPanel		*parent;
 	ParControl	**controlList;
 	wxWindow	*lastControl;
-	wxStringList	rothmanHeadings;
 
   public:
   	UniParListPtr	parList;
@@ -76,7 +75,6 @@ class ParListInfo {
 	DatumPtr	GetPC(void)			{ return pc; }
 	void	ResetControlValues(void);
 	void	SetEnabledControls(void);
-	void	SetICListListBox(IonChanListPtr theICs);
 	void	SetModuleListBox(DatumPtr simulation);
 	void	SetParBoolean(UniParPtr par, int index);
 	void	SetParFileName(UniParPtr par, int index);

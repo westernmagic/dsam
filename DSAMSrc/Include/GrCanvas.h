@@ -90,27 +90,29 @@ class MyCanvas: public wxWindow
 	int		numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
-	wxRect		signal, summary, *xAxis, *yAxis;
 	wxFont  *labelFont, *axisTitleFont;
+	wxRect	signal, summary, *xAxis, *yAxis;
+	wxFrame	*parent;
 	wxString	xTitle, yTitle;
 	wxMemoryDC	memDC;
 	wxBitmap	*memBmp;
 	MultiLine	*signalLines, *summaryLine;
-	wxFrame		*parent;
+	SignalDispPtr	mySignalDispPtr;
 	UniParListPtr	parList;
 
   public:
 
-	MyCanvas(wxFrame *frame);
+	MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr);
 	~MyCanvas(void);
 
 	void	CreateBackingBitmap(void);
+	void	CreateParDialog(void);
 	void	DrawAxes(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawVerticalText(wxDC& dc, wxString& string, int x, int y);
 	void	InitData(EarObjectPtr data);
-	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO,
-			  UniParListPtr theParList);
+	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO);
+	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }
 
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnPreferences(wxCommandEvent& event);

@@ -148,10 +148,10 @@
 // the whole of <wx/wx.h>
 #	ifndef WX_PRECOMP
 #		include <wx/wx.h>
-#		include <wx/notebook.h>
 #	endif
 
 // Any files included regardless of precompiled headers
+#	include <wx/notebook.h>
 #	include <wx/print.h>
 #	include "wx/printdlg.h"
 
@@ -173,6 +173,7 @@
 #	include "GrSimModDialog.h"
 #	include "GrRunMgr.h"
 #	include "GrRunParDialog.h"
+#	include "GrDisplayParDialog.h"
 #	include "GrSimMgr.h"
 #	include "GrLine.h"
 #	include "GrCanvas.h"

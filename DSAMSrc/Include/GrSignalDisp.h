@@ -66,6 +66,7 @@
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 
 	class DisplayS;
+	class DialogList;
 	
 #endif /* GRAPHICS_SUPPORT */
 
@@ -144,6 +145,7 @@ typedef struct {
 	ReduceChans		reduceChans;
 #	if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 	DisplayS		*display;
+	DialogList		*dialog;
 #	endif /* GRAPHICS_SUPPORT */
 
 } SignalDisp, *SignalDispPtr;
