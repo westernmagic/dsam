@@ -334,6 +334,7 @@ Init(void)
 
 	SetAppName_AppInterface(PROGRAM_NAME);
 	SetAppVersion_AppInterface(AMS_VERSION);
+	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
 	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
 
 #	ifdef GRAPHICS_SUPPORT
