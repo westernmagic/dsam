@@ -218,6 +218,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	SetEnabledPars_IHC_Meddis2000();
 	strcpy(hairCell2Ptr->diagFileName, DEFAULT_FILE_NAME);
 	hairCell2Ptr->hCChannels = NULL;
+	hairCell2Ptr->fp = NULL;
 	return(TRUE);
 
 }
@@ -1350,8 +1351,8 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 		spontCleft_c0 = (hairCell2Ptr->cleftReplenishMode ==
 		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? hC->maxFreePool_M *
 		  hC->replenishRate_y * spontPerm_k0 / (hC->replenishRate_y *
-		  (hC->lossRate_l + hC->recoveryRate_r) + spontPerm_k0 * hC->lossRate_l):
-		  hC->replenishRate_y / hC->lossRate_l;
+		  (hC->lossRate_l + hC->recoveryRate_r) + spontPerm_k0 *
+		   hC->lossRate_l): hC->replenishRate_y / hC->lossRate_l;
 		if (spontCleft_c0 > 0.0) {
 		   if (hC->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
 		      spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
@@ -1391,6 +1392,10 @@ FreeProcessVariables_IHC_Meddis2000(void)
 
 	if (hairCell2Ptr->hCChannels == NULL)
 		return;
+	if (hairCell2Ptr->fp) {
+		fclose(hairCell2Ptr->fp);
+		hairCell2Ptr->fp = NULL;
+	}
 	free(hairCell2Ptr->hCChannels);
 	hairCell2Ptr->hCChannels = NULL;
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
