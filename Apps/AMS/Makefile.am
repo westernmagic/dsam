@@ -40,6 +40,9 @@ dist-hook: ams.spec
 	     CONFIG_HEADERS= \
 	     $(SHELL) config.status \
 	     && cp INSTALL README $(distdir) \
-		 && cat README | tr "\r" "\n"> $(distdir)/README.txt ; \
+		 &&	if [ -x /usr/bin/unix2dos ] ; then \
+		 		/usr/bin/unix2dos -n README README.txt ; \
+				cp README.txt $(distdir); \
+			fi \
 	fi \
 	&& cp ams.spec $(distdir)
