@@ -12,10 +12,12 @@
  *				There are no PrintPars nor ReadPars routines, as these are not
  *				appropriate for this type of module.
  *				19-03-97 LPO: Added "mode" parameter.
+ *				02-03-05 LPO: This module is not being thread enabled as the
+ *				number of input channels defines the channel processing.
  * Author:		L. P. O'Mard
  * Created:		11 Jun 1996
  * Updated:		19 Mar 1997
- * Copyright:	(c) 1998, University of Essex
+ * Copyright:	(c) 2005, CNBH, University of Essex
  *
  *********************/
 

@@ -11,10 +11,13 @@
  *				helped right now.
  *				There are no PrintPars nor ReadPars routines, as these are not
  *				appropriate for this type of module.
+ *				19-03-97 LPO: Added "mode" parameter.
+ *				02-03-05 LPO: This module is not being thread enabled as the
+ *				number of input channels defines the channel processing.
  * Author:		L. P. O'Mard
  * Created:		11 Jun 1996
  * Updated:		19 Mar 1997
- * Copyright:	(c) 1998, University of Essex
+ * Copyright:	(c) 2005, CNBH, University of Essex
  *
  *********************/
 
@@ -708,41 +711,41 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Utility_SelectChannels";
 	int		i, numInChans;
+	SelectChanPtr	p = selectChanPtr;
 
-	if (selectChanPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
 		  interleaveLevel;
-		if ((selectChanPtr->numChannels < numInChans) &&
-		  !ResizeDoubleArray_UniParMgr(&selectChanPtr->selectionArray,
-	      &selectChanPtr->numChannels, numInChans)) {
+		if ((p->numChannels < numInChans) && !ResizeDoubleArray_UniParMgr(
+		  &p->selectionArray, &p->numChannels, numInChans)) {
 			NotifyError("%s: Could not set selection array.", funcName);
 			return(FALSE);
 		}
-		switch (selectChanPtr->selectionMode) {
+		switch (p->selectionMode) {
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL:
-			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 1.0;
+			for (i = 0; i < p->numChannels; i++)
+				p->selectionArray[i] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE:
-			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0.0;
-			selectChanPtr->selectionArray[selectChanPtr->numChannels / 2] = 1.0;
+			for (i = 0; i < p->numChannels; i++)
+				p->selectionArray[i] = 0.0;
+			p->selectionArray[p->numChannels / 2] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST:
-			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0.0;
-			selectChanPtr->selectionArray[0] = 1.0;
+			for (i = 0; i < p->numChannels; i++)
+				p->selectionArray[i] = 0.0;
+			p->selectionArray[0] = 1.0;
 			break;
 		case UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST:
-			for (i = 0; i < selectChanPtr->numChannels; i++)
-				selectChanPtr->selectionArray[i] = 0.0;
-			selectChanPtr->selectionArray[selectChanPtr->numChannels - 1] = 1.0;
+			for (i = 0; i < p->numChannels; i++)
+				p->selectionArray[i] = 0.0;
+			p->selectionArray[p->numChannels - 1] = 1.0;
 			break;
 		default:
 			;
 		}
-		selectChanPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -771,6 +774,7 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	uShort	numChannels = 0;
 	int		i, k, l, chan, inChanIndex;
 	ChanLen	j;
+	SelectChanPtr	p = selectChanPtr;
 
 	if (!CheckPars_Utility_SelectChannels())
 		return(FALSE);
@@ -784,20 +788,20 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	switch (selectChanPtr->mode) {
+	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
 		numChannels = data->inSignal[0]->numChannels;
 		break;
 	case SELECT_CHANS_REMOVE_MODE:
-		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
-			if (selectChanPtr->selectionArray[i] > 0.0)
+		for (i = 0, numChannels = 0; i < p->numChannels; i++)
+			if (p->selectionArray[i] > 0.0)
 				numChannels++;
 			numChannels *= data->inSignal[0]->interleaveLevel;
 			break;
 	case SELECT_CHANS_EXPAND_MODE:
-		for (i = 0, numChannels = 0; i < selectChanPtr->numChannels; i++)
-			if (selectChanPtr->selectionArray[i] > 0.0)
-				numChannels += (uShort) selectChanPtr->selectionArray[i];
+		for (i = 0, numChannels = 0; i < p->numChannels; i++)
+			if (p->selectionArray[i] > 0.0)
+				numChannels += (uShort) p->selectionArray[i];
 			numChannels *= data->inSignal[0]->interleaveLevel;
 		break;
 	} /* switch */
@@ -809,14 +813,14 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
 	  interleaveLevel);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	switch (selectChanPtr->mode) {
+	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
 		for (i = 0; i < data->inSignal[0]->numChannels; i++) {
 			outPtr = data->outSignal->channel[i];
-			if (selectChanPtr->selectionArray[i] > 0.0) {
+			if (p->selectionArray[i] > 0.0) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 				inPtr = data->inSignal[0]->channel[i];
-				multiplier = selectChanPtr->selectionArray[inChanIndex];
+				multiplier = p->selectionArray[inChanIndex];
 				for (j = 0; j < data->outSignal->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 			} else
@@ -827,14 +831,14 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	case SELECT_CHANS_REMOVE_MODE:
 		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
-			if (selectChanPtr->selectionArray[inChanIndex] > 0.0) {
+			if (p->selectionArray[inChanIndex] > 0.0) {
 				SetInfoChannelLabel_SignalData(data->outSignal, chan, data->
 				  inSignal[0]->info.chanLabel[i]);
 				SetInfoCF_SignalData(data->outSignal, chan, data->inSignal[0]->
 				  info.cFArray[i]);
 				inPtr = data->inSignal[0]->channel[i];
 				outPtr = data->outSignal->channel[chan];
-				multiplier = selectChanPtr->selectionArray[inChanIndex];
+				multiplier = p->selectionArray[inChanIndex];
 				for (j = 0; j < data->outSignal->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 				chan++;
@@ -845,9 +849,8 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i += data->
 		  inSignal[0]->interleaveLevel) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
-			if (selectChanPtr->selectionArray[inChanIndex] > 0.0)
-				for (k = 0; k < selectChanPtr->selectionArray[inChanIndex];
-				  k++)
+			if (p->selectionArray[inChanIndex] > 0.0)
+				for (k = 0; k < p->selectionArray[inChanIndex]; k++)
 					for (l = 0; l < data->outSignal->interleaveLevel; l++) {
 						SetInfoChannelLabel_SignalData(data->outSignal, chan,
 						  data->inSignal[0]->info.chanLabel[i + l]);
