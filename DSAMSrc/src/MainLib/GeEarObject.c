@@ -964,5 +964,6 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 		
 	for (i = 0; i < supporting->numInSignals; i++)
 		supporting->inSignal[i] = base->inSignal[i];
+	return(TRUE);
 
 }
