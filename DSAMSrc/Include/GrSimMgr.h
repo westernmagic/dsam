@@ -43,10 +43,10 @@
 /******************************************************************************/
 
 #define	DEFAULT_SERVER_NAME				"110773"
-#define	SIM_MANAGER_HELP_TOP_LEVEL		"DSAMHelp"
-#define SIM_MANAGER_HELP_DIR			"helpfiles"
+#define SIM_MANAGER_HELP_DIR			"HelpFiles"
 #define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
 #define SIM_MANAGER_REG_PATHS			"/Paths"
+#define SIM_MANAGER_REG_DSAM_HELP_PATH	"DSAMHelp"
 #define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
 
 /******************************************************************************/
@@ -88,8 +88,10 @@ class MyFrame: public wxFrame {
 
 #	ifdef MPI_SUPPORT
 	char	**initStringPtrs;
-#	endif	
+#	endif
+	int		helpCount;
 	wxMenu		*fileMenu, *editMenu, *viewMenu;
+	wxConfigBase	*pConfig;
 
   public:
     wxPanel		*panel;
@@ -99,6 +101,8 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
+	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
+			  const wxString& fileName);
 	void	OnAbout(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnExecute(wxCommandEvent& event);
