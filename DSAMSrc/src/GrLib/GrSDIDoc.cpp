@@ -78,10 +78,12 @@ SDIDocument::OnCloseDocument(void)
 bool
 SDIDocument::OnNewDocument(void)
 {
-	static const char *funcName = "DIDocument::OnNewDocument";
+	static const char *funcName = "SDIDocument::OnNewDocument";
 
 	wxDocument::OnNewDocument();
 	FreeSim_AppInterface();
+	wxClientDC dc(diagram.GetCanvas());
+	diagram.Clear(dc);			// This was not being done automatically.
 	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
 	  NULL) {
 		NotifyError("%s: Could not initialise process.", funcName);
