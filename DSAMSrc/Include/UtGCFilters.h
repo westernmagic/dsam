@@ -108,8 +108,12 @@ void	FreeHammingWindow(double *p);
 
 void	FreeERBWindow_GCFilters(double *p);
 
+void	FreeLeakyIntCoeffs_GCFilters(OnePoleCoeffsPtr *p);
+
 void	AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, 
 						AsymCmpCoeffsPtr p[]);
+
+BOOLN	CheckCntlInit_GCFilters(CntlGammaCPtr *cntlGammaC);
 
 void	ERBGammaTone_GCFilters(SignalDataPtr theSignal, 
 						ERBGammaToneCoeffsPtr p[]);
