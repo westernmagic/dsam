@@ -134,7 +134,7 @@ typedef enum {
 	IHC_COOKE91,
 	IHC_MEDDIS86,
 	IHC_MEDDIS86A,
-	IHC_MEDDIS95,
+	IHC_MEDDIS2000,
 	IHCRP_CARNEY,
 	IHCRP_MEDDIS,
 	IHCRP_SHAMMA,
@@ -607,7 +607,7 @@ void		SetIHC_Meddis86_ModuleMgr(ModulePtr theModule);
 
 void		SetIHC_Meddis86a_ModuleMgr(ModulePtr theModule);
 
-void		SetIHC_Meddis95_ModuleMgr(ModulePtr theModule);
+void		SetIHC_Meddis2000_ModuleMgr(ModulePtr theModule);
 
 void		SetIHCRP_Carney_ModuleMgr(ModulePtr theModule);
 

@@ -104,7 +104,7 @@
 #include "MoHCRPShamma.h"
 #include "MoIHC86Meddis.h"
 #include "MoIHC86aMeddis.h"
-#include "MoIHC95Meddis.h"
+#include "MoIHCMeddis2000.h"
 #include "MoIHCCarney.h"
 #include "MoIHCCooke.h"
 #include "MoNCArleKim.h"

@@ -52,7 +52,7 @@ Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp GrLine.cpp \
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c FlLowPass.c \
 				MoHCRPCarney.c MoHCRPMeddis.c MoHCRPShamma.c MoIHC86Meddis.c \
-				MoIHC86aMeddis.c MoIHC95Meddis.c MoIHCCarney.c MoIHCCooke.c \
+				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
 				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c FlBandPass.c \
 				FlMultiBPass.c
 

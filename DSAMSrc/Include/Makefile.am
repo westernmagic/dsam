@@ -24,7 +24,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h FlLowPass.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
-				MoIHC86aMeddis.h MoIHC95Meddis.h MoIHCCarney.h MoIHCCooke.h \
+				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
 				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h FlBandPass.h \
 				FlMultiBPass.h
 
