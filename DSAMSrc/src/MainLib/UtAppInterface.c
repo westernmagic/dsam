@@ -1120,7 +1120,7 @@ SetTitle_AppInterface(char *title)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->title, MAXLINE, "%s", title);
+	snprintf(appInterfacePtr->title, MAX_FILE_PATH, "%s", title);
 	return(TRUE);
 
 } 

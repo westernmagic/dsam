@@ -76,7 +76,7 @@ typedef struct {
 	char	appParFile[MAX_FILE_PATH];
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
-	char	title[MAXLINE];
+	char	title[MAX_FILE_PATH];
 	char	authors[APP_MAX_AUTHORS][MAXLINE];
 	char	simulationFile[MAX_FILE_PATH];
 	char	segmentMode[SMALL_STRING];
