@@ -113,8 +113,7 @@ class MyFrame: public wxFrame {
     wxPanel		*panel;
     wxTextCtrl	*diagnosticsWindow;
 
-    MyFrame(wxFrame *frame, const wxString &title, const wxPoint& pos,
-	  const wxSize& size);
+    MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
