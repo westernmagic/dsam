@@ -644,7 +644,6 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	static const char	*funcName = "ReadSimParFileOld_Utility_SimScript";
 	BOOLN	ok = TRUE, foundDivider = FALSE;
 	char	parName[MAXLINE], parValue[MAX_FILE_PATH];
-	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 	
@@ -654,10 +653,8 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	}
 	FreeSimulation_Utility_SimScript();
 	Init_ParFile();
-	SetErrorsFile_Common("off", OVERWRITE);
 	if ((simulation = Read_Utility_SimScript(fp)) == NULL)
 		ok = FALSE;
-	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {
 		NotifyError("%s: Not enough lines, or invalid parameters, in "
 		  "simulation parameter file.", funcName);
@@ -682,6 +679,7 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 		NotifyError("%s: Invalid parameters, in simulation parameter file "
 		  "'%s'.", funcName, filePath);
 		return(FALSE); */
+		NotifyWarning("%s: Using old SPF format.", funcName);
 		rewind(fp);
 		return(ReadSimParFileOld_Utility_SimScript(fp));
 	}
@@ -836,14 +834,12 @@ ReadSimScript_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimScript_Utility_SimScript";
 	DatumPtr	simulation;
-	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 
 	Init_ParFile();
-	SetErrorsFile_Common("off", OVERWRITE);
 	simulation = Read_Utility_SimScript(fp);
-	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	Free_ParFile();
 	if (!simulation) {	/* To be removed when ReadSimScriptOld is removed. */
+		NotifyWarning("%s: Using old script format.", funcName);
 		rewind(fp);
 		return(ReadSimScriptOld_Utility_SimScript(fp));
 	}
