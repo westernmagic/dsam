@@ -31,7 +31,7 @@
 /*************************** Constant definitions *****************************/
 /******************************************************************************/
 
-#define BASILARM_DRNL_TEST_NUM_PARS	10
+#define BASILARM_DRNL_TEST_NUM_PARS	11
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -41,6 +41,7 @@ typedef enum {
 
 	BASILARM_DRNL_TEST_NONLINGTCASCADE,
 	BASILARM_DRNL_TEST_NONLINLPCASCADE,
+	BASILARM_DRNL_TEST_LPFILTERMODE,
 	BASILARM_DRNL_TEST_COMPRESSIONMODE,
 	BASILARM_DRNL_TEST_COMPRESSIONPARS,
 	BASILARM_DRNL_TEST_LINGTCASCADE,
@@ -54,6 +55,7 @@ typedef enum {
 
 typedef enum {
 
+	DRNLT_COMPRESSION_MODE_DISABLED,
 	DRNLT_COMPRESSION_MODE_ORIGINAL,		
 	DRNLT_COMPRESSION_MODE_INVPOWER,
 	DRNLT_COMPRESSION_MODE_BROKENSTICK1,
@@ -62,16 +64,37 @@ typedef enum {
 
 } CompressionModeSpecifier;
 
+typedef enum {
+
+	BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE,
+	BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE,
+	BASILARM_DRNL_TEST_LPFILTERMODE_NULL
+
+} BasilarMLPFilterModeSpecifier;
+
+typedef struct {
+	
+	BOOLN	set;
+	int		cascade;
+	int		stateVectorLen;
+	union {
+		ContButtCoeffsPtr	*beau;
+		TwoPoleCoeffsPtr	*butt;
+	} ptr;
+
+} LowPassFilter, *LowPassFilterPtr;
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
 	
 	BOOLN	nonLinGTCascadeFlag, nonLinLPCascadeFlag, compressionModeFlag;
-	BOOLN	*compressionParsFlag, linGTCascadeFlag, linLPCascadeFlag, linCFFlag;
-	BOOLN	linBwidthFlag, linScalerFlag;
+	BOOLN	lPFilterModeFlag, *compressionParsFlag, linGTCascadeFlag;
+	BOOLN	linLPCascadeFlag, linCFFlag, linBwidthFlag, linScalerFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		nonLinGTCascade;
 	int		nonLinLPCascade;
+	int		lPFilterMode;
 	int		compressionMode;
 	double	*compressionPars;
 	int		linGTCascade;
@@ -82,6 +105,7 @@ typedef struct {
 	CFListPtr	theCFs;
 
 	/* Private Members */
+	NameSpecifier	*lPFilterModeList;
 	NameSpecifier *compressionModeList;
 	UniParListPtr	parList;
 	int		numChannels;
@@ -89,8 +113,8 @@ typedef struct {
 	GammaToneCoeffsPtr	*nonLinearGT1;
 	GammaToneCoeffsPtr	*nonLinearGT2;
 	GammaToneCoeffsPtr	*linearGT;
-	TwoPoleCoeffsPtr	*nonLinearLP;
-	TwoPoleCoeffsPtr	*linearLP;
+	LowPassFilter	nonLinearLP;
+	LowPassFilter	linearLP;	
 	EarObjectPtr	linearF;			/* Extra signal for linear filter. */
 
 } BM0DRNL, *BM0DRNLPtr;
@@ -116,11 +140,20 @@ BOOLN	CheckPars_BasilarM_DRNL_Test(void);
 
 BOOLN	Free_BasilarM_DRNL_Test(void);
 
+void	FreeLPFilters_BasilarM_DRNL_Test(LowPassFilterPtr p);
+
 void	FreeProcessVariables_BasilarM_DRNL_Test(void);
 
 CFListPtr	GetCFListPtr_BasilarM_DRNL_Test(void);
 
 UniParListPtr	GetUniParListPtr_BasilarM_DRNL_Test(void);
+
+BOOLN	InitLPFilterArray_BasilarM_DRNL_Test(LowPassFilterPtr p, int cascade);
+
+BOOLN	InitLPFilterModeList_BasilarM_DRNL_Test(void);
+
+BOOLN	InitLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p, int index,
+		  double cutOffFrequency, double dt);
 
 BOOLN	Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec);
 
@@ -131,6 +164,11 @@ BOOLN	InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data);
 BOOLN	PrintPars_BasilarM_DRNL_Test(void);
 
 BOOLN	ReadPars_BasilarM_DRNL_Test(char *fileName);
+
+void	ResetLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p);
+
+void	RunLPFilter_BasilarM_DRNL_Test(SignalDataPtr signal,
+		  LowPassFilterPtr p);
 
 BOOLN	RunModel_BasilarM_DRNL_Test(EarObjectPtr data);
 
@@ -155,14 +193,16 @@ BOOLN	SetLinScaler_BasilarM_DRNL_Test(double theLinScaler);
 
 BOOLN	SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade);
 
+BOOLN	SetLPFilterMode_BasilarM_DRNL_Test(char * theLPFilterMode);
+
 BOOLN	SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade);
 
 BOOLN	SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade);
 
 BOOLN	SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
-		  char * compressionMode, double *compressionParsArray,
-		  int linGTCascade, int linLPCascade, double linCF, double linBwidth,
-		  double linScaler, CFListPtr theCFs);
+		  char *lPFilterMode, char *compressionMode,
+		  double *compressionParsArray, int linGTCascade, int linLPCascade,
+		  double linCF, double linBwidth, double linScaler, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_DRNL_Test(void);
 
