@@ -50,7 +50,6 @@ clean)
 	rm -f `find . -name '*.plg'`
 	rm -f `find . -name '*.ncb'`
 	rm -f `find . -name '*.opt'`
-	rm -f $INCDIR/dsam.rc
 	;;
 make)
 	echo Creating unix distribution directory ...
