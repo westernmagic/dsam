@@ -893,6 +893,8 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		  data->outSignal->length)	/* Last incomplete bin */
 			*outPtr +=  binSum;
 	}
+	if (p->typeMode == HISTOGRAM_PSTH)
+		p->numPeriods++;
 	if (p->detectionMode == HISTOGRAM_DETECT_SPIKES) {
 		totalBinDuration = binWidth * p->numPeriods;
 		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
