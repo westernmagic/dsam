@@ -19,7 +19,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define FILTER_FIR_NUM_PARS			6
+#define FILTER_FIR_NUM_PARS			7
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -27,6 +27,7 @@
 
 typedef enum {
 
+	FILTER_FIR_DIAGNOSTICMODE,
 	FILTER_FIR_TYPE,
 	FILTER_FIR_NUMTAPS,
 	FILTER_FIR_NUMBANDS,
@@ -51,8 +52,9 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	typeFlag, numTapsFlag, numBandsFlag;
+	BOOLN	diagnosticModeFlag, typeFlag, numTapsFlag, numBandsFlag;
 	BOOLN	updateProcessVariablesFlag;
+	int		diagnosticMode;
 	int		type;
 	int		numTaps;
 	int		numBands;
@@ -112,6 +114,8 @@ BOOLN	SetBandFreqs_Filter_FIR(double *theBandFreqs);
 
 BOOLN	SetDesired_Filter_FIR(double *theDesired);
 
+BOOLN	SetDiagnosticMode_Filter_FIR(char * theDiagnosticMode);
+
 BOOLN	SetIndividualBand_Filter_FIR(int theIndex, double theBand);
 
 BOOLN	SetIndividualDesired_Filter_FIR(int theIndex, double theDesired);
@@ -126,8 +130,8 @@ BOOLN	SetNumTaps_Filter_FIR(int theNumTaps);
 
 BOOLN	SetParsPointer_Filter_FIR(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_FIR(char * type, int numTaps, int numBands,
-		  double *bandFreqs, double *desired, double *weights);
+BOOLN	SetPars_Filter_FIR(char * diagnosticMode, char * type, int numTaps,
+		  int numBands, double *bandFreqs, double *desired, double *weights);
 
 BOOLN	SetType_Filter_FIR(char * theType);
 

@@ -25,6 +25,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtRemez.h"
 #include "UtFIRFilters.h"
@@ -56,6 +57,7 @@ Free_Filter_FIR(void)
 
 	if (fIRPtr == NULL)
 		return(FALSE);
+	FreeProcessVariables_Filter_FIR();
 	if (fIRPtr->bandFreqs) {
 		free(fIRPtr->bandFreqs);
 		fIRPtr->bandFreqs = NULL;
@@ -133,9 +135,11 @@ Init_Filter_FIR(ParameterSpecifier parSpec)
 	}
 	fIRPtr->parSpec = parSpec;
 	fIRPtr->updateProcessVariablesFlag = TRUE;
+	fIRPtr->diagnosticModeFlag = FALSE;
 	fIRPtr->typeFlag = FALSE;
 	fIRPtr->numTapsFlag = FALSE;
 	fIRPtr->numBandsFlag = FALSE;
+	fIRPtr->diagnosticMode = 0;
 	fIRPtr->type = 0;
 	fIRPtr->numTaps = 0;
 	fIRPtr->numBands = 0;
@@ -174,6 +178,11 @@ SetUniParList_Filter_FIR(void)
 		return(FALSE);
 	}
 	pars = fIRPtr->parList->pars;
+	SetPar_UniParMgr(&pars[FILTER_FIR_DIAGNOSTICMODE], "DIAG_MODE",
+	  "Diagnostic mode ('off', 'screen' or <file name>).",
+	  UNIPAR_BOOL,
+	  &fIRPtr->diagnosticMode, NULL,
+	  (void * (*)) SetDiagnosticMode_Filter_FIR);
 	SetPar_UniParMgr(&pars[FILTER_FIR_TYPE], "TYPE",
 	  "FIR filter type 'bandpass', 'differentiator' or 'Hilber').",
 	  UNIPAR_NAME_SPEC,
@@ -288,13 +297,15 @@ AllocNumBands_Filter_FIR(int numBands)
  */
 
 BOOLN
-SetPars_Filter_FIR(char * type, int numTaps, int numBands,
+SetPars_Filter_FIR(char *diagnosticMode, char * type, int numTaps, int numBands,
   double *bandFreqs, double *desired, double *weights)
 {
 	static const char	*funcName = "SetPars_Filter_FIR";
 	BOOLN	ok;
 
 	ok = TRUE;
+	if (!SetDiagnosticMode_Filter_FIR(diagnosticMode))
+		ok = FALSE;
 	if (!SetType_Filter_FIR(type))
 		ok = FALSE;
 	if (!SetNumTaps_Filter_FIR(numTaps))
@@ -310,6 +321,36 @@ SetPars_Filter_FIR(char * type, int numTaps, int numBands,
 	if (!ok)
 		NotifyError("%s: Failed to set all module parameters." ,funcName);
 	return(ok);
+
+}
+
+/****************************** SetDiagnosticMode *****************************/
+
+/*
+ * This function sets the module's diagnosticMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagnosticMode_Filter_FIR(char * theDiagnosticMode)
+{
+	static const char	*funcName = "SetDiagnosticMode_Filter_FIR";
+	int		specifier;
+
+	if (fIRPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theDiagnosticMode,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError("%s: Illegal switch state (%s).", funcName,
+		  theDiagnosticMode);
+		return(FALSE);
+	}
+	fIRPtr->diagnosticModeFlag = TRUE;
+	fIRPtr->diagnosticMode = specifier;
+	return(TRUE);
 
 }
 
@@ -594,6 +635,10 @@ CheckPars_Filter_FIR(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
+	if (!fIRPtr->diagnosticModeFlag) {
+		NotifyError("%s: diagnosticMode variable not set.", funcName);
+		ok = FALSE;
+	}
 	if (!fIRPtr->typeFlag) {
 		NotifyError("%s: type variable not set.", funcName);
 		ok = FALSE;
@@ -656,11 +701,17 @@ PrintPars_Filter_FIR(void)
 		return(FALSE);
 	}
 	DPrint("FIR Filter Module Parameters:-\n");
+	DPrint("\tDiagnostics mode: %s,", BooleanList_NSpecLists(fIRPtr->
+	  diagnosticMode)->name);
 	DPrint("\t%10s\t%10s\t%10s\n", "Band/Freqs", "desired", "weights");
 	DPrint("\t%10s\t%10s\t%10s\n", "(Hz)", "(\?\?)", "(>0)");
-	for (i = 0; i < fIRPtr->numBands; i++)
-		DPrint("\t%10g\t%10g\t%10g\n", fIRPtr->bandFreqs[i], fIRPtr->desired[
-		  i], fIRPtr->weights[i]);
+	if (fIRPtr->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
+		for (i = 0; i < fIRPtr->numBands; i++)
+			DPrint("\t%10g\t%10g\t%10g\n", fIRPtr->bandFreqs[i], fIRPtr->
+			  desired[i], fIRPtr->weights[i]);
+	} else
+		DPrint("\tList of %d elements (off because of diagnostic mode.\n",
+		  fIRPtr->numBands);
 	DPrint("\tFilter type = %s \n", fIRPtr->typeList[fIRPtr->type].name);
 	DPrint("\tnumTaps = %d ??\n", fIRPtr->numTaps);
 	DPrint("\tnumBands = %d ??\n", fIRPtr->numBands);
@@ -679,8 +730,8 @@ ReadPars_Filter_FIR(char *fileName)
 {
 	static const char	*funcName = "ReadPars_Filter_FIR";
 	BOOLN	ok;
-	char	*filePath, type[MAXLINE];
-	int		i, numTaps, numBands;
+	char	*filePath, type[MAXLINE], diagnosticMode[MAX_FILE_PATH];
+	int		i, numTaps, numBands = 0;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
@@ -691,13 +742,15 @@ ReadPars_Filter_FIR(char *fileName)
 	DPrint("%s: Reading from '%s':\n", funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
+	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
+		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%s", type))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%d", &numTaps))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%d", &numBands))
 		ok = FALSE;
-	if (!AllocNumBands_Filter_FIR(numBands)) {
+	if (ok && !AllocNumBands_Filter_FIR(numBands)) {
 		NotifyError("%%s: Cannot allocate memory for the 'numBands' arrays.",
 		  funcName);
 		return(FALSE);
@@ -713,8 +766,8 @@ ReadPars_Filter_FIR(char *fileName)
 		  "parameter file '%s'.", funcName, fileName);
 		return(FALSE);
 	}
-	if (!SetPars_Filter_FIR(type, numTaps, numBands, fIRPtr->bandFreqs,
-	  fIRPtr->desired, fIRPtr->weights)) {
+	if (!SetPars_Filter_FIR(diagnosticMode, type, numTaps, numBands, fIRPtr->
+	  bandFreqs, fIRPtr->desired, fIRPtr->weights)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
