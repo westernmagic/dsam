@@ -52,6 +52,7 @@
 #define	GLOBAL_PARAMETERS		FALSE	/* For setting mod. parameter pointer */
 #define MAX_MODULE_NAME			30	/* Max. characters in module name. */
 #define	NULL_MODULE_NAME		"NULL"
+#define	MODULE_NUM_PARS_FOR_VALID_NEW_FORMAT	2
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/

@@ -628,6 +628,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	BOOLN	ok = TRUE, useOldReadPars;
 	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
 	char	failedParName[MAXLINE] = "";
+	int		newParCount = 0, parCount = 0;
 	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	UniParPtr	par;
 	UniParListPtr	parList, tempParList;
@@ -654,12 +655,15 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
+		parCount++;
 		tempParList = parList;
 		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
 		if (useOldReadPars) {
 			if (par) {
-				useOldReadPars = FALSE;
-				GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
+				if (newParCount++ == MODULE_NUM_PARS_FOR_VALID_NEW_FORMAT) {
+					useOldReadPars = FALSE;
+					GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
+				}
 			} else {
 				ok = FALSE;
 				strcpy(failedParName, parName);
@@ -679,7 +683,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
-	if (useOldReadPars) {
+	if ((parCount != newParCount) && useOldReadPars) {
 		GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 		/* Enable this following line after an adjustment period. */
 		/* NotifyWarning("%s: Using old parameter format for module '%s'.",
