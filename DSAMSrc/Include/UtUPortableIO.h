@@ -43,6 +43,14 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.8  2004/02/25 14:55:19  lowel
+* Bug fixes:  The configure.ac script has been changed so that the size of long
+* variables is checked.  This is required because it is different for 64 bit
+* systems.  These changes are now taken advantage of by the UtUPortableIO code
+* module.  Various cosmetic changes were also made to get rid of compiler
+* warnings.
+* Change: Version change to 2.7.6.
+*
 * Revision 1.7  2003/12/12 14:09:04  lowel
 * Changes: I have implemented a more secure server operation.
 * The changes have include the addition of the new Extensions library.
@@ -156,12 +164,20 @@
 #endif
 
 #ifndef HAVE_INT16
-	typedef	 short	int16;
-#endif
+#	if defined(SIZEOF_INT) && (SIZEOF_INT == 2)
+		typedef	 int	int16;
+#	else /* Assume sizeof(short) == 2 */
+		typedef	 short	int16;
+#	endif /* SIZEOF_INT */
+#endif /* HAVE_INT16 */
 
 #ifndef HAVE_INT32
-	typedef  long	int32;
-#endif
+#	if defined(SIZEOF_LONG) && (SIZEOF_LONG == 8)
+		typedef  int	int32;
+#	else /* Assume sizeof(long) == 4 */
+		typedef  long	int32;
+#	endif /* SIZEOF_LONG */
+#endif /* HAVE_INT32 */
 
 typedef struct {
 

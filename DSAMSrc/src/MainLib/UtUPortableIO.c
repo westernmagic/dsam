@@ -40,6 +40,14 @@
 * $Header$
 *
 * $Log$
+* Revision 1.6  2004/02/25 14:55:19  lowel
+* Bug fixes:  The configure.ac script has been changed so that the size of long
+* variables is checked.  This is required because it is different for 64 bit
+* systems.  These changes are now taken advantage of by the UtUPortableIO code
+* module.  Various cosmetic changes were also made to get rid of compiler
+* warnings.
+* Change: Version change to 2.7.6.
+*
 * Revision 1.5  2003/12/12 14:09:04  lowel
 * Changes: I have implemented a more secure server operation.
 * The changes have include the addition of the new Extensions library.
@@ -588,7 +596,7 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 		  uPortableIOPtr->length) {
 			fprintf(stderr, "%s: Attempt to read past the end of memory.\n",
 			  funcName);
-			fprintf(stderr, "%s: offset = %ld\n", funcName, offset);
+			fprintf(stderr, "%s: offset = %d\n", funcName, offset);
 			fprintf(stderr, "%s: difference = %ld\n", funcName,
 			  uPortableIOPtr->memPtr +
 			  offset - uPortableIOPtr->memStart + uPortableIOPtr->length);
