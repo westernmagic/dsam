@@ -209,14 +209,18 @@ SDIEvtHandler::FreeInstruction(void)
 /****************************** SetSelectedShape ******************************/
 /******************************************************************************/
 
-void
+/*
+ * This routine returns TRUE if the shape was already selected.
+ */
+
+bool
 SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 {
-	if (GetShape()->Selected()) {
-		GetShape()->Select(FALSE, &dc);
-		// Redraw because bits of objects will be are missing
-		GetShape()->GetCanvas()->Redraw(dc);
-	} else {
+	bool	alreadySelected = false;
+
+	if (GetShape()->Selected())
+		alreadySelected = true;
+	else {
 		// Ensure no other shape is selected, to simplify Undo/Redo code
 		bool redraw = FALSE;
 		wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
@@ -235,6 +239,7 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 		if (redraw)
 			GetShape()->GetCanvas()->Redraw(dc);
 	}
+	return(alreadySelected);
 
 }
 
@@ -257,33 +262,46 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
 	if (keys == 0) {
-		SetSelectedShape(dc);
+		if (SetSelectedShape(dc)) {
+			GetShape()->Select(FALSE, &dc);
+			// Redraw because bits of objects will be are missing
+			GetShape()->GetCanvas()->Redraw(dc);
+		}
 	} else 
 		if (keys & KEY_CTRL) {
-			printf("Debug: ctrl left click.\n");
+			printf("SDIEvtHandler::OnLeftClick: Debug: ctrl left click.\n");
 		} else {
-			wxGetApp().GetFrame()->SetStatusText(label);
+			printf("SDIEvtHandler::OnLeftClick: Debug: shift left click.\n");
 		}
 
 }
 
 /******************************************************************************/
-/****************************** OnRightClick **********************************/
+/****************************** OnLeftDoubleClick *****************************/
 /******************************************************************************/
 
 /*
  * SDIEvtHandler: an event handler class for all shapes
  */
- 
+
+/*
+ * If this routine is called, and the instruction is unset, then call the set
+ * instruction dialog, otherwiase edit the instruction parameters.
+ * Any subsequent changes of instruction needs to be done using "right click".
+ */
+
 void
-SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
+SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 {
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
 	if (keys == 0) {
 		SetSelectedShape(dc);
-		if (!dialog && pc) {
+		if (!pc) {
+			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
+			((SDIView *) canvas->view)->ProcessListDialog();
+		} else if (!dialog) {
 			switch (pc->type) {
 			case PROCESS: {
 				UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
@@ -291,7 +309,7 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 
 				switch (parList->mode) {
 				case UNIPAR_SET_SIMSPEC: {
-					printf("SDIEvtHandler::OnRightClick: Open child SDI "
+					printf("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
 					  "window.\n");
 					break; }
 				default:
@@ -315,11 +333,34 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 		}
 	} else 
 		if (keys & KEY_CTRL) {
-			SetSelectedShape(dc);
-			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
-			((SDIView *) canvas->view)->ProcessListDialog();
+ 		   // Do something for CONTROL
 		} else {
-			wxGetApp().GetFrame()->SetStatusText(label);
+		   // Do something for for SHIFT ?
+		}
+
+}
+
+/******************************************************************************/
+/****************************** OnRightClick **********************************/
+/******************************************************************************/
+
+/*
+ * SDIEvtHandler: an event handler class for all shapes
+ */
+ 
+void
+SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
+{
+	wxClientDC dc(GetShape()->GetCanvas());
+	GetShape()->GetCanvas()->PrepareDC(dc);
+
+	if (keys == 0) {
+		SetSelectedShape(dc);
+	} else 
+		if (keys & KEY_CTRL) {
+			printf("SDIEvtHandler::OnRightClick: Debug: ctrl left click.\n");
+		} else {
+			printf("SDIEvtHandler::OnRightClick: Debug: shift left click.\n");
 		}
 
 }

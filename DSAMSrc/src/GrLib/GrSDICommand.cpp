@@ -312,6 +312,8 @@ SDICommand::Do(void)
 		wxShape *theShape = NULL;
 		if (shape)
 			theShape = shape; // Saved from undoing the line
+		else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
+			return(false);
 		else {
 			bool	standardConnection = false;
 			theShape = (wxShape *)shapeInfo->CreateObject();
@@ -493,9 +495,8 @@ SDICommand::Undo(void)
 			myHandler->label = shapeLabel;
 			shapeLabel = oldLabel;
 
-			if (!myHandler->pc)
-				myHandler->InitInstruction();
-			myHandler->EditInstruction();
+			if (myHandler->pc)
+				myHandler->FreeInstruction();
 
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);

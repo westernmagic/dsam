@@ -62,9 +62,11 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	bool	EditInstruction(void);
 	void	FreeInstruction(void);
 	bool	InitInstruction(void);
-	void	SetSelectedShape(wxClientDC &dc);
+	bool	SetSelectedShape(wxClientDC &dc);
 
 	void	OnLeftClick(double x, double y, int keys = 0, int attachment = 0);
+	void	OnLeftDoubleClick(double x, double y, int keys = 0,
+			  int attachment = 0);
 	void	OnRightClick(double x, double y, int keys = 0, int attachment = 0);
 	void	OnBeginDragRight(double x, double y, int keys = 0, int attachment =
 			  0);
