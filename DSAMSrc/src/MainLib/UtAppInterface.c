@@ -55,12 +55,14 @@ Free_AppInterface(void)
 		return(TRUE);
 	if (appInterfacePtr->diagModeList)
 		free(appInterfacePtr->diagModeList);
-	if (appInterfacePtr->appParList)
-		FreeList_UniParMgr(&appInterfacePtr->appParList);
 	if (appInterfacePtr->parList)
 		FreeList_UniParMgr(&appInterfacePtr->parList);
+	if (appInterfacePtr->appParList)
+		FreeList_UniParMgr(&appInterfacePtr->appParList);
 	if (appInterfacePtr->audModel)
 		Free_EarObject(&appInterfacePtr->audModel);
+	if (appInterfacePtr->FreeAppProcessVars)
+		(* appInterfacePtr->FreeAppProcessVars)();
 	if (appInterfacePtr->parSpec == GLOBAL) {
 		free(appInterfacePtr);
 		appInterfacePtr = NULL;
@@ -162,13 +164,14 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->appParList = NULL;
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	appInterfacePtr->simLastModified = 0;
+	appInterfacePtr->FreeAppProcessVars = NULL;
 	appInterfacePtr->Init = NULL;
 	appInterfacePtr->PrintUsage = NULL;
 	appInterfacePtr->PrintSimMgrUsage = NULL;
 	appInterfacePtr->ProcessOptions = NULL;
 	appInterfacePtr->RegisterUserModules = NULL;
-	appInterfacePtr->ReadInitialPars = NULL;
 	appInterfacePtr->SetFinalPars = NULL;
+	appInterfacePtr->SetUniParList = NULL;
 	return(TRUE);
 
 }
@@ -368,23 +371,24 @@ SetAppParFile_AppInterface(char *fileName)
 
 }
 
-/****************************** SetAppParList *********************************/
+/****************************** SetAppSetUniParList ***************************/
 
 /*
- * This functions sets the application's extra 'parList'.
- * It returns false if it fails in any way.
+ * This functions sets the application's SetUniParList routine which is used
+ * to set the applications parameters.
  */
 
 BOOLN
-SetAppParList_AppInterface(UniParListPtr appParList)
+SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
+  *parList))
 {
-	static const char	*funcName = "SetAppParList_AppInterface";
+	static const char	*funcName = "SetAppSetUniParList_AppInterface";
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	appInterfacePtr->appParList = appParList;
+	appInterfacePtr->SetUniParList = SetUniParList;
 	return(TRUE);
 
 }
@@ -427,29 +431,6 @@ SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **, int *))
 		return(FALSE);
 	}
 	appInterfacePtr->ProcessOptions = ProcessOptions;
-	return(TRUE);
-
-}
-
-/****************************** SetAppReadInitialPars *************************/
-
-/*
- * This functions sets the application's Initial pars routine.
- * These are parameters which need to be set by the application interace, as
- * they are being used by the application interface.
- * It returns false if it fails in any way.
- */
-
-BOOLN
-SetAppReadInitialPars_AppInterface(BOOLN (* ReadInitialPars)(char *))
-{
-	static const char	*funcName = "SetAppReadInitialPars_AppInterface";
-
-	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	appInterfacePtr->ReadInitialPars = ReadInitialPars;
 	return(TRUE);
 
 }
@@ -834,30 +815,41 @@ GetEarObjectPtr_AppInterface(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_AppInterface(FILE *fp)
+ReadPars_AppInterface(char *parFileName)
 {
 	static const char *funcName = "ReadPars_AppInterface";
 	BOOLN	ok = TRUE;
+	char	*filePath;
 	char	parName[MAXLINE], parValue[MAX_FILE_PATH];
+	FILE	*fp;
 	UniParPtr	par;
+	UniParListPtr	tempParList;
 
-	if (!fp) {
-		NotifyError("%s: File pointer not set.", funcName);
+	filePath = GetParsFileFPath_Common(parFileName);
+	if ((fp = fopen(filePath, "r")) == NULL) {
+		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
 		return(FALSE);
 	}
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&appInterfacePtr->parList, parName,
+	Init_ParFile();
+	SetEmptyLineMessage_ParFile(FALSE);
+	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
+		tempParList = appInterfacePtr->parList;
+		if ((par = FindUniPar_UniParMgr(&tempParList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
+			NotifyError("%s: Unknown parameter '%s' for application.", funcName,
 			  parName);
 			ok = FALSE;
 		} else {
-			if (!SetParValue_UniParMgr(&appInterfacePtr->parList, par->index,
-			  parValue))
+			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
 				ok = FALSE;
 		}
+	
+	}
+	SetEmptyLineMessage_ParFile(TRUE);
+	fclose(fp);
+	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError("%s: Could not set parameters for application.", funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1281,6 +1273,9 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			return(FALSE);
 		if (!GetDSAMPtr_Common()->appInitialisedFlag) {
 			appInterfacePtr->Init = Init;
+			if (appInterfacePtr->SetUniParList)
+				(* appInterfacePtr->SetUniParList)(&appInterfacePtr->
+				  appParList);
 			GetDSAMPtr_Common()->appInitialisedFlag = TRUE;
 			if (GetDSAMPtr_Common()->usingGUIFlag)
 				return(FALSE);
@@ -1301,9 +1296,9 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 	}
 	if (appInterfacePtr->updateProcessVariablesFlag) {
 		if (appInterfacePtr->readAppParFileFlag) {
-			if (appInterfacePtr->ReadInitialPars && !(* appInterfacePtr->
-			  ReadInitialPars)(appInterfacePtr->appParFile)) {
-				NotifyError("%s: Failed to set initial parameters.", funcName);
+			if (!ReadPars_AppInterface(appInterfacePtr->appParFile)) {
+				NotifyError("%s: Failed to set application parameters.",
+				  funcName);
 				return(FALSE);
 			}
 			appInterfacePtr->readAppParFileFlag = FALSE;

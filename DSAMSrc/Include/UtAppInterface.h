@@ -96,13 +96,14 @@ typedef struct {
 	UniParListPtr	appParList;
 	UniParListPtr	parList;
 	time_t	simLastModified;
+	BOOLN	(* FreeAppProcessVars)(void);
 	BOOLN	(* Init)(void);
 	void	(* PrintUsage)(void);
 	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
-	BOOLN	(* ReadInitialPars)(char *);
 	BOOLN	(* RegisterUserModules)(void);
 	BOOLN	(* SetFinalPars)(void);
+	BOOLN	(* SetUniParList)(UniParListPtr *);
 
 } AppInterface, *AppInterfacePtr;
 
@@ -172,7 +173,7 @@ BOOLN	ProcessOptions_AppInterface(void);
 
 void	PrintUsage_AppInterface(void);
 
-BOOLN	ReadPars_AppInterface(FILE *fp);
+BOOLN	ReadPars_AppInterface(char *parFileName);
 
 BOOLN	ReadProgParFile_AppInterface(void);
 
@@ -181,8 +182,6 @@ void	ResetCommandArgFlags_AppInterface(void);
 BOOLN	SetAppParFile_AppInterface(char *fileName);
 
 BOOLN	SetAppName_AppInterface(char *appName);
-
-BOOLN	SetAppParList_AppInterface(UniParListPtr appParList);
 
 BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 
@@ -194,7 +193,8 @@ BOOLN	SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(
 
 BOOLN	SetAppSetFinalPars_AppInterface(BOOLN (* SetFinalPars)(void));
 
-BOOLN	SetAppReadInitialPars_AppInterface(BOOLN (* ReadInitialPars)(char *));
+BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
+		  *parList));
 
 BOOLN	SetAppVersion_AppInterface(char *appVersion);
 

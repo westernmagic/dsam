@@ -954,7 +954,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 		wxGetApp().InitMain();
 		simFilePath = GetParString_UniParMgr(&GetPtr_AppInterface()->parList->
 		  pars[APP_INT_SIMULATIONFILE]);
-		defaultDir = wxPathOnly(simFilePath);
+		defaultDir = (wxIsAbsolutePath(simFilePath))? wxPathOnly(simFilePath):
+		  wxGetCwd() + "/" + wxPathOnly(simFilePath);
 	} else 
 		defaultDir = wxGetCwd();
 

@@ -80,8 +80,6 @@ BOOLN	PrintPars_Utility_PadSignal(void);
 
 BOOLN	Process_Utility_PadSignal(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_PadSignal(char *fileName);
-
 BOOLN	SetBeginDuration_Utility_PadSignal(double theBeginDuration);
 
 BOOLN	SetBeginValue_Utility_PadSignal(double theBeginValue);

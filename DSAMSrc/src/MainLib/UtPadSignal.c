@@ -334,56 +334,6 @@ PrintPars_Utility_PadSignal(void)
 
 }
 
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads parameters from a file line by line.
- * Each line which is not a comment or blank should have at least a parameter
- * name and value.  Characters on the line following the 'value' are ignored.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_PadSignal(char *fileName)
-{
-	static const char	*funcName = "ReadPars_Utility_PadSignal";
-	BOOLN	ok = TRUE;
-	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
-	FILE	*fp;
-	UniParPtr	par;
-
-	if (strcmp(fileName, NO_FILE) == 0)
-		return(TRUE);
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
-	Init_ParFile();
-	SetEmptyLineMessage_ParFile(FALSE);
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&padSignalPtr->parList, parName,
-		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
-			  parName);
-			ok = FALSE;
-		} else {
-			if (!SetParValue_UniParMgr(&padSignalPtr->parList, par->index,
-			  parValue))
-				ok = FALSE;
-		}
-	SetEmptyLineMessage_ParFile(TRUE);
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError("%s: Invalid parameters, in module parameter file '%s'.",
-		  funcName, fileName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -430,7 +380,6 @@ InitModule_Utility_PadSignal(ModulePtr theModule)
 	theModule->Free = Free_Utility_PadSignal;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_PadSignal;
 	theModule->PrintPars = PrintPars_Utility_PadSignal;
-	theModule->ReadPars = ReadPars_Utility_PadSignal;
 	theModule->RunProcess = Process_Utility_PadSignal;
 	theModule->SetParsPointer = SetParsPointer_Utility_PadSignal;
 	return(TRUE);

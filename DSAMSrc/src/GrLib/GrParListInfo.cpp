@@ -303,7 +303,9 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 
 	controlList[index] = new ParControl(par, infoNum, textCtrl, labelText);
 
-	if ((par->type == UNIPAR_INT_ARRAY) || (par->type == UNIPAR_REAL_ARRAY))
+	if ((par->type == UNIPAR_INT_ARRAY) || (par->type == UNIPAR_REAL_ARRAY) ||
+	  (par->type == UNIPAR_STRING_ARRAY) || (par->type ==
+	  UNIPAR_NAME_SPEC_ARRAY))
 		SetSlider(index);
 
 	if (controlList[index]->FirstSlider()) {
@@ -501,7 +503,7 @@ ParListInfo::SetParListIonChannel(void)
 void
 ParListInfo::SetSlider(int index)
 {
-	int		i;
+	int		i, minElement, maxElement;
 
 //	Start a wxSaticBox here too?
 	for (i = index - 1; i >= 0; i--)
@@ -511,10 +513,18 @@ ParListInfo::SetSlider(int index)
 			controlList[index]->SetSlider(controlList[i]->GetSlider());
 			return;
 		}
-	wxSlider *slider = new wxSlider(parent, DL_ID_SLIDER + index, 0, 0,
-	  *(controlList[index]->GetPar()->valuePtr.array.numElements) - 1,
-	  wxDefaultPosition, wxSize(PARLISTINFO_SILDER_ITEM_WIDTH, -1),
-	  wxSL_LABELS | wxSL_HORIZONTAL);
+#	ifdef __WXMSW__
+		minElement = 0;
+		maxElement = *(controlList[index]->GetPar()->valuePtr.array.
+		  numElements) - 1;
+#	else
+		minElement = 1;
+		maxElement = *(controlList[index]->GetPar()->valuePtr.array.
+		  numElements);
+#	endif
+	wxSlider *slider = new wxSlider(parent, DL_ID_SLIDER + index, minElement,
+	  minElement, maxElement, wxDefaultPosition, wxSize(
+	  PARLISTINFO_SILDER_ITEM_WIDTH, -1), wxSL_LABELS | wxSL_HORIZONTAL);
 
 	controlList[index]->SetSlider(slider);
 	controlList[index]->SetFirstSlider();
