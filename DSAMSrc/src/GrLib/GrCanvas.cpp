@@ -236,6 +236,12 @@ MyCanvas::SetGraphPars(void)
 
 /****************************** InitGraph *************************************/
 
+/* 
+ * This routine initialises the graph, i.e. scaling etc.
+ * The minYFlag and maxYFlag signalDisp parameters are set manually when the
+ * 'minY' and 'maxy' variables.
+ */
+
 void
 MyCanvas::InitGraph(void)
 {
@@ -244,25 +250,19 @@ MyCanvas::InitGraph(void)
 	SetGraphPars();
 
 	if (mySignalDispPtr->automaticYScaling) {
-		wxString	stringVal;
 		signalLines->CalcMaxMinLimits(mySignalDispPtr->data);
-		stringVal.sprintf("%g", signalLines->GetMinY());
-		SetParValue_UniParMgr(&mySignalDispPtr->parList, DISPLAY_MIN_Y,
-		  (char *) stringVal.GetData());
-		stringVal.sprintf("%g", signalLines->GetMaxY());
-		SetParValue_UniParMgr(&mySignalDispPtr->parList, DISPLAY_MAX_Y,
-		  (char *) stringVal.GetData());
+		mySignalDispPtr->minY = signalLines->GetMinY();
+		mySignalDispPtr->minYFlag = TRUE;
+		mySignalDispPtr->maxY = signalLines->GetMaxY();
+		mySignalDispPtr->maxYFlag = TRUE;
+		summaryLine->CalcMaxMinLimits(mySignalDispPtr->summary);
 	} else {
 		signalLines->SetMinY(mySignalDispPtr->minY);
 		signalLines->SetMaxY(mySignalDispPtr->maxY);
-	}
-	
-	if (mySignalDispPtr->automaticYScaling)
-		summaryLine->CalcMaxMinLimits(mySignalDispPtr->summary);
-	else {
 		summaryLine->SetMinY(mySignalDispPtr->minY);
 		summaryLine->SetMaxY(mySignalDispPtr->maxY);
 	}
+	
 	summaryLine->SetYMagnification(1.0);
 	switch (mySignalDispPtr->mode) {
 	case GRAPH_MODE_LINE:
@@ -482,6 +482,10 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 		DrawExponent(dc, labelFont, xAxisScale.GetExponent(), xAxis->GetRight(
 		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
 
+	if (xAxisScale.GetNumberFormatChanged())
+		strcpy(mySignalDispPtr->xNumberFormat, (char *) xAxisScale.
+		  GetFormatString().GetData());
+
 }
 
 /****************************** DrawExponent **********************************/
@@ -529,9 +533,9 @@ MyCanvas::GetMinimumIntLog(double value)
  */
 
 void
-MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
-  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-  double minYValue, double maxYValue)
+MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
+  wxFont *labelFont, int theXOffset, int theYOffset, int yTicks,
+  int numDisplayedChans, double minYValue, double maxYValue)
 {
 	/* static const char *funcName = "MyCanvas::DrawYScale"; */
 	int		i, j, tickLength, xPos, yPos, top, xLabel;
@@ -594,6 +598,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, minY;
 	double	maxY;
 	wxString format, label, space = " ";
+	AxisScale	insetAxisScale;
 
 	if (!yAxis)
 		return;
@@ -638,15 +643,18 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 				minY = signalLines->GetMinY();
 				maxY = 0.0;
 			}
-			DrawYScale(dc, &yInset, insetLabelFont, theXOffset - (int) floor(
-			  yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE + 0.5),
-			  theYOffset, 2, 1, minY, maxY);
+			DrawYScale(dc, insetAxisScale, &yInset, insetLabelFont, theXOffset -
+			  (int) floor(yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE +
+			  0.5), theYOffset, 2, 1, minY, maxY);
 		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
-		DrawYScale(dc, yAxis, labelFont, theXOffset, theYOffset,
+		DrawYScale(dc, yAxisScale, yAxis, labelFont, theXOffset, theYOffset,
 		  mySignalDispPtr->yTicks, numDisplayedChans, signalLines->GetMinY(),
 		  signalLines->GetMaxY());
+		if (yAxisScale.GetNumberFormatChanged())
+			strcpy(mySignalDispPtr->yNumberFormat, (char *) yAxisScale.
+			  GetFormatString().GetData());
 		break;
 	default:
 		wxLogWarning("%s: Scale (%d) not implemented.", funcName,

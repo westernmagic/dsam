@@ -125,9 +125,9 @@ class MyCanvas: public wxWindow
 			  int y);
 	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
-	void	DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
-			  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-			  double minYValue, double maxYValue);
+	void	DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
+			  wxFont *labelFont, int theXOffset, int theYOffset, int yTicks,
+			  int numDisplayedChans, double minYValue, double maxYValue);
 	int		GetMinimumIntLog(double value);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
 	void	InitData(EarObjectPtr data);

@@ -80,7 +80,7 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 	maxPosition = maxPos;
 	numTicks = theNumTicks;
 	if (!ParseNumberFormat(numberFormat)) {
-		wxLogError("%s: Failed recognise number format '%s'", funcName,
+		wxLogError("%s: Failed to recognise number format '%s'", funcName,
 		  numberFormat);
 		return(FALSE);
 	}
@@ -207,6 +207,26 @@ int
 AxisScale::GetTickPosition(double tickValue)
 {
 	return((int) (minPosition + positionScale * (tickValue - minTickValue)));
+
+}
+
+/****************************** GetFormatString *******************************/
+
+/*
+ * This function returns the format string for the current settings.
+ */
+
+wxString
+AxisScale::GetFormatString(void)
+{
+	int		i;
+	wxString	format;
+
+	format = (decPlaces)? "x.": "x";
+	for (i = 0; i < decPlaces; i++)
+		format += "X";
+	format.Printf("%se%d", (char *) format.GetData(), exponent);
+	return(format);
 
 }
 

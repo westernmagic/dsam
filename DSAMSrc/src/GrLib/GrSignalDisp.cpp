@@ -147,12 +147,12 @@ InitParNameList_SignalDisp(void)
 
 					{ "X_AXIS_TITLE",	DISPLAY_X_AXIS_TITLE },
 					{ "X_NUMBER_FORMAT",	DISPLAY_X_NUMBER_FORMAT },
-					{ "X_DEC_PLACES", DISPLAY_X_DEC_PLACES },
+					{ "X_DEC_PLACES",	DISPLAY_X_DEC_PLACES },
 					{ "X_TICKS",		DISPLAY_X_TICKS },
 					{ "Y_AXIS_TITLE",	DISPLAY_Y_AXIS_TITLE },
 					{ "Y_AXIS_MODE",	DISPLAY_Y_AXIS_MODE },
 					{ "Y_NUMBER_FORMAT",	DISPLAY_Y_NUMBER_FORMAT },
-					{ "Y_DEC_PLACES", DISPLAY_Y_DEC_PLACES },
+					{ "Y_DEC_PLACES",	DISPLAY_Y_DEC_PLACES },
 					{ "Y_TICKS",		DISPLAY_Y_TICKS },
 					{ "Y_INSET_SCALE",	DISPLAY_Y_INSET_SCALE },
 
@@ -206,7 +206,6 @@ InitYAxisModeList_SignalDisp(void)
 
 					{ "CHANNEL",		GRAPH_Y_AXIS_MODE_CHANNEL },
 					{ "LINEAR_SCALE",	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
-					{ "LOG_SCALE",		GRAPH_Y_AXIS_MODE_LOG_SCALE },
 					{ "", 				GRAPH_Y_AXIS_MODE_NULL }
 				};
 	signalDispPtr->yAxisModeList = list;
@@ -1445,8 +1444,8 @@ ReadPars_SignalDisp(char *parFileName)
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&signalDispPtr->parList, parName)) ==
-		  NULL) {
+		if ((par = FindUniPar_UniParMgr(&signalDispPtr->parList, parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
 			  parName);
 			ok = FALSE;

@@ -41,12 +41,14 @@ class AxisScale
 	bool	CalculateValueScale(void);
 	double	GetDecPlaces(void)		{ return decPlaces; }
 	int		GetExponent(void)		{ return exponent; }
+	wxString	GetFormatString(void);
 	int		GetNumTicks(void)		{ return numTicks; }
+	bool	GetNumberFormatChanged()	{ return numberFormatChanged; }
 	char *	GetOutputFormatString(void)	{ return (char *) outputFormat.GetData(
 			  ); }
-	double	GetValueScale(void)			{ return valueScale; }
 	double	GetTickValue(int i);
 	int		GetTickPosition(double tickValue);
+	double	GetValueScale(void)			{ return valueScale; }
 	bool	ParseNumberFormat(char *numberFormat);
 	double	RoundedValue(double value);
 	bool	Set(char *numberFormat, double minVal, double maxVal, int minPos,
