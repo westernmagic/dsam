@@ -367,7 +367,7 @@ MyApp::CreateMenuBar(void)
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(SDIFRAME_ABOUT, _("&About...\tCtrl-A"),
 	  _("Show about dialog"));
-	helpMenu->Append(wxID_HELP, "&Help...\tCtrl-H");
+	helpMenu->Append(wxID_HELP, "&Help Topics...\tCtrl-H");
 	if (!helpCount)
 		helpMenu->Enable(wxID_HELP, FALSE);
 
