@@ -1,4 +1,19 @@
 /* Main dsam resources */
 
+CUT		BITMAP "Bitmaps/cut.bmp"
+HELP		BITMAP "Bitmaps/help.bmp"
+NEW		BITMAP "Bitmaps/new.bmp"
+OPEN		BITMAP "Bitmaps/open.bmp"
+PLAY		BITMAP "Bitmaps/play.bmp"
+PRINT		BITMAP "Bitmaps/print.bmp"
+SAVE		BITMAP "Bitmaps/save.bmp"
+STOP		BITMAP "Bitmaps/stop.bmp"
+
+TOOL1		BITMAP "Bitmaps/tool1.bmp"
+TOOL2		BITMAP "Bitmaps/tool2.bmp"
+TOOL3		BITMAP "Bitmaps/tool3.bmp"
+TOOL4		BITMAP "Bitmaps/tool4.bmp"
+ARROWTOOL	BITMAP "Bitmaps/arrow.bmp"
+
 #include "wx/msw/wx.rc"
-#include "wx/html/msw/wxhtml.rc"
+/* #include "wx/html/msw/wxhtml.rc" */
