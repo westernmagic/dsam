@@ -30,22 +30,26 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	CANVAS_BITMAP_WIDTH		1000
-#define	CANVAS_BITMAP_HEIGHT	1000
-
-#define	CANVAS_PS_X_OFFSET		50.0
-#define	CANVAS_PS_Y_OFFSET		50.0
-
 /* The following is needed because of errors in scale position - can't get
  * Get extent to work properly.
  */
-#if defined(wx_xt)
-#	define CANVAS_TEXT_X_ADJUST		1.5
-#	define CANVAS_TEXT_Y_ADJUST		0.5
+#if defined(wx_gtk)
+#	define CANVAS_TEXT_X_ADJUST		1.0
+#	define CANVAS_TEXT_Y_ADJUST		1.5
 #else
 #	define CANVAS_TEXT_X_ADJUST		1.0
 #	define CANVAS_TEXT_Y_ADJUST		1.0
 #endif
+
+/************************** ID's for the menu commands ************************/
+
+enum {
+
+	DISPLAY_MENU_PRINT = 1,
+	DISPLAY_MENU_PREFERENCES,
+	DISPLAY_MENU_EXIT
+
+};
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -61,8 +65,8 @@
 
 class MyCanvas: public wxWindow
 {
-	BOOLN	useTextAdjust;
-	int		yAxisTicks, numChannels;
+	bool	useTextAdjust, firstSizeEvent;
+	int		yAxisTicks, numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
 	Box		signal, summary, *originalCanvas, *xAxis, *yAxis;
@@ -71,6 +75,7 @@ class MyCanvas: public wxWindow
 	wxMemoryDC	memDC;
 	wxBitmap	*memBmp;
 	MultiLine	*signalLines, *summaryLine;
+	wxFrame		*parent;
 
   public:
 	SignalCtrls		signalCtrl;
@@ -80,9 +85,20 @@ class MyCanvas: public wxWindow
 	  const wxSize& size = wxDefaultSize, long style = 0);
 	~MyCanvas(void);
 
+	void	CreateBackingBitmap(void);
+	void	DrawAxes(wxDC& dc, float theXOffset, float theYOffset);
+	void	DrawGraph(wxDC& dc, double theXOffset, double theYOffset);
+	void	DrawVerticalText(wxDC& dc, wxString& string, float x, float y);
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO,
 			  double xResolution);
+
+	void	OnPreferences(wxCommandEvent& event);
+	void	OnPrint(wxCommandEvent& event);
+	void	OnQuit(wxCommandEvent& event);
+	void	OnRightDown(wxMouseEvent &event);
+	void	OnSize(wxSizeEvent& event);
+	
 	void	SetGraphAreas(void);
 	void	SetLines(MultiLine *lines, EarObjectPtr data, Box box,
 			  float xResolution);
@@ -90,9 +106,6 @@ class MyCanvas: public wxWindow
 			  float xResolution);
 	void	SetTextAdjust(float *xAdjust, float *yAdjust);
 	void	SetUseTextAdjust(BOOLN state)	{ useTextAdjust = state; };
-	void	DrawAxes(wxDC& dc, float theXOffset, float theYOffset);
-	void	DrawGraph(wxDC& dc, double theXOffset, double theYOffset);
-	void	DrawVerticalText(wxDC& dc, wxString& string, float x, float y);
 
  	// private:
 	void	OnPaint(void); // Set back to private when possible.

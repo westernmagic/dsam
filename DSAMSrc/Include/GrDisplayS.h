@@ -20,20 +20,6 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-/*************************** MDI **********************************************/
-
-/*************************** Menu Commands ************************************/
-
-#define DISPLAY_QUIT			101
-#define DISPLAY_PRINT_EPS		102
-
-/*************************** Button Tags **************************************/
-
-#define	DISPLAY_SIGNAL_BUTTON_TAG		200
-#define	DISPLAY_SCALE_BUTTON_TAG		201
-#define	DISPLAY_PRINTER_BUTTON_TAG		202
-#define	DISPLAY_QUIT_BUTTON_TAG			203
-
 /*************************** Misc *********************************************/
 
 #ifndef WXDIR
@@ -57,10 +43,6 @@
 class DisplayS: public wxFrame
 {
   private:
-//	MyButton *printerBtn;
-//	MyButton *scaleBtn;
-//	MyButton *signalBtn;
-//	MyButton *quitBtn;
 
  public:
 	MyCanvas	*canvas;
@@ -69,12 +51,6 @@ class DisplayS: public wxFrame
 	  const wxSize& size, long handle);
 	~DisplayS(void);
 	
-	void	InitButtons(void);
-	void	OnSize(wxSizeEvent& event);
-	
-  // Call backs
-  // void	ButtonProc(wxButton& but, wxCommandEvent& event);
-
 };
 
 /******************************************************************************/

@@ -151,6 +151,13 @@
 #	endif
 
 // Any files included regardless of precompiled headers
+#	include <wx/print.h>
+#	include "wx/printdlg.h"
+
+#	if wxTEST_POSTSCRIPT_IN_MSW
+#		include "wx/generic/printps.h"
+#		include "wx/generic/prntdlgg.h"
+#	endif
 
 #	include "GrUtils.h"
 #	include "GrFonts.h"
@@ -168,6 +175,7 @@
 #	include "GrGraphCtrls.h"
 #	include "GrLine.h"
 #	include "GrCanvas.h"
+#	include "GrPrintDisp.h"
 #	include "GrBrushes.h"
 #	include "GrDisplayS.h"
 

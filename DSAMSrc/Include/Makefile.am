@@ -15,11 +15,11 @@ Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h StdMessage.h
 
-Gr_Headers	= GrBrushes.h GrCanvas.h GrGraphCtrls.h \
+Gr_Headers	= GrBrushes.h GrGraphCtrls.h GrCanvas.h \
 				GrLine.h GrSignalDisp.h GrDisplayS.h GrSimMgr.h GrUtils.h \
 				GrIPC.h GrRunMgr.h GrSimModDialog.h GrModParDialog.h \
 				GrParListInfo.h GrFonts.h GrDialogInfo.h GrDialogList.h \
-				GrDSAMList.h GrParListInfoList.h GrRunParDialog.h
+				GrDSAMList.h GrParListInfoList.h GrRunParDialog.h GrPrintDisp.h
   
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h MoDendrite.h \

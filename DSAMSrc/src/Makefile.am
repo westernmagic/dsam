@@ -53,9 +53,9 @@ Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 
 Std_Source	= StdMessage.c StdSignalDisp.c
 
-Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrCanvas.cpp GrFonts.cpp \
+Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp \
 				GrGraphCtrls.cpp GrLine.cpp GrSignalDisp.cpp GrDisplayS.cpp \
-				GrSimMgr.cpp GrUtils.cpp GrIPC.cpp
+				GrSimMgr.cpp GrUtils.cpp GrIPC.cpp GrPrintDisp.cpp
 ## GrRunMgr.cpp \
 ## GrSimModDialog.cpp GrModParDialog.cpp GrParListInfo.cpp \
 ## GrDialogInfo.cpp GrDialogList.cpp \
