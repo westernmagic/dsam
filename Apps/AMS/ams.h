@@ -63,7 +63,6 @@
 #define	AMS_NUM_PARS				2		/* No. of application parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
-#define AMS_REG_SPF_FILE			"SPFFile"
 
 #ifndef AMS_DATA_INSTALL_DIR
 #	define	AMS_DATA_INSTALL_DIR	"."	/* To find the DSAM help files, etc. */
@@ -79,16 +78,6 @@ typedef enum {
 	AMS_NUMBEROFRUNS
 
 } AMSParSpecifier;
-
-typedef enum {
-
-	AMS_PARAMETERS_LIST_MODE,
-	AMS_CFLIST_LIST_MODE,
-	AMS_LIST_NULL
-
-} AMSListSpecifier;
-
-typedef struct stat *StatPtr;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
