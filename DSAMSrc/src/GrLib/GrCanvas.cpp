@@ -244,9 +244,14 @@ MyCanvas::InitGraph(void)
 	SetGraphPars();
 
 	if (mySignalDispPtr->automaticYScaling) {
+		wxString	stringVal;
 		signalLines->CalcMaxMinLimits(mySignalDispPtr->data);
-		mySignalDispPtr->minY = signalLines->GetMinY();
-		mySignalDispPtr->maxY = signalLines->GetMaxY();
+		stringVal.sprintf("%g", signalLines->GetMinY());
+		SetParValue_UniParMgr(&mySignalDispPtr->parList, DISPLAY_MIN_Y,
+		  (char *) stringVal.GetData());
+		stringVal.sprintf("%g", signalLines->GetMaxY());
+		SetParValue_UniParMgr(&mySignalDispPtr->parList, DISPLAY_MAX_Y,
+		  (char *) stringVal.GetData());
 	} else {
 		signalLines->SetMinY(mySignalDispPtr->minY);
 		signalLines->SetMaxY(mySignalDispPtr->maxY);

@@ -1345,6 +1345,13 @@ CheckPars_SignalDisp(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
+	if (signalDispPtr->automaticYScalingFlag && (signalDispPtr->
+	  automaticYScaling == GENERAL_BOOLEAN_OFF) && (!signalDispPtr->minYFlag ||
+	  !signalDispPtr->maxYFlag)) {
+		NotifyError("%s: When auto-scaling is on, the minimum and maximum "
+		  " Y value must also be set.", funcName);
+		return(FALSE);
+	}
 	return(TRUE);
 	
 }	
@@ -1422,147 +1429,38 @@ BOOLN
 ReadPars_SignalDisp(char *parFileName)
 {
 	static const char *funcName = "ReadPars_SignalDisp";
-	bool	ok;
-	char	*parFilePath;
-	char	parName[MAXLINE], parValue[MAXLINE];
-	FILE    *fp;
-    
-    if (strcmp(parFileName, NO_FILE) == 0)
-    	return(TRUE);
-	parFilePath = GetParsFileFPath_Common(parFileName);
-    if ((fp = fopen(parFilePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFilePath);
+	BOOLN	ok = TRUE;
+	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
+	FILE	*fp;
+	UniParPtr	par;
+
+	if (strcmp(parFileName, NO_FILE) == 0)
+		return(TRUE);
+	filePath = GetParsFileFPath_Common(parFileName);
+	if ((fp = fopen(filePath, "r")) == NULL) {
+		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
 		return(FALSE);
-    }
-    DPrint("%s: Reading from '%s':\n", funcName, parFilePath);
-    Init_ParFile();
-	ok = TRUE;
+	}
+	DPrint("%s: Reading from '%s':\n", funcName, parFileName);
+	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		switch (Identify_NameSpecifier(parName, signalDispPtr->parNameList)) {
-		case DISPLAY_AUTOMATIC_SCALING:
-			if (!SetAutomaticYScaling_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_CHANNEL_STEP:
-			if (!SetChannelStep_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_FRAME_DELAY:
-			if (!SetFrameDelay_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_WINDOW_HEIGHT:
-			if (!SetFrameHeight_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_WINDOW_TITLE:
-			if (!SetTitle_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_WINDOW_WIDTH:
-			if (!SetFrameWidth_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_WINDOW_X_POS:
-			if (!SetFrameXPos_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_WINDOW_Y_POS:
-			if (!SetFrameYPos_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_NORMALISATION_MODE:
-			if (!SetYNormalisationMode_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_MAX_Y:
-			if (!SetMaxY_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_MIN_Y:
-			if (!SetMinY_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_MODE:
-			if (!SetMode_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_NUMGREYSCALES:
-			if (!SetNumGreyScales_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_TOP_MARGIN:
-			if (!SetTopMargin_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_WIDTH:
-			if (!SetWidth_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_MAGNIFICATION:
-			if (!SetMagnification_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_SUMMARY_DISPLAY:
-			if (!SetSummaryDisplay_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_X_RESOLUTION:
-			if (!SetXResolution_SignalDisp(atof(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_X_AXIS_TITLE:
-			if (!SetXAxisTitle_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_X_NUMBER_FORMAT:
-			if (!SetXNumberFormat_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_X_DEC_PLACES:
-			if (!SetXDecPlaces_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_X_TICKS:
-			if (!SetXTicks_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_AXIS_TITLE:
-			if (!SetYAxisTitle_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_AXIS_MODE:
-			if (!SetYAxisMode_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_NUMBER_FORMAT:
-			if (!SetYNumberFormat_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_DEC_PLACES:
-			if (!SetYDecPlaces_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_TICKS:
-			if (!SetYTicks_SignalDisp(atoi(parValue)))
-				ok = FALSE;
-			break;
-		case DISPLAY_Y_INSET_SCALE:
-			if (!SetYInsetScale_SignalDisp(parValue))
-				ok = FALSE;
-			break;
-		case DISPLAY_NULL:
-			NotifyError("%s: Illegal parameter name (%s).", funcName, parName);
+		if ((par = FindUniPar_UniParMgr(&signalDispPtr->parList, parName)) ==
+		  NULL) {
+			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
+			  parName);
 			ok = FALSE;
-			break;
-		} /* case */
+		} else {
+			if (!SetParValue_UniParMgr(&signalDispPtr->parList, par->index,
+			  parValue))
+				ok = FALSE;
+		}
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s:  Invalid parameters, in module parameter file '%s'.",
-		  funcName, parFilePath);
+		NotifyError("%s: Invalid parameters, in module parameter file '%s'.",
+		  funcName, parFileName);
 		return(FALSE);
 	}
 	return(TRUE);
