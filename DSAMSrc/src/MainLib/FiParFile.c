@@ -274,7 +274,7 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 	va_start(args, fmt);
 
 	/* This next line is needed because strtok bashes its string argument. */
-	CopyAndTrunc_Utility_String(fmtScanLine, fmt, MAXLINE);
+	snprintf(fmtScanLine, MAXLINE, "%s", fmt);
 	formatToken = strtok(fmtScanLine, FORMAT_DELIMITERS);
 	while ((formatToken != NULL) && (restOfLine != NULL) &&
 	  ((formatType = IdentifyFormat_ParFile(formatToken, extraFmt)) != EOF)) {

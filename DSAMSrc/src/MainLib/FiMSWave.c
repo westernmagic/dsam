@@ -145,14 +145,11 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 	else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < dataFilePtr->timeOffsetCount * dataFilePtr->numChannels;
 		  i++)
-			(* dataFilePtr->ReadSample)(fp);
+			ReadSample_DataFile(fp);
 	}
 	for (i = 0; i < length; i++)
-		for (j = 0; j < dataFilePtr->numChannels; j++) {
-			data->outSignal->channel[j][i] =
-			  (ChanData) ((* dataFilePtr->ReadSample)(fp) /
-			    dataFilePtr->normalise);
-		}
+		for (j = 0; j < dataFilePtr->numChannels; j++)
+			data->outSignal->channel[j][i] = ReadSample_DataFile(fp);
 	CloseFile(fp);
 	return(TRUE);
 

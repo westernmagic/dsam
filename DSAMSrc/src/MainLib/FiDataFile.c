@@ -169,7 +169,6 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->timeOffsetCount = 0;
 	dataFilePtr->maxSamples = 0;
 	dataFilePtr->type = NULL_DATA_FILE;
-	dataFilePtr->ReadSample = NULL;
 	dataFilePtr->uIOPtr = NULL;
 	return(TRUE);
 
@@ -478,11 +477,7 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
 FileFormatSpecifier
 Format_DataFile(char *suffix)
 {
-	int		i;
-	struct fileFormat {
-		char	*name;
-		FileFormatSpecifier	specifier;
-	} soundFormat[] = {
+	static NameSpecifier soundFormatList[] = {
 
 		{"AIF", AIF_DATA_FILE},
 		{"AIFF", AIFF_DATA_FILE},
@@ -494,11 +489,7 @@ Format_DataFile(char *suffix)
 
 	};
 
-	ToUpper_Utility_String(suffix, suffix);
-	for (i = 0; (soundFormat[i].specifier != NULL_DATA_FILE) &&
-	  (strcmp(suffix, soundFormat[i].name) != 0); i++)
-		;
-	return(dataFilePtr->type = soundFormat[i].specifier);
+	return(dataFilePtr->type = Identify_NameSpecifier(suffix, soundFormatList));
 
 }
 
@@ -819,7 +810,7 @@ SetFileName_DataFile(char *fileName)
 		NotifyError("%s: Illegal file name.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(dataFilePtr->name, fileName, MAX_FILE_PATH);
+	snprintf(dataFilePtr->name, MAX_FILE_PATH, "%s", fileName);
 	Format_DataFile(GetSuffix_Utility_String(fileName));
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1134,16 +1125,12 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 		}
 		switch (dataFilePtr->wordSize) {
 		case 1:
-			dataFilePtr->ReadSample = (int32 (*)(FILE *)) Read8Bits;
 			dataFilePtr->normalise = (double) (0xff >> 1);
 			break;
 		case 2:
-			dataFilePtr->ReadSample = (int32 (*)(FILE *))
-			  dataFilePtr->Read16Bits;
 			dataFilePtr->normalise = (double) (0xffff >> 1);
 			break;
 		case 4:
-			dataFilePtr->ReadSample = dataFilePtr->Read32Bits;
 			dataFilePtr->normalise = (double) (0xffffffff >> 1);
 			break;
 		default:
@@ -1170,6 +1157,41 @@ void
 FreeProcessVariables_DataFile(void)
 {
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
+
+}
+
+/**************************** ReadSample **************************************/
+
+/*
+ * This function reads a sample from a specified file pointer.
+ * It assumes that the file pointer has been correctly initialised, and that
+ * no other checking, such as end of file, is required.
+ * This routine is required because the Windows platform disliked the use of the
+ * ReadSample pointer.
+ */
+
+ChanData
+ReadSample_DataFile(FILE *fp)
+{
+	static const char *funcName = "ReadSample_DataFile";
+	ChanData	sample;
+
+	switch (dataFilePtr->wordSize) {
+	case 1:
+		sample = (ChanData) Read8Bits(fp);
+		break;
+	case 2:
+		sample = (ChanData) dataFilePtr->Read16Bits(fp);
+		break;
+	case 4:
+		sample = (ChanData) dataFilePtr->Read32Bits(fp);
+		break;
+	default:
+		NotifyError("%s: Unsupported sample bit size = %d.", funcName,
+		  dataFilePtr->wordSize);
+		return(0.0);
+	} /* switch */		
+	return(sample / dataFilePtr->normalise);
 
 }
 

@@ -188,8 +188,7 @@ ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 	  dataFilePtr->wordSize), SEEK_SET);
 	for (i = 0; i < length; i++)
 		for (j = 0; j < p->numChannels; j++)
-			data->outSignal->channel[j][i] = dataFilePtr->ReadSample(fp) / 
-			  dataFilePtr->normalise;
+			data->outSignal->channel[j][i] = ReadSample_DataFile(fp);
 	return(TRUE);
 
 }

@@ -109,15 +109,14 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 		  SEEK_SET);
 	else
 		while (dataFilePtr->timeOffsetCount) {
-			dataFilePtr->ReadSample(fp);
+			ReadSample_DataFile(fp);
 			dataFilePtr->timeOffsetCount--;
 		}
 	endChan = dataFilePtr->numChannels - 1;
 	numSamples = dataFilePtr->numChannels * length;
 	for (i = 0, index = 0; i < numSamples; i++) {
 		chan = i % dataFilePtr->numChannels;
-		*(data->outSignal->channel[chan] + index) = dataFilePtr->ReadSample(
-		  fp) / dataFilePtr->normalise;
+		*(data->outSignal->channel[chan] + index) = ReadSample_DataFile(fp);
 		if (chan == endChan)
 			index++;
 	}

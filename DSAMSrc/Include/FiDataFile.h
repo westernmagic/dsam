@@ -158,7 +158,6 @@ typedef struct {
 	int32 	maxSamples;		/* This can be set to restrict the data size. */
 	int32	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;
-	int32	(* ReadSample)(FILE *); /* Generic sample reading */
 	UPortableIOPtr	uIOPtr;
 
 } DataFile, *DataFilePtr;
@@ -213,6 +212,8 @@ BOOLN	PrintPars_DataFile(void);
 int32	ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype);
 
 BOOLN	ReadPars_DataFile(char *fileName);
+
+ChanData	ReadSample_DataFile(FILE *fp);
 
 BOOLN	ReadSignal_DataFile(char *fileName, EarObjectPtr data);
 
