@@ -69,8 +69,13 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 		return(FALSE);
 	}
 	numberFormatChanged = FALSE;
-	minValue = minVal;
-	maxValue = maxVal;
+	if (fabs(maxVal - minVal) < DBL_EPSILON) {
+		minValue = minVal - 1.0;
+		maxValue = maxVal + 1.0;
+	} else {
+		minValue = minVal;
+		maxValue = maxVal;
+	}
 	minPosition = minPos;
 	maxPosition = maxPos;
 	numTicks = theNumTicks;
@@ -79,8 +84,8 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 		  numberFormat);
 		return(FALSE);
 	}
-	CalculatValueScale();
-	CalculatPositionScale();
+	CalculateValueScale();
+	CalculatePositionScale();
 	outputFormat.Printf("%%.%df", decPlaces);
 	return(TRUE);
 
@@ -118,16 +123,15 @@ AxisScale::ParseNumberFormat(char *format)
 
 }
 
-/****************************** CalculatValueScale ****************************/
+/****************************** CalculateValueScale ***************************/
 
 /*
  * This determines the axis scalers.
  */
 
 bool
-AxisScale::CalculatValueScale(void)
+AxisScale::CalculateValueScale(void)
 {
-	static const char *funcName = "AxisScale::CalculatValueScale";
 	double	baseScale, powerScale;
 
 	roundingScaler = pow(10.0, decPlaces);
@@ -136,9 +140,6 @@ AxisScale::CalculatValueScale(void)
 	  	numberFormatChanged = TRUE;
 		exponent--;
 	}
-	/*if (numberFormatChanged)
-		NotifyWarning("%s: The format has been adjusted to fit the data "
-		  "range", funcName); */
 	powerScale = pow(10.0, -exponent);
 	valueScale = baseScale * powerScale;
 	minValueScaled = minValue * powerScale;
@@ -147,14 +148,14 @@ AxisScale::CalculatValueScale(void)
 
 }
 
-/****************************** CalculatPositionScale *************************/
+/****************************** CalculatePositionScale ************************/
 
 /*
  * This determines the axis scalers.
  */
 
 bool
-AxisScale::CalculatPositionScale(void)
+AxisScale::CalculatePositionScale(void)
 {
 	positionScale = (maxPosition - minPosition) / (GetTickValue(numTicks - 1) -
 	  GetTickValue(0));
