@@ -44,12 +44,13 @@ class ParListInfoList {
 			  (wxObject *) theInfo); };
 	wxPanel *	UsingNotebook(DatumPtr pc, UniParListPtr parList,
 				  const wxString& title);
+	ParListInfo *	GetInfo(int index)	{ return list.GetMember(index); }
 	wxWindow *	GetLastControl(void);
 	int		GetMaxControlsHeight(void);
 	int		GetNumDialogs(void)	{ return list.Number(); };
+	DialogList *	GetParent(void)		{ return parent; }
 	void	SetStandardInfo(wxPanel *panel, DatumPtr pc, UniParListPtr parList,
-			  const wxString& title, int offset = 0, int numPars = -1,
-			  char *prefix = "");
+			  const wxString& title, int offset = 0, int numPars = -1);
 	void	SetDisplayModuleInfo(wxPanel *panel, DatumPtr pc,
 			  UniParListPtr parList, int offset = 0, int panelNum = 0);
 	void	SetSubParListInfo(ParListInfo& info, int offset);
