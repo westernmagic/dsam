@@ -64,6 +64,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %doc AUTHORS COPYING README NEWS ChangeLog
 %{prefix}/share/%{name}/DEFAULT/*
+%{prefix}/share/%{name}/HelpFiles/*
 %{prefix}/bin/*
 
 

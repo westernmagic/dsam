@@ -3,7 +3,9 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-pkgdata_DATA	= \
+DIRECTORY	= HelpFiles
+
+EXTRA_DIST	= \
 	AMSHE.htm \
 	AMSHE000.gif \
 	AMSHE001.gif \
@@ -43,5 +45,6 @@ pkgdata_DATA	= \
 	AMSHelp.hhc \
 	ams.hhp
 	
-EXTRA_DIST = $(pkgdata_DATA)
-
+install-data-local: Makefile.am
+		mkdir -p $(pkgdatadir)/$(DIRECTORY)
+		$(INSTALL_DATA) $(EXTRA_DIST) $(pkgdatadir)/$(DIRECTORY)
