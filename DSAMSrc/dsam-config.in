@@ -89,7 +89,7 @@ fi
 if test "$echo_cflags" = "yes"; then
 	cflags="@DEFS@ -I@includedir@/@PACKAGE@"
 	if [ "$use_debug" = "yes" ]; then
-		cflags="$cflags -mwindows"
+		cflags="$cflags -ggdb3"
 	fi
 	if [ "$use_gui" = "yes" ]; then
 		cflags="$cflags @DSAM_GRAPHICS@ @WXINC@"
@@ -105,6 +105,12 @@ if [ "$echo_rflags" = "yes" ]; then
 fi
 if [ "$echo_libs" = "yes" ]; then
 	libs="-L@libdir@ -l@PACKAGE@"
+	if test "$use_debug" = "yes"; then
+		libs="$libs -ldmalloc"
+		if test "$use_gui" = "yes"; then
+			libs="$libs -ldmallocxx"
+		fi
+	fi
 	if [ "$use_gui" = "yes" ]; then
 		libs="$libs -l@PACKAGE@_g @WXLDFLAGS@"
 	else
