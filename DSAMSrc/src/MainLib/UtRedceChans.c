@@ -509,8 +509,8 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channel.", funcName);
 		return(FALSE);
 	}
-	SetInterleaveLevel_SignalData(data->outSignal,
-	  data->inSignal[0]->interleaveLevel);
+	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+	  interleaveLevel);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 	SetInfoCFArray_SignalData(data->outSignal, NULL);
