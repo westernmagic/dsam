@@ -409,16 +409,16 @@ int MainSimulation(MAIN_ARGS)
 
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
 		PrintInitialDiagnostics();
-	PrintPars_ModuleMgr(GetPtr_AppInterface()->audModel);
+	PrintSimPars_AppInterface();
 
 	DPrint("Starting process...\n");
 	startTime = clock();
-	ResetProcess_EarObject(GetPtr_AppInterface()->audModel);
+	ResetSim_AppInterface();
 
 	if (fileLockingModeSpecifier)
 		SetLockFile(TRUE);
 	for (i = 0; i < numberOfRuns; i++)
-		if (!RunProcess_ModuleMgr(GetPtr_AppInterface()->audModel))
+		if (!RunSim_AppInterface())
 			return(0);
 	if (fileLockingModeSpecifier)
 		SetLockFile(FALSE);
