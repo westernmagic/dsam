@@ -92,7 +92,8 @@ typedef enum {
 	UNIPAR_REAL_ARRAY,
 	UNIPAR_STRING,
 	UNIPAR_NAME_SPEC,
-	UNIPAR_NAME_SPEC_WITH_TEXT,
+	UNIPAR_NAME_SPEC_WITH_FILE,
+	UNIPAR_NAME_SPEC_WITH_FPATH,
 	UNIPAR_MODULE,
 	UNIPAR_CFLIST,
 	UNIPAR_ICLIST,
@@ -146,6 +147,7 @@ typedef struct UniPar {
 		} simScript;
 		struct {
 			int	*		numElements;
+			int			index;
 			union {
 				int	**		i;
 				long **		l;
@@ -224,7 +226,9 @@ void	FreeList_UniParMgr(UniParListPtr *list);
 
 NameSpecifier *	GeneralParNameList_UniParMgr(int index);
 
-char *	GetParString_UniParMgr(UniParListPtr parList, int index);
+char *	GetParString_UniParMgr(UniParPtr p);
+
+char *	GetParStringFromList_UniParMgr(UniParListPtr parList, int index);
 
 UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
 				  void *handlePtr);
@@ -234,12 +238,6 @@ BOOLN	PrintArray_UniParMgr(UniParPtr p, char *suffix);
 BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
-
-BOOLN	ResetBandwidthParList_UniParMgr(UniParListPtr *parList);
-
-BOOLN	ResetCFListPointer_UniParMgr(UniParListPtr parList);
-
-BOOLN	ResetCFParList_UniParMgr(UniParListPtr *parList);
 
 BOOLN	ResetICListParList_UniParMgr(UniParListPtr *parList);
 
