@@ -156,7 +156,7 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	ChanData	*stateBuffer;
 	register ChanData	*xi, *s, *s2;
 
-	if (p->m < data->outSignal->length)		/* Shift unnessary */
+	if ((ChanLen) p->m < data->outSignal->length)		/* Shift unnessary */
 		stateSampleLen = p->m;
 	else {
 		stateSampleLen = data->outSignal->length;
@@ -164,7 +164,7 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 			stateBuffer =  p->state + p->m * chan;
 			s = stateBuffer + p->m - 1;
 			s2 = s - stateSampleLen;
-			for (i = stateSampleLen; i < p->m; i++)
+			for (i = stateSampleLen; i < (ChanLen) p->m; i++)
 				*s-- = *s2--;
 		}
 	}
