@@ -111,7 +111,7 @@ typedef	enum {
 
 	GRAPH_MODE_OFF,
 	GRAPH_MODE_LINE,
-	GRAPH_MODE_RASTER,
+	GRAPH_MODE_GREY_SCALE,
 	GRAPH_MODE_NULL
 
 } SignalDispModeSpecifier;

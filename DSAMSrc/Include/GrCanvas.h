@@ -134,7 +134,7 @@ class MyCanvas: public wxWindow
 	void	SetGraphAreas(void);
 	void	SetGraphPars(void);
 	void	SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect);
-	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
+	void	SetGreyScaleLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
 			  double xResolution);
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
 	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
