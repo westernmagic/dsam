@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
@@ -189,6 +190,7 @@ CheckPars_Click(void)
 {
 	static const char *funcName = "CheckPars_Click";
 	BOOLN	ok;
+	double	remainder;
 	
 	ok = TRUE;
 	if (clickPtr == NULL) {
@@ -214,6 +216,13 @@ CheckPars_Click(void)
 	if (clickPtr->clickTime >= clickPtr->duration) {
 		NotifyError("%s: Click time must be less then the signal duration.",
 		  funcName);
+		ok = FALSE;
+	}
+	remainder = fmod(clickPtr->clickTime, clickPtr->dt);
+	if ((remainder > DBL_EPSILON) && (fabs(remainder - clickPtr->dt) >
+	  DBL_EPSILON)) {
+		NotifyError("%s: The click time should be a multiple of the sampling "
+		  "interval (%g ms)", funcName, MILLI(clickPtr->dt));
 		ok = FALSE;
 	}
 	return(ok);
