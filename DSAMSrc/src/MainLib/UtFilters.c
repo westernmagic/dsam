@@ -184,7 +184,7 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 		A0 = 1.; A1 = 0.; A2 = 0.;
 		B0 = *splane; B1 = *(splane+1); B2 = *(splane+2); /* general 2 pole */
 	}
-	if (f3dB / fs > 0.5) {
+	if (DBL_GREATER(f3dB / fs, 0.5)) {
 		NotifyError("%s: Maximum sampling for filter specification, dt = "
 		  "%g ms.", funcName, MSEC(0.5 / f3dB));
 		return(NULL);
@@ -600,7 +600,7 @@ InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
 		return(NULL);
 	}
 
-	if (dt * frequencyDiff > 0.5) {
+	if (DBL_GREATER(dt * frequencyDiff, 0.5)) {
 		NotifyError("%s: Sampling interval, dt = %g ms is too low for the\n"
 		  "filter specification (largest, dt = %g ms.", funcName, MSEC(dt),
 		  MSEC(0.5 / frequencyDiff));
@@ -719,7 +719,7 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 		return(NULL);
 	}
 	sqrt2 = sqrt(2.0);
-	if (cutOffFrequency * samplingInterval > 0.5) {
+	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
 		NotifyError("%s: Maximum sampling for filter specification, dt = "
 		  "%g ms.", funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);
