@@ -299,7 +299,6 @@ IPCClient::GetAllOutputFiles(void)
 	Read(&numFiles, sizeof(numFiles));
 	for (i = 0; i < numFiles; i++) {
 		ReadString(fileName);
-		printf("TestGetFilesCommand: Got file '%s'\n", fileName.c_str());
 		Read(&length, sizeof(length));
 		wxFFileOutputStream outStream(fileName);
 		wxDataOutputStream	data(outStream);
