@@ -34,9 +34,10 @@ repeat 200 	{
         	Display_Signal	< displayFiberResponse.par 
 	
 		Ana_histogram	< histogramPH.par 
-        	Display_Signal	< displayPH.par	
+        	Display_Signal	< displayPH.par
 
 		}
+		Ana_SynchIndex		
 		DataFile_Out	
 
 }

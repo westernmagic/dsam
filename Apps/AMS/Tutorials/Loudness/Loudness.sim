@@ -37,14 +37,14 @@ b1%		Display_Signal	(->x)	< displayLSR.par
 
 # HSR
 d%		IHC_Meddis2000	(z->)	< IHC_Meddis2000HSR.par
-		An_SG_Binomial 		< binomialLSR.par
+		An_SG_Binomial 		< binomialHSR.par
 d1%		Display_Signal	(->x)	< displayHSR.par
 
 # combine LSR, MSR and HSR fiber outputs
 x%		Util_Accumulate (b1, d1->)
 
 # add across channels
-		Util_ReduceChannels 		< reduceChannels.par
+		Util_ReduceChannels 	< reduceChannels.par
 
 # apply temporal window
 		Filt_MultiBPass		< filtMBtemporalWindow.par

@@ -12,3 +12,4 @@
 
 create_help AMS Tutorials -h1
 mv AMSTutorials.zip ../HelpFiles
+ps2pdf AMSTutorials.prn ../HelpFiles/AMSTutorials.pdf

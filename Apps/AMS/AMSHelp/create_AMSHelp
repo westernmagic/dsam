@@ -12,3 +12,4 @@
 
 create_help AMS Help -h3
 mv AMSHelp.zip ../HelpFiles
+ps2pdf AMSHelp.prn ../HelpFiles/AMSHelp.pdf

@@ -1,0 +1,16 @@
+# 		Display_Signal		< displayCCF.par
+
+Y_AXIS_MODE	CHANNEL	Y-axis mode ('channel' (No.) or 'scale').
+
+AUTO_Y_SCALE	ON	Automatic y-axis scale ('on' or 'off').
+
+X_AXIS_TITLE	"Lag (s)"
+
+WIN_TITLE	cross correlation		Display window title.
+SUMMARYDISPLAY	ON	Summary display mode ('on' or 'off').
+
+WIN_HEIGHT	300	Display frame height (pixel units).
+WIN_WIDTH	300	Display frame width (pixel units).
+WIN_X_POS	300	Display frame X position (pixel units).
+WIN_Y_POS	300	Display frame Y position (pixel units).
+

@@ -7,8 +7,8 @@ AUTOMAKE_OPTIONS = foreign
 DIRECTORY	= Tutorials
 SUBDIRS		= AuditoryPeriphery Autocorrelation BinauralPitch DRNLinputOutput \
 				GenerateStimulus ImpulseResponse Loudness MATLABdemo \
-				MeasureIntensity Pre-emphasisFilter
+				MeasureIntensity Pre-emphasisFilter Precedence
 
-EXTRA_DIST	= 
+EXTRA_DIST	=
 
 include $(top_srcdir)/mkunxinst.env

@@ -1,0 +1,4 @@
+#		DataFile_out		< dataFileOut.par
+
+FILENAME	output.dat	Stimulus file name.
+

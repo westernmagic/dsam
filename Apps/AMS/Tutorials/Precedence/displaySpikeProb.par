@@ -1,0 +1,15 @@
+#	      Display_Signal 	< displaySpikeProb.par	
+
+WIN_TITLE	"IHC synapse (spike prob)"
+ 
+WIN_HEIGHT	300
+WIN_WIDTH	300
+WIN_X_POS	0
+WIN_Y_POS	300
+
+Y_AXIS_MODE	CHANNEL
+Y_AXIS_TITLE	"channel BF (Hz)"
+AUTO_Y_SCALE	OFF
+MINY		-60E-3
+MAXY		-20E-3
+

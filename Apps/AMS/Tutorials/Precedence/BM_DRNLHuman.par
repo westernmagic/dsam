@@ -1,7 +1,7 @@
-#		BM_DRNL		< BM_DRNLHuman.par	
+#		BM_DRNL			< BM_DRNLHuman.par
 
 # Parameters are based on 
-# Lopez-Poveda, E.A., and Meddis, R.  
+# Lopez-Poveda, E.A.,   and Ray Meddis.  
 #"A human non-linear cochlear filterbank"
 # JASA 110, 3107-3118, (2001)
 
@@ -36,7 +36,7 @@ LINSCALEG_PARAMETER	1:-0.48
 
 #BF List Parameters:-
 CF_MODE			HUMAN
-MIN_CF			100	Minimum centre frequency (Hz).
-MAX_CF			5000	Maximum centre frequency (Hz).
-CHANNELS			10	No. of centre frequencies.
+MIN_CF			244.7	Minimum centre frequency (Hz).
+MAX_CF			1690	Maximum centre frequency (Hz).
+CHANNELS			14	No. of centre frequencies.
 

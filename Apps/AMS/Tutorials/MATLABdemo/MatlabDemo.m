@@ -125,7 +125,7 @@ function runAMS_RM(simFile, pars)
 % SEGMENT MODE is set to OFF
 
 % ------ Path for the aim routine -------
-amsdsam_path  = 'c:\Progra~1\DSAM\AMS\';
+amsdsam_path  = 'c:\DSAM\AMS\';
 amsdsam_exe = 'ams_ng';
 
 % ------ Check sim file is specified ------
