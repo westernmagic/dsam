@@ -615,7 +615,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	SetInfoSampleTitle_SignalData(data->outSignal, "Delay period (s)");
 	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 	SetOutputTimeOffset_SignalData(data->outSignal, -crossCorrPtr->period);
-	timeOffsetIndex = (ChanLen) floor(crossCorrPtr->timeOffset / dt + 0.5);
+	timeOffsetIndex = (ChanLen) floor(crossCorrPtr->timeOffset / dt + 0.5) - 1;
 	if (!InitProcessVariables_Analysis_CCF(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);

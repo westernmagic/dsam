@@ -670,7 +670,7 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Binaural pure tone stimulus");
 	if ( !InitOutSignal_EarObject(data, BINAURAL_PTONE_CHANNELS,
-	  (ChanLen) (bPureTonePtr->duration / bPureTonePtr->dt + 1.5),
+	  (ChanLen) floor(bPureTonePtr->duration / bPureTonePtr->dt + 0.5),
 	    bPureTonePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal.", funcName);
 		return(FALSE);
@@ -687,8 +687,8 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 		}
 		amplitude = RMS_AMP(intensity) * SQRT_2;
 		dataPtr = data->outSignal->channel[j];
-		for (i = 0, t = data->timeIndex; i <
-		  data->outSignal->length; i++, t++)
+		for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++,
+		  t++)
 			*(dataPtr++) = (ChanData) (amplitude * sin(PIx2 * frequency * (t *
 			data->outSignal->dt) + phase * j));
 	}

@@ -639,7 +639,7 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "White Noise stimulus");
 	if ( !InitOutSignal_EarObject(data, whiteNoisePtr->numChannels,
-	  (ChanLen) (whiteNoisePtr->duration / whiteNoisePtr->dt + 1.5),
+	  (ChanLen) floor(whiteNoisePtr->duration / whiteNoisePtr->dt + 0.5),
 	  whiteNoisePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);

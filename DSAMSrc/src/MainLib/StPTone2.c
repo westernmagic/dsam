@@ -346,8 +346,8 @@ SetBeginPeriodDuration_PureTone_2(double theBeginPeriodDuration)
 /********************************* SetEndPeriodDuration ***********************/
 
 /*
- * This function sets the module's endPeriodDuration parameter.  It first checks that
- * the module has been initialised.
+ * This function sets the module's endPeriodDuration parameter.  It first checks
+ * that the module has been initialised.
  * It returns TRUE if the operation is successful.
  */
 
@@ -592,7 +592,8 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 	totalDuration = pureTone2Ptr->beginPeriodDuration + pureTone2Ptr->duration +
 	  pureTone2Ptr->endPeriodDuration;
 	if ( !InitOutSignal_EarObject(data, PURE_TONE_2_NUM_CHANNELS,
-	  (ChanLen) (totalDuration / pureTone2Ptr->dt + 1.5), pureTone2Ptr->dt) ) {
+	  (ChanLen) floor(totalDuration / pureTone2Ptr->dt + 0.5), pureTone2Ptr->
+	   dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}

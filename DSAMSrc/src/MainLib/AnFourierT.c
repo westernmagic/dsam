@@ -482,6 +482,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_FourierT";
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
+	double	dF;
 	ChanLen	i;
 	Complex	*fT;
 
@@ -502,12 +503,13 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	SetSamplingInterval_SignalData(data->outSignal, 1.0 /
-	  (data->inSignal[0]->dt * fourierTPtr->fTLength));
+	dF = 1.0 / (data->inSignal[0]->dt * fourierTPtr->fTLength);
+	SetSamplingInterval_SignalData(data->outSignal, dF);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz)");
 	SetInfoChannelTitle_SignalData(data->outSignal, "Arbitrary Amplitude");
 	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+	SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
 	/* Set up data and apply Lorch Window. */
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		fT = fourierTPtr->fT;

@@ -701,7 +701,7 @@ PrintPars_Filter_FIR(void)
 		return(FALSE);
 	}
 	DPrint("FIR Filter Module Parameters:-\n");
-	DPrint("\tDiagnostics mode: %s,", BooleanList_NSpecLists(fIRPtr->
+	DPrint("\tDiagnostics mode: %s,\n", BooleanList_NSpecLists(fIRPtr->
 	  diagnosticMode)->name);
 	DPrint("\t%10s\t%10s\t%10s\n", "Band/Freqs", "desired", "weights");
 	DPrint("\t%10s\t%10s\t%10s\n", "(Hz)", "(\?\?)", "(>0)");
@@ -710,7 +710,7 @@ PrintPars_Filter_FIR(void)
 			DPrint("\t%10g\t%10g\t%10g\n", fIRPtr->bandFreqs[i], fIRPtr->
 			  desired[i], fIRPtr->weights[i]);
 	} else
-		DPrint("\tList of %d elements (off because of diagnostic mode.\n",
+		DPrint("\tList of %d elements (off because of diagnostic mode).\n",
 		  fIRPtr->numBands);
 	DPrint("\tFilter type = %s \n", fIRPtr->typeList[fIRPtr->type].name);
 	DPrint("\tnumTaps = %d ??\n", fIRPtr->numTaps);

@@ -498,8 +498,8 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
-	offsetIndex = (ChanLen) (findIndexPtr->timeOffset /
-	  data->inSignal[0]->dt + 0.5);
+	offsetIndex = (ChanLen) (findIndexPtr->timeOffset / data->inSignal[0]->dt +
+	  0.5);
 	findMinimum = (findIndexPtr->mode == FIND_INDEX_MINIMUM);
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + offsetIndex;

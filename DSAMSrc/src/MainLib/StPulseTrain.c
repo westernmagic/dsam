@@ -607,8 +607,8 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Pulse-train stimulus");
 	data->updateProcessFlag = TRUE;
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) (pulseTrainPtr->duration /
-	  pulseTrainPtr->dt + 1.5), pulseTrainPtr->dt) ) {
+	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(pulseTrainPtr->
+	  duration / pulseTrainPtr->dt + 0.5), pulseTrainPtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
@@ -620,8 +620,8 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 		pulseTrainPtr->remainingPulseTime = pulseTrainPtr->pulseDuration;
 	}
 	outPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex * dt; i < data->outSignal->length; i++,
-	  t += dt, outPtr++) {
+	for (i = 0, t = (data->timeIndex + 1) * dt; i < data->outSignal->length;
+	  i++, t += dt, outPtr++) {
 		if (pulseTrainPtr->remainingPulseTime > 0.0) {
 			*outPtr = pulseTrainPtr->amplitude;
 			pulseTrainPtr->remainingPulseTime -= dt;

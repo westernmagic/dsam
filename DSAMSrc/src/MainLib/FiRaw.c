@@ -84,8 +84,8 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 	SetProcessName_EarObject(data, "'%s' byte (raw) file",
 	  GetFileNameFPath_Utility_String(fileName));
 	if (fp == stdin) {
-		requestedLength = (int32) floor(dataFilePtr->duration *
-		  dataFilePtr->defaultSampleRate + 1.5);
+		requestedLength = (int32) floor(dataFilePtr->duration * dataFilePtr->
+		  defaultSampleRate + 0.5);
 	} else {
 		SetPosition_UPortableIO(fp, 0L, SEEK_END);
 		requestedLength = GetPosition_UPortableIO(fp) / dataFilePtr->wordSize /

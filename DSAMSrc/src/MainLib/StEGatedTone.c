@@ -841,7 +841,7 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 	  "Process");
 	dt = eGatedTonePtr->dt;
 	if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
-	  (ChanLen) floor(eGatedTonePtr->duration / dt + 1.5), dt)) {
+	  (ChanLen) floor(eGatedTonePtr->duration / dt + 0.5), dt)) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
@@ -851,12 +851,12 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 	phaseRads = DEGREES_TO_RADS(eGatedTonePtr->phase);
 	dtx2xPi = dt * PIx2;
 	if (data->timeIndex == PROCESS_START_TIME) {
-		eGatedTonePtr->beginPeriodIndex =
-		  (ChanLen) floor(eGatedTonePtr->beginPeriodDuration / dt + 0.5);
+		eGatedTonePtr->beginPeriodIndex = (ChanLen) floor(eGatedTonePtr->
+		  beginPeriodDuration / dt + 0.5);
 		eGatedTonePtr->cycleCount = cyclePeriodIndex;
 	}
 	outPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++,
+	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  outPtr++) {
 	  	if (t < eGatedTonePtr->beginPeriodIndex) {
 			*outPtr = 0.0;

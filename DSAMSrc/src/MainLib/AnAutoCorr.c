@@ -669,14 +669,14 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Auto Correlation Function (ACF) analysis");
 	dt = data->inSignal[0]->dt;
-	maxLagIndex = (ChanLen) (autoCorrPtr->maxLag / dt + 1.5);
+	maxLagIndex = (ChanLen) (autoCorrPtr->maxLag / dt + 0.5);
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 	  maxLagIndex, dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
 	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
-	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 1.5);
+	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoSampleTitle_SignalData(data->outSignal, "Delay maxLag (s)");
 	if (!InitProcessVariables_Analysis_ACF(data)) {

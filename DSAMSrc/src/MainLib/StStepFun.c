@@ -589,15 +589,15 @@ GenerateSignal_StepFunction(EarObjectPtr data)
 	totalDuration = stepFunPtr->beginPeriodDuration +
 	  stepFunPtr->duration + stepFunPtr->endPeriodDuration;
 	data->updateProcessFlag = TRUE;
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) (totalDuration /
-	  stepFunPtr->dt + 1.5), stepFunPtr->dt) ) {
+	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(totalDuration /
+	  stepFunPtr->dt + 0.5), stepFunPtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
-	beginPeriodDurationIndex = (ChanLen) (stepFunPtr->beginPeriodDuration /
+	beginPeriodDurationIndex = (ChanLen) floor(stepFunPtr->beginPeriodDuration /
 	  data->outSignal->dt + 0.5);
-	endSignalIndex = beginPeriodDurationIndex +
-	  (ChanLen) (stepFunPtr->duration / stepFunPtr->dt + 0.5);
+	endSignalIndex = beginPeriodDurationIndex + (ChanLen) floor(stepFunPtr->
+	  duration / stepFunPtr->dt + 0.5);
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0; i < data->outSignal->length; i++)
 		if ( (i >= beginPeriodDurationIndex) && (i <= endSignalIndex) )

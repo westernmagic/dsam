@@ -797,7 +797,7 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "Multi-frequency pulsed pure-tone stimulus");
 	if ( !InitOutSignal_EarObject(data, PURE_TONE_3_NUM_CHANNELS,
-	  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 1.5),
+	  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 0.5),
 	  pureTone4Ptr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
@@ -815,7 +815,7 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 		pureTone4Ptr->pulseCount = 0;
 	}
 	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++,
+	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  dataPtr++) {
 	  	if (t < pureTone4Ptr->beginIndex)
 	  		continue;

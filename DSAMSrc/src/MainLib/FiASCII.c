@@ -78,8 +78,8 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "'%s' ASCII (dat) file",
 	  GetFileNameFPath_Utility_String(fileName));
-	numSamples = (int32) floor(dataFilePtr->duration *
-	  dataFilePtr->defaultSampleRate + 1.5);
+	numSamples = (int32) floor(dataFilePtr->duration * dataFilePtr->
+	  defaultSampleRate + 0.5);
 	if (!InitProcessVariables_DataFile(data, numSamples,
 	  dataFilePtr->defaultSampleRate)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);

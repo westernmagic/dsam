@@ -617,8 +617,7 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
 		binSum = (findMinimum)? DBL_MAX: -DBL_MAX;
-		for (i = 0; i < timeRangeIndex - binWidthIndex;
-		  i++, inPtr++) {
+		for (i = 0; i < timeRangeIndex - binWidthIndex; i++, inPtr++) {
 			for (j = 0, sum = 0.0, binPtr = inPtr; j < binWidthIndex; j++,
 			  binPtr++)
 				sum += *binPtr;

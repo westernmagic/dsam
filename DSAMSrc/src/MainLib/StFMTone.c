@@ -693,8 +693,8 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Frequency Modulated Pure Tone stimulus");
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) (fMTonePtr->duration /
-	  fMTonePtr->dt + 1.5), fMTonePtr->dt) ) {
+	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(fMTonePtr->duration /
+	  fMTonePtr->dt + 0.5), fMTonePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
@@ -702,7 +702,7 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 	  frequency / fMTonePtr->modulationFrequency;
 	amplitude = RMS_AMP(fMTonePtr->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++)
+	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++)
 		*(dataPtr++) = amplitude * sin(PIx2 * fMTonePtr->frequency *
 		  t * data->outSignal->dt - modulationIndex * cos(2 * PI *
 		  fMTonePtr->modulationFrequency * t * data->outSignal->dt +

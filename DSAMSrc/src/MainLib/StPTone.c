@@ -506,14 +506,14 @@ GenerateSignal_PureTone(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "Pure Tone stimulus");
 	if ( !InitOutSignal_EarObject(data, PURETONE_NUM_CHANNELS,
-	  (ChanLen) (pureTonePtr->duration / pureTonePtr->dt + 1.5),
+	  (ChanLen) floor(pureTonePtr->duration / pureTonePtr->dt + 0.5),
 	  pureTonePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
 	amplitude = RMS_AMP(pureTonePtr->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++)
+	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++)
 		*(dataPtr++) = amplitude * sin(PIx2 * pureTonePtr->frequency *
 		  (t * data->outSignal->dt));
 	SetProcessContinuity_EarObject(data);

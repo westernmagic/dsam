@@ -806,7 +806,7 @@ GenerateSignal_PureTone_Multi(EarObjectPtr data)
 	SetProcessName_EarObject(data, "Multiple pure tone stimulus");
 	data->updateProcessFlag = TRUE;	/* Ensure signal is set to zero. */
 	if ( !InitOutSignal_EarObject(data, PURE_TONE_NUM_CHANNELS,
-	  (ChanLen) (mPureTonePtr->duration / mPureTonePtr->dt + 1.5),
+	  (ChanLen) floor(mPureTonePtr->duration / mPureTonePtr->dt + 0.5),
 	  mPureTonePtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal.", funcName);
 		return(FALSE);
@@ -815,10 +815,10 @@ GenerateSignal_PureTone_Multi(EarObjectPtr data)
 		amplitude = RMS_AMP(mPureTonePtr->intensities[j]) * SQRT_2;
 		phase = DEGREES_TO_RADS(mPureTonePtr->phases[j]);
 		dataPtr = data->outSignal->channel[0];
-		for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++)
-			*dataPtr++ += (ChanData) (amplitude * sin(PIx2 *
-			   mPureTonePtr->frequencies[j] * (t * data->outSignal->dt) +
-			   phase));
+		for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++,
+		  t++)
+			*dataPtr++ += (ChanData) (amplitude * sin(PIx2 * mPureTonePtr->
+			  frequencies[j] * (t * data->outSignal->dt) + phase));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

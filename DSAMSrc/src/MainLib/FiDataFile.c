@@ -1117,7 +1117,7 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 			dataFilePtr->maxSamples = (int32) dataFilePtr->numSamples;
 		else {
 			if ((dataFilePtr->maxSamples = (int32) floor(dataFilePtr->duration *
-			  sampleRate + 1.5)) > (int32) dataFilePtr->numSamples) {
+			  sampleRate + 0.5)) > (int32) dataFilePtr->numSamples) {
 				NotifyError("%s: Duration (%g ms) is longer than signal.",
 				  funcName, MILLI(dataFilePtr->duration));
 				return(FALSE);

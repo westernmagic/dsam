@@ -501,13 +501,13 @@ GenerateSignal_Click(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "Click (delta-function) stimulus");
 	if (!InitOutSignal_EarObject(data, 1, (ChanLen) (clickPtr->duration /
-		clickPtr->dt + 1.5), clickPtr->dt)) {
+		clickPtr->dt + 0.5), clickPtr->dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
 	dataPtr = data->outSignal->channel[0];
 	/* The channel is initialised to zero by InitOutSignal_EarObject. */
-	timeIndex = (ChanLen) floor(clickPtr->clickTime / clickPtr->dt + 0.5);
+	timeIndex = (ChanLen) floor(clickPtr->clickTime / clickPtr->dt + 0.5) - 1;
 	dataPtr[timeIndex] = clickPtr->amplitude;
 	data->outSignal->rampFlag = TRUE;	/* Clicks cannot really be ramped. */
 	SetProcessContinuity_EarObject(data);

@@ -1150,7 +1150,7 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 		return(FALSE);
 	SetProcessName_EarObject(data, "Harmonic series stimulus");
 	if ( !InitOutSignal_EarObject(data, HARMONIC_NUM_CHANNELS,
-	  (ChanLen) (harmonicPtr->duration / harmonicPtr->dt + 1.5),
+	  (ChanLen) floor(harmonicPtr->duration / harmonicPtr->dt + 0.5),
 	    harmonicPtr->dt) ) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
@@ -1164,7 +1164,7 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 	dataPtr = data->outSignal->channel[0];
 	totalNumberOfHarmonics = harmonicPtr->highestHarmonic -
 	  harmonicPtr->lowestHarmonic + 1;
-	for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++, t++,
+	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  dataPtr++) {
 	  	timexPix2 = PIx2 * t * data->outSignal->dt;
 		for (j = 0, *dataPtr = 0.0; j < totalNumberOfHarmonics; j++) {
