@@ -60,17 +60,10 @@
 #	define	AMS_VERSION					"?.?.?"
 #endif
 
-#define	AMS_NUM_PARS				6		/* Number of main parameters. */
+#define	AMS_NUM_PARS				2		/* No. of application parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
 #define AMS_REG_SPF_FILE			"SPFFile"
-#define AMS_REG_SPF_FILE			"SPFFile"
-
-#ifndef GRAPHICS_SUPPORT
-#	define	MAIN_ARGS	int argc, char **argv
-#else
-#	define	MAIN_ARGS	void
-#endif /* GRAPHICS_SUPPORT */
 
 #ifndef AMS_DATA_INSTALL_DIR
 #	define	AMS_DATA_INSTALL_DIR	"."	/* To find the DSAM help files, etc. */
@@ -90,10 +83,6 @@
 
 typedef enum {
 
-	AMS_DIAGNOSTICMODE,
-	AMS_SIMSCRIPTFILE,
-	AMS_SIMPARFILE,
-	AMS_SEGMENTMODE,
 	AMS_FILELOCKINGMODE,
 	AMS_NUMBEROFRUNS
 
@@ -113,31 +102,6 @@ typedef struct stat *StatPtr;
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-#ifdef GRAPHICS_SUPPORT
-
-/*************************** MyRunMgr ****************************************/
-
-class MyRunMgr: public RunMgr
-{
-
-  public:
-	
-	bool	ResetCommandArgs(void);
-	bool	OnExit(void);
-	bool	OnInit(void);
-	bool	CheckProgInitialisation(void);
-	wxIcon *	GetIcon(void)	{ return icon; }
-	UniParListPtr	GetParList(void);
-	char *	GetSimParFile(void);
-	EarObjectPtr	GetSimProcess(void);
-	void	ListSimParameters(void);
-	void	SetTitle(char *theTitle);
-	bool	StatusChanged(void);
-
-};
-
-#endif /* GRAPHICS_SUPPORT */
-
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -146,57 +110,22 @@ class MyRunMgr: public RunMgr
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
-void	FlagReinitialise(void);
-
-StatPtr	GetFileStatusPtr(char *fileName);
-
 BOOLN	Init(void);
-
-BOOLN	InitProcess(void);
-
-BOOLN	InitSimulation(void);
-
-void	ListCFListAndExit(void);
-
-void	ListParameters(void);
-
-void	ListParsAndExit(void);
 
 void	PrintInitialDiagnostics(void);
 
-BOOLN	ProcessParComs(EarObjectPtr audModel, int argc, char **argv,
-		  int initialCom);
-
 void	PrintUsage(void);
 
-int		ProcessOptions(int argc, char **argv);
+BOOLN	ProcessOptions(char option, char **argv, int *optInd);
 
 BOOLN	ReadMainParsFromFile(char *fileName);
 
-BOOLN	ReadProgParFile(char *fileName);
-
-BOOLN	SimScriptFileChanged(StatPtr simSpecFileStat, BOOLN updateStatus);
-
-void	SetArgcAndArgV(int theArgc, char **theArgv);
-
-BOOLN	SetDiagnosticMode(char *theDiagnosticMode);
+BOOLN	SetAppInterfacePars(void);
 
 BOOLN	SetFileLockingMode(char *theFileLockingMode);
 
 BOOLN	SetLockFile(BOOLN on);
 
 BOOLN	SetNumberOfRuns(int theNumberOfRuns);
-
-BOOLN	SetParsFilePath(char *theParsFilePath);
-
-void	SetProgramName(void);
-
-BOOLN	SetProgramParValue(char *parName, char *parValue);
-
-BOOLN	SetSegmentMode(char *theSegmentMode);
-
-BOOLN	SetSimParFileMode(char *theSimParFileMode);
-
-BOOLN	SetSimScriptFile(char *theSimScriptFile);
 
 BOOLN	SetUniParList(void);
