@@ -137,9 +137,22 @@
 #	undef TRUE			/* required because WxWin doesn't check. */
 #	undef FALSE
 
-#	include "wx.h"
-#	include "wx_form.h"
-#	include "wxstring.h"
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
+#	include <wx/wx_form.h>
+#	include <wx/wxstring.h>
 
 #	include "GrUtils.h"
 #	include "GrFonts.h"
@@ -163,8 +176,13 @@
 
 #	if !defined(DSAM_MYAPP) & !defined(DSAM_DO_NOT_DEFINE_MYAPP)
 #	define DSAM_MYAPP	1
-	//  This statement initialises the whole GUI application
-	MyApp	myApp;
+	/* Create a new application object: this macro will allow wxWindows to
+	 * create the application object during program execution (it's better than
+	 * using a static object for many reasons) and also declares the accessor
+	 * function wxGetApp() which will return the reference of the right type
+	 * (i.e. MyApp and not wxApp)
+	 */
+	IMPLEMENT_APP(MyApp)
 #	endif /* DSAM_MYAPP */
 #endif /* GRAPHICS_SUPPORT */
 
