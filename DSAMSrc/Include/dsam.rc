@@ -1,0 +1,4 @@
+/* Main dsam resources */
+
+#include "wx/msw/wx.rc"
+#include "wx/html/msw/wxhtml.rc"
