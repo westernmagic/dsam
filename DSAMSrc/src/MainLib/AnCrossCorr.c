@@ -532,7 +532,7 @@ InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 	if (crossCorrPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_CCF();
 		dt = data->inSignal[0]->dt;
-		maxPeriodIndex = (ChanLen) (crossCorrPtr->period / dt);
+		maxPeriodIndex = (ChanLen) floor(crossCorrPtr->period / dt + 0.05);
 		if ((crossCorrPtr->exponentDt = (double *) calloc(maxPeriodIndex,
 		  sizeof(double))) == NULL) {
 			NotifyError("%s: Out of memory for exponent lookup table.",
@@ -600,7 +600,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Cross Correlation Function (CCF) analysis");
 	dt = data->inSignal[0]->dt;
-	periodIndex = (ChanLen) (crossCorrPtr->period / dt + 0.5);
+	periodIndex = (ChanLen) floor(crossCorrPtr->period / dt + 0.5);
 	totalPeriodIndex = periodIndex * 2 + 1;
 	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 	  numChannels / 2), totalPeriodIndex, dt)) {
@@ -615,7 +615,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	SetInfoSampleTitle_SignalData(data->outSignal, "Delay period (s)");
 	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 	SetOutputTimeOffset_SignalData(data->outSignal, -crossCorrPtr->period);
-	timeOffsetIndex = (ChanLen) (crossCorrPtr->timeOffset / dt);
+	timeOffsetIndex = (ChanLen) floor(crossCorrPtr->timeOffset / dt + 0.5);
 	if (!InitProcessVariables_Analysis_CCF(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);
