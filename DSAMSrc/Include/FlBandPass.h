@@ -3,6 +3,8 @@
  * File:		FlBandPass.h
  * Purpose:		This is an implementation of a pre-emphasis band pass filter
  *				using the filters.c module.
+ *				Beauchamp K. and Yuen C. (1979) "Digital Methods for signal
+ *				analysis", George Allen & Unwin, London. P 256-257.
  * Comments:	The band-pass filter is used to model the effects of the
  *				outer- and middle-ear on an input signal.
  *				LPO (10-09-95): A pre-attenuation parameter has been added to
