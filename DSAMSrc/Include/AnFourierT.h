@@ -1,26 +1,66 @@
 /**********************
  *
- * File:		AnFourierT.c
+ * File:		AnFourierT.h
  * Purpose:		This module contains the fourier analysis routines routines.
  * Comments:	
  * Author:		L. P. O'Mard
  * Created:		18-01-94
  * Updated:		
- * Copyright:	(c) 1998, University of Essex
+ * Copyright:	(c) 2000, University of Essex
  *
  **********************/
 
-#ifndef	_UTFTANALYSIS_H
-#define _UTFTANALYSIS_H	1
+#ifndef	_ANFOURIERT_H
+#define _ANFOURIERT_H	1
 
 #include "UtCmplxM.h"
+#include "UtNameSpecs.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	FORWARD_FT		1			/* Forward FT */
-#define	BACKWARD_FT		-1			/* Backward FT */
+#define ANALYSIS_FOURIERT_NUM_PARS			1
+
+/******************************************************************************/
+/****************************** Type definitions ******************************/
+/******************************************************************************/
+
+typedef enum {
+
+	ANALYSIS_FOURIERT_OUTPUTMODE
+
+} FourierTParSpecifier;
+
+typedef enum {
+
+	ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE,
+	ANALYSIS_FOURIERT_PHASE_OUTPUTMODE,
+	ANALYSIS_FOURIERT_OUTPUTMODE_NULL
+
+} AnalysisOutputModeSpecifier;
+
+typedef struct {
+
+	ParameterSpecifier	parSpec;
+	BOOLN	updateProcessVariablesFlag;
+
+	BOOLN	outputModeFlag;
+	int		outputMode;
+
+	/* Private members */
+	NameSpecifier	*outputModeList;
+	UniParListPtr	parList;
+	ChanLen	fTLength;
+	Complex	*fT;
+
+} FourierT, *FourierTPtr;
+
+/******************************************************************************/
+/****************************** External variables ****************************/
+/******************************************************************************/
+
+extern	FourierTPtr	fourierTPtr;
 
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
@@ -32,13 +72,33 @@
  */
 __BEGIN_DECLS
 
-void	FFT_FourierT(double *data, unsigned long nn, int isign);
+BOOLN	Calc_Analysis_FourierT(EarObjectPtr data);
 
-void	FFT_FourierT_Complex(Complex data[], unsigned long nn, int isign);
+BOOLN	CheckData_Analysis_FourierT(EarObjectPtr data);
 
-BOOLN	Phase_FourierT(EarObjectPtr data);
+BOOLN	CheckPars_Analysis_FourierT(void);
 
-BOOLN	RealFT_FourierT(SignalDataPtr signal, int direction);
+BOOLN	Free_Analysis_FourierT(void);
+
+void	FreeProcessVariables_Analysis_FourierT(void);
+
+UniParListPtr	GetUniParListPtr_Analysis_FourierT(void);
+
+BOOLN	InitOutputModeList_Analysis_FourierT(void);
+
+BOOLN	Init_Analysis_FourierT(ParameterSpecifier parSpec);
+
+BOOLN	InitProcessVariables_Analysis_FourierT(EarObjectPtr data);
+
+BOOLN	PrintPars_Analysis_FourierT(void);
+
+BOOLN	ReadPars_Analysis_FourierT(char *fileName);
+
+BOOLN	SetOutputMode_Analysis_FourierT(char * theOutputMode);
+
+BOOLN	SetPars_Analysis_FourierT(char * outputMode);
+
+BOOLN	SetUniParList_Analysis_FourierT(void);
 
 __END_DECLS
 
