@@ -108,7 +108,6 @@ class MyCanvas: public wxWindow
 	~MyCanvas(void);
 
 	void	CreateBackingBitmap(void);
-	void	CreateParDialog(void);
 	void	DrawAxes(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawVerticalText(wxDC& dc, wxString& string, int x, int y);
