@@ -393,6 +393,27 @@ SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
 
 }
 
+/****************************** SetAppFreeAppProcessVars **********************/
+
+/*
+ * This functions sets the application's FreeAppProcessVars routine which is
+ * used free allocated memory for the applications process.
+ */
+
+BOOLN
+SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void))
+{
+	static const char	*funcName = "SetAppFreeProcessVars_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->FreeAppProcessVars = FreeAppProcessVars;
+	return(TRUE);
+
+}
+
 /****************************** SetAppPrintUsage ******************************/
 
 /*

@@ -206,6 +206,8 @@ BOOLN	SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion);
 
 BOOLN	SetDiagMode_AppInterface(char *theDiagMode);
 
+BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
+
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
