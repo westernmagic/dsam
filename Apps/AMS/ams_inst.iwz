@@ -46,7 +46,7 @@ LangDir=LANG\ENG\
 AppName=AMS
 AppExe=[Program Files]\AMS.exe
 AppExeFile=
-Version=1.0.2-2.5.7v3)
+Version=1.0.3-2.6.8
 Company=DSAM
 Title=DSAM AMS
 TitleType=1
@@ -73,7 +73,7 @@ Component1GroupList=1 2 3 4 5
 
 [Groups]
 Groups=5
-Group1Size=1154028
+Group1Size=1186796
 Group1Files=4
 Group1Name=Program Files
 Group1Dir=<INSTALLDIR>
@@ -194,7 +194,7 @@ Group4File33=E:\projects\dsam\AMS\DEFAULT\strobeACdflt.par
 Group4File34=E:\projects\dsam\AMS\DEFAULT\strobeDflt.par
 Group4File35=E:\projects\dsam\AMS\DEFAULT\sumSAIdflt.par
 Group4File36=E:\projects\dsam\AMS\DEFAULT\waveDflt.par
-Group5Size=6669
+Group5Size=6733
 Group5Files=7
 Group5Name=Matlab Files
 Group5Dir=<INSTALLDIR>\Matlab
