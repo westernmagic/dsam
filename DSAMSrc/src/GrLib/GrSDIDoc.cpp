@@ -35,6 +35,8 @@
 #include "GrSimMgr.h"
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
+#include "GrSDIDoc.h"
+#include "GrSDIDoc.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -131,6 +133,34 @@ SDIDocument::OnNewDocument(void)
 wxOutputStream&
 SDIDocument::SaveObject(wxOutputStream& stream)
 {
+	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
+	wxFileName	tempFileName, fileName = GetFilename();
+
+
+	wxDocument::SaveObject(stream);
+	tempFileName.AssignTempFileName("diag");
+
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+	if (fileName.GetExt().IsSameAs(SDI_DOCUMENT_SIM_FILE_EXT, FALSE)) {
+		WriteParFiles_Datum((char *) fileName.GetPath().c_str(),
+		  GetSimulation_AppInterface());
+		WriteSimScript_Datum((char *)tempFileName.GetFullPath().c_str(),
+		  GetSimulation_AppInterface());
+	} else {
+		FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+		SetParsFile_Common((char * )tempFileName.GetFullPath().c_str(),
+		  OVERWRITE);
+		ListParameters_AppInterface();
+		fclose(GetDSAMPtr_Common()->parsFile);
+		GetDSAMPtr_Common()->parsFile = oldFp;
+	}
+	SetDiagMode(oldDiagMode);
+	wxTransferFileToStream(tempFileName.GetFullPath(), stream);
+	wxRemoveFile(tempFileName.GetFullPath());
+
+	fileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+	diagram.SaveFile(fileName.GetFullPath());
 	return stream;
 
 }

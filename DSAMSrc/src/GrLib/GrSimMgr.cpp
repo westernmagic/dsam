@@ -238,11 +238,11 @@ MyApp::OnInit(void)
 	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
 	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*."
-	  SDI_SPF_DOC_FILE_EXT, simFile.GetCwd(), SDI_SPF_DOC_FILE_EXT,
+	  SDI_DOCUMENT_SPF_FILE_EXT, simFile.GetCwd(), SDI_DOCUMENT_SPF_FILE_EXT,
 	  "Simulation Design", "Simulation view", CLASSINFO(SDISPFDocument),
 	  CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
-	  SDI_SIM_DOC_FILE_EXT, simFile.GetCwd(), SDI_SIM_DOC_FILE_EXT,
+	  SDI_DOCUMENT_SIM_FILE_EXT, simFile.GetCwd(), SDI_DOCUMENT_SIM_FILE_EXT,
 	  "Simulation Design", "Simulation view", CLASSINFO(SDISimDocument),
 	  CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);

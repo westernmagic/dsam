@@ -34,6 +34,8 @@ class istream;
 /******************************************************************************/
 
 #define	SDI_DOCUMENT_DIAGRAM_EXTENSION	"dia"
+#define SDI_DOCUMENT_SIM_FILE_EXT		"sim"
+#define SDI_DOCUMENT_SPF_FILE_EXT		"spf"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
