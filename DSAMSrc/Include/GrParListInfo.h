@@ -66,6 +66,7 @@ class ParListInfo {
 
 	void	AddModuleListBoxEntries(wxListBox *listBox);
 	bool	CheckChangedValues(void);
+	void	CheckInterDependence(void);
 	int		GetInfoNum(void)			{ return infoNum; }
 	wxWindow *	GetLastControl(void)	{ return lastControl; }
 	wxSize	GetSize(void) const			{ return wxSize(maxWidth, maxHeight); }
