@@ -24,6 +24,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtBandwidth.h"
 #include "UtCFList.h"
@@ -127,6 +128,7 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->modelFlag = TRUE;
 	bMZhangPtr->speciesFlag = TRUE;
+	bMZhangPtr->microPaInputFlag = TRUE;
 	bMZhangPtr->nbOrderFlag = TRUE;
 	bMZhangPtr->wbOrderFlag = TRUE;
 	bMZhangPtr->cornerCPFlag = TRUE;
@@ -142,6 +144,7 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 	bMZhangPtr->r0Flag = TRUE;
 	bMZhangPtr->model = BASILARM_ZHANG_MODEL_FEED_FORWARD_NL;
 	bMZhangPtr->species = UT_ZHANG_SPECIES_HUMAN;
+	bMZhangPtr->microPaInput = GENERAL_BOOLEAN_ON;
 	bMZhangPtr->nbOrder = 3;
 	bMZhangPtr->wbOrder = 3;
 	bMZhangPtr->cornerCP = BASILARM_ZHANG_ABS_DB - 12.0;
@@ -198,6 +201,11 @@ SetUniParList_BasilarM_Zhang(void)
 	  UNIPAR_NAME_SPEC,
 	  &bMZhangPtr->species, SpeciesList_Utility_Zhang(0),
 	  (void * (*)) SetSpecies_BasilarM_Zhang);
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MICROPAINPUT], "MICRO_PASCALS",
+	  "Input expected in micro pascals instead of pascals ('on' or 'off').",
+	  UNIPAR_NAME_SPEC,
+	  &bMZhangPtr->microPaInput, BooleanList_NSpecLists(0),
+	  (void * (*)) SetMicroPaInput_BasilarM_Zhang);
 	SetPar_UniParMgr(&pars[BASILARM_ZHANG_NBORDER], "N_ORDER",
 	  "Order of the narrow bandpass filter (int).",
 	  UNIPAR_INT,
@@ -356,6 +364,37 @@ SetSpecies_BasilarM_Zhang(char * theSpecies)
 	bMZhangPtr->speciesFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->species = specifier;
+	return(TRUE);
+
+}
+
+/****************************** SetMicroPaInput *******************************/
+
+/*
+ * This function sets the module's microPaInput parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetMicroPaInput_BasilarM_Zhang(char * theMicroPaInput)
+{
+	static const char	*funcName = "SetMicroPaInput_BasilarM_Zhang";
+	int		specifier;
+
+	if (bMZhangPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theMicroPaInput,
+		DiagModeList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theMicroPaInput);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	bMZhangPtr->microPaInputFlag = TRUE;
+	bMZhangPtr->updateProcessVariablesFlag = TRUE;
+	bMZhangPtr->microPaInput = specifier;
 	return(TRUE);
 
 }
@@ -720,35 +759,6 @@ SetCFList_BasilarM_Zhang(CFListPtr theCFList)
 
 }
 
-/****************************** SetBandWidths *********************************/
-
-/*
- * This function sets the band width mode for the gamma tone filters.
- * The band width mode defines the function for calculating the gamma tone
- * filter band width 3 dB down.
- * No checks are made on the correct length for the bandwidth array.
- */
-
-BOOLN
-SetBandWidths_BasilarM_Zhang(char *theBandwidthMode, double *theBandwidths)
-{
-	static const char	*funcName = "SetBandWidths_BasilarM_Zhang";
-
-	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	/*** Put any other required checks here. ***/
-	if (!SetBandwidths_CFList(bMZhangPtr->cFList, theBandwidthMode,
-	  theBandwidths)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
-		return(FALSE);
-	}
-	bMZhangPtr->updateProcessVariablesFlag = TRUE;
-	return(TRUE);
-
-}
-
 /****************************** CheckPars *************************************/
 
 /*
@@ -776,6 +786,10 @@ CheckPars_BasilarM_Zhang(void)
 	}
 	if (!bMZhangPtr->speciesFlag) {
 		NotifyError("%s: species variable not set.", funcName);
+		ok = FALSE;
+	}
+	if (!bMZhangPtr->microPaInputFlag) {
+		NotifyError("%s: microPaInput variable not set.", funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->nbOrderFlag) {
@@ -884,6 +898,8 @@ PrintPars_BasilarM_Zhang(void)
 	  model].name);
 	DPrint("\tspecies = %s \n", SpeciesList_Utility_Zhang(bMZhangPtr->
 	  species)->name);
+	DPrint("\tMicro Pascal Input = %s,\n", BooleanList_NSpecLists(bMZhangPtr->
+	  microPaInput)->name);
 	DPrint("\tNarrow/wide bandpass filter Orders = %d/%d\n", bMZhangPtr->
 	  nbOrder, bMZhangPtr->wbOrder);
 	DPrint("\tNonlinearity corner/slope/strengh = %g/%g/%g,\n",
@@ -1110,7 +1126,7 @@ GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
 
 }
 
-/****************************** RunGammaTone ***********************************/
+/****************************** RunGammaTone **********************************/
 
 /*
  * Original name: runGammaTone
@@ -1139,7 +1155,7 @@ RunGammaTone_BasilarM_Zhang(TGammaTone *p, double x)
 
 	EXP_CMPLXM(c_phase, p->phase); /*/ FREQUENCY SHIFT */
 	SCALER_MULT_CMPLXM(p->gtf[0], c_phase,x);
-	for( j = 1; j <= p->Order; j++) {      /*/ IIR Bilinear transformation LPF */
+	for( j = 1; j <= p->Order; j++) {     /*/ IIR Bilinear transformation LPF */
 		ADD_CMPLXM(c1, p->gtf[j-1], p->gtfl[j-1]);
 		SCALER_MULT_CMPLXM(c2, c1, p->c2LP);
 		SCALER_MULT_CMPLXM(c1, p->gtfl[j], p->c1LP);
@@ -1174,8 +1190,9 @@ RunGammaTone2_BasilarM_Zhang(TGammaTone *p, const double *in, double *out,
 		p->phase += p->delta_phase;
 
 		EXP_CMPLXM(c_phase,p->phase); /*/ FREQUENCY SHIFT */
-		SCALER_MULT_CMPLXM(p->gtf[0],c_phase,x);
-		for( loopGT = 1; loopGT <= p->Order; loopGT++) { /*/ IIR Bilinear transformation LPF */
+		SCALER_MULT_CMPLXM(p->gtf[0],c_phase, x);
+		/*/ IIR Bilinear transformation LPF */
+		for ( loopGT = 1; loopGT <= p->Order; loopGT++) {
 			ADD_CMPLXM(c1,p->gtf[loopGT-1],p->gtfl[loopGT-1]);
 			SCALER_MULT_CMPLXM(c2,c1,p->c2LP);
 			SCALER_MULT_CMPLXM(c1,p->gtfl[loopGT],p->c1LP);
@@ -1191,7 +1208,7 @@ RunGammaTone2_BasilarM_Zhang(TGammaTone *p, const double *in, double *out,
 
 }
 
-/****************************** SetGammaToneTau ********************************/
+/****************************** SetGammaToneTau *******************************/
 
 /*
  * Original name: setGammaToneTau
@@ -1248,7 +1265,7 @@ SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,double _tdres,
 
 }
 
-/****************************** InitBasilarMembrane ****************************/
+/****************************** InitBasilarMembrane ***************************/
 
 /*
  * Extracted from the cmpa.c code (LPO).
@@ -1315,9 +1332,9 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
 		bm->tau = taumax;
 
 	SetZhangGTCoeffs_BasilarM_Zhang(&(bm->bmfilter), tdres, cf, bm->tau,
-	  1.0, bm->bmorder);
-	SetZhangGTCoeffs_BasilarM_Zhang(&(bm->gfagain), tdres, cf, taumin, 1.0,
-	  1);
+	  BASILARM_ZHANG_GAIN(bMZhangPtr->microPaInput), bm->bmorder);
+	SetZhangGTCoeffs_BasilarM_Zhang(&(bm->gfagain), tdres, cf, taumin, 1.0 /* *
+	 BASILARM_ZHANG_FILTER_GAIN */, 1);
 	/*
 	* Get Wbfilter parameters
 	*/
@@ -1463,7 +1480,7 @@ Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
 	double wbout,ohcout;
 	double x, x1,out1;
 
-	for(i=0; i<length; i++) {
+	for (i = 0; i < length; i++) {
 		x = in[i];
 		/*/ pass the signal through the tuning filter */
 		x1 = bm->bmfilter.Run(&(bm->bmfilter),x);
@@ -1494,7 +1511,8 @@ Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
 			/*/ normalize the gain of the wideband pass filter as 0dB at CF */
 			dtmp = taunow*PIx2*(bm->wbfilter.F_shift-bm->bmfilter.F_shift);
 			wb_gain = pow((1+dtmp*dtmp), bm->wbfilter.Order/2.0);
-			bm->wbfilter.gain=wb_gain;
+			bm->wbfilter.gain = wb_gain * BASILARM_ZHANG_GAIN(bMZhangPtr->
+			  microPaInput);
 
 			/*/ pass the control signal through OHC model*/
 			ohcout = bm->ohc.Run(&(bm->ohc),wbout);
@@ -1538,6 +1556,7 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_BasilarM_Zhang";
 	register ChanData	 *inPtr, *outPtr;
+	uShort	totalChannels;
 	int		chan;
 
 	if (data == NULL) {
@@ -1552,10 +1571,10 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Zhang et al. Non-linear BM filtering");
 
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
+	totalChannels = bMZhangPtr->cFList->numChannels * data->inSignal[0]->
+	  numChannels;
+	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		NotifyError("%s: Cannot initialise output channel.", funcName);
 		return(FALSE);
 	}
 
@@ -1564,8 +1583,9 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
+	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
+		  interleaveLevel];
 		outPtr = data->outSignal->channel[chan];
 		Run2BasilarMembrane_BasilarM_Zhang(&bMZhangPtr->bM[chan],
 		  inPtr, outPtr, data->outSignal->length);

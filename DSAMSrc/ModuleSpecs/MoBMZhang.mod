@@ -10,6 +10,7 @@ typedef struct {
 
 	NameSpecifier	model;		/* Model to use. */
 	NameSpecifier	species;	/* Species to use. */
+	NameSpecifier	microPaInput;	/* Expect input in micro Pascals. */
 	int		nbOrder;			/* Order of the narrow bandpass filter */
 	int		wbOrder;			/* Order of the wide bandpass filter */
 	double	cornerCP;			/* Parameter in logarithmic nonlinearity */

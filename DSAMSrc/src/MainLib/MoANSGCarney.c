@@ -99,26 +99,26 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	}
 	carneySGPtr->parSpec = parSpec;
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
-	carneySGPtr->ranSeedFlag = FALSE;
-	carneySGPtr->numFibresFlag = FALSE;
+	carneySGPtr->ranSeedFlag = TRUE;
+	carneySGPtr->numFibresFlag = TRUE;
 	carneySGPtr->pulseDurationFlag = FALSE;
-	carneySGPtr->pulseMagnitudeFlag = FALSE;
-	carneySGPtr->refractoryPeriodFlag = FALSE;
-	carneySGPtr->maxThresholdFlag = FALSE;
-	carneySGPtr->dischargeCoeffC0Flag = FALSE;
-	carneySGPtr->dischargeCoeffC1Flag = FALSE;
-	carneySGPtr->dischargeTConstS0Flag = FALSE;
-	carneySGPtr->dischargeTConstS1Flag = FALSE;
-	carneySGPtr->ranSeed = 0;
-	carneySGPtr->numFibres = 0;
+	carneySGPtr->pulseMagnitudeFlag = TRUE;
+	carneySGPtr->refractoryPeriodFlag = TRUE;
+	carneySGPtr->maxThresholdFlag = TRUE;
+	carneySGPtr->dischargeCoeffC0Flag = TRUE;
+	carneySGPtr->dischargeCoeffC1Flag = TRUE;
+	carneySGPtr->dischargeTConstS0Flag = TRUE;
+	carneySGPtr->dischargeTConstS1Flag = TRUE;
+	carneySGPtr->ranSeed = 1;
+	carneySGPtr->numFibres = 1;
 	carneySGPtr->pulseDuration = 0.0;
-	carneySGPtr->pulseMagnitude = 0.0;
-	carneySGPtr->refractoryPeriod = 0.0;
-	carneySGPtr->maxThreshold = 0.0;
-	carneySGPtr->dischargeCoeffC0 = 0.0;
-	carneySGPtr->dischargeCoeffC1 = 0.0;
-	carneySGPtr->dischargeTConstS0 = 0.0;
-	carneySGPtr->dischargeTConstS1 = 0.0;
+	carneySGPtr->pulseMagnitude = 1.0;
+	carneySGPtr->refractoryPeriod = 0.75e-3;
+	carneySGPtr->maxThreshold = 1.0;
+	carneySGPtr->dischargeCoeffC0 = 0.5;
+	carneySGPtr->dischargeCoeffC1 = 0.5;
+	carneySGPtr->dischargeTConstS0 = 1e-3;
+	carneySGPtr->dischargeTConstS1 = 12.5e-3;
 
 	if (!SetUniParList_ANSpikeGen_Carney()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -917,7 +917,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  exp(-excessTime / p->dischargeTConstS0) +
 					  p->dischargeCoeffC1 * exp(-excessTime /
 					  p->dischargeTConstS1));
-					if ((*inPtr - threshold * dt) > Ran01_Random(
+					if (((*inPtr - threshold) * dt) > Ran01_Random(
 					  &randomNumSeed)) {
 						*remainingPulseTimePtr = p->pulseDuration;
 						*timerPtr = 0.0;
@@ -938,4 +938,3 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	return(TRUE);
 
 }
-

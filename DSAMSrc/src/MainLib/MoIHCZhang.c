@@ -675,7 +675,7 @@ CheckData_IHC_Zhang(EarObjectPtr data)
 
 void
 RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in, double *out,
-  int length)
+  const int length)
 {
 	int register i;
 	double PPIlast,PL,PG,CIlast,CLlast,CG,VI,VL;
@@ -862,7 +862,7 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 			syn->Ar_over_Ast = p->aAROverAST;
 			syn->tauR =  p->tauR;
 			syn->tauST = p->tauST;
-			InitSynapse_IHC_Zhang(p->synapse);
+			InitSynapse_IHC_Zhang(syn);
 
 			kKCF = 2.0 + p->ks * log10(syn->cf / 1000.0);
 			if (kKCF < 1.5)

@@ -1530,6 +1530,10 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
 		break;
 	case BANDWIDTH_INTERNAL_DYNAMIC:
 	case BANDWIDTH_DISABLED:
+		if (theCFs->bandwidth) {
+			free(theCFs->bandwidth);
+			theCFs->bandwidth = NULL;
+		}
 		break;
 	default:
 		if (theCFs->bandwidth)

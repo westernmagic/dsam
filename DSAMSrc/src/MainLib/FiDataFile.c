@@ -685,7 +685,7 @@ CalculateNormalisation_DataFile(SignalDataPtr signal)
 					maxValue = fabs(*dataPtr);
 		}
 	if (maxValue < DBL_EPSILON)
-		return(0.0);
+		return(1.0);
 	dataFilePtr->normOffset = ((dataFilePtr->endian !=
 	  DATA_FILE_LITTLE_ENDIAN_UNSIGNED) && (dataFilePtr->endian !=
 	  DATA_FILE_BIG_ENDIAN_UNSIGNED))? 0.0: maxValue;

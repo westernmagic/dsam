@@ -522,7 +522,7 @@ RunIHCNL2_IHCRP_Zhang(TNonLinear* p, const double *in, double *out,
   ChanLen	register i;
   register double	temp,dtemp,tempA;
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < (ChanLen) length; i++) {
 		/*/begin Vsp -> Vihc */
     	temp = in[i];
 		if(temp >= 0) {

@@ -20,8 +20,14 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define BASILARM_ZHANG_NUM_PARS			16
-#define BASILARM_ZHANG_ABS_DB				20.0
+#define BASILARM_ZHANG_NUM_PARS			17
+#define BASILARM_ZHANG_ABS_DB			20.0
+
+/******************************************************************************/
+/****************************** Macro definitions *****************************/
+/******************************************************************************/
+
+#define BASILARM_ZHANG_GAIN(MPA)	((MPA)? 1e-6: 1.0)
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -31,6 +37,7 @@ typedef enum {
 
 	BASILARM_ZHANG_MODEL,
 	BASILARM_ZHANG_SPECIES,
+	BASILARM_ZHANG_MICROPAINPUT,
 	BASILARM_ZHANG_NBORDER,
 	BASILARM_ZHANG_WBORDER,
 	BASILARM_ZHANG_CORNERCP,
@@ -74,7 +81,8 @@ typedef struct TGammaTone {
 	Complex gtf[MAX_ORDER],gtfl[MAX_ORDER];
 	int Order;
 
-	/*// Set the tau of the gammatone filter, this is useful for time-varying filter */
+	/*// Set the tau of the gammatone filter, this is useful for time-varying
+	 * filter */
 	void (*SetTau)(struct TGammaTone *p, double _tau);
 
 } TGammaTone, *TGammaTonePtr;
@@ -82,7 +90,8 @@ typedef struct TGammaTone {
 typedef struct { /* class of basilar membrane */
 
   /* double (*run)(TBasilarMembrane *p, double x); */
-  /* void (*run2)(TBasilarMembrane *p, const double *in, double *out, const int length); */
+  /* void (*run2)(TBasilarMembrane *p, const double *in, double *out,
+   * const int length); */
 
   int bmmodel; /* determine if the bm is broad_linear, sharp_linear or other */
   double tdres;
@@ -104,12 +113,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modelFlag, speciesFlag, nbOrderFlag, wbOrderFlag, cornerCPFlag;
-	BOOLN	slopeCPFlag, strenghCPFlag, x0CPFlag, s0CPFlag, x1CPFlag, s1CPFlag;
-	BOOLN	shiftCPFlag, cutCPFlag, kCPFlag, r0Flag;
+	BOOLN	modelFlag, speciesFlag, microPaInputFlag, nbOrderFlag, wbOrderFlag;
+	BOOLN	cornerCPFlag, slopeCPFlag, strenghCPFlag, x0CPFlag, s0CPFlag;
+	BOOLN	x1CPFlag, s1CPFlag, shiftCPFlag, cutCPFlag, kCPFlag, r0Flag;
 	BOOLN	updateProcessVariablesFlag;
 	int		model;
 	int		species;
+	int		microPaInput;
 	int		nbOrder;
 	int		wbOrder;
 	double	cornerCP;
@@ -179,9 +189,6 @@ void	Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm,
 
 BOOLN	RunModel_BasilarM_Zhang(EarObjectPtr data);
 
-BOOLN	SetBandWidths_BasilarM_Zhang(char *theBandwidthMode,
-		  double *theBandwidths);
-
 BOOLN	SetCFList_BasilarM_Zhang(CFListPtr theCFList);
 
 BOOLN	SetCornerCP_BasilarM_Zhang(double theCornerCP);
@@ -189,6 +196,8 @@ BOOLN	SetCornerCP_BasilarM_Zhang(double theCornerCP);
 BOOLN	SetCutCP_BasilarM_Zhang(double theCutCP);
 
 BOOLN	SetKCP_BasilarM_Zhang(int theKCP);
+
+BOOLN	SetMicroPaInput_BasilarM_Zhang(char * theMicroPaInput);
 
 BOOLN	SetModel_BasilarM_Zhang(char * theModel);
 

@@ -116,7 +116,7 @@ BOOLN	PrintPars_IHC_Zhang(void);
 BOOLN	RunModel_IHC_Zhang(EarObjectPtr data);
 
 void	RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in,
-		  double *out, int length);
+		  double *out, const int length);
 
 BOOLN	SetAAROverAST_IHC_Zhang(double theAAROverAST);
 

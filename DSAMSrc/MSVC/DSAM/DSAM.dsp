@@ -253,6 +253,10 @@ SOURCE=..\..\src\MainLib\MoBMGammaT.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\MoBMZhang.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\MoHCRPCarney.c
 # End Source File
 # Begin Source File
@@ -266,6 +270,10 @@ SOURCE=..\..\src\MainLib\MoHCRPSham3StVIn.c
 # Begin Source File
 
 SOURCE=..\..\src\MainLib\MoHCRPShamma.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\MainLib\MoHCRPZhang.c
 # End Source File
 # Begin Source File
 
@@ -286,6 +294,10 @@ SOURCE=..\..\src\MainLib\MoIHCCooke.c
 # Begin Source File
 
 SOURCE=..\..\src\MainLib\MoIHCMeddis2000.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\MainLib\MoIHCZhang.c
 # End Source File
 # Begin Source File
 
@@ -559,6 +571,10 @@ SOURCE=..\..\src\MainLib\UtUIEEEFloat.c
 
 SOURCE=..\..\src\MainLib\UtUPortableIO.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\src\MainLib\UtZhang.c
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -817,6 +833,10 @@ SOURCE=..\..\Include\MoBMGammaT.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\MoBMZhang.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\MoHCRPCarney.h
 # End Source File
 # Begin Source File
@@ -830,6 +850,10 @@ SOURCE=..\..\Include\MoHCRPSham3StVIn.h
 # Begin Source File
 
 SOURCE=..\..\Include\MoHCRPShamma.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\MoHCRPZhang.h
 # End Source File
 # Begin Source File
 
@@ -850,6 +874,10 @@ SOURCE=..\..\Include\MoIHCCooke.h
 # Begin Source File
 
 SOURCE=..\..\Include\MoIHCMeddis2000.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\MoIHCZhang.h
 # End Source File
 # Begin Source File
 
@@ -1134,6 +1162,10 @@ SOURCE=..\..\Include\UtUIEEEFloat.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtUPortableIO.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\UtZhang.h
 # End Source File
 # End Group
 # End Target
