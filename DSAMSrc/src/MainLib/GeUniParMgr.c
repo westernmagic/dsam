@@ -67,6 +67,7 @@
 #include "UtString.h"
 #include "UtDatum.h"
 #include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 
 /******************************************************************************/
 /************************ Global variables ************************************/
@@ -230,7 +231,8 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		par->valuePtr.simScript.fileName = (char *) ptr2;
 		break;
 	case UNIPAR_PARLIST:
-		par->valuePtr.parList = (UniParListPtr *) ptr1;
+		par->valuePtr.parList.list = (UniParListPtr *) ptr1;
+		par->valuePtr.parList.process = (EarObjectPtr *) ptr2;
 		break;
 	default:
 		NotifyError("%s: Universal parameter not yet implemented (%d).",
@@ -573,13 +575,23 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 		ok = PrintPars_UniParMgr(p->valuePtr.module.parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
 		break;
-	case UNIPAR_PARLIST:
-		if (!*(p->valuePtr.parList))
+	case UNIPAR_PARLIST: {
+		char newSuffix[MAXLINE];
+		if (!*(p->valuePtr.parList.list))
 			break;
+		if (p->valuePtr.parList.process)
+			SET_PARS_POINTER(*p->valuePtr.parList.process);
 		DPrint("# Sub-parameter list: %s: \n", p->desc);
-		ok = PrintPars_UniParMgr(*(p->valuePtr.parList),
-		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
-		break;
+		strcpy(newSuffix, suffix);
+		if (!p->FuncPtr.SetString) {	/* Lowest parList */
+			char 	newLabel[MAXLINE];
+			snprintf(newLabel, MAXLINE, ".%s", p->abbr);
+			SubStrReplace_Utility_String(newSuffix, UNIPAR_TOP_PARENT_LABEL,
+			  newLabel);
+		}
+		ok = PrintPars_UniParMgr(*(p->valuePtr.parList.list),
+		  UNIPAR_SUB_PAR_LIST_MARKER, newSuffix);
+		break; }
 	case UNIPAR_CFLIST:
 		DPrint("# CFList parameters:\n");
 		if (!PrintPars_UniParMgr((*p->valuePtr.cFPtr)->cFParList,
@@ -717,9 +729,11 @@ CheckParList_UniParMgr(UniParListPtr list)
 				ok = CheckParList_UniParMgr(p->valuePtr.module.parList);
 				break;
 			case UNIPAR_PARLIST:
-				if (!*(p->valuePtr.parList))
+				if (!*(p->valuePtr.parList.list))
 					break;
-				ok = CheckParList_UniParMgr(*(p->valuePtr.parList));
+				if (p->valuePtr.parList.process)
+					SET_PARS_POINTER(*p->valuePtr.parList.process);
+				ok = CheckParList_UniParMgr(*(p->valuePtr.parList.list));
 				break;
 			case UNIPAR_CFLIST:
 				if (!*p->valuePtr.cFPtr) {
@@ -1353,11 +1367,13 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
 			}
 		   break;
 		case UNIPAR_PARLIST:
+			if (p->valuePtr.parList.process)
+				SET_PARS_POINTER(*p->valuePtr.parList.process);
 			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
-			if ((tempParList = *(p->valuePtr.parList)) == NULL)
+			if ((tempParList = *(p->valuePtr.parList.list)) == NULL)
 				break;
 			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
 			  NULL) {

@@ -169,7 +169,7 @@ ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 				useNotebook = TRUE;
 		 		break;
 			case UNIPAR_PARLIST:
-				useNotebook = (*parList->pars[i].valuePtr.parList != NULL);
+				useNotebook = (*parList->pars[i].valuePtr.parList.list != NULL);
 		 		break;
 			case UNIPAR_ICLIST:
 				useNotebook = TRUE;
@@ -291,12 +291,15 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 				  moduleName);
 				break; }
 			case UNIPAR_PARLIST: {
-				if (!*p->valuePtr.parList)
+				if (!*p->valuePtr.parList.list)
 					break;
-				if ((*p->valuePtr.parList)->GetPanelList)
-					SetPanelledModuleInfo(panel, pc, *p->valuePtr.parList);
+				if (p->valuePtr.parList.process)
+					SET_PARS_POINTER(*p->valuePtr.parList.process);
+				if ((*p->valuePtr.parList.list)->GetPanelList)
+					SetPanelledModuleInfo(panel, pc, *p->valuePtr.parList.list);
 				else
-					SetStandardInfo(panel, pc, *p->valuePtr.parList, p->desc);
+					SetStandardInfo(panel, pc, *p->valuePtr.parList.list,
+					  p->desc);
 				break; }
 			case UNIPAR_PARARRAY: {
 				ParArrayPtr	parArray = *p->valuePtr.pAPtr;

@@ -560,7 +560,9 @@ MyApp::SetConfiguration(UniParListPtr parList)
 		p = &parList->pars[i];
 		switch (p->type) {
 		case UNIPAR_PARLIST:
-			SetConfiguration(*p->valuePtr.parList);
+			if (p->valuePtr.parList.process)
+				SET_PARS_POINTER(*p->valuePtr.parList.process);
+			SetConfiguration(*p->valuePtr.parList.list);
 			break;
 		case UNIPAR_INT_ARRAY:
 		case UNIPAR_REAL_ARRAY:
@@ -609,7 +611,9 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 		p = &parList->pars[i];
 		switch (p->type) {
 		case UNIPAR_PARLIST:
-			SaveConfiguration(*p->valuePtr.parList);
+			if (p->valuePtr.parList.process)
+				SET_PARS_POINTER(*p->valuePtr.parList.process);
+			SaveConfiguration(*p->valuePtr.parList.list);
 			break;
 		case UNIPAR_INT_ARRAY:
 		case UNIPAR_REAL_ARRAY:

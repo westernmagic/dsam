@@ -67,6 +67,7 @@
 #define UNIPAR_INDEX_SEPARATOR		':'
 #define UNIPAR_SUB_PAR_LIST_MARKER	"  "
 #define UNIPAR_MAX_ARRAY_INDEX		2
+#define	UNIPAR_TOP_PARENT_LABEL		".0"
 
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
@@ -149,7 +150,10 @@ typedef struct UniPar {
 		CFListPtr	*cFPtr;
 		IonChanListPtr	*iCPtr;
 		ParArrayPtr		*pAPtr;
-		UniParListPtr	*parList;
+		struct {
+			UniParListPtr	*list;
+			EarObjectPtr	*process;
+		} parList;
 		struct {
 			int	*			specifier;
 			NameSpecifier	*list;
