@@ -998,6 +998,7 @@ Process_Utility_SimScript(EarObjectPtr data)
 	SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
 	if (!Execute_Utility_Datum(localSimScriptPtr->simulation)) {
 		NotifyError("%s: Could not execute simulation modules.", funcName);
+		SetParsFilePath_Common(oldParsFilePath);
 		return(FALSE);
 	}
 	SetParsFilePath_Common(oldParsFilePath);
