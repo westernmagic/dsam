@@ -1066,7 +1066,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 			if (((processName[0] == '\0') || (StrNCmpNoCase_Utility_String(
 			  (*pc)->data->module->name, processName) == 0)) && ((pList =
 			  GetUniParListPtr_ModuleMgr((*pc)->data)) != NULL) &&
-			  ((processLabel[0] == '\0') || (StrNCmpNoCase_Utility_String(
+			  ((processLabel[0] == '\0') || (StrCmpNoCase_Utility_String(
 			  (*pc)->label, processLabel) == 0))) {
 				if ((par = FindUniPar_UniParMgr(&pList, parName,
 				  UNIPAR_SEARCH_ABBR)) != NULL) {
