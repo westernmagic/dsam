@@ -39,6 +39,7 @@ dist-hook: ams.spec
 	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README:$(srcdir)/README.in"\
 	     CONFIG_HEADERS= \
 	     $(SHELL) config.status \
-	     && cp INSTALL README $(distdir) ; \
+	     && cp INSTALL README $(distdir) \
+		 && cat README | tr "\r" "\n"> $(distdir)/README.txt ; \
 	fi \
 	&& cp ams.spec $(distdir)
