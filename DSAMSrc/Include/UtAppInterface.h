@@ -29,7 +29,7 @@
 #define	APP_INT_NUM_PARS			4		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
 
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
+#ifdef USE_GUI
 #	define	MAIN_ARGS	void
 #	define ARGC		0
 #	define ARGV		NULL
