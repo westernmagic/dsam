@@ -24,7 +24,7 @@
 #if defined(__SGI__) || defined(__SUN__)
 #	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	56
 #else
-#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	28
+#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	56
 #endif
 
 /******************************************************************************/
