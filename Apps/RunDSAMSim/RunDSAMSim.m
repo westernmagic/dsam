@@ -1,6 +1,6 @@
 % RunDSAMSim:
 % 
-% [data info] = RunDSAMSim(<sim file>, [<parameter settings>, [<diag. mode>,...
+% [data, info] = RunDSAMSim(<sim file>, [<parameter settings>, [<diag. mode>,...
 %                          [<signal>, [<signal info.>]]]])
 % 
 % <sim file>           Simulation file name (string).
