@@ -140,6 +140,8 @@ StatPtr	GetFileStatusPtr_AppInterface(char *fileName);
 
 DatumPtr	GetSimulation_AppInterface(void);
 
+UniParPtr	GetUniParPtr_AppInterface(char *parName);
+
 BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,

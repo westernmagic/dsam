@@ -1397,3 +1397,31 @@ GetPtr_AppInterface(void)
 
 }
 
+/****************************** GetUniParPtr **********************************/
+
+/*
+ * This function returns a universal parameter for the main application
+ * simulation.
+ * It returns NULL if it fails in any way.
+ */
+
+UniParPtr
+GetUniParPtr_AppInterface(char *parName)
+{
+	static const char *funcName = "GetUniParPtr_AppInterface";
+	UniParPtr	par;
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(NULL);
+	}
+	if ((par = GetUniParPtr_ModuleMgr(appInterfacePtr->audModel, parName)) ==
+	  NULL) {
+		NotifyError("%s: Could not find simulation parameter '%s'.", funcName,
+		  parName);
+		return(NULL);
+	}
+	return(par);
+
+}
+
