@@ -1194,8 +1194,6 @@ SetUniParValue_Utility_Datum(DatumPtr start, char *parName, char *parValue)
 	}
 	pc = start;
 	if (!FindModuleUniPar_Utility_Datum(&parList, &index, &pc, parName, TRUE)) {
-		if (!parList)
-			return(TRUE);
 		NotifyError("%s: Could not find '%s' parameter in simulation.",
 		  funcName, parName);
 		return(FALSE);
