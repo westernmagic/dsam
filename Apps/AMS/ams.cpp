@@ -1,6 +1,6 @@
 /**********************
  *
- * File:		ams.c
+ * File:		ams.cpp
  * Purpose:		This program generates a simulation response using the
  *				simulation script utility.
  * Comments:	22-04-98 LPO:  Amended to allow users to override the stimulus
@@ -252,24 +252,34 @@ ReadAppInterfacePars(char *parFileName)
 {
 	static const char *funcName = "ReadAppInterfacePars";
 	BOOLN	ok = TRUE;
+	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
 	FILE	*fp;
+	UniParPtr	par;
 
-	if ((fp = fopen(parFileName, "r")) == NULL) {
-		NotifyError("%s: Failed to read '%s' parameter file.", funcName,
-		  parFileName);
+	filePath = GetParsFileFPath_Common(parFileName);
+	if ((fp = fopen(filePath, "r")) == NULL) {
+		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
 		return(FALSE);
 	}
 	Init_ParFile();
+	SetEmptyLineMessage_ParFile(FALSE);
 	if (!ReadPars_AppInterface(fp))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", fileLockingMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numberOfRuns))
-		ok = FALSE;
+	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
+		if ((par = FindUniPar_UniParMgr(&programParList, parName)) == NULL) {
+			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
+			  parName);
+			ok = FALSE;
+		} else {
+			if (!SetParValue_UniParMgr(&programParList, par->index, parValue))
+				ok = FALSE;
+		}
+	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Failed to read parameters.", funcName);
+		NotifyError("%s: Invalid parameters, in module parameter file '%s'.",
+		  funcName, parFileName);
 		return(FALSE);
 	}
 	return(TRUE);
