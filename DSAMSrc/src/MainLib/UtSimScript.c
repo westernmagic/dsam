@@ -1083,6 +1083,25 @@ SetProcessSimPtr_Utility_SimScript(EarObjectPtr data)
 
 }
 
+/****************************** GetPtr ******************************************/
+
+/*
+ * This function returns the global simScriptPtr pointer.
+ */
+
+SimScriptPtr
+GetPtr_Utility_SimScript(void)
+{
+	static const char	*funcName = "SetProcessSimPtr_Utility_SimScript";
+
+	if (!simScriptPtr) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(NULL);
+	}
+	return (simScriptPtr);
+
+}
+
 /****************************** SetParsPointer ********************************/
 
 /*

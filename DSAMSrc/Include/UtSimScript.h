@@ -142,6 +142,8 @@ char *	GetFilePath_Utility_SimScript(char *filePath);
 
 DynaBListPtr	GetLabelBList_Utility_SimScript(void);
 
+SimScriptPtr	GetPtr_Utility_SimScript(void);
+
 SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(char *suffix);
 
 DatumPtr	GetSimulation_Utility_SimScript(void);
