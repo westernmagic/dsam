@@ -192,6 +192,7 @@
 //		Any files included regardless of precompiled headers
 #		include <wx/socket.h>
 #		include "ExtIPCServer.h"
+#		include "ExtMainApp.h"
 #	endif /* USE_EXTENSIONS_LIBRARY */
 
 #	if defined(GRAPHICS_SUPPORT) && defined(USE_GUI)
@@ -216,6 +217,7 @@
 #		include "GrParListInfoList.h"
 #		include "GrModParDialog.h"
 #		include "GrSimThread.h"
+#		include	"GrIPCServer.h"
 #		include "GrSimMgr.h"
 #		include "GrLines.h"
 #		include "GrAxisScale.h"

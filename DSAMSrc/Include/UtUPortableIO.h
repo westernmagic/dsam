@@ -43,6 +43,12 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.7  2003/12/12 14:09:04  lowel
+* Changes: I have implemented a more secure server operation.
+* The changes have include the addition of the new Extensions library.
+* I have had to update the UtUPortableIO code module for the use of 'memory files'
+* These are files that are written to memory instead of to a file.
+*
 * Revision 1.6  2002/11/10 13:35:09  lowel
 * Changes:  I have made changes to the compile configuration for both UNIX and
 * MSVC compilations.  The improvements include adding the 'LIBRARY_COMPILE'
@@ -161,7 +167,8 @@ typedef struct {
 
 	char	*memStart;			/* Points to the start of data in memory. */
 	char	*memPtr;			/* Points to the current reading position. */
-	int32	length;
+	char	*eOFPtr;			/* Points to point past the last write */
+	ChanLen	length;
 
 } UPortableIO, *UPortableIOPtr;
 
@@ -181,11 +188,11 @@ extern	UPortableIO	uPortableIO, *uPortableIOPtr;
  */
 __BEGIN_DECLS
 
-void		FreeMemory_UPortableIO(void);
+void		FreeMemory_UPortableIO(UPortableIOPtr *p);
 
 int32		GetPosition_UPortableIO(FILE *fp);
 
-UPortableIOPtr	InitMemory_UPortableIO(int32 length);
+BOOLN		InitMemory_UPortableIO(UPortableIOPtr *p, ChanLen length);
 
 char		ReadByte(FILE *fp);
 

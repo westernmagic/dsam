@@ -109,6 +109,8 @@ __BEGIN_DECLS
 
 double		GetDuration_AIFF(char *fileName);
 
+int32		GetFileSize_AIFF(SignalDataPtr theSignal, int32 previousSamples);
+
 int32		GetFormChunkSize_AIFF(SignalDataPtr theSignal,
 			  int32 previousSamples);
 

@@ -102,7 +102,8 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 		p->chunkSize -= 4;
 		switch(dataFilePtr->Read32Bits(fp)){
 		case	AIFF_COMM:
-			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
+			subSize = dataFilePtr->Read32Bits(fp);
+			p->chunkSize -= subSize + 4;
 			p->numChannels = dataFilePtr->Read16Bits(fp);
 			subSize -= 2;
 			p->numSampleFrames = dataFilePtr->Read32Bits(fp);
@@ -114,7 +115,8 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		case	AIFF_SSND:
-			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
+			subSize = dataFilePtr->Read32Bits(fp);
+			p->chunkSize -= subSize + 4;
 			p->offset = dataFilePtr->Read32Bits(fp);
 			subSize -= 4;
 			p->blockSize = dataFilePtr->Read32Bits(fp);
@@ -124,7 +126,8 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			break;
 		case	AIFF_DSAM:
 			p->dSAMChunk.flag = TRUE;
-			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
+			subSize = dataFilePtr->Read32Bits(fp);
+			p->chunkSize -= subSize + 4;
 			p->dSAMChunk.interleaveLevel = dataFilePtr->Read16Bits(fp);
 			subSize -= 2;
 			p->dSAMChunk.numWindowFrames = dataFilePtr->Read16Bits(fp);
@@ -139,7 +142,8 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		default:
-			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
+			subSize = dataFilePtr->Read32Bits(fp);
+			p->chunkSize -= subSize + 4;
 			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		} /* switch */
@@ -243,7 +247,7 @@ InitialFileRead_AIFF(char *fileName, AIFFParams *pars)
 	InitParams_AIFF(pars);
 	if (dataFilePtr->endian == 0)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
-	rewind(fp);
+	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if (!ReadFileIdentifier_DataFile(fp, AIFF_FORM, "AIFF")) {
 		NotifyError("%s: Couldn't find initial chunk in file '%s'.", funcName,
 		  fileName);
@@ -255,6 +259,7 @@ InitialFileRead_AIFF(char *fileName, AIFFParams *pars)
 		  fileName);
 		return(NULL);
 	}
+	pars->chunkSize -= 4;		/* AIFF read */
 	ReadParams_AIFF(fp, pars);
 	return(fp);
 
@@ -372,6 +377,23 @@ GetFormChunkSize_AIFF(SignalDataPtr theSignal, int32 previousSamples)
 	totalSize += AIFF_CHUNK_HEADER_SIZE;/* chunk ID and chunk size parameters */
 	totalSize += AIFF_DSAM_CHUNK_SIZE(theSignal);
 	return(totalSize);
+
+}
+
+/**************************** GetFileSize *************************************/
+
+/*
+ * This function returns the total file size required for a signal.
+ * The eight bytes (+8) required by the chunk ID and the chunk size parameter
+ * are added to get the total file size in bytes,
+ * i.e. "AIFF_CHUNK_HEADER_SIZE".
+ */
+
+int32
+GetFileSize_AIFF(SignalDataPtr theSignal, int32 previousSamples)
+{
+	return(AIFF_CHUNK_HEADER_SIZE + GetFormChunkSize_AIFF(theSignal,
+	  previousSamples));
 
 }
 

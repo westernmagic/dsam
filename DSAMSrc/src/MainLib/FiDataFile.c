@@ -220,6 +220,8 @@ Init_DataFile(ParameterSpecifier parSpec)
  * It should be called when the module is no longer in use.
  * It is defined as returning a BOOLN value because the generic module
  * interface requires that a non-void value be returned.
+ * If the uIOPtr filed is set. it is expected that the assoiciated memory be
+ * free'd elsewhere.
  */
 
 BOOLN
@@ -229,6 +231,7 @@ Free_DataFile(void)
 		return(TRUE);
 	if (dataFilePtr->parList)
 		FreeList_UniParMgr(&dataFilePtr->parList);
+
 	if (dataFilePtr->parSpec == GLOBAL) {
 		free(dataFilePtr);
 		dataFilePtr = NULL;
@@ -493,12 +496,12 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
 
 	if (!dataFilePtr->endian) 
 		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
-	rewind(fp);
+	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
 		return(identifier);
 	SetRWFormat_DataFile((dataFilePtr->endian == DATA_FILE_BIG_ENDIAN)?
 	  DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN);
-	rewind(fp);
+	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
 		return(identifier);
 	NotifyError("%s: Could not find %s identifier.", funcName, filetype);
@@ -599,7 +602,7 @@ OpenFile_DataFile(char *fileName, char *mode)
 {
 	static const char *funcName = "OpenFile_DataFile";
 	char	*parFilePath;
-	FILE	*fp, *dummy = stdin;
+	FILE	*fp, *dummy = stdout;
 
 	uPortableIOPtr = dataFilePtr->uIOPtr;
 	switch (*fileName) {
@@ -611,7 +614,7 @@ OpenFile_DataFile(char *fileName, char *mode)
 		uPortableIOPtr->memPtr = uPortableIOPtr->memStart;
 		return(dummy);
 	default:
-		FreeMemory_UPortableIO();
+		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);
 		parFilePath = GetParsFileFPath_Common(fileName);
 		if ((fp = fopen(parFilePath, mode)) == NULL) {
 			NotifyError("%s: Couldn't open '%s' ('%s').", funcName, fileName,
@@ -652,7 +655,7 @@ NumberOfColumns_DataFile(FILE *fp)
 		} else
 			number = FALSE;
 	}
-	rewind(fp);
+	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	return(numcols);
 	
 } /* NumberOfColumns_DataFile */
@@ -1285,8 +1288,9 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Parameters have not been correctly set.", funcName);
 		return(FALSE);
 	}
+	Format_DataFile(GetSuffix_Utility_String(fileName));
 	uPortableIOPtr = dataFilePtr->uIOPtr;
-	switch (Format_DataFile(GetSuffix_Utility_String(fileName))) {
+	switch (dataFilePtr->type) {
 	case	AIFF_DATA_FILE:
 		ok = ReadFile_AIFF(fileName, data);
 		break;
@@ -1425,3 +1429,4 @@ WriteOutSignal_DataFile_Named(EarObjectPtr data)
 	return(WriteOutSignalMain_DataFile(dataFilePtr->name, data));
 
 }
+

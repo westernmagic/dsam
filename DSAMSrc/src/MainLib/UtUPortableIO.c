@@ -40,6 +40,12 @@
 * $Header$
 *
 * $Log$
+* Revision 1.5  2003/12/12 14:09:04  lowel
+* Changes: I have implemented a more secure server operation.
+* The changes have include the addition of the new Extensions library.
+* I have had to update the UtUPortableIO code module for the use of 'memory files'
+* These are files that are written to memory instead of to a file.
+*
 * Revision 1.4  2001/09/14 17:42:20  lowel
 * Changes: these where required to get rid of compiler warnings when using
 * Microsoft Visual C++.  One in particular was particularly useful, as I
@@ -179,8 +185,11 @@ WriteByte(char ch, FILE *fp)
 {
 	if (uPortableIOPtr == NULL)
 		putc(ch, fp);
-	else
+	else {
 		*uPortableIOPtr->memPtr++ = ch;
+		if (uPortableIOPtr->memPtr > uPortableIOPtr->eOFPtr)
+			uPortableIOPtr->eOFPtr = uPortableIOPtr->memPtr;
+	}
 
 }
 
@@ -474,14 +483,14 @@ WriteIEEEExtendedHighLow(FILE *fp, DefDouble num)
  */
 
 void
-FreeMemory_UPortableIO(void)
+FreeMemory_UPortableIO(UPortableIOPtr *p)
 {
-	if (uPortableIOPtr == NULL)
+	if (*p == NULL)
 		return;
-	if (uPortableIOPtr->memStart != NULL)
-		free(uPortableIOPtr->memStart);
-	free(uPortableIOPtr);
-	uPortableIOPtr = NULL;
+	if ((*p)->memStart != NULL)
+		free((*p)->memStart);
+	free((*p));
+	(*p) = NULL;
 
 }
 
@@ -493,25 +502,34 @@ FreeMemory_UPortableIO(void)
  * returns NULL.
  */
 
-UPortableIOPtr
-InitMemory_UPortableIO(int32 length)
+BOOLN
+InitMemory_UPortableIO(UPortableIOPtr *p, ChanLen length)
 {
-	if (uPortableIOPtr != NULL)
-		FreeMemory_UPortableIO();
-	if ((uPortableIOPtr = (UPortableIOPtr) malloc(sizeof(UPortableIO))) ==
-	  NULL) {
-		fprintf(stderr, "InitMemory_UPortableIO: Cannot allocate memory for "\
-		  "module pointer.");
-		return(NULL);
+	if (!(*p)) {
+		if (((*p) = (UPortableIOPtr) malloc(sizeof(UPortableIO))) == NULL) {
+			fprintf(stderr, "InitMemory_UPortableIO: Cannot allocate memory "
+			  "for module pointer.");
+			return(FALSE);
+		}
+		(*p)->length = 0;
+		(*p)->memStart = NULL;
 	}
-	if ((uPortableIOPtr->memStart = (char *) malloc(length)) == NULL) {
-		fprintf(stderr, "InitMemory_UPortableIO: Cannot allocate data memory.");
-		free(uPortableIOPtr);
-		return(NULL);
+	if ((*p)->length != length) {
+		if ((*p)->memStart) {
+			free((*p)->memStart);
+			(*p)->memStart = NULL;
+		}
+		if (((*p)->memStart = (char *) malloc(length)) == NULL) {
+			fprintf(stderr, "InitMemory_UPortableIO: Cannot allocate data "
+			  "memory.");
+			free((*p));
+			*p = NULL;
+			return(FALSE);
+		}
 	}
-	uPortableIOPtr->memPtr = uPortableIOPtr->memStart;
-	uPortableIOPtr->length = length;
-	return(uPortableIOPtr);
+	(*p)->memPtr = (*p)->eOFPtr = (*p)->memStart;
+	(*p)->length = length;
+	return(TRUE);
 
 }
 
@@ -540,6 +558,7 @@ GetPosition_UPortableIO(FILE *fp)
  * For a file, it returns the result from fseek.
  * For memory operations (uPortableIOPtr != NULL) the offset from the start of
  * the data in memory.
+ * SetPosition_UPortableIO(fp, OL, SEEK_SET) == rewind(fp).
  */
 
 BOOLN
@@ -567,20 +586,29 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 	case SEEK_CUR:
 		if (uPortableIOPtr->memPtr + offset > uPortableIOPtr->memStart +
 		  uPortableIOPtr->length) {
-			fprintf(stderr, "%s: Attempt to read past the end of memory.",
+			fprintf(stderr, "%s: Attempt to read past the end of memory.\n",
 			  funcName);
+			fprintf(stderr, "%s: offset = %ld\n", funcName, offset);
+			fprintf(stderr, "%s: difference = %ld\n", funcName,
+			  uPortableIOPtr->memPtr +
+			  offset - uPortableIOPtr->memStart + uPortableIOPtr->length);
 			return(FALSE);
 		}
 		uPortableIOPtr->memPtr += offset;
 		return(TRUE);
 	case SEEK_END:
-		if (offset > uPortableIOPtr->length) {
-			fprintf(stderr, "%s: Attempt to read past the start of memory.",
+		if ((offset + uPortableIOPtr->eOFPtr) > (uPortableIOPtr->memStart + 
+		  uPortableIOPtr->length)) {
+			fprintf(stderr, "%s: Attempt to read past the end of memory.\n",
 			  funcName);
 			return(FALSE);
 		}
-		uPortableIOPtr->memPtr = uPortableIOPtr->memStart +
-		  uPortableIOPtr->length - offset;
+		if ((uPortableIOPtr->eOFPtr - offset) < uPortableIOPtr->memStart) {
+			fprintf(stderr, "%s: Attempt to read past the start of memory.\n",
+			  funcName);
+			return(FALSE);
+		}
+		uPortableIOPtr->memPtr = uPortableIOPtr->eOFPtr + offset;
 		return(TRUE);
 	default:
 		fprintf(stderr, "%s: Illegal relative position.", funcName);
@@ -588,4 +616,3 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 	} /* switch */
 
 }
-

@@ -15,7 +15,6 @@
 #ifndef _UTAPPINTERFACE_H
 #define	_UTAPPINTERFACE_H 1
 
-#include <stdlib.h> 
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -71,7 +70,7 @@ typedef struct {
 	
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
 	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
-	BOOLN	appParFileFlag, canLoadSimulationFlag;
+	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
@@ -104,7 +103,7 @@ typedef struct {
 	int		simFileType;
 	BOOLN	(* FreeAppProcessVars)(void);
 	BOOLN	(* Init)(void);
-	void	(* OnExecute)(void);
+	BOOLN	(* OnExecute)(void);
 	void	(* OnExit)(void);
 	void	(* PrintUsage)(void);
 	void	(* PrintSimMgrUsage)(void);
@@ -156,8 +155,6 @@ void	FreeSim_AppInterface(void);
 
 AppInterfacePtr	GetPtr_AppInterface(void);
 
-EarObjectPtr	GetEarObjectPtr_AppInterface(void);
-
 char *	GetFilePath_AppInterface(char *filePath);
 
 DatumPtr *	GetSimPtr_AppInterface(void);
@@ -181,7 +178,7 @@ BOOLN	ListParameters_AppInterface(void);
 
 void	ListParsAndExit_AppInterface(void);
 
-void	OnExecute_AppInterface(void);
+BOOLN	OnExecute_AppInterface(void);
 
 void	OnExit_AppInterface(void);
 
@@ -237,6 +234,8 @@ BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
+
+BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
 BOOLN	SetParsFilePath_AppInterface(char * parsFilePath);
 

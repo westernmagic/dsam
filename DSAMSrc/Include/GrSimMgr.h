@@ -110,7 +110,7 @@ class MyApp: public wxApp {
 	wxString	dataInstallDir, title;
 	SDIFrame	*frame;
 	DiagFrame	*diagFrame;
-	IPCServer	*iPCServer;
+	GrIPCServer	*iPCServer;
 	wxConfigBase	*pConfig;
 	wxDocManager	*myDocManager;
 	wxHtmlHelpController help;
@@ -135,6 +135,7 @@ class MyApp: public wxApp {
 	wxMenuBar	*CreateMenuBar(void);
 	EditorToolPalette *CreatePalette(wxFrame *parent);
 	void	CloseDiagWindow(void);
+	void	CreateDocument(const wxString& fileName);
 	void	CreateProcessLists(void);
 	void	DeleteSimThread(void);
 	void	EnableSimParMenuOptions(bool on);
@@ -144,7 +145,6 @@ class MyApp: public wxApp {
 	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
 	wxArrayString *	GetProcessList(int classSpecifier);
-	wxSocketBase *	GetServerSocket(void)	{ return iPCServer->GetSocket(); }
 
 	bool	InitArgv(int argc);
 	void	InitAppInterface(void);
@@ -193,7 +193,7 @@ extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
 
 void	CreateApp(void);
 
-void	OnExecute_MyApp(void);
+BOOLN	OnExecute_MyApp(void);
 
 void	OnExit_MyApp(void);
 
