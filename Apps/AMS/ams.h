@@ -56,7 +56,10 @@
 /******************************************************************************/
 
 #define	PROGRAM_NAME				"ams"
-#define	AMS_VERSION					"0.13.11"
+#ifndef AMS_VERSION
+#	define	AMS_VERSION					"?.?.?"
+#endif
+
 #define	AMS_NUM_PARS				6		/* Number of main parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
