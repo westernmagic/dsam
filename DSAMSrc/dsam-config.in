@@ -84,6 +84,9 @@ if test "$echo_cflags" = "yes"; then
 	if test "$use_gui" = "yes"; then
 		cflags="$cflags @DSAM_GRAPHICS@ @WXINC@"
 	fi
+	if test "$MINGW32" = "yes"; then
+		cflags="$cflags -mwindows"
+	fi
 	echo $cflags
 fi
 if test "$echo_libs" = "yes"; then
