@@ -573,6 +573,10 @@ SOURCE=..\..\src\MainLib\UtSwapLR.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\UtTranspose.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtUIEEEFloat.c
 # End Source File
 # Begin Source File
@@ -1206,6 +1210,10 @@ SOURCE=..\..\Include\UtStrobe.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtSwapLR.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\UtTranspose.h
 # End Source File
 # Begin Source File
 
