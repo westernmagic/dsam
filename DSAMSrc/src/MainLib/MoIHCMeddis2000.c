@@ -309,6 +309,64 @@ GetUniParListPtr_IHC_Meddis2000(void)
 
 }
 
+/****************************** SetPars ***************************************/
+
+/*
+ * This function sets all the module's parameters.
+ * It returns TRUE if the operation is successful.
+ */
+
+BOOLN
+SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
+  double CaVrev, double betaCa, double gammaCa,
+  double pCa, double GCaMax, double perm_Ca0, double perm_z, double tauCaChan,
+  double tauConcCa, int maxFreePool_M, double replenishRate_y,
+  double lossRate_l, double reprocessRate_x, double recoveryRate_r)
+{
+	static const char	*funcName = "SetPars_IHC_Meddis2000";
+	BOOLN	ok;
+
+	ok = TRUE;
+	if (!SetOpMode_IHC_Meddis2000(opMode))
+		ok = FALSE;
+	if (!SetDiagMode_IHC_Meddis2000(diagMode))
+		ok = FALSE;
+	if (!SetRanSeed_IHC_Meddis2000(ranSeed))
+		ok = FALSE;
+	if (!SetCaVrev_IHC_Meddis2000(CaVrev))
+		ok = FALSE;
+	if (!SetBetaCa_IHC_Meddis2000(betaCa))
+		ok = FALSE;
+	if (!SetGammaCa_IHC_Meddis2000(gammaCa))
+		ok = FALSE;
+	if (!SetPCa_IHC_Meddis2000(pCa))
+		ok = FALSE;
+	if (!SetGCaMax_IHC_Meddis2000(GCaMax))
+		ok = FALSE;
+	if (!SetPerm_Ca0_IHC_Meddis2000(perm_Ca0))
+		ok = FALSE;
+	if (!SetPerm_z_IHC_Meddis2000(perm_z))
+		ok = FALSE;
+	if (!SetTauCaChan_IHC_Meddis2000(tauCaChan))
+		ok = FALSE;
+	if (!SetTauConcCa_IHC_Meddis2000(tauConcCa))
+		ok = FALSE;
+	if (!SetMaxFreePool_M_IHC_Meddis2000(maxFreePool_M))
+		ok = FALSE;
+	if (!SetReplenishRate_y_IHC_Meddis2000(replenishRate_y))
+		ok = FALSE;
+	if (!SetLossRate_l_IHC_Meddis2000(lossRate_l))
+		ok = FALSE;
+	if (!SetReprocessRate_x_IHC_Meddis2000(reprocessRate_x))
+		ok = FALSE;
+	if (!SetRecoveryRate_r_IHC_Meddis2000(recoveryRate_r))
+		ok = FALSE;
+	if (!ok)
+		NotifyError("%s: Failed to set all module parameters." ,funcName);
+	return(ok);
+
+}
+
 /****************************** SetOpMode *************************************/
 
 /*
@@ -880,6 +938,87 @@ PrintPars_IHC_Meddis2000(void)
 
 }
 
+/****************************** ReadPars **************************************/
+
+/*
+ * This program reads a specified number of parameters from a file.
+ * It returns FALSE if it fails in any way.n */
+
+BOOLN
+ReadPars_IHC_Meddis2000(char *fileName)
+{
+	static const char	*funcName = "ReadPars_IHC_Meddis2000";
+	BOOLN	ok;
+	char	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
+	int		maxFreePool_M;
+	long	ranSeed;
+	double	recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
+	double	perm_Ca0, perm_z, tauCaChan, tauConcCa;
+	double	replenishRate_y, lossRate_l, reprocessRate_x, recoveryRate_r;
+	FILE	*fp;
+
+	filePath = GetParsFileFPath_Common(fileName);
+	if ((fp = fopen(filePath, "r")) == NULL) {
+		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+		return(FALSE);
+	}
+	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	Init_ParFile();
+	ok = TRUE;
+	if (!GetPars_ParFile(fp, "%s", opMode))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%s", diagMode))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &recPotOffset))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &CaVrev))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &betaCa))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &gammaCa))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &pCa))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &GCaMax))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &perm_Ca0))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &perm_z))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &tauCaChan))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &tauConcCa))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%d", &maxFreePool_M))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &replenishRate_y))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &lossRate_l))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &reprocessRate_x))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &recoveryRate_r))
+		ok = FALSE;
+	fclose(fp);
+	Free_ParFile();
+	if (!ok) {
+		NotifyError("%s: Not enough lines, or invalid parameters, in module "
+		  "parameter file '%s'.", funcName, fileName);
+		return(FALSE);
+	}
+	if (!SetPars_IHC_Meddis2000(opMode, diagMode, ranSeed,
+	  CaVrev, betaCa, gammaCa, pCa, GCaMax, perm_Ca0, perm_z, tauCaChan,
+	  tauConcCa, maxFreePool_M, replenishRate_y, lossRate_l, reprocessRate_x,
+	  recoveryRate_r)) {
+		NotifyError("%s: Could not set parameters.", funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -925,6 +1064,7 @@ InitModule_IHC_Meddis2000(ModulePtr theModule)
 	theModule->Free = Free_IHC_Meddis2000;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis2000;
 	theModule->PrintPars = PrintPars_IHC_Meddis2000;
+	theModule->ReadPars = ReadPars_IHC_Meddis2000;
 	theModule->RunProcess = RunModel_IHC_Meddis2000;
 	theModule->SetParsPointer = SetParsPointer_IHC_Meddis2000;
 	return(TRUE);

@@ -144,6 +144,8 @@ BOOLN	Init_IHC_Meddis2000(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_IHC_Meddis2000(void);
 
+BOOLN	ReadPars_IHC_Meddis2000(char *fileName);
+
 BOOLN	RunModel_IHC_Meddis2000(EarObjectPtr data);
 
 BOOLN	SetBetaCa_IHC_Meddis2000(double theBetaCa);
@@ -167,6 +169,13 @@ BOOLN	SetOpMode_IHC_Meddis2000(char * theOpMode);
 BOOLN	SetPCa_IHC_Meddis2000(double thePCa);
 
 BOOLN	SetParsPointer_IHC_Meddis2000(ModulePtr theModule);
+
+BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
+		  double CaVrev, double betaCa, double gammaCa,
+		  double pCa, double GCaMax, double perm_Ca0, double perm_z,
+		  double tauCaChan, double tauConcCa, int maxFreePool_M,
+		  double replenishRate_y, double lossRate_l, double reprocessRate_x,
+		  double recoveryRate_r);
 
 BOOLN	SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0);
 
