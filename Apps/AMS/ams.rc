@@ -1,3 +1,5 @@
-/* Main dsam resources */
+/* Main ams resources */
 
-#include "wx/msw/wx.rc"
+ams		ICON "ams.ico"
+
+#include "dsam.rc"

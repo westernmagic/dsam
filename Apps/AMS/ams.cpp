@@ -50,10 +50,17 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "DSAM.h"
 #include "ams.h"
+
+/******************************************************************************/
+/****************************** Bitmaps ***************************************/
+/******************************************************************************/
+
+#if defined(GRAPHICS_SUPPORT) && !defined(__WXMSW__)
+#	include "ams.xpm"
+#endif
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -218,7 +225,7 @@ void
 PrintUsage(void)
 {
 	fprintf(stderr, "\n"
-	  "Application specific options:\n"
+	  "%s specific options:\n"
 	  "\t-P <file name>\t: Use this main parameter file\n"
 	  "\t-r <x>        \t: Repeat the simulation 'x' times.\n"
 	  "\t-v            \t: Print program version\n",
@@ -324,9 +331,14 @@ Init(void)
 		  funcName);
 		exit(1);
 	}
+
+	SetAppName_AppInterface(PROGRAM_NAME);
+	SetAppVersion_AppInterface(AMS_VERSION);
 	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
 
-	/*	myRunMgr.SetIcon(new wxIcon(wxICON(ams))); */
+#	ifdef GRAPHICS_SUPPORT
+	myRunMgr.SetIcon(new wxICON(ams));
+#	endif
 
 	SetUniParList();
 
