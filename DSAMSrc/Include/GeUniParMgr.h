@@ -63,6 +63,7 @@
 /******************************************************************************/
 
 #define UNIPAR_NAME_SEPARATOR		'.'
+#define UNIPAR_INDEX_SEPARATOR		':'
 #define UNIPAR_SUB_PAR_LIST_MARKER	"  "
 #define UNIPAR_MAX_ARRAY_INDEX		2
 
@@ -227,10 +228,11 @@ NameSpecifier *	GeneralParNameList_UniParMgr(int index);
 
 char *	GetParString_UniParMgr(UniParPtr p);
 
-char *	GetParStringFromList_UniParMgr(UniParListPtr parList, int index);
-
 UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
 				  void *handlePtr);
+
+BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, char *parValue,
+		  char **parValuePtr, int *index);
 
 BOOLN	PrintArray_UniParMgr(UniParPtr p, char *suffix);
 
