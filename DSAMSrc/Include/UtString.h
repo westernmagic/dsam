@@ -43,6 +43,8 @@ __BEGIN_DECLS
 
 char *	InitString_Utility_String(char *string);
 
+char *	QuotedString_Utility_String(char *string);
+
 void	ToUpper_Utility_String(char *upperCaseString, char *string);
 
 int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
