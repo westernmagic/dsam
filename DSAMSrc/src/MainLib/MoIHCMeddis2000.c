@@ -125,11 +125,10 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->opModeFlag = FALSE;
 	hairCell2Ptr->diagModeFlag = FALSE;
 	hairCell2Ptr->ranSeedFlag = FALSE;
-	hairCell2Ptr->recPotOffsetFlag = FALSE;
 	hairCell2Ptr->CaVrevFlag = FALSE;
 	hairCell2Ptr->betaCaFlag = FALSE;
 	hairCell2Ptr->gammaCaFlag = FALSE;
-	hairCell2Ptr->pCaFlag = FALSE;
+	hairCell2Ptr->pCaFlag = TRUE;
 	hairCell2Ptr->GCaMaxFlag = FALSE;
 	hairCell2Ptr->perm_Ca0Flag = FALSE;
 	hairCell2Ptr->perm_zFlag = FALSE;
@@ -143,11 +142,10 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->opMode = 0;
 	hairCell2Ptr->diagMode = 0;
 	hairCell2Ptr->ranSeed = 0;
-	hairCell2Ptr->recPotOffset = 0.0;
 	hairCell2Ptr->CaVrev = 0.0;
 	hairCell2Ptr->betaCa = 0.0;
 	hairCell2Ptr->gammaCa = 0.0;
-	hairCell2Ptr->pCa = 0.0;
+	hairCell2Ptr->pCa = 3.0;
 	hairCell2Ptr->GCaMax = 0.0;
 	hairCell2Ptr->perm_Ca0 = 0.0;
 	hairCell2Ptr->perm_z = 0.0;
@@ -212,38 +210,33 @@ SetUniParList_IHC_Meddis2000(void)
 	  UNIPAR_LONG,
 	  &hairCell2Ptr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RECPOTOFFSET], "RECPOT_OFFSET",
-	  "Voltage offset applied to input signal (volts).",
-	  UNIPAR_REAL,
-	  &hairCell2Ptr->recPotOffset, NULL,
-	  (void * (*)) SetRecPotOffset_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CAVREV], "CA_VREV",
-	  "Calcium reversal potential (Volts).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CAVREV], "REV_POT_ECA",
+	  "Calcium reversal potential, E_Ca (Volts).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->CaVrev, NULL,
 	  (void * (*)) SetCaVrev_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_BETACA], "CA_BETA",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_BETACA], "BETA_CA",
 	  "Calcium channel Boltzmann function parameter, beta.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->betaCa, NULL,
 	  (void * (*)) SetBetaCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GAMMACA], "CA_GAMMA",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GAMMACA], "GAMMA_CA",
 	  "Calcium channel Boltzmann function parameter, gamma.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->gammaCa, NULL,
 	  (void * (*)) SetGammaCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PCA], "CA_POW",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PCA], "POWER_CA",
 	  "Calcium channel transmitter release exponent (power).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->pCa, NULL,
 	  (void * (*)) SetPCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GCAMAX], "CA_GMAX",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GCAMAX], "GMAX_CA",
 	  "Maximum calcium conductance (Siemens).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->GCaMax, NULL,
 	  (void * (*)) SetGCaMax_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "CA_CONCTHR",
-	  "Calcium threshold.",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "CONC_THRESH_CA",
+	  "Calcium threshold Concentration.",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_Ca0, NULL,
 	  (void * (*)) SetPerm_Ca0_IHC_Meddis2000);
@@ -252,17 +245,17 @@ SetUniParList_IHC_Meddis2000(void)
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_z, NULL,
 	  (void * (*)) SetPerm_z_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCACHAN], "CA_CHAN_TAU",
-	  "Calcium channel time constant (s).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCACHAN], "TAU_M",
+	  "Calcium current time constant (s).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauCaChan, NULL,
 	  (void * (*)) SetTauCaChan_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCONCCA], "CA_ACCUM_TAU",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCONCCA], "TAU_CA",
 	  "Calcium ion diffusion (accumulation) time constant (s).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauConcCa, NULL,
 	  (void * (*)) SetTauConcCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_MAXFREEPOOL_M], "MAX_FREE_POOL",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_MAXFREEPOOL_M], "MAX_FREE_POOL_M",
 	  "Max. no. of transmitter packets in free pool (integer).",
 	  UNIPAR_INT,
 	  &hairCell2Ptr->maxFreePool_M, NULL,
@@ -313,66 +306,6 @@ GetUniParListPtr_IHC_Meddis2000(void)
 		return(NULL);
 	}
 	return(hairCell2Ptr->parList);
-
-}
-
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
-  double recPotOffset, double CaVrev, double betaCa, double gammaCa,
-  double pCa, double GCaMax, double perm_Ca0, double perm_z, double tauCaChan,
-  double tauConcCa, int maxFreePool_M, double replenishRate_y,
-  double lossRate_l, double reprocessRate_x, double recoveryRate_r)
-{
-	static const char	*funcName = "SetPars_IHC_Meddis2000";
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetOpMode_IHC_Meddis2000(opMode))
-		ok = FALSE;
-	if (!SetDiagMode_IHC_Meddis2000(diagMode))
-		ok = FALSE;
-	if (!SetRanSeed_IHC_Meddis2000(ranSeed))
-		ok = FALSE;
-	if (!SetRecPotOffset_IHC_Meddis2000(recPotOffset))
-		ok = FALSE;
-	if (!SetCaVrev_IHC_Meddis2000(CaVrev))
-		ok = FALSE;
-	if (!SetBetaCa_IHC_Meddis2000(betaCa))
-		ok = FALSE;
-	if (!SetGammaCa_IHC_Meddis2000(gammaCa))
-		ok = FALSE;
-	if (!SetPCa_IHC_Meddis2000(pCa))
-		ok = FALSE;
-	if (!SetGCaMax_IHC_Meddis2000(GCaMax))
-		ok = FALSE;
-	if (!SetPerm_Ca0_IHC_Meddis2000(perm_Ca0))
-		ok = FALSE;
-	if (!SetPerm_z_IHC_Meddis2000(perm_z))
-		ok = FALSE;
-	if (!SetTauCaChan_IHC_Meddis2000(tauCaChan))
-		ok = FALSE;
-	if (!SetTauConcCa_IHC_Meddis2000(tauConcCa))
-		ok = FALSE;
-	if (!SetMaxFreePool_M_IHC_Meddis2000(maxFreePool_M))
-		ok = FALSE;
-	if (!SetReplenishRate_y_IHC_Meddis2000(replenishRate_y))
-		ok = FALSE;
-	if (!SetLossRate_l_IHC_Meddis2000(lossRate_l))
-		ok = FALSE;
-	if (!SetReprocessRate_x_IHC_Meddis2000(reprocessRate_x))
-		ok = FALSE;
-	if (!SetRecoveryRate_r_IHC_Meddis2000(recoveryRate_r))
-		ok = FALSE;
-	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
-	return(ok);
 
 }
 
@@ -455,31 +388,6 @@ SetRanSeed_IHC_Meddis2000(long theRanSeed)
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
 	hairCell2Ptr->ranSeedFlag = TRUE;
 	hairCell2Ptr->ranSeed = theRanSeed;
-	return(TRUE);
-
-}
-
-/****************************** SetRecPotOffset *******************************/
-
-/*
- * This function sets the module's recPotOffset parameter.
- * It returns TRUE if the operation is successful.
- * Additional checks should be added as required.
- */
-
-BOOLN
-SetRecPotOffset_IHC_Meddis2000(double theRecPotOffset)
-{
-	static const char	*funcName = "SetRecPotOffset_IHC_Meddis2000";
-
-	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	/*** Put any other required checks here. ***/
-	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->recPotOffsetFlag = TRUE;
-	hairCell2Ptr->recPotOffset = theRecPotOffset;
 	return(TRUE);
 
 }
@@ -867,10 +775,6 @@ CheckPars_IHC_Meddis2000(void)
 		NotifyError("%s: ranSeed variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (!hairCell2Ptr->recPotOffsetFlag) {
-		NotifyError("%s: recPotOffset variable not set.", funcName);
-		ok = FALSE;
-	}
 	if (!hairCell2Ptr->CaVrevFlag) {
 		NotifyError("%s: CaVrev variable not set.", funcName);
 		ok = FALSE;
@@ -953,8 +857,6 @@ PrintPars_IHC_Meddis2000(void)
 	DPrint("\tDiagnostic Mode = %s \n",
 	  hairCell2Ptr->diagModeList[hairCell2Ptr->diagMode].name);
 	DPrint("\tRandom Seed = %ld \n", hairCell2Ptr->ranSeed);
-	DPrint("\tReceptor Potential Offset = %g (V)\n",
-	  hairCell2Ptr->recPotOffset);
 	DPrint("\tCalcium reversal potential = %g (V)\n", hairCell2Ptr->CaVrev);
 	DPrint("\tBeta = %g \n", hairCell2Ptr->betaCa);
 	DPrint("\tGamma = %g \n", hairCell2Ptr->gammaCa);
@@ -974,87 +876,6 @@ PrintPars_IHC_Meddis2000(void)
 	DPrint("\tLoss rate, l = %g /s,\tReprocessing rate, x = %g /s\n",
 	  hairCell2Ptr->lossRate_l, hairCell2Ptr->reprocessRate_x);
 	DPrint("\tRecovery rate, r = %g /s\n", hairCell2Ptr->recoveryRate_r);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_IHC_Meddis2000(char *fileName)
-{
-	static const char	*funcName = "ReadPars_IHC_Meddis2000";
-	BOOLN	ok;
-	char	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
-	int		maxFreePool_M;
-	long	ranSeed;
-	double	recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
-	double	perm_Ca0, perm_z, tauCaChan, tauConcCa;
-	double	replenishRate_y, lossRate_l, reprocessRate_x, recoveryRate_r;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", opMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", diagMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &recPotOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &CaVrev))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &betaCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &gammaCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &GCaMax))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &perm_Ca0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &perm_z))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &tauCaChan))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &tauConcCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &maxFreePool_M))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &replenishRate_y))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lossRate_l))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &reprocessRate_x))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &recoveryRate_r))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_IHC_Meddis2000(opMode, diagMode, ranSeed, recPotOffset,
-	  CaVrev, betaCa, gammaCa, pCa, GCaMax, perm_Ca0, perm_z, tauCaChan,
-	  tauConcCa, maxFreePool_M, replenishRate_y, lossRate_l, reprocessRate_x,
-	  recoveryRate_r)) {
-		NotifyError("%s: Could not set parameters.", funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -1104,7 +925,6 @@ InitModule_IHC_Meddis2000(ModulePtr theModule)
 	theModule->Free = Free_IHC_Meddis2000;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis2000;
 	theModule->PrintPars = PrintPars_IHC_Meddis2000;
-	theModule->ReadPars = ReadPars_IHC_Meddis2000;
 	theModule->RunProcess = RunModel_IHC_Meddis2000;
 	theModule->SetParsPointer = SetParsPointer_IHC_Meddis2000;
 	return(TRUE);
@@ -1232,9 +1052,9 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 		} 
 
 		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[
-		  0][0] + hC->recPotOffset))) / hC->betaCa));		
-		ICa = hC->GCaMax*pow(ssactCa,3)*(data->inSignal[0]->channel[0][0] +
-		  hC->recPotOffset - hC->CaVrev);
+		  0][0]))) / hC->betaCa));		
+		ICa = hC->GCaMax*pow(ssactCa,3)*(data->inSignal[0]->channel[0][0] -
+		  hC->CaVrev);
 		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ? (hC->perm_z * (pow(-ICa, hC->
 		  pCa) - pow(hC->perm_Ca0,hC->pCa))) : 0; 
 		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y * spontPerm_k0 /
@@ -1300,6 +1120,8 @@ FreeProcessVariables_IHC_Meddis2000(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * ssactCa:	steady state Calcium activation.
+ * ICa:		Calcium current.
  */
 
 BOOLN
@@ -1308,18 +1130,13 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	static const char	*funcName = "RunModel_IHC_Meddis2000";
 	register	ChanData	 *inPtr, *outPtr;
 
+	BOOLN	debug;
 	int		i;
-	double	timer;
 	register double replenish, reprocessed, ejected;
 	ChanLen	j;
 	double	dt, ydt, xdt, rdt, kdt, zdt, l_Plus_rdt;
-	double	reUptake, reUptakeAndLost;
+	double	reUptake, reUptakeAndLost, timer, ssactCa, ICa, k0pow, Vin;
 	HairCell2Ptr	hC;
-	double  ssactCa;	/* steady state Calcium activation */
-	double  ICa;	/* Calcium current */
-	double  k0pow;
-	BOOLN	debug;
-	double Vin;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -1374,7 +1191,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 		  data->outSignal->length; j++, outPtr++) {
 
 			/*** Calcium controlled transmitter release function ***/
-			Vin = *inPtr + hC->recPotOffset;
+			Vin = *inPtr;
 
 			/* Ca current */
 			ssactCa = 	1/( 1 + exp(-hC->gammaCa*Vin)/hC->betaCa );		

@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define IHC_MEDDIS2000_NUM_PARS		18
+#define IHC_MEDDIS2000_NUM_PARS		17
 #define  MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
 
 /******************************************************************************/
@@ -36,7 +36,6 @@ typedef enum {
 	IHC_MEDDIS2000_OPMODE,
 	IHC_MEDDIS2000_DIAGMODE,
 	IHC_MEDDIS2000_RANSEED,
-	IHC_MEDDIS2000_RECPOTOFFSET,
 	IHC_MEDDIS2000_CAVREV,
 	IHC_MEDDIS2000_BETACA,
 	IHC_MEDDIS2000_GAMMACA,
@@ -78,7 +77,7 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	opModeFlag, diagModeFlag, ranSeedFlag, recPotOffsetFlag, CaVrevFlag;
+	BOOLN	opModeFlag, diagModeFlag, ranSeedFlag, CaVrevFlag;
 	BOOLN	betaCaFlag, gammaCaFlag, pCaFlag, GCaMaxFlag, perm_Ca0Flag;
 	BOOLN	perm_zFlag, tauCaChanFlag, tauConcCaFlag, maxFreePool_MFlag;
 	BOOLN	replenishRate_yFlag, lossRate_lFlag, reprocessRate_xFlag;
@@ -88,7 +87,6 @@ typedef struct {
 	int		opMode;
 	int		diagMode;
 	long	ranSeed;
-	double	recPotOffset;
 	double	CaVrev;
 	double	betaCa;
 	double	gammaCa;
@@ -146,8 +144,6 @@ BOOLN	Init_IHC_Meddis2000(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_IHC_Meddis2000(void);
 
-BOOLN	ReadPars_IHC_Meddis2000(char *fileName);
-
 BOOLN	RunModel_IHC_Meddis2000(EarObjectPtr data);
 
 BOOLN	SetBetaCa_IHC_Meddis2000(double theBetaCa);
@@ -172,20 +168,11 @@ BOOLN	SetPCa_IHC_Meddis2000(double thePCa);
 
 BOOLN	SetParsPointer_IHC_Meddis2000(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
-		  double recPotOffset, double CaVrev, double betaCa, double gammaCa,
-		  double pCa, double GCaMax, double perm_Ca0, double perm_z,
-		  double tauCaChan, double tauConcCa, int maxFreePool_M,
-		  double replenishRate_y, double lossRate_l, double reprocessRate_x,
-		  double recoveryRate_r);
-
 BOOLN	SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0);
 
 BOOLN	SetPerm_z_IHC_Meddis2000(double thePerm_z);
 
 BOOLN	SetRanSeed_IHC_Meddis2000(long theRanSeed);
-
-BOOLN	SetRecPotOffset_IHC_Meddis2000(double theRecPotOffset);
 
 BOOLN	SetRecoveryRate_r_IHC_Meddis2000(double theRecoveryRate_r);
 
