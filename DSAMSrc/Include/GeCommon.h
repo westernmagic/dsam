@@ -197,6 +197,8 @@
 
 #define DBL_GREATER(A, B) (((A) - (B)) > DBL_EPSILON)
 
+#define IS_ABSOLUTE_PATH(S)		(((S)[0] == '/') || ((S)[1] == ':'))
+
 /* This next definition is need for compiler niceties in MS Visual C++
  * otherwise it complains about "int being forces to 'true' or 'false'.
  */
