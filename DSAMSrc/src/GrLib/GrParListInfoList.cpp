@@ -60,8 +60,6 @@ ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
 	if (notebook) {
 		if (parList->notebookPanel < 0)
 			parList->notebookPanel = notebookPanel;
-		//*** this next line needs to be done later ***/
-		//notebook->SetSelection(parList->notebookPanel);
 		parent->SetSize(GetNotebookSize());
 	}
 

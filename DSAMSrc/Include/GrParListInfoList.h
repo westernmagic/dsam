@@ -22,9 +22,9 @@
 #define	PARLISTINFOLIST_ID_NOTEBOOK			1000
 #define	PARLISTINFOLIST_MAIN_ICLIST_PAGES	2
 #if defined(__WXMSW__)
-#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	80
+#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	100
 #else
-#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	56
+#	define	PARLISTINFOLIST_NOTEBOOK_ADD_HEIGHT	80
 #endif
 
 /******************************************************************************/
