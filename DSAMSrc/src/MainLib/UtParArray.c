@@ -137,8 +137,8 @@ CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction)
 /********************************* SetGeneralUniParList ***********************/
 
 /*
- * This routine initialises and sets the IonChanList's universal parameter list.
- * This list provides universal access to the IonChanList's parameters.
+ * This routine initialises and sets the ParArray's universal parameter list.
+ * This list provides universal access to the ParArray's parameters.
  */
  
 BOOLN
