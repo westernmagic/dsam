@@ -431,7 +431,7 @@ BOOLN
 Process_Utility_MathOp(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_MathOp";
-	register ChanData	 *inPtr1, *inPtr2, *outPtr;
+	register ChanData	 *inPtr1, *inPtr2 = NULL, *outPtr;
 	int		chan;
 	ChanLen	i;
 
