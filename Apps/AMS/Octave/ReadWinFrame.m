@@ -64,7 +64,7 @@ switch info.wordSize
 	   if info.numWindowFrames == 1
 		fseek(fid,4 * (top - 1), 'cof');
 		nn = bot - top + 1;
-		signal = fread(fid,[info.numChannels, nn], 'uint32');
+		signal = fread(fid,[info.numChannels, nn], 'int32');
 	   else
 		for kk = 1:length(frameId)
 		    fseek(fid, p_bias + 4 * (frameId(kk) - 1) * info.numChannels * ...
