@@ -39,7 +39,7 @@
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
 #define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
 #define	GRAPH_LABEL_SIZE					13
-#define	GRAPH_AXIS_LABEL_SIZE				15
+#define	GRAPH_AXIS_LABEL_SIZE				13
 #define	GRAPH_TICK_LENGTH_SCALE				0.08
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
 #define	GRAPH_NUM_GREY_SCALES				10
@@ -122,7 +122,8 @@ class MyCanvas: public wxWindow
 	void	OnQuit(wxCommandEvent& event);
 	void	OnRightDown(wxMouseEvent &event);
 	void	OnSize(wxSizeEvent& event);
-	
+
+	void	RescaleGraph(void);
 	void	SetGraphAreas(void);
 	void	SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect);
 	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
@@ -130,8 +131,8 @@ class MyCanvas: public wxWindow
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
 	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
 
- 	// private:
-	void	OnPaint(void); // Set back to private when possible.
+ 	private:
+	void	OnPaint(wxPaintEvent& event);
 
 	DECLARE_EVENT_TABLE()
 

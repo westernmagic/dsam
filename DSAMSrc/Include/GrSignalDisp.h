@@ -139,6 +139,7 @@ typedef struct {
 	BOOLN			reduceChansInitialised;
 	BOOLN			registeredWithDisplayFlag;
 	BOOLN			displayCanDeleteFlag;
+	BOOLN			redrawFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	summary;
