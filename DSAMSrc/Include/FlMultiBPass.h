@@ -17,8 +17,8 @@
  *
  *********************/
 
-#ifndef _FLBANDPASS_H
-#define _FLBANDPASS_H 1
+#ifndef _FLMULTIBPASS_H
+#define _FLMULTIBPASS_H 1
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -33,7 +33,7 @@
 typedef enum {
 
 	MULTIBPASS_NUMFILTERS,
-	MULTIBPASS_ORDER,
+	MULTIBPASS_CASCADE,
 	MULTIBPASS_PREATTENUATION,
 	MULTIBPASS_LOWERCUTOFFFREQ,
 	MULTIBPASS_UPPERCUFOFFFREQ
@@ -54,7 +54,7 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 	BOOLN	numFiltersFlag;
 	int		numFilters;
-	int		*order;
+	int		*cascade;
 	double	*preAttenuation;
 	double	*upperCutOffFreq;
 	double	*lowerCutOffFreq;
@@ -107,7 +107,7 @@ BOOLN	RunModel_Filter_MultiBPass(EarObjectPtr data);
 BOOLN	SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
 		  double theLowerCutOffFreq);
 
-BOOLN	SetIndividualOrder_Filter_MultiBPass(int theIndex, int theOrder);
+BOOLN	SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade);
 
 BOOLN	SetIndividualPreAttenuation_Filter_MultiBPass(int theIndex,
 		  double thePreAttenuation);
@@ -119,9 +119,9 @@ BOOLN	SetLowerCutOffFreq_Filter_MultiBPass(double *theLowerCutOffFreq);
 
 BOOLN	SetNumFilters_Filter_MultiBPass(int theNumFilters);
 
-BOOLN	SetOrder_Filter_MultiBPass(int *theOrder);
+BOOLN	SetCascade_Filter_MultiBPass(int *theCascade);
 
-BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *order,
+BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *cascade,
 		  double *preAttenuation, double *upperCutOffFreq,
 		  double *lowerCutOffFreq);
 

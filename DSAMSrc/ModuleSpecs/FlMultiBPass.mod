@@ -9,9 +9,9 @@ proc_routine	RunModel;
 typedef struct {
 
 	int_al	numFilters;
-	int		*order;
+	int		*cascade;
 	double	*preAttenuation;
-	double	*upperCutOffFreq;
 	double	*lowerCutOffFreq;
+	double	*upperCutOffFreq;
 
 } MultiBPassF;
