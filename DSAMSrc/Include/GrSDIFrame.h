@@ -104,12 +104,9 @@ class SDIFrame: public wxDocParentFrame
 	void	OnExecute(wxCommandEvent& event);
 	void	OnEditMainPars(wxCommandEvent& event);
 	void	OnEditProcess(wxCommandEvent& event);
-	void	OnEditSimPars(wxCommandEvent& event);
 	void	OnHelp(wxCommandEvent& event);
-	void	OnLoadSimFile(wxCommandEvent& event);
 	void	OnReloadSimFile(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
-	void	OnSaveSimPars(wxCommandEvent& event);
 	void	OnSimThreadEvent(wxCommandEvent& event);
 	void	OnStopSimulation(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
