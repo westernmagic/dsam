@@ -136,7 +136,8 @@ EarObjectPtr	GetLastProcess_Utility_Datum(DatumPtr start);
 
 UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 
-BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start);
+BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
+		  DynaBListPtr *labelBList);
 
 BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 

@@ -782,7 +782,7 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 	parList = (* data->module->GetUniParListPtr)();
 	switch (data->module->specifier) {
 	case SIMSCRIPT_MODULE:
-		if (!SetUniParValue_Utility_SimScript(parName, value)) {
+		if (!SetSimUniParValue_Utility_SimScript(parName, value)) {
 			NotifyError("%s: Could not find parameter '%s' for process '%s'",
 			  funcName, parName, data->module->name);
 			return(FALSE);

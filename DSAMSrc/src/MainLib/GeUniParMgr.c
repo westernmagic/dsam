@@ -497,6 +497,109 @@ PrintArray_UniParMgr(UniParPtr p, char *suffix)
 
 }
 
+/************************ PrintPar ********************************************/
+
+/*
+ * Print a universal parameter.
+ */
+
+BOOLN
+PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
+{
+	static const char *funcName = "PrintPar_UniParMgr";
+	BOOLN	ok = TRUE;
+	char	string[LONG_STRING];
+	DynaListPtr	node;
+
+	if (p == NULL) {
+		NotifyError("%s: Universal parameter not initialised.", funcName);
+		return(FALSE);
+	}
+	switch (p->type) {
+	case UNIPAR_BOOL:
+	case UNIPAR_INT:
+	case UNIPAR_LONG:
+	case UNIPAR_REAL:
+	case UNIPAR_STRING:
+	case UNIPAR_NAME_SPEC:
+	case UNIPAR_NAME_SPEC_WITH_FILE:
+	case UNIPAR_NAME_SPEC_WITH_FPATH:
+	case UNIPAR_FILE_NAME:
+		if ((strlen(p->abbr) + strlen(suffix)) >= LONG_STRING) {
+			NotifyError("%s: Combined string '%s%s' is greater than %d.",
+			  funcName, p->abbr, suffix, MAXLINE);
+			return(FALSE);
+		}
+		snprintf(string, LONG_STRING, "%s%s", p->abbr, suffix);
+		DPrint("\t%s%-25s\t", prefix, string);
+		PrintValue_UniParMgr(p);
+		DPrint("%s\n", p->desc);
+		break;
+	case UNIPAR_MODULE:
+		DPrint("\t# Module parameter file: %s\n",
+		  p->valuePtr.module.parFile);
+		ok = PrintPars_UniParMgr(p->valuePtr.module.parList,
+		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
+		break;
+	case UNIPAR_PARLIST:
+		if (!*(p->valuePtr.parList))
+			break;
+		DPrint("\t# Sub-parameter list: \n");
+		ok = PrintPars_UniParMgr(*(p->valuePtr.parList),
+		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
+		break;
+	case UNIPAR_CFLIST:
+		DPrint("\t# CFList parameters:\n");
+		if (!PrintPars_UniParMgr((*p->valuePtr.cFPtr)->cFParList,
+		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
+			ok = FALSE;
+		if ((*p->valuePtr.cFPtr)->bandwidth && !PrintPars_UniParMgr(
+		  (*p->valuePtr.cFPtr)->bParList, UNIPAR_SUB_PAR_LIST_MARKER,
+		  suffix))
+			ok = FALSE;
+		break;
+	case UNIPAR_PARARRAY:
+		DPrint("\t# %s parameters:\n", (*p->valuePtr.pAPtr)->name);
+		if (!PrintPars_UniParMgr((*p->valuePtr.pAPtr)->parList,
+		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
+			ok = FALSE;
+		break;
+	case UNIPAR_ICLIST:
+		DPrint("\t# IonChanList parameters:\n");
+		if (!PrintPars_UniParMgr((*p->valuePtr.iCPtr)->parList,
+		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
+			ok = FALSE;
+		for (node = (*p->valuePtr.iCPtr)->ionChannels; node; node =
+		  node->next) {
+			IonChannelPtr iC = (IonChannelPtr) node->data;
+			DPrint("\t# <---- Ion channel %s ---->\n", iC->description);
+			if (!PrintPars_UniParMgr(iC->parList,
+			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
+				ok = FALSE;
+		}
+		break;
+	case UNIPAR_SIMSCRIPT:
+		DPrint("\t# Parameters for '%s' simulation:\n",
+		  p->valuePtr.simScript.fileName);
+		PrintParListModules_Utility_Datum(*p->valuePtr.simScript.simulation,
+		  UNIPAR_SUB_PAR_LIST_MARKER);
+		break;
+	case UNIPAR_INT_ARRAY:
+	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_STRING_ARRAY:
+	case UNIPAR_NAME_SPEC_ARRAY:
+		DPrint("\t# %s:\n", p->desc);
+		PrintArray_UniParMgr(p, suffix);
+		break;
+	default:
+		NotifyError("%s: Universal parameter not yet implemented (%d).",
+		  funcName, p->type);
+		ok = FALSE;
+	}
+	return(ok);
+
+}
+
 /************************ PrintPars *******************************************/
 
 /*
@@ -507,101 +610,20 @@ BOOLN
 PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 {
 	static const char *funcName = "PrintPars_UniParMgr";
-	BOOLN	ok = TRUE;
-	char	string[LONG_STRING];
 	int		i;
-	UniParPtr	p;
-	DynaListPtr	node;
 
 	if (list == NULL) {
 		NotifyError("%s: List not initialised.", funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < list->numPars; i++) {
-		p = &list->pars[i];
-		switch (p->type) {
-		case UNIPAR_BOOL:
-		case UNIPAR_INT:
-		case UNIPAR_LONG:
-		case UNIPAR_REAL:
-		case UNIPAR_STRING:
-		case UNIPAR_NAME_SPEC:
-		case UNIPAR_NAME_SPEC_WITH_FILE:
-		case UNIPAR_NAME_SPEC_WITH_FPATH:
-		case UNIPAR_FILE_NAME:
-			if ((strlen(p->abbr) + strlen(suffix)) >= LONG_STRING) {
-				NotifyError("%s: Combined string '%s%s' is greater than %d.",
-				  funcName, p->abbr, suffix, MAXLINE);
-				return(FALSE);
-			}
-			snprintf(string, LONG_STRING, "%s%s", p->abbr, suffix);
-			DPrint("\t%s%-25s\t", prefix, string);
-			PrintValue_UniParMgr(p);
-			DPrint("%s\n", p->desc);
-			break;
-		case UNIPAR_MODULE:
-			DPrint("\t# Module parameter file: %s\n",
-			  p->valuePtr.module.parFile);
-			ok = PrintPars_UniParMgr(p->valuePtr.module.parList,
-			  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
-			break;
-		case UNIPAR_PARLIST:
-			if (!*(p->valuePtr.parList))
-				break;
-			DPrint("\t# Sub-parameter list: \n");
-			ok = PrintPars_UniParMgr(*(p->valuePtr.parList),
-			  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
-			break;
-		case UNIPAR_CFLIST:
-			DPrint("\t# CFList parameters:\n");
-			if (!PrintPars_UniParMgr((*p->valuePtr.cFPtr)->cFParList,
-			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
-				ok = FALSE;
-			if ((*p->valuePtr.cFPtr)->bandwidth && !PrintPars_UniParMgr(
-			  (*p->valuePtr.cFPtr)->bParList, UNIPAR_SUB_PAR_LIST_MARKER,
-			  suffix))
-				ok = FALSE;
-			break;
-		case UNIPAR_PARARRAY:
-			DPrint("\t# %s parameters:\n", (*p->valuePtr.pAPtr)->name);
-			if (!PrintPars_UniParMgr((*p->valuePtr.pAPtr)->parList,
-			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
-				ok = FALSE;
-			break;
-		case UNIPAR_ICLIST:
-			DPrint("\t# IonChanList parameters:\n");
-			if (!PrintPars_UniParMgr((*p->valuePtr.iCPtr)->parList,
-			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
-				ok = FALSE;
-			for (node = (*p->valuePtr.iCPtr)->ionChannels; node; node =
-			  node->next) {
-				IonChannelPtr iC = (IonChannelPtr) node->data;
-				DPrint("\t# <---- Ion channel %s ---->\n", iC->description);
-				if (!PrintPars_UniParMgr(iC->parList,
-				  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
-					ok = FALSE;
-			}
-			break;
-		case UNIPAR_SIMSCRIPT:
-			DPrint("\t# Parameters for '%s' simulation:\n",
-			  p->valuePtr.simScript.fileName);
-			PrintParListModules_Utility_Datum(*p->valuePtr.simScript.simulation,
-			  UNIPAR_SUB_PAR_LIST_MARKER);
-			break;
-		case UNIPAR_INT_ARRAY:
-		case UNIPAR_REAL_ARRAY:
-		case UNIPAR_STRING_ARRAY:
-		case UNIPAR_NAME_SPEC_ARRAY:
-			DPrint("\t# %s:\n", p->desc);
-			PrintArray_UniParMgr(p, suffix);
-			break;
-		default:
-			NotifyError("%s: Universal parameter not yet implemented (%d).",
-			  funcName, p->type);
-			ok = FALSE;
+		if (!PrintPar_UniParMgr(&list->pars[i], prefix, suffix)) {
+			NotifyError("%s: Could not print '%s' parameter.", funcName,
+				list->pars[i].abbr);
+			return(FALSE);
 		}
 	}
-	return(ok);
+	return(TRUE);
 
 }
 

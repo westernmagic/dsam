@@ -560,12 +560,11 @@ SetDefaultLabels_Utility_Datum(DatumPtr start)
  */
 
 BOOLN
-InitialiseEarObjects_Utility_Datum(DatumPtr start)
+InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 {
 	static const char	*funcName = "InitialiseEarObjects_Utility_Datum";
 	BOOLN	ok = TRUE;
 	DatumPtr	pc;
-	DynaBListPtr	labelBList = NULL;
 
 	if (start == NULL) {
 		NotifyError("%s: Simulation not initialised.\n", funcName);
@@ -584,21 +583,20 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start)
 				  funcName, pc->u.proc.moduleName);
 				ok = FALSE;
 			}
-			if ((pc->label[0] != '\0') && !Insert_Utility_DynaBList(&labelBList,
+			if ((pc->label[0] != '\0') && !Insert_Utility_DynaBList(labelBList,
 			  CmpProcessLabels_Utility_Datum, pc)) {
 				NotifyError("%s: Cannot insert process labelled '%s' into "
-				  "connection list.", funcName, pc->label);
+				  "simulation.", funcName, pc->label);
 				ok = FALSE;
 			}
 		}
 	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(start, labelBList);
+		ok = ResolveInstLabels_Utility_Datum(start, *labelBList);
 
 	if (ok && !SetDefaultConnections_Utility_Datum(start)) {
 		NotifyError("%s Could not set default foward connections.", funcName);
 		ok = FALSE;
 	}
-	FreeList_Utility_DynaBList(&labelBList);
 	return (ok);
 
 }
@@ -667,7 +665,7 @@ InitialiseModules_Utility_Datum(DatumPtr start)
 	BOOLN	ok;
 	DatumPtr	pc;
 	
-	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
+	for (pc = start, ok = TRUE; (pc != NULL) && ok; pc = pc->next)
 		if (pc->type == PROCESS ) {
 			if (GetDSAMPtr_Common()->usingGUIFlag && (pc->data->module->
 			  specifier == DISPLAY_MODULE) && (GetUniParPtr_ModuleMgr(pc->data,

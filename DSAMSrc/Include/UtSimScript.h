@@ -101,6 +101,7 @@ typedef struct {
 	SymbolPtr	symList;
 	DatumPtr	*simPtr;
 	DynaListPtr	subSimList;
+	DynaBListPtr	*labelBListPtr, labelBList;
 
 } SimScript, *SimScriptPtr;
 
@@ -158,22 +159,32 @@ DatumPtr	Read_Utility_SimScript(FILE *fp);
 
 BOOLN	ReadPars_Utility_SimScript(char *fileName);
 
-BOOLN	ReadSimParFile_Utility_SimScript(char *filePath);
+BOOLN	ReadSimParFileOld_Utility_SimScript(char *filePath);
 
-BOOLN	ReadSimScript_Utility_SimScript(char *fileName);
+BOOLN	ReadSimScriptOld_Utility_SimScript(char *fileName);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
+
+BOOLN	SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr);
 
 BOOLN	SetOperationMode_Utility_SimScript(char *theOperationMode);
 
 BOOLN	SetParFilePathMode_Utility_SimScript(char *theParFilePathMode);
+
+BOOLN	SetParsFilePath_Utility_SimScript(char * parsFilePath);
 
 BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
 		  char *operationMode, char *parFilePathMode);
 
+BOOLN	SetSimFileName_Utility_SimScript(char * simFileName);
+
+BOOLN	SetSimParFileFlag_Utility_SimScript(BOOLN state);
+
 BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
+
+BOOLN	SetSimUniParValue_Utility_SimScript(char *parName, char *parValue);
 
 BOOLN	SetUniParList_Utility_SimScript(void);
 

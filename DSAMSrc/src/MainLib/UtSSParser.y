@@ -35,6 +35,7 @@
 #include "UtSimScript.h"
 
 int		yyerror(char *);
+int		IgnoreToEndOfLine(void);
 #define	yylex	yylex
 int		yylex(void);
 
@@ -61,7 +62,24 @@ int		yylex(void);
 list:		/* nothing */
 		|	list '\n'
 		|	list simulation_list '\n'
+		|	list par_statement_list simulation_list '\n'
 		|	list error '\n'			{ yyerrok; }
+	;
+par_statement_list:
+			par_statement
+		|	par_statement_list par_statement
+	;
+par_statement:
+			STRING STRING
+			{	if (!SetUniParValue_Utility_SimScript($1->name, $2->name))
+					return 1;
+				IgnoreToEndOfLine();
+			}
+		|	STRING QUOTED_STRING
+			{	if (!SetUniParValue_Utility_SimScript($1->name, $2->name))
+					return 1;
+				IgnoreToEndOfLine();
+			}
 	;
 simulation_list:
 			simulation	{ ;}
@@ -174,6 +192,7 @@ statement_specifier:
 		|	STRING '%' REPEAT
 				{ $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
 				  $$->label = InitString_Utility_String($1->name); }
+	;
 reset:
 			RESET { $$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, RESET);
 				}
@@ -212,6 +231,23 @@ yyerror(char *s)
 	return 1;
 }
 
+/****************************** IgnoreToEndOfLine *****************************/
+
+/*
+ * This function ignores characters until the end of the line.
+ */
+
+int
+IgnoreToEndOfLine(void)
+{
+	int		c;
+
+	while (((c = fgetc(simScriptPtr->fp)) != '\n') && (c != EOF))
+			;
+	return(c);
+
+}
+
 /****************************** yylex *****************************************/
 
 /*
@@ -230,8 +266,7 @@ yylex(void)
 		if (c == '\n')
 			simScriptPtr->lineNumber++;
 	while (c == '#') {				 /* Check for comments. */
-		while (((c = fgetc(simScriptPtr->fp)) != '\n') && (c != EOF))
-			;
+		c = IgnoreToEndOfLine();
 		for ( ; isspace(c); c = fgetc(simScriptPtr->fp))
 			if (c == '\n')
 				simScriptPtr->lineNumber++;

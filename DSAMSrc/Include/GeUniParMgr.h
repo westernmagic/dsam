@@ -269,6 +269,8 @@ BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, char *parValue,
 
 BOOLN	PrintArray_UniParMgr(UniParPtr p, char *suffix);
 
+BOOLN	PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix);
+
 BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
