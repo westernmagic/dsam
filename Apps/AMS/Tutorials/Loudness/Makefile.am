@@ -16,9 +16,9 @@ ParFiles	= binomialHSR.par binomialLSR.par BM_DRNLHuman.par click.par \
 				displayHSR.par displayLSR.par displayRP.par \
 				displayStimulus.par displaySumAN.par filtIIRMoore.par \
 				filtMBtemporalWindow.par Fourier.par IHC_Meddis2000HSR.par \
-				IHC_Meddis2000LSR.par IHCRP_VelIn_GP.par mathOpstapes.par \
+				IHC_Meddis2000LSR.par IHCRP_VelIn_GP.par mathOpStapes.par \
 				padSignal.par rampDown.par rampUp.par reduceChannels.par \
-				stimHarmonic.par
+				stimHarmonic.par filtFIRELP.par filtScaleToStapes.par
 
 MatlabFiles	= 
 

@@ -8,7 +8,7 @@
 		Trans_Gate	<	rampDown.par
 		Display_Signal	<	displaySignal.par
 		Filt_MultiBPass	<	filtMultiBandpassGP.par
-		Util_mathOp	<	mathOPstapes.par
+		Util_mathOp	<	mathOpStapes.par
 		BM_gammaT	<	BM_gammatone.par
 		Display_Signal	<	displayBM.par
 		DataFile_out
@@ -87,7 +87,7 @@
 		UPPER_FREQ.Filt_MultiBPass.4	  0:25000     
 		UPPER_FREQ.Filt_MultiBPass.4	  1:30000     
 
-	##----- Util_mathOp.5          (mathOPstapes.par) -----##
+	##----- Util_mathOp.5          (mathOpStapes.par) -----##
 	OPERATOR.Util_mathOp.5   	"SCALE"   	Mathematical operator ('add', 'modulus', 'scale', 'sqr' or 'subtract').
 	OPERAND.Util_mathOp.5    	1.4e-010  	Operand (only used in scale mode at present).
 

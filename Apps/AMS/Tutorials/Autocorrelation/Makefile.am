@@ -15,7 +15,7 @@ ParFiles	= acf.par BM_DRNLHuman.par dataFileIn.par dataFileOut.par \
 				displayReceptorPotential.par displayRP.par displayStimulus.par \
 				filtIIRMoore.par filtMultiBandpass.par filtScaleToStapes.par \
 				filtStereocilia.par IHC_Meddis2000HSR.par \
-				IHCreceptorPotential.par IHCRP_VelIn_GP.par mathOpstapes.par \
+				IHCreceptorPotential.par IHCRP_VelIn_GP.par mathOpStapes.par \
 				rampDown.par rampUp.par reduceChannels.par stimHarmonic.par
 
 MatlabFiles	= MatlabAcfDemo.m

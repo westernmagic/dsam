@@ -14,7 +14,7 @@ begin {
 		Filt_MultiBPass	< filtMultiBandpassGP.par	
 
 #convert to stapes velocity
-		Util_mathOp		< mathOPstapes.par
+		Util_mathOp		< mathOpStapes.par
 
 # Basilar membrane filter model.
 @ 		BM_gammaT		< BM_gammatone.par	

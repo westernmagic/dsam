@@ -13,7 +13,7 @@ stim%		Stim_Harmonic		< stimHarmonic.par
 		Filt_MultiBPass		< filtIIRMoore.par
 
 # convert to stapes velocity
-		Util_mathOp			< mathOPstapes.par
+		Util_mathOp			< mathOpStapes.par
 
 # nonlinear DRNL filterbank
 		BM_DRNL			< BM_DRNLHuman.par

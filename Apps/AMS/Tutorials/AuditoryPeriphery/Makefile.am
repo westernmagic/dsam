@@ -16,7 +16,7 @@ ParFiles	= ANpsthBM.par ANrefractory.par BM_drnlGP1.par BM_drnlGP.par \
 				displayPH.par displayPSTH.par displayRP.par displaySignal.par \
 				displaySynapse.par filtMultiBandpassGP.par histogram1.par \
 				histogramPH.par histogramPSTH.par IHChsr2000spike.par \
-				IHCRP_VelIn_GP.par mathOpstapes.par rampDown.par rampUp.par \
+				IHCRP_VelIn_GP.par mathOpStapes.par rampDown.par rampUp.par \
 				stimTone.par
 
 MatlabFiles	= 

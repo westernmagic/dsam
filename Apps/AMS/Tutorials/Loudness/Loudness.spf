@@ -10,7 +10,7 @@
 		Util_PadSignal	<	padSignal.par
 		Display_Signal	<	displayStimulus.par
 		Filt_MultiBPass	<	filtIIRMoore.par
-		Util_mathOp	<	mathOPstapes.par
+		Util_mathOp	<	mathOpStapes.par
 		BM_DRNL	<	BM_DRNLHuman.par
 		Display_Signal	<	displayBM.par
 	z%	IHCRP_Shamma3StateVelIn (->a, b, d)	<	IHCRP_VelIn_GP.par
@@ -124,7 +124,7 @@
 		UPPER_FREQ.Filt_MultiBPass.6	  1:14000     
 		UPPER_FREQ.Filt_MultiBPass.6	  2:14000     
 
-	##----- Util_mathOp.7          (mathOPstapes.par) -----##
+	##----- Util_mathOp.7          (mathOpStapes.par) -----##
 	OPERATOR.Util_mathOp.7   	"SCALE"   	Mathematical operator ('add', 'modulus', 'scale', 'sqr' or 'subtract').
 	OPERAND.Util_mathOp.7    	1.4e-010  	Operand (only used in scale mode at present).
 
