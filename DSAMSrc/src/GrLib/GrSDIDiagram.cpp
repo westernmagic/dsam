@@ -65,9 +65,59 @@
 
 SDIDiagram::SDIDiagram(void)
 {
-	x = 60.0;
-	y = 60.0;
+	x = DIAGRAM_DEFAULT_INITIAL_X;
+	y = DIAGRAM_DEFAULT_INITIAL_Y;
 	simulation = NULL;
+
+}
+
+/******************************************************************************/
+/****************************** AdjustShapeToLabel ****************************/
+/******************************************************************************/
+
+void
+SDIDiagram::AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label)
+{
+	bool	sizeChanged = FALSE;
+	double	boxWidth, boxHeight;
+	wxCoord	labelWidth, labelHeight;
+
+	label.MakeLower();
+	dc.GetTextExtent(label, &labelWidth, &labelHeight);
+	shape->GetBoundingBoxMin(&boxWidth, &boxHeight);
+	if ((labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN) > boxWidth) {
+		boxWidth = labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN;
+		sizeChanged = TRUE;
+	}
+	if ((labelHeight + DIAGRAM_LABEL_HEIGHT_MARGIN) > boxHeight) {
+		boxHeight = labelHeight + DIAGRAM_LABEL_HEIGHT_MARGIN;
+		sizeChanged = TRUE;
+	}
+	if (sizeChanged)
+		shape->SetSize(boxWidth, boxHeight);
+
+}
+
+/******************************************************************************/
+/****************************** AddShape **************************************/
+/******************************************************************************/
+
+/*
+ * My Add shape method.
+ */
+
+void
+SDIDiagram::AddShape(wxShape *shape)
+{
+	wxDiagram::AddShape(shape);
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+	if (myHandler->pc) {
+		myHandler->ResetLabel();
+		wxClientDC dc(shape->GetCanvas());
+		shape->FormatText(dc, (char*) (const char *) myHandler->label);
+		shape->GetCanvas()->PrepareDC(dc);
+		AdjustShapeToLabel(dc, shape, myHandler->label);
+	}
 
 }
 
@@ -79,21 +129,25 @@ wxShape *
 SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
   wxBrush *brush)
 {
+	double	boxWidth, boxHeight;
 	wxShape *shape = CreateBasicShape(shapeInfo, type, brush);
 
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 	myHandler->pc = pc;
-	myHandler->ResetLabel();
 
 	shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH, DIAGRAM_DEFAULT_SHAPE_HEIGHT);
 	shape->SetId(pc->stepNumber);
 	AddShape(shape);
-	shape->Show(TRUE);
 	wxClientDC dc(shape->GetCanvas());
-	shape->FormatText(dc, (char*) (const char *) myHandler->label);
 	shape->GetCanvas()->PrepareDC(dc);
 	shape->Move(dc, x, y);
-	x += DIAGRAM_DEFAULT_SHAPE_WIDTH + 20;
+	shape->Show(TRUE);
+	shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
+	x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
+	if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().GetWidth()) {
+		x = DIAGRAM_DEFAULT_INITIAL_X;
+		y += DIAGRAM_DEFAULT_SHAPE_HEIGHT + DIAGRAM_DEFAULT_Y_SEPARATION;
+	}
 	return(shape);
 
 }
@@ -174,8 +228,8 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 		break;
 	default:
 		lineShape->MakeLineControlPoints(2);
-		lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
-		  DIAGRAM_HOLLOW_CIRCLE_SIZE, 0.0, DIAGRAM_HOLLOW_CIRCLE_TEXT);
+		lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
+		  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 	} /* switch */
 	AddShape(shape);
 	fromShape->AddLine(lineShape, toShape);
@@ -213,22 +267,24 @@ SDIDiagram::DrawSimConnections(void)
 		if (pc->type == STOP)
 			continue;
 		wxShape *fromShape = (wxShape *) (GET_DATUM_CLIENT_DATA(pc));
-		if ((pc->type == PROCESS) && pc->u.proc.outputList) {
-			for (DynaListPtr p = pc->u.proc.outputList; p != NULL; p = p->
-			  next) {
-				toPc = (DatumPtr) FindElement_Utility_DynaBList(labelBList,
-				  CmpProcessLabel_Utility_Datum, (char *) p->data)->data;
-				AddLineShape(fromShape, (wxShape *) toPc->data->clientData, -1);
+		switch (pc->type) {
+		case PROCESS: 
+			if (pc->u.proc.outputList) {
+				for (DynaListPtr p = pc->u.proc.outputList; p != NULL; p = p->
+				  next) {
+					toPc = (DatumPtr) FindElement_Utility_DynaBList(labelBList,
+					  CmpProcessLabel_Utility_Datum, (char *) p->data)->data;
+					AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(
+					  toPc), -1);
+				}
+			} else {
+				EarObjRefPtr	p;
+				for (p = pc->data->customerList; p != NULL; p = p->next)
+					AddLineShape(fromShape, (wxShape *) p->earObject->
+					  clientData, -1);
 			}
-		} else {
-			for (toPc = pc->next; toPc && (toPc->type == STOP); toPc = toPc->
-			  next)
-				;
-			if (toPc)
-				AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
-				  -1);
-		}
-		if (pc->type == REPEAT) {
+			break;
+		case REPEAT: {
 			int	level = 0;
 			for (toPc = pc->next; (toPc->type != STOP) || level; toPc = toPc->
 			  next)
@@ -244,7 +300,10 @@ SDIDiagram::DrawSimConnections(void)
 				} /* switch */
 			AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
 			  REPEAT);
-		}
+			break; }
+		default:
+			;
+		} /* switch */
 	}
 
 }

@@ -59,28 +59,28 @@ SDIAnalysisShape::SDIAnalysisShape(double w, double h): wxEllipseShape(w, h)
 }
 
 /******************************************************************************/
-/****************************** SDIControlShape Methods ***********************/
+/****************************** SDIDisplayShape Methods ***********************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, wxRectangleShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIDisplayShape, wxRectangleShape)
 
 /******************************************************************************/
 /****************************** Constructor ***********************************/
 /******************************************************************************/
 
-SDIControlShape::SDIControlShape(double w, double h): wxRectangleShape(w, h)
+SDIDisplayShape::SDIDisplayShape(double w, double h): wxRectangleShape(w, h)
 {
 	// 0.3 of the smaller rectangle dimension
 	SetCornerRadius((double) -0.3);
 }
 
 /******************************************************************************/
-/****************************** SDIUtilityShape Methods ***********************/
+/****************************** SDIControlShape Methods ***********************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIUtilityShape, wxPolygonShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, wxPolygonShape)
 
-SDIUtilityShape::SDIUtilityShape(double w, double h): wxPolygonShape()
+SDIControlShape::SDIControlShape(double w, double h): wxPolygonShape()
 {
 	// wxPolygonShape::SetSize relies on the shape having non-zero
 	// size initially.
@@ -167,20 +167,16 @@ SDIIOShape::SDIIOShape(double w, double h): wxPolygonShape()
 	if (h == 0.0)
 		h = 60.0;
 
-	double	flange = h / 8.0;
-
+	double	offset = h / 8.0;
 	wxList *thePoints = new wxList;
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (h / 2.0 -
-	  flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (h / 2.0 -
-	  flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (h / 2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint(w, 0.0));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (-h / 2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (-h / 2.0 +
-	  flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (-h / 2.0 +
-	  flange)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 - offset), (h /
+	  2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - offset), (h /
+	  2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 + offset), (-h /
+	  2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + offset), (-h /
+	  2.0)));
 	Create(thePoints);
 
  }
@@ -201,7 +197,7 @@ SDIModelShape::SDIModelShape(double w, double h): wxPolygonShape()
 		h = 60.0;
 
 	double	edge = h / 4.0;
-	double	hW = w / 10.0;
+	double	hW = w / 16.0;
 	double	hH = h / 4.0;
 
 	wxList *thePoints = new wxList;
@@ -224,12 +220,12 @@ SDIModelShape::SDIModelShape(double w, double h): wxPolygonShape()
  }
 
 /******************************************************************************/
-/****************************** SDIStimulusShape Methods **********************/
+/****************************** SDIUserShape Methods **************************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIStimulusShape, wxPolygonShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIUserShape, wxPolygonShape)
 
-SDIStimulusShape::SDIStimulusShape(double w, double h): wxPolygonShape()
+SDIUserShape::SDIUserShape(double w, double h): wxPolygonShape()
 {
 	// wxPolygonShape::SetSize relies on the shape having non-zero
 	// size initially.
@@ -239,34 +235,34 @@ SDIStimulusShape::SDIStimulusShape(double w, double h): wxPolygonShape()
 		h = 60.0;
 
 	double	flange = h / 8.0;
-	double	base = w / 6.0;
-	double	slope = w / 7.0;
+	double	base = w / 12.0;
+	double	slope = w / 14.0;
+	double	hd = w / 4.0;
 
 	wxList *thePoints = new wxList;
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base + slope),
-	  (h / 2.0 - flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (h / 2.0 -
-	  flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (h / 2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint(w, 0.0));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (-h / 2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (-h / 2.0 +
-	  flange)));
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base + slope),
-	  (-h / 2.0 + flange)));
-	// Base 
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base), (-h /
-	  2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (-h / 2.0)));
 	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (h / 2.0)));
 	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base), (h /
 	  2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base + slope),
+	  (h / 2.0 - flange)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - hd),  (h / 2.0 -
+	  flange)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - hd),  (h / 2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), 0.0));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - hd), (-h / 2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - hd), (-h / 2.0 +
+	  flange)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base + slope),
+	  (-h / 2.0 + flange)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + base), (-h /
+	  2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (-h / 2.0)));
 	Create(thePoints);
 
  }
 
 /******************************************************************************/
-/****************************** SDIStimulusShape Methods **********************/
+/****************************** SDITransformShape Methods *********************/
 /******************************************************************************/
 
 IMPLEMENT_DYNAMIC_CLASS(SDITransformShape, wxPolygonShape)
@@ -280,27 +276,25 @@ SDITransformShape::SDITransformShape(double w, double h): wxPolygonShape()
 	if (h == 0.0)
 		h = 60.0;
 
-	double	offset = h / 8.0;
+	double	inset = h / 7.0;
 	wxList *thePoints = new wxList;
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 - offset), (h /
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0), (h / 2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0), (h / 2.0)));
+	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - inset), (-h /
 	  2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 - offset), (h /
-	  2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((w / 2.0 + offset), (-h /
-	  2.0)));
-	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + offset), (-h /
+	thePoints->Append((wxObject*) new wxRealPoint((-w / 2.0 + inset), (-h /
 	  2.0)));
 	Create(thePoints);
 
  }
 
 /******************************************************************************/
-/****************************** SDIUserShape Methods **************************/
+/****************************** SDIUtilityShape Methods ***********************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIUserShape, wxRectangleShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIUtilityShape, wxRectangleShape)
 
-SDIUserShape::SDIUserShape(double w, double h): wxRectangleShape(w, h)
+SDIUtilityShape::SDIUtilityShape(double w, double h): wxRectangleShape(w, h)
 {
 }
 

@@ -3,12 +3,14 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-bmpFiles	= arrow.bmp user_tool.bmp control_tool.bmp analysis_tool.bmp \
-				utility_tool.bmp new.bmp open.bmp save.bmp cut.bmp print.bmp \
-				help.bmp play.bmp stop.bmp
+bmpFiles	= analysis_tool.bmp arrow.bmp control_tool.bmp cut.bmp \
+				display_tool.bmp filter_tool.bmp help.bmp io_tool.bmp \
+				model_tool.bmp new.bmp open.bmp play.bmp print.bmp save.bmp \
+				stop.bmp transform_tool.bmp user_tool.bmp utility_tool.bmp
 
-xpmFiles	= dsam.xpm arrow.xpm user_tool.xpm control_tool.xpm \
-				analysis_tool.xpm utility_tool.xpm new.xpm open.xpm save.xpm \
-				cut.xpm print.xpm help.xpm play.xpm stop.xpm
+xpmFiles	= analysis_tool.xpm arrow.xpm control_tool.xpm cut.xpm \
+				display_tool.xpm dsam.xpm filter_tool.xpm help.xpm io_tool.xpm \
+				model_tool.xpm new.xpm open.xpm play.xpm print.xpm save.xpm \
+				stop.xpm transform_tool.xpm user_tool.xpm utility_tool.xpm
 
 EXTRA_DIST	= $(bmpFiles) $(xpmFiles)

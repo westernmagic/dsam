@@ -150,7 +150,6 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 {
 	char tempFileName[MAX_FILE_PATH];
 
-	printf("SDIDocument::SaveObject: Entered\n");
 	wxDocument::SaveObject(stream);
 	(void) wxGetTempFileName("diag", tempFileName);
 

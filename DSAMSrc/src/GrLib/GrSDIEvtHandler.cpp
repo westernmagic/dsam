@@ -71,6 +71,7 @@ SDIEvtHandler::ResetLabel(void)
 {
 	label.Empty();
 	label.Printf("{ %s }\n", pc->label);
+	label.MakeLower();
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
@@ -114,10 +115,10 @@ SDIEvtHandler::InitInstruction(void)
 		}
 		break; }
 	case ANALYSIS_MODULE_CLASS:
+	case DISPLAY_MODULE_CLASS:
 	case FILTER_MODULE_CLASS:
 	case IO_MODULE_CLASS:
 	case MODEL_MODULE_CLASS:
-	case STIMULUS_MODULE_CLASS:
 	case TRANSFORM_MODULE_CLASS:
 	case USER_MODULE_CLASS:
 	case UTILITY_MODULE_CLASS:
@@ -167,10 +168,10 @@ SDIEvtHandler::EditInstruction(void)
 		} /* switch */
 		break; }
 	case ANALYSIS_MODULE_CLASS:
+	case DISPLAY_MODULE_CLASS:
 	case FILTER_MODULE_CLASS:
 	case IO_MODULE_CLASS:
 	case MODEL_MODULE_CLASS:
-	case STIMULUS_MODULE_CLASS:
 	case TRANSFORM_MODULE_CLASS:
 	case USER_MODULE_CLASS:
 	case UTILITY_MODULE_CLASS:
@@ -307,6 +308,8 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 	if (keys == 0) {
 		SetSelectedShape(dc);
 		if (!pc) {
+			if (GetShape()->IsKindOf(CLASSINFO(wxLineShape)))
+				return;
 			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
 			((SDIView *) canvas->view)->ProcessListDialog();
 		} else if (!dialog) {
@@ -377,6 +380,11 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 		  "process", TRUE);
 		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, "&Change process",
 		  "Change process");
+		menu.AppendSeparator();
+		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, "&Read par. file",
+		  "Read parameter file.");
+		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, "&Write par. file",
+		  "Write parameter file.");
 		menu.AppendSeparator();
 		menu.Append(SDIFRAME_EDIT_MENU_PROPERTIES, "&Properties...");
 

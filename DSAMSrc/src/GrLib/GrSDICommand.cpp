@@ -257,7 +257,9 @@ SDICommand::RedrawShapeLabel(wxShape *shape)
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-	shape->FormatText(dc, (char*) (const char *) myHandler->label);
+	((SDIDiagram *) doc->GetDiagram())->AdjustShapeToLabel(dc, shape,
+	  myHandler->label);
+	shape->FormatText(dc, (const char *) myHandler->label);
 	shape->Draw(dc);
 
 	doc->Modify(TRUE);
@@ -293,8 +295,8 @@ SDICommand::AddLineShape(int lineType)
 			break;
 		default:
 			lineShape->MakeLineControlPoints(2);
-			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
-			  DIAGRAM_HOLLOW_CIRCLE_SIZE, 0.0, DIAGRAM_HOLLOW_CIRCLE_TEXT);
+			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
+			  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 			if (!ConnectInstructions(fromShape, toShape)) {
 				delete theShape;
 				shape = NULL;
@@ -373,7 +375,8 @@ SDICommand::Do(void)
 		else {
 			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
 			  shapeInfo, processType, wxCYAN_BRUSH);
-			theShape->SetSize(60, 60);
+			theShape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
+			  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
 		}
 		doc->GetDiagram()->AddShape(theShape);
 		theShape->Show(TRUE);

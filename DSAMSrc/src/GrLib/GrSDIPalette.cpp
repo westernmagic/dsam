@@ -55,10 +55,10 @@
 #include "Bitmaps/arrow.xpm"
 #include "Bitmaps/analysis_tool.xpm"
 #include "Bitmaps/control_tool.xpm"
+#include "Bitmaps/display_tool.xpm"
 #include "Bitmaps/filter_tool.xpm"
 #include "Bitmaps/io_tool.xpm"
 #include "Bitmaps/model_tool.xpm"
-#include "Bitmaps/stimulus_tool.xpm"
 #include "Bitmaps/transform_tool.xpm"
 #include "Bitmaps/user_tool.xpm"
 #include "Bitmaps/utility_tool.xpm"
@@ -100,21 +100,21 @@ EditorToolPalette::Set(void)
 	#ifdef __WXMSW__
 	wxBitmap PaletteAnaTool("analysis_tool");
 	wxBitmap PaletteCtrlTool("control_tool");
+	wxBitmap PaletteCtrlTool("display_tool");
 	wxBitmap PaletteFiltTool("filter_tool");
 	wxBitmap PaletteIOTool("io_tool");
 	wxBitmap PaletteArrow("ARROWTOOL");
 	wxBitmap PaletteModelTool("model_tool");
-	wxBitmap PaletteStimTool("stimulus_tool");
 	wxBitmap PaletteTransTool("transform_tool");
 	wxBitmap PaletteUserTool("user_tool");
 	wxBitmap PaletteUtilTool("utility_tool");
 	#elif defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxBitmap PaletteAnaTool(analysis_tool_xpm);
 	wxBitmap PaletteCtrlTool(control_tool_xpm);
+	wxBitmap PaletteDisplayTool(display_tool_xpm);
 	wxBitmap PaletteFiltTool(filter_tool_xpm);
 	wxBitmap PaletteIOTool(io_tool_xpm);
 	wxBitmap PaletteModelTool(model_tool_xpm);
-	wxBitmap PaletteStimTool(stimulus_tool_xpm);
 	wxBitmap PaletteTransTool(transform_tool_xpm);
 	wxBitmap PaletteUserTool(user_tool_xpm);
 	wxBitmap PaletteUtilTool(utility_tool_xpm);
@@ -130,14 +130,14 @@ EditorToolPalette::Set(void)
 	  NULL, "Analysis Process");
 	AddTool(CONTROL_MODULE_CLASS, PaletteCtrlTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Control Process");
+	AddTool(DISPLAY_MODULE_CLASS, PaletteDisplayTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Display Process");
 	AddTool(FILTER_MODULE_CLASS, PaletteFiltTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Filter Process");
 	AddTool(IO_MODULE_CLASS, PaletteIOTool, wxNullBitmap, TRUE, 0, -1, NULL,
 	  "Input/Output Process");
 	AddTool(MODEL_MODULE_CLASS, PaletteModelTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Model Process");
-	AddTool(STIMULUS_MODULE_CLASS, PaletteStimTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Stimulus Process");
 	AddTool(TRANSFORM_MODULE_CLASS, PaletteTransTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Transform Process");
 	AddTool(USER_MODULE_CLASS, PaletteUserTool, wxNullBitmap, TRUE, 0, -1,

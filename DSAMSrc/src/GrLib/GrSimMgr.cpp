@@ -405,14 +405,14 @@ MyApp::GetProcessList(int classSpecifier)
 		return(&wxGetApp().anaList);
 	case CONTROL_MODULE_CLASS:
 		return(&wxGetApp().ctrlList);
+	case DISPLAY_MODULE_CLASS:
+		return(&wxGetApp().displayList);
 	case FILTER_MODULE_CLASS:
 		return(&wxGetApp().filtList);
 	case IO_MODULE_CLASS:
 		return(&wxGetApp().ioList);
 	case MODEL_MODULE_CLASS:
 		return(&wxGetApp().modelsList);
-	case STIMULUS_MODULE_CLASS:
-		return(&wxGetApp().stimList);
 	case TRANSFORM_MODULE_CLASS:
 		return(&wxGetApp().transList);
 	case USER_MODULE_CLASS:
