@@ -893,7 +893,7 @@ InitModule_Neuron_HHuxley(ModulePtr theModule)
 	theModule->parsPtr = hHuxleyNCPtr;
 	theModule->CheckPars = CheckPars_Neuron_HHuxley;
 	theModule->Free = Free_Neuron_HHuxley;
-	theModule->GetPotentialResponse = GetPotentialResponse_Neuron_HHuxley;
+	theModule->GetData = GetPotentialResponse_Neuron_HHuxley;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_HHuxley;
 	theModule->PrintPars = PrintPars_Neuron_HHuxley;
 	theModule->ReadPars = ReadPars_Neuron_HHuxley;
@@ -1123,17 +1123,19 @@ FreeProcessVariables_Neuron_HHuxley(void)
  * returns the potential.
  */
 
-double
-GetPotentialResponse_Neuron_HHuxley(double potential)
+void *
+GetPotentialResponse_Neuron_HHuxley(void *potentialPtr)
 {
 	static const char *funcName = "GetPotentialResponse_Neuron_HHuxley";
+	double *potential;
 
+	potential = (double *) potentialPtr;
 	if (!CheckPars_Neuron_HHuxley()) {
 		NotifyError("%s: Parameters have not been correctly set, zero "\
 		  "returned.", funcName);
-		return(0.0);
+		return(NULL);
 	}
-	return(potential);
+	return(potentialPtr);
 
 }
 

@@ -172,7 +172,7 @@ BOOLN	SetDiagnosticMode_Neuron_HHuxley(char *theDiagnosticMode);
 BOOLN	SetExcitatoryReversalPot_Neuron_HHuxley(double
 		  theExcitatoryReversalPot);
 
-double	GetPotentialResponse_Neuron_HHuxley(double potential);
+void *	GetPotentialResponse_Neuron_HHuxley(void *potentialPtr);
 
 BOOLN	SetICList_Neuron_HHuxley(IonChanListPtr theICList);
 

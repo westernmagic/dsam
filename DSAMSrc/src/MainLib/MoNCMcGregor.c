@@ -551,21 +551,23 @@ CheckPars_Neuron_McGregor(void)
  *
  */
 
-double
-GetPotentialResponse_Neuron_McGregor(double potential)
+void *
+GetPotentialResponse_Neuron_McGregor(void *potentialPtr)
 {
 	static const char *funcName = "GetPotentialResponse_Neuron_McGregor";
+	double	*potential;
 
 	if (!CheckPars_Neuron_McGregor()) {
 		NotifyError("%s: Parameters have not been correctly set, zero "\
 		  "returned.", funcName);
-		return(0.0);
+		return(NULL);
 	}
-	if (potential - mcGregorPtr->cellRestingPot_Er >
+	potential = (double *) potentialPtr;
+	if (*potential - mcGregorPtr->cellRestingPot_Er >
 	  mcGregorPtr->restingThreshold_Th0 + mcGregorPtr->accomConst_c)
-		potential -= mcGregorPtr->actionPotential;
+		*potential -= mcGregorPtr->actionPotential;
 
-	return(potential);
+	return(potentialPtr);
 
 }
 
@@ -712,7 +714,7 @@ InitModule_Neuron_McGregor(ModulePtr theModule)
 	theModule->parsPtr = mcGregorPtr;
 	theModule->CheckPars = CheckPars_Neuron_McGregor;
 	theModule->Free = Free_Neuron_McGregor;
-	theModule->GetPotentialResponse = GetPotentialResponse_Neuron_McGregor;
+	theModule->GetData = GetPotentialResponse_Neuron_McGregor;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_McGregor;
 	theModule->PrintPars = PrintPars_Neuron_McGregor;
 	theModule->ReadPars = ReadPars_Neuron_McGregor;

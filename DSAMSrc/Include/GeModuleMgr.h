@@ -118,6 +118,7 @@ typedef struct moduleStruct {
 	BOOLN	(* CheckData)(EarObjectPtr data);
 	BOOLN	(* CheckPars)(void);
 	BOOLN	(* Free)(void);
+	void *	(* GetData)(void *);
 	double	(* GetPotentialResponse)(double potential);
 	UniParListPtr	(* GetUniParListPtr)(void);
 	BOOLN	(* PrintPars)(void);
@@ -181,11 +182,11 @@ void	FreeNull_ModuleMgr(void);
 
 void	FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle theHandle);
 
+void *	GetData_ModuleMgr(EarObjectPtr data, void *inArg);
+
 EarObjectPtr	GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label);
 
 char *	GetParsFilePath_ModuleMgr(EarObjectPtr data);
-
-double	GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential);
 
 EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
 

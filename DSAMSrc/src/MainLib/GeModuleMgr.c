@@ -81,11 +81,10 @@ void *
 NoFunction_ModuleMgr(void)
 {
 	static const char *funcName = "NoFunction_ModuleMgr";
-	BOOLN	dummy = FALSE;
 
 	NotifyError("%s: Attempted to use a function which does not\nexist for "\
 	  "module.", funcName );
-	return(dummy);
+	return(NULL);
 
 }
 
@@ -99,9 +98,7 @@ NoFunction_ModuleMgr(void)
 void *
 NullFunction_ModuleMgr(void)
 {
-	int		dummy = 0;
-	
-	return(dummy);
+	return(NULL);
 
 }
 
@@ -115,9 +112,8 @@ NullFunction_ModuleMgr(void)
 void *
 TrueFunction_ModuleMgr(void)
 {
-	BOOLN	dummy = TRUE;
 	
-	return(dummy);
+	return((void *) TRUE);
 
 }
 
@@ -133,6 +129,7 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 	module->CheckData = (BOOLN (*)(EarObjectPtr)) DefaultFunc;
 	module->CheckPars = (BOOLN (*)(void)) DefaultFunc;
 	module->Free = (BOOLN (*)(void)) TrueFunction_ModuleMgr;
+	module->GetData = (void * (*)(void *)) DefaultFunc;
 	module->GetPotentialResponse = (double (*)(double)) DefaultFunc;
 	module->GetUniParListPtr = (UniParListPtr (*)(void)) NullFunction_ModuleMgr;
 	module->PrintPars = (BOOLN (*)(void)) DefaultFunc;
@@ -434,23 +431,22 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 
 }
 
-/*************************** GetPotentialResponse *****************************/
+/*************************** GetData ******************************************/
 
 /*
- * This function returns the poential response from a module.
- * It only works for routines that have a potential response function.
+ * This function returns general data from a model, as defined by the module's 
+ * specification.
  */
 
-double
-GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential)
+void *
+GetData_ModuleMgr(EarObjectPtr data, void *inArg)
 {
 	static const char *funcName = "GetPotentialResponse_ModuleMgr";
 
 	if (!CheckData_ModuleMgr(data, funcName))
-		return(0.0);
+		return(NULL);
 	SET_PARS_POINTER(data);
-	SET_PARS_POINTER(data);
-	return((* data->module->GetPotentialResponse)(potential));
+	return((* data->module->GetData)(inArg));
 
 }
 
@@ -564,8 +560,6 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 		return(NULL);
 	SET_PARS_POINTER(data);
 	parList = (* data->module->GetUniParListPtr)();
-	if (!parList)
-		NotifyError("%s: arggh!\n", funcName);
 	if ((par = FindUniPar_UniParMgr(&parList, parName, UNIPAR_SEARCH_ABBR)) ==
 	  NULL) {
 		NotifyError("%s: Could not find parameter '%s' for process '%s'",

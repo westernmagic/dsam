@@ -114,7 +114,7 @@ BOOLN	Free_Neuron_ArleKim(void);
 
 void	FreeProcessVariables_Neuron_ArleKim(void);
 
-double	GetPotentialResponse_Neuron_ArleKim(double potential);
+void *	GetPotentialResponse_Neuron_ArleKim(void *potentialPtr);
 
 UniParListPtr	GetUniParListPtr_Neuron_ArleKim(void);
 

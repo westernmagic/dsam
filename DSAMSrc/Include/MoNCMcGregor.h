@@ -100,7 +100,7 @@ BOOLN	Free_Neuron_McGregor(void);
 
 void	FreeProcessVariables_Neuron_McGregor(void);
 
-double	GetPotentialResponse_Neuron_McGregor(double potential);
+void *	GetPotentialResponse_Neuron_McGregor(void *potentialPtr);
 
 UniParListPtr	GetUniParListPtr_Neuron_McGregor(void);
 
