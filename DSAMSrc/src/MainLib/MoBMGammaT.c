@@ -509,10 +509,10 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
-		SetInfoChannelLabels_SignalData(data->outSignal,
-		  bMGammaTPtr->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal,
-		  bMGammaTPtr->theCFs->frequency);
+		SetInfoChannelLabels_SignalData(data->outSignal, bMGammaTPtr->theCFs->
+		  frequency);
+		SetInfoCFArray_SignalData(data->outSignal, bMGammaTPtr->theCFs->
+		  frequency);
 		bMGammaTPtr->updateProcessVariablesFlag = FALSE;
 		bMGammaTPtr->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
