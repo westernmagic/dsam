@@ -86,12 +86,13 @@ typedef struct {
 
 typedef struct {
 
+	int		cascade;
 	double	cC;
 	double	twoC;
 	double	dD;
 	double	eE;
 	double	gainLossFactor;
-	double	state[FILTERS_NUM_CONTBUTT2_STATE_VARS];
+	double	*state;
 
 } ContButtCoeffs, *ContButtCoeffsPtr;
 
@@ -147,6 +148,8 @@ void	FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p);
 
 void	FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p);
 
+void	FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p);
+
 void	FreeTwoPoleCoeffs_Filters(TwoPoleCoeffsPtr *p);
 
 void	GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffsPtr p[]);
@@ -155,7 +158,8 @@ void	IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffsPtr p[]);
 
 void	IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[]);
 
-void	IIR2ContSingle_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr p);
+void	IIR2Cont_Filters(SignalDataPtr theSignal,
+		  ContButtCoeffsPtr pArray[]);
 
 void	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
 
@@ -163,8 +167,9 @@ BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int cascade,
 					  double lowerCutOffFreq, double upperCutOffFreq,
 					  double dt);
 
-ContButtCoeffsPtr	InitIIR2ContCoeffs_Filters(double cutOffFrequency,
-					  double samplingInterval, int highOrLowPass);
+ContButtCoeffsPtr	InitIIR2ContCoeffs_Filters(int cascade,
+					  double cutOffFrequency, double samplingInterval,
+					  int highOrLowPass);
 
 ContButt1CoeffsPtr	InitIIR1ContCoeffs_Filters(double cutOffFrequency,
 					  double samplingInterval, int highOrLowPass);
