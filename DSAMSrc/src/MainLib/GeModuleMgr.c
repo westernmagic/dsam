@@ -441,7 +441,7 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 void *
 GetData_ModuleMgr(EarObjectPtr data, void *inArg)
 {
-	static const char *funcName = "GetPotentialResponse_ModuleMgr";
+	static const char *funcName = "GetData_ModuleMgr";
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
