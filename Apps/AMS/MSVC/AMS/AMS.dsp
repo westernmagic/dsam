@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /D "_MBCS" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /D "_MBCS" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "USE_GUI" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "USE_GUI" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"

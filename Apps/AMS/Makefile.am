@@ -2,7 +2,9 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-bin_PROGRAMS	= ams ams_ng
+bin_PROGRAMS	= ams_ng @AMS@
+
+EXTRA_PROGRAMS	= ams
 
 ams_SOURCES		= ams.h ams.cpp ams.xpm
 ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
@@ -10,7 +12,6 @@ ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
 ams_ng_SOURCES	= ams.h ams.xpm
 ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
-pkginclude_HEADERS	= AMSSetup.h
 BUILT_SOURCES	= ams.spec
 
 EXTRA_DIST		= ams.par ams.rc amsicon.ico
