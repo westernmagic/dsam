@@ -29,18 +29,17 @@
 
 class ParListInfoList {
 
-	bool		labelsFlag;
 	DialogList	*parent;
 
   public:
 	DSAMList<ParListInfo>	list;
 
-	ParListInfoList(DialogList *theParent, DatumPtr pc, UniParListPtr parList,
-	  bool theLabelsFlag);
+	ParListInfoList(DialogList *theParent, DatumPtr pc, UniParListPtr parList);
 	~ParListInfoList(void);
 
 	void	AddInfo(ParListInfo *theInfo)	{ list.Append(list.Number(),
 			  (wxObject *) theInfo); };
+	wxWindow *	GetLastControl(void);
 	int		GetNumDialogs(void)	{ return list.Number(); };
 	void	SetInfo(DatumPtr pc, UniParListPtr parList, int offset,
 			  char *prefix);

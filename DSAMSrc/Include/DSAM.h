@@ -148,6 +148,7 @@
 // the whole of <wx/wx.h>
 #	ifndef WX_PRECOMP
 #		include <wx/wx.h>
+#		include <wx/notebook.h>
 #	endif
 
 // Any files included regardless of precompiled headers
