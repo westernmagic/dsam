@@ -14,7 +14,7 @@ SPFFiles	= auditoryNervePreemphFFT.spf auditoryNerve.spf clickProblem.spf
 ParFiles	= binomial.par BM_DRNL_GP4.par dataFileIn.par dataFileOut.par \
 				displayAN.par displayBM.par displayClick.par \
 				displayReceptorPotential.par displayStimulus.par \
-				filtFIRMoore.par filtIIRMoore.par filtMultiBandpass.par
+				filtFIRMoore.par filtIIRMoore.par filtMultiBandpass.par \
 				filtScaleToStapes.par filtStereocilia.par Fourier.par \
 				IHC_Meddis2000HSR.par IHC_Meddis2000LSR.par \
 				IHCRP_ShammaVelIn.par rampDown.par rampUp.par reduceDt.par \
