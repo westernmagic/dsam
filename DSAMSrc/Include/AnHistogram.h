@@ -26,7 +26,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_HISTOGRAM_NUM_PARS			6
+#define ANALYSIS_HISTOGRAM_NUM_PARS			7
 
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
@@ -39,6 +39,7 @@
 typedef enum {
 
 	ANALYSIS_HISTOGRAM_DETECTIONMODE,
+	ANALYSIS_HISTOGRAM_OUTPUT_MODE,
 	ANALYSIS_HISTOGRAM_TYPEMODE,
 	ANALYSIS_HISTOGRAM_EVENTTHRESHOLD,
 	ANALYSIS_HISTOGRAM_BINWIDTH,
@@ -57,10 +58,16 @@ typedef enum {
 
 typedef enum {
 
+	HISTOGRAM_OUTPUT_BIN_COUNTS,
+	HISTOGRAM_OUTPUT_SPIKE_RATE,
+	HISTOGRAM_OUTPUT_NULL
+
+} HistogramOutputSpecifier;
+
+typedef enum {
+
 	HISTOGRAM_PSTH,		
-	HISTOGRAM_PSTH_SR,		
 	HISTOGRAM_PH,
-	HISTOGRAM_PH_SR,
 	HISTOGRAM_TYPE_NULL
 
 } HistogramTypeSpecifier;
@@ -70,9 +77,10 @@ typedef struct {
 	ParameterSpecifier parSpec;
 	
 	BOOLN	detectionModeFlag, typeModeFlag, eventThresholdFlag, binWidthFlag;
-	BOOLN	periodFlag, timeOffsetFlag;
+	BOOLN	periodFlag, timeOffsetFlag, outputModeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		detectionMode;
+	int		outputMode;
 	int		typeMode;
 	double	eventThreshold;
 	double	binWidth;
@@ -81,11 +89,13 @@ typedef struct {
 
 	/* Private members */
 	NameSpecifier	*detectionModeList;
+	NameSpecifier	*outputModeList;
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
 	BOOLN			*riseDetected;
 	ChanLen			numPeriods;
 	ChanLen			offsetIndex;
+	ChanLen			extraSample;
 	ChanLen			bufferSamples;
 	EarObjectPtr	dataBuffer;
 
@@ -123,11 +133,16 @@ BOOLN	Init_Analysis_Histogram(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_Analysis_Histogram(EarObjectPtr data);
 
-BOOLN	InitTypeModeList_Analysis_Histogram(void);
-
 BOOLN	InitDetectionModeList_Analysis_Histogram(void);
 
+BOOLN	InitOutputModeList_Analysis_Histogram(void);
+
+BOOLN	InitTypeModeList_Analysis_Histogram(void);
+
 BOOLN	PrintPars_Analysis_Histogram(void);
+
+void	PushDataBuffer_Analysis_Histogram(EarObjectPtr data,
+		  ChanLen lastSamples);
 
 BOOLN	ReadPars_Analysis_Histogram(char *fileName);
 
@@ -136,6 +151,8 @@ BOOLN	SetBinWidth_Analysis_Histogram(double theBinWidth);
 BOOLN	SetDetectionMode_Analysis_Histogram(char *theDetectionMode);
 
 BOOLN	SetEventThreshold_Analysis_Histogram(double theEventThreshold);
+
+BOOLN	SetOutputMode_Analysis_Histogram(char *theOutputMode);
 
 BOOLN	SetTimeOffset_Analysis_Histogram(double theTimeOffset);
 

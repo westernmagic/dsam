@@ -93,6 +93,27 @@ InitDetectionModeList_Analysis_Histogram(void)
 
 }
 
+/****************************** InitOutputModeList ****************************/
+
+/*
+ * This routine intialises the output Mode list array.
+ */
+
+BOOLN
+InitOutputModeList_Analysis_Histogram(void)
+{
+	static NameSpecifier	outputModeList[] = {
+
+					{"BIN_COUNTS",	HISTOGRAM_OUTPUT_BIN_COUNTS },
+					{"SPIKE_RATE",	HISTOGRAM_OUTPUT_SPIKE_RATE },
+					{"",			HISTOGRAM_OUTPUT_NULL }
+
+				};
+	histogramPtr->outputModeList = outputModeList;
+	return(TRUE);
+
+}
+
 /****************************** InitTypeModeList ******************************/
 
 /*
@@ -105,9 +126,7 @@ InitTypeModeList_Analysis_Histogram(void)
 	static NameSpecifier	typeModeList[] = {
 
 					{"PSTH",	HISTOGRAM_PSTH },
-					{"PSTH_SR",	HISTOGRAM_PSTH_SR },
 					{"PH",		HISTOGRAM_PH },
-					{"PH_SR",	HISTOGRAM_PH_SR },
 					{"",		HISTOGRAM_TYPE_NULL }
 
 				};
@@ -153,8 +172,10 @@ Init_Analysis_Histogram(ParameterSpecifier parSpec)
 	histogramPtr->eventThresholdFlag = FALSE;
 	histogramPtr->binWidthFlag = FALSE;
 	histogramPtr->periodFlag = FALSE;
+	histogramPtr->outputModeFlag = TRUE;
 	histogramPtr->timeOffsetFlag = FALSE;
 	histogramPtr->detectionMode = 0;
+	histogramPtr->outputMode = HISTOGRAM_OUTPUT_BIN_COUNTS;
 	histogramPtr->typeMode = 0;
 	histogramPtr->eventThreshold = 0.0;
 	histogramPtr->binWidth = 0.0;
@@ -162,6 +183,7 @@ Init_Analysis_Histogram(ParameterSpecifier parSpec)
 	histogramPtr->timeOffset = 0.0;
 
 	InitDetectionModeList_Analysis_Histogram();
+	InitOutputModeList_Analysis_Histogram();
 	InitTypeModeList_Analysis_Histogram();
 	if (!SetUniParList_Analysis_Histogram()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -202,8 +224,13 @@ SetUniParList_Analysis_Histogram(void)
 	  UNIPAR_NAME_SPEC,
 	  &histogramPtr->detectionMode, histogramPtr->detectionModeList,
 	  (void * (*)) SetDetectionMode_Analysis_Histogram);
+	SetPar_UniParMgr(&pars[ANALYSIS_HISTOGRAM_OUTPUT_MODE], "OUTPUT_MODE",
+	  "Output mode: 'bin_counts'  or 'spike_rate'.",
+	  UNIPAR_NAME_SPEC,
+	  &histogramPtr->outputMode, histogramPtr->outputModeList,
+	  (void * (*)) SetOutputMode_Analysis_Histogram);
 	SetPar_UniParMgr(&pars[ANALYSIS_HISTOGRAM_TYPEMODE], "TYPE_MODE",
-	  "Histogram type: 'PSTH', 'PSTH_SR', 'PH' or 'PH_SR'.",
+	  "Histogram type: 'PSTH', or 'PH'.",
 	  UNIPAR_NAME_SPEC,
 	  &histogramPtr->typeMode, histogramPtr->typeModeList,
 	  (void * (*)) SetTypeMode_Analysis_Histogram);
@@ -315,6 +342,36 @@ SetDetectionMode_Analysis_Histogram(char *theDetectionMode)
 	}
 	histogramPtr->detectionModeFlag = TRUE;
 	histogramPtr->detectionMode = specifier;
+	return(TRUE);
+
+}
+
+/****************************** SetOutputMode *********************************/
+
+/*
+ * This function sets the module's output mode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetOutputMode_Analysis_Histogram(char *theOutputMode)
+{
+	static const char	*funcName = "SetOutputMode_Analysis_Histogram";
+	int		specifier;
+
+	if (histogramPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theOutputMode,
+	  histogramPtr->outputModeList)) == HISTOGRAM_OUTPUT_NULL) {
+		NotifyError("%s: Illegal output mode (%s).", funcName,
+		  theOutputMode);
+		return(FALSE);
+	}
+	histogramPtr->outputModeFlag = TRUE;
+	histogramPtr->outputMode = specifier;
 	return(TRUE);
 
 }
@@ -485,8 +542,7 @@ CheckPars_Analysis_Histogram(void)
 		NotifyError("%s: binWidth variable not set.", funcName);
 		ok = FALSE;
 	}
-	if ((histogramPtr->typeMode == HISTOGRAM_PH) || (histogramPtr->typeMode ==
-	  HISTOGRAM_PH_SR)) {
+	if (histogramPtr->typeMode == HISTOGRAM_PH) {
 	   if (!histogramPtr->periodFlag) {
 			NotifyError("%s: period variable not set.", funcName);
 			ok = FALSE;
@@ -502,9 +558,8 @@ CheckPars_Analysis_Histogram(void)
 		NotifyError("%s: timeOffset variable not set.", funcName);
 		ok = FALSE;
 	}
-	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) &&
-	  ((histogramPtr->typeMode == HISTOGRAM_PSTH_SR) || (histogramPtr->
-	  typeMode == HISTOGRAM_PH_SR))) {
+	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) && (histogramPtr->
+	  outputMode == HISTOGRAM_OUTPUT_SPIKE_RATE)) {
 		NotifyError("%s: The spike rate histogram modes cannot be used in "
 		  "continuous detection mode.", funcName);
 		ok = FALSE;
@@ -534,13 +589,14 @@ PrintPars_Analysis_Histogram(void)
 		return(FALSE);
 	}
 	DPrint("Histogram analysis module parameters:-\n");
-	DPrint("\tDetection mode = %s,",
-	  histogramPtr->detectionModeList[histogramPtr->detectionMode].name);
-	DPrint("\tType mode = %s,\n",
-	  histogramPtr->typeModeList[histogramPtr->typeMode].name);
+	DPrint("\tDetection mode = %s,", histogramPtr->detectionModeList[
+	  histogramPtr->detectionMode].name);
+	DPrint("\tOutput mode = %s,", histogramPtr->outputModeList[histogramPtr->
+	  outputMode].name);
+	DPrint("\tType mode = %s,\n", histogramPtr->typeModeList[histogramPtr->
+	  typeMode].name);
 	if (histogramPtr->detectionMode == HISTOGRAM_DETECT_SPIKES)
-		DPrint("\tEvent threshold = %g units,\n",
-	 	  histogramPtr->eventThreshold);
+		DPrint("\tEvent threshold = %g units,\n", histogramPtr->eventThreshold);
 	DPrint("\tBin width = ");
 	if (histogramPtr->binWidth <= 0.0)
 		DPrint("<prev. signal dt>,");
@@ -548,9 +604,7 @@ PrintPars_Analysis_Histogram(void)
 		DPrint("%g ms,", MSEC(histogramPtr->binWidth));
 	switch (histogramPtr->typeMode) {
 	case HISTOGRAM_PSTH:
-	case HISTOGRAM_PSTH_SR:
 	case HISTOGRAM_PH:
-	case HISTOGRAM_PH_SR:
 		DPrint("\tPeriod = %g ms\n", MSEC(histogramPtr->period));
 		break;
 	default:
@@ -697,19 +751,13 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 		return(FALSE);
 	}
 	signalDuration = data->inSignal[0]->length * data->inSignal[0]->dt;
-	if ((histogramPtr->typeMode == HISTOGRAM_PH) || (histogramPtr->typeMode ==
-	  HISTOGRAM_PH_SR)){
-		if ((histogramPtr->period < data->inSignal[0]->dt) || (histogramPtr->
-		  period > signalDuration)) {
-			NotifyError("%s: Invalid period = %g ms!", funcName,
-			  MSEC(histogramPtr->period));
+	if (histogramPtr->typeMode == HISTOGRAM_PH) {
+		if (histogramPtr->period < data->inSignal[0]->dt) {
+			NotifyError("%s: The period (%g ms) is less than the input signal "
+			  "sampling interval (%g ms)!", funcName, MILLI(histogramPtr->
+			  period), MILLI(data->inSignal[0]->dt));
 			return(FALSE);
 		}
-	}
-	if (histogramPtr->timeOffset > signalDuration) {
-		NotifyError("%s: Invalid time offset = %g ms!", funcName,
-		  MSEC(histogramPtr->timeOffset));
-		return(FALSE);
 	}
 	return(TRUE);
 
@@ -729,11 +777,9 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_Histogram";
 	int		i;
-	double	dt;
 	ChanLen	bufferLength;
-	HistogramPtr	p;
+	HistogramPtr	p = histogramPtr;
 	
-	p = histogramPtr;
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -753,24 +799,24 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 		}
 		p->numPeriods = 0;
 		ResetProcess_EarObject(p->dataBuffer);
-		bufferLength = ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode ==
-		  HISTOGRAM_PSTH_SR))? 1: (ChanLen) floor(p->period / data->inSignal[
-		  0]->dt + 0.5);
+		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (ChanLen) floor(p->
+		  period / data->inSignal[0]->dt + 0.5);
 		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
 		  numChannels, bufferLength, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise channels for PH Buffer.",
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->outSignal->dt;
 		p->bufferSamples = 0;
-		p->offsetIndex = (ChanLen) (histogramPtr->timeOffset / dt + 0.5) + 1;
+		p->offsetIndex = (ChanLen) floor(p->timeOffset / data->inSignal[0]->dt +
+		  0.5);
+		p->extraSample = (p->offsetIndex)? 0: 1;
 		for (i = 0; i < data->outSignal->numChannels; i++)
 			p->riseDetected[i] = FALSE;
 		if (p->offsetIndex < data->inSignal[0]->length)
 			for (i = 0; i < data->outSignal->numChannels; i++)
 				p->dataBuffer->outSignal->channel[i][0] = data->inSignal[0]->
-				  channel[0][p->offsetIndex - 1];
+				  channel[0][p->offsetIndex + p->extraSample - 1];
 	}
 	return(TRUE);
 
@@ -797,6 +843,32 @@ FreeProcessVariables_Analysis_Histogram(void)
 
 }
 
+/**************************** PushDataBuffer **********************************/
+
+/*
+ * This routine pushes sections from the end of the input signal into the data
+ * buffer.
+ */
+
+void
+PushDataBuffer_Analysis_Histogram(EarObjectPtr data, ChanLen lastSamples)
+{
+	register	ChanData	*inPtr, *buffPtr;
+	int		chan;
+	ChanLen	i;
+
+	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
+		  lastSamples;
+		buffPtr = histogramPtr->dataBuffer->outSignal->channel[chan] +
+		  histogramPtr->bufferSamples;
+		for (i = 0; i < lastSamples; i++)
+			*buffPtr++ = *inPtr++;
+	}
+	histogramPtr->bufferSamples = lastSamples;
+
+}
+
 /****************************** Calc ******************************************/
 
 /*
@@ -810,6 +882,8 @@ FreeProcessVariables_Analysis_Histogram(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The 'extraSample' and 'extraTimeInterval' are only required when the time
+ * offset is zero. 
  */
 
 BOOLN
@@ -817,11 +891,11 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_Histogram";
 	register	ChanData	*inPtr, *outPtr, *buffPtr, binSum;
-	BOOLN	bufferData, spikeRateMode;
 	int		chan;
 	double	nextCutOff, nextBinCutOff, dt, binWidth, time, totalBinDuration;
-	ChanLen	i, remnantSamples, bufferSamples;
-	HistogramPtr	p;
+	double	extraTimeInterval;
+	ChanLen	i, bufferSamples, processLength, availableLength;
+	HistogramPtr	p = histogramPtr;
 
 	if (!CheckPars_Analysis_Histogram())
 		return(FALSE);
@@ -830,9 +904,8 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Histogram Analysis Module");
-	p = histogramPtr;
 	dt = data->inSignal[0]->dt;
-	if ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode == HISTOGRAM_PSTH_SR))
+	if (p->typeMode == HISTOGRAM_PSTH)
 		p->period = data->inSignal[0]->length * dt - p->timeOffset;
 	binWidth = (p->binWidth <= 0.0)? dt: p->binWidth;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
@@ -847,101 +920,98 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	spikeRateMode = ((p->typeMode == HISTOGRAM_PSTH_SR) || (p->typeMode ==
-	  HISTOGRAM_PH_SR));
-	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && spikeRateMode && p->
-	  numPeriods) {
-		totalBinDuration = binWidth * p->numPeriods;
-		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-			outPtr = data->outSignal->channel[chan];
-			for (i = 0; i < data->outSignal->length; i++)
-				*outPtr++ *= totalBinDuration;
-		}
+	if (p->offsetIndex > data->inSignal[0]->length)
+		processLength = 0;
+	else {
+		availableLength = data->inSignal[0]->length - p->offsetIndex - p->
+		  extraSample + p->bufferSamples + 1;
+		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
+		  (ChanLen) floor(floor(availableLength * dt / p->period) * p->period /
+		  dt + DBL_EPSILON);
 	}
-	bufferData = FALSE;
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + p->offsetIndex;
-		outPtr = data->outSignal->channel[chan];
-		buffPtr = p->dataBuffer->outSignal->channel[chan];
-		bufferSamples = p->bufferSamples;
-		nextCutOff = p->period;
-		nextBinCutOff = binWidth - dt;
-		for (i = p->offsetIndex, binSum = 0; (i < data->inSignal[0]->length);
-		  i++) {
-			switch (p->detectionMode) {
-			case HISTOGRAM_DETECT_SPIKES:
-				if (!p->riseDetected[chan])
-					p->riseDetected[chan] = (*inPtr > *buffPtr);
-				else {
-					if (*inPtr < *buffPtr) {
-						p->riseDetected[chan] = FALSE;
-						if (*buffPtr > p->eventThreshold)
-							binSum++;
-					}
-				}
-				break;
-			case HISTOGRAM_CONTINUOUS:
-				binSum += *buffPtr;
-				break;
-			} /* switch */
-			if (!bufferSamples)
-				*buffPtr = *(inPtr++);
-			else {
-				buffPtr++;
-				bufferSamples--;
-			}
-			time = (i - p->offsetIndex + 1) * dt;
-			if (DBL_GREATER(time, nextCutOff)) {
-				remnantSamples = data->inSignal[0]->length - i + 1;
-				if ((remnantSamples * dt) < p->period) {
-					bufferData = TRUE;
-					break;
-				}
+	if (processLength) {
+		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
+		  HISTOGRAM_OUTPUT_SPIKE_RATE) && p->numPeriods) {
+			totalBinDuration = binWidth * p->numPeriods;
+			for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 				outPtr = data->outSignal->channel[chan];
-				nextCutOff += p->period;
-				p->numPeriods++;
-			}
-			if (DBL_GREATER(time, nextBinCutOff)) {
-				if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
-				  data->outSignal->length) /* - because of rounding errors. */
-					*outPtr++ += binSum;
-				binSum = 0;
-				nextBinCutOff += binWidth;
+				for (i = 0; i < data->outSignal->length; i++)
+					*outPtr++ *= totalBinDuration;
 			}
 		}
-		if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
-		  data->outSignal->length)	/* Last incomplete bin */
-			*outPtr +=  binSum;
-	}
-	if ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode == HISTOGRAM_PSTH_SR))
-		p->numPeriods++;
-	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && spikeRateMode) {
-		totalBinDuration = binWidth * p->numPeriods;
 		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+			inPtr = data->inSignal[0]->channel[chan] + p->offsetIndex + p->
+			  extraSample;
 			outPtr = data->outSignal->channel[chan];
-			for (i = 0; i < data->outSignal->length; i++)
-				*outPtr++ /= totalBinDuration;
-		}
-	}
-	if (p->offsetIndex) {
-		if (p->offsetIndex < data->inSignal[0]->length) {
-			p->offsetIndex = 0;
-			if (bufferData) {
-				bufferSamples = remnantSamples + 1;
-				for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-					inPtr = data->inSignal[0]->channel[chan] + data->inSignal[
-					  0]->length - bufferSamples;
-					buffPtr = p->dataBuffer->outSignal->channel[chan];
-					for (i = 0; i < bufferSamples; i++)
-						*buffPtr++ = *inPtr++;
+			buffPtr = p->dataBuffer->outSignal->channel[chan];
+			bufferSamples = p->bufferSamples;
+			extraTimeInterval = dt * p->extraSample;
+			nextCutOff = p->period - extraTimeInterval;
+			nextBinCutOff = binWidth - extraTimeInterval;
+			for (i = 0, binSum = 0; i < processLength; i++) {
+				switch (p->detectionMode) {
+				case HISTOGRAM_DETECT_SPIKES:
+					if (!p->riseDetected[chan])
+						p->riseDetected[chan] = (*inPtr > *buffPtr);
+					else {
+						if (*inPtr < *buffPtr) {
+							p->riseDetected[chan] = FALSE;
+							if (*buffPtr > p->eventThreshold)
+								binSum++;
+						}
+					}
+					break;
+				case HISTOGRAM_CONTINUOUS:
+					binSum += *buffPtr;
+					break;
+				} /* switch */
+				if (!bufferSamples)
+					*buffPtr = *(inPtr++);
+				else {
+					buffPtr++;
+					bufferSamples--;
+				}
+				time = (i + 1) * dt;
+				if (DBL_GREATER(time, nextBinCutOff)) {
+					if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
+					  data->outSignal->length) /* - because of rounding errors*/
+						*outPtr++ += binSum;
+					binSum = 0;
+					nextBinCutOff += binWidth;
+				}
+				if (DBL_GREATER(time, nextCutOff)) {
+					outPtr = data->outSignal->channel[chan];
+					nextCutOff += p->period;
+					p->numPeriods++;
 				}
 			}
+			if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
+			  data->outSignal->length)	/* Last incomplete bin */
+				*outPtr +=  binSum;
+		}
+		if (p->typeMode == HISTOGRAM_PSTH)
+			p->numPeriods++;
+		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
+		  HISTOGRAM_OUTPUT_SPIKE_RATE)) {
+			totalBinDuration = binWidth * p->numPeriods;
+			for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+				outPtr = data->outSignal->channel[chan];
+				for (i = 0; i < data->outSignal->length; i++)
+					*outPtr++ /= totalBinDuration;
+			}
+		}
+	}
+	if (p->offsetIndex + p->extraSample) {
+		if (p->offsetIndex < data->inSignal[0]->length) {
+			if (processLength < availableLength)
+				PushDataBuffer_Analysis_Histogram(data, availableLength -
+				  processLength);
+			p->offsetIndex = 0;
 		} else {
 			p->offsetIndex -= data->inSignal[0]->length;
-			for (chan = 0; chan < data->inSignal[0]->numChannels; chan++)
-				p->dataBuffer->outSignal->channel[chan][0] = data->inSignal[0]->
-				  channel[chan][data->inSignal[0]->length - 1];
+			PushDataBuffer_Analysis_Histogram(data, 1);
 		}
+		p->extraSample = 0;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
