@@ -31,11 +31,7 @@ new models supplied by the Development System for Auditory Modelling (DSAM).
 %prep
 %setup
 AMS_FLAGS="--prefix=%{prefix}"
-if [ ! -f configure ]; then
-  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./autogen.sh
-else
-  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure $AMS_FLAGS
-fi
+%configure $AMS_FLAGS
 
 %build
 # Needed for snapshot releases.
