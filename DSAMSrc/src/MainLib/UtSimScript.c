@@ -162,7 +162,7 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 	}
 	simScriptPtr->symList = NULL;
 	InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
-	simScriptPtr->simParFileFlag = FALSE;
+	simScriptPtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
 	sprintf(simScriptPtr->parsFilePath, "No path");
 	simScriptPtr->lineNumber = 0;
 	simScriptPtr->simPtr = NULL;
@@ -415,22 +415,22 @@ SetSimUniParValue_Utility_SimScript(char *parName, char *parValue)
 
 }
 
-/****************************** SetSimParFileFlag *****************************/
+/****************************** SetSimFileType ********************************/
 
 /*
  * This function sets the module's simParFileFlag field.
  */
 
 BOOLN
-SetSimParFileFlag_Utility_SimScript(BOOLN state)
+SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType)
 {
-	static const char	*funcName = "SetSimParFileFlag_Utility_SimScript";
+	static const char	*funcName = "SetSimFileType_Utility_SimScript";
 
 	if (simScriptPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	simScriptPtr->simParFileFlag = state;
+	simScriptPtr->simFileType = simFileType;
 	return(TRUE);
 
 }
@@ -833,12 +833,15 @@ ReadPars_Utility_SimScript(char *fileName)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	SetSimParFileFlag_Utility_SimScript(StrNCmpNoCase_Utility_String(
-	  GetSuffix_Utility_String(fileName), "SPF") == 0);
+	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE) {
+		simScriptPtr->simFileType = (StrNCmpNoCase_Utility_String(
+		  GetSuffix_Utility_String(fileName), "SPF") == 0)?
+		  UTILITY_SIMSCRIPT_SPF_FILE: UTILITY_SIMSCRIPT_SIM_FILE;
+	}
 	filePath = GetParsFileFPath_Common(fileName);
 	FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
 	  simScriptPtr->simFileName);
-	if (!simScriptPtr->simParFileFlag) {
+	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
 		if (!ReadSimScript_Utility_SimScript(filePath)) {
 			NotifyError("%s: Could not read simulation script from\nfile "
 			  "'%s'.", funcName, filePath);
@@ -1138,8 +1141,8 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				SetParsFilePath_Utility_SimScript(localSimScriptPtr->
 				  parsFilePath);
 				SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
-				SetSimParFileFlag_Utility_SimScript(localSimScriptPtr->
-				  simParFileFlag);
+				SetSimFileType_Utility_SimScript(localSimScriptPtr->
+				  simFileType);
 				SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
 				  labelBListPtr);
 				SetSimulation_Utility_SimScript(
@@ -1152,7 +1155,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				;
 			}
 		}
-	if (!localSimScriptPtr->simParFileFlag) {
+	if (localSimScriptPtr->simFileType != UTILITY_SIMSCRIPT_SPF_FILE) {
 		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
 		if (!InitialiseModules_Utility_Datum(simulation)) {
 			NotifyError("%s: Could not initialise modules.", funcName);

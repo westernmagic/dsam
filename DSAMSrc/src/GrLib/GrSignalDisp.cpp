@@ -75,6 +75,7 @@
 #include "UtString.h"
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
+#	include <wx/wxexpr.h>
 #	include "GrUtils.h"
 #	include "GrSimMgr.h"
 #	include "GrLines.h"

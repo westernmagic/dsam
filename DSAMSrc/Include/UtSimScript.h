@@ -53,11 +53,12 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define UTILITY_SIMSCRIPT_NUM_PARS	3
-#define	MAX_IDENTIFIERS					20
-#define	NULL_STRING						""
-#define SIMSCRIPT_SIMPARFILE_DIVIDER	"<<>>"
-#define SIMSCRIPT_DISABLED_MODULE_CHAR	'@'
+#define UTILITY_SIMSCRIPT_NUM_PARS			3
+#define	MAX_IDENTIFIERS						20
+#define	NULL_STRING							""
+#define SIMSCRIPT_SIMPARFILE_DIVIDER		"<<>>"
+#define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	"<()>"
+#define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -79,6 +80,14 @@ typedef enum {
 
 } UtilityParFilePathModeSpecifier;
 
+typedef enum {
+
+	UTILITY_SIMSCRIPT_SIM_FILE,
+	UTILITY_SIMSCRIPT_SPF_FILE,
+	UTILITY_SIMSCRIPT_UNKNOWN_FILE
+
+} SimFileTypeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
@@ -93,7 +102,7 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	NameSpecifier	*parFilePathModeList;
-	BOOLN	simParFileFlag;
+	SimFileTypeSpecifier	simFileType;
 	char	simFileName[MAX_FILE_PATH];
 	char	parsFilePath[MAX_FILE_PATH];
 	int		lineNumber;
@@ -182,7 +191,7 @@ BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
 
 BOOLN	SetSimFileName_Utility_SimScript(char * simFileName);
 
-BOOLN	SetSimParFileFlag_Utility_SimScript(BOOLN state);
+BOOLN	SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType);
 
 BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
 

@@ -41,7 +41,8 @@
 #include <wx/config.h>
 #include <wx/thread.h>
 #include <wx/dynarray.h>
-
+#include <wx/filesys.h>
+#include <wx/fs_zip.h>
 
 #if !wxUSE_CONSTRAINTS
 #	error "You must set wxUSE_CONSTRAINTS to 1 in setup.h!"
@@ -50,6 +51,10 @@
 #if !wxUSE_THREADS
 #	error "You must enable thread support!"
 #endif // wxUSE_THREADS
+
+#if !wxUSE_STREAMS || !wxUSE_ZIPSTREAM || !wxUSE_ZLIB
+       #error "You must enable streams. zipstream amd zlib support!"
+#endif
 
 #if !wxUSE_DOC_VIEW_ARCHITECTURE
 #	error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in setup.h!
@@ -171,19 +176,6 @@ MyApp::OnInit(void)
 	wxOGLInitialize();
 	/* static const char *funcName = "MyApp::OnInit"; */
 
-	// Create a document manager
-	myDocManager = new wxDocManager;
-
-	// Create templates relating drawing documents to their views
-	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*.spf",
-	  "", "spf", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
-	CLASSINFO(SDIView));
-	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*.sim",
-	  "", "sim", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
-	CLASSINFO(SDIView));
-
-	myDocManager->SetMaxDocsOpen(1);
-
 	// Setup the printing global variables.
     printData = new wxPrintData;
 #	if defined(__WXGTK__) || defined(__WXMOTIF__)
@@ -217,6 +209,9 @@ MyApp::OnInit(void)
 	// Image handlers
 	wxInitAllImageHandlers();
 
+	// Required for advanced HTML help
+	wxFileSystem::AddHandler(new wxZipFSHandler);
+
 	// Get config setup
 	SetVendorName("CNBH");
 
@@ -229,6 +224,17 @@ MyApp::OnInit(void)
 
 	InitHelp();
 
+	// Create a document manager
+	myDocManager = new wxDocManager;
+	// Create templates relating drawing documents to their views
+	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*.spf",
+	  simFile.GetCwd(), "spf", "Simulation Design", "Simulation view",
+	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*.sim",
+	  simFile.GetCwd(), "sim", "Simulation Design", "Simulation view",
+	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	myDocManager->SetMaxDocsOpen(1);
+
 	// Get frame position and size
 	pConfig->SetPath(SIM_MANAGER_REG_MAIN_FRAME);
 	int		x = pConfig->Read("x", (long int) 0);
@@ -239,9 +245,6 @@ MyApp::OnInit(void)
 	// Create the main frame window
 	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, "Simulation Manager",
 	  wxPoint(x, y), wxSize(w, h), wxDEFAULT_FRAME_STYLE);
-
-	// Ensure title it set after the frame is created.
-	SetTitle();
 
 	frame->SetMenuBar(CreateMenuBar());
 	frame->editMenu = editMenu;
@@ -290,8 +293,7 @@ MyApp::InitAppInterface(void)
 		//  pars[APP_INT_SIMULATIONFILE]);
 		//defaultDir = (wxIsAbsolutePath(simFilePath))? wxPathOnly(simFilePath):
 		//  wxGetCwd() + "/" + wxPathOnly(simFilePath);
-	} else 
-		defaultDir = wxGetCwd();
+	}
 
 }
 
@@ -307,9 +309,8 @@ MyApp::InitHelp(void)
 	help.UseConfig(wxConfig::Get());
 	// help.SetTempDir(".");  -- causes crashes on solaris
 	if (GetPtr_AppInterface()) {
-		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH,
-		  GetPtr_AppInterface()->installDir,
-		  GetPtr_AppInterface()->appName);
+		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, GetPtr_AppInterface()->
+		  installDir, GetPtr_AppInterface()->appName);
 		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, DSAM_DATA_INSTALL_DIR,
 		  DSAM_PACKAGE);
 	}
@@ -402,7 +403,7 @@ MyApp::CreateMenuBar(void)
 // module list.
 
 void
-MyApp::AddToProcessList(wxStringList& list, const wxString& prefix)
+MyApp::AddToProcessList(wxArrayString& list, const wxString& prefix)
 {
 	ModRegEntryPtr	prefixStart, modList;
 
@@ -536,7 +537,6 @@ MyApp::CheckInitialisation(void)
 		return(FALSE);
 	}
 
-	SetTitle();
 	return(TRUE);
 
 }
@@ -613,7 +613,6 @@ MyApp::InitMain(void)
 		SetConfiguration(GetPtr_AppInterface()->parList);
 	ResetCommandArgs();
 	ResetStepCount_Utility_Datum();
-	SetTitle();
 	
 }
 
@@ -720,27 +719,6 @@ MyApp::InitRun(void)
 	MainSimulation();
 	SetCanFreePtrFlag_AppInterface(FALSE);
 	return(CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
-
-}
-
-/****************************** SetTitle **************************************/
-
-// This routine sets the frame title from the application interface title.
-// The NULL frame test is necessary because the first time this is called the
-// frame will not have been set.
-
-void
-MyApp::SetTitle(void)
-{
-	if (!GetPtr_AppInterface())
-		return;
-
-	if (frame) {
-		title.sprintf("%s: %s (%s)", GetPtr_AppInterface()->appName, 
-		  wxFileNameFromPath(GetPtr_AppInterface()->title), (char *) wxPathOnly(
-		  GetPtr_AppInterface()->title).GetData());
-		frame->SetTitle(title);
-	}
 
 }
 
@@ -1025,19 +1003,18 @@ void
 MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
   const wxString& fileName)
 {
-	wxString helpFile, helpFilePath;
+	wxString	helpFilePath;
+	wxFileName	helpFile;
 
 	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
 	helpFilePath = pConfig->Read(path, "");
 	if (GetPtr_AppInterface()) {
-		helpFile = ((helpFilePath.Len() != 0)? helpFilePath: defaultPath) +
-		  "/" + SIM_MANAGER_HELP_DIR + "/" + fileName + ".hhp";
-#		ifdef __WXMSW__
-		wxUnix2DosFilename((char *) helpFile.GetData());
-#		endif
+		if (helpFilePath.Len() != 0)
+			helpFilePath = defaultPath;
+		helpFile = wxFileName(helpFilePath, fileName, ".zip");
 	} else
-		helpFile = defaultPath + "/" + SIM_MANAGER_HELP_DIR + "/DSAMApp.hhp";
-	if (wxFileExists(helpFile) && help.AddBook(helpFile))
+		helpFile = wxFileName(defaultPath, "DSAMApp.zip");
+	if (helpFile.FileExists() && help.AddBook(helpFile))
 		 helpCount++;
 
 }

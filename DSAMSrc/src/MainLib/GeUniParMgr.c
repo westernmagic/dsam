@@ -162,6 +162,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	par->enabled = TRUE;
 	par->type = type;
 	par->abbr = abbreviation;
+	par->altAbbr = NULL;
 	par->desc = description;
 	switch (type) {
 	case UNIPAR_INT:
@@ -411,6 +412,27 @@ SetGetPanelListFunc_UniParMgr(UniParListPtr list, NameSpecifier * (* Func)(int))
 
 }
 
+/************************ SetAltAbbreviation **********************************/
+
+/*
+ * This routine sets an alternative abbreviation for a universal parameter.
+ * This facility is to be used for old or changed parameter names which will
+ * soon be made obsolete.
+ */
+
+void
+SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr)
+{
+	static const char	*funcName = "SetAltAbbreviation_UniParMgr";
+
+	if (!altAbbr || (*altAbbr == '\0')) {
+		NotifyError("%s: No string given!", funcName);
+		return;
+	}
+	p->altAbbr = altAbbr;
+
+}
+
 /************************ PrintValue ******************************************/
 
 /*
@@ -472,19 +494,19 @@ PrintArray_UniParMgr(UniParPtr p, char *suffix)
 	for (i = 0; i < *p->valuePtr.array.numElements; i++)
 		switch (p->type) {
 		case UNIPAR_INT_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10d\n", p->abbr, suffix, i, (*p->valuePtr.
+			DPrint("\t%s%s\t%3d:%-10d\n", p->abbr, suffix, i, (*p->valuePtr.
 			  array.pPtr.i)[i]);
 			break;
 		case UNIPAR_REAL_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i, (*p->valuePtr.
+			DPrint("\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i, (*p->valuePtr.
 			  array.pPtr.r)[i]);
 			break;
 		case UNIPAR_STRING_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
+			DPrint("\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
 			  QuotedString_Utility_String((*p->valuePtr.array.pPtr.s)[i]));
 			break;
 		case UNIPAR_NAME_SPEC_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
+			DPrint("\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
 			  QuotedString_Utility_String(p->valuePtr.array.pPtr.nameList.list[
 			    (*p->valuePtr.array.pPtr.nameList.specifier)[i]].name));
 			break;
@@ -531,12 +553,12 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 			return(FALSE);
 		}
 		snprintf(string, LONG_STRING, "%s%s", p->abbr, suffix);
-		DPrint("\t%s%-25s\t", prefix, string);
+		DPrint("%s%-25s\t", prefix, string);
 		PrintValue_UniParMgr(p);
 		DPrint("%s\n", p->desc);
 		break;
 	case UNIPAR_MODULE:
-		DPrint("\t# Module parameter file: %s\n",
+		DPrint("# Module parameter file: %s\n",
 		  p->valuePtr.module.parFile);
 		ok = PrintPars_UniParMgr(p->valuePtr.module.parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
@@ -544,12 +566,12 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_PARLIST:
 		if (!*(p->valuePtr.parList))
 			break;
-		DPrint("\t# Sub-parameter list: \n");
+		DPrint("# Sub-parameter list: \n");
 		ok = PrintPars_UniParMgr(*(p->valuePtr.parList),
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
 		break;
 	case UNIPAR_CFLIST:
-		DPrint("\t# CFList parameters:\n");
+		DPrint("# CFList parameters:\n");
 		if (!PrintPars_UniParMgr((*p->valuePtr.cFPtr)->cFParList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
@@ -559,27 +581,27 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 			ok = FALSE;
 		break;
 	case UNIPAR_PARARRAY:
-		DPrint("\t# %s parameters:\n", (*p->valuePtr.pAPtr)->name);
+		DPrint("# %s parameters:\n", (*p->valuePtr.pAPtr)->name);
 		if (!PrintPars_UniParMgr((*p->valuePtr.pAPtr)->parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
 		break;
 	case UNIPAR_ICLIST:
-		DPrint("\t# IonChanList parameters:\n");
+		DPrint("# IonChanList parameters:\n");
 		if (!PrintPars_UniParMgr((*p->valuePtr.iCPtr)->parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
 		for (node = (*p->valuePtr.iCPtr)->ionChannels; node; node =
 		  node->next) {
 			IonChannelPtr iC = (IonChannelPtr) node->data;
-			DPrint("\t# <---- Ion channel %s ---->\n", iC->description);
+			DPrint("# <---- Ion channel %s ---->\n", iC->description);
 			if (!PrintPars_UniParMgr(iC->parList,
 			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 				ok = FALSE;
 		}
 		break;
 	case UNIPAR_SIMSCRIPT:
-		DPrint("\t# Parameters for '%s' simulation:\n",
+		DPrint("# Parameters for '%s' simulation:\n",
 		  p->valuePtr.simScript.fileName);
 		PrintParListModules_Utility_Datum(*p->valuePtr.simScript.simulation,
 		  UNIPAR_SUB_PAR_LIST_MARKER);
@@ -588,7 +610,7 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
-		DPrint("\t# %s:\n", p->desc);
+		DPrint("# %s:\n", p->desc);
 		PrintArray_UniParMgr(p, suffix);
 		break;
 	default:
@@ -1253,7 +1275,11 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
 {
 	switch (mode) {
 	case UNIPAR_SEARCH_ABBR:
-		return(StrNCmpNoCase_Utility_String(p->abbr, (char *) item));
+		if (StrNCmpNoCase_Utility_String(p->abbr, (char *) item) == 0)
+			return(0);
+		if (p->altAbbr)
+			return(StrNCmpNoCase_Utility_String(p->altAbbr, (char *) item));
+		break;
 	case UNIPAR_SEARCH_TYPE:
 		return(p->type - (int) item);
 	}

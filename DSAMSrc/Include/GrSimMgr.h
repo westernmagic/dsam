@@ -44,7 +44,6 @@
 /******************************************************************************/
 
 #define	DEFAULT_SERVER_NAME				"110773"
-#define SIM_MANAGER_HELP_DIR			"HelpFiles"
 #define SIM_MANAGER_DEFAULT_WIDTH		500
 #define SIM_MANAGER_DEFAULT_HEIGHT		200	
 #define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
@@ -126,9 +125,9 @@ class MyApp: public wxApp {
   public:
 	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu, *windowsMenu;
 	wxIcon	*icon;
-	wxString	simFilePath, defaultDir;
-	wxStringList	anaList, ctrlList, filtList, ioList, modelsList, stimList;
-	wxStringList	transList, userList, utilList;
+	wxFileName	simFile;
+	wxArrayString	anaList, ctrlList, filtList, ioList, modelsList, stimList;
+	wxArrayString	transList, userList, utilList;
 	SimThread	*simThread;
 	wxArrayDisplay	displays;
 	wxCriticalSection	mainCritSect;
@@ -141,7 +140,7 @@ class MyApp: public wxApp {
 	void	CheckOptions(void);
 	wxMenuBar	*CreateMenuBar(void);
 	EditorToolPalette *CreatePalette(wxFrame *parent);
-	void	AddToProcessList(wxStringList& list, const wxString& prefix);
+	void	AddToProcessList(wxArrayString& list, const wxString& prefix);
 	void	CloseDiagWindow(void);
 	void	CreateProcessLists(void);
 	void	DeleteSimThread(void);
@@ -176,7 +175,6 @@ class MyApp: public wxApp {
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
 	void	SetDiagLocks(bool on);
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
-	void	SetTitle(void);
 	void	StartSimThread(void);
 	bool	StatusChanged(void);
 

@@ -133,6 +133,7 @@ typedef struct UniPar {
 	BOOLN	enabled;
 	uInt	index;
 	char	*abbr;
+	char	*altAbbr;
 	char	*desc;
 
 	UniParModeSpecifier	mode;
@@ -276,6 +277,8 @@ BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
+
+void	SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr);
 
 BOOLN	SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  char *parValue);

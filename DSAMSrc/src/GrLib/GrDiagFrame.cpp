@@ -77,7 +77,6 @@ DiagFrame::DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	  "Window\n", wxPoint(0, 0), wxSize(width, height), wxTE_MULTILINE);
 	diagnosticsText->SetFont(*diagnosticsWindowFont);
 
-
 }
 
 /******************************************************************************/

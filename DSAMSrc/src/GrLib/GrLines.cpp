@@ -291,8 +291,8 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 	else
 		xIndex = (xResolution / xScale > 1.0)? (int) (xResolution / xScale): 1;
 	deltaX = xScale * xIndex;
-	yNormalOffset = (yNormalisationMode == GRAPH_LINE_YNORM_MIDDLE_MODE)? (maxY +
-	  minY) / 2.0: minY;
+	yNormalOffset = (yNormalisationMode == GRAPH_LINE_YNORM_MIDDLE_MODE)?
+	  (maxY + minY) / 2.0: minY;
 
 	xOffset = (wxCoord) (theXOffset + rect.GetLeft());
 	yChan = theYOffset + yOffset;
@@ -311,7 +311,7 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 		} else {
 			lastXCoord = X_COORD(0.0);
 			lastYCoord = Y_COORD(*p);
-			for (i = 1, p += xIndex, x = deltaX, minYPtr = minYRecord; i <
+			for (i = xIndex, p += xIndex, x = deltaX, minYPtr = minYRecord; i <
 			  length; i += xIndex, p += xIndex, x += deltaX, minYPtr +=
 			  xIndex) {
 		  		xCoord = X_COORD(x);

@@ -68,6 +68,7 @@ class SDIDocument: public wxDocument
 	#else
 	virtual wxOutputStream&	SaveObject(wxOutputStream& stream);
 	virtual wxInputStream&	LoadObject(wxInputStream& stream);
+	bool	GotDiagramInfo(wxInputStream& stream);
 	#endif
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }

@@ -33,6 +33,8 @@
 
 #include <wx/docview.h>
 #include <wx/colordlg.h>
+#include <wx/wxexpr.h>
+#include <wx/cmdproc.h>
 
 #if !wxUSE_DOC_VIEW_ARCHITECTURE
 #error You must set wxUSE_DOC_VIEW_ARCHITECTURE to 1 in wx_setup.h!
@@ -88,9 +90,10 @@ SDIView::ProcessListDialog(void)
 	wxShape *theShape = FindSelectedShape();
 
 	if (theShape) {
+		wxArrayString	*procList = ((SDIEvtHandler *) theShape->
+		  GetEventHandler())->GetProcessList();
 		wxSingleChoiceDialog dialog(theShape->GetCanvas(), "Select a process",
-		  "Please select a process", *((SDIEvtHandler *) theShape->
-		  GetEventHandler())->GetProcessList());
+		  "Please select a process", procList->Count(), &procList->Item(0));
 
 		if (dialog.ShowModal() == wxID_OK) {
 			SDICanvas *canvas = (SDICanvas *) theShape->GetCanvas();
@@ -100,7 +103,6 @@ SDIView::ProcessListDialog(void)
 			  dialog.GetStringSelection(), theShape));
 		
 		}
-		
 	}
 
 }

@@ -22,6 +22,8 @@
 #include <iostream.h>
 #endif
 
+#include "wx/txtstrm.h"
+
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
@@ -158,22 +160,60 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 }
 
 /******************************************************************************/
+/****************************** GotDiagramInfo ********************************/
+/******************************************************************************/
+
+/*
+ * This routine returns TRUE if Diagram information can be found in the file.
+ */
+
+bool
+SDIDocument::GotDiagramInfo(wxInputStream& stream)
+{
+	wxTextInputStream text(stream);
+
+	while (!stream.Eof())
+		if (text.ReadLine().Contains(SIMSCRIPT_SIMPARFILE_SDI_DIVIDER))
+			return(true);
+	return (false);
+
+}
+
+/******************************************************************************/
 /****************************** LoadObject ************************************/
 /******************************************************************************/
 
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
+	printf("SDIDocument::LoadObject: Entered\n");
 	wxDocument::LoadObject(stream);
 
-	char buf[400];
-	(void) wxGetTempFileName("diag", buf);
+	printf("SDIDocument::LoadObject: This is a '%s' file\n", (char *)
+	  GetDocumentTemplate()->GetDefaultExtension().GetData());
+	printf("SDIDocument::LoadObject: Set simFileType\n");
 
-	wxTransferStreamToFile(stream, buf);
+	wxString tempFileName = wxFileName::CreateTempFileName("diag");
+	/* The 'wxGetTempFileName' routine is obsolete and should be replaced.*/
+//	(void) wxGetTempFileName("diag", buf);
+	printf("SDIDocument::LoadObject: File name = '%s'\n",
+	  (char *) tempFileName.GetData());
+
+	wxTransferStreamToFile(stream, tempFileName);
 
 	diagram.DeleteAllShapes();
-	diagram.LoadFile(buf);
-	wxRemoveFile(buf);
+//	printf("SDIDocument::LoadObject: file name = '%s'\n", (char *) GetFilename(
+//	  ).GetData());
+//	wxGetApp().simFile.SetCwd(GetDocumentTemplate()->GetDirectory());
+	wxGetApp().simFile = tempFileName;
+	wxGetApp().GetFrame()->SetSimFileAndLoad();
+	
+//	if (!GotDiagramInfo(stream)) {
+//		printf("SDIDocument::LoadObject: Draw basic simulation layout\n");
+//		return(stream);
+//	}
+	diagram.LoadFile(tempFileName);
+	wxRemoveFile(tempFileName);
 
 	return stream;
 

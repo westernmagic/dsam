@@ -61,7 +61,7 @@ SDIEvtHandler::~SDIEvtHandler(void)
 /****************************** GetProcList ***********************************/
 /******************************************************************************/
 
-wxStringList *
+wxArrayString *
 SDIEvtHandler::GetProcessList(void)
 {
 	static const char	*funcName = "SDIEvtHandler::GetProcessList";

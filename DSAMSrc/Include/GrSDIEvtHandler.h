@@ -58,7 +58,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	  const wxString& lab = "", int theProcessType = -1);
 	~SDIEvtHandler(void);
 
-	wxStringList *	GetProcessList(void);
+	wxArrayString *	GetProcessList(void);
 	bool	EditInstruction(void);
 	void	FreeInstruction(void);
 	bool	InitInstruction(void);

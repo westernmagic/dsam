@@ -189,8 +189,10 @@
 // Any files included regardless of precompiled headers
 #	include <wx/notebook.h>
 #	include <wx/print.h>
-#	include "wx/printdlg.h"
-#	include "wx/socket.h"
+#	include <wx/printdlg.h>
+#	include <wx/socket.h>
+#	include <wx/cmdproc.h>
+#	include <wx/wxexpr.h>
 
 #	if wxTEST_POSTSCRIPT_IN_MSW
 #		include "wx/generic/printps.h"

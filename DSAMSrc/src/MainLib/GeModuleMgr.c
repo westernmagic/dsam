@@ -710,10 +710,10 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
  * It is not being called in places where it will fail.
  */
 
-BOOLN
-GetSimParFileFlag_ModuleMgr(EarObjectPtr data)
+int
+GetSimFileType_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetSimParFileFlag_ModuleMgr";
+	static const char *funcName = "GetSimFileType_ModuleMgr";
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -722,7 +722,7 @@ GetSimParFileFlag_ModuleMgr(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	return(((SimScriptPtr) data->module->parsPtr)->simParFileFlag);
+	return((int) ((SimScriptPtr) data->module->parsPtr)->simFileType);
 
 }
 

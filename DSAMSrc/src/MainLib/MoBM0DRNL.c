@@ -187,6 +187,8 @@ Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 		Free_BasilarM_DRNL_Test();
 		return(FALSE);
 	}
+	bM0DRNLPtr->numChannels = 0;
+	bM0DRNLPtr->numCompressionPars = 0;
 	SetDefaultCompressionMode_BasilarM_DRNL_Test();
 	return(TRUE);
 
@@ -1436,8 +1438,6 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 	/* Initialise Variables and coefficients */
 	
 	SetProcessName_EarObject(data, "DRNL_Test Basilar Membrane Filtering");
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Input signal not correctly initialised.", funcName);
 		return(FALSE);

@@ -200,6 +200,8 @@
 
 #define IS_ABSOLUTE_PATH(S)		(((S)[0] == '/') || ((S)[1] == ':'))
 
+#define	POSSIBLY_NULL_STRING_PTR(S)	(((S))? (S): UNSET_STRING)
+
 /* This next definition is need for compiler niceties in MS Visual C++
  * otherwise it complains about "int being forces to 'true' or 'false'.
  */

@@ -60,6 +60,7 @@
 
 #include <wx/wxexpr.h>
 #include <wx/docview.h>
+#include <wx/cmdproc.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

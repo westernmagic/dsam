@@ -165,7 +165,7 @@ double		GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential);
 
 EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
 
-BOOLN		GetSimParFileFlag_ModuleMgr(EarObjectPtr data);
+int		GetSimFileType_ModuleMgr(EarObjectPtr data);
 
 DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
 
