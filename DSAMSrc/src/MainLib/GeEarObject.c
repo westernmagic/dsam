@@ -33,6 +33,7 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "UtRandom.h"
 
 /******************************************************************************/
 /*************************** Global Variables *********************************/
@@ -74,11 +75,14 @@ Init_EarObject(char *moduleName)
 	data->processName = NULL;
 	data->localOutSignalFlag = FALSE;
 	data->externalDataFlag = FALSE;
+	data->initThreadRunFlag = FALSE;
+	data->threadRunFlag = FALSE;
 	data->updateCustomersFlag = TRUE;
 	data->updateProcessFlag = TRUE;
 	data->firstSectionFlag = TRUE;
 	data->numInSignals = 0;
 	data->timeIndex = PROCESS_START_TIME;
+	data->randPars = NULL;
 	data->inSignal = NULL;
 	data->outSignal = NULL;
 	data->customerList = NULL;
@@ -97,6 +101,10 @@ Init_EarObject(char *moduleName)
 	}
 #	endif
 	data->clientData = NULL;
+	data->numThreads = 0;
+	data->numSubProcesses = 0;
+	data->threadProcs = NULL;
+	data->subProcessList = NULL;
 	return(data);
 
 } /* Init_EarObject */
@@ -213,6 +221,8 @@ FreeOutSignal_EarObject(EarObjectPtr data)
  * released before memory of the object itself is released.
  * Only locally create signals will be free'd, i.e. each EarObject must release
  * the signals which it created.
+ * When releasing the memory for the 'threadProcs' remember that these
+ * EarObjects are copies and have no personal allocated space.
  */
  
 void
@@ -235,6 +245,10 @@ Free_EarObject(EarObjectPtr *theObject)
 #	endif
 	FreeEarObjRefList_EarObject(&(*theObject)->customerList);
 	FreeEarObjRefList_EarObject(&(*theObject)->supplierList);
+	if ((*theObject)->randPars)
+		FreePars_Random(&(*theObject)->randPars);
+	if ((*theObject)->threadProcs)
+		FreeThreadProcs_EarObject(*theObject);
 	free(*theObject);
 	*theObject = NULL;		
 	
@@ -786,11 +800,15 @@ SetTimeContinuity_EarObject(EarObjectPtr data)
  * This routine sets the various process continuity requirements, such as
  * time, customer updating, etc.
  * It assumes that the EarObjectPtr has been initialised.
+ * The 'data->outSignal->offset' comparison ensures that only the first thread
+ * of a multi-threaded run will set the process continuity information.
  */
 
 void
 SetProcessContinuity_EarObject(EarObjectPtr data)
 {
+	if (data->outSignal->offset)
+		return;
 	SetTimeContinuity_EarObject(data);
 	if (data->updateCustomersFlag)
 		UpdateCustomers_EarObject(data);
@@ -804,11 +822,15 @@ SetProcessContinuity_EarObject(EarObjectPtr data)
  * This routine sets the various process continuity requirements for utility 
  * modules, such as staticTimeFlag, outputTimeOffset etc.
  * It assumes that the EarObjectPtr has been initialised.
+ * The 'data->outSignal->offset' comparison ensures that only the first thread
+ * of a multi-threaded run will set the process continuity information.
  */
 
 void
 SetUtilityProcessContinuity_EarObject(EarObjectPtr data)
 {
+	if (data->outSignal->offset)
+		return;
 	if (data->inSignal[0]) {
 		data->outSignal->staticTimeFlag = data->inSignal[0]->staticTimeFlag;
 		data->outSignal->numWindowFrames = data->inSignal[0]->numWindowFrames;
@@ -967,6 +989,207 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 		
 	for (i = 0; i < supporting->numInSignals; i++)
 		supporting->inSignal[i] = base->inSignal[i];
+	return(TRUE);
+
+}
+
+/**************************** SetRandPars *************************************/
+
+/*
+ * This function initialises the random parameters structure.
+ * It sets the random seed if the structure already exists, otherwise it
+ * initialises it.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const char *callingFunc)
+{
+	
+	if (p->randPars) {
+		SetSeed_Random(p->randPars, ranSeed);
+		return(TRUE);
+	}
+	if ((p->randPars = InitPars_Random(ranSeed)) == NULL) {
+		NotifyError("%s: Out of memory for 'random' parameters.", callingFunc);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/**************************** FreeThreadSubProcs ******************************/
+
+/*
+ * This routine frees the memory for the EarObject Copies for the sub-processes.
+ * The out signal created as only a copy for the output signal, so it can
+ * be simply free'd.  In addition, the space for the all the out signals was
+ * created in one go, so the first out signal is used to delete all of them.
+ * The same applies to the process EarObjects.
+ */
+ 
+void
+FreeThreadSubProcs_EarObject(EarObjectPtr p)
+{
+	int		i;
+	EarObjectPtr	*sP;
+
+	for (i = 0, sP = p->subProcessList; i < p->numSubProcesses; i++, sP++)
+		if ((*sP)->randPars)
+			FreePars_Random(&(*sP)->randPars);
+ 	if (p->subProcessList[0]->outSignal)
+		free(p->subProcessList[0]->outSignal);
+	free(p->subProcessList);
+
+}
+
+/**************************** InitThreadSubProcs ******************************/
+
+/*
+ * This function initialises the thread sub-process list.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+InitThreadSubProcs_EarObject(EarObjectPtr p)
+{
+	static const char *funcName = "InitThreadSubProcs_EarObject";
+	int		i;
+	EarObjectPtr	*sP, earObjectList, *origSubProcessList;
+	SignalDataPtr	signalList;
+
+	if ((earObjectList = (EarObject *) calloc(p->numSubProcesses, sizeof(
+	  EarObject))) == NULL) {
+		NotifyError("%s: Could not initialise sub-process EarObject Copy list "
+		  "(%d copies).", funcName, p->numSubProcesses);
+		return(FALSE);
+	}
+	if ((signalList = (SignalData *) calloc(p->numSubProcesses, sizeof(
+	  SignalData))) == NULL) {
+		NotifyError("%s: Out of memory for %d signal copies.", funcName,
+		  p->numSubProcesses);
+		return(FALSE);
+	}
+	origSubProcessList = p->subProcessList;
+	p->subProcessList = NULL;	/* Don't want original list bashed. */
+	if (!InitSubProcessList_EarObject(p, p->numSubProcesses)) {
+		NotifyError("%s: Could not initialise sub-process list copy.",
+		  funcName);
+		return(FALSE);
+	}
+	for (i = 0, sP = p->subProcessList; i < p->numSubProcesses; i++, sP++) {
+		*sP = earObjectList++;
+		(*sP)->outSignal = signalList++;
+		*(*sP)->outSignal = *(*origSubProcessList++)->outSignal;
+		if ((*sP)->randPars) {
+			(*sP)->randPars = NULL;
+			SetRandPars_EarObject((*sP), -(i + 1 + p->randPars->idum),
+			  funcName);
+		}
+	}
+	return(TRUE);
+
+}
+
+/**************************** FreeThreadProcs *********************************/
+
+/*
+ * This routine frees the memory for the EarObjectCopies.
+ * The out signal created as only a copy for the output signal, so it can
+ * be simply free'd.  In addition, the space for the all the out signals was
+ * created in one go, so the first out signal is used to delete all of them.
+ * The same applies to the process EarObjects.
+ */
+ 
+void
+FreeThreadProcs_EarObject(EarObjectPtr p)
+{
+	int		i;
+	EarObjectPtr	pI;
+
+	for (i = 0, pI = p->threadProcs; i < p->numThreads - 1; i++, pI++) {
+		if (pI->randPars)
+			FreePars_Random(&pI->randPars);
+		if (pI->subProcessList)
+			FreeThreadSubProcs_EarObject(pI);
+	}
+ 	if (p->threadProcs[0].outSignal)
+		free(p->threadProcs[0].outSignal);
+	free(p->threadProcs);
+
+}
+
+/**************************** InitThreadProcs *********************************/
+
+/*
+ * This function initialises the threadProcs list.
+ * It returns FALSE if it fails in any way.
+ * The first thread uses the original process data, randPars, outSignal, etc.
+ */
+
+BOOLN
+InitThreadProcs_EarObject(EarObjectPtr p, int numThreads)
+{
+	static const char *funcName = "InitThreadProcs_EarObject";
+	int		i, numCopies;
+	EarObjectPtr	tP;
+	SignalDataPtr	s;
+
+	numCopies = numThreads - 1;
+	if ((p->threadProcs = (EarObject *) calloc(numCopies, sizeof(EarObject))) ==
+	  NULL) {
+		NotifyError("%s: Could not initialise EarObject Copy list (%d copies).",
+		  funcName, numCopies);
+		return(FALSE);
+	}
+	if ((s = (SignalData *) calloc(numCopies, sizeof(SignalData))) == NULL) {
+		NotifyError("%s: Out of memory for %d signal copies.", funcName,
+		  numCopies);
+		return(FALSE);
+	}
+	p->numThreads = numThreads;
+	for (i = 0, tP = p->threadProcs; i < numCopies; i++, tP++, s++) {
+		*tP = *p;
+		tP->outSignal = s;
+		*tP->outSignal = *p->outSignal;
+		if (tP->randPars) {
+			tP->randPars = NULL;
+			SetRandPars_EarObject(tP, -(i + 1 + p->randPars->idum), funcName);
+		}
+		if (p->subProcessList && !InitThreadSubProcs_EarObject(tP)) {
+			NotifyError("%s: Could not initialise sub process copies.",
+			  funcName);
+			return(FALSE);
+		}
+
+	}
+	return(TRUE);
+
+}
+
+/************************** InitSubProcessList ********************************/
+
+/*
+ * Initialise a list of references to sub process Lists.
+ * This list provides a way of initialising the sub processes for threaded 
+ * operation.
+ * It assumes that the module has been correctly initialised.
+ */
+
+BOOLN
+InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses)
+{
+	static const char	*funcName = "InitSubProcessList_EarObject";
+
+	if (p->subProcessList)
+		free(p->subProcessList);
+	if ((p->subProcessList = (EarObjectPtr *) calloc(numSubProcesses, sizeof(
+	  EarObjectPtr))) == NULL) {
+	  	NotifyError("%s: Out of memory for %d element sub-process list.",
+		  funcName, numSubProcesses);
+		return(FALSE);
+	}
+	p->numSubProcesses = numSubProcesses;
 	return(TRUE);
 
 }

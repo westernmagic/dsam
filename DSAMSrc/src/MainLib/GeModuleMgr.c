@@ -63,8 +63,9 @@
 /******************************************************************************/
 
 ModuleRefPtr	moduleList = NULL;
-ModulePtr		nullModule = NULL;
-BOOLN			(* TestDestroy_ModuleMgr)(void) = NULL;
+ModulePtr	nullModule = NULL;
+BOOLN	(* TestDestroy_ModuleMgr)(void) = NULL;
+BOOLN	(* RunProcess_ModuleMgr)(EarObjectPtr) = RunProcessStandard_ModuleMgr;
 
 /******************************************************************************/
 /************************** Subroutines and functions *************************/
@@ -185,6 +186,7 @@ Init_ModuleMgr(char *theModuleName)
 	theModule->specifier = modRegEntryPtr->specifier;
 	theModule->classSpecifier = modRegEntryPtr->classSpecifier;
 	theModule->onFlag = TRUE;
+	theModule->threadMode = MODULE_THREAD_MODE_NONE;
 	theModule->parsPtr = NULL;
 	ToUpper_Utility_String(theModule->name, theModuleName);
 	SetDefault_ModuleMgr(theModule, NoFunction_ModuleMgr);
@@ -395,7 +397,6 @@ CheckData_ModuleMgr(EarObjectPtr data, const char *callingFunction)
 	}
 	return(TRUE);
 }
-
 
 /**************************** Enable ******************************************/
 
@@ -761,7 +762,7 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
 
 }
 
-/*************************** RunProcess ***************************************/
+/*************************** RunProcessStandard *******************************/
 
 /*
  * This function runs the module process
@@ -769,9 +770,9 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
  */
 
 BOOLN
-RunProcess_ModuleMgr(EarObjectPtr data)
+RunProcessStandard_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "RunProcess_ModuleMgr";
+	static const char *funcName = "RunProcessStandard_ModuleMgr";
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -884,6 +885,20 @@ SetTestDestroy_ModuleMgr(BOOLN (* Func)(void))
 }
 
 
+/************************** SetRunProcess *************************************/
+
+/*
+ * This routine sets the global 'RunProcess' function pointer.
+ */
+
+void
+SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr))
+{
+	RunProcess_ModuleMgr = Func;
+
+}
+
+
 /************************** SetNull *******************************************/
 
 /*
@@ -920,3 +935,4 @@ FreeNull_ModuleMgr(void)
 	Free_ModuleMgr(&tempPtr);
 	
 }
+

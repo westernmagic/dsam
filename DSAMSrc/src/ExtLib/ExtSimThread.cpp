@@ -38,16 +38,16 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "UtAppInterface.h"
+#include "UtSSSymbols.h"
+#include "UtSSParser.h"
 
 #include "ExtMainApp.h"
+#include "ExtRunThreadedProc.h"
+#include "ExtProcThread.h"
 #include "ExtSimThread.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
-/******************************************************************************/
-
-/******************************************************************************/
-/****************************** Global variables ******************************/
 /******************************************************************************/
 
 /******************************************************************************/
@@ -60,9 +60,11 @@
 
 /****************************** Constructor ***********************************/
 
-SimThread::SimThread(void): wxThread()
+SimThread::SimThread(wxThreadKind kind): wxThread(kind)
 {
 	SetTestDestroy_ModuleMgr(TestDestroy_SimThread);
+	if (runThreadedProc)
+		runThreadedProc->SetNumThreads(GetPtr_AppInterface()->numThreads);
 
 }
 
@@ -75,10 +77,10 @@ void *
 SimThread::Entry()
 {
 	SetInterruptRequestStatus_Common(FALSE);
-	dSAMMainApp->RunSimulation();
+	bool ok = dSAMMainApp->RunSimulation();
 	GetPtr_AppInterface()->simulationFinishedFlag = TRUE;
 
-	return(NULL);
+	return((void *) ok);
 
 }
 

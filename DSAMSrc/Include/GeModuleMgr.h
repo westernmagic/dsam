@@ -66,9 +66,18 @@
 #define	SET_PARS_POINTER(EAROBJ)	((* (EAROBJ)->module->SetParsPointer) \
 										((EAROBJ)->module))
 
+#define MODULE_THREAD_ENABLED(EAROBJ)	((EAROBJ)->module->threadMode)
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef enum {
+
+	MODULE_THREAD_MODE_NONE = 0,
+	MODULE_THREAD_MODE_SIMPLE,
+
+} ThreadModeSpecifier;
 
 typedef enum {
 
@@ -110,8 +119,11 @@ typedef struct moduleStruct {
 
 	BOOLN	onFlag;
 	char	name[MAX_MODULE_NAME];
+	int		numSubProcesses;	/* No. of sub-process to register with threads*/
+	EarObjectPtr	*subProcessList;
 	ModuleSpecifier	specifier;
 	ModuleClassSpecifier	classSpecifier;
+	ThreadModeSpecifier		threadMode;
 	ModuleHandle	handle;				/* Reference handle for manager. */
 	
 	/* General, accessible functions. */
@@ -155,6 +167,16 @@ typedef struct moduleNode {
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
+
+/* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
+ * macros, to allow the safe use of C libraries with C++ libraries - defined
+ * in GeCommon.h.
+ */
+__BEGIN_DECLS
+
+extern BOOLN (* RunProcess_ModuleMgr)(EarObjectPtr);
+
+__END_DECLS
 
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
@@ -214,7 +236,7 @@ BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
 BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, char *fileName);
 
-BOOLN	RunProcess_ModuleMgr(EarObjectPtr data);
+BOOLN	RunProcessStandard_ModuleMgr(EarObjectPtr data);
 
 BOOLN	RunModel_ModuleMgr_Null(EarObjectPtr data);
 
@@ -228,6 +250,8 @@ BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
 		  double value);
 
 BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value);
+
+void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
 
 void	SetTestDestroy_ModuleMgr(BOOLN (* Func)(void));
 

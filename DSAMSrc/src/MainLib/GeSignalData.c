@@ -79,6 +79,7 @@ Init_SignalData(const char *callingFunctionName)
 		exit(1);
 	}
 	theData->numChannels = 0;
+	theData->offset = 0;
 	theData->interleaveLevel = SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
 	theData->numWindowFrames = SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES;
 	theData->length = 0;
@@ -438,7 +439,7 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 		return(FALSE);
 	if (!SameType_SignalData(a, b))
 		return(FALSE);
-	for (i = 0; i < a->numChannels; i++) {
+	for (i = a->offset; i < a->numChannels; i++) {
 		aPtr = a->channel[i];
 		bPtr = b->channel[i];
 		for (j = 0; j < a->length; j++)

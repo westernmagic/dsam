@@ -18,13 +18,13 @@ Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
-				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
-				GrParListInfoList.h GrPrintDisp.h GrParControl.h ExtCommon.h \
-				GrAxisScale.h dsam.rc GrSDIPalette.h GrMainApp.h \
-				GrSDIView.h GrSDIFrame.h GrSDICanvas.h GrSDIDiagram.h \
-				GrSDIEvtHandler.h GrSDICommand.h GrSDIShapes.h GrDiagFrame.h \
-				GrSDIDoc.h GrSDISimDoc.h GrSDISPFDoc.h GrIPCServer.h \
-				GrSDIDocManager.h
+				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h \
+				GrFonts.h GrDialogInfo.h GrParListInfoList.h GrPrintDisp.h \
+				GrParControl.h ExtCommon.h GrAxisScale.h dsam.rc \
+				GrSDIPalette.h GrMainApp.h GrSDIView.h GrSDIFrame.h \
+				GrSDICanvas.h GrSDIDiagram.h GrSDIEvtHandler.h GrSDICommand.h \
+				GrSDIShapes.h GrDiagFrame.h GrSDIDoc.h GrSDISimDoc.h \
+				GrSDISPFDoc.h GrIPCServer.h GrSDIDocManager.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
@@ -41,7 +41,8 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
-				ExtIPCClient.h ExtSocket.h ExtSocketServer.h
+				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
+				ExtRunThreadedProc.h
 
 Std_Headers	= 
 

@@ -25,6 +25,7 @@
 #define _EAROBJECT_H	1
 
 #include "GeSignalData.h"
+#include "UtRandom.h"
  
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -65,12 +66,14 @@ typedef struct refNode *EarObjRefPtr;	/* Pre-referencing of customer node.  */
 	
 #endif
 
-typedef struct {
+typedef struct _EarObject {
 
 	BOOLN		localOutSignalFlag;	/* EarObjects must only destroy their*/
 									/* own signals. */
 	BOOLN		externalDataFlag;	/* Set when channel pointers are set */
 									/* using external data. */
+	BOOLN		initThreadRunFlag;	/* For initialising thread run. */
+	BOOLN		threadRunFlag;		/* Set when running thread. */
 	BOOLN		updateCustomersFlag;	/* This is set when an update is */
 										/* required */
 	BOOLN		updateProcessFlag;	/* Set when dt is changed for a signal. */
@@ -78,7 +81,10 @@ typedef struct {
 	EarObjHandle	handle;			/* Reference handle for manager. */
 	char			*processName;	/* The origins of the output stimulus */
 	int				numInSignals;	/* Count of input signals. */
+	int				numThreads;		/* No. of thread process using EarObject */
+	int				numSubProcesses;/* No. of associated. sub-processes. */
 	ChanLen			timeIndex;		/* used in segmented mode processing */
+	RandParsPtr		randPars;		/* Used to store random number pars. */
 	SignalDataPtr	*inSignal;		/* The original signals */
 	SignalDataPtr	outSignal;		/* The signal set by the process stages */
 	EarObjRefPtr	customerList;	/* Pointer to list of customers. */
@@ -87,6 +93,8 @@ typedef struct {
 	ModulePtr		module;			/* Module linked with process. */
 #	endif
 	void			*clientData;	/* Used to store misc. handling info. */
+	struct _EarObject	*threadProcs;	/* Pointer to thread EarObject copies */
+	struct _EarObject	**subProcessList;	/* Pointers to subProcesses. */
 
 } EarObject, *EarObjectPtr;
 
@@ -145,6 +153,10 @@ void	FreeEarObjRefList_EarObject(EarObjRefPtr *theList);
 			
 int		FreeEarObjRef_EarObject(EarObjRefPtr *theList, EarObjHandle theHandle);
 
+void	FreeThreadProcs_EarObject(EarObjectPtr p);
+
+void	FreeThreadSubProcs_EarObject(EarObjectPtr p);
+
 void	FreeOutSignal_EarObject(EarObjectPtr data);
 
 void	Free_EarObject(EarObjectPtr *theObject);	
@@ -156,6 +168,12 @@ BOOLN	InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels);
 BOOLN	InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, 	
 		  ChanLen length, double samplingInterval);
 			
+BOOLN	InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses);
+
+BOOLN	InitThreadProcs_EarObject(EarObjectPtr p, int numThreads);
+
+BOOLN	InitThreadSubProcs_EarObject(EarObjectPtr p);
+
 double	GetResult_EarObject(EarObjectPtr data, uShort channel);
 
 double	GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample);
@@ -176,6 +194,9 @@ void	SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
 BOOLN	SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
 		  ChanLen length, double samplingInterval);
 			
+BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
+		  const char *callingFunc);
+
 void	SetTimeContinuity_EarObject(EarObjectPtr data);
 
 void	SetUtilityProcessContinuity_EarObject(EarObjectPtr data);

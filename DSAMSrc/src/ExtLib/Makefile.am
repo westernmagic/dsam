@@ -14,7 +14,8 @@ INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 
 libdsam_ext_la_SOURCES= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp \
 						ExtIPCUtils.cpp ExtIPCClient.cpp ExtSocket.cpp \
-						ExtSocketServer.cpp
+						ExtSocketServer.cpp ExtProcThread.cpp \
+						ExtRunThreadedProc.cpp
 
 libdsam_ext_la_LDFLAGS= $(GenLaLDFLAGS)
 

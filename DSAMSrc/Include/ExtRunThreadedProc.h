@@ -1,36 +1,21 @@
 /******************
  *		
- * File:		ExtSimThread.h
- * Purpose: 	Simulation thread class module.
- * Comments:	This was re-named from the RunMgr Class
- *				The 'RunMgr' class allows the MainSimulation program to send
- *				run information to the simulation manager.  The class contains
- *				classes that can be overridden.
- *				26-01-99 LPO: Introduced the 'ListSimParameters' function which
- *				prints the parameters for a simulation.
- *				Introduced the 'StautsChanged' function which indicates when
- *				the 'CheckProgInitialisation' routine needs to be run to
- *				re-initialise the simulation.
- *				29-01-99 LPO: Added a universal parameter list for the program
- *				parameters.
- *				05-05-99 LPO: Introduced the 'ListProgParameters' routine.
- *				14-05-99 LPO: Introduced the 'GetSimParFile' routine which
- *				returns a pointer to the simulation parameter file name.
+ * File:		ExtRunThreadedProc.h
+ * Purpose: 	This module runs a processes using threads of possible.
+ * Comments:	It was deceided to create this module rather than creating
+ *				a replacement ExecuteSimulation routine.
  * Author:		L. P. O'Mard
- * Created:		20 Sep 1998
- * Updated:		14 May 1999
- * Copyright:	(c) 1999-2001, University of Essex
+ * Created:		30 Sep 2004
+ * Updated:		
+ * Copyright:	(c) 2004, CNBH, University of Essex
  *
  ******************/
 
-#ifndef	_EXTSIMTHREAD_H
-#define _EXTSIMTHREAD_H	1
+#ifndef	_EXTRUNTHREADEDPROC_H
+#define _EXTRUNTHREADEDPROC_H	1
 
 #include "GeSignalData.h"
 #include "GeEarObject.h"
-#include "GeUniParMgr.h"
-
-#include "UtDatum.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -44,29 +29,25 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** SimThread ****************************************/
+class RunThreadedProc {
 
-class SimThread: public wxThread {
+	int		numThreads;
 
   public:
-	wxCriticalSection	critSect, diagsCritSect;
+	RunThreadedProc(void);
 
-	SimThread(wxThreadKind kind = wxTHREAD_DETACHED);
-
-	virtual void *Entry();
-	virtual void OnExit();
-	
-	DatumPtr	ExecuteSimulation(DatumPtr start);
-	bool	MyTestDestroy(void)	{ return TestDestroy(); }
-	bool	PreThreadProcessInit(DatumPtr pc);
-	bool	RunThreadEnabledProcess(DatumPtr pc);
-	void	SuspendDiagnostics(void);
+	bool	PreThreadProcessInit(EarObjectPtr data);
+	bool	RunThreadEnabled(EarObjectPtr data);
+	bool	RunProcess(EarObjectPtr data);
+	void	SetNumThreads(int theNumThreads);
 
 };
 
 /******************************************************************************/
 /*************************** External variables *******************************/
 /******************************************************************************/
+
+extern RunThreadedProc	*runThreadedProc;
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
@@ -82,9 +63,7 @@ class SimThread: public wxThread {
  */
 __BEGIN_DECLS
 
-DatumPtr	ExecuteSimulation_SimThread(DatumPtr start);
-
-BOOLN	TestDestroy_SimThread(void);
+BOOLN	RunProcess_RunThreadedProc(EarObjectPtr data);
 
 __END_DECLS
 

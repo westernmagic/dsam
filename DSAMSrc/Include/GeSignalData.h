@@ -74,6 +74,7 @@ typedef struct {
 	BOOLN	staticTimeFlag;	/* Set to make _WorldTime_EarObject static. */
 	BOOLN	externalDataFlag;/* Set when channel memory comes from elsewhere. */
 	uShort	numChannels;	/* No. of channels for signal. */
+	uShort	offset;			/* Channel offset for threaded processing. */
 	uShort	interleaveLevel;/* For post BM binaural processing.*/
 	uShort	numWindowFrames;/* For frame processing modues. */
 	ChanLen	length;			/* The length of the signal store in datapoint */

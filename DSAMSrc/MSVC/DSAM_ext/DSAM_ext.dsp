@@ -101,6 +101,14 @@ SOURCE=..\..\src\ExtLib\ExtMainApp.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\ExtLib\ExtProcThread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\ExtLib\ExtRunThreadedProc.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\ExtLib\ExtSimThread.cpp
 # End Source File
 # Begin Source File

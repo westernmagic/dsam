@@ -39,12 +39,14 @@
 /********************************** Pre-references ****************************/
 
 class SimThread;
+class RunThreadedProc;
 
 /*************************** MainApp ******************************************/
 
 class MainApp {
 
 	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag, diagsOn;
+	bool	threadedSimExecutionFlag;
 	char	**argv;
 	int		argc;
 	int		serverPort;
@@ -53,6 +55,7 @@ class MainApp {
 
   public:
 	SimThread	*simThread;
+	RunThreadedProc	*runThreadedProc;
 	wxCriticalSection	mainCritSect;
 
   	MainApp(int theArgc = 0, char **theArgv = NULL, int (* TheExternalMain)(
@@ -84,7 +87,7 @@ class MainApp {
 	char *	RestoreQuotedStr(char *str);
 	int		RunServer(void);
 	void	SetInitStatus(bool status)	{ initOk = status; }
-	void	StartSimThread(void);
+	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(char **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, char *string, int size);
@@ -117,7 +120,6 @@ extern MainApp	*dSAMMainApp;
 			  "aborting.");
 			return(1);
 		}
-
 		MainApp	mainApp(argc, argv, MainSimulation);
 		return(mainApp.Main());
 

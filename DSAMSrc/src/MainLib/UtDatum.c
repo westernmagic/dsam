@@ -47,6 +47,12 @@
 #include <string.h>
 #include <ctype.h>
 
+/*#define DEBUG	1 */
+
+#if DEBUG
+#	include <time.h>
+#endif
+
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
@@ -1045,13 +1051,22 @@ Execute_Utility_Datum(DatumPtr start)
 		return NULL;
 	for (pc = start; pc != NULL; pc = pc->next) {
 		switch (pc->type) {
-		case PROCESS:
+		case PROCESS: {
+#			if DEBUG
+				time_t	startTime = time(NULL);
+				clock_t	startClock = clock();
+#			endif	
 			if (!RunProcess_ModuleMgr(pc->data)) {
 				NotifyError("%s: Could not run process '%s'.", funcName,
 				  pc->label);
 				return(NULL);
 			}
-			break;
+#			if DEBUG
+				printf("%s: process '%s' took %g (%g CPU) seconds to run.\n",
+				  funcName, pc->label, difftime(time(NULL), startTime),
+				  (double) (clock() - startClock) / CLOCKS_PER_SEC);
+#			endif	
+			break; }
 		case RESET:
 			ResetProcess_EarObject(pc->data);
 			break;

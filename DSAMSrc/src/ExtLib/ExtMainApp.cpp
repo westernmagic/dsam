@@ -41,6 +41,7 @@
 #include "ExtSocket.h"
 #include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
+#include "ExtRunThreadedProc.h"
 #include "ExtMainApp.h"
 
 /******************************************************************************/
@@ -63,11 +64,13 @@ MainApp	*dSAMMainApp = NULL;
 MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
+	printf("MainApp::MainApp: Entered.\n");
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
 	argsAreLocalFlag = (!argc || !argv);
 	ExternalMain = TheExternalMain;
+	threadedSimExecutionFlag = true;	/* should be set by command-line */
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
 	serverFlag = false;
@@ -77,6 +80,7 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
+	runThreadedProc = new RunThreadedProc();
 	if (ExternalMain)
 		initOk = InitRun();
 	if (initOk)
@@ -112,6 +116,7 @@ int
 MainApp::Main(void)
 {
 	static const char *funcName = "MainApp::Main";
+	bool	ok = false;
 
 	if (!initOk) {
 		NotifyWarning("%s: Program not using application interface or not "
@@ -125,7 +130,12 @@ MainApp::Main(void)
 		   funcName);
 		return(false);
 	}
-	return(RunSimulation());
+	if (!threadedSimExecutionFlag)
+		return(RunSimulation());
+	StartSimThread(wxTHREAD_JOINABLE);
+	ok = CXX_BOOL(simThread->Wait());
+	delete simThread;
+	return(ok);
 
 }
 
@@ -465,7 +475,6 @@ MainApp::CheckInitialisation(void)
 		NotifyError("%s: Could not initialise process variables.", funcName);
 		return(FALSE);
 	}
-
 	return(TRUE);
 
 }
@@ -477,14 +486,14 @@ MainApp::CheckInitialisation(void)
  */
 
 void
-MainApp::StartSimThread(void)
+MainApp::StartSimThread(wxThreadKind kind)
 {
 	static const char *funcName = "MainApp::StartSimThread";
 
 	mainCritSect.Enter();
 	SwitchGUILocking_Common(TRUE);
 	mainCritSect.Leave();
-	simThread = new SimThread();
+	simThread = new SimThread(kind);
 	if (simThread->Create() != wxTHREAD_NO_ERROR)
 		wxLogFatalError("%s: Can't create simulation thread!", funcName);
 

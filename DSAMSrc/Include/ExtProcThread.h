@@ -1,36 +1,17 @@
 /******************
  *		
- * File:		ExtSimThread.h
- * Purpose: 	Simulation thread class module.
- * Comments:	This was re-named from the RunMgr Class
- *				The 'RunMgr' class allows the MainSimulation program to send
- *				run information to the simulation manager.  The class contains
- *				classes that can be overridden.
- *				26-01-99 LPO: Introduced the 'ListSimParameters' function which
- *				prints the parameters for a simulation.
- *				Introduced the 'StautsChanged' function which indicates when
- *				the 'CheckProgInitialisation' routine needs to be run to
- *				re-initialise the simulation.
- *				29-01-99 LPO: Added a universal parameter list for the program
- *				parameters.
- *				05-05-99 LPO: Introduced the 'ListProgParameters' routine.
- *				14-05-99 LPO: Introduced the 'GetSimParFile' routine which
- *				returns a pointer to the simulation parameter file name.
+ * File:		ExtProcThread.h
+ * Purpose: 	Process thread class module.
+ * Comments:	
  * Author:		L. P. O'Mard
- * Created:		20 Sep 1998
- * Updated:		14 May 1999
- * Copyright:	(c) 1999-2001, University of Essex
+ * Created:		23 Sep 2004
+ * Updated:		
+ * Copyright:	(c) 2004, CNBH, University of Essex
  *
  ******************/
 
-#ifndef	_EXTSIMTHREAD_H
-#define _EXTSIMTHREAD_H	1
-
-#include "GeSignalData.h"
-#include "GeEarObject.h"
-#include "GeUniParMgr.h"
-
-#include "UtDatum.h"
+#ifndef	_EXTPROCTHREAD_H
+#define _EXTPROCTHREAD_H	1
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -44,23 +25,24 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** SimThread ****************************************/
+/*************************** ProcThread ***************************************/
 
-class SimThread: public wxThread {
+class ProcThread: public wxThread {
+	int		index;
+	int		*threadCount;
+	uInt	origNumChannels;
+	wxCondition	*myCondition;
+	wxMutex		*myMutex;
+	EarObjectPtr	process;
 
   public:
-	wxCriticalSection	critSect, diagsCritSect;
 
-	SimThread(wxThreadKind kind = wxTHREAD_DETACHED);
+	ProcThread(int theIndex, int offset, int numChannels,
+	  EarObjectPtr theDataPtr, wxMutex *mutex, wxCondition *condition,
+	  int *theThreadCount);
 
 	virtual void *Entry();
 	virtual void OnExit();
-	
-	DatumPtr	ExecuteSimulation(DatumPtr start);
-	bool	MyTestDestroy(void)	{ return TestDestroy(); }
-	bool	PreThreadProcessInit(DatumPtr pc);
-	bool	RunThreadEnabledProcess(DatumPtr pc);
-	void	SuspendDiagnostics(void);
 
 };
 
@@ -82,9 +64,6 @@ class SimThread: public wxThread {
  */
 __BEGIN_DECLS
 
-DatumPtr	ExecuteSimulation_SimThread(DatumPtr start);
-
-BOOLN	TestDestroy_SimThread(void);
 
 __END_DECLS
 
