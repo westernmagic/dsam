@@ -24,6 +24,8 @@
 #define	PARLISTINFO_TEXT_ITEM_WIDTH		150
 #define	PARLISTINFO_IC_TEXT_ITEM_WIDTH	50
 #define	PARLISTINFO_SUB_MODULE_1		1
+#define PARLISTINFO_DEFAULT_X_MARGIN	4
+#define PARLISTINFO_DEFAULT_Y_MARGIN	4
 
 #if defined(wx_motif) || defined(wx_msw)
 #	define	PARLISTINFO_MAX_LABEL			40
@@ -47,7 +49,7 @@
 
 class ParListInfo {
 
-	int			infoNum, offset, numPars;
+	int			infoNum, offset, numPars, maxHeight, maxWidth;
 	DatumPtr	pc;
 	wxPanel		*parent;
 	ParControl	**controlList;
@@ -65,6 +67,7 @@ class ParListInfo {
 	bool	CheckChangedValues(void);
 	int		GetInfoNum(void)			{ return infoNum; }
 	wxWindow *	GetLastControl(void)	{ return lastControl; }
+	wxSize	GetSize(void) const			{ return wxSize(maxWidth, maxHeight); }
 	int		GetNumPars(void)			{ return numPars; }
 	int		GetOffset(void)				{ return offset; }
 	ParControl * GetParControl(int i);
@@ -77,6 +80,7 @@ class ParListInfo {
 	void	SetModuleListBox(DatumPtr simulation);
 	void	SetParBoolean(UniParPtr par, int index);
 	void	SetParFileName(UniParPtr par, int index);
+	void	SetParGeneral(UniParPtr par, int index);
 	void	SetParNameList(UniParPtr par, int index);
 	void	SetParNameListWithText(UniParPtr par, int index);
 	void	SetParStandard(UniParPtr par, int index);
