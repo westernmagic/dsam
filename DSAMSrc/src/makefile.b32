@@ -8,17 +8,11 @@
 
 ###############################################################################
 ###############################################################################
-##                     Environment tests                                     ##
+##                     Include Files                                         ##
 ###############################################################################
 ###############################################################################
 
-!if "$(BCCDIR)" == ""
-!error You must define the BCCDIR variable in autoexec.bat, e.g. BCCDIR=d:\bc4
-!endif
-
-!if "$(DSAMDIR)" == ""
-!error You must define the DSAMDIR variable in autoexec.bat, e.g. DSAMDIR=c:\dsam\v0.6
-!endif
+!include $(DSAMDIR)\makeb32.env
 
 ###############################################################################
 ###############################################################################
@@ -26,58 +20,6 @@
 ###############################################################################
 ###############################################################################
 
-BOR_VER = 4
-
-###############################################################################
-#
-# Graphics support using WxWin
-
-# Uncomment the following line
-!include $(DSAMDIR)\src\GraphSup.dos
-
-###############################################################################
-
-SUPPORT_SUFFIX = $(MPI_SUFFIX)$(GRAPHICS_SUFFIX)
-LIBRARY =       CRL$(SUPPORT_SUFFIX)
-
-INCNAME = Include
-INCDIR  = $(DSAMDIR)\$(INCNAME)
-LDIRNAME= lib
-LIBDIR  = $(DSAMDIR)\$(LDIRNAME)
-BINDIR  = $(DSAMDIR)\bin
-CFGNAME = $(LIBRARY).cfg
-CFG     = $(LIBDIR)\$(CFGNAME)
-RESNAME = dsam.res
-RES       = $(LIBDIR)\$(RESNAME)
-
-CCCRL           = cccrl$(SUPPORT_SUFFIX)
-LIBNAME                  = $(LIBRARY).lib
-LIB             = $(LIBDIR)\$(LIBNAME)
-CRL_LDLIBS      = -l$(LIBRARY) $(WXLDLIBS) $(MPI_LDLIBS)
-
-DEBUG_FLAGS = #-v -R #-DDEBUG=$(DEBUG)
-# The option line below is for 32 bit mode
-OPTIONS =  -DBORLANDC -i55 $(DEBUG_FLAGS) -DVERSION="2.2.4"
-#Uncomment the following for pre-compiled headers
-#OPTIONS2 =  -H=%DSAMDIR%\lib\$(LIBRARY).csm
-#Console output library
-CFLAGS  = @$(CFG) $(OPTIONS2)
-AR              = tlib
-ARFLAGS = /P64 -+
-RM              = erase
-RMFLAGS =
-CC              = bcc32
-
-.SUFFIXES:      .c .cpp .obj
-
-.c.obj:
-		$(CC) $(CFLAGS) -c $<
-		$(AR) $(LIB) $(ARFLAGS) $*.obj
-#               $(RM) $(RMFLAGS) $*.obj
-
-.cpp.obj:
-		$(CC) $(CFLAGS) -c $<
-		$(AR) $(LIB) $(ARFLAGS) $*.obj
 
 ###############################################################################
 ###############################################################################
@@ -85,12 +27,12 @@ CC              = bcc32
 ###############################################################################
 ###############################################################################
 
-BINCCCRL        =$(DSAMDIR)\bin\$(CCCRL).bat
-BINDIRDUMMY     =$(BINDIR)\dummy
-LIBDIRDUMMY     =$(LIBDIR)\dummy
+BINCCDSAM	= $(DSAMDIR)\bin\$(CCDSAM).bat
+BINDIRDUMMY	= $(BINDIR)\dummy
+LIBDIRDUMMY	= $(LIBDIR)\dummy
 
-#default:       wxdefault:        crl
-crl:            $(CFG) $(BINCCCRL) $(LIBDIRDUMMY) $(LIB)
+#default:       wxdefault:        dsam
+dsam:            $(CFG) $(BINCCDSAM) $(LIBDIRDUMMY) $(LIB)
 
 ###############################################################################
 ##                    BINDIRDUMMY "bin" directory creation                   ##
@@ -102,15 +44,15 @@ $(BINDIRDUMMY):
 !               $(BINDIRDUMMY)
 
 ###############################################################################
-##                    BINCCCRL - batch file creation                         ##
+##                    BINCCDSAM - batch file creation                        ##
 ###############################################################################
 
-$(BINCCCRL): $(BINDIRDUMMY)
+$(BINCCDSAM): $(BINDIRDUMMY)
 		copy &&!
 		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(CFGNAME) $(OPTIONS2) %1.c \
 		  %DSAMDIR%\$(LDIRNAME)\$(LIBNAME) %WXWIN%\lib\wx32.lib
 		$(BRC32CMD)
-!               $(BINCCCRL)
+!               $(BINCCDSAM)
 
 ###############################################################################
 ##                     LIBDIRDUMMY - "lib" directory creation                ##
@@ -128,11 +70,11 @@ $(LIBDIRDUMMY):
 
 $(CFG): makefile.b32 $(LIBDIRDUMMY)
 	copy &&!
--I$$(DSAMDIR)\$(INCNAME);$$(BCCDIR)\include
--I$(DSAMDIR)\$(INCNAME);$(BCCDIR)\include
+-I$$(DSAMDIR)\$(INCNAME);$$(DSAMDIR);$$(BCCDIR)\include
+-I$(DSAMDIR)\$(INCNAME);$(DSAMDIR);$(BCCDIR)\include
 
--I$$(WXWIN)\include\msw;$$(WXWIN)\include\base
--I$(WXWIN)\include\msw;$(WXWIN)\include\base
+-I$$(WXWIN)\include
+-I$(WXWIN)\include
 
 -L$$(BCCDIR)\lib
 
@@ -140,11 +82,11 @@ $(WXFLAGS)
 $(MPI_CFLAGS)
 $(OPTIONS)
 -L$$(DSAMDIR)\lib -L$$(WXWIN)\lib
-$(CRL_LDFLAGS)
+$(DSAM_LDFLAGS)
 ! $(CFG)
 
 ###############################################################################
-##                     LIB - CRL library compilation                         ##
+##                     LIB - DSAM library compilation                        ##
 ###############################################################################
 
 GEN_HEADERS	= $(INCDIR)/GeCommon.h $(INCDIR)/GeSignalData.h \
@@ -152,42 +94,54 @@ GEN_HEADERS	= $(INCDIR)/GeCommon.h $(INCDIR)/GeSignalData.h \
 
 ANALYSIS_OBJS= AnExperiment.obj AnFourierT.obj AnGeneral.obj AnAutoCorr.obj \
 			AnHistogram.obj AnCrossCorr.obj AnSynchIndex.obj \
-			AnFindBin.obj AnInterSIH.obj AnModulusFT.obj AnSpikeReg.obj \
-			AnAverages.obj AnConvolve.obj AnFindNextIndex.obj \
-			AnIntensity.obj AnSAImage.obj
+			AnFindBin.obj AnInterSIH.obj AnSpikeReg.obj AnAverages.obj \
+			AnConvolve.obj AnFindNextIndex.obj AnIntensity.obj AnSAImage.obj \
+			AnFourierT.obj
 
 FILING_OBJS = FiParFile.obj FiDataFile.obj FiRaw.obj FiMSWave.obj FiASCII.obj \
 			FiAIFF.obj
 
+FILTER_OBJS	= FlLowPass.obj FlMultiBPass.obj FlFIR.obj
+
 GENERAL_OBJS= GeCommon.obj  GeSignalData.obj  GeEarObject.obj  \
-			GeModuleMgr.obj GeNSpecLists.obj GeUniParMgr.obj
+			GeModuleMgr.obj GeNSpecLists.obj GeUniParMgr.obj GeModuleReg.c
+			
+STD_OBJS	= StdMessage.obj StdSignalDisp.obj
 
-MODEL_OBJS  = MoIHC86Meddis.obj  MoIHC95Meddis.obj  MoBMGammaT.obj \
-			FlBandPass.obj  MoNCArleKim.obj  MoANSGSimple.obj \
-			MoHCRPMeddis.obj  FlLowPass.obj  MoBMDRNL.obj MoBM0DRNL.obj \
-			MoBMCooke.obj  MoNCMcGregor.obj MoIHCCooke.obj  \
-			MoHCRPShamma.obj MoIHC86aMeddis.obj  MoBMCarney.obj \
-			MoIHCCarney.obj MoHCRPCarney.obj  MoANSGCarney.obj \
-			MoANSGBinom.obj MoNCHHuxley.obj FlMultiBPass.obj
+GRAPHIC_OBJS= GrMessage.obj GrBrushes.obj GrFonts.obj GrCanvas.obj GrLine.obj \
+				GrSignalDisp.obj GrDisplayS.obj GrSimMgr.obj GrUtils.obj \
+				GrPrintDisp.obj GrSimModDialog.obj \
+				GrModParDialog.obj GrParListInfo.obj GrDialogInfo.obj \
+				GrDialogList.obj GrParListInfoList.obj GrParControl.obj
 
+MODEL_OBJS	= MoANSGBinom.obj MoANSGCarney.obj MoANSGSimple.obj MoBM0DRNL.obj \
+			MoBMCarney.obj MoBMCooke.obj MoBMDRNL.obj MoBMGammaT.obj \
+			FlLowPass.obj MoHCRPCarney.obj MoHCRPMeddis.obj MoHCRPShamma.obj \
+			MoIHC86Meddis.obj MoIHC86aMeddis.obj MoIHCMeddis2000.obj \
+			MoIHCCarney.obj MoIHCCooke.obj MoNCArleKim.obj MoNCHHuxley.obj \
+			MoNCMcGregor.obj MoBMGammaC.obj
 
 STIMULUS_OBJS= StMPTone.obj  StPTone.obj  StPTone2.obj StClick.obj  \
 			StAMTone.obj  StStepFun.obj StBPTone.obj  StMPPTone.obj  \
 			StWhiteNoise.obj StHarmonic.obj  StFMTone.obj  \
 			StPulseTrain.obj StEGatedTone.obj
 
-UTILITY_OBJS= UtRamp.obj  UtCmplxM.obj  UtBandwidth.obj UtFilters.obj \
-			UtCFList.obj  UtRandom.obj UtNameSpecs.obj \
-			UtUIEEEFloat.obj UtUPortableIO.obj UtDebug.obj \
-			UtBinSignal.obj UtSSParser.obj UtSimScript.obj \
-			UtAccumulate.obj UtReduceDt.obj UtRedceChans.obj \
-			UtAmpMod.obj UtCreateBinaural.obj  UtSpikeList.obj \
-			UtDatum.obj UtShapePulse.obj UtStddise.obj \
-			UtIterRipple.obj UtSelectChans.obj UtRefractory.obj \
-			UtCompress.obj UtIonChanList.obj UtSample.obj \
-			UtConvMonaural.obj UtCBinauralITD.obj UtDelay.obj \
+STIMULUS_OBJS= StAMTone.obj StBPTone.obj StClick.obj StFMTone.obj \
+			StHarmonic.obj StMPPTone.obj StMPTone.obj StPTone.obj StPTone2.obj \
+			StPulseTrain.obj StStepFun.obj StWhiteNoise.obj StEGatedTone.obj
+
+UTILITY_OBJS= UtSSParser.obj UtAccumulate.obj UtAmpMod.obj UtBandwidth.obj \
+			UtBinSignal.obj UtCBinauralITD.obj UtCFList.obj UtCmplxM.obj \
+			UtCompress.obj UtConvMonaural.obj UtCreateBinaural.obj UtDatum.obj \
+			UtDebug.obj UtDelay.obj UtFilters.obj UtIonChanList.obj \
+			UtIterRipple.obj UtNameSpecs.obj UtRamp.obj UtRandom.obj \
+			UtRedceChans.obj UtReduceDt.obj UtRefractory.obj UtSample.obj \
+			UtSelectChans.obj UtShapePulse.obj UtSSSymbols.obj UtSimScript.obj \
+			UtSpikeList.obj UtStddise.obj UtUIEEEFloat.obj UtUPortableIO.obj \
 			UtCreateJoined.obj UtStrobe.obj UtOptions.obj UtString.obj \
-			UtPause.obj
+			UtPause.obj UtHalfWRectify.obj UtDynaList.obj UtAppInterface.obj \
+			UtFFT.obj UtParArray.obj UtGCFilters.obj UtFIRFilters.obj \
+			UtRemez.obj
 
 TRANSFORM_OBJS= TrGate.obj TrSetDBSPL.obj
 
@@ -256,6 +210,16 @@ FiASCII.obj: $(INCDIR)/FiASCII.h $(INCDIR)/FiDataFile.h $(GEN_HEADERS)
 FiAIFF.obj: $(INCDIR)/FiAIFF.h $(INCDIR)/FiDataFile.h $(GEN_HEADERS)
 
 ###############################################################################
+#                      Filter module dependencies                             #
+###############################################################################
+
+FlLowPass.obj:  $(INCDIR)/FlLowPass.h $(INCDIR)/GeCommon.h
+
+FlMultiBPass.obj:  $(INCDIR)/FlMultiBPass.h $(INCDIR)/GeCommon.h
+
+FlFIR.obj:  $(INCDIR)/FlFIR.h $(INCDIR)/GeCommon.h
+
+###############################################################################
 #                      Ge (main) modules dependencies                         #
 ###############################################################################
 
@@ -277,47 +241,60 @@ GeUniParMgr.obj:       $(INCDIR)/GeCommon.h $(INCDIR)/GeUniParMgr.h
 
 GrBrushes.obj:	$(INCDIR)/GrBrushes.h
 
-GrCanvas.obj:	$(INCDIR)/GrCanvas.h $(INCDIR)/GrGraphCtrls.h \
-				  $(GEN_HEADERS) $(INCDIR)/GrLine.h $(INCDIR)/GrDisplayS.h
+GrCanvas.obj:	$(INCDIR)/GrCanvas.h  $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
+				  $(INCDIR)/GrBrushes.h $(INCDIR)/GrSignalDisp.h \
+				  $(INCDIR)/GrDisplayS.h $(INCDIR)/GrPrintDisp.h \
+				  $(INCDIR)/GrModParDialog.h
+
+GrDialogInfo.obj:	$(INCDIR)/GrDialogInfo.h $(INCDIR)/GeCommon.h \
+					  $(INCDIR)/GrDSAMList.h $(INCDIR)/GrDialogInfo.h
+
+GrDialogList.obj:	$(INCDIR)/*.h UtSSParser.h
 
 GrDisplayS.obj:	$(INCDIR)/GrDisplayS.h $(GEN_HEADERS) $(INCDIR)/GrCanvas.h \
-				  $(INCDIR)/GrUtils.h $(INCDIR)/GrGraphCtrls.h \
-				  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h
-
-GrGraphCtrls.obj:	$(INCDIR)/GrGraphCtrls.h
+				  $(INCDIR)/GrUtils.h $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h \
+				  $(INCDIR)/GrModParDialog.h $(INCDIR)/GrSignalDisp.h
 
 GrFonts.obj:	$(INCDIR)/GrFonts.h
 
-GrSocket.obj:		$(INCDIR)/GrSocket.h $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
+GrLine.obj:		$(INCDIR)/GrLine.h $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
+				  $(INCDIR)/GrBrushes.h
 
+GrMessage.obj:	$(INCDIR)/StdMessage.h $(INCDIR)/GeCommon.h \
+				  $(INCDIR)/GrSimMgr.h
 
-GrLine.obj:		$(INCDIR)/GrLine.h
+GrModParDialog.obj:	$(INCDIR)/*.h UtSSParser.h
 
-GrModParDialog.obj:	$(INCDIR)/GrModParDialog.h $(GEN_HEADERS)
+GrParControl.obj:	$(INCDIR)/GrParControl.h $(INCDIR)/GeCommon.h \
+					  $(INCDIR)/GeUniParMgr.h
 
-GrParListInfo.obj:	$(INCDIR)/GrParListInfo.h $(INCDIR)/GrItems.h $(GEN_HEADERS)
+GrParListInfo.obj:	$(INCDIR)/*.h UtSSParser.h
 
-GrRunMgr.obj:	$(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
+GrParListInfoList.obj:	$(INCDIR)/*.h UtSSParser.h
 
-GrRunParDialog.obj:	$(INCDIR)/GrRunParDialog.h $(INCDIR)/GrItems.h \
-					  $(GEN_HEADERS)
+GrPrintDisp.obj:	$(INCDIR)/GrPrintDisp.h $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
+					  $(INCDIR)/GrBrushes.h $(INCDIR)/GrSignalData.h \
+					  $(INCDIR)/GrDisplayS.h $(INCDIR)/GrCanvas.h
 
-GrSimModDialog.obj:	$(INCDIR)/GrSimModDialog.h $(INCDIR)/GrModParDialog.h \
-					   $(INCDIR)/GrItems.h $(GEN_HEADERS)
-
-GrSignalDisp.obj:	$(INCDIR)/GrSignalDisp.h $(INCDIR)/GrCanvas.h \
-					  $(INCDIR)/GrGraphCtrls.h $(GEN_HEADERS) \
+GrSignalDisp.obj:	$(INCDIR)/GrSignalDisp.h $(GEN_HEADERS) \
+					  $(INCDIR)/GeModuleMgr.h $(INCDIR)/GeNSpecLists.h \
+					  $(INCDIR)/FiParFile.h $(INCDIR)/GrUtils.h \
+					  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h \
+					  $(INCDIR)/GrSignalDisp.h $(INCDIR)/GrCanvas.h \
 					  $(INCDIR)/GrDisplayS.h
 
-GrSimMgr.obj:	$(RES) $(INCDIR)/GrSimMgr.h $(INCDIR)/GeCommon.h \
-				  $(INCDIR)/GrGraphCtrls.h $(INCDIR)/GrSocket.h \
-				  $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
+GrSimMgr.obj:	$(RES) $(INCDIR)/*.h UtSSParser.h
 
-GrUtils.obj:	$(INCDIR)/GrUtils.h
+GrSimModDialog.obj:	$(INCDIR)/*.h UtSSParser.h
 
-$(RES): dsam.rc
-				brc32 -r /i$(BCCDIR)\include /i$(WXDIR)\include\msw \
-				/i$(WXDIR)\contrib\fafa  dsam.rc -fo$<
+GrSocket.obj:	$(INCDIR)/GrSocket.h $(INCDIR)/GeCommon.h
+				  $(INCDIR)/GeEarobject.h $(INCDIR)/GrSocket.h
+
+GrUtils.obj:	$(INCDIR)/GrUtils.h $(INCDIR)/GeCommon.h
+
+$(RES):		$(INCDIR)/dsam.rc
+				brc32 -r /i$(BCCDIR)\include /i$(WXWIN)\include \
+				  $(INCDIR)/dsam.rc -fo$<
 
 
 ###############################################################################
@@ -454,7 +431,7 @@ UtSSParser.obj: $(INCDIR)/UtSSParser.h $(INCDIR)/UtSimScript.h \
 UtString.obj:	$(INCDIR)/UtString.h $(INCDIR)/GeCommon.h
 
 $(INCDIR)/UtSSParser.h: UtSSParser.c
-					copy UtSSParser.h $(INCDIR)
+				copy UtSSParser.h $(INCDIR)
 
 UtSimScript.obj:  $(INCDIR)/UtSimScript.h $(INCDIR)/UtDatum.h \
 				  UtSSParser.h $(GEN_HEADERS) $(INCDIR)/UtNameSpecs.h
@@ -510,7 +487,7 @@ TrSetDBSPL.obj:  $(INCDIR)/TrSetDBSPL.h $(INCDIR)/GeCommon.h
 ###############################################################################
 
 clean: mostly-clean
-	$(RM) $(BINCCCRL)
+	$(RM) $(BINCCDSAM)
 	$(RM) $(LIBDIR)\$(LIBRARY).*
 	$(RM) $(CFG)
 	$(RM) $(LIBRARY).CSM
