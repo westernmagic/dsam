@@ -88,6 +88,10 @@ enum {
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
+/********************************** Pre-references ****************************/
+
+class SimModuleDialog;
+
 /*************************** MyFrame ******************************************/
 
 // Define a new frame
@@ -108,6 +112,7 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
+	void	DeleteDisplays(DatumPtr pc);
 	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
 			  const wxString& fileName);
 	void	OnAbout(wxCommandEvent& event);
@@ -144,6 +149,7 @@ class MyApp: public wxApp {
 	MyFrame		*frame;
 	wxSocketServer	*myServer;
 	wxSocketClient	*myClient;
+	SimModuleDialog	*simModuleDialog;
 
   public:
 	wxIcon		*icon;
@@ -153,8 +159,10 @@ class MyApp: public wxApp {
 
 	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
+	void	DeleteSimModuleDialog(void);
 	void	GetDefaultDisplayPos(int *x, int *y);
 	MyFrame *	GetFrame(void)	{ return frame; }
+	SimModuleDialog *	GetSimModuleDialog(void)	{ return simModuleDialog; }
 	bool	InitArgv(int argc);
 	void	InitMain(void);
 	bool	InitRun(void);
@@ -174,6 +182,7 @@ class MyApp: public wxApp {
 	void	SetConfiguration(UniParListPtr	parList);
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
+	void	SetSimModuleDialog(SimModuleDialog *dlg) { simModuleDialog = dlg; }
 	void	SetTitle(void);
 	bool	StatusChanged(void);
 

@@ -37,6 +37,7 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "UtDatum.h"
 
 #include "GrUtils.h"
 #include "GrSimMgr.h"

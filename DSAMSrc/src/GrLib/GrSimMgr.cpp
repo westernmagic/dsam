@@ -122,6 +122,7 @@ MyApp::MyApp(void)
 	dataInstallDir = DSAM_DATA_INSTALL_DIR;
 	icon = NULL;
 	busy = FALSE;
+	simModuleDialog = NULL;
 
 }
 
@@ -619,6 +620,21 @@ MyApp::StatusChanged(void)
 	
 }
 
+/****************************** DeleteSimModuleDialog *************************/
+
+/*
+ * This routine deletes the simulation module dialog.
+ */
+
+void
+MyApp::DeleteSimModuleDialog(void)
+{
+	if (simModuleDialog)
+		delete simModuleDialog;
+
+
+}
+
 /****************************** OnServerEvent *********************************/
 
 /*
@@ -975,6 +991,32 @@ MyFrame::EnableSimParMenuOptions(bool on)
 
 }
 
+/****************************** DeleteDisplays ********************************/
+
+// This routine recursively deletes all simulation displays.
+
+void
+MyFrame::DeleteDisplays(DatumPtr pc)
+{
+
+	while (pc) {
+		if (pc->type == PROCESS)
+			switch (pc->data->module->specifier) {
+			case DISPLAY_MODULE: {
+				SignalDispPtr ptr = (SignalDispPtr) pc->data->module->parsPtr;
+				if (ptr->display)
+					delete ptr->display;
+				break; }
+			case SIMSCRIPT_MODULE: {
+				SimScriptPtr ptr = (SimScriptPtr) pc->data->module->parsPtr;
+				DeleteDisplays(ptr->simulation);
+				break; }
+			}
+		pc = pc->next;
+	}
+
+}
+
 /****************************** ResetSimulation *******************************/
 
 bool
@@ -982,22 +1024,10 @@ MyFrame::ResetSimulation(void)
 {
 	/*static char *funcName = "MyFrame::ResetSimulation";*/
 
-	if (simModuleDialog)
-		delete simModuleDialog;
+	wxGetApp().DeleteSimModuleDialog();
 
-	if (appInterfacePtr->audModel) {
-		DatumPtr	pc = GetSimulation_ModuleMgr(appInterfacePtr->audModel);
-		while (pc) {
-			if ((pc->type == PROCESS) && (pc->data->module->specifier ==
-			  DISPLAY_MODULE)) {
-				SignalDispPtr ptr = (SignalDispPtr) pc->data->module->
-				  parsPtr;
-				if (ptr->display)
-					delete ptr->display;
-			}
-			pc = pc->next;
-		}
-	}
+	if (appInterfacePtr->audModel)
+		DeleteDisplays(GetSimulation_ModuleMgr(appInterfacePtr->audModel));
 
 	if (!wxGetApp().CheckInitialisation()) {
 		EnableSimParMenuOptions(FALSE);
@@ -1022,12 +1052,12 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 	ResetGUIDialogs();
 	if (appInterfacePtr->Init) {
 		if (wxGetApp().StatusChanged()) {
-			if (simModuleDialog)
-				delete simModuleDialog;
+			wxGetApp().DeleteSimModuleDialog();
 			if (!wxGetApp().CheckInitialisation())
 				return;
 		}
-		if (simModuleDialog && !simModuleDialog->CheckChangedValues())
+		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
+		  )->CheckChangedValues())
 			return;
 		if (!appInterfacePtr->audModel) {
 			NotifyError("%s: Simulation not initialised.", funcName);
@@ -1130,11 +1160,10 @@ MyFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
 		datumStepCount = 0;
 		wxGetApp().CheckInitialisation();
 	}
-	if (!simModuleDialog) {
-		(void) new SimModuleDialog(this, "Simulation Parameters",
-		   GetSimulation_ModuleMgr(appInterfacePtr->audModel),
-		   GetUniParListPtr_ModuleMgr(appInterfacePtr->audModel));
-		simModuleDialog->SetBaseParent(TRUE);
+	if (!wxGetApp().GetSimModuleDialog()) {
+		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
+		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(appInterfacePtr->
+		  audModel), GetUniParListPtr_ModuleMgr(appInterfacePtr->audModel)));
 	}
 
 }
