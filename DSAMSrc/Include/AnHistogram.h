@@ -26,7 +26,8 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_HISTOGRAM_NUM_PARS			7
+#define ANALYSIS_HISTOGRAM_NUM_PARS				7
+#define ANALYSIS_HISTOGRAM_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
@@ -35,6 +36,12 @@
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
+
+typedef enum {
+
+	ANALYSIS_HISTOGRAM_DATABUFFER
+
+} AnHistogramSubProcessSpecifier;
 
 typedef enum {
 
@@ -93,10 +100,8 @@ typedef struct {
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
 	BOOLN			*riseDetected;
-	ChanLen			numPeriods;
-	ChanLen			offsetIndex;
-	ChanLen			extraSample;
-	ChanLen			bufferSamples;
+	double			wBinWidth, wPeriod, dt;
+	ChanLen			*numPeriods, *offsetIndex, *extraSample, *bufferSamples;
 	EarObjectPtr	dataBuffer;
 
 } Histogram, *HistogramPtr;

@@ -191,10 +191,11 @@ Init_Analysis_Histogram(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	histogramPtr->riseDetected = NULL;
-	histogramPtr->numPeriods = 0;
 	histogramPtr->dataBuffer = NULL;
-	histogramPtr->offsetIndex = 0;
-	histogramPtr->bufferSamples = 0;
+	histogramPtr->numPeriods = NULL;
+	histogramPtr->offsetIndex = NULL;
+	histogramPtr->extraSample = NULL;
+	histogramPtr->bufferSamples = NULL;
 	return(TRUE);
 
 }
@@ -240,7 +241,8 @@ SetUniParList_Analysis_Histogram(void)
 	  &histogramPtr->eventThreshold, NULL,
 	  (void * (*)) SetEventThreshold_Analysis_Histogram);
 	SetPar_UniParMgr(&pars[ANALYSIS_HISTOGRAM_BINWIDTH], "BIN_WIDTH",
-	  "Bin width for the histogram: -ve assumes dt for previous signal (s).",
+	  "Histogram Bin width (-ve: previous signal dt, zero: one bin = input "
+	  " signal length) (s).",
 	  UNIPAR_REAL,
 	  &histogramPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Analysis_Histogram);
@@ -594,11 +596,12 @@ PrintPars_Analysis_Histogram(void)
 	  typeMode].name);
 	if (histogramPtr->detectionMode == HISTOGRAM_DETECT_SPIKES)
 		DPrint("\tEvent threshold = %g units,\n", histogramPtr->eventThreshold);
-	DPrint("\tBin width = ");
-	if (histogramPtr->binWidth <= 0.0)
-		DPrint("<prev. signal dt>,");
-	else
-		DPrint("%g ms,", MSEC(histogramPtr->binWidth));
+	DPrint("\tBin width = %g ms", MSEC(histogramPtr->binWidth));
+	if (histogramPtr->binWidth < 0.0)
+		DPrint(" (prev. signal dt)");
+	else if (histogramPtr->binWidth == 0.0)
+		DPrint("(1 bin, prev. signal length)");
+	DPrint(",");
 	switch (histogramPtr->typeMode) {
 	case HISTOGRAM_PSTH:
 	case HISTOGRAM_PH:
@@ -708,6 +711,7 @@ InitModule_Analysis_Histogram(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = histogramPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_Histogram;
 	theModule->Free = Free_Analysis_Histogram;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Histogram;
@@ -771,6 +775,8 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
  * at sets the initial process values as required.
  * It assumes that all of the parameters for the module have been correctly
  * initialised.
+ * When setting the dataBuffer channels, the "offsetIndex" and "extraSample"
+ * array elements all have the same values respectively.
  */
 
 BOOLN
@@ -785,18 +791,48 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_Histogram();
+			if ((p->dataBuffer = Init_EarObject("NULL")) == NULL) {
+				NotifyError("%s: Could not initialise data buffer EarObject",
+				  funcName);
+				return(FALSE);
+			}
+			if (!InitSubProcessList_EarObject(data,
+			  ANALYSIS_HISTOGRAM_NUM_SUB_PROCESSES)) {
+				NotifyError("%s: Could not initialise %d sub-process list for "
+				  "process.", funcName, ANALYSIS_HISTOGRAM_NUM_SUB_PROCESSES);
+				return(FALSE);
+			}
+			data->subProcessList[ANALYSIS_HISTOGRAM_DATABUFFER] = p->dataBuffer;
 			if ((p->riseDetected = (BOOLN *) calloc(
 			  data->outSignal->numChannels, sizeof(BOOLN))) == NULL) {
 				NotifyError("%s: Out of memory for 'riseDetected' array.",
 				  funcName);
 				return(FALSE);
 			}
-			if ((p->dataBuffer = Init_EarObject("NULL")) == NULL) {
-				NotifyError("%s: Could not initialise data buffer EarObject",
+			if ((p->numPeriods = (ChanLen *) calloc(data->numThreads, sizeof(
+			  ChanLen))) == NULL) {
+				NotifyError("%s: Out of memory for numPeriods array.",
 				  funcName);
 				return(FALSE);
 			}
-			p->numPeriods = 0;
+			if ((p->offsetIndex = (ChanLen *) calloc(data->numThreads, sizeof(
+			  ChanLen))) == NULL) {
+				NotifyError("%s: Out of memory for offsetIndex array.",
+				  funcName);
+				return(FALSE);
+			}
+			if ((p->bufferSamples = (ChanLen *) calloc(data->numThreads, sizeof(
+			  ChanLen))) == NULL) {
+				NotifyError("%s: Out of memory for bufferSamples array.",
+				  funcName);
+				return(FALSE);
+			}
+			if ((p->extraSample = (ChanLen *) calloc(data->numThreads, sizeof(
+			  ChanLen))) == NULL) {
+				NotifyError("%s: Out of memory for extraSample array.",
+				  funcName);
+				return(FALSE);
+			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		ResetProcess_EarObject(p->dataBuffer);
@@ -809,16 +845,19 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->bufferSamples = 0;
-		p->offsetIndex = (ChanLen) floor(p->timeOffset / data->inSignal[0]->dt +
-		  0.5);
-		p->extraSample = (p->offsetIndex)? 0: 1;
+		for (i = 0; i < data->numThreads; i++) {
+			p->bufferSamples[i] = 0;
+			p->numPeriods[i] = 0;
+			p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / data->inSignal[
+			  0]->dt + 0.5);
+			p->extraSample[i] = (p->offsetIndex[i])? 0: 1;
+		}
+		if (p->offsetIndex[0] < data->inSignal[0]->length)
+			for (i = 0; i < data->outSignal->numChannels; i++)
+				p->dataBuffer->outSignal->channel[i][0] = data->inSignal[
+				  0]->channel[i][p->offsetIndex[0] + p->extraSample[0] - 1];
 		for (i = 0; i < data->outSignal->numChannels; i++)
 			p->riseDetected[i] = FALSE;
-		if (p->offsetIndex < data->inSignal[0]->length)
-			for (i = 0; i < data->outSignal->numChannels; i++)
-				p->dataBuffer->outSignal->channel[i][0] = data->inSignal[0]->
-				  channel[0][p->offsetIndex + p->extraSample - 1];
 	}
 	return(TRUE);
 
@@ -837,6 +876,22 @@ FreeProcessVariables_Analysis_Histogram(void)
 	if (histogramPtr->riseDetected) {
 		free(histogramPtr->riseDetected);
 		histogramPtr->riseDetected = NULL;
+	}
+	if (histogramPtr->numPeriods) {
+		free(histogramPtr->numPeriods);
+		histogramPtr->numPeriods = NULL;
+	}
+	if (histogramPtr->offsetIndex) {
+		free(histogramPtr->offsetIndex);
+		histogramPtr->offsetIndex = NULL;
+	}
+	if (histogramPtr->extraSample) {
+		free(histogramPtr->extraSample);
+		histogramPtr->extraSample = NULL;
+	}
+	if (histogramPtr->bufferSamples) {
+		free(histogramPtr->bufferSamples);
+		histogramPtr->bufferSamples = NULL;
 	}
 	if (histogramPtr->dataBuffer)
 		Free_EarObject(&histogramPtr->dataBuffer);
@@ -859,15 +914,17 @@ PushDataBuffer_Analysis_Histogram(EarObjectPtr data, ChanLen lastSamples)
 	int		chan;
 	ChanLen	i;
 
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
 		  lastSamples;
-		buffPtr = histogramPtr->dataBuffer->outSignal->channel[chan] +
-		  histogramPtr->bufferSamples;
+		buffPtr = data->subProcessList[ANALYSIS_HISTOGRAM_DATABUFFER]->
+		  outSignal->channel[chan] + histogramPtr->bufferSamples[
+		  data->threadIndex];
 		for (i = 0; i < lastSamples; i++)
 			*buffPtr++ = *inPtr++;
 	}
-	histogramPtr->bufferSamples = lastSamples;
+	histogramPtr->bufferSamples[data->threadIndex] = lastSamples;
 
 }
 
@@ -894,62 +951,82 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_Histogram";
 	register	ChanData	*inPtr, *outPtr, *buffPtr, binSum;
 	int		chan;
-	double	nextCutOff, nextBinCutOff, dt, binWidth, time, totalBinDuration;
-	double	extraTimeInterval, period;
-	ChanLen	i, bufferSamples, processLength, availableLength;
+	double	nextCutOff, nextBinCutOff, time, totalBinDuration;
+	double	extraTimeInterval;
+	ChanLen	i, bufferSamples, processLength, availableLength, *offsetIndexPtr;
+	ChanLen	*numPeriodsPtr, *extraSamplePtr;
+	EarObjectPtr	dataBuffer;
 	HistogramPtr	p = histogramPtr;
 
-	if (!CheckPars_Analysis_Histogram())
-		return(FALSE);
-	if (!CheckData_Analysis_Histogram(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_Histogram())
+			return(FALSE);
+		if (!CheckData_Analysis_Histogram(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Histogram Analysis Module");
+		p->dt = data->inSignal[0]->dt;
+		p->wPeriod = ((p->typeMode == HISTOGRAM_PSTH) || (p->period <=
+		  0.0))? data->inSignal[0]->length * p->dt: p->period;
+		p->wBinWidth = (p->binWidth <= 0.0)? p->dt: p->binWidth;
+		if (p->binWidth < 0.0)
+			p->wBinWidth = p->dt;
+		else if (p->binWidth == 0.0)
+			p->wBinWidth = _GetDuration_SignalData(data->inSignal[0]);
+		else
+			p->wBinWidth = p->binWidth;
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  (ChanLen) floor(p->wPeriod / p->wBinWidth + 0.5), p->wBinWidth)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetOutputTimeOffset_SignalData(data->outSignal, p->wBinWidth);
+		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		if (!InitProcessVariables_Analysis_Histogram(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Histogram Analysis Module");
-	dt = data->inSignal[0]->dt;
-	period = ((p->typeMode == HISTOGRAM_PSTH) || (p->period <= 0.0))?
-	  data->inSignal[0]->length * dt: p->period;
-	binWidth = (p->binWidth <= 0.0)? dt: p->binWidth;
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  (ChanLen) floor(period / binWidth + 0.5), binWidth)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetOutputTimeOffset_SignalData(data->outSignal, binWidth);
-	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-	if (!InitProcessVariables_Analysis_Histogram(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	if (p->offsetIndex > data->inSignal[0]->length)
+	offsetIndexPtr = p->offsetIndex + data->threadIndex;
+	numPeriodsPtr = p->numPeriods + data->threadIndex;
+	extraSamplePtr = p->extraSample + data->threadIndex;
+	if (*offsetIndexPtr > data->inSignal[0]->length) {
 		processLength = 0;
-	else {
-		availableLength = data->inSignal[0]->length - p->offsetIndex - p->
-		  extraSample + p->bufferSamples + 1;
+		availableLength = 0; /* ?? is this right?*/
+	} else {
+		availableLength = data->inSignal[0]->length - *offsetIndexPtr -
+		  *extraSamplePtr + p->bufferSamples[
+		  data->threadIndex] + 1;
 		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
-		  (ChanLen) floor(floor(availableLength * dt / period) * period / dt +
-		  DBL_EPSILON);
+		  (ChanLen) floor(floor(availableLength * p->dt / p->wPeriod) *
+		  p->wPeriod / p->dt + DBL_EPSILON);
 	}
 	if (processLength) {
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
-		  HISTOGRAM_OUTPUT_SPIKE_RATE) && p->numPeriods) {
-			totalBinDuration = binWidth * p->numPeriods;
-			for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+		  HISTOGRAM_OUTPUT_SPIKE_RATE) && *numPeriodsPtr) {
+			totalBinDuration = p->wBinWidth * *numPeriodsPtr;
+			for (chan = data->outSignal->offset; chan < data->inSignal[0]->
+			  numChannels; chan++) {
 				outPtr = data->outSignal->channel[chan];
 				for (i = 0; i < data->outSignal->length; i++)
 					*outPtr++ *= totalBinDuration;
 			}
 		}
-		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan] + p->offsetIndex + p->
-			  extraSample;
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
+			inPtr = data->inSignal[0]->channel[chan] + *offsetIndexPtr +
+			  *extraSamplePtr;
 			outPtr = data->outSignal->channel[chan];
-			buffPtr = p->dataBuffer->outSignal->channel[chan];
-			bufferSamples = p->bufferSamples;
-			extraTimeInterval = dt * p->extraSample;
-			nextCutOff = period - extraTimeInterval;
-			nextBinCutOff = binWidth - extraTimeInterval;
+			buffPtr = data->subProcessList[ANALYSIS_HISTOGRAM_DATABUFFER]->
+			  outSignal->channel[chan];
+			bufferSamples = p->bufferSamples[data->threadIndex];
+			extraTimeInterval = p->dt * *extraSamplePtr;
+			nextCutOff = p->wPeriod - extraTimeInterval;
+			nextBinCutOff = p->wBinWidth - extraTimeInterval;
 			for (i = 1, binSum = 0; i < processLength; i++) {
 				switch (p->detectionMode) {
 				case HISTOGRAM_DETECT_SPIKES:
@@ -973,18 +1050,18 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 					buffPtr++;
 					bufferSamples--;
 				}
-				time = i * dt;
+				time = i * p->dt;
 				if (DBL_GREATER(time, nextBinCutOff)) {
 					if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
 					  data->outSignal->length) /* - because of rounding errors*/
 						*outPtr++ += binSum;
 					binSum = 0;
-					nextBinCutOff += binWidth;
+					nextBinCutOff += p->wBinWidth;
 				}
 				if (DBL_GREATER(time, nextCutOff)) {
 					outPtr = data->outSignal->channel[chan];
-					nextCutOff += period;
-					p->numPeriods++;
+					nextCutOff += p->wPeriod;
+					(*numPeriodsPtr)++;
 				}
 			}
 			if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
@@ -992,28 +1069,29 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 				*outPtr +=  binSum;
 		}
 		if (p->typeMode == HISTOGRAM_PSTH)
-			p->numPeriods++;
+			(*numPeriodsPtr)++;
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
 		  HISTOGRAM_OUTPUT_SPIKE_RATE)) {
-			totalBinDuration = binWidth * p->numPeriods;
-			for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+			totalBinDuration = p->wBinWidth * *numPeriodsPtr;
+			for (chan = data->outSignal->offset; chan < data->inSignal[0]->
+			  numChannels; chan++) {
 				outPtr = data->outSignal->channel[chan];
 				for (i = 0; i < data->outSignal->length; i++)
 					*outPtr++ /= totalBinDuration;
 			}
 		}
 	}
-	if (p->offsetIndex + p->extraSample) {
-		if (p->offsetIndex < data->inSignal[0]->length) {
+	if (*offsetIndexPtr + *extraSamplePtr) {
+		if (*offsetIndexPtr < data->inSignal[0]->length) {
 			if (processLength < availableLength)
 				PushDataBuffer_Analysis_Histogram(data, availableLength -
 				  processLength);
-			p->offsetIndex = 0;
+			*offsetIndexPtr = 0;
 		} else {
-			p->offsetIndex -= data->inSignal[0]->length;
+			*offsetIndexPtr -= data->inSignal[0]->length;
 			PushDataBuffer_Analysis_Histogram(data, 1);
 		}
-		p->extraSample = 0;
+		*extraSamplePtr = 0;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
