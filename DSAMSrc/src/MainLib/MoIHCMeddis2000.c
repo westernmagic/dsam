@@ -1160,7 +1160,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!CheckInSignal_EarObject(data, funcName))
+	if (!CheckInit_SignalData(data->inSignal[0], funcName))
 		return(FALSE);
 
 	/*** Put additional checks here. ***/
@@ -1258,8 +1258,10 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 
 		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[
 		  0][0]))) / hC->betaCa));		
-		ICa = hC->GCaMax*pow(ssactCa,3)*(data->inSignal[0]->channel[0][0] -
+		ICa = hC->GCaMax * pow(ssactCa, 3) * (data->inSignal[0]->channel[0][0] -
 		  hC->CaVrev);
+		if (hairCell2Ptr->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
+			ICa *= hC->tauConcCa;
 		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ? (hC->perm_z * (pow(-ICa, hC->
 		  pCa) - pow(hC->perm_Ca0,hC->pCa))) : 0; 
 		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y * spontPerm_k0 /
@@ -1280,8 +1282,7 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			hC->hCChannels[i].actCa = ssactCa;
-			hC->hCChannels[i].concCa = (hairCell2Ptr->caCondMode ==
-			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)? -ICa: -ICa * hC->tauConcCa;
+			hC->hCChannels[i].concCa = -ICa;
 			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
 			hC->hCChannels[i].cleftC = spontCleft_c0;
 			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
