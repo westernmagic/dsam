@@ -14,13 +14,13 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= ams.par ams.rc amsicon.ico ams.zip AMSTutorial.zip
+EXTRA_DIST		= ams.par ams.rc amsicon.ico
 
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
 
-SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC Tutorials
+SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)

@@ -1,0 +1,14 @@
+#!/bin/sh
+##################
+#
+# File:		create_AMSTutorials
+# Purpose:	This script creates the help document using the helper scripts
+# Author:	L.P.O'Mard
+# Created:	29 Jan 2003
+# Updated:	
+# Copyright:(c) 2003, CNBH, University of Essex
+#
+##################
+
+create_help AMS Tutorials -h1
+mv AMSTutorials.zip ../HelpFiles

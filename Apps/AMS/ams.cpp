@@ -376,7 +376,8 @@ Init(void)
 	SetAppVersion_AppInterface(AMS_VERSION);
 	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
 	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
-	SetAppExtraHelpFile_AppInterface(AMS_TUTORIAL_HELP);
+	AddAppHelpBook_AppInterface(AMS_HELP);
+	AddAppHelpBook_AppInterface(AMS_TUTORIAL_HELP);
 
 #	ifdef USE_GUI
 	wxGetApp().SetIcon(new wxICON(ams));
