@@ -55,32 +55,6 @@
 /******************************************************************************/
 
 /*
- * These following lines are required to turn on the appropriate values for the
- * cccrlx scripts, regardless of the settings in the DSAMSetup.h file - which is
- * useful for other things too.
- */
-
-#ifdef CCDSAM
-#	undef GRAPHICS_SUPPORT
-#	undef MPI_SUPPORT
-#endif
-
-#ifdef CCDSAMG
-#	define GRAPHICS_SUPPORT	1
-#	undef MPI_SUPPORT
-#endif
-
-#ifdef CCDSAMM
-#	define MPI_SUPPORT		1
-#	undef GRAPHICS_SUPPORT
-#endif
-
-#ifdef CCDSAMMG
-#	define MPI_SUPPORT		1
-#	define GRAPHICS_SUPPORT	1
-#endif
-
-/*
  * Normal definitions
  */
 

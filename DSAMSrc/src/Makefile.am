@@ -14,6 +14,8 @@ if WXMSW
 WXWINRESFLAGS	= $(RESFLAGS)
 WXWINRESCOMP	= $(RESCOMP)
 DSAMRESPATH		= $(bindir)/$(DSAMRES)
+else
+DSAMRESPATH		=
 endif
 
 LaVersionInfo	= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
@@ -21,19 +23,17 @@ LaVersionInfo	= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 
 GenLaLDFLAGS	= -rpath $(libdir) $(LaVersionInfo) -export-dynamic
 
-bin_SCRIPTS		= ccdsam @CCDSAMM@ @CCDSAMG@ @CCDSAMMG@ @DSAMRES@
-EXTRA_SCRIPTS	= ccdsamm ccdsamg ccdsammg DSAMRes.o
+bin_SCRIPTS		= @DSAMRES@
+EXTRA_SCRIPTS	= DSAMRes.o
 bin_PROGRAMS	= @PAWORKER1M@
 EXTRA_PROGRAMS	= PaWorker1m.exe
 
-lib_LTLIBRARIES = libDSAM.la libDSAMStd.la @LIBDSAMG@ @LIBDSAMM@@LIBDSAMMG@
-EXTRA_LTLIBRARIES= libDSAMm.la libDSAMg.la libDSAMmg.la 
+lib_LTLIBRARIES = libdsam.la libdsam_std.la @LIBDSAMG@ @LIBDSAMM@@LIBDSAMMG@
+EXTRA_LTLIBRARIES= libdsam_m.la libdsam_g.la libdsam_mg.la 
 EXTRA_DIST		= makefile.b32 graphsup.dos dsam.rc
 
-MYCCCOMPILE		= $(CC) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir)
-MYCXXCOMPILE	= $(CXX) $(CPPFLAGS) $(DEFS) $(WXINC) '$$*' -I$(pkgincludedir)
 YFLAGS			= -dl
-INCLUDES		= -I$(top_srcdir)/Include $(MPI_INC) $(WXINC)
+INCLUDES		= -I$(top_srcdir)/Include @DSAM_DEFS@ $(MPI_INC) $(WXINC)
 
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
@@ -82,49 +82,27 @@ Tr_Sources	= TrGate.c TrSetDBSPL.c
 pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
-libDSAM_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
+libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(St_Sources) $(Tr_Sources)
-libDSAM_la_LDFLAGS=  $(GenLaLDFLAGS)
+libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
-libDSAMStd_la_SOURCES= $(Std_Source)
-libDSAMStd_la_LDFLAGS= $(GenLaLDFLAGS)
-libDSAMm_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
+libdsam_std_la_SOURCES= $(Std_Source)
+libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
+libdsam_m_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(St_Sources) $(Tr_Sources) $(Pa_Sources)
-libDSAMm_la_LDFLAGS= $(GenLaLDFLAGS)
+libdsam_m_la_LDFLAGS= $(GenLaLDFLAGS)
 
-libDSAMg_la_SOURCES= $(Gr_Sources)
-libDSAMg_la_LDFLAGS= $(GenLaLDFLAGS)
+libdsam_g_la_SOURCES= $(Gr_Sources)
+libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 
-libDSAMmg_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
+libdsam_mg_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(St_Sources) $(Tr_Sources) $(Pa_Sources) \
 					$(Gr_Sources)
-libDSAMmg_la_LDFLAGS= $(GenLaLDFLAGS)
+libdsam_mg_la_LDFLAGS= $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c
 PaWorker1m_exe_LDADD	= libDSAMm.a -L$(CHIMP_LIB) -lmpi -lchimp -lm
 
 DSAMRes.o:	Makefile
 		$(WXWINRESCOMP) $(WXWINRESFLAGS) $(srcdir)/dsam.rc -o $@
-
-ccdsam:	../DSAMSetup.h Makefile
-		echo $(MYCCCOMPILE) -DCCDSAM -L$(libdir) -lDSAM -lDSAMStd -lm > $@
-		chmod +x $@
-
-ccdsamm:	../DSAMSetup.h Makefile
-		echo $(MYCCCOMPILE) -DCCDSAMM -L$(libdir) -lDSAMm \
-		  -L$(CHIMP_LIB) -lmpi -lchimp -lm > $@
-		chmod +x $@
-
-ccdsamg:	../DSAMSetup.h Makefile
-		echo $(MYCXXCOMPILE) -DCCDSAMG $(X_CFLAGS) $(WXWINLDFLAGS) \
-		  -L$(libdir) -lDSAM -lDSAMg  $(WXWINLIBS) $(DSAMRESPATH) \
-		  $(X_PRE_LIBS) $(X_LIBS) $(X_EXTRA_LIBS) $(WXLDFLAGS) > $@
-		chmod +x $@
-
-ccdsammg:	../DSAMSetup.h Makefile
-		echo $(MYCOMPILE) -DCCDSAMMG $(X_CFLAGS) $(WXWINLDFLAGS) \
-		  -L$(libdir) -lDSAMmg -L$(CHIMP_LIB) -lmpi -lchimp $(WXWINLIBS) \
-		  $(X_PRE_LIBS) $(X_LIBS) $(X_EXTRA_LIBS) -lX11 -lXmu -lXt -lXpm \
-		  -lXaw -lm > $@
-		chmod +x $@
 

@@ -21,8 +21,10 @@ BuildRoot: /tmp/%{name}-root
 Obsoletes: dsam
 
 %description
-DSAM contains a library of established and experimental models of the auditory
-periphery.  It is designed to greatly ease the production of auditory models.
+DSAM is a library to support programmers producing auditory models.  It includes
+a wide collection of established and experimental auditory models.  It also
+provides facilities for reading and writing to sound file formats, in addition
+to including many analysis functions.
 
 %changelog
 * Wed Mar 22 2000 Lowel P. O'Mard <lowel@essex.ac.uk>
@@ -41,9 +43,9 @@ Header files for dsam %{ver} library.
 %setup
 DSAM_FLAGS="--prefix=%{prefix} --enable-graphics --enable-shared"
 if [ ! -f configure ]; then
-  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh $DSAM_FLAGS
+  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./autogen.sh $DSAM_FLAGS
 else
-  CFLAGS="$RPM_OPT_FLAGS" ./configure $DSAM_FLAGS
+  CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure $DSAM_FLAGS
 fi
 
 %build
