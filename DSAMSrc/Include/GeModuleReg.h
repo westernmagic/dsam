@@ -23,7 +23,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	MODULE_REG_DEFAAULT_USER_MODULES	10
+#define	MODULE_REG_DEFAAULT_USER_MODULES	20
 #define	NULL_MODULE_NAME		"NULL"
 
 /******************************************************************************/
