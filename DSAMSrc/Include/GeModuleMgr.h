@@ -88,6 +88,7 @@ typedef enum {
 	AN_SG_SIMPLE,
 	BM_CARNEY,
 	BM_COOKE,
+	BM_GAMMAC,
 	BM_GAMMAT,
 	BM_DRNL,
 	BM_DRNL_TEST,
@@ -198,6 +199,7 @@ typedef struct moduleStruct {
 		Averages	averages;
 		BinomialSG	binomialSG;
 		BinSignal	binSignal;
+		BMGammaC	bMGammaC;
 		BMGammaT	bMGammaT;
 		BM0DRNL		bM0DRNL;
 		BM0Cooke	bM0Cooke;
@@ -376,6 +378,8 @@ void		SetAMTone_ModuleMgr(ModulePtr theModule);
 void		SetBasilarM_Carney_ModuleMgr(ModulePtr theModule);
 
 void		SetBasilarM_Cooke_ModuleMgr(ModulePtr theModule);
+
+void		SetBasilarM_GammaC_ModuleMgr(ModulePtr theModule);
 
 void		SetBasilarM_GammaT_ModuleMgr(ModulePtr theModule);
 

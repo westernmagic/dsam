@@ -16,7 +16,7 @@ Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoHCRPShamma.mod MoIHCCarney.mod MoIHCCooke.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
-				FlBandPass.mod FlMultiBPass.mod
+				FlBandPass.mod FlMultiBPass.mod MoBMGammaC.mod
 
 Pa_Modules	= PaMaster1.mod
 
