@@ -74,7 +74,7 @@ InitOperatorModeList_Utility_MathOp(void)
 	static NameSpecifier	modeList[] = {
 
 			{ "ADD",		UTILITY_MATHOP_OPERATORMODE_ADD },
-			{ "MODULUS",	UTILITY_MATHOP_OPERATORMODE_MODULUS },
+			{ "ABSOLUTE",	UTILITY_MATHOP_OPERATORMODE_ABSOLUTE },
 			{ "SCALE",		UTILITY_MATHOP_OPERATORMODE_SCALE },
 			{ "SQR",		UTILITY_MATHOP_OPERATORMODE_SQR },
 			{ "SUBTRACT",	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
@@ -465,7 +465,7 @@ Process_Utility_MathOp(EarObjectPtr data)
 			for (i = 0; i < data->outSignal->length; i++)
 				*outPtr++ = *inPtr1++ + *inPtr2++;
 			break;
-		case UTILITY_MATHOP_OPERATORMODE_MODULUS:
+		case UTILITY_MATHOP_OPERATORMODE_ABSOLUTE:
 			for (i = 0; i < data->outSignal->length; i++)
 				*outPtr++ = fabs(*inPtr1++);
 			break;
