@@ -161,6 +161,7 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 		Free_Utility_SimScript();
 		return(FALSE);
 	}
+	simScriptPtr->simParFileFlag = FALSE;
 	sprintf(simScriptPtr->parsFilePath, "No path");
 	simScriptPtr->lineNumber = 0;
 	simScriptPtr->symList = NULL;
@@ -345,8 +346,8 @@ SetParFilePathMode_Utility_SimScript(char *theParFilePathMode)
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH:
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL:
 		simScriptPtr->parFilePathMode = UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH;
-		CopyAndTrunc_Utility_String(simScriptPtr->parsFilePath,
-		  theParFilePathMode, MAX_FILE_PATH);
+		snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, "%s",
+		  theParFilePathMode);
 		break;
 	default:
 		;
@@ -440,7 +441,7 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		return(FALSE);
 	}
 	FindFilePathAndName_Common(filePath, localSimScriptPtr->parsFilePath,
-	  localSimScriptPtr->simParFileName);
+	  localSimScriptPtr->simFileName);
 	FreeSimulation_Utility_SimScript();
 	Init_ParFile();
 	if (!GetPars_ParFile(fp, "%s", operationMode))
@@ -542,26 +543,25 @@ PrintPars_Utility_SimScript(void)
 
 }
 
-/****************************** ReadPars **************************************/
+/****************************** ReadSimScript *********************************/
 
 /*
  * This program reads a specified number of parameters from a file.
+ * It was the original "ReadPars_..." routine.
  * This routine is special in the way that it treats the file path.  For this
  * module, all file paths for modules needs to be stored.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-ReadPars_Utility_SimScript(char *fileName)
+ReadSimScript_Utility_SimScript(char *filePath)
 {
-	static const char	*funcName = "ReadPars_Utility_SimScript";
+	static const char	*funcName = "ReadSimScript_Utility_SimScript";
 	BOOLN	ok;
-	char	*filePath;
 	char	operationMode[MAXLINE], parFilePathMode[MAX_FILE_PATH];
 	DatumPtr	simulation;
 	FILE	*fp;
 
-	filePath = GetParsFileFPath_Common(fileName);
 	if ((fp = fopen(filePath, "r")) == NULL) {
 		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
 		return(FALSE);
@@ -582,12 +582,50 @@ ReadPars_Utility_SimScript(char *fileName)
 		  "parameter file '%s'.", funcName, filePath);
 		return(FALSE);
 	}
-	FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
-	  simScriptPtr->simFileName);
 	if (!SetPars_Utility_SimScript(simulation, operationMode,
 	  parFilePathMode)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** ReadPars **************************************/
+
+/*
+ * This function sets the simulation for an EarObject, according to the
+ * file name extension.
+ * It sets the 'simParFileFlag' argument pointer accordingly.
+ */
+
+BOOLN
+ReadPars_Utility_SimScript(char *fileName)
+{
+	static const char	*funcName = "ReadPars_Utility_SimScript";
+	char	*filePath;
+
+	if (simScriptPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	simScriptPtr->simParFileFlag = (StrNCmpNoCase_Utility_String(
+	  GetSuffix_Utility_String(fileName), "SPF") == 0);
+	filePath = GetParsFileFPath_Common(fileName);
+	FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
+	  simScriptPtr->simFileName);
+	if (!simScriptPtr->simParFileFlag) {
+		if (!ReadSimScript_Utility_SimScript(filePath)) {
+			NotifyError("%s: Could not read simulation script from\nfile "
+			  "'%s'.", funcName, filePath);
+			return(FALSE);
+		}
+	} else {
+		if (!ReadSimParFile_Utility_SimScript(filePath)) {
+			NotifyError("%s: Could not read simulation parameter file from\n"
+			  " file '%s'.", funcName, filePath);
+			return(FALSE);
+		}
 	}
 	return(TRUE);
 
@@ -843,10 +881,9 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (localSimScriptPtr->parFilePathMode ==
-	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {
-		CopyAndTrunc_Utility_String(localSimScriptPtr->parsFilePath,
-		  localSimScriptPtr->parFilePathModeList[
-		  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name, MAX_FILE_PATH);
+	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {snprintf(localSimScriptPtr->
+	    parsFilePath, MAX_FILE_PATH, "%s", localSimScriptPtr->
+		parFilePathModeList[UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name);
 	}
 	for (pc = localSimScriptPtr->simulation; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {
@@ -864,6 +901,16 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 			case ANA_SAI_MODULE:
 				SetPar_ModuleMgr(pc->data, "STROBE_PAR_FILE", NO_FILE);
 				break;
+			case NEUR_HHUXLEY_MODULE: {
+				IonChanListPtr	theICs;
+
+				if ((theICs = GenerateDefault_IonChanList()) == NULL) {
+					NotifyError("%s: Out of memory for default ion channel "
+					  "list structure.", funcName);
+					return(FALSE);
+				}
+				SetPar_ModuleMgr(pc->data, "ICList", (char *) theICs);
+				break; }
 			default:
 				if (strncmp(pc->u.proc.moduleName, BM_MODULE_PREFIX,
 				  lenBMModPrefix) == 0) {

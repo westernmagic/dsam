@@ -91,8 +91,8 @@ typedef enum {
 
 typedef enum {
 
-	ICLIST_IC_MODE,
 	ICLIST_IC_DESCRIPTION,
+	ICLIST_IC_MODE,
 	ICLIST_IC_ENABLED,
 	ICLIST_IC_EQUILIBRIUM_POT,
 	ICLIST_IC_CONDUCTANCE,
@@ -195,8 +195,10 @@ typedef struct IonChanList {
 	/* Private members */
 	NameSpecifier	*printTablesModeList;
 	UniParListPtr	parList;
-	int		index;					/* Used by universal parameter list. */
+	IonChannelPtr	currentIC;			/* Used by universal parameter list. */
+	int		oldNumChannels;
 	int		numTableEntries;
+	int		oldNumTableEntries;
 	char	diagFileName[MAX_FILE_PATH];
 
 } IonChanList, *IonChanListPtr;
@@ -226,6 +228,10 @@ BOOLN	CheckPars_IonChanList(IonChanListPtr theICList);
 BOOLN	Free_IonChanList(IonChanListPtr *theICList);
 
 void	FreeIonChannel_IonChanList(IonChannelPtr *theIC);
+
+void	FreeIonChannels_IonChanList(IonChanListPtr theICList);
+
+IonChanListPtr	GenerateDefault_IonChanList(void);
 
 BOOLN	GetParsBoltzmann_IonChanList(IonChannelPtr theIC, FILE *fp);
 
@@ -259,6 +265,9 @@ BOOLN	ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode,
 		  double *equilibriumPot, double *baseMaxConductance,
 		  int *activationExponent);
 
+BOOLN	ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC,
+		  FILE *fp);
+
 BOOLN	ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC);
 
 double	HHuxleyAlpha_IonChanList(double a, double b, double c, double d,
@@ -271,6 +280,8 @@ double	HHuxleyBeta_IonChanList(double a, double b, double c, double d,
 
 BOOLN	SetBaseLeakageCond_IonChanList(IonChanListPtr theICs,
 		  double baseLeakageCond);
+
+BOOLN	PrepareIonChannels_IonChanList(IonChanListPtr theICs);
 
 BOOLN	SetGeneralUniParList_IonChanList(IonChanListPtr theICs);
 
@@ -296,10 +307,12 @@ BOOLN	SetICEquilibriumPot_IonChanList(IonChannelPtr theIC,
 
 BOOLN	SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName);
 
-BOOLN	SetICGeneralPars_IonChanList(IonChannelPtr theIC, IonChanListPtr theICs,
-		  ICModeSpecifier mode, char *description, char *enabled,
-		  double equilibriumPot, double baseMaxConductance,
-		  int activationExponent);
+BOOLN	SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
+		  char *description, char *enabled, double equilibriumPot,
+		  double baseMaxConductance, int activationExponent);
+
+void	SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
+		  IonChanListPtr theICs);
 
 BOOLN	SetICBoltzmannHalfMaxV_IonChanList(IonChannelPtr theIC, int index,
 		  double theHalfMaxV);

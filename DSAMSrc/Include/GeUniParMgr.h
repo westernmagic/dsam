@@ -258,6 +258,8 @@ BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
 BOOLN	SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  char *parValue);
 
+BOOLN	SetCurrentIC_UniParMgr(IonChanListPtr theICs, char *description);
+
 BOOLN	SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index,
 		  char *parValue);
 

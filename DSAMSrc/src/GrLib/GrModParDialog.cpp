@@ -177,8 +177,9 @@ ModuleParDialog::OnICButton(wxCommandEvent& event)
 			NotifyError("%s: Could not initialise ion channel.", funcName);
 			return;
 		}
-		SetICGeneralPars_IonChanList(iC, theICs,ICLIST_BOLTZMANN_MODE,
+		SetICGeneralPars_IonChanList(iC, ICLIST_BOLTZMANN_MODE,
 		  "<description>", "on", 0.0, 0.0, 1);
+		SetICGeneralParsFromICList_IonChanList(iC, theICs);
 		SetIonChannelUniParList_IonChanList(theICs, iC);
 		SetIonChannelUniParListMode_IonChanList(iC);
 		if (!Append_Utility_DynaList(&theICs->ionChannels, iC)) {
@@ -236,7 +237,9 @@ ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 		deleteICBtn->Enable(TRUE);
 		ParListInfo	*info = parListInfoList->list[index +
 		  PARLISTINFOLIST_MAIN_ICLIST_PAGES];
-		info->parList->handlePtr.iCs->index = index;
+		info->parList->handlePtr.iCs->currentIC = (IonChannelPtr)
+		  GetMemberData_Utility_DynaList(info->parList->handlePtr.iCs->
+		  ionChannels, index);
 	}
 
 }

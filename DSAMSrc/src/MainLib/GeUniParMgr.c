@@ -672,13 +672,15 @@ CheckParList_UniParMgr(UniParListPtr list)
 		break;
 	case UNIPAR_SET_ICLIST: {
 		DynaListPtr	node;
+		IonChanListPtr	theICs = list->handlePtr.iCs;
 		IonChannelPtr	iC;
 
-		for (node = list->handlePtr.iCs->ionChannels; ok && node; node =
-		  node->next) {
+		if (list->updateFlag)
+			ok = PrepareIonChannels_IonChanList(theICs);
+		for (node = theICs->ionChannels; ok && node; node = node->next) {
 			iC = (IonChannelPtr) node->data;
 			if (iC->parList->updateFlag)
-				ok = ResetIonChannel_IonChanList(list->handlePtr.iCs, iC);
+				ok = ResetIonChannel_IonChanList(theICs, iC);
 		}
 		break; }
 	default:
@@ -856,6 +858,9 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	case UNIPAR_CFLIST:
 		ok = (* p->FuncPtr.SetCFList)((CFListPtr) parValue);
 		break;
+	case UNIPAR_ICLIST:
+		ok = (* p->FuncPtr.SetICList)((IonChanListPtr) parValue);
+		break;
 	case UNIPAR_PARARRAY:
 		ok = (* p->FuncPtr.SetParArray)((ParArrayPtr) parValue);
 		break;
@@ -971,6 +976,33 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 
 }
 
+/************************ SetCurrentIC ****************************************/
+
+/*
+ * This routine sets the IC index for an IC list structure.
+ * It assumes that the arguments are correctly initialised.
+ * It returns FALSE if the ion channel is not found and there are no free un-set
+ * ion channels which it can use.
+ */
+
+BOOLN
+SetCurrentIC_UniParMgr(IonChanListPtr theICs, char *description)
+{
+	DynaListPtr	node;
+	IonChannelPtr	iC;
+
+	for (node = theICs->ionChannels; node; node = node->next) {
+		iC = (IonChannelPtr) node->data;
+		if ((iC->description[0] == '\0') || (StrNCmpNoCase_Utility_String(
+		  iC->description, description) == 0)) {
+			theICs->currentIC = iC;
+			return(TRUE);
+		}
+	}
+	return(FALSE);
+
+}
+
 /************************ SetICParValue ***************************************/
 
 /*
@@ -986,29 +1018,23 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	char	*arrayValue;
 	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	UniParPtr	p;
-	IonChannelPtr	theIC;
+	IonChanListPtr	theICs = parList->handlePtr.iCs;
 
-	if ((theIC = (IonChannelPtr) GetMemberData_Utility_DynaList(
-	  parList->handlePtr.iCs->ionChannels, parList->handlePtr.iCs->index)) ==
-	  NULL) {
-		NotifyError("%s: Could not get ion channel.", funcName);
-		return(FALSE);
-	}
 	p = &parList->pars[index];
 	switch (p->type) {
 	case UNIPAR_INT:
-		ok = (* p->FuncPtr.SetICInt)(theIC, atoi(parValue));
+		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, atoi(parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetICReal)(theIC, atof(parValue));
+		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, atof(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
 			NotifyError("%s: Could not set array value.", funcName);
 			return(FALSE);
 		}
-		ok = (* p->FuncPtr.SetICRealArrayElement)(theIC, arrayIndex[0],
-		  atof(arrayValue));
+		ok = (* p->FuncPtr.SetICRealArrayElement)(theICs->currentIC,
+		  arrayIndex[0], atof(arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1017,7 +1043,13 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
 	case UNIPAR_FILE_NAME:
-		ok = (* p->FuncPtr.SetICString)(theIC, parValue);
+		if ((index == ICLIST_IC_DESCRIPTION) && !SetCurrentIC_UniParMgr(theICs,
+		  parValue)) {
+			NotifyError("%s: Could not find '%s' ion channel.", funcName,
+			  parValue);
+			return(FALSE);
+		}
+		ok = (* p->FuncPtr.SetICString)(theICs->currentIC, parValue);
 		break;
 	default:
 		NotifyError("%s: Universal parameter type not yet implemented (%d).",
@@ -1043,10 +1075,6 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 	UniParPtr	p = &(*parList)->pars[index];
 	IonChanListPtr	theICs = (*parList)->handlePtr.iCs;
 
-	if (index == ICLIST_NUMCHANNELS) {
-		NotifyError("%s: Change of channels is not implemented.", funcName);
-		return(FALSE);
-	}
 	switch (p->type) {
 	case UNIPAR_INT:
 		ok = (* p->FuncPtr.SetICListInt)(theICs, atoi(parValue));
@@ -1201,15 +1229,27 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
 			break;
 		case UNIPAR_ICLIST: {
 			DynaListPtr	node;
+			IonChanListPtr	theICs = *p->valuePtr.iCPtr;
 
-			if (!*p->valuePtr.iCPtr)
+			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+				par = p;
+				break;
+			}
+			if (!theICs)
 				return(NULL);
-			tempParList = (*p->valuePtr.iCPtr)->parList;
+			tempParList = theICs->parList;
 			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
 				*parList = tempParList;
 				break;
 			}
-			for (node = (*p->valuePtr.iCPtr)->ionChannels; node; node =
+			if (!theICs->ionChannels) {
+				if (!PrepareIonChannels_IonChanList(theICs)) {
+					NotifyError("%s: Could not set the ion channels.",
+					  funcName);
+					return(FALSE);
+				}
+			}
+			for (node = theICs->ionChannels; node; node =
 			  node->next) {
 				tempParList = ((IonChannelPtr) node->data)->parList;
 				if ((par = FindUniPar_UniParMgr(&tempParList, parName)) !=

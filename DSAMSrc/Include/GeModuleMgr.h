@@ -73,6 +73,7 @@ typedef enum {
 	ANA_SAI_MODULE,
 	DISPLAY_MODULE,
 	PROCESS_MODULE,
+	NEUR_HHUXLEY_MODULE,
 	NULL_MODULE,
 	SIMSCRIPT_MODULE,
 
@@ -164,6 +165,8 @@ EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
 
 double		GetRestingResponse_ModuleMgr(EarObjectPtr data);
 
+BOOLN		GetSimParFileFlag_ModuleMgr(EarObjectPtr data);
+
 DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
 
 UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName);
@@ -181,8 +184,6 @@ BOOLN		PrintPars_ModuleMgr(EarObjectPtr data);
 BOOLN		PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
 BOOLN		ReadPars_ModuleMgr(EarObjectPtr data, char *fileName);
-
-BOOLN		ReadSimParFile_ModuleMgr(EarObjectPtr data, char *simParFileName);
 
 BOOLN		RunProcess_ModuleMgr(EarObjectPtr data);
 

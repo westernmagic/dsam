@@ -94,8 +94,8 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	NameSpecifier	*parFilePathModeList;
+	BOOLN	simParFileFlag;
 	char	simFileName[MAX_FILE_PATH];
-	char	simParFileName[MAX_FILE_PATH];
 	char	parsFilePath[MAX_FILE_PATH];
 	int		lineNumber;
 	FILE	*fp;
@@ -147,7 +147,6 @@ BOOLN	InitSimulation_Utility_SimScript(DatumPtr simulation);
 
 char *	InitString_Utility_SimScript(char *string);
 
-
 void	NotifyError_Utility_SimScript(char *format, ...);
 
 BOOLN	PrintPars_Utility_SimScript(void);
@@ -161,6 +160,8 @@ DatumPtr	Read_Utility_SimScript(FILE *fp);
 BOOLN	ReadPars_Utility_SimScript(char *fileName);
 
 BOOLN	ReadSimParFile_Utility_SimScript(char *filePath);
+
+BOOLN	ReadSimScript_Utility_SimScript(char *fileName);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 

@@ -107,7 +107,7 @@ class MyFrame: public wxFrame {
 	char	**initStringPtrs;
 #	endif
 	int		helpCount;
-	wxMenu	*fileMenu, *editMenu, *viewMenu;
+	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu;
 	wxConfigBase	*pConfig;
 
   public:
@@ -118,6 +118,7 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
+	wxMenu *	GetProgramMenu(void)	{ return programMenu; }
 	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
 			  const wxString& fileName);
 	void	OnAbout(wxCommandEvent& event);

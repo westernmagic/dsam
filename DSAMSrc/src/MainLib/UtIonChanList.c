@@ -83,6 +83,26 @@ FreeIonChannel_IonChanList(IonChannelPtr *theIC)
 
 }
 
+/****************************** FreeIonChannels *******************************/
+
+/*
+ * This function releases of the memory allocated for all ion channels.
+ */
+
+void
+FreeIonChannels_IonChanList(IonChanListPtr theICList)
+{
+	IonChannelPtr	theIC;
+
+	if (!theICList)
+		return;
+	while (theICList->ionChannels) {
+		theIC = (IonChannelPtr) Pull_Utility_DynaList(&theICList->ionChannels);
+			FreeIonChannel_IonChanList(&theIC);
+	}
+
+}
+
 /****************************** Free ******************************************/
 
 /*
@@ -95,15 +115,10 @@ BOOLN
 Free_IonChanList(IonChanListPtr *theICList)
 {
 	/* static const char	*funcName = "Free_IonChanList"; */
-	IonChannelPtr	theIC;
 
 	if (*theICList == NULL)
 		return(FALSE);
-	while ((*theICList)->ionChannels) {
-		theIC = (IonChannelPtr) Pull_Utility_DynaList(
-		  &(*theICList)->ionChannels);
-			FreeIonChannel_IonChanList(&theIC);
-	}
+	FreeIonChannels_IonChanList(*theICList);
 	if ((*theICList)->printTablesModeList)
 		free((*theICList)->printTablesModeList);
 	FreeList_UniParMgr(&(*theICList)->parList);
@@ -147,7 +162,9 @@ Init_IonChanList(const char *callingFunctionName)
 		return(NULL);
 	}
 	theICList->parList = NULL;
-	theICList->index = 0;
+	theICList->currentIC = NULL;
+	theICList->oldNumChannels = 0;
+	theICList->oldNumTableEntries = 0;
 	return(theICList);
 
 }
@@ -420,16 +437,16 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 		return(FALSE);
 	}
 	pars = theIC->parList->pars;
-	SetPar_UniParMgr(&pars[ICLIST_IC_MODE], "MODE",
-	 "Mode option ('file', 'hHuxley' or 'boltzmann').",
-	  UNIPAR_NAME_SPEC,
-	  &theIC->mode, iCListModeList,
-	  (void * (*)) SetICMode_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_DESCRIPTION], "DESCRIPTION",
 	 "Description.",
 	  UNIPAR_STRING,
 	  &theIC->description, NULL,
 	  (void * (*)) SetICDescription_IonChanList);
+	SetPar_UniParMgr(&pars[ICLIST_IC_MODE], "MODE",
+	 "Mode option ('file', 'hHuxley' or 'boltzmann').",
+	  UNIPAR_NAME_SPEC,
+	  &theIC->mode, iCListModeList,
+	  (void * (*)) SetICMode_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ENABLED], "ENABLED",
 	 "Ion channel enabled status ('on' or 'off).",
 	  UNIPAR_BOOL,
@@ -1184,6 +1201,27 @@ ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, char *fileName,
 
 }
 
+/****************************** SetICGeneralParsFromICList ********************/
+
+/*
+ * This routine sets the general parameters for an IC structure which are
+ * inherited from the IC list structure.
+ * It assumes that the IonChannel structure and the IonChanList structure
+ * have been correctly initialised.
+ */
+
+void
+SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
+  IonChanListPtr theICs)
+{
+	theIC->temperature = theICs->temperature;
+	theIC->minVoltage = theICs->minVoltage;
+	theIC->maxVoltage = theICs->maxVoltage;
+	theIC->dV = theICs->dV;
+	theIC->numTableEntries = theICs->numTableEntries;
+
+}
+
 /****************************** SetICGeneralPars ******************************/
 
 /*
@@ -1193,8 +1231,8 @@ ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, char *fileName,
  */
 
 BOOLN
-SetICGeneralPars_IonChanList(IonChannelPtr theIC, IonChanListPtr theICs,
-  ICModeSpecifier mode, char *description, char *enabled, double equilibriumPot,
+SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
+  char *description, char *enabled, double equilibriumPot,
   double baseMaxConductance, int activationExponent)
 {
 	static const char	*funcName = "SetICGeneralPars_IonChanList";
@@ -1215,11 +1253,6 @@ SetICGeneralPars_IonChanList(IonChannelPtr theIC, IonChanListPtr theICs,
 		return(FALSE);
 	}
 	theIC->mode = mode;
-	theIC->temperature = theICs->temperature;
-	theIC->minVoltage = theICs->minVoltage;
-	theIC->maxVoltage = theICs->maxVoltage;
-	theIC->dV = theICs->dV;
-	theIC->numTableEntries = theICs->numTableEntries;
 	return(TRUE);
 
 }
@@ -1231,8 +1264,8 @@ SetICGeneralPars_IonChanList(IonChannelPtr theIC, IonChanListPtr theICs,
  * structure.
  */
 
-IonChannelPtr
-ReadICPars_IonChanList(IonChanListPtr theICs, FILE *fp)
+BOOLN
+ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 {
 	static const char	*funcName = "ReadICPars_IonChanList";
 	BOOLN	ok = TRUE;
@@ -1240,32 +1273,28 @@ ReadICPars_IonChanList(IonChanListPtr theICs, FILE *fp)
 	char	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
 	char	enabled[SMALL_STRING], description[MAXLINE];
 	double	equilibriumPot, baseMaxConductance;
-	IonChannelPtr	theIC = NULL;
 	ICModeSpecifier mode;
 
 	if (!GetPars_ParFile(fp, "%s", modeName)) {
 		NotifyError("%s: Could not read filename.", funcName);
-		return(NULL);
+		return(FALSE);
 	}
 	if ((mode = (ICModeSpecifier) Identify_NameSpecifier(modeName,
 	  iCListModeList)) == ICLIST_NULL) {
 		NotifyError("%s: Unknown ion channel mode (%s).", funcName, modeName);
-		return(NULL);
+		return(FALSE);
 	}
 	if (!ReadICGeneralPars_IonChanList(&fp, mode, fileName, description,
 	  enabled, &equilibriumPot, &baseMaxConductance, &activationExponent)) {
 		NotifyError("%s: Could not read general parameters.", funcName);
-		return(NULL);
+		return(FALSE);
 	}
-	if ((theIC = InitIonChannel_IonChanList(funcName,
-	  theICs->numTableEntries)) == NULL)
-		return(NULL);
-	if (!SetICGeneralPars_IonChanList(theIC, theICs, mode, description, enabled,
+	if (!SetICGeneralPars_IonChanList(theIC, mode, description, enabled,
 	  equilibriumPot, baseMaxConductance, activationExponent)) {
 		NotifyError("%s: Could not set general parameters.", funcName);
-		FreeIonChannel_IonChanList(&theIC);
-		return(NULL);
+		return(FALSE);
 	}
+	SetICGeneralParsFromICList_IonChanList(theIC, theICs);
 	switch (mode) {
 	case ICLIST_BOLTZMANN_MODE:
 		if (!GetParsBoltzmann_IonChanList(theIC, fp))
@@ -1280,7 +1309,7 @@ ReadICPars_IonChanList(IonChanListPtr theICs, FILE *fp)
 			GenerateHHuxley_IonChanList(theIC);
 		break;
 	case ICLIST_FILE_MODE:
-		CopyAndTrunc_Utility_String(theIC->fileName, fileName, MAX_FILE_PATH);
+		snprintf(theIC->fileName, MAX_FILE_PATH, "%s", fileName);
 		if (!ReadVoltageTable_IonChanList(theIC, fp)) {
 			NotifyError("%s: Failed to read ion channel from file '%s'.",
 			  funcName, fileName);
@@ -1292,18 +1321,11 @@ ReadICPars_IonChanList(IonChanListPtr theICs, FILE *fp)
 		ok = FALSE;
 		break;
 	} /* Switch */
-	if (ok && !SetIonChannelUniParList_IonChanList(theICs, theIC)) { 
-		NotifyError("%s: Could not initialise parameter list.", funcName);
-		ok = FALSE;
-	}
 	if (ok && !SetIonChannelUniParListMode_IonChanList(theIC)) { 
 		NotifyError("%s: Could not set parameter list mode.", funcName);
 		ok = FALSE;
 	}
-	if (ok)
-		return(theIC);
-	FreeIonChannel_IonChanList(&theIC);
-	return(NULL);
+	return(ok);
 
 }
 
@@ -1346,9 +1368,9 @@ IonChanListPtr
 ReadPars_IonChanList(FILE *fp)
 {
 	static const char	*funcName = "ReadPars_IonChanList";
-	int		i;
 	IonChanListPtr	theICs = NULL;
 	IonChannelPtr	theIC;
+	DynaListPtr		node;
 
 	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
 		NotifyError("%s: Out of memory for ion channel list structure.",
@@ -1365,15 +1387,16 @@ ReadPars_IonChanList(FILE *fp)
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
-	for (i = 0; i < theICs->numChannels; i++) {
-		if ((theIC = ReadICPars_IonChanList(theICs, fp)) == NULL) {
-			NotifyError("%s: Could not read ion channel %d.", funcName, i);
-			Free_IonChanList(&theICs);
-			return(NULL);
-		}
-		if (!Append_Utility_DynaList(&theICs->ionChannels, theIC)) {
-			NotifyError("%s: Could not add ion channel %d to list.", funcName,
-			  i);
+	if (!PrepareIonChannels_IonChanList(theICs)) {
+		NotifyError("%s: Failed to prepare the ion channels.", funcName);
+		Free_IonChanList(&theICs);
+		return(NULL);
+	}
+	for (node = theICs->ionChannels; node; node = node->next) {
+		theIC = (IonChannelPtr) node->data;
+		if (!ReadICPars_IonChanList(theICs, theIC, fp)) {
+			NotifyError("%s: Could not read ion channel '%s'.", funcName,
+			  theIC->description);
 			Free_IonChanList(&theICs);
 			return(NULL);
 		}
@@ -1384,6 +1407,97 @@ ReadPars_IonChanList(FILE *fp)
 		return(NULL);
 	}
 	return(theICs);
+
+}
+
+/****************************** GenerateDefault *******************************/
+
+/*
+ * This function returns a default ICList structure.
+ * It is used to create a structure whose parameters can be set later.
+ */
+
+IonChanListPtr
+GenerateDefault_IonChanList(void)
+{
+	static const char	*funcName = "GenerateDefault_IonChanList";
+	IonChanListPtr	theICs = NULL;
+
+	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
+		NotifyError("%s: Out of memory for ion channel list structure.",
+		  funcName);
+		return(NULL);
+	}
+	if (!SetGeneralUniParList_IonChanList(theICs)) {
+		NotifyError("%s: Could not initialise parameter list.", funcName);
+		Free_IonChanList(&theICs);
+		return(NULL);
+	}
+	return(theICs);
+
+}
+
+/****************************** PrepareIonChannels ****************************/
+
+/*
+ * This adds a default ion channel to an IC List structure.
+ * It is used to create an ion channel structure whose parameters can be set
+ * later.
+ * If the number of channels is reduced, then the channel at the to of the
+ * list is removed.
+ */
+
+BOOLN
+PrepareIonChannels_IonChanList(IonChanListPtr theICs)
+{
+	static const char	*funcName = "PrepareIonChannels_IonChanList";
+	int		i;
+	IonChannelPtr	theIC;
+	DynaListPtr		node;
+
+	if (!CheckInit_IonChanList(theICs, funcName))
+		return(FALSE);
+
+	if (!SetGeneratedPars_IonChanList(theICs)) {
+		NotifyError("%s: Ion channel parameters must be set first.", funcName);
+		return(FALSE);
+	}
+	if (!theICs->ionChannels)
+		theICs->oldNumTableEntries = theICs->numTableEntries;
+	if (theICs->numChannels != theICs->oldNumChannels) {
+		if (theICs->numChannels < theICs->oldNumChannels) {
+			theIC = Pull_Utility_DynaList(&theICs->ionChannels);
+			FreeIonChannel_IonChanList(&theIC);
+		} else {
+			for (i = theICs->oldNumChannels; i < theICs->numChannels; i++) {
+				if ((theIC = InitIonChannel_IonChanList(funcName, theICs->
+				  numTableEntries)) == NULL)
+					return(FALSE);
+				SetICGeneralParsFromICList_IonChanList(theIC, theICs);
+				if (!Append_Utility_DynaList(&theICs->ionChannels, theIC)) {
+					NotifyError("%s: Could not add ion channel [%d] to list.",
+					  funcName, i);
+					FreeIonChannel_IonChanList(&theIC);
+					return(FALSE);
+				}
+				if (!SetIonChannelUniParList_IonChanList(theICs, theIC)) { 
+					NotifyError("%s: Could not initialise ion channel '%s' "
+					  "parameter list.", funcName, theIC->description);
+					return(FALSE);
+				}
+			}
+		}
+		theICs->oldNumChannels = theICs->numChannels;
+	}
+	if (theICs->numTableEntries != theICs->oldNumTableEntries) {
+		for (node = theICs->ionChannels; node; node = node->next) {
+			theIC = (IonChannelPtr) node->data;
+			theIC->table = (ICTableEntry *) realloc(theIC->table, theICs->
+			  numTableEntries * sizeof(ICTableEntry));
+		}
+		theICs->oldNumTableEntries = theICs->numTableEntries;
+	}
+	return(TRUE);
 
 }
 
@@ -1415,13 +1529,13 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 			NotifyError("%s: Could not read general parameters.", funcName);
 			ok = FALSE;
 		}
-		if (ok && !SetICGeneralPars_IonChanList(theIC, theICs, theIC->mode,
-		  description, enabled, equilibriumPot, baseMaxConductance,
-		  activationExponent)) {
+		if (ok && !SetICGeneralPars_IonChanList(theIC, theIC->mode, description,
+		  enabled, equilibriumPot, baseMaxConductance, activationExponent)) {
 			NotifyError("%s: Could not set general parameters.", funcName);
 			FreeIonChannel_IonChanList(&theIC);
 			ok = FALSE;
 		}
+		SetICGeneralParsFromICList_IonChanList(theIC, theICs);
 		if (ok)
 			ok = ReadVoltageTable_IonChanList(theIC, fp);
 		Free_ParFile();
@@ -1749,7 +1863,7 @@ SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription)
 		NotifyError("%s: Ion channel not initialised.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(theIC->description, theDescription, MAXLINE);
+	snprintf(theIC->description, MAXLINE, "%s", theDescription);
 	return(TRUE);
 
 }
@@ -2360,7 +2474,7 @@ SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName)
 		NotifyError("%s: Ion channel not initialised.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(theIC->fileName, fileName, MAX_FILE_PATH);
+	snprintf(theIC->fileName, MAX_FILE_PATH, "%s", fileName);
 	theIC->updateFlag = TRUE;
 	if (theIC->parList)
 		theIC->parList->updateFlag = TRUE;
