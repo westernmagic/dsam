@@ -43,6 +43,13 @@ cvsconfig)
 	;;
 clean)
 	rm -rf lib bin $INCDIR/UtSSParser.h `find . -name '*.obj'`
+	rm -f `find . -name '*.exe'`
+	rm -f `find . -name '*.pch'`
+	rm -f `find . -name '*.idb'`
+	rm -f `find . -name '*.pdb'`
+	rm -f `find . -name '*.plg'`
+	rm -f `find . -name '*.ncb'`
+	rm -f `find . -name '*.opt'`
 	rm -f $INCDIR/dsam.rc
 	;;
 make)
