@@ -69,6 +69,7 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appVersion[MAXLINE];
+	char	compiledDSAMVersion[MAXLINE];
 	char	title[MAXLINE];
 	char	simScriptFile[MAX_FILE_PATH];
 	char	segmentMode[SMALL_STRING];
@@ -160,6 +161,8 @@ BOOLN	SetAppSetInitialPars_AppInterface(BOOLN (* SetInitialPars)(void));
 BOOLN	SetAppVersion_AppInterface(char *appVersion);
 
 void	SetArgcAndArgV_AppInterface(int theArgc, char **theArgv);
+
+BOOLN	SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion);
 
 BOOLN	SetDiagMode_AppInterface(char *theDiagMode);
 
