@@ -44,7 +44,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			19
+#define DISPLAY_NUM_PARS			22
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
@@ -89,6 +89,7 @@ typedef	enum {
 	/* Axis controls */
 	DISPLAY_X_DEC_PLACES,
 	DISPLAY_X_TICKS,
+	DISPLAY_Y_AXIS_MODE,
 	DISPLAY_Y_TICKS,
 	/* General Controls */
 	DISPLAY_FRAME_DELAY,
@@ -98,9 +99,29 @@ typedef	enum {
 	DISPLAY_WINDOW_HEIGHT,
 	DISPLAY_WINDOW_TITLE,
 	DISPLAY_WINDOW_WIDTH,
+	DISPLAY_WINDOW_X_POS,
+	DISPLAY_WINDOW_Y_POS,
 	DISPLAY_NULL
 
 } SignalDispParSpecifier;
+
+typedef	enum {
+
+	GRAPH_MODE_OFF,
+	GRAPH_MODE_LINE,
+	GRAPH_MODE_RASTER,
+	GRAPH_MODE_NULL
+
+} SignalDispModeSpecifier;
+
+typedef	enum {
+
+	GRAPH_Y_AXIS_MODE_CHANNEL,
+	GRAPH_Y_AXIS_MODE_LINEAR_SCALE,
+	GRAPH_Y_AXIS_MODE_LOG_SCALE,
+	GRAPH_Y_AXIS_MODE_NULL
+
+} SignalDispyAxisModeSpecifier;
 
 typedef struct {
 
@@ -111,6 +132,7 @@ typedef struct {
 	BOOLN	xResolutionFlag, maxYFlag, minYFlag, widthFlag, frameWidthFlag;
 	BOOLN	frameHeightFlag, frameDelayFlag, titleFlag, channelStepFlag;
 	BOOLN	xTicksFlag, xDecPlacesFlag, yTicksFlag, topMarginFlag;
+	BOOLN	frameXPosFlag, frameYPosFlag, yAxisModeFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	char	title[MAXLINE];
@@ -118,6 +140,9 @@ typedef struct {
 	int		channelStep;
 	int		frameHeight;
 	int		frameWidth;
+	int		frameXPos;
+	int		frameYPos;
+	int		yAxisMode;
 	int		yNormalisationMode;
 	int		mode;
 	int		numGreyScales;
@@ -136,6 +161,7 @@ typedef struct {
 	/* Private variables */
 	NameSpecifier	*parNameList;
 	NameSpecifier	*modeList;
+	NameSpecifier	*yAxisModeList;
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			reduceChansInitialised;
@@ -193,6 +219,8 @@ BOOLN	InitParNameList_SignalDisp(void);
 
 BOOLN	InitProcessVariables_SignalDisp(EarObjectPtr data);
 
+BOOLN	InitYAxisModeList_SignalDisp(void);
+
 BOOLN	PrintPars_SignalDisp(void);
 
 void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
@@ -208,6 +236,10 @@ BOOLN	SetFrameDelay_SignalDisp(double theFrameDelay);
 
 BOOLN	SetFrameHeight_SignalDisp(int theFrameHeight);
 
+BOOLN	SetFrameXPos_SignalDisp(int theFrameXPos);
+
+BOOLN	SetFrameYPos_SignalDisp(int theFrameYPos);
+
 BOOLN	SetFrameWidth_SignalDisp(int theFrameWidth);
 
 BOOLN	SetMaxY_SignalDisp(double maxY);
@@ -219,11 +251,13 @@ BOOLN	SetMode_SignalDisp(char *theMode);
 BOOLN	SetNumGreyScales_SignalDisp(int theNumGreyScales);
 
 BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
-		  char *theYNormalisationMode, char *theSummaryDisplay, char *theTitle,
-		  int channelStep, int theNumGreyScales, int theFrameHeight,
-		  int theFrameWidth, int theXDecPlaces, int theXticks, int theYticks,
-		  double theFrameDelay, double theMagnification, double theXResolution,
-		  double maxY, double minY, double topMargin, double width);
+		  char *theYNormalisationMode, char *theYAxisMode,
+		  char *theSummaryDisplay, char *theTitle, int channelStep,
+		  int theNumGreyScales, int theFrameHeight, int theFrameWidth,
+		  int theFrameXPos, int theFrameYPos, int theXDecPlaces, int theXticks,
+		  int theYticks, double theFrameDelay, double theMagnification,
+		  double theXResolution, double maxY, double minY, double topMargin,
+		  double width);
 
 BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
@@ -244,6 +278,8 @@ BOOLN	SetXResolution_SignalDisp(double xResolution);
 BOOLN	SetXDecPlaces_SignalDisp(int xDecPlaces);
 
 BOOLN	SetXTicks_SignalDisp(int xTicks);
+
+BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
 
 BOOLN	SetYNormalisationMode_SignalDisp(char *theYNormalisationMode);
 

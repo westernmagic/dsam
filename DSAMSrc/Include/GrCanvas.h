@@ -35,17 +35,17 @@
 
 #define	GRAPH_Y_TITLE_SCALE					0.03
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
-#define	GRAPH_Y_AXIS_SCALE					0.12
+#define	GRAPH_Y_AXIS_SCALE					0.15
 #define	GRAPH_Y_LABELS_X_OFFSET_SCALE		0.04
 
 #define	GRAPH_X_AXIS_SCALE					0.05
 #define	GRAPH_X_TITLE_SCALE					0.04
-#define	GRAPH_X_TITLE_MARGIN_SCALE			0.15
+#define	GRAPH_X_TITLE_MARGIN_SCALE			0.02
 #define	GRAPH_X_LABELS_Y_OFFSET_SCALE		0.04
 
 #define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
-#define	GRAPH_LABEL_SIZE					13
-#define	GRAPH_AXIS_LABEL_SIZE				13
+#define	GRAPH_AXIS_TITLE_SCALE				0.40
+#define	GRAPH_AXIS_LABEL_SCALE				0.45
 #define	GRAPH_TICK_LENGTH_SCALE				0.08
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
 #define	GRAPH_NUM_GREY_SCALES				10
@@ -74,15 +74,6 @@ enum {
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
-
-typedef	enum {
-
-	GRAPH_MODE_OFF,
-	GRAPH_MODE_LINE,
-	GRAPH_MODE_RASTER,
-	GRAPH_MODE_NULL
-
-} SignalDispModeSpecifier;
 
 /******************************************************************************/
 /****************************** Class definitions *****************************/
@@ -113,9 +104,9 @@ class MyCanvas: public wxWindow
 	~MyCanvas(void);
 
 	void	CreateBackingBitmap(void);
-	void	DrawAxes(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
-	void	DrawVerticalText(wxDC& dc, wxString& string, int x, int y);
+	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
+	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO);
@@ -128,6 +119,7 @@ class MyCanvas: public wxWindow
 	void	OnRightDown(wxMouseEvent &event);
 	void	OnSize(wxSizeEvent& event);
 
+	void	ForceRepaintforMSW(void);
 	void	RescaleGraph(void);
 	void	SetGraphAreas(void);
 	void	SetGraphPars(void);

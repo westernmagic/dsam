@@ -54,6 +54,10 @@ class DisplayS: public wxFrame
 
 	SignalDispPtr	GetSignalDispPtr(void) { return(mySignalDispPtr); }
 
+	void	OnMove(wxMoveEvent& event);
+
+	DECLARE_EVENT_TABLE()
+
 };
 
 /******************************************************************************/
