@@ -132,18 +132,18 @@ extern	double	Filters_butt2Poly[];			/* Butterworth */
  */
 __BEGIN_DECLS
 
-void	BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[]);
+BOOLN	BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[]);
 
 double	BandPassFD_Filters(double freq, double lowerCutOffFreq,
 		  double upperCutOffFreq, int order);
 
-void	BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
+BOOLN	BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 		  double bB, double cC);
 
-void	BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
+BOOLN	BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 		  double *bB, double cC);
 
-void	Compression_Filters(SignalDataPtr theSignal, double nrwthr,
+BOOLN	Compression_Filters(SignalDataPtr theSignal, double nrwthr,
 		  double nrwcr);
 
 void	FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p);
@@ -154,16 +154,16 @@ void	FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p);
 
 void	FreeTwoPoleCoeffs_Filters(TwoPoleCoeffsPtr *p);
 
-void	GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffsPtr p[]);
+BOOLN	GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffsPtr p[]);
 
-void	IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffsPtr p[]);
+BOOLN	IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffsPtr p[]);
 
-void	IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[]);
+BOOLN	IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[]);
 
-void	IIR2Cont_Filters(SignalDataPtr theSignal,
+BOOLN	IIR2Cont_Filters(SignalDataPtr theSignal,
 		  ContButtCoeffsPtr pArray[]);
 
-void	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
+BOOLN	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
 
 BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int cascade,
 					  double lowerCutOffFreq, double upperCutOffFreq,
@@ -187,10 +187,10 @@ TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(double *splane, int cascade,
 		 * the corner the corner splane contains the coefficients of the
 		 * denominator polynomial. */
 
-void	InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
+BOOLN	InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
 		  double slope);
 
-void	UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
+BOOLN	UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 			double bB, double cC, double dD);
 
 void	ZeroArray_Filters(double *p, int length);

@@ -278,7 +278,7 @@ FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p)
  * passed to the routine.
  */
 
-void
+BOOLN
 IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 {
 	static const char *funcName = "IIR2_Filters";
@@ -289,7 +289,7 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 	
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
@@ -312,6 +312,7 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 			}
 		}
 	}
+	return(TRUE);
 
 }
 
@@ -322,7 +323,7 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
  * passed to the routine.
  */
  
-void
+BOOLN
 Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 {
 	static const char *funcName = "Compression_Filters";
@@ -332,11 +333,11 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
@@ -349,6 +350,7 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 				if(*data < -nrwthr) /* linear up to threshold */
 					*data = -pow((-*data - nrwthr), nrwcr) - nrwthr;
 			}
+	return(TRUE);
 
 }
 
@@ -360,7 +362,7 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
  * It uses Inverse Power compresion: y = sign(x) / (1 + shift * |x|^(-slope)).
  */
  
-void
+BOOLN
 InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
   double slope)
 {
@@ -371,17 +373,18 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
 
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
 			*data = (*data < 0.0)? -1.0 / (1.0 + shift * pow(-*data, -slope)):
 			  1.0 / (1.0 + shift * pow(*data, -slope));
+	return(TRUE);
 
 }
 
@@ -394,7 +397,7 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
  * y = sign(x) * b|x|^c.
  */
  
-void
+BOOLN
 BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC)
 {
@@ -406,11 +409,11 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
@@ -425,6 +428,7 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 				*data = (aTerm < bCTerm)? aTerm: bCTerm;
 			}
 		}
+	return(TRUE);
 
 }
 
@@ -438,7 +442,7 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
  * This version uses arrays for the A and B parameters.
  */
  
-void
+BOOLN
 BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
   double *bB, double cC)
 {
@@ -450,11 +454,11 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
@@ -469,6 +473,7 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 				*data = (aTerm < bCTerm)? aTerm: bCTerm;
 			}
 		}
+	return(TRUE);
 
 }
 
@@ -483,7 +488,7 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 
 #define	FUNC(X)		(aA * pow((X), bB) + cC * pow((X), dD))
 
-void
+BOOLN
 UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC, double dD)
 {
@@ -494,11 +499,11 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 
 	if (!theSignal->lengthFlag) {
 		NotifyError("%s: Signal data length is not set!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
 		NotifyError("%s: No signal channels have been initialised!", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
@@ -506,6 +511,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 			*data = (*data < 0.0)? -FUNC(-*data): ((*data == 0.0)? 0.0:
 			  FUNC(*data));
 		}
+	return(TRUE);
 
 }
 
@@ -521,7 +527,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
  * Each channel has its own filter (coefficients).
  */
 
-void
+BOOLN
 GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 {
 	static const char *funcName = "GammaTone_Filters";
@@ -532,7 +538,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}	
 	/* For the allocation of space to the state vector, the filter for all
 	 * channels are assumed to have the same cascade as the first. */
@@ -553,6 +559,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 				ptr1++;
 			}
 	}
+	return(TRUE);
 
 }
 
@@ -652,7 +659,7 @@ FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p)
  * pass being slightly different for a different length signal.
  */
 
-void
+BOOLN
 BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 {
 	static const char *funcName = "BandPass_Filters";
@@ -662,7 +669,7 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 	
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}	
 	for (chan = 0; chan < theSignal->numChannels; chan++) {
 		for (i = 0, state = p[chan]->state; i < p[chan]->cascade; i++, state +=
@@ -682,6 +689,7 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 			}
 		}
 	}
+	return(FALSE);
 
 }
 
@@ -764,7 +772,7 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
  * argument array, have been initialised.
  */
 
-void
+BOOLN
 IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 {
 	static const char *funcName = "IIR2Cont_Filters";
@@ -776,7 +784,7 @@ IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	for (chan = 0; chan < theSignal->numChannels; chan++) {
 		p = pArray[chan];
@@ -796,6 +804,7 @@ IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 			}
 		}
 	}
+	return(TRUE);
 
 }
 
@@ -820,7 +829,7 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 	if (cutOffFrequency * samplingInterval > 0.5) {
 		NotifyError("%s: Maximum sampling for filter specification, dt = "
 		  "%g ms.", funcName, MSEC(0.5 / cutOffFrequency));
-		exit(1);
+		return(NULL);
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;
 	cotOrTan = (highOrLowPass == HIGHPASS)? tan(theta): 1.0 / tan(theta);
@@ -852,7 +861,7 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
  * argument array, have been initialised.
  */
 
-void
+BOOLN
 IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 {
 	static const char *funcName = "IIR1ContSingle_Filters";
@@ -863,7 +872,7 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 	
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}	
 	for (chan = 0; chan < theSignal->numChannels; chan++) {
 		xi_1 = p->state;
@@ -877,6 +886,7 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 			*yi_1 = *(yi++);
 		}
 	}
+	return(TRUE);
 
 }
 
@@ -893,7 +903,7 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
  * argument array, have been initialised.
  */
 
-void
+BOOLN
 IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 {
 	static const char *funcName = "IIR1Cont_Filters";
@@ -905,7 +915,7 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 	
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}	
 	for (chan = 0; chan < theSignal->numChannels; chan++) {
 		ptr = p[chan];
@@ -920,6 +930,7 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 			*yi_1 = *(yi++);
 		}
 	}
+	return(TRUE);
 
 }
 

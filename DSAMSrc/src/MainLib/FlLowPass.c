@@ -455,7 +455,7 @@ InitModule_Filter_LowPass(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_LowPass;
 	theModule->PrintPars = PrintPars_Filter_LowPass;
 	theModule->ReadPars = ReadPars_Filter_LowPass;
-	theModule->RunProcess = RunModel_Filter_LowPass;
+	theModule->RunProcess = RunProcess_Filter_LowPass;
 	theModule->SetParsPointer = SetParsPointer_Filter_LowPass;
 	return(TRUE);
 
@@ -484,8 +484,13 @@ InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 		}
 		lowPassFPtr->numChannels = data->outSignal->numChannels;
 	 	for (i = 0; i < data->outSignal->numChannels; i++)
-			lowPassFPtr->coefficients[i] = InitIIR1ContCoeffs_Filters(
-			  lowPassFPtr->cutOffFrequency, data->inSignal[0]->dt, LOWPASS);
+			if ((lowPassFPtr->coefficients[i] = InitIIR1ContCoeffs_Filters(
+			  lowPassFPtr->cutOffFrequency, data->inSignal[0]->dt, LOWPASS)) ==
+			  NULL) {
+				NotifyError("%s: Could not allocate filter coefficients.",
+				  funcName);
+				return(FALSE);
+			}
 		lowPassFPtr->updateProcessVariablesFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
@@ -531,9 +536,9 @@ FreeProcessVariables_Filter_LowPass(void)
  */
 
 BOOLN
-RunModel_Filter_LowPass(EarObjectPtr data)
+RunProcess_Filter_LowPass(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_Filter_LowPass";
+	static const char *funcName = "RunProcess_Filter_LowPass";
 	int			chan;
 	ChanLen		i;
 	register ChanData	*inPtr, *outPtr;

@@ -95,7 +95,7 @@ BOOLN	PrintPars_Filter_LowPass(void);
 
 BOOLN	ReadPars_Filter_LowPass(char *fileName);
 
-BOOLN	RunModel_Filter_LowPass(EarObjectPtr data);
+BOOLN	RunProcess_Filter_LowPass(EarObjectPtr data);
 
 BOOLN	SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency);
 
