@@ -74,6 +74,8 @@ void	PrintFreeRoutine(FILE *fp);
 
 void	PrintFuncPrototypes(FILE *fp);
 
+void	PrintFreeProcessVariablesRoutine(FILE *fp);
+
 void	PrintGetFunctions(FILE *fp);
 
 void	PrintGetNumXParsRoutines(FILE *fp);
@@ -83,6 +85,10 @@ void	PrintGetUniParListPtrRoutine(FILE *fp);
 void	PrintGlobalVariables(FILE *fp);
 
 void	PrintIncludeFiles(FILE *fp, char *headerFile);
+
+void	PrintInitModuleRoutine(FILE *fp);
+
+void	PrintInitProcessVariablesRoutine(FILE *fp);
 
 void	PrintInitRoutine(FILE *fp);
 
@@ -97,6 +103,8 @@ void	PrintProcessRoutine(FILE *fp);
 void	PrintReadParsRoutine(FILE *fp);
 
 void	PrintSetParsRoutine(FILE *fp);
+
+void	PrintSetParsPointerRoutine(FILE *fp);
 
 void	PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		  SetFunctionTypeSpecifier functionType);

@@ -34,6 +34,7 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
+BOOLN	processVarsFlag;
 char	*module, *qualifier, *structure, ptrType[MAXLINE], ptrVar[MAXLINE];
 
 /******************************************************************************/
@@ -50,7 +51,7 @@ char	*module, *qualifier, *structure, ptrType[MAXLINE], ptrVar[MAXLINE];
 void
 Init_WriteCodeUtils(void)
 {
-	Token	*tp;
+	Token	*tp, *type, *identifierList[MAX_IDENTIFIERS];
 
 	if ((tp = FindTokenType(MOD_NAME, pc)) == 0)
 		execerror("ModGen: Process: Module name not set (mod_name)",
@@ -70,6 +71,14 @@ Init_WriteCodeUtils(void)
 	sprintf(ptrType, "%sPtr", structure);
 	sprintf(ptrVar, "%s", ptrType);
 	ptrVar[0] = tolower(ptrType[0]);
+	
+	if ((tp = FindTokenType(PROCESS_VARS, pc)) == NULL)
+		processVarsFlag = FALSE;
+	else {
+		GetType_IdentifierList(&type, identifierList, tp);
+		processVarsFlag = (strcmp(UpperCase(identifierList[0]->sym->name),
+		  "TRUE") == 0);
+	}
 
 }
 
@@ -140,6 +149,35 @@ CreateFuncName(char *function, char *moduleName, char *qualifier)
 {
 	static	char funcName[MAXLINE];
 
+	if ((strlen(function) + strlen(moduleName) + strlen(qualifier)) >= MAXLINE)
+		execerror("Function name too long", function);
+	sprintf(funcName, "%s_%s%s%s", function, moduleName, (*qualifier)? "_": "",
+	  qualifier);
+	return funcName;
+
+}
+
+/****************************** CreateProcessFuncName *************************/
+
+/*
+ * This routine creates a process function name.
+ * It returns a pointer to a static string, or 0 if it fails.
+ */
+
+char *
+CreateProcessFuncName(Token *pc, char *moduleName, char *qualifier)
+{
+	static	char funcName[MAXLINE];
+	char	*function;
+
+	Token	*p, *type, *identifierList[MAX_IDENTIFIERS];
+	
+	if ((p = FindTokenType(PROC_ROUTINE, pc)) == NULL)
+		function = "Process";
+	else {
+		GetType_IdentifierList(&type, identifierList, p);
+		function = identifierList[0]->sym->name;
+	}
 	if ((strlen(function) + strlen(moduleName) + strlen(qualifier)) >= MAXLINE)
 		execerror("Function name too long", function);
 	sprintf(funcName, "%s_%s%s%s", function, moduleName, (*qualifier)? "_": "",

@@ -24,6 +24,7 @@
 #	define	MODGEN_VERSION		"?.?.?"
 #endif
 #define MAXLINE				82		/* Max. characters in a line + \n\0. */
+#define MAX_FILE_PATH		255		/* Max. characters in a line + \n\0. */
 
 #ifndef TRUE
 #	define	TRUE		0xFFFF
@@ -32,6 +33,14 @@
 #	define	FALSE		0
 #endif
 
+#ifdef WIN32
+#	ifndef snprintf
+#		define snprintf _snprintf
+#	endif
+#	ifndef vsnprintf
+#		define vsnprintf _vsnprintf
+#	endif
+#endif
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/

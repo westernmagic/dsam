@@ -30,7 +30,7 @@
 %token	<sym>	VOID CHAR SHORT INT LONG FLOAT DOUBLE SIGNED UNSIGNED
 %token	<sym>	CONST VOLATILE
 %token	<sym>	STRUCT UNION
-%token	<sym>	MOD_NAME QUALIFIER PROC_ROUTINE
+%token	<sym>	MOD_NAME QUALIFIER PROC_ROUTINE PROCESS_VARS
 %token	<sym>	POINTER STANDARD_TOKEN INT_AL NAMESPECIFIER CFLISTPTR PARARRAY
 %%
 list:		/* nothing */
@@ -78,6 +78,7 @@ type_specifier:
 	|	NAMESPECIFIER		{ ; }
 	|	CFLISTPTR			{ ; }
 	|	PARARRAY			{ ; }
+	|	PROCESS_VARS		{ ; }
 	;
 typedef_name:
 		TYPEDEF_NAME		{ ; }

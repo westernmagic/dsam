@@ -52,7 +52,8 @@
 /****************************** External variables ****************************/
 /******************************************************************************/
 
-extern char	*module, *qualifier, *structure, ptrType[], ptrVar[];
+extern BOOLN	processVarsFlag;
+extern char		*module, *qualifier, *structure, ptrType[], ptrVar[];
 
 /******************************************************************************/
 /****************************** Function Prototypes ***************************/
@@ -64,6 +65,8 @@ char *	CreateBaseModuleName(char *moduleName, char *qualifier,
 char *	CreateFuncDeclaration(char *type, char *funcName, char *arguments);
 
 char *	CreateFuncName(char *function, char *moduleName, char *qualifier);
+
+char *	CreateProcessFuncName(Token *pc, char *moduleName, char *qualifier);
 
 char *	GetInputTypeFormatStr(Symbol *p);
 

@@ -99,17 +99,21 @@ TestProcess(char *baseName)
 void
 Process(char *baseName)
 {
-	char	headerFileName[MAXLINE], mainFileName[MAXLINE], *p, *up;
+	char	headerFileNamePath[MAX_FILE_PATH], mainFileNamePath[MAX_FILE_PATH];
+	char	*p, *up, *headerFileName, *mainFileName;
 	char	upperCaseBaseName[MAXLINE];
 	int		i;
 	FILE	*headerFP, *mainFP;
 
-	sprintf(headerFileName, "%s.h", baseName);
-	if ((headerFP = fopen(headerFileName, "w")) == NULL)
+	snprintf(headerFileNamePath, MAX_FILE_PATH, "%s.h", baseName);
+	if ((headerFP = fopen(headerFileNamePath, "w")) == NULL)
 		execerror("ModGen: Process: Cannot open file", headerFileName);
-	sprintf(mainFileName, "%s.c", baseName);
-	if ((mainFP = fopen(mainFileName, "w")) == NULL)
+	headerFileName = GetFileNameFPath(headerFileNamePath);
+	snprintf(mainFileNamePath, MAX_FILE_PATH, "%s.c", baseName);
+	if ((mainFP = fopen(mainFileNamePath, "w")) == NULL)
 		execerror("ModGen: Process: Cannot open file", mainFileName);
+	mainFileName = GetFileNameFPath(mainFileNamePath);
+	
 	Init_WriteCodeUtils();
 
 	/* Main file. */
@@ -125,7 +129,8 @@ Process(char *baseName)
 	/* Header file. */
 	
 	PrintFileHeader(headerFP, headerFileName);
-	for (p = baseName, up = upperCaseBaseName; *p != '\0'; p++, up++)
+	for (p = GetFileNameFPath(baseName), up = upperCaseBaseName; *p != '\0';
+	  p++, up++)
 		*up = toupper(*p);
 	*up = '\0';
 	fprintf(headerFP, "#ifndef _%s_H\n", upperCaseBaseName);

@@ -50,7 +50,11 @@ StandardFunctions standardFunctions[] = {
 	{"Get",				PrintGetFunctions},
 	{"PrintPars",		PrintPrintParsRoutine},
 	{"ReadPars",		PrintReadParsRoutine},
+	{"SetParsPointer",	PrintSetParsPointerRoutine},
+	{"InitModule",		PrintInitModuleRoutine},
 	{"CheckData",		PrintCheckDataRoutine},
+	{"InitProcessVariables",	PrintInitProcessVariablesRoutine},
+	{"FreeProcessVariables",	PrintFreeProcessVariablesRoutine},
 	{"Process",			PrintProcessRoutine},
 	{0,					0}
 };
@@ -83,6 +87,7 @@ PrintIncludeFiles(FILE *fp, char *headerFileName)
 	fprintf(fp, "#include \"GeSignalData.h\"\n");
 	fprintf(fp, "#include \"GeEarObject.h\"\n");
 	fprintf(fp, "#include \"GeUniParMgr.h\"\n");
+	fprintf(fp, "#include \"GeModuleMgr.h\"\n");
 	fprintf(fp, "#include \"FiParFile.h\"\n");
 
 	p = FindTokenType(STRUCT, pc);
@@ -134,8 +139,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
-			  PARARRAY)){
+			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(strVariable, "%s%s", (*list)->sym->name,
 				(type->sym->type == PARARRAY)? "Mode": "");
 				sprintf(function, "Init%sList", Capital(strVariable));
@@ -193,6 +197,9 @@ PrintFreeRoutine(FILE *fp)
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif (%s == NULL)\n", ptrVar);
 	fprintf(fp, "\t\treturn(FALSE);\n");
+	if (processVarsFlag)
+		fprintf(fp, "\t%s();\n", CreateFuncName("FreeProcessVariables", module,
+		  qualifier));
 	/* Free pointers. */
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
@@ -231,6 +238,7 @@ void
 PrintInitRoutine(FILE *fp)
 {
 	static char	*function = "Init";
+	BOOLN	firstParArrayFlag = TRUE;
 	char	*funcName, *funcDeclaration;
 	char	initListFunc[MAXLINE];
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
@@ -271,6 +279,8 @@ PrintInitRoutine(FILE *fp)
 	fprintf(fp, "\t}\n");
 
 	fprintf(fp, "\t%s->parSpec = parSpec;\n", ptrVar);
+	if (processVarsFlag)
+		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 
 	/* Flags first */
 	p = FindTokenType(STRUCT, pc);
@@ -286,25 +296,46 @@ PrintInitRoutine(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
-			fprintf(fp, "\t%s->%s = ", ptrVar, (*list)->sym->name);
-			if ((*list)->inst == POINTER)
-				fprintf(fp, "NULL");
-			else
-				switch(type->sym->type) {
-				case DOUBLE:
-					fprintf(fp, "0.0");
-					break;
-				case BOOLEAN_VAR:
-					fprintf(fp, "FALSE");
-					break;
-				case CFLISTPTR:
-				case PARARRAY:
+			if (type->sym->type == PARARRAY) {
+				Print(fp, "\t  ", "\tif ((");
+				Print(fp, "\t  ", ptrVar);
+				Print(fp, "\t  ", "->");
+				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", " = Init_ParArray(\"");
+				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", "\", FitFuncModeList_NSpecLists(0), ");
+				Print(fp, "\t  ", CreateFuncName("GetFitFuncPars", module,
+				  qualifier));
+				Print(fp, "\t  ", ")) == NULL) {\n");
+				Print(fp, "", "");
+				fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise %s "
+				  "parArray structure\",\n\t\t  funcName);\n", (*list)->sym->
+				  name);
+				fprintf(fp, "\t\t%s();\n", CreateFuncName("Free", module,
+				  qualifier));
+				fprintf(fp, "\t\treturn(FALSE);\n");
+				fprintf(fp, "\t}\n");
+			} else {
+				fprintf(fp, "\t%s->%s = ", ptrVar, (*list)->sym->name);
+				if ((*list)->inst == POINTER)
 					fprintf(fp, "NULL");
-					break;
-				default:
-					fprintf(fp, "0");
-				} /* switch */
-			fprintf(fp, ";\n");
+				else
+					switch(type->sym->type) {
+					case DOUBLE:
+						fprintf(fp, "0.0");
+						break;
+					case BOOLEAN_VAR:
+						fprintf(fp, "FALSE");
+						break;
+					case CFLISTPTR:
+					case PARARRAY:
+						fprintf(fp, "NULL");
+						break;
+					default:
+						fprintf(fp, "0");
+					} /* switch */
+				fprintf(fp, ";\n");
+			}
 		}
 	fprintf(fp, "\n");
 
@@ -312,8 +343,7 @@ PrintInitRoutine(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
-			  PARARRAY)) {
+			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(initListFunc, "Init%s%sList", Capital(
 				  (*list)->sym->name), (type->sym->type == PARARRAY)? "Mode":
 				  "");
@@ -1128,6 +1158,105 @@ PrintReadParsRoutine(FILE *fp)
 
 }
 
+/****************************** PrintSetParsPointerRoutine ********************/
+
+/*
+ * This routine prints the Module SetParsPointerRoutine routine.
+ * It adds the function declaration to the main list.
+ */
+
+void
+PrintSetParsPointerRoutine(FILE *fp)
+{
+	static 	char	*function = "SetParsPointer";
+	char	*funcName, *funcDeclaration;
+	
+	PrintLineCommentHeading(fp, function);
+	fprintf(fp,
+	  "/*\n"
+	  " * This function sets the global parameter pointer for the module to\n"
+	  " * that associated with the module instance.\n"
+	  " */\n\n"
+	  );
+	funcName = CreateFuncName(function, module, qualifier);
+	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+	  "ModulePtr theModule");
+	fprintf(fp, "%s\n{\n", funcDeclaration);
+	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	fprintf(fp, "\n");
+
+	fprintf(fp, "\tif (!theModule) {\n");
+	fprintf(fp, "\t\tNotifyError(\"%%s: The module is not set.\", "
+	  "funcName);\n");
+	fprintf(fp, "\t\treturn(FALSE);\n");
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\t%s = (%s) theModule->parsPtr;\n", ptrVar, ptrType);
+	fprintf(fp, "\treturn(TRUE);\n");
+	fprintf(fp, "\n}\n\n");
+	AddRoutine(funcDeclaration);
+
+}
+
+/****************************** PrintInitModuleRoutine ************************/
+
+/*
+ * This routine prints the Module InitModule routine.
+ * It adds the function declaration to the main list.
+ */
+
+void
+PrintInitModuleRoutine(FILE *fp)
+{
+	static 	char	*function = "InitModule";
+	char	*funcName, *funcDeclaration;
+	
+	PrintLineCommentHeading(fp, function);
+	fprintf(fp,
+	  "/*\n"
+	  " * This routine sets the function pointers for this process module.\n"
+	  " * It also initialises the process structure.\n"
+	  " */\n\n"
+	  );
+	funcName = CreateFuncName(function, module, qualifier);
+	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+	  "ModulePtr theModule");
+	fprintf(fp, "%s\n{\n", funcDeclaration);
+	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	fprintf(fp, "\n");
+
+	fprintf(fp, "\tif (!%s(theModule)) {\n", CreateFuncName("SetParsPointer",
+	  module, qualifier));
+	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot set parameters pointer.\", "
+	  "funcName);\n");
+	fprintf(fp, "\t\treturn(FALSE);\n");
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\tif (!%s(GLOBAL)) {\n", CreateFuncName("Init", module,
+	  qualifier));
+	fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise process "
+	  "structure.\", funcName);\n");
+	fprintf(fp, "\t\treturn(FALSE);\n");
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\ttheModule->parsPtr = %s;\n", ptrVar);
+	fprintf(fp, "\ttheModule->CheckPars = %s;\n", CreateFuncName("CheckPars",
+	  module, qualifier));
+	fprintf(fp, "\ttheModule->Free = %s;\n", CreateFuncName("Free",
+	  module, qualifier));
+	fprintf(fp, "\ttheModule->GetUniParListPtr = %s;\n", CreateFuncName(
+	  "GetUniParListPtr", module, qualifier));
+	fprintf(fp, "\ttheModule->PrintPars = %s;\n", CreateFuncName("PrintPars",
+	  module, qualifier));
+	fprintf(fp, "\ttheModule->ReadPars = %s;\n", CreateFuncName("ReadPars",
+	  module, qualifier));
+	fprintf(fp, "\ttheModule->RunProcess = %s;\n", CreateProcessFuncName(pc,
+	  module, qualifier));
+	fprintf(fp, "\ttheModule->SetParsPointer = %s;\n", CreateFuncName(
+	  "SetParsPointer", module, qualifier));
+	fprintf(fp, "\treturn(TRUE);\n");
+	fprintf(fp, "\n}\n\n");
+	AddRoutine(funcDeclaration);
+
+}
+
 /****************************** PrintCheckDataRoutine *************************/
 
 /*
@@ -1175,6 +1304,96 @@ PrintCheckDataRoutine(FILE *fp)
 
 }
 
+/****************************** PrintInitProcessVariablesRoutine **************/
+
+/*
+ * This routine prints the Module CheckData routine.
+ * It adds the function declaration to the main list.
+ */
+
+void
+PrintInitProcessVariablesRoutine(FILE *fp)
+{
+	static 	char	*function = "InitProcessVariables";
+	char	*funcName, *funcDeclaration;
+
+	if (!processVarsFlag)
+		return;
+	PrintLineCommentHeading(fp, function);
+	fprintf(fp,
+	  "/*\n"
+	  " * This function allocates the memory for the process variables.\n"
+	  " * It assumes that all of the parameters for the module have been\n"
+	  " * correctly initialised.\n"
+	  " */\n\n"
+	  );
+	funcName = CreateFuncName(function, module, qualifier);
+	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+	  "EarObjectPtr data");
+	fprintf(fp, "%s\n{\n", funcDeclaration);
+	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	fprintf(fp, "\n");
+
+	Print(fp, "\t  ", "\tif (");
+	Print(fp, "\t  ", ptrVar);
+	Print(fp, "\t  ", "->updateProcessVariablesFlag || "
+	  "data->updateProcessFlag) {\n");
+	Print(fp, "", "");
+	fprintf(fp, "\t\t/*** Additional update flags can be added to above line "
+	  "***/\n");
+	fprintf(fp, "\t\t%s();\n", CreateFuncName("FreeProcessVariables", module,
+	  qualifier));
+	fprintf(fp, "\t\t/*** Put memory allocation etc here ***/\n");
+	fprintf(fp, "\t\t%s->updateProcessVariablesFlag = FALSE;\n", ptrVar);
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\tif (data->timeIndex == PROCESS_START_TIME) {\n");
+	fprintf(fp, "\t\t/*** Put reset (to zero ?) code here ***/\n");
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\treturn(TRUE);\n");
+	fprintf(fp, "\n}\n\n");
+	AddRoutine(funcDeclaration);
+
+}
+
+/****************************** PrintFreeProcessVariablesRoutine **************/
+
+/*
+ * This routine prints the Module FreeProcessVariabls routine.
+ * It adds the func;tion declaration to the main list.
+ */
+
+void
+PrintFreeProcessVariablesRoutine(FILE *fp)
+{
+	static 	char	*function = "FreeProcessVariables";
+	char	*funcName, *funcDeclaration;
+	
+	if (!processVarsFlag)
+		return;
+	PrintLineCommentHeading(fp, function);
+	fprintf(fp,
+	  "/*\n"
+	  " * This routine releases the memory allocated for the process "
+	  "variables\n"
+	  " * if they have been initialised.\n"
+	  " */\n\n"
+	  );
+	funcName = CreateFuncName(function, module, qualifier);
+	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+	  "void");
+	fprintf(fp, "%s\n{\n", funcDeclaration);
+	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	fprintf(fp, "\n");
+
+	fprintf(fp, "\t/** Put memory deallocation code here.    ***/\n");
+	fprintf(fp, "\t/** Remember to set the pointers to NULL. ***/\n");
+
+	fprintf(fp, "\treturn(TRUE);\n");
+	fprintf(fp, "\n}\n\n");
+	AddRoutine(funcDeclaration);
+
+}
+
 /****************************** PrintProcessRoutine ***************************/
 
 /*
@@ -1214,7 +1433,8 @@ PrintProcessRoutine(FILE *fp)
 	  "EarObjectPtr data");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
 	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
-	fprintf(fp, "\tregister\tChanData\t *inPtr, *outPtr;\n");
+	fprintf(fp, "\tregister ChanData\t *inPtr, *outPtr;\n");
+	fprintf(fp, "\tint\t\ti, chan;\n");
 	fprintf(fp, "\n");
 
 	fprintf(fp, "\tif (data == NULL) {\n");
@@ -1222,6 +1442,7 @@ PrintProcessRoutine(FILE *fp)
 	  "funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
+
 	fprintf(fp, "\tif (!%s())\n", CreateFuncName("CheckPars", module,
 	  qualifier));
 	fprintf(fp, "\t\treturn(FALSE);\n");
@@ -1230,12 +1451,40 @@ PrintProcessRoutine(FILE *fp)
 	fprintf(fp, "\t\tNotifyError(\"%%s: Process data invalid.\", funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
+
 	fprintf(fp, "\tSetProcessName_EarObject(data, \"Module process \?\?\");\n");
 	fprintf(fp, "\n");
-	fprintf(fp, "\t/*** Put your code here: Initialise output signal. ***/\n");
+
+	fprintf(fp, "\t/*** Example Initialise output signal - ammend/change if "
+	  "required. ***/\n");
+	fprintf(fp, "\tif (!InitOutSignal_EarObject(data, data->inSignal[0]->"
+	  "numChannels,\n");
+	fprintf(fp, "\t  data->inSignal[0]->length, data->inSignal[0]->dt)) {\n");
+	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot initialise output channels.\", "
+	  "funcName);\n");
+	fprintf(fp, "\t\treturn(FALSE);\n");
+	fprintf(fp, "\t}\n");
 	fprintf(fp, "\n");
-	fprintf(fp, "\t/*** Put your code here: process output signal. ***/\n");
-	fprintf(fp, "\t/*** (using 'inPtr' and 'outPtr' for each channel?) ***/\n");
+
+	if (processVarsFlag) {
+		fprintf(fp, "\tif (!%s(data)) {\n", CreateFuncName(
+		  "InitProcessVariables", module, qualifier));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise the process "
+		  "variables.\",\n\t\t  funcName);\n");
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	}
+
+	fprintf(fp, "\tfor (chan = 0; chan < data->inSignal[0]->numChannels; "
+	  "chan++) {\n");
+	fprintf(fp, "\t\tinPtr = data->inSignal[0]->channel[chan];\n");
+	fprintf(fp, "\t\toutPtr = data->outSignal->channel[chan];\n");
+	fprintf(fp, "\t\t/*** Put your code here to process output signal. ***/\n");
+	fprintf(fp, "\t\t/*** The following 'for' loop is an example only. ***/\n");
+	fprintf(fp, "\t\tfor (i = 0; i < data->outSignal->length; i++)\n");
+	fprintf(fp, "\t\t\t*outPtr++ = *inPtr++;\n");
+	fprintf(fp, "\t}\n");
+
 	fprintf(fp, "\n");
 	fprintf(fp, "\tSetProcessContinuity_EarObject(data);\n");
 	fprintf(fp, "\treturn(TRUE);\n");
@@ -1419,7 +1668,6 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t}\n");
 		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, token->sym->name);
 		fprintf(fp, "\t\tFree_CFList(&%s->%s);\n", ptrVar, token->sym->name);
-		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 		sprintf(assignmentString, "\t%s->%s = theCFList;\n", ptrVar,
 		  token->sym->name);
 	}
@@ -1433,7 +1681,6 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t}\n");
 		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, token->sym->name);
 		fprintf(fp, "\t\tFree_ParArray(&%s->%s);\n", ptrVar, token->sym->name);
-		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 	}
 
 	if (functionType == SET_BANDWIDTHS_ROUTINE) {
@@ -1455,6 +1702,9 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		default:
 			fprintf(fp, "\t%s->%sFlag = TRUE;\n", ptrVar, token->sym->name);
 		}
+	
+	if (processVarsFlag)
+		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 
 	if (type->inst != INT_AL) {
 		fprintf(fp, "%s", assignmentString);

@@ -66,6 +66,7 @@ static struct {
 	{"NameSpecifier",	NAMESPECIFIER},
 	{"CFListPtr",	CFLISTPTR},
 	{"ParArrayPtr",	PARARRAY},
+	{"process_vars",	PROCESS_VARS},
 	{0,		0}
 
 };

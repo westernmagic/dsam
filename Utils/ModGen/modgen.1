@@ -12,7 +12,7 @@ modgen \- creates a DSAM library module
 The argument
 .I file.mod
 contains the specification of a module to be included in the
-.I LUTEar
+.I DSAM
 library.
 If the
 .I
@@ -26,8 +26,8 @@ creates the
 .I file.c
 source and
 .I file.h
-header files required for adding a module to the
-.I LUTEar
+header files required for using a module with the
+.I DSAM
 library.
 
 .PP
@@ -47,6 +47,9 @@ addition of a few keywords, i.e.
 .B proc_routine	
 .I ProcessRoutineName;
 .br
+.B process_vars	
+.I boolean state;
+.br
 .B typedef struct
 {
 
@@ -58,7 +61,7 @@ addition of a few keywords, i.e.
 
 - keywords are shown in bold-face and the identifers, or names, are given as
 bold italics. The standard ANSI C type specifiers are available for declaring
-the modul parameters, e.g. 'char', 'int', 'float', 'double', and so on. Here is
+the module parameters, e.g. 'char', 'int', 'float', 'double', and so on. Here is
 an example showing the module specification for the StMPTone module.
 
 .PP
@@ -73,6 +76,9 @@ Multi;
 .br
 .B proc_routine	
 GenerateSignal;
+.br
+.B process_vars
+false;
 .br
 .B typedef struct
 {
@@ -94,6 +100,19 @@ Here a description is given of the special keywords used by the
 .I modgen
 program.
 
+.TP 7
+.B int_al
+is a special form of the standard 'int' type.  The '_al' stands for 'array
+limit', as it is used to indicate that the respective parameter is to be used
+as the array length for any following array declarations (see the example for
+the StMPTone module specification given above).  Only one parameter will be
+used for
+.I int_al
+declaration lines, and it will be applied as the array limit for all pointers
+thereafter declared until the next
+.I int_al
+declaration.
+
 .TP 9
 .B mod_name
 specifies the base name of the module.  This must be declared, as it appears
@@ -106,20 +125,13 @@ PrintPars_
 .B void
 ).
 
-
-.TP 10
-.B qualifier
-specifies an additional qualifier for the module name.  This declaration is
-optional, but if declared it will appear after the base name of the module in
-all module routines, separated by an underscore, e.g.
-
-PrintPars_
-.I ModuleName
-_
-.I Qualifier
-(
-.B void
-).
+.TP 13
+.B process_vars
+indicates to modgen whether the process variable code needs to be generated.
+It can be
+.I true
+or
+.I false.
 
 .TP 13
 .B proc_routine
@@ -135,18 +147,19 @@ _
 
 will be given.
 
-.TP 7
-.B int_al
-is a special form of the standard 'int' type.  The '_al' stands for 'array
-limit', as it is used to indicate that the respective parameter is to be used
-as the array length for any following array declarations (see the example for
-the StMPTone module specification given above).  Only one parameter will be
-used for
-.I int_al
-declaration lines, and it will be applied as the array limit for all pointers
-thereafter declared until the next
-.I int_al
-declaration.
+.TP 10
+.B qualifier
+specifies an additional qualifier for the module name.  This declaration is
+optional, but if declared it will appear after the base name of the module in
+all module routines, separated by an underscore, e.g.
+
+PrintPars_
+.I ModuleName
+_
+.I Qualifier
+(
+.B void
+).
 
 .SH DIAGNOSTICS
 
@@ -167,9 +180,9 @@ typedef before the main module structure declaration, e.g.
 .RE
 
 .PP
-This version (1.2) of the program does not know how to treat 'private' process
+This version (1.3) of the program does not know how to treat 'private' process
 variables.
 
 .SH AUTHOR
 Lowel P. O'Mard
-.I L.P.OMard@lut.ac.uk
+.I lowel@essex.ac.uk

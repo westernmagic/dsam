@@ -190,12 +190,9 @@ Print(FILE *fp, char *prefix, char *string)
 					punctuation = lp;
 				break;
 			case ',':
-				punctuation = lp;
-				break;
 			case '(':
-				punctuation = lp;
-				break;
 			case '[':
+			case '>':
 				punctuation = lp;
 				break;
 			case '.':
@@ -453,3 +450,26 @@ PluralToSingular(char *string)
 	return(newString);
 
 }
+
+/**************************** GetFileNameFPath ********************************/
+
+/*
+ * This routine returns the filename with the path removed.
+ * It returns the entire file name if there is no file path.
+ * 
+ */
+ 
+char *
+GetFileNameFPath(char *fileName)
+{
+	char	*p;
+
+	p = strrchr(fileName, '/');
+	if (!p)
+		p = strrchr(fileName, '\\');
+	if (p == NULL)
+		return(fileName);
+	return(++p);
+
+}
+

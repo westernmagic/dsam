@@ -144,8 +144,7 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
-			  PARARRAY)) {
+			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
 				  qualifier, TRUE), UpperCase((*list)->sym->name));
 				fprintf(fp, "typedef enum {\n\n");
@@ -192,6 +191,9 @@ PrintExpandedStructure(FILE *fp)
 			}
 	if (line[0] != '\0')
 		fprintf(fp, "%s;\n", line);
+
+	if (processVarsFlag)
+		fprintf(fp, "\tBOOLN\tupdateProcessVariablesFlag;\n");
 
 	/* Parameters */
 	p = FindTokenType(STRUCT, pc);

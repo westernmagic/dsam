@@ -61,4 +61,5 @@ rm -rf $RPM_BUILD_ROOT
 
 %doc AUTHORS COPYING README NEWS ChangeLog
 %{_bindir}/*
+%{_mandir}/man1/*
 

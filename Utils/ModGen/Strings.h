@@ -43,6 +43,8 @@ char *	Capital(char *string);
 
 char *	GetExtension(char *fileName);
 
+char *	GetFileNameFPath(char *fileName);
+
 char *	PluralToSingular(char *string);
 
 void	Print(FILE *fp, char *prefix, char *string);
