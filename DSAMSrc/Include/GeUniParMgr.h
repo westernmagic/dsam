@@ -78,6 +78,7 @@ typedef enum {
 typedef enum {
 
 	UNIPAR_UNKNOWN,
+	UNIPAR_BOOL,
 	UNIPAR_INT,
 	UNIPAR_INT_ARRAY,
 	UNIPAR_LONG,
