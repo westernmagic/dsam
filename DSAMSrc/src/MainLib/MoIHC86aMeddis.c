@@ -847,8 +847,8 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 			*outPtr++ = (ChanData) (h2dt * hC->hCChannels[i].cleftC);
 		}
 	}
-	if (clipped)
-		NotifyError("%s: Clipping has occurred.", funcName);
+	/*if (clipped)
+		NotifyWarning("%s: Clipping has occurred.", funcName); */
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 		
