@@ -1,12 +1,16 @@
 /**********************
  *
  * File:		MoHCRPSham3StVIn.h
- * Purpose:		
+ * Purpose:		This module contains a revised model for the Shamme hair cell
+ *				receptor potential: Shamm, S. A. Chadwick R. S. Wilbur W. J.
+ *				Morrish K. A. and Rinzel J.(1986) "A biophysical model of
+ *				cochlear processing: Intensity dependence of pure tone
+ *				responses", J. Acoust. Soc. Am. [80], pp 133-145.
  * Comments:	Written using ModuleProducer version 1.3.2 (Mar 27 2001).
- * Author:		
+ * Author:		C. J. Sumner
  * Created:		20 Aug 2001
  * Updated:	
- * Copyright:	(c) 2001, 
+ * Copyright:	(c) 2001, CNBH, University of Essex.
  *
  *********************/
 
@@ -37,8 +41,8 @@ typedef enum {
 	IHCRP_SHAMMA3STATEVELIN_REFERENCEPOT,
 	IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S0,
 	IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S1,
-	IHCRP_SHAMMA3STATEVELIN_OFFSET_X0,
-	IHCRP_SHAMMA3STATEVELIN_OFFSET_X1
+	IHCRP_SHAMMA3STATEVELIN_OFFSET_U0,
+	IHCRP_SHAMMA3STATEVELIN_OFFSET_U1
 
 } Sham3StVInParSpecifier;
 
@@ -51,7 +55,7 @@ typedef struct {
 	BOOLN	restingConductance_G0Flag, kConductance_GkFlag;
 	BOOLN	maxMConductance_GmaxFlag, ciliaTimeConst_tcFlag;
 	BOOLN	ciliaCouplingGain_CFlag, referencePotFlag, sensitivity_s0Flag;
-	BOOLN	sensitivity_s1Flag, offset_x0Flag, offset_x1Flag;
+	BOOLN	sensitivity_s1Flag, offset_u0Flag, offset_u1Flag;
 	BOOLN	updateProcessVariablesFlag;
 	double	endocochlearPot_Et;
 	double	reversalPot_Ek;
@@ -65,8 +69,8 @@ typedef struct {
 	double	referencePot;
 	double	sensitivity_s0;
 	double	sensitivity_s1;
-	double	offset_x0;
-	double	offset_x1;
+	double	offset_u0;
+	double	offset_u1;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -130,9 +134,9 @@ BOOLN	SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk);
 BOOLN	SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(
 		  double theMaxMConductance_Gmax);
 
-BOOLN	SetOffset_x0_IHCRP_Shamma3StateVelIn(double theOffset_x0);
+BOOLN	SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0);
 
-BOOLN	SetOffset_x1_IHCRP_Shamma3StateVelIn(double theOffset_x1);
+BOOLN	SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1);
 
 BOOLN	SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule);
 
@@ -142,7 +146,7 @@ BOOLN	SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 		  double kConductance_Gk, double maxMConductance_Gmax,
 		  double ciliaTimeConst_tc, double ciliaCouplingGain_C,
 		  double referencePot, double sensitivity_s0, double sensitivity_s1,
-		  double offset_x0, double offset_x1);
+		  double offset_u0, double offset_u1);
 
 BOOLN	SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot);
 

@@ -1,12 +1,16 @@
 /**********************
  *
  * File:		MoHCRPSham3StVIn.c
- * Purpose:		
+ * Purpose:		This module contains a revised model for the Shamme hair cell
+ *				receptor potential: Shamm, S. A. Chadwick R. S. Wilbur W. J.
+ *				Morrish K. A. and Rinzel J.(1986) "A biophysical model of
+ *				cochlear processing: Intensity dependence of pure tone
+ *				responses", J. Acoust. Soc. Am. [80], pp 133-145.
  * Comments:	Written using ModuleProducer version 1.3.2 (Mar 27 2001).
- * Author:		
+ * Author:		C. J. Sumner
  * Created:		20 Aug 2001
  * Updated:	
- * Copyright:	(c) 2001, 
+ * Copyright:	(c) 2001, CNBH, University of Essex.
  *
  *********************/
 
@@ -83,7 +87,8 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 	if (parSpec == GLOBAL) {
 		if (sham3StVInPtr != NULL)
 			Free_IHCRP_Shamma3StateVelIn();
-		if ((sham3StVInPtr = (Sham3StVInPtr) malloc(sizeof(Sham3StVIn))) == NULL) {
+		if ((sham3StVInPtr = (Sham3StVInPtr) malloc(sizeof(Sham3StVIn))) ==
+		  NULL) {
 			NotifyError("%s: Out of memory for 'global' pointer", funcName);
 			return(FALSE);
 		}
@@ -107,8 +112,8 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 	sham3StVInPtr->referencePotFlag = FALSE;
 	sham3StVInPtr->sensitivity_s0Flag = FALSE;
 	sham3StVInPtr->sensitivity_s1Flag = FALSE;
-	sham3StVInPtr->offset_x0Flag = FALSE;
-	sham3StVInPtr->offset_x1Flag = FALSE;
+	sham3StVInPtr->offset_u0Flag = FALSE;
+	sham3StVInPtr->offset_u1Flag = FALSE;
 	sham3StVInPtr->endocochlearPot_Et = 0.0;
 	sham3StVInPtr->reversalPot_Ek = 0.0;
 	sham3StVInPtr->reversalPotCorrection = 0.0;
@@ -121,8 +126,8 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 	sham3StVInPtr->referencePot = 0.0;
 	sham3StVInPtr->sensitivity_s0 = 0.0;
 	sham3StVInPtr->sensitivity_s1 = 0.0;
-	sham3StVInPtr->offset_x0 = 0.0;
-	sham3StVInPtr->offset_x1 = 0.0;
+	sham3StVInPtr->offset_u0 = 0.0;
+	sham3StVInPtr->offset_u1 = 0.0;
 
 	if (!SetUniParList_IHCRP_Shamma3StateVelIn()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -216,16 +221,16 @@ SetUniParList_IHCRP_Shamma3StateVelIn(void)
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->sensitivity_s1, NULL,
 	  (void * (*)) SetSensitivity_s1_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_X0], "X0",
-	  "Offset constant, X0 (m).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U0], "U0",
+	  "Offset constant, U0 (m).",
 	  UNIPAR_REAL,
-	  &sham3StVInPtr->offset_x0, NULL,
-	  (void * (*)) SetOffset_x0_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_X1], "X1",
-	  "Offset constant, X1 (m).",
+	  &sham3StVInPtr->offset_u0, NULL,
+	  (void * (*)) SetOffset_u0_IHCRP_Shamma3StateVelIn);
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U1], "U1",
+	  "Offset constant, U1 (m).",
 	  UNIPAR_REAL,
-	  &sham3StVInPtr->offset_x1, NULL,
-	  (void * (*)) SetOffset_x1_IHCRP_Shamma3StateVelIn);
+	  &sham3StVInPtr->offset_u1, NULL,
+	  (void * (*)) SetOffset_u1_IHCRP_Shamma3StateVelIn);
 	return(TRUE);
 
 }
@@ -268,8 +273,8 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
   double totalCapacitance_C, double restingConductance_G0,
   double kConductance_Gk, double maxMConductance_Gmax,
   double ciliaTimeConst_tc, double ciliaCouplingGain_C, double referencePot,
-  double sensitivity_s0, double sensitivity_s1, double offset_x0,
-  double offset_x1)
+  double sensitivity_s0, double sensitivity_s1, double offset_u0,
+  double offset_u1)
 {
 	static const char	*funcName = "SetPars_IHCRP_Shamma3StateVelIn";
 	BOOLN	ok;
@@ -299,9 +304,9 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 		ok = FALSE;
 	if (!SetSensitivity_s1_IHCRP_Shamma3StateVelIn(sensitivity_s1))
 		ok = FALSE;
-	if (!SetOffset_x0_IHCRP_Shamma3StateVelIn(offset_x0))
+	if (!SetOffset_u0_IHCRP_Shamma3StateVelIn(offset_u0))
 		ok = FALSE;
-	if (!SetOffset_x1_IHCRP_Shamma3StateVelIn(offset_x1))
+	if (!SetOffset_u1_IHCRP_Shamma3StateVelIn(offset_u1))
 		ok = FALSE;
 	if (!ok)
 		NotifyError("%s: Failed to set all module parameters." ,funcName);
@@ -620,52 +625,52 @@ SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
 
 }
 
-/****************************** SetOffset_x0 **********************************/
+/****************************** SetOffset_u0 **********************************/
 
 /*
- * This function sets the module's offset_x0 parameter.
+ * This function sets the module's offset_u0 parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetOffset_x0_IHCRP_Shamma3StateVelIn(double theOffset_x0)
+SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
 {
-	static const char	*funcName = "SetOffset_x0_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName = "SetOffset_u0_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->offset_x0Flag = TRUE;
+	sham3StVInPtr->offset_u0Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
-	sham3StVInPtr->offset_x0 = theOffset_x0;
+	sham3StVInPtr->offset_u0 = theOffset_u0;
 	return(TRUE);
 
 }
 
-/****************************** SetOffset_x1 **********************************/
+/****************************** SetOffset_u1 **********************************/
 
 /*
- * This function sets the module's offset_x1 parameter.
+ * This function sets the module's offset_u1 parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetOffset_x1_IHCRP_Shamma3StateVelIn(double theOffset_x1)
+SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1)
 {
-	static const char	*funcName = "SetOffset_x1_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName = "SetOffset_u1_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->offset_x1Flag = TRUE;
+	sham3StVInPtr->offset_u1Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
-	sham3StVInPtr->offset_x1 = theOffset_x1;
+	sham3StVInPtr->offset_u1 = theOffset_u1;
 	return(TRUE);
 
 }
@@ -739,12 +744,12 @@ CheckPars_IHCRP_Shamma3StateVelIn(void)
 		NotifyError("%s: sensitivity_s1 variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (!sham3StVInPtr->offset_x0Flag) {
-		NotifyError("%s: offset_x0 variable not set.", funcName);
+	if (!sham3StVInPtr->offset_u0Flag) {
+		NotifyError("%s: offset_u0 variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (!sham3StVInPtr->offset_x1Flag) {
-		NotifyError("%s: offset_x1 variable not set.", funcName);
+	if (!sham3StVInPtr->offset_u1Flag) {
+		NotifyError("%s: offset_u1 variable not set.", funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -769,30 +774,30 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
 	}
 	DPrint("Modified Shamma Receptor Potential Module  Module Parameters:-\n");
 	DPrint("\tEndocochlear potential, Et = %g V,\n", 
-               sham3StVInPtr->endocochlearPot_Et);
+			   sham3StVInPtr->endocochlearPot_Et);
 	DPrint( "\tReversal potential, Ek = %g V,\n", 
-               sham3StVInPtr->reversalPot_Ek);
+			   sham3StVInPtr->reversalPot_Ek);
 	DPrint("\tReversal potential correction Rp/(Rt+Rp) =", 
-               sham3StVInPtr->reversalPotCorrection);
+			   sham3StVInPtr->reversalPotCorrection);
 	DPrint("\tTotal capacitance, Ct = %g F,\n", 
-               sham3StVInPtr->totalCapacitance_C);
+			   sham3StVInPtr->totalCapacitance_C);
 	DPrint("\tResting conductance, G0 = %g S,\n", 
-               sham3StVInPtr->restingConductance_G0);
+			   sham3StVInPtr->restingConductance_G0);
 	DPrint("\tPotassium conductance, Gk = %g S,\n", 
-               sham3StVInPtr->kConductance_Gk);
+			   sham3StVInPtr->kConductance_Gk);
 	DPrint("\tMaximum mechanically sensitive Conductance,", 
-                "Gmax = %g S,\n", sham3StVInPtr->maxMConductance_Gmax);
+				"Gmax = %g S,\n", sham3StVInPtr->maxMConductance_Gmax);
 	DPrint("\tBM/Cilia: time constant = %g ms,\t gain = %g", 
-                "dB\n", sham3StVInPtr->ciliaTimeConst_tc,
-                 sham3StVInPtr->ciliaCouplingGain_C);
+				"dB\n", sham3StVInPtr->ciliaTimeConst_tc,
+				 sham3StVInPtr->ciliaCouplingGain_C);
 	DPrint("\tReference potential = %g V\n", 
-               sham3StVInPtr->referencePot);
+			   sham3StVInPtr->referencePot);
 	DPrint("\tTransduction function 0:\n Sensitivity, s0 = %g (/m)", 
-               "\tOffset, x0 = %g (m)\n", sham3StVInPtr->sensitivity_s0,
-               sham3StVInPtr->offset_x0  );
+			   "\tOffset, U0 = %g (m)\n", sham3StVInPtr->sensitivity_s0,
+			   sham3StVInPtr->offset_u0  );
 	DPrint("\tTransduction function 1:\n Sensitivity, s1 = %g (/m)", 
-               "\tOffset, x1 = %g (m)\n", sham3StVInPtr->sensitivity_s1,
-               sham3StVInPtr->offset_x1  );
+			   "\tOffset, u1 = %g (m)\n", sham3StVInPtr->sensitivity_s1,
+			   sham3StVInPtr->offset_u1  );
 	return(TRUE);
 
 }
@@ -809,20 +814,10 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 	static const char	*funcName = "ReadPars_IHCRP_Shamma3StateVelIn";
 	BOOLN	ok = TRUE;
 	char	*filePath;
-	double	endocochlearPot_Et;
-	double	reversalPot_Ek;
-	double	reversalPotCorrection;
-	double	totalCapacitance_C;
-	double	restingConductance_G0;
-	double	kConductance_Gk;
-	double	maxMConductance_Gmax;
-	double	ciliaTimeConst_tc;
-	double	ciliaCouplingGain_C;
-	double	referencePot;
-	double	sensitivity_s0;
-	double	sensitivity_s1;
-	double	offset_x0;
-	double	offset_x1;
+	double	endocochlearPot_Et, reversalPot_Ek, reversalPotCorrection;
+	double	totalCapacitance_C, restingConductance_G0, kConductance_Gk;
+	double	maxMConductance_Gmax, ciliaTimeConst_tc, ciliaCouplingGain_C;
+	double	referencePot, sensitivity_s0, sensitivity_s1, offset_u0, offset_u1;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
@@ -854,11 +849,11 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &sensitivity_s0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &offset_x0))
+	if (!GetPars_ParFile(fp, "%lf", &offset_u0))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &sensitivity_s1))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &offset_x1))
+	if (!GetPars_ParFile(fp, "%lf", &offset_u1))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
@@ -871,7 +866,7 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 	  reversalPotCorrection, totalCapacitance_C, restingConductance_G0,
 	  kConductance_Gk, maxMConductance_Gmax, ciliaTimeConst_tc,
 	  ciliaCouplingGain_C, referencePot, sensitivity_s0, sensitivity_s1,
-	  offset_x0, offset_x1)) {
+	  offset_u0, offset_u1)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
@@ -911,7 +906,8 @@ SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 double
 GetRestingResponse_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char	*funcName = "GetRestingResponse_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "GetRestingResponse_IHCRP_Shamma3StateVelIn";
 	double	correctedRevPot_Epk;
 	
 	if (sham3StVInPtr == NULL) {
@@ -951,6 +947,7 @@ InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 	theModule->parsPtr = sham3StVInPtr;
 	theModule->CheckPars = CheckPars_IHCRP_Shamma3StateVelIn;
 	theModule->Free = Free_IHCRP_Shamma3StateVelIn;
+	theModule->GetRestingResponse = GetRestingResponse_IHCRP_Shamma3StateVelIn;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma3StateVelIn;
 	theModule->PrintPars = PrintPars_IHCRP_Shamma3StateVelIn;
 	theModule->ReadPars = ReadPars_IHCRP_Shamma3StateVelIn;
@@ -1000,49 +997,52 @@ CheckData_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "InitProcessVariables_IHCRP_Shamma3StateVelIn";
 	int		i;
 	double	restingPotential_V0;
 
 	if (sham3StVInPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		/*** Additional update flags can be added to above line ***/
-		if (sham3StVInPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+		if (sham3StVInPtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 
-		    FreeProcessVariables_IHCRP_Shamma3StateVelIn();
-		    /*** Put memory allocation etc here ***/
-		    if ((sham3StVInPtr->lastInput = (double *)
-			 calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
-		      NotifyError("%s: Out of memory for 'lastInput'.", funcName);
-		      return(FALSE);
-		    }
-		    if ((sham3StVInPtr->lastOutput = (double *)
-			 calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
-		      NotifyError("%s: Out of memory for 'lastOutput'.", funcName);
-		      return(FALSE);
-		    }
-		    if ((sham3StVInPtr->lastCiliaDisplacement_u = (double *)
-			 calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
-		      NotifyError("%s: Out of memory for 'lastCiliaDisplacement_u'.",
-		      funcName);
-		   return(FALSE);
-		   }
-		   sham3StVInPtr->updateProcessVariablesFlag = FALSE;
-	        }
+			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
+			/*** Put memory allocation etc here ***/
+			if ((sham3StVInPtr->lastInput = (double *)
+				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+				NotifyError("%s: Out of memory for 'lastInput'.", funcName);
+				return(FALSE);
+			}
+			if ((sham3StVInPtr->lastOutput = (double *)
+				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+				NotifyError("%s: Out of memory for 'lastOutput'.", funcName);
+				return(FALSE);
+			}
+			if ((sham3StVInPtr->lastCiliaDisplacement_u = (double *)
+				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+				NotifyError("%s: Out of memory for 'lastCiliaDisplacement_u'.",
+				funcName);
+				return(FALSE);
+			}
+			sham3StVInPtr->updateProcessVariablesFlag = FALSE;
+		}
 
-	        restingPotential_V0 = (sham3StVInPtr->restingConductance_G0 *
-		     sham3StVInPtr->endocochlearPot_Et + sham3StVInPtr->kConductance_Gk *
-		     (sham3StVInPtr->reversalPot_Ek + sham3StVInPtr->endocochlearPot_Et *
-		     sham3StVInPtr->reversalPotCorrection)) /
-		     (sham3StVInPtr->restingConductance_G0 + sham3StVInPtr->kConductance_Gk);
+		restingPotential_V0 = (sham3StVInPtr->restingConductance_G0 *
+		sham3StVInPtr->endocochlearPot_Et + sham3StVInPtr->kConductance_Gk *
+		(sham3StVInPtr->reversalPot_Ek + sham3StVInPtr->endocochlearPot_Et *
+		sham3StVInPtr->reversalPotCorrection)) /
+		(sham3StVInPtr->restingConductance_G0 + sham3StVInPtr->
+		kConductance_Gk);
 
-	        if (data->timeIndex == PROCESS_START_TIME) {
-		     for (i = 0; i < data->outSignal->numChannels; i++) {
-		          /*** Put reset (to zero ?) code here ***/
-		          sham3StVInPtr->lastInput[i] = 0.0;
-		          sham3StVInPtr->lastOutput[i] = restingPotential_V0;
-		          sham3StVInPtr->lastCiliaDisplacement_u[i] = 0.0;
-		     }	
+		if (data->timeIndex == PROCESS_START_TIME) {
+			for (i = 0; i < data->outSignal->numChannels; i++) {
+			/*** Put reset (to zero ?) code here ***/
+			sham3StVInPtr->lastInput[i] = 0.0;
+			sham3StVInPtr->lastOutput[i] = restingPotential_V0;
+			sham3StVInPtr->lastCiliaDisplacement_u[i] = 0.0;
+			}	
 		}
 	}
 	return(TRUE);
@@ -1059,7 +1059,7 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IHCRP_Shamma3StateVelIn(void)
 {
-	/** Put memory deallocation code here.    ***/
+	/** Put memory deallocation code here.	***/
 	/** Remember to set the pointers to NULL. ***/
 	if (sham3StVInPtr->lastInput != NULL) {
 		free(sham3StVInPtr->lastInput);
@@ -1103,8 +1103,8 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	double	leakageConductance_Ga, conductance_G, potential_V;
 	double	ciliaDisplacement_u, lastInput;
 	double  ciliaAct;
-	double  x0, x1, s0, s1;
-	register     double		dtOverC, gkEpk, dtOverTc, cGain, dt;
+	double  u0, u1, s0, s1;
+	register	 double		dtOverC, gkEpk, dtOverTc, cGain, dt;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
@@ -1113,7 +1113,7 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
 		NotifyError("%s: Parameters invalid.", funcName);
 		return(FALSE);
-        }
+		}
 	if (!CheckData_IHCRP_Shamma3StateVelIn(data)) {
 		NotifyError("%s: Process data invalid.", funcName);
 		return(FALSE);
@@ -1140,16 +1140,16 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	}
 
 	s0 = sham3StVInPtr->sensitivity_s0;
-	x0 = sham3StVInPtr->offset_x0;
+	u0 = sham3StVInPtr->offset_u0;
 	s1 = sham3StVInPtr->sensitivity_s1;
-	x1 = sham3StVInPtr->offset_x1;
+	u1 = sham3StVInPtr->offset_u1;
 
 	dt = data->outSignal->dt;
 	dtOverC = dt / sham3StVInPtr->totalCapacitance_C;
 	gkEpk = sham3StVInPtr->kConductance_Gk * (sham3StVInPtr->reversalPot_Ek +
 	  sham3StVInPtr->endocochlearPot_Et * sham3StVInPtr->
 	  reversalPotCorrection);
-	ciliaAct = 1.0 / (1.0 + exp(x0 / s0) * ( 1 + exp(x1 / s1)));
+	ciliaAct = 1.0 / (1.0 + exp(u0 / s0) * ( 1 + exp(u1 / s1)));
 	leakageConductance_Ga = sham3StVInPtr->restingConductance_G0 -
 	sham3StVInPtr->maxMConductance_Gmax * ciliaAct;
 
@@ -1165,9 +1165,9 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += dt * cGain * (*inPtr ) - 
 			  ciliaDisplacement_u * dtOverTc;
-            ciliaAct = 1.0 / (1.0 + exp((x0 - ciliaDisplacement_u) / s0) *
-			  (1.0 + exp((x1 - ciliaDisplacement_u) / s1)));
-            conductance_G = sham3StVInPtr->maxMConductance_Gmax * ciliaAct +
+			ciliaAct = 1.0 / (1.0 + exp((u0 - ciliaDisplacement_u) / s0) *
+			  (1.0 + exp((u1 - ciliaDisplacement_u) / s1)));
+			conductance_G = sham3StVInPtr->maxMConductance_Gmax * ciliaAct +
 			  leakageConductance_Ga; 
 			*outPtr = (ChanData) (potential_V - dtOverC * (conductance_G *
 			  (potential_V - sham3StVInPtr->endocochlearPot_Et) +

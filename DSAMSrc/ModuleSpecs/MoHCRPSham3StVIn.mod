@@ -13,12 +13,12 @@ typedef struct {
 	double	kConductance_Gk;	/* Potassium conductance, S (Seimens). */
 	double	maxMConductance_Gmax;	/* Maximum mechanical conductance, S. */
 	double	ciliaTimeConst_tc;	/* BM/cilia displacement time constant, s. */
-	double	ciliaCouplingGain_C;    /* Cilia coupling gain. */
+	double	ciliaCouplingGain_C;	/* Cilia coupling gain. */
 	double	referencePot;		/* Reference potential */
-        double  sensitivity_s0;         /* Sensitivity constants for trans. function */
-        double  sensitivity_s1;
-        double  offset_x0;              /* Offset constants for transduction function */
-        double  offset_x1;              
+	double  sensitivity_s0;		 /* Sensitivity constants for trans. function */
+	double  sensitivity_s1;
+	double  offset_u0;			  /* Offset constants for transduction function */
+	double  offset_u1;			  
   	
 } Sham3StVIn;
 
