@@ -186,6 +186,8 @@ BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 
+BOOLN	PrintSimFiles_Datum(char  *fileName, DatumPtr start);
+
 BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName,
 		  int indentLevel, char *prefix, BOOLN checkForSubSimScripts);
 
@@ -203,6 +205,8 @@ BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc);
 
 BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
+
+void	SetDefaultProcessFileName_Utility_Datum(DatumPtr pc);
 
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);

@@ -207,6 +207,8 @@ void *		NullFunction_ModuleMgr(void);
 
 BOOLN		PrintPars_ModuleMgr(EarObjectPtr data);
 
+BOOLN		PrintSimFile_ModuleMgr(char *fileName, EarObjectPtr data);
+
 BOOLN		PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
 BOOLN		ReadPars_ModuleMgr(EarObjectPtr data, char *fileName);

@@ -14,7 +14,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef HAVE_WX_OGL_OGL_H
+#ifdef USE_WX_OGL
 
 #ifdef __GNUG__
 // #pragma implementation
@@ -298,4 +298,4 @@ SDIUtilityShape::SDIUtilityShape(double w, double h): wxRectangleShape(w, h)
 {
 }
 
-#endif /* HAVE_WX_OGL_OGL_H */
+#endif /* USE_WX_OGL */

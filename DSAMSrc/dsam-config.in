@@ -101,7 +101,7 @@ if test "$echo_cflags" = "yes"; then
 	echo $cflags
 fi
 if [ "$echo_rflags" = "yes" ]; then
-	rflags="@RESFLAGS@ --include-dir @includedir@"
+	rflags="@WXRESFLAGS@ --include-dir @includedir@"
 	echo $rflags
 fi
 if [ "$echo_libs" = "yes" ]; then
@@ -113,7 +113,7 @@ if [ "$echo_libs" = "yes" ]; then
 		fi
 	fi
 	if [ "$use_gui" = "yes" ]; then
-		libs="$libs -l@PACKAGE@_g @WXLDFLAGS@"
+		libs="$libs -l@PACKAGE@_g @WXLDLIBS@"
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
 	fi

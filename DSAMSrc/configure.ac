@@ -68,11 +68,51 @@ dnl ============================================================================
 dnl 'Global' variable declaration
 dnl ============================================================================
 
-WX_CONFIG=wx-config
+WX_DEFAULT_CONFIG=wx-config
+
+dnl ============================================================================
+dnl Configure ENABLE options
+dnl ============================================================================
+
+AC_ARG_ENABLE(wx_gtk,
+   [  --disable-wx_gtk           Do not compile wxGTK support],
+   [WX_GTK="$enableval"],
+   [WX_GTK="yes"]
+)
+
+AC_ARG_ENABLE(wx_base,
+   [  --disable-wx_base           Do not compile wxBase support],
+   [WX_BASE="$enableval"],
+   [WX_BASE="yes"]
+)
+
+AC_ARG_ENABLE(wx_ogl,
+   [  --disable-wx_ogl           Do not compile wx OGL support],
+   [WX_OGL="$enableval"],
+   [WX_OGL="yes"]
+)
+
+dnl ============================================================================
+dnl Configure WITH options
+dnl ============================================================================
+
+AC_ARG_WITH(wx_ogl-headers,
+   [  --with-wx_ogl-headers=DIR  wx OGL Include files location],
+   [WX_OGL_HDR_DIR="$withval"]
+   [WX_OGL_CPPFLAGS="-I$withval"] 
+)
+
+AC_ARG_WITH(wx_ogl-lib,
+   [  --with-wx_ogl-lib=DIR      wx OGL Library location],
+   [WX_OGL_LDFLAGS="-L$withval"] 
+)
 
 dnl ============================================================================
 dnl cross-compiling support: we're cross compiling if the build system is
 dnl different from the target one (assume host and target be always the same)
+dnl -
+dnl -this needs to be updated LPO 21-10-2003.
+dnl -
 dnl ============================================================================
 
 if test $host != $build; then
@@ -85,7 +125,7 @@ if test $host != $build; then
 		LD=$host_alias-ld
 		NM=$host_alias-nm
 		STRIP=$host_alias-strip
-		WX_CONFIG=$host_alias-wx-config
+		WX_DEFAULT_CONFIG=$host_alias-wx-config
 	fi
 fi
 
@@ -291,89 +331,98 @@ AC_ARG_ENABLE(dmalloc,
 	AM_CONDITIONAL(DMALLOC, test x$dmalloc = xtrue)
 
 dnl ----------------------------------------------------------------------------
-dnl wxport
+dnl wxWin library (General)
 dnl ----------------------------------------------------------------------------
 
-AC_ARG_ENABLE(wxport,
-	[  --enable-wxport=ARG     Specify WxWin port [ARG=gtk]],
-	[case ${enableval} in
-		motif)	AC_DEFINE(wx_motif, 1, "Using motif port") ;;
-		msw)	AC_DEFINE(wx_msw, 1, "Using MSW port") ;;
-		gtk)	AC_DEFINE(wx_gtk, 1, "Using GTK port") ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-wxport) ;;
-	esac], wxport=gtk)
-
-AC_MSG_CHECKING(for WXWIN environment ($WX_CONFIG))
-if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
+AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_DEFAULT_CONFIG))
+if eval "$WX_DEFAULT_CONFIG --version 2> config.log > /dev/null"; then
 	wxwinAvailable=yes
+	wx_version=`$WX_DEFAULT_CONFIG --version | cut -d. -f 1-2`
 else
 	wxwinAvailable=no
 fi
-
 AC_MSG_RESULT($wxwinAvailable)
 
-if test x$wxwinAvailable = xyes; then
-	wx_inc=`$WX_CONFIG --cxxflags`
-	wx_ldflags=`$WX_CONFIG --libs`
-	wx_resflags="--include-dir `$WX_CONFIG --exec-prefix`/include \
-	  --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
-	AC_CHECK_HEADERS(wx/ogl/ogl.h, [ogl=true], [ogl=false])
-	if test x$ogl = xtrue; then
-		ogl_ldflags="-logl"
+WX_CONFIG=
+using_wxwin_gui=
+
+dnl ----------------------------------------------------------------------------
+dnl wxBase library
+dnl ----------------------------------------------------------------------------
+
+if test x$WX_BASE = xyes; then
+	TMP_CONFIG=wxbase-$wx_version-config
+	AC_MSG_CHECKING(for wxBase configuration shell script ($TMP_CONFIG))
+	if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
+		AC_DEFINE(wx_base, 1, [Use wxBase library])
+		wx_base_available=yes
+		WX_CONFIG=$TMP_CONFIG
+		WX_BASE_CPPFLAGS=`$TMP_CONFIG --cflags`
+		WX_BASE_LDFLAGS=`$TMP_CONFIG --libs`
+	else
+		wx_base_available=no
 	fi
+	AC_MSG_RESULT($wx_base_available)
 fi
 
-XINCLUDE=$wx_xinclude
-AC_SUBST(XINCLUDE)
-WXINC=$wx_inc
-AC_SUBST(WXINC)
-WXBASEINC=$wx_baseinc
-AC_SUBST(WXBASEINC)
-WXLDFLAGS="$wx_ldflags $ogl_ldflags"
-AC_SUBST(WXLDFLAGS)
-
-case "${wxport}" in
-	motif)	WXLDLIBS=$wx_motifldlibs
-		;;
-	msw)	RESFLAGS=$wx_resflags
-			AC_SUBST(RESFLAGS)
-		;;
-	mswg95)	RESFLAGS=$wx_resflags
-			AC_SUBST(RESFLAGS)
-			RESCOMP=$wx_rescomp
-		;;
-	*)
-		;;
-esac
-
-AC_SUBST(WXLDLIBS)
-
-AM_CONDITIONAL(WXGTK, test x$wxport = xgtk)
-AM_CONDITIONAL(WXMSW, test x$wxport = xmsw)
-
 dnl ----------------------------------------------------------------------------
-dnl Graphics library option
+dnl wxGTK library
 dnl ----------------------------------------------------------------------------
 
-AC_ARG_ENABLE(graphics,
-	[  --enable-graphics=ARG   Enable DSAM Graphics support [ARG=no]],
-	[case ${enableval} in
-		yes)
-			if test x$wxwinAvailable = xyes; then
-				AC_PROG_CXX
-				AC_PROG_CXXCPP
-				DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
-				AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
-				GR_LIB=GrLib
-				graphics=true
-			else
-				AC_MSG_ERROR(WxWin must be installed!)
-				graphics=false
-			fi
-			;;
-		*)	graphics=false ;;
-	esac], [ graphics=false ])
-AM_CONDITIONAL(DSAM_GRAPHICS, test x$graphics = xtrue)
+if test x$WX_GTK = xyes; then
+	TMP_CONFIG=wxgtk-$wx_version-config
+	AC_MSG_CHECKING(for wxGTK configuration shell script ($TMP_CONFIG))
+	if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
+		AC_DEFINE(wx_gtk, 1, [Use wxGTK library])
+		WX_CONFIG=$TMP_CONFIG
+		wx_gtk_available=yes
+		using_wxwin_gui=yes
+	else
+		wx_gtk_available=no
+	fi
+	AC_MSG_RESULT($wx_gtk_available)
+fi
+
+dnl ----------------------------------------------------------------------------
+dnl wx OGL library
+dnl ----------------------------------------------------------------------------
+
+if test x$WX_OGL = xyes -a x$using_wxwin_gui = xyes; then
+	AC_CHECKING([for wxWindows OGL Library and Header files])
+	CXXFLAGS_save=$CXXFLAGS
+	CXXFLAGS=`$WX_CONFIG --cflags`
+	AC_CHECK_HEADER([wx/ogl/ogl.h], 
+		[
+			AC_COMPILE_IFELSE(
+				[
+					AC_LANG_PROGRAM(
+						[
+							#include <wx/wx.h>
+							#include <wx/ogl/ogl.h>
+						],
+						[
+							wxShapeEvtHandler	*handler = new wxShapeEvtHandler();
+						]
+					)
+				],
+				[
+					AC_DEFINE(USE_WX_OGL, 1, [Use wxWindows OGL library])
+					WX_OGL_LDFLAGS="-logl"
+				],
+				[
+					AC_MSG_ERROR([wx OGL headers were found but library was not found.])
+				]
+			)
+		],
+		[
+			AC_MSG_RESULT([wx OGL library and headers not found.])
+			AC_MSG_RESULT([wx OGL library available from http://www.wxwindows.org])
+			AC_MSG_ERROR([Or try ./configure --disable-wx_ogl])
+		],
+		[#include <wx/wx.h>]
+	)
+	CXXFLAGS=$CXXFLAGS_save
+fi
 
 dnl ----------------------------------------------------------------------------
 dnl Parallel library option
@@ -400,6 +449,29 @@ AC_SUBST(DSAM_GRAPHICS)
 AC_SUBST(DSAM_MPI)
 AC_SUBST(DSAM_DEFS)
 
+dnl ----------------------------------------------------------------------------
+dnl General graphics option settings.
+dnl ----------------------------------------------------------------------------
+
+if test x$wxwinAvailable = xyes; then
+	AC_PROG_CXX
+	AC_PROG_CXXCPP
+	XINCLUDE=$wx_xinclude
+	AC_SUBST(XINCLUDE)
+	WXINC="`$WX_CONFIG --cxxflags` $WX_OGL_CPPFLAGS"
+	AC_SUBST(WXINC)
+	WXLDLIBS="`$WX_CONFIG --libs` $WX_OGL_LDFLAGS"
+	AC_SUBST(WXLDLIBS)
+fi
+if test x$using_wxwin_gui = xyes; then
+	DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
+	AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
+	WXRESFLAGS="--include-dir `$WX_CONFIG --exec-prefix`/include \
+	  --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
+	AC_SUBST(WXRESFLAGS)
+fi
+AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxwin_gui = xyes)
+
 dnl ============================================================================
 dnl Checks for system services or capabilities.
 dnl ============================================================================
@@ -409,7 +481,6 @@ AC_OBJEXT
 AC_SYS_LONG_FILE_NAMES
 
 AM_CONDITIONAL(MPI, test x$mpi = xyes)
-AM_CONDITIONAL(WXWIN, test x$graphics = xyes)
 AC_SUBST(LIBDSAM)
 AC_SUBST(LIBDSAMM)
 AC_SUBST(PAWORKER1M)

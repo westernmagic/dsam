@@ -14,7 +14,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef HAVE_WX_OGL_OGL_H
+#ifdef USE_WX_OGL
 
 #include "DSAM.h"
 
@@ -222,4 +222,4 @@ SDIDocument::LoadObject(wxInputStream& stream)
 
 #endif
 
-#endif /* HAVE_WX_OGL_OGL_H */
+#endif /* USE_WX_OGL */

@@ -3,16 +3,10 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+if DSAM_GRAPHICS
 SUBDIRS		= Bitmaps
 
 include $(top_srcdir)/src/makeunix.env
-
-WXWINLDFLAGS	= $(WXLDFLAGS)
-WXWINLIBS		= $(WXLDLIBS)
-
-if WXMSW
-WXWINRESFLAGS	= $(RESFLAGS)
-endif
 
 lib_LTLIBRARIES = libdsam_g.la
 EXTRA_DIST		= makefile.b32
@@ -31,5 +25,5 @@ libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 
-GrSignalDisp.cpp: $(top_srcdir)/src/StdLib/StdSignalDisp.c
-	cp $(top_srcdir)/src/StdLib/StdSignalDisp.c GrSignalDisp.cpp
+else
+endif

@@ -41,7 +41,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef HAVE_WX_OGL_OGL_H
+#ifdef USE_WX_OGL
 
 #ifdef __GNUG__
 // #pragma implementation
@@ -547,4 +547,4 @@ SDICommand::RemoveLines(wxShape *shape)
 
 }
 
-#endif /* HAVE_WX_OGL_OGL_H */
+#endif /* USE_WX_OGL */

@@ -5,6 +5,5 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST	= makeunix.env makeb32.env
 
-SUBDIRS		= MainLib StdLib @GR_LIB@
-##SUBDIRS		= MainLib StdLib GrLib
+SUBDIRS		= MainLib StdLib GrLib
 

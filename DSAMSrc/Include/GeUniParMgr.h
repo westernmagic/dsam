@@ -275,6 +275,10 @@ BOOLN	PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix);
 
 BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 
+BOOLN	PrintParList_UniParMgr(UniParListPtr parList);
+
+void	PrintSubParList_UniParMgr(UniParListPtr parList);
+
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
