@@ -107,8 +107,8 @@ class SDICommand: public wxCommand
 	inline wxClassInfo	*GetShapeInfo(void) { return shapeInfo; }
 	inline bool		GetSelected(void) { return selected; }
 
-	void	ConnectProcesses(void);
-	void	DisconnectProcesses(void);
+	bool	ConnectProcesses(wxShape *fromShape, wxShape *toShape);
+	void	DisconnectProcesses(wxShape *fromShape, wxShape *toShape);
 	void	RemoveLines(wxShape *shape);
 	void	SetBasic(int command, SDIDocument *ddoc, wxShape *theShape);
 

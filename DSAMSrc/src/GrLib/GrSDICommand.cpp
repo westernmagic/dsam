@@ -179,8 +179,8 @@ SDICommand::SetBasic(int command, SDIDocument *ddoc, wxShape *theShape)
  * It also inserts the instructions into the simulation.
  */
 
-void
-SDICommand::ConnectProcesses(void)
+bool
+SDICommand::ConnectProcesses(wxShape *fromShape, wxShape *toShape)
 {
 	static const char *funcName = "SDICommand::ConnectProcesses";
 
@@ -191,26 +191,16 @@ SDICommand::ConnectProcesses(void)
 	if (!fromPc || !toPc) {
 		wxLogError("%s: Both processes must be set before a connection\n"
 		  "can be made.", funcName);
-		return;
+		return(false);
 	}
 	if (!ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data)) {
 		wxLogError("%s: Could not connect processes.", funcName);
-		return;
+		return(false);
 	}
 
 	DatumPtr	*simPtr = GetSimPtr_AppInterface();
-
-	if (!DATUM_IN_SIMULATION(fromPc)) {
-		if (DATUM_IN_SIMULATION(toPc))
-			InsertInst_Utility_Datum(simPtr, toPc, fromPc);
-		else {
-			InsertInst_Utility_Datum(simPtr, NULL, fromPc);
-			AppendInst_Utility_Datum(simPtr, fromPc, toPc);
-		}
-	} else {
-		if (!DATUM_IN_SIMULATION(toPc))
-			AppendInst_Utility_Datum(simPtr, fromPc, toPc);
-	}
+	ConnectSim_Utility_Datum(simPtr, fromPc, toPc);
+	return(true);
 
 }
 
@@ -224,7 +214,7 @@ SDICommand::ConnectProcesses(void)
  */
 
 void
-SDICommand::DisconnectProcesses(void)
+SDICommand::DisconnectProcesses(wxShape *fromShape, wxShape *toShape)
 {
 	static const char *funcName = "SDICommand::DisconnectProcesses";
 
@@ -265,7 +255,7 @@ SDICommand::Do(void)
 				wxLineShape *lineShape = (wxLineShape *)shape;
 				fromShape = lineShape->GetFrom();
 				toShape = lineShape->GetTo();
-				DisconnectProcesses();
+				DisconnectProcesses(fromShape, toShape);
 			} else {
 				SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->
 				  GetEventHandler();
@@ -311,7 +301,6 @@ SDICommand::Do(void)
 		if (shape)
 			theShape = shape; // Saved from undoing the line
 		else {
-			ConnectProcesses();
 			theShape = (wxShape *)shapeInfo->CreateObject();
 			theShape->AssignNewIds();
 			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
@@ -326,6 +315,11 @@ SDICommand::Do(void)
 			lineShape->MakeLineControlPoints(2);
 			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, 10.0, 0.0,
 			  "Normal arrowhead");
+		}
+		if (!ConnectProcesses(fromShape, toShape)) {
+			delete theShape;
+			shape = NULL;
+			return(false);
 		}
 
 		doc->GetDiagram()->AddShape(theShape);
@@ -409,7 +403,7 @@ SDICommand::Undo(void)
 			if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
 				wxLineShape *lineShape = (wxLineShape *)shape;
 				fromShape->AddLine(lineShape, toShape);
-				ConnectProcesses();
+				ConnectProcesses(fromShape, toShape);
 			}
 			if (selected)
 				shape->Select(TRUE);
@@ -436,7 +430,7 @@ SDICommand::Undo(void)
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
-			DisconnectProcesses();
+			DisconnectProcesses(fromShape, toShape);
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);
 			shape->Unlink();

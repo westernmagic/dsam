@@ -215,6 +215,31 @@ DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 
 }
 
+/****************************** ConnectSim ************************************/
+
+/*
+ * Connect datum instructions in a list.
+ */
+
+void
+ConnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
+{
+	if (!DATUM_IN_SIMULATION(from)) {
+		if (DATUM_IN_SIMULATION(to))
+			InsertInst_Utility_Datum(head, to, from);
+		else {
+			InsertInst_Utility_Datum(head, NULL, from);
+			AppendInst_Utility_Datum(head, from, to);
+		}
+	} else if (!DATUM_IN_SIMULATION(to))
+		AppendInst_Utility_Datum(head, from, to);
+	else {
+		from->next = to;
+		to->previous = from;
+	}
+
+}
+
 /****************************** FreeInstruction *******************************/
 
 /*
