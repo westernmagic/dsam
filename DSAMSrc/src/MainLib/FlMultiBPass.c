@@ -936,8 +936,8 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		bPParsPtr->data->inSignal[0] = data->inSignal[0];
 		InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
 		if (fabs(multiBPassFPtr->preAttenuation[i]) > DBL_EPSILON)
-			GaindB_SignalData(bPParsPtr->data->outSignal,
-			  multiBPassFPtr->preAttenuation[i]);
+			GaindB_SignalData(bPParsPtr->data->outSignal, multiBPassFPtr->
+			  preAttenuation[i]);
 		BandPass_Filters(bPParsPtr->data->outSignal, bPParsPtr->coefficients);
 	}
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
