@@ -585,7 +585,7 @@ GenerateSignal_StepFunction(EarObjectPtr data)
 	}	
 	if (!CheckPars_StepFunction())
 		return(FALSE);
-	SetProcessName_EarObject(data, "Silence pure-tone stimulus");
+	SetProcessName_EarObject(data, "Step-function stimulus");
 	totalDuration = stepFunPtr->beginPeriodDuration +
 	  stepFunPtr->duration + stepFunPtr->endPeriodDuration;
 	data->updateProcessFlag = TRUE;
@@ -597,7 +597,7 @@ GenerateSignal_StepFunction(EarObjectPtr data)
 	beginPeriodDurationIndex = (ChanLen) (stepFunPtr->beginPeriodDuration /
 	  data->outSignal->dt + 0.5);
 	endSignalIndex = beginPeriodDurationIndex +
-	  (ChanLen) (stepFunPtr->duration / stepFunPtr->dt + 0.5) - 1;
+	  (ChanLen) (stepFunPtr->duration / stepFunPtr->dt + 0.5);
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0; i < data->outSignal->length; i++)
 		if ( (i >= beginPeriodDurationIndex) && (i <= endSignalIndex) )
