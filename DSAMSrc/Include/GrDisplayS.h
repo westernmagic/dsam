@@ -77,8 +77,8 @@ class DisplayS: public wxFrame
 	~DisplayS(void);
 	
 	void	InitButtons(void);
-	void	OnActivate(Bool active);
-	Bool	OnClose(void);
+	void	OnActivate(bool active);
+	bool	OnClose(void);
 	void	OnSize(int width, int height);
 	
   // Call backs
