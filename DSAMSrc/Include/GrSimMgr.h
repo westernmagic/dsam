@@ -32,9 +32,8 @@
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
+#	include <wx/socket.h>
 #endif
-
-#include "GrIPC.h"
 
 /* sccsid[] = "%W% %G%" */
 
@@ -42,42 +41,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-/*************************** Menu Commands ************************************/
-
-/*************************** File Menu ****************************************/
-
-#define SIM_MANAGER_FILE_SAVE_SIM_PARS	100
-#define SIM_MANAGER_FILE_EXIT			101
-
-/*************************** Edit Menu ****************************************/
-
-#define SIM_MANAGER_EDIT_SIM_PARS		200
-#define SIM_MANAGER_EDIT_MAIN_PARS		201
-
-/*************************** View Menu ****************************************/
-
-#define SIM_MANAGER_VIEW_SIM_PARS		300
-
-/*************************** Program Menu *************************************/
-
-#define SIM_MANAGER_PROGRAM_EXECUTE			400
-
-/*************************** Help Menu ****************************************/
-
-#define SIM_MANAGER_HELP_MANUAL			600
-#define SIM_MANAGER_HELP_KEYWORD		601
-
-/*************************** Misc *********************************************/
-
-
-/*************************** Button Tags **************************************/
-
-#define	SIM_MANAGER_EXIT_BUTTON_TAG		100
-#define	SIM_MANAGER_GO_BUTTON_TAG		101
-
-/*************************** Misc *********************************************/
-
-#define	SIM_MANAGER_HELP_TOP_LEVEL			"DSAMHelp"
+#define	DEFAULT_SERVER_NAME				"110773"
+#define	SIM_MANAGER_HELP_TOP_LEVEL		"DSAMHelp"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -94,6 +59,17 @@ enum {
 	MYFRAME_ID_VIEW_SIM_PARS
 
 };
+
+enum {
+
+	MYAPP_SOCKET_ID = 1,
+	MYAPP_SERVER_ID
+
+};
+
+/******************************************************************************/
+/*************************** Type definitions *********************************/
+/******************************************************************************/
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -136,30 +112,36 @@ class MyFrame: public wxFrame {
 // Define a new application
 class MyApp: public wxApp {
 
-	bool		clientServerFlag;
-	uInt		serverId;
-	int			displayDefaultX, displayDefaultY;
+	bool	clientServerFlag, busy;
+	uInt	serverId;
+	int		displayDefaultX, displayDefaultY, myArgc;
+	char	**myArgv;
 	wxString	serverName;
 	MyFrame		*frame;
-	IPCOpModeSpecifier	operationMode;
+	wxSocketServer	*myServer;
+	wxSocketClient	*myClient;
 
   public:
 
 	MyApp(void);
-
+	
 	void	CheckOptions(void);
 	void	GetDefaultDisplayPos(int *x, int *y);
 	MyFrame *	GetFrame(void)	{ return frame; }
+	bool	InitArgv(int argc);
 	bool	OnInit(void);
     int		OnExit(void);
+	void	OnServerEvent(wxSocketEvent& event);
+	void	OnSocketEvent(wxSocketEvent& event);
 	void	PrintUsage(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
-	void	RunInServerMode(void);
 	void	RunInClientMode(void);
 	bool	RunSimulation(void);
-	void	SetClientServerMode(void);
-	
+	bool	SetArgvString(int index, char *string, int size);
+	bool	SetClientServerMode(void);
+
+	DECLARE_EVENT_TABLE()
 
 };
 

@@ -59,7 +59,6 @@
 #include "UtSimScript.h"
 #include "UtShapePulse.h"
 #include "UtSpikeList.h"
-/* #include "UtSSParser.h" - this shouldn't be needed by programs. */
 #include "UtStddise.h"
 #include "UtStrobe.h"
 #include "UtUIEEEFloat.h"
@@ -130,7 +129,7 @@
 #include "TrGate.h"
 #include "TrSetDBSPL.h"
 
-#include	"GrSignalDisp.h"
+#include "GrSignalDisp.h"
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #/* --cplusplus ensures only included with c++ compile */
@@ -154,6 +153,7 @@
 #	include <wx/notebook.h>
 #	include <wx/print.h>
 #	include "wx/printdlg.h"
+#	include "wx/socket.h"
 
 #	if wxTEST_POSTSCRIPT_IN_MSW
 #		include "wx/generic/printps.h"
@@ -162,7 +162,6 @@
 
 #	include "GrUtils.h"
 #	include "GrFonts.h"
-#	include "GrIPC.h"
 #	include "GrDSAMList.h"
 #	include "GrDialogInfo.h"
 #	include "GrParControl.h"

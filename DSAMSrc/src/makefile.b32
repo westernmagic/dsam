@@ -288,7 +288,7 @@ GrGraphCtrls.obj:	$(INCDIR)/GrGraphCtrls.h
 
 GrFonts.obj:	$(INCDIR)/GrFonts.h
 
-GrIPC.obj:		$(INCDIR)/GrIPC.h $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
+GrSocket.obj:		$(INCDIR)/GrSocket.h $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
 
 
 GrLine.obj:		$(INCDIR)/GrLine.h
@@ -310,7 +310,7 @@ GrSignalDisp.obj:	$(INCDIR)/GrSignalDisp.h $(INCDIR)/GrCanvas.h \
 					  $(INCDIR)/GrDisplayS.h
 
 GrSimMgr.obj:	$(RES) $(INCDIR)/GrSimMgr.h $(INCDIR)/GeCommon.h \
-				  $(INCDIR)/GrGraphCtrls.h $(INCDIR)/GrIPC.h \
+				  $(INCDIR)/GrGraphCtrls.h $(INCDIR)/GrSocket.h \
 				  $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
 
 GrUtils.obj:	$(INCDIR)/GrUtils.h
