@@ -837,24 +837,25 @@ ReadPars_AppInterface(FILE *fp)
 {
 	static const char *funcName = "ReadPars_AppInterface";
 	BOOLN	ok = TRUE;
-	char	diagnosticMode[MAX_FILE_PATH], simulationFile[MAX_FILE_PATH];
-	char	segmentMode[MAXLINE];
+	char	parName[MAXLINE], parValue[MAX_FILE_PATH];
+	UniParPtr	par;
 
 	if (!fp) {
 		NotifyError("%s: File pointer not set.", funcName);
 		return(FALSE);
 	}
-	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", simulationFile))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", segmentMode))
-		ok = FALSE;
+	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
+		if ((par = FindUniPar_UniParMgr(&appInterfacePtr->parList, parName)) ==
+		  NULL) {
+			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
+			  parName);
+			ok = FALSE;
+		} else {
+			if (!SetParValue_UniParMgr(&appInterfacePtr->parList, par->index,
+			  parValue))
+				ok = FALSE;
+		}
 	if (!ok) {
-		NotifyError("%s: Failed to read parameters.", funcName);
-		return(FALSE);
-	}
-    if (!SetPars_AppInterface(diagnosticMode, simulationFile, segmentMode)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
