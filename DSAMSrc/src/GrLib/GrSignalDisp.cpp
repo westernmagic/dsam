@@ -1501,7 +1501,7 @@ CheckPars_SignalDisp(void)
 	if (signalDispPtr->autoXScaleFlag && !signalDispPtr->autoXScale &&
 	  (!signalDispPtr->xOffsetFlag || !signalDispPtr->xExtentFlag)) {
 		NotifyError("%s: When automatic x-scale is off, the x offset and "
-		  "x extent values must also be set.", funcName);
+		  "x extent values must both be set.", funcName);
 		return(FALSE);
 	}
 	return(TRUE);
