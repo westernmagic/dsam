@@ -661,7 +661,7 @@ ProcessParComs_AppInterface(void)
 		NotifyError("%s: No simulation has been initialised.", funcName);
 		return(FALSE);
 	}
-	if ((p->argc - p->initialCommand) % 2 != 0) {
+	if (p->argc && ((p->argc - p->initialCommand) % 2 != 0)) {
 		NotifyError("%s: parameter values must be in <name> <value> pairs.",
 		  funcName);
 		return(FALSE);
@@ -669,7 +669,7 @@ ProcessParComs_AppInterface(void)
 	for (i = p->initialCommand; i < p->argc; i += 2) {
 		if (SetProgramParValue_AppInterface(p->argv[i], p->argv[i + 1],
 		  FALSE) || (simulation && SetUniParValue_Utility_Datum(simulation,
-		  p->argv[i], p->argv[i + 1])))
+		  p->argv[i], p->argv[i + 1])) || !simulation)
 			continue;
 		NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
 		  p->argv[i], p->argv[i + 1]);

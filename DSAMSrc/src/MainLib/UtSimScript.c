@@ -175,7 +175,6 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	simScriptPtr->symList = NULL;
-	InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
 	simScriptPtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
 	sprintf(simScriptPtr->parsFilePath, "No path");
 	simScriptPtr->lineNumber = 0;
@@ -423,6 +422,34 @@ SetSimUniParValue_Utility_SimScript(char *parName, char *parValue)
 	  parValue)) {
 		NotifyError("%s: Could not set '%s' value to '%s'.", funcName, parName,
 		  parValue);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** SetControlParValue ****************************/
+
+/*
+ * This function sets the control parameter values for the simulation.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetControlParValue_Utility_SimScript(char *label, char *value, BOOLN diagsOn)
+{
+	static const char	*funcName = "SetControlParValue_Utility_SimScript";
+	DatumPtr	pc;
+
+	if (simScriptPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if (!SetControlParValue_Utility_Datum(simScriptPtr->simulation, label,
+	  value, diagsOn)) {
+		NotifyError("%s: Could not set control labelled '%s' value to '%s'.",
+		  funcName, label, value);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -873,7 +900,8 @@ ReadPars_Utility_SimScript(char *fileName)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE)
+	if ((simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE) ||
+	  simScriptPtr->simulation)
 		simScriptPtr->simFileType = GetSimFileType_Utility_SimScript(
 		  GetSuffix_Utility_String(fileName));
 	filePath = GetParsFileFPath_Common(fileName);
@@ -1003,6 +1031,8 @@ Read_Utility_SimScript(FILE *fp)
 	FreeSimulation_Utility_SimScript();
 	localSimScriptPtr->fp = fp;
 	localSimScriptPtr->simPtr = &localSimScriptPtr->simulation;
+	if (!localSimScriptPtr->symList);
+		InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
 	if (yyparse() != 0)
 		FreeSimulation_Utility_SimScript();
 	simScriptPtr = localSimScriptPtr;

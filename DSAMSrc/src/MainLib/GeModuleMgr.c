@@ -801,22 +801,22 @@ BOOLN
 SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 {
 	static const char *funcName = "SetPar_ModuleMgr";
-	UniParPtr	par;
-	UniParListPtr	parList;
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 	SET_PARS_POINTER(data);
-	parList = (* data->module->GetUniParListPtr)();
 	switch (data->module->specifier) {
 	case SIMSCRIPT_MODULE:
-		if (!SetSimUniParValue_Utility_SimScript(parName, value)) {
-			NotifyError("%s: Could not find parameter '%s' for process '%s'",
-			  funcName, parName, data->module->name);
-			return(FALSE);
-		}
-		return(TRUE);
-	default:
+		if (SetControlParValue_Utility_SimScript(parName, value, FALSE))
+			return(TRUE);
+		if (SetSimUniParValue_Utility_SimScript(parName, value))
+			return(TRUE);
+		NotifyError("%s: Could not find parameter '%s' for process '%s'",
+		  funcName, parName, data->module->name);
+		return(FALSE);
+	default: {
+		UniParPtr	par;
+		UniParListPtr	parList = (* data->module->GetUniParListPtr)();
 		if ((par = FindUniPar_UniParMgr(&parList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Could not find parameter '%s' for process '%s'",
@@ -824,6 +824,7 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 			return(FALSE);
 		}
 		return(SetParValue_UniParMgr(&parList, par->index, value));
+		}
 	}
 
 }

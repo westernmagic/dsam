@@ -190,6 +190,9 @@ BOOLN	ReadSimScriptOld_Utility_SimScript(FILE *fp);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 
+BOOLN	SetControlParValue_Utility_SimScript(char *label, char *value,
+		  BOOLN diagsOn);
+
 BOOLN	SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr);
 
 BOOLN	SetOperationMode_Utility_SimScript(char *theOperationMode);

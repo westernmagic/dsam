@@ -198,6 +198,9 @@ void	ResetStepCount_Utility_Datum(void);
 BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 		  labelBList);
 
+BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, char *label,
+		  char *value, BOOLN diagsOn);
+
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
 BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc);

@@ -1278,6 +1278,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		processName[0] = '\0';
 		processLabel[0] = '\0';
 	} else {
+		*p = '\0';
 		snprintf(processName, MAXLINE, "%s", p + 1);
 		if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL) {
 			snprintf(processLabel, MAXLINE, "%s%s", (isdigit(*(p + 1)))?
@@ -1286,8 +1287,6 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		} else
 			processLabel[0] = '\0';
 	}
-	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) != NULL)
-		*p = '\0';
 	for ( ; *pc != NULL; *pc = (*pc)->next)
 		if (((*pc)->type == PROCESS) && ((*pc)->data->module->specifier !=
 		  NULL_MODULE)) {
@@ -1404,6 +1403,50 @@ GetInstIntVal_Utility_Datum(DatumPtr start, char *label)
 		exit(1);
 	}
 	return (pc->u.loop.count);
+
+}
+
+/****************************** SetControlParValue ****************************/
+
+/*
+ * This function sets the control parameter values for a labelled instruction.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetControlParValue_Utility_Datum(DatumPtr start, char *label, char *value,
+  BOOLN diagsOn)
+{
+	static const char	*funcName = "SetControlParValue_Utility_SimScript";
+	DatumPtr	pc;
+
+	if (start == NULL) {
+		NotifyError("%s: Simulation not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((pc = FindLabelledInst_Utility_Datum(start, label)) == NULL) {
+		if (diagsOn)
+			NotifyError("%s: Could not find label '%s' in simulation script.",
+			  funcName, label);
+		return(FALSE);
+	}
+	switch (pc->type) {
+	case REPEAT: {
+		int count = atoi(value);
+		if (count <= 0) {
+			NotifyError("%s: Illegal value for repeat loop count (%d).\n",
+			  funcName);
+			return(FALSE);
+		}
+		pc->u.loop.count = count;
+		break; }
+	default:
+		NotifyError("%s: Labelled instruction, '%s' has no associated integer "
+		  "value.", funcName, label);
+		return(FALSE);
+	} /* switch */
+	return(TRUE);
 
 }
 
