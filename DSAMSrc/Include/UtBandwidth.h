@@ -21,7 +21,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define BANDWIDTH_NUM_CONSTANT_PARS	1
+#define BANDWIDTH_NUM_PARS				4
+#define BANDWIDTH_NUM_CONSTANT_PARS		1
 
 #define	K1_ERB		24.7		/* k1 constant. */
 #define K2_ERB		4.37e-3		/* K2 constant, frequency in Hz. */
@@ -59,8 +60,9 @@ typedef enum {
 typedef enum {
 
 	BANDWIDTH_PAR_MODE,
-	BANDWIDTH_PAR_1,
-	BANDWIDTH_PAR_2
+	BANDWIDTH_PAR_MIN,
+	BANDWIDTH_PAR_QUALITY,
+	BANDWIDTH_PAR_BANDWIDTH
 
 } BandwidthParSpecifier;
 

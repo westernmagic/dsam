@@ -86,8 +86,8 @@ typedef	enum {
 	DISPLAY_X_RESOLUTION,
 	DISPLAY_Y_NORMALISATION_MODE,
 	/* Axis controls */
-	DISPLAY_X_TICKS,
 	DISPLAY_X_DEC_PLACES,
+	DISPLAY_X_TICKS,
 	DISPLAY_Y_TICKS,
 	/* General Controls */
 	DISPLAY_FRAME_DELAY,
@@ -173,6 +173,8 @@ BOOLN	CheckPars_SignalDisp(void);
 BOOLN	Free_SignalDisp(void);
 
 BOOLN	FreeProcessVariables_SignalDisp(void);
+
+NameSpecifier *	GetPanelList_SignalDisp(int index);
 
 UniParListPtr	GetUniParListPtr_SignalDisp(void);
 
