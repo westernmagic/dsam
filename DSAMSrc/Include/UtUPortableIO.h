@@ -43,6 +43,10 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.4  2000/11/22 18:45:09  lowel
+* The 'InitMemory_UPortableIO' was changed to return a pointer to the module
+* structure created, rather than a BOOLN variable.
+*
 * Revision 1.3  2000/04/10 06:55:35  lowel
 * Changed the Ieee routines to IEEE
 *
@@ -168,7 +172,7 @@ void		FreeMemory_UPortableIO(void);
 
 int32		GetPosition_UPortableIO(FILE *fp);
 
-BOOLN		InitMemory_UPortableIO(int32 length);
+UPortableIOPtr	InitMemory_UPortableIO(int32 length);
 
 char		ReadByte(FILE *fp);
 
