@@ -81,6 +81,8 @@ extern	SelectChanPtr	selectChanPtr;
  */
 __BEGIN_DECLS
 
+BOOLN	AllocNumChannels_Utility_SelectChannels(int numChannels);
+
 BOOLN	CheckData_Utility_SelectChannels(EarObjectPtr data);
 
 BOOLN	CheckPars_Utility_SelectChannels(void);

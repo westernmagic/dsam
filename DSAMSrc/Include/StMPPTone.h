@@ -75,6 +75,8 @@ extern	PureTone4Ptr	pureTone4Ptr;
  */
 __BEGIN_DECLS
 
+BOOLN	AllocNumPulses_PureTone_MultiPulse(int numPulses);
+
 BOOLN	CheckPars_PureTone_MultiPulse(void);
 
 BOOLN	Free_PureTone_MultiPulse(void);
@@ -104,10 +106,10 @@ BOOLN	SetFrequencies_PureTone_MultiPulse(double *theFrequencies);
 
 BOOLN	SetNumPulses_PureTone_MultiPulse(int theNumPulses);
 
-BOOLN	SetPars_PureTone_MultiPulse(int theNumPulses, double theIntensity,
-		  double *theFrequencies, double theDuration,
-		  double theSamplingInterval, double theBeginPeriodDuration,
-		  double thePulseDuration, double theRepetitionPeriod);
+BOOLN	SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
+		  double intensity, double beginPeriodDuration, double pulseDuration,
+		  double repetitionPeriod, double duration, double samplingInterval);
+
 		  
 BOOLN	SetPulseDuration_PureTone_MultiPulse(double thePulseDuration);
 

@@ -82,6 +82,8 @@ extern	MultiBPassFPtr	multiBPassFPtr;
  */
 __BEGIN_DECLS
 
+BOOLN	AllocNumFilters_Filter_MultiBPass(int numFilters);
+
 BOOLN	CheckData_Filter_MultiBPass(EarObjectPtr data);
 
 BOOLN	CheckPars_Filter_MultiBPass(void);

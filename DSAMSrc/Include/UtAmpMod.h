@@ -61,6 +61,8 @@ extern	AmpModPtr	ampModPtr;
  */
 __BEGIN_DECLS
 
+BOOLN	AllocNumFrequencies_Utility_AmpMod(int numFrequencies);
+
 BOOLN	CheckData_Utility_AmpMod(EarObjectPtr data);
 
 BOOLN	CheckPars_Utility_AmpMod(void);

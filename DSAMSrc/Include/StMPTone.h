@@ -69,6 +69,8 @@ extern	MPureTonePtr	mPureTonePtr;
  */
 __BEGIN_DECLS
 
+BOOLN	AllocNumPTones_PureTone_Multi(int numPTones);
+
 BOOLN	CheckPars_PureTone_Multi(void);
 
 BOOLN	Free_PureTone_Multi(void);

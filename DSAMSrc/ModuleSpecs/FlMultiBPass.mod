@@ -14,4 +14,4 @@ typedef struct {
 	double	*upperCutOffFreq;
 	double	*lowerCutOffFreq;
 
-} multiBPassF;
+} MultiBPassF;
