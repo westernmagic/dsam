@@ -1164,6 +1164,7 @@ MyFrame::SetSimFileAndLoad(void)
 	ResetSimulation();
 	if (mainParDialog)
 		mainParDialog->parListInfoList->UpdateAllControlValues();
+	diagnosticsWindow->Clear();
 
 }
 
