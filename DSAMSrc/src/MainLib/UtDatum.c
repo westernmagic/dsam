@@ -871,7 +871,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 				tempPc = ((SimScriptPtr) (*pc)->data->module->parsPtr)->
 				  simulation;
 				if (FindModuleUniPar_Utility_Datum(parList, index, &tempPc,
-				  parSpecifier, diagnosticsOn)) {
+				  parSpecifier, FALSE)) {
 					*pc = tempPc;
 					return(TRUE);
 				}
