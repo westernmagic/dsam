@@ -1083,7 +1083,7 @@ SetProcessSimPtr_Utility_SimScript(EarObjectPtr data)
 
 }
 
-/****************************** GetPtr ******************************************/
+/****************************** GetPtr ****************************************/
 
 /*
  * This function returns the global simScriptPtr pointer.
