@@ -25,7 +25,7 @@ ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
 
 ams_ng.$(OBJEXT):	ams.cpp
-					$(COMPILE) -c ams.cpp -o ams_ng.$(OBJEXT)
+					$(COMPILE) -c -x c ams.cpp -o ams_ng.$(OBJEXT)
 
 $(AMSRESOBJ):	Makefile ams.rc
 	@if test x$(MINGW32) = xyes; then \

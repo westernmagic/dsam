@@ -62,7 +62,7 @@
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
 
-#if defined(GRAPHICS_SUPPORT) && !defined(__WXMSW__)
+#if defined(USE_GUI) && !defined(__WXMSW__)
 #	include "ams.xpm"
 #endif
 
@@ -377,7 +377,7 @@ Init(void)
 	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
 	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
 
-#	ifdef GRAPHICS_SUPPORT
+#	ifdef USE_GUI
 	wxGetApp().SetIcon(new wxICON(ams));
 #	endif
 
