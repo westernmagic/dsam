@@ -147,6 +147,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->useParComsFlag = TRUE;
 	appInterfacePtr->checkMainInit = TRUE;
 	appInterfacePtr->canLoadSimulationFlag = TRUE;
+	appInterfacePtr->numThreadsFlag = TRUE;
 	appInterfacePtr->listParsAndExit = FALSE;
 	appInterfacePtr->listCFListAndExit = FALSE;
 	appInterfacePtr->appParFileFlag = FALSE;
@@ -166,6 +167,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->argv = NULL;
 	appInterfacePtr->argc = 0;
 	appInterfacePtr->initialCommand = 0;
+	appInterfacePtr->numThreads = -1;
 	appInterfacePtr->segmentModeSpecifier = GENERAL_BOOLEAN_OFF;
 	appInterfacePtr->diagModeSpecifier = GENERAL_DIAGNOSTIC_OFF_MODE;
 	appInterfacePtr->maxUserModules = -1;
@@ -235,6 +237,11 @@ SetUniParList_AppInterface(void)
 	  UNIPAR_BOOL,
 	  &appInterfacePtr->segmentModeSpecifier, NULL,
 	  (void * (*)) SetSegmentMode_AppInterface);
+	SetPar_UniParMgr(&pars[APP_INT_NUMTHREADS], "NUM_THREADS",
+	  "No. of processing threads for simulation (-ve defaults to no. CPU's).",
+	  UNIPAR_INT,
+	  &appInterfacePtr->numThreads, NULL,
+	  (void * (*)) SetNumThreads_AppInterface);
 	SetPar_UniParMgr(&pars[APP_INT_PARLIST], "PAR_LIST",
 	  "App. Specific Pars.",
 	  UNIPAR_PARLIST,
@@ -334,6 +341,28 @@ SetSegmentMode_AppInterface(char *theSegmentMode)
 	}
 	strcpy(appInterfacePtr->segmentMode, theSegmentMode);
 	SetSegmentedMode(appInterfacePtr->segmentModeSpecifier);
+	return(TRUE);
+
+}
+
+/****************************** SetNumThreads *********************************/
+
+/*
+ * This functions sets the application's number of processing threads to use for
+ * the simulation.
+ * It returns false if it fails in any way.
+ */
+
+BOOLN
+SetNumThreads_AppInterface(int numThreads)
+{
+	static const char	*funcName = "SetNumThreads_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->numThreads = numThreads;
 	return(TRUE);
 
 }
@@ -668,8 +697,8 @@ ProcessParComs_AppInterface(void)
 	}
 	for (i = p->initialCommand; i < p->argc; i += 2) {
 		if (SetProgramParValue_AppInterface(p->argv[i], p->argv[i + 1],
-		  FALSE) || (simulation && SetUniParValue_Utility_Datum(simulation,
-		  p->argv[i], p->argv[i + 1])) || !simulation)
+		  FALSE) || (simulation && SetPar_ModuleMgr(p->audModel, p->argv[i],
+		    p->argv[i + 1])) || !simulation)
 			continue;
 		NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
 		  p->argv[i], p->argv[i + 1]);
@@ -812,6 +841,7 @@ ParseParSpecifiers_AppInterface(char *parName, char *appName, char *subProcess)
 BOOLN
 SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 {
+	static const char *funcName = "SetProgramParValue_AppInterface";
 	BOOLN	ok = TRUE, creatorApp = TRUE;
 	char	parNameCopy[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
 	UniParPtr	par;
@@ -826,6 +856,15 @@ SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 			return(FALSE);
 	}
 	parList = appInterfacePtr->parList;
+	if (*subProcess) {
+		if ((par = FindUniPar_UniParMgr(&parList, subProcess,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
+			NotifyError("%s: Unknown sub-process '%s' for application.",
+			  funcName, subProcess);
+			return(FALSE);
+		} else
+			parList = *(par->valuePtr.parList.list);
+	}
 	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy,
 	  UNIPAR_SEARCH_ABBR)) == NULL) {
 		if (creatorApp)
@@ -929,7 +968,7 @@ ReadPars_AppInterface(char *parFileName)
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
 		ParseParSpecifiers_AppInterface(parName, appName, subProcess);
 		tempParList = appInterfacePtr->parList;
-		if (subProcess[0]) {
+		if (*subProcess) {
 			if ((par = FindUniPar_UniParMgr(&tempParList, subProcess,
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
 				NotifyError("%s: Unknown sub-process '%s' for application.",
