@@ -112,7 +112,8 @@ InitInst_Utility_Datum(int type)
 		datum->u.string = NULL_STRING;
 		break;
 	case REPEAT:
-		datum->u.var = 0;
+		datum->u.loop.count = 1;
+		datum->u.loop.stopPlaced = FALSE;
 		break;
 	default:
 		;
@@ -187,6 +188,7 @@ InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 void
 AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 {
+	printf("AppendInst_Utility_Datum: Called\n");
 	if (!*head) {	/* Start of simulation list */
 		*head = datum;
 		return;
@@ -197,14 +199,14 @@ AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 
 }
 
-/****************************** DisconnectSim *********************************/
+/****************************** DisconnectInst ********************************/
 
 /*
  * Disconnect datum instructions in a list.
  */
 
 void
-DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
+DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	from->next = NULL;
 	to->previous = NULL;
@@ -215,14 +217,14 @@ DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 
 }
 
-/****************************** ConnectSim ************************************/
+/****************************** ConnectInst ***********************************/
 
 /*
  * Connect datum instructions in a list.
  */
 
 void
-ConnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
+ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	if (!DATUM_IN_SIMULATION(from)) {
 		if (DATUM_IN_SIMULATION(to))
@@ -386,7 +388,7 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		case REPEAT:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel++);
-			DPrint("repeat %d {\n", pc->u.var);
+			DPrint("repeat %d {\n", pc->u.loop.count);
 			break;
 		case RESET:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
@@ -398,7 +400,7 @@ PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		default:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
-			DPrint("default %d\tvar = %d\n", pc->type, pc->u.var);
+			DPrint("default %d\tvar = %d\n", pc->type, pc->u.loop.count);
 			break;
 		} /* switch */
 	}
@@ -952,11 +954,15 @@ Execute_Utility_Datum(DatumPtr start)
 		case STOP:
 			return (pc);
 		case REPEAT:
-			if (!pc->u.var) {
-				NotifyError("%s: Illegal zero 'repeat'.", funcName);
+			if (!pc->u.loop.count) {
+				NotifyError("%s: Illegal zero 'repeat' count.", funcName);
 				return(NULL);
 			}
-			for (i = 0; i < pc->u.var; i++)
+			if (!pc->u.loop.stopPlaced) {
+				NotifyError("%s: Repeat has no end point.", funcName);
+				return(NULL);
+			}
+			for (i = 0; i < pc->u.loop.count; i++)
 				lastInstruction = Execute_Utility_Datum(pc->next);
 			pc = lastInstruction;
 			break;
@@ -1290,7 +1296,7 @@ GetInstIntVal_Utility_Datum(DatumPtr start, char *label)
 		  funcName);
 		exit(1);
 	}
-	return (pc->u.var);
+	return (pc->u.loop.count);
 
 }
 
@@ -1339,3 +1345,28 @@ ResetStepCount_Utility_Datum(void)
 
 }
 
+/****************************** FindNearestProcesses **************************/
+
+/*
+ * This routine ensures that process instructions are connected 'though' non-
+ * process instructions like 'reset' and 'repeat'.
+ * It changes the pointer arguments to the nearest process found.
+ * It return's TRUE if a nearest process is found.
+ */
+
+BOOLN
+FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc)
+{
+	if (((*fromPc)->type != PROCESS) && ((*toPc)->type != PROCESS))
+		return(FALSE);
+	while (*fromPc && ((*fromPc)->type != PROCESS))
+		*fromPc = (*fromPc)->previous;
+	if (!*fromPc)
+		return(FALSE);
+	while (*toPc && ((*toPc)->type != PROCESS))
+		*toPc = (*toPc)->next;
+	if (!*toPc)
+		return(FALSE);
+	return(TRUE);
+
+}

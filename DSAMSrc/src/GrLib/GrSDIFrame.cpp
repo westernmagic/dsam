@@ -446,7 +446,7 @@ SDIFrame::OnEditProcess(wxCommandEvent& event)
 
 	menu.Append(SDIFRAME_CUT, "&Cut");
 	menu.AppendSeparator();
-	menu.Append(SDIFRAME_EDIT_PROCESS_NAME, "&Process name");
+	menu.Append(SDIFRAME_EDIT_PROCESS, "&Properties");
 
 	PopupMenu(&menu, 0, 0);
 

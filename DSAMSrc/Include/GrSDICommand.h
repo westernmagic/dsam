@@ -49,6 +49,12 @@
 /******************************************************************************/
 
 /******************************************************************************/
+/*************************** Macro Definitions ********************************/
+/******************************************************************************/
+
+#define	SHAPE_PC(SHAPE)	(((SDIEvtHandler *) (SHAPE)->GetEventHandler())->pc)
+
+/******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
 
@@ -61,7 +67,6 @@
 /******************************************************************************/
 
 /*************************** SDICommand ***************************************/
-
  
 class SDICommand: public wxCommand
 {
@@ -107,8 +112,8 @@ class SDICommand: public wxCommand
 	inline wxClassInfo	*GetShapeInfo(void) { return shapeInfo; }
 	inline bool		GetSelected(void) { return selected; }
 
-	bool	ConnectProcesses(wxShape *fromShape, wxShape *toShape);
-	void	DisconnectProcesses(wxShape *fromShape, wxShape *toShape);
+	bool	ConnectInstructions(wxShape *fromShape, wxShape *toShape);
+	void	DisconnectInstructions(wxShape *fromShape, wxShape *toShape);
 	void	RemoveLines(wxShape *shape);
 	void	SetBasic(int command, SDIDocument *ddoc, wxShape *theShape);
 

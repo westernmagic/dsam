@@ -48,6 +48,7 @@ class SDIView: public wxView
 	~SDIView(void) {};
 
 	SDICanvas *	CreateCanvas(wxView *view, wxFrame *parent);
+	void	EditCtrlProperties(void);
 	wxShape	*FindSelectedShape(void);
 	bool	OnCreate(wxDocument *doc, long flags);
 	void	OnDraw(wxDC *dc);

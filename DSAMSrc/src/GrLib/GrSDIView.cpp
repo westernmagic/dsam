@@ -42,6 +42,8 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtDatum.h"
+#include "UtSSSymbols.h"
+#include "UtSSParser.h"
 #include "GrSDIPalette.h"
 #include "GrSDICanvas.h"
 #include "GrSDIFrame.h"
@@ -70,7 +72,7 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
     EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
     EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
-    EVT_MENU(SDIFRAME_EDIT_PROCESS_NAME, SDIView::OnSetProcessLabel)
+    EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -87,17 +89,46 @@ SDIView::ProcessListDialog(void)
 		  "Please select a process", *((SDIEvtHandler *) theShape->
 		  GetEventHandler())->GetProcessList());
 
-		dialog.SetSelection(2);
-
 		if (dialog.ShowModal() == wxID_OK) {
 			SDICanvas *canvas = (SDICanvas *) theShape->GetCanvas();
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Edit process name", SDIFRAME_EDIT_PROCESS_NAME,
+			  new SDICommand("Edit process name", SDIFRAME_EDIT_PROCESS,
 			  (SDIDocument *) canvas->view->GetDocument(),
 			  dialog.GetStringSelection(), theShape));
 		
 		}
 		
+	}
+
+}
+
+/******************************************************************************/
+/****************************** EditCtrlProperties *************************/
+/******************************************************************************/
+
+void
+SDIView::EditCtrlProperties(void)
+{
+	wxShape *theShape = FindSelectedShape();
+
+	if (theShape) {
+		DatumPtr	pc = ((SDIEvtHandler *) theShape->GetEventHandler())->pc;
+		SDICanvas *canvas = (SDICanvas *) theShape->GetCanvas();
+
+		switch (pc->type) {
+		case REPEAT: {
+			wxString	oldStrCount;
+			oldStrCount.Printf("%d", pc->u.loop.count);
+			wxString newStrCount = wxGetTextFromUser("Enter repeat count",
+			  "Shape Control Par", oldStrCount);
+			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
+			  new SDICommand("Edit control parameters", SDIFRAME_EDIT_PROCESS,
+			  (SDIDocument *) canvas->view->GetDocument(), newStrCount,
+			  theShape));
+			break; }
+		default:
+			;
+		} /* switch */
 	}
 
 }

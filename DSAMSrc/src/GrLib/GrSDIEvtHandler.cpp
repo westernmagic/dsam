@@ -107,10 +107,8 @@ SDIEvtHandler::InitInstruction(void)
 	}
 	switch (processType) {
 	case PALETTE_CONTROL: {
-		int		type;
 		SymbolPtr	sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
 	  	  (char *) label.GetData());
-		type = sp->type;
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError("%s: Could not create '%s' control intruction for "
 			  "process '%s'.", funcName, (char *) label.GetData());
@@ -154,6 +152,18 @@ SDIEvtHandler::EditInstruction(void)
 	case PALETTE_CONTROL: {
 		printf("%s: Debug: This routine also needs to ask for a process "
 		  "label\n", funcName);
+		switch (pc->type) {
+		case REPEAT: {
+			long	count;
+
+			label.ToLong(&count);
+			if (count >= 1)
+				pc->u.loop.count = count;
+			label.Printf("repeat %d", pc->u.loop.count);
+			break; }
+		default:
+			;
+		} /* switch */
 		break; }
 	case PALETTE_ANALYSIS:
 	case PALETTE_FILTERS:
@@ -274,22 +284,33 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 	if (keys == 0) {
 		SetSelectedShape(dc);
 		if (!dialog && pc) {
-			UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
-			wxString	title;
+			switch (pc->type) {
+			case PROCESS: {
+				UniParListPtr	parList = GetUniParListPtr_ModuleMgr(pc->data);
+				wxString	title;
 
-			switch (parList->mode) {
-			case UNIPAR_SET_SIMSPEC: {
-				printf("SDIEvtHandler::OnRightClick: Open child SDI window.\n");
+				switch (parList->mode) {
+				case UNIPAR_SET_SIMSPEC: {
+					printf("SDIEvtHandler::OnRightClick: Open child SDI "
+					  "window.\n");
+					break; }
+				default:
+					title = (pc->data->module->specifier == DISPLAY_MODULE)?
+					  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
+					  NameAndLabel_Utility_Datum(pc);
+					dialog = new ModuleParDialog(((SDICanvas *) GetShape()->
+					  GetCanvas())->parent, title, pc, parList, this,
+					  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
+					dialog->SetNotebookSelection();
+					dialog->Show(TRUE);
+				} /* switch */
+				break; }
+			case REPEAT: {
+				SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
+				((SDIView *) canvas->view)->EditCtrlProperties();
 				break; }
 			default:
-				title = (pc->data->module->specifier == DISPLAY_MODULE)?
-				  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
-				  NameAndLabel_Utility_Datum(pc);
-				dialog = new ModuleParDialog(((SDICanvas *) GetShape()->
-				  GetCanvas())->parent, title, pc, parList, this,
-				  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
-				dialog->SetNotebookSelection();
-				dialog->Show(TRUE);
+				;
 			} /* switch */
 		}
 	} else 

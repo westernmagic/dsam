@@ -134,8 +134,10 @@ statement:
 			{ $1->u.proc.parFile = InitString_Utility_String($3->name); }
 			/* Ignore the QUOTED_STRING at present. */
 		|	statement_specifier NUMBER statement
-			{ $1->u.var = $2; InstallInst_Utility_Datum(simScriptPtr->simPtr,
-			    STOP); }
+			{	$1->u.loop.count = $2;
+				InstallInst_Utility_Datum(simScriptPtr->simPtr, STOP);
+				$1->u.loop.stopPlaced = TRUE;
+			}
 		|	reset STRING
 			{ $1->u.string = InitString_Utility_String($2->name); }
 		|	'{' statement_list '}'

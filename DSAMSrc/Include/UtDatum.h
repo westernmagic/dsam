@@ -70,7 +70,6 @@ typedef struct Datum {
 	uInt	stepNumber;
 	char	*label;
 	union {
-		int		var;				/* loop count, etc... */
 		char	*string;
 		struct {
 			char	*parFile;
@@ -78,6 +77,10 @@ typedef struct Datum {
 			DynaListPtr		inputList;
 			DynaListPtr		outputList;
 		} proc;
+		struct {
+			BOOLN	stopPlaced;
+			int		count;
+		} loop;
 	} u;
 	EarObjectPtr	data;
 	struct Datum	*previous;			/* To link to previous datum */
@@ -114,9 +117,10 @@ int		CmpProcessLabel_Utility_Datum(void *a, void *b);
 
 int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
-void	ConnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
+void	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 
-void	DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
+void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
+		  DatumPtr to);
 
 DatumPtr	Execute_Utility_Datum(DatumPtr start);
 
@@ -131,6 +135,8 @@ DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
 
 BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		  DatumPtr *pc, char *parSpecifier, BOOLN diagnosticsOn);
+
+BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc);
 
 EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier);
 
