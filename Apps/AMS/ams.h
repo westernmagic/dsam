@@ -99,8 +99,6 @@ void	PrintUsage(void);
 
 BOOLN	ProcessOptions(int argc, char **argv, int *optInd);
 
-BOOLN	ReadMainParsFromFile(char *fileName);
-
 BOOLN	SetAppInterfacePars(void);
 
 BOOLN	SetFileLockingMode(char *theFileLockingMode);
@@ -109,4 +107,4 @@ BOOLN	SetLockFile(BOOLN on);
 
 BOOLN	SetNumberOfRuns(int theNumberOfRuns);
 
-BOOLN	SetUniParList(void);
+BOOLN	SetUniParList(UniParListPtr *parList);

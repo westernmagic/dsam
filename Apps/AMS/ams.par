@@ -1,10 +1,10 @@
 #
 # AMS main parameter file.
 #
-DIAG_MODE          	"OFF"     			Diagnostics mode specifier ('off', 'screen' or <filename>).
-SIM_FILE           	"DEFAULT/AIM.sim"	Simulation file.
-SEGMENT_MODE       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+DIAG_MODE		"OFF"				Diagnostics mode specifier ('off', 'screen' or <filename>).
+SIM_FILE		"DEFAULT/AIM.sim"	Simulation file.
+SEGMENT_MODE	ON					Segmented or frame-base processing mode ('on' or 'off').
 
 # Misc. parameters
-FILELOCKING_MODE   	OFF       	File locking mode ('on' or 'off').
-NUM_RUNS           	1         	Number of repeat runs, or segments/frames.
+FILELOCKING_MODE	OFF	File locking mode ('on' or 'off').
+NUM_RUNS			1		Number of repeat runs, or segments/frames.

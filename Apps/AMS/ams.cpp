@@ -75,7 +75,6 @@ BOOLN	numberOfRunsFlag;
 char	fileLockingMode[MAXLINE] = "off";
 
 int		numberOfRuns = 1, fileLockingModeSpecifier;
-UniParListPtr	programParList = NULL;
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -90,17 +89,17 @@ UniParListPtr	programParList = NULL;
  */
 
 BOOLN
-SetUniParList(void)
+SetUniParList(UniParListPtr *parList)
 {
 	static const char *funcName = "SetUniParList";
 	UniParPtr	pars;
 
-	if ((programParList = InitList_UniParMgr(UNIPAR_SET_GENERAL, AMS_NUM_PARS,
+	if ((*parList = InitList_UniParMgr(UNIPAR_SET_GENERAL, AMS_NUM_PARS,
 	  NULL)) == NULL) {
 		NotifyError("%s: Could not initialise parList.", funcName);
 		return(FALSE);
 	}
-	pars = programParList->pars;
+	pars = (*parList)->pars;
 	SetPar_UniParMgr(&pars[AMS_FILELOCKINGMODE], "FILELOCKING_MODE",
 	  "File locking mode ('on' or 'off').",
 	  UNIPAR_BOOL,
@@ -238,55 +237,6 @@ ProcessOptions(int argc, char **argv, int *optInd)
 
 }
 
-/****************************** ReadAppInterfacePars **************************/
-
-/*
- * This function sets the application interface parameters and is passed to the
- * application interface as a function pointer.
- * It reads a specified number of parameters from a file.
- * It expects there to be one parameter per line.
- */
-
-BOOLN
-ReadAppInterfacePars(char *parFileName)
-{
-	static const char *funcName = "ReadAppInterfacePars";
-	BOOLN	ok = TRUE;
-	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
-	FILE	*fp;
-	UniParPtr	par;
-
-	filePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
-		return(FALSE);
-	}
-	Init_ParFile();
-	SetEmptyLineMessage_ParFile(FALSE);
-	if (!ReadPars_AppInterface(fp))
-		ok = FALSE;
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&programParList, parName,
-		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
-			  parName);
-			ok = FALSE;
-		} else {
-			if (!SetParValue_UniParMgr(&programParList, par->index, parValue))
-				ok = FALSE;
-		}
-	SetEmptyLineMessage_ParFile(TRUE);
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError("%s: Invalid parameters, in module parameter file '%s'.",
-		  funcName, parFileName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** SetLockFile ***********************************/
 
 /*
@@ -339,13 +289,10 @@ Init(void)
 	wxGetApp().SetIcon(new wxICON(ams));
 #	endif
 
-	SetUniParList();
-
-	SetAppParList_AppInterface(programParList);
+	SetAppSetUniParList_AppInterface(SetUniParList);
 
 	SetAppPrintUsage_AppInterface(PrintUsage);
 	SetAppProcessOptions_AppInterface(ProcessOptions);
-	SetAppReadInitialPars_AppInterface(ReadAppInterfacePars);
 
 	return(TRUE);
 
