@@ -835,7 +835,6 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 		  wxGetApp().GetGrMainApp()->simThread) {
 			wxGetApp().GetGrMainApp()->DeleteSimThread();
 			wxLogWarning("Simulation terminated by user.");
-			printf("Notify_MyApp: Debug: Terminate requested.\n");
 		}
 			
 #		ifndef __WXMSW__
