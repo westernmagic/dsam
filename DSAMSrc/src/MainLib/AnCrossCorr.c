@@ -607,7 +607,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
-	data->outSignal->interleaveLevel = 1;
+	SetInterleaveLevel_SignalData(data->outSignal, 1);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	for (chan = 0; chan < data->outSignal->numChannels; chan++)
 		data->outSignal->info.cFArray[chan] =
