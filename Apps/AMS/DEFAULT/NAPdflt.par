@@ -1,4 +1,4 @@
-XResolution 		0.0001		X axis resolution (fraction).
+X_Resolution 		0.0001		X axis resolution (fraction).
 Magnification		3		Signal Y scale.
 Normalisation		bottom
 win_height			400

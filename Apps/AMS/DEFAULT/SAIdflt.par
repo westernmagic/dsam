@@ -3,6 +3,6 @@ minY				0.0
 maxY				1.0
 Magnification		15
 Normalisation		bottom
-XResolution 		0.01
+X_Resolution 		0.01
 win_height			400
 win_width			350
