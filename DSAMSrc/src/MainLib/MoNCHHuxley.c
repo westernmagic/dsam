@@ -273,8 +273,8 @@ SetUniParList_Neuron_HHuxley(void)
 	  UNIPAR_REAL,
 	  &hHuxleyNCPtr->restingCriteria, NULL,
 	  (void * (*)) SetRestingCriteria_Neuron_HHuxley);
-	SetPar_UniParMgr(&pars[NEURON_HHUXLEY_ICLIST], "",
-	  "",
+	SetPar_UniParMgr(&pars[NEURON_HHUXLEY_ICLIST], "ICLIST",
+	  "Ion Channel List",
 	  UNIPAR_ICLIST,
 	  &hHuxleyNCPtr->iCList, NULL,
 	  (void * (*)) SetICList_Neuron_HHuxley);
@@ -477,7 +477,6 @@ SetExcitatoryReversalPot_Neuron_HHuxley(double theExcitatoryReversalPot)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
 	hHuxleyNCPtr->excitatoryReversalPotFlag = TRUE;
 	hHuxleyNCPtr->excitatoryReversalPot = theExcitatoryReversalPot;
 	return(TRUE);
@@ -502,7 +501,6 @@ SetInhibitoryReversalPot_Neuron_HHuxley(double theInhibitoryReversalPot)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
 	hHuxleyNCPtr->inhibitoryReversalPotFlag = TRUE;
 	hHuxleyNCPtr->inhibitoryReversalPot = theInhibitoryReversalPot;
 	return(TRUE);

@@ -69,7 +69,7 @@ ModRegEntry	libraryModuleList[] = {
 	{ "IHCRP_SHAMMA3StateVelIn", PROCESS_MODULE,
 	  InitModule_IHCRP_Shamma3StateVelIn },
 	{ "NEUR_ARLEKIM", PROCESS_MODULE, InitModule_Neuron_ArleKim },
-	{ "NEUR_HHUXLEY", PROCESS_MODULE, InitModule_Neuron_HHuxley },
+	{ "NEUR_HHUXLEY", NEUR_HHUXLEY_MODULE, InitModule_Neuron_HHuxley },
 	{ "NEUR_MCGREGOR", PROCESS_MODULE, InitModule_Neuron_McGregor },
 	{ "NULL", NULL_MODULE, SetNull_ModuleMgr },
 #	ifdef _PAMASTER1_H

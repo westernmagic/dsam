@@ -159,8 +159,6 @@ Init_AppInterface(ParameterSpecifier parSpec)
 		Free_AppInterface();
 		return(FALSE);
 	}
-	appInterfacePtr->simParFileFlag = FALSE;
-	appInterfacePtr->simParFileFlag = TRUE;
 	appInterfacePtr->appParList = NULL;
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	appInterfacePtr->simLastModified = 0;
@@ -265,8 +263,8 @@ SetSimulationFile_AppInterface(char *theSimulationFile)
 		NotifyError("%s: Illegal zero length name.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(appInterfacePtr->simulationFile, 
-	  theSimulationFile, MAX_FILE_PATH);
+	snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, "%s",
+	  theSimulationFile);
 	appInterfacePtr->simulationFileFlag = TRUE;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -339,8 +337,7 @@ SetInstallDir_AppInterface(char *theInstallDir)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(appInterfacePtr->installDir, theInstallDir,
-	  MAX_FILE_PATH);
+	snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, "%s", theInstallDir);
 	return(TRUE);
 
 }
@@ -365,8 +362,7 @@ SetAppParFile_AppInterface(char *fileName)
 		NotifyError("%s: illegal file name.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(appInterfacePtr->appParFile, fileName,
-	  MAX_FILE_PATH);
+	snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, "%s", fileName);
 	appInterfacePtr->appParFileFlag = TRUE;
 	return(TRUE);
 
@@ -650,8 +646,8 @@ ProcessOptions_AppInterface(void)
 			}
 			break;
 		case 'P':
-			CopyAndTrunc_Utility_String(appInterfacePtr->appParFile, argument,
-			  MAX_FILE_PATH);
+			snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, "%s",
+			  argument);
 			appInterfacePtr->readAppParFileFlag = TRUE;
 			break;
 		case 's':
@@ -756,14 +752,15 @@ SetProgramParValue_AppInterface(char *parName, char *parValue)
 
 	localParFilePtr = parFile;
 	parFile = NULL;
-	CopyAndTrunc_Utility_String(parNameCopy, parName, MAXLINE);
+	snprintf(parNameCopy, MAXLINE, "%s", parName);
 	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL)
 		*p = '\0';
 	parList = appInterfacePtr->parList;
 	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy)) == NULL)
 		ok = FALSE;
 	else if (((parList != appInterfacePtr->parList) || (par->index !=
-	  APP_INT_SIMULATIONFILE) || appInterfacePtr->simParFileFlag) &&
+	  APP_INT_SIMULATIONFILE) || (appInterfacePtr->audModel &&
+	 GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel))) &&
 	  !SetParValue_UniParMgr(&parList, par->index, parValue))
 		ok = FALSE;
 	parFile = localParFilePtr;
@@ -1001,25 +998,9 @@ InitSimulation_AppInterface(void)
 			ok = FALSE;
 		}
 	}
-	appInterfacePtr->simParFileFlag = (StrNCmpNoCase_Utility_String(
-	  GetSuffix_Utility_String(appInterfacePtr->simulationFile), "SPF") == 0);
-	if (ok) {
-		if (!appInterfacePtr->simParFileFlag) {
-			if (!ReadPars_ModuleMgr(appInterfacePtr->audModel,
-			  appInterfacePtr->simulationFile)) {
-				NotifyError("%s: Could not read process parameters from\nfile "
-				  "'%s'.", funcName, appInterfacePtr->simulationFile);
-				ok = FALSE;
-			}
-		} else {
-			if (!ReadSimParFile_ModuleMgr(appInterfacePtr->audModel,
-			  appInterfacePtr->simulationFile)) {
-				NotifyError("%s: Could not read simulation parameters from\n"
-				  " file '%s'.", funcName, appInterfacePtr->simulationFile);
-				ok = FALSE;
-			}
-		}
-	}
+	if (ok && !ReadPars_ModuleMgr(appInterfacePtr->audModel, appInterfacePtr->
+	  simulationFile))
+		ok = FALSE;
 	if (!ok) {
 		FreeAll_EarObject();
 		appInterfacePtr->audModel = NULL;
@@ -1050,8 +1031,7 @@ SetAppName_AppInterface(char *appName)
 		return(FALSE);
 	}
 
-	CopyAndTrunc_Utility_String(appInterfacePtr->appName, appName,
-	  MAX_FILE_PATH);
+	snprintf(appInterfacePtr->appName, MAX_FILE_PATH, "%s", appName);
 	return(TRUE);
 
 } 
@@ -1114,7 +1094,7 @@ SetTitle_AppInterface(char *title)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	CopyAndTrunc_Utility_String(appInterfacePtr->title, title, MAXLINE);
+	snprintf(appInterfacePtr->title, MAXLINE, "%s", title);
 	return(TRUE);
 
 } 
@@ -1345,8 +1325,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			NotifyError("%s: Could not Initialise simulation.", funcName);
 			return(FALSE);
 		}
-		if (appInterfacePtr->simParFileFlag && !ReadProgParFile_AppInterface(
-		  )) {
+		if (GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel) && 
+		  !ReadProgParFile_AppInterface()) {
 			NotifyError("%s: Could not read the program settings in\nfile "
 			  "'%s'.", funcName, appInterfacePtr->simulationFile);
 			return(FALSE);
