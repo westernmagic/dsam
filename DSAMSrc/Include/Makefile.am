@@ -61,6 +61,8 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 
+TinyXml_Headers	= tinystr.h tinyxml.h
+
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
 					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers) \
