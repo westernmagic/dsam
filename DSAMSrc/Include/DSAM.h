@@ -68,6 +68,7 @@
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
 #include "UtString.h"
+#include "UtParArray.h"
 
 #include "AnAutoCorr.h"
 #include "AnAverages.h"
