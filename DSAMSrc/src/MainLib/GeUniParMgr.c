@@ -1445,3 +1445,75 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
 	return(par);
 
 }
+
+/****************************** PrintSubParList *******************************/
+
+/*
+ * This routine prints the names and values for a sub parameter list, using
+ * the format used for reading in parameters using simulation files.
+ */
+
+void
+PrintSubParList_UniParMgr(UniParListPtr parList)
+{
+	int		i;
+	UniParPtr	par;
+
+	if (!parList)
+		return;
+	for (i = 0; i < parList->numPars; i++) {
+		par = &parList->pars[i];
+		if (par->enabled)
+			PrintPar_UniParMgr(par, "", "");
+	}
+}
+
+/****************************** PrintParList **********************************/
+
+/*
+ * This routine prints the names and values for a parameter list, using the
+ * format used for reading in parameters using simulation files.
+ */
+
+BOOLN
+PrintParList_UniParMgr(UniParListPtr parList)
+{
+	static char *funcName = "PrintParList_UniParMgr";
+	int		i;
+
+	if (!parList) {
+		NotifyError("%s: Parameter list not initialised.", funcName);
+		return(FALSE);
+	}
+	switch (parList->mode) {
+	case UNIPAR_SET_GENERAL:
+	case UNIPAR_SET_SIMSPEC:
+	case UNIPAR_SET_PARARRAY:
+		for (i = 0; i < parList->numPars; i++)
+			PrintPar_UniParMgr(&parList->pars[i], "", "");
+		break;
+	case UNIPAR_SET_CFLIST: {
+		CFListPtr	theCFs = parList->handlePtr.cFs;
+		DPrint("\n#CF List Parameters:-\n");
+		PrintSubParList_UniParMgr(theCFs->cFParList);
+		DPrint("\n");
+		PrintSubParList_UniParMgr(theCFs->bParList);
+		break; }
+	case UNIPAR_SET_ICLIST: {
+		DynaListPtr	node;
+		IonChanListPtr	theICs = parList->handlePtr.iCs;
+		IonChannelPtr	iC;
+		DPrint("\n#IC List Parameters:-\n");
+		for (node = theICs->ionChannels; node; node = node->next) {
+			iC = (IonChannelPtr) node->data;
+			PrintSubParList_UniParMgr(iC->parList);
+			DPrint("\n");
+		}
+		break; }
+	default:
+		NotifyError("%s: Mode '%d' not implemented.", funcName, parList->mode);
+	}
+	return(TRUE);
+
+}
+

@@ -13,3 +13,7 @@ INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
 libdsam_std_la_SOURCES= StdMessage.c StdSignalDisp.c StdSimThread.c
 
 libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
+
+StdSignalDisp.c: $(top_srcdir)/src/GrLib/GrSignalDisp.cpp
+	cp $(top_srcdir)/src/GrLib/GrSignalDisp.cpp StdSignalDisp.c
+

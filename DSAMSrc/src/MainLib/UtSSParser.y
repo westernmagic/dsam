@@ -106,7 +106,12 @@ simulation:
 	;
 simulation_name:
 			STRING
-			{  $$ = (DatumPtr) Pull_Utility_DynaList(&simScriptPtr->subSimList);
+			{ if (!simScriptPtr->subSimList) {
+			    $$ = simScriptPtr->simPtr;
+				strcpy(simScriptPtr->simFileName, $1->name);
+				
+			  } else {
+			  $$ = (DatumPtr) Pull_Utility_DynaList(&simScriptPtr->subSimList);
 			  if (strcmp($$->u.proc.parFile, $1->name) != 0) {
 			    NotifyError_Utility_SimScript("parser: '%s' simulation script "
 				  "does not correspond with '%s' .", $$->u.proc.parFile,
@@ -115,6 +120,7 @@ simulation_name:
 			  }
 			  simScriptPtr->simPtr = GetSimScriptSimulation_Utility_SimScript(
 			   $$);
+			}
 			}
 		;
 statement_list:

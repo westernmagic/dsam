@@ -1455,3 +1455,68 @@ FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc)
 	return(TRUE);
 
 }
+
+/****************************** SetDefaultProcessFileName *********************/
+
+/*
+ * This routine sets the process file name to the module number with the
+ * step number as a suffix, but only if the file name has not already been set.
+ */
+
+void
+SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
+{
+	char	fileName[MAXLINE];
+
+	if (pc->type != PROCESS)
+		return;
+	if (*pc->u.proc.parFile == '\0') {
+		snprintf(fileName, MAXLINE, "%s_%d.par", pc->u.proc.moduleName,
+		  pc->stepNumber);
+		pc->u.proc.parFile = InitString_Utility_String(fileName);
+	}
+
+}
+
+/*************************** PrintSimFiles ************************************/
+
+/*
+ * This function prints the parameters for a simulation as a ".sim" files.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+PrintSimFiles_Datum(char  *fileName, DatumPtr start)
+{
+	static const char *funcName = "PrintSimFile_Datum";
+	DatumPtr	pc;
+	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+	UniParListPtr	parList;
+
+	if (!start) {
+		NotifyError("%s: Simulation not initialised.", funcName);
+		return(FALSE);
+	}
+	SetParsFile_Common(fileName, OVERWRITE);
+	PrintSimScript_Utility_Datum(start, fileName, 0, "", FALSE);
+	fclose(GetDSAMPtr_Common()->parsFile);
+	for (pc = start; pc; pc = pc->next) {
+		if (pc->type != PROCESS)
+			continue;
+		if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
+			PrintSimFiles_Datum(pc->u.proc.parFile, GetSimulation_ModuleMgr(pc->
+			  data));
+			continue;
+		}
+		SET_PARS_POINTER(pc->data);
+		if ((parList = (* pc->data->module->GetUniParListPtr)()) == NULL)
+			return(TRUE);
+		SetDefaultProcessFileName_Utility_Datum(pc);
+		SetParsFile_Common(pc->u.proc.parFile, OVERWRITE);
+		PrintParList_UniParMgr(parList);
+		fclose(GetDSAMPtr_Common()->parsFile);
+	}
+	GetDSAMPtr_Common()->parsFile = oldFp;
+	return(TRUE);
+
+}
