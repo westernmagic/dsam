@@ -37,6 +37,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define CFLIST_NUM_PARS				9
 #define CFLIST_NUM_CONSTANT_PARS	2
 
 /******************************************************************************/
@@ -68,10 +69,13 @@ typedef enum {
 
 	CFLIST_CF_DIAGNOSTIC_MODE,
 	CFLIST_CF_MODE,
-	CFLIST_CF_PAR_1,
-	CFLIST_CF_PAR_2,
-	CFLIST_CF_PAR_3,
-	CFLIST_CF_PAR_4
+	CFLIST_CF_SINGLE_FREQ,
+	CFLIST_CF_FOCAL_FREQ,
+	CFLIST_CF_MIN_FREQ,
+	CFLIST_CF_MAX_FREQ,
+	CFLIST_CF_NUM_CHANNELS,
+	CFLIST_CF_ERB_DENSITY,
+	CFLIST_CF_FREQUENCIES
 
 } CFListCFParSpecifier;
 
@@ -139,10 +143,6 @@ double		GetBandwidth_CFList(CFListPtr theCFs, int channel);
 
 double		GetCF_CFList(CFListPtr theCFs, int channel);
 
-int			GetNumBandwidthPars_CFList(CFListPtr theCFs);
-
-int			GetNumCFPars_CFList(CFListPtr theCFs);
-
 CFListPtr	Init_CFList(const char *callingFunctionName);
 
 void		PrintList_CFList(CFListPtr theCFs);
@@ -172,6 +172,8 @@ BOOLN		SetBandwidths_CFList(CFListPtr theCFs, char *modeName,
 BOOLN		SetBandwidthUniParList_CFList(CFListPtr theCFs);
 
 BOOLN		SetCFUniParList_CFList(CFListPtr theCFs);
+
+BOOLN		SetCFUniParListMode_CFList(CFListPtr theCFs);
 
 BOOLN		SetCFMode_CFList(CFListPtr theCFs, char *modeName);
 

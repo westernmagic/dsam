@@ -33,6 +33,12 @@
  *				it now will find the parameters within a simulation script.
  *				03-06-99 LPO: Corrected the problem with 'SetParValue_' not
  *				treating the general list parameters correctly.
+ *				08-09-99 LPO: In the 'FindUniPar_' routine only the sub-
+ *				parameters for a module would be set, and not the module
+ *				parameter file name itself.  This has been fixed.
+ *				26-10-99 LPO: Introduced the 'enabled' flag for the 'UniPar'
+ *				structure.  Printing, setting operations and such like will not
+ *				be carried out on 'disabled' parameters.
  * Authors:		L. P. O'Mard
  * Created:		24 Sep 1998
  * Updated:		03 Jun 1999
@@ -107,6 +113,7 @@ typedef enum {
 
 typedef struct UniPar {
 
+	BOOLN	enabled;
 	uInt	index;
 	char	*abbr;
 	char	*desc;
