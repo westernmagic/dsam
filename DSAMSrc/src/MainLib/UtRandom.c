@@ -154,7 +154,7 @@ SetGlobalSeed_Random(long theSeed)
  */
 
 double
-GaussRan01_Random(void)
+GaussRan01_Random(long *seed)
 {
 	static BOOLN	isSet = FALSE;
 	static double	gSet;
@@ -162,8 +162,8 @@ GaussRan01_Random(void)
 
 	if (!isSet) {
 		do {
-			v1 = 2.0 * Ran01_Random(&randomNumSeed) - 1.0;
-			v2 = 2.0 * Ran01_Random(&randomNumSeed) - 1.0;
+			v1 = 2.0 * Ran01_Random(seed) - 1.0;
+			v2 = 2.0 * Ran01_Random(seed) - 1.0;
 			rSquared = SQR(v1) + SQR(v2);
 		} while ((rSquared >= 1.0) || (rSquared == 0.0));
 		fac = sqrt(-2.0 * log(rSquared) / rSquared);

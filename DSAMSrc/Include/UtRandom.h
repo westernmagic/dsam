@@ -42,7 +42,7 @@ __BEGIN_DECLS
 
 int		GeomDist_Random(double probability, int numTrials);
 
-double	GaussRan01_Random(void);
+double	GaussRan01_Random(long *seed);
 
 double	Ran01_Random(long *seed);
 
