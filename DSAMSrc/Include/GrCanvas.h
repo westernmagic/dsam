@@ -129,7 +129,7 @@ class MyCanvas: public wxWindow
 	void	OnRightDown(wxMouseEvent &event);
 	void	OnSize(wxSizeEvent& event);
 
-	void	ForceRepaintforMSW(void);
+	void	RedrawGraph(void);
 	void	RescaleGraph(void);
 	void	SetGraphAreas(void);
 	void	SetGraphPars(void);
