@@ -751,7 +751,7 @@ BOOLN
 SetProgramParValue_AppInterface(char *parName, char *parValue)
 {
 	BOOLN	ok = TRUE;
-	char	*p, parNameCopy[MAXLINE];
+	char	*p, parNameCopy[MAXLINE], appName[MAXLINE];
 	UniParPtr	par;
 	ParFilePtr	localParFilePtr;
 	UniParListPtr	parList;
@@ -759,8 +759,15 @@ SetProgramParValue_AppInterface(char *parName, char *parValue)
 	localParFilePtr = parFile;
 	parFile = NULL;
 	snprintf(parNameCopy, MAXLINE, "%s", parName);
-	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL)
+	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL) {
 		*p = '\0';
+		snprintf(appName, MAXLINE, "%s", p + 1);
+		if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) != NULL)
+			*p = '\0';
+		if (StrNCmpNoCase_Utility_String(appInterfacePtr->appName, appName) !=
+		  0)
+			return(FALSE);
+	}
 	parList = appInterfacePtr->parList;
 	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy,
 	  UNIPAR_SEARCH_ABBR)) == NULL)
