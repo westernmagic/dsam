@@ -598,7 +598,8 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 	if (autoCorrPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_ACF();
 		dt = data->inSignal[0]->dt;
-		sumLimitIndex = (ChanLen) (3.0 * autoCorrPtr->timeConstant / dt);
+		sumLimitIndex = (ChanLen) floor(3.0 * autoCorrPtr->timeConstant / dt +
+		  0.5);
 		autoCorrPtr->sumLimitIndex = (sumLimitIndex < data->outSignal->length)?
 		  sumLimitIndex: data->outSignal->length;
 		if ((autoCorrPtr->exponentDt = (double *) calloc(
