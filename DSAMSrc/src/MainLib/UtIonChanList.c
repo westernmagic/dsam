@@ -249,7 +249,7 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 	theIC->enabled = GENERAL_BOOLEAN_ON;
 	theIC->description[0] = '\0';
 	theIC->numTableEntries = numTableEntries;
-	theIC->activationExponent = 0;
+	theIC->activationExponent = 0.0;
 	theIC->equilibriumPot = 0.0;
 	theIC->temperature = 0.0;
 	theIC->baseMaxConductance = 0.0;
@@ -261,6 +261,7 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 	InitICHHuxleyPars_IonChanList(&theIC->hHuxley);
 	InitICBoltzmannPars_IonChanList(&theIC->boltzmann);
 	strcpy(theIC->fileName, DEFAULT_FILE_NAME);
+	theIC->PowFunc = pow;
 	theIC->parList = NULL;
 	if ((theIC->table = (ICTableEntry *) calloc(theIC->numTableEntries,
 	  sizeof(ICTableEntry))) == NULL) {
@@ -463,8 +464,8 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 	  &theIC->baseMaxConductance, NULL,
 	  (void * (*)) SetICBaseMaxConductance_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_ACTIVATION_EXPONENT], "ACTIVATION",
-	 "Activation exponent (int).",
-	  UNIPAR_INT,
+	 "Activation exponent (real).",
+	  UNIPAR_REAL,
 	  &theIC->activationExponent, NULL,
 	  (void * (*)) SetICActivationExponent_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_CONDUCTANCE_Q10], "COND_Q10",
@@ -692,7 +693,7 @@ PrintIonChannelPars_IonChanList(IonChannelPtr theIC)
 	default:
 		;
 	}
-	DPrint("\t\tActivation exponent: %d,", theIC->activationExponent);
+	DPrint("\t\tActivation exponent: %g,", theIC->activationExponent);
 	DPrint("\tNo. of table entries: %d\n", theIC->numTableEntries);
 
 }
@@ -1166,7 +1167,7 @@ ReadGeneralPars_IonChanList(FILE *fp, IonChanListPtr theICs)
 BOOLN
 ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, char *fileName,
   char *description, char *enabled, double *equilibriumPot,
-  double *baseMaxConductance, int *activationExponent)
+  double *baseMaxConductance, double *activationExponent)
 {
 	static const char	*funcName = "ReadICGeneralPars_IonChanList";
 	BOOLN	ok = TRUE;
@@ -1193,7 +1194,7 @@ ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, char *fileName,
 		ok = FALSE;
 	if (!GetPars_ParFile(*fp, "%lf", baseMaxConductance))
 		ok = FALSE;
-	if (!GetPars_ParFile(*fp, "%d", activationExponent))
+	if (!GetPars_ParFile(*fp, "%lf", activationExponent))
 		ok = FALSE;
 	if (!ok)
 		NotifyError("%s: Could not read general parameters.", funcName);
@@ -1233,7 +1234,7 @@ SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
 BOOLN
 SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
   char *description, char *enabled, double equilibriumPot,
-  double baseMaxConductance, int activationExponent)
+  double baseMaxConductance, double activationExponent)
 {
 	static const char	*funcName = "SetICGeneralPars_IonChanList";
 	BOOLN	ok = TRUE;
@@ -1269,10 +1270,9 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 {
 	static const char	*funcName = "ReadICPars_IonChanList";
 	BOOLN	ok = TRUE;
-	int		activationExponent;
 	char	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
 	char	enabled[SMALL_STRING], description[MAXLINE];
-	double	equilibriumPot, baseMaxConductance;
+	double	equilibriumPot, baseMaxConductance, activationExponent;
 	ICModeSpecifier mode;
 
 	if (!GetPars_ParFile(fp, "%s", modeName)) {
@@ -1325,6 +1325,7 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 		NotifyError("%s: Could not set parameter list mode.", funcName);
 		ok = FALSE;
 	}
+	SetICPowFunc_IonChanList(theIC);
 	return(ok);
 
 }
@@ -1506,6 +1507,86 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 
 }
 
+/****************************** Pow1Func **************************************/
+
+/*
+ * This function is a fast implementation of x^1.
+ * The second argument is there for compatibility with the standard 'pow'
+ * function, but it is not used.
+ */
+
+double
+Pow1Func_IonChanList(double x, double dummy)
+{
+	return(x);
+
+}
+
+/****************************** Pow2Func **************************************/
+
+/*
+ * This function is a fast implementation of x^2.
+ * The second argument is there for compatibility with the standard 'pow'
+ * function, but it is not used.
+ */
+
+double
+Pow2Func_IonChanList(double x, double dummy)
+{
+	return(x * x);
+
+}
+
+/****************************** Pow3Func **************************************/
+
+/*
+ * This function is a fast implementation of x^3.
+ * The second argument is there for compatibility with the standard 'pow'
+ * function, but it is not used.
+ */
+
+double
+Pow3Func_IonChanList(double x, double dummy)
+{
+	return(x * x * x);
+
+}
+
+/****************************** SetICPowFunc **********************************/
+
+/*
+ * This routine sets the ion channels Pow function.
+ * If the activation is an integer, then the more efficient X * x ,etc. formas
+ * are used.
+ */
+
+void
+SetICPowFunc_IonChanList(IonChannelPtr theIC)
+{
+	int		intActivation;
+
+	if (fabs(theIC->activationExponent) != (intActivation = (int) floor(fabs(
+	  theIC->activationExponent) + 0.5))) {
+		printf("Debug: Using standard 'pow' function.\n");
+		theIC->PowFunc = pow;
+		return;
+	}
+	switch (intActivation) {
+	case 1:
+		theIC->PowFunc = Pow1Func_IonChanList;
+		break;
+	case 2:
+		theIC->PowFunc = Pow2Func_IonChanList;
+		break;
+	case 3:
+		theIC->PowFunc = Pow3Func_IonChanList;
+		break;
+	default:
+		theIC->PowFunc = pow;
+	}
+
+}
+
 /****************************** ResetIonChannel *******************************/
 
 /*
@@ -1518,9 +1599,8 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 {
 	static const char	*funcName = "ResetIonChannel_IonChanList";
 	BOOLN	ok = TRUE;
-	int		activationExponent;
 	char	enabled[SMALL_STRING], description[MAXLINE];
-	double	equilibriumPot, baseMaxConductance;
+	double	equilibriumPot, baseMaxConductance, activationExponent;
 	FILE	*fp = NULL;
 
 	if (!CheckInitIC_IonChanList(theIC, funcName))
@@ -1556,6 +1636,7 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 		  theIC->mode);
 		ok = FALSE;
 	} /* Switch */
+	SetICPowFunc_IonChanList(theIC);
 	return(ok);
 
 }
@@ -1950,7 +2031,7 @@ SetICConductanceQ10_IonChanList(IonChannelPtr theIC, double theConductanceQ10)
  
 BOOLN
 SetICActivationExponent_IonChanList(IonChannelPtr theIC,
-  int theActivationExponent)
+  double theActivationExponent)
 {
 	static const char *funcName = "SetICActivationExponent_IonChanList";
 

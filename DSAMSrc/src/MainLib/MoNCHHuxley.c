@@ -1234,21 +1234,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
-				  	switch (iC->activationExponent) {
-				  	case 1:
-				  		activation = *yPtr;
-				  		break;
-				  	case 2:
-				  		activation = *yPtr * *yPtr;
-				  		break;
-				  	case 3:
-				  		activation = *yPtr * *yPtr * *yPtr;
-				  		break;
-				  	default:
-				  		NotifyError("%s: Undefined y activation exponent.",
-				  		  funcName);
-				  		return(FALSE);
-				  	} /* switch */
+					activation = iC->PowFunc(*yPtr, iC->activationExponent);
 					if (debug) {
 						conductance = iC->maxConductance * activation * *zPtr;
 				  		fprintf(c->fp, "\t%g\t%g", NANO(conductance),
@@ -1305,21 +1291,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
-				  	switch (iC->activationExponent) {
-				  	case 1:
-				  		activation = *yPtr;
-				  		break;
-				  	case 2:
-				  		activation = *yPtr * *yPtr;
-				  		break;
-				  	case 3:
-				  		activation = *yPtr * *yPtr * *yPtr;
-				  		break;
-				  	default:
-				  		NotifyError("%s: Undefined y activation exponent.",
-				  		  funcName);
-				  		return(FALSE);
-				  	} /* switch */
+					activation = iC->PowFunc(*yPtr, iC->activationExponent);
 					if (debug) {
 						conductance = iC->maxConductance * activation * *zPtr;
 				  		fprintf(c->fp, "\t%g\t%g", NANO(conductance),

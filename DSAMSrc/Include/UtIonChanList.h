@@ -163,7 +163,7 @@ typedef struct {
 	BOOLN	enabled;
 	char	description[MAXLINE];
 	int		numTableEntries;
-	int		activationExponent;
+	double	activationExponent;
 	double	equilibriumPot;
 	double	temperature;
 	double	baseMaxConductance, maxConductance, conductanceQ10;
@@ -173,6 +173,7 @@ typedef struct {
 	ICBoltzmannPars	boltzmann;
 	ICHHuxleyPars	hHuxley;
 	char			fileName[MAX_FILE_PATH];
+	double			(* PowFunc)(double, double);
 	ICTableEntry	*table;
 	UniParListPtr	parList;
 	
@@ -263,7 +264,7 @@ IonChanListPtr	ReadPars_IonChanList(FILE *fp);
 BOOLN	ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode,
 		  char *fileName, char *description, char *enabled,
 		  double *equilibriumPot, double *baseMaxConductance,
-		  int *activationExponent);
+		  double *activationExponent);
 
 BOOLN	ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC,
 		  FILE *fp);
@@ -290,7 +291,7 @@ BOOLN	SetGeneralUniParListMode_CFList(IonChanListPtr theICs);
 BOOLN	SetGeneratedPars_IonChanList(IonChanListPtr theICs);
 
 BOOLN	SetICActivationExponent_IonChanList(IonChannelPtr theIC,
-		  int theActivationExponent);
+		  double theActivationExponent);
 
 BOOLN	SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
 		  double theBaseMaxConductance);
@@ -309,7 +310,7 @@ BOOLN	SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName);
 
 BOOLN	SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
 		  char *description, char *enabled, double equilibriumPot,
-		  double baseMaxConductance, int activationExponent);
+		  double baseMaxConductance, double activationExponent);
 
 void	SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
 		  IonChanListPtr theICs);
@@ -390,6 +391,8 @@ BOOLN	SetICHHuxleyBetaJ_IonChanList(IonChannelPtr theIC, int index,
 
 BOOLN	SetICHHuxleyBetaK_IonChanList(IonChannelPtr theIC, int index,
 		  double value);
+
+void	SetICPowFunc_IonChanList(IonChannelPtr theIC);
 
 BOOLN	SetIonChannelUniParList_IonChanList(IonChanListPtr theICs,
 		  IonChannelPtr theIC);
