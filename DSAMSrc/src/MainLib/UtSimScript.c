@@ -537,12 +537,11 @@ PrintSimParFile_Utility_SimScript(void)
  */
 
 BOOLN
-ReadSimParFileOld_Utility_SimScript(char *filePath)
+ReadSimParFileOld_Utility_SimScript(FILE *fp)
 {
-	static const char	*funcName = "ReadSimParFile_Utility_SimScript";
+	static const char	*funcName = "ReadSimParFileOld_Utility_SimScript";
 	BOOLN	ok = TRUE, foundDivider = FALSE;
 	char	parName[MAXLINE], parValue[MAXLINE], operationMode[MAXLINE];
-	FILE	*fp;
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 	
@@ -550,13 +549,6 @@ ReadSimParFileOld_Utility_SimScript(char *filePath)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Could not open '%s' simulation parameter file.",
-		  funcName, filePath);
-		return(FALSE);
-	}
-	FindFilePathAndName_Common(filePath, localSimScriptPtr->parsFilePath,
-	  localSimScriptPtr->simFileName);
 	FreeSimulation_Utility_SimScript();
 	Init_ParFile();
 	if (!GetPars_ParFile(fp, "%s", operationMode))
@@ -581,12 +573,11 @@ ReadSimParFileOld_Utility_SimScript(char *filePath)
 			ok = FALSE;
 		}
 	SetEmptyLineMessage_ParFile(TRUE);
-	fclose(fp);
 	Free_ParFile();
 	simScriptPtr = localSimScriptPtr;
 	if (!ok) {
-		NotifyError("%s: Invalid parameters, in simulation parameter file "
-		  "'%s'.", funcName, filePath);
+		NotifyError("%s: Invalid parameters, in simulation parameter file.", 
+		  funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -600,12 +591,12 @@ ReadSimParFileOld_Utility_SimScript(char *filePath)
  */
 
 BOOLN
-ReadSimParFile_Utility_SimScript(char *filePath)
+ReadSimParFile_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimParFileOld_Utility_SimScript";
 	BOOLN	ok = TRUE, foundDivider = FALSE;
 	char	parName[MAXLINE], parValue[MAXLINE];
-	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 	
@@ -613,13 +604,6 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Could not open '%s' simulation parameter file.",
-		  funcName, filePath);
-		return(FALSE);
-	}
-	FindFilePathAndName_Common(filePath, localSimScriptPtr->parsFilePath,
-	  localSimScriptPtr->simFileName);
 	FreeSimulation_Utility_SimScript();
 	Init_ParFile();
 	SetErrorsFile_Common("off", OVERWRITE);
@@ -627,8 +611,8 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		ok = FALSE;
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError("%s: Not enough lines, or invalid parameters, in "
+		  "simulation parameter file.", funcName);
 		ok = FALSE;
 	}
 	SetEmptyLineMessage_ParFile(FALSE);
@@ -642,7 +626,6 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 			ok = FALSE;
 		}
 	SetEmptyLineMessage_ParFile(TRUE);
-	fclose(fp);
 	Free_ParFile();
 	simScriptPtr = localSimScriptPtr;
 	if (!ok) {
@@ -651,7 +634,8 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		NotifyError("%s: Invalid parameters, in simulation parameter file "
 		  "'%s'.", funcName, filePath);
 		return(FALSE); */
-		return(ReadSimParFileOld_Utility_SimScript(filePath));
+		rewind(fp);
+		return(ReadSimParFileOld_Utility_SimScript(fp));
 	}
 	return(TRUE);
 
@@ -723,6 +707,26 @@ PrintPars_Utility_SimScript(void)
 
 }
 
+/****************************** GetFilePath ***********************************/
+
+/*
+ * This routine returns the given filePath, depending upon whether GUI mode is
+ * used.
+ */
+
+char *
+GetFilePath_Utility_SimScript(char *filePath)
+{
+	static char guiFilePath[MAX_FILE_PATH];
+
+	if (!GetDSAMPtr_Common()->usingGUIFlag)
+		return(filePath);
+	snprintf(guiFilePath, MAX_FILE_PATH, "%s/%s", simScriptPtr->parsFilePath,
+	  simScriptPtr->simFileName);
+	return(guiFilePath);
+	
+}
+
 /****************************** ReadSimScriptOld ******************************/
 
 /*
@@ -735,19 +739,13 @@ PrintPars_Utility_SimScript(void)
  */
 
 BOOLN
-ReadSimScriptOld_Utility_SimScript(char *filePath)
+ReadSimScriptOld_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimScriptOld_Utility_SimScript";
 	BOOLN	ok;
 	char	operationMode[MAXLINE], parFilePathMode[MAX_FILE_PATH];
 	DatumPtr	simulation;
-	FILE	*fp;
 
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
 	if (!GetPars_ParFile(fp, "%s", operationMode))
@@ -757,11 +755,10 @@ ReadSimScriptOld_Utility_SimScript(char *filePath)
 	simScriptPtr->lineNumber = GetLineCount_ParFile();
 	if ((simulation = Read_Utility_SimScript(fp)) == NULL)
 		ok = FALSE;
-	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError("%s: Not enough lines, or invalid parameters, in "
+		  "simulation script file.", funcName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_SimScript(simulation, operationMode,
@@ -787,31 +784,50 @@ ReadSimScriptOld_Utility_SimScript(char *filePath)
  */
 
 BOOLN
-ReadSimScript_Utility_SimScript(char *filePath)
+ReadSimScript_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimScript_Utility_SimScript";
 	DatumPtr	simulation;
-	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
 	Init_ParFile();
 	SetErrorsFile_Common("off", OVERWRITE);
 	simulation = Read_Utility_SimScript(fp);
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-	fclose(fp);
 	Free_ParFile();
-	if (!simulation)	/* To be removed when ReadSimScriptOld is removed. */
-		return(ReadSimScriptOld_Utility_SimScript(filePath));
+	if (!simulation) {	/* To be removed when ReadSimScriptOld is removed. */
+		rewind(fp);
+		return(ReadSimScriptOld_Utility_SimScript(fp));
+	}
 	if (!SetSimulation_Utility_SimScript(simulation)) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError("%s: Not enough lines, or invalid parameters, in "
+		  "simulation script file.", funcName);
 		return(FALSE);
 	}
 	return(TRUE);
+
+}
+
+/**************************** GetSimFileType **********************************/
+
+/*
+ * This routine returns the pointer to a simulation file format.
+ * It also sets the simScriptPtr->simFileType field.
+ */
+
+SimFileTypeSpecifier
+GetSimFileType_Utility_SimScript(char *suffix)
+{
+	static NameSpecifier simFileTypeList[] = {
+
+		{"SIM", UTILITY_SIMSCRIPT_SIM_FILE},
+		{"SPF", UTILITY_SIMSCRIPT_SPF_FILE},
+		{"", UTILITY_SIMSCRIPT_UNKNOWN_FILE}
+
+	};
+
+	return((SimFileTypeSpecifier) Identify_NameSpecifier(suffix,
+	  simFileTypeList));
 
 }
 
@@ -821,40 +837,57 @@ ReadSimScript_Utility_SimScript(char *filePath)
  * This function sets the simulation for an EarObject, according to the
  * file name extension.
  * It sets the 'simParFileFlag' argument pointer accordingly.
+ * If using the GUI, then the file path and file name are set by the GUI code.
  */
 
 BOOLN
 ReadPars_Utility_SimScript(char *fileName)
 {
 	static const char	*funcName = "ReadPars_Utility_SimScript";
+	BOOLN	ok = TRUE;
 	char	*filePath;
+	FILE	*fp;
 
 	if (simScriptPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE) {
-		simScriptPtr->simFileType = (StrNCmpNoCase_Utility_String(
-		  GetSuffix_Utility_String(fileName), "SPF") == 0)?
-		  UTILITY_SIMSCRIPT_SPF_FILE: UTILITY_SIMSCRIPT_SIM_FILE;
-	}
+	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE)
+		simScriptPtr->simFileType = GetSimFileType_Utility_SimScript(
+		  GetSuffix_Utility_String(fileName));
 	filePath = GetParsFileFPath_Common(fileName);
-	FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
-	  simScriptPtr->simFileName);
-	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
-		if (!ReadSimScript_Utility_SimScript(filePath)) {
-			NotifyError("%s: Could not read simulation script from\nfile "
-			  "'%s'.", funcName, filePath);
-			return(FALSE);
-		}
-	} else {
-		if (!ReadSimParFile_Utility_SimScript(filePath)) {
-			NotifyError("%s: Could not read simulation parameter file from\n"
-			  " file '%s'.", funcName, filePath);
-			return(FALSE);
-		}
+	if (!GetDSAMPtr_Common()->usingGUIFlag)
+		FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
+		  simScriptPtr->simFileName);  
+	if ((fp = fopen(filePath, "r")) == NULL) {
+		NotifyError("%s: Cannot open data file '%s'.\n", funcName,
+		  GetFilePath_Utility_SimScript(filePath));
+		return(FALSE);
 	}
-	return(TRUE);
+	DPrint("%s: Reading from '%s':\n", funcName, GetFilePath_Utility_SimScript(
+	  filePath));
+	switch (simScriptPtr->simFileType) {
+	case UTILITY_SIMSCRIPT_SIM_FILE:
+		if (!ReadSimScript_Utility_SimScript(fp)) {
+			NotifyError("%s: Could not read simulation script from\nfile "
+			  "'%s'.", funcName, GetFilePath_Utility_SimScript(filePath));
+			ok = FALSE;
+		}
+		break;
+	case UTILITY_SIMSCRIPT_SPF_FILE:
+		if (!ReadSimParFile_Utility_SimScript(fp)) {
+			NotifyError("%s: Could not read simulation parameter file from\n"
+			  " file '%s'.", funcName, GetFilePath_Utility_SimScript(filePath));
+			ok = FALSE;
+		}
+		break;
+	default:
+		NotifyError("%s: Unknown simulation file type '%s'.", funcName,
+		  GetFilePath_Utility_SimScript(filePath));
+		ok = FALSE;
+	}
+	fclose(fp);
+	return(ok);
 
 }
 
@@ -1133,7 +1166,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 			pc->data->module->onFlag = pc->onFlag;
 			switch (pc->data->module->specifier) {
 			case SIMSCRIPT_MODULE:
-				(* pc->data->module->SetParsPointer)(pc->data->module);
+				SET_PARS_POINTER(pc->data);
 				SetOperationMode_Utility_SimScript(BooleanList_NSpecLists(
 				  localSimScriptPtr->operationMode)->name);
 				SetParFilePathMode_Utility_SimScript(localSimScriptPtr->
@@ -1141,8 +1174,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				SetParsFilePath_Utility_SimScript(localSimScriptPtr->
 				  parsFilePath);
 				SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
-				SetSimFileType_Utility_SimScript(localSimScriptPtr->
-				  simFileType);
+				simScriptPtr->simFileType = localSimScriptPtr->simFileType;
 				SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
 				  labelBListPtr);
 				SetSimulation_Utility_SimScript(

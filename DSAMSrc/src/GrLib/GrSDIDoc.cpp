@@ -189,15 +189,23 @@ SDIDocument::LoadObject(wxInputStream& stream)
 	printf("SDIDocument::LoadObject: Entered\n");
 	wxDocument::LoadObject(stream);
 
-	printf("SDIDocument::LoadObject: This is a '%s' file\n", (char *)
-	  GetDocumentTemplate()->GetDefaultExtension().GetData());
-	printf("SDIDocument::LoadObject: Set simFileType\n");
+	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
+	  GetDocumentTemplate()->GetDefaultExtension().GetData()));
+	printf("SDIDocument::LoadObject: Here I need to set the directory and "
+	  "file name\n");
+	wxFileName	fileName = GetFilename();
+	printf("SDIDocument::LoadObject: directory = '%s'\n", (char *)
+	  fileName.GetPath().GetData());
+	printf("SDIDocument::LoadObject: file name = '%s'\n", (char *)
+	  fileName.GetFullName().GetData());
 
-	wxString tempFileName = wxFileName::CreateTempFileName("diag");
+	SetParsFilePath_AppInterface((char *) fileName.GetPath().GetData());
+	SetSimFileName_AppInterface((char *) fileName.GetFullName().GetData());
+	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
 	/* The 'wxGetTempFileName' routine is obsolete and should be replaced.*/
 //	(void) wxGetTempFileName("diag", buf);
-	printf("SDIDocument::LoadObject: File name = '%s'\n",
-	  (char *) tempFileName.GetData());
+	printf("SDIDocument::LoadObject: File name = '%s'\n", (char *) tempFileName.
+	  GetData());
 
 	wxTransferStreamToFile(stream, tempFileName);
 

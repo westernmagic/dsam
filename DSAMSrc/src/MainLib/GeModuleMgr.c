@@ -433,7 +433,8 @@ GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(0.0);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
+	SET_PARS_POINTER(data);
 	return((* data->module->GetPotentialResponse)(potential));
 
 }
@@ -452,7 +453,7 @@ GetSimulation_ModuleMgr(EarObjectPtr data)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	return((data->module->specifier != SIMSCRIPT_MODULE)? NULL: ((SimScriptPtr)
 	  data->module->parsPtr)->simulation);
 
@@ -472,7 +473,7 @@ GetSimPtr_ModuleMgr(EarObjectPtr data)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	return((data->module->specifier != SIMSCRIPT_MODULE)? NULL: ((SimScriptPtr)
 	  data->module->parsPtr)->simPtr);
 
@@ -495,7 +496,7 @@ GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier)
 		return(NULL);
 	if (data->module->specifier != SIMSCRIPT_MODULE)
 		return(data);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	if ((process = FindProcess_Utility_Datum(((SimScriptPtr) data->module->
 	  parsPtr)->simulation, processSpecifier)) != NULL)
 		return(process);
@@ -521,7 +522,7 @@ GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label)
 		return(NULL);
 	if (data->module->specifier != SIMSCRIPT_MODULE)
 		return(NULL);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	if ((process = FindLabelledProcess_Utility_Datum(((SimScriptPtr) data->
 	  module->parsPtr)->simulation, label)) != NULL)
 		return(process);
@@ -546,7 +547,7 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	parList = (* data->module->GetUniParListPtr)();
 	if (!parList)
 		NotifyError("%s: arggh!\n", funcName);
@@ -573,7 +574,7 @@ GetUniParListPtr_ModuleMgr(EarObjectPtr data)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	return((* data->module->GetUniParListPtr)());
 
 }
@@ -592,7 +593,7 @@ PrintPars_ModuleMgr(EarObjectPtr data)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	return((* data->module->PrintPars)());
 
 }
@@ -622,7 +623,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	if (data->module->specifier == SIMSCRIPT_MODULE)
 		return((* data->module->ReadPars)(fileName));
 	parList = (* data->module->GetUniParListPtr)();
@@ -691,7 +692,7 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
 		NotifyError("%s: This function can only be used with a simulation.",
 		  funcName);
@@ -770,7 +771,7 @@ RunProcess_ModuleMgr(EarObjectPtr data)
 		return(FALSE);
 
 	if (data->module->onFlag) {
-		(* data->module->SetParsPointer)(data->module);
+		SET_PARS_POINTER(data);
 		return((* data->module->RunProcess)(data));
 	} else {
 		(* nullModule->SetParsPointer)(nullModule);
@@ -796,7 +797,7 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
-	(* data->module->SetParsPointer)(data->module);
+	SET_PARS_POINTER(data);
 	parList = (* data->module->GetUniParListPtr)();
 	switch (data->module->specifier) {
 	case SIMSCRIPT_MODULE:

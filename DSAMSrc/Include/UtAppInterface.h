@@ -28,6 +28,7 @@
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	APP_INT_NUM_PARS			4		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
+#define	APP_MAX_HELP_BOOKS			4
 
 #ifdef USE_GUI
 #	define	MAIN_ARGS	void
@@ -73,6 +74,7 @@ typedef struct {
 	BOOLN	appParFileFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
+	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
 	char	appParFile[MAX_FILE_PATH];
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
@@ -82,12 +84,15 @@ typedef struct {
 	char	segmentMode[SMALL_STRING];
 	char	diagMode[MAX_FILE_PATH];
 	char	installDir[MAX_FILE_PATH];
+	char	simFileName[MAX_FILE_PATH];
+	char	parsFilePath[MAX_FILE_PATH];
 	char	**argv;
 	int		argc;
 	int		initialCommand;
 	int		segmentModeSpecifier;
 	int		diagModeSpecifier;
 	int		maxUserModules;
+	int		numHelpBooks;
 	EarObjectPtr	audModel;
 
 	/* Private members */
@@ -96,7 +101,7 @@ typedef struct {
 	NameSpecifier	*diagModeList;
 	UniParListPtr	appParList;
 	UniParListPtr	parList;
-	time_t	simLastModified;
+	int		simFileType;
 	BOOLN	(* FreeAppProcessVars)(void);
 	BOOLN	(* Init)(void);
 	void	(* PrintUsage)(void);
@@ -141,13 +146,15 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
+BOOLN	AddAppHelpBook_AppInterface(const char *bookName);
+
 BOOLN	Free_AppInterface(void);
 
 AppInterfacePtr	GetPtr_AppInterface(void);
 
 EarObjectPtr	GetEarObjectPtr_AppInterface(void);
 
-StatPtr	GetFileStatusPtr_AppInterface(char *fileName);
+char *	GetFilePath_AppInterface(char *filePath);
 
 DatumPtr *	GetSimPtr_AppInterface(void);
 
@@ -217,18 +224,21 @@ BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
+BOOLN	SetParsFilePath_AppInterface(char * parsFilePath);
+
 BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue);
 
 BOOLN	SetSegmentMode_AppInterface(char *theSegmentMode);
+
+BOOLN	SetSimFileName_AppInterface(char * simFileName);
+
+BOOLN	SetSimFileType_AppInterface(int simFileType);
 
 BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
 
 BOOLN	SetTitle_AppInterface(char *title);
 
 BOOLN	SetUniParList_AppInterface(void);
-
-BOOLN	SimulationFileChanged_AppInterface(StatPtr simSpecFileStat,
-		  BOOLN updateStatus);
 
 __END_DECLS
 

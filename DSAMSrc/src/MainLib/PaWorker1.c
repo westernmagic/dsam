@@ -403,8 +403,7 @@ ProcessMesgTag(void)
 		if (!ok || !ReadPars_ModuleMgr(workPtr->simulation, simScriptParFile))
 			ok = FALSE;
 		else {
-			(* workPtr->simulation->module->SetParsPointer)(workPtr->
-			  simulation->module);
+			SET_PARS_POINTER(simulation);
 			PrintPars_Utility_SimScript();
 			switch (channelMode) {
 			case WORKER_CHANNEL_SET_TO_BM_MODE:

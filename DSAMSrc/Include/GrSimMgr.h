@@ -176,7 +176,6 @@ class MyApp: public wxApp {
 	void	SetDiagLocks(bool on);
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
 	void	StartSimThread(void);
-	bool	StatusChanged(void);
 
 	DECLARE_EVENT_TABLE()
 

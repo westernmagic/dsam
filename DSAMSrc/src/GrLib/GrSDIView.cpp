@@ -155,7 +155,6 @@ SDIView::OnCreate(wxDocument *doc, long flags)
 	canvas->view = this;
 
 	ResetGUIDialogs();
-	wxGetApp().ResetSimulation();
 
 	SetFrame(frame);
 	Activate(TRUE);

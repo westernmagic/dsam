@@ -444,10 +444,6 @@ void
 SDIFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
 {
 	ResetGUIDialogs();
-	if (wxGetApp().StatusChanged()) {
-		ResetStepCount_Utility_Datum();
-		wxGetApp().CheckInitialisation();
-	}
 	printf("SDIFrame::OnEditSimPars: Open simulation view.\n");
 //	if (!wxGetApp().GetSimModuleDialog()) {
 //		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,

@@ -872,27 +872,6 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 
 }
 
-/****************************** StatusChanged *********************************/
-
-/*
- * This routine checks if any status change occurs.  This will signal the
- * re-initialisation of the program.
- */
-
-bool
-MyApp::StatusChanged(void)
-{
-	if (!GetPtr_AppInterface())
-		return(FALSE);
-	if (SimulationFileChanged_AppInterface(GetFileStatusPtr_AppInterface(
-	  GetPtr_AppInterface()->simulationFile), FALSE))
-		return(TRUE);
-	if (!GetPtr_AppInterface()->audModel)
-		return(TRUE);
-	return(FALSE);
-	
-}
-
 /****************************** DeleteSimThread *******************************/
 
 /*

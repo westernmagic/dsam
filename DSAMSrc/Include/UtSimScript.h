@@ -138,6 +138,10 @@ BOOLN	Free_Utility_SimScript(void);
 
 BOOLN	FreeSimulation_Utility_SimScript(void);
 
+char *	GetFilePath_Utility_SimScript(char *filePath);
+
+SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(char *suffix);
+
 DatumPtr	GetSimulation_Utility_SimScript(void);
 
 DatumPtr * GetSimScriptSimulation_Utility_SimScript(DatumPtr pc);
@@ -168,9 +172,13 @@ DatumPtr	Read_Utility_SimScript(FILE *fp);
 
 BOOLN	ReadPars_Utility_SimScript(char *fileName);
 
-BOOLN	ReadSimParFileOld_Utility_SimScript(char *filePath);
+BOOLN	ReadSimParFile_Utility_SimScript(FILE *fp);
 
-BOOLN	ReadSimScriptOld_Utility_SimScript(char *fileName);
+BOOLN	ReadSimParFileOld_Utility_SimScript(FILE *fp);
+
+BOOLN	ReadSimScript_Utility_SimScript(FILE *fp);
+
+BOOLN	ReadSimScriptOld_Utility_SimScript(FILE *fp);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 

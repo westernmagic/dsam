@@ -582,7 +582,7 @@ ParListInfo::SetParValue(ParControl *control)
 		value = "Value not yet being set!";
 	}
 	if (pc)
-		(* pc->data->module->SetParsPointer)(pc->data->module);
+		SET_PARS_POINTER(pc->data);
 	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (char *)
 	  value.c_str())) {
 		control->SetUpdateFlag(FALSE);

@@ -17,7 +17,6 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "DSAM.h"
 
@@ -151,6 +150,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->segmentModeSpecifier = GENERAL_BOOLEAN_OFF;
 	appInterfacePtr->diagModeSpecifier = GENERAL_DIAGNOSTIC_OFF_MODE;
 	appInterfacePtr->maxUserModules = -1;
+	appInterfacePtr->numHelpBooks = 0;
 	appInterfacePtr->audModel = NULL;
 
 	InitListingModeList_AppInterface();
@@ -164,7 +164,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	}
 	appInterfacePtr->appParList = NULL;
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
-	appInterfacePtr->simLastModified = 0;
+	appInterfacePtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
 	appInterfacePtr->FreeAppProcessVars = NULL;
 	appInterfacePtr->Init = NULL;
 	appInterfacePtr->PrintUsage = NULL;
@@ -251,7 +251,6 @@ SetDiagMode_AppInterface(char *theDiagMode)
 /*
  * This functions sets the simulation file name.
  * It returns false if it fails in any way.
- * It also sets the global "simLastModified" variable to zero.
  */
 
 BOOLN
@@ -675,65 +674,24 @@ ProcessOptions_AppInterface(void)
 
 }
 
-/****************************** GetFileStatusPtr ******************************/
+/****************************** GetFilePath ***********************************/
 
 /*
- * This routine returns a pointer to the status of a file.
- * The status of the file is a static variable, so the pointer will change if
- * other files are checked with this routine.
- * It returns NULL if the file does not exist or there is any other error.
+ * This routine returns the given filePath, depending upon whether GUI mode is
+ * used.
  */
 
-StatPtr
-GetFileStatusPtr_AppInterface(char *fileName)
+char *
+GetFilePath_AppInterface(char *filePath)
 {
-	static const char *funcName = "GetFileStatusPtr_AppInterface";
-	static struct stat	simulationFileStat;
+	static char guiFilePath[MAX_FILE_PATH];
 
-	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	if (stat(fileName, &simulationFileStat) == -1) {
-		NotifyError("%s: Could not get status of file\n'%s'.", funcName,
-		  fileName);
-		return(NULL);
-	}
-	return(&simulationFileStat);
-
-}
-
-/****************************** SimulationFileChanged *************************/
-
-/*
- * This routine checks whether the simulation script file has been changed.
- * It will return FALSE if the global 'simLastModified' was originally unset.
- */
-
-BOOLN
-SimulationFileChanged_AppInterface(StatPtr simulationFileStat,
-  BOOLN updateStatus)
-{
-	static const char *funcName = "SimulationFileChanged_AppInterface";
-	BOOLN	changed;
-
-	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!simulationFileStat) {
-		NotifyError("%s: Could not get status of simulation script "
-		  "file.", funcName);
-		return(FALSE);
-	}
-	if (appInterfacePtr->simLastModified != simulationFileStat->st_mtime) {
-		changed = (appInterfacePtr->simLastModified != 0);
-		if (updateStatus)
-			appInterfacePtr->simLastModified = simulationFileStat->st_mtime;
-		return(changed);
-	}
-	return(FALSE);
-
+	if (!GetDSAMPtr_Common()->usingGUIFlag)
+		return(filePath);
+	snprintf(guiFilePath, MAX_FILE_PATH, "%s/%s", appInterfacePtr->parsFilePath,
+	  appInterfacePtr->simFileName);
+	return(guiFilePath);
+	
 }
 
 /************************ SetProgramParValue **********************************/
@@ -774,8 +732,9 @@ SetProgramParValue_AppInterface(char *parName, char *parValue)
 		ok = FALSE;
 	else if (((parList != appInterfacePtr->parList) || (par->index !=
 	  APP_INT_SIMULATIONFILE) || (appInterfacePtr->audModel &&
-	 GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel))) &&
-	  !SetParValue_UniParMgr(&parList, par->index, parValue))
+	 (GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
+	 UTILITY_SIMSCRIPT_SPF_FILE))) && !SetParValue_UniParMgr(&parList,
+	 par->index, parValue))
 		ok = FALSE;
 	parFile = localParFilePtr;
 	return(ok);
@@ -988,21 +947,12 @@ BOOLN
 InitSimFromSimScript_AppInterface(void)
 {
 	static const char *funcName = "InitSimFromSimScript_AppInterface";
-	StatPtr	simulationFileStatPtr;
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((simulationFileStatPtr = GetFileStatusPtr_AppInterface(
-	  appInterfacePtr->simulationFile)) == NULL) {
-		NotifyError("%s: Could not find status of simulation script\nfile"
-		  "'%s'", funcName, appInterfacePtr->simulationFile);
-		appInterfacePtr->updateProcessVariablesFlag = TRUE;
-		return(FALSE);
-	}
-	if (!appInterfacePtr->audModel || SimulationFileChanged_AppInterface(
-	  simulationFileStatPtr, TRUE)) {
+	if (!appInterfacePtr->audModel) {
 		ResetSimulation_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
@@ -1033,6 +983,66 @@ ResetSimulation_AppInterface(void)
 
 }
 
+/****************************** SetSimFileType ********************************/
+
+/*
+ * This function sets the module's simParFileFlag field.
+ */
+
+BOOLN
+SetSimFileType_AppInterface(int simFileType)
+{
+	static const char	*funcName = "SetSimFileType_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->simFileType = simFileType;
+	return(TRUE);
+
+}
+
+/****************************** SetSimFileName ********************************/
+
+/*
+ * This function sets the module's simFileName field.
+ */
+
+BOOLN
+SetSimFileName_AppInterface(char * simFileName)
+{
+	static const char	*funcName = "SetSimFileName_AppInterface";
+
+	if (appInterfacePtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	snprintf(appInterfacePtr->simFileName, MAX_FILE_PATH, "%s", simFileName);
+	return(TRUE);
+
+}
+
+/****************************** SetParsFilePath *******************************/
+
+/*
+ * This function sets the module's parsFilePath field.
+ */
+
+BOOLN
+SetParsFilePath_AppInterface(char * parsFilePath)
+{
+	static const char	*funcName = "SetParsFilePath_AppInterface";
+
+	if (appInterfacePtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	snprintf(appInterfacePtr->parsFilePath, MAX_FILE_PATH, "%s", parsFilePath);
+	return(TRUE);
+
+}
+
 /****************************** InitSimulation ********************************/
 
 /*
@@ -1044,26 +1054,23 @@ InitSimulation_AppInterface(void)
 {
 	static const char *funcName = "InitSimulation_AppInterface";
 	BOOLN	ok = TRUE;
-	StatPtr	simulationFileStatPtr;
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((simulationFileStatPtr = GetFileStatusPtr_AppInterface(
-	  appInterfacePtr->simulationFile)) == NULL) {
-		NotifyError("%s: Could not find file '%s'", funcName,
-		  appInterfacePtr->simulationFile);
-		appInterfacePtr->updateProcessVariablesFlag = TRUE;
-		return(FALSE);
-	}
-	if (!appInterfacePtr->audModel || SimulationFileChanged_AppInterface(
-	  simulationFileStatPtr, TRUE)) {
+	if (!appInterfacePtr->audModel) {
 		ResetSimulation_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
 			NotifyError("%s: Could not initialise process.", funcName);
 			ok = FALSE;
+		}
+		if (GetDSAMPtr_Common()->usingGUIFlag) {
+			SET_PARS_POINTER(appInterfacePtr->audModel);
+			SetSimFileType_Utility_SimScript(appInterfacePtr->simFileType);
+			SetParsFilePath_Utility_SimScript(appInterfacePtr->parsFilePath);
+			SetSimFileName_Utility_SimScript(appInterfacePtr->simFileName);
 		}
 	}
 	if (ok && !ReadPars_ModuleMgr(appInterfacePtr->audModel, appInterfacePtr->
@@ -1164,6 +1171,70 @@ SetTitle_AppInterface(char *title)
 	return(TRUE);
 
 } 
+
+/****************************** AddAppHelpBook ********************************/
+
+/*
+ * This function adds a help book to the application's help book list.
+ * It returns FALSE if it fails in any way
+ */
+
+BOOLN
+AddAppHelpBook_AppInterface(const char *bookName)
+{
+	static const char *funcName = "AddAppHelpBook_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	if (*bookName == '\0') {
+		NotifyError("%s: Book name not set.\n", funcName);
+		return(FALSE);
+	}
+	if ((appInterfacePtr->numHelpBooks - 1) == APP_MAX_HELP_BOOKS) {
+		NotifyError("%s: Maximum number of help books added (%d).", funcName,
+		  APP_MAX_HELP_BOOKS);
+		return(FALSE);
+	}
+	strcpy(appInterfacePtr->appHelpBooks[appInterfacePtr->numHelpBooks++],
+	  bookName);
+	return(TRUE);
+
+}
+
+/****************************** SetPars ***************************************/
+
+/*
+ * This routine carries out general initialisation tasks for the application
+ * interface.
+ */
+
+BOOLN
+SetPars_AppInterface(char *diagMode, char *simulationFile, char *segmentMode)
+{
+	static const char *funcName = "SetPars_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	if (!SetDiagMode_AppInterface(diagMode)) {
+		NotifyError("%s: Could not set diagnostic mode.", funcName);
+		return(FALSE);
+	}
+	if (!SetSimulationFile_AppInterface(simulationFile)) {
+		NotifyError("%s: Could not set simulation file mode.", funcName);
+		return(FALSE);
+	}
+	if (!SetSegmentMode_AppInterface(segmentMode)) {
+		NotifyError("%s: Could not set segment processing mode.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->checkMainInit = FALSE;
+	return(TRUE);
+
+}
 
 /****************************** ListParsAndExit *******************************/
 
@@ -1364,8 +1435,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			}
 			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
 			  audModel));
-			if (GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel) && 
-			  !ReadProgParFile_AppInterface()) {
+			if ((GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
+			  UTILITY_SIMSCRIPT_SPF_FILE) && !ReadProgParFile_AppInterface()) {
 				NotifyError("%s: Could not read the program settings in\nfile "
 				  "'%s'.", funcName, appInterfacePtr->simulationFile);
 				return(FALSE);
