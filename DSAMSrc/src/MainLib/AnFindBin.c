@@ -122,11 +122,11 @@ Init_Analysis_FindBin(ParameterSpecifier parSpec)
 	findBinPtr->modeFlag = TRUE;
 	findBinPtr->binWidthFlag = TRUE;
 	findBinPtr->timeOffsetFlag = TRUE;
-	findBinPtr->timeRangeFlag = TRUE;
+	findBinPtr->timeWidthFlag = TRUE;
 	findBinPtr->mode = FIND_BIN_MIN_VALUE_MODE;
 	findBinPtr->binWidth = -1.0;
 	findBinPtr->timeOffset = 0.0;
-	findBinPtr->timeRange = -1.0;
+	findBinPtr->timeWidth = -1.0;
 
 	InitModeList_Analysis_FindBin();
 	if (!SetUniParList_Analysis_FindBin()) {
@@ -170,15 +170,15 @@ SetUniParList_Analysis_FindBin(void)
 	  &findBinPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Analysis_FindBin);
 	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEOFFSET], "OFFSET",
-	  "Time offset from which to start search (s).",
+	  "Offset from which to start search (s?).",
 	  UNIPAR_REAL,
 	  &findBinPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_FindBin);
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMERANGE], "RANGE",
-	  "Time range for search: -ve assume to end of signal (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEWIDTH], "WIDTH",
+	  "Analysis window width for search: -ve assume to end of signal (s?).",
 	  UNIPAR_REAL,
-	  &findBinPtr->timeRange, NULL,
-	  (void * (*)) SetTimeRange_Analysis_FindBin);
+	  &findBinPtr->timeWidth, NULL,
+	  (void * (*)) SetTimeWidth_Analysis_FindBin);
 	return(TRUE);
 
 }
@@ -217,7 +217,7 @@ GetUniParListPtr_Analysis_FindBin(void)
 
 BOOLN
 SetPars_Analysis_FindBin(char *mode, double binWidth,
-  double timeOffset, double timeRange)
+  double timeOffset, double timeWidth)
 {
 	static const char	*funcName = "SetPars_Analysis_FindBin";
 	BOOLN	ok;
@@ -229,7 +229,7 @@ SetPars_Analysis_FindBin(char *mode, double binWidth,
 		ok = FALSE;
 	if (!SetTimeOffset_Analysis_FindBin(timeOffset))
 		ok = FALSE;
-	if (!SetTimeRange_Analysis_FindBin(timeRange))
+	if (!SetTimeWidth_Analysis_FindBin(timeWidth))
 		ok = FALSE;
 	if (!ok)
 		NotifyError("%s: Failed to set all module parameters." ,funcName);
@@ -317,25 +317,25 @@ SetTimeOffset_Analysis_FindBin(double theTimeOffset)
 
 }
 
-/****************************** SetTimeRange **********************************/
+/****************************** SetTimeWidth **********************************/
 
 /*
- * This function sets the module's timeRange parameter.
+ * This function sets the module's timeWidth parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetTimeRange_Analysis_FindBin(double theTimeRange)
+SetTimeWidth_Analysis_FindBin(double theTimeWidth)
 {
-	static const char	*funcName = "SetTimeRange_Analysis_FindBin";
+	static const char	*funcName = "SetTimeWidth_Analysis_FindBin";
 
 	if (findBinPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	findBinPtr->timeRangeFlag = TRUE;
-	findBinPtr->timeRange = theTimeRange;
+	findBinPtr->timeWidthFlag = TRUE;
+	findBinPtr->timeWidth = theTimeWidth;
 	return(TRUE);
 
 }
@@ -373,8 +373,8 @@ CheckPars_Analysis_FindBin(void)
 		NotifyError("%s: timeOffset variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (!findBinPtr->timeRangeFlag) {
-		NotifyError("%s: timeRange variable not set.", funcName);
+	if (!findBinPtr->timeWidthFlag) {
+		NotifyError("%s: timeWidth variable not set.", funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -408,10 +408,10 @@ PrintPars_Analysis_FindBin(void)
 	DPrint("\tTime offset = %g ms,",
 	  MSEC(findBinPtr->timeOffset));
 	DPrint("\tTime range = ");
-	if (findBinPtr->timeRange < 0.0)
+	if (findBinPtr->timeWidth < 0.0)
 		DPrint("<end of signal>\n");
 	else
-		DPrint("%g ms\n", MSEC(findBinPtr->timeRange));
+		DPrint("%g ms\n", MSEC(findBinPtr->timeWidth));
 	return(TRUE);
 
 }
@@ -429,7 +429,7 @@ ReadPars_Analysis_FindBin(char *fileName)
 	BOOLN	ok;
 	char	*filePath;
 	char	mode[MAXLINE];
-	double	binWidth, timeOffset, timeRange;
+	double	binWidth, timeOffset, timeWidth;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
@@ -446,7 +446,7 @@ ReadPars_Analysis_FindBin(char *fileName)
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeRange))
+	if (!GetPars_ParFile(fp, "%lf", &timeWidth))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
@@ -456,7 +456,7 @@ ReadPars_Analysis_FindBin(char *fileName)
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FindBin(mode, binWidth, timeOffset,
-	  timeRange)) {
+	  timeWidth)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
@@ -555,11 +555,11 @@ CheckData_Analysis_FindBin(EarObjectPtr data)
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
-	if ((findBinPtr->timeRange > 0.0) && (findBinPtr->timeOffset +
-	  findBinPtr->timeRange >= signalDuration)) {
+	if ((findBinPtr->timeWidth > 0.0) && (findBinPtr->timeOffset +
+	  findBinPtr->timeWidth >= signalDuration)) {
 		NotifyError("%s: Time offset + range (%g ms) must not exceed the "
 		  "signal duration (%g ms).", funcName,
-		  MSEC(findBinPtr->timeOffset + findBinPtr->timeRange),
+		  MSEC(findBinPtr->timeOffset + findBinPtr->timeWidth),
 			MSEC(signalDuration));
 		return(FALSE);
 	}
@@ -591,7 +591,7 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	BOOLN	findMinimum;
 	int		chan;
 	double	dt;
-	ChanLen	i, j, binWidthIndex, timeRangeIndex, timeOffsetIndex, binIndex = 0;
+	ChanLen	i, j, binWidthIndex, timeWidthIndex, timeOffsetIndex, binIndex = 0;
 
 	if (!CheckPars_Analysis_FindBin())
 		return(FALSE);
@@ -611,13 +611,13 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	binWidthIndex = (findBinPtr->binWidth <= 0.0)? (ChanLen) 1:
 	  (ChanLen) (findBinPtr->binWidth / dt + 0.5);
 	timeOffsetIndex = (ChanLen) (findBinPtr->timeOffset / dt + 0.5);
-	timeRangeIndex = (findBinPtr->timeRange <= 0.0)?
+	timeWidthIndex = (findBinPtr->timeWidth <= 0.0)?
 	  data->inSignal[0]->length - timeOffsetIndex:
-	  (ChanLen) (findBinPtr->timeRange / dt + 0.5);
+	  (ChanLen) (findBinPtr->timeWidth / dt + 0.5);
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
 		binSum = (findMinimum)? DBL_MAX: -DBL_MAX;
-		for (i = 0; i < timeRangeIndex - binWidthIndex; i++, inPtr++) {
+		for (i = 0; i < timeWidthIndex - binWidthIndex; i++, inPtr++) {
 			for (j = 0, sum = 0.0, binPtr = inPtr; j < binWidthIndex; j++,
 			  binPtr++)
 				sum += *binPtr;

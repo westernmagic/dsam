@@ -31,7 +31,7 @@ typedef enum {
 	ANALYSIS_FINDBIN_MODE,
 	ANALYSIS_FINDBIN_BINWIDTH,
 	ANALYSIS_FINDBIN_TIMEOFFSET,
-	ANALYSIS_FINDBIN_TIMERANGE
+	ANALYSIS_FINDBIN_TIMEWIDTH
 
 } FindBinParSpecifier;
 
@@ -49,11 +49,11 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, binWidthFlag, timeOffsetFlag, timeRangeFlag;
+	BOOLN	modeFlag, binWidthFlag, timeOffsetFlag, timeWidthFlag;
 	int		mode;
 	double	binWidth;
 	double	timeOffset;
-	double	timeRange;
+	double	timeWidth;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -104,11 +104,11 @@ BOOLN	InitModule_Analysis_FindBin(ModulePtr theModule);
 BOOLN	SetParsPointer_Analysis_FindBin(ModulePtr theModule);
 
 BOOLN	SetPars_Analysis_FindBin(char *mode, double binWidth,
-			  double timeOffset, double timeRange);
+			  double timeOffset, double timeWidth);
 
 BOOLN	SetTimeOffset_Analysis_FindBin(double theTimeOffset);
 
-BOOLN	SetTimeRange_Analysis_FindBin(double theTimeRange);
+BOOLN	SetTimeWidth_Analysis_FindBin(double theTimeWidth);
 
 BOOLN	SetUniParList_Analysis_FindBin(void);
 
