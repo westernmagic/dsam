@@ -130,8 +130,6 @@
 #include "TrGate.h"
 #include "TrSetDBSPL.h"
 
-#	include	"GrSignalDisp.h"
-
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #/* --cplusplus ensures only included with c++ compile */
 #	undef TRUE			/* required because WxWin doesn't check. */
@@ -172,7 +170,6 @@
 //#	include "GrRunMgr.h"
 //#	include "GrRunParDialog.h"
 #	include "GrSimMgr.h"
-#	include "GrGraphCtrls.h"
 #	include "GrLine.h"
 #	include "GrCanvas.h"
 #	include "GrPrintDisp.h"
@@ -190,6 +187,8 @@
 	IMPLEMENT_APP(MyApp)
 #	endif /* DSAM_MYAPP */
 #endif /* GRAPHICS_SUPPORT */
+
+#	include	"GrSignalDisp.h"
 
 #ifdef MPI_SUPPORT
 #	include "mpi.h"

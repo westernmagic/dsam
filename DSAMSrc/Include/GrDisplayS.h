@@ -42,13 +42,13 @@
 
 class DisplayS: public wxFrame
 {
-  private:
+	long	handle;
 
  public:
 	MyCanvas	*canvas;
 
-	DisplayS(wxFrame *frame, const wxString& title, const wxPoint& pos,
-	  const wxSize& size, long handle);
+	DisplayS(wxFrame *frame, long theHandle, const wxString& title,
+	  const wxPoint& pos, const wxSize& size);
 	~DisplayS(void);
 	
 };

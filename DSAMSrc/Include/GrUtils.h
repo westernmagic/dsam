@@ -35,19 +35,19 @@ class Box
 {
 
   public:
-	float	left, right, top, bottom;
+	double	left, right, top, bottom;
 
-	Box(float theLeft = 0.0, float theRight = 0.0, float theTop = 0.0,
-	  float theBottom = 0.0);
+	Box(double theLeft = 0.0, double theRight = 0.0, double theTop = 0.0,
+	  double theBottom = 0.0);
 
-	void	 Reset(float theLeft, float theRight, float theTop,
-			  float theBottom);
+	void	 Reset(double theLeft, double theRight, double theTop,
+			  double theBottom);
 	void	Offset(double x, double y) {bottom += y; top += y; left += x;
 			  right += x;}
 	void	ShiftVertical(double shift) {bottom += shift; top += shift;}
 	void	ShiftHorizontal(double shift) {left += shift; right += shift;}
-	float	Height(void) {return (bottom - top);}
-	float	Width(void) {return (right - left);}
+	double	Height(void) {return (bottom - top);}
+	double	Width(void) {return (right - left);}
 
 };
 
