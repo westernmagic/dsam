@@ -1,29 +1,36 @@
 General Information
 ===================
 
-This is @PACKAGE@ version @VERSION@.  @PACKAGE@ is a library to support
-programmers producing auditory models.  It includes a wide collection of
-established and experimental auditory models.  It also provides facilities for
-reading and writing to sound file formats, in addition to including many
-analysis functions.
+This is @PACKAGE@ version @VERSION@.  @PACKAGE@ allows users to
+design, run and evaluate auditory models.  It is backed up by the
+extensive collection of published and new models supplied by the
+development system for auditory modelling (DSAM), formerly known as
+LUTEar.
 
-To use the graphics support code, the wxWin code must be obtained and compiled
+There are two executable files, which are fully operational,
+however the help documentation is not yet complete.
 
-The wxUSE_APPLE_IEEE must be set to 0 (Note to Lowel: If this approach does not
-work, then move the UtUIEEEFloat.c to the standard, Std library, and the Gr..
-library so that the alternative compiled code - with and without the duplicated
-IEEE conversion routines - can be used as necessary).
+The AMS executable will run the application version with graphics
+support. The AMS_NG application is the console version.
 
-The official ftp site is:
-  ftp://ftp.essex.ac.uk/pub/omard/dsam
+The main parameter file for both executables is the 'AMS.par' ASCII
+text file, though AMS will work without this file. The driving DSAM
+simulation specification file is specified in the 'AMS.par' file,
+among other parameters.
+
+To use this application on UNIX the DSAM library must be installed.
+
+The official ftp site is: ftp://ftp.essex.ac.uk/pub/omard/dsam
 
 The official web site is:
-  http://www.essex.ac.uk/psychology/hearinglab/dsam
 
-A mailing list is located at:
-  dsam@mailbase.ac.uk
+	http://www.essex.ac.uk/psychology/hearinglab/dsam
 
-To subscribe: visit the web site at ...
+A mailing list is located at: dsam@mailbase.ac.uk
+
+To subscribe: visit the web site at:
+
+	http://www.mailbase.ac.uk/lists/dsam/
 
 Installation
 ============
@@ -33,33 +40,25 @@ See the file 'INSTALL'
 How to report bugs
 ==================
 
-To report a bug, send mail either to gtk-list, as mentioned
-above, or to gtk-bugs@gtk.org. If you send mail to gtk-list, you
-must be subscribed yourself.
+To report a bug, send mail either to the dsam list, as mentioned
+above.
 
 In the mail include:
 
-* The version of GLib
+* The version of @PACKAGE@
 
 * Information about your system. For instance:
 
-   - What operating system and version
-   - What version of X
-   - For Linux, what version of the C library
+   - What operating system and version - What version of X - For
+   Linux, what version of the C library
 
   And anything else you think is relevant.
 
 * How to reproduce the bug. 
 
-  If you can reproduce it with the testglib program that is built 
-  in the glib/ directory, that will be most convenient.  Otherwise, 
-  please include a short test program that exhibits the behavior. 
-  As a last resort, you can also provide a pointer to a larger piece 
-  of software that can be downloaded.
+* If the bug was a crash, the exact text that was printed out when
+  the crash occured.
 
-* If the bug was a crash, the exact text that was printed out
-  when the crash occured.
-
-* Further information such as stack traces may be useful, but
-  is not necessary.
+* Further information such as stack traces may be useful, but is
+  not necessary.
 
