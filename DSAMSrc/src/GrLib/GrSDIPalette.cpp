@@ -53,10 +53,15 @@
 // Include pixmaps
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #include "Bitmaps/arrow.xpm"
-#include "Bitmaps/tool1.xpm"
-#include "Bitmaps/tool2.xpm"
-#include "Bitmaps/tool3.xpm"
-#include "Bitmaps/tool4.xpm"
+#include "Bitmaps/analysis_tool.xpm"
+#include "Bitmaps/control_tool.xpm"
+#include "Bitmaps/filter_tool.xpm"
+#include "Bitmaps/io_tool.xpm"
+#include "Bitmaps/model_tool.xpm"
+#include "Bitmaps/stimulus_tool.xpm"
+#include "Bitmaps/transform_tool.xpm"
+#include "Bitmaps/user_tool.xpm"
+#include "Bitmaps/utility_tool.xpm"
 #endif
 
 /******************************************************************************/
@@ -93,26 +98,26 @@ EditorToolPalette::Set(void)
 {
 	// Load palette bitmaps
 	#ifdef __WXMSW__
-	wxBitmap PaletteAnaTool("TOOL1");
-	wxBitmap PaletteCtrlTool("TOOL2");
-	wxBitmap PaletteFiltTool("TOOL3");
-	wxBitmap PaletteIOTool("TOOL4");
+	wxBitmap PaletteAnaTool("analysis_tool");
+	wxBitmap PaletteCtrlTool("control_tool");
+	wxBitmap PaletteFiltTool("filter_tool");
+	wxBitmap PaletteIOTool("io_tool");
 	wxBitmap PaletteArrow("ARROWTOOL");
-	wxBitmap PaletteModelTool("TOOL1");
-	wxBitmap PaletteStimTool("TOOL2");
-	wxBitmap PaletteTransTool("TOOL3");
-	wxBitmap PaletteUserTool("TOOL4");
-	wxBitmap PaletteUtilTool("TOOL1");
+	wxBitmap PaletteModelTool("model_tool");
+	wxBitmap PaletteStimTool("stimulus_tool");
+	wxBitmap PaletteTransTool("transform_tool");
+	wxBitmap PaletteUserTool("user_tool");
+	wxBitmap PaletteUtilTool("utility_tool");
 	#elif defined(__WXGTK__) || defined(__WXMOTIF__)
-	wxBitmap PaletteAnaTool(tool1_xpm);
-	wxBitmap PaletteCtrlTool(tool2_xpm);
-	wxBitmap PaletteFiltTool(tool3_xpm);
-	wxBitmap PaletteIOTool(tool4_xpm);
-	wxBitmap PaletteModelTool(tool1_xpm);
-	wxBitmap PaletteStimTool(tool2_xpm);
-	wxBitmap PaletteTransTool(tool3_xpm);
-	wxBitmap PaletteUserTool(tool4_xpm);
-	wxBitmap PaletteUtilTool(tool1_xpm);
+	wxBitmap PaletteAnaTool(analysis_tool_xpm);
+	wxBitmap PaletteCtrlTool(control_tool_xpm);
+	wxBitmap PaletteFiltTool(filter_tool_xpm);
+	wxBitmap PaletteIOTool(io_tool_xpm);
+	wxBitmap PaletteModelTool(model_tool_xpm);
+	wxBitmap PaletteStimTool(stimulus_tool_xpm);
+	wxBitmap PaletteTransTool(transform_tool_xpm);
+	wxBitmap PaletteUserTool(user_tool_xpm);
+	wxBitmap PaletteUtilTool(utility_tool_xpm);
 	wxBitmap PaletteArrow(arrow_xpm);
 	#endif
 

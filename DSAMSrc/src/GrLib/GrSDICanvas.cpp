@@ -109,23 +109,23 @@ SDICanvas::GetClassInfo(int classSpecifier)
 
 	switch (classSpecifier) {
 	case ANALYSIS_MODULE_CLASS:
-		return(CLASSINFO(wxRectangleShape));
+		return(CLASSINFO(SDIAnalysisShape));
 	case CONTROL_MODULE_CLASS:
-		return(CLASSINFO(wxRoundedRectangleShape));
+		return(CLASSINFO(SDIControlShape));
 	case FILTER_MODULE_CLASS:
-		return(CLASSINFO(wxEllipseShape));
+		return(CLASSINFO(SDIFilterShape));
 	case IO_MODULE_CLASS:
-		return(CLASSINFO(wxDiamondShape));
+		return(CLASSINFO(SDIIOShape));
 	case MODEL_MODULE_CLASS:
-		return(CLASSINFO(wxRectangleShape));
+		return(CLASSINFO(SDIModelShape));
 	case STIMULUS_MODULE_CLASS:
-		return(CLASSINFO(wxRoundedRectangleShape));
+		return(CLASSINFO(SDIStimulusShape));
 	case TRANSFORM_MODULE_CLASS:
-		return(CLASSINFO(wxEllipseShape));
+		return(CLASSINFO(SDITransformShape));
 	case USER_MODULE_CLASS:
-		return(CLASSINFO(wxDiamondShape));
+		return(CLASSINFO(SDIUserShape));
 	case UTILITY_MODULE_CLASS:
-		return(CLASSINFO(wxRectangleShape));
+		return(CLASSINFO(SDIUtilityShape));
 	default:
 		;
 	}
