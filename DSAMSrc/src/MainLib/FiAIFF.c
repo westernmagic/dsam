@@ -48,6 +48,7 @@
 #include "GeUniParMgr.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"
 #include "FiAIFF.h"
@@ -249,7 +250,8 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' AIFF file", fileName);
+	SetProcessName_EarObject(data, "'%s' AIFF file",
+	  GetFileNameFPath_Utility_String(fileName));
 	InitParams_AIFF(&pars);
 	if (dataFilePtr->endian == 0)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);

@@ -26,6 +26,7 @@
 #include "GeUniParMgr.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"
 #include "FiMSWave.h"
@@ -107,7 +108,8 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Couldn't read file '%s'.", funcName, fileName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' Microsoft Wave file", fileName);
+	SetProcessName_EarObject(data, "'%s' Microsoft Wave file",
+	  GetFileNameFPath_Utility_String(fileName));
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->timeIndex ==
 	  PROCESS_START_TIME) || (fp != stdin)) {
 		if (!ReadHeader_Wave(fp, &pars)) {

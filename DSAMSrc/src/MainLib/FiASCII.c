@@ -26,6 +26,7 @@
 #include "GeUniParMgr.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"
 #include "FiASCII.h"
@@ -74,7 +75,8 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Illegal no. of columns: '%s'.", funcName, fileName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' ASCII (dat) file", fileName);
+	SetProcessName_EarObject(data, "'%s' ASCII (dat) file",
+	  GetFileNameFPath_Utility_String(fileName));
 	numSamples = (int32) floor(dataFilePtr->duration *
 	  dataFilePtr->defaultSampleRate + 1.5);
 	if (!InitProcessVariables_DataFile(data, numSamples,

@@ -34,6 +34,7 @@
 #include "GeUniParMgr.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"
 #include "FiRaw.h"
@@ -80,7 +81,8 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 		NotifyError("%s: Couldn't open file.", funcName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' byte (raw) file", fileName);
+	SetProcessName_EarObject(data, "'%s' byte (raw) file",
+	  GetFileNameFPath_Utility_String(fileName));
 	if (fp == stdin) {
 		requestedLength = (int32) floor(dataFilePtr->duration *
 		  dataFilePtr->defaultSampleRate + 1.5);
