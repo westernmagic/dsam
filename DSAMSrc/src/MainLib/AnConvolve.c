@@ -165,7 +165,7 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 			endInR = inR + data->inSignal[1]->length;
 			inS = data->inSignal[0]->channel[chan] + i;
 			for (*outPtr = 0.0;(inS >= data->inSignal[0]->channel[chan]) &&
-			  (inR <= endInR); inR++, inS--)
+			  (inR < endInR); inR++, inS--)
 				*outPtr += *inR * *inS;
 		}
 	}
