@@ -1039,6 +1039,7 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 	snprintf(parName, MAXLINE, "%s", parSpecifier);
 	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL) {
 		processName[0] = '\0';
+		processLabel[0] = '\0';
 	} else {
 		snprintf(processName, MAXLINE, "%s", p + 1);
 		if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL) {
