@@ -60,6 +60,7 @@
 #define SIMSCRIPT_DEFAULT_CF_CHANNELS	2
 #define SIMSCRIPT_DEFAULT_CF_LOW_FREQ	100
 #define SIMSCRIPT_DEFAULT_CF_HIGH_FREQ	6000
+#define SIMSCRIPT_DISABLED_MODULE_CHAR	'@'
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
