@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeNSpecLists.h"
 #include "GeModuleMgr.h"
+#include "GeModuleReg.h"
 
 #include "UtSSSymbols.h"
 #include "UtSimScript.h"
@@ -129,7 +130,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 
 	if (parSpec == GLOBAL) {
 		if (appInterfacePtr != NULL)
-			Free_Analysis_ACF();
+			Free_AppInterface();
 		if ((appInterfacePtr = (AppInterfacePtr) malloc(sizeof(
 		  AppInterface))) == NULL) {
 			NotifyError("%s: Out of memory for 'global' pointer", funcName);
@@ -189,8 +190,8 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->FreeAppProcessVars = NULL;
 	appInterfacePtr->Init = NULL;
 	appInterfacePtr->OnExecute = NULL;
+	appInterfacePtr->PrintExtMainAppUsage = NULL;
 	appInterfacePtr->PrintUsage = NULL;
-	appInterfacePtr->PrintSimMgrUsage = NULL;
 	appInterfacePtr->ProcessOptions = NULL;
 	appInterfacePtr->RegisterUserModules = NULL;
 	appInterfacePtr->PostInitFunc = NULL;
@@ -561,6 +562,28 @@ SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
 
 }
 
+/****************************** SetOnExit *************************************/
+
+/*
+ * This functions sets the application's OnExit routine.
+ * This routine is used by the application to hold it's exit routine.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetOnExit_AppInterface(void (* OnExit)(void))
+{
+	static const char	*funcName = "SetOnExit_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	appInterfacePtr->OnExit = OnExit;
+	return(TRUE);
+
+}
+
 /****************************** PrintInitialDiagnostics ***********************/
 
 /*
@@ -679,7 +702,7 @@ ProcessOptions_AppInterface(void)
 		return(FALSE);
 	}
 	while ((c = Process_Options(appInterfacePtr->argc, appInterfacePtr->argv,
-	  &optInd, &optSub, &argument, "@#:d:hl:P:s:"))) {
+	  &optInd, &optSub, &argument, "@#:d:hl:P:s:Sp:"))) {
 		optionFound = TRUE;
 		switch (c) {
 		case '@':
@@ -1009,7 +1032,7 @@ void
 FreeSim_AppInterface(void)
 {
 	FreeAll_EarObject();
-	datumStepCount = 0;
+	ResetStepCount_Utility_Datum();
 	appInterfacePtr->audModel = NULL;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 
@@ -1417,7 +1440,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 				(* appInterfacePtr->SetUniParList)(&appInterfacePtr->
 				  appParList);
 			GetDSAMPtr_Common()->appInitialisedFlag = TRUE;
-			if (GetDSAMPtr_Common()->usingGUIFlag)
+			if (GetDSAMPtr_Common()->usingExtFlag)
 				return(FALSE);
 		}
 	}
@@ -1427,8 +1450,6 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		ProcessOptions_AppInterface();
 		if (appInterfacePtr->printUsageFlag) {
 			PrintUsage_AppInterface();
-			if (appInterfacePtr->PrintSimMgrUsage)
-				(* appInterfacePtr->PrintSimMgrUsage)();
 			if (appInterfacePtr->PrintUsage)
 				(* appInterfacePtr->PrintUsage)();
 			exit(0);

@@ -30,7 +30,6 @@
 /******************************************************************************/
 
 #define	EXTIPCSERVER_DEFAULT_SERVER_NAME		"DSAM IPC Server"
-#define EXTIPCSERVER_DEFAULT_SERVER_PORT		3000
 #define EXTIPCSERVER_MAX_COMMAND_CHAR			10
 #define EXTIPCSERVER_MEMORY_FILE_NAME			"+.aif"
 
@@ -48,14 +47,25 @@ enum {
 enum {
 
 	IPCSERVER_COMMAND_QUIT,
-	IPCSERVER_COMMAND_INIT,
-	IPCSERVER_COMMAND_RUN,
-	IPCSERVER_COMMAND_SET,
+
+	IPCSERVER_COMMAND_ERRMSGS,
 	IPCSERVER_COMMAND_GET,
 	IPCSERVER_COMMAND_GETFILES,
+	IPCSERVER_COMMAND_INIT,
 	IPCSERVER_COMMAND_PUT,
-	IPCSERVER_COMMAND_ERRMSGS,
+	IPCSERVER_COMMAND_RUN,
+	IPCSERVER_COMMAND_SET,
+	IPCSERVER_COMMAND_STATUS,
+
 	IPCSERVER_COMMAND_NULL
+
+};
+
+enum {
+
+	IPCSERVER_STATUS_READY = 0,
+	IPCSERVER_STATUS_BUSY,
+	IPCSERVER_STATUS_ERROR
 
 };
 
@@ -93,21 +103,23 @@ class IPCServer {
 	NameSpecifier *	CommandList(int index);
 	wxSocketServer	*	GetServer(void)	{ return myServer; }
 	wxSocketBase *	GetSocket(void)	{ return sock; };
-	wxSocketBase *	InitConnection(void);
+	wxSocketBase *	InitConnection(bool wait = true);
 	bool	InitInProcess(void);
 	bool	InitOutProcess(void);
-	void	InitSimulation(wxSocketBase *sock);
+	void	OnInit(void);
+	void	OnExecute(void);
+	void	OnGet(void);
 	bool	Ok(void)	{ return ok; }
-	void	OnGet(wxSocketBase *sock);
-	void	OnGetFiles(wxSocketBase *sock);
-	void	OnPut(wxSocketBase *sock);
-	void	PrintNotificationList(int index = -1);
-	void	ProcessInput(wxSocketBase *sock);
+	void	OnGetFiles(void);
+	void	OnPut(void);
+	void	OnSet(void);
+	void	OnStatus(void);
+	void	OnErrMsgs(int index = -1);
+	bool	ProcessInput(void);
 	void	ResetInProcess(void);
 	void	ResetOutProcess(void);
 	bool	RunInProcess(void);
 	bool	RunOutProcess(void);
-	void	SetParameters(wxSocketBase *sock);
 
 };
 

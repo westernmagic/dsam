@@ -52,6 +52,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "GeCommon.h"
 #include "StdMessage.h"
@@ -67,6 +68,7 @@ static DSAM	dSAM = {
 			FALSE,		/* segmentedMode */
 			FALSE,		/* usingGUIFlag */
 			FALSE,		/* lockGUIFlag */
+			FALSE,		/* usingExtFlag */
 			FALSE,		/* interruptRequestedFlag */
 			NULL,		/* diagnosticsPrefix */
 			VERSION,	/* version */
@@ -524,6 +526,19 @@ void
 SetUsingGUIStatus(BOOLN status)
 {
 	dSAM.usingGUIFlag = status;
+
+}
+
+/*************************** SetUsingExtStatus ********************************/
+
+/*
+ * This routine sets the 'usingExtFlag'.
+ */
+
+void
+SetUsingExtStatus(BOOLN status)
+{
+	dSAM.usingExtFlag = status;
 
 }
 

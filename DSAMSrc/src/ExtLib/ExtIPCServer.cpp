@@ -42,6 +42,7 @@
 #include "FiDataFile.h"
 #include "FiAIFF.h"
 #include "UtSSParser.h"
+#include "ExtMainApp.h"
 #include "ExtIPCServer.h"
 
 /******************************************************************************/
@@ -70,7 +71,7 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort)
 	inUIOPtr = NULL;
 	outUIOPtr = NULL;
 	addr.Hostname((hostName.length())? hostName: "localhost");
-	addr.Service((!theServicePort)? EXTIPCSERVER_DEFAULT_SERVER_PORT:
+	addr.Service((!theServicePort)? EXTMAINAPP_DEFAULT_SERVER_PORT:
 	  theServicePort);
 
 	myServer = new wxSocketServer(addr);
@@ -113,13 +114,14 @@ IPCServer::CommandList(int index)
 	static NameSpecifier	modeList[] = {
 
 					{ "QUIT",		IPCSERVER_COMMAND_QUIT},
-					{ "INIT",		IPCSERVER_COMMAND_INIT},
-					{ "RUN",		IPCSERVER_COMMAND_RUN},
-					{ "SET",		IPCSERVER_COMMAND_SET},
+					{ "ERRMSGS",	IPCSERVER_COMMAND_ERRMSGS},
 					{ "GET",		IPCSERVER_COMMAND_GET},
 					{ "GETFILES",	IPCSERVER_COMMAND_GETFILES},
+					{ "INIT",		IPCSERVER_COMMAND_INIT},
 					{ "PUT",		IPCSERVER_COMMAND_PUT},
-					{ "ERRMSGS",	IPCSERVER_COMMAND_ERRMSGS},
+					{ "RUN",		IPCSERVER_COMMAND_RUN},
+					{ "SET",		IPCSERVER_COMMAND_SET},
+					{ "STATUS",		IPCSERVER_COMMAND_STATUS},
 					{ "",		IPCSERVER_COMMAND_NULL},
 				
 				};
@@ -135,13 +137,13 @@ IPCServer::CommandList(int index)
  */
 
 wxSocketBase *
-IPCServer::InitConnection(void)
+IPCServer::InitConnection(bool wait)
 {
 	static const char *funcName = "IPCServer::OnServerEvent";
 	wxString	salutation;
 	wxIPV4address	addr;
 
-	sock = myServer->Accept(FALSE);
+	sock = myServer->Accept(wait);
 	if (!sock) {
 		NotifyError("%s: Couldn't accept a new connection.\n", funcName);
 		return(NULL);
@@ -298,17 +300,20 @@ IPCServer::RunOutProcess(void)
 
 }
 
-/****************************** InitSimulation ********************************/
+/****************************** OnInit ****************************************/
 
 /*
  */
 
 void
-IPCServer::InitSimulation(wxSocketBase *sock)
+IPCServer::OnInit(void)
 {
-	static const char *funcName = "IPCServer::InitSimulation";
+	static const char *funcName = "IPCServer::OnInit";
 	unsigned char c;
 
+	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
+		return;
+	}
 	ResetInProcess();
 	ResetOutProcess();
 	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
@@ -337,7 +342,7 @@ IPCServer::InitSimulation(wxSocketBase *sock)
  */
 
 void
-IPCServer::OnPut(wxSocketBase *sock)
+IPCServer::OnPut(void)
 {
 	static const char *funcName = "IPCServer::OnPut";
 	size_t	length;
@@ -364,7 +369,7 @@ IPCServer::OnPut(wxSocketBase *sock)
  */
 
 void
-IPCServer::OnGet(wxSocketBase *sock)
+IPCServer::OnGet(void)
 {
 	UPortableIOPtr	uIOPtr;
 	ChanLen	length = 0;
@@ -414,7 +419,7 @@ IPCServer::BuildFileList(wxArrayString &list, DatumPtr pc)
  */
 
 void
-IPCServer::OnGetFiles(wxSocketBase *sock)
+IPCServer::OnGetFiles(void)
 {
 	static const char *funcName = "IPCServer::OnGetFiles";
 	wxUint8	byte;
@@ -455,13 +460,13 @@ IPCServer::OnGetFiles(wxSocketBase *sock)
 	/*** Don't forget to delete files after. ***/
 }
 
-/****************************** SetParameters *********************************/
+/****************************** OnSet *****************************************/
 
 /*
  */
 
 void
-IPCServer::SetParameters(wxSocketBase *sock)
+IPCServer::OnSet(void)
 {
 	static const char *funcName = "IPCServer::SetParameters";
 	int		i, numTokens;
@@ -492,6 +497,49 @@ IPCServer::SetParameters(wxSocketBase *sock)
 
 }
 
+/****************************** OnExecute *************************************/
+
+/*
+ */
+
+void
+IPCServer::OnExecute(void)
+{
+	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
+		return;
+	}
+	if (inProcess)
+		RunInProcess();
+	OnExecute_AppInterface();
+		
+
+}
+
+/****************************** OnStatus **************************************/
+
+/*
+ */
+
+void
+IPCServer::OnStatus(void)
+{
+	unsigned char status = IPCSERVER_STATUS_READY;
+
+
+	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
+		status = IPCSERVER_STATUS_BUSY;
+		sock->Write(&status, 1);
+		return;
+	}
+	if (notificationList.GetCount() > 0) {
+		status = IPCSERVER_STATUS_ERROR;
+		sock->Write(&status, 1);
+		return;
+	}
+	sock->Write(&status, 1);
+	
+}
+
 /****************************** ProcessInput **********************************/
 
 /*
@@ -501,54 +549,58 @@ IPCServer::SetParameters(wxSocketBase *sock)
  * the extension and re-creating it.
  */
 
-void
-IPCServer::ProcessInput(wxSocketBase *sock)
+bool
+IPCServer::ProcessInput(void)
 {
 	static const char *funcName = "IPCServer::ProcessInput";
+	bool endProcessing;
 	unsigned char c;
 
 	sock->SetNotify(wxSOCKET_LOST_FLAG);
 	buffer.Clear();
-	while(!sock->Read(&c, 1).Error() && (c != '\n'))
+	while(((endProcessing = sock->Read(&c, 1).Error()) == false) && (c != '\n'))
 		if (c != '\r')
 			buffer += c;
 	switch (Identify_NameSpecifier((char *) buffer.c_str(), CommandList(0))) {
 	case IPCSERVER_COMMAND_QUIT:
+		endProcessing = true;
 		OnExit_AppInterface();
 		break;
-	case IPCSERVER_COMMAND_INIT:
-		InitSimulation(sock);
-		break;
-	case IPCSERVER_COMMAND_RUN:
-		if (inProcess)
-			RunInProcess();
-		if (!OnExecute_AppInterface())
-			break;
-		break;
-	case IPCSERVER_COMMAND_SET:
-		SetParameters(sock);
+	case IPCSERVER_COMMAND_ERRMSGS:
+		OnErrMsgs();
+		notificationList.Clear();
 		break;
 	case IPCSERVER_COMMAND_GET:
-		OnGet(sock);
+		OnGet();
 		break;
 	case IPCSERVER_COMMAND_GETFILES:
-		OnGetFiles(sock);
+		OnGetFiles();
+		break;
+	case IPCSERVER_COMMAND_INIT:
+		OnInit();
 		break;
 	case IPCSERVER_COMMAND_PUT:
-		OnPut(sock);
+		OnPut();
 		break; 
-	case IPCSERVER_COMMAND_ERRMSGS:
-		PrintNotificationList();
+	case IPCSERVER_COMMAND_RUN:
+		OnExecute();
+		break;
+	case IPCSERVER_COMMAND_SET:
+		OnSet();
+		break;
+	case IPCSERVER_COMMAND_STATUS:
+		OnStatus();
 		break;
 	default:
 		NotifyError("%s: Unknown command given (%s).", funcName, buffer.
 		  c_str());
 	}
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
+	return(!endProcessing);
 
 }
 
-/****************************** PrintNotificationList *************************/
+/****************************** OnErrMsgs *************************************/
 
 /*
  * This routine prints the notification list.  If the index is given then
@@ -557,7 +609,7 @@ IPCServer::ProcessInput(wxSocketBase *sock)
  */
 
 void
-IPCServer::PrintNotificationList(int index)
+IPCServer::OnErrMsgs(int index)
 {
 	unsigned char numNotifications;
 
@@ -591,7 +643,11 @@ IPCServer::PrintNotificationList(int index)
 void
 IPCServer::LoadSimFile(const wxString& fileName)
 {
-	printf("IPCServer::LoadSimFile: Does nothing\n");
+	FreeSim_AppInterface();
+	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
+	  APP_INT_SIMULATIONFILE, (char *) fileName.c_str()))
+		return;
+	dSAMMainApp->ResetSimulation();
 
 }
 
@@ -682,3 +738,4 @@ Notify_IPCServer(const char *format, va_list args, CommonDiagSpecifier type)
 	GetPtr_IPCServer()->AddNotification(message);
 
 } /* NotifyMessage */
+

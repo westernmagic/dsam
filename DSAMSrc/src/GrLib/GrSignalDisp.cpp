@@ -49,7 +49,7 @@
 #include <time.h>
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-#include "GrCommon.h"
+#include "ExtCommon.h"
 #endif
 
 #include "GeCommon.h"

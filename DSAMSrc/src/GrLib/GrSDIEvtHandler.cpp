@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 #include <wx/docview.h>
 #include <wx/cmdproc.h>
 

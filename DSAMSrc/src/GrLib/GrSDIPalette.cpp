@@ -20,8 +20,8 @@
 // #pragma implementation
 #endif
 
-#include "GrCommon.h"
-#include "GrCommon.h"
+#include "ExtCommon.h"
+#include "ExtCommon.h"
 #include <wx/toolbar.h>
 
 #include <ctype.h>

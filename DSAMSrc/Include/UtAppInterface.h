@@ -29,11 +29,12 @@
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
 
-#ifdef USE_GUI
+#if defined(USE_GUI) || defined(EXTENSIONS_SUPPORT)
 #	define	MAIN_ARGS	void
 #	define ARGC		0
 #	define ARGV		NULL
 #else
+#	define MainSimulation	main
 #	define	MAIN_ARGS	int argc, char **argv
 #	define ARGC		argc
 #	define ARGV		argv
@@ -105,8 +106,8 @@ typedef struct {
 	BOOLN	(* Init)(void);
 	BOOLN	(* OnExecute)(void);
 	void	(* OnExit)(void);
+	void	(* PrintExtMainAppUsage)(void);
 	void	(* PrintUsage)(void);
-	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
 	BOOLN	(* RegisterUserModules)(void);
 	BOOLN	(* PostInitFunc)(void);
@@ -236,6 +237,8 @@ BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
 BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
+
+BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
 BOOLN	SetParsFilePath_AppInterface(char * parsFilePath);
 

@@ -73,10 +73,11 @@
 /*************************** Pre-reference definitions ************************/
 /******************************************************************************/
 
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-
-	class DisplayS;
-	class wxDialog;
+#if defined(__cplusplus)
+#	if defined(GRAPHICS_SUPPORT)
+		class DisplayS;
+		class wxDialog;
+#	endif
 	class wxCriticalSection;
 #else
 	typedef	void *	DisplayS;

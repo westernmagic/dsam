@@ -17,7 +17,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

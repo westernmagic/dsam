@@ -42,6 +42,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -52,6 +53,7 @@
 #include "UtString.h"
 #include "UtOptions.h"
 #include "UtSimScript.h"
+#include "FiParFile.h"
 
 #include "GeModuleMgr.h"
 #include "GeModuleReg.h"
@@ -62,6 +64,7 @@
 
 ModuleRefPtr	moduleList = NULL;
 ModulePtr		nullModule = NULL;
+BOOLN			(* TestDestroy_ModuleMgr)(void) = NULL;
 
 /******************************************************************************/
 /************************** Subroutines and functions *************************/
@@ -779,7 +782,7 @@ RunProcess_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 
-	if (GetDSAMPtr_Common()->usingGUIFlag && TestDestroy_SimThread())
+	if (TestDestroy_ModuleMgr && (* TestDestroy_ModuleMgr)())
 		return(FALSE);
 
 	if (data->module->onFlag) {
@@ -869,6 +872,20 @@ SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
 	return(SetPar_ModuleMgr(data, name, arrayElementString));
 
 }
+
+/************************** SetTestDestory ************************************/
+
+/*
+ * This routine sets the global 'ModuleTestDestoryFunc' function pointer.
+ */
+
+void
+SetTestDestroy_ModuleMgr(BOOLN (* Func)(void))
+{
+	TestDestroy_ModuleMgr = Func;
+
+}
+
 
 /************************** SetNull *******************************************/
 

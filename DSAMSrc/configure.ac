@@ -363,7 +363,7 @@ if test x$WX_BASE = xyes; then
 		AC_DEFINE(wx_base, 1, [Use wxBase library])
 		wx_base_available=yes
 		WX_CONFIG=$TMP_CONFIG
-		WX_BASE_CPPFLAGS=`$TMP_CONFIG --cxxflags`
+		WX_BASE_CXXFLAGS=`$TMP_CONFIG --cxxflags`
 		WX_BASE_LDFLAGS=`$TMP_CONFIG --libs`
 	else
 		wx_base_available=no
@@ -468,10 +468,19 @@ if test x$wxwinAvailable = xyes; then
 	AC_SUBST(WXINC)
 	WXLDLIBS="`$WX_CONFIG --libs` $WX_OGL_LDFLAGS"
 	AC_SUBST(WXLDLIBS)
-	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Using Extensions Support")
-	DSAM_EXTENSIONS="-DEXTENSIONS_SUPPORT"
 fi
-AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wxwinAvailable = xyes)
+
+if test x$wx_base_available = xyes; then
+	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Using Extensions Support")
+	DSAMEXTINC="-DEXTENSIONS_SUPPORT"
+	AC_SUBST(DSAMEXTINC)
+	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
+	AC_SUBST(DSAMEXTLIB)
+	AC_SUBST(WX_BASE_CXXFLAGS)
+	AC_SUBST(WX_BASE_LDFLAGS)
+fi
+AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
+
 if test x$using_wxwin_gui = xyes; then
 	DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
 	AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")

@@ -18,7 +18,7 @@ libdsam_g_la_SOURCES= GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrLines.cpp GrCanvas.cpp GrDisplayS.cpp GrSignalDisp.cpp \
 				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrModParDialog.cpp \
 				GrParListInfo.cpp GrDialogInfo.cpp GrParListInfoList.cpp \
-				GrParControl.cpp GrSimThread.cpp GrSDIDoc.cpp GrIPCServer.cpp \
+				GrParControl.cpp GrSDIDoc.cpp GrIPCServer.cpp GrMainApp.cpp \
 				GrSDIPalette.cpp GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp \
 				GrSDIDiagram.cpp GrSDIEvtHandler.cpp GrSDICommand.cpp \
 				GrSDIShapes.cpp GrDiagFrame.cpp GrSDISimDoc.cpp GrSDISPFDoc.cpp

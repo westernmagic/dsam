@@ -16,7 +16,7 @@
 
 #ifdef USE_WX_OGL
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 #include <wx/docview.h>
 
 // define this to use XPMs everywhere (by default, BMPs are used under Win)
@@ -55,6 +55,7 @@
 #include "GrDiagFrame.h"
 #include "GrDisplayS.h"
 #include "GrCanvas.h"
+#include "GrMainApp.h"
 #include "GrSDIFrame.h"
 
 /******************************************************************************/
@@ -230,7 +231,7 @@ SDIFrame::SetSimFileAndLoad(void)
 	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().c_str(
 	    )))
 		return(FALSE);
-	if (!wxGetApp().ResetSimulation())
+	if (!wxGetApp().GetGrMainApp()->ResetSimulation())
 		return(FALSE);
 	if (mainParDialog)
 		mainParDialog->parListInfoList->UpdateAllControlValues();
@@ -393,7 +394,7 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 {
 	static char *funcName = "SDIFrame::OnExecute";
 
-	if (wxGetApp().simThread) {
+	if (wxGetApp().GetGrMainApp()->simThread) {
 		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
 		return;
 	}
@@ -402,9 +403,6 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		wxGetApp().GetDiagFrame()->Clear();
 	ResetGUIDialogs();
 	if (GetPtr_AppInterface()->Init) {
-//		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
-//		  )->CheckChangedValues())
-//			return;
 		if (!CheckChangedValues())
 			return;
 		if (!GetPtr_AppInterface()->audModel) {
@@ -419,7 +417,7 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		mainParDialog->cancelBtn->Enable(FALSE);
 	}
 	ResetGUIDialogs();
-	wxGetApp().StartSimThread();
+	wxGetApp().GetGrMainApp()->StartSimThread();
 	wxGetApp().programMenu->Enable(SDIFRAME_STOP_SIMULATION, TRUE);
 
 }
@@ -430,9 +428,9 @@ void
 SDIFrame::OnStopSimulation(wxCommandEvent& WXUNUSED(event))
 {
 
-	if (!wxGetApp().simThread)
+	if (!wxGetApp().GetGrMainApp()->simThread)
 		return;
-	wxGetApp().DeleteSimThread();
+	wxGetApp().GetGrMainApp()->DeleteSimThread();
 	wxLogWarning("Simulation terminated by user.");
 
 }

@@ -30,7 +30,7 @@
 #ifndef _GRSIMMGR_H
 #define _GRSIMMGR_H 1
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
 #	include <wx/wxhtml.h>
@@ -93,7 +93,8 @@ class EditorToolPalette;
 class SDICanvas;
 class SDIFrame;
 class DiagFrame;
-class SimThread;
+class GrMainApp;
+class GrIPCServer;
 
 /*************************** wxArrayDisplay ***********************************/
 
@@ -104,12 +105,11 @@ WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 // Define a new application
 class MyApp: public wxApp {
 
-	bool	serverFlag, busy, audModelLoadedFlag;
-	uShort	serverPort;
-	int		displayDefaultX, displayDefaultY, myArgc, helpCount;
-	char	**myArgv;
+	bool	audModelLoadedFlag;
+	int		displayDefaultX, displayDefaultY, helpCount;
 	wxString	dataInstallDir, title;
 	SDIFrame	*frame;
+	GrMainApp	*grMainApp;
 	DiagFrame	*diagFrame;
 	GrIPCServer	*iPCServer;
 	wxConfigBase	*pConfig;
@@ -123,54 +123,41 @@ class MyApp: public wxApp {
 	wxArrayString	anaList, ctrlList, displayList, filtList, ioList,
 					  modelsList;
 	wxArrayString	transList, userList, utilList;
-	SimThread	*simThread;
 	wxArrayDisplay	displays;
-	wxCriticalSection	mainCritSect;
 
 	MyApp(void);
 
 	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
 			  const wxString& fileName);
-	bool	CheckInitialisation(void);
-	void	CheckOptions(void);
 	wxMenuBar	*CreateMenuBar(void);
 	EditorToolPalette *CreatePalette(wxFrame *parent);
 	void	CloseDiagWindow(void);
 	void	CreateDocument(const wxString& fileName);
 	void	CreateProcessLists(void);
-	void	DeleteSimThread(void);
 	void	EnableSimParMenuOptions(bool on);
 	bool	GetAudModelLoadedFlag(void)		{ return audModelLoadedFlag; }
 	void	GetDefaultDisplayPos(int *x, int *y);
 	DiagFrame *	GetDiagFrame(void)	{ return diagFrame; }
+	GrMainApp *	GetGrMainApp(void)	{ return grMainApp; }
 	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
 	wxArrayString *	GetProcessList(int classSpecifier);
 
-	bool	InitArgv(int argc);
-	void	InitAppInterface(void);
 	void	InitHelp(void);
-	void	InitMain(void);
-	bool	InitRun(void);
 	void	ExitMain(void);
 	bool	OnInit(void);
 	int		OnExit(void);
 	void	OnServerEvent(wxSocketEvent& event);
 	void	OnSocketEvent(wxSocketEvent& event);
 	void	OpenDiagWindow(void);
-	bool	ResetCommandArgs(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
-	bool	ResetSimulation(void);
 	void	SaveConfiguration(UniParListPtr	parList);
 	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
-	bool	SetArgvString(int index, char *string, int size);
-	bool	SetServerMode(void);
+	bool	InitServer(void);
 	void	SetConfiguration(UniParListPtr	parList);
 	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
-	void	SetDiagLocks(bool on);
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
-	void	StartSimThread(void);
 
 	DECLARE_EVENT_TABLE()
 
@@ -197,8 +184,6 @@ void	CreateApp(void);
 BOOLN	OnExecute_MyApp(void);
 
 void	OnExit_MyApp(void);
-
-void	PrintUsage_MyApp(void);
 
 void	DPrint_MyApp(char *format, va_list args);
 

@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 
 // Any files included regardless of precompiled headers
 #include <wx/image.h>
@@ -71,7 +71,6 @@
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"
 #include "UtAppInterface.h"
-#include "UtOptions.h"
 
 #include "GrSDIPalette.h"
 #include "GrSDIFrame.h"
@@ -82,11 +81,12 @@
 #include "GrSDIView.h"
 #include "GrDiagFrame.h"
 #include "GrIPCServer.h"
-#include "GrSimThread.h"
 #include "GrSignalDisp.h"
 #include "GrCanvas.h"
 #include "GrPrintDisp.h"
 #include "GrFonts.h"
+#include "ExtSimThread.h"
+#include "GrMainApp.h"
 #include "GrBrushes.h"
 #include "GrSimMgr.h"
 
@@ -138,18 +138,13 @@ END_EVENT_TABLE()
 MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 {
 	GetDSAMPtr_Common()->usingGUIFlag = TRUE;
-	serverPort = 0;
-	serverFlag = FALSE;
 	displayDefaultX = 0;
 	displayDefaultY = 0;
-	myArgc = 0;
-	myArgv = NULL;
 	frame = NULL;
 	iPCServer = NULL;
+	grMainApp = NULL;
 	dataInstallDir = DSAM_DATA_INSTALL_DIR;
 	icon = NULL;
-	busy = FALSE;
-	simThread = NULL;
 	myDocManager = NULL;
 	diagFrame = NULL;
 	fileMenu = editMenu = viewMenu = programMenu = NULL;
@@ -168,8 +163,6 @@ MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 int
 MyApp::OnExit(void)
 {
-	int		i;
-
 	wxOGLCleanUp();
 	delete printData;
 
@@ -178,14 +171,8 @@ MyApp::OnExit(void)
 	if (myDocManager)
 		delete myDocManager;
 
-	if (myArgv && (myArgv != argv)) {
-		for (i = 0; i < myArgc; i++)
-			if (myArgv)
-				free(myArgv[i]);
-		free(myArgv);
-	}
 	delete wxConfigBase::Set((wxConfigBase *) NULL);
-	Free_AppInterface();
+	delete grMainApp;
 	return(0);
 
 }
@@ -214,16 +201,6 @@ MyApp::OnInit(void)
 	ResetGUIDialogs();
 	SwitchGUILocking_Common(FALSE);
 
-	myArgc = argc;
-	myArgv = argv;
-
-	// Check call options
-	CheckOptions();
-	if (serverFlag) {
-		if (!SetServerMode())
-			return(FALSE);
-	}
-	
 	// Set brushes
 	greyBrushes = new GrBrushes();
 	
@@ -241,7 +218,12 @@ MyApp::OnInit(void)
 
 	pConfig = wxConfigBase::Get();
 
-	InitAppInterface();
+	grMainApp = new GrMainApp(argc, argv);
+
+	if (grMainApp->GetServerFlag()) {
+		if (!InitServer())
+			return(FALSE);
+	}
 
 	// Get config setup
 	pConfig = wxConfigBase::Get();
@@ -299,33 +281,6 @@ MyApp::OnInit(void)
 
 	// Essential - return the main frame window
 	return(TRUE);
-
-}
-
-/****************************** InitAppInterface ******************************/
-
-/*
- * This routine initialises the application interface.
- */
-
-void
-MyApp::InitAppInterface(void)
-{
-	InitRun();
-	if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
-		GetPtr_AppInterface()->PrintSimMgrUsage = PrintUsage_MyApp;
-		GetPtr_AppInterface()->OnExit = OnExit_MyApp;
-		SetOnExecute_AppInterface(OnExecute_MyApp);
-		GetPtr_AppInterface()->canLoadSimulationFlag = FALSE;
-		InitMain();
-		GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
-		// ??
-		// The code below, and after the "else" needs to be done somewhere else.
-		//simFilePath = GetParString_UniParMgr(&GetPtr_AppInterface()->parList->
-		//  pars[APP_INT_SIMULATIONFILE]);
-		//defaultDir = (wxIsAbsolutePath(simFilePath))? wxPathOnly(simFilePath):
-		//  wxGetCwd() + "/" + wxPathOnly(simFilePath);
-	}
 
 }
 
@@ -501,125 +456,24 @@ MyApp::EnableSimParMenuOptions(bool on)
 
 }
 
-/****************************** SetServerMode *********************************/
+/****************************** InitServer ************************************/
 
 /*
  * This routine sets up the general parameters for the server mode.
  */
 
 bool
-MyApp::SetServerMode(void)
+MyApp::InitServer(void)
 {
 	wxIPV4address	addr;
 
-	iPCServer = new GrIPCServer("", serverPort);
+	iPCServer = new GrIPCServer("", grMainApp->GetServerPort());
 	if (iPCServer->Ok())
 		iPCServer->SetNotification(this);
 	return(TRUE);
 			
 }
 			
-/****************************** CheckInitialisation ***************************/
-
-/*
- * This routine checks that the simulation run has been initialised.
- */
-
-bool
-MyApp::CheckInitialisation(void)
-{
-	static const char *funcName = "MyApp::CheckInitialisation";
-
-	if (!GetPtr_AppInterface()) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
-		ResetStepCount_Utility_Datum();
-	if (!InitProcessVariables_AppInterface(NULL, myArgc, myArgv)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
-		return(FALSE);
-	}
-
-	return(TRUE);
-
-}
-
-/****************************** CheckOptions **********************************/
-
-/*
- * This routine checks for the program call options.
- * It sets the ones only to be used here to be ignored by other routines.
- */
-
-void
-MyApp::CheckOptions(void)
-{
-	int		optInd = 1, optSub = 0;
-	char	c, *argument;
-
-	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "Sp:l:")))
-		switch (c) {
-		case 'S':
-			serverFlag = TRUE;
-			MarkIgnore_Options(argc, argv, "-S", OPTIONS_NO_ARG);
-			break;
-		case 'p':
-			serverPort = atoi(argument);
-			MarkIgnore_Options(argc, argv, "-p", OPTIONS_WITH_ARG);
-			break;
-		case 'l':
-			wxGetApp().InitRun();
-			if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
-				InitMain();
-				if (!CheckInitialisation())
-					exit(1);
-			}
-			MainSimulation();
-		default:
-			;
-		} /* switch */
-
-}
-
-/****************************** ResetCommandArgs ******************************/
-
-bool
-MyApp::ResetCommandArgs(void)
-{
-	static const char *funcName = "MyApp::ResetCommandArgs";
-
-	if (!GetPtr_AppInterface()) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	ResetCommandArgFlags_AppInterface();
-	if (!InitProcessVariables_AppInterface(NULL, myArgc, myArgv)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
-/****************************** InitMain **************************************/
-
-/*
- * This routine initialises the program.
- */
-
-void
-MyApp::InitMain(void)
-{
-	ResetDefaultDisplayPos();
-	if (GetPtr_AppInterface())
-		SetConfiguration(GetPtr_AppInterface()->parList);
-	ResetCommandArgs();
-	ResetStepCount_Utility_Datum();
-	
-}
-
 /****************************** ExitMain **************************************/
 
 /*
@@ -631,10 +485,6 @@ MyApp::ExitMain(void)
 {
 	if (GetPtr_AppInterface())
 		SaveConfiguration(GetPtr_AppInterface()->parList);
-
-	DeleteSimThread();
-
-	SetCanFreePtrFlag_AppInterface(TRUE);
 
 	// save the control's values to the config
 	if ( pConfig != NULL ) {
@@ -665,55 +515,6 @@ MyApp::CreateDocument(const wxString& fileName)
 
 }
 
-/****************************** StartSimThread ********************************/
-
-/*
- * This routine starts the simulation thread.
- */
-
-void
-MyApp::StartSimThread(void)
-{
-	static const char *funcName = "MyApp::StartSimThread";
-
-	mainCritSect.Enter();
-	SwitchGUILocking_Common(TRUE);
-	mainCritSect.Leave();
-	simThread = new SimThread();
-	if (simThread->Create() != wxTHREAD_NO_ERROR)
-		wxLogFatalError("%s: Can't create simulation thread!", funcName);
-
-	if (simThread->Run() != wxTHREAD_NO_ERROR)
-		wxLogError("%s: Cannot start simulation thread.", funcName);
-
-}
-
-/****************************** InitRun ***************************************/
-
-/*
- * This function runs the simulation in the first initialisation run
- * during which the application interface is initialised.
- * With correct usage of the 'InitProcessVariables_AppInterface' routine
- * nothing after the program should be run.
- */
-
-bool
-MyApp::InitRun(void)
-{
-	static const char *funcName = "MyApp::InitRun";
-
-	wxCriticalSectionLocker locker(mainCritSect);
-
-	if (GetDSAMPtr_Common()->appInitialisedFlag) {
-		NotifyWarning("%s: Attempted to re-initialise application.", funcName);
-		return(TRUE);
-	}
-	MainSimulation();
-	SetCanFreePtrFlag_AppInterface(FALSE);
-	return(CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
-
-}
-
 /****************************** GetDefaultDisplayPos **************************/
 
 /*
@@ -728,45 +529,6 @@ MyApp::GetDefaultDisplayPos(int *x, int *y)
 	*y = displayDefaultX;
 	displayDefaultX += 15;
 	displayDefaultY += 10;
-
-}
-
-/****************************** SetArgv ***************************************/
-
-bool
-MyApp::SetArgvString(int index, char *string, int size)
-{
-	static const char *funcName = "MyServer::SetArgv";
-	
-	if ((myArgv[index] = (char *) malloc(size + 1)) == NULL) {
-		NotifyError("%s: Out of memory for myArgv[%d].", funcName, index);
-		return(FALSE);
-	}
-	strcpy(myArgv[index], string);
-	return(TRUE);
-
-}
-
-/****************************** InitArgv **************************************/
-
-/*
- * This allocates the memory for the argv pointer.
- */
-
-bool
-MyApp::InitArgv(int argc)
-{
-	static const char *funcName = "MyServer::InitArgv";
-
-	if (!argc)
-		return(TRUE);
-	myArgc = argc;
-	if ((myArgv = (char **) calloc(myArgc, sizeof(char *))) == NULL) {
-		NotifyError("%s: Out of memory for myArgv[%d] array.", funcName,
-		  myArgc);
-		return(FALSE);
-	}
-	return(TRUE);
 
 }
 
@@ -863,70 +625,6 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 
 }
 
-/****************************** DeleteSimThread *******************************/
-
-/*
- * This routine deletes the simulation thread.
- * It first turns off the GUI output so that locking problems with exit
- * diagnostics do not occur.
- * It also waits until the simThread pointer is set to NULL.
- */
-
-void
-MyApp::DeleteSimThread(void)
-{
-	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-	if (simThread) {
-		simThread->SuspendDiagnostics();
-		simThread->Delete();
-	}
-
-}
-
-/****************************** SetDiagLocks **********************************/
-
-/*
- * This routine sets the dialog locking on and off.
- */
-
-void
-MyApp::SetDiagLocks(bool on)
-{
-	if (!GetDSAMPtr_Common()->lockGUIFlag)
-		return;
-	if (on) {
-		simThread->diagsCritSect.Enter();
-		wxMutexGuiEnter();
-	} else {
-		simThread->diagsCritSect.Leave();
-		wxMutexGuiLeave();
-	}
-
-}
-
-/****************************** ResetSimulation *******************************/
-
-bool
-MyApp::ResetSimulation(void)
-{
-	static char *funcName = "MyApp::ResetSimulation";
-
-	if (simThread) {
-		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
-		return(FALSE);
-	}
-	//DeleteSimModuleDialog();
-
-	SwitchGUILocking_Common(FALSE);
-	if (!CheckInitialisation()) {
-		EnableSimParMenuOptions(FALSE);
-		return(FALSE);
-	}
-	EnableSimParMenuOptions(TRUE);
-	return(TRUE);
-
-}
-
 /****************************** OpenDiagWindow ********************************/
 
 void
@@ -989,7 +687,7 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 		NotifyError("%s: Unexpected socket event.", funcName);
 		return;
 	}
-	wxSocketBase *sock = iPCServer->InitConnection();
+	wxSocketBase *sock = iPCServer->InitConnection(false);
 	if (!sock) {
 		NotifyError("%s: Couldn't initialise connection.\n");
 		return;
@@ -1015,7 +713,7 @@ MyApp::OnSocketEvent(wxSocketEvent& event)
 	SetDiagMode(COMMON_SOCKET_DIAG_MODE);
 	switch (event.GetSocketEvent()) {
 	case wxSOCKET_INPUT: {
-		iPCServer->ProcessInput(sock);
+		iPCServer->ProcessInput();
 		break; }
 	case wxSOCKET_LOST:
 		sock->Destroy();
@@ -1026,24 +724,6 @@ MyApp::OnSocketEvent(wxSocketEvent& event)
 		;
 	}
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
-
-}
-
-/****************************** PrintUsage ************************************/
-
-/*
- * This routine prints the usage for the options used by myApp.
- * It expects to be called by the operating routine's "PrintUsage" routine.
- * So it cannot be a member function.
- */
-
-void
-PrintUsage_MyApp(void)
-{
-	fprintf(stderr, "\n"
-	  "\t-S            \t: Run in server mode\n"
-	  "\t-p <x>        \t: Run using ethernet port <x>.\n"
-	  );
 
 }
 

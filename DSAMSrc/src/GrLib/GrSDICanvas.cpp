@@ -16,7 +16,7 @@
 
 #ifdef USE_WX_OGL
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 
 #include <wx/colordlg.h>
 #include <wx/docview.h>

@@ -94,6 +94,8 @@ if test "$echo_cflags" = "yes"; then
 	fi
 	if [ "$use_gui" = "yes" ]; then
 		cflags="$cflags -DUSE_GUI @WXINC@"
+	else
+		cflags="$cflags @DSAMEXTINC@ @WX_BASE_CXXFLAGS@"
 	fi
 	if [ "@MINGW32@" = "yes" -a "$use_debug" != "yes" ]; then
 		cflags="$cflags -mwindows"
@@ -116,6 +118,10 @@ if [ "$echo_libs" = "yes" ]; then
 		libs="$libs -l@PACKAGE@_g @WXLDLIBS@"
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
+		if [ -z "@DSAM_EXTENSIONS_TRUE@" ]; then
+			libs="$libs @WX_BASE_LDFLAGS@"
+		fi
 	fi
+	libs="$libs @DSAMEXTLIB@"
 	echo $libs
 fi

@@ -43,8 +43,6 @@
 #include "GeModuleMgr.h"
 #include "GeModuleReg.h"
 
-#include "StdSimThread.h"
-
 #include "UtAccumulate.h"
 #include "UtAmpMod.h"
 #include "UtAppInterface.h"
@@ -193,6 +191,7 @@
 #		include <wx/socket.h>
 #		include "ExtIPCServer.h"
 #		include "ExtMainApp.h"
+#		include "ExtSimThread.h"
 #	endif /* USE_EXTENSIONS_LIBRARY */
 
 #	if defined(GRAPHICS_SUPPORT) && defined(USE_GUI)
@@ -216,7 +215,6 @@
 #		include "GrParListInfo.h"
 #		include "GrParListInfoList.h"
 #		include "GrModParDialog.h"
-#		include "GrSimThread.h"
 #		include	"GrIPCServer.h"
 #		include "GrSimMgr.h"
 #		include "GrLines.h"

@@ -14,7 +14,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 #include <wx/wxexpr.h>
 
 #include "GeCommon.h"

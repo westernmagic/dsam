@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "GrCommon.h"
+#include "ExtCommon.h"
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

@@ -114,11 +114,6 @@
 #	define	FLT_MAX		((float) 1.0e37)
 #endif
 
-
-#ifndef USE_GUI
-#	define MainSimulation	main
-#endif
-
 #define	PROCESS_START_TIME		0
 
 #ifdef WIN32
@@ -275,6 +270,7 @@ typedef struct {
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
 	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
+	BOOLN	usingExtFlag;		/* TRUE when the extensions are being used. */
 	BOOLN	interruptRequestedFlag;	/* TRUE, when an interrupt is in process. */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
@@ -376,6 +372,8 @@ void	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 void	SetParsFilePath_Common(char *name);
 
 void	SetSegmentedMode(BOOLN setting);
+
+void	SetUsingExtStatus(BOOLN status);
 
 void	SetUsingGUIStatus(BOOLN status);
 
