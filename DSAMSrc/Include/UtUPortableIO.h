@@ -43,6 +43,9 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.5  2001/06/12 13:01:32  lowel
+* Cosmetic changes.
+*
 * Revision 1.4  2000/11/22 18:45:09  lowel
 * The 'InitMemory_UPortableIO' was changed to return a pointer to the module
 * structure created, rather than a BOOLN variable.

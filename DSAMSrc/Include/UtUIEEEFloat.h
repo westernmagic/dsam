@@ -54,6 +54,9 @@
 * NaN's, and denormalized numbers.
 * $Header$ *
 * $Log$
+* Revision 1.3  2001/06/12 13:01:32  lowel
+* Cosmetic changes.
+*
 * Revision 1.2  2000/04/10 06:49:49  lowel
 * Changed the names of the Ieee routines to IEEE.
 *
