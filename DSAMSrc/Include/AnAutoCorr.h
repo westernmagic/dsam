@@ -84,7 +84,9 @@ typedef struct {
 	NameSpecifier	*normalisationModeList;
 	NameSpecifier	*timeConstModeList;
 	UniParListPtr	parList;
-	double	*exponentDt;
+	ChanLen	timeOffsetIndex, sumLimitIndex, maxLagIndex;
+	double	*exponentDt, expDecay, dt;
+	
 
 } AutoCorr, *AutoCorrPtr;
 

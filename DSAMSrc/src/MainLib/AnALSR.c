@@ -360,6 +360,7 @@ InitModule_Analysis_ALSR(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = aLSRPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_ALSR;
 	theModule->Free = Free_Analysis_ALSR;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ALSR;
@@ -415,24 +416,25 @@ BOOLN
 InitProcessVariables_Analysis_ALSR(EarObjectPtr data)
 {
 	static const char	*funcName = "InitProcessVariables_Analysis_ALSR";
+	ALSRPtr	p = aLSRPtr;
 
-	if (aLSRPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_Analysis_ALSR();
-		if ((aLSRPtr->modulusFT = Init_EarObject("Ana_FourierT")) == NULL) {
+		if ((p->modulusFT = Init_EarObject("Ana_FourierT")) == NULL) {
 			NotifyError("%s: Could not initialise the 'modulusFT' EarObject.",
 			  funcName);
 			return(FALSE);
 		}
-		aLSRPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	}
-	if (!SetPar_ModuleMgr(aLSRPtr->modulusFT, "output_mode", "modulus")) {
+	if (!SetPar_ModuleMgr(p->modulusFT, "output_mode", "modulus")) {
 		NotifyError("%s: Could not set the 'Ana_FourierT' output mode.",
 		  funcName);
 		return(FALSE);
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		ResetProcess_EarObject(aLSRPtr->modulusFT);
+		ResetProcess_EarObject(p->modulusFT);
 		/*** Put reset (to zero ?) code here ***/
 	}
 	return(TRUE);
@@ -481,11 +483,8 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	int		chan, minChan, maxChan, minWinChan, maxWinChan, numChannels;
 	double	dF, *cFs;
 	ChanLen	i, minIndex, maxIndex;
+	ALSRPtr	p = aLSRPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
 	if (!CheckPars_Analysis_ALSR())
 		return(FALSE);
 	if (!CheckData_Analysis_ALSR(data)) {
@@ -509,23 +508,22 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz) ");
 	snprintf(channelTitle, MAXLINE, "ALSR function (+%g / -%g octaves)",
-	  aLSRPtr->lowerAveLimit, aLSRPtr->upperAveLimit);
+	  p->lowerAveLimit, p->upperAveLimit);
 	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 	SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 	SetInfoCFArray_SignalData(data->outSignal, NULL);
 	if (!GetChannelLimits_SignalData(data->inSignal[0], &minChan, &maxChan, 
-	  aLSRPtr->lowerAveLimit, aLSRPtr->upperAveLimit,
-	  SIGNALDATA_LIMIT_MODE_OCTAVE)) {
+	  p->lowerAveLimit, p->upperAveLimit, SIGNALDATA_LIMIT_MODE_OCTAVE)) {
 		NotifyError("%s: Could not find a channel limits for signal.",
 		  funcName);
 		return(FALSE);
 	}
-	TempInputConnection_EarObject(data, aLSRPtr->modulusFT, 1);
-	if (!RunProcess_ModuleMgr(aLSRPtr->modulusFT)) {
+	TempInputConnection_EarObject(data, p->modulusFT, 1);
+	if (!RunProcess_ModuleMgr(p->modulusFT)) {
 		NotifyError("%s: Could not run 'Ana_FourierT' process.", funcName);
 		return(FALSE);
 	}
-	dF = aLSRPtr->modulusFT->outSignal->dt;
+	dF = p->modulusFT->outSignal->dt;
 	cFs = data->inSignal[0]->info.cFArray;
 	SetSamplingInterval_SignalData(data->outSignal, dF);
 	minIndex = (ChanLen) floor(cFs[minChan] / dF + 0.5);
@@ -536,10 +534,10 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	outPtr = data->outSignal->channel[0] + minIndex;
 	for (i = minIndex; i <= maxIndex; i++, outPtr++) {
 		GetWindowLimits_SignalData(data->inSignal[0], &minWinChan, &maxWinChan,
-		  i * dF, aLSRPtr->lowerAveLimit, aLSRPtr->upperAveLimit,
+		  i * dF, p->lowerAveLimit, p->upperAveLimit,
 		  SIGNALDATA_LIMIT_MODE_OCTAVE);
 		for (chan = minWinChan, *outPtr = 0.0; chan <= maxWinChan; chan++)
-			*outPtr += aLSRPtr->modulusFT->outSignal->channel[chan][i];
+			*outPtr += p->modulusFT->outSignal->channel[chan][i];
 	}
 	for (i = maxIndex + 1; i < data->outSignal->length; i++)
 		*outPtr++ = 0.0;

@@ -633,6 +633,7 @@ InitModule_Analysis_ACF(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = autoCorrPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_ACF;
 	theModule->Free = Free_Analysis_ACF;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ACF;
@@ -750,25 +751,25 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 	register double	*expDtPtr, dt;
 	int		chan;
 	double	minDecay;
-	ChanLen	i, maxLagIndex, minLagIndex;
-	
-	if (autoCorrPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	ChanLen	i, minLagIndex;
+	AutoCorrPtr	p = autoCorrPtr;
+
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_ACF();
-		if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
 			dt = data->inSignal[0]->dt;
-			maxLagIndex = (ChanLen) floor(autoCorrPtr->maxLag / dt + 0.5);
-			if ((autoCorrPtr->exponentDt = (double *) calloc(maxLagIndex,
-			  sizeof(double))) == NULL) {
+			if ((p->exponentDt = (double *) calloc(p->maxLagIndex, sizeof(
+			  double))) == NULL) {
 				NotifyError("%s: Out of memory for exponent lookup table.",
 				  funcName);
 				return(FALSE);
 			}
-			minLagIndex = (ChanLen) floor(autoCorrPtr->timeConstant / (dt *
-			  autoCorrPtr->timeConstScale) + 0.5);
-			minDecay = exp(-dt / autoCorrPtr->timeConstant);
-			for (i = 0, expDtPtr = autoCorrPtr->exponentDt; i < maxLagIndex;
-			  i++, expDtPtr++)
-				*expDtPtr = (i > minLagIndex)? exp(-1.0 / (i * autoCorrPtr->
+			minLagIndex = (ChanLen) floor(p->timeConstant / (dt *
+			  p->timeConstScale) + 0.5);
+			minDecay = exp(-dt / p->timeConstant);
+			for (i = 0, expDtPtr = p->exponentDt; i < p->maxLagIndex; i++,
+			  expDtPtr++)
+				*expDtPtr = (i > minLagIndex)? exp(-1.0 / (i * p->
 				  timeConstScale)): minDecay;
 			
 		}
@@ -780,7 +781,7 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 			  cFArray[chan];
 		SetInfoSampleTitle_SignalData(data->outSignal, "Delay Lag (s)");
 		SetNumWindowFrames_SignalData(data->outSignal, 0);
-		autoCorrPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -817,6 +818,9 @@ FreeProcessVariables_Analysis_ACF(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The setting of the static 'expDtPtr' pointer is done outside of the
+ * 'initThreadRun' for the sake of speed, i.e. because it is defined as a
+ * register.
  */
 
 BOOLN
@@ -826,62 +830,68 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	register    double  *expDtPtr = NULL;
 	register    ChanData    *inPtr, *outPtr;
 	int		chan;
-	double	dt, wiegrebeTimeConst, expDecay;
-	ChanLen i, timeOffsetIndex, maxLagIndex, deltaT, sumLimitIndex;
+	double	wiegrebeTimeConst;
+	ChanLen i, deltaT;
+	AutoCorrPtr	p = autoCorrPtr;
 
-	if (!CheckPars_Analysis_ACF())
-		return(FALSE);
-	if (!CheckData_Analysis_ACF(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_ACF())
+			return(FALSE);
+		if (!CheckData_Analysis_ACF(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Auto Correlation Function (ACF) "
+		  "analysis");
+		p->dt = data->inSignal[0]->dt;
+		p->maxLagIndex = (ChanLen) floor(p->maxLag / p->dt + 0.5);
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
+		  p->maxLagIndex, p->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Analysis_ACF(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		p->timeOffsetIndex = (ChanLen) ((p->timeOffset < 0.0)? data->inSignal[
+		  0]->length: p->timeOffset / p->dt + 0.5);
+		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER) {
+			p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
+			  p->timeConstant * 3.0);
+			p->expDecay = exp(-p->dt / p->timeConstant);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Auto Correlation Function (ACF) analysis");
-	dt = data->inSignal[0]->dt;
-	maxLagIndex = (ChanLen) (autoCorrPtr->maxLag / dt + 0.5);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  maxLagIndex, dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Analysis_ACF(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
-	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
-	if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER) {
-		sumLimitIndex = SunLimitIndex_Analysis_ACF(data, autoCorrPtr->
-		  timeConstant * 3.0);
-		expDecay = exp(-dt / autoCorrPtr->timeConstant);
-		expDtPtr = &expDecay;
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER)
+		expDtPtr = &p->expDecay;
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		outPtr = data->outSignal->channel[chan];
-		if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
-			expDtPtr = autoCorrPtr->exponentDt;
-		for (deltaT = 0; deltaT < maxLagIndex; deltaT++, outPtr++) {
-			if (autoCorrPtr->timeConstMode ==
-			  ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
-				wiegrebeTimeConst = TimeConstant_Analysis_ACF(deltaT * dt);
-				sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
+		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
+			expDtPtr = p->exponentDt;
+		for (deltaT = 0; deltaT < p->maxLagIndex; deltaT++, outPtr++) {
+			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+				wiegrebeTimeConst = TimeConstant_Analysis_ACF(deltaT * p->dt);
+				p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 				  wiegrebeTimeConst);
 			}
-			inPtr = data->inSignal[0]->channel[chan] + (timeOffsetIndex -
-			  sumLimitIndex);
-			for (i = 0, *outPtr = 0.0; i < sumLimitIndex; i++, inPtr++)
+			inPtr = data->inSignal[0]->channel[chan] + (p->timeOffsetIndex -
+			  p->sumLimitIndex);
+			for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
 				*outPtr =  (*outPtr * *expDtPtr) + (*inPtr * *(inPtr - deltaT));
-			if (autoCorrPtr->timeConstMode ==
-			  ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
+			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
 				expDtPtr++;
 				*outPtr /= wiegrebeTimeConst;
 			}
-			switch(autoCorrPtr->normalisationMode) {
+			switch(p->normalisationMode) {
 			case ANALYSIS_NORM_MODE_STANDARD:
-				*outPtr /= maxLagIndex;
+				*outPtr /= p->maxLagIndex;
 				break;
 			case ANALYSIS_NORM_MODE_UNITY:
-				sqrt(*outPtr /= autoCorrPtr->timeConstant);
+				sqrt(*outPtr /= p->timeConstant);
 			default:
 				;
 			} /* switch */

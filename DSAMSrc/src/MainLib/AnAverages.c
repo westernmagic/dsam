@@ -457,6 +457,7 @@ InitModule_Analysis_Averages(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = averagesPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_Averages;
 	theModule->Free = Free_Analysis_Averages;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Averages;
@@ -534,29 +535,34 @@ Calc_Analysis_Averages(EarObjectPtr data)
 	register	ChanData	 *inPtr, sum;
 	int		chan;
 	double	dt;
-	ChanLen	i, timeOffsetIndex, timeRangeIndex;
+	ChanLen	i;
+	AveragesPtr	p = averagesPtr;
 
-	if (!CheckPars_Analysis_Averages())
-		return(FALSE);
-	if (!CheckData_Analysis_Averages(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_Averages())
+			return(FALSE);
+		if (!CheckData_Analysis_Averages(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Averages Analysis");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		  1.0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		dt = data->inSignal[0]->dt;
+		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5);
+		p->timeRangeIndex = (p->timeRange <= 0.0)? data->inSignal[0]->length -
+		  p->timeOffsetIndex: (ChanLen) floor(p->timeRange / dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Averages Analysis");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-	  1.0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	dt = data->inSignal[0]->dt;
-	timeOffsetIndex = (ChanLen) floor(averagesPtr->timeOffset / dt + 0.5);
-	timeRangeIndex = (averagesPtr->timeRange <= 0.0)?
-	  data->inSignal[0]->length - timeOffsetIndex:
-	  (ChanLen) floor(averagesPtr->timeRange / dt + 0.5);
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
-		for (i = 0, sum = 0.0; i < timeRangeIndex; i++, inPtr++)
-			switch (averagesPtr->mode) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
+		for (i = 0, sum = 0.0; i < p->timeRangeIndex; i++, inPtr++)
+			switch (p->mode) {
 			case AVERAGES_FULL:
 				sum += *inPtr;
 				break;
@@ -570,10 +576,10 @@ Calc_Analysis_Averages(EarObjectPtr data)
 				break;
 			} /* switch */
 				
-		data->outSignal->channel[chan][0] = (ChanData) (sum / timeRangeIndex);
+		data->outSignal->channel[chan][0] = (ChanData) (sum /
+		  p->timeRangeIndex);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
 }
-
