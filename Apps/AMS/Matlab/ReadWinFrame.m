@@ -17,19 +17,25 @@ switch wordSize
 	case 1
 		frame = fread(fid, [numChannels, frameLen], 'char');
 	case 2
-		frame = Read16Bits(fid, littleEndian);
-		if (littleEndian == 0)
-			for i = 1:frameLen
-				for j = 1:numChannels
-					frame(j, i) = bitshift(bitand(frame(j, i), 255), +8) + ...
-					  bitshift(frame(j, i), -8);
-				end;
+		for i = 1:frameLen
+			for j = 1:numChannels
+				data = Read16Bits(fid, littleEndian);
+				if (data > 32767)
+					frame(j, i) = data - 65536;
+				else
+					frame(j, i) = data;
+				end
 			end;
 		end;
 	case 4
 		for i = 1:frameLen
 			for j = 1:numChannels
-				frame(j, i) = Read32Bits(fid, littleEndian);
+				data = Read32Bits(fid, littleEndian);
+				if (data > 2147483647)
+					frame(j, i) = data - 4294967296;
+				else
+					frame(j, i) = data;
+				end
 			end;
 		end;
 	
