@@ -1,18 +1,18 @@
 /**********************
  *
  * File:		UtDelay.h
- * Purpose:		This module introduces a initialDelay in a monaural signal or an
+ * Purpose:		This module introduces a delay in a monaural signal or an
  *				interaural time difference (ITD) in a binaural signal.
  * Comments:	Written using ModuleProducer version 1.10 (Jan  3 1997).
- *				For binaural signals if the initialDelay is positive, then the
- *				right (second) channel is initialDelayed relative to the left
- *				channel, and vice versus for negative initialDelays.
- *				Monaural signals always treat initialDelays as positive values.
+ *				For binaural signals if the delay is positive, then the right
+ *				(second) channel is delayed relative to the left (first)
+ *				channel, and vice versus for negative delays.
+ *				Monaural signals always treat delays as positive values.
  * Author:		L. P. O'Mard
  * Created:		08 Apr 1997
  * Updated:	
- * Copyright:	(c) 1997, University of Essex
- *
+ * Copyright:	(c) 1998, University of Essex
+*
  *********************/
 
 #ifndef _UTDELAY_H
