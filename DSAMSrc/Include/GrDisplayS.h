@@ -42,12 +42,8 @@
 
 class DisplayS: public wxFrame
 {
-<<<<<<< GrDisplayS.h
 	long	handle;
 	SignalDispPtr	mySignalDispPtr;
-=======
-	long	handle;
->>>>>>> 1.5
 
  public:
 	MyCanvas	*canvas;
