@@ -621,11 +621,10 @@ ParListInfo::AddModuleListBoxEntries(wxListBox *listBox)
 		if (p->type == PROCESS) {
 			wxString moduleEntry;
 			if (p->data->module->onFlag)
-				moduleEntry.sprintf("  %s.%d", p->u.proc.moduleName,
-				  p->stepNumber);
+				moduleEntry.sprintf("  %s", NameAndLabel_Utility_Datum(p));
 			else
-				moduleEntry.sprintf("%c %s.%d", SIMSCRIPT_DISABLED_MODULE_CHAR,
-				  p->u.proc.moduleName, p->stepNumber);
+				moduleEntry.sprintf("%c %s", SIMSCRIPT_DISABLED_MODULE_CHAR,
+				  NameAndLabel_Utility_Datum(p));
 			listBox->Append(moduleEntry.GetData());
 		}
 
