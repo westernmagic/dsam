@@ -42,3 +42,6 @@ pkgdata_DATA	= \
 	AMSHE_c.htm \
 	AMSHelp.hhc \
 	ams.hhp
+	
+EXTRA_DIST = $(pkgdata_DATA)
+
