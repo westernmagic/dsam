@@ -74,6 +74,10 @@
 #	define LN_2	0.69314718055994529
 #endif
 
+#ifndef LOG_2
+#	define LOG_2	0.30102999566398
+#endif
+
 #define MAXLINE				80		/* Max. No. of characters in a line. */
 #define SMALL_STRING		10		/* For small string operations. */
 #define LONG_STRING			255		/* For very long strings. */
@@ -173,6 +177,8 @@
 #define RMS_AMP(DBVALUE)		(20.0 * pow(10.0, (DBVALUE) / 20.0))
 
 #define DB_SPL(RMS_AMPLITUDE)	(20.0 * log10((RMS_AMPLITUDE) / 20.0))
+
+#define OCTAVE(F, X)	(pow(10, (X) * LOG_2 + log10(F)))
 
 #define MSEC(SECONDS)			((SECONDS) * 1.0e+3)
 #define MILLI(VALUE)			((VALUE) * 1.0e+3)
