@@ -1341,6 +1341,11 @@ SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 {
 	static const char	*funcName = "SetGeneratedPars_IonChanList";
 
+	if (theICs->dV <= DBL_EPSILON) {
+		NotifyError("%s: the voltage step must be greater than zero.",
+		  funcName);
+		return(FALSE);
+	}
 	if ((theICs->numTableEntries = (int) ceil((theICs->maxVoltage -
 	  theICs->minVoltage) / theICs->dV) + 1) <= 0) {
 		NotifyError("%s: Cannot define table from voltage range\n%g -> %g mV "
