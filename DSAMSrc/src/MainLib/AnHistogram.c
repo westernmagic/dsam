@@ -816,7 +816,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_Histogram";
 	register	ChanData	*inPtr, *outPtr, *buffPtr, binSum;
-	BOOLN	bufferData;
+	BOOLN	bufferData, spikeRateMode;
 	int		chan;
 	double	nextCutOff, nextBinCutOff, dt, binWidth, time, totalBinDuration;
 	ChanLen	i, remnantSamples, bufferSamples;
@@ -845,7 +845,10 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && p->numPeriods) {
+	spikeRateMode = ((p->typeMode == HISTOGRAM_PSTH_SR) || (p->typeMode ==
+	  HISTOGRAM_PH_SR));
+	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && spikeRateMode && p->
+	  numPeriods) {
 		totalBinDuration = binWidth * p->numPeriods;
 		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 			outPtr = data->outSignal->channel[chan];
@@ -910,8 +913,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	}
 	if ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode == HISTOGRAM_PSTH_SR))
 		p->numPeriods++;
-	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && ((p->typeMode ==
-	  HISTOGRAM_PSTH_SR) || (p->typeMode == HISTOGRAM_PH_SR))) {
+	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && spikeRateMode) {
 		totalBinDuration = binWidth * p->numPeriods;
 		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 			outPtr = data->outSignal->channel[chan];
