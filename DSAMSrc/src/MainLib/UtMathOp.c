@@ -349,6 +349,7 @@ InitModule_Utility_MathOp(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = mathOpPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_MathOp;
 	theModule->Free = Free_Utility_MathOp;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_MathOp;
@@ -435,26 +436,26 @@ Process_Utility_MathOp(EarObjectPtr data)
 	int		chan;
 	ChanLen	i;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Utility_MathOp())
-		return(FALSE);
-	if (!CheckData_Utility_MathOp(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Mathematical operation module process");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_MathOp())
+			return(FALSE);
+		if (!CheckData_Utility_MathOp(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Mathematical operation module process");
 
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+		/*** Example Initialise output signal - ammend/change if required. ***/
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		inPtr1 = data->inSignal[0]->channel[chan];
 		if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 		  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT))
