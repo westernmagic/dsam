@@ -625,8 +625,9 @@ BOOLN
 ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 {
 	static const char *funcName = "ReadPars_ModuleMgr";
-	BOOLN	ok = TRUE, useOldReadPars = FALSE, firstParameter = TRUE;
+	BOOLN	ok = TRUE, useOldReadPars;
 	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
+	char	failedParName[MAXLINE] = "";
 	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	UniParPtr	par;
 	UniParListPtr	parList, tempParList;
@@ -644,42 +645,53 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
 		return(FALSE);
 	}
+	if (!data->module->ReadPars)
+		useOldReadPars = FALSE;
+	else {
+		useOldReadPars = TRUE;
+		SetErrorsFile_Common("off", OVERWRITE);
+	}
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
 		tempParList = parList;
-		if (firstParameter)
-			SetErrorsFile_Common("off", OVERWRITE);
 		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
-		if (firstParameter) {
-			GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-			if (!par && data->module->ReadPars) {
-				useOldReadPars = TRUE;
-				break;
-			}
-			DPrint("%s: Reading '%s' parameters from '%s':\n", funcName, data->
-			  module->name, fileName);
-			firstParameter = FALSE;
-		}
-		if (!par) {
-			NotifyError("%s: Unknown parameter '%s' for module '%s'.", funcName,
-			  parName, data->module->name);
-			ok = FALSE;
-		} else {
-			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
+		if (useOldReadPars) {
+			if (par) {
+				useOldReadPars = FALSE;
+				GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
+			} else {
 				ok = FALSE;
+				strcpy(failedParName, parName);
+			}
+		}
+		if (!useOldReadPars) {
+			if (!par) {
+				NotifyError("%s: Unknown parameter '%s' for module '%s'.",
+				  funcName, parName, data->module->name);
+				ok = FALSE;
+			} else {
+				if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
+					ok = FALSE;
+			}
 		}
 	}
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
 	if (useOldReadPars) {
+		GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 		/* Enable this following line after an adjustment period. */
 		/* NotifyWarning("%s: Using old parameter format for module '%s'.",
 		  funcName, data->module->name); */
+		DPrint("%s: Reading '%s' parameters from '%s':\n", funcName, data->
+		  module->name, fileName);
 		return((* data->module->ReadPars)(fileName));
 	}
 	if (!ok) {
+		if (*failedParName)
+			NotifyError("%s: Unknown parameter '%s' for module '%s'.", funcName,
+			  failedParName, data->module->name);
 		NotifyError("%s: Invalid parameters, in '%s' module parameter file "
 		  "'%s'.", funcName, data->module->name, fileName);
 		return(FALSE);
