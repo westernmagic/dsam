@@ -147,7 +147,6 @@ class MyApp: public wxApp {
     int		OnExit(void);
 	void	OnServerEvent(wxSocketEvent& event);
 	void	OnSocketEvent(wxSocketEvent& event);
-	void	PrintUsage(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	void	RunInClientMode(void);
@@ -178,6 +177,8 @@ extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
 /******************************************************************************/
 
 void	CreateApp(void);
+
+void	PrintUsage_MyApp(void);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
