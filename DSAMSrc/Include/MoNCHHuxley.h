@@ -39,7 +39,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define NEURON_HHUXLEY_NUM_PARS			10
+#define NEURON_HHUXLEY_NUM_PARS			11
 #define	HHUXLEY_FIND_REST_MAX_LOOP		500
 
 /******************************************************************************/
@@ -53,6 +53,7 @@ typedef enum {
 	NEURON_HHUXLEY_INJECTIONMODE,
 	NEURON_HHUXLEY_EXCITATORYREVERSALPOT,
 	NEURON_HHUXLEY_INHIBITORYREVERSALPOT,
+	NEURON_HHUXLEY_SHUNTINHIBITORYREVERSALPOT,
 	NEURON_HHUXLEY_CELLCAPACITANCE,
 	NEURON_HHUXLEY_RESTINGPOTENTIAL,
 	NEURON_HHUXLEY_RESTINGSIGNALDURATION,
@@ -88,16 +89,19 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	operationModeFlag, injectionModeFlag, restingPotentialFlag;
+	BOOLN	diagnosticModeFlag, operationModeFlag, injectionModeFlag;
 	BOOLN	excitatoryReversalPotFlag, inhibitoryReversalPotFlag;
-	BOOLN	cellCapacitanceFlag,restingSignalDurationFlag, restingCriteriaFlag;
-	BOOLN	diagnosticModeFlag, updateProcessVariablesFlag;
+	BOOLN	shuntInhibitoryReversalPotFlag, cellCapacitanceFlag;
+	BOOLN	restingPotentialFlag, restingSignalDurationFlag;
+	BOOLN	restingCriteriaFlag, iCListFlag;
+	BOOLN	updateProcessVariablesFlag;
 
 	int		diagnosticMode;
 	int		operationMode;
 	int		injectionMode;
 	double	excitatoryReversalPot;
 	double	inhibitoryReversalPot;
+	double	shuntInhibitoryReversalPot;
 	double	cellCapacitance;
 	double	restingPotential;
 	double	restingSignalDuration;
@@ -188,8 +192,9 @@ BOOLN	SetParsPointer_Neuron_HHuxley(ModulePtr theModule);
 BOOLN	SetPars_Neuron_HHuxley(IonChanListPtr iCList, char *diagnosticMode,
 		  char *operationMode, char *injectionMode,
 		  double excitatoryReversalPot, double inhibitoryReversalPot,
-		  double cellCapacitance, double restingPotential,
-		  double restingSignalDuration, double restingCriteria);
+		  double shuntInhibitoryReversalPot, double cellCapacitance,
+		  double restingPotential, double restingSignalDuration,
+		  double restingCriteria);
 
 BOOLN	SetRestingCriteria_Neuron_HHuxley(double theRestingCriteria);
 
@@ -197,6 +202,9 @@ BOOLN	SetRestingPotential_Neuron_HHuxley(double theRestingPotential);
 
 BOOLN	SetRestingSignalDuration_Neuron_HHuxley(
 		  double theRestingSignalDuration);
+
+BOOLN	SetShuntInhibitoryReversalPot_Neuron_HHuxley(
+		  double theShuntInhibitoryReversalPot);
 
 BOOLN	SetUniParList_Neuron_HHuxley(void);
 

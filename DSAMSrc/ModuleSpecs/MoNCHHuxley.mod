@@ -7,7 +7,7 @@ mod_name		Neuron;
 qualifier		HHuxley;
 proc_routine	RunModel;
 typedef		int	IonChanListPtr;
-
+process_vars	true;
 typedef struct {
 
 	NameSpecifier	diagnosticMode;
@@ -15,6 +15,7 @@ typedef struct {
 	NameSpecifier	injectionMode;
 	double			excitatoryReversalPot;
 	double			inhibitoryReversalPot;
+	double			shuntInhibitoryReversalPot;
 	double			cellCapacitance;
 	double			restingPotential;
 	double			restingSignalDuration;

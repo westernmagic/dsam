@@ -172,6 +172,7 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 	hHuxleyNCPtr->injectionModeFlag = FALSE;
 	hHuxleyNCPtr->excitatoryReversalPotFlag = FALSE;
 	hHuxleyNCPtr->inhibitoryReversalPotFlag = FALSE;
+	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = FALSE;
 	hHuxleyNCPtr->cellCapacitanceFlag = FALSE;
 	hHuxleyNCPtr->restingPotentialFlag = FALSE;
 	hHuxleyNCPtr->restingSignalDurationFlag = FALSE;
@@ -182,6 +183,7 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 	hHuxleyNCPtr->injectionMode = 0;
 	hHuxleyNCPtr->excitatoryReversalPot = 0.0;
 	hHuxleyNCPtr->inhibitoryReversalPot = 0.0;
+	hHuxleyNCPtr->shuntInhibitoryReversalPot = 0.0;
 	hHuxleyNCPtr->cellCapacitance = 0.0;
 	hHuxleyNCPtr->restingPotential = 0.0;
 	hHuxleyNCPtr->restingSignalDuration = 0.0;
@@ -253,6 +255,12 @@ SetUniParList_Neuron_HHuxley(void)
 	  UNIPAR_REAL,
 	  &hHuxleyNCPtr->inhibitoryReversalPot, NULL,
 	  (void * (*)) SetInhibitoryReversalPot_Neuron_HHuxley);
+	SetPar_UniParMgr(&pars[NEURON_HHUXLEY_SHUNTINHIBITORYREVERSALPOT],
+	  "SHUNT_INHIB_REV_POT",
+	  "Shunt inhibitory reversal potential (V).",
+	  UNIPAR_REAL,
+	  &hHuxleyNCPtr->shuntInhibitoryReversalPot, NULL,
+	  (void * (*)) SetShuntInhibitoryReversalPot_Neuron_HHuxley);
 	SetPar_UniParMgr(&pars[NEURON_HHUXLEY_CELLCAPACITANCE], "CAPACITANCE",
 	  "Cell capacitance (Farads).",
 	  UNIPAR_REAL,
@@ -317,8 +325,9 @@ GetUniParListPtr_Neuron_HHuxley(void)
 BOOLN
 SetPars_Neuron_HHuxley(IonChanListPtr iCList, char *diagnosticMode,
   char *operationMode, char *injectionMode, double excitatoryReversalPot,
-  double inhibitoryReversalPot, double cellCapacitance, double restingPotential,
-  double restingSignalDuration, double restingCriteria)
+  double inhibitoryReversalPot, double shuntInhibitoryReversalPot,
+  double cellCapacitance, double restingPotential, double restingSignalDuration,
+  double restingCriteria)
 {
 	static const char	*funcName = "SetPars_Neuron_HHuxley";
 	BOOLN	ok;
@@ -335,6 +344,9 @@ SetPars_Neuron_HHuxley(IonChanListPtr iCList, char *diagnosticMode,
 	if (!SetExcitatoryReversalPot_Neuron_HHuxley(excitatoryReversalPot))
 		ok = FALSE;
 	if (!SetInhibitoryReversalPot_Neuron_HHuxley(inhibitoryReversalPot))
+		ok = FALSE;
+	if (!SetShuntInhibitoryReversalPot_Neuron_HHuxley(
+	  shuntInhibitoryReversalPot))
 		ok = FALSE;
 	if (!SetCellCapacitance_Neuron_HHuxley(cellCapacitance))
 		ok = FALSE;
@@ -507,6 +519,32 @@ SetInhibitoryReversalPot_Neuron_HHuxley(double theInhibitoryReversalPot)
 
 }
 
+/****************************** SetShuntInhibitoryReversalPot *****************/
+
+/*
+ * This function sets the module's shuntInhibitoryReversalPot parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetShuntInhibitoryReversalPot_Neuron_HHuxley(double
+  theShuntInhibitoryReversalPot)
+{
+	static const char	*funcName =
+	  "SetShuntInhibitoryReversalPot_Neuron_HHuxley";
+
+	if (hHuxleyNCPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = TRUE;
+	hHuxleyNCPtr->shuntInhibitoryReversalPot = theShuntInhibitoryReversalPot;
+	return(TRUE);
+
+}
+
 /****************************** SetCellCapacitance ****************************/
 
 /*
@@ -649,6 +687,11 @@ CheckPars_Neuron_HHuxley(void)
 		NotifyError("%s: inhibitoryReversalPot variable not set.", funcName);
 		ok = FALSE;
 	}
+	if (!hHuxleyNCPtr->shuntInhibitoryReversalPotFlag) {
+		NotifyError("%s: shuntInhibitoryReversalPot variable not set.",
+		  funcName);
+		ok = FALSE;
+	}
 	if (!hHuxleyNCPtr->cellCapacitanceFlag) {
 		NotifyError("%s: cellCapacitance variable not set.", funcName);
 		ok = FALSE;
@@ -742,6 +785,8 @@ PrintPars_Neuron_HHuxley(void)
 	  MILLI(hHuxleyNCPtr->excitatoryReversalPot));
 	DPrint("\tInhibitory reversal potential = %g (mV),\n",
 	  MILLI(hHuxleyNCPtr->inhibitoryReversalPot));
+	DPrint("\tShunt inhibitory reversal potential = %g (mV),\n",
+	  MILLI(hHuxleyNCPtr->shuntInhibitoryReversalPot));
 	DPrint("\tCell capacitance = %g (F),\n",
 	  hHuxleyNCPtr->cellCapacitance);
 	DPrint("\tRestingPotential = %g mV\n",
@@ -771,6 +816,7 @@ ReadPars_Neuron_HHuxley(char *fileName)
 	char	injectionMode[MAXLINE];
 	double	excitatoryReversalPot, inhibitoryReversalPot, cellCapacitance;
 	double	restingPotential, restingSignalDuration, restingCriteria;
+	double	shuntInhibitoryReversalPot;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
@@ -791,6 +837,8 @@ ReadPars_Neuron_HHuxley(char *fileName)
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &inhibitoryReversalPot))
 		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%lf", &shuntInhibitoryReversalPot))
+		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &cellCapacitance))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &restingPotential))
@@ -810,8 +858,8 @@ ReadPars_Neuron_HHuxley(char *fileName)
 	}
 	if (!SetPars_Neuron_HHuxley(iCList, diagnosticMode, operationMode,
 	  injectionMode, excitatoryReversalPot, inhibitoryReversalPot,
-	  cellCapacitance, restingPotential, restingSignalDuration,
-	  restingCriteria)) {
+	  shuntInhibitoryReversalPot, cellCapacitance, restingPotential,
+	  restingSignalDuration, restingCriteria)) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		return(FALSE);
 	}
@@ -1131,7 +1179,7 @@ BOOLN
 RunModel_Neuron_HHuxley(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_Neuron_HHuxley";
-	register	ChanData	*gExPtr, *gInPtr, *injPtr, *outPtr;
+	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
 	register	double		deltaY, deltaZ;
 	BOOLN	debug;
 	int		i, inSignal;
@@ -1189,6 +1237,8 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
 		gInPtr = (inSignal < data->numInSignals)?
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
+		gSInPtr = (inSignal < data->numInSignals)?
+		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
 		outPtr = data->outSignal->channel[i];
 		switch (c->operationMode) {
 		case HHUXLEYNC_OPERATION_NORMAL_MODE:
@@ -1241,6 +1291,9 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 				if (gInPtr)
 					currentSum += *gInPtr++ * (s->potential_V -
 					  c->inhibitoryReversalPot);
+				if (gSInPtr)
+					currentSum += *gSInPtr++ * (s->potential_V -
+					  c->shuntInhibitoryReversalPot);
 				*outPtr = s->potential_V - currentSum * dtOverC;
 				yPtr = s->y;
 				zPtr = s->z;
@@ -1304,6 +1357,9 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 					*outPtr -= *gExPtr++ * (*injPtr - c->excitatoryReversalPot);
 				if (gInPtr)
 					*outPtr -= *gInPtr++ * (*injPtr - c->inhibitoryReversalPot);
+				if (gSInPtr)
+					*outPtr -= *gSInPtr++ * (*injPtr - c->
+					  shuntInhibitoryReversalPot);
 				yPtr = s->y;
 				zPtr = s->z;
 				for (node = c->iCList->ionChannels; node; node = node->next) {
