@@ -1059,8 +1059,6 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char	*funcName = "FreeProcessVariables_IHCRP_Shamma3StateVelIn";
-
 	/** Put memory deallocation code here.    ***/
 	/** Remember to set the pointers to NULL. ***/
 	if (sham3StVInPtr->lastInput != NULL) {
