@@ -55,11 +55,11 @@ typedef struct {
 
 } WhiteNoise, *WhiteNoisePtr;
 	
-/********************************* External Variables ***********************************/
+/********************************* External Variables *************************/
 
 extern	WhiteNoisePtr	whiteNoisePtr;
 
-/********************************* Function Prototypes **********************************/
+/********************************* Function Prototypes ************************/
 
 /* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
  * macros, to allow the safe use of C libraries with C++ libraries - defined
