@@ -90,6 +90,7 @@ SDIDocument::OnNewDocument(void)
 		return(false);
 	}
 	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
+	SetSimulationFileFlag_AppInterface(FALSE);
 	wxGetApp().SetAudModelLoadedFlag(true);
 	return (true);
 

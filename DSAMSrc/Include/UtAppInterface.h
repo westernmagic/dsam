@@ -251,6 +251,8 @@ BOOLN	SetSimPar_AppInterface(char *parName, char *value);
 
 BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
 
+void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
+
 BOOLN	SetTitle_AppInterface(char *title);
 
 BOOLN	SetUniParList_AppInterface(void);

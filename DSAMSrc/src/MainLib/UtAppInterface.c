@@ -249,6 +249,20 @@ SetDiagMode_AppInterface(char *theDiagMode)
 
 }
 
+/****************************** SetSimulationFileFlag *************************/
+
+/*
+ * This routine sets the simulationFileFlag which signals whether a simulation
+ * file needs to be loaded.
+ */
+
+void
+SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
+{
+	appInterfacePtr->simulationFileFlag = theSimulationFileFlag;
+
+}
+
 /****************************** SetSimulationFile *****************************/
 
 /*

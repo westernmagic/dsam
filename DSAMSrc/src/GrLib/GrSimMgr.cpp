@@ -819,7 +819,7 @@ MyApp::SetConfiguration(UniParListPtr parList)
 				SetParValue_UniParMgr(&parList, i, (char *) parValue.GetData());
 		}
 	}
-	GetPtr_AppInterface()->simulationFileFlag = FALSE; //Don't use sim file name
+	SetSimulationFileFlag_AppInterface(FALSE); //Don't use sim file name
 
 }
 
