@@ -81,15 +81,16 @@ class ParControl {
 	wxCheckBox *	GetCheckBox(void)	{ Check(CHECK_BOX); return checkBox; }
 	wxChoice *		GetChoice(void)		{ Check(CHOICE); return choice; }
 	wxComboBox *	GetComboBox(void)	{ Check(COMBO_BOX); return comboBox; }
+	wxControl *		GetControl(void);
 	int				GetInfoNum(void)	{ return infoNum; }
 	UniParPtr		GetPar(void)		{ return par; }
+	wxSize			GetSize(void) const;
 	wxSlider *		GetSlider(void)		{ return slider; }
 	ParListInfoTypeSpecifier	GetSpecialType(void)
 										{ Check(SPECIAL); return type; }
 	Tag				GetTag(void)		{ return tag; }
 	wxTextCtrl *	GetTextCtrl(void)	{ Check(TEXT_CTRL); return textCtrl; }
 	bool			GetUpdateFlag(void)	{ return updateFlag; }
-	wxControl *		GetControl(void);
 
 	void	PostInit(void);
 	void	ResetValue(void);
