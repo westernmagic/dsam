@@ -198,7 +198,7 @@ SetNumberOfRuns(int theNumberOfRuns)
 EarObjectPtr
 GetDataFileInProcess(void)
 {
-	static char *funcName = PROGRAM_NAME": GetDataFileInProcess";
+	/*static const char *funcName = PROGRAM_NAME": GetDataFileInProcess"; */
 	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
 	EarObjectPtr	process;
 
@@ -372,7 +372,7 @@ SetLockFile(BOOLN on)
 BOOLN
 PostInitFunc(void)
 {
-	static char *funcName = PROGRAM_NAME": PostInitFunc";
+	/*static char *funcName = PROGRAM_NAME": PostInitFunc";*/
 
 	return(TRUE);
 
@@ -402,7 +402,7 @@ RegisterUserModules(void)
 BOOLN
 Init(void)
 {
-	static char *funcName = PROGRAM_NAME": Init";
+	/* static char *funcName = PROGRAM_NAME": Init"; */
 
 	SetAppName_AppInterface(PROGRAM_NAME);
 	SetAppVersion_AppInterface(AMS_VERSION);
@@ -433,7 +433,7 @@ Init(void)
 
 int MainSimulation(MAIN_ARGS)
 {
-	clock_t	startTime;
+	time_t	startTime;
 	int		i;
 
 	if (!InitProcessVariables_AppInterface(Init, ARGC, ARGV))
@@ -444,7 +444,7 @@ int MainSimulation(MAIN_ARGS)
 	PrintSimPars_AppInterface();
 
 	DPrint("Starting process...\n");
-	startTime = clock();
+	startTime = time(NULL);
 	ResetSim_AppInterface();
 
 	if (fileLockingModeSpecifier)
@@ -458,8 +458,8 @@ int MainSimulation(MAIN_ARGS)
 	if (fileLockingModeSpecifier)
 		SetLockFile(FALSE);
 
-	DPrint("The process took %g CPU seconds to run.\n", (double) (clock() -
-	  startTime) / CLOCKS_PER_SEC);
+	DPrint("The process took %g seconds to run.\n", difftime(time(NULL),
+	  startTime));
 
 	Free_AppInterface();
 	DPrint("Finished test.\n");
