@@ -88,6 +88,7 @@ typedef struct {
 	UniParListPtr	parList;
 	time_t	simLastModified;
 	void	(* PrintUsage)(void);
+	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
 	BOOLN	(* SetInitialPars)(void);
 	BOOLN	(* SetFinalPars)(void);
