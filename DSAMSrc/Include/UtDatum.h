@@ -140,7 +140,9 @@ BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc);
 
 EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier);
 
-void	FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc);
+void	FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc);
+
+void	FreeInstruction_Utility_Datum(DatumPtr *pc);
 
 void	FreeInstructions_Utility_Datum(DatumPtr *pc);
 

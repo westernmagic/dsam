@@ -200,7 +200,6 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 	
 	if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
 		ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data);
-
 	return(true);
 
 }
@@ -240,7 +239,7 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 void
 SDICommand::DisconnectRepeatInst(wxShape *fromShape, wxShape *toShape)
 {
-	FreeInstruction_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(toShape)->
+	FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(toShape)->
 	  next);
 	SHAPE_PC(fromShape)->u.loop.stopPlaced = FALSE;
 		

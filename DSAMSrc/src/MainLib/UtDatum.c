@@ -168,6 +168,10 @@ InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 		*head = datum;
 		return;
 	}
+	if (!pos) {
+		*head = datum;
+		return;
+	}
 	if (pos == *head)
 		*head = datum;
 	if (pos->previous)
@@ -226,9 +230,9 @@ void
 ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	if (!DATUM_IN_SIMULATION(from)) {
-		if (DATUM_IN_SIMULATION(to))
+		if (DATUM_IN_SIMULATION(to)) {
 			InsertInst_Utility_Datum(head, to, from);
-		else {
+		} else {
 			InsertInst_Utility_Datum(head, NULL, from);
 			AppendInst_Utility_Datum(head, from, to);
 		}
@@ -244,13 +248,56 @@ ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 /****************************** FreeInstruction *******************************/
 
 /*
+ * This routine frees a single Datum instructions.
+ * It does not manage the simulation connections.
+ * Note that all of the strings where initialised to 'NULL_STRING', but if
+ * they were set, then the string was allocated space.
+ */
+
+void
+FreeInstruction_Utility_Datum(DatumPtr *pc)
+{
+	if (!*pc)
+		return;
+
+	if (*(*pc)->label != '\0')
+		free((*pc)->label);
+	switch ((*pc)->type) {
+	case PROCESS:
+		if (*(*pc)->u.proc.parFile != '\0')
+			free((*pc)->u.proc.parFile);
+		if (*(*pc)->u.proc.moduleName != '\0')
+			free((*pc)->u.proc.moduleName);
+		if ((*pc)->u.proc.inputList)
+			FreeList_Utility_DynaList(&(*pc)->u.proc.inputList);
+		if ((*pc)->u.proc.outputList)
+			FreeList_Utility_DynaList(&(*pc)->u.proc.outputList);
+		Free_EarObject(&(*pc)->data);
+		break;
+	case RESET:
+		if (*(*pc)->u.string != '\0')
+			free((*pc)->u.string);
+		break;
+	case REPEAT:
+		break;
+	default:
+		;
+	} /* switch */
+	free((*pc));
+	*pc = NULL;
+
+}
+
+/****************************** FreeInstFromSim *******************************/
+
+/*
  * This routine frees a single Datum instructions from the simulation.
  * Note that all of the strings where initialised to 'NULL_STRING', but if
  * they were set, then the string was allocated space.
  */
 
 void
-FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc)
+FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc)
 {
 	if (!pc)
 		return;
@@ -261,31 +308,7 @@ FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc)
 			(*start)->previous = NULL;
 	} else
 		pc->previous->next = pc->next;
-
-	if (*pc->label != '\0')
-		free(pc->label);
-	switch (pc->type) {
-	case PROCESS:
-		if (*pc->u.proc.parFile != '\0')
-			free(pc->u.proc.parFile);
-		if (*pc->u.proc.moduleName != '\0')
-			free(pc->u.proc.moduleName);
-		if (pc->u.proc.inputList)
-			FreeList_Utility_DynaList(&pc->u.proc.inputList);
-		if (pc->u.proc.outputList)
-			FreeList_Utility_DynaList(&pc->u.proc.outputList);
-		Free_EarObject(&pc->data);
-		break;
-	case RESET:
-		if (*pc->u.string != '\0')
-			free(pc->u.string);
-		break;
-	case REPEAT:
-		break;
-	default:
-		;
-	} /* switch */
-	free(pc);
+	FreeInstruction_Utility_Datum(&pc);
 
 }
 
@@ -299,7 +322,7 @@ void
 FreeInstructions_Utility_Datum(DatumPtr *pc)
 {
 	while (*pc)
-		FreeInstruction_Utility_Datum(pc, *pc);
+		FreeInstFromSim_Utility_Datum(pc, *pc);
 
 }
 
@@ -470,23 +493,6 @@ CmpLabel_Utility_Datum(void *a, void *b)
 	char	*bLabel = (char *) b;
 
 	return (StrCmpNoCase_Utility_String(aLabel, bLabel));
-
-}
-
-/****************************** PrintProcessLabel *****************************/
-
-/*
- * This function cmpares the labels of two process nodes.
- * It returns a negative, zero, or postive integer values according to whether
- * the labels are less than, equal or greater than respectively.
- */
-
-void
-PrintProcessLabel_Utility_Datum(void *ptr)
-{
-	DatumPtr	datumPtr = (DatumPtr) ptr;
-
-	printf("Debug: %s\n", datumPtr->label);
 
 }
 
@@ -1281,9 +1287,9 @@ FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier)
 			  processLabel) == 0)))
 				return(pc->data);
 		}
-		if (processLabel[0] == '\0')
-			processStr[0] = '\0';
-		else
+	if (processLabel[0] == '\0')
+		processStr[0] = '\0';
+	else
 		snprintf(processStr, MAXLINE, ", label [%s] ", processLabel);
 	NotifyError("%s: Could not find process '%s'%s in the simulation "
 	  "script.", funcName, processName, processStr);

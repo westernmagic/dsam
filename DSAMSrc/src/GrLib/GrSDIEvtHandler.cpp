@@ -235,11 +235,17 @@ SDIEvtHandler::EditInstruction(void)
 /****************************** FreeInstruction *******************************/
 /******************************************************************************/
 
+/*
+ * This routine free's the memory for an instruction.
+ * It does not manage the simulation connections, as these are taken care of by
+ * the 'line' connection code.
+ */
+
 void
 SDIEvtHandler::FreeInstruction(void)
 {
 	if (pc)
-		FreeInstruction_Utility_Datum(&pc, pc);
+		FreeInstruction_Utility_Datum(&pc);
 
 }
 
