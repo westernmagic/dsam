@@ -24,6 +24,8 @@
 #ifndef	_GESIGNALDATA_H
 #define _GESIGNALDATA_H	1
 
+#include "UtNameSpecs.h"
+
 /******************************************************************************/
 /*************************** Constant definitions *****************************/
 /******************************************************************************/
@@ -44,6 +46,14 @@
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef enum {
+
+	SIGNALDATA_LIMIT_MODE_OCTAVE,
+	SIGNALDATA_LIMIT_MODE_CHANNEL,
+	SIGNALDATA_LIMIT_MODE_NULL
+
+} SignalDataLimitModeSpecifier;
 
 typedef struct {
 
@@ -99,6 +109,9 @@ BOOLN	CheckRamp_SignalData(SignalDataPtr theSignal);
 
 BOOLN	CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b);
 
+int		FindCFIndex_SignalData(SignalDataPtr signal, int minIndex, int maxIndex,
+		  double frequency);
+
 void	Free_SignalData(SignalDataPtr *theData);
 
 void	FreeChannels_SignalData(SignalDataPtr theData);
@@ -107,15 +120,25 @@ BOOLN	GaindB_SignalData(SignalDataPtr d, double gaindB);
 
 BOOLN	GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[]);
 
+BOOLN	GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan,
+		  int *maxChan, double lowerLimit, double upperLimit,
+		  SignalDataLimitModeSpecifier mode);
+
 double	GetDuration_SignalData(SignalDataPtr theSignal);
 
 double	GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample);
+
+void	GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan,
+		  int *maxChan, double frequency, double lowerLimit, double upperLimit,
+		  SignalDataLimitModeSpecifier mode);
 
 SignalDataPtr	Init_SignalData(const char *callingFunctionName);
 
 BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels);
 	
 BOOLN	InitInfo_SignalData(SignalInfoPtr info);
+
+NameSpecifier *	LimitModeList_SignalData(int index);
 
 BOOLN	OutputToFile_SignalData(char *fileName, SignalDataPtr theData);
 

@@ -992,3 +992,144 @@ SetStaticTimeFlag_SignalData(SignalDataPtr signal, BOOLN flag)
 	signal->staticTimeFlag = flag;
 
 }
+
+/****************************** InitLimitModeList *****************************/
+
+/*
+ * This function initialises the 'limitMode' list array
+ */
+
+NameSpecifier *
+LimitModeList_SignalData(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "OCTAVE",		SIGNALDATA_LIMIT_MODE_OCTAVE },
+			{ "CHANNEL",	SIGNALDATA_LIMIT_MODE_CHANNEL },
+			{ "",			SIGNALDATA_LIMIT_MODE_NULL },
+		};
+	return (&modeList[index]);
+
+}
+
+/****************************** GetChannelLimits ******************************/
+
+/*
+ * This routine calculates the signal channel limits, according to the
+ * limitMode.
+ * The minimum and maximum channels are returned using the respective pointer
+ * arguments.
+ */
+
+BOOLN
+GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
+  double lowerLimit, double upperLimit, SignalDataLimitModeSpecifier mode)
+{
+	static const char	*funcName = "GetChannelLimits_SignalData";
+
+	switch (mode) {
+	case SIGNALDATA_LIMIT_MODE_OCTAVE:
+		*minChan = 0;
+		while (signal->info.cFArray[0] > OCTAVE(signal->info.cFArray[*minChan],
+		  lowerLimit))
+			(*minChan)++;
+		*maxChan = signal->numChannels - 1;
+		while (signal->info.cFArray[signal->numChannels - 1] < OCTAVE(signal->
+		  info.cFArray[*maxChan], upperLimit))
+			(*maxChan)--;
+		break;
+	case SIGNALDATA_LIMIT_MODE_CHANNEL:
+		*minChan = (int) -lowerLimit;
+		*maxChan = signal->numChannels - (int) upperLimit - 1;
+		break;
+	default:
+		;
+	}
+	if (*maxChan < *minChan) {
+		NotifyError("%s: Invalid channel limits calculated from averaging "
+		  "limits (%d -> %d).", funcName, *minChan, *maxChan);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** GetWindowLimits *******************************/
+
+/*
+ * This routine calculates the window limits around a specified frequency,
+ * according to the limit mode.
+ * The minimum and maximum channels are returned using the respective pointer
+ * arguments.
+ * It expects the signal channels limits to have been correctly determined.
+ */
+
+void
+GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
+  double frequency, double lowerLimit, double upperLimit,
+  SignalDataLimitModeSpecifier mode)
+{
+	/* static const char	*funcName = "GetWindowLimits_SignalData"; */
+	int		chan;
+	double	requiredFreq;
+
+	chan = FindCFIndex_SignalData(signal, 0, signal->numChannels - 1,
+	  frequency);
+	switch (mode) {
+	case SIGNALDATA_LIMIT_MODE_OCTAVE:
+		requiredFreq = OCTAVE(frequency, lowerLimit);
+		*minChan = chan;
+		while (signal->info.cFArray[*minChan] > requiredFreq)
+			(*minChan)--;
+		(*minChan)++;
+		requiredFreq = OCTAVE(frequency, upperLimit);
+		*maxChan = chan;
+		while (signal->info.cFArray[*maxChan] < requiredFreq)
+			(*maxChan)++;
+		(*maxChan)--;
+		break;
+	case SIGNALDATA_LIMIT_MODE_CHANNEL:
+		*minChan = chan + (int) lowerLimit;
+		*maxChan = chan + (int) upperLimit;
+		break;
+	default:
+		;
+	}
+
+}
+
+/****************************** FindCFIndex ***********************************/
+
+/*
+ * This routine routine returns the number index an an array of frequencies
+ * of the closet to a specified frequency.
+ * It works recursively.
+ * This function assumes that all the arguments are correctly set, i.e. no
+ * argument validity checks are made here.
+ * A special check is made when there are two CF's to be checked, in which case
+ * the one that is closest to the specified frequency is chosen.
+ * The value -1 is returned if there is an error.
+ */
+
+int
+FindCFIndex_SignalData(SignalDataPtr signal, int minIndex, int maxIndex,
+  double frequency)
+{
+	int		midPoint;
+
+	/*if (minIndex == maxIndex)
+		return(-1); */
+	if ((maxIndex - minIndex) == 1) {
+		if (fabs(frequency - signal->info.cFArray[minIndex]) < fabs(frequency -
+		   signal->info.cFArray[maxIndex]))
+			return(minIndex);
+		else
+			return(maxIndex);
+	}
+	midPoint = minIndex + (maxIndex - minIndex) / 2;
+	if (frequency < signal->info.cFArray[midPoint])
+		return(FindCFIndex_SignalData(signal, minIndex, midPoint, frequency));
+	else
+		return(FindCFIndex_SignalData(signal, midPoint, maxIndex, frequency));
+
+}
