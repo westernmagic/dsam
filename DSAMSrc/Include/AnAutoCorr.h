@@ -43,7 +43,7 @@ typedef enum {
 	ANALYSIS_ACF_NORMALISATIONMODE,
 	ANALYSIS_ACF_TIMEOFFSET,
 	ANALYSIS_ACF_TIMECONSTANT,
-	ANALYSIS_ACF_PERIOD
+	ANALYSIS_ACF_MAXLAG
 
 } AutoCorrParSpecifier;
 
@@ -59,12 +59,12 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	normalisationModeFlag, timeOffsetFlag, timeConstantFlag, periodFlag;
+	BOOLN	normalisationModeFlag, timeOffsetFlag, timeConstantFlag, maxLagFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		normalisationMode;
 	double	timeOffset;
 	double	timeConstant;
-	double	period;
+	double	maxLag;
 
 	/* Private members */
 	NameSpecifier	*normalisationModeList;
@@ -114,9 +114,9 @@ BOOLN	ReadPars_Analysis_ACF(char *fileName);
 BOOLN	SetNormalisationMode_Analysis_ACF(char * theNormalisationMode);
 
 BOOLN	SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
-		  double timeConstant, double period);
+		  double timeConstant, double maxLag);
 
-BOOLN	SetPeriod_Analysis_ACF(double thePeriod);
+BOOLN	SetMaxLag_Analysis_ACF(double theMaxLag);
 
 BOOLN	SetTimeConstant_Analysis_ACF(double theTimeConstant);
 
