@@ -1,7 +1,7 @@
 /**********************
  *
  * File:		AnFourierT.c
- * Purpose:		This module contains the fourier analysis routines.
+ * Purpose:		This module runs a basic Fourier Analysis.
  * Comments:	
  * Author:		L. P. O'Mard
  * Created:		18-01-94
