@@ -100,7 +100,6 @@ InitInst_Utility_Datum(int type)
 	datum->onFlag = TRUE;
 	datum->type = type;
 	datum->label = NULL_STRING;
-	datum->defaultLabelFlag = FALSE;
 	switch (type) {
 	case PROCESS:
 		datum->u.proc.parFile = NULL_STRING;
@@ -341,8 +340,8 @@ PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel)
 
 	for (i = 0; i < indentLevel; i++)
 		DPrint("\t");
-	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && pc->label && !pc->
-	  defaultLabelFlag && (pc->label[0] != '\0'))
+	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && pc->label &&
+	  (pc->label[0] != '\0'))
 		DPrint("%s%%", pc->label);
 	DPrint("\t");
 
@@ -431,7 +430,8 @@ PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 				PrintConnections_Utility_Datum(pc->u.proc.outputList);
 				DPrint(")");
 			}
-			if (strcmp(pc->u.proc.parFile, NO_FILE) == 0)
+			if ((*pc->u.proc.parFile == '\0') || strcmp(pc->u.proc.parFile,
+			  NO_FILE) == 0)
 				DPrint("\n");
 			else if (checkForSubSimScripts && (pc->data->module->specifier ==
 			  SIMSCRIPT_MODULE))
@@ -726,12 +726,11 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc)
 
 	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
 	  '\0')) {
-		snprintf(label, MAXLINE, "%d", pc->stepNumber);
+		snprintf(label, MAXLINE, "p%d", pc->stepNumber);
 		if ((pc->label = InitString_Utility_String(label)) == NULL) {
 			NotifyError("%s: Out of memory for label '%s'.", funcName, label);
 			return(FALSE);
 		}
-		pc->defaultLabelFlag = TRUE;
 	}
 	return(TRUE);
 

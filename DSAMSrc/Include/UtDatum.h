@@ -68,7 +68,6 @@
 typedef struct Datum {
 
 	BOOLN	onFlag;
-	BOOLN	defaultLabelFlag;
 	int		type;
 	uInt	stepNumber;
 	char	*label;

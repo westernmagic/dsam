@@ -70,8 +70,7 @@ void
 SDIEvtHandler::ResetLabel(void)
 {
 	label.Empty();
-	if (!pc->defaultLabelFlag)
-		label.Printf("{ %s }\n", pc->label);
+	label.Printf("{ %s }\n", pc->label);
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
@@ -106,7 +105,7 @@ SDIEvtHandler::InitInstruction(void)
 	}
 	switch (processType) {
 	case CONTROL_MODULE_CLASS: {
-		SymbolPtr	sp = LookUpSymbol_Utility_SSSymbols(GetPtr_Utility_SimScript(
+		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(GetPtr_Utility_SimScript(
 		  )->symList, (char *) label.GetData());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError("%s: Could not create '%s' control intruction for "

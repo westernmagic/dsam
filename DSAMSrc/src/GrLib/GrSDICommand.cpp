@@ -439,11 +439,7 @@ SDICommand::Do(void)
 		fromPc->data = toPc->data;
 		((SDIEvtHandler *) fromShape->GetEventHandler())->ResetLabel();
 		RedrawShapeLabel(fromShape);
-		if (toPc->defaultLabelFlag) {
-			toPc->defaultLabelFlag = FALSE;
-			((SDIEvtHandler *) toShape->GetEventHandler())->ResetLabel();
-			RedrawShapeLabel(toShape);
-		}
+		RedrawShapeLabel(toShape);
 		break; }
 	}
 	return TRUE;
