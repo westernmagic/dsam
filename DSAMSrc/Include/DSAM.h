@@ -59,6 +59,7 @@
 #include "UtLocalChans.h"
 #include "UtNameSpecs.h"
 #include "UtOptions.h"
+#include "UtPadSignal.h"
 #include "UtPause.h"
 #include "UtRamp.h"
 #include "UtRandom.h"
