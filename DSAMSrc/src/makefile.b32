@@ -32,7 +32,7 @@ BINDIRDUMMY	= $(BINDIR)\dummy
 LIBDIRDUMMY	= $(LIBDIR)\dummy
 LIBS		= $(MAIN_LIB) $(STD_LIB) $(GR_LIB)
 
-all:		$(BINCCDSAM) $(LIBDIRDUMMY) $(MAIN_CFG) $(LIBS)
+all:		$(BINCCDSAM) $(LIBDIRDUMMY) $(MAIN_CFG) libraries
 
 ###############################################################################
 ##                    BINDIRDUMMY "bin" directory creation                   ##
@@ -47,12 +47,12 @@ $(BINDIRDUMMY):
 ##                    BINCCDSAM - batch file creation                        ##
 ###############################################################################
 
-$(BINCCDSAM): $(BINDIRDUMMY)
+$(BINCCDSAM): $(BINDIRDUMMY) makeb32.env makefile.b32
 		copy &&!
-		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(MAIN_CFG_NAM) $(OPTIONS2) %1.c \
-		  %DSAMDIR%\$(LDIRNAME)\$(LIBNAME) %WXWIN%\lib\wx32.lib
+		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(MAIN_CFG_NAM) $(OPTIONS2) %1 \
+		  $(MAIN_LNAME) $(STD_LNAME)
 		$(BRC32CMD)
-!               $(BINCCDSAM)
+! $(BINCCDSAM)
 
 ###############################################################################
 ##                     LIBDIRDUMMY - "lib" directory creation                ##
@@ -73,10 +73,17 @@ $(MAIN_CFG): makeb32.env makefile.b32 $(LIBDIRDUMMY)
 -I$$(DSAMDIR)\$(INCNAME);$$(DSAMDIR);$$(BCCDIR)\include
 -I$(DSAMDIR)\$(INCNAME);$(DSAMDIR);$(BCCDIR)\include
 
--L$$(BCCDIR)\lib
+-3
+-d
+-X
+-R-
+-a1 # GUI applications crashes on run without this
+
+-tWM
 
 $(OPTIONS)
 -L$$(DSAMDIR)\lib
+-L$(DSAMDIR)\lib
 $(DSAM_LDFLAGS)
 
 ! $(MAIN_CFG)
@@ -85,17 +92,18 @@ $(DSAM_LDFLAGS)
 ##                     Library subdirectories                                ##
 ###############################################################################
 
-$(MAIN_LIB):
+libraries:
 		cd $(MAIN_LIB_DIR)
 		make -f makefile.b32
+		cd ..
 
-$(STD_LIB):
 		cd $(STD_LIB_DIR)
 		make -f makefile.b32
+		cd ..
 
-$(GR_LIB):
 		cd $(GR_LIB_DIR)
 		make -f makefile.b32
+		cd ..
 
 ###############################################################################
 ###############################################################################

@@ -68,10 +68,13 @@ int		grSimMgrPleaseLink = 0;
 
 wxList	myChildren(wxKEY_INTEGER);
 
-// This statement initialises the whole application
-// But it has now been moved into the DSAM.h fileto solve some linking problems
-// with shared libraries on IRIX 6.2.
-//MyApp myApp;
+/* Create a new application object: this macro will allow wxWindows to
+ * create the application object during program execution (it's better than
+ * using a static object for many reasons) and also declares the accessor
+ * function wxGetApp() which will return the reference of the right type
+ * (i.e. MyApp and not wxApp)
+ */
+IMPLEMENT_APP(MyApp)
 
 #ifdef wx_mac
 void CreateApp(void)

@@ -189,16 +189,6 @@
 #	include "GrBrushes.h"
 #	include "GrDisplayS.h"
 
-#	if !defined(DSAM_MYAPP) & !defined(DSAM_DO_NOT_DEFINE_MYAPP)
-#	define DSAM_MYAPP	1
-	/* Create a new application object: this macro will allow wxWindows to
-	 * create the application object during program execution (it's better than
-	 * using a static object for many reasons) and also declares the accessor
-	 * function wxGetApp() which will return the reference of the right type
-	 * (i.e. MyApp and not wxApp)
-	 */
-	IMPLEMENT_APP(MyApp)
-#	endif /* DSAM_MYAPP */
 #endif /* GRAPHICS_SUPPORT */
 
 #ifdef MPI_SUPPORT

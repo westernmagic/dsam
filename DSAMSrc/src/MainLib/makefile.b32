@@ -41,10 +41,10 @@ ANALYSIS_OBJS= AnExperiment.obj AnFourierT.obj AnGeneral.obj AnAutoCorr.obj \
 FILING_OBJS = FiParFile.obj FiDataFile.obj FiRaw.obj FiMSWave.obj FiASCII.obj \
 			FiAIFF.obj
 
-FILTER_OBJS	= FlLowPass.obj FlMultiBPass.obj FlFIR.obj
+FILTER_OBJS	= FlBandPass.obj FlLowPass.obj FlMultiBPass.obj FlFIR.obj
 
 GENERAL_OBJS= GeCommon.obj  GeSignalData.obj  GeEarObject.obj  \
-			GeModuleMgr.obj GeNSpecLists.obj GeUniParMgr.obj GeModuleReg.c
+			GeModuleMgr.obj GeNSpecLists.obj GeUniParMgr.obj GeModuleReg.obj
 			
 STD_OBJS	= StdMessage.obj StdSignalDisp.obj
 
@@ -73,11 +73,11 @@ STIMULUS_OBJS= StAMTone.obj StBPTone.obj StClick.obj StFMTone.obj \
 UTILITY_OBJS= UtSSParser.obj UtAccumulate.obj UtAmpMod.obj UtBandwidth.obj \
 			UtBinSignal.obj UtCBinauralITD.obj UtCFList.obj UtCmplxM.obj \
 			UtCompress.obj UtConvMonaural.obj UtCreateBinaural.obj UtDatum.obj \
-			UtDebug.obj UtDelay.obj UtFilters.obj UtIonChanList.obj \
-			UtIterRipple.obj UtNameSpecs.obj UtRamp.obj UtRandom.obj \
-			UtRedceChans.obj UtReduceDt.obj UtRefractory.obj UtSample.obj \
-			UtSelectChans.obj UtShapePulse.obj UtSSSymbols.obj UtSimScript.obj \
-			UtSpikeList.obj UtStddise.obj UtUIEEEFloat.obj UtUPortableIO.obj \
+			UtDelay.obj UtFilters.obj UtIonChanList.obj UtIterRipple.obj \
+			UtNameSpecs.obj UtRamp.obj UtRandom.obj UtRedceChans.obj \
+			UtReduceDt.obj UtRefractory.obj UtSample.obj UtSelectChans.obj \
+			UtShapePulse.obj UtSSSymbols.obj UtSimScript.obj UtSpikeList.obj \
+			UtStddise.obj UtUIEEEFloat.obj UtUPortableIO.obj \
 			UtCreateJoined.obj UtStrobe.obj UtOptions.obj UtString.obj \
 			UtPause.obj UtHalfWRectify.obj UtDynaList.obj UtAppInterface.obj \
 			UtFFT.obj UtParArray.obj UtGCFilters.obj UtFIRFilters.obj \
@@ -85,9 +85,9 @@ UTILITY_OBJS= UtSSParser.obj UtAccumulate.obj UtAmpMod.obj UtBandwidth.obj \
 
 TRANSFORM_OBJS= TrGate.obj TrSetDBSPL.obj
 
-$(LIB):		$(MAIN_CFG) $(ANALYSIS_OBJS) $(FILING_OBJS) $(GENERAL_OBJS) \
-				$(MODEL_OBJS) $(STIMULUS_OBJS) $(UTILITY_OBJS) \
-				$(TRANSFORM_OBJS) $(GRAPHICS_OBJS)
+$(LIB):		$(MAIN_CFG) $(ANALYSIS_OBJS) $(FILING_OBJS) $(FILTER_OBJS) \
+			  $(GENERAL_OBJS) $(MODEL_OBJS) $(STIMULUS_OBJS) $(UTILITY_OBJS) \
+			  $(TRANSFORM_OBJS)
 		@echo $(LIB) library updated.
 
 ###############################################################################
@@ -172,71 +172,11 @@ GeEarObject.obj:        $(GEN_HEADERS)
 
 GeModuleMgr.obj:        $(INCDIR)/*.h
 
+GeModuleReg.obj:        $(INCDIR)/*.h
+
 GeNSpecLists.obj:       $(INCDIR)/GeCommon.h $(INCDIR)/GeNSpecLists.h
 
 GeUniParMgr.obj:       $(INCDIR)/GeCommon.h $(INCDIR)/GeUniParMgr.h
-
-###############################################################################
-#                     Graphical display module dependencies                   #
-###############################################################################
-
-GrBrushes.obj:	$(INCDIR)/GrBrushes.h
-
-GrCanvas.obj:	$(INCDIR)/GrCanvas.h  $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
-				  $(INCDIR)/GrBrushes.h $(INCDIR)/GrSignalDisp.h \
-				  $(INCDIR)/GrDisplayS.h $(INCDIR)/GrPrintDisp.h \
-				  $(INCDIR)/GrModParDialog.h
-
-GrDialogInfo.obj:	$(INCDIR)/GrDialogInfo.h $(INCDIR)/GeCommon.h \
-					  $(INCDIR)/GrDSAMList.h $(INCDIR)/GrDialogInfo.h
-
-GrDialogList.obj:	$(INCDIR)/*.h UtSSParser.h
-
-GrDisplayS.obj:	$(INCDIR)/GrDisplayS.h $(GEN_HEADERS) $(INCDIR)/GrCanvas.h \
-				  $(INCDIR)/GrUtils.h $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h \
-				  $(INCDIR)/GrModParDialog.h $(INCDIR)/GrSignalDisp.h
-
-GrFonts.obj:	$(INCDIR)/GrFonts.h
-
-GrLine.obj:		$(INCDIR)/GrLine.h $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
-				  $(INCDIR)/GrBrushes.h
-
-GrMessage.obj:	$(INCDIR)/StdMessage.h $(INCDIR)/GeCommon.h \
-				  $(INCDIR)/GrSimMgr.h
-
-GrModParDialog.obj:	$(INCDIR)/*.h UtSSParser.h
-
-GrParControl.obj:	$(INCDIR)/GrParControl.h $(INCDIR)/GeCommon.h \
-					  $(INCDIR)/GeUniParMgr.h
-
-GrParListInfo.obj:	$(INCDIR)/*.h UtSSParser.h
-
-GrParListInfoList.obj:	$(INCDIR)/*.h UtSSParser.h
-
-GrPrintDisp.obj:	$(INCDIR)/GrPrintDisp.h $(GEN_HEADERS) $(INCDIR)/GrUtils.h \
-					  $(INCDIR)/GrBrushes.h $(INCDIR)/GrSignalData.h \
-					  $(INCDIR)/GrDisplayS.h $(INCDIR)/GrCanvas.h
-
-GrSignalDisp.obj:	$(INCDIR)/GrSignalDisp.h $(GEN_HEADERS) \
-					  $(INCDIR)/GeModuleMgr.h $(INCDIR)/GeNSpecLists.h \
-					  $(INCDIR)/FiParFile.h $(INCDIR)/GrUtils.h \
-					  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h \
-					  $(INCDIR)/GrSignalDisp.h $(INCDIR)/GrCanvas.h \
-					  $(INCDIR)/GrDisplayS.h
-
-GrSimMgr.obj:	$(RES) $(INCDIR)/*.h UtSSParser.h
-
-GrSimModDialog.obj:	$(INCDIR)/*.h UtSSParser.h
-
-GrSocket.obj:	$(INCDIR)/GrSocket.h $(INCDIR)/GeCommon.h
-				  $(INCDIR)/GeEarobject.h $(INCDIR)/GrSocket.h
-
-GrUtils.obj:	$(INCDIR)/GrUtils.h $(INCDIR)/GeCommon.h
-
-$(RES):		$(INCDIR)/dsam.rc
-				brc32 -r /i$(BCCDIR)\include /i$(WXWIN)\include \
-				  $(INCDIR)/dsam.rc -fo$<
-
 
 ###############################################################################
 #                      Model Module dependencies                              #
@@ -374,8 +314,7 @@ UtString.obj:	$(INCDIR)/UtString.h $(INCDIR)/GeCommon.h
 $(INCDIR)/UtSSParser.h: UtSSParser.c
 				copy UtSSParser.h $(INCDIR)
 
-UtSimScript.obj:  $(INCDIR)/UtSimScript.h $(INCDIR)/UtDatum.h \
-				  UtSSParser.h $(GEN_HEADERS) $(INCDIR)/UtNameSpecs.h
+UtSimScript.obj:  $(INCDIR)/*.h
 
 UtAccumulate.obj:       $(INCDIR)/UtAccumulate.h $(GEN_HEADERS)
 
@@ -428,11 +367,8 @@ TrSetDBSPL.obj:  $(INCDIR)/TrSetDBSPL.h $(INCDIR)/GeCommon.h
 ###############################################################################
 
 clean: mostly-clean
-	$(RM) $(BINCCDSAM)
-	$(RM) $(LIBDIR)\$(LIBRARY).*
-	$(RM) $(CFG)
-	$(RM) $(LIBRARY).CSM
-	$(RM) $(RES)
+	$(RM) $(LIB)
+#	$(RM) $(LIBRARY).CSM
 
 
 mostly-clean:

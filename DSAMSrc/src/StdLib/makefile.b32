@@ -53,11 +53,7 @@ StdSignalDisp.obj: 	$(INCDIR)/GrSignalDisp.h $(GEN_HEADERS)
 ###############################################################################
 
 clean: mostly-clean
-	$(RM) $(BINCCDSAM)
-	$(RM) $(LIBDIR)\$(LIBRARY).*
-	$(RM) $(CFG)
-	$(RM) $(LIBRARY).CSM
-	$(RM) $(RES)
+	$(RM) $(LIB)
 
 mostly-clean:
 	$(RM) *.obj
