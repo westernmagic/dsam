@@ -17,7 +17,7 @@
  *				Free Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *				02111-1307  USA
  *
- *				LPO: See bottom of file for above licenses.
+ *				LPO: See bottom of header file for above licenses.
  *				04 Dec 2000 LPO: Converted this code to allow the calculation of
  *				arbitrary frequency response functions.
  * Author:		Jake Janovetz, additions/revisions L. P. O'Mard
