@@ -32,7 +32,9 @@
 #ifndef PI
 # define PI 3.1415926538
 #endif
-#define Pi PI
+#ifndef Pi
+# define Pi PI
+#endif
 #define Piby2 (PI/2.)
 #define TwoPi (2.* Pi)
 #define LOWPASS 1
