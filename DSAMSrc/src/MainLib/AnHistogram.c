@@ -795,9 +795,9 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
+			p->numPeriods = 0;
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		p->numPeriods = 0;
 		ResetProcess_EarObject(p->dataBuffer);
 		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (ChanLen) floor(p->
 		  period / data->inSignal[0]->dt + 0.5);
