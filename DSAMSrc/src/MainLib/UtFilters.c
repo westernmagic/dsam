@@ -649,9 +649,9 @@ FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p)
 /*
  * This routine filters the signal, returning the result in the same signal
  * passed to the routine.
- * The signal is a band-pass filter.  Yi = J*X[i] - J*X[i-2] + K*Y[i-1] +
- * L*Y[i-2] - where X and Y are the input and output values respectively.
- * See Beauchamp p.257 - 258.
+ * The signal is a 1st order band-pass filter.  Yi = J*X[i] - J*X[i-2] +
+ * K*Y[i-1] + L*Y[i-2] - where X and Y are the input and output values
+ * respectively. See Beauchamp p.257 - 258.
  * No checks are made here as to whether or not the coefficients, passed as an
  * argument array, have been initialised.
  * The state variables are stored in the format X[i-1], X[i-2], Y[i-1], Y[i-2].
