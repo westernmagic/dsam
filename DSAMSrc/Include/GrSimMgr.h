@@ -30,6 +30,7 @@
 #ifndef _GRSIMMGR_H
 #define _GRSIMMGR_H 1
 
+#include "GrCommon.h"
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
 #	include <wx/wxhtml.h>

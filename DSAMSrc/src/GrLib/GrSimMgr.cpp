@@ -34,23 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(LIBRARY_COMPILE) && defined(GRAPHICS_SUPPORT)
-#	define DSAM_DO_NOT_DEFINE_MYAPP = 1
-#	define USE_GUI = 1
-#endif
-
-// For compilers that support precompilation, includes "wx.h".
-#	include <wx/wxprec.h>
-
-#	ifdef __BORLANDC__
-	    #pragma hdrstop
-#	endif
-
-// Any files you want to include if not precompiling by including
-// the whole of <wx/wx.h>
-#	ifndef WX_PRECOMP
-#		include <wx/wx.h>
-#	endif
+#include "GrCommon.h"
 
 // Any files included regardless of precompiled headers
 #include <wx/image.h>

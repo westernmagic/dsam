@@ -49,20 +49,7 @@
 #include <time.h>
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-// For compilers that support precompilation, includes "wx.h".
-#	include <wx/wxprec.h>
-
-#	ifdef __BORLANDC__
-	    #pragma hdrstop
-#	endif
-
-// Any files you want to include if not precompiling by including
-// the whole of <wx/wx.h>
-#	ifndef WX_PRECOMP
-#		include <wx/wx.h>
-#	endif
-
-// Any files included regardless of precompiled headers
+#include "GrCommon.h"
 #endif
 
 #include "GeCommon.h"

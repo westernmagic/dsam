@@ -19,7 +19,7 @@ Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
-				GrParListInfoList.h GrPrintDisp.h GrParControl.h \
+				GrParListInfoList.h GrPrintDisp.h GrParControl.h GrCommon.h \
 				GrSimThread.h GrAxisScale.h dsam.rc GrSDIPalette.h \
 				GrSDIView.h GrSDIFrame.h GrSDICanvas.h GrSDIDiagram.h \
 				GrSDIEvtHandler.h GrSDICommand.h GrSDIShapes.h GrDiagFrame.h \

@@ -19,9 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef WX_PRECOMP
-#	include <wx/wx.h>
-#endif
+#include "GrCommon.h"
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
