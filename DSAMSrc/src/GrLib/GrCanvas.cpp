@@ -358,7 +358,8 @@ MyCanvas::SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect)
 		  xIndex, xPos += deltaX)
 			lines->AddPoint(j, (int) xPos, (int) (-(*p - yNormalisationOffset) *
 			  yScale));
-		sprintf(stringNum, "%.0f", data->outSignal->info.chanLabel[j]);
+		snprintf(stringNum, MAXLINE, "%.0f", data->outSignal->info.chanLabel[
+		  j]);
 		lines->SetLineLabel(j, stringNum);
 	}
 
@@ -397,7 +398,8 @@ MyCanvas::SetGreyScaleLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
 		  xIndex, xPos += deltaX)
 			lines->AddPoint(j, (int) xPos, (int) ((*p - lines->GetMinY()) *
 			  yScale));
-		sprintf(stringNum, "%.0f", data->outSignal->info.chanLabel[j]);
+		snprintf(stringNum, MAXLINE, "%.0f", data->outSignal->info.chanLabel[
+		  j]);
 		lines->SetLineRectHeight(j, lines->GetChannelSpace());
 		lines->SetLineRectWidth(j, deltaX);
 		lines->SetLineLabel(j, stringNum);
@@ -492,7 +494,7 @@ MyCanvas::DrawExponent(wxDC& dc, int exponent, int x, int y)
 
 }
 
-/****************************** GetMinimumIntLog *******************************/
+/****************************** GetMinimumIntLog ******************************/
 
 /*
  * This routine returns the  log result for a specified value, returning a value
@@ -510,7 +512,7 @@ MyCanvas::GetMinimumIntLog(double value)
 
 }
 
-/****************************** GetYExponent ***********************************/
+/****************************** GetYExponent **********************************/
 
 /*
  * This routine returns a suitable exponent using the maximum and minimum Y
@@ -529,6 +531,20 @@ MyCanvas::GetYExponent(MultiLine *lines)
 	  GRAPH_Y_SCALE_UPPER_EXP_LIMIT))
 		return(exponent);
 	return(0);
+
+}
+
+/******************************* GetSignalYScale ******************************/
+
+/*
+ * This function returns the Y scale for a signal.
+ */
+
+double
+MyCanvas::GetSignalYScale(void)
+{
+	return((signalLines->GetMaxY() - signalLines->GetMinY()) /
+	  (mySignalDispPtr->yTicks - 1));
 
 }
 
@@ -574,8 +590,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
 		exponent = GetYExponent(signalLines);
-		scale = (signalLines->GetMaxY() - signalLines->GetMinY()) /
-		  (mySignalDispPtr->yTicks - 1);
+		scale = GetSignalYScale();
 		yTickSpacing = chanSpacing / (mySignalDispPtr->yTicks - 1);
 		format.Printf("%%.%df", mySignalDispPtr->yDecPlaces);
 		for (j = 0; j < numDisplayedChans; j++) {
