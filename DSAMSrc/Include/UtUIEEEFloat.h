@@ -54,8 +54,11 @@
 * NaN's, and denormalized numbers.
 * $Header$ *
 * $Log$
-* Revision 1.1  1999/09/15 14:49:03  lowel
-* Initial revision
+* Revision 1.2  2000/04/10 06:49:49  lowel
+* Changed the names of the Ieee routines to IEEE.
+*
+* Revision 1.1.1.1  1999/09/15 14:49:03  lowel
+* Imported DSAM source
 *
 * Revision 1.1.1.1  1999/09/14 15:52:34  lowel
 * Imported DSAM source 
@@ -96,11 +99,11 @@ __BEGIN_DECLS
 
 void		Bytes2Hex(register char *bytes, char *hex, register int nBytes);
 
-void		ConvertToIeeeDouble(DefDouble num, char *bytes);
+void		ConvertToIEEEDouble(DefDouble num, char *bytes);
 
-void		ConvertToIeeeExtended(DefDouble num, char *bytes);
+void		ConvertToIEEEExtended(DefDouble num, char *bytes);
 
-void		ConvertToIeeeSingle(DefDouble num, char *bytes);
+void		ConvertToIEEESingle(DefDouble num, char *bytes);
 
 void		Hex2Bytes(register char *hex, char *bytes);
 
@@ -108,17 +111,17 @@ void		MaybeSwapBytes(char *bytes, int nBytes);
 
 void		SignalFPE(int i);
 
-void		TestFromIeeeDouble(char *hex);
+void		TestFromIEEEDouble(char *hex);
 
-void		TestFromIeeeExtended(char *hex);
+void		TestFromIEEEExtended(char *hex);
 
-void		TestFromIeeeSingle(char *hex);
+void		TestFromIEEESingle(char *hex);
 
-void		TestToIeeeDouble(DefDouble f);
+void		TestToIEEEDouble(DefDouble f);
 
-void		TestToIeeeExtended(DefDouble f);
+void		TestToIEEEExtended(DefDouble f);
 
-void		TestToIeeeSingle(DefDouble f);
+void		TestToIEEESingle(DefDouble f);
 
 int			GetHexSymbol(register int x);
 
@@ -128,11 +131,11 @@ float		MachineIEEESingle(char *bytes);
 
 double		MachineIEEEDouble(char *bytes);
 
-DefDouble	ConvertFromIeeeDouble(char *bytes);
+DefDouble	ConvertFromIEEEDouble(char *bytes);
 
-DefDouble	ConvertFromIeeeExtended(char *bytes);
+DefDouble	ConvertFromIEEEExtended(char *bytes);
 
-DefDouble	ConvertFromIeeeSingle(char *bytes);
+DefDouble	ConvertFromIEEESingle(char *bytes);
 
 __END_DECLS
 
