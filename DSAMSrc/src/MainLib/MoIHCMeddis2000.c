@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -169,6 +170,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 		Free_IHC_Meddis2000();
 		return(FALSE);
 	}
+	strcpy(hairCell2Ptr->diagFileName, DEFAULT_FILE_NAME);
 	hairCell2Ptr->hCChannels = NULL;
 	return(TRUE);
 
@@ -1218,8 +1220,8 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 		  data->updateProcessFlag) {
 			randomNumSeed = hairCell2Ptr->ranSeed;
 			FreeProcessVariables_IHC_Meddis2000();
-			OpenDiagnostics_NSpecLists(&hairCell2Ptr->fp,
-			  hairCell2Ptr->diagModeList, hairCell2Ptr->diagMode);
+			OpenDiagnostics_NSpecLists(&hairCell2Ptr->fp, hairCell2Ptr->
+			  diagModeList, hairCell2Ptr->diagMode);
 
 			if ((hC->hCChannels = (HairCellVars2Ptr) calloc(
 			  data->outSignal->numChannels, sizeof (HairCellVars2))) == NULL) {
@@ -1229,29 +1231,27 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 			hairCell2Ptr->updateProcessVariablesFlag = FALSE;
 		} 
 
-		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[0][0] 
-                                             +hC->recPotOffset)))       / hC->betaCa ) );		
+		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[
+		  0][0] + hC->recPotOffset))) / hC->betaCa));		
 		ICa = hC->GCaMax*pow(ssactCa,3)*(data->inSignal[0]->channel[0][0] +
 		  hC->recPotOffset - hC->CaVrev);
-		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ?
-                                 ( hC->perm_z * 
-                                    ( pow(-ICa,hC->pCa) - pow(hC->perm_Ca0,hC->pCa) ) )
-                                 : 0; 
+		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ? (hC->perm_z * (pow(-ICa, hC->
+		  pCa) - pow(hC->perm_Ca0,hC->pCa))) : 0; 
 		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y * spontPerm_k0 /
 		  (hC->replenishRate_y * (hC->lossRate_l + hC->recoveryRate_r) +
 		  spontPerm_k0 * hC->lossRate_l);
-                if (spontCleft_c0>0) {
+		if (spontCleft_c0>0) {
 		   if (hC->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
 		      spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
 		        hC->recoveryRate_r) / spontPerm_k0;
-                   else 
-		      spontFreePool_q0 = floor( (spontCleft_c0 * (hC->lossRate_l +
+			else 
+				spontFreePool_q0 = floor( (spontCleft_c0 * (hC->lossRate_l +
 		        hC->recoveryRate_r) / spontPerm_k0) + 0.5);
 		} else
 		   spontFreePool_q0 = hC->maxFreePool_M;
 
-		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r /
-		   hC->reprocessRate_x;
+		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r / hC->
+		  reprocessRate_x;
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			hC->hCChannels[i].actCa = ssactCa;

@@ -142,7 +142,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	for (i = 0; i < APP_MAX_AUTHORS; i++)
 		appInterfacePtr->authors[i][0] = '\0';
 	strcpy(appInterfacePtr->simulationFile, NO_FILE);
-	strcpy(appInterfacePtr->diagMode, NO_FILE);
+	strcpy(appInterfacePtr->diagMode, DEFAULT_FILE_NAME);
 	strcpy(appInterfacePtr->installDir, ".");
 	appInterfacePtr->argv = NULL;
 	appInterfacePtr->argc = 0;

@@ -84,7 +84,7 @@
 #define MAX_FILE_PATH		255		/* For file names - can have long paths */
 #define UNSET_STRING		"<unset>" /* initial string value for arrays. */
 #define TAB_SPACES			4		/* Spaces per tab with GRAPHICS_SUPPORT */
-#define	NO_FILE				"no_file"	/* -for when this must be indicated. */
+#define	NO_FILE				"not_set"	/* -for when this must be indicated. */
 #define	DEFAULT_FILE_NAME	"<file name>"
 #define DEFAULT_ERRORS_FILE		stderr
 #define DEFAULT_WARNINGS_FILE	stdout

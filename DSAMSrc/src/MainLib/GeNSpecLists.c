@@ -66,11 +66,11 @@ DiagModeList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "OFF",	GENERAL_DIAGNOSTIC_OFF_MODE},
-					{ "SCREEN",	GENERAL_DIAGNOSTIC_SCREEN_MODE},
-					{ "ERROR",	GENERAL_DIAGNOSTIC_ERROR_MODE},
-					{ NO_FILE,	GENERAL_DIAGNOSTIC_FILE_MODE},
-					{ "",		GENERAL_DIAGNOSTIC_MODE_NULL},
+					{ "OFF",				GENERAL_DIAGNOSTIC_OFF_MODE},
+					{ "SCREEN",				GENERAL_DIAGNOSTIC_SCREEN_MODE},
+					{ "ERROR",				GENERAL_DIAGNOSTIC_ERROR_MODE},
+					{ DEFAULT_FILE_NAME,	GENERAL_DIAGNOSTIC_FILE_MODE},
+					{ "",					GENERAL_DIAGNOSTIC_MODE_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -193,16 +193,18 @@ BOOLN
 OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 {
 	static const char *funcName = "OpenDiagnostics_NSpecLists";
-	char	*fileName;
+	char	*filePath, *fileName;
 
 	switch (mode) {
 	case GENERAL_DIAGNOSTIC_OFF_MODE:
 		return(TRUE);
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
 		fileName = list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
-		if ((*fp = fopen(fileName, "w")) == NULL) {
+		filePath = (IS_ABSOLUTE_PATH(fileName))? fileName:
+		  GetParsFileFPath_Common(fileName);
+		if ((*fp = fopen(filePath, "w")) == NULL) {
 			NotifyError("%s: Could not open file '%s' for diagnostics.",
-			  funcName, fileName);
+			  funcName, filePath);
 			return(FALSE);
 		}
 		break;
