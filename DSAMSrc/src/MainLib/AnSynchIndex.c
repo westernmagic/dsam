@@ -143,12 +143,8 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 			cosineSum += *r * cos(theta);
 			rSum += fabs(*r++);
 		}
-		if (rSum == 0.0) {
-			NotifyError("%s: Zero sum for input signal.", funcName);
-			return(FALSE);
-		}
-		data->outSignal->channel[chan][0] = sqrt(sineSum * sineSum + cosineSum *
-		  cosineSum) / rSum;
+		data->outSignal->channel[chan][0] = (rSum == 0.0) 0.0: sqrt(sineSum *
+		  sineSum + cosineSum * cosineSum) / rSum;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
