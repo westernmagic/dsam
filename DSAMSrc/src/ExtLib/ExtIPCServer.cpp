@@ -270,7 +270,8 @@ IPCServer::BuildFileList(wxArrayString &list, DatumPtr pc)
 				BuildFileList(list, pc);
 				break;
 			case DATAFILE_MODULE:
-				if (((DataFilePtr) pc->data->module->parsPtr)->inputMode)
+				if (!pc->onFlag || ((DataFilePtr) pc->data->module->parsPtr)->
+				  inputMode)
 					break;
 				list.Add(GetUniParPtr_ModuleMgr(pc->data, "fileName")->valuePtr.
 				  s);
