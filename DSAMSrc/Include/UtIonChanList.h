@@ -172,7 +172,7 @@ typedef struct {
 	double	dV;
 	ICBoltzmannPars	boltzmann;
 	ICHHuxleyPars	hHuxley;
-	char			fileName[MAXLINE];
+	char			fileName[MAX_FILE_PATH];
 	ICTableEntry	*table;
 	UniParListPtr	parList;
 	
