@@ -105,6 +105,7 @@
 #define DEFAULT_WARNINGS_FILE	stdout
 #define DEFAULT_PARS_FILE		stdout
 #define UNSET_FILE_PTR			(FILE *) -1
+#define NULL_MODULE_PROCESS_NAME	"Null process module"
 
 #ifndef TRUE
 #	define	TRUE		0xFFFF
