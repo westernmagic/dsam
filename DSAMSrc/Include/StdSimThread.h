@@ -1,6 +1,6 @@
 /******************
  *
- * File:		StdMessages.h
+ * File:		StdSimThread.h
  * Purpose:		This file contains the standard messaging routine prototypes
  *				for both the GUI and non-GUI message libraries.
  * Comments:	It was take from the GeCommon module.
