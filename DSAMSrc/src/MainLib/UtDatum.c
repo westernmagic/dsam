@@ -535,7 +535,7 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 {
 	/* static const char	*funcName = "PrintParListModules_Utility_Datum"; */
 	BOOLN	ok;
-	char	suffix[MAXLINE];
+	char	suffix[MAXLINE], fmtParFileName[MAXLINE];
 	DatumPtr		pc;
 	UniParListPtr	parList;
 	
@@ -549,8 +549,9 @@ PrintParListModules_Utility_Datum(DatumPtr start, char *prefix)
 				ok = PrintParListModules_Utility_Datum(GetSimulation_ModuleMgr(
 				  pc->data), prefix);
 			else {
-				DPrint("\t##--------------- %-20s [%d] ---------------##\n",
-				  pc->u.proc.moduleName, pc->stepNumber);
+				snprintf(fmtParFileName, MAXLINE, "(%s)", pc->u.proc.parFile);
+				DPrint("\t##----- %-20s [%d] %20s -----##\n",
+				  pc->u.proc.moduleName, pc->stepNumber, fmtParFileName);
 				snprintf(suffix, MAXLINE, ".%s.%d", pc->u.proc.moduleName,
 				  pc->stepNumber);
 				ok = (parList)? PrintPars_UniParMgr(parList, prefix, suffix):
