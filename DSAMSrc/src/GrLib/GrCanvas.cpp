@@ -608,19 +608,22 @@ MyCanvas::RescaleGraph(void)
 
 }
 
-/****************************** ForceRepaintforMSW ****************************/
+/****************************** RedrawGraph ***********************************/
 
 /*
- * Using 'Refresh' for MSW does not work at present, so this routine will force
- * the window to be repainted, when GrSignalDisp wants a redraw.
+ * This routine redraws the graph when required.
  */
 
 void
-MyCanvas::ForceRepaintforMSW(void)
+MyCanvas::RedrawGraph(void)
 {
-	wxPaintEvent	event;
-	
-	OnPaint(event);
+	wxClientDC dc(this);
+
+	if (mySignalDispPtr->redrawFlag) {
+		DrawGraph(memDC, 0, 0);
+		mySignalDispPtr->redrawFlag = FALSE;
+	}
+	dc.Blit(0, 0, bitmapWidth, bitmapHeight, &memDC, 0, 0, wxCOPY);
 
 }
 

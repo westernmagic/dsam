@@ -89,7 +89,6 @@
 /******************************************************************************/
 
 SignalDispPtr	signalDispPtr = NULL;
-int		signalDispPleaseLink = 0;
 
 wxIcon		*sigDispIcon = NULL;
 
@@ -1816,12 +1815,7 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 			signalDispPtr->display->Show(TRUE);
 		} else {
 			SetDisplay_SignalDisp(data);
-#			if defined (__WXMSW__)
-			signalDispPtr->display->canvas->Refresh(FALSE);
-			signalDispPtr->display->canvas->ForceRepaintforMSW();
-#			else
-			signalDispPtr->display->canvas->Refresh(FALSE);
-#			endif
+			signalDispPtr->display->canvas->RedrawGraph();
 		}
 	}
 	return(TRUE);
