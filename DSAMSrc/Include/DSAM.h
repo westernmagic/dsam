@@ -151,22 +151,19 @@
 #	endif
 
 // Any files included regardless of precompiled headers
-#	include <wx/wx_form.h>
-#	include <wx/wxstring.h>
 
 #	include "GrUtils.h"
 #	include "GrFonts.h"
 #	include "GrIPC.h"
-#	include "GrItems.h"
-#	include "GrDSAMList.h"
-#	include "GrDialogInfo.h"
-#	include "GrParListInfo.h"
-#	include "GrParListInfoList.h"
-#	include "GrDialogList.h"
-#	include "GrModParDialog.h"
-#	include "GrSimModDialog.h"
-#	include "GrRunMgr.h"
-#	include "GrRunParDialog.h"
+//#	include "GrDSAMList.h"
+//#	include "GrDialogInfo.h"
+//#	include "GrParListInfo.h"
+//#	include "GrParListInfoList.h"
+//#	include "GrDialogList.h"
+//#	include "GrModParDialog.h"
+//#	include "GrSimModDialog.h"
+//#	include "GrRunMgr.h"
+//#	include "GrRunParDialog.h"
 #	include "GrSimMgr.h"
 #	include "GrGraphCtrls.h"
 #	include "GrLine.h"

@@ -31,7 +31,7 @@
 #define _GRSIMMGR_H 1
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-#	include "wxstring.h"
+#	include <wx/textctrl.h>
 #endif
 
 #ifdef wx_mac
@@ -92,12 +92,57 @@
 #define	SIM_MANAGER_HELP_TOP_LEVEL			"DSAMHelp"
 
 /******************************************************************************/
-/*************************** Type definitions *********************************/
+/*************************** Enum definitions *********************************/
 /******************************************************************************/
+
+enum {
+
+	MYFRAME_ID_QUIT = 1,
+	MYFRAME_ID_EXECUTE,
+	MYFRAME_ID_HELP,
+	MYFRAME_ID_EDIT_MAIN_PARS,
+	MYFRAME_ID_EDIT_SIM_PARS,
+	MYFRAME_ID_SAVE_SIM_PARS,
+	MYFRAME_ID_VIEW_SIM_PARS
+
+};
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
+
+/*************************** MyFrame ******************************************/
+
+// Define a new frame
+class MyFrame: public wxFrame {
+
+#	ifdef MPI_SUPPORT
+	char	**initStringPtrs;
+#	endif	
+	wxMenu		*fileMenu, *editMenu, *viewMenu;
+
+  public:
+    wxPanel		*panel;
+    wxTextCtrl	*diagnosticsWindow;
+
+    MyFrame(wxFrame *frame, const wxString &title, const wxPoint& pos,
+	  const wxSize& size);
+    ~MyFrame(void);
+
+	void	EnableSimParMenuOptions(bool on);
+    bool	OnCloseWindow(wxCloseEvent& event);
+	void	OnExecute(wxCommandEvent& event);
+	void	OnQuit(wxCommandEvent& event);
+	void	OnHelp(wxCommandEvent& event);
+	void	OnEditMainPars(wxCommandEvent& event);
+	void	OnEditSimPars(wxCommandEvent& event);
+	void	OnSaveSimPars(wxCommandEvent& event);
+	void	OnViewSimPars(wxCommandEvent& event);
+	void	OnSize(wxSizeEvent& event);
+
+	DECLARE_EVENT_TABLE()
+
+};
 
 /*************************** MyApp ********************************************/
 
@@ -127,53 +172,19 @@ class MyApp: public wxApp {
 
 };
 
-/*************************** MyTextWindow *************************************/
-
-class MyTextWindow: public wxTextCtrl
-{
-  public:
-	MyTextWindow(wxFrame *frame, int x=-1, int y=-1, int width=-1,
-	  int height=-1, long style=0): wxTextCtrl(frame, x, y, width, height,
-	  style) { DragAcceptFiles(TRUE); }
-
-	/* void OnChar(wxKeyEvent& event); */
-};
-
-/*************************** MyFrame ******************************************/
-
-// Define a new frame
-class MyFrame: public wxFrame {
-
-#	ifdef MPI_SUPPORT
-	char	**initStringPtrs;
-#	endif	
-	wxMenu		*fileMenu, *editMenu, *viewMenu;
-
-  public:
-    wxPanel		*panel;
-    wxTextCtrl	*diagnosticsWindow;
-
-    MyFrame(wxFrame *frame, char *title, int x, int y, int w, int h, int type);
-    ~MyFrame(void);
-
-	void	EnableSimParMenuOptions(bool on);
-    bool	OnClose(void);
- 	void	OnSize(int width, int height);
-
-};
-
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
 
-extern MyApp	myApp;
+DECLARE_APP(MyApp)
+
 extern wxList	myChildren;
-extern int		childFrameType;
 
 #ifdef MPI_SUPPORT
 	extern "C" MPI_Init(int *, char ***);
 	extern "C" MPI_Finalize(void);
 #endif
+extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/

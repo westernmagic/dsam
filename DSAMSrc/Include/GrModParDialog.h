@@ -30,7 +30,6 @@
 #include "UtCFList.h"
 #include "UtIonChanList.h"
 
-#include "GrItems.h"
 #include "GrDSAMList.h"
 #include "GrDialogInfo.h"
 #include "GrParListInfo.h"

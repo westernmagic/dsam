@@ -7,9 +7,9 @@ if MPI
 MPI_INC = -I$(CHIMPHOME)/include
 endif
 
-if WXXT
-WXWININC		= -I$(WXDIR)/wx -I$(WXDIR)/setup/$(OSTYPE) -D_NO_USES_DEFINES
-WXWINLDFLAGS	= -L$(WXDIR)/lib/$(OSTYPE)
+if WXGTK
+WXWININC		= $(WXINC) -D_NO_USES_DEFINES
+WXWINLDFLAGS	= $(WXINC)
 WXWINLIBS		= 
 else
 WXWININC		= $(XINCLUDE) -I$(WXINC) -I$(WXBASEINC)
@@ -53,12 +53,13 @@ Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 
 Std_Source	= StdMessage.c StdSignalDisp.c
 
-Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrItems.cpp GrCanvas.cpp \
+Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrCanvas.cpp GrFonts.cpp \
 				GrGraphCtrls.cpp GrLine.cpp GrSignalDisp.cpp GrDisplayS.cpp \
-				GrSimMgr.cpp GrUtils.cpp GrIPC.cpp GrRunMgr.cpp \
-				GrSimModDialog.cpp GrModParDialog.cpp GrParListInfo.cpp \
-				GrFonts.cpp GrDialogInfo.cpp GrDialogList.cpp \
-				GrParListInfoList.cpp GrRunParDialog.cpp aiai.xbm
+				GrSimMgr.cpp GrUtils.cpp GrIPC.cpp
+## GrRunMgr.cpp \
+## GrSimModDialog.cpp GrModParDialog.cpp GrParListInfo.cpp \
+## GrDialogInfo.cpp GrDialogList.cpp \
+## GrParListInfoList.cpp GrRunParDialog.cpp dsam.xpm
   
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c MoDendrite.c \

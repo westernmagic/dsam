@@ -22,12 +22,6 @@
 
 /*************************** MDI **********************************************/
 
-#define MDI_QUIT        1
-#define MDI_NEW_WINDOW  2
-#define MDI_REFRESH     3
-#define MDI_CHILD_QUIT  4
-#define MDI_ABOUT       5
-
 /*************************** Menu Commands ************************************/
 
 #define DISPLAY_QUIT			101
@@ -63,26 +57,23 @@
 class DisplayS: public wxFrame
 {
   private:
-	MyButton *printerBtn;
-	MyButton *scaleBtn;
-	MyButton *signalBtn;
-	MyButton *quitBtn;
+//	MyButton *printerBtn;
+//	MyButton *scaleBtn;
+//	MyButton *signalBtn;
+//	MyButton *quitBtn;
 
  public:
 	MyCanvas	*canvas;
-	wxPanel		*panel;
 
-	DisplayS(wxFrame *frame, char *title, int x, int y, int w, int h, int type,
-	  long handle);
+	DisplayS(wxFrame *frame, const wxString& title, const wxPoint& pos,
+	  const wxSize& size, long handle);
 	~DisplayS(void);
 	
 	void	InitButtons(void);
-	void	OnActivate(bool active);
-	bool	OnClose(void);
-	void	OnSize(int width, int height);
+	void	OnSize(wxSizeEvent& event);
 	
   // Call backs
-	void	ButtonProc(wxButton& but, wxCommandEvent& event);
+  // void	ButtonProc(wxButton& but, wxCommandEvent& event);
 
 };
 

@@ -282,7 +282,7 @@ GrCanvas.obj:	$(INCDIR)/GrCanvas.h $(INCDIR)/GrGraphCtrls.h \
 
 GrDisplayS.obj:	$(INCDIR)/GrDisplayS.h $(GEN_HEADERS) $(INCDIR)/GrCanvas.h \
 				  $(INCDIR)/GrUtils.h $(INCDIR)/GrGraphCtrls.h \
-				  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h $(INCDIR)/GrItems.h
+				  $(INCDIR)/GrSimMgr.h $(INCDIR)/GrLine.h
 
 GrGraphCtrls.obj:	$(INCDIR)/GrGraphCtrls.h
 
@@ -290,12 +290,10 @@ GrFonts.obj:	$(INCDIR)/GrFonts.h
 
 GrIPC.obj:		$(INCDIR)/GrIPC.h $(INCDIR)/GrRunMgr.h $(GEN_HEADERS)
 
-GrItems.obj:	$(INCDIR)/GrItems.h
 
 GrLine.obj:		$(INCDIR)/GrLine.h
 
-GrModParDialog.obj:	$(INCDIR)/GrModParDialog.h $(INCDIR)/GrItems.h \
-					  $(GEN_HEADERS)
+GrModParDialog.obj:	$(INCDIR)/GrModParDialog.h $(GEN_HEADERS)
 
 GrParListInfo.obj:	$(INCDIR)/GrParListInfo.h $(INCDIR)/GrItems.h $(GEN_HEADERS)
 

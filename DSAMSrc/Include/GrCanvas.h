@@ -30,8 +30,8 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	CANVAS_BITMAP_WIDTH		600
-#define	CANVAS_BITMAP_HEIGHT	600
+#define	CANVAS_BITMAP_WIDTH		1000
+#define	CANVAS_BITMAP_HEIGHT	1000
 
 #define	CANVAS_PS_X_OFFSET		50.0
 #define	CANVAS_PS_Y_OFFSET		50.0
@@ -59,15 +59,15 @@
 
 // Define a new canvas which can receive some events
 
-class MyCanvas: public wxScrolledWindow
+class MyCanvas: public wxWindow
 {
 	BOOLN	useTextAdjust;
-	char	xTitle[MAXLINE], yTitle[MAXLINE];
 	int		yAxisTicks, numChannels;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
 	Box		signal, summary, *originalCanvas, *xAxis, *yAxis;
 	wxFont  *labelFont, *axisTitleFont;
+	wxString	xTitle, yTitle;
 	wxMemoryDC	memDC;
 	wxBitmap	*memBmp;
 	MultiLine	*signalLines, *summaryLine;
@@ -76,8 +76,8 @@ class MyCanvas: public wxScrolledWindow
 	SignalCtrls		signalCtrl;
 	AxisCtrls		axisCtrl;
 
-	MyCanvas(wxFrame *frame, int x, int y, int w, int h, int style =
-	  wxRETAINED);
+	MyCanvas(wxFrame *frame, const wxPoint& pos = wxDefaultPosition,
+	  const wxSize& size = wxDefaultSize, long style = 0);
 	~MyCanvas(void);
 
 	void	InitData(EarObjectPtr data);
@@ -92,10 +92,12 @@ class MyCanvas: public wxScrolledWindow
 	void	SetUseTextAdjust(BOOLN state)	{ useTextAdjust = state; };
 	void	DrawAxes(wxDC& dc, float theXOffset, float theYOffset);
 	void	DrawGraph(wxDC& dc, double theXOffset, double theYOffset);
-	void	DrawVerticalText(wxDC& dc, char *string, float x, float y);
+	void	DrawVerticalText(wxDC& dc, wxString& string, float x, float y);
 
  	// private:
 	void	OnPaint(void); // Set back to private when possible.
+
+	DECLARE_EVENT_TABLE()
 
 };
 
