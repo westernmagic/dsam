@@ -117,12 +117,12 @@ Init_Analysis_Averages(ParameterSpecifier parSpec)
 		}
 	}
 	averagesPtr->parSpec = parSpec;
-	averagesPtr->modeFlag = FALSE;
-	averagesPtr->timeOffsetFlag = FALSE;
-	averagesPtr->timeRangeFlag = FALSE;
-	averagesPtr->mode = 0;
+	averagesPtr->modeFlag = TRUE;
+	averagesPtr->timeOffsetFlag = TRUE;
+	averagesPtr->timeRangeFlag = TRUE;
+	averagesPtr->mode = AVERAGES_FULL;
 	averagesPtr->timeOffset = 0.0;
-	averagesPtr->timeRange = 0.0;
+	averagesPtr->timeRange = -1.0;
 
 	InitModeList_Analysis_Averages();
 	if (!SetUniParList_Analysis_Averages()) {
