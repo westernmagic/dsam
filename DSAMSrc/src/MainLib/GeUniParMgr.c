@@ -506,6 +506,7 @@ PrintArray_UniParMgr(UniParPtr p, char *suffix)
 			  array.pPtr.i)[i]);
 			break;
 		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_REAL_DYN_ARRAY:
 			DPrint("\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i, (*p->valuePtr.
 			  array.pPtr.r)[i]);
 			break;
@@ -617,6 +618,7 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 		break;
 	case UNIPAR_INT_ARRAY:
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
 		DPrint("# %s:\n", p->desc);
@@ -792,9 +794,10 @@ GetParString_UniParMgr(UniParPtr p)
 		NotifyError("%s: Parameter not initialised.", funcName);
 		return(NULL);
 	}
-	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY) || (p->
-	  type == UNIPAR_STRING_ARRAY) || (p->type == UNIPAR_NAME_SPEC_ARRAY)) &&
-	  (*p->valuePtr.array.numElements == 0))
+	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY) ||
+	  (p->type == UNIPAR_REAL_ARRAY) || (p->type == UNIPAR_STRING_ARRAY) ||
+	  (p->type == UNIPAR_NAME_SPEC_ARRAY)) && (*p->valuePtr.array.numElements ==
+	  0))
 		return("");
 		
 	switch (p->type) {
@@ -816,6 +819,7 @@ GetParString_UniParMgr(UniParPtr p)
 		sprintf(string, "%g", *p->valuePtr.r);
 		break;
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 		sprintf(string, "%g", (*p->valuePtr.array.pPtr.r)[p->valuePtr.array.
 		  index]);
 		break;
