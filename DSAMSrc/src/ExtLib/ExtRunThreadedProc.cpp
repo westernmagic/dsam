@@ -135,7 +135,7 @@ RunThreadedProc::RunThreadEnabled(EarObjectPtr data)
 #	if DEBUG
 	printf("%s: Debug: chansPerThread = %d\n", funcName, chansPerThread);
 #	endif
-	remainderChans = data->outSignal->numChannels % chansPerThread;
+	remainderChans = data->outSignal->numChannels % numThreads;
 
 	data->threadRunFlag = TRUE;
 	if (!InitThreadProcs_EarObject(data, numThreads)) {
