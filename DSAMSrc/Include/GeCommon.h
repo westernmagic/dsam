@@ -113,14 +113,15 @@
 #	define	FALSE		0
 #endif
 
-/*
+
 #ifndef DBL_MAX
 #	define	DBL_MAX		((double) 1.0e37)
 #endif
+
 #ifndef FLT_MAX
 #	define	FLT_MAX		((float) 1.0e37)
 #endif
-*/
+
 
 #ifndef GRAPHICS_SUPPORT
 #	define MainSimulation	main
