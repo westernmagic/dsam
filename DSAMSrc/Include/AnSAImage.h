@@ -48,7 +48,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define SAI_NUM_PARS			6
+#define SAI_NUM_PARS			7
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -57,6 +57,7 @@
 typedef enum {
 
 	SAI_DIAGNOSTIC_MODE,
+	SAI_INTEGRATION_MODE,
 	SAI_STROBE_SPECIFICATION,
 	SAI_NEGATIVE_WIDTH,
 	SAI_POSITIVE_WIDTH,
@@ -65,14 +66,24 @@ typedef enum {
 
 } SAIParSpecifier;
 
+typedef enum {
+
+	SAI_INTEGRATION_MODE_STI,
+	SAI_INTEGRATION_MODE_AC,
+	SAI_INTEGRATION_MODE_NULL
+
+} AnalysisIntegrationModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	diagnosticModeFlag, strobeSpecificationFlag, positiveWidthFlag;
-	BOOLN	negativeWidthFlag, inputDecayRateFlag, imageDecayHalfLifeFlag;
+	BOOLN	diagnosticModeFlag, integrationModeFlag, strobeSpecificationFlag;
+	BOOLN	negativeWidthFlag, positiveWidthFlag, inputDecayRateFlag;
+	BOOLN	imageDecayHalfLifeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
+	int		integrationMode;
 	char	strobeSpecification[MAX_FILE_PATH];
 	double	negativeWidth;
 	double	positiveWidth;
@@ -81,6 +92,7 @@ typedef struct {
 
 	/* Private members */
 	NameSpecifier	*diagnosticModeList;
+	NameSpecifier	*integrationModeList;
 	UniParListPtr	parList;
 	char			diagnosticString[MAX_FILE_PATH];
 	double			*inputDecay;
@@ -123,6 +135,8 @@ BOOLN	FreeProcessVariables_Analysis_SAI(void);
 
 UniParListPtr	GetUniParListPtr_Analysis_SAI(void);
 
+BOOLN	InitIntegrationModeList_Analysis_SAI(void);
+
 BOOLN	Init_Analysis_SAI(ParameterSpecifier parSpec);
 
 BOOLN	InitInputDecayArray_Analysis_SAI(EarObjectPtr data);
@@ -149,15 +163,17 @@ BOOLN	SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife);
 
 BOOLN	SetInputDecayRate_Analysis_SAI(double theInputDecayRate);
 
+BOOLN	SetIntegrationMode_Analysis_SAI(char * theIntegrationMode);
+
 BOOLN	SetDelay_Analysis_SAI(double theDelay);
 
 BOOLN	SetDelayTimeout_Analysis_SAI(double theDelayTimeout);
 
 BOOLN	SetNegativeWidth_Analysis_SAI(double theNegativeWidth);
 
-BOOLN	SetPars_Analysis_SAI(char *diagnosticMode, char *strobeSpecification,
-		  double negativeWidth, double positiveWidth, double inputDecayRate,
-		  double imageDecayHalfLife);
+BOOLN	SetPars_Analysis_SAI(char *diagnosticMode, char *integrationMode,
+		  char *strobeSpecification, double negativeWidth, double
+		  positiveWidth, double inputDecayRate, double imageDecayHalfLife);
 
 BOOLN	SetPositiveWidth_Analysis_SAI(double thePositiveWidth);
 
