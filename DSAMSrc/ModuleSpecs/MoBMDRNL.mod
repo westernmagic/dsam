@@ -9,18 +9,20 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	int		nonLinGTCascade;
-	int		nonLinLPCascade;
+	int				nonLinGTCascade;
+	int				nonLinLPCascade;
+	ParArray		nonLinBwidth;
 
-	double		compressionPower;
+	ParArray		comprScaleA;
+	ParArray		comprScaleB;
+	double			comprExponent;
 	
-	int		linGTCascade;
-	int		linLPCascade;
-	int		linCFMode;
-	double	linCFPars;
-	int		linBandwidthMode;
-	double	linScale;						/* b */
+	int				linGTCascade;
+	int				linLPCascade;
+	ParArray		linCF;
+	ParArray		linBwidth;
+	double			linScaleG;
 
-	CFListPtr	theCFs;
+	CFListPtr		theCFs;
 
 } BMDRNL;
