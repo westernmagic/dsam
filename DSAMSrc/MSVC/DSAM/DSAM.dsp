@@ -677,6 +677,14 @@ SOURCE=..\..\Include\ExtSimThread.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\ExtSocket.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ExtSocketServer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\FiAIFF.h
 # End Source File
 # Begin Source File
