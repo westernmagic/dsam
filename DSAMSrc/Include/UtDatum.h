@@ -114,7 +114,7 @@ int		CmpProcessLabel_Utility_Datum(void *a, void *b);
 
 int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
-void	DisconnectSim_Utility_Datum(DatumPtr from, DatumPtr to);
+void	DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 
 DatumPtr	Execute_Utility_Datum(DatumPtr start);
 

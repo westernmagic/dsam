@@ -204,10 +204,14 @@ AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
  */
 
 void
-DisconnectSim_Utility_Datum(DatumPtr from, DatumPtr to)
+DisconnectSim_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	from->next = NULL;
 	to->previous = NULL;
+	if (!DATUM_IN_SIMULATION(from) && (*head == from))
+		*head = (DATUM_IN_SIMULATION(to))? to: NULL;
+	if (!DATUM_IN_SIMULATION(to) && (*head == to))
+		*head = NULL;
 
 }
 

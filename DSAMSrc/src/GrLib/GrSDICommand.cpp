@@ -215,6 +215,35 @@ SDICommand::ConnectProcesses(void)
 }
 
 /******************************************************************************/
+/****************************** DisconnectProcesses ***************************/
+/******************************************************************************/
+
+/*
+ * This routine connects two specified processes and inserts them into the
+ * simulation.
+ */
+
+void
+SDICommand::DisconnectProcesses(void)
+{
+	static const char *funcName = "SDICommand::DisconnectProcesses";
+
+	SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->GetEventHandler();
+	SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->GetEventHandler();
+	DatumPtr	toPc = toHandler->pc, fromPc = fromHandler->pc;
+	DatumPtr	*simPtr = GetSimPtr_AppInterface();
+
+	if (!fromPc || !toPc) {
+		wxLogError("%s: Both processes must be set before a connection\n"
+		  "can be made.", funcName);
+		return;
+	}
+	DisconnectOutSignalFromIn_EarObject(fromPc->data, toPc->data);
+	DisconnectSim_Utility_Datum(simPtr, fromPc, toPc);
+		
+}
+
+/******************************************************************************/
 /****************************** Do ********************************************/
 /******************************************************************************/
 
@@ -361,37 +390,6 @@ SDICommand::Do(void)
 		break; }
 	}
 	return TRUE;
-
-}
-
-/******************************************************************************/
-/****************************** DisconnectProcesses ***************************/
-/******************************************************************************/
-
-/*
- * This routine connects two specified processes and inserts them into the
- * simulation.
- */
-
-void
-SDICommand::DisconnectProcesses(void)
-{
-	static const char *funcName = "SDICommand::DisconnectProcesses";
-
-	SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->GetEventHandler();
-	SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->GetEventHandler();
-	DatumPtr	toPc = toHandler->pc, fromPc = fromHandler->pc;
-
-	if (!fromPc || !toPc) {
-		wxLogError("%s: Both processes must be set before a connection\n"
-		  "can be made.", funcName);
-		return;
-	}
-	DisconnectOutSignalFromIn_EarObject(fromPc->data, toPc->data);
-
-	printf("SDICommand::Undo: need to uninstall processes here too.\n");
-
-	DisconnectSim_Utility_Datum(fromPc, toPc);
 
 }
 
