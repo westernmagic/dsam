@@ -53,6 +53,8 @@ char *	QuotedString_Utility_String(char *string);
 
 void	ToUpper_Utility_String(char *upperCaseString, char *string);
 
+char *	RemoveChar_Utility_String(char *string, char c);
+
 int		StrCmpNoCase_Utility_String(char *s1, char *s2);
 
 int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);

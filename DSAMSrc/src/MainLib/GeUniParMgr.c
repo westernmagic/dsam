@@ -769,8 +769,8 @@ GetParString_UniParMgr(UniParPtr p)
 		snprintf(string, LONG_STRING, "%s", p->valuePtr.s);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		sprintf(string, "%s", (*p->valuePtr.array.pPtr.s)[p->valuePtr.array.
-		  index]);
+		snprintf(string, LONG_STRING, "%s", (*p->valuePtr.array.pPtr.s)[p->
+		  valuePtr.array.index]);
 		break;
 	case UNIPAR_FILE_NAME:
 		snprintf(string, LONG_STRING, "%s", p->valuePtr.file.name);
@@ -896,6 +896,7 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 			NotifyError("%s: Could not set array value.", funcName);
 			return(FALSE);
 		}
+		RemoveChar_Utility_String(arrayValue, '"');
 		ok = (* p->FuncPtr.SetStringArrayElement)(arrayIndex[0], arrayValue);
 		break;
 	case UNIPAR_BOOL:

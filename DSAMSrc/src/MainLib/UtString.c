@@ -192,3 +192,23 @@ GetFileNameFPath_Utility_String(char *fileName)
 
 }
 
+/**************************** RemoveChar **************************************/
+
+/*
+ * This routine removes a specified character from a string.
+ * It expects the string to be properly terminated with a null character.
+ */
+ 
+char *
+RemoveChar_Utility_String(char *string, char c)
+{
+	char	*p1, *p2;
+
+	for (p1 = p2 = string; *p2; p1++)
+		if (*p1 != c)
+			*p2++ = *p1;
+	*p2 = '\0';
+	return(string);
+
+}
+
