@@ -654,7 +654,8 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	binWidth = (spikeRegPtr->binWidth <= 0.0)? dt: spikeRegPtr->binWidth;
 	maxTime = (spikeRegPtr->timeRange > 0.0)?
 	  spikeRegPtr->timeRange: _GetDuration_SignalData(data->inSignal[0]);
-	timeRangeIndex = (ChanLen) ((maxTime - spikeRegPtr->timeOffset) / binWidth);
+	timeRangeIndex = (ChanLen) floor((maxTime - spikeRegPtr->timeOffset) /
+	  binWidth + 0.5);
 	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 	  numChannels * SPIKE_REG_NUM_RETURNS), timeRangeIndex, binWidth)) {
 		NotifyError("%s: Cannot initialise sumEarObj.", funcName);
