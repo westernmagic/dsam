@@ -58,7 +58,9 @@ typedef enum {
 typedef enum {
 
 	HISTOGRAM_PSTH,		
+	HISTOGRAM_PSTH_SR,		
 	HISTOGRAM_PH,
+	HISTOGRAM_PH_SR,
 	HISTOGRAM_TYPE_NULL
 
 } HistogramTypeSpecifier;

@@ -105,7 +105,9 @@ InitTypeModeList_Analysis_Histogram(void)
 	static NameSpecifier	typeModeList[] = {
 
 					{"PSTH",	HISTOGRAM_PSTH },
+					{"PSTH_SR",	HISTOGRAM_PSTH_SR },
 					{"PH",		HISTOGRAM_PH },
+					{"PH_SR",	HISTOGRAM_PH_SR },
 					{"",		HISTOGRAM_TYPE_NULL }
 
 				};
@@ -201,7 +203,7 @@ SetUniParList_Analysis_Histogram(void)
 	  &histogramPtr->detectionMode, histogramPtr->detectionModeList,
 	  (void * (*)) SetDetectionMode_Analysis_Histogram);
 	SetPar_UniParMgr(&pars[ANALYSIS_HISTOGRAM_TYPEMODE], "TYPE_MODE",
-	  "Histogram type: 'PSTH' or 'PH'.",
+	  "Histogram type: 'PSTH', 'PSTH_SR', 'PH' or 'PH_SR'.",
 	  UNIPAR_NAME_SPEC,
 	  &histogramPtr->typeMode, histogramPtr->typeModeList,
 	  (void * (*)) SetTypeMode_Analysis_Histogram);
@@ -482,7 +484,8 @@ CheckPars_Analysis_Histogram(void)
 		NotifyError("%s: binWidth variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (histogramPtr->typeMode == HISTOGRAM_PH) {
+	if ((histogramPtr->typeMode == HISTOGRAM_PH) || (histogramPtr->typeMode ==
+	  HISTOGRAM_PH_SR)) {
 	   if (!histogramPtr->periodFlag) {
 			NotifyError("%s: period variable not set.", funcName);
 			ok = FALSE;
@@ -496,6 +499,13 @@ CheckPars_Analysis_Histogram(void)
 	}
 	if (!histogramPtr->timeOffsetFlag) {
 		NotifyError("%s: timeOffset variable not set.", funcName);
+		ok = FALSE;
+	}
+	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) &&
+	  ((histogramPtr->typeMode == HISTOGRAM_PSTH_SR) || (histogramPtr->
+	  typeMode == HISTOGRAM_PH_SR))) {
+		NotifyError("%s: The spike rate histogram modes cannot be used in "
+		  "continuous detection mode.", funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -535,12 +545,16 @@ PrintPars_Analysis_Histogram(void)
 		DPrint("<prev. signal dt>,");
 	else
 		DPrint("%g ms,", MSEC(histogramPtr->binWidth));
-	if ((histogramPtr->typeMode == HISTOGRAM_PH) || (histogramPtr->typeMode ==
-	  HISTOGRAM_PH))
-		DPrint("\tPeriod = %g ms,",
-		  MSEC(histogramPtr->period));
-	DPrint("\tTime offset = %g ms\n",
-	  MSEC(histogramPtr->timeOffset));
+	switch (histogramPtr->typeMode) {
+	case HISTOGRAM_PSTH:
+	case HISTOGRAM_PSTH_SR:
+	case HISTOGRAM_PH:
+	case HISTOGRAM_PH_SR:
+		DPrint("\tPeriod = %g ms,", MSEC(histogramPtr->period));
+		break;
+	default:
+		DPrint("\tTime offset = %g ms\n", MSEC(histogramPtr->timeOffset));
+	}
 	return(TRUE);
 
 }
@@ -683,7 +697,7 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 	}
 	signalDuration = data->inSignal[0]->length * data->inSignal[0]->dt;
 	if ((histogramPtr->typeMode == HISTOGRAM_PH) || (histogramPtr->typeMode ==
-	  HISTOGRAM_PH)){
+	  HISTOGRAM_PH_SR)){
 		if ((histogramPtr->period < data->inSignal[0]->dt) || (histogramPtr->
 		  period > signalDuration)) {
 			NotifyError("%s: Invalid period = %g ms!", funcName,
@@ -738,8 +752,9 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		ResetProcess_EarObject(p->dataBuffer);
-		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (ChanLen) floor(p->
-		  period / data->inSignal[0]->dt + 0.5);
+		bufferLength = ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode ==
+		  HISTOGRAM_PSTH_SR))? 1: (ChanLen) floor(p->period / data->inSignal[
+		  0]->dt + 0.5);
 		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
 		  numChannels, bufferLength, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise channels for PH Buffer.",
@@ -816,7 +831,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	SetProcessName_EarObject(data, "Histogram Analysis Module");
 	p = histogramPtr;
 	dt = data->inSignal[0]->dt;
-	if (p->typeMode == HISTOGRAM_PSTH)
+	if ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode == HISTOGRAM_PSTH_SR))
 		p->period = data->inSignal[0]->length * dt - p->timeOffset;
 	binWidth = (p->binWidth <= 0.0)? dt: p->binWidth;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
@@ -893,9 +908,10 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		  data->outSignal->length)	/* Last incomplete bin */
 			*outPtr +=  binSum;
 	}
-	if (p->typeMode == HISTOGRAM_PSTH)
+	if ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode == HISTOGRAM_PSTH_SR))
 		p->numPeriods++;
-	if (p->detectionMode == HISTOGRAM_DETECT_SPIKES) {
+	if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && ((p->typeMode ==
+	  HISTOGRAM_PSTH_SR) || (p->typeMode == HISTOGRAM_PH_SR))) {
 		totalBinDuration = binWidth * p->numPeriods;
 		for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 			outPtr = data->outSignal->channel[chan];
