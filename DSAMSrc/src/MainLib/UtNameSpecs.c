@@ -67,6 +67,7 @@ int
 Identify_NameSpecifier(char *name, NameSpecifierPtr list)
 {
 	static char *funcName = "Identify_NameSpecifier";
+	int		length;
 
 	if (list == NULL) {
 		NotifyError("%s: List not correctly initialised.", funcName);
@@ -76,10 +77,13 @@ Identify_NameSpecifier(char *name, NameSpecifierPtr list)
 		NotifyError("%s: Illegal null name.", funcName);
 		return(GetNullSpec_NameSpecifier(list));
 	}
-	if (strlen(name) >= MAXLINE) {
+	length = strlen(name);
+	if (length >= MAXLINE) {
 		NotifyError("%s: Search name is too long (%s)", funcName, name);
 		return(GetNullSpec_NameSpecifier(list));
 	}
+	if (!length)
+		return(GetNullSpec_NameSpecifier(list));
 	for (  ; StrNCmpNoCase_Utility_String(list->name, name) != 0 &&
 	  list->name[0] != '\0'; list++)
 		;
