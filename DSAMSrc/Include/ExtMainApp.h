@@ -22,6 +22,8 @@
 /******************************************************************************/
 
 #define MAINAPP_PARAMETER_STR_DELIMITERS	" ,\t"
+#define MAINAPP_QUOTE						'"'
+#define MAINAPP_SPACE_SUBST					'\1'
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -77,7 +79,9 @@ class MainApp {
 	int		GetServerPort(void)	{ return(serverPort); }
 	bool	InitArgv(int theArgc);
 	bool	InitMain(bool loadSimulationFlag = false);
+	bool	ProtectQuotedStr(char *str);
 	void	RemoveCommands(int offset, char *prefix);
+	char *	RestoreQuotedStr(char *str);
 	int		RunServer(void);
 	void	SetInitStatus(bool status)	{ initOk = status; }
 	void	StartSimThread(void);

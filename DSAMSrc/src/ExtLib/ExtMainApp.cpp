@@ -259,6 +259,56 @@ MainApp::SetArgvString(int index, char *string, int size)
 
 }
 
+/****************************** ProtectQuotedStr ******************************/
+
+/*
+ * This function replaces characters between quotes so the strings are reqarded
+ * as non-delimited.
+ * The speech marks are also replaced with spaces.
+ * It returns FALSE if it enounters an error.
+ */
+
+bool
+MainApp::ProtectQuotedStr(char *str)
+{
+	static const char *funcName = "MainApp::ProtectQuotedStr";
+	bool	quotesOn = FALSE;
+	char	*p;
+
+	for (p = str; *p != '\0'; p++) {
+		if (*p == MAINAPP_QUOTE) {
+			quotesOn = (!quotesOn);
+			*p = ' ';
+		} else
+			if (quotesOn && (*p == ' '))
+				*p = MAINAPP_SPACE_SUBST;
+	}
+	if (quotesOn) {
+		NotifyError("%s: Incomplete quoted string in parameters.", funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** RestoreQuotedStr ******************************/
+
+/*
+ * This routine returns the spaces to a protected quoted string.
+ */
+
+char *
+MainApp::RestoreQuotedStr(char *str)
+{
+	char	*p;
+
+	for (p = str; *p != '\0'; p++)
+		if (*p == MAINAPP_SPACE_SUBST)
+			*p = ' ';
+	return(str);
+
+}
+
 /****************************** SetParameterOptionArgs ************************/
 
 /*
@@ -281,10 +331,15 @@ MainApp::SetParameterOptionArgs(int indexStart, char *parameterOptions,
 		return(-1);
 	}
 	strcpy(workStr, parameterOptions);
+	if (!ProtectQuotedStr(workStr)) {
+		NotifyError("%s; Could note protect quoted parameters.", funcName);
+		return(-1);
+	}
 	token = strtok(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
 	while (token) {
 		if (!countOnly)
-			SetArgvString(indexStart + count, token, strlen(token));
+			SetArgvString(indexStart + count, RestoreQuotedStr(token),
+			  strlen(token));
 		count++;
 		token = strtok(NULL, MAINAPP_PARAMETER_STR_DELIMITERS);
 	}
