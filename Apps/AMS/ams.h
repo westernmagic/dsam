@@ -63,6 +63,7 @@
 #define	AMS_NUM_PARS				2		/* No. of application parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
+#define AMS_TUTORIAL_HELP			"AMSTutorial"
 
 #ifndef AMS_DATA_INSTALL_DIR
 #	define	AMS_DATA_INSTALL_DIR	"."	/* To find the DSAM help files, etc. */

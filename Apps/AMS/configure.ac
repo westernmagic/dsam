@@ -267,7 +267,6 @@ AC_OUTPUT(
 	ams.spec
 	CfgTools/Makefile
 	DEFAULT/Makefile
-	HelpFiles/Makefile
 	Matlab/Makefile
 	MSVC/Makefile
 	MSVC/AMS/Makefile

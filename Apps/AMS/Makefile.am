@@ -14,7 +14,7 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= ams.par ams.rc amsicon.ico
+EXTRA_DIST		= ams.par ams.rc amsicon.ico ams.zip AMSTutorial.zip
 
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
