@@ -339,7 +339,7 @@
 
 <<>> Simulation parameter file divider.
 
-	DIAG_MODE.AMS.0          	"SCREEN"  	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	DIAG_MODE.AMS.0          	"OFF"  	Diagnostics mode specifier ('off', 'screen' or <filename>).
 	SIM_SCRIPT_FILE.AMS.0    	"AIM.sim" 	Simulation script file.
 	SIM_PAR_FILE.AMS.0       	"DEFAULT/AIM.spf"	Simulation parameter file mode ('off' or <file name>).
 	SEGMENT_MODE.AMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
