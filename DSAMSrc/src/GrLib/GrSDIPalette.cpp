@@ -103,7 +103,6 @@ EditorToolPalette::Set(void)
 	wxBitmap PaletteTransTool("TOOL3");
 	wxBitmap PaletteUserTool("TOOL4");
 	wxBitmap PaletteUtilTool("TOOL1");
-	wxBitmap PaletteArrow("ARROWTOOL");
 	#elif defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxBitmap PaletteAnaTool(tool1_xpm);
 	wxBitmap PaletteCtrlTool(tool2_xpm);
