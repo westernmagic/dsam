@@ -85,7 +85,6 @@ class ModuleParDialog: public wxDialog {
 	void	OnPageChanged(wxNotebookEvent &event);
 
 	bool	CheckChangedValues(void);
-	bool	CheckDialogChangedValues(void);
 	void	DisableCancelBtn(void)	{ cancelBtn->Enable(FALSE); }
 	wxNode *	GetParListNode(wxNode *node, long tag);
 	bool	GetUpdateParent(void)	{ return updateParent; }

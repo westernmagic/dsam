@@ -196,6 +196,7 @@ ModuleParDialog::DeleteDialog(void)
 			printf("ModuleParDialog::DeleteDialog: calling dialog pointer "
 			  "needs to be set to NULL\n");
 	}
+	wxGetApp().GetFrame()->DeleteFromDialogList(this);
 
 }
 
@@ -324,7 +325,6 @@ ModuleParDialog::CheckChangedValues(void)
 	bool	ok;
 	size_t	i;
 
-	ok = CheckDialogChangedValues();
 	for (i = 0; i < parListInfoList->list.Count(); i++) {
 		if (!parListInfoList->list[i]->CheckChangedValues())
 			ok = FALSE;
@@ -339,31 +339,6 @@ ModuleParDialog::CheckChangedValues(void)
 	if (ok && !UpdateParent())
 		ok = FALSE;
 	return(ok);
-
-}
-
-/****************************** CheckDialogChangedValues **********************/
-
-/*
- * This routine checks the values for all of the dialogs and checks to see if
- * they have been changed from the dialog without pressing <return>.
- * It will return FALSE if it cannot set any change values.
- */
-
-bool
-ModuleParDialog::CheckDialogChangedValues(void)
-{
-	bool	ok = TRUE;
-//	size_t	i;
-
-	printf("ModuleParDialog::CheckDialogChangedValues: debug called\n");
-//	for (i = 0; i < dialogList.Count(); i++)
-//		if (dialogList[i]->dialog) {
-//			if (!dialogList[i]->dialog->CheckChangedValues())
-//				ok = FALSE;
-//		}
-	return(ok);
-	
 
 }
 

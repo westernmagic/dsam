@@ -67,11 +67,14 @@ class EditorToolPalette;
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
+/*************************** SDIFrame *****************************************/
+
 class SDIFrame: public wxDocParentFrame
 {
 	DECLARE_CLASS(SDIFrame)
 
 	ModuleParDialog	*mainParDialog;
+	DynaListPtr		dialogList;
 
   public:
 	wxMenu *editMenu;
@@ -91,6 +94,9 @@ class SDIFrame: public wxDocParentFrame
 	#endif // USE_GENERIC_TBAR
 
 	SDICanvas *	CreateCanvas(wxView *view, wxFrame *parent);
+	void	AddToDialogList(ModuleParDialog *dialog);
+	bool	CheckChangedValues(void);
+	void	DeleteFromDialogList(ModuleParDialog *dialog);
 	void	DeleteMainParDialog(void);
 	void	OnAbout(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
@@ -116,5 +122,11 @@ class SDIFrame: public wxDocParentFrame
 	DECLARE_EVENT_TABLE()
 
 };
+
+/******************************************************************************/
+/*************************** Subroutine declarations **************************/
+/******************************************************************************/
+
+int		CmpDialogs_SDIFrame(void *diagNode1, void *diagNode2);
 
 #endif

@@ -331,6 +331,7 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 					dialog = new ModuleParDialog(canvas->parent, title, pc,
 					  parList, this, (int) (winX + x), (int) (winY + y), 500,
 					  500, wxDEFAULT_DIALOG_STYLE);
+					wxGetApp().GetFrame()->AddToDialogList(dialog);
 					dialog->SetNotebookSelection();
 					dialog->Show(TRUE);
 					}

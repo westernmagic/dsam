@@ -101,6 +101,7 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	canvas = NULL;
 	mainParDialog = NULL;
 	myToolBar = NULL;
+	dialogList = NULL;
 	
 #	ifdef MPI_SUPPORT
 	static const char *funcName = "SDIFrame::MyFrame";
@@ -222,6 +223,57 @@ SDIFrame::SetSimFileAndLoad(void)
 
 }
 
+/****************************** AddToDialogList *******************************/
+
+/*
+ * This routine adds a dialog to the open dialog list.
+ */
+
+void
+SDIFrame::AddToDialogList(ModuleParDialog *dialog)
+{
+	Append_Utility_DynaList(&dialogList, dialog);
+	
+}
+
+/****************************** DeleteFromDialogList **************************/
+
+/*
+ * This routine adds a dialog to the open dialog list.
+ */
+
+void
+SDIFrame::DeleteFromDialogList(ModuleParDialog *dialog)
+{
+	DynaListPtr	p = FindElement_Utility_DynaList(dialogList,
+	  CmpDialogs_SDIFrame, dialog);
+	if (!p)	
+		wxLogError("SDIFrame::DeleteFromDialogList: Could not find dialog.\n");	
+	Remove_Utility_DynaList(&dialogList, p);
+
+}
+
+/****************************** CheckChangedValues ****************************/
+
+/*
+ * This routine checks for changed values in the open dialogs.
+ */
+
+bool
+SDIFrame::CheckChangedValues(void)
+{
+	bool	ok = TRUE;
+	DynaListPtr	p = dialogList;
+
+	while (p) {
+		if (!((ModuleParDialog *) p->data)->CheckChangedValues())
+			ok = FALSE;
+		p = p->next;
+	}
+	return(ok);
+
+}
+
 /****************************** CreateToolbar *********************************/
 
 void
@@ -338,6 +390,8 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 //		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
 //		  )->CheckChangedValues())
 //			return;
+		if (!CheckChangedValues())
+			return;
 		if (!GetPtr_AppInterface()->audModel) {
 			NotifyError("%s: Simulation not initialised.", funcName);
 			return;
@@ -436,6 +490,7 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 	mainParDialog->SetNotebookSelection();
 	printf("SDIFrame::OnEditMainPars: dialog created\n");
 	mainParDialog->Show(TRUE);
+	wxGetApp().GetFrame()->AddToDialogList(mainParDialog);
 
 }
 
@@ -621,6 +676,22 @@ SDIFrame::OnCloseWindow(wxCloseEvent& event)
 	if (!event.GetVeto())
 		wxOGLCleanUp();
 
+}
+
+/****************************** CmpDialogs ************************************/
+
+/*
+ * This function compares dialogs for a match
+ */
+
+int
+CmpDialogs_SDIFrame(void *diagNode1, void *diagNode2)
+{
+	ModuleParDialog	*diag1 = (ModuleParDialog * ) diagNode1;
+	ModuleParDialog	*diag2 = (ModuleParDialog * ) diagNode2;
+
+	return (diag1->pc != diag2->pc);
+	
 }
 
 #endif /* HAVE_WX_OGL_H */
