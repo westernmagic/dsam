@@ -160,10 +160,11 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 		Free_Utility_SimScript();
 		return(FALSE);
 	}
+	simScriptPtr->symList = NULL;
+	InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
 	simScriptPtr->simParFileFlag = FALSE;
 	sprintf(simScriptPtr->parsFilePath, "No path");
 	simScriptPtr->lineNumber = 0;
-	simScriptPtr->symList = NULL;
 	simScriptPtr->simPtr = NULL;
 	simScriptPtr->subSimList = NULL;
 	simScriptPtr->labelBList = NULL;
@@ -924,7 +925,6 @@ Read_Utility_SimScript(FILE *fp)
 	}
 	FreeSimulation_Utility_SimScript();
 	localSimScriptPtr->fp = fp;
-	InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
 	localSimScriptPtr->simPtr = &localSimScriptPtr->simulation;
 	if (yyparse() != 0)
 		FreeSimulation_Utility_SimScript();
