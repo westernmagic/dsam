@@ -51,6 +51,7 @@
 enum {
 
 	MYFRAME_ID_QUIT = 1,
+	MYFRAME_ID_ABOUT,
 	MYFRAME_ID_EXECUTE,
 	MYFRAME_ID_HELP,
 	MYFRAME_ID_EDIT_MAIN_PARS,
@@ -93,6 +94,7 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
+	void	OnAbout(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnExecute(wxCommandEvent& event);
 	void	OnHelp(wxCommandEvent& event);
