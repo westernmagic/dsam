@@ -647,35 +647,35 @@ ProcessParComs_AppInterface(void)
 	static const char *funcName = "ProcessParComs_AppInterface";
 	int		i;
 	DatumPtr	simulation = NULL;
+	AppInterfacePtr	p = appInterfacePtr;
 
-
-	if (!appInterfacePtr) {
+	if (!p) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!appInterfacePtr->useParComsFlag)
+	if (!p->useParComsFlag)
 		return(TRUE);
 
-	if (appInterfacePtr->audModel && (simulation = GetSimulation_ModuleMgr(
-	  appInterfacePtr->audModel)) == NULL) {
+	if (p->audModel && (simulation = GetSimulation_ModuleMgr(p->audModel)) ==
+	  NULL) {
 		NotifyError("%s: No simulation has been initialised.", funcName);
 		return(FALSE);
 	}
-	if ((appInterfacePtr->argc - appInterfacePtr->initialCommand) % 2 != 0) {
+	if ((p->argc - p->initialCommand) % 2 != 0) {
 		NotifyError("%s: parameter values must be in <name> <value> pairs.",
 		  funcName);
 		return(FALSE);
 	}
-	for (i = appInterfacePtr->initialCommand; i < appInterfacePtr->argc; i += 2)
-		if (!SetProgramParValue_AppInterface(appInterfacePtr->argv[i],
-		  appInterfacePtr->argv[i + 1], FALSE) && (!simulation ||
-		  !SetUniParValue_Utility_Datum(simulation, appInterfacePtr->argv[i],
-		  appInterfacePtr->argv[i + 1]))) {
-			NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
-			  appInterfacePtr->argv[i], appInterfacePtr->argv[i + 1]);
-			return(FALSE);
-		}
-	appInterfacePtr->useParComsFlag = (!appInterfacePtr->audModel);
+	for (i = p->initialCommand; i < p->argc; i += 2) {
+		if (SetProgramParValue_AppInterface(p->argv[i], p->argv[i + 1],
+		  FALSE) || (simulation && SetUniParValue_Utility_Datum(simulation,
+		  p->argv[i], p->argv[i + 1])))
+			continue;
+		NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
+		  p->argv[i], p->argv[i + 1]);
+		return(FALSE);
+	}
+	p->useParComsFlag = (!p->audModel);
 	return(TRUE);
 
 }
