@@ -107,16 +107,15 @@ if [ "$echo_rflags" = "yes" ]; then
 	echo $rflags
 fi
 if [ "$echo_libs" = "yes" ]; then
-	libs="-L@libdir@ -l@PACKAGE@"
+	libs="-L@libdir@ -l@PACKAGE@ @DSAMEXTLIB@"
 	if test "$use_debug" = "yes"; then
 		libs="$libs -ldmalloc"
 		if test "$use_gui" = "yes"; then
 			libs="$libs -ldmallocxx"
 		fi
 	fi
-	libs="$libs @DSAMEXTLIB@"
 	if [ "$use_gui" = "yes" ]; then
-		libs="$libs -l@PACKAGE@_g @WXLDLIBS@"
+		libs="$libs -l@PACKAGE@_g @DSAMEXTLIB@ @WXLDLIBS@"
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
 		if [ -z "@DSAM_EXTENSIONS_TRUE@" ]; then
