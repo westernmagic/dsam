@@ -19,7 +19,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrRunMgr.h GrSimModDialog.h \
 				GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
 				GrDialogList.h GrDSAMList.h GrParListInfoList.h GrPrintDisp.h \
-				GrParControl.h
+				GrParControl.h dsam.rc
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h FlLowPass.h \

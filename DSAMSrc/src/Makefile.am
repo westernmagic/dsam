@@ -12,10 +12,6 @@ WXWINLIBS		= $(WXLDLIBS)
 
 if WXMSW
 WXWINRESFLAGS	= $(RESFLAGS)
-WXWINRESCOMP	= $(RESCOMP)
-DSAMRESPATH		= $(bindir)/$(DSAMRES)
-else
-DSAMRESPATH		=
 endif
 
 LaVersionInfo	= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
@@ -23,14 +19,12 @@ LaVersionInfo	= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 
 GenLaLDFLAGS	= -rpath $(libdir) $(LaVersionInfo) -export-dynamic
 
-bin_SCRIPTS		= @DSAMRES@
-EXTRA_SCRIPTS	= DSAMRes.o
 bin_PROGRAMS	= @PAWORKER1M@
 EXTRA_PROGRAMS	= PaWorker1m.exe
 
 lib_LTLIBRARIES = libdsam.la libdsam_std.la @LIBDSAMG@ @LIBDSAMM@@LIBDSAMMG@
 EXTRA_LTLIBRARIES= libdsam_m.la libdsam_g.la libdsam_mg.la 
-EXTRA_DIST		= makefile.b32 graphsup.dos dsam.rc
+EXTRA_DIST		= makefile.b32 graphsup.dos
 
 YFLAGS			= -dl
 INCLUDES		= -I$(top_srcdir)/Include @DSAM_DEFS@ $(MPI_INC) $(WXINC) \
@@ -104,7 +98,4 @@ libdsam_mg_la_LDFLAGS= $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c
 PaWorker1m_exe_LDADD	= libDSAMm.a -L$(CHIMP_LIB) -lmpi -lchimp -lm
-
-DSAMRes.o:	Makefile dsam.rc
-		$(WXWINRESCOMP) $(WXWINRESFLAGS) $(srcdir)/dsam.rc -o $@
 
