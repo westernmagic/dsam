@@ -119,9 +119,9 @@ Init_Analysis_FindNextIndex(ParameterSpecifier parSpec)
 		}
 	}
 	findIndexPtr->parSpec = parSpec;
-	findIndexPtr->modeFlag = FALSE;
-	findIndexPtr->timeOffsetFlag = FALSE;
-	findIndexPtr->mode = 0;
+	findIndexPtr->modeFlag = TRUE;
+	findIndexPtr->timeOffsetFlag = TRUE;
+	findIndexPtr->mode = FIND_INDEX_MAXIMUM;
 	findIndexPtr->timeOffset = 0.0;
 
 	InitModeList_Analysis_FindNextIndex();

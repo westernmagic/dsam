@@ -100,7 +100,7 @@ Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 	}
 	refractAdjPtr->parSpec = parSpec;
 	refractAdjPtr->updateProcessVariablesFlag = TRUE;
-	refractAdjPtr->refractoryPeriodFlag = FALSE;
+	refractAdjPtr->refractoryPeriodFlag = TRUE;
 	refractAdjPtr->refractoryPeriod = 0.0;
 
 	if (!SetUniParList_Utility_RefractoryAdjust()) {
@@ -391,8 +391,8 @@ CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 	if (!CheckInit_SignalData(data->inSignal[0],
 	  "CheckData_Utility_RefractoryAdjust"))
 		return(FALSE);
-	if (refractAdjPtr->refractoryPeriod >=
-	  _GetDuration_SignalData(data->inSignal[0])) {
+	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(data->
+	  inSignal[0])) {
 		NotifyError("%s: Refractory period (%g ms) is too long for signal "
 		  "length (%g ms).", funcName, MSEC(refractAdjPtr->refractoryPeriod),
 		  MSEC(_GetDuration_SignalData(data->inSignal[0])));

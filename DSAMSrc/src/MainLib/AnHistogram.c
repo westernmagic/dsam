@@ -167,19 +167,19 @@ Init_Analysis_Histogram(ParameterSpecifier parSpec)
 	}
 	histogramPtr->parSpec = parSpec;
 	histogramPtr->updateProcessVariablesFlag = TRUE;
-	histogramPtr->detectionModeFlag = FALSE;
-	histogramPtr->typeModeFlag = FALSE;
-	histogramPtr->eventThresholdFlag = FALSE;
-	histogramPtr->binWidthFlag = FALSE;
-	histogramPtr->periodFlag = FALSE;
+	histogramPtr->detectionModeFlag = TRUE;
+	histogramPtr->typeModeFlag = TRUE;
+	histogramPtr->eventThresholdFlag = TRUE;
+	histogramPtr->binWidthFlag = TRUE;
+	histogramPtr->periodFlag = TRUE;
 	histogramPtr->outputModeFlag = TRUE;
-	histogramPtr->timeOffsetFlag = FALSE;
-	histogramPtr->detectionMode = 0;
+	histogramPtr->timeOffsetFlag = TRUE;
+	histogramPtr->detectionMode = HISTOGRAM_DETECT_SPIKES;
 	histogramPtr->outputMode = HISTOGRAM_OUTPUT_BIN_COUNTS;
-	histogramPtr->typeMode = 0;
+	histogramPtr->typeMode = HISTOGRAM_PSTH;
 	histogramPtr->eventThreshold = 0.0;
-	histogramPtr->binWidth = 0.0;
-	histogramPtr->period = 0.0;
+	histogramPtr->binWidth = -1.0;
+	histogramPtr->period = -1.0;
 	histogramPtr->timeOffset = 0.0;
 
 	InitDetectionModeList_Analysis_Histogram();
@@ -543,11 +543,8 @@ CheckPars_Analysis_Histogram(void)
 		ok = FALSE;
 	}
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
-	   if (!histogramPtr->periodFlag) {
-			NotifyError("%s: period variable not set.", funcName);
-			ok = FALSE;
-		}
-		if (histogramPtr->binWidth > histogramPtr->period) {
+		if ((histogramPtr->period > 0.0) && (histogramPtr->binWidth >
+		  histogramPtr->period)) {
 			NotifyError("%s: The bin width is too small for the period value "
 			  "(%g ms & %g ms respectively).", funcName,
 			  MSEC(histogramPtr->binWidth), MSEC(histogramPtr->period));
@@ -605,7 +602,11 @@ PrintPars_Analysis_Histogram(void)
 	switch (histogramPtr->typeMode) {
 	case HISTOGRAM_PSTH:
 	case HISTOGRAM_PH:
-		DPrint("\tPeriod = %g ms\n", MSEC(histogramPtr->period));
+		DPrint("\tPeriod = ");
+		if (histogramPtr->period > 0.0)
+			DPrint("%g ms\n", MSEC(histogramPtr->period));
+		else
+			DPrint("<Signal duration>\n");
 		break;
 	default:
 		DPrint("\tTime offset = %g ms\n", MSEC(histogramPtr->timeOffset));
@@ -752,7 +753,8 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 	}
 	signalDuration = data->inSignal[0]->length * data->inSignal[0]->dt;
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
-		if (histogramPtr->period < data->inSignal[0]->dt) {
+		if ((histogramPtr->period > 0.0) && (histogramPtr->period < data->
+		  inSignal[0]->dt)) {
 			NotifyError("%s: The period (%g ms) is less than the input signal "
 			  "sampling interval (%g ms)!", funcName, MILLI(histogramPtr->
 			  period), MILLI(data->inSignal[0]->dt));
@@ -799,8 +801,9 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		ResetProcess_EarObject(p->dataBuffer);
-		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (ChanLen) floor(p->
-		  period / data->inSignal[0]->dt + 0.5);
+		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (p->period > 0.0)?
+		  (ChanLen) floor(p->period / data->inSignal[0]->dt + 0.5): data->
+		  inSignal[0]->length;
 		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
 		  numChannels, bufferLength, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise channels for PH Buffer.",
@@ -893,7 +896,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	register	ChanData	*inPtr, *outPtr, *buffPtr, binSum;
 	int		chan;
 	double	nextCutOff, nextBinCutOff, dt, binWidth, time, totalBinDuration;
-	double	extraTimeInterval;
+	double	extraTimeInterval, period;
 	ChanLen	i, bufferSamples, processLength, availableLength;
 	HistogramPtr	p = histogramPtr;
 
@@ -905,11 +908,11 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Histogram Analysis Module");
 	dt = data->inSignal[0]->dt;
-	if (p->typeMode == HISTOGRAM_PSTH)
-		p->period = data->inSignal[0]->length * dt - p->timeOffset;
+	period = ((p->typeMode == HISTOGRAM_PSTH) || (p->period <= 0.0))?
+	  data->inSignal[0]->length * dt: p->period;
 	binWidth = (p->binWidth <= 0.0)? dt: p->binWidth;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  (ChanLen) floor(p->period / binWidth + 0.5), binWidth)) {
+	  (ChanLen) floor(period / binWidth + 0.5), binWidth)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
@@ -926,8 +929,8 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		availableLength = data->inSignal[0]->length - p->offsetIndex - p->
 		  extraSample + p->bufferSamples + 1;
 		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
-		  (ChanLen) floor(floor(availableLength * dt / p->period) * p->period /
-		  dt + DBL_EPSILON);
+		  (ChanLen) floor(floor(availableLength * dt / period) * period / dt +
+		  DBL_EPSILON);
 	}
 	if (processLength) {
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
@@ -946,7 +949,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 			buffPtr = p->dataBuffer->outSignal->channel[chan];
 			bufferSamples = p->bufferSamples;
 			extraTimeInterval = dt * p->extraSample;
-			nextCutOff = p->period - extraTimeInterval;
+			nextCutOff = period - extraTimeInterval;
 			nextBinCutOff = binWidth - extraTimeInterval;
 			for (i = 0, binSum = 0; i < processLength; i++) {
 				switch (p->detectionMode) {
@@ -981,7 +984,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 				}
 				if (DBL_GREATER(time, nextCutOff)) {
 					outPtr = data->outSignal->channel[chan];
-					nextCutOff += p->period;
+					nextCutOff += period;
 					p->numPeriods++;
 				}
 			}

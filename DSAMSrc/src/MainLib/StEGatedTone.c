@@ -116,28 +116,28 @@ Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 		}
 	}
 	eGatedTonePtr->parSpec = parSpec;
-	eGatedTonePtr->typeModeFlag = FALSE;
-	eGatedTonePtr->floorModeFlag = FALSE;
-	eGatedTonePtr->carrierFrequencyFlag = FALSE;
-	eGatedTonePtr->amplitudeFlag = FALSE;
-	eGatedTonePtr->phaseFlag = FALSE;
-	eGatedTonePtr->beginPeriodDurationFlag = FALSE;
-	eGatedTonePtr->repetitionRateFlag = FALSE;
-	eGatedTonePtr->halfLifeFlag = FALSE;
-	eGatedTonePtr->floorFlag = FALSE;
-	eGatedTonePtr->durationFlag = FALSE;
-	eGatedTonePtr->dtFlag = FALSE;
-	eGatedTonePtr->typeMode = 0;
-	eGatedTonePtr->floorMode = 0;
-	eGatedTonePtr->carrierFrequency = 0.0;
-	eGatedTonePtr->amplitude = 0.0;
+	eGatedTonePtr->typeModeFlag = TRUE;
+	eGatedTonePtr->floorModeFlag = TRUE;
+	eGatedTonePtr->carrierFrequencyFlag = TRUE;
+	eGatedTonePtr->amplitudeFlag = TRUE;
+	eGatedTonePtr->phaseFlag = TRUE;
+	eGatedTonePtr->beginPeriodDurationFlag = TRUE;
+	eGatedTonePtr->repetitionRateFlag = TRUE;
+	eGatedTonePtr->halfLifeFlag = TRUE;
+	eGatedTonePtr->floorFlag = TRUE;
+	eGatedTonePtr->durationFlag = TRUE;
+	eGatedTonePtr->dtFlag = TRUE;
+	eGatedTonePtr->typeMode = EGATED_TONE_RAMPED_MODE;
+	eGatedTonePtr->floorMode = GENERAL_BOOLEAN_ON;
+	eGatedTonePtr->carrierFrequency = 1000.0;
+	eGatedTonePtr->amplitude = 10000.0;
 	eGatedTonePtr->phase = 0.0;
 	eGatedTonePtr->beginPeriodDuration = 0.0;
-	eGatedTonePtr->repetitionRate = 0.0;
-	eGatedTonePtr->halfLife = 0.0;
+	eGatedTonePtr->repetitionRate = 40.0;
+	eGatedTonePtr->halfLife = 5e-3;
 	eGatedTonePtr->floor = 0.0;
-	eGatedTonePtr->duration = 0.0;
-	eGatedTonePtr->dt = 0.0;
+	eGatedTonePtr->duration = 0.1;
+	eGatedTonePtr->dt = 0.1e-3;
 
 	InitTypeModeList_Stimulus_ExpGatedTone();
 	if (!SetUniParList_Stimulus_ExpGatedTone()) {

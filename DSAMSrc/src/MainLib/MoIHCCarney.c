@@ -98,26 +98,26 @@ Init_IHC_Carney(ParameterSpecifier parSpec)
 	}
 	carneyHCPtr->parSpec = parSpec;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
-	carneyHCPtr->maxHCVoltageFlag = FALSE;
-	carneyHCPtr->restingReleaseRateFlag = FALSE;
-	carneyHCPtr->restingPermFlag = FALSE;
-	carneyHCPtr->maxGlobalPermFlag = FALSE;
-	carneyHCPtr->maxLocalPermFlag = FALSE;
-	carneyHCPtr->maxImmediatePermFlag = FALSE;
-	carneyHCPtr->maxLocalVolumeFlag = FALSE;
-	carneyHCPtr->minLocalVolumeFlag = FALSE;
-	carneyHCPtr->maxImmediateVolumeFlag = FALSE;
-	carneyHCPtr->minImmediateVolumeFlag = FALSE;
-	carneyHCPtr->maxHCVoltage = 0.0;
-	carneyHCPtr->restingReleaseRate = 0.0;
-	carneyHCPtr->restingPerm = 0.0;
-	carneyHCPtr->maxGlobalPerm = 0.0;
-	carneyHCPtr->maxLocalPerm = 0.0;
-	carneyHCPtr->maxImmediatePerm = 0.0;
-	carneyHCPtr->maxLocalVolume = 0.0;
-	carneyHCPtr->minLocalVolume = 0.0;
-	carneyHCPtr->maxImmediateVolume = 0.0;
-	carneyHCPtr->minImmediateVolume = 0.0;
+	carneyHCPtr->maxHCVoltageFlag = TRUE;
+	carneyHCPtr->restingReleaseRateFlag = TRUE;
+	carneyHCPtr->restingPermFlag = TRUE;
+	carneyHCPtr->maxGlobalPermFlag = TRUE;
+	carneyHCPtr->maxLocalPermFlag = TRUE;
+	carneyHCPtr->maxImmediatePermFlag = TRUE;
+	carneyHCPtr->maxLocalVolumeFlag = TRUE;
+	carneyHCPtr->minLocalVolumeFlag = TRUE;
+	carneyHCPtr->maxImmediateVolumeFlag = TRUE;
+	carneyHCPtr->minImmediateVolumeFlag = TRUE;
+	carneyHCPtr->maxHCVoltage = 10.0;
+	carneyHCPtr->restingReleaseRate = 70.0;
+	carneyHCPtr->restingPerm = 0.015;
+	carneyHCPtr->maxGlobalPerm = 0.08;
+	carneyHCPtr->maxLocalPerm = 0.1;
+	carneyHCPtr->maxImmediatePerm = 1.5	;
+	carneyHCPtr->maxLocalVolume = 0.003;
+	carneyHCPtr->minLocalVolume = 0.001;
+	carneyHCPtr->maxImmediateVolume = 0.0003;
+	carneyHCPtr->minImmediateVolume = 0.0001;
 
 	if (!SetUniParList_IHC_Carney()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

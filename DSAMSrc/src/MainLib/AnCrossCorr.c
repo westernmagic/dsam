@@ -111,12 +111,12 @@ Init_Analysis_CCF(ParameterSpecifier parSpec)
 	}
 	crossCorrPtr->parSpec = parSpec;
 	crossCorrPtr->updateProcessVariablesFlag = TRUE;
-	crossCorrPtr->timeOffsetFlag = FALSE;
-	crossCorrPtr->timeConstantFlag = FALSE;
-	crossCorrPtr->periodFlag = FALSE;
+	crossCorrPtr->timeOffsetFlag = TRUE;
+	crossCorrPtr->timeConstantFlag = TRUE;
+	crossCorrPtr->periodFlag = TRUE;
 	crossCorrPtr->timeOffset = 0.0;
-	crossCorrPtr->timeConstant = 0.0;
-	crossCorrPtr->period = 0.0;
+	crossCorrPtr->timeConstant = 0.0025;
+	crossCorrPtr->period = 0.005;
 	crossCorrPtr->exponentDt = NULL;
 
 	if (!SetUniParList_Analysis_CCF()) {

@@ -96,12 +96,12 @@ Init_Utility_ShapePulse(ParameterSpecifier parSpec)
 	}
 	shapePulsePtr->parSpec = parSpec;
 	shapePulsePtr->updateProcessVariablesFlag = TRUE;
-	shapePulsePtr->eventThresholdFlag = FALSE;
-	shapePulsePtr->pulseDurationFlag = FALSE;
-	shapePulsePtr->pulseMagnitudeFlag = FALSE;
+	shapePulsePtr->eventThresholdFlag = TRUE;
+	shapePulsePtr->pulseDurationFlag = TRUE;
+	shapePulsePtr->pulseMagnitudeFlag = TRUE;
 	shapePulsePtr->eventThreshold = 0.0;
-	shapePulsePtr->pulseDuration = 0.0;
-	shapePulsePtr->pulseMagnitude = 0.0;
+	shapePulsePtr->pulseDuration = 0.2e-3;
+	shapePulsePtr->pulseMagnitude = 3.8;
 	shapePulsePtr->remainingPulseTime = NULL;
 
 	if (!SetUniParList_Utility_ShapePulse()) {

@@ -68,11 +68,11 @@ Init_PureTone_Multi(ParameterSpecifier parSpec)
 	}
 	mPureTonePtr->parSpec = parSpec;
 	mPureTonePtr->numPTonesFlag = FALSE;
-	mPureTonePtr->durationFlag = FALSE;
+	mPureTonePtr->durationFlag = TRUE;
 	mPureTonePtr->dtFlag = FALSE;
 	mPureTonePtr->numPTones = 0;
-	mPureTonePtr->duration = 0.0;
-	mPureTonePtr->dt = 0.0;
+	mPureTonePtr->duration = 0.1;
+	mPureTonePtr->dt = DEFAULT_DT;
 	mPureTonePtr->intensities = NULL;
 	mPureTonePtr->frequencies = NULL;
 	mPureTonePtr->phases = NULL;

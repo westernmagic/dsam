@@ -99,8 +99,8 @@ Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
 	}
 	setDBSPLPtr->parSpec = parSpec;
 	setDBSPLPtr->updateProcessVariablesFlag = TRUE;
-	setDBSPLPtr->timeOffsetFlag = FALSE;
-	setDBSPLPtr->intensityFlag = FALSE;
+	setDBSPLPtr->timeOffsetFlag = TRUE;
+	setDBSPLPtr->intensityFlag = TRUE;
 	setDBSPLPtr->timeOffset = 0.0;
 	setDBSPLPtr->intensity = 0.0;
 

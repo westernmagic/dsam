@@ -110,14 +110,14 @@ Init_Analysis_SpikeRegularity(ParameterSpecifier parSpec)
 	}
 	spikeRegPtr->parSpec = parSpec;
 	spikeRegPtr->updateProcessVariablesFlag = TRUE;
-	spikeRegPtr->eventThresholdFlag = FALSE;
-	spikeRegPtr->binWidthFlag = FALSE;
-	spikeRegPtr->timeOffsetFlag = FALSE;
-	spikeRegPtr->timeRangeFlag = FALSE;
+	spikeRegPtr->eventThresholdFlag = TRUE;
+	spikeRegPtr->binWidthFlag = TRUE;
+	spikeRegPtr->timeOffsetFlag = TRUE;
+	spikeRegPtr->timeRangeFlag = TRUE;
 	spikeRegPtr->eventThreshold = 0.0;
-	spikeRegPtr->binWidth = 0.0;
+	spikeRegPtr->binWidth = -1.0;
 	spikeRegPtr->timeOffset = 0.0;
-	spikeRegPtr->timeRange = 0.0;
+	spikeRegPtr->timeRange = -10.0;
 
 	if (!SetUniParList_Analysis_SpikeRegularity()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -101,7 +101,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
 	carneySGPtr->ranSeedFlag = TRUE;
 	carneySGPtr->numFibresFlag = TRUE;
-	carneySGPtr->pulseDurationFlag = FALSE;
+	carneySGPtr->pulseDurationFlag = TRUE;
 	carneySGPtr->pulseMagnitudeFlag = TRUE;
 	carneySGPtr->refractoryPeriodFlag = TRUE;
 	carneySGPtr->maxThresholdFlag = TRUE;
@@ -109,9 +109,9 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->dischargeCoeffC1Flag = TRUE;
 	carneySGPtr->dischargeTConstS0Flag = TRUE;
 	carneySGPtr->dischargeTConstS1Flag = TRUE;
-	carneySGPtr->ranSeed = 1;
+	carneySGPtr->ranSeed = -1;
 	carneySGPtr->numFibres = 1;
-	carneySGPtr->pulseDuration = 0.0;
+	carneySGPtr->pulseDuration = -1.0;
 	carneySGPtr->pulseMagnitude = 1.0;
 	carneySGPtr->refractoryPeriod = 0.75e-3;
 	carneySGPtr->maxThreshold = 1.0;
@@ -339,11 +339,6 @@ SetPulseDuration_ANSpikeGen_Carney(double thePulseDuration)
 
 	if (carneySGPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	if (thePulseDuration < 0.0) {
-		NotifyError("%s: Pulse duration must be greater than zero.\n",
-		  funcName);
 		return(FALSE);
 	}
 	carneySGPtr->pulseDurationFlag = TRUE;
@@ -585,7 +580,8 @@ CheckPars_ANSpikeGen_Carney(void)
 		NotifyError("%s: dischargeTConstS1 variable not set.", funcName);
 		ok = FALSE;
 	}
-	if (carneySGPtr->pulseDuration >= carneySGPtr->refractoryPeriod) {
+	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration >=
+	  carneySGPtr->refractoryPeriod)) {
 		NotifyError("%s: Pulse duration must be smaller than the\n"
 		  "refractory period, %g ms (%g ms).", funcName, MSEC(
 		  carneySGPtr->refractoryPeriod), MSEC(carneySGPtr->pulseDuration));
@@ -616,8 +612,11 @@ PrintPars_ANSpikeGen_Carney(void)
 	DPrint("\tRandom number seed = %ld,",
 	  carneySGPtr->ranSeed);
 	DPrint("\tNumber of fibres = %d,\n", carneySGPtr->numFibres);
-	DPrint("\tPulse duration = %g ms,",
-	  MSEC(carneySGPtr->pulseDuration));
+	DPrint("\tPulse duration = ");
+	if (carneySGPtr->pulseDuration > 0.0)
+		DPrint("%g ms,", MSEC(carneySGPtr->pulseDuration));
+	else
+		DPrint("< prev. signal dt>,");
 	DPrint("\tPulse magnitude = %g (nA?)\n",
 	  carneySGPtr->pulseMagnitude);
 	DPrint("\tRefractory period, Ra = %g ms\n",
@@ -776,7 +775,8 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 	}
 	if (!CheckInit_SignalData(data->inSignal[0], funcName))
 		return(FALSE);
-	if (carneySGPtr->pulseDuration < data->inSignal[0]->dt) {
+	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration <
+	  data->inSignal[0]->dt)) {
 		NotifyError("%s: Pulse duration is too small for sampling\n"
 		  "interval, %g ms (%g ms)\n", funcName,
 		  MSEC(data->inSignal[0]->dt), MSEC(carneySGPtr->pulseDuration));
@@ -877,7 +877,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	register	ChanData	*inPtr, *outPtr;
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
-	double	dt, threshold, excessTime;
+	double	dt, threshold, excessTime, pulseDuration;
 	ChanLen	j;
 	CarneySGPtr	p;
 	
@@ -899,6 +899,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		return(FALSE);
 	}
 	dt = data->inSignal[0]->dt;
+	pulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: dt;
 	p = carneySGPtr;			/* To simplify equations */
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		outPtr = data->outSignal->channel[chan];
@@ -919,7 +920,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  p->dischargeTConstS1));
 					if (((*inPtr - threshold) * dt) > Ran01_Random(
 					  &randomNumSeed)) {
-						*remainingPulseTimePtr = p->pulseDuration;
+						*remainingPulseTimePtr = pulseDuration;
 						*timerPtr = 0.0;
 					}
 				}

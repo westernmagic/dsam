@@ -93,21 +93,21 @@ Init_PureTone_FM(ParameterSpecifier parSpec)
 		}
 	}
 	fMTonePtr->parSpec = parSpec;
-	fMTonePtr->frequencyFlag = FALSE;
-	fMTonePtr->intensityFlag = FALSE;
-	fMTonePtr->durationFlag = FALSE;
-	fMTonePtr->dtFlag = FALSE;
-	fMTonePtr->phaseFlag = FALSE;
-	fMTonePtr->modulationDepthFlag = FALSE;
-	fMTonePtr->modulationFrequencyFlag = FALSE;
-	fMTonePtr->modulationPhaseFlag = FALSE;
-	fMTonePtr->frequency = 0.0;
-	fMTonePtr->intensity = 0.0;
-	fMTonePtr->duration = 0.0;
-	fMTonePtr->dt = 0.0;
+	fMTonePtr->frequencyFlag = TRUE;
+	fMTonePtr->intensityFlag = TRUE;
+	fMTonePtr->durationFlag = TRUE;
+	fMTonePtr->dtFlag = TRUE;
+	fMTonePtr->phaseFlag = TRUE;
+	fMTonePtr->modulationDepthFlag = TRUE;
+	fMTonePtr->modulationFrequencyFlag = TRUE;
+	fMTonePtr->modulationPhaseFlag = TRUE;
+	fMTonePtr->frequency = 1000.0;
+	fMTonePtr->intensity = 30.0;
+	fMTonePtr->duration = 0.1;
+	fMTonePtr->dt = DEFAULT_DT;
 	fMTonePtr->phase = 0.0;
-	fMTonePtr->modulationDepth = 0.0;
-	fMTonePtr->modulationFrequency = 0.0;
+	fMTonePtr->modulationDepth = 80.0;
+	fMTonePtr->modulationFrequency = 2000.0;
 	fMTonePtr->modulationPhase = 0.0;
 
 	if (!SetUniParList_PureTone_FM()) {

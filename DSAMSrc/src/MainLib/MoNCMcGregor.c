@@ -68,24 +68,24 @@ Init_Neuron_McGregor(ParameterSpecifier parSpec)
 	}
 	mcGregorPtr->parSpec = parSpec;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
-	mcGregorPtr->membraneTConstFlag = FALSE;
-	mcGregorPtr->thresholdTConstFlag = FALSE;
-	mcGregorPtr->accomConstFlag = FALSE;
-	mcGregorPtr->delayedRectKCondFlag = FALSE;
-	mcGregorPtr->restingThresholdFlag = FALSE;
-	mcGregorPtr->actionPotentialFlag = FALSE;
-	mcGregorPtr->kDecayTConstFlag = FALSE;
-	mcGregorPtr->kEquilibriumPotFlag = FALSE;
-	mcGregorPtr->cellRestingPotFlag = FALSE;
-	mcGregorPtr->membraneTConst_Tm = 0.0;
-	mcGregorPtr->kDecayTConst_TGk = 0.0;
-	mcGregorPtr->thresholdTConst_TTh = 0.0;
-	mcGregorPtr->accomConst_c = 0.0;
-	mcGregorPtr->delayedRectKCond_b = 0.0;
-	mcGregorPtr->restingThreshold_Th0 = 0.0;
-	mcGregorPtr->actionPotential = 0.0;
-	mcGregorPtr->kEquilibriumPot_Ek = 0.0;
-	mcGregorPtr->cellRestingPot_Er = 0.0;
+	mcGregorPtr->membraneTConstFlag = TRUE;
+	mcGregorPtr->thresholdTConstFlag = TRUE;
+	mcGregorPtr->accomConstFlag = TRUE;
+	mcGregorPtr->delayedRectKCondFlag = TRUE;
+	mcGregorPtr->restingThresholdFlag = TRUE;
+	mcGregorPtr->actionPotentialFlag = TRUE;
+	mcGregorPtr->kDecayTConstFlag = TRUE;
+	mcGregorPtr->kEquilibriumPotFlag = TRUE;
+	mcGregorPtr->cellRestingPotFlag = TRUE;
+	mcGregorPtr->membraneTConst_Tm = 2e-3;
+	mcGregorPtr->kDecayTConst_TGk = 0.9e-3;
+	mcGregorPtr->thresholdTConst_TTh = 20e-3;
+	mcGregorPtr->accomConst_c = 0.3;
+	mcGregorPtr->delayedRectKCond_b = 0.017;
+	mcGregorPtr->restingThreshold_Th0 = 10.0;
+	mcGregorPtr->actionPotential = 50.0;
+	mcGregorPtr->kEquilibriumPot_Ek = -10.0;
+	mcGregorPtr->cellRestingPot_Er = -60.0;
 
 	if (!SetUniParList_Neuron_McGregor()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

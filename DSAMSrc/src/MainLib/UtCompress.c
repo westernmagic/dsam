@@ -114,13 +114,13 @@ Init_Utility_Compression(ParameterSpecifier parSpec)
 		}
 	}
 	compressionPtr->parSpec = parSpec;
-	compressionPtr->modeFlag = FALSE;
-	compressionPtr->signalMultiplierFlag = FALSE;
-	compressionPtr->powerExponentFlag = FALSE;
-	compressionPtr->minResponseFlag = FALSE;
-	compressionPtr->mode = 0;
-	compressionPtr->signalMultiplier = 0.0;
-	compressionPtr->powerExponent = 0.0;
+	compressionPtr->modeFlag = TRUE;
+	compressionPtr->signalMultiplierFlag = TRUE;
+	compressionPtr->powerExponentFlag = TRUE;
+	compressionPtr->minResponseFlag = TRUE;
+	compressionPtr->mode = COMPRESS_LOG_MODE;
+	compressionPtr->signalMultiplier = 1.0;
+	compressionPtr->powerExponent = 1.0;
 	compressionPtr->minResponse = 0.0;
 
 	InitModeList_Utility_Compression();

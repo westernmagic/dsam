@@ -179,18 +179,18 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
 		}
 	}
 	gatePtr->parSpec = parSpec;
-	gatePtr->positionModeFlag = FALSE;
-	gatePtr->operationModeFlag = FALSE;
-	gatePtr->typeModeFlag = FALSE;
-	gatePtr->timeOffsetFlag = FALSE;
-	gatePtr->durationFlag = FALSE;
-	gatePtr->slopeParameterFlag = FALSE;
-	gatePtr->positionMode = 0;
-	gatePtr->operationMode = 0;
-	gatePtr->typeMode = 0;
+	gatePtr->positionModeFlag = TRUE;
+	gatePtr->operationModeFlag = TRUE;
+	gatePtr->typeModeFlag = TRUE;
+	gatePtr->timeOffsetFlag = TRUE;
+	gatePtr->durationFlag = TRUE;
+	gatePtr->slopeParameterFlag = TRUE;
+	gatePtr->positionMode = GATE_RELATIVE_POSITION_MODE;
+	gatePtr->operationMode = GATE_RAMP_OPERATION_MODE;
+	gatePtr->typeMode = GATE_RAISED_COS_TYPE_MODE;
 	gatePtr->timeOffset = 0.0;
-	gatePtr->duration = 0.0;
-	gatePtr->slopeParameter = 0.0;
+	gatePtr->duration = 2.5e-3;
+	gatePtr->slopeParameter = 0.016;
 
 	InitPositionModeList_Transform_Gate();
 	InitOperationModeList_Transform_Gate();

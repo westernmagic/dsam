@@ -71,17 +71,17 @@ Init_StepFunction(ParameterSpecifier parSpec)
 		}
 	}
 	stepFunPtr->parSpec = parSpec;
-	stepFunPtr->durationFlag = FALSE;
-	stepFunPtr->dtFlag = FALSE;
-	stepFunPtr->amplitudeFlag = FALSE;
-	stepFunPtr->beginPeriodDurationFlag = FALSE;
-	stepFunPtr->endPeriodDurationFlag = FALSE;
-	stepFunPtr->beginEndAmplitudeFlag = FALSE;
-	stepFunPtr->amplitude = 0.0;
-	stepFunPtr->duration = 0.0;
-	stepFunPtr->dt = 0.0;
-	stepFunPtr->beginPeriodDuration  = 0.0;
-	stepFunPtr->endPeriodDuration = 0.0;
+	stepFunPtr->durationFlag = TRUE;
+	stepFunPtr->dtFlag = TRUE;
+	stepFunPtr->amplitudeFlag = TRUE;
+	stepFunPtr->beginPeriodDurationFlag = TRUE;
+	stepFunPtr->endPeriodDurationFlag = TRUE;
+	stepFunPtr->beginEndAmplitudeFlag = TRUE;
+	stepFunPtr->amplitude = 30.0;
+	stepFunPtr->duration = 0.08;
+	stepFunPtr->dt = DEFAULT_DT;
+	stepFunPtr->beginPeriodDuration  = 0.01;
+	stepFunPtr->endPeriodDuration = 0.01;
 	stepFunPtr->beginEndAmplitude = 0.0;
 
 	if (!SetUniParList_StepFunction()) {

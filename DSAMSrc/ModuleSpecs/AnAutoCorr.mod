@@ -4,6 +4,7 @@
 mod_name		Analysis;
 qualifier		ACF;
 proc_routine	Calc;
+process_vars	true;
 typedef struct {
 
 	NameSpecifier	normalisationMode;

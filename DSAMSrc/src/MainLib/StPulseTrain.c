@@ -97,16 +97,16 @@ Init_PulseTrain(ParameterSpecifier parSpec)
 		}
 	}
 	pulseTrainPtr->parSpec = parSpec;
-	pulseTrainPtr->pulseRateFlag = FALSE;
-	pulseTrainPtr->pulseDurationFlag = FALSE;
-	pulseTrainPtr->amplitudeFlag = FALSE;
-	pulseTrainPtr->durationFlag = FALSE;
-	pulseTrainPtr->dtFlag = FALSE;
-	pulseTrainPtr->pulseRate = 0.0;
-	pulseTrainPtr->pulseDuration = 0.0;
-	pulseTrainPtr->amplitude = 0.0;
-	pulseTrainPtr->duration = 0.0;
-	pulseTrainPtr->dt = 0.0;
+	pulseTrainPtr->pulseRateFlag = TRUE;
+	pulseTrainPtr->pulseDurationFlag = TRUE;
+	pulseTrainPtr->amplitudeFlag = TRUE;
+	pulseTrainPtr->durationFlag = TRUE;
+	pulseTrainPtr->dtFlag = TRUE;
+	pulseTrainPtr->pulseRate = 360.0;
+	pulseTrainPtr->pulseDuration = 0.1e-3;
+	pulseTrainPtr->amplitude = 3.4e-7;
+	pulseTrainPtr->duration = 0.1;
+	pulseTrainPtr->dt = DEFAULT_DT;
 
 	if (!SetUniParList_PulseTrain()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -94,8 +94,8 @@ Init_Analysis_Intensity(ParameterSpecifier parSpec)
 		}
 	}
 	intensityPtr->parSpec = parSpec;
-	intensityPtr->timeOffsetFlag = FALSE;
-	intensityPtr->timeOffset = 0.0;
+	intensityPtr->timeOffsetFlag = TRUE;
+	intensityPtr->timeOffset = 2.5e-3;
 
 	if (!SetUniParList_Analysis_Intensity()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

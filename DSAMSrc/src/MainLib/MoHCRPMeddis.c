@@ -70,14 +70,14 @@ Init_IHCRP_Meddis(ParameterSpecifier parSpec)
 	}
 	meddisRPPtr->parSpec = parSpec;
 	meddisRPPtr->updateProcessVariablesFlag = TRUE;
-	meddisRPPtr->permConstAFlag = FALSE;
-	meddisRPPtr->permConstBFlag = FALSE;
-	meddisRPPtr->releaseRateFlag = FALSE;
-	meddisRPPtr->mTimeConstTmFlag = FALSE;
-	meddisRPPtr->permConst_A = 0.0;
-	meddisRPPtr->permConst_B = 0.0;
-	meddisRPPtr->releaseRate_g = 0.0;
-	meddisRPPtr->mTimeConst_tm = 0.0;
+	meddisRPPtr->permConstAFlag = TRUE;
+	meddisRPPtr->permConstBFlag = TRUE;
+	meddisRPPtr->releaseRateFlag = TRUE;
+	meddisRPPtr->mTimeConstTmFlag = TRUE;
+	meddisRPPtr->permConst_A = 100.0;
+	meddisRPPtr->permConst_B = 6000.0;
+	meddisRPPtr->releaseRate_g = 2000.0;
+	meddisRPPtr->mTimeConst_tm = 0.1e-3;
 
 	if (!SetUniParList_IHCRP_Meddis()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

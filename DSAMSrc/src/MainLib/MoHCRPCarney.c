@@ -96,20 +96,20 @@ Init_IHCRP_Carney(ParameterSpecifier parSpec)
 	}
 	carneyRPPtr->parSpec = parSpec;
 	carneyRPPtr->updateProcessVariablesFlag = TRUE;
-	carneyRPPtr->cutOffFrequencyFlag = FALSE;
-	carneyRPPtr->hCOperatingPointFlag = FALSE;
-	carneyRPPtr->asymmetricalBiasFlag = FALSE;
-	carneyRPPtr->maxHCVoltageFlag = FALSE;
-	carneyRPPtr->referencePotFlag = FALSE;
-	carneyRPPtr->waveDelayCoeffFlag = FALSE;
-	carneyRPPtr->waveDelayLengthFlag = FALSE;
-	carneyRPPtr->cutOffFrequency = 0.0;
-	carneyRPPtr->hCOperatingPoint = 0.0;
-	carneyRPPtr->asymmetricalBias = 0.0;
-	carneyRPPtr->maxHCVoltage = 0.0;
+	carneyRPPtr->cutOffFrequencyFlag = TRUE;
+	carneyRPPtr->hCOperatingPointFlag = TRUE;
+	carneyRPPtr->asymmetricalBiasFlag = TRUE;
+	carneyRPPtr->maxHCVoltageFlag = TRUE;
+	carneyRPPtr->referencePotFlag = TRUE;
+	carneyRPPtr->waveDelayCoeffFlag = TRUE;
+	carneyRPPtr->waveDelayLengthFlag = TRUE;
+	carneyRPPtr->cutOffFrequency = 1100.0;
+	carneyRPPtr->hCOperatingPoint = 1000.0;
+	carneyRPPtr->asymmetricalBias = 0.462;
+	carneyRPPtr->maxHCVoltage = 10.0;
 	carneyRPPtr->referencePot = 0.0;
-	carneyRPPtr->waveDelayCoeff = 0.0;
-	carneyRPPtr->waveDelayLength = 0.0;
+	carneyRPPtr->waveDelayCoeff = 0.00813;
+	carneyRPPtr->waveDelayLength = 0.00649;
 
 	if (!SetUniParList_IHCRP_Carney()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

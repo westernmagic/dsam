@@ -93,10 +93,10 @@ Init_Utility_Sample(ParameterSpecifier parSpec)
 		}
 	}
 	samplePtr->parSpec = parSpec;
-	samplePtr->timeOffsetFlag = FALSE;
-	samplePtr->dtFlag = FALSE;
+	samplePtr->timeOffsetFlag = TRUE;
+	samplePtr->dtFlag = TRUE;
 	samplePtr->timeOffset = 0.0;
-	samplePtr->dt = 0.0;
+	samplePtr->dt = -1.0;
 
 	if (!SetUniParList_Utility_Sample()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -133,7 +133,7 @@ SetUniParList_Utility_Sample(void)
 	  &samplePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Utility_Sample);
 	SetPar_UniParMgr(&pars[UTILITY_SAMPLE_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	  "Sampling interval, dt (s) (-ve assumes prev. signal dt).",
 	  UNIPAR_REAL,
 	  &samplePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_Utility_Sample);
@@ -289,7 +289,11 @@ PrintPars_Utility_Sample(void)
 	}
 	DPrint("Sample Utility Module Parameters:-\n");
 	DPrint("\tTime offset = %g ms\n", MILLI(samplePtr->timeOffset));
-	DPrint("\tSampling interval = %g ms\n", MILLI(samplePtr->dt));
+	DPrint("\tSampling interval = ");
+	if (samplePtr->dt > 0.0)
+		DPrint("%g ms\n", MILLI(samplePtr->dt));
+	else
+		DPrint("<prev. signal dt>.\n");
 	return(TRUE);
 
 }
@@ -414,7 +418,7 @@ CheckData_Utility_Sample(EarObjectPtr data)
 	if (!CheckInit_SignalData(data->inSignal[0], "CheckData_Utility_Sample"))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
-	if (samplePtr->dt < dt) {
+	if ((samplePtr->dt > 0.0) && (samplePtr->dt < dt)) {
 		NotifyError("%s: Sampling interval (%g ms) is less than signal\n"
 		  "sampling interval (%g ms).", funcName, MSEC(samplePtr->dt),
 		  MSEC(dt));
@@ -452,6 +456,7 @@ Process_Utility_Sample(EarObjectPtr data)
 	static const char	*funcName = "Process_Utility_Sample";
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
+	double	dt;
 	ChanLen	i, dtIndex, timeOffsetIndex;
 
 	if (!CheckPars_Utility_Sample())
@@ -461,11 +466,12 @@ Process_Utility_Sample(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Sample utility process");
-	dtIndex = (ChanLen) (samplePtr->dt / data->inSignal[0]->dt + 0.5);
+	dt = (samplePtr->dt > 0.0)? samplePtr->dt: data->inSignal[0]->dt;
+	dtIndex = (ChanLen) (dt / data->inSignal[0]->dt + 0.5);
 	timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
 	  (ChanLen) (samplePtr->timeOffset / data->inSignal[0]->dt + 0.5);
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  (data->inSignal[0]->length - timeOffsetIndex) / dtIndex, samplePtr->dt)) {
+	  (data->inSignal[0]->length - timeOffsetIndex) / dtIndex, dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}

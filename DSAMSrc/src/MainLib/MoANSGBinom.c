@@ -101,16 +101,16 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	}
 	binomialSGPtr->parSpec = parSpec;
 	binomialSGPtr->updateProcessVariablesFlag = TRUE;
-	binomialSGPtr->numFibresFlag = FALSE;
-	binomialSGPtr->ranSeedFlag = FALSE;
-	binomialSGPtr->pulseDurationFlag = FALSE;
-	binomialSGPtr->pulseMagnitudeFlag = FALSE;
-	binomialSGPtr->refractoryPeriodFlag = FALSE;
-	binomialSGPtr->numFibres = 0;
-	binomialSGPtr->ranSeed = 1;
-	binomialSGPtr->pulseDuration = 0.0;
-	binomialSGPtr->pulseMagnitude = 0.0;
-	binomialSGPtr->refractoryPeriod = 0.0;
+	binomialSGPtr->numFibresFlag = TRUE;
+	binomialSGPtr->ranSeedFlag = TRUE;
+	binomialSGPtr->pulseDurationFlag = TRUE;
+	binomialSGPtr->pulseMagnitudeFlag = TRUE;
+	binomialSGPtr->refractoryPeriodFlag = TRUE;
+	binomialSGPtr->numFibres = 5000;
+	binomialSGPtr->ranSeed = -1;
+	binomialSGPtr->pulseDuration = 2e-05;
+	binomialSGPtr->pulseMagnitude = 1.0;
+	binomialSGPtr->refractoryPeriod = 1e-3;
 
 	if (!SetUniParList_ANSpikeGen_Binomial()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

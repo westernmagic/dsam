@@ -125,14 +125,14 @@ Init_Analysis_ACF(ParameterSpecifier parSpec)
 	}
 	autoCorrPtr->parSpec = parSpec;
 	autoCorrPtr->updateProcessVariablesFlag = TRUE;
-	autoCorrPtr->normalisationModeFlag = FALSE;
-	autoCorrPtr->timeOffsetFlag = FALSE;
-	autoCorrPtr->timeConstantFlag = FALSE;
+	autoCorrPtr->normalisationModeFlag = TRUE;
+	autoCorrPtr->timeOffsetFlag = TRUE;
+	autoCorrPtr->timeConstantFlag = TRUE;
 	autoCorrPtr->maxLagFlag = FALSE;
-	autoCorrPtr->normalisationMode = 0;
-	autoCorrPtr->timeOffset = 0.0;
-	autoCorrPtr->timeConstant = 0.0;
-	autoCorrPtr->maxLag = 0.0;
+	autoCorrPtr->normalisationMode = ANALYSIS_NORM_MODE_STANDARD;
+	autoCorrPtr->timeOffset = -1.0;
+	autoCorrPtr->timeConstant = 0.0025;
+	autoCorrPtr->maxLag = 0.0075;
 
 	InitNormalisationModeList_Analysis_ACF();
 	if (!SetUniParList_Analysis_ACF()) {

@@ -102,12 +102,12 @@ Init_Analysis_ISIH(ParameterSpecifier parSpec)
 	}
 	interSIHPtr->parSpec = parSpec;
 	interSIHPtr->updateProcessVariablesFlag = TRUE;
-	interSIHPtr->orderFlag = FALSE;
-	interSIHPtr->eventThresholdFlag = FALSE;
-	interSIHPtr->maxIntervalFlag = FALSE;
-	interSIHPtr->order = 0;
+	interSIHPtr->orderFlag = TRUE;
+	interSIHPtr->eventThresholdFlag = TRUE;
+	interSIHPtr->maxIntervalFlag = TRUE;
+	interSIHPtr->order = -1;
 	interSIHPtr->eventThreshold = 0.0;
-	interSIHPtr->maxInterval = 0.0;
+	interSIHPtr->maxInterval = -1.0;
 
 	if (!SetUniParList_Analysis_ISIH()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

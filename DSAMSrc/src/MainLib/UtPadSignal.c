@@ -95,10 +95,10 @@ Init_Utility_PadSignal(ParameterSpecifier parSpec)
 		}
 	}
 	padSignalPtr->parSpec = parSpec;
-	padSignalPtr->beginDurationFlag = FALSE;
-	padSignalPtr->beginValueFlag = FALSE;
-	padSignalPtr->endDurationFlag = FALSE;
-	padSignalPtr->endValueFlag = FALSE;
+	padSignalPtr->beginDurationFlag = TRUE;
+	padSignalPtr->beginValueFlag = TRUE;
+	padSignalPtr->endDurationFlag = TRUE;
+	padSignalPtr->endValueFlag = TRUE;
 	padSignalPtr->beginDuration = 0.0;
 	padSignalPtr->beginValue = 0.0;
 	padSignalPtr->endDuration = 0.0;

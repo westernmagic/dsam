@@ -115,14 +115,14 @@ Init_Utility_LocalChans(ParameterSpecifier parSpec)
 		}
 	}
 	localChansPtr->parSpec = parSpec;
-	localChansPtr->modeFlag = FALSE;
-	localChansPtr->limitModeFlag = FALSE;
-	localChansPtr->lowerLimitFlag = FALSE;
-	localChansPtr->upperLimitFlag = FALSE;
-	localChansPtr->mode = 0;
-	localChansPtr->limitMode = 0;
-	localChansPtr->lowerLimit = 0.0;
-	localChansPtr->upperLimit = 0.0;
+	localChansPtr->modeFlag = TRUE;
+	localChansPtr->limitModeFlag = TRUE;
+	localChansPtr->lowerLimitFlag = TRUE;
+	localChansPtr->upperLimitFlag = TRUE;
+	localChansPtr->mode = UTILITY_LOCALCHANS_MODE_SUM;
+	localChansPtr->limitMode = SIGNALDATA_LIMIT_MODE_OCTAVE;
+	localChansPtr->lowerLimit = -1.0;
+	localChansPtr->upperLimit = 1.0;
 
 	InitModeList_Utility_LocalChans();
 	if (!SetUniParList_Utility_LocalChans()) {

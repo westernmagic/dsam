@@ -127,9 +127,9 @@ Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 		}
 	}
 	selectChanPtr->parSpec = parSpec;
-	selectChanPtr->modeFlag = FALSE;
-	selectChanPtr->numChannelsFlag = FALSE;
-	selectChanPtr->mode = 0;
+	selectChanPtr->modeFlag = TRUE;
+	selectChanPtr->numChannelsFlag = TRUE;
+	selectChanPtr->mode = SELECT_CHANS_REMOVE_MODE;
 	selectChanPtr->numChannels = 0;
 	selectChanPtr->selectionArray = NULL;
 

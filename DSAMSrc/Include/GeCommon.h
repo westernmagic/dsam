@@ -91,6 +91,7 @@
 #define DEFAULT_PARS_FILE		stdout
 #define UNSET_FILE_PTR			(FILE *) -1
 #define NULL_MODULE_PROCESS_NAME	"Null process module"
+#define DEFAULT_DT				0.05e-3
 
 #ifndef DSAM_DATA_INSTALL_DIR
 #	define	DSAM_DATA_INSTALL_DIR	"."	/* Used to find the DSAM help files. */

@@ -75,23 +75,23 @@ Init_IHC_Meddis86a(ParameterSpecifier parSpec)
 	}
 	hairCell3Ptr->parSpec = parSpec;
 	hairCell3Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell3Ptr->replenishRateFlag = FALSE;
-	hairCell3Ptr->lossRateFlag = FALSE;
-	hairCell3Ptr->reprocessRateFlag = FALSE;
-	hairCell3Ptr->recoveryRateFlag = FALSE;
-	hairCell3Ptr->maxFreePoolFlag = FALSE;
-	hairCell3Ptr->permeabilityPHFlag = FALSE;
-	hairCell3Ptr->permeabilityPZFlag = FALSE;
-	hairCell3Ptr->firingRateFlag = FALSE;
+	hairCell3Ptr->replenishRateFlag = TRUE;
+	hairCell3Ptr->lossRateFlag = TRUE;
+	hairCell3Ptr->reprocessRateFlag = TRUE;
+	hairCell3Ptr->recoveryRateFlag = TRUE;
+	hairCell3Ptr->maxFreePoolFlag = TRUE;
+	hairCell3Ptr->permeabilityPHFlag = TRUE;
+	hairCell3Ptr->permeabilityPZFlag = TRUE;
+	hairCell3Ptr->firingRateFlag = TRUE;
 					
-	hairCell3Ptr->maxFreePool_M = 0;
-	hairCell3Ptr->replenishRate_y = 0.0;
-	hairCell3Ptr->lossRate_l = 0.0;
-	hairCell3Ptr->reprocessRate_x = 0.0;
-	hairCell3Ptr->recoveryRate_r = 0.0;
-	hairCell3Ptr->permeabilityPH_h = 0.0;
-	hairCell3Ptr->permeabilityPZ_z = 0.0;
-	hairCell3Ptr->firingRate_h2 = 0.0;
+	hairCell3Ptr->maxFreePool_M = 1;
+	hairCell3Ptr->replenishRate_y = 5.05;
+	hairCell3Ptr->lossRate_l = 2500.0;
+	hairCell3Ptr->reprocessRate_x = 66.31;
+	hairCell3Ptr->recoveryRate_r = 6580.0;
+	hairCell3Ptr->permeabilityPH_h = 800.0;
+	hairCell3Ptr->permeabilityPZ_z = 8.6538e+10;
+	hairCell3Ptr->firingRate_h2 = 50000.0;
 
 	if (!SetUniParList_IHC_Meddis86a()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -99,12 +99,12 @@ Init_Utility_Pause(ParameterSpecifier parSpec)
 		}
 	}
 	pausePtr->parSpec = parSpec;
-	pausePtr->bellModeFlag = FALSE;
-	pausePtr->delayFlag = FALSE;
-	pausePtr->messageFlag = FALSE;
-	pausePtr->bellMode = 0;
-	pausePtr->delay = 0;
-	pausePtr->message[0] = '\0';
+	pausePtr->bellModeFlag = TRUE;
+	pausePtr->delayFlag = TRUE;
+	pausePtr->messageFlag = TRUE;
+	pausePtr->bellMode = GENERAL_BOOLEAN_ON;
+	pausePtr->delay = -1;
+	sprintf(pausePtr->message, "Processing paused");
 
 	if (!SetUniParList_Utility_Pause()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

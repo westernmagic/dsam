@@ -68,15 +68,15 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 	}
 	simpleSGPtr->parSpec = parSpec;
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
-	simpleSGPtr->pulseDurationFlag = FALSE;
-	simpleSGPtr->pulseMagnitudeFlag = FALSE;
-	simpleSGPtr->refractoryPeriodFlag = FALSE;
-	simpleSGPtr->numFibresFlag = FALSE;
-	simpleSGPtr->ranSeedFlag = FALSE;
-	simpleSGPtr->ranSeed = 1;
-	simpleSGPtr->numFibres = 0;
-	simpleSGPtr->pulseDuration = 0.0;
-	simpleSGPtr->pulseMagnitude = 0.0;
+	simpleSGPtr->pulseDurationFlag = TRUE;
+	simpleSGPtr->pulseMagnitudeFlag = TRUE;
+	simpleSGPtr->refractoryPeriodFlag = TRUE;
+	simpleSGPtr->numFibresFlag = TRUE;
+	simpleSGPtr->ranSeedFlag = TRUE;
+	simpleSGPtr->ranSeed = -1;
+	simpleSGPtr->numFibres = 5;
+	simpleSGPtr->pulseDuration = 0.1e-3;
+	simpleSGPtr->pulseMagnitude = 4.3;
 	simpleSGPtr->refractoryPeriod = PS_REFRACTORY_PERIOD;
 
 	if (!SetUniParList_ANSpikeGen_Simple()) {

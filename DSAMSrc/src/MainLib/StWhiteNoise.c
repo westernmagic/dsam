@@ -67,20 +67,20 @@ Init_WhiteNoise(ParameterSpecifier parSpec)
 		}
 	}
 	whiteNoisePtr->parSpec = parSpec;
-	whiteNoisePtr->numChannelsFlag = FALSE;
-	whiteNoisePtr->durationFlag = FALSE;
-	whiteNoisePtr->dtFlag = FALSE;
-	whiteNoisePtr->intensityFlag = FALSE;
-	whiteNoisePtr->correlationDegreeFlag = FALSE;
-	whiteNoisePtr->randomizationIndexFlag = FALSE;
-	whiteNoisePtr->ranSeedFlag = FALSE;
+	whiteNoisePtr->numChannelsFlag = TRUE;
+	whiteNoisePtr->durationFlag = TRUE;
+	whiteNoisePtr->dtFlag = TRUE;
+	whiteNoisePtr->intensityFlag = TRUE;
+	whiteNoisePtr->correlationDegreeFlag = TRUE;
+	whiteNoisePtr->randomizationIndexFlag = TRUE;
+	whiteNoisePtr->ranSeedFlag = TRUE;
 	whiteNoisePtr->numChannels = 1;
-	whiteNoisePtr->intensity = 0.0;
-	whiteNoisePtr->duration = 0.0;
-	whiteNoisePtr->dt = 0.0;
+	whiteNoisePtr->intensity = 30.0;
+	whiteNoisePtr->duration = 0.1;
+	whiteNoisePtr->dt = DEFAULT_DT;
 	whiteNoisePtr->correlationDegree = 1;
-	whiteNoisePtr->randomizationIndex = 12;
-	whiteNoisePtr->ranSeed = 1;
+	whiteNoisePtr->randomizationIndex = 36;
+	whiteNoisePtr->ranSeed = 0;
 
 	if (!SetUniParList_WhiteNoise()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -149,18 +149,18 @@ Init_Utility_Strobe(ParameterSpecifier parSpec)
 	}
 	strobePtr->parSpec = parSpec;
 	strobePtr->updateProcessVariablesFlag = TRUE;
-	strobePtr->typeModeFlag = FALSE;
-	strobePtr->diagnosticModeFlag = FALSE;
-	strobePtr->thresholdFlag = FALSE;
-	strobePtr->thresholdDecayRateFlag = FALSE;
-	strobePtr->delayFlag = FALSE;
-	strobePtr->delayTimeoutFlag = FALSE;
-	strobePtr->typeMode = 0;
-	strobePtr->diagnosticMode = 0;
+	strobePtr->typeModeFlag = TRUE;
+	strobePtr->diagnosticModeFlag = TRUE;
+	strobePtr->thresholdFlag = TRUE;
+	strobePtr->thresholdDecayRateFlag = TRUE;
+	strobePtr->delayFlag = TRUE;
+	strobePtr->delayTimeoutFlag = TRUE;
+	strobePtr->typeMode = STROBE_PEAK_SHADOW_POSITIVE_MODE;
+	strobePtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	strobePtr->threshold = 0.0;
-	strobePtr->thresholdDecayRate = 0.0;
-	strobePtr->delay = 0.0;
-	strobePtr->delayTimeout = 0.0;
+	strobePtr->thresholdDecayRate = 5000.0;
+	strobePtr->delay = 5e-3;
+	strobePtr->delayTimeout = 10e-3;
 
 	InitTypeModeList_Utility_Strobe();
 	if ((strobePtr->diagnosticModeList = InitNameList_NSpecLists(

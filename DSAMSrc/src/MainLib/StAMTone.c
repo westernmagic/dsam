@@ -66,18 +66,18 @@ Init_PureTone_AM(ParameterSpecifier parSpec)
 		}
 	}
 	aMTonePtr->parSpec = parSpec;
-	aMTonePtr->frequencyFlag = FALSE;
-	aMTonePtr->modulationFrequencyFlag = FALSE;
-	aMTonePtr->modulationDepthFlag = FALSE;
-	aMTonePtr->durationFlag = FALSE;
-	aMTonePtr->dtFlag = FALSE;
-	aMTonePtr->intensityFlag = FALSE;
-	aMTonePtr->frequency = 0.0;
-	aMTonePtr->modulationFrequency = 0.0;
-	aMTonePtr->modulationDepth = 0.0;
-	aMTonePtr->intensity = 0.0;
-	aMTonePtr->duration = 0.0;
-	aMTonePtr->dt = 0.0;
+	aMTonePtr->frequencyFlag = TRUE;
+	aMTonePtr->modulationFrequencyFlag = TRUE;
+	aMTonePtr->modulationDepthFlag = TRUE;
+	aMTonePtr->durationFlag = TRUE;
+	aMTonePtr->dtFlag = TRUE;
+	aMTonePtr->intensityFlag = TRUE;
+	aMTonePtr->frequency = 1000.0;
+	aMTonePtr->modulationFrequency = 200.0;
+	aMTonePtr->modulationDepth = 50.0;
+	aMTonePtr->intensity = 20.0;
+	aMTonePtr->duration = 0.1;
+	aMTonePtr->dt = 0.1e-5;
 
 	if (!SetUniParList_PureTone_AM()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -71,17 +71,17 @@ Init_IHC_Cooke91(ParameterSpecifier parSpec)
 	}
 	cookeHCPtr->parSpec = parSpec;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
-	cookeHCPtr->crawfordConstFlag = FALSE;
-	cookeHCPtr->releaseFractionFlag = FALSE;
-	cookeHCPtr->refillFractionFlag = FALSE;
-	cookeHCPtr->spontRateFlag = FALSE;
-	cookeHCPtr->maxSpikeRateFlag = FALSE;
+	cookeHCPtr->crawfordConstFlag = TRUE;
+	cookeHCPtr->releaseFractionFlag = TRUE;
+	cookeHCPtr->refillFractionFlag = TRUE;
+	cookeHCPtr->spontRateFlag = TRUE;
+	cookeHCPtr->maxSpikeRateFlag = TRUE;
 					
-	cookeHCPtr->crawfordConst = 0;
-	cookeHCPtr->releaseFraction = 0.0;
-	cookeHCPtr->refillFraction = 0.0;
-	cookeHCPtr->spontRate = 0.0;
-	cookeHCPtr->maxSpikeRate = 0.0;
+	cookeHCPtr->crawfordConst = 100;
+	cookeHCPtr->releaseFraction = 24.0;
+	cookeHCPtr->refillFraction = 6.0;
+	cookeHCPtr->spontRate = 50.0;
+	cookeHCPtr->maxSpikeRate = 1000.0;
 
 	if (!SetUniParList_IHC_Cooke91()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

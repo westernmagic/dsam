@@ -127,10 +127,10 @@ Init_Utility_ReduceChannels(ParameterSpecifier parSpec)
 		}
 	}
 	reduceChansPtr->parSpec = parSpec;
-	reduceChansPtr->modeFlag = FALSE;
-	reduceChansPtr->numChannelsFlag = FALSE;
-	reduceChansPtr->mode = 0;
-	reduceChansPtr->numChannels = 0;
+	reduceChansPtr->modeFlag = TRUE;
+	reduceChansPtr->numChannelsFlag = TRUE;
+	reduceChansPtr->mode = REDUCE_CHANS_SUM_MODE;
+	reduceChansPtr->numChannels = 1;
 
 	InitModeList_Utility_ReduceChannels();
 	if (!SetUniParList_Utility_ReduceChannels()) {

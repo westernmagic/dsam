@@ -91,11 +91,11 @@ Init_Filter_LowPass(ParameterSpecifier parSpec)
 	lowPassFPtr->parSpec = parSpec;
 	lowPassFPtr->updateProcessVariablesFlag = TRUE;
 	lowPassFPtr->modeFlag = FALSE;
-	lowPassFPtr->cutOffFrequencyFlag = FALSE;
-	lowPassFPtr->signalMultiplierFlag = FALSE;
-	lowPassFPtr->mode = 0;
-	lowPassFPtr->cutOffFrequency = 0.0;
-	lowPassFPtr->signalMultiplier = 0.0;
+	lowPassFPtr->cutOffFrequencyFlag = TRUE;
+	lowPassFPtr->signalMultiplierFlag = TRUE;
+	lowPassFPtr->mode = FILTER_LOW_PASS_MODE_NORMAL;
+	lowPassFPtr->cutOffFrequency = 5000.0;
+	lowPassFPtr->signalMultiplier = 1.0;
 	lowPassFPtr->numChannels = 0;
 	lowPassFPtr->coefficients = NULL;
 

@@ -98,20 +98,20 @@ Init_PureTone_Binaural(ParameterSpecifier parSpec)
 		}
 	}
 	bPureTonePtr->parSpec = parSpec;
-	bPureTonePtr->leftFrequencyFlag = FALSE;
-	bPureTonePtr->rightFrequencyFlag = FALSE;
-	bPureTonePtr->leftIntensityFlag = FALSE;
-	bPureTonePtr->rightIntensityFlag = FALSE;
-	bPureTonePtr->phaseDifferenceFlag = FALSE;
-	bPureTonePtr->durationFlag = FALSE;
-	bPureTonePtr->dtFlag = FALSE;
-	bPureTonePtr->leftFrequency = 0.0;
-	bPureTonePtr->rightFrequency = 0.0;
-	bPureTonePtr->leftIntensity = 0.0;
-	bPureTonePtr->rightIntensity = 0.0;
-	bPureTonePtr->phaseDifference = 0.0;
-	bPureTonePtr->duration = 0.0;
-	bPureTonePtr->dt = 0.0;
+	bPureTonePtr->leftFrequencyFlag = TRUE;
+	bPureTonePtr->rightFrequencyFlag = TRUE;
+	bPureTonePtr->leftIntensityFlag = TRUE;
+	bPureTonePtr->rightIntensityFlag = TRUE;
+	bPureTonePtr->phaseDifferenceFlag = TRUE;
+	bPureTonePtr->durationFlag = TRUE;
+	bPureTonePtr->dtFlag = TRUE;
+	bPureTonePtr->leftFrequency = 1000.0;
+	bPureTonePtr->rightFrequency = 1000.0;
+	bPureTonePtr->leftIntensity = 20.0;
+	bPureTonePtr->rightIntensity = 20.0;
+	bPureTonePtr->phaseDifference = 180.0;
+	bPureTonePtr->duration = 0.1;
+	bPureTonePtr->dt = DEFAULT_DT;
 
 	if (!SetUniParList_PureTone_Binaural()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

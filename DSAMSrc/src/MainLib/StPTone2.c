@@ -65,18 +65,18 @@ Init_PureTone_2(ParameterSpecifier parSpec)
 		}
 	}
 	pureTone2Ptr->parSpec = parSpec;
-	pureTone2Ptr->frequencyFlag = FALSE;
-	pureTone2Ptr->durationFlag = FALSE;
-	pureTone2Ptr->dtFlag = FALSE;
-	pureTone2Ptr->intensityFlag = FALSE;
-	pureTone2Ptr->beginPeriodDurationFlag = FALSE;
-	pureTone2Ptr->endPeriodDurationFlag = FALSE;
-	pureTone2Ptr->frequency = 0.0;
-	pureTone2Ptr->intensity = 0.0;
-	pureTone2Ptr->duration = 0.0;
-	pureTone2Ptr->dt = 0.0;
-	pureTone2Ptr->beginPeriodDuration = 0.0;
-	pureTone2Ptr->endPeriodDuration = 0.0;
+	pureTone2Ptr->frequencyFlag = TRUE;
+	pureTone2Ptr->durationFlag = TRUE;
+	pureTone2Ptr->dtFlag = TRUE;
+	pureTone2Ptr->intensityFlag = TRUE;
+	pureTone2Ptr->beginPeriodDurationFlag = TRUE;
+	pureTone2Ptr->endPeriodDurationFlag = TRUE;
+	pureTone2Ptr->frequency = 1000.0;
+	pureTone2Ptr->intensity = 30.0;
+	pureTone2Ptr->duration = 0.08;
+	pureTone2Ptr->dt = DEFAULT_DT;
+	pureTone2Ptr->beginPeriodDuration = 0.01;
+	pureTone2Ptr->endPeriodDuration = 0.01;
 
 	if (!SetUniParList_PureTone_2()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

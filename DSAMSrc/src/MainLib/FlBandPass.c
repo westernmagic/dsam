@@ -77,13 +77,13 @@ Init_Filter_BandPass(ParameterSpecifier parSpec)
 	}
 	bandPassFPtr->parSpec = parSpec;
 	bandPassFPtr->updateProcessVariablesFlag = TRUE;
-	bandPassFPtr->cascadeFlag = FALSE;
-	bandPassFPtr->upperCutOffFreqFlag = FALSE;
-	bandPassFPtr->lowerCutOffFreqFlag = FALSE;
-	bandPassFPtr->preAttenuationFlag = FALSE;
-	bandPassFPtr->cascade = 0;
-	bandPassFPtr->upperCutOffFreq = 0.0;
-	bandPassFPtr->lowerCutOffFreq = 0.0;
+	bandPassFPtr->cascadeFlag = TRUE;
+	bandPassFPtr->upperCutOffFreqFlag = TRUE;
+	bandPassFPtr->lowerCutOffFreqFlag = TRUE;
+	bandPassFPtr->preAttenuationFlag = TRUE;
+	bandPassFPtr->cascade = 2;
+	bandPassFPtr->upperCutOffFreq = 8500.0;
+	bandPassFPtr->lowerCutOffFreq = 450.0;
 	bandPassFPtr->preAttenuation = 0.0;
 
 	if (!SetUniParList_Filter_BandPass()) {

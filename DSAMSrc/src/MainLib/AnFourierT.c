@@ -119,9 +119,9 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 		}
 	}
 	fourierTPtr->parSpec = parSpec;
-	fourierTPtr->outputModeFlag = FALSE;
 	fourierTPtr->updateProcessVariablesFlag = TRUE;
-	fourierTPtr->outputMode = 0;
+	fourierTPtr->outputModeFlag = TRUE;
+	fourierTPtr->outputMode = ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE;
 
 	InitOutputModeList_Analysis_FourierT();
 	if (!SetUniParList_Analysis_FourierT()) {

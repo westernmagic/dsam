@@ -149,20 +149,20 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 	}
 	sAImagePtr->parSpec = parSpec;
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
-	sAImagePtr->diagnosticModeFlag = FALSE;
-	sAImagePtr->integrationModeFlag = FALSE;
+	sAImagePtr->diagnosticModeFlag = TRUE;
+	sAImagePtr->integrationModeFlag = TRUE;
 	sAImagePtr->strobeSpecificationFlag = FALSE;
-	sAImagePtr->positiveWidthFlag = FALSE;
-	sAImagePtr->negativeWidthFlag = FALSE;
-	sAImagePtr->inputDecayRateFlag = FALSE;
-	sAImagePtr->imageDecayHalfLifeFlag = FALSE;
-	sAImagePtr->diagnosticMode = 0;
-	sAImagePtr->integrationMode = 0;
+	sAImagePtr->positiveWidthFlag = TRUE;
+	sAImagePtr->negativeWidthFlag = TRUE;
+	sAImagePtr->inputDecayRateFlag = TRUE;
+	sAImagePtr->imageDecayHalfLifeFlag = TRUE;
+	sAImagePtr->diagnosticMode = GENERAL_BOOLEAN_OFF;
+	sAImagePtr->integrationMode = SAI_INTEGRATION_MODE_STI;
 	sAImagePtr->strobeSpecification[0] = '\0';
-	sAImagePtr->positiveWidth = 0.0;
-	sAImagePtr->negativeWidth = 0.0;
-	sAImagePtr->inputDecayRate = 0.0;
-	sAImagePtr->imageDecayHalfLife = 0.0;
+	sAImagePtr->positiveWidth = 5.0e-3;
+	sAImagePtr->negativeWidth = -35.0e-3;
+	sAImagePtr->inputDecayRate = 2.5e+3;
+	sAImagePtr->imageDecayHalfLife = 30e-3;
 
 	if ((sAImagePtr->diagnosticModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), sAImagePtr->diagnosticString)) == NULL)

@@ -121,10 +121,10 @@ Init_Utility_BinSignal(ParameterSpecifier parSpec)
 		}
 	}
 	binSignalPtr->parSpec = parSpec;
-	binSignalPtr->modeFlag = FALSE;
-	binSignalPtr->binWidthFlag = FALSE;
-	binSignalPtr->mode = 0;
-	binSignalPtr->binWidth = 0.0;
+	binSignalPtr->modeFlag = TRUE;
+	binSignalPtr->binWidthFlag = TRUE;
+	binSignalPtr->mode = UTILITY_BINSIGNAL_SUM_MODE;
+	binSignalPtr->binWidth = -1.0;
 
 	InitModeList_Utility_BinSignal();
 	if (!SetUniParList_Utility_BinSignal()) {
@@ -162,7 +162,7 @@ SetUniParList_Utility_BinSignal(void)
 	  &binSignalPtr->mode, binSignalPtr->modeList,
 	  (void * (*)) SetMode_Utility_BinSignal);
 	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_BINWIDTH], "BIN_WIDTH",
-	  "Bin width for binned signal (s).",
+	  "Bin width for binned signal (s) (prev. signal sampling ingterval).",
 	  UNIPAR_REAL,
 	  &binSignalPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Utility_BinSignal);

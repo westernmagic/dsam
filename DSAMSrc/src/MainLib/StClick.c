@@ -68,14 +68,14 @@ Init_Click(ParameterSpecifier parSpec)
 		}
 	}
 	clickPtr->parSpec = parSpec;
-	clickPtr->clickTimeFlag = FALSE;
-	clickPtr->amplitudeFlag = FALSE;
-	clickPtr->durationFlag = FALSE;
-	clickPtr->dtFlag = FALSE;
-	clickPtr->clickTime = 0.0;
-	clickPtr->amplitude = 0.0;
-	clickPtr->duration = 0.0;
-	clickPtr->dt = 0.0;
+	clickPtr->clickTimeFlag = TRUE;
+	clickPtr->amplitudeFlag = TRUE;
+	clickPtr->durationFlag = TRUE;
+	clickPtr->dtFlag = TRUE;
+	clickPtr->clickTime = 0.01;
+	clickPtr->amplitude = 1.0;
+	clickPtr->duration = 0.1;
+	clickPtr->dt = DEFAULT_DT;
 
 	if (!SetUniParList_Click()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

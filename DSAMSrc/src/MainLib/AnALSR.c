@@ -101,12 +101,12 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 	}
 	aLSRPtr->parSpec = parSpec;
 	aLSRPtr->updateProcessVariablesFlag = TRUE;
-	aLSRPtr->lowerAveLimitFlag = FALSE;
-	aLSRPtr->upperAveLimitFlag = FALSE;
-	aLSRPtr->normaliseFlag = FALSE;
-	aLSRPtr->lowerAveLimit = 0.0;
-	aLSRPtr->upperAveLimit = 0.0;
-	aLSRPtr->normalise = 0.0;
+	aLSRPtr->lowerAveLimitFlag = TRUE;
+	aLSRPtr->upperAveLimitFlag = TRUE;
+	aLSRPtr->normaliseFlag = TRUE;
+	aLSRPtr->lowerAveLimit = -1.0;
+	aLSRPtr->upperAveLimit = 1.0;
+	aLSRPtr->normalise = 1.0;
 
 	if (!SetUniParList_Analysis_ALSR()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -148,7 +148,7 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 	simScriptPtr->operationModeFlag = TRUE;
 	simScriptPtr->parFilePathModeFlag = TRUE;
 	simScriptPtr->simulation = NULL;
-	simScriptPtr->operationMode = GENERAL_BOOLEAN_ON;
+	simScriptPtr->operationMode = GENERAL_BOOLEAN_OFF;
 	simScriptPtr->parFilePathMode = UTILITY_SIMSCRIPT_PARFILEPATHMODE_RELATIVE;
 
 	if ((simScriptPtr->parFilePathModeList = InitNameList_NSpecLists(

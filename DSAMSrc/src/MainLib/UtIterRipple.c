@@ -119,14 +119,14 @@ Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 		}
 	}
 	iterRipplePtr->parSpec = parSpec;
-	iterRipplePtr->numIterationsFlag = FALSE;
-	iterRipplePtr->modeFlag = FALSE;
-	iterRipplePtr->delayFlag = FALSE;
-	iterRipplePtr->signalMultiplierFlag = FALSE;
-	iterRipplePtr->numIterations = 0;
-	iterRipplePtr->mode = 0;
+	iterRipplePtr->numIterationsFlag = TRUE;
+	iterRipplePtr->modeFlag = TRUE;
+	iterRipplePtr->delayFlag = TRUE;
+	iterRipplePtr->signalMultiplierFlag = TRUE;
+	iterRipplePtr->numIterations = 2;
+	iterRipplePtr->mode = ITERRIPPLE_IRSO_MODE;
 	iterRipplePtr->delay = 0.0;
-	iterRipplePtr->signalMultiplier = 0.0;
+	iterRipplePtr->signalMultiplier = 1.0;
 
 	InitModeList_Utility_IteratedRipple();
 	if (!SetUniParList_Utility_IteratedRipple()) {
@@ -408,8 +408,7 @@ PrintPars_Utility_IteratedRipple(void)
 	  iterRipplePtr->numIterations);
 	DPrint("\tNetwork mode = %s,",
 	  iterRipplePtr->modeList[iterRipplePtr->mode].name);
-	DPrint("\tDelay = %g (ms),\n",
-	  MSEC(iterRipplePtr->delay));
+	DPrint("\tDelay = %g (ms),\n", MSEC(iterRipplePtr->delay));
 	DPrint("\tSignal multiplier = %g (units).\n",
 	  iterRipplePtr->signalMultiplier);
 	return(TRUE);

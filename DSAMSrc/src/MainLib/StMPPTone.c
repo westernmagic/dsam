@@ -66,20 +66,20 @@ Init_PureTone_MultiPulse(ParameterSpecifier parSpec)
 		}
 	}
 	pureTone4Ptr->parSpec = parSpec;
-	pureTone4Ptr->intensityFlag = FALSE;
-	pureTone4Ptr->durationFlag = FALSE;
-	pureTone4Ptr->dtFlag = FALSE;
-	pureTone4Ptr->beginPeriodDurationFlag = FALSE;
-	pureTone4Ptr->pulseDurationFlag = FALSE;
-	pureTone4Ptr->repetitionPeriodFlag = FALSE;
+	pureTone4Ptr->intensityFlag = TRUE;
+	pureTone4Ptr->durationFlag = TRUE;
+	pureTone4Ptr->dtFlag = TRUE;
+	pureTone4Ptr->beginPeriodDurationFlag = TRUE;
+	pureTone4Ptr->pulseDurationFlag = TRUE;
+	pureTone4Ptr->repetitionPeriodFlag = TRUE;
 	pureTone4Ptr->numPulsesFlag = FALSE;
 	pureTone4Ptr->numPulses = 0;
-	pureTone4Ptr->intensity = 0.0;
-	pureTone4Ptr->duration = 0.0;
-	pureTone4Ptr->dt = 0.0;
-	pureTone4Ptr->beginPeriodDuration = 0.0;
-	pureTone4Ptr->pulseDuration = 0.0;
-	pureTone4Ptr->repetitionPeriod = 0.0;
+	pureTone4Ptr->intensity = 30.0;
+	pureTone4Ptr->duration = 0.08;
+	pureTone4Ptr->dt = 0.1e-3;
+	pureTone4Ptr->beginPeriodDuration = 0.01;
+	pureTone4Ptr->pulseDuration = 5e-3;
+	pureTone4Ptr->repetitionPeriod = 7e-3;
 	pureTone4Ptr->frequencies = NULL;
 
 	if (!SetUniParList_PureTone_MultiPulse()) {
