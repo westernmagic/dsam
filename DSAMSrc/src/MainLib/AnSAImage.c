@@ -945,7 +945,7 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 				  "EarObject", funcName);
 				return(FALSE);
 			}
-			sAImagePtr->zeroIndex = (ChanLen) (-sAImagePtr->negativeWidth /
+			sAImagePtr->zeroIndex = (ChanLen) floor(-sAImagePtr->negativeWidth /
 			  data->inSignal[0]->dt + 0.5);
 			sAImagePtr->positiveWidthIndex = data->outSignal->length -
 			  sAImagePtr->zeroIndex;
@@ -1182,8 +1182,8 @@ Process_Analysis_SAI(EarObjectPtr data)
 	SetProcessName_EarObject(data, "Stabilised Auditory Image Module process");
 	dt = data->inSignal[0]->dt;
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  (ChanLen) ((sAImagePtr->positiveWidth - sAImagePtr->negativeWidth) / dt +
-	  0.5), dt)) {
+	  (ChanLen) floor((sAImagePtr->positiveWidth - sAImagePtr->negativeWidth) /
+	    dt + 0.5), dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
