@@ -70,6 +70,7 @@ typedef struct {
 	NameSpecifier	*normalisationModeList;
 	UniParListPtr	parList;
 	double	*exponentDt;
+	ChanLen	sumLimitIndex;
 
 } AutoCorr, *AutoCorrPtr;
 

@@ -37,6 +37,9 @@
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
  *				implements the auto-normalisation for calculating the
  *				'datafilePtr->normalise' parameter.
+ *				24-10-00 LPO: The 'inputMode' parameter has been introduced, and
+ *				is set by the 'SetDataFileIn_ModuleMgr' and
+ *				'SetDataFileOut_ModuleMgr' routines.
  * Authors:		L. P. O'Mard revised from Malcolm Slaney's code.
  * Created:		12 Jul 1993
  * Updated:		04 Aug 1999
@@ -147,6 +150,7 @@ typedef struct {
 	/* Private parameters */
 	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;
+	BOOLN	inputMode;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave support*/
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
