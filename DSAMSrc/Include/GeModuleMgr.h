@@ -575,9 +575,6 @@ void		SetAnalysis_SynchIndex_ModuleMgr(ModulePtr theModule);
 
 void		SetAMTone_ModuleMgr(ModulePtr theModule);
 
-BOOLN		SetArrayPar_ModuleMgr(EarObjectPtr data, char *parName, int index,
-			  char *value);
-
 void		SetBasilarM_Carney_ModuleMgr(ModulePtr theModule);
 
 void		SetBasilarM_Cooke_ModuleMgr(ModulePtr theModule);
