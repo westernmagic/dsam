@@ -158,8 +158,7 @@ SetUniParList_Analysis_FourierT(void)
 	}
 	pars = fourierTPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_FOURIERT_OUTPUTMODE], "OUTPUT_MODE",
-	  "Output mode ('modulus', 'phase', 'complex' or 'dB_SPL' - "
-	  "approximation).",
+	  "Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' (approximation).",
 	  UNIPAR_NAME_SPEC,
 	  &fourierTPtr->outputMode, fourierTPtr->outputModeList,
 	  (void * (*)) SetOutputMode_Analysis_FourierT);
