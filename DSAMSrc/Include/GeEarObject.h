@@ -141,6 +141,8 @@ void		FreeEarObjRefList_EarObject(EarObjRefPtr *theList);
 int			FreeEarObjRef_EarObject(EarObjRefPtr *theList, 	
 			  EarObjHandle theHandle);
 
+void		FreeOutSignal_EarObject(EarObjectPtr data);
+
 void		Free_EarObject(EarObjectPtr *theObject);	
 			
 EarObjectPtr	Init_EarObject(char *moduleName);		
