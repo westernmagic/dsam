@@ -7,9 +7,10 @@ output.dat		Name of output file.
 #
 #Par. file		Name					Discription
 #---------		---------				-------------
-PTone1.par		PureTone				Stimulus generation paradigm.
-PreEmph1.par	PreEmphasis_BandPass	Outer-/middler-ear filter model.
-GammaT1.par		BasilarM_GammaT			basilar membrane filter model.
+PTone1.par		Stim_PureTone			Stimulus generation paradigm.
+Ramp1.par		Trans_Gate				Ramp (Gate) transformatio.
+PreEmph1.par	Filt_BandPass			Outer-/middler-ear filter model.
+GammaT1.par		BM_GammaT				basilar membrane filter model.
 RPModuleIV.par	null					IHC receptor potential model.
 Meddis86.par	IHC_Meddis86			Inner hair cell (IHC) model.
 #
