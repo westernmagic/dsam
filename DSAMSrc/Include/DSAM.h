@@ -56,6 +56,7 @@
 #include "UtHalfWRectify.h"
 #include "UtIonChanList.h"
 #include "UtIterRipple.h"
+#include "UtLocalChans.h"
 #include "UtNameSpecs.h"
 #include "UtOptions.h"
 #include "UtPause.h"
@@ -76,8 +77,10 @@
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
 #include "UtString.h"
+#include "UtSwapLR.h"
 #include "UtParArray.h"
 
+#include "AnALSR.h"
 #include "AnAutoCorr.h"
 #include "AnAverages.h"
 #include "AnConvolve.h"

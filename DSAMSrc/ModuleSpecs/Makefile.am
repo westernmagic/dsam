@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## src directory makefile.
+## ModuleSpecs directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
@@ -8,7 +8,7 @@ AUTOMAKE_OPTIONS = foreign
 An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnFindBin.mod AnFindNextIndex.mod AnHistogram.mod \
 				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
-				 AnSynchIndex.mod AnSAImage.mod
+				 AnSynchIndex.mod AnSAImage.mod AnALSR.mod
 
 Fi_Modules	= FiDataFile.mod
 
@@ -34,7 +34,8 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
 				UtCreateBinaural.mod UtDelay.mod UtIterRipple.mod \
 				UtRedceChans.mod UtReduceDt.mod UtRefractory.mod UtSample.mod \
 				UtSelectChans.mod UtShapePulse.mod UtSimScript.mod \
-				UtStddise.mod UtStrobe.mod UtPause.mod UtHalfWRectify.mod
+				UtStddise.mod UtStrobe.mod UtPause.mod UtHalfWRectify.mod \
+				UtLocalChans.mod UtSwapLR.mod
 
 Tr_Modules	= TrGate.mod
 

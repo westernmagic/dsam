@@ -13,7 +13,7 @@ WXWINRESFLAGS	= $(RESFLAGS)
 endif
 
 lib_LTLIBRARIES = libdsam_g.la
-EXTRA_DIST		= makefile.b32 dsam.rc
+EXTRA_DIST		= makefile.b32
 
 INCLUDES		= $(MAIN_INC) $(WXINC) -I$(top_srcdir)/src/MainLib
 

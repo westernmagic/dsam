@@ -29,6 +29,7 @@ ModRegEntry	*userModuleList = NULL;
 ModRegEntry	libraryModuleList[] = {
 
 	{ "ANA_ACF", PROCESS_MODULE, InitModule_Analysis_ACF },
+	{ "ANA_ALSR", PROCESS_MODULE, InitModule_Analysis_ALSR },
 	{ "ANA_AVERAGES", PROCESS_MODULE, InitModule_Analysis_Averages },
 	{ "ANA_CCF", PROCESS_MODULE, InitModule_Analysis_CCF },
 	{ "ANA_CONVOLUTION", PROCESS_MODULE, InitModule_Analysis_Convolution },
@@ -106,6 +107,7 @@ ModRegEntry	libraryModuleList[] = {
 	  InitModule_Utility_HalfWaveRectify },
 	{ "UTIL_ITERATEDRIPPLE", PROCESS_MODULE,
 	  InitModule_Utility_IteratedRipple },
+	{ "UTIL_LocalChans", PROCESS_MODULE, InitModule_Utility_LocalChans },
 	{ "UTIL_PAUSE", PROCESS_MODULE, InitModule_Utility_Pause },
 	{ "UTIL_REDUCECHANNELS", PROCESS_MODULE, InitModule_Utility_ReduceChannels
 	  },
@@ -119,6 +121,7 @@ ModRegEntry	libraryModuleList[] = {
 	{ "UTIL_SIMSCRIPT", SIMSCRIPT_MODULE, InitModule_Utility_SimScript },
 	{ "UTIL_STANDARDISE", PROCESS_MODULE, InitModule_Utility_Standardise },
 	{ "UTIL_STROBE", PROCESS_MODULE, InitModule_Utility_Strobe },
+	{ "UTIL_SWAPLR", PROCESS_MODULE, InitModule_Utility_SwapLR },
 
 	{ "", MODULE_SPECIFIER_NULL }
 
@@ -239,7 +242,7 @@ RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
 		return(FALSE);
 	}
 	if (GetRegEntry_ModuleReg((char *) name)) {
-		NotifyError("%s: Module name '%s' already used.", funcName);
+		NotifyError("%s: Module name '%s' already used.", funcName, name);
 		return(FALSE);
 	}
 	if (!InitModuleFunc) {

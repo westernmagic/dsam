@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## src directory makefile.
+## Include directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
@@ -8,7 +8,7 @@ AUTOMAKE_OPTIONS = foreign
 An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnExperiment.h AnFindBin.h AnFindNextIndex.h AnFourierT.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
-				AnSpikeReg.h AnSynchIndex.h AnSAImage.h
+				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h
   
 Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 
@@ -48,7 +48,8 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
 				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
 				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h \
-				UtFIRFilters.h UtRemez.h UtDynaBList.h
+				UtFIRFilters.h UtRemez.h UtDynaBList.h UtLocalChans.h \
+				UtSwapLR.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 

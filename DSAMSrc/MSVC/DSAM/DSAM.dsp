@@ -85,6 +85,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\AnALSR.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\AnAutoCorr.c
 # End Source File
 # Begin Source File
@@ -453,6 +457,10 @@ SOURCE=..\..\src\MainLib\UtIterRipple.c
 # End Source File
 # Begin Source File
 
+SOURCE=\projects\dsam\DSAMSrc\src\MainLib\UtLocalChans.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtNameSpecs.c
 # End Source File
 # Begin Source File
@@ -533,6 +541,10 @@ SOURCE=..\..\src\MainLib\UtStrobe.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\UtSwapLR.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\UtUIEEEFloat.c
 # End Source File
 # Begin Source File
@@ -543,6 +555,10 @@ SOURCE=..\..\src\MainLib\UtUPortableIO.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\Include\AnALSR.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\Include\AnAutoCorr.h
@@ -1001,6 +1017,10 @@ SOURCE=..\..\Include\UtIterRipple.h
 # End Source File
 # Begin Source File
 
+SOURCE=\projects\dsam\DSAMSrc\Include\UtLocalChans.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\UtNameSpecs.h
 # End Source File
 # Begin Source File
@@ -1082,6 +1102,10 @@ SOURCE=..\..\Include\UtString.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtStrobe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\UtSwapLR.h
 # End Source File
 # Begin Source File
 

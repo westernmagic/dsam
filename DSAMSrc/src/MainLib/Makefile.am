@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-## src directory makefile.
+## src/MainLib directory makefile.
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -21,7 +21,7 @@ INCLUDES		= $(MAIN_INC)
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
 				AnGeneral.c AnHistogram.c AnIntensity.c AnInterSIH.c \
-				AnSpikeReg.c AnSynchIndex.c AnSAImage.c
+				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c
   
 Fi_Sources	= FiDataFile.c FiAIFF.c FiASCII.c FiMSWave.c FiRaw.c FiParFile.c
 
@@ -54,7 +54,8 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtUIEEEFloat.c UtUPortableIO.c UtCreateJoined.c UtStrobe.c \
 				UtOptions.c UtString.c UtPause.c UtHalfWRectify.c UtDynaList.c \
 				UtAppInterface.c UtFFT.c UtParArray.c UtGCFilters.c \
-				UtFIRFilters.c UtRemez.c UtDynaBList.c
+				UtFIRFilters.c UtRemez.c UtDynaBList.c UtLocalChans.c \
+				UtSwapLR.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c
 
