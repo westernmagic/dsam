@@ -14,7 +14,7 @@
 INCDIR=Include
 SRCDIR=src
 MAINLIB=$SRCDIR/MainLib
-GRLIB=$SRCDIR/GrLib
+STDLIB=$SRCDIR/StdLib
 CFGTOOLS=CfgTools
 TEMP_FILE=file.tmp
 
@@ -43,7 +43,7 @@ CVSConfigure()
 	  DSAMSetup.h > temp
 	mv temp DSAMSetup.h
 	cp $MAINLIB/UtSSParser.h $INCDIR
-	(cd $GRLIB; make GrSignalDisp.cpp)
+	(cd $STDLIB; make StdSignalDisp.c)
 }
 
 ############################### Main Script ####################################
