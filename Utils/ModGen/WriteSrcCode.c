@@ -1050,8 +1050,8 @@ PrintReadParsRoutine(FILE *fp)
 	fprintf(fp, "\twhile (GetPars_ParFile(fp, \"%%s %%s\", parName,"
 	  "parValue))\n");
 	fprintf(fp, "\t\tif ((par = FindUniPar_UniParMgr(&padSignalPtr->parList,"
-	  "parName)) ==\n");
-	fprintf(fp, "\t\t  NULL) {\n");
+	  "parName,\n");
+	fprintf(fp, "\t\t  UNIPAR_SEARCH_ABBR)) == NULL) {\n");
 	fprintf(fp, "\t\t\tNotifyError(\"%%s: Unknown parameter '%%s' for "
 	  "module.\", funcName,\n");
 	fprintf(fp, "\t\t\t  parName);\n");
