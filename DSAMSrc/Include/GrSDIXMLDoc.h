@@ -26,15 +26,13 @@ class ostream;
 class istream;
 #endif
 
+#include "ExtXMLDocument.h"
+
 #include "UtDynaList.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
-
-#define SDI_XML_SIMULAION_ELEMENT		"simulation"
-#define SDI_XML_PAR_ELEMENT				"par"
-#define SDI_XML_APPLICATION_ELEMENT		"application"
 
 // Shape elements.
 #define SDI_XML_ANALYSIS_SHAPE_ELEMENT	_T("analysis_shape")
@@ -51,7 +49,6 @@ class istream;
 #define SDI_XML_ARCS_ELEMENT			_T("arcs")
 #define SDI_XML_ATTACHMENTS_ELEMENT		_T("attachments")
 #define SDI_XML_BRUSH_ELEMENT			_T("brush")
-#define SDI_XML_DSAM_ELEMENT			_T("dsam")
 #define SDI_XML_INPUT_ELEMENT			_T("input")
 #define SDI_XML_LINE_ELEMENT			_T("line")
 #define SDI_XML_MISC_ELEMENT			_T("misc")
@@ -79,7 +76,6 @@ class istream;
 #define SDI_XML_HEIGHT_ATTRIBUTE		_T("height")
 #define	SDI_XML_HILITE_ATTRIBUTE		_T("hilite")
 #define SDI_XML_ID_ATTRIBUTE			_T("id")
-#define SDI_XML_LABEL_ATTRIBUTE			_T("label")
 #define SDI_XML_OBJLABEL_ATTRIBUTE		_T("obj_label")
 #define	SDI_XML_STYLE_ATTRIBUTE			_T("style")
 #define	SDI_XML_MIN_HEIGHT_ATTRIBUTE	_T("min_height")
@@ -124,26 +120,22 @@ class istream;
 /*************************** Pre reference definitions ************************/
 /******************************************************************************/
 
-class TiXmlNode;
-
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
 /*************************** SDIDocument **************************************/
 
-class SDIXMLDocument: public TiXmlDocument
-{
+class SDIXMLDocument: public DSAMXMLDocument {
 
   private:
 
   public:
   
-  	SDIXMLDocument(EarObjectPtr simProcess);
+  	SDIXMLDocument();
 	~SDIXMLDocument(void);
 
 	void	AddAnalysisShapeInfo(TiXmlNode &parent, wxShape *shape);
-	void	AddAppInfo(TiXmlNode &parent);
 	void	AddAttachmentsInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddBrushInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddControlShapeInfo(TiXmlNode &parent, wxShape *shape);
@@ -151,17 +143,11 @@ class SDIXMLDocument: public TiXmlDocument
 	void	AddIOShapeInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddLineInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddModelShapeInfo(TiXmlNode &parent, wxShape *shape);
-	void	AddParGeneral(TiXmlNode &node, UniParPtr p);
-	void	AddParList(TiXmlNode &node, UniParListPtr parList);
-	void	AddParListStandard(TiXmlNode &node, UniParListPtr parList);
 	void	AddPenInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddPointInfo(TiXmlNode &parent,wxRealPoint *point);
 	void	AddPolygonShapeInfo(TiXmlElement &parent, wxShape *shape);
 	void	AddRegions(TiXmlNode &parent, wxShape *shape);
-	void	AddShapeInfo(TiXmlNode &node, wxShape *shape);
-	void	AddSimConnections(TiXmlNode &node, DynaListPtr list, char * type);
-	DatumPtr	AddSimObjects(TiXmlNode &node, DatumPtr start);
-	void	AddSimulation(TiXmlNode &node, EarObjectPtr simProcess);
+	void	AddShapeInfo(TiXmlNode &node, void *shapePtr);
 	void	AddTransformShapeInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddUserShapeInfo(TiXmlNode &parent, wxShape *shape);
 	void	AddUtilityShapeInfo(TiXmlNode &parent, wxShape *shape);

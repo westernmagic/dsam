@@ -42,7 +42,7 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
-				ExtRunThreadedProc.h
+				ExtRunThreadedProc.h ExtXMLDocument.h
 
 Std_Headers	= 
 

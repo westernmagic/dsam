@@ -798,7 +798,7 @@ GetFilePath_AppInterface(char *filePath)
 {
 	static char guiFilePath[MAX_FILE_PATH];
 
-	if (!GetDSAMPtr_Common()->usingGUIFlag)
+	if (!GetDSAMPtr_Common()->usingExtFlag)
 		return(filePath);
 	snprintf(guiFilePath, MAX_FILE_PATH, "%s/%s", appInterfacePtr->parsFilePath,
 	  appInterfacePtr->simFileName);

@@ -42,6 +42,9 @@
 #include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
 #include "ExtRunThreadedProc.h"
+#include "tinyxml.h"
+#include "ExtXMLDocument.h"
+#include "GrSDIXMLDoc.h"
 #include "ExtMainApp.h"
 
 /******************************************************************************/
@@ -439,6 +442,16 @@ MainApp::InitMain(bool loadSimulationFlag)
 		return(true);
 	GetPtr_AppInterface()->PrintExtMainAppUsage = PrintUsage_MainApp;
 	ResetCommandArgFlags_AppInterface();
+	if (GetPtr_AppInterface()->simFileType == UTILITY_SIMSCRIPT_XML_FILE) {
+		printf("%s: Debug: Got XML file.\n", funcName);
+		DSAMXMLDocument doc;
+		if (!doc.LoadFile(GetFilePath_AppInterface(NULL))) {
+			NotifyError("%s: Could not load XML file '%s' (Error: %s).",
+			  funcName, GetFilePath_AppInterface(NULL), doc.ErrorDesc());
+			return(false);
+		}
+		/*** you are here ***/
+	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = loadSimulationFlag;
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
@@ -462,7 +475,7 @@ MainApp::CheckInitialisation(void)
 
 	if (!GetPtr_AppInterface()) {
 		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
+		return(false);
 	}
 	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
 		ResetStepCount_Utility_Datum();
@@ -472,9 +485,9 @@ MainApp::CheckInitialisation(void)
 #	endif /* DSAM_DEBUG */
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
-		return(FALSE);
+		return(false);
 	}
-	return(TRUE);
+	return(true);
 
 }
 

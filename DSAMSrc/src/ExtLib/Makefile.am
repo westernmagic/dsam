@@ -15,7 +15,7 @@ INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 DSAM_Ext_Sources	= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp \
 						ExtIPCUtils.cpp ExtIPCClient.cpp ExtSocket.cpp \
 						ExtSocketServer.cpp ExtProcThread.cpp \
-						ExtRunThreadedProc.cpp
+						ExtRunThreadedProc.cpp ExtXMLDocument.cpp
 
 TinyXml_Sources	= tinystr.cpp tinyxml.cpp tinyxmlerror.cpp tinyxmlparser.cpp
 

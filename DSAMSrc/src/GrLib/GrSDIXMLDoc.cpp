@@ -51,17 +51,8 @@
 /****************************** Constructor ***********************************/
 /******************************************************************************/
 
-SDIXMLDocument::SDIXMLDocument(EarObjectPtr simProcess)
+SDIXMLDocument::SDIXMLDocument(void)
 {
-	const char* rootDecleration = "<?xml version=\"1.0\" standalone=\"no\" ?>";
-
-	SetTabSize(4);
-	Parse(rootDecleration);
-	TiXmlElement dSAMElement(SDI_XML_DSAM_ELEMENT);
-	dSAMElement.SetAttribute("version", GetDSAMPtr_Common()->version);
-	AddAppInfo(dSAMElement);
-	AddSimulation(dSAMElement, simProcess);
-	InsertEndChild(dSAMElement);
 
 }
 
@@ -72,25 +63,6 @@ SDIXMLDocument::SDIXMLDocument(EarObjectPtr simProcess)
 SDIXMLDocument::~SDIXMLDocument(void)
 {
 
-}
-
-/******************************************************************************/
-/****************************** AddSimConnections **************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddSimConnections(TiXmlNode &node, DynaListPtr list,
-  char * type)
-{
-	DynaListPtr	dNode;
-
-	for (dNode = list; dNode != NULL; dNode = dNode->next) {
-		TiXmlElement	connectionElement(type);
-		connectionElement.SetAttribute(SDI_XML_LABEL_ATTRIBUTE, (char *) dNode->
-		  data);
-		node.InsertEndChild(connectionElement);
-	}
-	
 }
 
 /******************************************************************************/
@@ -450,8 +422,9 @@ SDIXMLDocument::AddUtilityShapeInfo(TiXmlNode &parent, wxShape *shape)
 /******************************************************************************/
 
 void
-SDIXMLDocument::AddShapeInfo(TiXmlNode &node, wxShape *shape)
+SDIXMLDocument::AddShapeInfo(TiXmlNode &node, void *shapePtr)
 {
+	wxShape *shape = (wxShape *) shapePtr;
 	TiXmlElement shapeElement(SDI_XML_SHAPE_ELEMENT);
 	AddPenInfo(shapeElement, shape);
 	AddBrushInfo(shapeElement, shape);
@@ -524,169 +497,3 @@ SDIXMLDocument::AddShapeInfo(TiXmlNode &node, wxShape *shape)
 	node.InsertEndChild(shapeElement);
 }
 
-/******************************************************************************/
-/****************************** AddSimObjects ******************************/
-/******************************************************************************/
-
-#define CREATE_OBJECT_ELEMENT(PC, TYPE)	\
-			TiXmlElement objectElement(SDI_XML_OBJECT_ELEMENT); \
-			objectElement.SetAttribute(SDI_XML_TYPE_ATTRIBUTE, (TYPE)); \
-			if ((PC)->label && *(PC)->label) \
-				objectElement.SetAttribute("label", (PC)->label); \
-
-DatumPtr
-SDIXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
-{
-	static const char *funcName = "SDIXMLDocument::AddSimObjects";
-	DatumPtr	pc, lastInstruction = NULL;
-
-	for (pc = start; pc; pc = pc->next) {
-		switch (pc->type) {
-		case PROCESS: {
-			if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
-				AddSimulation(node, pc->data);
-				break;
-			}
-			CREATE_OBJECT_ELEMENT(pc, SDI_XML_PROCESS_ATTRIBUTE_VALUE);
-			objectElement.SetAttribute(SDI_XML_NAME_ATTRIBUTE, pc->data->
-			  module->name);
-			AddSimConnections(objectElement, pc->u.proc.inputList,
-			  SDI_XML_INPUT_ELEMENT);
-			AddSimConnections(objectElement, pc->u.proc.outputList,
-			  SDI_XML_OUTPUT_ELEMENT);
-			AddParList(objectElement, GetUniParListPtr_ModuleMgr(pc->data));
-			AddShapeInfo(objectElement, (wxShape *) pc->data->clientData);
-			node.InsertEndChild(objectElement);
-			break; }
-		case REPEAT: {
-			CREATE_OBJECT_ELEMENT(pc, GetProcessName_Utility_Datum(pc));
-			objectElement.SetAttribute(SDI_XML_COUNT_ATTRIBUTE, pc->u.loop.
-			  count);
-			pc = lastInstruction = AddSimObjects(objectElement, pc->next);
-			AddShapeInfo(objectElement, (wxShape *) pc->clientData);
-			node.InsertEndChild(objectElement);
-			break; }
-		case RESET: {
-			CREATE_OBJECT_ELEMENT(pc, GetProcessName_Utility_Datum(pc));
-			objectElement.SetAttribute(SDI_XML_OBJLABEL_ATTRIBUTE, pc->u.
-			  string);
-			AddShapeInfo(objectElement, (wxShape *) pc->clientData);
-			node.InsertEndChild(objectElement);
-			break; }
-		case STOP:
-			return(pc);
-			break;
-		default:
-			NotifyError("%s: Not yet implemented (%d)", funcName, pc->type);
-		}
-		if ((lastInstruction = pc) == NULL)
-			break;
-	}
-	return (lastInstruction);
-
-}
-
-#undef CREATE_OBJECT_ELEMENT
-
-/******************************************************************************/
-/****************************** AddSimulation ******************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddSimulation(TiXmlNode &node, EarObjectPtr simProcess)
-{
-	TiXmlElement	simElement(SDI_XML_SIMULAION_ELEMENT);
-	AddParList(simElement, GetUniParListPtr_ModuleMgr(simProcess));
-	AddSimObjects(simElement, GetSimulation_ModuleMgr(simProcess));
-	node.InsertEndChild(simElement);
-
-}
-
-/******************************************************************************/
-/****************************** AddParGeneral ******************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddParGeneral(TiXmlNode &node, UniParPtr p)
-{
-	int		i, oldIndex;
-	wxString	str;
-
-	switch (p->type) {
-	case UNIPAR_PARLIST:
-		if (p->valuePtr.parList.process)
-			SET_PARS_POINTER(*p->valuePtr.parList.process);
-		AddParListStandard(node, *p->valuePtr.parList.list);
-		break;
-	case UNIPAR_INT_ARRAY:
-	case UNIPAR_REAL_ARRAY:
-	case UNIPAR_STRING_ARRAY:
-	case UNIPAR_NAME_SPEC_ARRAY:
-		for (i = 0; i < *p->valuePtr.array.numElements; i++) {
-			oldIndex = p->valuePtr.array.index;
-			p->valuePtr.array.index = i;
-			TiXmlElement parElement(SDI_XML_PAR_ELEMENT);
-			parElement.SetAttribute("name", p->abbr);
-			str.Printf("%d:%s", i, GetParString_UniParMgr(p));
-			parElement.SetAttribute("value", (char *) str.c_str());
-			node.InsertEndChild(parElement);
-			p->valuePtr.array.index = oldIndex;
-		}
-		break;
-	case UNIPAR_SIMSCRIPT:
-		break;
-	default:
-		TiXmlElement parElement(SDI_XML_PAR_ELEMENT);
-		parElement.SetAttribute("name", p->abbr);
-		parElement.SetAttribute("value", GetParString_UniParMgr(p));
-		node.InsertEndChild(parElement);
-	}
-	
-}
-
-/******************************************************************************/
-/****************************** AddParListStandard *************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddParListStandard(TiXmlNode &node, UniParListPtr parList)
-{
-	int		i;
-
-	for (i = 0; i < parList->numPars; i++)
-		AddParGeneral(node, &parList->pars[i]);
-}
-
-/******************************************************************************/
-/****************************** AddParList *********************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddParList(TiXmlNode &node, UniParListPtr parList)
-{
-	if (!parList)
-		return;
-	switch (parList->mode) {
-	case UNIPAR_SET_IC:
-		printf("SDIXMLDocument::AddParList:Debug not yet implemented.\n"); 
-		//break;
-	default:
-		AddParListStandard(node, parList);
-	}
-
-}
-
-/******************************************************************************/
-/****************************** AddAppInfo ******************************/
-/******************************************************************************/
-
-void
-SDIXMLDocument::AddAppInfo(TiXmlNode &node)
-{
-	TiXmlElement appElement(SDI_XML_APPLICATION_ELEMENT);
-	appElement.SetAttribute("name", GetPtr_AppInterface()->appName);
-	appElement.SetAttribute("version", GetPtr_AppInterface()->appVersion);
-	AddParList(appElement, GetPtr_AppInterface()->appParList);
-	node.InsertEndChild(appElement);
-
-}

@@ -39,6 +39,7 @@
 #include "GrSDIFrame.h"
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
+#include "ExtXMLDocument.h"
 #include "GrSDIXMLDoc.h"
 
 /******************************************************************************/
@@ -228,11 +229,10 @@ SDIDocument::LoadObject(wxInputStream& stream)
 wxOutputStream&
 SDIDocument::SaveXMLObject(wxOutputStream& stream)
 {
-	static const char *funcName = "SDIDocument::SaveXMLObject";
-
-	printf("%s: Entered\n", funcName);
 	wxDocument::SaveObject(stream);
-	SDIXMLDocument	doc(diagram.GetSimProcess());
+	SDIXMLDocument	doc;
+//	DSAMXMLDocument	doc;
+	doc.Create(diagram.GetSimProcess());
 	doc.SaveFile(GetFilename());
 	return(stream);
 
