@@ -30,14 +30,16 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	GRAPH_RIGHT_MARGIN_SCALE			0.01
+#define	GRAPH_RIGHT_MARGIN_SCALE			0.02
 #define	GRAPH_X_AXIS_SCALE					0.05
 #define	GRAPH_Y_AXIS_SCALE					0.12
 #define	GRAPH_X_TITLE_SCALE					0.04
+#define	GRAPH_X_TITLE_MARGIN_SCALE			0.15
 #define	GRAPH_Y_TITLE_SCALE					0.03
+#define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
 #define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
 #define	GRAPH_LABEL_SIZE					13
-#define	GRAPH_AXIS_LABEL_SIZE				13
+#define	GRAPH_AXIS_LABEL_SIZE				15
 #define	GRAPH_TICK_LENGTH_SCALE				0.08
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
 #define	GRAPH_NUM_GREY_SCALES				10
