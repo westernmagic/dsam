@@ -1286,6 +1286,11 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 		  "mode.", funcName, cFListModeList[theCFs->centreFreqMode].name);
 		return(FALSE);
 	}
+	if (theCFs->centreFreqMode != CFLIST_FOCAL_LOG_MODE) {
+		theCFs->focalCF = (theCFs->numChannels == 1)? theCFs->frequency[0]:
+		  (theCFs->frequency[0] + theCFs->frequency[theCFs->numChannels - 1]) /
+		  2.0;
+	}
 	theCFs->oldNumChannels = theCFs->numChannels;
 	theCFs->updateFlag = TRUE;
 	RatifyPars_CFList(theCFs);
