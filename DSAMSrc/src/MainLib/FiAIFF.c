@@ -206,12 +206,12 @@ ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 {
 	int		i;
 
-	SetInterleaveLevel_SignalData(data->outSignal,
-	  p->dSAMChunk.interleaveLevel);
-	SetNumWindowFrames_SignalData(data->outSignal,
-	  p->dSAMChunk.numWindowFrames);
-	SetOutputTimeOffset_SignalData(data->outSignal,
-	  p->dSAMChunk.outputTimeOffset);
+	SetInterleaveLevel_SignalData(data->outSignal, p->dSAMChunk.
+	  interleaveLevel);
+	SetNumWindowFrames_SignalData(data->outSignal, p->dSAMChunk.
+	  numWindowFrames);
+	SetOutputTimeOffset_SignalData(data->outSignal, p->dSAMChunk.
+	  outputTimeOffset);
 	SetStaticTimeFlag_SignalData(data->outSignal, p->dSAMChunk.staticTimeFlag);
 	SetPosition_UPortableIO(fp, p->dSAMChunk.posOfChannelLabels, SEEK_SET);
 	for (i = 0; i < p->numChannels / p->dSAMChunk.interleaveLevel; i++)
