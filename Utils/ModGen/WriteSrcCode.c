@@ -1333,9 +1333,12 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t}\n");
 	}
 	if (type->inst == INT_AL) {
-		fprintf(fp, "\tif (the%s <= 0) {\n", Capital(variableName));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal value (%%d).\", funcName, "
-		  "the%s);\n", Capital(variableName));
+		fprintf(fp, "\tif (the%s < 1) {\n", Capital(variableName));
+		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Value must be greater then "
+		  "zero (%d).\", funcName, the");
+		Print(fp, "\t\t  ", Capital(variableName));
+		Print(fp, "\t\t  ", ");\n");
+		Print(fp, "\t\t  ", "");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 		fprintf(fp, "\tif (!Alloc%s_%s(the%s)) {\n", Capital(variableName),
