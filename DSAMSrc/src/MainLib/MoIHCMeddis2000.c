@@ -59,8 +59,6 @@ Free_IHC_Meddis2000(void)
 
 	if (hairCell2Ptr == NULL)
 		return(FALSE);
-	if (hairCell2Ptr->diagModeList)
-		free(hairCell2Ptr->diagModeList);
 	if (hairCell2Ptr->parList)
 		FreeList_UniParMgr(&hairCell2Ptr->parList);
 	if (hairCell2Ptr->parSpec == GLOBAL) {
@@ -204,7 +202,7 @@ SetUniParList_IHC_Meddis2000(void)
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_DIAGMODE], "DIAG_MODE",
 	  "Diagnostic mode. Outputs internal states of running model ('off', "
 	  "'screen' or <file name>).",
-	  UNIPAR_NAME_SPEC,
+	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], "RAN_SEED",
@@ -242,7 +240,7 @@ SetUniParList_IHC_Meddis2000(void)
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->GCaMax, NULL,
 	  (void * (*)) SetGCaMax_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "PERM_CA0",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "CA_CONCTHR",
 	  "Permeability in the absence of calcium (normally negative or zero).",
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_Ca0, NULL,
@@ -1236,25 +1234,34 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 			hairCell2Ptr->updateProcessVariablesFlag = FALSE;
 		} 
 
-		ssactCa = 1.0 / ( 1.0 + (exp(-(hC->gammaCa*(data->inSignal[0]->channel[
-		  0][0] +hC->recPotOffset))) / hC->betaCa) );		
+		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[0][0] 
+                                             +hC->recPotOffset)))       / hC->betaCa ) );		
 		ICa = hC->GCaMax*pow(ssactCa,3)*(data->inSignal[0]->channel[0][0] +
 		  hC->recPotOffset - hC->CaVrev);
-		spontPerm_k0 = hC->perm_z * data->outSignal->dt * (
-		       pow(hC->perm_Ca0,hC->pCa) + pow(-ICa,hC->pCa) ); 
-	
+		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ?
+                                 ( hC->perm_z * 
+                                    ( pow(-ICa,hC->pCa) - pow(hC->perm_Ca0,hC->pCa) ) )
+                                 : 0; 
 		spontCleft_c0 = hC->maxFreePool_M * hC->replenishRate_y * spontPerm_k0 /
 		  (hC->replenishRate_y * (hC->lossRate_l + hC->recoveryRate_r) +
 		  spontPerm_k0 * hC->lossRate_l);
-		spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
-		  hC->recoveryRate_r) / spontPerm_k0;
+                if (spontCleft_c0>0) {
+		   if (hC->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
+		      spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
+		        hC->recoveryRate_r) / spontPerm_k0;
+                   else 
+		      spontFreePool_q0 = floor( (spontCleft_c0 * (hC->lossRate_l +
+		        hC->recoveryRate_r) / spontPerm_k0) + 0.5);
+		} else
+		   spontFreePool_q0 = hC->maxFreePool_M;
+
 		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r /
-		  hC->reprocessRate_x;
+		   hC->reprocessRate_x;
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			hC->hCChannels[i].actCa = ssactCa;
 			hC->hCChannels[i].concCa = -ICa;		
-			hC->hCChannels[i].reservoirQ = (int) floor(spontFreePool_q0);
+			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
 			hC->hCChannels[i].cleftC = spontCleft_c0;
 			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
 		}
@@ -1326,7 +1333,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	if (!CheckPars_IHC_Meddis2000())
 		return(FALSE);
 	if (!CheckData_IHC_Meddis2000(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
+	 	NotifyError("%s: Process data invalid.", funcName);
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Meddis 2000 IHC. Calcium transmitter "

@@ -109,8 +109,8 @@ typedef struct {
 	NameSpecifier	*diagModeList;
 	UniParListPtr	parList;
 	HairCellVars2	*hCChannels;
-	char			diagFileName[MAX_FILE_PATH];
-	FILE			*fp;
+	char		diagFileName[MAX_FILE_PATH];
+	FILE		*fp;
 
 } HairCell2, *HairCell2Ptr;
 
