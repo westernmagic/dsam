@@ -161,6 +161,10 @@ SOURCE=..\..\src\GrLib\GrSDIDoc.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\GrLib\GrSDIDocManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\GrLib\GrSDIEvtHandler.cpp
 # End Source File
 # Begin Source File
