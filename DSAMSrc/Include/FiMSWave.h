@@ -24,7 +24,7 @@
 
 #define WAVE_RIFF		0x46464952		/* "FFIR" (RIFF) */
 #define WAVE_WAVE		0x45564157		/* "EVAW" (WAVE) */
-#define WAVE_FMT		0x20746D66		/* "fmt " (fmt ) */
+#define WAVE_FMT		0x20746D66		/* " tmf" (fmt ) */
 #define WAVE_DATA		0x61746164		/* "atad" (data) */
 #define WAVE_PCM_CODE	1
 #define WAVE_MONO		1
@@ -53,6 +53,9 @@ typedef struct {
 
 	int32	dataChunk;		/* 'data' */
 	int32	dataChunkLength;/* = numSamples * numChannels * bitsPerSample / 8 */
+
+	/* My info */
+	int32	soundPosition;
   
 } WaveHeader, *WaveHeaderPtr;
 

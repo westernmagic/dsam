@@ -50,31 +50,56 @@ BOOLN
 ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 {
 	static const char *funcName = "ReadHeader_Wave";
+	int32	subSize, chunkSize, iD;
 
 	if ((p->identifier = ReadFileIdentifier_DataFile(fp, WAVE_RIFF,
 	  "MS WAVE")) == 0)
 		return(FALSE);
-	p->length = dataFilePtr->Read32Bits(fp);
+	p->length = chunkSize = dataFilePtr->Read32Bits(fp);
 	if ((p->chunkType = dataFilePtr->Read32Bits(fp)) != WAVE_WAVE) {
 		NotifyError("%s: Could not find chunk identifier.", funcName);
 		return(FALSE);
 	}
-	if ((p->subChunkType = dataFilePtr->Read32Bits(fp)) != WAVE_FMT) {
-		NotifyError("%s: Could not find sub-chunk identifier.", funcName);
+	p->subChunkLength = p->dataChunkLength = 0;
+	while ((chunkSize - 4) > 0) {
+		chunkSize -= 4;
+		switch (iD = dataFilePtr->Read32Bits(fp)) {
+		case WAVE_FMT:
+			p->subChunkLength = dataFilePtr->Read32Bits(fp);
+			chunkSize -= subSize = p->subChunkLength;
+			p->format = dataFilePtr->Read16Bits(fp);
+			subSize -= 2;
+			p->numChannels = dataFilePtr->Read16Bits(fp);
+			subSize -= 2;
+			p->sampleRate = dataFilePtr->Read32Bits(fp);
+			subSize -= 4;
+			p->byteRate = dataFilePtr->Read32Bits(fp);
+			subSize -= 4;
+			p->blockAlign = dataFilePtr->Read16Bits(fp);
+			subSize -= 2;
+			p->bitsPerSample = dataFilePtr->Read16Bits(fp);
+			subSize -= 2;
+			IgnoreBytes_DataFile(fp, &subSize);
+			break;
+		case WAVE_DATA:
+			p->dataChunkLength = dataFilePtr->Read32Bits(fp);
+			chunkSize -= subSize = p->dataChunkLength;
+			p->soundPosition = GetPosition_UPortableIO(fp);
+			IgnoreBytes_DataFile(fp, &subSize);
+			break;
+		default:
+			chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
+			IgnoreBytes_DataFile(fp, &subSize);
+		}
+	}
+	if (!p->subChunkLength) {
+		NotifyError("%s: Could not find FMT chunk identifier.", funcName);
 		return(FALSE);
 	}
-	p->subChunkLength = dataFilePtr->Read32Bits(fp);
-	p->format = dataFilePtr->Read16Bits(fp);
-	p->numChannels = dataFilePtr->Read16Bits(fp);
-	p->sampleRate = dataFilePtr->Read32Bits(fp);
-	p->byteRate = dataFilePtr->Read32Bits(fp);
-	p->blockAlign = dataFilePtr->Read16Bits(fp);
-	p->bitsPerSample = dataFilePtr->Read16Bits(fp);
-	if ((p->dataChunk = dataFilePtr->Read32Bits(fp)) != WAVE_DATA) {
-		NotifyError("%s: Could not find data chunk identifier.", funcName);
+	if (!p->dataChunkLength) {
+		NotifyError("%s: Could not find DATA chunk identifier.", funcName);
 		return(FALSE);
 	}
-	p->dataChunkLength = dataFilePtr->Read32Bits(fp);
 	return(TRUE);
 
 }
@@ -177,7 +202,7 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 	if (pars.numChannels == 2)
 		SetInterleaveLevel_SignalData(data->outSignal, 2);
 	if (fp != stdin)
-		SetPosition_UPortableIO(fp, GetPosition_UPortableIO(fp) + (int32)
+		SetPosition_UPortableIO(fp, pars.soundPosition + (int32)
 		  (data->timeIndex + dataFilePtr->timeOffsetCount - 1) *
 		  dataFilePtr->numChannels * dataFilePtr->wordSize, SEEK_SET);
 	else if (data->timeIndex == PROCESS_START_TIME) {

@@ -197,6 +197,8 @@ void	FreeProcessVariables_DataFile(void);
 
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
+void	IgnoreBytes_DataFile(FILE *fp, int32 *count);
+
 BOOLN	Init_DataFile(ParameterSpecifier parSpec);
 
 BOOLN	InitEndianModeList_DataFile(void);
