@@ -62,6 +62,7 @@ static struct {
 	{"volatile",	VOLATILE},
 	{"struct",		STRUCT},
 	{"union",		UNION},
+	{"BoolSpecifier", BOOLSPECIFIER},
 	{"BOOLN",		BOOLEAN_VAR},
 	{"mod_name",	MOD_NAME},
 	{"qualifier",	QUALIFIER},

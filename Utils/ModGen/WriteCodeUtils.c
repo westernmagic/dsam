@@ -275,6 +275,7 @@ GetOutputTypeFormatStr(Symbol *p)
 	case LONG:			return("%ld");
 	case FLOAT:			return("%f");
 	case DOUBLE:		return("%g");
+	case BOOLSPECIFIER:	return("%s");
 	case NAMESPECIFIER:	return("%s");
 	case FILENAME:		return("%s");
 	default:			return("\"_to be defined_");
@@ -353,6 +354,7 @@ GetTypeFormatStr(SymbolPtr sym, BOOLN isPointer)
 
 	switch (sym->type) {
 	case FILENAME:
+	case BOOLSPECIFIER:
 	case NAMESPECIFIER:
 		if (isPointer)
 			return("char *");

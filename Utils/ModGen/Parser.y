@@ -27,7 +27,7 @@
 	Symbol	*sym;		/* symbol table pointer */
 }
 %token	<sym>	IDENTIFIER CONSTANT_EXPRESSION TYPEDEF_NAME
-%token	<sym>	TYPEDEF ENUM BOOLEAN_VAR
+%token	<sym>	TYPEDEF ENUM BOOLEAN_VAR BOOLSPECIFIER
 %token	<sym>	VOID CHAR SHORT INT LONG FLOAT DOUBLE SIGNED UNSIGNED
 %token	<sym>	CONST VOLATILE
 %token	<sym>	STRUCT UNION
@@ -72,6 +72,7 @@ type_specifier:
 	|	struct_or_union_specifier
 	|	enum_specifier
 	|	BOOLEAN_VAR			{ ; }
+	|	BOOLSPECIFIER		{ ; }
 	|	typedef_name
 	|	MOD_NAME			{ ; }
 	|	QUALIFIER			{ ; }

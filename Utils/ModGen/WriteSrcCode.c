@@ -75,7 +75,7 @@ StandardFunctions standardFunctions[] = {
 void
 PrintIncludeFiles(FILE *fp, char *headerFileName)
 {
-	BOOLN		parArrayHeaderPlaced = FALSE;
+	BOOLN		parArrayHeaderPlaced = FALSE, nameSpecListsHeaderPlaced = FALSE;
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 
 	fprintf(fp, "#ifdef HAVE_CONFIG_H\n");
@@ -96,6 +96,11 @@ PrintIncludeFiles(FILE *fp, char *headerFileName)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
+			if ((type->sym->type == BOOLSPECIFIER) &&
+			  !nameSpecListsHeaderPlaced) {
+				fprintf(fp, "#include \"GeNSpecLists.h\"\n");
+				nameSpecListsHeaderPlaced = TRUE;
+			}
 			if (type->sym->type == CFLISTPTR) {
 				fprintf(fp, "#include \"UtBandwidth.h\"\n");
 				fprintf(fp, "#include \"UtCFList.h\"\n");
@@ -423,6 +428,9 @@ PrintInitRoutine(FILE *fp)
 						break;
 					case BOOLEAN_VAR:
 						fprintf(fp, "FALSE");
+						break;
+					case BOOLSPECIFIER:
+						fprintf(fp, "GENERAL_BOOLEAN_OFF");
 						break;
 					case PARARRAY:
 					case DATUMPTR:
@@ -913,7 +921,8 @@ PrintPrintParsRoutine(FILE *fp)
 				Print(fp, "\t  ", (*list)->sym->name);
 				Print(fp, "\t  ", ", DATUM_INITIAL_INDENT_LEVEL, \"\\t\");\n");
 				Print(fp, "\t  ", "");
-			} else if (((*list)->inst != POINTER) || (type->sym->type == CHAR)) {
+			} else if (((*list)->inst != POINTER) || (type->sym->type ==
+			  CHAR)) {
 				Print(fp, "\t  ", "\tDPrint(\"\\t");
 				Print(fp, "\t  ", DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
 				Print(fp, "\t  ", " = ");
@@ -925,6 +934,14 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", (*list)->sym->name);
 					Print(fp, "\t  ", ")? \"TRUE\": \"FALSE\"");
+					break;
+				case BOOLSPECIFIER:
+					Print(fp, "\t  ", "\\n\", ");
+					Print(fp, "\t  ", "BooleanList_NSpecLists(");
+					Print(fp, "\t  ", ptrVar);
+					Print(fp, "\t  ", "->");
+					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", ")->name");
 					break;
 				case NAMESPECIFIER:
 					Print(fp, "\t  ", " \\n\", ");
@@ -1560,7 +1577,8 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	Print(fp, "\t  ", funcName);
 	Print(fp, "\t  ", "\";\n");
 	Print(fp, "\t  ", "");
-	if (type->sym->type == NAMESPECIFIER)
+	if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
+	  BOOLSPECIFIER))
 		fprintf(fp, "\tint\t\tspecifier;\n");
 	fprintf(fp, "\n");
 	PrintModuleInitCheck(fp);
@@ -1580,13 +1598,22 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
+	if (type->sym->type == BOOLSPECIFIER) {
+		fprintf(fp, "\tif ((specifier = Identify_NameSpecifier(the%s,\n"
+		  "\t\tBooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {\n",
+		  Capital(variableName));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal switch state (%%s).\", "
+		  "funcName, the%s);\n", Capital(variableName));
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	}
 	if (type->sym->type == NAMESPECIFIER) {
 		fprintf(fp, "\tif ((specifier = Identify_NameSpecifier(the%s,\n"
 		  "\t\t%s->%sList)) == %s_%s_NULL) {\n", Capital(variableName),
 		  ptrVar, variableName, CreateBaseModuleName(module, qualifier, TRUE),
 		  UpperCase(token->sym->name));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal name (%%s).\", funcName, "
-		  "the%s);\n", Capital(variableName));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal name (%%s).\", "
+		  "funcName, the%s);\n", Capital(variableName));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
@@ -1675,6 +1702,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		case CFLISTPTR:
 		case FILENAME:
 			break;
+		case BOOLSPECIFIER:
 		case NAMESPECIFIER:
 			fprintf(fp, "specifier;\n");
 			break;

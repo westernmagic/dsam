@@ -205,6 +205,9 @@ PrintExpandedStructure(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
 		fprintf(fp, "\t");
 		switch (type->sym->type){
+		case BOOLSPECIFIER:
+			fprintf(fp, "int\t");
+			break;
 		case NAMESPECIFIER:
 			fprintf(fp, "int");
 			break;
