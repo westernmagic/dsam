@@ -1,0 +1,6 @@
+/* Main RunDSAMSim resources */
+
+/*#include "dsam.rc"*/
+
+/* Matlab resources */
+#include "mexversion.rc"
