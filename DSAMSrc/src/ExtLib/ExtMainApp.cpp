@@ -543,7 +543,7 @@ void
 PrintUsage_MainApp(void)
 {
 	fprintf(stderr, "\n"
-	  "\t-S            \t: Run in server mode\n"
+	  "\t-S            \t: Run in server mode (add another -S with (x)inetd).\n"
 	  "\t-I <x>        \t: Run using server ID <x>.\n"
 	  );
 
