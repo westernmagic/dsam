@@ -113,6 +113,7 @@ class MyCanvas: public wxWindow
 	void	InitGraph(EarObjectPtr data, EarObjectPtr summaryEarO,
 			  UniParListPtr theParList);
 
+	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnPreferences(wxCommandEvent& event);
 	void	OnPrint(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);

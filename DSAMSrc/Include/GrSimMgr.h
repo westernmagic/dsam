@@ -118,12 +118,12 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
-	bool	OnCloseWindow(wxCloseEvent& event);
+	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnExecute(wxCommandEvent& event);
-	void	OnQuit(wxCommandEvent& event);
 	void	OnHelp(wxCommandEvent& event);
 	void	OnEditMainPars(wxCommandEvent& event);
 	void	OnEditSimPars(wxCommandEvent& event);
+	void	OnQuit(wxCommandEvent& event);
 	void	OnSaveSimPars(wxCommandEvent& event);
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
