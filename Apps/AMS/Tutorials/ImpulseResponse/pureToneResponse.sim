@@ -1,8 +1,5 @@
 #			pureToneResponse.sim
 
-off			Diagnostics mode ("off" or "on").
-relative	Parameter file path mode - \relative\ or \absolute\
- 
 begin {
 
 stim%  stim_PureTone       < PTone1.par
@@ -28,3 +25,4 @@ BM%	BM_DRNL				   < BM_DRNLHumanALN.par
 
 	   DataFile_out			< dataFileOut.par
 		}
+

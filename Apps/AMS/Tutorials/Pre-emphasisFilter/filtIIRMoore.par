@@ -1,0 +1,22 @@
+#			Filt_MultiBPass			< filtIIRMoore.par
+
+
+# Filter is based on Brian Moore's FIR filter.  
+# NB 0 dB gain at 1 kHz
+
+4		 Number of parallel band pass filters.
+ 
+#	Order	Atten		lower cutoff	upper lutoff	
+#							(Hz)		(Hz)
+
+	2	   -12	   100		   1300
+	2	  1.5		   350		   6500
+	2	    5 	  1800		   5200
+	2       -11         7500              14000
+	
+Notes:
+
+1. Order is the order of the filter 
+2. Attenuation is the attenuation applied to the output of that filter.
+3. Lower and upper cut-off frequencies are 3 dB down points.
+4. Additional filters should be added as additional rows in the table.

@@ -1,21 +1,8 @@
-#			An_SG_Binomial 			< BinomialHSR.par
+#		An_SG_Binomial 		< binomialHSR.par
 
-# This process converts the probability of firing into
-#  a stream of spikes in N different auditory nerve fibers.
-# Each spike has a width and magnitude.
+NUM_FIBRES		64	Number of fibres.
+RAN_SEED		0	Random number seed (0 for different seed for each run).
+PULSE_DURATION	2e-05	Pulse duration (s).
+MAGNITUDE		1	Pulse magnitude (arbitrary units).
+REFRAC_PERIOD	0.00075	Refractory period (s).
 
-# The output stream is the sum of the spike activity.
-
-# This process is unbelievably fast owing to a neat 
-#  little routine in Hastings, N.A.J., 
-#  Statistical Distributions page 41.
-
-64			 Number of fibres (based on Relkin, Hear. Res., 1991, 215-222)
-0			 Random number seed:
-			#	 0 uses the same random number each time
-			#	-1 gives a different random sequence
-
-0.02e-3	 Pulse duration (s)
-1			 Pulse magnitude (unit determined by receiving module)
-			# e.g. conductance or voltage.
-0.75e-3		 Refractory period (s).

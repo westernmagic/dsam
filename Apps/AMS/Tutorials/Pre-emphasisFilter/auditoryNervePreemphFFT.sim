@@ -1,0 +1,24 @@
+#auditoryNerve.sim
+  
+begin {
+
+#  Stimulus generation (comment out DataFile_In and Util_ReduceDt)
+	    Stim_Click					<stimulusClick.par
+# Read in from file (comment out Stim_Harmonic)
+#			DataFile_In 				< dataFileIn.par	
+#			Util_ReduceDt       < reduceDt.par
+
+#apply ramps to signal
+			Trans_Gate					< rampUp.par
+			Trans_Gate					< rampDown.par
+
+#outer/middle ear simulation
+			Filt_MultiBPass			< filtMultiBandpass.par
+			ANA_FourierT        < Fourier.par
+			Display_Signal			< displayClick.par
+
+
+
+#write results to a data file	
+			DataFile_out				< dataFileOut.par
+		}

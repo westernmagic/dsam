@@ -1,0 +1,11 @@
+# intensity.sim
+
+off		Diagnostics mode ("off" or "on").
+relative	Parameter file path mode - \relative\ or \absolute\
+
+begin  {
+	DataFile_In		< fileIn.par
+	display_Signal
+	Ana_Intensity
+	DataFile_Out
+	}

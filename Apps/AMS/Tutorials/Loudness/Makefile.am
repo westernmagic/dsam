@@ -8,21 +8,21 @@ DIRECTORY	= Tutorials/Loudness
 
 SimScripts	= bpFilterTest.sim filterFunction.sim Loudness.sim makeHarmSig.sim
 
-SPFFiles	= bpFilterTest.spf filterFunction.spf Loudness.spf makeHarmSig.spf
+SPFFiles	= filer1K.spf Loudness.spf
 
 ParFiles	= binomialHSR.par binomialLSR.par BM_DRNLHuman.par click.par \
 				dataFileIn.par dataFileOut.par dataFileOutSignal.par \
 				displayBM.par displayFiltResponse.par displayFourier.par \
-				displayHSR.par displayLSR.par displayReceptorPotential.par \
-				displayStimulus.par displaySumAN.par filtFIRELP.par \
-				filtMBtemporalWindow.par filtScaleToStapes.par Fourier.par \
-				IHC_Meddis2000HSR.par IHC_Meddis2000LSR.par \
-				IHCRP_ShammaVelIn.par padSignal.par rampDown.par rampUp.par \
-				reduceChannels.par stimHarmonic.par
+				displayHSR.par displayLSR.par displayRP.par \
+				displayStimulus.par displaySumAN.par filtIIRMoore.par \
+				filtMBtemporalWindow.par Fourier.par IHC_Meddis2000HSR.par \
+				IHC_Meddis2000LSR.par IHCRP_VelIn_GP.par mathOpstapes.par \
+				padSignal.par rampDown.par rampUp.par reduceChannels.par \
+				stimHarmonic.par
 
 MatlabFiles	= 
 
-DataFiles	= harmsig.aif harmSig.wav
+DataFiles	= harmsig.aif harmSig.wav loudResults.xls
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
 
