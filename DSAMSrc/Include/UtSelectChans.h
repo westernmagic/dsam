@@ -28,7 +28,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define UTILITY_SELECTCHANNELS_NUM_PARS			3
+#define UTILITY_SELECTCHANNELS_NUM_PARS			4
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -37,10 +37,22 @@
 typedef enum {
 
 	UTILITY_SELECTCHANNELS_MODE,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE,
 	UTILITY_SELECTCHANNELS_NUMCHANNELS,
 	UTILITY_SELECTCHANNELS_SELECTIONARRAY
 
 } SelectChanParSpecifier;
+
+typedef enum {
+
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_USER,
+	UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL
+
+} SelectChanSelectionModeSpecifier;
 
 typedef	enum {
 
@@ -55,14 +67,17 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, numChannelsFlag;
+	BOOLN	modeFlag, selectionModeFlag, numChannelsFlag;
+	BOOLN	updateProcessVariablesFlag;
 	int		mode;
-	int		numChannels;
+	int		selectionMode;
 	int		*selectionArray;
 
 	/* Private members */
 	NameSpecifier *modeList;
+	NameSpecifier	*selectionModeList;
 	UniParListPtr	parList;
+	int		numChannels;
 
 } SelectChan, *SelectChanPtr;
 
@@ -92,6 +107,10 @@ BOOLN	Free_Utility_SelectChannels(void);
 
 UniParListPtr	GetUniParListPtr_Utility_SelectChannels(void);
 
+BOOLN	InitProcessVariables_Utility_SelectChannels(EarObjectPtr data);
+
+BOOLN	InitSelectionModeList_Utility_SelectChannels(void);
+
 BOOLN	Init_Utility_SelectChannels(ParameterSpecifier parSpec);
 
 BOOLN	InitModeList_Utility_SelectChannels(void);
@@ -101,6 +120,12 @@ BOOLN	PrintPars_Utility_SelectChannels(void);
 BOOLN	Process_Utility_SelectChannels(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_SelectChannels(char *fileName);
+
+BOOLN	ResizeSelectionArray_Utility_SelectChannels(int numChannels);
+
+BOOLN	SetDefaulEnabledPars_Utility_SelectChannels(void);
+
+void	SetEnabledState_Utility_SelectChannels(void);
 
 BOOLN	SetIndividualSelection_Utility_SelectChannels(int theIndex,
 		  int theSelection);
@@ -117,6 +142,8 @@ BOOLN	SetPars_Utility_SelectChannels(char *mode, int numChannels,
 		  int *selectionArray);
 
 BOOLN	SetSelectionArray_Utility_SelectChannels(int *theSelectionArray);
+
+BOOLN	SetSelectionMode_Utility_SelectChannels(char * theSelectionMode);
 
 BOOLN	SetUniParList_Utility_SelectChannels(void);
 

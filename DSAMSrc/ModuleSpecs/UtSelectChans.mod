@@ -5,9 +5,11 @@
 
 mod_name		Utility;
 qualifier		SelectChannels;
+process_vars	true;
 typedef struct {
 	
 	NameSpecifier	mode;
+	NameSpecifier	selectionMode;
 	int_al	numChannels;
 	int		*selectionArray;
 

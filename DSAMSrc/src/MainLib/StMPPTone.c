@@ -36,6 +36,30 @@ PureTone4Ptr	pureTone4Ptr = NULL;
 /********************************* Subroutines and functions ******************/
 /******************************************************************************/
 
+/********************************* SetDefaultNumPulsesArrays ******************/
+
+/*
+ * This routine sets the default arrays and array values.
+ */
+
+BOOLN
+SetDefaultNumPulsesArrays_PureTone_MultiPulse(void)
+{
+	static const char *funcName =
+	  "SetDefaultNumPulsesArrays_PureTone_MultiPulse";
+	int		i;
+	double	frequencies[] = {1000.0, 2000.0};
+
+	if (!AllocNumPulses_PureTone_MultiPulse(2)) {
+		NotifyError("%s: Could not allocate default arrays.", funcName);
+		return(FALSE);
+	}
+	for (i = 0; i < pureTone4Ptr->numPulses; i++)
+		pureTone4Ptr->frequencies[i] = frequencies[i];
+	return(TRUE);
+
+}
+
 /********************************* Init ***************************************/
 
 /*
@@ -81,6 +105,12 @@ Init_PureTone_MultiPulse(ParameterSpecifier parSpec)
 	pureTone4Ptr->pulseDuration = 5e-3;
 	pureTone4Ptr->repetitionPeriod = 7e-3;
 	pureTone4Ptr->frequencies = NULL;
+
+	if (!SetDefaultNumPulsesArrays_PureTone_MultiPulse()) {
+		NotifyError("%s: Could not set the default 'numPulses' arrays.",
+		  funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_PureTone_MultiPulse()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -233,6 +263,7 @@ AllocNumPulses_PureTone_MultiPulse(int numPulses)
 		return(FALSE);
 	}
 	pureTone4Ptr->numPulses = numPulses;
+	pureTone4Ptr->numPulsesFlag = TRUE;
 	return(TRUE);
 
 }
@@ -264,7 +295,7 @@ CheckPars_PureTone_MultiPulse(void)
 		ok = FALSE;
 	}
 	if (pureTone4Ptr->frequencies == NULL) {
-		NotifyError("%s: intensites array not set.", funcName);
+		NotifyError("%s: frequencies array not set.", funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->durationFlag) {

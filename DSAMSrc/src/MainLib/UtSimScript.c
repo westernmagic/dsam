@@ -1125,16 +1125,6 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 			case ANA_SAI_MODULE:
 				SetPar_ModuleMgr(pc->data, "STROBE_PAR_FILE", NO_FILE);
 				break;
-			case NEUR_HHUXLEY_MODULE: {
-				IonChanListPtr	theICs;
-
-				if ((theICs = GenerateDefault_IonChanList()) == NULL) {
-					NotifyError("%s: Out of memory for default ion channel "
-					  "list structure.", funcName);
-					return(FALSE);
-				}
-				SetPar_ModuleMgr(pc->data, "ICList", (char *) theICs);
-				break; }
 			default:
 				;
 			}

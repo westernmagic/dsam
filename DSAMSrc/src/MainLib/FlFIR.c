@@ -135,12 +135,12 @@ Init_Filter_FIR(ParameterSpecifier parSpec)
 	}
 	fIRPtr->parSpec = parSpec;
 	fIRPtr->updateProcessVariablesFlag = TRUE;
-	fIRPtr->diagnosticModeFlag = FALSE;
-	fIRPtr->typeFlag = FALSE;
+	fIRPtr->diagnosticModeFlag = TRUE;
+	fIRPtr->typeFlag = TRUE;
 	fIRPtr->numTapsFlag = FALSE;
 	fIRPtr->numBandsFlag = FALSE;
-	fIRPtr->diagnosticMode = 0;
-	fIRPtr->type = 0;
+	fIRPtr->diagnosticMode = GENERAL_BOOLEAN_OFF;
+	fIRPtr->type = FILTER_FIR_USER_TYPE;
 	fIRPtr->numTaps = 0;
 	fIRPtr->numBands = 0;
 	fIRPtr->bandFreqs = NULL;

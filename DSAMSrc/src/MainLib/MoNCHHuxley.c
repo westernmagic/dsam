@@ -167,27 +167,30 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 	}
 	hHuxleyNCPtr->parSpec = parSpec;
 	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
-	hHuxleyNCPtr->diagnosticModeFlag = FALSE;
-	hHuxleyNCPtr->operationModeFlag = FALSE;
-	hHuxleyNCPtr->injectionModeFlag = FALSE;
-	hHuxleyNCPtr->excitatoryReversalPotFlag = FALSE;
-	hHuxleyNCPtr->inhibitoryReversalPotFlag = FALSE;
-	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = FALSE;
-	hHuxleyNCPtr->cellCapacitanceFlag = FALSE;
-	hHuxleyNCPtr->restingPotentialFlag = FALSE;
-	hHuxleyNCPtr->restingSignalDurationFlag = FALSE;
-	hHuxleyNCPtr->restingCriteriaFlag = FALSE;
-	hHuxleyNCPtr->iCList = NULL;
-	hHuxleyNCPtr->diagnosticMode = 0;
-	hHuxleyNCPtr->operationMode = 0;
-	hHuxleyNCPtr->injectionMode = 0;
-	hHuxleyNCPtr->excitatoryReversalPot = 0.0;
-	hHuxleyNCPtr->inhibitoryReversalPot = 0.0;
-	hHuxleyNCPtr->shuntInhibitoryReversalPot = 0.0;
-	hHuxleyNCPtr->cellCapacitance = 0.0;
-	hHuxleyNCPtr->restingPotential = 0.0;
-	hHuxleyNCPtr->restingSignalDuration = 0.0;
-	hHuxleyNCPtr->restingCriteria = 0.0;
+	hHuxleyNCPtr->diagnosticModeFlag = TRUE;
+	hHuxleyNCPtr->operationModeFlag = TRUE;
+	hHuxleyNCPtr->injectionModeFlag = TRUE;
+	hHuxleyNCPtr->excitatoryReversalPotFlag = TRUE;
+	hHuxleyNCPtr->inhibitoryReversalPotFlag = TRUE;
+	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = TRUE;
+	hHuxleyNCPtr->cellCapacitanceFlag = TRUE;
+	hHuxleyNCPtr->restingPotentialFlag = TRUE;
+	hHuxleyNCPtr->restingSignalDurationFlag = TRUE;
+	hHuxleyNCPtr->restingCriteriaFlag = TRUE;
+	hHuxleyNCPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
+	hHuxleyNCPtr->operationMode = HHUXLEYNC_OPERATION_NORMAL_MODE;
+	hHuxleyNCPtr->injectionMode = HHUXLEYNC_INJECTION_OFF;
+	hHuxleyNCPtr->excitatoryReversalPot = -0.01;
+	hHuxleyNCPtr->inhibitoryReversalPot = -0.01;
+	hHuxleyNCPtr->shuntInhibitoryReversalPot = -0.01;
+	hHuxleyNCPtr->cellCapacitance = 10e-12;
+	hHuxleyNCPtr->restingPotential = -65.53e-3;
+	hHuxleyNCPtr->restingSignalDuration = 30e-3;
+	hHuxleyNCPtr->restingCriteria = 1.0e-9;
+	if ((hHuxleyNCPtr->iCList = GenerateDefault_IonChanList()) == NULL) {
+		NotifyError("%s: could not set default ICList.", funcName);
+		return(FALSE);
+	}
 
 	InitInjectionModeList_Neuron_HHuxley();
 	InitOperationModeList_Neuron_HHuxley();
@@ -1062,6 +1065,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 				  data->outSignal->dt);
 			}
 			p->updateProcessVariablesFlag = FALSE;
+			p->iCList->updateFlag = FALSE;
 		}
 		for (i = 0; i < p->numChannels; i++) {
 			p->state[i].potential_V = p->restingPotential;

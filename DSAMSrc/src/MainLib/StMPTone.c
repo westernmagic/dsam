@@ -37,6 +37,34 @@ MPureTonePtr	mPureTonePtr = NULL;
 /********************************* Subroutines and functions ******************/
 /******************************************************************************/
 
+/********************************* SetDefaultNumPTonesArrays ******************/
+
+/*
+ * This function sets the default arrays and array values.
+ */
+
+BOOLN
+SetDefaultNumPTonesArrays_PureTone_Multi(void)
+{
+	static const char	*funcName = "SetDefaultNumPTonesArrays_PureTone_Multi";
+	int		i;
+	double	intensities[] = {20.0, 20.0};
+	double	frequencies[] = {100.0, 200.0};
+	double	phases[] = {0.0, 0.0};
+
+	if (!AllocNumPTones_PureTone_Multi(2)) {
+		NotifyError("%s: Could not allocate default arrays.", funcName);
+		return(FALSE);
+	}
+	for (i = 0; i < mPureTonePtr->numPTones; i++) {
+		mPureTonePtr->intensities[i] = intensities[i];
+		mPureTonePtr->frequencies[i] = frequencies[i];
+		mPureTonePtr->phases[i] = phases[i];
+	}
+	return(TRUE);
+
+}
+
 /********************************* Init ***************************************/
 
 /*
@@ -69,13 +97,19 @@ Init_PureTone_Multi(ParameterSpecifier parSpec)
 	mPureTonePtr->parSpec = parSpec;
 	mPureTonePtr->numPTonesFlag = FALSE;
 	mPureTonePtr->durationFlag = TRUE;
-	mPureTonePtr->dtFlag = FALSE;
+	mPureTonePtr->dtFlag = TRUE;
 	mPureTonePtr->numPTones = 0;
 	mPureTonePtr->duration = 0.1;
 	mPureTonePtr->dt = DEFAULT_DT;
 	mPureTonePtr->intensities = NULL;
 	mPureTonePtr->frequencies = NULL;
 	mPureTonePtr->phases = NULL;
+
+	if (!SetDefaultNumPTonesArrays_PureTone_Multi()) {
+		NotifyError("%s: Could not set the default 'numPTones' arrays.",
+		  funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_PureTone_Multi()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -661,6 +695,7 @@ AllocNumPTones_PureTone_Multi(int numPTones)
 		  numPTones);
 		return(FALSE);
  	}
+	mPureTonePtr->numPTonesFlag = TRUE;
 	mPureTonePtr->numPTones = numPTones;
 	return(TRUE);
 

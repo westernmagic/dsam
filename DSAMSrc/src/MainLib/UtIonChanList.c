@@ -1427,12 +1427,68 @@ IonChanListPtr
 GenerateDefault_IonChanList(void)
 {
 	static const char	*funcName = "GenerateDefault_IonChanList";
+	int		i, j;
 	IonChanListPtr	theICs = NULL;
+	IonChannelPtr	theIC;
+	DynaListPtr		node;
+	ICBoltzmannParsPtr	p;
+	struct iC {
+		char *	desc;
+		double	equilPot;
+		double	baseMax;
+		double	actExp;
+		double	condQ10;
+		double	currPars[2][3];
+	} iCs[] = {
+		{ "Na_Conner", 0.055, 300e-9, 1.0, 2.5, {{-0.0191, 3.7, 0.10e-3},
+		  {-0.053, -3.6, 0.50e-3}}},
+		{ "K+_FastHiT", -0.073, 54e-9, 1.0, 2.5, {{-0.015, 4, 1.61e-3},
+		  {0.0, 0.0, 0.0}}},
+		{ "K+_SlowLoT", -0.073, 18e-9, 1.0, 2.5, {{-0.028, 4.6, 10.0e-3},
+		  {0.0, 0.0, 0.0}}},
+		{ "K+_BoltzmannTr", -0.073, 24e-9, 1.0, 2.5, {{-0.0302, 0.6, 1.0e-3},
+		  {-0.0612, -4.9, 3.0e-3}}}
+	};
 
 	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
 		NotifyError("%s: Out of memory for ion channel list structure.",
 		  funcName);
 		return(NULL);
+	}
+	SetNumChannels_IonChanList(theICs, 4);
+	SetPrintTablesMode_IonChanList(theICs, "off");
+	SetBaseLeakageCond_IonChanList(theICs, 0.150e-9);
+	SetLeakagePot_IonChanList(theICs, -0.01);
+	SetTemperature_IonChanList(theICs, 22.0);
+	SetLeakageCondQ10_IonChanList(theICs, 2.0);
+	SetMinVoltage_IonChanList(theICs, -0.120);
+	SetMaxVoltage_IonChanList(theICs, 0.055);
+	SetVoltageStep_IonChanList(theICs, 0.001);
+
+	SetGeneratedPars_IonChanList(theICs);
+	if (!PrepareIonChannels_IonChanList(theICs)) {
+		NotifyError("%s: Failed to prepare the ion channels.", funcName);
+		Free_IonChanList(&theICs);
+		return(NULL);
+	}
+	for (node = theICs->ionChannels, i = 0; node; node = node->next, i++) {
+		theIC = (IonChannelPtr) node->data;
+		if (!SetICGeneralPars_IonChanList(theIC, ICLIST_BOLTZMANN_MODE,
+		  iCs[i].desc, "on", iCs[i].equilPot, iCs[i].baseMax, iCs[i].actExp)) {
+			NotifyError("%s: Could not set general parameters.", funcName);
+			Free_IonChanList(&theICs);
+			return(NULL);
+		}
+		theIC->conductanceQ10 = iCs[i].condQ10;
+		p = &theIC->boltzmann;
+		for (j = 0; j < ICLIST_NUM_GATES; j++) {
+			p->halfMaxV.array[j] = iCs[i].currPars[j][0];
+			p->zZ.array[j] = iCs[i].currPars[j][1];
+			p->tau.array[j] = iCs[i].currPars[j][2];
+		}
+		SetICPowFunc_IonChanList(theIC);
+		SetIonChannelUniParListMode_IonChanList(theIC);
+		GenerateBoltzmann_IonChanList(theIC);
 	}
 	if (!SetGeneralUniParList_IonChanList(theICs)) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -1744,6 +1800,7 @@ SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
 	theICs->temperature = theTemperature;
+	theICs->updateFlag = TRUE;
 	return(TRUE);
 
 }

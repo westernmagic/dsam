@@ -31,6 +31,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtSelectChans.h"
 
@@ -95,6 +96,29 @@ InitModeList_Utility_SelectChannels(void)
 
 }
 
+/****************************** InitSelectionModeList *************************/
+
+/*
+ * This function initialises the 'selectionMode' list array
+ */
+
+BOOLN
+InitSelectionModeList_Utility_SelectChannels(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "ALL",		UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL },
+			{ "MIDDLE",		UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE },
+			{ "LOWEST",		UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST },
+			{ "HIGHEST",	UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST },
+			{ "USER",		UTILITY_SELECTCHANNELS_SELECTIONMODE_USER },
+			{ "",			UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL },
+		};
+	selectChanPtr->selectionModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -127,18 +151,22 @@ Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 		}
 	}
 	selectChanPtr->parSpec = parSpec;
+	selectChanPtr->updateProcessVariablesFlag = TRUE;
 	selectChanPtr->modeFlag = TRUE;
+	selectChanPtr->selectionModeFlag = TRUE;
 	selectChanPtr->numChannelsFlag = TRUE;
 	selectChanPtr->mode = SELECT_CHANS_REMOVE_MODE;
-	selectChanPtr->numChannels = 0;
+	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL;
 	selectChanPtr->selectionArray = NULL;
 
 	InitModeList_Utility_SelectChannels();
+	InitSelectionModeList_Utility_SelectChannels();
 	if (!SetUniParList_Utility_SelectChannels()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
 		Free_Utility_SelectChannels();
 		return(FALSE);
 	}
+	selectChanPtr->numChannels = 0;
 	return(TRUE);
 
 }
@@ -164,12 +192,18 @@ SetUniParList_Utility_SelectChannels(void)
 	}
 	pars = selectChanPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_MODE], "MODE",
-	  "Selection mode - 'zero', 'remove' or 'expan'.",
+	  "Selection mode - 'zero', 'remove' or 'expand'.",
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->mode, selectChanPtr->modeList,
 	  (void * (*)) SetMode_Utility_SelectChannels);
+	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONMODE],
+	  "SELECTION_MODE",
+	  "Channel selection mode ('all', 'middle', 'top', 'botton' or 'user'.",
+	  UNIPAR_NAME_SPEC,
+	  &selectChanPtr->selectionMode, selectChanPtr->selectionModeList,
+	  (void * (*)) SetSelectionMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], "NUM_CHANNELS",
-	  "No. of channels in selection field.",
+	  "No. of channels in selection field (This is no longer).",
 	  UNIPAR_INT,
 	  &selectChanPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
@@ -178,7 +212,26 @@ SetUniParList_Utility_SelectChannels(void)
 	  UNIPAR_INT_ARRAY,
 	  &selectChanPtr->selectionArray, &selectChanPtr->numChannels,
 	  (void * (*)) SetIndividualSelection_Utility_SelectChannels);
+
+	SetEnabledState_Utility_SelectChannels();
 	return(TRUE);
+
+}
+
+/****************************** SetEnabledState *******************************/
+
+/*
+ * This routine sets the enabled states.
+ */
+
+void
+SetEnabledState_Utility_SelectChannels(void)
+{
+	selectChanPtr->parList->pars[UTILITY_SELECTCHANNELS_NUMCHANNELS].enabled =
+	  FALSE;
+	selectChanPtr->parList->pars[UTILITY_SELECTCHANNELS_SELECTIONARRAY].
+	  enabled = (selectChanPtr->selectionMode ==
+	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER);
 
 }
 
@@ -227,13 +280,14 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
 		return(TRUE);
 	if (selectChanPtr->selectionArray)
 		free(selectChanPtr->selectionArray);
-	if ((selectChanPtr->selectionArray = (int *) calloc(numChannels, sizeof(
-	  int))) == NULL) {
+	if ((selectChanPtr->selectionArray = (int *) calloc(numChannels,
+	  sizeof(int))) == NULL) {
 		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
 		  funcName, numChannels);
 		return(FALSE);
 	}
 	selectChanPtr->numChannels = numChannels;
+	selectChanPtr->numChannelsFlag = TRUE;
 	return(TRUE);
 
 }
@@ -295,6 +349,39 @@ SetMode_Utility_SelectChannels(char *theMode)
 
 }
 
+/****************************** SetSelectionMode ******************************/
+
+/*
+ * This function sets the module's selectionMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetSelectionMode_Utility_SelectChannels(char * theSelectionMode)
+{
+	static const char	*funcName = "SetSelectionMode_Utility_SelectChannels";
+	int		specifier;
+
+	if (selectChanPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theSelectionMode,
+	  selectChanPtr->selectionModeList)) ==
+	  UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theSelectionMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	selectChanPtr->selectionModeFlag = TRUE;
+	selectChanPtr->updateProcessVariablesFlag = TRUE;
+	selectChanPtr->selectionMode = specifier;
+	SetEnabledState_Utility_SelectChannels();
+	return(TRUE);
+
+}
+
 /****************************** SetNumChannels ********************************/
 
 /*
@@ -310,22 +397,23 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
 {
 	static const char	*funcName = "SetNumChannels_Utility_SelectChannels";
 
-	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	if (theNumChannels < 1) {
-		NotifyError("%s: Value must be greater then zero (%d).", funcName,
-		  theNumChannels);
-		return(FALSE);
-	}
-	if (!AllocNumChannels_Utility_SelectChannels(theNumChannels)) {
-		NotifyError("%s: Cannot allocate memory for the 'numChannels' arrays.",
-		 funcName);
-		return(FALSE);
-	}
-	/*** Put any other required checks here. ***/
-	selectChanPtr->numChannelsFlag = TRUE;
+    if (selectChanPtr == NULL) {
+        NotifyError("%s: Module not initialised.", funcName);
+        return(FALSE);
+    }
+    if (theNumChannels < 1) {
+        NotifyError("%s: Illegal number of selection channels.\n", funcName,
+          theNumChannels);
+        return(FALSE);
+    }
+    if (!AllocNumChannels_Utility_SelectChannels(theNumChannels)) {
+        NotifyError("%s: Cannot allocate memory for the 'numChannels' arrays.",
+         funcName);
+        return(FALSE);
+    }
+    /*** Put any other required checks here. ***/
+    selectChanPtr->numChannelsFlag = TRUE;
+    selectChanPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
 }
@@ -353,6 +441,41 @@ SetSelectionArray_Utility_SelectChannels(int *theSelectionArray)
 
 }
 
+/****************************** ResizeSelectionArray **************************/
+
+/*
+ * This routine resizes the selection array.
+ * It assumes that the module has been correctly initialised.
+ */
+
+BOOLN
+ResizeSelectionArray_Utility_SelectChannels(int numChannels)
+{
+	static const char *funcName = "ResizeSelectionArray_Utility_SelectChannels";
+	register int	*newArray, *oldArray;
+	int		i, *savedArray = NULL;
+
+	if (numChannels == selectChanPtr->numChannels)
+		return(TRUE);
+	if (selectChanPtr->selectionArray)
+		savedArray = selectChanPtr->selectionArray;
+	if ((selectChanPtr->selectionArray = (int *) calloc(numChannels,
+	  sizeof(int))) == NULL) {
+		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		  funcName, numChannels);
+		return(FALSE);
+	}
+	if (savedArray) {
+		newArray = selectChanPtr->selectionArray;
+		oldArray = savedArray;
+		for (i = 0; i < selectChanPtr->numChannels; i++)
+			*newArray++ = *oldArray++;
+		free(savedArray);
+	}
+	selectChanPtr->numChannels = numChannels;
+	return(TRUE);
+}
+
 /****************************** SetIndividualSelection ************************/
 
 /*
@@ -371,18 +494,20 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, int theSelection)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (selectChanPtr->selectionArray == NULL) {
-		NotifyError("%s: SelectionArray not set.", funcName);
-		return(FALSE);
-	}
-	if (theIndex > selectChanPtr->numChannels - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
-		  funcName, selectChanPtr->numChannels - 1, theIndex);
+	if (selectChanPtr->selectionMode !=
+	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) {
+		NotifyError("%s: Channels can only be selected in 'user' selection "
+		  "mode.", funcName);
 		return(FALSE);
 	}
 	if (theSelection < 0) {
 		NotifyError("%s: The selection values must be greater than zero ('%d'",
 		  funcName, theSelection);
+		return(FALSE);
+	}
+	if ((theIndex > selectChanPtr->numChannels - 1) &&
+	  !ResizeSelectionArray_Utility_SelectChannels(theIndex + 1)) {
+		NotifyError("%s: Could not resize the selection array.", funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -412,16 +537,18 @@ CheckPars_Utility_SelectChannels(void)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (selectChanPtr->selectionArray == NULL) {
+	if (!selectChanPtr->selectionModeFlag) {
+		NotifyError("%s: selectionMode variable not set.", funcName);
+		ok = FALSE;
+	}
+	if ((selectChanPtr->selectionMode == 
+	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) &&
+	  selectChanPtr->selectionArray == NULL) {
 		NotifyError("%s: selectionArray array not set.", funcName);
 		ok = FALSE;
 	}
 	if (!selectChanPtr->modeFlag) {
 		NotifyError("%s: mode variable not set.", funcName);
-		ok = FALSE;
-	}
-	if (!selectChanPtr->numChannelsFlag) {
-		NotifyError("%s: numChannels variable not set.", funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -454,8 +581,8 @@ PrintPars_Utility_SelectChannels(void)
 		else
 			DPrint("\t    off\n");
 	DPrint("\tMode = %s,", selectChanPtr->modeList[selectChanPtr->mode].name);
-	DPrint("\tNo. of Channels = %d.\n",
-	  selectChanPtr->numChannels);
+	DPrint("\tChannel selection mode = %s.\n", selectChanPtr->selectionModeList[
+	  selectChanPtr->selectionMode].name);
 	return(TRUE);
 
 }
@@ -492,7 +619,7 @@ ReadPars_Utility_SelectChannels(char *fileName)
 		  funcName);
 		return(FALSE);
 	}
-	for (i = 0; i < numChannels; i++)
+	for (i = 0; i < selectChanPtr->numChannels; i++)
 		if (!GetPars_ParFile(fp, "%d", &selectChanPtr->selectionArray[i]))
 			ok = FALSE;
 	fclose(fp);
@@ -502,6 +629,7 @@ ReadPars_Utility_SelectChannels(char *fileName)
 		  "parameter file '%s'.", funcName, fileName);
 		return(FALSE);
 	}
+	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_USER;
 	if (!SetPars_Utility_SelectChannels(mode, numChannels,
 	  selectChanPtr->selectionArray)) {
 		NotifyError("%s: Could not set parameters.", funcName);
@@ -591,12 +719,64 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 		return(FALSE);
 	numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
 	  interleaveLevel;
-	if (selectChanPtr->numChannels != numInChans) {
-		NotifyError("%s: The specified channel field (%d) is not the same\n"
-		  "as the input  signal channels (%d, interleave level %d).", funcName,
+	if (selectChanPtr->numChannels > numInChans) {
+		NotifyError("%s: The specified channel field (%d) is greater than\n"
+		  "as the input signal channels (%d, interleave level %d).", funcName,
 		  selectChanPtr->numChannels, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->interleaveLevel);
 			return(FALSE);
+	}
+	return(TRUE);
+
+}
+
+/****************************** InitProcessVariables **************************/
+
+/*
+ * This function allocates the memory for the process variables.
+ * It assumes that all of the parameters for the module have been
+ * correctly initialised.
+ */
+
+BOOLN
+InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
+{
+	static const char *funcName = "InitProcessVariables_Utility_SelectChannels";
+	int		i, numInChans;
+
+	if (selectChanPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+		/*** Additional update flags can be added to above line ***/
+		numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
+		  interleaveLevel;
+		if ((selectChanPtr->numChannels < numInChans) &&
+		  !ResizeSelectionArray_Utility_SelectChannels(numInChans)) {
+			NotifyError("%s: Could not set selection array.", funcName);
+			return(FALSE);
+		}
+		switch (selectChanPtr->selectionMode) {
+		case UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL:
+			for (i = 0; i < selectChanPtr->numChannels; i++)
+				selectChanPtr->selectionArray[i] = 1;
+			break;
+		case UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE:
+			for (i = 0; i < selectChanPtr->numChannels; i++)
+				selectChanPtr->selectionArray[i] = 0;
+			selectChanPtr->selectionArray[selectChanPtr->numChannels / 2] = 1;
+			break;
+		case UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST:
+			for (i = 0; i < selectChanPtr->numChannels; i++)
+				selectChanPtr->selectionArray[i] = 0;
+			selectChanPtr->selectionArray[0] = 1;
+			break;
+		case UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST:
+			for (i = 0; i < selectChanPtr->numChannels; i++)
+				selectChanPtr->selectionArray[i] = 0;
+			selectChanPtr->selectionArray[selectChanPtr->numChannels - 1] = 1;
+			break;
+		default:
+			;
+		}
+		selectChanPtr->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -633,6 +813,11 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Select Channels Utility Module process");
+	if (!InitProcessVariables_Utility_SelectChannels(data)) {
+		NotifyError("%s: Could not initialise the process variables.",
+		  funcName);
+		return(FALSE);
+	}
 	switch (selectChanPtr->mode) {
 	case SELECT_CHANS_ZERO_MODE:
 		numChannels = data->inSignal[0]->numChannels;

@@ -89,6 +89,8 @@ BOOLN	PrintPars_PureTone_Multi(void);
 
 BOOLN	ReadPars_PureTone_Multi(char *fileName);
 
+BOOLN	SetDefaultNumPTonesArrays_PureTone_Multi(void);
+
 BOOLN	SetDuration_PureTone_Multi(double theDuration);
 
 BOOLN	SetFrequencies_PureTone_Multi(double *theFrequencies);

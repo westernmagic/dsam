@@ -104,6 +104,8 @@ BOOLN	ReadPars_Filter_MultiBPass(char *fileName);
 
 BOOLN	RunModel_Filter_MultiBPass(EarObjectPtr data);
 
+BOOLN	SetDefaultNumFiltersArrays_Filter_MultiBPass(void);
+
 BOOLN	SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
 		  double theLowerCutOffFreq);
 

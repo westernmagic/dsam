@@ -74,6 +74,35 @@ Free_Utility_AmpMod(void)
 
 }
 
+/********************************* SetDefaultNumFrequenciesArrays *************/
+
+/*
+ * This routine sets the default arrays and array values.
+ */
+
+BOOLN
+SetDefaultNumFrequenciesArrays_Utility_AmpMod(void)
+{
+	static const char *funcName =
+	  "SetDefaultNumFrequenciesArrays_Utility_AmpMod";
+	int		i;
+	double	modulationDepths[] = {50.0};
+	double	frequencies[] = {100.0};
+	double	phases[] = {0.0};
+
+	if (!AllocNumFrequencies_Utility_AmpMod(1)) {
+		NotifyError("%s: Could not allocate default arrays.", funcName);
+		return(FALSE);
+	}
+	for (i = 0; i < ampModPtr->numFrequencies; i++) {
+		ampModPtr->modulationDepths[i] = modulationDepths[i];
+		ampModPtr->frequencies[i] = frequencies[i];
+		ampModPtr->phases[i] = phases[i];
+	}
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -110,6 +139,12 @@ Init_Utility_AmpMod(ParameterSpecifier parSpec)
 	ampModPtr->modulationDepths = NULL;
 	ampModPtr->frequencies = NULL;
 	ampModPtr->phases = NULL;
+
+	if (!SetDefaultNumFrequenciesArrays_Utility_AmpMod()) {
+		NotifyError("%s: Could not set the default 'numFrequencies' arrays.",
+		  funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_Utility_AmpMod()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -232,6 +267,7 @@ AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 		return(FALSE);
 	}
 	ampModPtr->numFrequencies = numFrequencies;
+	ampModPtr->numFrequenciesFlag = TRUE;
 	return(TRUE);
 
 }

@@ -88,6 +88,37 @@ Free_Filter_MultiBPass(void)
 
 }
 
+/********************************* SetDefaultNumFiltersArrays *****************/
+
+/*
+ * This routine sets the default arrays and array values.
+ */
+
+BOOLN
+SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
+{
+	static const char *funcName =
+	  "SetDefaultNumFiltersArrays_Filter_MultiBPass";
+	int		i;
+	int		cascade[] = {2, 2, 2};
+	double	preAttenuation[] = {1.5, 6.0, -11.0};
+	double	lowerCutOffFreq[] = {330.0, 1900.0, 7500.0};
+	double	upperCutOffFreq[] = {5500.0, 5000.0, 14000.0};
+
+	if (!AllocNumFilters_Filter_MultiBPass(3)) {
+		NotifyError("%s: Could not allocate default arrays.", funcName);
+		return(FALSE);
+	}
+	for (i = 0; i < multiBPassFPtr->numFilters; i++) {
+		multiBPassFPtr->cascade[i] = cascade[i];
+		multiBPassFPtr->preAttenuation[i] = preAttenuation[i];
+		multiBPassFPtr->upperCutOffFreq[i] = upperCutOffFreq[i];
+		multiBPassFPtr->lowerCutOffFreq[i] = lowerCutOffFreq[i];
+	}
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -127,6 +158,12 @@ Init_Filter_MultiBPass(ParameterSpecifier parSpec)
 	multiBPassFPtr->preAttenuation = NULL;
 	multiBPassFPtr->upperCutOffFreq = NULL;
 	multiBPassFPtr->lowerCutOffFreq = NULL;
+
+	if (!SetDefaultNumFiltersArrays_Filter_MultiBPass()) {
+		NotifyError("%s: Could not set the default 'numFilters' arrays.",
+		  funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_Filter_MultiBPass()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -267,6 +304,7 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
 		return(FALSE);
 	}
 	multiBPassFPtr->numFilters = numFilters;
+	multiBPassFPtr->numFiltersFlag = TRUE;
 	return(TRUE);
 
 }
