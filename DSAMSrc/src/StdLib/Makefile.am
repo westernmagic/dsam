@@ -14,6 +14,7 @@ libdsam_std_la_SOURCES= StdSignalDisp.c
 
 libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
 
+if DSAM_GRAPHICS
 StdSignalDisp.c: $(top_srcdir)/src/GrLib/GrSignalDisp.cpp
 	cp $(top_srcdir)/src/GrLib/GrSignalDisp.cpp StdSignalDisp.c
-
+endif
