@@ -20,8 +20,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#ifndef VERSION
-#define	VERSION				"?.?.?"
+#ifndef MODGEN_VERSION
+#	define	MODGEN_VERSION		"?.?.?"
 #endif
 #define MAXLINE				82		/* Max. characters in a line + \n\0. */
 

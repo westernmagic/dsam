@@ -100,7 +100,7 @@ PrintFileHeader(FILE *fp, char *fileName)
 	  " * Copyright:\t(c) %s, \n"
 	  " *\n"
 	  " *********************/\n"
-	  "\n", fileName, VERSION, dateStrn, yearStrn);
+	  "\n", fileName, MODGEN_VERSION, dateStrn, yearStrn);
 
 }
 
