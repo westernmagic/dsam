@@ -97,6 +97,10 @@ SOURCE=..\..\src\GrLib\GrCanvas.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\GrLib\GrDiagFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\GrLib\GrDialogInfo.cpp
 # End Source File
 # Begin Source File
