@@ -155,7 +155,7 @@ dnl
 dnl call DSAM_CPP_BOOL - will define HAVE_BOOL if the compiler supports bool
 dnl ---------------------------------------------------------------------------
 
-AC_DEFUN(DSAM_CPP_BOOL,
+AC_DEFUN([DSAM_CPP_BOOL],
 [
   AC_CACHE_CHECK([if C++ compiler supports bool], wx_cv_cpp_bool,
   [
@@ -191,7 +191,7 @@ dnl ---------------------------------------------------------------------------
 dnl a slightly better AC_C_BIGENDIAN macro which allows cross-compiling
 dnl ---------------------------------------------------------------------------
 
-AC_DEFUN(DSAM_C_BIGENDIAN,
+AC_DEFUN([DSAM_C_BIGENDIAN],
 [AC_CACHE_CHECK(whether byte ordering is bigendian, ac_cv_c_bigendian,
 [ac_cv_c_bigendian=unknown
 # See if sys/param.h defines the BYTE_ORDER macro.
