@@ -6,6 +6,7 @@ off			Diagnostic mode ("off" or "on").
 #../DEFAULT/strobeDflt.par
 # before, now full path due to requirements of aim_mat (13/10/98)
 #
+STI				Integration mode.
 strobeDflt.par	Strobe module specification file name.
 -35e-3			Negative frame width (s).
 5e-3			Positive frame width (s).
