@@ -8,10 +8,11 @@
  *				inSignal[0] and inSignal[1] as left (L) and right (R)
  *				respectively.  If the two signals are already binaural, then
  *				they will be merged into a single binaural signal.
+ *				It is not worth thread enabling this utility.
  * Author:		L. P. O'Mard
  * Created:		Feb 14 1996
  * Updated:	
- * Copyright:	(c) 1998, University of Essex
+ * Copyright:	(c) 2005, CNBH, University of Essex.
  *
  *********************/
 
