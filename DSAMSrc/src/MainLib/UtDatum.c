@@ -80,18 +80,18 @@ GetLastInst_Utility_Datum(DatumPtr head)
 
 }
 
-/****************************** InstallInst ***********************************/
+/****************************** InitInst **************************************/
 
 /*
- * Install a code datum instruction in table.
- * Datum instructions are added to the end of the list.
+ * Initialises a datum instruction. The space is allocated and the basic 
+ * settings assigned.
  */
 
 DatumPtr
-InstallInst_Utility_Datum(DatumPtr *head, int type)
+InitInst_Utility_Datum(int type)
 {
-	static const char *funcName = "InstallInst_Utility_Datum";
-	DatumPtr	datum, pc;
+	static const char *funcName = "InitInst_Utility_Datum";
+	DatumPtr	datum;
 	
 	if ((datum = (DatumPtr) malloc(sizeof (Datum))) == NULL) {
 		NotifyError("%s: Out of memory for Datum.", funcName);
@@ -119,6 +119,29 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 	} /* Switch */
 	datum->data = NULL;
 	datum->next = NULL;
+	datum->previous = NULL;
+	datum->stepNumber = datumStepCount++;
+	return datum;
+
+}
+
+/****************************** InstallInst ***********************************/
+
+/*
+ * Install a code datum instruction in table.
+ * Datum instructions are added to the end of the list.
+ */
+
+DatumPtr
+InstallInst_Utility_Datum(DatumPtr *head, int type)
+{
+	static const char *funcName = "InstallInst_Utility_Datum";
+	DatumPtr	datum, pc;
+	
+	if ((datum = InitInst_Utility_Datum(type)) == NULL) {
+		NotifyError("%s: Could not initialise datum instruction.", funcName);
+		return(NULL);
+	}
 	if ((pc = GetLastInst_Utility_Datum(*head)) == NULL) {
 		*head = datum;
 		datum->previous = NULL;
@@ -131,6 +154,53 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 
 }
 
+/****************************** FreeInstruction *******************************/
+
+/*
+ * This routine frees a single Datum instructions from the simulation.
+ * Note that all of the strings where initialised to 'NULL_STRING', but if
+ * they were set, then the string was allocated space.
+ */
+
+void
+FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc)
+{
+	static const char *funcName = "FreeInstruction_Utility_Datum";
+
+	if (!pc)
+		return;
+
+	if (!pc->previous)
+		*start = pc->next;
+	else
+		pc->previous->next = pc->next;
+
+	if (*pc->label != '\0')
+		free(pc->label);
+	switch (pc->type) {
+	case PROCESS:
+		if (*pc->u.proc.parFile != '\0')
+			free(pc->u.proc.parFile);
+		if (*pc->u.proc.moduleName != '\0')
+			free(pc->u.proc.moduleName);
+		if (pc->u.proc.inputList)
+			FreeList_Utility_DynaList(&pc->u.proc.inputList);
+		if (pc->u.proc.outputList)
+			FreeList_Utility_DynaList(&pc->u.proc.outputList);
+		Free_EarObject(&pc->data);
+		break;
+	case RESET:
+		free(pc->u.string);
+		break;
+	case REPEAT:
+		break;
+	default:
+		;
+	} /* switch */
+	free(pc);
+
+}
+
 /****************************** FreeInstructions ******************************/
 
 /*
@@ -140,36 +210,8 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 void
 FreeInstructions_Utility_Datum(DatumPtr *pc)
 {
-	DatumPtr	temp;
-	
-	for ( ; *pc != NULL; ) {
-		temp = *pc;
-		*pc = (*pc)->next;
-		if (*temp->label != '\0')
-			free(temp->label);
-		switch (temp->type) {
-		case PROCESS:
-			if (*temp->u.proc.parFile != '\0')
-				free(temp->u.proc.parFile);
-			if (*temp->u.proc.moduleName != '\0')
-				free(temp->u.proc.moduleName);
-			if (temp->u.proc.inputList)
-				FreeList_Utility_DynaList(&temp->u.proc.inputList);
-			if (temp->u.proc.outputList)
-				FreeList_Utility_DynaList(&temp->u.proc.outputList);
-			Free_EarObject(&temp->data);
-			break;
-		case RESET:
-			free(temp->u.string);
-			break;
-		case REPEAT:
-			break;
-		default:
-			;
-		} /* switch */
-		free(temp);
-	}
-	*pc = NULL;
+	while (*pc)
+		FreeInstruction_Utility_Datum(pc, *pc);
 
 }
 

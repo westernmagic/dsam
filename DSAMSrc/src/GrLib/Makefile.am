@@ -3,6 +3,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+SUBDIRS		= Bitmaps
+
 include $(top_srcdir)/src/makeunix.env
 
 WXWINLDFLAGS	= $(WXLDFLAGS)
@@ -23,7 +25,9 @@ libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrSimModDialog.cpp \
 				GrModParDialog.cpp GrParListInfo.cpp GrDialogInfo.cpp \
 				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \
-				GrSocket.cpp GrSimThread.cpp
+				GrSocket.cpp GrSimThread.cpp GrSDIDoc.cpp GrSDIPalette.cpp \
+				GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp GrSDIDiagram.cpp \
+				GrSDIEvtHandler.cpp GrSDICommand.cpp GrSDIShapes.cpp
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 

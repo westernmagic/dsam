@@ -63,8 +63,12 @@ BOOLN	InitUserModuleList_ModuleReg(int theMaxUserModules);
 
 ModRegEntryPtr	GetRegEntry_ModuleReg(char *name);
 
+ModRegEntryPtr	LibraryList_ModuleReg(uShort index);
+
 BOOLN	RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(
 		  ModulePtr));
+
+ModRegEntryPtr	UserList_ModuleReg(uShort index);
 
 __END_DECLS
 

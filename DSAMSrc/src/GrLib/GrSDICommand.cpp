@@ -1,0 +1,414 @@
+/**********************
+ *
+ * File:		GrSDICommand.cpp
+ * Purpose: 	Command class for Simulation Design Interface.
+ * Comments:	Revised from Julian Smart's Ogledit/doc.h
+ *				Most user interface commands are routed through this, to give
+ *				us the Undo/Redo mechanism. If you add more commands, such as
+ *				changing the shape colour, you will need to add members to
+ *				'remember' what the user applied (for 'Do') and what the
+ *				previous state was (for 'Undo').
+ *				You can have one member for each property to be changed.
+ *				Assume we also have a pointer member wxShape *shape, which is
+ *				set to the shape being changed. Let's assume we're changing
+ *				the shape colour. Our member for this is shapeColour.
+ *				- In 'Do':
+ *					o Set a temporary variable 'temp' to the current colour
+ *						for 'shape'.
+ *					o Change the colour to the new colour.
+ *					o Set shapeColour to the _old_ colour, 'temp'.
+ *				- In 'Undo':
+ *					o Set a temporary variable 'temp' to the current colour
+ *						for 'shape'.
+ *					o Change the colour to shapeColour (the old colour).
+ *					o Set shapeColour to 'temp'.
+ *
+ *				So, as long as we have a pointer to the shape being changed, we
+ *				only need one member variable for each property.
+ *
+ *				PROBLEM: when an Add shape command is redone, the 'shape'
+ *				pointer changes.
+ *				Assume, as here, that we keep a pointer to the old shape so we
+ *				reuse it when we recreate.
+ * Author:		L.P.O'Mard
+ * Created:		13 Nov 2002
+ * Updated:		
+ * Copyright:	(c) 2002, CNBH, University of Essex
+ *
+ **********************/
+
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG_H */
+
+#ifdef HAVE_WX_OGL_OGL_H
+
+#ifdef __GNUG__
+// #pragma implementation
+#endif
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include <wx/wxexpr.h>
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "UtDatum.h"
+
+#include "GrSDIDiagram.h"
+#include "GrSDIDoc.h"
+#include "GrSDICommand.h"
+#include "GrSDIEvtHandler.h"
+
+/******************************************************************************/
+/****************************** Bitmaps ***************************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/****************************** Global variables ******************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/****************************** Methods (Subroutines) *************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/****************************** Constructor 1 *********************************/
+/******************************************************************************/
+
+/*
+ * Implementation of drawing command
+ */
+
+SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+  wxClassInfo *info, int theProcessType, double xx, double yy, bool sel,
+  wxShape *theShape, wxShape *fs, wxShape *ts): wxCommand(TRUE, name)
+{
+	SetBasic(command, ddoc, theShape);
+	fromShape = fs;
+	toShape = ts;
+	shapeInfo = info;
+	processType = theProcessType;
+	x = xx;
+	y = yy;
+	selected = sel;
+
+}
+
+/******************************************************************************/
+/****************************** Constructor 2 *********************************/
+/******************************************************************************/
+
+SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+  wxBrush *backgroundColour, wxShape *theShape): wxCommand(TRUE, name)
+{
+	SetBasic(command, ddoc, theShape);
+	shapeBrush = backgroundColour;
+
+}
+
+/******************************************************************************/
+/****************************** Constructor 3 *********************************/
+/******************************************************************************/
+
+SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+  const wxString& lab, wxShape *theShape): wxCommand(TRUE, name)
+{
+	SetBasic(command, ddoc, theShape);
+	shapeLabel = lab;
+
+}
+
+/******************************************************************************/
+/****************************** Destructor ************************************/
+/******************************************************************************/
+
+SDICommand::~SDICommand(void)
+{
+	if (shape && deleteShape) {
+		shape->SetCanvas(NULL);
+		delete shape;
+	}
+
+}
+
+/******************************************************************************/
+/****************************** SetBasic **************************************/
+/******************************************************************************/
+
+void
+SDICommand::SetBasic(int command, SDIDocument *ddoc, wxShape *theShape)
+{
+	doc = ddoc;
+	cmd = command;
+	shape = theShape;
+	x = 0.0;
+	y = 0.0;
+	selected = FALSE;
+	shapePen = NULL;
+	deleteShape = FALSE;
+	fromShape = NULL;
+	toShape = NULL;
+	shapeInfo = NULL;
+	shapeBrush = NULL;
+	processType = -1;
+
+}
+
+/******************************************************************************/
+/****************************** Do ********************************************/
+/******************************************************************************/
+
+bool
+SDICommand::Do(void)
+{
+	static const char *funcName = "SDICommand::Do";
+
+	switch (cmd) {
+	case SDICOMMAND_CUT: {
+		if (shape) {
+			deleteShape = TRUE;
+
+			shape->Select(FALSE);
+
+			// Generate commands to explicitly remove each connected line.
+			RemoveLines(shape);
+
+			doc->GetDiagram()->RemoveShape(shape);
+			if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
+				wxLineShape *lineShape = (wxLineShape *)shape;
+				fromShape = lineShape->GetFrom();
+				toShape = lineShape->GetTo();
+			}
+			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
+			  );
+			myHandler->FreeInstruction();
+
+			shape->Unlink();
+
+			doc->Modify(TRUE);
+			doc->UpdateAllViews();
+		}
+
+		break; }
+	case SDICOMMAND_ADD_SHAPE: {
+		wxShape *theShape = NULL;
+		if (shape)
+			theShape = shape; // Saved from undoing the shape
+		else {
+			theShape = (wxShape *)shapeInfo->CreateObject();
+			theShape->AssignNewIds();
+			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
+			  wxString(""), processType));
+			theShape->SetCentreResize(FALSE);
+			theShape->SetPen(wxBLACK_PEN);
+			theShape->SetBrush(wxCYAN_BRUSH);
+			theShape->SetSize(60, 60);
+		}
+		doc->GetDiagram()->AddShape(theShape);
+		theShape->Show(TRUE);
+
+		wxClientDC dc(theShape->GetCanvas());
+		theShape->GetCanvas()->PrepareDC(dc);
+
+		theShape->Move(dc, x, y);
+
+		shape = theShape;
+		deleteShape = FALSE;
+
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
+	case SDICOMMAND_ADD_LINE: {
+		wxShape *theShape = NULL;
+		if (shape)
+			theShape = shape; // Saved from undoing the line
+		else {
+			printf("Debug: Added connection and create connected processes\n");
+			theShape = (wxShape *)shapeInfo->CreateObject();
+			theShape->AssignNewIds();
+			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
+			  wxString("")));
+			theShape->SetPen(wxBLACK_PEN);
+			theShape->SetBrush(wxRED_BRUSH);
+
+			wxLineShape *lineShape = (wxLineShape *)theShape;
+
+			// Yes, you can have more than 2 control points, in which case
+			// it becomes a multi-segment line.
+			lineShape->MakeLineControlPoints(2);
+			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, 10.0, 0.0,
+			  "Normal arrowhead");
+		}
+
+		doc->GetDiagram()->AddShape(theShape);
+
+		fromShape->AddLine((wxLineShape *)theShape, toShape);
+
+		theShape->Show(TRUE);
+
+		wxClientDC dc(theShape->GetCanvas());
+		theShape->GetCanvas()->PrepareDC(dc);
+
+		// It won't get drawn properly unless you move both
+		// connected images
+		fromShape->Move(dc, fromShape->GetX(), fromShape->GetY());
+		toShape->Move(dc, toShape->GetX(), toShape->GetY());
+
+		shape = theShape;
+		deleteShape = FALSE;
+
+		// Create processes if necessary and connect them
+		
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
+	case SDICOMMAND_CHANGE_BACKGROUND_COLOUR: {
+		if (shape) {
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			wxBrush *oldBrush = shape->GetBrush();
+			shape->SetBrush(shapeBrush);
+			shapeBrush = oldBrush;
+			shape->Draw(dc);
+
+			doc->Modify(TRUE);
+			doc->UpdateAllViews();
+		}
+		break; }
+	case SDICOMMAND_EDIT_PROCESS: {
+		if (shape) {
+			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
+			  );
+			wxString oldLabel(myHandler->label);
+			myHandler->label = shapeLabel;
+			shapeLabel = oldLabel;
+			
+			myHandler->InitInstruction();
+
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			shape->FormatText(dc, (char*) (const char*) myHandler->label);
+			shape->Draw(dc);
+
+			doc->Modify(TRUE);
+			doc->UpdateAllViews();
+		}
+		break; }
+	}
+	return TRUE;
+
+}
+
+/******************************************************************************/
+/****************************** Undo ******************************************/
+/******************************************************************************/
+
+bool
+SDICommand::Undo(void)
+{
+	switch (cmd) {
+	case SDICOMMAND_CUT: {
+		if (shape) {
+			doc->GetDiagram()->AddShape(shape);
+			shape->Show(TRUE);
+
+			if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
+				wxLineShape *lineShape = (wxLineShape *)shape;
+				fromShape->AddLine(lineShape, toShape);
+			}
+			if (selected)
+				shape->Select(TRUE);
+
+			deleteShape = FALSE;
+		}
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
+	case SDICOMMAND_ADD_SHAPE:
+	case SDICOMMAND_ADD_LINE: {
+		if (shape) {
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			shape->Select(FALSE, &dc);
+			doc->GetDiagram()->RemoveShape(shape);
+			shape->Unlink();
+			deleteShape = TRUE;
+		}
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
+	case SDICOMMAND_CHANGE_BACKGROUND_COLOUR: {
+		if (shape) {
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			wxBrush *oldBrush = shape->GetBrush();
+			shape->SetBrush(shapeBrush);
+			shapeBrush = oldBrush;
+			shape->Draw(dc);
+
+			doc->Modify(TRUE);
+			doc->UpdateAllViews();
+		}
+		break; }
+	case SDICOMMAND_EDIT_PROCESS: {
+		if (shape) {
+			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
+			  );
+			wxString oldLabel(myHandler->label);
+			myHandler->label = shapeLabel;
+			shapeLabel = oldLabel;
+
+			myHandler->FreeInstruction();
+			myHandler->InitInstruction();
+
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			shape->FormatText(dc, (char*) (const char*) myHandler->label);
+			shape->Draw(dc);
+
+			doc->Modify(TRUE);
+			doc->UpdateAllViews();
+		}
+
+		break; }
+	}
+	return TRUE;
+
+}
+
+/******************************************************************************/
+/****************************** RemoveLines ***********************************/
+/******************************************************************************/
+
+// Remove each individual line connected to a shape by sending a command.
+void
+SDICommand::RemoveLines(wxShape *shape)
+{
+	wxNode *node = shape->GetLines().First();
+	while (node) {
+		wxLineShape *line = (wxLineShape *)node->Data();
+		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDICOMMAND_CUT,
+		  doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
+
+		node = shape->GetLines().First();
+	}
+
+}
+
+#endif /* HAVE_WX_OGL_OGL_H */

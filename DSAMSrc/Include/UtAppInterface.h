@@ -180,6 +180,8 @@ BOOLN	ReadProgParFile_AppInterface(void);
 
 void	ResetCommandArgFlags_AppInterface(void);
 
+void	ResetSimulation_AppInterface(void);
+
 BOOLN	SetAppParFile_AppInterface(char *fileName);
 
 BOOLN	SetAppName_AppInterface(char *appName);
@@ -212,9 +214,6 @@ BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
-
-BOOLN	SetPars_AppInterface(char *diagMode, char *simulationFile,
-		  char *segmentMode);
 
 BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue);
 

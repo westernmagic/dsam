@@ -579,7 +579,7 @@ ProcessParComs_AppInterface(void)
 
 	if ((simulation = GetSimulation_ModuleMgr(appInterfacePtr->audModel)) ==
 	  NULL) {
-		NotifyError("%s: Simulation not initialised.", funcName);
+		NotifyError("%s: No simulation has been initialised.", funcName);
 		return(FALSE);
 	}
 	if ((appInterfacePtr->argc - appInterfacePtr->initialCommand) % 2 != 0) {
@@ -974,19 +974,33 @@ InitSimFromSimScript_AppInterface(void)
 	}
 	if (!appInterfacePtr->audModel || SimulationFileChanged_AppInterface(
 	  simulationFileStatPtr, TRUE)) {
-		FreeAll_EarObject();
-		datumStepCount = 0;
+		ResetSimulation_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
 			NotifyError("%s: Could not initialise process.", funcName);
-			FreeAll_EarObject();
-			appInterfacePtr->updateProcessVariablesFlag = TRUE;
+			ResetSimulation_AppInterface();
 			appInterfacePtr->checkMainInit = TRUE;
 			return(FALSE);
 		}
 		
 	}
 	return(TRUE);
+
+}
+
+/****************************** ResetSimulation *******************************/
+
+/*
+ * This routine resets the simulation.
+ */
+
+void
+ResetSimulation_AppInterface(void)
+{
+	FreeAll_EarObject();
+	datumStepCount = 0;
+	appInterfacePtr->audModel = NULL;
+	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 
 }
 
@@ -1009,15 +1023,14 @@ InitSimulation_AppInterface(void)
 	}
 	if ((simulationFileStatPtr = GetFileStatusPtr_AppInterface(
 	  appInterfacePtr->simulationFile)) == NULL) {
-		NotifyError("%s: Could not find status of file '%s'", funcName,
+		NotifyError("%s: Could not find file '%s'", funcName,
 		  appInterfacePtr->simulationFile);
 		appInterfacePtr->updateProcessVariablesFlag = TRUE;
 		return(FALSE);
 	}
 	if (!appInterfacePtr->audModel || SimulationFileChanged_AppInterface(
 	  simulationFileStatPtr, TRUE)) {
-		FreeAll_EarObject();
-		datumStepCount = 0;
+		ResetSimulation_AppInterface();
 		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
 		  NULL) {
 			NotifyError("%s: Could not initialise process.", funcName);
@@ -1028,9 +1041,7 @@ InitSimulation_AppInterface(void)
 	  simulationFile))
 		ok = FALSE;
 	if (!ok) {
-		FreeAll_EarObject();
-		appInterfacePtr->audModel = NULL;
-		appInterfacePtr->updateProcessVariablesFlag = TRUE;
+		ResetSimulation_AppInterface();
 		return(FALSE);
 	}
 
@@ -1124,39 +1135,6 @@ SetTitle_AppInterface(char *title)
 	return(TRUE);
 
 } 
-
-/****************************** SetPars ***************************************/
-
-/*
- * This routine carries out general initialisation tasks for the application
- * interface.
- */
-
-BOOLN
-SetPars_AppInterface(char *diagMode, char *simulationFile, char *segmentMode)
-{
-	static const char *funcName = "SetPars_AppInterface";
-
-	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!SetDiagMode_AppInterface(diagMode)) {
-		NotifyError("%s: Could not set diagnostic mode.", funcName);
-		return(FALSE);
-	}
-	if (!SetSimulationFile_AppInterface(simulationFile)) {
-		NotifyError("%s: Could not set simulation file mode.", funcName);
-		return(FALSE);
-	}
-	if (!SetSegmentMode_AppInterface(segmentMode)) {
-		NotifyError("%s: Could not set segment processing mode.", funcName);
-		return(FALSE);
-	}
-	appInterfacePtr->checkMainInit = FALSE;
-	return(TRUE);
-
-}
 
 /****************************** ListParsAndExit *******************************/
 
@@ -1253,7 +1231,7 @@ ResetCommandArgFlags_AppInterface(void)
 		exit(1);
 	}
 	appInterfacePtr->checkMainInit = TRUE;
-	appInterfacePtr->useParComsFlag = TRUE;
+	appInterfacePtr->useParComsFlag = (appInterfacePtr->audModel != NULL);
 
 }
 
@@ -1350,20 +1328,22 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
 		  appInterfacePtr->compiledDSAMVersion);
 
-		if (!InitSimulation_AppInterface()) {
-			NotifyError("%s: Could not Initialise simulation.", funcName);
-			return(FALSE);
+		if (appInterfacePtr->simulationFileFlag) {
+			if (!InitSimulation_AppInterface()) {
+				NotifyError("%s: Could not Initialise simulation.", funcName);
+				return(FALSE);
+			}
+			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
+			  audModel));
+			if (GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel) && 
+			  !ReadProgParFile_AppInterface()) {
+				NotifyError("%s: Could not read the program settings in\nfile "
+				  "'%s'.", funcName, appInterfacePtr->simulationFile);
+				return(FALSE);
+			}
+			if (!ProcessParComs_AppInterface())
+				return(FALSE);
 		}
-		SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
-		  audModel));
-		if (GetSimParFileFlag_ModuleMgr(appInterfacePtr->audModel) && 
-		  !ReadProgParFile_AppInterface()) {
-			NotifyError("%s: Could not read the program settings in\nfile "
-			  "'%s'.", funcName, appInterfacePtr->simulationFile);
-			return(FALSE);
-		}
-		if (!ProcessParComs_AppInterface())
-			return(FALSE);
 
 		if (appInterfacePtr->listParsAndExit)
 			ListParsAndExit_AppInterface();
@@ -1374,9 +1354,9 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 
 		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
 		  PostInitFunc)()) {
-				NotifyError("%s: Failed to run post initialisation function.",
-				  funcName);
-				return(FALSE);
+			NotifyError("%s: Failed to run post initialisation function.",
+			  funcName);
+			return(FALSE);
 		}
 	}
 	appInterfacePtr->checkMainInit = FALSE;

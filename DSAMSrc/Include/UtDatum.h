@@ -122,6 +122,8 @@ BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 
 EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier);
 
+void	FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc);
+
 void	FreeInstructions_Utility_Datum(DatumPtr *pc);
 
 BOOLN	FreeEarObjects_Utility_Datum(DatumPtr start);
@@ -140,6 +142,8 @@ BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 		  DynaBListPtr *labelBList);
 
 BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
+
+DatumPtr	InitInst_Utility_Datum(int type);
 
 DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 

@@ -214,6 +214,14 @@
 #	include "GrPrintDisp.h"
 #	include "GrBrushes.h"
 #	include "GrDisplayS.h"
+#	include "GrSDICanvas.h"
+#	include "GrSDIFrame.h"
+#	include "GrSDIEvtHandler.h"
+#	include "GrSDIDiagram.h"
+#	include "GrSDIDoc.h"
+#	include "GrSDICommand.h"
+#	include "GrSDIView.h"
+#	include "GrSDIPalette.h"
 
 #endif /* GRAPHICS_SUPPORT */
 

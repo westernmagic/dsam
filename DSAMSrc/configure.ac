@@ -1,5 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
+<<<<<<< configure.ac
 dnl CVS ID $Id$
+=======
+dnl CVS ID $Id$
+>>>>>>> 1.3
 dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
@@ -31,10 +35,17 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 # CURRENT: REVISION : AGE
 #
 DSAM_MAJOR_VERSION=2
+<<<<<<< configure.ac
+DSAM_MINOR_VERSION=7
+DSAM_MICRO_VERSION=0
+DSAM_INTERFACE_AGE=0
+DSAM_BINARY_AGE=0
+=======
 DSAM_MINOR_VERSION=6
 DSAM_MICRO_VERSION=37
 DSAM_INTERFACE_AGE=9
 DSAM_BINARY_AGE=9
+>>>>>>> 1.3
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -429,6 +440,7 @@ AC_OUTPUT([
 	src/MainLib/Makefile
 	src/StdLib/Makefile
 	src/GrLib/Makefile
+	src/GrLib/Bitmaps/Makefile
 	ModuleSpecs/Makefile
 	Examples/Makefile
 	dsam-config

@@ -26,7 +26,21 @@
 
 int			numUserModules, maxUserModules;
 ModRegEntry	*userModuleList = NULL;
-ModRegEntry	libraryModuleList[] = {
+
+/******************************************************************************/
+/************************** Subroutines and functions *************************/
+/******************************************************************************/
+
+/************************** LibraryList ***************************************/
+
+/*
+ * This routine returns an entry to the module library list.
+ */
+
+ModRegEntryPtr
+LibraryList_ModuleReg(uShort index)
+{
+	static ModRegEntry	moduleList[] = {
 
 	{ "ANA_ACF", PROCESS_MODULE, InitModule_Analysis_ACF },
 	{ "ANA_ALSR", PROCESS_MODULE, InitModule_Analysis_ALSR },
@@ -131,11 +145,28 @@ ModRegEntry	libraryModuleList[] = {
 
 	{ "", MODULE_SPECIFIER_NULL }
 
-};
+	};
 
-/******************************************************************************/
-/************************** Subroutines and functions *************************/
-/******************************************************************************/
+	return(&moduleList[index]);
+
+}
+
+/************************** UserList ******************************************/
+
+/*
+ * This routine returns an entry to the user module list.
+ */
+
+ModRegEntryPtr
+UserList_ModuleReg(uShort index)
+{
+	if (!userModuleList)
+		return(NULL);
+	if (index > numUserModules)
+		return(NULL);
+	return(&userModuleList[index]);
+
+}
 
 /************************** Identify ******************************************/
 
@@ -180,7 +211,8 @@ GetRegEntry_ModuleReg(char *name)
 		NotifyError("%s: Search name is too long (%s)", funcName, name);
 		return(NULL);
 	}
-	if ((regEntryPtr = Identify_ModuleReg(libraryModuleList, name)) != NULL)
+	if ((regEntryPtr = Identify_ModuleReg(LibraryList_ModuleReg(0), name)) !=
+	  NULL)
 		return(regEntryPtr);
 	
 	return(Identify_ModuleReg(userModuleList, name));
