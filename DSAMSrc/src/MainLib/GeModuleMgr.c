@@ -122,7 +122,6 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 	module->CheckPars = (BOOLN (*)(void)) DefaultFunc;
 	module->Free = (BOOLN (*)(void)) TrueFunction_ModuleMgr;
 	module->GetPotentialResponse = (double (*)(double)) DefaultFunc;
-	module->GetRestingResponse = (double (*)(void)) DefaultFunc;
 	module->GetUniParListPtr = (UniParListPtr (*)(void)) NullFunction_ModuleMgr;
 	module->PrintPars = (BOOLN (*)(void)) DefaultFunc;
 #	ifdef _PAMASTER1_H
@@ -441,25 +440,6 @@ GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential)
 
 }
 
-/*************************** GetRestingResponse *******************************/
-
-/*
- * This function returns the resting response from a module.
- * It only works for routines that have a resting response function.
- */
-
-double
-GetRestingResponse_ModuleMgr(EarObjectPtr data)
-{
-	static const char *funcName = "GetRestingResponse_ModuleMgr";
-
-	if (!CheckData_ModuleMgr(data, funcName))
-		return(0.0);
-	(* data->module->SetParsPointer)(data->module);
-	return((* data->module->GetRestingResponse)());
-
-}
-
 /*************************** GetSimulation ************************************/
 
 /*
@@ -642,22 +622,21 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 		if (firstParameter)
 			SetErrorsFile_Common("off", OVERWRITE);
 		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
-		if (firstParameter)
+		if (firstParameter) {
 			GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-		if (!par) {
-		  	if (data->module->ReadPars) {
+			if (!par && data->module->ReadPars) {
 				useOldReadPars = TRUE;
 				break;
 			}
+			DPrint("%s: Reading '%s' parameters from '%s':\n", funcName, data->
+			  module->name, fileName);
+			firstParameter = FALSE;
+		}
+		if (!par) {
 			NotifyError("%s: Unknown parameter '%s' for module '%s'.", funcName,
 			  parName, data->module->name);
 			ok = FALSE;
 		} else {
-			if (firstParameter) {
-				DPrint("%s: Reading '%s' parameters from '%s':\n", funcName,
-				  data->module->name, fileName);
-				firstParameter = FALSE;
-			}
 			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
 				ok = FALSE;
 		}
