@@ -876,7 +876,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, char *parValue, char **parValuePtr,
 	}
 	if ((par->type != UNIPAR_INT_ARRAY) && (par->type != UNIPAR_REAL_ARRAY) &&
 	  (par->type != UNIPAR_STRING_ARRAY) && (par->type !=
-	  UNIPAR_NAME_SPEC_ARRAY)) {
+	  UNIPAR_NAME_SPEC_ARRAY) && (par->type != UNIPAR_REAL_DYN_ARRAY)) {
 		NotifyError("%s: Universal parameter is not array type (%d).\n",
 		  funcName, par->type);
 		return(FALSE);
@@ -939,6 +939,7 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 		ok = (* p->FuncPtr.SetReal)(atof(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
 			NotifyError("%s: Could not set array value.", funcName);
 			return(FALSE);

@@ -58,7 +58,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtFIRFilters.h UtRemez.h UtDynaBList.h UtLocalChans.h \
 				UtSwapLR.h UtPadSignal.h UtMathOp.h UtZhang.h
 
-Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectChans.h
+Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \

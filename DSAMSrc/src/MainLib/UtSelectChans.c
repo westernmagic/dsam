@@ -209,7 +209,7 @@ SetUniParList_Utility_SelectChannels(void)
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONARRAY], "ARRAY",
 	  "Selection array 0 = off, 1 = on.",
-	  UNIPAR_REAL_ARRAY,
+	  UNIPAR_REAL_DYN_ARRAY,
 	  &selectChanPtr->selectionArray, &selectChanPtr->numChannels,
 	  (void * (*)) SetIndividualSelection_Utility_SelectChannels);
 
