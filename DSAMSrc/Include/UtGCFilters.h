@@ -28,8 +28,8 @@
 # define winSizeERB	3
 #endif
 
-#define max(x,y) ((x)<(y)? (y):(x))
-#define min(x,y) ((x)<(y)? (x):(y))
+#define MAX(x,y) ((x)<(y)? (y):(x))
+#define MIN(x,y) ((x)<(y)? (x):(y))
 
 #define GCFILTERS_NUM_CASCADE_ACF_FILTER		4 	/* cascadeAC */ 
 #define GCFILTERS_NUM_CASCADE_ERBGT_FILTER		4 	/* cascadeAC */ 

@@ -1,10 +1,10 @@
 #
-# File:         makefile.b32
-# Comments:		When compiled, WxWin must have USE_GNU_WXSTRING 0 (off).
+# File:         MainLib/makefile.b32
+# Comments:		
 # Author:       Lowel P. O'Mard
-# Created:      1996
-# Updated:      15 Mar 1998
-# Copyright:    (c) 1998, University of Essex
+# Created:      13 Jul 2001
+# Updated:      
+# Copyright:    (c) 2001, University of Essex
 
 ###############################################################################
 ###############################################################################
@@ -12,7 +12,7 @@
 ###############################################################################
 ###############################################################################
 
-!include $(DSAMDIR)\makeb32.env
+!include $(DSAMDIR)\src\makeb32.env
 
 ###############################################################################
 ###############################################################################
@@ -20,6 +20,7 @@
 ###############################################################################
 ###############################################################################
 
+LIB		= $(MAIN_LIB)
 
 ###############################################################################
 ###############################################################################
@@ -27,70 +28,9 @@
 ###############################################################################
 ###############################################################################
 
-BINCCDSAM	= $(DSAMDIR)\bin\$(CCDSAM).bat
-BINDIRDUMMY	= $(BINDIR)\dummy
-LIBDIRDUMMY	= $(LIBDIR)\dummy
-
-#default:       wxdefault:        dsam
-dsam:            $(CFG) $(BINCCDSAM) $(LIBDIRDUMMY) $(LIB)
-
 ###############################################################################
-##                    BINDIRDUMMY "bin" directory creation                   ##
+##                     Main DSAM library compilation                         ##
 ###############################################################################
-
-$(BINDIRDUMMY):
-		mkdir $(BINDIR)
-		copy &&!
-!               $(BINDIRDUMMY)
-
-###############################################################################
-##                    BINCCDSAM - batch file creation                        ##
-###############################################################################
-
-$(BINCCDSAM): $(BINDIRDUMMY)
-		copy &&!
-		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(CFGNAME) $(OPTIONS2) %1.c \
-		  %DSAMDIR%\$(LDIRNAME)\$(LIBNAME) %WXWIN%\lib\wx32.lib
-		$(BRC32CMD)
-!               $(BINCCDSAM)
-
-###############################################################################
-##                     LIBDIRDUMMY - "lib" directory creation                ##
-###############################################################################
-
-$(LIBDIRDUMMY):
-		mkdir $(LIBDIR)
-		copy &&!
-!               $(LIBDIRDUMMY)
-
-
-###############################################################################
-##                     CFG - Configuration file                              ##
-###############################################################################
-
-$(CFG): makefile.b32 $(LIBDIRDUMMY)
-	copy &&!
--I$$(DSAMDIR)\$(INCNAME);$$(DSAMDIR);$$(BCCDIR)\include
--I$(DSAMDIR)\$(INCNAME);$(DSAMDIR);$(BCCDIR)\include
-
--I$$(WXWIN)\include
--I$(WXWIN)\include
-
--L$$(BCCDIR)\lib
-
-$(WXFLAGS)
-$(MPI_CFLAGS)
-$(OPTIONS)
--L$$(DSAMDIR)\lib -L$$(WXWIN)\lib
-$(DSAM_LDFLAGS)
-! $(CFG)
-
-###############################################################################
-##                     LIB - DSAM library compilation                        ##
-###############################################################################
-
-GEN_HEADERS	= $(INCDIR)/GeCommon.h $(INCDIR)/GeSignalData.h \
-			  $(INCDIR)/GeEarObject.h $(INCDIR)/GeUniParMgr.h
 
 ANALYSIS_OBJS= AnExperiment.obj AnFourierT.obj AnGeneral.obj AnAutoCorr.obj \
 			AnHistogram.obj AnCrossCorr.obj AnSynchIndex.obj \
@@ -145,8 +85,9 @@ UTILITY_OBJS= UtSSParser.obj UtAccumulate.obj UtAmpMod.obj UtBandwidth.obj \
 
 TRANSFORM_OBJS= TrGate.obj TrSetDBSPL.obj
 
-$(LIB): $(ANALYSIS_OBJS) $(FILING_OBJS) $(GENERAL_OBJS) $(MODEL_OBJS) \
-		  $(STIMULUS_OBJS) $(UTILITY_OBJS) $(TRANSFORM_OBJS) $(GRAPHICS_OBJS)
+$(LIB):		$(MAIN_CFG) $(ANALYSIS_OBJS) $(FILING_OBJS) $(GENERAL_OBJS) \
+				$(MODEL_OBJS) $(STIMULUS_OBJS) $(UTILITY_OBJS) \
+				$(TRANSFORM_OBJS) $(GRAPHICS_OBJS)
 		@echo $(LIB) library updated.
 
 ###############################################################################

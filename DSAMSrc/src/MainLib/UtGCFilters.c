@@ -486,9 +486,9 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 			win[mch] *= 1.0 / sumWin;
 
 		for (nch = 0; nch < numChannels; nch++) {
-			mch = max(0, nch - winLength / 2);
-			strPos = max(winLength / 2 - nch, 0);
-			endPos = min(winLength, numChannels - nch + winLength / 2);
+			mch = MAX(0, nch - winLength / 2);
+			strPos = MAX(winLength / 2 - nch, 0);
+			endPos = MIN(winLength, numChannels - nch + winLength / 2);
 			for (nwin = strPos; nwin < endPos; nwin++) {
 				p[nch + numChannels * mch] = win[nwin];
        			mch++;
@@ -676,9 +676,9 @@ SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
       	for (nch = 0; nch < numChannels; nch++) 
 		winOut += winPsEst[mch + nch * numChannels] * cntlGammaC[
 		  nch]->outSignalLI;
-		winOut = max(winOut, pow(10.0, -10.0));	
+		winOut = MAX(winOut, pow(10.0, -10.0));	
 					/* Limit minimum value for log10 */
-		cntlGammaC[mch]->psEst = min(20.0 * log10(coefPsEst * winOut), 120.0 );
+		cntlGammaC[mch]->psEst = MIN(20.0 * log10(coefPsEst * winOut), 120.0 );
 		if (maxPsEst < cntlGammaC[mch]->psEst)
 			maxPsEst = cntlGammaC[mch]->psEst;
 	}
@@ -770,8 +770,8 @@ CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
 
 	
 	for (nch = 0; nch < theSignal->numChannels; nch++) 
-		cntlGammaC[nch]->outSignalLI = (max(theSignal->channel[nch][nsmpl], 0.0)
-							+ max(-theSignal->channel[nch][nsmpl], 0.0)) / 2.0;
+		cntlGammaC[nch]->outSignalLI = (MAX(theSignal->channel[nch][nsmpl], 0.0)
+							+ MAX(-theSignal->channel[nch][nsmpl], 0.0)) / 2.0;
 
 	LeakyInt_GCFilters(cntlGammaC, coefficientsLI, theSignal->numChannels);
 

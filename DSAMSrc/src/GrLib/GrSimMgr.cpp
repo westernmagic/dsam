@@ -627,7 +627,7 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 {
 	static const char *funcName = "MyApp::OnServerEvent";
 
-	if (event.SocketEvent() != wxSOCKET_CONNECTION) {
+	if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
 		NotifyError("%s: Unexpected socket event.", funcName);
 		return;
 	}
@@ -654,9 +654,9 @@ void
 MyApp::OnSocketEvent(wxSocketEvent& event)
 {
 	static const char *funcName = "MyApp::OnSocketEvent";
-	wxSocketBase *sock = event.Socket();
+	wxSocketBase *sock = event.GetSocket();
 
-	switch(event.SocketEvent()) {
+	switch(event.GetSocketEvent()) {
 	case wxSOCKET_INPUT: {
 		unsigned char c;
 		char	msg[MAX_MSG_SIZE];

@@ -1,0 +1,141 @@
+#
+# File:         makefile.b32
+# Comments:		When compiled, WxWin must have USE_GNU_WXSTRING 0 (off).
+# Author:       Lowel P. O'Mard
+# Created:      1996
+# Updated:      15 Mar 1998
+# Copyright:    (c) 1998, University of Essex
+
+###############################################################################
+###############################################################################
+##                     Include Files                                         ##
+###############################################################################
+###############################################################################
+
+!include $(DSAMDIR)\src\makeb32.env
+
+###############################################################################
+###############################################################################
+##                     General make environment                              ##
+###############################################################################
+###############################################################################
+
+
+###############################################################################
+###############################################################################
+##                     Main section of makefile                              ##
+###############################################################################
+###############################################################################
+
+BINCCDSAM	= $(DSAMDIR)\bin\$(CCDSAM).bat
+BINDIRDUMMY	= $(BINDIR)\dummy
+LIBDIRDUMMY	= $(LIBDIR)\dummy
+LIBS		= $(MAIN_LIB) $(STD_LIB) $(GR_LIB)
+
+all:		$(BINCCDSAM) $(LIBDIRDUMMY) $(MAIN_CFG) $(LIBS)
+
+###############################################################################
+##                    BINDIRDUMMY "bin" directory creation                   ##
+###############################################################################
+
+$(BINDIRDUMMY):
+		mkdir $(BINDIR)
+		copy &&!
+!               $(BINDIRDUMMY)
+
+###############################################################################
+##                    BINCCDSAM - batch file creation                        ##
+###############################################################################
+
+$(BINCCDSAM): $(BINDIRDUMMY)
+		copy &&!
+		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(MAIN_CFG_NAM) $(OPTIONS2) %1.c \
+		  %DSAMDIR%\$(LDIRNAME)\$(LIBNAME) %WXWIN%\lib\wx32.lib
+		$(BRC32CMD)
+!               $(BINCCDSAM)
+
+###############################################################################
+##                     LIBDIRDUMMY - "lib" directory creation                ##
+###############################################################################
+
+$(LIBDIRDUMMY):
+		mkdir $(LIBDIR)
+		copy &&!
+!               $(LIBDIRDUMMY)
+
+
+###############################################################################
+##                     CFG - Configuration file                              ##
+###############################################################################
+
+$(MAIN_CFG): makeb32.env makefile.b32 $(LIBDIRDUMMY)
+	copy &&!
+-I$$(DSAMDIR)\$(INCNAME);$$(DSAMDIR);$$(BCCDIR)\include
+-I$(DSAMDIR)\$(INCNAME);$(DSAMDIR);$(BCCDIR)\include
+
+-L$$(BCCDIR)\lib
+
+$(OPTIONS)
+-L$$(DSAMDIR)\lib
+$(DSAM_LDFLAGS)
+
+! $(MAIN_CFG)
+
+###############################################################################
+##                     Library subdirectories                                ##
+###############################################################################
+
+$(MAIN_LIB):
+		cd $(MAIN_LIB_DIR)
+		make -f makefile.b32
+
+$(STD_LIB):
+		cd $(STD_LIB_DIR)
+		make -f makefile.b32
+
+$(GR_LIB):
+		cd $(GR_LIB_DIR)
+		make -f makefile.b32
+
+###############################################################################
+###############################################################################
+##                     Other Make utilities                                  ##
+###############################################################################
+###############################################################################
+
+###############################################################################
+##                     CLEAN - delete files                                  ##
+###############################################################################
+
+clean: mostly-clean
+	$(RM) $(BINCCDSAM)
+	$(RM) $(LIBDIR)\$(LIBRARY).*
+	$(RM) $(MAIN_CFG)
+	$(RM) $(LIBRARY).CSM
+	$(RM) $(RES)
+	
+	cd $(MAIN_LIB_DIR)
+	make -f makefile.b32 clean
+	cd ..
+
+	cd $(STD_LIB_DIR)
+	make -f makefile.b32 clean
+	cd ..
+
+	cd $(GR_LIB_DIR)
+	make -f makefile.b32 clean
+	cd ..
+
+mostly-clean:
+	cd $(MAIN_LIB_DIR)
+	make -f makefile.b32 mostly-clean
+	cd ..
+
+	cd $(STD_LIB_DIR)
+	make -f makefile.b32 mostly-clean
+	cd ..
+
+	cd $(GR_LIB_DIR)
+	make -f makefile.b32 mostly-clean
+	cd ..
+
