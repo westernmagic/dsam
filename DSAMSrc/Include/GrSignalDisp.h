@@ -136,7 +136,8 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			reduceChansInitialised;
-	BOOLN			registeredWithDisplay;
+	BOOLN			registeredWithDisplayFlag;
+	BOOLN			displayCanDeleteFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	summary;
