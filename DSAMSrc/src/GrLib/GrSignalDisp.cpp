@@ -1672,7 +1672,7 @@ InitModule_SignalDisp(ModulePtr theModule)
  * 'CheckInit_SignalData()' routine if the signal must be ramped for
  * the process.
  */
-kkl
+
 BOOLN
 CheckData_SignalDisp(EarObjectPtr data)
 {
