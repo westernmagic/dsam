@@ -344,7 +344,7 @@ SDIFrame::CreateToolbar(void)
 	// the changes
 	toolBar->Realize();
 
-	toolBar->SetRows(10);
+	toolBar->SetRows(1);
 
 }
 
@@ -484,7 +484,6 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 	  GetPtr_AppInterface()->parList, NULL, 300, 300, 500, 500,
 	  wxDEFAULT_DIALOG_STYLE);
 	mainParDialog->SetNotebookSelection();
-	printf("SDIFrame::OnEditMainPars: dialog created\n");
 	mainParDialog->Show(TRUE);
 	wxGetApp().GetFrame()->AddToDialogList(mainParDialog);
 
