@@ -355,6 +355,7 @@ InitModule_Utility_RefractoryAdjust(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = refractAdjPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_RefractoryAdjust;
 	theModule->Free = Free_Utility_RefractoryAdjust;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_RefractoryAdjust;
@@ -415,38 +416,38 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 	  "InitProcessVariables_Utility_RefractoryAdjust";
 	int		i, j;
 	double	*ptr;
-	ChanLen	k, refractoryPeriodIndex;
+	ChanLen	k;
+	RefractAdjPtr	p = refractAdjPtr;
 
-	if (refractAdjPtr->updateProcessVariablesFlag ||
-	  data->updateProcessFlag || (data->timeIndex == PROCESS_START_TIME)) {
-		refractoryPeriodIndex = (ChanLen) (refractAdjPtr->refractoryPeriod /
-		  data->outSignal->dt + 0.5);
-		if (refractAdjPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
+	  (data->timeIndex == PROCESS_START_TIME)) {
+		p->refractoryPeriodIndex = (ChanLen) (p->refractoryPeriod / data->
+		  outSignal->dt + 0.5);
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Utility_RefractoryAdjust();
-		  	refractAdjPtr->numChannels = data->outSignal->numChannels;
-			if ((refractAdjPtr->lastOutput = (double **)
-			  calloc(refractAdjPtr->numChannels, sizeof(double *))) == NULL) {
+		  	p->numChannels = data->outSignal->numChannels;
+			if ((p->lastOutput = (double **) calloc(p->numChannels, sizeof(
+			  double *))) == NULL) {
 			 	NotifyError("%s: Out of memory for 'lastOutput pointers'.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			for (i = 0; i < refractAdjPtr->numChannels; i++)
-				if ((refractAdjPtr->lastOutput[i] = (double *)
-				  calloc(refractoryPeriodIndex, sizeof(double))) == NULL) {
+			for (i = 0; i < p->numChannels; i++)
+				if ((p->lastOutput[i] = (double *) calloc(p->
+				  refractoryPeriodIndex, sizeof(double))) == NULL) {
 					NotifyError("%s: Out of memory for 'lastOutput arrays'.",
 					  funcName);
 					for (j = 0; j < i - 1; j++)
-						free(refractAdjPtr->lastOutput[j]);
-					free(refractAdjPtr->lastOutput);
-					refractAdjPtr->lastOutput = NULL;
+						free(p->lastOutput[j]);
+					free(p->lastOutput);
+					p->lastOutput = NULL;
 					return(FALSE);
 				}
-			refractAdjPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		for (i = 0; i < refractAdjPtr->numChannels; i++) {
-			ptr = refractAdjPtr->lastOutput[i];
-			for (k = 0; k < refractoryPeriodIndex; k++)
+		for (i = 0; i < p->numChannels; i++) {
+			ptr = p->lastOutput[i];
+			for (k = 0; k < p->refractoryPeriodIndex; k++)
 				*ptr++ = 0.0;
 		}
 	}
@@ -499,43 +500,47 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 	register	double		sum;
 	int		chan;
 	double	*lastOutputPtr;
-	ChanLen	i, j, refractoryPeriodIndex;
+	ChanLen	i, j;
+	RefractAdjPtr	p = refractAdjPtr;
 
-	if (!CheckPars_Utility_RefractoryAdjust())
-		return(FALSE);
-	if (!CheckData_Utility_RefractoryAdjust(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_RefractoryAdjust())
+			return(FALSE);
+		if (!CheckData_Utility_RefractoryAdjust(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Meddis 91 AN Refractory Adustment Process");
+		if (!InitOutFromInSignal_EarObject(data, 0)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Utility_RefractoryAdjust(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Meddis 91 AN Refractory Adustment Process");
-	if (!InitOutFromInSignal_EarObject(data, 0)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Utility_RefractoryAdjust(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	refractoryPeriodIndex = (ChanLen) (refractAdjPtr->refractoryPeriod / 
-	  data->outSignal->dt + 0.5);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++) {
 			sum = 0.0;
-			if (i < refractoryPeriodIndex) {
-				lastOutputPtr = refractAdjPtr->lastOutput[chan] + i;
-				for (j = i; j < refractoryPeriodIndex; j++)
+			if (i < p->refractoryPeriodIndex) {
+				lastOutputPtr = p->lastOutput[chan] + i;
+				for (j = i; j < p->refractoryPeriodIndex; j++)
 					sum += *lastOutputPtr++;
 				sumPtr = data->outSignal->channel[chan];
 			} else
-				sumPtr = outPtr - refractoryPeriodIndex;
+				sumPtr = outPtr - p->refractoryPeriodIndex;
 			while (sumPtr < outPtr)
 				sum += *sumPtr++;
 			*outPtr++ *= (1.0 - sum);
 		}		
-		lastOutputPtr = refractAdjPtr->lastOutput[chan] + refractoryPeriodIndex;
-		for (i = 0; i < refractoryPeriodIndex; i++)
+		lastOutputPtr = p->lastOutput[chan] + p->refractoryPeriodIndex;
+		for (i = 0; i < p->refractoryPeriodIndex; i++)
 			*--lastOutputPtr = *--outPtr;
 	}
 	SetUtilityProcessContinuity_EarObject(data);

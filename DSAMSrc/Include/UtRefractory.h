@@ -45,6 +45,7 @@ typedef struct {
 	UniParListPtr	parList;
 	int		numChannels;
 	double	**lastOutput;
+	ChanLen	refractoryPeriodIndex;
 
 } RefractAdj, *RefractAdjPtr;
 

@@ -468,6 +468,7 @@ InitModule_Utility_Delay(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = delay2Ptr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_Delay;
 	theModule->Free = Free_Utility_Delay;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Delay;
@@ -558,34 +559,39 @@ Process_Utility_Delay(EarObjectPtr data)
 	static const char	*funcName = "Process_Utility_Delay";
 	register	ChanData	*inPtr, *outPtr;
 	int		chan, delayedChan;
-	double	delay = 0.0, delayPerChannel = 0.0;
+	double	delay = 0.0;
 	ChanLen	i, delayIndex;
+	Delay2Ptr	p = delay2Ptr;
 
-	if (!CheckPars_Utility_Delay())
-		return(FALSE);
-	if (!CheckData_Utility_Delay(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Delay())
+			return(FALSE);
+		if (!CheckData_Utility_Delay(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Introduce ITD into binaural signal");
+		if (!InitOutFromInSignal_EarObject(data, 0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetInfoChannelTitle_SignalData(data->outSignal, "Delay-ITD ms");
+		p->delayPerChannel = (p->mode != DELAY_LINEAR_MODE)? 0.0: (p->
+		  finalDelay - p->initialDelay) / (data->outSignal->numChannels / data->
+		  outSignal->interleaveLevel - 1);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Introduce ITD into binaural signal");
-	if (!InitOutFromInSignal_EarObject(data, 0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetInfoChannelTitle_SignalData(data->outSignal, "Delay-ITD ms");
-	if (delay2Ptr->mode == DELAY_LINEAR_MODE)
-		delayPerChannel = (delay2Ptr->finalDelay - delay2Ptr->initialDelay) /
-		  (data->outSignal->numChannels / data->outSignal->interleaveLevel - 1);
-	for (chan = 0; chan < data->outSignal->numChannels; chan +=
-	  data->outSignal->interleaveLevel) {
-		switch (delay2Ptr->mode) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan += data->outSignal->interleaveLevel) {
+		switch (p->mode) {
 		case DELAY_SINGLE_MODE:
-			delay = delay2Ptr->initialDelay;
+			delay = p->initialDelay;
 			break;
 		case DELAY_LINEAR_MODE:
-			delay = delayPerChannel * (chan /
-			  data->outSignal->interleaveLevel) + delay2Ptr->initialDelay;
+			delay = p->delayPerChannel * (chan /
+			  data->outSignal->interleaveLevel) + p->initialDelay;
 			break;
 		} /* switch */
 		delayIndex = (ChanLen) fabs(delay / data->inSignal[0]->dt + 0.5);
@@ -593,7 +599,7 @@ Process_Utility_Delay(EarObjectPtr data)
 		if (data->outSignal->interleaveLevel == 1)
 			delayedChan = chan;
 		else {
-			delayedChan = (delay2Ptr->initialDelay > 0.0)? chan + 1: chan;
+			delayedChan = (p->initialDelay > 0.0)? chan + 1: chan;
 			SetInfoChannelLabel_SignalData(data->outSignal, chan + 1, delay);
 		}
 		inPtr = data->inSignal[0]->channel[delayedChan];

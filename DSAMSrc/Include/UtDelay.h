@@ -58,6 +58,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
+	double	delayPerChannel;
 
 } Delay2, *Delay2Ptr;
 

@@ -108,7 +108,8 @@ Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 	if (parSpec == GLOBAL) {
 		if (iterRipplePtr != NULL)
 			Free_Utility_IteratedRipple();
-		if ((iterRipplePtr = (IterRipplePtr) malloc(sizeof(IterRipple))) == NULL) {
+		if ((iterRipplePtr = (IterRipplePtr) malloc(sizeof(IterRipple))) ==
+		  NULL) {
 			NotifyError("%s: Out of memory for 'global' pointer", funcName);
 			return(FALSE);
 		}
@@ -505,6 +506,7 @@ InitModule_Utility_IteratedRipple(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = iterRipplePtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_IteratedRipple;
 	theModule->Free = Free_Utility_IteratedRipple;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_IteratedRipple;
@@ -566,41 +568,54 @@ CheckData_Utility_IteratedRipple(EarObjectPtr data)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The 'Add_SignalData' routine is not used here as it would not have been easy
+ * to make it thread-safe, as the input signal does not change no. of channels.
  */
 
 BOOLN
 Process_Utility_IteratedRipple(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_IteratedRipple";
-	register	ChanData	 *outPtr;
+	register	ChanData	 *inPtr, *outPtr;
 	int		j, chan;
 	ChanLen		i, samplesDelay;
 
-	if (!CheckPars_Utility_IteratedRipple())
-		return(FALSE);
-	if (!CheckData_Utility_IteratedRipple(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Iterated Ripple Utility process.");
-	if (!InitOutFromInSignal_EarObject(data, 0)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_IteratedRipple())
+			return(FALSE);
+		if (!CheckData_Utility_IteratedRipple(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Iterated Ripple Utility process.");
+		if (!InitOutFromInSignal_EarObject(data, 0)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	switch (iterRipplePtr->mode) {
 	case ITERRIPPLE_IRSO_MODE:	
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
 			Delay_SignalData(data->outSignal, iterRipplePtr->delay);
-			Scale_SignalData(data->outSignal, iterRipplePtr->signalMultiplier);
-			Add_SignalData(data->outSignal, data->inSignal[0]);
+			for (chan = data->outSignal->offset; chan < data->outSignal->
+			  numChannels; chan++) {
+			  	inPtr = data->inSignal[0]->channel[chan];
+				outPtr = data->outSignal->channel[chan];
+				for (i = 0; i < data->outSignal->length ; i++)
+					*outPtr++ = *outPtr * iterRipplePtr->signalMultiplier +
+					  *inPtr++;
+			}
 		}	
 		break;
 	case ITERRIPPLE_IRSS_MODE:	
 		samplesDelay = (ChanLen) ( iterRipplePtr->delay / data->outSignal->dt);
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
-			for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-				outPtr = data->outSignal->channel[chan] +
-				  data->outSignal->length - samplesDelay - 1;
+			for (chan = data->outSignal->offset; chan < data->outSignal->
+			  numChannels; chan++) {
+				outPtr = data->outSignal->channel[chan] + data->outSignal->
+				  length - samplesDelay - 1;
 				for (i = 0; i < data->outSignal->length - samplesDelay; i++,
 				  outPtr--)
 					*(outPtr + samplesDelay) += *outPtr *

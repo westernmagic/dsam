@@ -352,6 +352,7 @@ InitModule_Utility_ReduceDt(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = reduceDtPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_ReduceDt;
 	theModule->Free = Free_Utility_ReduceDt;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ReduceDt;
@@ -415,31 +416,37 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 	int		chan, j;
 	double	gradient;
 	ChanLen	i;
+	ReduceDtPtr	p = reduceDtPtr;
 
-	if (!CheckPars_Utility_ReduceDt())
-		return(FALSE);
-	if (!CheckData_Utility_ReduceDt(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_ReduceDt())
+			return(FALSE);
+		if (!CheckData_Utility_ReduceDt(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Module process ??");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length * p->denominator, data->inSignal[0]->dt /
+		  p->denominator)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}	
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Module process ??");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length * reduceDtPtr->denominator,
-	  data->inSignal[0]->dt / reduceDtPtr->denominator)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}	
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		gradient = 0.0;
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->inSignal[0]->length - 1; i++, inPtr++) {
-			gradient = (*(inPtr + 1) - *inPtr) / reduceDtPtr->denominator;
-			for (j = 0; j < reduceDtPtr->denominator; j++)
+			gradient = (*(inPtr + 1) - *inPtr) / p->denominator;
+			for (j = 0; j < p->denominator; j++)
 				*(outPtr++) = *inPtr + gradient * j;
 		}
 		/* Use the previous gradient for the last input sample. */
-		for (j = 0; j < reduceDtPtr->denominator; j++)
+		for (j = 0; j < p->denominator; j++)
 			*(outPtr++) = *inPtr + gradient * j;
 	}
 	SetUtilityProcessContinuity_EarObject(data);

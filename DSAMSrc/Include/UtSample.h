@@ -40,6 +40,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	ChanLen	dtIndex, timeOffsetIndex;
 
 } Sample, *SamplePtr;
 

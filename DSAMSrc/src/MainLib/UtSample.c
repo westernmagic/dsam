@@ -381,6 +381,7 @@ InitModule_Utility_Sample(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = samplePtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_Sample;
 	theModule->Free = Free_Utility_Sample;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Sample;
@@ -457,28 +458,34 @@ Process_Utility_Sample(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	double	dt;
-	ChanLen	i, dtIndex, timeOffsetIndex;
+	ChanLen	i;
+	SamplePtr	p = samplePtr;
 
-	if (!CheckPars_Utility_Sample())
-		return(FALSE);
-	if (!CheckData_Utility_Sample(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Sample())
+			return(FALSE);
+		if (!CheckData_Utility_Sample(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Sample utility process");
+		dt = (p->dt > 0.0)? p->dt: data->inSignal[0]->dt;
+		p->dtIndex = (ChanLen) (dt / data->inSignal[0]->dt + 0.5);
+		p->timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
+		  (ChanLen) (p->timeOffset / data->inSignal[0]->dt + 0.5);
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
+		  (data->inSignal[0]->length - p->timeOffsetIndex) / p->dtIndex, dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Sample utility process");
-	dt = (samplePtr->dt > 0.0)? samplePtr->dt: data->inSignal[0]->dt;
-	dtIndex = (ChanLen) (dt / data->inSignal[0]->dt + 0.5);
-	timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
-	  (ChanLen) (samplePtr->timeOffset / data->inSignal[0]->dt + 0.5);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-	  (data->inSignal[0]->length - timeOffsetIndex) / dtIndex, dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
 		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++, inPtr += dtIndex)
+		for (i = 0; i < data->outSignal->length; i++, inPtr += p->dtIndex)
 			*outPtr++ = *inPtr;
 	}
 	SetUtilityProcessContinuity_EarObject(data);

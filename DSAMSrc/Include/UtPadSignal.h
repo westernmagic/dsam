@@ -45,6 +45,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
+	ChanLen	beginDurationIndex, endDurationIndex;
 
 } PadSignal, *PadSignalPtr;
 

@@ -65,6 +65,7 @@ InitModule_Utility_Standardise(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Utility_Standardise"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_Standardise;
 	theModule->SetParsPointer = SetParsPointer_Utility_Standardise;
 	return(TRUE);
@@ -124,18 +125,23 @@ Process_Utility_Standardise(EarObjectPtr data)
 	double	mean, sumXX, sumX, standardDev;
 	ChanLen	i;
 
-	if (!CheckData_Utility_Standardise(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_Standardise(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Signal Standardisation Process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}	
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Signal Standardisation Process");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}	
 
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels; 
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0, sumX = sumXX = 0.0; i < data->inSignal[0]->length; i++,

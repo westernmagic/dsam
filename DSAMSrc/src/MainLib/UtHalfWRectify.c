@@ -63,6 +63,7 @@ InitModule_Utility_HalfWaveRectify(ModulePtr theModule)
 	/* static const char *funcName = "InitModule_Utility_HalfWaveRectify"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_HalfWaveRectify;
 	theModule->SetParsPointer = SetParsPointer_Utility_HalfWaveRectify;
 	return(TRUE);
@@ -121,21 +122,22 @@ Process_Utility_HalfWaveRectify(EarObjectPtr data)
 	int			chan;
 	ChanLen	i;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_HalfWaveRectify(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Half-wave rectification process ");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckData_Utility_HalfWaveRectify(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Half-wave rectification process ");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++, inPtr++)

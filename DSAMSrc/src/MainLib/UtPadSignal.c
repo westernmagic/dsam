@@ -377,6 +377,7 @@ InitModule_Utility_PadSignal(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = padSignalPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_PadSignal;
 	theModule->Free = Free_Utility_PadSignal;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_PadSignal;
@@ -438,39 +439,41 @@ Process_Utility_PadSignal(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	double	dt;
-	ChanLen	i, beginDurationIndex, endDurationIndex;
+	ChanLen	i;
+	PadSignalPtr	p = padSignalPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Utility_PadSignal())
-		return(FALSE);
-	if (!CheckData_Utility_PadSignal(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Signal padding Module process");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_PadSignal())
+			return(FALSE);
+		if (!CheckData_Utility_PadSignal(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Signal padding Module process");
 
-	dt = data->inSignal[0]->dt;
-	beginDurationIndex = (ChanLen) floor(padSignalPtr->beginDuration / dt +
-	  0.05);
-	endDurationIndex = (ChanLen) floor(padSignalPtr->endDuration / dt + 0.05);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  beginDurationIndex + data->inSignal[0]->length + endDurationIndex, dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+		dt = data->inSignal[0]->dt;
+		p->beginDurationIndex = (ChanLen) floor(p->beginDuration / dt + 0.05);
+		p->endDurationIndex = (ChanLen) floor(p->endDuration / dt + 0.05);
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  p->beginDurationIndex + data->inSignal[0]->length +
+		  p->endDurationIndex, dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < beginDurationIndex; i++)
-			*outPtr++ = padSignalPtr->beginValue;
+		for (i = 0; i < p->beginDurationIndex; i++)
+			*outPtr++ = p->beginValue;
 		for (i = 0; i < data->inSignal[0]->length; i++)
 			*outPtr++ = *inPtr++;
-		for (i = 0; i < endDurationIndex; i++)
-			*outPtr++ = padSignalPtr->endValue;
+		for (i = 0; i < p->endDurationIndex; i++)
+			*outPtr++ = p->endValue;
 	}
 
 	SetProcessContinuity_EarObject(data);

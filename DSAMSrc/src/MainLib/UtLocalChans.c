@@ -499,6 +499,7 @@ InitModule_Utility_LocalChans(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = localChansPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Utility_LocalChans;
 	theModule->Free = Free_Utility_LocalChans;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_LocalChans;
@@ -564,59 +565,58 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 	static const char	*funcName = "Calc_Utility_LocalChans";
 	register ChanData	 *inPtr, *outPtr;
 	char	channelTitle[MAXLINE];
-	int		outChan, inChan, minChan, maxChan, lowerChanLimit, upperChanLimit;
+	int		outChan, inChan, maxChan, lowerChanLimit, upperChanLimit;
 	int		numChannels;
 	ChanLen	i;
+	LocalChansPtr	p = localChansPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Utility_LocalChans())
-		return(FALSE);
-	if (!CheckData_Utility_LocalChans(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Channel localisation Module process");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_LocalChans())
+			return(FALSE);
+		if (!CheckData_Utility_LocalChans(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Channel localisation Module process");
 
-	if (!GetChannelLimits_SignalData(data->inSignal[0], &minChan, &maxChan, 
-	  localChansPtr->lowerLimit, localChansPtr->upperLimit, localChansPtr->
-	  limitMode)) {
-		NotifyError("%s: Could not find a channel limits for signal.",
-		  funcName);
-		return(FALSE);
+		if (!GetChannelLimits_SignalData(data->inSignal[0], &p->minChan,
+		  &maxChan, p->lowerLimit, p->upperLimit, p->limitMode)) {
+			NotifyError("%s: Could not find a channel limits for signal.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, (uShort) (maxChan - p->minChan + 1),
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		snprintf(channelTitle, MAXLINE, "Averaged channels ('%s' mode)",
+		  LimitModeList_SignalData(p->limitMode)->name);
+		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
+		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
+		  sampleTitle);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, (uShort) (maxChan - minChan + 1), data->
-	  inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	snprintf(channelTitle, MAXLINE, "Averaged channels ('%s' mode)",
-	  LimitModeList_SignalData(localChansPtr->limitMode)->name);
-	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
-	SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
-	  sampleTitle);
 
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan++) {
-		inChan = minChan + outChan;
+	for (outChan = data->outSignal->offset; outChan < data->outSignal->
+	  numChannels; outChan++) {
+		inChan = p->minChan + outChan;
 		data->outSignal->info.chanLabel[outChan] = data->inSignal[0]->info.
 		  chanLabel[inChan];
 		data->outSignal->info.cFArray[outChan] = data->inSignal[0]->info.
 		  cFArray[inChan];
 		GetWindowLimits_SignalData(data->inSignal[0], &lowerChanLimit,
 		  &upperChanLimit, data->inSignal[0]->info.cFArray[inChan],
-		  localChansPtr->lowerLimit, localChansPtr->upperLimit, localChansPtr->
-		  limitMode);
+		  p->lowerLimit, p->upperLimit, p->limitMode);
 		for (inChan = lowerChanLimit; inChan <= upperChanLimit; inChan++) {
 			inPtr = data->inSignal[0]->channel[inChan];
 			outPtr = data->outSignal->channel[outChan];
 			for (i = 0; i < data->outSignal->length; i++)
 				*outPtr++ += *inPtr++;
 		}
-		if ((localChansPtr->mode == UTILITY_LOCALCHANS_MODE_AVERAGE) &&
+		if ((p->mode == UTILITY_LOCALCHANS_MODE_AVERAGE) &&
 		  (lowerChanLimit != upperChanLimit)) {
 			numChannels = upperChanLimit - lowerChanLimit + 1;
 			outPtr = data->outSignal->channel[outChan];

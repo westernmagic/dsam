@@ -56,6 +56,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
+	int		minChan;
 
 } LocalChans, *LocalChansPtr;
 

@@ -64,6 +64,7 @@ InitModule_Utility_SwapLR(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Utility_SwapLR"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_SwapLR;
 	theModule->SetParsPointer = SetParsPointer_Utility_SwapLR;
 	return(TRUE);
@@ -127,26 +128,24 @@ Process_Utility_SwapLR(EarObjectPtr data)
 	int		chan;
 	ChanLen	i;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_SwapLR(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Swap L->R Utility Module process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  interleaveLevel);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckData_Utility_SwapLR(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Swap L->R Utility Module process");
-
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
-	  interleaveLevel);
-	for (chan = 0; chan < data->inSignal[0]->numChannels - 1; chan += data->
-	  inSignal[0]->interleaveLevel) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels -
+	  1; chan += data->inSignal[0]->interleaveLevel) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan + 1];
 		for (i = 0; i < data->outSignal->length; i++)
