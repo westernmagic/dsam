@@ -121,7 +121,7 @@
 #		define snprintf _snprintf
 #	endif
 #	ifndef vsnprintf
-#		defineDSAM vsnprintf _vsnprintf
+#		define vsnprintf _vsnprintf
 #	endif
 #endif
 
