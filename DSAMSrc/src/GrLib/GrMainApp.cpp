@@ -54,6 +54,7 @@ GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
 	SetOnExecute_AppInterface(OnExecute_MyApp);
 	SetOnExit_AppInterface(OnExit_MyApp);
 	MainApp::InitMain();
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 
 }
 
