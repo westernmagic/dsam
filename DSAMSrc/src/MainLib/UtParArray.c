@@ -61,8 +61,10 @@ ParArrayPtr
 Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 {
 	static const char *funcName = "Init_ParArray";
+	BOOLN	lastListEntryFound = FALSE;
 	char	workStr[LONG_STRING];
 	ParArrayPtr p;
+	NameSpecifierPtr	list;
 
 	if (!name) {
 		NotifyError("%s: Name not initialised.", funcName);
@@ -85,12 +87,24 @@ Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	p->modeList = modeList;
 	p->parList = NULL;
 
-	ToUpper_Utility_String(workStr, name);
+	ToUpper_Utility_String(workStr, p->name);
 	snprintf(p->abbr[PARARRAY_MODE], MAXLINE, "%s_MODE", workStr);
 	snprintf(p->abbr[PARARRAY_PARAMETER], MAXLINE, "%s_PARAMETER", workStr);
 	snprintf(p->desc[PARARRAY_MODE], MAXLINE, "Variable '%s' mode (", name);
 	snprintf(p->desc[PARARRAY_PARAMETER], MAXLINE, "Parameters for '%s' "
 	  "function", name);
+	for (list = p->modeList; *list->name != '\0'; list++) {
+		snprintf(workStr, LONG_STRING, "'%s'", list->name);
+		strcat(p->desc[PARARRAY_MODE], workStr);
+		if (!lastListEntryFound && *(list + 2)->name == '\0') {
+			strcat(p->desc[PARARRAY_MODE], " or ");
+			lastListEntryFound = TRUE;
+		} else {
+			if (*(list + 1)->name != '\0')
+				strcat(p->desc[PARARRAY_MODE], ", ");
+		}
+	}
+	strcat(p->desc[PARARRAY_MODE], ").");
 	if (!SetMode_ParArray(p, p->modeList[0].name)) {
 		NotifyError("Could not set initial parameter array.", funcName);
 		Free_ParArray(&p);
@@ -135,9 +149,8 @@ SetUniParList_ParArray(ParArrayPtr parArray)
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
-	FreeList_UniParMgr(&parArray->parList);
-	if ((parArray->parList = InitList_UniParMgr(UNIPAR_SET_PARARRAY,
-	  PARARRAY_NUM_PARS, parArray)) == NULL) {
+	if (!parArray->parList && (parArray->parList = InitList_UniParMgr(
+	  UNIPAR_SET_PARARRAY, PARARRAY_NUM_PARS, parArray)) == NULL) {
 		NotifyError("%s: Could not initialise parList.", funcName);
 		return(FALSE);
 	}
@@ -167,9 +180,7 @@ BOOLN
 SetMode_ParArray(ParArrayPtr parArray, char *modeName)
 {
 	static const char *funcName = "SetMode_ParArray";
-	char	workStr[LONG_STRING];
 	int		mode, newNumParams;
-	NameSpecifierPtr	list;
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
@@ -192,17 +203,6 @@ SetMode_ParArray(ParArrayPtr parArray, char *modeName)
 			return(FALSE);
 		}
 	}
-	for (list = parArray->modeList; *list->name != '\0'; list++) {
-		snprintf(workStr, LONG_STRING, "'%s'", list->name);
-		strcat(parArray->desc[PARARRAY_MODE], workStr);
-		if (*(list + 2)->name == '\0')
-			strcat(parArray->desc[PARARRAY_MODE], " or ");
-		else {
-			if (*(list + 1)->name != '\0')
-				strcat(parArray->desc[PARARRAY_MODE], ", ");
-		}
-	}
-	strcat(parArray->desc[PARARRAY_MODE], ").");
 	SetUniParList_ParArray(parArray);
 	parArray->parList->updateFlag = TRUE;
 	parArray->updateFlag = TRUE;
