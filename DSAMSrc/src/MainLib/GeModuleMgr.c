@@ -2,7 +2,7 @@
  *
  * File:		GeModuleMgr.c
  * Purpose:		This module contains the module managment routines.
- * Comments:	These routines carry out various functions such as freeing
+ * Comments:	These routines carry out various functions as freeing
  *				all module memory space, and so on.
  *				17-04-98 LPO: Added the NULL_MODULE_NAME string constant.
  *				22-04-98 LPO: Changed all the stimulus module names so that they
@@ -85,7 +85,7 @@ NoFunction_ModuleMgr(void)
 
 	NotifyError("%s: Attempted to use a function which does not\nexist for "\
 	  "module.", funcName );
-	return((BOOLN *) dummy);
+	return(dummy);
 
 }
 
@@ -101,7 +101,7 @@ NullFunction_ModuleMgr(void)
 {
 	int		dummy = 0;
 	
-	return((int *) dummy);
+	return(dummy);
 
 }
 
@@ -117,7 +117,7 @@ TrueFunction_ModuleMgr(void)
 {
 	BOOLN	dummy = TRUE;
 	
-	return((BOOLN *) dummy);
+	return(dummy);
 
 }
 
