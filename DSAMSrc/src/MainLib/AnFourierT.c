@@ -518,7 +518,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
 	  data->inSignal[0]->interleaveLevel * numOutChans));
 	/* Set up data and apply Lorch Window. */
-	dBSPLFactor = data->inSignal[0]->dt / ANALYSIS_FOURIERT_DB_SPL_SCALE;
+	dBSPLFactor =  SQRT_2 / data->inSignal[0]->length;
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan += numOutChans) {
 		fT = fourierTPtr->fT;
 		fT->re = fT->im = 0.0;
