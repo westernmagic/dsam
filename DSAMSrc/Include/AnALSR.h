@@ -97,9 +97,6 @@ BOOLN	SetNormalise_Analysis_ALSR(double theNormalise);
 
 BOOLN	SetParsPointer_Analysis_ALSR(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_ALSR(double lowerAveLimit, double upperAveLimit,
-		  double normalise);
-
 BOOLN	SetUniParList_Analysis_ALSR(void);
 
 BOOLN	SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit);

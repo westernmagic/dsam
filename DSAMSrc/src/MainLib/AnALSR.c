@@ -182,33 +182,6 @@ GetUniParListPtr_Analysis_ALSR(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_ALSR(double lowerAveLimit, double upperAveLimit,
-  double normalise)
-{
-	static const char	*funcName = "SetPars_Analysis_ALSR";
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetLowerAveLimit_Analysis_ALSR(lowerAveLimit))
-		ok = FALSE;
-	if (!SetUpperAveLimit_Analysis_ALSR(upperAveLimit))
-		ok = FALSE;
-	if (!SetNormalise_Analysis_ALSR(normalise))
-		ok = FALSE;
-	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetLowerAveLimit ******************************/
 
 /*
