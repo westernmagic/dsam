@@ -193,7 +193,8 @@ SDIDocument::LoadObject(wxInputStream& stream)
 
 	diagram.DeleteAllShapes();
 	wxGetApp().simFile = tempFileName;
-	wxGetApp().GetFrame()->SetSimFileAndLoad();
+	if (!wxGetApp().GetFrame()->SetSimFileAndLoad())
+		return(stream);
 
 	wxFileName	diagFileName = fileName;
 	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);

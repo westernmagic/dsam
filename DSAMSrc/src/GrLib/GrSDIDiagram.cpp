@@ -123,7 +123,6 @@ SDIDiagram::SetProcessClientData(DatumPtr pc, wxShape *shape)
 void
 SDIDiagram::DrawSimShapes()
 {
-	printf("SDIDiagram::DrawSimShapes: Entered\n");
 	DatumPtr	pc;
 	ModulePtr	module;
 	wxShape		*shape;
@@ -150,8 +149,8 @@ SDIDiagram::DrawSimShapes()
 			shape = (wxShape *) ppc->data->clientData;
 			break; }
 		default:
-			printf("SDIDiagram::DrawSimShapes: datum type %d not implemented."
-			  "\n", pc->type);
+			wxLogError("SDIDiagram::DrawSimShapes: datum type %d not "
+			  "implemented.\n", pc->type);
 		} /* switch */
 		if (shape)
 			SetProcessClientData(pc, shape);
@@ -203,7 +202,6 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 void
 SDIDiagram::DrawSimConnections(void)
 {
-	printf("SDIDiagram::DrawSimConnections: Entered\n");
 	DatumPtr	pc, toPc;
 	DynaBListPtr labelBList;
 
@@ -258,7 +256,6 @@ SDIDiagram::DrawSimConnections(void)
 void
 SDIDiagram::DrawSimulation(void)
 {
-	printf("SDIDiagram::DrawSimulation: Entered\n");
 	DrawSimShapes();
 	DrawSimConnections();
 
@@ -320,30 +317,75 @@ SDIDiagram::FindShapeProcess(uInt id)
 
 /*
  * This function checks that the loaded diagram corresponds with the simulation.
+ * It returns 'FALSE' if it finds any discrepancies.
  */
 
 bool
 SDIDiagram::VerifyDiagram(void)
 {
+	static const char *funcName = "SDIDiagram::VerifyDiagram";
+	int		numDiagConnections = 0, numSimConnections = 0;
+	DatumPtr	pc;
+	EarObjectPtr	fromProcess, toProcess;
+	EarObjRefPtr p;
 	wxNode *node = m_shapeList->First();
 
+	// Check processes exist for each shape.
+	while (node) {
+		wxShape *shape = (wxShape *) node->Data();
+		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
+			if ((pc = FindShapeProcess((uInt) shape->GetId())) == NULL)
+				return(FALSE);
+			SetProcessClientData(pc, shape);
+			SHAPE_PC(shape) = pc;
+		}
+		node = node->Next();
+	}
+	// Check processes exist for each shape line, and that the connection
+	// exists in the simulation
+	node = m_shapeList->First();
 	while (node) {
 		wxShape *shape = (wxShape *) node->Data();
 		if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
 			wxLineShape *lineShape = (wxLineShape *) shape;
 			wxShape *fromShape = lineShape->GetFrom();
 			wxShape *toShape = lineShape->GetTo();
-			if (!fromShape || !toShape)
+			if (!fromShape || !toShape) {
+				wxLogWarning("%s: Diagram line is not connected to a valid "
+				  "process.", funcName);
 				return (FALSE);
-			if (!FindShapeProcess((uInt) fromShape->GetId()) ||
-			  !FindShapeProcess((uInt) toShape->GetId()))
+			}
+			fromProcess = SHAPE_PC(fromShape)->data;
+			toProcess = SHAPE_PC(toShape)->data;
+			for (p = fromProcess->customerList; (p != NULL) && (p->earObject->
+			  handle != toProcess->handle); p = p->next)
+				;
+			if (!p) {
+				wxLogWarning("%s: Diagram line does not correspond to a "
+				  "simulation connection.", funcName);
 				return(FALSE);
-		} else {
-			DatumPtr pc = FindShapeProcess((uInt) shape->GetId());
-			if (pc)
-				SetProcessClientData(pc, shape);
+			}
+			numDiagConnections++;
 		}
 		node = node->Next();
+	}
+	// Check if any undrawn connections or shapes
+	for (pc = simulation; pc != NULL; pc = pc->next) {
+		if (pc->type == PROCESS) {
+			if (!pc->clientData && (pc->data && !pc->data->clientData)) {
+				wxLogWarning("%s: Process has no description (step %d, label "
+				  "%s'.", funcName, pc->stepNumber, pc->label);
+				return (FALSE);
+			}
+			for (p = pc->data->customerList; (p != NULL); p = p->next)
+				numSimConnections++;
+		}
+	}
+	if (numDiagConnections != numSimConnections) {
+		wxLogWarning("%s: The number of diagram lines (%d) does not "
+		  "correspond\nto the number of simulation connections (%d).", funcName,
+		  numDiagConnections, numSimConnections);
+		return(FALSE);
 	}
 	return(TRUE);
 

@@ -205,7 +205,7 @@ SDIFrame::UpdateMainParDialog(void)
  * This routine sets the simulation file and attempts to load it.
  */
 
-void
+bool
 SDIFrame::SetSimFileAndLoad(void)
 {
 	if (wxGetApp().GetDiagFrame())
@@ -213,10 +213,12 @@ SDIFrame::SetSimFileAndLoad(void)
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
 	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().
 	  GetData()))
-		return;
-	wxGetApp().ResetSimulation();
+		return(FALSE);
+	if (!wxGetApp().ResetSimulation())
+		return(FALSE);
 	if (mainParDialog)
 		mainParDialog->parListInfoList->UpdateAllControlValues();
+	return(TRUE);
 
 }
 

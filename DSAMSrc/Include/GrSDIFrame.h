@@ -110,7 +110,7 @@ class SDIFrame: public wxDocParentFrame
 	void	OnSize(wxSizeEvent& event);
 	void	CreateToolbar(void);
 	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
-	void	SetSimFileAndLoad(void);
+	bool	SetSimFileAndLoad(void);
 	void	UpdateMainParDialog(void);
 
 	DECLARE_EVENT_TABLE()
