@@ -573,7 +573,7 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_PARLIST:
 		if (!*(p->valuePtr.parList))
 			break;
-		DPrint("# Sub-parameter list: \n");
+		DPrint("# Sub-parameter list: %s: \n", p->desc);
 		ok = PrintPars_UniParMgr(*(p->valuePtr.parList),
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
 		break;
@@ -1295,7 +1295,7 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
 			return(StrNCmpNoCase_Utility_String(p->altAbbr, (char *) item));
 		break;
 	case UNIPAR_SEARCH_TYPE:
-		return(p->type - (int) item);
+		return(p->type - *((int *) item));
 	}
 	return(-1);
 

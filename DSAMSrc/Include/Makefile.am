@@ -40,7 +40,7 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
-				ExtIPCClient.h
+				ExtIPCClient.h ExtSocket.h ExtSocketServer.h
 
 Std_Headers	= 
 

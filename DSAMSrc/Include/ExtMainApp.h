@@ -42,7 +42,7 @@ class SimThread;
 
 class MainApp {
 
-	bool	initOk, serverFlag;
+	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag;
 	char	**argv;
 	int		argc;
 	int		serverPort;
@@ -111,11 +111,11 @@ extern MainApp	*dSAMMainApp;
 		if (!initializer) {
 			NotifyError("Failed to initialize the wxWindows library, "
 			  "aborting.");
-			exit(1);
+			return(1);
 		}
 
 		MainApp	mainApp(argc, argv, MainSimulation);
-		exit(mainApp.Main());
+		return(mainApp.Main());
 
 	}
 #	endif

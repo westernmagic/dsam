@@ -37,6 +37,8 @@
 #include "UtAppInterface.h"
 #include "ExtSimThread.h"
 #include "ExtIPCUtils.h"
+#include "ExtSocket.h"
+#include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
 #include "ExtMainApp.h"
 
@@ -63,17 +65,20 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
+	argsAreLocalFlag = (!argc || !argv);
 	ExternalMain = TheExternalMain;
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
 	serverFlag = false;
+	superServerFlag = false;
 	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
 	if (ExternalMain)
 		initOk = InitRun();
-	CheckOptions();
+	if (initOk)
+		CheckOptions();
 	
 }
 
@@ -85,10 +90,13 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 MainApp::~MainApp(void)
 {
 	DeleteSimThread();
-	
-	FreeArgStrings();
+
+	if( argsAreLocalFlag)
+		FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
 	Free_AppInterface();
+	FreeAll_EarObject();
+	FreeNull_ModuleMgr();
 	dSAMMainApp = NULL;
 
 }
@@ -103,7 +111,11 @@ MainApp::Main(void)
 {
 	static const char *funcName = "MainApp::Main";
 
-	printf("MainApp::Main: Entered\n");
+	if (!initOk) {
+		NotifyWarning("%s: Program not using application interface or not "
+		  "correctly initialised.\n", funcName);
+		return(false);
+	}
 	if (serverFlag)
 		return(RunServer());
 	if (!InitMain(TRUE)) {
@@ -128,7 +140,7 @@ MainApp::RunServer(void)
 	printf("MainApp::Main: Starting server operation.\n");
 	SetOnExecute_AppInterface(OnExecute_MainApp);
 	InitMain(FALSE);
-	IPCServer *server = new IPCServer("", serverPort);
+	IPCServer *server = new IPCServer("", serverPort, superServerFlag);
 	if (!server->Ok()) {
 		NotifyError("%s: Could not start server.\n", funcName);
 		return(false);
@@ -137,7 +149,7 @@ MainApp::RunServer(void)
 		printf("%s: Debug: Waiting for connection on port %d\n", funcName,
 		  serverPort);
 		
-        wxSocketBase *socket = server->InitConnection();
+        SocketBase *socket = server->InitConnection();
         if (!socket) {
             NotifyError("%s: Connection failed.", funcName);
             break;
@@ -161,6 +173,8 @@ MainApp::RunServer(void)
 /*
  * This routine checks for the program call options.
  * It sets the ones only to be used here to be ignored by other routines.
+ * Two instances of the "-S" flag set the super server flag indicating that the
+ * server is to be run by xinetd/inetd.
  */
 
 void
@@ -173,7 +187,10 @@ MainApp::CheckOptions(void)
 	  "SI:")))
 		switch (c) {
 		case 'S':
-			serverFlag = TRUE;
+			if (!serverFlag)
+				serverFlag = TRUE;
+			else
+				superServerFlag = TRUE;
 			MarkIgnore_Options(argc, argv, "-S", OPTIONS_NO_ARG);
 			break;
 		case 'I':
@@ -368,8 +385,10 @@ MainApp::CheckInitialisation(void)
 	}
 	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
 		ResetStepCount_Utility_Datum();
+#	if DSAM_DEBUG
 	for (int i = 0; i < argc; i++)
-		printf("%2d: %s\n", i, argv[i]);
+		printf("%s: %2d: %s\n", funcName, i, argv[i]);
+#	endif /* DSAM_DEBUG */
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
 		return(FALSE);

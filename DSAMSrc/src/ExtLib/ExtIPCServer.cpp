@@ -41,6 +41,8 @@
 #include "UtSSParser.h"
 #include "ExtMainApp.h"
 #include "ExtIPCUtils.h"
+#include "ExtSocket.h"
+#include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
 
 /******************************************************************************/
@@ -55,7 +57,13 @@ IPCServer	*iPCServer = NULL;
 
 /****************************** Constructor ***********************************/
 
-IPCServer::IPCServer(const wxString& hostName, uShort theServicePort)
+/*
+ * The superServerFlag argument indicates that the server is to be started by
+ * inetd/xinetd.
+ */
+
+IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
+  bool superServerFlag)
 {
 	static const char *funcName = "IPCServer::IPCServer";
 	wxIPV4address	addr;
@@ -63,19 +71,21 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort)
 	iPCServer = this;
 	ok = true;
 	simulationInitialisedFlag = false;
+	successfulRunFlag = false;
 	sock = NULL;
 
 	if (!hostName.IsEmpty())
 		addr.Hostname(hostName);
 	addr.Service((!theServicePort)? EXTIPCUTILS_DEFAULT_SERVER_PORT:
 	  theServicePort);
-	myServer = new wxSocketServer(addr);
+	myServer = new SocketServer(addr, superServerFlag, wxSOCKET_NONE);
 	if (!myServer->Ok()) {
 		NotifyError("%s: Could not listen at port %u.", funcName,
 		  theServicePort);
 		ok = FALSE;
 	}
-	SetDPrintFunc(DPrint_IPCServer);
+	//SetDPrintFunc(DPrint_IPCServer); - send to a logging system?
+	SetDPrintFunc(NULL);
 	SetNotifyFunc(Notify_IPCServer);
 
 }
@@ -105,7 +115,7 @@ IPCServer::~IPCServer(void)
  * socket.
  */
 
-wxSocketBase *
+SocketBase *
 IPCServer::InitConnection(bool wait)
 {
 	static const char *funcName = "IPCServer::OnServerEvent";
@@ -173,7 +183,7 @@ void
 IPCServer::OnPut(void)
 {
 	static const char *funcName = "IPCServer::OnPut";
-	size_t	length;
+	wxUint32	length;
 
  	sock->Read(&length, sizeof(length));
 	if (!iPCUtils.InitInputMemory(length)) {
@@ -223,16 +233,16 @@ IPCServer::OnPutArgs(void)
 void
 IPCServer::OnGet(void)
 {
+	wxUint32	length = 0;
 
 	if (!GetPtr_AppInterface()->simulationFinishedFlag ||
 	  !GetSimProcess_AppInterface()->outSignal) {
-		ChanLen	length = 0;
 		sock->Write(&length, sizeof(length));
 		return;
 	}
 	iPCUtils.RunOutProcess();
- 	sock->Write(&iPCUtils.GetOutUIOPtr()->length, sizeof(iPCUtils.GetOutUIOPtr(
-	  )->length));
+	length = (wxUint32) iPCUtils.GetOutUIOPtr()->length; // Must correct this
+ 	sock->Write(&length, sizeof(length));
 	sock->Write(iPCUtils.GetOutUIOPtr()->memStart, iPCUtils.GetOutUIOPtr()->
 	  length);
 
@@ -274,12 +284,13 @@ void
 IPCServer::OnGetFiles(void)
 {
 	static const char *funcName = "IPCServer::OnGetFiles";
-	wxUint8	byte;
-	size_t	i, j, length;
+	wxUint8	byte, numFiles = 0;
+	wxUint32	i, j, length;
 	wxArrayString	list;
-	unsigned char	numFiles = 0;
+	wxString	nameOnly;
+	wxFileName	fileName;
 
-	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
+	if (!GetPtr_AppInterface()->simulationFinishedFlag || !successfulRunFlag) {
  		sock->Write(&numFiles, sizeof(numFiles));
 		return;
 	}
@@ -287,12 +298,15 @@ IPCServer::OnGetFiles(void)
 	numFiles = list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
-		sock->Write(list[i], list[i].length());
+		fileName = GetParsFileFPath_Common((char *) list[i].c_str());
+		nameOnly = fileName.GetFullName();
+		sock->Write(nameOnly, nameOnly.length());
 		sock->Write("\n", 1);
-		wxFFileInputStream inStream(GetParsFileFPath_Common((char *) list[i].
-		  c_str()));
+		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
 			NotifyError("%s: Could not open '%s' for transfer.", funcName,
+			  list[i].c_str());
+			printf("%s: Could not open '%s' for transfer.", funcName,
 			  list[i].c_str());
 			return;
 		}
@@ -304,8 +318,11 @@ IPCServer::OnGetFiles(void)
 			byte = data.Read8();
 			sock->Write(&byte, 1);
 		}
+		if (!wxRemoveFile(fileName.GetFullPath()))
+			NotifyError("%s: Could not remove file '%s' from server.", funcName,
+			  fileName.GetFullPath().c_str());
 	}
-	/*** Don't forget to delete files after. ***/
+
 }
 
 /****************************** OnSet *****************************************/
@@ -366,7 +383,7 @@ IPCServer::OnExecute(void)
 		iPCUtils.ConnectToInProcess(GetSimProcess_AppInterface());
 
 	iPCUtils.RunInProcess();
-	OnExecute_AppInterface();
+	successfulRunFlag = CXX_BOOL(OnExecute_AppInterface());
 
 }
 

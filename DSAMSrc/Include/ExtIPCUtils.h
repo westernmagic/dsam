@@ -1,44 +1,79 @@
 /**********************
  *
- * File:		ExtIPCServer.h
- * Purpose:		Inter-process communication server extension code module.
- * Comments:	This code module was revised from the GrSimMgr.cpp code module.
+ * File:		ExtIPCUtils.h
+ * Purpose:		Inter-process communication server extension utility code
+ *				module.
+ * Comments:	This code module was revised from the ExtIPCServer.cpp code
+ *				module.
  * Author:		L. P. O'Mard
- * Created:		06 Nov 2003
+ * Created:		09 Jan 2004
  * Updated:		
- * Copyright:	(c) 2003, University of Essex
+ * Copyright:	(c) 2004, University of Essex
  *
  **********************/
 
-#ifndef _EXTIPCSERVER_H
-#define _EXTIPCSERVER_H 1
+#ifndef _EXTIPCUTILS_H
+#define _EXTIPCUTILS_H 1
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/socket.h>
 #endif
 
-#include "GeCommon.h"
-#include "GeSignalData.h"
-#include "GeEarObject.h"
 #include "UtNameSpecs.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
-#include "UtDatum.h"
-#include "ExtIPCUtils.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	EXTIPC_DEFAULT_SERVER_NAME		"DSAM IPC Server"
+#define EXTIPCUTILS_MAX_COMMAND_CHAR		10
+#define EXTIPCUTILS_MEMORY_FILE_NAME		"+.aif"
+#define EXTIPCUTILS_DEFAULT_SERVER_PORT		3300
+
+
+#ifndef HEADER_ONLY /* This allows for the simple extraction of the defines. */
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
 
+enum {
+
+	IPC_STATUS_READY = 0,
+	IPC_STATUS_BUSY,
+	IPC_STATUS_ERROR
+
+};
+
+enum {
+
+	IPC_APP_SOCKET_ID = 1,
+	IPC_APP_SERVER_ID
+
+};
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef enum {
+
+	IPC_COMMAND_QUIT,
+
+	IPC_COMMAND_ERRMSGS,
+	IPC_COMMAND_GET,
+	IPC_COMMAND_GETFILES,
+	IPC_COMMAND_INIT,
+	IPC_COMMAND_PUT,
+	IPC_COMMAND_PUT_ARGS,
+	IPC_COMMAND_RUN,
+	IPC_COMMAND_SET,
+	IPC_COMMAND_STATUS,
+
+	IPC_COMMAND_NULL
+
+} IPCCommandSpecifier;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -46,50 +81,37 @@
 
 /********************************** Pre-references ****************************/
 
-class SocketBase;
-class SocketServer;
+/*************************** IPCUtils *****************************************/
 
-/*************************** IPCServer ****************************************/
+class IPCUtils {
 
-class IPCServer {
-
-	bool	ok, simulationInitialisedFlag, successfulRunFlag;
-	IPCUtils	iPCUtils;
-	wxString	buffer;
-	wxArrayString	notificationList;
-	SocketBase	*sock;
-	SocketServer	*myServer;
+	bool	inProcessConnectedFlag, outProcessConnectedFlag;
+	EarObjectPtr	outProcess, inProcess;
+	EarObjectPtr	inProcessCustomer, outProcessSupplier;
+	UPortableIOPtr	inUIOPtr, outUIOPtr;
 
   public:
-	IPCServer(const wxString& hostName, uShort theServicePort,
-	  bool superServerFlag = false);
-	virtual	~IPCServer(void);
 
-	virtual void	LoadSimFile(const wxString& fileName);
+	IPCUtils(void);
+	~IPCUtils(void);
 
-	void	AddNotification(wxString &s)	{ notificationList.Add(s); }
-	void	BuildFileList(wxArrayString &list, DatumPtr pc);
-	void	ClearNotifications(void)	{ notificationList.Empty(); }
-	SocketServer *	GetServer(void)	{ return myServer; }
-	SocketBase *	GetSocket(void)	{ return sock; };
-	SocketBase *	InitConnection(bool wait = true);
+	NameSpecifier *	CommandList(int index);
+	void	ConnectToOutProcess(EarObjectPtr supplierProcess);
+	void	ConnectToInProcess(EarObjectPtr customerProcess);
+	void	DisconnectInProcess(void);
+	void	DisconnectOutProcess(void);
+	EarObjectPtr	GetInProcess(void)	{ return inProcess; }
+	bool	InProcessConnected(void)	{ return inProcessConnectedFlag; }
+	EarObjectPtr	GetOutProcess(void)	{ return outProcess; }
+	UPortableIOPtr	GetInUIOPtr(void)	{ return inUIOPtr; }
+	UPortableIOPtr	GetOutUIOPtr(void)	{ return outUIOPtr; }
+	bool	InitInputMemory(ChanLen length);
 	bool	InitInProcess(void);
 	bool	InitOutProcess(void);
-	void	OnInit(void);
-	void	OnExecute(void);
-	void	OnGet(void);
-	bool	Ok(void)	{ return ok; }
-	void	OnGetFiles(void);
-	void	OnPut(void);
-	void	OnPutArgs(void);
-	void	OnSet(void);
-	void	OnStatus(void);
-	void	OnErrMsgs(int index = -1);
-	bool	ProcessInput(void);
 	void	ResetInProcess(void);
 	void	ResetOutProcess(void);
-	bool	RunInProcess(void);
 	bool	RunOutProcess(void);
+	bool	RunInProcess(void);
 
 };
 
@@ -101,18 +123,14 @@ class IPCServer {
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
-void	DPrint_IPCServer(char *format, va_list args);
-
-void	EmptyDiagBuffer_IPCServer(char *s, int *c);
-
-IPCServer *	GetPtr_IPCServer(void);
-
-void	Notify_IPCServer(const char *format, va_list args,
-		  CommonDiagSpecifier type);
+NameSpecifier *	CommandList_IPCUtils(int index);
+EarObjectPtr	InitOutProcess_IPCUtils(UPortableIOPtr uIOPtr,
+				  EarObjectPtr simProcess);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
 /******************************************************************************/
 
+#endif /* HEADER_ONLY */
 #endif
 

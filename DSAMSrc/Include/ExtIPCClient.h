@@ -1,36 +1,27 @@
 /**********************
  *
- * File:		ExtIPCServer.h
- * Purpose:		Inter-process communication server extension code module.
- * Comments:	This code module was revised from the GrSimMgr.cpp code module.
+ * File:		ExtIPCClient.h
+ * Purpose:		Inter-process communication client extension code module.
+ * Comments:	
  * Author:		L. P. O'Mard
- * Created:		06 Nov 2003
+ * Created:		09 Jan 2004
  * Updated:		
- * Copyright:	(c) 2003, University of Essex
+ * Copyright:	(c) 2004, University of Essex
  *
  **********************/
 
-#ifndef _EXTIPCSERVER_H
-#define _EXTIPCSERVER_H 1
+#ifndef _EXTIPCCLIENT_H
+#define _EXTIPCCLIENT_H 1
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/socket.h>
 #endif
 
 #include "GeCommon.h"
-#include "GeSignalData.h"
-#include "GeEarObject.h"
-#include "UtNameSpecs.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
-#include "UtDatum.h"
-#include "ExtIPCUtils.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
-
-#define	EXTIPC_DEFAULT_SERVER_NAME		"DSAM IPC Server"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -46,51 +37,35 @@
 
 /********************************** Pre-references ****************************/
 
-class SocketBase;
-class SocketServer;
+class wxFileName;
 
-/*************************** IPCServer ****************************************/
+/*************************** IPCClient ****************************************/
 
-class IPCServer {
+class IPCClient: wxSocketClient {
 
-	bool	ok, simulationInitialisedFlag, successfulRunFlag;
+	bool	ok;
 	IPCUtils	iPCUtils;
 	wxString	buffer;
-	wxArrayString	notificationList;
-	SocketBase	*sock;
-	SocketServer	*myServer;
 
   public:
-	IPCServer(const wxString& hostName, uShort theServicePort,
-	  bool superServerFlag = false);
-	virtual	~IPCServer(void);
+	IPCClient(const wxString& hostName, uShort theServicePort);
+	virtual	~IPCClient(void);
 
-	virtual void	LoadSimFile(const wxString& fileName);
-
-	void	AddNotification(wxString &s)	{ notificationList.Add(s); }
-	void	BuildFileList(wxArrayString &list, DatumPtr pc);
-	void	ClearNotifications(void)	{ notificationList.Empty(); }
-	SocketServer *	GetServer(void)	{ return myServer; }
-	SocketBase *	GetSocket(void)	{ return sock; };
-	SocketBase *	InitConnection(bool wait = true);
-	bool	InitInProcess(void);
-	bool	InitOutProcess(void);
-	void	OnInit(void);
-	void	OnExecute(void);
-	void	OnGet(void);
+	unsigned char	CheckStatus(void);
+	bool	CreateSPFFromSimScript(wxFileName &fileName);
+	bool	Errors(void);
+	bool	GetAllOutputFiles(void);
+	EarObjectPtr	GetSimProcess(void);
+	IPCUtils * GetIPCUtils(void)	{ return &iPCUtils; }
+	bool	InitSimFromFile(const wxString &simFileName);
+	bool	InitSimulation(const char *simulation);
 	bool	Ok(void)	{ return ok; }
-	void	OnGetFiles(void);
-	void	OnPut(void);
-	void	OnPutArgs(void);
-	void	OnSet(void);
-	void	OnStatus(void);
-	void	OnErrMsgs(int index = -1);
-	bool	ProcessInput(void);
-	void	ResetInProcess(void);
-	void	ResetOutProcess(void);
-	bool	RunInProcess(void);
-	bool	RunOutProcess(void);
-
+	bool	ReadString(wxString &s);
+	bool	RunSimulation(void);
+	bool	SendArguments(int argc, char **argv);
+	bool	SendCommand(IPCCommandSpecifier command);
+	bool	SendInputProcess(void);
+	void	WaitForReady(void)	{ while (CheckStatus() == IPC_STATUS_BUSY); }
 };
 
 /******************************************************************************/
@@ -100,15 +75,6 @@ class IPCServer {
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
-
-void	DPrint_IPCServer(char *format, va_list args);
-
-void	EmptyDiagBuffer_IPCServer(char *s, int *c);
-
-IPCServer *	GetPtr_IPCServer(void);
-
-void	Notify_IPCServer(const char *format, va_list args,
-		  CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
