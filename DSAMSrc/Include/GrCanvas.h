@@ -35,13 +35,17 @@
 
 #define	GRAPH_Y_TITLE_SCALE					0.03
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
-#define	GRAPH_Y_AXIS_SCALE					0.15
+#define	GRAPH_Y_AXIS_SCALE					0.16
 #define	GRAPH_Y_LABELS_X_OFFSET_SCALE		0.04
+#define GRAPH_Y_SCALE_LOWER_EXP_LIMIT		0
+#define GRAPH_Y_SCALE_UPPER_EXP_LIMIT		5
 
 #define	GRAPH_X_AXIS_SCALE					0.05
 #define	GRAPH_X_TITLE_SCALE					0.04
 #define	GRAPH_X_TITLE_MARGIN_SCALE			0.02
 #define	GRAPH_X_LABELS_Y_OFFSET_SCALE		0.04
+
+#define GRAPH_EXPONENT_VS_LABEL_SCALE		0.7
 
 #if defined(__WXMSW__)
 #	define	GRAPH_AXIS_TITLE_SCALE				0.3
@@ -94,7 +98,7 @@ class MyCanvas: public wxWindow
 	int		numChannels, bitmapWidth, bitmapHeight;
 	double	dt, outputTimeOffset;
 	ChanLen	chanLength, timeIndex;
-	wxFont  *labelFont, *axisTitleFont;
+	wxFont  *labelFont, *axisTitleFont, *superLabelFont;
 	wxRect	signal, summary, *xAxis, *yAxis;
 	wxFrame	*parent;
 	wxString	xTitle, yTitle;
@@ -110,6 +114,7 @@ class MyCanvas: public wxWindow
 
 	void	CreateBackingBitmap(void);
 	void	DrawGraph(wxDC& dc, int theXOffset, int theYOffset);
+	void	DrawExponent(wxDC& dc, int exponent, int x, int y);
 	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }

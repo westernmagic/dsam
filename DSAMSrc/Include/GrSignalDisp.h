@@ -44,13 +44,14 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			22
+#define DISPLAY_NUM_PARS			23
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
 #define	DEFAULT_WIDTH					-1.0
 #define	DEFAULT_CHANNEL_STEP			1
 #define	DEFAULT_X_DEC_PLACES			0
+#define	DEFAULT_Y_DEC_PLACES			0
 #define	DEFAULT_X_TICKS					6
 #define	DEFAULT_Y_TICKS					15
 
@@ -90,6 +91,7 @@ typedef	enum {
 	DISPLAY_X_DEC_PLACES,
 	DISPLAY_X_TICKS,
 	DISPLAY_Y_AXIS_MODE,
+	DISPLAY_Y_DEC_PLACES,
 	DISPLAY_Y_TICKS,
 	/* General Controls */
 	DISPLAY_FRAME_DELAY,
@@ -132,7 +134,7 @@ typedef struct {
 	BOOLN	xResolutionFlag, maxYFlag, minYFlag, widthFlag, frameWidthFlag;
 	BOOLN	frameHeightFlag, frameDelayFlag, titleFlag, channelStepFlag;
 	BOOLN	xTicksFlag, xDecPlacesFlag, yTicksFlag, topMarginFlag;
-	BOOLN	frameXPosFlag, frameYPosFlag, yAxisModeFlag;
+	BOOLN	frameXPosFlag, frameYPosFlag, yAxisModeFlag, yDecPlacesFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	char	title[MAXLINE];
@@ -149,6 +151,7 @@ typedef struct {
 	int		summaryDisplay;
 	int		xTicks;
 	int		xDecPlaces;
+	int		yDecPlaces;
 	int		yTicks;
 	double	frameDelay;
 	double	magnification;
@@ -255,9 +258,9 @@ BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
 		  char *theSummaryDisplay, char *theTitle, int channelStep,
 		  int theNumGreyScales, int theFrameHeight, int theFrameWidth,
 		  int theFrameXPos, int theFrameYPos, int theXDecPlaces, int theXticks,
-		  int theYticks, double theFrameDelay, double theMagnification,
-		  double theXResolution, double maxY, double minY, double topMargin,
-		  double width);
+		  int theYDecPlaces, int theYticks, double theFrameDelay,
+		  double theMagnification, double theXResolution, double maxY,
+		  double minY, double topMargin, double width);
 
 BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
@@ -280,6 +283,8 @@ BOOLN	SetXDecPlaces_SignalDisp(int xDecPlaces);
 BOOLN	SetXTicks_SignalDisp(int xTicks);
 
 BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
+
+BOOLN	SetYDecPlaces_SignalDisp(int yDecPlaces);
 
 BOOLN	SetYNormalisationMode_SignalDisp(char *theYNormalisationMode);
 
