@@ -40,6 +40,9 @@
 * $Header$
 *
 * $Log$
+* Revision 1.8  2005/01/11 10:33:44  lowel
+* Change: Cosmetic.
+*
 * Revision 1.7  2004/04/01 09:46:54  lowel
 * Fix: Corrected a signed/unsigned comparison in "SetPosition_..." - compiler
 * warning.
@@ -600,7 +603,7 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 		  uPortableIOPtr->length) {
 			fprintf(stderr, "%s: Attempt to read past the end of memory.\n",
 			  funcName);
-			fprintf(stderr, "%s: offset = %d\n", funcName, offset);
+			fprintf(stderr, "%s: offset = %ld\n", funcName, offset);
 			fprintf(stderr, "%s: difference = %ld\n", funcName,
 			  uPortableIOPtr->memPtr +
 			  offset - uPortableIOPtr->memStart + uPortableIOPtr->length);
