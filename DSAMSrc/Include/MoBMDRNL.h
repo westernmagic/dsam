@@ -36,17 +36,22 @@
 
 #define	DRNL_QUAD_FUNC(F, A, B, C)	((A) + (B) * (F) + (C)* (F) * (F))
 
-#define	DRNL_NON_LIN_COMP_A(F)	DRNL_QUAD_FUNC(F, 35, -0.04, 2.85e-5)
+#define DRNL_MIN_VAL_FUNC(VAL, MIN)	(((VAL) < (MIN))? (MIN): (VAL))
 
-#define	DRNL_NON_LIN_COMP_B(F)	DRNL_QUAD_FUNC(F, 2.71e-3, 2.01e-6, -9.83e-11)
+#define DRNL_LOG_FUNC(F, A, B)	((A) + (B) * log((F)))
 
-#define	DRNL_LIN_CF(F)			DRNL_QUAD_FUNC(F, 355.0, 0.3454, 3.182e-5)
+#define	DRNL_NON_LIN_COMP_A(F)	DRNL_QUAD_FUNC(F, 23, -0.0279, 3.13e-5)
 
-#define	DRNL_LIN_WIDTH(F)		DRNL_QUAD_FUNC(F, 31.94, 0.2134, -1.0657e-5)
+#define	DRNL_NON_LIN_COMP_B(F)	DRNL_LOG_FUNC(F, -9.22e-3, 2.14e-3)
 
-#define	DRNL_LIN_ATTEN(F)		DRNL_QUAD_FUNC(F, 30.19, -0.00447, 4.384e-7)
+#define	DRNL_LIN_CF(F)			DRNL_QUAD_FUNC(F, 393, 0.294, 3.465e-5)
 
-#define	DRNL_LIN_LP(F)			DRNL_QUAD_FUNC(F, 0.8867, 0.000291, -1.816e-8)
+#define	DRNL_LIN_WIDTH(F)		DRNL_MIN_VAL_FUNC(DRNL_LOG_FUNC(F, -887.17, \
+								  170.69), (F) / 2.0)
+
+#define	DRNL_LIN_ATTEN(F)		(23.13 * exp(6.76e-5 * (F)))
+
+#define	DRNL_LIN_LP(F)			(1.503 + -3.42e-5 * (F))
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
