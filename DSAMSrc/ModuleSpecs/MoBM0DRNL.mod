@@ -10,16 +10,15 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	int		order;
+	int		nonLinGTCascade;
+	int		nonLinLPCascade;
 	NameSpecifier	compressionMode;
-	double	narrowBroadeningCoeff;
-	double	/* * */compressionPar;
-	int		wideFOrder;
-	double	wideFCentreFreq;
-	double	wideFWidth;
-	double	wideAttenuation;
-	double	wideFLPCutOffScale;
-	double	outputScale;
+	double	/* * */compressionPars;
+	int		linGTCascade;
+	int		linLPCascade;
+	double	linCF;
+	double	linBwidth;
+	double	linScaler;
 	CFListPtr	theCFs;
 
 } BM0DRNL;
