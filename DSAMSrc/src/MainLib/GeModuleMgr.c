@@ -507,6 +507,32 @@ GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier)
 
 }
 
+/*************************** GetLabelledProcess *******************************/
+
+/*
+ * This function returns pointer to labelled process in a simulation.
+ */
+
+EarObjectPtr
+GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label)
+{
+	static const char *funcName = "GetLabelledProcess_ModuleMgr";
+	EarObjectPtr	process;
+
+	if (!CheckData_ModuleMgr(data, funcName))
+		return(NULL);
+	if (data->module->specifier != SIMSCRIPT_MODULE)
+		return(NULL);
+	(* data->module->SetParsPointer)(data->module);
+	if ((process = FindLabelledProcess_Utility_Datum(((SimScriptPtr) data->
+	  module->parsPtr)->simulation, label)) != NULL)
+		return(process);
+
+	NotifyError("%s: Could not find process.", funcName);
+	return(NULL);
+
+}
+
 /*************************** GetUniParPtr *************************************/
 
 /*
