@@ -26,6 +26,7 @@
 
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	APP_INT_NUM_PARS			4		/* Number of main parameters. */
+#define	APP_MAX_AUTHORS				5
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	define	MAIN_ARGS	void
@@ -69,6 +70,7 @@ typedef struct {
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
 	char	title[MAXLINE];
+	char	authors[APP_MAX_AUTHORS][MAXLINE];
 	char	simulationFile[MAX_FILE_PATH];
 	char	segmentMode[SMALL_STRING];
 	char	diagMode[MAX_FILE_PATH];
