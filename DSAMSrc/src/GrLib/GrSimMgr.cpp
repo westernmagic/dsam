@@ -554,8 +554,8 @@ MyApp::InitArgv(int argc)
 void
 MyApp::SetConfiguration(UniParListPtr parList)
 {
-	int		i;
-	wxString	parValue;
+	int		i, j;
+	wxString	indexedName, parValue, indexedParValue;
 	UniParPtr	p;
 
 	if (!parList)
@@ -569,6 +569,21 @@ MyApp::SetConfiguration(UniParListPtr parList)
 		switch (p->type) {
 		case UNIPAR_PARLIST:
 			SetConfiguration(*p->valuePtr.parList);
+			break;
+		case UNIPAR_INT_ARRAY:
+		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_STRING_ARRAY:
+		case UNIPAR_NAME_SPEC_ARRAY:
+			for (j = 0; j < *p->valuePtr.array.numElements; j++) {
+				indexedName.Printf("%s.%d", p->abbr, j);
+				parValue = pConfig->Read(indexedName, "");
+				if (parValue.Len() != 0) {
+					indexedParValue.Printf("%d:%s", j, (char *) parValue.
+					  GetData());
+					SetParValue_UniParMgr(&parList, i, (char *) indexedParValue.
+					  GetData());
+				}
+			}
 			break;
 		default:
 			parValue = pConfig->Read(p->abbr, "");
@@ -588,8 +603,9 @@ MyApp::SetConfiguration(UniParListPtr parList)
 void
 MyApp::SaveConfiguration(UniParListPtr parList)
 {
-	int		i;
+	int		i, j, oldIndex;
 	UniParPtr	p;
+	wxString	name;
 
 	if (!parList)
 		return;
@@ -602,6 +618,18 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 		switch (p->type) {
 		case UNIPAR_PARLIST:
 			SaveConfiguration(*p->valuePtr.parList);
+			break;
+		case UNIPAR_INT_ARRAY:
+		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_STRING_ARRAY:
+		case UNIPAR_NAME_SPEC_ARRAY:
+			for (j = 0; j < *p->valuePtr.array.numElements; j++) {
+				oldIndex = p->valuePtr.array.index;
+				p->valuePtr.array.index = j;
+				name.Printf("%s.%d", p->abbr, j);
+				pConfig->Write(name, GetParString_UniParMgr(p));
+				p->valuePtr.array.index = oldIndex;
+			}
 			break;
 		default:
 			pConfig->Write(p->abbr, GetParString_UniParMgr(p));
