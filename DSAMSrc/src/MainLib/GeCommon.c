@@ -378,10 +378,11 @@ SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
  * The function returns TRUE if successful.
  */
 
-void
+BOOLN
 SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.parsFile = GetFilePtr(outputSpecifier, mode);
+	return(dSAM.parsFile == stderr);
 
 }
 

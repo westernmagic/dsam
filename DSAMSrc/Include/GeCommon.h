@@ -367,7 +367,7 @@ void	SetInterruptRequestStatus_Common(BOOLN status);
 void	SetNotifyFunc(void (* Func)(const char *, va_list,
 		  CommonDiagSpecifier));
 
-void	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
+BOOLN	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetParsFilePath_Common(char *name);
 
