@@ -36,7 +36,7 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
-Std_Headers	= StdMessage.h StdSimThread.h
+Std_Headers	= StdMessage.h StdSimThread.h StdSignalDisp.h
 
 Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtCBinauralITD.h UtCFList.h UtCmplxM.h UtCompress.h \

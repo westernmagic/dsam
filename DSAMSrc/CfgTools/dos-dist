@@ -40,6 +40,7 @@ CVSConfigure()
 	./configure --enable-graphics
 	(cd $MAINLIB; make UtSSParser.c)
 	cp $MAINLIB/UtSSParser.h $INCDIR
+	(cd $GRLIB; make GrSignalDisp.cpp)
 }
 
 ############################### Main Script ####################################
