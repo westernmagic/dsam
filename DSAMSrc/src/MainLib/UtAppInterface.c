@@ -1340,7 +1340,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		DPrint("Starting %s Application version %s [DSAM Version: %s "
 		  "(dynamic),\n%s (compiled)]...\n", appInterfacePtr->appName,
 		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
-		  DSAM_VERSION);
+		  appInterfacePtr->compiledDSAMVersion);
 
 		if (!InitSimulation_AppInterface()) {
 			NotifyError("%s: Could not Initialise simulation.", funcName);
