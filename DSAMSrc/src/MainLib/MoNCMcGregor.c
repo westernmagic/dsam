@@ -759,7 +759,8 @@ InitProcessVariables_Neuron_McGregor(EarObjectPtr data)
 	
 	if (mcGregorPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (mcGregorPtr->updateProcessVariablesFlag) {
+		if (mcGregorPtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 			FreeProcessVariables_Neuron_McGregor();
 			if ((mcGregorPtr->state =
 			  (McGregorStatePtr) calloc(data->outSignal->numChannels,

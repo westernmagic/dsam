@@ -939,7 +939,7 @@ InitProcessVariables_Neuron_ArleKim(EarObjectPtr data)
 	
 	if (arleKimPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (arleKimPtr->updateProcessVariablesFlag) {
+		if (arleKimPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_ArleKim();
 			if ((arleKimPtr->state =
 			  (ArleKimStatePtr) calloc(data->outSignal->numChannels,

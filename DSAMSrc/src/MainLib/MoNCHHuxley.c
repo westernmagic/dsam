@@ -1043,7 +1043,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 	  data->updateProcessFlag || p->iCList->updateFlag || (data->timeIndex ==
 	  PROCESS_START_TIME))) {
 		p->numChannels = data->outSignal->numChannels;
-		if (p->updateProcessVariablesFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_HHuxley();
 			OpenDiagnostics_NSpecLists(&hHuxleyNCPtr->fp,
 			  hHuxleyNCPtr->diagnosticModeList, hHuxleyNCPtr->diagnosticMode);
