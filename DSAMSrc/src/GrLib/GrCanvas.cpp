@@ -106,7 +106,6 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 	signalLines = NULL;
 	summaryLine = NULL;
 	chanLength = 0;
-	numChannels = 0;
 
 	parent = frame;
 	mySignalDispPtr = theSignalDispPtr;
@@ -226,8 +225,6 @@ MyCanvas::SetGraphAreas(void)
 void
 MyCanvas::SetGraphPars(void)
 {
-	signalLines->ResetScaleAdjustment();
-
 	signalLines->SetChannelStep(mySignalDispPtr->channelStep);
 	signalLines->SetYMagnification(mySignalDispPtr->magnification);
 	greyBrushes->SetGreyScales(mySignalDispPtr->numGreyScales);
@@ -250,12 +247,12 @@ MyCanvas::InitGraph(void)
 	SetGraphPars();
 
 	if (mySignalDispPtr->automaticYScaling) {
-		signalLines->CalcMaxMinLimits(mySignalDispPtr->data);
+		signalLines->CalcMaxMinLimits();
 		mySignalDispPtr->minY = signalLines->GetMinY();
 		mySignalDispPtr->minYFlag = TRUE;
 		mySignalDispPtr->maxY = signalLines->GetMaxY();
 		mySignalDispPtr->maxYFlag = TRUE;
-		summaryLine->CalcMaxMinLimits(mySignalDispPtr->summary);
+		summaryLine->CalcMaxMinLimits();
 	} else {
 		signalLines->SetMinY(mySignalDispPtr->minY);
 		signalLines->SetMaxY(mySignalDispPtr->maxY);
@@ -266,16 +263,38 @@ MyCanvas::InitGraph(void)
 	summaryLine->SetYMagnification(1.0);
 	switch (mySignalDispPtr->mode) {
 	case GRAPH_MODE_LINE:
-		SetLines(signalLines, mySignalDispPtr->data, signal);
-		SetLines(summaryLine, mySignalDispPtr->summary, summary);
+		SetLines(signalLines);
+		SetLines(summaryLine);
 		break;
 	case GRAPH_MODE_GREY_SCALE:
-		SetGreyScaleLines(signalLines, mySignalDispPtr->data, signal,
-		  mySignalDispPtr->xResolution);
-		SetGreyScaleLines(summaryLine, mySignalDispPtr->summary, summary, 1.0);
+		SetGreyScaleLines(signalLines);
+		SetGreyScaleLines(summaryLine);
 		break;
 	} /* switch */
-	summaryLine->SetYSpacing(summary);
+	signalLines->Rescale(signal);
+	summaryLine->Rescale(summary);
+
+}
+
+/****************************** ResetGrLines **********************************/
+
+/*
+ * This method re-initialises a graph line if required.
+ */
+
+void
+MyCanvas::ResetGrLines(GrLines **lines, SignalDataPtr signal, int channelStep)
+{
+	chanLength = signal->length;
+	if (!*lines) {
+		if ((*lines = new GrLines(signal, channelStep, 0, chanLength)) ==
+		   NULL) {
+			wxMessageBox("MyCanvas::ResetGrLines: out of memory for signal "
+			  "lines", "Client: Error", wxOK);
+			exit(1);
+		}
+	} else
+		(*lines)->Reset();
 
 }
 
@@ -288,36 +307,25 @@ MyCanvas::InitGraph(void)
 void
 MyCanvas::InitData(EarObjectPtr data)
 {
-	if (signalLines && ((chanLength != data->outSignal->length) ||
-	  (data->outSignal->numChannels != signalLines->GetNumLines()))) {
-			delete signalLines;
+	if (signalLines && ((signalLines->GetSignalPtr() != data->outSignal) ||
+	  (chanLength != data->outSignal->length) || (data->outSignal->
+	  numChannels != signalLines->GetNumLines()))) {
+		delete signalLines;
 		signalLines = NULL;
 		if (summaryLine)
 			delete summaryLine;
 		summaryLine = NULL;
 	}
-	numChannels = data->outSignal->numChannels;
+	if (summaryLine && (summaryLine->GetSignalPtr() != mySignalDispPtr->
+	  summary->outSignal)) {
+		delete summaryLine;
+		summaryLine = NULL;
+	}
 	chanLength = data->outSignal->length;
 	timeIndex = _WorldTime_EarObject(data);
 	dt = data->outSignal->dt;
-	if (!signalLines) {
-		if ((signalLines = new MultiLine(numChannels,
-		  mySignalDispPtr->channelStep, chanLength)) == NULL) {
-			wxMessageBox("MyCanvas::InitData: out of memory for signal "
-			  "lines", "Client: Error", wxOK);
-			exit(1);
-		}
-		if ((summaryLine = new MultiLine(mySignalDispPtr->summary->outSignal->
-		  numChannels, 1, chanLength)) == NULL) {
-			wxMessageBox("MyCanvas::InitData out of memory for summary "
-			  "line", "Client: Error", wxOK);
-			exit(1);
-		}
-	} else {
-		signalLines->Reset();
-		summaryLine->Reset();
-	}
-	outputTimeOffset = data->outSignal->outputTimeOffset;
+	ResetGrLines(&signalLines, data->outSignal, mySignalDispPtr->channelStep);
+	ResetGrLines(&summaryLine, mySignalDispPtr->summary->outSignal, 1);
 		/* Tidy up, using wxString - when wxString works. */
 	if (strcmp(xTitle, mySignalDispPtr->xAxisTitle) != 0)
 		xTitle.Printf("%s", mySignalDispPtr->xAxisTitle);
@@ -336,38 +344,11 @@ MyCanvas::InitData(EarObjectPtr data)
  */
 
 void
-MyCanvas::SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect)
+MyCanvas::SetLines(GrLines *lines)
 {
-	char	stringNum[MAXLINE];
-	int		j, xIndex;
-	double	xScale, yScale, xPos, deltaX, yNormalisationOffset;
-	ChanLen	i;
-	ChanData	*p;
 
 	lines->SetGreyScaleMode(FALSE);
 	lines->SetYNormalisationMode(mySignalDispPtr->yNormalisationMode);
-	lines->SetParams(rect);
-	xScale = (double) rect.GetWidth() / (data->outSignal->length - 1);
-	yScale = lines->GetYScale();
-	if (xScale >= 1.0)
-		xIndex = 1;
-	else
-		xIndex = (mySignalDispPtr->xResolution / xScale > 1.0)? (int)
-		  (mySignalDispPtr->xResolution / xScale): 1;
-	deltaX = xScale * xIndex;
-	yNormalisationOffset = (mySignalDispPtr->yNormalisationMode ==
-	  LINE_YNORM_MIDDLE_MODE )?
-	  (lines->GetMaxY() + lines->GetMinY()) / 2.0: lines->GetMinY();
-	for (j = 0; j < data->outSignal->numChannels; j++) {
-		p = data->outSignal->channel[j];
-		for (i = 0, xPos = 0.0; i < data->outSignal->length; i += xIndex, p +=
-		  xIndex, xPos += deltaX)
-			lines->AddPoint(j, (int) xPos, (int) (-(*p - yNormalisationOffset) *
-			  yScale));
-		snprintf(stringNum, MAXLINE, "%.0f", data->outSignal->info.chanLabel[
-		  j]);
-		lines->SetLineLabel(j, stringNum);
-	}
 
 }
 
@@ -379,37 +360,11 @@ MyCanvas::SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect)
  */
 
 void
-MyCanvas::SetGreyScaleLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
-  double xResolution)
+MyCanvas::SetGreyScaleLines(GrLines *lines)
 {
-	char	stringNum[MAXLINE];
-	int		j, xIndex;
-	double	xScale, yScale, xPos, deltaX;
-	ChanLen	i;
-	ChanData	*p;
 
 	lines->SetGreyScaleMode(TRUE);
-	lines->SetParams(rect);
-	yScale = (mySignalDispPtr->numGreyScales - 1) / (lines->GetMaxY() - lines->
-	  GetMinY());
-	xScale = rect.GetWidth() / data->outSignal->length;
-	if (xScale >= 1.0)
-		xIndex = 1;
-	else
-		xIndex = (xResolution / xScale > 1.0)? (int) (xResolution / xScale): 1;
-	deltaX = xScale * xIndex;
-	for (j = 0; j < data->outSignal->numChannels; j++) {
-		p = data->outSignal->channel[j];
-		for (i = 0, xPos = 0.0; i < data->outSignal->length; i += xIndex, p +=
-		  xIndex, xPos += deltaX)
-			lines->AddPoint(j, (int) xPos, (int) ((*p - lines->GetMinY()) *
-			  yScale));
-		snprintf(stringNum, MAXLINE, "%.0f", data->outSignal->info.chanLabel[
-		  j]);
-		lines->SetLineRectHeight(j, lines->GetChannelSpace());
-		lines->SetLineRectWidth(j, deltaX);
-		lines->SetLineLabel(j, stringNum);
-	}
+	lines->SetNumGreyScales(mySignalDispPtr->numGreyScales);
 
 }
 
@@ -441,7 +396,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	static const char *funcName = "MyCanvas::DrawXAxis";
 	int		i, tickLength, yPos, xPos, xTitlePos, yTitlePos;
 	long int	stringWidth, stringHeight;
-	double	tempXAdjust, tempYAdjust, xValue;
+	double	tempXAdjust, tempYAdjust, xValue, outputTimeOffset;
+	ChanLen	displayLength;
 	wxString stringNum, label, space = " ";
 
 	if (!xAxis)
@@ -452,9 +408,15 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	dc.SetFont(*labelFont);
 	dc.DrawLine(xAxis->GetLeft() + theXOffset,  xAxis->GetTop() + theYOffset,
 	  xAxis->GetRight() + theXOffset, xAxis->GetTop() + theYOffset);
+	outputTimeOffset = signalLines->GetSignalPtr()->outputTimeOffset;
+	displayLength = timeIndex + chanLength - 1;
+	if (mySignalDispPtr->mode == GRAPH_MODE_GREY_SCALE) {
+		outputTimeOffset -= dt;
+		displayLength++;
+	}
 	if (!xAxisScale.Set(mySignalDispPtr->xNumberFormat, outputTimeOffset +
-	  timeIndex * dt, outputTimeOffset + (timeIndex + chanLength - 1) * dt,
-	  xAxis->GetLeft(), xAxis->GetRight(), mySignalDispPtr->xTicks)) {
+	  timeIndex * dt, outputTimeOffset + displayLength * dt, xAxis->GetLeft(),
+	  xAxis->GetRight(), mySignalDispPtr->xTicks)) {
 		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
 		return;
 	}
@@ -680,7 +642,6 @@ MyCanvas::DrawGraph(wxDC& dc, int theXOffset, int theYOffset)
 	dc.SetMapMode(wxMM_TEXT);
 	dc.Clear();
 	dc.SetLogicalFunction(wxCOPY);
-	//signalLines->RescaleY(*parList->pars[DISPLAY_MAGNIFICATION].valuePtr.r);
 	signalLines->DrawLines(dc,  theXOffset,  theYOffset);
 	if (mySignalDispPtr->summaryDisplay)
 		summaryLine->DrawLines(dc, theXOffset, theYOffset);
@@ -739,6 +700,9 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 	CreateBackingBitmap();
 	RescaleGraph();
 	mySignalDispPtr->redrawGraphFlag = TRUE;
+	mySignalDispPtr->critSect->Enter();
+	RedrawGraph();
+	mySignalDispPtr->critSect->Leave();
 
 }
 
@@ -752,7 +716,6 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 void
 MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
-	//wxMutexGuiEnter();
 	wxPaintDC dc(this);
 
 	if (mySignalDispPtr->redrawGraphFlag) {
@@ -760,7 +723,6 @@ MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event))
 		mySignalDispPtr->redrawGraphFlag = FALSE;
 	}
 	dc.Blit(0, 0, bitmapWidth, bitmapHeight, &memDC, 0, 0, wxCOPY);
-	//wxMutexGuiLeave();
 
 }
 

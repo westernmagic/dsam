@@ -41,7 +41,7 @@
 
 #include "GrUtils.h"
 #include "GrSimMgr.h"
-#include "GrLine.h"
+#include "GrLines.h"
 #include "GrModParDialog.h"
 #include "GrSignalDisp.h"
 #include "GrCanvas.h"

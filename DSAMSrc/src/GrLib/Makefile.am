@@ -18,7 +18,7 @@ EXTRA_DIST		= makefile.b32
 INCLUDES		= $(MAIN_INC) $(WXINC) -I$(top_srcdir)/src/MainLib
 
 libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
-				GrLine.cpp GrCanvas.cpp GrSignalDisp.cpp GrDisplayS.cpp \
+				GrLines.cpp GrCanvas.cpp GrSignalDisp.cpp GrDisplayS.cpp \
 				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrSimModDialog.cpp \
 				GrModParDialog.cpp GrParListInfo.cpp GrDialogInfo.cpp \
 				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \

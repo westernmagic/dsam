@@ -17,7 +17,7 @@ Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
 
-Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
+Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrSimModDialog.h \
 				GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
 				GrDialogList.h GrParListInfoList.h GrPrintDisp.h \

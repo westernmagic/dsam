@@ -24,7 +24,7 @@
 #ifndef _GRCANVAS_H
 #define _GRCANVAS_H 1
 
-#include "GrLine.h"
+#include "GrLines.h"
 #include "GrAxisScale.h"
 
 /******************************************************************************/
@@ -101,16 +101,16 @@ enum {
 class MyCanvas: public wxWindow
 {
 	bool	useTextAdjust, firstSizeEvent;
-	int		numChannels, bitmapWidth, bitmapHeight;
-	double	dt, outputTimeOffset;
+	int		bitmapWidth, bitmapHeight;
+	double	dt;
 	ChanLen	chanLength, timeIndex;
 	wxFont  *labelFont, *insetLabelFont, *axisTitleFont, *superLabelFont;
 	wxRect	signal, summary, *xAxis, *yAxis;
 	wxFrame	*parent;
+	GrLines	*signalLines, *summaryLine;
 	wxString	xTitle, yTitle;
 	wxMemoryDC	memDC;
 	wxBitmap	*memBmp;
-	MultiLine	*signalLines, *summaryLine;
 	AxisScale	xAxisScale, yAxisScale;
 	SignalDispPtr	mySignalDispPtr;
 
@@ -129,7 +129,7 @@ class MyCanvas: public wxWindow
 			  wxFont *labelFont, int theXOffset, int theYOffset, int yTicks,
 			  int numDisplayedChans, double minYValue, double maxYValue);
 	int		GetMinimumIntLog(double value);
-	MultiLine *GetSignalLines(void)		{ return signalLines; }
+	GrLines *GetSignalLines(void)		{ return signalLines; }
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(void);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }
@@ -143,11 +143,12 @@ class MyCanvas: public wxWindow
 
 	void	RedrawGraph(void);
 	void	RescaleGraph(void);
+	void	ResetGrLines(GrLines **lines, SignalDataPtr signal,
+			  int channelStep);
 	void	SetGraphAreas(void);
 	void	SetGraphPars(void);
-	void	SetLines(MultiLine *lines, EarObjectPtr data, wxRect& rect);
-	void	SetGreyScaleLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
-			  double xResolution);
+	void	SetLines(GrLines *lines);
+	void	SetGreyScaleLines(GrLines *lines);
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
 	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
 
