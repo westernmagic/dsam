@@ -793,8 +793,8 @@ BOOLN
 CheckData_Analysis_SAI(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Analysis_SAI";
-	double	width;
-	int		strobeType, strobeDelay;
+	double	width, strobeDelay;
+	int		strobeType;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);
