@@ -485,7 +485,7 @@ MyApp::SetClientServerMode(void)
 	if (wxGetUserId(userId, MAXLINE))
 		serverName.sprintf("%u", Hash_Utils(userId) + serverId);
 	else
-		serverName = DEFAULT_SERVER_NAME;
+		serverName = SIM_MANAGER_DEFAULT_SERVER_NAME;
 	addr.Hostname("localhost");
 	addr.Service(serverName);
 	myClient = new wxSocketClient();

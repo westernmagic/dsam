@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\mswdll" /I "$(WXWIN)\contrib\include" /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D HAVE_CONFIG_H=1 /D LIBRARY_COMPILE=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\mswdll" /I "$(WXWIN)\contrib\include" /D "_MBCS" /D "_LIB" /D "NDEBUG" /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D "WIN32" /D HAVE_CONFIG_H=1 /D LIBRARY_COMPILE=1 /D USE_WX_OGL=1 /YX /FD /c
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
 # ADD RSC /l 0x809 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\mswdll" /I "$(WXWIN)\contrib\include" /D "_WINDOWS" /D "NDEBUG" /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WX_USING_DLL=1 /D "WIN32" /D HAVE_CONFIG_H=1 /D LIBRARY_COMPILE=1 /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\mswdll" /I "$(WXWIN)\contrib\include" /D "_WINDOWS" /D "NDEBUG" /D "GRAPHICS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D "WIN32" /D HAVE_CONFIG_H=1 /D LIBRARY_COMPILE=1 /D USE_WX_OGL=1 /YX /FD /GZ /c
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
 # ADD RSC /l 0x809 /i "$(WXWIN)\include" /d "_DEBUG"
 BSC32=bscmake.exe

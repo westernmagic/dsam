@@ -168,63 +168,69 @@
 
 #include "GrSignalDisp.h"
 
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus) && defined(USE_GUI)
+#if defined(__cplusplus)
 #/* --cplusplus ensures only included with c++ compile */
-#	undef TRUE			/* required because WxWin doesn't check. */
-#	undef FALSE
+#	if defined(GRAPHICS_SUPPORT) || defined(USE_EXTENSIONS_LIBRARY)
+#		undef TRUE			/* required because WxWin doesn't check. */
+#		undef FALSE
 
-// For compilers that support precompilation, includes "wx.h".
-#	include <wx/wxprec.h>
+//		For compilers that support precompilation, includes "wx.h".
+#		include <wx/wxprec.h>
 
-#	ifdef __BORLANDC__
-	    #pragma hdrstop
-#	endif
+#		ifdef __BORLANDC__
+	   		#pragma hdrstop
+#		endif
 
-// Any files you want to include if not precompiling by including
-// the whole of <wx/wx.h>
-#	ifndef WX_PRECOMP
-#		include <wx/wx.h>
-#	endif
+//		Any files you want to include if not precompiling by including
+//		the whole of <wx/wx.h>
+#		ifndef WX_PRECOMP
+#			include <wx/wx.h>
+#		endif
+#	endif /* __WXWIN__ */
+#	if defined(GRAPHICS_SUPPORT) && defined(USE_GUI)
+//		Any files included regardless of precompiled headers
+#		include <wx/notebook.h>
+#		include <wx/print.h>
+#		include <wx/printdlg.h>
+#		include <wx/socket.h>
+#		include <wx/cmdproc.h>
+#		include <wx/wxexpr.h>
 
-// Any files included regardless of precompiled headers
-#	include <wx/notebook.h>
-#	include <wx/print.h>
-#	include <wx/printdlg.h>
-#	include <wx/socket.h>
-#	include <wx/cmdproc.h>
-#	include <wx/wxexpr.h>
+#		if wxTEST_POSTSCRIPT_IN_MSW
+#			include "wx/generic/printps.h"
+#			include "wx/generic/prntdlgg.h"
+#		endif
 
-#	if wxTEST_POSTSCRIPT_IN_MSW
-#		include "wx/generic/printps.h"
-#		include "wx/generic/prntdlgg.h"
-#	endif
+#		include "GrUtils.h"
+#		include "GrFonts.h"
+#		include "GrDialogInfo.h"
+#		include "GrParControl.h"
+#		include "GrParListInfo.h"
+#		include "GrParListInfoList.h"
+#		include "GrModParDialog.h"
+#		include "GrSimThread.h"
+#		include "GrSimMgr.h"
+#		include "GrLines.h"
+#		include "GrAxisScale.h"
+#		include "GrCanvas.h"
+#		include "GrPrintDisp.h"
+#		include "GrBrushes.h"
+#		include "GrDisplayS.h"
+#		include "GrDiagFrame.h"
+#		include "GrSDICanvas.h"
+#		include "GrSDIFrame.h"
+#		include "GrSDIEvtHandler.h"
+#		include "GrSDIDiagram.h"
+#		include "GrSDIDoc.h"
+#		include "GrSDICommand.h"
+#		include "GrSDIView.h"
+#		include "GrSDIPalette.h"
 
-#	include "GrUtils.h"
-#	include "GrFonts.h"
-#	include "GrDialogInfo.h"
-#	include "GrParControl.h"
-#	include "GrParListInfo.h"
-#	include "GrParListInfoList.h"
-#	include "GrModParDialog.h"
-#	include "GrSimThread.h"
-#	include "GrSimMgr.h"
-#	include "GrLines.h"
-#	include "GrAxisScale.h"
-#	include "GrCanvas.h"
-#	include "GrPrintDisp.h"
-#	include "GrBrushes.h"
-#	include "GrDisplayS.h"
-#	include "GrDiagFrame.h"
-#	include "GrSDICanvas.h"
-#	include "GrSDIFrame.h"
-#	include "GrSDIEvtHandler.h"
-#	include "GrSDIDiagram.h"
-#	include "GrSDIDoc.h"
-#	include "GrSDICommand.h"
-#	include "GrSDIView.h"
-#	include "GrSDIPalette.h"
-
-#endif /* GRAPHICS_SUPPORT */
+#	endif /* GRAPHICS_SUPPORT */
+#	if USE_EXTENSIONS_LIBRARY
+#		include "ExtIPCMgr.h"
+#	endif /* USE_EXTENSIONS_LIBRARY */
+#endif /* __cplusplus */
 
 #ifdef MPI_SUPPORT
 #	include "mpi.h"

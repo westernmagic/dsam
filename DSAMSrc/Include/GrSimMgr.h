@@ -43,7 +43,6 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	DEFAULT_SERVER_NAME				"110773"
 #define SIM_MANAGER_DEFAULT_WIDTH		500
 #define SIM_MANAGER_DEFAULT_HEIGHT		200	
 #define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
@@ -52,8 +51,11 @@
 #define SIM_MANAGER_REG_DSAM_HELP_BOOK	"DSAMHelp"
 #define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
 
+#define	SIM_MANAGER_DEFAULT_SERVER_NAME		"DSAM IPC Server"
+
 #define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	"Program parameters"
 #define SIM_MANAGER_REG_MAIN_PARS				"/MainPars"
+#define	DEFAULT_SERVER_NAME		"DSAM IPC Server"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/

@@ -74,6 +74,11 @@ dnl ============================================================================
 dnl Configure ENABLE options
 dnl ============================================================================
 
+AC_ARG_ENABLE(wxwin,
+   [  --disable-wxwin           Do not compile any wxWindows support],
+   [WXWIN="$enableval"],
+   [WXWIN="yes"]
+)
 AC_ARG_ENABLE(wx_gtk,
    [  --disable-wx_gtk           Do not compile wxGTK support],
    [WX_GTK="$enableval"],
@@ -334,14 +339,15 @@ dnl ----------------------------------------------------------------------------
 dnl wxWin library (General)
 dnl ----------------------------------------------------------------------------
 
-AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_DEFAULT_CONFIG))
-if eval "$WX_DEFAULT_CONFIG --version 2> config.log > /dev/null"; then
-	wxwinAvailable=yes
-	wx_version=`$WX_DEFAULT_CONFIG --version | cut -d. -f 1-2`
-else
-	wxwinAvailable=no
+wxwinAvailable=no
+if test x$WXWIN = xyes; then
+	AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_DEFAULT_CONFIG))
+	if eval "$WX_DEFAULT_CONFIG --version 2> config.log > /dev/null"; then
+		wxwinAvailable=yes
+		wx_version=`$WX_DEFAULT_CONFIG --version | cut -d. -f 1-2`
+	fi
+	AC_MSG_RESULT($wxwinAvailable)
 fi
-AC_MSG_RESULT($wxwinAvailable)
 
 WX_CONFIG=
 using_wxwin_gui=
@@ -357,7 +363,7 @@ if test x$WX_BASE = xyes; then
 		AC_DEFINE(wx_base, 1, [Use wxBase library])
 		wx_base_available=yes
 		WX_CONFIG=$TMP_CONFIG
-		WX_BASE_CPPFLAGS=`$TMP_CONFIG --cflags`
+		WX_BASE_CPPFLAGS=`$TMP_CONFIG --cxxflags`
 		WX_BASE_LDFLAGS=`$TMP_CONFIG --libs`
 	else
 		wx_base_available=no
@@ -390,7 +396,7 @@ dnl ----------------------------------------------------------------------------
 if test x$WX_OGL = xyes -a x$using_wxwin_gui = xyes; then
 	AC_CHECKING([for wxWindows OGL Library and Header files])
 	CXXFLAGS_save=$CXXFLAGS
-	CXXFLAGS=`$WX_CONFIG --cflags`
+	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	AC_CHECK_HEADER([wx/ogl/ogl.h], 
 		[
 			AC_COMPILE_IFELSE(
@@ -450,7 +456,7 @@ AC_SUBST(DSAM_MPI)
 AC_SUBST(DSAM_DEFS)
 
 dnl ----------------------------------------------------------------------------
-dnl General graphics option settings.
+dnl General option settings.
 dnl ----------------------------------------------------------------------------
 
 if test x$wxwinAvailable = xyes; then
@@ -462,7 +468,10 @@ if test x$wxwinAvailable = xyes; then
 	AC_SUBST(WXINC)
 	WXLDLIBS="`$WX_CONFIG --libs` $WX_OGL_LDFLAGS"
 	AC_SUBST(WXLDLIBS)
+	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Using Extensions Support")
+	DSAM_EXTENSIONS="-DEXTENSIONS_SUPPORT"
 fi
+AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wxwinAvailable = xyes)
 if test x$using_wxwin_gui = xyes; then
 	DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
 	AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
@@ -499,6 +508,7 @@ AC_OUTPUT([
 	src/Makefile
 	src/MainLib/Makefile
 	src/StdLib/Makefile
+	src/ExtLib/Makefile
 	src/GrLib/Makefile
 	src/GrLib/Bitmaps/Makefile
 	ModuleSpecs/Makefile

@@ -39,6 +39,8 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
+Ext_Headers	= ExtIPCMgr.h
+
 Std_Headers	= StdMessage.h StdSimThread.h StdSignalDisp.h
 
 Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
@@ -58,9 +60,10 @@ Tr_Headers	= TrGate.h TrSetDBSPL.h
 
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
-					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers)
+					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers) \
+					$(Ext_Headers)
 
 DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(Fi_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
-					$(Gr_Headers) $(Std_Headers)
+					$(Gr_Headers) $(Std_Headers) $(Ext_Headers)
 		touch $(top_srcdir)/Include/DSAM.h

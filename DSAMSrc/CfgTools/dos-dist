@@ -37,7 +37,7 @@ EOF
 CVSConfigure()
 {
 	$CFGTOOLS/cvsconfigure
-	./configure --enable-graphics
+	./configure
 	(cd $MAINLIB; make UtSSParser.c)
 	sed "s/#define.*HAVE_STRINGS_H.*/\/* #undef HAVE_STRINGS_H *\//" \
 	  DSAMSetup.h > temp
