@@ -443,8 +443,10 @@ PrintPars_Utility_SelectChannels(void)
 	DPrint("\t%10s\n", "Selection Array");
 	DPrint("\t%10s\n", "(state)");
 	for (i = 0; i < selectChanPtr->numChannels; i++)
-		DPrint("\t%10s\n",
-		(selectChanPtr->selectionArray[i])? "    on    ": "    off    ");
+		if (selectChanPtr->selectionArray[i])
+			DPrint("\t    on * %d\n", selectChanPtr->selectionArray[i]);
+		else
+			DPrint("\t    off\n");
 	DPrint("\tMode = %s,", selectChanPtr->modeList[selectChanPtr->mode].name);
 	DPrint("\tNo. of Channels = %d.\n",
 	  selectChanPtr->numChannels);
@@ -611,7 +613,7 @@ BOOLN
 Process_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SelectChannels";
-	register	ChanData	 *inPtr, *outPtr;
+	register	ChanData	 *inPtr, *outPtr, multiplier;
 	uShort	numChannels = 0;
 	int		i, chan, inChanIndex;
 	ChanLen	j;
@@ -665,8 +667,9 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 				  0]->info.cFArray[inChanIndex];
 				inPtr = data->inSignal[0]->channel[i];
 				outPtr = data->outSignal->channel[chan];
+				multiplier = selectChanPtr->selectionArray[inChanIndex];
 				for (j = 0; j < data->outSignal->length; j++)
-					*outPtr++ = *inPtr++;
+					*outPtr++ = *inPtr++ * multiplier;
 				chan++;
 			}
 			break;
