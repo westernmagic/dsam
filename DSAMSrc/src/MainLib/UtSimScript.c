@@ -1094,9 +1094,6 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 	static const char *funcName = "InitSimulation_Utility_SimScript";
 	char	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
 	DatumPtr	pc;
-	CFListPtr	theCFs = NULL;
-	UniParPtr	par;
-	UniParListPtr	pList;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (localSimScriptPtr->parFilePathMode ==
@@ -1139,22 +1136,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				SetPar_ModuleMgr(pc->data, "ICList", (char *) theICs);
 				break; }
 			default:
-				if (((pList = GetUniParListPtr_ModuleMgr(pc->data)) != NULL) &&
-				  ((par = FindUniPar_UniParMgr(&pList, (void *) UNIPAR_CFLIST,
-				  UNIPAR_SEARCH_TYPE)) != NULL)) {
-					if ((theCFs = GenerateDefault_CFList()) == NULL) {
-						NotifyError("%s: Could not generate default CF list.",
-						  funcName);
-						return(FALSE);
-					}
-					if (!SetBandwidths_CFList(theCFs, "erb", NULL)) {
-						NotifyError("%s: Could not set CF bandwidths.",
-						  funcName);
-						Free_CFList(&theCFs);
-						return(FALSE);
-					}
-					SetPar_ModuleMgr(pc->data, par->abbr, (char *) theCFs);
-				}
+				;
 			}
 		}
 	if (!localSimScriptPtr->simParFileFlag) {

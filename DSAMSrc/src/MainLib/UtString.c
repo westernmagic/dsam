@@ -62,7 +62,7 @@ ToUpper_Utility_String(char *upperCaseString, char *string)
 int
 StrCmpNoCase_Utility_String(char *s1, char *s2)
 {
-	static char *funcName = "StrNCmpNoCase_Utility_String";
+	static char *funcName = "StrCmpNoCase_Utility_String";
 	char	upperString[2][LONG_STRING], *string[2];
 	int		i, len[2];
 

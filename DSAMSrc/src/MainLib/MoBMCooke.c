@@ -97,11 +97,18 @@ Init_BasilarM_Cooke(ParameterSpecifier parSpec)
 		}
 	}
 	bM0CookePtr->parSpec = parSpec;
-	bM0CookePtr->broadeningCoeffFlag = FALSE;
 	bM0CookePtr->updateProcessVariablesFlag = TRUE;
-	bM0CookePtr->outputModeFlag = FALSE;
-	bM0CookePtr->broadeningCoeff = 0.0;
-	bM0CookePtr->theCFs = NULL;
+	bM0CookePtr->broadeningCoeffFlag = TRUE;
+	bM0CookePtr->outputModeFlag = TRUE;
+	bM0CookePtr->outputMode = BM_COOKE_OUTPUTMODE_BM_DETAIL;
+	bM0CookePtr->broadeningCoeff = 1.019;
+	if ((bM0CookePtr->theCFs = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
+	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 
 	InitOutputModeList_BasilarM_Cooke();
 	if (!SetUniParList_BasilarM_Cooke()) {

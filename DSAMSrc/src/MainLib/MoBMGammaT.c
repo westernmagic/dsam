@@ -93,15 +93,21 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 		}
 	} else { /* LOCAL */
 		if (bMGammaTPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError("%s: 'local' pointer not set.", funcName);
 			return(FALSE);
 		}
 	}
 	bMGammaTPtr->parSpec = parSpec;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
-	bMGammaTPtr->cascadeFlag = FALSE;
-	bMGammaTPtr->cascade = 0;
-	bMGammaTPtr->theCFs = NULL;
+	bMGammaTPtr->cascadeFlag = TRUE;
+	bMGammaTPtr->cascade = 4;
+	if ((bMGammaTPtr->theCFs = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
+	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_BasilarM_GammaT()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -125,23 +125,30 @@ Init_BasilarM_GammaChirp(ParameterSpecifier parSpec)
 	}
 	bMGammaCPtr->parSpec = parSpec;
 	bMGammaCPtr->updateProcessVariablesFlag = TRUE;
-	bMGammaCPtr->diagnosticModeFlag = FALSE;
-	bMGammaCPtr->opModeFlag = FALSE;
-	bMGammaCPtr->cascadeFlag = FALSE;
-	bMGammaCPtr->bCoeffFlag = FALSE;
-	bMGammaCPtr->cCoeff0Flag = FALSE;
-	bMGammaCPtr->cCoeff1Flag = FALSE;
-	bMGammaCPtr->cLowerLimFlag = FALSE;
-	bMGammaCPtr->cUpperLimFlag = FALSE;
-	bMGammaCPtr->diagnosticMode = 0;
-	bMGammaCPtr->opMode = 0;
-	bMGammaCPtr->cascade = 0;
-	bMGammaCPtr->bCoeff = 0.0;
-	bMGammaCPtr->cCoeff0 = 0.0;
-	bMGammaCPtr->cCoeff1 = 0.0;
-	bMGammaCPtr->cLowerLim = 0.0;
+	bMGammaCPtr->diagnosticModeFlag = TRUE;
+	bMGammaCPtr->opModeFlag = TRUE;
+	bMGammaCPtr->cascadeFlag = TRUE;
+	bMGammaCPtr->bCoeffFlag = TRUE;
+	bMGammaCPtr->cCoeff0Flag = TRUE;
+	bMGammaCPtr->cCoeff1Flag = TRUE;
+	bMGammaCPtr->cLowerLimFlag = TRUE;
+	bMGammaCPtr->cUpperLimFlag = TRUE;
+	bMGammaCPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
+	bMGammaCPtr->opMode = BASILARM_GAMMACHIRP_OPMODE_FEEDBACK;
+	bMGammaCPtr->cascade = 4;
+	bMGammaCPtr->bCoeff = 1.019;
+	bMGammaCPtr->cCoeff0 = 3.38;
+	bMGammaCPtr->cCoeff1 = -0.107;
+	bMGammaCPtr->cLowerLim = -3.5;
 	bMGammaCPtr->cUpperLim = 0.0;
 	bMGammaCPtr->theCFs = NULL;
+	if ((bMGammaCPtr->theCFs = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
+	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 
 	InitOpModeList_BasilarM_GammaChirp();
 	if ((bMGammaCPtr->diagnosticModeList = InitNameList_NSpecLists(

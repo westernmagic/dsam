@@ -90,11 +90,31 @@ InitLPFilterModeList_BasilarM_DRNL_Test(void)
 	static NameSpecifier	modeList[] = {
 
 			{ "BUTTERWORTH",	BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE },
-			{ "BEAUCHAMP",	BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE },
+			{ "BEAUCHAMP",		BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE },
 			{ "",	BASILARM_DRNL_TEST_LPFILTERMODE_NULL },
 		};
 	bM0DRNLPtr->lPFilterModeList = modeList;
 	return(TRUE);
+
+}
+
+/****************************** SetDefaultCompressionMode *********************/
+
+/*
+ * This sets the default compression mode and associated parameters.
+ */
+
+void
+SetDefaultCompressionMode_BasilarM_DRNL_Test(void)
+{
+	int		i;
+	double	defValues[] = { 50.0, 0.008, 0.25};
+
+	SetCompressionMode_BasilarM_DRNL_Test("broken_stick1");
+	for (i = 0; i < bM0DRNLPtr->numCompressionPars; i++) {
+		bM0DRNLPtr->compressionPars[i] = defValues[i];
+		bM0DRNLPtr->compressionParsFlag[i] = TRUE;
+	}
 
 }
 
@@ -128,28 +148,32 @@ Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 		}
 	}
 	bM0DRNLPtr->parSpec = parSpec;
-	bM0DRNLPtr->updateProcessVariablesFlag = FALSE;
-	bM0DRNLPtr->nonLinGTCascadeFlag = FALSE;
-	bM0DRNLPtr->nonLinLPCascadeFlag = FALSE;
-	bM0DRNLPtr->compressionModeFlag = FALSE;
-	bM0DRNLPtr->lPFilterModeFlag = FALSE;
+	bM0DRNLPtr->updateProcessVariablesFlag = TRUE;
+	bM0DRNLPtr->nonLinGTCascadeFlag = TRUE;
+	bM0DRNLPtr->nonLinLPCascadeFlag = TRUE;
+	bM0DRNLPtr->compressionModeFlag = TRUE;
+	bM0DRNLPtr->lPFilterModeFlag = TRUE;
 	bM0DRNLPtr->compressionParsFlag = NULL;
-	bM0DRNLPtr->linGTCascadeFlag = FALSE;
-	bM0DRNLPtr->linLPCascadeFlag = FALSE;
-	bM0DRNLPtr->linCFFlag = FALSE;
-	bM0DRNLPtr->linBwidthFlag = FALSE;
-	bM0DRNLPtr->linScalerFlag = FALSE;
-	bM0DRNLPtr->nonLinGTCascade = 0;
-	bM0DRNLPtr->nonLinLPCascade = 0;
-	bM0DRNLPtr->compressionMode = 0;
-	bM0DRNLPtr->lPFilterMode = 0;
+	bM0DRNLPtr->linGTCascadeFlag = TRUE;
+	bM0DRNLPtr->linLPCascadeFlag = TRUE;
+	bM0DRNLPtr->linCFFlag = TRUE;
+	bM0DRNLPtr->linBwidthFlag = TRUE;
+	bM0DRNLPtr->linScalerFlag = TRUE;
+	bM0DRNLPtr->nonLinGTCascade = 3;
+	bM0DRNLPtr->nonLinLPCascade = 3;
 	bM0DRNLPtr->compressionPars = NULL;
-	bM0DRNLPtr->linGTCascade = 0;
-	bM0DRNLPtr->linLPCascade = 0;
-	bM0DRNLPtr->linCF = 0.0;
-	bM0DRNLPtr->linBwidth = 0.0;
-	bM0DRNLPtr->linScaler = 0.0;
-	bM0DRNLPtr->theCFs = NULL;
+	bM0DRNLPtr->lPFilterMode = BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE;
+	bM0DRNLPtr->linGTCascade = 2;
+	bM0DRNLPtr->linLPCascade = 4;
+	bM0DRNLPtr->linCF = 700.0;
+	bM0DRNLPtr->linBwidth = 130.0;
+	bM0DRNLPtr->linScaler = 83.0;
+	if ((bM0DRNLPtr->theCFs = GenerateDefault_CFList("single", 1, 750.0,
+	  CFLIST_DEFAULT_HIGH_FREQ, CFLIST_DEFAULT_BW_MODE_NAME,
+	  CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 	bM0DRNLPtr->nonLinearGT1 = NULL;
 	bM0DRNLPtr->nonLinearGT2 = NULL;
 	bM0DRNLPtr->nonLinearLP.set = FALSE;
@@ -163,7 +187,7 @@ Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 		Free_BasilarM_DRNL_Test();
 		return(FALSE);
 	}
-	bM0DRNLPtr->numCompressionPars = 0;
+	SetDefaultCompressionMode_BasilarM_DRNL_Test();
 	return(TRUE);
 
 }
@@ -1033,10 +1057,6 @@ InitModule_BasilarM_DRNL_Test(ModulePtr theModule)
 
 	if (!SetParsPointer_BasilarM_DRNL_Test(theModule)) {
 		NotifyError("%s: Cannot set parameters pointer.", funcName);
-		return(FALSE);
-	}
-	if (!Init_BasilarM_DRNL_Test(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_DRNL_Test(GLOBAL)) {

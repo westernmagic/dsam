@@ -99,17 +99,22 @@ Init_BasilarM_Carney(ParameterSpecifier parSpec)
 	}
 	bMCarneyPtr->parSpec = parSpec;
 	bMCarneyPtr->updateProcessVariablesFlag = TRUE;
-	bMCarneyPtr->cascadeFlag = FALSE;
-	bMCarneyPtr->cutOffFrequencyFlag = FALSE;
-	bMCarneyPtr->hCOperatingPointFlag = FALSE;
-	bMCarneyPtr->asymmetricalBiasFlag = FALSE;
-	bMCarneyPtr->maxHCVoltageFlag = FALSE;
-	bMCarneyPtr->cascade = 0;
-	bMCarneyPtr->cutOffFrequency = 0.0;
-	bMCarneyPtr->hCOperatingPoint = 0.0;
-	bMCarneyPtr->asymmetricalBias = 0.0;
-	bMCarneyPtr->maxHCVoltage = 0.0;
-	bMCarneyPtr->cFList = NULL;
+	bMCarneyPtr->cascadeFlag = TRUE;
+	bMCarneyPtr->cutOffFrequencyFlag = TRUE;
+	bMCarneyPtr->hCOperatingPointFlag = TRUE;
+	bMCarneyPtr->asymmetricalBiasFlag = TRUE;
+	bMCarneyPtr->maxHCVoltageFlag = TRUE;
+	bMCarneyPtr->cascade = 4;
+	bMCarneyPtr->cutOffFrequency = 1100.0;
+	bMCarneyPtr->hCOperatingPoint = 5000.0;
+	bMCarneyPtr->asymmetricalBias = 0.462;
+	bMCarneyPtr->maxHCVoltage = 10.0;
+	if ((bMCarneyPtr->cFList = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS, 200.0, 5000.0,
+	  "internal_dynamic", CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 
 	if (!SetUniParList_BasilarM_Carney()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

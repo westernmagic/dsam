@@ -158,7 +158,13 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 	bMZhangPtr->cutCP = 800.0;
 	bMZhangPtr->kCP = 3;
 	bMZhangPtr->r0 = 0.05;
-	bMZhangPtr->cFList = NULL;
+	if ((bMZhangPtr->cFList = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, "internal_dynamic",
+	  CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
 
 	InitModelList_BasilarM_Zhang();
 	if (!SetUniParList_BasilarM_Zhang()) {

@@ -863,23 +863,50 @@ AllocateFrequencies_CFList(CFListPtr theCFs)
 
 /*
  * This routine generates a default CFList.
+ * If the number of channels is one, then it is assumed that 'single' or 'user'
+ * mode is being used.
  */
  
 CFListPtr
-GenerateDefault_CFList(void)
+GenerateDefault_CFList(char *modeName, int numberOfCFs, double minCF,
+  double maxCF, char *bwModeName, double (* BWidthFunc)(struct BandwidthMode *,
+  double))
 {
 	static const char *funcName = "GenerateDefault_CFList";
+	double	*frequencies;
 	CFListPtr theCFs;
 
-	if ((theCFs = GenerateList_CFList("log", "parameters",
-	  CFLIST_DEFAULT_CF_CHANNELS, CFLIST_DEFAULT_CF_LOW_FREQ,
-	  CFLIST_DEFAULT_CF_HIGH_FREQ, 0.0, 0.0, NULL)) == NULL) {
+	if (numberOfCFs < 1) {
+		NotifyError("%s: Insufficient CF's (%d).", funcName, numberOfCFs);
+		return(NULL);
+	}
+	if (Identify_NameSpecifier(modeName, cFListModeList) ==
+	  CFLIST_SINGLE_MODE) {
+		if ((frequencies = (double *) calloc(numberOfCFs, sizeof(double))) ==
+		  NULL) {
+			NotifyError("%s: Out of memory for frequencies (%d)", funcName,
+			  numberOfCFs);
+			return(NULL);
+		}
+		frequencies[0] = minCF;
+	} else
+		frequencies = NULL;
+	if ((theCFs = GenerateList_CFList(modeName, "parameters", numberOfCFs,
+	  minCF, maxCF, 0.0, 0.0, frequencies)) == NULL) {
 		NotifyError("%s: Could not generate default CF list.", funcName);
 		Free_CFList(&theCFs);
 		return(NULL);
 	}
 	theCFs->minCFFlag = FALSE;
 	theCFs->maxCFFlag = FALSE;
+	if (BWidthFunc)
+		theCFs->bandwidthMode.Func = BWidthFunc;
+	if (!SetBandwidths_CFList(theCFs, bwModeName, NULL)) {
+		NotifyError("%s: Could not set CF bandwidths.",
+		  funcName);
+		Free_CFList(&theCFs);
+		return(NULL);
+	}
 	return(theCFs);
 
 }

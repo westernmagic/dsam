@@ -146,6 +146,44 @@ GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
 
 }
 
+/****************************** SetDefaultParArrayPars ************************/
+
+/*
+ * This routine sets the default values for the parameter array parameters.
+ */
+
+void
+SetDefaultParArrayPars_BasilarM_DRNL(void)
+{
+	int		i;
+	double	nonLinBwidth[] = {0.8, 58};
+	double	comprScaleA[] = {1.67, 0.45};
+	double	comprScaleB[] = {-5.85, 0.875};
+	double	linCF[] = {0.14, 0.95};
+	double	linBwidth[] = {1.3, 0.53};
+	double	linScaleG[] = {5.48, -0.97};
+
+	SetMode_ParArray(bMDRNLPtr->nonLinBwidth, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->nonLinBwidth->numParams; i++)
+		bMDRNLPtr->nonLinBwidth->params[i] = nonLinBwidth[i];
+	SetMode_ParArray(bMDRNLPtr->comprScaleA, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->comprScaleA->numParams; i++)
+		bMDRNLPtr->comprScaleA->params[i] = comprScaleA[i];
+	SetMode_ParArray(bMDRNLPtr->comprScaleB, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->comprScaleB->numParams; i++)
+		bMDRNLPtr->comprScaleB->params[i] = comprScaleB[i];
+	SetMode_ParArray(bMDRNLPtr->linCF, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->linCF->numParams; i++)
+		bMDRNLPtr->linCF->params[i] = linCF[i];
+	SetMode_ParArray(bMDRNLPtr->linBwidth, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->linBwidth->numParams; i++)
+		bMDRNLPtr->linBwidth->params[i] = linBwidth[i];
+	SetMode_ParArray(bMDRNLPtr->linScaleG, "Log_func1");
+	for (i = 0; i < bMDRNLPtr->linScaleG->numParams; i++)
+		bMDRNLPtr->linScaleG->params[i] = linScaleG[i];
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -177,13 +215,14 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 		}
 	}
 	bMDRNLPtr->parSpec = parSpec;
-	bMDRNLPtr->nonLinGTCascadeFlag = FALSE;
-	bMDRNLPtr->nonLinLPCascadeFlag = FALSE;
-	bMDRNLPtr->comprExponentFlag = FALSE;
-	bMDRNLPtr->linGTCascadeFlag = FALSE;
-	bMDRNLPtr->linLPCascadeFlag = FALSE;
-	bMDRNLPtr->nonLinGTCascade = 0;
-	bMDRNLPtr->nonLinLPCascade = 0;
+	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
+	bMDRNLPtr->nonLinGTCascadeFlag = TRUE;
+	bMDRNLPtr->nonLinLPCascadeFlag = TRUE;
+	bMDRNLPtr->comprExponentFlag = TRUE;
+	bMDRNLPtr->linGTCascadeFlag = TRUE;
+	bMDRNLPtr->linLPCascadeFlag = TRUE;
+	bMDRNLPtr->nonLinGTCascade = 3;
+	bMDRNLPtr->nonLinLPCascade = 4;
 	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray("NonLinBwidth", 
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
 		NotifyError("%s: Could not initialise NonLinBwidth parArray structure",
@@ -205,9 +244,9 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	bMDRNLPtr->comprExponent = 0.0;
-	bMDRNLPtr->linGTCascade = 0;
-	bMDRNLPtr->linLPCascade = 0;
+	bMDRNLPtr->comprExponent = 0.1;
+	bMDRNLPtr->linGTCascade = 3;
+	bMDRNLPtr->linLPCascade = 4;
 	if ((bMDRNLPtr->linCF = Init_ParArray("LinCF", FitFuncModeList_NSpecLists(
 	  0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
 		NotifyError("%s: Could not initialise LinCF parArray structure",
@@ -229,7 +268,14 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	bMDRNLPtr->theCFs = NULL;
+	if ((bMDRNLPtr->theCFs = GenerateDefault_CFList(
+	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, "internal_static",
+	  GetNonLinBandwidth_BasilarM_DRNL)) == NULL) {
+		NotifyError("%s: could not set default CFList.", funcName);
+		return(FALSE);
+	}
+	SetDefaultParArrayPars_BasilarM_DRNL();
 
 	if (!SetUniParList_BasilarM_DRNL()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);

@@ -39,11 +39,14 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define CFLIST_NUM_PARS				9
-#define CFLIST_NUM_CONSTANT_PARS	2
-#define CFLIST_DEFAULT_CF_CHANNELS	2
-#define CFLIST_DEFAULT_CF_LOW_FREQ	100
-#define CFLIST_DEFAULT_CF_HIGH_FREQ	6000
+#define CFLIST_NUM_PARS					9
+#define CFLIST_NUM_CONSTANT_PARS		2
+#define CFLIST_DEFAULT_MODE_NAME		"log"
+#define CFLIST_DEFAULT_CHANNELS			30
+#define CFLIST_DEFAULT_LOW_FREQ			100
+#define CFLIST_DEFAULT_HIGH_FREQ		10000
+#define CFLIST_DEFAULT_BW_MODE_NAME		"erb"
+#define CFLIST_DEFAULT_BW_MODE_FUNC		NULL
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -141,7 +144,9 @@ BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
 void		Free_CFList(CFListPtr *theCFs);
 
-CFListPtr	GenerateDefault_CFList(void);
+CFListPtr	GenerateDefault_CFList(char *modeName, int numberOfCFs,
+			  double minCF, double maxCF, char *bwModeName,
+			  double (* BWidthFunc)(struct BandwidthMode *, double));
 
 BOOLN		GenerateERB_CFList(CFListPtr theCFs);
 

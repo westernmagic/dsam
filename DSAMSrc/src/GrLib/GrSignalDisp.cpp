@@ -221,28 +221,28 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 		}
 	}
 	
-	signalDispPtr->autoYScaleFlag = FALSE;
-	signalDispPtr->yAxisModeFlag = FALSE;
-	signalDispPtr->yNormalisationModeFlag = FALSE;
-	signalDispPtr->modeFlag = FALSE;
-	signalDispPtr->numGreyScalesFlag = FALSE;
-	signalDispPtr->magnificationFlag = FALSE;
-	signalDispPtr->summaryDisplayFlag = FALSE;
-	signalDispPtr->xResolutionFlag = FALSE;
+	signalDispPtr->autoYScaleFlag = TRUE;
+	signalDispPtr->yAxisModeFlag = TRUE;
+	signalDispPtr->yNormalisationModeFlag = TRUE;
+	signalDispPtr->modeFlag = TRUE;
+	signalDispPtr->numGreyScalesFlag = TRUE;
+	signalDispPtr->magnificationFlag = TRUE;
+	signalDispPtr->summaryDisplayFlag = TRUE;
+	signalDispPtr->xResolutionFlag = TRUE;
 	signalDispPtr->minYFlag = FALSE;
 	signalDispPtr->maxYFlag = FALSE;
-	signalDispPtr->autoXScaleFlag = FALSE;
-	signalDispPtr->xOffsetFlag = FALSE;
-	signalDispPtr->xExtentFlag = FALSE;
-	signalDispPtr->widthFlag = FALSE;
-	signalDispPtr->frameDelayFlag = FALSE;
-	signalDispPtr->frameHeightFlag = FALSE;
-	signalDispPtr->frameWidthFlag = FALSE;
-	signalDispPtr->frameXPosFlag = FALSE;
-	signalDispPtr->frameYPosFlag = FALSE;
+	signalDispPtr->autoXScaleFlag = TRUE;
+	signalDispPtr->xOffsetFlag = TRUE;
+	signalDispPtr->xExtentFlag = TRUE;
+	signalDispPtr->widthFlag = TRUE;
+	signalDispPtr->frameDelayFlag = TRUE;
+	signalDispPtr->frameHeightFlag = TRUE;
+	signalDispPtr->frameWidthFlag = TRUE;
+	signalDispPtr->frameXPosFlag = TRUE;
+	signalDispPtr->frameYPosFlag = TRUE;
 	signalDispPtr->titleFlag = FALSE;
-	signalDispPtr->topMarginFlag = FALSE;
-	signalDispPtr->channelStepFlag = FALSE;
+	signalDispPtr->topMarginFlag = TRUE;
+	signalDispPtr->channelStepFlag = TRUE;
 	signalDispPtr->xTicksFlag = FALSE;
 	signalDispPtr->xAxisTitleFlag = FALSE;
 	signalDispPtr->xNumberFormatFlag = FALSE;
