@@ -1243,7 +1243,7 @@ PrintCheckDataRoutine(FILE *fp)
 	  "funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
-	fprintf(fp, "\tif (!CheckInit_SignalData(data->inSignal[0], funcName))\n");
+	fprintf(fp, "\tif (!CheckInSignal_EarObject(data, funcName))\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t/*** Put additional checks here. ***/\n");
 	fprintf(fp, "\treturn(TRUE);\n");
