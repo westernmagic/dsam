@@ -136,13 +136,13 @@ typedef enum {
 	IHCRP_MEDDIS,
 	IHCRP_SHAMMA,
 	NEUR_ARLEKIM,
-	NEUR_DENDRITELP,
+	FILT_LOWPASS,
 	NEUR_HHUXLEY,
 	NEUR_MCGREGOR,
 	NULL_MODULE,
 	MPI_MASTER1,
-	PREEM_BANDPASS,
-	PREEM_MULTIBPASS,
+	FILT_BANDPASS,
+	FILT_MULTIBPASS,
 	STIM_CLICK,
 	STIM_EXPGATEDTONE,
 	STIM_HARMONIC,
@@ -417,7 +417,7 @@ typedef struct moduleStruct {
 		CreateBinITD	createBinITD;
 		CrossCorr	crossCorr;
 		DataFile	dataFile;
-		Dendrite	dendrite;
+		LowPassF	lowPassF;
 		EGatedTone	eGatedTone;
 		FMTone		fMTone;
 		FindBin		findBin;
@@ -443,8 +443,8 @@ typedef struct moduleStruct {
 		ModulusFT	modulusFT;
 		MPureTone	mPureTone;
 		Pause		pause;
-		PEMultiBP	pEMultiBP;
-		PreEmphasis	preEmphasis;
+		MultiBPassF	multiBPassF;
+		BandPassF	bandPassF;
 		PulseTrain	pulseTrain;
 		PureTone	pureTone;
 		PureTone4	pureTone4;
@@ -619,7 +619,7 @@ void		SetMPureTone_ModuleMgr(ModulePtr theModule);
 
 void		SetNeuron_ArleKim_ModuleMgr(ModulePtr theModule);
 
-void		SetNeuron_DendriteLP_ModuleMgr(ModulePtr theModule);
+void		SetFilter_LowPass_ModuleMgr(ModulePtr theModule);
 
 void		SetNeuron_HHuxley_ModuleMgr(ModulePtr theModule);
 
@@ -635,9 +635,9 @@ BOOLN		SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value);
 
 BOOLN		SetParsPointer_ModuleMgr(ModulePtr theModule);
 
-void		SetPreEmphasis_BandPass_ModuleMgr(ModulePtr theModule);
+void		SetFilter_BandPass_ModuleMgr(ModulePtr theModule);
 
-void		SetPreEmphasis_MultiBPass_ModuleMgr(ModulePtr theModule);
+void		SetFilter_MultiBPass_ModuleMgr(ModulePtr theModule);
 
 void		SetPulseTrain_ModuleMgr(ModulePtr theModule);
 

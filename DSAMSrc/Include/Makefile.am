@@ -22,11 +22,11 @@ Gr_Headers	= GrBrushes.h GrCanvas.h \
 				GrDSAMList.h GrParListInfoList.h GrPrintDisp.h GrParControl.h
   
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
-				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h MoDendrite.h \
+				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h FlLowPass.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHC95Meddis.h MoIHCCarney.h MoIHCCooke.h \
-				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h MoPEBPass.h \
-				MoPEMBPass.h
+				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h FlBandPass.h \
+				FlMultiBPass.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 

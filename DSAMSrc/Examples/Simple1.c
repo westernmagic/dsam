@@ -19,7 +19,7 @@ int MainSimulation(void)
 	/* Initialise EarObjects. */
 	
 	stimulus = Init_EarObject("click");
-	pEFilter = Init_EarObject("PreEmphasis_BandPass");
+	pEFilter = Init_EarObject("Filter_BandPass");
 	bMFilter = Init_EarObject("BasilarM_GammaT");
 	hairCell = Init_EarObject("IHC_Meddis86");
 

@@ -56,11 +56,11 @@ Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp \
 				GrParListInfoList.cpp GrParControl.cpp dsam.xpm
   
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
-				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c MoDendrite.c \
+				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c FlLowPass.c \
 				MoHCRPCarney.c MoHCRPMeddis.c MoHCRPShamma.c MoIHC86Meddis.c \
 				MoIHC86aMeddis.c MoIHC95Meddis.c MoIHCCarney.c MoIHCCooke.c \
-				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoPEBPass.c \
-				MoPEMBPass.c
+				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c FlBandPass.c \
+				FlMultiBPass.c
 
 Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 

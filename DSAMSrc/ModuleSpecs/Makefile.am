@@ -12,11 +12,11 @@ An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoBMCarney.mod MoBMCooke.mod MoBMGammaT.mod MoBMDRNL.mod \
-				MoBM0DRNL.mod MoDendrite.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
+				MoBM0DRNL.mod FlLowPass.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
 				MoHCRPShamma.mod MoIHCCarney.mod MoIHCCooke.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHC95Meddis.mod \
-				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod MoPEBPass.mod \
-				MoPEMBPass.mod
+				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod FlBandPass.mod \
+				FlMultiBPass.mod
 
 Pa_Modules	= PaMaster1.mod
 

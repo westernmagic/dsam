@@ -163,12 +163,12 @@ GENERAL_OBJS= GeCommon.obj  GeSignalData.obj  GeEarObject.obj  \
 			GeModuleMgr.obj GeNSpecLists.obj GeUniParMgr.obj
 
 MODEL_OBJS  = MoIHC86Meddis.obj  MoIHC95Meddis.obj  MoBMGammaT.obj \
-			MoPEBPass.obj  MoNCArleKim.obj  MoANSGSimple.obj \
-			MoHCRPMeddis.obj  MoDendrite.obj  MoBMDRNL.obj MoBM0DRNL.obj \
+			FlBandPass.obj  MoNCArleKim.obj  MoANSGSimple.obj \
+			MoHCRPMeddis.obj  FlLowPass.obj  MoBMDRNL.obj MoBM0DRNL.obj \
 			MoBMCooke.obj  MoNCMcGregor.obj MoIHCCooke.obj  \
 			MoHCRPShamma.obj MoIHC86aMeddis.obj  MoBMCarney.obj \
 			MoIHCCarney.obj MoHCRPCarney.obj  MoANSGCarney.obj \
-			MoANSGBinom.obj MoNCHHuxley.obj MoPEMBPass.obj
+			MoANSGBinom.obj MoNCHHuxley.obj FlMultiBPass.obj
 
 
 STIMULUS_OBJS= StMPTone.obj  StPTone.obj  StPTone2.obj StClick.obj  \
@@ -364,9 +364,9 @@ MoNCHHuxley.obj:        $(INCDIR)/MoNCHHuxley.h $(INCDIR)/UtIonChanList.h \
 
 MoNCMcGregor.obj:       $(INCDIR)/MoNCMcGregor.h $(GEN_HEADERS)
 
-MoPEBPass.obj:  $(INCDIR)/MoPEBPass.h $(GEN_HEADERS)
+FlBandPass.obj:  $(INCDIR)/FlBandPass.h $(GEN_HEADERS)
 
-MoPEMBPass.obj:  $(INCDIR)/MoPEMBPass.h $(GEN_HEADERS)
+FlMultiBPass.obj:  $(INCDIR)/FlMultiBPass.h $(GEN_HEADERS)
 
 MoHCRPMeddis.obj:       $(INCDIR)/MoHCRPMeddis.h $(GEN_HEADERS)
 

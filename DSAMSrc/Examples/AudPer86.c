@@ -110,9 +110,9 @@ int main(void)
 	ReadPars_PureTone( stParFile );
 	PrintPars_PureTone();
 
-	Init_PreEmphasis_BandPass( GLOBAL );
-	ReadPars_PreEmphasis_BandPass( pEParFile );
-	PrintPars_PreEmphasis_BandPass();
+	Init_Filter_BandPass( GLOBAL );
+	ReadPars_Filter_BandPass( pEParFile );
+	PrintPars_Filter_BandPass();
 
 	Init_BasilarM_GammaT( GLOBAL );
 	ReadPars_BasilarM_GammaT( bMParFile );
@@ -135,7 +135,7 @@ int main(void)
 	Calc_Analysis_Intensity( intensity );
 	printf("\tStimulus intensity = %g dB SPL.\n",
 	  GetResult_EarObject(intensity, CHANNEL ));
-	RunModel_PreEmphasis_BandPass( pEFilter );
+	RunModel_Filter_BandPass( pEFilter );
 	PrintProcessName_EarObject("2-Outer-/middle-ear: '%s'.\n", pEFilter );
 	RunModel_BasilarM_GammaT( bMFilter );
 	PrintProcessName_EarObject("3-Basilar membrane: '%s'.\n", bMFilter );
