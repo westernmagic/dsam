@@ -1,62 +1,91 @@
-function signal=ReadAIFF(fname)
-absoluteNormalise = 1.0;
-fid=fopen(fname);
-aiff_form=fread(fid,4,'char');
-chunkSize=fread(fid,1,'int32');
-aiff_aiff=fread(fid,4,'char');
-chunkSize=chunkSize-16;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% File:			ReadAIFF.m
+% Purpose:		Reads an AIFF format file.
+% Comments:		The default binary format is big-endian, if this does not
+%				work, then little-endian format is tried.
+% Author:		L. P. O'Mard
+% Revised by:
+% Created:
+% Updated:
+% Copyright:	(c) 2000, University of Essex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-while chunkSize-4>0;
-	chunkName=fread(fid,4,'char');
-	chunkSize=chunkSize-4;
-	if chunkName'==double('COMM');
+function signal = ReadAIFF(fname)
+
+absoluteNormalise = 1.0;
+fid = fopen(fname);
+littleEndian = 0;
+aiff_form = ReadBytes(fid, 4, littleEndian);
+if aiff_form' == double('FORM')
+%	disp('big-endian');
+else
+%	disp('little-endian');
+	littleEndian = 1;
+end;
+
+chunkSize = Read32Bits(fid, littleEndian);
+
+aiff_aiff = ReadBytes(fid, 4, littleEndian);
+if aiff_aiff' ~= double('AIFF')
+	aiff_aiff
+	disp('Not a valid AIFF file.');
+	return
+end;
+chunkSize = chunkSize - 16;
+
+while chunkSize - 4 > 0;
+	chunkName = ReadBytes(fid, 4, littleEndian);
+	chunkSize = chunkSize - 4;
+	if chunkName' == double('COMM');
 % 		disp('step COMM');
- 		subSize=fread(fid,1,'int32');
- 		chunkSize=chunkSize-subSize;
- 		numChannels=fread(fid,1,'int16');
- 		subSize=subSize-2;
- 		numSampleFrames=fread(fid,1,'int32');
- 		subSize=subSize-4; 
- 		sampleSize=fread(fid,1,'int16');
- 		subSize=subSize-2;
- 		sampleRate=ReadIEEE(fid);
- 		subSize=subSize-10;
- 		fread(fid,subSize,'char');
-	elseif chunkName'==double('SSND');
+ 		subSize = Read32Bits(fid, littleEndian);
+ 		chunkSize = chunkSize-subSize;
+ 		numChannels = Read16Bits(fid, littleEndian);
+ 		subSize = subSize - 2;
+ 		numSampleFrames = Read32Bits(fid, littleEndian);
+ 		subSize = subSize - 4; 
+ 		sampleSize = Read16Bits(fid, littleEndian);
+ 		subSize = subSize - 2;
+ 		sampleRate = ReadIEEE(fid, littleEndian);
+ 		subSize = subSize - 10;
+ 		fread(fid, subSize, 'char');
+	elseif chunkName' == double('SSND');
 % 		disp('step SSND');
- 		subSize=fread(fid,1,'int32');
- 		chunkSize=chunkSize-subSize;
- 		offset=fread(fid,1,'int32');
-		subSize=subSize-4;
-		blockSize=fread(fid,1,'int32');
-		subSize=subSize-4;
-		soundPosition=ftell(fid)+offset;
-		fread(fid,subSize,'char');
-	elseif chunkName'==double('LUT2');
+ 		subSize = Read32Bits(fid, littleEndian);
+ 		chunkSize = chunkSize - subSize;
+ 		offset = Read32Bits(fid, littleEndian);
+		subSize = subSize - 4;
+		blockSize = Read32Bits(fid, littleEndian);
+		subSize = subSize - 4;
+		soundPosition = ftell(fid) + offset;
+		fread(fid, subSize, 'char');
+	elseif chunkName' == double('LUT2');
 % 		disp('step LUT2');
- 		subSize=fread(fid,1,'int32');
- 		chunkSize=chunkSize-subSize;
- 		interleaveLevel=fread(fid,1,'int16');
- 		subSize=subSize-2;
-  		numWindowFrames=fread(fid,1,'int16');
- 		subSize=subSize-2;
-  		staticTimeFlag=fread(fid,1,'int16');
- 		subSize=subSize-2;
-		outputTimeOffset=ReadIEEE(fid);
- 		subSize=subSize-10;
- 		absoluteNormalise=ReadIEEE(fid);
- 		subSize=subSize-10;
- 		fread(fid,subSize,'char');
+ 		subSize = Read32Bits(fid, littleEndian);
+ 		chunkSize = chunkSize - subSize;
+ 		interleaveLevel = Read16Bits(fid, littleEndian);
+ 		subSize = subSize - 2;
+  		numWindowFrames = Read16Bits(fid, littleEndian);
+ 		subSize = subSize - 2;
+  		staticTimeFlag = Read16Bits(fid, littleEndian);
+ 		subSize = subSize - 2;
+		outputTimeOffset = ReadIEEE(fid, littleEndian);
+ 		subSize = subSize - 10;
+ 		absoluteNormalise = ReadIEEE(fid, littleEndian);
+ 		subSize = subSize - 10;
+ 		fread(fid, subSize, 'char');
 		
  	else;
- 		subSize=fread(fid,1,'int32');
- 		chunkSize=chunkSize-subSize;
- 		fread(fid,subSize,'char');
+ 		subSize = Read32Bits(fid, littleEndian);
+ 		chunkSize = chunkSize - subSize;
+ 		fread(fid, subSize, 'char');
  			
  	end;
 end;
 
-wordSize=floor((sampleSize+7)/8);
+wordSize = floor((sampleSize + 7 ) / 8);
 normalise = (2^16 - 1) / 2^(17 - wordSize * 8) / absoluteNormalise;
 switch wordSize
 	case 1, scale = normalise / 127.0;
@@ -64,15 +93,11 @@ switch wordSize
 	case 4, scale = normalise / 32768.0 / 65536;
 end
 frameLength = numSampleFrames / numWindowFrames;
-signal = zeros(numChannels,frameLength,numWindowFrames);
-status = fseek(fid,soundPosition,'bof');
+signal = zeros(numChannels,frameLength, numWindowFrames);
+status = fseek(fid, soundPosition, 'bof');
 for k = 1:numWindowFrames
-	switch wordSize
-		case 1, frame = fread(fid, [numChannels, frameLength],'char');
-		case 2, frame = fread(fid, [numChannels, frameLength],'int16');
-		case 4, frame = fread(fid, [numChannels, frameLength],'int32');
-	end
-	signal(:,:,k) = frame;
+	signal(:, :, k) = ReadWinFrame(fid, numChannels, frameLength, wordSize, ...
+	  littleEndian);
 end
 signal = signal .* scale;
 status = fclose(fid);

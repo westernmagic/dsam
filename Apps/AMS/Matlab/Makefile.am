@@ -5,7 +5,8 @@
 AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Matlab
-M_files		= ReadAIFF.m ReadIEEE.m
+M_files		= ReadAIFF.m ReadIEEE.m Read16Bits.m Read32Bits.m ReadBytes.m \
+				ReadSNDChunk.m ReadWinFrame.m
 
 EXTRA_DIST	= $(M_files)
 
