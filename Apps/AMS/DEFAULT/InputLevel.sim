@@ -1,0 +1,13 @@
+#AIM.sim
+on			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode ('relative', 'none' or <file path>).
+
+# Module Specifications
+
+begin {
+	
+	DataFile_In			< LevelDFIn.par
+    Display_Signal		< LevelDisp1.par
+
+}
+
