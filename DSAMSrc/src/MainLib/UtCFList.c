@@ -374,9 +374,10 @@ SetNumChannels_CFList(CFListPtr theCFs, int numChannels)
 		  numChannels);
 		return(FALSE);
 	}
-	if (theCFs->centreFreqMode == CFLIST_SINGLE_MODE) {
-		NotifyError("%s: You cannot set the number of channels when single "
-		  "mode is set.  First change the mode.", funcName);
+	if ((theCFs->centreFreqMode == CFLIST_SINGLE_MODE) && (numChannels != 1)) {
+		NotifyError("%s: You cannot set the number of channels to more than 1 "
+		  "when the 'single' CF mode is set.  First change the mode.",
+		  funcName);
 		return(FALSE);
 	}
 	theCFs->numChannels = numChannels;
