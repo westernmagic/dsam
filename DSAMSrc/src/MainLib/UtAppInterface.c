@@ -647,18 +647,18 @@ ProcessParComs_AppInterface(void)
 {
 	static const char *funcName = "ProcessParComs_AppInterface";
 	int		i;
-	DatumPtr	simulation;
+	DatumPtr	simulation = NULL;
 
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!appInterfacePtr->useParComsFlag || !appInterfacePtr->audModel)
+	if (!appInterfacePtr->useParComsFlag)
 		return(TRUE);
 
-	if ((simulation = GetSimulation_ModuleMgr(appInterfacePtr->audModel)) ==
-	  NULL) {
+	if (appInterfacePtr->audModel && (simulation = GetSimulation_ModuleMgr(
+	  appInterfacePtr->audModel)) == NULL) {
 		NotifyError("%s: No simulation has been initialised.", funcName);
 		return(FALSE);
 	}
