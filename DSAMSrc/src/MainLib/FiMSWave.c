@@ -203,8 +203,8 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 		SetInterleaveLevel_SignalData(data->outSignal, 2);
 	if (fp != stdin)
 		SetPosition_UPortableIO(fp, pars.soundPosition + (int32)
-		  (data->timeIndex + dataFilePtr->timeOffsetCount - 1) *
-		  dataFilePtr->numChannels * dataFilePtr->wordSize, SEEK_SET);
+		  (data->timeIndex + dataFilePtr->timeOffsetCount) * dataFilePtr->
+		  numChannels * dataFilePtr->wordSize, SEEK_SET);
 	else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < dataFilePtr->timeOffsetCount * dataFilePtr->numChannels;
 		  i++)
