@@ -879,7 +879,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	viewMenu->Append(MYFRAME_ID_VIEW_SIM_PARS, "&Simulation parameters",
 	  "List simulation parameters (to diagnostic window)");
 
-	wxMenu *programMenu = new wxMenu;
+	programMenu = new wxMenu;
 	programMenu->Append(MYFRAME_ID_EXECUTE, "&Execute\tCtrl-G", "Execute "
 	  "simulation");
 	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-C",
@@ -955,6 +955,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	  !GetPtr_AppInterface()->audModel) {
 		EnableSimParMenuOptions(FALSE);
 	}
+	programMenu->Enable(MYFRAME_ID_STOP_SIMULATION, FALSE);
 
 	// Get config setup
 	pConfig = wxConfigBase::Get();
@@ -1054,6 +1055,7 @@ MyFrame::EnableSimParMenuOptions(bool on)
 	fileMenu->Enable(MYFRAME_ID_SAVE_SIM_PARS, on);
 	editMenu->Enable(MYFRAME_ID_EDIT_SIM_PARS, on);
 	viewMenu->Enable(MYFRAME_ID_VIEW_SIM_PARS, on);
+	programMenu->Enable(MYFRAME_ID_EXECUTE, on);
 
 }
 
@@ -1113,6 +1115,7 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 	}
 	ResetGUIDialogs();
 	wxGetApp().StartSimThread();
+	programMenu->Enable(MYFRAME_ID_STOP_SIMULATION, TRUE);
 
 }
 
@@ -1271,8 +1274,7 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	GetDSAMPtr_Common()->parsFile = oldFp;
 	GetDSAMPtr_Common()->noGUIOutputFlag = noGUIOutputFlag;
 	if (filePath)
-		CopyAndTrunc_Utility_String(filePath, (char *) newFilePath.GetData(),
-		  MAX_FILE_PATH);
+		snprintf(filePath,MAX_FILE_PATH, "%s", (char *) newFilePath.GetData());
 
 }
 
