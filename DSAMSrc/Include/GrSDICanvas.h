@@ -49,6 +49,7 @@ class SDICanvas: public wxShapeCanvas
 	~SDICanvas(void);
 
 	void	EditProcessMenu(double x = 0, double y = 0);
+	wxClassInfo *	GetClassInfo(int classSpecifier);
 	void	OnEnableProcess(wxCommandEvent& event);
 	void	OnMouseEvent(wxMouseEvent& event);
 	void	OnPaint(wxPaintEvent& event);

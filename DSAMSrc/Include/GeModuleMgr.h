@@ -83,6 +83,26 @@ typedef enum {
 
 } ModuleSpecifier;
 
+/* 
+ * ModuleClassSpecifier:
+ * Note that the PALETTE_ARROW enum used in GrSDIPallete.h starts at 100
+ * and is used with these specifiers.
+ */
+
+typedef enum {
+
+	ANALYSIS_MODULE_CLASS = 1,
+	CONTROL_MODULE_CLASS,
+	FILTER_MODULE_CLASS,
+	IO_MODULE_CLASS,
+	MODEL_MODULE_CLASS,
+	STIMULUS_MODULE_CLASS,
+	TRANSFORM_MODULE_CLASS,
+	USER_MODULE_CLASS,
+	UTILITY_MODULE_CLASS
+
+} ModuleClassSpecifier;
+
 typedef unsigned int	ModuleHandle;	/* For module management. */
 
 typedef struct moduleStruct {
@@ -90,6 +110,7 @@ typedef struct moduleStruct {
 	BOOLN	onFlag;
 	char	name[MAX_MODULE_NAME];
 	ModuleSpecifier	specifier;
+	ModuleClassSpecifier	classSpecifier;
 	ModuleHandle	handle;				/* Reference handle for manager. */
 	
 	/* General, accessible functions. */

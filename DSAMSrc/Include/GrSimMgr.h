@@ -140,7 +140,6 @@ class MyApp: public wxApp {
 	void	CheckOptions(void);
 	wxMenuBar	*CreateMenuBar(void);
 	EditorToolPalette *CreatePalette(wxFrame *parent);
-	void	AddToProcessList(wxArrayString& list, const wxString& prefix);
 	void	CloseDiagWindow(void);
 	void	CreateProcessLists(void);
 	void	DeleteSimThread(void);
@@ -150,6 +149,8 @@ class MyApp: public wxApp {
 	DiagFrame *	GetDiagFrame(void)	{ return diagFrame; }
 	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
+	wxArrayString *	GetProcessList(int classSpecifier);
+
 	bool	GetSuspendDiagnostics(void);
 	bool	InitArgv(int argc);
 	void	InitAppInterface(void);

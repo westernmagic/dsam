@@ -394,30 +394,39 @@ MyApp::CreateMenuBar(void)
 
 }
 
-/****************************** AddToProcessList ******************************/
+/****************************** GetProcessList ********************************/
 
-// This routine adds to a process list using the supplied prefix.
-// It assumes that all process modules with similar prefixs are in the same
-// region.
-// If the prefix is NULL then the process list is constructed from the user
-// module list.
+// This routine returns a pointer to a process list.
 
-void
-MyApp::AddToProcessList(wxArrayString& list, const wxString& prefix)
+wxArrayString *
+MyApp::GetProcessList(int classSpecifier)
 {
-	ModRegEntryPtr	prefixStart, modList;
+	static const char *funcName = "MyApp::GetProcessList";
 
-	if (prefix.GetChar(0) == '@') {
-		list.Add(prefix.Mid(1));
-		return;
+	switch (classSpecifier) {
+	case ANALYSIS_MODULE_CLASS:
+		return(&wxGetApp().anaList);
+	case CONTROL_MODULE_CLASS:
+		return(&wxGetApp().ctrlList);
+	case FILTER_MODULE_CLASS:
+		return(&wxGetApp().filtList);
+	case IO_MODULE_CLASS:
+		return(&wxGetApp().ioList);
+	case MODEL_MODULE_CLASS:
+		return(&wxGetApp().modelsList);
+	case STIMULUS_MODULE_CLASS:
+		return(&wxGetApp().stimList);
+	case TRANSFORM_MODULE_CLASS:
+		return(&wxGetApp().transList);
+	case USER_MODULE_CLASS:
+		return(&wxGetApp().userList);
+	case UTILITY_MODULE_CLASS:
+		return(&wxGetApp().utilList);
+	default:
+		NotifyError("%s: Unknown process type (%d).\n", funcName,
+		  classSpecifier);
+		return(NULL);
 	}
-	if ((prefixStart = (prefix.IsEmpty())? UserList_ModuleReg(0):
-	  GetRegEntry_ModuleReg((char *) prefix.GetData())) == NULL)
-		return;
-	for (modList = prefixStart; (modList->name[0] != '\0'); modList++)
-		if (StrNCmpNoCase_Utility_String(modList->name, (char *) prefix.GetData(
-		  )) == 0)
-			list.Add(modList->name);
 
 }
 
@@ -429,29 +438,18 @@ MyApp::AddToProcessList(wxArrayString& list, const wxString& prefix)
 void
 MyApp::CreateProcessLists(void)
 {
-	wxString	string;
 	SymbolPtr	p, symList = NULL;
+	ModRegEntryPtr	modReg;
 
-	AddToProcessList(anaList, "Ana_");
-	AddToProcessList(filtList, "Filt_");
-	AddToProcessList(ioList, "DataFile_");
-	AddToProcessList(ioList, "Display_");
-	AddToProcessList(modelsList, "AN_SG_");
-	AddToProcessList(modelsList, "BM_");
-	AddToProcessList(modelsList, "IHC_");
-	AddToProcessList(modelsList, "IHCRP_");
-	AddToProcessList(modelsList, "NEUR_");
-	AddToProcessList(stimList, "Stim_");
-	AddToProcessList(transList, "Trans_");
-	AddToProcessList(userList, "");
-	AddToProcessList(utilList, "Util_");
-
+	for (modReg = LibraryList_ModuleReg(0); (modReg->name[0] != '\0'); modReg++)
+		GetProcessList(modReg->classSpecifier)->Add(modReg->name);
+	for (modReg = UserList_ModuleReg(0); (modReg->name[0] != '\0'); modReg++)
+		userList.Add(modReg->name);
 	InitKeyWords_Utility_SSSymbols(&symList);
 	for (p = symList; p; p = p->next) {
 		if ((p->type == STOP) || (p->type == BEGIN))
 			continue;
-		string.Printf("@%s", p->name);
-		AddToProcessList(ctrlList, string);
+		ctrlList.Add(p->name);
 	}
 	FreeSymbols_Utility_SSSymbols(&symList);
 

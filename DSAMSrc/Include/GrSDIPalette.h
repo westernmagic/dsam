@@ -33,18 +33,13 @@
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
 
+/*
+ * This enum is used with the ModuleClassSpecifier in GeModuleMgr.h.
+ */
+
 enum {
 
-	PALETTE_ANALYSIS = 1,
-	PALETTE_CONTROL,
-	PALETTE_FILTERS,
-	PALETTE_IO,
-	PALETTE_MODELS,
-	PALETTE_STIMULI,
-	PALETTE_TRANSFORMS,
-	PALETTE_USER,
-	PALETTE_UTILITIES,
-	PALETTE_ARROW
+	PALETTE_ARROW = 1000
 
 };
 

@@ -172,6 +172,7 @@ Init_ModuleMgr(char *theModuleName)
 		return(NULL);
 	}
 	theModule->specifier = modRegEntryPtr->specifier;
+	theModule->classSpecifier = modRegEntryPtr->classSpecifier;
 	theModule->onFlag = TRUE;
 	theModule->parsPtr = NULL;
 	ToUpper_Utility_String(theModule->name, theModuleName);

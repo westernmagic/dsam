@@ -72,7 +72,7 @@ class SDICommand: public wxCommand
 {
   protected:
 	SDIDocument *doc;
-	int cmd, processType;
+	int		cmd, processType;
 	wxShape *shape; // Pointer to the shape we're acting on
 	wxShape *fromShape;
 	wxShape *toShape;

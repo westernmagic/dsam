@@ -47,7 +47,9 @@ class SDIDiagram: public wxDiagram
 {
   public:
 	SDIDiagram(void) {}
-
+	
+	wxShape *	CreateShape(wxClassInfo *shapeInfo, int type, wxBrush *brush);
+	void	DrawSimulation(DatumPtr start);
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 

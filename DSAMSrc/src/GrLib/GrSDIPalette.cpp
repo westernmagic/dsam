@@ -38,6 +38,10 @@
 #include <math.h>
 
 #include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 #include "GrSimMgr.h"
 //#include "GrSDIDoc.h"
 #include "GrSDIPalette.h"
@@ -118,23 +122,23 @@ EditorToolPalette::Set(void)
 
 	AddTool(PALETTE_ARROW, PaletteArrow, wxNullBitmap, TRUE, 0, -1, NULL,
 	  "Pointer");
-	AddTool(PALETTE_ANALYSIS, PaletteAnaTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Analysis Process");
-	AddTool(PALETTE_CONTROL, PaletteCtrlTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Control Process");
-	AddTool(PALETTE_FILTERS, PaletteFiltTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Filter Process");
-	AddTool(PALETTE_IO, PaletteIOTool, wxNullBitmap, TRUE, 0, -1, NULL,
+	AddTool(ANALYSIS_MODULE_CLASS, PaletteAnaTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Analysis Process");
+	AddTool(CONTROL_MODULE_CLASS, PaletteCtrlTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Control Process");
+	AddTool(FILTER_MODULE_CLASS, PaletteFiltTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Filter Process");
+	AddTool(IO_MODULE_CLASS, PaletteIOTool, wxNullBitmap, TRUE, 0, -1, NULL,
 	  "Input/Output Process");
-	AddTool(PALETTE_MODELS, PaletteModelTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Model Process");
-	AddTool(PALETTE_STIMULI, PaletteStimTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Stimulus Process");
-	AddTool(PALETTE_TRANSFORMS, PaletteTransTool, wxNullBitmap, TRUE, 0, -1,
+	AddTool(MODEL_MODULE_CLASS, PaletteModelTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Model Process");
+	AddTool(STIMULUS_MODULE_CLASS, PaletteStimTool, wxNullBitmap, TRUE, 0, -1,
+	  NULL, "Stimulus Process");
+	AddTool(TRANSFORM_MODULE_CLASS, PaletteTransTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Transform Process");
-	AddTool(PALETTE_USER, PaletteUserTool, wxNullBitmap, TRUE, 0, -1,
+	AddTool(USER_MODULE_CLASS, PaletteUserTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "User defined Process");
-	AddTool(PALETTE_UTILITIES, PaletteUtilTool, wxNullBitmap, TRUE, 0, -1,
+	AddTool(UTILITY_MODULE_CLASS, PaletteUtilTool, wxNullBitmap, TRUE, 0, -1,
 	  NULL, "Utility Process");
 
 	Realize();

@@ -39,6 +39,9 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "UtDatum.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 #include "GrSimMgr.h"
 #include "GrSDIPalette.h"
 #include "GrSDICanvas.h"
@@ -96,6 +99,41 @@ SDICanvas::~SDICanvas(void)
 }
 
 /******************************************************************************/
+/*************************** GetClassInfo *************************************/
+/******************************************************************************/
+
+wxClassInfo *
+SDICanvas::GetClassInfo(int classSpecifier)
+{
+	static const char *funcName = "SDICanvas::GetClassInfo";
+	switch (classSpecifier) {
+	case ANALYSIS_MODULE_CLASS:
+		return(CLASSINFO(wxRectangleShape));
+	case CONTROL_MODULE_CLASS:
+		return(CLASSINFO(wxRoundedRectangleShape));
+	case FILTER_MODULE_CLASS:
+		return(CLASSINFO(wxEllipseShape));
+	case IO_MODULE_CLASS:
+		return(CLASSINFO(wxDiamondShape));
+	case MODEL_MODULE_CLASS:
+		return(CLASSINFO(wxRectangleShape));
+	case STIMULUS_MODULE_CLASS:
+		return(CLASSINFO(wxRoundedRectangleShape));
+	case TRANSFORM_MODULE_CLASS:
+		return(CLASSINFO(wxEllipseShape));
+	case USER_MODULE_CLASS:
+		return(CLASSINFO(wxDiamondShape));
+	case UTILITY_MODULE_CLASS:
+		return(CLASSINFO(wxRectangleShape));
+	default:
+		NotifyError("%s: Unknown module class specifier (%d).", funcName,
+		  classSpecifier);
+	}
+	return(NULL);
+
+}
+
+/******************************************************************************/
 /*************************** OnLeftClick **************************************/
 /******************************************************************************/
 
@@ -103,39 +141,8 @@ void
 SDICanvas::OnLeftClick(double x, double y, int keys)
 {
 	EditorToolPalette *palette = ((SDIFrame *) parent)->palette;
-	wxClassInfo *info = NULL;
+	wxClassInfo *info = GetClassInfo(palette->currentlySelected);
 
-	switch (palette->currentlySelected) {
-	case PALETTE_ANALYSIS:
-		info = CLASSINFO(wxRectangleShape);
-		break;
-	case PALETTE_CONTROL:
-		info = CLASSINFO(wxRoundedRectangleShape);
-		break;
-	case PALETTE_FILTERS:
-		info = CLASSINFO(wxEllipseShape);
-		break;
-	case PALETTE_IO:
-		info = CLASSINFO(wxDiamondShape);
-		break;
-	case PALETTE_MODELS:
-		info = CLASSINFO(wxRectangleShape);
-		break;
-	case PALETTE_STIMULI:
-		info = CLASSINFO(wxRoundedRectangleShape);
-		break;
-	case PALETTE_TRANSFORMS:
-		info = CLASSINFO(wxEllipseShape);
-		break;
-	case PALETTE_USER:
-		info = CLASSINFO(wxDiamondShape);
-		break;
-	case PALETTE_UTILITIES:
-		info = CLASSINFO(wxRectangleShape);
-		break;
-	default:
-		break;
-	}
 	if (info) {
 		view->GetDocument()->GetCommandProcessor()->Submit(new SDICommand(
 		  (char*) info->GetClassName(), SDIFRAME_ADD_SHAPE, (SDIDocument *)

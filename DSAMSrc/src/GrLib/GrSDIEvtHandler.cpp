@@ -58,41 +58,6 @@ SDIEvtHandler::~SDIEvtHandler(void)
 }
 
 /******************************************************************************/
-/****************************** GetProcList ***********************************/
-/******************************************************************************/
-
-wxArrayString *
-SDIEvtHandler::GetProcessList(void)
-{
-	static const char	*funcName = "SDIEvtHandler::GetProcessList";
-
-	switch (processType) {
-	case PALETTE_ANALYSIS:
-		return(&wxGetApp().anaList);
-	case PALETTE_CONTROL:
-		return(&wxGetApp().ctrlList);
-	case PALETTE_FILTERS:
-		return(&wxGetApp().filtList);
-	case PALETTE_IO:
-		return(&wxGetApp().ioList);
-	case PALETTE_MODELS:
-		return(&wxGetApp().modelsList);
-	case PALETTE_STIMULI:
-		return(&wxGetApp().stimList);
-	case PALETTE_TRANSFORMS:
-		return(&wxGetApp().transList);
-	case PALETTE_USER:
-		return(&wxGetApp().userList);
-	case PALETTE_UTILITIES:
-		return(&wxGetApp().utilList);
-	default:
-		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
-		return(NULL);
-	}
-
-}
-
-/******************************************************************************/
 /****************************** ResetLabel ************************************/
 /******************************************************************************/
 
@@ -141,7 +106,7 @@ SDIEvtHandler::InitInstruction(void)
 		return(false);
 	}
 	switch (processType) {
-	case PALETTE_CONTROL: {
+	case CONTROL_MODULE_CLASS: {
 		SymbolPtr	sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
 	  	  (char *) label.GetData());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
@@ -150,14 +115,14 @@ SDIEvtHandler::InitInstruction(void)
 			return(false);
 		}
 		break; }
-	case PALETTE_ANALYSIS:
-	case PALETTE_FILTERS:
-	case PALETTE_IO:
-	case PALETTE_MODELS:
-	case PALETTE_STIMULI:
-	case PALETTE_TRANSFORMS:
-	case PALETTE_USER:
-	case PALETTE_UTILITIES:
+	case ANALYSIS_MODULE_CLASS:
+	case FILTER_MODULE_CLASS:
+	case IO_MODULE_CLASS:
+	case MODEL_MODULE_CLASS:
+	case STIMULUS_MODULE_CLASS:
+	case TRANSFORM_MODULE_CLASS:
+	case USER_MODULE_CLASS:
+	case UTILITY_MODULE_CLASS:
 		if ((pc = InitInst_Utility_Datum(PROCESS)) == NULL) {
 			NotifyError("%s: Could not create new intruction for process '%s'.",
 			  funcName, (char *) label.GetData());
@@ -189,7 +154,7 @@ SDIEvtHandler::EditInstruction(void)
 	if (label.IsEmpty())
 		return(true);
 	switch (processType) {
-	case PALETTE_CONTROL: {
+	case CONTROL_MODULE_CLASS: {
 		switch (pc->type) {
 		case REPEAT: {
 			long	count;
@@ -203,14 +168,14 @@ SDIEvtHandler::EditInstruction(void)
 			;
 		} /* switch */
 		break; }
-	case PALETTE_ANALYSIS:
-	case PALETTE_FILTERS:
-	case PALETTE_IO:
-	case PALETTE_MODELS:
-	case PALETTE_STIMULI:
-	case PALETTE_TRANSFORMS:
-	case PALETTE_USER:
-	case PALETTE_UTILITIES:
+	case ANALYSIS_MODULE_CLASS:
+	case FILTER_MODULE_CLASS:
+	case IO_MODULE_CLASS:
+	case MODEL_MODULE_CLASS:
+	case STIMULUS_MODULE_CLASS:
+	case TRANSFORM_MODULE_CLASS:
+	case USER_MODULE_CLASS:
+	case UTILITY_MODULE_CLASS:
 		if (*pc->u.proc.moduleName != '\0')
 			free(pc->u.proc.moduleName);
 		pc->u.proc.moduleName = InitString_Utility_String((char *) label.

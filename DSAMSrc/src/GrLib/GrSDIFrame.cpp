@@ -210,7 +210,6 @@ SDIFrame::SetSimFileAndLoad(void)
 {
 	if (wxGetApp().GetDiagFrame())
 		wxGetApp().GetDiagFrame()->Clear();
-	printf("SDIFrame::SetSimFileAndLoad: diagnosticsWindow->Clear()\n");
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
 	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().
 	  GetData()))

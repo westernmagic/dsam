@@ -521,7 +521,7 @@ PrintPars_AppInterface(void)
 	DPrint("Diagnostics specifier is set to '%s'.\n",
 	  appInterfacePtr->diagModeList[appInterfacePtr->diagModeSpecifier].name);
 	DPrint("This simulation is run from the file '%s'.\n",
-	  appInterfacePtr->simulationFile);
+	  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 	DPrint("\n");
 
 }
@@ -679,6 +679,8 @@ ProcessOptions_AppInterface(void)
 /*
  * This routine returns the given filePath, depending upon whether GUI mode is
  * used.
+ * This was introduced to conform to the use of streams in the wxWindows
+ * document/view code.
  */
 
 char *
@@ -906,7 +908,7 @@ ReadProgParFile_AppInterface(void)
 	readProgParFileFlag = TRUE;
 	if ((fp = fopen(appInterfacePtr->simulationFile, "r")) == NULL) {
 		NotifyError("%s: Could not open '%s' parameter file.", funcName,
-		  appInterfacePtr->simulationFile);
+		  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 		readProgParFileFlag = FALSE;
 		return(FALSE);
 	}
@@ -929,7 +931,8 @@ ReadProgParFile_AppInterface(void)
 	readProgParFileFlag = FALSE;
 	if (!ok && (strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
 		NotifyError("%s: Invalid parameters in file '%s', program parameter "
-		  "section (%s).", funcName, appInterfacePtr->simulationFile, parName);
+		  "section (%s).", funcName, GetFilePath_AppInterface(appInterfacePtr->
+		  simulationFile), parName);
 		return(FALSE);
 	}
 	strcpy(appInterfacePtr->simulationFile, oldSPF);
@@ -1438,7 +1441,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			if ((GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
 			  UTILITY_SIMSCRIPT_SPF_FILE) && !ReadProgParFile_AppInterface()) {
 				NotifyError("%s: Could not read the program settings in\nfile "
-				  "'%s'.", funcName, appInterfacePtr->simulationFile);
+				  "'%s'.", funcName, GetFilePath_AppInterface(appInterfacePtr->
+				  simulationFile));
 				return(FALSE);
 			}
 			if (!ProcessParComs_AppInterface())

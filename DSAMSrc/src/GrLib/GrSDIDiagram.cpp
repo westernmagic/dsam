@@ -37,8 +37,11 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtDatum.h"
+#include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 #include "GrSDIEvtHandler.h"
 #include "GrSDIDiagram.h"
+#include "GrSDICanvas.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -51,6 +54,50 @@
 /******************************************************************************/
 /****************************** Methods (Subroutines) *************************/
 /******************************************************************************/
+
+/******************************************************************************/
+/****************************** DrawSimulation ********************************/
+/******************************************************************************/
+
+void
+SDIDiagram::DrawSimulation(DatumPtr start)
+{
+	printf("SDIDiagram::DrawSimulation: Entered\n");
+	DatumPtr	pc;
+	SDICanvas	*canvas = (SDICanvas *) GetCanvas();
+
+	if (start == NULL)
+		return;
+	for (pc = start; pc != NULL; pc = pc->next) {
+		wxShape *theShape = CreateShape(canvas->GetClassInfo(pc->data->
+		  module->classSpecifier), pc->type, wxCYAN_BRUSH);
+		theShape->SetSize(60, 60);
+		AddShape(theShape);
+		theShape->Show(TRUE);
+		wxClientDC dc(theShape->GetCanvas());
+		theShape->GetCanvas()->PrepareDC(dc);
+		theShape->Move(dc, 0, 0);
+	}
+
+}
+
+/******************************************************************************/
+/****************************** CreateShape ***********************************/
+/******************************************************************************/
+
+wxShape *
+SDIDiagram::CreateShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
+{
+	wxShape *theShape = (wxShape *) shapeInfo->CreateObject();
+	theShape->AssignNewIds();
+	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
+	  wxString(""), type));
+	theShape->SetCentreResize(FALSE);
+	theShape->SetPen(wxBLACK_PEN);
+	theShape->SetBrush(brush);
+	return(theShape);
+
+}
 
 /******************************************************************************/
 /****************************** OnShapeSave ***********************************/

@@ -16,6 +16,7 @@
 #ifndef	_MODULEREG_H
 #define _MODULEREG_H	1
 
+#include "GeUniParMgr.h"
 #include "UtNameSpecs.h"
  
 /******************************************************************************/
@@ -38,6 +39,7 @@
 typedef struct {
 
 	char	*name;
+	ModuleClassSpecifier	classSpecifier;
 	ModuleSpecifier		specifier;
 	BOOLN	(* InitModule )(ModulePtr);
 

@@ -90,8 +90,8 @@ SDIView::ProcessListDialog(void)
 	wxShape *theShape = FindSelectedShape();
 
 	if (theShape) {
-		wxArrayString	*procList = ((SDIEvtHandler *) theShape->
-		  GetEventHandler())->GetProcessList();
+		wxArrayString	*procList = wxGetApp().GetProcessList(((SDIEvtHandler *)
+		  theShape->GetEventHandler())->processType);
 		wxSingleChoiceDialog dialog(theShape->GetCanvas(), "Select a process",
 		  "Please select a process", procList->Count(), &procList->Item(0));
 

@@ -277,12 +277,8 @@ SDICommand::AddLineShape(int lineType)
 	else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
 		return(false);
 	else {
-		theShape = (wxShape *)shapeInfo->CreateObject();
-		theShape->AssignNewIds();
-		theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
-		  wxString(""), lineType));
-		theShape->SetPen(wxBLACK_PEN);
-		theShape->SetBrush(wxRED_BRUSH);
+		theShape = ((SDIDiagram *) doc->GetDiagram())->CreateShape(
+			  shapeInfo, lineType, wxRED_BRUSH);
 
 		wxLineShape *lineShape = (wxLineShape *)theShape;
 
@@ -375,13 +371,8 @@ SDICommand::Do(void)
 		if (shape)
 			theShape = shape; // Saved from undoing the shape
 		else {
-			theShape = (wxShape *)shapeInfo->CreateObject();
-			theShape->AssignNewIds();
-			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
-			  wxString(""), processType));
-			theShape->SetCentreResize(FALSE);
-			theShape->SetPen(wxBLACK_PEN);
-			theShape->SetBrush(wxCYAN_BRUSH);
+			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateShape(
+			  shapeInfo, processType, wxCYAN_BRUSH);
 			theShape->SetSize(60, 60);
 		}
 		doc->GetDiagram()->AddShape(theShape);
