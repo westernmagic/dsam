@@ -36,7 +36,7 @@ Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoHCRPCarney.c MoHCRPMeddis.c MoHCRPShamma.c MoIHC86Meddis.c \
 				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
 				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoBMGammaC.c \
-				MoHCRPSham3StVIn.c
+				MoHCRPSham3StVIn.c MoBMZhang.c MoHCRPZhang.c MoIHCZhang.c
 
 Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 
@@ -55,7 +55,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtOptions.c UtString.c UtPause.c UtHalfWRectify.c UtDynaList.c \
 				UtAppInterface.c UtFFT.c UtParArray.c UtGCFilters.c \
 				UtFIRFilters.c UtRemez.c UtDynaBList.c UtLocalChans.c \
-				UtSwapLR.c UtPadSignal.c UtMathOp.c
+				UtSwapLR.c UtPadSignal.c UtMathOp.c UtZhang.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c
 

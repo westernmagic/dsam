@@ -28,7 +28,8 @@ Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
 				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h \
-				FlMultiBPass.h MoBMGammaC.h MoHCRPSham3StVIn.h
+				FlMultiBPass.h MoBMGammaC.h MoHCRPSham3StVIn.h \
+				MoBMZhang.h MoHCRPZhang.h MoIHCZhang.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 
@@ -49,7 +50,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
 				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h \
 				UtFIRFilters.h UtRemez.h UtDynaBList.h UtLocalChans.h \
-				UtSwapLR.h UtPadSignal.h UtMathOp.h
+				UtSwapLR.h UtPadSignal.h UtMathOp.h UtZhang.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 
