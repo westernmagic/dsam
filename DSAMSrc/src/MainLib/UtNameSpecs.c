@@ -78,10 +78,6 @@ Identify_NameSpecifier(char *name, NameSpecifierPtr list)
 		return(GetNullSpec_NameSpecifier(list));
 	}
 	length = strlen(name);
-	if (length >= MAXLINE) {
-		NotifyError("%s: Search name is too long (%s)", funcName, name);
-		return(GetNullSpec_NameSpecifier(list));
-	}
 	if (!length)
 		return(GetNullSpec_NameSpecifier(list));
 	for (  ; StrNCmpNoCase_Utility_String(list->name, name) != 0 &&
