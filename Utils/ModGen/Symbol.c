@@ -60,7 +60,7 @@ lookup(char *s)
  */
 
 Symbol *
-install(char *s, int type)
+install(char *s, char *alt, int type)
 {
 	Symbol	*sp;
 	void	*emalloc(unsigned n);
@@ -68,9 +68,26 @@ install(char *s, int type)
 	sp = (Symbol *) emalloc(sizeof (Symbol));
 	sp->name = (char *) emalloc(strlen(s) + 1);
 	strcpy(sp->name, s);
+	if (alt) {
+		sp->altName = (char *) emalloc(strlen(alt) + 1);
+		strcpy(sp->altName, alt);
+	}
 	sp->type = type;
 	sp->next = symlist;		/* put at front of list */
 	symlist = sp;
 	return sp;
+
+}
+
+/****************************** GetName ***************************************/
+
+/*
+ * This routine returns the name for a symbol.
+ */
+
+char *
+GetName(Symbol *sp)
+{
+	return((sp->altName)? sp->altName: sp->name);
 
 }

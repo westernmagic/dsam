@@ -119,7 +119,7 @@ PrintParSpecifierEnumDefinition(FILE *fp)
 				placeComma = FALSE;
 			}
 			fprintf(fp, "\t%s_%s", baseModuleName, UpperCase(
-			  DT_TO_SAMPLING_INTERVAL((*list)->sym->name)));
+			  DT_TO_SAMPLING_INTERVAL(GetName((*list)->sym))));
 			placeComma = (*(list + 1) != 0);
 				
 		}
@@ -150,13 +150,13 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
-				  qualifier, TRUE), UpperCase((*list)->sym->name));
+				  qualifier, TRUE), UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "typedef enum {\n\n");
 				fprintf(fp, "\t%s\n", nameSpecBase);
 				fprintf(fp, "\t%sNULL\n", nameSpecBase);
 				fprintf(fp, "\n} %s", Capital(module));
-				fprintf(fp, "%s%sSpecifier;\n\n", Capital((*list)->sym->name),
-				  (type->sym->type == PARARRAY)? "Mode": "");
+				fprintf(fp, "%s%sSpecifier;\n\n", Capital(GetName((*list)->
+				  sym)), (type->sym->type == PARARRAY)? "Mode": "");
 			}
 
 }
@@ -184,7 +184,7 @@ PrintExpandedStructure(FILE *fp)
 			if (((*list)->inst != POINTER) && (type->sym->type !=
 			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) && (type->sym->
 			  type != DATUMPTR)) {
-				sprintf(variable, "%sFlag", (*list)->sym->name);
+				sprintf(variable, "%sFlag", GetName((*list)->sym));
 				if (line[0] == '\0')
 					sprintf(line, "\tBOOLN\t%s", variable);
 				else if (RealStringLength(line) + strlen(variable) +
@@ -218,17 +218,18 @@ PrintExpandedStructure(FILE *fp)
 			fprintf(fp, "char");
 			break;
 		default:
-			fprintf(fp, "%s", type->sym->name);
+			fprintf(fp, "%s", GetName(type->sym));
 		}
 		fprintf(fp, "\t");
-		if ((strlen(type->sym->name) < 4) || (type->sym->type == NAMESPECIFIER))
+		if ((strlen(GetName(type->sym)) < 4) || (type->sym->type ==
+		  NAMESPECIFIER))
 			fprintf(fp, "\t");
 		for (list = identifierList; *list != 0; list++) {
 			if (list != identifierList)
 				fprintf(fp, ", ");
 			if ((*list)->inst == POINTER)
 				fprintf(fp, "*");
-			fprintf(fp, "%s", (*list)->sym->name);
+			fprintf(fp, "%s", GetName((*list)->sym));
 			if (type->sym->type == FILENAME)
 				fprintf(fp, "[MAX_FILE_PATH]");
 		}
@@ -245,12 +246,12 @@ PrintExpandedStructure(FILE *fp)
 			switch (type->sym->type) {
 			case NAMESPECIFIER:
 			case PARARRAY:
-				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n", (*list)->sym->name,
-				  (type->sym->type == PARARRAY)? "Mode": "");
+				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n", GetName((*list)->
+				  sym), (type->sym->type == PARARRAY)? "Mode": "");
 				break;
 			case DATUMPTR:
-				fprintf(fp, "\tchar\t%s%s[MAX_FILE_PATH];\n", (*list)->sym->
-				  name, SIM_SCRIPT_NAME_SUFFIX);
+				fprintf(fp, "\tchar\t%s%s[MAX_FILE_PATH];\n", GetName((*list)->
+				  sym), SIM_SCRIPT_NAME_SUFFIX);
 				break;
 			default:
 				;

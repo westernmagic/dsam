@@ -56,8 +56,6 @@ Token *		InstallToken(Symbol *sym, int inst);
 
 void		SetTokenInstRelCurrent(int inst, unsigned int steps);
 
-void		TransposeTokenTypes(void);
-
 void		PrintTokens(Token *p);
 
 #endif

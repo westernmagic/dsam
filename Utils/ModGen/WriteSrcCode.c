@@ -148,7 +148,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
-				sprintf(strVariable, "%s%s", (*list)->sym->name,
+				sprintf(strVariable, "%s%s", GetName((*list)->sym),
 				(type->sym->type == PARARRAY)? "Mode": "");
 				sprintf(function, "Init%sList", Capital(strVariable));
 				PrintLineCommentHeading(fp, function);
@@ -161,7 +161,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 				funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 				  "void");
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
-				  qualifier, TRUE), UpperCase((*list)->sym->name));
+				  qualifier, TRUE), UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "%s\n{\n", funcDeclaration);
 				fprintf(fp, "\tstatic NameSpecifier\tmodeList[] = {\n\n");
 				fprintf(fp, "\t\t\t{ \"\",\t%s },\n", nameSpecBase);
@@ -191,12 +191,12 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 	Token	*type, *arrayType, *arrayIdentifierList[MAX_IDENTIFIERS];
 	Symbol	*limitSym;
 
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
 		  arrayLimit);
 		limitSym = arrayIdentifierList[0]->sym;
-		sprintf(function, "SetDefault%sArrays", Capital(limitSym->name));
+		sprintf(function, "SetDefault%sArrays", Capital(GetName(limitSym)));
 		PrintLineCommentHeading(fp, function);
 		fprintf(fp,
 		  "/*\n"
@@ -204,7 +204,7 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 		  " * '%s' variable.\n"
 		  " * It returns FALSE if it fails in any way.\n"
 		  " */\n\n",
-		  limitSym->name
+		  GetName(limitSym)
 		  );
 		funcName = CreateFuncName(function, module, qualifier);
 		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
@@ -213,28 +213,28 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 
 		fprintf(fp, "\tint\t\ti;\n");
 		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
-		  p)) && ((type->inst != INT_AL)); )
+		  p)) && ((type->sym->type != INT_AL)); )
 			for (list = identifierList; *list != 0; list++)
 				if ((*list)->inst == POINTER)
 					fprintf(fp, "\t%s\t%s[] = {/* default values here */};\n",
-					  type->sym->name, (*list)->sym->name);
+					  GetName(type->sym), GetName((*list)->sym));
 		fprintf(fp, "\n");
 
 		fprintf(fp, "\tif (!Alloc%s(/* Def. no. elements */)) {\n",
-		  CreateFuncName(Capital(limitSym->name), module, qualifier));
+		  CreateFuncName(Capital(GetName(limitSym)), module, qualifier));
 		fprintf(fp, "\t\tNotifyError(\"%%s: Could not allocate default arrays."
 		  "\", funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	
 		fprintf(fp, "\tfor (i = 0; i < %s->%s; i++) {\n", ptrVar,
-		  limitSym->name);
+		  GetName(limitSym));
 		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
-		  p)) && ((type->inst != INT_AL)); )
+		  p)) && ((type->sym->type != INT_AL)); )
 			for (list = identifierList; *list != 0; list++)
 				if ((*list)->inst == POINTER)
 					fprintf(fp, "\t\t%s->%s[i] = %s[i];\n",  ptrVar,
-					  (*list)->sym->name, (*list)->sym->name);
+					  GetName((*list)->sym), GetName((*list)->sym));
 		fprintf(fp, "\t}\n");
 
 		fprintf(fp, "\treturn(TRUE);\n");
@@ -282,19 +282,21 @@ PrintFreeRoutine(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
 			if (((*list)->inst == POINTER) && (type->sym->type != CHAR)) {
-				fprintf(fp, "\tif (%s->%s) {\n", ptrVar, (*list)->sym->name);
-				fprintf(fp, "\t\tfree(%s->%s);\n", ptrVar, (*list)->sym->name);
-				fprintf(fp, "\t\t%s->%s = NULL;\n", ptrVar, (*list)->sym->name);
+				fprintf(fp, "\tif (%s->%s) {\n", ptrVar, GetName((*list)->sym));
+				fprintf(fp, "\t\tfree(%s->%s);\n", ptrVar, GetName((*list)->
+				  sym));
+				fprintf(fp, "\t\t%s->%s = NULL;\n", ptrVar, GetName((*list)->
+				  sym));
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == CFLISTPTR)
 				fprintf(fp, "\tFree_CFList(&%s->%s);\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 			else if (type->sym->type == PARARRAY)
 				fprintf(fp, "\tFree_ParArray(&%s->%s);\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 			else if (type->sym->type == DATUMPTR)
 				fprintf(fp, "\tFreeInstructions_Utility_Datum(&%s->%s);\n",
-				  ptrVar, (*list)->sym->name);
+				  ptrVar, GetName((*list)->sym));
 	fprintf(fp, "\tif (%s->parList)\n", ptrVar);
 	fprintf(fp, "\t\tFreeList_UniParMgr(&%s->parList);\n", ptrVar);
 	fprintf(fp, "\tif (%s->parSpec == GLOBAL) {\n", ptrVar);
@@ -372,7 +374,7 @@ PrintInitRoutine(FILE *fp)
 			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) &&
 			  (type->sym->type != PARARRAY) && (type->sym->type != DATUMPTR))
 				fprintf(fp, "\t%s->%sFlag = FALSE;\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 
 	/* Public parameters */
 	p = FindTokenType(STRUCT, pc);
@@ -382,17 +384,17 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", "\tif ((");
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", " = Init_ParArray(\"");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", "\", FitFuncModeList_NSpecLists(0), ");
 				Print(fp, "\t  ", CreateFuncName("GetFitFuncPars", module,
 				  qualifier));
 				Print(fp, "\t  ", ")) == NULL) {\n");
 				Print(fp, "", "");
 				fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise %s "
-				  "parArray structure\",\n\t\t  funcName);\n", (*list)->sym->
-				  name);
+				  "parArray structure\",\n\t\t  funcName);\n", GetName((*list)->
+				  sym));
 				fprintf(fp, "\t\t%s();\n", CreateFuncName("Free", module,
 				  qualifier));
 				fprintf(fp, "\t\treturn(FALSE);\n");
@@ -401,7 +403,7 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", "\tif ((");
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", " = GenerateDefault_CFList(\n");
 				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_MODE_NAME, "
 				  "CFLIST_DEFAULT_CF_CHANNELS,\n");
@@ -415,10 +417,10 @@ PrintInitRoutine(FILE *fp)
 				fprintf(fp, "\t\treturn(FALSE);\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == FILENAME)
-				fprintf(fp, "\tstrcpy(%s->%s, NO_FILE);\n", ptrVar, (*list)->
-				  sym->name);
+				fprintf(fp, "\tstrcpy(%s->%s, NO_FILE);\n", ptrVar, GetName(
+				  (*list)->sym));
 			else {
-				fprintf(fp, "\t%s->%s = ", ptrVar, (*list)->sym->name);
+				fprintf(fp, "\t%s->%s = ", ptrVar, GetName((*list)->sym));
 				if ((*list)->inst == POINTER)
 					fprintf(fp, "NULL");
 				else
@@ -445,19 +447,19 @@ PrintInitRoutine(FILE *fp)
 	fprintf(fp, "\n");
 
 	/* Default array settings. */
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		printSetDefaults = TRUE;
 		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
 		  arrayLimit);
 		limitSym = arrayIdentifierList[0]->sym;
 		sprintf(defaultsFunction, "SetDefault%sArrays", Capital(
-		  limitSym->name));
+		  GetName(limitSym)));
 		fprintf(fp, "\tif (!%s()) {\n", CreateFuncName(defaultsFunction, module,
 		  qualifier));
 		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Could not set the default "
 		  "'");
-		Print(fp, "\t\t  ", limitSym->name);
+		Print(fp, "\t\t  ", GetName(limitSym));
 		Print(fp, "\t\t  ", "' arrays.\", funcName);\n");
 		Print(fp, "", "");
 		fprintf(fp, "\t\treturn(FALSE);\n");
@@ -472,13 +474,13 @@ PrintInitRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(initListFunc, "Init%s%sList", Capital(
-				  (*list)->sym->name), (type->sym->type == PARARRAY)? "Mode":
+				  GetName((*list)->sym)), (type->sym->type == PARARRAY)? "Mode":
 				  "");
 				fprintf(fp, "\t%s();\n", CreateFuncName(initListFunc, module,
 				  qualifier));
 			} else if (type->sym->type == DATUMPTR)
 				fprintf(fp, "\tsprintf(%s->%s%s, NO_FILE);\n", ptrVar,
-				  (*list)->sym->name, SIM_SCRIPT_NAME_SUFFIX);
+				  GetName((*list)->sym), SIM_SCRIPT_NAME_SUFFIX);
 	
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("SetUniParList", module,
 	  qualifier));
@@ -552,22 +554,22 @@ PrintSetUniParListRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++) {
 			fprintf(fp, "\tSetPar_UniParMgr(&pars[%s_%s], \"\",\n",
 			  baseModuleName, UpperCase(DT_TO_SAMPLING_INTERVAL(
-			  (*list)->sym->name)));
+			  GetName((*list)->sym))));
 			fprintf(fp, "\t  \"\",\n");
 			fprintf(fp, "\t  %s,\n", GetOutputUniParTypeFormatStr((*list),
 			  type));
-			fprintf(fp, "\t  &%s->%s, ", ptrVar, (*list)->sym->name);
+			fprintf(fp, "\t  &%s->%s, ", ptrVar, GetName((*list)->sym));
 			if ((*list)->inst == POINTER) {
 				if ((arrayLimit = FindArrayLimit(pc,
-				  (*list)->sym->name)) == NULL)
+				  GetName((*list)->sym))) == NULL)
 					fprintf(fp, "NULL,\n");
 				else
-					fprintf(fp, "&%s->%s,\n", ptrVar, FindArrayLimit(pc,
-					  (*list)->sym->name)->sym->name);
+					fprintf(fp, "&%s->%s,\n", ptrVar, GetName(FindArrayLimit(pc,
+					  GetName((*list)->sym))->sym));
 			} else if (type->sym->type == NAMESPECIFIER)
-				fprintf(fp, "%s->%sList,\n", ptrVar, (*list)->sym->name);
+				fprintf(fp, "%s->%sList,\n", ptrVar, GetName((*list)->sym));
 			else if (type->sym->type == DATUMPTR)
-				fprintf(fp, "%s->%s%s,\n", ptrVar, (*list)->sym->name,
+				fprintf(fp, "%s->%s%s,\n", ptrVar, GetName((*list)->sym),
 				  SIM_SCRIPT_NAME_SUFFIX);
 			else if (type->sym->type == FILENAME)
 				fprintf(fp, "\"*.*\",\n");
@@ -575,12 +577,12 @@ PrintSetUniParListRoutine(FILE *fp)
 				fprintf(fp, "NULL,\n");
 			if (((*list)->inst == POINTER) && (type->sym->type != CHAR))
 				sprintf(setFunctionBase, "Individual%s", Capital(
-				  PluralToSingular((*list)->sym->name)));
+				  PluralToSingular(GetName((*list)->sym))));
 			else if (type->sym->type == CFLISTPTR)
 				strcpy(setFunctionBase, "CFList");
 			else
 				sprintf(setFunctionBase, "%s", Capital(DT_TO_SAMPLING_INTERVAL(
-				  (*list)->sym->name)));
+				  GetName((*list)->sym))));
 			fprintf(fp, "\t  (void * (*)) Set%s);\n",
 			  CreateFuncName(setFunctionBase, module, qualifier));
 		}
@@ -669,38 +671,38 @@ PrintCheckParsRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: %s array not set.\", "
-				  "funcName);\n", (*list)->sym->name);
+				  "funcName);\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == CFLISTPTR) {
 				fprintf(fp, "\tif (!CheckPars_CFList(%s->%s)) {\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: Centre frequency list "
 				  "parameters not correctly set.\",\n\t\t  funcName);\n");
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == PARARRAY) {
 				fprintf(fp, "\tif (!CheckInit_ParArray(%s->%s, funcName)) {\n",
-				  ptrVar, (*list)->sym->name);
+				  ptrVar, GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: Variable %s "
 				  "parameter array not correctly set.\",\n\t\t  funcName);\n",
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == DATUMPTR) {
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: %s not set.\", funcName);"
-				  "\n", (*list)->sym->name);
+				  "\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type != BOOLEAN_VAR) {
 				fprintf(fp, "\tif (!%s->%sFlag) {\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: %s variable not set.\", "
-				  "funcName);\n", (*list)->sym->name);
+				  "funcName);\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			}
@@ -732,7 +734,7 @@ CreateSetParsArguments(BOOLN justNames)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
 			length += strlen(GetTypeFormatStr(type->sym, TRUE)) + strlen(
-			  DT_TO_SAMPLING_INTERVAL((*list)->sym->name)) + extraChars;
+			  DT_TO_SAMPLING_INTERVAL(GetName((*list)->sym))) + extraChars;
 			if ((*list)->inst == POINTER)
 				length++;
 		}
@@ -755,7 +757,7 @@ CreateSetParsArguments(BOOLN justNames)
 				}
 					
 			}
-			strcat(string, DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
+			strcat(string, DT_TO_SAMPLING_INTERVAL(GetName((*list)->sym)));
 		}
 	return(string);
 
@@ -777,7 +779,7 @@ PrintArrayListHeader(FILE *fp, Token *arrayLimit)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 	
 	for (p = arrayLimit; (p = GetType_IdentifierList(&type, identifierList,
-	  p)) && ((p->inst != INT_AL)); )
+	  p)) && ((p->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER)
 				titleCount++;
@@ -788,11 +790,11 @@ PrintArrayListHeader(FILE *fp, Token *arrayLimit)
 	Print(fp, "\t  ", "\tDPrint(");
 	Print(fp, "\t  ", formatString);
 	for (p = arrayLimit; (p = GetType_IdentifierList(&type, identifierList,
-	  p)) && ((p->inst != INT_AL)); )
+	  p)) && ((p->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
 				Print(fp, "\t  ", ", _\"");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", "_\"");
 			}
 	Print(fp, "\t  ", ");\n");
@@ -823,7 +825,7 @@ PrintArrayListVars(FILE *fp, Token *arrayLimit)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 	
 	for (p = arrayLimit; (p = GetType_IdentifierList(&type, identifierList,
-	  p)) && ((p->inst != INT_AL)); )
+	  p)) && ((p->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER)
 				titleCount++;
@@ -834,13 +836,13 @@ PrintArrayListVars(FILE *fp, Token *arrayLimit)
 	Print(fp, "\t\t  ", "\t\tDPrint(");
 	Print(fp, "\t\t  ", formatString);
 	for (p = arrayLimit; (p = GetType_IdentifierList(&type, identifierList,
-	  p)) && ((p->inst != INT_AL)); )
+	  p)) && ((p->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
 				Print(fp, "\t\t  ", ", ");
 				Print(fp, "\t\t  ", ptrVar);
 				Print(fp, "\t\t  ", "->");
-				Print(fp, "\t\t  ", (*list)->sym->name);
+				Print(fp, "\t\t  ", GetName((*list)->sym));
 				Print(fp, "\t\t  ", "[i]");
 			}
 	Print(fp, "\t\t  ", ");\n");
@@ -875,7 +877,7 @@ PrintPrintParsRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
 	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
-	if (FindTokenInst(INT_AL, pc))
+	if (FindTokenType(INT_AL, pc))
 		fprintf(fp, "\tint\t\ti;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("CheckPars", module,
@@ -886,14 +888,14 @@ PrintPrintParsRoutine(FILE *fp)
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tDPrint(\"?? %s Module Parameters:-"
 	  "\\n\");\n", module);
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		PrintArrayListHeader(fp, arrayLimit);
 		GetType_IdentifierList(&type, identifierList, arrayLimit);
 		Print(fp, "\t  ", "\tfor (i = 0; i < ");
 		Print(fp, "\t  ", ptrVar);
 		Print(fp, "\t  ", "->");
-		Print(fp, "\t  ", identifierList[0]->sym->name);
+		Print(fp, "\t  ", GetName(identifierList[0]->sym));
 		Print(fp, "\t  ", "; i++)\n");
 		Print(fp, "\t  ", "");
 		PrintArrayListVars(fp, arrayLimit);
@@ -903,28 +905,29 @@ PrintPrintParsRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == CFLISTPTR)
 				fprintf(fp, "\tPrintPars_CFList(%s->%s);\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 			else if (type->sym->type == PARARRAY)
 				fprintf(fp, "\tPrintPars_ParArray(%s->%s);\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 			else if (type->sym->type == DATUMPTR) {
 				Print(fp, "\t  ", "\tDPrint(\"\\tSimulation instruction list "
 				  "(%%s):-\\n\", ");
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", SIM_SCRIPT_NAME_SUFFIX ");\n");
 				Print(fp, "\t  ", "");
 				Print(fp, "\t  ", "\tPrintInstructions_Utility_Datum(");
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
-				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", ", DATUM_INITIAL_INDENT_LEVEL, \"\\t\");\n");
 				Print(fp, "\t  ", "");
 			} else if (((*list)->inst != POINTER) || (type->sym->type ==
 			  CHAR)) {
 				Print(fp, "\t  ", "\tDPrint(\"\\t");
-				Print(fp, "\t  ", DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
+				Print(fp, "\t  ", DT_TO_SAMPLING_INTERVAL(GetName((*list)->
+				  sym)));
 				Print(fp, "\t  ", " = ");
 				Print(fp, "\t  ", GetOutputTypeFormatStr(type->sym));
 				switch (type->sym->type) {
@@ -932,7 +935,7 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", " \\n\", (");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 					Print(fp, "\t  ", ")? \"TRUE\": \"FALSE\"");
 					break;
 				case BOOLSPECIFIER:
@@ -940,31 +943,31 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", "BooleanList_NSpecLists(");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 					Print(fp, "\t  ", ")->name");
 					break;
 				case NAMESPECIFIER:
 					Print(fp, "\t  ", " \\n\", ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 					Print(fp, "\t  ", "List[");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 					Print(fp, "\t  ", "].name");
 					break;
 				case FILENAME:
 					Print(fp, "\t  ", ".\\n\", ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 					break;
 				default:
 					Print(fp, "\t  ", " \?\?\\n\", ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
+					Print(fp, "\t  ", GetName((*list)->sym));
 				}
 				Print(fp, "\t  ", ");\n");
 				Print(fp, "\t  ", "");
@@ -992,12 +995,12 @@ PrintAllocArraysRoutines(FILE *fp)
 	Token	*type, *arrayType, *arrayIdentifierList[MAX_IDENTIFIERS];
 	Symbol	*limitSym;
 
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
 		  arrayLimit);
 		limitSym = arrayIdentifierList[0]->sym;
-		sprintf(function, "Alloc%s", Capital(limitSym->name));
+		sprintf(function, "Alloc%s", Capital(GetName(limitSym)));
 		PrintLineCommentHeading(fp, function);
 		fprintf(fp,
 		  "/*\n"
@@ -1008,49 +1011,51 @@ PrintAllocArraysRoutines(FILE *fp)
 		  " * parameter too.\n"
 		  " * It returns FALSE if it fails in any way.\n"
 		  " */\n\n",
-		  limitSym->name, limitSym->name
+		  GetName(limitSym), GetName(limitSym)
 		  );
 		funcName = CreateFuncName(function, module, qualifier);
-		sprintf(funcArguments, "int %s", limitSym->name);
+		sprintf(funcArguments, "int %s", GetName(limitSym));
 		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 		  funcArguments);
 		fprintf(fp, "%s\n{\n", funcDeclaration);
 		fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
 		fprintf(fp, "\n");
 
-		fprintf(fp, "\tif (%s == %s->%s)\n", limitSym->name, ptrVar,
-		  limitSym->name);
+		fprintf(fp, "\tif (%s == %s->%s)\n", GetName(limitSym), ptrVar,
+		  GetName(limitSym));
 		fprintf(fp, "\t\treturn(TRUE);\n");
 
 		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
-		  p)) && ((type->inst != INT_AL)); )
+		  p)) && ((type->sym->type != INT_AL)); )
 			for (list = identifierList; *list != 0; list++)
 				if ((*list)->inst == POINTER) {
-					sprintf(arrayPtrVar, "%s->%s", ptrVar, (*list)->sym->name);
+					sprintf(arrayPtrVar, "%s->%s", ptrVar, GetName((*list)->
+					  sym));
 					fprintf(fp, "\tif (%s)\n", arrayPtrVar);
 					fprintf(fp, "\t\tfree(%s);\n", arrayPtrVar);
 					Print(fp, "\t  ", "\tif ((");
 					Print(fp, "\t  ", arrayPtrVar);
 					Print(fp, "\t  ", " = (");
-					Print(fp, "\t  ", type->sym->name);
+					Print(fp, "\t  ", GetName(type->sym));
 					Print(fp, "\t  ", " *) calloc(");
-					Print(fp, "\t  ", limitSym->name);
+					Print(fp, "\t  ", GetName(limitSym));
 					Print(fp, "\t  ", ", sizeof(");
-					Print(fp, "\t  ", type->sym->name);
+					Print(fp, "\t  ", GetName(type->sym));
 					Print(fp, "\t  ", "))) == NULL) {\n");
 					Print(fp, "\t  ", "");
 					Print(fp, "\t\t  ", "\t\tNotifyError(_\"%s: Cannot "
 					  "allocate memory for '%d' ");
-					Print(fp, "\t\t  ", (*list)->sym->name);
+					Print(fp, "\t\t  ", GetName((*list)->sym));
 					Print(fp, "\t\t  ", "._\", funcName, ");
-					Print(fp, "\t\t  ", limitSym->name);
+					Print(fp, "\t\t  ", GetName(limitSym));
 					Print(fp, "\t\t  ", ");\n");
 					Print(fp, "\t\t  ", "");
 					fprintf(fp, "\t\treturn(FALSE);\n");
 					fprintf(fp, "\t}\n");
 				}
 
-		fprintf(fp, "\t%s->%s = %s;\n", ptrVar, limitSym->name, limitSym->name);
+		fprintf(fp, "\t%s->%s = %s;\n", ptrVar, GetName(limitSym), GetName(
+		  limitSym));
 		fprintf(fp, "\treturn(TRUE);\n");
 		fprintf(fp, "\n}\n\n");
 		AddRoutine(funcDeclaration);
@@ -1080,14 +1085,14 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 	limitSym = arrayIdentifierList[0]->sym;
 	fprintf(fp, "\tif (!GetPars_ParFile(fp, \"%s\", ",
 	  GetInputTypeFormatStr(arrayType->sym));
-	fprintf(fp, "&%s))\n", limitSym->name);
+	fprintf(fp, "&%s))\n", GetName(limitSym));
 	fprintf(fp, "\t\tok = FALSE;\n");
 
-	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", Capital(limitSym->name),
-	  CreateBaseModuleName(module, qualifier, FALSE), limitSym->name);
+	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", Capital(GetName(limitSym)),
+	  CreateBaseModuleName(module, qualifier, FALSE), GetName(limitSym));
 	Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory for "
 	  "the '");
-	Print(fp, "\t\t  ", limitSym->name);
+	Print(fp, "\t\t  ", GetName(limitSym));
 	Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
 	Print(fp, "\t\t  ", "");
 	fprintf(fp, "\t\treturn(FALSE);\n");
@@ -1095,7 +1100,7 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 
 	addSpace = FALSE;
 	for (p = pStart; (p = GetType_IdentifierList(&type, identifierList, p)) &&
-	  ((type->inst != INT_AL)); )
+	  ((type->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
 				if (addSpace)
@@ -1105,18 +1110,18 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 				addSpace = TRUE;
 			}
 	strcat(formatString, "_\"");
-	fprintf(fp, "\tfor (i = 0; i < %s; i++)\n", limitSym->name);
+	fprintf(fp, "\tfor (i = 0; i < %s; i++)\n", GetName(limitSym));
 	Print(fp, "\t  ", "\t\tif (!GetPars_ParFile(fp, ");
 	Print(fp, "\t\t  ", formatString);
 	for (p = pStart; (p = GetType_IdentifierList(&type, identifierList, p)) &&
-	  ((type->inst != INT_AL)); )
+	  ((type->sym->type != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
 				if (type->sym->type != CHAR)
 					Print(fp, "\t\t  ", ", &");
 				Print(fp, "\t\t  ", ptrVar);
 				Print(fp, "\t\t  ", "->");
-				Print(fp, "\t\t  ", (*list)->sym->name);
+				Print(fp, "\t\t  ", GetName((*list)->sym));
 				Print(fp, "\t\t  ", "[i]");
 			}
 	Print(fp, "\t\t  ", "))\n");
@@ -1376,7 +1381,7 @@ PrintProcessRoutine(FILE *fp)
 		function = "Process";
 	else {
 		GetType_IdentifierList(&type, identifierList, p);
-		function = identifierList[0]->sym->name;
+		function = GetName(identifierList[0]->sym);
 	}
 	PrintLineCommentHeading(fp, function);
 	fprintf(fp,
@@ -1500,7 +1505,7 @@ PrintSetFunctionComment(FILE *fp, TokenPtr token, TokenPtr type,
 		  (token->inst == POINTER)? "array":
 		  "parameter", (functionType == SET_ARRAY_ELEMENT_ROUTINE)? " element":
 		  "");
-		if (type->inst == INT_AL) {
+		if (type->sym->type == INT_AL) {
 			Print(fp, " * ", " * The '");
 			Print(fp, " * ", variableName);
 			Print(fp, " * ", "' variable is set by the 'Alloc");
@@ -1533,21 +1538,21 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	
 	switch (functionType) {
 	case SET_ARRAY_ELEMENT_ROUTINE:
-		variableName = PluralToSingular(token->sym->name);
+		variableName = PluralToSingular(GetName(token->sym));
 		sprintf(function, "SetIndividual%s", Capital(variableName));
 		sprintf(funcArguments, "int theIndex, %s the%s",
 		  GetTypeFormatStr(type->sym, TRUE), Capital(variableName));
 		sprintf(assignmentString, "\t%s->%s[theIndex] = ", ptrVar,
-		  token->sym->name);
+		  GetName(token->sym));
 		break;
 	case SET_BANDWIDTHS_ROUTINE:
-		variableName = PluralToSingular(token->sym->name);
+		variableName = PluralToSingular(GetName(token->sym));
 		sprintf(function, "SetBandWidths", Capital(variableName));
 		sprintf(funcArguments, "char *theBandwidthMode, double *theBandwidths");
 		assignmentString[0] = '\0';
 		break;
 	default:
-		variableName = DT_TO_SAMPLING_INTERVAL(token->sym->name);
+		variableName = DT_TO_SAMPLING_INTERVAL(GetName(token->sym));
 		switch (type->sym->type) {
 		case CFLISTPTR:
 			strcpy(function, "SetCFList");
@@ -1560,11 +1565,11 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 			  Capital(variableName));
 			if (type->sym->type == FILENAME)
 				sprintf(assignmentString, "\tsnprintf(%s->%s, MAX_FILE_PATH, "
-				  "\"%%s\", the%s);\n", ptrVar, token->sym->name, Capital(
+				  "\"%%s\", the%s);\n", ptrVar, GetName(token->sym), Capital(
 				  variableName));
 			else
-				sprintf(assignmentString, "\t%s->%s = ", ptrVar, token->sym->
-				  name);
+				sprintf(assignmentString, "\t%s->%s = ", ptrVar, GetName(token->
+				  sym));
 		}
 	}
 	PrintLineCommentHeading(fp, function);
@@ -1573,9 +1578,9 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  funcArguments);
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	Print(fp, "\t  ", "\tstatic const char\t*funcName = \"");
+	Print(fp, "\t  ", "\tstatic const char\t*funcName = _\"");
 	Print(fp, "\t  ", funcName);
-	Print(fp, "\t  ", "\";\n");
+	Print(fp, "\t  ", "_\";\n");
 	Print(fp, "\t  ", "");
 	if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
 	  BOOLSPECIFIER))
@@ -1583,18 +1588,18 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	fprintf(fp, "\n");
 	PrintModuleInitCheck(fp);
 	if (functionType == SET_ARRAY_ELEMENT_ROUTINE) {
-		fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar, token->sym->name);
+		fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar, GetName(token->sym));
 		fprintf(fp, "\t\tNotifyError(\"%%s: %s not set.\", "
-		  "funcName);\n", Capital(token->sym->name));
+		  "funcName);\n", Capital(GetName(token->sym)));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
-		arrayLimit = FindArrayLimit(pc, token->sym->name);
+		arrayLimit = FindArrayLimit(pc, GetName(token->sym));
 		fprintf(fp, "\tif (theIndex > %s->%s - 1) {\n", ptrVar,
-		  arrayLimit->sym->name);
+		  GetName(arrayLimit->sym));
 		fprintf(fp, "\t\tNotifyError(\"%%s: Index value must be in the range "
 		  "0 - %%d (%%d).\",\n");
 		fprintf(fp, "\t\t  funcName, %s->%s - 1, theIndex);\n", ptrVar,
-		  arrayLimit->sym->name);
+		  GetName(arrayLimit->sym));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
@@ -1611,13 +1616,13 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\tif ((specifier = Identify_NameSpecifier(the%s,\n"
 		  "\t\t%s->%sList)) == %s_%s_NULL) {\n", Capital(variableName),
 		  ptrVar, variableName, CreateBaseModuleName(module, qualifier, TRUE),
-		  UpperCase(token->sym->name));
+		  UpperCase(GetName(token->sym)));
 		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal name (%%s).\", "
 		  "funcName, the%s);\n", Capital(variableName));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
-	if (type->inst == INT_AL) {
+	if (type->sym->type == INT_AL) {
 		fprintf(fp, "\tif (the%s < 1) {\n", Capital(variableName));
 		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Value must be greater then "
 		  "zero (%d).\", funcName, the");
@@ -1629,7 +1634,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\tif (!Alloc%s_%s(the%s)) {\n", Capital(variableName),
 		  CreateBaseModuleName(module, qualifier, FALSE), Capital(
 		  variableName));
-		Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory "
+		Print(fp, "\t\t  ", "\t\tNotifyError(_\"%s: Cannot allocate memory "
 		  "for the '");
 		Print(fp, "\t\t  ", variableName);
 		Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
@@ -1647,26 +1652,27 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		  "correctly set.\",\n\t\t  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
-		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, token->sym->name);
-		fprintf(fp, "\t\tFree_CFList(&%s->%s);\n", ptrVar, token->sym->name);
+		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, GetName(token->sym));
+		fprintf(fp, "\t\tFree_CFList(&%s->%s);\n", ptrVar, GetName(token->sym));
 		sprintf(assignmentString, "\t%s->%s = theCFList;\n", ptrVar,
-		  token->sym->name);
+		  GetName(token->sym));
 	}
 
 	if (type->sym->type == PARARRAY) { 
 		fprintf(fp, "\tif (!CheckInit_ParArray(the%s, funcName)) {\n", Capital(
-		  token->sym->name));
+		  GetName(token->sym)));
 		fprintf(fp, "\t\tNotifyError(\"%%s: ParArray structure not correctly "
 		  "set.\",  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
-		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, token->sym->name);
-		fprintf(fp, "\t\tFree_ParArray(&%s->%s);\n", ptrVar, token->sym->name);
+		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, GetName(token->sym));
+		fprintf(fp, "\t\tFree_ParArray(&%s->%s);\n", ptrVar, GetName(token->
+		  sym));
 	}
 
 	if (type->sym->type == DATUMPTR) { 
 		fprintf(fp, "\tif (!InitSimulation_Utility_SimScript((the%s)) {\n",
-		  Capital(token->sym->name));
+		  Capital(GetName(token->sym)));
 		fprintf(fp, "\t\tNotifyError(\"%%s: Simulation not correctly "
 		  "initialised.\",  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
@@ -1675,7 +1681,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 
 	if (functionType == SET_BANDWIDTHS_ROUTINE) {
 		fprintf(fp, "\tif (!SetBandwidths_CFList(%s->%s, theBandwidthMode,\n",
-		  ptrVar, token->sym->name);
+		  ptrVar, GetName(token->sym));
 		fprintf(fp, "\t  theBandwidths)) {\n");
 		fprintf(fp, "\t\tNotifyError(\"%%s: Failed to set bandwidth mode.\", "
 		  "funcName);\n");
@@ -1690,13 +1696,13 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		case PARARRAY:
 			break;
 		default:
-			fprintf(fp, "\t%s->%sFlag = TRUE;\n", ptrVar, token->sym->name);
+			fprintf(fp, "\t%s->%sFlag = TRUE;\n", ptrVar, GetName(token->sym));
 		}
 	
 	if (processVarsFlag)
 		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 
-	if (type->inst != INT_AL) {
+	if (type->sym->type != INT_AL) {
 		fprintf(fp, "%s", assignmentString);
 		switch (type->sym->type) {
 		case CFLISTPTR:
@@ -1733,7 +1739,7 @@ PrintSetFunctions(FILE *fp)
 		for (list = identifierList; *list != 0; list++) {
 			PrintSetFunction(fp, *list, type, SET_STANDARD_ROUTINE);
 			if (((*list)->inst == POINTER) && FindArrayLimit(pc,
-			  (*list)->sym->name))
+			  GetName((*list)->sym)))
 				PrintSetFunction(fp, *list, type, SET_ARRAY_ELEMENT_ROUTINE);
 			if (type->sym->type == CFLISTPTR)
 				PrintSetFunction(fp, *list, type, SET_BANDWIDTHS_ROUTINE);
@@ -1775,14 +1781,14 @@ PrintGetFunctions(FILE *fp)
 				  funcName);
 				PrintModuleInitCheck(fp);
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "\t\tNotifyError(\"%%s: CFList data structure has "
 				  "not been correctly set.  \"\n\t\t  \"NULL returned.\", "
 				  "funcName);\n");
 				fprintf(fp, "\t\treturn(NULL);\n");
 				fprintf(fp, "\t}\n");
 				fprintf(fp, "\treturn(%s->%s);\n\n", ptrVar,
-				  (*list)->sym->name);
+				  GetName((*list)->sym));
 				fprintf(fp, "}\n\n");
 				AddRoutine(funcDeclaration);
 			}
@@ -1808,12 +1814,13 @@ PrintGetNumXParsRoutines(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
 			if (type->sym->type == PARARRAY) {
-				sprintf(function, "GetNum%sPars", Capital((*list)->sym->name));
+				sprintf(function, "GetNum%sPars", Capital(GetName((*list)->
+				  sym)));
 				PrintLineCommentHeading(fp, function);
 				fprintf(fp, "/*\n");
 				Print(fp, " * ", " * This function returns the number of "
 				  "parameters for the respective ");
-				Print(fp, " * ", (*list)->sym->name);
+				Print(fp, " * ", GetName((*list)->sym));
 				Print(fp, " * ", " parameter array structure. Using it helps "
 				  "maintain the correspondence between the mode names.\n");
 				Print(fp, " * ", "");
@@ -1827,7 +1834,7 @@ PrintGetNumXParsRoutines(FILE *fp)
 				baseModuleName = CreateBaseModuleName(module, qualifier, TRUE);
 				fprintf(fp, "\tswitch (mode) {\n");
 				fprintf(fp, "\tcase %s_%s_XXX_MODE:\n", baseModuleName,
-				  UpperCase((*list)->sym->name));
+				  UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "\t\tbreak;\n");
 				fprintf(fp, "\tdefault:\n");
 				fprintf(fp, "\t\tNotifyError(\"%%s: Mode not listed (%%d), "

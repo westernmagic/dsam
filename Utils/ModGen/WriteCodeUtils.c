@@ -61,13 +61,13 @@ Init_WriteCodeUtils(void)
 		execerror("ModGen: Process: Module name not set (mod_name)",
 		  (char *) 0);
 	else
-		module = tp->next->sym->name;
-	qualifier = ((tp = FindTokenType(QUALIFIER, pc)) != 0)? tp->next->sym->name:
-	  "";
+		module = GetName(tp->next->sym);
+	qualifier = ((tp = FindTokenType(QUALIFIER, pc)) != 0)? GetName(tp->next->
+	  sym): "";
 	/* Find the last typedef identifier */
 	for (tp = FindTokenType(TYPEDEF_NAME, pc); tp != 0; tp =
 	  FindTokenType(TYPEDEF_NAME, tp->next))
-		structure = tp->sym->name;
+		structure = GetName(tp->sym);
 	if (islower(structure[0]))
 		execerror("Process: structure name must begin with upper case char.",
 		  "");
@@ -80,7 +80,7 @@ Init_WriteCodeUtils(void)
 		processVarsFlag = FALSE;
 	else {
 		GetType_IdentifierList(&type, identifierList, tp);
-		processVarsFlag = (strcmp(UpperCase(identifierList[0]->sym->name),
+		processVarsFlag = (strcmp(UpperCase(GetName(identifierList[0]->sym)),
 		  "TRUE") == 0);
 	}
 
@@ -180,7 +180,7 @@ CreateProcessFuncName(Token *pc, char *moduleName, char *qualifier)
 		function = "Process";
 	else {
 		GetType_IdentifierList(&type, identifierList, p);
-		function = identifierList[0]->sym->name;
+		function = GetName(identifierList[0]->sym);
 	}
 	if ((strlen(function) + strlen(moduleName) + strlen(qualifier)) >= MAXLINE)
 		execerror("Function name too long", function);
@@ -272,6 +272,7 @@ GetOutputTypeFormatStr(Symbol *p)
 	case BOOLEAN_VAR:	return("%s");
 	case CHAR:			return("%s");
 	case INT:			return("%d");
+	case INT_AL:		return("%d");
 	case LONG:			return("%ld");
 	case FLOAT:			return("%f");
 	case DOUBLE:		return("%g");
@@ -298,6 +299,7 @@ GetInputTypeFormatStr(Symbol *p)
 	case BOOLEAN_VAR:	return("%d");
 	case CHAR:			return("%s");
 	case INT:			return("%d");
+	case INT_AL:		return("%d");
 	case LONG:			return("%ld");
 	case FLOAT:			return("%f");
 	case DOUBLE:		return("%lf");
@@ -323,6 +325,7 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 		switch (type->sym->type) {
 		case CHAR:			return("UNIPAR_STRING");
 		case INT:			return("UNIPAR_INT");
+		case INT_AL:		return("UNIPAR_INT_AL");
 		case LONG:			return("UNIPAR_LONG");
 		case DOUBLE:		return("UNIPAR_REAL");
 		case NAMESPECIFIER:	return("UNIPAR_NAME_SPEC");
@@ -365,7 +368,7 @@ GetTypeFormatStr(SymbolPtr sym, BOOLN isPointer)
 		return("DatumPtr");
 		break;
 	default:
-		return(sym->name);
+		return(GetName(sym));
 	}
 
 }

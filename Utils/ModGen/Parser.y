@@ -77,7 +77,7 @@ type_specifier:
 	|	MOD_NAME			{ ; }
 	|	QUALIFIER			{ ; }
 	|	PROC_ROUTINE		{ ; }
-	|	INT_AL				{	SetTokenInstRelCurrent(INT_AL, 0); }
+	|	INT_AL				{ ; }
 	|	NAMESPECIFIER		{ ; }
 	|	FILENAME			{ ; }
 	|	DATUMPTR			{ ; }
@@ -272,7 +272,7 @@ yylex(void)
 		ungetc(c, fpIn);
 		*p = '\0';
 		if ((s = lookup(sbuf)) == 0)
-			s = install(sbuf, IDENTIFIER);
+			s = install(sbuf, 0, IDENTIFIER);
 		InstallToken(s, STANDARD_TOKEN);
 		yylval.sym = s;
 		return s->type;

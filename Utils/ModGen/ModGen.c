@@ -191,7 +191,6 @@ main(int argc, char * argv[])
 		return 1;
 	}
 	fclose(fpIn);
-	TransposeTokenTypes();
 	printf("%s version %s (%s):\n", progname, MODGEN_VERSION, __DATE__);
 	Process(baseName);
 	return 0;

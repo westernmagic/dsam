@@ -14,12 +14,19 @@
 #define _SYMBOL_H	1
 
 /******************************************************************************/
+/****************************** Constant definitions **************************/
+/******************************************************************************/
+
+#define	DEFAULT_ALT_NAME_PTR	0
+
+/******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
 
 typedef struct	Symbol	{	/* Symbol table entry. */
 
 	char	*name;
+	char	*altName;		/* Alternative for type e.g. 'int' for 'int_al'. */
 	short	type;			/* VAR, BLTIN, UNDEF */
 	struct Symbol	*next;	/* To link to next symbol */
 
@@ -29,8 +36,9 @@ typedef struct	Symbol	{	/* Symbol table entry. */
 /****************************** Function prototypes ***************************/
 /******************************************************************************/
 
-Symbol	*install(char *, int type);
+Symbol	*install(char *, char *, int type);
 Symbol	*lookup(char *);
+char *	GetName(Symbol *sp);
 Symbol	*GetSymbolStackPtr(void);
 
 #endif

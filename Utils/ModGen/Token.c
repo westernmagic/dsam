@@ -28,18 +28,6 @@
 
 Token	*pc = 0, *currentPC = 0;
 
-static struct {
-
-	int		presentType;
-	char	*newName;
-	
-} transposeTable[] = {
-
-	{INT_AL,	"int"},
-	{0,		0}
-
-};
-
 /******************************************************************************/
 /****************************** Function Declarations *************************/
 /******************************************************************************/
@@ -194,29 +182,6 @@ FindTokenInst(int inst, Token *p)
 
 }
 
-/****************************** TransposeTokenTypes ***************************/
-
-/*
- * This routine transposes all of the special types which have been marked
- * using the inst field of the token.
- */
-
-void
-TransposeTokenTypes(void)
-{
-	int		i;
-	Symbol	*newSymbol;
-	Token	*p;
-	
-	for (i = 0; transposeTable[i].newName != 0; i++) {
-		newSymbol = lookup(transposeTable[i].newName);
-		for (p = pc; p != 0; p = p->next)
-			if ((p->sym) && (p->sym->type == transposeTable[i].presentType))
-				p->sym = newSymbol;
-	}
-	
-}
-
 /****************************** FindArrayLimit ********************************/
 
 /*
@@ -231,12 +196,12 @@ FindArrayLimit(TokenPtr pc, char *variableName)
 	TokenPtr	p, arrayLimit, arrayType, arrayIdentifierList[MAX_IDENTIFIERS];
 	TokenPtr	pStart, *list, type, identifierList[MAX_IDENTIFIERS];
 
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
 		  arrayLimit);
 		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
-		  p)) && ((type->inst != INT_AL)); )
+		  p)) && ((type->sym->type != INT_AL)); )
 			for (list = identifierList; *list != 0; list++)
 				if (strcmp((*list)->sym->name, variableName) == 0)
 					return(arrayIdentifierList[0]);

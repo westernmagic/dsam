@@ -43,38 +43,39 @@ static struct {
 static struct {
 
 	char	*name;
+	char	*altName;
 	int		type;
 
 } keywords[] = {
 
-	{"void",		VOID},
-	{"char",		CHAR},
-	{"short",		SHORT},
-	{"int",			INT},
-	{"long",		LONG},
-	{"float",		FLOAT},
-	{"double",		DOUBLE},
-	{"signed",		SIGNED},
-	{"unsigned",	UNSIGNED},
-	{"typedef",		TYPEDEF},
-	{"enum",		ENUM},
-	{"const",		CONST},
-	{"volatile",	VOLATILE},
-	{"struct",		STRUCT},
-	{"union",		UNION},
-	{"BoolSpecifier", BOOLSPECIFIER},
-	{"BOOLN",		BOOLEAN_VAR},
-	{"mod_name",	MOD_NAME},
-	{"qualifier",	QUALIFIER},
-	{"proc_routine",	PROC_ROUTINE},
-	{"int_al",		INT_AL},
-	{"NameSpecifier",	NAMESPECIFIER},
-	{"FileName",	FILENAME},
-	{"DatumPtr",	DATUMPTR},
-	{"CFListPtr",	CFLISTPTR},
-	{"ParArrayPtr",	PARARRAY},
-	{"process_vars",	PROCESS_VARS},
-	{0,		0}
+	{"void",		DEFAULT_ALT_NAME_PTR,		VOID},
+	{"char",		DEFAULT_ALT_NAME_PTR,		CHAR},
+	{"short",		DEFAULT_ALT_NAME_PTR,		SHORT},
+	{"int",			DEFAULT_ALT_NAME_PTR,		INT},
+	{"long",		DEFAULT_ALT_NAME_PTR,		LONG},
+	{"float",		DEFAULT_ALT_NAME_PTR,		FLOAT},
+	{"double",		DEFAULT_ALT_NAME_PTR,		DOUBLE},
+	{"signed",		DEFAULT_ALT_NAME_PTR,		SIGNED},
+	{"unsigned",	DEFAULT_ALT_NAME_PTR,		UNSIGNED},
+	{"typedef",		DEFAULT_ALT_NAME_PTR,		TYPEDEF},
+	{"enum",		DEFAULT_ALT_NAME_PTR,		ENUM},
+	{"const",		DEFAULT_ALT_NAME_PTR,		CONST},
+	{"volatile",	DEFAULT_ALT_NAME_PTR,		VOLATILE},
+	{"struct",		DEFAULT_ALT_NAME_PTR,		STRUCT},
+	{"union",		DEFAULT_ALT_NAME_PTR,		UNION},
+	{"BoolSpecifier", DEFAULT_ALT_NAME_PTR,	BOOLSPECIFIER},
+	{"BOOLN",		DEFAULT_ALT_NAME_PTR,		BOOLEAN_VAR},
+	{"mod_name",	DEFAULT_ALT_NAME_PTR,		MOD_NAME},
+	{"qualifier",	DEFAULT_ALT_NAME_PTR,		QUALIFIER},
+	{"proc_routine",	DEFAULT_ALT_NAME_PTR,	PROC_ROUTINE},
+	{"int_al",		"int",						INT_AL},
+	{"NameSpecifier",	DEFAULT_ALT_NAME_PTR,	NAMESPECIFIER},
+	{"FileName",	DEFAULT_ALT_NAME_PTR,		FILENAME},
+	{"DatumPtr",	DEFAULT_ALT_NAME_PTR,		DATUMPTR},
+	{"CFListPtr",	DEFAULT_ALT_NAME_PTR,		CFLISTPTR},
+	{"ParArrayPtr",	DEFAULT_ALT_NAME_PTR,		PARARRAY},
+	{"process_vars",	DEFAULT_ALT_NAME_PTR,	PROCESS_VARS},
+	{0,				0,							0}
 
 };
 
@@ -96,7 +97,7 @@ Init(void)
 	/* for (i = 0; consts[i].name; i++)
 		install(consts[i].name, VAR, consts[i].cval); */
 	for (i = 0; keywords[i].name; i++)
-		install(keywords[i].name, keywords[i].type);
+		install(keywords[i].name, keywords[i].altName, keywords[i].type);
 
 }
 
