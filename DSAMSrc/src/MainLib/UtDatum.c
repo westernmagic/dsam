@@ -1559,7 +1559,6 @@ WriteParFiles_Datum(char *filePath, DatumPtr start)
 	static const char *funcName = "WriteParFiles_Datum";
 	char	fileName[MAX_FILE_PATH];
 	DatumPtr	pc;
-	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 	UniParListPtr	parList;
 
 	if (!start) {
@@ -1590,10 +1589,11 @@ WriteParFiles_Datum(char *filePath, DatumPtr start)
 		SetDefaultProcessFileName_Utility_Datum(pc);
 		snprintf(fileName, MAX_FILE_PATH, "%s/%s", filePath,
 		  pc->u.proc.parFile);
-		SetParsFile_Common(fileName, OVERWRITE);
-		PrintParList_UniParMgr(parList);
-		fclose(GetDSAMPtr_Common()->parsFile);
-		GetDSAMPtr_Common()->parsFile = oldFp;
+		if (!WriteParFile_UniParMgr(fileName, parList)) {
+			NotifyError("%s: Failed to write parameter file '%s'.", funcName,
+			  fileName);
+			return(FALSE);
+		}
 	}
 	return(TRUE);
 
