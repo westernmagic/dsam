@@ -23,5 +23,4 @@ install-data-local: Makefile.am
 		$(INSTALL_DATA) $(EXTRA_DIST) $(pkgdatadir)/$(DIRECTORY)
 
 uninstall-local:
-		cd $(pkgdatadir)/$(DIRECTORY)
-		rm -rf $(EXTRA_DIST)
+		cd $(pkgdatadir)/$(DIRECTORY) && rm -rf $(EXTRA_DIST)
