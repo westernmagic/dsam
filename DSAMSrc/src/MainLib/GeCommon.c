@@ -382,7 +382,7 @@ BOOLN
 SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.parsFile = GetFilePtr(outputSpecifier, mode);
-	return(dSAM.parsFile == stderr);
+	return(dSAM.parsFile != stderr);
 
 }
 
