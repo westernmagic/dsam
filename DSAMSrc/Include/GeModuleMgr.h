@@ -94,7 +94,6 @@ typedef struct moduleStruct {
 	BOOLN	(* CheckPars)(void);
 	BOOLN	(* Free)(void);
 	double	(* GetPotentialResponse)(double potential);
-	double	(* GetRestingResponse)(void);
 	UniParListPtr	(* GetUniParListPtr)(void);
 	BOOLN	(* PrintPars)(void);
 #	ifdef _PAMASTER1_H
@@ -165,8 +164,6 @@ char *		GetParsFilePath_ModuleMgr(EarObjectPtr data);
 double		GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential);
 
 EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
-
-double		GetRestingResponse_ModuleMgr(EarObjectPtr data);
 
 BOOLN		GetSimParFileFlag_ModuleMgr(EarObjectPtr data);
 
