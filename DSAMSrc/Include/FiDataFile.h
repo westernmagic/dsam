@@ -130,7 +130,7 @@ typedef struct {
 	char	name[MAX_FILE_PATH];/* - used by Generate Signal, set by ReadPars.*/
 	int		wordSize;			/* can be either 1 or 2 byte words. */
 	int		endian;				/* can be either 0 or 1, little- or big-endian*/
-	uShort	numChannels;		/* used only by Raw binary support at present.*/
+	int		numChannels;		/* used only by Raw binary support at present.*/
 	double	defaultSampleRate;	/* - for when this is not specified. */
 	double 	duration;			/* This can be set to restrict the data size. */
 	double	timeOffset;			/* Set to miss date at start of signal. */
