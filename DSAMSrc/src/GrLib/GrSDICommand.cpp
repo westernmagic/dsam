@@ -277,7 +277,7 @@ SDICommand::AddLineShape(int lineType)
 	else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
 		return(false);
 	else {
-		theShape = ((SDIDiagram *) doc->GetDiagram())->CreateShape(
+		theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
 			  shapeInfo, lineType, wxRED_BRUSH);
 
 		wxLineShape *lineShape = (wxLineShape *)theShape;
@@ -285,16 +285,16 @@ SDICommand::AddLineShape(int lineType)
 		switch (lineType) {
 		case REPEAT:
 			lineShape->MakeLineControlPoints(4);
-			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, 10.0, 0.0,
-			  "Normal arrowhead");
+			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
+			  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 			AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
 			  toShape), InitInst_Utility_Datum(STOP));
 			SHAPE_PC(fromShape)->u.loop.stopPlaced = TRUE;
 			break;
 		default:
 			lineShape->MakeLineControlPoints(2);
-			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END, 10.0,
-			  0.0, "Hollow circle");
+			lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
+			  DIAGRAM_HOLLOW_CIRCLE_SIZE, 0.0, DIAGRAM_HOLLOW_CIRCLE_TEXT);
 			if (!ConnectInstructions(fromShape, toShape)) {
 				delete theShape;
 				shape = NULL;
@@ -371,7 +371,7 @@ SDICommand::Do(void)
 		if (shape)
 			theShape = shape; // Saved from undoing the shape
 		else {
-			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateShape(
+			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
 			  shapeInfo, processType, wxCYAN_BRUSH);
 			theShape->SetSize(60, 60);
 		}

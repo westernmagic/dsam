@@ -71,17 +71,18 @@ SDIEvtHandler::ResetLabel(void)
 {
 	label.Empty();
 	if (!pc->defaultLabelFlag)
-		label.Printf("%s\n", pc->label);
+		label.Printf("{ %s }\n", pc->label);
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
-		strCount.Printf("%s\n%d", GetProcessName_Utility_Datum(pc), pc->u.loop.
-		  count);
+		strCount.Printf("%s\n[ %d ]", GetProcessName_Utility_Datum(pc),
+		  pc->u.loop.count);
 		label += strCount;
 		break; }
 	case RESET: {
 		wxString str;
-		str.Printf("%s\n%s", GetProcessName_Utility_Datum(pc), pc->u.string);
+		str.Printf("%s\n[ %s ]", GetProcessName_Utility_Datum(pc), pc->u.
+		  string);
 		label += str;
 		break; }
 	default:
@@ -265,6 +266,7 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 void
 SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 {
+	printf("SDIEvtHandler::OnLeftClick: Entered\n");
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
@@ -300,6 +302,7 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 void
 SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 {
+	printf("SDIEvtHandler::OnLeftDoubleClick: Entered\n");
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
@@ -363,6 +366,7 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 void
 SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 {
+	printf("SDIEvtHandler::OnRightClick: Entered\n");
 	SDICanvas *canvas = (SDICanvas *)GetShape()->GetCanvas();
 	wxClientDC dc(canvas);
 	canvas->PrepareDC(dc);

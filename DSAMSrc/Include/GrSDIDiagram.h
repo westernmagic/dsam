@@ -27,6 +27,16 @@
 
 #define	DIAGRAM_DEFAULT_SHAPE_WIDTH		60.0
 #define	DIAGRAM_DEFAULT_SHAPE_HEIGHT	60.0
+#define	DIAGRAM_HOLLOW_CIRCLE_TEXT		"Hollow circle connection"
+#define DIAGRAM_HOLLOW_CIRCLE_SIZE		6.0
+#define	DIAGRAM_ARROW_TEXT				"Arrow head 'repeat' connection"
+#define DIAGRAM_ARROW_SIZE				10.0
+
+/******************************************************************************/
+/*************************** Macro Definitions ********************************/
+/******************************************************************************/
+
+#define	SHAPE_PC(SHAPE)	(((SDIEvtHandler *) (SHAPE)->GetEventHandler())->pc)
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -48,10 +58,18 @@
  
 class SDIDiagram: public wxDiagram
 {
+	double	x, y;
+
   public:
-	SDIDiagram(void) {}
+	SDIDiagram(void);
 	
-	wxShape *	CreateShape(wxClassInfo *shapeInfo, int type, wxBrush *brush);
+	void	AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType);
+	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
+				  wxBrush *brush);
+	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
+				  wxBrush *brush);
+	void	DrawSimConnections(DatumPtr start);
+	void	DrawSimShapes(DatumPtr start);
 	void	DrawSimulation(DatumPtr start);
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
