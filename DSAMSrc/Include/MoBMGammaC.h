@@ -19,10 +19,10 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define BASILARM_GAMMACHIRP_NUM_PARS			9
-#define BASILARM_GAMMACHIRP_COEFF_PS_EST		0.65	/* CoefPsEst */
-#define BASILARM_GAMMACHIRP_COEFF_CMPRS			1.0	/* Cmprs     */
-#define BASILARM_GAMMACHIRP_DELAY_TIME_LI		100.0	/* T_LI	[ms] */	
+#define BASILARM_GAMMACHIRP_NUM_PARS				9
+#define BASILARM_GAMMACHIRP_COEFF_PS_EST			0.65	/* CoefPsEst */
+#define BASILARM_GAMMACHIRP_COEFF_CMPRS				1.0	/* Cmprs     */
+#define BASILARM_GAMMACHIRP_DELAY_TIME_LI			100.0	/* T_LI	[ms] */	
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
