@@ -759,33 +759,6 @@ ReadPars_IHCRP_Shamma(char *fileName)
     
 }
 
-/**************************** GetRestingResponse ******************************/
-
-/*
- * This routine returns the resting response of the Shamma et al. IHC
- * receptor potential model.  It can then be used for things like calculating
- * the AC/DC ratio.
- */
-
-double
-GetRestingResponse_IHCRP_Shamma(void)
-{
-	static const char	*funcName = "GetRestingResponse_IHCRP_Shamma";
-	double	correctedRevPot_Epk;
-	
-	if (shammaPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	correctedRevPot_Epk = shammaPtr->reversalPot_Ek +
-	  shammaPtr->endocochlearPot_Et * shammaPtr->reversalPotCorrection;
-	return((shammaPtr->restingConductance_G0 *
-	  shammaPtr->endocochlearPot_Et + shammaPtr->kConductance_Gk *
-	  correctedRevPot_Epk) / (shammaPtr->restingConductance_G0 +
-	  shammaPtr->kConductance_Gk) - shammaPtr->referencePot);
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -829,7 +802,6 @@ InitModule_IHCRP_Shamma(ModulePtr theModule)
 	theModule->parsPtr = shammaPtr;
 	theModule->CheckPars = CheckPars_IHCRP_Shamma;
 	theModule->Free = Free_IHCRP_Shamma;
-	theModule->GetRestingResponse = GetRestingResponse_IHCRP_Shamma;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma;
 	theModule->PrintPars = PrintPars_IHCRP_Shamma;
 	theModule->ReadPars = ReadPars_IHCRP_Shamma;

@@ -104,8 +104,6 @@ BOOLN	FreeProcessVariables_IHCRP_Shamma3StateVelIn(void);
 
 BOOLN	Free_IHCRP_Shamma3StateVelIn(void);
 
-double	GetRestingResponse_IHCRP_Shamma(void);
-
 UniParListPtr	GetUniParListPtr_IHCRP_Shamma3StateVelIn(void);
 
 BOOLN	InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule);

@@ -100,8 +100,6 @@ BOOLN	Free_IHCRP_Shamma(void);
 
 void	FreeProcessVariables_IHCRP_Shamma(void);
 
-double	GetRestingResponse_IHCRP_Shamma(void);
-
 UniParListPtr	GetUniParListPtr_IHCRP_Shamma(void);
 
 BOOLN	Init_IHCRP_Shamma(ParameterSpecifier parSpec);

@@ -102,8 +102,6 @@ void	FreeProcessVariables_Neuron_McGregor(void);
 
 double	GetPotentialResponse_Neuron_McGregor(double potential);
 
-double	GetRestingResponse_Neuron_McGregor(void);
-
 UniParListPtr	GetUniParListPtr_Neuron_McGregor(void);
 
 BOOLN	Init_Neuron_McGregor(ParameterSpecifier parSpec);

@@ -77,8 +77,6 @@ BOOLN	Free_IHCRP_Meddis(void);
 
 void	FreeProcessVariables_IHCRP_Meddis(void);
 
-double	GetRestingResponse_IHCRP_Meddis(void);
-
 UniParListPtr	GetUniParListPtr_IHCRP_Meddis(void);
 
 BOOLN	Init_IHCRP_Meddis(ParameterSpecifier parSpec);

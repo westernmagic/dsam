@@ -100,8 +100,6 @@ void	FreeCarneyRPCoeffs_IHCRP_Carney(CarneyRPCoeffsPtr *p);
 
 BOOLN	FreeProcessVariables_IHCRP_Carney(void);
 
-double	GetRestingResponse_IHCRP_Carney(void);
-
 UniParListPtr	GetUniParListPtr_IHCRP_Carney(void);
 
 BOOLN	Init_IHCRP_Carney(ParameterSpecifier parSpec);

@@ -708,33 +708,6 @@ GetPotentialResponse_Neuron_ArleKim(double potential)
 
 }
 
-/****************************** GetRestingResponse ****************************/
-
-/*
- * This routine returns resting potential.
- *
- */
-
-double
-GetRestingResponse_Neuron_ArleKim(void)
-{
-	static const char *funcName = "GetRestingResponse_Neuron_ArleKim";
-	double		restingPotential_Er, totalConductance_G;
-	ArleKimPtr	p;
-
-	if (!CheckPars_Neuron_ArleKim()) {
-		NotifyError("%s: Parameters have not been correctly set, zero "\
-		  "returned.", funcName);
-		return(0.0);
-	}
-	p = arleKimPtr;
-	totalConductance_G = p->kRestingCond_gk + p->bRestingCond_gb;
-	restingPotential_Er = (p->kRestingCond_gk * p->kReversalPoten_Ek +
-	  p->bRestingCond_gb * p->bReversalPoten_Eb) / totalConductance_G;
-	return(restingPotential_Er);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -892,7 +865,6 @@ InitModule_Neuron_ArleKim(ModulePtr theModule)
 	theModule->CheckPars = CheckPars_Neuron_ArleKim;
 	theModule->Free = Free_Neuron_ArleKim;
 	theModule->GetPotentialResponse = GetPotentialResponse_Neuron_ArleKim;
-	theModule->GetRestingResponse = GetRestingResponse_Neuron_ArleKim;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_ArleKim;
 	theModule->PrintPars = PrintPars_Neuron_ArleKim;
 	theModule->ReadPars = ReadPars_Neuron_ArleKim;

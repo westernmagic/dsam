@@ -737,26 +737,6 @@ GetICListPtr_Neuron_HHuxley(void)
 
 }
 
-/**************************** GetRestingResponse ******************************/
-
-/*
- * This routine returns the resting response of the H. Huxley neural cell
- * model.
- */
-
-double
-GetRestingResponse_Neuron_HHuxley(void)
-{
-	static const char	*funcName = "GetRestingResponse_Neuron_HHuxley";
-
-	if (hHuxleyNCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	return(hHuxleyNCPtr->restingPotential);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -911,7 +891,6 @@ InitModule_Neuron_HHuxley(ModulePtr theModule)
 	theModule->CheckPars = CheckPars_Neuron_HHuxley;
 	theModule->Free = Free_Neuron_HHuxley;
 	theModule->GetPotentialResponse = GetPotentialResponse_Neuron_HHuxley;
-	theModule->GetRestingResponse = GetRestingResponse_Neuron_HHuxley;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_HHuxley;
 	theModule->PrintPars = PrintPars_Neuron_HHuxley;
 	theModule->ReadPars = ReadPars_Neuron_HHuxley;

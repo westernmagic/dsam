@@ -569,27 +569,6 @@ GetPotentialResponse_Neuron_McGregor(double potential)
 
 }
 
-/****************************** GetRestingResponse ****************************/
-
-/*
- * This routine returns resting potential.
- *
- */
-
-double
-GetRestingResponse_Neuron_McGregor(void)
-{
-	static const char *funcName = "GetRestingResponse_Neuron_McGregor";
-
-	if (!CheckPars_Neuron_McGregor()) {
-		NotifyError("%s: Parameters have not been correctly set, zero "\
-		  "returned.", funcName);
-		return(0.0);
-	}
-	return(mcGregorPtr->cellRestingPot_Er);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -734,7 +713,6 @@ InitModule_Neuron_McGregor(ModulePtr theModule)
 	theModule->CheckPars = CheckPars_Neuron_McGregor;
 	theModule->Free = Free_Neuron_McGregor;
 	theModule->GetPotentialResponse = GetPotentialResponse_Neuron_McGregor;
-	theModule->GetRestingResponse = GetRestingResponse_Neuron_McGregor;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_McGregor;
 	theModule->PrintPars = PrintPars_Neuron_McGregor;
 	theModule->ReadPars = ReadPars_Neuron_McGregor;

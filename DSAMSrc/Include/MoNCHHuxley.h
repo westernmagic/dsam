@@ -151,8 +151,6 @@ void	FreeProcessVariables_Neuron_HHuxley(void);
 
 IonChanListPtr	GetICListPtr_Neuron_HHuxley(void);
 
-double		GetRestingResponse_Neuron_HHuxley(void);
-
 UniParListPtr	GetUniParListPtr_Neuron_HHuxley(void);
 
 BOOLN	Init_Neuron_HHuxley(ParameterSpecifier parSpec);

@@ -597,7 +597,6 @@ InitModule_IHCRP_Carney(ModulePtr theModule)
 	theModule->CheckPars = CheckPars_IHCRP_Carney;
 	theModule->Free = Free_IHCRP_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Carney;
-	theModule->GetRestingResponse = GetRestingResponse_IHCRP_Carney;
 	theModule->PrintPars = PrintPars_IHCRP_Carney;
 	theModule->ReadPars = ReadPars_IHCRP_Carney;
 	theModule->RunProcess = RunModel_IHCRP_Carney;
@@ -655,27 +654,6 @@ FreeProcessVariables_IHCRP_Carney(void)
 	}
 	carneyRPPtr->updateProcessVariablesFlag = TRUE;
 	return(FALSE);
-
-}
-
-/**************************** GetRestingResponse ******************************/
-
-/*
- * This routine returns the resting response of the Carney et al. IHC
- * receptor potential model.  It can then be used for things like calculating
- * the AC/DC ratio.
- */
-
-double
-GetRestingResponse_IHCRP_Carney(void)
-{
-	static const char	*funcName = "GetRestingResponse_IHCRP_Carney";
-	
-	if (carneyRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	return(carneyRPPtr->referencePot);
 
 }
 

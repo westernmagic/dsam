@@ -773,31 +773,30 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
 		return(FALSE);
 	}
 	DPrint("Modified Shamma Receptor Potential Module  Module Parameters:-\n");
-	DPrint("\tEndocochlear potential, Et = %g V,\n", 
-			   sham3StVInPtr->endocochlearPot_Et);
-	DPrint( "\tReversal potential, Ek = %g V,\n", 
-			   sham3StVInPtr->reversalPot_Ek);
-	DPrint("\tReversal potential correction Rp/(Rt+Rp) =", 
-			   sham3StVInPtr->reversalPotCorrection);
-	DPrint("\tTotal capacitance, Ct = %g F,\n", 
-			   sham3StVInPtr->totalCapacitance_C);
-	DPrint("\tResting conductance, G0 = %g S,\n", 
-			   sham3StVInPtr->restingConductance_G0);
-	DPrint("\tPotassium conductance, Gk = %g S,\n", 
-			   sham3StVInPtr->kConductance_Gk);
-	DPrint("\tMaximum mechanically sensitive Conductance,", 
-				"Gmax = %g S,\n", sham3StVInPtr->maxMConductance_Gmax);
-	DPrint("\tBM/Cilia: time constant = %g ms,\t gain = %g", 
-				"dB\n", sham3StVInPtr->ciliaTimeConst_tc,
-				 sham3StVInPtr->ciliaCouplingGain_C);
-	DPrint("\tReference potential = %g V\n", 
-			   sham3StVInPtr->referencePot);
-	DPrint("\tTransduction function 0:\n Sensitivity, s0 = %g (/m)", 
-			   "\tOffset, U0 = %g (m)\n", sham3StVInPtr->sensitivity_s0,
-			   sham3StVInPtr->offset_u0  );
-	DPrint("\tTransduction function 1:\n Sensitivity, s1 = %g (/m)", 
-			   "\tOffset, u1 = %g (m)\n", sham3StVInPtr->sensitivity_s1,
-			   sham3StVInPtr->offset_u1  );
+	DPrint("\tEndocochlear potential, Et = %g V,\n", sham3StVInPtr->
+	  endocochlearPot_Et);
+	DPrint( "\tReversal potential, Ek = %g V,\n", sham3StVInPtr->
+	  reversalPot_Ek);
+	DPrint("\tReversal potential correction Rp/(Rt+Rp) = %g,\n", sham3StVInPtr->
+	  reversalPotCorrection);
+	DPrint("\tTotal capacitance, Cm = %g F,\n", sham3StVInPtr->
+	  totalCapacitance_C);
+	DPrint("\tResting conductance, G0 = %g S,\n", sham3StVInPtr->
+	  restingConductance_G0);
+	DPrint("\tPotassium conductance, Gk = %g S,\n", sham3StVInPtr->
+	  kConductance_Gk);
+	DPrint("\tMaximum mechanically sensitive Conductance, Gmax = %g S,\n",
+	  sham3StVInPtr->maxMConductance_Gmax);
+	DPrint("\tBM/Cilia: time constant = %g ms,", sham3StVInPtr->
+	  ciliaTimeConst_tc);
+	DPrint("\tGain = %g dB,\n", sham3StVInPtr->ciliaCouplingGain_C);
+	DPrint("\tReference potential = %g V,\n", sham3StVInPtr->referencePot);
+	DPrint("\tTransduction function 0:\n\t\tSensitivity, s0 = %g (/m), ", 
+	  sham3StVInPtr->sensitivity_s0);
+	DPrint("\tOffset, u0 = %g (m)\n", sham3StVInPtr->offset_u0  );
+	DPrint("\tTransduction function 1:\n\t\tSensitivity, s1 = %g (/m),",
+	  sham3StVInPtr->sensitivity_s1);
+	DPrint("\tOffset, u1 = %g (m)\n", sham3StVInPtr->offset_u1 );
 	return(TRUE);
 
 }
@@ -895,35 +894,6 @@ SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 
 }
 
-/**************************** GetRestingResponse ******************************/
-
-/*
- * This routine returns the resting response of the Shamma et al. IHC
- * receptor potential model.  It can then be used for things like calculating
- * the AC/DC ratio.
- */
-
-double
-GetRestingResponse_IHCRP_Shamma3StateVelIn(void)
-{
-	static const char	*funcName =
-	  "GetRestingResponse_IHCRP_Shamma3StateVelIn";
-	double	correctedRevPot_Epk;
-	
-	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	correctedRevPot_Epk = sham3StVInPtr->reversalPot_Ek +
-	  sham3StVInPtr->endocochlearPot_Et * sham3StVInPtr->reversalPotCorrection;
-	return((sham3StVInPtr->restingConductance_G0 *
-	  sham3StVInPtr ->endocochlearPot_Et + sham3StVInPtr->kConductance_Gk *
-	  correctedRevPot_Epk) / (sham3StVInPtr->restingConductance_G0 +
-	  sham3StVInPtr->kConductance_Gk) - sham3StVInPtr->referencePot);
-
-}
-
-
 /****************************** InitModule ************************************/
 
 /*
@@ -947,7 +917,6 @@ InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 	theModule->parsPtr = sham3StVInPtr;
 	theModule->CheckPars = CheckPars_IHCRP_Shamma3StateVelIn;
 	theModule->Free = Free_IHCRP_Shamma3StateVelIn;
-	theModule->GetRestingResponse = GetRestingResponse_IHCRP_Shamma3StateVelIn;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma3StateVelIn;
 	theModule->PrintPars = PrintPars_IHCRP_Shamma3StateVelIn;
 	theModule->ReadPars = ReadPars_IHCRP_Shamma3StateVelIn;

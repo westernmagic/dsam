@@ -416,28 +416,6 @@ ReadPars_IHCRP_Meddis(char *fileName)
     
 }
 
-/**************************** GetRestingResponse ******************************/
-
-/*
- * This routine returns the resting response of the Meddis IHC
- * receptor potential model.  It can then be used for things like calculating
- * the AC/DC ratio.
- */
-
-double
-GetRestingResponse_IHCRP_Meddis(void)
-{
-	static const char	*funcName = "GetRestingResponse_IHCRP_Meddis";
-
-	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	return(meddisRPPtr->releaseRate_g * meddisRPPtr->permConst_A /
-	  (meddisRPPtr->permConst_A + meddisRPPtr->permConst_B));
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -482,7 +460,6 @@ InitModule_IHCRP_Meddis(ModulePtr theModule)
 	theModule->CheckPars = CheckPars_IHCRP_Meddis;
 	theModule->Free = Free_IHCRP_Meddis;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Meddis;
-	theModule->GetRestingResponse = GetRestingResponse_IHCRP_Meddis;
 	theModule->PrintPars = PrintPars_IHCRP_Meddis;
 	theModule->ReadPars = ReadPars_IHCRP_Meddis;
 	theModule->RunProcess = RunModel_IHCRP_Meddis;
