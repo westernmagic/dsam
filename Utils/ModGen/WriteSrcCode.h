@@ -58,6 +58,8 @@ extern StandardFunctions standardFunctions[];
 /****************************** Function Prototypes ***************************/
 /******************************************************************************/
 
+void	PrintAllocArraysRoutines(FILE *fp);
+
 void	PrintArrayCode(FILE *fp, Token *arrayLimit);
 
 void	PrintArrayListHeader(FILE *fp, Token *arrayLimit);

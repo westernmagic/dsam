@@ -42,6 +42,7 @@ StandardFunctions standardFunctions[] = {
 	{"Init",			PrintInitRoutine},
 	{"SetUniParList",	PrintSetUniParListRoutine},
 	{"GetUniParListPtr",PrintGetUniParListPtrRoutine},
+	{"Alloc",			PrintAllocArraysRoutines},
 	{"SetPars",			PrintSetParsRoutine},
 	{"Set",				PrintSetFunctions},
 	{"CheckPars",		PrintCheckParsRoutine},
@@ -560,6 +561,12 @@ CreateSetParsArguments(BOOLN justNames)
 				strcat(string, " ");
 				if ((*list)->inst == POINTER)
 					strcat(string, "*");
+			} else {
+				if (((*list)->inst == POINTER) && (type->sym->type != CHAR)) {
+					strcat(string, ptrVar);
+					strcat(string, "->");
+				}
+					
 			}
 			strcat(string, DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
 		}
@@ -808,6 +815,89 @@ PrintPrintParsRoutine(FILE *fp)
 
 }
 
+/****************************** PrintAllocArraysRoutines **********************/
+
+/*
+ * This routine prints the 'Alloc...' array allocation routines.
+ * It adds the function declaration to the main list.
+ * It doesn't expect the 'line' string to be larger than LONG_LINE.
+ */
+
+void
+PrintAllocArraysRoutines(FILE *fp)
+{
+	char	function[MAXLINE], funcArguments[MAXLINE], arrayPtrVar[MAXLINE];
+	char	*funcDeclaration, *funcName;
+	Token	*p, *identifierList[MAX_IDENTIFIERS], **list, *pStart, *arrayLimit;
+	Token	*type, *arrayType, *arrayIdentifierList[MAX_IDENTIFIERS];
+	Symbol	*limitSym;
+
+	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
+	  arrayLimit = arrayLimit->next) {
+		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
+		  arrayLimit);
+		limitSym = arrayIdentifierList[0]->sym;
+		sprintf(function, "Alloc%s", Capital(limitSym->name));
+		PrintLineCommentHeading(fp, function);
+		fprintf(fp,
+		  "/*\n"
+		  " * This function allocates the memory for the pure tone arrays.\n"
+		  " * It will assume that nothing needs to be done if the '%s' \n"
+		  " * variable is the same as the current structure member value.\n"
+		  " * To make this work, the function needs to set the structure '%s'\n"
+		  " * parameter too.\n"
+		  " * It returns FALSE if it fails in any way.\n"
+		  " */\n\n",
+		  limitSym->name, limitSym->name
+		  );
+		funcName = CreateFuncName(function, module, qualifier);
+		sprintf(funcArguments, "int %s", limitSym->name);
+		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+		  funcArguments);
+		fprintf(fp, "%s\n{\n", funcDeclaration);
+		fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+		fprintf(fp, "\n");
+
+		fprintf(fp, "\tif (%s == %s->%s)\n", limitSym->name, ptrVar,
+		  limitSym->name);
+		fprintf(fp, "\t\treturn(TRUE);\n");
+
+		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
+		  p)) && ((type->inst != INT_AL)); )
+			for (list = identifierList; *list != 0; list++)
+				if ((*list)->inst == POINTER) {
+					sprintf(arrayPtrVar, "%s->%s",  ptrVar, (*list)->sym->name);
+					fprintf(fp, "\tif (%s)\n", arrayPtrVar);
+					fprintf(fp, "\t\tfree(%s);\n", arrayPtrVar);
+					Print(fp, "\t  ", "\tif ((");
+					Print(fp, "\t  ", arrayPtrVar);
+					Print(fp, "\t  ", " = (");
+					Print(fp, "\t  ", type->sym->name);
+					Print(fp, "\t  ", " *) calloc(");
+					Print(fp, "\t  ", limitSym->name);
+					Print(fp, "\t  ", ", sizeof(");
+					Print(fp, "\t  ", type->sym->name);
+					Print(fp, "\t  ", "))) == NULL) {\n");
+					Print(fp, "\t  ", "");
+					Print(fp, "\t\t  ", "\t\tNotifyError(_\"%s: Cannot "
+					  "allocate memory for '%d' ");
+					Print(fp, "\t\t  ", (*list)->sym->name);
+					Print(fp, "\t\t  ", "._\", funcName, ");
+					Print(fp, "\t\t  ", limitSym->name);
+					Print(fp, "\t\t  ", ");\n");
+					Print(fp, "\t\t  ", "");
+					fprintf(fp, "\t\treturn(FALSE);\n");
+					fprintf(fp, "\t}\n");
+				}
+
+		fprintf(fp, "\t%s->%s = %s;\n", ptrVar, limitSym->name, limitSym->name);
+		fprintf(fp, "\treturn(TRUE);\n");
+		fprintf(fp, "\n}\n\n");
+		AddRoutine(funcDeclaration);
+	}
+
+}
+
 /****************************** PrintArrayCode ********************************/
 
 /*
@@ -830,28 +920,24 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 	limitSym = arrayIdentifierList[0]->sym;
 	fprintf(fp, "\tif (!GetPars_ParFile(fp, \"%s\", ",
 	  GetInputTypeFormatStr(arrayType->sym));
-	fprintf(fp, "&%s))\n", DT_TO_SAMPLING_INTERVAL(limitSym->name));
+	fprintf(fp, "&%s))\n", limitSym->name);
 	fprintf(fp, "\t\tok = FALSE;\n");
+
+	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", limitSym->name,
+	  CreateBaseModuleName(module, qualifier, FALSE), limitSym->name);
+	Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory for "
+	  "the '");
+	Print(fp, "\t\t  ", limitSym->name);
+	Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
+	Print(fp, "\t\t  ", "");
+	fprintf(fp, "\t\treturn(FALSE);\n");
+	fprintf(fp, "\t}\n");
 
 	addSpace = FALSE;
 	for (p = pStart; (p = GetType_IdentifierList(&type, identifierList, p)) &&
 	  ((type->inst != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
-				Print(fp, "\t  ", "\tif ((");
-				Print(fp, "\t  ", (*list)->sym->name);
-				Print(fp, "\t  ", " = (");
-				Print(fp, "\t  ", type->sym->name);
-				Print(fp, "\t  ", " *) calloc(");
-				Print(fp, "\t  ", limitSym->name);
-				Print(fp, "\t  ", ", sizeof(");
-				Print(fp, "\t  ", type->sym->name);
-				Print(fp, "\t  ", "))) == NULL) {\n");
-				Print(fp, "\t  ", "");
-				fprintf(fp, "\t\tNotifyError(\"%%s: Cannot allocate memory "
-				  "for %s.\", funcName);\n", (*list)->sym->name);
-				fprintf(fp, "\t\treturn(FALSE);\n");
-				fprintf(fp, "\t}\n");
 				if (addSpace)
 					strcat(formatString, " ");
 				strcat(formatString, (type->sym->type == DOUBLE)? "%lf":
@@ -866,7 +952,10 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 	  ((type->inst != INT_AL)); )
 		for (list = identifierList; *list != 0; list++)
 			if ((*list)->inst == POINTER) {
-				Print(fp, "\t\t  ", ", &");
+				if (type->sym->type != CHAR)
+					Print(fp, "\t\t  ", ", &");
+				Print(fp, "\t\t  ", ptrVar);
+				Print(fp, "\t\t  ", "->");
 				Print(fp, "\t\t  ", (*list)->sym->name);
 				Print(fp, "\t\t  ", "[i]");
 			}
@@ -875,7 +964,6 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 	fprintf(fp, "\t\t\tok = FALSE;\n");
 
 }
-
 
 /****************************** PrintReadParsRoutine **************************/
 
@@ -889,7 +977,7 @@ void
 PrintReadParsRoutine(FILE *fp)
 {
 	static char	*function = "ReadPars";
-	char	*funcName, *funcDeclaration, ptrVar[MAXLINE];
+	char	*funcName, *funcDeclaration;
 	char	*setParsArguments;
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list, arrayLimit;
 	
@@ -911,6 +999,8 @@ PrintReadParsRoutine(FILE *fp)
 		fprintf(fp, "\tint\t\ti;\n");
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
+		if (((*identifierList)->inst == POINTER) && (type->sym->type != CHAR))
+			continue;
 		if (((*identifierList)->inst == POINTER) && (type->sym->type == CHAR))
 			fprintf(fp, "\tstatic ");
 		else
@@ -921,8 +1011,6 @@ PrintReadParsRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++) {
 			if (list != identifierList)
 				fprintf(fp, ", ");
-			if (((*list)->inst == POINTER) && (type->sym->type != CHAR))
-				fprintf(fp, "*");
 			fprintf(fp, DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
 			if ((type->sym->type == NAMESPECIFIER) || (((*list)->inst ==
 			  POINTER) && (type->sym->type == CHAR)))
@@ -966,8 +1054,8 @@ PrintReadParsRoutine(FILE *fp)
 					default:
 						fprintf(fp, "&");
 					}
-					fprintf(fp, "%s))\n",
-					  DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
+					fprintf(fp, "%s))\n", DT_TO_SAMPLING_INTERVAL(
+					  (*list)->sym->name));
 					fprintf(fp, "\t\tok = FALSE;\n");
 				}
 			}
@@ -1244,7 +1332,24 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
-	
+	if (type->inst == INT_AL) {
+		fprintf(fp, "\tif (the%s <= 0) {\n", Capital(variableName));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal value (%%d).\", funcName, "
+		  "the%s);\n", Capital(variableName));
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+		fprintf(fp, "\tif (!Alloc%s_%s(the%s)) {\n", Capital(variableName),
+		  CreateBaseModuleName(module, qualifier, FALSE), Capital(
+		  variableName));
+		Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory "
+		  "for the '");
+		Print(fp, "\t\t  ", variableName);
+		Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
+		Print(fp, "\t\t  ", "");
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	}
+
 	fprintf(fp, "\t/*** Put any other required checks here. ***/\n");
 
 	if ((type->sym->type == CFLISTPTR) && (functionType !=

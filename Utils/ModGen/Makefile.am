@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+AUTOMAKE_OPTIONS = foreign
+
 bin_PROGRAMS	= modgen
 noinst_HEADERS	= ModGen.h MGGeneral.h Strings.h Symbol.h  Token.h \
 					WriteCodeUtils.h WriteHeaderCode.h WriteSrcCode.h \

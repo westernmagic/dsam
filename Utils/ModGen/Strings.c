@@ -129,7 +129,8 @@ PrintAndAdjustLine(FILE *fp, char *prefix, char *string, char *eol,
  * excessive length is put onto successive lines.
  * If the string is "" then any remaining lines in the buffer will be printed
  * (flushed).
- * At present, lines are separated at spaces or commas.
+ * At present, lines are separated at spaces, commas, open brackets ("(") or 
+ * equals ("=").
  * Special consideration is given to quoted lines which are divided over
  * successive lines.
  * Quoted strings within quoted string must use the sequence '_\"'f for quotes
@@ -189,6 +190,9 @@ Print(FILE *fp, char *prefix, char *string)
 					punctuation = lp;
 				break;
 			case ',':
+				punctuation = lp;
+				break;
+			case '(':
 				punctuation = lp;
 				break;
 			case '.':
