@@ -99,9 +99,12 @@ GetFitFuncPars_BasilarM_DRNL(int mode)
 	static const char	*funcName = "GetFitFuncPars_BasilarM_DRNL";
 
 	switch (mode) {
-	case GENERAL_FIT_FUNC_LOG_FUNC1_MODE:
+	case GENERAL_FIT_FUNC_EXP1_MODE:
+	case GENERAL_FIT_FUNC_LOG1_MODE:
+	case GENERAL_FIT_FUNC_LOG2_MODE:
+	case GENERAL_FIT_FUNC_LINEAR1_MODE:
 		return(2);
-	case GENERAL_FIT_FUNC_POLY_FUNC1_MODE:
+	case GENERAL_FIT_FUNC_POLY1_MODE:
 		return(3);
 	default:
 		NotifyError("%s: Mode not listed (%d), returning zero.", funcName,
@@ -124,9 +127,15 @@ GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
 	static const char	*funcName = "GetFitFuncValue_BasilarM_DRNL";
 
 	switch (p->mode) {
-	case GENERAL_FIT_FUNC_LOG_FUNC1_MODE:
+	case GENERAL_FIT_FUNC_EXP1_MODE:
+		return(p->params[0] * exp(p->params[1] * linCF));
+	case GENERAL_FIT_FUNC_LINEAR1_MODE:
+		return(p->params[0] + p->params[1] * linCF);
+	case GENERAL_FIT_FUNC_LOG1_MODE:
 		return(pow(10.0, p->params[0] + p->params[1] * log10(linCF)));
-	case GENERAL_FIT_FUNC_POLY_FUNC1_MODE:
+	case GENERAL_FIT_FUNC_LOG2_MODE:
+		return(p->params[0] + p->params[1] * log(linCF));
+	case GENERAL_FIT_FUNC_POLY1_MODE:
 		return(p->params[0] + p->params[1] * linCF + p->params[2] * linCF *
 		  linCF);
 	default:

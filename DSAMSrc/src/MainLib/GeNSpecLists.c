@@ -90,9 +90,12 @@ FitFuncModeList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "LOG_FUNC1",	GENERAL_FIT_FUNC_LOG_FUNC1_MODE},
-					{ "POLY_FUNC1",	GENERAL_FIT_FUNC_POLY_FUNC1_MODE},
-					{ "",			GENERAL_FIT_FUNC_NULL},
+					{ "EXP_FUNC1",	GENERAL_FIT_FUNC_EXP1_MODE},
+					{ "LINEAR_FUNC1",	GENERAL_FIT_FUNC_LINEAR1_MODE},
+					{ "LOG_FUNC1",		GENERAL_FIT_FUNC_LOG1_MODE},
+					{ "LOG_FUNC2",		GENERAL_FIT_FUNC_LOG2_MODE},
+					{ "POLY_FUNC1",		GENERAL_FIT_FUNC_POLY1_MODE},
+					{ "",				GENERAL_FIT_FUNC_NULL},
 				
 				};
 	return (&modeList[index]);
