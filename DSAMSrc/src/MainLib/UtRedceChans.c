@@ -16,10 +16,12 @@
  *				the output signal to zero.
  *				02-03-97 LPO: this module now treats interleaved signals
  *				correctly.
+ *				02-03-05 LPO: This module is not being thread enabled as the
+ *				number of input channels defines the channel processing.
  * Author:		L.P.O'Mard
  * Created:		21 Dec 1995
  * Updated:		02 Mar 1997
- * Copyright:	(c) 1998, University of Essex. 
+ * Copyright:	(c) 2005, CNBH, University of Essex. 
  *
  *********************/
 
@@ -492,6 +494,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	uShort	numChannels;
 	int		j, chan, channelBinWidth, binRatio;
 	ChanLen	i;
+	ReduceChansPtr	p = reduceChansPtr;
 
 	if (!CheckPars_Utility_ReduceChannels())
 		return(FALSE);
@@ -500,8 +503,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "Average across channels utility");
-	numChannels = reduceChansPtr->numChannels *
-	  data->inSignal[0]->interleaveLevel;
+	numChannels = p->numChannels * data->inSignal[0]->interleaveLevel;
 	data->updateProcessFlag = TRUE;
 	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
 	  data->inSignal[0]->dt)) {
@@ -516,7 +518,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	snprintf(channelTitle, MAXLINE, "Channel summary (%d -> %d)", data->
 	  inSignal[0]->numChannels, data->outSignal->numChannels);
 	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
-	binRatio = data->inSignal[0]->numChannels / reduceChansPtr->numChannels;
+	binRatio = data->inSignal[0]->numChannels / p->numChannels;
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan +=
 	  data->inSignal[0]->interleaveLevel)
 		for (j = 0; j < data->inSignal[0]->interleaveLevel; j++) {
@@ -527,7 +529,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 				*outPtr++ += *inPtr++;
 	}
 	channelBinWidth = data->inSignal[0]->numChannels / numChannels;
-	if (reduceChansPtr->mode == REDUCE_CHANS_AVERAGE_MODE)
+	if (p->mode == REDUCE_CHANS_AVERAGE_MODE)
 		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 			outPtr = data->outSignal->channel[chan];
 			for (i = 0; i < data->outSignal->length; i++)

@@ -12,10 +12,16 @@
  *				channels must be a multiple of the number of input channels. It
  *				overwrites previous data if the output signal has already been
  *				initialised.
+ *				This routine always sets the data->updateProcessFlag, to reset
+ *				the output signal to zero.
+ *				02-03-97 LPO: this module now treats interleaved signals
+ *				correctly.
+ *				02-03-05 LPO: This module is not being thread enabled as the
+ *				number of input channels defines the channel processing.
  * Author:		L.P.O'Mard
- * Created:		Dec 21 1995
- * Updated:	
- * Copyright:	(c) 1998, University of Essex. 
+ * Created:		21 Dec 1995
+ * Updated:		02 Mar 1997
+ * Copyright:	(c) 2005, CNBH, University of Essex. 
  *
 **********************/
 
