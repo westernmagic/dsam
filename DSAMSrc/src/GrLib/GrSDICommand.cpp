@@ -58,7 +58,6 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/wxexpr.h>
 #include <wx/docview.h>
 #include <wx/cmdproc.h>
 
@@ -536,13 +535,13 @@ SDICommand::Undo(void)
 void
 SDICommand::RemoveLines(wxShape *shape)
 {
-	wxNode *node = shape->GetLines().First();
+	wxNode *node = shape->GetLines().GetFirst();
 	while (node) {
-		wxLineShape *line = (wxLineShape *)node->Data();
+		wxLineShape *line = (wxLineShape *)node->GetData();
 		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDIFRAME_CUT,
 		  doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
 
-		node = shape->GetLines().First();
+		node = shape->GetLines().GetFirst();
 	}
 
 }

@@ -231,10 +231,10 @@ ModuleParDialog::CheckChangedValues(void)
 wxNode *
 ModuleParDialog::GetParListNode(wxNode *node, long tag)
 {
-	ParListInfo	*p = (ParListInfo *) node->Data();
+	ParListInfo	*p = (ParListInfo *) node->GetData();
 	
 	if ((tag - p->GetOffset()) > (p->parList->numPars - 1))
-		return(GetParListNode(node->Next(), tag));
+		return(GetParListNode(node->GetNext(), tag));
 	return(node);
 
 }

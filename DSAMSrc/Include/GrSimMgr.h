@@ -34,6 +34,7 @@
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	include <wx/textctrl.h>
 #	include <wx/wxhtml.h>
+#	include <wx/socket.h>
 #	include <wx/docview.h>
 #endif
 
@@ -45,6 +46,7 @@
 
 #define SIM_MANAGER_DEFAULT_WIDTH		500
 #define SIM_MANAGER_DEFAULT_HEIGHT		200	
+#define SIM_MANAGER_HELP_DIR			"HelpFiles"
 #define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
 #define SIM_MANAGER_REG_PATHS			"/Paths"
 #define SIM_MANAGER_REG_DSAM_HELP_PATH	"DSAMHelp"

@@ -199,7 +199,7 @@ MyApp::OnInit(void)
 	// Setup the printing global variables.
     printData = new wxPrintData;
 #	if defined(__WXGTK__) || defined(__WXMOTIF__)
-		*printData = *wxThePrintSetupData;
+//		*printData = *wxThePrintSetupData;
 #	endif
 
 	ResetGUIDialogs();
@@ -300,10 +300,11 @@ MyApp::InitHelp(void)
 	help.UseConfig(wxConfig::Get());
 	// help.SetTempDir(".");  -- causes crashes on solaris
 	if (GetPtr_AppInterface()) {
-		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, GetPtr_AppInterface()->
-		  installDir, GetPtr_AppInterface()->appName);
-		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, DSAM_DATA_INSTALL_DIR,
-		  DSAM_PACKAGE);
+		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, wxString(GetPtr_AppInterface(
+		  )->installDir) + "/" + SIM_MANAGER_HELP_DIR, wxString(
+		  GetPtr_AppInterface()->appName).Upper() + "Help");
+		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, wxString(
+		  DSAM_DATA_INSTALL_DIR) + "/" + SIM_MANAGER_HELP_DIR, DSAM_PACKAGE);
 	}
 
 }
@@ -669,9 +670,15 @@ MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
 	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
 	helpFilePath = pConfig->Read(path, "");
 	if (GetPtr_AppInterface()) {
-		if (helpFilePath.Len() != 0)
+		if (!helpFilePath.Len())
 			helpFilePath = defaultPath;
-		helpFile = wxFileName(helpFilePath, fileName, ".zip");
+		printf("MyApp::AddHelpBook: Debug: helpFilePath = '%s'\n", helpFilePath.
+		  c_str());
+		printf("MyApp::AddHelpBook: Debug: defaultPath = '%s'\n", defaultPath.
+		  c_str());
+		helpFile = wxFileName(helpFilePath, fileName, "zip");
+		printf("MyApp::AddHelpBook: Debug: helpFile = '%s'\n",
+		  helpFile.GetFullPath().c_str());
 	} else
 		helpFile = wxFileName(defaultPath, "DSAMApp.zip");
 	if (helpFile.FileExists() && help.AddBook(helpFile))

@@ -268,16 +268,16 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 		// Ensure no other shape is selected, to simplify Undo/Redo code
 		bool redraw = FALSE;
 		wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
-		  )->First();
+		  )->GetFirst();
 		while (node) {
-			wxShape *eachShape = (wxShape *)node->Data();
+			wxShape *eachShape = (wxShape *)node->GetData();
 			if (eachShape->GetParent() == NULL) {
 				if (eachShape->Selected()) {
 					eachShape->Select(FALSE, &dc);
 					redraw = TRUE;
 				}
 			}
-			node = node->Next();
+			node = node->GetNext();
 		}
 		GetShape()->Select(TRUE, &dc);
 		if (redraw)

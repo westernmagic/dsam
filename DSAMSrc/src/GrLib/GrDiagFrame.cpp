@@ -15,7 +15,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "ExtCommon.h"
-#include <wx/wxexpr.h>
 
 #include "GeCommon.h"
 #include "GrDiagFrame.h"

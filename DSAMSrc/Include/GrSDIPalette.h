@@ -19,11 +19,7 @@
 
 #include <wx/wx.h>
 #include <wx/string.h>
-#if 0 // def __WXGTK__
 #include <wx/toolbar.h>
-#else
-#include <wx/tbarsmpl.h>
-#endif
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/

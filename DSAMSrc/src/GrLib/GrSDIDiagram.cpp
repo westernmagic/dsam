@@ -31,7 +31,6 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/wxexpr.h>
 #include <wx/tokenzr.h>
 
 #include "GeCommon.h"
@@ -79,7 +78,7 @@ SDIDiagram::SDIDiagram(void)
 void
 SDIDiagram::AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label)
 {
-	bool	sizeChanged = FALSE;
+	bool	sizeChanged = false;
 	double	boxWidth, boxHeight;
 	wxCoord	labelWidth, labelHeight;
 	wxString	longestStr = "", token;
@@ -380,13 +379,14 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 	theShape->AssignNewIds();
 	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
 	  wxString(""), type));
-	theShape->SetCentreResize(FALSE);
+	theShape->SetCentreResize(false);
 	theShape->SetPen(wxBLACK_PEN);
 	theShape->SetBrush(brush);
 	return(theShape);
 
 }
 
+#if wxUSE_PROLOGIO
 /******************************************************************************/
 /****************************** OnShapeSave ***********************************/
 /******************************************************************************/
@@ -420,6 +420,7 @@ SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 	return TRUE;
 
 }
+#endif
 
 /******************************************************************************/
 /****************************** FindShapeDatum ********************************/
@@ -454,10 +455,10 @@ SDIDiagram::SetShapeHandlers(void)
 	const static char *funcName = "SDIDiagram::SetShapeHandlers";
 	DatumPtr	pc;
 	SDIEvtHandler	*myHandler;
-	wxNode *node = m_shapeList->First();
+	wxNode *node = m_shapeList->GetFirst();
 
 	while (node) {
-		wxShape *shape = (wxShape *) node->Data();
+		wxShape *shape = (wxShape *) node->GetData();
 		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
 			if ((pc = FindShapeDatum((uInt) shape->GetId())) == NULL) {
 				wxLogError("%s: Could not find shape id = %ld", funcName,
@@ -479,7 +480,7 @@ SDIDiagram::SetShapeHandlers(void)
 				;
 			} /* switch */
 		}
-		node = node->Next();
+		node = node->GetNext();
 	}
 	return(true);
 			
@@ -491,7 +492,7 @@ SDIDiagram::SetShapeHandlers(void)
 
 /*
  * This function checks that the loaded diagram corresponds with the simulation.
- * It returns 'FALSE' if it finds any discrepancies.
+ * It returns 'false' if it finds any discrepancies.
  */
 
 bool
@@ -502,13 +503,13 @@ SDIDiagram::VerifyDiagram(void)
 	DatumPtr	pc, toPc;
 	EarObjectPtr	fromProcess, toProcess;
 	EarObjRefPtr p;
-	wxNode *node = m_shapeList->First();
+	wxNode *node = m_shapeList->GetFirst();
 
 	// Check processes exist for each shape line, and that the connection
 	// exists in the simulation
-	node = m_shapeList->First();
+	node = m_shapeList->GetFirst();
 	while (node) {
-		wxShape *shape = (wxShape *) node->Data();
+		wxShape *shape = (wxShape *) node->GetData();
 		if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
 			wxLineShape *lineShape = (wxLineShape *) shape;
 			wxShape *fromShape = lineShape->GetFrom();
@@ -516,7 +517,7 @@ SDIDiagram::VerifyDiagram(void)
 			if (!fromShape || !toShape) {
 				wxLogWarning("%s: Diagram line is not connected to a valid "
 				  "process.", funcName);
-				return (FALSE);
+				return (false);
 			}
 			if ((SHAPE_PC(fromShape)->type == PROCESS) && (SHAPE_PC(toShape)->
 			  type == PROCESS)) {
@@ -528,12 +529,12 @@ SDIDiagram::VerifyDiagram(void)
 				if (!p) {
 					wxLogWarning("%s: Diagram line does not correspond to a "
 					  "simulation connection.", funcName);
-					return(FALSE);
+					return(false);
 				}
 			}
 			numDiagConnections++;
 		}
-		node = node->Next();
+		node = node->GetNext();
 	}
 	// Check if any undrawn connections or shapes
 	for (pc = simulation; pc != NULL; pc = pc->next) {
@@ -541,7 +542,7 @@ SDIDiagram::VerifyDiagram(void)
 			if (!pc->clientData && (pc->data && !pc->data->clientData)) {
 				wxLogWarning("%s: Process has no description (step %d, label "
 				  "%s'.", funcName, pc->stepNumber, pc->label);
-				return (FALSE);
+				return (false);
 			}
 			for (p = pc->data->customerList; (p != NULL); p = p->next)
 				numSimConnections++;
@@ -557,7 +558,7 @@ SDIDiagram::VerifyDiagram(void)
 		wxLogWarning("%s: The number of diagram lines (%d) does not "
 		  "correspond\nto the number of simulation connections (%d).", funcName,
 		  numDiagConnections, numSimConnections);
-		return(FALSE);
+		return(false);
 	}
 	return(TRUE);
 

@@ -33,7 +33,6 @@
 
 #include <wx/docview.h>
 #include <wx/colordlg.h>
-#include <wx/wxexpr.h>
 #include <wx/cmdproc.h>
 
 #if !wxUSE_DOC_VIEW_ARCHITECTURE
@@ -238,13 +237,13 @@ SDIView::OnDraw(wxDC *dc)
 	wxDiagram *diagram_p=((SDIDocument*)GetDocument())->GetDiagram();
 	if (diagram_p->GetShapeList()) { 
 		/*wxCursor *old_cursor = NULL; */
-		wxNode *current = diagram_p->GetShapeList()->First();
+		wxNode *current = diagram_p->GetShapeList()->GetFirst();
 
 		while (current) {// Loop through the entire list of shapes 
-			wxShape *object = (wxShape *)current->Data();
+			wxShape *object = (wxShape *)current->GetData();
 			if (!object->GetParent())
 				object->Draw(* dc); // Draw the shape onto our printing dc
-			current = current->Next();  // Procede to the next shape in the list
+			current = current->GetNext();// Procede to the next shape in the list
 		}
 	}
 	dc->EndDrawing(); // Allows optimization of drawing code under MS Windows. 
@@ -278,7 +277,7 @@ SDIView::OnClose(bool deleteWindow)
 	SDIDocument *diagramDoc = (SDIDocument *)GetDocument();
 	diagramDoc->GetDiagram()->SetCanvas(NULL);
 
-	canvas->Clear();
+	canvas->ClearBackground();
 	canvas->SetDiagram(NULL);
 	canvas->view = NULL;
 	canvas = NULL;
@@ -304,14 +303,14 @@ SDIView::FindSelectedShape(void)
 {
 	SDIDocument *doc = (SDIDocument *)GetDocument();
 	wxShape *theShape = NULL;
-	wxNode *node = doc->GetDiagram()->GetShapeList()->First();
+	wxNode *node = doc->GetDiagram()->GetShapeList()->GetFirst();
 	while (node) {
-		wxShape *eachShape = (wxShape *)node->Data();
+		wxShape *eachShape = (wxShape *)node->GetData();
 		if ((eachShape->GetParent() == NULL) && eachShape->Selected()) {
 			theShape = eachShape;
 			node = NULL;
 		} else
-			node = node->Next();
+			node = node->GetNext();
 	}
 	return theShape;
 }

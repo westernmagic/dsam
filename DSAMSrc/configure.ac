@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=9
-DSAM_INTERFACE_AGE=9
-DSAM_BINARY_AGE=9
+DSAM_MICRO_VERSION=11
+DSAM_INTERFACE_AGE=11
+DSAM_BINARY_AGE=11
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -346,6 +346,7 @@ if test x$WXWIN = xyes; then
 	if eval "$WX_DEFAULT_CONFIG --version 2> config.log > /dev/null"; then
 		wxwinAvailable=yes
 		wx_version=`$WX_DEFAULT_CONFIG --version | cut -d. -f 1-2`
+		wx_basename=`$WX_DEFAULT_CONFIG --basename`
 	fi
 	AC_MSG_RESULT($wxwinAvailable)
 fi
@@ -414,7 +415,7 @@ if test x$WX_OGL = xyes -a x$using_wxwin_gui = xyes; then
 				],
 				[
 					AC_DEFINE(USE_WX_OGL, 1, [Use wxWindows OGL library])
-					WX_OGL_LDFLAGS="-logl"
+					WX_OGL_LDFLAGS="-l${wx_basename}_ogl-${wx_version}"
 				],
 				[
 					AC_MSG_ERROR([wx OGL headers were found but library was not found.])

@@ -77,7 +77,7 @@ SDIDocManager::OnFileSaveAs(wxCommandEvent& event)
 	docTemplate = GetCurrentDocument()->GetDocumentTemplate();
 	wxString	oldFileFilter = docTemplate->GetFileFilter();
 	for (i = 0; i < m_templates.GetCount(); i++) {
-		temp = (wxDocTemplate *) (m_templates.Nth(i)->Data());
+		temp = (wxDocTemplate *) (m_templates.Item(i)->GetData());
 		if (temp->IsVisible()) {
 		// add a '|' to separate this filter from the previous one
 		if ( !descrBuf.IsEmpty() )

@@ -22,7 +22,7 @@
 
 #include "ExtCommon.h"
 #include "ExtCommon.h"
-#include <wx/toolbar.h>
+//#include <wx/toolbar.h>
 
 #include <ctype.h>
 #include <stdlib.h>

@@ -83,8 +83,10 @@ class SDIDiagram: public wxDiagram
 	void	DrawSimShapes(void);
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
+#	if wxUSE_PROLOGIO
 	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
+#	endif
 	void	SetProcessClientData(DatumPtr pc, wxShape *shape);
 	bool	SetShapeHandlers(void);
 	void	SetSimulation(DatumPtr theSim)	{ simulation = theSim; }

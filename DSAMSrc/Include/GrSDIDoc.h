@@ -19,7 +19,6 @@
 
 #include <wx/docview.h>
 #include <wx/string.h>
-#include <wx/wxexpr.h>
 #include <wx/filesys.h>
 
 #include <wx/ogl/ogl.h>

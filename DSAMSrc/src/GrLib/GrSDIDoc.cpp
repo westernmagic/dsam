@@ -97,7 +97,7 @@ SDIDocument::OnCloseDocument(void)
 {
 	diagram.DeleteAllShapes();
 	diagram.SetSimulation(NULL);
-	return TRUE;
+	return true;
 
 }
 
@@ -160,7 +160,9 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 	wxRemoveFile(tempFileName.GetFullPath());
 
 	fileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
+#	if wxUSE_PROLOGIO
 	diagram.SaveFile(fileName.GetFullPath());
+#	endif
 	return stream;
 
 }
