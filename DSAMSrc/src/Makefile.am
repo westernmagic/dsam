@@ -3,6 +3,10 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+if DMALLOC
+DMALLOC_FLAGS	= -DDMALLOC
+endif
+
 if MPI
 MPI_INC = -I$(CHIMPHOME)/include
 endif
@@ -28,7 +32,7 @@ EXTRA_DIST		= makefile.b32 graphsup.dos
 
 YFLAGS			= -dl
 INCLUDES		= -I$(top_srcdir)/Include @DSAM_DEFS@ $(MPI_INC) $(WXINC) \
-					-DDSAM_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
+					-DDSAM_DATA_INSTALL_DIR="\"$(pkgdatadir)\"" $(DMALLOC_FLAGS)
 
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
@@ -43,11 +47,11 @@ Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c
 Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 				GeNSpecLists.c GeUniParMgr.c GeModuleReg.c
 
-Std_Source	= StdMessage.c StdSignalDisp.c
+Std_Sources	= StdMessage.c StdSignalDisp.c
 
 Gr_Sources	= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrCanvas.cpp GrLine.cpp \
 				GrSignalDisp.cpp GrDisplayS.cpp GrSimMgr.cpp GrUtils.cpp \
-				GrPrintDisp.cpp GrRunMgr.cpp GrSimModDialog.cpp \
+				GrPrintDisp.cpp GrSimModDialog.cpp \
 				GrModParDialog.cpp GrParListInfo.cpp GrDialogInfo.cpp \
 				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \
 				dsam.xpm
@@ -85,7 +89,7 @@ libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
-libdsam_std_la_SOURCES= $(Std_Source)
+libdsam_std_la_SOURCES= $(Std_Sources)
 libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
 libdsam_m_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)

@@ -15,10 +15,10 @@ Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
 
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
-				GeNSpecLists.h GeUniParMgr.h StdMessage.h GeModuleReg.h
+				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
-				GrSimMgr.h GrUtils.h GrRunMgr.h GrSimModDialog.h \
+				GrSimMgr.h GrUtils.h GrSimModDialog.h \
 				GrModParDialog.h GrParListInfo.h GrFonts.h GrDialogInfo.h \
 				GrDialogList.h GrDSAMList.h GrParListInfoList.h GrPrintDisp.h \
 				GrParControl.h dsam.rc
@@ -36,6 +36,8 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h
 
+Std_Headers	= StdMessage.h
+
 Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtCBinauralITD.h UtCFList.h UtCmplxM.h UtCompress.h \
 				UtConvMonaural.h UtCreateBinaural.h UtDatum.h UtDebug.h \
@@ -52,9 +54,9 @@ Tr_Headers	= TrGate.h TrSetDBSPL.h
 
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
-					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers)
+					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers)
 
 DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(Fi_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
-					$(Gr_Headers)
+					$(Gr_Headers) $(Std_Headers)
 		touch DSAM.h
