@@ -818,8 +818,11 @@ Execute_Utility_Datum(DatumPtr start)
 	for (pc = start; pc != NULL; pc = pc->next) {
 		switch (pc->type) {
 		case PROCESS:
-			if (!RunProcess_ModuleMgr(pc->data))
+			if (!RunProcess_ModuleMgr(pc->data)) {
+				NotifyError("%s: Could not run process '%s'.", funcName,
+				  pc->label);
 				return(NULL);
+			}
 			break;
 		case RESET:
 			ResetProcess_EarObject(pc->data);
