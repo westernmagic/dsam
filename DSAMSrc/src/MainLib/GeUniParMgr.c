@@ -187,6 +187,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_STRING:
 		par->valuePtr.s = (char *) ptr1;
 		break;
+	case UNIPAR_STRING_ARRAY:
+		par->valuePtr.array.index = 0;
+		par->valuePtr.array.pPtr.s = (char ***) ptr1;
+		par->valuePtr.array.numElements = (int *) ptr2;
+		break;
 	case UNIPAR_FILE_NAME:
 		par->valuePtr.file.name = (char *) ptr1;
 		par->valuePtr.file.defaultExtension = (char *) ptr2;
@@ -209,6 +214,13 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
 		par->valuePtr.nameList.specifier = (int *) ptr1;
 		par->valuePtr.nameList.list = (NameSpecifier *) ptr2;
+		break;
+	case UNIPAR_NAME_SPEC_ARRAY:
+		par->valuePtr.array.index = 0;
+		par->valuePtr.array.pPtr.nameList.specifier = (int **) ((void **) ptr1)[
+		  0];
+		par->valuePtr.array.numElements = (int *) ((void **) ptr1)[1];
+		par->valuePtr.array.pPtr.nameList.list = (NameSpecifier *) ptr2;
 		break;
 	case UNIPAR_SIMSCRIPT:
 		par->valuePtr.simScript.simulation = (DatumPtr *) ptr1;
@@ -249,6 +261,10 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_FILE_NAME:
 		case UNIPAR_PARLIST:
 			par->FuncPtr.SetString = (BOOLN (*)(char *)) Func;
+			break;
+		case UNIPAR_STRING_ARRAY:
+		case UNIPAR_NAME_SPEC_ARRAY:
+			par->FuncPtr.SetStringArrayElement = (BOOLN (*)(int, char *)) Func;
 			break;
 		case UNIPAR_CFLIST:
 			par->FuncPtr.SetCFList = (BOOLN (*)(CFListPtr)) Func;
@@ -386,7 +402,7 @@ SetGetPanelListFunc_UniParMgr(UniParListPtr list, NameSpecifier * (* Func)(int))
 {
 	static const char *funcName = "SetPanelListFunc_UniParMgr";
 
-	if (list == NULL) {
+	if (!list) {
 		NotifyError("%s: List not initialised.", funcName);
 		return(FALSE);
 	}
@@ -456,12 +472,21 @@ PrintArray_UniParMgr(UniParPtr p, char *suffix)
 	for (i = 0; i < *p->valuePtr.array.numElements; i++)
 		switch (p->type) {
 		case UNIPAR_INT_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10d\n", p->abbr, suffix, i,
-			  (*p->valuePtr.array.pPtr.i)[i]);
+			DPrint("\t\t%s%s\t%3d:%-10d\n", p->abbr, suffix, i, (*p->valuePtr.
+			  array.pPtr.i)[i]);
 			break;
 		case UNIPAR_REAL_ARRAY:
-			DPrint("\t\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i,
-			  (*p->valuePtr.array.pPtr.r)[i]);
+			DPrint("\t\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i, (*p->valuePtr.
+			  array.pPtr.r)[i]);
+			break;
+		case UNIPAR_STRING_ARRAY:
+			DPrint("\t\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
+			  QuotedString_Utility_String((*p->valuePtr.array.pPtr.s)[i]));
+			break;
+		case UNIPAR_NAME_SPEC_ARRAY:
+			DPrint("\t\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
+			  QuotedString_Utility_String(p->valuePtr.array.pPtr.nameList.list[
+			    (*p->valuePtr.array.pPtr.nameList.specifier)[i]].name));
 			break;
 		default:
 			NotifyError("%s: Universal parameter not yet implemented (%d).",
@@ -565,6 +590,8 @@ PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 			break;
 		case UNIPAR_INT_ARRAY:
 		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_STRING_ARRAY:
+		case UNIPAR_NAME_SPEC_ARRAY:
 			DPrint("\t# %s:\n", p->desc);
 			PrintArray_UniParMgr(p, suffix);
 			break;
@@ -712,7 +739,8 @@ GetParString_UniParMgr(UniParPtr p)
 		NotifyError("%s: Parameter not initialised.", funcName);
 		return(NULL);
 	}
-	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY)) &&
+	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY) || (p->
+	  type == UNIPAR_STRING_ARRAY) || (p->type == UNIPAR_NAME_SPEC_ARRAY)) &&
 	  (*p->valuePtr.array.numElements == 0))
 		return("");
 		
@@ -740,6 +768,10 @@ GetParString_UniParMgr(UniParPtr p)
 	case UNIPAR_STRING:
 		snprintf(string, LONG_STRING, "%s", p->valuePtr.s);
 		break;
+	case UNIPAR_STRING_ARRAY:
+		sprintf(string, "%s", (*p->valuePtr.array.pPtr.s)[p->valuePtr.array.
+		  index]);
+		break;
 	case UNIPAR_FILE_NAME:
 		snprintf(string, LONG_STRING, "%s", p->valuePtr.file.name);
 		break;
@@ -751,6 +783,11 @@ GetParString_UniParMgr(UniParPtr p)
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
 		snprintf(string, LONG_STRING, "%s", p->valuePtr.nameList.list[
 		  *p->valuePtr.nameList.specifier].name);
+		break;
+	case UNIPAR_NAME_SPEC_ARRAY:
+		snprintf(string, LONG_STRING, "%s", p->valuePtr.array.pPtr.nameList.
+		  list[*p->valuePtr.array.pPtr.nameList.specifier[p->valuePtr.array.
+		  index]].name);
 		break;
 	default:
 		NotifyError("%s: Universal parameter not yet implemented (%d).",
@@ -783,7 +820,9 @@ ParseArrayValue_UniParMgr(UniParPtr par, char *parValue, char **parValuePtr,
 		NotifyError("%s: Universal parameter not initalised.\n", funcName);
 		return(FALSE);
 	}
-	if ((par->type != UNIPAR_INT_ARRAY) && (par->type != UNIPAR_REAL_ARRAY)) {
+	if ((par->type != UNIPAR_INT_ARRAY) && (par->type != UNIPAR_REAL_ARRAY) &&
+	  (par->type != UNIPAR_STRING_ARRAY) && (par->type !=
+	  UNIPAR_NAME_SPEC_ARRAY)) {
 		NotifyError("%s: Universal parameter is not array type (%d).\n",
 		  funcName, par->type);
 		return(FALSE);
@@ -850,6 +889,14 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 		}
 		ok = (* p->FuncPtr.SetRealArrayElement)(arrayIndex[0],
 		  atof(arrayValue));
+		break;
+	case UNIPAR_STRING_ARRAY:
+	case UNIPAR_NAME_SPEC_ARRAY:
+		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
+			NotifyError("%s: Could not set array value.", funcName);
+			return(FALSE);
+		}
+		ok = (* p->FuncPtr.SetStringArrayElement)(arrayIndex[0], arrayValue);
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1150,6 +1197,47 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 
 }
 
+/*************************** SetRealParValue **********************************/
+
+/*
+ * This function calls the converts a real value to a string then calls the
+ * 'SetParValue_' routine.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index, double parValue)
+{
+	char	stringValue[MAXLINE];
+
+	snprintf(stringValue, MAXLINE, "%g", parValue);
+	return(SetParValue_UniParMgr(parList, index, stringValue));
+
+}
+
+/************************ Cmp *************************************************/
+
+/*
+ * This function compares a universal parameter name or type with the respective
+ * search item, according to the mode.
+ * It returns values similar to 'strcmp': It returns an integer less than,
+ * equal to, or greater than zero if the value is found, respectively, to be
+ * less than, to match, or be greater than the search item.
+ */
+
+int
+Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
+{
+	switch (mode) {
+	case UNIPAR_SEARCH_ABBR:
+		return(StrNCmpNoCase_Utility_String(p->abbr, (char *) item));
+	case UNIPAR_SEARCH_TYPE:
+		return(p->type - (int) item);
+	}
+	return(-1);
+
+}
+
 /************************ FindUniPar ******************************************/
 
 /*
@@ -1166,7 +1254,8 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
  */
 
 UniParPtr
-FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
+FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
+  UniParSearchSpecifier mode)
 {
 	static const char *funcName = "FindUniPar_UniParMgr";
 	int		i;
@@ -1181,55 +1270,60 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
 		p = &(*parList)->pars[i];
 		switch (p->type) {
 		case UNIPAR_MODULE:
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
 			tempParList = p->valuePtr.module.parList;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;	/* here in case anything is added under this. */
 			}
 		   break;
 		case UNIPAR_PARLIST:
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
 			if ((tempParList = *(p->valuePtr.parList)) == NULL)
 				break;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;	/* here in case anything is added under this. */
 			}
 		   break;
 		case UNIPAR_CFLIST:
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
 			if (!*p->valuePtr.cFPtr)
 				return(NULL);
 			tempParList = (*p->valuePtr.cFPtr)->cFParList;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;
 			}
 			tempParList = (*p->valuePtr.cFPtr)->bParList;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;
 			}
 			break;
 		case UNIPAR_PARARRAY:
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
 			if (!*p->valuePtr.pAPtr)
 				break;
 			tempParList = (*p->valuePtr.pAPtr)->parList;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;
 			}
@@ -1238,14 +1332,15 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
 			DynaListPtr	node;
 			IonChanListPtr	theICs = *p->valuePtr.iCPtr;
 
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}
 			if (!theICs)
 				return(NULL);
 			tempParList = theICs->parList;
-			if ((par = FindUniPar_UniParMgr(&tempParList, parName)) != NULL) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
+			  NULL) {
 				*parList = tempParList;
 				break;
 			}
@@ -1259,7 +1354,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
 			for (node = theICs->ionChannels; node; node =
 			  node->next) {
 				tempParList = ((IonChannelPtr) node->data)->parList;
-				if ((par = FindUniPar_UniParMgr(&tempParList, parName)) !=
+				if ((par = FindUniPar_UniParMgr(&tempParList, parName, mode)) !=
 				  NULL) {
 					*parList = tempParList;
 					break;
@@ -1278,7 +1373,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName)
 			}
 			break; }
 		default:
-			if (StrNCmpNoCase_Utility_String(p->abbr, parName) == 0) {
+			if (Cmp_UniParMgr(p, parName, mode) == 0) {
 				par = p;
 				break;
 			}

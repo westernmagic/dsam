@@ -758,7 +758,8 @@ SetProgramParValue_AppInterface(char *parName, char *parValue)
 	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL)
 		*p = '\0';
 	parList = appInterfacePtr->parList;
-	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy)) == NULL)
+	if ((par = FindUniPar_UniParMgr(&parList, parNameCopy,
+	  UNIPAR_SEARCH_ABBR)) == NULL)
 		ok = FALSE;
 	else if (((parList != appInterfacePtr->parList) || (par->index !=
 	  APP_INT_SIMULATIONFILE) || (appInterfacePtr->audModel &&
@@ -845,8 +846,8 @@ ReadPars_AppInterface(FILE *fp)
 		return(FALSE);
 	}
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&appInterfacePtr->parList, parName)) ==
-		  NULL) {
+		if ((par = FindUniPar_UniParMgr(&appInterfacePtr->parList, parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
 			  parName);
 			ok = FALSE;

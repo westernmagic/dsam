@@ -362,8 +362,8 @@ ReadPars_Utility_PadSignal(char *fileName)
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&padSignalPtr->parList, parName)) ==
-		  NULL) {
+		if ((par = FindUniPar_UniParMgr(&padSignalPtr->parList, parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
 			  parName);
 			ok = FALSE;

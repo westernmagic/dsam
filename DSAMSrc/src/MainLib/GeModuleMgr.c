@@ -525,8 +525,9 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 	(* data->module->SetParsPointer)(data->module);
 	parList = (* data->module->GetUniParListPtr)();
 	if (!parList)
-		NotifyError("%s: arggh\n", funcName);
-	if ((par = FindUniPar_UniParMgr(&parList, parName)) == NULL) {
+		NotifyError("%s: arggh!\n", funcName);
+	if ((par = FindUniPar_UniParMgr(&parList, parName, UNIPAR_SEARCH_ABBR)) ==
+	  NULL) {
 		NotifyError("%s: Could not find parameter '%s' for process '%s'",
 		  funcName, parName, data->module->name);
 		return(NULL);
@@ -721,7 +722,8 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 		}
 		return(TRUE);
 	default:
-		if ((par = FindUniPar_UniParMgr(&parList, parName)) == NULL) {
+		if ((par = FindUniPar_UniParMgr(&parList, parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Could not find parameter '%s' for process '%s'",
 			  funcName, parName, data->module->name);
 			return(FALSE);

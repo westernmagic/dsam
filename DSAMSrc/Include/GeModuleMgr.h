@@ -52,7 +52,6 @@
 #define	GLOBAL_PARAMETERS		FALSE	/* For setting mod. parameter pointer */
 #define MAX_MODULE_NAME			30	/* Max. characters in module name. */
 #define	NULL_MODULE_NAME		"NULL"
-#define BM_MODULE_PREFIX		"BM_"
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/

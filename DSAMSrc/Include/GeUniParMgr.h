@@ -78,6 +78,13 @@
 
 typedef enum {
 
+	UNIPAR_SEARCH_ABBR,
+	UNIPAR_SEARCH_TYPE
+
+} UniParSearchSpecifier;
+
+typedef enum {
+
 	UNIPAR_GENERAL_NULL,
 	UNIPAR_GENERAL_ARRAY_INDEX_1,
 	UNIPAR_GENERAL_ARRAY_INDEX_2
@@ -96,10 +103,12 @@ typedef enum {
 	UNIPAR_REAL,
 	UNIPAR_REAL_ARRAY,
 	UNIPAR_STRING,
+	UNIPAR_STRING_ARRAY,
 	UNIPAR_LONG,
 	UNIPAR_LONG_ARRAY,
 	UNIPAR_MODULE,
 	UNIPAR_NAME_SPEC,
+	UNIPAR_NAME_SPEC_ARRAY,
 	UNIPAR_NAME_SPEC_WITH_FILE,
 	UNIPAR_NAME_SPEC_WITH_FPATH,
 	UNIPAR_PARLIST,
@@ -158,9 +167,14 @@ typedef struct UniPar {
 			int	*		numElements;
 			int			index;
 			union {
+				char ***	s;
 				int	**		i;
 				long **		l;
 				double **	r;
+				struct {
+					int	**			specifier;
+					NameSpecifier	*list;
+				} nameList;
 			} pPtr;
 		} array;
 	} valuePtr;
@@ -172,6 +186,7 @@ typedef struct UniPar {
 		BOOLN	(* SetReal)(double);
 		BOOLN	(* SetRealArrayElement)(int, double);
 		BOOLN	(* SetString)(char *);
+		BOOLN	(* SetStringArrayElement)(int, char *);
 		BOOLN	(* SetCFList)(CFListPtr);
 		BOOLN	(* SetICList)(IonChanListPtr);
 		BOOLN	(* SetDatumPtr)(DatumPtr);
@@ -237,7 +252,10 @@ __BEGIN_DECLS
 
 BOOLN	CheckParList_UniParMgr(UniParListPtr list);
 
-UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, char *parName);
+int		Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode);
+
+UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
+			  UniParSearchSpecifier mode);
 
 void	FreeList_UniParMgr(UniParListPtr *list);
 
@@ -284,6 +302,9 @@ BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
 
 void	SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
+
+BOOLN	SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index,
+		  double parValue);
 
 __END_DECLS
 

@@ -24,7 +24,6 @@
 
 #define	MODULE_REG_DEFAAULT_USER_MODULES	10
 #define	NULL_MODULE_NAME		"NULL"
-#define BM_MODULE_PREFIX		"BM_"
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/
