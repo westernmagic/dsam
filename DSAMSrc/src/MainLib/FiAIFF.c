@@ -204,7 +204,8 @@ ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 BOOLN
 ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 {
-	int		i;
+	int		i, j, chan;
+	double	labelValue;
 
 	SetInterleaveLevel_SignalData(data->outSignal, p->dSAMChunk.
 	  interleaveLevel);
@@ -214,8 +215,14 @@ ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 	  outputTimeOffset);
 	SetStaticTimeFlag_SignalData(data->outSignal, p->dSAMChunk.staticTimeFlag);
 	SetPosition_UPortableIO(fp, p->dSAMChunk.posOfChannelLabels, SEEK_SET);
-	for (i = 0; i < p->numChannels / p->dSAMChunk.interleaveLevel; i++)
-		data->outSignal->info.chanLabel[i] = dataFilePtr->ReadIEEEExtended(fp);
+	for (i = 0, chan = 0; i < p->numChannels / p->dSAMChunk.interleaveLevel;
+	  i++) {
+		labelValue = dataFilePtr->ReadIEEEExtended(fp);
+		for (j = 0; j < p->dSAMChunk.interleaveLevel; j++) {
+			data->outSignal->info.cFArray[chan] = labelValue;
+			data->outSignal->info.chanLabel[chan++] = labelValue;
+		}
+	}
 	return(TRUE);
 
 }
