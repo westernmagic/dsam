@@ -152,7 +152,7 @@ SetUniParList_ANSpikeGen_Carney(void)
 	}
 	pars = carneySGPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_RANSEED], "RAN_SEED",
-	  "Random number seed (0 produces a different seed each run.",
+	  "Random number seed (0 produces a different seed each run).",
 	  UNIPAR_LONG,
 	  &carneySGPtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_ANSpikeGen_Carney);
@@ -617,20 +617,17 @@ PrintPars_ANSpikeGen_Carney(void)
 		DPrint("%g ms,", MSEC(carneySGPtr->pulseDuration));
 	else
 		DPrint("< prev. signal dt>,");
-	DPrint("\tPulse magnitude = %g (nA?)\n",
-	  carneySGPtr->pulseMagnitude);
-	DPrint("\tRefractory period, Ra = %g ms\n",
-	  MSEC(carneySGPtr->refractoryPeriod));
-	DPrint("\tMax. threshold increase, Hmax = %g "
-	  "(spikes/s)\n", carneySGPtr->maxThreshold);
-	DPrint("\tDischarge coefficent, C0 = %g,",
-	  carneySGPtr->dischargeCoeffC0);
-	DPrint("\tDischarge coefficent, C1 = %g\n",
-	  carneySGPtr->dischargeCoeffC1);
-	DPrint("\tDischarge time constant, S0 = %g ms,\n",
-	  MSEC(carneySGPtr->dischargeTConstS0));
-	DPrint("\tDischarge time constant, S1 = %g ms.\n",
-	  MSEC(carneySGPtr->dischargeTConstS1));
+	DPrint("\tPulse magnitude = %g (nA?)\n", carneySGPtr->pulseMagnitude);
+	DPrint("\tRefractory period, Ra = %g ms\n", MSEC(
+	  carneySGPtr->refractoryPeriod));
+	DPrint("\tMax. threshold increase, Hmax = %g (spikes/s)\n",
+	  carneySGPtr->maxThreshold);
+	DPrint("\tDischarge coefficent, C0 = %g,", carneySGPtr->dischargeCoeffC0);
+	DPrint("\tDischarge coefficent, C1 = %g\n", carneySGPtr->dischargeCoeffC1);
+	DPrint("\tDischarge time constant, S0 = %g ms,\n", MSEC(
+	  carneySGPtr->dischargeTConstS0));
+	DPrint("\tDischarge time constant, S1 = %g ms.\n", MSEC(
+	  carneySGPtr->dischargeTConstS1));
 	return(TRUE);
 
 }
@@ -900,7 +897,6 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	}
 	dt = data->inSignal[0]->dt;
 	pulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: dt;
-	p = carneySGPtr;			/* To simplify equations */
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		outPtr = data->outSignal->channel[chan];
 		for (j = 0; j < data->outSignal->length; j++)
