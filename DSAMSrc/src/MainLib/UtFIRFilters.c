@@ -135,12 +135,54 @@ FreeFIRCoeffs_FIRFilters(FIRCoeffsPtr *p)
 
 }
 
+/**************************** ProcessBuffer ***********************************/
+
+/*
+ * This routine pushes the signal data into the state buffer, allowing the old
+ * data to 'fall off the end.'
+ * It assumes that the EarObjectPtr 'data' has already been checked.
+ * A buffer is used to host the previous 'x' values.  The buffer data is stored
+ * in the buffer using, "First in First OUt" (FIFO), operation mode.
+ * The start of the buffer is 'left/0' and the end of the buffer is
+ * 'right/m'.
+ */
+
+void
+ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
+{
+	/*static const char *funcName = "FIR_FIRFilters";*/
+	int		chan;
+	ChanLen	i, stateSampleLen;
+	ChanData	*stateBuffer;
+	register ChanData	*xi, *s, *s2;
+
+	if (p->m < data->outSignal->length)		/* Shift unnessary */
+		stateSampleLen = p->m;
+	else {
+		stateSampleLen = data->outSignal->length;
+		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+			stateBuffer =  p->state + p->m * chan;
+			s = stateBuffer + p->m - 1;
+			s2 = s - stateSampleLen;
+			for (i = stateSampleLen; i < p->m; i++)
+				*s-- = *s2--;
+		}
+	}
+	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+		s = p->state + p->m * chan;
+		xi = data->inSignal[0]->channel[chan] + stateSampleLen - 1;
+		for (i = 0; i < stateSampleLen; i++)
+			*s++ = *xi--;
+	}
+
+}
+
 /**************************** FIR *********************************************/
 
 /*
  * FIR filter application.
  *
- *         N
+ *         M
  * y(n) = SUM c(k).x(n-k)
  *        k=0
  *
@@ -162,19 +204,15 @@ FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 			c = p->c;
 			for (j = p->m, xi2 = xi, summ = 0.0; j && (xi2 >= xStart); j--)
 				summ += *c++ * *xi2--;
-			state = p->state + p->numChannels * chan;
+			state = p->state + p->m * chan;
 			while (j) {
 				summ += *c++ * *state++;
 				j--;
 			}
 			*yi = summ;
 		}
-		state = p->state + p->numChannels * chan;
-		xi = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
-		  p->m ;
-		for (i = p->m; i; i--)
-			*state++ = *xi++;
 	}
+	ProcessBuffer_FIRFilters(data, p);
 
 }
 

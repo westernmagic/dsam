@@ -52,6 +52,7 @@ FIRCoeffsPtr	InitFIRCoeffs_FIRFilters(int numChannels, int numTaps,
 				  int numBands, double *bands, double *desired, double *weights,
 				  int type);
 
+void	ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p);
 
 __END_DECLS
 
