@@ -1559,3 +1559,27 @@ ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
 	return(TRUE);
 }
 
+/****************************** WriteParFile **********************************/
+
+/*
+ * This function writes a parameter file from a parList.
+ * It assumes that the parList had been correctly initialised.
+ */
+
+BOOLN
+WriteParFile_UniParMgr(char *fileName, UniParListPtr parList)
+{
+	static const char *funcName = "WriteParFile_UniParMgr";
+	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
+
+	if (!SetParsFile_Common(fileName, OVERWRITE)) {
+		NotifyError("%s: Could not open parameter file '%s' for writing.",
+		  funcName, fileName);
+		return(FALSE);
+	}
+	PrintParList_UniParMgr(parList);
+	fclose(GetDSAMPtr_Common()->parsFile);
+	GetDSAMPtr_Common()->parsFile = oldFp;
+	return(TRUE);
+
+}

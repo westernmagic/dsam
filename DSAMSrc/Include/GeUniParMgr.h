@@ -319,6 +319,8 @@ void	SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 BOOLN	SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  double parValue);
 
+BOOLN	WriteParFile_UniParMgr(char *fileName, UniParListPtr parList);
+
 __END_DECLS
 
 #endif
