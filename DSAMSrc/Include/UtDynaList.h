@@ -24,6 +24,7 @@
 typedef struct DynaList {
 
 	void			*data;
+	struct DynaList	*previous;			/* To link to next node */
 	struct DynaList	*next;				/* To link to next node */
 
 } DynaList, *DynaListPtr;
@@ -44,7 +45,13 @@ __BEGIN_DECLS
 
 DynaListPtr	Append_Utility_DynaList(DynaListPtr *nodePtr, void *data);
 
+DynaListPtr	GetLastInst_Utility_DynaList(DynaListPtr head);
+
+void *		GetMemberData_Utility_DynaList(DynaListPtr list, int index);
+
 void *		Pull_Utility_DynaList(DynaListPtr *nodePtr);
+
+BOOLN		Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr);
 
 __END_DECLS
 
