@@ -7,7 +7,6 @@ if MPI
 MPI_INC = -I$(CHIMPHOME)/include
 endif
 
-WXWININC		= $(XINCLUDE) -I$(WXINC) -I$(WXBASEINC)
 WXWINLDFLAGS	= $(WXLDFLAGS)
 WXWINLIBS		= $(WXLDLIBS)
 
@@ -29,9 +28,9 @@ EXTRA_LTLIBRARIES= libDSAMm.la libDSAMg.la libDSAMmg.la
 EXTRA_DIST		= makefile.b32 graphsup.dos dsam.rc
 
 MYCCCOMPILE		= $(CC) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir)
-MYCXXCOMPILE	= $(CXX) $(CPPFLAGS) $(DEFS) '$$*' -I$(pkgincludedir)
+MYCXXCOMPILE	= $(CXX) $(CPPFLAGS) $(DEFS) $(WXINC) '$$*' -I$(pkgincludedir)
 YFLAGS			= -dl
-INCLUDES		= -I../Include $(MPI_INC) $(WXWININC)
+INCLUDES		= -I../Include $(MPI_INC) $(WXINC)
 
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
