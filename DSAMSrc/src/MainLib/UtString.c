@@ -128,21 +128,15 @@ QuotedString_Utility_String(char *string)
  * This routine returns the suffix of a file name i.e. any characters
  * after a ".".
  * It returns the entire file name if no suffix is returned.
- * 
  */
  
 char *
 GetSuffix_Utility_String(char *fileName)
 {
-	static char scanLine[MAXLINE]; /* - must be static so that memory is kept.*/
-	char	*token;
+	char	*p;
 
-	/* Remember, strtok clobbers scanLine. */
-	CopyAndTrunc_Utility_String(scanLine, fileName, MAXLINE);
-	strtok(scanLine, ".");		/* Initialisation */
-	token = strtok(NULL, " ");
-	if (token != NULL)
-		return(token);
+	if ((p = strrchr(fileName, '.')) != NULL)
+		return(p + 1);
 	else 
 		return(fileName);
 		
@@ -170,18 +164,3 @@ GetFileNameFPath_Utility_String(char *fileName)
 
 }
 
-/**************************** CopyAndTrunc ************************************/
-
-/*
- * This routine copies only n parameters from the src, and ensures that the
- * destination is null terminated.
- * 
- */
- 
-void
-CopyAndTrunc_Utility_String(char *dest, char *src, size_t n)
-{
-	strncpy(dest, src, n);
-	dest[n - 1] = '\0';
-
-}

@@ -390,8 +390,8 @@ SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
 		return(FALSE);
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
-	CopyAndTrunc_Utility_String(sAImagePtr->strobeSpecification,
-	  theStrobeSpecification, MAX_FILE_PATH);
+	snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, "%s",
+	  theStrobeSpecification);
 	return(TRUE);
 
 }

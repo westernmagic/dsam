@@ -78,7 +78,7 @@ Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 		NotifyError("%s: Out of memory for structure.", funcName);
 		return(NULL);
 	}
-	CopyAndTrunc_Utility_String(p->name, name, MAXLINE);
+	snprintf(p->name, MAXLINE, "%s", name);
 	p->updateFlag = TRUE;
 	p->mode = PARARRAY_NULL;
 	p->params = NULL;

@@ -278,7 +278,7 @@ SetMessage_Utility_Pause(char *theMessage)
 	}
 	/*** Put any other required checks here. ***/
 	pausePtr->messageFlag = TRUE;
-	CopyAndTrunc_Utility_String(pausePtr->message, theMessage, LONG_STRING);
+	snprintf(pausePtr->message, LONG_STRING, "%s", theMessage);
 	return(TRUE);
 
 }

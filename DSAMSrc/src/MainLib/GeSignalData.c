@@ -666,8 +666,7 @@ SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	CopyAndTrunc_Utility_String(theData->info.channelTitle, title,
-	  SIGNALDATA_MAX_TITLE);
+	snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 
@@ -685,8 +684,7 @@ SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	CopyAndTrunc_Utility_String(theData->info.chanDataTitle, title,
-	  SIGNALDATA_MAX_TITLE);
+	snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 
@@ -704,8 +702,7 @@ SetInfoSampleTitle_SignalData(SignalDataPtr theData, char *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	CopyAndTrunc_Utility_String(theData->info.sampleTitle, title,
-	  SIGNALDATA_MAX_TITLE);
+	snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, "%s", title);
 
 }
 
