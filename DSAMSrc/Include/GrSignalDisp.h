@@ -44,7 +44,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			31
+#define DISPLAY_NUM_PARS			32
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
@@ -82,29 +82,31 @@
 typedef	enum {
 
 	/* Signal Controls */
-	DISPLAY_AUTOMATIC_SCALING,
-	DISPLAY_MAX_Y,
-	DISPLAY_MIN_Y,
+	DISPLAY_MAGNIFICATION,
 	DISPLAY_Y_NORMALISATION_MODE,
 	DISPLAY_CHANNEL_STEP,
-	DISPLAY_MAGNIFICATION,
 	DISPLAY_NUMGREYSCALES,
 	DISPLAY_X_RESOLUTION,
-	DISPLAY_X_ZOOM,
-	DISPLAY_X_OFFSET,
-	DISPLAY_X_EXTENT,
 	DISPLAY_WIDTH,
-	/* Axis controls */
+	/* Y-Axis controls */
 	DISPLAY_Y_AXIS_TITLE,
 	DISPLAY_Y_AXIS_MODE,
+	DISPLAY_AUTOMATIC_SCALING,
+	DISPLAY_AUTO_Y_SCALE,
+	DISPLAY_MAX_Y,
+	DISPLAY_MIN_Y,
 	DISPLAY_Y_NUMBER_FORMAT,
 	DISPLAY_Y_DEC_PLACES,
 	DISPLAY_Y_TICKS,
 	DISPLAY_Y_INSET_SCALE,
+	/* X-Axis controls */
 	DISPLAY_X_AXIS_TITLE,
+	DISPLAY_AUTO_X_SCALE,
 	DISPLAY_X_NUMBER_FORMAT,
 	DISPLAY_X_DEC_PLACES,
 	DISPLAY_X_TICKS,
+	DISPLAY_X_OFFSET,
+	DISPLAY_X_EXTENT,
 	/* General Controls */
 	DISPLAY_WINDOW_TITLE,
 	DISPLAY_MODE,
@@ -146,11 +148,11 @@ typedef struct {
 	BOOLN	yInsetScaleFlag, xDecPlacesFlag, xTicksFlag, xOffsetFlag;
 	BOOLN	modeFlag, frameDelayFlag, topMarginFlag, frameHeightFlag;
 	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, summaryDisplayFlag;
-	BOOLN	automaticYScalingFlag, titleFlag, xAxisTitleFlag, xNumberFormatFlag;
-	BOOLN	yAxisTitleFlag, yNumberFormatFlag, xZoomFlag;
+	BOOLN	autoYScaleFlag, titleFlag, xAxisTitleFlag, xNumberFormatFlag;
+	BOOLN	yAxisTitleFlag, yNumberFormatFlag, autoXScaleFlag;
 
 	BOOLN	updateProcessVariablesFlag;
-	BOOLN	automaticYScaling;
+	BOOLN	autoYScale;
 	int		channelStep;
 	double	magnification;
 	double	maxY;
@@ -169,7 +171,7 @@ typedef struct {
 	char	xNumberFormat[MAXLINE];
 	int		xDecPlaces;
 	int		xTicks;
-	BOOLN	xZoom;
+	BOOLN	autoXScale;
 	double	xOffset;
 	double	xExtent;
 	char	title[MAXLINE];
@@ -250,7 +252,11 @@ BOOLN	PrintPars_SignalDisp(void);
 void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
 		  EarObjectPtr bufferEarObj, int windowFrame);
 
-BOOLN	SetAutomaticYScaling_SignalDisp(char *theAutomaticYScaling);
+void	SetAutoXScaleParsState_SignalDisp(BOOLN state);
+
+BOOLN	SetAutoYScale_SignalDisp(char *theAutoYScale);
+
+void	SetAutoYScaleParsState_SignalDisp(BOOLN state);
 
 BOOLN	SetChannelStep_SignalDisp(int theChannelStep);
 
@@ -306,7 +312,7 @@ BOOLN	SetXOffset_SignalDisp(double theXOffset);
 
 BOOLN	SetXTicks_SignalDisp(int xTicks);
 
-BOOLN	SetXZoom_SignalDisp(char *xZoom);
+BOOLN	SetAutoXScale_SignalDisp(char *autoXScale);
 
 BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
 

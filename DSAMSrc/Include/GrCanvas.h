@@ -102,10 +102,12 @@ class MyCanvas: public wxWindow
 {
 	bool	useTextAdjust, firstSizeEvent;
 	int		bitmapWidth, bitmapHeight;
+	long	pointerX, pointerY;
 	double	dt;
 	ChanLen	offset, chanLength, timeIndex;
 	wxFont  *labelFont, *insetLabelFont, *axisTitleFont, *superLabelFont;
 	wxRect	signal, summary, *xAxis, *yAxis;
+	wxPoint	pointer;
 	wxFrame	*parent;
 	GrLines	signalLines, summaryLine;
 	wxString	xTitle, yTitle;

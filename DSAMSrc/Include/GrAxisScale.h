@@ -29,19 +29,20 @@
 
 class AxisScale
 {
-	bool	numberFormatChanged;
+	bool	numberFormatChanged, autoScale;
 	int		exponent, decPlaces, numTicks, minPosition, maxPosition;
+	int		tickOffset;
 	double	valueScale, positionScale, roundingScaler, minValue, maxValue;
-	double	minValueScaled, minTickValue;
+	double	minValueScaled, minValueScaledRounded, minTickValue, powerScale;
+	double	maxValueScaled;
 	wxString	outputFormat;
 
   public:
 
-	bool	CalculatePositionScale(void);
-	bool	CalculateValueScale(void);
+	bool	CalculateScales(void);
 	double	GetDecPlaces(void)		{ return decPlaces; }
 	int		GetExponent(void)		{ return exponent; }
-	wxString	GetFormatString(void);
+	wxString	GetFormatString(char formatChar);
 	int		GetNumTicks(void)		{ return numTicks; }
 	bool	GetNumberFormatChanged()	{ return numberFormatChanged; }
 	char *	GetOutputFormatString(void)	{ return (char *) outputFormat.GetData(
@@ -52,7 +53,7 @@ class AxisScale
 	bool	ParseNumberFormat(char *numberFormat);
 	double	RoundedValue(double value);
 	bool	Set(char *numberFormat, double minVal, double maxVal, int minPos,
-			  int maxPos, int theNumTicks);
+			  int maxPos, int theNumTicks, bool theAutoScale);
 
 };
 

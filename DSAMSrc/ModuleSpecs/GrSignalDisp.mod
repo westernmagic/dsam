@@ -13,13 +13,11 @@ typedef struct {
 	double	width;
 	double	xResolution;
 	int		yNormalisationMode;
-	BOOLN	xZoom;
-	double	xOffset;
-	double	xExtent;
 
 	/* Axis controls */
 	char	*yAxisTitle;	/* MAXLINE */
 	int		yAxisMode;
+	BOOLN	autoYScale;
 	char	*yNumberFormat;	/* MAXLINE */
 	int		yDecPlaces;
 	int		yTicks;
@@ -29,6 +27,9 @@ typedef struct {
 	char	*xNumberFormat;	/* MAXLINE */
 	int		xDecPlaces;
 	int		xTicks;
+	BOOLN	autoXScale;
+	double	xOffset;
+	double	xExtent;
 
 	/* General Controls */
 	char	*title;			/* [MAXLINE] */
