@@ -48,6 +48,7 @@
 #define _GECOMMON_H	1
 
 #include <stdarg.h>
+#include <limits.h>		/* - sort out DBL_MAX previously defined problems. */
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -99,6 +100,7 @@
 #define UNSET_STRING		"<unset>" /* initial string value for arrays. */
 #define TAB_SPACES			4		/* Spaces per tab with GRAPHICS_SUPPORT */
 #define	NO_FILE				"no_file"	/* -for when this must be indicated. */
+#define	DEFAULT_FILE_NAME	"<file name>"
 #define DEFAULT_ERRORS_FILE		stderr
 #define DEFAULT_WARNINGS_FILE	stdout
 #define DEFAULT_PARS_FILE		stdout
@@ -110,12 +112,15 @@
 #ifndef FALSE
 #	define	FALSE		0
 #endif
+
+/*
 #ifndef DBL_MAX
 #	define	DBL_MAX		((double) 1.0e37)
 #endif
 #ifndef FLT_MAX
 #	define	FLT_MAX		((float) 1.0e37)
 #endif
+*/
 
 #ifndef GRAPHICS_SUPPORT
 #	define MainSimulation	main
