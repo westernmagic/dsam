@@ -174,7 +174,6 @@ typedef struct UniPar {
 		BOOLN	(* SetString)(char *);
 		BOOLN	(* SetCFList)(CFListPtr);
 		BOOLN	(* SetICList)(IonChanListPtr);
-		BOOLN	(* SetParArray)(ParArrayPtr);
 		BOOLN	(* SetDatumPtr)(DatumPtr);
 
 		BOOLN	(* SetCFListInt)(CFListPtr, int);
@@ -211,7 +210,10 @@ typedef struct UniParListNode {
 
 		CFListPtr		cFs;
 		IonChanListPtr	iCs;
-		ParArrayPtr		parArray;
+		struct {
+			ParArrayPtr	ptr;
+			BOOLN		(* SetFunc)(ParArrayPtr);
+		} parArray;
 
 	} handlePtr;
 

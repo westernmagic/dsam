@@ -465,6 +465,14 @@ SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth)
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
+	if (bMDRNLPtr->theCFs) {
+		bMDRNLPtr->theCFs->bandwidthMode.Func = 
+		  GetNonLinBandwidth_BasilarM_DRNL;
+		if (!SetBandwidths_CFList(bMDRNLPtr->theCFs, "internal_static", NULL)) {
+			NotifyError("%s: Failed to set bandwidth mode.", funcName);
+			return(FALSE);
+		}
+	}
 	bMDRNLPtr->nonLinBwidth = theNonLinBwidth;
 	return(TRUE);
 

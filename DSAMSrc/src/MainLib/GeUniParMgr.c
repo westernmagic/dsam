@@ -111,7 +111,8 @@ InitList_UniParMgr(UniParModeSpecifier mode, int numPars, void *handlePtr)
 		p->handlePtr.iCs = (IonChanListPtr) handlePtr;
 		break;
 	case UNIPAR_SET_PARARRAY:
-		p->handlePtr.parArray = (ParArrayPtr) handlePtr;
+		p->handlePtr.parArray.ptr = (ParArrayPtr) handlePtr;
+		p->handlePtr.parArray.SetFunc = NULL;
 		break;
 	default:
 		;
@@ -198,7 +199,7 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		par->valuePtr.cFPtr = (CFListPtr *) ptr1;
 		break;
 	case UNIPAR_PARARRAY:
-		par->valuePtr.pAPtr = (ParArrayPtr *) ptr1;
+		par->valuePtr.pAPtr = (ParArrayPtr *) ptr1; 
 		break;
 	case UNIPAR_ICLIST:
 		par->valuePtr.iCPtr = (IonChanListPtr *) ptr1;
@@ -253,7 +254,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 			par->FuncPtr.SetCFList = (BOOLN (*)(CFListPtr)) Func;
 			break;
 		case UNIPAR_PARARRAY:
-			par->FuncPtr.SetParArray = (BOOLN (*)(ParArrayPtr)) Func;
+			if (!*par->valuePtr.pAPtr || !(*par->valuePtr.pAPtr)->parList)
+				NotifyError("%s: Could not set par array handle function.",
+				  funcName);			
+			(*par->valuePtr.pAPtr)->parList->handlePtr.parArray.SetFunc =
+			  (BOOLN (*)(ParArrayPtr)) Func;
 			break;
 		case UNIPAR_ICLIST:
 			par->FuncPtr.SetICList = (BOOLN (*)(IonChanListPtr)) Func;
@@ -862,7 +867,6 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 		ok = (* p->FuncPtr.SetICList)((IonChanListPtr) parValue);
 		break;
 	case UNIPAR_PARARRAY:
-		ok = (* p->FuncPtr.SetParArray)((ParArrayPtr) parValue);
 		break;
 	default:
 		NotifyError("%s: Universal parameter type not yet implemented (%d).",
@@ -947,7 +951,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 	p = &(*parList)->pars[index];
 	switch (p->type) {
 	case UNIPAR_INT:
-		ok = (* p->FuncPtr.SetParArrayInt)((*parList)->handlePtr.parArray,
+		ok = (* p->FuncPtr.SetParArrayInt)((*parList)->handlePtr.parArray.ptr,
 		  atoi(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
@@ -956,7 +960,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetParArrayRealArrayElement)(
-		  (*parList)->handlePtr.parArray, arrayIndex[0], atof(arrayValue));
+		  (*parList)->handlePtr.parArray.ptr, arrayIndex[0], atof(arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -964,14 +968,17 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 	case UNIPAR_NAME_SPEC:
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
-		ok = (* p->FuncPtr.SetParArrayString)((*parList)->handlePtr.parArray,
-		  parValue);
+		ok = (* p->FuncPtr.SetParArrayString)((*parList)->handlePtr.parArray.
+		  ptr, parValue);
 		break;
 	default:
 		NotifyError("%s: Universal parameter type not yet implemented (%d).",
 		  funcName, p->type);
 		ok = FALSE;
 	}
+	if (ok)
+		(* (*parList)->handlePtr.parArray.SetFunc)((*parList)->handlePtr.
+		  parArray.ptr);
 	return(ok);
 
 }
