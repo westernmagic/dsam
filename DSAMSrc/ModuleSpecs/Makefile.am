@@ -38,7 +38,7 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
 				UtStddise.mod UtStrobe.mod UtPause.mod UtHalfWRectify.mod \
 				UtLocalChans.mod UtSwapLR.mod UtPadSignal.mod UtMathOp.mod
 
-Tr_Modules	= TrGate.mod
+Tr_Modules	= TrGate.mod TrSetDBSPL.mod TrCollectChans.mod
 
 EXTRA_DIST	= $(An_Modules) $(Fi_Modules) $(Fl_Modules) $(Mo_Modules) \
 				$(Pa_Modules) $(St_Modules) $(Ut_Modules) $(Tr_Modules)

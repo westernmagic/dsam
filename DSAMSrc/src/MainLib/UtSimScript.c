@@ -440,7 +440,6 @@ BOOLN
 SetControlParValue_Utility_SimScript(char *label, char *value, BOOLN diagsOn)
 {
 	static const char	*funcName = "SetControlParValue_Utility_SimScript";
-	DatumPtr	pc;
 
 	if (simScriptPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -448,8 +447,9 @@ SetControlParValue_Utility_SimScript(char *label, char *value, BOOLN diagsOn)
 	}
 	if (!SetControlParValue_Utility_Datum(simScriptPtr->simulation, label,
 	  value, diagsOn)) {
-		NotifyError("%s: Could not set control labelled '%s' value to '%s'.",
-		  funcName, label, value);
+		if (diagsOn)
+			NotifyError("%s: Could not set control labelled '%s' value to "
+			  "'%s'.", funcName, label, value);
 		return(FALSE);
 	}
 	return(TRUE);

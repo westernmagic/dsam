@@ -159,6 +159,7 @@
 #include "StStepFun.h"
 #include "StWhiteNoise.h"
 
+#include "TrCollectChans.h"
 #include "TrGate.h"
 #include "TrSetDBSPL.h"
 

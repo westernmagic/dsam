@@ -58,7 +58,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtFIRFilters.c UtRemez.c UtDynaBList.c UtLocalChans.c \
 				UtSwapLR.c UtPadSignal.c UtMathOp.c UtZhang.c
 
-Tr_Sources	= TrGate.c TrSetDBSPL.c
+Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectChans.c
 
 pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c

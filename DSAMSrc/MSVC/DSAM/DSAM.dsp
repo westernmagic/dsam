@@ -369,6 +369,10 @@ SOURCE=..\..\src\MainLib\StWhiteNoise.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\MainLib\TrCollectChans.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\MainLib\TrGate.c
 # End Source File
 # Begin Source File
@@ -994,6 +998,10 @@ SOURCE=..\..\Include\StStepFun.h
 # Begin Source File
 
 SOURCE=..\..\Include\StWhiteNoise.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\TrCollectChans.h
 # End Source File
 # Begin Source File
 
