@@ -48,3 +48,7 @@ EXTRA_DIST	= \
 install-data-local: Makefile.am
 		mkdir -p $(pkgdatadir)/$(DIRECTORY)
 		$(INSTALL_DATA) $(EXTRA_DIST) $(pkgdatadir)/$(DIRECTORY)
+
+uninstall-local:
+		cd $(pkgdatadir)/$(DIRECTORY)
+		rm -rf $(EXTRA_DIST)
