@@ -54,6 +54,9 @@
 /*************************** Misc definitions *********************************/
 
 #define DATAFILE_NUM_PARS		9
+#define DATAFILE_MOD_NAME_PREFIX	"DataFile_"
+#define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX "IN"
+#define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX "OUT"
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
 #define	MEMORY_FILE_DIRN		'+'		/*           "                 */
 #define	MAXLINE_LARGE			256		/* For very "wide" ASCII files */
