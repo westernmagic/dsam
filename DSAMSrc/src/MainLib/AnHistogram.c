@@ -950,7 +950,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 			extraTimeInterval = dt * p->extraSample;
 			nextCutOff = period - extraTimeInterval;
 			nextBinCutOff = binWidth - extraTimeInterval;
-			for (i = 0, binSum = 0; i < processLength - p->extraSample; i++) {
+			for (i = 1, binSum = 0; i < processLength; i++) {
 				switch (p->detectionMode) {
 				case HISTOGRAM_DETECT_SPIKES:
 					if (!p->riseDetected[chan])
@@ -973,7 +973,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 					buffPtr++;
 					bufferSamples--;
 				}
-				time = (i + 1) * dt;
+				time = i * dt;
 				if (DBL_GREATER(time, nextBinCutOff)) {
 					if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
 					  data->outSignal->length) /* - because of rounding errors*/
