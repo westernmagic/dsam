@@ -138,6 +138,8 @@ __BEGIN_DECLS
 
 BOOLN		AllocateFrequencies_CFList(CFListPtr theCFs);
 
+NameSpecifier *	CFModeList_CFList(int index);
+
 BOOLN		CheckInit_CFList(CFList *theCFs, const char *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);

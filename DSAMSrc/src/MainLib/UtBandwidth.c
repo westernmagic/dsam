@@ -29,24 +29,36 @@
 /****************************** Global Variables ******************************/
 /******************************************************************************/
 
-NameSpecifier	bandwidthModeList[] = {
-
-					{"ERB",			BANDWIDTH_ERB },
-					{"CAT",			BANDWIDTH_CAT },
-					{"CUSTOM_ERB",	BANDWIDTH_CUSTOM_ERB },
-					{"GUINEA_PIG",	BANDWIDTH_GUINEA_PIG },
-					{"USER",		BANDWIDTH_USER },
-					{"NONLINEAR",	BANDWIDTH_NONLINEAR },
-					{"INTERNAL_DYNAMIC",	BANDWIDTH_INTERNAL_DYNAMIC },
-					{"INTERNAL_STATIC",	BANDWIDTH_INTERNAL_STATIC },
-					{"DISABLED",	BANDWIDTH_DISABLED },
-					{"",			BANDWIDTH_NULL }
-
-				};
-
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
 /******************************************************************************/
+
+/********************************* ModeList ***********************************/
+
+/*
+ * This function returns a CF mode list entry.
+ */
+
+NameSpecifier *
+ModeList_Bandwidth(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{"ERB",			BANDWIDTH_ERB },
+			{"CAT",			BANDWIDTH_CAT },
+			{"CUSTOM_ERB",	BANDWIDTH_CUSTOM_ERB },
+			{"GUINEA_PIG",	BANDWIDTH_GUINEA_PIG },
+			{"USER",		BANDWIDTH_USER },
+			{"NONLINEAR",	BANDWIDTH_NONLINEAR },
+			{"INTERNAL_DYNAMIC",	BANDWIDTH_INTERNAL_DYNAMIC },
+			{"INTERNAL_STATIC",	BANDWIDTH_INTERNAL_STATIC },
+			{"DISABLED",	BANDWIDTH_DISABLED },
+			{"",			BANDWIDTH_NULL }
+
+		};
+	return (&modeList[index]);
+
+}
 
 /******************************** GetMode *************************************/
 
@@ -85,7 +97,7 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName)
 		NotifyError("%s: Mode pointer is not set ('%s').", funcName, modeName);
 		return(FALSE);
 	}
-	if ((specifier = Identify_NameSpecifier(modeName, bandwidthModeList)) ==
+	if ((specifier = Identify_NameSpecifier(modeName, ModeList_Bandwidth(0))) ==
 	  BANDWIDTH_NULL) {
 		NotifyError("%s: Unknown bandwidth  mode (%s).", funcName, modeName);
 		return(FALSE);

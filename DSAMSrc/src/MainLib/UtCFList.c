@@ -51,23 +51,6 @@
 /****************************** Global Variables ******************************/
 /******************************************************************************/
 
-static NameSpecifier	cFListModeList[] = {
-
-							{ "SINGLE", 	CFLIST_SINGLE_MODE },
-							{ "USER", 		CFLIST_USER_MODE },
-							{ "ERB", 		CFLIST_ERB_MODE },
-							{ "ERB_N", 		CFLIST_ERBN_MODE },
-							{ "LOG", 		CFLIST_LOG_MODE },
-							{ "FOCAL_LOG",	CFLIST_FOCAL_LOG_MODE },
-							{ "LINEAR",		CFLIST_LINEAR_MODE },
-							{ "CAT",		CFLIST_CAT_MODE },
-							{ "CHINCHILLA",	CFLIST_CHINCHILLA_MODE },
-							{ "GUINEA_PIG",	CFLIST_GPIG_MODE },
-							{ "HUMAN",		CFLIST_HUMAN_MODE },
-							{ "MACAQUE",	CFLIST_MACAQUEM_MODE },
-							{ "",			CFLIST_NULL }
-						};
-
 static NameSpecifier	cFListDiagModeList[] = {
 
 							{ "LIST", 		CFLIST_DIAG_MODE },
@@ -137,6 +120,35 @@ Free_CFList(CFListPtr *theCFs)
 	FreeList_UniParMgr(&(*theCFs)->bParList);
 	free((*theCFs));
 	*theCFs = NULL;
+
+}
+
+/********************************* CFModeList *********************************/
+
+/*
+ * This function returns a CF mode list entry.
+ */
+
+NameSpecifier *
+CFModeList_CFList(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "SINGLE", 	CFLIST_SINGLE_MODE },
+			{ "USER", 		CFLIST_USER_MODE },
+			{ "ERB", 		CFLIST_ERB_MODE },
+			{ "ERB_N", 		CFLIST_ERBN_MODE },
+			{ "LOG", 		CFLIST_LOG_MODE },
+			{ "FOCAL_LOG",	CFLIST_FOCAL_LOG_MODE },
+			{ "LINEAR",		CFLIST_LINEAR_MODE },
+			{ "CAT",		CFLIST_CAT_MODE },
+			{ "CHINCHILLA",	CFLIST_CHINCHILLA_MODE },
+			{ "GUINEA_PIG",	CFLIST_GPIG_MODE },
+			{ "HUMAN",		CFLIST_HUMAN_MODE },
+			{ "MACAQUE",	CFLIST_MACAQUEM_MODE },
+			{ "",			CFLIST_NULL }
+		};
+	return (&modeList[index]);
 
 }
 
@@ -232,7 +244,7 @@ SetCFMode_CFList(CFListPtr theCFs, char *modeName)
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
-	if ((mode = Identify_NameSpecifier(modeName, cFListModeList)) ==
+	if ((mode = Identify_NameSpecifier(modeName, CFModeList_CFList(0))) ==
 	  CFLIST_NULL) {
 		NotifyError("%s: Unknown CF mode (%s).", funcName, modeName);
 		return(FALSE);
@@ -560,7 +572,7 @@ SetCFUniParList_CFList(CFListPtr theCFs)
 	 "'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or "
 	 "'macaque').",
 	  UNIPAR_NAME_SPEC,
-	  &theCFs->centreFreqMode, cFListModeList,
+	  &theCFs->centreFreqMode, CFModeList_CFList(0),
 	  (void * (*)) SetCFMode_CFList);
 	SetPar_UniParMgr(&pars[CFLIST_CF_SINGLE_FREQ], "SINGLE_CF",
 	  "Centre frequency (Hz).",
@@ -744,7 +756,7 @@ SetBandwidthUniParList_CFList(CFListPtr theCFs)
 	 "Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or "
 	 "'Nonlinear').",
 	  UNIPAR_NAME_SPEC,
-	  &theCFs->bandwidthMode.specifier, bandwidthModeList,
+	  &theCFs->bandwidthMode.specifier, ModeList_Bandwidth(0),
 	  (void *(*)) SetBandwidthSpecifier_CFList);
 	SetPar_UniParMgr(&pars[BANDWIDTH_PAR_MIN], "BW_MIN",
 	  "Minimum filter bandwidth (Hz).",
@@ -880,7 +892,7 @@ GenerateDefault_CFList(char *modeName, int numberOfCFs, double minCF,
 		NotifyError("%s: Insufficient CF's (%d).", funcName, numberOfCFs);
 		return(NULL);
 	}
-	if (Identify_NameSpecifier(modeName, cFListModeList) ==
+	if (Identify_NameSpecifier(modeName, CFModeList_CFList(0)) ==
 	  CFLIST_SINGLE_MODE) {
 		if ((frequencies = (double *) calloc(numberOfCFs, sizeof(double))) ==
 		  NULL) {
@@ -1311,7 +1323,7 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 	} /* Switch */
 	if (!ok) {
 		NotifyError("%s: Could not generate CFList for '%s' frequency "
-		  "mode.", funcName, cFListModeList[theCFs->centreFreqMode].name);
+		  "mode.", funcName, CFModeList_CFList(theCFs->centreFreqMode)->name);
 		return(FALSE);
 	}
 	if (theCFs->centreFreqMode != CFLIST_FOCAL_LOG_MODE) {
@@ -1448,7 +1460,7 @@ ReadPars_CFList(FILE *fp)
 		NotifyError("%s: Could not read centre frequency mode.", funcName);
 		return(NULL);
 	}
-	switch (mode = Identify_NameSpecifier(modeName, cFListModeList)) {
+	switch (mode = Identify_NameSpecifier(modeName, CFModeList_CFList(0))) {
 	case	CFLIST_SINGLE_MODE:
 	case	CFLIST_USER_MODE:
 		if (mode == CFLIST_SINGLE_MODE)
@@ -1862,8 +1874,8 @@ PrintList_CFList(CFListPtr theCFs)
 			DPrint("\t%10s\n", "<unset>");
 	}
 	DPrint("\t\tCF Spacing mode: %s, Bandwidth mode: %s\n",
-	  cFListModeList[theCFs->centreFreqMode].name, bandwidthModeList[
-	    theCFs->bandwidthMode.specifier].name);
+	  CFModeList_CFList(theCFs->centreFreqMode)->name, ModeList_Bandwidth(
+	    theCFs->bandwidthMode.specifier)->name);
 
 }
 
@@ -1895,7 +1907,7 @@ PrintPars_CFList(CFListPtr theCFs)
 			return;
 		}
 		DPrint("\t\tCF Spacing mode: %s\n",
-		  cFListModeList[theCFs->centreFreqMode].name);
+		  CFModeList_CFList(theCFs->centreFreqMode)->name);
 		switch (theCFs->centreFreqMode) {
 		case CFLIST_ERB_MODE:
 			DPrint("\t\tMinimum/maximum frequency: %g / %g Hz,\n",
@@ -1924,8 +1936,8 @@ PrintPars_CFList(CFListPtr theCFs)
 		default:
 			;
 		} /* Switch */
-		DPrint("\t\tBandwidth mode: %s\n", bandwidthModeList[
-		  theCFs->bandwidthMode.specifier].name);
+		DPrint("\t\tBandwidth mode: %s\n", ModeList_Bandwidth(
+		  theCFs->bandwidthMode.specifier)->name);
 		switch (theCFs->bandwidthMode.specifier) {
 		case BANDWIDTH_CUSTOM_ERB:
 			DPrint("\t\tMinimum bandwidth: %g (Hz),",

@@ -81,8 +81,6 @@ typedef struct BandwidthMode {
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-extern NameSpecifier	bandwidthModeList[];
-
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
@@ -114,6 +112,8 @@ double	FFromERBRate_Bandwidth(double theERBRate);
 double	GuineaPigFromF_Bandwidth(double f);
 
 double	NonLinearFromF_Bandwidth(double f);
+
+NameSpecifier *	ModeList_Bandwidth(int index);
 
 BOOLN	SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName);
 
