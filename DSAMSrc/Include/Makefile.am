@@ -12,6 +12,8 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
   
 Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 
+Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
+
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h StdMessage.h
 
@@ -22,10 +24,10 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
 				GrParControl.h dsam.rc
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
-				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h FlLowPass.h \
+				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
-				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h FlBandPass.h \
+				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h \
 				FlMultiBPass.h MoBMGammaC.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
@@ -43,14 +45,16 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtSSSymbols.h UtSimScript.h UtSpikeList.h UtStddise.h \
 				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
 				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
-				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h
+				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h \
+				UtFIRFilters.h UtRemez.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h
 
-pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fi_Headers) \
-					$(An_Headers) $(Ge_Headers) $(Ut_Headers) $(Tr_Headers) \
-					$(Pa_Headers) $(Gr_Headers)
+pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
+					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
+					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers)
 
-DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fi_Headers) $(An_Headers) $(Ge_Headers) \
-					$(Ut_Headers) $(Tr_Headers) $(Pa_Headers) $(Gr_Headers)
+DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(Fi_Headers) $(An_Headers) \
+					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
+					$(Gr_Headers)
 		touch DSAM.h

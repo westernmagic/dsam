@@ -10,13 +10,15 @@ An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
 				 AnSynchIndex.mod AnSAImage.mod
 
+Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod
+
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoBMCarney.mod MoBMCooke.mod MoBMGammaT.mod MoBMDRNL.mod \
 				MoBM0DRNL.mod FlLowPass.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
 				MoHCRPShamma.mod MoIHCCarney.mod MoIHCCooke.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
-				FlBandPass.mod FlMultiBPass.mod MoBMGammaC.mod
+				MoBMGammaC.mod
 
 Pa_Modules	= PaMaster1.mod
 
@@ -33,5 +35,5 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
 
 Tr_Modules	= TrGate.mod
 
-EXTRA_DIST	= $(An_Modules) $(Mo_Modules) $(Pa_Modules) $(St_Modules) \
-				$(Ut_Modules) $(Tr_Modules)
+EXTRA_DIST	= $(An_Modules) $(Fl_Modules) $(Mo_Modules) $(Pa_Modules) \
+				$(St_Modules) $(Ut_Modules) $(Tr_Modules)

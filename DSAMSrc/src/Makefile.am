@@ -37,6 +37,9 @@ An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
   
 Fi_Sources	= FiDataFile.c FiAIFF.c FiASCII.c FiMSWave.c FiRaw.c FiParFile.c
 
+Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c
+
+
 Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 				GeNSpecLists.c GeUniParMgr.c
 
@@ -53,8 +56,7 @@ Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c FlLowPass.c \
 				MoHCRPCarney.c MoHCRPMeddis.c MoHCRPShamma.c MoIHC86Meddis.c \
 				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
-				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c FlBandPass.c \
-				FlMultiBPass.c MoBMGammaC.c
+				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoBMGammaC.c
 
 Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 
@@ -71,7 +73,8 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtSSSymbols.c UtSimScript.c UtSpikeList.c UtStddise.c \
 				UtUIEEEFloat.c UtUPortableIO.c UtCreateJoined.c UtStrobe.c \
 				UtOptions.c UtString.c UtPause.c UtHalfWRectify.c UtDynaList.c \
-				UtAppInterface.c UtFFT.c UtParArray.c UtGCFilters.c
+				UtAppInterface.c UtFFT.c UtParArray.c UtGCFilters.c \
+				UtFIRFilters.c UtRemez.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c
 
@@ -79,21 +82,22 @@ pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
 libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
-					$(Mo_Sources) $(St_Sources) $(Tr_Sources)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
 libdsam_std_la_SOURCES= $(Std_Source)
 libdsam_std_la_LDFLAGS= $(GenLaLDFLAGS)
 libdsam_m_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
-					$(Mo_Sources) $(St_Sources) $(Tr_Sources) $(Pa_Sources)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
+					$(Pa_Sources)
 libdsam_m_la_LDFLAGS= $(GenLaLDFLAGS)
 
 libdsam_g_la_SOURCES= $(Gr_Sources)
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 
 libdsam_mg_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
-					$(Mo_Sources) $(St_Sources) $(Tr_Sources) $(Pa_Sources) \
-					$(Gr_Sources)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources) \
+					$(Pa_Sources) $(Gr_Sources)
 libdsam_mg_la_LDFLAGS= $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c

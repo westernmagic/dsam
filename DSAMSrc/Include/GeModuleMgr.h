@@ -96,6 +96,7 @@ typedef enum {
 	DATAFILE_OUT,
 	DISPLAY_SIGNAL,
 	FILT_BANDPASS,
+	FILT_FIR,
 	FILT_LOWPASS,
 	FILT_MULTIBPASS,
 	IHC_CARNEY,
@@ -220,6 +221,7 @@ typedef struct moduleStruct {
 		FMTone		fMTone;
 		FindBin		findBin;
 		FindIndex	findIndex;
+		FIR			fIR;
 		FourierT	fourierT;
 		Gate		gate;
 		HairCell	hairCell;
@@ -417,11 +419,17 @@ void		SetIHCRP_Meddis_ModuleMgr(ModulePtr theModule);
 
 void		SetIHCRP_Shamma_ModuleMgr(ModulePtr theModule);
 
+void		SetFilter_BandPass_ModuleMgr(ModulePtr theModule);
+
+void		SetFilter_FIR_ModuleMgr(ModulePtr theModule);
+
+void		SetFilter_LowPass_ModuleMgr(ModulePtr theModule);
+
+void		SetFilter_MultiBPass_ModuleMgr(ModulePtr theModule);
+
 void		SetMPureTone_ModuleMgr(ModulePtr theModule);
 
 void		SetNeuron_ArleKim_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_LowPass_ModuleMgr(ModulePtr theModule);
 
 void		SetNeuron_HHuxley_ModuleMgr(ModulePtr theModule);
 
@@ -436,10 +444,6 @@ void		SetMPI_Master1_ModuleMgr(ModulePtr theModule);
 BOOLN		SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value);
 
 BOOLN		SetParsPointer_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_BandPass_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_MultiBPass_ModuleMgr(ModulePtr theModule);
 
 void		SetPulseTrain_ModuleMgr(ModulePtr theModule);
 
