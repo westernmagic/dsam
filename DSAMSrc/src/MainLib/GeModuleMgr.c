@@ -615,27 +615,28 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
 
 }
 
-/*************************** ReadSimParFile ***********************************/
+/*************************** GetSimParFileFlag ********************************/
 
 /*
- * This function reads the parameters for the simulation module.
- * It returns FALSE if it fails in any way.
+ * This function returns the SimParFileFlag for a simulation script.
+ * It also returns FALSE if it fails, but in this case it prints an error
+ * messages.
+ * It is not being called in places where it will fail.
  */
 
 BOOLN
-ReadSimParFile_ModuleMgr(EarObjectPtr data, char *simParFileName)
+GetSimParFileFlag_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "ReadPars_ModuleMgr";
+	static const char *funcName = "GetSimParFileFlag_ModuleMgr";
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
-	(* data->module->SetParsPointer)(data->module);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
 		NotifyError("%s: This function can only be used with a simulation.",
 		  funcName);
 		return(FALSE);
 	}
-	return(ReadSimParFile_Utility_SimScript(simParFileName));
+	return(((SimScriptPtr) data->module)->simParFileFlag);
 
 }
 
