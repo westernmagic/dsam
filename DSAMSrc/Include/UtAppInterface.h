@@ -94,6 +94,7 @@ typedef struct {
 	void	(* PrintUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
 	BOOLN	(* SetInitialPars)(void);
+	BOOLN	(* SetFinalPars)(void);
 
 } AppInterface, *AppInterfacePtr;
 
@@ -145,6 +146,8 @@ BOOLN	ProcessOptions_AppInterface(void);
 
 void	PrintUsage_AppInterface(void);
 
+BOOLN	ReadPars_AppInterface(FILE *fp);
+
 BOOLN	ReadProgParFile_AppInterface(void);
 
 BOOLN	SetAppName_AppInterface(char *appName);
@@ -155,6 +158,8 @@ BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 
 BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **,
 		  int *));
+
+BOOLN	SetAppSetFinalPars_AppInterface(BOOLN (* SetFinalPars)(void));
 
 BOOLN	SetAppSetInitialPars_AppInterface(BOOLN (* SetInitialPars)(void));
 
