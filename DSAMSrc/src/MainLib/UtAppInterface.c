@@ -1386,7 +1386,7 @@ ResetCommandArgFlags_AppInterface(void)
 		exit(1);
 	}
 	appInterfacePtr->checkMainInit = TRUE;
-	appInterfacePtr->useParComsFlag = (appInterfacePtr->audModel != NULL);
+	appInterfacePtr->useParComsFlag = TRUE;
 
 }
 
