@@ -17,10 +17,9 @@ DSAMRESPATH		= $(bindir)/$(DSAMRES)
 endif
 
 LaVersionInfo	= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-					-release $(LT_RELEASE) \
-					-export-dynamic
+					-release $(LT_RELEASE)
 
-GenLaLDFLAGS	= -rpath $(libdir) $(LaVersionIno) -export-dynamic
+GenLaLDFLAGS	= -rpath $(libdir) $(LaVersionInfo) -export-dynamic
 
 bin_SCRIPTS		= ccdsam @CCDSAMM@ @CCDSAMG@ @CCDSAMMG@ @DSAMRES@
 EXTRA_SCRIPTS	= ccdsamm ccdsamg ccdsammg DSAMRes.o
@@ -85,7 +84,7 @@ BUILT_SOURCES		= UtSSParser.c
 
 libDSAM_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
 					$(Mo_Sources) $(St_Sources) $(Tr_Sources)
-libDSAM_la_LDFLAGS=  $(LaVersionIno)
+libDSAM_la_LDFLAGS=  $(GenLaLDFLAGS)
 
 libDSAMStd_la_SOURCES= $(Std_Source)
 libDSAMStd_la_LDFLAGS= $(GenLaLDFLAGS)

@@ -4,4 +4,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 pkginclude_HEADERS	= DSAMSetup.h
+EXTRA_DIST	= dsam.spec
 SUBDIRS		= CfgTools Include src ModuleSpecs Examples
+
+dsam.spec: dsam.spec.in
