@@ -179,7 +179,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	sprintf(dataFilePtr->name, "output.dat");
 	dataFilePtr->wordSize = 2;
-	dataFilePtr->endian = 0;
+	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
 	dataFilePtr->defaultSampleRate = 8000.0;
 	dataFilePtr->duration = -1.0;
@@ -333,7 +333,7 @@ GetUniParListPtr_DataFile(void)
 
 }
 
-/**************************** SetWordSize_DataFile ****************************/
+/**************************** SetWordSize *************************************/
 
 /*
  * This routine sets the word size for the binary file support.
@@ -360,7 +360,7 @@ SetWordSize_DataFile(int wordSize)
 	
 }
 
-/**************************** SetNormalisation_DataFile ***********************/
+/**************************** SetNormalisation ********************************/
 
 /*
  * This routine sets the normalisation parameter for the binary file support.
@@ -381,7 +381,7 @@ SetNormalisation_DataFile(double normalisation)
 	
 }
 
-/**************************** SetNumChannels_DataFile *************************/
+/**************************** SetNumChannels **********************************/
 
 /*
  * This routine sets the number of channels for the binary file support.
@@ -404,10 +404,27 @@ SetNumChannels_DataFile(int numChannels)
 	dataFilePtr->numChannels = numChannels;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
 }
 
-/**************************** SetRWFormat_DataFile ****************************/
+
+
+/**************************** GetMachineByteOrder *****************************/
+
+/*
+ * Sets the byte order according to the machine.
+ */
+
+DataFileEndianModeSpecifier
+GetMachineByteOrder_DataFile(void)
+{
+	short int	word = 0x0001;
+	char		*byte = (char *) &word;
+
+	return((byte[0])? DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN);
+
+}
+
+/**************************** SetRWFormat *************************************/
 
 /*
  * Sets the reading and writing routines of the 'dataFile' structure.
@@ -424,7 +441,8 @@ SetRWFormat_DataFile(int dataFormat)
 		NotifyError("%s: Module not initialised.", funcName);
 		return;
 	}
-	dataFilePtr->endian = dataFormat;
+	if (dataFormat == DATA_FILE_DEFAULT_ENDIAN)
+		dataFormat = GetMachineByteOrder_DataFile();
 	switch (dataFormat) {
 	case DATA_FILE_LITTLE_ENDIAN:
 	case DATA_FILE_LITTLE_ENDIAN_UNSIGNED:
@@ -449,7 +467,7 @@ SetRWFormat_DataFile(int dataFormat)
 
 }
 
-/**************************** SetEndian_DataFile ******************************/
+/**************************** SetEndian ***************************************/
 
 /*
  * This routine sets the endedness of binary data file reading/writing to
@@ -494,13 +512,12 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
 	static const char *funcName = "ReadFileIdentifier_DataFile";
 	int32	identifier;
 
-	if (!dataFilePtr->endian) 
-		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
 		return(identifier);
-	SetRWFormat_DataFile((dataFilePtr->endian == DATA_FILE_BIG_ENDIAN)?
-	  DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN);
+	dataFilePtr->endian = (dataFilePtr->endian == DATA_FILE_BIG_ENDIAN)?
+	  DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN;
+	SetRWFormat_DataFile(dataFilePtr->endian);
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
 		return(identifier);
