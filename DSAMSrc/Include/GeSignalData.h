@@ -111,7 +111,7 @@ double	GetDuration_SignalData(SignalDataPtr theSignal);
 
 double	GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample);
 
-SignalDataPtr	Init_SignalData(char *callingFunctionName);
+SignalDataPtr	Init_SignalData(const char *callingFunctionName);
 
 BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels);
 	
