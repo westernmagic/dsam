@@ -122,7 +122,8 @@
 
 #define SQR(X) 					((X) * (X))
 
-#define	DEGREES_TO_RADS(DEGREES)	((DEGREES) / 57.29577951)
+#define	DEGREES_TO_RADS(DEGREES)	((DEGREES) * PI / 180.0)
+#define	RADS_TO_DEGREES(RADS)	((RADS) * 180.0 / PI)
 
 #define	MINIMUM(A, B)			(((A) < (B))? (A): (B))
 
