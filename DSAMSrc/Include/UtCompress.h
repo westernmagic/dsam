@@ -19,7 +19,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define UTILITY_COMPRESSION_NUM_PARS			3
+#define UTILITY_COMPRESSION_NUM_PARS			4
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -29,7 +29,8 @@ typedef enum {
 
 	UTILITY_COMPRESSION_MODE,
 	UTILITY_COMPRESSION_SIGNALMULTIPLIER,
-	UTILITY_COMPRESSION_POWEREXPONENT
+	UTILITY_COMPRESSION_POWEREXPONENT,
+	UTILITY_COMPRESSION_MINRESPONSE
 
 } CompressionParSpecifier;
 
@@ -45,10 +46,11 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, signalMultiplierFlag, powerExponentFlag;
+	BOOLN	modeFlag, signalMultiplierFlag, powerExponentFlag, minResponseFlag;
 	int		mode;
 	double	signalMultiplier;
 	double	powerExponent;
+	double	minResponse;
 
 	/* Private members */
 	NameSpecifier	*modeList;
@@ -90,10 +92,12 @@ BOOLN	Process_Utility_Compression(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_Compression(char *fileName);
 
+BOOLN	SetMinResponse_Utility_Compression(double theMinResponse);
+
 BOOLN	SetMode_Utility_Compression(char *theMode);
 
 BOOLN	SetPars_Utility_Compression(char *mode, double signalMultiplier,
-		  double powerExponent);
+		  double powerExponent, double minResponse);
 
 BOOLN	SetPowerExponent_Utility_Compression(double thePowerExponent);
 

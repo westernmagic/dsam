@@ -11,5 +11,6 @@ typedef struct {
 	NameSpecifier	mode;
 	double	signalMultiplier;
 	double	powerExponent;
+	double	minResponse;
 
 } Compression;
