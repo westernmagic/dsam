@@ -1,0 +1,6 @@
+FREQUENCY	5000	Frequency (Hz).
+INTENSITY	60	Intensity (dB SPL).
+DURATION	0.05	Duration (s).
+DT	2e-05	Sampling interval, dt (s).
+BEGIN_SILENCE	0	Silence period before the signal begins (s).
+END_SILENCE	0.005	Silence period after the signal ends (s).

@@ -263,14 +263,27 @@ dnl Final configure outputs.
 dnl ============================================================================
 
 AC_OUTPUT(
+	Makefile
 	ams.spec
 	CfgTools/Makefile
 	DEFAULT/Makefile
 	HelpFiles/Makefile
 	Matlab/Makefile
-	Octave/Makefile
 	MSVC/Makefile
 	MSVC/AMS/Makefile
 	MSVC/AMS_ng/Makefile
-	Makefile
+	Octave/Makefile
+	Tutorials/Makefile
+	Tutorials/ANfiberModels/Makefile
+	Tutorials/ANfiberModels/ANmodelISIH/Makefile
+	Tutorials/ANfiberModels/ANmodelPeriodH/Makefile
+	Tutorials/ANfiberModels/ANmodelPSTH/Makefile
+	Tutorials/ANfiberModels/ANspikeStream/Makefile
+	Tutorials/AuditoryNerve/Makefile
+	Tutorials/Autocorrelation/Makefile
+	Tutorials/BinauralPitch/Makefile
+	Tutorials/DRNLinputOutput/Makefile
+	Tutorials/ImpulseResponse/Makefile
+	Tutorials/Loudness/Makefile
+
 )

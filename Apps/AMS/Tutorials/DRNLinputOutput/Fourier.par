@@ -1,0 +1,13 @@
+#		ANA_FourierT				< Fourier.par
+
+# computes a Fourier transform of a signal
+# resolution is a function of the total number 
+#  of points in the signal.
+
+# Warning the ANA_Fourier generates a mirror image
+#  of the power spectrum.  However, negative 
+#  frequencies are not displayed.
+# Results are best read only in the first/left half of the output.
+
+modulus		 \modulus\  for power spectrum
+				#\phase\    for phase spectrum

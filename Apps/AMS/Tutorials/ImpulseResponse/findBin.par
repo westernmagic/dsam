@@ -1,0 +1,4 @@
+MODE	MAX_VALUE	Search mode ('max_value', 'max_index', 'min_value' or 'min_index').
+BIN_WIDTH	-1	Bin width (time window) for search bin: -ve assumes dt for previous signal (s).
+OFFSET	0.024	Offset from which to start search (s?).
+WIDTH	0.025	Analysis window width for search: -ve assume to end of signal (s?).

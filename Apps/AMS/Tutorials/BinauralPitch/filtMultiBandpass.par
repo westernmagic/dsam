@@ -1,0 +1,5 @@
+NUM_FILTERS	1	No. of parallel band pass filters.
+CASCADE	0:1
+ATTENUATION	0:0
+LOWER_FREQ	0:300
+UPPER_FREQ	0:5000

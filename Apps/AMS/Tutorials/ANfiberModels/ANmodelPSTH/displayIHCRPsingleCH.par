@@ -1,0 +1,39 @@
+#Generic display parameter file - 'displayGeneric.par'
+#This parameter file can be omitted from the .sim file
+#Leave all lines as comments unless you wish to 
+#improve on the default settings
+
+win_title				P		my_window
+summaryDisplay		off		/on off/ aggregates all channels
+#channel_step			2		/integer/ for skipping channels
+y_axis_mode			linear /channel linear log/
+
+win_X_pos				600		top left corner of window, pixel no
+win_y_pos				0		top left corner of window, pixel no
+#								 (0,0) is top left of screen
+
+win_height				300		display window height (max 1000)
+win_Width				300		display window width (max 1000)
+
+auto_scaling			off		/on off/
+#magnification		1		y-axis gain (>1 allows signal to 
+#								 exceed autoscaling limits)
+maxY					-0.01		(auto_scaling must be off)
+minY					-0.06		(auto_scaling must be off)
+#normalisation			middle /bottom middle/ of y scale
+#x_resolution			0.1		/0.1 to 1.0/
+
+#x_dec_places			0		x-axis,	no of decimal places
+#x_ticks				5		no. of x tick marks
+y_dec_places			2		y-axis,	no of decimal places
+y_ticks				5		no. of y tick marks
+
+#mode					line  /line raster/
+#numGreyScale			10		(raster display must be on)
+#topMargin				5		% margin as % of display window
+#width					1		width of display in signal units
+
+#mystery parameters
+#frameDelay				1		(?s) between successive frames
+#frameHeight			200
+#frameWidth			200

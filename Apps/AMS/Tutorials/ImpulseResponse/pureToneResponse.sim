@@ -1,0 +1,30 @@
+#			pureToneResponse.sim
+
+off			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode - \relative\ or \absolute\
+ 
+begin {
+
+stim%  stim_PureTone       < PTone1.par
+
+#apply ramps to signal
+		Trans_Gate				< rampUp.par
+		Trans_Gate				< rampDown.par
+      
+		Display_Signal			< displayStimulus.par
+
+#Outer middle ear simulation
+	   Filt_FIR		         < filtFIRELP.par
+
+#convert to stapes velocity
+		filt_LowPass			< filtScaleToStapes.par
+		Display_Signal			< displayMiddleEar.par
+
+#inner ear DRNL filter
+BM%	BM_DRNL				   < BM_DRNLHumanALN.par
+		Display_Signal			< displayDRNL.par
+		
+      ANA_FindBin 		   < findBin.par
+
+	   DataFile_out			< dataFileOut.par
+		}

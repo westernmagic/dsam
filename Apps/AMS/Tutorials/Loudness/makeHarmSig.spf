@@ -1,0 +1,99 @@
+	##--------------- Simulation script ----------------------##
+	OFF	Diagnostics mode ('off' or 'on').
+
+	begin  {
+		Stim_Harmonic	<	stimHarmonic.par
+		Trans_Gate	<	rampUp.par
+		Trans_Gate	<	rampDown.par
+		Display_Signal	<	displayStimulus.par
+		DataFile_out	<	dataFileOutSignal.par
+	}
+
+	##----- Stim_Harmonic.0        (stimHarmonic.par) -----##
+	LOW_HARMONIC.Stim_Harmonic.0	1         	Lowest harmonic number.
+	HIGH_HARMONIC.Stim_Harmonic.0	20        	Highest harmonic number.
+	PHASE_MODE.Stim_Harmonic.0	"COSINE"  	Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).
+	PHASE_PAR.Stim_Harmonic.0	0         	Phase parameter (Shroeder phase: C value, Random: random number seed).
+	MISTUNED_HARM.Stim_Harmonic.0	-1        	Mistuned harmonic number (0 = F0, -ve implies none mistuned).
+	MT_FACTOR.Stim_Harmonic.0	0         	Mistuning factor (%).
+	FUND_FREQ.Stim_Harmonic.0	64        	Fundamental frequency (Hz).
+	INTENSITY.Stim_Harmonic.0	60        	Intensity (dB SPL).
+	DURATION.Stim_Harmonic.0 	0.2       	Duration (s).
+	DT.Stim_Harmonic.0       	1.5625e-005	Sampling interval, dt (s).
+	MOD_FREQ.Stim_Harmonic.0 	2.5       	Modulation Frequency (Hz).
+	MOD_PHASE.Stim_Harmonic.0	0         	Modulation Phase (degrees).
+	MOD_DEPTH.Stim_Harmonic.0	0         	Modulation depth (%).
+	ORDER.Stim_Harmonic.0    	0         	Filter order.
+	LOW_CUTOFF.Stim_Harmonic.0	200       	Lower cut off frequency 3 dB down (Hz).
+	UPPER_CUTOFF.Stim_Harmonic.0	600       	Upper cut off frequency 3 dB down (Hz).
+
+	##----- Trans_Gate.1                 (rampUp.par) -----##
+	POS_MODE.Trans_Gate.1    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.1     	"RAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.1   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.1      	0         	Time offset (s)
+	DURATION.Trans_Gate.1    	0.02      	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.1       	0.02      	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Trans_Gate.2               (rampDown.par) -----##
+	POS_MODE.Trans_Gate.2    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.2     	"DAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.2   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.2      	0         	Time offset (s)
+	DURATION.Trans_Gate.2    	0.02      	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.2       	0.02      	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Display_Signal.3     (displayStimulus.par) -----##
+	MAGNIFICATION.Display_Signal.3	1         	Signal magnification.
+	NORMALISATION.Display_Signal.3	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.3	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.3	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.3	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.3   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.3	"mPa"     	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.3	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.3	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.3	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.3    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.3    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.3	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.3	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.3 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.3	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.3	"Time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.3	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.3	"x.e-3"   	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.3	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.3 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.3	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.3	0         	X extent for display in zoom mode (x units).
+	WIN_TITLE.Display_Signal.3	"stimulus with ramps"	Display window title.
+	MODE.Display_Signal.3    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.3	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.3	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.3	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.3	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.3	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.3	0         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.3	0         	Display frame Y position (pixel units).
+
+	##----- DataFile_out.4       (dataFileOutSignal.par) -----##
+	FILENAME.DataFile_out.4  	"harmsig.aif"	Stimulus file name.
+	WORDSIZE.DataFile_out.4  	2         	Default word size for sound data (1,2 or 4 bytes)
+	ENDIAN_MODE.DataFile_out.4	"LITTLE"  	Default (for format), 'little' or 'big'-endian.
+	CHANNELS.DataFile_out.4  	1         	No. of Channels: for raw binary and ASCII files.)
+	NORM_MODE.DataFile_out.4 	0         	Normalisation factor for writing (0 or -ve: automatic).
+	SAMPLERATE.DataFile_out.4	50000     	Default sample rate: for raw binary and ASCII files (Hz).
+	DURATION.DataFile_out.4  	-1        	Duration of read signal: -ve = unlimited (s)
+	STARTTIME.DataFile_out.4 	0         	Start time (offset) for signal (s).
+	GAIN.DataFile_out.4      	0         	Relative signal gain (dB).
+
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.ams.0           	"C:\allProgs\collaborators\tutorials\loudness\makeHarmSig.sim"	Simulation file.
+	SEGMENT_MODE.ams.0       	OFF       	Segmented or frame-base processing mode ('on' or 'off').
+	# Sub-parameter list: 
+	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
+	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

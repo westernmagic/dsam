@@ -1,0 +1,7 @@
+DETECT_MODE	SPIKE	Detection mode: 'spike' (detection) or 'continuous' (signal).
+OUTPUT_MODE	BIN_COUNTS	Output mode: 'bin_counts'  or 'spike_rate'.
+TYPE_MODE	PSTH	Histogram type: 'PSTH', or 'PH'.
+THRESHOLD	0.5	Event threshold for bin counts (units as appropriate).
+BIN_WIDTH	0.001	Bin width for the histogram: -ve assumes dt for previous signal (s).
+PERIOD	0.001	Period for period histogram: used in 'PH' mode only (s).
+OFFSET	0	Time offset for histogram (s).

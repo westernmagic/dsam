@@ -1,0 +1,55 @@
+#pitchLateCrossover.sim
+
+# simulation accepts a binaural input
+#  computes an acf for each ear independently 
+#  and then averages the two acfs.
+  
+off			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode - \relative\ or \absolute\
+ 
+begin {
+
+#  Read stimulus from file
+			DataFile_In 				< dataFileIn.par	
+
+#apply ramps to signal
+			Trans_Gate					< rampUp.par
+			Trans_Gate					< rampDown.par
+			Display_Signal			< displayStimulus.par
+
+#outer/middle ear simulation
+			Filt_MultiBPass			< filtMultiBandpass.par
+
+#convert to stapes velocity
+			filt_LowPass				< filtScaleToStapes.par
+
+#nonlinear DRNL filterbank
+			BM_DRNL					< BM_DRNLHuman.par
+			Display_Signal			< displayBM.par
+
+#receptor potential 
+			Filt_MultiBPass			< filtStereocilia.par
+			IHCRP_Shamma 				< IHCreceptorPotential.par
+			Display_Signal			< displayReceptorPotential.par
+  
+# HSR spike probability
+			IHC_Meddis2000			< IHC_Meddis2000HSR.par
+
+#autocorrelate
+			Ana_Acf					< acf.par
+			Display_Signal			< displayACFlate.par
+
+#create summary acf
+redch%		 	Util_ReduceChannels	(->swap, acc)	< UtRedChans.par
+
+#create left right mirror image
+swap%			util_swapLR			(redch->acc)
+		
+#add left/right acfs together
+acc%			Util_Accumulate		(redch, swap-> )
+			Display_Signal							< displayACF2.par
+
+#write results to a data file	
+			DataFile_out								< dataFileOut.par
+		}	
+

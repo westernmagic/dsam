@@ -1,0 +1,2 @@
+MODE	SUM	Bining mode ('average' or 'sum').
+BIN_WIDTH	0.001	Bin width for binned signal (s).

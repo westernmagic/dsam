@@ -1,0 +1,9 @@
+FILENAME	harmsig.aif	Stimulus file name.
+WORDSIZE	2	Default word size for sound data (1,2 or 4 bytes)
+ENDIAN_MODE	LITTLE	Default (for format), 'little' or 'big'-endian.
+CHANNELS	1	No. of Channels: for raw binary and ASCII files.)
+NORM_MODE	0	Normalisation factor for writing (0 or -ve: automatic).
+SAMPLERATE	50000	Default sample rate: for raw binary and ASCII files (Hz).
+DURATION	-1	Duration of read signal: -ve = unlimited (s)
+STARTTIME	0	Start time (offset) for signal (s).
+GAIN	0	Relative signal gain (dB).

@@ -1,0 +1,17 @@
+OP_MODE	PROB	Output mode: stochastic ('spike') or probability ('prob').
+DIAG_MODE	OFF	Diagnostic mode. Outputs internal states of running model ('off', 'screen' or <file name>).
+RAN_SEED	0	Random number seed (0 for different seed for each run).
+REV_POT_ECA	0.066	Calcium reversal potential, E_Ca (Volts).
+BETA_CA	400	Calcium channel Boltzmann function parameter, beta.
+GAMMA_CA	130	Calcium channel Boltzmann function parameter, gamma.
+POWER_CA	3	Calcium channel transmitter release exponent (power).
+GMAX_CA	8e-09	Maximum calcium conductance (Siemens).
+CONC_THRESH_CA	4.48e-11	Calcium threshold Concentration.
+PERM_Z	2e+32	Transmitter release permeability, Z (unitless gain)
+TAU_M	0.0001	Calcium current time constant (s).
+TAU_CA	0.0001	Calcium ion diffusion (accumulation) time constant (s).
+MAX_FREE_POOL_M	10	Max. no. of transmitter packets in free pool (integer).
+REPLENISH_Y	10	Replenishment rate (units per second).
+LOSS_L	2580	Loss rate (units per second).
+REPROCESS_X	66.31	Reprocessing rate (units per second).
+RECOVERY_R	6580	Recovery rate (units per second).

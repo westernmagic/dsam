@@ -1,0 +1,6 @@
+POS_MODE	RELATIVE	Position mode ('absolute' or 'relative')
+OP_MODE	RAMP	Operation mode ('ramp' or 'damp')
+TYPE_MODE	RAISED_COS	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+OFFSET	0	Time offset (s)
+DURATION	0.005	Ramp duration - negative assumes the end of the signal (s)
+SLOPE	0.01	Slope parameter or half-life (in 'decay_par' mode only)

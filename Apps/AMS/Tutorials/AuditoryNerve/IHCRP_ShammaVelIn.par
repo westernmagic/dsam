@@ -1,0 +1,14 @@
+E_T	0.1	Endocochlear potential, Et (V).
+E_K	-0.07045	Reversal potential, Ek (V).
+RP_CORRECTION	0.04	Reversal potential correction, Rp/(Rt+Rp).
+C_TOTAL	6.21e-12	Total capacitance, C = Ca + Cb (F).
+G0	1.974e-09	Resting conductance, G0 (S).
+G_K	1.8026e-08	Potassium conductance, Gk (S = Siemens).
+G_MAXC	3.7e-09	Maximum mechanical conductance, Gmax (S).
+T_C	0.00213	Cilia/BM time constant (s).
+GAIN_C	47	Cilia/BM coupling gain, C (dB).
+REF_POT	0	Reference potential (V).
+S0	1.2e-07	Sensitivity constant, S0 (/m).
+S1	5e-09	Sensitivity constant, S1 (/m).
+U0	2e-08	Offset constant, U0 (m).
+U1	7e-09	Offset constant, U1 (m).

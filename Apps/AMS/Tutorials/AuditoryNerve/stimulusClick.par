@@ -1,0 +1,4 @@
+TIME	0.001	Time for the delta-function click (s).
+AMPLITUDE	40	Amplitude (uPa).
+DURATION	0.02	Duration (s).
+DT	1e-06	Sampling interval, dt (s).

@@ -1,0 +1,34 @@
+#filterFunction.sim
+  
+off			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode - \relative\ or \absolute\
+ 
+begin {
+
+#  			Stimulus generation
+			Stim_Harmonic				< stimHarmonic.par
+#			DataFile_In 				< dataFileIn.par	
+
+#			apply ramps to signal
+			Trans_Gate					< rampUp.par
+			Trans_Gate					< rampDown.par
+			Display_Signal			< displayStimulus.par
+
+#			outer/middle ear simulation
+			Filt_FIR					< filtFIRELP.par
+
+#			convert to stapes velocity
+#			scalar is linked to FIR filter
+			filt_LowPass				< filtScaleToStapes.par
+
+#			nonlinear DRNL filterbank
+			BM_DRNL					< BM_DRNLHuman.par
+			Display_Signal			< displayBM.par
+
+#			compute fourier transform
+			ANA_FourierT				< Fourier.par
+			Display_signal			< displayFourier.par
+
+#			write results to a data file	
+			DataFile_out				< dataFileOut.par
+		}

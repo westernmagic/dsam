@@ -1,0 +1,1800 @@
+	##--------------- Simulation script ----------------------##
+	OFF	Diagnostics mode ('off' or 'on').
+
+	begin  {
+		Stim_Harmonic	<	stimHarmonic.par
+		Trans_Gate	<	rampUp.par
+		Trans_Gate	<	rampDown.par
+		Display_Signal	<	displayStimulus.par
+		Filt_FIR	<	filtFIRELP.par
+		filt_LowPass	<	filtScaleToStapes.par
+		BM_DRNL	<	BM_DRNLHuman.par
+		Display_Signal	<	displayBM.par
+		ANA_FourierT	<	Fourier.par
+		Display_signal	<	displayFourier.par
+		DataFile_out	<	dataFileOut.par
+	}
+
+	##----- Stim_Harmonic.0        (stimHarmonic.par) -----##
+	LOW_HARMONIC.Stim_Harmonic.0	1         	Lowest harmonic number.
+	HIGH_HARMONIC.Stim_Harmonic.0	20        	Highest harmonic number.
+	PHASE_MODE.Stim_Harmonic.0	"COSINE"  	Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).
+	PHASE_PAR.Stim_Harmonic.0	0         	Phase parameter (Shroeder phase: C value, Random: random number seed).
+	MISTUNED_HARM.Stim_Harmonic.0	-1        	Mistuned harmonic number (0 = F0, -ve implies none mistuned).
+	MT_FACTOR.Stim_Harmonic.0	0         	Mistuning factor (%).
+	FUND_FREQ.Stim_Harmonic.0	64        	Fundamental frequency (Hz).
+	INTENSITY.Stim_Harmonic.0	60        	Intensity (dB SPL).
+	DURATION.Stim_Harmonic.0 	0.2       	Duration (s).
+	DT.Stim_Harmonic.0       	1.5625e-005	Sampling interval, dt (s).
+	MOD_FREQ.Stim_Harmonic.0 	2.5       	Modulation Frequency (Hz).
+	MOD_PHASE.Stim_Harmonic.0	0         	Modulation Phase (degrees).
+	MOD_DEPTH.Stim_Harmonic.0	0         	Modulation depth (%).
+	ORDER.Stim_Harmonic.0    	0         	Filter order.
+	LOW_CUTOFF.Stim_Harmonic.0	200       	Lower cut off frequency 3 dB down (Hz).
+	UPPER_CUTOFF.Stim_Harmonic.0	600       	Upper cut off frequency 3 dB down (Hz).
+
+	##----- Trans_Gate.1                 (rampUp.par) -----##
+	POS_MODE.Trans_Gate.1    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.1     	"RAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.1   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.1      	0         	Time offset (s)
+	DURATION.Trans_Gate.1    	0.02      	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.1       	0.02      	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Trans_Gate.2               (rampDown.par) -----##
+	POS_MODE.Trans_Gate.2    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.2     	"DAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.2   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.2      	0         	Time offset (s)
+	DURATION.Trans_Gate.2    	0.02      	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.2       	0.02      	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Display_Signal.3     (displayStimulus.par) -----##
+	MAGNIFICATION.Display_Signal.3	1         	Signal magnification.
+	NORMALISATION.Display_Signal.3	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.3	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.3	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.3	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.3   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.3	"mPa"     	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.3	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.3	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.3	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.3    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.3    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.3	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.3	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.3 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.3	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.3	"Time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.3	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.3	"x.e-3"   	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.3	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.3 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.3	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.3	0         	X extent for display in zoom mode (x units).
+	WIN_TITLE.Display_Signal.3	"stimulus with ramps"	Display window title.
+	MODE.Display_Signal.3    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.3	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.3	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.3	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.3	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.3	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.3	0         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.3	0         	Display frame Y position (pixel units).
+
+	##----- Filt_FIR.4               (filtFIRELP.par) -----##
+	DIAG_MODE.Filt_FIR.4     	ON        	Diagnostic mode ('off', 'screen' or <file name>).
+	TYPE.Filt_FIR.4          	"USER"    	FIR filter type 'bandpass', 'differentiator' or 'Hilber').
+	NUM_TAPS.Filt_FIR.4      	-1        	Number of filter tapsl
+	NUM_BANDS.Filt_FIR.4     	513       	No. of frequency bands.
+	# Frequency response bands/Frequencies (Hz).:
+		BAND_FREQ.Filt_FIR.4	  0:0         
+		BAND_FREQ.Filt_FIR.4	  1:0         
+		BAND_FREQ.Filt_FIR.4	  2:0         
+		BAND_FREQ.Filt_FIR.4	  3:0         
+		BAND_FREQ.Filt_FIR.4	  4:0         
+		BAND_FREQ.Filt_FIR.4	  5:0         
+		BAND_FREQ.Filt_FIR.4	  6:0         
+		BAND_FREQ.Filt_FIR.4	  7:0         
+		BAND_FREQ.Filt_FIR.4	  8:0         
+		BAND_FREQ.Filt_FIR.4	  9:0         
+		BAND_FREQ.Filt_FIR.4	 10:0         
+		BAND_FREQ.Filt_FIR.4	 11:0         
+		BAND_FREQ.Filt_FIR.4	 12:0         
+		BAND_FREQ.Filt_FIR.4	 13:0         
+		BAND_FREQ.Filt_FIR.4	 14:0         
+		BAND_FREQ.Filt_FIR.4	 15:0         
+		BAND_FREQ.Filt_FIR.4	 16:0         
+		BAND_FREQ.Filt_FIR.4	 17:0         
+		BAND_FREQ.Filt_FIR.4	 18:0         
+		BAND_FREQ.Filt_FIR.4	 19:0         
+		BAND_FREQ.Filt_FIR.4	 20:0         
+		BAND_FREQ.Filt_FIR.4	 21:0         
+		BAND_FREQ.Filt_FIR.4	 22:0         
+		BAND_FREQ.Filt_FIR.4	 23:0         
+		BAND_FREQ.Filt_FIR.4	 24:0         
+		BAND_FREQ.Filt_FIR.4	 25:0         
+		BAND_FREQ.Filt_FIR.4	 26:0         
+		BAND_FREQ.Filt_FIR.4	 27:0         
+		BAND_FREQ.Filt_FIR.4	 28:0         
+		BAND_FREQ.Filt_FIR.4	 29:0         
+		BAND_FREQ.Filt_FIR.4	 30:0         
+		BAND_FREQ.Filt_FIR.4	 31:0         
+		BAND_FREQ.Filt_FIR.4	 32:0         
+		BAND_FREQ.Filt_FIR.4	 33:0         
+		BAND_FREQ.Filt_FIR.4	 34:0         
+		BAND_FREQ.Filt_FIR.4	 35:0         
+		BAND_FREQ.Filt_FIR.4	 36:0         
+		BAND_FREQ.Filt_FIR.4	 37:0         
+		BAND_FREQ.Filt_FIR.4	 38:0         
+		BAND_FREQ.Filt_FIR.4	 39:0         
+		BAND_FREQ.Filt_FIR.4	 40:0         
+		BAND_FREQ.Filt_FIR.4	 41:0         
+		BAND_FREQ.Filt_FIR.4	 42:0         
+		BAND_FREQ.Filt_FIR.4	 43:0         
+		BAND_FREQ.Filt_FIR.4	 44:0         
+		BAND_FREQ.Filt_FIR.4	 45:0         
+		BAND_FREQ.Filt_FIR.4	 46:0         
+		BAND_FREQ.Filt_FIR.4	 47:0         
+		BAND_FREQ.Filt_FIR.4	 48:0         
+		BAND_FREQ.Filt_FIR.4	 49:0         
+		BAND_FREQ.Filt_FIR.4	 50:0         
+		BAND_FREQ.Filt_FIR.4	 51:0         
+		BAND_FREQ.Filt_FIR.4	 52:0         
+		BAND_FREQ.Filt_FIR.4	 53:0         
+		BAND_FREQ.Filt_FIR.4	 54:0         
+		BAND_FREQ.Filt_FIR.4	 55:0         
+		BAND_FREQ.Filt_FIR.4	 56:0         
+		BAND_FREQ.Filt_FIR.4	 57:0         
+		BAND_FREQ.Filt_FIR.4	 58:0         
+		BAND_FREQ.Filt_FIR.4	 59:0         
+		BAND_FREQ.Filt_FIR.4	 60:0         
+		BAND_FREQ.Filt_FIR.4	 61:0         
+		BAND_FREQ.Filt_FIR.4	 62:0         
+		BAND_FREQ.Filt_FIR.4	 63:0         
+		BAND_FREQ.Filt_FIR.4	 64:0         
+		BAND_FREQ.Filt_FIR.4	 65:0         
+		BAND_FREQ.Filt_FIR.4	 66:0         
+		BAND_FREQ.Filt_FIR.4	 67:0         
+		BAND_FREQ.Filt_FIR.4	 68:0         
+		BAND_FREQ.Filt_FIR.4	 69:0         
+		BAND_FREQ.Filt_FIR.4	 70:0         
+		BAND_FREQ.Filt_FIR.4	 71:0         
+		BAND_FREQ.Filt_FIR.4	 72:0         
+		BAND_FREQ.Filt_FIR.4	 73:0         
+		BAND_FREQ.Filt_FIR.4	 74:0         
+		BAND_FREQ.Filt_FIR.4	 75:0         
+		BAND_FREQ.Filt_FIR.4	 76:0         
+		BAND_FREQ.Filt_FIR.4	 77:0         
+		BAND_FREQ.Filt_FIR.4	 78:0         
+		BAND_FREQ.Filt_FIR.4	 79:0         
+		BAND_FREQ.Filt_FIR.4	 80:0         
+		BAND_FREQ.Filt_FIR.4	 81:0         
+		BAND_FREQ.Filt_FIR.4	 82:0         
+		BAND_FREQ.Filt_FIR.4	 83:0         
+		BAND_FREQ.Filt_FIR.4	 84:0         
+		BAND_FREQ.Filt_FIR.4	 85:0         
+		BAND_FREQ.Filt_FIR.4	 86:0         
+		BAND_FREQ.Filt_FIR.4	 87:0         
+		BAND_FREQ.Filt_FIR.4	 88:0         
+		BAND_FREQ.Filt_FIR.4	 89:0         
+		BAND_FREQ.Filt_FIR.4	 90:0         
+		BAND_FREQ.Filt_FIR.4	 91:0         
+		BAND_FREQ.Filt_FIR.4	 92:0         
+		BAND_FREQ.Filt_FIR.4	 93:0         
+		BAND_FREQ.Filt_FIR.4	 94:0         
+		BAND_FREQ.Filt_FIR.4	 95:0         
+		BAND_FREQ.Filt_FIR.4	 96:0         
+		BAND_FREQ.Filt_FIR.4	 97:0         
+		BAND_FREQ.Filt_FIR.4	 98:0         
+		BAND_FREQ.Filt_FIR.4	 99:0         
+		BAND_FREQ.Filt_FIR.4	100:0         
+		BAND_FREQ.Filt_FIR.4	101:0         
+		BAND_FREQ.Filt_FIR.4	102:0         
+		BAND_FREQ.Filt_FIR.4	103:0         
+		BAND_FREQ.Filt_FIR.4	104:0         
+		BAND_FREQ.Filt_FIR.4	105:0         
+		BAND_FREQ.Filt_FIR.4	106:0         
+		BAND_FREQ.Filt_FIR.4	107:0         
+		BAND_FREQ.Filt_FIR.4	108:0         
+		BAND_FREQ.Filt_FIR.4	109:0         
+		BAND_FREQ.Filt_FIR.4	110:0         
+		BAND_FREQ.Filt_FIR.4	111:0         
+		BAND_FREQ.Filt_FIR.4	112:0         
+		BAND_FREQ.Filt_FIR.4	113:0         
+		BAND_FREQ.Filt_FIR.4	114:0         
+		BAND_FREQ.Filt_FIR.4	115:0         
+		BAND_FREQ.Filt_FIR.4	116:0         
+		BAND_FREQ.Filt_FIR.4	117:0         
+		BAND_FREQ.Filt_FIR.4	118:0         
+		BAND_FREQ.Filt_FIR.4	119:0         
+		BAND_FREQ.Filt_FIR.4	120:0         
+		BAND_FREQ.Filt_FIR.4	121:0         
+		BAND_FREQ.Filt_FIR.4	122:0         
+		BAND_FREQ.Filt_FIR.4	123:0         
+		BAND_FREQ.Filt_FIR.4	124:0         
+		BAND_FREQ.Filt_FIR.4	125:0         
+		BAND_FREQ.Filt_FIR.4	126:0         
+		BAND_FREQ.Filt_FIR.4	127:0         
+		BAND_FREQ.Filt_FIR.4	128:0         
+		BAND_FREQ.Filt_FIR.4	129:0         
+		BAND_FREQ.Filt_FIR.4	130:0         
+		BAND_FREQ.Filt_FIR.4	131:0         
+		BAND_FREQ.Filt_FIR.4	132:0         
+		BAND_FREQ.Filt_FIR.4	133:0         
+		BAND_FREQ.Filt_FIR.4	134:0         
+		BAND_FREQ.Filt_FIR.4	135:0         
+		BAND_FREQ.Filt_FIR.4	136:0         
+		BAND_FREQ.Filt_FIR.4	137:0         
+		BAND_FREQ.Filt_FIR.4	138:0         
+		BAND_FREQ.Filt_FIR.4	139:0         
+		BAND_FREQ.Filt_FIR.4	140:0         
+		BAND_FREQ.Filt_FIR.4	141:0         
+		BAND_FREQ.Filt_FIR.4	142:0         
+		BAND_FREQ.Filt_FIR.4	143:0         
+		BAND_FREQ.Filt_FIR.4	144:0         
+		BAND_FREQ.Filt_FIR.4	145:0         
+		BAND_FREQ.Filt_FIR.4	146:0         
+		BAND_FREQ.Filt_FIR.4	147:0         
+		BAND_FREQ.Filt_FIR.4	148:0         
+		BAND_FREQ.Filt_FIR.4	149:0         
+		BAND_FREQ.Filt_FIR.4	150:0         
+		BAND_FREQ.Filt_FIR.4	151:0         
+		BAND_FREQ.Filt_FIR.4	152:0         
+		BAND_FREQ.Filt_FIR.4	153:0         
+		BAND_FREQ.Filt_FIR.4	154:0         
+		BAND_FREQ.Filt_FIR.4	155:0         
+		BAND_FREQ.Filt_FIR.4	156:0         
+		BAND_FREQ.Filt_FIR.4	157:0         
+		BAND_FREQ.Filt_FIR.4	158:0         
+		BAND_FREQ.Filt_FIR.4	159:0         
+		BAND_FREQ.Filt_FIR.4	160:0         
+		BAND_FREQ.Filt_FIR.4	161:0         
+		BAND_FREQ.Filt_FIR.4	162:0         
+		BAND_FREQ.Filt_FIR.4	163:0         
+		BAND_FREQ.Filt_FIR.4	164:0         
+		BAND_FREQ.Filt_FIR.4	165:0         
+		BAND_FREQ.Filt_FIR.4	166:0         
+		BAND_FREQ.Filt_FIR.4	167:0         
+		BAND_FREQ.Filt_FIR.4	168:0         
+		BAND_FREQ.Filt_FIR.4	169:0         
+		BAND_FREQ.Filt_FIR.4	170:0         
+		BAND_FREQ.Filt_FIR.4	171:0         
+		BAND_FREQ.Filt_FIR.4	172:0         
+		BAND_FREQ.Filt_FIR.4	173:0         
+		BAND_FREQ.Filt_FIR.4	174:0         
+		BAND_FREQ.Filt_FIR.4	175:0         
+		BAND_FREQ.Filt_FIR.4	176:0         
+		BAND_FREQ.Filt_FIR.4	177:0         
+		BAND_FREQ.Filt_FIR.4	178:0         
+		BAND_FREQ.Filt_FIR.4	179:0         
+		BAND_FREQ.Filt_FIR.4	180:0         
+		BAND_FREQ.Filt_FIR.4	181:0         
+		BAND_FREQ.Filt_FIR.4	182:0         
+		BAND_FREQ.Filt_FIR.4	183:0         
+		BAND_FREQ.Filt_FIR.4	184:0         
+		BAND_FREQ.Filt_FIR.4	185:0         
+		BAND_FREQ.Filt_FIR.4	186:0         
+		BAND_FREQ.Filt_FIR.4	187:0         
+		BAND_FREQ.Filt_FIR.4	188:0         
+		BAND_FREQ.Filt_FIR.4	189:0         
+		BAND_FREQ.Filt_FIR.4	190:0         
+		BAND_FREQ.Filt_FIR.4	191:0         
+		BAND_FREQ.Filt_FIR.4	192:0         
+		BAND_FREQ.Filt_FIR.4	193:0         
+		BAND_FREQ.Filt_FIR.4	194:0         
+		BAND_FREQ.Filt_FIR.4	195:0         
+		BAND_FREQ.Filt_FIR.4	196:0         
+		BAND_FREQ.Filt_FIR.4	197:0         
+		BAND_FREQ.Filt_FIR.4	198:0         
+		BAND_FREQ.Filt_FIR.4	199:0         
+		BAND_FREQ.Filt_FIR.4	200:0         
+		BAND_FREQ.Filt_FIR.4	201:0         
+		BAND_FREQ.Filt_FIR.4	202:0         
+		BAND_FREQ.Filt_FIR.4	203:0         
+		BAND_FREQ.Filt_FIR.4	204:0         
+		BAND_FREQ.Filt_FIR.4	205:0         
+		BAND_FREQ.Filt_FIR.4	206:0         
+		BAND_FREQ.Filt_FIR.4	207:0         
+		BAND_FREQ.Filt_FIR.4	208:0         
+		BAND_FREQ.Filt_FIR.4	209:0         
+		BAND_FREQ.Filt_FIR.4	210:0         
+		BAND_FREQ.Filt_FIR.4	211:0         
+		BAND_FREQ.Filt_FIR.4	212:0         
+		BAND_FREQ.Filt_FIR.4	213:0         
+		BAND_FREQ.Filt_FIR.4	214:0         
+		BAND_FREQ.Filt_FIR.4	215:0         
+		BAND_FREQ.Filt_FIR.4	216:0         
+		BAND_FREQ.Filt_FIR.4	217:0         
+		BAND_FREQ.Filt_FIR.4	218:0         
+		BAND_FREQ.Filt_FIR.4	219:0         
+		BAND_FREQ.Filt_FIR.4	220:0         
+		BAND_FREQ.Filt_FIR.4	221:0         
+		BAND_FREQ.Filt_FIR.4	222:0         
+		BAND_FREQ.Filt_FIR.4	223:0         
+		BAND_FREQ.Filt_FIR.4	224:0         
+		BAND_FREQ.Filt_FIR.4	225:0         
+		BAND_FREQ.Filt_FIR.4	226:0         
+		BAND_FREQ.Filt_FIR.4	227:0         
+		BAND_FREQ.Filt_FIR.4	228:0         
+		BAND_FREQ.Filt_FIR.4	229:0         
+		BAND_FREQ.Filt_FIR.4	230:0         
+		BAND_FREQ.Filt_FIR.4	231:0         
+		BAND_FREQ.Filt_FIR.4	232:0         
+		BAND_FREQ.Filt_FIR.4	233:0         
+		BAND_FREQ.Filt_FIR.4	234:0         
+		BAND_FREQ.Filt_FIR.4	235:0         
+		BAND_FREQ.Filt_FIR.4	236:0         
+		BAND_FREQ.Filt_FIR.4	237:0         
+		BAND_FREQ.Filt_FIR.4	238:0         
+		BAND_FREQ.Filt_FIR.4	239:0         
+		BAND_FREQ.Filt_FIR.4	240:0         
+		BAND_FREQ.Filt_FIR.4	241:0         
+		BAND_FREQ.Filt_FIR.4	242:0         
+		BAND_FREQ.Filt_FIR.4	243:0         
+		BAND_FREQ.Filt_FIR.4	244:0         
+		BAND_FREQ.Filt_FIR.4	245:0         
+		BAND_FREQ.Filt_FIR.4	246:0         
+		BAND_FREQ.Filt_FIR.4	247:0         
+		BAND_FREQ.Filt_FIR.4	248:0         
+		BAND_FREQ.Filt_FIR.4	249:0         
+		BAND_FREQ.Filt_FIR.4	250:0         
+		BAND_FREQ.Filt_FIR.4	251:0         
+		BAND_FREQ.Filt_FIR.4	252:0         
+		BAND_FREQ.Filt_FIR.4	253:0         
+		BAND_FREQ.Filt_FIR.4	254:0         
+		BAND_FREQ.Filt_FIR.4	255:0         
+		BAND_FREQ.Filt_FIR.4	256:0         
+		BAND_FREQ.Filt_FIR.4	257:0         
+		BAND_FREQ.Filt_FIR.4	258:0         
+		BAND_FREQ.Filt_FIR.4	259:0         
+		BAND_FREQ.Filt_FIR.4	260:0         
+		BAND_FREQ.Filt_FIR.4	261:0         
+		BAND_FREQ.Filt_FIR.4	262:0         
+		BAND_FREQ.Filt_FIR.4	263:0         
+		BAND_FREQ.Filt_FIR.4	264:0         
+		BAND_FREQ.Filt_FIR.4	265:0         
+		BAND_FREQ.Filt_FIR.4	266:0         
+		BAND_FREQ.Filt_FIR.4	267:0         
+		BAND_FREQ.Filt_FIR.4	268:0         
+		BAND_FREQ.Filt_FIR.4	269:0         
+		BAND_FREQ.Filt_FIR.4	270:0         
+		BAND_FREQ.Filt_FIR.4	271:0         
+		BAND_FREQ.Filt_FIR.4	272:0         
+		BAND_FREQ.Filt_FIR.4	273:0         
+		BAND_FREQ.Filt_FIR.4	274:0         
+		BAND_FREQ.Filt_FIR.4	275:0         
+		BAND_FREQ.Filt_FIR.4	276:0         
+		BAND_FREQ.Filt_FIR.4	277:0         
+		BAND_FREQ.Filt_FIR.4	278:0         
+		BAND_FREQ.Filt_FIR.4	279:0         
+		BAND_FREQ.Filt_FIR.4	280:0         
+		BAND_FREQ.Filt_FIR.4	281:0         
+		BAND_FREQ.Filt_FIR.4	282:0         
+		BAND_FREQ.Filt_FIR.4	283:0         
+		BAND_FREQ.Filt_FIR.4	284:0         
+		BAND_FREQ.Filt_FIR.4	285:0         
+		BAND_FREQ.Filt_FIR.4	286:0         
+		BAND_FREQ.Filt_FIR.4	287:0         
+		BAND_FREQ.Filt_FIR.4	288:0         
+		BAND_FREQ.Filt_FIR.4	289:0         
+		BAND_FREQ.Filt_FIR.4	290:0         
+		BAND_FREQ.Filt_FIR.4	291:0         
+		BAND_FREQ.Filt_FIR.4	292:0         
+		BAND_FREQ.Filt_FIR.4	293:0         
+		BAND_FREQ.Filt_FIR.4	294:0         
+		BAND_FREQ.Filt_FIR.4	295:0         
+		BAND_FREQ.Filt_FIR.4	296:0         
+		BAND_FREQ.Filt_FIR.4	297:0         
+		BAND_FREQ.Filt_FIR.4	298:0         
+		BAND_FREQ.Filt_FIR.4	299:0         
+		BAND_FREQ.Filt_FIR.4	300:0         
+		BAND_FREQ.Filt_FIR.4	301:0         
+		BAND_FREQ.Filt_FIR.4	302:0         
+		BAND_FREQ.Filt_FIR.4	303:0         
+		BAND_FREQ.Filt_FIR.4	304:0         
+		BAND_FREQ.Filt_FIR.4	305:0         
+		BAND_FREQ.Filt_FIR.4	306:0         
+		BAND_FREQ.Filt_FIR.4	307:0         
+		BAND_FREQ.Filt_FIR.4	308:0         
+		BAND_FREQ.Filt_FIR.4	309:0         
+		BAND_FREQ.Filt_FIR.4	310:0         
+		BAND_FREQ.Filt_FIR.4	311:0         
+		BAND_FREQ.Filt_FIR.4	312:0         
+		BAND_FREQ.Filt_FIR.4	313:0         
+		BAND_FREQ.Filt_FIR.4	314:0         
+		BAND_FREQ.Filt_FIR.4	315:0         
+		BAND_FREQ.Filt_FIR.4	316:0         
+		BAND_FREQ.Filt_FIR.4	317:0         
+		BAND_FREQ.Filt_FIR.4	318:0         
+		BAND_FREQ.Filt_FIR.4	319:0         
+		BAND_FREQ.Filt_FIR.4	320:0         
+		BAND_FREQ.Filt_FIR.4	321:0         
+		BAND_FREQ.Filt_FIR.4	322:0         
+		BAND_FREQ.Filt_FIR.4	323:0         
+		BAND_FREQ.Filt_FIR.4	324:0         
+		BAND_FREQ.Filt_FIR.4	325:0         
+		BAND_FREQ.Filt_FIR.4	326:0         
+		BAND_FREQ.Filt_FIR.4	327:0         
+		BAND_FREQ.Filt_FIR.4	328:0         
+		BAND_FREQ.Filt_FIR.4	329:0         
+		BAND_FREQ.Filt_FIR.4	330:0         
+		BAND_FREQ.Filt_FIR.4	331:0         
+		BAND_FREQ.Filt_FIR.4	332:0         
+		BAND_FREQ.Filt_FIR.4	333:0         
+		BAND_FREQ.Filt_FIR.4	334:0         
+		BAND_FREQ.Filt_FIR.4	335:0         
+		BAND_FREQ.Filt_FIR.4	336:0         
+		BAND_FREQ.Filt_FIR.4	337:0         
+		BAND_FREQ.Filt_FIR.4	338:0         
+		BAND_FREQ.Filt_FIR.4	339:0         
+		BAND_FREQ.Filt_FIR.4	340:0         
+		BAND_FREQ.Filt_FIR.4	341:0         
+		BAND_FREQ.Filt_FIR.4	342:0         
+		BAND_FREQ.Filt_FIR.4	343:0         
+		BAND_FREQ.Filt_FIR.4	344:0         
+		BAND_FREQ.Filt_FIR.4	345:0         
+		BAND_FREQ.Filt_FIR.4	346:0         
+		BAND_FREQ.Filt_FIR.4	347:0         
+		BAND_FREQ.Filt_FIR.4	348:0         
+		BAND_FREQ.Filt_FIR.4	349:0         
+		BAND_FREQ.Filt_FIR.4	350:0         
+		BAND_FREQ.Filt_FIR.4	351:0         
+		BAND_FREQ.Filt_FIR.4	352:0         
+		BAND_FREQ.Filt_FIR.4	353:0         
+		BAND_FREQ.Filt_FIR.4	354:0         
+		BAND_FREQ.Filt_FIR.4	355:0         
+		BAND_FREQ.Filt_FIR.4	356:0         
+		BAND_FREQ.Filt_FIR.4	357:0         
+		BAND_FREQ.Filt_FIR.4	358:0         
+		BAND_FREQ.Filt_FIR.4	359:0         
+		BAND_FREQ.Filt_FIR.4	360:0         
+		BAND_FREQ.Filt_FIR.4	361:0         
+		BAND_FREQ.Filt_FIR.4	362:0         
+		BAND_FREQ.Filt_FIR.4	363:0         
+		BAND_FREQ.Filt_FIR.4	364:0         
+		BAND_FREQ.Filt_FIR.4	365:0         
+		BAND_FREQ.Filt_FIR.4	366:0         
+		BAND_FREQ.Filt_FIR.4	367:0         
+		BAND_FREQ.Filt_FIR.4	368:0         
+		BAND_FREQ.Filt_FIR.4	369:0         
+		BAND_FREQ.Filt_FIR.4	370:0         
+		BAND_FREQ.Filt_FIR.4	371:0         
+		BAND_FREQ.Filt_FIR.4	372:0         
+		BAND_FREQ.Filt_FIR.4	373:0         
+		BAND_FREQ.Filt_FIR.4	374:0         
+		BAND_FREQ.Filt_FIR.4	375:0         
+		BAND_FREQ.Filt_FIR.4	376:0         
+		BAND_FREQ.Filt_FIR.4	377:0         
+		BAND_FREQ.Filt_FIR.4	378:0         
+		BAND_FREQ.Filt_FIR.4	379:0         
+		BAND_FREQ.Filt_FIR.4	380:0         
+		BAND_FREQ.Filt_FIR.4	381:0         
+		BAND_FREQ.Filt_FIR.4	382:0         
+		BAND_FREQ.Filt_FIR.4	383:0         
+		BAND_FREQ.Filt_FIR.4	384:0         
+		BAND_FREQ.Filt_FIR.4	385:0         
+		BAND_FREQ.Filt_FIR.4	386:0         
+		BAND_FREQ.Filt_FIR.4	387:0         
+		BAND_FREQ.Filt_FIR.4	388:0         
+		BAND_FREQ.Filt_FIR.4	389:0         
+		BAND_FREQ.Filt_FIR.4	390:0         
+		BAND_FREQ.Filt_FIR.4	391:0         
+		BAND_FREQ.Filt_FIR.4	392:0         
+		BAND_FREQ.Filt_FIR.4	393:0         
+		BAND_FREQ.Filt_FIR.4	394:0         
+		BAND_FREQ.Filt_FIR.4	395:0         
+		BAND_FREQ.Filt_FIR.4	396:0         
+		BAND_FREQ.Filt_FIR.4	397:0         
+		BAND_FREQ.Filt_FIR.4	398:0         
+		BAND_FREQ.Filt_FIR.4	399:0         
+		BAND_FREQ.Filt_FIR.4	400:0         
+		BAND_FREQ.Filt_FIR.4	401:0         
+		BAND_FREQ.Filt_FIR.4	402:0         
+		BAND_FREQ.Filt_FIR.4	403:0         
+		BAND_FREQ.Filt_FIR.4	404:0         
+		BAND_FREQ.Filt_FIR.4	405:0         
+		BAND_FREQ.Filt_FIR.4	406:0         
+		BAND_FREQ.Filt_FIR.4	407:0         
+		BAND_FREQ.Filt_FIR.4	408:0         
+		BAND_FREQ.Filt_FIR.4	409:0         
+		BAND_FREQ.Filt_FIR.4	410:0         
+		BAND_FREQ.Filt_FIR.4	411:0         
+		BAND_FREQ.Filt_FIR.4	412:0         
+		BAND_FREQ.Filt_FIR.4	413:0         
+		BAND_FREQ.Filt_FIR.4	414:0         
+		BAND_FREQ.Filt_FIR.4	415:0         
+		BAND_FREQ.Filt_FIR.4	416:0         
+		BAND_FREQ.Filt_FIR.4	417:0         
+		BAND_FREQ.Filt_FIR.4	418:0         
+		BAND_FREQ.Filt_FIR.4	419:0         
+		BAND_FREQ.Filt_FIR.4	420:0         
+		BAND_FREQ.Filt_FIR.4	421:0         
+		BAND_FREQ.Filt_FIR.4	422:0         
+		BAND_FREQ.Filt_FIR.4	423:0         
+		BAND_FREQ.Filt_FIR.4	424:0         
+		BAND_FREQ.Filt_FIR.4	425:0         
+		BAND_FREQ.Filt_FIR.4	426:0         
+		BAND_FREQ.Filt_FIR.4	427:0         
+		BAND_FREQ.Filt_FIR.4	428:0         
+		BAND_FREQ.Filt_FIR.4	429:0         
+		BAND_FREQ.Filt_FIR.4	430:0         
+		BAND_FREQ.Filt_FIR.4	431:0         
+		BAND_FREQ.Filt_FIR.4	432:0         
+		BAND_FREQ.Filt_FIR.4	433:0         
+		BAND_FREQ.Filt_FIR.4	434:0         
+		BAND_FREQ.Filt_FIR.4	435:0         
+		BAND_FREQ.Filt_FIR.4	436:0         
+		BAND_FREQ.Filt_FIR.4	437:0         
+		BAND_FREQ.Filt_FIR.4	438:0         
+		BAND_FREQ.Filt_FIR.4	439:0         
+		BAND_FREQ.Filt_FIR.4	440:0         
+		BAND_FREQ.Filt_FIR.4	441:0         
+		BAND_FREQ.Filt_FIR.4	442:0         
+		BAND_FREQ.Filt_FIR.4	443:0         
+		BAND_FREQ.Filt_FIR.4	444:0         
+		BAND_FREQ.Filt_FIR.4	445:0         
+		BAND_FREQ.Filt_FIR.4	446:0         
+		BAND_FREQ.Filt_FIR.4	447:0         
+		BAND_FREQ.Filt_FIR.4	448:0         
+		BAND_FREQ.Filt_FIR.4	449:0         
+		BAND_FREQ.Filt_FIR.4	450:0         
+		BAND_FREQ.Filt_FIR.4	451:0         
+		BAND_FREQ.Filt_FIR.4	452:0         
+		BAND_FREQ.Filt_FIR.4	453:0         
+		BAND_FREQ.Filt_FIR.4	454:0         
+		BAND_FREQ.Filt_FIR.4	455:0         
+		BAND_FREQ.Filt_FIR.4	456:0         
+		BAND_FREQ.Filt_FIR.4	457:0         
+		BAND_FREQ.Filt_FIR.4	458:0         
+		BAND_FREQ.Filt_FIR.4	459:0         
+		BAND_FREQ.Filt_FIR.4	460:0         
+		BAND_FREQ.Filt_FIR.4	461:0         
+		BAND_FREQ.Filt_FIR.4	462:0         
+		BAND_FREQ.Filt_FIR.4	463:0         
+		BAND_FREQ.Filt_FIR.4	464:0         
+		BAND_FREQ.Filt_FIR.4	465:0         
+		BAND_FREQ.Filt_FIR.4	466:0         
+		BAND_FREQ.Filt_FIR.4	467:0         
+		BAND_FREQ.Filt_FIR.4	468:0         
+		BAND_FREQ.Filt_FIR.4	469:0         
+		BAND_FREQ.Filt_FIR.4	470:0         
+		BAND_FREQ.Filt_FIR.4	471:0         
+		BAND_FREQ.Filt_FIR.4	472:0         
+		BAND_FREQ.Filt_FIR.4	473:0         
+		BAND_FREQ.Filt_FIR.4	474:0         
+		BAND_FREQ.Filt_FIR.4	475:0         
+		BAND_FREQ.Filt_FIR.4	476:0         
+		BAND_FREQ.Filt_FIR.4	477:0         
+		BAND_FREQ.Filt_FIR.4	478:0         
+		BAND_FREQ.Filt_FIR.4	479:0         
+		BAND_FREQ.Filt_FIR.4	480:0         
+		BAND_FREQ.Filt_FIR.4	481:0         
+		BAND_FREQ.Filt_FIR.4	482:0         
+		BAND_FREQ.Filt_FIR.4	483:0         
+		BAND_FREQ.Filt_FIR.4	484:0         
+		BAND_FREQ.Filt_FIR.4	485:0         
+		BAND_FREQ.Filt_FIR.4	486:0         
+		BAND_FREQ.Filt_FIR.4	487:0         
+		BAND_FREQ.Filt_FIR.4	488:0         
+		BAND_FREQ.Filt_FIR.4	489:0         
+		BAND_FREQ.Filt_FIR.4	490:0         
+		BAND_FREQ.Filt_FIR.4	491:0         
+		BAND_FREQ.Filt_FIR.4	492:0         
+		BAND_FREQ.Filt_FIR.4	493:0         
+		BAND_FREQ.Filt_FIR.4	494:0         
+		BAND_FREQ.Filt_FIR.4	495:0         
+		BAND_FREQ.Filt_FIR.4	496:0         
+		BAND_FREQ.Filt_FIR.4	497:0         
+		BAND_FREQ.Filt_FIR.4	498:0         
+		BAND_FREQ.Filt_FIR.4	499:0         
+		BAND_FREQ.Filt_FIR.4	500:0         
+		BAND_FREQ.Filt_FIR.4	501:0         
+		BAND_FREQ.Filt_FIR.4	502:0         
+		BAND_FREQ.Filt_FIR.4	503:0         
+		BAND_FREQ.Filt_FIR.4	504:0         
+		BAND_FREQ.Filt_FIR.4	505:0         
+		BAND_FREQ.Filt_FIR.4	506:0         
+		BAND_FREQ.Filt_FIR.4	507:0         
+		BAND_FREQ.Filt_FIR.4	508:0         
+		BAND_FREQ.Filt_FIR.4	509:0         
+		BAND_FREQ.Filt_FIR.4	510:0         
+		BAND_FREQ.Filt_FIR.4	511:0         
+		BAND_FREQ.Filt_FIR.4	512:0         
+	# Desired frequency response (dB).:
+		FREQ_RESP.Filt_FIR.4	  0:-1.25e-011
+		FREQ_RESP.Filt_FIR.4	  1:-1.66e-009
+		FREQ_RESP.Filt_FIR.4	  2:-3.51e-009
+		FREQ_RESP.Filt_FIR.4	  3:-5.3e-009 
+		FREQ_RESP.Filt_FIR.4	  4:-7.18e-009
+		FREQ_RESP.Filt_FIR.4	  5:-8.53e-009
+		FREQ_RESP.Filt_FIR.4	  6:-8.51e-009
+		FREQ_RESP.Filt_FIR.4	  7:-7.3e-009 
+		FREQ_RESP.Filt_FIR.4	  8:-6.18e-009
+		FREQ_RESP.Filt_FIR.4	  9:-5.72e-009
+		FREQ_RESP.Filt_FIR.4	 10:-5.08e-009
+		FREQ_RESP.Filt_FIR.4	 11:-3.6e-009 
+		FREQ_RESP.Filt_FIR.4	 12:-2.19e-009
+		FREQ_RESP.Filt_FIR.4	 13:-1.98e-009
+		FREQ_RESP.Filt_FIR.4	 14:-2.56e-009
+		FREQ_RESP.Filt_FIR.4	 15:-2.28e-009
+		FREQ_RESP.Filt_FIR.4	 16:-4.29e-010
+		FREQ_RESP.Filt_FIR.4	 17:2.21e-009 
+		FREQ_RESP.Filt_FIR.4	 18:4.62e-009 
+		FREQ_RESP.Filt_FIR.4	 19:6.43e-009 
+		FREQ_RESP.Filt_FIR.4	 20:7.21e-009 
+		FREQ_RESP.Filt_FIR.4	 21:6.21e-009 
+		FREQ_RESP.Filt_FIR.4	 22:3.25e-009 
+		FREQ_RESP.Filt_FIR.4	 23:-6.85e-010
+		FREQ_RESP.Filt_FIR.4	 24:-4.57e-009
+		FREQ_RESP.Filt_FIR.4	 25:-8.04e-009
+		FREQ_RESP.Filt_FIR.4	 26:-1.09e-008
+		FREQ_RESP.Filt_FIR.4	 27:-1.24e-008
+		FREQ_RESP.Filt_FIR.4	 28:-1.2e-008 
+		FREQ_RESP.Filt_FIR.4	 29:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	 30:-9.73e-009
+		FREQ_RESP.Filt_FIR.4	 31:-9.17e-009
+		FREQ_RESP.Filt_FIR.4	 32:-7.66e-009
+		FREQ_RESP.Filt_FIR.4	 33:-4.6e-009 
+		FREQ_RESP.Filt_FIR.4	 34:-1.17e-009
+		FREQ_RESP.Filt_FIR.4	 35:1.18e-009 
+		FREQ_RESP.Filt_FIR.4	 36:1.71e-009 
+		FREQ_RESP.Filt_FIR.4	 37:4.42e-010 
+		FREQ_RESP.Filt_FIR.4	 38:-2.31e-009
+		FREQ_RESP.Filt_FIR.4	 39:-5.5e-009 
+		FREQ_RESP.Filt_FIR.4	 40:-7.94e-009
+		FREQ_RESP.Filt_FIR.4	 41:-9.33e-009
+		FREQ_RESP.Filt_FIR.4	 42:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	 43:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	 44:-9.02e-009
+		FREQ_RESP.Filt_FIR.4	 45:-5.87e-009
+		FREQ_RESP.Filt_FIR.4	 46:-3.9e-009 
+		FREQ_RESP.Filt_FIR.4	 47:-5.21e-009
+		FREQ_RESP.Filt_FIR.4	 48:-8.4e-009 
+		FREQ_RESP.Filt_FIR.4	 49:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	 50:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	 51:-1.14e-008
+		FREQ_RESP.Filt_FIR.4	 52:-1.36e-008
+		FREQ_RESP.Filt_FIR.4	 53:-1.45e-008
+		FREQ_RESP.Filt_FIR.4	 54:-1.23e-008
+		FREQ_RESP.Filt_FIR.4	 55:-8.45e-009
+		FREQ_RESP.Filt_FIR.4	 56:-4.8e-009 
+		FREQ_RESP.Filt_FIR.4	 57:-3.27e-010
+		FREQ_RESP.Filt_FIR.4	 58:6.27e-009 
+		FREQ_RESP.Filt_FIR.4	 59:1.35e-008 
+		FREQ_RESP.Filt_FIR.4	 60:1.84e-008 
+		FREQ_RESP.Filt_FIR.4	 61:2.11e-008 
+		FREQ_RESP.Filt_FIR.4	 62:2.41e-008 
+		FREQ_RESP.Filt_FIR.4	 63:2.77e-008 
+		FREQ_RESP.Filt_FIR.4	 64:2.98e-008 
+		FREQ_RESP.Filt_FIR.4	 65:2.99e-008 
+		FREQ_RESP.Filt_FIR.4	 66:2.95e-008 
+		FREQ_RESP.Filt_FIR.4	 67:2.91e-008 
+		FREQ_RESP.Filt_FIR.4	 68:2.64e-008 
+		FREQ_RESP.Filt_FIR.4	 69:2.08e-008 
+		FREQ_RESP.Filt_FIR.4	 70:1.5e-008  
+		FREQ_RESP.Filt_FIR.4	 71:1.06e-008 
+		FREQ_RESP.Filt_FIR.4	 72:4.99e-009 
+		FREQ_RESP.Filt_FIR.4	 73:-3.44e-009
+		FREQ_RESP.Filt_FIR.4	 74:-1.11e-008
+		FREQ_RESP.Filt_FIR.4	 75:-1.32e-008
+		FREQ_RESP.Filt_FIR.4	 76:-1.18e-008
+		FREQ_RESP.Filt_FIR.4	 77:-1.26e-008
+		FREQ_RESP.Filt_FIR.4	 78:-1.66e-008
+		FREQ_RESP.Filt_FIR.4	 79:-1.84e-008
+		FREQ_RESP.Filt_FIR.4	 80:-1.61e-008
+		FREQ_RESP.Filt_FIR.4	 81:-1.5e-008 
+		FREQ_RESP.Filt_FIR.4	 82:-1.99e-008
+		FREQ_RESP.Filt_FIR.4	 83:-2.72e-008
+		FREQ_RESP.Filt_FIR.4	 84:-3e-008   
+		FREQ_RESP.Filt_FIR.4	 85:-2.67e-008
+		FREQ_RESP.Filt_FIR.4	 86:-2.01e-008
+		FREQ_RESP.Filt_FIR.4	 87:-1.05e-008
+		FREQ_RESP.Filt_FIR.4	 88:3.57e-009 
+		FREQ_RESP.Filt_FIR.4	 89:1.99e-008 
+		FREQ_RESP.Filt_FIR.4	 90:3.21e-008 
+		FREQ_RESP.Filt_FIR.4	 91:3.73e-008 
+		FREQ_RESP.Filt_FIR.4	 92:3.7e-008  
+		FREQ_RESP.Filt_FIR.4	 93:3.18e-008 
+		FREQ_RESP.Filt_FIR.4	 94:1.96e-008 
+		FREQ_RESP.Filt_FIR.4	 95:1.53e-009 
+		FREQ_RESP.Filt_FIR.4	 96:-1.67e-008
+		FREQ_RESP.Filt_FIR.4	 97:-3.15e-008
+		FREQ_RESP.Filt_FIR.4	 98:-4.65e-008
+		FREQ_RESP.Filt_FIR.4	 99:-6.41e-008
+		FREQ_RESP.Filt_FIR.4	100:-7.96e-008
+		FREQ_RESP.Filt_FIR.4	101:-8.61e-008
+		FREQ_RESP.Filt_FIR.4	102:-8.47e-008
+		FREQ_RESP.Filt_FIR.4	103:-8e-008   
+		FREQ_RESP.Filt_FIR.4	104:-7.29e-008
+		FREQ_RESP.Filt_FIR.4	105:-6e-008   
+		FREQ_RESP.Filt_FIR.4	106:-4.43e-008
+		FREQ_RESP.Filt_FIR.4	107:-3.4e-008 
+		FREQ_RESP.Filt_FIR.4	108:-3.32e-008
+		FREQ_RESP.Filt_FIR.4	109:-3.62e-008
+		FREQ_RESP.Filt_FIR.4	110:-3.76e-008
+		FREQ_RESP.Filt_FIR.4	111:-3.61e-008
+		FREQ_RESP.Filt_FIR.4	112:-3.26e-008
+		FREQ_RESP.Filt_FIR.4	113:-2.54e-008
+		FREQ_RESP.Filt_FIR.4	114:-1.62e-008
+		FREQ_RESP.Filt_FIR.4	115:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	116:-8.91e-009
+		FREQ_RESP.Filt_FIR.4	117:-4.46e-009
+		FREQ_RESP.Filt_FIR.4	118:6.13e-009 
+		FREQ_RESP.Filt_FIR.4	119:1.44e-008 
+		FREQ_RESP.Filt_FIR.4	120:1.02e-008 
+		FREQ_RESP.Filt_FIR.4	121:-7.1e-010 
+		FREQ_RESP.Filt_FIR.4	122:-6.4e-009 
+		FREQ_RESP.Filt_FIR.4	123:-6.62e-009
+		FREQ_RESP.Filt_FIR.4	124:-1.38e-008
+		FREQ_RESP.Filt_FIR.4	125:-3.04e-008
+		FREQ_RESP.Filt_FIR.4	126:-4.59e-008
+		FREQ_RESP.Filt_FIR.4	127:-5.43e-008
+		FREQ_RESP.Filt_FIR.4	128:-6.57e-008
+		FREQ_RESP.Filt_FIR.4	129:-8.68e-008
+		FREQ_RESP.Filt_FIR.4	130:-1.09e-007
+		FREQ_RESP.Filt_FIR.4	131:-1.23e-007
+		FREQ_RESP.Filt_FIR.4	132:-1.37e-007
+		FREQ_RESP.Filt_FIR.4	133:-1.61e-007
+		FREQ_RESP.Filt_FIR.4	134:-1.86e-007
+		FREQ_RESP.Filt_FIR.4	135:-1.91e-007
+		FREQ_RESP.Filt_FIR.4	136:-1.79e-007
+		FREQ_RESP.Filt_FIR.4	137:-1.69e-007
+		FREQ_RESP.Filt_FIR.4	138:-1.71e-007
+		FREQ_RESP.Filt_FIR.4	139:-1.68e-007
+		FREQ_RESP.Filt_FIR.4	140:-1.51e-007
+		FREQ_RESP.Filt_FIR.4	141:-1.29e-007
+		FREQ_RESP.Filt_FIR.4	142:-1.17e-007
+		FREQ_RESP.Filt_FIR.4	143:-1.12e-007
+		FREQ_RESP.Filt_FIR.4	144:-1.08e-007
+		FREQ_RESP.Filt_FIR.4	145:-1.1e-007 
+		FREQ_RESP.Filt_FIR.4	146:-1.14e-007
+		FREQ_RESP.Filt_FIR.4	147:-9.61e-008
+		FREQ_RESP.Filt_FIR.4	148:-4.13e-008
+		FREQ_RESP.Filt_FIR.4	149:2.73e-008 
+		FREQ_RESP.Filt_FIR.4	150:7.07e-008 
+		FREQ_RESP.Filt_FIR.4	151:9.09e-008 
+		FREQ_RESP.Filt_FIR.4	152:1.2e-007  
+		FREQ_RESP.Filt_FIR.4	153:1.64e-007 
+		FREQ_RESP.Filt_FIR.4	154:1.81e-007 
+		FREQ_RESP.Filt_FIR.4	155:1.47e-007 
+		FREQ_RESP.Filt_FIR.4	156:9.56e-008 
+		FREQ_RESP.Filt_FIR.4	157:7.56e-008 
+		FREQ_RESP.Filt_FIR.4	158:7.98e-008 
+		FREQ_RESP.Filt_FIR.4	159:6.92e-008 
+		FREQ_RESP.Filt_FIR.4	160:3.38e-008 
+		FREQ_RESP.Filt_FIR.4	161:5.17e-009 
+		FREQ_RESP.Filt_FIR.4	162:-4.01e-009
+		FREQ_RESP.Filt_FIR.4	163:-9.88e-009
+		FREQ_RESP.Filt_FIR.4	164:-1.89e-008
+		FREQ_RESP.Filt_FIR.4	165:-5.54e-009
+		FREQ_RESP.Filt_FIR.4	166:3.37e-008 
+		FREQ_RESP.Filt_FIR.4	167:6.09e-008 
+		FREQ_RESP.Filt_FIR.4	168:4.3e-008  
+		FREQ_RESP.Filt_FIR.4	169:1.02e-008 
+		FREQ_RESP.Filt_FIR.4	170:8.8e-009  
+		FREQ_RESP.Filt_FIR.4	171:4.01e-008 
+		FREQ_RESP.Filt_FIR.4	172:6.19e-008 
+		FREQ_RESP.Filt_FIR.4	173:6.32e-008 
+		FREQ_RESP.Filt_FIR.4	174:7.36e-008 
+		FREQ_RESP.Filt_FIR.4	175:1.22e-007 
+		FREQ_RESP.Filt_FIR.4	176:2.06e-007 
+		FREQ_RESP.Filt_FIR.4	177:3.22e-007 
+		FREQ_RESP.Filt_FIR.4	178:4.57e-007 
+		FREQ_RESP.Filt_FIR.4	179:5.63e-007 
+		FREQ_RESP.Filt_FIR.4	180:5.71e-007 
+		FREQ_RESP.Filt_FIR.4	181:4.83e-007 
+		FREQ_RESP.Filt_FIR.4	182:3.88e-007 
+		FREQ_RESP.Filt_FIR.4	183:3.53e-007 
+		FREQ_RESP.Filt_FIR.4	184:3.18e-007 
+		FREQ_RESP.Filt_FIR.4	185:1.89e-007 
+		FREQ_RESP.Filt_FIR.4	186:-1.21e-008
+		FREQ_RESP.Filt_FIR.4	187:-1.41e-007
+		FREQ_RESP.Filt_FIR.4	188:-1.22e-007
+		FREQ_RESP.Filt_FIR.4	189:-3.94e-008
+		FREQ_RESP.Filt_FIR.4	190:-4.4e-008 
+		FREQ_RESP.Filt_FIR.4	191:-1.71e-007
+		FREQ_RESP.Filt_FIR.4	192:-3.46e-007
+		FREQ_RESP.Filt_FIR.4	193:-4.87e-007
+		FREQ_RESP.Filt_FIR.4	194:-5.84e-007
+		FREQ_RESP.Filt_FIR.4	195:-6.39e-007
+		FREQ_RESP.Filt_FIR.4	196:-6.52e-007
+		FREQ_RESP.Filt_FIR.4	197:-6.18e-007
+		FREQ_RESP.Filt_FIR.4	198:-5.6e-007 
+		FREQ_RESP.Filt_FIR.4	199:-4.71e-007
+		FREQ_RESP.Filt_FIR.4	200:-3.26e-007
+		FREQ_RESP.Filt_FIR.4	201:-1.18e-007
+		FREQ_RESP.Filt_FIR.4	202:8.13e-008 
+		FREQ_RESP.Filt_FIR.4	203:1.85e-007 
+		FREQ_RESP.Filt_FIR.4	204:1.4e-007  
+		FREQ_RESP.Filt_FIR.4	205:-3.01e-008
+		FREQ_RESP.Filt_FIR.4	206:-2.78e-007
+		FREQ_RESP.Filt_FIR.4	207:-5.38e-007
+		FREQ_RESP.Filt_FIR.4	208:-7.8e-007 
+		FREQ_RESP.Filt_FIR.4	209:-1.03e-006
+		FREQ_RESP.Filt_FIR.4	210:-1.36e-006
+		FREQ_RESP.Filt_FIR.4	211:-1.77e-006
+		FREQ_RESP.Filt_FIR.4	212:-2.09e-006
+		FREQ_RESP.Filt_FIR.4	213:-2.09e-006
+		FREQ_RESP.Filt_FIR.4	214:-1.76e-006
+		FREQ_RESP.Filt_FIR.4	215:-1.34e-006
+		FREQ_RESP.Filt_FIR.4	216:-1.12e-006
+		FREQ_RESP.Filt_FIR.4	217:-1.15e-006
+		FREQ_RESP.Filt_FIR.4	218:-1.25e-006
+		FREQ_RESP.Filt_FIR.4	219:-1.37e-006
+		FREQ_RESP.Filt_FIR.4	220:-1.72e-006
+		FREQ_RESP.Filt_FIR.4	221:-2.5e-006 
+		FREQ_RESP.Filt_FIR.4	222:-3.44e-006
+		FREQ_RESP.Filt_FIR.4	223:-3.85e-006
+		FREQ_RESP.Filt_FIR.4	224:-3.27e-006
+		FREQ_RESP.Filt_FIR.4	225:-1.91e-006
+		FREQ_RESP.Filt_FIR.4	226:-5.4e-007 
+		FREQ_RESP.Filt_FIR.4	227:3.59e-007 
+		FREQ_RESP.Filt_FIR.4	228:8.72e-007 
+		FREQ_RESP.Filt_FIR.4	229:1.34e-006 
+		FREQ_RESP.Filt_FIR.4	230:1.72e-006 
+		FREQ_RESP.Filt_FIR.4	231:1.68e-006 
+		FREQ_RESP.Filt_FIR.4	232:1.1e-006  
+		FREQ_RESP.Filt_FIR.4	233:3.42e-007 
+		FREQ_RESP.Filt_FIR.4	234:-3.77e-007
+		FREQ_RESP.Filt_FIR.4	235:-1.18e-006
+		FREQ_RESP.Filt_FIR.4	236:-2.42e-006
+		FREQ_RESP.Filt_FIR.4	237:-3.95e-006
+		FREQ_RESP.Filt_FIR.4	238:-5.36e-006
+		FREQ_RESP.Filt_FIR.4	239:-6.26e-006
+		FREQ_RESP.Filt_FIR.4	240:-6.68e-006
+		FREQ_RESP.Filt_FIR.4	241:-6.55e-006
+		FREQ_RESP.Filt_FIR.4	242:-5.99e-006
+		FREQ_RESP.Filt_FIR.4	243:-5.29e-006
+		FREQ_RESP.Filt_FIR.4	244:-5.25e-006
+		FREQ_RESP.Filt_FIR.4	245:-5.9e-006 
+		FREQ_RESP.Filt_FIR.4	246:-6.42e-006
+		FREQ_RESP.Filt_FIR.4	247:-5.36e-006
+		FREQ_RESP.Filt_FIR.4	248:-2.76e-006
+		FREQ_RESP.Filt_FIR.4	249:6.13e-007 
+		FREQ_RESP.Filt_FIR.4	250:3.61e-006 
+		FREQ_RESP.Filt_FIR.4	251:7.2e-006  
+		FREQ_RESP.Filt_FIR.4	252:1.17e-005 
+		FREQ_RESP.Filt_FIR.4	253:1.81e-005 
+		FREQ_RESP.Filt_FIR.4	254:2.33e-005 
+		FREQ_RESP.Filt_FIR.4	255:3.17e-005 
+		FREQ_RESP.Filt_FIR.4	256:3.97e-005 
+		FREQ_RESP.Filt_FIR.4	257:3.17e-005 
+		FREQ_RESP.Filt_FIR.4	258:2.33e-005 
+		FREQ_RESP.Filt_FIR.4	259:1.81e-005 
+		FREQ_RESP.Filt_FIR.4	260:1.17e-005 
+		FREQ_RESP.Filt_FIR.4	261:7.2e-006  
+		FREQ_RESP.Filt_FIR.4	262:3.61e-006 
+		FREQ_RESP.Filt_FIR.4	263:6.13e-007 
+		FREQ_RESP.Filt_FIR.4	264:-2.76e-006
+		FREQ_RESP.Filt_FIR.4	265:-5.36e-006
+		FREQ_RESP.Filt_FIR.4	266:-6.42e-006
+		FREQ_RESP.Filt_FIR.4	267:-5.9e-006 
+		FREQ_RESP.Filt_FIR.4	268:-5.25e-006
+		FREQ_RESP.Filt_FIR.4	269:-5.29e-006
+		FREQ_RESP.Filt_FIR.4	270:-5.99e-006
+		FREQ_RESP.Filt_FIR.4	271:-6.55e-006
+		FREQ_RESP.Filt_FIR.4	272:-6.68e-006
+		FREQ_RESP.Filt_FIR.4	273:-6.26e-006
+		FREQ_RESP.Filt_FIR.4	274:-5.36e-006
+		FREQ_RESP.Filt_FIR.4	275:-3.95e-006
+		FREQ_RESP.Filt_FIR.4	276:-2.42e-006
+		FREQ_RESP.Filt_FIR.4	277:-1.18e-006
+		FREQ_RESP.Filt_FIR.4	278:-3.77e-007
+		FREQ_RESP.Filt_FIR.4	279:3.42e-007 
+		FREQ_RESP.Filt_FIR.4	280:1.1e-006  
+		FREQ_RESP.Filt_FIR.4	281:1.68e-006 
+		FREQ_RESP.Filt_FIR.4	282:1.72e-006 
+		FREQ_RESP.Filt_FIR.4	283:1.34e-006 
+		FREQ_RESP.Filt_FIR.4	284:8.72e-007 
+		FREQ_RESP.Filt_FIR.4	285:3.59e-007 
+		FREQ_RESP.Filt_FIR.4	286:-5.4e-007 
+		FREQ_RESP.Filt_FIR.4	287:-1.91e-006
+		FREQ_RESP.Filt_FIR.4	288:-3.27e-006
+		FREQ_RESP.Filt_FIR.4	289:-3.85e-006
+		FREQ_RESP.Filt_FIR.4	290:-3.44e-006
+		FREQ_RESP.Filt_FIR.4	291:-2.5e-006 
+		FREQ_RESP.Filt_FIR.4	292:-1.72e-006
+		FREQ_RESP.Filt_FIR.4	293:-1.37e-006
+		FREQ_RESP.Filt_FIR.4	294:-1.25e-006
+		FREQ_RESP.Filt_FIR.4	295:-1.15e-006
+		FREQ_RESP.Filt_FIR.4	296:-1.12e-006
+		FREQ_RESP.Filt_FIR.4	297:-1.34e-006
+		FREQ_RESP.Filt_FIR.4	298:-1.76e-006
+		FREQ_RESP.Filt_FIR.4	299:-2.09e-006
+		FREQ_RESP.Filt_FIR.4	300:-2.09e-006
+		FREQ_RESP.Filt_FIR.4	301:-1.77e-006
+		FREQ_RESP.Filt_FIR.4	302:-1.36e-006
+		FREQ_RESP.Filt_FIR.4	303:-1.03e-006
+		FREQ_RESP.Filt_FIR.4	304:-7.8e-007 
+		FREQ_RESP.Filt_FIR.4	305:-5.38e-007
+		FREQ_RESP.Filt_FIR.4	306:-2.78e-007
+		FREQ_RESP.Filt_FIR.4	307:-3.01e-008
+		FREQ_RESP.Filt_FIR.4	308:1.4e-007  
+		FREQ_RESP.Filt_FIR.4	309:1.85e-007 
+		FREQ_RESP.Filt_FIR.4	310:8.13e-008 
+		FREQ_RESP.Filt_FIR.4	311:-1.18e-007
+		FREQ_RESP.Filt_FIR.4	312:-3.26e-007
+		FREQ_RESP.Filt_FIR.4	313:-4.71e-007
+		FREQ_RESP.Filt_FIR.4	314:-5.6e-007 
+		FREQ_RESP.Filt_FIR.4	315:-6.18e-007
+		FREQ_RESP.Filt_FIR.4	316:-6.52e-007
+		FREQ_RESP.Filt_FIR.4	317:-6.39e-007
+		FREQ_RESP.Filt_FIR.4	318:-5.84e-007
+		FREQ_RESP.Filt_FIR.4	319:-4.87e-007
+		FREQ_RESP.Filt_FIR.4	320:-3.46e-007
+		FREQ_RESP.Filt_FIR.4	321:-1.71e-007
+		FREQ_RESP.Filt_FIR.4	322:-4.4e-008 
+		FREQ_RESP.Filt_FIR.4	323:-3.94e-008
+		FREQ_RESP.Filt_FIR.4	324:-1.22e-007
+		FREQ_RESP.Filt_FIR.4	325:-1.41e-007
+		FREQ_RESP.Filt_FIR.4	326:-1.21e-008
+		FREQ_RESP.Filt_FIR.4	327:1.89e-007 
+		FREQ_RESP.Filt_FIR.4	328:3.18e-007 
+		FREQ_RESP.Filt_FIR.4	329:3.53e-007 
+		FREQ_RESP.Filt_FIR.4	330:3.88e-007 
+		FREQ_RESP.Filt_FIR.4	331:4.83e-007 
+		FREQ_RESP.Filt_FIR.4	332:5.71e-007 
+		FREQ_RESP.Filt_FIR.4	333:5.63e-007 
+		FREQ_RESP.Filt_FIR.4	334:4.57e-007 
+		FREQ_RESP.Filt_FIR.4	335:3.22e-007 
+		FREQ_RESP.Filt_FIR.4	336:2.06e-007 
+		FREQ_RESP.Filt_FIR.4	337:1.22e-007 
+		FREQ_RESP.Filt_FIR.4	338:7.36e-008 
+		FREQ_RESP.Filt_FIR.4	339:6.32e-008 
+		FREQ_RESP.Filt_FIR.4	340:6.19e-008 
+		FREQ_RESP.Filt_FIR.4	341:4.01e-008 
+		FREQ_RESP.Filt_FIR.4	342:8.8e-009  
+		FREQ_RESP.Filt_FIR.4	343:1.02e-008 
+		FREQ_RESP.Filt_FIR.4	344:4.3e-008  
+		FREQ_RESP.Filt_FIR.4	345:6.09e-008 
+		FREQ_RESP.Filt_FIR.4	346:3.37e-008 
+		FREQ_RESP.Filt_FIR.4	347:-5.54e-009
+		FREQ_RESP.Filt_FIR.4	348:-1.89e-008
+		FREQ_RESP.Filt_FIR.4	349:-9.88e-009
+		FREQ_RESP.Filt_FIR.4	350:-4.01e-009
+		FREQ_RESP.Filt_FIR.4	351:5.17e-009 
+		FREQ_RESP.Filt_FIR.4	352:3.38e-008 
+		FREQ_RESP.Filt_FIR.4	353:6.92e-008 
+		FREQ_RESP.Filt_FIR.4	354:7.98e-008 
+		FREQ_RESP.Filt_FIR.4	355:7.56e-008 
+		FREQ_RESP.Filt_FIR.4	356:9.56e-008 
+		FREQ_RESP.Filt_FIR.4	357:1.47e-007 
+		FREQ_RESP.Filt_FIR.4	358:1.81e-007 
+		FREQ_RESP.Filt_FIR.4	359:1.64e-007 
+		FREQ_RESP.Filt_FIR.4	360:1.2e-007  
+		FREQ_RESP.Filt_FIR.4	361:9.09e-008 
+		FREQ_RESP.Filt_FIR.4	362:7.07e-008 
+		FREQ_RESP.Filt_FIR.4	363:2.73e-008 
+		FREQ_RESP.Filt_FIR.4	364:-4.13e-008
+		FREQ_RESP.Filt_FIR.4	365:-9.61e-008
+		FREQ_RESP.Filt_FIR.4	366:-1.14e-007
+		FREQ_RESP.Filt_FIR.4	367:-1.1e-007 
+		FREQ_RESP.Filt_FIR.4	368:-1.08e-007
+		FREQ_RESP.Filt_FIR.4	369:-1.12e-007
+		FREQ_RESP.Filt_FIR.4	370:-1.17e-007
+		FREQ_RESP.Filt_FIR.4	371:-1.29e-007
+		FREQ_RESP.Filt_FIR.4	372:-1.51e-007
+		FREQ_RESP.Filt_FIR.4	373:-1.68e-007
+		FREQ_RESP.Filt_FIR.4	374:-1.71e-007
+		FREQ_RESP.Filt_FIR.4	375:-1.69e-007
+		FREQ_RESP.Filt_FIR.4	376:-1.79e-007
+		FREQ_RESP.Filt_FIR.4	377:-1.91e-007
+		FREQ_RESP.Filt_FIR.4	378:-1.86e-007
+		FREQ_RESP.Filt_FIR.4	379:-1.61e-007
+		FREQ_RESP.Filt_FIR.4	380:-1.37e-007
+		FREQ_RESP.Filt_FIR.4	381:-1.23e-007
+		FREQ_RESP.Filt_FIR.4	382:-1.09e-007
+		FREQ_RESP.Filt_FIR.4	383:-8.68e-008
+		FREQ_RESP.Filt_FIR.4	384:-6.57e-008
+		FREQ_RESP.Filt_FIR.4	385:-5.43e-008
+		FREQ_RESP.Filt_FIR.4	386:-4.59e-008
+		FREQ_RESP.Filt_FIR.4	387:-3.04e-008
+		FREQ_RESP.Filt_FIR.4	388:-1.38e-008
+		FREQ_RESP.Filt_FIR.4	389:-6.62e-009
+		FREQ_RESP.Filt_FIR.4	390:-6.4e-009 
+		FREQ_RESP.Filt_FIR.4	391:-7.1e-010 
+		FREQ_RESP.Filt_FIR.4	392:1.02e-008 
+		FREQ_RESP.Filt_FIR.4	393:1.44e-008 
+		FREQ_RESP.Filt_FIR.4	394:6.13e-009 
+		FREQ_RESP.Filt_FIR.4	395:-4.46e-009
+		FREQ_RESP.Filt_FIR.4	396:-8.91e-009
+		FREQ_RESP.Filt_FIR.4	397:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	398:-1.62e-008
+		FREQ_RESP.Filt_FIR.4	399:-2.54e-008
+		FREQ_RESP.Filt_FIR.4	400:-3.26e-008
+		FREQ_RESP.Filt_FIR.4	401:-3.61e-008
+		FREQ_RESP.Filt_FIR.4	402:-3.76e-008
+		FREQ_RESP.Filt_FIR.4	403:-3.62e-008
+		FREQ_RESP.Filt_FIR.4	404:-3.32e-008
+		FREQ_RESP.Filt_FIR.4	405:-3.4e-008 
+		FREQ_RESP.Filt_FIR.4	406:-4.43e-008
+		FREQ_RESP.Filt_FIR.4	407:-6e-008   
+		FREQ_RESP.Filt_FIR.4	408:-7.29e-008
+		FREQ_RESP.Filt_FIR.4	409:-8e-008   
+		FREQ_RESP.Filt_FIR.4	410:-8.47e-008
+		FREQ_RESP.Filt_FIR.4	411:-8.61e-008
+		FREQ_RESP.Filt_FIR.4	412:-7.96e-008
+		FREQ_RESP.Filt_FIR.4	413:-6.41e-008
+		FREQ_RESP.Filt_FIR.4	414:-4.65e-008
+		FREQ_RESP.Filt_FIR.4	415:-3.15e-008
+		FREQ_RESP.Filt_FIR.4	416:-1.67e-008
+		FREQ_RESP.Filt_FIR.4	417:1.53e-009 
+		FREQ_RESP.Filt_FIR.4	418:1.96e-008 
+		FREQ_RESP.Filt_FIR.4	419:3.18e-008 
+		FREQ_RESP.Filt_FIR.4	420:3.7e-008  
+		FREQ_RESP.Filt_FIR.4	421:3.73e-008 
+		FREQ_RESP.Filt_FIR.4	422:3.21e-008 
+		FREQ_RESP.Filt_FIR.4	423:1.99e-008 
+		FREQ_RESP.Filt_FIR.4	424:3.57e-009 
+		FREQ_RESP.Filt_FIR.4	425:-1.05e-008
+		FREQ_RESP.Filt_FIR.4	426:-2.01e-008
+		FREQ_RESP.Filt_FIR.4	427:-2.67e-008
+		FREQ_RESP.Filt_FIR.4	428:-3e-008   
+		FREQ_RESP.Filt_FIR.4	429:-2.72e-008
+		FREQ_RESP.Filt_FIR.4	430:-1.99e-008
+		FREQ_RESP.Filt_FIR.4	431:-1.5e-008 
+		FREQ_RESP.Filt_FIR.4	432:-1.61e-008
+		FREQ_RESP.Filt_FIR.4	433:-1.84e-008
+		FREQ_RESP.Filt_FIR.4	434:-1.66e-008
+		FREQ_RESP.Filt_FIR.4	435:-1.26e-008
+		FREQ_RESP.Filt_FIR.4	436:-1.18e-008
+		FREQ_RESP.Filt_FIR.4	437:-1.32e-008
+		FREQ_RESP.Filt_FIR.4	438:-1.11e-008
+		FREQ_RESP.Filt_FIR.4	439:-3.44e-009
+		FREQ_RESP.Filt_FIR.4	440:4.99e-009 
+		FREQ_RESP.Filt_FIR.4	441:1.06e-008 
+		FREQ_RESP.Filt_FIR.4	442:1.5e-008  
+		FREQ_RESP.Filt_FIR.4	443:2.08e-008 
+		FREQ_RESP.Filt_FIR.4	444:2.64e-008 
+		FREQ_RESP.Filt_FIR.4	445:2.91e-008 
+		FREQ_RESP.Filt_FIR.4	446:2.95e-008 
+		FREQ_RESP.Filt_FIR.4	447:2.99e-008 
+		FREQ_RESP.Filt_FIR.4	448:2.98e-008 
+		FREQ_RESP.Filt_FIR.4	449:2.77e-008 
+		FREQ_RESP.Filt_FIR.4	450:2.41e-008 
+		FREQ_RESP.Filt_FIR.4	451:2.11e-008 
+		FREQ_RESP.Filt_FIR.4	452:1.84e-008 
+		FREQ_RESP.Filt_FIR.4	453:1.35e-008 
+		FREQ_RESP.Filt_FIR.4	454:6.27e-009 
+		FREQ_RESP.Filt_FIR.4	455:-3.27e-010
+		FREQ_RESP.Filt_FIR.4	456:-4.8e-009 
+		FREQ_RESP.Filt_FIR.4	457:-8.45e-009
+		FREQ_RESP.Filt_FIR.4	458:-1.23e-008
+		FREQ_RESP.Filt_FIR.4	459:-1.45e-008
+		FREQ_RESP.Filt_FIR.4	460:-1.36e-008
+		FREQ_RESP.Filt_FIR.4	461:-1.14e-008
+		FREQ_RESP.Filt_FIR.4	462:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	463:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	464:-8.4e-009 
+		FREQ_RESP.Filt_FIR.4	465:-5.21e-009
+		FREQ_RESP.Filt_FIR.4	466:-3.9e-009 
+		FREQ_RESP.Filt_FIR.4	467:-5.87e-009
+		FREQ_RESP.Filt_FIR.4	468:-9.02e-009
+		FREQ_RESP.Filt_FIR.4	469:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	470:-1.03e-008
+		FREQ_RESP.Filt_FIR.4	471:-9.33e-009
+		FREQ_RESP.Filt_FIR.4	472:-7.94e-009
+		FREQ_RESP.Filt_FIR.4	473:-5.5e-009 
+		FREQ_RESP.Filt_FIR.4	474:-2.31e-009
+		FREQ_RESP.Filt_FIR.4	475:4.42e-010 
+		FREQ_RESP.Filt_FIR.4	476:1.71e-009 
+		FREQ_RESP.Filt_FIR.4	477:1.18e-009 
+		FREQ_RESP.Filt_FIR.4	478:-1.17e-009
+		FREQ_RESP.Filt_FIR.4	479:-4.6e-009 
+		FREQ_RESP.Filt_FIR.4	480:-7.66e-009
+		FREQ_RESP.Filt_FIR.4	481:-9.17e-009
+		FREQ_RESP.Filt_FIR.4	482:-9.73e-009
+		FREQ_RESP.Filt_FIR.4	483:-1.06e-008
+		FREQ_RESP.Filt_FIR.4	484:-1.2e-008 
+		FREQ_RESP.Filt_FIR.4	485:-1.24e-008
+		FREQ_RESP.Filt_FIR.4	486:-1.09e-008
+		FREQ_RESP.Filt_FIR.4	487:-8.04e-009
+		FREQ_RESP.Filt_FIR.4	488:-4.57e-009
+		FREQ_RESP.Filt_FIR.4	489:-6.85e-010
+		FREQ_RESP.Filt_FIR.4	490:3.25e-009 
+		FREQ_RESP.Filt_FIR.4	491:6.21e-009 
+		FREQ_RESP.Filt_FIR.4	492:7.21e-009 
+		FREQ_RESP.Filt_FIR.4	493:6.43e-009 
+		FREQ_RESP.Filt_FIR.4	494:4.62e-009 
+		FREQ_RESP.Filt_FIR.4	495:2.21e-009 
+		FREQ_RESP.Filt_FIR.4	496:-4.29e-010
+		FREQ_RESP.Filt_FIR.4	497:-2.28e-009
+		FREQ_RESP.Filt_FIR.4	498:-2.56e-009
+		FREQ_RESP.Filt_FIR.4	499:-1.98e-009
+		FREQ_RESP.Filt_FIR.4	500:-2.19e-009
+		FREQ_RESP.Filt_FIR.4	501:-3.6e-009 
+		FREQ_RESP.Filt_FIR.4	502:-5.08e-009
+		FREQ_RESP.Filt_FIR.4	503:-5.72e-009
+		FREQ_RESP.Filt_FIR.4	504:-6.18e-009
+		FREQ_RESP.Filt_FIR.4	505:-7.3e-009 
+		FREQ_RESP.Filt_FIR.4	506:-8.51e-009
+		FREQ_RESP.Filt_FIR.4	507:-8.53e-009
+		FREQ_RESP.Filt_FIR.4	508:-7.18e-009
+		FREQ_RESP.Filt_FIR.4	509:-5.3e-009 
+		FREQ_RESP.Filt_FIR.4	510:-3.51e-009
+		FREQ_RESP.Filt_FIR.4	511:-1.66e-009
+		FREQ_RESP.Filt_FIR.4	512:-1.25e-011
+	# Positive weighting for each band:
+		WEIGHTS.Filt_FIR.4	  0:0         
+		WEIGHTS.Filt_FIR.4	  1:0         
+		WEIGHTS.Filt_FIR.4	  2:0         
+		WEIGHTS.Filt_FIR.4	  3:0         
+		WEIGHTS.Filt_FIR.4	  4:0         
+		WEIGHTS.Filt_FIR.4	  5:0         
+		WEIGHTS.Filt_FIR.4	  6:0         
+		WEIGHTS.Filt_FIR.4	  7:0         
+		WEIGHTS.Filt_FIR.4	  8:0         
+		WEIGHTS.Filt_FIR.4	  9:0         
+		WEIGHTS.Filt_FIR.4	 10:0         
+		WEIGHTS.Filt_FIR.4	 11:0         
+		WEIGHTS.Filt_FIR.4	 12:0         
+		WEIGHTS.Filt_FIR.4	 13:0         
+		WEIGHTS.Filt_FIR.4	 14:0         
+		WEIGHTS.Filt_FIR.4	 15:0         
+		WEIGHTS.Filt_FIR.4	 16:0         
+		WEIGHTS.Filt_FIR.4	 17:0         
+		WEIGHTS.Filt_FIR.4	 18:0         
+		WEIGHTS.Filt_FIR.4	 19:0         
+		WEIGHTS.Filt_FIR.4	 20:0         
+		WEIGHTS.Filt_FIR.4	 21:0         
+		WEIGHTS.Filt_FIR.4	 22:0         
+		WEIGHTS.Filt_FIR.4	 23:0         
+		WEIGHTS.Filt_FIR.4	 24:0         
+		WEIGHTS.Filt_FIR.4	 25:0         
+		WEIGHTS.Filt_FIR.4	 26:0         
+		WEIGHTS.Filt_FIR.4	 27:0         
+		WEIGHTS.Filt_FIR.4	 28:0         
+		WEIGHTS.Filt_FIR.4	 29:0         
+		WEIGHTS.Filt_FIR.4	 30:0         
+		WEIGHTS.Filt_FIR.4	 31:0         
+		WEIGHTS.Filt_FIR.4	 32:0         
+		WEIGHTS.Filt_FIR.4	 33:0         
+		WEIGHTS.Filt_FIR.4	 34:0         
+		WEIGHTS.Filt_FIR.4	 35:0         
+		WEIGHTS.Filt_FIR.4	 36:0         
+		WEIGHTS.Filt_FIR.4	 37:0         
+		WEIGHTS.Filt_FIR.4	 38:0         
+		WEIGHTS.Filt_FIR.4	 39:0         
+		WEIGHTS.Filt_FIR.4	 40:0         
+		WEIGHTS.Filt_FIR.4	 41:0         
+		WEIGHTS.Filt_FIR.4	 42:0         
+		WEIGHTS.Filt_FIR.4	 43:0         
+		WEIGHTS.Filt_FIR.4	 44:0         
+		WEIGHTS.Filt_FIR.4	 45:0         
+		WEIGHTS.Filt_FIR.4	 46:0         
+		WEIGHTS.Filt_FIR.4	 47:0         
+		WEIGHTS.Filt_FIR.4	 48:0         
+		WEIGHTS.Filt_FIR.4	 49:0         
+		WEIGHTS.Filt_FIR.4	 50:0         
+		WEIGHTS.Filt_FIR.4	 51:0         
+		WEIGHTS.Filt_FIR.4	 52:0         
+		WEIGHTS.Filt_FIR.4	 53:0         
+		WEIGHTS.Filt_FIR.4	 54:0         
+		WEIGHTS.Filt_FIR.4	 55:0         
+		WEIGHTS.Filt_FIR.4	 56:0         
+		WEIGHTS.Filt_FIR.4	 57:0         
+		WEIGHTS.Filt_FIR.4	 58:0         
+		WEIGHTS.Filt_FIR.4	 59:0         
+		WEIGHTS.Filt_FIR.4	 60:0         
+		WEIGHTS.Filt_FIR.4	 61:0         
+		WEIGHTS.Filt_FIR.4	 62:0         
+		WEIGHTS.Filt_FIR.4	 63:0         
+		WEIGHTS.Filt_FIR.4	 64:0         
+		WEIGHTS.Filt_FIR.4	 65:0         
+		WEIGHTS.Filt_FIR.4	 66:0         
+		WEIGHTS.Filt_FIR.4	 67:0         
+		WEIGHTS.Filt_FIR.4	 68:0         
+		WEIGHTS.Filt_FIR.4	 69:0         
+		WEIGHTS.Filt_FIR.4	 70:0         
+		WEIGHTS.Filt_FIR.4	 71:0         
+		WEIGHTS.Filt_FIR.4	 72:0         
+		WEIGHTS.Filt_FIR.4	 73:0         
+		WEIGHTS.Filt_FIR.4	 74:0         
+		WEIGHTS.Filt_FIR.4	 75:0         
+		WEIGHTS.Filt_FIR.4	 76:0         
+		WEIGHTS.Filt_FIR.4	 77:0         
+		WEIGHTS.Filt_FIR.4	 78:0         
+		WEIGHTS.Filt_FIR.4	 79:0         
+		WEIGHTS.Filt_FIR.4	 80:0         
+		WEIGHTS.Filt_FIR.4	 81:0         
+		WEIGHTS.Filt_FIR.4	 82:0         
+		WEIGHTS.Filt_FIR.4	 83:0         
+		WEIGHTS.Filt_FIR.4	 84:0         
+		WEIGHTS.Filt_FIR.4	 85:0         
+		WEIGHTS.Filt_FIR.4	 86:0         
+		WEIGHTS.Filt_FIR.4	 87:0         
+		WEIGHTS.Filt_FIR.4	 88:0         
+		WEIGHTS.Filt_FIR.4	 89:0         
+		WEIGHTS.Filt_FIR.4	 90:0         
+		WEIGHTS.Filt_FIR.4	 91:0         
+		WEIGHTS.Filt_FIR.4	 92:0         
+		WEIGHTS.Filt_FIR.4	 93:0         
+		WEIGHTS.Filt_FIR.4	 94:0         
+		WEIGHTS.Filt_FIR.4	 95:0         
+		WEIGHTS.Filt_FIR.4	 96:0         
+		WEIGHTS.Filt_FIR.4	 97:0         
+		WEIGHTS.Filt_FIR.4	 98:0         
+		WEIGHTS.Filt_FIR.4	 99:0         
+		WEIGHTS.Filt_FIR.4	100:0         
+		WEIGHTS.Filt_FIR.4	101:0         
+		WEIGHTS.Filt_FIR.4	102:0         
+		WEIGHTS.Filt_FIR.4	103:0         
+		WEIGHTS.Filt_FIR.4	104:0         
+		WEIGHTS.Filt_FIR.4	105:0         
+		WEIGHTS.Filt_FIR.4	106:0         
+		WEIGHTS.Filt_FIR.4	107:0         
+		WEIGHTS.Filt_FIR.4	108:0         
+		WEIGHTS.Filt_FIR.4	109:0         
+		WEIGHTS.Filt_FIR.4	110:0         
+		WEIGHTS.Filt_FIR.4	111:0         
+		WEIGHTS.Filt_FIR.4	112:0         
+		WEIGHTS.Filt_FIR.4	113:0         
+		WEIGHTS.Filt_FIR.4	114:0         
+		WEIGHTS.Filt_FIR.4	115:0         
+		WEIGHTS.Filt_FIR.4	116:0         
+		WEIGHTS.Filt_FIR.4	117:0         
+		WEIGHTS.Filt_FIR.4	118:0         
+		WEIGHTS.Filt_FIR.4	119:0         
+		WEIGHTS.Filt_FIR.4	120:0         
+		WEIGHTS.Filt_FIR.4	121:0         
+		WEIGHTS.Filt_FIR.4	122:0         
+		WEIGHTS.Filt_FIR.4	123:0         
+		WEIGHTS.Filt_FIR.4	124:0         
+		WEIGHTS.Filt_FIR.4	125:0         
+		WEIGHTS.Filt_FIR.4	126:0         
+		WEIGHTS.Filt_FIR.4	127:0         
+		WEIGHTS.Filt_FIR.4	128:0         
+		WEIGHTS.Filt_FIR.4	129:0         
+		WEIGHTS.Filt_FIR.4	130:0         
+		WEIGHTS.Filt_FIR.4	131:0         
+		WEIGHTS.Filt_FIR.4	132:0         
+		WEIGHTS.Filt_FIR.4	133:0         
+		WEIGHTS.Filt_FIR.4	134:0         
+		WEIGHTS.Filt_FIR.4	135:0         
+		WEIGHTS.Filt_FIR.4	136:0         
+		WEIGHTS.Filt_FIR.4	137:0         
+		WEIGHTS.Filt_FIR.4	138:0         
+		WEIGHTS.Filt_FIR.4	139:0         
+		WEIGHTS.Filt_FIR.4	140:0         
+		WEIGHTS.Filt_FIR.4	141:0         
+		WEIGHTS.Filt_FIR.4	142:0         
+		WEIGHTS.Filt_FIR.4	143:0         
+		WEIGHTS.Filt_FIR.4	144:0         
+		WEIGHTS.Filt_FIR.4	145:0         
+		WEIGHTS.Filt_FIR.4	146:0         
+		WEIGHTS.Filt_FIR.4	147:0         
+		WEIGHTS.Filt_FIR.4	148:0         
+		WEIGHTS.Filt_FIR.4	149:0         
+		WEIGHTS.Filt_FIR.4	150:0         
+		WEIGHTS.Filt_FIR.4	151:0         
+		WEIGHTS.Filt_FIR.4	152:0         
+		WEIGHTS.Filt_FIR.4	153:0         
+		WEIGHTS.Filt_FIR.4	154:0         
+		WEIGHTS.Filt_FIR.4	155:0         
+		WEIGHTS.Filt_FIR.4	156:0         
+		WEIGHTS.Filt_FIR.4	157:0         
+		WEIGHTS.Filt_FIR.4	158:0         
+		WEIGHTS.Filt_FIR.4	159:0         
+		WEIGHTS.Filt_FIR.4	160:0         
+		WEIGHTS.Filt_FIR.4	161:0         
+		WEIGHTS.Filt_FIR.4	162:0         
+		WEIGHTS.Filt_FIR.4	163:0         
+		WEIGHTS.Filt_FIR.4	164:0         
+		WEIGHTS.Filt_FIR.4	165:0         
+		WEIGHTS.Filt_FIR.4	166:0         
+		WEIGHTS.Filt_FIR.4	167:0         
+		WEIGHTS.Filt_FIR.4	168:0         
+		WEIGHTS.Filt_FIR.4	169:0         
+		WEIGHTS.Filt_FIR.4	170:0         
+		WEIGHTS.Filt_FIR.4	171:0         
+		WEIGHTS.Filt_FIR.4	172:0         
+		WEIGHTS.Filt_FIR.4	173:0         
+		WEIGHTS.Filt_FIR.4	174:0         
+		WEIGHTS.Filt_FIR.4	175:0         
+		WEIGHTS.Filt_FIR.4	176:0         
+		WEIGHTS.Filt_FIR.4	177:0         
+		WEIGHTS.Filt_FIR.4	178:0         
+		WEIGHTS.Filt_FIR.4	179:0         
+		WEIGHTS.Filt_FIR.4	180:0         
+		WEIGHTS.Filt_FIR.4	181:0         
+		WEIGHTS.Filt_FIR.4	182:0         
+		WEIGHTS.Filt_FIR.4	183:0         
+		WEIGHTS.Filt_FIR.4	184:0         
+		WEIGHTS.Filt_FIR.4	185:0         
+		WEIGHTS.Filt_FIR.4	186:0         
+		WEIGHTS.Filt_FIR.4	187:0         
+		WEIGHTS.Filt_FIR.4	188:0         
+		WEIGHTS.Filt_FIR.4	189:0         
+		WEIGHTS.Filt_FIR.4	190:0         
+		WEIGHTS.Filt_FIR.4	191:0         
+		WEIGHTS.Filt_FIR.4	192:0         
+		WEIGHTS.Filt_FIR.4	193:0         
+		WEIGHTS.Filt_FIR.4	194:0         
+		WEIGHTS.Filt_FIR.4	195:0         
+		WEIGHTS.Filt_FIR.4	196:0         
+		WEIGHTS.Filt_FIR.4	197:0         
+		WEIGHTS.Filt_FIR.4	198:0         
+		WEIGHTS.Filt_FIR.4	199:0         
+		WEIGHTS.Filt_FIR.4	200:0         
+		WEIGHTS.Filt_FIR.4	201:0         
+		WEIGHTS.Filt_FIR.4	202:0         
+		WEIGHTS.Filt_FIR.4	203:0         
+		WEIGHTS.Filt_FIR.4	204:0         
+		WEIGHTS.Filt_FIR.4	205:0         
+		WEIGHTS.Filt_FIR.4	206:0         
+		WEIGHTS.Filt_FIR.4	207:0         
+		WEIGHTS.Filt_FIR.4	208:0         
+		WEIGHTS.Filt_FIR.4	209:0         
+		WEIGHTS.Filt_FIR.4	210:0         
+		WEIGHTS.Filt_FIR.4	211:0         
+		WEIGHTS.Filt_FIR.4	212:0         
+		WEIGHTS.Filt_FIR.4	213:0         
+		WEIGHTS.Filt_FIR.4	214:0         
+		WEIGHTS.Filt_FIR.4	215:0         
+		WEIGHTS.Filt_FIR.4	216:0         
+		WEIGHTS.Filt_FIR.4	217:0         
+		WEIGHTS.Filt_FIR.4	218:0         
+		WEIGHTS.Filt_FIR.4	219:0         
+		WEIGHTS.Filt_FIR.4	220:0         
+		WEIGHTS.Filt_FIR.4	221:0         
+		WEIGHTS.Filt_FIR.4	222:0         
+		WEIGHTS.Filt_FIR.4	223:0         
+		WEIGHTS.Filt_FIR.4	224:0         
+		WEIGHTS.Filt_FIR.4	225:0         
+		WEIGHTS.Filt_FIR.4	226:0         
+		WEIGHTS.Filt_FIR.4	227:0         
+		WEIGHTS.Filt_FIR.4	228:0         
+		WEIGHTS.Filt_FIR.4	229:0         
+		WEIGHTS.Filt_FIR.4	230:0         
+		WEIGHTS.Filt_FIR.4	231:0         
+		WEIGHTS.Filt_FIR.4	232:0         
+		WEIGHTS.Filt_FIR.4	233:0         
+		WEIGHTS.Filt_FIR.4	234:0         
+		WEIGHTS.Filt_FIR.4	235:0         
+		WEIGHTS.Filt_FIR.4	236:0         
+		WEIGHTS.Filt_FIR.4	237:0         
+		WEIGHTS.Filt_FIR.4	238:0         
+		WEIGHTS.Filt_FIR.4	239:0         
+		WEIGHTS.Filt_FIR.4	240:0         
+		WEIGHTS.Filt_FIR.4	241:0         
+		WEIGHTS.Filt_FIR.4	242:0         
+		WEIGHTS.Filt_FIR.4	243:0         
+		WEIGHTS.Filt_FIR.4	244:0         
+		WEIGHTS.Filt_FIR.4	245:0         
+		WEIGHTS.Filt_FIR.4	246:0         
+		WEIGHTS.Filt_FIR.4	247:0         
+		WEIGHTS.Filt_FIR.4	248:0         
+		WEIGHTS.Filt_FIR.4	249:0         
+		WEIGHTS.Filt_FIR.4	250:0         
+		WEIGHTS.Filt_FIR.4	251:0         
+		WEIGHTS.Filt_FIR.4	252:0         
+		WEIGHTS.Filt_FIR.4	253:0         
+		WEIGHTS.Filt_FIR.4	254:0         
+		WEIGHTS.Filt_FIR.4	255:0         
+		WEIGHTS.Filt_FIR.4	256:0         
+		WEIGHTS.Filt_FIR.4	257:0         
+		WEIGHTS.Filt_FIR.4	258:0         
+		WEIGHTS.Filt_FIR.4	259:0         
+		WEIGHTS.Filt_FIR.4	260:0         
+		WEIGHTS.Filt_FIR.4	261:0         
+		WEIGHTS.Filt_FIR.4	262:0         
+		WEIGHTS.Filt_FIR.4	263:0         
+		WEIGHTS.Filt_FIR.4	264:0         
+		WEIGHTS.Filt_FIR.4	265:0         
+		WEIGHTS.Filt_FIR.4	266:0         
+		WEIGHTS.Filt_FIR.4	267:0         
+		WEIGHTS.Filt_FIR.4	268:0         
+		WEIGHTS.Filt_FIR.4	269:0         
+		WEIGHTS.Filt_FIR.4	270:0         
+		WEIGHTS.Filt_FIR.4	271:0         
+		WEIGHTS.Filt_FIR.4	272:0         
+		WEIGHTS.Filt_FIR.4	273:0         
+		WEIGHTS.Filt_FIR.4	274:0         
+		WEIGHTS.Filt_FIR.4	275:0         
+		WEIGHTS.Filt_FIR.4	276:0         
+		WEIGHTS.Filt_FIR.4	277:0         
+		WEIGHTS.Filt_FIR.4	278:0         
+		WEIGHTS.Filt_FIR.4	279:0         
+		WEIGHTS.Filt_FIR.4	280:0         
+		WEIGHTS.Filt_FIR.4	281:0         
+		WEIGHTS.Filt_FIR.4	282:0         
+		WEIGHTS.Filt_FIR.4	283:0         
+		WEIGHTS.Filt_FIR.4	284:0         
+		WEIGHTS.Filt_FIR.4	285:0         
+		WEIGHTS.Filt_FIR.4	286:0         
+		WEIGHTS.Filt_FIR.4	287:0         
+		WEIGHTS.Filt_FIR.4	288:0         
+		WEIGHTS.Filt_FIR.4	289:0         
+		WEIGHTS.Filt_FIR.4	290:0         
+		WEIGHTS.Filt_FIR.4	291:0         
+		WEIGHTS.Filt_FIR.4	292:0         
+		WEIGHTS.Filt_FIR.4	293:0         
+		WEIGHTS.Filt_FIR.4	294:0         
+		WEIGHTS.Filt_FIR.4	295:0         
+		WEIGHTS.Filt_FIR.4	296:0         
+		WEIGHTS.Filt_FIR.4	297:0         
+		WEIGHTS.Filt_FIR.4	298:0         
+		WEIGHTS.Filt_FIR.4	299:0         
+		WEIGHTS.Filt_FIR.4	300:0         
+		WEIGHTS.Filt_FIR.4	301:0         
+		WEIGHTS.Filt_FIR.4	302:0         
+		WEIGHTS.Filt_FIR.4	303:0         
+		WEIGHTS.Filt_FIR.4	304:0         
+		WEIGHTS.Filt_FIR.4	305:0         
+		WEIGHTS.Filt_FIR.4	306:0         
+		WEIGHTS.Filt_FIR.4	307:0         
+		WEIGHTS.Filt_FIR.4	308:0         
+		WEIGHTS.Filt_FIR.4	309:0         
+		WEIGHTS.Filt_FIR.4	310:0         
+		WEIGHTS.Filt_FIR.4	311:0         
+		WEIGHTS.Filt_FIR.4	312:0         
+		WEIGHTS.Filt_FIR.4	313:0         
+		WEIGHTS.Filt_FIR.4	314:0         
+		WEIGHTS.Filt_FIR.4	315:0         
+		WEIGHTS.Filt_FIR.4	316:0         
+		WEIGHTS.Filt_FIR.4	317:0         
+		WEIGHTS.Filt_FIR.4	318:0         
+		WEIGHTS.Filt_FIR.4	319:0         
+		WEIGHTS.Filt_FIR.4	320:0         
+		WEIGHTS.Filt_FIR.4	321:0         
+		WEIGHTS.Filt_FIR.4	322:0         
+		WEIGHTS.Filt_FIR.4	323:0         
+		WEIGHTS.Filt_FIR.4	324:0         
+		WEIGHTS.Filt_FIR.4	325:0         
+		WEIGHTS.Filt_FIR.4	326:0         
+		WEIGHTS.Filt_FIR.4	327:0         
+		WEIGHTS.Filt_FIR.4	328:0         
+		WEIGHTS.Filt_FIR.4	329:0         
+		WEIGHTS.Filt_FIR.4	330:0         
+		WEIGHTS.Filt_FIR.4	331:0         
+		WEIGHTS.Filt_FIR.4	332:0         
+		WEIGHTS.Filt_FIR.4	333:0         
+		WEIGHTS.Filt_FIR.4	334:0         
+		WEIGHTS.Filt_FIR.4	335:0         
+		WEIGHTS.Filt_FIR.4	336:0         
+		WEIGHTS.Filt_FIR.4	337:0         
+		WEIGHTS.Filt_FIR.4	338:0         
+		WEIGHTS.Filt_FIR.4	339:0         
+		WEIGHTS.Filt_FIR.4	340:0         
+		WEIGHTS.Filt_FIR.4	341:0         
+		WEIGHTS.Filt_FIR.4	342:0         
+		WEIGHTS.Filt_FIR.4	343:0         
+		WEIGHTS.Filt_FIR.4	344:0         
+		WEIGHTS.Filt_FIR.4	345:0         
+		WEIGHTS.Filt_FIR.4	346:0         
+		WEIGHTS.Filt_FIR.4	347:0         
+		WEIGHTS.Filt_FIR.4	348:0         
+		WEIGHTS.Filt_FIR.4	349:0         
+		WEIGHTS.Filt_FIR.4	350:0         
+		WEIGHTS.Filt_FIR.4	351:0         
+		WEIGHTS.Filt_FIR.4	352:0         
+		WEIGHTS.Filt_FIR.4	353:0         
+		WEIGHTS.Filt_FIR.4	354:0         
+		WEIGHTS.Filt_FIR.4	355:0         
+		WEIGHTS.Filt_FIR.4	356:0         
+		WEIGHTS.Filt_FIR.4	357:0         
+		WEIGHTS.Filt_FIR.4	358:0         
+		WEIGHTS.Filt_FIR.4	359:0         
+		WEIGHTS.Filt_FIR.4	360:0         
+		WEIGHTS.Filt_FIR.4	361:0         
+		WEIGHTS.Filt_FIR.4	362:0         
+		WEIGHTS.Filt_FIR.4	363:0         
+		WEIGHTS.Filt_FIR.4	364:0         
+		WEIGHTS.Filt_FIR.4	365:0         
+		WEIGHTS.Filt_FIR.4	366:0         
+		WEIGHTS.Filt_FIR.4	367:0         
+		WEIGHTS.Filt_FIR.4	368:0         
+		WEIGHTS.Filt_FIR.4	369:0         
+		WEIGHTS.Filt_FIR.4	370:0         
+		WEIGHTS.Filt_FIR.4	371:0         
+		WEIGHTS.Filt_FIR.4	372:0         
+		WEIGHTS.Filt_FIR.4	373:0         
+		WEIGHTS.Filt_FIR.4	374:0         
+		WEIGHTS.Filt_FIR.4	375:0         
+		WEIGHTS.Filt_FIR.4	376:0         
+		WEIGHTS.Filt_FIR.4	377:0         
+		WEIGHTS.Filt_FIR.4	378:0         
+		WEIGHTS.Filt_FIR.4	379:0         
+		WEIGHTS.Filt_FIR.4	380:0         
+		WEIGHTS.Filt_FIR.4	381:0         
+		WEIGHTS.Filt_FIR.4	382:0         
+		WEIGHTS.Filt_FIR.4	383:0         
+		WEIGHTS.Filt_FIR.4	384:0         
+		WEIGHTS.Filt_FIR.4	385:0         
+		WEIGHTS.Filt_FIR.4	386:0         
+		WEIGHTS.Filt_FIR.4	387:0         
+		WEIGHTS.Filt_FIR.4	388:0         
+		WEIGHTS.Filt_FIR.4	389:0         
+		WEIGHTS.Filt_FIR.4	390:0         
+		WEIGHTS.Filt_FIR.4	391:0         
+		WEIGHTS.Filt_FIR.4	392:0         
+		WEIGHTS.Filt_FIR.4	393:0         
+		WEIGHTS.Filt_FIR.4	394:0         
+		WEIGHTS.Filt_FIR.4	395:0         
+		WEIGHTS.Filt_FIR.4	396:0         
+		WEIGHTS.Filt_FIR.4	397:0         
+		WEIGHTS.Filt_FIR.4	398:0         
+		WEIGHTS.Filt_FIR.4	399:0         
+		WEIGHTS.Filt_FIR.4	400:0         
+		WEIGHTS.Filt_FIR.4	401:0         
+		WEIGHTS.Filt_FIR.4	402:0         
+		WEIGHTS.Filt_FIR.4	403:0         
+		WEIGHTS.Filt_FIR.4	404:0         
+		WEIGHTS.Filt_FIR.4	405:0         
+		WEIGHTS.Filt_FIR.4	406:0         
+		WEIGHTS.Filt_FIR.4	407:0         
+		WEIGHTS.Filt_FIR.4	408:0         
+		WEIGHTS.Filt_FIR.4	409:0         
+		WEIGHTS.Filt_FIR.4	410:0         
+		WEIGHTS.Filt_FIR.4	411:0         
+		WEIGHTS.Filt_FIR.4	412:0         
+		WEIGHTS.Filt_FIR.4	413:0         
+		WEIGHTS.Filt_FIR.4	414:0         
+		WEIGHTS.Filt_FIR.4	415:0         
+		WEIGHTS.Filt_FIR.4	416:0         
+		WEIGHTS.Filt_FIR.4	417:0         
+		WEIGHTS.Filt_FIR.4	418:0         
+		WEIGHTS.Filt_FIR.4	419:0         
+		WEIGHTS.Filt_FIR.4	420:0         
+		WEIGHTS.Filt_FIR.4	421:0         
+		WEIGHTS.Filt_FIR.4	422:0         
+		WEIGHTS.Filt_FIR.4	423:0         
+		WEIGHTS.Filt_FIR.4	424:0         
+		WEIGHTS.Filt_FIR.4	425:0         
+		WEIGHTS.Filt_FIR.4	426:0         
+		WEIGHTS.Filt_FIR.4	427:0         
+		WEIGHTS.Filt_FIR.4	428:0         
+		WEIGHTS.Filt_FIR.4	429:0         
+		WEIGHTS.Filt_FIR.4	430:0         
+		WEIGHTS.Filt_FIR.4	431:0         
+		WEIGHTS.Filt_FIR.4	432:0         
+		WEIGHTS.Filt_FIR.4	433:0         
+		WEIGHTS.Filt_FIR.4	434:0         
+		WEIGHTS.Filt_FIR.4	435:0         
+		WEIGHTS.Filt_FIR.4	436:0         
+		WEIGHTS.Filt_FIR.4	437:0         
+		WEIGHTS.Filt_FIR.4	438:0         
+		WEIGHTS.Filt_FIR.4	439:0         
+		WEIGHTS.Filt_FIR.4	440:0         
+		WEIGHTS.Filt_FIR.4	441:0         
+		WEIGHTS.Filt_FIR.4	442:0         
+		WEIGHTS.Filt_FIR.4	443:0         
+		WEIGHTS.Filt_FIR.4	444:0         
+		WEIGHTS.Filt_FIR.4	445:0         
+		WEIGHTS.Filt_FIR.4	446:0         
+		WEIGHTS.Filt_FIR.4	447:0         
+		WEIGHTS.Filt_FIR.4	448:0         
+		WEIGHTS.Filt_FIR.4	449:0         
+		WEIGHTS.Filt_FIR.4	450:0         
+		WEIGHTS.Filt_FIR.4	451:0         
+		WEIGHTS.Filt_FIR.4	452:0         
+		WEIGHTS.Filt_FIR.4	453:0         
+		WEIGHTS.Filt_FIR.4	454:0         
+		WEIGHTS.Filt_FIR.4	455:0         
+		WEIGHTS.Filt_FIR.4	456:0         
+		WEIGHTS.Filt_FIR.4	457:0         
+		WEIGHTS.Filt_FIR.4	458:0         
+		WEIGHTS.Filt_FIR.4	459:0         
+		WEIGHTS.Filt_FIR.4	460:0         
+		WEIGHTS.Filt_FIR.4	461:0         
+		WEIGHTS.Filt_FIR.4	462:0         
+		WEIGHTS.Filt_FIR.4	463:0         
+		WEIGHTS.Filt_FIR.4	464:0         
+		WEIGHTS.Filt_FIR.4	465:0         
+		WEIGHTS.Filt_FIR.4	466:0         
+		WEIGHTS.Filt_FIR.4	467:0         
+		WEIGHTS.Filt_FIR.4	468:0         
+		WEIGHTS.Filt_FIR.4	469:0         
+		WEIGHTS.Filt_FIR.4	470:0         
+		WEIGHTS.Filt_FIR.4	471:0         
+		WEIGHTS.Filt_FIR.4	472:0         
+		WEIGHTS.Filt_FIR.4	473:0         
+		WEIGHTS.Filt_FIR.4	474:0         
+		WEIGHTS.Filt_FIR.4	475:0         
+		WEIGHTS.Filt_FIR.4	476:0         
+		WEIGHTS.Filt_FIR.4	477:0         
+		WEIGHTS.Filt_FIR.4	478:0         
+		WEIGHTS.Filt_FIR.4	479:0         
+		WEIGHTS.Filt_FIR.4	480:0         
+		WEIGHTS.Filt_FIR.4	481:0         
+		WEIGHTS.Filt_FIR.4	482:0         
+		WEIGHTS.Filt_FIR.4	483:0         
+		WEIGHTS.Filt_FIR.4	484:0         
+		WEIGHTS.Filt_FIR.4	485:0         
+		WEIGHTS.Filt_FIR.4	486:0         
+		WEIGHTS.Filt_FIR.4	487:0         
+		WEIGHTS.Filt_FIR.4	488:0         
+		WEIGHTS.Filt_FIR.4	489:0         
+		WEIGHTS.Filt_FIR.4	490:0         
+		WEIGHTS.Filt_FIR.4	491:0         
+		WEIGHTS.Filt_FIR.4	492:0         
+		WEIGHTS.Filt_FIR.4	493:0         
+		WEIGHTS.Filt_FIR.4	494:0         
+		WEIGHTS.Filt_FIR.4	495:0         
+		WEIGHTS.Filt_FIR.4	496:0         
+		WEIGHTS.Filt_FIR.4	497:0         
+		WEIGHTS.Filt_FIR.4	498:0         
+		WEIGHTS.Filt_FIR.4	499:0         
+		WEIGHTS.Filt_FIR.4	500:0         
+		WEIGHTS.Filt_FIR.4	501:0         
+		WEIGHTS.Filt_FIR.4	502:0         
+		WEIGHTS.Filt_FIR.4	503:0         
+		WEIGHTS.Filt_FIR.4	504:0         
+		WEIGHTS.Filt_FIR.4	505:0         
+		WEIGHTS.Filt_FIR.4	506:0         
+		WEIGHTS.Filt_FIR.4	507:0         
+		WEIGHTS.Filt_FIR.4	508:0         
+		WEIGHTS.Filt_FIR.4	509:0         
+		WEIGHTS.Filt_FIR.4	510:0         
+		WEIGHTS.Filt_FIR.4	511:0         
+		WEIGHTS.Filt_FIR.4	512:0         
+
+	##----- filt_LowPass.5       (filtScaleToStapes.par) -----##
+	MODE.filt_LowPass.5      	"SCALED"  	Output mode for model ('normal' or 'scaled').
+	CUT_OFF_FREQ.filt_LowPass.5	25000     	Cut-off frequency (3 dB down point - Hz).
+	SCALE.filt_LowPass.5     	1e-006    	Signal multiplier scale ('scaled' mode only).
+
+	##----- BM_DRNL.6              (BM_DRNLHuman.par) -----##
+	NL_GT_CASCADE.BM_DRNL.6  	3         	Nonlinear gammatone filter cascade.
+	NL_LP_CASCADE.BM_DRNL.6  	3         	Nonlinear low-pass filter cascade.
+	# NonLinBwidth parameters:
+	  NONLINBWIDTH_MODE.BM_DRNL.6	"LOG_FUNC1"	Variable 'NonLinBwidth' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'NonLinBwidth' function:
+		NONLINBWIDTH_PARAMETER.BM_DRNL.6	  0:-0.032    
+		NONLINBWIDTH_PARAMETER.BM_DRNL.6	  1:0.774     
+	# ComprScaleA parameters:
+	  COMPRSCALEA_MODE.BM_DRNL.6	"LOG_FUNC1"	Variable 'ComprScaleA' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'ComprScaleA' function:
+		COMPRSCALEA_PARAMETER.BM_DRNL.6	  0:1.4       
+		COMPRSCALEA_PARAMETER.BM_DRNL.6	  1:0.82      
+	# ComprScaleB parameters:
+	  COMPRSCALEB_MODE.BM_DRNL.6	"LOG_FUNC1"	Variable 'ComprScaleB' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'ComprScaleB' function:
+		COMPRSCALEB_PARAMETER.BM_DRNL.6	  0:1.62      
+		COMPRSCALEB_PARAMETER.BM_DRNL.6	  1:-0.82     
+	COMP_N_EXPON.BM_DRNL.6   	0.25      	Compression exponent, n (units).
+	L_GT_CASCADE.BM_DRNL.6   	2         	Linear gammatone filter cascade.
+	L_LP_CASCADE.BM_DRNL.6   	4         	Linear low-pass filter cascade.
+	# LinCF parameters:
+	  LINCF_MODE.BM_DRNL.6     	"LOG_FUNC1"	Variable 'LinCF' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'LinCF' function:
+		LINCF_PARAMETER.BM_DRNL.6	  0:-0.068    
+		LINCF_PARAMETER.BM_DRNL.6	  1:1.02      
+	# LinBwidth parameters:
+	  LINBWIDTH_MODE.BM_DRNL.6 	"LOG_FUNC1"	Variable 'LinBwidth' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'LinBwidth' function:
+		LINBWIDTH_PARAMETER.BM_DRNL.6	  0:0.037     
+		LINBWIDTH_PARAMETER.BM_DRNL.6	  1:0.79      
+	# linScaleG parameters:
+	  LINSCALEG_MODE.BM_DRNL.6 	"LOG_FUNC1"	Variable 'linScaleG' mode ('LOG_FUNC1' or 'POLY_FUNC1').
+	# Parameters for 'linScaleG' function:
+		LINSCALEG_PARAMETER.BM_DRNL.6	  0:4.2       
+		LINSCALEG_PARAMETER.BM_DRNL.6	  1:-0.48     
+	# CFList parameters:
+	  DIAG_MODE.BM_DRNL.6      	"PARAMETERS"	Diagnostic mode ('list' or 'parameters').
+	  CF_MODE.BM_DRNL.6        	"HUMAN"   	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
+	  SINGLE_CF.BM_DRNL.6      	40        	Centre frequency (Hz).
+	  FOCAL_CF.BM_DRNL.6       	1568.07   	Focal centre frequency (Hz).
+	  MIN_CF.BM_DRNL.6         	40        	Minimum centre frequency (Hz).
+	  MAX_CF.BM_DRNL.6         	10000     	Maximum centre frequency (Hz).
+	  CHANNELS.BM_DRNL.6       	10        	No. of centre frequencies.
+	  ERB_DENSITY.BM_DRNL.6    	0.295689  	ERB density (filters/critical band).
+	# Centre frequencies (Hz).:
+		CENTRE_FREQ.BM_DRNL.6	  0:40        
+		CENTRE_FREQ.BM_DRNL.6	  1:143.886   
+		CENTRE_FREQ.BM_DRNL.6	  2:305.935   
+		CENTRE_FREQ.BM_DRNL.6	  3:558.712   
+		CENTRE_FREQ.BM_DRNL.6	  4:953.013   
+		CENTRE_FREQ.BM_DRNL.6	  5:1568.07   
+		CENTRE_FREQ.BM_DRNL.6	  6:2527.49   
+		CENTRE_FREQ.BM_DRNL.6	  7:4024.06   
+		CENTRE_FREQ.BM_DRNL.6	  8:6358.53   
+		CENTRE_FREQ.BM_DRNL.6	  9:10000     
+	  B_MODE.BM_DRNL.6         	"INTERNAL_STATIC"	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+	  BW_MIN.BM_DRNL.6         	24.7      	Minimum filter bandwidth (Hz).
+	  QUALITY.BM_DRNL.6        	0.00437   	Ultimate quality factor of filters.
+	# Filter bandwidths (Hz).:
+		BANDWIDTH.BM_DRNL.6	  0:16.1434   
+		BANDWIDTH.BM_DRNL.6	  1:43.4817   
+		BANDWIDTH.BM_DRNL.6	  2:77.961    
+		BANDWIDTH.BM_DRNL.6	  3:124.258   
+		BANDWIDTH.BM_DRNL.6	  4:187.855   
+		BANDWIDTH.BM_DRNL.6	  5:276.193   
+		BANDWIDTH.BM_DRNL.6	  6:399.652   
+		BANDWIDTH.BM_DRNL.6	  7:572.81    
+		BANDWIDTH.BM_DRNL.6	  8:816.202   
+		BANDWIDTH.BM_DRNL.6	  9:1158.78   
+
+	##----- Display_Signal.7          (displayBM.par) -----##
+	MAGNIFICATION.Display_Signal.7	1         	Signal magnification.
+	NORMALISATION.Display_Signal.7	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.7	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.7	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.7	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.7   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.7	"channel CF"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.7	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.7	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.7	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.7    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.7    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.7	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.7	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.7 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.7	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.7	"time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.7	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.7	"x.e-3"   	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.7	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.7 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.7	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.7	0         	X extent for display in zoom mode (x units).
+	WIN_TITLE.Display_Signal.7	"Basilar membrane DRNL"	Display window title.
+	MODE.Display_Signal.7    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.7	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.7	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.7	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.7	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.7	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.7	300       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.7	0         	Display frame Y position (pixel units).
+
+	##----- ANA_FourierT.8              (Fourier.par) -----##
+	OUTPUT_MODE.ANA_FourierT.8	"MODULUS" 	Output mode ('modulus' or 'phase').
+
+	##----- Display_signal.9     (displayFourier.par) -----##
+	MAGNIFICATION.Display_signal.9	1         	Signal magnification.
+	NORMALISATION.Display_signal.9	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_signal.9	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_signal.9	10        	Number of grey scales.
+	X_RESOLUTION.Display_signal.9	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_signal.9   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_signal.9	"power"   	Y-axis title.
+	Y_AXIS_MODE.Display_signal.9	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_signal.9	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_signal.9	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_signal.9    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_signal.9    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_signal.9	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_signal.9	0         	Y axis scale decimal places.
+	Y_TICKS.Display_signal.9 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_signal.9	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_signal.9	"Frequency"	X axis title.
+	AUTO_X_SCALE.Display_signal.9	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_signal.9	"xe3"     	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_signal.9	0         	X axis scale decimal places.
+	X_TICKS.Display_signal.9 	3         	X axis tick marks.
+	X_OFFSET.Display_signal.9	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_signal.9	0         	X extent for display in zoom mode (x units).
+	WIN_TITLE.Display_signal.9	"Fourier_analysis"	Display window title.
+	MODE.Display_signal.9    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_signal.9	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_signal.9	0         	Delay between display frames (s)
+	TOPMARGIN.Display_signal.9	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_signal.9	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_signal.9	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_signal.9	600       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_signal.9	0         	Display frame Y position (pixel units).
+
+	##----- DataFile_out.10         (dataFileOut.par) -----##
+	FILENAME.DataFile_out.10 	"output.dat"	Stimulus file name.
+	WORDSIZE.DataFile_out.10 	2         	Default word size for sound data (1,2 or 4 bytes)
+	ENDIAN_MODE.DataFile_out.10	"LITTLE"  	Default (for format), 'little' or 'big'-endian.
+	CHANNELS.DataFile_out.10 	1         	No. of Channels: for raw binary and ASCII files.)
+	NORM_MODE.DataFile_out.10	0         	Normalisation factor for writing (0 or -ve: automatic).
+	SAMPLERATE.DataFile_out.10	50000     	Default sample rate: for raw binary and ASCII files (Hz).
+	DURATION.DataFile_out.10 	-1        	Duration of read signal: -ve = unlimited (s)
+	STARTTIME.DataFile_out.10	0         	Start time (offset) for signal (s).
+	GAIN.DataFile_out.10     	0         	Relative signal gain (dB).
+
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.ams.0           	"C:\allProgs\collaborators\tutorials\loudness\filterFunction.sim"	Simulation file.
+	SEGMENT_MODE.ams.0       	OFF       	Segmented or frame-base processing mode ('on' or 'off').
+	# Sub-parameter list: 
+	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
+	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

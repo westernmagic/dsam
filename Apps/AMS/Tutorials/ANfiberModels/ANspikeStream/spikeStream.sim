@@ -1,0 +1,41 @@
+#spikeTimes.sim
+# creates a spike train (binary sequence)
+# and outputs this to a file 'outputSpikes.dat'
+# The output file is two-columns, 'time, 0/1'
+  
+off		Diagnostics mode ("off" or "on").
+relative	Parameter file path mode.
+ 
+begin 	{
+
+# or stimulus generation
+	Stim_PureTone_2		< stimulusTone.par
+
+	Trans_Gate				< rampUp.par
+	Trans_Gate				< rampDown.par
+	Display_Signal		< displayStimulus.par
+	
+# Outer-/middler-ear filter model.
+	Filt_MultiBPass		< filtMultiBandpassGP.par
+
+# Basilar membrane filter model.
+	BM_DRNL				< BM_DRNL_GP4.par
+	Display_Signal		< displayDRNL.par
+
+# IHC receptor potential
+	IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par	
+	Display_Signal		< displayIHCRP.par
+
+
+#IHC synaptic response
+	IHC_Meddis2000		< IHChsr2000spike.par
+
+#Refractory effect
+	AN_SG_Carney			< ANrefracCarneySpike.par
+
+	Display_Signal		< displayPSTH.par
+
+
+#Write output file
+	DataFile_out			< dataFileOutSpikes.par
+		}

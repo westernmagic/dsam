@@ -1,0 +1,4 @@
+BEGIN_DURATION	0.02	The pad duration for the beginning of the signal (s).
+BEGIN_VALUE	0	The pad value for the beginning of the signal (units).
+END_DURATION	0.02	The pad duration for the end of the signal (s).
+END_VALUE	0	The pad value for the end of the signal (units).

@@ -1,0 +1,26 @@
+function AMSoutput=computeAMS(simFile,signalfile, maxLag, AMSgain)
+
+if strcmp(simFile,'ACFearly.sim')
+   pars=[...
+      ' FILENAME.DataFile_In.0  ' signalfile ...
+      ' GAIN.DataFile_In.0 ' num2str(AMSgain+60)...
+      ' MAX_LAG.Ana_Acf.14 '	num2str(maxLag)...
+   ];
+else
+      pars=[...
+      ' FILENAME.DataFile_In.0  ' signalfile ...
+      ' GAIN.DataFile_In.0 ' num2str(AMSgain+60)...
+      ' MAX_LAG.Ana_Acf.12 '	num2str(maxLag)...
+   ];
+end
+
+AMSresultsFile= runDSAM ('', 'results', simFile,pars,'dat');
+fid = fopen(AMSresultsFile);
+if fid == -1, error('AMS did not produce a file'),   end  
+
+ignorFirstLine = fgetl(fid); 	%column headings (ignore)
+
+%read two column matrix (time, 0/1 spike event)
+AMSoutput= fscanf(fid,'%g',[3 inf]);
+fclose(fid); delete results*
+figure(1)

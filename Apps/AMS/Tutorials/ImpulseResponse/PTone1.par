@@ -1,0 +1,4 @@
+FREQUENCY	500	Frequency (Hz).
+INTENSITY	60	Intensity (dB SPL).
+DURATION	0.05	Duration (s).
+DT	2e-05	Sampling interval, dt (s).

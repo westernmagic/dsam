@@ -1,0 +1,21 @@
+#			Filt_MultiBPass			< filtStereocilia.par
+
+# 	Converts BM velocity into stereocilia deflection.
+# 	Effectively this is a velocity to amplitude conversion
+#    at high signal frequencies.
+#  	 i.e. 6 dB reduction per doubling of frequency
+
+
+1		 Number of parallel band pass filters.
+ 
+#	Order	Atten		lower cutoff	upper cutoff	
+#							(Hz)		(Hz)
+
+	1		-35.5 			  0			 10	
+ 
+Notes:
+
+1. Order is the order of the filter (1 or 2)
+2. Attenuation is the attenuation applied to the output of that filter.
+3. Lower and upper cut-off frequencies are 3 dB down points.
+4. Additional filters should be added as additional rows in the table.
