@@ -482,8 +482,9 @@ MyApp::SetTitle(void)
 		return;
 
 	if (frame) {
-		title.sprintf("%s: %s", GetPtr_AppInterface()->appName,
-		  GetPtr_AppInterface()->title);
+		title.sprintf("%s: %s (%s)", GetPtr_AppInterface()->appName, 
+		  wxFileNameFromPath(GetPtr_AppInterface()->title), (char *) wxPathOnly(
+		  GetPtr_AppInterface()->title).GetData());
 		frame->SetTitle(title);
 	}
 
