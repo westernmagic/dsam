@@ -8,7 +8,7 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	int			order;		/* Defines the Q value of the gamma tone filters.*/
+	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
 	double		cutOffFrequency;	/* Fc */
 	double		hCOperatingPoint;	/* PDfb */
 	double		asymmetricalBias;	/* P0 */

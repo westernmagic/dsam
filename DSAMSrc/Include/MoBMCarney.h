@@ -48,7 +48,7 @@
 
 typedef enum {
 
-	BASILARM_CARNEY_ORDER,
+	BASILARM_CARNEY_CASCADE,
 	BASILARM_CARNEY_CUTOFFFREQUENCY,
 	BASILARM_CARNEY_HCOPERATINGPOINT,
 	BASILARM_CARNEY_ASYMMETRICALBIAS,
@@ -71,11 +71,11 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	orderFlag, cutOffFrequencyFlag, hCOperatingPointFlag;
+	BOOLN	cascadeFlag, cutOffFrequencyFlag, hCOperatingPointFlag;
 	BOOLN	asymmetricalBiasFlag, maxHCVoltageFlag;
 	BOOLN	updateProcessVariablesFlag;
 
-	int		order;
+	int		cascade;
 	double	cutOffFrequency;
 	double	hCOperatingPoint;
 	double	asymmetricalBias;
@@ -122,7 +122,7 @@ UniParListPtr	GetUniParListPtr_BasilarM_Carney(void);
 
 BOOLN	Init_BasilarM_Carney(ParameterSpecifier parSpec);
 
-CarneyGTCoeffsPtr	InitCarneyGTCoeffs_BasilarM_Carney(int order, double cF);
+CarneyGTCoeffsPtr	InitCarneyGTCoeffs_BasilarM_Carney(int cascade, double cF);
 
 BOOLN	InitProcessVariables_BasilarM_Carney(EarObjectPtr data);
 
@@ -142,9 +142,9 @@ BOOLN	SetMaxHCVoltage_BasilarM_Carney(double theMaxHCVoltage);
 
 BOOLN	SetHCOperatingPoint_BasilarM_Carney(double theHCOperatingPoint);
 
-BOOLN	SetOrder_BasilarM_Carney(int theOrder);
+BOOLN	SetCascade_BasilarM_Carney(int theCascade);
 
-BOOLN	SetPars_BasilarM_Carney(int order, double cutOffFrequency,
+BOOLN	SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
 		  double hCOperatingPoint, double asymmetricalBias,
 		  double maxHCVoltage, CFListPtr cFList);
 

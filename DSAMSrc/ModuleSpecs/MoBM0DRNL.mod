@@ -12,6 +12,7 @@ typedef struct {
 
 	int		nonLinGTCascade;
 	int		nonLinLPCascade;
+	NameSpecifier	lPFilterMode;
 	NameSpecifier	compressionMode;
 	double	/* * */compressionPars;
 	int		linGTCascade;

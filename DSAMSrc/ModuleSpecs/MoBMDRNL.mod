@@ -1,5 +1,6 @@
 /* This is the module specification for the DRNL basilar
  * membrane module.
+ * This BM model
  */
 
 mod_name		BasilarM;
@@ -8,11 +9,18 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	int			order;	
-	double		nonLinearBroadeningCoeff;
+	int		nonLinGTCascade;
+	int		nonLinLPCascade;
+
 	double		compressionPower;
-	double		linearBroadeningCoeff;
-	double		outputScale;
+	
+	int		linGTCascade;
+	int		linLPCascade;
+	int		linCFMode;
+	double	linCFPars;
+	int		linBandwidthMode;
+	double	linScale;						/* b */
+
 	CFListPtr	theCFs;
 
 } BMDRNL;

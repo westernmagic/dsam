@@ -8,7 +8,7 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	int			order;		/* Defines the Q value of the gamma tone filters.*/
+	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
 
 } BMGammaT;

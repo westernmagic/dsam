@@ -59,7 +59,7 @@
 
 typedef enum {
 
-	BASILARM_DRNL_ORDER,
+	BASILARM_DRNL_CASCADE,
 	BASILARM_DRNL_NONLINEARBROADENINGCOEFF,
 	BASILARM_DRNL_COMPRESSIONPOWER,
 	BASILARM_DRNL_LINEARBROADENINGCOEFF,
@@ -72,11 +72,11 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	orderFlag;
+	BOOLN	cascadeFlag;
 	BOOLN	nonLinearBroadeningCoeffFlag, compressionPowerFlag, outputScaleFlag;
 	BOOLN	linearBroadeningCoeffFlag;
 	BOOLN	updateProcessVariablesFlag;
-	int		order;					/* Total (nonLinear filter) line order. */
+	int		cascade;				/* Total (nonLinear filter) line cascade. */
 	double	nonLinearBroadeningCoeff;	/* NonLinear broadening coefficient */
 	double	compressionPower;		/* - for broken stick compression. */
 	double	linearBroadeningCoeff;	/* Linear broadening coefficient */
@@ -143,13 +143,13 @@ BOOLN	SetCompressionPower_BasilarM_DRNL(double theCompressionPower);
 BOOLN	SetNonLinearBroadeningCoeff_BasilarM_DRNL(double 
 		  theNonLinearBroadeningCoeff);
 
-BOOLN	SetOrder_BasilarM_DRNL(int theOrder);
+BOOLN	SetCascade_BasilarM_DRNL(int theCascade);
 
 BOOLN	SetOutputScale_BasilarM_DRNL(double theOutputScale);
 
-BOOLN	SetPars_BasilarM_DRNL(int theOrder, double theNonLinearBroadeningCoeff,
-		  double theCompressionPower, double linearBroadeningCoeff,
-		  CFListPtr theCFs, double outputScale);
+BOOLN	SetPars_BasilarM_DRNL(int theCascade,
+		  double theNonLinearBroadeningCoeff, double theCompressionPower,
+		  double linearBroadeningCoeff, CFListPtr theCFs, double outputScale);
 		  
 BOOLN	SetLinearBroadeningCoeff_BasilarM_DRNL(double theLinearBroadeningCoeff);
 

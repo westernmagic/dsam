@@ -1,4 +1,4 @@
-2		Filter order.
+2		Filter cascade.
 0.0		Pre-attenuation for filter (dB).
 450.0	Lower, 3 dB down cut-off frequency (Hz).
 8500.0	Upper, 3 dB down cut-off frequency (Hz).

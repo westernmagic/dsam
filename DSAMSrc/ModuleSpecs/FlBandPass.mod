@@ -6,7 +6,7 @@ qualifier		BandPass;
 proc_routine	RunModel;
 typedef struct {
 
-	int		order;
+	int		cascade;
 	double	preAttenuation;			/* Pre-attenuation for filter. */
 	double	upperCutOffFreq, lowerCutOffFreq;
 

@@ -27,7 +27,7 @@
 
 typedef enum {
 
-	BM_GAMMT_ORDER,
+	BM_GAMMT_CASCADE,
 	BM_GAMMAT_THE_CFS
 
 } GammaTParSpecifier;
@@ -36,9 +36,9 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN		orderFlag;
+	BOOLN		cascadeFlag;
 	BOOLN		updateProcessVariablesFlag;
-	int			order;		/* Defines the Q value of the gamma tone filters.*/
+	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
 	
 	/* Private members */
@@ -89,9 +89,9 @@ BOOLN	SetBandwidths_BasilarM_GammaT(char *theBandwidthMode,
 
 BOOLN SetCFList_BasilarM_GammaT(CFListPtr theCFList);
 
-BOOLN	SetOrder_BasilarM_GammaT(int theOrder);
+BOOLN	SetCascade_BasilarM_GammaT(int theCascade);
 
-BOOLN	SetPars_BasilarM_GammaT(int theOrder, CFListPtr theCFs);
+BOOLN	SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_GammaT(void);
 
