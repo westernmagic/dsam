@@ -928,6 +928,7 @@ FreeProcessVariables_IHCRP_Shamma(void)
  * The reference potential, is not remembered for previous runs, and as added
  * after all processing has been done, because otherwise it causes problems
  * with the low-pass filtering effect.
+ * The 'denom_val' calculation is employed to trap exponential overflow errors.
  */
 
 BOOLN
@@ -937,8 +938,8 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	int		chan;
 	ChanLen	i;
 	double	leakageConductance_Ga, conductance_G, potential_V;
-	double	ciliaDisplacement_u, lastInput;
-	register	double		dtOverC, gkEpk, dtOverTc, cGain, dt, expArg;
+	double	ciliaDisplacement_u, lastInput, max_u, denom_val;
+	register	double		dtOverC, gkEpk, dtOverTc, cGain, dt;
 	register	ChanData	*inPtr, *outPtr;
 	
 	if (!CheckPars_IHCRP_Shamma()) {
@@ -972,22 +973,25 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	  shammaPtr->maxMConductance_Gmax / (1.0 + 1.0 / shammaPtr->beta);
 	cGain = pow(10.0, shammaPtr->ciliaCouplingGain_C / 20.0);
 	dtOverTc = dt / shammaPtr->ciliaTimeConst_tc;
+        max_u = log(HUGE_VAL);
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 		ciliaDisplacement_u = shammaPtr->lastCiliaDisplacement_u[chan];
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		potential_V = shammaPtr->lastOutput[chan];
 		lastInput = shammaPtr->lastInput[chan];
-		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
+		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {       
 			ciliaDisplacement_u += cGain * (*inPtr - lastInput) - 
 			  ciliaDisplacement_u * dtOverTc;
-			if ((expArg = -shammaPtr->gamma * ciliaDisplacement_u) >
-			  MAX_EXP_ARG) {
-				NotifyError("%s: Exponential overflow.", funcName);
-				return(FALSE);
-			}  
-			conductance_G = shammaPtr->maxMConductance_Gmax  / (1.0 +
-			  exp(expArg) / shammaPtr->beta) + leakageConductance_Ga;
+
+			denom_val = ((-shammaPtr->gamma * ciliaDisplacement_u) >= max_u)?
+			  1.0 + HUGE_VAL / shammaPtr->beta : 
+			  1.0 + exp(-shammaPtr->gamma * ciliaDisplacement_u) /
+			  shammaPtr->beta;
+
+			conductance_G = shammaPtr->maxMConductance_Gmax / denom_val +
+			  leakageConductance_Ga;
+ 
 			*outPtr = (ChanData) (potential_V - dtOverC * (conductance_G *
 			  (potential_V - shammaPtr->endocochlearPot_Et) +
 			  shammaPtr->kConductance_Gk * potential_V - gkEpk));

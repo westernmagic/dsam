@@ -74,8 +74,6 @@
 #	define LN_2	0.69314718055994529
 #endif
 
-#define	MAX_EXP_ARG			700.0
-
 #define MAXLINE				80		/* Max. No. of characters in a line. */
 #define SMALL_STRING		10		/* For small string operations. */
 #define LONG_STRING			255		/* For very long strings. */
