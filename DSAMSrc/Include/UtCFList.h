@@ -90,7 +90,7 @@ typedef struct CFList {
 	double	focalCF;
 	double	eRBDensity;
 	double	*frequency, *bandwidth;
-	BandwidthModePtr	bandwidthMode;
+	BandwidthMode	bandwidthMode;
 
 	/* Private members */
 	int		oldNumChannels;
@@ -153,6 +153,8 @@ BOOLN		ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs);
 
 CFListPtr	ReadPars_CFList(FILE *fp);
 
+BOOLN		RegenerateList_CFList(CFListPtr theCFs);
+
 BOOLN		ResetBandwidth_CFList(CFListPtr theCFs, int channel,
 			  double theBandwidth);
 
@@ -170,6 +172,8 @@ BOOLN		SetBandwidths_CFList(CFListPtr theCFs, char *modeName,
 			  double *theBandwidths);
 
 BOOLN		SetBandwidthUniParList_CFList(CFListPtr theCFs);
+
+BOOLN		SetBandwidthUniParListMode_CFList(CFListPtr theCFs);
 
 BOOLN		SetCFUniParList_CFList(CFListPtr theCFs);
 
@@ -194,9 +198,6 @@ BOOLN		SetIndividualFreq_CFList(CFListPtr theCFs, int theIndex,
 BOOLN		SetMaxCF_CFList(CFListPtr theCFs, double maxCF);
 
 BOOLN		SetMinCF_CFList(CFListPtr theCFs, double minCF);
-
-BOOLN		SetNewBandwidthMode_CFList(CFListPtr theCFs,
-			  BandwidthModePtr oldMode);
 
 BOOLN		SetNumChannels_CFList(CFListPtr theCFs, int numChannels);
 
