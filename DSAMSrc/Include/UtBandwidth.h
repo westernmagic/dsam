@@ -113,7 +113,7 @@ double	GuineaPigFromF_Bandwidth(double f);
 
 double	NonLinearFromF_Bandwidth(double f);
 
-BandwidthModePtr	GetMode_Bandwidth(char *modeName);
+BOOLN	SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName);
 
 __END_DECLS
 
