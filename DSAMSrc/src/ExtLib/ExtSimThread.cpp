@@ -31,7 +31,6 @@
 #include <stdlib.h>
 
 #include "ExtCommon.h"
-#include <wx/docview.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -40,9 +39,6 @@
 #include "GeModuleMgr.h"
 #include "UtAppInterface.h"
 
-#include "GrSDIFrame.h"
-#include "GrIPCServer.h"
-#include "GrSimMgr.h"
 #include "ExtMainApp.h"
 #include "ExtSimThread.h"
 

@@ -17,9 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef WX_PRECOMP
-#	include <wx/wx.h>
-#endif
+#include <ExtCommon.h>
 
 #include <wx/socket.h>
 #include <wx/filename.h>
