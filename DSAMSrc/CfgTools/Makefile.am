@@ -3,6 +3,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= build
+EXTRA_DIST	= cvsconfigure
 
 

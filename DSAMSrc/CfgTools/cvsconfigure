@@ -1,0 +1,18 @@
+#!/bin/sh
+##################
+#
+# File:		cvsconfigure
+# Purpose:	This script runs all of the commands necessary for configuring DSAM
+#			from the CVS repository.
+# Author:	L.P.O'Mard
+# Created:	21 Jun 2001
+# Updated:	
+# Copyright:(c) 2001, University of Essex
+#
+##################
+
+aclocal
+autoconf
+automake --add-missing
+
+
