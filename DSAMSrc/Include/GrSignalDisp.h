@@ -44,16 +44,19 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			24
+#define DISPLAY_NUM_PARS			28
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
 #define	DEFAULT_WIDTH					-1.0
 #define	DEFAULT_CHANNEL_STEP			1
-#define	DEFAULT_X_DEC_PLACES			0
-#define	DEFAULT_Y_DEC_PLACES			0
+#define	DEFAULT_X_NUMBER_FORMAT			"xe-3"
+#define	DEFAULT_Y_NUMBER_FORMAT			"x"
 #define	DEFAULT_X_TICKS					6
 #define	DEFAULT_Y_TICKS					15
+#define DEFAULT_X_DEC_PLACES			0
+#define DEFAULT_Y_DEC_PLACES			0
+
 
 #define	DISPLAY_PROCESS_NAME				"DSAM Display"
 #define	DISPLAY_DEFAULT_FRAME_WIDTH			440
@@ -89,9 +92,13 @@ typedef	enum {
 	DISPLAY_X_RESOLUTION,
 	DISPLAY_Y_NORMALISATION_MODE,
 	/* Axis controls */
+	DISPLAY_X_AXIS_TITLE,
+	DISPLAY_X_NUMBER_FORMAT,
 	DISPLAY_X_DEC_PLACES,
 	DISPLAY_X_TICKS,
+	DISPLAY_Y_AXIS_TITLE,
 	DISPLAY_Y_AXIS_MODE,
+	DISPLAY_Y_NUMBER_FORMAT,
 	DISPLAY_Y_DEC_PLACES,
 	DISPLAY_Y_TICKS,
 	DISPLAY_Y_INSET_SCALE,
@@ -134,13 +141,18 @@ typedef struct {
 	BOOLN	automaticYScalingFlag, channelStepFlag, frameHeightFlag;
 	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, yAxisModeFlag;
 	BOOLN	yNormalisationModeFlag, modeFlag, numGreyScalesFlag;
-	BOOLN	summaryDisplayFlag, xTicksFlag, xDecPlacesFlag, yDecPlacesFlag;
+	BOOLN	summaryDisplayFlag, xTicksFlag, xNumberFormatFlag;
+	BOOLN	yNumberFormatFlag, xDecPlacesFlag, yDecPlacesFlag;
 	BOOLN	yTicksFlag, yInsetScaleFlag, frameDelayFlag, titleFlag;
 	BOOLN	magnificationFlag, xResolutionFlag, minYFlag, maxYFlag;
-	BOOLN	topMarginFlag, widthFlag;
+	BOOLN	topMarginFlag, widthFlag, xAxisTitleFlag, yAxisTitleFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	char	title[MAXLINE];
+	char	xAxisTitle[MAXLINE];
+	char	yAxisTitle[MAXLINE];
+	char	xNumberFormat[MAXLINE];
+	char	yNumberFormat[MAXLINE];
 	int		automaticYScaling;
 	int		channelStep;
 	int		frameHeight;
@@ -148,13 +160,13 @@ typedef struct {
 	int		frameXPos;
 	int		frameYPos;
 	int		yAxisMode;
+	int		xDecPlaces;
+	int		yDecPlaces;
 	int		yNormalisationMode;
 	int		mode;
 	int		numGreyScales;
 	int		summaryDisplay;
 	int		xTicks;
-	int		xDecPlaces;
-	int		yDecPlaces;
 	int		yTicks;
 	int		yInsetScale;
 	double	frameDelay;
@@ -172,7 +184,7 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			redrawGraphFlag;
-	BOOLN			resetTitleFlag;
+	BOOLN			drawCompletedFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	data;
@@ -262,15 +274,6 @@ BOOLN	SetNumGreyScales_SignalDisp(int theNumGreyScales);
 
 BOOLN	SetParsPointer_SignalDisp(ModulePtr theModule);
 
-BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
-		  char *theYNormalisationMode, char *theYAxisMode,
-		  char *theSummaryDisplay, char *theTitle, char *yInsetScale,
-		  int channelStep, int theNumGreyScales, int theFrameHeight,
-		  int theFrameWidth, int theFrameXPos, int theFrameYPos,
-		  int theXDecPlaces, int theXticks, int theYDecPlaces, int theYticks,
-		  double theFrameDelay, double theMagnification, double theXResolution,
-		  double maxY, double minY, double topMargin, double width);
-
 BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
 BOOLN	SetMagnification_SignalDisp(double magnification);
@@ -285,15 +288,23 @@ BOOLN	SetUniParList_SignalDisp(void);
 
 BOOLN	SetWidth_SignalDisp(double width);
 
-BOOLN	SetXResolution_SignalDisp(double xResolution);
+BOOLN	SetXAxisTitle_SignalDisp(char *xAxisTitle);
 
 BOOLN	SetXDecPlaces_SignalDisp(int xDecPlaces);
+
+BOOLN	SetXResolution_SignalDisp(double xResolution);
+
+BOOLN	SetXNumberFormat_SignalDisp(char *xNumberFormat);
 
 BOOLN	SetXTicks_SignalDisp(int xTicks);
 
 BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
 
+BOOLN	SetYAxisTitle_SignalDisp(char *yAxisTitle);
+
 BOOLN	SetYDecPlaces_SignalDisp(int yDecPlaces);
+
+BOOLN	SetYNumberFormat_SignalDisp(char *yNumberFormat);
 
 BOOLN	SetYInsetScale_SignalDisp(char *yInsetScale);
 

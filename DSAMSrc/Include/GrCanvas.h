@@ -25,6 +25,7 @@
 #define _GRCANVAS_H 1
 
 #include "GrLine.h"
+#include "GrAxisScale.h"
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -40,23 +41,22 @@
 #define	GRAPH_Y_INSET_SCALE_OFFSET_SCALE	0.55
 #define	GRAPH_Y_INSET_SCALE_HEIGHT_SCALE	0.1
 #define GRAPH_Y_INSET_SCALE_UPPER_EXP_LIMIT	2
-#define GRAPH_Y_SCALE_LOWER_EXP_LIMIT		0
-#define GRAPH_Y_SCALE_UPPER_EXP_LIMIT		5
 
-#define	GRAPH_X_AXIS_SCALE					0.07
+#define	GRAPH_X_AXIS_SCALE					0.13
 #define	GRAPH_X_TITLE_SCALE					0.03
 #define	GRAPH_X_TITLE_MARGIN_SCALE			0.02
 #define	GRAPH_X_LABELS_Y_OFFSET_SCALE		0.04
 
 #define GRAPH_EXPONENT_VS_LABEL_SCALE		0.7
+#define GRAPH_EXPONENT_LENGTH				4
 #define GRAPH_INSET_VS_LABEL_SCALE			0.5
 
 #if defined(__WXMSW__)
 #	define	GRAPH_AXIS_TITLE_SCALE			0.3
-#	define	GRAPH_AXIS_LABEL_SCALE			0.3
+#	define	GRAPH_AXIS_LABEL_SCALE			0.03
 #else
 #	define	GRAPH_AXIS_TITLE_SCALE			0.40
-#	define	GRAPH_AXIS_LABEL_SCALE			0.45
+#	define	GRAPH_AXIS_LABEL_SCALE			0.035
 #endif /* __WXMSW__ */
 
 #define	GRAPH_X_TICK_LENGTH_SCALE			0.08
@@ -111,6 +111,7 @@ class MyCanvas: public wxWindow
 	wxMemoryDC	memDC;
 	wxBitmap	*memBmp;
 	MultiLine	*signalLines, *summaryLine;
+	AxisScale	xAxisScale, yAxisScale;
 	SignalDispPtr	mySignalDispPtr;
 
   public:
@@ -126,10 +127,9 @@ class MyCanvas: public wxWindow
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 			  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-			  int upperExpLimit, double minYScale);
+			  double minYValue, double maxYValue);
 	int		GetMinimumIntLog(double value);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
-	int		GetYExponent(MultiLine *lines, int upperExpLimit);
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(void);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }

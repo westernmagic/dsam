@@ -62,6 +62,7 @@
 #include "GrUtils.h"
 #include "GrBrushes.h"
 #include "GrSignalDisp.h"
+#include "GrAxisScale.h"
 #include "GrCanvas.h"
 #include "GrDisplayS.h"
 #include "GrPrintDisp.h"
@@ -116,8 +117,7 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 	labelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
 	superLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
 	insetLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
-	axisTitleFont = new wxFont(14, wxROMAN, wxNORMAL,
-	  wxBOLD);
+	axisTitleFont = new wxFont(14, wxROMAN, wxNORMAL, wxBOLD);
 	xAxis = new wxRect();
 	yAxis = new wxRect();
 
@@ -314,10 +314,10 @@ MyCanvas::InitData(EarObjectPtr data)
 	}
 	outputTimeOffset = data->outSignal->outputTimeOffset;
 		/* Tidy up, using wxString - when wxString works. */
-	if (strcmp(xTitle, data->outSignal->info.sampleTitle) != 0)
-		xTitle.Printf("%s", data->outSignal->info.sampleTitle);
-	if (strcmp(yTitle, data->outSignal->info.channelTitle) != 0)
-		yTitle.Printf("%s", data->outSignal->info.channelTitle);
+	if (strcmp(xTitle, mySignalDispPtr->xAxisTitle) != 0)
+		xTitle.Printf("%s", mySignalDispPtr->xAxisTitle);
+	if (strcmp(yTitle, mySignalDispPtr->yAxisTitle) != 0)
+		yTitle.Printf("%s", mySignalDispPtr->yAxisTitle);
 
 }
 
@@ -385,8 +385,8 @@ MyCanvas::SetGreyScaleLines(MultiLine *lines, EarObjectPtr data, wxRect& rect,
 
 	lines->SetGreyScaleMode(TRUE);
 	lines->SetParams(rect);
-	yScale = (mySignalDispPtr->numGreyScales - 1) / (lines->GetMaxY() -
-	  lines->GetMinY());
+	yScale = (mySignalDispPtr->numGreyScales - 1) / (lines->GetMaxY() - lines->
+	  GetMinY());
 	xScale = rect.GetWidth() / data->outSignal->length;
 	if (xScale >= 1.0)
 		xIndex = 1;
@@ -433,11 +433,11 @@ MyCanvas::SetTextAdjust(double *xAdjust, double *yAdjust)
 void
 MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
-	int		i, tickLength, xTickSpacing, yPos, xPos;
+	static const char *funcName = "MyCanvas::DrawXAxis";
+	int		i, tickLength, yPos, xPos, xTitlePos, yTitlePos;
 	long int	stringWidth, stringHeight;
-	double	interval, scale, timeOffsetMS, tempXAdjust, tempYAdjust;
-	double	roundingScaler, unitScale;
-	wxString stringNum, format, label, space = " ";
+	double	tempXAdjust, tempYAdjust, xValue;
+	wxString stringNum, label, space = " ";
 
 	if (!xAxis)
 		return;
@@ -447,20 +447,19 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	dc.SetFont(*labelFont);
 	dc.DrawLine(xAxis->GetLeft() + theXOffset,  xAxis->GetTop() + theYOffset,
 	  xAxis->GetRight() + theXOffset, xAxis->GetTop() + theYOffset);
-	timeOffsetMS = MSEC(outputTimeOffset + timeIndex * dt) ;
-	roundingScaler = pow(10.0, mySignalDispPtr->xDecPlaces);
-	unitScale = (xTitle.Replace("(s)", "(ms)"))? 1000.0: 1.0;
-	interval = floor(unitScale * (chanLength - 1) * dt * roundingScaler + 0.5) /
-	  roundingScaler;
-	scale = interval / (mySignalDispPtr->xTicks - 1);
-	xTickSpacing = xAxis->GetWidth() / (mySignalDispPtr->xTicks - 1);
+	if (!xAxisScale.Set(mySignalDispPtr->xNumberFormat, outputTimeOffset +
+	  timeIndex * dt, outputTimeOffset + (timeIndex + chanLength - 1) * dt,
+	  xAxis->GetLeft(), xAxis->GetRight(), mySignalDispPtr->xTicks)) {
+		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
+		return;
+	}
 	tickLength = (int) (xAxis->GetHeight() * GRAPH_X_TICK_LENGTH_SCALE);
-	format.Printf("%%.%df", mySignalDispPtr->xDecPlaces);
 	yPos = (int) (xAxis->GetTop() + theYOffset + xAxis->GetHeight() *
 	  GRAPH_X_LABELS_Y_OFFSET_SCALE);
 	for (i = 0; i < mySignalDispPtr->xTicks; i++) {
-		xPos = xAxis->GetLeft() + i * xTickSpacing + theXOffset;
-		stringNum.Printf(format, i * scale + timeOffsetMS);
+		xValue = xAxisScale.GetTickValue(i);
+		xPos = xAxisScale.GetTickPosition(xValue) + theXOffset;
+		stringNum.Printf(xAxisScale.GetOutputFormatString(), xValue);
 		dc.GetTextExtent(stringNum, &stringWidth, &stringHeight);
 		dc.DrawText(stringNum, (int) (xPos - stringWidth * tempXAdjust / 2.0),
 		  (int) (yPos + ((useTextAdjust)? stringHeight / 2.0: 0.0)));
@@ -469,10 +468,14 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	}
 	dc.SetFont(*axisTitleFont);
 	dc.GetTextExtent(xTitle, &stringWidth, &stringHeight);
-	dc.DrawText(xTitle, (int) ((xAxis->GetWidth() + stringWidth * tempXAdjust) /
-	   2.0 + theXOffset), (int) (xAxis->GetBottom() - stringHeight *
-	   tempYAdjust - xAxis->GetHeight() * GRAPH_X_TITLE_MARGIN_SCALE +
-	   theYOffset));
+	xTitlePos = (int) ((xAxis->GetWidth() + stringWidth * tempXAdjust) / 2.0 +
+	  theXOffset);
+	yTitlePos = (int) (xAxis->GetBottom() - stringHeight * tempYAdjust - xAxis->
+	  GetHeight() * GRAPH_X_TITLE_MARGIN_SCALE + theYOffset);
+	dc.DrawText(xTitle, xTitlePos, yTitlePos);
+	if (xAxisScale.GetExponent())
+		DrawExponent(dc, labelFont, xAxisScale.GetExponent(), xAxis->GetRight(
+		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
 
 }
 
@@ -513,28 +516,6 @@ MyCanvas::GetMinimumIntLog(double value)
 
 }
 
-/****************************** GetYExponent **********************************/
-
-/*
- * This routine returns a suitable exponent using the maximum and minimum Y
- * values.
- */
-
-int
-MyCanvas::GetYExponent(MultiLine *lines, int upperExpLimit)
-{
-	int		exponent, bottomLog, topLog;
-
-	bottomLog = GetMinimumIntLog(lines->GetMinY());
-	topLog = GetMinimumIntLog(lines->GetMaxY());
-	exponent = (fabs(bottomLog) > fabs(topLog))? bottomLog: topLog;
-	if ((exponent < GRAPH_Y_SCALE_LOWER_EXP_LIMIT) || (exponent >
-	  upperExpLimit))
-		return(exponent);
-	return(0);
-
-}
-
 /******************************* DrawYScale ***********************************/
 
 /*
@@ -545,15 +526,15 @@ MyCanvas::GetYExponent(MultiLine *lines, int upperExpLimit)
 void
 MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
   int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-  int upperExpLimit, double minYScale)
+  double minYValue, double maxYValue)
 {
 	/* static const char *funcName = "MyCanvas::DrawYScale"; */
-	int		i, j, tickLength, exponent = 0, xPos, yPos, top, xLabel;
+	int		i, j, tickLength, xPos, yPos, top, xLabel;
 	int		leftMostLabel;
 	long int	stringWidth, stringHeight, charWidth;
-	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, scale;
-	double	displayScale, chanDisplayScale;
-	wxString format, label, space = " ";
+	double	tempXAdjust, tempYAdjust, chanSpacing, yOffset;
+	double	displayScale, chanDisplayScale, yValue;
+	wxString label, space = " ";
 
 	dc.SetPen(*wxBLACK_PEN);
 	SetTextAdjust(&tempXAdjust, &tempYAdjust);
@@ -564,23 +545,22 @@ MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 	displayScale = (double) yAxisRect->GetHeight() / yAxis->GetHeight();
 	chanDisplayScale = (double) signalLines->GetNumDisplayedLines() /
 	  numDisplayedChans;
-	chanSpacing = signalLines->GetChannelSpace() * chanDisplayScale;
+	chanSpacing = signalLines->GetChannelSpace() * chanDisplayScale *
+	  displayScale;
+	yAxisScale.Set(mySignalDispPtr->yNumberFormat, minYValue, maxYValue, 0,
+	  (int) chanSpacing, yTicks);
 	tickLength = (int) (yAxisRect->GetWidth() * GRAPH_Y_TICK_LENGTH_SCALE);
 	dc.GetTextExtent(space, &charWidth, &stringHeight);
 	xPos = (int) (yAxisRect->GetRight() - tickLength + theXOffset - yAxisRect->
 	  GetWidth() * GRAPH_Y_LABELS_X_OFFSET_SCALE);
 	leftMostLabel = xPos;
-	exponent = GetYExponent(signalLines, upperExpLimit);
-	scale = (signalLines->GetMaxY() - signalLines->GetMinY()) * displayScale *
-	  chanDisplayScale / (yTicks - 1.0);
-	yTickSpacing = chanSpacing * displayScale / (yTicks - 1);
-	format.Printf("%%.%df", mySignalDispPtr->yDecPlaces);
 	for (j = 0; j < numDisplayedChans; j++) {
 		yOffset = yAxisRect->GetBottom() - j * chanSpacing + theYOffset;
 		for (i = 0; i < yTicks; i++) {
-			yPos = (int) (yOffset - i * yTickSpacing + 0.5);
-			label.sprintf(format, (i * scale + minYScale) * pow(10.0,
-			  -exponent) / mySignalDispPtr->magnification);
+			yValue = yAxisScale.GetTickValue(i);
+			yPos = (int) (yOffset - yAxisScale.GetTickPosition(yValue));
+			label.sprintf(yAxisScale.GetOutputFormatString(), yValue /
+			  mySignalDispPtr->magnification);
 			dc.GetTextExtent(label, &stringWidth, &stringHeight);
 			xLabel = (int) (xPos - (stringWidth - charWidth / 2.0) *
 			  tempXAdjust);
@@ -592,9 +572,9 @@ MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 			  yAxisRect->GetRight() + theXOffset, yPos);
 		}
 	}
-	if (exponent)
-		DrawExponent(dc, labelFont, exponent, leftMostLabel - charWidth * 8,
-		  top + theYOffset + stringHeight);
+	if (yAxisScale.GetExponent())
+		DrawExponent(dc, labelFont, yAxisScale.GetExponent(), leftMostLabel -
+		  charWidth * 8, top + theYOffset + stringHeight);
 
 }
 
@@ -606,7 +586,8 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 	static const char *funcName = "MyCanvas::DrawYAxis";
 	int		i, numDisplayedChans, tickLength, xPos, yPos;
 	long int	stringWidth, stringHeight, charWidth;
-	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset;
+	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, minY;
+	double	maxY;
 	wxString format, label, space = " ";
 
 	if (!yAxis)
@@ -645,18 +626,26 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 			  ));
 			insetLabelFont->SetPointSize((int)(labelFont->GetPointSize() *
 			  GRAPH_INSET_VS_LABEL_SCALE));
+			if (signalLines->GetMaxY() > 0.0) {
+				minY = 0.0;
+				maxY = signalLines->GetMaxY();
+			} else {
+				minY = signalLines->GetMinY();
+				maxY = 0.0;
+			}
 			DrawYScale(dc, &yInset, insetLabelFont, theXOffset - (int) floor(
 			  yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE + 0.5),
-			  theYOffset, 2, 1, GRAPH_Y_INSET_SCALE_UPPER_EXP_LIMIT, 0.0);
+			  theYOffset, 2, 1, minY, maxY);
 		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
 		DrawYScale(dc, yAxis, labelFont, theXOffset, theYOffset,
-		  mySignalDispPtr->yTicks, numDisplayedChans,
-		  GRAPH_Y_SCALE_UPPER_EXP_LIMIT, signalLines->GetMinY());
+		  mySignalDispPtr->yTicks, numDisplayedChans, signalLines->GetMinY(),
+		  signalLines->GetMaxY());
 		break;
 	default:
-		NotifyError("%s: Scale (%d) not implemented.", funcName);
+		wxLogWarning("%s: Scale (%d) not implemented.", funcName,
+		  mySignalDispPtr->yAxisMode);
 	}
 	dc.SetFont(*axisTitleFont);
 	dc.GetTextExtent(yTitle, &stringWidth, &stringHeight);
@@ -682,10 +671,10 @@ MyCanvas::DrawGraph(wxDC& dc, int theXOffset, int theYOffset)
 	signalLines->DrawLines(dc,  theXOffset,  theYOffset);
 	if (mySignalDispPtr->summaryDisplay)
 		summaryLine->DrawLines(dc, theXOffset, theYOffset);
-	labelFont->SetPointSize((int) (xAxis->GetHeight() *
+	labelFont->SetPointSize((int) (parent->GetClientSize().GetHeight() *
 	  GRAPH_AXIS_LABEL_SCALE));
-	axisTitleFont->SetPointSize((int) (xAxis->GetHeight() *
-	  GRAPH_AXIS_TITLE_SCALE));
+	axisTitleFont->SetPointSize((int) (parent->GetClientSize().GetHeight() *
+	  GRAPH_AXIS_LABEL_SCALE));
 	DrawXAxis(dc, theXOffset, theYOffset);
 	DrawYAxis(dc, theXOffset, theYOffset);
 
@@ -799,7 +788,7 @@ MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 		PrintDisp printout(this);
 
 		if (!printer.Print(this, &printout, TRUE))
-			NotifyError("%s:There was a problem printing.\nPerhaps your "
+			wxLogWarning("%s:There was a problem printing.\nPerhaps your "
 			  "current printer is not set correctly?",funcName);
 		else
 			*printData = printer.GetPrintDialogData().GetPrintData();

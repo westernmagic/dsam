@@ -191,6 +191,7 @@
 #	include "GrSimThread.h"
 #	include "GrSimMgr.h"
 #	include "GrLine.h"
+#	include "GrAxisScale.h"
 #	include "GrCanvas.h"
 #	include "GrPrintDisp.h"
 #	include "GrBrushes.h"

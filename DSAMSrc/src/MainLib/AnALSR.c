@@ -610,11 +610,7 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		GetWindowLimits_SignalData(data->inSignal[0], &minWinChan, &maxWinChan,
 		  i * dF, aLSRPtr->lowerAveLimit, aLSRPtr->upperAveLimit,
 		  SIGNALDATA_LIMIT_MODE_OCTAVE);
-		/* printf("%s: frequency: %g Hz, minWinChan: %d, maxWinChan: %d\n",
-		  funcName, i * dF, minWinChan, maxWinChan); */
 		for (chan = minWinChan, *outPtr = 0.0; chan <= maxWinChan; chan++)
-			/* *outPtr += (aLSRPtr->modulusFT->outSignal->channel[chan][i] /
-			  aLSRPtr->modulusFT->outSignal->channel[chan][1]); */
 			*outPtr += aLSRPtr->modulusFT->outSignal->channel[chan][i];
 	}
 	for (i = maxIndex + 1; i < data->outSignal->length; i++)

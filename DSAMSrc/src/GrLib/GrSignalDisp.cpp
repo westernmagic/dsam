@@ -115,7 +115,7 @@ GetPanelList_SignalDisp(int index)
 	static NameSpecifier	list[] = {
 
 				{ "Signal",		DISPLAY_AUTOMATIC_SCALING },
-				{ "Axis",		DISPLAY_X_DEC_PLACES },
+				{ "Axis",		DISPLAY_X_AXIS_TITLE },
 				{ "General",	DISPLAY_FRAME_DELAY },
 				{ "", 			DISPLAY_NULL }
 			};
@@ -135,33 +135,37 @@ InitParNameList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ "AUTO_SCALING", DISPLAY_AUTOMATIC_SCALING },
-					{ "CHANNEL_STEP", DISPLAY_CHANNEL_STEP },
-					{ "MAGNIFICATION", DISPLAY_MAGNIFICATION },
-					{ "MAXY", DISPLAY_MAX_Y },
-					{ "MINY", DISPLAY_MIN_Y },
-					{ "NUMGREYSCALES", DISPLAY_NUMGREYSCALES },
-					{ "WIDTH", DISPLAY_WIDTH },
-					{ "X_RESOLUTION", DISPLAY_X_RESOLUTION },
-					{ "NORMALISATION", DISPLAY_Y_NORMALISATION_MODE },
+					{ "AUTO_SCALING",	DISPLAY_AUTOMATIC_SCALING },
+					{ "CHANNEL_STEP",	DISPLAY_CHANNEL_STEP },
+					{ "MAGNIFICATION",	DISPLAY_MAGNIFICATION },
+					{ "MAXY",			DISPLAY_MAX_Y },
+					{ "MINY",			DISPLAY_MIN_Y },
+					{ "NUMGREYSCALES",	DISPLAY_NUMGREYSCALES },
+					{ "WIDTH",			DISPLAY_WIDTH },
+					{ "X_RESOLUTION",	DISPLAY_X_RESOLUTION },
+					{ "NORMALISATION",	DISPLAY_Y_NORMALISATION_MODE },
 
+					{ "X_AXIS_TITLE",	DISPLAY_X_AXIS_TITLE },
+					{ "X_NUMBER_FORMAT",	DISPLAY_X_NUMBER_FORMAT },
 					{ "X_DEC_PLACES", DISPLAY_X_DEC_PLACES },
-					{ "X_TICKS", DISPLAY_X_TICKS },
-					{ "Y_AXIS_MODE", DISPLAY_Y_AXIS_MODE },
+					{ "X_TICKS",		DISPLAY_X_TICKS },
+					{ "Y_AXIS_TITLE",	DISPLAY_Y_AXIS_TITLE },
+					{ "Y_AXIS_MODE",	DISPLAY_Y_AXIS_MODE },
+					{ "Y_NUMBER_FORMAT",	DISPLAY_Y_NUMBER_FORMAT },
 					{ "Y_DEC_PLACES", DISPLAY_Y_DEC_PLACES },
-					{ "Y_TICKS", DISPLAY_Y_TICKS },
-					{ "Y_INSET_SCALE", DISPLAY_Y_INSET_SCALE },
+					{ "Y_TICKS",		DISPLAY_Y_TICKS },
+					{ "Y_INSET_SCALE",	DISPLAY_Y_INSET_SCALE },
 
-					{ "FRAMEDELAY", DISPLAY_FRAME_DELAY },
-					{ "MODE", DISPLAY_MODE },
-					{ "SUMMARYDISPLAY", DISPLAY_SUMMARY_DISPLAY },
-					{ "TOPMARGIN", DISPLAY_TOP_MARGIN },
-					{ "WIN_HEIGHT", DISPLAY_WINDOW_HEIGHT },
-					{ "WIN_TITLE", DISPLAY_WINDOW_TITLE },
-					{ "WIN_WIDTH", DISPLAY_WINDOW_WIDTH },
-					{ "WIN_X_POS", DISPLAY_WINDOW_X_POS },
-					{ "WIN_Y_POS", DISPLAY_WINDOW_Y_POS },
-					{ "", DISPLAY_NULL }
+					{ "FRAMEDELAY",		DISPLAY_FRAME_DELAY },
+					{ "MODE",			DISPLAY_MODE },
+					{ "SUMMARYDISPLAY",	DISPLAY_SUMMARY_DISPLAY },
+					{ "TOPMARGIN",		DISPLAY_TOP_MARGIN },
+					{ "WIN_HEIGHT",		DISPLAY_WINDOW_HEIGHT },
+					{ "WIN_TITLE",		DISPLAY_WINDOW_TITLE },
+					{ "WIN_WIDTH",		DISPLAY_WINDOW_WIDTH },
+					{ "WIN_X_POS",		DISPLAY_WINDOW_X_POS },
+					{ "WIN_Y_POS",		DISPLAY_WINDOW_Y_POS },
+					{ "",				DISPLAY_NULL }
 				};
 	signalDispPtr->parNameList = list;
 	return(TRUE);
@@ -261,6 +265,10 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->topMarginFlag = FALSE;
 	signalDispPtr->channelStepFlag = FALSE;
 	signalDispPtr->xTicksFlag = FALSE;
+	signalDispPtr->xAxisTitleFlag = FALSE;
+	signalDispPtr->xNumberFormatFlag = FALSE;
+	signalDispPtr->yAxisTitleFlag = FALSE;
+	signalDispPtr->yNumberFormatFlag = FALSE;
 	signalDispPtr->xDecPlacesFlag = FALSE;
 	signalDispPtr->yDecPlacesFlag = FALSE;
 	signalDispPtr->yTicksFlag = FALSE;
@@ -271,8 +279,8 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->frameDelay = DISPLAY_DEFAULT_FRAME_DELAY;
 	signalDispPtr->frameHeight = DISPLAY_DEFAULT_FRAME_HEIGHT;
 	signalDispPtr->frameWidth = DISPLAY_DEFAULT_FRAME_WIDTH;
-	wxGetApp().GetDefaultDisplayPos(&signalDispPtr->frameXPos,
-	  &signalDispPtr->frameYPos);
+	wxGetApp().GetDefaultDisplayPos(&signalDispPtr->frameXPos, &signalDispPtr->
+	  frameYPos);
 	signalDispPtr->yAxisMode = GRAPH_Y_AXIS_MODE_CHANNEL;
 	signalDispPtr->yNormalisationMode = LINE_YNORM_MIDDLE_MODE;
 	signalDispPtr->mode = GRAPH_MODE_LINE;
@@ -283,11 +291,15 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->width = DEFAULT_WIDTH;
 	signalDispPtr->channelStep = DEFAULT_CHANNEL_STEP;
 	signalDispPtr->xTicks = DEFAULT_X_TICKS;
+	strcpy(signalDispPtr->xNumberFormat, DEFAULT_X_NUMBER_FORMAT);
+	strcpy(signalDispPtr->yNumberFormat, DEFAULT_Y_NUMBER_FORMAT);
 	signalDispPtr->xDecPlaces = DEFAULT_X_DEC_PLACES;
 	signalDispPtr->yDecPlaces = DEFAULT_Y_DEC_PLACES;
 	signalDispPtr->yTicks = DEFAULT_Y_TICKS;
 	signalDispPtr->yInsetScale = GENERAL_BOOLEAN_ON;
 	signalDispPtr->title[0] = '\0';
+	signalDispPtr->xAxisTitle[0] = '\0';
+	signalDispPtr->yAxisTitle[0] = '\0';
 	signalDispPtr->xResolution = DEFAULT_X_RESOLUTION;
 	
 	InitModeList_SignalDisp();
@@ -304,7 +316,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->summary = NULL;
 	signalDispPtr->inLineProcess = FALSE;
 	signalDispPtr->redrawGraphFlag = FALSE;
-	signalDispPtr->resetTitleFlag = FALSE;
+	signalDispPtr->drawCompletedFlag = TRUE;
 	signalDispPtr->display = NULL;
 	signalDispPtr->dialog = NULL;
 	signalDispPtr->critSect = NULL;
@@ -472,9 +484,15 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yNormalisationMode, yNormModeList_Line,
 	  (void * (*)) SetYNormalisationMode_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_TITLE], signalDispPtr->parNameList[
+	  DISPLAY_Y_AXIS_TITLE].name,
+	  "Y-axis title.",
+	  UNIPAR_STRING,
+	  &signalDispPtr->yAxisTitle, NULL,
+	  (void * (*)) SetYAxisTitle_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_MODE],
 	  signalDispPtr->parNameList[DISPLAY_Y_AXIS_MODE].name,
-	  "Y axis mode ('channel' (No.) or 'scale').",
+	  "Y-axis mode ('channel' (No.) or 'scale').",
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yAxisMode, signalDispPtr->yAxisModeList,
 	  (void * (*)) SetYAxisMode_SignalDisp);
@@ -484,12 +502,30 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_INT,
 	  &signalDispPtr->xTicks, NULL,
 	  (void * (*)) SetXTicks_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], signalDispPtr->parNameList[
+	  DISPLAY_X_AXIS_TITLE].name,
+	  "X axis title.",
+	  UNIPAR_STRING,
+	  &signalDispPtr->xAxisTitle, NULL,
+	  (void * (*)) SetXAxisTitle_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT],
+	  signalDispPtr->parNameList[DISPLAY_X_NUMBER_FORMAT].name,
+	  "X axis scale number format, (e.g. x.xxe-3).",
+	  UNIPAR_STRING,
+	  &signalDispPtr->xNumberFormat, NULL,
+	  (void * (*)) SetXNumberFormat_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES],
 	  signalDispPtr->parNameList[DISPLAY_X_DEC_PLACES].name,
 	  "X axis scale decimal places.",
 	  UNIPAR_INT,
 	  &signalDispPtr->xDecPlaces, NULL,
 	  (void * (*)) SetXDecPlaces_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT],
+	  signalDispPtr->parNameList[DISPLAY_Y_NUMBER_FORMAT].name,
+	  "Y axis scale number format, (e.g. x.xxe-3).",
+	  UNIPAR_STRING,
+	  &signalDispPtr->yNumberFormat, NULL,
+	  (void * (*)) SetYNumberFormat_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_Y_DEC_PLACES],
 	  signalDispPtr->parNameList[DISPLAY_Y_DEC_PLACES].name,
 	  "Y axis scale decimal places.",
@@ -508,6 +544,8 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_BOOL,
 	  &signalDispPtr->yInsetScale, NULL,
 	  (void * (*)) SetYInsetScale_SignalDisp);
+	pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
+	pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
 
 	return(TRUE);
 
@@ -720,6 +758,27 @@ SetFrameYPos_SignalDisp(int frameYPos)
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
+}
+
+/**************************** SetYAxisTitle ***********************************/
+
+/*
+ * This routine sets the 'y_axis_title' field of the 'signalDisp' structure.
+ */
+
+BOOLN
+SetYAxisTitle_SignalDisp(char *yAxisTitle)
+{
+	static const char *funcName = "SetYAxisTitle_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	signalDispPtr->yAxisTitleFlag = TRUE;
+	snprintf(signalDispPtr->yAxisTitle, MAXLINE, "%s", yAxisTitle);
+	return(TRUE);
+
 }
 
 /**************************** SetYAxisMode ************************************/
@@ -1043,7 +1102,7 @@ SetTitle_SignalDisp(char *title)
 	}
 	signalDispPtr->titleFlag = TRUE;
 	snprintf(signalDispPtr->title, MAXLINE, "%s", title);
-	signalDispPtr->resetTitleFlag = TRUE;
+	signalDispPtr->redrawGraphFlag = TRUE;
 	return(TRUE);
 
 }
@@ -1076,34 +1135,57 @@ SetXTicks_SignalDisp(int xTicks)
 	
 }
 
-/**************************** SetXDecPlaces ***********************************/
+/**************************** SetXAxisTitle ***********************************/
 
 /*
- * This routine sets the decimal places displayed for the display x-axis.
- * This is a bool response, hence only non-zero values are TRUE.
+ * This routine sets the 'x_axis_title' field of the 'signalDisp' structure.
  */
 
 BOOLN
-SetXDecPlaces_SignalDisp(int xDecPlaces)
+SetXAxisTitle_SignalDisp(char *xAxisTitle)
 {
-	static const char *funcName = "SetXDecPlaces_SignalDisp";
+	static const char *funcName = "SetXAxisTitle_SignalDisp";
 
 	if (signalDispPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (xDecPlaces < 0) {
-		NotifyError("%s: Value cannot be negative (%g)", funcName, xDecPlaces);
+	signalDispPtr->xAxisTitleFlag = TRUE;
+	snprintf(signalDispPtr->xAxisTitle, MAXLINE, "%s", xAxisTitle);
+	return(TRUE);
+
+}
+
+/**************************** SetXNumberFormat ********************************/
+
+/*
+ * This routine sets the displayed number format, i.e. the number of decimal
+ * places displayed and the exponent for the display x-axis.
+ * This is a bool response, hence only non-zero values are TRUE.
+ */
+
+BOOLN
+SetXNumberFormat_SignalDisp(char *xNumberFormat)
+{
+	static const char *funcName = "SetXNumberFormat_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	signalDispPtr->xDecPlaces = xDecPlaces;
-	signalDispPtr->xDecPlacesFlag = TRUE;
+	if (!xNumberFormat || (xNumberFormat[0] == '\0')) {
+		NotifyError("%s: This setting must be in the form 'xx.e-3' (%s)",
+		  funcName, xNumberFormat);
+		return(FALSE);
+	}
+	snprintf(signalDispPtr->xNumberFormat, MAXLINE, "%s", xNumberFormat);
+	signalDispPtr->xNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
 }
 
-/**************************** SetYDecPlaces ***********************************/
+/**************************** SetYNumberFormat ********************************/
 
 /*
  * This routine sets the decimal places displayed for the display x-axis.
@@ -1111,20 +1193,21 @@ SetXDecPlaces_SignalDisp(int xDecPlaces)
  */
 
 BOOLN
-SetYDecPlaces_SignalDisp(int yDecPlaces)
+SetYNumberFormat_SignalDisp(char *yNumberFormat)
 {
-	static const char *funcName = "SetYDecPlaces_SignalDisp";
+	static const char *funcName = "SetYNumberFormat_SignalDisp";
 
 	if (signalDispPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (yDecPlaces < 0) {
-		NotifyError("%s: Value cannot be negative (%g)", funcName, yDecPlaces);
+	if (!yNumberFormat || (yNumberFormat[0] == '\0')) {
+		NotifyError("%s: This setting must be in the form 'xx.e-3' (%s)",
+		  funcName, yNumberFormat);
 		return(FALSE);
 	}
-	signalDispPtr->yDecPlaces = yDecPlaces;
-	signalDispPtr->yDecPlacesFlag = TRUE;
+	snprintf(signalDispPtr->yNumberFormat, MAXLINE, "%s", yNumberFormat);
+	signalDispPtr->yNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
@@ -1189,6 +1272,62 @@ SetYInsetScale_SignalDisp(char *theYInsetScale)
 	
 }
 
+/**************************** SetXDecPlaces ***********************************/
+
+/*
+ * This routine sets the decimal places displayed for the display x-axis.
+ * This is a bool response, hence only non-zero values are TRUE.
+ * This parameter has been disabled in the parlist.  It is obsolete.
+ */
+
+BOOLN
+SetXDecPlaces_SignalDisp(int xDecPlaces)
+{
+	static const char *funcName = "SetXDecPlaces_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if (xDecPlaces < 0) {
+		NotifyError("%s: Value cannot be negative (%g)", funcName, xDecPlaces);
+		return(FALSE);
+	}
+	signalDispPtr->xDecPlaces = xDecPlaces;
+	signalDispPtr->xDecPlacesFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	return(TRUE);
+	
+}
+
+/**************************** SetYDecPlaces ***********************************/
+
+/*
+ * This routine sets the decimal places displayed for the display x-axis.
+ * This parameter has been disabled in the parlist.  It is obsolete.
+ * This is a bool response, hence only non-zero values are TRUE.
+ */
+
+BOOLN
+SetYDecPlaces_SignalDisp(int yDecPlaces)
+{
+	static const char *funcName = "SetYDecPlaces_SignalDisp";
+
+	if (signalDispPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if (yDecPlaces < 0) {
+		NotifyError("%s: Value cannot be negative (%g)", funcName, yDecPlaces);
+		return(FALSE);
+	}
+	signalDispPtr->yDecPlaces = yDecPlaces;
+	signalDispPtr->yDecPlacesFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	return(TRUE);
+	
+}
+
 /********************************* CheckPars **********************************/
 
 /*
@@ -1209,77 +1348,6 @@ CheckPars_SignalDisp(void)
 	return(TRUE);
 	
 }	
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
- 
-BOOLN
-SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
-  char *theYNormalisationMode, char *theYAxisMode, char *theSummaryDisplay,
-  char *theTitle, char *yInsetScale, int theChannelStep, int theNumGreyScales,
-  int theFrameHeight, int theFrameWidth, int theFrameXPos, int theFrameYPos,
-  int theXDecPlaces, int theXTicks, int theYDecPlaces, int theYTicks,
-  double theFrameDelay, double theMagnification, double theXResolution,
-  double theMaxY,  double theMinY, double theTopMargin, double theWidth)
-{
-	bool	ok;
-	
-	ok = TRUE;
-	if (!SetAutomaticYScaling_SignalDisp(theAutomaticYScaling))
-		ok = FALSE;
-	if (!SetChannelStep_SignalDisp(theChannelStep))
-		ok = FALSE;
-	if (!SetFrameDelay_SignalDisp(theFrameDelay))
-		ok = FALSE;
-	if (!SetFrameHeight_SignalDisp(theFrameHeight))
-		ok = FALSE;
-	if (!SetFrameWidth_SignalDisp(theFrameWidth))
-		ok = FALSE;
-	if (!SetFrameXPos_SignalDisp(theFrameXPos))
-		ok = FALSE;
-	if (!SetFrameYPos_SignalDisp(theFrameYPos))
-		ok = FALSE;
-	if (!SetYAxisMode_SignalDisp(theYAxisMode))
-		ok = FALSE;
-	if (!SetYNormalisationMode_SignalDisp(theYNormalisationMode))
-		ok = FALSE;
-	if (!SetMode_SignalDisp(theMode))
-		ok = FALSE;
-	if (!SetNumGreyScales_SignalDisp(theNumGreyScales))
-		ok = FALSE;
-	if (!SetMagnification_SignalDisp(theMagnification))
-		ok = FALSE;
-	if (!SetSummaryDisplay_SignalDisp(theSummaryDisplay))
-		ok = FALSE;
-	if (!SetXResolution_SignalDisp(theXResolution))
-		ok = FALSE;
-	if (!SetMaxY_SignalDisp(theMaxY))
-		ok = FALSE;
-	if (!SetMinY_SignalDisp(theMinY))
-		ok = FALSE;
-	if (!SetTitle_SignalDisp(theTitle))
-		ok = FALSE;
-	if (!SetTopMargin_SignalDisp(theTopMargin))
-		ok = FALSE;
-	if (!SetWidth_SignalDisp(theWidth))
-		ok = FALSE;
-	if (!SetXTicks_SignalDisp(theXTicks))
-		ok = FALSE;
-	if (!SetXDecPlaces_SignalDisp(theXDecPlaces))
-		ok = FALSE;
-	if (!SetYDecPlaces_SignalDisp(theYDecPlaces))
-		ok = FALSE;
-	if (!SetYTicks_SignalDisp(theYTicks))
-		ok = FALSE;
-	if (!SetYInsetScale_SignalDisp(yInsetScale))
-		ok = FALSE;
-	return(ok);
-	
-}
 
 /****************************** PrintPars *************************************/
 
@@ -1314,11 +1382,13 @@ PrintPars_SignalDisp(void)
 	  BooleanList_NSpecLists(signalDispPtr->summaryDisplay)->name);
 	DPrint("\tSignal Y scale = %g.\n", signalDispPtr->magnification);
 	DPrint("\tX resolution = %g (<= 1.0)\n", signalDispPtr->xResolution);
+	DPrint("\tX axis title = %s\n", signalDispPtr->xAxisTitle);
 	DPrint("\tX axis ticks = %d\n", signalDispPtr->xTicks);
-	DPrint("\tX axis scale decimal places = %d\n", signalDispPtr->xDecPlaces);
+	DPrint("\tX axis scale number format = %s\n", signalDispPtr->xNumberFormat);
+	DPrint("\tY axis title = %s\n", signalDispPtr->yAxisTitle);
 	DPrint("\tY-axis mode = %s,\n",
 	  signalDispPtr->yAxisModeList[signalDispPtr->yAxisMode].name);
-	DPrint("\tY axis scale decimal places = %d\n", signalDispPtr->yDecPlaces);
+	DPrint("\tY axis scale number format = %s\n", signalDispPtr->yNumberFormat);
 	DPrint("\tY axis ticks = %d\n", signalDispPtr->yTicks);
 	DPrint("\tY inste scale mode: %s\n",
 	  BooleanList_NSpecLists(signalDispPtr->yInsetScale)->name);
@@ -1442,6 +1512,14 @@ ReadPars_SignalDisp(char *parFileName)
 			if (!SetXResolution_SignalDisp(atof(parValue)))
 				ok = FALSE;
 			break;
+		case DISPLAY_X_AXIS_TITLE:
+			if (!SetXAxisTitle_SignalDisp(parValue))
+				ok = FALSE;
+			break;
+		case DISPLAY_X_NUMBER_FORMAT:
+			if (!SetXNumberFormat_SignalDisp(parValue))
+				ok = FALSE;
+			break;
 		case DISPLAY_X_DEC_PLACES:
 			if (!SetXDecPlaces_SignalDisp(atoi(parValue)))
 				ok = FALSE;
@@ -1450,8 +1528,16 @@ ReadPars_SignalDisp(char *parFileName)
 			if (!SetXTicks_SignalDisp(atoi(parValue)))
 				ok = FALSE;
 			break;
+		case DISPLAY_Y_AXIS_TITLE:
+			if (!SetYAxisTitle_SignalDisp(parValue))
+				ok = FALSE;
+			break;
 		case DISPLAY_Y_AXIS_MODE:
 			if (!SetYAxisMode_SignalDisp(parValue))
+				ok = FALSE;
+			break;
+		case DISPLAY_Y_NUMBER_FORMAT:
+			if (!SetYNumberFormat_SignalDisp(parValue))
 				ok = FALSE;
 			break;
 		case DISPLAY_Y_DEC_PLACES:
@@ -1625,8 +1711,8 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 	if (signalDispPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		signal = data->outSignal;
-		if (signalDispPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+		if (signalDispPtr->updateProcessVariablesFlag || data->
+		  updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
 			signalDispPtr->critSect = new wxCriticalSection();
 			if ((signalDispPtr->summary = Init_EarObject(
@@ -1647,6 +1733,10 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 					signalDispPtr->width = _GetDuration_SignalData(signal) /
 					  signal->numWindowFrames;
 			}
+			if (signalDispPtr->xAxisTitle[0] == '\0')
+				SetXAxisTitle_SignalDisp(data->outSignal->info.sampleTitle);
+			if (signalDispPtr->yAxisTitle[0] == '\0')
+				SetYAxisTitle_SignalDisp(data->outSignal->info.channelTitle);
 			signalDispPtr->parList->updateFlag = TRUE;
 			signalDispPtr->updateProcessVariablesFlag = FALSE;
 			data->updateProcessFlag = FALSE;
@@ -1800,6 +1890,7 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 {
 	static const char *funcName = "ShowSignal_SignalDisp";
 	time_t	startTime;
+	BOOLN	notReady;
 	int		i;
 
 	if (data == NULL) {
@@ -1841,6 +1932,13 @@ ShowSignal_SignalDisp(EarObjectPtr data)
   			startTime = time(NULL);
   		}
 #		endif
+		notReady = TRUE;
+		while (notReady) {
+			signalDispPtr->critSect->Enter();
+			notReady = !signalDispPtr->drawCompletedFlag;
+			signalDispPtr->critSect->Leave();
+		}
+		signalDispPtr->drawCompletedFlag = FALSE;
 		signalDispPtr->critSect->Enter();
 		SetDisplay_SignalDisp(data);
 		signalDispPtr->critSect->Leave();

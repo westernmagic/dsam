@@ -120,7 +120,6 @@ void
 DisplayS::SetDisplayTitle(void)
 {
 	SetTitle(signalDispPtr->title);
-	signalDispPtr->resetTitleFlag = FALSE;
 	
 }
 

@@ -693,6 +693,10 @@ SOURCE=..\..\Include\GeUniParMgr.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\GrAxisScale.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\GrBrushes.h
 # End Source File
 # Begin Source File

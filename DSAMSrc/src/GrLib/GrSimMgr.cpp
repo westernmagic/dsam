@@ -1350,12 +1350,13 @@ MyFrame::OnSimThreadEvent(wxCommandEvent& event)
 			signalDispPtr->display->canvas->InitGraph();
 			signalDispPtr->display->canvas->RedrawGraph();
 		}
+		signalDispPtr->drawCompletedFlag = TRUE;
 		signalDispPtr->critSect->Leave();
 		break; }
 	default:
 		;
 	}
-
+ 
 }
   
 /****************************** OnSize ****************************************/
