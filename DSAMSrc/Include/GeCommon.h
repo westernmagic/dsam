@@ -239,6 +239,8 @@ void	DPrintStandard_Message(char *format, va_list args);
 
 void	FindFilePathAndName_Common(char *filePath, char *path, char *name);
 
+void	FreeDoubleArray_Common(double **p);
+
 FILE *	GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode);
 
 char *	GetParsFileFPath_Common(char *parFile);
