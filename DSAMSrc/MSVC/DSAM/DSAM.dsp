@@ -457,7 +457,7 @@ SOURCE=..\..\src\MainLib\UtIterRipple.c
 # End Source File
 # Begin Source File
 
-SOURCE=\projects\dsam\DSAMSrc\src\MainLib\UtLocalChans.c
+SOURCE=..\..\src\MainLib\UtLocalChans.c
 # End Source File
 # Begin Source File
 
