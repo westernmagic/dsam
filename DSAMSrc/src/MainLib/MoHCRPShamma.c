@@ -938,7 +938,7 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	ChanLen	i;
 	double	leakageConductance_Ga, conductance_G, potential_V;
 	double	ciliaDisplacement_u, lastInput;
-	register	double		dtOverC, gkEpk, dtOverTc, cGain, dt;
+	register	double		dtOverC, gkEpk, dtOverTc, cGain, dt, expArg;
 	register	ChanData	*inPtr, *outPtr;
 	
 	if (!CheckPars_IHCRP_Shamma()) {
@@ -981,9 +981,13 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += cGain * (*inPtr - lastInput) - 
 			  ciliaDisplacement_u * dtOverTc;
+			if ((expArg = -shammaPtr->gamma * ciliaDisplacement_u) >
+			  MAX_EXP_ARG) {
+				NotifyError("%s: Exponential overflow.", funcName);
+				return(FALSE);
+			}  
 			conductance_G = shammaPtr->maxMConductance_Gmax  / (1.0 +
-			  exp(-shammaPtr->gamma * ciliaDisplacement_u) /
-			  shammaPtr->beta) + leakageConductance_Ga;
+			  exp(expArg) / shammaPtr->beta) + leakageConductance_Ga;
 			*outPtr = (ChanData) (potential_V - dtOverC * (conductance_G *
 			  (potential_V - shammaPtr->endocochlearPot_Et) +
 			  shammaPtr->kConductance_Gk * potential_V - gkEpk));

@@ -66,11 +66,15 @@
 #ifndef PI
 # define	PI	3.141592653589792434		/* From MacEar */
 #endif
+
 #define PIx2	6.283185307179584868
 #define	SQRT_2	1.4142135623730951
+
 #ifndef LN_2
 #	define LN_2	0.69314718055994529
 #endif
+
+#define	MAX_EXP_ARG			700.0
 
 #define MAXLINE				80		/* Max. No. of characters in a line. */
 #define SMALL_STRING		10		/* For small string operations. */
