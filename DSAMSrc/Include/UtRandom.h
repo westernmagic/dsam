@@ -19,10 +19,18 @@
 /******************************************************************************/
 
 #define RANDOM_INITIAL_SEED		3141L
+#define RANDOM_NTAB				32
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+typedef struct {
+
+	long	idum;
+	long	iy;
+	long	iv[RANDOM_NTAB];
+
+} RandPars, *RandParsPtr;
 
 /******************************************************************************/
 /*************************** External Variables *******************************/
@@ -40,13 +48,17 @@ extern long	randomNumSeed;			/* Seed for the random number generator */
  */
 __BEGIN_DECLS
 
-int		GeomDist_Random(double probability, int numTrials);
+void	FreePars_Random(RandParsPtr *p);
 
-double	GaussRan01_Random(long *seed);
+int		GeomDist_Random(double probability, int numTrials, RandParsPtr p);
 
-double	Ran01_Random(long *seed);
+double	GaussRan01_Random(RandParsPtr p);
 
-void	SetGlobalSeed_Random(long theSeed);
+RandParsPtr	InitPars_Random(long idum);
+
+double	Ran01_Random(RandParsPtr p);
+
+BOOLN	SetSeed_Random(RandParsPtr p, long ranSeed);
 
 __END_DECLS
 
