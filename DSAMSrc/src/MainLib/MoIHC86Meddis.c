@@ -660,6 +660,7 @@ InitModule_IHC_Meddis86(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = hairCellPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Meddis86;
 	theModule->Free = Free_IHC_Meddis86;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis86;
@@ -786,58 +787,61 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 	register	double	reUptakeAndLost;
 	int		i;
 	ChanLen	j;
-	double	dt, ymdt, xdt, ydt, l_Plus_rdt, rdt, kdt, st_Plus_A, gdt, hdt;
+	double	st_Plus_A, kdt;
 	ChanData	*inPtr, *outPtr;
-	HairCellPtr	hC;
+	HairCellPtr	hC = hairCellPtr;
 	
-	if (!CheckPars_IHC_Meddis86())		
-		return(FALSE);
-	if (!CheckData_IHC_Meddis86(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Meddis 86 IHC Synapse");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Meddis86())		
+			return(FALSE);
+		if (!CheckData_IHC_Meddis86(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Meddis 86 IHC Synapse");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
 
-	if (!InitProcessVariables_IHC_Meddis86(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+		if (!InitProcessVariables_IHC_Meddis86(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		hC->dt = data->outSignal->dt;
+		hC->ymdt = hC->replenishRate_y * hC->maxFreePool_M * hC->dt;
+		hC->xdt = hC->reprocessRate_x * hC->dt;
+		hC->ydt = hC->replenishRate_y * hC->dt;
+		hC->l_Plus_rdt = (hC->lossRate_l + hC->recoveryRate_r) * hC->dt;
+		hC->rdt = hC->recoveryRate_r * hC->dt;
+		hC->gdt = hC->releaseRate_g * hC->dt;
+		hC->hdt = hC->firingRate_h * hC->dt;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	dt = data->outSignal->dt;
-	hC = hairCellPtr;		/* Shorter variable for long formulae. */
-	ymdt = hC->replenishRate_y * hC->maxFreePool_M * dt;
-	xdt = hC->reprocessRate_x * dt;
-	ydt = hC->replenishRate_y * dt;
-	l_Plus_rdt = (hC->lossRate_l + hC->recoveryRate_r) * dt;
-	rdt = hC->recoveryRate_r * dt;
-	gdt = hC->releaseRate_g * dt;
-	hdt = hC->firingRate_h * dt;
-	for (i = 0; i < data->outSignal->numChannels; i++) {
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
 		for (j = 0; j < data->outSignal->length; j++) {
 			if ((st_Plus_A = *inPtr++ + hC->permConst_A) > 0.0)
-				kdt = gdt * st_Plus_A / (st_Plus_A + hC->permConst_B);
+				kdt = hC->gdt * st_Plus_A / (st_Plus_A + hC->permConst_B);
 			else
 				kdt = 0.0;
 			replenish = (hC->hCChannels[i].reservoirQ < hC->maxFreePool_M)?
-			  ymdt - ydt * hC->hCChannels[i].reservoirQ: 0.0;
-			reprocessed = xdt * hC->hCChannels[i].reprocessedW;
+			  hC->ymdt - hC->ydt * hC->hCChannels[i].reservoirQ: 0.0;
+			reprocessed = hC->xdt * hC->hCChannels[i].reprocessedW;
 			ejected = kdt * hC->hCChannels[i].reservoirQ;
-			reUptake = rdt * hC->hCChannels[i].cleftC;
-			reUptakeAndLost = l_Plus_rdt * hC->hCChannels[i].cleftC;
+			reUptake = hC->rdt * hC->hCChannels[i].cleftC;
+			reUptakeAndLost = hC->l_Plus_rdt * hC->hCChannels[i].cleftC;
 
 			hC->hCChannels[i].reservoirQ += replenish - ejected + reprocessed;
 			hC->hCChannels[i].cleftC += ejected - reUptakeAndLost;
 			hC->hCChannels[i].reprocessedW += reUptake - reprocessed;
 			
 			/* Spike prob. */
-			*outPtr++ = (ChanData) (hdt * hC->hCChannels[i].cleftC);
+			*outPtr++ = (ChanData) (hC->hdt * hC->hCChannels[i].cleftC);
 		}
 	}
 	SetProcessContinuity_EarObject(data);

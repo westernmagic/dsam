@@ -90,7 +90,7 @@ Init_Filter_LowPass(ParameterSpecifier parSpec)
 	}
 	lowPassFPtr->parSpec = parSpec;
 	lowPassFPtr->updateProcessVariablesFlag = TRUE;
-	lowPassFPtr->modeFlag = FALSE;
+	lowPassFPtr->modeFlag = TRUE;
 	lowPassFPtr->cutOffFrequencyFlag = TRUE;
 	lowPassFPtr->signalMultiplierFlag = TRUE;
 	lowPassFPtr->mode = FILTER_LOW_PASS_MODE_NORMAL;
@@ -450,6 +450,7 @@ InitModule_Filter_LowPass(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = lowPassFPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Filter_LowPass;
 	theModule->Free = Free_Filter_LowPass;
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_LowPass;
@@ -473,28 +474,27 @@ InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_Filter_LowPass";
 	int		i, j;
 	double	*statePtr;
+	LowPassFPtr	p = lowPassFPtr;
 
-	if (lowPassFPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_LowPass();
-		if ((lowPassFPtr->coefficients =
-		  (ContButt1CoeffsPtr *) calloc(data->outSignal->numChannels,
-		   sizeof(ContButt1CoeffsPtr))) == NULL) {
+		if ((p->coefficients = (ContButt1CoeffsPtr *) calloc(data->outSignal->
+		  numChannels, sizeof(ContButt1CoeffsPtr))) == NULL) {
 		 	NotifyError("%s: Out of memory.", funcName);
 		 	return(FALSE);
 		}
-		lowPassFPtr->numChannels = data->outSignal->numChannels;
+		p->numChannels = data->outSignal->numChannels;
 	 	for (i = 0; i < data->outSignal->numChannels; i++)
-			if ((lowPassFPtr->coefficients[i] = InitIIR1ContCoeffs_Filters(
-			  lowPassFPtr->cutOffFrequency, data->inSignal[0]->dt, LOWPASS)) ==
-			  NULL) {
+			if ((p->coefficients[i] = InitIIR1ContCoeffs_Filters(
+			  p->cutOffFrequency, data->inSignal[0]->dt, LOWPASS)) == NULL) {
 				NotifyError("%s: Could not allocate filter coefficients.",
 				  funcName);
 				return(FALSE);
 			}
-		lowPassFPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			statePtr = lowPassFPtr->coefficients[i]->state;
+			statePtr = p->coefficients[i]->state;
 			for (j = 0; j < FILTERS_NUM_CONTBUTT1_STATE_VARS; j++)
 				*statePtr++ = 0.0;
 		}
@@ -542,31 +542,37 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 	int			chan;
 	ChanLen		i;
 	register ChanData	*inPtr, *outPtr;
-	
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	SetProcessName_EarObject(data, "Low-pass filter process");
-	if (!CheckPars_Filter_LowPass())
-		return(FALSE);
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
+
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		SetProcessName_EarObject(data, "Low-pass filter process");
+		if (!CheckPars_Filter_LowPass())
+			return(FALSE);
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Couldn't initialse output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Filter_LowPass(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Couldn't initialse output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Filter_LowPass(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		switch (lowPassFPtr->mode) {

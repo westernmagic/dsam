@@ -75,6 +75,7 @@ typedef struct  {
 	/* Private members */
 	UniParListPtr	parList;
 	McGregorState *state;
+	double	condDecay, threshDecay, bOverDt, dtOverTm;
 
 } McGregor, *McGregorPtr;
 

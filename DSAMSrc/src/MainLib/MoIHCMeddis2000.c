@@ -249,8 +249,8 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->opMode, hairCell2Ptr->opModeList,
 	  (void * (*)) SetOpMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_DIAGMODE], "DIAG_MODE",
-	  "Diagnostic mode. Outputs internal states of running model ('off', "
-	  "'screen' or <file name>).",
+	  "Diagnostic mode. Outputs internal states of running model in non-"
+	  "threaded mode('off', 'screen' or <file name>).",
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
@@ -344,7 +344,7 @@ SetUniParList_IHC_Meddis2000(void)
 
 }
 
-/****************************** SetEnabledPars *********************************/
+/****************************** SetEnabledPars ********************************/
 
 /*
  * This routine sets the enabled parameters.
@@ -550,7 +550,8 @@ SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theCleftReplenishMode,
-		hairCell2Ptr->cleftReplenishModeList)) == IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL) {
+		hairCell2Ptr->cleftReplenishModeList)) ==
+		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL) {
 		NotifyError("%s: Illegal name (%s).", funcName, theCleftReplenishMode);
 		return(FALSE);
 	}
@@ -1210,6 +1211,7 @@ InitModule_IHC_Meddis2000(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = hairCell2Ptr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHC_Meddis2000;
 	theModule->Free = Free_IHC_Meddis2000;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis2000;
@@ -1316,23 +1318,23 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_IHC_Meddis2000";
 	int		i;
 	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
-	HairCell2Ptr	hC;
+	HairCell2Ptr	p = hairCell2Ptr; /* Shorter variable for long formulae. */
 	
 	double	  	ICa;		/* Calcium current */
 	double	  	ssactCa;	/* steady state Calcium activation */
 
 	if (hairCell2Ptr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		hC = hairCell2Ptr;		/* Shorter variable for long formulae. */
 
 		if (hairCell2Ptr->updateProcessVariablesFlag ||
 		  data->updateProcessFlag) {
-			randomNumSeed = hairCell2Ptr->ranSeed;
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
 			FreeProcessVariables_IHC_Meddis2000();
 			OpenDiagnostics_NSpecLists(&hairCell2Ptr->fp, hairCell2Ptr->
 			  diagModeList, hairCell2Ptr->diagMode);
 
-			if ((hC->hCChannels = (HairCellVars2Ptr) calloc(
+			if ((p->hCChannels = (HairCellVars2Ptr) calloc(
 			  data->outSignal->numChannels, sizeof (HairCellVars2))) == NULL) {
 				NotifyError("%s: Out of memory.", funcName);
 				return(FALSE);
@@ -1340,38 +1342,38 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 			hairCell2Ptr->updateProcessVariablesFlag = FALSE;
 		} 
 
-		ssactCa = 1.0 / ( 1.0 + (exp(- (hC->gammaCa*(data->inSignal[0]->channel[
-		  0][0]))) / hC->betaCa));		
-		ICa = hC->GCaMax * pow(ssactCa, 3) * (data->inSignal[0]->channel[0][0] -
-		  hC->CaVrev);
+		ssactCa = 1.0 / ( 1.0 + (exp(- (p->gammaCa*(data->inSignal[0]->channel[
+		  0][0]))) / p->betaCa));		
+		ICa = p->GCaMax * pow(ssactCa, 3) * (data->inSignal[0]->channel[0][0] -
+		  p->CaVrev);
 		if (hairCell2Ptr->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
-			ICa *= hC->tauConcCa;
-		spontPerm_k0 = ( -ICa > hC->perm_Ca0 ) ? (hC->perm_z * (pow(-ICa, hC->
-		  pCa) - pow(hC->perm_Ca0,hC->pCa))) : 0; 
+			ICa *= p->tauConcCa;
+		spontPerm_k0 = ( -ICa > p->perm_Ca0 ) ? (p->perm_z * (pow(-ICa, p->
+		  pCa) - pow(p->perm_Ca0,p->pCa))) : 0; 
 		spontCleft_c0 = (hairCell2Ptr->cleftReplenishMode ==
-		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? hC->maxFreePool_M *
-		  hC->replenishRate_y * spontPerm_k0 / (hC->replenishRate_y *
-		  (hC->lossRate_l + hC->recoveryRate_r) + spontPerm_k0 *
-		   hC->lossRate_l): hC->replenishRate_y / hC->lossRate_l;
+		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? p->maxFreePool_M *
+		  p->replenishRate_y * spontPerm_k0 / (p->replenishRate_y *
+		  (p->lossRate_l + p->recoveryRate_r) + spontPerm_k0 *
+		   p->lossRate_l): p->replenishRate_y / p->lossRate_l;
 		if (spontCleft_c0 > 0.0) {
-		   if (hC->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
-		      spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
-		        hC->recoveryRate_r) / spontPerm_k0;
+		   if (p->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
+		      spontFreePool_q0 = spontCleft_c0 * (p->lossRate_l +
+		        p->recoveryRate_r) / spontPerm_k0;
 			else 
-				spontFreePool_q0 = floor( (spontCleft_c0 * (hC->lossRate_l +
-		        hC->recoveryRate_r) / spontPerm_k0) + 0.5);
+				spontFreePool_q0 = floor( (spontCleft_c0 * (p->lossRate_l +
+		          p->recoveryRate_r) / spontPerm_k0) + 0.5);
 		} else
-		   spontFreePool_q0 = hC->maxFreePool_M;
+		   spontFreePool_q0 = p->maxFreePool_M;
 
-		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r / hC->
-		  reprocessRate_x;
+		spontReprocess_w0 = spontCleft_c0 * p->recoveryRate_r /
+		  p->reprocessRate_x;
 
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			hC->hCChannels[i].actCa = ssactCa;
-			hC->hCChannels[i].concCa = -ICa;
-			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
-			hC->hCChannels[i].cleftC = spontCleft_c0;
-			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
+			p->hCChannels[i].actCa = ssactCa;
+			p->hCChannels[i].concCa = -ICa;
+			p->hCChannels[i].reservoirQ = spontFreePool_q0;
+			p->hCChannels[i].cleftC = spontCleft_c0;
+			p->hCChannels[i].reprocessedW = spontReprocess_w0;
 		}
 	}
 	return(TRUE);
@@ -1426,53 +1428,53 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_IHC_Meddis2000";
 	register	ChanData	 *inPtr, *outPtr;
-
+	register double kdt, replenish, reprocessed, ejected;
 	BOOLN	debug;
 	int		i;
-	register double replenish, reprocessed, ejected;
 	ChanLen	j;
-	double	dt, ydt, xdt, rdt, kdt, zdt, l_Plus_rdt;
-	double	reUptake, reUptakeAndLost, timer, ssactCa, ICa, k0pow, Vin;
-	HairCell2Ptr	hC;
+	double	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
+	HairCell2Ptr	p = hairCell2Ptr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHC_Meddis2000())
+			return(FALSE);
+		if (!CheckData_IHC_Meddis2000(data)) {
+	 		NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Meddis 2000 IHC. Calcium transmitter "
+		  "release and quantal synapse");
+
+		/*** Put your code here: Initialise output signal. ***/
+
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+
+		if (!InitProcessVariables_IHC_Meddis2000(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+
+		dt = data->outSignal->dt;
+		p->ydt = p->replenishRate_y * dt;
+		p->rdt = p->recoveryRate_r * dt;
+		p->xdt = p->reprocessRate_x * dt;
+		p->zdt = p->perm_z * dt;
+		p->k0pow = pow( p->perm_Ca0, p->pCa );	
+		p->l_Plus_rdt = (p->lossRate_l + p->recoveryRate_r) * dt;
+		p->dt_Over_tauConcCa = dt / p->tauConcCa;
+		p->dtOverTauCaChan = dt / p->tauCaChan;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckPars_IHC_Meddis2000())
-		return(FALSE);
-	if (!CheckData_IHC_Meddis2000(data)) {
-	 	NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Meddis 2000 IHC. Calcium transmitter "
-	  "release and quantal synapse");
-
-	/*** Put your code here: Initialise output signal. ***/
-
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-
-	if (!InitProcessVariables_IHC_Meddis2000(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-
-	dt = data->outSignal->dt;
-	hC = hairCell2Ptr;		/* Shorter name for use with long equations. */
-	ydt = hC->replenishRate_y * dt;
-	rdt = hC->recoveryRate_r * dt;
-	xdt = hC->reprocessRate_x * dt;
-	zdt = hC->perm_z * dt;
-	k0pow = pow( hC->perm_Ca0, hC->pCa );	
-	l_Plus_rdt = (hC->lossRate_l + hC->recoveryRate_r) * dt;
 
 	/* Set up debug/diagnostic mode */
-	debug = (hairCell2Ptr->diagMode !=GENERAL_DIAGNOSTIC_OFF_MODE);
+	debug = (!data->threadRunFlag && (hairCell2Ptr->diagMode !=
+	  GENERAL_DIAGNOSTIC_OFF_MODE));
 	if (debug) {
 		fprintf(hairCell2Ptr->fp, "Time(s)\tVm (V)\tactCa (-)\tICa (A)\tconcCa "
 		  "(-)\tkdt (P)\tQ \tC \tW \tEjected");
@@ -1482,31 +1484,33 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	/*** Put your code here: process output signal. ***/
 	/*** (using 'inPtr' and 'outPtr' for each channel?) ***/
 
-	for (i = 0, timer = DBL_MAX; i < data->outSignal->numChannels; i++) {
+	for (i = data->outSignal->offset, timer = DBL_MAX; i < data->outSignal->
+	  numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
-		for (j = 0, outPtr = data->outSignal->channel[i]; j <
-		  data->outSignal->length; j++, outPtr++) {
+		for (j = 0, outPtr = data->outSignal->channel[i]; j < data->outSignal->
+		  length; j++, outPtr++) {
 
 			/*** Calcium controlled transmitter release function ***/
 			Vin = *inPtr;
 
 			/* Ca current */
-			ssactCa = 	1/( 1 + exp(-hC->gammaCa*Vin)/hC->betaCa );		
+			ssactCa = 	1/( 1 + exp(-p->gammaCa*Vin)/p->betaCa );		
 	
-			hC->hCChannels[i].actCa += (ssactCa - hC->hCChannels[i].actCa) *
-			  dt / hC->tauCaChan; 
-			ICa = hC->GCaMax * pow(hC->hCChannels[i].actCa, 3) * (Vin -
-			  hC->CaVrev);
+			p->hCChannels[i].actCa += (ssactCa - p->hCChannels[i].actCa) *
+			  p->dtOverTauCaChan; 
+			ICa = p->GCaMax * pow(p->hCChannels[i].actCa, 3) * (Vin -
+			  p->CaVrev);
 			
 			/* Calcium Ion accumulation and diffusion */			
-			hC->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
+			p->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
 			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
-			  (-ICa - hC->hCChannels[i].concCa) * dt / hC->tauConcCa:
-			  (-ICa - hC->hCChannels[i].concCa / hC->tauConcCa) * dt;
+			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
+			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) *
+			  data->outSignal->dt;
 
 			/* power law release function */
-			kdt = ( hC->hCChannels[i].concCa > hC->perm_Ca0 ) ? (zdt * (pow(
-			  hC->hCChannels[i].concCa, hC->pCa) - k0pow)): 0; 
+			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
+			  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0; 
 
 			/* Increment input pointer */
 			inPtr++; 
@@ -1518,24 +1522,25 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			switch(hairCell2Ptr->opMode) {
 				/* spike output mode */
 				case IHC_MEDDIS2000_OPMODE_SPIKE:
-					replenish = (hC->cleftReplenishMode ==
+					replenish = (p->cleftReplenishMode ==
 					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? GeomDist_Random(
-					  ydt, 1): (hC->hCChannels[i].reservoirQ <
-					  hC->maxFreePool_M)? GeomDist_Random(ydt, (int) (
-					  hC->maxFreePool_M - hC->hCChannels[i].reservoirQ)): 0;
+					  p->ydt, 1,data->randPars): (p->hCChannels[i].reservoirQ <
+					  p->maxFreePool_M)? GeomDist_Random(p->ydt, (int) (
+					  p->maxFreePool_M - p->hCChannels[i].reservoirQ),
+					  data->randPars): 0;
 
-					ejected = GeomDist_Random(kdt, (int) hC->hCChannels[
-					  i].reservoirQ);	
+					ejected = GeomDist_Random(kdt, (int) p->hCChannels[
+					  i].reservoirQ, data->randPars);	
 		
-					reUptakeAndLost = l_Plus_rdt * hC->hCChannels[i].cleftC;
-					reUptake = rdt * hC->hCChannels[i].cleftC;
-					reprocessed = (hC->hCChannels[i].reprocessedW < 1.0)? 0:
-					GeomDist_Random(xdt, (int) floor(hC->hCChannels[
-					  i].reprocessedW));
+					reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
+					reUptake = p->rdt * p->hCChannels[i].cleftC;
+					reprocessed = (p->hCChannels[i].reprocessedW < 1.0)? 0:
+					GeomDist_Random(p->xdt, (int) floor(p->hCChannels[
+					  i].reprocessedW), data->randPars);
 
-					hC->hCChannels[i].reservoirQ += replenish - ejected +
+					p->hCChannels[i].reservoirQ += replenish - ejected +
 					  reprocessed;
-					*outPtr = hC->hCChannels[i].cleftC += ejected -
+					*outPtr = p->hCChannels[i].cleftC += ejected -
 					  reUptakeAndLost;
 
 					if (ejected > 0)
@@ -1543,29 +1548,29 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 					else
 						*outPtr = 0.0;
 			
-					hC->hCChannels[i].reprocessedW += reUptake - reprocessed;
+					p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 					break;
 
 				/* probability output mode */
 				case IHC_MEDDIS2000_OPMODE_PROB:
-					replenish = (hC->cleftReplenishMode ==
-					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? ydt:
-					  (hC->hCChannels[i].reservoirQ < hC->maxFreePool_M)? ydt *
-					  (hC->maxFreePool_M - hC->hCChannels[i].reservoirQ): 0.0;
+					replenish = (p->cleftReplenishMode ==
+					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? p->ydt:
+					  (p->hCChannels[i].reservoirQ < p->maxFreePool_M)? p->ydt *
+					  (p->maxFreePool_M - p->hCChannels[i].reservoirQ): 0.0;
 		
-					ejected = kdt * hC->hCChannels[i].reservoirQ;
+					ejected = kdt * p->hCChannels[i].reservoirQ;
 		
-					reUptakeAndLost = l_Plus_rdt * hC->hCChannels[i].cleftC;
-					reUptake = rdt * hC->hCChannels[i].cleftC;
+					reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
+					reUptake = p->rdt * p->hCChannels[i].cleftC;
 		
-					reprocessed = xdt * hC->hCChannels[i].reprocessedW;	
-					hC->hCChannels[i].reservoirQ += replenish - ejected +
+					reprocessed = p->xdt * p->hCChannels[i].reprocessedW;	
+					p->hCChannels[i].reservoirQ += replenish - ejected +
 					  reprocessed;
-					hC->hCChannels[i].cleftC += ejected - reUptakeAndLost;
+					p->hCChannels[i].cleftC += ejected - reUptakeAndLost;
 
 					*outPtr = ejected; 
 			
-					hC->hCChannels[i].reprocessedW += reUptake - reprocessed;
+					p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 					break;
 
 				/* neither mode set. error and exit */
@@ -1577,10 +1582,11 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			/* diagnostic mode output */
 			if (debug) {
 				fprintf(hairCell2Ptr->fp,
-				  "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g", j * dt, Vin,
-				  hC->hCChannels[i].actCa, ICa, hC->hCChannels[i].concCa, kdt,
-				  hC->hCChannels[i].reservoirQ, hC->hCChannels[i].cleftC,
-				  hC->hCChannels[i].reprocessedW, ejected);
+				  "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g", j *
+				  data->outSignal->dt, Vin, p->hCChannels[i].actCa, ICa,
+				  p->hCChannels[i].concCa, kdt, p->hCChannels[i].reservoirQ,
+				  p->hCChannels[i].cleftC, p->hCChannels[i].reprocessedW,
+				  ejected);
 				fprintf(hairCell2Ptr->fp, "\n");
 			}		 
 

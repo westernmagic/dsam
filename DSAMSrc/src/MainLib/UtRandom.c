@@ -28,11 +28,68 @@
 /************************** Global Variables **********************************/
 /******************************************************************************/
 
-long	randomNumSeed = RANDOM_INITIAL_SEED; 
-
 /******************************************************************************/
 /************************** Subroutines and functions *************************/
 /******************************************************************************/
+
+/************************** InitPars ******************************************/
+
+/*
+ * This routine initialises the a RandPars structure.
+ * It returns NULL if it fails in any way.
+ */
+
+RandParsPtr
+InitPars_Random(long idum)
+{
+	static const char *funcName = "InitPars_Random";
+	RandParsPtr	p;
+
+	if ((p = (RandParsPtr) malloc(sizeof(RandPars))) == NULL) {
+		NotifyError("%s: Could not initialises structure.", funcName);
+		return(NULL);
+	}
+	p->idum = idum;
+	p->iy = 0;
+	return(p);
+
+}
+
+/************************** FreePars ******************************************/
+
+/*
+ * This routine frees the memory allocated for a RandPars structure.
+ */
+
+void
+FreePars_Random(RandParsPtr *p)
+{
+	if (!*p)
+		return;
+	free(*p);
+	*p = NULL;
+
+}
+
+/************************** SetSeed *******************************************/
+
+/*
+ * This function sets the random number seed.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetSeed_Random(RandParsPtr p, long ranSeed)
+{
+	static const char *funcName = "SetSeed_Random";
+	if (!p) {
+		NotifyError("%s: Structure is not initialised.", funcName);
+		return(FALSE);
+	}
+	p->idum = ranSeed;
+	return(TRUE);
+
+}
 
 /************************** Ran01 *********************************************/
 
@@ -47,43 +104,40 @@ long	randomNumSeed = RANDOM_INITIAL_SEED;
 #define AM (1.0 / IM)
 #define IQ 127773L
 #define IR 2836
-#define NTAB 32
-#define NDIV (1 + (IM - 1) / NTAB)
+#define NDIV (1 + (IM - 1) / RANDOM_NTAB)
 #define EPS 1.2e-7
 #define RNMX (1.0 - EPS)
 
 double
-Ran01_Random(long *idum)
+Ran01_Random(RandParsPtr p)
 {
 	int j;
 	long k;
-	static long iy=0;
-	static long iv[NTAB];
 	double temp;
 
-	if (*idum <= 0 || !iy) {
-		if (*idum == 0)
-			*idum = (long) time(NULL);
+	if (p->idum <= 0 || !p->iy) {
+		if (p->idum == 0)
+			p->idum = (long) time(NULL);
 		else
-			*idum = (-(*idum) < 1)? 1: -(*idum);
-		for (j = NTAB + 7; j >= 0; j--) {
-			k = (*idum) / IQ;
-			*idum = IA * (*idum - k * IQ) - IR * k;
-			if (*idum < 0)
-				*idum += IM;
-			if (j < NTAB)
-				iv[j] = *idum;
+			p->idum = (-(p->idum) < 1)? 1: -(p->idum);
+		for (j = RANDOM_NTAB + 7; j >= 0; j--) {
+			k = (p->idum) / IQ;
+			p->idum = IA * (p->idum - k * IQ) - IR * k;
+			if (p->idum < 0)
+				p->idum += IM;
+			if (j < RANDOM_NTAB)
+				p->iv[j] = p->idum;
 		}
-		iy=iv[0];
+		p->iy = p->iv[0];
 	}
-	k = (*idum) / IQ;
-	*idum = IA * (*idum - k * IQ) - IR * k;
-	if (*idum < 0)
-		*idum += IM;
-	j = iy / NDIV;
-	iy = iv[j];
-	iv[j] = *idum;
-	return( ((temp = AM * iy) > RNMX)? RNMX: temp);
+	k = (p->idum) / IQ;
+	p->idum = IA * (p->idum - k * IQ) - IR * k;
+	if (p->idum < 0)
+		p->idum += IM;
+	j = p->iy / NDIV;
+	p->iy = p->iv[j];
+	p->iv[j] = p->idum;
+	return( ((temp = AM * p->iy) > RNMX)? RNMX: temp);
 
 }
 #undef IA
@@ -91,7 +145,6 @@ Ran01_Random(long *idum)
 #undef AM
 #undef IQ
 #undef IR
-#undef NTAB
 #undef NDIV
 #undef EPS
 #undef RNMX
@@ -108,7 +161,7 @@ Ran01_Random(long *idum)
  */
 
 int
-GeomDist_Random(double probability, int numTrials)
+GeomDist_Random(double probability, int numTrials, RandParsPtr p)
 {
 	int		i;
 	double	sum, logNotProbable;
@@ -124,26 +177,13 @@ GeomDist_Random(double probability, int numTrials)
 	if ((numTrials <= 0) || (probability < DBL_EPSILON))
 		return(0);
 	logNotProbable = log(1.0 - probability);
-	for (i = 0, sum = 0.0; ((sum += log(Ran01_Random(&randomNumSeed)) /
-	  logNotProbable) < numTrials); i++)
+	for (i = 0, sum = 0.0; ((sum += log(Ran01_Random(p)) / logNotProbable) <
+	  numTrials); i++)
 		;
 	if (i > numTrials)
 		i = numTrials;
 	return (i);
 	
-}
-
-/************************** SetGlobalSeed *************************************/
-
-/*
- * This routine sets the global random number seed for the module.
- */
-
-void
-SetGlobalSeed_Random(long theSeed)
-{
-	randomNumSeed = theSeed;
-
 }
 
 /************************** GaussRan01 ****************************************/
@@ -154,7 +194,7 @@ SetGlobalSeed_Random(long theSeed)
  */
 
 double
-GaussRan01_Random(long *seed)
+GaussRan01_Random(RandParsPtr p)
 {
 	static BOOLN	isSet = FALSE;
 	static double	gSet;
@@ -162,8 +202,8 @@ GaussRan01_Random(long *seed)
 
 	if (!isSet) {
 		do {
-			v1 = 2.0 * Ran01_Random(seed) - 1.0;
-			v2 = 2.0 * Ran01_Random(seed) - 1.0;
+			v1 = 2.0 * Ran01_Random(p) - 1.0;
+			v2 = 2.0 * Ran01_Random(p) - 1.0;
 			rSquared = SQR(v1) + SQR(v2);
 		} while ((rSquared >= 1.0) || (rSquared == 0.0));
 		fac = sqrt(-2.0 * log(rSquared) / rSquared);

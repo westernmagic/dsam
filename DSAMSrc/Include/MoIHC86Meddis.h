@@ -69,6 +69,7 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	HairCellVars	*hCChannels;
+	double	dt, ymdt, xdt, ydt, l_Plus_rdt, rdt, gdt, hdt;
 	
 } HairCell, *HairCellPtr;
 

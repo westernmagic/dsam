@@ -712,6 +712,7 @@ InitModule_Neuron_McGregor(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = mcGregorPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Neuron_McGregor;
 	theModule->Free = Free_Neuron_McGregor;
 	theModule->GetData = GetPotentialResponse_Neuron_McGregor;
@@ -736,26 +737,24 @@ InitProcessVariables_Neuron_McGregor(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Neuron_McGregor";
 	int		i;
-	
-	if (mcGregorPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
+	McGregorPtr	p = mcGregorPtr;
+
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (mcGregorPtr->updateProcessVariablesFlag || data->
-		  updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_McGregor();
-			if ((mcGregorPtr->state =
-			  (McGregorStatePtr) calloc(data->outSignal->numChannels,
-			   sizeof(McGregorState))) == NULL) {
+			if ((p->state = (McGregorStatePtr) calloc(data->outSignal->
+			  numChannels, sizeof(McGregorState))) == NULL) {
 			 	NotifyError("%s: Out of memory.", funcName);
 			 	return(FALSE);
 			}
-			mcGregorPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			mcGregorPtr->state[i].potential_E = 0.0;
-			mcGregorPtr->state[i].kConductance_Gk = 0.0;
-			mcGregorPtr->state[i].threshold_Th =
-			  mcGregorPtr->restingThreshold_Th0;
-			mcGregorPtr->state[i].lastSpikeState = 0;
+			p->state[i].potential_E = 0.0;
+			p->state[i].kConductance_Gk = 0.0;
+			p->state[i].threshold_Th = p->restingThreshold_Th0;
+			p->state[i].lastSpikeState = 0;
 		}
 	}
 	return(TRUE);
@@ -801,63 +800,65 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 	static const char *funcName = "RunModel_Neuron_McGregor";
 	int			i, spikeState_s;
 	double		dt, totalConductance;
-	register double	potDecay, condDecay, threshDecay, bOverDt, dtOverTm;
+	register double	potDecay;
 	ChanLen		j;
 	ChanData	*inPtr, *outPtr;
-	McGregorPtr	c;
+	McGregorPtr	c = mcGregorPtr;
 	McGregorStatePtr	s;
 	
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_Neuron_McGregor())		
-		return(FALSE);
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0]))
-		return(FALSE);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "McGregor neural cell");
-	if (!InitProcessVariables_Neuron_McGregor(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dt = data->outSignal->dt;
-	c = mcGregorPtr;
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_Neuron_McGregor())		
+			return(FALSE);
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0]))
+			return(FALSE);
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "McGregor neural cell");
+		if (!InitProcessVariables_Neuron_McGregor(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dt = data->outSignal->dt;
 
-	dtOverTm = dt / c->membraneTConst_Tm;
-	condDecay = exp( -dt / c->kDecayTConst_TGk );
-	threshDecay = exp( -dt / c->thresholdTConst_TTh );
-	bOverDt = c->delayedRectKCond_b / dt;
-
-	for (i = 0; i < data->outSignal->numChannels; i++) {
+		c->dtOverTm = dt / c->membraneTConst_Tm;
+		c->condDecay = exp( -dt / c->kDecayTConst_TGk );
+		c->threshDecay = exp( -dt / c->thresholdTConst_TTh );
+		c->bOverDt = c->delayedRectKCond_b / dt;
+		if (data->initThreadRunFlag)
+			return(TRUE);
+	}
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
 		s = &c->state[i];
 		spikeState_s = s->lastSpikeState;
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
 		for (j = 0; j < data->outSignal->length; j++, outPtr++) {
 			totalConductance = 1.0 + s->kConductance_Gk;
-			potDecay = exp(-totalConductance * dtOverTm);
+			potDecay = exp(-totalConductance * c->dtOverTm);
 			s->potential_E = s->potential_E * potDecay + (*inPtr++ +
 			  s->kConductance_Gk * c->kEquilibriumPot_Ek) / totalConductance *
 			  (1.0 - potDecay);
-			s->threshold_Th = s->threshold_Th * threshDecay +
+			s->threshold_Th = s->threshold_Th * c->threshDecay +
 			  (c->accomConst_c * s->potential_E + c->restingThreshold_Th0) *
-			  (1.0 - threshDecay);
+			  (1.0 - c->threshDecay);
 			s->lastSpikeState = spikeState_s;
 			spikeState_s = (s->potential_E < s->threshold_Th)? 0: 1;
-			s->kConductance_Gk = s->kConductance_Gk * condDecay;
+			s->kConductance_Gk = s->kConductance_Gk * c->condDecay;
 			*outPtr = s->potential_E + c->cellRestingPot_Er;
 			if (spikeState_s) {
 				if (s->lastSpikeState < spikeState_s)
 					*outPtr = c->actionPotential + c->cellRestingPot_Er;
-				s->kConductance_Gk += bOverDt * (1 - condDecay);
+				s->kConductance_Gk += c->bOverDt * (1 - c->condDecay);
 			}
 		}
 	}

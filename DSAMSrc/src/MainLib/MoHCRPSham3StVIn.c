@@ -171,12 +171,14 @@ SetUniParList_IHCRP_Shamma3StateVelIn(void)
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->reversalPot_Ek, NULL,
 	  (void * (*)) SetReversalPot_Ek_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REVERSALPOTCORRECTION], "RP_CORRECTION",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REVERSALPOTCORRECTION],
+	  "RP_CORRECTION",
 	  "Reversal potential correction, Rp/(Rt+Rp).",
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->reversalPotCorrection, NULL,
 	  (void * (*)) SetReversalPotCorrection_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_TOTALCAPACITANCE_C], "C_TOTAL",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_TOTALCAPACITANCE_C],
+	  "C_TOTAL",
 	  "Total capacitance, C = Ca + Cb (F).",
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->totalCapacitance_C, NULL,
@@ -191,7 +193,8 @@ SetUniParList_IHCRP_Shamma3StateVelIn(void)
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->kConductance_Gk, NULL,
 	  (void * (*)) SetKConductance_Gk_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_MAXMCONDUCTANCE_GMAX], "G_MAXC",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_MAXMCONDUCTANCE_GMAX],
+	  "G_MAXC",
 	  "Maximum mechanical conductance, Gmax (S).",
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->maxMConductance_Gmax, NULL,
@@ -201,7 +204,8 @@ SetUniParList_IHCRP_Shamma3StateVelIn(void)
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->ciliaTimeConst_tc, NULL,
 	  (void * (*)) SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_CILIACOUPLINGGAIN_C], "GAIN_C",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_CILIACOUPLINGGAIN_C],
+	  "GAIN_C",
 	  "Cilia/BM coupling gain, C (dB).",
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->ciliaCouplingGain_C, NULL,
@@ -284,11 +288,13 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 		ok = FALSE;
 	if (!SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(reversalPot_Ek))
 		ok = FALSE;
-	if (!SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(reversalPotCorrection))
+	if (!SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(
+	  reversalPotCorrection))
 		ok = FALSE;
 	if (!SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(totalCapacitance_C))
 		ok = FALSE;
-	if (!SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(restingConductance_G0))
+	if (!SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(
+	  restingConductance_G0))
 		ok = FALSE;
 	if (!SetKConductance_Gk_IHCRP_Shamma3StateVelIn(kConductance_Gk))
 		ok = FALSE;
@@ -375,7 +381,8 @@ SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
  */
 
 BOOLN
-SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double theReversalPotCorrection)
+SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
+  theReversalPotCorrection)
 {
 	static const char	*funcName =
 	  "SetReversalPotCorrection_IHCRP_Shamma3StateVelIn";
@@ -427,7 +434,8 @@ SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
  */
 
 BOOLN
-SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double theRestingConductance_G0)
+SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
+  theRestingConductance_G0)
 {
 	static const char	*funcName =
 	  "SetRestingConductance_G0_IHCRP_Shamma3StateVelIn";
@@ -915,6 +923,7 @@ InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = sham3StVInPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_IHCRP_Shamma3StateVelIn;
 	theModule->Free = Free_IHCRP_Shamma3StateVelIn;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma3StateVelIn;
@@ -967,47 +976,42 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	  "InitProcessVariables_IHCRP_Shamma3StateVelIn";
 	int		i;
 	double	restingPotential_V0;
+	Sham3StVInPtr p = sham3StVInPtr;
 
-	if (sham3StVInPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		/*** Additional update flags can be added to above line ***/
-		if (sham3StVInPtr->updateProcessVariablesFlag || data->
-		  updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 
 			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
-			/*** Put memory allocation etc here ***/
-			if ((sham3StVInPtr->lastInput = (double *)
-				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastInput = (double *) calloc(data->outSignal->numChannels,
+			  sizeof(double))) == NULL) {
 				NotifyError("%s: Out of memory for 'lastInput'.", funcName);
 				return(FALSE);
 			}
-			if ((sham3StVInPtr->lastOutput = (double *)
-				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
+			  sizeof(double))) == NULL) {
 				NotifyError("%s: Out of memory for 'lastOutput'.", funcName);
 				return(FALSE);
 			}
-			if ((sham3StVInPtr->lastCiliaDisplacement_u = (double *)
+			if ((p->lastCiliaDisplacement_u = (double *)
 				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
 				NotifyError("%s: Out of memory for 'lastCiliaDisplacement_u'.",
-				funcName);
+				  funcName);
 				return(FALSE);
 			}
-			sham3StVInPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
 
-		restingPotential_V0 = (sham3StVInPtr->restingConductance_G0 *
-		sham3StVInPtr->endocochlearPot_Et + sham3StVInPtr->kConductance_Gk *
-		(sham3StVInPtr->reversalPot_Ek + sham3StVInPtr->endocochlearPot_Et *
-		sham3StVInPtr->reversalPotCorrection)) /
-		(sham3StVInPtr->restingConductance_G0 + sham3StVInPtr->
-		kConductance_Gk);
+		restingPotential_V0 = (p->restingConductance_G0 *
+		  p->endocochlearPot_Et + p->kConductance_Gk * (p->reversalPot_Ek +
+		  p->endocochlearPot_Et * p->reversalPotCorrection)) /
+		  (p->restingConductance_G0 + p->kConductance_Gk);
 
 		if (data->timeIndex == PROCESS_START_TIME) {
 			for (i = 0; i < data->outSignal->numChannels; i++) {
-			/*** Put reset (to zero ?) code here ***/
-			sham3StVInPtr->lastInput[i] = 0.0;
-			sham3StVInPtr->lastOutput[i] = restingPotential_V0;
-			sham3StVInPtr->lastCiliaDisplacement_u[i] = 0.0;
+				p->lastInput[i] = 0.0;
+				p->lastOutput[i] = restingPotential_V0;
+				p->lastCiliaDisplacement_u[i] = 0.0;
 			}	
 		}
 	}
@@ -1025,8 +1029,6 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IHCRP_Shamma3StateVelIn(void)
 {
-	/** Put memory deallocation code here.	***/
-	/** Remember to set the pointers to NULL. ***/
 	if (sham3StVInPtr->lastInput != NULL) {
 		free(sham3StVInPtr->lastInput);
 		sham3StVInPtr->lastInput = NULL;
@@ -1066,95 +1068,84 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int	chan;
 	ChanLen	i;
-	double	leakageConductance_Ga, conductance_G, potential_V;
+	double	conductance_G, potential_V;
 	double	ciliaDisplacement_u, lastInput;
-	double  ciliaAct;
-	double  u0, u1, s0, s1;
-	register	 double		dtOverC, gkEpk, dtOverTc, cGain, dt;
+	Sham3StVInPtr p = sham3StVInPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
-		NotifyError("%s: Parameters invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
+			NotifyError("%s: Parameters invalid.", funcName);
+			return(FALSE);
+			}
+		if (!CheckData_IHCRP_Shamma3StateVelIn(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
 		}
-	if (!CheckData_IHCRP_Shamma3StateVelIn(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+ 		SetProcessName_EarObject(data, "Modified Shamma hair cell receptor "
+		  "potential");
+
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+
+		if (!InitProcessVariables_IHCRP_Shamma3StateVelIn(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+
+		p->dtOverC = data->outSignal->dt / p->totalCapacitance_C;
+		p->gkEpk = p->kConductance_Gk * (p->reversalPot_Ek +
+		  p->endocochlearPot_Et * p->reversalPotCorrection);
+		p->ciliaAct = 1.0 / (1.0 + exp(p->offset_u0 / p->sensitivity_s0) *
+		  (1.0 + exp(p->offset_u1 / p->sensitivity_s1)));
+		p->leakageConductance_Ga = p->restingConductance_G0 -
+		  p->maxMConductance_Gmax * p->ciliaAct;
+
+		p->cGaindt = pow(10.0, p->ciliaCouplingGain_C / 20.0) * data->
+		  outSignal->dt;
+		p->dtOverTc = data->outSignal->dt / p->ciliaTimeConst_tc;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
-	}
- 	SetProcessName_EarObject(data, "Modified Shamma hair cell receptor "
-	  "potential");
 
-
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-
-	if (!InitProcessVariables_IHCRP_Shamma3StateVelIn(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-
-	s0 = sham3StVInPtr->sensitivity_s0;
-	u0 = sham3StVInPtr->offset_u0;
-	s1 = sham3StVInPtr->sensitivity_s1;
-	u1 = sham3StVInPtr->offset_u1;
-
-	dt = data->outSignal->dt;
-	dtOverC = dt / sham3StVInPtr->totalCapacitance_C;
-	gkEpk = sham3StVInPtr->kConductance_Gk * (sham3StVInPtr->reversalPot_Ek +
-	  sham3StVInPtr->endocochlearPot_Et * sham3StVInPtr->
-	  reversalPotCorrection);
-	ciliaAct = 1.0 / (1.0 + exp(u0 / s0) * ( 1 + exp(u1 / s1)));
-	leakageConductance_Ga = sham3StVInPtr->restingConductance_G0 -
-	sham3StVInPtr->maxMConductance_Gmax * ciliaAct;
-
-	cGain = pow(10.0, sham3StVInPtr->ciliaCouplingGain_C / 20.0);
-	dtOverTc = dt / sham3StVInPtr->ciliaTimeConst_tc;
-
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
-		ciliaDisplacement_u = sham3StVInPtr->lastCiliaDisplacement_u[chan];
-		potential_V = sham3StVInPtr->lastOutput[chan];
-		lastInput = sham3StVInPtr->lastInput[chan];
+		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
+		potential_V = p->lastOutput[chan];
+		lastInput = p->lastInput[chan];
 		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
-			ciliaDisplacement_u += dt * cGain * (*inPtr ) - 
-			  ciliaDisplacement_u * dtOverTc;
-			ciliaAct = 1.0 / (1.0 + exp((u0 - ciliaDisplacement_u) / s0) *
-			  (1.0 + exp((u1 - ciliaDisplacement_u) / s1)));
-			conductance_G = sham3StVInPtr->maxMConductance_Gmax * ciliaAct +
-			  leakageConductance_Ga; 
-			*outPtr = (ChanData) (potential_V - dtOverC * (conductance_G *
-			  (potential_V - sham3StVInPtr->endocochlearPot_Et) +
-			  sham3StVInPtr->kConductance_Gk * potential_V - gkEpk));
+			ciliaDisplacement_u += p->cGaindt * (*inPtr ) - 
+			  ciliaDisplacement_u * p->dtOverTc;
+			p->ciliaAct = 1.0 / (1.0 + exp((p->offset_u0 -
+			  ciliaDisplacement_u) / p->sensitivity_s0) * (1.0 + exp((
+			  p->offset_u1 - ciliaDisplacement_u) / p->sensitivity_s1)));
+			conductance_G = p->maxMConductance_Gmax * p->ciliaAct +
+			  p->leakageConductance_Ga; 
+			*outPtr = (ChanData) (potential_V - p->dtOverC * (conductance_G *
+			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *
+			  potential_V - p->gkEpk));
 			potential_V = *outPtr;
 			lastInput = *inPtr;
 		}
-		sham3StVInPtr->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
-		sham3StVInPtr->lastInput[chan] = lastInput;
-		sham3StVInPtr->lastOutput[chan] = potential_V;
+		p->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
+		p->lastInput[chan] = lastInput;
+		p->lastOutput[chan] = potential_V;
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++)
-			*outPtr++ += sham3StVInPtr->referencePot;
+			*outPtr++ += p->referencePot;
 	}
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
 }
-
-
-
-
-
