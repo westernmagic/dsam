@@ -101,7 +101,8 @@ typedef struct {
 	ChanLen			inputCount;
 	ChanLen			zeroIndex;
 	ChanLen			positiveWidthIndex;
-	ChanLen			decayCount;
+	ChanLen			*decayCount;
+	ChanData		decayScale;
 	EarObjectPtr	strobeData;
 	EarObjectPtr	dataBuffer;
 	EarObjectPtr	strobeDataBuffer;
@@ -127,8 +128,6 @@ __BEGIN_DECLS
 BOOLN	CheckData_Analysis_SAI(EarObjectPtr data);
 
 BOOLN	CheckPars_Analysis_SAI(void);
-
-void	DecayImage_Analysis_SAI(EarObjectPtr data);
 
 BOOLN	Free_Analysis_SAI(void);
 
