@@ -39,8 +39,8 @@
 /*************************** Macro Definitions ********************************/
 /******************************************************************************/
 
-#define	_WorldTime_EarObject(EAROBJ)	((!dSAM.segmentedMode || \
-  (EAROBJ)->outSignal->staticTimeFlag || ((EAROBJ)->timeIndex < \
+#define	_WorldTime_EarObject(EAROBJ)	((!GetDSAMPtr_Common()->segmentedMode \
+  || (EAROBJ)->outSignal->staticTimeFlag || ((EAROBJ)->timeIndex < \
   (EAROBJ)->outSignal->length))? PROCESS_START_TIME: (EAROBJ)->timeIndex - \
   (EAROBJ)->outSignal->length)
 
