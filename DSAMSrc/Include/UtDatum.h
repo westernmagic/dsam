@@ -21,7 +21,7 @@
  *				routine was not being reset to zero when installing 'datum'
  *				nodes at the head of the list.  This occurred with the 
  *				GUI mode, where simulations needed to be recreated.
- *				02-02-99 LPO: The 'FindModuleUniVar_' routine now also returns
+ *				02-02-99 LPO: The 'FindModuleUniPar_' routine now also returns
  *				the simulation 'DatumPtr' at which the universal parameter was
  *				found.
  *				The 'SetUniParValue_' routine has been moved here from the
@@ -108,7 +108,7 @@ DatumPtr	FindLabelledProcessInst_Utility_Datum(DatumPtr start,
 DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
 				  char *moduleName);
 
-BOOLN	FindModuleUniVar_Utility_Datum(UniParListPtr *parList, uInt *index,
+BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		  DatumPtr *pc, char *parSpecifier, BOOLN diagnosticsOn);
 
 void	FreeInstructions_Utility_Datum(DatumPtr *pc);
