@@ -57,7 +57,7 @@ class ModuleParDialog: public DialogList {
 
  public:
 	ModuleParDialog(wxWindow *parent, char *title, int theInfoNum, DatumPtr pc,
-	  UniParListPtr theParList = NULL, BOOLN labelsFlag = TRUE, Bool modal =
+	  UniParListPtr theParList = NULL, BOOLN labelsFlag = TRUE, bool modal =
 	  DIALOGLIST_MODAL_MODE, int x = 300, int y = 300, int width = 500,
 	  int height = 500, long style = wxDEFAULT_DIALOG_STYLE);
 	~ModuleParDialog(void);
