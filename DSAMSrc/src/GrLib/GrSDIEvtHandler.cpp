@@ -266,7 +266,6 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 void
 SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 {
-	printf("SDIEvtHandler::OnLeftClick: Entered\n");
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 

@@ -210,6 +210,7 @@ SDIDocument::LoadObject(wxInputStream& stream)
 	else 
 		diagram.LoadFile(tempFileName);
 	wxRemoveFile(tempFileName);
+	wxGetApp().SetAudModelLoadedFlag(true);
 
 	return stream;
 
