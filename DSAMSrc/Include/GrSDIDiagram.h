@@ -25,12 +25,18 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	DIAGRAM_DEFAULT_SHAPE_WIDTH		60.0
-#define	DIAGRAM_DEFAULT_SHAPE_HEIGHT	60.0
-#define	DIAGRAM_HOLLOW_CIRCLE_TEXT		"Hollow circle connection"
-#define DIAGRAM_HOLLOW_CIRCLE_SIZE		6.0
-#define	DIAGRAM_ARROW_TEXT				"Arrow head 'repeat' connection"
+#define	DIAGRAM_DEFAULT_SHAPE_WIDTH		90.0
+#define	DIAGRAM_DEFAULT_SHAPE_HEIGHT	50.0
+#define DIAGRAM_DEFAULT_INITIAL_X		60.0
+#define DIAGRAM_DEFAULT_INITIAL_Y		60.0
+#define DIAGRAM_DEFAULT_X_SEPARATION	20.0
+#define DIAGRAM_DEFAULT_Y_SEPARATION	20.0
+#define	DIAGRAM_LABEL_WIDTH_MARGIN		5.0
+#define	DIAGRAM_LABEL_HEIGHT_MARGIN		5.0
+#define	DIAGRAM_ARROW_TEXT				"Arrow head connection"
 #define DIAGRAM_ARROW_SIZE				10.0
+#define	DIAGRAM_REPEAT_ARROW_TEXT		"Arrow head 'repeat' connection"
+#define DIAGRAM_REPEAT_ARROW_SIZE		10.0
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/
@@ -65,6 +71,8 @@ class SDIDiagram: public wxDiagram
 	SDIDiagram(void);
 	
 	void	AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType);
+	void	AddShape(wxShape *shape);
+	void	AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
 				  wxBrush *brush);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,

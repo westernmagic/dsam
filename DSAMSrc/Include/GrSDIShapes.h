@@ -57,12 +57,7 @@ class SDIAnalysisShape: public wxEllipseShape
 
 /*************************** SDIControlShape **********************************/
 
-/*
- * A few new shape classes so we have a 1:1 mapping
- * between palette symbol and unique class
- */
- 
-class SDIControlShape: public wxRectangleShape
+class SDIControlShape: public wxPolygonShape
 {
 	DECLARE_DYNAMIC_CLASS(SDIControlShape)
 
@@ -72,15 +67,20 @@ class SDIControlShape: public wxRectangleShape
 
 };
 
-/*************************** SDIUtilityShape **********************************/
+/*************************** SDIControlShape **********************************/
 
-class SDIUtilityShape: public wxPolygonShape
+/*
+ * A few new shape classes so we have a 1:1 mapping
+ * between palette symbol and unique class
+ */
+ 
+class SDIDisplayShape: public wxRectangleShape
 {
-	DECLARE_DYNAMIC_CLASS(SDIUtilityShape)
+	DECLARE_DYNAMIC_CLASS(SDIDisplayShape)
 
   private:
   public:
-	SDIUtilityShape(double w = 0.0, double h = 0.0);
+	SDIDisplayShape(double w = 0.0, double h = 0.0);
 
 };
 
@@ -117,17 +117,6 @@ class SDIModelShape: public wxPolygonShape
 
 };
 
-/*************************** SDIStimulusShape *********************************/
-
-class SDIStimulusShape: public wxPolygonShape
-{
-	DECLARE_DYNAMIC_CLASS(SDIStimulusShape)
-
-  public:
-    SDIStimulusShape(double w = 0.0, double h = 0.0);
-
-};
-
 /*************************** SDITransformShape ********************************/
 
 class SDITransformShape: public wxPolygonShape
@@ -141,12 +130,23 @@ class SDITransformShape: public wxPolygonShape
 
 /*************************** SDIUserShape *************************************/
 
-class SDIUserShape: public wxRectangleShape
+class SDIUserShape: public wxPolygonShape
 {
 	DECLARE_DYNAMIC_CLASS(SDIUserShape)
 
   public:
     SDIUserShape(double w = 0.0, double h = 0.0);
+
+};
+
+/*************************** SDIUtilityShape **********************************/
+
+class SDIUtilityShape: public wxRectangleShape
+{
+	DECLARE_DYNAMIC_CLASS(SDIUtilityShape)
+
+  public:
+    SDIUtilityShape(double w = 0.0, double h = 0.0);
 
 };
 

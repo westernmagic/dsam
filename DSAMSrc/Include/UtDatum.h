@@ -51,6 +51,7 @@
 
 #define	DATUM_DEFAULT_EAROBJECT_CONNECTIONS		1
 #define DATUM_INITIAL_INDENT_LEVEL				0
+#define DATUM_DEFAULT_LABEL_PREFIX				"p"
 
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
