@@ -143,6 +143,8 @@ char *	NameAndStepNumber_Utility_Datum(DatumPtr pc);
 
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
+void	ResetStepCount_Utility_Datum(void);
+
 BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start);
 
 BOOLN	SetBackwardConnections_Utility_Datum(DatumPtr start);

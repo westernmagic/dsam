@@ -24,8 +24,6 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char 	**argv;
-int		argc;
 AppInterfacePtr	appInterfacePtr = NULL;
 
 /******************************************************************************/
@@ -1258,10 +1256,6 @@ ResetCommandArgFlags_AppInterface(void)
 /*
  * This routine sets the appInterfacePtr argc and argv parameters.
  * The global variables are also set.
- * When used in GUI mode, 'argc' and 'argv' will already have been set, so they
- * will be reset to themselves.  This is because 'argc' and 'argv' will not be
- * in the main program arguments, and within 'MainSimulation' the global
- * variables will be in scope.
  */
 
 void
@@ -1273,8 +1267,8 @@ SetArgcAndArgV_AppInterface(int theArgc, char **theArgv)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		exit(1);
 	}
-	appInterfacePtr->argc = argc = theArgc;
-	appInterfacePtr->argv = argv = theArgv;
+	appInterfacePtr->argc = theArgc;
+	appInterfacePtr->argv = theArgv;
 
 }
 
@@ -1402,3 +1396,24 @@ SetCanFreePtrFlag_AppInterface(BOOLN status)
 	return(TRUE);
 
 }
+
+/****************************** GetPtr ****************************************/
+
+/*
+ * This function returns the application interface pointer.
+ * This routine is useful for the VC++ compile.
+ */
+
+AppInterfacePtr
+GetPtr_AppInterface(void)
+{
+	static const char *funcName = "GetPtr_AppInterface";
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(FALSE);
+	}
+	return(appInterfacePtr);
+
+}
+

@@ -213,8 +213,8 @@ MyApp::OnInit(void)
 	// Ensure title it set after the frame is created.
 	SetTitle();
 
-	if (appInterfacePtr)
-		SetAppName(appInterfacePtr->appName);
+	if (GetPtr_AppInterface())
+		SetAppName(GetPtr_AppInterface()->appName);
 	else
 		SetAppName("DSAM_App");
 
@@ -282,12 +282,12 @@ MyApp::CheckInitialisation(void)
 {
 	static const char *funcName = "MyApp::CheckInitialisation";
 
-	if (!appInterfacePtr) {
+	if (!GetPtr_AppInterface()) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if (appInterfacePtr->updateProcessVariablesFlag)
-		datumStepCount = 0;
+	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
+		ResetStepCount_Utility_Datum();
 	if (!InitProcessVariables_AppInterface(NULL, myArgc, myArgv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
 		return(FALSE);
@@ -324,7 +324,7 @@ MyApp::CheckOptions(void)
 			break;
 		case 'l':
 			wxGetApp().InitRun();
-			if (appInterfacePtr && appInterfacePtr->Init) {
+			if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
 				InitMain();
 				if (!CheckInitialisation())
 					exit(1);
@@ -343,7 +343,7 @@ MyApp::ResetCommandArgs(void)
 {
 	static const char *funcName = "MyApp::ResetCommandArgs";
 
-	if (!appInterfacePtr) {
+	if (!GetPtr_AppInterface()) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
@@ -366,10 +366,10 @@ void
 MyApp::InitMain(void)
 {
 	ResetDefaultDisplayPos();
-	if (appInterfacePtr)
-		SetConfiguration(appInterfacePtr->parList);
+	if (GetPtr_AppInterface())
+		SetConfiguration(GetPtr_AppInterface()->parList);
 	ResetCommandArgs();
-	datumStepCount = 0;
+	ResetStepCount_Utility_Datum();
 	SetTitle();
 	
 }
@@ -383,8 +383,8 @@ MyApp::InitMain(void)
 void
 MyApp::ExitMain(void)
 {
-	if (appInterfacePtr)
-		SaveConfiguration(appInterfacePtr->parList);
+	if (GetPtr_AppInterface())
+		SaveConfiguration(GetPtr_AppInterface()->parList);
 
 	DeleteSimThread();
 
@@ -476,12 +476,12 @@ MyApp::InitRun(void)
 void
 MyApp::SetTitle(void)
 {
-	if (!appInterfacePtr)
+	if (!GetPtr_AppInterface())
 		return;
 
 	if (frame) {
-		title.sprintf("%s: %s", appInterfacePtr->appName, appInterfacePtr->
-		  title);
+		title.sprintf("%s: %s", GetPtr_AppInterface()->appName,
+		  GetPtr_AppInterface()->title);
 		frame->SetTitle(title);
 	}
 
@@ -618,12 +618,12 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 bool
 MyApp::StatusChanged(void)
 {
-	if (!appInterfacePtr)
+	if (!GetPtr_AppInterface())
 		return(FALSE);
 	if (SimulationFileChanged_AppInterface(GetFileStatusPtr_AppInterface(
-	  appInterfacePtr->simulationFile), FALSE))
+	  GetPtr_AppInterface()->simulationFile), FALSE))
 		return(TRUE);
-	if (!appInterfacePtr->audModel)
+	if (!GetPtr_AppInterface()->audModel)
 		return(TRUE);
 	return(FALSE);
 	
@@ -757,7 +757,7 @@ MyApp::OnSocketEvent(wxSocketEvent& event)
 			len = sock->ReadMsg(msg, MAX_MSG_SIZE).LastCount();
 			SetArgvString(i, msg, len);
 		}
-		if (appInterfacePtr && myArgv) {
+		if (GetPtr_AppInterface() && myArgv) {
 			SetArgcAndArgV_AppInterface(myArgc, myArgv);
 			ResetGUIDialogs();
 			ResetCommandArgs();
@@ -878,7 +878,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	wxMenu *programMenu = new wxMenu;
 	programMenu->Append(MYFRAME_ID_EXECUTE, "&Execute\tCtrl-G", "Execute "
 	  "simulation");
-	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-T",
+	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-C",
 	  "Stop simulation execution.");
 
 	wxMenu *helpMenu = new wxMenu;
@@ -941,14 +941,14 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 
 	// Initialise application
 	wxGetApp().InitRun();
-	if (appInterfacePtr && appInterfacePtr->Init) {
-		appInterfacePtr->PrintSimMgrUsage = PrintUsage_MyApp;
+	if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
+		GetPtr_AppInterface()->PrintSimMgrUsage = PrintUsage_MyApp;
 		wxGetApp().InitMain();
 	}
 
 	// Disable unusable menus
-	if (!appInterfacePtr || !appInterfacePtr->Init || !appInterfacePtr->
-	  audModel) {
+	if (!GetPtr_AppInterface() || !GetPtr_AppInterface()->Init ||
+	  !GetPtr_AppInterface()->audModel) {
 		EnableSimParMenuOptions(FALSE);
 	}
 
@@ -960,9 +960,10 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	wxString helpFile;
 	help.UseConfig(wxConfig::Get());
 	// help.SetTempDir(".");  -- causes crashes on solaris
-	if (appInterfacePtr) {
+	if (GetPtr_AppInterface()) {
 		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH,
-		  appInterfacePtr->installDir, appInterfacePtr->appName);
+		  GetPtr_AppInterface()->installDir,
+		  GetPtr_AppInterface()->appName);
 		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, DSAM_DATA_INSTALL_DIR,
 		  DSAM_PACKAGE);
 	}
@@ -1026,7 +1027,7 @@ MyFrame::AddHelpBook(const wxString& path, const wxString& defaultPath,
 
 	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
 	helpFilePath = pConfig->Read(path, "");
-	if (appInterfacePtr) {
+	if (GetPtr_AppInterface()) {
 		helpFile = ((helpFilePath.Len() != 0)? helpFilePath: defaultPath) +
 		  "/" + SIM_MANAGER_HELP_DIR + "/" + fileName + ".hhp";
 #		ifdef __WXMSW__
@@ -1092,7 +1093,7 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 	}
 
 	ResetGUIDialogs();
-	if (appInterfacePtr->Init) {
+	if (GetPtr_AppInterface()->Init) {
 		if (wxGetApp().StatusChanged()) {
 			wxGetApp().DeleteSimModuleDialog();
 			if (!wxGetApp().CheckInitialisation())
@@ -1101,7 +1102,7 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
 		  )->CheckChangedValues())
 			return;
-		if (!appInterfacePtr->audModel) {
+		if (!GetPtr_AppInterface()->audModel) {
 			NotifyError("%s: Simulation not initialised.", funcName);
 			return;
 		}
@@ -1161,13 +1162,13 @@ MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 	int		i;
 	wxString title, authors, message, dsamVersion;
 
-	if (appInterfacePtr) {
-		title.sprintf("About %s %s", appInterfacePtr->appName,
-		  appInterfacePtr->appVersion);
-		dsamVersion = appInterfacePtr->compiledDSAMVersion;
+	if (GetPtr_AppInterface()) {
+		title.sprintf("About %s %s", GetPtr_AppInterface()->appName,
+		  GetPtr_AppInterface()->appVersion);
+		dsamVersion = GetPtr_AppInterface()->compiledDSAMVersion;
 		for (i = 0, authors = "Authors: "; i < APP_MAX_AUTHORS; i++)
-			if (appInterfacePtr->authors[i][0] != '\0')
-				authors += appInterfacePtr->authors[i];
+			if (GetPtr_AppInterface()->authors[i][0] != '\0')
+				authors += GetPtr_AppInterface()->authors[i];
 	} else {
 		title.sprintf("About Application");
 		dsamVersion = DSAM_VERSION;
@@ -1185,20 +1186,21 @@ MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 
 /*
  * This routine creates the run paraneter dialog.
- * If the appInterfacePtr->updateProcessFlag is set, then on 'OK' the
- * simulation parameter windows and display windows will be closed.
+ * If the GetPtr_AppInterface()->updateProcessFlag is set, then on
+ * 'OK' the simulation parameter windows and display windows will be closed.
  */
 
 void
 MyFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 {
-	if (!appInterfacePtr->parList)
+	if (!GetPtr_AppInterface()->parList)
 		return;
 
-	ModuleParDialog dialog(this, "Main Parameters", 0, NULL, appInterfacePtr->
-	  parList, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
+	ModuleParDialog dialog(this, "Main Parameters", 0, NULL,
+	  GetPtr_AppInterface()->parList, 300, 300, 500, 500,
+	  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
 
-	if ((dialog.ShowModal() == wxID_OK) && appInterfacePtr->
+	if ((dialog.ShowModal() == wxID_OK) && GetPtr_AppInterface()->
 	  updateProcessVariablesFlag)
 		ResetSimulation();
 
@@ -1211,13 +1213,14 @@ MyFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
 {
 	ResetGUIDialogs();
 	if (wxGetApp().StatusChanged()) {
-		datumStepCount = 0;
+		ResetStepCount_Utility_Datum();
 		wxGetApp().CheckInitialisation();
 	}
 	if (!wxGetApp().GetSimModuleDialog()) {
 		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
-		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(appInterfacePtr->
-		  audModel), GetUniParListPtr_ModuleMgr(appInterfacePtr->audModel)));
+		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(
+		  GetPtr_AppInterface()->audModel), GetUniParListPtr_ModuleMgr(
+		  GetPtr_AppInterface()->audModel)));
 	}
 
 }
@@ -1232,7 +1235,7 @@ MyFrame::OnLoadSimFile(wxCommandEvent& event)
 	  "*.spf": "*.sim";
 	wxFileDialog dialog(this, "Choose a file", wxGetCwd(), "", extension);
 	if ((dialog.ShowModal() == wxID_OK) && SetParValue_UniParMgr(
-	  &appInterfacePtr->parList, APP_INT_SIMULATIONFILE, (char *) dialog.
+	  &GetPtr_AppInterface()->parList, APP_INT_SIMULATIONFILE, (char *) dialog.
 	  GetPath().GetData())) {
 		ResetSimulation();
 	}
@@ -1247,7 +1250,7 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	char *filePath, path[MAX_FILE_PATH], fileName[MAXLINE];
 	wxString newFilePath;
 
-	filePath = appInterfacePtr->parList->pars[APP_INT_SIMULATIONFILE].
+	filePath = GetPtr_AppInterface()->parList->pars[APP_INT_SIMULATIONFILE].
 	  valuePtr.s;
 	FindFilePathAndName_Common(filePath, path, fileName);
 	newFilePath = FileSelector_Utils("Simulation parameter file", path,

@@ -116,6 +116,15 @@
 #endif
 #define	PROCESS_START_TIME		0
 
+#ifdef WIN32
+#	ifndef snprintf
+#		define snprintf _snprintf
+#	endif
+#	ifndef vsnprintf
+#		define vsnprintf _vsnprintf
+#	endif
+#endif
+
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
 /******************************************************************************/
@@ -151,9 +160,11 @@
 #ifdef __cplusplus
 # define __BEGIN_DECLS extern "C" {
 # define __END_DECLS }
+# define __CONST_DECLS const
 #else
 # define __BEGIN_DECLS /* empty */
 # define __END_DECLS /* empty */
+# define __CONST_DECLS /* empty */
 #endif
 
 /******************************************************************************/

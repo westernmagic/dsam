@@ -136,7 +136,6 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 void
 ModuleParDialog::DeleteDialog(void)
 {
-	printf("ModuleParDialog::DeleteDialog: Called.\n");
 	DialogList *parent = (DialogList *) GetParent();
 
 	if (pc && pc->data->module->specifier == DISPLAY_MODULE)

@@ -35,10 +35,11 @@
 
 #define	GRAPH_Y_TITLE_SCALE					0.025
 #define	GRAPH_Y_TITLE_MARGIN_SCALE			0.05
-#define	GRAPH_Y_AXIS_SCALE					0.16
+#define	GRAPH_Y_AXIS_SCALE					0.2
 #define	GRAPH_Y_LABELS_X_OFFSET_SCALE		0.04
-#define	GRAPH_Y_INSET_SCALE_OFFSET_SCALE	0.45
+#define	GRAPH_Y_INSET_SCALE_OFFSET_SCALE	0.55
 #define	GRAPH_Y_INSET_SCALE_HEIGHT_SCALE	0.1
+#define GRAPH_Y_INSET_SCALE_UPPER_EXP_LIMIT	2
 #define GRAPH_Y_SCALE_LOWER_EXP_LIMIT		0
 #define GRAPH_Y_SCALE_UPPER_EXP_LIMIT		5
 
@@ -48,7 +49,7 @@
 #define	GRAPH_X_LABELS_Y_OFFSET_SCALE		0.04
 
 #define GRAPH_EXPONENT_VS_LABEL_SCALE		0.7
-#define GRAPH_INSET_VS_LABEL_SCALE			0.7
+#define GRAPH_INSET_VS_LABEL_SCALE			0.5
 
 #if defined(__WXMSW__)
 #	define	GRAPH_AXIS_TITLE_SCALE			0.3
@@ -125,10 +126,10 @@ class MyCanvas: public wxWindow
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 			  int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-			  double minYScale);
+			  int upperExpLimit, double minYScale);
 	int		GetMinimumIntLog(double value);
 	MultiLine *GetSignalLines(void)		{ return signalLines; }
-	int		GetYExponent(MultiLine *lines);
+	int		GetYExponent(MultiLine *lines, int upperExpLimit);
 	void	InitData(EarObjectPtr data);
 	void	InitGraph(void);
 	SignalDispPtr GetSignalDispPtr(void)	{ return mySignalDispPtr; }

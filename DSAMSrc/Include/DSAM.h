@@ -116,6 +116,7 @@
 #include "MoBMCarney.h"
 #include "MoHCRPCarney.h"
 #include "MoHCRPMeddis.h"
+#include "MoHCRPSham3StVIn.h"
 #include "MoHCRPShamma.h"
 #include "MoIHC86Meddis.h"
 #include "MoIHC86aMeddis.h"

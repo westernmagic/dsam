@@ -1013,3 +1013,17 @@ SetUniParValue_Utility_Datum(DatumPtr start, char *parName, char *parValue)
 
 }
 
+/****************************** ResetStepCount ********************************/
+
+/*
+ * This routine resets the global datumStepCount variable.
+ * It is needed because MS VC++ complains.
+ */
+
+void
+ResetStepCount_Utility_Datum(void)
+{
+	datumStepCount = 0;
+
+}
+

@@ -521,7 +521,7 @@ MyCanvas::GetMinimumIntLog(double value)
  */
 
 int
-MyCanvas::GetYExponent(MultiLine *lines)
+MyCanvas::GetYExponent(MultiLine *lines, int upperExpLimit)
 {
 	int		exponent, bottomLog, topLog;
 
@@ -529,7 +529,7 @@ MyCanvas::GetYExponent(MultiLine *lines)
 	topLog = GetMinimumIntLog(lines->GetMaxY());
 	exponent = (fabs(bottomLog) > fabs(topLog))? bottomLog: topLog;
 	if ((exponent < GRAPH_Y_SCALE_LOWER_EXP_LIMIT) || (exponent >
-	  GRAPH_Y_SCALE_UPPER_EXP_LIMIT))
+	  upperExpLimit))
 		return(exponent);
 	return(0);
 
@@ -545,7 +545,7 @@ MyCanvas::GetYExponent(MultiLine *lines)
 void
 MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
   int theXOffset, int theYOffset, int yTicks, int numDisplayedChans,
-  double minYScale)
+  int upperExpLimit, double minYScale)
 {
 	/* static const char *funcName = "MyCanvas::DrawYScale"; */
 	int		i, j, tickLength, exponent = 0, xPos, yPos, top, xLabel;
@@ -570,7 +570,7 @@ MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 	xPos = (int) (yAxisRect->GetRight() - tickLength + theXOffset - yAxisRect->
 	  GetWidth() * GRAPH_Y_LABELS_X_OFFSET_SCALE);
 	leftMostLabel = xPos;
-	exponent = GetYExponent(signalLines);
+	exponent = GetYExponent(signalLines, upperExpLimit);
 	scale = (signalLines->GetMaxY() - signalLines->GetMinY()) * displayScale *
 	  chanDisplayScale / (yTicks - 1);
 	yTickSpacing = chanSpacing * displayScale / (yTicks - 1);
@@ -647,12 +647,13 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 			  GRAPH_INSET_VS_LABEL_SCALE));
 			DrawYScale(dc, &yInset, insetLabelFont, theXOffset - (int) floor(
 			  yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE + 0.5),
-			  theYOffset, 2, 1, 0.0);
+			  theYOffset, 2, 1, GRAPH_Y_INSET_SCALE_UPPER_EXP_LIMIT, 0.0);
 		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
 		DrawYScale(dc, yAxis, labelFont, theXOffset, theYOffset,
-		  mySignalDispPtr->yTicks, numDisplayedChans, signalLines->GetMinY());
+		  mySignalDispPtr->yTicks, numDisplayedChans,
+		  GRAPH_Y_SCALE_UPPER_EXP_LIMIT, signalLines->GetMinY());
 		break;
 	default:
 		NotifyError("%s: Scale (%d) not implemented.", funcName);

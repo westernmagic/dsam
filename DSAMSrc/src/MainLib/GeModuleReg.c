@@ -66,6 +66,8 @@ ModRegEntry	libraryModuleList[] = {
 	{ "IHCRP_CARNEY", PROCESS_MODULE, InitModule_IHCRP_Carney },
 	{ "IHCRP_MEDDIS", PROCESS_MODULE, InitModule_IHCRP_Meddis },
 	{ "IHCRP_SHAMMA", PROCESS_MODULE, InitModule_IHCRP_Shamma },
+	{ "IHCRP_SHAMMA3StateVelIn", PROCESS_MODULE,
+	  InitModule_IHCRP_Shamma3StateVelIn },
 	{ "NEUR_ARLEKIM", PROCESS_MODULE, InitModule_Neuron_ArleKim },
 	{ "NEUR_HHUXLEY", PROCESS_MODULE, InitModule_Neuron_HHuxley },
 	{ "NEUR_MCGREGOR", PROCESS_MODULE, InitModule_Neuron_McGregor },

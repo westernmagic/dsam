@@ -59,7 +59,7 @@ MODEL_OBJS	= MoANSGBinom.obj MoANSGCarney.obj MoANSGSimple.obj MoBM0DRNL.obj \
 			FlLowPass.obj MoHCRPCarney.obj MoHCRPMeddis.obj MoHCRPShamma.obj \
 			MoIHC86Meddis.obj MoIHC86aMeddis.obj MoIHCMeddis2000.obj \
 			MoIHCCarney.obj MoIHCCooke.obj MoNCArleKim.obj MoNCHHuxley.obj \
-			MoNCMcGregor.obj MoBMGammaC.obj
+			MoNCMcGregor.obj MoBMGammaC.obj MoHCRPSham3StVIn.obj
 
 STIMULUS_OBJS= StMPTone.obj  StPTone.obj  StPTone2.obj StClick.obj  \
 			StAMTone.obj  StStepFun.obj StBPTone.obj  StMPPTone.obj  \
@@ -229,6 +229,8 @@ FlMultiBPass.obj:  $(INCDIR)/FlMultiBPass.h $(GEN_HEADERS)
 MoHCRPMeddis.obj:       $(INCDIR)/MoHCRPMeddis.h $(GEN_HEADERS)
 
 MoHCRPShamma.obj:       $(INCDIR)/MoHCRPShamma.h $(GEN_HEADERS)
+
+MoHCRPSham3StVIn.obj:       $(INCDIR)/MoHCRPSham3StVIn.h $(GEN_HEADERS)
 
 MoHCRPCarney.obj:       $(INCDIR)/MoHCRPCarney.h $(GEN_HEADERS) \
 						  $(CF_HEADERS)

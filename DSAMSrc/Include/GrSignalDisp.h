@@ -171,14 +171,12 @@ typedef struct {
 	NameSpecifier	*yAxisModeList;
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
-	BOOLN			reduceChansInitialised;
 	BOOLN			redrawGraphFlag;
 	BOOLN			resetTitleFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	data;
 	EarObjectPtr	summary;
-	ReduceChans		reduceChans;
 #	if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 	DisplayS		*display;
 	DialogList		*dialog;

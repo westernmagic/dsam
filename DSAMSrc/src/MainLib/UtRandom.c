@@ -37,7 +37,7 @@ long	randomNumSeed = RANDOM_INITIAL_SEED;
 /************************** Ran01 *********************************************/
 
 /*
- * This routine initialises the random number generator.
+ * This routine is a uniformally distributed random number generator.
  * It has been revised from the "Numerical Recipes 2nd ed." Ran1 (p.280).
  * Set "seed" to any negative value to initialise or re-intialise the sequence.
  */
@@ -146,3 +146,32 @@ SetGlobalSeed_Random(long theSeed)
 
 }
 
+/************************** GaussRan01 ****************************************/
+
+/*
+ * This routine is a Gaussian (normally) distributed random number generator.
+ * It has been revised from the "Numerical Recipes 2nd ed." Ran1 (p.289).
+ */
+
+double
+GaussRan01_Random(void)
+{
+	static BOOLN	isSet = FALSE;
+	static double	gSet;
+	double	fac, rSquared, v1, v2;
+
+	if (!isSet) {
+		do {
+			v1 = 2.0 * Ran01_Random(&randomNumSeed) - 1.0;
+			v2 = 2.0 * Ran01_Random(&randomNumSeed) - 1.0;
+			rSquared = SQR(v1) + SQR(v2);
+		} while ((rSquared >= 1.0) || (rSquared == 0.0));
+		fac = sqrt(-2.0 * log(rSquared) / rSquared);
+		gSet = v1 * fac;
+		isSet = TRUE;
+		return (v2 * fac);
+	} else {
+		isSet = FALSE;
+		return (gSet);
+	}
+}

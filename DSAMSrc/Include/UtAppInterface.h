@@ -30,8 +30,12 @@
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	define	MAIN_ARGS	void
+#	define ARGC		0
+#	define ARGV		NULL
 #else
 #	define	MAIN_ARGS	int argc, char **argv
+#	define ARGC		argc
+#	define ARGV		argv
 #endif /* GRAPHICS_SUPPORT */
 
 /******************************************************************************/
@@ -128,6 +132,8 @@ extern AppInterfacePtr	appInterfacePtr;
 __BEGIN_DECLS
 
 BOOLN	Free_AppInterface(void);
+
+AppInterfacePtr	GetPtr_AppInterface(void);
 
 EarObjectPtr	GetEarObjectPtr_AppInterface(void);
 

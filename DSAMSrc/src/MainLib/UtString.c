@@ -151,7 +151,7 @@ GetSuffix_Utility_String(char *fileName)
 /**************************** GetFileNameFPath ********************************/
 
 /*
- * This routine returns the filename witht the path removed.
+ * This routine returns the filename with the path removed.
  * It returns the entire file name if there is no file path.
  * 
  */

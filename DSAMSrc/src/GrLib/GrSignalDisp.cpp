@@ -303,7 +303,6 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->data = NULL;
 	signalDispPtr->summary = NULL;
 	signalDispPtr->inLineProcess = FALSE;
-	signalDispPtr->reduceChansInitialised = FALSE;
 	signalDispPtr->redrawGraphFlag = FALSE;
 	signalDispPtr->resetTitleFlag = FALSE;
 	signalDispPtr->display = NULL;
@@ -1630,7 +1629,8 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 		  data->updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
 			signalDispPtr->critSect = new wxCriticalSection();
-			if ((signalDispPtr->summary = Init_EarObject("NULL")) == NULL) {
+			if ((signalDispPtr->summary = Init_EarObject(
+			  "Util_ReduceChannels")) == NULL) {
 				NotifyError("%s: Out of memory for summary EarObject.",
 				  funcName);
 				return(FALSE);
@@ -1647,9 +1647,6 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 					signalDispPtr->width = _GetDuration_SignalData(signal) /
 					  signal->numWindowFrames;
 			}
-			reduceChansPtr = &signalDispPtr->reduceChans;
-			Init_Utility_ReduceChannels(LOCAL);
-			signalDispPtr->reduceChansInitialised = TRUE;
 			signalDispPtr->parList->updateFlag = TRUE;
 			signalDispPtr->updateProcessVariablesFlag = FALSE;
 			data->updateProcessFlag = FALSE;
@@ -1694,11 +1691,6 @@ FreeProcessVariables_SignalDisp(void)
 	if (signalDispPtr->critSect)
 		delete signalDispPtr->critSect;
 
-	if (signalDispPtr->reduceChansInitialised) {
- 		reduceChansPtr = &signalDispPtr->reduceChans;
- 		Free_Utility_ReduceChannels();
- 		reduceChansPtr = NULL;
-	}
  	signalDispPtr->updateProcessVariablesFlag = TRUE;
  	return(TRUE);
 
@@ -1761,10 +1753,9 @@ SetDisplay_SignalDisp(EarObjectPtr data)
 
 	/* "Manual" connection of output signal to the summary EarObject. */
 	signalDispPtr->summary->inSignal[0] = data->outSignal;
-	reduceChansPtr = &signalDispPtr->reduceChans;
-	SetMode_Utility_ReduceChannels("average");
-	SetNumChannels_Utility_ReduceChannels(1);
-	Process_Utility_ReduceChannels(signalDispPtr->summary);
+	SetPar_ModuleMgr(signalDispPtr->summary, "mode", "average");
+	SetPar_ModuleMgr(signalDispPtr->summary, "num_Channels", "1");
+	RunProcess_ModuleMgr(signalDispPtr->summary);
 
 	signalDispPtr->redrawGraphFlag = TRUE;
 	signalDispPtr->data = (signalDispPtr->buffer)? signalDispPtr->buffer: data;
@@ -1785,7 +1776,7 @@ PostDisplayEvent_SignalDisp(void)
 	  MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT);
 	event.SetInt(MYAPP_THREAD_DRAW_GRAPH);
 	event.SetClientData(signalDispPtr);
-	wxPostEvent( wxGetApp().GetFrame(), event);
+	wxPostEvent(wxGetApp().GetFrame(), event);
 
 }
 
