@@ -636,7 +636,7 @@ GetSimParFileFlag_ModuleMgr(EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	return(((SimScriptPtr) data->module)->simParFileFlag);
+	return(((SimScriptPtr) data->module->parsPtr)->simParFileFlag);
 
 }
 
