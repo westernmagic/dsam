@@ -10,7 +10,6 @@
  *
  *********************/
 
-#include <iostream.h>
 #include <octave/oct.h>
 
 #include <octave/oct-map.h>
@@ -77,7 +76,7 @@ AnyBadArgument(const octave_value_list& args)
 			return true;
 		} else {
 			Octave_map map = args(INFO_STRUCT).map_value();
-			if (!map["dt"].is_real_scalar()) {
+			if (map["dt"].empty()) {
 				error("Structure 'dt' element not present.");
 				return true;
 			}
@@ -143,8 +142,8 @@ GetOutputSignalMatrix(SignalDataPtr signal)
 /*************************** Main routine *************************************/
 /******************************************************************************/
 
-#define GET_INFO_PAR(NAME, DEF_VALUE) ((info[(NAME)].is_real_scalar())? \
-		  info[(NAME)].double_value(): (DEF_VALUE))
+#define GET_INFO_PAR(NAME, DEF_VALUE) ((info[(NAME)](0).is_real_scalar())? \
+		  info[(NAME)](0).double_value(): (DEF_VALUE))
 // Note that the third parameter (nargout) is not used, so it is
 // omitted from the list of arguments to DEFUN_DLD in order to avoid
 // the warning from gcc about an unused function parameter. 
@@ -187,7 +186,7 @@ DEFUN_DLD (RunDSAMSim, args, ,
 		inputMatrixPtr = &inputMatrix(0, 0);
  		numChannels = (uShort) inputMatrix.rows();
 		length = (ChanLen) inputMatrix.columns();
-		dt = info["dt"].double_value();
+		dt = info["dt"](0).double_value();
 		staticTimeFlag = (BOOLN) GET_INFO_PAR("staticTimeFlag", FALSE);
 		outputTimeOffset = GET_INFO_PAR("outputTimeOffset", 0.0);
 	}
