@@ -10,15 +10,16 @@ ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
 ams_ng_SOURCES	= ams.h ams.xpm
 ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
+pkginclude_HEADERS	= AMSSetup.h
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= ams.par
+EXTRA_DIST		= ams.par ams.rc amsicon.ico
 
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
 
-SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab
+SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab MSVC
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
