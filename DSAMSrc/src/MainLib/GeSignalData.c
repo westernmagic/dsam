@@ -413,7 +413,7 @@ Scale_SignalData(SignalDataPtr d, double multiplier)
 	
 	if (!CheckInit_SignalData(d, "Scale_SignalData (theSignal)"))
 		return(FALSE);
-	for (i = 0; i < d->numChannels; i++)
+	for (i = d->offset; i < d->numChannels; i++)
 		for (j = 0, dataPtr = d->channel[i]; j < d->length; j++)
 			*(dataPtr++) *= multiplier;
 	return(TRUE);
