@@ -62,7 +62,7 @@ class ParListInfo {
 	  int theInfoNum, int theOffset = 0, int theNumPars = -1);
 	~ParListInfo(void);
 
-	void	AddModuleListBoxEntries(DatumPtr pc, wxListBox& listBox);
+	void	AddModuleListBoxEntries(wxListBox *listBox);
 	bool	CheckChangedValues(void);
 	int		GetInfoNum(void)			{ return infoNum; }
 	wxWindow *	GetLastControl(void)	{ return lastControl; }
@@ -75,7 +75,7 @@ class ParListInfo {
 	DatumPtr	GetPC(void)			{ return pc; }
 	void	ResetControlValues(void);
 	void	SetEnabledControls(void);
-	void	SetModuleListBox(DatumPtr simulation);
+	void	SetModuleListBox(void);
 	void	SetParBoolean(UniParPtr par, int index);
 	void	SetParFileName(UniParPtr par, int index);
 	void	SetParGeneral(UniParPtr par, int index);
