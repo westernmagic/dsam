@@ -95,6 +95,7 @@ Init_EarObject(char *moduleName)
 		return(NULL);
 	}
 #	endif
+	data->clientData = NULL;
 	return(data);
 
 } /* Init_EarObject */

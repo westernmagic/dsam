@@ -58,6 +58,9 @@
 
 #define DATUM_IN_SIMULATION(PC)	((PC)->previous || (PC)->next)
 
+#define GET_DATUM_CLIENT_DATA(PC)	(((PC)->type == PROCESS)? \
+		  (PC)->data->clientData: (PC)->clientData)
+
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
@@ -83,6 +86,7 @@ typedef struct Datum {
 		} loop;
 	} u;
 	EarObjectPtr	data;
+	void			*clientData;
 	struct Datum	*previous;			/* To link to previous datum */
 	struct Datum	*next;				/* To link to next datum */
 

@@ -84,6 +84,7 @@ typedef struct {
 #	ifndef _NO_MODULEMGR
 	ModulePtr		module;			/* Module linked with process. */
 #	endif
+	void			*clientData;	/* Used to store misc. handling info. */
 
 } EarObject, *EarObjectPtr;
 

@@ -119,6 +119,7 @@ InitInst_Utility_Datum(int type)
 		;
 	} /* Switch */
 	datum->data = NULL;
+	datum->clientData = NULL;
 	datum->next = NULL;
 	datum->previous = NULL;
 	datum->stepNumber = datumStepCount++;
@@ -820,12 +821,12 @@ NameAndLabel_Utility_Datum(DatumPtr pc)
 	static const char	*funcName = "NameAndLabel_Utility_Datum";
 	static char	string[MAXLINE];
 
-	if (!pc || (pc->type != PROCESS)) {
-		NotifyError("%s: Pointer not initialised or not a 'PROCESS'.",
-		  funcName);
+	if (!pc) {
+		NotifyError("%s: Pointer not initialised.", funcName);
 		return(NULL);
 	}
-	snprintf(string, MAXLINE, "%s.%s", pc->u.proc.moduleName, pc->label);
+	snprintf(string, MAXLINE, "%s.%s", GetProcessName_Utility_Datum(pc), pc->
+	  label);
 	return(string);
 
 }
