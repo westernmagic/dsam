@@ -83,15 +83,18 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 {
 	updateParent = FALSE;
 	enableTextCtrlsFlag = FALSE;
+	enableNoteBookPagingFlag = FALSE;
 	pc = thePC;
 	okBtn = NULL;
 	cancelBtn = NULL;
 	quitBtn = NULL;
+	deleteICBtn = NULL;
 	myHandler = theHandler;
 	parList = theParList;
 
 	parListInfoList = new ParListInfoList(this, pc, parList);
 	enableTextCtrlsFlag = TRUE;
+	enableNoteBookPagingFlag = TRUE;
 	lastControl = parListInfoList->GetLastControl();
 
 	/* static char *funcName = "ModuleParDialog::ModuleParDialog"; */
@@ -150,6 +153,79 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 	Layout();
 	Fit();
 
+}
+
+/****************************** Destructor ************************************/
+
+ModuleParDialog::~ModuleParDialog(void)
+{
+	if (parListInfoList)
+		delete parListInfoList;
+
+}
+
+/****************************** CheckChangedValues ****************************/
+
+/*
+ * This routine checks the changed values and returns false if any of them
+ * cannot be set.
+ * This routine also sets the main parList update flag (parListInfo[0]) to
+ * It assumes that there is at least one member in the list.
+ * TRUE if any of the sub-parList update flags are set to TRUE;
+ */
+
+bool
+ModuleParDialog::CheckChangedValues(void)
+{
+	bool	ok;
+	size_t	i;
+
+	for (i = 0; i < parListInfoList->list.Count(); i++) {
+		if (!parListInfoList->list[i]->CheckChangedValues())
+			ok = FALSE;
+		if (parListInfoList->list[i]->parList->updateFlag) {
+			parListInfoList->list[0]->parList->updateFlag = TRUE;
+			if(cancelBtn)
+				cancelBtn->Enable(FALSE);
+		}
+	}
+	if (ok && !CheckParList_UniParMgr(parListInfoList->list[0]->parList))
+		ok = FALSE;
+	if (ok && !UpdateParent())
+		ok = FALSE;
+	return(ok);
+
+}
+
+/****************************** GetParListNode ********************************/
+
+/*
+ * This routine recursively checks for the appropriate list for a tag.
+ */
+
+wxNode *
+ModuleParDialog::GetParListNode(wxNode *node, long tag)
+{
+	ParListInfo	*p = (ParListInfo *) node->Data();
+	
+	if ((tag - p->GetOffset()) > (p->parList->numPars - 1))
+		return(GetParListNode(node->Next(), tag));
+	return(node);
+
+}
+
+/****************************** SetNotebookPanel ******************************/
+
+/*
+ * This routine the main parlist 'notebookPanel' field.
+ */
+
+void
+ModuleParDialog::SetNotebookPanel(int selection)
+{
+	ParListInfo *info = parListInfoList->list[0];
+
+	info->parList->notebookPanel = selection;
 }
 
 /****************************** SetNotebookSelection **************************/
@@ -280,6 +356,8 @@ ModuleParDialog::OnOk(wxCommandEvent& WXUNUSED(event))
 void 
 ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 {
+	if (!enableNoteBookPagingFlag)
+		return;
 	int	selection = event.GetSelection();
 
 	SetNotebookPanel(selection);
@@ -299,83 +377,6 @@ ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 	}
 
 }
-
-/****************************** Destructor ************************************/
-
-ModuleParDialog::~ModuleParDialog(void)
-{
-	if (parListInfoList)
-		delete parListInfoList;
-
-}
-
-/****************************** CheckChangedValues ****************************/
-
-/*
- * This routine checks the changed values and returns false if any of them
- * cannot be set.
- * This routine also sets the main parList update flag (parListInfo[0]) to
- * It assumes that there is at least one member in the list.
- * TRUE if any of the sub-parList update flags are set to TRUE;
- */
-
-bool
-ModuleParDialog::CheckChangedValues(void)
-{
-	bool	ok;
-	size_t	i;
-
-	for (i = 0; i < parListInfoList->list.Count(); i++) {
-		if (!parListInfoList->list[i]->CheckChangedValues())
-			ok = FALSE;
-		if (parListInfoList->list[i]->parList->updateFlag) {
-			parListInfoList->list[0]->parList->updateFlag = TRUE;
-			if(cancelBtn)
-				cancelBtn->Enable(FALSE);
-		}
-	}
-	if (ok && !CheckParList_UniParMgr(parListInfoList->list[0]->parList))
-		ok = FALSE;
-	if (ok && !UpdateParent())
-		ok = FALSE;
-	return(ok);
-
-}
-
-/****************************** GetParListNode ********************************/
-
-/*
- * This routine recursively checks for the appropriate list for a tag.
- */
-
-wxNode *
-ModuleParDialog::GetParListNode(wxNode *node, long tag)
-{
-	ParListInfo	*p = (ParListInfo *) node->Data();
-	
-	if ((tag - p->GetOffset()) > (p->parList->numPars - 1))
-		return(GetParListNode(node->Next(), tag));
-	return(node);
-
-}
-
-/****************************** SetNotebookPanel ******************************/
-
-/*
- * This routine the main parlist 'notebookPanel' field.
- */
-
-void
-ModuleParDialog::SetNotebookPanel(int selection)
-{
-	ParListInfo *info = parListInfoList->list[0];
-
-	info->parList->notebookPanel = selection;
-}
-
-/******************************************************************************/
-/****************************** Call backs ************************************/
-/******************************************************************************/
 
 /****************************** OnButton **************************************/
 
