@@ -1141,7 +1141,7 @@ SetPars_AppInterface(char *diagMode, char *simulationFile, char *segmentMode)
 void
 ListParsAndExit_AppInterface(void)
 {	
-	SetGUIDialogStatus(FALSE);
+	SetUsingGUIStatus(FALSE);
 	SetParsFile_Common("screen", OVERWRITE);
 	ListParameters_AppInterface();
 	exit(0);

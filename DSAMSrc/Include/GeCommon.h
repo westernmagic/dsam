@@ -340,6 +340,8 @@ void	SetParsFilePath_Common(char *name);
 
 void	SetSegmentedMode(BOOLN setting);
 
+void	SetUsingGUIStatus(BOOLN status);
+
 void	SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);

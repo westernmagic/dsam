@@ -396,6 +396,20 @@ SetGUIDialogStatus(BOOLN status)
 
 }
 
+/*************************** SetUsingGUIStatus *******************************/
+
+/*
+ * This routine sets the 'usingGUIFlag', defining if output is sent to
+ * dialogs and not to the console.
+ */
+
+void
+SetUsingGUIStatus(BOOLN status)
+{
+	dSAM.usingGUIFlag = status;
+
+}
+
 /*************************** SetParsFilePath **********************************/
 
 /*
