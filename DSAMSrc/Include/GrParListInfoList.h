@@ -40,6 +40,7 @@
 class ParListInfoList {
 
 	bool	useNotebookControls;
+	int		notebookPanel;
 	DialogList	*parent;
 	wxNotebook	*notebook;
 

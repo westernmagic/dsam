@@ -204,6 +204,7 @@ typedef struct UniParListNode {
 	UniParModeSpecifier	mode;
 
 	BOOLN	updateFlag;
+	int		notebookPanel;
 	uInt	numPars;
 	UniPar	*pars;
 	union {
