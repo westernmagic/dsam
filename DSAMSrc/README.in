@@ -8,6 +8,7 @@ reading and writing to sound file formats, in addition to including many
 analysis functions.
 
 To use the graphics support code, the wxWin code must be obtained and compiled
+(it can be found at http://www.wxwindows.org/).
 
 The official ftp site is:
   ftp://ftp.essex.ac.uk/pub/omard/dsam
