@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define UTILITY_BINSIGNAL_NUM_PARS			1
+#define UTILITY_BINSIGNAL_NUM_PARS			2
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -32,18 +32,29 @@
 
 typedef enum {
 
+	UTILITY_BINSIGNAL_MODE,
 	UTILITY_BINSIGNAL_BINWIDTH
 
 } BinSignalParSpecifier;
+
+typedef enum {
+
+	UTILITY_BINSIGNAL_AVERAGE_MODE,
+	UTILITY_BINSIGNAL_SUM_MODE,
+	UTILITY_BINSIGNAL_MODE_NULL
+
+} UtilityModeSpecifier;
 
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	binWidthFlag;
+	BOOLN	modeFlag, binWidthFlag;
+	int		mode;
 	double	binWidth;
 
 	/* Private members */
+	NameSpecifier	*modeList;
 	UniParListPtr	parList;
 
 } BinSignal, *BinSignalPtr;
@@ -70,6 +81,8 @@ BOOLN	CheckPars_Utility_BinSignal(void);
 
 BOOLN	Free_Utility_BinSignal(void);
 
+BOOLN	InitModeList_Utility_BinSignal(void);
+
 BOOLN	Init_Utility_BinSignal(ParameterSpecifier parSpec);
 
 UniParListPtr	GetUniParListPtr_Utility_BinSignal(void);
@@ -82,7 +95,9 @@ BOOLN	ReadPars_Utility_BinSignal(char *fileName);
 
 BOOLN	SetBinWidth_Utility_BinSignal(double theBinWidth);
 
-BOOLN	SetPars_Utility_BinSignal(double binWidth);
+BOOLN	SetMode_Utility_BinSignal(char * theMode);
+
+BOOLN	SetPars_Utility_BinSignal(char * mode, double binWidth);
 
 BOOLN	SetUniParList_Utility_BinSignal(void);
 
