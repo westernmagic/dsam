@@ -749,6 +749,8 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 		 		  funcName);
 		 		return(FALSE);
 			}
+			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+			CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
 			for (i = 0; i < p->numChannels; i++) {
 				cFIndex = i / data->outSignal->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyRPCoeffs_IHCRP_Carney(
@@ -830,8 +832,6 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 		NotifyError("%s: Could not initialise output signal.", funcName);
 		return(FALSE);
 	}
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
 	if (!InitProcessVariables_IHCRP_Carney(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);
