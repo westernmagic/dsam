@@ -9,13 +9,14 @@ usage()
 	cat <<EOF
 Usage: dsam-config [OPTIONS] [LIBRARIES]
 Options:
-	[--prefix[=DIR]]
-	[--exec-prefix[=DIR]]
-	[--version]
-	[--libs]
 	[--cflags]
-	[--rflags]
+	[--debug]
+	[--exec-prefix[=DIR]]
 	[--gui]
+	[--libs]
+	[--prefix[=DIR]]
+	[--rflags]
+	[--version]
 EOF
 	exit $1
 }
