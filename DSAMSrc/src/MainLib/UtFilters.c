@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
@@ -826,7 +827,7 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 	double	theta, cotOrTan;
 	ContButt1CoeffsPtr	p;
 
-	if (cutOffFrequency * samplingInterval > 0.5) {
+	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
 		NotifyError("%s: Maximum sampling for filter specification, dt = "
 		  "%g ms.", funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);

@@ -9,7 +9,7 @@
  *				segmented mode friendly.
  *				13-02-98 LPO: Corrected time offset checking.
  *				04-03-99 LPO: Corrected the double precsision error using SGI's
- *				by introducing the 'DBL_GREATER_OR_EQUAL macro'.
+ *				by introducing the 'DBL_GREATER macro'.
  * Author:		L. P. O'Mard
  * Created:		17 Nov 1995
  * Updated:		04 Mar 1999

@@ -9,7 +9,7 @@
  *				segmented mode friendly.
  *				13-02-98 LPO: Corrected time offset checking.
  *				04-03-99 LPO: Corrected the double precsision error using SGI's
- *				by introducing the 'DBL_GREATER_OR_EQUAL macro'.
+ *				by introducing the 'DBL_GREATER macro'.
  * Author:		L. P. O'Mard
  * Created:		17 Nov 1995
  * Updated:		04 Mar 1999
@@ -417,6 +417,7 @@ SetPeriod_Analysis_Histogram(double thePeriod)
 	}
 	/*** Put any required checks here. ***/
 	histogramPtr->periodFlag = TRUE;
+	histogramPtr->updateProcessVariablesFlag = TRUE;
 	histogramPtr->period = thePeriod;
 	return(TRUE);
 
@@ -550,7 +551,7 @@ PrintPars_Analysis_Histogram(void)
 	case HISTOGRAM_PSTH_SR:
 	case HISTOGRAM_PH:
 	case HISTOGRAM_PH_SR:
-		DPrint("\tPeriod = %g ms,", MSEC(histogramPtr->period));
+		DPrint("\tPeriod = %g ms\n", MSEC(histogramPtr->period));
 		break;
 	default:
 		DPrint("\tTime offset = %g ms\n", MSEC(histogramPtr->timeOffset));
@@ -748,9 +749,9 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
-			p->numPeriods = 0;
 			p->updateProcessVariablesFlag = FALSE;
 		}
+		p->numPeriods = 0;
 		ResetProcess_EarObject(p->dataBuffer);
 		bufferLength = ((p->typeMode == HISTOGRAM_PSTH) || (p->typeMode ==
 		  HISTOGRAM_PSTH_SR))? 1: (ChanLen) floor(p->period / data->inSignal[
@@ -839,6 +840,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
+	SetOutputTimeOffset_SignalData(data->outSignal, binWidth);
 	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 	if (!InitProcessVariables_Analysis_Histogram(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
@@ -862,7 +864,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		outPtr = data->outSignal->channel[chan];
 		buffPtr = p->dataBuffer->outSignal->channel[chan];
 		bufferSamples = p->bufferSamples;
-		nextCutOff = p->period + dt;
+		nextCutOff = p->period;
 		nextBinCutOff = binWidth - dt;
 		for (i = p->offsetIndex, binSum = 0; (i < data->inSignal[0]->length);
 		  i++) {
@@ -889,7 +891,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 				bufferSamples--;
 			}
 			time = (i - p->offsetIndex + 1) * dt;
-			if (DBL_GREATER_OR_EQUAL(time, nextCutOff)) {
+			if (DBL_GREATER(time, nextCutOff)) {
 				remnantSamples = data->inSignal[0]->length - i + 1;
 				if ((remnantSamples * dt) < p->period) {
 					bufferData = TRUE;
@@ -899,7 +901,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 				nextCutOff += p->period;
 				p->numPeriods++;
 			}
-			if (DBL_GREATER_OR_EQUAL(time, nextBinCutOff)) {
+			if (DBL_GREATER(time, nextBinCutOff)) {
 				if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
 				  data->outSignal->length) /* - because of rounding errors. */
 					*outPtr++ += binSum;
