@@ -286,7 +286,7 @@ SetMinCF_CFList(CFListPtr theCFs, double minCF)
 	theCFs->minCF = minCF;
 	theCFs->minCFFlag = TRUE;
 	if (!theCFs->maxCFFlag && (theCFs->minCF > theCFs->maxCF))
-		theCFs->maxCF *= 2.0;
+		theCFs->maxCF = theCFs->minCF * 2.0;
 	if (theCFs->cFParList)
 		theCFs->cFParList->updateFlag = TRUE;
 	return(TRUE);
@@ -313,7 +313,7 @@ SetMaxCF_CFList(CFListPtr theCFs, double maxCF)
 	theCFs->maxCF = maxCF;
 	theCFs->maxCFFlag = TRUE;
 	if (!theCFs->minCFFlag && (theCFs->maxCF < theCFs->minCF))
-		theCFs->minCF /= 2.0;
+		theCFs->minCF = theCFs->maxCF / 2.0;
 	if (theCFs->cFParList)
 		theCFs->cFParList->updateFlag = TRUE;
 	return(TRUE);
