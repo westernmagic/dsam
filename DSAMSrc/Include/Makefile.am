@@ -47,7 +47,7 @@ Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 Std_Headers	= 
 
 Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
-				UtCBinauralITD.h UtCFList.h UtCmplxM.h UtCompress.h \
+				UtCFList.h UtCmplxM.h UtCompress.h \
 				UtConvMonaural.h UtCreateBinaural.h UtDatum.h UtDebug.h \
 				UtDelay.h UtFilters.h UtIonChanList.h UtIterRipple.h \
 				UtNameSpecs.h UtRamp.h UtRandom.h UtRedceChans.h UtReduceDt.h \

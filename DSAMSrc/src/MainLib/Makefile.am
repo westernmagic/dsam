@@ -46,7 +46,7 @@ St_Sources	= StAMTone.c StBPTone.c StClick.c StFMTone.c StHarmonic.c \
 				StStepFun.c StWhiteNoise.c StEGatedTone.c
 
 Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
-				UtBinSignal.c UtCBinauralITD.c UtCFList.c UtCmplxM.c \
+				UtBinSignal.c UtCFList.c UtCmplxM.c \
 				UtCompress.c UtConvMonaural.c UtCreateBinaural.c UtDatum.c \
 				UtDebug.c UtDelay.c UtFilters.c UtIonChanList.c UtIterRipple.c \
 				UtNameSpecs.c UtRamp.c UtRandom.c UtRedceChans.c UtReduceDt.c \
