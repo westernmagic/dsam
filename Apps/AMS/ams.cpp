@@ -70,11 +70,12 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-BOOLN	numberOfRunsFlag;
-
 char	fileLockingMode[MAXLINE] = "off";
+char	autoNumRunsMode[MAXLINE] = "off";
 
-int		numberOfRuns = 1, fileLockingModeSpecifier;
+int		numberOfRuns = 1;
+int		fileLockingModeSpecifier = GENERAL_BOOLEAN_OFF;
+int		autoNumRunsModeSpecifier = GENERAL_BOOLEAN_OFF;
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -105,6 +106,11 @@ SetUniParList(UniParListPtr *parList)
 	  UNIPAR_BOOL,
 	  &fileLockingModeSpecifier, NULL,
 	  (void * (*)) SetFileLockingMode);
+	SetPar_UniParMgr(&pars[AMS_AUTONUMRUNSMODE], "AUTO_NUM_RUNS_MODE",
+	  "Auto-setting of the number of runs (data files only) ('on' or 'off').",
+	  UNIPAR_BOOL,
+	  &autoNumRunsModeSpecifier, NULL,
+	  (void * (*)) SetAutoNumRunsMode);
 	SetPar_UniParMgr(&pars[AMS_NUMBEROFRUNS], "NUM_RUNS",
 	  "Number of repeat runs, or segments/frames.",
 	  UNIPAR_INT,
@@ -137,6 +143,29 @@ SetFileLockingMode(char *theFileLockingMode)
 
 }
 
+/****************************** SetAutoNumRunsMode ****************************/
+
+/*
+ * This functions sets the automatic number of runs setting mode.
+ * It returns false if it fails in any way.
+ */
+
+BOOLN
+SetAutoNumRunsMode(char *theAutoNumRunsMode)
+{
+	static const char	*funcName = PROGRAM_NAME": SetAutoNumRunsMode";
+
+	if ((autoNumRunsModeSpecifier = Identify_NameSpecifier(theAutoNumRunsMode,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError("%s: Illegal auto. number of runs mode mode (%s): must be "
+		  "'on' or 'off'.", funcName, theAutoNumRunsMode);
+		return(FALSE);
+	}
+	strcpy(autoNumRunsMode, theAutoNumRunsMode);
+	return(TRUE);
+
+}
+
 /****************************** SetNumberOfRuns *******************************/
 
 /*
@@ -149,11 +178,40 @@ SetNumberOfRuns(int theNumberOfRuns)
 {
 	static const char	*funcName = PROGRAM_NAME": SetNumberOfRuns";
 
+	if (theNumberOfRuns < 0) {
+		NotifyError("%s: Illegal number of runs (%d).", funcName,
+		  theNumberOfRuns);
+		return(FALSE);
+	}
 	numberOfRuns = theNumberOfRuns;
-	numberOfRunsFlag = TRUE;
-	if (numberOfRuns < 1)
-		AutoSetNumberOfRuns();
 	return(TRUE);
+
+}
+
+/****************************** GetDataFileInProcess **************************/
+
+/*
+ * This routine returns a pointer to the a 'DataFile_In' process at the
+ * beginning of a simulation.  If it is not there, then it returns NULL.
+ */
+
+EarObjectPtr
+GetDataFileInProcess(void)
+{
+	static char *funcName = PROGRAM_NAME": GetDataFileInProcess";
+	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
+	EarObjectPtr	process;
+
+	SetErrorsFile_Common("off", OVERWRITE);
+	process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
+	  GetPtr_AppInterface()->audModel));
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
+	if (!process)
+		return(NULL);
+	if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
+	  0)
+		return(NULL);
+	return(process);
 
 }
 
@@ -170,30 +228,16 @@ AutoSetNumberOfRuns(void)
 {
 	static char *funcName = PROGRAM_NAME": AutoSetNumberOfRuns";
 	double	totalDuration, segmentDuration;
-	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
 	EarObjectPtr	process;
-
-	if (numberOfRuns > 0)
-		return(TRUE);
 
 	if (!GetDSAMPtr_Common()->segmentedMode) {
 		numberOfRuns = 1;
 		return(TRUE);
 	}
 
-	SetErrorsFile_Common("off", OVERWRITE);
-	process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
-	  GetPtr_AppInterface()->audModel));
-	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
-	if (!process)
+	if ((process = GetDataFileInProcess()) == NULL)
 		return(TRUE);
 	numberOfRuns = 1;	/* Default value */
-	if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
-	  0) {
-		NotifyError("%s: Operation failed. First process is not DataFile_In.\n",
-		  funcName);
-		return(TRUE);
-	}
 	segmentDuration = *GetUniParPtr_ModuleMgr(process, "duration")->valuePtr.r;
 	if (segmentDuration < 0.0) {
 		NotifyError("%s: Segment size must be set when using auto 'number of "
@@ -278,7 +322,6 @@ ProcessOptions(int argc, char **argv, int *optInd)
 				"zero (%d).", funcName, numberOfRuns);
 				exit(1);
 			}
-			numberOfRunsFlag = TRUE;
 			foundOption = TRUE;
 			break;
 		case 'v':
@@ -331,11 +374,6 @@ PostInitFunc(void)
 {
 	static char *funcName = PROGRAM_NAME": PostInitFunc";
 
-	if (!AutoSetNumberOfRuns()) {
-		NotifyError("%s: Could not automatically set the number of runs.",
-		  funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -365,12 +403,6 @@ BOOLN
 Init(void)
 {
 	static char *funcName = PROGRAM_NAME": Init";
-
-	if (!GetPtr_AppInterface() && !Init_AppInterface(GLOBAL)) {
-		NotifyError("%s: Could not initialise the application interface.",
-		  funcName);
-		exit(1);
-	}
 
 	SetAppName_AppInterface(PROGRAM_NAME);
 	SetAppVersion_AppInterface(AMS_VERSION);
@@ -417,6 +449,9 @@ int MainSimulation(MAIN_ARGS)
 
 	if (fileLockingModeSpecifier)
 		SetLockFile(TRUE);
+	if (autoNumRunsModeSpecifier && GetDataFileInProcess() &&
+	  !AutoSetNumberOfRuns())
+		return(FALSE);
 	for (i = 0; i < numberOfRuns; i++)
 		if (!RunSim_AppInterface())
 			return(0);

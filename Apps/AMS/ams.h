@@ -60,7 +60,7 @@
 #	define	AMS_VERSION					"?.?.?"
 #endif
 
-#define	AMS_NUM_PARS				2		/* No. of application parameters. */
+#define	AMS_NUM_PARS				3		/* No. of application parameters. */
 #define DEFAULT_ERRORS_MODE			"screen"
 #define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
 #define AMS_HELP					"AMSHelp"
@@ -77,6 +77,7 @@
 typedef enum {
 
 	AMS_FILELOCKINGMODE,
+	AMS_AUTONUMRUNSMODE,
 	AMS_NUMBEROFRUNS
 
 } AMSParSpecifier;
@@ -95,6 +96,8 @@ typedef enum {
 
 BOOLN	AutoSetNumberOfRuns(void);
 
+EarObjectPtr	GetDataFileInProcess(void);
+
 BOOLN	Init(void);
 
 BOOLN	PostInitFunc(void);
@@ -106,6 +109,8 @@ void	PrintUsage(void);
 BOOLN	ProcessOptions(int argc, char **argv, int *optInd);
 
 BOOLN	SetAppInterfacePars(void);
+
+BOOLN	SetAutoNumRunsMode(char *theAutoNumRunsMode);
 
 BOOLN	SetFileLockingMode(char *theFileLockingMode);
 
