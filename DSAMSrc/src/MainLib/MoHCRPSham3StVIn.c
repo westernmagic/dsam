@@ -320,8 +320,8 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 BOOLN
 SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
 {
-	static const char	*funcName ="
-	  " "SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -372,8 +372,8 @@ SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
 BOOLN
 SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double theReversalPotCorrection)
 {
-	static const char	*funcName ="
-	  " "SetReversalPotCorrection_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetReversalPotCorrection_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -398,8 +398,8 @@ SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double theReversalPotCorrection
 BOOLN
 SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
 {
-	static const char	*funcName ="
-	  " "SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -424,8 +424,8 @@ SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
 BOOLN
 SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double theRestingConductance_G0)
 {
-	static const char	*funcName ="
-	  " "SetRestingConductance_G0_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetRestingConductance_G0_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -476,8 +476,8 @@ SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
 BOOLN
 SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
 {
-	static const char	*funcName ="
-	  " "SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -502,8 +502,8 @@ SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
 BOOLN
 SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
 {
-	static const char	*funcName ="
-	  " "SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -528,8 +528,8 @@ SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
 BOOLN
 SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
 {
-	static const char	*funcName ="
-	  " "SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn";
+	static const char	*funcName =
+	  "SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn";
 
 	if (sham3StVInPtr == NULL) {
 		NotifyError("%s: Module not initialised.", funcName);
@@ -1104,8 +1104,8 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	ChanLen	i;
 	double	leakageConductance_Ga, conductance_G, potential_V;
 	double	ciliaDisplacement_u, lastInput;
-        double  ciliaSSAct, ciliaAct;
-        double  x0, x1, s0, s1;
+	double  ciliaAct;
+	double  x0, x1, s0, s1;
 	register     double		dtOverC, gkEpk, dtOverTc, cGain, dt;
 
 	if (data == NULL) {
@@ -1151,7 +1151,7 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	gkEpk = sham3StVInPtr->kConductance_Gk * (sham3StVInPtr->reversalPot_Ek +
 	  sham3StVInPtr->endocochlearPot_Et * sham3StVInPtr->
 	  reversalPotCorrection);
-	ciliaAct = 1/ ( 1 + exp(x0 / s0) * ( 1 + exp(x1 / s1) )  );
+	ciliaAct = 1.0 / (1.0 + exp(x0 / s0) * ( 1 + exp(x1 / s1)));
 	leakageConductance_Ga = sham3StVInPtr->restingConductance_G0 -
 	sham3StVInPtr->maxMConductance_Gmax * ciliaAct;
 
