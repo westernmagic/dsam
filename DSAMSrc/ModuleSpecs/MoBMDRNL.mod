@@ -21,7 +21,7 @@ typedef struct {
 	int				linLPCascade;
 	ParArrayPtr		linCF;
 	ParArrayPtr		linBwidth;
-	double			linScaleG;
+	ParArrayPtr		linScaleG;
 
 	CFListPtr		theCFs;
 

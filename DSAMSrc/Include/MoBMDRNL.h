@@ -54,10 +54,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	nonLinGTCascadeFlag, nonLinLPCascadeFlag, nonLinBwidthFlag;
-	BOOLN	comprScaleAFlag, comprScaleBFlag, comprExponentFlag;
-	BOOLN	linGTCascadeFlag, linLPCascadeFlag, linCFFlag, linBwidthFlag;
-	BOOLN	linScaleGFlag;
+	BOOLN	nonLinGTCascadeFlag, nonLinLPCascadeFlag, comprExponentFlag;
+	BOOLN	linGTCascadeFlag, linLPCascadeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		nonLinGTCascade;
 	int		nonLinLPCascade;
@@ -69,7 +67,7 @@ typedef struct {
 	int		linLPCascade;
 	ParArrayPtr	linCF;
 	ParArrayPtr	linBwidth;
-	double	linScaleG;
+	ParArrayPtr	linScaleG;
 	CFListPtr	theCFs;
 
 	/* Private members */
@@ -102,6 +100,9 @@ extern	BMDRNLPtr	bMDRNLPtr;
 * in GeCommon.h.
 */
 __BEGIN_DECLS
+
+void	ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal,
+		  ParArrayPtr p);
 
 BOOLN	CheckData_BasilarM_DRNL(EarObjectPtr data);
 
@@ -148,7 +149,7 @@ BOOLN	SetLinGTCascade_BasilarM_DRNL(int theLinGTCascade);
 
 BOOLN	SetLinLPCascade_BasilarM_DRNL(int theLinLPCascade);
 
-BOOLN	SetLinScaleG_BasilarM_DRNL(double theLinScaleG);
+BOOLN	SetLinScaleG_BasilarM_DRNL(ParArrayPtr theLinScaleG);
 
 BOOLN	InitModule_BasilarM_DRNL(ModulePtr theModule);
 
@@ -164,7 +165,7 @@ BOOLN	SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
 		  ParArrayPtr nonLinBwidth, ParArrayPtr comprScaleA,
 		  ParArrayPtr comprScaleB, double comprExponent, int linGTCascade,
 		  int linLPCascade, ParArrayPtr linCF, ParArrayPtr linBwidth,
-		  double linScaleG, CFListPtr theCFs);
+		  ParArrayPtr linScaleG, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_DRNL(void);
 
