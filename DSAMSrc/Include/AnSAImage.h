@@ -102,7 +102,6 @@ typedef struct {
 	ChanLen			zeroIndex;
 	ChanLen			positiveWidthIndex;
 	ChanLen			*decayCount;
-	ChanData		decayScale;
 	EarObjectPtr	strobeData;
 	EarObjectPtr	dataBuffer;
 	EarObjectPtr	strobeDataBuffer;
