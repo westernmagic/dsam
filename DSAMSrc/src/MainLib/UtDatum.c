@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "DSAM.h"
 #include "UtSSParser.h"
@@ -726,7 +727,8 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc)
 
 	if (((pc->type == PROCESS) || (pc->type == REPEAT)) && (pc->label[0] ==
 	  '\0')) {
-		snprintf(label, MAXLINE, "p%d", pc->stepNumber);
+		snprintf(label, MAXLINE, "%s%d", DATUM_DEFAULT_LABEL_PREFIX,
+		  pc->stepNumber);
 		if ((pc->label = InitString_Utility_String(label)) == NULL) {
 			NotifyError("%s: Out of memory for label '%s'.", funcName, label);
 			return(FALSE);
@@ -1230,6 +1232,8 @@ FindModuleProcessInst_Utility_Datum(DatumPtr start, char *moduleName)
  * The 'FindUniPar_UniParMgr' changes the 'pList' value, cannot be used again
  * when a general list parameter is searched for.
  * This routine will not produce error diagnostics if the 'pList' is NULL.
+ * If the process label starts with a digit, then it is assumed that an older
+ * SPF file is being read.
  */
 
 BOOLN
@@ -1254,7 +1258,8 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 	} else {
 		snprintf(processName, MAXLINE, "%s", p + 1);
 		if ((p = strchr(processName, UNIPAR_NAME_SEPARATOR)) != NULL) {
-			snprintf(processLabel, MAXLINE, "%s", p + 1);
+			snprintf(processLabel, MAXLINE, "%s%s", (isdigit(*(p + 1)))?
+			  DATUM_DEFAULT_LABEL_PREFIX: "", p + 1);
 			*p = '\0';
 		} else
 			processLabel[0] = '\0';

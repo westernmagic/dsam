@@ -485,6 +485,8 @@ CheckData_IHCRP_Meddis(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}	
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (meddisRPPtr->mTimeConst_tm <= data->inSignal[0]->dt / 2.0) {
 		NotifyError("%s: Membrane time constant (%g ms) is too small it must\n"
 		  "be greater than %g ms", funcName, MILLI(meddisRPPtr->mTimeConst_tm),

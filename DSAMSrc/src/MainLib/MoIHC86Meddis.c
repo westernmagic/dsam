@@ -689,6 +689,8 @@ CheckData_IHC_Meddis86(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}	
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0]))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;

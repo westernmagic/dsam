@@ -1432,6 +1432,8 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 		NotifyError("%s: EarObject not initialised.", funcName);
 		return(FALSE);
 	}	
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	if (!CheckPars_BasilarM_DRNL_Test())
 		return(FALSE);
 		
