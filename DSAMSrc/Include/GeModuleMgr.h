@@ -153,6 +153,8 @@ void		Free_ModuleMgr(ModulePtr *theModule);
 
 void		FreeAll_ModuleMgr(void);
 
+void		FreeNull_ModuleMgr(void);
+
 void		FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle
 			  theHandle);
 
