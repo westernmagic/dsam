@@ -70,6 +70,7 @@ InitModule_Analysis_Convolution(ModulePtr theModule)
 	/* static const char	*funcName = "InitModule_Analysis_Convolution"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Calc_Analysis_Convolution;
 	theModule->SetParsPointer = SetParsPointer_Analysis_Convolution;
 	return(TRUE);
@@ -146,19 +147,24 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 	register	ChanData	*inR, *inS, *outPtr, *endInR;
 	ChanLen	i;
 
-	if (!CheckData_Analysis_Convolution(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Analysis_Convolution(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Auto-convolution Process");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal,
+		  data->inSignal[0]->interleaveLevel);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Auto-convolution Process");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal,
-	  data->inSignal[0]->interleaveLevel);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
 			inR = data->inSignal[1]->channel[chan];

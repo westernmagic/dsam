@@ -455,6 +455,7 @@ InitModule_Analysis_CCF(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = crossCorrPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_CCF;
 	theModule->Free = Free_Analysis_CCF;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_CCF;
@@ -528,22 +529,23 @@ InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 	
 	double	*expDtPtr, dt;
 	ChanLen	i, maxPeriodIndex;
+	CrossCorrPtr	p = crossCorrPtr;
 	
-	if (crossCorrPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_CCF();
 		dt = data->inSignal[0]->dt;
-		maxPeriodIndex = (ChanLen) floor(crossCorrPtr->period / dt + 0.05);
-		if ((crossCorrPtr->exponentDt = (double *) calloc(maxPeriodIndex,
-		  sizeof(double))) == NULL) {
+		maxPeriodIndex = (ChanLen) floor(p->period / dt + 0.05);
+		if ((p->exponentDt = (double *) calloc(maxPeriodIndex, sizeof(
+		  double))) == NULL) {
 			NotifyError("%s: Out of memory for exponent lookup table.",
 			  funcName);
 			return(FALSE);
 		}
 		SetNumWindowFrames_SignalData(data->outSignal, 0);
-		for (i = 0, expDtPtr = crossCorrPtr->exponentDt; i < maxPeriodIndex;
-		  i++, expDtPtr++)
-			*expDtPtr = exp( -(i * dt) / crossCorrPtr->timeConstant);
-		crossCorrPtr->updateProcessVariablesFlag = FALSE;
+		for (i = 0, expDtPtr = p->exponentDt; i < maxPeriodIndex; i++,
+		  expDtPtr++)
+			*expDtPtr = exp( -(i * dt) / p->timeConstant);
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -590,47 +592,54 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	int		chan;
 	long	deltaT;
 	double	dt;
-	ChanLen	i, periodIndex, totalPeriodIndex, timeOffsetIndex;
+	ChanLen	i, totalPeriodIndex;
+	CrossCorrPtr	p = crossCorrPtr;
 
-	if (!CheckPars_Analysis_CCF())
-		return(FALSE);
-	if (!CheckData_Analysis_CCF(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_CCF())
+			return(FALSE);
+		if (!CheckData_Analysis_CCF(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Cross Correlation Function (CCF) "
+		  "analysis");
+		dt = data->inSignal[0]->dt;
+		p->periodIndex = (ChanLen) floor(p->period / dt + 0.5);
+		totalPeriodIndex = p->periodIndex * 2 + 1;
+		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+		  numChannels / 2), totalPeriodIndex, dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, 1);
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		for (chan = 0; chan < data->outSignal->numChannels; chan++)
+			data->outSignal->info.cFArray[chan] =
+			  data->inSignal[0]->info.cFArray[chan];
+		SetInfoSampleTitle_SignalData(data->outSignal, "Delay period (s)");
+		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		SetOutputTimeOffset_SignalData(data->outSignal, -p->period);
+		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5) - 1;
+		if (!InitProcessVariables_Analysis_CCF(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Cross Correlation Function (CCF) analysis");
-	dt = data->inSignal[0]->dt;
-	periodIndex = (ChanLen) floor(crossCorrPtr->period / dt + 0.5);
-	totalPeriodIndex = periodIndex * 2 + 1;
-	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
-	  numChannels / 2), totalPeriodIndex, dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, 1);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++)
-		data->outSignal->info.cFArray[chan] =
-		  data->inSignal[0]->info.cFArray[chan];
-	SetInfoSampleTitle_SignalData(data->outSignal, "Delay period (s)");
-	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-	SetOutputTimeOffset_SignalData(data->outSignal, -crossCorrPtr->period);
-	timeOffsetIndex = (ChanLen) floor(crossCorrPtr->timeOffset / dt + 0.5) - 1;
-	if (!InitProcessVariables_Analysis_CCF(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan += 2) {
+	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	  chan += 2) {
 		outPtr = data->outSignal->channel[chan / 2];
-		for (deltaT = -((long) periodIndex); deltaT <= (long) periodIndex;
+		for (deltaT = -((long) p->periodIndex); deltaT <= (long) p->periodIndex;
 		  deltaT++, outPtr++) {
-			inPtrL = data->inSignal[0]->channel[chan] + timeOffsetIndex;
-			inPtrR = data->inSignal[0]->channel[chan + 1] + timeOffsetIndex;
-			for (i = 0, *outPtr = 0.0, expDtPtr = crossCorrPtr->exponentDt;
-			  i < periodIndex; i++, expDtPtr++, inPtrL--, inPtrR--)
+			inPtrL = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
+			inPtrR = data->inSignal[0]->channel[chan + 1] + p->timeOffsetIndex;
+			for (i = 0, *outPtr = 0.0, expDtPtr = p->exponentDt;
+			  i < p->periodIndex; i++, expDtPtr++, inPtrL--, inPtrR--)
 				*outPtr += *inPtrL * *(inPtrR - deltaT) * *expDtPtr;
-			*outPtr /= periodIndex;
+			*outPtr /= p->periodIndex;
 		}
 	}
 	data->outSignal->numWindowFrames++;

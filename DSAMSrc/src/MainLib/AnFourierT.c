@@ -132,6 +132,7 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	fourierTPtr->fTLength = 0;
+	fourierTPtr->numThreads = 0;
 	fourierTPtr->fT = NULL;
 	return(TRUE);
 
@@ -376,6 +377,7 @@ InitModule_Analysis_FourierT(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = fourierTPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_FourierT;
 	theModule->Free = Free_Analysis_FourierT;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FourierT;
@@ -430,17 +432,27 @@ BOOLN
 InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_FourierT";
+	int		i;
+	FourierTPtr	p = fourierTPtr;
 
-	if (fourierTPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_FourierT();
-		fourierTPtr->fTLength = Length_FFT(data->inSignal[0]->length);
-		if ((fourierTPtr->fT = (Complex *) calloc(fourierTPtr->fTLength,
-		  sizeof(Complex))) == NULL) {
-			NotifyError("%s: Couldn't allocate memory for complex data array.",
-			  funcName);
+		p->fTLength = Length_FFT(data->inSignal[0]->length);
+		p->numThreads = data->numThreads;
+		if ((p->fT = (ComplexPtr *) calloc(p->numThreads, sizeof(
+		  ComplexPtr))) == NULL) {
+			NotifyError("%s: Couldn't allocate memory for complex data pointer "
+			  " array.", funcName);
 			return(FALSE);
 		}
-		fourierTPtr->updateProcessVariablesFlag = FALSE;
+		for (i = 0; i < data->numThreads; i++)
+			if ((p->fT[i] = (Complex *) calloc(p->fTLength, sizeof(
+			  Complex))) == NULL) {
+				NotifyError("%s: Couldn't allocate memory for complex data "
+				  "array (%d).", funcName, i);
+				return(FALSE);
+			}
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -456,7 +468,11 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 void
 FreeProcessVariables_Analysis_FourierT(void)
 {
+	int		i;
+
 	if (fourierTPtr->fT) {
+		for (i = 0; i < fourierTPtr->numThreads; i++)
+			free(fourierTPtr->fT[i]);
 		free(fourierTPtr->fT);
 		fourierTPtr->fT = NULL;
 	}
@@ -483,58 +499,63 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_FourierT";
 	register	ChanData	 *inPtr, *outPtr;
-	int		chan, numOutChans;
-	double	dF, dBSPLFactor;
+	int		chan;
+	double	dF;
 	ChanLen	i;
 	Complex	*fT;
+	FourierTPtr	p = fourierTPtr;
 
-	if (!CheckPars_Analysis_FourierT())
-		return(FALSE);
-	if (!CheckData_Analysis_FourierT(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_FourierT())
+			return(FALSE);
+		if (!CheckData_Analysis_FourierT(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Fourier Transform: modulus");
+		p->numOutChans = (p->outputMode ==
+		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
+		if (!InitOutSignal_EarObject(data, (uShort) (
+		  data->inSignal[0]->numChannels * p->numOutChans),
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Couldn't initialse output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Analysis_FourierT(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		dF = 1.0 / (data->inSignal[0]->dt * p->fTLength);
+		SetSamplingInterval_SignalData(data->outSignal, dF);
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, "Arbitrary Amplitude");
+		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
+		SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
+		  data->inSignal[0]->interleaveLevel * p->numOutChans));
+		p->dBSPLFactor = SQRT_2 / data->inSignal[0]->length;
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Fourier Transform: modulus");
-	numOutChans = (fourierTPtr->outputMode ==
-	  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
-	if (!InitOutSignal_EarObject(data, (uShort) (
-	  data->inSignal[0]->numChannels * numOutChans),
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Couldn't initialse output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Analysis_FourierT(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	dF = 1.0 / (data->inSignal[0]->dt * fourierTPtr->fTLength);
-	SetSamplingInterval_SignalData(data->outSignal, dF);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz)");
-	SetInfoChannelTitle_SignalData(data->outSignal, "Arbitrary Amplitude");
-	SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-	SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
-	SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
-	  data->inSignal[0]->interleaveLevel * numOutChans));
-	/* Set up data and apply Lorch Window. */
-	dBSPLFactor =  SQRT_2 / data->inSignal[0]->length;
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan += numOutChans) {
-		fT = fourierTPtr->fT;
+	for (chan = data->outSignal->offset * p->numOutChans; chan < data->inSignal[
+	  0]->numChannels; chan += p->numOutChans) {
+		fT = p->fT[data->threadIndex];
 		fT->re = fT->im = 0.0;
 		inPtr = data->inSignal[0]->channel[chan] + 1;
 		for (i = 1, fT++; i < data->outSignal->length; i++, fT++) {
 			fT->im = 0.0;
 			fT->re = *inPtr++;
 		}
-		for (i = i; i < fourierTPtr->fTLength; i++, fT++) {
+		for (i = i; i < p->fTLength; i++, fT++) {
 			fT->re = 0.0;
 			fT->im = 0.0;
 		}
-		CalcComplex_FFT(fourierTPtr->fT, fourierTPtr->fTLength, FORWARD_FT);
+		fT = p->fT[data->threadIndex];
 		outPtr = data->outSignal->channel[chan];
-		fT = fourierTPtr->fT;
-		switch (fourierTPtr->outputMode) {
+		CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
+		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
 			for (i = 0; i < data->outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) MODULUS_CMPLX(*fT);
@@ -546,14 +567,15 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		case ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE:
 			for (i = 0; i < data->outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->re;
-			fT = fourierTPtr->fT;
+			fT = p->fT[data->threadIndex];
 			outPtr = data->outSignal->channel[chan + 1];
 			for (i = 0; i < data->outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->im;
 			break;
 		case ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE:
 			for (i = 0; i < data->outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) DB_SPL(MODULUS_CMPLX(*fT) * dBSPLFactor);
+				*outPtr++ = (ChanData) DB_SPL(MODULUS_CMPLX(*fT) *
+				  p->dBSPLFactor);
 			break;
 		default:
 			;

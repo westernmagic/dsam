@@ -505,6 +505,7 @@ InitModule_Analysis_FindBin(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = findBinPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_FindBin;
 	theModule->Free = Free_Analysis_FindBin;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FindBin;
@@ -596,45 +597,50 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	BOOLN	findMinimum;
 	int		chan;
 	double	dt;
-	ChanLen	i, j, binWidthIndex, timeWidthIndex, timeOffsetIndex, binIndex = 0;
+	ChanLen	i, j, binIndex = 0;
+	FindBinPtr	p = findBinPtr;
 
-	if (!CheckPars_Analysis_FindBin())
-		return(FALSE);
-	if (!CheckData_Analysis_FindBin(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_FindBin())
+			return(FALSE);
+		if (!CheckData_Analysis_FindBin(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Find Maximum Bin Value Analysis");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		  1.0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		findMinimum = (p->mode == FIND_BIN_MIN_VALUE_MODE) || (p->mode ==
+		  FIND_BIN_MIN_INDEX_MODE);
+		dt = data->inSignal[0]->dt;
+		p->binWidthIndex = (p->binWidth <= 0.0)? (ChanLen) 1: (ChanLen) (p->
+		  binWidth / dt + 0.5);
+		p->timeOffsetIndex = (ChanLen) (p->timeOffset / dt + 0.5);
+		p->timeWidthIndex = (p->timeWidth <= 0.0)? data->inSignal[0]->length -
+		  p->timeOffsetIndex: (ChanLen) (p->timeWidth / dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Find Maximum Bin Value Analysis");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-	  1.0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	findMinimum = (findBinPtr->mode == FIND_BIN_MIN_VALUE_MODE) ||
-	  (findBinPtr->mode == FIND_BIN_MIN_INDEX_MODE);
-	dt = data->inSignal[0]->dt;
-	binWidthIndex = (findBinPtr->binWidth <= 0.0)? (ChanLen) 1:
-	  (ChanLen) (findBinPtr->binWidth / dt + 0.5);
-	timeOffsetIndex = (ChanLen) (findBinPtr->timeOffset / dt + 0.5);
-	timeWidthIndex = (findBinPtr->timeWidth <= 0.0)?
-	  data->inSignal[0]->length - timeOffsetIndex:
-	  (ChanLen) (findBinPtr->timeWidth / dt + 0.5);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
 		binSum = (findMinimum)? DBL_MAX: -DBL_MAX;
-		for (i = 0; i < timeWidthIndex - binWidthIndex; i++, inPtr++) {
-			for (j = 0, sum = 0.0, binPtr = inPtr; j < binWidthIndex; j++,
+		for (i = 0; i < p->timeWidthIndex - p->binWidthIndex; i++, inPtr++) {
+			for (j = 0, sum = 0.0, binPtr = inPtr; j < p->binWidthIndex; j++,
 			  binPtr++)
 				sum += *binPtr;
 			if ((findMinimum)? (sum < binSum): (sum > binSum)) {
 				binSum = sum;
-				binIndex = timeOffsetIndex + i - binWidthIndex / 2;
+				binIndex = p->timeOffsetIndex + i - p->binWidthIndex / 2;
 			}
 		}
-		switch (findBinPtr->mode) {
+		switch (p->mode) {
 		case FIND_BIN_MIN_VALUE_MODE:
 		case FIND_BIN_MAX_VALUE_MODE:
-			data->outSignal->channel[chan][0] = binSum / binWidthIndex;
+			data->outSignal->channel[chan][0] = binSum / p->binWidthIndex;
 			break;
 		case FIND_BIN_MIN_INDEX_MODE:
 		case FIND_BIN_MAX_INDEX_MODE:

@@ -414,6 +414,7 @@ InitModule_Analysis_FindNextIndex(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = findIndexPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_Analysis_FindNextIndex;
 	theModule->Free = Free_Analysis_FindNextIndex;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FindNextIndex;
@@ -482,37 +483,43 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_FindNextIndex";
 	register	ChanData	 *inPtr, lastValue;
-	BOOLN	found, gradient, findMinimum;
+	BOOLN	found, gradient;
 	int		chan;
-	ChanLen	i, offsetIndex, widthIndex, index;
+	ChanLen	i, index, widthIndex;
+	FindIndexPtr	p = findIndexPtr;
 
-	if (!CheckPars_Analysis_FindNextIndex())
-		return(FALSE);
-	if (!CheckData_Analysis_FindNextIndex(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_FindNextIndex())
+			return(FALSE);
+		if (!CheckData_Analysis_FindNextIndex(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Find Value Analysis");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		  1.0)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		p->offsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +
+		  0.5);
+		p->findMinimum = (p->mode == FIND_INDEX_MINIMUM);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Find Value Analysis");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-	  1.0)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	offsetIndex = (ChanLen) (findIndexPtr->timeOffset / data->inSignal[0]->dt +
-	  0.5);
-	findMinimum = (findIndexPtr->mode == FIND_INDEX_MINIMUM);
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + offsetIndex;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		inPtr = data->inSignal[0]->channel[chan] + p->offsetIndex;
 		gradient = FALSE;
-		for (i = offsetIndex + 1, lastValue = *inPtr++, found = FALSE,
+		for (i = p->offsetIndex + 1, lastValue = *inPtr++, found = FALSE,
 		  widthIndex = 0; (i < data->inSignal[0]->length - 1) && !found; i++,
 		    inPtr++) {
 			if (!gradient)
-				gradient = (findMinimum)? (*inPtr < lastValue): (*inPtr >
+				gradient = (p->findMinimum)? (*inPtr < lastValue): (*inPtr >
 				  lastValue);
 			if (gradient) {
-				if ((findMinimum)? (*inPtr < *(inPtr + 1)): (*inPtr > *(inPtr +
-				  1)))  {
+				if ((p->findMinimum)? (*inPtr < *(inPtr + 1)): (*inPtr >
+				  *(inPtr + 1)))  {
 				  	index = i - widthIndex / 2;
 					data->outSignal->channel[chan][0] = (ChanData) index;
 					found = TRUE;
@@ -524,7 +531,7 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 		}
 		if (!found) {
 			NotifyWarning("%s: %s not found. Returning end of channel "\
-			  "index = %u.", funcName, (findMinimum)? "Minimum": "Maximum",
+			  "index = %u.", funcName, (p->findMinimum)? "Minimum": "Maximum",
 			  data->inSignal[0]->length - 1);
 			data->outSignal->channel[chan][0] = (ChanData) (data->inSignal[
 			  0]->length - 1);

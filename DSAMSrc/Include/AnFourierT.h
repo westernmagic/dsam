@@ -53,8 +53,11 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*outputModeList;
 	UniParListPtr	parList;
+	int		numThreads;
+	int		numOutChans;
+	double	dBSPLFactor;
 	ChanLen	fTLength;
-	Complex	*fT;
+	ComplexPtr	*fT;
 
 } FourierT, *FourierTPtr;
 

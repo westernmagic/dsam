@@ -60,6 +60,7 @@ typedef struct {
 	/* Private members */
 	double	*exponentDt;
 	UniParListPtr	parList;
+	ChanLen	periodIndex, timeOffsetIndex;
 
 } CrossCorr, *CrossCorrPtr;
 
