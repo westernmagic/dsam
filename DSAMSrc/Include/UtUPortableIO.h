@@ -43,6 +43,9 @@
 *
 * $Header$ *
 * $Log$
+* Revision 1.3  2000/04/10 06:55:35  lowel
+* Changed the Ieee routines to IEEE
+*
 * Revision 1.2  1999/10/06 16:45:08  lowel
 * Removed the Makefile.in files
 * The GUI interface now compiles, but there are still errors, and the
@@ -193,17 +196,17 @@ void		WriteBytes(FILE	 *fp, char	 *p, int	 n);
 
 void		WriteBytesSwapped(FILE	 *fp, char	 *p, int	 n);
 
-void		WriteIeeeDoubleHighLow(FILE *fp, DefDouble num);
+void		WriteIEEEDoubleHighLow(FILE *fp, DefDouble num);
 
-void		WriteIeeeDoubleLowHigh(FILE *fp, DefDouble num);
+void		WriteIEEEDoubleLowHigh(FILE *fp, DefDouble num);
 
-void		WriteIeeeExtendedHighLow(FILE *fp, DefDouble num);
+void		WriteIEEEExtendedHighLow(FILE *fp, DefDouble num);
 
-void		WriteIeeeExtendedLowHigh(FILE *fp, DefDouble num);
+void		WriteIEEEExtendedLowHigh(FILE *fp, DefDouble num);
 
-void		WriteIeeeFloatHighLow(FILE *fp, DefDouble num);
+void		WriteIEEEFloatHighLow(FILE *fp, DefDouble num);
 
-void		WriteIeeeFloatLowHigh(FILE *fp, DefDouble num);
+void		WriteIEEEFloatLowHigh(FILE *fp, DefDouble num);
 
 int16		Read16BitsLowHigh(FILE *fp);
 
@@ -217,17 +220,17 @@ int32		Read32BitsLowHigh(FILE *fp);
 
 int			Read8Bits(FILE *fp);
 
-DefDouble	ReadIeeeDoubleHighLow(FILE *fp);
+DefDouble	ReadIEEEDoubleHighLow(FILE *fp);
 
-DefDouble	ReadIeeeDoubleLowHigh(FILE *fp);
+DefDouble	ReadIEEEDoubleLowHigh(FILE *fp);
 
-DefDouble	ReadIeeeExtendedHighLow(FILE *fp);
+DefDouble	ReadIEEEExtendedHighLow(FILE *fp);
 
-DefDouble	ReadIeeeExtendedLowHigh(FILE *fp);
+DefDouble	ReadIEEEExtendedLowHigh(FILE *fp);
 
-DefDouble	ReadIeeeFloatHighLow(FILE *fp);
+DefDouble	ReadIEEEFloatHighLow(FILE *fp);
 
-DefDouble	ReadIeeeFloatLowHigh(FILE *fp);
+DefDouble	ReadIEEEFloatLowHigh(FILE *fp);
 
 __END_DECLS
 
