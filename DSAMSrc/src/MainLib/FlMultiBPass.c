@@ -794,8 +794,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 	
 	if (multiBPassFPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_MultiBPass();
-		if ((multiBPassFPtr->bPassPars = (BPassParsPtr) calloc(
-		  multiBPassFPtr->numFilters, sizeof(BPassPars))) == NULL) {
+		if ((multiBPassFPtr->bPassPars = (BPassParsPtr) calloc(multiBPassFPtr->
+		  numFilters, sizeof(BPassPars))) == NULL) {
 			NotifyError("%s: Cannot allocate memory for bPassPars array.",
 			  funcName);
 			return(FALSE);
