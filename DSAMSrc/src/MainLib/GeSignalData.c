@@ -611,7 +611,8 @@ BOOLN
 SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
 {
 	static char *funcName = "SetInfoChannelLabel_SignalData";
-	if (!CheckInit_SignalData(theData, "SetInfoChannelLabels_SignalData"))
+
+	if (!CheckInit_SignalData(theData, funcName))
 		return(FALSE);
 	if (!theData->localInfoFlag)
 		return(TRUE);
@@ -649,6 +650,33 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 	else
 		for (i = 0; i < theData->numChannels / theData->interleaveLevel; i++)
 			theData->info.cFArray[i] = (double) i;
+
+}
+
+/**************************** SetInfoCF ***************************************/
+
+/*
+ * This routine sets a single channel cf in the signal's info structure,
+ * but only if the information is local, and not just a copy.
+ * It returns an error if an attempt is made to use an illegal index.
+ */
+
+BOOLN
+SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
+{
+	static char *funcName = "SetInfoCF_SignalData";
+
+	if (!CheckInit_SignalData(theData, funcName))
+		return(FALSE);
+	if (!theData->localInfoFlag)
+		return(TRUE);
+	if ((index < 0) || (index >= theData->numChannels)) {
+		NotifyError("%s: Illegal CF array index (%d), must be in range 0 - %d.",
+		  funcName, index, theData->numChannels - 1);
+		return(FALSE);
+	}
+	theData->info.cFArray[index] = cF;
+	return(TRUE);
 
 }
 
