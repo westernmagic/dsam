@@ -449,11 +449,6 @@ ParListInfo::SetParListIonChannel(void)
 		controlList[index]->SetEnable();
 
 	}
-	// This is necessary because of an omission in MSW wxSlider class
-	//maxHeight += GetParControl(ICLIST_IC_ALPHA_A)->GetSlider()->GetSize(
-	//  ).GetHeight() + PARLISTINFO_DEFAULT_Y_MARGIN + 3 * 
-	//  (GetParControl(ICLIST_IC_ALPHA_A)->GetSize().GetHeight() +
-	//  PARLISTINFO_DEFAULT_Y_MARGIN);
 	int  width, height;
 	GetParControl(ICLIST_IC_ALPHA_A)->GetSlider()->GetSize(&width, &height);
 	maxHeight += height + PARLISTINFO_DEFAULT_Y_MARGIN + 3 * 
