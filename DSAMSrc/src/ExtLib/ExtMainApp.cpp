@@ -451,6 +451,7 @@ void
 MainApp::DeleteSimThread(void)
 {
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+	SetInterruptRequestStatus_Common(TRUE);
 	if (simThread) {
 		simThread->SuspendDiagnostics();
 		simThread->Delete();

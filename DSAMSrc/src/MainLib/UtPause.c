@@ -493,8 +493,13 @@ Notify_Utility_Pause(char *format, ...)
 
 	va_start(args, format);
 	oldDiagMode = GetDSAMPtr_Common()->diagMode;
-	(GetDSAMPtr_Common()->Notify)(format, args, COMMON_GENERAL_DIAGNOSTIC);
+	(GetDSAMPtr_Common()->Notify)(format, args,
+	  COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL);
 	SetDiagMode(oldDiagMode);
+	if (GetDSAMPtr_Common()->interruptRequestedFlag) {
+		GetDSAMPtr_Common()->notificationCount++; /* no more dialogs */
+		return;
+	}
 	if (GetDSAMPtr_Common()->diagMode == COMMON_CONSOLE_DIAG_MODE) {
 		printf("Press <return> to continue...");
 		getchar();

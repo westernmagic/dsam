@@ -228,7 +228,8 @@ DiagnosticTitle(CommonDiagSpecifier type)
 
 			{ "Error",		COMMON_ERROR_DIAGNOSTIC },
 			{ "Warning",	COMMON_WARNING_DIAGNOSTIC },
-			{ "Alert",		COMMON_GENERAL_DIAGNOSTIC }
+			{ "Alert",		COMMON_GENERAL_DIAGNOSTIC },
+			{ "Alert (stop)",	COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL }
 		};
 
 	return(list[type].name);
@@ -670,6 +671,7 @@ SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on)
 		}
 		break;
 	case COMMON_GENERAL_DIAGNOSTIC:
+	case COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL:
 		if (on)
 			dSAM.parsFile = oldParsFile;
 		else {

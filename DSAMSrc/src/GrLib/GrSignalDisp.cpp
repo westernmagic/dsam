@@ -161,7 +161,7 @@ InitYAxisModeList_SignalDisp(void)
 
 }
 
-/****************************** InitYNormModeList ******************************/
+/****************************** InitYNormModeList *****************************/
 
 /*
  * This routine intialises the signal line mode list array.

@@ -821,6 +821,7 @@ void
 Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 {
 	char	message[LONG_STRING], *heading;
+	long	style = wxOK;
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
 		vsnprintf(message, LONG_STRING, format, args);
@@ -828,16 +829,26 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 		if (GetDSAMPtr_Common()->lockGUIFlag)
 			wxMutexGuiEnter();
 #		endif
-		wxMessageBox(message, DiagnosticTitle(type), wxOK);
+		if (type == COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL)
+			style |= wxCANCEL;
+		if ((wxMessageBox(message, DiagnosticTitle(type), style) == wxCANCEL) &&
+		  wxGetApp().GetGrMainApp()->simThread) {
+			wxGetApp().GetGrMainApp()->DeleteSimThread();
+			wxLogWarning("Simulation terminated by user.");
+			printf("Notify_MyApp: Debug: Terminate requested.\n");
+		}
+			
 #		ifndef __WXMSW__
 		if (GetDSAMPtr_Common()->lockGUIFlag)
 			wxMutexGuiLeave();
 #		endif
-		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+		if ((type != COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL) ||
+		  GetDSAMPtr_Common()->interruptRequestedFlag)
+			SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 		heading = "\nDiagnostics:-\n";
 	} else
 		heading = "";
 	snprintf(message, LONG_STRING, "%s%s\n", heading, format);
 	(GetDSAMPtr_Common()->DPrint)(message, args);
 
-} /* NotifyMessage */
+}

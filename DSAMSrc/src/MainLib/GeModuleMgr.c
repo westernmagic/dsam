@@ -776,7 +776,9 @@ RunProcess_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 
-	if (TestDestroy_ModuleMgr && (* TestDestroy_ModuleMgr)())
+	/*if (TestDestroy_ModuleMgr && (* TestDestroy_ModuleMgr)())
+		return(FALSE);*/
+	if (GetDSAMPtr_Common()->interruptRequestedFlag)
 		return(FALSE);
 
 	if (data->module->onFlag) {
