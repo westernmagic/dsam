@@ -545,6 +545,7 @@ PrintUsage_AppInterface(void)
 	}
 	fprintf(stderr, "\n"
 	  "Usage: %s [options] [parameter1 value1 parameter2 value2 ...]\n"
+	  "\t-d <state>    \t: Diagnostics mode ('off', 'screen' or filename).\n"
 	  "\t-h            \t: Produce this help message.\n"
 	  "\t-l <list>     \t: List options: 'parameters', 'cfinfo'.\n"
 	  "\t-P <file name>\t: Use this main parameter file\n"
@@ -623,11 +624,15 @@ ProcessOptions_AppInterface(void)
 		return(FALSE);
 	}
 	while ((c = Process_Options(appInterfacePtr->argc, appInterfacePtr->argv,
-	  &optInd, &optSub, &argument, "@#:hl:P:s:"))) {
+	  &optInd, &optSub, &argument, "@#:d:hl:P:s:"))) {
 		optionFound = TRUE;
 		switch (c) {
 		case '@':
 		case '#':
+			break;
+		case 'd':
+			ok = SetProgramParValue_AppInterface(appInterfacePtr->parList->pars[
+			  APP_INT_DIAGNOSTICMODE].abbr, argument);
 			break;
 		case 'h':
 			appInterfacePtr->printUsageFlag = TRUE;
