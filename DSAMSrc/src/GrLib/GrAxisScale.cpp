@@ -68,8 +68,8 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 		  "(%d)\n", funcName, minPos, maxPos);
 		return(FALSE);
 	}
-	numberFormatChanged = FALSE;
- 	if (fabs(maxVal - minVal) < DBL_EPSILON) {
+	settingsChanged = FALSE;
+ 	if (fabs(maxVal - minVal) <= 0.0) {
 		minValue = minVal - 1.0;
 		maxValue = maxVal + 1.0;
 	} else {
@@ -79,11 +79,14 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 	minPosition = minPos;
 	maxPosition = maxPos;
 	tickOffset = 0;
+	dataExponent = (int) floor(log10(MAXIMUM(fabs(minValue), fabs(maxValue))) +
+      0.5);
+	sigDigits = AXIS_SCALE_DEFAULT_SIG_DIGITS;
+	decPlaces = AXIS_SCALE_DEFAULT_DEC_PLACES;
+	exponent = dataExponent - sigDigits;
 	autoScale = theAutoScale;
 	if (autoScale) {
 		numTicks = 10;
-		exponent = 0;
-		decPlaces = 0;
 	} else {
 		numTicks = theNumTicks;
 		if (!ParseNumberFormat(numberFormat)) {
@@ -116,16 +119,28 @@ AxisScale::ParseNumberFormat(char *format)
 		wxLogError("%s: Format string not set.\n", funcName);
 		return(FALSE);
 	}
-	decPlaces = 0;
-	exponent = 0;
 	if (strcmp(format, "auto") == 0)
 		return(TRUE);
+	sigDigits = 0;
+	decPlaces = 0;
 	p1 = strchr(format, '.');
 	p2 = strchr((p1)? p1: format, 'e');
-	if (p1 && p2)
+	if (p1)
+		sigDigits = p1 - format;
+	else if (p2)
+		sigDigits = p2 - format;
+	else
+		sigDigits = strlen(format);
+		
+	if (p1 && p2) {
 		decPlaces = p2 - p1 - 1;
+	}
 	if (p2)
 		exponent = atoi(p2 + 1);
+	else {
+		exponent = dataExponent - sigDigits;
+		settingsChanged = !autoScale;
+	}
 	return(TRUE);
 
 }
@@ -144,7 +159,7 @@ AxisScale::CalculateScales(void)
 	roundingScaler = pow(10.0, decPlaces);
 	baseScale = (maxValue - minValue) / (numTicks - 1);
 	while (fabs(RoundedValue(baseScale * pow(10.0, -exponent)) < DBL_EPSILON)) {
-	  	numberFormatChanged = TRUE;
+	  	settingsChanged = !autoScale;
 		exponent--;
 	}
 	powerScale = pow(10.0, -exponent);
@@ -154,13 +169,15 @@ AxisScale::CalculateScales(void)
 	minValueScaled = minValue * powerScale;
 	maxValueScaled = maxValue * powerScale;
 	minValueScaledRounded = RoundedValue(minValueScaled);
-	if (autoScale) {
-		if (minValueScaledRounded < minValueScaled)
-			tickOffset++;
-		while ((maxValueScaled - GetTickValue(numTicks - 1)) > valueScale)
-			numTicks++;
-		while (GetTickValue(numTicks - 1) > maxValueScaled)
-			numTicks--;
+	if (minValueScaledRounded < minValueScaled)
+		tickOffset++;
+	while (GetTickValue(numTicks - 1) > maxValueScaled) {
+	  	settingsChanged = !autoScale;
+		numTicks--;
+	}
+	while ((maxValueScaled - GetTickValue(numTicks - 1)) > valueScale) {
+	  	settingsChanged = !autoScale;
+		numTicks++;
 	}
 	return(TRUE);
 
@@ -218,7 +235,8 @@ AxisScale::GetFormatString(char formatChar)
 	int		i;
 	wxString	format;
 
-	format = formatChar;
+	for (i = 0; i < sigDigits; i++)
+		format += formatChar;
 	if (decPlaces)
 		format += '.';
 	for (i = 0; i < decPlaces; i++)

@@ -272,7 +272,8 @@ MyCanvas::InitData(EarObjectPtr data)
 		chanLength = signal->length;
 	} else {
 		offset = (ChanLen) floor(mySignalDispPtr->xOffset / signal->dt + 0.5);
-		chanLength = (ChanLen) floor((mySignalDispPtr->xExtent) / signal->dt +
+		chanLength = (mySignalDispPtr->xExtent < 0.0)? signal->length - offset:
+		  (ChanLen) floor((mySignalDispPtr->xExtent) / signal->dt +
 		  0.5);
 	}
 		
@@ -372,7 +373,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	}
 	if (!xAxisScale.Set(mySignalDispPtr->xNumberFormat, outputTimeOffset +
 	  timeIndex * dt, outputTimeOffset + displayLength * dt, xAxis->GetLeft(),
-	  xAxis->GetRight(), mySignalDispPtr->xTicks, mySignalDispPtr->
+	  xAxis->GetRight(), mySignalDispPtr->xTicks, (bool) mySignalDispPtr->
 	  autoXScale)) {
 		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
 		return;
@@ -401,9 +402,11 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 		DrawExponent(dc, labelFont, xAxisScale.GetExponent(), xAxis->GetRight(
 		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
 
-	if (xAxisScale.GetNumberFormatChanged())
+	if (xAxisScale.GetSettingsChanged()) {
 		strcpy(mySignalDispPtr->xNumberFormat, (char *) xAxisScale.
 		  GetFormatString('x').GetData());
+		mySignalDispPtr->xTicks = xAxisScale.GetNumTicks();
+	}
 
 }
 
@@ -453,8 +456,9 @@ MyCanvas::GetMinimumIntLog(double value)
 
 void
 MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
-  wxFont *labelFont, int theXOffset, int theYOffset, int yTicks,
-  int numDisplayedChans, double minYValue, double maxYValue)
+  wxFont *labelFont, char *numFormat, int theXOffset, int theYOffset,
+  int yTicks, int numDisplayedChans, double minYValue, double maxYValue,
+  bool autoScale)
 {
 	/* static const char *funcName = "MyCanvas::DrawYScale"; */
 	int		i, j, tickLength, xPos, yPos, top, xLabel;
@@ -475,8 +479,8 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 	  numDisplayedChans;
 	chanSpacing = signalLines.GetChannelSpace() * chanDisplayScale *
 	  displayScale;
-	yAxisScale.Set(mySignalDispPtr->yNumberFormat, minYValue, maxYValue, 0,
-	  (int) chanSpacing, yTicks, mySignalDispPtr->autoYScale);
+	yAxisScale.Set(numFormat, minYValue, maxYValue, 0, (int) chanSpacing,
+	  yTicks, autoScale);
 	tickLength = (int) (yAxisRect->GetWidth() * GRAPH_Y_TICK_LENGTH_SCALE);
 	dc.GetTextExtent(space, &charWidth, &stringHeight);
 	xPos = (int) (yAxisRect->GetRight() - tickLength + theXOffset - yAxisRect->
@@ -555,25 +559,25 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 			  ));
 			insetLabelFont->SetPointSize((int)(labelFont->GetPointSize() *
 			  GRAPH_INSET_VS_LABEL_SCALE));
-			if (signalLines.GetMaxY() > 0.0) {
-				minY = 0.0;
-				maxY = signalLines.GetMaxY();
-			} else {
-				minY = signalLines.GetMinY();
-				maxY = 0.0;
-			}
-			DrawYScale(dc, insetAxisScale, &yInset, insetLabelFont, theXOffset -
-			  (int) floor(yAxis->GetWidth() * GRAPH_Y_INSET_SCALE_OFFSET_SCALE +
-			  0.5), theYOffset, 2, 1, minY, maxY);
+			minY = 0.0,
+            maxY = fabs(signalLines.GetMaxY() - signalLines.GetMinY()) *
+			  GRAPH_Y_INSET_SCALE_HEIGHT_SCALE;
+			DrawYScale(dc, insetAxisScale, &yInset, insetLabelFont, "x",
+			  theXOffset - (int) floor(yAxis->GetWidth() *
+			  GRAPH_Y_INSET_SCALE_OFFSET_SCALE + 0.5), theYOffset, 2, 1, minY,
+			  maxY, FALSE);
 		}
 		break;
 	case GRAPH_Y_AXIS_MODE_LINEAR_SCALE:
-		DrawYScale(dc, yAxisScale, yAxis, labelFont, theXOffset, theYOffset,
-		  mySignalDispPtr->yTicks, numDisplayedChans, signalLines.GetMinY(),
-		  signalLines.GetMaxY());
-		if (yAxisScale.GetNumberFormatChanged())
+		DrawYScale(dc, yAxisScale, yAxis, labelFont, mySignalDispPtr->
+		  yNumberFormat, theXOffset, theYOffset, mySignalDispPtr->yTicks,
+		  numDisplayedChans, signalLines.GetMinY(), signalLines.GetMaxY(),
+		  (bool) mySignalDispPtr->autoYScale);
+		if (yAxisScale.GetSettingsChanged()) {
 			strcpy(mySignalDispPtr->yNumberFormat, (char *) yAxisScale.
 			  GetFormatString('y').GetData());
+			mySignalDispPtr->yTicks = yAxisScale.GetNumTicks();
+		}
 		break;
 	default:
 		wxLogWarning("%s: Scale (%d) not implemented.", funcName,

@@ -17,6 +17,9 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
+#define AXIS_SCALE_DEFAULT_SIG_DIGITS	1
+#define AXIS_SCALE_DEFAULT_DEC_PLACES	0
+
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
@@ -29,9 +32,9 @@
 
 class AxisScale
 {
-	bool	numberFormatChanged, autoScale;
-	int		exponent, decPlaces, numTicks, minPosition, maxPosition;
-	int		tickOffset;
+	bool	settingsChanged, autoScale;
+	int		exponent, dataExponent, decPlaces, numTicks, minPosition;
+	int		tickOffset, sigDigits, maxPosition;
 	double	valueScale, positionScale, roundingScaler, minValue, maxValue;
 	double	minValueScaled, minValueScaledRounded, minTickValue, powerScale;
 	double	maxValueScaled;
@@ -44,7 +47,7 @@ class AxisScale
 	int		GetExponent(void)		{ return exponent; }
 	wxString	GetFormatString(char formatChar);
 	int		GetNumTicks(void)		{ return numTicks; }
-	bool	GetNumberFormatChanged()	{ return numberFormatChanged; }
+	bool	GetSettingsChanged()	{ return settingsChanged; }
 	char *	GetOutputFormatString(void)	{ return (char *) outputFormat.GetData(
 			  ); }
 	double	GetTickValue(int i);
