@@ -73,13 +73,6 @@ char	fileLockingMode[MAXLINE] = "off";
 int		numberOfRuns = 1, fileLockingModeSpecifier;
 UniParListPtr	programParList = NULL;
 
-#ifdef GRAPHICS_SUPPORT
-
-// Tell SimMgr that we are passing run information.
-//RunMgr	myRunMgr(Init);
-
-#endif /* GRAPHICS_SUPPORT */
-
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
 /******************************************************************************/
@@ -191,7 +184,7 @@ PrintUsage(void)
 	  "%s specific options:\n"
 	  "\t-r <x>        \t: Repeat the simulation 'x' times.\n"
 	  "\t-v            \t: Print program version\n",
-	  appInterfacePtr->appName);
+	  GetPtr_AppInterface()->appName);
 	exit(1);
 
 }
@@ -316,7 +309,7 @@ Init(void)
 {
 	static char *funcName = PROGRAM_NAME": Init";
 
-	if (!appInterfacePtr && !Init_AppInterface(GLOBAL)) {
+	if (!GetPtr_AppInterface() && !Init_AppInterface(GLOBAL)) {
 		NotifyError("%s: Could not initialise the application interface.",
 		  funcName);
 		exit(1);
@@ -353,21 +346,21 @@ int MainSimulation(MAIN_ARGS)
 	clock_t		startTime;
 	int			i;
 
-	if (!InitProcessVariables_AppInterface(Init, argc, argv))
+	if (!InitProcessVariables_AppInterface(Init, ARGC, ARGV))
 		return(1);
 
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
 		PrintInitialDiagnostics();
-	PrintPars_ModuleMgr(appInterfacePtr->audModel);
+	PrintPars_ModuleMgr(GetPtr_AppInterface()->audModel);
 
 	DPrint("Starting process...\n");
 	startTime = clock();
-	ResetProcess_EarObject(appInterfacePtr->audModel);
+	ResetProcess_EarObject(GetPtr_AppInterface()->audModel);
 
 	if (fileLockingModeSpecifier)
 		SetLockFile(TRUE);
 	for (i = 0; i < numberOfRuns; i++)
-		if (!RunProcess_ModuleMgr(appInterfacePtr->audModel))
+		if (!RunProcess_ModuleMgr(GetPtr_AppInterface()->audModel))
 			return(0);
 	if (fileLockingModeSpecifier)
 		SetLockFile(FALSE);

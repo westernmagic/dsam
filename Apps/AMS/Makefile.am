@@ -12,6 +12,8 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
+EXTRA_DIST		= ams.par
+
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
@@ -19,7 +21,7 @@ AM_CXXFLAGS		= $(DSAMGUIINC)
 SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
-					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT)
+					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
 
 ams_ng.$(OBJEXT):	ams.cpp
 					$(COMPILE) -c ams.cpp -o ams_ng.$(OBJEXT)

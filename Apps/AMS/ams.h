@@ -57,7 +57,7 @@
 
 #define	PROGRAM_NAME				"ams"
 #ifndef AMS_VERSION
-#	define	AMS_VERSION					"0.15.6"
+#	define	AMS_VERSION					"1.0.1"
 #endif
 
 #define	AMS_NUM_PARS				2		/* No. of application parameters. */
@@ -97,7 +97,7 @@ void	PrintInitialDiagnostics(void);
 
 void	PrintUsage(void);
 
-BOOLN	ProcessOptions(char option, char **argv, int *optInd);
+BOOLN	ProcessOptions(int argc, char **argv, int *optInd);
 
 BOOLN	ReadMainParsFromFile(char *fileName);
 

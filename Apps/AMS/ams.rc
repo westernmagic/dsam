@@ -2,4 +2,5 @@
 
 ams		ICON "amsicon.ico"
 
-/* #include "dsam.rc"  - this is the correct line. */
+/* - this is the correct line. */
+#include "dsam.rc"
