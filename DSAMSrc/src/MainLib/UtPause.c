@@ -5,10 +5,11 @@
  *				interrupted, producing a specified message.
  * Comments:	Written using ModuleProducer version 1.2.4 (May  7 1999).
  *				27-05-99 LPO: Added the 'alertMode' option.
+ *				02-03-05 LPO: There is no point in thread enabling this module.
  * Author:		L. P. O'Mard
  * Created:		07 May 1999
  * Updated:		27 May 1999
- * Copyright:	(c) 1999, University of Essex.
+ * Copyright:	(c) 2005, CNBH, University of Essex.
  *
  *********************/
 
