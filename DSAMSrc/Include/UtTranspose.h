@@ -21,7 +21,7 @@
 /******************************************************************************/
 
 #define UTILITY_TRANSPOSE_NUM_PARS			1
-#define	UTILITY_TRANSPOSE_MOD_NAME			"UTILITY_TRANSPOSE"
+#define	UTILITY_TRANSPOSE_MOD_NAME			"UTIL_TRANSPOSE"
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
