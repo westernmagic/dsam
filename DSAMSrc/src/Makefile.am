@@ -71,7 +71,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtSSSymbols.c UtSimScript.c UtSpikeList.c UtStddise.c \
 				UtUIEEEFloat.c UtUPortableIO.c UtCreateJoined.c UtStrobe.c \
 				UtOptions.c UtString.c UtPause.c UtHalfWRectify.c UtDynaList.c \
-				UtAppInterface.c UtFFT.c
+				UtAppInterface.c UtFFT.c UtParArray.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c
 
