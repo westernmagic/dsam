@@ -1,0 +1,4 @@
+4			Order for the gamma tone filters - basilar membrane model.
+single		Centre frequency mode for filter.
+1000.0		Initial centre frequency of gamma-tone filter bank.
+ERB			Band width (3 dB down) mode for filters.

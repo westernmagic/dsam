@@ -1,0 +1,118 @@
+#
+# Borland C++ IDE generated makefile
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCCDOS  = Bcc +BccDos.cfg 
+TLINK   = TLink
+TLIB    = TLib
+TASM    = Tasm
+#
+# IDE macros
+#
+
+
+#
+# Options
+#
+IDE_LFLAGSDOS =  -LD:\BC4\LIB -P
+IDE_BFLAGS = 
+LLATDOS_modgendexe =  -c -Tde
+RLATDOS_modgendexe =  -ID:\BC4\INCLUDE;D:\LUTEAR\CRL208\INCLUDE
+BLATDOS_modgendexe = 
+LEAT_modgendexe = $(LLATDOS_modgendexe)
+REAT_modgendexe = $(RLATDOS_modgendexe)
+BEAT_modgendexe = $(BLATDOS_modgendexe)
+
+#
+# Dependency List
+#
+Dep_modgen = \
+   modgen.exe
+
+modgen : BccDos.cfg $(Dep_modgen)
+  echo MakeNode modgen
+
+Dep_modgendexe = \
+   y_tab.obj\
+   init.obj\
+   mggenera.obj\
+   strings.obj\
+   symbol.obj\
+   token.obj\
+   writecod.obj\
+   modgen.obj
+
+modgen.exe : $(Dep_modgendexe)
+  $(TLINK)   @&&|
+ /v $(IDE_LFLAGSDOS) $(LEAT_modgendexe) +
+D:\BC4\LIB\c0m.obj+
+y_tab.obj+
+init.obj+
+mggenera.obj+
+strings.obj+
+symbol.obj+
+token.obj+
+writecod.obj+
+modgen.obj
+$<,$*
+D:\BC4\LIB\emu.lib+
+D:\BC4\LIB\mathm.lib+
+D:\BC4\LIB\cm.lib
+
+|
+
+y_tab.obj :  y_tab.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ y_tab.c
+
+init.obj :  init.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ init.c
+
+mggenera.obj :  mggenera.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ mggenera.c
+
+strings.obj :  strings.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ strings.c
+
+symbol.obj :  symbol.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ symbol.c
+
+token.obj :  token.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ token.c
+
+writecod.obj :  writecod.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ writecod.c
+
+modgen.obj :  modgen.c
+  $(BCCDOS) -P- -c $(CEAT_modgendexe) -o$@ modgen.c
+
+# Compiler configuration file
+BccDos.cfg : 
+   Copy &&|
+-W-
+-R
+-v
+-vi
+-X-
+-H
+-ID:\BC4\INCLUDE;E:\LUTEAR\CRL207\INCLUDE
+-H=modgen.csm
+-DBORLANDC
+-i40
+-4
+-ml
+-Fs
+-Ff
+-Ff=0
+-A-
+-ID:\BC4\INCLUDE;D:\LUTEAR\CRL208\INCLUDE
+-mm
+-f
+| $@
+
+

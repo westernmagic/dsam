@@ -1,0 +1,4 @@
+1000.0		Stimulus frequency (Hz).
+20.0		Stimulus signal intensity (dB SPL).
+20.0e-3		Stimulus signal duration (seconds).
+0.05e-3		Stimulus sampling interval, dt (seconds).

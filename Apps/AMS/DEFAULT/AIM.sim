@@ -1,0 +1,21 @@
+#DFLT.sim
+on			Diagnostics mode ("off" or "on").
+relative	Parameter file path mode ('relative', 'none' or <file path>).
+
+# Module Specifications
+
+begin {
+	
+	DataFile_In			< waveDflt.par
+	Trans_Gate			< gateDflt.par
+	PreEm_BandPass		< midearDflt.par
+	BM_GammaT			< gtfDflt.par
+	Display_Signal		< BMMdflt.par
+	IHC_Meddis86		< medDflt.par
+	Display_Signal		< NAPdflt.par
+	Ana_SAI				< stiDflt.par
+	Display_Signal		< SAIdflt.par
+	#DataFile_Out
+
+}
+

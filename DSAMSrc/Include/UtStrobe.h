@@ -1,0 +1,195 @@
+/**********************
+ *
+ * File:		UtStrobe.h
+ * Purpose:		This module implements strobe criteria for the AIM stabilised
+ *				auditory image (SAI)
+ *				See Patterson R. D. and Allerhand M. H. (1995) "Time-domain
+ *				modeling of peripheral auditory processing: A modular
+ *				Architecture and a software platform", J. Acoust. Soc. Am. 98,
+ *				1890-1894.
+ * Comments:	Written using ModuleProducer version 1.12 (Oct  9 1997).
+ *				The "Threshold" strobe mode algorithm is the same as the
+ *				"user" mode at present.  This is because the "User" mode is
+ *				interpreted differently by the calling SAI module program.
+ *				This method saves having to have a separate set of mode names
+ *				in the SAI module.
+ *				20-11-97 LPO: Peak strobe criteria now only strobes when the
+ *				peak is above the threshold.
+ *				21-11-97 LPO: Changed "lagTime" to "delay".
+ *				25-11-97 LPO: Implemented the peak shadow "-" mode.
+ *				10-12-97 LPO: After a long battle I have finished implementing
+ *				the peak shadow "+" mode.  Note that the definition for this
+ *				criterion is different from that described in the AIM code
+ *				(though even in the AIM code is was not implemented.)
+ *				11-12-97 LPO: Added the delayTimeout constraint.  This causes
+ *				the most recent strobe peak to be set, regardless of the
+ *				delayCount state.
+ *				06-07-99 LPO: This module now sets the 'staticTimeFlag', as
+ *				it sets the 'outputTimeOffset' field,
+ * Author:		L. P. O'Mard
+ * Created:		10 Oct 1997
+ * Updated:		11 Sep 1997
+ * Copyright:	(c) 1997-1999, University of Essex
+ *
+ *********************/
+
+#ifndef _UTSTROBE_H
+#define _UTSTROBE_H 1
+
+#include "UtNameSpecs.h"
+
+/******************************************************************************/
+/****************************** Constant definitions **************************/
+/******************************************************************************/
+
+#define STROBE_NUM_PARS			6
+#define STROBE_SPIKE_UNIT		1.0
+
+/******************************************************************************/
+/****************************** Type definitions ******************************/
+/******************************************************************************/
+
+typedef enum {
+
+	STROBE_TYPE_MODE,
+	STROBE_DIAGNOSTIC_MODE,
+	STROBE_THRESHOLD,
+	STROBE_THRESHOLD_DECAY_RATE,
+	STROBE_DELAY,
+	STROBE_DELAY_TIMEOUT
+
+} StrobeParSpecifier;
+
+typedef	enum {
+
+	STROBE_USER_MODE,
+	STROBE_THRESHOLD_MODE,
+	STROBE_PEAK_MODE,
+	STROBE_PEAK_SHADOW_NEGATIVE_MODE,
+	STROBE_PEAK_SHADOW_POSITIVE_MODE,
+	STROBE_DELTA_GAMMA_MODE,
+	STROBE_MODE_NULL
+
+} StrobeModeSpecifier;
+
+typedef	enum {
+
+	STROBE_PROCESS_BUFFER_CHANNEL,
+	STROBE_PROCESS_DATA_CHANNEL
+
+} StrobeChanProcessSpecifier;
+
+typedef struct {
+
+	BOOLN		gradient;
+	BOOLN		strobeAlreadyPlaced;
+	double		threshold;
+	double		deltaThreshold;
+	ChanLen		widthIndex;
+	ChanLen		delayCount;
+	ChanLen		delayTimeoutCount;
+	ChanLen		prevPeakIndex;
+	ChanData	prevPeakHeight;
+	ChanData	lastSample;
+	ChanData	*lastInput;
+
+} StrobeState, *StrobeStatePtr;
+
+typedef struct {
+
+	ParameterSpecifier	parSpec;
+
+	BOOLN	typeModeFlag, diagnosticModeFlag, thresholdFlag;
+	BOOLN	thresholdDecayRateFlag, delayFlag, delayTimeoutFlag;
+	BOOLN	updateProcessVariablesFlag;
+	int		typeMode;
+	int		diagnosticMode;
+	double	threshold;
+	double	thresholdDecayRate;
+	double	delay;
+	double	delayTimeout;
+
+	/* Private members */
+	NameSpecifier	*typeModeList;
+	UniParListPtr	parList;
+	char			diagnosticString[MAX_FILE_PATH];
+	int				numChannels;
+	double			thresholdDecay;
+	FILE			*fp;
+	ChanLen			numLastSamples;
+	ChanLen			delayTimeoutSamples;
+	StrobeStatePtr	*stateVars;
+
+} Strobe, *StrobePtr;
+
+/******************************************************************************/
+/****************************** External variables ****************************/
+/******************************************************************************/
+
+extern	StrobePtr	strobePtr;
+
+/******************************************************************************/
+/****************************** Function Prototypes ***************************/
+/******************************************************************************/
+
+/* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
+ * macros, to allow the safe use of C libraries with C++ libraries - defined
+ * in GeCommon.h.
+ */
+__BEGIN_DECLS
+
+BOOLN	CheckData_Utility_Strobe(EarObjectPtr data);
+
+BOOLN	CheckPars_Utility_Strobe(void);
+
+BOOLN	Free_Utility_Strobe(void);
+
+void	FreeProcessVariables_Utility_Strobe(void);
+
+void	FreeStateVariables_Utility_Strobe(StrobeStatePtr *p);
+
+UniParListPtr	GetUniParListPtr_Utility_Strobe(void);
+
+BOOLN	Init_Utility_Strobe(ParameterSpecifier parSpec);
+
+BOOLN	InitProcessVariables_Utility_Strobe(EarObjectPtr data);
+
+StrobeStatePtr	InitStateVariables_Utility_Strobe(ChanLen numLastSamples);
+
+BOOLN	InitTypeModeList_Utility_Strobe(void);
+
+BOOLN	PrintPars_Utility_Strobe(void);
+
+BOOLN	Process_Utility_Strobe(EarObjectPtr data);
+
+void	ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
+		  StrobeChanProcessSpecifier chanProcessSpecifier);
+
+void	ProcessPeakModes_Utility_Strobe(EarObjectPtr data);
+
+void	ProcessThesholdModes_Utility_Strobe(EarObjectPtr data);
+
+BOOLN	ReadPars_Utility_Strobe(char *fileName);
+
+BOOLN	SetDiagnosticMode_Utility_Strobe(char *theDiagnosticMode);
+
+BOOLN	SetDelay_Utility_Strobe(double theDelay);
+
+BOOLN	SetDelayTimeout_Utility_Strobe(double theDelayTimeout);
+
+BOOLN	SetTypeMode_Utility_Strobe(char *theTypeMode);
+
+BOOLN	SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode,
+		  double threshold, double thresholdDecayRate, double delay,
+		  double delayTimeout);
+
+BOOLN	SetThresholdDecayRate_Utility_Strobe(
+		  double theThresholdDecayRate);
+
+BOOLN	SetThreshold_Utility_Strobe(double theThreshold);
+
+BOOLN	SetUniParList_Utility_Strobe(void);
+
+__END_DECLS
+
+#endif

@@ -1,0 +1,11 @@
+# Parameters for a MSR cell from a web-page by E. Lopez-Poveda, Essex
+# 16/04/98 SU
+75.0		Permeability constant A (units per second).
+48000.0		Permeability constant B (units per second).
+500.0		Release rate (units per second).
+5.05		Replenishment rate (units per second).
+1650.0		Loss rate (units per second).
+170.0		Reprocessing rate (units per second).
+8500.0		Recovery rate (units per second).
+1.0			Max. no. of transmitter packets in free pool.
+50000.0		Firing rate (spikes per second).

@@ -1,0 +1,175 @@
+.TH MODGEN 1
+.SH NAME
+modgen \- creates a LUTEar library module
+
+.SH SYNOPSIS
+.B modgen
+.I file.mod
+.br
+.B modgen
+
+.SH DESCRIPTION
+The argument
+.I file.mod
+contains the specification of a module to be included in the
+.I LUTEar
+library.
+If the
+.I
+modgen
+command is issued without an argument, the user will be prompted for
+.I file.mod.
+Using the specification contained within
+.I file.mod,
+.I modgen
+creates the
+.I file.c
+source and
+.I file.h
+header files required for adding a module to the
+.I LUTEar
+library.
+
+.PP
+The layout of the module file,
+.I file.mod,
+is very similar to a standard ANSI C structure typedef declaration, with the
+addition of a few keywords, i.e.
+
+.RS 10
+.PP
+.B mod_name		
+.I moduleName;
+.br
+.B qualifier			
+.I qualifier;
+.br
+.B proc_routine	
+.I ProcessRoutineName;
+.br
+.B typedef struct
+{
+
+.I	... Parameter declarations ...
+
+}
+.I StructureName;
+.RE
+
+- keywords are shown in bold-face and the identifers, or names, are given as
+bold italics. The standard ANSI C type specifiers are available for declaring
+the modul parameters, e.g. 'char', 'int', 'float', 'double', and so on. Here is
+an example showing the module specification for the StMPTone module.
+
+.PP
+.RS 5
+/* This is a comment */
+.br
+.B mod_name		
+PureTone;
+.br
+.B qualifier			
+Multi;
+.br
+.B proc_routine	
+GenerateSignal;
+.br
+.B typedef struct
+{
+
+.B	double	
+duration, dt;
+.br
+.B	int_al		
+numPTones;
+.br
+.B	double	
+*intensities, *frequencies, *phases;
+
+} MPureTone;
+
+.SS Keywords
+
+Here a description is given of the special keywords used by the
+.I modgen
+program.
+
+.TP 9
+.B mod_name
+specifies the base name of the module.  This must be declared, as it appears
+as the base name for all the module routines, separated from the function name
+by an underscore, e.g.
+
+PrintPars_
+.I ModuleName
+(
+.B void
+).
+
+
+.TP 10
+.B qualifier
+specifies an additional qualifier for the module name.  This declaration is
+optional, but if declared it will appear after the base name of the module in
+all module routines, separated by an underscore, e.g.
+
+PrintPars_
+.I ModuleName
+_
+.I Qualifier
+(
+.B void
+).
+
+.TP 13
+.B proc_routine
+specifies the name to be given to the main process routine, i.e. the routine
+which actually generates the output signal.  It is is not declared then the
+default name
+
+Process_
+.I ModuleName
+_
+.I Qualifier
+(...)
+
+will be given.
+
+.TP 7
+.B int_al
+is a special form of the standard 'int' type.  The '_al' stands for 'array
+limit', as it is used to indicate that the respective parameter is to be used
+as the array length for any following array declarations (see the example for
+the StMPTone module specification given above).  Only one parameter will be
+used for
+.I int_al
+declaration lines, and it will be applied as the array limit for all pointers
+thereafter declared until the next
+.I int_al
+declaration.
+
+.SH DIAGNOSTICS
+
+If an error is encountered in the
+.I file.mod
+module specification file the program will exit, try to indicating the
+approximate position of the error.
+
+.SH BUGS
+When declaring module parameters combinations such as 'unsigned int' will not
+be interpreted correctly.  This problem can be circumvented by introducing a
+typedef before the main module structure declaration, e.g.
+
+.PP
+.RS 15
+.B typedef unsigned int
+.I uint
+.RE
+
+.PP
+This version (1.2) of the program does not know how to treat 'private' process
+variables.
+
+.SH AUTHOR
+Lowel P. O'Mard
+.I L.P.OMard@lut.ac.uk

@@ -1,0 +1,14 @@
+#stiDflt.par
+
+off			Diagnostic mode ("off" or "on").
+#
+# Strobe module specification file name. used to be
+#../DEFAULT/strobeDflt.par
+# before, now full path due to requirements of aim_mat (13/10/98)
+#
+strobeDflt.par	Strobe module specification file name.
+-35e-3			Negative frame width (s).
+5e-3			Positive frame width (s).
+2.5e+3			Input decay rate (%/s).
+30e-3			Image decay half-life (s).
+

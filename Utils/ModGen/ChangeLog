@@ -1,0 +1,9 @@
+##############
+# 05-11-1998 #
+
+Implemented support for 'name specifier' code.
+
+Implmented support for 'universal parameter' code.
+
+Changed version number from 1.12 -> 1.2.0
+

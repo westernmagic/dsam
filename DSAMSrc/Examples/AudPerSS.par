@@ -1,0 +1,5 @@
+#
+# Main Parameter file
+#
+output.dat		Name of output file.
+Meddis86.sim	Simulation specification file.

@@ -1,0 +1,83 @@
+	##--------------- Simulation script ----------------------##
+	ON	Diagnostics mode ('off' or 'on').
+
+	begin  {
+		Stim_Puretone_2	<	P2Tone1.par
+		Trans_Gate	<	Ramp1.par
+		BM_GammaT	<	GammaTLog1.par
+		IHC_Meddis86	<	Meddis86.par
+		AN_SG_Binomial	<	BinomSG1.par
+		Ana_Histogram	<	PSTH3.par
+		Display_Signal
+	}
+
+	##--------------- Stim_Puretone_2      [0] ---------------##
+	FREQUENCY.Stim_Puretone_2.0	1000      	Frequency (Hz).
+	INTENSITY.Stim_Puretone_2.0	80        	Intensity (dB SPL).
+	DURATION.Stim_Puretone_2.0	0.2       	Duration (s).
+	DT.Stim_Puretone_2.0     	5e-05     	Sampling interval, dt (s).
+	BEGIN_SILENCE.Stim_Puretone_2.0	0.02      	Silence period before the signal begins (s).
+	END_SILENCE.Stim_Puretone_2.0	0.05      	Silence period after the signal ends (s).
+	##--------------- Trans_Gate           [1] ---------------##
+	POS_MODE.Trans_Gate.1    	RELATIVE  	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.1     	RAMP      	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.1   	SINE      	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.1      	0         	Time offset (s)
+	DURATION.Trans_Gate.1    	0.0025    	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.1       	0.004     	Slope parameter or half-life (in 'decay_par' mode only)
+	##--------------- BM_GammaT            [2] ---------------##
+	ORDER.BM_GammaT.2        	4         	Filter order.
+	# CFList parameters:
+	  DIAG_MODE.BM_GammaT.2    	PARAMETERS	Diagnostic mode ('list' or 'parameters').
+	  CF_MODE.BM_GammaT.2      	LOG       	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log' or 'user'.
+	  MIN_CF.BM_GammaT.2       	100       	Minimum centre frequency (Hz).
+	  MAX_CF.BM_GammaT.2       	6000      	Maximum centre frequency (Hz).
+	  CHANNELS.BM_GammaT.2     	10        	No. of centre frequencies.
+	  B_MODE.BM_GammaT.2       	ERB       	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+	##--------------- IHC_Meddis86         [3] ---------------##
+	PERM_CONST_A.IHC_Meddis86.3	100       	Permeability constant A (units/s).
+	PERM_CONST_B.IHC_Meddis86.3	6000      	Permeability constant B (units/s).
+	RELEASE_G.IHC_Meddis86.3 	2000      	Release rate (units/s).
+	REPLENISH_Y.IHC_Meddis86.3	5.05      	Replenishment rate (units/s).
+	LOSS_L.IHC_Meddis86.3    	2500      	Loss rate (units/s).
+	REPROCESS_X.IHC_Meddis86.3	66.31     	Reprocessing rate (units/s).
+	RECOVERY_R.IHC_Meddis86.3	6580      	Recovery rate (units/s).
+	MAX_FREE_POOL_M.IHC_Meddis86.3	1         	Max. no. of transmitter packets in free pool.
+	FIRING_RATE_H.IHC_Meddis86.3	50000     	Firing rate (spikes/s)
+	##--------------- AN_SG_Binomial       [4] ---------------##
+	NUM_FIBRES.AN_SG_Binomial.4	500       	Number of fibres.
+	RAN_SEED.AN_SG_Binomial.4	1         	Random number seed (0 for different seed for each run).
+	PULSE_DURATION.AN_SG_Binomial.4	5e-05     	Pulse duration (s).
+	MAGNITUDE.AN_SG_Binomial.4	1         	Pulse magnitude (arbitrary units).
+	REFRAC_PERIOD.AN_SG_Binomial.4	0.001     	Refractory period (s).
+	##--------------- Ana_Histogram        [5] ---------------##
+	DETECT_MODE.Ana_Histogram.5	CONTINUOUS	Detection mode: 'spike' (detection) or 'continuous' (signal).
+	TYPE_MODE.Ana_Histogram.5	PSTH      	Histogram type: 'PSTH' or 'PH'.
+	THRESHOLD.Ana_Histogram.5	0.5       	Event threshold for bin counts (units as appropriate).
+	BIN_WIDTH.Ana_Histogram.5	0.001     	Bin width for the histogram: -ve assumes dt for previous signal (s).
+	PERIOD.Ana_Histogram.5   	0.27      	Period for period histogram: used in 'PH' mode only (s).
+	OFFSET.Ana_Histogram.5   	0         	Time offset for histogram (s).
+	##--------------- Display_Signal       [6] ---------------##
+	AUTO_SCALING.Display_Signal.6	ON        	Automatic scaling ('on' or 'off').
+	FRAMEDELAY.Display_Signal.6	0         	Delay between display frames (s)
+	MAGNIFICATION.Display_Signal.6	1         	Signal magnification.
+	MAXY.Display_Signal.6    	5.31794e-315	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.6    	5.33729e-315	Minimum Y Value (for manual scaling).
+	MODE.Display_Signal.6    	LINE      	Display mode ('off', 'line' or 'raster').
+	NUMGREYSCALES.Display_Signal.6	10        	Number of grey scales (raster mode).
+	SUMMARYDISPLAY.Display_Signal.6	OFF       	Summary display mode ('on' or 'off').
+	WIDTH.Display_Signal.6   	-1        	Displayed signal width (seconds or x units).
+	WIN_HEIGHT.Display_Signal.6	500       	Display frame height (pixel units).
+	WIN_TITLE.Display_Signal.6	"          "	Display window title.
+	WIN_WIDTH.Display_Signal.6	440       	Display frame width (pixel units).
+	XRESOLUTION.Display_Signal.6	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	NORMALISATION.Display_Signal.6	MIDDLE    	Y' normalisation mode ('bottom' or 'middle').
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.AMS.0          	SCREEN    	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_SCRIPT_FILE.AMS.0    	"/home/lowel/projects/dsam/Applications/AMS/SimScripts/BSA99/Meddis86_5v2.sim"	Simulation script file.
+	SIM_PAR_FILE.AMS.0       	"off       "	Simulation parameter file mode ('off' or <file name>).
+	SEGMENT_MODE.AMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	FILELOCKING_MODE.AMS.0   	OFF       	File locking mode ('on' or 'off').
+	NUM_RUNS.AMS.0           	1         	Number of repeat runs, or segments/frames.

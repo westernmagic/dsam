@@ -1,0 +1,117 @@
+/**********************
+ *
+ * File:		UtIterRipple.h
+ * Purpose:		This routine transforms a signal using the Iterated Ripple
+ *				algorithm as described in: "A time domain description for the
+ *				pitch strength of iterated rippled noide", W.A. Yost, R.
+ * 				Patterson, S. Sheft. J.Acoust. Soc. Am. 999(2), February 1996
+ * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
+ *				It generates two classes of Iterated Ripple signal:
+ * 				IRSO Iterated Rippled Signal ADD-ORIGINAL
+ * 				IRSS Iterated Rippled Signal ADD-SAME
+ * Authors:		Almudena Eustaquio-Martin, L. P. O'Mard
+ * Created:		04-JUN-1996.
+ * Updated:	
+ * Copyright:	(c) 1998, University of Essex
+ *
+ *********************/
+
+#ifndef _UTITERRIPPLE_H
+#define _UTITERRIPPLE_H 1
+
+#include "UtNameSpecs.h"
+
+/******************************************************************************/
+/****************************** Constant definitions **************************/
+/******************************************************************************/
+
+#define UTILITY_ITERATEDRIPPLE_NUM_PARS			4
+
+/******************************************************************************/
+/****************************** Type definitions ******************************/
+/******************************************************************************/
+
+typedef enum {
+
+	UTILITY_ITERATEDRIPPLE_NUMITERATIONS,
+	UTILITY_ITERATEDRIPPLE_MODE,
+	UTILITY_ITERATEDRIPPLE_DELAY,
+	UTILITY_ITERATEDRIPPLE_SIGNALMULTIPLIER
+
+} IterRippleParSpecifier;
+
+typedef	enum {
+
+	ITERRIPPLE_IRSO_MODE,
+	ITERRIPPLE_IRSS_MODE,
+	ITERRIPPLE_NULL
+
+} IterRippleModeSpecifier;
+
+typedef struct {
+
+	ParameterSpecifier	parSpec;
+
+	BOOLN	numIterationsFlag, modeFlag, delayFlag;
+	BOOLN	signalMultiplierFlag;
+	int		numIterations;
+	int		mode;
+	double	delay;
+	double	signalMultiplier;
+
+	/* Private members */
+	NameSpecifier *modeList;
+	UniParListPtr	parList;
+
+} IterRipple, *IterRipplePtr;
+
+/******************************************************************************/
+/****************************** External variables ****************************/
+/******************************************************************************/
+
+extern	IterRipplePtr	iterRipplePtr;
+
+/******************************************************************************/
+/****************************** Function Prototypes ***************************/
+/******************************************************************************/
+
+/* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
+ * macros, to allow the safe use of C libraries with C++ libraries - defined
+ * in GeCommon.h.
+ */
+__BEGIN_DECLS
+
+BOOLN	CheckData_Utility_IteratedRipple(EarObjectPtr data);
+
+BOOLN	CheckPars_Utility_IteratedRipple(void);
+
+BOOLN	Free_Utility_IteratedRipple(void);
+
+UniParListPtr	GetUniParListPtr_Utility_IteratedRipple(void);
+
+BOOLN	Init_Utility_IteratedRipple(ParameterSpecifier parSpec);
+
+BOOLN	InitModeList_Utility_IteratedRipple(void);
+
+BOOLN	PrintPars_Utility_IteratedRipple(void);
+
+BOOLN	Process_Utility_IteratedRipple(EarObjectPtr data);
+
+BOOLN	ReadPars_Utility_IteratedRipple(char *fileName);
+
+BOOLN	SetDelay_Utility_IteratedRipple(double theDelay);
+
+BOOLN	SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier);
+
+BOOLN	SetMode_Utility_IteratedRipple(char *theMode);
+
+BOOLN	SetNumIterations_Utility_IteratedRipple(int theNumIterations);
+
+BOOLN	SetPars_Utility_IteratedRipple(int numIterations, char *mode,
+		  double delay, double signalMultiplier);
+
+BOOLN	SetUniParList_Utility_IteratedRipple(void);
+
+__END_DECLS
+
+#endif

@@ -1,0 +1,11 @@
+on		Diagnostics mode ("off" or "on".
+
+# Module Specifications
+
+begin {
+
+		PureTone				< PTone1.par
+		PreEmphasis_BandPass	< PreEmph1.par
+		IHC_Meddis86			< Meddis86.par
+
+}

@@ -1,0 +1,4 @@
+#dBSPLdflt.par
+
+0.0		Time offset for intensity calculation (s).
+70		Required intensity setting (dB SPL).

@@ -1,0 +1,101 @@
+	##--------------- DataFile_In          [0] ---------------##
+	FILENAME       	../DEFAULT/cegc_br.raw	Stimulus file name.
+	WORDSIZE       	2         	Default word size for sound data (1 or 2 bytes)
+	ENDIAN_MODE    	0         	Default (for format), big- or little-endian: 0, 1 or 2.
+	CHANNELS       	1         	No. of Channels: for raw binary and ASCII files.)
+	NORM_MODE      	0         	Normalisation factor for writing (0 or -ve: automatic).
+	SAMPLERATE     	20000     	Default sample rate: for raw binary and ASCII files (Hz).
+	DURATION       	0.01      	Duration of read signal: -ve = unlimited (s)
+	STARTTIME      	0         	Start time (offset) for signal (s).
+	GAIN           	0         	Relative signal gain (dB).
+	##--------------- Trans_Gate           [1] ---------------##
+	POS_MODE       	RELATIVE  	Position mode ('absolute' or 'relative')
+	OP_MODE        	RAMP      	Operation mode ('ramp' or 'damp')
+	TYPE_MODE      	SINE      	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET         	0         	Time offset (s)
+	DURATION       	0.0001    	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE          	0.004     	Slope parameter or half-life (in 'decay_par' mode only)
+	##--------------- Trans_SetDBSPL       [2] ---------------##
+	OFFSET         	0         	Time offset for intensity calculation (s).
+	DBSPL          	70        	Required intensity setting (dB SPL).
+	##--------------- PreEm_BandPass       [3] ---------------##
+	ORDER          	2         	Filter order.
+	ATTENUATION    	0         	Pre-attenuation for filter (dB).
+	LOWER_FREQ     	450       	Lower, 3 dB down cut-off frequency (Hz).
+	UPPER_FREQ     	8500      	Upper, 3 dB down cut-off frequency (Hz).
+	##--------------- BM_GammaT            [4] ---------------##
+	ORDER          	4         	Filter order.
+	# CFList parameters:
+	  DIAGNOSTIC_MODE	PARAMETERS	Diagnostic mode ('list' or 'parameters').
+	  CF_MODE        	ERB       	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log' or 'user'.
+	  MIN_CF         	100       	Minimum centre frequency (Hz).
+	  MAX_CF         	6000      	Maximum centre frequency (Hz).
+	  ERB_DENSITY    	2         	ERB density (filters/critical band).
+	  B_MODE         	CUSTOM_ERB	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+	  BW_MIN         	24.7      	Minimum filter bandwidth (Hz).
+	  QUALITY        	9.259     	Ultimate quality factor of filters.
+	##--------------- Display_Signal       [5] ---------------##
+	AUTO_SCALING   	ON        	Automatic scaling ('on' or 'off').
+	FRAMEDELAY     	0         	Delay between display frames (s)
+	MAGNIFICATION  	3         	Signal magnification.
+	MAXY           	0         	Maximum Y value (for manual scaling).
+	MINY           	0         	Minimum Y Value (for manual scaling).
+	MODE           	LINE      	Display mode ('line' or 'raster').
+	NUMGREYSCALES  	10        	Number of grey scales (raster mode).
+	SUMMARYDISPLAY 	OFF       	Summary display mode ('on' or 'off').
+	WIDTH          	-1        	Displayed signal width (seconds or x units).
+	WIN_HEIGHT     	500       	Display frame height (pixel units).
+	WIN_WIDTH      	440       	Display frame width (pixel units).
+	XRESOLUTION    	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	NORMALISATION  	MIDDLE    	Y' normalisation mode ('bottom' or 'middle').
+	##--------------- IHC_Meddis86         [6] ---------------##
+	PERM_CONST_A   	75        	Permeability constant A (units/s).
+	PERM_CONST_B   	48000     	Permeability constant B (units/s).
+	RELEASE_G      	500       	Release rate (units/s).
+	REPLENISH_Y    	5.05      	Replenishment rate (units/s).
+	LOSS_L         	1650      	Loss rate (units/s).
+	REPROCESS_X    	170       	Reprocessing rate (units/s).
+	RECOVERY_R     	8500      	Recovery rate (units/s).
+	MAX_FREE_POOL_M	1         	Max. no. of transmitter packets in free pool.
+	FIRING_RATE_H  	50000     	Firing rate (spikes/s)
+	##--------------- Display_Signal       [7] ---------------##
+	AUTO_SCALING   	ON        	Automatic scaling ('on' or 'off').
+	FRAMEDELAY     	0         	Delay between display frames (s)
+	MAGNIFICATION  	3         	Signal magnification.
+	MAXY           	0         	Maximum Y value (for manual scaling).
+	MINY           	0         	Minimum Y Value (for manual scaling).
+	MODE           	LINE      	Display mode ('line' or 'raster').
+	NUMGREYSCALES  	10        	Number of grey scales (raster mode).
+	SUMMARYDISPLAY 	OFF       	Summary display mode ('on' or 'off').
+	WIDTH          	-1        	Displayed signal width (seconds or x units).
+	WIN_HEIGHT     	500       	Display frame height (pixel units).
+	WIN_WIDTH      	440       	Display frame width (pixel units).
+	XRESOLUTION    	0.0001    	Resolution of X scale (1 - low, fractions are higher).
+	NORMALISATION  	BOTTOM    	Y' normalisation mode ('bottom' or 'middle').
+	##--------------- Ana_SAI              [8] ---------------##
+	DIAGNOSTICS    	off       	Diagnostic mode ('on', 'off' or <file name>).
+	# Module parameter file: /cbu/sound1/dsam/aim/DEFAULT/strobeDflt.par
+	  CRITERION      	PEAK_SHADOW+	Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), 'peak_shadow-' (3), or 'peak_shadow+' (4/5).
+	  STROBE_DIAGNOSTICS	off       	Diagnostic mode ('on', 'off' or <file name>).
+	  THRESHOLD      	0.03      	Threshold for strobing: 'user', 'threshold' and 'peak' modes only.
+	  STROBE_DECAY   	5000      	Threshold decay rate (%/s).
+	  STROBE_LAG     	0.005     	Strobe lag (delay) time (s).
+	  TIMEOUT        	0.01      	Strobe lag (delay) timeout (s).
+	NWIDTH         	-0.035    	Negative width of auditory image (s).
+	PWIDTH         	0.005     	Positive width of auditory image (s).
+	NAP_DECAY      	2500      	Neural activity pattern (input) decay rate (%/s)
+	IMAGE_DECAY    	0.03      	Auditory image decay half-life (s).
+	##--------------- Display_Signal       [9] ---------------##
+	AUTO_SCALING   	OFF       	Automatic scaling ('on' or 'off').
+	FRAMEDELAY     	0         	Delay between display frames (s)
+	MAGNIFICATION  	15        	Signal magnification.
+	MAXY           	1         	Maximum Y value (for manual scaling).
+	MINY           	0         	Minimum Y Value (for manual scaling).
+	MODE           	LINE      	Display mode ('line' or 'raster').
+	NUMGREYSCALES  	10        	Number of grey scales (raster mode).
+	SUMMARYDISPLAY 	OFF       	Summary display mode ('on' or 'off').
+	WIDTH          	-1        	Displayed signal width (seconds or x units).
+	WIN_HEIGHT     	500       	Display frame height (pixel units).
+	WIN_WIDTH      	440       	Display frame width (pixel units).
+	XRESOLUTION    	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	NORMALISATION  	BOTTOM    	Y' normalisation mode ('bottom' or 'middle').

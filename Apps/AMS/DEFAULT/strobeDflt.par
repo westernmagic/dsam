@@ -1,0 +1,11 @@
+# strobeDflt.par
+
+# Possible strobe modes: "user", "1-threshold", "2-peak", "3-peak_shadow-",
+# "4-peak_shadow+", "6-delta_gamma".
+
+peak_shadow+	Strobe mode.
+off		diagnostic mode ("on" or "off").
+0.030	Threshold for strobing - "user", "threshold" and "peak" modes only (units).
+5000	Threshold decay rate (half life).
+5e-3	Strobe delay time (s).
+10e-3	Strobe delay timeout (s).
