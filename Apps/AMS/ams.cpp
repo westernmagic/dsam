@@ -67,12 +67,9 @@
 /******************************************************************************/
 
 BOOLN	readMainParsFlag = FALSE, numberOfRunsFlag;
-BOOLN	checkMainInit = TRUE;
 BOOLN	checkInitialisation = TRUE;
 
-char	diagnosticMode[MAX_FILE_PATH], simScriptFile[MAX_FILE_PATH];
-char	simParFileMode[MAX_FILE_PATH], parFileName[MAX_FILE_PATH];
-char	segmentMode[MAXLINE];
+char	parFileName[MAX_FILE_PATH];
 char	fileLockingMode[MAXLINE] = "off";
 
 int		numberOfRuns = 1, fileLockingModeSpecifier;
@@ -107,12 +104,12 @@ ReadMainParsFromFile(char *fileName)
 		return(FALSE);
 	}
 	Init_ParFile();
-	GetPars_ParFile(fp, "%s", diagnosticMode);
-	GetPars_ParFile(fp, "%s", simScriptFile);
-	GetPars_ParFile(fp, "%s", simParFileMode);
-	GetPars_ParFile(fp, "%s", segmentMode);
-	GetPars_ParFile(fp, "%s", fileLockingMode);
-	GetPars_ParFile(fp, "%d", &numberOfRuns);
+	if (!ReadPars_AppInterface(fp))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%s", fileLockingMode))
+		ok = FALSE;
+	if (!GetPars_ParFile(fp, "%d", &numberOfRuns))
+		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok)
@@ -302,14 +299,33 @@ SetAppInterfacePars(void)
 			  parFileName);
 			return(FALSE);
 		}
-		if (!SetPars_AppInterface(diagnosticMode, simScriptFile,
-		  simParFileMode, segmentMode)) {
-			NotifyError("%s: Could not set Application Interface parameters.\n",
-			  funcName);
-			return(FALSE);
-		}
 		readMainParsFlag = FALSE;
 	}
+	return(TRUE);
+
+}
+
+/****************************** SetLockFile ***********************************/
+
+/*
+ * This routine sets the lock file.
+ */
+
+BOOLN
+SetLockFile(BOOLN on)
+{
+	static char *funcName = PROGRAM_NAME": SetLockFile";
+	FILE	*fp;
+
+	if (on) {
+		if ((fp = fopen(LOCK_FILE, "w")) == NULL) {
+			NotifyError("%s: Could not create lock file '%s'.", funcName,
+			  LOCK_FILE);
+			return(FALSE);
+		}
+		fclose(fp);
+	} else
+		remove(LOCK_FILE);
 	return(TRUE);
 
 }
@@ -351,31 +367,6 @@ Init(void)
 	SetAppSetInitialPars_AppInterface(SetAppInterfacePars);
 
 	checkInitialisation = FALSE;
-	return(TRUE);
-
-}
-
-/****************************** SetLockFile ***********************************/
-
-/*
- * This routine sets the lock file.
- */
-
-BOOLN
-SetLockFile(BOOLN on)
-{
-	static char *funcName = PROGRAM_NAME": SetLockFile";
-	FILE	*fp;
-
-	if (on) {
-		if ((fp = fopen(LOCK_FILE, "w")) == NULL) {
-			NotifyError("%s: Could not create lock file '%s'.", funcName,
-			  LOCK_FILE);
-			return(FALSE);
-		}
-		fclose(fp);
-	} else
-		remove(LOCK_FILE);
 	return(TRUE);
 
 }
