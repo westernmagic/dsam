@@ -93,6 +93,8 @@ $(GR_CFG): $(DSAMDIR)\src\makeb32.env makefile.b32
 
 -tWM
 
+$(OPTIONS)
+
 ! $(GR_CFG)
 
 ###############################################################################
@@ -103,7 +105,8 @@ $(BINCCDSAMG): $(DSAMDIR)\src\makeb32.env makefile.b32
 		
 	copy &&!
 		$(CC) @%DSAMDIR%\$(LDIRNAME)\$(MAIN_CFG_NAM) \
-		  @%DSAMDIR%\$(LDIRNAME)\$(GR_CFG_NAM) $(OPTIONS2) -c %1
+		  @%DSAMDIR%\$(LDIRNAME)\$(GR_CFG_NAM) $(OPTIONS2) -c %1 %2 %3 %4 %5 \
+		  %6 %7 %8 %9 
 		$(BRC) -r -fO%1.res %1
 		$(LINK) $(LINK_FLAGS) c0w32 %1, %1, $(MAP_NAME), \
 		  $(MAIN_LNAME) $(GR_LNAME) $(WXLIBS) $(BCCLIBS), $(DEF_NAME), \
