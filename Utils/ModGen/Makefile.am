@@ -7,7 +7,6 @@ noinst_HEADERS	= ModGen.h MGGeneral.h Strings.h Symbol.h  Token.h \
 modgen_SOURCES	= Parser.y ModGen.c Init.c MGGeneral.c Strings.c Symbol.c \
 					Token.c WriteCodeUtils.c WriteHeaderCode.c \
 					WriteSrcCode.c
-					 
 
 pkginclude_HEADERS	= Parser.h 
 BUILT_SOURCES		= Parser.c
