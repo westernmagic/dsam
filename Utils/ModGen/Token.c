@@ -10,7 +10,12 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
+#include <string.h>
 
 #include "MGGeneral.h"
 #include "Symbol.h"

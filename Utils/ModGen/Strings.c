@@ -10,7 +10,12 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -250,7 +255,7 @@ char *
 StrBreak(char *string, int n, const char *delimiters)
 {
 	static char *funcName = "StrBreak";
-	char	*p, *copy, *pos, *result;
+	char	*p, *copy,  *result;
 	int		i;
 
 	if (n == 0)
@@ -402,7 +407,6 @@ Capital(char *string)
 {
 	static char* funcName = "Capital";
 	static char	newString[MAXLINE];
-	char	*p1, *p2;
 
 	if (strlen(string) >= MAXLINE)
 		execerror("String too long", funcName);
@@ -424,7 +428,7 @@ PluralToSingular(char *string)
 	static char* funcName = "Capital";
 	static char	newString[MAXLINE];
 	char	*stringSuffix;
-	int		i, stringLen, suffixLen;
+	int		i, stringLen;
 	struct	conversion {
 		char *plural, *singular;
 	} convTable[] = {

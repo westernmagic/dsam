@@ -3,6 +3,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= cvsconfigure
+EXTRA_DIST	= cvsconfigure dos-dist
 
 

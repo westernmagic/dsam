@@ -10,13 +10,13 @@ modgen_SOURCES	= Parser.y ModGen.c Init.c MGGeneral.c Strings.c Symbol.c \
 					Token.c WriteCodeUtils.c WriteHeaderCode.c \
 					WriteSrcCode.c
 
-pkginclude_HEADERS	= Parser.h 
+pkginclude_HEADERS	= Parser.h MGSetup.h
 BUILT_SOURCES		= Parser.c modgen.spec
 YFLAGS			= -dl
 EXTRA_DIST		= makefile.dos modgen.1
 man_MANS		= modgen.1
 
-SUBDIRS			= CfgTools
+SUBDIRS			= CfgTools MSVC
 
 modgen.spec:	modgen.spec.in
 

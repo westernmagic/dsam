@@ -14,6 +14,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -178,7 +182,8 @@ PrintExpandedStructure(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
 			if (((*list)->inst != POINTER) && (type->sym->type !=
-			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR)) {
+			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) && (type->sym->
+			  type != DATUMPTR)) {
 				sprintf(variable, "%sFlag", (*list)->sym->name);
 				if (line[0] == '\0')
 					sprintf(line, "\tBOOLN\t%s", variable);
@@ -198,7 +203,21 @@ PrintExpandedStructure(FILE *fp)
 	/* Parameters */
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
-		fprintf(fp, "\t%s\t", NAMESPECIFIER_TO_INT(type->sym));
+		fprintf(fp, "\t");
+		switch (type->sym->type){
+		case NAMESPECIFIER:
+			fprintf(fp, "int");
+			break;
+		case DATUMPTR:
+			fprintf(fp, "DatumPtr");
+			break;
+		case FILENAME:
+			fprintf(fp, "char");
+			break;
+		default:
+			fprintf(fp, "%s", type->sym->name);
+		}
+		fprintf(fp, "\t");
 		if ((strlen(type->sym->name) < 4) || (type->sym->type == NAMESPECIFIER))
 			fprintf(fp, "\t");
 		for (list = identifierList; *list != 0; list++) {
@@ -207,6 +226,8 @@ PrintExpandedStructure(FILE *fp)
 			if ((*list)->inst == POINTER)
 				fprintf(fp, "*");
 			fprintf(fp, "%s", (*list)->sym->name);
+			if (type->sym->type == FILENAME)
+				fprintf(fp, "[MAX_FILE_PATH]");
 		}
 		fprintf(fp, ";\n");
 	}
@@ -218,12 +239,19 @@ PrintExpandedStructure(FILE *fp)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
-			if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
-			  PARARRAY))
-				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n",
-				  (*list)->sym->name, (type->sym->type == PARARRAY)? "Mode":
-				   "");
-
+			switch (type->sym->type) {
+			case NAMESPECIFIER:
+			case PARARRAY:
+				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n", (*list)->sym->name,
+				  (type->sym->type == PARARRAY)? "Mode": "");
+				break;
+			case DATUMPTR:
+				fprintf(fp, "\tchar\t%s%s[MAX_FILE_PATH];\n", (*list)->sym->
+				  name, SIM_SCRIPT_NAME_SUFFIX);
+				break;
+			default:
+				;
+			}
 	fprintf(fp, "\tUniParListPtr	parList;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "} %s, *%sPtr;\n\n", structure, structure);

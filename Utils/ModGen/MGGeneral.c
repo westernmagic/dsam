@@ -10,6 +10,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -27,6 +27,7 @@
 #define	LONG_LINE						512
 #define	MAX_IDENTIFIERS					20
 #define	MAX_ROUTINES					200
+#define	SIM_SCRIPT_NAME_SUFFIX			"FName"
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -38,9 +39,6 @@
 
 #define	DT_TO_SAMPLING_INTERVAL(NAME) ((strcmp(NAME, "dt") == 0)? \
 		  "samplingInterval": NAME)
-
-#define NAMESPECIFIER_TO_INT(SYM) (((SYM)->type == NAMESPECIFIER)? "int": \
-		  (SYM)->name)
 
 #define NAMESPECIFIER_TO_CHAR(SYM) (((SYM)->type == NAMESPECIFIER)? \
 		  "char": (SYM)->name)
@@ -73,6 +71,8 @@ char *	GetInputTypeFormatStr(Symbol *p);
 char *	GetOutputTypeFormatStr(Symbol *p);
 
 char *	GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type);
+
+char *	GetTypeFormatStr(SymbolPtr sym, BOOLN isPointer);
 
 void	Init_WriteCodeUtils(void);
 

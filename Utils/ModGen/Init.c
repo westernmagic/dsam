@@ -10,6 +10,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "Symbol.h"
 #include "Parser.h"
 #include "Init.h"
@@ -64,6 +68,8 @@ static struct {
 	{"proc_routine",	PROC_ROUTINE},
 	{"int_al",		INT_AL},
 	{"NameSpecifier",	NAMESPECIFIER},
+	{"FileName",	FILENAME},
+	{"DatumPtr",	DATUMPTR},
 	{"CFListPtr",	CFLISTPTR},
 	{"ParArrayPtr",	PARARRAY},
 	{"process_vars",	PROCESS_VARS},

@@ -14,6 +14,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,7 +48,6 @@ StandardFunctions standardFunctions[] = {
 	{"SetUniParList",	PrintSetUniParListRoutine},
 	{"GetUniParListPtr",PrintGetUniParListPtrRoutine},
 	{"Alloc",			PrintAllocArraysRoutines},
-	{"SetPars",			PrintSetParsRoutine},
 	{"Set",				PrintSetFunctions},
 	{"CheckPars",		PrintCheckParsRoutine},
 	{"Get",				PrintGetFunctions},
@@ -215,6 +218,9 @@ PrintFreeRoutine(FILE *fp)
 			else if (type->sym->type == PARARRAY)
 				fprintf(fp, "\tFree_ParArray(&%s->%s);\n", ptrVar,
 				  (*list)->sym->name);
+			else if (type->sym->type == DATUMPTR)
+				fprintf(fp, "\tFreeInstructions_Utility_Datum(&%s->%s);\n",
+				  ptrVar, (*list)->sym->name);
 	fprintf(fp, "\tif (%s->parList)\n", ptrVar);
 	fprintf(fp, "\t\tFreeList_UniParMgr(&%s->parList);\n", ptrVar);
 	fprintf(fp, "\tif (%s->parSpec == GLOBAL) {\n", ptrVar);
@@ -288,7 +294,7 @@ PrintInitRoutine(FILE *fp)
 		for (list = identifierList; *list != 0; list++)
 			if (((*list)->inst != POINTER) && (type->sym->type !=
 			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) &&
-			  (type->sym->type != PARARRAY))
+			  (type->sym->type != PARARRAY) && (type->sym->type != DATUMPTR))
 				fprintf(fp, "\t%s->%sFlag = FALSE;\n", ptrVar,
 				  (*list)->sym->name);
 
@@ -315,7 +321,10 @@ PrintInitRoutine(FILE *fp)
 				  qualifier));
 				fprintf(fp, "\t\treturn(FALSE);\n");
 				fprintf(fp, "\t}\n");
-			} else {
+			} else if (type->sym->type == FILENAME)
+				fprintf(fp, "\tstrcpy(%s->%s, NO_FILE);\n", ptrVar, (*list)->
+				  sym->name);
+			else {
 				fprintf(fp, "\t%s->%s = ", ptrVar, (*list)->sym->name);
 				if ((*list)->inst == POINTER)
 					fprintf(fp, "NULL");
@@ -329,6 +338,7 @@ PrintInitRoutine(FILE *fp)
 						break;
 					case CFLISTPTR:
 					case PARARRAY:
+					case DATUMPTR:
 						fprintf(fp, "NULL");
 						break;
 					default:
@@ -349,7 +359,9 @@ PrintInitRoutine(FILE *fp)
 				  "");
 				fprintf(fp, "\t%s();\n", CreateFuncName(initListFunc, module,
 				  qualifier));
-			}
+			} else if (type->sym->type == DATUMPTR)
+				fprintf(fp, "\tsprintf(%s->%s%s, NO_FILE);\n", ptrVar,
+				  (*list)->sym->name, SIM_SCRIPT_NAME_SUFFIX);
 	
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("SetUniParList", module,
 	  qualifier));
@@ -437,6 +449,11 @@ PrintSetUniParListRoutine(FILE *fp)
 					  (*list)->sym->name)->sym->name);
 			} else if (type->sym->type == NAMESPECIFIER)
 				fprintf(fp, "%s->%sList,\n", ptrVar, (*list)->sym->name);
+			else if (type->sym->type == DATUMPTR)
+				fprintf(fp, "%s->%s%s,\n", ptrVar, (*list)->sym->name,
+				  SIM_SCRIPT_NAME_SUFFIX);
+			else if (type->sym->type == FILENAME)
+				fprintf(fp, "\"*.*\",\n");
 			else
 				fprintf(fp, "NULL,\n");
 			if (((*list)->inst == POINTER) && (type->sym->type != CHAR))
@@ -468,7 +485,6 @@ PrintGetUniParListPtrRoutine(FILE *fp)
 {
 	static char	*function = "GetUniParListPtr";
 	char	*funcName, *funcDeclaration;
-	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 	
 	PrintLineCommentHeading(fp, function);
 	fprintf(fp,
@@ -556,6 +572,13 @@ PrintCheckParsRoutine(FILE *fp)
 				  (*list)->sym->name);
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
+			} else if (type->sym->type == DATUMPTR) {
+				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
+				  (*list)->sym->name);
+				fprintf(fp, "\t\tNotifyError(\"%%s: %s not set.\", funcName);"
+				  "\n", (*list)->sym->name);
+				fprintf(fp, "\t\tok = FALSE;\n");
+				fprintf(fp, "\t}\n");
 			} else if (type->sym->type != BOOLEAN_VAR) {
 				fprintf(fp, "\tif (!%s->%sFlag) {\n", ptrVar,
 				  (*list)->sym->name);
@@ -591,8 +614,8 @@ CreateSetParsArguments(BOOLN justNames)
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
-			length += strlen(NAMESPECIFIER_TO_CHAR_PTR(type->sym)) +
-			   strlen(DT_TO_SAMPLING_INTERVAL((*list)->sym->name)) + extraChars;
+			length += strlen(GetTypeFormatStr(type->sym, TRUE)) + strlen(
+			  DT_TO_SAMPLING_INTERVAL((*list)->sym->name)) + extraChars;
 			if ((*list)->inst == POINTER)
 				length++;
 		}
@@ -604,7 +627,7 @@ CreateSetParsArguments(BOOLN justNames)
 			 if (*string != '\0')
 				strcat(string, ", ");
 			if (!justNames) {
-				strcat(string, NAMESPECIFIER_TO_CHAR_PTR(type->sym));
+				strcat(string, GetTypeFormatStr(type->sym, TRUE));
 				strcat(string, " ");
 				if ((*list)->inst == POINTER)
 					strcat(string, "*");
@@ -618,66 +641,6 @@ CreateSetParsArguments(BOOLN justNames)
 			strcat(string, DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
 		}
 	return(string);
-
-}
-
-/****************************** PrintSetParsRoutine ***************************/
-
-/*
- * This routine prints the Module SetPars routine.
- * It adds the function declaration to the main list.
- * Because the set pars routine arguments can be so long, memory is allocated
- * for the string pointer returned, which must be free'd when finished with.
- * Note the special treatment for "dt" variables, i.e. it is always expanded
- * to "samplingInterval" using the DT_TO_SAMPLING_INTERVAL macro.
- */
-
-void
-PrintSetParsRoutine(FILE *fp)
-{
-	static char	*function = "SetPars";
-	char	*funcName, *funcDeclaration, *funcArguments;
-	char	setFuncName[MAXLINE], setFunctionBase[MAXLINE];
-	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
-	
-	PrintLineCommentHeading(fp, function);
-	fprintf(fp,
-	  "/*\n"
-	  " * This function sets all the module's parameters.\n"
-	  " * It returns TRUE if the operation is successful.\n"
-	  " */\n\n"
-	  );
-	funcName = CreateFuncName(function, module, qualifier);
-	funcArguments = CreateSetParsArguments(FALSE);
-	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
-	  funcArguments);
-	free(funcArguments);	/* not static */
-	Print(fp, "  ", funcDeclaration);
-	Print(fp, "  ", "");
-	fprintf(fp, "\n{\n");
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
-	fprintf(fp, "\tBOOLN\tok;\n");
-	fprintf(fp, "\n");
-	fprintf(fp, "\tok = TRUE;\n");
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		for (list = identifierList; *list != 0; list++) {
-			if (type->sym->type == CFLISTPTR)
-				strcpy(setFunctionBase, "CFList");
-			else
-				strcpy(setFunctionBase, Capital(DT_TO_SAMPLING_INTERVAL(
-				  (*list)->sym->name)));
-			sprintf(setFuncName, "Set%s", setFunctionBase);
-			fprintf(fp, "\tif (!%s(%s))\n", CreateFuncName(setFuncName,
-			  module, qualifier), DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
-			fprintf(fp, "\t\tok = FALSE;\n");
-		}
-	fprintf(fp, "\tif (!ok)\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Failed to set all module "
-	  "parameters.\" ,funcName);\n");
-	fprintf(fp, "\treturn(ok);\n");
-	fprintf(fp, "\n}\n\n");
-	AddRoutine(funcDeclaration);
 
 }
 
@@ -827,7 +790,21 @@ PrintPrintParsRoutine(FILE *fp)
 			else if (type->sym->type == PARARRAY)
 				fprintf(fp, "\tPrintPars_ParArray(%s->%s);\n", ptrVar,
 				  (*list)->sym->name);
-			else if (((*list)->inst != POINTER) || (type->sym->type == CHAR)) {
+			else if (type->sym->type == DATUMPTR) {
+				Print(fp, "\t  ", "\tDPrint(\"\\tSimulation instruction list "
+				  "(%%s):-\\n\", ");
+				Print(fp, "\t  ", ptrVar);
+				Print(fp, "\t  ", "->");
+				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", SIM_SCRIPT_NAME_SUFFIX ");\n");
+				Print(fp, "\t  ", "");
+				Print(fp, "\t  ", "\tPrintInstructions_Utility_Datum(");
+				Print(fp, "\t  ", ptrVar);
+				Print(fp, "\t  ", "->");
+				Print(fp, "\t  ", (*list)->sym->name);
+				Print(fp, "\t  ", ", DATUM_INITIAL_INDENT_LEVEL, \"\\t\");\n");
+				Print(fp, "\t  ", "");
+			} else if (((*list)->inst != POINTER) || (type->sym->type == CHAR)) {
 				Print(fp, "\t  ", "\tDPrint(\"\\t");
 				Print(fp, "\t  ", DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
 				Print(fp, "\t  ", " = ");
@@ -850,6 +827,12 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", (*list)->sym->name);
 					Print(fp, "\t  ", "].name");
+					break;
+				case FILENAME:
+					Print(fp, "\t  ", ".\\n\", ");
+					Print(fp, "\t  ", ptrVar);
+					Print(fp, "\t  ", "->");
+					Print(fp, "\t  ", (*list)->sym->name);
 					break;
 				default:
 					Print(fp, "\t  ", " \?\?\\n\", ");
@@ -1029,14 +1012,16 @@ PrintReadParsRoutine(FILE *fp)
 {
 	static char	*function = "ReadPars";
 	char	*funcName, *funcDeclaration, mainFuncName[MAXLINE];
-	char	*setParsArguments;
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list, arrayLimit;
 	
 	PrintLineCommentHeading(fp, function);
 	fprintf(fp,
 	  "/*\n"
-	  " * This program reads a specified number of parameters from a file.\n"
-	  " * It returns FALSE if it fails in any way.n"
+	  " * This program reads parameters from a file line by line.\n"
+	  " * Each line which is not a comment or blank should have at least a\n"
+	  " * parameter name and value.  Characters on the line following the\n"
+	  " * 'value' are ignored.\n"
+	  " * It returns FALSE if it fails in any way.\n"
 	  " */\n\n"
 	  );
 	funcName = CreateFuncName(function, module, qualifier);
@@ -1045,32 +1030,13 @@ PrintReadParsRoutine(FILE *fp)
 	fprintf(fp, "%s\n{\n", funcDeclaration);
 	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
 	fprintf(fp, "\tBOOLN\tok = TRUE;\n");
-	fprintf(fp, "\tchar\t*filePath;\n");
-	if (FindTokenInst(INT_AL, pc))
-		fprintf(fp, "\tint\t\ti;\n");
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
-		if (((*identifierList)->inst == POINTER) && (type->sym->type != CHAR))
-			continue;
-		if (((*identifierList)->inst == POINTER) && (type->sym->type == CHAR))
-			fprintf(fp, "\tstatic ");
-		else
-			fprintf(fp, "\t");
-		fprintf(fp, "%s\t", NAMESPECIFIER_TO_CHAR(type->sym));
-		if (strlen(type->sym->name) <= 4)
-			fprintf(fp, "\t");
-		for (list = identifierList; *list != 0; list++) {
-			if (list != identifierList)
-				fprintf(fp, ", ");
-			fprintf(fp, DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
-			if ((type->sym->type == NAMESPECIFIER) || (((*list)->inst ==
-			  POINTER) && (type->sym->type == CHAR)))
-				fprintf(fp, "[MAXLINE]");
-		}
-		fprintf(fp, ";\n");
-	}
+	fprintf(fp, "\tchar\t*filePath, parName[MAXLINE], parValue["
+	  "MAX_FILE_PATH];\n");
 	fprintf(fp, "\tFILE\t*fp;\n");
+	fprintf(fp, "\tUniParPtr\tpar;\n");
 	fprintf(fp, "\n");
+	fprintf(fp, "\tif (strcmp(fileName, NO_FILE) == 0)\n");
+	fprintf(fp, "\t\treturn(TRUE);\n");
 	fprintf(fp, "\tfilePath = GetParsFileFPath_Common(fileName);\n");
 	fprintf(fp, "\tif ((fp = fopen(filePath, \"r\")) == NULL) {\n");
 	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot open data file '%%s'.\\n\", "
@@ -1080,80 +1046,33 @@ PrintReadParsRoutine(FILE *fp)
 	fprintf(fp, "\tDPrint(\"%%s: Reading from '%%s':\\n\", funcName, "
 	  "fileName);\n");
 	fprintf(fp, "\tInit_ParFile();\n");
-	/* Scalar parameters first. */
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		if (type->inst != INT_AL)
-			for (list = identifierList; *list != 0; list++) {
-				if (type->sym->type == CFLISTPTR) {
-					fprintf(fp, "\tif ((%s = ReadPars_CFList(fp)) == NULL)\n",
-					  (*list)->sym->name);
-					fprintf(fp, "\t\t ok = FALSE;\n");
-					fprintf(fp, "\tif (!ReadBandwidths_CFList(fp, %s))\n",
-					  (*list)->sym->name);
-					fprintf(fp, "\t\t ok = FALSE;\n");
-					break;
-				}
-				if (type->sym->type == PARARRAY) {
-					sprintf(mainFuncName, "GetNum%sPars", Capital(
-					  (*list)->sym->name));
-					Print(fp, "\t  ", "\tif ((");
-					Print(fp, "\t  ", (*list)->sym->name);
-					Print(fp, "\t  ", " = ReadPars_ParArray(fp, \"");
-					Print(fp, "\t  ", Capital((*list)->sym->name));
-					Print(fp, "\t  ", "\", ");
-					Print(fp, "\t  ", ptrVar);
-					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", (*list)->sym->name);
-					Print(fp, "\t  ", "ModeList, ");
-					Print(fp, "\t  ", CreateFuncName(mainFuncName, module,
-					  qualifier));
-					Print(fp, "\t  ", ")) == NULL)\n");
-					Print(fp, "\t  ", "");
-					fprintf(fp, "\t\t ok = FALSE;\n");
-					break;
-				}
-				if (((*list)->inst != POINTER) || (type->sym->type == CHAR)) {
-					fprintf(fp, "\tif (!GetPars_ParFile(fp, \"%s\", ",
-					  GetInputTypeFormatStr(type->sym));
-					switch (type->sym->type) {
-					case CHAR:
-					case NAMESPECIFIER:
-						break;
-					default:
-						fprintf(fp, "&");
-					}
-					fprintf(fp, "%s))\n", DT_TO_SAMPLING_INTERVAL(
-					  (*list)->sym->name));
-					fprintf(fp, "\t\tok = FALSE;\n");
-				}
-			}
-	/* Array parameters. */
-	for (arrayLimit = pc; (arrayLimit = FindTokenInst(INT_AL, arrayLimit)); 
-	  arrayLimit = arrayLimit->next)
-		PrintArrayCode(fp, arrayLimit);
+	fprintf(fp, "\tSetEmptyLineMessage_ParFile(FALSE);\n");
+	fprintf(fp, "\twhile (GetPars_ParFile(fp, \"%%s %%s\", parName,"
+	  "parValue))\n");
+	fprintf(fp, "\t\tif ((par = FindUniPar_UniParMgr(&padSignalPtr->parList,"
+	  "parName)) ==\n");
+	fprintf(fp, "\t\t  NULL) {\n");
+	fprintf(fp, "\t\t\tNotifyError(\"%%s: Unknown parameter '%%s' for "
+	  "module.\", funcName,\n");
+	fprintf(fp, "\t\t\t  parName);\n");
+	fprintf(fp, "\t\t\tok = FALSE;\n");
+	fprintf(fp, "\t\t} else {\n");
+	fprintf(fp, "\t\t\tif (!SetParValue_UniParMgr(&padSignalPtr->parList, par->"
+	  "index,\n");
+	fprintf(fp, "\t\t\t  parValue))\n");
+	fprintf(fp, "\t\t\t\tok = FALSE;\n");
+	fprintf(fp, "\t}\n");
+	fprintf(fp, "\tSetEmptyLineMessage_ParFile(TRUE);\n");
 	fprintf(fp, "\tfclose(fp);\n");
 	fprintf(fp, "\tFree_ParFile();\n");
 	fprintf(fp, "\tif (!ok) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Not enough lines, or invalid "
-	  "parameters, in module \"\n");
-	fprintf(fp, "\t\t  \"parameter file '%%s'.\", funcName, fileName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
-	setParsArguments = CreateSetParsArguments(TRUE);
-	Print(fp, "\t  ", "\tif (!");
-	Print(fp, "\t  ", CreateFuncName("SetPars", module, qualifier));
-	Print(fp, "\t  ", "(");
-	Print(fp, "\t  ", setParsArguments);
-	Print(fp, "\t  ", ")) {\n");
-	Print(fp, "\t  ", "");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Could not set parameters.\", "
-	  "funcName);\n");
+	fprintf(fp, "\t\tNotifyError(\"%%s: Invalid parameters, in module "
+	  "parameter file '%%s'.\",\n");
+	fprintf(fp, "\t\t  funcName, fileName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\treturn(TRUE);\n");
 	fprintf(fp, "\n}\n\n");
-	free(setParsArguments);
 	AddRoutine(funcDeclaration);
 
 }
@@ -1571,7 +1490,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		variableName = PluralToSingular(token->sym->name);
 		sprintf(function, "SetIndividual%s", Capital(variableName));
 		sprintf(funcArguments, "int theIndex, %s the%s",
-		  NAMESPECIFIER_TO_CHAR_PTR(type->sym), Capital(variableName));
+		  GetTypeFormatStr(type->sym, TRUE), Capital(variableName));
 		sprintf(assignmentString, "\t%s->%s[theIndex] = ", ptrVar,
 		  token->sym->name);
 		break;
@@ -1590,10 +1509,16 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 			break;
 		default:
 			sprintf(function, "Set%s", Capital(variableName));
-			sprintf(funcArguments, "%s %sthe%s", NAMESPECIFIER_TO_CHAR_PTR(
-			  type->sym), (token->inst == POINTER)? "*": "",
+			sprintf(funcArguments, "%s %sthe%s", GetTypeFormatStr(type->sym,
+			  TRUE), (token->inst == POINTER)? "*": "",
 			  Capital(variableName));
-			sprintf(assignmentString, "\t%s->%s = ", ptrVar, token->sym->name);
+			if (type->sym->type == FILENAME)
+				sprintf(assignmentString, "\tsnprintf(%s->%s, MAX_FILE_PATH, "
+				  "\"%%s\", the%s);\n", ptrVar, token->sym->name, Capital(
+				  variableName));
+			else
+				sprintf(assignmentString, "\t%s->%s = ", ptrVar, token->sym->
+				  name);
 		}
 	}
 	PrintLineCommentHeading(fp, function);
@@ -1683,6 +1608,15 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t\tFree_ParArray(&%s->%s);\n", ptrVar, token->sym->name);
 	}
 
+	if (type->sym->type == DATUMPTR) { 
+		fprintf(fp, "\tif (!InitSimulation_Utility_SimScript((the%s)) {\n",
+		  Capital(token->sym->name));
+		fprintf(fp, "\t\tNotifyError(\"%%s: Simulation not correctly "
+		  "initialised.\",  funcName);\n");
+		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t}\n");
+	}
+
 	if (functionType == SET_BANDWIDTHS_ROUTINE) {
 		fprintf(fp, "\tif (!SetBandwidths_CFList(%s->%s, theBandwidthMode,\n",
 		  ptrVar, token->sym->name);
@@ -1710,6 +1644,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "%s", assignmentString);
 		switch (type->sym->type) {
 		case CFLISTPTR:
+		case FILENAME:
 			break;
 		case NAMESPECIFIER:
 			fprintf(fp, "specifier;\n");

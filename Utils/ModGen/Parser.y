@@ -17,6 +17,7 @@
 
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include "MGGeneral.h"
 #include "Symbol.h"
@@ -32,6 +33,7 @@
 %token	<sym>	STRUCT UNION
 %token	<sym>	MOD_NAME QUALIFIER PROC_ROUTINE PROCESS_VARS
 %token	<sym>	POINTER STANDARD_TOKEN INT_AL NAMESPECIFIER CFLISTPTR PARARRAY
+%token	<sym>	DATUMPTR FILENAME
 %%
 list:		/* nothing */
 		|	list
@@ -76,6 +78,8 @@ type_specifier:
 	|	PROC_ROUTINE		{ ; }
 	|	INT_AL				{	SetTokenInstRelCurrent(INT_AL, 0); }
 	|	NAMESPECIFIER		{ ; }
+	|	FILENAME			{ ; }
+	|	DATUMPTR			{ ; }
 	|	CFLISTPTR			{ ; }
 	|	PARARRAY			{ ; }
 	|	PROCESS_VARS		{ ; }

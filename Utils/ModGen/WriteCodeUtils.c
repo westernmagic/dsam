@@ -17,6 +17,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -272,6 +276,7 @@ GetOutputTypeFormatStr(Symbol *p)
 	case FLOAT:			return("%f");
 	case DOUBLE:		return("%g");
 	case NAMESPECIFIER:	return("%s");
+	case FILENAME:		return("%s");
 	default:			return("\"_to be defined_");
 	} /* switch */
 
@@ -296,6 +301,7 @@ GetInputTypeFormatStr(Symbol *p)
 	case FLOAT:			return("%f");
 	case DOUBLE:		return("%lf");
 	case NAMESPECIFIER:	return("%s");
+	case FILENAME:		return("%s");
 	default:			return("\"_to be defined_");
 	} /* switch */
 
@@ -319,8 +325,10 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 		case LONG:			return("UNIPAR_LONG");
 		case DOUBLE:		return("UNIPAR_REAL");
 		case NAMESPECIFIER:	return("UNIPAR_NAME_SPEC");
+		case FILENAME:		return("UNIPAR_FILE_NAME");
 		case CFLISTPTR:		return("UNIPAR_CFLIST");
 		case PARARRAY:		return("UNIPAR_PARARRAY");
+		case DATUMPTR:		return("UNIPAR_SIMSCRIPT");
 		default:			return("UNIPAR_UNKNOWN");
 		} /* switch */
 	else
@@ -329,6 +337,34 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 		case DOUBLE:		return("UNIPAR_REAL_ARRAY");
 		default:			return("UNIPAR_UNKNOWN_ARRAY");
 		} /* switch */
+
+}
+
+/****************************** GetTypeFormatStr ******************************/
+
+/*
+ * This routine returns the "C" type associated with a particular
+ * symbol.
+ */
+
+char *
+GetTypeFormatStr(SymbolPtr sym, BOOLN isPointer)
+{
+
+	switch (sym->type) {
+	case FILENAME:
+	case NAMESPECIFIER:
+		if (isPointer)
+			return("char *");
+		else
+			return("char");
+		break;
+	case DATUMPTR:
+		return("DatumPtr");
+		break;
+	default:
+		return(sym->name);
+	}
 
 }
 

@@ -10,6 +10,10 @@
  *
  **********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "MGSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <ctype.h>
 
@@ -100,7 +104,7 @@ void
 Process(char *baseName)
 {
 	char	headerFileNamePath[MAX_FILE_PATH], mainFileNamePath[MAX_FILE_PATH];
-	char	*p, *up, *headerFileName, *mainFileName;
+	char	*p, *up, *headerFileName = NULL, *mainFileName = NULL;
 	char	upperCaseBaseName[MAXLINE];
 	int		i;
 	FILE	*headerFP, *mainFP;
