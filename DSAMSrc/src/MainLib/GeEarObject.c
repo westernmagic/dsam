@@ -101,7 +101,8 @@ Init_EarObject(char *moduleName)
 	}
 #	endif
 	data->clientData = NULL;
-	data->numThreads = 0;
+	data->numThreads = 1;
+	data->threadIndex = 0;
 	data->numSubProcesses = 0;
 	data->threadProcs = NULL;
 	data->subProcessList = NULL;
@@ -1147,7 +1148,6 @@ InitThreadProcs_EarObject(EarObjectPtr p, int numThreads)
 		  numCopies);
 		return(FALSE);
 	}
-	p->numThreads = numThreads;
 	for (i = 0, tP = p->threadProcs; i < numCopies; i++, tP++, s++) {
 		*tP = *p;
 		tP->outSignal = s;

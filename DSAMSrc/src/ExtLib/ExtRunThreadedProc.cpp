@@ -91,6 +91,7 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	printf("%s: Debug: Entered.\n", funcName);
 #	endif
 	data->initThreadRunFlag = true;
+	data->numThreads = numThreads;
 	ok = CXX_BOOL(RunProcessStandard_ModuleMgr(data));
 	data->initThreadRunFlag = false;
 	if (!ok)

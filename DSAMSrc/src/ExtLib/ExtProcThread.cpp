@@ -56,15 +56,15 @@ ProcThread::ProcThread(int theIndex, int offset, int numChannels,
 {
 	int		i;
 
-	index = theIndex;
-	if (index)
-		process = &theDataPtr->threadProcs[index - 1];
+	if (theIndex)
+		process = &theDataPtr->threadProcs[theIndex - 1];
 	else {
 		process = theDataPtr;
 		origNumChannels = process->outSignal->numChannels;
 	}
 	process->outSignal->offset = offset;
 	process->outSignal->numChannels = offset + numChannels;
+	process->threadIndex = theIndex;
 	for (i = 0; i < theDataPtr->numSubProcesses; i++) {
 		process->subProcessList[i]->outSignal->offset = process->outSignal->
 		  offset;
@@ -115,7 +115,7 @@ ProcThread::OnExit()
 	printf("ProcThread::OnExit: offset %d signaled finished.\n",
 	  process->outSignal->offset);
 #	endif
-	if (!index)	{
+	if (!process->threadIndex)	{
 		int		i;
 		process->outSignal->offset = 0;
 		process->outSignal->numChannels = origNumChannels;

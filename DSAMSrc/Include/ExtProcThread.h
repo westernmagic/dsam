@@ -28,7 +28,6 @@
 /*************************** ProcThread ***************************************/
 
 class ProcThread: public wxThread {
-	int		index;
 	int		*threadCount;
 	uInt	origNumChannels;
 	wxCondition	*myCondition;
