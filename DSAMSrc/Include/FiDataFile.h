@@ -54,8 +54,6 @@
 /*************************** Misc definitions *********************************/
 
 #define DATAFILE_NUM_PARS		9
-#define BIG_ENDIAN_DATA_FILE	2		/* Option for binary reading/writing */
-#define LITTLE_ENDIAN_DATA_FILE	1		/* Option for binary reading/writing */
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
 #define	MEMORY_FILE_DIRN		'+'		/*           "                 */
 #define	MAXLINE_LARGE			256		/* For very "wide" ASCII files */
@@ -108,6 +106,15 @@ typedef enum {
 
 }  FileFormatSpecifier;
 
+typedef enum {
+
+	DATA_FILE_DEFAULT_ENDIAN,
+	DATA_FILE_LITTLE_ENDIAN,
+	DATA_FILE_BIG_ENDIAN,
+	DATA_FILE_ENDIAN_NULL
+
+} DataFileEndianModeSpecifier;
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
@@ -132,10 +139,13 @@ typedef struct {
 	
 	void	(* Write16Bits)(FILE *, int16);
 	void	(* Write32Bits)(FILE *, int32);
+	void	(* WriteIEEEExtended)(FILE *, double);
 	int16	(* Read16Bits)(FILE *);
 	int32	(* Read32Bits)(FILE *);
+	double	(* ReadIEEEExtended)(FILE *);
 	
 	/* Private parameters */
+	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave support*/
 	ChanLen	timeOffsetIndex;
@@ -185,6 +195,8 @@ UniParListPtr	GetUniParListPtr_DataFile(void);
 
 BOOLN		Init_DataFile(ParameterSpecifier parSpec);
 
+BOOLN		InitEndianModeList_DataFile(void);
+
 BOOLN		InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 			  double sampleRate);
 
@@ -206,7 +218,7 @@ BOOLN		SetDefaultSampleRate_DataFile(double theDefaultSampleRate);
 
 BOOLN		SetDuration_DataFile(double theDuration);
 
-BOOLN		SetEndian_DataFile(int endian);
+BOOLN		SetEndian_DataFile(char *endian);
 
 void		SetEndianRW_DataFile(int endian);
 
@@ -220,8 +232,8 @@ BOOLN		SetNumChannels_DataFile(int numChannels);
 
 BOOLN		SetNormalisation_DataFile(double normalisation);
 
-BOOLN		SetPars_DataFile(char *theFileName, int theWordSize, int theEndian,
-			  int theNumChannels, double theDefaultSampleRate,
+BOOLN		SetPars_DataFile(char *theFileName, int theWordSize,
+			  char *theEndian, int theNumChannels, double theDefaultSampleRate,
 			  double theDuration, double theTimeOffset, double theGain,
 			  double normalisation);
 
