@@ -154,8 +154,9 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 	switch (lineType) {
 	case REPEAT:
 		lineShape->MakeLineControlPoints(4);
-		lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END, DIAGRAM_ARROW_SIZE,
-		  0.0, DIAGRAM_ARROW_TEXT);
+		lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_MIDDLE,
+		  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
+		break;
 	default:
 		lineShape->MakeLineControlPoints(2);
 		lineShape->AddArrow(ARROW_HOLLOW_CIRCLE, ARROW_POSITION_END,
@@ -227,8 +228,8 @@ SDIDiagram::DrawSimConnections(DatumPtr start)
 				default:
 					;
 				} /* switch */
-				AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
-				  REPEAT);
+			AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
+			  REPEAT);
 		}
 	}
 

@@ -285,7 +285,7 @@ SDICommand::AddLineShape(int lineType)
 		switch (lineType) {
 		case REPEAT:
 			lineShape->MakeLineControlPoints(4);
-			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
+			lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_MIDDLE,
 			  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 			AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
 			  toShape), InitInst_Utility_Datum(STOP));

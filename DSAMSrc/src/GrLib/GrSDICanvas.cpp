@@ -126,8 +126,7 @@ SDICanvas::GetClassInfo(int classSpecifier)
 	case UTILITY_MODULE_CLASS:
 		return(CLASSINFO(wxRectangleShape));
 	default:
-		NotifyError("%s: Unknown module class specifier (%d).", funcName,
-		  classSpecifier);
+		;
 	}
 	return(NULL);
 
@@ -140,7 +139,6 @@ SDICanvas::GetClassInfo(int classSpecifier)
 void
 SDICanvas::OnLeftClick(double x, double y, int keys)
 {
-	printf("SDICanvas::OnLeftClick: Entered\n");
 	EditorToolPalette *palette = ((SDIFrame *) parent)->palette;
 	wxClassInfo *info = GetClassInfo(palette->currentlySelected);
 
