@@ -64,6 +64,7 @@ class ModuleParDialog: public DialogList {
 //T	void	ListBoxProc(wxListBox& list, wxCommandEvent& WXUNUSED(event));
 //T	void	SliderProc(wxSlider& slider, wxCommandEvent& WXUNUSED(event));
 //T	void	TextProc(wxTextCtrl& text, wxCommandEvent& event);
+	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnOk(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
