@@ -1,0 +1,5 @@
+#		Trans_Gate		< rampDown.par	
+
+op_mode 	damp
+pos_mode	relative
+duration	2.5e-3

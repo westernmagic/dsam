@@ -1,0 +1,13 @@
+#        	Display_Signal	< displaySynapse.par		
+
+WIN_TITLE	"IHC/AN synapse"
+ 
+WIN_HEIGHT	300
+WIN_WIDTH	300
+WIN_X_POS	0
+WIN_Y_POS	300
+
+Y_AXIS_MODE	CHANNEL
+Y_AXIS_TITLE	"spike probability"
+AUTO_Y_SCALE	on
+

@@ -1,0 +1,27 @@
+# filterbankDRNL.sim
+
+begin {
+
+# generate stimulus	
+	 	stim_pureTone_2 	< stimTone.par
+	
+# Ramps
+		Trans_Gate		< rampUp.par	
+		Trans_Gate		< rampDown.par
+		Display_Signal	< displaySignal.par
+
+# Outer-/middler-ear filter model.
+		Filt_MultiBPass	< filtMultiBandpassGP.par	
+
+#convert to stapes velocity
+		Util_mathOp		< mathOPstapes.par
+
+# Basilar membrane filter model.
+@ 		BM_gammaT		< BM_gammatone.par	
+		BM_drnl		< BM_drnlGP.par	
+	      Display_Signal 	< displayBM.par	 
+		DataFile_out		
+
+	}	
+		
+

@@ -1,0 +1,13 @@
+#        	Display_Signal	< displayPH.par	
+
+WIN_TITLE	"AN period histogram"
+ 
+WIN_HEIGHT	300
+WIN_WIDTH	300
+WIN_X_POS	300
+WIN_Y_POS	300
+
+Y_AXIS_MODE	LINEAR
+Y_AXIS_TITLE	"spike count"
+AUTO_Y_SCALE	on
+

@@ -1,0 +1,12 @@
+#	      Display_Signal 	< displayBM.par	
+
+win_title	"basilar membrane"
+ 
+win_height	300
+win_width	300
+win_x_pos	300
+win_y_pos	0
+
+y_axis_mode	channel
+y_axis_title	"channel BF (Hz)"
+

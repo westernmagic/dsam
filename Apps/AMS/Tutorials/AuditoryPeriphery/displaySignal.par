@@ -1,0 +1,11 @@
+#		Display_Signal	< displaySignal.par
+
+win_title	stimulus
+
+win_height	300
+win_width	300
+win_x_pos	0
+win_y_pos	0
+
+y_axis_mode	linear
+y_axis_title	"signal   (µPa)"

@@ -1,0 +1,12 @@
+#		Ana_histogram	< histogramPH.par 
+
+BIN_WIDTH		50E-6		# 20 bins for 1 kHz period
+
+DETECT_MODE		SPIKE
+THRESHOLD		0.5
+
+TYPE_MODE		PH
+PERIOD		0.001
+OFFSET		0.0025
+
+
