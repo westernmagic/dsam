@@ -795,7 +795,7 @@ GetParString_UniParMgr(UniParPtr p)
 		return(NULL);
 	}
 	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY) ||
-	  (p->type == UNIPAR_REAL_ARRAY) || (p->type == UNIPAR_STRING_ARRAY) ||
+	  (p->type == UNIPAR_REAL_DYN_ARRAY) || (p->type == UNIPAR_STRING_ARRAY) ||
 	  (p->type == UNIPAR_NAME_SPEC_ARRAY)) && (*p->valuePtr.array.numElements ==
 	  0))
 		return("");
