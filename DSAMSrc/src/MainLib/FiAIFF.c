@@ -111,7 +111,7 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			subSize -= 2;
 			p->sampleRate = dataFilePtr->ReadIEEEExtended(fp);
 			subSize -= 10;
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		case	AIFF_SSND:
 			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
@@ -120,7 +120,7 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			p->blockSize = dataFilePtr->Read32Bits(fp);
 			subSize -= 4;
 			p->soundPosition = GetPosition_UPortableIO(fp) + p->offset;
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		case	AIFF_DSAM:
 			p->dSAMChunk.flag = TRUE;
@@ -136,11 +136,11 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 			p->dSAMChunk.normalise = dataFilePtr->ReadIEEEExtended(fp);
 			subSize -= 10;
 			p->dSAMChunk.posOfChannelLabels = GetPosition_UPortableIO(fp);
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		default:
 			p->chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		} /* switch */
 	}

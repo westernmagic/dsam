@@ -79,17 +79,17 @@ ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 			subSize -= 2;
 			p->bitsPerSample = dataFilePtr->Read16Bits(fp);
 			subSize -= 2;
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		case WAVE_DATA:
 			p->dataChunkLength = dataFilePtr->Read32Bits(fp);
 			chunkSize -= subSize = p->dataChunkLength;
 			p->soundPosition = GetPosition_UPortableIO(fp);
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 			break;
 		default:
 			chunkSize -= subSize = dataFilePtr->Read32Bits(fp);
-			IgnoreBytes_DataFile(fp, &subSize);
+			SetPosition_UPortableIO(fp, subSize, SEEK_CUR);
 		}
 	}
 	if (!p->subChunkLength) {

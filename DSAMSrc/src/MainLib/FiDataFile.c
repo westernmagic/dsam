@@ -693,22 +693,6 @@ CalculateNormalisation_DataFile(SignalDataPtr signal)
 
 }
 
-/**************************** IgnoreBytes *************************************/
-
-/*
- * This routine ignore a series of bytes, as specified by the count argument.
- */
-
-void
-IgnoreBytes_DataFile(FILE *fp, int32 *count)
-{
-	while (*count > 0){
-		Read8Bits(fp);
-		(*count)--;
-	}
-
-}
-
 /**************************** WriteSignal *************************************/
 
 /*
