@@ -323,7 +323,7 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 int
 GetLineCount_ParFile(void)
 {
-	static const char *funcName = "GetLineCount_ParFile";
+	/* static const char *funcName = "GetLineCount_ParFile"; */
 
 	if (!CheckInit_ParFile())
 		exit(1);
