@@ -465,3 +465,4 @@ RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
 	return(TRUE);
 
 }
+
