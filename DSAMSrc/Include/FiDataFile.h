@@ -158,6 +158,7 @@ typedef struct {
 	int32	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;
 	int32	(* ReadSample)(FILE *); /* Generic sample reading */
+	UPortableIOPtr	uIOPtr;
 
 } DataFile, *DataFilePtr;
 
@@ -207,6 +208,8 @@ int			NumberOfColumns_DataFile(FILE *fp);
 FILE *		OpenFile_DataFile(char *fileName, char *mode);
 
 BOOLN		PrintPars_DataFile(void);
+
+int32		ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype);
 
 BOOLN		ReadPars_DataFile(char *fileName);
 
