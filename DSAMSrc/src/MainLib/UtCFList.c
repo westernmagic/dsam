@@ -697,6 +697,7 @@ SetBandwidthUniParListMode_CFList(CFListPtr theCFs)
 	case BANDWIDTH_CAT:
 	case BANDWIDTH_GUINEA_PIG:
 	case BANDWIDTH_NONLINEAR:
+	case BANDWIDTH_DISABLED:
 	case BANDWIDTH_INTERNAL_DYNAMIC:
 	case BANDWIDTH_INTERNAL_STATIC:
 		break;
@@ -1472,7 +1473,7 @@ ReadPars_CFList(FILE *fp)
 			ok = FALSE;
 		break;
 	default	:
-		NotifyError("%s: Unknown frequency mode.", funcName);
+		NotifyError("%s: Unknown frequency mode (%s).", funcName, modeName);
 		ok = FALSE;
 		break;
 	} /* Switch */
@@ -1522,6 +1523,7 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
 		theCFs->bandwidth = theBandwidths;
 		break;
 	case BANDWIDTH_INTERNAL_DYNAMIC:
+	case BANDWIDTH_DISABLED:
 		break;
 	default:
 		if (theCFs->bandwidth)
@@ -1621,6 +1623,7 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
 				  theCFs->numChannels);
 				return(FALSE);
 			}
+	case BANDWIDTH_DISABLED:
 	case BANDWIDTH_INTERNAL_DYNAMIC:
 	case BANDWIDTH_INTERNAL_STATIC:
 		break;
@@ -1711,9 +1714,10 @@ ResetCF_CFList(CFListPtr theCFs, int channel, double theFrequency)
 	}
 	theCFs->frequency[channel] = theFrequency;
 	if ((theCFs->bandwidthMode.specifier != BANDWIDTH_USER) &&
-	  (theCFs->bandwidthMode.specifier != BANDWIDTH_INTERNAL_DYNAMIC))
-		theCFs->bandwidth[channel] =
-		  (* theCFs->bandwidthMode.Func)(&theCFs->bandwidthMode, theFrequency);
+	  (theCFs->bandwidthMode.specifier != BANDWIDTH_INTERNAL_DYNAMIC) &&
+	  (theCFs->bandwidthMode.specifier != BANDWIDTH_DISABLED))
+		theCFs->bandwidth[channel] = (* theCFs->bandwidthMode.Func)(&theCFs->
+		  bandwidthMode, theFrequency);
 	theCFs->updateFlag = TRUE;
 	return(TRUE);
 
@@ -1775,9 +1779,10 @@ GetBandwidth_CFList(CFListPtr theCFs, int channel)
 		  "set.  Zero returned.", funcName);
 		return(0.0);
 	}
-	if (theCFs->bandwidthMode.specifier == BANDWIDTH_INTERNAL_DYNAMIC) {
-		NotifyError("%s: Internal bandwidths cannot be read.  Zero returned",
-		  funcName);
+	if ((theCFs->bandwidthMode.specifier == BANDWIDTH_INTERNAL_DYNAMIC) ||
+	  (theCFs->bandwidthMode.specifier == BANDWIDTH_DISABLED)) {
+		NotifyError("%s: Internal/disabled bandwidths cannot be read.  Zero "
+		  "returned", funcName);
 		return(0.0);
 	}
 	if (channel < 0 || channel >= theCFs->numChannels) {
@@ -1812,6 +1817,8 @@ PrintList_CFList(CFListPtr theCFs)
 		DPrint("\t\t%10d\t%10g", i, theCFs->frequency[i]);
 		if (theCFs->bandwidthMode.specifier == BANDWIDTH_INTERNAL_DYNAMIC)
 			DPrint("\t%10s\n", "<internal>");
+		else if (theCFs->bandwidthMode.specifier == BANDWIDTH_DISABLED)
+			DPrint("\t%10s\n", "<disabled>");
 		else if (theCFs->bandwidth) {
 				DPrint("\t%10g\n", theCFs->bandwidth[i]);
 		} else
