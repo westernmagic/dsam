@@ -488,11 +488,10 @@ CheckData_Utility_Pause(EarObjectPtr data)
 void
 Notify_Utility_Pause(char *format, ...)
 {
-	DiagModeSpecifier	oldDiagMode;
+	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	va_list	args;
 
 	va_start(args, format);
-	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	(GetDSAMPtr_Common()->Notify)(format, args,
 	  COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL);
 	SetDiagMode(oldDiagMode);
