@@ -104,20 +104,21 @@
 // Define a new application
 class MyApp: public wxApp {
 
-	BOOLN		clientServerFlag;
+	bool		clientServerFlag;
 	uInt		serverId;
 	wxString	serverName;
+	MyFrame		*frame;
 	IPCOpModeSpecifier	operationMode;
 
   public:
-	wxMenu		*fileMenu, *editMenu, *viewMenu;
 
 	MyApp(void);
 
 	void	CheckOptions(void);
-	void	PrintUsage(void);
-	wxFrame *OnInit(void);
+	MyFrame *	GetFrame(void)	{ return frame; }
+	bool	OnInit(void);
     int		OnExit(void);
+	void	PrintUsage(void);
 	void	RunInServerMode(void);
 	void	RunInClientMode(void);
 	BOOLN	RunSimulation(void);
@@ -146,6 +147,7 @@ class MyFrame: public wxFrame {
 #	ifdef MPI_SUPPORT
 	char	**initStringPtrs;
 #	endif	
+	wxMenu		*fileMenu, *editMenu, *viewMenu;
 
   public:
     wxPanel		*panel;
@@ -154,7 +156,8 @@ class MyFrame: public wxFrame {
     MyFrame(wxFrame *frame, char *title, int x, int y, int w, int h, int type);
     ~MyFrame(void);
 
-    Bool	OnClose(void);
+	void	EnableSimParMenuOptions(bool on);
+    bool	OnClose(void);
  	void	OnSize(int width, int height);
 
 };
@@ -164,7 +167,6 @@ class MyFrame: public wxFrame {
 /******************************************************************************/
 
 extern MyApp	myApp;
-extern MyFrame	*myFrame;
 extern wxList	myChildren;
 extern int		childFrameType;
 
