@@ -297,6 +297,7 @@ SetSegmentMode_AppInterface(char *theSegmentMode)
 		return(FALSE);
 	}
 	strcpy(appInterfacePtr->segmentMode, theSegmentMode);
+	SetSegmentedMode(appInterfacePtr->segmentModeSpecifier);
 	return(TRUE);
 
 }
@@ -1355,8 +1356,6 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		}
 		if (!ProcessParComs_AppInterface())
 			return(FALSE);
-
-		SetSegmentedMode(appInterfacePtr->segmentModeSpecifier);
 
 		if (appInterfacePtr->listParsAndExit)
 			ListParsAndExit_AppInterface();
