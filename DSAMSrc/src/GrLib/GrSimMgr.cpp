@@ -56,14 +56,6 @@
 #endif
 
 /******************************************************************************/
-/****************************** Bitmaps ***************************************/
-/******************************************************************************/
-
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
-#include "Bitmaps/dsam.xpm"
-#endif
-
-/******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
@@ -126,8 +118,10 @@ MyApp::MyApp(void): help(wxHF_DEFAULTSTYLE | wxHF_OPENFILES)
 	simModuleDialog = NULL;
 	simThread = NULL;
 	myDocManager = NULL;
+	diagFrame = NULL;
 	fileMenu = editMenu = viewMenu = programMenu = NULL;
 	helpCount = 0;
+	audModelLoadedFlag = false;
 
 }
 
@@ -158,6 +152,7 @@ MyApp::OnExit(void)
 		free(myArgv);
 	}
 	delete wxConfigBase::Set((wxConfigBase *) NULL);
+	Free_AppInterface();
 	return(0);
 
 }
@@ -180,13 +175,15 @@ MyApp::OnInit(void)
 	// Create a document manager
 	myDocManager = new wxDocManager;
 
-  // Create templates relating drawing documents to their views
-  (void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*.spf",
-    "", "spf", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
+	// Create templates relating drawing documents to their views
+	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*.spf",
+	  "", "spf", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
 	CLASSINFO(SDIView));
-  (void) new wxDocTemplate(myDocManager, "Simulation Script", "*.sim",
-    "", "sim", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
+	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*.sim",
+	  "", "sim", "Simulation Design", "Simulation view", CLASSINFO(SDIDocument),
 	CLASSINFO(SDIView));
+
+	myDocManager->SetMaxDocsOpen(1);
 
 	// Setup the printing global variables.
     printData = new wxPrintData;
@@ -241,8 +238,8 @@ MyApp::OnInit(void)
 	int		h = pConfig->Read("h", (long int) SIM_MANAGER_DEFAULT_HEIGHT);
 
 	// Create the main frame window
-	frame = new MyFrame(myDocManager, (wxFrame *) NULL, "Simulation Manager",
-	  wxPoint(x, y), wxSize(w, h));
+	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, "Simulation Manager",
+	  wxPoint(x, y), wxSize(w, h), wxDEFAULT_FRAME_STYLE);
 
 	// Ensure title it set after the frame is created.
 	SetTitle();
@@ -250,6 +247,8 @@ MyApp::OnInit(void)
 	frame->SetMenuBar(CreateMenuBar());
 	frame->editMenu = editMenu;
 	myDocManager->FileHistoryUseMenu(fileMenu);
+
+	frame->canvas = frame->CreateCanvas(NULL, frame);
 
 	if (GetPtr_AppInterface())
 		SetAppName(GetPtr_AppInterface()->appName);
@@ -259,10 +258,12 @@ MyApp::OnInit(void)
 	// Set up process lists for dialogs
 	CreateProcessLists();
 
+	myDocManager->CreateDocument("", wxDOC_SILENT);
+
     // Show frame and tell the application that it's our main window
 
 	frame->Show(TRUE);
-    SetTopWindow(frame);
+    //SetTopWindow(frame);
 
 	if (myServer)
 		StartSimThread();
@@ -337,12 +338,10 @@ MyApp::CreateMenuBar(void)
 	fileMenu->Append(wxID_SAVEAS, "Save as...", "Save simulation "
 	  "parameter file...");
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, "&Quit\tCtrl-Q", "Quit from program.");
+	fileMenu->Append(wxID_EXIT, "E&xit\tCtrl-x", "Exit from program.");
 	myDocManager->FileHistoryUseMenu(fileMenu);
 
 	editMenu = new wxMenu("", wxMENU_TEAROFF);
-	editMenu->Append(wxID_EXIT, "Simulation parameters..."
-	  "\tCtrl-E", "Edit simulation parameters");
 	editMenu->Append(MYFRAME_ID_EDIT_MAIN_PARS, "&Main Parameters...\tCtrl-M",
 	  "Edit main program preferences");
 
@@ -355,6 +354,10 @@ MyApp::CreateMenuBar(void)
 	  "simulation");
 	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-C",
 	  "Stop simulation execution.");
+
+	windowsMenu = new wxMenu("", wxMENU_TEAROFF);
+	windowsMenu->Append(SDIFRAME_DIAG_WINDOW, "Diagnostic Window",
+	  "Open diagnostics window.");
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(MYFRAME_ID_ABOUT, _("&About...\tCtrl-A"),
@@ -380,6 +383,7 @@ MyApp::CreateMenuBar(void)
 	menuBar->Append(editMenu, "&Edit");
 	menuBar->Append(viewMenu, "&View");
 	menuBar->Append(programMenu, "&Program");
+	menuBar->Append(windowsMenu, "&Windows");
 	menuBar->Append(helpMenu, "&Help");
 	return(menuBar);
 
@@ -444,6 +448,7 @@ MyApp::CreateProcessLists(void)
 		string.Printf("@%s", p->name);
 		AddToProcessList(ctrlList, string);
 	}
+	FreeSymbols_Utility_SSSymbols(&symList);
 
 }
 
@@ -611,7 +616,7 @@ MyApp::InitMain(void)
 /****************************** ExitMain **************************************/
 
 /*
- * This saves the configuration and runs the OnExit virtual function.
+ * This saves the configuration and closes all DSAM interfaces.
  */
 
 void
@@ -623,8 +628,7 @@ MyApp::ExitMain(void)
 	DeleteSimThread();
 
 	SetCanFreePtrFlag_AppInterface(TRUE);
-	Free_AppInterface();
-	FreeAll_EarObject();
+	// FreeAll_EarObject();
 
 	// save the control's values to the config
 	if ( pConfig != NULL ) {
@@ -1006,6 +1010,52 @@ MyApp::ResetSimulation(void)
 
 }
 
+/****************************** OpenDiagWindow ********************************/
+
+void
+MyApp::OpenDiagWindow(void)
+{
+	if (diagFrame)
+		return;
+
+	diagFrame = new DiagFrame(frame, "DSAM Diagnostics");
+	diagFrame->Show(TRUE);
+
+}
+
+/****************************** CloseDiagWindow *******************************/
+
+void
+MyApp::CloseDiagWindow(void)
+{
+	delete diagFrame;
+	diagFrame = NULL;
+
+}
+
+/****************************** AddHelpBook ***********************************/
+
+void
+MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
+  const wxString& fileName)
+{
+	wxString helpFile, helpFilePath;
+
+	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
+	helpFilePath = pConfig->Read(path, "");
+	if (GetPtr_AppInterface()) {
+		helpFile = ((helpFilePath.Len() != 0)? helpFilePath: defaultPath) +
+		  "/" + SIM_MANAGER_HELP_DIR + "/" + fileName + ".hhp";
+#		ifdef __WXMSW__
+		wxUnix2DosFilename((char *) helpFile.GetData());
+#		endif
+	} else
+		helpFile = defaultPath + "/" + SIM_MANAGER_HELP_DIR + "/DSAMApp.hhp";
+	if (wxFileExists(helpFile) && help.AddBook(helpFile))
+		 helpCount++;
+
+}
+
 /****************************** OnServerEvent *********************************/
 
 /*
@@ -1100,471 +1150,4 @@ PrintUsage_MyApp(void)
 	  );
 
 }
-
-/******************************************************************************/
-/****************************** MyFrame Methods *******************************/
-/******************************************************************************/
-
-IMPLEMENT_CLASS(MyFrame, wxDocParentFrame)
-
-/******************************************************************************/
-/*************************** Event tables *************************************/
-/******************************************************************************/
-
-BEGIN_EVENT_TABLE(MyFrame, wxDocParentFrame)
-	EVT_MENU(MYFRAME_ID_ABOUT, MyFrame::OnAbout)
-	/*EVT_MENU(MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT, MyFrame::OnSimThreadEvent)
-	EVT_MENU(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)
-	EVT_MENU(MYFRAME_ID_EDIT_MAIN_PARS, MyFrame::OnEditMainPars)
-	EVT_MENU(MYFRAME_ID_EDIT_SIM_PARS, MyFrame::OnEditSimPars)
-	EVT_MENU(wxID_HELP, MyFrame::OnHelp)
-	EVT_MENU(wxID_OPEN, MyFrame::OnLoadSimFile)
-	EVT_MENU(wxID_REVERT, MyFrame::OnReloadSimFile)
-	EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
-	EVT_MENU(wxID_SAVEAS, MyFrame::OnSaveSimPars)
-	EVT_MENU(MYFRAME_ID_STOP_SIMULATION, MyFrame::OnStopSimulation)
-	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, MyFrame::OnViewSimPars)
-	EVT_BUTTON(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)*/
-	EVT_CLOSE(MyFrame::OnCloseWindow)
-	EVT_SIZE(MyFrame::OnSize)
-END_EVENT_TABLE()
-
-
-/****************************** Constructor ***********************************/
-
-// Define my frame constructor
-// Note that for the 'LayoutConstraints' to work properly the panel must be
-// set using constraints..
-
-MyFrame::MyFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
-  const wxPoint& pos, const wxSize& size): wxDocParentFrame(manager, frame, -1,
-  title, pos, size)
-{
-	/* static const char *funcName = "MyFrame::MyFrame"; */
-	SetIcon(wxICON((wxGetApp().icon)? *wxGetApp().icon: dsam));
-	wxLayoutConstraints	*c;
-
-	mainParDialog = NULL;
-	editMenu = NULL;
-
-#	ifdef MPI_SUPPORT
-	static const char *funcName = "MyFrame::MyFrame";
-	int		argc = 1;
-	
-	if ((initStringPtrs = (char **) calloc(argc, sizeof(char *))) == NULL) {
-		NotifyError("%s: Out of memory for %d initialisation strings.",
-		 funcName, argc);
-		 exit(1);
-	}
-	initStringPtrs[0] = (char *) funcName;
-	MPI_Init( &argc, &initStringPtrs );
-#	endif
-
-
-	// Make a panel
-	panel = new wxPanel(this, 0, 0, 1000, 30, wxTAB_TRAVERSAL);
-	panel->SetBackgroundColour(wxSystemSettings::GetSystemColour(
-	  wxSYS_COLOUR_3DFACE));
-
-	// Panel controls
-
-	// Buttons
-	wxButton *goBtn = new wxButton(panel, MYFRAME_ID_EXECUTE, "GO");
-	goBtn->SetDefault();
-
-	c = new wxLayoutConstraints;
-
-	c->left.SameAs(panel, wxLeft, 4);
-	c->top.SameAs(panel, wxTop, 4);
-	c->bottom.SameAs(panel, wxBottom, 4);
-	c->width.AsIs();
-	goBtn->SetConstraints(c);
-
-	// Set constraints for panel sub window
-	c = new wxLayoutConstraints;
-
-	c->left.SameAs(this, wxLeft);
-	c->top.SameAs(this, wxTop);
-	c->right.SameAs(this, wxRight);
-	c->bottom.AsIs();
-	panel->SetConstraints(c);
-
-	// Make text window for diagnostics
-	diagnosticsWindow = new wxTextCtrl(this, -1, "DSAM Diagnostics "
-	  "Window\n", wxPoint(0, 0), wxDefaultSize, wxTE_MULTILINE);
-	diagnosticsWindow->SetFont(*diagnosticsWindowFont);
-
-	c = new wxLayoutConstraints;
-
-	c->top.Below(panel);
-	c->left.SameAs(this, wxLeft);
-	c->right.SameAs(this, wxRight);
-	c->bottom.SameAs(this, wxBottom);
-	diagnosticsWindow->SetConstraints(c);
-
-   CreateStatusBar(2);
-
-}
-
-/****************************** Destructor ************************************/
-
-// Define my frame destructor
-
-MyFrame::~MyFrame(void)
-{
-#	ifdef MPI_SUPPORT
-	int		i, myRank, numProcesses, ok = TRUE;
-
-	MPI_Comm_rank( MPI_COMM_WORLD, &myRank);
-	MPI_Group_size( MPI_COMM_WORLD, &numProcesses);	
-	for (i = 0; i < numProcesses; i++)
-		if (i != myRank)
-			MPI_Send(&ok, 1, MPI_INT, i, MASTER_EXIT_TAG, MPI_COMM_WORLD);
-	
-	free(initStringPtrs);
-	MPI_Finalize();
-#	endif
-	
-	DeleteMainParDialog();
-	wxGetApp().ExitMain();
-
-}
-
-/****************************** AddHelpBook ***********************************/
-
-void
-MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
-  const wxString& fileName)
-{
-	wxString helpFile, helpFilePath;
-
-	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
-	helpFilePath = pConfig->Read(path, "");
-	if (GetPtr_AppInterface()) {
-		helpFile = ((helpFilePath.Len() != 0)? helpFilePath: defaultPath) +
-		  "/" + SIM_MANAGER_HELP_DIR + "/" + fileName + ".hhp";
-#		ifdef __WXMSW__
-		wxUnix2DosFilename((char *) helpFile.GetData());
-#		endif
-	} else
-		helpFile = defaultPath + "/" + SIM_MANAGER_HELP_DIR + "/DSAMApp.hhp";
-	if (wxFileExists(helpFile) && help.AddBook(helpFile))
-		 helpCount++;
-
-}
-
-/****************************** DeleteMainParDialog ***************************/
-
-void
-MyFrame::DeleteMainParDialog(void)
-{
-	if (!mainParDialog)
-		return;
-	delete mainParDialog;
-	mainParDialog = NULL;
-
-}
-
-/****************************** UpdateMainParDialog ***************************/
-
-/*
- * This routine checks if main dialog window is open, and if so it refreshes
- * the parameters in the dialog.
- */
-
-void
-MyFrame::UpdateMainParDialog(void)
-{
-	if (!mainParDialog)
-		return;
-	
-
-}
-
-/****************************** SetSimFileAndLoad *****************************/
-
-/*
- * This routine sets the simulation file and attempts to load it.
- */
-
-void
-MyFrame::SetSimFileAndLoad(void)
-{
-	diagnosticsWindow->Clear();
-	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFilePath.GetData()))
-		return;
-	wxGetApp().ResetSimulation();
-	if (mainParDialog)
-		mainParDialog->parListInfoList->UpdateAllControlValues();
-
-}
-
-/******************************************************************************/
-/****************************** Call backs ************************************/
-/******************************************************************************/
-
-/****************************** OnExecute *************************************/
-
-void
-MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
-{
-	static char *funcName = "MyFrame::OnExecute";
-
-	if (wxGetApp().simThread) {
-		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
-		return;
-	}
-
-	diagnosticsWindow->Clear();
-	ResetGUIDialogs();
-	if (GetPtr_AppInterface()->Init) {
-		if (wxGetApp().StatusChanged()) {
-			wxGetApp().DeleteSimModuleDialog();
-			if (!wxGetApp().CheckInitialisation())
-				return;
-		}
-		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
-		  )->CheckChangedValues())
-			return;
-		if (!GetPtr_AppInterface()->audModel) {
-			NotifyError("%s: Simulation not initialised.", funcName);
-			return;
-		}
-	}
-	if (mainParDialog) {
-		if (!mainParDialog->CheckChangedValues())
-			return;
-		mainParDialog->parListInfoList->UpdateAllControlValues();
-		mainParDialog->cancelBtn->Enable(FALSE);
-	}
-	ResetGUIDialogs();
-	wxGetApp().StartSimThread();
-	wxGetApp().programMenu->Enable(MYFRAME_ID_STOP_SIMULATION, TRUE);
-
-}
-
-/****************************** OnStopSimulation ******************************/
-
-void
-MyFrame::OnStopSimulation(wxCommandEvent& WXUNUSED(event))
-{
-
-	if (!wxGetApp().simThread)
-		return;
-	wxGetApp().DeleteSimThread();
-	wxLogWarning("Simulation terminated by user.");
-
-}
-
-/****************************** OnQuit ****************************************/
-
-void
-MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
-{
-	Close();
-
-}
-
-/****************************** OnCloseWindow *********************************/
-
-// Define the behaviour for the frame closing
-// must delete all frames except for the main one.
-
-void
-MyFrame::OnCloseWindow(wxCloseEvent& event)
-{
-	wxDocParentFrame::OnCloseWindow(event);
-
-}
-
-/****************************** OnHelp ****************************************/
-
-void
-MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
-{
-	wxGetApp().GetHelpController()->Display("Main page");
-
-}
-
-/****************************** OnAbout ***************************************/
-
-void
-MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
-{
-	int		i;
-	wxString title, authors, message, dsamVersion;
-
-	if (GetPtr_AppInterface()) {
-		title.sprintf("About %s %s", GetPtr_AppInterface()->appName,
-		  GetPtr_AppInterface()->appVersion);
-		dsamVersion = GetPtr_AppInterface()->compiledDSAMVersion;
-		for (i = 0, authors = "Authors: "; i < APP_MAX_AUTHORS; i++)
-			if (GetPtr_AppInterface()->authors[i][0] != '\0')
-				authors += GetPtr_AppInterface()->authors[i];
-	} else {
-		title.sprintf("About Application");
-		dsamVersion = DSAM_VERSION;
-	}
-	message.sprintf("%s"
-	  "DSAM version: %s (dynamic), compiled with %s\n"
-	  "Author, Dr. Lowel P. O'Mard (with God's Help)\n"
-	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n",
-	  authors.GetData(), GetDSAMPtr_Common()->version, dsamVersion.GetData());
-	wxMessageBox(message, title, wxOK | wxICON_INFORMATION, this);
-
-}
-
-/****************************** OnEditMainPars ********************************/
-
-/*
- * This routine creates the run paraneter dialog.
- * If the GetPtr_AppInterface()->updateProcessFlag is set, then on
- * 'OK' the simulation parameter windows and display windows will be closed.
- */
-
-void
-MyFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
-{
-	if (!GetPtr_AppInterface()->parList)
-		return;
-
-	if (mainParDialog)
-		return;
-	mainParDialog = new ModuleParDialog(this, "Main Parameters",
-	  MODPARDIALOG_MAIN_PARENT_INFONUM, NULL, GetPtr_AppInterface()->parList,
-	  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
-	mainParDialog->Show(TRUE);
-
-}
-
-/****************************** OnEditSimPars *********************************/
-
-void
-MyFrame::OnEditSimPars(wxCommandEvent& WXUNUSED(event))
-{
-	ResetGUIDialogs();
-	if (wxGetApp().StatusChanged()) {
-		ResetStepCount_Utility_Datum();
-		wxGetApp().CheckInitialisation();
-	}
-	if (!wxGetApp().GetSimModuleDialog()) {
-		wxGetApp().SetSimModuleDialog(new SimModuleDialog(this,
-		  "Simulation Parameters", -1, GetSimulation_ModuleMgr(
-		  GetPtr_AppInterface()->audModel), GetUniParListPtr_ModuleMgr(
-		  GetPtr_AppInterface()->audModel)));
-	}
-
-}
-
-/****************************** OnLoadSimFile *********************************/
-
-void
-MyFrame::OnLoadSimFile(wxCommandEvent& event)
-{
-	ResetGUIDialogs();
-	wxString extension = (event.GetId() == MYFRAME_ID_LOAD_SIM_PAR_FILE)?
-	  "All files|*.*|Sim. Par Files (*.spf)|*.spf|Sim. scripts (*.sim)|*.sim": "*.sim";
-	wxFileDialog dialog(this, "Choose a file", wxGetApp().defaultDir, "",
-	  extension);
-	if (dialog.ShowModal() == wxID_OK) {
-		wxGetApp().defaultDir = dialog.GetDirectory();
-		wxGetApp().simFilePath = dialog.GetPath();
-		SetSimFileAndLoad();
-	}
-
-}
-
-/****************************** OnReloadSimFile *******************************/
-
-void
-MyFrame::OnReloadSimFile(wxCommandEvent& event)
-{
-
-	ResetGUIDialogs();
-	SetSimFileAndLoad();
-
-}
-
-/****************************** OnSaveSimPars *********************************/
-
-void
-MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
-{
-	wxString newFilePath, fileName;
-
-	fileName = wxFileNameFromPath(wxGetApp().simFilePath).BeforeLast('.') +
-	  ".spf";
-	newFilePath = wxFileSelector("Simulation parameter file", wxPathOnly(
-	  wxGetApp().simFilePath), fileName, "spf", "*.spf", wxSAVE |
-	  wxOVERWRITE_PROMPT | wxHIDE_READONLY, this);
-	if (!newFilePath)
-		return;
-	bool dialogOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->dialogOutputFlag);
-	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-	SetGUIDialogStatus(FALSE);
-	SetParsFile_Common((char *) newFilePath.GetData(), OVERWRITE);
-	ListParameters_AppInterface();
-	fclose(GetDSAMPtr_Common()->parsFile);
-	GetDSAMPtr_Common()->parsFile = oldFp;
-	SetGUIDialogStatus(dialogOutputFlag);
-
-}
-
-/****************************** OnViewSimPars *********************************/
-
-void
-MyFrame::OnViewSimPars(wxCommandEvent& WXUNUSED(event))
-{
-	FILE	*oldParsFile = GetDSAMPtr_Common()->parsFile;
-
-	SetParsFile_Common("screen", OVERWRITE);
-	ListParameters_AppInterface();
-	GetDSAMPtr_Common()->parsFile = oldParsFile;
-
-}
-
-/****************************** OnSimThreadEvent ******************************/
-
-void
-MyFrame::OnSimThreadEvent(wxCommandEvent& event)
-{
- 	switch (event.GetInt()) {
-	case MYAPP_THREAD_DRAW_GRAPH: {
-		SignalDispPtr	signalDispPtr = (SignalDispPtr) event.GetClientData();
-
-		signalDispPtr->critSect->Enter();
-		if (!signalDispPtr->display) {
-			signalDispPtr->display = new DisplayS(this, signalDispPtr);
-			signalDispPtr->display->canvas->InitGraph();
-			signalDispPtr->display->Show(TRUE);
-		} else {
-			signalDispPtr->display->canvas->InitGraph();
-			signalDispPtr->display->canvas->RedrawGraph();
-		}
-		signalDispPtr->drawCompletedFlag = TRUE;
-		signalDispPtr->critSect->Leave();
-		break; }
-	default:
-		;
-	}
- 
-}
-  
-/****************************** OnSize ****************************************/
-
-// Size the subwindows when the frame is resized.
-// Note that the 'width' and 'height' parameters are not used, but are reset
-// using GetClientSize(...).
-
-void
-MyFrame::OnSize(wxSizeEvent& WXUNUSED(event))
-{
-	Layout();
-	
-}
-
-/******************************************************************************/
-/****************************** General Routines ******************************/
-/******************************************************************************/
 

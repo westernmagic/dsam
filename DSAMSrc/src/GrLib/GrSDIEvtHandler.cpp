@@ -110,14 +110,20 @@ SDIEvtHandler::InitInstruction(void)
 		return(true);
 	switch (processType) {
 	case PALETTE_CONTROL: {
-		SymbolPtr	sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
-		  (char *) label.GetData());
+		int		type;
+		SymbolPtr	sp, symList = NULL;
 
-		if (!sp) {
-			NotifyError("%s: Could not find '%s' control.", funcName, (char *)
-			  label.GetData());
-			return(false);
+		if (simScriptPtr)
+			sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
+		  	  (char *) label.GetData());
+		else {
+			InitKeyWords_Utility_SSSymbols(&symList);
+			sp = LookUpSymbol_Utility_SSSymbols(symList, (char *) label.GetData(
+			  ));
 		}
+		type = sp->type;
+		if (symList)
+			FreeSymbols_Utility_SSSymbols(&symList);
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError("%s: Could not create '%s' control intruction for "
 			  "process '%s'.", funcName, (char *) label.GetData());
@@ -139,6 +145,7 @@ SDIEvtHandler::InitInstruction(void)
 		}
 		pc->u.proc.moduleName = InitString_Utility_String((char *) label.
 		  GetData());
+		pc->data = Init_EarObject(pc->u.proc.moduleName);
 		break;
 	default:
 		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);

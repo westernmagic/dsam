@@ -27,7 +27,8 @@ libdsam_g_la_SOURCES= GrMessage.cpp GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrDialogList.cpp GrParListInfoList.cpp GrParControl.cpp \
 				GrSocket.cpp GrSimThread.cpp GrSDIDoc.cpp GrSDIPalette.cpp \
 				GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp GrSDIDiagram.cpp \
-				GrSDIEvtHandler.cpp GrSDICommand.cpp GrSDIShapes.cpp
+				GrSDIEvtHandler.cpp GrSDICommand.cpp GrSDIShapes.cpp \
+				GrDiagFrame.cpp
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 

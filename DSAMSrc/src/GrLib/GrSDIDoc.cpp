@@ -16,24 +16,7 @@
 
 #ifdef HAVE_WX_OGL_OGL_H
 
-#ifdef __GNUG__
-// #pragma implementation
-#endif
-
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include "GeCommon.h"
-#include "GrSDIDiagram.h"
-#include "GrSDIDoc.h"
+#include "DSAM.h"
 
 #if wxUSE_STD_IOSTREAM
 #include <iostream.h>
@@ -59,6 +42,17 @@ IMPLEMENT_DYNAMIC_CLASS(SDIDocument, wxDocument)
 
 SDIDocument::SDIDocument(void)
 {
+	static const char *funcName = "SDIDocument::SDIDocument";
+
+	printf("SDIDocument::SDIDocument: Entered\n");
+	
+//	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
+//	  NULL) {
+//		NotifyError("%s: Could not initialise process.", funcName);
+//		return;
+//	}
+//	wxGetApp().SetAudModelLoadedFlag(true);
+
 }
 
 /******************************************************************************/
@@ -67,6 +61,10 @@ SDIDocument::SDIDocument(void)
 
 SDIDocument::~SDIDocument(void)
 {
+	printf("SDIDocument::~SDIDocument: Entered\n");
+//	ResetSimulation_AppInterface();
+//	wxGetApp().SetAudModelLoadedFlag(false);
+
 }
 
 /******************************************************************************/

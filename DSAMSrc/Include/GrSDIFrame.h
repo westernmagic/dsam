@@ -32,6 +32,7 @@ enum {
 	SDIFRAME_ADD_SHAPE,
 	SDIFRAME_ADD_LINE,
 	SDIFRAME_EDIT_LABEL,
+	SDIFRAME_DIAG_WINDOW,
 	SDIFRAME_CHANGE_BACKGROUND_COLOUR
 
 };
@@ -40,28 +41,54 @@ enum {
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
+/********************************** Pre-references ****************************/
+
+class ModuleParDialog;
+
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-class SDIFrame: public wxDocChildFrame
+class SDIFrame: public wxDocParentFrame
 {
 	DECLARE_CLASS(SDIFrame)
+
+	ModuleParDialog	*mainParDialog;
+
   public:
 	wxMenu *editMenu;
 
 	SDICanvas	*canvas;
 	EditorToolPalette *palette;
 
-	SDIFrame(wxDocument *doc, wxView *view, wxFrame *parent,
-	  const wxString& title, const wxPoint& pos = wxDefaultPosition,
-	  const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
+	SDIFrame(wxDocManager *manager, wxFrame *parent, const wxString& title,
+	  const wxPoint& pos = wxDefaultPosition, const wxSize& size =
+	  wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
+	~SDIFrame(void);
 
-	void	OnSize(wxSizeEvent& event);
-	void	OnCloseWindow(wxCloseEvent& event);
+	SDICanvas *	CreateCanvas(wxView *view, wxFrame *parent);
+	void	DeleteMainParDialog(void);
 	void	OnAbout(wxCommandEvent& event);
+	void	OnCloseWindow(wxCloseEvent& event);
+	void	OnDiagWindow(wxCommandEvent& event);
+	void	OnExecute(wxCommandEvent& event);
+	void	OnEditMainPars(wxCommandEvent& event);
+	void	OnEditSimPars(wxCommandEvent& event);
+	void	OnHelp(wxCommandEvent& event);
+	void	OnLoadSimFile(wxCommandEvent& event);
+	void	OnReloadSimFile(wxCommandEvent& event);
+	void	OnQuit(wxCommandEvent& event);
+	void	OnSaveSimPars(wxCommandEvent& event);
+	void	OnSimThreadEvent(wxCommandEvent& event);
+	void	OnStopSimulation(wxCommandEvent& event);
+	void	OnViewSimPars(wxCommandEvent& event);
+	void	OnSize(wxSizeEvent& event);
+	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
+	void	SetSimFileAndLoad(void);
+	void	UpdateMainParDialog(void);
 
 	DECLARE_EVENT_TABLE()
+
 };
 
 #endif

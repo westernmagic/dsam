@@ -81,6 +81,8 @@
 #	include "GrSignalDisp.h"
 #	include "GrCanvas.h"
 #	include "GrDisplayS.h"
+#	include "GrSDICanvas.h"
+#	include "GrSDIFrame.h"
 #else
 #	include "GrSignalDisp.h"
 #endif

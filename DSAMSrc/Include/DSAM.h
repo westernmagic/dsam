@@ -214,6 +214,7 @@
 #	include "GrPrintDisp.h"
 #	include "GrBrushes.h"
 #	include "GrDisplayS.h"
+#	include "GrDiagFrame.h"
 #	include "GrSDICanvas.h"
 #	include "GrSDIFrame.h"
 #	include "GrSDIEvtHandler.h"

@@ -190,7 +190,8 @@ FreeInstruction_Utility_Datum(DatumPtr *start, DatumPtr pc)
 		Free_EarObject(&pc->data);
 		break;
 	case RESET:
-		free(pc->u.string);
+		if (*pc->u.string != '\0')
+			free(pc->u.string);
 		break;
 	case REPEAT:
 		break;

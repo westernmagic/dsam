@@ -85,7 +85,7 @@ SDICanvas::SDICanvas(wxView *v, wxWindow *theParent, wxWindowID id,
 }
 
 /******************************************************************************/
-/*************************** Desstructor **************************************/
+/*************************** Destructor ***************************************/
 /******************************************************************************/
 
 SDICanvas::~SDICanvas(void)
@@ -168,8 +168,15 @@ void SDICanvas::OnEndDragRight(double x, double y, int keys)
 {
 }
 
-void SDICanvas::OnMouseEvent(wxMouseEvent& event)
+/******************************************************************************/
+/*************************** OnMouseEvent *************************************/
+/******************************************************************************/
+
+void
+SDICanvas::OnMouseEvent(wxMouseEvent& event)
 {
+	if (!wxGetApp().GetAudModelLoadedFlag())
+		return;
     wxShapeCanvas::OnMouseEvent(event);
 }
 

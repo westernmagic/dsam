@@ -105,54 +105,9 @@ class SimModuleDialog;
 class ModuleParDialog;
 class EditorToolPalette;
 class SDICanvas;
-
-/*************************** MyFrame ******************************************/
-
-// Define a new frame
-class MyFrame: public wxDocParentFrame {
-
-	DECLARE_CLASS(MyFrame)
-
-#	ifdef MPI_SUPPORT
-	char	**initStringPtrs;
-#	endif
-	ModuleParDialog	*mainParDialog;
-
-  public:
-	wxPanel	*panel;
-	wxMenu	*editMenu;
-	wxTextCtrl	*diagnosticsWindow;
-
-    MyFrame(wxDocManager *manager, wxFrame *parent, const wxString& title,
-	  const wxPoint& pos, const wxSize& size);
-    ~MyFrame(void);
-
-	void	DeleteMainParDialog(void);
-	void	OnAbout(wxCommandEvent& event);
-	void	OnCloseWindow(wxCloseEvent& event);
-	void	OnExecute(wxCommandEvent& event);
-	void	OnHelp(wxCommandEvent& event);
-	void	OnEditMainPars(wxCommandEvent& event);
-	void	OnEditSimPars(wxCommandEvent& event);
-	void	OnLoadSimFile(wxCommandEvent& event);
-	void	OnReloadSimFile(wxCommandEvent& event);
-	void	OnQuit(wxCommandEvent& event);
-	void	OnSaveSimPars(wxCommandEvent& event);
-	void	OnSimThreadEvent(wxCommandEvent& event);
-	void	OnStopSimulation(wxCommandEvent& event);
-	void	OnViewSimPars(wxCommandEvent& event);
-	void	OnSize(wxSizeEvent& event);
-	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
-	void	SetSimFileAndLoad(void);
-	void	UpdateMainParDialog(void);
-
-	DECLARE_EVENT_TABLE()
-
-};
-
-/*************************** SimThread pre-reference **************************/
-
-class	SimThread;
+class SDIFrame;
+class DiagFrame;
+class SimThread;
 
 /*************************** wxArrayDisplay ***********************************/
 
@@ -163,12 +118,13 @@ WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 // Define a new application
 class MyApp: public wxApp {
 
-	bool	clientServerFlag, busy;
+	bool	clientServerFlag, busy, audModelLoadedFlag;
 	uInt	serverId;
 	int		displayDefaultX, displayDefaultY, myArgc, helpCount;
 	char	**myArgv;
 	wxString	serverName, dataInstallDir, title;
-	MyFrame		*frame;
+	SDIFrame	*frame;
+	DiagFrame	*diagFrame;
 	wxConfigBase	*pConfig;
 	wxSocketServer	*myServer;
 	wxSocketClient	*myClient;
@@ -177,7 +133,7 @@ class MyApp: public wxApp {
 	wxHtmlHelpController help;
 
   public:
-	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu;
+	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu, *windowsMenu;
 	wxIcon	*icon;
 	wxString	simFilePath, defaultDir;
 	wxStringList	anaList, ctrlList, filtList, ioList, modelsList, stimList;
@@ -195,12 +151,15 @@ class MyApp: public wxApp {
 	wxMenuBar	*CreateMenuBar(void);
 	EditorToolPalette *CreatePalette(wxFrame *parent);
 	void	AddToProcessList(wxStringList& list, const wxString& prefix);
+	void	CloseDiagWindow(void);
 	void	CreateProcessLists(void);
 	void	DeleteSimModuleDialog(void);
 	void	DeleteSimThread(void);
 	void	EnableSimParMenuOptions(bool on);
+	bool	GetAudModelLoadedFlag(void)		{ return audModelLoadedFlag; }
 	void	GetDefaultDisplayPos(int *x, int *y);
-	MyFrame *	GetFrame(void)	{ return frame; }
+	DiagFrame *	GetDiagFrame(void)	{ return diagFrame; }
+	SDIFrame *	GetFrame(void)	{ return frame; }
 	wxHtmlHelpController * GetHelpController(void)	{ return &help; }
 	SimModuleDialog *	GetSimModuleDialog(void)	{ return simModuleDialog; }
 	bool	GetSuspendDiagnostics(void);
@@ -214,12 +173,14 @@ class MyApp: public wxApp {
 	int		OnExit(void);
 	void	OnServerEvent(wxSocketEvent& event);
 	void	OnSocketEvent(wxSocketEvent& event);
+	void	OpenDiagWindow(void);
 	bool	ResetCommandArgs(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	bool	ResetSimulation(void);
 	void	RunInClientMode(void);
 	void	SaveConfiguration(UniParListPtr	parList);
+	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
 	bool	SetArgvString(int index, char *string, int size);
 	bool	SetClientServerMode(void);
 	void	SetConfiguration(UniParListPtr	parList);

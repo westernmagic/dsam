@@ -235,6 +235,18 @@ SDICommand::Do(void)
 			theShape = shape; // Saved from undoing the line
 		else {
 			printf("Debug: Added connection and create connected processes\n");
+			// Connect processes
+			SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->
+			  GetEventHandler();
+			SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->
+			  GetEventHandler();
+			if (!fromHandler->pc || !toHandler->pc) {
+				wxLogError("%s: Both processes must be set before a connect\n"
+				  "can be made.", funcName);
+				break;
+			}
+			ConnectOutSignalToIn_EarObject(fromHandler->pc->data, toHandler->pc->
+			  data);
 			theShape = (wxShape *)shapeInfo->CreateObject();
 			theShape->AssignNewIds();
 			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
@@ -337,11 +349,31 @@ SDICommand::Undo(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_ADD_SHAPE:
+	case SDICOMMAND_ADD_SHAPE: {
+		if (shape) {
+			wxClientDC dc(shape->GetCanvas());
+			shape->GetCanvas()->PrepareDC(dc);
+
+			shape->Select(FALSE, &dc);
+			doc->GetDiagram()->RemoveShape(shape);
+			shape->Unlink();
+			deleteShape = TRUE;
+		}
+		doc->Modify(TRUE);
+		doc->UpdateAllViews();
+		break; }
 	case SDICOMMAND_ADD_LINE: {
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
+
+			// Disconnect processes
+			SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->
+			  GetEventHandler();
+			SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->
+			  GetEventHandler();
+			DisconnectOutSignalFromIn_EarObject(fromHandler->pc->data,
+			  toHandler->pc->data);
 
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);

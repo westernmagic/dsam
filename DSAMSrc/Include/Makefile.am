@@ -24,7 +24,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrParControl.h GrSocket.h GrSimThread.h GrAxisScale.h dsam.rc \
 				GrSDIDoc.h GrSDIPalette.h GrSDIView.h GrSDIFrame.h \
 				GrSDICanvas.h GrSDIDiagram.h GrSDIEvtHandler.h GrSDICommand.h \
-				GrSDIShapes.h
+				GrSDIShapes.h GrDiagFrame.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \

@@ -83,17 +83,11 @@ END_EVENT_TABLE()
 bool
 SDIView::OnCreate(wxDocument *doc, long flags)
 {
-    int width, height;
-
-	frame = new SDIFrame(doc, this, wxGetApp().GetFrame(), "Child Frame",
-	  wxPoint(10, 10), wxSize(300, 300), wxDEFAULT_FRAME_STYLE);
+	frame = wxGetApp().GetFrame();
 	//frame->palette = new EditorToolPalette(frame, wxPoint(0, 0), wxSize(-1,
 	//  -1),wxTB_HORIZONTAL);
-	frame->GetClientSize(&width, &height);
-	frame->canvas = new SDICanvas(this, frame, -1, wxPoint(0, 0), wxSize(width,
-	  height), 0);
 	canvas = frame->canvas;
-	frame->Show(TRUE);
+	canvas->view = this;
 
 	ResetGUIDialogs();
 	wxGetApp().ResetSimulation();
@@ -102,7 +96,9 @@ SDIView::OnCreate(wxDocument *doc, long flags)
 	Activate(TRUE);
 
 	// Initialize the edit menu Undo and Redo items
-	doc->GetCommandProcessor()->SetEditMenu(((MyFrame *) frame)->editMenu);
+	doc->GetCommandProcessor()->SetEditMenu(((SDIFrame *) frame)->editMenu);
+	doc->GetCommandProcessor()->Initialize();
+
 
 	wxShapeCanvas *shapeCanvas = (wxShapeCanvas *)canvas;
 	SDIDocument *diagramDoc = (SDIDocument *)doc;
@@ -222,10 +218,8 @@ SDIView::OnClose(bool deleteWindow)
 	canvas = NULL;
 
 	wxString s = wxTheApp->GetAppName();
-	if (frame) {
+	if (frame)
 		frame->SetTitle(s);
-		delete frame;
-	}
 
 	SetFrame((wxFrame *) NULL);
 
