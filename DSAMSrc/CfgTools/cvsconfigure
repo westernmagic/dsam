@@ -15,5 +15,5 @@ aclocal
 autoheader
 autoconf
 automake --add-missing
-
+ln -sf /usr/share/libtool/ltmain.sh CfgTools/
 
