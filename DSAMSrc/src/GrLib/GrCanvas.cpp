@@ -427,7 +427,7 @@ MyCanvas::DrawExponent(wxDC& dc, wxFont *labelFont, int exponent, int x, int y)
 	dc.DrawText(string, x, y);
 	dc.GetTextExtent(string, &stringWidth, &stringHeight);
 	string.sprintf("%d", exponent);
-	superLabelFont->SetPointSize((int)(labelFont->GetPointSize() *
+	SetPointSize(&superLabelFont, (int)(labelFont->GetPointSize() *
 	  GRAPH_EXPONENT_VS_LABEL_SCALE));
 	dc.SetFont(*superLabelFont);
 	dc.DrawText(string, x + stringWidth, y - stringHeight / 2);
@@ -567,7 +567,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 			  GRAPH_Y_INSET_SCALE_HEIGHT_SCALE + 0.5));
 			yInset.SetY(yInset.GetY() + yAxis->GetHeight() - yInset.GetHeight(
 			  ));
-			insetLabelFont->SetPointSize((int)(labelFont->GetPointSize() *
+			SetPointSize(&insetLabelFont, (int)(labelFont->GetPointSize() *
 			  GRAPH_INSET_VS_LABEL_SCALE));
 			minY = 0.0,
             maxY = fabs(signalLines.GetMaxY() - signalLines.GetMinY()) *
@@ -602,6 +602,25 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 
 }
 
+/****************************** SetPointSize **********************************/
+
+// Resets the wxFont because SetPointSize does not work under wxGTK-2.4.0
+
+void
+MyCanvas::SetPointSize(wxFont **font, int pointSize)
+{
+#	if defined(__WXMSW__)
+	(*font)->SetPointSize(pointSize);
+#	else
+	int	family = (*font)->GetFamily();
+	int	style = (*font)->GetStyle();
+	int	weight = (*font)->GetWeight();
+	delete *font;
+	*font = new wxFont(pointSize, family, style, weight);
+#	endif /* __WXMSW__ */
+ 
+}
+
 /****************************** DrawGraph *************************************/
 
 //
@@ -616,9 +635,9 @@ MyCanvas::DrawGraph(wxDC& dc, int theXOffset, int theYOffset)
 	signalLines.DrawLines(dc,  theXOffset,  theYOffset);
 	if (mySignalDispPtr->summaryDisplay)
 		summaryLine.DrawLines(dc, theXOffset, theYOffset);
-	labelFont->SetPointSize((int) (parent->GetClientSize().GetHeight() *
+	SetPointSize(&labelFont, (int) (parent->GetClientSize().GetHeight() *
 	  GRAPH_AXIS_LABEL_SCALE));
-	axisTitleFont->SetPointSize((int) (parent->GetClientSize().GetHeight() *
+	SetPointSize(&axisTitleFont, (int) (parent->GetClientSize().GetHeight() *
 	  GRAPH_AXIS_LABEL_SCALE));
 	DrawXAxis(dc, theXOffset, theYOffset);
 	DrawYAxis(dc, theXOffset, theYOffset);

@@ -145,8 +145,9 @@ class MyCanvas: public wxWindow
 	void	RedrawGraph(void);
 	void	RescaleGraph(void);
 	void	SetGraphAreas(void);
-	void	SetLines(GrLines &lines);
 	void	SetGreyScaleLines(GrLines &lines);
+	void	SetLines(GrLines &lines);
+	void	SetPointSize(wxFont **font, int pointSize);
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
 	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
 
