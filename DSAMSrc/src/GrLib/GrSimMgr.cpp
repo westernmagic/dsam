@@ -843,6 +843,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	SetIcon(wxICON((wxGetApp().icon)? *wxGetApp().icon: dsam));
 	wxLayoutConstraints	*c;
 
+	defaultDir = wxGetCwd();
+
 	fileMenu = editMenu = viewMenu = NULL;
 	mainParDialog = NULL;
 
@@ -1115,6 +1117,24 @@ MyFrame::UpdateMainParDialog(void)
 
 }
 
+/****************************** SetSimFileAndLoad *****************************/
+
+/*
+ * This routine sets the simulation file and attempts to load it.
+ */
+
+void
+MyFrame::SetSimFileAndLoad(void)
+{
+	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
+	  APP_INT_SIMULATIONFILE, (char *) simFilePath.GetData()))
+		return;
+	ResetSimulation();
+	if (mainParDialog)
+		mainParDialog->parListInfoList->UpdateAllControlValues();
+
+}
+
 /******************************************************************************/
 /****************************** Call backs ************************************/
 /******************************************************************************/
@@ -1283,13 +1303,11 @@ MyFrame::OnLoadSimFile(wxCommandEvent& event)
 	ResetGUIDialogs();
 	wxString extension = (event.GetId() == MYFRAME_ID_LOAD_SIM_PAR_FILE)?
 	  "*.spf": "*.sim";
-	wxFileDialog dialog(this, "Choose a file", wxGetCwd(), "", extension);
-	if ((dialog.ShowModal() == wxID_OK) && SetParValue_UniParMgr(
-	  &GetPtr_AppInterface()->parList, APP_INT_SIMULATIONFILE, (char *) dialog.
-	  GetPath().GetData())) {
-		ResetSimulation();
-		if (mainParDialog)
-			mainParDialog->parListInfoList->UpdateAllControlValues();
+	wxFileDialog dialog(this, "Choose a file", defaultDir, "", extension);
+	if (dialog.ShowModal() == wxID_OK) {
+		defaultDir = dialog.GetDirectory();
+		simFilePath = dialog.GetPath();
+		SetSimFileAndLoad();
 	}
 
 }
@@ -1299,17 +1317,9 @@ MyFrame::OnLoadSimFile(wxCommandEvent& event)
 void
 MyFrame::OnReloadSimFile(wxCommandEvent& event)
 {
-	static const char * funcName = "MyFrame::OnReloadSimFile";
 
 	ResetGUIDialogs();
-	if (!GetPtr_AppInterface()->audModel) {
-		wxLogError("%s: There is no simulation to reload.", funcName);
-		return;
-	}
-	GetPtr_AppInterface()->updateProcessVariablesFlag = TRUE;
-	ResetSimulation();
-	if (mainParDialog)
-		mainParDialog->parListInfoList->UpdateAllControlValues();
+	SetSimFileAndLoad();
 
 }
 

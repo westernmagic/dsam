@@ -111,6 +111,7 @@ class MyFrame: public wxFrame {
 	int		helpCount;
 	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu;
 	wxConfigBase	*pConfig;
+	wxString		simFilePath, defaultDir;
 	ModuleParDialog	*mainParDialog;
 
   public:
@@ -141,6 +142,7 @@ class MyFrame: public wxFrame {
 	void	OnSize(wxSizeEvent& event);
 	bool	ResetSimulation(void);
 	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
+	void	SetSimFileAndLoad(void);
 	void	UpdateMainParDialog(void);
 
    private:
