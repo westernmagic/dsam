@@ -77,6 +77,9 @@
 #	if defined(GRAPHICS_SUPPORT)
 		class DisplayS;
 		class wxDialog;
+#else
+		typedef	void *	DisplayS;
+		typedef	void *	wxDialog;
 #	endif
 	class wxCriticalSection;
 #else
