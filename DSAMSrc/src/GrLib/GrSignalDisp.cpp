@@ -1351,6 +1351,13 @@ CheckPars_SignalDisp(void)
 		  " Y value must also be set.", funcName);
 		return(FALSE);
 	}
+	if (!signalDispPtr->automaticYScaling && (signalDispPtr->minY >=
+	  signalDispPtr->maxY)) {
+		NotifyError("%s: the minimum y value (%g) should be less than than the "
+		  "maximum y value (%g).", funcName, signalDispPtr->minY,
+		  signalDispPtr->maxY);
+		return(FALSE);
+	}
 	return(TRUE);
 	
 }	
