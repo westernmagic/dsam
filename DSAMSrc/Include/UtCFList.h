@@ -41,6 +41,9 @@
 
 #define CFLIST_NUM_PARS				9
 #define CFLIST_NUM_CONSTANT_PARS	2
+#define CFLIST_DEFAULT_CF_CHANNELS	2
+#define CFLIST_DEFAULT_CF_LOW_FREQ	100
+#define CFLIST_DEFAULT_CF_HIGH_FREQ	6000
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -97,6 +100,7 @@ typedef struct {
 
 typedef struct {
 
+	BOOLN	minCFFlag, maxCFFlag;
 	BOOLN	updateFlag;
 	CFListSpecifier			centreFreqMode;
 	CFListDiagModeSpecifier	diagnosticMode;
@@ -136,6 +140,8 @@ BOOLN		CheckInit_CFList(CFList *theCFs, const char *callingFunction);
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
 void		Free_CFList(CFListPtr *theCFs);
+
+CFListPtr	GenerateDefault_CFList(void);
 
 BOOLN		GenerateERB_CFList(CFListPtr theCFs);
 
