@@ -1,6 +1,6 @@
 cegc_br.raw	Stimulus file name.
 2			Default word size for sound data (1 or 2 bytes).
-0			Default (for format), big- or little-endian: 0, 1 or 2.
+default		Format "Default", "big" or "little" -endian.
 1			Number of Channels (only used for raw binary files.)
 0.0			Normalisation factor for writing (0 or -ve: automatic).
 20000		Default sample rate - used for raw binary and ASCII files.
