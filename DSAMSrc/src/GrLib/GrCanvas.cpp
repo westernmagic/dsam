@@ -538,7 +538,7 @@ void
 MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
 	static const char *funcName = "MyCanvas::DrawYAxis";
-	int		i, j, numDisplayedChans, tickLength, exponent, xPos, yPos;
+	int		i, j, numDisplayedChans, tickLength, exponent = 0, xPos, yPos;
 	long int	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, scale;
 	wxString format, label, space = " ";
