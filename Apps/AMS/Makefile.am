@@ -14,19 +14,17 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= ams.par ams.rc amsicon.ico
+EXTRA_DIST		= ams.par ams.rc amsicon.ico mkunxinst.env
 
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
-AM_CFLAGS		= $(DSAMINC)
-AM_CXXFLAGS		= $(DSAMGUIINC)
 
 SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
-					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
+					$(CXXCOMPILE) $(DSAMGUIINC) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
 
 ams_ng.$(OBJEXT):	ams.cpp
-					$(COMPILE) -c -x c ams.cpp -o ams_ng.$(OBJEXT)
+					$(CXXCOMPILE) $(DSAMINC) -c ams.cpp -o ams_ng.$(OBJEXT)
 
 $(AMSRESOBJ):	Makefile ams.rc
 	@if test x$(MINGW32) = xyes; then \

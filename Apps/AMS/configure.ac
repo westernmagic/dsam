@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 AMS_MAJOR_VERSION=1
 AMS_MINOR_VERSION=1
-AMS_MICRO_VERSION=8
-AMS_INTERFACE_AGE=5
-AMS_BINARY_AGE=5
+AMS_MICRO_VERSION=9
+AMS_INTERFACE_AGE=6
+AMS_BINARY_AGE=6
 AMS_VERSION=$AMS_MAJOR_VERSION.$AMS_MINOR_VERSION.$AMS_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -144,7 +144,6 @@ dnl ============================================================================
 dnl Checks for programs.
 dnl ============================================================================
 
-AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -257,6 +256,32 @@ RESCOMP=$dsam_rescomp
 AC_SUBST(RESCOMP)
 RESFLAGS=$dsam_res_flags
 AC_SUBST(RESFLAGS)
+
+dnl ----------------------------------------------------------------------------
+dnl Find server port
+dnl ----------------------------------------------------------------------------
+
+AC_MSG_CHECKING(configured server port)
+cat >> get_port.$ac_ext << _DSAM_EOF
+#include <stdio.h>
+
+#define	HEADER_ONLY		1
+
+#include "GeCommon.h"
+#include "ExtIPCUtils.h"
+
+int main(void)
+{
+	printf("%d\n", EXTIPCUTILS_DEFAULT_SERVER_PORT);
+	return(0);
+}
+_DSAM_EOF
+
+$CC get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
+SERVER_PORT=`./a.out`
+AC_MSG_RESULT($SERVER_PORT)
+rm -f get_port.$ac_ext
+AC_SUBST(SERVER_PORT)
 
 dnl ============================================================================
 dnl Final configure outputs.
