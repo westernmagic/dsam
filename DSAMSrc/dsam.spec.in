@@ -1,0 +1,89 @@
+# Spec for building DSAM RPM Packages
+
+# Note that this is NOT a relocatable package
+%define prefix	/usr
+%define ver		@VERSION@
+%define libVer	@LT_RELEASE@
+%define RELEASE 1
+%define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+
+Name: dsam
+Summary: Development System for Auditory Modelling
+Version: %{ver}
+Release: %{rel}
+Copyright: Centre for the Neural Basis of Hearing, UK, Earth.
+Group: Development/Libraries
+Source: ftp://ftp.essex.ac.uk/pub/omard/dsam/%{name}-%{ver}.tar.gz
+URL: http://www.essex.ac.uk/psychology/hearinglab/dsam
+Packager: Lowel P. O'Mard <lowel@essex.ac.uk> 
+Requires: wxwin
+BuildRoot: /tmp/%{name}-root
+Obsoletes: dsam
+
+%description
+DSAM contains a library of established and experimental models of the auditory
+periphery.  It is designed to greatly ease the production of auditory models.
+
+%changelog
+* Wed Mar 22 2000 Lowel P. O'Mard <lowel@essex.ac.uk>
+- Initial skeleton, based on the .specs from ddd-3.2 and gtk+-1.2.6.
+
+%package devel
+Summary: Version %{ver} of the DSAM library
+Group: Development/Libraries
+Requires: dsam
+Obsoletes: dsam-devel
+
+%description devel
+Header files for dsam %{ver} library.
+
+%prep
+%setup
+DSAM_FLAGS="--prefix=%{prefix} --enable-graphics --enable-shared"
+if [ ! -f configure ]; then
+  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh $DSAM_FLAGS
+else
+  CFLAGS="$RPM_OPT_FLAGS" ./configure $DSAM_FLAGS
+fi
+
+%build
+# Needed for snapshot releases.
+if [ "$SMP" != "" ]; then
+  export MAKE="make -j$SMP"
+else
+  export MAKE="make"
+fi
+$MAKE
+
+%install
+rm -rf $RPM_BUILD_ROOT
+
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%preun
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING README NEWS ChangeLog
+%doc Examples
+%{prefix}/lib/lib*-%{libVer}.so*
+%{prefix}/bin/*
+
+%files devel
+%defattr(-, root, root)
+
+%{prefix}/include/*
+%{prefix}/lib/lib*.so
+%{prefix}/lib/*a
+%{prefix}/bin/*
+
