@@ -94,7 +94,7 @@ if test "$echo_libs" = "yes"; then
 	if test "$use_gui" = "yes"; then
 		libs="$libs -l@PACKAGE@_g @DSAMRESPATH@ @WXLDFLAGS@"
 	else
-		libs="$libs -l@PACKAGE@_std"
+		libs="$libs -l@PACKAGE@_std -lm"
 	fi
 	echo $libs
 fi
