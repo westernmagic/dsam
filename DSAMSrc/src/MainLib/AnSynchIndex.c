@@ -143,7 +143,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 			cosineSum += *r * cos(theta);
 			rSum += fabs(*r++);
 		}
-		data->outSignal->channel[chan][0] = (rSum == 0.0) 0.0: sqrt(sineSum *
+		data->outSignal->channel[chan][0] = (rSum == 0.0)? 0.0: sqrt(sineSum *
 		  sineSum + cosineSum * cosineSum) / rSum;
 	}
 	SetProcessContinuity_EarObject(data);
