@@ -405,7 +405,9 @@ MyApp::StartSimThread(void)
 {
 	static const char *funcName = "MyApp::StartSimThread";
 
+	mainCritSect.Enter();
 	SwitchGUILocking_Common(TRUE);
+	mainCritSect.Leave();
 	simThread = new SimThread();
 	if (simThread->Create() != wxTHREAD_NO_ERROR)
 		wxLogFatalError("%s: Can't create simulation thread!", funcName);
@@ -463,7 +465,7 @@ MyApp::InitRun(void)
 	}
 	MainSimulation();
 	SetCanFreePtrFlag_AppInterface(FALSE);
-	return(GetDSAMPtr_Common()->appInitialisedFlag);
+	return(CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
 
 }
 
@@ -638,8 +640,10 @@ MyApp::StatusChanged(void)
 void
 MyApp::DeleteSimModuleDialog(void)
 {
-	if (simModuleDialog)
+	if (simModuleDialog) {
 		delete simModuleDialog;
+		simModuleDialog = NULL;
+	}
 
 
 }
@@ -1258,7 +1262,7 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	  wxHIDE_READONLY, this);
 	if (!newFilePath)
 		return;
-	bool noGUIOutputFlag = GetDSAMPtr_Common()->noGUIOutputFlag;
+	bool noGUIOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->noGUIOutputFlag);
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 	GetDSAMPtr_Common()->noGUIOutputFlag = TRUE;
 	SetParsFile_Common((char *) newFilePath.GetData(), OVERWRITE);
