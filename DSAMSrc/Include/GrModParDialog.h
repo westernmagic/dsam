@@ -61,7 +61,7 @@
 
 class ModuleParDialog: public wxDialog {
 
-	bool	updateParent, enableTextCtrlsFlag, enableNoteBookPagingFlag;
+	bool	updateParent, enableTextCtrlsFlag, enableNotebookPagingFlag;
 	wxButton	*deleteICBtn, *addICBtn;
 	wxObject	*myHandler;
 	UniParListPtr	parList;

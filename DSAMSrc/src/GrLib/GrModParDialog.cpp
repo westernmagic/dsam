@@ -83,7 +83,7 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 {
 	updateParent = FALSE;
 	enableTextCtrlsFlag = FALSE;
-	enableNoteBookPagingFlag = FALSE;
+	enableNotebookPagingFlag = FALSE;
 	pc = thePC;
 	okBtn = NULL;
 	cancelBtn = NULL;
@@ -94,7 +94,7 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 
 	parListInfoList = new ParListInfoList(this, pc, parList);
 	enableTextCtrlsFlag = TRUE;
-	enableNoteBookPagingFlag = TRUE;
+	enableNotebookPagingFlag = TRUE;
 	lastControl = parListInfoList->GetLastControl();
 
 	/* static char *funcName = "ModuleParDialog::ModuleParDialog"; */
@@ -356,7 +356,7 @@ ModuleParDialog::OnOk(wxCommandEvent& WXUNUSED(event))
 void 
 ModuleParDialog::OnPageChanged(wxNotebookEvent &event)
 {
-	if (!enableNoteBookPagingFlag)
+	if (!enableNotebookPagingFlag)
 		return;
 	int	selection = event.GetSelection();
 
