@@ -17,7 +17,7 @@ switch wordSize
 	case 1
 		frame = fread(fid, [numChannels, frameLen], 'char');
 	case 2
-		frame = fread(fid, [numChannels, frameLen], 'int16');
+		frame = Read16Bits(fid, littleEndian);
 		if (littleEndian == 0)
 			for i = 1:frameLen
 				for j = 1:numChannels
