@@ -60,6 +60,8 @@ __BEGIN_DECLS
 
 ModRegEntryPtr	Identify_ModuleReg(ModRegEntryPtr list, char *name);
 
+BOOLN	InitUserModuleList_ModuleReg(int theMaxUserModules);
+
 ModRegEntryPtr	GetRegEntry_ModuleReg(char *name);
 
 BOOLN	RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(
