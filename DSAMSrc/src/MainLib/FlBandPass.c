@@ -495,9 +495,8 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 	
 	if (bandPassFPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_BandPass();
-		if ((bandPassFPtr->coefficients =
-		  (BandPassCoeffsPtr *) calloc(data->outSignal->numChannels,
-		    sizeof(BandPassCoeffsPtr))) == NULL) {
+		if ((bandPassFPtr->coefficients = (BandPassCoeffsPtr *) calloc(data->
+		  outSignal->numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
 		 	NotifyError("%s: Out of memory.", funcName);
 		 	return(FALSE);
 		}
