@@ -1386,16 +1386,17 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 			fprintf(fp, "\t%s->%sFlag = TRUE;\n", ptrVar, token->sym->name);
 		}
 
-	fprintf(fp, "%s", assignmentString);
-
-	switch (type->sym->type) {
-	case CFLISTPTR:
-		break;
-	case NAMESPECIFIER:
-		fprintf(fp, "specifier;\n");
-		break;
-	default:
-		fprintf(fp, "the%s;\n", Capital(variableName));
+	if (type->inst != INT_AL) {
+		fprintf(fp, "%s", assignmentString);
+		switch (type->sym->type) {
+		case CFLISTPTR:
+			break;
+		case NAMESPECIFIER:
+			fprintf(fp, "specifier;\n");
+			break;
+		default:
+			fprintf(fp, "the%s;\n", Capital(variableName));
+		}
 	}
 	fprintf(fp, "\treturn(TRUE);\n");
 	fprintf(fp, "\n}\n\n");
