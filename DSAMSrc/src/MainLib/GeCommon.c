@@ -118,14 +118,14 @@ DPrint(char *format, ...)
 	va_list	args;
 
 	CheckInitParsFile_Common();
-	if (!dSAM.parsFile)
+	if (!dSAM.parsFile || !dSAM.DPrint || (dSAM.diagMode ==
+	  COMMON_OFF_DIAG_MODE))
 		return;
 	va_start(args, format);
-	if (dSAM.usingGUIFlag && (dSAM.parsFile == stdout)) {
+	if (dSAM.diagMode == COMMON_CONSOLE_DIAG_MODE)
+		DPrintStandard(format, args);
+	else
 		(* dSAM.DPrint)(format, args);
-		return;
-	}
-	DPrintStandard(format, args);
 	va_end(args);
 	
 }
