@@ -1,6 +1,6 @@
 /**********************
  *
- * File:		GeAppInterface.h
+ * File:		UtAppInterface.h
  * Purpose:		This Module contains the interface routines for DSAM
  *				applications.
  * Comments:	
@@ -25,7 +25,7 @@
 /******************************************************************************/
 
 #define DEFAULT_ERRORS_MODE			"screen"
-#define	APP_INT_NUM_PARS			5		/* Number of main parameters. */
+#define	APP_INT_NUM_PARS			4		/* Number of main parameters. */
 
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 #	define	MAIN_ARGS	void
@@ -44,8 +44,7 @@
 typedef enum {
 
 	APP_INT_DIAGNOSTICMODE,
-	APP_INT_SIMSCRIPTFILE,
-	APP_INT_SIMPARFILE,
+	APP_INT_SIMULATIONFILE,
 	APP_INT_SEGMENTMODE,
 	APP_INT_PARLIST
 
@@ -63,33 +62,30 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	simScriptFileFlag,simParFileModeFlag, useParComsFlag;
-	BOOLN	checkMainInit, listParsAndExit, listCFListAndExit, readMainParsFlag;
-	BOOLN	printUsageFlag;
+	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
+	BOOLN	listCFListAndExit, readMainParsFlag, printUsageFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
 	char	title[MAXLINE];
-	char	simScriptFile[MAX_FILE_PATH];
+	char	simulationFile[MAX_FILE_PATH];
 	char	segmentMode[SMALL_STRING];
-	char	simParFileMode[MAX_FILE_PATH];
 	char	diagMode[MAX_FILE_PATH];
 	char	installDir[MAX_FILE_PATH];
 	char	**argv;
 	int		argc;
 	int		initialCommand;
-	int		simParFileModeSpecifier;
 	int		segmentModeSpecifier;
 	int		diagModeSpecifier;
 	EarObjectPtr	audModel;
 
 	/* Private members */
+	BOOLN	simParFileFlag;
 	NameSpecifier	*listingModeList;
 	NameSpecifier	*diagModeList;
 	UniParListPtr	appParList;
 	UniParListPtr	parList;
-	char	*simFile;
 	time_t	simLastModified;
 	void	(* PrintUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
@@ -150,6 +146,8 @@ BOOLN	ReadPars_AppInterface(FILE *fp);
 
 BOOLN	ReadProgParFile_AppInterface(void);
 
+void	ResetCommandArgFlags_AppInterface(void);
+
 BOOLN	SetAppName_AppInterface(char *appName);
 
 BOOLN	SetAppParList_AppInterface(UniParListPtr appParList);
@@ -173,22 +171,20 @@ BOOLN	SetDiagMode_AppInterface(char *theDiagMode);
 
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
 
-BOOLN	SetPars_AppInterface(char *diagMode, char *simScriptFile,
-		  char *simParFileMode, char *segmentMode);
+BOOLN	SetPars_AppInterface(char *diagMode, char *simulationFile,
+		  char *segmentMode);
 
 BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue);
 
 BOOLN	SetSegmentMode_AppInterface(char *theSegmentMode);
 
-BOOLN	SetSimParFileMode_AppInterface(char *theSimParFileMode);
-
-BOOLN	SetSimScriptFile_AppInterface(char *theSimScriptFile);
+BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
 
 BOOLN	SetTitle_AppInterface(char *title);
 
 BOOLN	SetUniParList_AppInterface(void);
 
-BOOLN	SimScriptFileChanged_AppInterface(StatPtr simSpecFileStat,
+BOOLN	SimulationFileChanged_AppInterface(StatPtr simSpecFileStat,
 		  BOOLN updateStatus);
 
 __END_DECLS
