@@ -504,6 +504,8 @@ BOOLN		CheckData_ModuleMgr(EarObjectPtr data, const char *callingFunction);
 
 ModuleRefPtr	CreateModuleRef_ModuleMgr(ModulePtr theModule);
 
+BOOLN		Enable_ModuleMgr(EarObjectPtr data, BOOLN on);
+
 void		Free_ModuleMgr(ModulePtr *theModule);
 
 void		FreeAll_ModuleMgr(void);
