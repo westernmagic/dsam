@@ -75,13 +75,12 @@ BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction);
 
 void	Free_ParArray(ParArrayPtr *parArray);
 
-ParArrayPtr	Init_ParArray(char *name, int mode, double *params,
-			  NameSpecifier *modeList, int (* GetNumPars)(int));
+ParArrayPtr	Init_ParArray(char *name, NameSpecifier *modeList,
+			  int (* GetNumPars)(int));
 
 void	PrintPars_ParArray(ParArrayPtr parArray);
 
-ParArrayPtr	ReadPars_ParArray(FILE *fp, char * parFuncName,
-			  NameSpecifierPtr modeList, int (* GetNumPars)(int));
+BOOLN	ReadPars_ParArray(FILE *fp, ParArrayPtr parArray);
 
 BOOLN	SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex,
 		  double parValue);
