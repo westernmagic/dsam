@@ -106,7 +106,6 @@ ParFilePathModePrototypeList_Utility_SimScript(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "NONE",		UTILITY_SIMSCRIPT_PARFILEPATHMODE_NONE },
 			{ "RELATIVE",	UTILITY_SIMSCRIPT_PARFILEPATHMODE_RELATIVE },
 			{ NO_FILE,		UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH },
 			{ "",			UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL },
@@ -349,9 +348,6 @@ SetParFilePathMode_Utility_SimScript(char *theParFilePathMode)
 		snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, "%s",
 		  theParFilePathMode);
 		break;
-	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_NONE:
-		sprintf(simScriptPtr->parsFilePath, "./");
-		break;
 	default:
 		;
 	}
@@ -453,7 +449,8 @@ ReadSimParFile_Utility_SimScript(char *filePath)
 		NotifyError("%s: Could not read simulation script.", funcName);
 		ok = FALSE;
 	}
-	if (ok && !SetPars_Utility_SimScript(simulation, operationMode, "none")) {
+	if (ok && !SetPars_Utility_SimScript(simulation, operationMode,
+	  "relative")) {
 		NotifyError("%s: Could not set parameters.", funcName);
 		ok = FALSE;
 	}
@@ -927,8 +924,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				}
 			}
 		}
-	if (localSimScriptPtr->parFilePathMode !=
-	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NONE) {
+	if (!localSimScriptPtr->simParFileFlag) {
 		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
 		if (!InitialiseModules_Utility_Datum(simulation)) {
 			NotifyError("%s: Could not initialise modules.", funcName);
