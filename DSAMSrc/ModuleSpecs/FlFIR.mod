@@ -1,4 +1,4 @@
-/* This is the module specification for the band pass pre-emphasis module.
+/* This is the module specification for the FIR filter module.
  */
 
 mod_name		Filter;
