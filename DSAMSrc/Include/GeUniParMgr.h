@@ -56,6 +56,7 @@
 #include "UtCFList.h"
 #include "UtDynaList.h"
 #include "UtIonChanList.h"
+#include "UtParArray.h"
 #include "UtNameSpecs.h"
 
 /******************************************************************************/
@@ -87,30 +88,32 @@ typedef enum {
 
 	UNIPAR_UNKNOWN,
 	UNIPAR_BOOL,
+	UNIPAR_CFLIST,
+	UNIPAR_FILE_NAME,
+	UNIPAR_ICLIST,
 	UNIPAR_INT,
 	UNIPAR_INT_ARRAY,
-	UNIPAR_LONG,
 	UNIPAR_REAL,
 	UNIPAR_REAL_ARRAY,
 	UNIPAR_STRING,
+	UNIPAR_LONG,
+	UNIPAR_MODULE,
 	UNIPAR_NAME_SPEC,
 	UNIPAR_NAME_SPEC_WITH_FILE,
 	UNIPAR_NAME_SPEC_WITH_FPATH,
-	UNIPAR_MODULE,
-	UNIPAR_CFLIST,
-	UNIPAR_ICLIST,
-	UNIPAR_SIMSCRIPT,
-	UNIPAR_FILE_NAME,
-	UNIPAR_PARLIST
+	UNIPAR_PARLIST,
+	UNIPAR_PARARRAY,
+	UNIPAR_SIMSCRIPT
 
 } UniParTypeSpecifier;
 
 typedef enum {
 
-	UNIPAR_SET_GENERAL,
 	UNIPAR_SET_CFLIST,
+	UNIPAR_SET_GENERAL,
 	UNIPAR_SET_IC,
 	UNIPAR_SET_ICLIST,
+	UNIPAR_SET_PARARRAY,
 	UNIPAR_SET_SIMSPEC
 
 } UniParModeSpecifier;
@@ -132,6 +135,7 @@ typedef struct UniPar {
 		char *		s;
 		CFListPtr	*cFPtr;
 		IonChanListPtr	*iCPtr;
+		ParArrayPtr		*pAPtr;
 		UniParListPtr	*parList;
 		struct {
 			int	*			specifier;
@@ -169,6 +173,7 @@ typedef struct UniPar {
 		BOOLN	(* SetString)(char *);
 		BOOLN	(* SetCFList)(CFListPtr);
 		BOOLN	(* SetICList)(IonChanListPtr);
+		BOOLN	(* SetParArray)(ParArrayPtr);
 		BOOLN	(* SetDatumPtr)(DatumPtr);
 
 		BOOLN	(* SetCFListInt)(CFListPtr, int);
@@ -185,6 +190,10 @@ typedef struct UniPar {
 		BOOLN	(* SetICRealArrayElement)(IonChannelPtr, int, double);
 		BOOLN	(* SetICString)(IonChannelPtr, char *);
 
+		BOOLN	(* SetParArrayInt)(ParArrayPtr, int);
+		BOOLN	(* SetParArrayRealArrayElement)(ParArrayPtr, int, double);
+		BOOLN	(* SetParArrayString)(ParArrayPtr, char *);
+
 	} FuncPtr;
 
 } UniPar, *UniParPtr;
@@ -194,13 +203,13 @@ typedef struct UniParListNode {
 	UniParModeSpecifier	mode;
 
 	BOOLN	updateFlag;
-	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	uInt	numPars;
 	UniPar	*pars;
 	union {
 
 		CFListPtr		cFs;
 		IonChanListPtr	iCs;
+		ParArrayPtr		parArray;
 
 	} handlePtr;
 
@@ -228,8 +237,6 @@ UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, char *parName);
 
 void	FreeList_UniParMgr(UniParListPtr *list);
 
-NameSpecifier *	GeneralParNameList_UniParMgr(int index);
-
 char *	GetParString_UniParMgr(UniParPtr p);
 
 UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
@@ -245,9 +252,6 @@ BOOLN	PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix);
 BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
-
-BOOLN	SetGeneralListPar_UniParMgr(UniParListPtr parList, int specifier,
-		  char *parValue);
 
 BOOLN	SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  char *parValue);
@@ -266,11 +270,14 @@ BOOLN	SetICParValue_UniParMgr(UniParListPtr parList, uInt index,
 BOOLN	SetGetPanelListFunc_UniParMgr(UniParListPtr list,
 		  NameSpecifier * (* Func)(int));
 
-void	SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
-		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
-
+BOOLN	SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
+		  char *parValue);
+		  
 BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  char *parValue);
+
+void	SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
+		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
 
 __END_DECLS
 
