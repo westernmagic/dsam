@@ -154,6 +154,8 @@ BOOLN		InitOutFromInSignal_EarObject(EarObjectPtr data, int numChannels);
 BOOLN		InitOutSignal_EarObject(EarObjectPtr data, int numChannels, 	
 			  ChanLen length, double samplingInterval);
 			
+int			GetInSignalRef_EarObject(EarObjectPtr data);
+
 double		GetResult_EarObject(EarObjectPtr data, uShort channel);
 
 double		GetSample_EarObject(EarObjectPtr data, uShort channel,
@@ -183,7 +185,7 @@ void		SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
 
 void		UpdateCustomers_EarObject(EarObjectPtr theObject);	
 			
-int			GetInSignalRef_EarObject(EarObjectPtr data);
+void		UnSetInSignal_EarObject(EarObjectPtr data, int inSignalRef);
 
 __END_DECLS
 
