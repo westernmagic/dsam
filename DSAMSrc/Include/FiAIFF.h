@@ -107,8 +107,12 @@ typedef struct {
  */
 __BEGIN_DECLS
 
+double		GetDuration_AIFF(char *fileName);
+
 int32		GetFormChunkSize_AIFF(SignalDataPtr theSignal,
 			  int32 previousSamples);
+
+FILE *		InitialFileRead_AIFF(char *fileName, AIFFParams *pars);
 
 void		InitParams_AIFF(AIFFParamsPtr p);
 

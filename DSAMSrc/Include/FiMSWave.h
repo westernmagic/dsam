@@ -70,13 +70,17 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-BOOLN		ReadFile_Wave(char *fileName, EarObjectPtr data);
+double	GetDuration_Wave(char *fileName);
 
-BOOLN		ReadHeader_Wave(FILE *fp, WaveHeaderPtr p);
+ChanLen	GetNumSamples_Wave(WaveHeader *p);
 
-BOOLN		WriteFile_Wave(char *fileName, EarObjectPtr data);
+BOOLN	ReadFile_Wave(char *fileName, EarObjectPtr data);
 
-void		WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset);
+BOOLN	ReadHeader_Wave(FILE *fp, WaveHeaderPtr p);
+
+BOOLN	WriteFile_Wave(char *fileName, EarObjectPtr data);
+
+void	WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset);
 
 __END_DECLS
 

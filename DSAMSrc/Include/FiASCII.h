@@ -33,9 +33,11 @@
  */
 __BEGIN_DECLS
 
-BOOLN		ReadFile_ASCII(char *fileName, EarObjectPtr data);
+double	GetDuration_ASCII(char *fileName);
 
-BOOLN		WriteFile_ASCII(char *fileName, EarObjectPtr data);
+BOOLN	ReadFile_ASCII(char *fileName, EarObjectPtr data);
+
+BOOLN	WriteFile_ASCII(char *fileName, EarObjectPtr data);
 
 __END_DECLS
 

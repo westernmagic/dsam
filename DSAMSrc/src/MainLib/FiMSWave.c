@@ -79,6 +79,46 @@ ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 
 }
 
+/**************************** InitialFileRead *********************************/
+
+/*
+ * This function returns a file pointer from the initial reading of a MS Wave
+ * file.
+ * It is created because this initial reading process is required for reading
+ * the entire file, or just extracting the size of the file.
+ * It returns a pointer to the file if successful, or NULL if it fails.
+ */
+
+FILE *
+InitialFileRead_Wave(char *fileName)
+{
+	static const char *funcName = "InitialFileRead_Wave";
+	FILE	*fp;
+
+	if (dataFilePtr->endian == DATA_FILE_DEFAULT_ENDIAN)
+		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
+	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
+		NotifyError("%s: Couldn't read file '%s'.", funcName, fileName);
+		return(NULL);
+	}
+	return(fp);
+
+}
+
+/**************************** GetNumSamples ***********************************/
+
+/*
+ * This function calculates the number of samples from the wave header
+ * parameters.
+ */
+
+ChanLen
+GetNumSamples_Wave(WaveHeader *p)
+{
+	return(p->dataChunkLength / p->numChannels / (p->bitsPerSample / 8));
+
+}
+
 /**************************** ReadFile ****************************************/
 
 /*
@@ -102,10 +142,9 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 	FILE	*fp;
 	WaveHeader	pars;
 
-	if (dataFilePtr->endian == DATA_FILE_DEFAULT_ENDIAN)
-		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
-	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't read file '%s'.", funcName, fileName);
+	if ((fp = InitialFileRead_Wave(fileName)) == NULL) {
+		NotifyError("%s: Could not read initial file structure from '%s'.",
+		  funcName, fileName);
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "'%s' Microsoft Wave file",
@@ -120,8 +159,7 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 		dataFilePtr->numChannels = pars.numChannels;
 		dataFilePtr->defaultSampleRate = pars.sampleRate;
 		dataFilePtr->wordSize = pars.bitsPerSample / 8;
-		dataFilePtr->numSamples = pars.dataChunkLength / pars.numChannels /
-		  dataFilePtr->wordSize;
+		dataFilePtr->numSamples = GetNumSamples_Wave(&pars);
 		if (!InitProcessVariables_DataFile(data, dataFilePtr->numSamples,
 		  pars.sampleRate)) {
 			NotifyError("%s: Could not initialise process variables.",
@@ -152,6 +190,36 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 			data->outSignal->channel[j][i] = ReadSample_DataFile(fp);
 	CloseFile(fp);
 	return(TRUE);
+
+}
+
+/**************************** GetDuration *************************************/
+
+/*
+ * This function extracts the duration of the file in a signal by reading the
+ * minimum of information from the file.
+ * It returns a negative value if it fails to read the file duration.
+ */
+
+double
+GetDuration_Wave(char *fileName)
+{
+	static const char *funcName = "GetDuration_Wave";
+	FILE	*fp;
+	WaveHeader	pars;
+
+	if ((fp = InitialFileRead_Wave(fileName)) == NULL) {
+		NotifyError("%s: Could not read initial file structure from '%s'.",
+		  funcName, fileName);
+		return(-1.0);
+	}
+	if (!ReadHeader_Wave(fp, &pars)) {
+		NotifyError("%s: Could not read header.", funcName);
+		CloseFile(fp);
+		return(FALSE);
+	}
+	CloseFile(fp);
+	return((double) GetNumSamples_Wave(&pars) / pars.sampleRate);
 
 }
 

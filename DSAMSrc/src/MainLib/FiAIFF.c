@@ -227,6 +227,51 @@ ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 
 }
 
+/**************************** InitialFileRead *********************************/
+
+/*
+ * This function returns a file pointer from the initial reading of an AIFF
+ * file.
+ * It is created because this initial reading process is required for reading
+ * the entire file, or just extracting the size of the file.
+ * It returns a pointer to the file if successful, or NULL if it fails.
+ */
+
+FILE *
+InitialFileRead_AIFF(char *fileName, AIFFParams *pars)
+{
+	static const char *funcName = "InitialFileRead_AIFF";
+	FILE	*fp;
+
+	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
+		NotifyError("%s: Couldn't open file.", funcName);
+		return(NULL);
+	}
+	if (fp == stdin) {
+		NotifyError("%s: Reading from stdin not supported for this format.",
+		  funcName);
+		return(NULL);
+	}
+	InitParams_AIFF(pars);
+	if (dataFilePtr->endian == 0)
+		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
+	rewind(fp);
+	if (!ReadFileIdentifier_DataFile(fp, AIFF_FORM, "AIFF")) {
+		NotifyError("%s: Couldn't find initial chunk in file '%s'.", funcName,
+		  fileName);
+		return(NULL);
+	}
+	pars->chunkSize = dataFilePtr->Read32Bits(fp);
+	if (dataFilePtr->Read32Bits(fp) != AIFF_AIFF){
+		NotifyError("%s: Couldn't find AIFF chunk in file '%s'.", funcName,
+		  fileName);
+		return(NULL);
+	}
+	ReadParams_AIFF(fp, pars);
+	return(fp);
+
+}
+
 /**************************** ReadFile ****************************************/
 
 /*
@@ -247,34 +292,16 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
 	FILE	*fp;
 	AIFFParams	pars;
 
-	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
-		return(FALSE);
-	}
-	if (fp == stdin) {
-		NotifyError("%s: Reading from stdin not supported for this format.",
-		  funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "'%s' AIFF file",
-	  GetFileNameFPath_Utility_String(fileName));
-	InitParams_AIFF(&pars);
-	if (dataFilePtr->endian == 0)
-		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
-	rewind(fp);
-	if (!ReadFileIdentifier_DataFile(fp, AIFF_FORM, "AIFF")) {
-		NotifyError("%s: Couldn't find initial chunk in file '%s'.", funcName,
-		  fileName);
-		return(FALSE);
-	}
-	pars.chunkSize = dataFilePtr->Read32Bits(fp);
-	if (dataFilePtr->Read32Bits(fp) != AIFF_AIFF){
-		NotifyError("%s: Couldn't find AIFF chunk in file '%s'.", funcName,
-		  fileName);
+	if ((fp = InitialFileRead_AIFF(fileName, &pars)) == NULL) {
+		NotifyError("%s: Could not read initial file structure from '%s'.",
+		  funcName, fileName);
 		return(FALSE);
 	}
 
 	ReadParams_AIFF(fp, &pars);
+
+	SetProcessName_EarObject(data, "'%s' AIFF file",
+	  GetFileNameFPath_Utility_String(fileName));
 
 	if (!pars.soundPosition) {
 		NotifyError("%s: Didn't find a SSND chunk in file '%s'.", funcName,
@@ -307,6 +334,31 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
 	}
 	CloseFile(fp);
 	return(TRUE);
+
+}
+
+/**************************** GetDuration *************************************/
+
+/*
+ * This function extracts the duration of the file in a signal by reading the
+ * minimum of information from the file.
+ * It returns a negative value if it fails to read the file duration.
+ */
+
+double
+GetDuration_AIFF(char *fileName)
+{
+	static const char *funcName = "GetDuration_AIFF";
+	FILE	*fp;
+	AIFFParams	pars;
+
+	if ((fp = InitialFileRead_AIFF(fileName, &pars)) == NULL) {
+		NotifyError("%s: Could not read initial file structure from '%s'.",
+		  funcName, fileName);
+		return(-1.0);
+	}
+	fclose(fp);
+	return(pars.numSampleFrames / pars.sampleRate);
 
 }
 

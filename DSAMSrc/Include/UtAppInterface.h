@@ -3,7 +3,8 @@
  * File:		UtAppInterface.h
  * Purpose:		This Module contains the interface routines for DSAM
  *				applications.
- * Comments:	
+ * Comments:	The 'PostInitFunc' routine is run at the end of the
+ *				'InitProcessVariables' routine.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
  * Updated:		
@@ -102,7 +103,7 @@ typedef struct {
 	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
 	BOOLN	(* RegisterUserModules)(void);
-	BOOLN	(* SetFinalPars)(void);
+	BOOLN	(* PostInitFunc)(void);
 	BOOLN	(* SetUniParList)(UniParListPtr *);
 
 } AppInterface, *AppInterfacePtr;
@@ -191,7 +192,7 @@ BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **,
 BOOLN	SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(
 		  void));
 
-BOOLN	SetAppSetFinalPars_AppInterface(BOOLN (* SetFinalPars)(void));
+BOOLN	SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void));
 
 BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
 		  *parList));

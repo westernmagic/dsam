@@ -47,6 +47,32 @@
 /****************************** Subroutines & functions ***********************/
 /******************************************************************************/
 
+/**************************** InitialFileRead *********************************/
+
+/*
+ * This function returns a file pointer from the initial reading of a raw binary
+ * file.
+ * It is created because this initial reading process is required for reading
+ * the entire file, or just extracting the size of the file.
+ * It returns a pointer to the file if successful, or NULL if it fails.
+ */
+
+FILE *
+InitialFileRead_Raw(char *fileName)
+{
+	static const char *funcName = "InitialFileRead_Wave";
+	FILE	*fp;
+
+	if (dataFilePtr->endian == 0)
+		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
+	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
+		NotifyError("%s: Couldn't open file.", funcName);
+		return(FALSE);
+	}
+	return(fp);
+
+}
+
 /**************************** ReadFile ****************************************/
 
 /*
@@ -71,14 +97,9 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 	ChanLen	i, length, index, requestedLength, numSamples;
 	FILE	*fp;
 
-	if (!CheckPars_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
-		return(FALSE);
-	}
-	if (dataFilePtr->endian == 0)
-		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
-	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
+	if ((fp = InitialFileRead_Raw(fileName)) == NULL) {
+		NotifyError("%s: Could not read initial file structure from '%s'.",
+		  funcName, fileName);
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, "'%s' byte (raw) file",
@@ -124,6 +145,40 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 	}
 	CloseFile(fp);
 	return(TRUE);
+
+}
+
+/**************************** GetDuration *************************************/
+
+/*
+ * This function extracts the duration of the file in a signal by reading the
+ * minimum of information from the file.
+ * It returns a negative value if it fails to read the file duration.
+ */
+
+double
+GetDuration_Raw(char *fileName)
+{
+	static const char *funcName = "GetDuration_Wave";
+	double	duration;
+	FILE	*fp;
+
+	if ((fp = InitialFileRead_Raw(fileName)) == NULL) {
+		NotifyError("%s: Could not do initial file operations for '%s'.",
+		  funcName, fileName);
+		CloseFile(fp);
+		return(-1.0);
+	}
+	if (fp == stdin) {
+		NotifyError("%s: Reading from stdin disables this function for this "
+		  "format.", funcName);
+		CloseFile(fp);
+		return(-1.0);
+	}
+	duration = FileLength_DataFile(fp) / dataFilePtr->wordSize / dataFilePtr->
+	  defaultSampleRate;
+	CloseFile(fp);
+	return(duration);
 
 }
 

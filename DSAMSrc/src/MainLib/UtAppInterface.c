@@ -3,7 +3,8 @@
  * File:		UtAppInterface.c
  * Purpose:		This Module contains the interface routines for DSAM
  *				application's.
- * Comments:	
+ * Comments:	The 'PostInitFunc' routine is run at the end of the
+ *				'InitProcessVariables' routine.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
  * Updated:		
@@ -170,7 +171,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->PrintSimMgrUsage = NULL;
 	appInterfacePtr->ProcessOptions = NULL;
 	appInterfacePtr->RegisterUserModules = NULL;
-	appInterfacePtr->SetFinalPars = NULL;
+	appInterfacePtr->PostInitFunc = NULL;
 	appInterfacePtr->SetUniParList = NULL;
 	return(TRUE);
 
@@ -457,7 +458,7 @@ SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **, int *))
 
 }
 
-/****************************** SetAppSetFinalPars ****************************/
+/****************************** SetAppPostInitFunc ****************************/
 
 /*
  * This functions sets the application's final pars routine.
@@ -467,15 +468,15 @@ SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **, int *))
  */
 
 BOOLN
-SetAppSetFinalPars_AppInterface(BOOLN (* SetFinalPars)(void))
+SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void))
 {
-	static const char	*funcName = "SetAppSetFinalPars_AppInterface";
+	static const char	*funcName = "SetAppPostInitFunc_AppInterface";
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	appInterfacePtr->SetFinalPars = SetFinalPars;
+	appInterfacePtr->PostInitFunc = PostInitFunc;
 	return(TRUE);
 
 }
@@ -1364,9 +1365,10 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 
 		appInterfacePtr->updateProcessVariablesFlag = FALSE;
 
-		if (appInterfacePtr->SetFinalPars &&
-		  !(* appInterfacePtr->SetFinalPars)()) {
-				NotifyError("%s: Failed to set final parameters.", funcName);
+		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
+		  PostInitFunc)()) {
+				NotifyError("%s: Failed to run post initialisation function.",
+				  funcName);
 				return(FALSE);
 		}
 	}

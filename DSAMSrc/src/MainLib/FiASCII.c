@@ -116,6 +116,25 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 
 }
 
+/**************************** GetDuration *************************************/
+
+/*
+ * This function is upposed to return the duration of a file.
+ * It will return the error value -1 for this file type as the end of the
+ * file cannot be calculated without reading the file.
+ */
+
+double
+GetDuration_ASCII(char *fileName)
+{
+	static const char *funcName = "GetDuration_ASCII";
+
+	NotifyError("%s: Signal duration cannot be calculated for this file type.",
+	  funcName);
+	return(-1.0);
+
+}
+
 /**************************** WriteFile ***************************************/
 
 /*

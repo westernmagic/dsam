@@ -109,6 +109,43 @@ InitEndianModeList_DataFile(void)
 
 }
 
+/**************************** GetDuration *************************************/
+
+/*
+ * This function returns the duration of signal stored in a file.
+ * It is expected that it will only be used as a 'callback' routine for the
+ * module, i.e. the module must be initialised to use it
+ */
+
+double
+GetDuration_DataFile(void)
+{
+	static const char *funcName = "GetDuration_DataFile";
+	double	duration;
+
+	switch (Format_DataFile(GetSuffix_Utility_String(dataFilePtr->name))) {
+	case	AIFF_DATA_FILE:
+		duration = GetDuration_AIFF(dataFilePtr->name);
+		break;
+	case	ASCII_DATA_FILE:
+		duration = GetDuration_ASCII(dataFilePtr->name);
+		break;
+	case	WAVE_DATA_FILE:
+		duration = GetDuration_Wave(dataFilePtr->name);
+		break;
+	case	RAW_DATA_FILE:
+		duration = GetDuration_Raw(dataFilePtr->name);
+		break;
+	default:
+		duration = -1.0;
+	} /* switch */
+	if (duration < 0.0)
+		NotifyError("%s: Could not calculate the total duration of the signal "
+		  "for '%s'", funcName, dataFilePtr->name);
+	return(duration);
+
+}
+
 /********************************* Init ***************************************/
 
 /*
@@ -157,6 +194,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->Read32Bits = Read32BitsHighLow;
 	dataFilePtr->ReadIEEEExtended = ReadIEEEExtendedHighLow;
 
+	dataFilePtr->GetDuration = GetDuration_DataFile;
 	InitEndianModeList_DataFile();
 	if (!SetUniParList_DataFile()) {
 		NotifyError("%s: Could not initialise parameter list.", funcName);
@@ -479,11 +517,11 @@ Format_DataFile(char *suffix)
 {
 	static NameSpecifier soundFormatList[] = {
 
-		{"AIF", AIF_DATA_FILE},
+		{"AIF", AIFF_DATA_FILE},
 		{"AIFF", AIFF_DATA_FILE},
 		{"DAT", ASCII_DATA_FILE},
 		{"RAW", RAW_DATA_FILE},
-		{"WAV", WAV_DATA_FILE},
+		{"WAV", WAVE_DATA_FILE},
 		{"WAVE", WAVE_DATA_FILE},
 		{"", NULL_DATA_FILE}
 
@@ -1248,14 +1286,12 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
 	}
 	uPortableIOPtr = dataFilePtr->uIOPtr;
 	switch (Format_DataFile(GetSuffix_Utility_String(fileName))) {
-	case	AIF_DATA_FILE:
 	case	AIFF_DATA_FILE:
 		ok = ReadFile_AIFF(fileName, data);
 		break;
 	case	ASCII_DATA_FILE:
 		ok = ReadFile_ASCII(fileName, data);
 		break;
-	case	WAV_DATA_FILE:
 	case	WAVE_DATA_FILE:
 		ok = ReadFile_Wave(fileName, data);
 		break;
@@ -1335,14 +1371,12 @@ WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data)
 	}
 	uPortableIOPtr = dataFilePtr->uIOPtr;
 	switch (Format_DataFile(GetSuffix_Utility_String(fileName))) {
-	case	AIF_DATA_FILE:
 	case	AIFF_DATA_FILE:
 		ok = WriteFile_AIFF(fileName, data);
 		break;
 	case	ASCII_DATA_FILE:
 		ok = WriteFile_ASCII(fileName, data);
 		break;
-	case	WAV_DATA_FILE:
 	case	WAVE_DATA_FILE:
 		ok = WriteFile_Wave(fileName, data);
 		break;
@@ -1367,12 +1401,6 @@ WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data)
 BOOLN
 ReadSignal_DataFile_Named(EarObjectPtr data)
 {
-	static const char *funcName = "ReadSignal_DataFile_Named";
-
-	if (!CheckPars_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
-		return(FALSE);
-	}
 	return(ReadSignalMain_DataFile(dataFilePtr->name, data));
 
 }

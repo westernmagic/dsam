@@ -96,11 +96,9 @@ typedef enum {
 
 typedef enum {
 
-	AIF_DATA_FILE,
 	AIFF_DATA_FILE,
 	ASCII_DATA_FILE,
 	RAW_DATA_FILE,
-	WAV_DATA_FILE,
 	WAVE_DATA_FILE,
 	NULL_DATA_FILE
 
@@ -146,7 +144,10 @@ typedef struct {
 	int16	(* Read16Bits)(FILE *);
 	int32	(* Read32Bits)(FILE *);
 	double	(* ReadIEEEExtended)(FILE *);
-	
+
+	/* Call back routines. */
+	double (* GetDuration)(void);
+
 	/* Private parameters */
 	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;

@@ -41,9 +41,13 @@
  */
 __BEGIN_DECLS
 
-BOOLN		ReadFile_Raw(char *fileName, EarObjectPtr data);
+FILE *	InitialFileRead_Raw(char *fileName);
 
-BOOLN		WriteFile_Raw(char *fileName, EarObjectPtr data);
+double	GetDuration_Raw(char *fileName);
+
+BOOLN	ReadFile_Raw(char *fileName, EarObjectPtr data);
+
+BOOLN	WriteFile_Raw(char *fileName, EarObjectPtr data);
 
 __END_DECLS
 
