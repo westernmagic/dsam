@@ -110,6 +110,7 @@ typedef struct {
 	double	delayTimeout;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
 	char			diagnosticString[MAX_FILE_PATH];

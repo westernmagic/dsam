@@ -105,6 +105,7 @@ typedef struct {
 	IonChanListPtr	iCList;
 	
 	/* Private Members */
+	NameSpecifier	*diagnosticModeList;
 	NameSpecifier	*operationModeList;
 	NameSpecifier	*injectionModeList;
 	UniParListPtr	parList;

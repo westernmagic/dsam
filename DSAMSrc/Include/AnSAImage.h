@@ -80,6 +80,7 @@ typedef struct {
 	double	imageDecayHalfLife;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
 	char			diagnosticString[MAX_FILE_PATH];
 	double			*inputDecay;

@@ -33,6 +33,7 @@ typedef	enum {
 	GENERAL_DIAGNOSTIC_OFF_MODE,
 	GENERAL_DIAGNOSTIC_SCREEN_MODE,
 	GENERAL_DIAGNOSTIC_ERROR_MODE,
+	GENERAL_DIAGNOSTIC_FILE_MODE,
 	GENERAL_DIAGNOSTIC_MODE_NULL
 
 } GeneralDiagnosticModeSpecifier;
@@ -65,7 +66,14 @@ void			CloseDiagnostics_NSpecLists(FILE **fp);
 
 NameSpecifier *	DiagModeList_NSpecLists(int index);
 
-BOOLN	OpenDiagnostics_NSpecLists(FILE **fp, int mode, char *fileName);
+int		GetNumListEntries_NSpecLists(NameSpecifierPtr list);
+
+int		IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list);
+
+NameSpecifier *	InitNameList_NSpecLists(NameSpecifierPtr prototypeList,
+				  char *textPtr);
+
+BOOLN	OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode);
 
 __END_DECLS
 

@@ -182,6 +182,7 @@ typedef struct IonChanList {
 
 	/* Private members */
 	struct IonChanList **parentPtr;
+	NameSpecifier	*printTablesModeList;
 	UniParListPtr	parList;
 	char	diagFileName[MAXLINE];
 
