@@ -1072,13 +1072,15 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 		 	NotifyError("%s: Out of memory (linearGT).", funcName);
 		 	return(FALSE);
 		}
-		if ((bMDRNLPtr->nonLinearLP = (ContButtCoeffsPtr *) calloc(
-		  bMDRNLPtr->numChannels, sizeof(ContButtCoeffsPtr))) == NULL) {
+		if ((bMDRNLPtr->nonLinLPCascade > 0) && ((bMDRNLPtr->nonLinearLP =
+		  (ContButtCoeffsPtr *) calloc( bMDRNLPtr->numChannels, sizeof(
+		  ContButtCoeffsPtr))) == NULL)) {
 		 	NotifyError("%s: Out of memory (linearLP).", funcName);
 		 	return(FALSE);
 		}
-		if ((bMDRNLPtr->linearLP = (ContButtCoeffsPtr *) calloc(
-		  bMDRNLPtr->numChannels, sizeof(ContButtCoeffsPtr))) == NULL) {
+		if ((bMDRNLPtr->linLPCascade > 0) && ((bMDRNLPtr->linearLP =
+		  (ContButtCoeffsPtr *) calloc(bMDRNLPtr->numChannels, sizeof(
+		  ContButtCoeffsPtr))) == NULL)) {
 		 	NotifyError("%s: Out of memory (linearLP).", funcName);
 		 	return(FALSE);
 		}
@@ -1098,9 +1100,9 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 				NotifyError("%s: Could not set nonLinearGT2[%d].", funcName, i);
 				return(FALSE);
 			}
-			if ((bMDRNLPtr->nonLinearLP[i] = InitIIR2ContCoeffs_Filters(
-			  bMDRNLPtr->nonLinLPCascade, centreFreq, data->inSignal[0]->dt,
-			  LOWPASS)) == NULL) {
+			if (bMDRNLPtr->nonLinearLP && ((bMDRNLPtr->nonLinearLP[i] =
+			  InitIIR2ContCoeffs_Filters(bMDRNLPtr->nonLinLPCascade, centreFreq,
+			  data->inSignal[0]->dt, LOWPASS)) == NULL)) {
 				NotifyError("%s: Could not set nonLinearLP[%d].", funcName, i);
 				return(FALSE);
 			}
@@ -1113,9 +1115,9 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 				NotifyError("%s: Could not set linearGT[%d].", funcName, i);
 				return(FALSE);
 			}
-			if ((bMDRNLPtr->linearLP[i] = InitIIR2ContCoeffs_Filters(
-			  bMDRNLPtr->linLPCascade, linearFCentreFreq, data->inSignal[0]->dt,
-			  LOWPASS)) == NULL) {
+			if (bMDRNLPtr->linearLP && ((bMDRNLPtr->linearLP[i] =
+			  InitIIR2ContCoeffs_Filters(bMDRNLPtr->linLPCascade,
+			  linearFCentreFreq, data->inSignal[0]->dt, LOWPASS)) == NULL)) {
 				NotifyError("%s: Could not set linearLP[%d].", funcName, i);
 				return(FALSE);
 			}
@@ -1175,9 +1177,13 @@ FreeProcessVariables_BasilarM_DRNL(void)
 		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT1[i]);
 		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT2[i]);
 		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->linearGT[i]);
-		FreeIIR2ContCoeffs_Filters(&bMDRNLPtr->nonLinearLP[i]);
-		FreeIIR2ContCoeffs_Filters(&bMDRNLPtr->linearLP[i]);
 	}
+	if (bMDRNLPtr->nonLinearLP)
+		for (i = 0; i < bMDRNLPtr->numChannels; i++)
+			FreeIIR2ContCoeffs_Filters(&bMDRNLPtr->nonLinearLP[i]);
+	if (bMDRNLPtr->linearLP)
+		for (i = 0; i < bMDRNLPtr->numChannels; i++)
+			FreeIIR2ContCoeffs_Filters(&bMDRNLPtr->linearLP[i]);
 	free(bMDRNLPtr->compressionA);
 	free(bMDRNLPtr->compressionB);
 	free(bMDRNLPtr->nonLinearGT1);
@@ -1281,10 +1287,12 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	BrokenStick1Compression2_Filters(data->outSignal, bMDRNLPtr->compressionA,
 	  bMDRNLPtr->compressionB, bMDRNLPtr->comprExponent);
 	GammaTone_Filters(data->outSignal, bMDRNLPtr->nonLinearGT2);
-	IIR2Cont_Filters(data->outSignal, bMDRNLPtr->nonLinearLP);
+	if (bMDRNLPtr->nonLinearLP)
+		IIR2Cont_Filters(data->outSignal, bMDRNLPtr->nonLinearLP);
 	
 	GammaTone_Filters(bMDRNLPtr->linearF->outSignal, bMDRNLPtr->linearGT);
-	IIR2Cont_Filters(bMDRNLPtr->linearF->outSignal, bMDRNLPtr->linearLP);
+	if (bMDRNLPtr->linearLP)
+		IIR2Cont_Filters(bMDRNLPtr->linearF->outSignal, bMDRNLPtr->linearLP);
 	
 	ApplyScale_BasilarM_DRNL(data, bMDRNLPtr->linearF->outSignal, bMDRNLPtr->
 	  linScaleG);
