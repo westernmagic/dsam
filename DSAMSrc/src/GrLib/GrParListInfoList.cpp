@@ -343,3 +343,20 @@ ParListInfoList::GetLastControl(void)
 	return((list.Count() > 0)? list.Last()->GetLastControl(): NULL);
 
 }
+
+/****************************** UpdateAllControlValues ************************/
+
+/*
+ * This routine updates all of the control values in all of the 'ParListInfo'
+ * records.
+ */
+
+void
+ParListInfoList::UpdateAllControlValues(void)
+{
+	size_t	i;
+
+	for (i = 0; i < list.Count(); i++)
+		list[i]->UpdateControlValues();
+
+}

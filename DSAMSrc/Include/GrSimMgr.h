@@ -97,6 +97,7 @@ enum {
 /********************************** Pre-references ****************************/
 
 class SimModuleDialog;
+class ModuleParDialog;
 
 /*************************** MyFrame ******************************************/
 
@@ -109,6 +110,7 @@ class MyFrame: public wxFrame {
 	int		helpCount;
 	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu;
 	wxConfigBase	*pConfig;
+	ModuleParDialog	*mainParDialog;
 
   public:
     wxPanel		*panel;
@@ -121,6 +123,7 @@ class MyFrame: public wxFrame {
 	wxMenu *	GetProgramMenu(void)	{ return programMenu; }
 	void	AddHelpBook(const wxString& path, const wxString& defaultPath,
 			  const wxString& fileName);
+	void	DeleteMainParDialog(void);
 	void	OnAbout(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnExecute(wxCommandEvent& event);
@@ -135,6 +138,8 @@ class MyFrame: public wxFrame {
 	void	OnViewSimPars(wxCommandEvent& event);
 	void	OnSize(wxSizeEvent& event);
 	bool	ResetSimulation(void);
+	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
+	void	UpdateMainParDialog(void);
 
    private:
       wxHtmlHelpController help;

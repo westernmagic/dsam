@@ -843,6 +843,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	wxLayoutConstraints	*c;
 
 	fileMenu = editMenu = viewMenu = NULL;
+	mainParDialog = NULL;
 
 #	ifdef MPI_SUPPORT
 	static const char *funcName = "MyFrame::MyFrame";
@@ -1005,6 +1006,7 @@ MyFrame::~MyFrame(void)
 	MPI_Finalize();
 #	endif
 	
+	DeleteMainParDialog();
 	wxGetApp().ExitMain();
 
 	// save the control's values to the config
@@ -1082,6 +1084,34 @@ MyFrame::ResetSimulation(void)
 
 }
 
+/****************************** DeleteMainParDialog ***************************/
+
+void
+MyFrame::DeleteMainParDialog(void)
+{
+	if (!mainParDialog)
+		return;
+	delete mainParDialog;
+	mainParDialog = NULL;
+
+}
+
+/****************************** UpdateMainParDialog ***************************/
+
+/*
+ * This routine checks if main dialog window is open, and if so it refreshes
+ * the parameters in the dialog.
+ */
+
+void
+MyFrame::UpdateMainParDialog(void)
+{
+	if (!mainParDialog)
+		return;
+	
+
+}
+
 /******************************************************************************/
 /****************************** Call backs ************************************/
 /******************************************************************************/
@@ -1112,6 +1142,12 @@ MyFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 			NotifyError("%s: Simulation not initialised.", funcName);
 			return;
 		}
+	}
+	if (mainParDialog) {
+		if (!mainParDialog->CheckChangedValues())
+			return;
+		mainParDialog->parListInfoList->UpdateAllControlValues();
+		mainParDialog->cancelBtn->Enable(FALSE);
 	}
 	ResetGUIDialogs();
 	wxGetApp().StartSimThread();
@@ -1203,13 +1239,16 @@ MyFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 	if (!GetPtr_AppInterface()->parList)
 		return;
 
-	ModuleParDialog dialog(this, "Main Parameters", 0, NULL,
-	  GetPtr_AppInterface()->parList, 300, 300, 500, 500,
-	  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
+	if (mainParDialog)
+		return;
+	mainParDialog = new ModuleParDialog(this, "Main Parameters",
+	  MODPARDIALOG_MAIN_PARENT_INFONUM, NULL, GetPtr_AppInterface()->parList,
+	  300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
+	mainParDialog->Show(TRUE);
 
-	if ((dialog.ShowModal() == wxID_OK) && GetPtr_AppInterface()->
+	/*if ((dialog.ShowModal() == wxID_OK) && GetPtr_AppInterface()->
 	  updateProcessVariablesFlag)
-		ResetSimulation();
+		ResetSimulation();*/
 
 }
 
@@ -1245,6 +1284,8 @@ MyFrame::OnLoadSimFile(wxCommandEvent& event)
 	  &GetPtr_AppInterface()->parList, APP_INT_SIMULATIONFILE, (char *) dialog.
 	  GetPath().GetData())) {
 		ResetSimulation();
+		if (mainParDialog)
+			mainParDialog->parListInfoList->UpdateAllControlValues();
 	}
 
 }

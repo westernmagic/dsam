@@ -100,6 +100,7 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 
 	if (parListInfoList->GetUseNotebookControls()) {
 		addICBtn = new wxButton(this, DL_ID_ADD_IC, "Add IC");
+		addICBtn->Enable(FALSE);
 		addICBtn->SetToolTip("Press button to add an ion channel.");
 
 		deleteICBtn = new wxButton(this, DL_ID_DELETE_IC, "Delete IC");
@@ -136,6 +137,11 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 void
 ModuleParDialog::DeleteDialog(void)
 {
+	if (infoNum == MODPARDIALOG_MAIN_PARENT_INFONUM) {
+		wxGetApp().GetFrame()->SetMainParDialog(NULL);
+		return;
+	}
+
 	DialogList *parent = (DialogList *) GetParent();
 
 	if (pc && pc->data->module->specifier == DISPLAY_MODULE)

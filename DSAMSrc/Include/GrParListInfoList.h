@@ -65,6 +65,7 @@ class ParListInfoList {
 	void	SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 			  UniParListPtr parList, int offset = 0, int panelNum = 0);
 	void	SetSubParListInfo(ParListInfo *info);
+	void	UpdateAllControlValues(void);
 
 };
 
