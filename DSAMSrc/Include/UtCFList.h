@@ -96,7 +96,6 @@ typedef struct CFList {
 	int		oldNumChannels;
 	UniParListPtr	cFParList;
 	UniParListPtr	bParList;
-	struct	CFList	**parentPtr;
 
 } CFList, *CFListPtr;
 
@@ -114,30 +113,29 @@ typedef struct CFList {
  */
 __BEGIN_DECLS
 
-BOOLN		CheckInit_CFList(CFList *theCFList, const char *callingFunction);
+BOOLN		AllocateFrequencies_CFList(CFListPtr theCFs);
 
-BOOLN		CheckPars_CFList(CFList *theCFList);
+BOOLN		CheckInit_CFList(CFList *theCFs, const char *callingFunction);
+
+BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
 void		Free_CFList(CFListPtr *theCFs);
 
-CFListPtr	GenerateERB_CFList(double minCF, double maxCF, double eRBDensity);
+BOOLN		GenerateERB_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateERBn_CFList(double minCF, double maxCF, int numberOfCFs);
+BOOLN		GenerateERBn_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateFocalLog_CFList(double focalCF, double minCF, double maxCF,
-			  int numberOfCFs);
+BOOLN		GenerateFocalLog_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateLinear_CFList(double minCF, double maxCF, int numberOfCFs);
+BOOLN		GenerateLinear_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateList_CFList(int mode, int diagnosticMode, int numberOfCFs,
-			  double minCF, double maxCF, double focalCF, double eRBDensity,
-			  double *frequencies);
+CFListPtr	GenerateList_CFList(char *modeName, char *diagModeName,
+			  int numberOfCFs, double minCF, double maxCF, double focalCF,
+			  double eRBDensity, double *frequencies);
 
-CFListPtr	GenerateLog_CFList(double minCF, double maxCF, int numberOfCFs);
+BOOLN		GenerateLog_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateNewList_CFList(CFListPtr oldCFs);
-
-CFListPtr	GenerateUser_CFList(int theChannels, double *theFrequencies);
+BOOLN		GenerateUser_CFList(CFListPtr theCFs);
 
 double		GetBandwidth_CFList(CFListPtr theCFs, int channel);
 
@@ -148,6 +146,8 @@ CFListPtr	Init_CFList(const char *callingFunctionName);
 void		PrintList_CFList(CFListPtr theCFs);
 
 void		PrintPars_CFList(CFListPtr theCFs);
+
+BOOLN		RatifyPars_CFList(CFListPtr theCFs);
 
 BOOLN		ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs);
 
@@ -181,6 +181,10 @@ BOOLN		SetDiagnosticMode_CFList(CFListPtr theCFs, char *modeName);
 
 BOOLN		SetERBDensity_CFList(CFListPtr theCFs, double eRBDensity);
 
+BOOLN		SetFocalCF_CFList(CFListPtr theCFs, double focalCF);
+
+BOOLN		SetGeneratedPars_CFList(CFListPtr theCFs);
+
 BOOLN		SetIndividualBandwidth_CFList(CFListPtr theCFs, int theIndex,
 			  double theBandwidth);
 
@@ -195,8 +199,6 @@ BOOLN		SetNewBandwidthMode_CFList(CFListPtr theCFs,
 			  BandwidthModePtr oldMode);
 
 BOOLN		SetNumChannels_CFList(CFListPtr theCFs, int numChannels);
-
-BOOLN		SetParentCFList_CFList(CFListPtr *cFPtr, CFListPtr theCFList);
 
 BOOLN		SetSingleFrequency_CFList(CFListPtr theCFs, double theFrequency);
 
