@@ -9,6 +9,6 @@ SUBDIRS		= AuditoryPeriphery Autocorrelation BinauralPitch DRNLinputOutput \
 				GenerateStimulus ImpulseResponse Loudness MATLABdemo \
 				MeasureIntensity Pre-emphasisFilter
 
-EXTRA_DIST	= AMStutorialNotes.doc
+EXTRA_DIST	= 
 
 include $(top_srcdir)/mkunxinst.env
