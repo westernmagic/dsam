@@ -202,6 +202,8 @@ typedef struct UniParListNode {
 
 	} handlePtr;
 
+	NameSpecifier * (* GetPanelList)(int);
+
 } UniParList;
 
 /******************************************************************************/
@@ -258,6 +260,9 @@ BOOLN	SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index,
 
 BOOLN	SetICParValue_UniParMgr(UniParListPtr parList, uInt index,
 		  char *parValue);
+
+BOOLN	SetGetPanelListFunc_UniParMgr(UniParListPtr list,
+		  NameSpecifier * (* Func)(int));
 
 void	SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
