@@ -677,7 +677,6 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	}
 	timeOffsetIndex = (ChanLen) ((autoCorrPtr->timeOffset < 0.0)?
 	  data->inSignal[0]->length: autoCorrPtr->timeOffset / dt + 0.5);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	SetInfoSampleTitle_SignalData(data->outSignal, "Delay maxLag (s)");
 	if (!InitProcessVariables_Analysis_ACF(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
