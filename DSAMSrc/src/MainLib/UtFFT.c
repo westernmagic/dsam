@@ -27,7 +27,7 @@
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
-/******************************************************************************/ 
+/******************************************************************************/
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -158,6 +158,12 @@ Calc_FFT(double *data, unsigned long nn, int isign)
 /*
  * This function calculates the normalised Fourier transformation of a real data
  * set.
+ * The '**ft' argument has been added so that the workspace can be assigned from
+ * outside of the routine.  If it is set to NULL, then the workspace will be
+ * assigned inside of the routine.
+ * If it is assigned from outside of the routine, then the calling routine must
+ * ensure that the correct size is used, and the the memory is deallocated after
+ * use.
  * It returns FALSE if the routine fails in any way.
  * N.B. dfn = n / (dt * length * 2).
  */
@@ -165,12 +171,13 @@ Calc_FFT(double *data, unsigned long nn, int isign)
 #define	C1	0.5
 
 BOOLN
-CalcReal_FFT(SignalDataPtr signal, int direction)
+CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 {
 	static const char *funcName = "CalcReal_FFT";
-	ChanLen	i, k, n, ln;
+	BOOLN	localFTArray = FALSE;
+	ChanLen	i, k, n;
 	double	h1r, h1i, h2r, h2i;
-	double	wr, wi, wpr, wpi, wtemp, theta, *fT;
+	double	wr, wi, wpr, wpi, wtemp, theta;
 	register double		c2, c3, *fT1, *fT2;
 	register ChanData	*ptr;
 	
@@ -178,13 +185,14 @@ CalcReal_FFT(SignalDataPtr signal, int direction)
 		NotifyError("%s: Signal not correctly set.", funcName);		
 		return(FALSE);
 	}
-	/* This next bit ensures there is a power of two of data */
-	ln = (ChanLen) ceil(log(signal->length) / log(2.0));
-	n = (ChanLen) pow(2.0, (double) ln);
-	if ((fT = (double *) calloc(n, sizeof(double))) == NULL) {
-		NotifyError("%s: Couldn't allocate memory for complex data array.",
-		  funcName);
-		return(FALSE);
+	n = Length_FFT(signal->length);
+	if (!fT) {
+		localFTArray = TRUE;
+		if ((fT = (double *) calloc(n, sizeof(double))) == NULL) {
+			NotifyError("%s: Couldn't allocate memory for complex data array.",
+			  funcName);
+			return(FALSE);
+		}
 	}
 	SetSamplingInterval_SignalData(signal, 1.0 / (signal->dt * n * 2.0));
 	theta = M_PI / (double) (n >> 1);
@@ -232,10 +240,27 @@ CalcReal_FFT(SignalDataPtr signal, int direction)
 		for (fT1 = fT; fT1 < fT + signal->length; fT1++)
 			*ptr++ = *fT1 * c3;
 	}
-	free(fT);
+	if (localFTArray)
+		free(fT);
 	return(TRUE);
 
 }
 
 #undef C1
 
+/****************************** Length ****************************************/
+
+/*
+ * This function returns the nearest length which is a power of two for use
+ * with the FFT algorithm.
+ */
+
+unsigned long
+Length_FFT(unsigned long length)
+{
+	unsigned long	ln;
+
+	ln = (unsigned long) ceil(log(length) / log(2.0));
+	return((unsigned long) pow(2.0, (double) ln));
+
+}

@@ -428,13 +428,10 @@ BOOLN
 InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_FourierT";
-	ChanLen	ln;
 
 	if (fourierTPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_FourierT();
-		/* This next bit ensures there is a power of two of data */
-		ln = (ChanLen) ceil(log(data->inSignal[0]->length) / log(2.0));
-		fourierTPtr->fTLength = (ChanLen) pow(2.0, (double) ln);
+		fourierTPtr->fTLength = Length_FFT(data->inSignal[0]->length);
 		if ((fourierTPtr->fT = (Complex *) calloc(fourierTPtr->fTLength,
 		  sizeof(Complex))) == NULL) {
 			NotifyError("%s: Couldn't allocate memory for complex data array.",

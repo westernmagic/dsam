@@ -37,7 +37,9 @@ void	Calc_FFT(double *data, unsigned long nn, int isign);
 
 void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
-BOOLN	CalcReal_FFT(SignalDataPtr signal, int direction);
+BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
+
+unsigned long	Length_FFT(unsigned long length);
 
 __END_DECLS
 
