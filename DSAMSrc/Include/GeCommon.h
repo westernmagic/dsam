@@ -178,6 +178,7 @@ typedef enum {
 	
 typedef struct {
 
+	BOOLN	appInitialisedFlag;	/* TRUE when application initialised. */
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
 	BOOLN	noGUIOutputFlag;	/* TRUE, when forcing output to stdout. */
@@ -240,6 +241,8 @@ void	DPrintStandard_Message(char *format, va_list args);
 void	FindFilePathAndName_Common(char *filePath, char *path, char *name);
 
 void	FreeDoubleArray_Common(double **p);
+
+DSAMPtr	GetDSAMPtr_Common(void);
 
 FILE *	GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode);
 
