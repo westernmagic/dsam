@@ -85,6 +85,8 @@ Free_Utility_SimScript(void)
 	FreeSimulation_Utility_SimScript();
 	if (simScriptPtr->parFilePathModeList)
 		free(simScriptPtr->parFilePathModeList);
+	if (simScriptPtr->labelBList)
+		FreeList_Utility_DynaBList(&simScriptPtr->labelBList);
 	if (simScriptPtr->parList)
 		FreeList_UniParMgr(&simScriptPtr->parList);
 	if (simScriptPtr->parSpec == GLOBAL) {
@@ -290,7 +292,7 @@ SetSimulation_Utility_SimScript(DatumPtr theSimulation)
 		NotifyError("%s: Simulation not correctly Initialised.", funcName);
 		return(FALSE);
 	}
-	if (simScriptPtr->labelBList)
+	if (!GetDSAMPtr_Common()->usingGUIFlag && simScriptPtr->labelBList)
 		FreeList_Utility_DynaBList(&simScriptPtr->labelBList);
 	simScriptPtr->simulation = theSimulation;
 	return(ok);
@@ -908,6 +910,26 @@ GetSimulation_Utility_SimScript(void)
 		return(FALSE);
 	}
 	return(simScriptPtr->simulation);
+
+}
+
+/****************************** GetLabelBList *********************************/
+
+/*
+ * This routine returns a pointer to the module's label binary list for use by
+ * other modules.
+ */
+ 
+DynaBListPtr
+GetLabelBList_Utility_SimScript(void)
+{
+	static const char	*funcName = "GetLabelBList_Utility_SimScript";
+
+	if (simScriptPtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	return(simScriptPtr->labelBList);
 
 }
 
