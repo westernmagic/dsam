@@ -71,10 +71,11 @@ class ModuleParDialog: public DialogList {
 
  public:
 	ModuleParDialog(wxWindow *parent, const wxString& title, int theInfoNum,
-	  DatumPtr pc, UniParListPtr theParList = NULL, long theStyle =
-	  DIALOGLIST_STYLE_DEFAULT, int x = -1, int y = -1, int width = -1,
-	  int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
+	  DatumPtr pc, UniParListPtr theParList = NULL, int x = -1, int y = -1,
+	  int width = -1, int height = -1, long style = wxDEFAULT_DIALOG_STYLE);
 	~ModuleParDialog(void);
+
+	virtual void UnSetDialog(void)	{; }
 
 	void	DeleteDialog(void);
 	void	OnICButton(wxCommandEvent& event);
