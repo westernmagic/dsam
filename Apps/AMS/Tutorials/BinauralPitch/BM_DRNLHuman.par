@@ -25,8 +25,7 @@ LINSCALEG_PARAMETER	1:-0.48
 #CF List Parameters:-
 DIAG_MODE	PARAMETERS	Diagnostic mode ('list' or 'parameters').
 CF_MODE	HUMAN	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
-MIN_CF	200	Minimum centre frequency (Hz).
-MAX_CF	5000	Maximum centre frequency (Hz).
+MIN_CF	40	Minimum centre frequency (Hz).
+MAX_CF	10000	Maximum centre frequency (Hz).
 CHANNELS	30	No. of centre frequencies.
 
-B_MODE	INTERNAL_STATIC	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').

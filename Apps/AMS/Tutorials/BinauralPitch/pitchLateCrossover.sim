@@ -1,55 +1,55 @@
-#pitchLateCrossover.sim
+# pitchLateCrossover.sim
 
-# simulation accepts a binaural input
+#  simulation accepts a binaural input
 #  computes an acf for each ear independently 
 #  and then averages the two acfs.
   
-off			Diagnostics mode ("off" or "on").
+off		Diagnostics mode ("off" or "on").
 relative	Parameter file path mode - \relative\ or \absolute\
  
 begin {
 
-#  Read stimulus from file
-			DataFile_In 				< dataFileIn.par	
+#  Stimulus generation
+		DataFile_In 		< dataFileIn.par	
 
-#apply ramps to signal
-			Trans_Gate					< rampUp.par
-			Trans_Gate					< rampDown.par
-			Display_Signal			< displayStimulus.par
+# apply ramps to signal
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Display_Signal		< displayStimulus.par
 
-#outer/middle ear simulation
-			Filt_MultiBPass			< filtMultiBandpass.par
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
 
-#convert to stapes velocity
-			filt_LowPass				< filtScaleToStapes.par
+# convert to stapes velocity
+		Util_mathOp			< mathOPstapes.par
 
-#nonlinear DRNL filterbank
-			BM_DRNL					< BM_DRNLHuman.par
-			Display_Signal			< displayBM.par
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
 
-#receptor potential 
-			Filt_MultiBPass			< filtStereocilia.par
-			IHCRP_Shamma 				< IHCreceptorPotential.par
-			Display_Signal			< displayReceptorPotential.par
-  
-# HSR spike probability
-			IHC_Meddis2000			< IHC_Meddis2000HSR.par
+# receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayReceptorPotential.par 
 
-#autocorrelate
-			Ana_Acf					< acf.par
-			Display_Signal			< displayACFlate.par
+# HSR
+		IHC_Meddis2000		< IHC_Meddis2000HSR.par
+		Display_Signal		< displayHSR.par 
 
-#create summary acf
-redch%		 	Util_ReduceChannels	(->swap, acc)	< UtRedChans.par
+# autocorrelate
+		Ana_Acf		< acf.par
+		Display_Signal		< displayACFlate.par
 
-#create left right mirror image
-swap%			util_swapLR			(redch->acc)
+# create summary acf
+redch%	Util_ReduceChannels	(->swap, acc)	< UtRedChans.par
+
+# create left right mirror image
+swap%		util_swapLR			(redch->acc)
 		
-#add left/right acfs together
-acc%			Util_Accumulate		(redch, swap-> )
-			Display_Signal							< displayACF2.par
+# add left/right acfs together
+acc%		Util_Accumulate		(redch, swap-> )
+		Display_Signal		< displaySACF.par 
 
-#write results to a data file	
-			DataFile_out								< dataFileOut.par
+# write results to a data file	
+		DataFile_out		< dataFileOut.par
 		}	
 
