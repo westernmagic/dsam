@@ -15,7 +15,7 @@
  *				and used in in all modules which need to store file names.
  *				29-01-99 LPO: Under the GRAPHICS mode the 'NotifyError' routine
  *				will produce a dialog the first time (if the 
- *				dSAM.'noGUIOutputFlag' flag is set to false).  After the first
+ *				dSAM.'dialogOutputFlag' flag is set to true).  After the first
  *				dialog is created, then subsequent calls will send error
  *				messages to the console.
  *				04-02-99 LPO: Introduced the 'CloseFile' routine to prevent
@@ -252,7 +252,7 @@ typedef struct {
 	BOOLN	segmentedMode;		/* TRUE, when in segmented mode. */
 	BOOLN	usingGUIFlag;		/* TRUE when the GUI is being used. */
 	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
-	BOOLN	noGUIOutputFlag;	/* TRUE, when forcing output to stdout. */
+	BOOLN	dialogOutputFlag;	/* TRUE, when forcing output to GUI dialog */
 	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
 	char	*version;			/* Global version; shared library will show */
 	char	*parsFilePath;		/* File path for parameter files. */
