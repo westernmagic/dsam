@@ -12,7 +12,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function signal = ReadAIFF(fname)
+function [signal, info] = ReadAIFF(fname)
 
 absoluteNormalise = 1.0;
 fid = fopen(fname);
@@ -39,10 +39,10 @@ while chunkSize - 4 > 0;
 	chunkName = ReadBytes(fid, 4, littleEndian);
 	chunkSize = chunkSize - 4;
 	if chunkName' == double('COMM');
-% 		disp('step COMM');
+ 		%disp('step COMM');
  		subSize = Read32Bits(fid, littleEndian);
  		chunkSize = chunkSize-subSize;
- 		numChannels = Read16Bits(fid, littleEndian);
+ 		info.numChannels = Read16Bits(fid, littleEndian);
  		subSize = subSize - 2;
  		numSampleFrames = Read32Bits(fid, littleEndian);
  		subSize = subSize - 4; 
@@ -52,7 +52,7 @@ while chunkSize - 4 > 0;
  		subSize = subSize - 10;
  		fread(fid, subSize, 'char');
 	elseif chunkName' == double('SSND');
-% 		disp('step SSND');
+ 		%disp('step SSND');
  		subSize = Read32Bits(fid, littleEndian);
  		chunkSize = chunkSize - subSize;
  		offset = Read32Bits(fid, littleEndian);
@@ -62,20 +62,21 @@ while chunkSize - 4 > 0;
 		soundPosition = ftell(fid) + offset;
 		fread(fid, subSize, 'char');
 	elseif chunkName' == double('LUT2');
-% 		disp('step LUT2');
+ 		%disp('step LUT2');
  		subSize = Read32Bits(fid, littleEndian);
  		chunkSize = chunkSize - subSize;
- 		interleaveLevel = Read16Bits(fid, littleEndian);
+ 		info.interleaveLevel = Read16Bits(fid, littleEndian);
  		subSize = subSize - 2;
-  		numWindowFrames = Read16Bits(fid, littleEndian);
+  		info.numWindowFrames = Read16Bits(fid, littleEndian);
  		subSize = subSize - 2;
   		staticTimeFlag = Read16Bits(fid, littleEndian);
  		subSize = subSize - 2;
-		outputTimeOffset = ReadIEEE(fid, littleEndian);
+		info.outputTimeOffset = ReadIEEE(fid, littleEndian);
  		subSize = subSize - 10;
  		absoluteNormalise = ReadIEEE(fid, littleEndian);
  		subSize = subSize - 10;
- 		fread(fid, subSize, 'char');
+ 		posOfChannelLabels = ftell(fid);
+		fread(fid, subSize, 'char');
 		
  	else;
  		subSize = Read32Bits(fid, littleEndian);
@@ -92,12 +93,23 @@ switch wordSize
 	case 2, scale = normalise / 32768.0;
 	case 4, scale = normalise / 32768.0 / 65536;
 end
-frameLength = numSampleFrames / numWindowFrames;
-signal = zeros(numChannels,frameLength, numWindowFrames);
+info.length = numSampleFrames / info.numWindowFrames;
+signal = zeros(info.numChannels,info.length, info.numWindowFrames);
 status = fseek(fid, soundPosition, 'bof');
-for k = 1:numWindowFrames
-	signal(:, :, k) = ReadWinFrame(fid, numChannels, frameLength, wordSize, ...
-	  littleEndian);
+for k = 1:info.numWindowFrames
+	signal(:, :, k) = ReadWinFrame(fid, info.numChannels, info.length, ...
+	  wordSize, littleEndian);
 end
 signal = signal .* scale;
+info.dt = 1.0 / sampleRate;
+
+chan = 1;
+fseek(fid, posOfChannelLabels, -1);
+for k = 1:info.numChannels / info.interleaveLevel
+	labelValue = ReadIEEE(fid, littleEndian);
+	for l = 1:info.interleaveLevel
+		info.labels(chan) = labelValue;
+		chan = chan + 1;
+	end
+end
 status = fclose(fid);
