@@ -78,7 +78,7 @@ SimThread::SimThread(void): wxThread()
 void *
 SimThread::Entry()
 {
-	MainSimulation();
+	dSAMMainApp->RunSimulation();
 	GetPtr_AppInterface()->simulationFinishedFlag = TRUE;
 
 	return(NULL);

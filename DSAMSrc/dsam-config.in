@@ -114,6 +114,7 @@ if [ "$echo_libs" = "yes" ]; then
 			libs="$libs -ldmallocxx"
 		fi
 	fi
+	libs="$libs @DSAMEXTLIB@"
 	if [ "$use_gui" = "yes" ]; then
 		libs="$libs -l@PACKAGE@_g @WXLDLIBS@"
 	else
@@ -122,6 +123,5 @@ if [ "$echo_libs" = "yes" ]; then
 			libs="$libs @WX_BASE_LDFLAGS@"
 		fi
 	fi
-	libs="$libs @DSAMEXTLIB@"
 	echo $libs
 fi

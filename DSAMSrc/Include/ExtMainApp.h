@@ -21,7 +21,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define EXTMAINAPP_DEFAULT_SERVER_PORT		3000
+#define EXTMAINAPP_DEFAULT_SERVER_PORT		3300
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -42,30 +42,42 @@ class SimThread;
 
 class MainApp {
 
-	bool	serverFlag;
+	bool	initOk, serverFlag;
 	char	**argv;
 	int		argc;
 	int		serverPort;
+	int		(* ExternalMain)(void);
+	int		(* ExternalRunSimulation)(void);
 
   public:
 	SimThread	*simThread;
 	wxCriticalSection	mainCritSect;
 
-  	MainApp(int theArgc, char **theArgv);
+  	MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void) = NULL,
+	  int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
+	virtual bool	InitRun(void);
+	virtual int		Main(void);
+	virtual	bool	RunSimulation(void);
 	virtual bool	ResetSimulation(void);
 	virtual void	SetRunIndicators(bool on)	{ ; }
+
+	// has the initialization been successful? (implicit test)
+	operator bool() const { return initOk; }
 
 	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
 	void	DeleteSimThread(void);
+	EarObjectPtr	GetSimProcess(void);
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
 	bool	InitMain(bool loadSimulationFlag = false);
-	bool	InitRun(void);
+	int		RunServer(void);
+	void	SetInitStatus(bool status)	{ initOk = status; }
 	void	StartSimThread(void);
-	int		Main(void);
+	void	SetArgc(int theArgc)	{ argc = theArgc; }
+	void	SetArgv(char **theArgv)	{ argv = theArgv; }
 
 };
 
@@ -73,7 +85,7 @@ class MainApp {
 /*************************** External Variables *******************************/
 /******************************************************************************/
 
-extern int		MainSimulation(void);
+extern int	MainSimulation(void);
 extern MainApp	*dSAMMainApp;
 
 /******************************************************************************/
@@ -94,7 +106,7 @@ extern MainApp	*dSAMMainApp;
 			exit(1);
 		}
 
-		MainApp	mainApp(argc, argv);
+		MainApp	mainApp(argc, argv, MainSimulation);
 		exit(mainApp.Main());
 
 	}

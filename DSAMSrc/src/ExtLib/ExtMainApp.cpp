@@ -55,16 +55,22 @@ MainApp	*dSAMMainApp = NULL;
  * the "main" subroutine in the header file.
  */
 
-MainApp::MainApp(int theArgc, char **theArgv)
+MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
+  int (* TheExternalRunSimulation)(void))
 {
+	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
+	ExternalMain = TheExternalMain;
+	ExternalRunSimulation = (TheExternalRunSimulation)?
+	  TheExternalRunSimulation: TheExternalMain;
 	serverFlag = false;
 	serverPort = EXTMAINAPP_DEFAULT_SERVER_PORT;
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
-	InitRun();
+	if (ExternalMain)
+		initOk = InitRun();
 	CheckOptions();
 	
 }
@@ -95,10 +101,27 @@ MainApp::Main(void)
 	static const char *funcName = "MainApp::Main";
 
 	printf("MainApp::Main: Entered\n");
-	if (!serverFlag) {
-		InitMain(TRUE);
-		return(MainSimulation());
+	if (serverFlag)
+		return(RunServer());
+	if (!InitMain(TRUE)) {
+		 NotifyError("%s: Could not initialise the main program.",
+		   funcName);
+		return(false);
 	}
+	return(RunSimulation());
+
+}
+
+/****************************** RunServer *************************************/
+
+/*
+ */
+
+int
+MainApp::RunServer(void)
+{
+	static const char *funcName = "MainApp::RunServer";
+
 	printf("MainApp::Main: Starting server operation.\n");
 	SetOnExecute_AppInterface(OnExecute_MainApp);
 	InitMain(FALSE);
@@ -181,7 +204,7 @@ MainApp::InitRun(void)
 		NotifyWarning("%s: Attempted to re-initialise application.", funcName);
 		return(TRUE);
 	}
-	MainSimulation();
+	(* ExternalMain)();
 	SetCanFreePtrFlag_AppInterface(FALSE);
 	return(CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
 
@@ -288,7 +311,7 @@ MainApp::DeleteSimThread(void)
 bool
 MainApp::ResetSimulation(void)
 {
-	static char *funcName = "MainApp::ResetSimulation";
+	static const char *funcName = "MainApp::ResetSimulation";
 
 	if (simThread) {
 		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
@@ -298,6 +321,37 @@ MainApp::ResetSimulation(void)
 	if (!CheckInitialisation())
 		return(false);
 	return(true);
+
+}
+
+/****************************** RunSimulation *********************************/
+
+bool
+MainApp::RunSimulation(void)
+{
+	static const char *funcName = "MainApp::RunSimulation";
+
+	if (!ExternalRunSimulation){
+		NotifyError("%s: External run simulation function not set.", funcName);
+		return(false);
+	}
+	return((* ExternalRunSimulation)());
+
+}
+
+/****************************** GetSimProcess *********************************/
+
+EarObjectPtr
+MainApp::GetSimProcess(void)
+{
+	static const char *funcName = "MainApp::GetSimProcess";
+	EarObjectPtr	audModel;
+
+	if ((audModel = GetSimProcess_AppInterface()) == NULL) {
+		NotifyError("%s: simulation did not run successfully.", funcName);
+		return(NULL);
+	}
+	return (audModel);
 
 }
 

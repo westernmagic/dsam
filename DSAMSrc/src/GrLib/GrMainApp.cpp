@@ -45,7 +45,8 @@
  * the "main" subroutine in the header file.
  */
 
-GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv)
+GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
+  MainSimulation)
 {
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())

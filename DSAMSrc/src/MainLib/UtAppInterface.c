@@ -654,7 +654,7 @@ ProcessParComs_AppInterface(void)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if (!appInterfacePtr->useParComsFlag)
+	if (!appInterfacePtr->useParComsFlag || !appInterfacePtr->audModel)
 		return(TRUE);
 
 	if ((simulation = GetSimulation_ModuleMgr(appInterfacePtr->audModel)) ==

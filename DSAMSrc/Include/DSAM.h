@@ -31,7 +31,6 @@
 
 #if defined(LIBRARY_COMPILE) && defined(GRAPHICS_SUPPORT)
 #	define DSAM_DO_NOT_DEFINE_MYAPP = 1
-#	define USE_GUI = 1
 #endif
 
 #include "GeCommon.h"
