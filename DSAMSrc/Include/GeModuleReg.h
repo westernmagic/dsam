@@ -59,6 +59,8 @@ typedef struct {
  */
 __BEGIN_DECLS
 
+int		GetNumUserModules_ModuleReg(void);
+
 ModRegEntryPtr	Identify_ModuleReg(ModRegEntryPtr list, char *name);
 
 BOOLN	InitUserModuleList_ModuleReg(int theMaxUserModules);

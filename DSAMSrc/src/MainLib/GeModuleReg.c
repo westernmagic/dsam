@@ -372,7 +372,7 @@ Identify_ModuleReg(ModRegEntryPtr list, char *name)
 ModRegEntryPtr
 GetRegEntry_ModuleReg(char *name)
 {
-	static char *funcName = "GetRegEntry_ModuleReg";
+	static const char *funcName = "GetRegEntry_ModuleReg";
 	ModRegEntryPtr	regEntryPtr;
 
 	if (name == NULL) {
@@ -437,7 +437,7 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
 BOOLN
 RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
 {
-	static char *funcName = "RegEntry_ModuleReg";
+	static const char *funcName = "RegEntry_ModuleReg";
 	char	upperName[MAXLINE];
 	ModRegEntryPtr	regEntry;
 
@@ -470,3 +470,17 @@ RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
 
 }
 
+/************************** GetNumUserModules *********************************/
+
+/*
+ * This routine returns the number of user modules.
+ */
+
+int
+GetNumUserModules_ModuleReg(void)
+{
+	/*static const char *funcName = "GetNumUserModules_ModuleReg";*/
+
+	return(numUserModules);
+
+}
