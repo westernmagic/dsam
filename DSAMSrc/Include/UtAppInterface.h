@@ -90,7 +90,6 @@ typedef struct {
 	EarObjectPtr	audModel;
 
 	/* Private members */
-	BOOLN	simParFileFlag;
 	BOOLN	canFreePtrFlag;
 	NameSpecifier	*listingModeList;
 	NameSpecifier	*diagModeList;
