@@ -127,7 +127,11 @@ __BEGIN_DECLS
 
 BOOLN	Free_AppInterface(void);
 
+EarObjectPtr	GetEarObjectPtr_AppInterface(void);
+
 StatPtr	GetFileStatusPtr_AppInterface(char *fileName);
+
+DatumPtr	GetSimulation_AppInterface(void);
 
 BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
