@@ -11,9 +11,10 @@
 #
 ##################
 
+#gettextize --force --copy
+libtoolize --force --copy
 aclocal
 autoheader
 autoconf
-automake --add-missing
-ln -sf /usr/share/libtool/ltmain.sh CfgTools/
+automake --add-missing --force-missing --gnu
 
