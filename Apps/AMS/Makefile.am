@@ -19,7 +19,7 @@ INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
 
-SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab MSVC
+SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab Octave MSVC
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)

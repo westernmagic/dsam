@@ -266,7 +266,8 @@ ReadAppInterfacePars(char *parFileName)
 	if (!ReadPars_AppInterface(fp))
 		ok = FALSE;
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&programParList, parName)) == NULL) {
+		if ((par = FindUniPar_UniParMgr(&programParList, parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
 			  parName);
 			ok = FALSE;
@@ -340,7 +341,6 @@ Init(void)
 
 	SetUniParList();
 
-	SetTitle_AppInterface(PROGRAM_NAME);
 	SetAppParList_AppInterface(programParList);
 
 	SetAppPrintUsage_AppInterface(PrintUsage);
