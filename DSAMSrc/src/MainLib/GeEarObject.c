@@ -516,7 +516,6 @@ BOOLN
 ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 {
 	static const char *funcName = "ConnectOutSignalToIn_EarObject";
-	char	*moduleName;
 	int		inSignalRef;
 
 	if (supplier == NULL) {
