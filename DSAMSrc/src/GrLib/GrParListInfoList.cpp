@@ -240,8 +240,9 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 			case UNIPAR_CFLIST: {
 				CFListPtr	theCFs = *p->valuePtr.cFPtr;
 				SetStandardInfo(panel, pc, theCFs->cFParList, "CF List");
-				if (theCFs->bandwidthMode.specifier !=
-				  BANDWIDTH_INTERNAL_DYNAMIC)
+				if ((theCFs->bandwidthMode.specifier !=
+				  BANDWIDTH_INTERNAL_DYNAMIC) && (theCFs->bandwidthMode.
+				  specifier !=BANDWIDTH_DISABLED))
 					SetStandardInfo(panel, pc, theCFs->bParList, "Bandwidths");
 				break; }
 			case UNIPAR_ICLIST: {
