@@ -20,11 +20,11 @@ EOF
 	exit $1
 }
 
-if test $# -eq 0; then
+if [ $# -eq 0 ]; then
 	usage 1 1>&2
 fi
 
-while test $# -gt 0; do
+while [ $# -gt 0 ]; do
 	case "$1" in
 	-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
 	*) optarg= ;;
@@ -33,7 +33,7 @@ while test $# -gt 0; do
 	case $1 in
 	--prefix=*)
 		prefix=$optarg
-		if test $exec_prefix_set = no ; then
+		if [ $exec_prefix_set = no ]; then
 			exec_prefix=$optarg
 		fi
 		;;
@@ -52,7 +52,7 @@ while test $# -gt 0; do
 		exit 0
 		;;
 	--cflags)
-		if test "@includedir@" != /usr/include ; then
+		if [ "@includedir@" != /usr/include ]; then
 			includes="-I@includedir@"
 		fi
 		echo_cflags=yes
@@ -64,11 +64,14 @@ while test $# -gt 0; do
 		echo_libs=yes
 		;;
 	--gui)
-		if test -z "@WXWIN_FALSE@"; then
+		if [ -z "@WXWIN_FALSE@" ]; then
 			echo Graphics support not installed.
 			exit 1
 		fi
 		use_gui=yes
+		;;
+	--debug)
+		use_debug=yes
 		;;
 	*)
 		usage 1 1>&2
@@ -77,29 +80,32 @@ while test $# -gt 0; do
 	shift
 done
 
-if test "$echo_prefix" = "yes"; then
+if [ "$echo_prefix" = "yes" ]; then
 	echo $prefix
 fi
-if test "$echo_exec_prefix" = "yes"; then
+if [ "$echo_exec_prefix" = "yes" ]; then
 	echo $exec_prefix
 fi
 if test "$echo_cflags" = "yes"; then
 	cflags="@DEFS@ -I@includedir@/@PACKAGE@"
-	if test "$use_gui" = "yes"; then
+	if [ "$use_debug" = "yes" ]; then
+		cflags="$cflags -mwindows"
+	fi
+	if [ "$use_gui" = "yes" ]; then
 		cflags="$cflags @DSAM_GRAPHICS@ @WXINC@"
 	fi
-	if test "$MINGW32" = "yes"; then
+	if [ "$MINGW32" = "yes" -a "$use_debug" != "yes" ]; then
 		cflags="$cflags -mwindows"
 	fi
 	echo $cflags
 fi
-if test "$echo_rflags" = "yes"; then
+if [ "$echo_rflags" = "yes" ]; then
 	rflags="@RESFLAGS@ --include-dir @includedir@"
 	echo $rflags
 fi
-if test "$echo_libs" = "yes"; then
+if [ "$echo_libs" = "yes" ]; then
 	libs="-L@libdir@ -l@PACKAGE@"
-	if test "$use_gui" = "yes"; then
+	if [ "$use_gui" = "yes" ]; then
 		libs="$libs -l@PACKAGE@_g @WXLDFLAGS@"
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
