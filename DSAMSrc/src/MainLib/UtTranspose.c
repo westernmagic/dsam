@@ -391,8 +391,8 @@ Process_Utility_Transpose(EarObjectPtr data)
 		timeOffset = 0.0;
 	}
 	  
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->length,
-	  data->inSignal[0]->numChannels, newDt)) {
+	if (!InitOutSignal_EarObject(data, (uShort) data->inSignal[0]->length,
+	  (ChanLen) data->inSignal[0]->numChannels, newDt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}
