@@ -245,8 +245,6 @@ BOOLN	PrintPars_SignalDisp(void);
 void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
 		  EarObjectPtr bufferEarObj, int windowFrame);
 
-BOOLN	ReadPars_SignalDisp(char *fileName);
-
 BOOLN	SetAutomaticYScaling_SignalDisp(char *theAutomaticYScaling);
 
 BOOLN	SetChannelStep_SignalDisp(int theChannelStep);

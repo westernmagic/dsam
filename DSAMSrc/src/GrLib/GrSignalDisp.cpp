@@ -1413,59 +1413,6 @@ PrintPars_SignalDisp(void)
 
 }
 
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- * This routine is different from the standard "ReadPars" routines which are
- * in most of the other modules: (1) As all parameters have a default value,
- * a "NO_FILE" parameter file name will just return TRUE; (2) parameter lines
- * are read in as required - there is no standard parameter file format.
- */
- 
-BOOLN
-ReadPars_SignalDisp(char *parFileName)
-{
-	static const char *funcName = "ReadPars_SignalDisp";
-	BOOLN	ok = TRUE;
-	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
-	FILE	*fp;
-	UniParPtr	par;
-
-	if (strcmp(parFileName, NO_FILE) == 0)
-		return(TRUE);
-	filePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
-		return(FALSE);
-	}
-	DPrint("%s: Reading from '%s':\n", funcName, parFileName);
-	Init_ParFile();
-	SetEmptyLineMessage_ParFile(FALSE);
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if ((par = FindUniPar_UniParMgr(&signalDispPtr->parList, parName,
-		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown parameter '%s' for module.", funcName,
-			  parName);
-			ok = FALSE;
-		} else {
-			if (!SetParValue_UniParMgr(&signalDispPtr->parList, par->index,
-			  parValue))
-				ok = FALSE;
-		}
-	SetEmptyLineMessage_ParFile(TRUE);
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError("%s: Invalid parameters, in module parameter file '%s'.",
-		  funcName, parFileName);
-		return(FALSE);
-	}
-	return(TRUE);
-    
-}
-
 /**************************** SetProcessMode **********************************/
 
 /*
@@ -1552,7 +1499,6 @@ InitModule_SignalDisp(ModulePtr theModule)
 	theModule->Free = Free_SignalDisp;
 	theModule->GetUniParListPtr = GetUniParListPtr_SignalDisp;
 	theModule->PrintPars = PrintPars_SignalDisp;
-	theModule->ReadPars = ReadPars_SignalDisp;
 	theModule->RunProcess = ShowSignal_SignalDisp;
 	theModule->SetParsPointer = SetParsPointer_SignalDisp;
 	return(TRUE);
