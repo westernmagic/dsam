@@ -162,7 +162,7 @@ SetUniParList_Utility_BinSignal(void)
 	  &binSignalPtr->mode, binSignalPtr->modeList,
 	  (void * (*)) SetMode_Utility_BinSignal);
 	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_BINWIDTH], "BIN_WIDTH",
-	  "Bin width for binned signal (s) (-ve: prev. signal sampling ingterval).",
+	  "Bin width for binned signal (s) (-ve: prev. signal duration).",
 	  UNIPAR_REAL,
 	  &binSignalPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Utility_BinSignal);
