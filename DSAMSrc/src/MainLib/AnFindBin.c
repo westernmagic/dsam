@@ -119,14 +119,14 @@ Init_Analysis_FindBin(ParameterSpecifier parSpec)
 		}
 	}
 	findBinPtr->parSpec = parSpec;
-	findBinPtr->modeFlag = FALSE;
-	findBinPtr->binWidthFlag = FALSE;
-	findBinPtr->timeOffsetFlag = FALSE;
-	findBinPtr->timeRangeFlag = FALSE;
-	findBinPtr->mode = 0;
-	findBinPtr->binWidth = 0.0;
+	findBinPtr->modeFlag = TRUE;
+	findBinPtr->binWidthFlag = TRUE;
+	findBinPtr->timeOffsetFlag = TRUE;
+	findBinPtr->timeRangeFlag = TRUE;
+	findBinPtr->mode = FIND_BIN_MIN_VALUE_MODE;
+	findBinPtr->binWidth = -1.0;
 	findBinPtr->timeOffset = 0.0;
-	findBinPtr->timeRange = 0.0;
+	findBinPtr->timeRange = -1.0;
 
 	InitModeList_Analysis_FindBin();
 	if (!SetUniParList_Analysis_FindBin()) {
