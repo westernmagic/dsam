@@ -954,6 +954,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
 	if (GetPtr_AppInterface() && GetPtr_AppInterface()->Init) {
 		GetPtr_AppInterface()->PrintSimMgrUsage = PrintUsage_MyApp;
 		wxGetApp().InitMain();
+		simFilePath = GetParString_UniParMgr(&GetPtr_AppInterface()->parList->
+		  pars[APP_INT_SIMULATIONFILE]);
 	}
 
 	// Disable unusable menus
