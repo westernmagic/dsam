@@ -612,7 +612,8 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_SelectChannels";
 	register	ChanData	 *inPtr, *outPtr;
-	int		i, chan, numChannels = 0, inChanIndex;
+	uShort	numChannels = 0;
+	int		i, chan, inChanIndex;
 	ChanLen	j;
 
 	if (!CheckPars_Utility_SelectChannels())

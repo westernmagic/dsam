@@ -87,7 +87,7 @@ typedef struct {
 
 	int		opMode;
 	int		diagMode;
-	double	ranSeed;
+	long	ranSeed;
 	double	recPotOffset;
 	double	CaVrev;
 	double	betaCa;
@@ -172,7 +172,7 @@ BOOLN	SetPCa_IHC_Meddis2000(double thePCa);
 
 BOOLN	SetParsPointer_IHC_Meddis2000(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, double ranSeed,
+BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
 		  double recPotOffset, double CaVrev, double betaCa, double gammaCa,
 		  double pCa, double GCaMax, double perm_Ca0, double perm_z,
 		  double tauCaChan, double tauConcCa, int maxFreePool_M,
@@ -183,7 +183,7 @@ BOOLN	SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0);
 
 BOOLN	SetPerm_z_IHC_Meddis2000(double thePerm_z);
 
-BOOLN	SetRanSeed_IHC_Meddis2000(double theRanSeed);
+BOOLN	SetRanSeed_IHC_Meddis2000(long theRanSeed);
 
 BOOLN	SetRecPotOffset_IHC_Meddis2000(double theRecPotOffset);
 

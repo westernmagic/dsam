@@ -58,7 +58,8 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 	static const char *funcName = "ReadFile_ASCII";
 	BOOLN	endOfSignal;
 	char	line[MAXLINE_LARGE];
-	int		chan, numColumns;
+	uShort	numColumns;
+	int		chan;
 	double	dt;
 	ChanLen	i, length, numSamples;
 	FILE	*fp;

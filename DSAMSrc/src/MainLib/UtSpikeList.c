@@ -235,7 +235,7 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 	static char	*funcName = "GenerateList_SpikeList";
 	register	BOOLN		*riseDetected;
 	register	ChanData	*inPtr, *lastValue;
-	int		chan;
+	uShort		chan;
 	ChanLen	i, startTime;
 
 	if (listSpec == NULL) {

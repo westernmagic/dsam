@@ -1031,9 +1031,10 @@ BOOLN
 RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_BasilarM_GammaChirp";
-	int			totalChannels, nch, cEstCnt, cFIndex;
-	double		sampleRate;
-	ChanLen		nsmpl;
+	uShort	totalChannels;
+	int		nch, cEstCnt, cFIndex;
+	double	sampleRate;
+	ChanLen	nsmpl;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);

@@ -466,9 +466,9 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 	double 	*p, *win, sumWin, diffERB;
 
 
-	if (numChannels > (int)winSizeERB) {
+	if (numChannels > (int) winSizeERB) {
 		diffERB = 1.0 / eRBDensity;
-		nee = ceil((double)winSizeERB / diffERB);
+		nee = (int) ceil((double) winSizeERB / diffERB);
 		winLength = nee + 1 - (nee % 2);	/* Making odd number */
 		winMtrxLength = numChannels * numChannels;
 

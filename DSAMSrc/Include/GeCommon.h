@@ -121,9 +121,52 @@
 #		define snprintf _snprintf
 #	endif
 #	ifndef vsnprintf
-#		define vsnprintf _vsnprintf
+#		defineDSAM vsnprintf _vsnprintf
 #	endif
 #endif
+
+// ----------------------------------------------------------------------------
+// Making or using DSAM as a Windows DLL
+// ----------------------------------------------------------------------------
+
+#if defined(__WINDOWS)
+
+// __declspec works in BC++ 5 and later, as well as VC++ and gcc
+#if defined(__VISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#  ifdef DSAM_MAKING_DLL
+#    define DSAM_API __declspec( dllexport )
+#  elif defined(DSAM_USING_DLL)
+#    define DSAM_API __declspec( dllimport )
+#  else
+#    define DSAM_API
+#  endif
+#else
+#    define DSAM_API
+#endif
+
+#elif defined(__PM__)
+
+#  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
+
+#    ifdef DSAM_MAKING_DLL
+#      define DSAM_API _Export
+#    elif defined(DSAM_USING_DLL)
+#      define DSAM_API _Export
+#    else
+#      define DSAM_API
+#    endif
+
+#  else
+
+#    define DSAM_API
+
+#  endif
+
+#else  // !(MSW or OS2)
+
+#  define DSAM_API
+
+#endif /* __WINDOWS */
 
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
@@ -147,6 +190,13 @@
 
 #define	MAXIMUM(A, B)			(((A) > (B))? (A): (B))
 
+/* This next definition is need for compiler niceties in MS Visual C++
+ * otherwise it complains about "int being forces to 'true' or 'false'.
+ */
+
+#ifdef __cplusplus
+#	define CXX_BOOL(A)		((A) != 0)
+#endif
 /*
  * __BEGIN_DECLS should be used at the beginning of all C declarations,
  * so that C++ compilers don't mangle their names.  Use __END_DECLS at

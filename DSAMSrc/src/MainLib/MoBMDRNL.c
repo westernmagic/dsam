@@ -1234,7 +1234,7 @@ BOOLN
 RunModel_BasilarM_DRNL(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_BasilarM_DRNL";
-	int		totalChannels;
+	uShort	totalChannels;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);

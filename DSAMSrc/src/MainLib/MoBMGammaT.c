@@ -544,7 +544,7 @@ BOOLN
 RunModel_BasilarM_GammaT(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_BasilarM_GammaT";
-	int		totalChannels;
+	uShort	totalChannels;
 				
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);

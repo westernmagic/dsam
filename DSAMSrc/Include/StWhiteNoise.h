@@ -42,7 +42,7 @@ typedef struct {
 
 	BOOLN	numChannelsFlag, durationFlag, dtFlag, intensityFlag;
 	BOOLN	correlationDegreeFlag, randomizationIndexFlag, ranSeedFlag;
-	int		numChannels;
+	uShort	numChannels;
 	double	intensity;
 	double	duration;
 	double	dt;

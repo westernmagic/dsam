@@ -131,8 +131,8 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 	}
 	if ((length = SetIOSectionLength_DataFile(data)) <= 0)
 		return(FALSE);
-	if (!InitOutSignal_EarObject(data, (int) dataFilePtr->numChannels, length,
-	  1.0 / dataFilePtr->defaultSampleRate)) {
+	if (!InitOutSignal_EarObject(data, dataFilePtr->numChannels, length, 1.0 /
+	  dataFilePtr->defaultSampleRate)) {
 		NotifyError("%s: Cannot initialise output signal", funcName);
 		return(FALSE);
 	}
@@ -190,9 +190,10 @@ WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset)
 											/*Sample rate*/
 	dataFilePtr->Write32Bits(fp, (int32) (dataFilePtr->wordSize /
 	  data->outSignal->dt + 0.5));
-	dataFilePtr->Write16Bits(fp, dataFilePtr->wordSize * data->outSignal->
-	  numChannels);	/* block align */
-	dataFilePtr->Write16Bits(fp, dataFilePtr->wordSize * 8);/* S. size in bits*/
+	dataFilePtr->Write16Bits(fp, (int16) (dataFilePtr->wordSize * data->
+	  outSignal->numChannels));	/* block align */
+	/* Next line: S. size in bits*/
+	dataFilePtr->Write16Bits(fp, (int16) (dataFilePtr->wordSize * 8));
 
 	dataFilePtr->Write32Bits(fp, WAVE_DATA);
 	dataFilePtr->Write32Bits(fp, dataLength);	/* Sample count */

@@ -104,7 +104,7 @@ ParListInfo::SetParBoolean(UniParPtr par, int index)
 
 	wxCheckBox *checkBox = new wxCheckBox(parent, DL_ID_CHECK_BOX + index,
 	  par->abbr);
-	checkBox->SetValue(*par->valuePtr.i);
+	checkBox->SetValue(CXX_BOOL(*par->valuePtr.i));
 	checkBox->SetToolTip(par->desc);
 	controlList[index] = new ParControl(par, infoNum, checkBox);
 
@@ -318,7 +318,6 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 		controlList[index]->GetSlider()->SetConstraints(c);
 		lastControl = controlList[index]->GetSlider();
 	}
-
 	c = new wxLayoutConstraints;
 	c->left.SameAs(parent, wxLeft, 4);
 	if (!lastControl)
@@ -556,7 +555,7 @@ ParListInfo::SetEnabledControls(void)
 bool
 ParListInfo::SetParValue(ParControl *control)
 {
-	char	*value;
+	wxString	value;
 
 	switch (control->GetTag()) {
 	case ParControl::CHECK_BOX:
@@ -565,20 +564,21 @@ ParListInfo::SetParValue(ParControl *control)
 		  GENERAL_BOOLEAN_OFF)->name;
 		break;
 	case ParControl::CHOICE:
-		value = (char *) control->GetChoice()->GetStringSelection().GetData();
+		value = control->GetChoice()->GetStringSelection();
 		break;
 	case ParControl::COMBO_BOX:
-		value = (char *) control->GetComboBox()->GetStringSelection().GetData();
+		value = control->GetComboBox()->GetStringSelection();
 		break;
 	case ParControl::TEXT_CTRL:
-		value = (char *) control->GetTextCtrl()->GetValue().GetData();
+		value = control->GetTextCtrl()->GetValue();
 		break;
 	default:
 		value = "Value not yet being set!";
 	}
 	if (pc)
 		(* pc->data->module->SetParsPointer)(pc->data->module);
-	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, value)) {
+	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (char *)
+	  value.c_str())) {
 		control->SetUpdateFlag(FALSE);
 		return(TRUE);
 	}

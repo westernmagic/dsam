@@ -141,7 +141,7 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	hairCell2Ptr->recoveryRate_rFlag = FALSE;
 	hairCell2Ptr->opMode = 0;
 	hairCell2Ptr->diagMode = 0;
-	hairCell2Ptr->ranSeed = 0.0;
+	hairCell2Ptr->ranSeed = 0;
 	hairCell2Ptr->recPotOffset = 0.0;
 	hairCell2Ptr->CaVrev = 0.0;
 	hairCell2Ptr->betaCa = 0.0;
@@ -207,7 +207,7 @@ SetUniParList_IHC_Meddis2000(void)
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], "RAN_SEED",
 	  "Random number seed (0 for different seed for each run).",
-	  UNIPAR_REAL,
+	  UNIPAR_LONG,
 	  &hairCell2Ptr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RECPOTOFFSET], "RECPOT_OFFSET",
@@ -322,7 +322,7 @@ GetUniParListPtr_IHC_Meddis2000(void)
  */
 
 BOOLN
-SetPars_IHC_Meddis2000(char * opMode, char * diagMode, double ranSeed,
+SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
   double recPotOffset, double CaVrev, double betaCa, double gammaCa,
   double pCa, double GCaMax, double perm_Ca0, double perm_z, double tauCaChan,
   double tauConcCa, int maxFreePool_M, double replenishRate_y,
@@ -441,7 +441,7 @@ SetDiagMode_IHC_Meddis2000(char * theDiagMode)
  */
 
 BOOLN
-SetRanSeed_IHC_Meddis2000(double theRanSeed)
+SetRanSeed_IHC_Meddis2000(long theRanSeed)
 {
 	static const char	*funcName = "SetRanSeed_IHC_Meddis2000";
 
@@ -950,7 +950,7 @@ PrintPars_IHC_Meddis2000(void)
 	  hairCell2Ptr->opModeList[hairCell2Ptr->opMode].name);
 	DPrint("\tDiagnostic Mode = %s \n",
 	  hairCell2Ptr->diagModeList[hairCell2Ptr->diagMode].name);
-	DPrint("\tRandom Seed = %g \n", hairCell2Ptr->ranSeed);
+	DPrint("\tRandom Seed = %ld \n", hairCell2Ptr->ranSeed);
 	DPrint("\tReceptor Potential Offset = %g (V)\n",
 	  hairCell2Ptr->recPotOffset);
 	DPrint("\tCalcium reversal potential = %g (V)\n", hairCell2Ptr->CaVrev);
@@ -989,7 +989,8 @@ ReadPars_IHC_Meddis2000(char *fileName)
 	BOOLN	ok;
 	char	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
 	int		maxFreePool_M;
-	double	ranSeed, recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
+	long	ranSeed;
+	double	recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
 	double	perm_Ca0, perm_z, tauCaChan, tauConcCa;
 	double	replenishRate_y, lossRate_l, reprocessRate_x, recoveryRate_r;
 	FILE	*fp;
@@ -1006,7 +1007,7 @@ ReadPars_IHC_Meddis2000(char *fileName)
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%s", diagMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &ranSeed))
+	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
 		ok = FALSE;
 	if (!GetPars_ParFile(fp, "%lf", &recPotOffset))
 		ok = FALSE;
@@ -1175,13 +1176,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		NotifyError("%s: tauConcCa = %g /s is too high for the "
 		  "sampling interval.", funcName, hairCell2Ptr->tauConcCa);
 		ok = FALSE;
-	}
-	if ( hairCell2Ptr->ranSeed>1.0 || hairCell2Ptr->ranSeed<-1.0 ) {
-		NotifyError("%s: ranSeed = %g /s is illegal. Must take a value"
-		  "of  -1,0 or 1.", funcName, hairCell2Ptr->ranSeed);
-		ok = FALSE;
-	}
-	
+	}	
 
 	return(TRUE);
 
@@ -1394,8 +1389,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			  dt / hC->tauConcCa;			
 
 			/* power law release function */
-			kdt = ( hC->hCChannels[i].concCa > hC->perm_Ca0 ) ? 
-				( zdt * ( pow( hC->hCChannels[i].concCa, hC->pCa ) - k0pow ) ): 0; 
+			kdt = ( hC->hCChannels[i].concCa > hC->perm_Ca0 ) ? (zdt * (pow(
+			  hC->hCChannels[i].concCa, hC->pCa) - k0pow)): 0; 
 
 			/* Increment input pointer */
 			inPtr++; 
@@ -1408,10 +1403,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 				/* spike output mode */
 				case IHC_MEDDIS2000_OPMODE_SPIKE:
 					replenish = (hC->hCChannels[i].reservoirQ <
-					  hC->maxFreePool_M)? GeomDist_Random(ydt,
-					  hC->maxFreePool_M - hC->hCChannels[i].reservoirQ): 0;
+					  hC->maxFreePool_M)? GeomDist_Random(ydt, (int) (
+					  hC->maxFreePool_M - hC->hCChannels[i].reservoirQ)): 0;
 
-					ejected = GeomDist_Random(kdt, hC->hCChannels[
+					ejected = GeomDist_Random(kdt, (int) hC->hCChannels[
 					  i].reservoirQ);	
 		
 					reUptakeAndLost = l_Plus_rdt * hC->hCChannels[i].cleftC;

@@ -46,7 +46,7 @@ BOOLN	CheckInit_Debug(void);
 
 BOOLN	SetChannelValue_Debug(int channel, ChanLen sample, double value);
 
-BOOLN	SetPars_Debug(int numChannels, ChanLen length,
+BOOLN	SetPars_Debug(uShort numChannels, ChanLen length,
 			  double samplingInterval);
 
 __END_DECLS

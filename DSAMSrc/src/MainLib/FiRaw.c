@@ -170,10 +170,10 @@ WriteFile_Raw(char *fileName, EarObjectPtr data)
 			Write8Bits(fp, outputVal);
 			break;
 		case	2:
-			dataFilePtr->Write16Bits(fp, outputVal);
+			dataFilePtr->Write16Bits(fp, (int16) outputVal);
 			break;
 		case	4:
-			dataFilePtr->Write32Bits(fp, outputVal);
+			dataFilePtr->Write32Bits(fp, (int32) outputVal);
 			break;
 		default:
 			CloseFile(fp);

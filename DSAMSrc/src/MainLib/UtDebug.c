@@ -89,7 +89,7 @@ Free_Debug(void)
  */
  
 BOOLN
-SetPars_Debug(int numChannels, ChanLen length, double samplingInterval)
+SetPars_Debug(uShort numChannels, ChanLen length, double samplingInterval)
 {
 	static const char *funcName = "SetPars_Debug";
 

@@ -140,7 +140,8 @@ Process_Utility_CreateBinaural(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_CreateBinaural";
 	register	ChanData	 *inPtr, *outPtr;
-	int		j, chan, outChanOffset, transferLevel, numChannelsToSet;
+	uShort	numChannelsToSet;
+	int		j, chan, outChanOffset, transferLevel;
 	ChanLen	i;
 
 	if (!CheckData_Utility_CreateBinaural(data)) {

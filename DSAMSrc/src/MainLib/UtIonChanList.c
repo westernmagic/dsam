@@ -1555,7 +1555,7 @@ SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
  */
 
 BOOLN
-SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, int theLeakageCondQ10)
+SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, double theLeakageCondQ10)
 {
 	static const char *funcName = "SetLeakageCondQ10_IonChanList";
 

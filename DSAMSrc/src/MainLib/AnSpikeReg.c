@@ -655,14 +655,14 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	maxTime = (spikeRegPtr->timeRange > 0.0)?
 	  spikeRegPtr->timeRange: _GetDuration_SignalData(data->inSignal[0]);
 	timeRangeIndex = (ChanLen) ((maxTime - spikeRegPtr->timeOffset) / binWidth);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels *
-	  SPIKE_REG_NUM_RETURNS, timeRangeIndex, binWidth)) {
+	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+	  numChannels * SPIKE_REG_NUM_RETURNS), timeRangeIndex, binWidth)) {
 		NotifyError("%s: Cannot initialise sumEarObj.", funcName);
 		return(FALSE);
 	}
 	SetOutputTimeOffset_SignalData(data->outSignal, spikeRegPtr->timeOffset);
-	SetInterleaveLevel_SignalData(data->outSignal,
-	  data->inSignal[0]->interleaveLevel * SPIKE_REG_NUM_RETURNS);
+	SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
+	  data->inSignal[0]->interleaveLevel * SPIKE_REG_NUM_RETURNS));
 	if (!InitProcessVariables_Analysis_SpikeRegularity(data)) {
 		NotifyError("%s: Could not initialise the process variables.",
 		  funcName);

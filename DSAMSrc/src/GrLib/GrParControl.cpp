@@ -225,10 +225,10 @@ ParControl::SetEnable(void)
 	wxControl *control = GetControl();
 
 	if (control)
-		control->Enable(par->enabled);
+		control->Enable(CXX_BOOL(par->enabled));
 
 	if (label)
-		label->Enable(par->enabled);
+		label->Enable(CXX_BOOL(par->enabled));
 
 	if (button)
 		switch (par->type) {
@@ -238,7 +238,7 @@ ParControl::SetEnable(void)
 			  comboBox->Number() - 1));
 			break;
 		default:	
-			button->Enable(par->enabled);
+			button->Enable(CXX_BOOL(par->enabled));
 		}
 	if (!par->enabled)
 		updateFlag = FALSE;
@@ -294,7 +294,7 @@ ParControl::ResetValue(void)
 	case LIST_BOX:
 		break;
 	case CHECK_BOX:
-		checkBox->SetValue(*par->valuePtr.i);
+		checkBox->SetValue(CXX_BOOL(*par->valuePtr.i));
 		break;
 	case TEXT_CTRL: {
 		bool	oldUpdateFlag = updateFlag;

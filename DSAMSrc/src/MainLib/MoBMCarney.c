@@ -814,7 +814,8 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 {
 	static const char	*funcName = "RunModel_BasilarM_Carney";
 	register	ChanData	 *inPtr, *outPtr;
-	int		j, chan, totalChannels, numComplexCoeffs, cFIndex;
+	uShort	totalChannels;
+	int		j, chan, numComplexCoeffs, cFIndex;
 	double	c, c1LP, c2LP, aCoeff, pix2xDt, pix2xDtxCF, cF, fF;
 	double	bCoeff, aA, oHCTemp, oHC;
 	ChanLen	i;

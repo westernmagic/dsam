@@ -572,7 +572,7 @@ MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 	leftMostLabel = xPos;
 	exponent = GetYExponent(signalLines, upperExpLimit);
 	scale = (signalLines->GetMaxY() - signalLines->GetMinY()) * displayScale *
-	  chanDisplayScale / (yTicks - 1);
+	  chanDisplayScale / (yTicks - 1.0);
 	yTickSpacing = chanSpacing * displayScale / (yTicks - 1);
 	format.Printf("%%.%df", mySignalDispPtr->yDecPlaces);
 	for (j = 0; j < numDisplayedChans; j++) {
@@ -580,7 +580,7 @@ MyCanvas::DrawYScale(wxDC& dc, wxRect *yAxisRect, wxFont *labelFont,
 		for (i = 0; i < yTicks; i++) {
 			yPos = (int) (yOffset - i * yTickSpacing + 0.5);
 			label.sprintf(format, (i * scale + minYScale) * pow(10.0,
-			  -exponent));
+			  -exponent) / mySignalDispPtr->magnification);
 			dc.GetTextExtent(label, &stringWidth, &stringHeight);
 			xLabel = (int) (xPos - (stringWidth - charWidth / 2.0) *
 			  tempXAdjust);

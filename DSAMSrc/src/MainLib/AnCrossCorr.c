@@ -602,8 +602,8 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	dt = data->inSignal[0]->dt;
 	periodIndex = (ChanLen) (crossCorrPtr->period / dt + 0.5);
 	totalPeriodIndex = periodIndex * 2 + 1;
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels / 2,
-	  totalPeriodIndex, dt)) {
+	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+	  numChannels / 2), totalPeriodIndex, dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}

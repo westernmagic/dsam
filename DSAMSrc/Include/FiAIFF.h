@@ -65,8 +65,8 @@ typedef struct {
 
 	BOOLN	flag;
 	BOOLN	staticTimeFlag;
-	int		numWindowFrames;	/* No. of window frames in sound chunk. */
-	int		interleaveLevel;
+	uShort	numWindowFrames;	/* No. of window frames in sound chunk. */
+	uShort	interleaveLevel;
 	double	outputTimeOffset;	
 	double	normalise;	
 	int32	posOfChannelLabels;
@@ -79,7 +79,7 @@ typedef struct {
 	int32	chunkSize;
 
 	/* DSAM Chunk data (COMM) */
-	int		numChannels;		/* No. of channels - mono, stereo...etc. */
+	uShort	numChannels;		/* No. of channels - mono, stereo...etc. */
 	int32	numSampleFrames;	/* No. of sample frames in sound chunk. */
 	int		sampleSize;			/* No. of data bits for each data point. */
 	double	sampleRate;			/* Sample rate of data in sound chunk. */

@@ -646,7 +646,8 @@ BOOLN
 RunModel_BasilarM_Cooke(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_BasilarM_Cooke";
-	int		chan, totalChannels, cFIndex;
+	uShort	totalChannels;
+	int		chan, cFIndex;
 	unsigned long	intSampleRate, tablePtr;
 	ChanLen	i;
 	double	zz, pow, cosPtr;

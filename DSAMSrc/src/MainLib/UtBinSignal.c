@@ -506,7 +506,7 @@ Process_Utility_BinSignal(EarObjectPtr data)
 		return(FALSE);
 	}
 	dt = data->inSignal[0]->dt;
-	numBins = floor(binWidth / dt + 0.5);
+	numBins = (int) floor(binWidth / dt + 0.5);
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];

@@ -384,7 +384,7 @@ BOOLN	SetIonChannelUniParList_IonChanList(IonChanListPtr theICs,
 BOOLN	SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC);
 
 BOOLN	SetLeakageCondQ10_IonChanList(IonChanListPtr theICs,
-		  int theLeakageCondQ10);
+		  double theLeakageCondQ10);
 
 BOOLN	SetLeakagePot_IonChanList(IonChanListPtr theICs, double leakagePot);
 

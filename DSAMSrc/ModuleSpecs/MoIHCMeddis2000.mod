@@ -10,7 +10,7 @@ typedef struct {
 
 	NameSpecifier	opMode;	/* output probabiliy mode: spikes or probability */
 	NameSpecifier   diagMode;	/* output variables during run (no/filename) */
-	double 	ranSeed;		/* seed for random number generator */
+	long	ranSeed;		/* seed for random number generator */
 
 	double recPotOffset;		/* Voltage correction for receptor potential */
 

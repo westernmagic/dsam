@@ -279,7 +279,7 @@ SetMaxInSignals_EarObject(EarObjectPtr theObject, int maxInSignals)
  */
 
 BOOLN
-SetNewOutSignal_EarObject(EarObjectPtr data, int numChannels, ChanLen length,
+SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   double samplingInterval)
 {
 	static const char *funcName = "SetNewOutSignal_EarObject";
@@ -390,7 +390,7 @@ ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
  */
  
 BOOLN
-InitOutSignal_EarObject(EarObjectPtr data, int numChannels, ChanLen length,
+InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   double samplingInterval)
 {
 	static const char *funcName = "InitOutSignal_EarObject";
@@ -434,10 +434,10 @@ InitOutSignal_EarObject(EarObjectPtr data, int numChannels, ChanLen length,
  */
  
 BOOLN
-InitOutFromInSignal_EarObject(EarObjectPtr data, int numChannels)
+InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
 	static const char *funcName = "InitOutFromInSignal_EarObject";
-	int		channelsToSet;
+	uShort	channelsToSet;
 	
 	if (!CheckPars_SignalData(data->inSignal[0])) {
 		NotifyError("%s: Signal not correctly initialised.", funcName);

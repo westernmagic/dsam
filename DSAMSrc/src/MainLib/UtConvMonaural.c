@@ -126,9 +126,9 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, "Convert monaural -> binaural utility");
 	ResetProcess_EarObject(data);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels /
-	  data->inSignal[0]->interleaveLevel, data->inSignal[0]->length,
-	  data->inSignal[0]->dt)) {
+	if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+	  numChannels / data->inSignal[0]->interleaveLevel), data->inSignal[0]->
+	  length, data->inSignal[0]->dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
 	}

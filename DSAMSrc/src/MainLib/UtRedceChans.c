@@ -490,7 +490,8 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	static const char	*funcName = "Process_Utility_ReduceChannels";
 	register	ChanData	 *inPtr, *outPtr;
 	char	channelTitle[MAXLINE];
-	int		j, chan, channelBinWidth, numChannels, binRatio;
+	uShort	numChannels;
+	int		j, chan, channelBinWidth, binRatio;
 	ChanLen	i;
 
 	if (!CheckPars_Utility_ReduceChannels())

@@ -354,8 +354,9 @@ WriteHeader_AIFF(FILE *fp, EarObjectPtr data, int32 previousSamples)
 	dataFilePtr->Write32Bits(fp, 18);		/* Chunk Size */
 	dataFilePtr->Write16Bits(fp, data->outSignal->numChannels);
 	dataFilePtr->Write32Bits(fp, (int32) data->outSignal->length +
-	  previousSamples);	
-	dataFilePtr->Write16Bits(fp, 8 * dataFilePtr->wordSize); /* Sample Size */
+	  previousSamples);
+	 /* next line: write Sample Size */
+	dataFilePtr->Write16Bits(fp, (int16) (8 * dataFilePtr->wordSize));
 	dataFilePtr->WriteIEEEExtended(fp, 1.0 / data->outSignal->dt);
 
 }
@@ -402,7 +403,7 @@ WriteDSAMChunk_AIFF(FILE *fp, SignalDataPtr signal, BOOLN updating)
 	dataFilePtr->Write32Bits(fp, chunkSize);	/* Chunk Size */
 	dataFilePtr->Write16Bits(fp, signal->interleaveLevel);
 	dataFilePtr->Write16Bits(fp, signal->numWindowFrames);
-	dataFilePtr->Write16Bits(fp, signal->staticTimeFlag);
+	dataFilePtr->Write16Bits(fp, (int16) signal->staticTimeFlag);
 	if (!updating) {
 		dataFilePtr->WriteIEEEExtended(fp, signal->outputTimeOffset);
 		dataFilePtr->WriteIEEEExtended(fp, dataFilePtr->normalise);

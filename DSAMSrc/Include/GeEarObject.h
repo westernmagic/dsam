@@ -149,9 +149,10 @@ EarObjectPtr	Init_EarObject(char *moduleName);
 
 EarObjectPtr	Init_EarObject_MultiInput(char *moduleName, int maxInSignals);
 			
-BOOLN		InitOutFromInSignal_EarObject(EarObjectPtr data, int numChannels);	
+BOOLN		InitOutFromInSignal_EarObject(EarObjectPtr data,
+			  uShort numChannels);	
 			
-BOOLN		InitOutSignal_EarObject(EarObjectPtr data, int numChannels, 	
+BOOLN		InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, 	
 			  ChanLen length, double samplingInterval);
 			
 int			GetInSignalRef_EarObject(EarObjectPtr data);
@@ -176,7 +177,7 @@ void		SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
 			
 void		SetMaxInSignals_EarObject(EarObjectPtr theObject, int maxInSignals);
 
-BOOLN		SetNewOutSignal_EarObject(EarObjectPtr data, int numChannels,
+BOOLN		SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
 			  ChanLen length, double samplingInterval);
 			
 void		SetTimeContinuity_EarObject(EarObjectPtr data);

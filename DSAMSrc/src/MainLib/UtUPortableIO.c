@@ -40,6 +40,11 @@
 * $Header$
 *
 * $Log$
+* Revision 1.4  2001/09/14 17:42:20  lowel
+* Changes: these where required to get rid of compiler warnings when using
+* Microsoft Visual C++.  One in particular was particularly useful, as I
+* discovered that the UtIonChanList was declaring a real variable as an int.
+*
 * Revision 1.3  2001/07/23 14:36:39  lowel
 * Compile error (bcc32): Removed the 'long long' type in Read32Bits... routines as
 * bcc32 doesn't know about it.  The ifdef statements seem to only be required for
@@ -205,7 +210,7 @@ Read16BitsLowHigh(FILE *fp)
 	if (result & 0x8000)
 		result = result - 0x10000;
 #endif	/* THINK_C */
-	return(result);
+	return((int16) result);
 }
 
 int16
@@ -222,29 +227,29 @@ Read16BitsHighLow(FILE *fp)
 	if (result & 0x8000)
 		result = result - 0x10000;
 #	endif	/* THINK_C */
-	return(result);
+	return((int16) result);
 }
 
 
 void
 Write8Bits(FILE *fp, int i)
 {
-	WriteByte(i & 0xff, fp);
+	WriteByte((char) (i & 0xff), fp);
 }
 
 void
 Write16BitsLowHigh(FILE *fp, int16 i)
 {
-	WriteByte(i&0xff,fp);
-	WriteByte((i>>8)&0xff,fp);
+	WriteByte((char) (i & 0xff),fp);
+	WriteByte((char) ((i >> 8) & 0xff),fp);
 }
 
 
 void
 Write16BitsHighLow(FILE *fp, int16 i)
 {
-	WriteByte((i>>8)&0xff,fp);
-	WriteByte(i&0xff,fp);
+	WriteByte((char) ((i >> 8) & 0xff),fp);
+	WriteByte((char) (i & 0xff),fp);
 }
 
 
