@@ -51,7 +51,7 @@
 /******************************************************************************/
 typedef struct {
 
-	int		order;				/* The order of the filter */
+	int		cascade;				/* The cascade of the filter */
 	double	a0, a1;
 	double	b1, b2;
 	double	*stateVector;
@@ -60,7 +60,7 @@ typedef struct {
 
 typedef struct {
 
-	int		order;
+	int		cascade;
 	double	b1, b2;
 	double	a0, a1, a2;
 	double	gainLossFactor;
@@ -70,7 +70,7 @@ typedef struct {
 
 typedef struct {
 
-	int		order;
+	int		cascade;
 	double	j;
 	double	k;
 	double	l;
@@ -159,7 +159,7 @@ void	IIR2ContSingle_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr p);
 
 void	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
 
-BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int order,
+BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int cascade,
 					  double lowerCutOffFreq, double upperCutOffFreq,
 					  double dt);
 
@@ -170,9 +170,9 @@ ContButt1CoeffsPtr	InitIIR1ContCoeffs_Filters(double cutOffFrequency,
 					  double samplingInterval, int highOrLowPass);
 
 GammaToneCoeffsPtr	InitGammaToneCoeffs_Filters(double centreFreq,
-					  double bWidth3dB, int order, double sampleClk);
+					  double bWidth3dB, int cascade, double sampleClk);
 
-TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(double *splane, int order, 
+TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(double *splane, int cascade, 
 					  double f3dB, double fs, int low_or_high);
 					   
 		/* latter generates z plane coefficients from 2 pole blocks, f3dB is
