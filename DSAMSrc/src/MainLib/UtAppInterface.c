@@ -131,6 +131,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->simulationFileFlag = FALSE;
 	appInterfacePtr->useParComsFlag = TRUE;
 	appInterfacePtr->checkMainInit = TRUE;
+	appInterfacePtr->canLoadSimulationFlag = TRUE;
 	appInterfacePtr->listParsAndExit = FALSE;
 	appInterfacePtr->listCFListAndExit = FALSE;
 	appInterfacePtr->appParFileFlag = FALSE;
@@ -941,7 +942,7 @@ ReadProgParFile_AppInterface(void)
 	fclose(fp);
 	Free_ParFile();
 	readProgParFileFlag = FALSE;
-	if (!ok) {
+	if (!ok && (strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
 		NotifyError("%s: Invalid parameters in file '%s', program parameter "
 		  "section (%s).", funcName, GetFilePath_AppInterface(appInterfacePtr->
 		  simulationFile), parName);
@@ -1443,7 +1444,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
 		  appInterfacePtr->compiledDSAMVersion);
 
-		if (appInterfacePtr->simulationFileFlag) {
+		if (appInterfacePtr->canLoadSimulationFlag &&
+		  appInterfacePtr->simulationFileFlag) {
 			if (!InitSimulation_AppInterface()) {
 				NotifyError("%s: Could not Initialise simulation.", funcName);
 				return(FALSE);

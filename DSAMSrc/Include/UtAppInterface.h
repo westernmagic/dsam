@@ -71,7 +71,7 @@ typedef struct {
 	
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
 	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
-	BOOLN	appParFileFlag;
+	BOOLN	appParFileFlag, canLoadSimulationFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
