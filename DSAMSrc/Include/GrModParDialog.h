@@ -35,7 +35,6 @@
 #include "GrDialogInfo.h"
 #include "GrParListInfo.h"
 #include "GrParListInfoList.h"
-#include "GrDialogList.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -48,6 +47,25 @@
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
+
+enum {
+
+	DL_ID_QUIT = 1,
+	DL_ID_CANCEL,
+	DL_ID_OK,
+
+	DL_ID_ADD_IC,
+	DL_ID_BUTTON,
+	DL_ID_DELETE_IC,
+	DL_ID_CHECK_BOX,
+	DL_ID_CHOICE,
+	DL_ID_COMBO_BOX,
+	DL_ID_LIST_BOX,
+	DL_ID_SIM_LIST_BOX,
+	DL_ID_SLIDER,
+	DL_ID_TEXT
+
+};
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -95,8 +113,6 @@ class ModuleParDialog: public wxDialog {
 	void	OnChoice(wxCommandEvent& event);
 	void	OnComboBox(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
-	void	OnListBox(wxCommandEvent& event) 	{
-				DPrint("DialogList::OnListBox called\n"); }
 	void	OnOk(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
 	void	OnSliderUpdate(wxCommandEvent& event);

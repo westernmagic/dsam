@@ -29,8 +29,6 @@
 
 /********************************** Pre-references ****************************/
 
-class DialogList;
-
 /*************************** DialogInfo ***************************************/
 
 class DialogInfo {
@@ -39,15 +37,12 @@ class DialogInfo {
 
   public:
  	wxObject	*ptr;
-	DialogList *dialog;
 	
 	DialogInfo(wxObject *thePtr, int theSpecifier);
 	~DialogInfo(void);
 
-	DialogList *	GetDialog(void)	{ return dialog; };
 	wxObject *	GetPtr(void)	{ return ptr; };
 	int		GetSpecifier(void)	{ return specifier; };
-	void	SetDialog(DialogList *theDialog)	{ dialog = theDialog; };
 
 };
 

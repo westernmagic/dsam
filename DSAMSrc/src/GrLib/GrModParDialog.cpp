@@ -27,8 +27,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DSAM.h"
-#include "UtSSParser.h"
+// For compilers that support precompilation, includes "wx.h".
+#	include <wx/wxprec.h>
+
+#	ifdef __BORLANDC__
+	    #pragma hdrstop
+#	endif
+
+// Any files you want to include if not precompiling by including
+// the whole of <wx/wx.h>
+#	ifndef WX_PRECOMP
+#		include <wx/wx.h>
+#	endif
+
+// Any files included regardless of precompiled headers
+
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
+#include "UtDynaList.h"
+#include "UtDatum.h"
+
+#include "GrIPCServer.h"
+#include "GrSimMgr.h"
+#include "GrSDIFrame.h"
+#include "GrSDIEvtHandler.h"
+#include "GrModParDialog.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -57,7 +81,6 @@ BEGIN_EVENT_TABLE(ModuleParDialog, wxDialog)
 	EVT_CHECKBOX(-1 /* DL_ID_CHECK_BOX */,	ModuleParDialog::OnCheckBox) 
 	EVT_CHOICE(-1 /* DL_ID_CHOICE */,		ModuleParDialog::OnChoice) 
 	EVT_COMBOBOX(-1 /* DL_ID_COMBO_BOX */,	ModuleParDialog::OnComboBox)
-	EVT_LISTBOX(-1 /* DL_ID_LIST_BOX */,	ModuleParDialog::OnListBox)
 	EVT_SLIDER(-1 /* DL_ID_SLIDER */,		ModuleParDialog::OnSliderUpdate)
 	EVT_TEXT(DL_ID_TEXT,					ModuleParDialog::OnText)
 	EVT_CLOSE(ModuleParDialog::OnCloseWindow)

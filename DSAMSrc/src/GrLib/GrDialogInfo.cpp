@@ -63,7 +63,6 @@ DialogInfo::DialogInfo(wxObject *thePtr, int theSpecifier)
 {
 	ptr = thePtr;
 	specifier = theSpecifier;
-	dialog = NULL;
 
 }
 

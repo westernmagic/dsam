@@ -41,7 +41,7 @@
 #include "UtNameSpecs.h"
 
 #if !defined(GRAPHICS_SUPPORT) || !defined(__cplusplus)
-#	include "StdSignalDisp.h"	
+#	define	STANDARD_C_SIGNALDISP_COMPILE	1
 #endif /* GRAPHICS_SUPPORT */
 
 /******************************************************************************/
@@ -76,9 +76,13 @@
 #if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
 
 	class DisplayS;
-	class DialogList;
+	class wxDialog;
 	class wxCriticalSection;
-	
+#else
+	typedef	void *	DisplayS;
+	typedef	void *	wxDialog;
+	typedef	void *	wxCriticalSection;
+	typedef	void *	wxIcon;
 #endif /* GRAPHICS_SUPPORT */
 
 /******************************************************************************/
@@ -212,7 +216,7 @@ typedef struct {
 	EarObjectPtr	data;
 	EarObjectPtr	summary;
 	DisplayS		*display;
-	DialogList		*dialog;
+	wxDialog		*dialog;
 	wxCriticalSection	*critSect;
 
 } SignalDisp, *SignalDispPtr;
