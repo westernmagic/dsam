@@ -67,6 +67,7 @@ Free_BasilarM_DRNL(void)
 
 	if (bMDRNLPtr == NULL)
 		return(FALSE);
+	FreeProcessVariables_BasilarM_DRNL();
 	Free_ParArray(&bMDRNLPtr->nonLinBwidth);
 	Free_ParArray(&bMDRNLPtr->comprScaleA);
 	Free_ParArray(&bMDRNLPtr->comprScaleB);
