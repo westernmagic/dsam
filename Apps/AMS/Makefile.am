@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = foreign
 bin_PROGRAMS	= ams ams_ng
 
 ams_SOURCES		= ams.h ams.cpp ams.xpm
-ams_LDADD		= $(DSAMGUILDFLAGS)
+ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
 
 ams_ng_SOURCES	= ams.h ams.xpm
 ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
@@ -16,13 +16,18 @@ INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
 AM_CFLAGS		= $(DSAMINC)
 AM_CXXFLAGS		= $(DSAMGUIINC)
 
-SUBDIRS			= CfgTools DEFAULT HelpFiles
+SUBDIRS			= CfgTools DEFAULT HelpFiles Matlab
 
-ams.$(OBJEXT):		ams.cpp
+ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) -c ams.cpp -o ams.$(OBJEXT)
 
 ams_ng.$(OBJEXT):	ams.cpp
 					$(COMPILE) -c ams.cpp -o ams_ng.$(OBJEXT)
+
+$(AMSRESOBJ):	Makefile ams.rc
+	if test x$(MINGW32) = xyes; then \
+		$(RESCOMP) $(RESFLAGS) $(srcdir)/ams.rc -o $@ ; \
+	fi
 
 ams.spec: ams.spec.in
 
