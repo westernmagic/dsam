@@ -618,7 +618,8 @@ PrintSetParsRoutine(FILE *fp)
 			if (type->sym->type == CFLISTPTR)
 				strcpy(setFunctionBase, "CFList");
 			else
-				strcpy(setFunctionBase, Capital((*list)->sym->name));
+				strcpy(setFunctionBase, Capital(DT_TO_SAMPLING_INTERVAL(
+				  (*list)->sym->name)));
 			sprintf(setFuncName, "Set%s", setFunctionBase);
 			fprintf(fp, "\tif (!%s(%s))\n", CreateFuncName(setFuncName,
 			  module, qualifier), DT_TO_SAMPLING_INTERVAL((*list)->sym->name));
@@ -923,7 +924,7 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 	fprintf(fp, "&%s))\n", limitSym->name);
 	fprintf(fp, "\t\tok = FALSE;\n");
 
-	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", limitSym->name,
+	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", Capital(limitSym->name),
 	  CreateBaseModuleName(module, qualifier, FALSE), limitSym->name);
 	Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory for "
 	  "the '");
@@ -1233,15 +1234,27 @@ PrintSetFunctionComment(FILE *fp, TokenPtr token, TokenPtr type,
 		    "bank.\n"
 		  " * It returns TRUE if the operation is successful.\n"
 		  " */\n\n");
-	else
+	else {
 		fprintf(fp,
 		  "/*\n"
 		  " * This function sets the module's %s %s%s.\n"
-		  " * It returns TRUE if the operation is successful.\n"
-		  " * Additional checks should be added as required.\n"
-		  " */\n\n", variableName, (token->inst == POINTER)? "array":
+		  " * It returns TRUE if the operation is successful.\n", variableName,
+		  (token->inst == POINTER)? "array":
 		  "parameter", (functionType == SET_ARRAY_ELEMENT_ROUTINE)? " element":
 		  "");
+		if (type->inst == INT_AL) {
+			Print(fp, " * ", " * The '");
+			Print(fp, " * ", variableName);
+			Print(fp, " * ", "' variable is set by the 'Alloc");
+			Print(fp, " * ", Capital(variableName));
+			Print(fp, " * ", "_");
+			Print(fp, " * ", CreateBaseModuleName(module, qualifier, FALSE));
+			Print(fp, " * ", "' routine.\n");
+			Print(fp, " * ", "");
+		}
+		fprintf(fp, " * Additional checks should be added as required.\n"
+		  " */\n\n");
+	}
 
 }
 

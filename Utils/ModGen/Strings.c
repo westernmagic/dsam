@@ -195,6 +195,9 @@ Print(FILE *fp, char *prefix, char *string)
 			case '(':
 				punctuation = lp;
 				break;
+			case '[':
+				punctuation = lp;
+				break;
 			case '.':
 			case ' ':
 			case '\t':
