@@ -37,21 +37,22 @@ begin {
 
 # L3: PATTERN STABILISATION (A) M&O AC (B) STI AC (C) STI 
 #  A: Autocorrelogram
-#    Ana_ACF                 < acfDflt.par 
-#    Display_Signal          < SAIdflt.par
+#    Ana_ACF            < acfDflt.par 
+#    Display_Signal     < SAIdflt.par
 
 #  B: STI Autocorrelation (AUDITORY IMAGE negative slope, non-buffered)
-	Ana_SAI			< stiACdflt.par  # strobeACdflt.par
-	Display_Signal  < SAIdflt.par
+	Ana_SAI				< stiACdflt.par  # strobeACdflt.par
+	Display_Signal  	< SAIdflt.par
 
 #  C: STROBED TEMPORAL INTEGRATION (AUDITORY IMAGE pos slope, buffered)
 #	Ana_SAI				< stiDflt.par	# strobeDflt.par
 #	Display_Signal		< SAIdflt.par
 
-    Util_ReduceChannels     < reduceDflt.par
-    Display_Signal			< sumSAIdflt.par
+    Util_ReduceChannels < reduceDflt.par
+    Display_Signal		< sumSAIdflt.par
 
-	 DataFile_Out
+# OUTPUT 
+	DataFile_Out		< outputDflt.par
 
 }
 

@@ -19,7 +19,7 @@ begin {
 	Display_Signal		< SAIdflt.par
     Util_ReduceChannels < reduceDflt.par
     Display_Signal		< sumSAIdflt.par
-	#DataFile_Out
+	DataFile_Out		< outputDflt.par
 
 }
 
