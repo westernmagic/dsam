@@ -183,6 +183,9 @@ BOOLN	OnExecute_AppInterface(void);
 
 void	OnExit_AppInterface(void);
 
+void	ParseParSpecifiers_AppInterface(char *parName, char *appName,
+		  char *subProcess);
+		  
 void	PrintPars_AppInterface(void);
 
 BOOLN	ProcessParComs_AppInterface(void);

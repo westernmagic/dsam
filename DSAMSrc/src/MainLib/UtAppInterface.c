@@ -777,6 +777,30 @@ GetFilePath_AppInterface(char *filePath)
 	
 }
 
+/************************ ParseParSpecifiers **********************************/
+
+/*
+ * This routine parses the parameter specifiers.
+ * It expects the strings spaces passed as arguments to have sufficient space.
+ */
+
+void
+ParseParSpecifiers_AppInterface(char *parName, char *appName, char *subProcess)
+{
+	char	*p;
+
+	*appName = *subProcess = '\0';
+	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL)
+		return;
+	*p = '\0';
+	snprintf(appName, MAXLINE, "%s", p + 1);
+	if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) == NULL)
+		return;
+	*p = '\0';
+	snprintf(subProcess, MAXLINE, "%s", p + 1);
+
+}
+
 /************************ SetProgramParValue **********************************/
 
 /*
@@ -789,16 +813,13 @@ BOOLN
 SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 {
 	BOOLN	ok = TRUE, creatorApp = TRUE;
-	char	*p, parNameCopy[MAXLINE], appName[MAXLINE];
+	char	parNameCopy[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
 	UniParPtr	par;
 	UniParListPtr	parList;
 
 	snprintf(parNameCopy, MAXLINE, "%s", parName);
-	if ((p = strchr(parNameCopy, UNIPAR_NAME_SEPARATOR)) != NULL) {
-		*p = '\0';
-		snprintf(appName, MAXLINE, "%s", p + 1);
-		if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) != NULL)
-			*p = '\0';
+	ParseParSpecifiers_AppInterface(parNameCopy, appName, subProcess);
+	if (*appName)  {
 		creatorApp = (StrNCmpNoCase_Utility_String(appInterfacePtr->appName,
 		  appName) == 0);
 		if (!creatorApp && !readSPF)
@@ -892,7 +913,8 @@ ReadPars_AppInterface(char *parFileName)
 	static const char *funcName = "ReadPars_AppInterface";
 	BOOLN	ok = TRUE;
 	char	*filePath;
-	char	parName[MAXLINE], parValue[MAX_FILE_PATH];
+	char	parName[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
+	char	parValue[MAX_FILE_PATH];
 	FILE	*fp;
 	UniParPtr	par;
 	UniParListPtr	tempParList;
@@ -905,7 +927,18 @@ ReadPars_AppInterface(char *parFileName)
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
+		ParseParSpecifiers_AppInterface(parName, appName, subProcess);
 		tempParList = appInterfacePtr->parList;
+		if (subProcess[0]) {
+			if ((par = FindUniPar_UniParMgr(&tempParList, subProcess,
+			  UNIPAR_SEARCH_ABBR)) == NULL) {
+				NotifyError("%s: Unknown sub-process '%s' for application.",
+				  funcName, subProcess);
+				ok = FALSE;
+				break;
+			} else
+				tempParList = *(par->valuePtr.parList.list);
+		}
 		if ((par = FindUniPar_UniParMgr(&tempParList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown parameter '%s' for application.", funcName,
@@ -1326,7 +1359,8 @@ ListParameters_AppInterface(void)
 		NotifyError("%s: Could not print simulation parameter file.", funcName);
 		return(FALSE);
 	}
-	snprintf(suffix, MAXLINE, ".%s.0", appInterfacePtr->appName);
+	snprintf(suffix, MAXLINE, ".%s%s", appInterfacePtr->appName,
+	  UNIPAR_TOP_PARENT_LABEL);
 	PrintPars_UniParMgr(appInterfacePtr->parList, "", suffix);
 	return(TRUE);
 
