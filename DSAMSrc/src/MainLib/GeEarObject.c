@@ -235,7 +235,7 @@ SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...)
 	if (theObject->processName != NULL)
 		free(theObject->processName);
 	va_start(args, format);
-	vsprintf(string, format, args);
+	vsnprintf(string, MAXLINE, format, args);
 	va_end(args);
 	if ((theObject->processName = (char *) malloc(strlen(string) + 1)) ==
 	   NULL) {
@@ -318,7 +318,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, int numChannels, ChanLen length,
 		data->updateProcessFlag = (oldOutSignal.dt != samplingInterval) ||
 		  (oldOutSignal.length != length) || (oldOutSignal.numChannels !=
 		   numChannels);
-		ResetSignalContinuity_EarObject(data, &oldOutSignal);
+		ResetSignalContinuity_EarObject(data, (data->updateProcessFlag)? NULL:
+		  &oldOutSignal);
 	} else
 		ResetSignalContinuity_EarObject(data, NULL);
 	return(TRUE);
