@@ -163,7 +163,7 @@ DatumPtr	Read_Utility_SimScript(FILE *fp);
 
 BOOLN	ReadPars_Utility_SimScript(char *fileName);
 
-BOOLN	ReadSimParFile_Utility_SimScript(char *fileName);
+BOOLN	ReadSimParFile_Utility_SimScript(char *filePath);
 
 BOOLN	SetOperationMode_Utility_SimScript(char *theOperationMode);
 
