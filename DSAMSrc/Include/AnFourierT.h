@@ -21,6 +21,7 @@
 /******************************************************************************/
 
 #define ANALYSIS_FOURIERT_NUM_PARS			1
+#define ANALYSIS_FOURIERT_DB_SPL_SCALE		0.007126
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -36,6 +37,8 @@ typedef enum {
 
 	ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE,
 	ANALYSIS_FOURIERT_PHASE_OUTPUTMODE,
+	ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE,
+	ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE,
 	ANALYSIS_FOURIERT_OUTPUTMODE_NULL
 
 } AnalysisOutputModeSpecifier;
