@@ -50,9 +50,9 @@ InitModeList_Filter_LowPass(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ "NORMAL", DENDRITE_MODE_NORMAL },
-					{ "SCALED", DENDRITE_MODE_SCALED },
-					{ "", DENDRITE_MODE_NULL }
+					{ "NORMAL", FILTER_LOW_PASS_MODE_NORMAL },
+					{ "SCALED", FILTER_LOW_PASS_MODE_SCALED },
+					{ "", FILTER_LOW_PASS_MODE_NULL }
 				};
 	lowPassFPtr->modeList = list;
 	return(TRUE);
@@ -217,12 +217,14 @@ SetMode_Filter_LowPass(char *theMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, lowPassFPtr->modeList)) ==
-	  DENDRITE_MODE_NULL) {
+	  FILTER_LOW_PASS_MODE_NULL) {
 		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
 		return(FALSE);
 	}
 	lowPassFPtr->modeFlag = TRUE;
 	lowPassFPtr->mode = specifier;
+	lowPassFPtr->parList->pars[FILTER_LOW_PASS_SIGNALMULTIPLIER].enabled = 
+	  (specifier == FILTER_LOW_PASS_MODE_SCALED);
 	return(TRUE);
 
 }
@@ -354,7 +356,7 @@ PrintPars_Filter_LowPass(void)
 	DPrint("\tMode = %s,",
 	  lowPassFPtr->modeList[lowPassFPtr->mode].name);
 	DPrint("\tCut-off Frequency = %g Hz\n", lowPassFPtr->cutOffFrequency);
-	if (lowPassFPtr->mode == DENDRITE_MODE_SCALED)
+	if (lowPassFPtr->mode == FILTER_LOW_PASS_MODE_SCALED)
 		DPrint("\tSignal multiplying factor = %g (?).\n",
 		  lowPassFPtr->signalMultiplier);
 	return(TRUE);
@@ -561,11 +563,11 @@ RunModel_Filter_LowPass(EarObjectPtr data)
 		inPtr = data->inSignal[0]->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		switch (lowPassFPtr->mode) {
-		case DENDRITE_MODE_NORMAL:
+		case FILTER_LOW_PASS_MODE_NORMAL:
 			for (i = 0; i < data->inSignal[0]->length; i++)
 				*outPtr++ = *inPtr++;
 			break;
-		case DENDRITE_MODE_SCALED:
+		case FILTER_LOW_PASS_MODE_SCALED:
 			for (i = 0; i < data->inSignal[0]->length; i++)
 				*outPtr++ = *inPtr++ * lowPassFPtr->signalMultiplier;
 			break;
