@@ -1306,14 +1306,14 @@ MyFrame::OnSaveSimPars(wxCommandEvent& WXUNUSED(event))
 	  wxHIDE_READONLY, this);
 	if (!newFilePath)
 		return;
-	bool noGUIOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->noGUIOutputFlag);
+	bool dialogOutputFlag = CXX_BOOL(GetDSAMPtr_Common()->dialogOutputFlag);
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-	GetDSAMPtr_Common()->noGUIOutputFlag = TRUE;
+	SetGUIDialogStatus(FALSE);
 	SetParsFile_Common((char *) newFilePath.GetData(), OVERWRITE);
 	ListParameters_AppInterface();
 	fclose(GetDSAMPtr_Common()->parsFile);
 	GetDSAMPtr_Common()->parsFile = oldFp;
-	GetDSAMPtr_Common()->noGUIOutputFlag = noGUIOutputFlag;
+	SetGUIDialogStatus(dialogOutputFlag);
 	if (filePath)
 		snprintf(filePath,MAX_FILE_PATH, "%s", (char *) newFilePath.GetData());
 
