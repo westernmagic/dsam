@@ -349,6 +349,7 @@ SetRanSeed_ANSpikeGen_Carney(long theRanSeed)
 		return(FALSE);
 	}
 	carneySGPtr->ranSeedFlag = TRUE;
+	carneySGPtr->updateProcessVariablesFlag = TRUE;
 	carneySGPtr->ranSeed = theRanSeed;
 	return(TRUE);
 
@@ -860,31 +861,33 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_ANSpikeGen_Carney";
 	int		i, arrayLength;
 	double	timeGreaterThanRefractoryPeriod;
+	CarneySGPtr	p = carneySGPtr;
 	
-	if (carneySGPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * carneySGPtr->numFibres;
-		if (carneySGPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		arrayLength = data->outSignal->numChannels * p->numFibres;
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
-			if ((carneySGPtr->timer = (double *) calloc(arrayLength,
-			  sizeof(double))) == NULL) {
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			if ((p->timer = (double *) calloc(arrayLength, sizeof(double))) ==
+			  NULL) {
 			 	NotifyError("%s: Out of memory for timer array.", funcName);
 			 	return(FALSE);
 			}
-			if ((carneySGPtr->remainingPulseTime = (double *)
-			  calloc(arrayLength, sizeof(double))) == NULL) {
+			if ((p->remainingPulseTime = (double *) calloc(arrayLength, sizeof(
+			  double))) == NULL) {
 			 	NotifyError("%s: Out of memory for remainingPulseTime array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			carneySGPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		timeGreaterThanRefractoryPeriod = carneySGPtr->refractoryPeriod +
-		  data->outSignal->dt;
+		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+		  outSignal->dt;
 		for (i = 0; i < arrayLength; i++) {
-			carneySGPtr->timer[i] = timeGreaterThanRefractoryPeriod;
-			carneySGPtr->remainingPulseTime[i] = 0.0;
+			p->timer[i] = timeGreaterThanRefractoryPeriod;
+			p->remainingPulseTime[i] = 0.0;
 		}
 	}
 	return(TRUE);
@@ -979,7 +982,8 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  p->dischargeTConstS1));
 					if (((((p->inputMode ==
 					  ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL)? *inPtr / dt:
-					  *inPtr) - threshold) * dt) > Ran01_Random(&p->ranSeed)) {
+					  *inPtr) - threshold) * dt) > Ran01_Random(data->
+					  randPars)) {
 						*remainingPulseTimePtr = pulseDuration;
 						*timerPtr = 0.0;
 					}

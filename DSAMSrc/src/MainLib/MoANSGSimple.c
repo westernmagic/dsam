@@ -523,32 +523,33 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_ANSpikeGen_Simple";
 	int		i, arrayLength;
 	double	timeGreaterThanRefractoryPeriod;
+	SimpleSGPtr	p = simpleSGPtr;
 	
-	if (simpleSGPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * simpleSGPtr->numFibres;
-		if (simpleSGPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		arrayLength = data->outSignal->numChannels * p->numFibres;
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Simple();
-			if ((simpleSGPtr->timer = (double *)
-			  calloc(arrayLength, sizeof(double))) == NULL) {
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			if ((p->timer = (double *) calloc(arrayLength, sizeof(double))) ==
+			  NULL) {
 			 	NotifyError("%s: Out of memory for timer array.", funcName);
 			 	return(FALSE);
 			}
-			if ((simpleSGPtr->remainingPulseTime = (double *)
-			  calloc(arrayLength, sizeof(double))) == NULL) {
+			if ((p->remainingPulseTime = (double *) calloc(arrayLength, sizeof(
+			  double))) == NULL) {
 			 	NotifyError("%s: Out of memory for remainingPulseTime array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			SetGlobalSeed_Random(simpleSGPtr->ranSeed);
-			simpleSGPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		timeGreaterThanRefractoryPeriod = simpleSGPtr->refractoryPeriod +
-		  data->outSignal->dt;
+		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+		  outSignal->dt;
 		for (i = 0; i < arrayLength; i++) {
-			simpleSGPtr->timer[i] = timeGreaterThanRefractoryPeriod;
-			simpleSGPtr->remainingPulseTime[i] = 0.0;
+			p->timer[i] = timeGreaterThanRefractoryPeriod;
+			p->remainingPulseTime[i] = 0.0;
 		}
 	}
 	return(TRUE);
@@ -680,7 +681,8 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 	int		i, chan;
 	double	dt;
 	ChanLen	j;
-	
+	SimpleSGPtr	p = simpleSGPtr;
+
 	if (!CheckPars_ANSpikeGen_Simple())
 		return(FALSE);
 	if (!CheckData_ANSpikeGen_Simple(data)) {
@@ -704,19 +706,19 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		for (j = 0; j < data->outSignal->length; j++)
 			*outPtr++ = 0.0;
 	}
-	for (i = 0, timerPtr = simpleSGPtr->timer, remainingPulseTimePtr =
-	  simpleSGPtr->remainingPulseTime; i < simpleSGPtr->numFibres; i++)
+	for (i = 0, timerPtr = p->timer, remainingPulseTimePtr =
+	  p->remainingPulseTime; i < p->numFibres; i++)
 		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
 			inPtr = data->inSignal[0]->channel[chan];
 			outPtr = data->outSignal->channel[chan];
 			for (j = 0; j < data->outSignal->length; j++) {
-				if ((*timerPtr > simpleSGPtr->refractoryPeriod) && 
-				  (*inPtr > Ran01_Random(&randomNumSeed))) {
-					*remainingPulseTimePtr = simpleSGPtr->pulseDuration;
+				if ((*timerPtr > p->refractoryPeriod) && (*inPtr > Ran01_Random(
+				  data->randPars))) {
+					*remainingPulseTimePtr = p->pulseDuration;
 					*timerPtr = 0.0;
 				}
 				if (*remainingPulseTimePtr >= dt) {
-					*outPtr += simpleSGPtr->pulseMagnitude;
+					*outPtr += p->pulseMagnitude;
 					*remainingPulseTimePtr -= dt;
 				};
 				*timerPtr += dt;

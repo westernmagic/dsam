@@ -446,6 +446,7 @@ InitModule_BasilarM_GammaT(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = bMGammaTPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_BasilarM_GammaT;
 	theModule->Free = Free_BasilarM_GammaT;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_GammaT;
@@ -491,23 +492,23 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 	static const char *funcName = "InitProcessVariables_BasilarM_GammaT";
 	int		i, j, cFIndex, stateVectorLength;
 	double	sampleRate, *ptr;
+	BMGammaTPtr	p = bMGammaTPtr;
 	
-	if (bMGammaTPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  bMGammaTPtr->theCFs->updateFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
+	  updateFlag) {
 		FreeProcessVariables_BasilarM_GammaT();
-		if ((bMGammaTPtr->coefficients =
-		  (GammaToneCoeffsPtr *) calloc(data->outSignal->numChannels,
-		   sizeof(GammaToneCoeffsPtr))) == NULL) {
+		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(data->outSignal->
+		  numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 	NotifyError("%s: Out of memory.", funcName);
 		 	return(FALSE);
 		}
 		sampleRate = 1.0 / data->inSignal[0]->dt;
-		bMGammaTPtr->numChannels = data->outSignal->numChannels;
+		p->numChannels = data->outSignal->numChannels;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
-			if ((bMGammaTPtr->coefficients[i] = InitGammaToneCoeffs_Filters(
-			  bMGammaTPtr->theCFs->frequency[cFIndex], bMGammaTPtr->theCFs->
-			  bandwidth[cFIndex], bMGammaTPtr->cascade, sampleRate)) == NULL) {
+			if ((p->coefficients[i] = InitGammaToneCoeffs_Filters(p->theCFs->
+			  frequency[cFIndex], p->theCFs->bandwidth[cFIndex], p->cascade,
+			  sampleRate)) == NULL) {
 				NotifyError("%s: Could not initialise coefficients for channel "
 				  "%d.", funcName, i);
 				return(FALSE);
@@ -515,17 +516,15 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
-		SetInfoChannelLabels_SignalData(data->outSignal, bMGammaTPtr->theCFs->
-		  frequency);
-		SetInfoCFArray_SignalData(data->outSignal, bMGammaTPtr->theCFs->
-		  frequency);
-		bMGammaTPtr->updateProcessVariablesFlag = FALSE;
-		bMGammaTPtr->theCFs->updateFlag = FALSE;
+		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
+		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+		p->updateProcessVariablesFlag = FALSE;
+		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		stateVectorLength = bMGammaTPtr->cascade * 
+		stateVectorLength = p->cascade * 
 		  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
 		for (i = 0; i < data->outSignal->numChannels; i++) {
-			ptr = bMGammaTPtr->coefficients[i]->stateVector;
+			ptr = p->coefficients[i]->stateVector;
 			for (j = 0; j < stateVectorLength; j++)
 				*ptr++ = 0.0;
 		}
@@ -552,32 +551,37 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 	static const char *funcName = "RunModel_BasilarM_GammaT";
 	uShort	totalChannels;
 				
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_BasilarM_GammaT())
-		return(FALSE);
-		
-	/* Initialise Variables and coefficients */
-	
-	SetProcessName_EarObject(data, "Gamma tone basilar membrane filtering");
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
-		return(FALSE);
-	}
-	totalChannels = bMGammaTPtr->theCFs->numChannels *
-	  data->inSignal[0]->numChannels;
-	if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
-		NotifyError("%s: Cannot initialise output channel.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_BasilarM_GammaT(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_BasilarM_GammaT())
+			return(FALSE);
+
+		/* Initialise Variables and coefficients */
+
+		SetProcessName_EarObject(data, "Gamma tone basilar membrane filtering");
+		if (!CheckInSignal_EarObject(data, funcName))
+			return(FALSE);
+		if (!CheckRamp_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not correctly initialised.",
+			  funcName);
+			return(FALSE);
+		}
+		totalChannels = bMGammaTPtr->theCFs->numChannels *
+		  data->inSignal[0]->numChannels;
+		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+			NotifyError("%s: Cannot initialise output channel.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_BasilarM_GammaT(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	/* Filter signal */
 	GammaTone_Filters(data->outSignal, bMGammaTPtr->coefficients);

@@ -58,7 +58,7 @@ typedef struct {
 	UniParListPtr	parList;
 	int		numChannels;
 	double	*lastOutput;
-	ChanLen	*remainingPulseIndex;
+	ChanLen	*remainingPulseIndex, pulseDurationIndex;
 	EarObjectPtr	refractAdjData;
 	RefractAdj		refractAdj;
 

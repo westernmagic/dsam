@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtRandom.h"
 #include "MoANSGBinom.h"
 
 /******************************************************************************/
@@ -530,6 +531,7 @@ InitModule_ANSpikeGen_Binomial(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = binomialSGPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->CheckPars = CheckPars_ANSpikeGen_Binomial;
 	theModule->Free = Free_ANSpikeGen_Binomial;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Binomial;
@@ -588,41 +590,40 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_ANSpikeGen_Binomial";
 	int		i;
+	BinomialSGPtr	p = binomialSGPtr;
 
-	if (binomialSGPtr->updateProcessVariablesFlag ||
-	  data->updateProcessFlag || (data->timeIndex == PROCESS_START_TIME)) {
-		if (binomialSGPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
+	  (data->timeIndex == PROCESS_START_TIME)) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Binomial();
-			if ((binomialSGPtr->refractAdjData = Init_EarObject("NULL")) ==
-			  NULL) {
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			if ((p->refractAdjData = Init_EarObject("NULL")) == NULL) {
 				NotifyError("%s: Out of memory for refractAdjData EarObject.",
 				  funcName);
 				return(FALSE);
 			}
-			refractAdjPtr = &binomialSGPtr->refractAdj;
+			refractAdjPtr = &p->refractAdj;
 			Init_Utility_RefractoryAdjust(LOCAL);
-			SetRefractoryPeriod_Utility_RefractoryAdjust(
-			  binomialSGPtr->refractoryPeriod);
-		  	binomialSGPtr->numChannels = data->outSignal->numChannels;
-			if ((binomialSGPtr->remainingPulseIndex = (ChanLen *)
-			  calloc(binomialSGPtr->numChannels, sizeof(ChanLen))) == NULL) {
+			SetRefractoryPeriod_Utility_RefractoryAdjust(p->refractoryPeriod);
+		  	p->numChannels = data->outSignal->numChannels;
+			if ((p->remainingPulseIndex = (ChanLen *) calloc(p->numChannels,
+			  sizeof(ChanLen))) == NULL) {
 			 	NotifyError("%s: Out of memory for remainingPulseIndex array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			if ((binomialSGPtr->lastOutput = (double *)
-			  calloc(binomialSGPtr->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastOutput = (double *) calloc(p->numChannels, sizeof(
+			  double))) == NULL) {
 			 	NotifyError("%s: Out of memory for lastOutput array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			SetGlobalSeed_Random(binomialSGPtr->ranSeed);
-			binomialSGPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		for (i = 0; i < binomialSGPtr->numChannels; i++) {
-			binomialSGPtr->remainingPulseIndex[i] = 0;
-			binomialSGPtr->lastOutput[i] = 0.0;
+		for (i = 0; i < p->numChannels; i++) {
+			p->remainingPulseIndex[i] = 0;
+			p->lastOutput[i] = 0.0;
 		}
 	}
 	return(TRUE);
@@ -639,20 +640,22 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 void
 FreeProcessVariables_ANSpikeGen_Binomial(void)
 {
-	if (binomialSGPtr->refractAdjData) {
-		Free_EarObject(&binomialSGPtr->refractAdjData);
-		refractAdjPtr = &binomialSGPtr->refractAdj;
+	BinomialSGPtr	p = binomialSGPtr;
+
+	if (p->refractAdjData) {
+		Free_EarObject(&p->refractAdjData);
+		refractAdjPtr = &p->refractAdj;
 		Free_Utility_RefractoryAdjust();
 	}
-	if (binomialSGPtr->remainingPulseIndex != NULL) {
-		free(binomialSGPtr->remainingPulseIndex);
-		binomialSGPtr->remainingPulseIndex = NULL;
+	if (p->remainingPulseIndex != NULL) {
+		free(p->remainingPulseIndex);
+		p->remainingPulseIndex = NULL;
 	}
-	if (binomialSGPtr->lastOutput != NULL) {
-		free(binomialSGPtr->lastOutput);
-		binomialSGPtr->lastOutput = NULL;
+	if (p->lastOutput != NULL) {
+		free(p->lastOutput);
+		p->lastOutput = NULL;
 	}
-	binomialSGPtr->updateProcessVariablesFlag = TRUE;
+	p->updateProcessVariablesFlag = TRUE;
 
 }
 
@@ -679,50 +682,56 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	register	ChanData	*inPtr, *outPtr, *pulsePtr;
 	register	double		output = 0.0;
 	int		chan;
-	double	dt, *lastOutputPtr;
-	ChanLen	i, pulseDurationIndex, pulseTimer = 0;
+	double	*lastOutputPtr;
+	ChanLen	i, pulseTimer = 0;
 	ChanLen	*remainingPulseIndexPtr;
 	ChanData	*pastEndOfData;
+	BinomialSGPtr	p = binomialSGPtr;
 
-	if (!CheckPars_ANSpikeGen_Binomial())
-		return(FALSE);
-	if (!CheckData_ANSpikeGen_Binomial(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_ANSpikeGen_Binomial())
+			return(FALSE);
+		if (!CheckData_ANSpikeGen_Binomial(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Binomial Post-synaptic Firing");
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_ANSpikeGen_Binomial(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		TempInputConnection_EarObject(data, p->refractAdjData, 1);
+		refractAdjPtr = &p->refractAdj;
+		Process_Utility_RefractoryAdjust(p->refractAdjData);
+		p->pulseDurationIndex = (ChanLen) (p->pulseDuration / data->inSignal[
+		  0]->dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Binomial Post-synaptic Firing");
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_ANSpikeGen_Binomial(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	TempInputConnection_EarObject(data, binomialSGPtr->refractAdjData, 1);
-	refractAdjPtr = &binomialSGPtr->refractAdj;
-	Process_Utility_RefractoryAdjust(binomialSGPtr->refractAdjData);
-	dt = data->inSignal[0]->dt;
-	pulseDurationIndex = (ChanLen) (binomialSGPtr->pulseDuration / dt + 0.5);
-	remainingPulseIndexPtr = binomialSGPtr->remainingPulseIndex;
-	lastOutputPtr = binomialSGPtr->lastOutput;
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-		inPtr = binomialSGPtr->refractAdjData->outSignal->channel[chan];
+	remainingPulseIndexPtr = p->remainingPulseIndex + data->outSignal->offset;
+	lastOutputPtr = p->lastOutput + data->outSignal->offset;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		inPtr = p->refractAdjData->outSignal->channel[chan];
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++)
 			*outPtr++ = 0.0;
-		if (binomialSGPtr->numFibres < 1)
+		if (p->numFibres < 1)
 			continue;
 		outPtr = data->outSignal->channel[chan];
 		pastEndOfData = data->outSignal->channel[chan] +
 		  data->outSignal->length;
 		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
-			output = binomialSGPtr->pulseMagnitude *
-			  GeomDist_Random(*inPtr++, binomialSGPtr->numFibres);
+			output = p->pulseMagnitude * GeomDist_Random(*inPtr++,
+			  p->numFibres, data->randPars);
 			if (output > 0.0) {
-				for (pulseTimer = pulseDurationIndex, pulsePtr = outPtr;
+				for (pulseTimer = p->pulseDurationIndex, pulsePtr = outPtr;
 				  pulseTimer && (pulsePtr < pastEndOfData); pulsePtr++,
 				  pulseTimer--) {
 					*pulsePtr += output;

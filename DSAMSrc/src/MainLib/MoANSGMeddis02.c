@@ -545,31 +545,33 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 	static const char	*funcName = "InitProcessVariables_ANSpikeGen_Meddis02";
 	int		i, arrayLength;
 	double	timeGreaterThanRefractoryPeriod;
+	Meddis02SGPtr	p = meddis02SGPtr;
 
-	if (meddis02SGPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * meddis02SGPtr->numFibres;
-		if (meddis02SGPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		arrayLength = data->outSignal->numChannels * p->numFibres;
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Meddis02();
-			if ((meddis02SGPtr->timer = (double *) calloc(arrayLength, sizeof(
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			if ((p->timer = (double *) calloc(arrayLength, sizeof(
 			  double))) == NULL) {
 			 	NotifyError("%s: Out of memory for timer array.", funcName);
 			 	return(FALSE);
 			}
-			if ((meddis02SGPtr->remainingPulseTime = (double *) calloc(
-			  arrayLength, sizeof(double))) == NULL) {
+			if ((p->remainingPulseTime = (double *) calloc(arrayLength, sizeof(
+			  double))) == NULL) {
 			 	NotifyError("%s: Out of memory for remainingPulseTime array.",
 			 	  funcName);
 			 	return(FALSE);
 			}
-			meddis02SGPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		timeGreaterThanRefractoryPeriod = meddis02SGPtr->refractoryPeriod +
-		  data->outSignal->dt;
+		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+		  outSignal->dt;
 		for (i = 0; i < arrayLength; i++) {
-			meddis02SGPtr->timer[i] = timeGreaterThanRefractoryPeriod;
-			meddis02SGPtr->remainingPulseTime[i] = 0.0;
+			p->timer[i] = timeGreaterThanRefractoryPeriod;
+			p->remainingPulseTime[i] = 0.0;
 		}
 	}
 	return(TRUE);
@@ -662,7 +664,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 				if ((*inPtr > 0.0) && (*timerPtr > p->refractoryPeriod)) {
 					excessTime = *timerPtr - p->refractoryPeriod;
 					spikeProb = 1.0 - exp(-excessTime / p->recoveryTau);
-					if (spikeProb > Ran01_Random(&p->ranSeed)) {
+					if (spikeProb > Ran01_Random(data->randPars)) {
 						*remainingPulseTimePtr = pulseDuration;
 						*timerPtr = 0.0;
 					}

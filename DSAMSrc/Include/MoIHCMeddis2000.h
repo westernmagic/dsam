@@ -25,7 +25,8 @@
 /******************************************************************************/
 
 #define IHC_MEDDIS2000_NUM_PARS		19
-#define  MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
+#define MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
+#define MEDDIS2000_MOD_NAME			"IHC_MEDDIS2000"
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -130,6 +131,8 @@ typedef struct {
 	HairCellVars2	*hCChannels;
 	char		diagFileName[MAX_FILE_PATH];
 	FILE		*fp;
+	double		ydt, rdt, xdt, zdt, k0pow, l_Plus_rdt, dt_Over_tauConcCa;
+	double		dtOverTauCaChan;
 
 } HairCell2, *HairCell2Ptr;
 

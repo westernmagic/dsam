@@ -27,7 +27,8 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define BASILARM_DRNL_NUM_PARS			12
+#define BM_DRNL_NUM_PARS			12
+#define BM_DRNL_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -35,18 +36,24 @@
 
 typedef enum {
 
-	BASILARM_DRNL_NONLINGTCASCADE,
-	BASILARM_DRNL_NONLINLPCASCADE,
-	BASILARM_DRNL_NONLINBWIDTH,
-	BASILARM_DRNL_COMPRSCALEA,
-	BASILARM_DRNL_COMPRSCALEB,
-	BASILARM_DRNL_COMPREXPONENT,
-	BASILARM_DRNL_LINGTCASCADE,
-	BASILARM_DRNL_LINLPCASCADE,
-	BASILARM_DRNL_LINCF,
-	BASILARM_DRNL_LINBWIDTH,
-	BASILARM_DRNL_LINSCALEG,
-	BASILARM_DRNL_THECFS
+	BM_DRNL_LINEARF
+
+} BMDRNLSubProcessSpecifier;
+
+typedef enum {
+
+	BM_DRNL_NONLINGTCASCADE,
+	BM_DRNL_NONLINLPCASCADE,
+	BM_DRNL_NONLINBWIDTH,
+	BM_DRNL_COMPRSCALEA,
+	BM_DRNL_COMPRSCALEB,
+	BM_DRNL_COMPREXPONENT,
+	BM_DRNL_LINGTCASCADE,
+	BM_DRNL_LINLPCASCADE,
+	BM_DRNL_LINCF,
+	BM_DRNL_LINBWIDTH,
+	BM_DRNL_LINSCALEG,
+	BM_DRNL_THECFS
 
 } BMDRNLParSpecifier;
 

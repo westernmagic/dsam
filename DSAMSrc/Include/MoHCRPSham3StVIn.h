@@ -21,7 +21,8 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define IHCRP_SHAMMA3STATEVELIN_NUM_PARS			14
+#define IHCRP_SHAMMA3STATEVELIN_NUM_PARS	14
+#define IHCRP_SHAMMA3STATEVELIN_MOD_NAME	"IHCRP_SHAMMA3STATEVELIN"
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -77,6 +78,7 @@ typedef struct {
 	double	*lastCiliaDisplacement_u;
 	double	*lastInput;
 	double	*lastOutput;
+	double	dtOverC, gkEpk, dtOverTc, cGaindt, ciliaAct, leakageConductance_Ga;
 
 } Sham3StVIn, *Sham3StVInPtr;
 

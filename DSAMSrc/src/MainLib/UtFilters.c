@@ -296,7 +296,7 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		exit(1);
 	}
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		for (i = 0, state = p[chan]->state; i < p[chan]->cascade; i++, state +=
 		  FILTERS_NUM_IIR2_STATE_VARS) {
 			state1 = state + 1;
@@ -340,7 +340,7 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
 			if(*data >= 0.0) { 			/* positive signal */
@@ -380,7 +380,7 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
 			*data = (*data < 0.0)? -1.0 / (1.0 + shift * pow(-*data, -slope)):
@@ -416,7 +416,7 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++) {
 			if (*data < 0.0) {
@@ -461,7 +461,7 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++) {
 			if (*data < 0.0) {
@@ -506,7 +506,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 		NotifyError("%s: No signal channels have been initialised!", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++) {
 			*data = (*data < 0.0)? -FUNC(-*data): ((*data == 0.0)? 0.0:
@@ -534,6 +534,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	static const char *funcName = "GammaTone_Filters";
 	int		j, chan;
 	ChanLen	i;
+	GammaToneCoeffs *gC;
 	register	double		*ptr1, *ptr2, wn;	/* Inner loop variables */
 	register	ChanData	*data;
 
@@ -543,18 +544,18 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	}	
 	/* For the allocation of space to the state vector, the filter for all
 	 * channels are assumed to have the same cascade as the first. */
-	 
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		data = theSignal->channel[chan];
+		gC = p[chan];
 		for (i = 0; i < theSignal->length; i++, data++)
-			for (j = 0, ptr1 = p[chan]->stateVector; j < p[chan]->cascade;
-			  j++) {
+			for (j = 0, ptr1 = gC->stateVector; j < gC->cascade; j++) {
 				ptr2 = ptr1;
-				*data -= p[chan]->b1 * *(ptr1++);
-				*data -= p[chan]->b2 * *ptr1;
+				*data -= gC->b1 * *(ptr1++);
+				*data -= gC->b2 * *ptr1;
 				wn = *data;		/* Temp variable */
-				*data *= p[chan]->a0;
-				*data += p[chan]->a1 * *ptr2; /* Final Yn */
+				*data *= gC->a0;
+				*data += gC->a1 * *ptr2; /* Final Yn */
 				*ptr1 = *ptr2;	/* Update Yn-1 to Yn-2 */
 				*ptr2 = wn;
 				ptr1++;
@@ -672,7 +673,7 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 		NotifyError("%s: Signal not correctly initialised.", funcName);
 		return(FALSE);
 	}	
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		for (i = 0, state = p[chan]->state; i < p[chan]->cascade; i++, state +=
 		 FILTERS_NUM_BP_STATE_VARS ) {
 			xState = state;
@@ -787,7 +788,7 @@ IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 		NotifyError("%s: Signal not correctly initialised.", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		p = pArray[chan];
 		for (j = 0; j < p->cascade; j++) {
 			yi = theSignal->channel[chan];
@@ -875,7 +876,7 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 		NotifyError("%s: Signal not correctly initialised.", funcName);
 		return(FALSE);
 	}	
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		xi_1 = p->state;
 		yi_1 = p->state + 1;
 		yi = theSignal->channel[chan];
@@ -918,7 +919,7 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 		NotifyError("%s: Signal not correctly initialised.", funcName);
 		return(FALSE);
 	}	
-	for (chan = 0; chan < theSignal->numChannels; chan++) {
+	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		ptr = p[chan];
 		xi_1 = ptr->state;
 		yi_1 = ptr->state + 1;
