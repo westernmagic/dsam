@@ -46,7 +46,7 @@ LangDir=LANG\ENG\
 AppName=AMS
 AppExe=[Program Files]\AMS.exe
 AppExeFile=
-Version=1.1.1-2.6.13
+Version=1.1.1-2.6.23
 Company=DSAM
 Title=DSAM AMS
 TitleType=1
@@ -73,7 +73,7 @@ Component1GroupList=1 2 3 4 5
 
 [Groups]
 Groups=5
-Group1Size=1195049
+Group1Size=1194988
 Group1Files=4
 Group1Name=Program Files
 Group1Dir=<INSTALLDIR>
