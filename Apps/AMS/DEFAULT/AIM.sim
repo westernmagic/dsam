@@ -8,7 +8,7 @@ begin {
 	
 	DataFile_In			< waveDflt.par
 	Trans_Gate			< gateDflt.par
-	PreEm_BandPass		< midearDflt.par
+	Filt_BandPass		< midearDflt.par
 	BM_GammaT			< gtfDflt.par
 	Display_Signal		< BMMdflt.par
 	IHC_Meddis86		< medDflt.par
