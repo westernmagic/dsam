@@ -118,7 +118,16 @@ typedef struct stat *StatPtr;
 
 extern char **argv;
 extern int	argc;
+
+/* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
+ * macros, to allow the safe use of C libraries with C++ libraries - defined
+ * in GeCommon.h.
+ */
+__BEGIN_DECLS
+
 extern AppInterfacePtr	appInterfacePtr;
+
+__END_DECLS
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
