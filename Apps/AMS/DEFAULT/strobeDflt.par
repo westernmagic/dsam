@@ -5,7 +5,7 @@
 
 peak_shadow+	Strobe mode.
 off		diagnostic mode ("on" or "off").
-0.030	Threshold for strobing - "user", "threshold" and "peak" modes only (units).
+0.0		Threshold for strobing - "user", "threshold" and "peak" modes only (units).
 5000	Threshold decay rate (half life).
 5e-3	Strobe delay time (s).
 10e-3	Strobe delay timeout (s).
