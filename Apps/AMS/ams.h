@@ -57,7 +57,7 @@
 
 #define	PROGRAM_NAME				"ams"
 #ifndef AMS_VERSION
-#	define	AMS_VERSION					"1.0.1"
+#	define	AMS_VERSION					"?.?.?"
 #endif
 
 #define	AMS_NUM_PARS				2		/* No. of application parameters. */
