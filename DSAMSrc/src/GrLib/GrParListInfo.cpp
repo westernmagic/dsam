@@ -185,6 +185,7 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
 		cBox->Append(list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
+	cBox->SetInsertionPointEnd();
 	cBox->SetToolTip(par->desc);
 
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
@@ -243,6 +244,7 @@ ParListInfo::SetParFileName(UniParPtr par, int index)
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxHSCROLL);
 	textCtrl->SetToolTip(par->desc);
+	textCtrl->SetInsertionPointEnd();
 
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
 	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
@@ -298,6 +300,7 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1));
 	textCtrl->SetToolTip(par->desc);
+	textCtrl->SetInsertionPointEnd();
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
 

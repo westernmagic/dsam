@@ -299,6 +299,7 @@ ParControl::ResetValue(void)
 	case TEXT_CTRL: {
 		bool	oldUpdateFlag = updateFlag;
 		textCtrl->SetValue(GetParString_UniParMgr(par));
+		textCtrl->SetInsertionPointEnd();
 		updateFlag = oldUpdateFlag;
 		} break;
 	default:
