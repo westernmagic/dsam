@@ -918,7 +918,7 @@ PrintPars_BasilarM_DRNL_Test(void)
 	DPrint("\tLinear gammatone filter cascade ('order') = %d\n",
 	  bM0DRNLPtr->linGTCascade);
 	DPrint("\tLinear low-pass filter cascade ('order')  = %d\n",\
-	  bM0DRNLPtr->nonLinLPCascade);
+	  bM0DRNLPtr->linLPCascade);
 	DPrint("\tLinear CF = %g (Hz),", bM0DRNLPtr->linCF);
 	DPrint("\tBandwidth = %g (Hz),", bM0DRNLPtr->linBwidth);
 	DPrint("\tScale = %g (units.)\n", bM0DRNLPtr->linScaler);
