@@ -17,7 +17,7 @@
  * Created:		12 Jul 1993
  * Updated:		12 Jan 1999
  * Copyright:	(c) 1999-2000, University of Essex.
-*
+ *
  *********************/
 
 #ifndef _MOBMDRNL_H
