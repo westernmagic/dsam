@@ -431,7 +431,8 @@ MyApp::CreateProcessLists(void)
 
 	for (modReg = LibraryList_ModuleReg(0); (modReg->name[0] != '\0'); modReg++)
 		GetProcessList(modReg->classSpecifier)->Add(modReg->name);
-	for (modReg = UserList_ModuleReg(0); (modReg->name[0] != '\0'); modReg++)
+	for (modReg = UserList_ModuleReg(0); modReg && (modReg->name[0] != '\0');
+	  modReg++)
 		userList.Add(modReg->name);
 	InitKeyWords_Utility_SSSymbols(&symList);
 	for (p = symList; p; p = p->next) {
