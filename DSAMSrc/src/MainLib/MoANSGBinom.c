@@ -247,11 +247,6 @@ SetNumFibres_ANSpikeGen_Binomial(int theNumFibres)
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if (theNumFibres < 1) {
-		NotifyError("%s: Number of fibres too low (%d).", funcName,
-		  theNumFibres);
-		return(FALSE);
-	}
 	binomialSGPtr->numFibresFlag = TRUE;
 	binomialSGPtr->numFibres = theNumFibres;
 	return(TRUE);
@@ -433,16 +428,12 @@ PrintPars_ANSpikeGen_Binomial(void)
 		return(FALSE);
 	}
 	DPrint("Binomial Post-synaptic Firing Module:-\n");
-	DPrint("\tNo. fibres = %d,",
-	  binomialSGPtr->numFibres);
-	DPrint("\tRandom no. seed = %ld\n",
-	  binomialSGPtr->ranSeed);
-	DPrint("\tPulse duration = %g ms,",
-	  MSEC(binomialSGPtr->pulseDuration));
-	DPrint("\tPulse magnitude = %g (nA?),\n",
-	  binomialSGPtr->pulseMagnitude);
-	DPrint("\trefractoryPeriod = %g ms\n",
-	  MSEC(binomialSGPtr->refractoryPeriod));
+	DPrint("\tNo. fibres = %d,", binomialSGPtr->numFibres);
+	DPrint("\tRandom no. seed = %ld\n", binomialSGPtr->ranSeed);
+	DPrint("\tPulse duration = %g ms,", MSEC(binomialSGPtr->pulseDuration));
+	DPrint("\tPulse magnitude = %g (nA?),\n", binomialSGPtr->pulseMagnitude);
+	DPrint("\trefractoryPeriod = %g ms\n", MSEC(binomialSGPtr->
+	  refractoryPeriod));
 	return(TRUE);
 
 }
@@ -460,7 +451,7 @@ ReadPars_ANSpikeGen_Binomial(char *fileName)
 	BOOLN	ok;
 	char	*filePath;
 	int		numFibres;
-	long		ranSeed;
+	long	ranSeed;
 	double	pulseDuration, pulseMagnitude, refractoryPeriod;
 	FILE	*fp;
 
@@ -722,6 +713,8 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		outPtr = data->outSignal->channel[chan];
 		for (i = 0; i < data->outSignal->length; i++)
 			*outPtr++ = 0.0;
+		if (binomialSGPtr->numFibres < 1)
+			continue;
 		outPtr = data->outSignal->channel[chan];
 		pastEndOfData = data->outSignal->channel[chan] +
 		  data->outSignal->length;
