@@ -37,9 +37,6 @@
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
  *				implements the auto-normalisation for calculating the
  *				'datafilePtr->normalise' parameter.
- *				24-10-00 LPO: The 'inputMode' parameter has been introduced, and
- *				is set by the 'SetDataFileIn_ModuleMgr' and
- *				'SetDataFileOut_ModuleMgr' routines.
  * Authors:		L. P. O'Mard revised from Malcolm Slaney's code.
  * Created:		12 Jul 1993
  * Updated:		04 Aug 1999
@@ -113,7 +110,9 @@ typedef enum {
 
 	DATA_FILE_DEFAULT_ENDIAN,
 	DATA_FILE_LITTLE_ENDIAN,
+	DATA_FILE_LITTLE_ENDIAN_UNSIGNED,
 	DATA_FILE_BIG_ENDIAN,
+	DATA_FILE_BIG_ENDIAN_UNSIGNED,
 	DATA_FILE_ENDIAN_NULL
 
 } DataFileEndianModeSpecifier;
@@ -140,6 +139,7 @@ typedef struct {
 	
 	/* Generic IO routines for reading big/little-endian data. */
 	
+	void	(* Write8Bits)(FILE *, int);
 	void	(* Write16Bits)(FILE *, int16);
 	void	(* Write32Bits)(FILE *, int32);
 	void	(* WriteIEEEExtended)(FILE *, double);
@@ -152,6 +152,7 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN	inputMode;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave support*/
+	double	normOffset;			/* Set for scaling: AIFF, Raw, MS Wave support*/
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
 	int32 	maxSamples;		/* This can be set to restrict the data size. */
@@ -225,8 +226,6 @@ BOOLN	SetDuration_DataFile(double theDuration);
 
 BOOLN	SetEndian_DataFile(char *endian);
 
-void	SetEndianRW_DataFile(int endian);
-
 BOOLN	SetFileName_DataFile(char *fileName);
 
 BOOLN	SetGain_DataFile(double theGain);
@@ -245,6 +244,8 @@ BOOLN	SetPars_DataFile(char *theFileName, int theWordSize,
 		  char *theEndian, int theNumChannels, double theDefaultSampleRate,
 		  double theDuration, double theTimeOffset, double theGain,
 		  double normalisation);
+
+void	SetRWFormat_DataFile(int endian);
 
 BOOLN	SetTimeOffset_DataFile(double timeOffset);
 

@@ -47,11 +47,12 @@ typedef struct {
 	int16	numChannels;	/* 1 Mono, 2 Stereo */
 	int32	sampleRate;		/* frequency of sample */
 	int32	byteRate;		/* No. of bytes per second. */
-	int16	sampleBytes;	/* samplesize; 1 or 2 bytes */
+	int16	blockAlign;		/* = numChannels * bitsperSample / 8*/
+	int16	bitsPerSample;	/* 8 bits = 8, 16 bits  = 16, etc. */
 	int16	sampleSize;		/* 8, 12 or 16 bit */ 
 
 	int32	dataChunk;		/* 'data' */
-	int32	dataChunkLength;/* sample count */
+	int32	dataChunkLength;/* = numSamples * numChannels * bitsPerSample / 8 */
   
 } WaveHeader, *WaveHeaderPtr;
 
