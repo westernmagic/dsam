@@ -280,7 +280,7 @@ SetUniParList_DataFile(void)
 	  &dataFilePtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_DataFile);
 	SetPar_UniParMgr(&pars[DATAFILE_NORMALISE], "NORM_MODE",
-	  "Normalisation factor for writing (0 or -ve: automatic).",
+	  "Normalisation factor for writing (either 0 or -ve: automatic).",
 	  UNIPAR_REAL,
 	  &dataFilePtr->normalisation, NULL,
 	  (void * (*)) SetNormalisation_DataFile);
