@@ -187,23 +187,23 @@ AutoSetNumberOfRuns(void)
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
 	if (!process)
 		return(TRUE);
+	numberOfRuns = 1;	/* Default value */
 	if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
 	  0) {
 		NotifyError("%s: Operation failed. First process is not DataFile_In.\n",
 		  funcName);
-		numberOfRuns = 1;
 		return(TRUE);
-	}
-	if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
-	  GetDuration)()) < 0.0) {
-		NotifyError("%s: Could not determine signal size for data file.",
-		  funcName);
-		return(FALSE);
 	}
 	segmentDuration = *GetUniParPtr_ModuleMgr(process, "duration")->valuePtr.r;
 	if (segmentDuration < 0.0) {
 		NotifyError("%s: Segment size must be set when using auto 'number of "
 		  "runs' mode.", funcName);
+		return(FALSE);
+	}
+	if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
+	  GetDuration)()) < 0.0) {
+		NotifyError("%s: Could not determine signal size for data file.",
+		  funcName);
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
@@ -340,6 +340,20 @@ PostInitFunc(void)
 
 }
 
+/****************************** RegisterUserModules ***************************/
+
+/*
+ * This routine registers my user modules.
+ */
+
+BOOLN
+RegisterUserModules(void)
+{
+	/*RegEntry_ModuleReg("BM_Carney2001", InitModule_BasilarM_Carney2001); */
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -373,6 +387,7 @@ Init(void)
 	SetAppProcessOptions_AppInterface(ProcessOptions);
 	SetAppPostInitFunc_AppInterface(PostInitFunc);
 
+	SetAppRegisterUserModules_AppInterface(RegisterUserModules);
 	return(TRUE);
 
 }
