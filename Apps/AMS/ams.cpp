@@ -67,7 +67,6 @@
 /******************************************************************************/
 
 BOOLN	numberOfRunsFlag;
-BOOLN	checkInitialisation = TRUE;
 
 char	fileLockingMode[MAXLINE] = "off";
 
@@ -77,7 +76,7 @@ UniParListPtr	programParList = NULL;
 #ifdef GRAPHICS_SUPPORT
 
 // Tell SimMgr that we are passing run information.
-RunMgr	myRunMgr(Init);
+//RunMgr	myRunMgr(Init);
 
 #endif /* GRAPHICS_SUPPORT */
 
@@ -231,8 +230,8 @@ ProcessOptions(int argc, char **argv, int *optInd)
 			break;
 		case 'v':
 			fprintf(stderr, "Version %s, compile date %s, DSAM %s (dynamic), "
-			  "%s (compiled).\n", AMS_VERSION, __DATE__, GetDSAMPtr_Common()->version,
-			  DSAM_VERSION);
+			  "%s (compiled).\n", AMS_VERSION, __DATE__, GetDSAMPtr_Common()->
+			  version, DSAM_VERSION);
 			exit(0);
 			break;
 		default:
@@ -329,7 +328,7 @@ Init(void)
 	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
 
 #	ifdef GRAPHICS_SUPPORT
-	myRunMgr.SetIcon(new wxICON(ams));
+	wxGetApp().SetIcon(new wxICON(ams));
 #	endif
 
 	SetUniParList();
@@ -341,7 +340,6 @@ Init(void)
 	SetAppProcessOptions_AppInterface(ProcessOptions);
 	SetAppReadInitialPars_AppInterface(ReadAppInterfacePars);
 
-	checkInitialisation = FALSE;
 	return(TRUE);
 
 }
@@ -355,10 +353,7 @@ int MainSimulation(MAIN_ARGS)
 	clock_t		startTime;
 	int			i;
 
-	if (checkInitialisation && !Init())
-		return(1);	
-
-	if (!InitProcessVariables_AppInterface(argc, argv))
+	if (!InitProcessVariables_AppInterface(Init, argc, argv))
 		return(1);
 
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
@@ -379,6 +374,8 @@ int MainSimulation(MAIN_ARGS)
 
 	DPrint("The process took %g CPU seconds to run.\n", (double) (clock() -
 	  startTime) / CLOCKS_PER_SEC);
+
+	Free_AppInterface();
 	DPrint("Finished test.\n");
 	return(0);
 	

@@ -25,7 +25,7 @@ ams_ng.$(OBJEXT):	ams.cpp
 					$(COMPILE) -c ams.cpp -o ams_ng.$(OBJEXT)
 
 $(AMSRESOBJ):	Makefile ams.rc
-	if test x$(MINGW32) = xyes; then \
+	@if test x$(MINGW32) = xyes; then \
 		$(RESCOMP) $(RESFLAGS) $(srcdir)/ams.rc -o $@ ; \
 	fi
 
