@@ -47,7 +47,7 @@
 #define	DRNL_LIN_CF(F)			DRNL_QUAD_FUNC(F, 393, 0.294, 3.465e-5)
 
 #define	DRNL_LIN_WIDTH(F)		DRNL_MIN_VAL_FUNC(DRNL_LOG_FUNC(F, -887.17, \
-								  170.69), (F) / 2.0)
+								  170.69), (F) / 10.0)
 
 #define	DRNL_LIN_ATTEN(F)		(23.13 * exp(6.76e-5 * (F)))
 
