@@ -54,6 +54,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	~SDIEvtHandler(void);
 
 	wxStringList *	GetProcessList(void);
+	bool	EditInstruction(void);
 	void	FreeInstruction(void);
 	bool	InitInstruction(void);
 

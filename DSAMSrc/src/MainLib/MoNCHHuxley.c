@@ -920,7 +920,6 @@ BOOLN
 CheckData_Neuron_HHuxley(EarObjectPtr data)
 {
 	static const char	*funcName = "CheckData_Neuron_HHuxley";
-	int		i;
 
 	if (data == NULL) {
 		NotifyError("%s: EarObject not initialised.", funcName);

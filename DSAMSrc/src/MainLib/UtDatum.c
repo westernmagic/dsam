@@ -149,8 +149,65 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 		pc->next = datum;
 		datum->previous = pc;
 	}
-	datum->stepNumber = datumStepCount++;
 	return datum;
+
+}
+
+/****************************** InsertInst ************************************/
+
+/*
+ * Insert a code datum instruction into a list before the current position.
+ * It expects to the datum to have been already created elsewhere.
+ */
+
+void
+InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
+{
+	if (!*head) {	/* Start of simulation list */
+		*head = datum;
+		return;
+	}
+	if (pos == *head)
+		*head = datum;
+	if (pos->previous)
+		pos->previous->next = datum;
+	datum->previous = pos->previous;
+	pos->previous = datum;
+	datum->next = pos;
+
+}
+
+/****************************** AppendInst ************************************/
+
+/*
+ * Append a code datum instruction into a list after the current position.
+ * It expects to the datum to have been already created elsewhere.
+ */
+
+void
+AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
+{
+	if (!*head) {	/* Start of simulation list */
+		*head = datum;
+		return;
+	}
+	datum->previous = pos;
+	datum->next = pos->next;
+	pos->next = datum;
+
+}
+
+/****************************** DisconnectSim *********************************/
+
+/*
+ * Disconnect datum instructions in a list.
+ */
+
+void
+DisconnectSim_Utility_Datum(DatumPtr from, DatumPtr to)
+{
+	from->next = NULL;
+	to->previous = NULL;
 
 }
 

@@ -149,6 +149,8 @@ EarObjectPtr	GetEarObjectPtr_AppInterface(void);
 
 StatPtr	GetFileStatusPtr_AppInterface(char *fileName);
 
+DatumPtr *	GetSimPtr_AppInterface(void);
+
 DatumPtr	GetSimulation_AppInterface(void);
 
 UniParPtr	GetUniParPtr_AppInterface(char *parName);

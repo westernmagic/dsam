@@ -53,8 +53,6 @@ SDIEvtHandler::SDIEvtHandler(wxShapeEvtHandler *prev, wxShape *shape,
 
 SDIEvtHandler::~SDIEvtHandler(void)
 {
-	if (pc)
-		FreeInstruction_Utility_Datum(&pc, pc);
 
 }
 
@@ -106,24 +104,12 @@ SDIEvtHandler::InitInstruction(void)
 		NotifyError("%s: datum already initialised!", funcName);
 		return(false);
 	}
-	if (label.IsEmpty())
-		return(true);
 	switch (processType) {
 	case PALETTE_CONTROL: {
 		int		type;
-		SymbolPtr	sp, symList = NULL;
-
-		if (simScriptPtr)
-			sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
-		  	  (char *) label.GetData());
-		else {
-			InitKeyWords_Utility_SSSymbols(&symList);
-			sp = LookUpSymbol_Utility_SSSymbols(symList, (char *) label.GetData(
-			  ));
-		}
+		SymbolPtr	sp = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
+	  	  (char *) label.GetData());
 		type = sp->type;
-		if (symList)
-			FreeSymbols_Utility_SSSymbols(&symList);
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError("%s: Could not create '%s' control intruction for "
 			  "process '%s'.", funcName, (char *) label.GetData());
@@ -143,13 +129,54 @@ SDIEvtHandler::InitInstruction(void)
 			  funcName, (char *) label.GetData());
 			return(true);
 		}
-		pc->u.proc.moduleName = InitString_Utility_String((char *) label.
-		  GetData());
-		pc->data = Init_EarObject(pc->u.proc.moduleName);
 		break;
 	default:
 		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
 		return(true);
+	}
+	return(true);
+
+}
+
+/******************************************************************************/
+/****************************** EditInstruction *******************************/
+/******************************************************************************/
+
+bool
+SDIEvtHandler::EditInstruction(void)
+{
+	static const char	*funcName = "SDIEvtHandler::EditInstruction";
+
+	if (label.IsEmpty())
+		return(true);
+	switch (processType) {
+	case PALETTE_CONTROL: {
+		printf("%s: Debug: This routine also needs to ask for a process "
+		  "label\n", funcName);
+		break; }
+	case PALETTE_ANALYSIS:
+	case PALETTE_FILTERS:
+	case PALETTE_IO:
+	case PALETTE_MODELS:
+	case PALETTE_STIMULI:
+	case PALETTE_TRANSFORMS:
+	case PALETTE_USER:
+	case PALETTE_UTILITIES:
+		if (*pc->u.proc.moduleName != '\0')
+			free(pc->u.proc.moduleName);
+		pc->u.proc.moduleName = InitString_Utility_String((char *) label.
+		  GetData());
+		if (!pc->data)
+			pc->data = Init_EarObject(pc->u.proc.moduleName);
+		else {
+			ResetProcess_EarObject(pc->data);
+			Free_ModuleMgr(&(pc->data->module));
+			pc->data->module = Init_ModuleMgr(pc->u.proc.moduleName);
+		}
+		break;
+	default:
+		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
+		return(false);
 	}
 	return(true);
 
@@ -266,7 +293,7 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 		if (dialog.ShowModal() == wxID_OK) {
 			SDICanvas *canvas = (SDICanvas *) GetShape()->GetCanvas();
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Edit Process", SDICOMMAND_EDIT_PROCESS,
+			  new SDICommand("Edit Process", SDIFRAME_EDIT_PROCESS,
 			  (SDIDocument *) canvas->view->GetDocument(),
 			  dialog.GetStringSelection(), GetShape()));
 		}
@@ -348,7 +375,7 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 
 	if (otherShape && !otherShape->IsKindOf(CLASSINFO(wxLineShape))) {
 		canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-		new SDICommand("wxLineShape", SDICOMMAND_ADD_LINE, (SDIDocument *)
+		new SDICommand("wxLineShape", SDIFRAME_ADD_LINE, (SDIDocument *)
 		  canvas->view->GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0,
 		  FALSE, NULL, GetShape(), otherShape));
 	}

@@ -330,19 +330,24 @@ MyApp::CreateMenuBar(void)
 	fileMenu->Append(wxID_NEW, "&New...\tCtrl-N", "Design new simulation.");
 	fileMenu->Append(wxID_OPEN, "&Open...\tCtrl-O", "Load Simulation from "
 	  "file.");
-	fileMenu->Append(wxID_REVERT, "&Reload...\tCtrl-R", "Reload Simulation.");
-	fileMenu->Append(wxID_CLOSE, "&Close");
+	fileMenu->Append(wxID_REVERT, "&Reload\tCtrl-R", "Reload Simulation.");
+	fileMenu->Append(wxID_CLOSE, "&Close\tCtrl-W");
  	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_SAVE, "&Save...\tCtrl-S", "Save simulation parameter "
 	  "file.");
 	fileMenu->Append(wxID_SAVEAS, "Save as...", "Save simulation "
 	  "parameter file...");
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, "E&xit\tCtrl-x", "Exit from program.");
+	fileMenu->Append(wxID_EXIT, "E&xit\tCtrl-Q", "Exit from program.");
 	myDocManager->FileHistoryUseMenu(fileMenu);
 
 	editMenu = new wxMenu("", wxMENU_TEAROFF);
-	editMenu->Append(MYFRAME_ID_EDIT_MAIN_PARS, "&Main Parameters...\tCtrl-M",
+	editMenu->Append(wxID_UNDO, "&Undo\tCtrl-Z");
+	editMenu->Append(wxID_REDO, "&Redo\tCtrl-Y");
+	editMenu->AppendSeparator();
+	editMenu->Append(SDIFRAME_CUT, "&Cut\tCtrl-X");
+	editMenu->AppendSeparator();
+	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, "&Main Parameters...\tCtrl-M",
 	  "Edit main program preferences");
 
 	viewMenu = new wxMenu("", wxMENU_TEAROFF);
@@ -350,9 +355,9 @@ MyApp::CreateMenuBar(void)
 	  "List simulation parameters (to diagnostic window)");
 
 	programMenu = new wxMenu;
-	programMenu->Append(MYFRAME_ID_EXECUTE, "&Execute\tCtrl-G", "Execute "
+	programMenu->Append(SDIFRAME_EXECUTE, "&Execute\tCtrl-G", "Execute "
 	  "simulation");
-	programMenu->Append(MYFRAME_ID_STOP_SIMULATION, "S&top simulation\tCtrl-C",
+	programMenu->Append(SDIFRAME_STOP_SIMULATION, "S&top simulation\tCtrl-C",
 	  "Stop simulation execution.");
 
 	windowsMenu = new wxMenu("", wxMENU_TEAROFF);
@@ -360,7 +365,7 @@ MyApp::CreateMenuBar(void)
 	  "Open diagnostics window.");
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(MYFRAME_ID_ABOUT, _("&About...\tCtrl-A"),
+	helpMenu->Append(SDIFRAME_ABOUT, _("&About...\tCtrl-A"),
 	  _("Show about dialog"));
 	helpMenu->Append(wxID_HELP, "&Help...\tCtrl-H");
 	if (!helpCount)
@@ -371,7 +376,7 @@ MyApp::CreateMenuBar(void)
 	  !GetPtr_AppInterface()->audModel) {
 		EnableSimParMenuOptions(FALSE);
 	}
-	programMenu->Enable(MYFRAME_ID_STOP_SIMULATION, FALSE);
+	programMenu->Enable(SDIFRAME_STOP_SIMULATION, FALSE);
 #	ifndef HAVE_WX_OGL_OGL_H
 	fileMenu->Enable(MYFRAME_ID_NEW_SIM, FALSE);
 #	endif
@@ -465,7 +470,7 @@ MyApp::EnableSimParMenuOptions(bool on)
 	editMenu->Enable(MYFRAME_ID_EDIT_SIM_PARS, on);
 	viewMenu->Enable(MYFRAME_ID_VIEW_SIM_PARS, on);
 	*/
-	programMenu->Enable(MYFRAME_ID_EXECUTE, on);
+	programMenu->Enable(SDIFRAME_EXECUTE, on);
 
 }
 
@@ -628,7 +633,6 @@ MyApp::ExitMain(void)
 	DeleteSimThread();
 
 	SetCanFreePtrFlag_AppInterface(TRUE);
-	// FreeAll_EarObject();
 
 	// save the control's values to the config
 	if ( pConfig != NULL ) {

@@ -1002,6 +1002,29 @@ GetSimScriptSimulation_Utility_SimScript(DatumPtr pc)
 
 }
 
+/****************************** SetProcessSimPtr ******************************/
+
+/*
+ * This routine sets the simPtr pointer to the simulation for a process.
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+SetProcessSimPtr_Utility_SimScript(EarObjectPtr data)
+{
+	static const char	*funcName = "SetProcessSimPtr_Utility_SimScript";
+	SimScriptPtr	p;
+
+	if (!data || (data->module->specifier != SIMSCRIPT_MODULE)) {
+		NotifyError("%s: Not a 'SIMSCRIPT_MODULE' process.", funcName);
+		return(FALSE);
+	}
+	p = (SimScriptPtr) data->module->parsPtr;
+	p->simPtr = &p->simulation;
+	return (TRUE);
+
+}
+
 /****************************** SetParsPointer ********************************/
 
 /*

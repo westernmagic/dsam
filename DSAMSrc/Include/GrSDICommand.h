@@ -52,17 +52,6 @@
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
 
-enum {
-
-	SDICOMMAND_CUT = 1,
-	SDICOMMAND_ABOUT,
-	SDICOMMAND_ADD_SHAPE,
-	SDICOMMAND_ADD_LINE,
-	SDICOMMAND_EDIT_PROCESS,
-	SDICOMMAND_CHANGE_BACKGROUND_COLOUR
-
-};
-
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
@@ -118,6 +107,8 @@ class SDICommand: public wxCommand
 	inline wxClassInfo	*GetShapeInfo(void) { return shapeInfo; }
 	inline bool		GetSelected(void) { return selected; }
 
+	void	ConnectProcesses(void);
+	void	DisconnectProcesses(void);
 	void	RemoveLines(wxShape *shape);
 	void	SetBasic(int command, SDIDocument *ddoc, wxShape *theShape);
 

@@ -178,6 +178,8 @@ BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
 BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
 		  char *operationMode, char *parFilePathMode);
 
+BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
+
 BOOLN	SetSimFileName_Utility_SimScript(char * simFileName);
 
 BOOLN	SetSimParFileFlag_Utility_SimScript(BOOLN state);

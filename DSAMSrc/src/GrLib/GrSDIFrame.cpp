@@ -43,18 +43,19 @@ IMPLEMENT_CLASS(SDIFrame, wxDocParentFrame)
 BEGIN_EVENT_TABLE(SDIFrame, wxDocParentFrame)
 	EVT_MENU(SDIFRAME_ABOUT, SDIFrame::OnAbout)
 	EVT_MENU(SDIFRAME_DIAG_WINDOW, SDIFrame::OnDiagWindow)
-	/*EVT_MENU(MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT, MyFrame::OnSimThreadEvent)
-	EVT_MENU(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)
-	EVT_MENU(MYFRAME_ID_EDIT_MAIN_PARS, MyFrame::OnEditMainPars)
-	EVT_MENU(MYFRAME_ID_EDIT_SIM_PARS, MyFrame::OnEditSimPars)
-	EVT_MENU(wxID_HELP, MyFrame::OnHelp)
-	EVT_MENU(wxID_OPEN, MyFrame::OnLoadSimFile)
-	EVT_MENU(wxID_REVERT, MyFrame::OnReloadSimFile)
-	EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
-	EVT_MENU(wxID_SAVEAS, MyFrame::OnSaveSimPars)
-	EVT_MENU(MYFRAME_ID_STOP_SIMULATION, MyFrame::OnStopSimulation)
-	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, MyFrame::OnViewSimPars)
-	EVT_BUTTON(MYFRAME_ID_EXECUTE, MyFrame::OnExecute)*/
+	EVT_MENU(SDIFRAME_EDIT_MAIN_PARS, SDIFrame::OnEditMainPars)
+	EVT_MENU(wxID_HELP, SDIFrame::OnHelp)
+	/*
+	EVT_MENU(MYFRAME_ID_EDIT_SIM_PARS, SDIFrame::OnEditSimPars)
+	EVT_MENU(wxID_OPEN, SDIFrame::OnLoadSimFile)
+	EVT_MENU(wxID_REVERT, SDIFrame::OnReloadSimFile)
+	EVT_MENU(wxID_EXIT, SDIFrame::OnQuit)
+	EVT_MENU(wxID_SAVEAS, SDIFrame::OnSaveSimPars)
+	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, SDIFrame::OnViewSimPars)
+	*/
+	EVT_MENU(SDIFRAME_SIM_THREAD_DISPLAY_EVENT, SDIFrame::OnSimThreadEvent)
+	EVT_MENU(SDIFRAME_STOP_SIMULATION, SDIFrame::OnStopSimulation)
+	EVT_MENU(SDIFRAME_EXECUTE, SDIFrame::OnExecute)
 	EVT_SIZE(SDIFrame::OnSize)
 	EVT_CLOSE(SDIFrame::OnCloseWindow)
 END_EVENT_TABLE()
@@ -67,7 +68,7 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
   const wxPoint& pos, const wxSize& size, long type): wxDocParentFrame(manager,
   frame, -1, title, pos, size, type)
 {
-	//SetIcon(wxICON((wxGetApp().icon)? *wxGetApp().icon: dsam));
+	SetIcon(wxICON((wxGetApp().icon)? *wxGetApp().icon: dsam));
 
 	canvas = NULL;
 	mainParDialog = NULL;
@@ -203,15 +204,10 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		return;
 	}
 
-	//diagnosticsWindow->Clear();
-	printf("SDIFrame:::OnExecute: diagnosticsWindow->Clear()\n");
+	if (wxGetApp().GetDiagFrame())
+		wxGetApp().GetDiagFrame()->Clear();
 	ResetGUIDialogs();
 	if (GetPtr_AppInterface()->Init) {
-		if (wxGetApp().StatusChanged()) {
-			wxGetApp().DeleteSimModuleDialog();
-			if (!wxGetApp().CheckInitialisation())
-				return;
-		}
 		if (wxGetApp().GetSimModuleDialog() && !wxGetApp().GetSimModuleDialog(
 		  )->CheckChangedValues())
 			return;
@@ -228,7 +224,7 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 	}
 	ResetGUIDialogs();
 	wxGetApp().StartSimThread();
-	wxGetApp().programMenu->Enable(MYFRAME_ID_STOP_SIMULATION, TRUE);
+	wxGetApp().programMenu->Enable(SDIFRAME_STOP_SIMULATION, TRUE);
 
 }
 
@@ -302,6 +298,7 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 void
 SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 {
+	printf("SDIFrame::OnEditMainPars: Entered\n");
 	if (!GetPtr_AppInterface()->parList)
 		return;
 

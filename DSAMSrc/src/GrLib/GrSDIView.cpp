@@ -67,10 +67,10 @@
 IMPLEMENT_DYNAMIC_CLASS(SDIView, wxView)
 
 BEGIN_EVENT_TABLE(SDIView, wxView)
-    EVT_MENU(SDICOMMAND_CUT, SDIView::OnCut)
-    EVT_MENU(SDICOMMAND_CHANGE_BACKGROUND_COLOUR,
+    EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
+    EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
-    EVT_MENU(SDICOMMAND_EDIT_PROCESS, SDIView::OnSetProcessLabel)
+    EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -261,7 +261,7 @@ SDIView::OnCut(wxCommandEvent& event)
 
 	wxShape *theShape = FindSelectedShape();
 	if (theShape)
-		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDICOMMAND_CUT,
+		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDIFRAME_CUT,
 		  doc, NULL, -1, 0.0, 0.0, TRUE, theShape));
 
 }
@@ -292,7 +292,7 @@ SDIView::OnChangeBackgroundColour(wxCommandEvent& event)
 
 		if (theBrush)
 			doc->GetCommandProcessor()->Submit(new SDICommand("Change colour",
-			  SDICOMMAND_CHANGE_BACKGROUND_COLOUR, doc, theBrush, theShape));
+			  SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush, theShape));
 	}
 
 }
@@ -309,7 +309,7 @@ SDIView::OnSetProcessLabel(wxCommandEvent& event)
 		wxString newLabel = wxGetTextFromUser("Enter new label", "Shape Label",
 		 ((SDIEvtHandler *)theShape->GetEventHandler())->label);
 		GetDocument()->GetCommandProcessor()->Submit(new SDICommand("Edit "
-		  "label", SDICOMMAND_EDIT_PROCESS, (SDIDocument*) GetDocument(),
+		  "label", SDIFRAME_EDIT_PROCESS, (SDIDocument*) GetDocument(),
 		  newLabel, theShape));
 	}
 

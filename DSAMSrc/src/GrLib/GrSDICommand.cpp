@@ -59,14 +59,18 @@
 #endif
 
 #include <wx/wxexpr.h>
+#include <wx/docview.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "GeUniParMgr.h"
 #include "UtDatum.h"
+#include "UtAppInterface.h"
 
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
+#include "GrSDIFrame.h"
 #include "GrSDICommand.h"
 #include "GrSDIEvtHandler.h"
 
@@ -166,16 +170,59 @@ SDICommand::SetBasic(int command, SDIDocument *ddoc, wxShape *theShape)
 }
 
 /******************************************************************************/
+/****************************** ConnectProcesses ******************************/
+/******************************************************************************/
+
+/*
+ * This routine connects two specified processes and inserts them into the
+ * simulation.
+ * It also inserts the instructions into the simulation.
+ */
+
+void
+SDICommand::ConnectProcesses(void)
+{
+	static const char *funcName = "SDICommand::ConnectProcesses";
+
+	SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->GetEventHandler();
+	SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->GetEventHandler();
+	DatumPtr	toPc = toHandler->pc, fromPc = fromHandler->pc;
+
+	if (!fromPc || !toPc) {
+		wxLogError("%s: Both processes must be set before a connection\n"
+		  "can be made.", funcName);
+		return;
+	}
+	if (!ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data)) {
+		wxLogError("%s: Could not connect processes.", funcName);
+		return;
+	}
+
+	DatumPtr	*simPtr = GetSimPtr_AppInterface();
+
+	if (!DATUM_IN_SIMULATION(fromPc)) {
+		if (DATUM_IN_SIMULATION(toPc))
+			InsertInst_Utility_Datum(simPtr, toPc, fromPc);
+		else {
+			InsertInst_Utility_Datum(simPtr, NULL, fromPc);
+			AppendInst_Utility_Datum(simPtr, fromPc, toPc);
+		}
+	} else {
+		if (!DATUM_IN_SIMULATION(toPc))
+			AppendInst_Utility_Datum(simPtr, fromPc, toPc);
+	}
+
+}
+
+/******************************************************************************/
 /****************************** Do ********************************************/
 /******************************************************************************/
 
 bool
 SDICommand::Do(void)
 {
-	static const char *funcName = "SDICommand::Do";
-
 	switch (cmd) {
-	case SDICOMMAND_CUT: {
+	case SDIFRAME_CUT: {
 		if (shape) {
 			deleteShape = TRUE;
 
@@ -189,11 +236,12 @@ SDICommand::Do(void)
 				wxLineShape *lineShape = (wxLineShape *)shape;
 				fromShape = lineShape->GetFrom();
 				toShape = lineShape->GetTo();
+				DisconnectProcesses();
+			} else {
+				SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->
+				  GetEventHandler();
+				myHandler->FreeInstruction();
 			}
-			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
-			  );
-			myHandler->FreeInstruction();
-
 			shape->Unlink();
 
 			doc->Modify(TRUE);
@@ -201,7 +249,7 @@ SDICommand::Do(void)
 		}
 
 		break; }
-	case SDICOMMAND_ADD_SHAPE: {
+	case SDIFRAME_ADD_SHAPE: {
 		wxShape *theShape = NULL;
 		if (shape)
 			theShape = shape; // Saved from undoing the shape
@@ -229,24 +277,12 @@ SDICommand::Do(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_ADD_LINE: {
+	case SDIFRAME_ADD_LINE: {
 		wxShape *theShape = NULL;
 		if (shape)
 			theShape = shape; // Saved from undoing the line
 		else {
-			printf("Debug: Added connection and create connected processes\n");
-			// Connect processes
-			SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->
-			  GetEventHandler();
-			SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->
-			  GetEventHandler();
-			if (!fromHandler->pc || !toHandler->pc) {
-				wxLogError("%s: Both processes must be set before a connect\n"
-				  "can be made.", funcName);
-				break;
-			}
-			ConnectOutSignalToIn_EarObject(fromHandler->pc->data, toHandler->pc->
-			  data);
+			ConnectProcesses();
 			theShape = (wxShape *)shapeInfo->CreateObject();
 			theShape->AssignNewIds();
 			theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
@@ -285,7 +321,7 @@ SDICommand::Do(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_CHANGE_BACKGROUND_COLOUR: {
+	case SDIFRAME_CHANGE_BACKGROUND_COLOUR: {
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
@@ -299,7 +335,7 @@ SDICommand::Do(void)
 			doc->UpdateAllViews();
 		}
 		break; }
-	case SDICOMMAND_EDIT_PROCESS: {
+	case SDIFRAME_EDIT_PROCESS: {
 		if (shape) {
 			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
 			  );
@@ -307,7 +343,11 @@ SDICommand::Do(void)
 			myHandler->label = shapeLabel;
 			shapeLabel = oldLabel;
 			
-			myHandler->InitInstruction();
+			if (!myHandler->pc) {
+				myHandler->InitInstruction();
+				myHandler->EditInstruction();
+			} else
+				myHandler->EditInstruction();
 
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
@@ -325,6 +365,37 @@ SDICommand::Do(void)
 }
 
 /******************************************************************************/
+/****************************** DisconnectProcesses ***************************/
+/******************************************************************************/
+
+/*
+ * This routine connects two specified processes and inserts them into the
+ * simulation.
+ */
+
+void
+SDICommand::DisconnectProcesses(void)
+{
+	static const char *funcName = "SDICommand::DisconnectProcesses";
+
+	SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->GetEventHandler();
+	SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->GetEventHandler();
+	DatumPtr	toPc = toHandler->pc, fromPc = fromHandler->pc;
+
+	if (!fromPc || !toPc) {
+		wxLogError("%s: Both processes must be set before a connection\n"
+		  "can be made.", funcName);
+		return;
+	}
+	DisconnectOutSignalFromIn_EarObject(fromPc->data, toPc->data);
+
+	printf("SDICommand::Undo: need to uninstall processes here too.\n");
+
+	DisconnectSim_Utility_Datum(fromPc, toPc);
+
+}
+
+/******************************************************************************/
 /****************************** Undo ******************************************/
 /******************************************************************************/
 
@@ -332,7 +403,7 @@ bool
 SDICommand::Undo(void)
 {
 	switch (cmd) {
-	case SDICOMMAND_CUT: {
+	case SDIFRAME_CUT: {
 		if (shape) {
 			doc->GetDiagram()->AddShape(shape);
 			shape->Show(TRUE);
@@ -340,6 +411,7 @@ SDICommand::Undo(void)
 			if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
 				wxLineShape *lineShape = (wxLineShape *)shape;
 				fromShape->AddLine(lineShape, toShape);
+				ConnectProcesses();
 			}
 			if (selected)
 				shape->Select(TRUE);
@@ -349,7 +421,7 @@ SDICommand::Undo(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_ADD_SHAPE: {
+	case SDIFRAME_ADD_SHAPE: {
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
@@ -362,19 +434,11 @@ SDICommand::Undo(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_ADD_LINE: {
+	case SDIFRAME_ADD_LINE: {
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
-
-			// Disconnect processes
-			SDIEvtHandler *toHandler = (SDIEvtHandler *) toShape->
-			  GetEventHandler();
-			SDIEvtHandler *fromHandler = (SDIEvtHandler *) fromShape->
-			  GetEventHandler();
-			DisconnectOutSignalFromIn_EarObject(fromHandler->pc->data,
-			  toHandler->pc->data);
-
+			DisconnectProcesses();
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);
 			shape->Unlink();
@@ -383,7 +447,7 @@ SDICommand::Undo(void)
 		doc->Modify(TRUE);
 		doc->UpdateAllViews();
 		break; }
-	case SDICOMMAND_CHANGE_BACKGROUND_COLOUR: {
+	case SDIFRAME_CHANGE_BACKGROUND_COLOUR: {
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
@@ -397,7 +461,7 @@ SDICommand::Undo(void)
 			doc->UpdateAllViews();
 		}
 		break; }
-	case SDICOMMAND_EDIT_PROCESS: {
+	case SDIFRAME_EDIT_PROCESS: {
 		if (shape) {
 			SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler(
 			  );
@@ -405,8 +469,11 @@ SDICommand::Undo(void)
 			myHandler->label = shapeLabel;
 			shapeLabel = oldLabel;
 
-			myHandler->FreeInstruction();
-			myHandler->InitInstruction();
+			if (!myHandler->pc) {
+				myHandler->InitInstruction();
+				myHandler->EditInstruction();
+			} else
+				myHandler->EditInstruction();
 
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
@@ -435,7 +502,7 @@ SDICommand::RemoveLines(wxShape *shape)
 	wxNode *node = shape->GetLines().First();
 	while (node) {
 		wxLineShape *line = (wxLineShape *)node->Data();
-		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDICOMMAND_CUT,
+		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDIFRAME_CUT,
 		  doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
 
 		node = shape->GetLines().First();

@@ -55,6 +55,7 @@ class SDIDocument: public wxDocument
 	DECLARE_DYNAMIC_CLASS(SDIDocument)
 
   private:
+
   public:
 	SDIDiagram diagram;
 
@@ -71,7 +72,8 @@ class SDIDocument: public wxDocument
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }
 
-	bool OnCloseDocument(void);
+	bool	OnCloseDocument(void);
+	bool	OnNewDocument(void);
 
 };
 

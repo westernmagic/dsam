@@ -167,6 +167,8 @@ EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
 
 BOOLN		GetSimParFileFlag_ModuleMgr(EarObjectPtr data);
 
+DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
+
 DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
 
 UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName);

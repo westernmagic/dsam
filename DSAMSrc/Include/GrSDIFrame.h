@@ -31,9 +31,17 @@ enum {
 	SDIFRAME_ABOUT,
 	SDIFRAME_ADD_SHAPE,
 	SDIFRAME_ADD_LINE,
-	SDIFRAME_EDIT_LABEL,
+
+	SDIFRAME_EDIT_MAIN_PARS,
+	SDIFRAME_EDIT_PROCESS,
+	
+	SDIFRAME_EXECUTE,
+	SDIFRAME_STOP_SIMULATION,
+
 	SDIFRAME_DIAG_WINDOW,
-	SDIFRAME_CHANGE_BACKGROUND_COLOUR
+	SDIFRAME_CHANGE_BACKGROUND_COLOUR,
+
+	SDIFRAME_SIM_THREAD_DISPLAY_EVENT = 100
 
 };
 
@@ -44,6 +52,8 @@ enum {
 /********************************** Pre-references ****************************/
 
 class ModuleParDialog;
+class SDICanvas;
+class EditorToolPalette;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/

@@ -42,16 +42,7 @@ IMPLEMENT_DYNAMIC_CLASS(SDIDocument, wxDocument)
 
 SDIDocument::SDIDocument(void)
 {
-	static const char *funcName = "SDIDocument::SDIDocument";
-
 	printf("SDIDocument::SDIDocument: Entered\n");
-	
-//	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
-//	  NULL) {
-//		NotifyError("%s: Could not initialise process.", funcName);
-//		return;
-//	}
-//	wxGetApp().SetAudModelLoadedFlag(true);
 
 }
 
@@ -62,8 +53,8 @@ SDIDocument::SDIDocument(void)
 SDIDocument::~SDIDocument(void)
 {
 	printf("SDIDocument::~SDIDocument: Entered\n");
-//	ResetSimulation_AppInterface();
-//	wxGetApp().SetAudModelLoadedFlag(false);
+	ResetSimulation_AppInterface();
+	wxGetApp().SetAudModelLoadedFlag(false);
 
 }
 
@@ -76,6 +67,29 @@ SDIDocument::OnCloseDocument(void)
 {
 	diagram.DeleteAllShapes();
 	return TRUE;
+
+}
+
+/******************************************************************************/
+/****************************** OnNewDocument *********************************/
+/******************************************************************************/
+
+bool
+SDIDocument::OnNewDocument(void)
+{
+	static const char *funcName = "DIDocument::OnNewDocument";
+
+	wxDocument::OnNewDocument();
+	printf("SDIDocument::OnNewDocument: Called\n");
+	ResetSimulation_AppInterface();
+	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
+	  NULL) {
+		NotifyError("%s: Could not initialise process.", funcName);
+		return(false);
+	}
+	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
+	wxGetApp().SetAudModelLoadedFlag(true);
+	return (true);
 
 }
 

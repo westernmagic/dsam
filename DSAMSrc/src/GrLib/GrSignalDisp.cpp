@@ -1729,6 +1729,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
+			ConnectOutSignalToIn_EarObject(data, signalDispPtr->summary);
 			if ((definedDuration > _GetDuration_SignalData(signal)) ||
 			  (signal->numWindowFrames !=
 			  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)) {
@@ -1855,8 +1856,6 @@ SetDisplay_SignalDisp(EarObjectPtr data)
 {
 	/* static const char *funcName = "SetDisplay_SignalDisp"; */
 
-	/* "Manual" connection of output signal to the summary EarObject. */
-	signalDispPtr->summary->inSignal[0] = data->outSignal;
 	SetPar_ModuleMgr(signalDispPtr->summary, "mode", "average");
 	SetPar_ModuleMgr(signalDispPtr->summary, "num_Channels", "1");
 	RunProcess_ModuleMgr(signalDispPtr->summary);
@@ -1878,7 +1877,7 @@ PostDisplayEvent_SignalDisp(void)
 {
 #	ifndef STANDARD_C_SIGNALDISP_COMPILE
 	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,
-	  MYFRAME_ID_SIM_THREAD_DISPLAY_EVENT);
+	  SDIFRAME_SIM_THREAD_DISPLAY_EVENT);
 	event.SetInt(MYAPP_THREAD_DRAW_GRAPH);
 	event.SetClientData(signalDispPtr);
 	wxPostEvent(wxGetApp().GetFrame(), event);

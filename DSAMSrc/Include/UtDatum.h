@@ -53,6 +53,12 @@
 #define DATUM_INITIAL_INDENT_LEVEL				1
 
 /******************************************************************************/
+/****************************** Macro definitions *****************************/
+/******************************************************************************/
+
+#define DATUM_IN_SIMULATION(PC)	((PC)->previous || (PC)->next)
+
+/******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
 
@@ -95,6 +101,8 @@ extern uInt	datumStepCount;
  */
 __BEGIN_DECLS
 
+void	AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
+
 BOOLN	CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
 
@@ -105,6 +113,8 @@ int		CmpLabel_Utility_Datum(void *a, void *b);
 int		CmpProcessLabel_Utility_Datum(void *a, void *b);
 
 int		CmpProcessLabels_Utility_Datum(void *a, void *b);
+
+void	DisconnectSim_Utility_Datum(DatumPtr from, DatumPtr to);
 
 DatumPtr	Execute_Utility_Datum(DatumPtr start);
 
@@ -144,6 +154,8 @@ BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
 DatumPtr	InitInst_Utility_Datum(int type);
+
+void	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
 
 DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 

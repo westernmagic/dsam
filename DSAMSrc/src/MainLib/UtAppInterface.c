@@ -812,6 +812,35 @@ GetSimulation_AppInterface(void)
 
 }
 
+/****************************** GetSimPtr *************************************/
+
+/*
+ * This function returns a pointer to the application interface's audModel
+ * simulation pointer.
+ */
+
+DatumPtr *
+GetSimPtr_AppInterface(void)
+{
+	static const char *funcName = "GetSimPtr_AppInterface";
+	DatumPtr	*simPtr;
+
+	if (!appInterfacePtr) {
+		NotifyError("%s: Application interface not initialised.", funcName);
+		return(NULL);
+	}
+	if (!appInterfacePtr->audModel) {
+		NotifyError("%s: Simulation EarObject nod initialised.", funcName);
+		return(NULL);
+	}
+	if ((simPtr = GetSimPtr_ModuleMgr(appInterfacePtr->audModel)) == NULL) {
+		NotifyError("%s: Simulation not initialised.", funcName);
+		return(NULL);
+	}
+	return(simPtr);
+
+}
+
 /****************************** GetEarObjectPtr *******************************/
 
 /*

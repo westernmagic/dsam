@@ -44,6 +44,7 @@ class DiagFrame: public wxFrame
 	DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos =
 	  wxDefaultPosition, const wxSize& size = wxDefaultSize);
 
+	void	Clear(void)		{ diagnosticsText->Clear(); }
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnSize(wxSizeEvent& event);
 

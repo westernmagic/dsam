@@ -458,6 +458,26 @@ GetSimulation_ModuleMgr(EarObjectPtr data)
 
 }
 
+/*************************** GetSimPtr ****************************************/
+
+/*
+ * This function returns the simulation pointer pointer from a module.
+ * It only works for routines that can return a simulation.
+ */
+
+DatumPtr *
+GetSimPtr_ModuleMgr(EarObjectPtr data)
+{
+	static const char *funcName = "GetSimPtr_ModuleMgr";
+
+	if (!CheckData_ModuleMgr(data, funcName))
+		return(NULL);
+	(* data->module->SetParsPointer)(data->module);
+	return((data->module->specifier != SIMSCRIPT_MODULE)? NULL: ((SimScriptPtr)
+	  data->module->parsPtr)->simPtr);
+
+}
+
 /*************************** GetProcess ***************************************/
 
 /*
