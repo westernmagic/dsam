@@ -1272,6 +1272,7 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
 		if (!data->outSignal->staticTimeFlag)
 			SetOutputTimeOffset_SignalData(data->outSignal,
 			  dataFilePtr->timeOffsetIndex * data->outSignal->dt);
+		data->outSignal->rampFlag = TRUE;	/* Let user sort out ramps */
 		SetProcessContinuity_EarObject(data);
 	}
 	return(ok);
