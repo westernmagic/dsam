@@ -1042,7 +1042,7 @@ SetTitle_SignalDisp(char *title)
 		return(FALSE);
 	}
 	signalDispPtr->titleFlag = TRUE;
-	CopyAndTrunc_Utility_String(signalDispPtr->title, title, MAXLINE);
+	snprintf(signalDispPtr->title, MAXLINE, "%s", title);
 	signalDispPtr->resetTitleFlag = TRUE;
 	return(TRUE);
 
