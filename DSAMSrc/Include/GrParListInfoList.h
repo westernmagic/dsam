@@ -29,14 +29,14 @@
 
 class ParListInfoList {
 
-	BOOLN		labelsFlag;
+	bool		labelsFlag;
 	DialogList	*parent;
 
   public:
 	DSAMList<ParListInfo>	list;
 
 	ParListInfoList(DialogList *theParent, DatumPtr pc, UniParListPtr parList,
-	  BOOLN theLabelsFlag);
+	  bool theLabelsFlag);
 	~ParListInfoList(void);
 
 	void	AddInfo(ParListInfo *theInfo)	{ list.Append(list.Number(),

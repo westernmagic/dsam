@@ -36,9 +36,9 @@
 /*************************** Type Definitions *********************************/
 /******************************************************************************/
 
-#ifndef	BOOLN_ALGEBRA 
-#	define BOOLN_ALGEBRA
-	typedef	int		BOOLN;
+#if !defined(BOOLEAN_ALGEBRA)
+#	define BOOLEAN_ALGEBRA
+	typedef	int	BOOLN;
 #endif
 
 typedef struct {
@@ -64,7 +64,7 @@ void	Convert_CmplxM(ComplexPtr a, ComplexPtr b);	/* .re has magnit.,
 
 void	Copy_CmplxM(ComplexPtr a,ComplexPtr b); /*move contents of a to b */
 
-int		Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c);
+BOOLN	Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c);
 
 double	Modulus_CmplxM(ComplexPtr z);
 

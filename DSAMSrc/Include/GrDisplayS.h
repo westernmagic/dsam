@@ -42,15 +42,22 @@
 
 class DisplayS: public wxFrame
 {
+<<<<<<< GrDisplayS.h
 	long	handle;
+	SignalDispPtr	mySignalDispPtr;
+=======
+	long	handle;
+>>>>>>> 1.5
 
  public:
 	MyCanvas	*canvas;
 
-	DisplayS(wxFrame *frame, long theHandle, const wxString& title,
-	  const wxPoint& pos, const wxSize& size);
+	DisplayS(wxFrame *frame, long theHandle, SignalDispPtr signalDispPtr,
+	  const wxString& title, const wxPoint& pos, const wxSize& size);
 	~DisplayS(void);
-	
+
+	SignalDispPtr	GetSignalDispPtr(void) { return(mySignalDispPtr); }
+
 };
 
 /******************************************************************************/

@@ -43,8 +43,13 @@
 *
 * $Header$ *
 * $Log$
-* Revision 1.1  1999/09/15 14:49:02  lowel
-* Initial revision
+* Revision 1.2  1999/10/06 16:45:08  lowel
+* Removed the Makefile.in files
+* The GUI interface now compiles, but there are still errors, and the
+* module parameter interface is to be recoded.
+*
+* Revision 1.1.1.1  1999/09/15 14:49:02  lowel
+* Imported DSAM source
 *
 * Revision 1.1.1.1  1999/09/14 15:52:33  lowel
 * Imported DSAM source 
@@ -123,9 +128,9 @@
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
-#ifndef	BOOLN_ALGEBRA
-#	define BOOLN_ALGEBRA
-	typedef	int		BOOLN;
+#if !defined(BOOLEAN_ALGEBRA)
+#	define BOOLEAN_ALGEBRA
+	typedef	int	BOOLN;
 #endif
 
 typedef	 short	int16;

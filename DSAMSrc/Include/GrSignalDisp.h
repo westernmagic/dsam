@@ -60,6 +60,16 @@
 #define	DISPLAY_DEFAULT_FRAME_DELAY			0.0
 
 /******************************************************************************/
+/*************************** Pre-reference definitions ************************/
+/******************************************************************************/
+
+#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
+
+	class DisplayS;
+	
+#endif /* GRAPHICS_SUPPORT */
+
+/******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
@@ -126,6 +136,7 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			reduceChansInitialised;
+	BOOLN			registeredWithDisplay;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	summary;
@@ -154,6 +165,8 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_SignalDisp(EarObjectPtr data);
 
+void	CheckForDisplay_SignalDisp(long handle);
+
 BOOLN	CheckPars_SignalDisp(void);
 
 BOOLN	Free_SignalDisp(void);
@@ -164,7 +177,7 @@ UniParListPtr	GetUniParListPtr_SignalDisp(void);
 
 BOOLN	Init_SignalDisp(ParameterSpecifier parSpec);
 
-BOOLN	InitBooleanList_SignalDisp(void);
+BOOLN	InitBOOLNeanList_SignalDisp(void);
 
 BOOLN	InitModeList_SignalDisp(void);
 

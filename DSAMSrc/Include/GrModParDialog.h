@@ -56,16 +56,20 @@ class ModuleParDialog: public DialogList {
 
  public:
 	ModuleParDialog(wxWindow *parent, char *title, int theInfoNum, DatumPtr pc,
-	  UniParListPtr theParList = NULL, BOOLN labelsFlag = TRUE, bool modal =
-	  DIALOGLIST_MODAL_MODE, int x = 300, int y = 300, int width = 500,
-	  int height = 500, long style = wxDEFAULT_DIALOG_STYLE);
+	  UniParListPtr theParList = NULL, bool labelsFlag = TRUE, int x = 300,
+	  int y = 300, int width = 500, int height = 500, long style =
+	  wxDEFAULT_DIALOG_STYLE);
 	~ModuleParDialog(void);
 
-	void	ButtonProc(wxButton& but, wxCommandEvent& event);
 	void	DeleteDialog(void);
-	void	ListBoxProc(wxListBox& list, wxCommandEvent& WXUNUSED(event));
-	void	SliderProc(wxSlider& slider, wxCommandEvent& WXUNUSED(event));
-	void	TextProc(wxTextCtrl& text, wxCommandEvent& event);
+//T	void	ListBoxProc(wxListBox& list, wxCommandEvent& WXUNUSED(event));
+//T	void	SliderProc(wxSlider& slider, wxCommandEvent& WXUNUSED(event));
+//T	void	TextProc(wxTextCtrl& text, wxCommandEvent& event);
+	void	OnOk(wxCommandEvent& event);
+	void	OnCancel(wxCommandEvent& event);
+	void	OnCloseWindow(wxCloseEvent& event);
+
+    DECLARE_EVENT_TABLE()
 
 };
 

@@ -34,18 +34,6 @@
 #	include <wx/textctrl.h>
 #endif
 
-#ifdef wx_mac
-#include "wx_text.h"
-// class wxPanel;
-// class wxDC;
-// class wxButton;
-// class wxCheckBox;
-// class wxListBox;
-// class wxTextCtrl;
-// class wxMenu;
-// class wxCommandEvent;
-#endif // wx_mac
-
 #include "GrIPC.h"
 
 /* sccsid[] = "%W% %G%" */
@@ -130,7 +118,7 @@ class MyFrame: public wxFrame {
     ~MyFrame(void);
 
 	void	EnableSimParMenuOptions(bool on);
-    bool	OnCloseWindow(wxCloseEvent& event);
+	bool	OnCloseWindow(wxCloseEvent& event);
 	void	OnExecute(wxCommandEvent& event);
 	void	OnQuit(wxCommandEvent& event);
 	void	OnHelp(wxCommandEvent& event);
@@ -166,7 +154,7 @@ class MyApp: public wxApp {
 	void	PrintUsage(void);
 	void	RunInServerMode(void);
 	void	RunInClientMode(void);
-	BOOLN	RunSimulation(void);
+	bool	RunSimulation(void);
 	void	SetClientServerMode(void);
 	
 

@@ -124,7 +124,7 @@ class MyCanvas: public wxWindow
 	void	SetRasterLines(MultiLine *lines, EarObjectPtr data, Box box,
 			  double xResolution);
 	void	SetTextAdjust(double *xAdjust, double *yAdjust);
-	void	SetUseTextAdjust(BOOLN state)	{ useTextAdjust = state; };
+	void	SetUseTextAdjust(bool state)	{ useTextAdjust = state; };
 
  	// private:
 	void	OnPaint(void); // Set back to private when possible.

@@ -43,30 +43,30 @@
 
 class ParListInfo {
 
-	BOOLN		*updateFlagList, *subParList, labelsFlag;
+	bool		*updateFlagList, *subParList, labelsFlag;
 	char		*prefix;
 	int			offset;
 	DatumPtr	pc;
 	DialogList	*parent;
-	MyText		**parTextList;
-	MySlider	**parSliderList;
-	MyButton	**parButtonList;
+//	wxTextCtrl	**parTextList;
+//	wxSlider	**parSliderList;
+//	wxButton	**parButtonList;
 	wxStringList	oldPars, labels, rothmanHeadings;
 
   public:
   	UniParListPtr	parList;
 
 	ParListInfo(DialogList *theParent, DatumPtr thePC, UniParListPtr theParList,
-	  int theOffset = 0, char *thePrefix = "", BOOLN theLabelsFlag = TRUE);
+	  int theOffset = 0, char *thePrefix = "", bool theLabelsFlag = TRUE);
 	~ParListInfo(void);
 
-	BOOLN	CheckChangedValues(void);
-	BOOLN	SubParList(int i)		{ return subParList[i]; };
+	bool	CheckChangedValues(void);
+	bool	SubParList(int i)		{ return subParList[i]; };
 	int		GetOffset(void)	{ return offset; };
-	MySlider *	SetSlider(int index);
-	MySlider *	GetSlider(int i)	{ return parSliderList[i]; };
+//	wxSlider *	SetSlider(int index);
+//	wxSlider *	GetSlider(int i)	{ return parSliderList[i]; };
 	char *	GetOldValue(int i)	{ return (char *) oldPars.Nth(i)->Data(); };
-	MyText *	GetParText(int i)	{ return parTextList[i]; };
+//	wxTextCtrl *	GetParText(int i)	{ return parTextList[i]; };
 	void	ResetOldParText(int index);
 	void	ResetOldValue(int index);
 	void	ResetOldValues(void);
@@ -75,8 +75,8 @@ class ParListInfo {
 	void	SetParStandard(int index);
 	void	SetParListStandard(void);
 	void	SetParListIonChannel(void);
-	BOOLN	SetParValue(int parNum, char *value);
-	void	SetUpdateFlag(int i, BOOLN state)	{ updateFlagList[i] = state; };
+	bool	SetParValue(int parNum, char *value);
+	void	SetUpdateFlag(int i, bool state)	{ updateFlagList[i] = state; };
 
 };
 

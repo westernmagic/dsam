@@ -163,9 +163,9 @@
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
-#ifndef	BOOLN 
-#	define BOOLN_ALGEBRA
-	typedef	int		BOOLN;
+#if !defined(BOOLEAN_ALGEBRA)
+#	define BOOLEAN_ALGEBRA
+	typedef	int	BOOLN;
 #endif
 
 typedef	unsigned long	ChanLen;	/* For the channel indices. */
