@@ -41,7 +41,7 @@ Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c
 
 
 Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
-				GeNSpecLists.c GeUniParMgr.c
+				GeNSpecLists.c GeUniParMgr.c GeModuleReg.c
 
 Std_Source	= StdMessage.c StdSignalDisp.c
 

@@ -40,6 +40,10 @@ BOOLN	CheckData_Utility_CreateJoined(EarObjectPtr data);
 
 BOOLN	Process_Utility_CreateJoined(EarObjectPtr data);
 
+BOOLN	InitModule_Utility_CreateJoined(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_CreateJoined(ModulePtr theModule);
+
 __END_DECLS
 
 #endif

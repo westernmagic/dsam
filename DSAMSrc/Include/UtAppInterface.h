@@ -64,9 +64,11 @@ typedef struct {
 	ParameterSpecifier parSpec;
 	
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
-	BOOLN	listCFListAndExit, readMainParsFlag, printUsageFlag;
+	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
+	BOOLN	appParFileFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
+	char	appParFile[MAX_FILE_PATH];
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
 	char	title[MAXLINE];
@@ -80,6 +82,7 @@ typedef struct {
 	int		initialCommand;
 	int		segmentModeSpecifier;
 	int		diagModeSpecifier;
+	int		maxUserModules;
 	EarObjectPtr	audModel;
 
 	/* Private members */
@@ -92,7 +95,8 @@ typedef struct {
 	void	(* PrintUsage)(void);
 	void	(* PrintSimMgrUsage)(void);
 	int		(* ProcessOptions)(int , char **, int *);
-	BOOLN	(* SetInitialPars)(void);
+	BOOLN	(* ReadInitialPars)(char *);
+	BOOLN	(* RegisterUserModules)(void);
 	BOOLN	(* SetFinalPars)(void);
 
 } AppInterface, *AppInterfacePtr;
@@ -151,6 +155,8 @@ BOOLN	ReadProgParFile_AppInterface(void);
 
 void	ResetCommandArgFlags_AppInterface(void);
 
+BOOLN	SetAppParFile_AppInterface(char *fileName);
+
 BOOLN	SetAppName_AppInterface(char *appName);
 
 BOOLN	SetAppParList_AppInterface(UniParListPtr appParList);
@@ -160,9 +166,12 @@ BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **,
 		  int *));
 
+BOOLN	SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(
+		  void));
+
 BOOLN	SetAppSetFinalPars_AppInterface(BOOLN (* SetFinalPars)(void));
 
-BOOLN	SetAppSetInitialPars_AppInterface(BOOLN (* SetInitialPars)(void));
+BOOLN	SetAppReadInitialPars_AppInterface(BOOLN (* ReadInitialPars)(char *));
 
 BOOLN	SetAppVersion_AppInterface(char *appVersion);
 
@@ -173,6 +182,8 @@ BOOLN	SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion);
 BOOLN	SetDiagMode_AppInterface(char *theDiagMode);
 
 BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
+
+BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
 BOOLN	SetPars_AppInterface(char *diagMode, char *simulationFile,
 		  char *segmentMode);

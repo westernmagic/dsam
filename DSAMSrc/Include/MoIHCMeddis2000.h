@@ -164,9 +164,13 @@ BOOLN	SetLossRate_l_IHC_Meddis2000(double theLossRate_l);
 
 BOOLN	SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M);
 
+BOOLN	InitModule_IHC_Meddis2000(ModulePtr theModule);
+
 BOOLN	SetOpMode_IHC_Meddis2000(char * theOpMode);
 
 BOOLN	SetPCa_IHC_Meddis2000(double thePCa);
+
+BOOLN	SetParsPointer_IHC_Meddis2000(ModulePtr theModule);
 
 BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, double ranSeed,
 		  double recPotOffset, double CaVrev, double betaCa, double gammaCa,

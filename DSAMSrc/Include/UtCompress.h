@@ -96,6 +96,10 @@ BOOLN	SetMinResponse_Utility_Compression(double theMinResponse);
 
 BOOLN	SetMode_Utility_Compression(char *theMode);
 
+BOOLN	InitModule_Utility_Compression(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Compression(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_Compression(char *mode, double signalMultiplier,
 		  double powerExponent, double minResponse);
 

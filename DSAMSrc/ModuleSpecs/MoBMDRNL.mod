@@ -11,16 +11,16 @@ typedef struct {
 
 	int				nonLinGTCascade;
 	int				nonLinLPCascade;
-	ParArray		nonLinBwidth;
+	ParArrayPtr		nonLinBwidth;
 
-	ParArray		comprScaleA;
-	ParArray		comprScaleB;
+	ParArrayPtr		comprScaleA;
+	ParArrayPtr		comprScaleB;
 	double			comprExponent;
 	
 	int				linGTCascade;
 	int				linLPCascade;
-	ParArray		linCF;
-	ParArray		linBwidth;
+	ParArrayPtr		linCF;
+	ParArrayPtr		linBwidth;
 	double			linScaleG;
 
 	CFListPtr		theCFs;

@@ -29,6 +29,8 @@
 #include "GeEarObject.h"
 #include "GeNSpecLists.h"
 #include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
+#include "GeModuleReg.h"
 
 #include "UtAccumulate.h"
 #include "UtAmpMod.h"
@@ -206,8 +208,6 @@
 #	include	"PaMaster1.h"
 #	include	"PaUtilities.h"
 #endif /* MPI_SUPPORT */
-
-#include "GeModuleMgr.h"
 
 #endif /* _DSAMHEADERS_H */
 

@@ -103,6 +103,10 @@ BOOLN	SetCrawfordConst_IHC_Cooke91(double theCrawfordConst);
 
 BOOLN	SetMaxSpikeRate_IHC_Cooke91(double theMaxSpikeRate);
 
+BOOLN	InitModule_IHC_Cooke91(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHC_Cooke91(ModulePtr theModule);
+
 BOOLN	SetPars_IHC_Cooke91(double crawfordConst, double releaseFraction,
 		  double refillFraction, double spontRate, double maxSpikeRate);
 

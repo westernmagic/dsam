@@ -106,7 +106,11 @@ BOOLN	SetIndividualSelection_Utility_SelectChannels(int theIndex,
 
 BOOLN	SetMode_Utility_SelectChannels(char *theMode);
 
+BOOLN	InitModule_Utility_SelectChannels(ModulePtr theModule);
+
 BOOLN	SetNumChannels_Utility_SelectChannels(int theNumChannels);
+
+BOOLN	SetParsPointer_Utility_SelectChannels(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_SelectChannels(char *mode, int numChannels,
 		  int *selectionArray);

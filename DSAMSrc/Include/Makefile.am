@@ -15,7 +15,7 @@ Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
 Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
 
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
-				GeNSpecLists.h GeUniParMgr.h StdMessage.h
+				GeNSpecLists.h GeUniParMgr.h StdMessage.h GeModuleReg.h
 
 Gr_Headers	= GrBrushes.h GrCanvas.h GrLine.h GrSignalDisp.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrRunMgr.h GrSimModDialog.h \

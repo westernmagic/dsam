@@ -124,6 +124,10 @@ BOOLN	SetCarrierFrequency_Stimulus_ExpGatedTone(double theCarrierFrequency);
 
 BOOLN	SetHalfLife_Stimulus_ExpGatedTone(double theHalfLife);
 
+BOOLN	InitModule_Stimulus_ExpGatedTone(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Stimulus_ExpGatedTone(ModulePtr theModule);
+
 BOOLN	SetPars_Stimulus_ExpGatedTone(char *typeMode, char *floorMode,
 		  double carrierFrequency, double amplitude, double phase,
 		  double beginPeriodDuration, double repetitionRate, double halfLife,

@@ -5,6 +5,7 @@
 mod_name		BasilarM;
 qualifier		GammaChirp;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 

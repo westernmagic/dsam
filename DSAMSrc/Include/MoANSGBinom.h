@@ -100,7 +100,11 @@ BOOLN	ReadPars_ANSpikeGen_Binomial(char *fileName);
 
 BOOLN	RunModel_ANSpikeGen_Binomial(EarObjectPtr data);
 
+BOOLN	InitModule_ANSpikeGen_Binomial(ModulePtr theModule);
+
 BOOLN	SetNumFibres_ANSpikeGen_Binomial(int theNumFibres);
+
+BOOLN	SetParsPointer_ANSpikeGen_Binomial(ModulePtr theModule);
 
 BOOLN	SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
 		  double pulseDuration, double pulseMagnitude,

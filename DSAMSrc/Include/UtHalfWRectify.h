@@ -38,6 +38,10 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_HalfWaveRectify(EarObjectPtr data);
 
+BOOLN	InitModule_Utility_HalfWaveRectify(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_HalfWaveRectify(ModulePtr theModule);
+
 BOOLN	Process_Utility_HalfWaveRectify(EarObjectPtr data);
 
 __END_DECLS

@@ -104,7 +104,11 @@ BOOLN	SetIndividualFreq_PureTone_MultiPulse(int theIndex, double theFreq);
 		  
 BOOLN	SetFrequencies_PureTone_MultiPulse(double *theFrequencies);
 
+BOOLN	InitModule_PureTone_MultiPulse(ModulePtr theModule);
+
 BOOLN	SetNumPulses_PureTone_MultiPulse(int theNumPulses);
+
+BOOLN	SetParsPointer_PureTone_MultiPulse(ModulePtr theModule);
 
 BOOLN	SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
 		  double intensity, double beginPeriodDuration, double pulseDuration,

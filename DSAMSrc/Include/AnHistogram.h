@@ -135,6 +135,10 @@ BOOLN	SetEventThreshold_Analysis_Histogram(double theEventThreshold);
 
 BOOLN	SetTimeOffset_Analysis_Histogram(double theTimeOffset);
 
+BOOLN	InitModule_Analysis_Histogram(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_Histogram(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_Histogram(char *detectionMode, char *typeMode,
 		  double eventThreshold, double binWidth, double period,
 		  double timeOffset);

@@ -94,48 +94,52 @@ extern	McGregorPtr	mcGregorPtr;
  */
 __BEGIN_DECLS
 
-BOOLN		CheckPars_Neuron_McGregor(void);
+BOOLN	CheckPars_Neuron_McGregor(void);
 
-BOOLN		Free_Neuron_McGregor(void);
+BOOLN	Free_Neuron_McGregor(void);
 
-void		FreeProcessVariables_Neuron_McGregor(void);
+void	FreeProcessVariables_Neuron_McGregor(void);
 
-double		GetPotentialResponse_Neuron_McGregor(double potential);
+double	GetPotentialResponse_Neuron_McGregor(double potential);
 
-double		GetRestingResponse_Neuron_McGregor(void);
+double	GetRestingResponse_Neuron_McGregor(void);
 
 UniParListPtr	GetUniParListPtr_Neuron_McGregor(void);
 
-BOOLN		Init_Neuron_McGregor(ParameterSpecifier parSpec);
+BOOLN	Init_Neuron_McGregor(ParameterSpecifier parSpec);
 
-BOOLN		InitProcessVariables_Neuron_McGregor(EarObjectPtr data);
+BOOLN	InitProcessVariables_Neuron_McGregor(EarObjectPtr data);
 
-BOOLN		PrintPars_Neuron_McGregor(void);
+BOOLN	PrintPars_Neuron_McGregor(void);
 
-BOOLN		ReadPars_Neuron_McGregor(char *fileName);
+BOOLN	ReadPars_Neuron_McGregor(char *fileName);
 
-BOOLN		RunModel_Neuron_McGregor(EarObjectPtr data);
+BOOLN	RunModel_Neuron_McGregor(EarObjectPtr data);
 
-BOOLN		SetAccomConst_Neuron_McGregor(double theAccomConst);
+BOOLN	SetAccomConst_Neuron_McGregor(double theAccomConst);
 
-BOOLN		SetActionPotential_Neuron_McGregor(double theActionPotential);
+BOOLN	SetActionPotential_Neuron_McGregor(double theActionPotential);
 
-BOOLN		SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond);
+BOOLN	SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond);
 
-BOOLN		SetKDecayTConst_Neuron_McGregor(double theKDecayTConst);
+BOOLN	SetKDecayTConst_Neuron_McGregor(double theKDecayTConst);
 
-BOOLN		SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot);
+BOOLN	SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot);
 
-BOOLN		SetCellRestingPot_Neuron_McGregor(double theCellRestingPot);
+BOOLN	SetCellRestingPot_Neuron_McGregor(double theCellRestingPot);
 
-BOOLN		SetMembraneTConst_Neuron_McGregor(double theMembraneTConst);
+BOOLN	SetMembraneTConst_Neuron_McGregor(double theMembraneTConst);
 
-BOOLN		SetPars_Neuron_McGregor(double tm, double tGk, double tTh,
-			  double c, double b, double tH0, double aP, double ek, double er);
+BOOLN	InitModule_Neuron_McGregor(ModulePtr theModule);
 
-BOOLN		SetRestingThreshold_Neuron_McGregor(double theRestingThreshold);
+BOOLN	SetParsPointer_Neuron_McGregor(ModulePtr theModule);
 
-BOOLN		SetThresholdTConst_Neuron_McGregor(double theThresholdTConst);
+BOOLN	SetPars_Neuron_McGregor(double tm, double tGk, double tTh, double c,
+		  double b, double tH0, double aP, double ek, double er);
+
+BOOLN	SetRestingThreshold_Neuron_McGregor(double theRestingThreshold);
+
+BOOLN	SetThresholdTConst_Neuron_McGregor(double theThresholdTConst);
 
 BOOLN	SetUniParList_Neuron_McGregor(void);
 

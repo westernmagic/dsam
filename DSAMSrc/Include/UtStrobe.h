@@ -180,6 +180,10 @@ BOOLN	SetDelayTimeout_Utility_Strobe(double theDelayTimeout);
 
 BOOLN	SetTypeMode_Utility_Strobe(char *theTypeMode);
 
+BOOLN	InitModule_Utility_Strobe(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Strobe(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode,
 		  double threshold, double thresholdDecayRate, double delay,
 		  double delayTimeout);

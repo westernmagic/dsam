@@ -128,6 +128,10 @@ BOOLN	SetKConductance_IHCRP_Shamma(double theKConductance);
 
 BOOLN	SetMaxMConductance_IHCRP_Shamma(double theMaxMConductance);
 
+BOOLN	InitModule_IHCRP_Shamma(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHCRP_Shamma(ModulePtr theModule);
+
 BOOLN	SetPars_IHCRP_Shamma(double Et, double Ek,
 		  double reversalPotCorrection, double C, double G0, double Gk,
 		  double Gmax, double beta, double gamma, double tc, double n, 

@@ -91,6 +91,10 @@ BOOLN SetCFList_BasilarM_GammaT(CFListPtr theCFList);
 
 BOOLN	SetCascade_BasilarM_GammaT(int theCascade);
 
+BOOLN	InitModule_BasilarM_GammaT(ModulePtr theModule);
+
+BOOLN	SetParsPointer_BasilarM_GammaT(ModulePtr theModule);
+
 BOOLN	SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_GammaT(void);

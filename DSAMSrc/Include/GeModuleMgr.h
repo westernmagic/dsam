@@ -69,87 +69,14 @@
 /******************************************************************************/
 
 typedef enum {
-	
-	ANA_ACF,
-	ANA_AVERAGES,
-	ANA_CCF,
-	ANA_CONVOLUTION,
-	ANA_FINDBIN,
-	ANA_FINDNEXTINDEX,
-	ANA_FOURIERT,
-	ANA_HISTOGRAM,
-	ANA_INTENSITY,
-	ANA_ISIH,
-	ANA_SAI,
-	ANA_SPIKEREGULARITY,
-	ANA_SYNCHINDEX,
-	AN_SG_BINOMIAL,
-	AN_SG_CARNEY,
-	AN_SG_SIMPLE,
-	BM_CARNEY,
-	BM_COOKE,
-	BM_GAMMAC,
-	BM_GAMMAT,
-	BM_DRNL,
-	BM_DRNL_TEST,
-	DATAFILE_IN,
-	DATAFILE_OUT,
-	DISPLAY_SIGNAL,
-	FILT_BANDPASS,
-	FILT_FIR,
-	FILT_LOWPASS,
-	FILT_MULTIBPASS,
-	IHC_CARNEY,
-	IHC_COOKE91,
-	IHC_MEDDIS86,
-	IHC_MEDDIS86A,
-	IHC_MEDDIS2000,
-	IHCRP_CARNEY,
-	IHCRP_MEDDIS,
-	IHCRP_SHAMMA,
-	NEUR_ARLEKIM,
-	NEUR_HHUXLEY,
-	NEUR_MCGREGOR,
-	NULL_MODULE,
-	MPI_MASTER1,
-	STIM_CLICK,
-	STIM_EXPGATEDTONE,
-	STIM_HARMONIC,
-	STIM_PULSETRAIN,
-	STIM_PURETONE,
-	STIM_PURETONE_2,
-	STIM_PURETONE_AM,
-	STIM_PURETONE_BINAURAL,
-	STIM_PURETONE_FM,
-	STIM_PURETONE_MULTI,
-	STIM_PURETONE_MULTIPULSE,
-	STIM_STEPFUN,
-	STIM_WHITENOISE,
-	TRANS_GATE,
-	TRANS_SETDBSPL,
-	UTIL_ACCUMULATE,
-	UTIL_AMPMOD,
-	UTIL_BINSIGNAL,
-	UTIL_CONVMONAURAL,
-	UTIL_COMPRESSION,
-	UTIL_CREATEBINAURAL,
-	UTIL_CREATEBINAURALITD,
-	UTIL_CREATEJOINED,
-	UTIL_DELAY,
-	UTIL_HALFWAVERECTIFY,
-	UTIL_ITERATEDRIPPLE,
-	UTIL_PAUSE,
-	UTIL_REDUCECHANNELS,
-	UTIL_REDUCEDT,
-	UTIL_REFRACTORYADJUST,
-	UTIL_SAMPLE,
-	UTIL_SELECTCHANNELS,
-	UTIL_SHAPEPULSE,
-	UTIL_SIMSCRIPT,
-	UTIL_STANDARDISE,
-	UTIL_STROBE,
 
-	NULL_SPECIFIER
+	ANA_SAI_MODULE,
+	DISPLAY_MODULE,
+	PROCESS_MODULE,
+	NULL_MODULE,
+	SIMSCRIPT_MODULE,
+
+	MODULE_SPECIFIER_NULL
 
 } ModuleSpecifier;
 
@@ -166,18 +93,10 @@ typedef struct moduleStruct {
 	BOOLN	(* CheckData)(EarObjectPtr data);
 	BOOLN	(* CheckPars)(void);
 	BOOLN	(* Free)(void);
-	CFListPtr	(* GetCFListPtr)(void);
-	IonChanListPtr	(* GetICListPtr)(void);
-	double	(* GetIndividualFreq)(int index);
-	double	(* GetIndividualIntensity)(int index);
 	double	(* GetPotentialResponse)(double potential);
-	int		(* GetNumWorkers)(void);
 	double	(* GetRestingResponse)(void);
-	DatumPtr	(* GetSimulation)(void);
 	UniParListPtr	(* GetUniParListPtr)(void);
-	BOOLN	(* Init)(ParameterSpecifier parSpec);
 	BOOLN	(* PrintPars)(void);
-	BOOLN	(* PrintSimParFile)(void);
 #	ifdef _PAMASTER1_H
 		BOOLN (* QueueCommand)(void *parameter, int parCount,
 		  TypeSpecifier type, char *label, CommandSpecifier command,
@@ -187,93 +106,17 @@ typedef struct moduleStruct {
 	BOOLN	(* RunProcess)(EarObjectPtr theObject);
 	BOOLN	(* ReadPars)(char *fileName);
 	BOOLN	(* ReadSignal)(char *fileName, EarObjectPtr data);
-	BOOLN	(* ReadSimParFile)(char *fileName);
-	BOOLN	(* WriteOutSignal)(char *fileName, EarObjectPtr data);
+	BOOLN	(* InitModule )(struct moduleStruct *);
+	BOOLN	(* SetParsPointer)(struct moduleStruct *);
 	
-	/* Module Parameters */
-	union {
-
-		AmpMod		ampMod;
-		AMTone		aMTone;
-		ArleKim		arleKim;
-		AutoCorr	autoCorr;
-		Averages	averages;
-		BinomialSG	binomialSG;
-		BinSignal	binSignal;
-		BMGammaC	bMGammaC;
-		BMGammaT	bMGammaT;
-		BM0DRNL		bM0DRNL;
-		BM0Cooke	bM0Cooke;
-		BMCarney	bMCarney;
-		BMDRNL		bMDRNL;
-		BPureTone	bPureTone;
-		CarneySG	carneySG;
-		CarneyRP	carneyRP;
-		CarneyHC	carneyHC;
-		Click		click;
-		CookeHC		cookeHC;
-		Compression	compression;
-		CreateBinITD	createBinITD;
-		CrossCorr	crossCorr;
-		DataFile	dataFile;
-		LowPassF	lowPassF;
-		EGatedTone	eGatedTone;
-		FMTone		fMTone;
-		FindBin		findBin;
-		FindIndex	findIndex;
-		FIR			fIR;
-		FourierT	fourierT;
-		Gate		gate;
-		HairCell	hairCell;
-		HairCell2	hairCell2;
-		HairCell3	hairCell3;
-		Harmonic	harmonic;
-		HHuxleyNC	hHuxleyNC;
-		Histogram	histogram;
-		Intensity	intensity;
-		InterSIH	interSIH;
-		Delay2	delay2;
-		IterRipple	iterRipple;
-
-#		ifdef _PAMASTER1_H
-		Master1		master1;
-#		endif
-
-		McGregor	mcGregor;
-		MeddisRP	meddisRP;
-		MPureTone	mPureTone;
-		Pause		pause;
-		MultiBPassF	multiBPassF;
-		BandPassF	bandPassF;
-		PulseTrain	pulseTrain;
-		PureTone	pureTone;
-		PureTone4	pureTone4;
-		PureTone2	pureTone2;
-		ReduceChans	reduceChans;
-		ReduceDt	reduceDt;
-		RefractAdj	refractAdj;
-		SAImage		sAImage;
-		Sample		sample;
-		SelectChan	selectChan;
-		SetDBSPL	setDBSPL;
-		Shamma		shamma;
-		ShapePulse	shapePulse;
-		SignalDisp	signalDisp;
-		SimpleSG	simpleSG;
-		SimScript	simScript;
-		SpikeReg	spikeReg;
-		StepFun		stepFun;
-		Strobe		strobe;
-		WhiteNoise	whiteNoise;
-
-	} pars;
+	void	*parsPtr;
 
 } Module;
 
 #ifndef MODULE_PTR
 #	define MODULE_PTR
 
-	typedef struct moduleStruct  *ModulePtr;/* Pre-referencing of module.  */
+	typedef struct moduleStruct  *ModulePtr;
 	
 #endif
 
@@ -313,9 +156,9 @@ void		FreeAll_ModuleMgr(void);
 void		FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle
 			  theHandle);
 
-CFListPtr	GetCFListPtr_ModuleMgr(EarObjectPtr data);
-
 double		GetPotentialResponse_ModuleMgr(EarObjectPtr data, double potential);
+
+EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
 
 double		GetRestingResponse_ModuleMgr(EarObjectPtr data);
 
@@ -343,172 +186,16 @@ BOOLN		RunProcess_ModuleMgr(EarObjectPtr data);
 
 BOOLN		RunModel_ModuleMgr_Null(EarObjectPtr data);
 
-void		SetANSpikeGen_Binomial_ModuleMgr(ModulePtr theModule);
-
-void		SetANSpikeGen_Carney_ModuleMgr(ModulePtr theModule);
-
-void		SetANSpikeGen_Simple_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_ACF_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_Convolution_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_Averages_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_CCF_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_FindBin_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_FindNextIndex_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_FourierT_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_Histogram_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_Intensity_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_ISIH_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_SAI_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_SpikeReg_ModuleMgr(ModulePtr theModule);
-
-void		SetAnalysis_SynchIndex_ModuleMgr(ModulePtr theModule);
-
-void		SetAMTone_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_Carney_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_Cooke_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_GammaC_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_GammaT_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_DRNL_ModuleMgr(ModulePtr theModule);
-
-void		SetBasilarM_DRNL_Test_ModuleMgr(ModulePtr theModule);
-
-void		SetBPureTone_ModuleMgr(ModulePtr theModule);
-
-void		SetClick_ModuleMgr(ModulePtr theModule);
-
-void		SetDataFileIn_ModuleMgr(ModulePtr theModule);
-
-void		SetDataFileOut_ModuleMgr(ModulePtr theModule);
-
 void		SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void));
 
-void		SetFMTone_ModuleMgr(ModulePtr theModule);
-
-void		SetHarmonic_ModuleMgr(ModulePtr theModule);
-
-void		SetIHC_Cooke91_ModuleMgr(ModulePtr theModule);
-
-void		SetIHC_Carney_ModuleMgr(ModulePtr theModule);
-
-void		SetIHC_Meddis86_ModuleMgr(ModulePtr theModule);
-
-void		SetIHC_Meddis86a_ModuleMgr(ModulePtr theModule);
-
-void		SetIHC_Meddis2000_ModuleMgr(ModulePtr theModule);
-
-void		SetIHCRP_Carney_ModuleMgr(ModulePtr theModule);
-
-void		SetIHCRP_Meddis_ModuleMgr(ModulePtr theModule);
-
-void		SetIHCRP_Shamma_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_BandPass_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_FIR_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_LowPass_ModuleMgr(ModulePtr theModule);
-
-void		SetFilter_MultiBPass_ModuleMgr(ModulePtr theModule);
-
-void		SetMPureTone_ModuleMgr(ModulePtr theModule);
-
-void		SetNeuron_ArleKim_ModuleMgr(ModulePtr theModule);
-
-void		SetNeuron_HHuxley_ModuleMgr(ModulePtr theModule);
-
-void		SetNeuron_McGregor_ModuleMgr(ModulePtr theModule);
-
-void		SetNull_ModuleMgr(ModulePtr module);
-
-void		SetMPPureTone_ModuleMgr(ModulePtr theModule);
-
-void		SetMPI_Master1_ModuleMgr(ModulePtr theModule);
+BOOLN		SetNull_ModuleMgr(ModulePtr module);
 
 BOOLN		SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value);
-
-BOOLN		SetParsPointer_ModuleMgr(ModulePtr theModule);
-
-void		SetPulseTrain_ModuleMgr(ModulePtr theModule);
-
-void		SetPureTone_ModuleMgr(ModulePtr theModule);
-
-void		SetPureTone2_ModuleMgr(ModulePtr theModule);
 
 BOOLN		SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
 			  double value);
 
 BOOLN		SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value);
-
-void		SetSignalDisp_ModuleMgr(ModulePtr theModule);
-
-void		SetStepFun_ModuleMgr(ModulePtr theModule);
-
-void		SetStimulus_ExpGatedTone_ModuleMgr(ModulePtr theModule);
-
-void		SetTransform_Gate_ModuleMgr(ModulePtr theModule);
-
-void		SetTransform_SetDBSPL_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Accumulate_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_AmpMod_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_BinSignal_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Compression_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_ConvMonaural_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_CreateBinaural_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_CreateBinauralITD_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_CreateJoined_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Delay_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_HalfWaveRectify_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_IteratedRipple_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Pause_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_ReduceChannels_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_ReduceDt_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_RefractoryAdjust_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Sample_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_SelectChannels_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_ShapePulse_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_SimScript_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Standardise_ModuleMgr(ModulePtr theModule);
-
-void		SetUtility_Strobe_ModuleMgr(ModulePtr theModule);
-
-void		SetWhiteNoise_ModuleMgr(ModulePtr theModule);
 
 void *		TrueFunction_ModuleMgr(void);
 

@@ -81,11 +81,15 @@ BOOLN	PrintPars_WhiteNoise(void);
 
 BOOLN	ReadPars_WhiteNoise(char *fileName);
 
+BOOLN	InitModule_WhiteNoise(ModulePtr theModule);
+
 BOOLN	SetNumChannels_WhiteNoise(int theNumChannels);
 
 BOOLN	SetDuration_WhiteNoise(double theDuration);
 
 BOOLN	SetIntensity_WhiteNoise(double theIntensity);
+
+BOOLN	SetParsPointer_WhiteNoise(ModulePtr theModule);
 
 BOOLN	SetPars_WhiteNoise(int numChannels, double theIntensity,
 		  double theDuration, double theSamplingInterval, int theCorrelationDegree,

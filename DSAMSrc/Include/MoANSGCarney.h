@@ -113,7 +113,11 @@ BOOLN	SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1);
 
 BOOLN	SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold);
 
+BOOLN	InitModule_ANSpikeGen_Carney(ModulePtr theModule);
+
 BOOLN	SetNumFibres_ANSpikeGen_Carney(int theNumFibres);
+
+BOOLN	SetParsPointer_ANSpikeGen_Carney(ModulePtr theModule);
 
 BOOLN	SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres,
 		  double pulseDuration, double pulseMagnitude, double

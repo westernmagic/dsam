@@ -99,6 +99,10 @@ BOOLN	SetBinWidth_Analysis_FindBin(double theBinWidth);
 
 BOOLN	SetMode_Analysis_FindBin(char *theMode);
 
+BOOLN	InitModule_Analysis_FindBin(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_FindBin(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_FindBin(char *mode, double binWidth,
 			  double timeOffset, double timeRange);
 

@@ -99,7 +99,11 @@ BOOLN	SetEventThreshold_Analysis_ISIH(double theEventThreshold);
 
 BOOLN	SetMaxInterval_Analysis_ISIH(double theMaxInterval);
 
+BOOLN	InitModule_Analysis_ISIH(ModulePtr theModule);
+
 BOOLN	SetOrder_Analysis_ISIH(int theOrder);
+
+BOOLN	SetParsPointer_Analysis_ISIH(ModulePtr theModule);
 
 BOOLN	SetPars_Analysis_ISIH(int order, double eventThreshold,
 		  double maxInterval);

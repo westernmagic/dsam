@@ -168,7 +168,11 @@ BOOLN	SetDelay_Analysis_SAI(double theDelay);
 
 BOOLN	SetDelayTimeout_Analysis_SAI(double theDelayTimeout);
 
+BOOLN	InitModule_Analysis_SAI(ModulePtr theModule);
+
 BOOLN	SetNegativeWidth_Analysis_SAI(double theNegativeWidth);
+
+BOOLN	SetParsPointer_Analysis_SAI(ModulePtr theModule);
 
 BOOLN	SetPars_Analysis_SAI(char *diagnosticMode, char *integrationMode,
 		  char *strobeSpecification, double negativeWidth, double

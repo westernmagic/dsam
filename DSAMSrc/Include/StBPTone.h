@@ -98,6 +98,10 @@ BOOLN	SetLeftFrequency_PureTone_Binaural(double theLeftFrequency);
 
 BOOLN	SetLeftIntensity_PureTone_Binaural(double theLeftIntensity);
 
+BOOLN	InitModule_PureTone_Binaural(ModulePtr theModule);
+
+BOOLN	SetParsPointer_PureTone_Binaural(ModulePtr theModule);
+
 BOOLN	SetPars_PureTone_Binaural(double leftFrequency, double rightFrequency,
 		  double leftIntensity, double rightIntensity, double phaseDifference,
 		  double duration, double samplingInterval);

@@ -89,7 +89,11 @@ BOOLN	SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase);
 
 BOOLN	SetModulationDepths_Utility_AmpMod(double *theModulationDepths);
 
+BOOLN	InitModule_Utility_AmpMod(ModulePtr theModule);
+
 BOOLN	SetNumFrequencies_Utility_AmpMod(int theNumFrequencies);
+
+BOOLN	SetParsPointer_Utility_AmpMod(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
 		  double *frequencies, double *phases);

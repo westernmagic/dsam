@@ -30,6 +30,14 @@
 
 typedef	enum {
 
+	GENERAL_BOOLEAN_OFF = 0,
+	GENERAL_BOOLEAN_ON,
+	GENERAL_BOOLEAN_NULL
+
+} GeneralBooleanSpecifier;
+
+typedef	enum {
+
 	GENERAL_DIAGNOSTIC_OFF_MODE,
 	GENERAL_DIAGNOSTIC_SCREEN_MODE,
 	GENERAL_DIAGNOSTIC_ERROR_MODE,
@@ -38,13 +46,13 @@ typedef	enum {
 
 } GeneralDiagnosticModeSpecifier;
 
-typedef	enum {
+typedef enum {
 
-	GENERAL_BOOLEAN_OFF = 0,
-	GENERAL_BOOLEAN_ON,
-	GENERAL_BOOLEAN_NULL
+	GENERAL_FIT_FUNC_LOG_FUNC1_MODE,
+	GENERAL_FIT_FUNC_POLY_FUNC1_MODE,
+	GENERAL_FIT_FUNC_NULL
 
-} GeneralBooleanSpecifier;
+} GeneralFitFuncModeSpecifier;
 
 /******************************************************************************/
 /****************************** External variables ****************************/
@@ -65,6 +73,8 @@ NameSpecifier *	BooleanList_NSpecLists(int index);
 void			CloseDiagnostics_NSpecLists(FILE **fp);
 
 NameSpecifier *	DiagModeList_NSpecLists(int index);
+
+NameSpecifier *	FitFuncModeList_NSpecLists(int index);
 
 int		GetNumListEntries_NSpecLists(NameSpecifierPtr list);
 

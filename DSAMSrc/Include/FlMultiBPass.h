@@ -117,9 +117,13 @@ BOOLN	SetIndividualUpperCutOffFreq_Filter_MultiBPass(int theIndex,
 
 BOOLN	SetLowerCutOffFreq_Filter_MultiBPass(double *theLowerCutOffFreq);
 
+BOOLN	InitModule_Filter_MultiBPass(ModulePtr theModule);
+
 BOOLN	SetNumFilters_Filter_MultiBPass(int theNumFilters);
 
 BOOLN	SetCascade_Filter_MultiBPass(int *theCascade);
+
+BOOLN	SetParsPointer_Filter_MultiBPass(ModulePtr theModule);
 
 BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *cascade,
 		  double *preAttenuation, double *upperCutOffFreq,

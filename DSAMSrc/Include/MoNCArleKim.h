@@ -106,61 +106,65 @@ extern	ArleKimPtr		arleKimPtr;
  */
 __BEGIN_DECLS
 
-BOOLN		CheckData_Neuron_ArleKim(EarObjectPtr data);
+BOOLN	CheckData_Neuron_ArleKim(EarObjectPtr data);
 
-BOOLN		CheckPars_Neuron_ArleKim(void);
+BOOLN	CheckPars_Neuron_ArleKim(void);
 
-BOOLN		Free_Neuron_ArleKim(void);
+BOOLN	Free_Neuron_ArleKim(void);
 
-void		FreeProcessVariables_Neuron_ArleKim(void);
+void	FreeProcessVariables_Neuron_ArleKim(void);
 
-double		GetPotentialResponse_Neuron_ArleKim(double potential);
+double	GetPotentialResponse_Neuron_ArleKim(double potential);
 
-double		GetRestingResponse_Neuron_ArleKim(void);
+double	GetRestingResponse_Neuron_ArleKim(void);
 
 UniParListPtr	GetUniParListPtr_Neuron_ArleKim(void);
 
-BOOLN		Init_Neuron_ArleKim(ParameterSpecifier parSpec);
+BOOLN	Init_Neuron_ArleKim(ParameterSpecifier parSpec);
 
-BOOLN		InitProcessVariables_Neuron_ArleKim(EarObjectPtr data);
+BOOLN	InitProcessVariables_Neuron_ArleKim(EarObjectPtr data);
 
-BOOLN		PrintPars_Neuron_ArleKim(void);
+BOOLN	PrintPars_Neuron_ArleKim(void);
 
-BOOLN		ReadPars_Neuron_ArleKim(char *fileName);
+BOOLN	ReadPars_Neuron_ArleKim(char *fileName);
 
-BOOLN		RunModel_Neuron_ArleKim(EarObjectPtr data);
+BOOLN	RunModel_Neuron_ArleKim(EarObjectPtr data);
 
-BOOLN		SetAccomConst_Neuron_ArleKim(double theAccomConst);
+BOOLN	SetAccomConst_Neuron_ArleKim(double theAccomConst);
 
-BOOLN		SetActionPotential_Neuron_ArleKim(double theActionPotential);
+BOOLN	SetActionPotential_Neuron_ArleKim(double theActionPotential);
 
-BOOLN		SetBRestingCond_Neuron_ArleKim(double theBRestingCond);
+BOOLN	SetBRestingCond_Neuron_ArleKim(double theBRestingCond);
 
-BOOLN		SetBReversalPoten_Neuron_ArleKim(double theBReversalPoten);
+BOOLN	SetBReversalPoten_Neuron_ArleKim(double theBReversalPoten);
 
-BOOLN		SetCellRestingPot_Neuron_ArleKim(double theCellRestingPot);
+BOOLN	SetCellRestingPot_Neuron_ArleKim(double theCellRestingPot);
 
-BOOLN		SetDelayedRectKCond_Neuron_ArleKim(double theDelayedRectKCond);
+BOOLN	SetDelayedRectKCond_Neuron_ArleKim(double theDelayedRectKCond);
 
-BOOLN		SetKDecayTConst_Neuron_ArleKim(double theKDecayTConst);
+BOOLN	SetKDecayTConst_Neuron_ArleKim(double theKDecayTConst);
 
-BOOLN		SetKRestingCond_Neuron_ArleKim(double theKRestingCond);
+BOOLN	SetKRestingCond_Neuron_ArleKim(double theKRestingCond);
 
-BOOLN		SetKReversalPoten_Neuron_ArleKim(double theKReversalPoten);
+BOOLN	SetKReversalPoten_Neuron_ArleKim(double theKReversalPoten);
 
-BOOLN		SetMembraneTConst_Neuron_ArleKim(double theMembraneTConst);
+BOOLN	SetMembraneTConst_Neuron_ArleKim(double theMembraneTConst);
 
-BOOLN		SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst);
+BOOLN	InitModule_Neuron_ArleKim(ModulePtr theModule);
 
-BOOLN		SetPars_Neuron_ArleKim(double tm, double tGk, double tTh,
-			  double c, double b, double tH0, double aP, double vnl,
-			  double ek, double eb, double gk, double gb);
+BOOLN	SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst);
 
-BOOLN		SetRestingThreshold_Neuron_ArleKim(double theRestingThreshold);
+BOOLN	SetParsPointer_Neuron_ArleKim(ModulePtr theModule);
 
-BOOLN		SetThresholdTConst_Neuron_ArleKim(double theThresholdTConst);
+BOOLN	SetPars_Neuron_ArleKim(double tm, double tGk, double tTh,
+		  double c, double b, double tH0, double aP, double vnl,
+		  double ek, double eb, double gk, double gb);
 
-BOOLN		SetUniParList_Neuron_ArleKim(void);
+BOOLN	SetRestingThreshold_Neuron_ArleKim(double theRestingThreshold);
+
+BOOLN	SetThresholdTConst_Neuron_ArleKim(double theThresholdTConst);
+
+BOOLN	SetUniParList_Neuron_ArleKim(void);
 
 __END_DECLS
 

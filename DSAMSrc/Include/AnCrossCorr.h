@@ -99,6 +99,10 @@ BOOLN	PrintPars_Analysis_CCF(void);
 
 BOOLN	ReadPars_Analysis_CCF(char *fileName);
 
+BOOLN	InitModule_Analysis_CCF(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_CCF(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_CCF(double timeOffset, double timeConstant,
 		  double period);
 

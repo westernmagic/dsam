@@ -92,6 +92,10 @@ BOOLN	SetIntensity_PureTone_AM(double theIntensity);
 
 BOOLN	SetModulationFrequency_PureTone_AM(double theModulationFrequency);
 
+BOOLN	InitModule_PureTone_AM(ModulePtr theModule);
+
+BOOLN	SetParsPointer_PureTone_AM(ModulePtr theModule);
+
 BOOLN	SetPars_PureTone_AM(double theFrequency, double theModulationFrequency,
 		  double theModulationDepth, double theIntensity, double theDuration,
 		  double theSamplingInterval);

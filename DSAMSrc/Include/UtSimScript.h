@@ -162,9 +162,13 @@ BOOLN	ReadPars_Utility_SimScript(char *fileName);
 
 BOOLN	ReadSimParFile_Utility_SimScript(char *filePath);
 
+BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
+
 BOOLN	SetOperationMode_Utility_SimScript(char *theOperationMode);
 
 BOOLN	SetParFilePathMode_Utility_SimScript(char *theParFilePathMode);
+
+BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
 		  char *operationMode, char *parFilePathMode);

@@ -42,6 +42,10 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_CreateBinaural(EarObjectPtr data);
 
+BOOLN	InitModule_Utility_CreateBinaural(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_CreateBinaural(ModulePtr theModule);
+
 BOOLN	Process_Utility_CreateBinaural(EarObjectPtr data);
 
 __END_DECLS

@@ -179,7 +179,11 @@ BOOLN	SetInhibitoryReversalPot_Neuron_HHuxley(double
 
 BOOLN	SetInjectionMode_Neuron_HHuxley(char *theInjectionMode);
 
+BOOLN	InitModule_Neuron_HHuxley(ModulePtr theModule);
+
 BOOLN	SetOperationMode_Neuron_HHuxley(char *theOperationMode);
+
+BOOLN	SetParsPointer_Neuron_HHuxley(ModulePtr theModule);
 
 BOOLN	SetPars_Neuron_HHuxley(IonChanListPtr iCList, char *diagnosticMode,
 		  char *operationMode, char *injectionMode,

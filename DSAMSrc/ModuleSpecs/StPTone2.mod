@@ -1,6 +1,6 @@
 /* This is a test comment */
 mod_name		PureTone;	/* This is another test comment */
-qualifier		ZAP2;		/* A signal digit produces an error for */
+qualifier		2;		/* A signal digit produces an error for */
 proc_routine	GenerateSignal;
 typedef struct {
 

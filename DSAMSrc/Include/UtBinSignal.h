@@ -97,6 +97,10 @@ BOOLN	SetBinWidth_Utility_BinSignal(double theBinWidth);
 
 BOOLN	SetMode_Utility_BinSignal(char * theMode);
 
+BOOLN	InitModule_Utility_BinSignal(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_BinSignal(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_BinSignal(char * mode, double binWidth);
 
 BOOLN	SetUniParList_Utility_BinSignal(void);

@@ -98,6 +98,10 @@ BOOLN	SetFrequency_PureTone_FM(double theFrequency);
 
 BOOLN	SetIntensity_PureTone_FM(double theIntensity);
 
+BOOLN	InitModule_PureTone_FM(ModulePtr theModule);
+
+BOOLN	SetParsPointer_PureTone_FM(ModulePtr theModule);
+
 BOOLN	SetPars_PureTone_FM(double frequency, double intensity,
 		  double duration, double samplingInterval, double phase,
 		  double modulationDepth, double modulationFrequency,

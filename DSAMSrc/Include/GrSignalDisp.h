@@ -251,7 +251,11 @@ BOOLN	SetMinY_SignalDisp(double minY);
 
 BOOLN	SetMode_SignalDisp(char *theMode);
 
+BOOLN	InitModule_SignalDisp(ModulePtr theModule);
+
 BOOLN	SetNumGreyScales_SignalDisp(int theNumGreyScales);
+
+BOOLN	SetParsPointer_SignalDisp(ModulePtr theModule);
 
 BOOLN	SetPars_SignalDisp(char *theMode, char *theAutomaticYScaling,
 		  char *theYNormalisationMode, char *theYAxisMode,

@@ -105,7 +105,11 @@ BOOLN	SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier);
 
 BOOLN	SetMode_Utility_IteratedRipple(char *theMode);
 
+BOOLN	InitModule_Utility_IteratedRipple(ModulePtr theModule);
+
 BOOLN	SetNumIterations_Utility_IteratedRipple(int theNumIterations);
+
+BOOLN	SetParsPointer_Utility_IteratedRipple(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_IteratedRipple(int numIterations, char *mode,
 		  double delay, double signalMultiplier);

@@ -86,6 +86,10 @@ BOOLN	ReadPars_Utility_ShapePulse(char *fileName);
 
 BOOLN	SetEventThreshold_Utility_ShapePulse(double theEventThreshold);
 
+BOOLN	InitModule_Utility_ShapePulse(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_ShapePulse(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_ShapePulse(double eventThreshold, double
 		  pulseDuration, double pulseMagnitude);
 

@@ -130,6 +130,10 @@ BOOLN	SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume);
 
 BOOLN	SetMinLocalVolume_IHC_Carney(double theMinLocalVolume);
 
+BOOLN	InitModule_IHC_Carney(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHC_Carney(ModulePtr theModule);
+
 BOOLN	SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
 		  double restingPerm, double maxGlobalPerm, double maxLocalPerm,
 		  double maxImmediatePerm, double maxLocalVolume,

@@ -44,6 +44,10 @@ BOOLN	CheckData_Utility_Standardise(EarObjectPtr data);
 
 BOOLN	Process_Utility_Standardise(EarObjectPtr data);
 
+BOOLN	InitModule_Utility_Standardise(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Standardise(ModulePtr theModule);
+
 __END_DECLS
 
 #endif

@@ -157,7 +157,11 @@ BOOLN	SetModulationFrequency_Harmonic(double theModulationFrequency);
 
 BOOLN	SetModulationPhase_Harmonic(double theModulationPhase);
 
+BOOLN	InitModule_Harmonic(ModulePtr theModule);
+
 BOOLN	SetOrder_Harmonic(int theOrder);
+
+BOOLN	SetParsPointer_Harmonic(ModulePtr theModule);
 
 BOOLN	SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
 		  int theHighestHarmonic, int theMistunedHarmonic,

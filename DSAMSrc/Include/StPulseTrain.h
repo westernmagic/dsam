@@ -89,6 +89,10 @@ BOOLN	SetAmplitude_PulseTrain(double theAmplitude);
 
 BOOLN	SetDuration_PulseTrain(double theDuration);
 
+BOOLN	InitModule_PulseTrain(ModulePtr theModule);
+
+BOOLN	SetParsPointer_PulseTrain(ModulePtr theModule);
+
 BOOLN	SetPars_PulseTrain(double pulseRate, double pulseDuration,
 		  double amplitude, double duration, double samplingInterval);
 

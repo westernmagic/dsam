@@ -143,7 +143,11 @@ BOOLN	SetChannelMode_MPI_Master1(char *theChannelMode);
 
 BOOLN	SetDiagnosticsMode_MPI_Master1(char *theDiagnosticsMode);
 
+BOOLN	InitModule_MPI_Master1(ModulePtr theModule);
+
 BOOLN	SetNumWorkers_MPI_Master1(int theNumWorkers);
+
+BOOLN	SetParsPointer_MPI_Master1(ModulePtr theModule);
 
 BOOLN	SetSimScriptParFile_MPI_Master1(char *theSimScriptParFile);
 

@@ -80,6 +80,10 @@ BOOLN	ReadPars_Utility_ReduceDt(char *fileName);
 
 BOOLN	SetDenominator_Utility_ReduceDt(int theDenominator);
 
+BOOLN	InitModule_Utility_ReduceDt(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_ReduceDt(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_ReduceDt(int denominator);
 
 BOOLN	SetUniParList_Utility_ReduceDt(void);

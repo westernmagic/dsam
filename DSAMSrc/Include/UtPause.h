@@ -90,6 +90,10 @@ BOOLN	SetDelay_Utility_Pause(int theDelay);
 
 BOOLN	SetMessage_Utility_Pause(char *theMessage);
 
+BOOLN	InitModule_Utility_Pause(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Pause(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_Pause(char * bellMode, int delay, char *message);
 
 BOOLN	SetUniParList_Utility_Pause(void);

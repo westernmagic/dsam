@@ -114,6 +114,10 @@ BOOLN	SetLossRate_IHC_Meddis86(double theLossRate);
 
 BOOLN	SetMaxFreePool_IHC_Meddis86(double theMaxFreePool);
 
+BOOLN	InitModule_IHC_Meddis86(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHC_Meddis86(ModulePtr theModule);
+
 BOOLN	SetPars_IHC_Meddis86(double A, double B, double g, double y, double l,
 		  double x, double r, double M, double h);
 		  

@@ -195,9 +195,13 @@ BOOLN	SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade);
 
 BOOLN	SetLPFilterMode_BasilarM_DRNL_Test(char * theLPFilterMode);
 
+BOOLN	InitModule_BasilarM_DRNL_Test(ModulePtr theModule);
+
 BOOLN	SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade);
 
 BOOLN	SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade);
+
+BOOLN	SetParsPointer_BasilarM_DRNL_Test(ModulePtr theModule);
 
 BOOLN	SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
 		  char *lPFilterMode, char *compressionMode,

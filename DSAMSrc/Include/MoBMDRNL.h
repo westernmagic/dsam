@@ -50,14 +50,6 @@ typedef enum {
 
 } BMDRNLParSpecifier;
 
-typedef enum {
-
-	BASILARM_DRNL_FIT_FUNC_LOG_FUNC1_MODE,
-	BASILARM_DRNL_FIT_FUNC_POLY_FUNC1_MODE,
-	BASILARM_DRNL_FIT_FUNC_NULL
-
-} BasilarMFitFuncModeSpecifier;
-
 typedef struct {
 
 	ParameterSpecifier	parSpec;
@@ -130,8 +122,6 @@ int	GetNumFitFuncPars_BasilarM_DRNL(int mode);
 
 UniParListPtr	GetUniParListPtr_BasilarM_DRNL(void);
 
-BOOLN	InitFitFuncModeList_BasilarM_DRNL(void);
-
 BOOLN	InitProcessVariables_BasilarM_DRNL(EarObjectPtr data);
 
 BOOLN	Init_BasilarM_DRNL(ParameterSpecifier parSpec);
@@ -160,11 +150,15 @@ BOOLN	SetLinLPCascade_BasilarM_DRNL(int theLinLPCascade);
 
 BOOLN	SetLinScaleG_BasilarM_DRNL(double theLinScaleG);
 
+BOOLN	InitModule_BasilarM_DRNL(ModulePtr theModule);
+
 BOOLN	SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth);
 
 BOOLN	SetNonLinGTCascade_BasilarM_DRNL(int theNonLinGTCascade);
 
 BOOLN	SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade);
+
+BOOLN	SetParsPointer_BasilarM_DRNL(ModulePtr theModule);
 
 BOOLN	SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
 		  ParArrayPtr nonLinBwidth, ParArrayPtr comprScaleA,

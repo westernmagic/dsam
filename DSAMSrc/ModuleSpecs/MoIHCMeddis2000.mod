@@ -33,4 +33,4 @@ typedef struct {
 	double	recoveryRate_r;		/* Recovery rate (units per second). */
 
 
-} HairCell4;
+} HairCell2;

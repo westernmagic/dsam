@@ -3,7 +3,7 @@
  */
 
 mod_name		Filter;
-qualifier		DendriteLP;
+qualifier		LowPass;
 proc_routine	RunModel;
 typedef struct {
 

@@ -92,6 +92,10 @@ BOOLN	SetBeginEndAmplitude_StepFunction(double theBeginEndAmplitude);
 
 BOOLN	SetEndPeriodDuration_StepFunction(double theEndPeriodDuration);
 
+BOOLN	InitModule_StepFunction(ModulePtr theModule);
+
+BOOLN	SetParsPointer_StepFunction(ModulePtr theModule);
+
 BOOLN	SetPars_StepFunction(double theAmplitude, double theDuration,
 		  double theSamplingInterval, double theBeginPeriodDuration,
 		  double theEndPeriodDuration, double theBeginEndAmplitude);

@@ -88,6 +88,10 @@ BOOLN	ReadPars_Transform_SetDBSPL(char *fileName);
 
 BOOLN	SetIntensity_Transform_SetDBSPL(double theIntensity);
 
+BOOLN	InitModule_Transform_SetDBSPL(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Transform_SetDBSPL(ModulePtr theModule);
+
 BOOLN	SetPars_Transform_SetDBSPL(double timeOffset, double intensity);
 
 BOOLN	SetTimeOffset_Transform_SetDBSPL(double theTimeOffset);

@@ -75,6 +75,10 @@ BOOLN	Process_Utility_Sample(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_Sample(char *fileName);
 
+BOOLN	InitModule_Utility_Sample(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Sample(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_Sample(double timeOffset,
 			  double samplingInterval);
 

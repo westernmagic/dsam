@@ -101,6 +101,10 @@ BOOLN	SetInitialDelay_Utility_Delay(double theInitialDelay);
 
 BOOLN	SetMode_Utility_Delay(char *theMode);
 
+BOOLN	InitModule_Utility_Delay(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_Delay(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_Delay(char *mode, double initialDelay,
 		  double finalDelay);
 

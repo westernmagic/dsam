@@ -37,6 +37,10 @@
  */
 __BEGIN_DECLS
 
+BOOLN	InitModule_Analysis_SynchIndex(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_SynchIndex(ModulePtr theModule);
+
 BOOLN	Calc_Analysis_SynchIndex(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_SynchIndex(EarObjectPtr data);

@@ -96,20 +96,19 @@ BOOLN		CheckParLists_Utility_Datum(DatumPtr start);
 
 DatumPtr	Execute_Utility_Datum(DatumPtr start);
 
-DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start,
-			  char *label);
+DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, char *label);
 
-EarObjectPtr	FindLabelledProcess_Utility_Datum(DatumPtr start,
-				  char *label);
+EarObjectPtr	FindLabelledProcess_Utility_Datum(DatumPtr start, char *label);
 
-DatumPtr	FindLabelledProcessInst_Utility_Datum(DatumPtr start,
-			  char *label);
+DatumPtr	FindLabelledProcessInst_Utility_Datum(DatumPtr start, char *label);
 
 DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
-				  char *moduleName);
+			  char *moduleName);
 
 BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		  DatumPtr *pc, char *parSpecifier, BOOLN diagnosticsOn);
+
+EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier);
 
 void	FreeInstructions_Utility_Datum(DatumPtr *pc);
 
@@ -117,7 +116,7 @@ BOOLN	FreeEarObjects_Utility_Datum(DatumPtr start);
 
 EarObjectPtr	GetFirstProcess_Utility_Datum(DatumPtr start);
 
-int			GetInstIntVal_Utility_Datum(DatumPtr start, char *label);
+int		GetInstIntVal_Utility_Datum(DatumPtr start, char *label);
 
 DatumPtr	GetLastInst_Utility_Datum(DatumPtr head);
 

@@ -180,81 +180,85 @@ extern	DataFilePtr	dataFilePtr;
  */
 __BEGIN_DECLS
 
-double		CalculateNormalisation_DataFile(SignalDataPtr signal);
+double	CalculateNormalisation_DataFile(SignalDataPtr signal);
  
-BOOLN		CheckPars_DataFile(void);
+BOOLN	CheckPars_DataFile(void);
 
-BOOLN		CheckParsRead_DataFile(void);
+BOOLN	CheckParsRead_DataFile(void);
 
-ChanLen		FileLength_DataFile(FILE *fp);
+ChanLen	FileLength_DataFile(FILE *fp);
 
 FileFormatSpecifier		Format_DataFile(char *formatExtension);
 
-BOOLN		Free_DataFile(void);
+BOOLN	Free_DataFile(void);
 
-void		FreeProcessVariables_DataFile(void);
+void	FreeProcessVariables_DataFile(void);
 
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
-BOOLN		Init_DataFile(ParameterSpecifier parSpec);
+BOOLN	Init_DataFile(ParameterSpecifier parSpec);
 
-BOOLN		InitEndianModeList_DataFile(void);
+BOOLN	InitEndianModeList_DataFile(void);
 
-BOOLN		InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
-			  double sampleRate);
+BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
+		  double sampleRate);
 
-int			NumberOfColumns_DataFile(FILE *fp);
+int		NumberOfColumns_DataFile(FILE *fp);
 
-FILE *		OpenFile_DataFile(char *fileName, char *mode);
+FILE *	OpenFile_DataFile(char *fileName, char *mode);
 
-BOOLN		PrintPars_DataFile(void);
+BOOLN	PrintPars_DataFile(void);
 
-int32		ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype);
+int32	ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype);
 
-BOOLN		ReadPars_DataFile(char *fileName);
+BOOLN	ReadPars_DataFile(char *fileName);
 
-BOOLN		ReadSignal_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	ReadSignal_DataFile(char *fileName, EarObjectPtr data);
 
-BOOLN		ReadSignal_DataFile_Named(EarObjectPtr data);
+BOOLN	ReadSignal_DataFile_Named(EarObjectPtr data);
 
-BOOLN		ReadSignalMain_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	ReadSignalMain_DataFile(char *fileName, EarObjectPtr data);
 
-BOOLN		SetDefaultSampleRate_DataFile(double theDefaultSampleRate);
+BOOLN	SetDefaultSampleRate_DataFile(double theDefaultSampleRate);
 
-BOOLN		SetDuration_DataFile(double theDuration);
+BOOLN	SetDuration_DataFile(double theDuration);
 
-BOOLN		SetEndian_DataFile(char *endian);
+BOOLN	SetEndian_DataFile(char *endian);
 
-void		SetEndianRW_DataFile(int endian);
+void	SetEndianRW_DataFile(int endian);
 
-BOOLN		SetFileName_DataFile(char *fileName);
+BOOLN	SetFileName_DataFile(char *fileName);
 
-BOOLN		SetGain_DataFile(double theGain);
+BOOLN	SetGain_DataFile(double theGain);
 
-ChanLen		SetIOSectionLength_DataFile(EarObjectPtr data);
+ChanLen	SetIOSectionLength_DataFile(EarObjectPtr data);
 
-BOOLN		SetNumChannels_DataFile(int numChannels);
+BOOLN	InitModule_DataFile(ModulePtr theModule);
 
-BOOLN		SetNormalisation_DataFile(double normalisation);
+BOOLN	SetNumChannels_DataFile(int numChannels);
 
-BOOLN		SetPars_DataFile(char *theFileName, int theWordSize,
-			  char *theEndian, int theNumChannels, double theDefaultSampleRate,
-			  double theDuration, double theTimeOffset, double theGain,
-			  double normalisation);
+BOOLN	SetNormalisation_DataFile(double normalisation);
 
-BOOLN		SetTimeOffset_DataFile(double timeOffset);
+BOOLN	SetParsPointer_DataFile(ModulePtr theModule);
 
-BOOLN		SetUniParList_DataFile(void);
+BOOLN	SetPars_DataFile(char *theFileName, int theWordSize,
+		  char *theEndian, int theNumChannels, double theDefaultSampleRate,
+		  double theDuration, double theTimeOffset, double theGain,
+		  double normalisation);
 
-BOOLN		SetWordSize_DataFile(int wordSize);
+BOOLN	SetTimeOffset_DataFile(double timeOffset);
 
-BOOLN		WriteOutSignal_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	SetUniParList_DataFile(void);
 
-BOOLN		WriteOutSignal_DataFile_Named(EarObjectPtr data);
+BOOLN	SetWordSize_DataFile(int wordSize);
 
-BOOLN		WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	WriteOutSignal_DataFile(char *fileName, EarObjectPtr data);
 
-BOOLN		WriteSignal_DataFile(FILE *fp, SignalDataPtr signal);
+BOOLN	WriteOutSignal_DataFile_Named(EarObjectPtr data);
+
+BOOLN	WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data);
+
+BOOLN	WriteSignal_DataFile(FILE *fp, SignalDataPtr signal);
 
 __END_DECLS
 

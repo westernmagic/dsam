@@ -95,6 +95,10 @@ BOOLN	SetCascade_Filter_BandPass(int theCascade);
 
 BOOLN	SetPreAttenuation_Filter_BandPass(double thePreAttenuation);
 		  
+BOOLN	InitModule_Filter_BandPass(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Filter_BandPass(ModulePtr theModule);
+
 BOOLN	SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
 		  double theUpperCutOffFreq, double preAttenuation);
 

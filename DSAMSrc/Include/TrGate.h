@@ -149,7 +149,11 @@ double	GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
 
 BOOLN	ReadPars_Transform_Gate(char *fileName);
 
+BOOLN	InitModule_Transform_Gate(ModulePtr theModule);
+
 BOOLN	SetOperationMode_Transform_Gate(char *theOperationMode);
+
+BOOLN	SetParsPointer_Transform_Gate(ModulePtr theModule);
 
 BOOLN	SetPars_Transform_Gate(char *positionMode, char *operationMode,
 		  char *typeMode, double timeOffset, double duration,

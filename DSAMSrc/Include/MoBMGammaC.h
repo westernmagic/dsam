@@ -147,7 +147,11 @@ BOOLN	SetCascade_BasilarM_GammaChirp(int theCascade);
 
 BOOLN	SetDiagnosticMode_BasilarM_GammaChirp(char * theDiagnosticMode);
 
+BOOLN	InitModule_BasilarM_GammaChirp(ModulePtr theModule);
+
 BOOLN	SetOpMode_BasilarM_GammaChirp(char * theOpMode);
+
+BOOLN	SetParsPointer_BasilarM_GammaChirp(ModulePtr theModule);
 
 BOOLN	SetPars_BasilarM_GammaChirp(char * diagnosticMode, char * opMode,
 		  int cascade, double bCoeff, double cCoeff0, double cCoeff1,

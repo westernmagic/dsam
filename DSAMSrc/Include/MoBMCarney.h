@@ -144,6 +144,10 @@ BOOLN	SetHCOperatingPoint_BasilarM_Carney(double theHCOperatingPoint);
 
 BOOLN	SetCascade_BasilarM_Carney(int theCascade);
 
+BOOLN	InitModule_BasilarM_Carney(ModulePtr theModule);
+
+BOOLN	SetParsPointer_BasilarM_Carney(ModulePtr theModule);
+
 BOOLN	SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
 		  double hCOperatingPoint, double asymmetricalBias,
 		  double maxHCVoltage, CFListPtr cFList);

@@ -99,7 +99,11 @@ BOOLN	ReadPars_Utility_ReduceChannels(char *fileName);
 
 BOOLN	SetMode_Utility_ReduceChannels(char *theMode);
 
+BOOLN	InitModule_Utility_ReduceChannels(ModulePtr theModule);
+
 BOOLN	SetNumChannels_Utility_ReduceChannels(int theNumChannels);
+
+BOOLN	SetParsPointer_Utility_ReduceChannels(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_ReduceChannels(char *mode, int numChannels);
 

@@ -37,6 +37,10 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_ConvMonaural(EarObjectPtr data);
 
+BOOLN	InitModule_Utility_ConvMonaural(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_ConvMonaural(ModulePtr theModule);
+
 BOOLN	Process_Utility_ConvMonaural(EarObjectPtr data);
 
 __END_DECLS

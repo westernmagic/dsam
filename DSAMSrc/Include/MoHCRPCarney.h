@@ -124,6 +124,10 @@ BOOLN	SetHCOperatingPoint_IHCRP_Carney(double theHCOperatingPoint);
 
 BOOLN	SetMaxHCVoltage_IHCRP_Carney(double theMaxHCVoltage);
 
+BOOLN	InitModule_IHCRP_Carney(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHCRP_Carney(ModulePtr theModule);
+
 BOOLN	SetPars_IHCRP_Carney(double cutOffFrequency, double HCOperatingPoint,
 		  double asymmetricalBias, double maxHCVoltage, double referencePot,
 		  double waveDelayCoeff, double waveDelayLength);

@@ -112,12 +112,16 @@ BOOLN	PrintPars_Analysis_ACF(void);
 
 BOOLN	ReadPars_Analysis_ACF(char *fileName);
 
+BOOLN	SetMaxLag_Analysis_ACF(double theMaxLag);
+
+BOOLN	InitModule_Analysis_ACF(ModulePtr theModule);
+
 BOOLN	SetNormalisationMode_Analysis_ACF(char * theNormalisationMode);
+
+BOOLN	SetParsPointer_Analysis_ACF(ModulePtr theModule);
 
 BOOLN	SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
 		  double timeConstant, double maxLag);
-
-BOOLN	SetMaxLag_Analysis_ACF(double theMaxLag);
 
 BOOLN	SetTimeConstant_Analysis_ACF(double theTimeConstant);
 

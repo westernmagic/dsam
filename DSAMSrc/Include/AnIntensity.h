@@ -74,6 +74,10 @@ BOOLN	PrintPars_Analysis_Intensity(void);
 
 BOOLN	ReadPars_Analysis_Intensity(char *fileName);
 
+BOOLN	InitModule_Analysis_Intensity(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_Intensity(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_Intensity(double timeOffset);
 
 BOOLN	SetTimeOffset_Analysis_Intensity(double theTimeOffset);

@@ -118,9 +118,13 @@ BOOLN	SetIndividualDesired_Filter_FIR(int theIndex, double theDesired);
 
 BOOLN	SetIndividualWeight_Filter_FIR(int theIndex, double theWeight);
 
+BOOLN	InitModule_Filter_FIR(ModulePtr theModule);
+
 BOOLN	SetNumBands_Filter_FIR(int theNumBands);
 
 BOOLN	SetNumTaps_Filter_FIR(int theNumTaps);
+
+BOOLN	SetParsPointer_Filter_FIR(ModulePtr theModule);
 
 BOOLN	SetPars_Filter_FIR(char * type, int numTaps, int numBands,
 		  double *bandFreqs, double *desired, double *weights);

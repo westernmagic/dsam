@@ -82,6 +82,10 @@ BOOLN	SetDuration_Click(double theDuration);
 
 BOOLN	SetAmplitude_Click(double theAmplitude);
 
+BOOLN	InitModule_Click(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Click(ModulePtr theModule);
+
 BOOLN	SetPars_Click(double theClickTime, double theAmplitude,
 		  double theDuration, double theSamplingInterval);
 		  

@@ -1,8 +1,8 @@
 /* This is the module specification for the ExpGatedTone module
  */
 
-mod_name		ExpGatedTone;
-qualifier		Stimulus;
+mod_name		Stimulus;
+qualifier		ExpGatedTone;
 proc_routine	GenerateSignal;
 typedef struct {
 

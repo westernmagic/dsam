@@ -97,6 +97,10 @@ BOOLN	SetPermConstA_IHCRP_Meddis(double thePermConstA);
 
 BOOLN	SetPermConstB_IHCRP_Meddis(double thePermConstB);
 
+BOOLN	InitModule_IHCRP_Meddis(ModulePtr theModule);
+
+BOOLN	SetParsPointer_IHCRP_Meddis(ModulePtr theModule);
+
 BOOLN	SetPars_IHCRP_Meddis(double aA, double bB, double g, double tm);
 		  
 BOOLN	SetReleaseRate_IHCRP_Meddis(double theReleaseRate);

@@ -109,7 +109,11 @@ BOOLN	ReadPars_ANSpikeGen_Simple(char *fileName);
 
 BOOLN	RunModel_ANSpikeGen_Simple(EarObjectPtr data);
 
+BOOLN	InitModule_ANSpikeGen_Simple(ModulePtr theModule);
+
 BOOLN	SetNumFibres_ANSpikeGen_Simple(int theNumFibres);
+
+BOOLN	SetParsPointer_ANSpikeGen_Simple(ModulePtr theModule);
 
 BOOLN	SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres,
 		  double pulseDuration, double pulseMagnitude,

@@ -43,6 +43,10 @@ __BEGIN_DECLS
 
 BOOLN	Calc_Analysis_Convolution(EarObjectPtr data);
 
+BOOLN	InitModule_Analysis_Convolution(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_Convolution(ModulePtr theModule);
+
 BOOLN	CheckData_Analysis_Convolution(EarObjectPtr data);
 
 __END_DECLS

@@ -1,5 +1,5 @@
-/* This is a test comment */
-mod_name		PureTone;	/* This is another test comment */
+/* This is a module specifiction file for the pure tone stimulus */
+mod_name		PureTone;
 proc_routine	GenerateSignal;
 typedef struct {
 

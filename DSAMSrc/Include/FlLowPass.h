@@ -21,7 +21,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define NEURON_DENDRITELP_NUM_PARS			3
+#define FILTER_LOW_PASS_NUM_PARS			3
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -29,9 +29,9 @@
 
 typedef enum {
 
-	NEURON_DENDRITELP_MODE,
-	NEURON_DENDRITELP_CUTOFFFREQUENCY,
-	NEURON_DENDRITELP_SIGNALMULTIPLIER
+	FILTER_LOW_PASS_MODE,
+	FILTER_LOW_PASS_CUTOFFFREQUENCY,
+	FILTER_LOW_PASS_SIGNALMULTIPLIER
 
 } LowPassFParSpecifier;
 
@@ -100,6 +100,10 @@ BOOLN	RunModel_Filter_LowPass(EarObjectPtr data);
 BOOLN	SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency);
 
 BOOLN	SetMode_Filter_LowPass(char *theMode);
+
+BOOLN	InitModule_Filter_LowPass(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Filter_LowPass(ModulePtr theModule);
 
 BOOLN	SetPars_Filter_LowPass(char *mode, double theLowerCutOffFreq,
 		  double theSignalMultiplier);

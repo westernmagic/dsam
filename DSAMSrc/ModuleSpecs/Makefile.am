@@ -10,6 +10,8 @@ An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
 				 AnSynchIndex.mod AnSAImage.mod
 
+Fi_Modules	= FiDataFile.mod
+
 Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod
 
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
@@ -24,7 +26,8 @@ Pa_Modules	= PaMaster1.mod
 
 St_Modules	= StPTone.mod StFMTone.mod StHarmonic.mod StPulseTrain.mod \
 				StEGatedTone.mod StPTone2.mod StAMTone.mod StBPTone.mod \
-				StMPTone.mod StMPPTone.mod StStepFun.mod StWhiteNoise.mod
+				StMPTone.mod StMPPTone.mod StStepFun.mod StWhiteNoise.mod \
+				StClick.mod
 
 Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
 				UtCBinauralITD.mod UtCompress.mod UtConvMonaural.mod \
@@ -35,5 +38,5 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod \
 
 Tr_Modules	= TrGate.mod
 
-EXTRA_DIST	= $(An_Modules) $(Fl_Modules) $(Mo_Modules) $(Pa_Modules) \
-				$(St_Modules) $(Ut_Modules) $(Tr_Modules)
+EXTRA_DIST	= $(An_Modules) $(Fi_Modules) $(Fl_Modules) $(Mo_Modules) \
+				$(Pa_Modules) $(St_Modules) $(Ut_Modules) $(Tr_Modules)

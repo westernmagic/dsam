@@ -102,9 +102,13 @@ BOOLN	SetIndividualPhase_PureTone_Multi(int theIndex, double thePhase);
 
 BOOLN	SetIntensities_PureTone_Multi(double *theIntensities);
 
+BOOLN	InitModule_PureTone_Multi(ModulePtr theModule);
+
 BOOLN	SetNumPTones_PureTone_Multi(int theNumPTones);
 
 BOOLN	SetPhases_PureTone_Multi(double *thePhases);
+
+BOOLN	SetParsPointer_PureTone_Multi(ModulePtr theModule);
 
 BOOLN	SetPars_PureTone_Multi(int theNumPTones, double *theFrequencies,
 		  double *theIntensities, double *thePhases, double theDuration,

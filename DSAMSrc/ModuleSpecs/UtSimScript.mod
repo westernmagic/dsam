@@ -13,4 +13,4 @@ typedef struct {
 	NameSpecifier	parFilePathMode;
 	DatumPtr		simulation;
 
-} SimSpec;
+} SimScript;

@@ -84,6 +84,10 @@ BOOLN	Process_Utility_RefractoryAdjust(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_RefractoryAdjust(char *fileName);
 
+BOOLN	InitModule_Utility_RefractoryAdjust(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Utility_RefractoryAdjust(ModulePtr theModule);
+
 BOOLN	SetPars_Utility_RefractoryAdjust(double refractoryPeriod);
 
 BOOLN	SetRefractoryPeriod_Utility_RefractoryAdjust(

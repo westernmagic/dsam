@@ -129,7 +129,11 @@ BOOLN	SetBandwidths_BasilarM_Cooke(char *theBandwidthMode,
 
 BOOLN	SetCFList_BasilarM_Cooke(CFListPtr theCFList);
 
+BOOLN	InitModule_BasilarM_Cooke(ModulePtr theModule);
+
 BOOLN	SetOutputMode_BasilarM_Cooke(char *theOutputMode);
+
+BOOLN	SetParsPointer_BasilarM_Cooke(ModulePtr theModule);
 
 BOOLN	SetPars_BasilarM_Cooke(char *theOutputMode,
 		  double theBroadeningCoeff, CFListPtr theCFs);

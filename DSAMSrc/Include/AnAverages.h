@@ -95,6 +95,10 @@ BOOLN	ReadPars_Analysis_Averages(char *fileName);
 
 BOOLN	SetMode_Analysis_Averages(char *theMode);
 
+BOOLN	InitModule_Analysis_Averages(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_Averages(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_Averages(char *mode, double timeOffset,
 		  double timeRange);
 

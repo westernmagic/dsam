@@ -104,6 +104,10 @@ BOOLN	SetBinWidth_Analysis_SpikeRegularity(double theBinWidth);
 
 BOOLN	SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold);
 
+BOOLN	InitModule_Analysis_SpikeRegularity(ModulePtr theModule);
+
+BOOLN	SetParsPointer_Analysis_SpikeRegularity(ModulePtr theModule);
+
 BOOLN	SetPars_Analysis_SpikeRegularity(double eventThreshold, double binWidth,
 		  double timeOffset, double timeRange);
 
