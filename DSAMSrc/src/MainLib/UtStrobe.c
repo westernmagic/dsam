@@ -988,7 +988,7 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 					}
 					s->widthIndex = 0;
 					s->gradient = FALSE;
-				} else if (*inPtr == *(inPtr + 1)) /* - for flat troughs.*/
+				} else if (*inPtr == nextSample) /* - for flat troughs.*/
 					s->widthIndex++;
 			}
 			if (strobePtr->diagnosticMode)
