@@ -1,4 +1,5 @@
-MODE	STANDARD	Normalisation mode ('standard' or 'unity').
-OFFSET	-1	Time offset, t0 (if -ve the end of the signal is assumed) (s).
+#		Ana_Acf			< acf.par
+
 TIME_CONST	0.0025	Time constant, tw (s).
-MAX_LAG	0.012	Maximum autocorrelation lag, tau (s).
+MAX_LAG	0.012		Maximum autocorrelation lag, tau (s).
+

@@ -1,16 +1,11 @@
+#		Stim_Harmonic		< stimHarmonic.par
+
 LOW_HARMONIC	1	Lowest harmonic number.
 HIGH_HARMONIC	20	Highest harmonic number.
-PHASE_MODE	COSINE	Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).
-PHASE_PAR	0	Phase parameter (Shroeder phase: C value, Random: random number seed).
-MISTUNED_HARM	-1	Mistuned harmonic number (0 = F0, -ve implies none mistuned).
-MT_FACTOR	0	Mistuning factor (%).
+PHASE_MODE		COSINE	
+
 FUND_FREQ	150	Fundamental frequency (Hz).
 INTENSITY	60	Intensity (dB SPL).
 DURATION	0.1	Duration (s).
 DT	2e-05	Sampling interval, dt (s).
-MOD_FREQ	2.5	Modulation Frequency (Hz).
-MOD_PHASE	0	Modulation Phase (degrees).
-MOD_DEPTH	0	Modulation depth (%).
-ORDER	0	Filter order.
-LOW_CUTOFF	1	Lower cut off frequency 3 dB down (Hz).
-UPPER_CUTOFF	1	Upper cut off frequency 3 dB down (Hz).
+

@@ -1,43 +1,41 @@
 #ACF.sim
   
-off			Diagnostics mode ("off" or "on").
+off		Diagnostics mode ("off" or "on").
 relative	Parameter file path mode - \relative\ or \absolute\
  
 begin {
 
 #  Stimulus generation
-			Stim_Harmonic				< stimHarmonic.par
+stim%		Stim_Harmonic		< stimHarmonic.par
 
 #apply ramps to signal
-			Trans_Gate					< rampUp.par
-			Trans_Gate					< rampDown.par
-			Display_Signal			< displayStimulus.par
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Display_Signal		< displayStimulus.par
 
-#outer/middle ear simulation
-			Filt_MultiBPass			< filtMultiBandpass.par
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
 
-#convert to stapes velocity
-			filt_LowPass				< filtScaleToStapes.par
+# convert to stapes velocity
+		Util_mathOp			< mathOPstapes.par
 
-#nonlinear DRNL filterbank
-			BM_DRNL					< BM_DRNLHuman.par
-			Display_Signal			< displayBM.par
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
 
-#receptor potential 
-			Filt_MultiBPass			< filtStereocilia.par
-			IHCRP_Shamma 				< IHCreceptorPotential.par
-			Display_Signal			< displayReceptorPotential.par
-  
+# receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayRP.par
 # HSR
-			IHC_Meddis2000			< IHC_Meddis2000HSR.par
-			Display_Signal			< displayHSR.par
+		IHC_Meddis2000		< IHC_Meddis2000HSR.par
+		Display_Signal		< displayHSR.par
 
-			Ana_Acf					< acf.par
-			Display_Signal				< displayACF.par
+		Ana_Acf			< acf.par
+		Display_Signal		< displayACF.par
 			
-			Util_ReduceChannels <reduceChannels.par
+		Util_ReduceChannels   	<reduceChannels.par
 
 
 #write results to a data file	
-			DataFile_out				< dataFileOut.par
+		DataFile_out		< dataFileOut.par
 		}
