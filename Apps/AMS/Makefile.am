@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign
 
 bin_PROGRAMS	= ams ams_ng
 
-ams_SOURCES		= ams.cpp ams.h ams.xpm
+ams_SOURCES		= ams.h ams.cpp ams.xpm
 ams_LDADD		= $(DSAMGUILDFLAGS)
 
 ams_ng_SOURCES	= ams.h ams.xpm
