@@ -31,11 +31,11 @@
 #define max(x,y) ((x)<(y)? (y):(x))
 #define min(x,y) ((x)<(y)? (x):(y))
 
-#define FILTERS_NUM_CASCADE_ACF_FILTER		4 		/* cascadeAC */ 
-#define FILTERS_NUM_CASCADE_ERBGT_FILTER		4 		/* cascadeAC */ 
-#define FILTERS_NUM_ACF_STATE_VARS_PER_FILTER	2 	/* - per cascaded filter*/
-#define FILTERS_NUM_LI_STATE_VARS_PER_FILTER	1 	/* - per cascaded filter*/
-#define FILTERS_NUM_CNTL_STATE_VARS_PER_FILTER	1 	/* - per cascaded filter*/
+#define GCFILTERS_NUM_CASCADE_ACF_FILTER		4 	/* cascadeAC */ 
+#define GCFILTERS_NUM_CASCADE_ERBGT_FILTER		4 	/* cascadeAC */ 
+#define GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER	2 	/* - per cascaded filter*/
+#define GCFILTERS_NUM_LI_STATE_VARS_PER_FILTER	1 	/* - per cascaded filter*/
+#define GCFILTERS_NUM_CNTL_STATE_VARS_PER_FILTER	1 /* - per cascaded filter*/
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
