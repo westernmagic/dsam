@@ -453,7 +453,7 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
 	static const char *funcName = "ReadFileIdentifier_DataFile";
 	int32	identifier;
 
-	if (!dataFilePtr->endian)
+	if (!dataFilePtr->endian) 
 		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
 	rewind(fp);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)

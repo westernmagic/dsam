@@ -193,7 +193,7 @@ ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 
 }
 
-/**************************** ReadDSAMChunkData *****************************/
+/**************************** ReadDSAMChunkData *******************************/
 
 /*
  * This routine reads the DSAM data from an AIFF file stream.
@@ -381,7 +381,7 @@ WriteSSNDChunk_AIFF(FILE *fp, SignalDataPtr signal,
 
 }
 
-/**************************** WriteDSAMChunk ********************************/
+/**************************** WriteDSAMChunk **********************************/
 
 /*
  * This routine writes the 'DSAM' chunk of the AIFF format to a file (stream).

@@ -253,7 +253,7 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 	static const char *funcName = "GetPars_ParFile";
 	static char	line[LONG_STRING], fmtScanLine[MAXLINE], extraFmt[MAXLINE];
 	char	c, *formatToken, *restOfLine;
-	int		formatType = 0;
+	int		formatType;
 	va_list	args;
 	
 	if (!CheckInit_ParFile())
