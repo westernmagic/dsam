@@ -9,6 +9,6 @@ typedef struct {
 	NameSpecifier	normalisationMode;
 	double	timeOffset;
 	double	timeConstant;
-	double	period;
+	double	maxLag;
 
 } AutoCorr;
