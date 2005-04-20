@@ -22,7 +22,7 @@ libdsam_g_la_SOURCES= GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
 				GrSDIPalette.cpp GrSDIView.cpp GrSDIFrame.cpp GrSDICanvas.cpp \
 				GrSDIDiagram.cpp GrSDIEvtHandler.cpp GrSDICommand.cpp \
 				GrSDIShapes.cpp GrDiagFrame.cpp GrSDIDocManager.cpp \
-				GrSDIXMLDoc.cpp
+				GrSDIXMLDoc.cpp GrSDIBaseShapes.cpp
 
 libdsam_g_la_LDFLAGS= $(GenLaLDFLAGS)
 

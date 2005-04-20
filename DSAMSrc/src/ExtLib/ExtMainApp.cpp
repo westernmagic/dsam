@@ -44,7 +44,6 @@
 #include "ExtRunThreadedProc.h"
 #include "tinyxml.h"
 #include "ExtXMLDocument.h"
-#include "GrSDIXMLDoc.h"
 #include "ExtMainApp.h"
 
 /******************************************************************************/
@@ -83,6 +82,8 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
 	runThreadedProc = new RunThreadedProc();
+	symList = NULL;
+	InitKeyWords_Utility_SSSymbols(&symList);
 	if (ExternalMain)
 		initOk = InitRun();
 	if (initOk)
@@ -99,6 +100,7 @@ MainApp::~MainApp(void)
 {
 	DeleteSimThread();
 
+	FreeSymbols_Utility_SSSymbols(&symList);
 	if( argsAreLocalFlag)
 		FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
@@ -202,7 +204,7 @@ MainApp::CheckOptions(void)
 	char	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "SI:d:")))
+	  "SI:d:s:")))
 		switch (c) {
 		case 'S':
 			if (!serverFlag)
@@ -214,6 +216,9 @@ MainApp::CheckOptions(void)
 		case 'I':
 			serverPort = atoi(argument);
 			MarkIgnore_Options(argc, argv, "-I", OPTIONS_WITH_ARG);
+			break;
+		case 's':
+			simFileName = argument;
 			break;
 		case 'd':
 			SetDiagMode_AppInterface(argument);
@@ -442,15 +447,13 @@ MainApp::InitMain(bool loadSimulationFlag)
 		return(true);
 	GetPtr_AppInterface()->PrintExtMainAppUsage = PrintUsage_MainApp;
 	ResetCommandArgFlags_AppInterface();
-	if (GetPtr_AppInterface()->simFileType == UTILITY_SIMSCRIPT_XML_FILE) {
-		printf("%s: Debug: Got XML file.\n", funcName);
-		DSAMXMLDocument doc;
-		if (!doc.LoadFile(GetFilePath_AppInterface(NULL))) {
-			NotifyError("%s: Could not load XML file '%s' (Error: %s).",
-			  funcName, GetFilePath_AppInterface(NULL), doc.ErrorDesc());
+	if (loadSimulationFlag && (GetSimFileType_Utility_SimScript((char *)
+	  simFileName.GetExt().c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) {
+		if (!LoadXMLDocument()) {
+			NotifyError("%s: Could not load XML Document.", funcName);
 			return(false);
 		}
-		/*** you are here ***/
+		loadSimulationFlag = false;
 	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = loadSimulationFlag;
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
@@ -460,6 +463,52 @@ MainApp::InitMain(bool loadSimulationFlag)
 	GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
 	return(true);
 	
+}
+
+/****************************** InitXMLDocument *******************************/
+
+/*
+ * This initialises the 
+ */
+
+void
+MainApp::InitXMLDocument(void)
+{
+	doc = new DSAMXMLDocument;
+
+}
+
+/****************************** LoadXMLDocument *******************************/
+
+/*
+ * This routine checks that the simulation run has been initialised.
+ */
+
+bool
+MainApp::LoadXMLDocument(void)
+{
+	static const char *funcName = "MainApp::LoadXMLDocument";
+	bool	ok = true;
+
+	printf("%s: Debug: Got XML file type.\n", funcName);
+	InitXMLDocument();
+	SetAppInterfaceFile(simFileName);
+	if (!doc->LoadFile(GetFilePath_AppInterface(NULL))) {
+		NotifyError("%s: Could not load XML file '%s' (Error: %s).",
+		  funcName, GetFilePath_AppInterface(NULL), doc->ErrorDesc());
+		ok = false;
+	}
+	if (ok && !doc->Translate()) {
+		NotifyError("%s: Could not translate XML document.", funcName);
+		ok = false;
+	}
+	if (ok) {
+		GetPtr_AppInterface()->audModel = doc->GetSimProcess();
+		SetSimulationFileFlag_AppInterface(FALSE);
+	}
+	delete doc;
+	return(ok);
+
 }
 
 /****************************** CheckInitialisation ***************************/
@@ -582,6 +631,24 @@ MainApp::GetSimProcess(void)
 		return(NULL);
 	}
 	return (audModel);
+
+}
+
+/******************************************************************************/
+/****************************** SetAppInterfaceFile ***************************/
+/******************************************************************************/
+
+/*
+ * Sets the application interface file and name.
+ */
+
+void
+MainApp::SetAppInterfaceFile(wxFileName &fileName)
+{
+	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
+	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
+	  fileName.GetExt().c_str()));
+	SetSimFileName_AppInterface((char *) fileName.GetFullName().c_str());
 
 }
 

@@ -48,6 +48,7 @@ class ModuleParDialog;
  
 class SDIEvtHandler: public wxShapeEvtHandler
 {
+
   public:
 	int		processType;
 	wxString	label;

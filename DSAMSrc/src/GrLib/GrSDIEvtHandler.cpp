@@ -43,6 +43,7 @@
 #include "GrModParDialog.h"
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
+#include "GrMainApp.h"
 #include "GrSignalDisp.h"
 #include "GrSDIEvtHandler.h"
 
@@ -142,8 +143,8 @@ SDIEvtHandler::InitInstruction(void)
 	}
 	switch (processType) {
 	case CONTROL_MODULE_CLASS: {
-		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(GetPtr_Utility_SimScript(
-		  )->symList, (char *) label.c_str());
+		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(wxGetApp().GetGrMainApp(
+		  )->GetSymList(), (char *) label.c_str());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError("%s: Could not create '%s' control intruction for "
 			  "process '%s'.", funcName, (char *) label.GetData());
@@ -216,7 +217,7 @@ SDIEvtHandler::EditInstruction(void)
 		pc->u.proc.moduleName = InitString_Utility_String((char *) label.
 		  GetData());
 		if (!pc->data)
-			pc->data = Init_EarObject(pc->u.proc.moduleName);
+			InitProcessInst_Utility_Datum(pc);
 		else {
 			ResetProcess_EarObject(pc->data);
 			Free_ModuleMgr(&(pc->data->module));
@@ -362,6 +363,7 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
+	printf("SDIEvtHandler::OnLeftClick: Entered\n");
 	if (keys == 0) {
 		if (SetSelectedShape(dc)) {
 			GetShape()->Select(FALSE, &dc);

@@ -59,9 +59,6 @@
 
 #define DATUM_IN_SIMULATION(PC)	((PC)->previous || (PC)->next)
 
-#define GET_DATUM_CLIENT_DATA(PC)	(((PC)->type == PROCESS)? \
-		  (PC)->data->clientData: (PC)->clientData)
-
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
@@ -70,6 +67,7 @@ typedef struct Datum {
 
 	BOOLN	onFlag;
 	int		type;
+	int		classSpecifier;
 	uInt	stepNumber;
 	char	*label;
 	union {
@@ -170,6 +168,8 @@ BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
 DatumPtr	InitInst_Utility_Datum(int type);
+
+BOOLN	InitProcessInst_Utility_Datum(DatumPtr pc);
 
 void	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
 

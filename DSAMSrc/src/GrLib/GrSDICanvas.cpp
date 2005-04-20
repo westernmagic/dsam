@@ -36,6 +36,7 @@
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
 #include "GrSDICommand.h"
+#include "GrSDIBaseShapes.h"
 #include "GrSDIShapes.h"
 
 /******************************************************************************/

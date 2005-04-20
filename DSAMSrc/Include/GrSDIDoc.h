@@ -75,7 +75,6 @@ class SDIDocument: public wxDocument
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }
 
-	void	SetAppInterfaceFile(wxFileName &fileName);
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
 	wxOutputStream&	SaveXMLObject(wxOutputStream& stream);

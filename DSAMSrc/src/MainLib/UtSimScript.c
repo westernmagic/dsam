@@ -1074,8 +1074,8 @@ InstallProcessInst_Utility_SimScripts(char *moduleName)
 
 	if (!GetRegEntry_ModuleReg(moduleName)) {
 		NotifyError_Utility_SimScript("%s: process module '%s' not known.",
-		 funcName, moduleName);
-	   return(NULL);
+		  funcName, moduleName);
+		return(NULL);
 	}
 	if ((p = InstallInst_Utility_Datum(simScriptPtr->simPtr, PROCESS)) ==
 	  NULL) {
@@ -1304,7 +1304,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				;
 			}
 		}
-	if (localSimScriptPtr->simFileType != UTILITY_SIMSCRIPT_SPF_FILE) {
+	if (localSimScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
 		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
 		if (!InitialiseModules_Utility_Datum(simulation)) {
 			NotifyError("%s: Could not initialise modules.", funcName);

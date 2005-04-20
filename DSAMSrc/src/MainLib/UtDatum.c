@@ -117,6 +117,7 @@ InitInst_Utility_Datum(int type)
 	datum->onFlag = TRUE;
 	datum->type = type;
 	datum->label = NULL_STRING;
+	datum->classSpecifier = -1;
 	switch (type) {
 	case PROCESS:
 		datum->u.proc.parFile = NULL_STRING;
@@ -126,10 +127,15 @@ InitInst_Utility_Datum(int type)
 		break;
 	case RESET:
 		datum->u.string = NULL_STRING;
+		datum->classSpecifier = CONTROL_MODULE_CLASS;
 		break;
 	case REPEAT:
 		datum->u.loop.count = 1;
 		datum->u.loop.stopPC = NULL;
+		datum->classSpecifier = CONTROL_MODULE_CLASS;
+		break;
+	case STOP:
+		datum->classSpecifier = CONTROL_MODULE_CLASS;
 		break;
 	default:
 		;
@@ -790,6 +796,31 @@ SetDefaultLabels_Utility_Datum(DatumPtr start)
 
 }
 
+/****************************** InitProcessInst *******************************/
+
+/*
+ * This routine initialises a process instruction.
+ * This routine assumes that the instruction is correctly initialised as a
+ * process.
+ */
+
+BOOLN
+InitProcessInst_Utility_Datum(DatumPtr pc)
+{
+	static const char	*funcName = "InitProcessInst_Utility_Datum";
+
+	if (pc->data)
+		Free_EarObject(&pc->data);
+	if ((pc->data = Init_EarObject(pc->u.proc.moduleName)) == NULL) {
+		NotifyError("%s: Could not initialise process '%s' labelled '%s'.",
+		  funcName, pc->u.proc.moduleName, pc->label);
+		return(FALSE);
+	}
+	pc->classSpecifier = pc->data->module->classSpecifier;
+	return(TRUE);
+
+}
+
 /****************************** InitialiseEarObjects **************************/
 
 /*
@@ -814,7 +845,7 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {
-			if ((pc->data = Init_EarObject(pc->u.proc.moduleName)) == NULL) {
+			if (!InitProcessInst_Utility_Datum(pc)) {
 				NotifyError("%s: Could not initialise process with '%s'.",
 				  funcName, pc->u.proc.moduleName);
 				ok = FALSE;

@@ -28,6 +28,7 @@
 #define	APP_INT_NUM_PARS			5		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
+#define APP_PARLIST_NAME			"app_specific"
 
 #if defined(USE_GUI) || defined(EXTENSIONS_SUPPORT)
 #	define	MAIN_ARGS	void

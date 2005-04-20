@@ -25,10 +25,14 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "UtSSSymbols.h"
 #include "UtAppInterface.h"
 #include "ExtMainApp.h"
 #include "GrSimMgr.h"
 #include "GrSDIFrame.h"
+#include "tinyxml.h"
+#include "ExtXMLDocument.h"
+#include "GrSDIXMLDoc.h"
 #include "GrMainApp.h"
 
 /******************************************************************************/
@@ -56,6 +60,19 @@ GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
 	SetOnExit_AppInterface(OnExit_MyApp);
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	InitMain();
+
+}
+
+/****************************** InitXMLDocument *******************************/
+
+/*
+ * This initialises the 
+ */
+
+void
+GrMainApp::InitXMLDocument(void)
+{
+	doc = new SDIXMLDocument(diagram);
 
 }
 

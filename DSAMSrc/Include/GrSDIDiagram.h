@@ -68,6 +68,7 @@
  
 class SDIDiagram: public wxDiagram
 {
+	bool	ok;
 	double	x, y;
 	EarObjectPtr	simProcess;
 
@@ -80,7 +81,7 @@ class SDIDiagram: public wxDiagram
 	void	AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
 				  wxBrush *brush);
-	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
+	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 				  wxBrush *brush);
 	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
 	void	DrawSimConnections(void);
@@ -93,7 +94,7 @@ class SDIDiagram: public wxDiagram
 	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
 #	endif
 	bool	SaveFile(const wxString& filename);
-	void	SetProcessClientData(DatumPtr pc, wxShape *shape);
+	void	SetOk(bool status)		{ ok = status; }
 	bool	SetShapeHandlers(void);
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);

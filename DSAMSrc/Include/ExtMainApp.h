@@ -17,6 +17,9 @@
 
 /* sccsid[] = "%W% %G%" */
 
+#include <wx/filename.h>
+#include "UtSSSymbols.h"
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -40,6 +43,7 @@
 
 class SimThread;
 class RunThreadedProc;
+class DSAMXMLDocument;
 
 /*************************** MainApp ******************************************/
 
@@ -52,9 +56,12 @@ class MainApp {
 	int		serverPort;
 	int		(* ExternalMain)(void);
 	int		(* ExternalRunSimulation)(void);
+	SymbolPtr	symList;
+	wxFileName	simFileName;
 
   public:
 	SimThread	*simThread;
+	DSAMXMLDocument	*doc;
 	RunThreadedProc	*runThreadedProc;
 	wxCriticalSection	mainCritSect;
 
@@ -62,6 +69,7 @@ class MainApp {
 	  void) = NULL, int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
+	virtual void	InitXMLDocument(void);
 	virtual EarObjectPtr	GetSimProcess(void);
 	virtual bool	InitRun(void);
 	virtual int		Main(void);
@@ -80,19 +88,22 @@ class MainApp {
 	char **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
+	SymbolPtr GetSymList(void)	{ return symList; }
 	bool	InitArgv(int theArgc);
 	bool	InitMain(bool loadSimulationFlag = false);
+	bool	LoadXMLDocument(void);
 	bool	ProtectQuotedStr(char *str);
 	void	RemoveCommands(int offset, char *prefix);
 	char *	RestoreQuotedStr(char *str);
 	int		RunServer(void);
-	void	SetInitStatus(bool status)	{ initOk = status; }
-	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);
+	void	SetAppInterfaceFile(wxFileName &fileName);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(char **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, char *string, int size);
+	void	SetInitStatus(bool status)	{ initOk = status; }
 	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,
 			  bool countOnly);
+	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);
 
 };
 

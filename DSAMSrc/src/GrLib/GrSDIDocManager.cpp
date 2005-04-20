@@ -87,6 +87,7 @@ SDIDocManager::OnFileSaveAs(wxCommandEvent& event)
 		}
 	}
 	docTemplate->SetFileFilter(descrBuf);
+	docTemplate->SetDirectory(GetLastDirectory());
 	wxDocManager::OnFileSaveAs(event);
 	docTemplate->SetFileFilter(oldFileFilter);
 #	else

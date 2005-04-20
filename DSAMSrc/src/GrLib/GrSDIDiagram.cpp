@@ -39,6 +39,8 @@
 #include "UtDatum.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GrSDIBaseShapes.h"
+#include "GrSDIShapes.h"
 #include "GrSDIEvtHandler.h"
 #include "GrSDIDiagram.h"
 #include "GrSDICanvas.h"
@@ -65,6 +67,7 @@
 
 SDIDiagram::SDIDiagram(void)
 {
+	ok = false;
 	x = DIAGRAM_DEFAULT_INITIAL_X;
 	y = DIAGRAM_DEFAULT_INITIAL_Y;
 	simProcess = NULL;
@@ -129,51 +132,47 @@ SDIDiagram::AddShape(wxShape *shape)
 }
 
 /******************************************************************************/
-/****************************** SetShape **************************************/
+/****************************** CreateLoadShape *******************************/
 /******************************************************************************/
 
+/*
+ * When 'pc' is NULL, a line shape is being set up.
+ */
+
 wxShape *
-SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo, int type,
+SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
   wxBrush *brush)
 {
+	bool	lineShape = (!pc);
 	double	boxWidth, boxHeight;
-	wxShape *shape = CreateBasicShape(shapeInfo, type, brush);
+	wxShape *shape = CreateBasicShape(shapeInfo, (lineShape)? -1:
+	  pc->classSpecifier, brush);
 
-	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
-	myHandler->pc = pc;
+	if (!lineShape) {
+		SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+		myHandler->pc = pc;
+		shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
+		  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
+		shape->SetId(pc->stepNumber);
+		pc->clientData = shape;
+		if (pc->type == PROCESS)
+			pc->data->clientData = shape;
+	}
 
-	shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH, DIAGRAM_DEFAULT_SHAPE_HEIGHT);
-	shape->SetId(pc->stepNumber);
 	AddShape(shape);
 	wxClientDC dc(shape->GetCanvas());
 	shape->GetCanvas()->PrepareDC(dc);
 	shape->Move(dc, x, y);
 	shape->Show(TRUE);
-	shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
-	x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
-	if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().GetWidth()) {
-		x = DIAGRAM_DEFAULT_INITIAL_X;
-		y += DIAGRAM_DEFAULT_SHAPE_HEIGHT + DIAGRAM_DEFAULT_Y_SEPARATION;
+	if (!lineShape) {
+		shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
+		x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
+		if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().GetWidth()) {
+			x = DIAGRAM_DEFAULT_INITIAL_X;
+			y += DIAGRAM_DEFAULT_SHAPE_HEIGHT + DIAGRAM_DEFAULT_Y_SEPARATION;
+		}
 	}
 	return(shape);
-
-}
-
-/******************************************************************************/
-/****************************** SetProcessClientData **************************/
-/******************************************************************************/
-
-/*
- * It assumes that the process, pc, is not NULL.
- */
-
-void
-SDIDiagram::SetProcessClientData(DatumPtr pc, wxShape *shape)
-{
-	if (pc->type == PROCESS)
-		pc->data->clientData = shape;
-	else
-		pc->clientData = shape;
 
 }
 
@@ -197,25 +196,24 @@ SDIDiagram::DrawSimShapes()
 		case PROCESS: {
 			module = pc->data->module;
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(module->
-			  classSpecifier), module->classSpecifier, wxCYAN_BRUSH);
+			  classSpecifier), wxCYAN_BRUSH);
 			break; }
 		case REPEAT:
 		case RESET:
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(
-			  CONTROL_MODULE_CLASS), CONTROL_MODULE_CLASS, wxCYAN_BRUSH);
+			  CONTROL_MODULE_CLASS), wxCYAN_BRUSH);
 			break;
 		case STOP: {
 			DatumPtr	ppc = pc;
 			while (ppc && (ppc->type != PROCESS))
 				ppc = ppc->previous;
-			shape = (wxShape *) ppc->data->clientData;
+			shape = (wxShape *) ppc->clientData;
+			pc->clientData = shape;
 			break; }
 		default:
 			wxLogError("SDIDiagram::DrawSimShapes: datum type %d not "
 			  "implemented.\n", pc->type);
 		} /* switch */
-		if (shape)
-			SetProcessClientData(pc, shape);
 		pc = pc->next;
 	}
 }
@@ -227,9 +225,9 @@ SDIDiagram::DrawSimShapes()
 wxShape *
 SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 {
-	wxShape *shape = CreateBasicShape(CLASSINFO(wxLineShape), lineType,
+	wxShape *shape = CreateBasicShape(CLASSINFO(SDILineShape), lineType,
 	  wxRED_BRUSH);
-	wxLineShape *lineShape = (wxLineShape *) shape;
+	SDILineShape *lineShape = (SDILineShape *) shape;
 	switch (lineType) {
 	case REPEAT:
 		lineShape->MakeLineControlPoints(4);
@@ -272,7 +270,7 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
 	  next)
 		;
 	if (toPc)
-		AddLineShape(shape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc), -1);
+		AddLineShape(shape, (wxShape *) toPc->clientData, -1);
 
 }
 
@@ -285,6 +283,7 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
  * output connection lists.
  * A "for" loop must be used here and not "while" because "continue" is used
  * and we need pc = pc->next to always be executed.
+ * This routine needs the process 'clientData' field to be set.
  */
 
 void
@@ -299,7 +298,7 @@ SDIDiagram::DrawSimConnections(void)
 	for (; pc != NULL; pc = pc->next) {
 		if (pc->type == STOP)
 			continue;
-		wxShape *fromShape = (wxShape *) (GET_DATUM_CLIENT_DATA(pc));
+		wxShape *fromShape = (wxShape *) (pc->clientData);
 		switch (pc->type) {
 		case PROCESS: 
 			if (pc->u.proc.outputList) {
@@ -307,8 +306,7 @@ SDIDiagram::DrawSimConnections(void)
 				  next) {
 					toPc = (DatumPtr) FindElement_Utility_DynaBList(labelBList,
 					  CmpProcessLabel_Utility_Datum, (char *) p->data)->data;
-					AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(
-					  toPc), -1);
+					AddLineShape(fromShape, (wxShape *) toPc->clientData, -1);
 				}
 			} else {
 				for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
@@ -319,8 +317,7 @@ SDIDiagram::DrawSimConnections(void)
 				switch (toPc->type) {
 				case RESET:
 				case REPEAT:
-					AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(
-					  toPc), -1);
+					AddLineShape(fromShape, (wxShape *) toPc->clientData, -1);
 					break;
 				default:
 					EarObjRefPtr	p;
@@ -344,8 +341,7 @@ SDIDiagram::DrawSimConnections(void)
 				default:
 					;
 				} /* switch */
-			AddLineShape(fromShape, (wxShape *) GET_DATUM_CLIENT_DATA(toPc),
-			  REPEAT);
+			AddLineShape(fromShape, (wxShape *) toPc->clientData, REPEAT);
 			DrawDefaultConnection(pc, fromShape);
 			break; }
 		case RESET:
@@ -365,19 +361,22 @@ SDIDiagram::DrawSimConnections(void)
 void
 SDIDiagram::DrawSimulation(void)
 {
+	if (ok)
+		return;
 	DrawSimShapes();
 	DrawSimConnections();
+	ok = true;
 
 }
 
 /******************************************************************************/
-/****************************** CreateShape ***********************************/
+/****************************** CreateBasicShape ******************************/
 /******************************************************************************/
 
 wxShape *
 SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 {
-	wxShape *theShape = (wxShape *) shapeInfo->CreateObject();
+	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
 	theShape->AssignNewIds();
 	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
 	  wxString(""), type));
@@ -425,26 +424,6 @@ SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
 #endif
 
 /******************************************************************************/
-/****************************** FindShapeDatum ********************************/
-/******************************************************************************/
-
-DatumPtr
-SDIDiagram::FindShapeDatum(uInt id)
-{
-	DatumPtr	pc;
-
-	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
-		return(NULL);
-	while (pc) {
-		if (pc->stepNumber == id)
-			return (pc);
-		pc = pc->next;
-	}
-	return(NULL);
-	
-}
-
-/******************************************************************************/
 /****************************** SetShapeHandlers ******************************/
 /******************************************************************************/
 
@@ -455,7 +434,7 @@ SDIDiagram::FindShapeDatum(uInt id)
 
 bool
 SDIDiagram::SetShapeHandlers(void)
-{
+{ 
 	const static char *funcName = "SDIDiagram::SetShapeHandlers";
 	DatumPtr	pc;
 	SDIEvtHandler	*myHandler;
@@ -464,12 +443,7 @@ SDIDiagram::SetShapeHandlers(void)
 	while (node) {
 		wxShape *shape = (wxShape *) node->GetData();
 		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
-			if ((pc = FindShapeDatum((uInt) shape->GetId())) == NULL) {
-				wxLogError("%s: Could not find shape id = %ld", funcName,
-				  shape->GetId());
-				return(false);
-			}
-			SetProcessClientData(pc, shape);
+			printf("%s: shape id = %ld\n", funcName, shape->GetId());
 			myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 			myHandler->pc = pc;
 			switch (pc->type) {
@@ -545,7 +519,7 @@ SDIDiagram::VerifyDiagram(void)
 		return(false);
 	while (pc) {
 		if (pc->type == PROCESS) {
-			if (!pc->clientData && (pc->data && !pc->data->clientData)) {
+			if (!pc->clientData && pc->data) {
 				wxLogWarning("%s: Process has no description (step %d, label "
 				  "%s'.", funcName, pc->stepNumber, pc->label);
 				return (false);

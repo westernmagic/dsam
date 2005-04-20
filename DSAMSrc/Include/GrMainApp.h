@@ -34,16 +34,21 @@
 
 /********************************** Pre-references ****************************/
 
+class SDIDiagram;
+
 /*************************** GrMainApp ****************************************/
 
 class GrMainApp: public MainApp {
 
+	SDIDiagram	*diagram;
 
   public:
   	GrMainApp(int theArgc, char **theArgv);
 
+	void	InitXMLDocument(void);
 	bool	ResetSimulation(void);
 	void	SetRunIndicators(bool on);
+	void	SetDiagram(SDIDiagram *theDiagram)		{ diagram = theDiagram; }
 
 };
 

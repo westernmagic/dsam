@@ -93,6 +93,7 @@
 #define NULL_MODULE_PROCESS_NAME	"Null process module"
 #define DEFAULT_DT				0.01e-3
 #define DEFAULT_INTENSITY		56.0
+#define	DSAM_VERSION_SEPARATOR	'.'
 
 #ifndef DSAM_DATA_INSTALL_DIR
 #	define	DSAM_DATA_INSTALL_DIR	"."	/* Used to find the DSAM help files. */

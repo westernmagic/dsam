@@ -40,6 +40,7 @@
 #include "GrSDIDiagram.h"
 #include "GrSDIDoc.h"
 #include "ExtXMLDocument.h"
+#include "GrMainApp.h"
 #include "GrSDIXMLDoc.h"
 
 /******************************************************************************/
@@ -62,6 +63,7 @@ IMPLEMENT_DYNAMIC_CLASS(SDIDocument, wxDocument)
 
 SDIDocument::SDIDocument(void)
 {
+	wxGetApp().GetGrMainApp()->SetDiagram(&diagram);
 
 }
 
@@ -73,22 +75,6 @@ SDIDocument::~SDIDocument(void)
 {
 	FreeSim_AppInterface();
 	wxGetApp().SetAudModelLoadedFlag(false);
-
-}
-
-/******************************************************************************/
-/****************************** SetAppInterfaceFile ***************************/
-/******************************************************************************/
-
-/*
- * Sets the application interface file and name.
- */
-
-void
-SDIDocument::SetAppInterfaceFile(wxFileName &fileName)
-{
-	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
-	SetSimFileName_AppInterface((char *) fileName.GetFullName().c_str());
 
 }
 
@@ -176,24 +162,30 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
-	/*static const char *funcName = "SDIDocument::LoadObject";*/
+	static const char *funcName = "SDIDocument::LoadObject";
 	printf("SDIDocument::LoadObject: Entered.\n");
 	wxDocument::LoadObject(stream);
 
 	wxFileName	fileName = GetFilename();
-	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
-	  fileName.GetExt().c_str()));
-
-	SetAppInterfaceFile(fileName);
+	wxGetApp().GetGrMainApp()->SetAppInterfaceFile(fileName);
 	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
 	wxTransferStreamToFile(stream, tempFileName);
 
 	diagram.DeleteAllShapes();
 	wxGetApp().simFile = tempFileName;
+	if ((GetSimFileType_Utility_SimScript((char *) fileName.GetExt().c_str()) ==
+	  UTILITY_SIMSCRIPT_XML_FILE)) {
+		if (!wxGetApp().GetGrMainApp()->LoadXMLDocument()) {
+			NotifyError("%s: Could not load XML Document.", funcName);
+			return(stream);
+		}
+		GetPtr_AppInterface()->canLoadSimulationFlag = false;
+	}
 	if (!wxGetApp().GetFrame()->SetSimFileAndLoad()) {
 		wxRemoveFile(tempFileName);
 		return(stream);
 	}
+	GetPtr_AppInterface()->canLoadSimulationFlag = true;
 
 #	if wxUSE_PROLOGIO
 	wxFileName	diagFileName = fileName;
@@ -216,8 +208,10 @@ SDIDocument::LoadObject(wxInputStream& stream)
 #	endif
 	wxRemoveFile(tempFileName);
 	wxGetApp().SetAudModelLoadedFlag(true);
-	GetDocumentTemplate()->SetDirectory(fileName.GetPath());
-	wxSetWorkingDirectory(fileName.GetPath()); // Above line seems necessary.
+	wxString lastDirectory = (fileName.GetPath().StartsWith(wxGetCwd()))?
+	  fileName.GetPath(): wxGetCwd() + fileName.GetPathSeparator() + fileName.
+	  GetPath();
+	GetDocumentManager( )->SetLastDirectory(lastDirectory);
 	return stream;
 
 }
@@ -230,9 +224,8 @@ wxOutputStream&
 SDIDocument::SaveXMLObject(wxOutputStream& stream)
 {
 	wxDocument::SaveObject(stream);
-	SDIXMLDocument	doc;
-//	DSAMXMLDocument	doc;
-	doc.Create(diagram.GetSimProcess());
+	SDIXMLDocument	doc(&diagram);
+	doc.Create();
 	doc.SaveFile(GetFilename());
 	return(stream);
 
