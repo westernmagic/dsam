@@ -1514,7 +1514,8 @@ PrintParList_UniParMgr(UniParListPtr parList)
 	case UNIPAR_SET_SIMSPEC:
 	case UNIPAR_SET_PARARRAY:
 		for (i = 0; i < parList->numPars; i++)
-			PrintPar_UniParMgr(&parList->pars[i], "", "");
+			if (parList->pars[i].enabled)
+				PrintPar_UniParMgr(&parList->pars[i], "", "");
 		break;
 	case UNIPAR_SET_CFLIST: {
 		CFListPtr	theCFs = parList->handlePtr.cFs;
