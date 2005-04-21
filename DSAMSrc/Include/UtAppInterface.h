@@ -87,7 +87,6 @@ typedef struct {
 	char	segmentMode[SMALL_STRING];
 	char	diagMode[MAX_FILE_PATH];
 	char	installDir[MAX_FILE_PATH];
-	char	simFileName[MAX_FILE_PATH];
 	char	parsFilePath[MAX_FILE_PATH];
 	char	**argv;
 	int		argc;
@@ -259,8 +258,6 @@ BOOLN	SetRealArraySimPar_AppInterface(char *parName, int index, double value);
 BOOLN	SetRealSimPar_AppInterface(char *parName, double value);
 
 BOOLN	SetSegmentMode_AppInterface(char *theSegmentMode);
-
-BOOLN	SetSimFileName_AppInterface(char * simFileName);
 
 BOOLN	SetSimFileType_AppInterface(int simFileType);
 

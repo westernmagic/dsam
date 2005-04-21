@@ -89,10 +89,6 @@ class SDIDiagram: public wxDiagram
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
 	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
-#	if wxUSE_PROLOGIO
-	bool	OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
-	bool	OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr);
-#	endif
 	bool	SaveFile(const wxString& filename);
 	void	SetOk(bool status)		{ ok = status; }
 	bool	SetShapeHandlers(void);

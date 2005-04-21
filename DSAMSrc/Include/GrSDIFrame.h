@@ -100,6 +100,7 @@ class SDIFrame: public wxDocParentFrame
 	bool	CheckChangedValues(void);
 	void	DeleteFromDialogList(ModuleParDialog *dialog);
 	void	DeleteMainParDialog(void);
+	bool	LoadSimulation(void);
 	void	OnAbout(wxCommandEvent& event);
 	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnDiagWindow(wxCommandEvent& event);
@@ -115,7 +116,6 @@ class SDIFrame: public wxDocParentFrame
 	void	OnSize(wxSizeEvent& event);
 	void	CreateToolbar(void);
 	void	SetMainParDialog(ModuleParDialog *dlg) { mainParDialog = dlg; }
-	bool	SetSimFileAndLoad(void);
 	void	UpdateMainParDialog(void);
 
 	DECLARE_EVENT_TABLE()

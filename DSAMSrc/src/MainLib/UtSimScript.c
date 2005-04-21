@@ -904,7 +904,8 @@ ReadPars_Utility_SimScript(char *fileName)
 	filePath = GetParsFileFPath_Common(fileName);
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
 		FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
-		  simScriptPtr->simFileName);  
+		  simScriptPtr->simFileName);
+	printf("%s: Debug: filePath = '%s'\n", funcName, filePath);
 	if ((fp = fopen(filePath, "r")) == NULL) {
 		NotifyError("%s: Cannot open data file '%s'.\n", funcName,
 		  GetFilePath_Utility_SimScript(filePath));

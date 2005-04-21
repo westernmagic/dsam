@@ -216,21 +216,17 @@ SDIFrame::UpdateMainParDialog(void)
 
 }
 
-/****************************** SetSimFileAndLoad *****************************/
+/****************************** LoadSimulation ********************************/
 
 /*
  * This routine sets the simulation file and attempts to load it.
  */
 
 bool
-SDIFrame::SetSimFileAndLoad(void)
+SDIFrame::LoadSimulation(void)
 {
 	if (wxGetApp().GetDiagFrame())
 		wxGetApp().GetDiagFrame()->Clear();
-	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (char *) wxGetApp().simFile.GetFullPath().c_str(
-	    )))
-		return(FALSE);
 	if (!wxGetApp().GetGrMainApp()->ResetSimulation())
 		return(FALSE);
 	if (mainParDialog)
@@ -513,7 +509,7 @@ SDIFrame::OnReloadSimFile(wxCommandEvent& event)
 {
 
 	ResetGUIDialogs();
-	SetSimFileAndLoad();
+	LoadSimulation();
 
 }
 

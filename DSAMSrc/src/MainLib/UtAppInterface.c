@@ -801,7 +801,7 @@ GetFilePath_AppInterface(char *filePath)
 	if (!GetDSAMPtr_Common()->usingExtFlag)
 		return(filePath);
 	snprintf(guiFilePath, MAX_FILE_PATH, "%s/%s", appInterfacePtr->parsFilePath,
-	  appInterfacePtr->simFileName);
+	  appInterfacePtr->simulationFile);
 	return(guiFilePath);
 	
 }
@@ -1129,26 +1129,6 @@ SetSimFileType_AppInterface(int simFileType)
 
 }
 
-/****************************** SetSimFileName ********************************/
-
-/*
- * This function sets the module's simFileName field.
- */
-
-BOOLN
-SetSimFileName_AppInterface(char * simFileName)
-{
-	static const char	*funcName = "SetSimFileName_AppInterface";
-
-	if (appInterfacePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
-		return(FALSE);
-	}
-	snprintf(appInterfacePtr->simFileName, MAX_FILE_PATH, "%s", simFileName);
-	return(TRUE);
-
-}
-
 /****************************** SetParsFilePath *******************************/
 
 /*
@@ -1196,7 +1176,7 @@ InitSimulation_AppInterface(void)
 			SET_PARS_POINTER(appInterfacePtr->audModel);
 			SetSimFileType_Utility_SimScript(appInterfacePtr->simFileType);
 			SetParsFilePath_Utility_SimScript(appInterfacePtr->parsFilePath);
-			SetSimFileName_Utility_SimScript(appInterfacePtr->simFileName);
+			SetSimFileName_Utility_SimScript(appInterfacePtr->simulationFile);
 		}
 	}
 	if (ok && !ReadPars_ModuleMgr(appInterfacePtr->audModel, appInterfacePtr->

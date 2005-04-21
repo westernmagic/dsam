@@ -88,6 +88,7 @@ class MainApp {
 	char **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
+	wxFileName &	GetSimFileName(void)	{ return simFileName; }
 	SymbolPtr GetSymList(void)	{ return symList; }
 	bool	InitArgv(int theArgc);
 	bool	InitMain(bool loadSimulationFlag = false);
@@ -96,13 +97,13 @@ class MainApp {
 	void	RemoveCommands(int offset, char *prefix);
 	char *	RestoreQuotedStr(char *str);
 	int		RunServer(void);
-	void	SetAppInterfaceFile(wxFileName &fileName);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(char **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, char *string, int size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
 	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,
 			  bool countOnly);
+	void	SetSimulationFile(wxFileName &fileName);
 	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);
 
 };

@@ -122,7 +122,6 @@ class MyApp: public wxApp {
   public:
 	wxMenu	*fileMenu, *editMenu, *viewMenu, *programMenu, *windowsMenu;
 	wxIcon	*icon;
-	wxFileName	simFile;
 	wxArrayString	anaList, ctrlList, displayList, filtList, ioList,
 					  modelsList;
 	wxArrayString	transList, userList, utilList;

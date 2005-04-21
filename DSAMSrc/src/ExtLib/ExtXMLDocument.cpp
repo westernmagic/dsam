@@ -54,7 +54,6 @@
 
 DSAMXMLDocument::DSAMXMLDocument(void)
 {
-	printf("DSAMXMLDocument::DSAMXMLDocument: Entered.\n");
 	mySimProcess = NULL;
 	labelBList = NULL;
 	SetTabSize(4);

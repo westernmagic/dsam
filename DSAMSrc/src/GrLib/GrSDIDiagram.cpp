@@ -387,42 +387,6 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 
 }
 
-#if wxUSE_PROLOGIO
-/******************************************************************************/
-/****************************** OnShapeSave ***********************************/
-/******************************************************************************/
-
-bool
-SDIDiagram::OnShapeSave(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-	wxDiagram::OnShapeSave(db, shape, expr);
-	SDIEvtHandler *handler = (SDIEvtHandler *)shape.GetEventHandler();
-	expr.AddAttributeValueString("label", handler->label);
-	return TRUE;
-
-}
-
-/******************************************************************************/
-/****************************** OnShapeLoad ***********************************/
-/******************************************************************************/
-
-bool
-SDIDiagram::OnShapeLoad(wxExprDatabase& db, wxShape& shape, wxExpr& expr)
-{
-	wxDiagram::OnShapeLoad(db, shape, expr);
-	
-	char *label = NULL;
-	expr.AssignAttributeValue("label", &label);
-	SDIEvtHandler *handler = new SDIEvtHandler(&shape, &shape, wxString(label));
-	shape.SetEventHandler(handler);
-
-	if (label)
-		delete[] label;
-	return TRUE;
-
-}
-#endif
-
 /******************************************************************************/
 /****************************** SetShapeHandlers ******************************/
 /******************************************************************************/

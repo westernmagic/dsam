@@ -490,12 +490,10 @@ MainApp::LoadXMLDocument(void)
 	static const char *funcName = "MainApp::LoadXMLDocument";
 	bool	ok = true;
 
-	printf("%s: Debug: Got XML file type.\n", funcName);
 	InitXMLDocument();
-	SetAppInterfaceFile(simFileName);
-	if (!doc->LoadFile(GetFilePath_AppInterface(NULL))) {
-		NotifyError("%s: Could not load XML file '%s' (Error: %s).",
-		  funcName, GetFilePath_AppInterface(NULL), doc->ErrorDesc());
+	if (!doc->LoadFile(simFileName.GetFullPath().c_str())) {
+		NotifyError("%s: Could not load XML file '%s' (Error: %s).", funcName,
+		  simFileName.GetFullPath().c_str(), doc->ErrorDesc());
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {
@@ -635,7 +633,7 @@ MainApp::GetSimProcess(void)
 }
 
 /******************************************************************************/
-/****************************** SetAppInterfaceFile ***************************/
+/****************************** SetSimulationFile *****************************/
 /******************************************************************************/
 
 /*
@@ -643,12 +641,13 @@ MainApp::GetSimProcess(void)
  */
 
 void
-MainApp::SetAppInterfaceFile(wxFileName &fileName)
+MainApp::SetSimulationFile(wxFileName &fileName)
 {
+	simFileName = fileName;
 	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
-	SetSimFileName_AppInterface((char *) fileName.GetFullName().c_str());
+	SetSimulationFile_AppInterface((char *) fileName.GetFullPath().c_str());
 
 }
 

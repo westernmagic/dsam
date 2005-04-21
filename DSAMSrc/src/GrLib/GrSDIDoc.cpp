@@ -163,50 +163,41 @@ wxInputStream&
 SDIDocument::LoadObject(wxInputStream& stream)
 {
 	static const char *funcName = "SDIDocument::LoadObject";
-	printf("SDIDocument::LoadObject: Entered.\n");
+	bool	isXMLFile;
+	wxFileName tempFileName;
 	wxDocument::LoadObject(stream);
 
 	wxFileName	fileName = GetFilename();
-	wxGetApp().GetGrMainApp()->SetAppInterfaceFile(fileName);
-	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
-	wxTransferStreamToFile(stream, tempFileName);
 
 	diagram.DeleteAllShapes();
-	wxGetApp().simFile = tempFileName;
-	if ((GetSimFileType_Utility_SimScript((char *) fileName.GetExt().c_str()) ==
-	  UTILITY_SIMSCRIPT_XML_FILE)) {
+	if ((isXMLFile = (GetSimFileType_Utility_SimScript((char *) fileName.GetExt(
+	  ).c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) == true) {
+		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
 		if (!wxGetApp().GetGrMainApp()->LoadXMLDocument()) {
 			NotifyError("%s: Could not load XML Document.", funcName);
 			return(stream);
 		}
 		GetPtr_AppInterface()->canLoadSimulationFlag = false;
+	} else {
+// Do I need this stream-swapping stuff?
+		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
+//		tempFileName = wxFileName::CreateTempFileName("simFile");
+//		wxTransferStreamToFile(stream, tempFileName.GetFullName());
+//		wxGetApp().GetGrMainApp()->SetSimulationFile(tempFileName);
 	}
-	if (!wxGetApp().GetFrame()->SetSimFileAndLoad()) {
-		wxRemoveFile(tempFileName);
+	if (!wxGetApp().GetFrame()->LoadSimulation()) {
+		wxRemoveFile(tempFileName.GetFullName());
 		return(stream);
 	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = true;
 
-#	if wxUSE_PROLOGIO
-	wxFileName	diagFileName = fileName;
-	diagFileName.SetExt(SDI_DOCUMENT_DIAGRAM_EXTENSION);
-	diagram.SetSimProcess(GetSimProcess_AppInterface());
-	if (!diagFileName.FileExists())
-		diagram.DrawSimulation();
-	else {
-		if (!diagram.LoadFile(diagFileName.GetFullPath()) ||
-		  !diagram.SetShapeHandlers() || !diagram.VerifyDiagram()) {
-			wxLogError("%s: Error loading diagram file - default layout "
-			  "used.\n", funcName);
-			diagram.DeleteAllShapes();
-			diagram.DrawSimulation();
-		}
-	}
-#	else
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	diagram.DrawSimulation();
-#	endif
-	wxRemoveFile(tempFileName);
+
+//	if (!isXMLFile) {
+//		wxRemoveFile(tempFileName.GetFullName());
+//		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
+//	}
 	wxGetApp().SetAudModelLoadedFlag(true);
 	wxString lastDirectory = (fileName.GetPath().StartsWith(wxGetCwd()))?
 	  fileName.GetPath(): wxGetCwd() + fileName.GetPathSeparator() + fileName.
