@@ -955,7 +955,6 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	double	extraTimeInterval;
 	ChanLen	i, bufferSamples, processLength, availableLength, *offsetIndexPtr;
 	ChanLen	*numPeriodsPtr, *extraSamplePtr;
-	EarObjectPtr	dataBuffer;
 	HistogramPtr	p = histogramPtr;
 
 	if (!data->threadRunFlag) {
