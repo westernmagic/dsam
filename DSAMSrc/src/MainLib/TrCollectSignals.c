@@ -238,6 +238,7 @@ SetLabelMode_Transform_CollectSignals(char * theLabelMode)
 	/*** Put any other required checks here. ***/
 	collectSigsPtr->labelModeFlag = TRUE;
 	collectSigsPtr->labelMode = specifier;
+	SetEnabledState_Transform_CollectSignals();
 	return(TRUE);
 
 }
