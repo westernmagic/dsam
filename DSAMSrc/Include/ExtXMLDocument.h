@@ -28,6 +28,8 @@ class istream;
 
 #include "UtDynaList.h"
 #include "UtDynaBList.h"
+#include "UtSSParser.h"
+#include "UtSimScript.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -40,6 +42,7 @@ class istream;
 #define DSAM_XML_INPUT_ELEMENT				_T("input")
 #define DSAM_XML_PAR_ELEMENT				_T("par")
 #define DSAM_XML_PAR_LIST_ELEMENT			_T("par_list")
+#define DSAM_XML_PARARRAY_ELEMENT			_T("par_array")
 #define DSAM_XML_OBJECT_ELEMENT				_T("object")
 #define DSAM_XML_OUTPUT_ELEMENT				_T("output")
 #define DSAM_XML_SIMULAION_ELEMENT			_T("simulation")
@@ -83,6 +86,7 @@ class DSAMXMLDocument: public TiXmlDocument
   private:
 	EarObjectPtr	mySimProcess;
 	DynaBListPtr	labelBList;
+	SimScriptPtr	simScriptPtr;
 
   public:
   
@@ -105,16 +109,20 @@ class DSAMXMLDocument: public TiXmlDocument
 	void	Create(EarObjectPtr simProcess);
 	wxString &	CreateNotification(TiXmlNode *node, char *format, va_list args);
 	void	GetApplicationInfo(void);
+	bool	GetCFListInfo(TiXmlElement *parentElement, UniParList *parList);
 	bool	GetConnectionInfo(TiXmlElement *objectElement, DynaListPtr *p,
 			  const char * type);
+	bool	GetParArrayInfo(TiXmlElement * myElement, UniParList *parList);
 	bool	GetParListInfo(TiXmlNode *parListNode, UniParList *parList);
+	bool	GetParInfo(TiXmlNode *parentElement, UniParList *parList);
 	EarObjectPtr	GetSimProcess(void)		{ return mySimProcess; }
 	bool	GetSimulationInfo(TiXmlNode *simNode);
-	DatumPtr	InstallControl(TiXmlElement *objectElement, int type);
+	DatumPtr	InstallInst(TiXmlElement *objectElement, int type);
 	DatumPtr	InstallProcess(TiXmlElement *objectElement);
 	bool	InstallSimulationNodes(TiXmlElement *simElement);
+	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
-	bool	ValidVersion(std::string s1, std::string s2);
+	bool	ValidVersion(wxString s1, wxString s2);
 	void	XMLNotifyWarning(TiXmlNode *node, char *format, ...);
 	void	XMLNotifyError(TiXmlNode *node, char *format, ...);
 	

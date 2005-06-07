@@ -126,6 +126,7 @@ class SDIFilterShape: public SDIPolygonShape
     SDIFilterShape(double width = 0.0, double height = 0.0);
 
 	void	AddXMLInfo(TiXmlNode &node);
+	bool	GetXMLInfo(TiXmlNode *node);
 
 };
 
@@ -170,6 +171,7 @@ class SDIModelShape: public SDIPolygonShape
     SDIModelShape(double width = 0.0, double height = 0.0);
 
 	void	AddXMLInfo(TiXmlNode &node);
+	bool	GetXMLInfo(TiXmlNode *node);
 
 };
 
@@ -197,6 +199,7 @@ class SDIUserShape: public SDIPolygonShape
     SDIUserShape(double width = 0.0, double height = 0.0);
 
 	void	AddXMLInfo(TiXmlNode &node);
+	bool	GetXMLInfo(TiXmlNode *node);
 
 };
 

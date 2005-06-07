@@ -75,7 +75,7 @@ class MainApp {
 	virtual int		Main(void);
 	virtual	bool	RunSimulation(void);
 	virtual bool	ResetSimulation(void);
-	virtual void	SetRunIndicators(bool on)	{ ; }
+	virtual void	SetRunIndicators(bool on)	{ on = true; }
 
 	// has the initialization been successful? (implicit test)
 	operator bool() const { return initOk; }
@@ -143,6 +143,8 @@ void	DPrintSysLog_MainApp(char *format, va_list args);
 void	PrintUsage_MainApp(void);
 
 BOOLN	OnExecute_MainApp(void);
+
+BOOLN	ReadXMLSimFile_MainApp(char *fileName);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

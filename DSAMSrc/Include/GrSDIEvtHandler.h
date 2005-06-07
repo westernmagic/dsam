@@ -77,6 +77,9 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	void	OnEndDragRight(double x, double y, int keys = 0, int attachment =
 			  0);
 	void	OnEndSize(double x, double y);
+	void	OnMovePost(wxDC& dc, double x, double y, double oldX, double oldY,
+			  bool display = TRUE);
+
 	void	SetDialog(ModuleParDialog *dlg) { dialog = dlg; }
 
 };

@@ -91,7 +91,6 @@ class SDIDiagram: public wxDiagram
 	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
 	bool	SaveFile(const wxString& filename);
 	void	SetOk(bool status)		{ ok = status; }
-	bool	SetShapeHandlers(void);
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
 

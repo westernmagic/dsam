@@ -58,6 +58,9 @@ SDIXMLDocument::SDIXMLDocument(SDIDiagram *theDiagram)
 {
 	diagramLoadInitiated = false;
 	diagram = theDiagram;
+	if (diagram->GetSimProcess())
+		SetSimScriptPtr((SimScriptPtr) diagram->GetSimProcess()->module->
+		  parsPtr);
 
 }
 
@@ -249,7 +252,7 @@ SDIXMLDocument::GetLineShapeInfo(TiXmlNode *parent)
 		ATTRIBUTE_VAL(lineShapeElement, SHAPE_XML_TO_ATTRIBUTE, toId, true);
 
 		wxLineShape *lineShape = (wxLineShape *) shape;
-		if ((fromId >= 0) and (toId >= 0)) {
+		if ((fromId >= 0) && (toId >= 0)) {
 			wxShape *from = FindShape(fromId);
 			wxShape *to = FindShape(toId);
 			from->AddLine((wxLineShape *) shape, to, lineShape->

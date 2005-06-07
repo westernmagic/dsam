@@ -181,8 +181,7 @@ GrLines::SetLength(ChanLen theLength)
 	if (minYRecord)
 		free(minYRecord);
 	if ((minYRecord = (wxCoord *) calloc(length, sizeof(wxCoord))) == NULL) {
-		wxMessageBox("GrLines::GrLines: out of memory for minYRecord.",
-		  "Client: Error", wxOK);
+		NotifyError("GrLines::GrLines: out of memory for minYRecord.");
 		exit(1);
 	}
 	redrawFlag = TRUE;

@@ -401,10 +401,6 @@ SOURCE=..\..\src\MainLib\UtBinSignal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\MainLib\UtCBinauralITD.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\MainLib\UtCFList.c
 # End Source File
 # Begin Source File
@@ -1034,10 +1030,6 @@ SOURCE=..\..\Include\UtBandwidth.h
 # Begin Source File
 
 SOURCE=..\..\Include\UtBinSignal.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\UtCBinauralITD.h
 # End Source File
 # Begin Source File
 

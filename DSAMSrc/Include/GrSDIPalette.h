@@ -52,16 +52,7 @@ enum {
  *
  */
 
-// TODO for wxWin: wxToolBar95 cannot be moved to a non-0,0 position!
-// Needs to have a parent window...
-// So use a simple toolbar at present.
-#if __WXGTK__
-#define TOOLPALETTECLASS    wxToolBar
-#else
-#define TOOLPALETTECLASS    wxToolBarSimple
-#endif
-
-class EditorToolPalette: public TOOLPALETTECLASS
+class EditorToolPalette: public wxToolBar
 {
   public:
 	int currentlySelected;

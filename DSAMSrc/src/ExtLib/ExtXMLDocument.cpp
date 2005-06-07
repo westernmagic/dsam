@@ -56,6 +56,7 @@ DSAMXMLDocument::DSAMXMLDocument(void)
 {
 	mySimProcess = NULL;
 	labelBList = NULL;
+	simScriptPtr = NULL;
 	SetTabSize(4);
 
 }
@@ -205,6 +206,13 @@ DSAMXMLDocument::AddParGeneral(TiXmlNode &node, UniParPtr p)
 		AddParList(cFListElement, (*p->valuePtr.cFPtr)->bParList);
 		node.InsertEndChild(cFListElement);
 		break; }
+	case UNIPAR_PARARRAY: {
+		TiXmlElement parArrayElement(DSAM_XML_PARARRAY_ELEMENT);
+		parArrayElement.SetAttribute(DSAM_XML_NAME_ATTRIBUTE, (*p->valuePtr.
+		  pAPtr)->name);
+		AddParList(parArrayElement, (*p->valuePtr.pAPtr)->parList);
+		node.InsertEndChild(parArrayElement);
+		break; }
 	case UNIPAR_PARLIST:
 		if (p->valuePtr.parList.process)
 			SET_PARS_POINTER(*p->valuePtr.parList.process);
@@ -212,6 +220,7 @@ DSAMXMLDocument::AddParGeneral(TiXmlNode &node, UniParPtr p)
 		break;
 	case UNIPAR_INT_ARRAY:
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
 		for (i = 0; i < *p->valuePtr.array.numElements; i++) {
@@ -362,7 +371,7 @@ DSAMXMLDocument::XMLNotifyWarning(TiXmlNode *node, char *format, ...)
  */
 
 bool
-DSAMXMLDocument::ValidVersion(std::string s1, std::string s2)
+DSAMXMLDocument::ValidVersion(wxString s1, wxString s2)
 {
 	static const char *funcName = "DSAMXMLDocument::ValidVersion";
 	size_t		pos;
@@ -383,72 +392,66 @@ DSAMXMLDocument::ValidVersion(std::string s1, std::string s2)
 }
 
 /******************************************************************************/
-/****************************** GetParListInfo ********************************/
+/****************************** GetParArrayInfo *******************************/
 /******************************************************************************/
 
 bool
-DSAMXMLDocument::GetParListInfo(TiXmlNode *parListNode, UniParList *parList)
+DSAMXMLDocument::GetParArrayInfo(TiXmlElement * myElement, UniParList *parList)
 {
-	static const char *funcName = "DSAMXMLDocument::GetParListInfo";
-	const char	*parName, *parValue;
+	static const char *funcName = "DSAMXMLDocument::GetParArrayInfo";
+	const char	*parName;
 	UniParPtr	par;
-	TiXmlNode	*node;
-	TiXmlElement	*parListElement, *parElement, *cFListElement;
+	UniParList	*subParList;
+	TiXmlNode	*node, *node2;
+	TiXmlElement	*parArrayElement;
 
-	parListElement = parListNode->ToElement();
-	for (node = parListElement->IterateChildren(DSAM_XML_PAR_ELEMENT, NULL);
-	  node; node = parListElement->IterateChildren(DSAM_XML_PAR_ELEMENT,
-	  node)) {
-		parElement = node->ToElement();
-		if ((parName = parElement->Attribute(DSAM_XML_NAME_ATTRIBUTE)) ==
+	for (node = myElement->IterateChildren(DSAM_XML_PARARRAY_ELEMENT,
+	  NULL); node; node = myElement->IterateChildren(
+	  DSAM_XML_PARARRAY_ELEMENT, node)) {
+		parArrayElement = node->ToElement();
+		if ((parName = parArrayElement->Attribute(DSAM_XML_NAME_ATTRIBUTE)) ==
 		  NULL) {
-			XMLNotifyError(parElement, _T("%s: Missing parameter %s in '%s' "
-			  "element."), funcName, DSAM_XML_NAME_ATTRIBUTE,
-			  DSAM_XML_PAR_ELEMENT);
+			XMLNotifyError(parArrayElement, _T("%s: '%s' element must have a "
+			  "name."), funcName, DSAM_XML_PARARRAY_ELEMENT);
 			return(false);
 		}
-		if ((par = FindUniPar_UniParMgr(&parList, (char *) parName,
+		subParList = parList;
+		if ((par = FindUniPar_UniParMgr(&subParList, (char *) parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			XMLNotifyError(parElement, "%s: Parameter '%s' not found.",
-			  funcName, parName);
+			XMLNotifyError(parArrayElement, _T("%s: '%s' parameter '%s' not "
+			  "found"), funcName, DSAM_XML_PARARRAY_ELEMENT, parName);
 			return(false);
 		}
-		if ((parValue = parElement->Attribute(DSAM_XML_VALUE_ATTRIBUTE)) ==
-		  NULL) {
-			XMLNotifyError(parElement, _T("%s: Missing parameter %s in '%s' "
-			  "element."), funcName, DSAM_XML_VALUE_ATTRIBUTE,
-			  DSAM_XML_PAR_ELEMENT);
+		if ((node2 = parArrayElement->FirstChildElement(
+		  DSAM_XML_PAR_LIST_ELEMENT)) == NULL) {
+		  	XMLNotifyError(parArrayElement, "%s: Could not find sub-parameter "
+			  "list for '%s' par_array.", funcName, parName);
 			return(false);
 		}
-		if (!SetParValue_UniParMgr(&parList, par->index, (char *) parValue)) {
-			XMLNotifyError(parElement, _T("%s: Could not set %s parameter to "
-			  "%s."), funcName, parName, parValue);
-			return(false);
-		}
-	}
-	for (node = parListElement->IterateChildren(DSAM_XML_PAR_LIST_ELEMENT,
-	  NULL); node; node = parListElement->IterateChildren(
-	  DSAM_XML_PAR_LIST_ELEMENT, node)) {
-		if ((parName = node->ToElement()->Attribute(DSAM_XML_NAME_ATTRIBUTE)) ==
-		  NULL) {
-			XMLNotifyError(node->ToElement(), _T("%s: '%s' Sub-parameter must "
-			  "have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
-			return(false);
-		}
-		if ((par = FindUniPar_UniParMgr(&parList, (char *) parName,
-		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			XMLNotifyError(node->ToElement(), _T("%s: Sub-parameter list '%s' "
-			  "parameter '%s' not found"), funcName, DSAM_XML_PAR_LIST_ELEMENT,
-			  parName);
-			return(false);
-		}
-		if (!GetParListInfo(node, *par->valuePtr.parList.list)) {
-			XMLNotifyError(node->ToElement(), "%s: Could not set sub-parameter "
+		if (!GetParListInfo(node2, subParList)) {
+			XMLNotifyError(parArrayElement, "%s: Could not set sub-parameter "
 			  "list", funcName);
 			return(false);
 		}
 	}
-	if ((cFListElement = parListElement->FirstChildElement(
+	return(true);
+
+}
+
+/******************************************************************************/
+/****************************** GetCFListInfo *********************************/
+/******************************************************************************/
+
+bool
+DSAMXMLDocument::GetCFListInfo(TiXmlElement *parentElement, 
+  UniParList *parList)
+{
+	static const char *funcName = "DSAMXMLDocument::GetCFListInfo";
+	UniParPtr	par;
+	TiXmlNode	*node;
+	TiXmlElement	*cFListElement;
+
+	if ((cFListElement = parentElement->FirstChildElement(
 	  DSAM_XML_CFLIST_ELEMENT)) != NULL) {
 		if ((par = FindUniPar_UniParMgr(&parList, "CFLIST",
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
@@ -484,6 +487,108 @@ DSAMXMLDocument::GetParListInfo(TiXmlNode *parListNode, UniParList *parList)
 }
 
 /******************************************************************************/
+/****************************** GetParInfo ************************************/
+/******************************************************************************/
+
+bool
+DSAMXMLDocument::GetParInfo(TiXmlNode *parentElement, UniParList *parList)
+{
+	static const char *funcName = "DSAMXMLDocument::GetParInfo";
+	const char	*parName, *parValue;
+	UniParPtr	par;
+	TiXmlNode	*node;
+	TiXmlElement	*parElement;
+
+	for (node = parentElement->IterateChildren(DSAM_XML_PAR_ELEMENT, NULL);
+	  node; node = parentElement->IterateChildren(DSAM_XML_PAR_ELEMENT,
+	  node)) {
+		parElement = node->ToElement();
+		if ((parName = parElement->Attribute(DSAM_XML_NAME_ATTRIBUTE)) ==
+		  NULL) {
+			XMLNotifyError(parElement, _T("%s: Missing parameter %s in '%s' "
+			  "element."), funcName, DSAM_XML_NAME_ATTRIBUTE,
+			  DSAM_XML_PAR_ELEMENT);
+			return(false);
+		}
+		if ((par = FindUniPar_UniParMgr(&parList, (char *) parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
+			XMLNotifyError(parElement, "%s: Parameter '%s' not found.",
+			  funcName, parName);
+			return(false);
+		}
+		if ((parValue = parElement->Attribute(DSAM_XML_VALUE_ATTRIBUTE)) ==
+		  NULL) {
+			XMLNotifyError(parElement, _T("%s: Missing parameter %s in '%s' "
+			  "element."), funcName, DSAM_XML_VALUE_ATTRIBUTE,
+			  DSAM_XML_PAR_ELEMENT);
+			return(false);
+		}
+		if (!SetParValue_UniParMgr(&parList, par->index, (char *) parValue)) {
+			XMLNotifyError(parElement, _T("%s: Could not set %s parameter to "
+			  "%s."), funcName, parName, parValue);
+			return(false);
+		}
+	}
+	return(true);
+
+}
+
+/******************************************************************************/
+/****************************** GetParListInfo ********************************/
+/******************************************************************************/
+
+bool
+DSAMXMLDocument::GetParListInfo(TiXmlNode *parListNode, UniParList *parList)
+{
+	static const char *funcName = "DSAMXMLDocument::GetParListInfo";
+	const char	*parName;
+	UniParPtr	par;
+	TiXmlNode	*node;
+	TiXmlElement	*parListElement;
+
+	parListElement = parListNode->ToElement();
+	if (!GetParInfo(parListElement, parList)) {
+		XMLNotifyError(parListElement, _T("%s: Failed reading parameters."),
+		  funcName);
+		return(false);
+	}
+	for (node = parListElement->IterateChildren(DSAM_XML_PAR_LIST_ELEMENT,
+	  NULL); node; node = parListElement->IterateChildren(
+	  DSAM_XML_PAR_LIST_ELEMENT, node)) {
+		if ((parName = node->ToElement()->Attribute(DSAM_XML_NAME_ATTRIBUTE)) ==
+		  NULL) {
+			XMLNotifyError(node->ToElement(), _T("%s: '%s' Sub-parameter must "
+			  "have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
+			return(false);
+		}
+		if ((par = FindUniPar_UniParMgr(&parList, (char *) parName,
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
+			XMLNotifyError(node->ToElement(), _T("%s: Sub-parameter list '%s' "
+			  "parameter '%s' not found"), funcName, DSAM_XML_PAR_LIST_ELEMENT,
+			  parName);
+			return(false);
+		}
+		if (!GetParListInfo(node, *par->valuePtr.parList.list)) {
+			XMLNotifyError(node->ToElement(), "%s: Could not set sub-parameter "
+			  "list", funcName);
+			return(false);
+		}
+	}
+	if (!GetCFListInfo(parListElement, parList)) {
+		XMLNotifyError(parListElement, _T("%s: Failed reading CFList "
+		  "parameters."), funcName);
+		return(false);
+	}
+	if (!GetParArrayInfo(parListElement, parList)) {
+		XMLNotifyError(parListElement, _T("%s: Failed reading parArray "
+		  "parameters."), funcName);
+		return(false);
+	}
+	return(true);
+
+}
+
+/******************************************************************************/
 /****************************** GetApplicationInfo ****************************/
 /******************************************************************************/
 
@@ -497,7 +602,7 @@ DSAMXMLDocument::GetApplicationInfo(void)
 	if ((appElement = RootElement()->FirstChildElement(
 	  DSAM_XML_APPLICATION_ELEMENT)) == NULL)
 		return;
-	std::string appName = appElement->Attribute(DSAM_XML_NAME_ATTRIBUTE);
+	wxString appName = appElement->Attribute(DSAM_XML_NAME_ATTRIBUTE);
 	if (appName.compare(GetPtr_AppInterface()->appName) != 0) {
 		NotifyWarning(_T("%s: Invalid application '%s', element ignored."),
 		  funcName, appName.c_str());
@@ -551,7 +656,7 @@ DatumPtr
 DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 {
 	static const char *funcName = "DSAMXMLDocument::InstallProcess";
-	const char	*moduleName, *label;
+	const char	*moduleName;
 	DatumPtr	pc;
 	TiXmlElement	*parListElement;
 
@@ -561,17 +666,15 @@ DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 		  funcName);
 		return(NULL);
 	}
-	if ((pc = InstallProcessInst_Utility_SimScripts((char *) moduleName)) ==
-	  NULL) {
-		XMLNotifyError(objectElement, _T("%s: Could not initialise process "
-		  "'%s'"), funcName, moduleName);
+	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
+		XMLNotifyError(objectElement, _T("%s: Could not initialise instruction "
+		  "for '%s'"), funcName, moduleName);
 		return(NULL);
 	}
-	if ((label = objectElement->Attribute(DSAM_XML_LABEL_ATTRIBUTE)) != NULL)
-		pc->label = InitString_Utility_String((char *) label);
-	if ((pc->data = Init_EarObject(pc->u.proc.moduleName)) == NULL) {
-		XMLNotifyError(objectElement, "%s: Could not initialise process.",
-		  funcName);
+	pc->u.proc.moduleName = InitString_Utility_String((char *) moduleName);
+	if (!InitProcessInst_Utility_Datum(pc)) {
+		XMLNotifyError(objectElement, _T("%s: Could not initialise process "
+		  "'%s'"), funcName, moduleName);
 		return(NULL);
 	}
 	if (((parListElement = objectElement->FirstChildElement(
@@ -604,19 +707,19 @@ DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 }
 
 /******************************************************************************/
-/****************************** InstallControl ********************************/
+/****************************** InstallInst ***********************************/
 /******************************************************************************/
 
 DatumPtr
-DSAMXMLDocument::InstallControl(TiXmlElement *objectElement, int type)
+DSAMXMLDocument::InstallInst(TiXmlElement *objectElement, int type)
 {
-	static const char *funcName = "DSAMXMLDocument::InstallControl";
+	static const char *funcName = "DSAMXMLDocument::InstallInst";
 	const char	*label;
 	DatumPtr	pc;
 
 	if ((pc = InstallInst_Utility_Datum(simScriptPtr->simPtr, type)) == NULL) {
-		XMLNotifyError(objectElement, _T("%s: Could not initialise control"),
-		  funcName);
+		XMLNotifyError(objectElement, _T("%s: Could not install "
+		  "instruction"), funcName);
 		return(NULL);
 	}
 	if ((label = objectElement->Attribute(DSAM_XML_LABEL_ATTRIBUTE)) != NULL)
@@ -659,7 +762,7 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 		  ), (char *) objectType)) != NULL) {
 			switch (sp->type) {
 			case REPEAT:
-				if ((pc = InstallControl(objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
 				if (!objectElement->Attribute(DSAM_XML_COUNT_ATTRIBUTE, &pc->u.
 				  loop.count)) {
@@ -674,7 +777,7 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 				  simPtr, STOP);
 				break;
 			case RESET:
-				if ((pc = InstallControl(objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
 				if ((label = objectElement->Attribute(
 				  DSAM_XML_OBJLABEL_ATTRIBUTE)) == NULL) {
@@ -724,12 +827,13 @@ DSAMXMLDocument::GetSimulationInfo(TiXmlNode *simNode)
 	}
 	SET_PARS_POINTER(mySimProcess);
 	SetProcessSimPtr_Utility_SimScript(mySimProcess);
+	simScriptPtr = (SimScriptPtr) mySimProcess->module->parsPtr;
+	simScriptPtr->simFileType = UTILITY_SIMSCRIPT_XML_FILE;
+	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->parsFilePath);
 	if ((parListElement = simElement->FirstChildElement(
 	  DSAM_XML_PAR_LIST_ELEMENT)) != NULL)
 		GetParListInfo(parListElement, GetUniParListPtr_ModuleMgr(
 		  mySimProcess));
-	((SimScriptPtr) mySimProcess->module->parsPtr)->simFileType =
-	  UTILITY_SIMSCRIPT_XML_FILE;
 	if (!InstallSimulationNodes(simElement)) {
 		XMLNotifyError(simElement, _T("%s: Could not install simulation."),
 		  funcName);
@@ -737,7 +841,7 @@ DSAMXMLDocument::GetSimulationInfo(TiXmlNode *simNode)
 	}
 	simulation = (ok)? GetSimulation_ModuleMgr(mySimProcess): NULL;
 	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(simulation, labelBList);
+		ok = CXX_BOOL(ResolveInstLabels_Utility_Datum(simulation, labelBList));
 	if (ok && !SetDefaultConnections_Utility_Datum(simulation)) {
 		XMLNotifyError(simElement, _T("%s Could not set default forward "
 		  "connections"), funcName);

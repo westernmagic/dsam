@@ -209,6 +209,8 @@ BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
 
 BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
 
+void	SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(char *));
+
 BOOLN	SetSimFileName_Utility_SimScript(char * simFileName);
 
 BOOLN	SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType);

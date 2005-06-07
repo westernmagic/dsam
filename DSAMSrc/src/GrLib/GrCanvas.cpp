@@ -120,7 +120,7 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 	xAxis = new wxRect();
 	yAxis = new wxRect();
 
-	SetToolTip("Press right mouse button for menu");
+	SetToolTip(wxT("Press right mouse button for menu"));
 
 }
 
@@ -281,11 +281,10 @@ MyCanvas::InitData(EarObjectPtr data)
 	dt = data->outSignal->dt;
 	signalLines.Set(data->outSignal, offset, chanLength);
 	summaryLine.Set(mySignalDispPtr->summary->outSignal, offset, chanLength);
-		/* Tidy up, using wxString - when wxString works. */
-	if (strcmp(xTitle, mySignalDispPtr->xAxisTitle) != 0)
-		xTitle.Printf("%s", mySignalDispPtr->xAxisTitle);
-	if (strcmp(yTitle, mySignalDispPtr->yAxisTitle) != 0)
-		yTitle.Printf("%s", mySignalDispPtr->yAxisTitle);
+	if (xTitle.compare((wxChar *) mySignalDispPtr->xAxisTitle) != 0)
+		xTitle = (wxChar *) mySignalDispPtr->xAxisTitle;
+	if (yTitle.compare((wxChar *) mySignalDispPtr->yAxisTitle) != 0)
+		yTitle = (wxChar *) mySignalDispPtr->yAxisTitle;
 
 }
 
@@ -359,7 +358,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	long int	stringWidth, stringHeight;
 	double	tempXAdjust, tempYAdjust, xValue, outputTimeOffset;
 	ChanLen	displayLength;
-	wxString stringNum, label, space = " ";
+	wxString stringNum, label, space = wxT(" ");
 
 	if (!xAxis)
 		return;
@@ -380,7 +379,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	  timeIndex * dt, outputTimeOffset + displayLength * dt, xAxis->GetLeft(),
 	  xAxis->GetRight(), mySignalDispPtr->xTicks, CXX_BOOL(mySignalDispPtr->
 	  autoXScale))) {
-		wxLogWarning("%s: Failed to set x-axis scale.", funcName);
+		wxLogWarning(wxT("%s: Failed to set x-axis scale."), funcName);
 		return;
 	}
 	tickLength = (int) (xAxis->GetHeight() * GRAPH_X_TICK_LENGTH_SCALE);
@@ -389,7 +388,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	for (i = 0; i < xAxisScale.GetNumTicks(); i++) {
 		xValue = xAxisScale.GetTickValue(i);
 		xPos = xAxisScale.GetTickPosition(xValue) + theXOffset;
-		stringNum.Printf(xAxisScale.GetOutputFormatString(), xValue);
+		stringNum.Printf((wxChar *) xAxisScale.GetOutputFormatString(),
+		  xValue);
 		dc.GetTextExtent(stringNum, &stringWidth, &stringHeight);
 		dc.DrawText(stringNum, (int) (xPos - stringWidth * tempXAdjust / 2.0),
 		  (int) (yPos + ((useTextAdjust)? stringHeight / 2.0: 0.0)));
@@ -408,8 +408,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
 
 	if (xAxisScale.GetSettingsChanged()) {
-		strcpy(mySignalDispPtr->xNumberFormat, xAxisScale.GetFormatString('x').
-		  c_str());
+		strcpy(mySignalDispPtr->xNumberFormat, (const char *) xAxisScale.
+		  GetFormatString('x').c_str());
 		mySignalDispPtr->xTicks = xAxisScale.GetNumTicks();
 	}
 
@@ -421,12 +421,12 @@ void
 MyCanvas::DrawExponent(wxDC& dc, wxFont *labelFont, int exponent, int x, int y)
 {
 	long int	stringWidth, stringHeight;
-	wxString	string("10");
+	wxString	string(wxT("10"));
 
 	dc.SetFont(*labelFont);
 	dc.DrawText(string, x, y);
 	dc.GetTextExtent(string, &stringWidth, &stringHeight);
-	string.sprintf("%d", exponent);
+	string.sprintf(wxT("%d"), exponent);
 	SetPointSize(&superLabelFont, (int)(labelFont->GetPointSize() *
 	  GRAPH_EXPONENT_VS_LABEL_SCALE));
 	dc.SetFont(*superLabelFont);
@@ -471,7 +471,7 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 	long int	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yOffset;
 	double	displayScale, chanDisplayScale, yValue;
-	wxString label, space = " ";
+	wxString label, space = wxT(" ");
 
 	dc.SetPen(*wxBLACK_PEN);
 	SetTextAdjust(&tempXAdjust, &tempYAdjust);
@@ -496,8 +496,8 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 		for (i = 0; i < yAxisScale.GetNumTicks(); i++) {
 			yValue = yAxisScale.GetTickValue(i);
 			yPos = (int) (yOffset - yAxisScale.GetTickPosition(yValue));
-			label.sprintf(yAxisScale.GetOutputFormatString(), yValue /
-			  mySignalDispPtr->magnification);
+			label.sprintf((wxChar *) yAxisScale.GetOutputFormatString(),
+			  yValue / mySignalDispPtr->magnification);
 			dc.GetTextExtent(label, &stringWidth, &stringHeight);
 			xLabel = (int) (xPos - (stringWidth - charWidth / 2.0) *
 			  tempXAdjust);
@@ -530,7 +530,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 	long int	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, minY;
 	double	maxY;
-	wxString format, label, space = " ";
+	wxString format, label, space = wxT(" ");
 	AxisScale	insetAxisScale;
 
 	if (!yAxis)
@@ -554,7 +554,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		  numDisplayedChans / mySignalDispPtr->yTicks;
 		for (i = 0; i < numDisplayedChans; i += (int) yTickSpacing) {
 			yPos = (int) (yOffset - i * chanSpacing);
-			label = signalLines.GetLineLabel(i);
+			label = (wxChar *) signalLines.GetLineLabel(i);
 			dc.GetTextExtent(label, &stringWidth, &stringHeight);
 			dc.DrawText(label, (int) (xPos - (stringWidth - charWidth / 2.0) *
 			  tempXAdjust), (int) (yPos - stringHeight * tempYAdjust / 2.0));
@@ -590,7 +590,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		}
 		break;
 	default:
-		wxLogWarning("%s: Scale (%d) not implemented.", funcName,
+		wxLogWarning(wxT("%s: Scale (%d) not implemented."), funcName,
 		  mySignalDispPtr->yAxisMode);
 	}
 	dc.SetFont(*axisTitleFont);
@@ -731,10 +731,12 @@ MyCanvas::OnRightDown(wxMouseEvent &event)
 {
 	wxMenu *menu = new wxMenu;
 
-	menu->Append(DISPLAY_MENU_PRINT, "&Print", "Print the display window");
-	menu->Append(DISPLAY_MENU_PREFERENCES, "P&references", "Set the display "
-	  "user preferences");
-	menu->Append(DISPLAY_MENU_EXIT, "&Close", "Close the display window");
+	menu->Append(DISPLAY_MENU_PRINT, wxT("&Print"), wxT("Print the display "
+	  "window"));
+	menu->Append(DISPLAY_MENU_PREFERENCES, wxT("P&references"), wxT("Set the "
+	  "display user preferences"));
+	menu->Append(DISPLAY_MENU_EXIT, wxT("&Close"), wxT("Close the display "
+	  "window"));
 
     PopupMenu( menu, event.GetX(), event.GetY() );
 
@@ -757,8 +759,8 @@ MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 		PrintDisp printout(this);
 
 		if (!printer.Print(this, &printout, TRUE))
-			wxLogWarning("%s:There was a problem printing.\nPerhaps your "
-			  "current printer is not set correctly?",funcName);
+			wxLogWarning(wxT("%s:There was a problem printing.\nPerhaps your "
+			  "current printer is not set correctly?"),funcName);
 		else
 			*printData = printer.GetPrintDialogData().GetPrintData();
 #	endif // wxUSE_PRINTING_ARCHITECTURE
@@ -778,7 +780,7 @@ MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 		mySignalDispPtr->dialog->Raise();
 		return;
 	}
-	ModuleParDialog dialog(this, mySignalDispPtr->title, NULL,
+	ModuleParDialog dialog(this, (wxChar *)mySignalDispPtr->title, NULL,
 	  mySignalDispPtr->parList, NULL, 300, 300, 500, 500,
 	  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
 

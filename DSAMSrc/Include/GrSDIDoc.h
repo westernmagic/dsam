@@ -36,6 +36,14 @@ class istream;
 #define SDI_DOCUMENT_SPF_FILE_EXT		"spf"
 #define SDI_DOCUMENT_XML_FILE_EXT		"xml"
 
+#if wxUSE_STD_IOSTREAM
+#	define	SDI_DOC_OSTREAM wxSTD ostream
+#	define	SDI_DOC_ISTREAM wxSTD istream
+#else
+#	define	SDI_DOC_OSTREAM wxOutputStream
+#	define	SDI_DOC_ISTREAM wxInputStream
+#endif
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -70,14 +78,14 @@ class SDIDocument: public wxDocument
 	SDIDocument(void);
 	~SDIDocument(void);
 
-	virtual wxOutputStream&	SaveObject(wxOutputStream& stream);
-	virtual wxInputStream&	LoadObject(wxInputStream& stream);
+	virtual SDI_DOC_OSTREAM&	SaveObject(SDI_DOC_OSTREAM& stream);
+	virtual SDI_DOC_ISTREAM&	LoadObject(SDI_DOC_ISTREAM& stream);
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }
 
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
-	wxOutputStream&	SaveXMLObject(wxOutputStream& stream);
+	SDI_DOC_OSTREAM&	SaveXMLObject(SDI_DOC_OSTREAM& stream);
 
 };
 

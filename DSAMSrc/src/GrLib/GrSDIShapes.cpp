@@ -148,7 +148,6 @@ IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, SDIPolygonShape)
 SDIControlShape::SDIControlShape(double width, double height): SDIPolygonShape(
   width, height)
 {
-
 	wxList *thePoints = new wxList;
 	wxRealPoint *point = new wxRealPoint(0.0, (-h/2.0));
 	thePoints->Append((wxObject*) point);
@@ -243,6 +242,24 @@ SDIFilterShape::AddXMLInfo(TiXmlNode &node)
 
 }
 
+/****************************** GetXMLInfo ************************************/
+
+bool
+SDIFilterShape::GetXMLInfo(TiXmlNode *node)
+{
+	static const char *funcName = "SDIFilterShape::GetXMLInfo";
+	TiXmlElement *myElement;
+
+	if ((myElement = node->FirstChildElement(SHAPE_XML_FILTER_SHAPE_ELEMENT)) ==
+	  NULL) {
+		NotifyError("%s: Could not find filter element.", funcName);
+		return(false);
+	}
+	SDIPolygonShape::GetXMLInfo(myElement);
+	return(true);
+
+}
+
 /******************************************************************************/
 /****************************** SDIIOShape Methods ****************************/
 /******************************************************************************/
@@ -296,7 +313,7 @@ SDIIOShape::GetXMLInfo(TiXmlNode *node)
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_IO_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find control element.", funcName);
+		NotifyError("%s: Could not find IO element.", funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -427,8 +444,8 @@ SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
 {
 	static const char *funcName = "SDILineShape::GetXMLArrowListInfo";
 	bool	ok = true;
-	int		arrowEnd, id = -1, type = ARROW_ARROW;
-	double	xOffset = 0.0, yOffset = 0.0, size = 0.0, spacing;
+	int		arrowEnd = 0, id = -1, type = ARROW_ARROW;
+	double	xOffset = 0.0, yOffset = 0.0, size = 0.0, spacing = 5.0;
     wxString arrowName;
 
 	TiXmlNode	*node;
@@ -450,7 +467,8 @@ SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
 		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_Y_OFFSET_ATTRIBUTE, yOffset,
 		  true);
 		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_SIZE_ATTRIBUTE, size, true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_SPACING_ATTRIBUTE, spacing, true);
+		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_SPACING_ATTRIBUTE, spacing,
+		  false);
 		if (!ok)
 			break;
 		wxRegisterId(id);
@@ -476,7 +494,7 @@ SDILineShape::GetXMLInfo(TiXmlNode *node)
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_LINE_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find control element.", funcName);
+		NotifyError("%s: Could not find line shape element.", funcName);
 		return(false);
 	}
 	ATTRIBUTE_VAL(myElement, SHAPE_XML_ISSPLINE_ATTRIBUTE, iVal, true);
@@ -542,7 +560,6 @@ IMPLEMENT_DYNAMIC_CLASS(SDIModelShape, SDIPolygonShape)
 SDIModelShape::SDIModelShape(double width, double height): SDIPolygonShape(
   width, height)
 {
-
 	double	edge = h / 4.0;
 	double	hW = w / 16.0;
 	double	hH = h / 4.0;
@@ -574,6 +591,24 @@ SDIModelShape::AddXMLInfo(TiXmlNode &node)
 	TiXmlElement myElement(SHAPE_XML_MODEL_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
 	node.InsertEndChild(myElement);
+
+}
+
+/****************************** GetXMLInfo ************************************/
+
+bool
+SDIModelShape::GetXMLInfo(TiXmlNode *node)
+{
+	static const char *funcName = "SDIModelShape::GetXMLInfo";
+	TiXmlElement *myElement;
+
+	if ((myElement = node->FirstChildElement(SHAPE_XML_MODEL_SHAPE_ELEMENT)) ==
+	  NULL) {
+		NotifyError("%s: Could not find model element.", funcName);
+		return(false);
+	}
+	SDIPolygonShape::GetXMLInfo(myElement);
+	return(true);
 
 }
 
@@ -624,6 +659,24 @@ SDIUserShape::AddXMLInfo(TiXmlNode &node)
 	TiXmlElement myElement(SHAPE_XML_USER_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
 	node.InsertEndChild(myElement);
+
+}
+
+/****************************** GetXMLInfo ************************************/
+
+bool
+SDIUserShape::GetXMLInfo(TiXmlNode *node)
+{
+	static const char *funcName = "SDIUserShape::GetXMLInfo";
+	TiXmlElement *myElement;
+
+	if ((myElement = node->FirstChildElement(SHAPE_XML_USER_SHAPE_ELEMENT)) ==
+	  NULL) {
+		NotifyError("%s: Could not find user element.", funcName);
+		return(false);
+	}
+	SDIPolygonShape::GetXMLInfo(myElement);
+	return(true);
 
 }
 

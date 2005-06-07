@@ -74,6 +74,8 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 	threadedSimExecutionFlag = true;	/* should be set by command-line */
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
+	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
+	
 	serverFlag = false;
 	superServerFlag = false;
 	diagsOn = false;
@@ -204,7 +206,7 @@ MainApp::CheckOptions(void)
 	char	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "SI:d:s:")))
+	  "SI:d:")))
 		switch (c) {
 		case 'S':
 			if (!serverFlag)
@@ -216,9 +218,6 @@ MainApp::CheckOptions(void)
 		case 'I':
 			serverPort = atoi(argument);
 			MarkIgnore_Options(argc, argv, "-I", OPTIONS_WITH_ARG);
-			break;
-		case 's':
-			simFileName = argument;
 			break;
 		case 'd':
 			SetDiagMode_AppInterface(argument);
@@ -447,14 +446,6 @@ MainApp::InitMain(bool loadSimulationFlag)
 		return(true);
 	GetPtr_AppInterface()->PrintExtMainAppUsage = PrintUsage_MainApp;
 	ResetCommandArgFlags_AppInterface();
-	if (loadSimulationFlag && (GetSimFileType_Utility_SimScript((char *)
-	  simFileName.GetExt().c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) {
-		if (!LoadXMLDocument()) {
-			NotifyError("%s: Could not load XML Document.", funcName);
-			return(false);
-		}
-		loadSimulationFlag = false;
-	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = loadSimulationFlag;
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError("%s: Could not initialise process variables.", funcName);
@@ -644,6 +635,8 @@ void
 MainApp::SetSimulationFile(wxFileName &fileName)
 {
 	simFileName = fileName;
+	printf("MainApp::SetSimulationFile: Debug: path = '%s'.\n", (char *)
+	  fileName.GetPath().c_str());
 	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
@@ -658,6 +651,28 @@ MainApp::SetSimulationFile(wxFileName &fileName)
 /******************************************************************************/
 /****************************** Functions *************************************/
 /******************************************************************************/
+
+/****************************** ReadXMLSimFile ********************************/
+
+/*
+ * This function loads an XML file.  It is called from here because the XML
+ * library code used is in C++.
+ */
+
+BOOLN
+ReadXMLSimFile_MainApp(char *theFileName)
+{
+	static const char *funcName = "ReadXMLSimFile_MainApp";
+
+	wxFileName fileName(theFileName);
+	dSAMMainApp->SetSimulationFile(fileName);
+	if (!dSAMMainApp->LoadXMLDocument()) {
+		NotifyError("%s: Could not load XML Document.", funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
 
 /****************************** Onexecute *************************************/
 

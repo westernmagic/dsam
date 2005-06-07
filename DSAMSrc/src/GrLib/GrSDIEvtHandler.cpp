@@ -566,4 +566,15 @@ SDIEvtHandler::OnEndSize(double x, double y)
 
 }
 
+/******************************************************************************/
+/****************************** OnMovePost ************************************/
+/******************************************************************************/
+
+void
+SDIEvtHandler::OnMovePost(wxDC& dc, double x, double y, double oldX,
+  double oldY, bool display)
+{
+	printf("SDIEvtHandler::OnMovePost: Called\n");
+}
+
 #endif /* USE_WX_OGL */

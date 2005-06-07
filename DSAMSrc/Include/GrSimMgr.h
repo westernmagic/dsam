@@ -158,7 +158,7 @@ class MyApp: public wxApp {
 	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
 	bool	InitServer(void);
 	void	SetConfiguration(UniParListPtr	parList);
-	void	SetDataInstallDir(char *theDir)	{ dataInstallDir = theDir; }
+	void	SetDataInstallDir(wxChar *theDir)	{ dataInstallDir = theDir; }
 	void	SetIcon(wxIcon *theIcon) { icon = theIcon; };
 
 	DECLARE_EVENT_TABLE()

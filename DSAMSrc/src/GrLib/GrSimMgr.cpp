@@ -200,7 +200,6 @@ MyApp::OnInit(void)
 //		*printData = *wxThePrintSetupData;
 #	endif
 
-	ResetGUIDialogs();
 	SwitchGUILocking_Common(FALSE);
 
 	// Set brushes
@@ -218,6 +217,7 @@ MyApp::OnInit(void)
 	// Get config setup
 	SetVendorName("CNBH");
 
+	// Get config setup
 	pConfig = wxConfigBase::Get();
 
 	grMainApp = new GrMainApp(argc, argv);
@@ -226,9 +226,6 @@ MyApp::OnInit(void)
 		if (!InitServer())
 			return(FALSE);
 	}
-
-	// Get config setup
-	pConfig = wxConfigBase::Get();
 
 	InitHelp();
 
@@ -270,7 +267,7 @@ MyApp::OnInit(void)
 	if (GetPtr_AppInterface())
 		SetAppName(GetPtr_AppInterface()->appName);
 	else
-		SetAppName("DSAM_App");
+		SetAppName(wxT("DSAM_App"));
 
 	// Set up process lists for dialogs
 	CreateProcessLists();
@@ -278,7 +275,7 @@ MyApp::OnInit(void)
 	if (GetPtr_AppInterface()->simulationFileFlag)
 		CreateDocument(GetPtr_AppInterface()->simulationFile);
 	else
-		myDocManager->CreateDocument("", wxDOC_NEW);
+		myDocManager->CreateDocument(wxT(""), wxDOC_NEW);
 
     // Show frame and tell the application that it's our main window
 
@@ -320,29 +317,31 @@ MyApp::InitHelp(void)
 wxMenuBar *
 MyApp::CreateMenuBar(void)
 {
-	fileMenu = new wxMenu("", wxMENU_TEAROFF);
-	fileMenu->Append(wxID_NEW, "&New...\tCtrl-N", "Design new simulation.");
-	fileMenu->Append(wxID_OPEN, "&Open...\tCtrl-O", "Load Simulation from "
-	  "file.");
-	fileMenu->Append(wxID_REVERT, "&Reload\tCtrl-R", "Reload Simulation.");
-	fileMenu->Append(wxID_CLOSE, "&Close\tCtrl-W");
+	fileMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+	fileMenu->Append(wxID_NEW, wxT("&New...\tCtrl-N"), wxT("Design new "
+	  "simulation."));
+	fileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl-O"), wxT("Load Simulation "
+	  "from file."));
+	fileMenu->Append(wxID_REVERT, wxT("&Reload\tCtrl-R"), wxT("Reload "
+	  "Simulation."));
+	fileMenu->Append(wxID_CLOSE, wxT("&Close\tCtrl-W"));
  	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_SAVE, "&Save...\tCtrl-S", "Save simulation parameter "
-	  "file.");
-	fileMenu->Append(wxID_SAVEAS, "Save as...", "Save simulation "
-	  "parameter file...");
+	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save simulation "
+	  "parameter file."));
+	fileMenu->Append(wxID_SAVEAS,  wxT("Save as..."),  wxT("Save simulation "
+	  "parameter file..."));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, "E&xit\tCtrl-Q", "Exit from program.");
+	fileMenu->Append(wxID_EXIT, wxT("E&xit\tCtrl-Q"), wxT("Exit from program."));
 	myDocManager->FileHistoryUseMenu(fileMenu);
 
-	editMenu = new wxMenu("", wxMENU_TEAROFF);
-	editMenu->Append(wxID_UNDO, "&Undo\tCtrl-Z");
-	editMenu->Append(wxID_REDO, "&Redo\tCtrl-Y");
+	editMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+	editMenu->Append(wxID_UNDO, wxT("&Undo\tCtrl-Z"));
+	editMenu->Append(wxID_REDO, wxT("&Redo\tCtrl-Y"));
 	editMenu->AppendSeparator();
-	editMenu->Append(SDIFRAME_CUT, "&Cut\tCtrl-X");
+	editMenu->Append(SDIFRAME_CUT, wxT("&Cut\tCtrl-X"));
 	editMenu->AppendSeparator();
-	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, "&Main Parameters...\tCtrl-M",
-	  "Edit main program preferences");
+	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Main Parameters..."
+	  "\tCtrl-M"), wxT("Edit main program preferences"));
 
 	viewMenu = new wxMenu("", wxMENU_TEAROFF);
 	viewMenu->Append(MYFRAME_ID_VIEW_SIM_PARS, "&Simulation parameters",
@@ -842,7 +841,7 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 		if ((wxMessageBox(message, DiagnosticTitle(type), style) == wxCANCEL) &&
 		  wxGetApp().GetGrMainApp()->simThread) {
 			wxGetApp().GetGrMainApp()->DeleteSimThread();
-			wxLogWarning("Simulation terminated by user.");
+			wxLogWarning(wxT("Simulation terminated by user."));
 		}
 			
 #		ifndef __WXMSW__

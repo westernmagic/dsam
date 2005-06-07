@@ -70,7 +70,7 @@
  */
 
 EditorToolPalette::EditorToolPalette(wxWindow* parent, const wxPoint& pos,
-  const wxSize& size, long style): TOOLPALETTECLASS(parent, -1, pos, size,
+  const wxSize& size, long style): wxToolBar(parent, -1, pos, size,
   style)
 {
 	currentlySelected = -1;
@@ -181,7 +181,7 @@ EditorToolPalette::OnMouseEnter(int toolIndex)
 void
 EditorToolPalette::SetSize(int x, int y, int width, int height, int sizeFlags)
 {
-	TOOLPALETTECLASS::SetSize(x, y, width, height, sizeFlags);
+	wxToolBar::SetSize(x, y, width, height, sizeFlags);
 }
 
 #endif /* USE_WX_OGL */

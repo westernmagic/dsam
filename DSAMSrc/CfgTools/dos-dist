@@ -42,6 +42,9 @@ CVSConfigure()
 	sed "s/#define.*HAVE_STRINGS_H.*/\/* #undef HAVE_STRINGS_H *\//" \
 	  DSAMSetup.h > temp
 	mv temp DSAMSetup.h
+	sed "s/#define.*SIZEOF_LONG.*/\/* #undef SIZEOF_LONG *\//" \
+	  DSAMSetup.h > temp
+	mv temp DSAMSetup.h
 	cp $MAINLIB/UtSSParser.h $INCDIR
 	(cd $STDLIB; make StdSignalDisp.c)
 }

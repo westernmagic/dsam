@@ -120,8 +120,8 @@ SDIDocument::OnNewDocument(void)
 /****************************** SaveObject ************************************/
 /******************************************************************************/
 
-wxOutputStream&
-SDIDocument::SaveObject(wxOutputStream& stream)
+SDI_DOC_OSTREAM&
+SDIDocument::SaveObject(SDI_DOC_OSTREAM& stream)
 {
 	wxFileName	tempFileName, fileName = GetFilename();
 
@@ -159,8 +159,8 @@ SDIDocument::SaveObject(wxOutputStream& stream)
 /****************************** LoadObject ************************************/
 /******************************************************************************/
 
-wxInputStream&
-SDIDocument::LoadObject(wxInputStream& stream)
+SDI_DOC_ISTREAM&
+SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 {
 	static const char *funcName = "SDIDocument::LoadObject";
 	bool	isXMLFile;
@@ -211,8 +211,8 @@ SDIDocument::LoadObject(wxInputStream& stream)
 /****************************** SaveXMLObject *********************************/
 /******************************************************************************/
 
-wxOutputStream&
-SDIDocument::SaveXMLObject(wxOutputStream& stream)
+SDI_DOC_OSTREAM&
+SDIDocument::SaveXMLObject(SDI_DOC_OSTREAM& stream)
 {
 	wxDocument::SaveObject(stream);
 	SDIXMLDocument	doc(&diagram);

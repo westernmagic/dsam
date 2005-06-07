@@ -73,6 +73,7 @@
 /******************************************************************************/
 
 SimScriptPtr	simScriptPtr = NULL;
+BOOLN	(* ReadXMLSimFile_SimScript)(char *fileName) = NULL;
 
 /******************************************************************************/
 /****************************** Subroutines and functions *********************/
@@ -680,6 +681,7 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 		  "'%s'.", funcName, filePath);
 		return(FALSE); */
 		NotifyWarning("%s: Using old SPF format.", funcName);
+		ResetGUIDialogs();
 		rewind(fp);
 		return(ReadSimParFileOld_Utility_SimScript(fp));
 	}
@@ -834,12 +836,16 @@ ReadSimScript_Utility_SimScript(FILE *fp)
 {
 	static const char	*funcName = "ReadSimScript_Utility_SimScript";
 	DatumPtr	simulation;
+	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 
 	Init_ParFile();
+	SetErrorsFile_Common("off", OVERWRITE);
 	simulation = Read_Utility_SimScript(fp);
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	Free_ParFile();
 	if (!simulation) {	/* To be removed when ReadSimScriptOld is removed. */
 		NotifyWarning("%s: Using old script format.", funcName);
+		ResetGUIDialogs();
 		rewind(fp);
 		return(ReadSimScriptOld_Utility_SimScript(fp));
 	}
@@ -891,29 +897,28 @@ ReadPars_Utility_SimScript(char *fileName)
 	static const char	*funcName = "ReadPars_Utility_SimScript";
 	BOOLN	ok = TRUE;
 	char	*filePath;
-	FILE	*fp;
+	FILE	*fp = NULL;
+	SimScriptPtr	p = simScriptPtr;
 
-	if (simScriptPtr == NULL) {
+	if (!p) {
 		NotifyError("%s: Module not initialised.", funcName);
 		return(FALSE);
 	}
-	if ((simScriptPtr->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE) ||
-	  simScriptPtr->simulation)
-		simScriptPtr->simFileType = GetSimFileType_Utility_SimScript(
+	if ((p->simFileType == UTILITY_SIMSCRIPT_UNKNOWN_FILE) || p->simulation)
+		p->simFileType = GetSimFileType_Utility_SimScript(
 		  GetSuffix_Utility_String(fileName));
 	filePath = GetParsFileFPath_Common(fileName);
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
-		FindFilePathAndName_Common(filePath, simScriptPtr->parsFilePath,
-		  simScriptPtr->simFileName);
-	printf("%s: Debug: filePath = '%s'\n", funcName, filePath);
-	if ((fp = fopen(filePath, "r")) == NULL) {
+		FindFilePathAndName_Common(filePath, p->parsFilePath, p->simFileName);
+	if (((p->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) || (p->simFileType ==
+	  UTILITY_SIMSCRIPT_SPF_FILE)) && (fp = fopen(filePath, "r")) == NULL) {
 		NotifyError("%s: Cannot open data file '%s'.\n", funcName,
 		  GetFilePath_Utility_SimScript(filePath));
 		return(FALSE);
 	}
 	DPrint("%s: Reading from '%s':\n", funcName, GetFilePath_Utility_SimScript(
 	  filePath));
-	switch (simScriptPtr->simFileType) {
+	switch (p->simFileType) {
 	case UTILITY_SIMSCRIPT_SIM_FILE:
 		if (!ReadSimScript_Utility_SimScript(fp)) {
 			NotifyError("%s: Could not read simulation script from\nfile "
@@ -928,12 +933,21 @@ ReadPars_Utility_SimScript(char *fileName)
 			ok = FALSE;
 		}
 		break;
+	case UTILITY_SIMSCRIPT_XML_FILE:
+		if (ReadXMLSimFile_SimScript)
+			ok = (* ReadXMLSimFile_SimScript)(filePath);
+		else  {
+			NotifyError("%s: XML support not available.", funcName);
+			ok = FALSE;
+		}
+		break;
 	default:
 		NotifyError("%s: Unknown simulation file type '%s'.", funcName,
 		  GetFilePath_Utility_SimScript(filePath));
 		ok = FALSE;
 	}
-	fclose(fp);
+	if (fp)
+		fclose(fp);
 	return(ok);
 
 }
@@ -1176,6 +1190,21 @@ GetPtr_Utility_SimScript(void)
 		return(NULL);
 	}
 	return (simScriptPtr);
+
+}
+
+/****************************** SetReadXMLSimFile *****************************/
+
+/*
+ * This function sets the function for reading XML files.
+ */
+
+void
+SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(char *))
+{
+	static const char	*funcName = "SetReadXMLSimFile_Utility_SimScript";
+
+	ReadXMLSimFile_SimScript = Func;
 
 }
 

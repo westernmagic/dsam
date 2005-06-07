@@ -688,8 +688,6 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 		/* Enable this following line after an adjustment period. */
 		/* NotifyWarning("%s: Using old parameter format for module '%s'.",
 		  funcName, data->module->name); */
-		DPrint("%s: Reading '%s' parameters from '%s':\n", funcName, data->
-		  module->name, fileName);
 		return((* data->module->ReadPars)(fileName));
 	}
 	if (!ok) {

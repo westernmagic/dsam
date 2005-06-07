@@ -63,8 +63,9 @@ END_EVENT_TABLE()
 /****************************** Constructor ***********************************/
 
 DisplayS::DisplayS(wxFrame *frame, SignalDispPtr signalDispPtr): wxFrame(frame,
-  -1, signalDispPtr->title,  wxPoint(signalDispPtr->frameXPos, signalDispPtr->
-  frameYPos), wxSize(signalDispPtr->frameWidth, signalDispPtr->frameHeight))
+  -1, (wxChar *)signalDispPtr->title,  wxPoint(signalDispPtr->frameXPos,
+  signalDispPtr->frameYPos), wxSize(signalDispPtr->frameWidth, signalDispPtr->
+  frameHeight))
 {
 	wxLayoutConstraints	*c;
 
@@ -104,7 +105,7 @@ DisplayS::~DisplayS(void)
 void
 DisplayS::SetDisplayTitle(void)
 {
-	SetTitle(signalDispPtr->title);
+	SetTitle((wxChar *) signalDispPtr->title);
 	
 }
 

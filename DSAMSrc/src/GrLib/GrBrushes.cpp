@@ -27,7 +27,7 @@
 // Any files you want to include if not precompiling by including
 // the whole of <wx/wx.h>
 #	ifndef WX_PRECOMP
-#		include <wx/msgdlg.h>
+#		include <wx/log.h>
 #		include <wx/dc.h>
 #	endif
 
@@ -82,8 +82,8 @@ GrBrushes::SetGreyScales(int theNumGreyScales)
 	float	redScale, blueScale, greenScale;
 
 	if (theNumGreyScales > MAX_BRUSHES) {
-		wxMessageBox("GrBrushes::SetGreyScales: Illegal no. of scales given",
-		  "Client: Error", wxOK);
+		wxLogError(_T("GrBrushes::SetGreyScales: Illegal no. of scales "
+		  "given."));
 		exit(1);
 	}
 	redScale = BRUSHES_GREYSCALE_MAX_RED / (theNumGreyScales - 1.0);
@@ -109,8 +109,7 @@ wxBrush *
 GrBrushes::GetBrush(int theBrush)
 {
 	if ((theBrush > numBrushes) || (theBrush < 0)) {
-		wxMessageBox("GrBrushes::GetBrush: Illegal brush number specified.",
-		  "Client: Error", wxOK);
+		wxLogError(_T("GrBrushes::GetBrush: Illegal brush number specified."));
 		exit(1);
 	}
 	return(brush[theBrush]);

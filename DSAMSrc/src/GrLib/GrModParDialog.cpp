@@ -193,7 +193,7 @@ ModuleParDialog::CheckChangedValues(void)
 	bool	ok = true;
 	size_t	i;
 
-	for (i = 0; i < parListInfoList->list.Count(); i++) {
+	for (i = 0; i < parListInfoList->list.GetCount(); i++) {
 		if (!parListInfoList->list[i]->CheckChangedValues())
 			ok = false;
 		if (parListInfoList->list[i]->parList->updateFlag) {
@@ -419,7 +419,7 @@ ModuleParDialog::OnButton(wxCommandEvent& event)
 		}
 		cB->Delete(cB->GetSelection());
 		cB->Append(path);
-		cB->SetSelection(cB->Number() - 1);
+		cB->SetSelection(cB->GetCount() - 1);
 		cB->SetInsertionPointEnd();
 		control->SetUpdateFlag(TRUE);
 		break; }
@@ -495,7 +495,8 @@ ModuleParDialog::OnComboBox(wxCommandEvent& event)
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH: {
 		wxComboBox *cB = (wxComboBox *) event.GetEventObject();
-		control->GetButton()->Enable(cB->GetSelection() == (cB->Number() - 1));
+		control->GetButton()->Enable(cB->GetSelection() == (cB->GetCount() -
+		  1));
 		cB->SetInsertionPointEnd();
 		break; }
 	default:

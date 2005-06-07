@@ -388,47 +388,6 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 }
 
 /******************************************************************************/
-/****************************** SetShapeHandlers ******************************/
-/******************************************************************************/
-
-/*
- * Routine sets the fields for the shape handlers.
- * It also checks that processes exist for each shape.
- */
-
-bool
-SDIDiagram::SetShapeHandlers(void)
-{ 
-	const static char *funcName = "SDIDiagram::SetShapeHandlers";
-	DatumPtr	pc;
-	SDIEvtHandler	*myHandler;
-	wxNode *node = m_shapeList->GetFirst();
-
-	while (node) {
-		wxShape *shape = (wxShape *) node->GetData();
-		if (!shape->IsKindOf(CLASSINFO(wxLineShape))) {
-			printf("%s: shape id = %ld\n", funcName, shape->GetId());
-			myHandler = (SDIEvtHandler *) shape->GetEventHandler();
-			myHandler->pc = pc;
-			switch (pc->type) {
-			case PROCESS:
-				myHandler->processType = pc->data->module->classSpecifier;
-				break;
-			case REPEAT:
-			case RESET:
-				myHandler->processType = CONTROL_MODULE_CLASS;
-				break;
-			default:
-				;
-			} /* switch */
-		}
-		node = node->GetNext();
-	}
-	return(true);
-			
-}
-
-/******************************************************************************/
 /****************************** VerifyDiagram *********************************/
 /******************************************************************************/
 

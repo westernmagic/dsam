@@ -156,7 +156,8 @@ ParListInfo::SetParNameList(UniParPtr par, int index)
 	NameSpecifierPtr list; 
 
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, "",
-	  wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
+	  wxDefaultPosition, wxSize(PARLISTINFO_CHOICE_ITEM_WIDTH,-1), 0, NULL,
+	  wxCB_READONLY);
 	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
 		cBox->Append(list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
@@ -202,7 +203,7 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
 	browseBtn->SetToolTip("Click this button to browse for a file (path).");
-	browseBtn->Enable(cBox->GetSelection() == (cBox->Number() - 1));
+	browseBtn->Enable(cBox->GetSelection() == (cBox->GetCount() - 1));
 
 	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
 
@@ -322,11 +323,15 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 /*
  * This routine sets the general parameter format.  It was separated from the
  * SetParListStandard routine so that other custon routines could use it too.
+ * As sub-lists use the note book, the control sizer should not be added for
+ * sub-lists.
  */
 
 void
 ParListInfo::SetParGeneral(UniParPtr par, int index)
 {
+	bool	subList = false;
+
 	switch (par->type) {
 	case UNIPAR_CFLIST:
 	case UNIPAR_ICLIST:
@@ -336,6 +341,7 @@ ParListInfo::SetParGeneral(UniParPtr par, int index)
 	case UNIPAR_PARARRAY:
 		controlList[index] = new ParControl(par, infoNum, NULL,
 		  PARCONTROL_SUB_LIST);
+		subList = true;
 		break;
 	case UNIPAR_BOOL:
 		SetParBoolean(par, index);
@@ -354,8 +360,9 @@ ParListInfo::SetParGeneral(UniParPtr par, int index)
 		SetParStandard(par, index);
 	}
 	controlList[index]->SetEnable();
-	sizer->Add(controlList[index]->GetSizer(), 0, wxALIGN_LEFT |
-	  wxALIGN_CENTER_VERTICAL);
+	if (!subList)
+		sizer->Add(controlList[index]->GetSizer(), 0, wxALIGN_LEFT |
+		  wxALIGN_CENTER_VERTICAL);
 
 }
 

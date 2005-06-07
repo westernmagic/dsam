@@ -556,7 +556,7 @@ SDIShape::GetShapeInfo(TiXmlElement *myElement)
 {
 	static const char *funcName = "SDIShape::GetShapeInfo";
 	bool	ok = true;
-	int		iVal;
+	int		iVal = 0;
 	double	x = 0.0, y = 0.0;
 	wxString	strValue;
 

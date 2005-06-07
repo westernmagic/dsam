@@ -67,8 +67,8 @@ class ParControl {
 	wxSlider		*slider;
 	wxStaticText	*label;
 
-	void	Check(Tag t)	{ if (tag != t) wxMessageBox("GrParListInfo: "
-							  "Illegal ParControl"); }
+	void	Check(Tag t)	{ if (tag != t) wxLogError(_T("GrParListInfo: "
+							  "Illegal ParControl")); }
 
   public:
 

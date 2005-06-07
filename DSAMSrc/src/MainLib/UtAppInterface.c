@@ -856,7 +856,7 @@ SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 			return(FALSE);
 	}
 	parList = appInterfacePtr->parList;
-	if (*subProcess) {
+	if (*subProcess && (*subProcess != '0')) {
 		if ((par = FindUniPar_UniParMgr(&parList, subProcess,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
 			NotifyError("%s: Unknown sub-process '%s' for application.",

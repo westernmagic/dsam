@@ -42,7 +42,8 @@ class DiagFrame: public wxFrame
 	wxTextCtrl	*diagnosticsText;
 
 	DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos =
-	  wxDefaultPosition, const wxSize& size = wxDefaultSize);
+	  wxDefaultPosition, const wxSize& size = wxDefaultSize, long style =
+	  wxDEFAULT_FRAME_STYLE | wxVSCROLL);
 
 	void	Clear(void)		{ diagnosticsText->Clear(); }
 	void	OnCloseWindow(wxCloseEvent& event);

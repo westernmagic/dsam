@@ -59,13 +59,13 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 	static const char *funcName = "AxisScale::Set";
 
 	if (minVal > maxVal) {
-		wxLogError("%s: minmum value (%g) is greater than maximum value "
-		  "(%g)\n", funcName, minVal, maxVal);
+		wxLogError(wxT("%s: minmum value (%g) is greater than maximum value "
+		  "(%g)\n"), funcName, minVal, maxVal);
 		return(FALSE);
 	}
 	if (minPos > maxPos) {
-		wxLogError("%s: minmum position (%d) is greater than maximum position "
-		  "(%d)\n", funcName, minPos, maxPos);
+		wxLogError(wxT("%s: minmum position (%d) is greater than maximum "
+		  "position (%d)\n"), funcName, minPos, maxPos);
 		return(FALSE);
 	}
 	settingsChanged = FALSE;
@@ -90,13 +90,13 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 	} else {
 		numTicks = theNumTicks;
 		if (!ParseNumberFormat(numberFormat)) {
-			wxLogError("%s: Failed to recognise number format '%s'", funcName,
-			  numberFormat);
+			wxLogError(wxT("%s: Failed to recognise number format '%s'"),
+			  funcName, numberFormat);
 			return(FALSE);
 		}
 	}
 	CalculateScales();
-	outputFormat.Printf("%%.%df", decPlaces);
+	outputFormat.Printf(wxT("%%.%df"), decPlaces);
 	return(TRUE);
 
 }
@@ -116,7 +116,7 @@ AxisScale::ParseNumberFormat(char *format)
 	char	*p1, *p2;
 
 	if (!format || (format[0] == '\0')) {
-		wxLogError("%s: Format string not set.\n", funcName);
+		wxLogError(wxT("%s: Format string not set.\n"), funcName);
 		return(FALSE);
 	}
 	if (strcmp(format, "auto") == 0)
@@ -255,7 +255,7 @@ AxisScale::GetFormatString(char formatChar)
 		format += '.';
 	for (i = 0; i < decPlaces; i++)
 		format += formatChar;
-	format.Printf("%se%d", format.c_str(), exponent);
+	format.Printf(wxT("%se%d"), format.c_str(), exponent);
 	return(format);
 
 }

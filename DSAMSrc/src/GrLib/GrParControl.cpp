@@ -37,7 +37,7 @@
 #		include <wx/listbox.h>
 #		include <wx/slider.h>
 #		include <wx/stattext.h>
-#		include <wx/msgdlg.h>
+#		include <wx/log.h>
 #	endif
 
 // Any files included regardless of precompiled headers
@@ -237,7 +237,7 @@ ParControl::SetEnable(void)
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 			button->Enable(par->enabled && (comboBox->GetSelection() ==
-			  comboBox->Number() - 1));
+			  comboBox->GetCount() - 1));
 			break;
 		default:	
 			button->Enable(CXX_BOOL(par->enabled));

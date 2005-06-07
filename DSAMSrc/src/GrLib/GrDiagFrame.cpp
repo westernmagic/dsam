@@ -51,7 +51,7 @@ END_EVENT_TABLE()
 // set using constraints..
 
 DiagFrame::DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
-  const wxSize& size): wxFrame(parent, -1, title, pos, size)
+  const wxSize& size, long style): wxFrame(parent, -1, title, pos, size, style)
 {
 
 	fileMenu = NULL;

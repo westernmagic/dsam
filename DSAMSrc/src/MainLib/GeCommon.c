@@ -465,14 +465,16 @@ CloseFiles(void)
 /*************************** ResetGUIDialogs **********************************/
 
 /*
- * This routine sets the 'diagMode' to 'COMMON_DIALOG_DIAG_MODE' so that output
- * is sent to dialogs and not to the console.
+ * This routine resets the notification field so that output is sent to dialogs
+ * and not to the console.
+ * It also sets the dialog mode for GUI dialogs.
  */
 
 void
 ResetGUIDialogs(void)
 {
 	dSAM.notificationCount = 0;
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 
 }
 
