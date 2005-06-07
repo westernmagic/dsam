@@ -201,12 +201,12 @@ SetUniParList_Utility_SelectChannels(void)
 	  (void * (*)) SetMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONMODE],
 	  "SELECTION_MODE",
-	  "Channel selection mode ('all', 'middle', 'top', 'botton' or 'user'.",
+	  "Channel selection mode ('all', 'middle', 'lowest', 'highest' or 'user'.",
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->selectionMode, selectChanPtr->selectionModeList,
 	  (void * (*)) SetSelectionMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], "NUM_CHANNELS",
-	  "No. of channels in selection field (This is no longer).",
+	  "No. of channels in selection field (This is no longer used).",
 	  UNIPAR_INT_AL,
 	  &selectChanPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
