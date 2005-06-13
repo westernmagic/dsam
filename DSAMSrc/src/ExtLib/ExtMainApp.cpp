@@ -635,8 +635,6 @@ void
 MainApp::SetSimulationFile(wxFileName &fileName)
 {
 	simFileName = fileName;
-	printf("MainApp::SetSimulationFile: Debug: path = '%s'.\n", (char *)
-	  fileName.GetPath().c_str());
 	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
