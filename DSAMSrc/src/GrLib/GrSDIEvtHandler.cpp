@@ -174,6 +174,7 @@ SDIEvtHandler::InitInstruction(void)
 		  funcName);
 		return(false);
 	}
+	pc->clientData = GetShape();
 	return(true);
 
 }
@@ -223,6 +224,7 @@ SDIEvtHandler::EditInstruction(void)
 			Free_ModuleMgr(&(pc->data->module));
 			pc->data->module = Init_ModuleMgr(pc->u.proc.moduleName);
 		}
+		pc->data->clientData = pc->clientData;
 		break;
 	default:
 		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
@@ -574,7 +576,8 @@ void
 SDIEvtHandler::OnMovePost(wxDC& dc, double x, double y, double oldX,
   double oldY, bool display)
 {
-	printf("SDIEvtHandler::OnMovePost: Called\n");
+	((SDICanvas *) GetShape()->GetCanvas())->view->GetDocument()->Modify(true);
+
 }
 
 #endif /* USE_WX_OGL */

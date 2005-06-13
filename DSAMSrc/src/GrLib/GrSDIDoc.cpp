@@ -215,6 +215,7 @@ SDI_DOC_OSTREAM&
 SDIDocument::SaveXMLObject(SDI_DOC_OSTREAM& stream)
 {
 	wxDocument::SaveObject(stream);
+	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	SDIXMLDocument	doc(&diagram);
 	doc.Create();
 	doc.SaveFile(GetFilename());

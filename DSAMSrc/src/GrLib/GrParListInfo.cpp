@@ -304,6 +304,7 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 	case UNIPAR_INT_ARRAY:
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_STRING_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY: {
 		int		i;
 		for (i = index - 1; i >= 0; i--)
