@@ -317,6 +317,9 @@ SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...)
  * It destroys the old output signal and re-creates it if necessary, in which
  * case the updateCustomersFlag is set.
  * If the sampling interval is changed, then the "updateProcessFlag" is set.
+ * I have introduced a check for processes that have been used by the 
+ * NULL process, RunModel_ModuleMgr_Null.  In these processes the 'outSignal'
+ * will not be NULL, but 'localOutSignalFlag' will be FALSE.
  * It returns FALSE if it fails in any way.
  */
 
@@ -328,7 +331,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 	BOOLN	createNewSignal = TRUE, deletedOldOutSignal = FALSE;
 	SignalData	oldOutSignal;
 
-	if (data->outSignal != NULL) {
+	if (data->localOutSignalFlag && (data->outSignal != NULL)) {
 		if (!data->outSignal->dtFlag || (data->outSignal->dt !=
 		  samplingInterval) || !data->outSignal->lengthFlag ||
 		  (data->outSignal->length != length) ||

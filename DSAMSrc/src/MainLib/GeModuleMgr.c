@@ -336,6 +336,8 @@ FreeAll_ModuleMgr(void)
 /*
  * This function connects the input signal to the output signal, without
  * doing any processing.
+ * If the 'data->module->onFlag' is set to FALSE, this means a module has been
+ * disabled, and any previous data needs to be Free'd.
  */
 
 BOOLN
@@ -352,8 +354,11 @@ RunModel_ModuleMgr_Null(EarObjectPtr data)
 		NotifyError("%s: Input signal not set correctly.", funcName);
 		return(FALSE);
 	}
+	if (!data->module->onFlag)
+		FreeOutSignal_EarObject(data);
 	data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
 	data->outSignal = data->inSignal[0];
+	data->localOutSignalFlag = FALSE;
  	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
@@ -841,8 +846,6 @@ RunProcessStandard_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 
-	/*if (TestDestroy_ModuleMgr && (* TestDestroy_ModuleMgr)())
-		return(FALSE);*/
 	if (GetDSAMPtr_Common()->interruptRequestedFlag)
 		return(FALSE);
 
