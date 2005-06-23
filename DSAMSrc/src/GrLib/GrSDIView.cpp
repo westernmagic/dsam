@@ -43,6 +43,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"
@@ -75,11 +76,12 @@
 IMPLEMENT_DYNAMIC_CLASS(SDIView, wxView)
 
 BEGIN_EVENT_TABLE(SDIView, wxView)
-    EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
-    EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
+	EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
+	EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
-    EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
-    EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
+	EVT_MENU(SDIFRAME_EDIT_MENU_ENABLE, SDIView::OnEditEnable)
+	EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
+	EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -244,7 +246,7 @@ SDIView::OnDraw(wxDC *dc)
 			wxShape *object = (wxShape *)current->GetData();
 			if (!object->GetParent())
 				object->Draw(* dc); // Draw the shape onto our printing dc
-			current = current->GetNext();// Procede to the next shape in the list
+			current = current->GetNext();//Procede to the next shape in the list
 		}
 	}
 	dc->EndDrawing(); // Allows optimization of drawing code under MS Windows. 
@@ -371,6 +373,27 @@ void
 SDIView::OnSetProcessLabel(wxCommandEvent& WXUNUSED(event))
 {
 	ProcessListDialog();
+
+}
+
+/******************************************************************************/
+/****************************** OnEditEnable **********************************/
+/******************************************************************************/
+
+/*
+ * This routine toggles the process' enabled status.
+ * The "Move" call redraw's the shape.
+ */
+
+void
+SDIView::OnEditEnable(wxCommandEvent& WXUNUSED(event))
+{
+	printf("SDIView::OnEditEnable: Entered\n");
+	wxShape *shape = FindSelectedShape();
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+	myHandler->pc->data->module->onFlag = !myHandler->pc->data->module->onFlag;
+	shape->SetBrush((myHandler->pc->data->module->onFlag)?
+	  DIAGRAM_ENABLED_BRUSH: DIAGRAM_DISENABLED_BRUSH);
 
 }
 

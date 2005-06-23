@@ -196,12 +196,13 @@ SDIDiagram::DrawSimShapes()
 		case PROCESS: {
 			module = pc->data->module;
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(module->
-			  classSpecifier), wxCYAN_BRUSH);
+			  classSpecifier), (module->onFlag)? DIAGRAM_ENABLED_BRUSH:
+			    DIAGRAM_DISENABLED_BRUSH);
 			break; }
 		case REPEAT:
 		case RESET:
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(
-			  CONTROL_MODULE_CLASS), wxCYAN_BRUSH);
+			  CONTROL_MODULE_CLASS), DIAGRAM_ENABLED_BRUSH);
 			break;
 		case STOP: {
 			DatumPtr	ppc = pc;

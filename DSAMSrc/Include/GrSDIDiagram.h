@@ -37,6 +37,8 @@
 #define DIAGRAM_ARROW_SIZE				10.0
 #define	DIAGRAM_REPEAT_ARROW_TEXT		"Arrow head 'repeat' connection"
 #define DIAGRAM_REPEAT_ARROW_SIZE		10.0
+#define DIAGRAM_ENABLED_BRUSH			wxCYAN_BRUSH
+#define DIAGRAM_DISENABLED_BRUSH		wxGREY_BRUSH
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/
