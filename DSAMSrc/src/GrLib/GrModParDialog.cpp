@@ -117,8 +117,8 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 	wxBoxSizer *buttonBox = new wxBoxSizer( wxHORIZONTAL );
 	buttonBox->Add(new wxButton(this,  wxID_OK, _T("Ok")), wxSizerFlags().
 	  Border(wxALL, 7));
-	buttonBox->Add(new wxButton(this, wxID_CANCEL, _T("Cancel")), wxSizerFlags(
-	  ).Border(wxALL, 7));
+	cancelBtn = new wxButton(this, wxID_CANCEL, _T("Cancel"));
+	buttonBox->Add(cancelBtn, wxSizerFlags().Border(wxALL, 7));
 	topSizer->Add(buttonBox, wxSizerFlags().Center());
 
 /*??	if (parListInfoList->GetUseNotebookControls()) {
@@ -489,6 +489,7 @@ ModuleParDialog::OnComboBox(wxCommandEvent& event)
 {
 	wxComboBox *cB = (wxComboBox *) event.GetEventObject();
 	ParControl *control = ((ParControlHandle *) cB->GetClientData(0))->GetPtr();
+	ParListInfo *info = parListInfoList->list[control->GetInfoNum()];
 
 	control->SetUpdateFlag(TRUE);
 	switch (control->GetPar()->type) {
@@ -502,6 +503,9 @@ ModuleParDialog::OnComboBox(wxCommandEvent& event)
 	default:
 		;
 	}
+	info->SetParValue(control);
+	info->CheckInterDependence();
+	DisableCancelBtn();
 
 }
 
@@ -530,8 +534,7 @@ ModuleParDialog::OnSliderUpdate(wxCommandEvent& event)
 			infoCtrl->GetPar()->valuePtr.array.index = index - 1;
 			infoCtrl->ResetValue();
 			infoCtrl->SetUpdateFlag(FALSE);
-			if (cancelBtn)
-				cancelBtn->Enable(FALSE);
+			DisableCancelBtn();
 		}
 	}
 
