@@ -65,6 +65,8 @@ ModRegEntryPtr	Identify_ModuleReg(ModRegEntryPtr list, char *name);
 
 BOOLN	InitUserModuleList_ModuleReg(int theMaxUserModules);
 
+void	FreeUserModuleList_ModuleReg(void);
+
 ModRegEntryPtr	GetRegEntry_ModuleReg(char *name);
 
 ModRegEntryPtr	LibraryList_ModuleReg(uShort index);

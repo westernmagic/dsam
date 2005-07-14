@@ -394,6 +394,20 @@ GetRegEntry_ModuleReg(char *name)
 
 }
 
+/************************** FreeUserModuleList ********************************/
+
+/*
+ * This function frees the user module list.
+ */
+
+void
+FreeUserModuleList_ModuleReg(void)
+{
+	if (userModuleList)
+		free(userModuleList);
+
+}
+
 /************************** InitUserModuleList ********************************/
 
 /*
