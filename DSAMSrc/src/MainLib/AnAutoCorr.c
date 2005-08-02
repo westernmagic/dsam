@@ -867,7 +867,7 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	}
 	if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER)
 		expDtPtr = &p->expDecay;
-	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		outPtr = data->outSignal->channel[chan];
 		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
@@ -897,7 +897,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 			} /* switch */
 		}
 	}
-	data->outSignal->numWindowFrames++;
+	if (!data->outSignal->offset)	/* Do this only for one (first) thread */
+		data->outSignal->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
