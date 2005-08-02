@@ -435,7 +435,7 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		gradient = 0.0;
 		inPtr = data->inSignal[0]->channel[chan];

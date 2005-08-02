@@ -558,7 +558,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
 		for (i = 0, sum = 0.0; i < p->timeRangeIndex; i++, inPtr++)
