@@ -58,6 +58,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier *modeList;
 	UniParListPtr	parList;
+	BOOLN	findMinimum;
 	ChanLen	binWidthIndex, timeWidthIndex, timeOffsetIndex;
 
 } FindBin, *FindBinPtr;

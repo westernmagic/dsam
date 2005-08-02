@@ -594,7 +594,6 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_FindBin";
 	register	ChanData	*inPtr, *binPtr;
 	register	double		sum, binSum;
-	BOOLN	findMinimum;
 	int		chan;
 	double	dt;
 	ChanLen	i, j, binIndex = 0;
@@ -613,7 +612,7 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
-		findMinimum = (p->mode == FIND_BIN_MIN_VALUE_MODE) || (p->mode ==
+		p->findMinimum = (p->mode == FIND_BIN_MIN_VALUE_MODE) || (p->mode ==
 		  FIND_BIN_MIN_INDEX_MODE);
 		dt = data->inSignal[0]->dt;
 		p->binWidthIndex = (p->binWidth <= 0.0)? (ChanLen) 1: (ChanLen) (p->
@@ -627,12 +626,12 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
-		binSum = (findMinimum)? DBL_MAX: -DBL_MAX;
+		binSum = (p->findMinimum)? DBL_MAX: -DBL_MAX;
 		for (i = 0; i < p->timeWidthIndex - p->binWidthIndex; i++, inPtr++) {
 			for (j = 0, sum = 0.0, binPtr = inPtr; j < p->binWidthIndex; j++,
 			  binPtr++)
 				sum += *binPtr;
-			if ((findMinimum)? (sum < binSum): (sum > binSum)) {
+			if ((p->findMinimum)? (sum < binSum): (sum > binSum)) {
 				binSum = sum;
 				binIndex = p->timeOffsetIndex + i - p->binWidthIndex / 2;
 			}
