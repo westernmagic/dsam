@@ -95,9 +95,6 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 
 /****************************** Destructor ************************************/
 
-/*
- */
-
 MainApp::~MainApp(void)
 {
 	DeleteSimThread();
@@ -107,7 +104,7 @@ MainApp::~MainApp(void)
 	if( argsAreLocalFlag)
 		FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
-	if (!GetPtr_AppInterface())
+	if (!initOk)
 		CloseFiles();
 	Free_AppInterface();
 	FreeAll_EarObject();
