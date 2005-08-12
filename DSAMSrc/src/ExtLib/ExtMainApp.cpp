@@ -101,11 +101,14 @@ MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
 MainApp::~MainApp(void)
 {
 	DeleteSimThread();
-
+	if (runThreadedProc)
+		delete runThreadedProc;
 	FreeSymbols_Utility_SSSymbols(&symList);
 	if( argsAreLocalFlag)
 		FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
+	if (!GetPtr_AppInterface())
+		CloseFiles();
 	Free_AppInterface();
 	FreeAll_EarObject();
 	FreeNull_ModuleMgr();
