@@ -339,7 +339,7 @@ SDIFrame::CreateToolbar(void)
 	toolBar->AddTool(wxID_SAVE, saveBitmap, wxNullBitmap, TRUE, currentX, -1,
 	  (wxObject *) NULL, "Save simulation");
 	currentX += width + 5;
-	toolBar->AddTool(wxID_CUT, cutBitmap, wxNullBitmap, FALSE, currentX, -1,
+	toolBar->AddTool(SDIFRAME_CUT, cutBitmap, wxNullBitmap, FALSE, currentX, -1,
 	  (wxObject *) NULL, "Cut element");
 	currentX += width + 5;
 	toolBar->AddTool(wxID_PRINT, printBitmap, wxNullBitmap, FALSE, currentX, -1,
