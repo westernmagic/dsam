@@ -63,6 +63,7 @@ class SDIView: public wxView
 	void	OnChangeBackgroundColour(wxCommandEvent& event);
 	void	OnEditEnable(wxCommandEvent& WXUNUSED(event));
 	void	OnEditProperties(wxCommandEvent& event);
+	void	OnReadParFile(wxCommandEvent& event);
 	void	OnSetProcessLabel(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()

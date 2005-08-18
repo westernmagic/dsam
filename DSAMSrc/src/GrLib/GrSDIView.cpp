@@ -16,20 +16,7 @@
 
 #ifdef USE_WX_OGL
 
-#ifdef __GNUG__
-// #pragma implementation
-#endif
-
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
+#include "ExtCommon.h"
 
 #include <wx/docview.h>
 #include <wx/colordlg.h>
@@ -81,6 +68,7 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
 	  SDIView::OnChangeBackgroundColour)
 	EVT_MENU(SDIFRAME_EDIT_MENU_ENABLE, SDIView::OnEditEnable)
 	EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
+	EVT_MENU(SDIFRAME_EDIT_MENU_READ_PAR_FILE, SDIView::OnReadParFile)
 	EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
 END_EVENT_TABLE()
 
@@ -391,7 +379,7 @@ SDIView::OnEditEnable(wxCommandEvent& WXUNUSED(event))
 	printf("SDIView::OnEditEnable: Entered\n");
 	wxShape *shape = FindSelectedShape();
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
-	myHandler->pc->data->module->onFlag = !myHandler->pc->data->module->onFlag;
+	Enable_ModuleMgr(myHandler->pc->data, !myHandler->pc->data->module->onFlag);
 	shape->SetBrush((myHandler->pc->data->module->onFlag)?
 	  DIAGRAM_ENABLED_BRUSH: DIAGRAM_DISENABLED_BRUSH);
 
@@ -409,6 +397,29 @@ SDIView::OnEditProperties(wxCommandEvent& WXUNUSED(event))
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
 	myHandler->ProcessProperties(shape->GetX(), shape->GetY());
+
+}
+
+/******************************************************************************/
+/****************************** OnReadParFile *********************************/
+/******************************************************************************/
+
+void
+SDIView::OnReadParFile(wxCommandEvent& WXUNUSED(event))
+{
+	static const char *funcName = "SDIView::OnReadParFile";
+
+	wxShape *shape = FindSelectedShape();
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+
+	wxFileDialog dialog(shape->GetCanvas(), "Choose a file", wxGetCwd());
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+	wxFileName fileName = dialog.GetPath();
+	if (!ReadPars_ModuleMgr(myHandler->pc->data, (char *) fileName.GetFullPath(
+	  ).c_str()))
+		NotifyWarning("%s: Could not read parameters from file '%s'.",
+		  funcName, fileName.GetFullPath().c_str());
 
 }
 
