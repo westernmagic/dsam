@@ -567,10 +567,10 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, "Inter-Spike Interval Histogram (ISIH) "
 		  "analysis");
-		maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
+		p->maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
 		  maxInterval / data->inSignal[0]->dt + 0.5): data->inSignal[0]->length;
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  maxIntervalIndex, data->inSignal[0]->dt)) {
+		  p->maxIntervalIndex, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
@@ -596,7 +596,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			for (p2 = p1->next; (p2 != NULL) && (p2 != currentSpikeSpec) &&
 			  (p2->number - p1->number <= p->maxSpikes); p2 = p2->next)
 				if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
-				  maxIntervalIndex)
+				  p->maxIntervalIndex)
 					outPtr[spikeIntervalIndex]++;
 	}
 	SetProcessContinuity_EarObject(data);

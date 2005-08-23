@@ -57,6 +57,7 @@ typedef struct {
 	UniParListPtr	parList;
 	SpikeListSpecPtr	spikeListSpec;
 	int		maxSpikes;
+	ChanLen	maxIntervalIndex;
 
 } InterSIH, *InterSIHPtr;
 
