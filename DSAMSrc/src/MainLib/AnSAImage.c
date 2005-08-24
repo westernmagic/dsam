@@ -1021,6 +1021,10 @@ FreeProcessVariables_Analysis_SAI(void)
 		free(sAImagePtr->decayCount);
 		sAImagePtr->decayCount = NULL;
 	}
+	if (sAImagePtr->inputCount) {
+		free(sAImagePtr->inputCount);
+		sAImagePtr->inputCount = NULL;
+	}
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
