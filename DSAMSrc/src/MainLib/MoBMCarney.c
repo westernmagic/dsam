@@ -842,7 +842,7 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 		SetProcessName_EarObject(data, "Carney non-linear basilar membrane "
 		  "filtering");
 		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Could not initialise output channels.", funcName);
 			return(FALSE);
 		}
@@ -861,6 +861,7 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	f = p->f[data->threadIndex];
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {

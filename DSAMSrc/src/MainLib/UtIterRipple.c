@@ -588,13 +588,14 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, "Iterated Ripple Utility process.");
-		if (!InitOutFromInSignal_EarObject(data, 0)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
 			NotifyError("%s: Could not initialise output signal.", funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	switch (iterRipplePtr->mode) {
 	case ITERRIPPLE_IRSO_MODE:	
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{

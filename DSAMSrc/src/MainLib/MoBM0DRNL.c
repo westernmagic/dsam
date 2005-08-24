@@ -1447,7 +1447,7 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 			return(FALSE);
 		}
 		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Cannot initialise output channel.", funcName);
 			return(FALSE);
 		}
@@ -1457,10 +1457,13 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 			return(FALSE);
 		}
 		TempInputConnection_EarObject(data, p->linearF, 1);
-		InitOutFromInSignal_EarObject(p->linearF, totalChannels);
+		InitOutTypeFromInSignal_EarObject(p->linearF, totalChannels);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+
+	InitOutDataFromInSignal_EarObject(data);
+	InitOutDataFromInSignal_EarObject(p->linearF);
 	
 	/* Filter non-linear signal path */
 	if (p->nonLinearGT1)

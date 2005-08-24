@@ -1069,7 +1069,7 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	int	chan;
 	ChanLen	i;
 	double	conductance_G, potential_V;
-	double	ciliaDisplacement_u, lastInput;
+	double	ciliaDisplacement_u, ciliaAct, lastInput;
 	Sham3StVInPtr p = sham3StVInPtr;
 
 	if (!data->threadRunFlag) {
@@ -1104,10 +1104,10 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		p->dtOverC = data->outSignal->dt / p->totalCapacitance_C;
 		p->gkEpk = p->kConductance_Gk * (p->reversalPot_Ek +
 		  p->endocochlearPot_Et * p->reversalPotCorrection);
-		p->ciliaAct = 1.0 / (1.0 + exp(p->offset_u0 / p->sensitivity_s0) *
+		ciliaAct = 1.0 / (1.0 + exp(p->offset_u0 / p->sensitivity_s0) *
 		  (1.0 + exp(p->offset_u1 / p->sensitivity_s1)));
 		p->leakageConductance_Ga = p->restingConductance_G0 -
-		  p->maxMConductance_Gmax * p->ciliaAct;
+		  p->maxMConductance_Gmax * ciliaAct;
 
 		p->cGaindt = pow(10.0, p->ciliaCouplingGain_C / 20.0) * data->
 		  outSignal->dt;
@@ -1126,10 +1126,10 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += p->cGaindt * (*inPtr ) - 
 			  ciliaDisplacement_u * p->dtOverTc;
-			p->ciliaAct = 1.0 / (1.0 + exp((p->offset_u0 -
-			  ciliaDisplacement_u) / p->sensitivity_s0) * (1.0 + exp((
-			  p->offset_u1 - ciliaDisplacement_u) / p->sensitivity_s1)));
-			conductance_G = p->maxMConductance_Gmax * p->ciliaAct +
+			ciliaAct = 1.0 / (1.0 + exp((p->offset_u0 - ciliaDisplacement_u) /
+			  p->sensitivity_s0) * (1.0 + exp((p->offset_u1 -
+			  ciliaDisplacement_u) / p->sensitivity_s1)));
+			conductance_G = p->maxMConductance_Gmax * ciliaAct +
 			  p->leakageConductance_Ga; 
 			*outPtr = (ChanData) (potential_V - p->dtOverC * (conductance_G *
 			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *

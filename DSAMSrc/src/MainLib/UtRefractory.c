@@ -510,8 +510,9 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 			NotifyError("%s: Process data invalid.", funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Meddis 91 AN Refractory Adustment Process");
-		if (!InitOutFromInSignal_EarObject(data, 0)) {
+		SetProcessName_EarObject(data, "Meddis 91 AN Refractory Adustment "
+		  "Process");
+		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
 			NotifyError("%s: Could not initialise output signal.", funcName);
 			return(FALSE);
 		}
@@ -523,6 +524,7 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		outPtr = data->outSignal->channel[chan];

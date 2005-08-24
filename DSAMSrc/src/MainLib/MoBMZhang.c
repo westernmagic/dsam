@@ -1577,7 +1577,7 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 		SetProcessName_EarObject(data, "Zhang et al. Non-linear BM filtering");
 
 		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Cannot initialise output channel.", funcName);
 			return(FALSE);
 		}
@@ -1590,6 +1590,7 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->

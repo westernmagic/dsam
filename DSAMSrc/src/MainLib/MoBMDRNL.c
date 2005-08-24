@@ -1321,7 +1321,7 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 			return(FALSE);
 		}
 		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Output channels not initialised (%d).", funcName,
 			  totalChannels);
 			return(FALSE);
@@ -1332,10 +1332,14 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 			return(FALSE);
 		}
 		TempInputConnection_EarObject(data, p->linearF, 1);
-		InitOutFromInSignal_EarObject(p->linearF, totalChannels);
+		/*InitOutFromInSignal_EarObject(p->linearF, totalChannels);*/
+		InitOutTypeFromInSignal_EarObject(p->linearF, totalChannels);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
+	linearF = data->subProcessList[BM_DRNL_LINEARF];
+	InitOutDataFromInSignal_EarObject(linearF);
 
 	/* Filter signal */
 	GammaTone_Filters(data->outSignal, p->nonLinearGT1);
@@ -1345,7 +1349,6 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	if (p->nonLinearLP)
 		IIR2Cont_Filters(data->outSignal, p->nonLinearLP);
 
-	linearF = data->subProcessList[BM_DRNL_LINEARF];
 	GammaTone_Filters(linearF->outSignal, p->linearGT);
 	if (p->linearLP)
 		IIR2Cont_Filters(linearF->outSignal, p->linearLP);

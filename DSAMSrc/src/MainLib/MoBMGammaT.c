@@ -571,7 +571,7 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 		}
 		totalChannels = bMGammaTPtr->theCFs->numChannels *
 		  data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Cannot initialise output channel.", funcName);
 			return(FALSE);
 		}
@@ -583,9 +583,8 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	/* Filter signal */
+	InitOutDataFromInSignal_EarObject(data);
 	GammaTone_Filters(data->outSignal, bMGammaTPtr->coefficients);
-
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

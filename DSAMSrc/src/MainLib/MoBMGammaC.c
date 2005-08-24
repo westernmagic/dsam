@@ -1057,7 +1057,7 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 		}
 		totalChannels = bMGammaCPtr->theCFs->numChannels * data->inSignal[
 		  0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Cannot initialise output channel.", funcName);
 			return(FALSE);
 		}
@@ -1082,6 +1082,7 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	if (bMGammaCPtr->cascade == 4)
 		ERBGammaTone_GCFilters(data->outSignal, bMGammaCPtr->coefficientsERBGT);
 	else

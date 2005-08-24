@@ -682,7 +682,7 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 			return(FALSE);
 		}
 		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
-		if (!InitOutFromInSignal_EarObject(data, totalChannels)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError("%s: Could not initialise output channels.", funcName);
 			return(FALSE);
 		}
@@ -694,6 +694,7 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		cFIndex = chan / data->outSignal->interleaveLevel;

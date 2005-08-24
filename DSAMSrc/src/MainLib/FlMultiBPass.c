@@ -982,11 +982,12 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		for (i = 0; i < p->numFilters; i++) {
 			bPParsPtr = &p->bPassPars[i];
 			TempInputConnection_EarObject(data, bPParsPtr->data, 1);
-			InitOutFromInSignal_EarObject(bPParsPtr->data, 0);
+			InitOutTypeFromInSignal_EarObject(bPParsPtr->data, 0);
 		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(bPParsPtr->data);
 	for (i = 0; i < p->numFilters; i++) {
 		bPParsPtr = &p->bPassPars[i];
 		if (fabs(p->gain[i]) > DBL_EPSILON)

@@ -827,7 +827,8 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = 0, clipped = FALSE; i < data->outSignal->numChannels; i++) {
+	for (i = data->outSignal->offset, clipped = FALSE; i < data->outSignal->
+	  numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];
 		for (j = 0; j < data->outSignal->length; j++) {

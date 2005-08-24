@@ -571,7 +571,7 @@ Process_Utility_Delay(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, "Introduce ITD into binaural signal");
-		if (!InitOutFromInSignal_EarObject(data, 0)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
@@ -583,6 +583,7 @@ Process_Utility_Delay(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	InitOutDataFromInSignal_EarObject(data);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan += data->outSignal->interleaveLevel) {
 		switch (p->mode) {

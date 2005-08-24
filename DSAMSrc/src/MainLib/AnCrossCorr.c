@@ -589,7 +589,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_CCF";
 	register	double	*expDtPtr;
 	register	ChanData	 *inPtrL, *inPtrR, *outPtr;
-	int		chan;
+	int		chan, inChan;
 	long	deltaT;
 	double	dt;
 	ChanLen	i, totalPeriodIndex;
@@ -629,20 +629,23 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
-	  chan += 2) {
-		outPtr = data->outSignal->channel[chan / 2];
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		outPtr = data->outSignal->channel[chan];
+		inChan = chan * 2;
 		for (deltaT = -((long) p->periodIndex); deltaT <= (long) p->periodIndex;
 		  deltaT++, outPtr++) {
-			inPtrL = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
-			inPtrR = data->inSignal[0]->channel[chan + 1] + p->timeOffsetIndex;
+			inPtrL = data->inSignal[0]->channel[inChan] + p->timeOffsetIndex;
+			inPtrR = data->inSignal[0]->channel[inChan + 1] +
+			  p->timeOffsetIndex;
 			for (i = 0, *outPtr = 0.0, expDtPtr = p->exponentDt;
 			  i < p->periodIndex; i++, expDtPtr++, inPtrL--, inPtrR--)
 				*outPtr += *inPtrL * *(inPtrR - deltaT) * *expDtPtr;
 			*outPtr /= p->periodIndex;
 		}
 	}
-	data->outSignal->numWindowFrames++;
+	if (!data->outSignal->offset)	/* Do this only for one (first) thread */
+		data->outSignal->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

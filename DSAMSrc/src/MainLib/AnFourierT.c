@@ -60,6 +60,8 @@ Free_Analysis_FourierT(void)
 	if (fourierTPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_FourierT();
+	if (fourierTPtr->parList)
+		FreeList_UniParMgr(&fourierTPtr->parList);
 	if (fourierTPtr->parSpec == GLOBAL) {
 		free(fourierTPtr);
 		fourierTPtr = NULL;
@@ -499,7 +501,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 {
 	static const char	*funcName = "Calc_Analysis_FourierT";
 	register	ChanData	 *inPtr, *outPtr;
-	int		chan;
+	int		chan, outChan;
 	double	dF;
 	ChanLen	i;
 	Complex	*fT;
@@ -515,9 +517,9 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		SetProcessName_EarObject(data, "Fourier Transform: modulus");
 		p->numOutChans = (p->outputMode ==
 		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
-		if (!InitOutSignal_EarObject(data, (uShort) (
-		  data->inSignal[0]->numChannels * p->numOutChans),
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+		  numChannels * p->numOutChans), data->inSignal[0]->length, data->
+		  inSignal[0]->dt)) {
 			NotifyError("%s: Couldn't initialse output signal.", funcName);
 			return(FALSE);
 		}
@@ -539,11 +541,12 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset * p->numOutChans; chan < data->inSignal[
-	  0]->numChannels; chan += p->numOutChans) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
+		outChan = chan * p->numOutChans;
 		fT = p->fT[data->threadIndex];
 		fT->re = fT->im = 0.0;
-		inPtr = data->inSignal[0]->channel[chan] + 1;
+		inPtr = data->inSignal[0]->channel[outChan] + 1;
 		for (i = 1, fT++; i < data->outSignal->length; i++, fT++) {
 			fT->im = 0.0;
 			fT->re = *inPtr++;
@@ -553,7 +556,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			fT->im = 0.0;
 		}
 		fT = p->fT[data->threadIndex];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = data->outSignal->channel[outChan];
 		CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
@@ -568,7 +571,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			for (i = 0; i < data->outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->re;
 			fT = p->fT[data->threadIndex];
-			outPtr = data->outSignal->channel[chan + 1];
+			outPtr = data->outSignal->channel[outChan + 1];
 			for (i = 0; i < data->outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->im;
 			break;

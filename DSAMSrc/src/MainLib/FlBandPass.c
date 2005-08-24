@@ -583,7 +583,7 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitOutFromInSignal_EarObject(data, 0)) {
+		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
 			NotifyError("%s: Could not initialise the process output signal.",
 			  funcName);
 			return(FALSE);
@@ -596,6 +596,8 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+
+	InitOutDataFromInSignal_EarObject(data);
 
 	/* Filter signal */
 	

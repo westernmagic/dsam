@@ -78,7 +78,7 @@ typedef struct {
 	double	*lastCiliaDisplacement_u;
 	double	*lastInput;
 	double	*lastOutput;
-	double	dtOverC, gkEpk, dtOverTc, cGaindt, ciliaAct, leakageConductance_Ga;
+	double	dtOverC, gkEpk, dtOverTc, cGaindt, leakageConductance_Ga;
 
 } Sham3StVIn, *Sham3StVInPtr;
 

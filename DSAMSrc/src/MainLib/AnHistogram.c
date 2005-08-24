@@ -914,7 +914,7 @@ PushDataBuffer_Analysis_Histogram(EarObjectPtr data, ChanLen lastSamples)
 	int		chan;
 	ChanLen	i;
 
-	for (chan = data->outSignal->offset; chan < data->inSignal[0]->numChannels;
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
 		  lastSamples;
@@ -998,8 +998,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		availableLength = 0; /* ?? is this right?*/
 	} else {
 		availableLength = data->inSignal[0]->length - *offsetIndexPtr -
-		  *extraSamplePtr + p->bufferSamples[
-		  data->threadIndex] + 1;
+		  *extraSamplePtr + p->bufferSamples[data->threadIndex] + 1;
 		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
 		  (ChanLen) floor(floor(availableLength * p->dt / p->wPeriod) *
 		  p->wPeriod / p->dt + DBL_EPSILON);
