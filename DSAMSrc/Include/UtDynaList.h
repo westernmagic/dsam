@@ -56,6 +56,8 @@ void *		GetMemberData_Utility_DynaList(DynaListPtr list, int index);
 
 int			GetNumElements_Utility_DynaList(DynaListPtr list);
 
+DynaListPtr	Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data);
+
 void *		Pull_Utility_DynaList(DynaListPtr *nodePtr);
 
 BOOLN		Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr);

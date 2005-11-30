@@ -153,7 +153,7 @@ BOOLN	SameType_SignalData_NoDiagnostics(SignalDataPtr a, SignalDataPtr b);
  
 BOOLN	SameType_SignalData(SignalDataPtr a, SignalDataPtr b);
 
-BOOLN	SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
+void	SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 		  SignalDataPtr supplier);
 
 BOOLN	SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF);

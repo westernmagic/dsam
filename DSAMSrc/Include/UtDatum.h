@@ -66,6 +66,7 @@
 typedef struct Datum {
 
 	BOOLN	onFlag;
+	BOOLN	threadSafe;
 	int		type;
 	int		classSpecifier;
 	uInt	stepNumber;
@@ -87,6 +88,7 @@ typedef struct Datum {
 	void			*clientData;
 	struct Datum	*previous;			/* To link to previous datum */
 	struct Datum	*next;				/* To link to next datum */
+	struct Datum	*passedThreadEnd;	/* To mark the end of thread chain. */
 
 } Datum, *DatumPtr;
 
@@ -95,6 +97,16 @@ typedef struct Datum {
 /******************************************************************************/
 
 extern uInt	datumStepCount;
+
+/* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
+ * macros, to allow the safe use of C libraries with C++ libraries - defined
+ * in GeCommon.h.
+ */
+__BEGIN_DECLS
+
+extern DatumPtr (* Execute_Utility_Datum)(DatumPtr, DatumPtr, int);
+
+__END_DECLS
 
 /******************************************************************************/
 /****************************** Function Prototypes ***************************/
@@ -124,7 +136,10 @@ void	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
 		  DatumPtr to);
 
-DatumPtr	Execute_Utility_Datum(DatumPtr start);
+BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
+
+DatumPtr	ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
+			  int threadIndex);
 
 DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, char *label);
 
@@ -152,11 +167,15 @@ BOOLN	FreeEarObjects_Utility_Datum(DatumPtr start);
 
 EarObjectPtr	GetFirstProcess_Utility_Datum(DatumPtr start);
 
+DatumPtr	GetFirstProcessInst_Utility_Datum(DatumPtr start);
+
 int		GetInstIntVal_Utility_Datum(DatumPtr start, char *label);
 
 DatumPtr	GetLastInst_Utility_Datum(DatumPtr head);
 
 EarObjectPtr	GetLastProcess_Utility_Datum(DatumPtr start);
+
+DatumPtr	GetPreviousProcessInst_Utility_Datum(DatumPtr start);
 
 char *	GetProcessName_Utility_Datum(DatumPtr pc);
 
@@ -208,6 +227,8 @@ BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc);
 BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
 
 void	SetDefaultProcessFileName_Utility_Datum(DatumPtr pc);
+
+void	SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int));
 
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);

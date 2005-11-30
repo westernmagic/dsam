@@ -237,6 +237,10 @@
 #	endif /* GRAPHICS_SUPPORT */
 #endif /* __cplusplus */
 
+#ifdef USE_PORTAUDIO
+#	include "IOAudioIn.h"
+#endif
+
 #ifdef MPI_SUPPORT
 #	include "mpi.h"
 #	include	"PaGeneral.h"

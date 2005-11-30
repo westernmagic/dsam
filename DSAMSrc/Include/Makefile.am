@@ -10,7 +10,8 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
 				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h
   
-Fi_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h
+IO_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h \
+				IOAudioIn.h
 
 Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
 
@@ -42,7 +43,8 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
-				ExtRunThreadedProc.h ExtXMLDocument.h
+				ExtRunThreadedProc.h ExtXMLDocument.h ExtSingleProcThread.h \
+				ExtProcChainThread.h
 
 Std_Headers	= 
 
@@ -64,11 +66,11 @@ Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 TinyXml_Headers	= tinystr.h tinyxml.h
 
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
-					$(Fi_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
+					$(IO_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
 					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers) \
 					$(Ext_Headers) $(TinyXml_Headers)
 
-DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(Fi_Headers) $(An_Headers) \
+DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(IO_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
 					$(Gr_Headers) $(Std_Headers) $(Ext_Headers)
 		touch $(top_srcdir)/Include/DSAM.h

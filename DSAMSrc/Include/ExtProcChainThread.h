@@ -1,21 +1,18 @@
 /******************
  *		
- * File:		ExtRunThreadedProc.h
- * Purpose: 	This module runs a processes using threads of possible.
- * Comments:	It was deceided to create this module rather than creating
- *				a replacement ExecuteSimulation routine.
+ * File:		ExtProcChainThread.h
+ * Purpose: 	Chain Process thread class module.  It processes a chain of
+ *				equal channelled processes.
+ * Comments:	
  * Author:		L. P. O'Mard
- * Created:		30 Sep 2004
+ * Created:		23 Sep 2004
  * Updated:		
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  ******************/
 
-#ifndef	_EXTRUNTHREADEDPROC_H
-#define _EXTRUNTHREADEDPROC_H	1
-
-#include "GeSignalData.h"
-#include "GeEarObject.h"
+#ifndef	_EXTPROCCHAINTHREAD_H
+#define _EXTPROCCHAINTHREAD_H	1
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -29,53 +26,28 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** ResetSignalling **********************************/
+/*************************** ProcThread ***************************************/
 
-class ProcessSignalling {
-
-  public:
-	wxMutex		*myMutex;
+class ProcChainThread: public ProcThread {
+	uInt	origNumChannels;
 	wxCondition	*myCondition;
-
-	ProcessSignalling(void)	{
-		myMutex = new wxMutex;
-		myCondition = new wxCondition(*myMutex);
-	};
-	~ProcessSignalling(void) { delete myCondition; delete myMutex; }
-	
-};
-
-/*************************** RunThreadedProc **********************************/
-
-class RunThreadedProc {
-
-	int		numThreads, chansPerThread, remainderChans, threadCount;
-	int		threadMode;
+	wxMutex		*myMutex;
+	DatumPtr	simulation;
 
   public:
-	RunThreadedProc(void);
 
-	DatumPtr	CleanUpThreadRuns(DatumPtr start);
-	DatumPtr	Execute(DatumPtr start);
-	DatumPtr	ExecuteMultiThreadChain(DatumPtr start);
-	DatumPtr	ExecuteStandardChain(DatumPtr start);
-	bool	InitThreadProcesses(EarObjectPtr data);
-	bool	PreThreadSimulationInit(DatumPtr start, bool *brokenChain);
-	bool	PreThreadProcessInit(EarObjectPtr data);
-	void	RestoreProcess(EarObjectPtr process);
-	void	RestoreSimulation(DatumPtr simulation);
-	bool	RunProcess(EarObjectPtr data);
-	void	SetNumThreads(int theNumThreads);
-	void	SetThreadDistribution(int numChannels);
-	bool	SetThreadMode(int mode);
+	ProcChainThread(int theIndex, int offset, int numChannels,
+	  DatumPtr start, wxMutex *mutex, wxCondition *condition,
+	  int *theThreadCount);
+
+	virtual void *Entry();
+	virtual void OnExit();
 
 };
 
 /******************************************************************************/
 /*************************** External variables *******************************/
 /******************************************************************************/
-
-extern RunThreadedProc	*runThreadedProc;
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
@@ -91,10 +63,6 @@ extern RunThreadedProc	*runThreadedProc;
  */
 __BEGIN_DECLS
 
-BOOLN	RunProcess_RunThreadedProc(EarObjectPtr data);
-
-DatumPtr	Execute_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
-			  int threadIndex);
 
 __END_DECLS
 

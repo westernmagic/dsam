@@ -49,6 +49,7 @@ class istream;
 
 #define DSAM_XML_COUNT_ATTRIBUTE			_T("count")
 #define DSAM_XML_ID_ATTRIBUTE				_T("id")
+#define DSAM_XML_ENABLED_ATTRIBUTE			_T("enabled")
 #define DSAM_XML_LABEL_ATTRIBUTE			_T("label")
 #define DSAM_XML_NAME_ATTRIBUTE				_T("name")
 #define DSAM_XML_OBJLABEL_ATTRIBUTE			_T("obj_label")

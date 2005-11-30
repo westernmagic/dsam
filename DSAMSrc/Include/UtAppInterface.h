@@ -25,7 +25,7 @@
 /******************************************************************************/
 
 #define DEFAULT_ERRORS_MODE			"screen"
-#define	APP_INT_NUM_PARS			5		/* Number of main parameters. */
+#define	APP_INT_NUM_PARS			6		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
 #define APP_PARLIST_NAME			"app_specific"
@@ -54,6 +54,7 @@ typedef enum {
 	APP_INT_DIAGNOSTICMODE,
 	APP_INT_SIMULATIONFILE,
 	APP_INT_SEGMENTMODE,
+	APP_INT_THREADMODE,
 	APP_INT_NUMTHREADS,
 	APP_INT_PARLIST
 
@@ -67,6 +68,14 @@ typedef enum {
 
 } AppInterfaceListSpecifier;
 
+typedef enum {
+
+	APP_INT_THREAD_MODE_PROCESS,
+	APP_INT_THREAD_MODE_CHANNEL_CHAIN,
+	APP_INT_THREAD_MODE_NULL
+
+} AppInterfaceThreadModeSpecifier;
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
@@ -74,7 +83,7 @@ typedef struct {
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
 	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
 	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
-	BOOLN	numThreadsFlag;
+	BOOLN	numThreadsFlag, threadModeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	char	appName[MAXLINE];
 	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
@@ -96,12 +105,14 @@ typedef struct {
 	int		maxUserModules;
 	int		numHelpBooks;
 	int		numThreads;
+	int		threadMode;
 	EarObjectPtr	audModel;
 
 	/* Private members */
 	BOOLN	canFreePtrFlag;
 	NameSpecifier	*listingModeList;
 	NameSpecifier	*diagModeList;
+	NameSpecifier	*threadModeList;
 	UniParListPtr	appParList;
 	UniParListPtr	parList;
 	int		simFileType;
@@ -175,6 +186,8 @@ BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  char **theArgv);
 
 BOOLN	InitSimulation_AppInterface(void);
+
+BOOLN	InitThreadModeList_AppInterface(void);
 
 void	ListCFListAndExit_AppInterface(void);
 
@@ -266,6 +279,8 @@ BOOLN	SetSimPar_AppInterface(char *parName, char *value);
 BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
 
 void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
+
+BOOLN	SetThreadMode_AppInterface(char * theThreadMode);
 
 BOOLN	SetTitle_AppInterface(char *title);
 

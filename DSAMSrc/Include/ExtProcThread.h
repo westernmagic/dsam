@@ -17,6 +17,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+/*#define DEBUG 1*/
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
@@ -28,21 +30,20 @@
 /*************************** ProcThread ***************************************/
 
 class ProcThread: public wxThread {
-	int		*threadCount;
-	uInt	origNumChannels;
+	int		*threadCount, index, offset, numChannels;
 	wxCondition	*myCondition;
 	wxMutex		*myMutex;
-	EarObjectPtr	process;
 
   public:
 
-	ProcThread(int theIndex, int offset, int numChannels,
-	  EarObjectPtr theDataPtr, wxMutex *mutex, wxCondition *condition,
-	  int *theThreadCount);
+	ProcThread(int theIndex, int theOffset, int theNumChannels, wxMutex *mutex,
+	  wxCondition *condition, int *theThreadCount);
 
-	virtual void *Entry();
 	virtual void OnExit();
 
+	int		GetIndex(void)		{ return index; }
+	int		GetOffset(void)		{ return offset; }
+	EarObjectPtr	ConfigProcess(EarObjectPtr theDataPtr);
 };
 
 /******************************************************************************/
