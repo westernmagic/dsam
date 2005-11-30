@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D HAVE_CONFIG_H=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(PORTAUDIO)\pa_common" /D "NDEBUG" /D HAVE_CONFIG_H=1 /D "WIN32" /D "_MBCS" /D "_LIB" /D USE_PORTAUDIO=1 /YX /FD /c
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
 # ADD RSC /l 0x809 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /D "_DEBUG" /D HAVE_CONFIG_H=1 /D "WIN32" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(PORTAUDIO)\pa_common" /D "_DEBUG" /D HAVE_CONFIG_H=1 /D "WIN32" /D "_MBCS" /D "_LIB" /D USE_PORTAUDIO=1 /YX /FD /GZ /c
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
 # ADD RSC /l 0x809 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -214,6 +214,10 @@ SOURCE=..\..\src\MainLib\GeSignalData.c
 # Begin Source File
 
 SOURCE=..\..\src\MainLib\GeUniParMgr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\MainLib\IOAudioIn.c
 # End Source File
 # Begin Source File
 
@@ -838,6 +842,10 @@ SOURCE=..\..\Include\GrSocket.h
 # Begin Source File
 
 SOURCE=..\..\Include\GrUtils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\IOAudioIn.h
 # End Source File
 # Begin Source File
 

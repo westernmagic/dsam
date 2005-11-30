@@ -419,8 +419,7 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 	ChanLen	k;
 	RefractAdjPtr	p = refractAdjPtr;
 
-	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		p->refractoryPeriodIndex = (ChanLen) (p->refractoryPeriod / data->
 		  outSignal->dt + 0.5);
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -444,11 +443,6 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 					return(FALSE);
 				}
 			p->updateProcessVariablesFlag = FALSE;
-		}
-		for (i = 0; i < p->numChannels; i++) {
-			ptr = p->lastOutput[i];
-			for (k = 0; k < p->refractoryPeriodIndex; k++)
-				*ptr++ = 0.0;
 		}
 	}
 	return(TRUE);
@@ -525,6 +519,14 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
+	if (data->timeIndex == PROCESS_START_TIME) {
+		for (chan = data->outSignal->offset; chan < data->outSignal->
+		  numChannels; chan++) {
+			outPtr = p->lastOutput[chan];
+			for (i = 0; i < p->refractoryPeriodIndex; i++)
+				*outPtr++ = 0.0;
+		}
+	}
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		outPtr = data->outSignal->channel[chan];

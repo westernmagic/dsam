@@ -597,16 +597,20 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 	}
 	InitOutDataFromInSignal_EarObject(data);
 	switch (iterRipplePtr->mode) {
-	case ITERRIPPLE_IRSO_MODE:	
+	case ITERRIPPLE_IRSO_MODE:
+		printf("%s: [%d], OutSignal = %lx, multiplier = %g\n", funcName, data->
+		  threadIndex, (unsigned long) data->outSignal, iterRipplePtr->
+		  signalMultiplier);
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
 			Delay_SignalData(data->outSignal, iterRipplePtr->delay);
 			for (chan = data->outSignal->offset; chan < data->outSignal->
 			  numChannels; chan++) {
 			  	inPtr = data->inSignal[0]->channel[chan];
 				outPtr = data->outSignal->channel[chan];
-				for (i = 0; i < data->outSignal->length ; i++)
-					*outPtr++ = *outPtr * iterRipplePtr->signalMultiplier +
-					  *inPtr++;
+				for (i = 0; i < data->outSignal->length ; i++) {
+					*outPtr *= iterRipplePtr->signalMultiplier;
+					*outPtr++ += *inPtr++;
+				}
 			}
 		}	
 		break;

@@ -10,7 +10,7 @@ An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
 				 AnSynchIndex.mod AnSAImage.mod AnALSR.mod
 
-Fi_Modules	= FiDataFile.mod
+IO_Modules	= FiDataFile.mod IOAudioIn.mod
 
 Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod
 
@@ -40,5 +40,5 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 
 Tr_Modules	= TrGate.mod TrSetDBSPL.mod TrCollectSignals.mod
 
-EXTRA_DIST	= $(An_Modules) $(Fi_Modules) $(Fl_Modules) $(Mo_Modules) \
+EXTRA_DIST	= $(An_Modules) $(IO_Modules) $(Fl_Modules) $(Mo_Modules) \
 				$(Pa_Modules) $(St_Modules) $(Ut_Modules) $(Tr_Modules)

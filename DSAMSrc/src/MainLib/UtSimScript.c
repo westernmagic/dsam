@@ -1202,8 +1202,6 @@ GetPtr_Utility_SimScript(void)
 void
 SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(char *))
 {
-	static const char	*funcName = "SetReadXMLSimFile_Utility_SimScript";
-
 	ReadXMLSimFile_SimScript = Func;
 
 }
@@ -1392,7 +1390,7 @@ Process_Utility_SimScript(EarObjectPtr data)
 	if (localSimScriptPtr->operationMode == GENERAL_BOOLEAN_ON)
 		PrintParsModules_Utility_Datum(localSimScriptPtr->simulation);
 	SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
-	if (!Execute_Utility_Datum(localSimScriptPtr->simulation)) {
+	if (!Execute_Utility_Datum(localSimScriptPtr->simulation, NULL, 0)) {
 		NotifyError("%s: Could not execute simulation modules.", funcName);
 		SetParsFilePath_Common(oldParsFilePath);
 		return(FALSE);

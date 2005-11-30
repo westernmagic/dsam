@@ -554,7 +554,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 	static const char	*funcName = "Calc_Analysis_ISIH";
 	register	ChanData	 *outPtr;
 	int		chan;
-	ChanLen	maxIntervalIndex, spikeIntervalIndex;
+	ChanLen	spikeIntervalIndex;
 	SpikeSpecPtr	p1, p2, headSpikeList, currentSpikeSpec;
 	InterSIHPtr	p = interSIHPtr;
 

@@ -1,6 +1,6 @@
 /******************
  *		
- * File:		ExtProcThread.h
+ * File:		ExtProcChainThread.h
  * Purpose: 	Process thread class module.
  * Comments:	
  * Author:		L. P. O'Mard
@@ -24,8 +24,12 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "UtSSSymbols.h"
+#include "UtSSParser.h"
+#include "UtDatum.h"
 
 #include "ExtProcThread.h"
+#include "ExtProcChainThread.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -50,50 +54,45 @@
  * its values need to be reset on closing.
  */
 
-ProcThread::ProcThread(int theIndex, int theOffset, int theNumChannels,
-  wxMutex *mutex, wxCondition *condition, int *theThreadCount): wxThread()
+ProcChainThread::ProcChainThread(int theIndex, int offset, int numChannels,
+  DatumPtr start, wxMutex *mutex, wxCondition *condition,
+  int *theThreadCount): ProcThread(theIndex, offset, numChannels, mutex,
+  condition, theThreadCount)
 {
-#	if DEBUG
-	printf("ProcThread::ProcThread: Debug: Index = %d, offset = %d\n", theIndex,
-	  theOffset);
-#	endif
-	index = theIndex;
-	offset = theOffset;
-	numChannels = theNumChannels;
-	myMutex = mutex;
-	myCondition = condition;
-	threadCount = theThreadCount;
+	DatumPtr	pc;
+
+	simulation = start;
+
+	for (pc = simulation; pc != simulation->passedThreadEnd; pc = pc->next) {
+		if (pc->type == PROCESS) {
+#			if DEBUG
+			printf("%s: Debug: Process '%s' listed.\n", funcName, pc->label);
+			printf("%s: Debug: Main outsignal = %x.\n", funcName, pc->data->
+			  outSignal);
+#			endif
+			ConfigProcess(pc->data);
+		}
+	}
 
 }
 
-/****************************** ConfigProcess *********************************/
+/****************************** Entry *****************************************/
 
-/*
- * The first thread uses the original process EarObject, and so some of
- * its values need to be reset on closing.
- */
+// The thread execution starts here.
+// This is a virtual function used by the WxWin threading code.
 
-EarObjectPtr
-ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
+void *
+ProcChainThread::Entry()
 {
-	int		i;
-	EarObjectPtr	process, subProcess;
-
-	if (!theDataPtr->localOutSignalFlag)
-		return(theDataPtr);
-	process = (index)? &theDataPtr->threadProcs[index - 1]: theDataPtr;
-#	ifdef DEBUG
-	printf("ProcThread::ConfigProcess: outsignal %x, index = %d\n",
-	  process->outSignal, index);
+#	if DEBUG
+	printf("ProcChainThread::Entry: Debug: Entered for offset = '%d\n",
+	  GetOffset());
+	if (simulation->data->inSignal)
+		OutputToFile_SignalData("PCT3Temp.dat", simulation->data->inSignal[0]);
 #	endif
-	process->outSignal->offset = offset;
-	process->outSignal->numChannels = offset + numChannels;
-	for (i = 0; i < theDataPtr->numSubProcesses; i++) {
-		subProcess = process->subProcessList[i];
-		subProcess->outSignal->offset = process->outSignal->offset;
-		subProcess->outSignal->numChannels = process->outSignal->numChannels;
-	}
-	return(process);
+	bool ok = CXX_BOOL(ExecuteStandard_Utility_Datum(simulation, simulation->
+	  passedThreadEnd, GetIndex()));
+	return((void *) ok);
 
 }
 
@@ -108,14 +107,9 @@ ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
 // parameters need to be reset.
 
 void
-ProcThread::OnExit(void)
+ProcChainThread::OnExit()
 {
-#	if DEBUG
-	printf("ProcThread::OnExit: offset %d signaled finished.\n", offset);
-#	endif
-	wxMutexLocker lock(*myMutex);
-	myCondition->Signal();
-	(*threadCount)--;
+	ProcThread::OnExit();
 
 }
 

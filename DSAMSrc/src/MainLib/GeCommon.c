@@ -61,7 +61,7 @@
 /************************ Global variables ************************************/
 /******************************************************************************/
 
-static DSAM	dSAM = {
+DSAM	dSAM = {
 
 			FALSE,		/* appInitialisedFlag */
 			FALSE,		/* segmentedMode */

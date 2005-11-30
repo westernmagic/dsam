@@ -136,6 +136,8 @@ DSAMXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
 			CREATE_OBJECT_ELEMENT(pc, DSAM_XML_PROCESS_ATTRIBUTE_VALUE);
 			objectElement.SetAttribute(DSAM_XML_NAME_ATTRIBUTE, pc->data->
 			  module->name);
+			if (!pc->data->module->onFlag)
+				objectElement.SetAttribute(DSAM_XML_ENABLED_ATTRIBUTE, 0);
 			AddSimConnections(objectElement, pc->u.proc.inputList,
 			  DSAM_XML_INPUT_ELEMENT);
 			AddSimConnections(objectElement, pc->u.proc.outputList,
@@ -656,7 +658,7 @@ DatumPtr
 DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 {
 	static const char *funcName = "DSAMXMLDocument::InstallProcess";
-	const char	*moduleName;
+	const char	*moduleName, *enabledStatus;
 	DatumPtr	pc;
 	TiXmlElement	*parListElement;
 
@@ -677,6 +679,9 @@ DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 		  "'%s'"), funcName, moduleName);
 		return(NULL);
 	}
+	if ((enabledStatus = objectElement->Attribute(
+	  DSAM_XML_ENABLED_ATTRIBUTE)) != NULL)
+		EnableProcess_Utility_Datum(pc, atoi(enabledStatus));
 	if (((parListElement = objectElement->FirstChildElement(
 	  DSAM_XML_PAR_LIST_ELEMENT)) != NULL) && !GetParListInfo(parListElement,
 	  GetUniParListPtr_ModuleMgr(pc->data))) {

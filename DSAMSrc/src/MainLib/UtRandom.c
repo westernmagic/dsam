@@ -4,6 +4,7 @@
  * Purpose:		This is the random number routines module.
  * Comments:	22-03-98 LPO Added support for seeds set the time for
  *				completely random numbers.
+ *				17-11-05 LPO Added the offset for setting seeds in thread mode.
  * Author:		L. P. O'Mard
  * Created:		29 Mar 1993
  * Updated:		22 Mar 1998
@@ -40,7 +41,7 @@
  */
 
 RandParsPtr
-InitPars_Random(long idum)
+InitPars_Random(long idum, long offset)
 {
 	static const char *funcName = "InitPars_Random";
 	RandParsPtr	p;
@@ -50,6 +51,7 @@ InitPars_Random(long idum)
 		return(NULL);
 	}
 	p->idum = idum;
+	p->offset = offset;
 	p->iy = 0;
 	return(p);
 
@@ -75,11 +77,12 @@ FreePars_Random(RandParsPtr *p)
 
 /*
  * This function sets the random number seed.
+ * The offset is used for setting different seeds in thread processing mode.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-SetSeed_Random(RandParsPtr p, long ranSeed)
+SetSeed_Random(RandParsPtr p, long ranSeed, long offset)
 {
 	static const char *funcName = "SetSeed_Random";
 	if (!p) {
@@ -87,6 +90,7 @@ SetSeed_Random(RandParsPtr p, long ranSeed)
 		return(FALSE);
 	}
 	p->idum = ranSeed;
+	p->offset = offset;
 	return(TRUE);
 
 }
@@ -120,6 +124,7 @@ Ran01_Random(RandParsPtr p)
 			p->idum = (long) time(NULL);
 		else
 			p->idum = (-(p->idum) < 1)? 1: -(p->idum);
+		p->idum += p->offset;
 		for (j = RANDOM_NTAB + 7; j >= 0; j--) {
 			k = (p->idum) / IQ;
 			p->idum = IA * (p->idum - k * IQ) - IR * k;

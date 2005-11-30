@@ -1010,7 +1010,7 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = 0; i < data->outSignal->numChannels; i++) {
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
 		spikeState_s = p->state[i].lastSpikeState;
 		inPtr = data->inSignal[0]->channel[i];
 		outPtr = data->outSignal->channel[i];

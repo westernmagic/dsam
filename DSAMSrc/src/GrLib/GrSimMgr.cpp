@@ -832,10 +832,6 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
 		vsnprintf(message, LONG_STRING, format, args);
-#		ifndef __WXMSW__
-		if (GetDSAMPtr_Common()->lockGUIFlag)
-			wxMutexGuiEnter();
-#		endif
 		if (type == COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL)
 			style |= wxCANCEL;
 		if ((wxMessageBox(message, DiagnosticTitle(type), style) == wxCANCEL) &&
@@ -844,10 +840,6 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 			wxLogWarning(wxT("Simulation terminated by user."));
 		}
 			
-#		ifndef __WXMSW__
-		if (GetDSAMPtr_Common()->lockGUIFlag)
-			wxMutexGuiLeave();
-#		endif
 		if ((type != COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL) ||
 		  GetDSAMPtr_Common()->interruptRequestedFlag)
 			SetDiagMode(COMMON_CONSOLE_DIAG_MODE);

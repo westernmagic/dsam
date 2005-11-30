@@ -432,14 +432,14 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 	if (keys == 0) {
 		SetSelectedShape(dc);
 		wxMenu menu("Edit Process");
-		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, "&Enable", "Enable/disable "
-		  "process", TRUE);
+		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, (pc->data->module->onFlag)?
+		  "Disa&ble": "Ena&ble", "Enable/disable process");
 		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, "&Change process",
 		  "Change process");
 		menu.AppendSeparator();
 		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, "&Read par. file",
 		  "Read parameter file.");
-		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, "&Write par. file",
+		menu.Append(SDIFRAME_EDIT_MENU_WRITE_PAR_FILE, "&Write par. file",
 		  "Write parameter file.");
 		menu.AppendSeparator();
 		menu.Append(SDIFRAME_EDIT_MENU_PROPERTIES, "&Properties...");

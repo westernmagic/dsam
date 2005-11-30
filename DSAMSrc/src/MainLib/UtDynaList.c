@@ -86,6 +86,36 @@ Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 
 }
 
+/****************************** Insert ****************************************/
+
+/*
+ * Add a new node to the top of the list.
+ * The node must initially be set to NULL.  If NULL is poassed as the
+ * 'nodePtr' value, then the node returned will be the head of the list.
+ * A NULL is returned if it fails in any way, otherwise it returns a pointer
+ * to the new node.
+ */
+
+DynaListPtr
+Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data)
+{
+	static const char *funcName = "Insert_Utility_DynaList";
+	DynaListPtr	newNode;
+
+	if ((newNode = (DynaListPtr) malloc(sizeof (DynaList))) == NULL) {
+		NotifyError("%s: Out of memory for DynaList.", funcName);
+		return(NULL);
+	}
+	newNode->data = data;
+	newNode->previous = NULL;
+	newNode->next = *nodePtr;
+	*nodePtr = newNode;
+	if (newNode->next)
+		newNode->next->previous = newNode;
+	return (newNode);
+
+}
+
 /****************************** Pull ******************************************/
 
 /*

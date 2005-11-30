@@ -70,6 +70,7 @@ Free_AppInterface(void)
 	if (!appInterfacePtr->canFreePtrFlag)
 		return(TRUE);
 	GetDSAMPtr_Common()->appInitialisedFlag = FALSE;
+	FreeUserModuleList_ModuleReg();
 	if (appInterfacePtr->diagModeList)
 		free(appInterfacePtr->diagModeList);
 	if (appInterfacePtr->parList)
@@ -105,6 +106,26 @@ InitListingModeList_AppInterface(void)
 			{ "",			APP_INT_LIST_NULL }
 		};
 	appInterfacePtr->listingModeList = modeList;
+	return(TRUE);
+
+}
+
+/****************************** InitThreadModeList ****************************/
+
+/*
+ * This function initialises the 'ThreadMode' list array
+ */
+
+BOOLN
+InitThreadModeList_AppInterface(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ "PROCESS",		APP_INT_THREAD_MODE_PROCESS },
+			{ "CHANNEL_CHAIN",	APP_INT_THREAD_MODE_CHANNEL_CHAIN },
+			{ "",				APP_INT_THREAD_MODE_NULL }
+		};
+	appInterfacePtr->threadModeList = modeList;
 	return(TRUE);
 
 }
@@ -148,6 +169,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->checkMainInit = TRUE;
 	appInterfacePtr->canLoadSimulationFlag = TRUE;
 	appInterfacePtr->numThreadsFlag = TRUE;
+	appInterfacePtr->threadModeFlag = TRUE;
 	appInterfacePtr->listParsAndExit = FALSE;
 	appInterfacePtr->listCFListAndExit = FALSE;
 	appInterfacePtr->appParFileFlag = FALSE;
@@ -168,6 +190,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->argc = 0;
 	appInterfacePtr->initialCommand = 0;
 	appInterfacePtr->numThreads = -1;
+	appInterfacePtr->threadMode = APP_INT_THREAD_MODE_PROCESS;
 	appInterfacePtr->segmentModeSpecifier = GENERAL_BOOLEAN_OFF;
 	appInterfacePtr->diagModeSpecifier = GENERAL_DIAGNOSTIC_OFF_MODE;
 	appInterfacePtr->maxUserModules = -1;
@@ -175,6 +198,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->audModel = NULL;
 
 	InitListingModeList_AppInterface();
+	InitThreadModeList_AppInterface();
 	if ((appInterfacePtr->diagModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), appInterfacePtr->diagMode)) == NULL)
 		return(FALSE);
@@ -237,6 +261,11 @@ SetUniParList_AppInterface(void)
 	  UNIPAR_BOOL,
 	  &appInterfacePtr->segmentModeSpecifier, NULL,
 	  (void * (*)) SetSegmentMode_AppInterface);
+	SetPar_UniParMgr(&pars[APP_INT_THREADMODE], "THREAD_MODE",
+	  "Thread mode ('process' or 'equi_channel').",
+	  UNIPAR_NAME_SPEC,
+	  &appInterfacePtr->threadMode, appInterfacePtr->threadModeList,
+	  (void * (*)) SetThreadMode_AppInterface);
 	SetPar_UniParMgr(&pars[APP_INT_NUMTHREADS], "NUM_THREADS",
 	  "No. of processing threads for simulation (-ve defaults to no. CPU's).",
 	  UNIPAR_INT,
@@ -341,6 +370,36 @@ SetSegmentMode_AppInterface(char *theSegmentMode)
 	}
 	strcpy(appInterfacePtr->segmentMode, theSegmentMode);
 	SetSegmentedMode(appInterfacePtr->segmentModeSpecifier);
+	return(TRUE);
+
+}
+
+/****************************** SetThreadMode **************************/
+
+/*
+ * This function sets the module's threadMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetThreadMode_AppInterface(char * theThreadMode)
+{
+	static const char	*funcName = "SetThreadMode_AppInterface";
+	int		specifier;
+
+	if (appInterfacePtr == NULL) {
+		NotifyError("%s: Module not initialised.", funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theThreadMode,
+		appInterfacePtr->threadModeList)) == APP_INT_THREAD_MODE_NULL) {
+		NotifyError("%s: Illegal name (%s).", funcName, theThreadMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	appInterfacePtr->threadModeFlag = TRUE;
+	appInterfacePtr->threadMode = specifier;
 	return(TRUE);
 
 }
@@ -631,6 +690,9 @@ PrintPars_AppInterface(void)
 	  appInterfacePtr->diagModeList[appInterfacePtr->diagModeSpecifier].name);
 	DPrint("This simulation is run from the file '%s'.\n",
 	  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
+	DPrint("Thread mode '%' used with '%d' threads.\n", appInterfacePtr->
+	  threadModeList[appInterfacePtr->threadMode].name,
+	  appInterfacePtr->numThreads);
 	DPrint("\n");
 
 }

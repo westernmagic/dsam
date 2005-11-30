@@ -171,6 +171,11 @@ LibraryList_ModuleReg(uShort index)
 	{ "IHCRP_ZHANG",
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Zhang },
+#	ifdef USE_PORTAUDIO
+	{ IO_AUDIOIN_MOD_NAME,
+		IO_MODULE_CLASS, PROCESS_MODULE,
+		InitModule_IO_AudioIn },
+#	endif /* USE_PORTAUDIO */
 	{ "NEUR_ARLEKIM",
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Neuron_ArleKim },

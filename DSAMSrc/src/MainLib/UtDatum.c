@@ -47,8 +47,6 @@
 #include <string.h>
 #include <ctype.h>
 
-/*#define DEBUG	1 */
-
 #if DEBUG
 #	include <time.h>
 #endif
@@ -66,11 +64,15 @@
 
 #include "UtDatum.h"
 
+/*#define DEBUG	1*/
+
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
 uInt	datumStepCount = 0;
+DatumPtr	(* Execute_Utility_Datum)(DatumPtr, DatumPtr, int) =
+			  ExecuteStandard_Utility_Datum;
 
 /******************************************************************************/
 /****************************** Subroutines and functions *********************/
@@ -115,6 +117,7 @@ InitInst_Utility_Datum(int type)
 		return(NULL);
 	}
 	datum->onFlag = TRUE;
+	datum->threadSafe = TRUE;
 	datum->type = type;
 	datum->label = NULL_STRING;
 	datum->classSpecifier = -1;
@@ -144,6 +147,7 @@ InitInst_Utility_Datum(int type)
 	datum->clientData = NULL;
 	datum->next = NULL;
 	datum->previous = NULL;
+	datum->passedThreadEnd = NULL;
 	datum->stepNumber = datumStepCount++;
 	return datum;
 
@@ -1063,7 +1067,7 @@ ResetSimulation_Utility_Datum(DatumPtr start)
 
 }
 
-/****************************** Execute ***************************************/
+/****************************** ExecuteStandard *******************************/
 
 /*
  * This routine executes a set of simulation instructions.
@@ -1072,31 +1076,31 @@ ResetSimulation_Utility_Datum(DatumPtr start)
  */
 
 DatumPtr
-Execute_Utility_Datum(DatumPtr start)
+ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
+  int threadIndex)
 {
-	static char *funcName = "Execute_Utility_Datum";
+	static const char *funcName = "ExecuteStandard_Utility_Datum";
 	int			i;
 	DatumPtr	pc, lastInstruction = NULL;
+	EarObjectPtr	process;
 
 	if (start == NULL)
 		return NULL;
-	for (pc = start; pc != NULL; pc = pc->next) {
+	for (pc = start; pc != passedEnd; pc = pc->next) {
 		switch (pc->type) {
 		case PROCESS: {
-#			if DEBUG
-				time_t	startTime = time(NULL);
-				clock_t	startClock = clock();
-#			endif	
-			if (!RunProcess_ModuleMgr(pc->data)) {
+			process = (!threadIndex)? pc->data: &pc->data->threadProcs[
+			  threadIndex - 1];
+			if (!RunProcess_ModuleMgr(process)) {
 				NotifyError("%s: Could not run process '%s'.", funcName,
 				  pc->label);
 				return(NULL);
 			}
-#			if DEBUG
-				printf("%s: process '%s' took %g (%g CPU) seconds to run.\n",
-				  funcName, pc->label, difftime(time(NULL), startTime),
-				  (double) (clock() - startClock) / CLOCKS_PER_SEC);
-#			endif	
+		#	if DEBUG
+			printf("%s: Debug: Run '%s' with channels %d -> %d.\n",
+			  funcName, pc->label, process->outSignal->offset,
+			  process->outSignal->numChannels - 1);
+		#	endif
 			break; }
 		case RESET:
 			ResetProcess_EarObject(pc->data);
@@ -1113,7 +1117,8 @@ Execute_Utility_Datum(DatumPtr start)
 				return(NULL);
 			}
 			for (i = 0; i < pc->u.loop.count; i++)
-				lastInstruction = Execute_Utility_Datum(pc->next);
+				lastInstruction = Execute_Utility_Datum(pc->next, passedEnd,
+				  threadIndex);
 			pc = lastInstruction;
 			break;
 		default:
@@ -1161,6 +1166,44 @@ GetFirstProcess_Utility_Datum(DatumPtr start)
     for (pc = start; pc != NULL; pc = pc->next)
     	if (pc->type == PROCESS)
     		return(pc->data);
+	return(NULL);
+
+}
+
+/****************************** GetFirstProcessInst ***************************/
+
+/*
+ * This routine returns the first process instruction in a simulation.
+ * It returns NULL if it fails in any way.
+ */
+
+DatumPtr
+GetFirstProcessInst_Utility_Datum(DatumPtr start)
+{
+	DatumPtr	pc;
+
+    for (pc = start; pc != NULL; pc = pc->next)
+    	if (pc->type == PROCESS)
+    		return(pc);
+	return(NULL);
+
+}
+
+/****************************** GetPreviousProcessInst ************************/
+
+/*
+ * This routine returns the previous process instruction in a simulation.
+ * It returns NULL if it fails in any way.
+ */
+
+DatumPtr
+GetPreviousProcessInst_Utility_Datum(DatumPtr start)
+{
+	DatumPtr	pc;
+
+    for (pc = start; pc != NULL; pc = pc->previous)
+    	if (pc->type == PROCESS)
+    		return(pc);
 	return(NULL);
 
 }
@@ -1667,6 +1710,40 @@ WriteSimScript_Datum(char *fileName, DatumPtr start)
 	PrintSimScript_Utility_Datum(start, fileName, 0, "", FALSE);
 	fclose(GetDSAMPtr_Common()->parsFile);
 	GetDSAMPtr_Common()->parsFile = oldFp;
+	return(TRUE);
+
+}
+
+/************************** SetExecute ****************************************/
+
+/*
+ * This routine sets the global 'RunProcess' function pointer.
+ */
+
+void
+SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int))
+{
+	Execute_Utility_Datum = Func;
+
+}
+
+/************************** EnableProcess *************************************/
+
+BOOLN
+EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status)
+{
+	static const char *funcName = "EnableProcess_Utility_Datum";
+
+	if (!pc) {
+		NotifyError("%s: Instruction not initialised.", funcName);
+		return(FALSE);
+	}
+	if (pc->type != PROCESS) {
+		NotifyError("%s: Instruction is not PROCESS type.", funcName);
+		return(FALSE);
+	}
+	pc->onFlag = status;
+	Enable_ModuleMgr(pc->data, status);
 	return(TRUE);
 
 }

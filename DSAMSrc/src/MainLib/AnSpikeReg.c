@@ -649,10 +649,6 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 {
 	static const char *funcName =
 	  "InitProcessVariables_Analysis_SpikeRegularity";
-	register ChanData	*sumPtr, *sumSqrsPtr, *countPtr;
-	int		outChan, inChan;
-	ChanLen	i;
-	ChanData	oldMean;
 	SpikeRegPtr	p = spikeRegPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
@@ -673,26 +669,6 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 			return(FALSE);
 		}
 		ResetListSpec_SpikeList(p->spikeListSpec);
-		/* First recover previous sums from signal (when not in segment mode).*/
-		for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
-		  SPIKE_REG_NUM_RETURNS) {
-			inChan = outChan / SPIKE_REG_NUM_RETURNS;
-			countPtr = p->countEarObj->outSignal->channel[inChan];
-			sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
-			sumSqrsPtr = data->outSignal->channel[outChan +
-			  SPIKE_REG_STANDARD_DEV];
-			for (i = 0; i < data->outSignal->length; i++, sumPtr++,
-			  sumSqrsPtr++, countPtr++) {
-				oldMean = *sumPtr;
-				*sumPtr *= *countPtr;
-				if (*countPtr > SPIKE_REG_MIN_SPIKES_FOR_STATISTICS) {
-					*sumSqrsPtr = SQR(*sumSqrsPtr);
-					*sumSqrsPtr = *sumSqrsPtr * (*countPtr - 1.0) + (*sumPtr *
-					  oldMean);
-				}
-			}
-
-		}
 	} else
 		ResetStatistics_Analysis_SpikeRegularity(data);
 	return(TRUE);
@@ -740,6 +716,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	double	interval, spikeTime, windowWidth, timeRange;
 	ChanLen	i, spikeTimeHistIndex, timeRangeIndex;
 	ChanLen	timeOffsetIndex;
+	ChanData	oldMean;
 	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
 	SpikeRegPtr	p = spikeRegPtr;
 
@@ -781,6 +758,24 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 		  inSignal[0]);
 		if (data->initThreadRunFlag)
 			return(TRUE);
+	}
+	/* First recover previous sums from signal (when not in segment mode).*/
+	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
+	  SPIKE_REG_NUM_RETURNS) {
+		inChan = outChan / SPIKE_REG_NUM_RETURNS;
+		countPtr = p->countEarObj->outSignal->channel[inChan];
+		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
+		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
+		for (i = 0; i < data->outSignal->length; i++, sumPtr++, sumSqrsPtr++,
+		  countPtr++) {
+			oldMean = *sumPtr;
+			*sumPtr *= *countPtr;
+			if (*countPtr > SPIKE_REG_MIN_SPIKES_FOR_STATISTICS) {
+				*sumSqrsPtr = SQR(*sumSqrsPtr);
+				*sumSqrsPtr = *sumSqrsPtr * (*countPtr - 1.0) + (*sumPtr *
+				  oldMean);
+			}
+		}
 	}
 	for (outChan = data->outSignal->offset; outChan <
 	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {

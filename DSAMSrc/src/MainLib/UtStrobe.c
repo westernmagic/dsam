@@ -843,6 +843,7 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 			statePtr->prevPeakHeight = data->inSignal[0]->channel[i][0];
 			statePtr->delayCount = 0;
 			statePtr->delayTimeoutCount = 0;
+			statePtr->deltaThreshold = 0.0;
 			switch (p->typeMode) {
 			case STROBE_PEAK_MODE:
 				statePtr->threshold = strobePtr->threshold;

@@ -23,7 +23,8 @@ An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnGeneral.c AnHistogram.c AnIntensity.c AnInterSIH.c \
 				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c
   
-Fi_Sources	= FiDataFile.c FiAIFF.c FiASCII.c FiMSWave.c FiRaw.c FiParFile.c
+IO_Sources	= FiDataFile.c FiAIFF.c FiASCII.c FiMSWave.c FiRaw.c FiParFile.c \
+				IOAudioIn.c
 
 Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c
 
@@ -63,7 +64,7 @@ Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectSignals.c
 pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
-libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(Fi_Sources) \
+libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(IO_Sources) \
 					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 

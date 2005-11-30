@@ -91,6 +91,7 @@ Init_SignalData(const char *callingFunctionName)
 	theData->rampFlag = FALSE;
 	theData->localInfoFlag = FALSE;
 	theData->staticTimeFlag = FALSE;
+	theData->externalDataFlag = FALSE;
 	InitInfo_SignalData(&theData->info);
 	theData->channel = NULL;
 	return(theData);
@@ -313,15 +314,16 @@ CheckRamp_SignalData(SignalDataPtr theSignal)
 /**************************** SetChannelsFromSignal ***************************/
 
 /*
- * This routine copies the data from the orignal channel into all of the
+ * This function copies the data from the orignal channel into all of the
  * channels of the supplied signal.  If the supplier signal is
  * multi-channelled, then the output signal will be an interleave of the
  * supplier channels.
  * It sets the interleaveLevel field for 'theSignal'.
  * It returns true if the operation was successful.
+ * This function assumes that the signals have been correctly initialised.
  */
 
-BOOLN
+void
 SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
   SignalDataPtr supplier)
 {
@@ -329,22 +331,12 @@ SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 	ChanLen	j;
 	register	ChanData	*copyChannel, *supplierChannel;
 	
-	if (!CheckInit_SignalData(theSignal, "SetChannelsFromSignal_SignalData"))
-		return(FALSE);
-	if (!CheckInit_SignalData(supplier, "SetChannelsFromSignal_SignalData "\
-	  "(supplier)"))
-		return(FALSE);
-	if (theSignal->numChannels != supplier->numChannels)
-		SetInterleaveLevel_SignalData(theSignal, supplier->numChannels);
-	else
-		SetInterleaveLevel_SignalData(theSignal, supplier->interleaveLevel);
-	for (i = 0; i < theSignal->numChannels; i++) {
+	for (i = theSignal->offset; i < theSignal->numChannels; i++) {
 		copyChannel = theSignal->channel[i];
 		supplierChannel = supplier->channel[i % supplier->numChannels];
 		for (j = 0; j < theSignal->length; j++)
 			*(copyChannel++) = *(supplierChannel++);
 	}
-	return(TRUE);
 	
 }
 

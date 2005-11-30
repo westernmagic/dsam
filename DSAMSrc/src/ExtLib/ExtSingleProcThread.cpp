@@ -1,6 +1,6 @@
 /******************
  *		
- * File:		ExtProcThread.h
+ * File:		ExtSingleProcThread.h
  * Purpose: 	Process thread class module.
  * Comments:	
  * Author:		L. P. O'Mard
@@ -26,6 +26,7 @@
 #include "GeModuleMgr.h"
 
 #include "ExtProcThread.h"
+#include "ExtSingleProcThread.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -50,50 +51,36 @@
  * its values need to be reset on closing.
  */
 
-ProcThread::ProcThread(int theIndex, int theOffset, int theNumChannels,
-  wxMutex *mutex, wxCondition *condition, int *theThreadCount): wxThread()
+SingleProcThread::SingleProcThread(int theIndex, int offset, int numChannels,
+  EarObjectPtr theDataPtr, wxMutex *mutex, wxCondition *condition,
+  int *theThreadCount): ProcThread(theIndex, offset, numChannels, mutex,
+  condition, theThreadCount)
 {
-#	if DEBUG
-	printf("ProcThread::ProcThread: Debug: Index = %d, offset = %d\n", theIndex,
-	  theOffset);
-#	endif
-	index = theIndex;
-	offset = theOffset;
-	numChannels = theNumChannels;
-	myMutex = mutex;
-	myCondition = condition;
-	threadCount = theThreadCount;
+	process = ConfigProcess(theDataPtr);
 
 }
 
-/****************************** ConfigProcess *********************************/
+/****************************** Entry *****************************************/
 
-/*
- * The first thread uses the original process EarObject, and so some of
- * its values need to be reset on closing.
- */
+// The thread execution starts here.
+// This is a virtual function used by the WxWin threading code.
 
-EarObjectPtr
-ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
+void *
+SingleProcThread::Entry()
 {
-	int		i;
-	EarObjectPtr	process, subProcess;
-
-	if (!theDataPtr->localOutSignalFlag)
-		return(theDataPtr);
-	process = (index)? &theDataPtr->threadProcs[index - 1]: theDataPtr;
-#	ifdef DEBUG
-	printf("ProcThread::ConfigProcess: outsignal %x, index = %d\n",
-	  process->outSignal, index);
-#	endif
-	process->outSignal->offset = offset;
-	process->outSignal->numChannels = offset + numChannels;
-	for (i = 0; i < theDataPtr->numSubProcesses; i++) {
-		subProcess = process->subProcessList[i];
-		subProcess->outSignal->offset = process->outSignal->offset;
-		subProcess->outSignal->numChannels = process->outSignal->numChannels;
+#	if DEBUG
+	printf("SingleProcThread::Entry: Debug: Entered\n");
+	printf("SingleProcThread::Entry: Debug: Running with channels %d -> %d.\n",
+	  process->outSignal->offset, process->outSignal->numChannels - 1);
+	if (process->subProcessList) {
+		printf("SingleProcThread::Entry: Debug: subProcess [%x], offset = "
+		  "%d, numChannels = %d\n", process->subProcessList[0], process->
+		  subProcessList[0]->outSignal->offset, process->subProcessList[0]->
+		  outSignal->numChannels);
 	}
-	return(process);
+#	endif
+	bool ok = CXX_BOOL(RunProcessStandard_ModuleMgr(process));
+	return((void *) ok);
 
 }
 
@@ -108,14 +95,9 @@ ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
 // parameters need to be reset.
 
 void
-ProcThread::OnExit(void)
+SingleProcThread::OnExit()
 {
-#	if DEBUG
-	printf("ProcThread::OnExit: offset %d signaled finished.\n", offset);
-#	endif
-	wxMutexLocker lock(*myMutex);
-	myCondition->Signal();
-	(*threadCount)--;
+	ProcThread::OnExit();
 
 }
 

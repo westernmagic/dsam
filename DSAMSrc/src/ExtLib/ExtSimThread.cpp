@@ -63,8 +63,10 @@
 SimThread::SimThread(wxThreadKind kind): wxThread(kind)
 {
 	SetTestDestroy_ModuleMgr(TestDestroy_SimThread);
-	if (runThreadedProc)
+	if (runThreadedProc) {
 		runThreadedProc->SetNumThreads(GetPtr_AppInterface()->numThreads);
+		runThreadedProc->SetThreadMode(GetPtr_AppInterface()->threadMode);
+	}
 
 }
 

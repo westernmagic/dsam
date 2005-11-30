@@ -77,6 +77,8 @@ Init_EarObject(char *moduleName)
 	data->externalDataFlag = FALSE;
 	data->initThreadRunFlag = FALSE;
 	data->threadRunFlag = FALSE;
+	data->useThreadsFlag = FALSE;
+	data->chainInitRunFlag = FALSE;
 	data->updateCustomersFlag = TRUE;
 	data->updateProcessFlag = TRUE;
 	data->firstSectionFlag = TRUE;
@@ -104,6 +106,7 @@ Init_EarObject(char *moduleName)
 	data->numThreads = 1;
 	data->threadIndex = 0;
 	data->numSubProcesses = 0;
+	data->origNumChannels = 0;
 	data->threadProcs = NULL;
 	data->subProcessList = NULL;
 	return(data);
@@ -233,6 +236,9 @@ Free_EarObject(EarObjectPtr *theObject)
 		return;
 	if ((*theObject)->inSignal)
 		free((*theObject)->inSignal);
+	if ((*theObject)->threadProcs)
+		FreeThreadProcs_EarObject(*theObject);
+	FreeSubProcessList_EarObject(*theObject);
 	FreeOutSignal_EarObject(*theObject);
 	/* This next line unregisters the object from the main list. */
 	FreeEarObjRef_EarObject(&mainEarObjectList, (*theObject)->handle);
@@ -248,8 +254,6 @@ Free_EarObject(EarObjectPtr *theObject)
 	FreeEarObjRefList_EarObject(&(*theObject)->supplierList);
 	if ((*theObject)->randPars)
 		FreePars_Random(&(*theObject)->randPars);
-	if ((*theObject)->threadProcs)
-		FreeThreadProcs_EarObject(*theObject);
 	free(*theObject);
 	*theObject = NULL;		
 	
@@ -331,6 +335,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 	BOOLN	createNewSignal = TRUE, deletedOldOutSignal = FALSE;
 	SignalData	oldOutSignal;
 
+	if (data->chainInitRunFlag)
+		return(TRUE);
 	if (data->localOutSignalFlag && (data->outSignal != NULL)) {
 		if (!data->outSignal->dtFlag || (data->outSignal->dt !=
 		  samplingInterval) || !data->outSignal->lengthFlag ||
@@ -341,6 +347,10 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 			Free_SignalData(&data->outSignal);
 			data->updateCustomersFlag = TRUE;
 			deletedOldOutSignal = TRUE;
+			printf("%s: Debug: data numChannels %u (%u), dt = %g (%g), "
+			"length = %lu (%lu)\n",
+			  funcName, oldOutSignal.numChannels, numChannels, oldOutSignal.dt,
+			  samplingInterval,  oldOutSignal.length, length);
 		} else
 			createNewSignal = FALSE;
 	} else
@@ -503,11 +513,82 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 		NotifyError("%s: Could not set output signal.", funcName);
 		return(FALSE);
 	}
-	if (!SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0])) {
-		NotifyError("%s: Cannot set output Channels for EarObject: '%s'.",
-		  funcName, POSSIBLY_NULL_STRING_PTR(data->processName));
+	SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0]);
+	if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  numChannels);
+	else
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  interleaveLevel);
+	return(TRUE);
+	
+}
+
+/**************************** InitOutDataFromInSignal *************************/
+
+/*
+ * This routine initialises or re-initialises the output signal data
+ * from the input signal.
+ * It will overwrite any previous signal information.
+ * This routine has been revised from the 'InitOutFromInSignal_EarObject'
+ * which caused complications with threaded operation.
+ * This function should be used in conjuction with the
+ * 'InitOutTypeFromInSignal_EarObject' routine to get the same functionality
+ * of the 'InitOutFromInSignal_EarObject' routine.
+ */
+ 
+void
+InitOutDataFromInSignal_EarObject(EarObjectPtr data)
+{
+	SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0]);
+
+}
+
+/**************************** InitOutTypeFromInSignal *************************/
+
+/*
+ * This routine initialises or re-initialises the output signal type, from the
+ * input signal type.  Signal setting is usually carried out automatically by
+ * the module routines using this routine.
+ * It allows the signal length to be re-set.
+ * If the argument numChannels is zero, then the routine initialises the same
+ * number of channels as for the input signal.
+ * If the input signal is binaural, then the output signal will contain twice
+ * as many output channels, interleaved, e.g. LRLRLR... - 'numChannels' times.
+ * This routine has been revised from the 'InitOutFromInSignal_EarObject'
+ * which caused complications with threaded operation.
+ * It does not call 'SetChannelsFromSignal_SignalData' routine because it is
+ * used within the pre-thread initialisation section of a process.
+ */
+ 
+BOOLN
+InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
+{
+	static const char *funcName = "InitOutTypeFromInSignal_EarObject";
+	uShort	channelsToSet;
+
+	if (!data->inSignal) {
+		NotifyError("%s: No connected input processes.", funcName);
 		return(FALSE);
 	}
+	if (!CheckPars_SignalData(data->inSignal[0])) {
+		NotifyError("%s: Signal not correctly initialised.", funcName);
+		return(FALSE);
+	}
+	channelsToSet = (numChannels == 0) ? data->inSignal[0]->numChannels:
+	  numChannels;
+
+	if (!SetNewOutSignal_EarObject(data, channelsToSet,
+		data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		NotifyError("%s: Could not set output signal.", funcName);
+		return(FALSE);
+	}
+	if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  numChannels);
+	else
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  interleaveLevel);
 	return(TRUE);
 	
 }
@@ -739,7 +820,8 @@ FreeEarObjRefList_EarObject(EarObjRefPtr *theList)
 
 /*
  * This routine updates all of an EarObject's customers, i.e. all customers
- * pointing to its output signal are reset.
+ * pointing to its output signal are reset, but only if they are not already
+ * pointing to the correct signal.
  */
 
 void
@@ -747,10 +829,11 @@ UpdateCustomers_EarObject(EarObjectPtr theObject)
 {
 	EarObjRefPtr	p;
 	
-	for (p = theObject->customerList; p != NULL; p = p->next) {
-		p->earObject->inSignal[p->inSignalRef] = theObject->outSignal;
-		p->earObject->updateProcessFlag = TRUE;
-	}
+	for (p = theObject->customerList; p != NULL; p = p->next)
+		if (p->earObject->inSignal[p->inSignalRef] != theObject->outSignal) {
+			p->earObject->inSignal[p->inSignalRef] = theObject->outSignal;
+			p->earObject->updateProcessFlag = TRUE;
+		}
 	theObject->updateCustomersFlag = FALSE;
 	
 }
@@ -843,25 +926,73 @@ SetUtilityProcessContinuity_EarObject(EarObjectPtr data)
 
 }
 
-/**************************** ResetProcess ************************************/
+/**************************** SetUpdateProcessFlag ****************************/
 
 /*
- * This routine resets an EarObject's process by setting the updateProcessFlag
- * to TRUE.  This routine is used, so that if later I introduce a different
- * flag for reseting EarObject signals to zero, to much of a code change will
- * not be nessary.
+ * This routine sets the 'updateProcessFlag' for a process and all its thread
+ * processes.
+ * It assumes that the process has been correctly initialised.
  */
 
 void
-ResetProcess_EarObject(EarObjectPtr theObject)
+SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 {
+	int		i;
+	EarObjectPtr	p;
+
+	theObject->updateProcessFlag = setting;
+	for (i = 0, p = theObject->threadProcs; i < theObject->numThreads - 1; i++,
+	  p++)
+		p->updateProcessFlag = setting;
+
+}
+
+/**************************** SetProcessForReset ******************************/
+
+/*
+ * This routine sets an EarObject's process for reset by setting the
+ * updateProcessFlag and associated fields to TRUE.  This routine is used, so
+ * that if later I introduce a different flag for reseting EarObject signals to
+ * zero, to much of a code change will not be nessary.
+ */
+
+void
+SetProcessForReset_EarObject(EarObjectPtr theObject)
+{
+	static const char *funcName = "SetProcessForReset_EarObject";
+
 	if (!theObject) {
-		NotifyError("ResetProcess_EarObject: EarObject not initialised.");
+		NotifyError("%s: EarObject not initialised.", funcName);
 		exit(1);
 	}
 	theObject->updateProcessFlag = TRUE;
 	theObject->timeIndex = PROCESS_START_TIME;
 	theObject->firstSectionFlag = TRUE;
+	printf("%s: Reseting process '%s'\n", funcName, theObject->processName);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets an EarObject's process and its thread subprocesses.
+ */
+
+void
+ResetProcess_EarObject(EarObjectPtr theObject)
+{
+	static const char *funcName = "ResetProcess_EarObject";
+	int		i;
+	EarObjectPtr	p;
+
+	if (!theObject) {
+		NotifyError("%s: EarObject not initialised.", funcName);
+		exit(1);
+	}
+	SetProcessForReset_EarObject(theObject);
+	for (i = 0, p = theObject->threadProcs; i < theObject->numThreads - 1; i++,
+	  p++)
+		SetProcessForReset_EarObject(p);
 
 }
 
@@ -1011,10 +1142,11 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const char *callingFunc)
 {
 	
 	if (p->randPars) {
-		SetSeed_Random(p->randPars, ranSeed);
+		SetSeed_Random(p->randPars, ranSeed, (long) p->threadIndex);
 		return(TRUE);
 	}
-	if ((p->randPars = InitPars_Random(ranSeed)) == NULL) {
+	if ((p->randPars = InitPars_Random(ranSeed, (long) p->threadIndex)) ==
+	  NULL) {
 		NotifyError("%s: Out of memory for 'random' parameters.", callingFunc);
 		return(FALSE);
 	}
@@ -1038,12 +1170,15 @@ FreeThreadSubProcs_EarObject(EarObjectPtr p)
 	int		i;
 	EarObjectPtr	*sP;
 
+	if (!p->subProcessList)
+		return;
 	for (i = 0, sP = p->subProcessList; i < p->numSubProcesses; i++, sP++)
 		if ((*sP)->randPars)
 			FreePars_Random(&(*sP)->randPars);
  	if (p->subProcessList[0]->outSignal)
 		free(p->subProcessList[0]->outSignal);
-	free(p->subProcessList);
+	free(p->subProcessList[0]);
+	FreeSubProcessList_EarObject(p);
 
 }
 
@@ -1055,17 +1190,27 @@ FreeThreadSubProcs_EarObject(EarObjectPtr p)
  */
 
 BOOLN
-InitThreadSubProcs_EarObject(EarObjectPtr p)
+InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 {
 	static const char *funcName = "InitThreadSubProcs_EarObject";
 	int		i;
-	EarObjectPtr	*sP, earObjectList, *origSubProcessList;
+	EarObjectPtr	*sP, *oSP, earObjectList;
 	SignalDataPtr	signalList;
 
+#	if DEBUG
+	printf("%s: Debug: process '%s' * %d\n", funcName, baseP->processName, 
+	  baseP->numSubProcesses);
+#	endif
+	if (!InitSubProcessList_EarObject(p, baseP->numSubProcesses)) {
+		NotifyError("%s: Could not initialise subProcesses.", funcName);
+		return(FALSE);
+	}
+	if (*p->subProcessList)
+		return(TRUE);
 	if ((earObjectList = (EarObject *) calloc(p->numSubProcesses, sizeof(
 	  EarObject))) == NULL) {
-		NotifyError("%s: Could not initialise sub-process EarObject Copy list "
-		  "(%d copies).", funcName, p->numSubProcesses);
+		NotifyError("%s: Could not initialise sub-process EarObject Copy "
+		  "list (%d copies).", funcName, p->numSubProcesses);
 		return(FALSE);
 	}
 	if ((signalList = (SignalData *) calloc(p->numSubProcesses, sizeof(
@@ -1074,22 +1219,15 @@ InitThreadSubProcs_EarObject(EarObjectPtr p)
 		  p->numSubProcesses);
 		return(FALSE);
 	}
-	origSubProcessList = p->subProcessList;
-	p->subProcessList = NULL;	/* Don't want original list bashed. */
-	if (!InitSubProcessList_EarObject(p, p->numSubProcesses)) {
-		NotifyError("%s: Could not initialise sub-process list copy.",
-		  funcName);
-		return(FALSE);
-	}
-	for (i = 0, sP = p->subProcessList; i < p->numSubProcesses; i++, sP++) {
+	for (i = 0, sP = p->subProcessList, oSP = baseP->subProcessList; i < p->
+	  numSubProcesses; i++, sP++, oSP++) {
 		*sP = earObjectList++;
+		*(*sP) = *(*oSP);
 		(*sP)->outSignal = signalList++;
-		*(*sP)->outSignal = *(*origSubProcessList++)->outSignal;
-		if ((*sP)->randPars) {
-			(*sP)->randPars = NULL;
-			SetRandPars_EarObject((*sP), -(i + 1 + p->randPars->idum),
-			  funcName);
-		}
+		(*sP)->randPars = NULL;
+		(*sP)->threadIndex = baseP->threadIndex;
+		*(*sP)->outSignal = *(*oSP)->outSignal;
+		InitThreadRandPars_EarObject((*sP), baseP);
 	}
 	return(TRUE);
 
@@ -1111,6 +1249,12 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
 	int		i;
 	EarObjectPtr	pI;
 
+	if (!p->threadProcs)
+		return;
+#	if DEBUG
+	printf("FreeThreadProcs_EarObject: Debug: process '%s' * %d\n",
+	  p->processName, p->numThreads - 1);
+#	endif
 	for (i = 0, pI = p->threadProcs; i < p->numThreads - 1; i++, pI++) {
 		if (pI->randPars)
 			FreePars_Random(&pI->randPars);
@@ -1120,7 +1264,26 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
  	if (p->threadProcs[0].outSignal)
 		free(p->threadProcs[0].outSignal);
 	free(p->threadProcs);
+	p->threadProcs = NULL;
 
+}
+
+/**************************** InitThreadRandPars ******************************/
+
+/*
+ * This routine initialised the random number structure for a sub process.
+ */
+
+void
+InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
+{
+	static const char *funcName = "InitThreadRandPars_EarObject";
+
+	if (!baseP->randPars)
+		return;
+	SetRandPars_EarObject(p, baseP->randPars->idum, funcName);
+	return;
+	
 }
 
 /**************************** InitThreadProcs *********************************/
@@ -1132,34 +1295,49 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
  */
 
 BOOLN
-InitThreadProcs_EarObject(EarObjectPtr p, int numThreads)
+InitThreadProcs_EarObject(EarObjectPtr p)
 {
 	static const char *funcName = "InitThreadProcs_EarObject";
 	int		i, numCopies;
 	EarObjectPtr	tP;
 	SignalDataPtr	s;
 
-	numCopies = numThreads - 1;
-	if ((p->threadProcs = (EarObject *) calloc(numCopies, sizeof(EarObject))) ==
-	  NULL) {
-		NotifyError("%s: Could not initialise EarObject Copy list (%d copies).",
-		  funcName, numCopies);
+#	if DEBUG
+	printf("%s: numThreads = %d.\n", funcName, p->numThreads);
+#	endif
+	p->threadRunFlag = TRUE;
+	if (p->threadProcs)
+		return(TRUE);
+	numCopies = p->numThreads - 1;
+	if ((p->threadProcs = (EarObject *) calloc(numCopies, sizeof(
+	  EarObject))) == NULL) {
+		NotifyError("%s: Could not initialise EarObject Copy list (%d "
+		  "copies).", funcName, numCopies);
 		return(FALSE);
 	}
-	if ((s = (SignalData *) calloc(numCopies, sizeof(SignalData))) == NULL) {
+	if ((s = (SignalData *) calloc(numCopies, sizeof(SignalData))) ==
+	  NULL) {
 		NotifyError("%s: Out of memory for %d signal copies.", funcName,
 		  numCopies);
 		return(FALSE);
 	}
+#	ifdef DEBUG
+	printf("%s: Debug: Main outSignal = %x.\n", funcName, p->outSignal);
+#	endif
 	for (i = 0, tP = p->threadProcs; i < numCopies; i++, tP++, s++) {
 		*tP = *p;
+		tP->threadProcs = NULL;
 		tP->outSignal = s;
+		tP->threadIndex = i + 1;
+#		ifdef DEBUG
+		printf("%s: Debug: Thread outSignal = %x (%x).\n", funcName, tP->
+		  outSignal, p->outSignal);
+#		endif
 		*tP->outSignal = *p->outSignal;
-		if (tP->randPars) {
-			tP->randPars = NULL;
-			SetRandPars_EarObject(tP, -(i + 1 + p->randPars->idum), funcName);
-		}
-		if (p->subProcessList && !InitThreadSubProcs_EarObject(tP)) {
+		tP->randPars = NULL;
+		tP->subProcessList = NULL;
+		InitThreadRandPars_EarObject(tP, p);
+		if (p->subProcessList && !InitThreadSubProcs_EarObject(tP, p)) {
 			NotifyError("%s: Could not initialise sub process copies.",
 			  funcName);
 			return(FALSE);
@@ -1167,6 +1345,24 @@ InitThreadProcs_EarObject(EarObjectPtr p, int numThreads)
 
 	}
 	return(TRUE);
+
+}
+
+/************************** FreeSubProcessList ********************************/
+
+/*
+ * This routine frees the memory allocated for a sub process list.
+ * It assumes that the module has been correctly initialised.
+ */
+
+void
+FreeSubProcessList_EarObject(EarObjectPtr p)
+{
+	if (!p->subProcessList)
+		return;
+	free(p->subProcessList);
+	p->subProcessList = NULL;
+	p->numSubProcesses = 0;
 
 }
 
@@ -1184,8 +1380,11 @@ InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses)
 {
 	static const char	*funcName = "InitSubProcessList_EarObject";
 
-	if (p->subProcessList)
-		free(p->subProcessList);
+	if (p->subProcessList) {
+		if (numSubProcesses == p->numSubProcesses)
+			return(TRUE);
+		FreeSubProcessList_EarObject(p);
+	}
 	if ((p->subProcessList = (EarObjectPtr *) calloc(numSubProcesses, sizeof(
 	  EarObjectPtr))) == NULL) {
 	  	NotifyError("%s: Out of memory for %d element sub-process list.",

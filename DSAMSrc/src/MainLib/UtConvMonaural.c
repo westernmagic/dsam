@@ -109,7 +109,9 @@ CheckData_Utility_ConvMonaural(EarObjectPtr data)
  * Stimulus generation only sets the output signal, the input signal
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
- * re-used.
+ * re-used
+ * Two loops are used in the main channel process loop so that reseting the
+ * original contents to zero is not necessary.
  */
 
 BOOLN
@@ -125,8 +127,7 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 			NotifyError("%s: Process data invalid.", funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Convert monaural -> binaural utility");
-		ResetProcess_EarObject(data);
+		SetProcessName_EarObject(data, "Convert binaural -> monaural utility");
 		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 		  numChannels / data->inSignal[0]->interleaveLevel), data->inSignal[0]->
 		  length, data->inSignal[0]->dt)) {
@@ -140,7 +141,14 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 	for (outChan = data->outSignal->offset; outChan < data->outSignal->
 	  numChannels; outChan++) {
 		inChan = outChan * data->inSignal[0]->interleaveLevel;
+		outPtr = data->outSignal->channel[outChan];
 		for (i = 0; i < data->inSignal[0]->interleaveLevel; i++) {
+			inPtr = data->inSignal[0]->channel[inChan];
+			outPtr = data->outSignal->channel[outChan];
+			for (j = 0; j < data->inSignal[0]->length; j++)
+				*(outPtr++) = *(inPtr++);
+		}
+		for (i = 1; i < data->inSignal[0]->interleaveLevel; i++) {
 			inPtr = data->inSignal[0]->channel[inChan + i];
 			outPtr = data->outSignal->channel[outChan];
 			for (j = 0; j < data->inSignal[0]->length; j++)

@@ -494,6 +494,10 @@ FreeProcessVariables_Analysis_FourierT(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The outSignal->dt field is set to the dF value, however to calculate the
+ * length of the channels, this needs to be the same as the input signal dt.
+ * the call to 'SetSamplingInterval_SignalData' before 'InitOutSignal_EarObject'
+ * ensures that the signal is not needlessly recreated.
  */
 
 BOOLN
@@ -517,6 +521,9 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		SetProcessName_EarObject(data, "Fourier Transform: modulus");
 		p->numOutChans = (p->outputMode ==
 		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
+		if (data->outSignal)
+			SetSamplingInterval_SignalData(data->outSignal, data->inSignal[
+			  0]->dt);
 		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 		  numChannels * p->numOutChans), data->inSignal[0]->length, data->
 		  inSignal[0]->dt)) {
