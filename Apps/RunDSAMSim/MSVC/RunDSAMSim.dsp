@@ -43,8 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "$(DSAMDIR)" /I "$(DSAMDIR)/include" /I "$(MATLABDIR)/extern/include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /D HAVE_CONFIG_H=1 /D "MATLAB_MEX_FILE" /FD /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MD /W4 /GR /GX- /O2 /I "$(DSAMDIR)" /I "$(DSAMDIR)/include" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\vc_dll\msw" /I "$(MATLABDIR)/extern/include" /D "__WXMSW__" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /D HAVE_CONFIG_H=1 /D "MATLAB_MEX_FILE" /D "EXTENSIONS_SUPPORT" /D "LIBRARY_COMPILE" /D WXUSINGDLL=1 /D wxUSE_GUI=0 /D MATLAB_COMPILE=1 /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DSAM.lib libmx.lib libmex.lib libmat.lib /nologo /dll /machine:I386 /nodefaultlib:"libCMT" /libpath:"$(DSAMDIR)\lib" /libpath:"$(MATLABDIR)\extern\lib\win32\microsoft\msvc60"
+# ADD LINK32 DSAM_ext.lib wxbase26_net.lib wxbase26.lib libmx.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DSAM.lib DSAM_std.lib libmex.lib libmat.lib /nologo /dll /machine:I386 /nodefaultlib:"libCMT" /libpath:"$(WXWIN)\lib\vc_dll" /libpath:"$(DSAMDIR)\lib" /libpath:"$(MATLABDIR)\extern\lib\win32\microsoft\msvc60"
 
 !ELSEIF  "$(CFG)" == "RunDSAMSim - Win32 Debug"
 
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)" /I "$(DSAMDIR)/include" /I "$(MATLABDIR)/extern/include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /D HAVE_CONFIG_H=1 /D "MATLAB_MEX_FILE" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)" /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(WXWIN)/lib/basedll" /I "$(MATLABDIR)/extern/include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "RUNDSAMSIM_EXPORTS" /D HAVE_CONFIG_H=1 /D "MATLAB_MEX_FILE" /D "EXTENSIONS_SUPPORT" /D "LIBRARY_COMPILE" /D WXUSINGDLL=1 /D wxUSE_GUI=0 /D MATLAB_COMPILE=1 /FD /GZ /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DSAM.lib DSAM_std.lib libmx.lib libmex.lib libmat.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libCMT" /pdbtype:sept /libpath:"$(DSAMDIR)\lib" /libpath:"$(MATLABDIR)\lib\win32\microsoft\msvc60"
+# ADD LINK32 libmx.lib wxbase24.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DSAM.lib DSAM_std.lib libmex.lib libmat.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libCMTD" /pdbtype:sept /libpath:"$(WXWIN)\lib" /libpath:"$(DSAMDIR)\lib" /libpath:"$(MATLABDIR)\extern\lib\win32\microsoft\msvc60"
 
 !ENDIF 
 
@@ -94,23 +94,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\DSAMMatrix.c
+SOURCE=..\MatMainApp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\RunDSAMSimMat.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\StdMessage.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\StdSignalDisp.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\StdSimThread.c
+SOURCE=..\RunDSAMSim.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -118,19 +106,7 @@ SOURCE=..\StdSimThread.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\DSAMMatrix.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\StdMessage.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\StdSignalDisp.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\StdSimThread.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

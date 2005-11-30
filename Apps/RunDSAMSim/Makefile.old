@@ -1,0 +1,41 @@
+# Makefile for Octave extension RunDSAMSim
+
+OBJS	= MatMainApp.o
+INSTALLDIR=.
+PROGRAM = RunDSAMSim.mexglx
+DEBUG	= -ggdb3
+DSAM_FLAGS= $(DEBUG) -fPIC -DLIBRARY_COMPILE
+
+.phony: all
+
+all: $(PROGRAM)
+
+.phony: clean
+
+clean:
+	rm -f $(PROGRAM) *.o
+
+remake:
+	make clean
+	make
+
+.phony: distclean
+
+distclean: clean
+	rm -f *~ octave-core core
+
+.phony: test
+
+test: RunDSAMSim.oct
+	octave --silent testmp.m
+
+RunDSAMSim.oct:  RunDSAMSim.cpp $(OBJS)
+	CPPFLAGS="$(DSAM_FLAGS) -w" mkoctfile -o $@ $< $(OBJS) \
+	  `dsam-config --cflags --libs`
+
+RunDSAMSim.mexglx:  RunDSAMSim.cpp $(OBJS)
+	CPPFLAGS="$(DSAM_FLAGS) -DMATLAB_COMPILE" mex -o $@ $< $(OBJS) \
+	  `dsam-config --cflags --libs`
+
+MatMainApp.o: MatMainApp.cpp MatMainApp.h
+	$(CXX) -c $< $(DSAM_FLAGS) `dsam-config --cflags`
