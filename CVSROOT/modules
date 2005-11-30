@@ -24,8 +24,7 @@
 # character to interpose another module into the current module.  This
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
-AMS				DSAM/AMS
-DSAMSrc			DSAM/DSAMSrc
-Documentation	DSAM/Documentation
-ModGen			DSAM/ModGen
-RunDSAMSim		DSAM/RunDSAMSim
+AMS			Apps/AMS
+RunDSAMSim		Apps/RunDSAMSim
+DSAMSrc			DSAMSrc
+ModGen			Utils/ModGen
