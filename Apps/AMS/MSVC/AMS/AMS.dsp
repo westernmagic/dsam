@@ -42,18 +42,18 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "$(DSAMDIR)/include" /I "$(WXWIN)/include" /I "$(WXWIN)\lib\mswdll" /I "$(DSAMDIR)" /I "$(WXWIN)/contrib/include" /I "$(WXWIN)/lib\mswdll" /D "_MBCS" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "EXTENSIONS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "USE_GUI" /YX /FD /c
-# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x809 /d "NDEBUG"
-# ADD RSC /l 0x809 /i "$(DSAMDIR)\src\GrLib" /i "$(DSAMDIR)/include" /i "$(WXWIN)/include" /d "NDEBUG"
+# ADD BASE CPP /nologo /MD /W4 /GR /O2 /I "$(WXWIN)\include" /I "$(WXWIN)\lib\vc_dll\msw" /I "." /I "$(WXWIN)\samples" /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /FD /EHsc /c
+# ADD CPP /nologo /MD /W4 /GR /O2 /I "$(WXWIN)/contrib/include" /I "." /I "$(WXWIN)\samples" /I "$(WXWIN)\include" /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)/include" /I "$(WXWIN)\lib\vc_dll\msw" /I "$(PORTAUDIO)/pa_common" /D "WXUSINGDLL" /D "NOPCH" /D "_WINDOWS" /D "GRAPHICS_SUPPORT" /D "__WXMSW__" /D "USE_GUI" /D HAVE_CONFIG_H=1 /D "WIN32" /D "EXTENSIONS_SUPPORT" /FD /EHsc /c
+# ADD BASE MTL /nologo /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /mktyplib203 /win32
+# ADD MTL /nologo /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_WINDOWS" /D "NOPCH" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /i "$(WXWIN)\include" /i "$(WXWIN)\lib\vc_dll\msw" /i "." /i "$(WXWIN)\samples" /d "__WXMSW__" /d "WXUSINGDLL" /d "_WINDOWS" /d "NOPCH"
+# ADD RSC /l 0x409 /i "$(WXWIN)\include" /i "$(WXWIN)\lib\vc_dll\msw" /i "." /i "$(WXWIN)\samples" /i "$(DSAMDIR)\src\GrLib" /i "$(DSAMDIR)/include" /d "__WXMSW__" /d "WXUSINGDLL" /d "_WINDOWS" /d "NOPCH"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 DSAM.lib DSAM_g.lib DSAM_ext.lib wxmsw24.lib ogl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)/lib" /libpath:"$(DSAMDIR)\lib" /libpath:"$(WXWIN)\lib"
+# ADD BASE LINK32 wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib winspool.lib winmm.lib shell32.lib comctl32.lib ole32.lib oleaut32.lib uuid.lib rpcrt4.lib advapi32.lib wsock32.lib oleacc.lib odbc32.lib /nologo /subsystem:windows /machine:I386 /out:"vc_mswdll\thread.exe" /libpath:"$(WXWIN)\lib\vc_dll"
+# ADD LINK32 DSAM_g.lib DSAM.lib DSAM_ext.lib wxmsw26_ogl.lib wxbase26_net.lib wxmsw26_html.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib portaudio.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(WXWIN)\lib\vc_dll" /libpath:"$(DSAMDIR)\lib" /libpath:"$(PORTAUDIO)\pa_win\msvc"
 
 !ELSEIF  "$(CFG)" == "AMS - Win32 Debug"
 
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)" /I "$(WXWIN)/contrib/include" /I "$(WXWIN)/lib\mswdll" /D WXUSINGDLL=1 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D HAVE_CONFIG_H=1 /D "GRAPHICS_SUPPORT" /D "EXTENSIONS_SUPPORT" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "USE_GUI" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(WXWIN)\contrib\include" /I "$(WXWIN)\include" /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)/include" /I "$(WXWIN)\lib\vc_dll\msw" /I "$(PORTAUDIO)/pa_common" /D "NDEBUG" /D "__WINDOWS__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "_WINDOWS" /D "GRAPHICS_SUPPORT" /D "__WXMSW__" /D "USE_GUI" /D HAVE_CONFIG_H=1 /D "WIN32" /D "EXTENSIONS_SUPPORT" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 DSAM_d.lib DSAM_g_d.lib wxmsw24.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ogl.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"MSVCRT" /pdbtype:sept /libpath:"$(DSAMDIR)\lib" /libpath:"$(WXWIN)\lib"
+# ADD LINK32 DSAM_d.lib DSAM_g_d.lib wxbase26.lib wxmsw26_ogl.lib wxmsw26_core.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib odbccp32.lib ogl.lib portaudio.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"MSVCRT" /pdbtype:sept /libpath:"$(WXWIN)\lib\vc_dll" /libpath:"$(DSAMDIR)\lib" /libpath:"$(PORTAUDIO)\pa_win\msvc"
 
 !ENDIF 
 
@@ -109,138 +109,6 @@ SOURCE=..\..\ams.h
 # Begin Source File
 
 SOURCE=..\..\ams.rc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\amsicon.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\blank.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\bullseye.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\cdrom.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\computer.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\drive.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\error.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\file1.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\floppy.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\folder1.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\folder2.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\hand.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\info.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\magnif1.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\noentry.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\pbrush.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\pencil.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\pntleft.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\pntright.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\query.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\question.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\removble.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\rightarr.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\roller.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\size.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\tip.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\warning.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\msw\watch1.cur
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\html\msw\wbook.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\html\msw\wfolder.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\html\msw\whelp.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\html\msw\whlproot.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wx\html\msw\wpage.ico
 # End Source File
 # End Group
 # End Target

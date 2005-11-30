@@ -18,7 +18,7 @@ if nargin < 2
 	frameId=1:1000000;
 end
 
-fid = fopen(fname);
+fid = fopen(fname, 'rb');
 if (fid < 0)
 	error(['Could not find file: ' fname]);
 end
@@ -114,7 +114,7 @@ if littleEndian
 	fid = fopen(fname,'r','l');
 %	disp('open as little endian')
 else
-	fid = fopen(fname,'r','b');
+	fid = fopen(fname,'rb','b');
 %	disp('open as big endian')
 end
 

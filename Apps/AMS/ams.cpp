@@ -311,7 +311,7 @@ ProcessOptions(int argc, char **argv, int *optInd)
 	int		optSub = 0;
 
 	while ((c = Process_Options(argc, argv, optInd, &optSub, &argument,
-	  "@#:r:v")))
+	  "@#:r:v")) != '\0')
 		switch (c) {
 		case '@':
 		case '#':

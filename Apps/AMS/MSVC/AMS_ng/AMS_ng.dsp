@@ -41,16 +41,16 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "$(DSAMDIR)/include" /I "$(DSAMDIR)" /I "$(WXWIN)/include" /I "$(WXWIN)\lib\basedll" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D HAVE_CONFIG_H=1 /D "EXTENSIONS_SUPPORT" /D WXUSINGDLL=1 /D wxUSE_GUI=0 /YX /FD /c
-# ADD BASE RSC /l 0x809 /d "NDEBUG"
-# ADD RSC /l 0x809 /i "$(DSAMDIR)\src\GrLib" /d "NDEBUG"
+# ADD BASE CPP /nologo /MD /W4 /GR /O2 /I "$(WXWIN)\include" /I "$(WXWIN)\lib\vc_dll\msw" /I "." /D "WIN32" /D "__WXMSW__" /D "WXUSINGDLL" /D "_CONSOLE" /D wxUSE_GUI=0 /Fd"vc_mswdll\console.pdb" /FD /EHsc /c
+# ADD CPP /nologo /MD /W4 /GR /O2 /I "$(DSAMDIR)/include" /I "$(WXWIN)\include" /I "$(WXWIN)\lib\vc_dll\msw" /I "." /I "$(DSAMDIR)" /I "$(WXWIN)/include" /I "$(PORTAUDIO)/pa_common" /D "__WXMSW__" /D "WXUSINGDLL" /D "_CONSOLE" /D wxUSE_GUI=0 /D "EXTENSIONS_SUPPORT" /D HAVE_CONFIG_H=1 /D "WIN32" /Fd"vc_mswdll\console.pdb" /FD /EHsc /c
+# ADD BASE RSC /l 0x409 /i "$(WXWIN)\include" /i "$(WXWIN)\lib\vc_dll\msw" /i "." /d "__WXMSW__" /d "WXUSINGDLL" /d "_CONSOLE" /d wxUSE_GUI=0
+# ADD RSC /l 0x409 /i "$(WXWIN)\include" /i "$(WXWIN)\lib\vc_dll\msw" /i "." /d "__WXMSW__" /d "WXUSINGDLL" /d "_CONSOLE" /d wxUSE_GUI=0
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 DSAM.lib DSAM_std.lib DSAM_ext.lib wxbase24.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"$(DSAMDIR)\lib" /libpath:"$(WXWIN)\lib"
+# ADD BASE LINK32 wxbase26_net.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib winspool.lib winmm.lib shell32.lib comctl32.lib ole32.lib oleaut32.lib uuid.lib rpcrt4.lib advapi32.lib wsock32.lib oleacc.lib odbc32.lib /nologo /subsystem:console /machine:I386 /libpath:"$(WXWIN)\lib\vc_dll"
+# ADD LINK32 DSAM_std.lib DSAM.lib DSAM_ext.lib wxbase26_net.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib portaudio.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib /nologo /subsystem:console /machine:I386 /libpath:"$(WXWIN)\lib\vc_dll" /libpath:"$(DSAMDIR)\lib" /libpath:"$(PORTAUDIO)\pa_win\msvc"
 
 !ELSEIF  "$(CFG)" == "AMS_ng - Win32 Debug"
 
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)" /I "$(DSAMDIR)\include" /D "_DEBUG" /D HAVE_CONFIG_H=1 /D "WIN32" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(DSAMDIR)\include" /I "$(DSAMDIR)" /I "$(WXWIN)/include" /I "$(WXWIN)\lib\vc_dll\msw" /I "$(PORTAUDIO)/pa_common" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D HAVE_CONFIG_H=1 /D "WIN32" /D "EXTENSIONS_SUPPORT" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
 # ADD RSC /l 0x809 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 DSAM_d.lib DSAM_std_d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"$(DSAMDIR)\lib"
+# ADD LINK32 DSAM_d.lib DSAM_std_d.lib odbccp32.lib portaudio.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"$(DSAMDIR)\lib" /libpath:"$(PORTAUDIO)\pa_win\msvc"
 
 !ENDIF 
 
