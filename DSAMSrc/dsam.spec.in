@@ -11,7 +11,7 @@ Name: dsam
 Summary: Development System for Auditory Modelling
 Version: %{ver}
 Release: %{rel}
-Copyright: Centre for the Neural Basis of Hearing, UK, Earth.
+License: LICENSE 
 Group: Libraries
 Source: ftp://ftp.essex.ac.uk/pub/omard/dsam/%{name}-%{ver}.tar.gz
 URL: http://www.essex.ac.uk/psychology/hearinglab/dsam
@@ -41,6 +41,7 @@ Header files for dsam %{ver} library.
 
 %prep
 %setup
+PATH=$PATH:/opt/gnome/bin
 DSAM_FLAGS="--prefix=%{prefix} --enable-graphics --enable-shared"
 
 %configure $DSAM_FLAGS

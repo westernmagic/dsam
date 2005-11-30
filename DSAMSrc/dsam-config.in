@@ -107,7 +107,7 @@ if [ "$echo_rflags" = "yes" ]; then
 	echo $rflags
 fi
 if [ "$echo_libs" = "yes" ]; then
-	libs="-L@libdir@ -l@PACKAGE@ @DSAMEXTLIB@"
+	libs="-L@libdir@ -l@PACKAGE@ @DSAMEXTLIB@ @PORTAUDIO_LDFLAGS@"
 	if test "$use_debug" = "yes"; then
 		libs="$libs -ldmalloc"
 		if test "$use_gui" = "yes"; then

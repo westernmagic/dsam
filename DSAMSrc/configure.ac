@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=14
-DSAM_INTERFACE_AGE=14
-DSAM_BINARY_AGE=14
+DSAM_MICRO_VERSION=15
+DSAM_INTERFACE_AGE=15
+DSAM_BINARY_AGE=15
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -97,6 +97,12 @@ AC_ARG_ENABLE(wx_ogl,
    [WX_OGL="yes"]
 )
 
+AC_ARG_ENABLE(portaudio,
+   [  --disable-portaudio           Do not compile PortAudio support],
+   [enable_portaudio="$enableval"],
+   [enable_portaudio="yes"]
+)
+
 dnl ============================================================================
 dnl Configure WITH options
 dnl ============================================================================
@@ -110,6 +116,17 @@ AC_ARG_WITH(wx_ogl-headers,
 AC_ARG_WITH(wx_ogl-lib,
    [  --with-wx_ogl-lib=DIR      wx OGL Library location],
    [WX_OGL_LDFLAGS="-L$withval"] 
+)
+
+AC_ARG_WITH(portaudio-headers,
+   [  --with-portaudio-headers=DIR  PortAudio Include files location],
+   [PORTAUDIO_HDR_DIR="$withval"]
+   [PORTAUDIO_CPPFLAGS="-I$withval"] 
+)
+
+AC_ARG_WITH(portaudio-lib,
+   [  --with-portaudio-lib=DIR      PortAudio Library location],
+   [PORTAUDIO_LDFLAGS="-L$withval"] 
 )
 
 dnl ============================================================================
@@ -442,6 +459,51 @@ if test x$WX_OGL = xyes -a x$using_wxwin_gui = xyes; then
 fi
 
 dnl ----------------------------------------------------------------------------
+dnl PortAudio library
+dnl ----------------------------------------------------------------------------
+
+PORTAUDIO_INCLUDE="-pipe -fPIC -DPA_LITTLE_ENDIAN -Ipa_common  -DSIZEOF_SHORT=2 \
+	  -DSIZEOF_INT=4 -DSIZEOF_LONG=8 -DHAVE_LIBPTHREAD=1 -DPA_USE_ALSA=1 -DPA_USE_OSS=1"
+
+if test x$enable_portaudio = xyes; then
+	AC_CHECKING([for PortAudio library and header files])
+	CFLAGS_save=$CFLAGS
+	CFLAGS=$PORTAUDIO_INCLUDE 
+	AC_CHECK_HEADER([portaudio.h], 
+		[
+			AC_COMPILE_IFELSE(
+				[
+					AC_LANG_PROGRAM(
+						[
+							#include <math.h>
+							#include <portaudio.h>
+						],
+						[
+							PaError err = Pa_Initialize();
+;
+						]
+					)
+				],
+				[
+					AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
+					PORTAUDIO_LDFLAGS="-lportaudio"
+					AC_SUBST(PORTAUDIO_LDFLAGS)
+				],
+				[
+					AC_MSG_ERROR([PortAudio headers were found but library was not found.])
+				]
+			)
+		],
+		[
+			AC_MSG_RESULT([PortAudio library and headers not found.])
+			AC_MSG_RESULT([PortAudio library available from http://www.portaudio.com/])
+		],
+		[#include <portaudio.h>]
+	)
+	CFLAGS=$CFLAGS_save
+fi
+
+dnl ----------------------------------------------------------------------------
 dnl Parallel library option
 dnl ----------------------------------------------------------------------------
 
@@ -489,6 +551,7 @@ if test x$wx_base_available = xyes; then
 	AC_SUBST(DSAMEXTLIB)
 	AC_SUBST(WX_BASE_CXXFLAGS)
 	AC_SUBST(WX_BASE_LDFLAGS)
+	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
