@@ -68,27 +68,22 @@ dnl ============================================================================
 dnl 'Global' variable declaration
 dnl ============================================================================
 
-WX_DEFAULT_CONFIG=wx-config
+WX_CONFIG=wx-config
 
 dnl ============================================================================
 dnl Configure ENABLE options
 dnl ============================================================================
 
 AC_ARG_ENABLE(wxwin,
-   [  --disable-wxwin           Do not compile any wxWindows support],
+   [  --disable-wxwin            Do not compile any wxWindows support],
    [WXWIN="$enableval"],
    [WXWIN="yes"]
 )
-AC_ARG_ENABLE(wx_gtk,
-   [  --disable-wx_gtk           Do not compile wxGTK support],
-   [WX_GTK="$enableval"],
-   [WX_GTK="yes"]
-)
 
-AC_ARG_ENABLE(wx_base,
-   [  --disable-wx_base           Do not compile wxBase support],
-   [WX_BASE="$enableval"],
-   [WX_BASE="yes"]
+AC_ARG_ENABLE(dsam_extensions,
+   [  --disable-dsam-extensions  Do not compile DSAM extensions support],
+   [DSAM_EXT="$enableval"],
+   [DSAM_EXT="yes"]
 )
 
 AC_ARG_ENABLE(wx_ogl,
@@ -98,7 +93,7 @@ AC_ARG_ENABLE(wx_ogl,
 )
 
 AC_ARG_ENABLE(portaudio,
-   [  --disable-portaudio           Do not compile PortAudio support],
+   [  --disable-portaudio        Do not compile PortAudio support],
    [enable_portaudio="$enableval"],
    [enable_portaudio="yes"]
 )
@@ -147,7 +142,7 @@ if test $host != $build; then
 		LD=$host_alias-ld
 		NM=$host_alias-nm
 		STRIP=$host_alias-strip
-		WX_DEFAULT_CONFIG=$host_alias-wx-config
+		WX_CONFIG=$host_alias-wx-config
 	fi
 fi
 
@@ -358,104 +353,141 @@ dnl ----------------------------------------------------------------------------
 
 wxwinAvailable=no
 if test x$WXWIN = xyes; then
-	AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_DEFAULT_CONFIG))
-	if eval "$WX_DEFAULT_CONFIG --version 2> config.log > /dev/null"; then
+	AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_CONFIG))
+	if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
 		wxwinAvailable=yes
-		wx_version=`$WX_DEFAULT_CONFIG --version | cut -d. -f 1-2`
-		wx_basename=`$WX_DEFAULT_CONFIG --basename`
+		wx_version=`$WX_CONFIG --version | cut -d. -f 1-2`
+		wx_basename=`$WX_CONFIG --basename`
 	fi
 	AC_MSG_RESULT($wxwinAvailable)
 fi
 
-WX_CONFIG=
-using_wxwin_gui=
+using_wxWidgets_gui=
 
 dnl ----------------------------------------------------------------------------
 dnl wxBase library
 dnl ----------------------------------------------------------------------------
 
-if test x$WX_BASE = xyes; then
-	TMP_CONFIG=wxbase-$wx_version-config
-	AC_MSG_CHECKING(for wxBase configuration shell script ($TMP_CONFIG))
-	if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
-		AC_DEFINE(wx_base, 1, [Use wxBase library])
-		wx_base_available=yes
-		WX_CONFIG=$TMP_CONFIG
-		WX_BASE_CXXFLAGS=`$TMP_CONFIG --cxxflags`
-		WX_BASE_LDFLAGS=`$TMP_CONFIG --libs`
-	else
-		wx_base_available=no
-	fi
-	AC_MSG_RESULT($wx_base_available)
+if test x$DSAM_EXT = xyes; then
+	CXXFLAGS_save=$CXXFLAGS
+	CXXFLAGS=`$WX_CONFIG --cxxflags`
+	LDFLAGS_save=$LDFLAGS
+	LDFLAGS=`$WX_CONFIG --libs base`
+	AC_MSG_CHECKING([for wxWidgets support for threaded extensions])
+	AC_LINK_IFELSE(
+		[
+			AC_LANG_PROGRAM(
+				[
+					#include <wx/wx.h>
+					#include <wx/thread.h>
+
+					class MyThread: public wxThread {
+					public:
+					  MyThread(void): wxThread()	{ Create(); }
+					  virtual  ExitCode Entry()	{ return (ExitCode) 1; }
+					};
+				],
+				[
+					MyThread	*thread = new MyThread();
+				]
+			)
+		],
+		[
+			wx_base_available=yes
+		],
+		[
+			wx_base_available=no
+		]
+	)
+	AC_MSG_RESULT($wx_base_available);
+	CXXFLAGS=$CXXFLAGS_save
+	LDFLAGS=$LDFLAGS_save
 fi
 
 dnl ----------------------------------------------------------------------------
 dnl wxGTK library
 dnl ----------------------------------------------------------------------------
 
-if test x$WX_GTK = xyes; then
-	TMP_CONFIG=wxgtk-$wx_version-config
-	AC_MSG_CHECKING(for wxGTK configuration shell script ($TMP_CONFIG))
-	if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
-		AC_DEFINE(wx_gtk, 1, [Use wxGTK library])
-		WX_CONFIG=$TMP_CONFIG
-		wx_gtk_available=yes
-		using_wxwin_gui=yes
-	else
-		AC_MSG_RESULT($wx_gtk_available)
-		TMP_CONFIG=wxgtk2-$wx_version-config
-		AC_MSG_CHECKING(for wxGTK2 configuration shell script ($TMP_CONFIG))
-		if eval "$TMP_CONFIG --version 2> config.log > /dev/null"; then
-			AC_DEFINE(wx_gtk, 1, [Use wxGTK library])
-			WX_CONFIG=$TMP_CONFIG
-			wx_gtk_available=yes
-			using_wxwin_gui=yes
-		else
-			wx_gtk_available=no
-		fi
-	fi
-	AC_MSG_RESULT($wx_gtk_available)
+if test x$WXWIN = xyes; then
+	AC_MSG_CHECKING([for wxWidgets GUI support])
+	CXXFLAGS_save=$CXXFLAGS
+	CXXFLAGS=`$WX_CONFIG --cxxflags`
+	LDFLAGS_save=$LDFLAGS
+	LDFLAGS=`$WX_CONFIG --libs`
+	AC_LINK_IFELSE(
+		[
+			AC_LANG_SOURCE(
+				[
+					#include "wx/wx.h"
+
+					class MyApp : public wxApp
+					{
+						public:
+						virtual bool OnInit();
+					};
+
+					IMPLEMENT_APP(MyApp)
+					bool MyApp::OnInit()
+					{
+						return true;
+					}
+				]
+			)
+		],
+		[
+			using_wxWidgets_gui=yes
+		],
+		[
+			using_wxWidgets_gui=no
+		]
+	)
+	AC_MSG_RESULT($using_wxWidgets_gui);
+	CXXFLAGS=$CXXFLAGS_save
+	LDFLAGS=$LDFLAGS_save
 fi
 
 dnl ----------------------------------------------------------------------------
 dnl wx OGL library
 dnl ----------------------------------------------------------------------------
 
-if test x$WX_OGL = xyes -a x$using_wxwin_gui = xyes; then
-	AC_CHECKING([for wxWindows OGL Library and Header files])
+if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
+	AC_MSG_CHECKING([for wxWidgets OGL support])
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
-	AC_CHECK_HEADER([wx/ogl/ogl.h], 
+	LDFLAGS_save=$LDFLAGS
+	LDFLAGS=`$WX_CONFIG --libs ogl`
+	AC_LINK_IFELSE(
 		[
-			AC_COMPILE_IFELSE(
+			AC_LANG_SOURCE(
 				[
-					AC_LANG_PROGRAM(
-						[
-							#include <wx/wx.h>
-							#include <wx/ogl/ogl.h>
-						],
-						[
-							wxShapeEvtHandler	*handler = new wxShapeEvtHandler();
-						]
-					)
-				],
-				[
-					AC_DEFINE(USE_WX_OGL, 1, [Use wxWindows OGL library])
-					WX_OGL_LDFLAGS="-l${wx_basename}_ogl-${wx_version}"
-				],
-				[
-					AC_MSG_ERROR([wx OGL headers were found but library was not found.])
+					#include "wx/wx.h"
+					#include <wx/ogl/ogl.h>
+
+					class MyApp : public wxApp
+					{
+						public:
+						virtual bool OnInit();
+					};
+
+					IMPLEMENT_APP(MyApp)
+					bool MyApp::OnInit()
+					{
+						wxShapeEvtHandler	*handler = new wxShapeEvtHandler();
+						return true;
+					}
 				]
 			)
 		],
 		[
-			AC_MSG_RESULT([wx OGL library and headers not found.])
-			AC_MSG_RESULT([wx OGL library available from http://www.wxwindows.org])
-			AC_MSG_ERROR([Or try ./configure --disable-wx_ogl])
+			using_wxWidgets_ogl=yes
 		],
-		[#include <wx/wx.h>]
+		[
+			using_wxWidgets_ogl=no
+		]
 	)
+	AC_MSG_RESULT($using_wxWidgets_ogl);
 	CXXFLAGS=$CXXFLAGS_save
+	LDFLAGS=$LDFLAGS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -466,41 +498,33 @@ PORTAUDIO_INCLUDE="-pipe -fPIC -DPA_LITTLE_ENDIAN -Ipa_common  -DSIZEOF_SHORT=2 
 	  -DSIZEOF_INT=4 -DSIZEOF_LONG=8 -DHAVE_LIBPTHREAD=1 -DPA_USE_ALSA=1 -DPA_USE_OSS=1"
 
 if test x$enable_portaudio = xyes; then
-	AC_CHECKING([for PortAudio library and header files])
+	AC_MSG_CHECKING([for PortAudio support for audio i/o])
 	CFLAGS_save=$CFLAGS
-	CFLAGS=$PORTAUDIO_INCLUDE 
-	AC_CHECK_HEADER([portaudio.h], 
+	CFLAGS=$PORTAUDIO_INCLUDE
+	LDFLAGS_save=$LDFLAGS
+	LDFLAGS="$PORTAUDIO_LDFLAGS -lportaudio"
+	AC_LINK_IFELSE(
 		[
-			AC_COMPILE_IFELSE(
+			AC_LANG_PROGRAM(
 				[
-					AC_LANG_PROGRAM(
-						[
-							#include <math.h>
-							#include <portaudio.h>
-						],
-						[
-							PaError err = Pa_Initialize();
-;
-						]
-					)
+					#include <math.h>
+					#include <portaudio.h>
 				],
 				[
-					AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
-					PORTAUDIO_LDFLAGS="-lportaudio"
-					AC_SUBST(PORTAUDIO_LDFLAGS)
-				],
-				[
-					AC_MSG_ERROR([PortAudio headers were found but library was not found.])
+					PaError err = Pa_Initialize();
 				]
 			)
 		],
 		[
-			AC_MSG_RESULT([PortAudio library and headers not found.])
-			AC_MSG_RESULT([PortAudio library available from http://www.portaudio.com/])
+			using_portaudio=yes
 		],
-		[#include <portaudio.h>]
+		[
+			using_portaudio=no
+		]
 	)
+	AC_MSG_RESULT($using_portaudio);
 	CFLAGS=$CFLAGS_save
+	LDFLAGS=$LDFLAGS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -535,34 +559,48 @@ dnl ----------------------------------------------------------------------------
 if test x$wxwinAvailable = xyes; then
 	AC_PROG_CXX
 	AC_PROG_CXXCPP
-	XINCLUDE=$wx_xinclude
-	AC_SUBST(XINCLUDE)
-	WXINC="`$WX_CONFIG --cxxflags` $WX_OGL_CPPFLAGS"
-	AC_SUBST(WXINC)
-	WXLDLIBS="`$WX_CONFIG --libs` $WX_OGL_LDFLAGS"
-	AC_SUBST(WXLDLIBS)
 fi
 
 if test x$wx_base_available = xyes; then
-	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Using Extensions Support")
+	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Use Extensions Support")
 	DSAMEXTINC="-DEXTENSIONS_SUPPORT"
 	AC_SUBST(DSAMEXTINC)
 	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
 	AC_SUBST(DSAMEXTLIB)
+	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base net`"
 	AC_SUBST(WX_BASE_CXXFLAGS)
+	WX_BASE_LDFLAGS="`$WX_CONFIG --libs base net`"
 	AC_SUBST(WX_BASE_LDFLAGS)
 	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
-if test x$using_wxwin_gui = xyes; then
+if test x$using_wxWidgets_ogl = xyes; then
+	AC_DEFINE(USE_WX_OGL, 1, [Use wxWidgets OGL Support])
+	WXOGLLIBS="`$WX_CONFIG --libs ogl`"
+fi
+
+if test x$using_wxWidgets_gui = xyes; then
 	DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
 	AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
 	WXRESFLAGS="--include-dir `$WX_CONFIG --exec-prefix`/include \
 	  --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
 	AC_SUBST(WXRESFLAGS)
+	XINCLUDE=$wx_xinclude
+	AC_SUBST(XINCLUDE)
+	WXINC="`$WX_CONFIG --cxxflags`"
+	AC_SUBST(WXINC)
+	WXLDLIBS="`$WX_CONFIG --libs` $WXOGLLIBS"
+	AC_SUBST(WXLDLIBS)
 fi
-AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxwin_gui = xyes)
+AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxWidgets_gui = xyes)
+
+if test x$using_portaudio = xyes; then
+	AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
+	PORTAUDIO_LDFLAGS="-lportaudio"
+	AC_SUBST(PORTAUDIO_LDFLAGS)
+fi
+AM_CONDITIONAL(USE_PORTAUDI, test x$using_portaudio = xyes)
 
 dnl ============================================================================
 dnl Checks for system services or capabilities.

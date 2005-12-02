@@ -115,7 +115,7 @@ if [ "$echo_libs" = "yes" ]; then
 		fi
 	fi
 	if [ "$use_gui" = "yes" ]; then
-		libs="$libs -l@PACKAGE@_g @DSAMEXTLIB@ @WXLDLIBS@"
+		libs="-l@PACKAGE@_g $libs @WXLDLIBS@"
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
 		if [ -z "@DSAM_EXTENSIONS_TRUE@" ]; then
