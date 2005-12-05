@@ -415,8 +415,6 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 	static const char *funcName =
 	  "InitProcessVariables_Utility_RefractoryAdjust";
 	int		i, j;
-	double	*ptr;
-	ChanLen	k;
 	RefractAdjPtr	p = refractAdjPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
