@@ -19,8 +19,6 @@
 
 #include <wx/string.h>
 
-#include <wx/ogl/ogl.h>
-
 #if wxUSE_STD_IOSTREAM
 class ostream;
 class istream;

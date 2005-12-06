@@ -85,17 +85,17 @@ typedef struct {
 	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
 	BOOLN	numThreadsFlag, threadModeFlag;
 	BOOLN	updateProcessVariablesFlag;
-	char	appName[MAXLINE];
+	WChar	appName[MAXLINE];
 	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
 	char	appParFile[MAX_FILE_PATH];
 	char	appVersion[MAXLINE];
 	char	compiledDSAMVersion[MAXLINE];
 	char	title[MAX_FILE_PATH];
 	char	authors[APP_MAX_AUTHORS][MAXLINE];
-	char	simulationFile[MAX_FILE_PATH];
+	WChar	simulationFile[MAX_FILE_PATH];
 	char	segmentMode[SMALL_STRING];
 	char	diagMode[MAX_FILE_PATH];
-	char	installDir[MAX_FILE_PATH];
+	WChar	installDir[MAX_FILE_PATH];
 	char	parsFilePath[MAX_FILE_PATH];
 	char	**argv;
 	int		argc;
@@ -224,7 +224,7 @@ BOOLN	RunSim_AppInterface(void);
 
 BOOLN	SetAppParFile_AppInterface(char *fileName);
 
-BOOLN	SetAppName_AppInterface(char *appName);
+BOOLN	SetAppName_AppInterface(WChar *appName);
 
 BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 
@@ -276,7 +276,7 @@ BOOLN	SetSimFileType_AppInterface(int simFileType);
 
 BOOLN	SetSimPar_AppInterface(char *parName, char *value);
 
-BOOLN	SetSimulationFile_AppInterface(char *theSimulationFile);
+BOOLN	SetSimulationFile_AppInterface(WChar *theSimulationFile);
 
 void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
 

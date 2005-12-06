@@ -46,17 +46,17 @@
 
 #define SIM_MANAGER_DEFAULT_WIDTH		500
 #define SIM_MANAGER_DEFAULT_HEIGHT		200	
-#define SIM_MANAGER_HELP_DIR			"HelpFiles"
-#define SIM_MANAGER_REG_MAIN_FRAME		"/MainFrame"
-#define SIM_MANAGER_REG_PATHS			"/Paths"
-#define SIM_MANAGER_REG_DSAM_HELP_PATH	"DSAMHelp"
-#define SIM_MANAGER_REG_DSAM_HELP_BOOK	"DSAMHelp"
-#define SIM_MANAGER_REG_APP_HELP_PATH	"Help"
-#define SIM_MANAGER_REG_MAIN_PARS				"/MainPars"
+#define SIM_MANAGER_HELP_DIR			wxT("HelpFiles")
+#define SIM_MANAGER_REG_MAIN_FRAME		wxT("/MainFrame")
+#define SIM_MANAGER_REG_PATHS			wxT("/Paths")
+#define SIM_MANAGER_REG_DSAM_HELP_PATH	wxT("DSAMHelp")
+#define SIM_MANAGER_REG_DSAM_HELP_BOOK	wxT("DSAMHelp")
+#define SIM_MANAGER_REG_APP_HELP_PATH	wxT("Help")
+#define SIM_MANAGER_REG_MAIN_PARS		wxT("/MainPars")
 
 
-#define	SIM_MANAGER_DEFAULT_SERVER_NAME		"DSAM IPC Server"
-#define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	"Program parameters"
+#define	SIM_MANAGER_DEFAULT_SERVER_NAME		wxT("DSAM IPC Server")
+#define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	wxT("Program parameters")
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/

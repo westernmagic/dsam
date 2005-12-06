@@ -38,7 +38,7 @@
 
 typedef struct {
 
-	char	*name;
+	WChar	*name;
 	ModuleClassSpecifier	classSpecifier;
 	ModuleSpecifier		specifier;
 	BOOLN	(* InitModule )(ModulePtr);

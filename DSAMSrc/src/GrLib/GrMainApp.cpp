@@ -49,7 +49,7 @@
  * the "main" subroutine in the header file.
  */
 
-GrMainApp::GrMainApp(int theArgc, char **theArgv): MainApp(theArgc, theArgv,
+GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
   MainSimulation)
 {
 	dSAMMainApp = this;

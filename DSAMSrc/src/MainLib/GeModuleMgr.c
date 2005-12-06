@@ -572,8 +572,8 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 	parList = (* data->module->GetUniParListPtr)();
 	if ((par = FindUniPar_UniParMgr(&parList, parName, UNIPAR_SEARCH_ABBR)) ==
 	  NULL) {
-		NotifyError("%s: Could not find parameter '%s' for process '%s'",
-		  funcName, parName, data->module->name);
+		NotifyError("%s: Could not find parameter '%s' for process '" STR_FMT
+		  "'", funcName, parName, data->module->name);
 		return(NULL);
 	}
 	return(par);
@@ -680,8 +680,8 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 		}
 		if (par || !useOldReadPars) {
 			if (!par) {
-				NotifyError("%s: Unknown parameter '%s' for module '%s'.",
-				  funcName, parName, data->module->name);
+				NotifyError("%s: Unknown parameter '%s' for module '" STR_FMT
+				  "'.", funcName, parName, data->module->name);
 				ok = FALSE;
 			} else {
 				if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
@@ -701,10 +701,10 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	}
 	if (!ok) {
 		if (*failedParName)
-			NotifyError("%s: Unknown parameter '%s' for module '%s'.", funcName,
-			  failedParName, data->module->name);
-		NotifyError("%s: Invalid parameters, in '%s' module parameter file "
-		  "'%s'.", funcName, data->module->name, fileName);
+			NotifyError("%s: Unknown parameter '%s' for module '" STR_FMT "'.",
+			  funcName, failedParName, data->module->name);
+		NotifyError("%s: Invalid parameters, in " STR_FMT " module parameter "
+		  "file '%s'.", funcName, data->module->name, fileName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -885,16 +885,16 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 			return(TRUE);
 		if (SetSimUniParValue_Utility_SimScript(parName, value))
 			return(TRUE);
-		NotifyError("%s: Could not find parameter '%s' for process '%s'",
-		  funcName, parName, data->module->name);
+		NotifyError("%s: Could not find parameter '%s' for process '" STR_FMT
+		  "'", funcName, parName, data->module->name);
 		return(FALSE);
 	default: {
 		UniParPtr	par;
 		UniParListPtr	parList = (* data->module->GetUniParListPtr)();
 		if ((par = FindUniPar_UniParMgr(&parList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Could not find parameter '%s' for process '%s'",
-			  funcName, parName, data->module->name);
+			NotifyError("%s: Could not find parameter '%s' for process '"
+			  STR_FMT "'", funcName, parName, data->module->name);
 			return(FALSE);
 		}
 		return(SetParValue_UniParMgr(&parList, par->index, value));

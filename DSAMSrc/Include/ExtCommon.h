@@ -32,4 +32,8 @@
 #	endif
 // Any files included regardless of precompiled headers
 
+#if wxUSE_UNICODE
+#	define DSAM_USE_UNICODE		1
+#endif
+
 #endif

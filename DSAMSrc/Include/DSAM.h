@@ -172,6 +172,7 @@
 #		undef FALSE
 
 //		For compilers that support precompilation, includes "wx.h".
+#		undef	wxT
 #		include <wx/wxprec.h>
 
 #		ifdef __BORLANDC__

@@ -176,16 +176,16 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->readAppParFileFlag = FALSE;
 	appInterfacePtr->printUsageFlag = FALSE;
 	appInterfacePtr->simulationFinishedFlag = TRUE;
-	strcpy(appInterfacePtr->appName, "No Name");
+	DSAM_strcpy(appInterfacePtr->appName, wxT("No Name"));
 	strcpy(appInterfacePtr->appParFile, NO_FILE);
 	strcpy(appInterfacePtr->appVersion, "?.?.?");
 	strcpy(appInterfacePtr->compiledDSAMVersion, "?.?.?");
 	strcpy(appInterfacePtr->title, "No title");
 	for (i = 0; i < APP_MAX_AUTHORS; i++)
 		appInterfacePtr->authors[i][0] = '\0';
-	strcpy(appInterfacePtr->simulationFile, NO_FILE);
+	DSAM_strcpy(appInterfacePtr->simulationFile, wxT(NO_FILE));
 	strcpy(appInterfacePtr->diagMode, DEFAULT_FILE_NAME);
-	strcpy(appInterfacePtr->installDir, ".");
+	DSAM_strcpy(appInterfacePtr->installDir, wxT("."));
 	appInterfacePtr->argv = NULL;
 	appInterfacePtr->argc = 0;
 	appInterfacePtr->initialCommand = 0;
@@ -208,7 +208,6 @@ Init_AppInterface(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	appInterfacePtr->appParList = NULL;
-	strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	appInterfacePtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
 	appInterfacePtr->canFreePtrFlag = TRUE;
 	appInterfacePtr->OnExit = NULL;
@@ -253,7 +252,7 @@ SetUniParList_AppInterface(void)
 	SetPar_UniParMgr(&pars[APP_INT_SIMULATIONFILE], "SIM_FILE",
 	  "Simulation file.",
 	  UNIPAR_FILE_NAME,
-	  &appInterfacePtr->simulationFile, (char *) "Sim. Par File (*.spf)|*.spf|"
+	  &appInterfacePtr->simulationFile, (WChar *) "Sim. Par File (*.spf)|*.spf|"
 	  "Sim. script (*.sim)|*.sim|All files (*.*)|*.*",
 	  (void * (*)) SetSimulationFile_AppInterface);
 	SetPar_UniParMgr(&pars[APP_INT_SEGMENTMODE], "SEGMENT_MODE",
@@ -326,7 +325,7 @@ SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
  */
 
 BOOLN
-SetSimulationFile_AppInterface(char *theSimulationFile)
+SetSimulationFile_AppInterface(WChar *theSimulationFile)
 {
 	static const char	*funcName = "SetSimulationFile_AppInterface";
 
@@ -334,11 +333,11 @@ SetSimulationFile_AppInterface(char *theSimulationFile)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	if (*theSimulationFile == '\0') {
+	if (*theSimulationFile == wxT('\0')) {
 		NotifyError("%s: Illegal zero length name.", funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, "%s",
+	DSAM_snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, "%s",
 	  theSimulationFile);
 	appInterfacePtr->simulationFileFlag = TRUE;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
@@ -457,7 +456,7 @@ SetMaxUserModules_AppInterface(int maxUserModules)
  */
 
 BOOLN
-SetInstallDir_AppInterface(char *theInstallDir)
+SetInstallDir_AppInterface(WChar *theInstallDir)
 {
 	static const char	*funcName = "SetInstallDir_AppInterface";
 
@@ -465,7 +464,8 @@ SetInstallDir_AppInterface(char *theInstallDir)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, "%s", theInstallDir);
+	DSAM_snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, wxT("%s"),
+	  theInstallDir);
 	return(TRUE);
 
 }
@@ -688,7 +688,7 @@ PrintPars_AppInterface(void)
 	DPrint("Simulation script application interface settings:\n");
 	DPrint("Diagnostics specifier is set to '%s'.\n",
 	  appInterfacePtr->diagModeList[appInterfacePtr->diagModeSpecifier].name);
-	DPrint("This simulation is run from the file '%s'.\n",
+	DPrint("This simulation is run from the file " STR_FMT ".\n",
 	  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 	DPrint("Thread mode '%' used with '%d' threads.\n", appInterfacePtr->
 	  threadModeList[appInterfacePtr->threadMode].name,
@@ -711,13 +711,13 @@ PrintUsage_AppInterface(void)
 		NotifyError("%s: Application interface not initialised.", funcName);
 		return;
 	}
-	fprintf(stderr, "\n"
+	DSAM_fprintf(stderr, wxT("\n"
 	  "Usage: %s [options] [parameter1 value1 parameter2 value2 ...]\n"
 	  "\t-d <state>    \t: Diagnostics mode ('off', 'screen' or filename).\n"
 	  "\t-h            \t: Produce this help message.\n"
 	  "\t-l <list>     \t: List options: 'parameters', 'cfinfo'.\n"
 	  "\t-P <file name>\t: Use this main parameter file\n"
-	  "\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n",
+	  "\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n"),
 	  appInterfacePtr->appName);
 
 }
@@ -1263,7 +1263,7 @@ InitSimulation_AppInterface(void)
  */
 
 BOOLN
-SetAppName_AppInterface(char *appName)
+SetAppName_AppInterface(WChar *appName)
 {
 	static const char *funcName = "SetAppName_AppInterface";
 

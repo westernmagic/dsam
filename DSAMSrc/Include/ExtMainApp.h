@@ -51,7 +51,7 @@ class MainApp {
 
 	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag, diagsOn;
 	bool	threadedSimExecutionFlag;
-	char	**argv;
+	wxChar	**argv;
 	int		argc;
 	int		serverPort;
 	int		(* ExternalMain)(void);
@@ -65,7 +65,7 @@ class MainApp {
 	RunThreadedProc	*runThreadedProc;
 	wxCriticalSection	mainCritSect;
 
-  	MainApp(int theArgc = 0, char **theArgv = NULL, int (* TheExternalMain)(
+  	MainApp(int theArgc = 0, wxChar **theArgv = NULL, int (* TheExternalMain)(
 	  void) = NULL, int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
@@ -85,7 +85,7 @@ class MainApp {
 	void	DeleteSimThread(void);
 	void	FreeArgStrings(void);
 	int		GetArgc(void)	{ return argc; }
-	char **	GetArgv(void)	{ return argv; }
+	wxChar **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
 	wxFileName &	GetSimFileName(void)	{ return simFileName; }
@@ -98,7 +98,7 @@ class MainApp {
 	char *	RestoreQuotedStr(char *str);
 	int		RunServer(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
-	void	SetArgv(char **theArgv)	{ argv = theArgv; }
+	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, char *string, int size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
 	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,

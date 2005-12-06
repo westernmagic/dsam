@@ -63,7 +63,7 @@ MainApp	*dSAMMainApp = NULL;
  * the "main" subroutine in the header file.
  */
 
-MainApp::MainApp(int theArgc, char **theArgv, int (* TheExternalMain)(void),
+MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
 	initOk = true;
@@ -165,7 +165,7 @@ MainApp::RunServer(void)
 	else
 		SetDiagMode(COMMON_OFF_DIAG_MODE);
 	InitMain(FALSE);
-	IPCServer *server = new IPCServer("", serverPort, superServerFlag);
+	IPCServer *server = new IPCServer(wxT(""), serverPort, superServerFlag);
 	if (!server->Ok()) {
 		NotifyError("%s: Could not start server.\n", funcName);
 		return(false);

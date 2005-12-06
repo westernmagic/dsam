@@ -43,7 +43,7 @@ class GrMainApp: public MainApp {
 	SDIDiagram	*diagram;
 
   public:
-  	GrMainApp(int theArgc, char **theArgv);
+  	GrMainApp(int theArgc, wxChar **theArgv);
 
 	void	InitXMLDocument(void);
 	bool	ResetSimulation(void);

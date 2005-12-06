@@ -49,9 +49,25 @@
 
 #include <stdarg.h>
 #include <limits.h>		/* - sort out DBL_MAX previously defined problems. */
+#include <wchar.h>
 
 #ifdef DMALLOC
 #	include "dmalloc.h"
+#endif
+
+/******************************************************************************/
+/*************************** Pre-constant Macro Definitions *******************/
+/******************************************************************************/
+
+/* The following definition is required for unicode internationalisation support
+ */
+
+#ifndef wxT
+#	if DSAM_USE_UNICODE
+#		define wxT(X)	L ## X
+#	else
+#		define wxT(X)	X
+#	endif
 #endif
 
 /******************************************************************************/
@@ -83,7 +99,7 @@
 #define MAX_FILE_PATH		255		/* For file names - can have long paths */
 #define UNSET_STRING		"<unset>" /* initial string value for arrays. */
 #define TAB_SPACES			4		/* Spaces per tab with GRAPHICS_SUPPORT */
-#define	NO_FILE				"not_set"	/* -for when this must be indicated. */
+#define	NO_FILE				"not_set" /*-for when this must be indicated.*/
 #define	DEFAULT_FILE_NAME	"<file name>"
 #define DEFAULT_ERRORS_FILE		stderr
 #define DEFAULT_WARNINGS_FILE	stdout
@@ -95,7 +111,7 @@
 #define	DSAM_VERSION_SEPARATOR	'.'
 
 #ifndef DSAM_DATA_INSTALL_DIR
-#	define	DSAM_DATA_INSTALL_DIR	"."	/* Used to find the DSAM help files. */
+#	define	DSAM_DATA_INSTALL_DIR	wxT(".") /* Used to find DSAM help files. */
 #endif
 
 #ifndef TRUE
@@ -127,6 +143,22 @@
 
 #define	LEFT_CHAN	0
 #define RIGHT_CHAN	1
+
+/*
+ * This next code is for UNICODE compilation options.
+ */
+
+#if DSAM_USE_UNICODE
+#	define DSAM_fprintf		wprintf
+#	define DSAM_snprintf	swprintf
+#	define DSAM_strcpy		wcscpy
+#	define STR_FMT			wxT("%ls")
+#else
+#	define DSAM_fprintf		fprintf
+#	define DSAM_snprintf	snprintf
+#	define DSAM_strcpy		strcpy
+#	define STR_FMT			"%s"
+#endif /* DSAM_USE_UNICODE */
 
 // ----------------------------------------------------------------------------
 // Making or using DSAM as a Windows DLL
@@ -202,13 +234,15 @@
 
 #define	POSSIBLY_NULL_STRING_PTR(S)	(((S))? (S): UNSET_STRING)
 
-/* This next definition is need for compiler niceties in MS Visual C++
+/*
+ * This next definition is need for compiler niceties in MS Visual C++
  * otherwise it complains about "int being forces to 'true' or 'false'.
  */
 
 #ifdef __cplusplus
 #	define CXX_BOOL(A)		((A) != 0)
 #endif
+
 /*
  * __BEGIN_DECLS should be used at the beginning of all C declarations,
  * so that C++ compilers don't mangle their names.  Use __END_DECLS at
@@ -242,6 +276,12 @@ typedef	unsigned long	ChanLen;	/* For the channel indices. */
 typedef	double			ChanData;	/* Data type for channel data. */
 typedef	unsigned short	uShort;
 typedef	unsigned short	uInt;
+		
+#if DSAM_USE_UNICODE
+	typedef wchar_t		WChar;		/* Type for unicode text */
+#else
+	typedef char		WChar;
+#endif
 
 typedef enum {
 	

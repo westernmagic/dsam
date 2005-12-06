@@ -58,7 +58,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 DSAM_PACKAGE=dsam
-AC_DEFINE_UNQUOTED(DSAM_PACKAGE,"$DSAM_PACKAGE", "DSAM Package name")
+AC_DEFINE_UNQUOTED(DSAM_PACKAGE,wxT("$DSAM_PACKAGE"), "DSAM Package name")
 AC_SUBST(DSAM_PACKAGE)
 
 AM_INIT_AUTOMAKE($DSAM_PACKAGE, $DSAM_VERSION)
@@ -74,22 +74,16 @@ dnl ============================================================================
 dnl Configure ENABLE options
 dnl ============================================================================
 
-AC_ARG_ENABLE(wxwin,
-   [  --disable-wxwin            Do not compile any wxWindows support],
-   [WXWIN="$enableval"],
-   [WXWIN="yes"]
-)
-
 AC_ARG_ENABLE(dsam_extensions,
    [  --disable-dsam-extensions  Do not compile DSAM extensions support],
    [DSAM_EXT="$enableval"],
    [DSAM_EXT="yes"]
 )
 
-AC_ARG_ENABLE(wx_ogl,
-   [  --disable-wx_ogl           Do not compile wx OGL support],
-   [WX_OGL="$enableval"],
-   [WX_OGL="yes"]
+AC_ARG_ENABLE(gui,
+   [  --disable-gui            Do not compile any wxWindows support],
+   [gui="$enableval"],
+   [gui="yes"]
 )
 
 AC_ARG_ENABLE(portaudio,
@@ -98,20 +92,21 @@ AC_ARG_ENABLE(portaudio,
    [enable_portaudio="yes"]
 )
 
+AC_ARG_ENABLE(unicode,
+   [  --disable-unicode        Do not compile Unicode support],
+   [enable_unicode="$enableval"],
+   [enable_unicode="yes"]
+)
+
+AC_ARG_ENABLE(wx_ogl,
+   [  --disable-wx_ogl           Do not compile wx OGL support],
+   [WX_OGL="$enableval"],
+   [WX_OGL="yes"]
+)
+
 dnl ============================================================================
 dnl Configure WITH options
 dnl ============================================================================
-
-AC_ARG_WITH(wx_ogl-headers,
-   [  --with-wx_ogl-headers=DIR  wx OGL Include files location],
-   [WX_OGL_HDR_DIR="$withval"]
-   [WX_OGL_CPPFLAGS="-I$withval"] 
-)
-
-AC_ARG_WITH(wx_ogl-lib,
-   [  --with-wx_ogl-lib=DIR      wx OGL Library location],
-   [WX_OGL_LDFLAGS="-L$withval"] 
-)
 
 AC_ARG_WITH(portaudio-headers,
    [  --with-portaudio-headers=DIR  PortAudio Include files location],
@@ -122,6 +117,17 @@ AC_ARG_WITH(portaudio-headers,
 AC_ARG_WITH(portaudio-lib,
    [  --with-portaudio-lib=DIR      PortAudio Library location],
    [PORTAUDIO_LDFLAGS="-L$withval"] 
+)
+
+AC_ARG_WITH(wx_ogl-headers,
+   [  --with-wx_ogl-headers=DIR  wx OGL Include files location],
+   [WX_OGL_HDR_DIR="$withval"]
+   [WX_OGL_CPPFLAGS="-I$withval"] 
+)
+
+AC_ARG_WITH(wx_ogl-lib,
+   [  --with-wx_ogl-lib=DIR      wx OGL Library location],
+   [WX_OGL_LDFLAGS="-L$withval"] 
 )
 
 dnl ============================================================================
@@ -352,7 +358,7 @@ dnl wxWin library (General)
 dnl ----------------------------------------------------------------------------
 
 wxwinAvailable=no
-if test x$WXWIN = xyes; then
+if test x$gui = xyes -o x$DSAM_EXT = xyes; then
 	AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_CONFIG))
 	if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
 		wxwinAvailable=yes
@@ -362,13 +368,11 @@ if test x$WXWIN = xyes; then
 	AC_MSG_RESULT($wxwinAvailable)
 fi
 
-using_wxWidgets_gui=
-
 dnl ----------------------------------------------------------------------------
 dnl wxBase library
 dnl ----------------------------------------------------------------------------
 
-if test x$DSAM_EXT = xyes; then
+if test x$DSAM_EXT = xyes -a x$wxwinAvailable = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	LDFLAGS_save=$LDFLAGS
@@ -405,10 +409,10 @@ if test x$DSAM_EXT = xyes; then
 fi
 
 dnl ----------------------------------------------------------------------------
-dnl wxGTK library
+dnl wxWidgets GUI library
 dnl ----------------------------------------------------------------------------
 
-if test x$WXWIN = xyes; then
+if test x$gui = xyes -a x$wxwinAvailable = xyes; then
 	AC_MSG_CHECKING([for wxWidgets GUI support])
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
@@ -571,13 +575,13 @@ if test x$wx_base_available = xyes; then
 	AC_SUBST(WX_BASE_CXXFLAGS)
 	WX_BASE_LDFLAGS="`$WX_CONFIG --libs base net`"
 	AC_SUBST(WX_BASE_LDFLAGS)
-	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
 if test x$using_wxWidgets_ogl = xyes; then
 	AC_DEFINE(USE_WX_OGL, 1, [Use wxWidgets OGL Support])
 	WXOGLLIBS="`$WX_CONFIG --libs ogl`"
+	AC_SUBST(WXOGLLIBS)
 fi
 
 if test x$using_wxWidgets_gui = xyes; then
@@ -588,12 +592,15 @@ if test x$using_wxWidgets_gui = xyes; then
 	AC_SUBST(WXRESFLAGS)
 	XINCLUDE=$wx_xinclude
 	AC_SUBST(XINCLUDE)
-	WXINC="`$WX_CONFIG --cxxflags`"
-	AC_SUBST(WXINC)
-	WXLDLIBS="`$WX_CONFIG --libs` $WXOGLLIBS"
-	AC_SUBST(WXLDLIBS)
 fi
 AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxWidgets_gui = xyes)
+
+if  test x$using_wxWidgets_gui = xyes -o x$using_wxWidgets_ogl = xyes; then
+	WXINC="`$WX_CONFIG --cxxflags`"
+	AC_SUBST(WXINC)
+	WXLDLIBS="`$WX_CONFIG --libs`"
+	AC_SUBST(WXLDLIBS)
+fi
 
 if test x$using_portaudio = xyes; then
 	AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
@@ -601,6 +608,11 @@ if test x$using_portaudio = xyes; then
 	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
 AM_CONDITIONAL(USE_PORTAUDI, test x$using_portaudio = xyes)
+
+if test x$enable_unicode = xyes; then
+	AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
+fi
+AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
 
 dnl ============================================================================
 dnl Checks for system services or capabilities.

@@ -215,7 +215,7 @@ MyApp::OnInit(void)
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 
 	// Get config setup
-	SetVendorName("CNBH");
+	SetVendorName(wxT("CNBH"));
 
 	// Get config setup
 	pConfig = wxConfigBase::Get();
@@ -232,30 +232,30 @@ MyApp::OnInit(void)
 	// Create a document manager
 	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
-	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
+	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_XML_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_XML_FILE_EXT, "Simulation Design", "Simulation view",
-	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
-	(void) new wxDocTemplate(myDocManager, "Simulation Parameter File", "*."
-	  SDI_DOCUMENT_SPF_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_SPF_FILE_EXT, "Simulation Design", "Simulation view",
-	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
-	(void) new wxDocTemplate(myDocManager, "Simulation Script", "*."
+	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
+	  "view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, wxT("Simulation Parameter File"),
+	  wxT("*.") SDI_DOCUMENT_SPF_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
+	  SDI_DOCUMENT_SPF_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
+	  "view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_SIM_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_SIM_FILE_EXT, "Simulation Design", "Simulation view",
-	  CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	  SDI_DOCUMENT_SIM_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
+	  "view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);
 
 	// Get frame position and size
 	pConfig->SetPath(SIM_MANAGER_REG_MAIN_FRAME);
-	int		x = pConfig->Read("x", (long int) 0);
-	int		y = pConfig->Read("y", (long int) 0);
-	int		w = pConfig->Read("w", (long int) SIM_MANAGER_DEFAULT_WIDTH);
-	int		h = pConfig->Read("h", (long int) SIM_MANAGER_DEFAULT_HEIGHT);
+	int		x = pConfig->Read(wxT("x"), (long int) 0);
+	int		y = pConfig->Read(wxT("y"), (long int) 0);
+	int		w = pConfig->Read(wxT("w"), (long int) SIM_MANAGER_DEFAULT_WIDTH);
+	int		h = pConfig->Read(wxT("h"), (long int) SIM_MANAGER_DEFAULT_HEIGHT);
 
 	// Create the main frame window
-	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, "Simulation Manager",
-	  wxPoint(x, y), wxSize(w, h), wxDEFAULT_FRAME_STYLE);
+	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, wxT("Simulation "
+	  "Manager"), wxPoint(x, y), wxSize(w, h), wxDEFAULT_FRAME_STYLE);
 
 	frame->SetMenuBar(CreateMenuBar());
 	frame->editMenu = editMenu;
@@ -297,13 +297,14 @@ void
 MyApp::InitHelp(void)
 {
 	help.UseConfig(wxConfig::Get());
-	// help.SetTempDir(".");  -- causes crashes on solaris
+	// help.SetTempDir(wxT("."));  -- causes crashes on solaris
 	if (GetPtr_AppInterface()) {
 		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, wxString(GetPtr_AppInterface(
-		  )->installDir) + "/" + SIM_MANAGER_HELP_DIR, wxString(
-		  GetPtr_AppInterface()->appName).Upper() + "Help");
+		  )->installDir) + wxT("/") + SIM_MANAGER_HELP_DIR, wxString(
+		  GetPtr_AppInterface()->appName).Upper() + wxT("Help"));
 		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, wxString(
-		  DSAM_DATA_INSTALL_DIR) + "/" + SIM_MANAGER_HELP_DIR, DSAM_PACKAGE);
+		  DSAM_DATA_INSTALL_DIR) + wxT("/") + SIM_MANAGER_HELP_DIR,
+		  DSAM_PACKAGE);
 	}
 
 }
@@ -326,12 +327,13 @@ MyApp::CreateMenuBar(void)
 	  "Simulation."));
 	fileMenu->Append(wxID_CLOSE, wxT("&Close\tCtrl-W"));
  	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save simulation "
-	  "parameter file."));
+	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save "
+	  "simulation parameter file."));
 	fileMenu->Append(wxID_SAVEAS,  wxT("Save as..."),  wxT("Save simulation "
 	  "parameter file..."));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, wxT("E&xit\tCtrl-Q"), wxT("Exit from program."));
+	fileMenu->Append(wxID_EXIT, wxT("E&xit\tCtrl-Q"), wxT("Exit from "
+	  "program."));
 	myDocManager->FileHistoryUseMenu(fileMenu);
 
 	editMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
@@ -343,24 +345,24 @@ MyApp::CreateMenuBar(void)
 	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Main Parameters..."
 	  "\tCtrl-M"), wxT("Edit main program preferences"));
 
-	viewMenu = new wxMenu("", wxMENU_TEAROFF);
-	viewMenu->Append(MYFRAME_ID_VIEW_SIM_PARS, "&Simulation parameters",
-	  "List simulation parameters (to diagnostic window)");
+	viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+	viewMenu->Append(MYFRAME_ID_VIEW_SIM_PARS, wxT("&Simulation parameters"),
+	  wxT("List simulation parameters (to diagnostic window)"));
 
 	programMenu = new wxMenu;
-	programMenu->Append(SDIFRAME_EXECUTE, "&Execute\tCtrl-G", "Execute "
-	  "simulation");
-	programMenu->Append(SDIFRAME_STOP_SIMULATION, "S&top simulation\tCtrl-C",
-	  "Stop simulation execution.");
+	programMenu->Append(SDIFRAME_EXECUTE, wxT("&Execute\tCtrl-G"), wxT(
+	  "Execute simulation"));
+	programMenu->Append(SDIFRAME_STOP_SIMULATION, wxT("S&top "
+	  "simulation\tCtrl-C"), wxT("Stop simulation execution."));
 
-	windowsMenu = new wxMenu("", wxMENU_TEAROFF);
-	windowsMenu->Append(SDIFRAME_DIAG_WINDOW, "Diagnostic Window",
-	  "Open diagnostics window.");
+	windowsMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
+	windowsMenu->Append(SDIFRAME_DIAG_WINDOW, wxT("Diagnostic Window"),
+	  wxT("Open diagnostics window."));
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(SDIFRAME_ABOUT, _("&About...\tCtrl-A"),
-	  _("Show about dialog"));
-	helpMenu->Append(wxID_HELP, "&Help Topics...\tCtrl-H");
+	helpMenu->Append(SDIFRAME_ABOUT, wxT("&About...\tCtrl-A"),
+	  wxT("Show about dialog"));
+	helpMenu->Append(wxID_HELP, wxT("&Help Topics...\tCtrl-H"));
 	if (!helpCount)
 		helpMenu->Enable(wxID_HELP, FALSE);
 
@@ -374,12 +376,12 @@ MyApp::CreateMenuBar(void)
 	// Make a menubar
 	wxMenuBar *menuBar = new wxMenuBar((long) (wxMB_DOCKABLE));
 
-	menuBar->Append(fileMenu, "&File");
-	menuBar->Append(editMenu, "&Edit");
-	menuBar->Append(viewMenu, "&View");
-	menuBar->Append(programMenu, "&Program");
-	menuBar->Append(windowsMenu, "&Windows");
-	menuBar->Append(helpMenu, "&Help");
+	menuBar->Append(fileMenu, wxT("&File"));
+	menuBar->Append(editMenu, wxT("&Edit"));
+	menuBar->Append(viewMenu, wxT("&View"));
+	menuBar->Append(programMenu, wxT("&Program"));
+	menuBar->Append(windowsMenu, wxT("&Windows"));
+	menuBar->Append(helpMenu, wxT("&Help"));
 	return(menuBar);
 
 }

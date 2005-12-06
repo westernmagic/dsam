@@ -119,7 +119,7 @@ typedef unsigned int	ModuleHandle;	/* For module management. */
 typedef struct moduleStruct {
 
 	BOOLN	onFlag;
-	char	name[MAX_MODULE_NAME];
+	WChar	name[MAX_MODULE_NAME];
 	int		numSubProcesses;	/* No. of sub-process to register with threads*/
 	EarObjectPtr	*subProcessList;
 	ModuleSpecifier	specifier;

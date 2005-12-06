@@ -567,18 +567,6 @@ RunProcess_RunThreadedProc(EarObjectPtr data)
 
 }
 
-/*************************** RunChainProcess **********************************/
-
-/*
- */
- 
-BOOLN
-RunChainProcesss_RunThreadedProc(EarObjectPtr data)
-{
-	return(runThreadedProc->RunChainProcess(data));
-
-}
-
 /*************************** Execute ******************************************/
 
 /*
