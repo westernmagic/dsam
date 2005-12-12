@@ -83,13 +83,13 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
-	runThreadedProc = new RunThreadedProc();
 	symList = NULL;
 	InitKeyWords_Utility_SSSymbols(&symList);
 	if (ExternalMain)
 		initOk = InitRun();
 	if (initOk)
 		CheckOptions();
+	runThreadedProc = new RunThreadedProc();
 	
 }
 
