@@ -99,6 +99,8 @@ BOOLN	PrintPars_Analysis_FourierT(void);
 
 BOOLN	ReadPars_Analysis_FourierT(char *fileName);
 
+void	ResetProcess_Analysis_FourierT(EarObjectPtr data);
+
 BOOLN	InitModule_Analysis_FourierT(ModulePtr theModule);
 
 BOOLN	SetOutputMode_Analysis_FourierT(char * theOutputMode);

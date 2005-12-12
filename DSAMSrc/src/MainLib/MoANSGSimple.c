@@ -511,101 +511,6 @@ ReadPars_ANSpikeGen_Simple(char *fileName)
     
 }
 
-/**************************** InitProcessVariables ****************************/
-
-/*
- * This function allocates the memory for the process variables.
- */
-
-BOOLN
-InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
-{
-	static const char *funcName = "InitProcessVariables_ANSpikeGen_Simple";
-	int		i, j, arrayLength;
-	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
-	SimpleSGPtr	p = simpleSGPtr;
-	
-	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
-	  timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * p->numFibres;
-		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
-			FreeProcessVariables_ANSpikeGen_Simple();
-			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
-				return(FALSE);
-			p->numThreads = data->numThreads;
-			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
-			  double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for timer pointer array.",
-				  funcName);
-			 	return(FALSE);
-			}
-			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
-			  sizeof(double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
-				  "array.", funcName);
-			 	return(FALSE);
-			}
-			for (i = 0; i < p->numThreads; i++) {
-				if ((p->timer[i] = (double *) calloc(arrayLength, sizeof(
-				  double))) == NULL) {
-			 		NotifyError("%s: Out of memory for timer array.", funcName);
-			 		return(FALSE);
-				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(arrayLength,
-				  sizeof(double))) == NULL) {
-			 		NotifyError("%s: Out of memory for remainingPulseTime "
-					  "array.", funcName);
-			 		return(FALSE);
-				}
-			}
-			p->updateProcessVariablesFlag = FALSE;
-		}
-		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
-		  outSignal->dt;
-		for (i = 0; i < p->numThreads; i++) {
-			timerPtr = p->timer[i];
-			remainingPulseTimePtr = p->remainingPulseTime[i];
-			for (j = 0; j < arrayLength; j++) {
-				*timerPtr++ = timeGreaterThanRefractoryPeriod;
-				*remainingPulseTimePtr++ = 0.0;
-			}
-		}
-	}
-	return(TRUE);
-
-}
-
-/**************************** FreeProcessVariables ****************************/
-
-/*
- * This routine releases the memory allocated for the process variables
- * if they have been initialised.
- */
-
-void
-FreeProcessVariables_ANSpikeGen_Simple(void)
-{
-	int		i;
-	SimpleSGPtr	p = simpleSGPtr;
-
-	if (p->timer) {
-		for (i = 0; i < p->numThreads; i++)
-			if (p->timer[i])
-				free(p->timer[i]);
-		free(p->timer);
-		p->timer = NULL;
-	}
-	if (p->remainingPulseTime) {
-		for (i = 0; i < p->numThreads; i++)
-			if (p->remainingPulseTime[i])
-				free(p->remainingPulseTime[i]);
-		free(p->remainingPulseTime);
-		p->remainingPulseTime = NULL;
-	}
-	simpleSGPtr->updateProcessVariablesFlag = TRUE;
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -653,9 +558,145 @@ InitModule_ANSpikeGen_Simple(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Simple;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Simple;
 	theModule->ReadPars = ReadPars_ANSpikeGen_Simple;
+	theModule->ResetProcess = ResetProcess_ANSpikeGen_Simple;
 	theModule->RunProcess = RunModel_ANSpikeGen_Simple;
 	theModule->SetParsPointer = SetParsPointer_ANSpikeGen_Simple;
 	return(TRUE);
+
+}
+
+/**************************** ResetProcessThread ******************************/
+
+/*
+ * This routine resets the process thread-related variables.
+ */
+
+void
+ResetProcessThread_ANSpikeGen_Simple(EarObjectPtr data,
+  double timeGreaterThanRefractoryPeriod, int i)
+{
+	int		j;
+	double	*timerPtr, *remainingPulseTimePtr;
+	SimpleSGPtr	p = simpleSGPtr;
+
+	timerPtr = p->timer[i];
+	remainingPulseTimePtr = p->remainingPulseTime[i];
+	for (j = 0; j < p->arrayLength; j++) {
+		*timerPtr++ = timeGreaterThanRefractoryPeriod;
+		*remainingPulseTimePtr++ = 0.0;
+	}
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_ANSpikeGen_Simple(EarObjectPtr data)
+{
+	int		i;
+	double	timeGreaterThanRefractoryPeriod;
+	SimpleSGPtr	p = simpleSGPtr;
+
+	ResetOutSignal_EarObject(data);
+	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+	  outSignal->dt;
+	if (data->threadRunFlag)
+		ResetProcessThread_ANSpikeGen_Simple(data,
+		  timeGreaterThanRefractoryPeriod, data->threadIndex);
+	else  {
+		for (i = 0; i < data->numThreads; i++) {
+			ResetProcessThread_ANSpikeGen_Simple(data,
+			  timeGreaterThanRefractoryPeriod, i);
+		}
+	}
+}
+
+/**************************** InitProcessVariables ****************************/
+
+/*
+ * This function allocates the memory for the process variables.
+ */
+
+BOOLN
+InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
+{
+	static const char *funcName = "InitProcessVariables_ANSpikeGen_Simple";
+	int		i;
+	SimpleSGPtr	p = simpleSGPtr;
+	
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		p->arrayLength = data->outSignal->numChannels * p->numFibres;
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
+			FreeProcessVariables_ANSpikeGen_Simple();
+			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+				return(FALSE);
+			p->numThreads = data->numThreads;
+			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
+			  double*))) == NULL) {
+			 	NotifyError("%s: Out of memory for timer pointer array.",
+				  funcName);
+			 	return(FALSE);
+			}
+			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
+			  sizeof(double*))) == NULL) {
+			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
+				  "array.", funcName);
+			 	return(FALSE);
+			}
+			for (i = 0; i < p->numThreads; i++) {
+				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
+				  double))) == NULL) {
+			 		NotifyError("%s: Out of memory for timer array.", funcName);
+			 		return(FALSE);
+				}
+				if ((p->remainingPulseTime[i] = (double *) calloc(p->
+				  arrayLength, sizeof(double))) == NULL) {
+			 		NotifyError("%s: Out of memory for remainingPulseTime "
+					  "array.", funcName);
+			 		return(FALSE);
+				}
+			}
+			p->updateProcessVariablesFlag = FALSE;
+		}
+		ResetProcess_ANSpikeGen_Simple(data);
+	}
+	return(TRUE);
+
+}
+
+/**************************** FreeProcessVariables ****************************/
+
+/*
+ * This routine releases the memory allocated for the process variables
+ * if they have been initialised.
+ */
+
+void
+FreeProcessVariables_ANSpikeGen_Simple(void)
+{
+	int		i;
+	SimpleSGPtr	p = simpleSGPtr;
+
+	if (p->timer) {
+		for (i = 0; i < p->numThreads; i++)
+			if (p->timer[i])
+				free(p->timer[i]);
+		free(p->timer);
+		p->timer = NULL;
+	}
+	if (p->remainingPulseTime) {
+		for (i = 0; i < p->numThreads; i++)
+			if (p->remainingPulseTime[i])
+				free(p->remainingPulseTime[i]);
+		free(p->remainingPulseTime);
+		p->remainingPulseTime = NULL;
+	}
+	simpleSGPtr->updateProcessVariablesFlag = TRUE;
 
 }
 

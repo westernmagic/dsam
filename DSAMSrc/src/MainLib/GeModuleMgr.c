@@ -141,6 +141,7 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 #	endif
 	module->ReadPars = NULL;
 	module->ReadSignal = (BOOLN (*)(char *, EarObjectPtr)) DefaultFunc;
+	module->ResetProcess = (void (*)(EarObjectPtr)) DefaultFunc;
 	module->RunProcess = (BOOLN (*)(EarObjectPtr)) DefaultFunc;
 	module->InitModule = (BOOLN (*)(ModulePtr)) DefaultFunc;
 	module->SetParsPointer = (BOOLN (*)(ModulePtr)) DefaultFunc;
@@ -832,6 +833,29 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
 		return(NULL);
 	}
 	return(((SimScriptPtr) data->module->parsPtr)->parsFilePath);
+
+}
+
+/*************************** ResetProcess *************************************/
+
+/*
+ * This function runs the module process reset routine
+ */
+
+BOOLN
+ResetProcess_ModuleMgr(EarObjectPtr data)
+{
+	static const char *funcName = "ResetProcess_ModuleMgr";
+
+	printf("%s: Called T[%d], (%s)\n", funcName, data->threadIndex, data->
+	  processName);
+	if (!CheckData_ModuleMgr(data, funcName))
+		return(FALSE);
+
+	SET_PARS_POINTER(data);
+	data->updateProcessFlag = TRUE;
+	(* data->module->ResetProcess)(data);
+	return(TRUE);
 
 }
 

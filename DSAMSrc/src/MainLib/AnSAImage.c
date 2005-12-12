@@ -772,6 +772,7 @@ InitModule_Analysis_SAI(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SAI;
 	theModule->PrintPars = PrintPars_Analysis_SAI;
 	theModule->ReadPars = ReadPars_Analysis_SAI;
+	theModule->ResetProcess = ResetProcess_Analysis_SAI;
 	theModule->RunProcess = Process_Analysis_SAI;
 	theModule->SetParsPointer = SetParsPointer_Analysis_SAI;
 	return(TRUE);
@@ -917,6 +918,33 @@ InitInputDecayArray_Analysis_SAI(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_SAI(EarObjectPtr data)
+{
+	int		i;
+	SAImagePtr	p = sAImagePtr;
+
+	ResetOutSignal_EarObject(data);
+	SetNumWindowFrames_SignalData(data->outSignal, 0);
+	ResetOutSignal_EarObject(p->dataBuffer);
+	ResetOutSignal_EarObject(p->strobeDataBuffer);
+	if (data->threadRunFlag)
+		p->inputCount[data->threadIndex] = 0;
+	else {
+		for (i = 0; i < data->numThreads; i++)
+			p->inputCount[i] = 0;
+	}
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+		p->decayCount[i] = 0;
+
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -971,27 +999,21 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 			p->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(
 			  p->strobeData, "criterion")->valuePtr.nameList.
 			  specifier == STROBE_USER_MODE)? 1: 0;
+			if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
+			  numChannels, data->outSignal->length, data->outSignal->dt)) {
+				NotifyError("%s: Cannot initialise channels for previous data.",
+				  funcName);
+				return(FALSE);
+			}
+			if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
+			  numChannels, data->outSignal->length, data->outSignal->dt)) {
+				NotifyError("%s: Cannot initialise channels for previous "
+				  "strobe data.", funcName);
+				return(FALSE);
+			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		ResetProcess_EarObject(p->dataBuffer);
-		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
-		  numChannels, data->outSignal->length, data->outSignal->dt)) {
-			NotifyError("%s: Cannot initialise channels for previous data.",
-			  funcName);
-			return(FALSE);
-		}
-		SetNumWindowFrames_SignalData(data->outSignal, 0);
-		ResetProcess_EarObject(p->strobeDataBuffer);
-		if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
-		  numChannels, data->outSignal->length, data->outSignal->dt)) {
-			NotifyError("%s: Cannot initialise channels for previous strobe "
-			  "data.", funcName);
-			return(FALSE);
-		}
-		for (i = 0; i < data->numThreads; i++)
-			p->inputCount[i] = 0;
-		for (i = 0; i < data->outSignal->numChannels; i++)
-			p->decayCount[i] = 0;
+		ResetProcess_Analysis_SAI(data);
 	}
 	return(TRUE);
 

@@ -73,6 +73,7 @@ InitModule_Utility_Accumulate(ModulePtr theModule)
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
+	theModule->ResetProcess = ResetProcess_Utility_Accumulate;
 	theModule->RunProcess = Process_Utility_Accumulate;
 	theModule->SetParsPointer = SetParsPointer_Utility_Accumulate;
 	return(TRUE);
@@ -119,6 +120,19 @@ CheckData_Utility_Accumulate(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_Accumulate(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
+
+}
+
 /****************************** Process ***************************************/
 
 /*
@@ -153,6 +167,7 @@ Process_Utility_Accumulate(EarObjectPtr data)
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
+		ResetProcess_Utility_Accumulate(data);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

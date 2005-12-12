@@ -808,6 +808,7 @@ InitModule_ANSpikeGen_Carney(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Carney;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Carney;
 	theModule->ReadPars = ReadPars_ANSpikeGen_Carney;
+	theModule->ResetProcess = ResetProcess_ANSpikeGen_Carney;
 	theModule->RunProcess = RunModel_ANSpikeGen_Carney;
 	theModule->SetParsPointer = SetParsPointer_ANSpikeGen_Carney;
 	return(TRUE);
@@ -850,6 +851,56 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcessThread ******************************/
+
+/*
+ * This routine resets the process thread-related variables.
+ */
+
+void
+ResetProcessThread_ANSpikeGen_Carney(EarObjectPtr data,
+  double timeGreaterThanRefractoryPeriod, int i)
+{
+	int		j;
+	double	*timerPtr, *remainingPulseTimePtr;
+	CarneySGPtr	p = carneySGPtr;
+
+	timerPtr = p->timer[i];
+	remainingPulseTimePtr = p->remainingPulseTime[i];
+	for (j = 0; j < p->arrayLength; j++) {
+		*timerPtr++ = timeGreaterThanRefractoryPeriod;
+		*remainingPulseTimePtr++ = 0.0;
+	}
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
+{
+	int		i;
+	double	timeGreaterThanRefractoryPeriod;
+	CarneySGPtr	p = carneySGPtr;
+
+	ResetOutSignal_EarObject(data);
+	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+	  outSignal->dt;
+	if (data->threadRunFlag)
+		ResetProcessThread_ANSpikeGen_Carney(data,
+		  timeGreaterThanRefractoryPeriod, data->threadIndex);
+	else  {
+		for (i = 0; i < data->numThreads; i++) {
+			ResetProcessThread_ANSpikeGen_Carney(data,
+			  timeGreaterThanRefractoryPeriod, i);
+		}
+	}
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -860,13 +911,12 @@ BOOLN
 InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_ANSpikeGen_Carney";
-	int		i, j, arrayLength;
-	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
+	int		i;
 	CarneySGPtr	p = carneySGPtr;
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * p->numFibres;
+		p->arrayLength = data->outSignal->numChannels * p->numFibres;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
@@ -885,13 +935,13 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
-				if ((p->timer[i] = (double *) calloc(arrayLength, sizeof(
+				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
 				  double))) == NULL) {
 			 		NotifyError("%s: Out of memory for timer array.", funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(arrayLength,
-				  sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (double *) calloc(p->
+				  arrayLength, sizeof(double))) == NULL) {
 			 		NotifyError("%s: Out of memory for remainingPulseTime "
 					  "array.", funcName);
 			 		return(FALSE);
@@ -899,16 +949,7 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
-		  outSignal->dt;
-		for (i = 0; i < p->numThreads; i++) {
-			timerPtr = p->timer[i];
-			remainingPulseTimePtr = p->remainingPulseTime[i];
-			for (j = 0; j < arrayLength; j++) {
-				*timerPtr++ = timeGreaterThanRefractoryPeriod;
-				*remainingPulseTimePtr++ = 0.0;
-			}
-		}
+		ResetProcess_ANSpikeGen_Carney(data);
 	}
 	return(TRUE);
 

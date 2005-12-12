@@ -51,7 +51,7 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	int		numThreads;
+	int		numThreads, arrayLength;
 	double	dt, wPulseDuration;
 	double	**timer;
 	double	**remainingPulseTime;
@@ -91,6 +91,8 @@ BOOLN	InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data);
 BOOLN	Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_ANSpikeGen_Meddis02(void);
+
+void	ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Meddis02(EarObjectPtr data);
 

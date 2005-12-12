@@ -312,7 +312,8 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
 		NotifyError("%s: Cannot initialise output channels.", funcName);
 		return(FALSE);
-	}	
+	}
+	ResetOutSignal_EarObject(data);
 	aveTimeOffsetIndex = (ChanLen) (data->inSignal[0]->length *
 	  STEADY_STATE_REGION_PERCENTAGE);
 	avePeriodIndex = data->inSignal[0]->length - aveTimeOffsetIndex -

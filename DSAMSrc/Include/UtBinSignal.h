@@ -95,6 +95,8 @@ BOOLN	Process_Utility_BinSignal(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_BinSignal(char *fileName);
 
+void	ResetProcess_Utility_BinSignal(EarObjectPtr data);
+
 BOOLN	SetBinWidth_Utility_BinSignal(double theBinWidth);
 
 BOOLN	SetMode_Utility_BinSignal(char * theMode);

@@ -846,6 +846,7 @@ GenerateSignal_PureTone_Multi(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output signal.", funcName);
 		return(FALSE);
 	}
+	ResetOutSignal_EarObject(data);
 	for (j = 0; j < mPureTonePtr->numPTones; j++) {
 		amplitude = RMS_AMP(mPureTonePtr->intensities[j]) * SQRT_2;
 		phase = DEGREES_TO_RADS(mPureTonePtr->phases[j]);

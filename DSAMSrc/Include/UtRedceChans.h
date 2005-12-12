@@ -103,6 +103,8 @@ BOOLN	Process_Utility_ReduceChannels(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_ReduceChannels(char *fileName);
 
+void	ResetProcess_Utility_ReduceChannels(EarObjectPtr data);
+
 BOOLN	SetMode_Utility_ReduceChannels(char *theMode);
 
 BOOLN	InitModule_Utility_ReduceChannels(ModulePtr theModule);

@@ -422,6 +422,7 @@ InitModule_Utility_BinSignal(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_BinSignal;
 	theModule->PrintPars = PrintPars_Utility_BinSignal;
 	theModule->ReadPars = ReadPars_Utility_BinSignal;
+	theModule->ResetProcess = ResetProcess_Utility_BinSignal;
 	theModule->RunProcess = Process_Utility_BinSignal;
 	theModule->SetParsPointer = SetParsPointer_Utility_BinSignal;
 	return(TRUE);
@@ -461,6 +462,19 @@ CheckData_Utility_BinSignal(EarObjectPtr data)
 		return(FALSE);
 	}
 	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_BinSignal(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
 
 }
 
@@ -510,6 +524,7 @@ Process_Utility_BinSignal(EarObjectPtr data)
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
+		ResetProcess_Utility_BinSignal(data);
 		p->numBins = (int) floor(p->wBinWidth / p->dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);

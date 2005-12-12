@@ -445,6 +445,7 @@ InitModule_Analysis_ISIH(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ISIH;
 	theModule->PrintPars = PrintPars_Analysis_ISIH;
 	theModule->ReadPars = ReadPars_Analysis_ISIH;
+	theModule->ResetProcess = ResetProcess_Analysis_ISIH;
 	theModule->RunProcess = Calc_Analysis_ISIH;
 	theModule->SetParsPointer = SetParsPointer_Analysis_ISIH;
 	return(TRUE);
@@ -486,6 +487,20 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_ISIH(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
+	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec);
+
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -500,20 +515,20 @@ BOOLN
 InitProcessVariables_Analysis_ISIH(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_ISIH";
+	InterSIHPtr	p = interSIHPtr;
 
-	if (interSIHPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (interSIHPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_ISIH();
-			if ((interSIHPtr->spikeListSpec = InitListSpec_SpikeList(
+			if ((p->spikeListSpec = InitListSpec_SpikeList(
 			  data->inSignal[0]->numChannels)) == NULL) {
 				NotifyError("%s: Out of memory for spikeListSpec.", funcName);
 				return(FALSE);
 			}
-			interSIHPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		ResetListSpec_SpikeList(interSIHPtr->spikeListSpec);
+		ResetProcess_Analysis_ISIH(data);
 	}
 	return(TRUE);
 

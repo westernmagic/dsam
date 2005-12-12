@@ -505,6 +505,7 @@ InitModule_Utility_LocalChans(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_LocalChans;
 	theModule->PrintPars = PrintPars_Utility_LocalChans;
 	theModule->ReadPars = ReadPars_Utility_LocalChans;
+	theModule->ResetProcess = ResetProcess_Utility_LocalChans;
 	theModule->RunProcess = Calc_Utility_LocalChans;
 	theModule->SetParsPointer = SetParsPointer_Utility_LocalChans;
 	return(TRUE);
@@ -541,6 +542,19 @@ CheckData_Utility_LocalChans(EarObjectPtr data)
 	}
 	/*** Put additional checks here. ***/
 	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_LocalChans(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
 
 }
 
@@ -590,6 +604,7 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
+		ResetProcess_Utility_LocalChans(data);
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		snprintf(channelTitle, MAXLINE, "Averaged channels ('%s' mode)",
 		  LimitModeList_SignalData(p->limitMode)->name);

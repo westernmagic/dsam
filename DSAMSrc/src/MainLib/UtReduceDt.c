@@ -358,6 +358,7 @@ InitModule_Utility_ReduceDt(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ReduceDt;
 	theModule->PrintPars = PrintPars_Utility_ReduceDt;
 	theModule->ReadPars = ReadPars_Utility_ReduceDt;
+	theModule->ResetProcess = ResetProcess_Utility_ReduceDt;
 	theModule->RunProcess = Process_Utility_ReduceDt;
 	theModule->SetParsPointer = SetParsPointer_Utility_ReduceDt;
 	return(TRUE);
@@ -390,6 +391,19 @@ CheckData_Utility_ReduceDt(EarObjectPtr data)
 		return(FALSE);
 	/*** Put additional checks here. ***/
 	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_ReduceDt(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
 
 }
 

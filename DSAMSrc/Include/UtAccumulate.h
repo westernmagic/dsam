@@ -50,6 +50,8 @@ BOOLN	CheckData_Utility_Accumulate(EarObjectPtr data);
 
 BOOLN	InitModule_Utility_Accumulate(ModulePtr theModule);
 
+void	ResetProcess_Utility_Accumulate(EarObjectPtr data);
+
 BOOLN	SetParsPointer_Utility_Accumulate(ModulePtr theModule);
 
 BOOLN	Process_Utility_Accumulate(EarObjectPtr data);

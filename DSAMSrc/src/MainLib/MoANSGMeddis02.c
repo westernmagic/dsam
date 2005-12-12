@@ -490,6 +490,7 @@ InitModule_ANSpikeGen_Meddis02(ModulePtr theModule)
 	theModule->Free = Free_ANSpikeGen_Meddis02;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Meddis02;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Meddis02;
+	theModule->ResetProcess = ResetProcess_ANSpikeGen_Meddis02;
 	theModule->RunProcess = RunModel_ANSpikeGen_Meddis02;
 	theModule->SetParsPointer = SetParsPointer_ANSpikeGen_Meddis02;
 	return(TRUE);
@@ -532,6 +533,56 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcessThread ******************************/
+
+/*
+ * This routine resets the process thread-related variables.
+ */
+
+void
+ResetProcessThread_ANSpikeGen_Meddis02(EarObjectPtr data,
+  double timeGreaterThanRefractoryPeriod, int i)
+{
+	int		j;
+	double	*timerPtr, *remainingPulseTimePtr;
+	Meddis02SGPtr	p = meddis02SGPtr;
+
+	timerPtr = p->timer[i];
+	remainingPulseTimePtr = p->remainingPulseTime[i];
+	for (j = 0; j < p->arrayLength; j++) {
+		*timerPtr++ = timeGreaterThanRefractoryPeriod;
+		*remainingPulseTimePtr++ = 0.0;
+	}
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
+{
+	int		i;
+	double	timeGreaterThanRefractoryPeriod;
+	Meddis02SGPtr	p = meddis02SGPtr;
+
+	ResetOutSignal_EarObject(data);
+	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
+	  outSignal->dt;
+	if (data->threadRunFlag)
+		ResetProcessThread_ANSpikeGen_Meddis02(data,
+		  timeGreaterThanRefractoryPeriod, data->threadIndex);
+	else  {
+		for (i = 0; i < data->numThreads; i++) {
+			ResetProcessThread_ANSpikeGen_Meddis02(data,
+			  timeGreaterThanRefractoryPeriod, i);
+		}
+	}
+}
+
 /****************************** InitProcessVariables **************************/
 
 /*
@@ -544,13 +595,12 @@ BOOLN
 InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
 	static const char	*funcName = "InitProcessVariables_ANSpikeGen_Meddis02";
-	int		i, j, arrayLength;
-	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
+	int		i;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
-		arrayLength = data->outSignal->numChannels * p->numFibres;
+		p->arrayLength = data->outSignal->numChannels * p->numFibres;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Meddis02();
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
@@ -569,13 +619,13 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
-				if ((p->timer[i] = (double *) calloc(arrayLength, sizeof(
+				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
 				  double))) == NULL) {
 			 		NotifyError("%s: Out of memory for timer array.", funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(arrayLength,
-				  sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (double *) calloc(p->
+				  arrayLength, sizeof(double))) == NULL) {
 			 		NotifyError("%s: Out of memory for remainingPulseTime "
 					  "array.", funcName);
 			 		return(FALSE);
@@ -583,16 +633,7 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
-		  outSignal->dt;
-		for (i = 0; i < p->numThreads; i++) {
-			timerPtr = p->timer[i];
-			remainingPulseTimePtr = p->remainingPulseTime[i];
-			for (j = 0; j < arrayLength; j++) {
-				*timerPtr++ = timeGreaterThanRefractoryPeriod;
-				*remainingPulseTimePtr++ = 0.0;
-			}
-		}
+		ResetProcess_ANSpikeGen_Meddis02(data);
 	}
 	return(TRUE);
 

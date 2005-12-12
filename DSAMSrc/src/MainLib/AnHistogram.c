@@ -717,6 +717,7 @@ InitModule_Analysis_Histogram(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Histogram;
 	theModule->PrintPars = PrintPars_Analysis_Histogram;
 	theModule->ReadPars = ReadPars_Analysis_Histogram;
+	theModule->ResetProcess = ResetProcess_Analysis_Histogram;
 	theModule->RunProcess = Calc_Analysis_Histogram;
 	theModule->SetParsPointer = SetParsPointer_Analysis_Histogram;
 	return(TRUE);
@@ -768,6 +769,55 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcessThread ******************************/
+
+/*
+ * This routine resets the process thread-related variables.
+ */
+
+void
+ResetProcessThread_Analysis_Histogram(EarObjectPtr data, int i)
+{
+	HistogramPtr	p = histogramPtr;
+
+	p->bufferSamples[i] = 0;
+	p->numPeriods[i] = 0;
+	p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / data->inSignal[0]->dt +
+	 0.5);
+	p->extraSample[i] = (p->offsetIndex[i])? 0: 1;
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_Histogram(EarObjectPtr data)
+{
+	int		i;
+	HistogramPtr	p = histogramPtr;
+
+	ResetOutSignal_EarObject(data);
+	ResetOutSignal_EarObject(p->dataBuffer);
+	if (data->threadRunFlag)
+		ResetProcessThread_Analysis_Histogram(data, data->threadIndex);
+	else  {
+		for (i = 0; i < data->numThreads; i++) {
+			ResetProcessThread_Analysis_Histogram(data, i);
+		}
+	}
+	if (p->offsetIndex[0] < data->inSignal[0]->length)
+		for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+			p->dataBuffer->outSignal->channel[i][0] = data->inSignal[
+			  0]->channel[i][p->offsetIndex[0] + p->extraSample[0] - 1];
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+		p->riseDetected[i] = FALSE;
+
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -783,7 +833,6 @@ BOOLN
 InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_Histogram";
-	int		i;
 	ChanLen	bufferLength;
 	HistogramPtr	p = histogramPtr;
 	
@@ -833,31 +882,18 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
+			bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (p->period >
+			  0.0)? (ChanLen) floor(p->period / data->inSignal[0]->dt + 0.5):
+			  data->inSignal[0]->length;
+			if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
+			  numChannels, bufferLength, data->inSignal[0]->dt)) {
+				NotifyError("%s: Cannot initialise channels for PH Buffer.",
+				  funcName);
+				return(FALSE);
+			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		ResetProcess_EarObject(p->dataBuffer);
-		bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (p->period > 0.0)?
-		  (ChanLen) floor(p->period / data->inSignal[0]->dt + 0.5): data->
-		  inSignal[0]->length;
-		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
-		  numChannels, bufferLength, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise channels for PH Buffer.",
-			  funcName);
-			return(FALSE);
-		}
-		for (i = 0; i < data->numThreads; i++) {
-			p->bufferSamples[i] = 0;
-			p->numPeriods[i] = 0;
-			p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / data->inSignal[
-			  0]->dt + 0.5);
-			p->extraSample[i] = (p->offsetIndex[i])? 0: 1;
-		}
-		if (p->offsetIndex[0] < data->inSignal[0]->length)
-			for (i = 0; i < data->outSignal->numChannels; i++)
-				p->dataBuffer->outSignal->channel[i][0] = data->inSignal[
-				  0]->channel[i][p->offsetIndex[0] + p->extraSample[0] - 1];
-		for (i = 0; i < data->outSignal->numChannels; i++)
-			p->riseDetected[i] = FALSE;
+		ResetProcess_Analysis_Histogram(data);
 	}
 	return(TRUE);
 

@@ -78,6 +78,8 @@ BOOLN	Process_Utility_ReduceDt(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_ReduceDt(char *fileName);
 
+void	ResetProcess_Utility_ReduceDt(EarObjectPtr data);
+
 BOOLN	SetDenominator_Utility_ReduceDt(int theDenominator);
 
 BOOLN	InitModule_Utility_ReduceDt(ModulePtr theModule);

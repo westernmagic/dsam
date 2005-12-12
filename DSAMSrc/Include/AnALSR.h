@@ -91,6 +91,8 @@ BOOLN	PrintPars_Analysis_ALSR(void);
 
 BOOLN	ReadPars_Analysis_ALSR(char *fileName);
 
+void	ResetProcess_Analysis_ALSR(EarObjectPtr data);
+
 BOOLN	SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit);
 
 BOOLN	SetNormalise_Analysis_ALSR(double theNormalise);

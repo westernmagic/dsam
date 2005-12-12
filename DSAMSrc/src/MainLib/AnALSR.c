@@ -365,6 +365,7 @@ InitModule_Analysis_ALSR(ModulePtr theModule)
 	theModule->Free = Free_Analysis_ALSR;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ALSR;
 	theModule->PrintPars = PrintPars_Analysis_ALSR;
+	theModule->ResetProcess = ResetProcess_Analysis_ALSR;
 	theModule->RunProcess = Calc_Analysis_ALSR;
 	theModule->SetParsPointer = SetParsPointer_Analysis_ALSR;
 	return(TRUE);
@@ -404,6 +405,20 @@ CheckData_Analysis_ALSR(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_ALSR(EarObjectPtr data)
+{
+	data->timeIndex = data->timeIndex;	/* So the compiler doesn't complain. */
+	ResetProcess_EarObject(aLSRPtr->modulusFT);
+
+}
+
 /****************************** InitProcessVariables **************************/
 
 /*
@@ -434,7 +449,7 @@ InitProcessVariables_Analysis_ALSR(EarObjectPtr data)
 		return(FALSE);
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		ResetProcess_EarObject(p->modulusFT);
+		ResetProcess_Analysis_ALSR(data);
 		/*** Put reset (to zero ?) code here ***/
 	}
 	return(TRUE);

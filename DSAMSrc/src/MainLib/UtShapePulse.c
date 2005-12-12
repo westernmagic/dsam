@@ -391,6 +391,60 @@ ReadPars_Utility_ShapePulse(char *fileName)
 
 }
 
+/****************************** InitModule ************************************/
+
+/*
+ * This routine sets the function pointers for this process module.
+ */
+
+BOOLN
+InitModule_Utility_ShapePulse(ModulePtr theModule)
+{
+	static const char	*funcName = "InitModule_Utility_ShapePulse";
+
+	if (!SetParsPointer_Utility_ShapePulse(theModule)) {
+		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		return(FALSE);
+	}
+	if (!Init_Utility_ShapePulse(GLOBAL)) {
+		NotifyError("%s: Could not initialise process structure.", funcName);
+		return(FALSE);
+	}
+	theModule->parsPtr = shapePulsePtr;
+	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
+	theModule->CheckPars = CheckPars_Utility_ShapePulse;
+	theModule->Free = Free_Utility_ShapePulse;
+	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ShapePulse;
+	theModule->PrintPars = PrintPars_Utility_ShapePulse;
+	theModule->ReadPars = ReadPars_Utility_ShapePulse;
+	theModule->ResetProcess = ResetProcess_Utility_ShapePulse;
+	theModule->RunProcess = Process_Utility_ShapePulse;
+	theModule->SetParsPointer = SetParsPointer_Utility_ShapePulse;
+	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_ShapePulse(EarObjectPtr data)
+{
+	int		i;
+
+	printf("ResetProcess_Utility_ShapePulse: Called T[%d], (%s)\n", data->
+	  threadIndex, data->processName);
+	ResetOutSignal_EarObject(data);
+	if (data->timeIndex == PROCESS_START_TIME) {
+		for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+			shapePulsePtr->remainingPulseTime[i] = 0.0;
+	}
+
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -401,7 +455,6 @@ BOOLN
 InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Utility_ShapePulse";
-	int		i;
 	ShapePulsePtr	p = shapePulsePtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -415,8 +468,7 @@ InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++)
-			p->remainingPulseTime[i] = 0.0;
+		ResetProcess_Utility_ShapePulse(data);
 	}
 	return(TRUE);
 
@@ -457,38 +509,6 @@ SetParsPointer_Utility_ShapePulse(ModulePtr theModule)
 		return(FALSE);
 	}
 	shapePulsePtr = (ShapePulsePtr) theModule->parsPtr;
-	return(TRUE);
-
-}
-
-/****************************** InitModule ************************************/
-
-/*
- * This routine sets the function pointers for this process module.
- */
-
-BOOLN
-InitModule_Utility_ShapePulse(ModulePtr theModule)
-{
-	static const char	*funcName = "InitModule_Utility_ShapePulse";
-
-	if (!SetParsPointer_Utility_ShapePulse(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
-		return(FALSE);
-	}
-	if (!Init_Utility_ShapePulse(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
-		return(FALSE);
-	}
-	theModule->parsPtr = shapePulsePtr;
-	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_ShapePulse;
-	theModule->Free = Free_Utility_ShapePulse;
-	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ShapePulse;
-	theModule->PrintPars = PrintPars_Utility_ShapePulse;
-	theModule->ReadPars = ReadPars_Utility_ShapePulse;
-	theModule->RunProcess = Process_Utility_ShapePulse;
-	theModule->SetParsPointer = SetParsPointer_Utility_ShapePulse;
 	return(TRUE);
 
 }

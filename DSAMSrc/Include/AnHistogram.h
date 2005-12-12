@@ -151,6 +151,8 @@ void	PushDataBuffer_Analysis_Histogram(EarObjectPtr data,
 
 BOOLN	ReadPars_Analysis_Histogram(char *fileName);
 
+void	ResetProcess_Analysis_Histogram(EarObjectPtr data);
+
 BOOLN	SetBinWidth_Analysis_Histogram(double theBinWidth);
 
 BOOLN	SetDetectionMode_Analysis_Histogram(char *theDetectionMode);

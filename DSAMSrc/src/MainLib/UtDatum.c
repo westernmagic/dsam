@@ -1075,6 +1075,9 @@ ResetSimulation_Utility_Datum(DatumPtr start)
  * It returns a pointer to the STOP instruction or NULL.
  */
 
+#define	GET_PROCESS(DATA)	((!threadIndex)? (DATA): &(DATA)->threadProcs[ \
+							  threadIndex - 1])
+
 DatumPtr
 ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
   int threadIndex)
@@ -1089,8 +1092,7 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 	for (pc = start; pc != passedEnd; pc = pc->next) {
 		switch (pc->type) {
 		case PROCESS: {
-			process = (!threadIndex)? pc->data: &pc->data->threadProcs[
-			  threadIndex - 1];
+			process = GET_PROCESS(pc->data);
 			if (!RunProcess_ModuleMgr(process)) {
 				NotifyError("%s: Could not run process '%s'.", funcName,
 				  pc->label);
@@ -1103,7 +1105,8 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 		#	endif
 			break; }
 		case RESET:
-			ResetProcess_EarObject(pc->data);
+			process = GET_PROCESS(pc->data);
+			ResetProcess_EarObject(process);
 			break;
 		case STOP:
 			return (pc);
@@ -1130,6 +1133,8 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 	return(lastInstruction);
 
 }
+
+#undef GET_PROCESS
 
 /****************************** GetLastProcess ********************************/
 

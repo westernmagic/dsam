@@ -99,6 +99,8 @@ BOOLN	PrintPars_Utility_LocalChans(void);
 
 BOOLN	ReadPars_Utility_LocalChans(char *fileName);
 
+void	ResetProcess_Utility_LocalChans(EarObjectPtr data);
+
 BOOLN	SetLowerLimit_Utility_LocalChans(double theLowerLimit);
 
 BOOLN	SetLimitMode_Utility_LocalChans(char * theLimitMode);

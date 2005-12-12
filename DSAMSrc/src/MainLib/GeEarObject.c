@@ -41,6 +41,8 @@
 
 EarObjHandle	earObjectCount = 0;
 EarObjRefPtr	mainEarObjectList = NULL;
+BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
+		  ResetProcessStandard_EarObject;
 
 /******************************************************************************/
 /********************************* Subroutines and functions ******************/
@@ -452,9 +454,6 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   double samplingInterval)
 {
 	static const char *funcName = "InitOutSignal_EarObject";
-	int		i;
-	register	ChanData	*dataPtr;
-	ChanLen	j;
 	
 	if (samplingInterval == 0.0) {
 		NotifyError("%s: Time step is zero for EarObject '%s'!", funcName,
@@ -466,12 +465,33 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		NotifyError("%s: Could not set output signal.", funcName);
 		return(FALSE);
 	}
-	if (!data->externalDataFlag && data->updateProcessFlag)
-		for (i = 0; i < numChannels; i++)
-			for (j = 0, dataPtr = data->outSignal->channel[i]; j < length; j++)
-				*(dataPtr++) = 0.0;
 	return(TRUE);
 	
+}
+
+/**************************** ResetOutSignal **********************************/
+
+/*
+ * This routine resets an output signal to zero.if the 'updateProcessFlag' is
+ * set and the signal is not external.
+ */
+ 
+void
+ResetOutSignal_EarObject(EarObjectPtr data)
+{
+	int		i;
+	register	ChanData	*dataPtr;
+	ChanLen	j;
+
+	if (!data->updateProcessFlag || data->externalDataFlag)
+		return;
+	printf("ResetOutSignal_EarObject: Called T[%d], (%s)\n", data->
+	  threadIndex, data->processName);
+	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+		for (j = 0, dataPtr = data->outSignal->channel[i]; j < data->outSignal->
+		  length; j++)
+			*(dataPtr++) = 0.0;
+
 }
 
 /**************************** InitOutFromInSignal *****************************/
@@ -972,27 +992,42 @@ SetProcessForReset_EarObject(EarObjectPtr theObject)
 
 }
 
-/**************************** ResetProcess ************************************/
+/************************** SetResetProcess ***********************************/
+
+/*
+ * This routine sets the global 'RunProcess' function pointer.
+ */
+
+void
+SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr))
+{
+	ResetProcess_EarObject = Func;
+
+}
+
+
+/**************************** ResetProcessStandard ****************************/
 
 /*
  * This routine resets an EarObject's process and its thread subprocesses.
  */
 
-void
-ResetProcess_EarObject(EarObjectPtr theObject)
+BOOLN
+ResetProcessStandard_EarObject(EarObjectPtr theObject)
 {
-	static const char *funcName = "ResetProcess_EarObject";
+	static const char *funcName = "ResetProcessStandard_EarObject";
 	int		i;
 	EarObjectPtr	p;
 
 	if (!theObject) {
 		NotifyError("%s: EarObject not initialised.", funcName);
-		exit(1);
+		return(FALSE);
 	}
 	SetProcessForReset_EarObject(theObject);
 	for (i = 0, p = theObject->threadProcs; i < theObject->numThreads - 1; i++,
 	  p++)
 		SetProcessForReset_EarObject(p);
+	return(TRUE);
 
 }
 

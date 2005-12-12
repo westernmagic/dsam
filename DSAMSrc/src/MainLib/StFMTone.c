@@ -366,7 +366,7 @@ SetPhase_PureTone_FM(double thePhase)
 
 }
 
-/****************************** SetModulationDepth *****************************/
+/****************************** SetModulationDepth ****************************/
 
 /*
  * This function sets the module's modulationDepth parameter.

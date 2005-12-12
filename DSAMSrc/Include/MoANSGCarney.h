@@ -74,7 +74,7 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*inputModeList;
 	UniParListPtr	parList;
-	int		numThreads;
+	int		numThreads, arrayLength;
 	double	dt, wPulseDuration;
 	double	**timer;
 	double	**remainingPulseTime;
@@ -116,6 +116,8 @@ BOOLN	Init_ANSpikeGen_Carney(ParameterSpecifier parSpec);
 BOOLN	PrintPars_ANSpikeGen_Carney(void);
 
 BOOLN	ReadPars_ANSpikeGen_Carney(char *fileName);
+
+void	ResetProcess_ANSpikeGen_Carney(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Carney(EarObjectPtr data);
 

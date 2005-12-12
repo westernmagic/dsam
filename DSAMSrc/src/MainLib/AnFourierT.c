@@ -385,6 +385,7 @@ InitModule_Analysis_FourierT(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FourierT;
 	theModule->PrintPars = PrintPars_Analysis_FourierT;
 	theModule->ReadPars = ReadPars_Analysis_FourierT;
+	theModule->ResetProcess = ResetProcess_Analysis_FourierT;
 	theModule->RunProcess = Calc_Analysis_FourierT;
 	theModule->SetParsPointer = SetParsPointer_Analysis_FourierT;
 	return(TRUE);
@@ -417,6 +418,19 @@ CheckData_Analysis_FourierT(EarObjectPtr data)
 		return(FALSE);
 	/*** Put additional checks here. ***/
 	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_FourierT(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
 
 }
 
@@ -530,6 +544,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			NotifyError("%s: Couldn't initialse output signal.", funcName);
 			return(FALSE);
 		}
+		ResetProcess_Analysis_FourierT(data);
 		if (!InitProcessVariables_Analysis_FourierT(data)) {
 			NotifyError("%s: Could not initialise the process variables.",
 			  funcName);

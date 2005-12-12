@@ -117,6 +117,12 @@ typedef struct refNode {	/* Reference node */
 extern EarObjHandle	earObjectCount;
 extern EarObjRefPtr	mainEarObjectList;
 
+__BEGIN_DECLS
+
+extern BOOLN (* ResetProcess_EarObject)(EarObjectPtr);
+
+__END_DECLS
+
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
@@ -195,22 +201,26 @@ void	PrintProcessName_EarObject(char *message, EarObjectPtr data);
 
 void	RemoveEarObjRefs_EarObject(EarObjectPtr theObject);	
 			
-void	ResetProcess_EarObject(EarObjectPtr theObject);
+void	ResetOutSignal_EarObject(EarObjectPtr data);
+
+BOOLN	ResetProcessStandard_EarObject(EarObjectPtr theObject);
 
 void	ResetSignalContinuity_EarObject(EarObjectPtr data,
 		  SignalDataPtr oldOutSignal);
 
+BOOLN	SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
+		  ChanLen length, double samplingInterval);
+			
 void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
 void	SetProcessForReset_EarObject(EarObjectPtr theObject);
 
 void	SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
 			
-BOOLN	SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
-		  ChanLen length, double samplingInterval);
-			
 BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
 		  const char *callingFunc);
+
+void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
 
 void	SetTimeContinuity_EarObject(EarObjectPtr data);
 

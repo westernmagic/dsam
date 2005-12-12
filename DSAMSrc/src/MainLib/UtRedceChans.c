@@ -431,6 +431,7 @@ InitModule_Utility_ReduceChannels(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ReduceChannels;
 	theModule->PrintPars = PrintPars_Utility_ReduceChannels;
 	theModule->ReadPars = ReadPars_Utility_ReduceChannels;
+	theModule->ResetProcess = ResetProcess_Utility_ReduceChannels;
 	theModule->RunProcess = Process_Utility_ReduceChannels;
 	theModule->SetParsPointer = SetParsPointer_Utility_ReduceChannels;
 	return(TRUE);
@@ -467,6 +468,19 @@ CheckData_Utility_ReduceChannels(EarObjectPtr data)
 		return(FALSE);
 	}
 	return(TRUE);
+
+}
+
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Utility_ReduceChannels(EarObjectPtr data)
+{
+	ResetOutSignal_EarObject(data);
 
 }
 
@@ -510,6 +524,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		NotifyError("%s: Cannot initialise output channel.", funcName);
 		return(FALSE);
 	}
+	ResetProcess_Utility_ReduceChannels(data);
 	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
 	  interleaveLevel);
 	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);

@@ -97,6 +97,8 @@ BOOLN	PrintPars_Analysis_ISIH(void);
 
 BOOLN	ReadPars_Analysis_ISIH(char *fileName);
 
+void	ResetProcess_Analysis_ISIH(EarObjectPtr data);
+
 BOOLN	SetEventThreshold_Analysis_ISIH(double theEventThreshold);
 
 BOOLN	SetMaxInterval_Analysis_ISIH(double theMaxInterval);

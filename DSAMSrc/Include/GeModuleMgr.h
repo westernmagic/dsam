@@ -144,6 +144,7 @@ typedef struct moduleStruct {
 	BOOLN	(* RunProcess)(EarObjectPtr theObject);
 	BOOLN	(* ReadPars)(char *fileName);
 	BOOLN	(* ReadSignal)(char *fileName, EarObjectPtr data);
+	void	(* ResetProcess)(EarObjectPtr data);
 	BOOLN	(* InitModule )(struct moduleStruct *);
 	BOOLN	(* SetParsPointer)(struct moduleStruct *);
 	
@@ -236,6 +237,8 @@ BOOLN	PrintSimFile_ModuleMgr(char *fileName, EarObjectPtr data);
 BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
 BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, char *fileName);
+
+BOOLN	ResetProcess_ModuleMgr(EarObjectPtr data);
 
 BOOLN	RunProcessStandard_ModuleMgr(EarObjectPtr data);
 

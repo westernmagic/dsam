@@ -156,6 +156,8 @@ void	PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength);
 
 BOOLN	ReadPars_Analysis_SAI(char *fileName);
 
+void	ResetProcess_Analysis_SAI(EarObjectPtr data);
+
 BOOLN	SetDiagnosticMode_Analysis_SAI(char *theDiagnosticMode);
 
 BOOLN	SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife);
