@@ -39,7 +39,7 @@
 #include "ExtProcChainThread.h"
 #include "ExtRunThreadedProc.h"
 
-//#define DEBUG	1
+#define DEBUG	1
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -63,10 +63,11 @@ RunThreadedProc::RunThreadedProc(void)
 	printf("RunThreadedProc::RunThreadedProc: Debug: Entered\n");
 #	endif
 	numThreads = wxThread::GetCPUCount();
-	threadMode = APP_INT_THREAD_MODE_PROCESS;
+	threadMode = (GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
+	  APP_INT_THREAD_MODE_PROCESS;
 #	if DEBUG
-	printf("RunThreadedProc::RunThreadedProc: Debug: %d CPU's available\n",
-	  numThreads);
+	printf("RunThreadedProc::RunThreadedProc: Debug: %d CPU's available, "
+	  "thread mode: %d\n", numThreads, threadMode);
 #	endif
 	runThreadedProc = this;
 
@@ -523,6 +524,7 @@ RunThreadedProc::Execute(DatumPtr start)
 	printf("%s: start [1] = %lx\n", funcName, (unsigned long) start);
 	SetExecute_Utility_Datum(ExecuteStandard_Utility_Datum);
 	SetRunProcess_ModuleMgr(RunProcessStandard_ModuleMgr);
+	SetResetProcess_EarObject(ResetProcess_ModuleMgr);
 	for (pc = start; pc != NULL; pc = pc->passedThreadEnd) {
 		switch (pc->type) {
 		case PROCESS: {
@@ -547,6 +549,7 @@ RunThreadedProc::Execute(DatumPtr start)
 	}
 	SetRunProcess_ModuleMgr(RunProcessStandard_ModuleMgr);
 	SetExecute_Utility_Datum(Execute_RunThreadedProc);
+	SetResetProcess_EarObject(ResetProcessStandard_EarObject);
 	return(lastInstruction);
 
 }
