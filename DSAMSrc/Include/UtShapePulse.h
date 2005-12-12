@@ -84,6 +84,8 @@ BOOLN	Process_Utility_ShapePulse(EarObjectPtr data);
 
 BOOLN	ReadPars_Utility_ShapePulse(char *fileName);
 
+void	ResetProcess_Utility_ShapePulse(EarObjectPtr data);
+
 BOOLN	SetEventThreshold_Utility_ShapePulse(double theEventThreshold);
 
 BOOLN	InitModule_Utility_ShapePulse(ModulePtr theModule);

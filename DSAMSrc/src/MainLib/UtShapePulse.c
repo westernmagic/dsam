@@ -435,7 +435,6 @@ ResetProcess_Utility_ShapePulse(EarObjectPtr data)
 {
 	int		i;
 
-	  threadIndex, data->processName);
 	ResetOutSignal_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
