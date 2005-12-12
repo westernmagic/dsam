@@ -435,7 +435,6 @@ ResetProcess_Utility_ShapePulse(EarObjectPtr data)
 {
 	int		i;
 
-	printf("ResetProcess_Utility_ShapePulse: Called T[%d], (%s)\n", data->
 	  threadIndex, data->processName);
 	ResetOutSignal_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
@@ -575,34 +574,28 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 	ShapePulsePtr	p = shapePulsePtr;
 
 	if (!data->threadRunFlag) {
-		printf("%s: Debug: T[%d]: init run 1\n", funcName, data->threadIndex);
 		if (!CheckPars_Utility_ShapePulse())
 			return(FALSE);
 		if (!CheckData_Utility_ShapePulse(data)) {
 			NotifyError("%s: Process data invalid.", funcName);
 			return(FALSE);
 		}
-		printf("%s: Debug: T[%d]: init run 2\n", funcName, data->threadIndex);
 		SetProcessName_EarObject(data, "Shape Pulse Utility Process");
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
 			NotifyError("%s: Could not initialise output signal.", funcName);
 			return(FALSE);
 		}
-		printf("%s: Debug: T[%d]: init run 3\n", funcName, data->threadIndex);
 		if (!InitProcessVariables_Utility_ShapePulse(data)) {
 			NotifyError("%s: Could not initialise the process variables.",
 			  funcName);
 			return(FALSE);
 		}
-		printf("%s: Debug: T[%d]: init run 4\n", funcName, data->threadIndex);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	dt = data->inSignal[0]->dt;
 	remainingPulseTimePtr = p->remainingPulseTime + data->outSignal->offset;
-	printf("%s: Debug: T[%d]: offset = %d, numChannels = %d\n", funcName,
-	  data->threadIndex, data->outSignal->offset, data->outSignal->numChannels);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
