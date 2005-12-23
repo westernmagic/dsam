@@ -89,6 +89,8 @@ BOOLN	PrintPars_Filter_BandPass(void);
 
 BOOLN	ReadPars_Filter_BandPass(char *fileName);
 
+void	ResetProcess_Filter_BandPass(EarObjectPtr data);
+
 BOOLN	RunModel_Filter_BandPass(EarObjectPtr data);
 
 BOOLN	SetLowerCutOffFreq_Filter_BandPass(double theLowerCutOffFreq);
