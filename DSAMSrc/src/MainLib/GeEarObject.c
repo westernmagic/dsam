@@ -108,7 +108,6 @@ Init_EarObject(char *moduleName)
 	data->numThreads = 1;
 	data->threadIndex = 0;
 	data->numSubProcesses = 0;
-	data->origNumChannels = 0;
 	data->threadProcs = NULL;
 	data->subProcessList = NULL;
 	return(data);
@@ -349,10 +348,6 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 			Free_SignalData(&data->outSignal);
 			data->updateCustomersFlag = TRUE;
 			deletedOldOutSignal = TRUE;
-			printf("%s: Debug: data numChannels %u (%u), dt = %g (%g), "
-			"length = %lu (%lu)\n",
-			  funcName, oldOutSignal.numChannels, numChannels, oldOutSignal.dt,
-			  samplingInterval,  oldOutSignal.length, length);
 		} else
 			createNewSignal = FALSE;
 	} else
@@ -485,8 +480,6 @@ ResetOutSignal_EarObject(EarObjectPtr data)
 
 	if (!data->updateProcessFlag || data->externalDataFlag)
 		return;
-	printf("ResetOutSignal_EarObject: Called T[%d], (%s)\n", data->
-	  threadIndex, data->processName);
 	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
 		for (j = 0, dataPtr = data->outSignal->channel[i]; j < data->outSignal->
 		  length; j++)
@@ -988,7 +981,6 @@ SetProcessForReset_EarObject(EarObjectPtr theObject)
 	theObject->updateProcessFlag = TRUE;
 	theObject->timeIndex = PROCESS_START_TIME;
 	theObject->firstSectionFlag = TRUE;
-	printf("%s: Reseting process '%s'\n", funcName, theObject->processName);
 
 }
 

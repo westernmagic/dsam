@@ -582,20 +582,24 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 	register	ChanData	*dataPtr;
 	ChanLen		i;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_PureTone_2())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Silence pure-tone stimulus");
-	totalDuration = pureTone2Ptr->beginPeriodDuration + pureTone2Ptr->duration +
-	  pureTone2Ptr->endPeriodDuration;
-	if ( !InitOutSignal_EarObject(data, PURE_TONE_2_NUM_CHANNELS,
-	  (ChanLen) floor(totalDuration / pureTone2Ptr->dt + 0.5), pureTone2Ptr->
-	   dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_PureTone_2())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Silence pure-tone stimulus");
+		totalDuration = pureTone2Ptr->beginPeriodDuration + pureTone2Ptr->duration +
+		  pureTone2Ptr->endPeriodDuration;
+		if ( !InitOutSignal_EarObject(data, PURE_TONE_2_NUM_CHANNELS,
+		  (ChanLen) floor(totalDuration / pureTone2Ptr->dt + 0.5), pureTone2Ptr->
+		   dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	dt = data->outSignal->dt;
 	startSignal = pureTone2Ptr->beginPeriodDuration;

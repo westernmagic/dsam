@@ -558,7 +558,8 @@ Process_Utility_Delay(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Utility_Delay";
 	register	ChanData	*inPtr, *outPtr;
-	int		chan, delayedChan;
+	BOOLN	delayChannel;
+	int		chan;
 	double	delay = 0.0;
 	ChanLen	i, delayIndex;
 	Delay2Ptr	p = delay2Ptr;
@@ -571,7 +572,8 @@ Process_Utility_Delay(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, "Introduce ITD into binaural signal");
-		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise output channels.", funcName);
 			return(FALSE);
 		}
@@ -583,30 +585,38 @@ Process_Utility_Delay(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	InitOutDataFromInSignal_EarObject(data);
 	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
-	  chan += data->outSignal->interleaveLevel) {
+	  chan++) {
 		switch (p->mode) {
 		case DELAY_SINGLE_MODE:
 			delay = p->initialDelay;
 			break;
 		case DELAY_LINEAR_MODE:
-			delay = p->delayPerChannel * (chan /
-			  data->outSignal->interleaveLevel) + p->initialDelay;
+			delay = p->delayPerChannel * (chan / data->outSignal->
+			  interleaveLevel) + p->initialDelay;
 			break;
 		} /* switch */
-		delayIndex = (ChanLen) fabs(delay / data->inSignal[0]->dt + 0.5);
-		SetInfoChannelLabel_SignalData(data->outSignal, chan, MSEC(delay));
+		delayChannel = FALSE;
 		if (data->outSignal->interleaveLevel == 1)
-			delayedChan = chan;
+			delayChannel = TRUE;
 		else {
-			delayedChan = (p->initialDelay > 0.0)? chan + 1: chan;
-			SetInfoChannelLabel_SignalData(data->outSignal, chan + 1, delay);
+			if (p->initialDelay > 0.0) {
+				if ((chan % data->outSignal->interleaveLevel) == 1)
+					delayChannel = TRUE;
+			} else {
+				if ((chan % data->outSignal->interleaveLevel) == 0)
+					delayChannel = TRUE;
+			}	
 		}
-		inPtr = data->inSignal[0]->channel[delayedChan];
-		outPtr = data->outSignal->channel[delayedChan];
-		for (i = 0; i < delayIndex; i++)
+		inPtr = data->inSignal[0]->channel[chan];
+		outPtr = data->outSignal->channel[chan];
+		if (delayChannel) {
+			delayIndex = (ChanLen) fabs(delay / data->inSignal[0]->dt + 0.5);
+			for (i = 0; i < delayIndex; i++)
 				*outPtr++ = 0.0;
+			SetInfoChannelLabel_SignalData(data->outSignal, chan, MSEC(delay));
+		} else
+			delayIndex = 0;
 		for (i = delayIndex; i < data->outSignal->length; i++)
 			*outPtr++ = *inPtr++;
 	}

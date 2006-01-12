@@ -79,6 +79,7 @@ Init_SignalData(const char *callingFunctionName)
 		exit(1);
 	}
 	theData->numChannels = 0;
+	theData->origNumChannels = 0;
 	theData->offset = 0;
 	theData->interleaveLevel = SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
 	theData->numWindowFrames = SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES;
@@ -237,6 +238,7 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 	}
 	theData->channel = p;
 	theData->numChannels = numChannels;
+	theData->origNumChannels = numChannels;
 	theData->externalDataFlag = externalDataFlag;
 	if ((theData->info.chanLabel = (double *) calloc(numChannels,
 	  sizeof(double))) == NULL) {
@@ -330,10 +332,10 @@ SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 	int		i;
 	ChanLen	j;
 	register	ChanData	*copyChannel, *supplierChannel;
-	
+
 	for (i = theSignal->offset; i < theSignal->numChannels; i++) {
 		copyChannel = theSignal->channel[i];
-		supplierChannel = supplier->channel[i % supplier->numChannels];
+		supplierChannel = supplier->channel[i % supplier->origNumChannels];
 		for (j = 0; j < theSignal->length; j++)
 			*(copyChannel++) = *(supplierChannel++);
 	}

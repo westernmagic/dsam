@@ -480,43 +480,45 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 	register ChanData	 **outChannels;
 	uShort	i, chan, numChannels;
 	double	*chanLabels, *userLabels;
+	CollectSigsPtr	p = collectSigsPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Transform_CollectSignals())
+			return(FALSE);
+		if (!CheckData_Transform_CollectSignals(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Collect channels transform module "
+		  "process");
+		for (i = 0, numChannels = 0; i < data->numInSignals; i++)
+			numChannels += data->inSignal[i]->numChannels;
+		if ((p->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && (p->
+		  numChannels != numChannels)) {
+			NotifyError("%s: The number of labels (%d) be equal to the number "
+			  "of channels in the output signal (%d).", funcName, p->
+			  numChannels, numChannels);
+			return(FALSE);
+		}
+		data->externalDataFlag = TRUE;
+		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
+		  data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  interleaveLevel);
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckPars_Transform_CollectSignals())
-		return(FALSE);
-	if (!CheckData_Transform_CollectSignals(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Collect channels transform module process");
-	for (i = 0, numChannels = 0; i < data->numInSignals; i++)
-		numChannels += data->inSignal[i]->numChannels;
-	if ((collectSigsPtr->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER)
-	  && (collectSigsPtr->numChannels != numChannels)) {
-		NotifyError("%s: The number of labels (%d) be equal to the number of "
-		  "channels in the output signal (%d).", funcName,
-		  collectSigsPtr->numChannels, numChannels);
-		return(FALSE);
-	}
-	data->externalDataFlag = TRUE;
-	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
-	  data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
-	  interleaveLevel);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 	outChannels = data->outSignal->channel;
 	chanLabels = data->outSignal->info.chanLabel;
-	userLabels = collectSigsPtr->labels;
+	userLabels = p->labels;
 	for (i = 0; i < data->numInSignals; i++)
 		for (chan = 0; chan < data->inSignal[i]->numChannels; chan++) {
 			*outChannels++ = data->inSignal[i]->channel[chan];
-			switch (collectSigsPtr->labelMode) {
+			switch (p->labelMode) {
 			case TRANSFORM_COLLECTSIGNALS_LABELMODE_INPUT_LABELS:
 				*chanLabels++ = data->inSignal[i]->info.chanLabel[chan];
 				break;

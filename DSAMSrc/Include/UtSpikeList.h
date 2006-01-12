@@ -43,7 +43,7 @@ typedef struct {
 	BOOLN			*riseDetected;
 	uShort			numChannels;
 	double			*lastValue;
-	ChanLen			timeIndex;
+	ChanLen			*timeIndex;
 	SpikeSpecPtr	*head;
 	SpikeSpecPtr	*tail;
 	SpikeSpecPtr	*current;
@@ -76,7 +76,8 @@ SpikeListSpecPtr	InitListSpec_SpikeList(int numChannels);
 BOOLN	InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 		  ChanLen timeIndex);
 
-BOOLN	ResetListSpec_SpikeList(SpikeListSpecPtr listSpec);
+BOOLN	ResetListSpec_SpikeList(SpikeListSpecPtr listSpec,
+		  SignalDataPtr signal);
 
 __END_DECLS
 

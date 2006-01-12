@@ -820,18 +820,23 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 	register	ChanData	*dataPtr;
 	ChanLen		i, t, pulseDurationIndex, repetitionPeriodIndex;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_PureTone_MultiPulse())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Multi-frequency pulsed pure-tone stimulus");
-	if ( !InitOutSignal_EarObject(data, PURE_TONE_3_NUM_CHANNELS,
-	  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 0.5),
-	  pureTone4Ptr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_PureTone_MultiPulse())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Multi-frequency pulsed pure-tone "
+		  "stimulus");
+		if ( !InitOutSignal_EarObject(data, PURE_TONE_3_NUM_CHANNELS,
+		  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 0.5),
+		  pureTone4Ptr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	amplitude = RMS_AMP(pureTone4Ptr->intensity) * SQRT_2;
 	pulseDurationIndex = (ChanLen) floor(pureTone4Ptr->pulseDuration /

@@ -217,8 +217,8 @@ GetUniParListPtr_PureTone_FM(void)
 
 BOOLN
 SetPars_PureTone_FM(double frequency, double intensity,
-  double duration, double samplingInterval, double phase, double modulationDepth,
-  double modulationFrequency, double modulationPhase)
+  double duration, double samplingInterval, double phase, double
+  modulationDepth, double modulationFrequency, double modulationPhase)
 {
 	static const char	*funcName = "SetPars_PureTone_FM";
 	BOOLN	ok;
@@ -390,7 +390,7 @@ SetModulationDepth_PureTone_FM(double theModulationDepth)
 
 }
 
-/****************************** SetModulationFrequency *************************/
+/****************************** SetModulationFrequency ************************/
 
 /*
  * This function sets the module's modulationFrequency parameter.
@@ -414,7 +414,7 @@ SetModulationFrequency_PureTone_FM(double theModulationFrequency)
 
 }
 
-/****************************** SetModulationPhase *****************************/
+/****************************** SetModulationPhase ****************************/
 
 /*
  * This function sets the module's modulationPhase parameter.
@@ -686,17 +686,21 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 	register	double		amplitude, modulationIndex;
 	register	ChanData	 *dataPtr;
 
-	if (!CheckPars_PureTone_FM())
-		return(FALSE);
-	if (!CheckData_PureTone_FM(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Frequency Modulated Pure Tone stimulus");
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(fMTonePtr->duration /
-	  fMTonePtr->dt + 0.5), fMTonePtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_PureTone_FM())
+			return(FALSE);
+		if (!CheckData_PureTone_FM(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Frequency Modulated Pure Tone stimulus");
+		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(fMTonePtr->duration /
+		  fMTonePtr->dt + 0.5), fMTonePtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	modulationIndex = fMTonePtr->modulationDepth / 100.0 * fMTonePtr->
 	  frequency / fMTonePtr->modulationFrequency;

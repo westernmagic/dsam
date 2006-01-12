@@ -832,19 +832,23 @@ GenerateSignal_PureTone_Multi(EarObjectPtr data)
 	register	double		amplitude, phase;
 	register	ChanData	*dataPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_PureTone_Multi())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Multiple pure tone stimulus");
-	data->updateProcessFlag = TRUE;	/* Ensure signal is set to zero. */
-	if ( !InitOutSignal_EarObject(data, PURE_TONE_NUM_CHANNELS,
-	  (ChanLen) floor(mPureTonePtr->duration / mPureTonePtr->dt + 0.5),
-	  mPureTonePtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_PureTone_Multi())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Multiple pure tone stimulus");
+		data->updateProcessFlag = TRUE;	/* Ensure signal is set to zero. */
+		if ( !InitOutSignal_EarObject(data, PURE_TONE_NUM_CHANNELS,
+		  (ChanLen) floor(mPureTonePtr->duration / mPureTonePtr->dt + 0.5),
+		  mPureTonePtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	ResetOutSignal_EarObject(data);
 	for (j = 0; j < mPureTonePtr->numPTones; j++) {

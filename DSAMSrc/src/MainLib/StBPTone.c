@@ -658,24 +658,24 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 	register	double		amplitude, phase, frequency, intensity;
 	register	ChanData	*dataPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_PureTone_Binaural())
+			return(FALSE);
+		if (!CheckData_PureTone_Binaural(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Binaural pure tone stimulus");
+		if ( !InitOutSignal_EarObject(data, BINAURAL_PTONE_CHANNELS,
+		  (ChanLen) floor(bPureTonePtr->duration / bPureTonePtr->dt + 0.5),
+	    	bPureTonePtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckPars_PureTone_Binaural())
-		return(FALSE);
-	if (!CheckData_PureTone_Binaural(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Binaural pure tone stimulus");
-	if ( !InitOutSignal_EarObject(data, BINAURAL_PTONE_CHANNELS,
-	  (ChanLen) floor(bPureTonePtr->duration / bPureTonePtr->dt + 0.5),
-	    bPureTonePtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, 2);
 	phase = bPureTonePtr->phaseDifference * PIx2 / 360.0;
 	for (j = 0; j < BINAURAL_PTONE_CHANNELS; j++) {
 		if (j == 0) {

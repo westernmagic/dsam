@@ -826,23 +826,26 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 {
 	static const char	*funcName = "GenerateSignal_Stimulus_ExpGatedTone";
 	register ChanData	 *outPtr;
-	register double		time, cycle, expFactor, phaseRads, dt, cyclePeriod;
+	register double		time, cycle, expFactor, phaseRads, cyclePeriod;
 	ChanLen		i, t;
 	EGatedTonePtr	p = eGatedTonePtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Stimulus_ExpGatedTone())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Exponentially Gated Pure Tone Module "
-	  "Process");
-	dt = p->dt;
-	if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
-	  (ChanLen) floor(p->duration / dt + 0.5), dt)) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}
+		if (!CheckPars_Stimulus_ExpGatedTone())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Exponentially Gated Pure Tone Module "
+		  "Process");
+		if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
+		  (ChanLen) floor(p->duration / p->dt + 0.5), p->dt)) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	cyclePeriod = 1.0 / p->repetitionRate;
 	expFactor = -LN_2 / p->halfLife;
@@ -854,7 +857,7 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 	outPtr = data->outSignal->channel[0];
 	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  outPtr++) {
-		time = t * dt;
+		time = t * p->dt;
 	  	if (time < p->beginPeriodDuration) {
 			*outPtr = 0.0;
 	  		continue;
@@ -869,7 +872,7 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 			p->cycleTimer = 0.0;
 			p->nextCycle += cyclePeriod;
 		} else
-			p->cycleTimer += dt;
+			p->cycleTimer += p->dt;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

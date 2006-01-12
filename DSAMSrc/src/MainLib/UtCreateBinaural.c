@@ -145,20 +145,24 @@ Process_Utility_CreateBinaural(EarObjectPtr data)
 	int		j, chan, outChanOffset, transferLevel;
 	ChanLen	i;
 
-	if (!CheckData_Utility_CreateBinaural(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_Utility_CreateBinaural(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Create/merge binaural signal routine");
+		numChannelsToSet = (data->inSignal[0]->interleaveLevel == 2)?
+		  data->inSignal[0]->numChannels: data->inSignal[0]->numChannels * 2;
+		data->updateProcessFlag = TRUE;
+		if (!InitOutSignal_EarObject(data, numChannelsToSet,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Create/merge binaural signal routine");
-	numChannelsToSet = (data->inSignal[0]->interleaveLevel == 2)?
-	  data->inSignal[0]->numChannels: data->inSignal[0]->numChannels * 2;
-	data->updateProcessFlag = TRUE;
-	if (!InitOutSignal_EarObject(data, numChannelsToSet,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetInterleaveLevel_SignalData(data->outSignal, 2);
 	transferLevel = (data->inSignal[0]->interleaveLevel == 2)? 1: 2;
 	for (j = 0; j < 2; j++) {
 		outChanOffset = j * (transferLevel - 1);

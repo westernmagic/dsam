@@ -1173,27 +1173,31 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	ICTableEntryPtr	e;
 	HHuxleyNCPtr	p = hHuxleyNCPtr;
 
-	if (!CheckPars_Neuron_HHuxley())
-		return(FALSE);
-	if (!CheckData_Neuron_HHuxley(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Neuron_HHuxley())
+			return(FALSE);
+		if (!CheckData_Neuron_HHuxley(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+			NotifyError("%s: Could not initialise output signal.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Hodkin-Huxley neural cell");
+		if (!InitProcessVariables_Neuron_HHuxley(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		p->dt = data->outSignal->dt;
+		p->dtOverC = p->dt / p->cellCapacitance;
+		p->debug = !p->restingRun && (p->diagnosticMode !=
+		  GENERAL_DIAGNOSTIC_OFF_MODE);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Hodkin-Huxley neural cell");
-	if (!InitProcessVariables_Neuron_HHuxley(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
-	}
-	p->dt = data->outSignal->dt;
-	p->dtOverC = p->dt / p->cellCapacitance;
-	p->debug = !p->restingRun && (p->diagnosticMode !=
-	  GENERAL_DIAGNOSTIC_OFF_MODE);
 
 	if (p->debug) {
 		DynaListPtr	node;

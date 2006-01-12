@@ -86,7 +86,6 @@ typedef struct _EarObject {
 	int				numThreads;		/* No. of thread process using EarObject */
 	int				threadIndex;	/* Identifies the thread process. */
 	int				numSubProcesses;/* No. of associated. sub-processes. */
-	int				origNumChannels;/* Original no. of channels for process. */
 	ChanLen			timeIndex;		/* used in segmented mode processing */
 	RandParsPtr		randPars;		/* Used to store random number pars. */
 	SignalDataPtr	*inSignal;		/* The original signals */

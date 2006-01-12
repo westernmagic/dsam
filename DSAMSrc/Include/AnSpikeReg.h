@@ -75,7 +75,7 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	double	dt, convertDt;
-	ChanLen	runningTimeOffsetIndex;
+	ChanLen	*runningTimeOffsetIndex;
 	EarObjectPtr	countEarObj;
 	SpikeListSpecPtr	spikeListSpec;
 
@@ -116,6 +116,8 @@ BOOLN	InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data);
 BOOLN	PrintPars_Analysis_SpikeRegularity(void);
 
 BOOLN	ReadPars_Analysis_SpikeRegularity(char *fileName);
+
+void	ResetProcess_Analysis_SpikeRegularity(EarObjectPtr data);
 
 void	ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data);
 

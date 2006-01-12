@@ -132,6 +132,7 @@ Init_Analysis_SpikeRegularity(ParameterSpecifier parSpec)
 	}
 	spikeRegPtr->spikeListSpec= NULL;
 	spikeRegPtr->countEarObj = NULL;
+	spikeRegPtr->runningTimeOffsetIndex = NULL;
 	return(TRUE);
 
 }
@@ -552,6 +553,7 @@ InitModule_Analysis_SpikeRegularity(ModulePtr theModule)
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SpikeRegularity;
 	theModule->PrintPars = PrintPars_Analysis_SpikeRegularity;
 	theModule->ReadPars = ReadPars_Analysis_SpikeRegularity;
+	theModule->ResetProcess = ResetProcess_Analysis_SpikeRegularity;
 	theModule->RunProcess = Calc_Analysis_SpikeRegularity;
 	theModule->SetParsPointer = SetParsPointer_Analysis_SpikeRegularity;
 	return(TRUE);
@@ -634,6 +636,22 @@ ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data)
 
 }
 
+/**************************** ResetProcess ************************************/
+
+/*
+ * This routine resets the process variables.
+ */
+
+void
+ResetProcess_Analysis_SpikeRegularity(EarObjectPtr data)
+{
+	SpikeRegPtr	p = spikeRegPtr;
+
+	ResetOutSignal_EarObject(p->countEarObj);
+	ResetListSpec_SpikeList(p->spikeListSpec, data->inSignal[0]);
+
+}
+
 /**************************** InitProcessVariables ****************************/
 
 /*
@@ -668,7 +686,13 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 			NotifyError("%s: Cannot initialise countEarObj.", funcName);
 			return(FALSE);
 		}
-		ResetListSpec_SpikeList(p->spikeListSpec);
+		if ((p->runningTimeOffsetIndex = (ChanLen *) calloc(data->inSignal[0]->
+		  numChannels, sizeof(ChanLen))) == NULL) {
+			NotifyError("%s: Out of memory for 'runningTimeOffsetIndex[%d]' "
+			  "array.", funcName, data->inSignal[0]->numChannels);
+			return(FALSE);
+		}
+		ResetProcess_Analysis_SpikeRegularity(data);
 	} else
 		ResetStatistics_Analysis_SpikeRegularity(data);
 	return(TRUE);
@@ -685,8 +709,14 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 void
 FreeProcessVariables_Analysis_SpikeRegularity(void)
 {
-	FreeListSpec_SpikeList(&spikeRegPtr->spikeListSpec);
-	Free_EarObject(&spikeRegPtr->countEarObj);
+	SpikeRegPtr	p = spikeRegPtr;
+
+	if (p->runningTimeOffsetIndex) {
+		free(p->runningTimeOffsetIndex);
+		p->runningTimeOffsetIndex = NULL;
+	}
+	FreeListSpec_SpikeList(&p->spikeListSpec);
+	Free_EarObject(&p->countEarObj);
 
 }
 
@@ -715,7 +745,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	int		outChan, inChan;
 	double	interval, spikeTime, windowWidth, timeRange;
 	ChanLen	i, spikeTimeHistIndex, timeRangeIndex;
-	ChanLen	timeOffsetIndex;
+	ChanLen	timeOffsetIndex, *runningTimeOffsetIndex;
 	ChanData	oldMean;
 	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
 	SpikeRegPtr	p = spikeRegPtr;
@@ -747,17 +777,20 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		/* Add additional sums. */
-		p->runningTimeOffsetIndex = p->spikeListSpec->timeIndex;
-		timeOffsetIndex = (ChanLen) floor(p->timeOffset / p->dt + 0.5);
-		if (p->runningTimeOffsetIndex < timeOffsetIndex)
-			p->runningTimeOffsetIndex += timeOffsetIndex -
-			  p->runningTimeOffsetIndex;
 		p->convertDt = p->dt / data->outSignal->dt;
 		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data->
 		  inSignal[0]);
 		if (data->initThreadRunFlag)
 			return(TRUE);
+	}
+	/* Add additional sums. */
+	timeOffsetIndex = (ChanLen) floor(p->timeOffset / p->dt + 0.5);
+	for (inChan = data->inSignal[0]->offset; inChan < data->inSignal[0]->
+	  numChannels; inChan++) {
+		runningTimeOffsetIndex = p->spikeListSpec->timeIndex + inChan;
+		if (*runningTimeOffsetIndex < timeOffsetIndex)
+			*runningTimeOffsetIndex += timeOffsetIndex -
+			  *runningTimeOffsetIndex;
 	}
 	/* First recover previous sums from signal (when not in segment mode).*/
 	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
@@ -791,7 +824,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			spikeTime = s->timeIndex * p->dt;
 			if (s->next && (spikeTime >= p->timeOffset) &&
 			  ((spikeTimeHistIndex = (ChanLen) floor((s->timeIndex -
-				  p->runningTimeOffsetIndex) * p->convertDt)) <
+				  p->runningTimeOffsetIndex[inChan]) * p->convertDt)) <
 				  data->outSignal->length)) {
 				interval = s->next->timeIndex * p->dt - spikeTime;
 				*(sumPtr + spikeTimeHistIndex) += interval;

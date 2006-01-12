@@ -497,7 +497,7 @@ void
 ResetProcess_Analysis_ISIH(EarObjectPtr data)
 {
 	ResetOutSignal_EarObject(data);
-	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec);
+	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, data->outSignal);
 
 }
 

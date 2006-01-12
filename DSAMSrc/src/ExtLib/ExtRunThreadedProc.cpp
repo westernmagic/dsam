@@ -39,7 +39,7 @@
 #include "ExtProcChainThread.h"
 #include "ExtRunThreadedProc.h"
 
-#define DEBUG	1
+//#define DEBUG	1
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
@@ -63,8 +63,8 @@ RunThreadedProc::RunThreadedProc(void)
 	printf("RunThreadedProc::RunThreadedProc: Debug: Entered\n");
 #	endif
 	numThreads = wxThread::GetCPUCount();
-	threadMode = (GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
-	  APP_INT_THREAD_MODE_PROCESS;
+	SetThreadMode((GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
+	  APP_INT_THREAD_MODE_PROCESS);
 #	if DEBUG
 	printf("RunThreadedProc::RunThreadedProc: Debug: %d CPU's available, "
 	  "thread mode: %d\n", numThreads, threadMode);
@@ -126,10 +126,6 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	printf("%s: Debug: Entered.\n", funcName);
 	printf("%s: Debug: Working on '%s'\n", funcName, data->processName);
 #	endif
-	if (data->module->threadMode == MODULE_THREAD_MODE_NONE) {
-		data->useThreadsFlag = FALSE;
-		return(true);
-	}
 	data->initThreadRunFlag = true;
 	if ((data->numThreads > 1) && ((data->numThreads != numThreads) || data->
 	  updateProcessFlag))
@@ -145,8 +141,10 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	  long) data->outSignal);
 #	endif
 	data->initThreadRunFlag = false;
-	data->useThreadsFlag = (data->outSignal->numChannels > 1);
-	data->origNumChannels = data->outSignal->numChannels;
+	data->useThreadsFlag = (data->module->threadMode ==
+	  MODULE_THREAD_MODE_NONE)? FALSE: (data->outSignal->numChannels > 1);
+	if (!data->useThreadsFlag)
+		data->numThreads = 1;
 	if (!ok)
 		NotifyError("%s: Could not do pre-thread process initialisation run.",
 		  funcName);
@@ -306,7 +304,6 @@ RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 			pc2 = pc;
 			break;
 		case REPEAT:
-			printf("%s: Adding repeat level to list.\n", funcName);
 			if (!PreThreadSimulationInit(pc->next, &linkBreak)) {
 				NotifyError("%s: Could not do pre-thread simulation "
 				  "initialisation.", funcName);
@@ -316,7 +313,6 @@ RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 			pc2 = GetFirstProcessInst_Utility_Datum(pc);
 			break;
 		case STOP:
-			printf("%s: Stop encountered.\n", funcName);
 			return(true);
 		default:
 			pc2 = pc;
@@ -367,15 +363,15 @@ RunThreadedProc::RestoreProcess(EarObjectPtr process)
 #		if DEBUG
 		printf("RunThreadedProc::RestoreProcess: Debug: Restoring process '%s' "
 		  "to offset '%d', numChannels '%d'.\n", process->processName, 0,
-		  process->origNumChannels);
+		  process->outSignal->origNumChannels);
 #		endif
 		int		i;
 		process->outSignal->offset = 0;
-		process->outSignal->numChannels = process->origNumChannels;
+		process->outSignal->numChannels = process->outSignal->origNumChannels;
 		for (i = 0; i < process->numSubProcesses; i++) {
 			process->subProcessList[i]->outSignal->offset = 0;
 			process->subProcessList[i]->outSignal->numChannels =
-			  process->origNumChannels;
+			  process->outSignal->origNumChannels;
 		}
 	}
 
@@ -406,12 +402,7 @@ RunThreadedProc::CleanUpThreadRuns(DatumPtr start)
 
 	if (start == NULL)
 		return NULL;
-	printf("RunThreadedProc::CleanUpThreadRuns: Debug: starting with process "
-	  "'%s' reset.\n", start->label);
 	for (pc = start; pc != start->passedThreadEnd; pc = pc->next) {
-		if  (pc->type == PROCESS)
-			printf("RunThreadedProc::CleanUpThreadRuns: Debug: process '%s' "
-			  "reset.\n", pc->label);
 		if  (pc->type == PROCESS)
 			pc->data->threadRunFlag = FALSE;
 		lastInstruction = pc;
@@ -515,22 +506,28 @@ RunThreadedProc::Execute(DatumPtr start)
 	printf("%s: Entered\n", funcName);
 #	endif
 
+#	if DEBUG
 	printf("%s: start [0] = %lx\n", funcName, (unsigned long) start);
+#	endif
 	if (!PreThreadSimulationInit(start, &brokenChain)) {
 		NotifyError("%s: Could not do pre-thread simulation initialisation.",
 		  funcName);
 		return(NULL);
 	}
+#	if DEBUG
 	printf("%s: start [1] = %lx\n", funcName, (unsigned long) start);
+#	endif
 	SetExecute_Utility_Datum(ExecuteStandard_Utility_Datum);
 	SetRunProcess_ModuleMgr(RunProcessStandard_ModuleMgr);
 	SetResetProcess_EarObject(ResetProcess_ModuleMgr);
 	for (pc = start; pc != NULL; pc = pc->passedThreadEnd) {
 		switch (pc->type) {
 		case PROCESS: {
-			pc = ((pc->data->module->threadMode == MODULE_THREAD_MODE_NONE) ||
-			  !pc->data->useThreadsFlag)? ExecuteStandardChain(pc):
-			  ExecuteMultiThreadChain(pc);
+			if ((pc->data->module->threadMode == MODULE_THREAD_MODE_NONE) ||
+			  !pc->data->useThreadsFlag)
+				lastInstruction = ExecuteStandardChain(pc);
+			else
+				lastInstruction = ExecuteMultiThreadChain(pc);
 			break; }
 		case RESET:
 			ResetProcess_EarObject(pc->data);
@@ -538,14 +535,16 @@ RunThreadedProc::Execute(DatumPtr start)
 		case STOP:
 			return (pc);
 		case REPEAT:
-			pc = (!pc->threadSafe)? ExecuteStandardChain(pc):
-			  ExecuteMultiThreadChain(pc);
+			if (!pc->threadSafe)
+				lastInstruction = ExecuteStandardChain(pc);
+			else
+			  	ExecuteMultiThreadChain(pc);
 			break;
 		default:
 			break;
 		} /* switch */
-		if ((lastInstruction = pc) == NULL)
-		break;
+		if (pc == NULL)
+			break;
 	}
 	SetRunProcess_ModuleMgr(RunProcessStandard_ModuleMgr);
 	SetExecute_Utility_Datum(Execute_RunThreadedProc);

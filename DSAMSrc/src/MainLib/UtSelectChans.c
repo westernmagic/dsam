@@ -776,17 +776,21 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	ChanLen	j;
 	SelectChanPtr	p = selectChanPtr;
 
-	if (!CheckPars_Utility_SelectChannels())
-		return(FALSE);
-	if (!CheckData_Utility_SelectChannels(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Select Channels Utility Module process");
-	if (!InitProcessVariables_Utility_SelectChannels(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_SelectChannels())
+			return(FALSE);
+		if (!CheckData_Utility_SelectChannels(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Select Channels Utility Module process");
+		if (!InitProcessVariables_Utility_SelectChannels(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:

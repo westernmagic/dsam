@@ -510,29 +510,33 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	ChanLen	i;
 	ReduceChansPtr	p = reduceChansPtr;
 
-	if (!CheckPars_Utility_ReduceChannels())
-		return(FALSE);
-	if (!CheckData_Utility_ReduceChannels(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_ReduceChannels())
+			return(FALSE);
+		if (!CheckData_Utility_ReduceChannels(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Average across channels utility");
+		numChannels = p->numChannels * data->inSignal[0]->interleaveLevel;
+		data->updateProcessFlag = TRUE;
+		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
+		  data->inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channel.", funcName);
+			return(FALSE);
+		}
+		ResetProcess_Utility_ReduceChannels(data);
+		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		  interleaveLevel);
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
+		SetInfoCFArray_SignalData(data->outSignal, NULL);
+		snprintf(channelTitle, MAXLINE, "Channel summary (%d -> %d)", data->
+		  inSignal[0]->numChannels, data->outSignal->numChannels);
+		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Average across channels utility");
-	numChannels = p->numChannels * data->inSignal[0]->interleaveLevel;
-	data->updateProcessFlag = TRUE;
-	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
-	  data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channel.", funcName);
-		return(FALSE);
-	}
-	ResetProcess_Utility_ReduceChannels(data);
-	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
-	  interleaveLevel);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetInfoChannelLabels_SignalData(data->outSignal, NULL);
-	SetInfoCFArray_SignalData(data->outSignal, NULL);
-	snprintf(channelTitle, MAXLINE, "Channel summary (%d -> %d)", data->
-	  inSignal[0]->numChannels, data->outSignal->numChannels);
-	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 	binRatio = data->inSignal[0]->numChannels / p->numChannels;
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan +=
 	  data->inSignal[0]->interleaveLevel)

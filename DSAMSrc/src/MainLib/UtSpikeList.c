@@ -82,6 +82,8 @@ FreeListSpec_SpikeList(SpikeListSpecPtr *p)
 		free((*p)->riseDetected);
 	if ((*p)->lastValue)
 		free((*p)->lastValue);
+	if ((*p)->timeIndex)
+		free((*p)->timeIndex);
 	free(*p);
 	*p = NULL;
 
@@ -140,7 +142,12 @@ InitListSpec_SpikeList(int numChannels)
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
-	p->timeIndex = PROCESS_START_TIME;
+	if ((p->timeIndex = (ChanLen *) calloc(p->numChannels, sizeof(ChanLen))) ==
+	 NULL) {
+		NotifyError("%s: Out of memory for 'timeIndex[%d]' array. ",
+		  funcName, p->numChannels);
+		ok = FALSE;
+	}
 	if (!ok)
 		FreeListSpec_SpikeList(&p);
 	return(p);
@@ -200,15 +207,17 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
  */
 
 BOOLN
-ResetListSpec_SpikeList(SpikeListSpecPtr listSpec)
+ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 {
 	static const char *funcName = "ResetListSpec_SpikeList";
+	int		chan;
 
 	if (listSpec == NULL) {
 		NotifyError("%s: Attempt to reset NULL list specification.", funcName);
 		return(FALSE);
 	}
-	listSpec->timeIndex = PROCESS_START_TIME;
+	for (chan = signal->offset; chan < signal->numChannels; chan++)
+		listSpec->timeIndex[chan] = PROCESS_START_TIME;
 	return(TRUE);
 
 }
@@ -230,18 +239,19 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 	register	BOOLN		*riseDetected;
 	register	ChanData	*inPtr, *lastValue;
 	uShort		chan;
-	ChanLen	i, startTime;
+	ChanLen	i, startTime, *timeIndex;
 
 	if (listSpec == NULL) {
 		NotifyError("%s: Attempt to use NULL list specification.", funcName);
 		return(FALSE);
 	}
-	for (chan = 0; chan < signal->numChannels; chan++) {
+	for (chan = signal->offset; chan < signal->numChannels; chan++) {
 		listSpec->current[chan] = listSpec->head[chan];
 		inPtr = signal->channel[chan];
 		riseDetected = listSpec->riseDetected + chan;
 		lastValue = listSpec->lastValue + chan;
-		if (listSpec->timeIndex == PROCESS_START_TIME) {
+		timeIndex = listSpec->timeIndex + chan;
+		if (*timeIndex == PROCESS_START_TIME) {
 			startTime = 1;
 			listSpec->riseDetected[chan] = FALSE;
 			*lastValue = *(inPtr++);
@@ -255,7 +265,7 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 					*riseDetected = FALSE;
 					if (*lastValue > eventThreshold) {
 						if (!InsertSpikeSpec_SpikeList(listSpec, chan,
-						  listSpec->timeIndex + i - 1)) {
+						  *timeIndex + i - 1)) {
 							NotifyError("%s: Could not insert spike "
 							  "specification.", funcName);
 							return(FALSE);
@@ -266,7 +276,7 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 			*lastValue = *(inPtr++);
 		}
 	}
-	listSpec->timeIndex += signal->length;
+	*timeIndex += signal->length;
 	return(TRUE);
 
 }

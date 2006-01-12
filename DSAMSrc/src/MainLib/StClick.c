@@ -493,17 +493,21 @@ GenerateSignal_Click(EarObjectPtr data)
 	ChanLen		timeIndex;
 	ChanData	*dataPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_Click())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Click (delta-function) stimulus");
-	if (!InitOutSignal_EarObject(data, 1, (ChanLen) (clickPtr->duration /
-		clickPtr->dt + 0.5), clickPtr->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_Click())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Click (delta-function) stimulus");
+		if (!InitOutSignal_EarObject(data, 1, (ChanLen) (clickPtr->duration /
+			clickPtr->dt + 0.5), clickPtr->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	dataPtr = data->outSignal->channel[0];
 	/* The channel is initialised to zero by InitOutSignal_EarObject. */

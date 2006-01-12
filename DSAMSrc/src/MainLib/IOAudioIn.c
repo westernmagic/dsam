@@ -759,24 +759,28 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 	BOOLN	ok = TRUE;
 	AudioInPtr p = audioInPtr;
 
-	if (!CheckPars_IO_AudioIn())
-		return(FALSE);
-	if (!CheckData_IO_AudioIn(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Audio input module process");
-	data->externalDataFlag = TRUE;
-	if (!InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
-	  floor(p->duration * p->sampleRate + 0.5), 1.0 / p->sampleRate)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	data->outSignal->rampFlag = TRUE;
-	if (!InitProcessVariables_IO_AudioIn(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_IO_AudioIn())
+			return(FALSE);
+		if (!CheckData_IO_AudioIn(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Audio input module process");
+		data->externalDataFlag = TRUE;
+		if (!InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
+		  floor(p->duration * p->sampleRate + 0.5), 1.0 / p->sampleRate)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		data->outSignal->rampFlag = TRUE;
+		if (!InitProcessVariables_IO_AudioIn(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	do {
 		p->pAError = Pa_IsStreamActive(p->stream);

@@ -511,21 +511,25 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 	int		chan;
 	ChanLen	i;
 
-	if (!CheckPars_Transform_SetDBSPL())
-		return(FALSE);
-	if (!CheckData_Transform_SetDBSPL(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Set Intensity Module process");
-	if (data->outSignal != data->inSignal[0]) {
-		data->outSignal = data->inSignal[0];
-		data->updateCustomersFlag = TRUE;
-	}
-	if (!InitProcessVariables_Transform_SetDBSPL(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Transform_SetDBSPL())
+			return(FALSE);
+		if (!CheckData_Transform_SetDBSPL(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Set Intensity Module process");
+		if (data->outSignal != data->inSignal[0]) {
+			data->outSignal = data->inSignal[0];
+			data->updateCustomersFlag = TRUE;
+		}
+		if (!InitProcessVariables_Transform_SetDBSPL(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan];

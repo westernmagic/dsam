@@ -500,33 +500,37 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	ChanLen	i, minIndex, maxIndex;
 	ALSRPtr	p = aLSRPtr;
 
-	if (!CheckPars_Analysis_ALSR())
-		return(FALSE);
-	if (!CheckData_Analysis_ALSR(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "ALSR Analysis Module process");
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Analysis_ALSR())
+			return(FALSE);
+		if (!CheckData_Analysis_ALSR(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "ALSR Analysis Module process");
 
-	/*** Example Initialise output signal - ammend/change if required. ***/
-	if (!InitOutSignal_EarObject(data, 1, data->inSignal[0]->length, data->
-	  inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
+		/*** Example Initialise output signal - ammend/change if required. ***/
+		if (!InitOutSignal_EarObject(data, 1, data->inSignal[0]->length, data->
+		  inSignal[0]->dt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
 
-	if (!InitProcessVariables_Analysis_ALSR(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+		if (!InitProcessVariables_Analysis_ALSR(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz) ");
+		snprintf(channelTitle, MAXLINE, "ALSR function (+%g / -%g octaves)",
+		  p->lowerAveLimit, p->upperAveLimit);
+		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
+		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
+		SetInfoCFArray_SignalData(data->outSignal, NULL);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz) ");
-	snprintf(channelTitle, MAXLINE, "ALSR function (+%g / -%g octaves)",
-	  p->lowerAveLimit, p->upperAveLimit);
-	SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
-	SetInfoChannelLabels_SignalData(data->outSignal, NULL);
-	SetInfoCFArray_SignalData(data->outSignal, NULL);
 	if (!GetChannelLimits_SignalData(data->inSignal[0], &minChan, &maxChan, 
 	  p->lowerAveLimit, p->upperAveLimit, SIGNALDATA_LIMIT_MODE_OCTAVE)) {
 		NotifyError("%s: Could not find a channel limits for signal.",

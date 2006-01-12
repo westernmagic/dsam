@@ -574,18 +574,22 @@ GenerateSignal_PureTone_AM(EarObjectPtr data)
 	register	double		time, amplitude;
 	register	ChanData	*dataPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_PureTone_AM())
-		return(FALSE);
-	SetProcessName_EarObject(data, "AM Tone stimulus");
-	if ( !InitOutSignal_EarObject(data, AM_TONE_NUM_CHANNELS,
-	  (ChanLen) floor(aMTonePtr->duration / aMTonePtr->dt + 0.5), aMTonePtr->
-	  dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_PureTone_AM())
+			return(FALSE);
+		SetProcessName_EarObject(data, "AM Tone stimulus");
+		if ( !InitOutSignal_EarObject(data, AM_TONE_NUM_CHANNELS,
+		  (ChanLen) floor(aMTonePtr->duration / aMTonePtr->dt + 0.5),
+		  aMTonePtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	amplitude = RMS_AMP(aMTonePtr->intensity) * SQRT_2;
 	modulationIndex = aMTonePtr->modulationDepth / 100.0;

@@ -371,39 +371,43 @@ Process_Utility_Transpose(EarObjectPtr data)
 	int		i, chan;
 	double	*chanLabel, delta1, newDt, timeOffset;
 
-	if (!CheckPars_Utility_Transpose())
-		return(FALSE);
-	if (!CheckData_Utility_Transpose(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Transpose())
+			return(FALSE);
+		if (!CheckData_Utility_Transpose(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Transpose Utility Module process");
+		chanLabel = data->inSignal[0]->info.chanLabel;
+		if ((data->inSignal[0]->numChannels > 2)) {
+			delta1 = chanLabel[1] - chanLabel[0];
+			regularLabels = (!DBL_GREATER(delta1, chanLabel[2] - chanLabel[1]));
+		} else
+			regularLabels = FALSE;
+		if ((transposePtr->mode == UTILITY_TRANSPOSE_STANDARD_MODE) &&
+		  regularLabels) {
+			newDt = delta1;
+			timeOffset = chanLabel[0];
+		} else {
+			newDt = 1.0;
+			timeOffset = 0.0;
+		}
+
+		if (!InitOutSignal_EarObject(data, (uShort) data->inSignal[0]->length,
+		  (ChanLen) data->inSignal[0]->numChannels, newDt)) {
+			NotifyError("%s: Cannot initialise output channels.", funcName);
+			return(FALSE);
+		}
+		SetOutputTimeOffset_SignalData(data->outSignal, timeOffset);
+		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetInfoChanDataTitle_SignalData(data->outSignal, data->inSignal[0]->info.
+		  sampleTitle);
+		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
+		  chanDataTitle);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Transpose Utility Module process");
-	chanLabel = data->inSignal[0]->info.chanLabel;
-	if ((data->inSignal[0]->numChannels > 2)) {
-		delta1 = chanLabel[1] - chanLabel[0];
-		regularLabels = (!DBL_GREATER(delta1, chanLabel[2] - chanLabel[1]));
-	} else
-		regularLabels = FALSE;
-	if ((transposePtr->mode == UTILITY_TRANSPOSE_STANDARD_MODE) &&
-	  regularLabels) {
-		newDt = delta1;
-		timeOffset = chanLabel[0];
-	} else {
-		newDt = 1.0;
-		timeOffset = 0.0;
-	}
-	  
-	if (!InitOutSignal_EarObject(data, (uShort) data->inSignal[0]->length,
-	  (ChanLen) data->inSignal[0]->numChannels, newDt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
-		return(FALSE);
-	}
-	SetOutputTimeOffset_SignalData(data->outSignal, timeOffset);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-	SetInfoChanDataTitle_SignalData(data->outSignal, data->inSignal[0]->info.
-	  sampleTitle);
-	SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
-	  chanDataTitle);
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
 		for (i = 0; i < data->outSignal->numChannels; i++)

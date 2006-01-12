@@ -1139,23 +1139,27 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 	double		amplitude, timexPix2, filterAmp, modulation;
 	register	ChanData	*dataPtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_Harmonic())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Harmonic series stimulus");
-	if ( !InitOutSignal_EarObject(data, HARMONIC_NUM_CHANNELS,
-	  (ChanLen) floor(harmonicPtr->duration / harmonicPtr->dt + 0.5),
-	    harmonicPtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_Harmonic(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_Harmonic())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Harmonic series stimulus");
+		if ( !InitOutSignal_EarObject(data, HARMONIC_NUM_CHANNELS,
+		  (ChanLen) floor(harmonicPtr->duration / harmonicPtr->dt + 0.5),
+	    	harmonicPtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_Harmonic(data)) {
+			NotifyError("%s: Could not initialise the process variables.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	amplitude = RMS_AMP(harmonicPtr->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];

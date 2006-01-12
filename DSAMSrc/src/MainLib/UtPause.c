@@ -530,19 +530,19 @@ Process_Utility_Pause(EarObjectPtr data)
 	time_t	startTime;
 	FILE	*oldParsFile;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_Pause())
+			return(FALSE);
+		if (!CheckData_Utility_Pause(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Pause utility module process");
+		data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
+		data->outSignal = data->inSignal[0];
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!CheckPars_Utility_Pause())
-		return(FALSE);
-	if (!CheckData_Utility_Pause(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
-	}
-	SetProcessName_EarObject(data, "Pause utility module process");
-	data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
-	data->outSignal = data->inSignal[0];
 
 	if (pausePtr->alertMode == GENERAL_BOOLEAN_ON)
 		fprintf(stderr, "\07");

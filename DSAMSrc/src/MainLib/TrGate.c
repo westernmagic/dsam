@@ -853,7 +853,8 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	ChanLen	i;
 	ChanData	*dataPtr, *endPtr;
 	
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		dataPtr = data->outSignal->channel[chan];
 		endPtr = dataPtr + data->outSignal->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
@@ -883,7 +884,8 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	int		chan;
 	ChanLen	i;
 
-	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
+	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	  chan++) {
 		startPtr = data->outSignal->channel[chan];
 		dataPtr = startPtr + data->outSignal->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
@@ -923,37 +925,40 @@ Process_Transform_Gate(EarObjectPtr data)
 {
 	static const char	*funcName = "Process_Transform_Gate";
 	int		operationMode;
-	ChanLen	intervalIndex, offsetIndex;
+	GatePtr	p = gatePtr;
 
-	if (!CheckPars_Transform_Gate())
-		return(FALSE);
-	if (!CheckData_Transform_Gate(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Transform_Gate())
+			return(FALSE);
+		if (!CheckData_Transform_Gate(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Gate Module process");
+		if (data->outSignal != data->inSignal[0]) {
+			data->outSignal = data->inSignal[0];
+			data->updateCustomersFlag = TRUE;
+		}
+		data->outSignal->rampFlag = TRUE;
+		p->offsetIndex = (p->positionMode == GATE_ABSOLUTE_POSITION_MODE)?
+		  (ChanLen) floor(p->timeOffset / data->outSignal->dt + 0.5): 0;
+		p->intervalIndex = (p->duration < 0.0)? data->inSignal[0]->length:
+		  (ChanLen) floor(p->duration / data->outSignal->dt + 0.5);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Gate Module process");
-	if (data->outSignal != data->inSignal[0]) {
-		data->outSignal = data->inSignal[0];
-		data->updateCustomersFlag = TRUE;
-	}
-	data->outSignal->rampFlag = TRUE;
-	offsetIndex = (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)?
-	  (ChanLen) floor(gatePtr->timeOffset / data->outSignal->dt + 0.5): 0;
-	intervalIndex = (gatePtr->duration < 0.0)?
-	  data->inSignal[0]->length: (ChanLen) floor(gatePtr->duration /
-	  data->outSignal->dt + 0.5);
-	if (data->timeIndex < (intervalIndex + offsetIndex)) {
-		operationMode = gatePtr->operationMode;
-		if (gatePtr->typeMode == GATE_EXP_DECAY_TYPE_MODE)
+	if (data->timeIndex < (p->intervalIndex + p->offsetIndex)) {
+		operationMode = p->operationMode;
+		if (p->typeMode == GATE_EXP_DECAY_TYPE_MODE)
 			operationMode = (operationMode == GATE_RAMP_OPERATION_MODE)?
 			  GATE_DAMP_OPERATION_MODE: GATE_RAMP_OPERATION_MODE;
 
 		switch (operationMode) {
 		case GATE_RAMP_OPERATION_MODE:
-			Ramp_Transform_Gate(data, offsetIndex, intervalIndex);
+			Ramp_Transform_Gate(data, p->offsetIndex, p->intervalIndex);
 			break;
 		case GATE_DAMP_OPERATION_MODE:
-			Damp_Transform_Gate(data, offsetIndex, intervalIndex);
+			Damp_Transform_Gate(data, p->offsetIndex, p->intervalIndex);
 			break;
 		default:
 			;

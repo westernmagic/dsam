@@ -579,20 +579,24 @@ GenerateSignal_StepFunction(EarObjectPtr data)
 	register	ChanData	*dataPtr;
 	ChanLen		i, beginPeriodDurationIndex, endSignalIndex;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_StepFunction())
-		return(FALSE);
-	SetProcessName_EarObject(data, "Step-function stimulus");
-	totalDuration = stepFunPtr->beginPeriodDuration +
-	  stepFunPtr->duration + stepFunPtr->endPeriodDuration;
-	data->updateProcessFlag = TRUE;
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(totalDuration /
-	  stepFunPtr->dt + 0.5), stepFunPtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_StepFunction())
+			return(FALSE);
+		SetProcessName_EarObject(data, "Step-function stimulus");
+		totalDuration = stepFunPtr->beginPeriodDuration +
+		  stepFunPtr->duration + stepFunPtr->endPeriodDuration;
+		data->updateProcessFlag = TRUE;
+		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(totalDuration /
+		  stepFunPtr->dt + 0.5), stepFunPtr->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	beginPeriodDurationIndex = (ChanLen) floor(stepFunPtr->beginPeriodDuration /
 	  data->outSignal->dt + 0.5);

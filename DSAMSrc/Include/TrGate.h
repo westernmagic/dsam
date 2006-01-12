@@ -110,6 +110,7 @@ typedef struct {
 	NameSpecifier *operationModeList;
 	NameSpecifier *typeModeList;
 	NameSpecifier *processModeList;
+	ChanLen	intervalIndex, offsetIndex;
 
 } Gate, *GatePtr;
 

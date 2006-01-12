@@ -596,40 +596,43 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 {
 	static const char	*funcName = "GenerateSignal_PulseTrain";
 	register	ChanData	 *outPtr;
-	double		pulsePeriod, dt, t;
+	double		pulsePeriod, t;
 	ChanLen		i;
+	PulseTrainPtr	p = pulseTrainPtr;
 
-	if (!CheckPars_PulseTrain())
-		return(FALSE);
-	if (!CheckData_PulseTrain(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_PulseTrain())
+			return(FALSE);
+		if (!CheckData_PulseTrain(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Pulse-train stimulus");
+		data->updateProcessFlag = TRUE;
+		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(p->
+		  duration / p->dt + 0.5), p->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		data->outSignal->rampFlag = TRUE; /* Do not ramp. */
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Pulse-train stimulus");
-	data->updateProcessFlag = TRUE;
-	if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(pulseTrainPtr->
-	  duration / pulseTrainPtr->dt + 0.5), pulseTrainPtr->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
-	}
-	data->outSignal->rampFlag = TRUE; /* Do not ramp. */
-	dt = pulseTrainPtr->dt;
-	pulsePeriod = 1.0 / pulseTrainPtr->pulseRate;
+	pulsePeriod = 1.0 / p->pulseRate;
 	if (data->timeIndex == PROCESS_START_TIME) {
-		pulseTrainPtr->nextPulseTime = pulsePeriod;
-		pulseTrainPtr->remainingPulseTime = pulseTrainPtr->pulseDuration;
+		p->nextPulseTime = pulsePeriod;
+		p->remainingPulseTime = p->pulseDuration;
 	}
 	outPtr = data->outSignal->channel[0];
-	for (i = 0, t = (data->timeIndex + 1) * dt; i < data->outSignal->length;
-	  i++, t += dt, outPtr++) {
-		if (pulseTrainPtr->remainingPulseTime > 0.0) {
-			*outPtr = pulseTrainPtr->amplitude;
-			pulseTrainPtr->remainingPulseTime -= dt;
+	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < data->outSignal->length;
+	  i++, t += p->dt, outPtr++) {
+		if (p->remainingPulseTime > 0.0) {
+			*outPtr = p->amplitude;
+			p->remainingPulseTime -= p->dt;
 		} else {
-			if (t >= pulseTrainPtr->nextPulseTime) {
-				pulseTrainPtr->remainingPulseTime =
-				  pulseTrainPtr->pulseDuration;
-				pulseTrainPtr->nextPulseTime += pulsePeriod;
+			if (t >= p->nextPulseTime) {
+				p->remainingPulseTime = p->pulseDuration;
+				p->nextPulseTime += pulsePeriod;
 			}
 		}
 	}

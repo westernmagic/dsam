@@ -632,22 +632,26 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	register	ChanData	*dataPtr, *dataPtrA, *dataPtrB;
 	WhiteNoisePtr	p = whiteNoisePtr;
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	if (!CheckPars_WhiteNoise())
-		return(FALSE);
-	SetProcessName_EarObject(data, "White Noise stimulus");
-	if ( !InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
-	  floor(p->duration / p->dt + 0.5), p->dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		if (!CheckPars_WhiteNoise())
+			return(FALSE);
+		SetProcessName_EarObject(data, "White Noise stimulus");
+		if ( !InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
+		  floor(p->duration / p->dt + 0.5), p->dt) ) {
+			NotifyError("%s: Cannot initialise output signal", funcName);
+			return(FALSE);
+		}
+		if (data->updateProcessFlag && !SetRandPars_EarObject(data, p->ranSeed,
+		  funcName))
+			return(FALSE);
+		SetInterleaveLevel_SignalData(data->outSignal, (uShort) p->numChannels);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (data->updateProcessFlag && !SetRandPars_EarObject(data, p->ranSeed,
-	  funcName))
-		return(FALSE);
-	SetInterleaveLevel_SignalData(data->outSignal, (uShort) p->numChannels);
 	amplitude = RMS_AMP(p->intensity) * SQRT_2;
 	dataPtr = data->outSignal->channel[0];
 	for (i = 0; i < data->outSignal->length; i++) {
