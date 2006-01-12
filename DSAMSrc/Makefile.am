@@ -5,9 +5,10 @@ AUTOMAKE_OPTIONS = foreign
 
 pkginclude_HEADERS	= DSAMSetup.h
 
-bin_SCRIPTS = dsam-config
+bin_SCRIPTS		= dsam-config
 BUILT_SOURCES	= dsam.spec dsam-config
-SUBDIRS		= CfgTools Include src ModuleSpecs Examples MSVC
+EXTRA_DIST		= LICENSE
+SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC
 
 dsam.spec: dsam.spec.in
 
