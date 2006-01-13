@@ -987,7 +987,8 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	InitOutDataFromInSignal_EarObject(bPParsPtr->data);
+	for (i = 0; i < p->numFilters; i++)
+		InitOutDataFromInSignal_EarObject(p->bPassPars[i].data);
 	for (i = 0; i < p->numFilters; i++) {
 		bPParsPtr = &p->bPassPars[i];
 		if (fabs(p->gain[i]) > DBL_EPSILON)
