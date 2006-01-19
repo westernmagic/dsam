@@ -698,7 +698,7 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 				  "script.", funcName, pc->u.string);
 				ok = FALSE;
 			} else
-				pc->data = ((DatumPtr) p->data)->data;
+				pc->u.pc = (DatumPtr) p->data;
 			break;
 		case PROCESS:
 			if (pc->u.proc.outputList && !SetOutputConnections_Utility_Datum(
@@ -1105,7 +1105,7 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 		#	endif
 			break; }
 		case RESET:
-			process = GET_PROCESS(pc->data);
+			process = GET_PROCESS(pc->u.pc->data);
 			ResetProcess_EarObject(process);
 			break;
 		case STOP:

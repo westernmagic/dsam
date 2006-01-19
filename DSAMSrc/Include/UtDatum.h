@@ -83,6 +83,7 @@ typedef struct Datum {
 			struct Datum	*stopPC;
 			int		count;
 		} loop;
+		struct Datum	*pc;
 	} u;
 	EarObjectPtr	data;
 	void			*clientData;
