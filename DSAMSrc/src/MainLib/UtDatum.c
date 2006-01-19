@@ -1119,10 +1119,16 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 				NotifyError("%s: Repeat has no end point.", funcName);
 				return(NULL);
 			}
+#			if DEBUG
+			clock_t startLoop = clock();
+#			endif
 			for (i = 0; i < pc->u.loop.count; i++)
 				lastInstruction = Execute_Utility_Datum(pc->next, passedEnd,
 				  threadIndex);
 			pc = lastInstruction;
+#			if DEBUG
+			clock_t EndLoop = clock();
+#			endif
 			break;
 		default:
 			break;

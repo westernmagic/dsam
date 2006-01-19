@@ -27,6 +27,12 @@
 
 #include "ExtProcThread.h"
 
+//#define DEBUG	1
+
+#if DEBUG
+#	include <time.h>
+#endif
+
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
@@ -83,8 +89,8 @@ ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
 		return(theDataPtr);
 	process = (index)? &theDataPtr->threadProcs[index - 1]: theDataPtr;
 #	ifdef DEBUG
-	printf("ProcThread::ConfigProcess: outsignal %x, index = %d\n",
-	  process->outSignal, index);
+	printf("ProcThread::ConfigProcess: outsignal %lx, index = %d\n",
+	  (unsigned long) process->outSignal, index);
 #	endif
 	process->outSignal->offset = offset;
 	process->outSignal->numChannels = offset + numChannels;
@@ -110,12 +116,12 @@ ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
 void
 ProcThread::OnExit(void)
 {
-#	if DEBUG
-	printf("ProcThread::OnExit: offset %d signaled finished.\n", offset);
-#	endif
 	wxMutexLocker lock(*myMutex);
 	myCondition->Signal();
 	(*threadCount)--;
+#	if DEBUG
+	printf("ProcThread::OnExit: T[%d] signaled finished.\n", index);
+#	endif
 
 }
 

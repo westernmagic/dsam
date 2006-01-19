@@ -28,6 +28,12 @@
 #include "ExtProcThread.h"
 #include "ExtSingleProcThread.h"
 
+//#define DEBUG 1
+
+#if DEBUG
+	extern clock_t startTime;
+#endif
+
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
@@ -69,17 +75,27 @@ void *
 SingleProcThread::Entry()
 {
 #	if DEBUG
-	printf("SingleProcThread::Entry: Debug: Entered\n");
-	printf("SingleProcThread::Entry: Debug: Running with channels %d -> %d.\n",
+	static const char *funcName = "SingleProcThread::Entry";
+	printf("%s: Debug: Entered\n", funcName);
+	printf("%s: Debug: Running with channels %d -> %d.\n", funcName,
 	  process->outSignal->offset, process->outSignal->numChannels - 1);
 	if (process->subProcessList) {
-		printf("SingleProcThread::Entry: Debug: subProcess [%x], offset = "
-		  "%d, numChannels = %d\n", process->subProcessList[0], process->
+		printf("%s: Debug: subProcess [%lx], offset = %d, numChannels = %d\n",
+		  funcName, (unsigned long) process->subProcessList[0], process->
 		  subProcessList[0]->outSignal->offset, process->subProcessList[0]->
 		  outSignal->numChannels);
 	}
+	clock_t	processStart = clock();
+	printf("%s: Debug: T[%d]: Starting main process at %g s\n", funcName,
+	  GetIndex(), ELAPSED_TIME(startTime, processStart));
 #	endif
 	bool ok = CXX_BOOL(RunProcessStandard_ModuleMgr(process));
+#	if DEBUG
+	clock_t	processFinish = clock();
+	printf("%s: T[%d]: Finished main process at %g s, %g s elapsed.\n",
+	  funcName, GetIndex(), ELAPSED_TIME(startTime, processFinish),
+	   ELAPSED_TIME(processStart, processFinish));
+#	endif
 	return((void *) ok);
 
 }

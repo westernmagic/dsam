@@ -31,6 +31,12 @@
 #include "ExtProcThread.h"
 #include "ExtProcChainThread.h"
 
+//#define DEBUG	1
+
+#if DEBUG
+	extern clock_t startTime;
+#endif
+
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
@@ -66,9 +72,9 @@ ProcChainThread::ProcChainThread(int theIndex, int offset, int numChannels,
 	for (pc = simulation; pc != simulation->passedThreadEnd; pc = pc->next) {
 		if (pc->type == PROCESS) {
 #			if DEBUG
-			printf("%s: Debug: Process '%s' listed.\n", funcName, pc->label);
-			printf("%s: Debug: Main outsignal = %x.\n", funcName, pc->data->
-			  outSignal);
+			printf("ProcChainThread::ProcChainThread: Debug: Process '%s' "
+			  "listed: Main outsignal = %lx.\n", pc->label, (unsigned long) pc->
+			  data->outSignal);
 #			endif
 			ConfigProcess(pc->data);
 		}
@@ -85,13 +91,22 @@ void *
 ProcChainThread::Entry()
 {
 #	if DEBUG
-	printf("ProcChainThread::Entry: Debug: Entered for offset = '%d\n",
-	  GetOffset());
-	if (simulation->data->inSignal)
-		OutputToFile_SignalData("PCT3Temp.dat", simulation->data->inSignal[0]);
+	static const char *funcName = "ProcChainThread::Entry";
+	printf("%s: Debug: T[%d]: labels '%s' -> '%s'\n", funcName,
+	  GetIndex(), simulation->label, (simulation->passedThreadEnd)? simulation->
+	  passedThreadEnd->label: "?");
+	clock_t	processStart = clock();
+	printf("%s: Debug: T[%d]: Starting simulation chain at %g s\n", funcName,
+	  GetIndex(), ELAPSED_TIME(startTime, processStart));
 #	endif
 	bool ok = CXX_BOOL(ExecuteStandard_Utility_Datum(simulation, simulation->
 	  passedThreadEnd, GetIndex()));
+#	if DEBUG
+	clock_t	processFinish = clock();
+	printf("%s: T[%d]: Finished simulation chain at %g s, %g s elapsed.\n",
+	  funcName, GetIndex(), ELAPSED_TIME(startTime, processFinish),
+	   ELAPSED_TIME(processStart, processFinish));
+#	endif
 	return((void *) ok);
 
 }
@@ -106,12 +121,12 @@ ProcChainThread::Entry()
 // The first thread uses the original EarObject and its data, and so some
 // parameters need to be reset.
 
-void
-ProcChainThread::OnExit()
-{
-	ProcThread::OnExit();
-
-}
+//void
+//ProcChainThread::OnExit()
+//{
+//	ProcThread::OnExit();
+//
+//}
 
 /******************************************************************************/
 /****************************** General Routines ******************************/

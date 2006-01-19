@@ -41,6 +41,10 @@
 
 //#define DEBUG	1
 
+#if DEBUG
+#	include <time.h>
+#endif
+
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
@@ -50,6 +54,9 @@
 /******************************************************************************/
 
 RunThreadedProc	*runThreadedProc = NULL;
+#if DEBUG
+	clock_t	startTime;
+#endif
 
 /******************************************************************************/
 /****************************** Functions *************************************/
@@ -61,6 +68,7 @@ RunThreadedProc::RunThreadedProc(void)
 {
 #	if DEBUG
 	printf("RunThreadedProc::RunThreadedProc: Debug: Entered\n");
+	startTime = clock();
 #	endif
 	numThreads = wxThread::GetCPUCount();
 	SetThreadMode((GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
@@ -247,6 +255,10 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 		  threadCount);
 #		endif
 		condition.Wait();
+#		if DEBUG
+		printf("%s: Debug: Thread finished at %g s.\n", funcName,
+		  ELAPSED_TIME(startTime, clock()));
+#		endif
 	}
 	data->threadRunFlag = FALSE;
 	RestoreProcess(data);
@@ -323,9 +335,9 @@ RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 		} else {
 			pc1 = (threadStartPc->type == PROCESS)? threadStartPc:
 			  GetPreviousProcessInst_Utility_Datum(threadStartPc);
-			if ((!linkBreak && pc1 && pc2 && (pc1->data->outSignal->
-			  numChannels == pc2->data->outSignal->numChannels)) || !pc1 ||
-			  !pc2)
+			if (!pc1 || !pc2 || (!linkBreak && ((pc2->type == RESET) ||
+			  (pc1->data->outSignal->numChannels == pc2->data->outSignal->
+			  numChannels))))
 				chainCount++;
 			else {
 #				if DEBUG
@@ -436,6 +448,7 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 #	if DEBUG
 	printf("%s: Debug: numThreads = %d for %s\n", funcName, numThreads,
 	  start->label);
+	clock_t chainStart;
 #	endif
 	for (i = 0; i < numThreads; i++) {
 		procChainThread = new ProcChainThread(i, i * chansPerThread,
@@ -446,6 +459,12 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 			  funcName);
 			procChainThread->Delete();
 		}
+#		if DEBUG
+		chainStart = clock();
+		printf("%s: Debug: T[%d]: Started for %s, time = %g s\n", funcName,
+		  procChainThread->GetIndex(), start->label, ELAPSED_TIME(
+		  startTime, chainStart));
+#		endif
 		if (procChainThread->Run() != wxTHREAD_NO_ERROR) {
 			wxLogError("%s: Cannot start process thread.", funcName);
 			procChainThread->Delete();
@@ -457,6 +476,12 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 		  funcName, threadCount);
 #		endif
 		condition.Wait();
+#		if DEBUG
+		clock_t chainFinished = clock();
+		printf("%s: Debug: Thread finished at %g s, %g s elapsed.\n", funcName,
+		  ELAPSED_TIME(startTime, chainFinished),
+		  ELAPSED_TIME(chainStart, chainFinished));
+#		endif
 	}
 	lastInstruction = CleanUpThreadRuns(start);
 	RestoreSimulation(start);
