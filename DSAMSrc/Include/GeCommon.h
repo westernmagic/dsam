@@ -234,6 +234,9 @@
 
 #define	POSSIBLY_NULL_STRING_PTR(S)	(((S))? (S): UNSET_STRING)
 
+#define ELAPSED_TIME(START, FINISH) ((double) ((FINISH) - (START)) / \
+		  CLOCKS_PER_SEC)
+
 /*
  * This next definition is need for compiler niceties in MS Visual C++
  * otherwise it complains about "int being forces to 'true' or 'false'.
