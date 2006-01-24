@@ -401,8 +401,8 @@ Process_Utility_Transpose(EarObjectPtr data)
 		}
 		SetOutputTimeOffset_SignalData(data->outSignal, timeOffset);
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChanDataTitle_SignalData(data->outSignal, data->inSignal[0]->info.
-		  sampleTitle);
+		SetInfoChanDataTitle_SignalData(data->outSignal, data->inSignal[0]->
+		  info.sampleTitle);
 		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
 		  chanDataTitle);
 		if (data->initThreadRunFlag)
