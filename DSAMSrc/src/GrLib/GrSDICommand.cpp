@@ -396,11 +396,11 @@ SDICommand::Do(void)
 		if (!toPc || (toPc->type != PROCESS))
 			return(false);
 
-		savedInfo = fromPc->data;
-		shapeLabel = fromPc->u.string;
-		fromPc->u.string = toPc->label;
+		savedInfo = fromPc;
+		shapeLabel = fromPc->u.ref.string;
+		fromPc->u.ref.string = toPc->label;
 		
-		fromPc->data = toPc->data;
+		fromPc->u.ref.pc = toPc;
 		((SDIEvtHandler *) fromShape->GetEventHandler())->ResetLabel();
 		RedrawShapeLabel(fromShape);
 		RedrawShapeLabel(toShape);
@@ -509,14 +509,13 @@ SDICommand::Undo(void)
 		DatumPtr	fromPc = SHAPE_PC(fromShape);
 
 		wxString	oldLabel;
-		oldLabel = fromPc->u.string;
-		fromPc->u.string = (char *) shapeLabel.c_str();
+		oldLabel = fromPc->u.ref.string;
+		fromPc->u.ref.string = (char *) shapeLabel.c_str();
 		shapeLabel = oldLabel;
 
-		EarObjectPtr	oldData;
-		oldData = fromPc->data;
-		fromPc->data = (EarObjectPtr) savedInfo;
-		savedInfo = oldData;
+		DatumPtr	oldPc = fromPc;
+		fromPc->u.ref.pc = (DatumPtr) savedInfo;
+		savedInfo = oldPc;
 
 		((SDIEvtHandler *) fromShape->GetEventHandler())->ResetLabel();
 		RedrawShapeLabel(fromShape);

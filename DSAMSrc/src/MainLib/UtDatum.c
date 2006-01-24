@@ -129,7 +129,7 @@ InitInst_Utility_Datum(int type)
 		datum->u.proc.outputList = NULL;
 		break;
 	case RESET:
-		datum->u.string = NULL_STRING;
+		datum->u.ref.string = NULL_STRING;
 		datum->classSpecifier = CONTROL_MODULE_CLASS;
 		break;
 	case REPEAT:
@@ -302,8 +302,8 @@ FreeInstruction_Utility_Datum(DatumPtr *pc)
 		Free_EarObject(&(*pc)->data);
 		break;
 	case RESET:
-		if (*(*pc)->u.string != '\0')
-			free((*pc)->u.string);
+		if (*(*pc)->u.ref.string != '\0')
+			free((*pc)->u.ref.string);
 		break;
 	case REPEAT:
 		break;
@@ -480,7 +480,8 @@ PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName, int indentLevel,
 			break;
 		case RESET:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
-			DPrint("%s\t%s\n", GetProcessName_Utility_Datum(pc), pc->u.string);
+			DPrint("%s\t%s\n", GetProcessName_Utility_Datum(pc),
+			  pc->u.ref.string);
 			break;
 		case STOP:
 			PrintIndentAndLabel_Utility_Datum(pc, --indentLevel);
@@ -693,12 +694,12 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 		switch (pc->type) {
 		case RESET:
 			if ((p = FindElement_Utility_DynaBList(labelBList,
-			  CmpProcessLabel_Utility_Datum, pc->u.string)) == NULL) {
+			  CmpProcessLabel_Utility_Datum, pc->u.ref.string)) == NULL) {
 				NotifyError("%s: Could not find label '%s' in the simulation "
-				  "script.", funcName, pc->u.string);
+				  "script.", funcName, pc->u.ref.string);
 				ok = FALSE;
 			} else
-				pc->u.pc = (DatumPtr) p->data;
+				pc->u.ref.pc = (DatumPtr) p->data;
 			break;
 		case PROCESS:
 			if (pc->u.proc.outputList && !SetOutputConnections_Utility_Datum(
@@ -1105,7 +1106,7 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 		#	endif
 			break; }
 		case RESET:
-			process = GET_PROCESS(pc->u.pc->data);
+			process = GET_PROCESS(pc->u.ref.pc->data);
 			ResetProcess_EarObject(process);
 			break;
 		case STOP:

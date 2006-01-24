@@ -72,7 +72,6 @@ typedef struct Datum {
 	uInt	stepNumber;
 	char	*label;
 	union {
-		char	*string;
 		struct {
 			char	*parFile;
 			char	*moduleName;
@@ -81,9 +80,12 @@ typedef struct Datum {
 		} proc;
 		struct {
 			struct Datum	*stopPC;
-			int		count;
+			int				count;
 		} loop;
-		struct Datum	*pc;
+		struct {
+			char			*string;
+			struct Datum	*pc;
+		} ref;
 	} u;
 	EarObjectPtr	data;
 	void			*clientData;

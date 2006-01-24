@@ -145,7 +145,7 @@ statement:
 				  simPtr, STOP);
 			}
 		|	reset STRING
-			{ $1->u.string = InitString_Utility_String($2->name); }
+			{ $1->u.ref.string = InitString_Utility_String($2->name); }
 		|	'{' statement_list '}'
 	;
 process:

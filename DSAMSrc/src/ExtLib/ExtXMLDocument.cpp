@@ -156,7 +156,7 @@ DSAMXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
 			break; }
 		case RESET: {
 			CREATE_OBJECT_ELEMENT(pc, GetProcessName_Utility_Datum(pc));
-			objectElement.SetAttribute(DSAM_XML_OBJLABEL_ATTRIBUTE, pc->u.
+			objectElement.SetAttribute(DSAM_XML_OBJLABEL_ATTRIBUTE, pc->u.ref.
 			  string);
 			AddShapeInfo(objectElement, pc->clientData);
 			node.InsertEndChild(objectElement);
@@ -790,7 +790,7 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 					  "missing"), funcName);
 					return(false);
 				}
-				pc->u.string = InitString_Utility_String((char *) label);
+				pc->u.ref.string = InitString_Utility_String((char *) label);
 				GetShapeInfo(objectElement, pc);
 				break;
 			default:
