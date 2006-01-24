@@ -76,6 +76,7 @@
 typedef enum {
 
 	MODULE_THREAD_MODE_NONE = 0,
+	MODULE_THREAD_MODE_TRANSFER,
 	MODULE_THREAD_MODE_SIMPLE,
 
 } ThreadModeSpecifier;

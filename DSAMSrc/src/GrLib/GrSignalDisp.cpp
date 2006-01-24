@@ -1647,6 +1647,7 @@ InitModule_SignalDisp(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = signalDispPtr;
+	theModule->threadMode = MODULE_THREAD_MODE_TRANSFER;
 	theModule->CheckPars = CheckPars_SignalDisp;
 	theModule->Free = Free_SignalDisp;
 	theModule->GetUniParListPtr = GetUniParListPtr_SignalDisp;
