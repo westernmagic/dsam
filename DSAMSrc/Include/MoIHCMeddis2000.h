@@ -174,6 +174,8 @@ BOOLN	PrintPars_IHC_Meddis2000(void);
 
 BOOLN	ReadPars_IHC_Meddis2000(char *fileName);
 
+void	ResetProcess_IHC_Meddis2000(EarObjectPtr data);
+
 BOOLN	RunModel_IHC_Meddis2000(EarObjectPtr data);
 
 BOOLN	SetBetaCa_IHC_Meddis2000(double theBetaCa);
