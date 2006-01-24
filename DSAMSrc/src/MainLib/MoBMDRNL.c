@@ -1226,8 +1226,7 @@ FreeProcessVariables_BasilarM_DRNL(void)
 	int		i;
 
 	if (bMDRNLPtr->linearF == NULL)
-		return(FALSE);
-	Free_EarObject(&bMDRNLPtr->linearF);
+		Free_EarObject(&bMDRNLPtr->linearF);
 	for (i = 0; i < bMDRNLPtr->numChannels; i++) {
 		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT1[i]);
 		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT2[i]);
