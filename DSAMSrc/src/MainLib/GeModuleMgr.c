@@ -346,20 +346,24 @@ RunModel_ModuleMgr_Null(EarObjectPtr data)
 {
 	static const char *funcName = "RunModel_ModuleMgr_Null";
 
-	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
-		return(FALSE);
-	}	
-	SetProcessName_EarObject(data, NULL_MODULE_PROCESS_NAME);
-	if (!data->inSignal || !CheckPars_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not set correctly.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (data == NULL) {
+			NotifyError("%s: EarObject not initialised.", funcName);
+			return(FALSE);
+		}	
+		SetProcessName_EarObject(data, NULL_MODULE_PROCESS_NAME);
+		if (!data->inSignal || !CheckPars_SignalData(data->inSignal[0])) {
+			NotifyError("%s: Input signal not set correctly.", funcName);
+			return(FALSE);
+		}
+		if (!data->module->onFlag)
+			FreeOutSignal_EarObject(data);
+		data->localOutSignalFlag = FALSE;
+		data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
+		data->outSignal = data->inSignal[0];
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	if (!data->module->onFlag)
-		FreeOutSignal_EarObject(data);
-	data->localOutSignalFlag = FALSE;
-	data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
-	data->outSignal = data->inSignal[0];
  	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
