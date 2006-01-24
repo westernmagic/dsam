@@ -108,7 +108,7 @@ SDIEvtHandler::ResetLabel(void)
 		break; }
 	case RESET: {
 		wxString str;
-		str.Printf("%s\n[ %s ]", GetProcessName_Utility_Datum(pc), pc->u.
+		str.Printf("%s\n[ %s ]", GetProcessName_Utility_Datum(pc), pc->u.ref.
 		  string);
 		label += str;
 		break; }
