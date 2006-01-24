@@ -1441,7 +1441,11 @@ WriteOutSignal_DataFile_Named(EarObjectPtr data)
 {
 	/* static const char *funcName = "WriteOutSignal_DataFile_Named"; */
 
-	data->outSignal = data->inSignal[0];
+	if (!data->threadRunFlag) {
+		data->outSignal = data->inSignal[0];
+		if (data->initThreadRunFlag)
+			return(TRUE);
+	}
 	SetProcessContinuity_EarObject(data);
 	return(WriteOutSignalMain_DataFile(dataFilePtr->name, data));
 
