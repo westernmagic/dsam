@@ -121,7 +121,7 @@ class DSAMXMLDocument: public TiXmlDocument
 	bool	InstallSimulationNodes(TiXmlElement *simElement);
 	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
-	bool	ValidVersion(wxString s1, wxString s2);
+	bool	ValidVersion(const wxString &s1, const wxString &s2);
 	void	XMLNotifyWarning(TiXmlNode *node, char *format, ...);
 	void	XMLNotifyError(TiXmlNode *node, char *format, ...);
 	

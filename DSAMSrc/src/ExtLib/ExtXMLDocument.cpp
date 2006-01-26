@@ -373,7 +373,7 @@ DSAMXMLDocument::XMLNotifyWarning(TiXmlNode *node, char *format, ...)
  */
 
 bool
-DSAMXMLDocument::ValidVersion(wxString s1, wxString s2)
+DSAMXMLDocument::ValidVersion(const wxString &s1, const wxString &s2)
 {
 	static const char *funcName = "DSAMXMLDocument::ValidVersion";
 	size_t		pos;
@@ -385,7 +385,7 @@ DSAMXMLDocument::ValidVersion(wxString s1, wxString s2)
 		return(false);
 	}
 	if (s1.compare(0, pos, s2, 0, pos) != 0) {
-		NotifyError("%s: Only versions '%s.x' are supported.", funcName,
+		NotifyError("%s: Only versions '%s.x' are fully supported.", funcName,
 		  s2.substr(0, pos).c_str());
 		return(false);
 	}
