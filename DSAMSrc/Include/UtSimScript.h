@@ -189,6 +189,8 @@ BOOLN	ReadSimScript_Utility_SimScript(FILE *fp);
 
 BOOLN	ReadSimScriptOld_Utility_SimScript(FILE *fp);
 
+void	ResetProcess_Utility_SimScript(EarObjectPtr data);
+
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 
 BOOLN	SetControlParValue_Utility_SimScript(char *label, char *value,

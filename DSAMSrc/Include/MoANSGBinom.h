@@ -19,13 +19,13 @@
 #define _MOANSGBINOM_H 1
 
 #include "UtRandom.h"
-#include "UtRefractory.h"
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_Binom_NUM_PARS			5
+#define ANSPIKEGEN_BINOM_NUM_PARS			5
+#define ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -33,11 +33,17 @@
 
 typedef enum {
 
-	ANSPIKEGEN_Binom_NUMFIBRES,
-	ANSPIKEGEN_Binom_RANSEED,
-	ANSPIKEGEN_Binom_PULSEDURATION,
-	ANSPIKEGEN_Binom_PULSEMAGNITUDE,
-	ANSPIKEGEN_Binom_REFRACTORYPERIOD
+	ANSPIKEGEN_REFRACTADJDATA
+
+} AnSpikeGenBinomSubProcessSpecifier;
+
+typedef enum {
+
+	ANSPIKEGEN_BINOM_NUMFIBRES,
+	ANSPIKEGEN_BINOM_RANSEED,
+	ANSPIKEGEN_BINOM_PULSEDURATION,
+	ANSPIKEGEN_BINOM_PULSEMAGNITUDE,
+	ANSPIKEGEN_BINOM_REFRACTORYPERIOD
 
 } BinomialSGParSpecifier;
 
@@ -60,7 +66,6 @@ typedef struct {
 	double	*lastOutput;
 	ChanLen	*remainingPulseIndex, pulseDurationIndex;
 	EarObjectPtr	refractAdjData;
-	RefractAdj		refractAdj;
 
 } BinomialSG, *BinomialSGPtr;
 

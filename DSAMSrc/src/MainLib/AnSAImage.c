@@ -960,59 +960,63 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 	int		i;
 	SAImagePtr	p = sAImagePtr;
 
-	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
-	  timeIndex == PROCESS_START_TIME)) {
-		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
-			FreeProcessVariables_Analysis_SAI();
-			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList,
-			  p->diagnosticMode);
-			if ((p->dataBuffer = Init_EarObject("NULL")) == NULL) {
-				NotifyError("%s: Could not initialise previous data EarObject",
-				  funcName);
-				return(FALSE);
-			}
-			if ((p->strobeDataBuffer = Init_EarObject("NULL")) == NULL) {
-				NotifyError("%s: Could not initialise previous strobe data "
-				  "EarObject", funcName);
-				return(FALSE);
-			}
-			p->zeroIndex = (ChanLen) floor(-p->negativeWidth / data->inSignal[
-			  0]->dt + 0.5);
-			p->positiveWidthIndex = data->outSignal->length - p->zeroIndex;
-			if (!InitInputDecayArray_Analysis_SAI(data)) {
-				NotifyError("%s: failed in to initialise input decay array",
-				  funcName);
-				return(FALSE);
-			}
-			if ((p->decayCount = (ChanLen *) calloc(data->outSignal->
-			  numChannels, sizeof(ChanLen))) == NULL) {
-				NotifyError("%s: Could not initialise decayCount array",
-				  funcName);
-				return(FALSE);
-			}
-			if ((p->inputCount = (ChanLen *) calloc(data->numThreads, sizeof(
-			  ChanLen))) == NULL) {
-				NotifyError("%s: Out of memory for inputCount array.",
-				  funcName);
-				return(FALSE);
-			}
-			p->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(
-			  p->strobeData, "criterion")->valuePtr.nameList.
-			  specifier == STROBE_USER_MODE)? 1: 0;
-			if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
-			  numChannels, data->outSignal->length, data->outSignal->dt)) {
-				NotifyError("%s: Cannot initialise channels for previous data.",
-				  funcName);
-				return(FALSE);
-			}
-			if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
-			  numChannels, data->outSignal->length, data->outSignal->dt)) {
-				NotifyError("%s: Cannot initialise channels for previous "
-				  "strobe data.", funcName);
-				return(FALSE);
-			}
-			p->updateProcessVariablesFlag = FALSE;
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
+		FreeProcessVariables_Analysis_SAI();
+		OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList,
+		  p->diagnosticMode);
+		if (!InitSubProcessList_EarObject(data, SAI_NUM_SUB_PROCESSES)) {
+			NotifyError("%s: Could not initialise %d sub-process list for "
+			  "process.", funcName, SAI_NUM_SUB_PROCESSES);
+			return(FALSE);
 		}
+		data->subProcessList[SAI_STROBEDATA] = p->strobeData;
+		if ((p->dataBuffer = Init_EarObject("NULL")) == NULL) {
+			NotifyError("%s: Could not initialise previous data EarObject",
+			  funcName);
+			return(FALSE);
+		}
+		if ((p->strobeDataBuffer = Init_EarObject("NULL")) == NULL) {
+			NotifyError("%s: Could not initialise previous strobe data "
+			  "EarObject", funcName);
+			return(FALSE);
+		}
+		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / data->inSignal[0]->
+		  dt + 0.5);
+		p->positiveWidthIndex = data->outSignal->length - p->zeroIndex;
+		if (!InitInputDecayArray_Analysis_SAI(data)) {
+			NotifyError("%s: failed in to initialise input decay array",
+			  funcName);
+			return(FALSE);
+		}
+		if ((p->decayCount = (ChanLen *) calloc(data->outSignal->numChannels,
+		  sizeof(ChanLen))) == NULL) {
+			NotifyError("%s: Could not initialise decayCount array",
+			  funcName);
+			return(FALSE);
+		}
+		if ((p->inputCount = (ChanLen *) calloc(data->numThreads, sizeof(
+		  ChanLen))) == NULL) {
+			NotifyError("%s: Out of memory for inputCount array.",
+			  funcName);
+			return(FALSE);
+		}
+		p->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(p->strobeData,
+		  "criterion")->valuePtr.nameList.specifier == STROBE_USER_MODE)? 1: 0;
+		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
+		  numChannels, data->outSignal->length, data->outSignal->dt)) {
+			NotifyError("%s: Cannot initialise channels for previous data.",
+			  funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
+		  numChannels, data->outSignal->length, data->outSignal->dt)) {
+			NotifyError("%s: Cannot initialise channels for previous strobe "
+			  "data.", funcName);
+			return(FALSE);
+		}
+		p->updateProcessVariablesFlag = FALSE;
+	}
+	if (data->timeIndex == PROCESS_START_TIME) {
 		ResetProcess_Analysis_SAI(data);
 	}
 	return(TRUE);
@@ -1212,6 +1216,7 @@ Process_Analysis_SAI(EarObjectPtr data)
 	double	dt;
 	ChanLen	frameLength, positiveWidthIndex, negativeWidthIndex, *inputCountPtr;
 	SAImagePtr	p = sAImagePtr;
+	EarObjectPtr	strobeData;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Analysis_SAI())
@@ -1238,14 +1243,15 @@ Process_Analysis_SAI(EarObjectPtr data)
 		}
 		TempInputConnection_EarObject(data, p->strobeData, 1);
 		p->strobeData->inSignal[0] = data->inSignal[p->strobeInSignalIndex];
-		if (!RunProcess_ModuleMgr(p->strobeData)) {
-			NotifyError("%s: Could not process strobe data .", funcName);
-			return(FALSE);
-		}
 		if (p->diagnosticMode)
 			OutputStrobeData_Analysis_SAI();
 		if (data->initThreadRunFlag)
 			return(TRUE);
+	}
+	strobeData = data->subProcessList[SAI_STROBEDATA];
+	if (!RunProcessStandard_ModuleMgr(strobeData)) {
+		NotifyError("%s: Could not process strobe data .", funcName);
+		return(FALSE);
 	}
 	inputCountPtr = p->inputCount + data->threadIndex;
 	positiveWidthIndex = p->positiveWidthIndex - strobePtr->numLastSamples;
@@ -1265,13 +1271,13 @@ Process_Analysis_SAI(EarObjectPtr data)
 		ProcessFrameSection_Analysis_SAI(data, p->strobeDataBuffer->outSignal->
 		  channel, p->dataBuffer->outSignal->channel, p->zeroIndex +
 		  strobePtr->numLastSamples, 0, positiveWidthIndex);
-		ProcessFrameSection_Analysis_SAI(data, p->strobeData->outSignal->
+		ProcessFrameSection_Analysis_SAI(data, strobeData->outSignal->
 		  channel, data->inSignal[0]->channel, *inputCountPtr,
 		  positiveWidthIndex, negativeWidthIndex);
 		PushBufferData_Analysis_SAI(data, frameLength);
 		*inputCountPtr = (endOfData)? 0: *inputCountPtr + frameLength;
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	 for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
 	  chan++)
 		DecayImage_Analysis_SAI(data, chan);
 	data->outSignal->numWindowFrames++;

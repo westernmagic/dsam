@@ -56,9 +56,11 @@ class RunThreadedProc {
 	RunThreadedProc(void);
 
 	DatumPtr	CleanUpThreadRuns(DatumPtr start);
+	bool	DetermineChannelChains(DatumPtr start, bool *brokenChain);
 	DatumPtr	Execute(DatumPtr start);
 	DatumPtr	ExecuteMultiThreadChain(DatumPtr start);
 	DatumPtr	ExecuteStandardChain(DatumPtr start);
+	bool	InitialiseProcesses(DatumPtr start);
 	bool	InitThreadProcesses(EarObjectPtr data);
 	bool	PreThreadSimulationInit(DatumPtr start, bool *brokenChain);
 	bool	PreThreadProcessInit(EarObjectPtr data);

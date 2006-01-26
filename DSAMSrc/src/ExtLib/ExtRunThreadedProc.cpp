@@ -129,12 +129,13 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 {
 	static const char *funcName = "RunThreadedProc::PreThreadProcessInit";
 	bool	ok = true;
+	int		i;
 
 #	if DEBUG
 	printf("%s: Debug: Entered.\n", funcName);
 	printf("%s: Debug: Working on '%s'\n", funcName, data->processName);
 #	endif
-	data->initThreadRunFlag = true;
+	data->initThreadRunFlag = TRUE;
 	if ((data->numThreads > 1) && ((data->numThreads != numThreads) || data->
 	  updateProcessFlag))
 		FreeThreadProcs_EarObject(data);
@@ -148,15 +149,43 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned 
 	  long) data->outSignal);
 #	endif
-	data->initThreadRunFlag = false;
-	data->useThreadsFlag = (data->module->threadMode ==
-	  MODULE_THREAD_MODE_NONE)? FALSE: (data->outSignal->numChannels > 1);
-	if (!data->useThreadsFlag)
-		data->numThreads = 1;
-	if (!ok)
+	data->initThreadRunFlag = FALSE;
+	if (!ok) {
 		NotifyError("%s: Could not do pre-thread process initialisation run.",
 		  funcName);
-	return(ok);
+		return(false);
+	}
+#	if DEBUG
+	printf("%s: Debug: Main outsignal [1] = %lx.\n", funcName, (unsigned
+	  long) data->outSignal);
+#	endif
+		
+	UpdateCustomers_EarObject(data);
+#	if DEBUG
+	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned
+	  long) data->outSignal);
+#	endif
+	switch (data->module->threadMode) {
+	case MODULE_THREAD_MODE_NONE:
+		data->useThreadsFlag = FALSE;
+		break;
+	case MODULE_THREAD_MODE_TRANSFER:
+		data->useThreadsFlag = (threadMode == APP_INT_THREAD_MODE_PROCESS)?
+		  FALSE: (data->outSignal->numChannels > 1);
+		break;
+	default:
+		data->useThreadsFlag = (data->outSignal->numChannels > 1);
+	} /* switch */
+	if (!data->useThreadsFlag)
+		data->numThreads = 1;
+	for (i = 0; i < data->numSubProcesses; i++)
+		if ((data->subProcessList[i]->module->specifier != NULL_MODULE) &&
+		  !PreThreadProcessInit(data->subProcessList[i])) {
+			NotifyError("%s: Failed to initialise sub-process [%d].", funcName,
+			  i);
+			return(false);
+		}
+	return(true);
 
 }
 
@@ -260,11 +289,130 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 		  ELAPSED_TIME(startTime, clock()));
 #		endif
 	}
-	data->threadRunFlag = FALSE;
+	SetThreadRunFlag_EarObject(data, FALSE);
 	RestoreProcess(data);
 #	if DEBUG
 	printf("%s: Debug: Finished\n", funcName);
 #	endif
+	return(true);
+
+}
+
+/****************************** InitialiseProcesses ***************************/
+
+/*
+ * This routine ranges through the entire simulation initialising all the
+ * process outPut signals.
+ */
+
+bool
+RunThreadedProc::InitialiseProcesses(DatumPtr start)
+{
+	static const char *funcName = "RunThreadedProc::InitialiseProcesses";
+	DatumPtr	pc;
+
+	for (pc = start; pc != NULL; pc = pc->next)
+		switch (pc->type) {
+		case PROCESS:
+#			if DEBUG
+			printf("%s: Debug: label '%s'\n", funcName, pc->label);
+			printf("%s: Debug: Main outsignal = %lx.\n", funcName, (unsigned
+			  long) pc->data->outSignal);
+#			endif
+			if ((pc->data->module->specifier == SIMSCRIPT_MODULE) &&
+			  !InitialiseProcesses(GetSimulation_ModuleMgr(pc->data))) {
+				NotifyError("%s: Could initialise sub-simulation process.",
+				  funcName);
+				return(false);
+			}
+			if (!PreThreadProcessInit(pc->data))
+				return(false);
+			if (pc->data->useThreadsFlag && !InitThreadProcesses(pc->data)) {
+				wxLogFatalError("%s: Could not initialise thread processes.",
+				  funcName);
+				return(false);
+			}
+			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
+			break;
+		case REPEAT:
+			if (!InitialiseProcesses(pc->next)) {
+				NotifyError("%s: Could not do process initialisation.",
+				  funcName);
+				return(false);
+			}
+			pc = pc->u.loop.stopPC;
+			break;
+		case STOP:
+			return(true);
+		default:
+			;
+		} /* switch */
+	return(true);
+
+}
+
+/****************************** DetermineChannelChains ************************/
+
+/*
+ * This routine ranges through the entire simulation and sets the channel
+ * chains.
+ */
+
+bool
+RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
+{
+	static const char *funcName = "RunThreadedProc::DetermineChannelChains";
+	bool	linkBreak;
+	int		chainCount = 0;
+	DatumPtr	pc, pc1, pc2, threadStartPc = NULL;
+
+	for (pc = start, threadStartPc = NULL; pc != NULL; pc = pc->next) {
+		linkBreak = FALSE;
+		switch (pc->type) {
+		case PROCESS:
+			linkBreak = (!pc->data->module->threadMode);
+			pc2 = pc;
+			break;
+		case REPEAT:
+			if (!DetermineChannelChains(pc->next, &linkBreak)) {
+				NotifyError("%s: Could not do pre-thread simulation "
+				  "initialisation.", funcName);
+				return(false);
+			}
+			pc->threadSafe = !linkBreak;
+			pc2 = GetFirstProcessInst_Utility_Datum(pc);
+			break;
+		case RESET:
+			pc2 = pc->u.ref.pc;
+			break;
+		case STOP:
+			return(true);
+		default:
+			pc2 = pc;
+		} /* switch */
+		if (!threadStartPc) {
+			threadStartPc = pc;
+			chainCount = 1;
+		} else {
+			pc1 = (threadStartPc->type == PROCESS)? threadStartPc:
+			  GetPreviousProcessInst_Utility_Datum(threadStartPc);
+			if (!pc1 || !pc2 || (!linkBreak && (pc1->data->outSignal->
+			  numChannels == pc2->data->outSignal->numChannels)))
+				chainCount++;
+			else {
+#				if DEBUG
+				printf("%s: Debug: label '%s' marked as thread start, %d "
+				  "processes\n", funcName, threadStartPc->label, chainCount);
+#				endif
+				threadStartPc->passedThreadEnd = pc;
+				threadStartPc = pc;
+				chainCount = 1;
+				*brokenChain = true;
+			}
+		}
+		if (pc->type == REPEAT)
+			pc = pc->u.loop.stopPC;
+	}
 	return(true);
 
 }
@@ -281,77 +429,15 @@ bool
 RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 {
 	static const char *funcName = "RunThreadedProc::PreThreadSimulationInit";
-	bool	linkBreak;
-	int		chainCount = 0;
-	DatumPtr	pc, pc1, pc2, threadStartPc = NULL;
 
-	for (pc = start, threadStartPc = NULL; pc != NULL; pc = pc->next) {
-		linkBreak = FALSE;
-		switch (pc->type) {
-		case PROCESS:
-#			if DEBUG
-			printf("%s: Debug: label '%s'\n", funcName, pc->label);
-			printf("%s: Debug: Main outsignal = %lx.\n", funcName, (unsigned
-			  long) pc->data->outSignal);
-#			endif
-			if (!PreThreadProcessInit(pc->data))
-				return(false);
-#			if DEBUG
-			printf("%s: Debug: Main outsignal [1] = %lx.\n", funcName, (unsigned
-			  long) pc->data->outSignal);
-#			endif
-			UpdateCustomers_EarObject(pc->data);
-#			if DEBUG
-			printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned
-			  long) pc->data->
-			  outSignal);
-#			endif
-			if (pc->data->useThreadsFlag && !InitThreadProcesses(pc->data)) {
-				wxLogFatalError("%s: Could not initialise thread processes.",
-				  funcName);
-				return(false);
-			}
-			linkBreak = (!pc->data->module->threadMode);
-			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
-			pc2 = pc;
-			break;
-		case REPEAT:
-			if (!PreThreadSimulationInit(pc->next, &linkBreak)) {
-				NotifyError("%s: Could not do pre-thread simulation "
-				  "initialisation.", funcName);
-				return(false);
-			}
-			pc->threadSafe = !linkBreak;
-			pc2 = GetFirstProcessInst_Utility_Datum(pc);
-			break;
-		case STOP:
-			return(true);
-		default:
-			pc2 = pc;
-		} /* switch */
-		if (!threadStartPc) {
-			threadStartPc = pc;
-			chainCount = 1;
-		} else {
-			pc1 = (threadStartPc->type == PROCESS)? threadStartPc:
-			  GetPreviousProcessInst_Utility_Datum(threadStartPc);
-			if (!pc1 || !pc2 || (!linkBreak && ((pc2->type == RESET) ||
-			  (pc1->data->outSignal->numChannels == pc2->data->outSignal->
-			  numChannels))))
-				chainCount++;
-			else {
-#				if DEBUG
-				printf("%s: Debug: label '%s' marked as thread start, %d "
-				  "processes\n", funcName, threadStartPc->label, chainCount);
-#				endif
-				threadStartPc->passedThreadEnd = pc;
-				threadStartPc = pc;
-				chainCount = 1;
-				*brokenChain = true;
-			}
-		}
-		if (pc->type == REPEAT)
-			pc = pc->u.loop.stopPC;
+	if (!InitialiseProcesses(start)) {
+		NotifyError("%s: Could not initialise the simulation processes.",
+		  funcName);
+		return(false);
+	}	
+	if (!DetermineChannelChains(start, brokenChain)) {
+		NotifyError("%s: Could not determine the channel chains.", funcName);
+		return(false);
 	}
 	return(true);
 
@@ -415,8 +501,11 @@ RunThreadedProc::CleanUpThreadRuns(DatumPtr start)
 	if (start == NULL)
 		return NULL;
 	for (pc = start; pc != start->passedThreadEnd; pc = pc->next) {
-		if  (pc->type == PROCESS)
+		if  (pc->type == PROCESS) {
 			pc->data->threadRunFlag = FALSE;
+			if (pc->data->module->specifier == SIMSCRIPT_MODULE)
+				CleanUpThreadRuns(GetSimulation_ModuleMgr(pc->data));
+		}
 		lastInstruction = pc;
 	}
 	return(lastInstruction);
@@ -476,6 +565,9 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 		  funcName, threadCount);
 #		endif
 		condition.Wait();
+		/* The above line can wait for a long time. Can something else be done
+		 * here?
+		 */
 #		if DEBUG
 		clock_t chainFinished = clock();
 		printf("%s: Debug: Thread finished at %g s, %g s elapsed.\n", funcName,
@@ -526,10 +618,6 @@ RunThreadedProc::Execute(DatumPtr start)
 		return(ExecuteStandard_Utility_Datum(start, NULL, 0));
 
 	DatumPtr	pc, lastInstruction = NULL;
-
-#	if DEBUG
-	printf("%s: Entered\n", funcName);
-#	endif
 
 #	if DEBUG
 	printf("%s: start [0] = %lx\n", funcName, (unsigned long) start);

@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=15
-DSAM_INTERFACE_AGE=15
-DSAM_BINARY_AGE=15
+DSAM_MICRO_VERSION=16
+DSAM_INTERFACE_AGE=16
+DSAM_BINARY_AGE=16
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -95,7 +95,7 @@ AC_ARG_ENABLE(portaudio,
 AC_ARG_ENABLE(unicode,
    [  --disable-unicode        Do not compile Unicode support],
    [enable_unicode="$enableval"],
-   [enable_unicode="yes"]
+   [enable_unicode="no"]
 )
 
 AC_ARG_ENABLE(wx_ogl,

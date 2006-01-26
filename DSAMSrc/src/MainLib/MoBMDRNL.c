@@ -1228,9 +1228,12 @@ FreeProcessVariables_BasilarM_DRNL(void)
 	if (bMDRNLPtr->linearF == NULL)
 		Free_EarObject(&bMDRNLPtr->linearF);
 	for (i = 0; i < bMDRNLPtr->numChannels; i++) {
-		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT1[i]);
-		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT2[i]);
-		FreeGammaToneCoeffs_Filters(&bMDRNLPtr->linearGT[i]);
+		if (bMDRNLPtr->nonLinearGT1)
+			FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT1[i]);
+		if (bMDRNLPtr->nonLinearGT2)
+			FreeGammaToneCoeffs_Filters(&bMDRNLPtr->nonLinearGT2[i]);
+		if (bMDRNLPtr->linearGT)
+			FreeGammaToneCoeffs_Filters(&bMDRNLPtr->linearGT[i]);
 	}
 	if (bMDRNLPtr->nonLinearLP)
 		for (i = 0; i < bMDRNLPtr->numChannels; i++)
@@ -1238,13 +1241,20 @@ FreeProcessVariables_BasilarM_DRNL(void)
 	if (bMDRNLPtr->linearLP)
 		for (i = 0; i < bMDRNLPtr->numChannels; i++)
 			FreeIIR2ContCoeffs_Filters(&bMDRNLPtr->linearLP[i]);
-	free(bMDRNLPtr->compressionA);
-	free(bMDRNLPtr->compressionB);
-	free(bMDRNLPtr->nonLinearGT1);
-	free(bMDRNLPtr->nonLinearGT2);
-	free(bMDRNLPtr->linearGT);
-	free(bMDRNLPtr->nonLinearLP);
-	free(bMDRNLPtr->linearLP);
+	if (bMDRNLPtr->compressionA)
+		free(bMDRNLPtr->compressionA);
+	if (bMDRNLPtr->compressionB)
+		free(bMDRNLPtr->compressionB);
+	if (bMDRNLPtr->nonLinearGT1)
+		free(bMDRNLPtr->nonLinearGT1);
+	if (bMDRNLPtr->nonLinearGT2)
+		free(bMDRNLPtr->nonLinearGT2);
+	if (bMDRNLPtr->linearGT)
+		free(bMDRNLPtr->linearGT);
+	if (bMDRNLPtr->nonLinearLP)
+		free(bMDRNLPtr->nonLinearLP);
+	if (bMDRNLPtr->linearLP)
+		free(bMDRNLPtr->linearLP);
 	bMDRNLPtr->compressionA = NULL;
 	bMDRNLPtr->compressionB = NULL;
 	bMDRNLPtr->nonLinearGT1 = NULL;

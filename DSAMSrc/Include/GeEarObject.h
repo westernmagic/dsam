@@ -221,6 +221,8 @@ BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
 
 void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
 
+void	SetThreadRunFlag_EarObject(EarObjectPtr theObject, BOOLN setting);
+
 void	SetTimeContinuity_EarObject(EarObjectPtr data);
 
 void	SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting);

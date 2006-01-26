@@ -1372,24 +1372,29 @@ Process_Utility_SimScript(EarObjectPtr data)
 	SignalDataPtr	lastOutSignal;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
-	if (!CheckPars_Utility_SimScript())
-		return(FALSE);
-	if (!CheckData_Utility_SimScript(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckPars_Utility_SimScript())
+			return(FALSE);
+		if (!CheckData_Utility_SimScript(data)) {
+			NotifyError("%s: Process data invalid.", funcName);
+			return(FALSE);
+		}
+		SetProcessName_EarObject(data, "Simulation script");
+		TempInputConnection_EarObject(data, GetFirstProcess_Utility_Datum(
+		  simScriptPtr->simulation), data->numInSignals);
+		if (!CheckParLists_Utility_Datum(localSimScriptPtr->simulation)) {
+			NotifyError("%s: Universal parameter lists check failed.",
+			  funcName);
+			return(FALSE);
+		}
+		if (data->updateProcessFlag)
+			ResetSimulation_Utility_Datum(localSimScriptPtr->simulation);
+		if (localSimScriptPtr->operationMode == GENERAL_BOOLEAN_ON)
+			PrintParsModules_Utility_Datum(localSimScriptPtr->simulation);
+		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
-	SetProcessName_EarObject(data, "Simulation script");
-	TempInputConnection_EarObject(data, GetFirstProcess_Utility_Datum(
-	  simScriptPtr->simulation), data->numInSignals);
-	if (!CheckParLists_Utility_Datum(localSimScriptPtr->simulation)) {
-		NotifyError("%s: Universal parameter lists check failed.", funcName);
-		return(FALSE);
-	}
-	if (data->updateProcessFlag)
-		ResetSimulation_Utility_Datum(localSimScriptPtr->simulation);
-	if (localSimScriptPtr->operationMode == GENERAL_BOOLEAN_ON)
-		PrintParsModules_Utility_Datum(localSimScriptPtr->simulation);
-	SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
 	if (!Execute_Utility_Datum(localSimScriptPtr->simulation, NULL, 0)) {
 		NotifyError("%s: Could not execute simulation modules.", funcName);
 		SetParsFilePath_Common(oldParsFilePath);

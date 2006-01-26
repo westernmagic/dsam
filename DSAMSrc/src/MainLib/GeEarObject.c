@@ -954,9 +954,11 @@ SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 	EarObjectPtr	p;
 
 	theObject->updateProcessFlag = setting;
-	for (i = 0, p = theObject->threadProcs; i < theObject->numThreads - 1; i++,
-	  p++)
+	for (i = 0, p = theObject->threadProcs; p && (i < theObject->numThreads -
+	  1); i++, p++)
 		p->updateProcessFlag = setting;
+	for (i = 0; i < theObject->numSubProcesses; i++)
+		theObject->subProcessList[i]->updateProcessFlag = setting;
 
 }
 
@@ -1332,7 +1334,7 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 #	if DEBUG
 	printf("%s: numThreads = %d.\n", funcName, p->numThreads);
 #	endif
-	p->threadRunFlag = TRUE;
+	SetThreadRunFlag_EarObject(p, TRUE);
 	if (p->threadProcs)
 		return(TRUE);
 	numCopies = p->numThreads - 1;
@@ -1372,6 +1374,26 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 
 	}
 	return(TRUE);
+
+}
+
+/**************************** SetThreadRunFlag ********************************/
+
+/*
+ * This routine sets the 'threadRunFlag' for a process and all its thread
+ * processes.
+ * It assumes that the process has been correctly initialised.
+ */
+
+void
+SetThreadRunFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
+{
+	int		i;
+	EarObjectPtr	p;
+
+	theObject->threadRunFlag = setting;
+	for (i = 0; i < theObject->numSubProcesses; i++)
+		theObject->subProcessList[i]->threadRunFlag = setting;
 
 }
 
