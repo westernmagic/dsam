@@ -408,7 +408,6 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 			return(FALSE);
 		}
 	}
-	/*** Put additional checks here. ***/
 	return(TRUE);
 
 }
@@ -444,8 +443,6 @@ Process_Utility_MathOp(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, "Mathematical operation module process");
-
-		/*** Example Initialise output signal - ammend/change if required. ***/
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
 			NotifyError("%s: Cannot initialise output channels.", funcName);
@@ -486,7 +483,6 @@ Process_Utility_MathOp(EarObjectPtr data)
 			;
 		}
 	}
-
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
