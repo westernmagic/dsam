@@ -257,7 +257,6 @@ SDIEvtHandler::EditInstruction(void)
 void
 SDIEvtHandler::FreeInstruction(void)
 {
-	printf("SDIEvtHandler::FreeInstruction: Debug: Entered.\n");
 	if (!pc)
 		return;
 	EarObjectPtr simProcess = ((SDIDiagram *) GetShape()->GetCanvas()->
