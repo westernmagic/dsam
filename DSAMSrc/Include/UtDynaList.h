@@ -24,7 +24,7 @@
 typedef struct DynaList {
 
 	void			*data;
-	struct DynaList	*previous;			/* To link to next node */
+	struct DynaList	*previous;			/* To link to previous node */
 	struct DynaList	*next;				/* To link to next node */
 
 } DynaList, *DynaListPtr;
