@@ -754,24 +754,39 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
 /*
  * This routine sets the default label for a process.
  * If a label has not been defined for a process, then by default it is set to
- * the process' step number.
+ * the process' step number, or the next unused process step number if the 
+ * 'labelBList' argument is not NULL.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-SetDefaultLabel_Utility_Datum(DatumPtr pc)
+SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 {
 	static const char *funcName = "SetDefaultLabel_Utility_Datum";
+	BOOLN	foundUnusedLabel = FALSE;
 	char	label[MAXLINE];
+	int		labelNumber;
 
-	if (((pc->type == PROCESS) || (pc->type == REPEAT) || (pc->type ==
-	  RESET)) && (pc->label[0] == '\0')) {
+	if (((pc->type != PROCESS) && (pc->type != REPEAT) && (pc->type !=
+	  RESET)) || (pc->label[0] != '\0'))
+		return(TRUE);
+	labelNumber = pc->stepNumber;
+	FILE *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	SetErrorsFile_Common("off", OVERWRITE);
+	while (!foundUnusedLabel) {
 		snprintf(label, MAXLINE, "%s%d", DATUM_DEFAULT_LABEL_PREFIX,
-		  pc->stepNumber);
-		if ((pc->label = InitString_Utility_String(label)) == NULL) {
-			NotifyError("%s: Out of memory for label '%s'.", funcName, label);
-			return(FALSE);
-		}
+		  labelNumber);
+		if (!labelBList || (FindElement_Utility_DynaBList(labelBList,
+		  CmpProcessLabel_Utility_Datum, label) == NULL))
+			foundUnusedLabel = TRUE;
+		else
+			labelNumber++;
+	}
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
+			  
+	if ((pc->label = InitString_Utility_String(label)) == NULL) {
+		NotifyError("%s: Out of memory for label '%s'.", funcName, label);
+		return(FALSE);
 	}
 	return(TRUE);
 
@@ -792,7 +807,7 @@ SetDefaultLabels_Utility_Datum(DatumPtr start)
 	DatumPtr	pc;
 
 	for (pc = start; (pc != NULL); pc = pc->next)
-		if (!SetDefaultLabel_Utility_Datum(pc)) {
+		if (!SetDefaultLabel_Utility_Datum(pc, NULL)) {
 			NotifyError("%s: Could not set default label '%s' for process "
 			  "'%s'.", funcName, pc->stepNumber, pc->u.proc.moduleName);
 			return(FALSE);

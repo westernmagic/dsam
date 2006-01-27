@@ -225,7 +225,7 @@ BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, char *label,
 
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
-BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc);
+BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList);
 
 BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
 

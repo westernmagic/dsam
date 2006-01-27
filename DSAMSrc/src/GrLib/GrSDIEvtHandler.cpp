@@ -169,9 +169,19 @@ SDIEvtHandler::InitInstruction(void)
 		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
 		return(false);
 	}
-	if (!SetDefaultLabel_Utility_Datum(pc)) {
+	EarObjectPtr simProcess = ((SDIDiagram *) GetShape()->GetCanvas()->
+	  GetDiagram())->GetSimProcess();
+	DynaBListPtr labelBList = (!simProcess)? NULL: ((SimScriptPtr) simProcess->
+	  module->parsPtr)->labelBList;
+	if (!SetDefaultLabel_Utility_Datum(pc, labelBList)) {
 		NotifyError("%s: Could not create set the default process label.",
 		  funcName);
+		return(false);
+	}
+	if (!Insert_Utility_DynaBList(((SimScriptPtr) simProcess->module->parsPtr)->
+	  labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
+		NotifyError("%s: Could not insert label '%s' into the label list.",
+		  funcName, pc->label);
 		return(false);
 	}
 	pc->clientData = GetShape();
@@ -247,8 +257,18 @@ SDIEvtHandler::EditInstruction(void)
 void
 SDIEvtHandler::FreeInstruction(void)
 {
-	if (pc)
-		FreeInstruction_Utility_Datum(&pc);
+	printf("SDIEvtHandler::FreeInstruction: Debug: Entered.\n");
+	if (!pc)
+		return;
+	EarObjectPtr simProcess = ((SDIDiagram *) GetShape()->GetCanvas()->
+	  GetDiagram())->GetSimProcess();
+	if (simProcess) {
+		DynaBListPtr *labelBListPtr = ((SimScriptPtr) simProcess->module->
+		  parsPtr)->labelBListPtr;
+		Remove_Utility_DynaBList(labelBListPtr, CmpProcessLabel_Utility_Datum, pc->
+		  label);
+	}
+	FreeInstruction_Utility_Datum(&pc);
 
 }
 

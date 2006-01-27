@@ -47,7 +47,7 @@ Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
 	DynaBListPtr	newNode;
 
 	if (nodePtr && *nodePtr) {
-		cmpResult = CmpFunc((*nodePtr)->data, data);
+		cmpResult = CmpFunc(data, (*nodePtr)->data);
 		if (cmpResult == 0) {
 			NotifyError("%s: Duplicated data.", funcName);
 			return(NULL);
@@ -72,6 +72,42 @@ Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
 	if (nodePtr)
 		*nodePtr = newNode;
 	return(newNode);
+
+}
+
+/****************************** Remove ****************************************/
+
+/*
+ * This routine removes a specified node from the binary list.
+ */
+
+BOOLN
+Remove_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
+  void *data)
+{
+	static const char *funcName = "Remove_Utility_DynaBList";
+	int		cmpResult;
+	DynaBListPtr	p;
+
+	if (!*nodePtr) {
+		NotifyError("%s: Element not found.", funcName);
+		return(FALSE);
+	}
+	cmpResult = CmpFunc(data, (*nodePtr)->data);
+	if (cmpResult > 0)
+		return(Remove_Utility_DynaBList(&(*nodePtr)->right, CmpFunc, data));
+	if (cmpResult < 0)
+	 	return(Remove_Utility_DynaBList(&(*nodePtr)->left, CmpFunc, data));
+	if ((*nodePtr)->right) {
+		for (p = (*nodePtr)->right; p->left != NULL; p = p->left)
+			;
+		p->left = (*nodePtr)->left;
+	} else
+		(*nodePtr)->right = (*nodePtr)->left;
+	p = *nodePtr;
+	*nodePtr = p->right;
+	free(p);
+	return(TRUE);
 
 }
 
@@ -105,9 +141,9 @@ PrintList_Utility_DynaBList(DynaBListPtr nodePtr, void (* PrintFunc)(void *))
 {
 	if (!nodePtr)
 		return;
-	PrintList_Utility_DynaBList(nodePtr->right, PrintFunc);
-	PrintFunc(nodePtr->data);
 	PrintList_Utility_DynaBList(nodePtr->left, PrintFunc);
+	PrintFunc(nodePtr->data);
+	PrintList_Utility_DynaBList(nodePtr->right, PrintFunc);
 
 }
 
@@ -127,7 +163,7 @@ FindElement_Utility_DynaBList(DynaBListPtr nodePtr, int (* CmpFunc)(void *,
 		NotifyError("%s: Element not found.", funcName);
 		return(NULL);
 	}
-	if (CmpFunc(nodePtr->data, data) > 0)
+	if (CmpFunc(data, nodePtr->data) > 0)
 		return(FindElement_Utility_DynaBList(nodePtr->right, CmpFunc, data));
 	if (CmpFunc(nodePtr->data, data) < 0)
 		return(FindElement_Utility_DynaBList(nodePtr->left, CmpFunc, data));
