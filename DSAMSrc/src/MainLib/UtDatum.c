@@ -558,12 +558,28 @@ CmpProcessLabels_Utility_Datum(void *a, void *b)
  */
 
 int
-CmpProcessLabel_Utility_Datum(void *processNode, void *labelPtr)
+CmpProcessLabel_Utility_Datum(void *labelPtr, void *processNode)
 {
 	char	*label = (char *) labelPtr;
 	DatumPtr	ptr = (DatumPtr) processNode;
 
-	return (StrCmpNoCase_Utility_String(ptr->label, label));
+	return (StrCmpNoCase_Utility_String(label, ptr->label));
+
+}
+
+/****************************** PrintLabel ************************************/
+
+/*
+ * This routine is used to print the binary label list.  It is to be used for
+ * debug purposes.
+ */
+
+void
+PrintLabel_Utility_Datum(void *p)
+{
+	DatumPtr	ptr = (DatumPtr) p;
+
+	printf(" %s\n", ptr->label);
 
 }
 
