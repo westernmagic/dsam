@@ -178,7 +178,7 @@ SDIEvtHandler::InitInstruction(void)
 		  funcName);
 		return(false);
 	}
-	if (!Insert_Utility_DynaBList(((SimScriptPtr) simProcess->module->parsPtr)->
+	if (simProcess && !Insert_Utility_DynaBList(((SimScriptPtr) simProcess->module->parsPtr)->
 	  labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
 		NotifyError("%s: Could not insert label '%s' into the label list.",
 		  funcName, pc->label);
@@ -264,8 +264,8 @@ SDIEvtHandler::FreeInstruction(void)
 	if (simProcess) {
 		DynaBListPtr *labelBListPtr = ((SimScriptPtr) simProcess->module->
 		  parsPtr)->labelBListPtr;
-		Remove_Utility_DynaBList(labelBListPtr, CmpProcessLabel_Utility_Datum, pc->
-		  label);
+		Remove_Utility_DynaBList(labelBListPtr, CmpProcessLabels_Utility_Datum,
+		  pc);
 	}
 	FreeInstruction_Utility_Datum(&pc);
 

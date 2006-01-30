@@ -563,7 +563,6 @@ SDIShape::GetShapeInfo(TiXmlElement *myElement)
 	ATTRIBUTE_VAL(myElement, DSAM_XML_ID_ATTRIBUTE, iVal, true);
 	m_id = iVal;
 	wxRegisterId(m_id);
-
 	ATTRIBUTE_VAL(myElement, SHAPE_XML_X_ATTRIBUTE, x, true);
 	ATTRIBUTE_VAL(myElement, SHAPE_XML_Y_ATTRIBUTE, y, true);
 	if (ok) {

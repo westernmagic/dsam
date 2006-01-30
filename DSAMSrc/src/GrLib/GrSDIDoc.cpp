@@ -192,7 +192,8 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 	GetPtr_AppInterface()->canLoadSimulationFlag = true;
 
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
-	diagram.DrawSimulation();
+	if (!isXMLFile)
+		diagram.DrawSimulation();
 
 //	if (!isXMLFile) {
 //		wxRemoveFile(tempFileName.GetFullName());

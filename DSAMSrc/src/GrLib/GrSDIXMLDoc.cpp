@@ -195,7 +195,6 @@ SDIXMLDocument::GetShapeInfo(TiXmlNode *parent, DatumPtr pc)
 		diagram->SetOk(false);
 		return;
 	}
-	diagram->GetShapeList()->Append(shape);
 
 }
 
@@ -258,7 +257,6 @@ SDIXMLDocument::GetLineShapeInfo(TiXmlNode *parent)
 			from->AddLine((wxLineShape *) shape, to, lineShape->
 			  GetAttachmentFrom(), lineShape->GetAttachmentTo());
 		}
-		diagram->GetShapeList()->Append(shape);
 	}
 
 }

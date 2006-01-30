@@ -55,7 +55,6 @@
 DSAMXMLDocument::DSAMXMLDocument(void)
 {
 	mySimProcess = NULL;
-	labelBList = NULL;
 	simScriptPtr = NULL;
 	SetTabSize(4);
 
@@ -67,8 +66,6 @@ DSAMXMLDocument::DSAMXMLDocument(void)
 
 DSAMXMLDocument::~DSAMXMLDocument(void)
 {
-	if (labelBList)
-		FreeList_Utility_DynaBList(&labelBList);
 
 }
 
@@ -802,8 +799,8 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 				return(false);
 			}
 		}
-		if (pc->label && *pc->label &&  !Insert_Utility_DynaBList(&labelBList,
-		  CmpProcessLabels_Utility_Datum, pc)) {
+		if (pc->label && *pc->label &&  !Insert_Utility_DynaBList(
+		  simScriptPtr->labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
 			XMLNotifyError(objectElement, _T("%s: Cannot insert process "
 			  "labelled '%s' into simulation."), funcName, pc->label);
 			return(false);
@@ -846,14 +843,15 @@ DSAMXMLDocument::GetSimulationInfo(TiXmlNode *simNode)
 	}
 	simulation = (ok)? GetSimulation_ModuleMgr(mySimProcess): NULL;
 	if (ok)
-		ok = CXX_BOOL(ResolveInstLabels_Utility_Datum(simulation, labelBList));
+		ok = CXX_BOOL(ResolveInstLabels_Utility_Datum(simulation,
+		  simScriptPtr->labelBList));
 	if (ok && !SetDefaultConnections_Utility_Datum(simulation)) {
 		XMLNotifyError(simElement, _T("%s Could not set default forward "
 		  "connections"), funcName);
 		ok = false;
 	}
-	if (ok)
-		GetLineShapeInfo(simElement);
+		if (ok)
+			GetLineShapeInfo(simElement);
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {
 		XMLNotifyError(simElement, _T("%s: Not enough lines, or invalid "
 		  "parameters, in simulation node"), funcName);

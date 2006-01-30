@@ -84,7 +84,6 @@ class DSAMXMLDocument: public TiXmlDocument
 
   private:
 	EarObjectPtr	mySimProcess;
-	DynaBListPtr	labelBList;
 	SimScriptPtr	simScriptPtr;
 
   public:
