@@ -418,12 +418,8 @@ SetOperationMode_Transform_Gate(char *theOperationMode)
 		return(FALSE);
 	}
 	if (!gatePtr->parList->pars[GATE_OPERATION_MODE].enabled && (gatePtr->
-	  processMode != GATE_STANDARD_PROCESS_MODE)) {
-	  	NotifyWarning("%s: The operation mode is not set in the reduced '%s' "
-		  "mode.", funcName, gatePtr->processModeList[gatePtr->processMode].
-		  name);
+	  processMode != GATE_STANDARD_PROCESS_MODE))
 		return(TRUE);
-	}
 	if ((specifier = Identify_NameSpecifier(theOperationMode,
 	  gatePtr->operationModeList)) == GATE_NULL_OPERATION_MODE) {
 		NotifyError("%s: Illegal mode name (%s).", funcName, theOperationMode);
