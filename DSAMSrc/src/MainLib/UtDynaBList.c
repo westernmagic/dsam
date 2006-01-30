@@ -158,16 +158,19 @@ FindElement_Utility_DynaBList(DynaBListPtr nodePtr, int (* CmpFunc)(void *,
   void *), void *data)
 {
 	static const char *funcName = "FindElement_Utility_DynaBList";
+	int		cmpResult;
 
 	if (!nodePtr) {
 		NotifyError("%s: Element not found.", funcName);
 		return(NULL);
 	}
-	if (CmpFunc(data, nodePtr->data) > 0)
+	cmpResult = CmpFunc(data, nodePtr->data);
+	if (cmpResult == 0)
+		return(nodePtr);
+	if (cmpResult > 0)
 		return(FindElement_Utility_DynaBList(nodePtr->right, CmpFunc, data));
-	if (CmpFunc(nodePtr->data, data) < 0)
+	else
 		return(FindElement_Utility_DynaBList(nodePtr->left, CmpFunc, data));
-	return(nodePtr);
 
 }
 
