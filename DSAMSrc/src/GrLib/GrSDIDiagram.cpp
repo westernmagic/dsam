@@ -144,16 +144,14 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
   wxBrush *brush)
 {
 	bool	lineShape = (!pc);
-	double	boxWidth, boxHeight;
 	wxShape *shape = CreateBasicShape(shapeInfo, (lineShape)? -1:
-	  pc->classSpecifier, brush);
+	  pc->classSpecifier, brush, false);
 
 	if (!lineShape) {
 		SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 		myHandler->pc = pc;
 		shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
 		  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
-		shape->SetId(pc->stepNumber);
 		pc->clientData = shape;
 		if (pc->type == PROCESS)
 			pc->data->clientData = shape;
@@ -164,14 +162,6 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 	shape->GetCanvas()->PrepareDC(dc);
 	shape->Move(dc, x, y);
 	shape->Show(TRUE);
-	if (!lineShape) {
-		shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
-		x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
-		if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().GetWidth()) {
-			x = DIAGRAM_DEFAULT_INITIAL_X;
-			y += DIAGRAM_DEFAULT_SHAPE_HEIGHT + DIAGRAM_DEFAULT_Y_SEPARATION;
-		}
-	}
 	return(shape);
 
 }
@@ -183,6 +173,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 void
 SDIDiagram::DrawSimShapes()
 {
+	double	boxWidth, boxHeight;
 	DatumPtr	pc;
 	ModulePtr	module;
 	wxShape		*shape;
@@ -198,6 +189,14 @@ SDIDiagram::DrawSimShapes()
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(module->
 			  classSpecifier), (module->onFlag)? DIAGRAM_ENABLED_BRUSH:
 			    DIAGRAM_DISENABLED_BRUSH);
+				shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
+				x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
+				if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().
+				  GetWidth()) {
+					x = DIAGRAM_DEFAULT_INITIAL_X;
+					y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
+					DIAGRAM_DEFAULT_Y_SEPARATION;
+				}
 			break; }
 		case REPEAT:
 		case RESET:
@@ -375,12 +374,14 @@ SDIDiagram::DrawSimulation(void)
 /******************************************************************************/
 
 wxShape *
-SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
+SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush,
+  bool assignNewIds)
 {
 	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
-	theShape->AssignNewIds();
-	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape,
-	  wxString(""), type));
+	if (assignNewIds)
+		theShape->AssignNewIds();
+	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape, wxString(
+	  ""), type));
 	theShape->SetCentreResize(false);
 	theShape->SetPen(wxBLACK_PEN);
 	theShape->SetBrush(brush);
