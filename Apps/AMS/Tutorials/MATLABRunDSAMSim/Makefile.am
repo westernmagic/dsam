@@ -4,15 +4,18 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/MATLABdemo
+DIRECTORY	= Tutorials/MATLABRunDSAMSim
 
-SimScripts	= 
+SimScripts	= gammatoneDemo.sim
 
-SPFFiles	= 
+SPFFiles	= gammatoneDemo.spf
 
-ParFiles	=
+ParFiles	= BM_gammatone.par filtMultiBandpassGP.par mathOpStapes.par
 
-MatlabFiles	= MatlabDemo.asv MatlabDemo.m
+
+MatlabFiles	= MatlabDemo.m MatlabDemoRunDSAMsim.asv MatlabDemoRunDSAMsim.m \
+				readDatFile.m
+
 
 
 

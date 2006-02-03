@@ -1,8 +1,9 @@
 #		BM_DRNL		< BMdrnlGP1.par	
 
 # Parameters are based on 
-# Sumner, C,  Lopez-Poveda, E.A.,   and Ray Meddis.  
+# Sumner, C,  Lopez-Poveda, E.A.,   and Ray Meddis (2003).  
 #"A non-linear filter-bank model of the guinea-pig cochlear nerve"
+# Table I
 
 #nonlinear path
 NL_GT_CASCADE		3	Nonlinear gammatone filter cascade.
@@ -37,5 +38,5 @@ LINSCALEG_PARAMETER	1:-0.97
 #BF List Parameters:-
 DIAG_MODE			PARAMETERS
 CF_MODE			SINGLE
-SINGLE_CF			1000
-
+SINGLE_CF			2000
+B_MODE        		GUINEA_PIG

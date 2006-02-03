@@ -306,7 +306,7 @@ AC_OUTPUT(
 	Tutorials/GenerateStimulus/Makefile
 	Tutorials/ImpulseResponse/Makefile
 	Tutorials/Loudness/Makefile
-	Tutorials/MATLABdemo/Makefile
+	Tutorials/MATLABRunDSAMSim/Makefile
 	Tutorials/MeasureIntensity/Makefile
 	Tutorials/Pre-emphasisFilter/Makefile
 	Tutorials/Precedence/Makefile

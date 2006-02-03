@@ -11,7 +11,7 @@ RP_CORRECTION	0.04	Reversal potential correction, Rp/(Rt+Rp).
 G_MAXC	8e-09		Maximum mechanical conductance, Gmax (S).
 S0		85e-9		Sensitivity constant, S0 (/m).
 U0		7e-9		Offset constant, U0 (m).
-S1		5e-7		Sensitivity constant, S1 (/m).
+S1		5e-9		Sensitivity constant, S1 (/m).
 U1		7e-9		Offset constant, U1 (m).
 C_TOTAL	6e-12		Total capacitance, C = Ca + Cb (F).
 T_C		2.13e-3	Cilia/BM time constant (s).

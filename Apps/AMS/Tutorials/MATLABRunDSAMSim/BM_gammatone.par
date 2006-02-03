@@ -1,0 +1,8 @@
+#		BM_gammaT		< BM_gammatone.par	
+
+CHANNELS	20
+MIN_CF		100
+MAX_CF		10000
+CASCADE	4
+CF_MODE	HUMAN
+B_MODE		ERB

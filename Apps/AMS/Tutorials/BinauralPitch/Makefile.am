@@ -13,10 +13,10 @@ SPFFiles	=
 ParFiles	= acf.par BM_DRNLHuman.par dataFileAif.par dataFileIn.par \
 				dataFileOut.par displayACFearly.par displayACFlate.par \
 				displayBM.par displayHSR.par displayReceptorPotential.par \
-				displaysACF.par displayStimulus.par filtIIRMoore.par \
+				displayStimulus.par filtIIRMoore.par \
 				filtMultiBandpass.par filtScaleToStapes.par \
 				filtStereocilia.par IHC_Meddis2000HSR.par \
-				IHCreceptorPotential.par IHCRP_VelIn_GP.par mathOpStapes.par \
+				IHCreceptorPotential.par IHCRP_VelIn_GP.par \
 				pitchEarlyCrossover.par rampDown.par rampUp.par \
 				stimHarmonic.par UtRedChans.par
 

@@ -10,7 +10,7 @@ WIN_Y_POS	300
 Y_AXIS_TITLE	"smoothed summed AN activity"
 Y_AXIS_MODE		LINEAR	
 AUTO_Y_SCALE	OFF	
-MAXY			0.5	
+MAXY			1	
 MINY			0	
 
 X_AXIS_TITLE	"time (s)"

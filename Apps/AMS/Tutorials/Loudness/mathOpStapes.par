@@ -1,4 +1,4 @@
-#		Util_mathOp		< mathOpStapes.par
+#		Util_mathOp		< mathOPstapes.par
 # converts microPascals to stapes velocity (m/s)
 
 OPERATOR	SCALE

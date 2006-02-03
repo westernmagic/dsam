@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials
 SUBDIRS		= AuditoryPeriphery Autocorrelation BinauralPitch DRNLinputOutput \
-				GenerateStimulus ImpulseResponse Loudness MATLABdemo \
+				GenerateStimulus ImpulseResponse Loudness MATLABRunDSAMSim \
 				MeasureIntensity Pre-emphasisFilter Precedence
 
 EXTRA_DIST	=
