@@ -1389,7 +1389,6 @@ void
 SetThreadRunFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 {
 	int		i;
-	EarObjectPtr	p;
 
 	theObject->threadRunFlag = setting;
 	for (i = 0; i < theObject->numSubProcesses; i++)

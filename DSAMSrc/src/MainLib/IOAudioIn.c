@@ -793,7 +793,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		data->outSignal->channel[RIGHT_CHAN] = p->buffer->outSignal->channel[
 		  RIGHT_CHAN] + p->segmentIndex;
 	p->segmentIndex += data->outSignal->length;
-	if (p->segmentIndex > p->buffer->outSignal->length)
+	if ((ChanLen) p->segmentIndex > p->buffer->outSignal->length)
 		p->segmentIndex = 0;
 	p->segmentReadyFlag = FALSE;
 	if ((p->pAError < 0) && !GetDSAMPtr_Common()->segmentedMode)

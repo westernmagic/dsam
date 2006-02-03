@@ -63,6 +63,7 @@
 IMPLEMENT_DYNAMIC_CLASS(SDIView, wxView)
 
 BEGIN_EVENT_TABLE(SDIView, wxView)
+    EVT_COMBOBOX(SDIFRAME_ZOOM_COMBOBOX, SDIView::OnZoomSel)
 	EVT_MENU(SDIFRAME_CUT, SDIView::OnCut)
 	EVT_MENU(SDIFRAME_CHANGE_BACKGROUND_COLOUR,
 	  SDIView::OnChangeBackgroundColour)
@@ -70,6 +71,7 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
 	EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
 	EVT_MENU(SDIFRAME_EDIT_MENU_READ_PAR_FILE, SDIView::OnReadParFile)
 	EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
+    EVT_TEXT_ENTER(SDIFRAME_ZOOM_COMBOBOX, SDIView::OnZoomSel)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -176,7 +178,7 @@ SDIView::OnCreate(wxDocument *doc, long flags)
 void
 SDIView::OnDraw(wxDC *dc) 
 { 
-
+	printf("SDIView::OnDraw: Entered\n");
 	/* You might use THIS code if you were scaling 
 	* graphics of known size to fit on the page. 
 	*/ 
@@ -421,6 +423,27 @@ SDIView::OnReadParFile(wxCommandEvent& WXUNUSED(event))
 		NotifyWarning("%s: Could not read parameters from file '%s'.",
 		  funcName, fileName.GetFullPath().c_str());
 
+}
+
+/******************************************************************************/
+/****************************** OnZoomSel *************************************/
+/******************************************************************************/
+
+void
+SDIView::OnZoomSel(wxCommandEvent& event)
+{
+	double	scale, percent;
+
+	wxComboBox* combo = (wxComboBox*) event.GetEventObject();
+	wxASSERT( combo != NULL );
+
+	combo->GetValue().ToDouble(&percent);
+	scale = percent / 100.0;
+
+	SDIDocument *diagramDoc = (SDIDocument *)GetDocument();
+	((SDIDiagram *) diagramDoc->GetDiagram())->Rescale(scale, scale);
+	canvas->Refresh();
+	
 }
 
 #endif /* HAVE_WX_OGL_H */

@@ -71,8 +71,11 @@ RunThreadedProc::RunThreadedProc(void)
 	startTime = clock();
 #	endif
 	numThreads = wxThread::GetCPUCount();
+	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	SetErrorsFile_Common("off", OVERWRITE);
 	SetThreadMode((GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
 	  APP_INT_THREAD_MODE_PROCESS);
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 #	if DEBUG
 	printf("RunThreadedProc::RunThreadedProc: Debug: %d CPU's available, "
 	  "thread mode: %d\n", numThreads, threadMode);

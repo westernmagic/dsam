@@ -27,7 +27,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define SDI_STANDARD_SHAPE_WIDTH      100
+#define SHAPE_DEFAULT_FONT_POINTSIZE	10
+#define SDI_STANDARD_SHAPE_WIDTH		100
 
 // Misc. elements.
 #define SHAPE_XML_ARCS_ELEMENT				_T("arcs")

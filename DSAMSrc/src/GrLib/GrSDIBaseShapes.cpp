@@ -185,7 +185,7 @@ SDIShape::AddFontInfo(TiXmlNode &parent, wxFont *font)
 	TiXmlElement fontElement(SHAPE_XML_FONT_ELEMENT);
 
 	fontElement.SetAttribute(SHAPE_XML_POINTSIZE_ATTRIBUTE, (font)?
-	  font->GetPointSize() : 10);
+	  font->GetPointSize() : SHAPE_DEFAULT_FONT_POINTSIZE);
 	fontElement.SetAttribute(SHAPE_XML_FAMILY_ATTRIBUTE, (long)((font)?
 	  font->GetFamily() : wxDEFAULT));
 	fontElement.SetAttribute(SHAPE_XML_STYLE_ATTRIBUTE, (long)((font)?
@@ -449,8 +449,8 @@ SDIShape::GetFontInfo(TiXmlNode *parent)
 {
 	static const char *funcName = "SDIShape::GetFontInfo";
 	bool	ok = true;
-	int		fontSize = 10, fontFamily = wxSWISS, fontStyle = wxNORMAL;
-	int		fontWeight = wxNORMAL;
+	int		fontSize = SHAPE_DEFAULT_FONT_POINTSIZE, fontFamily = wxSWISS;
+	int		fontStyle = wxNORMAL, fontWeight = wxNORMAL;
 	TiXmlElement	*myElement;
 
 	if ((myElement = parent->FirstChildElement(SHAPE_XML_FONT_ELEMENT)) == NULL)

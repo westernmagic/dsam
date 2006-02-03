@@ -957,7 +957,6 @@ BOOLN
 InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Analysis_SAI";
-	int		i;
 	SAImagePtr	p = sAImagePtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {

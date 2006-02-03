@@ -235,6 +235,9 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 void
 SDICommand::RedrawShapeLabel(wxShape *shape)
 {
+//*** you are here
+//*** put some of this this into GrBasicShape?
+
 	wxClientDC dc(shape->GetCanvas());
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
@@ -330,14 +333,15 @@ SDICommand::Do(void)
 
 		break; }
 	case SDIFRAME_ADD_SHAPE: {
+		SDIDiagram *diagram = (SDIDiagram *) doc->GetDiagram();
 		wxShape *theShape = NULL;
 		if (shape)
 			theShape = shape; // Saved from undoing the shape
 		else {
 			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
 			  shapeInfo, processType, wxCYAN_BRUSH);
-			theShape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
-			  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
+			theShape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH * diagram->GetXScale(
+			  ), DIAGRAM_DEFAULT_SHAPE_HEIGHT * diagram->GetYScale());
 		}
 		doc->GetDiagram()->AddShape(theShape);
 		theShape->Show(TRUE);

@@ -22,6 +22,9 @@
 /******************************************************************************/
 
 #define	SDIFRAME_ID_TOOLBAR		500
+#define	SDIFRAME_MAX_ZOOM		200
+#define	SDIFRAME_MIN_ZOOM		10
+#define	SDIFRAME_INC_ZOOM		10
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -50,6 +53,7 @@ enum {
 
 	SDIFRAME_DIAG_WINDOW,
 	SDIFRAME_CHANGE_BACKGROUND_COLOUR,
+	SDIFRAME_ZOOM_COMBOBOX,
 
 	SDIFRAME_SIM_THREAD_DISPLAY_EVENT = 100
 
@@ -77,6 +81,9 @@ class SDIFrame: public wxDocParentFrame
 
 	ModuleParDialog	*mainParDialog;
 	DynaListPtr		dialogList;
+
+  protected:
+	wxComboBox	*myZoomComboBox;
 
   public:
 	wxMenu *editMenu;

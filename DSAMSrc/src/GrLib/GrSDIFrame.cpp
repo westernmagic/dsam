@@ -118,6 +118,7 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	mainParDialog = NULL;
 	myToolBar = NULL;
 	dialogList = NULL;
+	myZoomComboBox = NULL;
 	
 #	ifdef MPI_SUPPORT
 	static const char *funcName = "SDIFrame::MyFrame";
@@ -352,6 +353,29 @@ SDIFrame::CreateToolbar(void)
 	toolBar->AddTool(SDIFRAME_STOP_SIMULATION, stopBitmap, wxNullBitmap, FALSE,
 	  currentX, -1, (wxObject *) NULL, "Stop simulation");
 	currentX += width + 5;
+	toolBar->AddSeparator();
+
+	// Create a combobox for zooming
+	int zoomW = 60;
+	int zoomH = 18;
+	int i;
+	int numStrings = (SDIFRAME_MAX_ZOOM - SDIFRAME_MIN_ZOOM) /
+	SDIFRAME_INC_ZOOM + 1;
+	wxString *zoomStrings = new wxString[numStrings];
+	for (i = 0; i < numStrings; i ++)
+		zoomStrings[numStrings - i - 1].Printf(_T("%d%%"), (i *
+		  SDIFRAME_INC_ZOOM + SDIFRAME_MIN_ZOOM));
+
+	myZoomComboBox = new wxComboBox(toolBar, SDIFRAME_ZOOM_COMBOBOX,
+	wxEmptyString, wxPoint(currentX, 1), wxSize(zoomW, zoomH), numStrings,
+	zoomStrings);
+	delete[] zoomStrings;
+	currentX += zoomW + 10;
+
+//#ifdef __WXGTK__
+	toolBar->AddControl(myZoomComboBox);
+//#endif
+
 	toolBar->AddSeparator();
 	toolBar->AddTool(wxID_HELP, helpBitmap, wxNullBitmap, FALSE, currentX, -1,
 	  (wxObject *) NULL, "Help button");

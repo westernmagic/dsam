@@ -72,6 +72,7 @@ class SDIDiagram: public wxDiagram
 {
 	bool	ok;
 	double	x, y;
+	double	xScale, yScale;
 	EarObjectPtr	simProcess;
 
   public:
@@ -91,6 +92,10 @@ class SDIDiagram: public wxDiagram
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
 	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
+	double	GetXScale(void)		{ return xScale; }
+	double	GetYScale(void)		{ return yScale; }
+	void	RedrawShapeLabel(wxShape *shape);
+	void	Rescale(double theXScale, double theYScale);
 	bool	SaveFile(const wxString& filename);
 	void	SetOk(bool status)		{ ok = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }

@@ -70,6 +70,8 @@ SDIDiagram::SDIDiagram(void)
 	ok = false;
 	x = DIAGRAM_DEFAULT_INITIAL_X;
 	y = DIAGRAM_DEFAULT_INITIAL_Y;
+	xScale = 1.0;
+	yScale = 1.0;
 	simProcess = NULL;
 
 }
@@ -410,7 +412,6 @@ SDIDiagram::VerifyDiagram(void)
 
 	// Check processes exist for each shape line, and that the connection
 	// exists in the simulation
-	node = m_shapeList->GetFirst();
 	while (node) {
 		wxShape *shape = (wxShape *) node->GetData();
 		if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
@@ -468,6 +469,63 @@ SDIDiagram::VerifyDiagram(void)
 	}
 	return(TRUE);
 
+}
+
+/******************************************************************************/
+/****************************** RedrawShapeLabel ******************************/
+/******************************************************************************/
+
+// Temporary
+
+void
+SDIDiagram::RedrawShapeLabel(wxShape *shape)
+{
+	wxClientDC dc(shape->GetCanvas());
+	shape->GetCanvas()->PrepareDC(dc);
+    SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+
+	AdjustShapeToLabel(dc, shape, myHandler->label);
+	shape->FormatText(dc, (const char *) myHandler->label);
+	shape->Draw(dc);
+
+}
+
+/******************************************************************************/
+/****************************** Rescale ***************************************/
+/******************************************************************************/
+
+/*
+ * This routine redraws the diagram using a new scale;
+ */
+
+void
+SDIDiagram::Rescale(double theXScale, double theYScale)
+{
+	double	rescaleX, rescaleY;
+	wxShape *shape;
+	wxNode *node = m_shapeList->GetFirst();
+
+	rescaleX = theXScale / xScale;
+	rescaleY = theYScale / yScale;
+	xScale = theXScale;
+	yScale = theYScale;
+	while (node) {
+		shape = (wxShape *) node->GetData();
+		shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH * xScale,
+			  DIAGRAM_DEFAULT_SHAPE_HEIGHT * yScale);
+		shape->SetX(shape->GetX() * rescaleX);
+		shape->SetY(shape->GetY() * rescaleY);
+		shape->GetFont()->SetPointSize((int) (SHAPE_DEFAULT_FONT_POINTSIZE *
+		  xScale));
+		RedrawShapeLabel(shape);
+		wxClientDC dc(shape->GetCanvas());
+		shape->GetCanvas()->PrepareDC(dc);
+		// It won't get drawn properly unless you move both
+		// connected images
+		shape->Move(dc, shape->GetX(), shape->GetY());
+		node = node->GetNext();
+	}
+	
 }
 
 #endif /* USE_WX_OGL */

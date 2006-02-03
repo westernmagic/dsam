@@ -782,12 +782,13 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 	BOOLN	foundUnusedLabel = FALSE;
 	char	label[MAXLINE];
 	int		labelNumber;
+	FILE	*savedErrorsFileFP;
 
 	if (((pc->type != PROCESS) && (pc->type != REPEAT) && (pc->type !=
 	  RESET)) || (pc->label[0] != '\0'))
 		return(TRUE);
 	labelNumber = pc->stepNumber;
-	FILE *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	SetErrorsFile_Common("off", OVERWRITE);
 	while (!foundUnusedLabel) {
 		snprintf(label, MAXLINE, "%s%d", DATUM_DEFAULT_LABEL_PREFIX,
