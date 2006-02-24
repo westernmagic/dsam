@@ -410,6 +410,7 @@ FreeUserModuleList_ModuleReg(void)
 {
 	if (userModuleList)
 		free(userModuleList);
+	userModuleList = NULL;
 
 }
 
@@ -427,8 +428,7 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
 	int		i;
 	ModRegEntryPtr	regEntry;
 
-	if (userModuleList)
-		free(userModuleList);
+	FreeUserModuleList_ModuleReg();
 	maxUserModules = (theMaxUserModules > 0)? theMaxUserModules:
 	  MODULE_REG_DEFAAULT_USER_MODULES;
 	if ((userModuleList = (ModRegEntryPtr) calloc(maxUserModules + 1, sizeof(
