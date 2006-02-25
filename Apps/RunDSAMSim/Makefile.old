@@ -2,7 +2,7 @@
 
 OBJS	= MatMainApp.o
 INSTALLDIR=.
-PROGRAM = RunDSAMSim.mexglx
+PROGRAM = RunDSAMSim.oct
 DEBUG	= -ggdb3
 DSAM_FLAGS= $(DEBUG) -fPIC -DLIBRARY_COMPILE
 
@@ -30,7 +30,7 @@ test: RunDSAMSim.oct
 	octave --silent testmp.m
 
 RunDSAMSim.oct:  RunDSAMSim.cpp $(OBJS)
-	CPPFLAGS="$(DSAM_FLAGS) -w" mkoctfile -o $@ $< $(OBJS) \
+	CPPFLAGS="$(DSAM_FLAGS) -w" mkoctfile  -o $@ $< $(OBJS) \
 	  `dsam-config --cflags --libs`
 
 RunDSAMSim.mexglx:  RunDSAMSim.cpp $(OBJS)

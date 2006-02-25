@@ -1,10 +1,10 @@
 # Makefile for Octave extension RunDSAMSim
 
-OBJS	= DSAMMatrix.o
+OBJS	= MatMainApp.o
 INSTALLDIR=.
 PROGRAM = RunDSAMSim.oct
-#PROGRAM = RunDSAMSim.mexglx
 DEBUG	= -ggdb3
+DSAM_FLAGS= $(DEBUG) -fPIC -DLIBRARY_COMPILE
 
 .phony: all
 
@@ -15,6 +15,10 @@ all: $(PROGRAM)
 clean:
 	rm -f $(PROGRAM) *.o
 
+remake:
+	make clean
+	make
+
 .phony: distclean
 
 distclean: clean
@@ -23,15 +27,15 @@ distclean: clean
 .phony: test
 
 test: RunDSAMSim.oct
-	octave -silent testmp.m
+	octave --silent testmp.m
 
-RunDSAMSim.oct:  RunDSAMSimOct.cpp $(OBJS)
-	CPPFLAGS=$(DEBUG) mkoctfile -o $@ RunDSAMSimOct.cpp $(OBJS) \
+RunDSAMSim.oct:  RunDSAMSim.cpp $(OBJS)
+	CPPFLAGS="$(DSAM_FLAGS) -w" mkoctfile  -o $@ $< $(OBJS) \
 	  `dsam-config --cflags --libs`
 
-RunDSAMSim.mexglx:  RunDSAMSimMat.c $(OBJS)
-	CPPFLAGS=$(DEBUG) mex -o $@ RunDSAMSimMat.c $(OBJS) \
+RunDSAMSim.mexglx:  RunDSAMSim.cpp $(OBJS)
+	CPPFLAGS="$(DSAM_FLAGS) -DMATLAB_COMPILE" mex -o $@ $< $(OBJS) \
 	  `dsam-config --cflags --libs`
 
-DSAMMatrix.o: DSAMMatrix.c DSAMMatrix.h
-	$(CC) -c $< $(DEBUG) `dsam-config --cflags`
+MatMainApp.o: MatMainApp.cpp MatMainApp.h
+	$(CXX) -c $< $(DSAM_FLAGS) `dsam-config --cflags`

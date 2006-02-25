@@ -393,11 +393,11 @@ AnyBadArgument(const octave_value_list& args)
  * signal.
  */
 
-static Octave_map
+Octave_map
 GetOutputInfoStruct(SignalDataPtr signal)
 {
 	int		i;
-	Octave_map	info;
+	static Octave_map	info;
 
 	info.assign("dt", octave_value(signal->dt));
 	info.assign("staticTimeFlag", octave_value((bool) signal->staticTimeFlag));
@@ -424,12 +424,12 @@ GetOutputInfoStruct(SignalDataPtr signal)
  * signal.
  */
 
-static Matrix
+Matrix
 GetOutputSignalMatrix(SignalDataPtr signal)
 {
 	register ChanData	*inPtr;
 	int		chan, i;
-	Matrix	m((int) signal->numChannels, (int) signal->length);
+	static Matrix	m((int) signal->numChannels, (int) signal->length);
 
 	for (chan = 0; chan < signal->numChannels; chan++) {
 		inPtr = signal->channel[chan];
