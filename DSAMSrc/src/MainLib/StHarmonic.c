@@ -1022,69 +1022,31 @@ BOOLN
 InitProcessVariables_Harmonic(EarObjectPtr data)
 {
 	static const char *funcName = "InitProcessVariables_Harmonic";
-	int		i, totalNumberOfHarmonics, harmonicNumber;
-	double	piOver2;
+	int		totalNumberOfHarmonics;
 	HarmonicPtr	p = harmonicPtr;
 	
 	totalNumberOfHarmonics = p->highestHarmonic - p->lowestHarmonic + 1;
-	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
-			FreeProcessVariables_Harmonic();
-			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
-				return(FALSE);
-			if ((p->phase = (double *) calloc(totalNumberOfHarmonics, sizeof(
-			  double))) == NULL) {
-				NotifyError("%s: Out of memory for 'phase' array", funcName);
-				return(FALSE);
-			}
-			if ((p->harmonicFrequency = (double *) calloc(
-			  totalNumberOfHarmonics, sizeof(double))) == NULL) {
-				NotifyError("%s: Out of memory for 'harmonic frequencies' "
-				  "array", funcName);
-				return(FALSE);
-			}
-			if ((p->modIndex = (double *) calloc(totalNumberOfHarmonics, sizeof(
-			  double))) == NULL) {
-				NotifyError("%s: Out of memory for 'modIndex' array", funcName);
-				return(FALSE);
-			}
-			p->updateProcessVariablesFlag = FALSE;
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
+		FreeProcessVariables_Harmonic();
+		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
+			return(FALSE);
+		if ((p->phase = (double *) calloc(totalNumberOfHarmonics, sizeof(
+		  double))) == NULL) {
+			NotifyError("%s: Out of memory for 'phase' array", funcName);
+			return(FALSE);
 		}
-		piOver2 = PI / 2.0;
-		for (i = 0; i < totalNumberOfHarmonics; i++) {
-			harmonicNumber = p->lowestHarmonic + i;
-			switch (p->phaseMode) {
-				case HARMONIC_RANDOM:
-					p->ranSeed = (long) p->phaseVariable;
-					p->phase[i] = PIx2 * Ran01_Random(data->randPars);
-					break;
-				case HARMONIC_SINE:
-					p->phase[i] = 0.0;
-					break;
-				case HARMONIC_COSINE:
-					p->phase[i] = PI / 2.0;
-					break;
-				case HARMONIC_ALTERNATING:
-					p->phase[i] = ((i % 2) == 0)? 0.0: piOver2;
-					break;
-				case HARMONIC_SCHROEDER:
-					p->phase[i] = p->phaseVariable * PI *
-					  harmonicNumber * (harmonicNumber + 1) /
-					  totalNumberOfHarmonics;
-					break;
-				case HARMONIC_NULL:
-					p->phase[i] = 0.0;
-					break;
-			} /* switch */
-		  	p->harmonicFrequency[i] = p->frequency * harmonicNumber;
-			if (harmonicNumber == p->mistunedHarmonic)
-				p->harmonicFrequency[i] += p->harmonicFrequency[i] *
-				p->mistuningFactor / 100.0;
-			p->modIndex[i] = (p->modulationDepth < DBL_EPSILON)? 0.0:
-			  (p->modulationDepth / 100.0) * (p->harmonicFrequency[i] / p->
-			  modulationFrequency);
+		if ((p->harmonicFrequency = (double *) calloc(totalNumberOfHarmonics,
+		  sizeof(double))) == NULL) {
+			NotifyError("%s: Out of memory for 'harmonic frequencies' array",
+			  funcName);
+			return(FALSE);
 		}
+		if ((p->modIndex = (double *) calloc(totalNumberOfHarmonics, sizeof(
+		  double))) == NULL) {
+			NotifyError("%s: Out of memory for 'modIndex' array", funcName);
+			return(FALSE);
+		}
+		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
@@ -1133,11 +1095,12 @@ BOOLN
 GenerateSignal_Harmonic(EarObjectPtr data)
 {
 	static const char *funcName = "GenerateSignal_Harmonic";
-	int			j, totalNumberOfHarmonics;
+	int			j, totalNumberOfHarmonics, harmonicNumber;
 	ChanLen		i, t;
-	double		instantFreq;
+	double		instantFreq, piOver2;
 	double		amplitude, timexPix2, filterAmp, modulation;
 	register	ChanData	*dataPtr;
+	HarmonicPtr	p = harmonicPtr;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
@@ -1161,10 +1124,44 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	amplitude = RMS_AMP(harmonicPtr->intensity) * SQRT_2;
-	dataPtr = data->outSignal->channel[0];
 	totalNumberOfHarmonics = harmonicPtr->highestHarmonic -
 	  harmonicPtr->lowestHarmonic + 1;
+	piOver2 = PI / 2.0;
+	for (i = 0; i < totalNumberOfHarmonics; i++) {
+		harmonicNumber = p->lowestHarmonic + i;
+		switch (p->phaseMode) {
+			case HARMONIC_RANDOM:
+				p->ranSeed = (long) p->phaseVariable;
+				p->phase[i] = PIx2 * Ran01_Random(data->randPars);
+				break;
+			case HARMONIC_SINE:
+				p->phase[i] = 0.0;
+				break;
+			case HARMONIC_COSINE:
+				p->phase[i] = PI / 2.0;
+				break;
+			case HARMONIC_ALTERNATING:
+				p->phase[i] = ((i % 2) == 0)? 0.0: piOver2;
+				break;
+			case HARMONIC_SCHROEDER:
+				p->phase[i] = p->phaseVariable * PI *
+				  harmonicNumber * (harmonicNumber + 1) /
+				  totalNumberOfHarmonics;
+				break;
+			case HARMONIC_NULL:
+				p->phase[i] = 0.0;
+				break;
+		} /* switch */
+		p->harmonicFrequency[i] = p->frequency * harmonicNumber;
+		if (harmonicNumber == p->mistunedHarmonic)
+			p->harmonicFrequency[i] += p->harmonicFrequency[i] *
+			p->mistuningFactor / 100.0;
+		p->modIndex[i] = (p->modulationDepth < DBL_EPSILON)? 0.0:
+		  (p->modulationDepth / 100.0) * (p->harmonicFrequency[i] / p->
+		  modulationFrequency);
+	}
+	amplitude = RMS_AMP(harmonicPtr->intensity) * SQRT_2;
+	dataPtr = data->outSignal->channel[0];
 	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
 	  dataPtr++) {
 	  	timexPix2 = PIx2 * t * data->outSignal->dt;
