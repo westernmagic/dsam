@@ -58,6 +58,7 @@ InitPhaseModeList_Harmonic(void)
 					{ "COSINE", HARMONIC_COSINE },
 					{ "ALTERNATING", HARMONIC_ALTERNATING },
 					{ "SCHROEDER", HARMONIC_SCHROEDER },
+					{ "USER", HARMONIC_USER },
 					{ "", HARMONIC_NULL },
 				};
 	harmonicPtr->phaseModeList = modeList;
@@ -199,7 +200,7 @@ SetUniParList_Harmonic(void)
 	  &harmonicPtr->highestHarmonic, NULL,
 	  (void * (*)) SetHighestHarmonic_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_PHASEMODE], "PHASE_MODE",
-	  "Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).",
+	  "Phase mode (ALTERNATING, COSINE, RANDOM, SCHROEDER, SINE, USER).",
 	  UNIPAR_NAME_SPEC,
 	  &harmonicPtr->phaseMode, harmonicPtr->phaseModeList,
 	  (void * (*)) SetPhaseMode_Harmonic);
@@ -721,7 +722,7 @@ SetOrder_Harmonic(int theorder)
 
 }
 
-/****************************** SetLowerCutOffFreq *****************************/
+/****************************** SetLowerCutOffFreq ****************************/
 
 /*
  * This function sets the module's lowerCutOffFreq parameter.
@@ -777,12 +778,11 @@ SetUpperCutOffFreq_Harmonic(double theUpperCutOffFreq)
  
 BOOLN
 SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
-		  int theHighestHarmonic, int theMistunedHarmonic,
-		  double theMistuningFactor, double thePhaseVariable, double theFrequency,
-		  double theIntensity, double theDuration, double theSamplingInterval,
-		  double theModulationFrequency, double theModulationPhase,
-		  double theModulationDepth, int theOrder, double theLowCutFreq,
-		  double theHighCutFreq)
+  int theHighestHarmonic, int theMistunedHarmonic, double theMistuningFactor,
+  double thePhaseVariable, double theFrequency, double theIntensity,
+  double theDuration, double theSamplingInterval, double theModulationFrequency,
+  double theModulationPhase, double theModulationDepth, int theOrder,
+  double theLowCutFreq, double theHighCutFreq)
 {
 	static const char *funcName = "SetPars_Harmonic";
 	BOOLN	ok;
@@ -1147,6 +1147,9 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 				p->phase[i] = p->phaseVariable * PI *
 				  harmonicNumber * (harmonicNumber + 1) /
 				  totalNumberOfHarmonics;
+				break;
+			case HARMONIC_USER:
+				p->phase[i] = p->phaseVariable;
 				break;
 			case HARMONIC_NULL:
 				p->phase[i] = 0.0;
