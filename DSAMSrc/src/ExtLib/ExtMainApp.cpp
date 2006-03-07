@@ -50,6 +50,7 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
+bool	initialiseNonGUIwxWidgets = false;
 MainApp	*dSAMMainApp = NULL;
 
 /******************************************************************************/
@@ -66,6 +67,8 @@ MainApp	*dSAMMainApp = NULL;
 MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
+	static const char *funcName = "MainApp::MainApp";
+
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
@@ -75,7 +78,14 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
 	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
-	
+	if (!GetDSAMPtr_Common()->usingGUIFlag) {
+		if (!initialiseNonGUIwxWidgets && !wxInitialize()) {
+			NotifyError("%s: Failed to initialize the wxWindows library, aborting.",
+			  funcName);
+			exit(1);
+		}
+		initialiseNonGUIwxWidgets = true;
+	}
 	serverFlag = false;
 	superServerFlag = false;
 	diagsOn = false;
@@ -94,6 +104,11 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 }
 
 /****************************** Destructor ************************************/
+
+//
+// This routine does not call wxUninitialize() because there are errors with
+// trying to re-call wxInitialize() - so it needs to be only called.
+//
 
 MainApp::~MainApp(void)
 {

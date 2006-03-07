@@ -124,12 +124,6 @@ extern MainApp	*dSAMMainApp;
 	int
 	main(int argc, char **argv)
 	{
-		wxInitializer initializer;
-		if (!initializer) {
-			NotifyError("Failed to initialize the wxWindows library, "
-			  "aborting.");
-			return(1);
-		}
 		MainApp	mainApp(argc, argv, MainSimulation);
 		return(mainApp.Main());
 
