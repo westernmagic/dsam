@@ -58,6 +58,7 @@ InitPhaseModeList_Harmonic(void)
 					{ "COSINE", HARMONIC_COSINE },
 					{ "ALTERNATING", HARMONIC_ALTERNATING },
 					{ "SCHROEDER", HARMONIC_SCHROEDER },
+					{ "PLACK_AND_WHITE", HARMONIC_PLACK_AND_WHITE },
 					{ "USER", HARMONIC_USER },
 					{ "", HARMONIC_NULL },
 				};
@@ -1147,6 +1148,9 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 				p->phase[i] = p->phaseVariable * PI *
 				  harmonicNumber * (harmonicNumber + 1) /
 				  totalNumberOfHarmonics;
+				break;
+			case HARMONIC_PLACK_AND_WHITE:
+				p->phase[i] = harmonicNumber * p->phaseVariable;
 				break;
 			case HARMONIC_USER:
 				p->phase[i] = p->phaseVariable;
