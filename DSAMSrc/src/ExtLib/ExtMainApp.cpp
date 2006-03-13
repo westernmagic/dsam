@@ -654,6 +654,7 @@ MainApp::SetSimulationFile(wxFileName &fileName)
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
 	SetSimulationFile_AppInterface((char *) fileName.GetFullPath().c_str());
+	wxSetWorkingDirectory(simFileName.GetPath());
 
 }
 

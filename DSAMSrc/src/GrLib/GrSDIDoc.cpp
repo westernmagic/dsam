@@ -109,7 +109,10 @@ SDIDocument::OnNewDocument(void)
 		NotifyError("%s: Could not initialise process.", funcName);
 		return(false);
 	}
+	SET_PARS_POINTER(appInterfacePtr->audModel);
 	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
+	SetParsFilePath_AppInterface((char *) wxGetCwd().c_str());
+	SetParsFilePath_Utility_SimScript(appInterfacePtr->parsFilePath);
 	SetSimulationFileFlag_AppInterface(FALSE);
 	wxGetApp().SetAudModelLoadedFlag(true);
 	return (true);

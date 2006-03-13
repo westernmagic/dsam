@@ -56,6 +56,8 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
+	wxFileName simFile(GetPtr_AppInterface()->simulationFile);
+	wxSetWorkingDirectory(simFile.GetPath());
 	SetOnExecute_AppInterface(OnExecute_MyApp);
 	SetOnExit_AppInterface(OnExit_MyApp);
 	ResetGUIDialogs();
