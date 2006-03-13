@@ -260,7 +260,7 @@ ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 		if (DATUM_IN_SIMULATION(to)) {
 			InsertInst_Utility_Datum(head, to, from);
 		} else {
-			InsertInst_Utility_Datum(head, NULL, from);
+			AppendInst_Utility_Datum(head, *head, from);
 			AppendInst_Utility_Datum(head, from, to);
 		}
 	} else if (!DATUM_IN_SIMULATION(to))
