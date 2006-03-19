@@ -132,3 +132,18 @@ FreeSymbols_Utility_SSSymbols(SymbolPtr *list)
 
 }
 
+/****************************** PrintSymbols **********************************/
+
+/*
+ * This routine prints the contents of a symbol list.
+ */
+
+void
+PrintSymbols_Utility_SSSymbols(SymbolPtr list)
+{
+	while (list) {
+		printf("\t%s\n", list->name);
+		list = list->next;
+	}
+
+}

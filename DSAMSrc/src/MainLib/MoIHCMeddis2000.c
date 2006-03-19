@@ -60,8 +60,11 @@ Free_IHC_Meddis2000(void)
 
 	if (hairCell2Ptr == NULL)
 		return(FALSE);
+	FreeProcessVariables_IHC_Meddis2000();
 	if (hairCell2Ptr->parList)
 		FreeList_UniParMgr(&hairCell2Ptr->parList);
+	if (hairCell2Ptr->diagModeList)
+		free(hairCell2Ptr->diagModeList);
 	if (hairCell2Ptr->parSpec == GLOBAL) {
 		free(hairCell2Ptr);
 		hairCell2Ptr = NULL;
@@ -1377,8 +1380,7 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 			return(FALSE);
 		FreeProcessVariables_IHC_Meddis2000();
-		OpenDiagnostics_NSpecLists(&p->fp, p->
-		  diagModeList, p->diagMode);
+		OpenDiagnostics_NSpecLists(&p->fp, p->diagModeList, p->diagMode);
 
 		if ((p->hCChannels = (HairCellVars2Ptr) calloc(
 		  data->outSignal->numChannels, sizeof (HairCellVars2))) == NULL) {
@@ -1402,7 +1404,6 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 void
 FreeProcessVariables_IHC_Meddis2000(void)
 {
-
 	if (hairCell2Ptr->hCChannels == NULL)
 		return;
 	if (hairCell2Ptr->fp) {

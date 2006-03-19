@@ -47,6 +47,8 @@
 /*
  * This is the main routine for using the extensions library, and is called by
  * the "main" subroutine in the header file.
+ * The 'simFile2' variable is used to see if the simulation file has been
+ * changed by the options.
  */
 
 GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
@@ -63,6 +65,7 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 	ResetGUIDialogs();
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	InitMain();
+	SetParsFilePath_Common(GetPtr_AppInterface()->parsFilePath);
 
 }
 

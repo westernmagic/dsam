@@ -47,13 +47,15 @@ extern	SymbolPtr	sSSymList;
  */
 __BEGIN_DECLS
 
-void		InitKeyWords_Utility_SSSymbols(SymbolPtr *list);
+void		FreeSymbols_Utility_SSSymbols(SymbolPtr *list);
 
-SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, char *s);
+void		InitKeyWords_Utility_SSSymbols(SymbolPtr *list);
 
 SymbolPtr	InstallSymbol_Utility_SSSymbols(SymbolPtr *list, char *s, int type);
 
-void		FreeSymbols_Utility_SSSymbols(SymbolPtr *list);
+SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, char *s);
+
+void		PrintSymbols_Utility_SSSymbols(SymbolPtr list);
 
 __END_DECLS
 

@@ -1098,6 +1098,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  p->theCFs->updateFlag) {
+		p->numChannels = data->outSignal->numChannels;
 		FreeProcessVariables_BasilarM_DRNL();
 		p->linearF = Init_EarObject("NULL");
 		if (!InitSubProcessList_EarObject(data, BM_DRNL_NUM_SUB_PROCESSES)) {
@@ -1106,7 +1107,6 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			return(FALSE);
 		}
 		data->subProcessList[BM_DRNL_LINEARF] = p->linearF;
-		p->numChannels = data->outSignal->numChannels;
 		if ((p->compressionA = (double *) calloc(p->numChannels, sizeof(
 		  double))) == NULL) {
 		 	NotifyError("%s: Out of memory (compressionA).", funcName);
@@ -1225,7 +1225,7 @@ FreeProcessVariables_BasilarM_DRNL(void)
 {
 	int		i;
 
-	if (bMDRNLPtr->linearF == NULL)
+	if (bMDRNLPtr->linearF)
 		Free_EarObject(&bMDRNLPtr->linearF);
 	for (i = 0; i < bMDRNLPtr->numChannels; i++) {
 		if (bMDRNLPtr->nonLinearGT1)

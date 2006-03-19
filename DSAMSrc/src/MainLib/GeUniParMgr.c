@@ -442,6 +442,23 @@ SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr)
 
 }
 
+/************************ FormatPar *******************************************/
+
+/*
+ * This function formats the full parameter specfication for printing.
+ * The string is static and is overwritten each time it is used.
+ */
+
+char *
+FormatPar_UniParMgr(UniParPtr p, char *suffix)
+{
+	static char	string[MAXLINE];
+
+	snprintf(string, MAXLINE, "%s%s", p->abbr, suffix);
+	return(string);
+
+}
+
 /************************ PrintValue ******************************************/
 
 /*
@@ -488,45 +505,44 @@ PrintValue_UniParMgr(UniParPtr p)
 
 }
 
-/************************ PrintArray ******************************************/
+/************************ FormatArrayString ***********************************/
 
 /*
- * Print the array values in a universal parameter.
- * It returns FALSE if it fails in anry way.
+ * This routine formats the array string.
  */
 
-BOOLN
-PrintArray_UniParMgr(UniParPtr p, char *suffix)
+char *
+FormatArrayString_UniParMgr(UniParPtr p, int index, char *suffix)
 {
-	static const char	*funcName = "PrintArray_UniParMgr";
-	int		i;
+	static const char	*funcName = "FormatArrayString_UniParMgr";
+	static char	string[MAXLINE];
 
-	for (i = 0; i < *p->valuePtr.array.numElements; i++)
-		switch (p->type) {
-		case UNIPAR_INT_ARRAY:
-			DPrint("\t%s%s\t%3d:%-10d\n", p->abbr, suffix, i, (*p->valuePtr.
-			  array.pPtr.i)[i]);
-			break;
-		case UNIPAR_REAL_ARRAY:
-		case UNIPAR_REAL_DYN_ARRAY:
-			DPrint("\t%s%s\t%3d:%-10g\n", p->abbr, suffix, i, (*p->valuePtr.
-			  array.pPtr.r)[i]);
-			break;
-		case UNIPAR_STRING_ARRAY:
-			DPrint("\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
-			  QuotedString_Utility_String((*p->valuePtr.array.pPtr.s)[i]));
-			break;
-		case UNIPAR_NAME_SPEC_ARRAY:
-			DPrint("\t%s%s\t%3d:%-10s\n", p->abbr, suffix, i,
-			  QuotedString_Utility_String(p->valuePtr.array.pPtr.nameList.list[
-			    (*p->valuePtr.array.pPtr.nameList.specifier)[i]].name));
-			break;
-		default:
-			NotifyError("%s: Universal parameter not yet implemented (%d).",
-			  funcName, p->type);
-			return(FALSE);
-		}
-	return(TRUE);
+	switch (p->type) {
+	case UNIPAR_INT_ARRAY:
+		snprintf(string, MAXLINE, "\t%s\t%3d:%-10d\n", FormatPar_UniParMgr(
+		   p, suffix), index, (*p->valuePtr.array.pPtr.i)[index]);
+		break;
+	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
+		snprintf(string, MAXLINE, "\t%s\t%3d:%-10g\n", FormatPar_UniParMgr(
+		  p, suffix), index, (*p->valuePtr.array.pPtr.r)[index]);
+		break;
+	case UNIPAR_STRING_ARRAY:
+		snprintf(string, MAXLINE, "\t%s\t%3d:%-10s\n", FormatPar_UniParMgr(
+		  p, suffix), index, QuotedString_Utility_String((*p->valuePtr.
+		  array.pPtr.s)[index]));
+		break;
+	case UNIPAR_NAME_SPEC_ARRAY:
+		snprintf(string, MAXLINE, "\t%s\t%3d:%-10s\n", FormatPar_UniParMgr(
+		  p, suffix), index, QuotedString_Utility_String(p->valuePtr.
+		  array.pPtr.nameList.list[(*p->valuePtr.array.pPtr.nameList.
+		  specifier)[index]].name));
+		break;
+	default:
+		snprintf(string, MAXLINE, "%s: Universal parameter not yet "
+		  "implemented (%d).", funcName, p->type);
+	}
+	return(string);
 
 }
 
@@ -632,10 +648,12 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
 	case UNIPAR_STRING_ARRAY:
-	case UNIPAR_NAME_SPEC_ARRAY:
+	case UNIPAR_NAME_SPEC_ARRAY: {
 		DPrint("# %s:\n", p->desc);
-		PrintArray_UniParMgr(p, suffix);
-		break;
+		int		i;
+		for (i = 0; i < *p->valuePtr.array.numElements; i++)
+			DPrint("%s", FormatArrayString_UniParMgr(p, i, suffix));
+		break; }
 	default:
 		NotifyError("%s: Universal parameter not yet implemented (%d).",
 		  funcName, p->type);

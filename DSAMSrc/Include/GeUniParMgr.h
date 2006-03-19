@@ -264,6 +264,10 @@ int		Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode);
 UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
 			  UniParSearchSpecifier mode);
 
+char *	FormatArrayString_UniParMgr(UniParPtr p, int index, char *suffix);
+
+char *	FormatPar_UniParMgr(UniParPtr p, char *suffix);
+
 void	FreeList_UniParMgr(UniParListPtr *list);
 
 char *	GetParString_UniParMgr(UniParPtr p);
@@ -273,8 +277,6 @@ UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
 
 BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, char *parValue,
 		  char **parValuePtr, int *index);
-
-BOOLN	PrintArray_UniParMgr(UniParPtr p, char *suffix);
 
 BOOLN	PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix);
 

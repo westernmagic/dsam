@@ -203,12 +203,10 @@ RunThreadedProc::InitThreadProcesses(EarObjectPtr data)
 	printf("%s: Debug: Thread processes initialised for '%s'\n", funcName,
 	  data->processName);
 #	endif
-	data->clientData = new ProcessSignalling;
 	if (!InitThreadProcs_EarObject(data)) {
 		wxLogFatalError("%s: Could not initialise thread EarObjects.",
 		  funcName);
 		return(false);
-		delete (ProcessSignalling *) data->clientData;
 	}
 	return(true);
 

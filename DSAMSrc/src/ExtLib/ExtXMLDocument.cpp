@@ -641,7 +641,9 @@ DSAMXMLDocument::GetConnectionInfo(TiXmlElement *objectElement, DynaListPtr *p,
 			  funcName);
 			return(false);
 		}
-		Append_Utility_DynaList(p, InitString_Utility_String((char *) label));
+		
+		Append_Utility_DynaList(p, InstallSymbol_Utility_SSSymbols(
+		  &simScriptPtr->symList, (char *) label, STRING)->name);
 	}
 	return(true);
 

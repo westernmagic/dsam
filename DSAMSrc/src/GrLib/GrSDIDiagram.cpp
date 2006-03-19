@@ -77,40 +77,6 @@ SDIDiagram::SDIDiagram(void)
 }
 
 /******************************************************************************/
-/****************************** AdjustShapeToLabel ****************************/
-/******************************************************************************/
-
-void
-SDIDiagram::AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label)
-{
-	bool	sizeChanged = false;
-	double	boxWidth, boxHeight;
-	wxCoord	labelWidth, labelHeight;
-	wxString	longestStr = "", token;
-
-	label.MakeLower();
-	wxStringTokenizer	tkz(label, "\n");
-	while (tkz.HasMoreTokens()) {
-		token = tkz.GetNextToken();
-		if (token.Length() > longestStr.Length())
-			longestStr = token;
-	}
-	dc.GetTextExtent(longestStr, &labelWidth, &labelHeight);
-	shape->GetBoundingBoxMin(&boxWidth, &boxHeight);
-	if ((labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN) > boxWidth) {
-		boxWidth = labelWidth + DIAGRAM_LABEL_WIDTH_MARGIN;
-		sizeChanged = TRUE;
-	}
-	if ((labelHeight + DIAGRAM_LABEL_HEIGHT_MARGIN) > boxHeight) {
-		boxHeight = labelHeight + DIAGRAM_LABEL_HEIGHT_MARGIN;
-		sizeChanged = TRUE;
-	}
-	if (sizeChanged)
-		shape->SetSize(boxWidth, boxHeight);
-
-}
-
-/******************************************************************************/
 /****************************** AddShape **************************************/
 /******************************************************************************/
 
@@ -126,9 +92,12 @@ SDIDiagram::AddShape(wxShape *shape)
 	if (myHandler->pc) {
 		myHandler->ResetLabel();
 		wxClientDC dc(shape->GetCanvas());
+		wxFont *labelFont = shape->GetFont();
+		printf("SDIDiagram::AddShape: Debug: Point size = %d\n", labelFont->
+		  GetPointSize());
 		shape->FormatText(dc, (char*) (const char *) myHandler->label);
 		shape->GetCanvas()->PrepareDC(dc);
-		AdjustShapeToLabel(dc, shape, myHandler->label);
+//		AdjustShapeToLabel(dc, shape, myHandler->label);
 	}
 
 }
@@ -484,7 +453,7 @@ SDIDiagram::RedrawShapeLabel(wxShape *shape)
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-	AdjustShapeToLabel(dc, shape, myHandler->label);
+//	AdjustShapeToLabel(dc, shape, myHandler->label);
 	shape->FormatText(dc, (const char *) myHandler->label);
 	shape->Draw(dc);
 

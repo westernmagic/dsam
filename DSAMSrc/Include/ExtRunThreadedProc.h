@@ -29,22 +29,6 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** ResetSignalling **********************************/
-
-class ProcessSignalling {
-
-  public:
-	wxMutex		*myMutex;
-	wxCondition	*myCondition;
-
-	ProcessSignalling(void)	{
-		myMutex = new wxMutex;
-		myCondition = new wxCondition(*myMutex);
-	};
-	~ProcessSignalling(void) { delete myCondition; delete myMutex; }
-	
-};
-
 /*************************** RunThreadedProc **********************************/
 
 class RunThreadedProc {

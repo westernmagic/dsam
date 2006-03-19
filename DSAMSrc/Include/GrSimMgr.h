@@ -154,7 +154,8 @@ class MyApp: public wxApp {
 	void	OpenDiagWindow(void);
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
-	void	SaveConfiguration(UniParListPtr	parList);
+	void	SaveConfiguration(UniParListPtr	parList, const wxString&
+			  processSuffix = "");
 	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
 	bool	InitServer(void);
 	void	SetConfiguration(UniParListPtr	parList);

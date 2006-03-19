@@ -599,11 +599,11 @@ MyApp::SetConfiguration(UniParListPtr parList)
  */
 
 void
-MyApp::SaveConfiguration(UniParListPtr parList)
+MyApp::SaveConfiguration(UniParListPtr parList, const wxString& processSuffix)
 {
 	int		i, j, oldIndex;
 	UniParPtr	p;
-	wxString	name;
+	wxString	name, value;
 
 	if (!parList)
 		return;
@@ -613,26 +613,29 @@ MyApp::SaveConfiguration(UniParListPtr parList)
 
 	for (i = 0; i < parList->numPars; i++) {
 		p = &parList->pars[i];
+		name = FormatPar_UniParMgr(p, (char *) processSuffix.c_str());
 		switch (p->type) {
 		case UNIPAR_PARLIST:
 			if (p->valuePtr.parList.process)
 				SET_PARS_POINTER(*p->valuePtr.parList.process);
-			SaveConfiguration(*p->valuePtr.parList.list);
+			SaveConfiguration(*p->valuePtr.parList.list, "." + wxString(p->
+			  abbr));
 			break;
 		case UNIPAR_INT_ARRAY:
 		case UNIPAR_REAL_ARRAY:
 		case UNIPAR_STRING_ARRAY:
-		case UNIPAR_NAME_SPEC_ARRAY:
+		case UNIPAR_NAME_SPEC_ARRAY: {
+			oldIndex = p->valuePtr.array.index;
 			for (j = 0; j < *p->valuePtr.array.numElements; j++) {
 				oldIndex = p->valuePtr.array.index;
 				p->valuePtr.array.index = j;
-				name.Printf("%s.%d", p->abbr, j);
-				pConfig->Write(name, GetParString_UniParMgr(p));
-				p->valuePtr.array.index = oldIndex;
+				value.Printf("%d:%s", j, GetParString_UniParMgr(p));
+				pConfig->Write(name, value);
 			}
-			break;
+			p->valuePtr.array.index = oldIndex;
+			break; }
 		default:
-			pConfig->Write(p->abbr, GetParString_UniParMgr(p));
+			;
 		}
 	}
 

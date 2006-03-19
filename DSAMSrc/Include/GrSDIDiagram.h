@@ -81,7 +81,6 @@ class SDIDiagram: public wxDiagram
 	wxShape *	AddLineShape(wxShape *fromShape, wxShape *toShape,
 				  int lineType);
 	void	AddShape(wxShape *shape);
-	void	AdjustShapeToLabel(wxClientDC& dc, wxShape *shape, wxString& label);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
 				  wxBrush *brush, bool assignNewIds = true);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,

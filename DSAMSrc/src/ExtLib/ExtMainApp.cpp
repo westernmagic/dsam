@@ -80,8 +80,8 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
 	if (!GetDSAMPtr_Common()->usingGUIFlag) {
 		if (!initialiseNonGUIwxWidgets && !wxInitialize()) {
-			NotifyError("%s: Failed to initialize the wxWindows library, aborting.",
-			  funcName);
+			NotifyError("%s: Failed to initialize the wxWindows library, "
+			  "aborting.", funcName);
 			exit(1);
 		}
 		initialiseNonGUIwxWidgets = true;
@@ -124,6 +124,8 @@ MainApp::~MainApp(void)
 	Free_AppInterface();
 	FreeAll_EarObject();
 	FreeNull_ModuleMgr();
+	if (initialiseNonGUIwxWidgets)
+		wxUninitialize();
 	dSAMMainApp = NULL;
 
 }
@@ -654,7 +656,6 @@ MainApp::SetSimulationFile(wxFileName &fileName)
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
 	SetSimulationFile_AppInterface((char *) fileName.GetFullPath().c_str());
-	wxSetWorkingDirectory(simFileName.GetPath());
 
 }
 

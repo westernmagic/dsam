@@ -242,8 +242,8 @@ SDICommand::RedrawShapeLabel(wxShape *shape)
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-	((SDIDiagram *) doc->GetDiagram())->AdjustShapeToLabel(dc, shape,
-	  myHandler->label);
+//	((SDIDiagram *) doc->GetDiagram())->AdjustShapeToLabel(dc, shape,
+//	  myHandler->label);
 	shape->FormatText(dc, (const char *) myHandler->label);
 	shape->Draw(dc);
 
