@@ -92,9 +92,6 @@ SDIDiagram::AddShape(wxShape *shape)
 	if (myHandler->pc) {
 		myHandler->ResetLabel();
 		wxClientDC dc(shape->GetCanvas());
-		wxFont *labelFont = shape->GetFont();
-		printf("SDIDiagram::AddShape: Debug: Point size = %d\n", labelFont->
-		  GetPointSize());
 		shape->FormatText(dc, (char*) (const char *) myHandler->label);
 		shape->GetCanvas()->PrepareDC(dc);
 //		AdjustShapeToLabel(dc, shape, myHandler->label);
@@ -356,6 +353,8 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush,
 	theShape->SetCentreResize(false);
 	theShape->SetPen(wxBLACK_PEN);
 	theShape->SetBrush(brush);
+	theShape->GetFont()->SetPointSize((int) (SHAPE_DEFAULT_FONT_POINTSIZE *
+	  xScale));
 	return(theShape);
 
 }
@@ -367,6 +366,9 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush,
 /*
  * This function checks that the loaded diagram corresponds with the simulation.
  * It returns 'false' if it finds any discrepancies.
+ * Nothing should be selected at this point, so there will be no need to 
+ * run the 'UnselectAllShapes' routine, so that 'control' shapes are not in
+ * the shape list.
  */
 
 bool
@@ -377,7 +379,7 @@ SDIDiagram::VerifyDiagram(void)
 	DatumPtr	pc, toPc;
 	EarObjectPtr	fromProcess, toProcess;
 	EarObjRefPtr p;
-	wxNode *node = m_shapeList->GetFirst();
+	wxNode *node = GetShapeList()->GetFirst();
 
 	// Check processes exist for each shape line, and that the connection
 	// exists in the simulation
@@ -460,11 +462,43 @@ SDIDiagram::RedrawShapeLabel(wxShape *shape)
 }
 
 /******************************************************************************/
+/****************************** UnselectAllShapes *****************************/
+/******************************************************************************/
+
+/*
+ * This routine unselects all shapes.
+ * It returns 'true' if the canvas needs to be redrawn.
+ */
+
+bool
+SDIDiagram::UnselectAllShapes(void)
+{
+	bool	redraw = false;
+	wxShape	*shape;
+	wxNode *node = GetShapeList()->GetFirst();
+	wxClientDC	dc(GetCanvas());
+	GetCanvas()->PrepareDC(dc);
+
+	while (node) {
+		shape = (wxShape *) node->GetData();
+		if (shape->Selected()) {
+			shape->Select(false, &dc);
+			redraw = true;
+		}
+		node = node->GetNext();
+	}
+	return(redraw);
+
+}
+
+/******************************************************************************/
 /****************************** Rescale ***************************************/
 /******************************************************************************/
 
 /*
  * This routine redraws the diagram using a new scale;
+ * If there is a selection, then there are additional 'control' shapes added
+ * to the diagram shape list - first unselect everything to simplify code.
  */
 
 void
@@ -472,8 +506,9 @@ SDIDiagram::Rescale(double theXScale, double theYScale)
 {
 	double	rescaleX, rescaleY;
 	wxShape *shape;
-	wxNode *node = m_shapeList->GetFirst();
+	wxNode *node = GetShapeList()->GetFirst();
 
+	UnselectAllShapes();
 	rescaleX = theXScale / xScale;
 	rescaleY = theYScale / yScale;
 	xScale = theXScale;
@@ -486,11 +521,10 @@ SDIDiagram::Rescale(double theXScale, double theYScale)
 		shape->SetY(shape->GetY() * rescaleY);
 		shape->GetFont()->SetPointSize((int) (SHAPE_DEFAULT_FONT_POINTSIZE *
 		  xScale));
-		RedrawShapeLabel(shape);
+		if (!shape->IsKindOf(CLASSINFO(wxLineShape)))
+			RedrawShapeLabel(shape);
 		wxClientDC dc(shape->GetCanvas());
 		shape->GetCanvas()->PrepareDC(dc);
-		// It won't get drawn properly unless you move both
-		// connected images
 		shape->Move(dc, shape->GetX(), shape->GetY());
 		node = node->GetNext();
 	}

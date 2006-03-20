@@ -99,6 +99,7 @@ class SDIDiagram: public wxDiagram
 	void	SetOk(bool status)		{ ok = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
+	bool	UnselectAllShapes(void);
 
 };
 

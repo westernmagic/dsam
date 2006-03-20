@@ -178,8 +178,8 @@ SDIEvtHandler::InitInstruction(void)
 		  funcName);
 		return(false);
 	}
-	if (simProcess && !Insert_Utility_DynaBList(((SimScriptPtr) simProcess->module->parsPtr)->
-	  labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
+	if (simProcess && !Insert_Utility_DynaBList(((SimScriptPtr) simProcess->
+	  module->parsPtr)->labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
 		NotifyError("%s: Could not insert label '%s' into the label list.",
 		  funcName, pc->label);
 		return(false);
@@ -288,20 +288,9 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 		alreadySelected = true;
 	else {
 		// Ensure no other shape is selected, to simplify Undo/Redo code
-		bool redraw = FALSE;
-		wxNode *node = GetShape()->GetCanvas()->GetDiagram()->GetShapeList(
-		  )->GetFirst();
-		while (node) {
-			wxShape *eachShape = (wxShape *)node->GetData();
-			if (eachShape->GetParent() == NULL) {
-				if (eachShape->Selected()) {
-					eachShape->Select(FALSE, &dc);
-					redraw = TRUE;
-				}
-			}
-			node = node->GetNext();
-		}
-		GetShape()->Select(TRUE, &dc);
+		bool redraw = ((SDIDiagram *) GetShape()->GetCanvas()->GetDiagram())->
+		  UnselectAllShapes();
+		GetShape()->Select(true, &dc);
 		if (redraw)
 			GetShape()->GetCanvas()->Redraw(dc);
 	}
@@ -387,7 +376,7 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 	printf("SDIEvtHandler::OnLeftClick: Entered\n");
 	if (keys == 0) {
 		if (SetSelectedShape(dc)) {
-			GetShape()->Select(FALSE, &dc);
+			GetShape()->Select(false, &dc);
 			// Redraw because bits of objects will be are missing
 			GetShape()->GetCanvas()->Redraw(dc);
 		}

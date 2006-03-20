@@ -27,7 +27,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define SHAPE_DEFAULT_FONT_POINTSIZE	10
+#define SHAPE_DEFAULT_FONT_POINTSIZE	5
 #define SDI_STANDARD_SHAPE_WIDTH		100
 
 // Misc. elements.
