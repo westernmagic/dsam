@@ -1128,43 +1128,43 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 	totalNumberOfHarmonics = harmonicPtr->highestHarmonic -
 	  harmonicPtr->lowestHarmonic + 1;
 	piOver2 = PI / 2.0;
-	for (i = 0; i < totalNumberOfHarmonics; i++) {
-		harmonicNumber = p->lowestHarmonic + i;
+	for (j = 0; j < totalNumberOfHarmonics; j++) {
+		harmonicNumber = p->lowestHarmonic + j;
 		switch (p->phaseMode) {
 			case HARMONIC_RANDOM:
 				p->ranSeed = (long) p->phaseVariable;
-				p->phase[i] = PIx2 * Ran01_Random(data->randPars);
+				p->phase[j] = PIx2 * Ran01_Random(data->randPars);
 				break;
 			case HARMONIC_SINE:
-				p->phase[i] = 0.0;
+				p->phase[j] = 0.0;
 				break;
 			case HARMONIC_COSINE:
-				p->phase[i] = PI / 2.0;
+				p->phase[j] = PI / 2.0;
 				break;
 			case HARMONIC_ALTERNATING:
-				p->phase[i] = ((i % 2) == 0)? 0.0: piOver2;
+				p->phase[j] = ((j % 2) == 0)? 0.0: piOver2;
 				break;
 			case HARMONIC_SCHROEDER:
-				p->phase[i] = p->phaseVariable * PI *
+				p->phase[j] = p->phaseVariable * PI *
 				  harmonicNumber * (harmonicNumber + 1) /
 				  totalNumberOfHarmonics;
 				break;
 			case HARMONIC_PLACK_AND_WHITE:
-				p->phase[i] = harmonicNumber * p->phaseVariable;
+				p->phase[j] = harmonicNumber * p->phaseVariable;
 				break;
 			case HARMONIC_USER:
-				p->phase[i] = p->phaseVariable;
+				p->phase[j] = p->phaseVariable;
 				break;
 			case HARMONIC_NULL:
-				p->phase[i] = 0.0;
+				p->phase[j] = 0.0;
 				break;
 		} /* switch */
-		p->harmonicFrequency[i] = p->frequency * harmonicNumber;
+		p->harmonicFrequency[j] = p->frequency * harmonicNumber;
 		if (harmonicNumber == p->mistunedHarmonic)
-			p->harmonicFrequency[i] += p->harmonicFrequency[i] *
+			p->harmonicFrequency[j] += p->harmonicFrequency[j] *
 			p->mistuningFactor / 100.0;
-		p->modIndex[i] = (p->modulationDepth < DBL_EPSILON)? 0.0:
-		  (p->modulationDepth / 100.0) * (p->harmonicFrequency[i] / p->
+		p->modIndex[j] = (p->modulationDepth < DBL_EPSILON)? 0.0:
+		  (p->modulationDepth / 100.0) * (p->harmonicFrequency[j] / p->
 		  modulationFrequency);
 	}
 	amplitude = RMS_AMP(harmonicPtr->intensity) * SQRT_2;
