@@ -1098,9 +1098,9 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  p->theCFs->updateFlag) {
-		p->numChannels = data->outSignal->numChannels;
 		FreeProcessVariables_BasilarM_DRNL();
 		p->linearF = Init_EarObject("NULL");
+		p->numChannels = data->outSignal->numChannels;
 		if (!InitSubProcessList_EarObject(data, BM_DRNL_NUM_SUB_PROCESSES)) {
 			NotifyError("%s: Could not initialise %d sub-process list for "
 			  "process.", funcName, BM_DRNL_NUM_SUB_PROCESSES);
