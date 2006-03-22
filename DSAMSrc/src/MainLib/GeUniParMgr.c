@@ -649,8 +649,8 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_REAL_DYN_ARRAY:
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY: {
-		DPrint("# %s:\n", p->desc);
 		int		i;
+		DPrint("# %s:\n", p->desc);
 		for (i = 0; i < *p->valuePtr.array.numElements; i++)
 			DPrint("%s", FormatArrayString_UniParMgr(p, i, suffix));
 		break; }
