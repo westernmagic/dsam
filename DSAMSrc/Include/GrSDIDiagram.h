@@ -70,7 +70,7 @@
  
 class SDIDiagram: public wxDiagram
 {
-	bool	ok;
+	bool	ok, loadIDsFromFile;
 	double	x, y;
 	double	xScale, yScale;
 	EarObjectPtr	simProcess;
@@ -82,7 +82,7 @@ class SDIDiagram: public wxDiagram
 				  int lineType);
 	void	AddShape(wxShape *shape);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
-				  wxBrush *brush, bool assignNewIds = true);
+				  wxBrush *brush);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 				  wxBrush *brush);
 	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
@@ -97,6 +97,7 @@ class SDIDiagram: public wxDiagram
 	void	Rescale(double theXScale, double theYScale);
 	bool	SaveFile(const wxString& filename);
 	void	SetOk(bool status)		{ ok = status; }
+	void	SetLoadIDsFromFile(bool status)		{ loadIDsFromFile = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
 	bool	UnselectAllShapes(void);

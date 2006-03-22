@@ -58,6 +58,7 @@ SDIXMLDocument::SDIXMLDocument(SDIDiagram *theDiagram)
 {
 	diagramLoadInitiated = false;
 	diagram = theDiagram;
+	diagram->SetLoadIDsFromFile(true);
 	if (diagram->GetSimProcess())
 		SetSimScriptPtr((SimScriptPtr) diagram->GetSimProcess()->module->
 		  parsPtr);

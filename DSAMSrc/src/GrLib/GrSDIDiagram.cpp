@@ -68,6 +68,7 @@
 SDIDiagram::SDIDiagram(void)
 {
 	ok = false;
+	loadIDsFromFile = false;
 	x = DIAGRAM_DEFAULT_INITIAL_X;
 	y = DIAGRAM_DEFAULT_INITIAL_Y;
 	xScale = 1.0;
@@ -113,7 +114,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 {
 	bool	lineShape = (!pc);
 	wxShape *shape = CreateBasicShape(shapeInfo, (lineShape)? -1:
-	  pc->classSpecifier, brush, false);
+	  pc->classSpecifier, brush);
 
 	if (!lineShape) {
 		SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
@@ -342,11 +343,10 @@ SDIDiagram::DrawSimulation(void)
 /******************************************************************************/
 
 wxShape *
-SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush,
-  bool assignNewIds)
+SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 {
 	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
-	if (assignNewIds)
+	if (!loadIDsFromFile)
 		theShape->AssignNewIds();
 	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape, wxString(
 	  ""), type));
