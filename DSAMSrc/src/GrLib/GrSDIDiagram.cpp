@@ -71,6 +71,7 @@ SDIDiagram::SDIDiagram(void)
 	loadIDsFromFile = false;
 	x = DIAGRAM_DEFAULT_INITIAL_X;
 	y = DIAGRAM_DEFAULT_INITIAL_Y;
+	direction = 1;
 	xScale = 1.0;
 	yScale = 1.0;
 	simProcess = NULL;
@@ -95,7 +96,6 @@ SDIDiagram::AddShape(wxShape *shape)
 		wxClientDC dc(shape->GetCanvas());
 		shape->FormatText(dc, (char*) (const char *) myHandler->label);
 		shape->GetCanvas()->PrepareDC(dc);
-//		AdjustShapeToLabel(dc, shape, myHandler->label);
 	}
 
 }
@@ -142,7 +142,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 void
 SDIDiagram::DrawSimShapes()
 {
-	double	boxWidth, boxHeight;
+	double	boxWidth, boxHeight, totalWidth;
 	DatumPtr	pc;
 	ModulePtr	module;
 	wxShape		*shape;
@@ -159,10 +159,12 @@ SDIDiagram::DrawSimShapes()
 			  classSpecifier), (module->onFlag)? DIAGRAM_ENABLED_BRUSH:
 			    DIAGRAM_DISENABLED_BRUSH);
 				shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
-				x += boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
-				if ((x + boxWidth) > shape->GetCanvas()->GetClientSize().
-				  GetWidth()) {
-					x = DIAGRAM_DEFAULT_INITIAL_X;
+				totalWidth = boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
+				x += direction * totalWidth;
+				if (((direction > 0) && (x + totalWidth) > shape->GetCanvas()->
+				  GetClientSize().GetWidth()) || ((direction < 0) && (x -
+				  totalWidth) < 0)) {
+					direction = - direction;
 					y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
 					DIAGRAM_DEFAULT_Y_SEPARATION;
 				}
@@ -455,7 +457,6 @@ SDIDiagram::RedrawShapeLabel(wxShape *shape)
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-//	AdjustShapeToLabel(dc, shape, myHandler->label);
 	shape->FormatText(dc, (const char *) myHandler->label);
 	shape->Draw(dc);
 

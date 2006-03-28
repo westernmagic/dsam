@@ -71,6 +71,7 @@
 class SDIDiagram: public wxDiagram
 {
 	bool	ok, loadIDsFromFile;
+	int		direction;
 	double	x, y;
 	double	xScale, yScale;
 	EarObjectPtr	simProcess;
