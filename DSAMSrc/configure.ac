@@ -506,7 +506,7 @@ if test x$enable_portaudio = xyes; then
 	CFLAGS_save=$CFLAGS
 	CFLAGS=$PORTAUDIO_INCLUDE
 	LDFLAGS_save=$LDFLAGS
-	LDFLAGS="$PORTAUDIO_LDFLAGS -lportaudio"
+	LDFLAGS="$PORTAUDIO_LDFLAGS -lportaudio -lpthread"
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_PROGRAM(

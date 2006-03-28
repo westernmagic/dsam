@@ -21,10 +21,12 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	SDIFRAME_ID_TOOLBAR		500
-#define	SDIFRAME_MAX_ZOOM		200
-#define	SDIFRAME_MIN_ZOOM		10
-#define	SDIFRAME_INC_ZOOM		10
+#define	SDIFRAME_ID_TOOLBAR				500
+#define	SDIFRAME_MAX_ZOOM				200
+#define	SDIFRAME_MIN_ZOOM				10
+#define	SDIFRAME_INC_ZOOM				10
+#define SDIFRAME_STATUS_BAR_FIELDS		2
+#define SDIFRAME_SIM_STATUS_FIELD		1
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/

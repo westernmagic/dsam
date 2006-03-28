@@ -139,6 +139,8 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	  wxTB_VERTICAL);
 	Centre(wxBOTH);
 
+	CreateStatusBar(SDIFRAME_STATUS_BAR_FIELDS);
+
 }
 
 /******************************************************************************/

@@ -79,6 +79,7 @@ void *
 SimThread::Entry()
 {
 	SetInterruptRequestStatus_Common(FALSE);
+	dSAMMainApp->SetRunIndicators(true);
 	bool ok = dSAMMainApp->RunSimulation();
 	GetPtr_AppInterface()->simulationFinishedFlag = TRUE;
 
@@ -99,7 +100,7 @@ SimThread::OnExit()
 
 	dSAMMainApp->simThread = NULL;
 	SetTestDestroy_ModuleMgr(NULL);
-	dSAMMainApp->SetRunIndicators(FALSE);
+	dSAMMainApp->SetRunIndicators(false);
 	SwitchGUILocking_Common(FALSE);
 	SetInterruptRequestStatus_Common(FALSE);
 
