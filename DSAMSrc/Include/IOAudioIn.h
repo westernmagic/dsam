@@ -26,9 +26,33 @@
 #define	IO_AUDIOIN_SAMPLE_FORMAT	paFloat32
 #define IO_AUDIOIN_SAMPLE_SILENCE	0.0f
 
+#ifdef paUseHostApiSpecificDeviceSpecification
+#	define IO_AUDIOIN_PORTAUDIO_V_19		1
+#else
+#	define paComplete						1
+#	define paContinue						0
+#	define paFramesPerBufferUnspecified		(0)
+#endif
+
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
+
+#ifndef IO_AUDIOIN_PORTAUDIO_V_19
+
+typedef double PaTime;
+typedef int PaDeviceIndex;
+typedef unsigned long PaSampleFormat;
+typedef struct PaStreamParameters {
+
+	PaDeviceIndex device;
+	int		channelCount;
+    PaSampleFormat	sampleFormat;
+	PaTime	suggestedLatency;
+	void	*hostApiSpecificStreamInfo;
+
+} PaStreamParameters;
+#endif 
 
 typedef	float AudioInSample;
 
@@ -111,10 +135,16 @@ BOOLN	PrintPars_IO_AudioIn(void);
 
 BOOLN	ReadSignal_IO_AudioIn(EarObjectPtr data);
 
+#ifdef	IO_AUDIOIN_PORTAUDIO_V_19
 static int	RecordCallback_IO_AudioIn(const void *inputBuffer,
 			  void *outputBuffer, unsigned long framesPerBuffer,
 			  const PaStreamCallbackTimeInfo* timeInfo,
 			  PaStreamCallbackFlags statusFlags, void *userData);
+#else
+static int	RecordCallback_IO_AudioIn(const void *inputBuffer,
+			  void *outputBuffer, unsigned long framesPerBuffer,
+			  PaTimestamp outTime, void *userData);
+#endif /* IO_AUDIOIN_PORTAUDIO_V_19 */
 
 void	ResetBuffer_IO_AudioIn(void);
 

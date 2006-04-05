@@ -595,11 +595,16 @@ ResetBuffer_IO_AudioIn(void)
  */
 
 static int
+#if	IO_AUDIOIN_PORTAUDIO_V_19
 RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
   unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo,
   PaStreamCallbackFlags statusFlags, void *userData)
+#else
+RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
+  unsigned long framesPerBuffer, PaTimestamp outTime, void *userData)
+#endif /* IO_AUDIOIN_PORTAUDIO_V_19 */
 {
-	static const char *funcName = "RecordCallback_IO_AudioIn";
+	/*static const char *funcName = "RecordCallback_IO_AudioIn";*/
 	long	i, framesToCalc;
 
 	AudioInPtr p = (AudioInPtr) userData;
@@ -682,16 +687,31 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 			return(FALSE);
 		}
 		p->portAudioInitialised = TRUE;
+#		ifdef IO_AUDIOIN_PORTAUDIO_V_19
 		inputParameters.device = (p->deviceID < 0)? Pa_GetDefaultInputDevice():
 		  p->deviceID;
-		inputParameters.channelCount = p->numChannels;
-		inputParameters.sampleFormat = IO_AUDIOIN_SAMPLE_FORMAT;
 		inputParameters.suggestedLatency = Pa_GetDeviceInfo(
 		  inputParameters.device )->defaultLowInputLatency;
+#		else
+		inputParameters.device = (p->deviceID < 0)? Pa_GetDefaultInputDeviceID(
+		  ): p->deviceID;
+		inputParameters.suggestedLatency = 0.0;
+#		endif 
+		inputParameters.channelCount = p->numChannels;
+		inputParameters.sampleFormat = IO_AUDIOIN_SAMPLE_FORMAT;
 		inputParameters.hostApiSpecificStreamInfo = NULL;
-		if ((p->pAError = Pa_OpenStream(&p->stream, &inputParameters, NULL,
+#		ifdef IO_AUDIOIN_PORTAUDIO_V_19
+		(p->pAError = Pa_OpenStream(&p->stream, &inputParameters, NULL,
 		  p->sampleRate, paFramesPerBufferUnspecified, paClipOff,
-		  RecordCallback_IO_AudioIn, p)) != paNoError) {
+		  RecordCallback_IO_AudioIn, p));
+#		else
+		(p->pAError = Pa_OpenStream(&p->stream, inputParameters.device,
+		  inputParameters.channelCount, inputParameters.sampleFormat, NULL,
+		  paNoDevice, 0, inputParameters.sampleFormat, NULL, p->sampleRate,
+		  paFramesPerBufferUnspecified, 0, paClipOff, RecordCallback_IO_AudioIn,
+		  p));
+#		endif
+		if ( p->pAError != paNoError) {
 			NotifyError_IO_AudioIn("%s: Could not open stream", funcName);
 			return(FALSE);
 		}
@@ -783,7 +803,11 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 			return(TRUE);
 	}
 	do {
+#		ifdef IO_AUDIOIN_PORTAUDIO_V_19
 		p->pAError = Pa_IsStreamActive(p->stream);
+#		else
+		p->pAError = Pa_StreamActive(p->stream);
+#		endif
 		if (p->sleep > 0)
 			Pa_Sleep((int) p->sleep);
 	} while (!p->segmentReadyFlag && (p->pAError == 1));
