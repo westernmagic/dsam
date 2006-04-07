@@ -96,7 +96,7 @@ typedef struct {
 	char	segmentMode[SMALL_STRING];
 	char	diagMode[MAX_FILE_PATH];
 	WChar	installDir[MAX_FILE_PATH];
-	char	parsFilePath[MAX_FILE_PATH];
+	char	workingDirectory[MAX_FILE_PATH];
 	char	**argv;
 	int		argc;
 	int		initialCommand;
@@ -261,7 +261,7 @@ BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
 BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
-BOOLN	SetParsFilePath_AppInterface(char * parsFilePath);
+BOOLN	SetWorkingDirectory_AppInterface(char * workingDirectory);
 
 BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue,
 		  BOOLN readSPF);

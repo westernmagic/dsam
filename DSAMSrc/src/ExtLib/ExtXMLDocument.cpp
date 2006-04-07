@@ -833,7 +833,7 @@ DSAMXMLDocument::GetSimulationInfo(TiXmlNode *simNode)
 	SetProcessSimPtr_Utility_SimScript(mySimProcess);
 	simScriptPtr = (SimScriptPtr) mySimProcess->module->parsPtr;
 	simScriptPtr->simFileType = UTILITY_SIMSCRIPT_XML_FILE;
-	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->parsFilePath);
+	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->workingDirectory);
 	if ((parListElement = simElement->FirstChildElement(
 	  DSAM_XML_PAR_LIST_ELEMENT)) != NULL)
 		GetParListInfo(parListElement, GetUniParListPtr_ModuleMgr(

@@ -58,14 +58,13 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
-	wxFileName simFile(GetPtr_AppInterface()->simulationFile);
-	wxSetWorkingDirectory(simFile.GetPath());
 	SetOnExecute_AppInterface(OnExecute_MyApp);
 	SetOnExit_AppInterface(OnExit_MyApp);
+	GetPtr_AppInterface()->parList->pars[APP_INT_SIMULATIONFILE].enabled =
+	  FALSE;
 	ResetGUIDialogs();
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	InitMain();
-	SetParsFilePath_Common(GetPtr_AppInterface()->parsFilePath);
 
 }
 
@@ -99,6 +98,8 @@ void
 GrMainApp::SetRunIndicators(bool on)
 {
 	wxGetApp().programMenu->Enable(SDIFRAME_STOP_SIMULATION, on);
+	wxGetApp().GetFrame()->SetStatusText((on)? "Simulation Running...":
+	  "Simulation finished.", SDIFRAME_SIM_STATUS_FIELD);
 
 }
 

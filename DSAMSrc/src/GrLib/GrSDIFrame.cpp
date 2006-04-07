@@ -496,7 +496,7 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 	}
 	message.sprintf("%s"
 	  "DSAM version: %s (dynamic), compiled with %s\n"
-	  "Author, Dr. Lowel P. O'Mard (with God's Help)\n"
+	  "Author, Dr. Lowel P. O'Mard (with God's support)\n"
 	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n",
 	  authors.GetData(), GetDSAMPtr_Common()->version, dsamVersion.GetData());
 	wxMessageBox(message, title, wxOK | wxICON_INFORMATION, this);

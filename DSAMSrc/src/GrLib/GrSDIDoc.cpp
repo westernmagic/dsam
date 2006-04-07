@@ -79,6 +79,20 @@ SDIDocument::~SDIDocument(void)
 }
 
 /******************************************************************************/
+/****************************** SetSimWorkingDirectory ************************/
+/******************************************************************************/
+
+void
+SDIDocument::SetSimWorkingDirectory(const wxString &directory)
+{
+	SET_PARS_POINTER(GetPtr_AppInterface()->audModel);
+	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
+	SetWorkingDirectory_AppInterface((char *) directory.c_str());
+	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->workingDirectory);
+
+}
+
+/******************************************************************************/
 /****************************** OnCloseDocument *******************************/
 /******************************************************************************/
 
@@ -109,10 +123,7 @@ SDIDocument::OnNewDocument(void)
 		NotifyError("%s: Could not initialise process.", funcName);
 		return(false);
 	}
-	SET_PARS_POINTER(appInterfacePtr->audModel);
-	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
-	SetParsFilePath_AppInterface((char *) wxGetCwd().c_str());
-	SetParsFilePath_Utility_SimScript(appInterfacePtr->parsFilePath);
+	SetSimWorkingDirectory(wxGetCwd());
 	SetSimulationFileFlag_AppInterface(FALSE);
 	wxGetApp().SetAudModelLoadedFlag(true);
 	return (true);
@@ -129,6 +140,8 @@ SDIDocument::SaveObject(SDI_DOC_OSTREAM& stream)
 	wxFileName	tempFileName, fileName = GetFilename();
 
 	wxDocument::SaveObject(stream);
+	if (wxGetCwd() != fileName.GetPath())
+		SetSimWorkingDirectory(fileName.GetPath());
 	if (fileName.GetExt().IsSameAs(SDI_DOCUMENT_XML_FILE_EXT, FALSE))
 		return(SaveXMLObject(stream));
 
@@ -202,6 +215,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 //		wxRemoveFile(tempFileName.GetFullName());
 //		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
 //	}
+	SetParsFilePath_Common(GetPtr_AppInterface()->workingDirectory);
 	wxGetApp().SetAudModelLoadedFlag(true);
 	wxString lastDirectory = (fileName.GetPath().StartsWith(wxGetCwd()))?
 	  fileName.GetPath(): wxGetCwd() + fileName.GetPathSeparator() + fileName.

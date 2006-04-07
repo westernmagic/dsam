@@ -86,6 +86,7 @@ class SDIDocument: public wxDocument
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
 	SDI_DOC_OSTREAM&	SaveXMLObject(SDI_DOC_OSTREAM& stream);
+	void	SetSimWorkingDirectory(const wxString &directory);
 
 };
 

@@ -69,6 +69,7 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 {
 	static const char *funcName = "MainApp::MainApp";
 
+	printf("%s: Debug: Entered\n", funcName);
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
@@ -79,12 +80,15 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	  TheExternalRunSimulation: TheExternalMain;
 	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
 	if (!GetDSAMPtr_Common()->usingGUIFlag) {
+		printf("%s: Debug: Not using GUI, flag = '%d'\n", funcName,
+		  initialiseNonGUIwxWidgets);
 		if (!initialiseNonGUIwxWidgets && !wxInitialize()) {
 			NotifyError("%s: Failed to initialize the wxWindows library, "
 			  "aborting.", funcName);
 			exit(1);
 		}
 		initialiseNonGUIwxWidgets = true;
+		printf("%s: Debug: Finished wxInitialise check.\n", funcName);
 	}
 	serverFlag = false;
 	superServerFlag = false;
@@ -652,7 +656,7 @@ void
 MainApp::SetSimulationFile(wxFileName &fileName)
 {
 	simFileName = fileName;
-	SetParsFilePath_AppInterface((char *) fileName.GetPath().c_str());
+	SetWorkingDirectory_AppInterface((char *) fileName.GetPath().c_str());
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
 	  fileName.GetExt().c_str()));
 	SetSimulationFile_AppInterface((char *) fileName.GetFullPath().c_str());
