@@ -99,8 +99,13 @@ SDIDocument::SetSimWorkingDirectory(const wxString &directory)
 bool
 SDIDocument::OnCloseDocument(void)
 {
+	wxDocument::OnCloseDocument();
 	diagram.DeleteAllShapes();
+	FreeSim_AppInterface();
+	wxClientDC dc(diagram.GetCanvas());
+	diagram.Clear(dc);			// This was not being done automatically.
 	diagram.SetSimProcess(NULL);
+	wxGetApp().SetAudModelLoadedFlag(false);
 	return true;
 
 }
@@ -127,6 +132,21 @@ SDIDocument::OnNewDocument(void)
 	SetSimulationFileFlag_AppInterface(FALSE);
 	wxGetApp().SetAudModelLoadedFlag(true);
 	return (true);
+
+}
+
+/******************************************************************************/
+/****************************** Revert ****************************************/
+/******************************************************************************/
+
+bool
+SDIDocument::Revert(void)
+{
+	if (!wxGetApp().GetAudModelLoadedFlag())
+		return(true);
+	wxFileName	fileName = GetFilename();
+	OnCloseDocument();
+	return(OnOpenDocument(fileName.GetFullName()));
 
 }
 

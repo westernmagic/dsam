@@ -94,7 +94,6 @@ BEGIN_EVENT_TABLE(SDIFrame, wxDocParentFrame)
 	EVT_MENU(SDIFRAME_EDIT_MAIN_PARS, SDIFrame::OnEditMainPars)
 	EVT_MENU(wxID_HELP, SDIFrame::OnHelp)
 	/*
-	EVT_MENU(wxID_REVERT, SDIFrame::OnReloadSimFile)
 	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, SDIFrame::OnViewSimPars)
 	*/
 	EVT_MENU(SDIFRAME_SIM_THREAD_DISPLAY_EVENT, SDIFrame::OnSimThreadEvent)
@@ -228,6 +227,7 @@ SDIFrame::UpdateMainParDialog(void)
 bool
 SDIFrame::LoadSimulation(void)
 {
+	ResetGUIDialogs();
 	if (wxGetApp().GetDiagFrame())
 		wxGetApp().GetDiagFrame()->Clear();
 	if (!wxGetApp().GetGrMainApp()->ResetSimulation())
@@ -525,17 +525,6 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 	mainParDialog->SetNotebookSelection();
 	mainParDialog->Show(TRUE);
 	wxGetApp().GetFrame()->AddToDialogList(mainParDialog);
-
-}
-
-/****************************** OnReloadSimFile *******************************/
-
-void
-SDIFrame::OnReloadSimFile(wxCommandEvent& event)
-{
-
-	ResetGUIDialogs();
-	LoadSimulation();
 
 }
 

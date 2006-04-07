@@ -83,8 +83,10 @@ class SDIDocument: public wxDocument
 
 	inline wxDiagram *	GetDiagram() { return &diagram; }
 
+	void	ClearDocument(void);
 	bool	OnCloseDocument(void);
 	bool	OnNewDocument(void);
+	bool	Revert(void);
 	SDI_DOC_OSTREAM&	SaveXMLObject(SDI_DOC_OSTREAM& stream);
 	void	SetSimWorkingDirectory(const wxString &directory);
 
