@@ -50,7 +50,6 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-bool	initialiseNonGUIwxWidgets = false;
 MainApp	*dSAMMainApp = NULL;
 
 /******************************************************************************/
@@ -69,7 +68,6 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 {
 	static const char *funcName = "MainApp::MainApp";
 
-	printf("%s: Debug: Entered\n", funcName);
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
@@ -79,17 +77,6 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	ExternalRunSimulation = (TheExternalRunSimulation)?
 	  TheExternalRunSimulation: TheExternalMain;
 	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
-	if (!GetDSAMPtr_Common()->usingGUIFlag) {
-		printf("%s: Debug: Not using GUI, flag = '%d'\n", funcName,
-		  initialiseNonGUIwxWidgets);
-		if (!initialiseNonGUIwxWidgets && !wxInitialize()) {
-			NotifyError("%s: Failed to initialize the wxWindows library, "
-			  "aborting.", funcName);
-			exit(1);
-		}
-		initialiseNonGUIwxWidgets = true;
-		printf("%s: Debug: Finished wxInitialise check.\n", funcName);
-	}
 	serverFlag = false;
 	superServerFlag = false;
 	diagsOn = false;
@@ -128,8 +115,6 @@ MainApp::~MainApp(void)
 	Free_AppInterface();
 	FreeAll_EarObject();
 	FreeNull_ModuleMgr();
-	if (initialiseNonGUIwxWidgets)
-		wxUninitialize();
 	dSAMMainApp = NULL;
 
 }
