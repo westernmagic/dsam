@@ -66,8 +66,6 @@ MainApp	*dSAMMainApp = NULL;
 MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
-	static const char *funcName = "MainApp::MainApp";
-
 	initOk = true;
 	argc = theArgc;
 	argv = theArgv;
