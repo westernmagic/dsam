@@ -319,7 +319,7 @@ wxMenuBar *
 MyApp::CreateMenuBar(void)
 {
 	fileMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
-	fileMenu->Append(wxID_NEW, wxT("&New...\tCtrl-N"), wxT("Design new "
+	fileMenu->Append(wxID_NEW, wxT("&New\tCtrl-N"), wxT("Design new "
 	  "simulation."));
 	fileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl-O"), wxT("Load Simulation "
 	  "from file."));
@@ -342,7 +342,7 @@ MyApp::CreateMenuBar(void)
 	editMenu->AppendSeparator();
 	editMenu->Append(SDIFRAME_CUT, wxT("&Cut\tCtrl-X"));
 	editMenu->AppendSeparator();
-	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Main Parameters..."
+	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Preferences..."
 	  "\tCtrl-M"), wxT("Edit main program preferences"));
 
 	viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);

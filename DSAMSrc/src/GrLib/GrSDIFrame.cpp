@@ -519,7 +519,7 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 
 	if (mainParDialog)
 		return;
-	mainParDialog = new ModuleParDialog(this, "Main Parameters", NULL,
+	mainParDialog = new ModuleParDialog(this, "Preferences", NULL,
 	  GetPtr_AppInterface()->parList, NULL, 300, 300, 500, 500,
 	  wxDEFAULT_DIALOG_STYLE);
 	mainParDialog->SetNotebookSelection();
