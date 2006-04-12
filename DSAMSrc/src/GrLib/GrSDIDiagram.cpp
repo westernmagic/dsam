@@ -136,13 +136,38 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 }
 
 /******************************************************************************/
+/****************************** UpdateAutoShapePos ****************************/
+/******************************************************************************/
+
+/*
+ * This routine sets the automatic position for the next shape.
+ */
+
+void
+SDIDiagram::UpdateAutoShapePos(wxShape *shape)
+{
+	double	boxWidth, boxHeight, totalWidth;
+
+	shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
+	totalWidth = boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
+	x += direction * totalWidth;
+	if (((direction > 0) && (x + totalWidth) > shape->GetCanvas()->
+	  GetClientSize().GetWidth()) || ((direction < 0) && (x - totalWidth) <
+	  0)) {
+		direction = - direction;
+		y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
+		DIAGRAM_DEFAULT_Y_SEPARATION;
+	}
+
+}
+
+/******************************************************************************/
 /****************************** DrawSimShapes *********************************/
 /******************************************************************************/
 
 void
 SDIDiagram::DrawSimShapes()
 {
-	double	boxWidth, boxHeight, totalWidth;
 	DatumPtr	pc;
 	ModulePtr	module;
 	wxShape		*shape;
@@ -158,21 +183,13 @@ SDIDiagram::DrawSimShapes()
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(module->
 			  classSpecifier), (module->onFlag)? DIAGRAM_ENABLED_BRUSH:
 			    DIAGRAM_DISENABLED_BRUSH);
-				shape->GetBoundingBoxMax(&boxWidth, &boxHeight);
-				totalWidth = boxWidth + DIAGRAM_DEFAULT_X_SEPARATION;
-				x += direction * totalWidth;
-				if (((direction > 0) && (x + totalWidth) > shape->GetCanvas()->
-				  GetClientSize().GetWidth()) || ((direction < 0) && (x -
-				  totalWidth) < 0)) {
-					direction = - direction;
-					y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
-					DIAGRAM_DEFAULT_Y_SEPARATION;
-				}
+			UpdateAutoShapePos(shape);
 			break; }
 		case REPEAT:
 		case RESET:
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(
 			  CONTROL_MODULE_CLASS), DIAGRAM_ENABLED_BRUSH);
+			UpdateAutoShapePos(shape);
 			break;
 		case STOP: {
 			DatumPtr	ppc = pc;

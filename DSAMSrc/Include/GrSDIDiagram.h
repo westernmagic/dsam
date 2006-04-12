@@ -101,6 +101,7 @@ class SDIDiagram: public wxDiagram
 	void	SetLoadIDsFromFile(bool status)		{ loadIDsFromFile = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
+	void	UpdateAutoShapePos(wxShape *shape);
 	bool	UnselectAllShapes(void);
 
 };
