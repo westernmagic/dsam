@@ -432,13 +432,14 @@ SDIEvtHandler::OnLeftDoubleClick(double x, double y, int keys, int attachment)
 void
 SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 {
-	printf("SDIEvtHandler::OnRightClick: Entered\n");
 	SDICanvas *canvas = (SDICanvas *)GetShape()->GetCanvas();
 	wxClientDC dc(canvas);
 	canvas->PrepareDC(dc);
 
 	if (keys == 0) {
 		SetSelectedShape(dc);
+		if (!pc)
+			return;
 		wxMenu menu("Edit Process");
 		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, (pc->data->module->onFlag)?
 		  "Disa&ble": "Ena&ble", "Enable/disable process");
