@@ -456,6 +456,10 @@ MainApp::InitMain(bool loadSimulationFlag)
 		return(false);
 	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
+	if (runThreadedProc) {
+		runThreadedProc->SetNumThreads(GetPtr_AppInterface()->numThreads);
+		runThreadedProc->SetThreadMode(GetPtr_AppInterface()->threadMode);
+	}
 	return(true);
 	
 }
