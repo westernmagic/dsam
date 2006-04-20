@@ -594,7 +594,7 @@ ResetBuffer_IO_AudioIn(void)
  * that could mess up the system like calling malloc() or free().
  */
 
-static int
+int
 #if	IO_AUDIOIN_PORTAUDIO_V_19
 RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
   unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo,

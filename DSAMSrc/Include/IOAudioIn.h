@@ -136,12 +136,12 @@ BOOLN	PrintPars_IO_AudioIn(void);
 BOOLN	ReadSignal_IO_AudioIn(EarObjectPtr data);
 
 #ifdef	IO_AUDIOIN_PORTAUDIO_V_19
-static int	RecordCallback_IO_AudioIn(const void *inputBuffer,
+int	RecordCallback_IO_AudioIn(const void *inputBuffer,
 			  void *outputBuffer, unsigned long framesPerBuffer,
 			  const PaStreamCallbackTimeInfo* timeInfo,
 			  PaStreamCallbackFlags statusFlags, void *userData);
 #else
-static int	RecordCallback_IO_AudioIn(const void *inputBuffer,
+int	RecordCallback_IO_AudioIn(const void *inputBuffer,
 			  void *outputBuffer, unsigned long framesPerBuffer,
 			  PaTimestamp outTime, void *userData);
 #endif /* IO_AUDIOIN_PORTAUDIO_V_19 */
