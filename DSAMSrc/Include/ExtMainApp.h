@@ -104,6 +104,7 @@ class MainApp {
 	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,
 			  bool countOnly);
 	void	SetSimulationFile(wxFileName &fileName);
+	void	SetThreadPars(void);
 	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);
 
 };
