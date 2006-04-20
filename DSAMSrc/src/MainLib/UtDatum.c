@@ -229,6 +229,29 @@ AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 
 }
 
+/****************************** RemoveConnection ******************************/
+
+/*
+ * Removes a connection label from a list.
+ */
+
+void    
+RemoveConnection_Utility_Datum(DynaListPtr *list, char *label)
+{
+	static const char	*funcName = "RemoveConnection_Utility_Datum";
+	DynaListPtr	p;
+
+	if (!*list)
+		return;
+	if ((p = FindElement_Utility_DynaList(*list, CmpLabel_Utility_Datum,
+	  label)) == NULL) {
+		NotifyError("%s: Could not find label '%s' in list.", funcName, label);
+		return;
+	}
+	Remove_Utility_DynaList(list, p);
+
+}
+
 /****************************** DisconnectInst ********************************/
 
 /*
@@ -244,6 +267,10 @@ DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 		*head = (DATUM_IN_SIMULATION(to))? to: NULL;
 	if (!DATUM_IN_SIMULATION(to) && (*head == to))
 		*head = NULL;
+	if ((from->type == PROCESS) && (to->type == PROCESS)) {
+		RemoveConnection_Utility_Datum(&from->u.proc.outputList, to->label);
+		RemoveConnection_Utility_Datum(&to->u.proc.inputList, from->label);
+	}
 
 }
 
@@ -268,6 +295,10 @@ ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 	else {
 		from->next = to;
 		to->previous = from;
+	}
+	if ((from->type == PROCESS) && (to->type == PROCESS)) {
+		Append_Utility_DynaList(&from->u.proc.outputList, to->label);
+		Append_Utility_DynaList(&to->u.proc.inputList, from->label);
 	}
 
 }
