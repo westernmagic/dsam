@@ -213,6 +213,8 @@ BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName,
 
 char *	NameAndLabel_Utility_Datum(DatumPtr pc);
 
+void	RemoveConnection_Utility_Datum(DynaListPtr *list, char *label);
+
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
 void	ResetStepCount_Utility_Datum(void);
