@@ -1673,7 +1673,7 @@ GetPtr_AppInterface(void)
 
 	if (!appInterfacePtr) {
 		NotifyError("%s: Application interface not initialised.", funcName);
-		return(FALSE);
+		return(NULL);
 	}
 	return(appInterfacePtr);
 
