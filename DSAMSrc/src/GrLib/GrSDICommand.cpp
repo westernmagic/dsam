@@ -221,7 +221,8 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 	DatumPtr	tempToPc = SHAPE_PC(toShape);
 	DatumPtr	tempFromPc = SHAPE_PC(fromShape);
 
-	if (FindNearestProcesses_Utility_Datum(&tempFromPc, &tempToPc))
+	if (FindNearestProcesses_Utility_Datum(&tempFromPc, &tempToPc) &&
+	  (tempToPc->type == PROCESS) && (tempFromPc->type == PROCESS))
 		DisconnectOutSignalFromIn_EarObject(tempFromPc->data, tempToPc->data);
 	DisconnectInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(fromShape),
 	  SHAPE_PC(toShape));
