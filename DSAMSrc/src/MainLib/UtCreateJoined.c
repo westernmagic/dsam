@@ -45,8 +45,6 @@
 BOOLN
 SetParsPointer_Utility_CreateJoined(ModulePtr theModule)
 {
-	/*static const char	*funcName = "SetParsPointer_Utility_CreateJoined"; */
-
 	return(TRUE);
 
 }
@@ -60,8 +58,6 @@ SetParsPointer_Utility_CreateJoined(ModulePtr theModule)
 BOOLN
 InitModule_Utility_CreateJoined(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Utility_CreateJoined"; */
-
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Process_Utility_CreateJoined;
@@ -86,11 +82,11 @@ InitModule_Utility_CreateJoined(ModulePtr theModule)
 BOOLN
 CheckData_Utility_CreateJoined(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_CreateJoined";
+	static const WChar	*funcName = wxT("CheckData_Utility_CreateJoined");
 	int		i;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -98,8 +94,9 @@ CheckData_Utility_CreateJoined(EarObjectPtr data)
 	for (i = 0; i < data->numInSignals; i++) {
 		if ((i != 0) && ((data->inSignal[0]->dt != data->inSignal[i]->dt) ||
 		  (data->inSignal[0]->numChannels != data->inSignal[i]->numChannels))) {
-			NotifyError("%s: All signals must of the same number of channels\n"
-			  "and sampling Interval (signal %d is different).\n", funcName, i);
+			NotifyError(wxT("%s: All signals must of the same number of "
+			  "channels\nand sampling Interval (signal %d is different).\n"),
+			  funcName, i);
 			return(FALSE);
 		}
 	}
@@ -126,22 +123,24 @@ CheckData_Utility_CreateJoined(EarObjectPtr data)
 BOOLN
 Process_Utility_CreateJoined(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_CreateJoined";
+	static const WChar	*funcName = wxT("Process_Utility_CreateJoined");
 	register	ChanData	 *inPtr, *outPtr;
 	int		i, chan;
 	ChanLen	j, joinedLength;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_CreateJoined(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Create Joined Utility module process");
+		SetProcessName_EarObject(data, wxT("Create Joined Utility module "
+		  "process"));
 		for (i = 0, joinedLength = 0; i < data->numInSignals; i++)
 			joinedLength += data->inSignal[i]->length;
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  joinedLength, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

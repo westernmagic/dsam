@@ -4,7 +4,7 @@
  * Purpose:		This module implements Arle & Kim's version of the MacGregor
  *				Model.
  * Comments:	The changes implemented in "Neural Modeling of instrinsic and
- *				spike-discharge properties of cochlear nucleus neurons",
+ *				spike-disWCharge properties of cochlear nucleus neurons",
  *				J. E. Erle and D. O. Kim, Biological Cybernetics, Springer
  *				Verlag 1991. - have been added to this module version of the
  *				McGregor model.
@@ -126,7 +126,7 @@ BOOLN	InitProcessVariables_Neuron_ArleKim(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_ArleKim(void);
 
-BOOLN	ReadPars_Neuron_ArleKim(char *fileName);
+BOOLN	ReadPars_Neuron_ArleKim(WChar *fileName);
 
 BOOLN	RunModel_Neuron_ArleKim(EarObjectPtr data);
 

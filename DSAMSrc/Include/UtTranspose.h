@@ -24,7 +24,7 @@
 /******************************************************************************/
 
 #define UTILITY_TRANSPOSE_NUM_PARS			1
-#define	UTILITY_TRANSPOSE_MOD_NAME			"UTIL_TRANSPOSE"
+#define	UTILITY_TRANSPOSE_MOD_NAME			wxT("UTIL_TRANSPOSE")
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -91,7 +91,7 @@ BOOLN	PrintPars_Utility_Transpose(void);
 
 BOOLN	Process_Utility_Transpose(EarObjectPtr data);
 
-BOOLN	SetMode_Utility_Transpose(char * theMode);
+BOOLN	SetMode_Utility_Transpose(WChar * theMode);
 
 BOOLN	SetParsPointer_Utility_Transpose(ModulePtr theModule);
 

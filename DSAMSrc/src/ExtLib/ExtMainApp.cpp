@@ -23,6 +23,7 @@
 
 #include <wx/app.h>
 #include <wx/socket.h>
+#include <wx/tokenzr.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -125,18 +126,18 @@ MainApp::~MainApp(void)
 int
 MainApp::Main(void)
 {
-	static const char *funcName = "MainApp::Main";
+	static const wxChar *funcName = wxT("MainApp::Main");
 	bool	ok = false;
 
 	if (!initOk) {
-		NotifyWarning("%s: Program not using application interface or not "
-		  "correctly initialised.\n", funcName);
+		NotifyWarning(wxT("%s: Program not using application interface or not "
+		  "correctly initialised.\n"), funcName);
 		return(false);
 	}
 	if (serverFlag)
 		return(RunServer());
 	if (!InitMain(TRUE)) {
-		 NotifyError("%s: Could not initialise the main program.",
+		 NotifyError(wxT("%s: Could not initialise the main program."),
 		   funcName);
 		return(false);
 	}
@@ -160,7 +161,7 @@ MainApp::Main(void)
 int
 MainApp::RunServer(void)
 {
-	static const char *funcName = "MainApp::RunServer";
+	static const wxChar *funcName = wxT("MainApp::RunServer");
 
 	SetOnExecute_AppInterface(OnExecute_MainApp);
 	SetDPrintFunc(DPrintSysLog_MainApp);
@@ -171,13 +172,13 @@ MainApp::RunServer(void)
 	InitMain(FALSE);
 	IPCServer *server = new IPCServer(wxT(""), serverPort, superServerFlag);
 	if (!server->Ok()) {
-		NotifyError("%s: Could not start server.\n", funcName);
+		NotifyError(wxT("%s: Could not start server.\n"), funcName);
 		return(false);
 	}
 	for ( ; ; ) {
        SocketBase *socket = server->InitConnection();
         if (!socket) {
-            NotifyError("%s: Connection failed.", funcName);
+            NotifyError(wxT("%s: Connection failed."), funcName);
             break;
         }
 		while (socket->IsConnected()) {
@@ -207,21 +208,21 @@ void
 MainApp::CheckOptions(void)
 {
 	int		optInd = 1, optSub = 0;
-	char	c, *argument;
+	wxChar	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  "SI:d:")))
+	  wxT("SI:d:"))))
 		switch (c) {
 		case 'S':
 			if (!serverFlag)
 				serverFlag = TRUE;
 			else
 				superServerFlag = TRUE;
-			MarkIgnore_Options(argc, argv, "-S", OPTIONS_NO_ARG);
+			MarkIgnore_Options(argc, argv, wxT("-S"), OPTIONS_NO_ARG);
 			break;
 		case 'I':
-			serverPort = atoi(argument);
-			MarkIgnore_Options(argc, argv, "-I", OPTIONS_WITH_ARG);
+			serverPort = (int) wcstol(argument, NULL, 0);
+			MarkIgnore_Options(argc, argv, wxT("-I"), OPTIONS_WITH_ARG);
 			break;
 		case 'd':
 			SetDiagMode_AppInterface(argument);
@@ -249,14 +250,14 @@ MainApp::CheckOptions(void)
 bool
 MainApp::InitArgv(int theArgc)
 {
-	static const char *funcName = "MainApp::InitArgv";
+	static const wxChar *funcName = wxT("MainApp::InitArgv");
 
 	if (!theArgc)
 		return(TRUE);
 	argc = theArgc;
-	if ((argv = (char **) calloc(argc, sizeof(
-	  char *))) == NULL) {
-		NotifyError("%s: Out of memory for argv[%d] array.", funcName, argc);
+	if ((argv = (wxChar **) calloc(argc, sizeof(wxChar *))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for argv[%d] array."), funcName,
+		  argc);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -266,15 +267,15 @@ MainApp::InitArgv(int theArgc)
 /****************************** SetArgvString *********************************/
 
 bool
-MainApp::SetArgvString(int index, char *string, int size)
+MainApp::SetArgvString(int index, wxChar *string, int size)
 {
-	static const char *funcName = "MainApp::SetArgvString";
+	static const wxChar *funcName = wxT("MainApp::SetArgvString");
 	
-	if ((argv[index] = (char *) malloc(size + 1)) == NULL) {
-		NotifyError("%s: Out of memory for argv[%d].", funcName, index);
+	if ((argv[index] = (wxChar *) calloc(size + 1, sizeof(wxChar))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for argv[%d]."), funcName, index);
 		return(FALSE);
 	}
-	strcpy(argv[index], string);
+	DSAM_strcpy(argv[index], string);
 	return(TRUE);
 
 }
@@ -288,12 +289,15 @@ MainApp::SetArgvString(int index, char *string, int size)
  * It returns FALSE if it enounters an error.
  */
 
+
+/* ToDo: implement this using wxString. */
+
 bool
-MainApp::ProtectQuotedStr(char *str)
+MainApp::ProtectQuotedStr(wxChar *str)
 {
-	static const char *funcName = "MainApp::ProtectQuotedStr";
+	static const wxChar *funcName = wxT("MainApp::ProtectQuotedStr");
 	bool	quotesOn = FALSE;
-	char	*p;
+	wxChar	*p;
 
 	for (p = str; *p != '\0'; p++) {
 		if (*p == MAINAPP_QUOTE) {
@@ -304,7 +308,8 @@ MainApp::ProtectQuotedStr(char *str)
 				*p = MAINAPP_SPACE_SUBST;
 	}
 	if (quotesOn) {
-		NotifyError("%s: Incomplete quoted string in parameters.", funcName);
+		NotifyError(wxT("%s: Incomplete quoted string in parameters."),
+		  funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -317,10 +322,10 @@ MainApp::ProtectQuotedStr(char *str)
  * This routine returns the spaces to a protected quoted string.
  */
 
-char *
-MainApp::RestoreQuotedStr(char *str)
+wxChar *
+MainApp::RestoreQuotedStr(wxChar *str)
 {
-	char	*p;
+	wxChar	*p;
 
 	for (p = str; *p != '\0'; p++)
 		if (*p == MAINAPP_SPACE_SUBST)
@@ -339,32 +344,27 @@ MainApp::RestoreQuotedStr(char *str)
  */
 
 int
-MainApp::SetParameterOptionArgs(int indexStart, char *parameterOptions,
+MainApp::SetParameterOptionArgs(int indexStart, wxChar *parameterOptions,
   bool countOnly)
 {
-	static const char *funcName = "MainApp::SetParameterOptionArgs";
-	char	*workStr, *token;
+	static const wxChar *funcName = wxT("MainApp::SetParameterOptionArgs");
+	wxString token, workStr = parameterOptions;
 	int		count = 0;
 
-	if ((workStr = (char *) malloc(strlen(parameterOptions) + 1)) == NULL) {
-		NotifyError("%s: Out of memory for workStr.", funcName);
+	if (!ProtectQuotedStr((wxChar *) workStr.c_str())) {
+		NotifyError(wxT("%s; Could note protect quoted parameters."), funcName);
 		return(-1);
 	}
-	strcpy(workStr, parameterOptions);
-	if (!ProtectQuotedStr(workStr)) {
-		NotifyError("%s; Could note protect quoted parameters.", funcName);
-		return(-1);
-	}
-	token = strtok(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
-	while (token) {
+	wxStringTokenizer tkz(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
+	while (tkz.HasMoreTokens()) {
+		token = tkz.GetNextToken();
 		if (!countOnly)
-			SetArgvString(indexStart + count, RestoreQuotedStr(token),
-			  strlen(token));
+			SetArgvString(indexStart + count, RestoreQuotedStr((wxChar *) token.
+			  c_str()), token.length());
 		count++;
-		token = strtok(NULL, MAINAPP_PARAMETER_STR_DELIMITERS);
 	}
-	free(workStr);
 	return(count);
+
 }
 	
 /****************************** RemoveCommands ********************************/
@@ -377,7 +377,7 @@ MainApp::SetParameterOptionArgs(int indexStart, char *parameterOptions,
  */
 
 void
-MainApp::RemoveCommands(int offset, char *prefix)
+MainApp::RemoveCommands(int offset, wxChar *prefix)
 {
 	int		i;
 
@@ -419,12 +419,13 @@ MainApp::FreeArgStrings(void)
 bool
 MainApp::InitRun(void)
 {
-	static const char *funcName = "MainApp::InitRun";
+	static const wxChar *funcName = wxT("MainApp::InitRun");
 
 	wxCriticalSectionLocker locker(mainCritSect);
 
 	if (GetDSAMPtr_Common()->appInitialisedFlag) {
-		NotifyWarning("%s: Attempted to re-initialise application.", funcName);
+		NotifyWarning(wxT("%s: Attempted to re-initialise application."),
+		  funcName);
 		return(TRUE);
 	}
 	(* ExternalMain)();
@@ -443,7 +444,7 @@ MainApp::InitRun(void)
 bool
 MainApp::InitMain(bool loadSimulationFlag)
 {
-	static const char *funcName = "MainApp::InitMain";
+	static const wxChar *funcName = wxT("MainApp::InitMain");
 
 	ResetStepCount_Utility_Datum();
 	if (!GetPtr_AppInterface() || !GetPtr_AppInterface()->Init)
@@ -452,7 +453,8 @@ MainApp::InitMain(bool loadSimulationFlag)
 	ResetCommandArgFlags_AppInterface();
 	GetPtr_AppInterface()->canLoadSimulationFlag = loadSimulationFlag;
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
+		NotifyError(wxT("%s: Could not initialise process variables."),
+		  funcName);
 		return(false);
 	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
@@ -486,17 +488,17 @@ MainApp::InitXMLDocument(void)
 bool
 MainApp::LoadXMLDocument(void)
 {
-	static const char *funcName = "MainApp::LoadXMLDocument";
+	static const wxChar *funcName = wxT("MainApp::LoadXMLDocument");
 	bool	ok = true;
 
 	InitXMLDocument();
-	if (!doc->LoadFile(simFileName.GetFullPath().c_str())) {
-		NotifyError("%s: Could not load XML file '%s' (Error: %s).", funcName,
-		  simFileName.GetFullPath().c_str(), doc->ErrorDesc());
+	if (!doc->LoadFile((const char *) simFileName.GetFullPath().mb_str())) {
+		NotifyError(wxT("%s: Could not load XML file '%s' (Error: %s)."),
+		  funcName, simFileName.GetFullPath().c_str(), doc->ErrorDesc());
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {
-		NotifyError("%s: Could not translate XML document.", funcName);
+		NotifyError(wxT("%s: Could not translate XML document."), funcName);
 		ok = false;
 	}
 	if (ok) {
@@ -517,20 +519,22 @@ MainApp::LoadXMLDocument(void)
 bool
 MainApp::CheckInitialisation(void)
 {
-	static const char *funcName = "MainApp::CheckInitialisation";
+	static const wxChar *funcName = wxT("MainApp::CheckInitialisation");
 
 	if (!GetPtr_AppInterface()) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(false);
 	}
 	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
 		ResetStepCount_Utility_Datum();
 #	if DSAM_DEBUG
 	for (int i = 0; i < argc; i++)
-		printf("%s: %2d: %s\n", funcName, i, argv[i]);
+		printf(wxT("%s: %2d: %s\n"), funcName, i, argv[i]);
 #	endif /* DSAM_DEBUG */
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
+		NotifyError(wxT("%s: Could not initialise process variables."),
+		  funcName);
 		return(false);
 	}
 	return(true);
@@ -546,17 +550,17 @@ MainApp::CheckInitialisation(void)
 void
 MainApp::StartSimThread(wxThreadKind kind)
 {
-	static const char *funcName = "MainApp::StartSimThread";
+	static const wxChar *funcName = wxT("MainApp::StartSimThread");
 
 	mainCritSect.Enter();
 	SwitchGUILocking_Common(TRUE);
 	mainCritSect.Leave();
 	simThread = new SimThread(kind);
 	if (simThread->Create() != wxTHREAD_NO_ERROR)
-		wxLogFatalError("%s: Can't create simulation thread!", funcName);
+		wxLogFatalError(wxT("%s: Can't create simulation thread!"), funcName);
 
 	if (simThread->Run() != wxTHREAD_NO_ERROR)
-		wxLogError("%s: Cannot start simulation thread.", funcName);
+		wxLogError(wxT("%s: Cannot start simulation thread."), funcName);
 
 }
 
@@ -586,10 +590,11 @@ MainApp::DeleteSimThread(void)
 bool
 MainApp::ResetSimulation(void)
 {
-	static const char *funcName = "MainApp::ResetSimulation";
+	static const wxChar *funcName = wxT("MainApp::ResetSimulation");
 
 	if (simThread) {
-		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
+		wxLogWarning(wxT("%s: Running simulation not yet terminated!"),
+		  funcName);
 		return(false);
 	}
 	SwitchGUILocking_Common(false);
@@ -604,11 +609,12 @@ MainApp::ResetSimulation(void)
 bool
 MainApp::RunSimulation(void)
 {
-	static const char *funcName = "MainApp::RunSimulation";
+	static const wxChar *funcName = wxT("MainApp::RunSimulation");
 
 	SetInterruptRequestStatus_Common(FALSE);
 	if (!ExternalRunSimulation){
-		NotifyError("%s: External run simulation function not set.", funcName);
+		NotifyError(wxT("%s: External run simulation function not set."),
+		  funcName);
 		return(false);
 	}
 	return(CXX_BOOL((* ExternalRunSimulation)()));
@@ -620,11 +626,11 @@ MainApp::RunSimulation(void)
 EarObjectPtr
 MainApp::GetSimProcess(void)
 {
-	static const char *funcName = "MainApp::GetSimProcess";
+	static const wxChar *funcName = wxT("MainApp::GetSimProcess");
 	EarObjectPtr	audModel;
 
 	if ((audModel = GetSimProcess_AppInterface()) == NULL) {
-		NotifyError("%s: simulation did not run successfully.", funcName);
+		NotifyError(wxT("%s: simulation did not run successfully."), funcName);
 		return(NULL);
 	}
 	return (audModel);
@@ -643,10 +649,10 @@ void
 MainApp::SetSimulationFile(wxFileName &fileName)
 {
 	simFileName = fileName;
-	SetWorkingDirectory_AppInterface((char *) fileName.GetPath().c_str());
-	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((char *)
+	SetWorkingDirectory_AppInterface((wxChar *) fileName.GetPath().c_str());
+	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((wxChar *)
 	  fileName.GetExt().c_str()));
-	SetSimulationFile_AppInterface((char *) fileName.GetFullPath().c_str());
+	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().c_str());
 
 }
 
@@ -666,14 +672,14 @@ MainApp::SetSimulationFile(wxFileName &fileName)
  */
 
 BOOLN
-ReadXMLSimFile_MainApp(char *theFileName)
+ReadXMLSimFile_MainApp(wxChar *theFileName)
 {
-	static const char *funcName = "ReadXMLSimFile_MainApp";
+	static const wxChar *funcName = wxT("ReadXMLSimFile_MainApp");
 
-	wxFileName fileName(theFileName);
+	wxFileName fileName((wxChar *) theFileName);
 	dSAMMainApp->SetSimulationFile(fileName);
 	if (!dSAMMainApp->LoadXMLDocument()) {
-		NotifyError("%s: Could not load XML Document.", funcName);
+		NotifyError(wxT("%s: Could not load XML Document."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -707,10 +713,10 @@ OnExecute_MainApp(void)
 void
 PrintUsage_MainApp(void)
 {
-	fprintf(stderr, "\n"
+	DSAM_fprintf(stderr, wxT("\n"
 	  "\t-S            \t: Run in server mode (add another -S with (x)inetd).\n"
 	  "\t-I <x>        \t: Run using server ID <x>.\n"
-	  );
+	  ));
 
 }
 
@@ -721,9 +727,10 @@ PrintUsage_MainApp(void)
  */
  
 void
-DPrintSysLog_MainApp(char *format, va_list args)
+DPrintSysLog_MainApp(wxChar *format, va_list args)
 {
-	vsyslog(LOG_INFO, format, args);
+	//vsyslog(LOG_INFO, format, args);
+	printf("DPrintSysLog_MainApp: Debug: Needs correction.\n");
 	
 }
 

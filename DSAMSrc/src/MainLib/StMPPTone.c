@@ -26,6 +26,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "StMPPTone.h"
 
 /********************************* Global variables ***************************/
@@ -45,13 +46,13 @@ PureTone4Ptr	pureTone4Ptr = NULL;
 BOOLN
 SetDefaultNumPulsesArrays_PureTone_MultiPulse(void)
 {
-	static const char *funcName =
-	  "SetDefaultNumPulsesArrays_PureTone_MultiPulse";
+	static const WChar *funcName =
+	  wxT("SetDefaultNumPulsesArrays_PureTone_MultiPulse");
 	int		i;
 	double	frequencies[] = {1000.0, 2000.0};
 
 	if (!AllocNumPulses_PureTone_MultiPulse(2)) {
-		NotifyError("%s: Could not allocate default arrays.", funcName);
+		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < pureTone4Ptr->numPulses; i++)
@@ -74,18 +75,18 @@ SetDefaultNumPulsesArrays_PureTone_MultiPulse(void)
 BOOLN
 Init_PureTone_MultiPulse(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("Init_PureTone_MultiPulse");
 
 	if (parSpec == GLOBAL) {
 		if (pureTone4Ptr != NULL)
 			Free_PureTone_MultiPulse();
 		if ((pureTone4Ptr = (PureTone4Ptr) malloc(sizeof(PureTone4))) == NULL) {
-			NotifyError("%s: Out of memory for 'global'pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global'pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (pureTone4Ptr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -107,13 +108,13 @@ Init_PureTone_MultiPulse(ParameterSpecifier parSpec)
 	pureTone4Ptr->frequencies = NULL;
 
 	if (!SetDefaultNumPulsesArrays_PureTone_MultiPulse()) {
-		NotifyError("%s: Could not set the default 'numPulses' arrays.",
+		NotifyError(wxT("%s: Could not set the default 'numPulses' arrays."),
 		  funcName);
 		return(FALSE);
 	}
 
 	if (!SetUniParList_PureTone_MultiPulse()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_PureTone_MultiPulse();
 		return(FALSE);
 	}
@@ -158,52 +159,55 @@ Free_PureTone_MultiPulse(void)
 BOOLN
 SetUniParList_PureTone_MultiPulse(void)
 {
-	static const char *funcName = "SetUniParList_PureTone_Multi";
+	static const WChar *funcName = wxT("SetUniParList_PureTone_Multi");
 	UniParPtr	pars;
 
 	if ((pureTone4Ptr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  PURETONE_MULTIPULSE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = pureTone4Ptr->parList->pars;
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_NUMPULSES], "NUM_PULSES",
-	  "Number of Pulse Frequencies",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_NUMPULSES], wxT("NUM_PULSES"),
+	  wxT("Number of Pulse Frequencies"),
 	  UNIPAR_INT_AL,
 	  &pureTone4Ptr->numPulses, NULL,
 	  (void * (*)) SetNumPulses_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_FREQUENCIES], "PULSE_FREQ",
-	  "Pulse frequencies (Hz).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_FREQUENCIES], wxT("PULSE_FREQ"),
+	  wxT("Pulse frequencies (Hz)."),
 	  UNIPAR_REAL_ARRAY,
 	  &pureTone4Ptr->frequencies, &pureTone4Ptr->numPulses,
 	  (void * (*)) SetIndividualFreq_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_INTENSITY], "INTENSITY",
-	  "Intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_INTENSITY], wxT("INTENSITY"),
+	  wxT("Intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->intensity, NULL,
 	  (void * (*)) SetIntensity_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_BEGINPERIODDURATION], "SILENCE",
-	  "Silent period, before first pulse (s).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_BEGINPERIODDURATION], wxT(
+	  "SILENCE"),
+	  wxT("Silent period, before first pulse (s)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->beginPeriodDuration, NULL,
 	  (void * (*)) SetBeginPeriodDuration_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_PULSEDURATION], "PULSE_DURATION",
-	  "Pulse duration (s).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_PULSEDURATION], wxT(
+	  "PULSE_DURATION"),
+	  wxT("Pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_REPETITIONPERIOD], "REP_PERIOD",
-	  "Repetition period (s).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_REPETITIONPERIOD], wxT(
+	  "REP_PERIOD"),
+	  wxT("Repetition period (s)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->repetitionPeriod, NULL,
 	  (void * (*)) SetRepetitionPeriod_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->duration, NULL,
 	  (void * (*)) SetDuration_PureTone_MultiPulse);
-	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_SAMPLINGINTERVAL], "DT",
-	  "Stimulus sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[PURETONE_MULTIPULSE_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Stimulus sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &pureTone4Ptr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_PureTone_MultiPulse);
@@ -221,15 +225,15 @@ SetUniParList_PureTone_MultiPulse(void)
 UniParListPtr
 GetUniParListPtr_PureTone_MultiPulse(void)
 {
-	static const char	*funcName = "GetUniParListPtr_PureTone_Multi";
+	static const WChar	*funcName = wxT("GetUniParListPtr_PureTone_Multi");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (pureTone4Ptr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pureTone4Ptr->parList);
@@ -250,7 +254,7 @@ GetUniParListPtr_PureTone_MultiPulse(void)
 BOOLN
 AllocNumPulses_PureTone_MultiPulse(int numPulses)
 {
-	static const char	*funcName = "AllocNumPulses_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("AllocNumPulses_PureTone_MultiPulse");
 
 	if (numPulses == pureTone4Ptr->numPulses)
 		return(TRUE);
@@ -258,7 +262,7 @@ AllocNumPulses_PureTone_MultiPulse(int numPulses)
 		free(pureTone4Ptr->frequencies);
 	if ((pureTone4Ptr->frequencies = (double *) calloc(numPulses, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' frequencies.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' frequencies."),
 		  funcName, numPulses);
 		return(FALSE);
 	}
@@ -280,65 +284,65 @@ AllocNumPulses_PureTone_MultiPulse(int numPulses)
 BOOLN
 CheckPars_PureTone_MultiPulse(void)
 {
-	static const char *funcName = "CheckPars_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("CheckPars_PureTone_MultiPulse");
 	BOOLN	ok;
 	int		i;
 	double	criticalFrequency;
 	
 	ok = TRUE;
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!pureTone4Ptr->intensityFlag) {
-		NotifyError("%s: Intensity variable not set.", funcName);
+		NotifyError(wxT("%s: Intensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (pureTone4Ptr->frequencies == NULL) {
-		NotifyError("%s: frequencies array not set.", funcName);
+		NotifyError(wxT("%s: frequencies array not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->beginPeriodDurationFlag) {
-		NotifyError("%s: beginPeriodDuration variable not "\
-		  "set.", funcName);
+		NotifyError(wxT("%s: beginPeriodDuration variable not ")\
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->repetitionPeriodFlag) {
-		NotifyError("%s: repetitionPeriod variable not set.", funcName);
+		NotifyError(wxT("%s: repetitionPeriod variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pureTone4Ptr->numPulsesFlag) {
-		NotifyError("%s: numPulses variable not set.", funcName);
+		NotifyError(wxT("%s: numPulses variable not set."), funcName);
 		ok = FALSE;
 	}
 	if ( (pureTone4Ptr->pulseDuration > pureTone4Ptr->duration) ) {
-	  	NotifyError("%s: The pulse duration  is longer than the signal "\
-		  "duration.", funcName);
+	  	NotifyError(wxT("%s: The pulse duration  is longer than the signal "
+		  "duration."), funcName);
 	  	ok = FALSE;
 	}
 	if ( (pureTone4Ptr->pulseDuration > pureTone4Ptr->repetitionPeriod) ) {
-	  	NotifyError("%s: The pulse duration  is longer than the repetition "\
-		  "period.", funcName);
+	  	NotifyError(wxT("%s: The pulse duration  is longer than the repetition "
+		  "period."), funcName);
 	  	ok = FALSE;
 	}
 	criticalFrequency = 1.0 / (2.0 * pureTone4Ptr->dt);
 	if (ok)
 		for (i = 0; i < pureTone4Ptr->numPulses; i++)
 			if (criticalFrequency <= pureTone4Ptr->frequencies[i]) {
-				NotifyError("%s: Sampling rate (dt = %g ms) is too low for "\
-				  "frequency No. %d.", funcName, MSEC(pureTone4Ptr->dt), i);
+				NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for "
+				  "frequency No. %d."), funcName, MSEC(pureTone4Ptr->dt), i);
 				ok = FALSE;
 			}
 	return(ok);
@@ -356,10 +360,10 @@ CheckPars_PureTone_MultiPulse(void)
 BOOLN
 SetIntensity_PureTone_MultiPulse(double theIntensity)
 {
-	static const char *funcName = "SetIntensity_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("SetIntensity_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->intensityFlag = TRUE;
@@ -379,10 +383,10 @@ SetIntensity_PureTone_MultiPulse(double theIntensity)
 BOOLN
 SetFrequencies_PureTone_MultiPulse(double *theFrequencies)
 {
-	static const char *funcName = "SetFrequencies_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("SetFrequencies_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->frequencies = theFrequencies;
@@ -403,20 +407,20 @@ SetFrequencies_PureTone_MultiPulse(double *theFrequencies)
 BOOLN
 SetNumPulses_PureTone_MultiPulse(int theNumPulses)
 {
-	static const char	*funcName = "SetNumPulses_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("SetNumPulses_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumPulses < 1) {
-		NotifyError("%s: Value must be greater then zero (%d).", funcName,
+		NotifyError(wxT("%s: Value must be greater then zero (%d)."), funcName,
 		  theNumPulses);
 		return(FALSE);
 	}
 	if (!AllocNumPulses_PureTone_MultiPulse(theNumPulses)) {
-		NotifyError("%%s: Cannot allocate memory for the 'numPulses' arrays.",
-		  funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -435,18 +439,18 @@ SetNumPulses_PureTone_MultiPulse(int theNumPulses)
 BOOLN
 SetIndividualFreq_PureTone_MultiPulse(int theIndex, double theFrequency)
 {
-	static const char *funcName = "SetIndividualFreq_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("SetIndividualFreq_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (pureTone4Ptr->frequencies == NULL) {
-		NotifyError("%s: Frequencies not set.", funcName);
+		NotifyError(wxT("%s: Frequencies not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > pureTone4Ptr->numPulses - 1) {
-		NotifyError("%s: Index value must be in the\nrange 0 - %d (%d).\n",
+		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, pureTone4Ptr->numPulses - 1, theIndex);
 		return(FALSE);
 	}
@@ -466,10 +470,10 @@ SetIndividualFreq_PureTone_MultiPulse(int theIndex, double theFrequency)
 BOOLN
 SetDuration_PureTone_MultiPulse(double theDuration)
 {
-	static const char *funcName = "SetDuration_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("SetDuration_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->durationFlag = TRUE;
@@ -489,10 +493,11 @@ SetDuration_PureTone_MultiPulse(double theDuration)
 BOOLN
 SetBeginPeriodDuration_PureTone_MultiPulse(double theBeginPeriodDuration)
 {
-	static const char *funcName = "SetBeginPeriodDuration_PureTone_MultiPulse";
+	static const WChar *funcName = wxT(
+	  "SetBeginPeriodDuration_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->beginPeriodDurationFlag = TRUE;
@@ -512,14 +517,14 @@ SetBeginPeriodDuration_PureTone_MultiPulse(double theBeginPeriodDuration)
 BOOLN
 SetPulseDuration_PureTone_MultiPulse(double thePulseDuration)
 {
-	static const char *funcName = "SetPulseDuration_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("SetPulseDuration_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseDuration < 0.0) {
-		NotifyError("%s: Illegal negative time!", funcName);
+		NotifyError(wxT("%s: Illegal negative time!"), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->pulseDurationFlag = TRUE;
@@ -539,14 +544,15 @@ SetPulseDuration_PureTone_MultiPulse(double thePulseDuration)
 BOOLN
 SetRepetitionPeriod_PureTone_MultiPulse(double theRepetitionPeriod)
 {
-	static const char *funcName = "SetRepetitionPeriod_PureTone_MultiPulse";
+	static const WChar *funcName = wxT(
+	  "SetRepetitionPeriod_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRepetitionPeriod < 0.0) {
-		NotifyError("%s: Illegal negative time!", funcName);
+		NotifyError(wxT("%s: Illegal negative time!"), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr->repetitionPeriodFlag = TRUE;
@@ -566,14 +572,15 @@ SetRepetitionPeriod_PureTone_MultiPulse(double theRepetitionPeriod)
 BOOLN
 SetSamplingInterval_PureTone_MultiPulse(double theSamplingInterval)
 {
-	static const char *funcName = "SetSamplingInterval_PureTone_MultiPulse";
+	static const WChar *funcName = wxT(
+	  "SetSamplingInterval_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -595,7 +602,7 @@ SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
   double intensity, double beginPeriodDuration, double pulseDuration,
   double repetitionPeriod, double duration, double samplingInterval)
 {
-	static const char	*funcName = "SetPars_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("SetPars_PureTone_MultiPulse");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -616,7 +623,7 @@ SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
 	if (!SetSamplingInterval_PureTone_MultiPulse(samplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -630,20 +637,20 @@ SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
 double
 GetIndividualFreq_PureTone_MultiPulse(int index)
 {
-	static const char *funcName = "GetIndividualFreq_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("GetIndividualFreq_PureTone_MultiPulse");
 
 	if (pureTone4Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_PureTone_MultiPulse()) {
-		NotifyError("%s: Parameters have not been correctly\nset.  Returning "\
-		  "zero.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly\nset. "
+		  " Returning zero."), funcName);
 		return(0.0);
 	}
 	if (index < 0 || index >= pureTone4Ptr->numPulses) {
-		NotifyError("%s: The valid index range is 0 to %d.  Returning zero.\n",
-		  funcName, pureTone4Ptr->numPulses - 1);
+		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning "
+		  "zero.\n"), funcName, pureTone4Ptr->numPulses - 1);
 		return(0.0);
 	}
 	return(pureTone4Ptr->frequencies[index]);
@@ -659,27 +666,25 @@ GetIndividualFreq_PureTone_MultiPulse(int index)
 BOOLN
 PrintPars_PureTone_MultiPulse(void)
 {
-	static const char *funcName = "PrintPars_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("PrintPars_PureTone_MultiPulse");
 	int	i;
 	
 	if (!CheckPars_PureTone_MultiPulse()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Multi-Frequency Pulsed Pure Tone Module "\
-	  "Parameters:-\n");
-	DPrint("\tIntensity = %g (Hz)\n", pureTone4Ptr->intensity);
-	DPrint("\tDuration = %g ms,\tSampling interval = %g ms\n",
+	DPrint(wxT("Multi-Frequency Pulsed Pure Tone Module Parameters:-\n"));
+	DPrint(wxT("\tIntensity = %g (Hz)\n"), pureTone4Ptr->intensity);
+	DPrint(wxT("\tDuration = %g ms,\tSampling interval = %g ms\n"),
 	  MSEC(pureTone4Ptr->duration), MSEC(pureTone4Ptr->dt));
-	DPrint("\t%10s\t%s\n", "Pulse No.", "Frequency (Hz)");
+	DPrint(wxT("\t%10s\t%s\n"), wxT("Pulse No."), wxT("Frequency (Hz)"));
 	for (i = 0; i < pureTone4Ptr->numPulses; i++)
-		DPrint("\t%10d\t%10g\n", i,
-		  pureTone4Ptr->frequencies[i]);
-	DPrint("\tBegin silence = %g ms,\tPulse duration = %g "\
-	  "ms\n", MSEC(pureTone4Ptr->beginPeriodDuration),
-	  MSEC(pureTone4Ptr->pulseDuration));
-	DPrint("\tRepetition period = %g ms.\n",
-	  MSEC(pureTone4Ptr->repetitionPeriod));
+		DPrint(wxT("\t%10d\t%10g\n"), i, pureTone4Ptr->frequencies[i]);
+	DPrint(wxT("\tBegin silence = %g ms,\tPulse duration = %g ms\n"), MSEC(
+	  pureTone4Ptr->beginPeriodDuration), MSEC(pureTone4Ptr->pulseDuration));
+	DPrint(wxT("\tRepetition period = %g ms.\n"), MSEC(pureTone4Ptr->
+	  repetitionPeriod));
 	return(TRUE);
 
 }
@@ -691,57 +696,58 @@ PrintPars_PureTone_MultiPulse(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_PureTone_MultiPulse(char *fileName)
+ReadPars_PureTone_MultiPulse(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("ReadPars_PureTone_MultiPulse");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		i, numPulses;
 	double	intensity, beginPeriodDuration, pulseDuration, repetitionPeriod;
 	double	duration, samplingInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numPulses))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numPulses))
 		ok = FALSE;
 	if (!AllocNumPulses_PureTone_MultiPulse(numPulses)) {
-		NotifyError("%%s: Cannot allocate memory for the 'numPulses' arrays.",
-		  funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numPulses; i++)
-		if (!GetPars_ParFile(fp, "%lf", &pureTone4Ptr->frequencies[i]))
+		if (!GetPars_ParFile(fp, wxT("%lf"), &pureTone4Ptr->frequencies[i]))
 			ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &intensity))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &duration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &beginPeriodDuration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &beginPeriodDuration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &repetitionPeriod))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &repetitionPeriod))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_MultiPulse(numPulses, pureTone4Ptr->frequencies,
 	  intensity, beginPeriodDuration, pulseDuration, repetitionPeriod,
 	  duration, samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -758,10 +764,10 @@ ReadPars_PureTone_MultiPulse(char *fileName)
 BOOLN
 SetParsPointer_PureTone_MultiPulse(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("SetParsPointer_PureTone_MultiPulse");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	pureTone4Ptr = (PureTone4Ptr) theModule->parsPtr;
@@ -778,14 +784,15 @@ SetParsPointer_PureTone_MultiPulse(ModulePtr theModule)
 BOOLN
 InitModule_PureTone_MultiPulse(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_PureTone_MultiPulse";
+	static const WChar	*funcName = wxT("InitModule_PureTone_MultiPulse");
 
 	if (!SetParsPointer_PureTone_MultiPulse(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_PureTone_MultiPulse(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = pureTone4Ptr;
@@ -815,24 +822,24 @@ InitModule_PureTone_MultiPulse(ModulePtr theModule)
 BOOLN
 GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 {
-	static const char *funcName = "GenerateSignal_PureTone_MultiPulse";
+	static const WChar *funcName = wxT("GenerateSignal_PureTone_MultiPulse");
 	double		amplitude;
 	register	ChanData	*dataPtr;
 	ChanLen		i, t, pulseDurationIndex, repetitionPeriodIndex;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_PureTone_MultiPulse())
 			return(FALSE);
-		SetProcessName_EarObject(data, "Multi-frequency pulsed pure-tone "
-		  "stimulus");
+		SetProcessName_EarObject(data, wxT("Multi-frequency pulsed pure-tone "
+		  "stimulus"));
 		if ( !InitOutSignal_EarObject(data, PURE_TONE_3_NUM_CHANNELS,
 		  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 0.5),
 		  pureTone4Ptr->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "StBPTone.h"
 
 /******************************************************************************/
@@ -53,8 +54,6 @@ BPureTonePtr	bPureTonePtr = NULL;
 BOOLN
 Free_PureTone_Binaural(void)
 {
-	/* static const char	*funcName = "Free_PureTone_Binaural";  */
-
 	if (bPureTonePtr == NULL)
 		return(FALSE);
 	if (bPureTonePtr->parList)
@@ -82,18 +81,18 @@ Free_PureTone_Binaural(void)
 BOOLN
 Init_PureTone_Binaural(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_PureTone_Binaural";
+	static const WChar	*funcName = wxT("Init_PureTone_Binaural");
 
 	if (parSpec == GLOBAL) {
 		if (bPureTonePtr != NULL)
 			Free_PureTone_Binaural();
 		if ((bPureTonePtr = (BPureTonePtr) malloc(sizeof(BPureTone))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bPureTonePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -114,7 +113,7 @@ Init_PureTone_Binaural(ParameterSpecifier parSpec)
 	bPureTonePtr->dt = DEFAULT_DT;
 
 	if (!SetUniParList_PureTone_Binaural()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_PureTone_Binaural();
 		return(FALSE);
 	}
@@ -133,47 +132,52 @@ Init_PureTone_Binaural(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_PureTone_Binaural(void)
 {
-	static const char *funcName = "SetUniParList_PureTone_Binaural";
+	static const WChar *funcName = wxT("SetUniParList_PureTone_Binaural");
 	UniParPtr	pars;
 
 	if ((bPureTonePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  PURETONE_Binaural_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bPureTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_LEFTFREQUENCY], "LEFT_FREQUENCY",
-	  "Left channel frequency (Hz).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_LEFTFREQUENCY], wxT(
+	  "LEFT_FREQUENCY"),
+	  wxT("Left channel frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->leftFrequency, NULL,
 	  (void * (*)) SetLeftFrequency_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_RIGHTFREQUENCY], "RIGHT_FREQUENCY",
-	  "Right channel frequency (Hz).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_RIGHTFREQUENCY], wxT(
+	  "RIGHT_FREQUENCY"),
+	  wxT("Right channel frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->rightFrequency, NULL,
 	  (void * (*)) SetRightFrequency_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_LEFTINTENSITY], "LEFT_INTENSITY",
-	  "Left channel intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_LEFTINTENSITY], wxT(
+	  "LEFT_INTENSITY"),
+	  wxT("Left channel intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->leftIntensity, NULL,
 	  (void * (*)) SetLeftIntensity_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_RIGHTINTENSITY], "RIGHT_INTENSITY",
-	  "Right channel intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_RIGHTINTENSITY], wxT(
+	  "RIGHT_INTENSITY"),
+	  wxT("Right channel intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->rightIntensity, NULL,
 	  (void * (*)) SetRightIntensity_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_PHASEDIFFERENCE], "PHASE_DIFF",
-	  "Phase difference between channels (degrees).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_PHASEDIFFERENCE], wxT(
+	  "PHASE_DIFF"),
+	  wxT("Phase difference between channels (degrees)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->phaseDifference, NULL,
 	  (void * (*)) SetPhaseDifference_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->duration, NULL,
 	  (void * (*)) SetDuration_PureTone_Binaural);
-	SetPar_UniParMgr(&pars[PURETONE_Binaural_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[PURETONE_Binaural_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &bPureTonePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_PureTone_Binaural);
@@ -191,15 +195,15 @@ SetUniParList_PureTone_Binaural(void)
 UniParListPtr
 GetUniParListPtr_PureTone_Binaural(void)
 {
-	static const char	*funcName = "GetUniParListPtr_PureTone_Binaural";
+	static const WChar	*funcName = wxT("GetUniParListPtr_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bPureTonePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bPureTonePtr->parList);
@@ -218,7 +222,7 @@ SetPars_PureTone_Binaural(double leftFrequency, double rightFrequency,
   double leftIntensity, double rightIntensity, double phaseDifference,
   double duration, double samplingInterval)
 {
-	static const char	*funcName = "SetPars_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetPars_PureTone_Binaural");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -237,7 +241,7 @@ SetPars_PureTone_Binaural(double leftFrequency, double rightFrequency,
 	if (!SetSamplingInterval_PureTone_Binaural(samplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -253,10 +257,10 @@ SetPars_PureTone_Binaural(double leftFrequency, double rightFrequency,
 BOOLN
 SetLeftFrequency_PureTone_Binaural(double theLeftFrequency)
 {
-	static const char	*funcName = "SetLeftFrequency_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetLeftFrequency_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -277,10 +281,10 @@ SetLeftFrequency_PureTone_Binaural(double theLeftFrequency)
 BOOLN
 SetRightFrequency_PureTone_Binaural(double theRightFrequency)
 {
-	static const char	*funcName = "SetRightFrequency_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetRightFrequency_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -301,10 +305,10 @@ SetRightFrequency_PureTone_Binaural(double theRightFrequency)
 BOOLN
 SetLeftIntensity_PureTone_Binaural(double theLeftIntensity)
 {
-	static const char	*funcName = "SetLeftIntensity_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetLeftIntensity_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -325,10 +329,10 @@ SetLeftIntensity_PureTone_Binaural(double theLeftIntensity)
 BOOLN
 SetRightIntensity_PureTone_Binaural(double theRightIntensity)
 {
-	static const char	*funcName = "SetRightIntensity_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetRightIntensity_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -349,10 +353,10 @@ SetRightIntensity_PureTone_Binaural(double theRightIntensity)
 BOOLN
 SetPhaseDifference_PureTone_Binaural(double thePhaseDifference)
 {
-	static const char	*funcName = "SetPhaseDifference_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetPhaseDifference_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -373,10 +377,10 @@ SetPhaseDifference_PureTone_Binaural(double thePhaseDifference)
 BOOLN
 SetDuration_PureTone_Binaural(double theDuration)
 {
-	static const char	*funcName = "SetDuration_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetDuration_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -397,14 +401,15 @@ SetDuration_PureTone_Binaural(double theDuration)
 BOOLN
 SetSamplingInterval_PureTone_Binaural(double theSamplingInterval)
 {
-	static const char	*funcName = "SetSamplingInterval_PureTone_Binaural";
+	static const WChar	*funcName = wxT(
+	  "SetSamplingInterval_PureTone_Binaural");
 
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -428,48 +433,48 @@ SetSamplingInterval_PureTone_Binaural(double theSamplingInterval)
 BOOLN
 CheckPars_PureTone_Binaural(void)
 {
-	static const char	*funcName = "CheckPars_PureTone_Binaural";
+	static const WChar	*funcName = wxT("CheckPars_PureTone_Binaural");
 	BOOLN	ok;
 	double	criticalFrequency;
 
 	ok = TRUE;
 	if (bPureTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bPureTonePtr->leftFrequencyFlag) {
-		NotifyError("%s: leftFrequency variable not set.", funcName);
+		NotifyError(wxT("%s: leftFrequency variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->rightFrequencyFlag) {
-		NotifyError("%s: rightFrequency variable not set.", funcName);
+		NotifyError(wxT("%s: rightFrequency variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->leftIntensityFlag) {
-		NotifyError("%s: leftIntensity variable not set.", funcName);
+		NotifyError(wxT("%s: leftIntensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->rightIntensityFlag) {
-		NotifyError("%s: rightIntensity variable not set.", funcName);
+		NotifyError(wxT("%s: rightIntensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->phaseDifferenceFlag) {
-		NotifyError("%s: phaseDifference variable not set.", funcName);
+		NotifyError(wxT("%s: phaseDifference variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bPureTonePtr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	criticalFrequency = 1.0 / (2.0 * bPureTonePtr->dt);
 	if (ok && ((criticalFrequency <= bPureTonePtr->leftFrequency) ||
 	  (criticalFrequency <= bPureTonePtr->rightFrequency))) {
-		NotifyError("%s: Sampling rate (dt = %g ms) is too low for one of "
-		  "the stimulus\nfrequencies.", funcName, MSEC(bPureTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for one of "
+		  "the stimulus\nfrequencies."), funcName, MSEC(bPureTonePtr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -486,20 +491,22 @@ CheckPars_PureTone_Binaural(void)
 BOOLN
 PrintPars_PureTone_Binaural(void)
 {
-	static const char	*funcName = "PrintPars_PureTone_Binaural";
+	static const WChar	*funcName = wxT("PrintPars_PureTone_Binaural");
 
 	if (!CheckPars_PureTone_Binaural()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Binaural Pure Tone Module Parameters:-\n");
-	DPrint("\tFrequency: left / right = %g / %g (Hz)\n",
+	DPrint(wxT("Binaural Pure Tone Module Parameters:-\n"));
+	DPrint(wxT("\tFrequency: left / right = %g / %g (Hz)\n"),
 	  bPureTonePtr->leftFrequency, bPureTonePtr->rightFrequency);
-	DPrint("\tIntensity: left / right = %g / %g (dB SPL)\n",
+	DPrint(wxT("\tIntensity: left / right = %g / %g (dB SPL)\n"),
 	  bPureTonePtr->leftIntensity, bPureTonePtr->rightIntensity);
-	DPrint("\tPhase difference = %g degrees\n", bPureTonePtr->phaseDifference);
-	DPrint("\tDuration = %g ms, ", MILLI(bPureTonePtr->duration));
-	DPrint("\tSamplingInterval = %g ms\n", MILLI(bPureTonePtr->dt));
+	DPrint(wxT("\tPhase difference = %g degrees\n"), bPureTonePtr->
+	  phaseDifference);
+	DPrint(wxT("\tDuration = %g ms, "), MILLI(bPureTonePtr->duration));
+	DPrint(wxT("\tSamplingInterval = %g ms\n"), MILLI(bPureTonePtr->dt));
 	return(TRUE);
 
 }
@@ -511,44 +518,45 @@ PrintPars_PureTone_Binaural(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_PureTone_Binaural(char *fileName)
+ReadPars_PureTone_Binaural(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_PureTone_Binaural";
+	static const WChar	*funcName = wxT("ReadPars_PureTone_Binaural");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	leftFrequency, rightFrequency, leftIntensity, rightIntensity;
 	double	phaseDifference, duration, samplingInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf %lf", &leftFrequency, &leftIntensity))
+	if (!GetPars_ParFile(fp, wxT("%lf %lf"), &leftFrequency, &leftIntensity))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf %lf", &rightFrequency, &rightIntensity))
+	if (!GetPars_ParFile(fp, wxT("%lf %lf"), &rightFrequency, &rightIntensity))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &phaseDifference))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &phaseDifference))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_Binaural(leftFrequency, rightFrequency,
 	  leftIntensity, rightIntensity, phaseDifference, duration,
 	  samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -565,10 +573,10 @@ ReadPars_PureTone_Binaural(char *fileName)
 BOOLN
 SetParsPointer_PureTone_Binaural(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_PureTone_Binaural";
+	static const WChar	*funcName = wxT("SetParsPointer_PureTone_Binaural");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bPureTonePtr = (BPureTonePtr) theModule->parsPtr;
@@ -585,14 +593,15 @@ SetParsPointer_PureTone_Binaural(ModulePtr theModule)
 BOOLN
 InitModule_PureTone_Binaural(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_PureTone_Binaural";
+	static const WChar	*funcName = wxT("InitModule_PureTone_Binaural");
 
 	if (!SetParsPointer_PureTone_Binaural(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_PureTone_Binaural(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bPureTonePtr;
@@ -623,10 +632,10 @@ InitModule_PureTone_Binaural(ModulePtr theModule)
 BOOLN
 CheckData_PureTone_Binaural(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_PureTone_Binaural";
+	static const WChar	*funcName = wxT("CheckData_PureTone_Binaural");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -652,7 +661,7 @@ CheckData_PureTone_Binaural(EarObjectPtr data)
 BOOLN
 GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 {
-	static const char	*funcName = "GenerateSignal_PureTone_Binaural";
+	static const WChar	*funcName = wxT("GenerateSignal_PureTone_Binaural");
 	int			j;
 	ChanLen		i, t;
 	register	double		amplitude, phase, frequency, intensity;
@@ -662,14 +671,14 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 		if (!CheckPars_PureTone_Binaural())
 			return(FALSE);
 		if (!CheckData_PureTone_Binaural(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Binaural pure tone stimulus");
+		SetProcessName_EarObject(data, wxT("Binaural pure tone stimulus"));
 		if ( !InitOutSignal_EarObject(data, BINAURAL_PTONE_CHANNELS,
 		  (ChanLen) floor(bPureTonePtr->duration / bPureTonePtr->dt + 0.5),
 	    	bPureTonePtr->dt) ) {
-			NotifyError("%s: Cannot initialise output signal.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal."), funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(data->outSignal, 2);

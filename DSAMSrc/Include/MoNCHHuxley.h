@@ -113,7 +113,7 @@ typedef struct {
 	NameSpecifier	*operationModeList;
 	NameSpecifier	*injectionModeList;
 	UniParListPtr	parList;
-	char			diagFileName[MAX_FILE_PATH];
+	WChar			diagFileName[MAX_FILE_PATH];
 	FILE			*fp;
 	BOOLN	restingRun, debug;
 	int		numChannels;
@@ -161,13 +161,13 @@ BOOLN	InitProcessVariables_Neuron_HHuxley(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_HHuxley(void);
 
-BOOLN	ReadPars_Neuron_HHuxley(char *fileName);
+BOOLN	ReadPars_Neuron_HHuxley(WChar *fileName);
 
 BOOLN	RunModel_Neuron_HHuxley(EarObjectPtr data);
 
 BOOLN	SetCellCapacitance_Neuron_HHuxley(double theCellCapacitance);
 
-BOOLN	SetDiagnosticMode_Neuron_HHuxley(char *theDiagnosticMode);
+BOOLN	SetDiagnosticMode_Neuron_HHuxley(WChar *theDiagnosticMode);
 
 BOOLN	SetExcitatoryReversalPot_Neuron_HHuxley(double
 		  theExcitatoryReversalPot);
@@ -179,16 +179,16 @@ BOOLN	SetICList_Neuron_HHuxley(IonChanListPtr theICList);
 BOOLN	SetInhibitoryReversalPot_Neuron_HHuxley(double
 			  theInhibitoryReversalPot);
 
-BOOLN	SetInjectionMode_Neuron_HHuxley(char *theInjectionMode);
+BOOLN	SetInjectionMode_Neuron_HHuxley(WChar *theInjectionMode);
 
 BOOLN	InitModule_Neuron_HHuxley(ModulePtr theModule);
 
-BOOLN	SetOperationMode_Neuron_HHuxley(char *theOperationMode);
+BOOLN	SetOperationMode_Neuron_HHuxley(WChar *theOperationMode);
 
 BOOLN	SetParsPointer_Neuron_HHuxley(ModulePtr theModule);
 
-BOOLN	SetPars_Neuron_HHuxley(IonChanListPtr iCList, char *diagnosticMode,
-		  char *operationMode, char *injectionMode,
+BOOLN	SetPars_Neuron_HHuxley(IonChanListPtr iCList, WChar *diagnosticMode,
+		  WChar *operationMode, WChar *injectionMode,
 		  double excitatoryReversalPot, double inhibitoryReversalPot,
 		  double shuntInhibitoryReversalPot, double cellCapacitance,
 		  double restingPotential, double restingSignalDuration,

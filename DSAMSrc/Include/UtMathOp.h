@@ -93,7 +93,7 @@ BOOLN	Process_Utility_MathOp(EarObjectPtr data);
 
 BOOLN	SetOperand_Utility_MathOp(double theOperand);
 
-BOOLN	SetOperatorMode_Utility_MathOp(char * theOperatorMode);
+BOOLN	SetOperatorMode_Utility_MathOp(WChar * theOperatorMode);
 
 BOOLN	SetParsPointer_Utility_MathOp(ModulePtr theModule);
 

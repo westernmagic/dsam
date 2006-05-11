@@ -51,8 +51,6 @@ IHCRPZhangPtr	iHCRPZhangPtr = NULL;
 BOOLN
 Free_IHCRP_Zhang(void)
 {
-	/* static const char	*funcName = "Free_IHCRP_Zhang";  */
-
 	if (iHCRPZhangPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IHCRP_Zhang();
@@ -81,19 +79,19 @@ Free_IHCRP_Zhang(void)
 BOOLN
 Init_IHCRP_Zhang(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("Init_IHCRP_Zhang");
 
 	if (parSpec == GLOBAL) {
 		if (iHCRPZhangPtr != NULL)
 			Free_IHCRP_Zhang();
 		if ((iHCRPZhangPtr = (IHCRPZhangPtr) malloc(sizeof(
 		  IHCRPZhang))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (iHCRPZhangPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -113,7 +111,7 @@ Init_IHCRP_Zhang(ParameterSpecifier parSpec)
 	iHCRPZhangPtr->k = 7;
 
 	if (!SetUniParList_IHCRP_Zhang()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHCRP_Zhang();
 		return(FALSE);
 	}
@@ -133,42 +131,42 @@ Init_IHCRP_Zhang(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IHCRP_Zhang(void)
 {
-	static const char *funcName = "SetUniParList_IHCRP_Zhang";
+	static const WChar *funcName = wxT("SetUniParList_IHCRP_Zhang");
 	UniParPtr	pars;
 
 	if ((iHCRPZhangPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHCRP_ZHANG_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = iHCRPZhangPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_A0], "A0",
-	  "Scaler in IHC nonlinear function.",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_A0], wxT("A0"),
+	  wxT("Scaler in IHC nonlinear function."),
 	  UNIPAR_REAL,
 	  &iHCRPZhangPtr->a0, NULL,
 	  (void * (*)) SetA0_IHCRP_Zhang);
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_B], "B",
-	  "Parameter in IHC nonlinear function.",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_B], wxT("B"),
+	  wxT("Parameter in IHC nonlinear function."),
 	  UNIPAR_REAL,
 	  &iHCRPZhangPtr->b, NULL,
 	  (void * (*)) SetB_IHCRP_Zhang);
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_C], "C",
-	  "Parameter in IHC nonlinear function.",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_C], wxT("C"),
+	  wxT("Parameter in IHC nonlinear function."),
 	  UNIPAR_REAL,
 	  &iHCRPZhangPtr->c, NULL,
 	  (void * (*)) SetC_IHCRP_Zhang);
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_D], "D",
-	  "Parameter in IHC nonlinear function.",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_D], wxT("D"),
+	  wxT("Parameter in IHC nonlinear function."),
 	  UNIPAR_REAL,
 	  &iHCRPZhangPtr->d, NULL,
 	  (void * (*)) SetD_IHCRP_Zhang);
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_CUT], "CUT",
-	  "Cutoff frequency of IHC low-pass filter (Hz).",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_CUT], wxT("CUT"),
+	  wxT("Cutoff frequency of IHC low-pass filter (Hz)."),
 	  UNIPAR_REAL,
 	  &iHCRPZhangPtr->cut, NULL,
 	  (void * (*)) SetCut_IHCRP_Zhang);
-	SetPar_UniParMgr(&pars[IHCRP_ZHANG_K], "K",
-	  "Order of IHC lowe-pass filter.",
+	SetPar_UniParMgr(&pars[IHCRP_ZHANG_K], wxT("K"),
+	  wxT("Order of IHC lowe-pass filter."),
 	  UNIPAR_INT,
 	  &iHCRPZhangPtr->k, NULL,
 	  (void * (*)) SetK_IHCRP_Zhang);
@@ -186,15 +184,15 @@ SetUniParList_IHCRP_Zhang(void)
 UniParListPtr
 GetUniParListPtr_IHCRP_Zhang(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (iHCRPZhangPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(iHCRPZhangPtr->parList);
@@ -212,10 +210,10 @@ GetUniParListPtr_IHCRP_Zhang(void)
 BOOLN
 SetA0_IHCRP_Zhang(double theA0)
 {
-	static const char	*funcName = "SetA0_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetA0_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -237,10 +235,10 @@ SetA0_IHCRP_Zhang(double theA0)
 BOOLN
 SetB_IHCRP_Zhang(double theB)
 {
-	static const char	*funcName = "SetB_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetB_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -262,10 +260,10 @@ SetB_IHCRP_Zhang(double theB)
 BOOLN
 SetC_IHCRP_Zhang(double theC)
 {
-	static const char	*funcName = "SetC_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetC_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -287,10 +285,10 @@ SetC_IHCRP_Zhang(double theC)
 BOOLN
 SetD_IHCRP_Zhang(double theD)
 {
-	static const char	*funcName = "SetD_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetD_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -312,10 +310,10 @@ SetD_IHCRP_Zhang(double theD)
 BOOLN
 SetCut_IHCRP_Zhang(double theCut)
 {
-	static const char	*funcName = "SetCut_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetCut_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -337,10 +335,10 @@ SetCut_IHCRP_Zhang(double theCut)
 BOOLN
 SetK_IHCRP_Zhang(int theK)
 {
-	static const char	*funcName = "SetK_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetK_IHCRP_Zhang");
 
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -364,36 +362,36 @@ SetK_IHCRP_Zhang(int theK)
 BOOLN
 CheckPars_IHCRP_Zhang(void)
 {
-	static const char	*funcName = "CheckPars_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("CheckPars_IHCRP_Zhang");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (iHCRPZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!iHCRPZhangPtr->a0Flag) {
-		NotifyError("%s: a0 variable not set.", funcName);
+		NotifyError(wxT("%s: a0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iHCRPZhangPtr->bFlag) {
-		NotifyError("%s: b variable not set.", funcName);
+		NotifyError(wxT("%s: b variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iHCRPZhangPtr->cFlag) {
-		NotifyError("%s: c variable not set.", funcName);
+		NotifyError(wxT("%s: c variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iHCRPZhangPtr->dFlag) {
-		NotifyError("%s: d variable not set.", funcName);
+		NotifyError(wxT("%s: d variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iHCRPZhangPtr->cutFlag) {
-		NotifyError("%s: cut variable not set.", funcName);
+		NotifyError(wxT("%s: cut variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iHCRPZhangPtr->kFlag) {
-		NotifyError("%s: k variable not set.", funcName);
+		NotifyError(wxT("%s: k variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -410,19 +408,20 @@ CheckPars_IHCRP_Zhang(void)
 BOOLN
 PrintPars_IHCRP_Zhang(void)
 {
-	static const char	*funcName = "PrintPars_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("PrintPars_IHCRP_Zhang");
 
 	if (!CheckPars_IHCRP_Zhang()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Zhang et al. IHCRP Module Parameters:-\n");
-	DPrint("\ta0 = %g,", iHCRPZhangPtr->a0);
-	DPrint("\tb = %g,", iHCRPZhangPtr->b);
-	DPrint("\tc = %g\n", iHCRPZhangPtr->c);
-	DPrint("\td = %g,", iHCRPZhangPtr->d);
-	DPrint("\tcut = %g (Hz),", iHCRPZhangPtr->cut);
-	DPrint("\tk = %d\n", iHCRPZhangPtr->k);
+	DPrint(wxT("Zhang et al. IHCRP Module Parameters:-\n"));
+	DPrint(wxT("\ta0 = %g,"), iHCRPZhangPtr->a0);
+	DPrint(wxT("\tb = %g,"), iHCRPZhangPtr->b);
+	DPrint(wxT("\tc = %g\n"), iHCRPZhangPtr->c);
+	DPrint(wxT("\td = %g,"), iHCRPZhangPtr->d);
+	DPrint(wxT("\tcut = %g (Hz),"), iHCRPZhangPtr->cut);
+	DPrint(wxT("\tk = %d\n"), iHCRPZhangPtr->k);
 	return(TRUE);
 
 }
@@ -437,10 +436,10 @@ PrintPars_IHCRP_Zhang(void)
 BOOLN
 SetParsPointer_IHCRP_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("SetParsPointer_IHCRP_Zhang");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	iHCRPZhangPtr = (IHCRPZhangPtr) theModule->parsPtr;
@@ -458,14 +457,15 @@ SetParsPointer_IHCRP_Zhang(ModulePtr theModule)
 BOOLN
 InitModule_IHCRP_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("InitModule_IHCRP_Zhang");
 
 	if (!SetParsPointer_IHCRP_Zhang(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHCRP_Zhang(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		   funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = iHCRPZhangPtr;
@@ -496,10 +496,10 @@ InitModule_IHCRP_Zhang(ModulePtr theModule)
 BOOLN
 CheckData_IHCRP_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("CheckData_IHCRP_Zhang");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -548,7 +548,7 @@ RunIHCNL2_IHCRP_Zhang(TNonLinear* p, const double *in, double *out,
 BOOLN
 InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("InitProcessVariables_IHCRP_Zhang");
 	int		i;
 	IHCRPZhangPtr	p = iHCRPZhangPtr;
 	THairCellPtr	hCRP;
@@ -558,7 +558,8 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 		FreeProcessVariables_IHCRP_Zhang();
 		if ((p->hCRP = (THairCell *) calloc(data->outSignal->numChannels,
 		  sizeof(THairCell))) == NULL) {
-		 	NotifyError("%s: Out of memory for coefficients array.", funcName);
+		 	NotifyError(wxT("%s: Out of memory for coefficients array."),
+			  funcName);
 		 	return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -615,7 +616,7 @@ FreeProcessVariables_IHCRP_Zhang(void)
 BOOLN
 RunModel_IHCRP_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_IHCRP_Zhang";
+	static const WChar	*funcName = wxT("RunModel_IHCRP_Zhang");
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	THairCellPtr	hCRP;
@@ -625,18 +626,19 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 		if (!CheckPars_IHCRP_Zhang())
 			return(FALSE);
 		if (!CheckData_IHCRP_Zhang(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Zhang et al. IHC Receptor Potential.");
+		SetProcessName_EarObject(data, wxT("Zhang et al. IHC Receptor "
+		  "Potential."));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_IHCRP_Zhang(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

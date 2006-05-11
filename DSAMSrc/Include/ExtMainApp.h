@@ -24,7 +24,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define MAINAPP_PARAMETER_STR_DELIMITERS	" ,\t"
+#define MAINAPP_PARAMETER_STR_DELIMITERS	wxT(" ,\t")
 #define MAINAPP_QUOTE						'"'
 #define MAINAPP_SPACE_SUBST					'\1'
 
@@ -51,7 +51,7 @@ class MainApp {
 
 	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag, diagsOn;
 	bool	threadedSimExecutionFlag;
-	wxChar	**argv;
+	WChar	**argv;
 	int		argc;
 	int		serverPort;
 	int		(* ExternalMain)(void);
@@ -65,7 +65,7 @@ class MainApp {
 	RunThreadedProc	*runThreadedProc;
 	wxCriticalSection	mainCritSect;
 
-  	MainApp(int theArgc = 0, wxChar **theArgv = NULL, int (* TheExternalMain)(
+  	MainApp(int theArgc = 0, WChar **theArgv = NULL, int (* TheExternalMain)(
 	  void) = NULL, int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
@@ -85,7 +85,7 @@ class MainApp {
 	void	DeleteSimThread(void);
 	void	FreeArgStrings(void);
 	int		GetArgc(void)	{ return argc; }
-	wxChar **	GetArgv(void)	{ return argv; }
+	WChar **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
 	wxFileName &	GetSimFileName(void)	{ return simFileName; }
@@ -93,15 +93,15 @@ class MainApp {
 	bool	InitArgv(int theArgc);
 	bool	InitMain(bool loadSimulationFlag = false);
 	bool	LoadXMLDocument(void);
-	bool	ProtectQuotedStr(char *str);
-	void	RemoveCommands(int offset, char *prefix);
-	char *	RestoreQuotedStr(char *str);
+	bool	ProtectQuotedStr(WChar *str);
+	void	RemoveCommands(int offset, WChar *prefix);
+	WChar *	RestoreQuotedStr(WChar *str);
 	int		RunServer(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
-	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
-	bool	SetArgvString(int index, char *string, int size);
+	void	SetArgv(WChar **theArgv)	{ argv = theArgv; }
+	bool	SetArgvString(int index, WChar *string, int size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
-	int		SetParameterOptionArgs(int indexStart, char *parameterOptions,
+	int		SetParameterOptionArgs(int indexStart, WChar *parameterOptions,
 			  bool countOnly);
 	void	SetSimulationFile(wxFileName &fileName);
 	void	SetThreadPars(void);
@@ -123,12 +123,12 @@ extern MainApp	*dSAMMainApp;
 #if defined(EXTENSIONS_SUPPORT) && !defined(USE_GUI)
 #	if !defined(LIBRARY_COMPILE)
 	int
-	main(int argc, char **argv)
+	main(int argc, WChar **argv)
 	{
 		wxInitializer initializer;
 		if (!initializer) {
-			NotifyError("main: Failed to initialize the wxWidgets library, "
-			  "aborting.");
+			NotifyError(wxT("main: Failed to initialize the wxWidgets library, "
+			  "aborting."));
 			return -1;
 		}
 		MainApp	mainApp(argc, argv, MainSimulation);
@@ -139,13 +139,13 @@ extern MainApp	*dSAMMainApp;
 
 #endif /* defined(EXTENSIONS_SUPPORT) && !defined(GRAPHICS_SUPPORT) */
 
-void	DPrintSysLog_MainApp(char *format, va_list args);
+void	DPrintSysLog_MainApp(WChar *format, va_list args);
 
 void	PrintUsage_MainApp(void);
 
 BOOLN	OnExecute_MainApp(void);
 
-BOOLN	ReadXMLSimFile_MainApp(char *fileName);
+BOOLN	ReadXMLSimFile_MainApp(WChar *fileName);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

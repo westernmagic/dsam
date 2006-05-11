@@ -54,8 +54,6 @@
 BOOLN
 SetParsPointer_Utility_Accumulate(ModulePtr theModule)
 {
-	/* static const char	*funcName = "SetParsPointer_Utility_Accumulate"; */
-
 	return(TRUE);
 
 }
@@ -69,8 +67,6 @@ SetParsPointer_Utility_Accumulate(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Accumulate(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Utility_Accumulate"; */
-
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->ResetProcess = ResetProcess_Utility_Accumulate;
@@ -96,12 +92,12 @@ InitModule_Utility_Accumulate(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Accumulate(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Accumulate";
+	static const WChar	*funcName = wxT("CheckData_Utility_Accumulate");
 	BOOLN	ok = TRUE;
 	int		i;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -109,8 +105,8 @@ CheckData_Utility_Accumulate(EarObjectPtr data)
 	for (i = 1; ok && (i < data->numInSignals); i++)
 		if (!SameType_SignalData_NoDiagnostics(data->inSignal[0],
 		  data->inSignal[i])) {
-			NotifyError("%s: Input signal [%d] is not the same as the first "
-			  "[0].", funcName, i);
+			NotifyError(wxT("%s: Input signal [%d] is not the same as the "
+			  "first [0]."), funcName, i);
 			ok = FALSE;
 		}
 	if (!ok)
@@ -151,20 +147,21 @@ ResetProcess_Utility_Accumulate(EarObjectPtr data)
 BOOLN
 Process_Utility_Accumulate(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Accumulate";
+	static const WChar	*funcName = wxT("Process_Utility_Accumulate");
 	register	ChanData	 *inPtr, *outPtr;
 	int			chan, input;
 	ChanLen	i;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_Accumulate(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Signal accumulator.");
+		SetProcessName_EarObject(data, wxT("Signal accumulator."));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_Accumulate(data);

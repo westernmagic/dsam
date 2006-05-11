@@ -50,8 +50,6 @@ CollectSigsPtr	collectSigsPtr = NULL;
 BOOLN
 Free_Transform_CollectSignals(void)
 {
-	/* static const char	*funcName = "Free_Transform_CollectSignals";  */
-
 	if (collectSigsPtr == NULL)
 		return(FALSE);
 	if (collectSigsPtr->labels) {
@@ -79,11 +77,11 @@ InitLabelModeList_Transform_CollectSignals(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "CHAN_INDEX",	TRANSFORM_COLLECTSIGNALS_LABELMODE_CHAN_INDEX },
-			{ "INPUT_LABELS", TRANSFORM_COLLECTSIGNALS_LABELMODE_INPUT_LABELS },
-			{ "USER",		TRANSFORM_COLLECTSIGNALS_LABELMODE_USER },
-			{ "",			TRANSFORM_COLLECTSIGNALS_LABELMODE_NULL },
-		};
+		{ wxT("CHAN_INDEX"),	TRANSFORM_COLLECTSIGNALS_LABELMODE_CHAN_INDEX },
+		{ wxT("INPUT_LABELS"),TRANSFORM_COLLECTSIGNALS_LABELMODE_INPUT_LABELS },
+		{ wxT("USER"),			TRANSFORM_COLLECTSIGNALS_LABELMODE_USER },
+		{ wxT(""),				TRANSFORM_COLLECTSIGNALS_LABELMODE_NULL },
+	};
 	collectSigsPtr->labelModeList = modeList;
 	return(TRUE);
 
@@ -104,19 +102,20 @@ InitLabelModeList_Transform_CollectSignals(void)
 BOOLN
 Init_Transform_CollectSignals(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("Init_Transform_CollectSignals");
 
 	if (parSpec == GLOBAL) {
 		if (collectSigsPtr != NULL)
 			Free_Transform_CollectSignals();
 		if ((collectSigsPtr = (CollectSigsPtr) malloc(sizeof(CollectSigs))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (collectSigsPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -127,7 +126,7 @@ Init_Transform_CollectSignals(ParameterSpecifier parSpec)
 
 	InitLabelModeList_Transform_CollectSignals();
 	if (!SetUniParList_Transform_CollectSignals()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Transform_CollectSignals();
 		return(FALSE);
 	}
@@ -147,22 +146,23 @@ Init_Transform_CollectSignals(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Transform_CollectSignals(void)
 {
-	static const char *funcName = "SetUniParList_Transform_CollectSignals";
+	static const WChar *funcName = wxT(
+	  "SetUniParList_Transform_CollectSignals");
 	UniParPtr	pars;
 
 	if ((collectSigsPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  TRANSFORM_COLLECTSIGNALS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = collectSigsPtr->parList->pars;
-	SetPar_UniParMgr(&pars[TRANSFORM_COLLECTSIGNALS_LABELMODE], "MODE",
-	  "Channel labelling mode ('chan_index', 'input_labels' or 'user').",
+	SetPar_UniParMgr(&pars[TRANSFORM_COLLECTSIGNALS_LABELMODE], wxT("MODE"),
+	  wxT("Channel labelling mode ('chan_index', 'input_labels' or 'user')."),
 	  UNIPAR_NAME_SPEC,
 	  &collectSigsPtr->labelMode, collectSigsPtr->labelModeList,
 	  (void * (*)) SetLabelMode_Transform_CollectSignals);
-	SetPar_UniParMgr(&pars[TRANSFORM_COLLECTSIGNALS_LABELS], "LABEL",
-	  "Channel label array (floating point values).",
+	SetPar_UniParMgr(&pars[TRANSFORM_COLLECTSIGNALS_LABELS], wxT("LABEL"),
+	  wxT("Channel label array (floating point values)."),
 	  UNIPAR_REAL_DYN_ARRAY,
 	  &collectSigsPtr->labels, &collectSigsPtr->numChannels,
 	  (void * (*)) SetIndividualLabel_Transform_CollectSignals);
@@ -196,15 +196,16 @@ SetEnabledState_Transform_CollectSignals(void)
 UniParListPtr
 GetUniParListPtr_Transform_CollectSignals(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Transform_CollectSignals";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_Transform_CollectSignals");
 
 	if (collectSigsPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (collectSigsPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(collectSigsPtr->parList);
@@ -220,19 +221,20 @@ GetUniParListPtr_Transform_CollectSignals(void)
  */
 
 BOOLN
-SetLabelMode_Transform_CollectSignals(char * theLabelMode)
+SetLabelMode_Transform_CollectSignals(WChar * theLabelMode)
 {
-	static const char	*funcName = "SetLabelMode_Transform_CollectSignals";
+	static const WChar	*funcName = wxT(
+	  "SetLabelMode_Transform_CollectSignals");
 	int		specifier;
 
 	if (collectSigsPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theLabelMode,
 		collectSigsPtr->labelModeList)) ==
 		  TRANSFORM_COLLECTSIGNALS_LABELMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theLabelMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theLabelMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -254,10 +256,10 @@ SetLabelMode_Transform_CollectSignals(char * theLabelMode)
 BOOLN
 SetLabels_Transform_CollectSignals(double *theLabels)
 {
-	static const char	*funcName = "SetLabels_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("SetLabels_Transform_CollectSignals");
 
 	if (collectSigsPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -277,22 +279,22 @@ SetLabels_Transform_CollectSignals(double *theLabels)
 BOOLN
 SetIndividualLabel_Transform_CollectSignals(int theIndex, double theLabel)
 {
-	static const char *funcName =
-	  "SetIndividualLabelArray_Utility_CollectSignals";
+	static const WChar *funcName =
+	  wxT("SetIndividualLabelArray_Utility_CollectSignals");
 
 	if (collectSigsPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (collectSigsPtr->labelMode != TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) {
-		NotifyError("%s: Channels can only be selected in 'user' Label "
-		  "mode.", funcName);
+		NotifyError(wxT("%s: Channels can only be selected in 'user' Label "
+		  "mode."), funcName);
 		return(FALSE);
 	}
 	if ((theIndex > collectSigsPtr->numChannels - 1) &&
 	  !ResizeDoubleArray_UniParMgr(&collectSigsPtr->labels,
 	    &collectSigsPtr->numChannels, theIndex + 1)) {
-		NotifyError("%s: Could not resize the 'labels' array.", funcName);
+		NotifyError(wxT("%s: Could not resize the 'labels' array."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -314,22 +316,22 @@ SetIndividualLabel_Transform_CollectSignals(int theIndex, double theLabel)
 BOOLN
 CheckPars_Transform_CollectSignals(void)
 {
-	static const char	*funcName = "CheckPars_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("CheckPars_Transform_CollectSignals");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (collectSigsPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!collectSigsPtr->labelModeFlag) {
-		NotifyError("%s: labelMode variable not set.", funcName);
+		NotifyError(wxT("%s: labelMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if ((collectSigsPtr->labelMode ==
 	  TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && collectSigsPtr->labels ==
 	  NULL) {
-		NotifyError("%s: 'Labels' array not set.", funcName);
+		NotifyError(wxT("%s: 'Labels' array not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -346,20 +348,21 @@ CheckPars_Transform_CollectSignals(void)
 BOOLN
 PrintPars_Transform_CollectSignals(void)
 {
-	static const char	*funcName = "PrintPars_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("PrintPars_Transform_CollectSignals");
 	int		i;
 
 	if (!CheckPars_Transform_CollectSignals()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Collect Signal Transform Module Parameters:-\n");
-	DPrint("\tLabel mode = %s.\n", collectSigsPtr->labelModeList[
+	DPrint(wxT("Collect Signal Transform Module Parameters:-\n"));
+	DPrint(wxT("\tLabel mode = %s.\n"), collectSigsPtr->labelModeList[
 	  collectSigsPtr->labelMode].name);
 	if (collectSigsPtr->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) {
-		DPrint("\tLabel Array:\n");
+		DPrint(wxT("\tLabel Array:\n"));
 		for (i = 0; i < collectSigsPtr->numChannels; i++)
-			DPrint("\tLabel[%2d]: %g\n", i, collectSigsPtr->labels[i]);
+			DPrint(wxT("\tLabel[%2d]: %g\n"), i, collectSigsPtr->labels[i]);
 	}
 	return(TRUE);
 
@@ -375,10 +378,11 @@ PrintPars_Transform_CollectSignals(void)
 BOOLN
 SetParsPointer_Transform_CollectSignals(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Transform_CollectSignals";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Transform_CollectSignals");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	collectSigsPtr = (CollectSigsPtr) theModule->parsPtr;
@@ -396,14 +400,15 @@ SetParsPointer_Transform_CollectSignals(ModulePtr theModule)
 BOOLN
 InitModule_Transform_CollectSignals(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("InitModule_Transform_CollectSignals");
 
 	if (!SetParsPointer_Transform_CollectSignals(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Transform_CollectSignals(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = collectSigsPtr;
@@ -433,12 +438,12 @@ InitModule_Transform_CollectSignals(ModulePtr theModule)
 BOOLN
 CheckData_Transform_CollectSignals(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("CheckData_Transform_CollectSignals");
 	BOOLN	ok = TRUE;
 	int		i;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -448,8 +453,8 @@ CheckData_Transform_CollectSignals(EarObjectPtr data)
 		  (fabs(data->inSignal[0]->dt - data->inSignal[i]->dt) > DBL_EPSILON) ||
 		  (data->inSignal[0]->interleaveLevel != data->inSignal[i]->
 		  interleaveLevel)) {
-			NotifyError("%s: Input signal [%d] does not have the same length "
-			  "and sampling interval as the first, [0].", funcName, i);
+			NotifyError(wxT("%s: Input signal [%d] does not have the same "
+			  "length and sampling interval as the first, [0]."), funcName, i);
 			ok = FALSE;
 		}
 	if (!ok)
@@ -476,7 +481,7 @@ CheckData_Transform_CollectSignals(EarObjectPtr data)
 BOOLN
 Process_Transform_CollectSignals(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Transform_CollectSignals";
+	static const WChar	*funcName = wxT("Process_Transform_CollectSignals");
 	register ChanData	 **outChannels;
 	uShort	i, chan, numChannels;
 	double	*chanLabels, *userLabels;
@@ -486,24 +491,24 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 		if (!CheckPars_Transform_CollectSignals())
 			return(FALSE);
 		if (!CheckData_Transform_CollectSignals(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Collect channels transform module "
-		  "process");
+		SetProcessName_EarObject(data, wxT("Collect channels transform module "
+		  "process"));
 		for (i = 0, numChannels = 0; i < data->numInSignals; i++)
 			numChannels += data->inSignal[i]->numChannels;
 		if ((p->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && (p->
 		  numChannels != numChannels)) {
-			NotifyError("%s: The number of labels (%d) be equal to the number "
-			  "of channels in the output signal (%d).", funcName, p->
+			NotifyError(wxT("%s: The number of labels (%d) be equal to the "
+			  "number of channels in the output signal (%d)."), funcName, p->
 			  numChannels, numChannels);
 			return(FALSE);
 		}
 		data->externalDataFlag = TRUE;
 		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
 		  data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->

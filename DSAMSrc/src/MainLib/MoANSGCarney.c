@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRandom.h"
 #include "MoANSGCarney.h"
 
@@ -52,8 +53,6 @@ CarneySGPtr	carneySGPtr = NULL;
 BOOLN
 Free_ANSpikeGen_Carney(void)
 {
-	/* static const char	*funcName = "Free_ANSpikeGen_Carney"; */
-
 	if (carneySGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Carney();
@@ -78,9 +77,9 @@ InitInputModeList_ANSpikeGen_Carney(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "CORRECTED",	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED },
-			{ "ORIGINAL",	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL },
-			{ "",			ANSPIKEGEN_CARNEY_INPUTMODE_NULL },
+			{ wxT("CORRECTED"),	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED },
+			{ wxT("ORIGINAL"),	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL },
+			{ wxT(""),			ANSPIKEGEN_CARNEY_INPUTMODE_NULL },
 		};
 	carneySGPtr->inputModeList = modeList;
 	return(TRUE);
@@ -102,18 +101,19 @@ InitInputModeList_ANSpikeGen_Carney(void)
 BOOLN
 Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("Init_ANSpikeGen_Carney");
 
 	if (parSpec == GLOBAL) {
 		if (carneySGPtr != NULL)
 			Free_ANSpikeGen_Carney();
 		if ((carneySGPtr = (CarneySGPtr) malloc(sizeof(CarneySG))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (carneySGPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -144,7 +144,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 
 	InitInputModeList_ANSpikeGen_Carney();
 	if (!SetUniParList_ANSpikeGen_Carney()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Carney();
 		return(FALSE);
 	}
@@ -165,67 +165,70 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_ANSpikeGen_Carney(void)
 {
-	static const char *funcName = "SetUniParList_ANSpikeGen_Carney";
+	static const WChar *funcName = wxT("SetUniParList_ANSpikeGen_Carney");
 	UniParPtr	pars;
 
 	if ((carneySGPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANSPIKEGEN_CARNEY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = carneySGPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_INPUTMODE], "INPUT_MODE",
-	  "Input mode, 'corrected' (2001), or 'original' (1993) setting.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_INPUTMODE], wxT("INPUT_MODE"),
+	  wxT("Input mode, 'corrected' (2001), or 'original' (1993) setting."),
 	  UNIPAR_NAME_SPEC,
 	  &carneySGPtr->inputMode, carneySGPtr->inputModeList,
 	  (void * (*)) SetInputMode_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_RANSEED], "RAN_SEED",
-	  "Random number seed (0 produces a different seed each run).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random number seed (0 produces a different seed each run)."),
 	  UNIPAR_LONG,
 	  &carneySGPtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_NUMFIBRES], "NUM_FIBRES",
-	  "Number of fibres.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_NUMFIBRES], wxT("NUM_FIBRES"),
+	  wxT("Number of fibres."),
 	  UNIPAR_INT,
 	  &carneySGPtr->numFibres, NULL,
 	  (void * (*)) SetNumFibres_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_PULSEDURATION], "PULSE_DURATION",
-	  "Excitary post-synaptic pulse duration (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_PULSEDURATION], wxT(
+	  "PULSE_DURATION"),
+	  wxT("Excitary post-synaptic pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_PULSEMAGNITUDE], "MAGNITUDE",
-	  "Pulse magnitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_PULSEMAGNITUDE], wxT("MAGNITUDE"),
+	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->pulseMagnitude, NULL,
 	  (void * (*)) SetPulseMagnitude_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_REFRACTORYPERIOD], "REFRAC_PERIOD",
-	  "Refractory period (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_REFRACTORYPERIOD], wxT(
+	  "REFRAC_PERIOD"),
+	  wxT("Refractory period (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->refractoryPeriod, NULL,
 	  (void * (*)) SetRefractoryPeriod_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_MAXTHRESHOLD], "THRESHOLD_INC",
-	  "Maximum threshold increase following discharge, Hmax (spikes/s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_MAXTHRESHOLD], wxT(
+	  "THRESHOLD_INC"),
+	  wxT("Maximum threshold increase following discharge, Hmax (spikes/s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->maxThreshold, NULL,
 	  (void * (*)) SetMaxThreshold_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGECOEFFC0], "C0",
-	  "Coefficient for discharge history effect, c0 (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGECOEFFC0], wxT("C0"),
+	  wxT("Coefficient for discharge history effect, c0 (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->dischargeCoeffC0, NULL,
 	  (void * (*)) SetDischargeCoeffC0_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGECOEFFC1], "C1",
-	  "Coefficient for discharge history effect, c1 (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGECOEFFC1], wxT("C1"),
+	  wxT("Coefficient for discharge history effect, c1 (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->dischargeCoeffC1, NULL,
 	  (void * (*)) SetDischargeCoeffC1_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGETCONSTS0], "S0",
-	  "Time constant for discharge history effect, s0 (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGETCONSTS0], wxT("S0"),
+	  wxT("Time constant for discharge history effect, s0 (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->dischargeTConstS0, NULL,
 	  (void * (*)) SetDischargeTConstS0_ANSpikeGen_Carney);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGETCONSTS1], "S1",
-	  "Time constant for discharge history effect, s1 (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISCHARGETCONSTS1], wxT("S1"),
+	  wxT("Time constant for discharge history effect, s1 (s)."),
 	  UNIPAR_REAL,
 	  &carneySGPtr->dischargeTConstS1, NULL,
 	  (void * (*)) SetDischargeTConstS1_ANSpikeGen_Carney);
@@ -243,15 +246,15 @@ SetUniParList_ANSpikeGen_Carney(void)
 UniParListPtr
 GetUniParListPtr_ANSpikeGen_Carney(void)
 {
-	static const char	*funcName = "GetUniParListPtr_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("GetUniParListPtr_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (carneySGPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(carneySGPtr->parList);
@@ -271,7 +274,7 @@ SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres, double pulseDuration,
   double dischargeCoeffC0, double dischargeCoeffC1, double dischargeTConstS0,
   double dischargeTConstS1)
 {
-	static const char	*funcName = "SetPars_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetPars_ANSpikeGen_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -296,7 +299,7 @@ SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres, double pulseDuration,
 	if (!SetDischargeTConstS1_ANSpikeGen_Carney(dischargeTConstS1))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -310,18 +313,18 @@ SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres, double pulseDuration,
  */
 
 BOOLN
-SetInputMode_ANSpikeGen_Carney(char * theInputMode)
+SetInputMode_ANSpikeGen_Carney(WChar * theInputMode)
 {
-	static const char	*funcName = "SetInputMode_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetInputMode_ANSpikeGen_Carney");
 	int		specifier;
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theInputMode,
 		carneySGPtr->inputModeList)) == ANSPIKEGEN_CARNEY_INPUTMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theInputMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theInputMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -342,10 +345,10 @@ SetInputMode_ANSpikeGen_Carney(char * theInputMode)
 BOOLN
 SetRanSeed_ANSpikeGen_Carney(long theRanSeed)
 {
-	static const char	*funcName = "SetRanSeed_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetRanSeed_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	carneySGPtr->ranSeedFlag = TRUE;
@@ -366,14 +369,15 @@ SetRanSeed_ANSpikeGen_Carney(long theRanSeed)
 BOOLN
 SetNumFibres_ANSpikeGen_Carney(int theNumFibres)
 {
-	static const char	*funcName = "SetNumFibres_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetNumFibres_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumFibres < 1) {
-		NotifyError("%s: Illegal no. of fibres (%d).", funcName, theNumFibres);
+		NotifyError(wxT("%s: Illegal no. of fibres (%d)."), funcName,
+		  theNumFibres);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -394,10 +398,10 @@ SetNumFibres_ANSpikeGen_Carney(int theNumFibres)
 BOOLN
 SetPulseDuration_ANSpikeGen_Carney(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	carneySGPtr->pulseDurationFlag = TRUE;
@@ -417,10 +421,10 @@ SetPulseDuration_ANSpikeGen_Carney(double thePulseDuration)
 BOOLN
 SetPulseMagnitude_ANSpikeGen_Carney(double thePulseMagnitude)
 {
-	static const char	*funcName = "SetPulseMagnitude_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetPulseMagnitude_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -441,14 +445,15 @@ SetPulseMagnitude_ANSpikeGen_Carney(double thePulseMagnitude)
 BOOLN
 SetRefractoryPeriod_ANSpikeGen_Carney(double theRefractoryPeriod)
 {
-	static const char	*funcName = "SetRefractoryPeriod_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT(
+	  "SetRefractoryPeriod_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError("%s: Refractory period must be greater than zero.\n",
+		NotifyError(wxT("%s: Refractory period must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -469,10 +474,10 @@ SetRefractoryPeriod_ANSpikeGen_Carney(double theRefractoryPeriod)
 BOOLN
 SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold)
 {
-	static const char	*funcName = "SetMaxThreshold_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetMaxThreshold_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -493,10 +498,11 @@ SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold)
 BOOLN
 SetDischargeCoeffC0_ANSpikeGen_Carney(double theDischargeCoeffC0)
 {
-	static const char	*funcName = "SetDischargeCoeffC0_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT(
+	  "SetDischargeCoeffC0_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -517,10 +523,11 @@ SetDischargeCoeffC0_ANSpikeGen_Carney(double theDischargeCoeffC0)
 BOOLN
 SetDischargeCoeffC1_ANSpikeGen_Carney(double theDischargeCoeffC1)
 {
-	static const char	*funcName = "SetDischargeCoeffC1_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT(
+	  "SetDischargeCoeffC1_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -541,10 +548,11 @@ SetDischargeCoeffC1_ANSpikeGen_Carney(double theDischargeCoeffC1)
 BOOLN
 SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0)
 {
-	static const char	*funcName = "SetDischargeTConstS0_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT(
+	  "SetDischargeTConstS0_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -565,10 +573,11 @@ SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0)
 BOOLN
 SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1)
 {
-	static const char	*funcName = "SetDischargeTConstS1_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT(
+	  "SetDischargeTConstS1_ANSpikeGen_Carney");
 
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -591,62 +600,62 @@ SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1)
 BOOLN
 CheckPars_ANSpikeGen_Carney(void)
 {
-	static const char	*funcName = "CheckPars_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("CheckPars_ANSpikeGen_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (carneySGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!carneySGPtr->inputModeFlag) {
-		NotifyError("%s: inputMode variable not set.", funcName);
+		NotifyError(wxT("%s: inputMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->ranSeedFlag) {
-		NotifyError("%s: ranSeed variable not set.", funcName);
+		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->numFibresFlag) {
-		NotifyError("%s: numFibres variable not set.", funcName);
+		NotifyError(wxT("%s: numFibres variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->pulseMagnitudeFlag) {
-		NotifyError("%s: pulseMagnitude variable not set.", funcName);
+		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->refractoryPeriodFlag) {
-		NotifyError("%s: refractoryPeriod variable not set.", funcName);
+		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->maxThresholdFlag) {
-		NotifyError("%s: maxThreshold variable not set.", funcName);
+		NotifyError(wxT("%s: maxThreshold variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->dischargeCoeffC0Flag) {
-		NotifyError("%s: dischargeCoeffC0 variable not set.", funcName);
+		NotifyError(wxT("%s: dischargeCoeffC0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->dischargeCoeffC1Flag) {
-		NotifyError("%s: dischargeCoeffC1 variable not set.", funcName);
+		NotifyError(wxT("%s: dischargeCoeffC1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->dischargeTConstS0Flag) {
-		NotifyError("%s: dischargeTConstS0 variable not set.", funcName);
+		NotifyError(wxT("%s: dischargeTConstS0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneySGPtr->dischargeTConstS1Flag) {
-		NotifyError("%s: dischargeTConstS1 variable not set.", funcName);
+		NotifyError(wxT("%s: dischargeTConstS1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration >=
 	  carneySGPtr->refractoryPeriod)) {
-		NotifyError("%s: Pulse duration must be smaller than the\n"
-		  "refractory period, %g ms (%g ms).", funcName, MSEC(
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n"
+		  "refractory period, %g ms (%g ms)."), funcName, MSEC(
 		  carneySGPtr->refractoryPeriod), MSEC(carneySGPtr->pulseDuration));
 		ok = FALSE;
 	}
@@ -664,34 +673,36 @@ CheckPars_ANSpikeGen_Carney(void)
 BOOLN
 PrintPars_ANSpikeGen_Carney(void)
 {
-	static const char	*funcName = "PrintPars_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("PrintPars_ANSpikeGen_Carney");
 
 	if (!CheckPars_ANSpikeGen_Carney()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Carney Post-Synaptic Firing Module "
-	  "Parameters:-\n");
-	DPrint("\tInput mode: %s,\n", carneySGPtr->inputModeList[carneySGPtr->
+	DPrint(wxT("Carney Post-Synaptic Firing Module Parameters:-\n"));
+	DPrint(wxT("\tInput mode: %s,\n"), carneySGPtr->inputModeList[carneySGPtr->
 	  inputMode].name);
-	DPrint("\tRandom number seed = %ld,",
+	DPrint(wxT("\tRandom number seed = %ld,"),
 	  carneySGPtr->ranSeed);
-	DPrint("\tNumber of fibres = %d,\n", carneySGPtr->numFibres);
-	DPrint("\tPulse duration = ");
+	DPrint(wxT("\tNumber of fibres = %d,\n"), carneySGPtr->numFibres);
+	DPrint(wxT("\tPulse duration = "));
 	if (carneySGPtr->pulseDuration > 0.0)
-		DPrint("%g ms,", MSEC(carneySGPtr->pulseDuration));
+		DPrint(wxT("%g ms,"), MSEC(carneySGPtr->pulseDuration));
 	else
-		DPrint("< prev. signal dt>,");
-	DPrint("\tPulse magnitude = %g (nA?)\n", carneySGPtr->pulseMagnitude);
-	DPrint("\tRefractory period, Ra = %g ms\n", MSEC(
+		DPrint(wxT("< prev. signal dt>,"));
+	DPrint(wxT("\tPulse magnitude = %g (nA?)\n"), carneySGPtr->pulseMagnitude);
+	DPrint(wxT("\tRefractory period, Ra = %g ms\n"), MSEC(
 	  carneySGPtr->refractoryPeriod));
-	DPrint("\tMax. threshold increase, Hmax = %g (spikes/s)\n",
+	DPrint(wxT("\tMax. threshold increase, Hmax = %g (spikes/s)\n"),
 	  carneySGPtr->maxThreshold);
-	DPrint("\tDischarge coefficent, C0 = %g,", carneySGPtr->dischargeCoeffC0);
-	DPrint("\tDischarge coefficent, C1 = %g\n", carneySGPtr->dischargeCoeffC1);
-	DPrint("\tDischarge time constant, S0 = %g ms,\n", MSEC(
+	DPrint(wxT("\tDischarge coefficent, C0 = %g,"), carneySGPtr->
+	  dischargeCoeffC0);
+	DPrint(wxT("\tDischarge coefficent, C1 = %g\n"), carneySGPtr->
+	  dischargeCoeffC1);
+	DPrint(wxT("\tDischarge time constant, S0 = %g ms,\n"), MSEC(
 	  carneySGPtr->dischargeTConstS0));
-	DPrint("\tDischarge time constant, S1 = %g ms.\n", MSEC(
+	DPrint(wxT("\tDischarge time constant, S1 = %g ms.\n"), MSEC(
 	  carneySGPtr->dischargeTConstS1));
 	return(TRUE);
 
@@ -704,11 +715,11 @@ PrintPars_ANSpikeGen_Carney(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_ANSpikeGen_Carney(char *fileName)
+ReadPars_ANSpikeGen_Carney(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("ReadPars_ANSpikeGen_Carney");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		numFibres;
 	long	ranSeed;
 	double	pulseDuration, pulseMagnitude, refractoryPeriod, maxThreshold;
@@ -717,44 +728,45 @@ ReadPars_ANSpikeGen_Carney(char *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numFibres))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numFibres))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseMagnitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &refractoryPeriod))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxThreshold))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxThreshold))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &dischargeCoeffC0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &dischargeCoeffC0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &dischargeCoeffC1))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &dischargeCoeffC1))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &dischargeTConstS0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &dischargeTConstS0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &dischargeTConstS1))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &dischargeTConstS1))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_ANSpikeGen_Carney(ranSeed, numFibres, pulseDuration,
 	  pulseMagnitude, refractoryPeriod, maxThreshold, dischargeCoeffC0,
 	  dischargeCoeffC1, dischargeTConstS0, dischargeTConstS1)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -771,10 +783,10 @@ ReadPars_ANSpikeGen_Carney(char *fileName)
 BOOLN
 SetParsPointer_ANSpikeGen_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("SetParsPointer_ANSpikeGen_Carney");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	carneySGPtr = (CarneySGPtr) theModule->parsPtr;
@@ -791,14 +803,15 @@ SetParsPointer_ANSpikeGen_Carney(ModulePtr theModule)
 BOOLN
 InitModule_ANSpikeGen_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("InitModule_ANSpikeGen_Carney");
 
 	if (!SetParsPointer_ANSpikeGen_Carney(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_ANSpikeGen_Carney(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = carneySGPtr;
@@ -831,18 +844,18 @@ InitModule_ANSpikeGen_Carney(ModulePtr theModule)
 BOOLN
 CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("CheckData_ANSpikeGen_Carney");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration <
 	  data->inSignal[0]->dt)) {
-		NotifyError("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n", funcName,
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
+		  "interval, %g ms (%g ms)\n"), funcName,
 		  MSEC(data->inSignal[0]->dt), MSEC(carneySGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -910,7 +923,8 @@ ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
 BOOLN
 InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_ANSpikeGen_Carney";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_ANSpikeGen_Carney");
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
 	
@@ -924,26 +938,27 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 			p->numThreads = data->numThreads;
 			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
 			  double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for timer pointer array.",
+			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
 			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
 			  sizeof(double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
-				  "array.", funcName);
+			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+				  "pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
 				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
 				  double))) == NULL) {
-			 		NotifyError("%s: Out of memory for timer array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for timer array."),
+					  funcName);
 			 		return(FALSE);
 				}
 				if ((p->remainingPulseTime[i] = (double *) calloc(p->
 				  arrayLength, sizeof(double))) == NULL) {
-			 		NotifyError("%s: Out of memory for remainingPulseTime "
-					  "array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+					  "array."), funcName);
 			 		return(FALSE);
 				}
 			}
@@ -1006,7 +1021,7 @@ FreeProcessVariables_ANSpikeGen_Carney(void)
 BOOLN
 RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_ANSpikeGen_Carney";
+	static const WChar	*funcName = wxT("RunModel_ANSpikeGen_Carney");
 	register	ChanData	*inPtr, *outPtr;
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
@@ -1018,17 +1033,19 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		if (!CheckPars_ANSpikeGen_Carney())
 			return(FALSE);
 		if (!CheckData_ANSpikeGen_Carney(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Carney Post-Synaptic Spike Firing");
+		SetProcessName_EarObject(data, wxT("Carney Post-Synaptic Spike "
+		  "Firing"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_ANSpikeGen_Carney(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

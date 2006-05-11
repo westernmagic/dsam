@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "StPulseTrain.h"
 
 /******************************************************************************/
@@ -51,8 +52,6 @@ PulseTrainPtr	pulseTrainPtr = NULL;
 BOOLN
 Free_PulseTrain(void)
 {
-	/* static const char	*funcName = "Free_PulseTrain"; */
-
 	if (pulseTrainPtr == NULL)
 		return(FALSE);
 	if (pulseTrainPtr->parList)
@@ -80,19 +79,19 @@ Free_PulseTrain(void)
 BOOLN
 Init_PulseTrain(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_PulseTrain";
+	static const WChar	*funcName = wxT("Init_PulseTrain");
 
 	if (parSpec == GLOBAL) {
 		if (pulseTrainPtr != NULL)
 			Free_PulseTrain();
 		if ((pulseTrainPtr = (PulseTrainPtr) malloc(sizeof(PulseTrain))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (pulseTrainPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -109,7 +108,7 @@ Init_PulseTrain(ParameterSpecifier parSpec)
 	pulseTrainPtr->dt = DEFAULT_DT;
 
 	if (!SetUniParList_PulseTrain()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_PulseTrain();
 		return(FALSE);
 	}
@@ -128,37 +127,37 @@ Init_PulseTrain(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_PulseTrain(void)
 {
-	static const char *funcName = "SetUniParList_PulseTrain";
+	static const WChar *funcName = wxT("SetUniParList_PulseTrain");
 	UniParPtr	pars;
 
 	if ((pulseTrainPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  PULSETRAIN_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = pulseTrainPtr->parList->pars;
-	SetPar_UniParMgr(&pars[PULSETRAIN_PULSERATE], "RATE",
-	  "Pulse rate (pulses/s)",
+	SetPar_UniParMgr(&pars[PULSETRAIN_PULSERATE], wxT("RATE"),
+	  wxT("Pulse rate (pulses/s)"),
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->pulseRate, NULL,
 	  (void * (*)) SetPulseRate_PulseTrain);
-	SetPar_UniParMgr(&pars[PULSETRAIN_PULSEDURATION], "PULSE_DURATION",
-	  "Pulse duration (s).",
+	SetPar_UniParMgr(&pars[PULSETRAIN_PULSEDURATION], wxT("PULSE_DURATION"),
+	  wxT("Pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_PulseTrain);
-	SetPar_UniParMgr(&pars[PULSETRAIN_AMPLITUDE], "AMPLITUDE",
-	  "Amplitude (arbitary units).",
+	SetPar_UniParMgr(&pars[PULSETRAIN_AMPLITUDE], wxT("AMPLITUDE"),
+	  wxT("Amplitude (arbitary units)."),
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->amplitude, NULL,
 	  (void * (*)) SetAmplitude_PulseTrain);
-	SetPar_UniParMgr(&pars[PULSETRAIN_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[PULSETRAIN_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->duration, NULL,
 	  (void * (*)) SetDuration_PulseTrain);
-	SetPar_UniParMgr(&pars[PULSETRAIN_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[PULSETRAIN_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &pulseTrainPtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_PulseTrain);
@@ -176,15 +175,15 @@ SetUniParList_PulseTrain(void)
 UniParListPtr
 GetUniParListPtr_PulseTrain(void)
 {
-	static const char	*funcName = "GetUniParListPtr_PulseTrain";
+	static const WChar	*funcName = wxT("GetUniParListPtr_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (pulseTrainPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pulseTrainPtr->parList);
@@ -202,7 +201,7 @@ BOOLN
 SetPars_PulseTrain(double pulseRate, double
   pulseDuration, double amplitude, double duration, double samplingInterval)
 {
-	static const char	*funcName = "SetPars_PulseTrain";
+	static const WChar	*funcName = wxT("SetPars_PulseTrain");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -217,7 +216,7 @@ SetPars_PulseTrain(double pulseRate, double
 	if (!SetSamplingInterval_PulseTrain(samplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -233,14 +232,14 @@ SetPars_PulseTrain(double pulseRate, double
 BOOLN
 SetPulseRate_PulseTrain(double thePulseRate)
 {
-	static const char	*funcName = "SetPulseRate_PulseTrain";
+	static const WChar	*funcName = wxT("SetPulseRate_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseRate < DBL_EPSILON) {
-		NotifyError("%s: Illegal value (%g).", funcName, thePulseRate);
+		NotifyError(wxT("%s: Illegal value (%g)."), funcName, thePulseRate);
 		return(FALSE);
 	}
 	pulseTrainPtr->pulseRateFlag = TRUE;
@@ -260,14 +259,14 @@ SetPulseRate_PulseTrain(double thePulseRate)
 BOOLN
 SetPulseDuration_PulseTrain(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_PulseTrain";
+	static const WChar	*funcName = wxT("SetPulseDuration_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseDuration < DBL_EPSILON) {
-		NotifyError("%s: Illegal value (%g).", funcName, thePulseDuration);
+		NotifyError(wxT("%s: Illegal value (%g)."), funcName, thePulseDuration);
 		return(FALSE);
 	}
 	pulseTrainPtr->pulseDurationFlag = TRUE;
@@ -287,10 +286,10 @@ SetPulseDuration_PulseTrain(double thePulseDuration)
 BOOLN
 SetAmplitude_PulseTrain(double theAmplitude)
 {
-	static const char	*funcName = "SetAmplitude_PulseTrain";
+	static const WChar	*funcName = wxT("SetAmplitude_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -311,14 +310,14 @@ SetAmplitude_PulseTrain(double theAmplitude)
 BOOLN
 SetDuration_PulseTrain(double theDuration)
 {
-	static const char	*funcName = "SetDuration_PulseTrain";
+	static const WChar	*funcName = wxT("SetDuration_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theDuration < DBL_EPSILON) {
-		NotifyError("%s: Illegal value (%g).", funcName, theDuration);
+		NotifyError(wxT("%s: Illegal value (%g)."), funcName, theDuration);
 		return(FALSE);
 	}
 	pulseTrainPtr->durationFlag = TRUE;
@@ -338,10 +337,10 @@ SetDuration_PulseTrain(double theDuration)
 BOOLN
 SetSamplingInterval_PulseTrain(double theSamplingInterval)
 {
-	static const char *funcName ="SetSamplingInterval_PulseTrain";
+	static const WChar *funcName =wxT("SetSamplingInterval_PulseTrain");
 
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -364,32 +363,32 @@ SetSamplingInterval_PulseTrain(double theSamplingInterval)
 BOOLN
 CheckPars_PulseTrain(void)
 {
-	static const char	*funcName = "CheckPars_PulseTrain";
+	static const WChar	*funcName = wxT("CheckPars_PulseTrain");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (pulseTrainPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!pulseTrainPtr->pulseRateFlag) {
-		NotifyError("%s: pulseRate variable not set.", funcName);
+		NotifyError(wxT("%s: pulseRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pulseTrainPtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pulseTrainPtr->amplitudeFlag) {
-		NotifyError("%s: amplitude variable not set.", funcName);
+		NotifyError(wxT("%s: amplitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pulseTrainPtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pulseTrainPtr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -406,22 +405,22 @@ CheckPars_PulseTrain(void)
 BOOLN
 PrintPars_PulseTrain(void)
 {
-	static const char	*funcName = "PrintPars_PulseTrain";
+	static const WChar	*funcName = wxT("PrintPars_PulseTrain");
 
 	if (!CheckPars_PulseTrain()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
 		return(FALSE);
 	}
-	DPrint("Pulse-Train Module Parameters:-\n");
-	DPrint("\tPulse rate = %g /s,\t",
+	DPrint(wxT("Pulse-Train Module Parameters:-\n"));
+	DPrint(wxT("\tPulse rate = %g /s,\t"),
 	  pulseTrainPtr->pulseRate);
-	DPrint("\tPulse duration = %g ms\n",
+	DPrint(wxT("\tPulse duration = %g ms\n"),
 	  MSEC(pulseTrainPtr->pulseDuration));
-	DPrint("\tAmplitude = %g (arbitrary units),\n",
+	DPrint(wxT("\tAmplitude = %g (arbitrary units),\n"),
 	  pulseTrainPtr->amplitude);
-	DPrint("\tDuration = %g ms,\t",
+	DPrint(wxT("\tDuration = %g ms,\t"),
 	  MSEC(pulseTrainPtr->duration));
-	DPrint("\tSampling interval = %g ms\n",
+	DPrint(wxT("\tSampling interval = %g ms\n"),
 	  MSEC(pulseTrainPtr->dt));
 	return(TRUE);
 
@@ -434,42 +433,43 @@ PrintPars_PulseTrain(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_PulseTrain(char *fileName)
+ReadPars_PulseTrain(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_PulseTrain";
+	static const WChar	*funcName = wxT("ReadPars_PulseTrain");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	pulseRate, pulseDuration, amplitude, duration, samplingInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &amplitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &amplitude))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PulseTrain(pulseRate, pulseDuration, amplitude,
 	  duration, samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -486,10 +486,10 @@ ReadPars_PulseTrain(char *fileName)
 BOOLN
 SetParsPointer_PulseTrain(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_PulseTrain";
+	static const WChar	*funcName = wxT("SetParsPointer_PulseTrain");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	pulseTrainPtr = (PulseTrainPtr) theModule->parsPtr;
@@ -506,14 +506,15 @@ SetParsPointer_PulseTrain(ModulePtr theModule)
 BOOLN
 InitModule_PulseTrain(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_PulseTrain";
+	static const WChar	*funcName = wxT("InitModule_PulseTrain");
 
 	if (!SetParsPointer_PulseTrain(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_PulseTrain(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = pulseTrainPtr;
@@ -544,32 +545,33 @@ InitModule_PulseTrain(ModulePtr theModule)
 BOOLN
 CheckData_PulseTrain(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_PulseTrain";
+	static const WChar	*funcName = wxT("CheckData_PulseTrain");
 	double	pulsePeriod;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	pulsePeriod = 1.0 / pulseTrainPtr->pulseRate;
 	if (pulsePeriod <= pulseTrainPtr->pulseDuration) {
-		NotifyError("%s: Pulse rate is too high for the pulse duration\n(rate "
-		  "must be < %g /s)", funcName, 1.0 / pulseTrainPtr->pulseDuration);
+		NotifyError(wxT("%s: Pulse rate is too high for the pulse "
+		  "duration\n(rate must be < %g /s)"), funcName, 1.0 / pulseTrainPtr->
+		  pulseDuration);
 		return(FALSE);
 	}
 	if (pulsePeriod / pulseTrainPtr->dt < 2.0) {
-		NotifyError("%s: Pulse rate is too low for the sampling interval\n"
-		  "(rate must be > %g /s)", funcName, 1.0 / (pulseTrainPtr->dt * 2.0));
+		NotifyError(wxT("%s: Pulse rate is too low for the sampling interval\n"
+		  "(rate must be > %g /s)"), funcName, 1.0 / (pulseTrainPtr->dt * 2.0));
 		return(FALSE);
 	}
 	if (pulsePeriod > pulseTrainPtr->duration) {
-		NotifyError("%s: Pulse rate is too low for the signal duration\n(rate "
-		  "must be > %g /s)", funcName, 1.0 / pulseTrainPtr->duration);
+		NotifyError(wxT("%s: Pulse rate is too low for the signal duration\n"
+		  "(rate must be > %g /s)"), funcName, 1.0 / pulseTrainPtr->duration);
 		return(FALSE);
 	}
 	if (pulseTrainPtr->pulseDuration < pulseTrainPtr->dt) {
-		NotifyError("%s: Pulse duration is less then sampling interval "
-		  "( use > %g ms).", funcName, MSEC(pulseTrainPtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is less then sampling interval "
+		  "( use > %g ms)."), funcName, MSEC(pulseTrainPtr->pulseDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -594,7 +596,7 @@ CheckData_PulseTrain(EarObjectPtr data)
 BOOLN
 GenerateSignal_PulseTrain(EarObjectPtr data)
 {
-	static const char	*funcName = "GenerateSignal_PulseTrain";
+	static const WChar	*funcName = wxT("GenerateSignal_PulseTrain");
 	register	ChanData	 *outPtr;
 	double		pulsePeriod, t;
 	ChanLen		i;
@@ -604,14 +606,14 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 		if (!CheckPars_PulseTrain())
 			return(FALSE);
 		if (!CheckData_PulseTrain(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Pulse-train stimulus");
+		SetProcessName_EarObject(data, wxT("Pulse-train stimulus"));
 		data->updateProcessFlag = TRUE;
 		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(p->
 		  duration / p->dt + 0.5), p->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		data->outSignal->rampFlag = TRUE; /* Do not ramp. */

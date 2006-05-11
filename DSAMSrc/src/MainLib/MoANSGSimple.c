@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRandom.h"
 #include "MoANSGSimple.h"
 
@@ -52,17 +53,17 @@ SimpleSGPtr		simpleSGPtr = NULL;
 BOOLN
 Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("Init_ANSpikeGen_Simple");
 	if (parSpec == GLOBAL) {
 		if (simpleSGPtr != NULL)
 			Free_ANSpikeGen_Simple();
 		if ((simpleSGPtr = (SimpleSGPtr) malloc(sizeof(SimpleSG))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (simpleSGPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -80,7 +81,7 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 	simpleSGPtr->refractoryPeriod = PS_REFRACTORY_PERIOD;
 
 	if (!SetUniParList_ANSpikeGen_Simple()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Simple();
 		return(FALSE);
 	}
@@ -115,37 +116,6 @@ Free_ANSpikeGen_Simple(void)
 
 }
 
-/************************** InitFuncPtr ***************************************/
-
-
-/*
- * This routine initialises the function pointer for the module.
- * It should be deallocated when the module is deallocated.
- */
-
-SpikeGenFuncPtr
-InitFuncPtr_ANSpikeGen_Simple(void)
-{
-	static const char *funcName = "InitFuncPtr_ANSpikeGen_Simple";
-	SpikeGenFuncPtr	ptr;
-	
-	if ((ptr = (SpikeGenFuncPtr) malloc(sizeof(SpikeGenFunc))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
-		return(NULL);
-	}
-	ptr->CheckPars = CheckPars_ANSpikeGen_Simple;
-	ptr->Free = Free_ANSpikeGen_Simple;
-	ptr->PrintPars = PrintPars_ANSpikeGen_Simple;
-	ptr->ReadPars = ReadPars_ANSpikeGen_Simple;
-	ptr->RunProcess = RunModel_ANSpikeGen_Simple;
-	ptr->SetRanSeed = SetRanSeed_ANSpikeGen_Simple;
-	ptr->SetPulseDuration = SetPulseDuration_ANSpikeGen_Simple;
-	ptr->SetPulseMagnitude = SetPulseMagnitude_ANSpikeGen_Simple;
-	ptr->SetRefractoryPeriod = SetRefractoryPeriod_ANSpikeGen_Simple;
-	return(ptr);
-
-}
-
 /****************************** SetUniParList *********************************/
 
 /*
@@ -157,37 +127,39 @@ InitFuncPtr_ANSpikeGen_Simple(void)
 BOOLN
 SetUniParList_ANSpikeGen_Simple(void)
 {
-	static const char *funcName = "SetUniParList_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("SetUniParList_ANSpikeGen_Simple");
 	UniParPtr	pars;
 
 	if ((simpleSGPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANSPIKEGEN_SIMPLE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = simpleSGPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_RANSEED], "RAN_SEED",
-	  "Random number seed (0 produces a different seed each run.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random number seed (0 produces a different seed each run."),
 	  UNIPAR_LONG,
 	  &simpleSGPtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_ANSpikeGen_Simple);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_NUMFIBRES], "NUM_FIBRES",
-	  "Number of fibres.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_NUMFIBRES], wxT("NUM_FIBRES"),
+	  wxT("Number of fibres."),
 	  UNIPAR_INT,
 	  &simpleSGPtr->numFibres, NULL,
 	  (void * (*)) SetNumFibres_ANSpikeGen_Simple);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEDURATION], "PULSE_DURATION",
-	  "Pulse duration (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEDURATION], wxT(
+	  "PULSE_DURATION"),
+	  wxT("Pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &simpleSGPtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_ANSpikeGen_Simple);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEMAGNITUDE], "MAGNITUDE",
-	  "Pulse magnitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEMAGNITUDE], wxT("MAGNITUDE"),
+	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &simpleSGPtr->pulseMagnitude, NULL,
 	  (void * (*)) SetPulseMagnitude_ANSpikeGen_Simple);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_REFRACTORYPERIOD], "REFRAC_PERIOD",
-	  "Refractory period (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_REFRACTORYPERIOD], wxT(
+	  "REFRAC_PERIOD"),
+	  wxT("Refractory period (s)."),
 	  UNIPAR_REAL,
 	  &simpleSGPtr->refractoryPeriod, NULL,
 	  (void * (*)) SetRefractoryPeriod_ANSpikeGen_Simple);
@@ -205,15 +177,15 @@ SetUniParList_ANSpikeGen_Simple(void)
 UniParListPtr
 GetUniParListPtr_ANSpikeGen_Simple(void)
 {
-	static const char	*funcName = "GetUniParListPtr_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("GetUniParListPtr_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (simpleSGPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(simpleSGPtr->parList);
@@ -230,10 +202,10 @@ GetUniParListPtr_ANSpikeGen_Simple(void)
 BOOLN
 SetRanSeed_ANSpikeGen_Simple(long theRanSeed)
 {
-	static const char *funcName = "SetRanSeed_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("SetRanSeed_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	simpleSGPtr->ranSeedFlag = TRUE;
@@ -254,14 +226,15 @@ SetRanSeed_ANSpikeGen_Simple(long theRanSeed)
 BOOLN
 SetNumFibres_ANSpikeGen_Simple(int theNumFibres)
 {
-	static const char	*funcName = "SetNumFibres_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("SetNumFibres_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumFibres < 1) {
-		NotifyError("%s: Illegal no. of fibres (%d).", funcName, theNumFibres);
+		NotifyError(wxT("%s: Illegal no. of fibres (%d)."), funcName,
+		  theNumFibres);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -282,14 +255,14 @@ SetNumFibres_ANSpikeGen_Simple(int theNumFibres)
 BOOLN
 SetPulseDuration_ANSpikeGen_Simple(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseDuration < 0.0) {
-		NotifyError("%s: Pulse duration must be greater than zero.\n",
+		NotifyError(wxT("%s: Pulse duration must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -311,10 +284,10 @@ SetPulseDuration_ANSpikeGen_Simple(double thePulseDuration)
 BOOLN
 SetPulseMagnitude_ANSpikeGen_Simple(double thePulseMagnitude)
 {
-	static const char	*funcName = "SetPulseMagnitude_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("SetPulseMagnitude_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -334,14 +307,14 @@ SetPulseMagnitude_ANSpikeGen_Simple(double thePulseMagnitude)
 BOOLN
 SetRefractoryPeriod_ANSpikeGen_Simple(double theRefractoryPeriod)
 {
-	static const char *funcName = "SetRefractoryPeriod_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("SetRefractoryPeriod_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError("%s: Refractory period must be greater than zero.\n",
+		NotifyError(wxT("%s: Refractory period must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -391,37 +364,37 @@ SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres, double pulseDuration,
 BOOLN
 CheckPars_ANSpikeGen_Simple(void)
 {
-	static const char *funcName = "CheckPars_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("CheckPars_ANSpikeGen_Simple");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (simpleSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!simpleSGPtr->ranSeedFlag) {
-		NotifyError("%s: Random number seed not correctly set.", funcName);
+		NotifyError(wxT("%s: Random number seed not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!simpleSGPtr->numFibresFlag) {
-		NotifyError("%s: numFibres variable not set.", funcName);
+		NotifyError(wxT("%s: numFibres variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!simpleSGPtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!simpleSGPtr->pulseMagnitudeFlag) {
-		NotifyError("%s: pulseMagnitude variable not set.", funcName);
+		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!simpleSGPtr->refractoryPeriodFlag) {
-		NotifyError("%s: Refractory period not correctly set.", funcName);
+		NotifyError(wxT("%s: Refractory period not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (simpleSGPtr->pulseDuration >= simpleSGPtr->refractoryPeriod) {
-		NotifyError("%s: Pulse duration must be smaller than the\n"
-		  "refractory period, %g ms (%g ms).", funcName, MSEC(
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n"
+		  "refractory period, %g ms (%g ms)."), funcName, MSEC(
 		  simpleSGPtr->refractoryPeriod), MSEC(simpleSGPtr->pulseDuration));
 		ok = FALSE;
 	}
@@ -438,23 +411,20 @@ CheckPars_ANSpikeGen_Simple(void)
 BOOLN
 PrintPars_ANSpikeGen_Simple(void)
 {
-	static const char *funcName = "PrintPars_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("PrintPars_ANSpikeGen_Simple");
 
 	if (!CheckPars_ANSpikeGen_Simple()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Simple Post-Synaptic Firing Module "
-	  "Parameters:-\n");
-	DPrint("\tRandom number seed = %ld,",
-	  simpleSGPtr->ranSeed);
-	DPrint("\tNo. of fibres = %d,\n", simpleSGPtr->numFibres);
-	DPrint("\tPulse duration = %g ms,",
-	  MSEC(simpleSGPtr->pulseDuration));
-	DPrint("\tPulse magnitude = %g (nA?),\n",
-	  simpleSGPtr->pulseMagnitude);
-	DPrint("\tRefractory Period = %g ms\n",
-	  MSEC(simpleSGPtr->refractoryPeriod));
+	DPrint(wxT("Simple Post-Synaptic Firing Module Parameters:-\n"));
+	DPrint(wxT("\tRandom number seed = %ld,"), simpleSGPtr->ranSeed);
+	DPrint(wxT("\tNo. of fibres = %d,\n"), simpleSGPtr->numFibres);
+	DPrint(wxT("\tPulse duration = %g ms,"), MSEC(simpleSGPtr->pulseDuration));
+	DPrint(wxT("\tPulse magnitude = %g (nA?),\n"), simpleSGPtr->pulseMagnitude);
+	DPrint(wxT("\tRefractory Period = %g ms\n"), MSEC(simpleSGPtr->
+	  refractoryPeriod));
 	return(TRUE);
 
 }
@@ -467,44 +437,45 @@ PrintPars_ANSpikeGen_Simple(void)
  */
  
 BOOLN
-ReadPars_ANSpikeGen_Simple(char *fileName)
+ReadPars_ANSpikeGen_Simple(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("ReadPars_ANSpikeGen_Simple");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	long	ranSeed;
 	int		numFibres;
 	double	pulseDuration, pulseMagnitude, refractoryPeriod;
     FILE    *fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
 		ok = FALSE;
- 	if (!GetPars_ParFile(fp, "%d", &numFibres))
+ 	if (!GetPars_ParFile(fp, wxT("%d"), &numFibres))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseMagnitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &refractoryPeriod))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
 		ok = FALSE;
 	fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_ANSpikeGen_Simple(ranSeed, numFibres, pulseDuration,
 	  pulseMagnitude, refractoryPeriod)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -521,10 +492,10 @@ ReadPars_ANSpikeGen_Simple(char *fileName)
 BOOLN
 SetParsPointer_ANSpikeGen_Simple(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("SetParsPointer_ANSpikeGen_Simple");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	simpleSGPtr = (SimpleSGPtr) theModule->parsPtr;
@@ -541,14 +512,15 @@ SetParsPointer_ANSpikeGen_Simple(ModulePtr theModule)
 BOOLN
 InitModule_ANSpikeGen_Simple(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("InitModule_ANSpikeGen_Simple");
 
 	if (!SetParsPointer_ANSpikeGen_Simple(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_ANSpikeGen_Simple(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = simpleSGPtr;
@@ -624,7 +596,8 @@ ResetProcess_ANSpikeGen_Simple(EarObjectPtr data)
 BOOLN
 InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_ANSpikeGen_Simple");
 	int		i;
 	SimpleSGPtr	p = simpleSGPtr;
 	
@@ -638,26 +611,27 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 			p->numThreads = data->numThreads;
 			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
 			  double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for timer pointer array.",
+			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
 			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
 			  sizeof(double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
-				  "array.", funcName);
+			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+				  "pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
 				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
 				  double))) == NULL) {
-			 		NotifyError("%s: Out of memory for timer array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for timer array."),
+					  funcName);
 			 		return(FALSE);
 				}
 				if ((p->remainingPulseTime[i] = (double *) calloc(p->
 				  arrayLength, sizeof(double))) == NULL) {
-			 		NotifyError("%s: Out of memory for remainingPulseTime "
-					  "array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+					  "array."), funcName);
 			 		return(FALSE);
 				}
 			}
@@ -716,18 +690,18 @@ FreeProcessVariables_ANSpikeGen_Simple(void)
 BOOLN
 CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_ANSpikeGen_Simple";
+	static const WChar	*funcName = wxT("CheckData_ANSpikeGen_Simple");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (simpleSGPtr->pulseDuration < data->inSignal[0]->dt) {
-		NotifyError("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n", funcName,
-		  MSEC(data->inSignal[0]->dt), MSEC(simpleSGPtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
+		  "interval, %g ms (%g ms)\n"), funcName, MSEC(data->inSignal[0]->dt),
+		  MSEC(simpleSGPtr->pulseDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -745,7 +719,7 @@ CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 BOOLN
 RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_ANSpikeGen_Simple";
+	static const WChar *funcName = wxT("RunModel_ANSpikeGen_Simple");
 	register	ChanData	*inPtr, *outPtr;
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
@@ -756,17 +730,19 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		if (!CheckPars_ANSpikeGen_Simple())
 			return(FALSE);
 		if (!CheckData_ANSpikeGen_Simple(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Simple Post-Synaptic Spike Firing");
+		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike "
+		  "Firing"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_ANSpikeGen_Simple(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -50,8 +50,6 @@
 BOOLN
 SetParsPointer_Utility_CreateBinaural(ModulePtr theModule)
 {
-	/* static const char *funcName = "SetParsPointer_Utility_CreateBinaural"; */
-
 	return(TRUE);
 
 }
@@ -65,8 +63,6 @@ SetParsPointer_Utility_CreateBinaural(ModulePtr theModule)
 BOOLN
 InitModule_Utility_CreateBinaural(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Utility_CreateBinaural"; */
-
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->RunProcess = Process_Utility_CreateBinaural;
 	theModule->SetParsPointer = SetParsPointer_Utility_CreateBinaural;
@@ -90,31 +86,31 @@ InitModule_Utility_CreateBinaural(ModulePtr theModule)
 BOOLN
 CheckData_Utility_CreateBinaural(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_CreateBinaural";
+	static const WChar	*funcName = wxT("CheckData_Utility_CreateBinaural");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (data->numInSignals != 2) {
-		NotifyError("%s: The process EarObject must have 2 inputs from other "
-		  "processes.", funcName);
+		NotifyError(wxT("%s: The process EarObject must have 2 inputs from "
+		  "other processes."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(data->inSignal[0]) ||
 	  !CheckPars_SignalData(data->inSignal[1])) {
-		NotifyError("%s: Input signals not correctly set.", funcName);		
+		NotifyError(wxT("%s: Input signals not correctly set."), funcName);		
 		return(FALSE);
 	}
 	if (!SameType_SignalData(data->inSignal[0], data->inSignal[1])) {
-		NotifyError("%s: Input signals are not the same.", funcName);		
+		NotifyError(wxT("%s: Input signals are not the same."), funcName);		
 		return(FALSE);
 	}
 	
 	if (data->inSignal[0]->interleaveLevel !=
 	  data->inSignal[1]->interleaveLevel) {
-		NotifyError("%s: Input signals do not have the same interleave level.",
-		  funcName);		
+		NotifyError(wxT("%s: Input signals do not have the same interleave "
+		  "level."), funcName);		
 		return(FALSE);
 	}
 	return(TRUE);
@@ -139,7 +135,7 @@ CheckData_Utility_CreateBinaural(EarObjectPtr data)
 BOOLN
 Process_Utility_CreateBinaural(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_CreateBinaural";
+	static const WChar	*funcName = wxT("Process_Utility_CreateBinaural");
 	register	ChanData	 *inPtr, *outPtr;
 	uShort	numChannelsToSet;
 	int		j, chan, outChanOffset, transferLevel;
@@ -147,16 +143,18 @@ Process_Utility_CreateBinaural(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_CreateBinaural(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Create/merge binaural signal routine");
+		SetProcessName_EarObject(data, wxT("Create/merge binaural signal "
+		  "routine"));
 		numChannelsToSet = (data->inSignal[0]->interleaveLevel == 2)?
 		  data->inSignal[0]->numChannels: data->inSignal[0]->numChannels * 2;
 		data->updateProcessFlag = TRUE;
 		if (!InitOutSignal_EarObject(data, numChannelsToSet,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(data->outSignal, 2);

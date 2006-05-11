@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnFindNextIndex.h"
 
 /******************************************************************************/
@@ -53,8 +54,6 @@ FindIndexPtr	findIndexPtr = NULL;
 BOOLN
 Free_Analysis_FindNextIndex(void)
 {
-	/* static const char	*funcName = "Free_Analysis_FindNextIndex";  */
-
 	if (findIndexPtr == NULL)
 		return(FALSE);
 	if (findIndexPtr->parList)
@@ -78,9 +77,9 @@ InitModeList_Analysis_FindNextIndex(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "MINIMUM", FIND_INDEX_MINIMUM},
-					{ "MAXIMUM", FIND_INDEX_MAXIMUM},
-					{ "", FIND_INDEX_NULL }
+					{ wxT("MINIMUM"),	FIND_INDEX_MINIMUM},
+					{ wxT("MAXIMUM"),	FIND_INDEX_MAXIMUM},
+					{ wxT(""), 			FIND_INDEX_NULL }
 				
 				};
 	findIndexPtr->modeList = modeList;
@@ -103,18 +102,19 @@ InitModeList_Analysis_FindNextIndex(void)
 BOOLN
 Init_Analysis_FindNextIndex(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("Init_Analysis_FindNextIndex");
 
 	if (parSpec == GLOBAL) {
 		if (findIndexPtr != NULL)
 			Free_Analysis_FindNextIndex();
 		if ((findIndexPtr = (FindIndexPtr) malloc(sizeof(FindIndex))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (findIndexPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -126,7 +126,7 @@ Init_Analysis_FindNextIndex(ParameterSpecifier parSpec)
 
 	InitModeList_Analysis_FindNextIndex();
 	if (!SetUniParList_Analysis_FindNextIndex()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_FindNextIndex();
 		return(FALSE);
 	}
@@ -145,22 +145,22 @@ Init_Analysis_FindNextIndex(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_FindNextIndex(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_FindNextIndex";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_FindNextIndex");
 	UniParPtr	pars;
 
 	if ((findIndexPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_FINDNEXTINDEX_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = findIndexPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDNEXTINDEX_MODE], "MODE",
-	  "Index search mode ('minimum' or 'maximum').",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDNEXTINDEX_MODE], wxT("MODE"),
+	  wxT("Index search mode ('minimum' or 'maximum')."),
 	  UNIPAR_NAME_SPEC,
 	  &findIndexPtr->mode, findIndexPtr->modeList,
 	  (void * (*)) SetMode_Analysis_FindNextIndex);
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDNEXTINDEX_TIMEOFFSET], "OFFSET",
-	  "Time offset for start of search (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDNEXTINDEX_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time offset for start of search (s)."),
 	  UNIPAR_REAL,
 	  &findIndexPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_FindNextIndex);
@@ -178,15 +178,16 @@ SetUniParList_Analysis_FindNextIndex(void)
 UniParListPtr
 GetUniParListPtr_Analysis_FindNextIndex(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_Analysis_FindNextIndex");
 
 	if (findIndexPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (findIndexPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(findIndexPtr->parList);
@@ -201,9 +202,9 @@ GetUniParListPtr_Analysis_FindNextIndex(void)
  */
 
 BOOLN
-SetPars_Analysis_FindNextIndex(char *mode, double timeOffset)
+SetPars_Analysis_FindNextIndex(WChar *mode, double timeOffset)
 {
-	static const char	*funcName = "SetPars_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("SetPars_Analysis_FindNextIndex");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -212,7 +213,7 @@ SetPars_Analysis_FindNextIndex(char *mode, double timeOffset)
 	if (!SetTimeOffset_Analysis_FindNextIndex(timeOffset))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -226,18 +227,18 @@ SetPars_Analysis_FindNextIndex(char *mode, double timeOffset)
  */
 
 BOOLN
-SetMode_Analysis_FindNextIndex(char *theMode)
+SetMode_Analysis_FindNextIndex(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("SetMode_Analysis_FindNextIndex");
 	int		specifier;
 
 	if (findIndexPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, findIndexPtr->modeList)) ==
 	  FIND_INDEX_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	findIndexPtr->modeFlag = TRUE;
@@ -257,11 +258,11 @@ SetMode_Analysis_FindNextIndex(char *theMode)
 BOOLN
 SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset)
 {
-	static const char	*funcName =
-	  "SetTimeOffset_Analysis_FindNextIndex";
+	static const WChar	*funcName =
+	  wxT("SetTimeOffset_Analysis_FindNextIndex");
 
 	if (findIndexPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -284,20 +285,20 @@ SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset)
 BOOLN
 CheckPars_Analysis_FindNextIndex(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_FindNextIndex");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (findIndexPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!findIndexPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!findIndexPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -314,18 +315,17 @@ CheckPars_Analysis_FindNextIndex(void)
 BOOLN
 PrintPars_Analysis_FindNextIndex(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_FindNextIndex");
 
 	if (!CheckPars_Analysis_FindNextIndex()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Find Indexes Analysis Module "\
-	  "Parameters:-\n");
-	DPrint("\tSearch mode = %s,",
-	  findIndexPtr->modeList[findIndexPtr->mode].name);
-	DPrint("\tTime offset = %g ms\n",
-	  MSEC(findIndexPtr->timeOffset));
+	DPrint(wxT("Find Indexes Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tSearch mode = %s,"), findIndexPtr->modeList[findIndexPtr->
+	  mode].name);
+	DPrint(wxT("\tTime offset = %g ms\n"), MSEC(findIndexPtr->timeOffset));
 	return(TRUE);
 
 }
@@ -337,36 +337,37 @@ PrintPars_Analysis_FindNextIndex(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_FindNextIndex(char *fileName)
+ReadPars_Analysis_FindNextIndex(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_FindNextIndex");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	timeOffset;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FindNextIndex(mode, timeOffset)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -383,10 +384,11 @@ ReadPars_Analysis_FindNextIndex(char *fileName)
 BOOLN
 SetParsPointer_Analysis_FindNextIndex(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Analysis_FindNextIndex");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	findIndexPtr = (FindIndexPtr) theModule->parsPtr;
@@ -403,14 +405,15 @@ SetParsPointer_Analysis_FindNextIndex(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_FindNextIndex(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("InitModule_Analysis_FindNextIndex");
 
 	if (!SetParsPointer_Analysis_FindNextIndex(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_FindNextIndex(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = findIndexPtr;
@@ -442,19 +445,19 @@ InitModule_Analysis_FindNextIndex(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_FindNextIndex(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("CheckData_Analysis_FindNextIndex");
 	double	signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (findIndexPtr->timeOffset > signalDuration) {
-		NotifyError("%s: Offset value (%g ms)is longer than the signal "
-		  "duration (%g ms).", funcName, MSEC(findIndexPtr->timeOffset),
+		NotifyError(wxT("%s: Offset value (%g ms)is longer than the signal "
+		  "duration (%g ms)."), funcName, MSEC(findIndexPtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
@@ -481,7 +484,7 @@ CheckData_Analysis_FindNextIndex(EarObjectPtr data)
 BOOLN
 Calc_Analysis_FindNextIndex(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_FindNextIndex";
+	static const WChar	*funcName = wxT("Calc_Analysis_FindNextIndex");
 	register	ChanData	 *inPtr, lastValue;
 	BOOLN	found, gradient;
 	int		chan;
@@ -492,13 +495,14 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 		if (!CheckPars_Analysis_FindNextIndex())
 			return(FALSE);
 		if (!CheckData_Analysis_FindNextIndex(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Find Value Analysis");
+		SetProcessName_EarObject(data, wxT("Find Value Analysis"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
 		  1.0)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		p->offsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +
@@ -530,9 +534,9 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 			lastValue = *inPtr;
 		}
 		if (!found) {
-			NotifyWarning("%s: %s not found. Returning end of channel "\
-			  "index = %u.", funcName, (p->findMinimum)? "Minimum": "Maximum",
-			  data->inSignal[0]->length - 1);
+			NotifyWarning(wxT("%s: %s not found. Returning end of channel "
+			  "index = %u."), funcName, (p->findMinimum)? wxT("Minimum"): wxT(
+			  "Maximum"), data->inSignal[0]->length - 1);
 			data->outSignal->channel[chan][0] = (ChanData) (data->inSignal[
 			  0]->length - 1);
 		}

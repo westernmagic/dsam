@@ -107,11 +107,11 @@ GetPanelList_SignalDisp(int index)
 {
 	static NameSpecifier	list[] = {
 
-				{ "Signal",		DISPLAY_MAGNIFICATION },
-				{ "Y-axis",		DISPLAY_Y_AXIS_TITLE },
-				{ "X-axis",		DISPLAY_X_AXIS_TITLE },
-				{ "General",	DISPLAY_WINDOW_TITLE },
-				{ "", 			DISPLAY_NULL }
+				{ wxT("Signal"),	DISPLAY_MAGNIFICATION },
+				{ wxT("Y-axis"),	DISPLAY_Y_AXIS_TITLE },
+				{ wxT("X-axis"),	DISPLAY_X_AXIS_TITLE },
+				{ wxT("General"),	DISPLAY_WINDOW_TITLE },
+				{ wxT(""), 			DISPLAY_NULL }
 			};
 	;
 	return(&list[index]);
@@ -129,10 +129,10 @@ InitModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ "OFF",		GRAPH_MODE_OFF },
-					{ "LINE",		GRAPH_MODE_LINE },
-					{ "GREY_SCALE",	GRAPH_MODE_GREY_SCALE },
-					{ "",			GRAPH_MODE_NULL }
+					{ wxT("OFF"),			GRAPH_MODE_OFF },
+					{ wxT("LINE"),			GRAPH_MODE_LINE },
+					{ wxT("GREY_SCALE"),	GRAPH_MODE_GREY_SCALE },
+					{ wxT(""),				GRAPH_MODE_NULL }
 				};
 	signalDispPtr->modeList = list;
 	return(TRUE);
@@ -150,10 +150,10 @@ InitYAxisModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ "AUTO",			GRAPH_Y_AXIS_MODE_AUTO },
-					{ "CHANNEL",		GRAPH_Y_AXIS_MODE_CHANNEL },
-					{ "LINEAR_SCALE",	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
-					{ "", 				GRAPH_Y_AXIS_MODE_NULL }
+					{ wxT("AUTO"),			GRAPH_Y_AXIS_MODE_AUTO },
+					{ wxT("CHANNEL"),		GRAPH_Y_AXIS_MODE_CHANNEL },
+					{ wxT("LINEAR_SCALE"),	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
+					{ wxT(""), 				GRAPH_Y_AXIS_MODE_NULL }
 				};
 	signalDispPtr->yAxisModeList = list;
 	return(TRUE);
@@ -171,9 +171,9 @@ InitYNormModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{"MIDDLE",		GRAPH_LINE_YNORM_MIDDLE_MODE },
-					{"BOTTOM",		GRAPH_LINE_YNORM_BOTTOM_MODE },
-					{"",			GRAPH_LINE_YNORM_MODE_NULL }
+					{wxT("MIDDLE"),		GRAPH_LINE_YNORM_MIDDLE_MODE },
+					{wxT("BOTTOM"),		GRAPH_LINE_YNORM_BOTTOM_MODE },
+					{wxT(""),			GRAPH_LINE_YNORM_MODE_NULL }
 				};
 	signalDispPtr->yNormModeList = list;
 	return(TRUE);
@@ -193,20 +193,21 @@ InitYNormModeList_SignalDisp(void)
 BOOLN
 Init_SignalDisp(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_SignalDisp";
+	static const WChar *funcName = wxT("Init_SignalDisp");
 
 	if (parSpec == GLOBAL) {
 		if (signalDispPtr != NULL)
 			Free_SignalDisp();
 		if ((signalDispPtr = (SignalDispPtr) malloc(sizeof(SignalDisp))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName,
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName,
 			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (signalDispPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName, funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName,
+			  funcName);
 			return(FALSE);
 		}
 	}
@@ -262,8 +263,8 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->width = DEFAULT_WIDTH;
 	signalDispPtr->channelStep = DEFAULT_CHANNEL_STEP;
 	signalDispPtr->xTicks = DEFAULT_X_TICKS;
-	strcpy(signalDispPtr->xNumberFormat, DEFAULT_X_NUMBER_FORMAT);
-	strcpy(signalDispPtr->yNumberFormat, DEFAULT_Y_NUMBER_FORMAT);
+	DSAM_strcpy(signalDispPtr->xNumberFormat, DEFAULT_X_NUMBER_FORMAT);
+	DSAM_strcpy(signalDispPtr->yNumberFormat, DEFAULT_Y_NUMBER_FORMAT);
 	signalDispPtr->xDecPlaces = DEFAULT_X_DEC_PLACES;
 	signalDispPtr->yDecPlaces = DEFAULT_Y_DEC_PLACES;
 	signalDispPtr->yTicks = DEFAULT_Y_TICKS;
@@ -282,7 +283,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	InitYAxisModeList_SignalDisp();
 	InitYNormModeList_SignalDisp();
 	if (!SetUniParList_SignalDisp()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_SignalDisp();
 		return(FALSE);
 	}
@@ -342,175 +343,176 @@ Free_SignalDisp(void)
 BOOLN
 SetUniParList_SignalDisp(void)
 {
-	static const char *funcName = "SetUniParList_SignalDisp";
+	static const WChar *funcName = wxT("SetUniParList_SignalDisp");
 	UniParPtr	pars;
 
 	if ((signalDispPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  DISPLAY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	SetGetPanelListFunc_UniParMgr(signalDispPtr->parList,
 	  GetPanelList_SignalDisp);
 
 	pars = signalDispPtr->parList->pars;
-	SetPar_UniParMgr(&pars[DISPLAY_AUTOMATIC_SCALING], "AUTO_SCALING",
-	  "Automatic scaling ('on' or 'off').",
+	SetPar_UniParMgr(&pars[DISPLAY_AUTOMATIC_SCALING], wxT("AUTO_SCALING"),
+	  wxT("Automatic scaling ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &signalDispPtr->autoYScale, NULL,
 	  (void * (*)) SetAutoYScale_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_AUTO_Y_SCALE], "AUTO_Y_SCALE",
-	  "Automatic y-axis scale ('on' or 'off').",
+	SetPar_UniParMgr(&pars[DISPLAY_AUTO_Y_SCALE], wxT("AUTO_Y_SCALE"),
+	  wxT("Automatic y-axis scale ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &signalDispPtr->autoYScale, NULL,
 	  (void * (*)) SetAutoYScale_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_CHANNEL_STEP], "CHANNEL_STEP",
-	  "Channel stepping mode.",
+	SetPar_UniParMgr(&pars[DISPLAY_CHANNEL_STEP], wxT("CHANNEL_STEP"),
+	  wxT("Channel stepping mode."),
 	  UNIPAR_INT,
 	  &signalDispPtr->channelStep, NULL,
 	  (void * (*)) SetChannelStep_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_TITLE], "WIN_TITLE",
-	  "Display window title.",
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_TITLE], wxT("WIN_TITLE"),
+	  wxT("Display window title."),
 	  UNIPAR_STRING,
 	  &signalDispPtr->title, NULL,
 	  (void * (*)) SetTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_FRAME_DELAY], "FRAMEDELAY",
-	  "Delay between display frames (s)",
+	SetPar_UniParMgr(&pars[DISPLAY_FRAME_DELAY], wxT("FRAMEDELAY"),
+	  wxT("Delay between display frames (s)"),
 	  UNIPAR_REAL,
 	  &signalDispPtr->frameDelay, NULL,
 	  (void * (*)) SetFrameDelay_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MAGNIFICATION], "MAGNIFICATION",
-	  "Signal magnification.",
+	SetPar_UniParMgr(&pars[DISPLAY_MAGNIFICATION], wxT("MAGNIFICATION"),
+	  wxT("Signal magnification."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->magnification, NULL,
 	  (void * (*)) SetMagnification_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MAX_Y], "MAXY",
-	  "Maximum Y value (for manual scaling).",
+	SetPar_UniParMgr(&pars[DISPLAY_MAX_Y], wxT("MAXY"),
+	  wxT("Maximum Y value (for manual scaling)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->maxY, NULL,
 	  (void * (*)) SetMaxY_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MIN_Y],"MINY",
-	  "Minimum Y Value (for manual scaling).",
+	SetPar_UniParMgr(&pars[DISPLAY_MIN_Y],wxT("MINY"),
+	  wxT("Minimum Y Value (for manual scaling)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->minY, NULL,
 	  (void * (*)) SetMinY_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_MODE], "MODE",
-	  "Display mode ('off', 'line' or 'gray_scale').",
+	SetPar_UniParMgr(&pars[DISPLAY_MODE], wxT("MODE"),
+	  wxT("Display mode ('off', 'line' or 'gray_scale')."),
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->mode, signalDispPtr->modeList,
 	  (void * (*)) SetMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_NUMGREYSCALES], "NUMGREYSCALES",
-	  "Number of grey scales.",
+	SetPar_UniParMgr(&pars[DISPLAY_NUMGREYSCALES], wxT("NUMGREYSCALES"),
+	  wxT("Number of grey scales."),
 	  UNIPAR_INT,
 	  &signalDispPtr->numGreyScales, NULL,
 	  (void * (*)) SetNumGreyScales_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_SUMMARY_DISPLAY], "SUMMARYDISPLAY",
-	  "Summary display mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[DISPLAY_SUMMARY_DISPLAY], wxT("SUMMARYDISPLAY"),
+	  wxT("Summary display mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &signalDispPtr->summaryDisplay, NULL,
 	  (void * (*)) SetSummaryDisplay_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_TOP_MARGIN], "TOPMARGIN",
-	  "Top margin for display (percent of display height).",
+	SetPar_UniParMgr(&pars[DISPLAY_TOP_MARGIN], wxT("TOPMARGIN"),
+	  wxT("Top margin for display (percent of display height)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->topMargin, NULL,
 	  (void * (*)) SetTopMargin_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WIDTH], "WIDTH",
-	  "Displayed signal width (seconds or x units).",
+	SetPar_UniParMgr(&pars[DISPLAY_WIDTH], wxT("WIDTH"),
+	  wxT("Displayed signal width (seconds or x units)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->width, NULL,
 	  (void * (*)) SetWidth_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_HEIGHT], "WIN_HEIGHT",
-	  "Display frame height (pixel units).",
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_HEIGHT], wxT("WIN_HEIGHT"),
+	  wxT("Display frame height (pixel units)."),
 	  UNIPAR_INT,
 	  &signalDispPtr->frameHeight, NULL,
 	  (void * (*)) SetFrameHeight_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_WIDTH], "WIN_WIDTH",
-	  "Display frame width (pixel units).",
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_WIDTH], wxT("WIN_WIDTH"),
+	  wxT("Display frame width (pixel units)."),
 	  UNIPAR_INT,
 	  &signalDispPtr->frameWidth, NULL,
 	  (void * (*)) SetFrameWidth_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_X_POS], "WIN_X_POS",
-	  "Display frame X position (pixel units).",
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_X_POS], wxT("WIN_X_POS"),
+	  wxT("Display frame X position (pixel units)."),
 	  UNIPAR_INT,
 	  &signalDispPtr->frameXPos, NULL,
 	  (void * (*)) SetFrameXPos_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_Y_POS], "WIN_Y_POS",
-	  "Display frame Y position (pixel units).",
+	SetPar_UniParMgr(&pars[DISPLAY_WINDOW_Y_POS], wxT("WIN_Y_POS"),
+	  wxT("Display frame Y position (pixel units)."),
 	  UNIPAR_INT,
 	  &signalDispPtr->frameYPos, NULL,
 	  (void * (*)) SetFrameYPos_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_RESOLUTION], "X_RESOLUTION",
-	  "Resolution of X scale (1 - low, fractions are higher).",
+	SetPar_UniParMgr(&pars[DISPLAY_X_RESOLUTION], wxT("X_RESOLUTION"),
+	  wxT("Resolution of X scale (1 - low, fractions are higher)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->xResolution, NULL,
 	  (void * (*)) SetXResolution_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_NORMALISATION_MODE], "NORMALISATION",
-	  "Y normalisation mode ('bottom' or 'middle').",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_NORMALISATION_MODE], wxT("NORMALISATION"),
+	  wxT("Y normalisation mode ('bottom' or 'middle')."),
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yNormalisationMode, signalDispPtr->yNormModeList,
 	  (void * (*)) SetYNormalisationMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_TITLE], "Y_AXIS_TITLE",
-	  "Y-axis title.",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_TITLE], wxT("Y_AXIS_TITLE"),
+	  wxT("Y-axis title."),
 	  UNIPAR_STRING,
 	  &signalDispPtr->yAxisTitle, NULL,
 	  (void * (*)) SetYAxisTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_MODE], "Y_AXIS_MODE",
-	  "Y-axis mode ('channel' (No.) or 'scale').",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_AXIS_MODE], wxT("Y_AXIS_MODE"),
+	  wxT("Y-axis mode ('channel' (No.) or 'scale')."),
 	  UNIPAR_NAME_SPEC,
 	  &signalDispPtr->yAxisMode, signalDispPtr->yAxisModeList,
 	  (void * (*)) SetYAxisMode_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT], "Y_NUMBER_FORMAT",
-	  "Y axis scale number format, (e.g. y.yye-3).",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_NUMBER_FORMAT], wxT("Y_NUMBER_FORMAT"),
+	  wxT("Y axis scale number format, (e.g. y.yye-3)."),
 	  UNIPAR_STRING,
 	  &signalDispPtr->yNumberFormat, NULL,
 	  (void * (*)) SetYNumberFormat_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_DEC_PLACES], "Y_DEC_PLACES",
-	  "Y axis scale decimal places.",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_DEC_PLACES], wxT("Y_DEC_PLACES"),
+	  wxT("Y axis scale decimal places."),
 	  UNIPAR_INT,
 	  &signalDispPtr->yDecPlaces, NULL,
 	  (void * (*)) SetYDecPlaces_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_TICKS], "Y_TICKS",
-	  "Y axis tick marks.",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_TICKS], wxT("Y_TICKS"),
+	  wxT("Y axis tick marks."),
 	  UNIPAR_INT,
 	  &signalDispPtr->yTicks, NULL,
 	  (void * (*)) SetYTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_Y_INSET_SCALE], "Y_INSET_SCALE",
-	  "Y inset scale mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[DISPLAY_Y_INSET_SCALE], wxT("Y_INSET_SCALE"),
+	  wxT("Y inset scale mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &signalDispPtr->yInsetScale, NULL,
 	  (void * (*)) SetYInsetScale_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], "X_AXIS_TITLE",
-	  "X axis title.",
+	SetPar_UniParMgr(&pars[DISPLAY_X_AXIS_TITLE], wxT("X_AXIS_TITLE"),
+	  wxT("X axis title."),
 	  UNIPAR_STRING,
 	  &signalDispPtr->xAxisTitle, NULL,
 	  (void * (*)) SetXAxisTitle_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT], "X_NUMBER_FORMAT",
-	  "X axis scale number format, (e.g. x.xxe-3).",
+	SetPar_UniParMgr(&pars[DISPLAY_X_NUMBER_FORMAT], wxT("X_NUMBER_FORMAT"),
+	  wxT("X axis scale number format, (e.g. x.xxe-3)."),
 	  UNIPAR_STRING,
 	  &signalDispPtr->xNumberFormat, NULL,
 	  (void * (*)) SetXNumberFormat_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES], "X_DEC_PLACES",
-	  "X axis scale decimal places.",
+	SetPar_UniParMgr(&pars[DISPLAY_X_DEC_PLACES], wxT("X_DEC_PLACES"),
+	  wxT("X axis scale decimal places."),
 	  UNIPAR_INT,
 	  &signalDispPtr->xDecPlaces, NULL,
 	  (void * (*)) SetXDecPlaces_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_TICKS], "X_TICKS",
-	  "X axis tick marks.",
+	SetPar_UniParMgr(&pars[DISPLAY_X_TICKS], wxT("X_TICKS"),
+	  wxT("X axis tick marks."),
 	  UNIPAR_INT,
 	  &signalDispPtr->xTicks, NULL,
 	  (void * (*)) SetXTicks_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_AUTO_X_SCALE], "AUTO_X_SCALE",
-	  "Autoscale option for x-axis ('on' or 'off')",
+	SetPar_UniParMgr(&pars[DISPLAY_AUTO_X_SCALE], wxT("AUTO_X_SCALE"),
+	  wxT("Autoscale option for x-axis ('on' or 'off')"),
 	  UNIPAR_BOOL,
 	  &signalDispPtr->autoXScale, NULL,
 	  (void * (*)) SetAutoXScale_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_OFFSET], "X_OFFSET",
-	  "X offset for display in zoom mode (x units).",
+	SetPar_UniParMgr(&pars[DISPLAY_X_OFFSET], wxT("X_OFFSET"),
+	  wxT("X offset for display in zoom mode (x units)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->xOffset, NULL,
 	  (void * (*)) SetXOffset_SignalDisp);
-	SetPar_UniParMgr(&pars[DISPLAY_X_EXTENT], "X_EXTENT",
-	  "X extent for display in zoom mode (x units or -1 for end of signal).",
+	SetPar_UniParMgr(&pars[DISPLAY_X_EXTENT], wxT("X_EXTENT"),
+	  wxT("X extent for display in zoom mode (x units or -1 for end of "
+	  "signal)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->xExtent, NULL,
 	  (void * (*)) SetXExtent_SignalDisp);
@@ -531,9 +533,9 @@ SetUniParList_SignalDisp(void)
 BOOLN
 SetDefaulEnabledPars_SignalDisp(void)
 {
-	static const char *funcName = "SetDefaulEnabledPars_SignalDisp";
+	static const WChar *funcName = wxT("SetDefaulEnabledPars_SignalDisp");
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->parList->pars[DISPLAY_X_DEC_PLACES].enabled = FALSE;
@@ -563,15 +565,15 @@ SetDefaulEnabledPars_SignalDisp(void)
 UniParListPtr
 GetUniParListPtr_SignalDisp(void)
 {
-	static const char *funcName = "GetUniParListPtr_SignalDisp";
+	static const WChar *funcName = wxT("GetUniParListPtr_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(NULL);
 	}
 	if (signalDispPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(signalDispPtr->parList);
@@ -608,18 +610,19 @@ SetAutoYScaleParsState_SignalDisp(BOOLN state)
  */
 
 BOOLN
-SetAutoYScale_SignalDisp(char *theAutoYScale)
+SetAutoYScale_SignalDisp(WChar *theAutoYScale)
 {
-	static const char *funcName = "SetAutoYScale_SignalDisp";
+	static const WChar *funcName = wxT("SetAutoYScale_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theAutoYScale,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName, theAutoYScale);
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
+		  theAutoYScale);
 		return(FALSE);
 	}
 	signalDispPtr->autoYScale = specifier;
@@ -640,10 +643,10 @@ SetAutoYScale_SignalDisp(char *theAutoYScale)
 BOOLN
 SetFrameDelay_SignalDisp(double frameDelay)
 {
-	static const char *funcName = "SetFrameDelay_SignalDisp";
+	static const WChar *funcName = wxT("SetFrameDelay_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->frameDelay = frameDelay;
@@ -662,10 +665,10 @@ SetFrameDelay_SignalDisp(double frameDelay)
 BOOLN
 SetChannelStep_SignalDisp(int channelStep)
 {
-	static const char *funcName = "SetChannelStep_SignalDisp";
+	static const WChar *funcName = wxT("SetChannelStep_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->channelStep = channelStep;
@@ -684,14 +687,14 @@ SetChannelStep_SignalDisp(int channelStep)
 BOOLN
 SetFrameHeight_SignalDisp(int frameHeight)
 {
-	static const char *funcName = "SetFrameHeight_SignalDisp";
+	static const WChar *funcName = wxT("SetFrameHeight_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (frameHeight <= 0) {
-		NotifyError("%s: Value must be greater than zero (%g)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g)"), funcName,
 		  frameHeight);
 		return(FALSE);
 	}
@@ -712,14 +715,14 @@ SetFrameHeight_SignalDisp(int frameHeight)
 BOOLN
 SetFrameWidth_SignalDisp(int frameWidth)
 {
-	static const char *funcName = "SetFrameWidth_SignalDisp";
+	static const WChar *funcName = wxT("SetFrameWidth_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (frameWidth <= 0) {
-		NotifyError("%s: Value must be greater than zero (%g)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g)"), funcName,
 		  frameWidth);
 		return(FALSE);
 	}
@@ -740,10 +743,10 @@ SetFrameWidth_SignalDisp(int frameWidth)
 BOOLN
 SetFrameXPos_SignalDisp(int frameXPos)
 {
-	static const char *funcName = "SetFrameXPos_SignalDisp";
+	static const WChar *funcName = wxT("SetFrameXPos_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->frameXPos = frameXPos;
@@ -763,10 +766,10 @@ SetFrameXPos_SignalDisp(int frameXPos)
 BOOLN
 SetFrameYPos_SignalDisp(int frameYPos)
 {
-	static const char *funcName = "SetFrameYPos_SignalDisp";
+	static const WChar *funcName = wxT("SetFrameYPos_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->frameYPos = frameYPos;
@@ -783,16 +786,16 @@ SetFrameYPos_SignalDisp(int frameYPos)
  */
 
 BOOLN
-SetYAxisTitle_SignalDisp(char *yAxisTitle)
+SetYAxisTitle_SignalDisp(WChar *yAxisTitle)
 {
-	static const char *funcName = "SetYAxisTitle_SignalDisp";
+	static const WChar *funcName = wxT("SetYAxisTitle_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->yAxisTitleFlag = TRUE;
-	snprintf(signalDispPtr->yAxisTitle, MAXLINE, "%s", yAxisTitle);
+	DSAM_snprintf(signalDispPtr->yAxisTitle, MAXLINE, wxT("%s"), yAxisTitle);
 	return(TRUE);
 
 }
@@ -820,18 +823,18 @@ SetYAxisModeParsState_SignalDisp(BOOLN state)
  */
 
 BOOLN
-SetYAxisMode_SignalDisp(char *theYAxisMode)
+SetYAxisMode_SignalDisp(WChar *theYAxisMode)
 {
-	static const char *funcName = "SetYAxisMode_SignalDisp";
+	static const WChar *funcName = wxT("SetYAxisMode_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theYAxisMode,
 	  signalDispPtr->yAxisModeList)) == GRAPH_MODE_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theYAxisMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theYAxisMode);
 		return(FALSE);
 	}
 	signalDispPtr->yAxisMode = specifier;
@@ -852,18 +855,18 @@ SetYAxisMode_SignalDisp(char *theYAxisMode)
  */
 
 BOOLN
-SetYNormalisationMode_SignalDisp(char *theYNormalisationMode)
+SetYNormalisationMode_SignalDisp(WChar *theYNormalisationMode)
 {
-	static const char *funcName = "SetYNormalisationMode_SignalDisp";
+	static const WChar *funcName = wxT("SetYNormalisationMode_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theYNormalisationMode,
 	  signalDispPtr->yNormModeList)) == GRAPH_LINE_YNORM_MODE_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theYNormalisationMode);
 		return(FALSE);
 	}
@@ -879,21 +882,21 @@ SetYNormalisationMode_SignalDisp(char *theYNormalisationMode)
 /*
  * This routine sets the x resolution for the display.
  * The x resolution is used in the algorithm for optimising printing x values.
- * It prevents inefficient "over-plotting" of points.
+ * It prevents inefficient wxT("over-plotting") of points.
  * This is a bool response, hence only non-zero values are TRUE.
  */
 
 BOOLN
 SetXResolution_SignalDisp(double xResolution)
 {
-	static const char *funcName = "SetXResolution_SignalDisp";
+	static const WChar *funcName = wxT("SetXResolution_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((xResolution < FLT_EPSILON) || (xResolution > 1.0)) {
-		NotifyError("%s: Value must be in range %.2g - 1.0 (%g)", funcName,
+		NotifyError(wxT("%s: Value must be in range %.2g - 1.0 (%g)"), funcName,
 		  FLT_EPSILON, xResolution);
 		return(FALSE);
 	}
@@ -914,14 +917,14 @@ SetXResolution_SignalDisp(double xResolution)
 BOOLN
 SetMagnification_SignalDisp(double magnification)
 {
-	static const char *funcName = "SetMagnification_SignalDisp";
+	static const WChar *funcName = wxT("SetMagnification_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (magnification < FLT_EPSILON) {
-		NotifyError("%s: Illegal value (%g)", funcName, magnification);
+		NotifyError(wxT("%s: Illegal value (%g)"), funcName, magnification);
 		return(FALSE);
 	}
 	signalDispPtr->magnification = magnification;
@@ -942,10 +945,10 @@ SetMagnification_SignalDisp(double magnification)
 BOOLN
 SetMaxY_SignalDisp(double maxY)
 {
-	static const char *funcName = "SetMaxY_SignalDisp";
+	static const WChar *funcName = wxT("SetMaxY_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->maxY = maxY;
@@ -966,10 +969,10 @@ SetMaxY_SignalDisp(double maxY)
 BOOLN
 SetMinY_SignalDisp(double minY)
 {
-	static const char *funcName = "SetMinY_SignalDisp";
+	static const WChar *funcName = wxT("SetMinY_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->minY = minY;
@@ -989,10 +992,10 @@ SetMinY_SignalDisp(double minY)
 BOOLN
 SetTopMargin_SignalDisp(double topMargin)
 {
-	static const char *funcName = "SetTopMargin_SignalDisp";
+	static const WChar *funcName = wxT("SetTopMargin_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->topMargin = topMargin;
@@ -1012,10 +1015,10 @@ SetTopMargin_SignalDisp(double topMargin)
 BOOLN
 SetWidth_SignalDisp(double width)
 {
-	static const char *funcName = "SetWidth_SignalDisp";
+	static const WChar *funcName = wxT("SetWidth_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/* signalDispPtr->width = width; parameter to be removed. */
@@ -1033,24 +1036,24 @@ SetWidth_SignalDisp(double width)
  */
 
 BOOLN
-SetMode_SignalDisp(char *theMode)
+SetMode_SignalDisp(WChar *theMode)
 {
-	static const char *funcName = "SetMode_SignalDisp";
+	static const WChar *funcName = wxT("SetMode_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 	  signalDispPtr->modeList)) == GRAPH_MODE_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	if ((specifier == GRAPH_MODE_GREY_SCALE) && (signalDispPtr->autoYScale ==
 	  GENERAL_BOOLEAN_OFF)) {
-		NotifyError("%s: Automatic Y scaling must be on to use the grey-scale "
-		  "mode.", funcName);
+		NotifyError(wxT("%s: Automatic Y scaling must be on to use the grey-"
+		  "scale mode."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->mode = specifier;
@@ -1070,14 +1073,14 @@ SetMode_SignalDisp(char *theMode)
 BOOLN
 SetNumGreyScales_SignalDisp(int theNumGreyScales)
 {
-	static const char *funcName = "SetNumGreyScales_SignalDisp";
+	static const WChar *funcName = wxT("SetNumGreyScales_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumGreyScales < 1) {
-		NotifyError("%s: Illegal value (%d)", funcName, theNumGreyScales);
+		NotifyError(wxT("%s: Illegal value (%d)"), funcName, theNumGreyScales);
 		return(FALSE);
 	}
 	signalDispPtr->numGreyScales = theNumGreyScales;
@@ -1096,18 +1099,18 @@ SetNumGreyScales_SignalDisp(int theNumGreyScales)
  */
 
 BOOLN
-SetSummaryDisplay_SignalDisp(char *theSummaryDisplay)
+SetSummaryDisplay_SignalDisp(WChar *theSummaryDisplay)
 {
-	static const char *funcName = "SetSummaryDisplay_SignalDisp";
+	static const WChar *funcName = wxT("SetSummaryDisplay_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theSummaryDisplay,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theSummaryDisplay);
 		return(FALSE);
 	}
@@ -1125,16 +1128,16 @@ SetSummaryDisplay_SignalDisp(char *theSummaryDisplay)
  */
 
 BOOLN
-SetTitle_SignalDisp(char *title)
+SetTitle_SignalDisp(WChar *title)
 {
-	static const char *funcName = "SetTitle_SignalDisp";
+	static const WChar *funcName = wxT("SetTitle_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->titleFlag = TRUE;
-	snprintf(signalDispPtr->title, MAXLINE, "%s", title);
+	DSAM_snprintf(signalDispPtr->title, MAXLINE, wxT("%s"), title);
 	signalDispPtr->redrawGraphFlag = TRUE;
 	return(TRUE);
 
@@ -1150,14 +1153,14 @@ SetTitle_SignalDisp(char *title)
 BOOLN
 SetXTicks_SignalDisp(int xTicks)
 {
-	static const char *funcName = "SetXTicks_SignalDisp";
+	static const WChar *funcName = wxT("SetXTicks_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (xTicks <= 0) {
-		NotifyError("%s: Value must be greater than zero (%g)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g)"), funcName,
 		  xTicks);
 		return(FALSE);
 	}
@@ -1175,16 +1178,16 @@ SetXTicks_SignalDisp(int xTicks)
  */
 
 BOOLN
-SetXAxisTitle_SignalDisp(char *xAxisTitle)
+SetXAxisTitle_SignalDisp(WChar *xAxisTitle)
 {
-	static const char *funcName = "SetXAxisTitle_SignalDisp";
+	static const WChar *funcName = wxT("SetXAxisTitle_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->xAxisTitleFlag = TRUE;
-	snprintf(signalDispPtr->xAxisTitle, MAXLINE, "%s", xAxisTitle);
+	DSAM_snprintf(signalDispPtr->xAxisTitle, MAXLINE, wxT("%s"), xAxisTitle);
 	return(TRUE);
 
 }
@@ -1198,20 +1201,21 @@ SetXAxisTitle_SignalDisp(char *xAxisTitle)
  */
 
 BOOLN
-SetXNumberFormat_SignalDisp(char *xNumberFormat)
+SetXNumberFormat_SignalDisp(WChar *xNumberFormat)
 {
-	static const char *funcName = "SetXNumberFormat_SignalDisp";
+	static const WChar *funcName = wxT("SetXNumberFormat_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!xNumberFormat || (xNumberFormat[0] == '\0')) {
-		NotifyError("%s: This setting must be in the form 'xx.e-3' (%s)",
+		NotifyError(wxT("%s: This setting must be in the form 'xx.e-3' (%s)"),
 		  funcName, xNumberFormat);
 		return(FALSE);
 	}
-	snprintf(signalDispPtr->xNumberFormat, MAXLINE, "%s", xNumberFormat);
+	DSAM_snprintf(signalDispPtr->xNumberFormat, MAXLINE, wxT("%s"),
+	  xNumberFormat);
 	signalDispPtr->xNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1244,18 +1248,18 @@ SetAutoXScaleParsState_SignalDisp(BOOLN state)
  */
 
 BOOLN
-SetAutoXScale_SignalDisp(char *theAutoXScale)
+SetAutoXScale_SignalDisp(WChar *theAutoXScale)
 {
-	static const char	*funcName = "SetAutoXScale_SignalDisp";
+	static const WChar	*funcName = wxT("SetAutoXScale_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theAutoXScale,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theAutoXScale);
 		return(FALSE);
 	}
@@ -1278,15 +1282,15 @@ SetAutoXScale_SignalDisp(char *theAutoXScale)
 BOOLN
 SetXOffset_SignalDisp(double theXOffset)
 {
-	static const char	*funcName = "SetXOffset_SignalDisp";
+	static const WChar	*funcName = wxT("SetXOffset_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theXOffset < 0.0) {
-		NotifyError("%s: Cannot set the X offset less than zero (%g units).",
-		  funcName, theXOffset);
+		NotifyError(wxT("%s: Cannot set the X offset less than zero (%g "
+		  "units)."), funcName, theXOffset);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -1308,10 +1312,10 @@ SetXOffset_SignalDisp(double theXOffset)
 BOOLN
 SetXExtent_SignalDisp(double theXExtent)
 {
-	static const char	*funcName = "SetXExtent_SignalDisp";
+	static const WChar	*funcName = wxT("SetXExtent_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -1330,20 +1334,21 @@ SetXExtent_SignalDisp(double theXExtent)
  */
 
 BOOLN
-SetYNumberFormat_SignalDisp(char *yNumberFormat)
+SetYNumberFormat_SignalDisp(WChar *yNumberFormat)
 {
-	static const char *funcName = "SetYNumberFormat_SignalDisp";
+	static const WChar *funcName = wxT("SetYNumberFormat_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!yNumberFormat || (yNumberFormat[0] == '\0')) {
-		NotifyError("%s: This setting must be in the form 'xx.e-3' (%s)",
+		NotifyError(wxT("%s: This setting must be in the form 'xx.e-3' (%s)"),
 		  funcName, yNumberFormat);
 		return(FALSE);
 	}
-	snprintf(signalDispPtr->yNumberFormat, MAXLINE, "%s", yNumberFormat);
+	DSAM_snprintf(signalDispPtr->yNumberFormat, MAXLINE, wxT("%s"),
+	  yNumberFormat);
 	signalDispPtr->yNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1360,14 +1365,14 @@ SetYNumberFormat_SignalDisp(char *yNumberFormat)
 BOOLN
 SetYTicks_SignalDisp(int yTicks)
 {
-	static const char *funcName = "SetYTicks_SignalDisp";
+	static const WChar *funcName = wxT("SetYTicks_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (yTicks <= 0) {
-		NotifyError("%s: Value must be greater than zero (%g)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g)"), funcName,
 		  yTicks);
 		return(FALSE);
 	}
@@ -1387,18 +1392,18 @@ SetYTicks_SignalDisp(int yTicks)
  */
 
 BOOLN
-SetYInsetScale_SignalDisp(char *theYInsetScale)
+SetYInsetScale_SignalDisp(WChar *theYInsetScale)
 {
-	static const char *funcName = "SetYInsetScale_SignalDisp";
+	static const WChar *funcName = wxT("SetYInsetScale_SignalDisp");
 	int		specifier;
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theYInsetScale,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theYInsetScale);
 		return(FALSE);
 	}
@@ -1420,14 +1425,15 @@ SetYInsetScale_SignalDisp(char *theYInsetScale)
 BOOLN
 SetXDecPlaces_SignalDisp(int xDecPlaces)
 {
-	static const char *funcName = "SetXDecPlaces_SignalDisp";
+	static const WChar *funcName = wxT("SetXDecPlaces_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (xDecPlaces < 0) {
-		NotifyError("%s: Value cannot be negative (%g)", funcName, xDecPlaces);
+		NotifyError(wxT("%s: Value cannot be negative (%g)"), funcName,
+		  xDecPlaces);
 		return(FALSE);
 	}
 	signalDispPtr->xDecPlaces = xDecPlaces;
@@ -1448,14 +1454,15 @@ SetXDecPlaces_SignalDisp(int xDecPlaces)
 BOOLN
 SetYDecPlaces_SignalDisp(int yDecPlaces)
 {
-	static const char *funcName = "SetYDecPlaces_SignalDisp";
+	static const WChar *funcName = wxT("SetYDecPlaces_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (yDecPlaces < 0) {
-		NotifyError("%s: Value cannot be negative (%g)", funcName, yDecPlaces);
+		NotifyError(wxT("%s: Value cannot be negative (%g)"), funcName,
+		  yDecPlaces);
 		return(FALSE);
 	}
 	signalDispPtr->yDecPlaces = yDecPlaces;
@@ -1476,29 +1483,29 @@ SetYDecPlaces_SignalDisp(int yDecPlaces)
 BOOLN
 CheckPars_SignalDisp(void)
 {
-	static const char *funcName = "CheckPars_SignalDisp";
+	static const WChar *funcName = wxT("CheckPars_SignalDisp");
 
 	if (signalDispPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (signalDispPtr->autoYScaleFlag && !signalDispPtr->autoYScale &&
 	  (!signalDispPtr->minYFlag || !signalDispPtr->maxYFlag)) {
-		NotifyError("%s: When the automatic y scale is off, the minimum and "
-		  "maximum Y value must also be set.", funcName);
+		NotifyError(wxT("%s: When the automatic y scale is off, the minimum "
+		  "and maximum Y value must also be set."), funcName);
 		return(FALSE);
 	}
 	if (!signalDispPtr->autoYScale && (signalDispPtr->minY >= signalDispPtr->
 	  maxY)) {
-		NotifyError("%s: the minimum y value (%g) should be less than than the "
-		  "maximum y value (%g).", funcName, signalDispPtr->minY,
+		NotifyError(wxT("%s: the minimum y value (%g) should be less than than "
+		  "the maximum y value (%g)."), funcName, signalDispPtr->minY,
 		  signalDispPtr->maxY);
 		return(FALSE);
 	}
 	if (signalDispPtr->autoXScaleFlag && !signalDispPtr->autoXScale &&
 	  (!signalDispPtr->xOffsetFlag || !signalDispPtr->xExtentFlag)) {
-		NotifyError("%s: When automatic x-scale is off, the x offset and "
-		  "x extent values must both be set.", funcName);
+		NotifyError(wxT("%s: When automatic x-scale is off, the x offset and "
+		  "x extent values must both be set."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1514,53 +1521,56 @@ CheckPars_SignalDisp(void)
 BOOLN
 PrintPars_SignalDisp(void)
 {
-	static const char *funcName = "PrintPars_SignalDisp";
+	static const WChar *funcName = wxT("PrintPars_SignalDisp");
 
 	if (!CheckPars_SignalDisp()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("SignalDisp Module Parameters:-\n");
-	DPrint("\tWindow title = %s,\n", signalDispPtr->title);
-	DPrint("\tMode = %s,\n",
+	DPrint(wxT("SignalDisp Module Parameters:-\n"));
+	DPrint(wxT("\tWindow title = %s,\n"), signalDispPtr->title);
+	DPrint(wxT("\tMode = %s,\n"),
 	  signalDispPtr->modeList[signalDispPtr->mode].name);
 	if (signalDispPtr->mode == GRAPH_MODE_GREY_SCALE)
-		DPrint("\tNo. grey scales = %d.\n", signalDispPtr->numGreyScales);
-	DPrint("\tAutomatic scaling mode: %s\n",
+		DPrint(wxT("\tNo. grey scales = %d.\n"), signalDispPtr->numGreyScales);
+	DPrint(wxT("\tAutomatic scaling mode: %s\n"),
 	  BooleanList_NSpecLists(signalDispPtr->autoYScale)->name);
-	DPrint("\tChannel step for display: %d\n", signalDispPtr->channelStep);
+	DPrint(wxT("\tChannel step for display: %d\n"), signalDispPtr->channelStep);
 	if (!signalDispPtr->autoYScale)
-		DPrint("\tMinimum/Maximum Y values: %g/%g units.\n",
+		DPrint(wxT("\tMinimum/Maximum Y values: %g/%g units.\n"),
 		  signalDispPtr->minY, signalDispPtr->maxY);
-	DPrint("\tY normalisation mode: %s\n",
+	DPrint(wxT("\tY normalisation mode: %s\n"),
 	  signalDispPtr->yNormModeList[signalDispPtr->yNormalisationMode].name);
-	DPrint("\tSummary display mode: %s\n",
+	DPrint(wxT("\tSummary display mode: %s\n"),
 	  BooleanList_NSpecLists(signalDispPtr->summaryDisplay)->name);
-	DPrint("\tSignal Y scale = %g.\n", signalDispPtr->magnification);
-	DPrint("\tY axis title = %s\n", signalDispPtr->yAxisTitle);
-	DPrint("\tY-axis mode = %s,\n",
+	DPrint(wxT("\tSignal Y scale = %g.\n"), signalDispPtr->magnification);
+	DPrint(wxT("\tY axis title = %s\n"), signalDispPtr->yAxisTitle);
+	DPrint(wxT("\tY-axis mode = %s,\n"),
 	  signalDispPtr->yAxisModeList[signalDispPtr->yAxisMode].name);
-	DPrint("\tY axis scale number format = %s\n", signalDispPtr->yNumberFormat);
-	DPrint("\tY axis ticks = %d\n", signalDispPtr->yTicks);
-	DPrint("\tY inste scale mode: %s\n",
+	DPrint(wxT("\tY axis scale number format = %s\n"), signalDispPtr->
+	  yNumberFormat);
+	DPrint(wxT("\tY axis ticks = %d\n"), signalDispPtr->yTicks);
+	DPrint(wxT("\tY inste scale mode: %s\n"),
 	  BooleanList_NSpecLists(signalDispPtr->yInsetScale)->name);
-	DPrint("\tX resolution = %g (<= 1.0)\n", signalDispPtr->xResolution);
-	DPrint("\tX axis title = %s\n", signalDispPtr->xAxisTitle);
-	DPrint("\tX axis ticks = %d\n", signalDispPtr->xTicks);
-	DPrint("\tX axis scale number format = %s\n", signalDispPtr->xNumberFormat);
+	DPrint(wxT("\tX resolution = %g (<= 1.0)\n"), signalDispPtr->xResolution);
+	DPrint(wxT("\tX axis title = %s\n"), signalDispPtr->xAxisTitle);
+	DPrint(wxT("\tX axis ticks = %d\n"), signalDispPtr->xTicks);
+	DPrint(wxT("\tX axis scale number format = %s\n"), signalDispPtr->
+	  xNumberFormat);
 	if (!signalDispPtr->autoXScale) {
-		DPrint("\tOffset/extent X values: %g", signalDispPtr->xOffset);
+		DPrint(wxT("\tOffset/extent X values: %g"), signalDispPtr->xOffset);
 		if (signalDispPtr->xExtent < DBL_EPSILON)
-			DPrint("units / <end of signal>).\n");
+			DPrint(wxT("units / <end of signal>).\n"));
 		else
-			DPrint("/%g units.\n", signalDispPtr->xExtent);
+			DPrint(wxT("/%g units.\n"), signalDispPtr->xExtent);
 	}
-	DPrint("\tTop margin percentage = %g %%\n", signalDispPtr->topMargin);
-	DPrint("\tFrame: dimensions %d x %d\n", signalDispPtr->frameWidth,
+	DPrint(wxT("\tTop margin percentage = %g %%\n"), signalDispPtr->topMargin);
+	DPrint(wxT("\tFrame: dimensions %d x %d\n"), signalDispPtr->frameWidth,
 	  signalDispPtr->frameHeight);
-	DPrint("\tFrame: position %d x %d\n", signalDispPtr->frameXPos,
+	DPrint(wxT("\tFrame: position %d x %d\n"), signalDispPtr->frameXPos,
 	  signalDispPtr->frameYPos);
-	DPrint("\tDelay %g ms\n", MILLI(signalDispPtr->frameDelay));
+	DPrint(wxT("\tDelay %g ms\n"), MILLI(signalDispPtr->frameDelay));
 	return(TRUE);
 
 }
@@ -1579,12 +1589,12 @@ PrintPars_SignalDisp(void)
 BOOLN
 SetProcessMode_SignalDisp(EarObjectPtr data)
 {
-	static const char *funcName = "SetProcessMode_SignalDisp";
+	static const WChar *funcName = wxT("SetProcessMode_SignalDisp");
 
-	if ((data->processName == NULL) || (strncmp(data->processName,
-		  DISPLAY_PROCESS_NAME, strlen(DISPLAY_PROCESS_NAME)) == 0) ||
-		  (strcmp(data->processName, NULL_MODULE_PROCESS_NAME) == 0)) {
-		SetProcessName_EarObject(data, "%s (%d)", DISPLAY_PROCESS_NAME,
+	if ((data->processName == NULL) || (DSAM_strncmp(data->processName,
+		  DISPLAY_PROCESS_NAME, DSAM_strlen(DISPLAY_PROCESS_NAME)) == 0) ||
+		  (DSAM_strcmp(data->processName, NULL_MODULE_PROCESS_NAME) == 0)) {
+		SetProcessName_EarObject(data, wxT("%s (%d)"), DISPLAY_PROCESS_NAME,
 		  (int) data->handle);
 		if (data->outSignal != NULL)
 			if (!SameType_SignalData_NoDiagnostics(data->inSignal[0],
@@ -1596,8 +1606,8 @@ SetProcessMode_SignalDisp(EarObjectPtr data)
 		signalDispPtr->inLineProcess = TRUE;
 	} else {
 		if (!CheckPars_SignalData(data->outSignal)) {
-			NotifyError("%s: Output signal not correctly set for 'sample' use.",
-			  funcName);
+			NotifyError(wxT("%s: Output signal not correctly set for 'sample' "
+			  "use."), funcName);
 			return(FALSE);
 		}
 		signalDispPtr->inLineProcess = FALSE;
@@ -1616,10 +1626,10 @@ SetProcessMode_SignalDisp(EarObjectPtr data)
 BOOLN
 SetParsPointer_SignalDisp(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_SignalDisp";
+	static const WChar	*funcName = wxT("SetParsPointer_SignalDisp");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr = (SignalDispPtr) theModule->parsPtr;
@@ -1636,14 +1646,15 @@ SetParsPointer_SignalDisp(ModulePtr theModule)
 BOOLN
 InitModule_SignalDisp(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_SignalDisp";
+	static const WChar	*funcName = wxT("InitModule_SignalDisp");
 
 	if (!SetParsPointer_SignalDisp(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_SignalDisp(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = signalDispPtr;
@@ -1674,8 +1685,6 @@ InitModule_SignalDisp(ModulePtr theModule)
 BOOLN
 CheckData_SignalDisp(EarObjectPtr data)
 {
-	/*static const char	*funcName = "CheckData_SignalDisp"; */
-
 	/*** Put additional checks here. ***/
 	return(TRUE);
 
@@ -1693,7 +1702,7 @@ CheckData_SignalDisp(EarObjectPtr data)
 BOOLN
 InitProcessVariables_SignalDisp(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_SignalDisp";
+	static const WChar *funcName = wxT("InitProcessVariables_SignalDisp");
 	double	definedDuration;
 	SignalDataPtr	signal, buffer;
 	
@@ -1713,8 +1722,8 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 			signalDispPtr->critSect = new wxCriticalSection();
 #			endif
 			if ((signalDispPtr->summary = Init_EarObject(
-			  "Util_ReduceChannels")) == NULL) {
-				NotifyError("%s: Out of memory for summary EarObject.",
+			  wxT("Util_ReduceChannels"))) == NULL) {
+				NotifyError(wxT("%s: Out of memory for summary EarObject."),
 				  funcName);
 				return(FALSE);
 			}
@@ -1722,8 +1731,9 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 			if ((definedDuration > _GetDuration_SignalData(signal)) ||
 			  (signal->numWindowFrames !=
 			  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)) {
-				if ((signalDispPtr->buffer = Init_EarObject("NULL")) == NULL) {
-					NotifyError("%s: Out of memory for buffer EarObject.",
+				if ((signalDispPtr->buffer = Init_EarObject(wxT("NULL"))) ==
+				  NULL) {
+					NotifyError(wxT("%s: Out of memory for buffer EarObject."),
 					  funcName);
 					return(FALSE);
 				}
@@ -1750,7 +1760,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 			if (!InitOutSignal_EarObject(signalDispPtr->buffer, signal->
 			  numChannels, (ChanLen) floor(definedDuration / signal->dt + 0.5),
 			  signal->dt)) {
-				NotifyError("%s: Could not initialise buffer signal.",
+				NotifyError(wxT("%s: Could not initialise buffer signal."),
 				  funcName);
 				return(FALSE);
 			}
@@ -1804,7 +1814,7 @@ void
 ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
   int windowFrame)
 {
-	/* static const char *funcName = "ProcessBuffer_SignalDisp"; */
+	/* static const WChar *funcName = wxT("ProcessBuffer_SignalDisp"); */
 	register	ChanData	*inPtr, *outPtr;
 	int		chan;
 	ChanLen	j, shift, signalLength;
@@ -1846,10 +1856,10 @@ ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
 void
 SetDisplay_SignalDisp(EarObjectPtr data)
 {
-	/* static const char *funcName = "SetDisplay_SignalDisp"; */
+	/* static const WChar *funcName = wxT("SetDisplay_SignalDisp"); */
 
-	SetPar_ModuleMgr(signalDispPtr->summary, "mode", "average");
-	SetPar_ModuleMgr(signalDispPtr->summary, "num_Channels", "1");
+	SetPar_ModuleMgr(signalDispPtr->summary, wxT("mode"), wxT("average"));
+	SetPar_ModuleMgr(signalDispPtr->summary, wxT("num_Channels"), wxT("1"));
 	RunProcess_ModuleMgr(signalDispPtr->summary);
 	signalDispPtr->data = data;
 
@@ -1897,13 +1907,13 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 {
 
 #	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	static const char *funcName = "ShowSignal_SignalDisp";
+	static const WChar *funcName = wxT("ShowSignal_SignalDisp");
 	time_t	startTime;
 	BOOLN	notReady;
 	int		i;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalDisp())
@@ -1911,7 +1921,7 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!SetProcessMode_SignalDisp(data)) {
-		NotifyError("%s: Could not set process mode.", funcName);
+		NotifyError(wxT("%s: Could not set process mode."), funcName);
 		return(FALSE);
 	}
 	if (signalDispPtr->mode == GRAPH_MODE_OFF) {
@@ -1920,11 +1930,11 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 		return(TRUE);
 	}
 	if (!CheckData_SignalDisp(data)) {
-		NotifyError("%s: Process data invalid.", funcName);
+		NotifyError(wxT("%s: Process data invalid."), funcName);
 		return(FALSE);
 	}
 	if (!InitProcessVariables_SignalDisp(data)) {
-		NotifyError("%s: Could not initialise the process variables.",
+		NotifyError(wxT("%s: Could not initialise the process variables."),
 		  funcName);
 		return(FALSE);
 	}

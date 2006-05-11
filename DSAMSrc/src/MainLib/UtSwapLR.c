@@ -45,7 +45,6 @@
 BOOLN
 SetParsPointer_Utility_SwapLR(ModulePtr theModule)
 {
-	/* static const char	*funcName = "SetParsPointer_Utility_SwapLR"; */
 
 	return(TRUE);
 
@@ -61,7 +60,7 @@ SetParsPointer_Utility_SwapLR(ModulePtr theModule)
 BOOLN
 InitModule_Utility_SwapLR(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Utility_SwapLR"; */
+	/* static const WChar	*funcName = wxT("InitModule_Utility_SwapLR"); */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
@@ -87,16 +86,16 @@ InitModule_Utility_SwapLR(ModulePtr theModule)
 BOOLN
 CheckData_Utility_SwapLR(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_SwapLR";
+	static const WChar	*funcName = wxT("CheckData_Utility_SwapLR");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (data->inSignal[0]->interleaveLevel != 2) {
-		NotifyError("%s: This utility only works with binaural signals.",
+		NotifyError(wxT("%s: This utility only works with binaural signals."),
 		  funcName);
 		return(FALSE);
 	} 
@@ -123,20 +122,20 @@ CheckData_Utility_SwapLR(EarObjectPtr data)
 BOOLN
 Process_Utility_SwapLR(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_SwapLR";
+	static const WChar	*funcName = wxT("Process_Utility_SwapLR");
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_SwapLR(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Swap L->R Utility Module process");
+		SetProcessName_EarObject(data, wxT("Swap L->R Utility Module process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->

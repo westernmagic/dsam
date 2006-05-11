@@ -126,20 +126,20 @@ BOOLN	InitProcessVariables_Analysis_ACF(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_ACF(void);
 
-BOOLN	ReadPars_Analysis_ACF(char *fileName);
+BOOLN	ReadPars_Analysis_ACF(WChar *fileName);
 
 BOOLN	SetMaxLag_Analysis_ACF(double theMaxLag);
 
 BOOLN	InitModule_Analysis_ACF(ModulePtr theModule);
 
-BOOLN	SetNormalisationMode_Analysis_ACF(char * theNormalisationMode);
+BOOLN	SetNormalisationMode_Analysis_ACF(WChar * theNormalisationMode);
 
 BOOLN	SetParsPointer_Analysis_ACF(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
+BOOLN	SetPars_Analysis_ACF(WChar * normalisationMode, double timeOffset,
 		  double timeConstant, double maxLag);
 
-BOOLN	SetTimeConstMode_Analysis_ACF(char * theTimeConstMode);
+BOOLN	SetTimeConstMode_Analysis_ACF(WChar * theTimeConstMode);
 
 BOOLN	SetTimeConstScale_Analysis_ACF(double theTimeConstScale);
 

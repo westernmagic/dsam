@@ -56,11 +56,11 @@
 #define UTILITY_SIMSCRIPT_NUM_PARS			3
 #define	MAX_IDENTIFIERS						20
 #define	NULL_STRING							""
-#define SIMSCRIPT_SIMPARFILE_DIVIDER		"<<>>"
-#define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	"<()>"
+#define SIMSCRIPT_SIMPARFILE_DIVIDER		wxT("<<>>")
+#define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	wxT("<()>")
 #define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'
-#define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE "#########################"\
-		  "#######################################################\n"
+#define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE wxT("#####################"\
+		  "###########################################################\n")
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -106,8 +106,8 @@ typedef struct {
 	UniParListPtr	parList;
 	NameSpecifier	*parFilePathModeList;
 	SimFileTypeSpecifier	simFileType;
-	char	simFileName[MAX_FILE_PATH];
-	char	parsFilePath[MAX_FILE_PATH];
+	WChar	simFileName[MAX_FILE_PATH];
+	WChar	parsFilePath[MAX_FILE_PATH];
 	int		lineNumber;
 	FILE	*fp;
 	SymbolPtr	symList;
@@ -141,13 +141,13 @@ BOOLN	Free_Utility_SimScript(void);
 
 BOOLN	FreeSimulation_Utility_SimScript(void);
 
-char *	GetFilePath_Utility_SimScript(char *filePath);
+WChar *	GetFilePath_Utility_SimScript(WChar *filePath);
 
 DynaBListPtr	GetLabelBList_Utility_SimScript(void);
 
 SimScriptPtr	GetPtr_Utility_SimScript(void);
 
-SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(char *suffix);
+SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(WChar *suffix);
 
 DatumPtr	GetSimulation_Utility_SimScript(void);
 
@@ -165,11 +165,11 @@ BOOLN	InitParFilePathModeList_Utility_SimScript(void);
 
 BOOLN	InitSimulation_Utility_SimScript(DatumPtr simulation);
 
-char *	InitString_Utility_SimScript(char *string);
+WChar *	InitString_Utility_SimScript(WChar *string);
 
-DatumPtr	InstallProcessInst_Utility_SimScripts(char *moduleName);
+DatumPtr	InstallProcessInst_Utility_SimScripts(WChar *moduleName);
 
-void	NotifyError_Utility_SimScript(char *format, ...);
+void	NotifyError_Utility_SimScript(WChar *format, ...);
 
 BOOLN	PrintPars_Utility_SimScript(void);
 
@@ -179,7 +179,7 @@ BOOLN	Process_Utility_SimScript(EarObjectPtr data);
 
 DatumPtr	Read_Utility_SimScript(FILE *fp);
 
-BOOLN	ReadPars_Utility_SimScript(char *fileName);
+BOOLN	ReadPars_Utility_SimScript(WChar *fileName);
 
 BOOLN	ReadSimParFile_Utility_SimScript(FILE *fp);
 
@@ -193,37 +193,37 @@ void	ResetProcess_Utility_SimScript(EarObjectPtr data);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 
-BOOLN	SetControlParValue_Utility_SimScript(char *label, char *value,
+BOOLN	SetControlParValue_Utility_SimScript(WChar *label, WChar *value,
 		  BOOLN diagsOn);
 
 BOOLN	SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr);
 
-BOOLN	SetOperationMode_Utility_SimScript(char *theOperationMode);
+BOOLN	SetOperationMode_Utility_SimScript(WChar *theOperationMode);
 
-BOOLN	SetParFilePathMode_Utility_SimScript(char *theParFilePathMode);
+BOOLN	SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode);
 
-BOOLN	SetParsFilePath_Utility_SimScript(char * parsFilePath);
+BOOLN	SetParsFilePath_Utility_SimScript(WChar * parsFilePath);
 
 BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
 
 BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
-		  char *operationMode, char *parFilePathMode);
+		  WChar *operationMode, WChar *parFilePathMode);
 
 BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
 
-void	SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(char *));
+void	SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(WChar *));
 
-BOOLN	SetSimFileName_Utility_SimScript(char * simFileName);
+BOOLN	SetSimFileName_Utility_SimScript(WChar * simFileName);
 
 BOOLN	SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType);
 
 BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
 
-BOOLN	SetSimUniParValue_Utility_SimScript(char *parName, char *parValue);
+BOOLN	SetSimUniParValue_Utility_SimScript(WChar *parName, WChar *parValue);
 
 BOOLN	SetUniParList_Utility_SimScript(void);
 
-BOOLN	SetUniParValue_Utility_SimScript(char *parName, char *parValue);
+BOOLN	SetUniParValue_Utility_SimScript(WChar *parName, WChar *parValue);
 
 __END_DECLS
 

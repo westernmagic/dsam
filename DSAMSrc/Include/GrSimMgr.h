@@ -155,7 +155,7 @@ class MyApp: public wxApp {
 	void	ResetDefaultDisplayPos(void)
 			  { displayDefaultX = 0; displayDefaultY = 0; }
 	void	SaveConfiguration(UniParListPtr	parList, const wxString&
-			  processSuffix = "");
+			  processSuffix = wxT(""));
 	void	SetAudModelLoadedFlag(bool status)	{ audModelLoadedFlag = status; }
 	bool	InitServer(void);
 	void	SetConfiguration(UniParListPtr	parList);
@@ -188,11 +188,11 @@ BOOLN	OnExecute_MyApp(void);
 
 void	OnExit_MyApp(void);
 
-void	DPrint_MyApp(char *format, va_list args);
+void	DPrint_MyApp(wxChar *format, va_list args);
 
-void	EmptyDiagWinBuffer_MyApp(char *s, int *c);
+void	EmptyDiagWinBuffer_MyApp(wxChar *s, int *c);
 
-void	Notify_MyApp(const char *format, va_list args,
+void	Notify_MyApp(const wxChar *format, va_list args,
 		  CommonDiagSpecifier type);
 
 /******************************************************************************/

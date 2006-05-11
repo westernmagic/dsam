@@ -100,7 +100,7 @@ BOOLN	InitProcessVariables_Filter_MultiBPass(EarObjectPtr data);
 
 BOOLN	PrintPars_Filter_MultiBPass(void);
 
-BOOLN	ReadPars_Filter_MultiBPass(char *fileName);
+BOOLN	ReadPars_Filter_MultiBPass(WChar *fileName);
 
 BOOLN	RunModel_Filter_MultiBPass(EarObjectPtr data);
 

@@ -41,11 +41,11 @@
 
 #define CFLIST_NUM_PARS					9
 #define CFLIST_NUM_CONSTANT_PARS		2
-#define CFLIST_DEFAULT_MODE_NAME		"log"
+#define CFLIST_DEFAULT_MODE_NAME		wxT("log")
 #define CFLIST_DEFAULT_CHANNELS			30
 #define CFLIST_DEFAULT_LOW_FREQ			100
 #define CFLIST_DEFAULT_HIGH_FREQ		10000
-#define CFLIST_DEFAULT_BW_MODE_NAME		"erb"
+#define CFLIST_DEFAULT_BW_MODE_NAME		wxT("erb")
 #define CFLIST_DEFAULT_BW_MODE_FUNC		NULL
 
 /******************************************************************************/
@@ -140,14 +140,14 @@ BOOLN		AllocateFrequencies_CFList(CFListPtr theCFs);
 
 NameSpecifier *	CFModeList_CFList(int index);
 
-BOOLN		CheckInit_CFList(CFList *theCFs, const char *callingFunction);
+BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
 void		Free_CFList(CFListPtr *theCFs);
 
-CFListPtr	GenerateDefault_CFList(char *modeName, int numberOfCFs,
-			  double minCF, double maxCF, char *bwModeName,
+CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,
+			  double minCF, double maxCF, WChar *bwModeName,
 			  double (* BWidthFunc)(struct BandwidthMode *, double));
 
 BOOLN		GenerateERB_CFList(CFListPtr theCFs);
@@ -160,7 +160,7 @@ BOOLN		GenerateGreenwood_CFList(CFListPtr theCFs);
 
 BOOLN		GenerateLinear_CFList(CFListPtr theCFs);
 
-CFListPtr	GenerateList_CFList(char *modeName, char *diagModeName,
+CFListPtr	GenerateList_CFList(WChar *modeName, WChar *diagModeName,
 			  int numberOfCFs, double minCF, double maxCF, double focalCF,
 			  double eRBDensity, double *frequencies);
 
@@ -174,7 +174,7 @@ double		GetCF_CFList(CFListPtr theCFs, int channel);
 
 GreenwoodParsPtr	GetGreenwoodPars_CFList(int	species);
 
-CFListPtr	Init_CFList(const char *callingFunctionName);
+CFListPtr	Init_CFList(const WChar *callingFunctionName);
 
 void		PrintList_CFList(CFListPtr theCFs);
 
@@ -199,12 +199,13 @@ BOOLN		SetBandwidthMin_CFList(CFListPtr theCFs, double bwMin);
 
 BOOLN		SetBandwidthQuality_CFList(CFListPtr theCFs, double quality);
 
-BOOLN		SetBandwidthSpecifier_CFList(CFListPtr theCFs, char *specifierName);
+BOOLN		SetBandwidthSpecifier_CFList(CFListPtr theCFs,
+			  WChar *specifierName);
 
-BOOLN		SetBandwidthsWithFunc_CFList(CFListPtr theCFs, char *modeName,
+BOOLN		SetBandwidthsWithFunc_CFList(CFListPtr theCFs, WChar *modeName,
 			  double (* Func)(BandwidthModePtr, double));
 
-BOOLN		SetBandwidths_CFList(CFListPtr theCFs, char *modeName,
+BOOLN		SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName,
 			  double *theBandwidths);
 
 BOOLN		SetBandwidthUniParList_CFList(CFListPtr theCFs);
@@ -215,9 +216,9 @@ BOOLN		SetCFUniParList_CFList(CFListPtr theCFs);
 
 BOOLN		SetCFUniParListMode_CFList(CFListPtr theCFs);
 
-BOOLN		SetCFMode_CFList(CFListPtr theCFs, char *modeName);
+BOOLN		SetCFMode_CFList(CFListPtr theCFs, WChar *modeName);
 
-BOOLN		SetDiagnosticMode_CFList(CFListPtr theCFs, char *modeName);
+BOOLN		SetDiagnosticMode_CFList(CFListPtr theCFs, WChar *modeName);
 
 BOOLN		SetERBDensity_CFList(CFListPtr theCFs, double eRBDensity);
 

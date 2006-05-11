@@ -44,6 +44,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "TrGate.h"
 
 /******************************************************************************/
@@ -68,8 +69,6 @@ GatePtr	gatePtr = NULL;
 BOOLN
 Free_Transform_Gate(void)
 {
-	/* static const char	*funcName = "Free_Transform_Gate";  */
-
 	if (gatePtr == NULL)
 		return(FALSE);
 	if (gatePtr->parList)
@@ -93,9 +92,9 @@ InitOperationModeList_Transform_Gate(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "RAMP",	GATE_RAMP_OPERATION_MODE},
-					{ "DAMP",	GATE_DAMP_OPERATION_MODE},
-					{ "",		GATE_NULL_OPERATION_MODE}
+					{ wxT("RAMP"),	GATE_RAMP_OPERATION_MODE},
+					{ wxT("DAMP"),	GATE_DAMP_OPERATION_MODE},
+					{ wxT(""),		GATE_NULL_OPERATION_MODE}
 
 				};
 	gatePtr->operationModeList = modeList;
@@ -114,9 +113,9 @@ InitPositionModeList_Transform_Gate(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "ABSOLUTE",	GATE_ABSOLUTE_POSITION_MODE},
-					{ "RELATIVE",	GATE_RELATIVE_POSITION_MODE},
-					{ "",			GATE_NULL_POSITION_MODE}
+					{ wxT("ABSOLUTE"),	GATE_ABSOLUTE_POSITION_MODE},
+					{ wxT("RELATIVE"),	GATE_RELATIVE_POSITION_MODE},
+					{ wxT(""),			GATE_NULL_POSITION_MODE}
 
 				};
 	gatePtr->positionModeList = modeList;
@@ -135,11 +134,11 @@ InitTypeModeList_Transform_Gate(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "LINEAR",		GATE_LINEAR_TYPE_MODE},
-					{ "SINE",		GATE_SINE_TYPE_MODE},
-					{ "RAISED_COS",	GATE_RAISED_COS_TYPE_MODE},
-					{ "EXP_DECAY",	GATE_EXP_DECAY_TYPE_MODE},
-					{ "",			GATE_NULL_TYPE_MODE}
+					{ wxT("LINEAR"),		GATE_LINEAR_TYPE_MODE},
+					{ wxT("SINE"),			GATE_SINE_TYPE_MODE},
+					{ wxT("RAISED_COS"),	GATE_RAISED_COS_TYPE_MODE},
+					{ wxT("EXP_DECAY"),		GATE_EXP_DECAY_TYPE_MODE},
+					{ wxT(""),				GATE_NULL_TYPE_MODE}
 
 				};
 	gatePtr->typeModeList = modeList;
@@ -158,10 +157,10 @@ InitProcessModeList_Transform_Gate(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "TRANS_GATE",	GATE_STANDARD_PROCESS_MODE},
-					{ "TRANS_RAMP",	GATE_RAMP_PROCESS_MODE},
-					{ "TRANS_DAMP",	GATE_DAMP_PROCESS_MODE},
-					{ "",			GATE_NULL_TYPE_MODE}
+					{ wxT("TRANS_GATE"),	GATE_STANDARD_PROCESS_MODE},
+					{ wxT("TRANS_RAMP"),	GATE_RAMP_PROCESS_MODE},
+					{ wxT("TRANS_DAMP"),	GATE_DAMP_PROCESS_MODE},
+					{ wxT(""),				GATE_NULL_TYPE_MODE}
 
 				};
 	gatePtr->processModeList = modeList;
@@ -184,19 +183,20 @@ InitProcessModeList_Transform_Gate(void)
 BOOLN
 Init_Transform_Gate(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Transform_Gate";
+	static const WChar	*funcName = wxT("Init_Transform_Gate");
 
 	if (parSpec == GLOBAL) {
 		if (gatePtr != NULL)
 			Free_Transform_Gate();
 		if ((gatePtr = (GatePtr) malloc(sizeof(Gate))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (gatePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -219,7 +219,7 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
 	InitTypeModeList_Transform_Gate();
 	InitProcessModeList_Transform_Gate();
 	if (!SetUniParList_Transform_Gate()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Transform_Gate();
 		return(FALSE);
 	}
@@ -237,41 +237,41 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Transform_Gate(void)
 {
-	static const char *funcName = "SetUniParList_Transform_Gate";
+	static const WChar *funcName = wxT("SetUniParList_Transform_Gate");
 	UniParPtr	pars;
 
 	if ((gatePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  GATE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = gatePtr->parList->pars;
-	SetPar_UniParMgr(&pars[GATE_POSITION_MODE], "POS_MODE",
-	 "Position mode ('absolute' or 'relative')",
+	SetPar_UniParMgr(&pars[GATE_POSITION_MODE], wxT("POS_MODE"),
+	 wxT("Position mode ('absolute' or 'relative')"),
 	 UNIPAR_NAME_SPEC,
 	 &gatePtr->positionMode, gatePtr->positionModeList,
 	 (void * (*)) SetPositionMode_Transform_Gate);
-	SetPar_UniParMgr(&pars[GATE_OPERATION_MODE], "OP_MODE",
-	  "Operation mode ('ramp' or 'damp')",
+	SetPar_UniParMgr(&pars[GATE_OPERATION_MODE], wxT("OP_MODE"),
+	  wxT("Operation mode ('ramp' or 'damp')"),
 	  UNIPAR_NAME_SPEC,
 	  &gatePtr->operationMode, gatePtr->operationModeList,
 	  (void * (*)) SetOperationMode_Transform_Gate);
-	SetPar_UniParMgr(&pars[GATE_TYPE_MODE], "TYPE_MODE",
-	  "Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')",
+	SetPar_UniParMgr(&pars[GATE_TYPE_MODE], wxT("TYPE_MODE"),
+	  wxT("Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')"),
 	  UNIPAR_NAME_SPEC,
 	  &gatePtr->typeMode, gatePtr->typeModeList,
 	  (void * (*)) SetTypeMode_Transform_Gate);
-	SetPar_UniParMgr(&pars[GATE_TIME_OFFSET], "OFFSET",
-	  "Time offset (s)",
+	SetPar_UniParMgr(&pars[GATE_TIME_OFFSET], wxT("OFFSET"),
+	  wxT("Time offset (s)"),
 	  UNIPAR_REAL, &gatePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Transform_Gate);
-	SetPar_UniParMgr(&pars[GATE_DURATION], "DURATION",
-	  "Ramp duration - negative assumes to the end of the signal (s)", 
+	SetPar_UniParMgr(&pars[GATE_DURATION], wxT("DURATION"),
+	  wxT("Ramp duration - negative assumes to the end of the signal (s)"), 
 	  UNIPAR_REAL,
 	  &gatePtr->duration, NULL,
 	  (void * (*)) SetDuration_Transform_Gate);
-	SetPar_UniParMgr(&pars[GATE_SLOPE_PARAMETER], "SLOPE",
-	  "Slope parameter or half-life (in 'decay_par' mode only)",
+	SetPar_UniParMgr(&pars[GATE_SLOPE_PARAMETER], wxT("SLOPE"),
+	  wxT("Slope parameter or half-life (in 'decay_par' mode only)"),
 	  UNIPAR_REAL,
 	  &gatePtr->slopeParameter, NULL,
 	  (void * (*)) SetSlopeParameter_Transform_Gate);
@@ -291,10 +291,10 @@ SetUniParList_Transform_Gate(void)
 BOOLN
 SetDefaulEnabledPars_Transform_Gate(void)
 {
-	static const char *funcName = "SetDefaulEnabledPars_Transform_Gate";
+	static const WChar *funcName = wxT("SetDefaulEnabledPars_Transform_Gate");
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	switch (gatePtr->typeMode) {
@@ -317,15 +317,15 @@ SetDefaulEnabledPars_Transform_Gate(void)
 UniParListPtr
 GetUniParListPtr_Transform_Gate(void)
 {
-	static const char *funcName = "GetUniParListPtr_Transform_Gate";
+	static const WChar *funcName = wxT("GetUniParListPtr_Transform_Gate");
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (gatePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(gatePtr->parList);
@@ -340,10 +340,10 @@ GetUniParListPtr_Transform_Gate(void)
  */
 
 BOOLN
-SetPars_Transform_Gate(char *positionMode, char *operationMode,
-  char *typeMode, double timeOffset, double duration, double slopeParameter)
+SetPars_Transform_Gate(WChar *positionMode, WChar *operationMode,
+  WChar *typeMode, double timeOffset, double duration, double slopeParameter)
 {
-	static const char	*funcName = "SetPars_Transform_Gate";
+	static const WChar	*funcName = wxT("SetPars_Transform_Gate");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -360,7 +360,7 @@ SetPars_Transform_Gate(char *positionMode, char *operationMode,
 	if (!SetSlopeParameter_Transform_Gate(slopeParameter))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 
 }
@@ -374,18 +374,19 @@ SetPars_Transform_Gate(char *positionMode, char *operationMode,
  */
 
 BOOLN
-SetPositionMode_Transform_Gate(char *thePositionMode)
+SetPositionMode_Transform_Gate(WChar *thePositionMode)
 {
-	static const char	*funcName = "SetPositionMode_Transform_Gate";
+	static const WChar	*funcName = wxT("SetPositionMode_Transform_Gate");
 	int		specifier;
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(thePositionMode,
 	  gatePtr->positionModeList)) == GATE_NULL_POSITION_MODE) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, thePositionMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName,
+		  thePositionMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -407,14 +408,14 @@ SetPositionMode_Transform_Gate(char *thePositionMode)
  */
 
 BOOLN
-SetOperationMode_Transform_Gate(char *theOperationMode)
+SetOperationMode_Transform_Gate(WChar *theOperationMode)
 
 {
-	static const char	*funcName = "SetOperationMode_Transform_Gate";
+	static const WChar	*funcName = wxT("SetOperationMode_Transform_Gate");
 	int		specifier;
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!gatePtr->parList->pars[GATE_OPERATION_MODE].enabled && (gatePtr->
@@ -422,7 +423,8 @@ SetOperationMode_Transform_Gate(char *theOperationMode)
 		return(TRUE);
 	if ((specifier = Identify_NameSpecifier(theOperationMode,
 	  gatePtr->operationModeList)) == GATE_NULL_OPERATION_MODE) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theOperationMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName,
+		  theOperationMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -441,18 +443,18 @@ SetOperationMode_Transform_Gate(char *theOperationMode)
  */
 
 BOOLN
-SetTypeMode_Transform_Gate(char *theTypeMode)
+SetTypeMode_Transform_Gate(WChar *theTypeMode)
 {
-	static const char	*funcName = "SetTypeMode_Transform_Gate";
+	static const WChar	*funcName = wxT("SetTypeMode_Transform_Gate");
 	int		specifier;
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theTypeMode,
 	  gatePtr->typeModeList)) == GATE_NULL_TYPE_MODE) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theTypeMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theTypeMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -475,14 +477,14 @@ SetTypeMode_Transform_Gate(char *theTypeMode)
 BOOLN
 SetTimeOffset_Transform_Gate(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Transform_Gate";
+	static const WChar	*funcName = wxT("SetTimeOffset_Transform_Gate");
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal time offset (%g ms).", funcName,
+		NotifyError(wxT("%s: Illegal time offset (%g ms)."), funcName,
 		  MSEC(theTimeOffset));
 		return(FALSE);
 	}
@@ -504,14 +506,14 @@ SetTimeOffset_Transform_Gate(double theTimeOffset)
 BOOLN
 SetDuration_Transform_Gate(double theDuration)
 {
-	static const char	*funcName = "SetDuration_Transform_Gate";
+	static const WChar	*funcName = wxT("SetDuration_Transform_Gate");
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fabs(theDuration) < DBL_EPSILON) {
-		NotifyError("%s: Time interval must be non-zero.", funcName);
+		NotifyError(wxT("%s: Time interval must be non-zero."), funcName);
 		return(FALSE);
 	}
 	gatePtr->durationFlag = TRUE;
@@ -531,10 +533,10 @@ SetDuration_Transform_Gate(double theDuration)
 BOOLN
 SetSlopeParameter_Transform_Gate(double theSlopeParameter)
 {
-	static const char	*funcName = "SetSlopeParameter_Transform_Gate";
+	static const WChar	*funcName = wxT("SetSlopeParameter_Transform_Gate");
 
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -557,36 +559,36 @@ SetSlopeParameter_Transform_Gate(double theSlopeParameter)
 BOOLN
 CheckPars_Transform_Gate(void)
 {
-	static const char	*funcName = "CheckPars_Transform_Gate";
+	static const WChar	*funcName = wxT("CheckPars_Transform_Gate");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (gatePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!gatePtr->positionModeFlag) {
-		NotifyError("%s: positionMode variable not set.", funcName);
+		NotifyError(wxT("%s: positionMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!gatePtr->operationModeFlag) {
-		NotifyError("%s: operationMode variable not set.", funcName);
+		NotifyError(wxT("%s: operationMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!gatePtr->typeModeFlag) {
-		NotifyError("%s: typeMode variable not set.", funcName);
+		NotifyError(wxT("%s: typeMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!gatePtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!gatePtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!gatePtr->slopeParameterFlag) {
-		NotifyError("%s: slopeParameter variable not set.", funcName);
+		NotifyError(wxT("%s: slopeParameter variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -603,34 +605,35 @@ CheckPars_Transform_Gate(void)
 BOOLN
 PrintPars_Transform_Gate(void)
 {
-	static const char	*funcName = "PrintPars_Transform_Gate";
+	static const WChar	*funcName = wxT("PrintPars_Transform_Gate");
 
 	if (!CheckPars_Transform_Gate()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Gate Transformation Module Parameters:-\n");
-	DPrint("\tPosition mode: %s,",
+	DPrint(wxT("Gate Transformation Module Parameters:-\n"));
+	DPrint(wxT("\tPosition mode: %s,"),
 	  gatePtr->positionModeList[gatePtr->positionMode].name);
-	DPrint("\tOperation mode: %s,\n",
+	DPrint(wxT("\tOperation mode: %s,\n"),
 	  gatePtr->operationModeList[gatePtr->operationMode].name);
-	DPrint("\tType mode: %s,",
+	DPrint(wxT("\tType mode: %s,"),
 	  gatePtr->typeModeList[gatePtr->typeMode].name);
-	DPrint("\tTime offset");
+	DPrint(wxT("\tTime offset"));
 	if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
-		DPrint(" = %g ms,\n", MSEC(gatePtr->timeOffset));
+		DPrint(wxT(" = %g ms,\n"), MSEC(gatePtr->timeOffset));
 	else
-		DPrint(": unused.\n");
-	DPrint("\tRamp duration = ");
+		DPrint(wxT(": unused.\n"));
+	DPrint(wxT("\tRamp duration = "));
 	if (gatePtr->duration < 0.0)
-		DPrint("signal extent,");
+		DPrint(wxT("signal extent,"));
 	else
-		DPrint("%g ms,", MSEC(gatePtr->duration));
-	DPrint("\tSlope parameter");
+		DPrint(wxT("%g ms,"), MSEC(gatePtr->duration));
+	DPrint(wxT("\tSlope parameter"));
 	if (gatePtr->typeMode == GATE_EXP_DECAY_TYPE_MODE)
-		DPrint(" (half-life) = %g ms.\n", MSEC(gatePtr->slopeParameter));
+		DPrint(wxT(" (half-life) = %g ms.\n"), MSEC(gatePtr->slopeParameter));
 	else
-		DPrint(": unused.\n");
+		DPrint(wxT(": unused.\n"));
 	return(TRUE);
 
 }
@@ -642,46 +645,47 @@ PrintPars_Transform_Gate(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Transform_Gate(char *fileName)
+ReadPars_Transform_Gate(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Transform_Gate";
+	static const WChar	*funcName = wxT("ReadPars_Transform_Gate");
 	BOOLN	ok;
-	char	*filePath;
-	char	positionMode[SMALL_STRING], operationMode[SMALL_STRING];
-	char	typeMode[SMALL_STRING];
+	WChar	*filePath;
+	WChar	positionMode[SMALL_STRING], operationMode[SMALL_STRING];
+	WChar	typeMode[SMALL_STRING];
 	double	timeOffset, duration, slopeParameter;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", positionMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), positionMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", operationMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), operationMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", typeMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), typeMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &slopeParameter))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &slopeParameter))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Transform_Gate(positionMode, operationMode, typeMode,
 	  timeOffset, duration, slopeParameter)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -698,10 +702,10 @@ ReadPars_Transform_Gate(char *fileName)
 BOOLN
 SetParsPointer_Transform_Gate(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Transform_Gate";
+	static const WChar	*funcName = wxT("SetParsPointer_Transform_Gate");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	gatePtr = (GatePtr) theModule->parsPtr;
@@ -718,14 +722,15 @@ SetParsPointer_Transform_Gate(ModulePtr theModule)
 BOOLN
 InitModule_Transform_Gate(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Transform_Gate";
+	static const WChar	*funcName = wxT("InitModule_Transform_Gate");
 
 	if (!SetParsPointer_Transform_Gate(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Transform_Gate(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = gatePtr;
@@ -741,11 +746,11 @@ InitModule_Transform_Gate(ModulePtr theModule)
 	  processModeList);
 	switch (gatePtr->processMode) {
 	case GATE_RAMP_PROCESS_MODE:
-		SetOperationMode_Transform_Gate("RAMP");
+		SetOperationMode_Transform_Gate(wxT("RAMP"));
 		gatePtr->parList->pars[GATE_OPERATION_MODE].enabled = FALSE;
 		break;
 	case GATE_DAMP_PROCESS_MODE:
-		SetOperationMode_Transform_Gate("DAMP");
+		SetOperationMode_Transform_Gate(wxT("DAMP"));
 		gatePtr->parList->pars[GATE_OPERATION_MODE].enabled = FALSE;
 		break;
 	default:
@@ -771,11 +776,11 @@ InitModule_Transform_Gate(ModulePtr theModule)
 BOOLN
 CheckData_Transform_Gate(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Transform_Gate";
+	static const WChar	*funcName = wxT("CheckData_Transform_Gate");
 	double	signalDuration, duration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -784,21 +789,21 @@ CheckData_Transform_Gate(EarObjectPtr data)
 	duration = (gatePtr->duration < 0.0)? signalDuration - gatePtr->timeOffset:
 	  gatePtr->duration;
  	if (duration > signalDuration) {
-		NotifyError("%s: Gate time interval (%g ms) is longer than signal "
-		  "(%g ms).", funcName, MSEC(duration), signalDuration);
+		NotifyError(wxT("%s: Gate time interval (%g ms) is longer than signal "
+		  "(%g ms)."), funcName, MSEC(duration), signalDuration);
 		return(FALSE);
 	}
 	if ((gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE) &&
 	  (gatePtr->timeOffset + duration - signalDuration) > DBL_EPSILON) {
-		NotifyError("%s: Time offset (%g ms) plus gate interval (%g ms) is "
-		  "longer than signal (%g ms).", funcName, MSEC(gatePtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) plus gate interval (%g ms) is "
+		  "longer than signal (%g ms)."), funcName, MSEC(gatePtr->timeOffset),
 		  MSEC(duration), MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((gatePtr->typeMode == GATE_EXP_DECAY_TYPE_MODE) &&
 	  (gatePtr->slopeParameter <= 0.0)) {
-		NotifyError("%s: Illegal slope parameter (half-life) value (%g ms).",
-		  funcName, MSEC(gatePtr->slopeParameter));
+		NotifyError(wxT("%s: Illegal slope parameter (half-life) value (%g "
+		  "ms)."), funcName, MSEC(gatePtr->slopeParameter));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -844,7 +849,7 @@ void
 Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
   ChanLen intervalIndex)
 {
-	/* static const char *funcName = "Ramp_Transform_Gate"; */
+	/* static const WChar *funcName = wxT("Ramp_Transform_Gate"); */
 	int		chan;
 	ChanLen	i;
 	ChanData	*dataPtr, *endPtr;
@@ -912,14 +917,14 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
  * re-used.
  * The output signal is manually connected to the input signal.
  * It assumes that a legal operation mode is set.
- * The "exp_decay" type mode requires the "ramp" and "damp" operations to be
- * switched.
+ * The wxT("exp_decay" type mode requires the "ramp" and "damp") operations to
+ * be switched.
  */
 
 BOOLN
 Process_Transform_Gate(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Transform_Gate";
+	static const WChar	*funcName = wxT("Process_Transform_Gate");
 	int		operationMode;
 	GatePtr	p = gatePtr;
 
@@ -927,10 +932,10 @@ Process_Transform_Gate(EarObjectPtr data)
 		if (!CheckPars_Transform_Gate())
 			return(FALSE);
 		if (!CheckData_Transform_Gate(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Gate Module process");
+		SetProcessName_EarObject(data, wxT("Gate Module process"));
 		if (data->outSignal != data->inSignal[0]) {
 			data->outSignal = data->inSignal[0];
 			data->updateCustomersFlag = TRUE;

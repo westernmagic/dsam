@@ -79,7 +79,7 @@ UniParListPtr	GetUniParListPtr_WhiteNoise(void);
 
 BOOLN	PrintPars_WhiteNoise(void);
 
-BOOLN	ReadPars_WhiteNoise(char *fileName);
+BOOLN	ReadPars_WhiteNoise(WChar *fileName);
 
 BOOLN	InitModule_WhiteNoise(ModulePtr theModule);
 

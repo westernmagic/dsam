@@ -79,8 +79,6 @@ SAImagePtr	sAImagePtr = NULL;
 BOOLN
 Free_Analysis_SAI(void)
 {
-	/* static const char	*funcName = "Free_Analysis_SAI";  */
-
 	if (sAImagePtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_SAI();
@@ -108,9 +106,9 @@ InitIntegrationModeList_Analysis_SAI(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "STI",	SAI_INTEGRATION_MODE_STI },
-			{ "AC",		SAI_INTEGRATION_MODE_AC },
-			{ "",		SAI_INTEGRATION_MODE_NULL },
+			{ wxT("STI"),	SAI_INTEGRATION_MODE_STI },
+			{ wxT("AC"),	SAI_INTEGRATION_MODE_AC },
+			{ wxT(""),		SAI_INTEGRATION_MODE_NULL },
 		};
 	sAImagePtr->integrationModeList = modeList;
 	return(TRUE);
@@ -132,18 +130,19 @@ InitIntegrationModeList_Analysis_SAI(void)
 BOOLN
 Init_Analysis_SAI(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_SAI";
+	static const WChar	*funcName = wxT("Init_Analysis_SAI");
 
 	if (parSpec == GLOBAL) {
 		if (sAImagePtr != NULL)
 			Free_Analysis_SAI();
 		if ((sAImagePtr = (SAImagePtr) malloc(sizeof(SAImage))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (sAImagePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -168,16 +167,17 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 	  DiagModeList_NSpecLists(0), sAImagePtr->diagnosticString)) == NULL)
 		return(FALSE);
 	InitIntegrationModeList_Analysis_SAI();
-	if ((sAImagePtr->strobeData = Init_EarObject("Util_Strobe")) == NULL) {
-		NotifyError("%s: Could not initialise strobe data EarObject", funcName);
+	if ((sAImagePtr->strobeData = Init_EarObject(wxT("Util_Strobe"))) == NULL) {
+		NotifyError(wxT("%s: Could not initialise strobe data EarObject"),
+		  funcName);
 		return(FALSE);
 	}
 	if (!SetUniParList_Analysis_SAI()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_SAI();
 		return(FALSE);
 	}
-	strcpy(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
+	DSAM_strcpy(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
 	sAImagePtr->strobeInSignalIndex = -1;
 	sAImagePtr->inputDecay = NULL;
 	sAImagePtr->fp = NULL;
@@ -199,49 +199,49 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_SAI(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_SAI";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_SAI");
 	UniParPtr	pars;
 
 	if ((sAImagePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  SAI_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = sAImagePtr->parList->pars;
-	SetPar_UniParMgr(&pars[SAI_DIAGNOSTIC_MODE], "DIAGNOSTICS",
-	  "Diagnostic mode ('off', 'screen', 'error' or <file name>).",
+	SetPar_UniParMgr(&pars[SAI_DIAGNOSTIC_MODE], wxT("DIAGNOSTICS"),
+	  wxT("Diagnostic mode ('off', 'screen', 'error' or <file name>)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &sAImagePtr->diagnosticMode, sAImagePtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_INTEGRATION_MODE], "INT_MODE",
-	  "Integration mode: 'STI' - stabilised temporal integration, 'AC' - "
-	  "autocorrelation.",
+	SetPar_UniParMgr(&pars[SAI_INTEGRATION_MODE], wxT("INT_MODE"),
+	  wxT("Integration mode: 'STI' - stabilised temporal integration, 'AC' - ")
+	  wxT("autocorrelation."),
 	  UNIPAR_NAME_SPEC,
 	  &sAImagePtr->integrationMode, sAImagePtr->integrationModeList,
 	  (void * (*)) SetIntegrationMode_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_STROBE_SPECIFICATION], "STROBE_PAR_FILE",
-	  "Strobe module parameter file name.",
+	SetPar_UniParMgr(&pars[SAI_STROBE_SPECIFICATION], wxT("STROBE_PAR_FILE"),
+	  wxT("Strobe module parameter file name."),
 	  UNIPAR_MODULE,
 	  &sAImagePtr->strobeSpecification, GetUniParListPtr_ModuleMgr(sAImagePtr->
 	  strobeData),
 	  (void * (*)) SetStrobeSpecification_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_NEGATIVE_WIDTH], "NWIDTH",
-	  "Negative width of auditory image (s).",
+	SetPar_UniParMgr(&pars[SAI_NEGATIVE_WIDTH], wxT("NWIDTH"),
+	  wxT("Negative width of auditory image (s)."),
 	  UNIPAR_REAL,
 	  &sAImagePtr->negativeWidth, NULL,
 	  (void * (*)) SetNegativeWidth_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_POSITIVE_WIDTH], "PWIDTH",
-	  "Positive width of auditory image (s).",
+	SetPar_UniParMgr(&pars[SAI_POSITIVE_WIDTH], wxT("PWIDTH"),
+	  wxT("Positive width of auditory image (s)."),
 	  UNIPAR_REAL,
 	  &sAImagePtr->positiveWidth, NULL,
 	  (void * (*)) SetPositiveWidth_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_INPUT_DECAY_RATE], "NAP_DECAY",
-	  "Neural activity pattern (input) decay rate (%/s)",
+	SetPar_UniParMgr(&pars[SAI_INPUT_DECAY_RATE], wxT("NAP_DECAY"),
+	  wxT("Neural activity pattern (input) decay rate (%/s)"),
 	  UNIPAR_REAL,
 	  &sAImagePtr->inputDecayRate, NULL,
 	  (void * (*)) SetInputDecayRate_Analysis_SAI);
-	SetPar_UniParMgr(&pars[SAI_IMAGE_DECAY_HALF_LIFE], "IMAGE_DECAY",
-	  "Auditory image decay half-life (s).",
+	SetPar_UniParMgr(&pars[SAI_IMAGE_DECAY_HALF_LIFE], wxT("IMAGE_DECAY"),
+	  wxT("Auditory image decay half-life (s)."),
 	  UNIPAR_REAL,
 	  &sAImagePtr->imageDecayHalfLife, NULL,
 	  (void * (*)) SetImageDecayHalfLife_Analysis_SAI);
@@ -259,15 +259,15 @@ SetUniParList_Analysis_SAI(void)
 UniParListPtr
 GetUniParListPtr_Analysis_SAI(void)
 {
-	static const char *funcName = "GetUniParListPtr_Analysis_SAI";
+	static const WChar *funcName = wxT("GetUniParListPtr_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (sAImagePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(sAImagePtr->parList);
@@ -282,11 +282,11 @@ GetUniParListPtr_Analysis_SAI(void)
  */
 
 BOOLN
-SetPars_Analysis_SAI(char * diagnosticMode, char * integrationMode,
-  char *strobeSpecification, double negativeWidth, double positiveWidth,
+SetPars_Analysis_SAI(WChar * diagnosticMode, WChar * integrationMode,
+  WChar *strobeSpecification, double negativeWidth, double positiveWidth,
   double inputDecayRate, double imageDecayHalfLife)
 {
-	static const char	*funcName = "SetPars_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetPars_Analysis_SAI");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -305,7 +305,7 @@ SetPars_Analysis_SAI(char * diagnosticMode, char * integrationMode,
 	if (!SetImageDecayHalfLife_Analysis_SAI(imageDecayHalfLife))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -319,12 +319,12 @@ SetPars_Analysis_SAI(char * diagnosticMode, char * integrationMode,
  */
 
 BOOLN
-SetDiagnosticMode_Analysis_SAI(char *theDiagnosticMode)
+SetDiagnosticMode_Analysis_SAI(WChar *theDiagnosticMode)
 {
-	static const char	*funcName = "SetDiagnosticMode_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetDiagnosticMode_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	sAImagePtr->diagnosticModeFlag = TRUE;
@@ -343,18 +343,19 @@ SetDiagnosticMode_Analysis_SAI(char *theDiagnosticMode)
  */
 
 BOOLN
-SetIntegrationMode_Analysis_SAI(char * theIntegrationMode)
+SetIntegrationMode_Analysis_SAI(WChar * theIntegrationMode)
 {
-	static const char	*funcName = "SetIntegrationMode_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetIntegrationMode_Analysis_SAI");
 	int		specifier;
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theIntegrationMode,
 		sAImagePtr->integrationModeList)) == SAI_INTEGRATION_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theIntegrationMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName,
+		  theIntegrationMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -373,28 +374,28 @@ SetIntegrationMode_Analysis_SAI(char * theIntegrationMode)
  */
 
 BOOLN
-SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
+SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification)
 {
-	static const char	*funcName = "SetStrobeSpecification_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetStrobeSpecification_Analysis_SAI");
 	BOOLN	ok;
 	ParFilePtr	oldPtr = parFile;
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (strcmp(theStrobeSpecification, NO_FILE) != 0) {
+	if (DSAM_strcmp(theStrobeSpecification, NO_FILE) != 0) {
 		parFile = NULL;
 		ok = ReadPars_ModuleMgr(sAImagePtr->strobeData, theStrobeSpecification);
 		parFile = oldPtr;
 		if (!ok) {
-			NotifyError("%s: Could not read strobe utility module parameters.",
-			  funcName);
+			NotifyError(wxT("%s: Could not read strobe utility module "
+			  "parameters."), funcName);
 			return(FALSE);
 		}
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
-	snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, "%s",
+	DSAM_snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, wxT("%s"),
 	  theStrobeSpecification);
 	return(TRUE);
 
@@ -411,10 +412,10 @@ SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification)
 BOOLN
 SetPositiveWidth_Analysis_SAI(double thePositiveWidth)
 {
-	static const char	*funcName = "SetPositiveWidth_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetPositiveWidth_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -436,14 +437,14 @@ SetPositiveWidth_Analysis_SAI(double thePositiveWidth)
 BOOLN
 SetNegativeWidth_Analysis_SAI(double theNegativeWidth)
 {
-	static const char	*funcName = "SetNegativeWidth_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetNegativeWidth_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNegativeWidth > 0.0) {
-		NotifyError("%s: Illegal negative width (%g ms).", funcName,
+		NotifyError(wxT("%s: Illegal negative width (%g ms)."), funcName,
 		  MSEC(theNegativeWidth));
 		return(FALSE);
 	}
@@ -465,10 +466,10 @@ SetNegativeWidth_Analysis_SAI(double theNegativeWidth)
 BOOLN
 SetInputDecayRate_Analysis_SAI(double theInputDecayRate)
 {
-	static const char	*funcName = "SetInputDecayRate_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetInputDecayRate_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -490,14 +491,14 @@ SetInputDecayRate_Analysis_SAI(double theInputDecayRate)
 BOOLN
 SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
 {
-	static const char	*funcName = "SetImageDecayHalfLife_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetImageDecayHalfLife_Analysis_SAI");
 
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theImageDecayHalfLife <= 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g).", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g)."), funcName,
 		  theImageDecayHalfLife);
 		return(FALSE);
 	}
@@ -518,7 +519,7 @@ SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
 BOOLN
 SetDelay_Analysis_SAI(double theDelay)
 {
-	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "strobe_lag",
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("strobe_lag"),
 	  theDelay));
 
 }
@@ -533,7 +534,7 @@ SetDelay_Analysis_SAI(double theDelay)
 BOOLN
 SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
 {
-	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "timeout",
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("timeout"),
 	  theDelayTimeout));
 
 }
@@ -548,7 +549,7 @@ SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
 BOOLN
 SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
 {
-	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "threshold_decay",
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("threshold_decay"),
 	  theThresholdDecayRate));
 
 }
@@ -563,7 +564,7 @@ SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
 BOOLN
 SetThreshold_Analysis_SAI(double theThreshold)
 {
-	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, "threshold",
+	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("threshold"),
 	  theThreshold));
 
 }
@@ -576,9 +577,10 @@ SetThreshold_Analysis_SAI(double theThreshold)
  */
 
 BOOLN
-SetTypeMode_Analysis_SAI(char *theTypeMode)
+SetTypeMode_Analysis_SAI(WChar *theTypeMode)
 {
-	return(SetPar_ModuleMgr(sAImagePtr->strobeData, "criterion", theTypeMode));
+	return(SetPar_ModuleMgr(sAImagePtr->strobeData, wxT("criterion"),
+	  theTypeMode));
 
 }
 
@@ -595,40 +597,40 @@ SetTypeMode_Analysis_SAI(char *theTypeMode)
 BOOLN
 CheckPars_Analysis_SAI(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_SAI";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_SAI");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (sAImagePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!sAImagePtr->diagnosticModeFlag) {
-		NotifyError("%s: diagnosticMode variable not set.", funcName);
+		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->integrationModeFlag) {
-		NotifyError("%s: integrationMode variable not set.", funcName);
+		NotifyError(wxT("%s: integrationMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->strobeSpecificationFlag) {
-		NotifyError("%s: strobeSpecification variable not set.", funcName);
+		NotifyError(wxT("%s: strobeSpecification variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->positiveWidthFlag) {
-		NotifyError("%s: positiveWidth variable not set.", funcName);
+		NotifyError(wxT("%s: positiveWidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->negativeWidthFlag) {
-		NotifyError("%s: negativeWidth variable not set.", funcName);
+		NotifyError(wxT("%s: negativeWidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->inputDecayRateFlag) {
-		NotifyError("%s: inputDecayRate variable not set.", funcName);
+		NotifyError(wxT("%s: inputDecayRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sAImagePtr->imageDecayHalfLifeFlag) {
-		NotifyError("%s: imageDecayHalfLife variable not set.", funcName);
+		NotifyError(wxT("%s: imageDecayHalfLife variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -645,26 +647,28 @@ CheckPars_Analysis_SAI(void)
 BOOLN
 PrintPars_Analysis_SAI(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_SAI";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_SAI");
 
 	if (!CheckPars_Analysis_SAI()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Stabilised Auditory Image Analysis Module Parameters:-\n");
-	DPrint("\tStrobeSpecification (%s):\n", sAImagePtr->strobeSpecification);
-	SetDiagnosticsPrefix("\t");
+	DPrint(wxT("Stabilised Auditory Image Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tStrobeSpecification (%s):\n"), sAImagePtr->
+	  strobeSpecification);
+	SetDiagnosticsPrefix(wxT("\t"));
 	PrintPars_ModuleMgr(sAImagePtr->strobeData);
 	SetDiagnosticsPrefix(NULL);
-	DPrint("\tIntegration mode = %s,\n", sAImagePtr->integrationModeList[
+	DPrint(wxT("\tIntegration mode = %s,\n"), sAImagePtr->integrationModeList[
 	  sAImagePtr->integrationMode].name);
-	DPrint("\tNegative width = %g ms,", MSEC(sAImagePtr->negativeWidth));
-	DPrint("\tPositive width = %g ms,\n", MSEC(sAImagePtr->positiveWidth));
-	DPrint("\tInput decay rate = %g %/ms,", sAImagePtr->inputDecayRate /
+	DPrint(wxT("\tNegative width = %g ms,"), MSEC(sAImagePtr->negativeWidth));
+	DPrint(wxT("\tPositive width = %g ms,\n"), MSEC(sAImagePtr->positiveWidth));
+	DPrint(wxT("\tInput decay rate = %g %/ms,"), sAImagePtr->inputDecayRate /
 	  MSEC(1.0));
-	DPrint("\tImage decay half-life = %g ms,\n",
+	DPrint(wxT("\tImage decay half-life = %g ms,\n"),
 	  MSEC(sAImagePtr->imageDecayHalfLife));
-	DPrint("\tDiagnostic mode: %s.\n", sAImagePtr->diagnosticModeList[
+	DPrint(wxT("\tDiagnostic mode: %s.\n"), sAImagePtr->diagnosticModeList[
 	  sAImagePtr->diagnosticMode].name);
 	return(TRUE);
 
@@ -677,48 +681,49 @@ PrintPars_Analysis_SAI(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_SAI(char *fileName)
+ReadPars_Analysis_SAI(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_SAI";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_SAI");
 	BOOLN	ok;
-	char	*filePath, diagnosticMode[MAXLINE], strobeSpecification[MAXLINE];
-	char	integrationMode[MAXLINE];
+	WChar	*filePath, diagnosticMode[MAXLINE], strobeSpecification[MAXLINE];
+	WChar	integrationMode[MAXLINE];
 	double	positiveWidth, negativeWidth, inputDecayRate, imageDecayHalfLife;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", integrationMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), integrationMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", strobeSpecification))
+	if (!GetPars_ParFile(fp, wxT("%s"), strobeSpecification))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &negativeWidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &negativeWidth))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &positiveWidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &positiveWidth))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &inputDecayRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &inputDecayRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &imageDecayHalfLife))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &imageDecayHalfLife))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_SAI(diagnosticMode, integrationMode,
 	  strobeSpecification, negativeWidth, positiveWidth, inputDecayRate,
 	  imageDecayHalfLife)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -735,10 +740,10 @@ ReadPars_Analysis_SAI(char *fileName)
 BOOLN
 SetParsPointer_Analysis_SAI(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_SAI";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_SAI");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	sAImagePtr = (SAImagePtr) theModule->parsPtr;
@@ -755,14 +760,15 @@ SetParsPointer_Analysis_SAI(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_SAI(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_SAI";
+	static const WChar	*funcName = wxT("InitModule_Analysis_SAI");
 
 	if (!SetParsPointer_Analysis_SAI(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_SAI(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = sAImagePtr;
@@ -795,48 +801,48 @@ InitModule_Analysis_SAI(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_SAI(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_SAI";
+	static const WChar	*funcName = wxT("CheckData_Analysis_SAI");
 	double	width, strobeDelay;
 	int		strobeType;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	strobeType = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData, "criterion")->
-	  valuePtr.nameList.specifier;
+	strobeType = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData, wxT(
+	  "criterion"))->valuePtr.nameList.specifier;
 	if (strobeType == STROBE_USER_MODE) {
 		if (data->numInSignals < 2) {
-			NotifyError("%s: In strobe 'USER' mode two input EarObjects are\n"
-			  "required (%d)", funcName, data->numInSignals);
+			NotifyError(wxT("%s: In strobe 'USER' mode two input EarObjects "
+			  "are\nrequired (%d)"), funcName, data->numInSignals);
 			return(FALSE);
 		}
 		if (!CheckInit_SignalData(data->inSignal[1],
-		  "CheckData_Analysis_SAI")) {
-			NotifyError("%s: Second EarObject required for USER mode not "
-			  "initialised.", funcName);
+		  wxT("CheckData_Analysis_SAI"))) {
+			NotifyError(wxT("%s: Second EarObject required for USER mode not "
+			  "initialised."), funcName);
 			return(FALSE);
 		}
 		if (!SameType_SignalData(data->inSignal[0], data->inSignal[1])) {
-			NotifyError("%s: Input signals are not the same.", funcName);		
+			NotifyError(wxT("%s: Input signals are not the same."), funcName);
 			return(FALSE);
 		}
 	}
 	width = sAImagePtr->positiveWidth - sAImagePtr->negativeWidth +
 	  data->inSignal[0]->dt;
 	if (width <= 0.0) {
-		NotifyError("%s: Illegal frame width (%g -> %g ms).", funcName,
+		NotifyError(wxT("%s: Illegal frame width (%g -> %g ms)."), funcName,
 		  MSEC(sAImagePtr->negativeWidth), MSEC(sAImagePtr->positiveWidth));
 		return(FALSE);
 	}
 	strobeDelay = *GetUniParPtr_ModuleMgr(sAImagePtr->strobeData,
-	  "strobe_lag")->valuePtr.r;
+	  wxT("strobe_lag"))->valuePtr.r;
 	if ((strobeType == STROBE_PEAK_SHADOW_POSITIVE_MODE) && (sAImagePtr->
 	  positiveWidth < strobeDelay)) {
-		NotifyError("%s: The positive width (%g ms) must be less than strobe "
-		  "delay (%g ms).", funcName, MSEC(sAImagePtr->positiveWidth),
+		NotifyError(wxT("%s: The positive width (%g ms) must be less than "
+		  "strobe delay (%g ms)."), funcName, MSEC(sAImagePtr->positiveWidth),
 		  MSEC(strobeDelay));
 		return(FALSE);
 	}
@@ -854,22 +860,22 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 void
 OutputStrobeData_Analysis_SAI(void)
 {
-	/* static const char *funcName = "OutputStrobeData_Analysis_SAI"; */
+	/* static const WChar *funcName = wxT("OutputStrobeData_Analysis_SAI"); */
 	int		chan;
 	ChanLen	i, t;
 	SignalDataPtr	signal;
 
 	signal = sAImagePtr->strobeData->outSignal;
-	fprintf(sAImagePtr->fp, "Time (s)");
+	DSAM_fprintf(sAImagePtr->fp, wxT("Time (s)"));
 	for (chan = signal->offset; chan < signal->numChannels; chan++)
-		fprintf(sAImagePtr->fp, "\t[%d]", chan);
-	fprintf(sAImagePtr->fp, "\n");
+		DSAM_fprintf(sAImagePtr->fp, wxT("\t[%d]"), chan);
+	DSAM_fprintf(sAImagePtr->fp, wxT("\n"));
 	for (i = 0, t = signal->timeIndex; i < signal->length; i++, t++) {
-		fprintf(sAImagePtr->fp, "%g", t * signal->dt +
+		DSAM_fprintf(sAImagePtr->fp, wxT("%g"), t * signal->dt +
 		  signal->outputTimeOffset);
 		for (chan = signal->offset; chan < signal->numChannels; chan++)
-			fprintf(sAImagePtr->fp, "\t%g", signal->channel[chan][i]);
-		fprintf(sAImagePtr->fp, "\n");
+			DSAM_fprintf(sAImagePtr->fp, wxT("\t%g"), signal->channel[chan][i]);
+		DSAM_fprintf(sAImagePtr->fp, wxT("\n"));
 	}
 
 }
@@ -893,13 +899,14 @@ OutputStrobeData_Analysis_SAI(void)
 BOOLN
 InitInputDecayArray_Analysis_SAI(EarObjectPtr data)
 {
-	static const char *funcName = "InitInputDecayArray_Analysis_SAI";
+	static const WChar *funcName = wxT("InitInputDecayArray_Analysis_SAI");
 	double	decayPerSample, *decayPtr, totalDecay;
 	ChanLen	i;
 
 	if ((sAImagePtr->inputDecay = (double *) calloc(data->outSignal->length,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Could not initialise input decay array", funcName);
+		NotifyError(wxT("%s: Could not initialise input decay array"),
+		  funcName);
 		return(FALSE);
 	}
 	decayPerSample = -sAImagePtr->inputDecayRate / 100.0 * data->outSignal->dt;
@@ -956,7 +963,7 @@ ResetProcess_Analysis_SAI(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Analysis_SAI";
+	static const WChar *funcName = wxT("InitProcessVariables_Analysis_SAI");
 	SAImagePtr	p = sAImagePtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -964,53 +971,54 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList,
 		  p->diagnosticMode);
 		if (!InitSubProcessList_EarObject(data, SAI_NUM_SUB_PROCESSES)) {
-			NotifyError("%s: Could not initialise %d sub-process list for "
-			  "process.", funcName, SAI_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
+			  "process."), funcName, SAI_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[SAI_STROBEDATA] = p->strobeData;
-		if ((p->dataBuffer = Init_EarObject("NULL")) == NULL) {
-			NotifyError("%s: Could not initialise previous data EarObject",
+		if ((p->dataBuffer = Init_EarObject(wxT("NULL"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise previous data EarObject"),
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->strobeDataBuffer = Init_EarObject("NULL")) == NULL) {
-			NotifyError("%s: Could not initialise previous strobe data "
-			  "EarObject", funcName);
+		if ((p->strobeDataBuffer = Init_EarObject(wxT("NULL"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise previous strobe data "
+			  "EarObject"), funcName);
 			return(FALSE);
 		}
 		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / data->inSignal[0]->
 		  dt + 0.5);
 		p->positiveWidthIndex = data->outSignal->length - p->zeroIndex;
 		if (!InitInputDecayArray_Analysis_SAI(data)) {
-			NotifyError("%s: failed in to initialise input decay array",
+			NotifyError(wxT("%s: failed in to initialise input decay array"),
 			  funcName);
 			return(FALSE);
 		}
 		if ((p->decayCount = (ChanLen *) calloc(data->outSignal->numChannels,
 		  sizeof(ChanLen))) == NULL) {
-			NotifyError("%s: Could not initialise decayCount array",
+			NotifyError(wxT("%s: Could not initialise decayCount array"),
 			  funcName);
 			return(FALSE);
 		}
 		if ((p->inputCount = (ChanLen *) calloc(data->numThreads, sizeof(
 		  ChanLen))) == NULL) {
-			NotifyError("%s: Out of memory for inputCount array.",
+			NotifyError(wxT("%s: Out of memory for inputCount array."),
 			  funcName);
 			return(FALSE);
 		}
 		p->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(p->strobeData,
-		  "criterion")->valuePtr.nameList.specifier == STROBE_USER_MODE)? 1: 0;
+		  wxT("criterion"))->valuePtr.nameList.specifier == STROBE_USER_MODE)?
+		  1: 0;
 		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
 		  numChannels, data->outSignal->length, data->outSignal->dt)) {
-			NotifyError("%s: Cannot initialise channels for previous data.",
+			NotifyError(wxT("%s: Cannot initialise channels for previous data."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
 		  numChannels, data->outSignal->length, data->outSignal->dt)) {
-			NotifyError("%s: Cannot initialise channels for previous strobe "
-			  "data.", funcName);
+			NotifyError(wxT("%s: Cannot initialise channels for previous "
+			  "strobe data."), funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -1065,7 +1073,7 @@ FreeProcessVariables_Analysis_SAI(void)
 void
 PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength)
 {
-	/* static const char	*funcName = "PushBufferData_Analysis_SAI"; */
+	/* static const WChar	*funcName = wxT("PushBufferData_Analysis_SAI"); */
 	register ChanData	*inPtr, *outPtr, *inStrobePtr, *outStrobePtr;
 	int		chan;
 	ChanLen	i, shiftLength, inputCount;
@@ -1142,7 +1150,6 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
   ChanData **dataPtrs, ChanLen strobeOffset, ChanLen frameOffset,
   ChanLen sectionLength)
 {
-	/* static const char	*funcName = "ProcessFrameSection_Analysis_SAI"; */
 	register ChanData	*inPtr, *outPtr, *strobeStatePtr, scaler;
 	int		chan;
 	double	*inputDecayPtr;
@@ -1209,7 +1216,7 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 BOOLN
 Process_Analysis_SAI(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Analysis_SAI";
+	static const WChar	*funcName = wxT("Process_Analysis_SAI");
 	BOOLN	endOfData;
 	int		chan;
 	double	dt;
@@ -1221,22 +1228,23 @@ Process_Analysis_SAI(EarObjectPtr data)
 		if (!CheckPars_Analysis_SAI())
 			return(FALSE);
 		if (!CheckData_Analysis_SAI(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Stabilised Auditory Image Module "
-		  "process");
+		SetProcessName_EarObject(data, wxT("Stabilised Auditory Image Module "
+		  "process"));
 		dt = data->inSignal[0]->dt;
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  (ChanLen) floor((p->positiveWidth - p->negativeWidth) / dt + 1.5),
 		  dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 		SetOutputTimeOffset_SignalData(data->outSignal, p->negativeWidth);
 		if (!InitProcessVariables_Analysis_SAI(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1249,7 +1257,7 @@ Process_Analysis_SAI(EarObjectPtr data)
 	}
 	strobeData = data->subProcessList[SAI_STROBEDATA];
 	if (!RunProcessStandard_ModuleMgr(strobeData)) {
-		NotifyError("%s: Could not process strobe data .", funcName);
+		NotifyError(wxT("%s: Could not process strobe data ."), funcName);
 		return(FALSE);
 	}
 	inputCountPtr = p->inputCount + data->threadIndex;

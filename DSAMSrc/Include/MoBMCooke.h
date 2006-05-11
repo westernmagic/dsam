@@ -121,22 +121,22 @@ void	FreeProcessVariables_BasilarM_Cooke(void);
 
 BOOLN	PrintPars_BasilarM_Cooke(void);
 
-BOOLN	ReadPars_BasilarM_Cooke(char *fileName);
+BOOLN	ReadPars_BasilarM_Cooke(WChar *fileName);
 
 BOOLN	RunModel_BasilarM_Cooke(EarObjectPtr data);
 
-BOOLN	SetBandwidths_BasilarM_Cooke(char *theBandwidthMode,
+BOOLN	SetBandwidths_BasilarM_Cooke(WChar *theBandwidthMode,
 		  double *theBandwidths);
 
 BOOLN	SetCFList_BasilarM_Cooke(CFListPtr theCFList);
 
 BOOLN	InitModule_BasilarM_Cooke(ModulePtr theModule);
 
-BOOLN	SetOutputMode_BasilarM_Cooke(char *theOutputMode);
+BOOLN	SetOutputMode_BasilarM_Cooke(WChar *theOutputMode);
 
 BOOLN	SetParsPointer_BasilarM_Cooke(ModulePtr theModule);
 
-BOOLN	SetPars_BasilarM_Cooke(char *theOutputMode,
+BOOLN	SetPars_BasilarM_Cooke(WChar *theOutputMode,
 		  double theBroadeningCoeff, CFListPtr theCFs);
 
 BOOLN	SetBroadeningCoeff_BasilarM_Cooke(double theBroadeningCoeff);

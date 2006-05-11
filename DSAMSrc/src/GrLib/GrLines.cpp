@@ -134,13 +134,14 @@ GrLines::SetGreyScaleMode(bool status)
  * It uses the local channel step;
  */
 
-char *
+WChar *
 GrLines::GetLineLabel(int theLine)
 {
-	static char	stringNum[MAXLINE];
+	static wxChar	stringNum[MAXLINE];
 	int		line = theLine * channelStep;
 
-	snprintf(stringNum, MAXLINE, "%.0f", signal->info.chanLabel[line]);
+	DSAM_snprintf(stringNum, MAXLINE, wxT("%.0f"), signal->info.chanLabel[
+	  line]);
 	return(stringNum);
 
 }
@@ -181,7 +182,7 @@ GrLines::SetLength(ChanLen theLength)
 	if (minYRecord)
 		free(minYRecord);
 	if ((minYRecord = (wxCoord *) calloc(length, sizeof(wxCoord))) == NULL) {
-		NotifyError("GrLines::GrLines: out of memory for minYRecord.");
+		NotifyError(wxT("GrLines::GrLines: out of memory for minYRecord."));
 		exit(1);
 	}
 	redrawFlag = TRUE;

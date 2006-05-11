@@ -36,12 +36,13 @@ BOOLN
 LinearRegression_GenAnalysis(double *y0, double *gradient, double *y,
   double dx, ChanLen startIndex, ChanLen length)
 {
-	static const char *funcName = "LinearRegression_GenAnalysis";
+	static const WChar *funcName = wxT("LinearRegression_GenAnalysis");
 	double  a, b, c, e, f, x;
 	ChanLen	i, endIndex;
 
 	if (length < 2) {
-		NotifyError("%s: Illegal calculation length (%lu).", funcName, length);
+		NotifyError(wxT("%s: Illegal calculation length (%lu)."), funcName,
+		  length);
 		return(FALSE);
 	}
 	b = c = e = f = 0.0;
@@ -76,21 +77,21 @@ double
 EuclideanDistance_GenAnalysis(double *arrayA, double *arrayB,
   ChanLen startIndex, ChanLen endIndex)
 {
-	static const char *funcName = "Euclidean_GenAnalysis";
+	static const WChar *funcName = wxT("Euclidean_GenAnalysis");
 	double		sum, difference;
 	ChanLen		i;
 	double		*ptr1, *ptr2;
 
 	if (arrayA == NULL) {
-		NotifyError("%s: Array A not initialised.", funcName);
+		NotifyError(wxT("%s: Array A not initialised."), funcName);
 		exit(1);
 	}
 	if (arrayB == NULL) {
-		NotifyError("%s: Array B not initialised.", funcName);
+		NotifyError(wxT("%s: Array B not initialised."), funcName);
 		exit(1);
 	}
 	if (endIndex < startIndex) {
-		NotifyError("%s: Start ", funcName);
+		NotifyError(wxT("%s: Start "), funcName);
 		exit(1);
 	}
 	ptr1 = arrayA + startIndex;

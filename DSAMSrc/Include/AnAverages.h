@@ -92,15 +92,15 @@ BOOLN	InitModeList_Analysis_Averages(void);
 
 BOOLN	PrintPars_Analysis_Averages(void);
 
-BOOLN	ReadPars_Analysis_Averages(char *fileName);
+BOOLN	ReadPars_Analysis_Averages(WChar *fileName);
 
-BOOLN	SetMode_Analysis_Averages(char *theMode);
+BOOLN	SetMode_Analysis_Averages(WChar *theMode);
 
 BOOLN	InitModule_Analysis_Averages(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_Averages(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_Averages(char *mode, double timeOffset,
+BOOLN	SetPars_Analysis_Averages(WChar *mode, double timeOffset,
 		  double timeRange);
 
 BOOLN	SetTimeRange_Analysis_Averages(double theTimeRange);

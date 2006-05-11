@@ -54,8 +54,6 @@ BMZhangPtr	bMZhangPtr = NULL;
 BOOLN
 Free_BasilarM_Zhang(void)
 {
-	/* static const char	*funcName = "Free_BasilarM_Zhang";  */
-
 	if (bMZhangPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_BasilarM_Zhang();
@@ -81,12 +79,12 @@ InitModelList_BasilarM_Zhang(void)
 {
 	static NameSpecifier	modeList[] = {
 
-		{ "FEED_FORWARD_NL",	BASILARM_ZHANG_MODEL_FEED_FORWARD_NL },
-		{ "FEED_BACK_NL",		BASILARM_ZHANG_MODEL_FEED_BACK_NL },
-		{ "SHARP_LINEAR",		BASILARM_ZHANG_MODEL_SHARP_LINEAR },
-		{ "BROAD_LINEAR",		BASILARM_ZHANG_MODEL_BROAD_LINEAR },
-		{ "BROAD_LINEAR_HIGH",	BASILARM_ZHANG_MODEL_BROAD_LINEAR_HIGH },
-		{ "",					BASILARM_ZHANG_MODEL_NULL },
+		{ wxT("FEED_FORWARD_NL"),	BASILARM_ZHANG_MODEL_FEED_FORWARD_NL },
+		{ wxT("FEED_BACK_NL"),		BASILARM_ZHANG_MODEL_FEED_BACK_NL },
+		{ wxT("SHARP_LINEAR"),		BASILARM_ZHANG_MODEL_SHARP_LINEAR },
+		{ wxT("BROAD_LINEAR"),		BASILARM_ZHANG_MODEL_BROAD_LINEAR },
+		{ wxT("BROAD_LINEAR_HIGH"),	BASILARM_ZHANG_MODEL_BROAD_LINEAR_HIGH },
+		{ wxT(""),					BASILARM_ZHANG_MODEL_NULL },
 	};
 	bMZhangPtr->modelList = modeList;
 	return(TRUE);
@@ -108,19 +106,20 @@ InitModelList_BasilarM_Zhang(void)
 BOOLN
 Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("Init_BasilarM_Zhang");
 
 	if (parSpec == GLOBAL) {
 		if (bMZhangPtr != NULL)
 			Free_BasilarM_Zhang();
 		if ((bMZhangPtr = (BMZhangPtr) malloc(sizeof(
 		  BMZhang))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bMZhangPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -160,15 +159,16 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 	bMZhangPtr->r0 = 0.05;
 	if ((bMZhangPtr->cFList = GenerateDefault_CFList(
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
-	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, "internal_dynamic",
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, wxT(
+	    "internal_dynamic"),
 	  CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 
 	InitModelList_BasilarM_Zhang();
 	if (!SetUniParList_BasilarM_Zhang()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_Zhang();
 		return(FALSE);
 	}
@@ -188,97 +188,98 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_BasilarM_Zhang(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_Zhang";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_Zhang");
 	UniParPtr	pars;
 
 	if ((bMZhangPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BASILARM_ZHANG_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMZhangPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MODEL], "MODEL",
-	  "Model type ('feed_forward_nl').",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MODEL], wxT("MODEL"),
+	  wxT("Model type ('feed_forward_nl')."),
 	  UNIPAR_NAME_SPEC,
 	  &bMZhangPtr->model, bMZhangPtr->modelList,
 	  (void * (*)) SetModel_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SPECIES], "SPECIES",
-	  "Species type ('Human').",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SPECIES], wxT("SPECIES"),
+	  wxT("Species type ('Human')."),
 	  UNIPAR_NAME_SPEC,
 	  &bMZhangPtr->species, SpeciesList_Utility_Zhang(0),
 	  (void * (*)) SetSpecies_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MICROPAINPUT], "MICRO_PASCALS",
-	  "Input expected in micro pascals instead of pascals ('on' or 'off').",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MICROPAINPUT], wxT("MICRO_PASCALS"),
+	  wxT("Input expected in micro pascals instead of pascals ('on' or 'off'"
+	    ")."),
 	  UNIPAR_NAME_SPEC,
 	  &bMZhangPtr->microPaInput, BooleanList_NSpecLists(0),
 	  (void * (*)) SetMicroPaInput_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_NBORDER], "N_ORDER",
-	  "Order of the narrow bandpass filter (int).",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_NBORDER], wxT("N_ORDER"),
+	  wxT("Order of the narrow bandpass filter (int)."),
 	  UNIPAR_INT,
 	  &bMZhangPtr->nbOrder, NULL,
 	  (void * (*)) SetNbOrder_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_WBORDER], "GAMMA_CP",
-	  "Order of the wide bandpass filter (int).",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_WBORDER], wxT("GAMMA_CP"),
+	  wxT("Order of the wide bandpass filter (int)."),
 	  UNIPAR_INT,
 	  &bMZhangPtr->wbOrder, NULL,
 	  (void * (*)) SetWbOrder_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CORNERCP], "CORNER_CP",
-	  "Corner parameter at which the BM starts compression",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CORNERCP], wxT("CORNER_CP"),
+	  wxT("Corner parameter at which the BM starts compression"),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->cornerCP, NULL,
 	  (void * (*)) SetCornerCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SLOPECP], "SLOPE_CP",
-	  "Slope of compression nonlinearity in Boltzmann combination.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SLOPECP], wxT("SLOPE_CP"),
+	  wxT("Slope of compression nonlinearity in Boltzmann combination."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->slopeCP, NULL,
 	  (void * (*)) SetSlopeCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_STRENGHCP], "STRENGTH_CP",
-	  "Strength of compression nonlinearity in Boltzmann combination.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_STRENGHCP], wxT("STRENGTH_CP"),
+	  wxT("Strength of compression nonlinearity in Boltzmann combination."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->strenghCP, NULL,
 	  (void * (*)) SetStrenghCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_X0CP], "X0_CP",
-	  "Parameter in Boltzman function.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_X0CP], wxT("X0_CP"),
+	  wxT("Parameter in Boltzman function."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->x0CP, NULL,
 	  (void * (*)) SetX0CP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_S0CP], "S0_CP",
-	  "Parameter in Boltzman function.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_S0CP], wxT("S0_CP"),
+	  wxT("Parameter in Boltzman function."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->s0CP, NULL,
 	  (void * (*)) SetS0CP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_X1CP], "X1_CP",
-	  "Parameter in Boltzman function.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_X1CP], wxT("X1_CP"),
+	  wxT("Parameter in Boltzman function."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->x1CP, NULL,
 	  (void * (*)) SetX1CP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_S1CP], "S1_CP",
-	  "Parameter in Boltzman function.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_S1CP], wxT("S1_CP"),
+	  wxT("Parameter in Boltzman function."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->s1CP, NULL,
 	  (void * (*)) SetS1CP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SHIFTCP], "SHIFT_CP",
-	  "Parameter in Boltzman function.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_SHIFTCP], wxT("SHIFT_CP"),
+	  wxT("Parameter in Boltzman function."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->shiftCP, NULL,
 	  (void * (*)) SetShiftCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CUTCP], "CUT_CP",
-	  "Cut-off frequency of control-path low-path filter (Hz).",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CUTCP], wxT("CUT_CP"),
+	  wxT("Cut-off frequency of control-path low-path filter (Hz)."),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->cutCP, NULL,
 	  (void * (*)) SetCutCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_KCP], "K_CP",
-	  "Order of control-path low-pass filter.",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_KCP], wxT("K_CP"),
+	  wxT("Order of control-path low-pass filter."),
 	  UNIPAR_INT,
 	  &bMZhangPtr->kCP, NULL,
 	  (void * (*)) SetKCP_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_R0], "R0",
-	  "Ratio of tau_LB (lower bound of tau_SP) to tau_narrow",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_R0], wxT("R0"),
+	  wxT("Ratio of tau_LB (lower bound of tau_SP) to tau_narrow"),
 	  UNIPAR_REAL,
 	  &bMZhangPtr->r0, NULL,
 	  (void * (*)) SetR0_BasilarM_Zhang);
-	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CFLIST], "CFLIST",
-	  "Centre frequency list",
+	SetPar_UniParMgr(&pars[BASILARM_ZHANG_CFLIST], wxT("CFLIST"),
+	  wxT("Centre frequency list"),
 	  UNIPAR_CFLIST,
 	  &bMZhangPtr->cFList, NULL,
 	  (void * (*)) SetCFList_BasilarM_Zhang);
@@ -296,15 +297,15 @@ SetUniParList_BasilarM_Zhang(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_Zhang(void)
 {
-	static const char	*funcName = "GetUniParListPtr_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("GetUniParListPtr_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMZhangPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZhangPtr->parList);
@@ -320,18 +321,18 @@ GetUniParListPtr_BasilarM_Zhang(void)
  */
 
 BOOLN
-SetModel_BasilarM_Zhang(char * theModel)
+SetModel_BasilarM_Zhang(WChar * theModel)
 {
-	static const char	*funcName = "SetModel_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetModel_BasilarM_Zhang");
 	int		specifier;
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theModel,
 		bMZhangPtr->modelList)) == BASILARM_ZHANG_MODEL_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theModel);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theModel);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -351,19 +352,19 @@ SetModel_BasilarM_Zhang(char * theModel)
  */
 
 BOOLN
-SetSpecies_BasilarM_Zhang(char * theSpecies)
+SetSpecies_BasilarM_Zhang(WChar * theSpecies)
 {
-	static const char	*funcName = "SetSpecies_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetSpecies_BasilarM_Zhang");
 	int		specifier;
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theSpecies,
 		SpeciesList_Utility_Zhang(0))) ==
 		  UT_ZHANG_SPECIES_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theSpecies);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSpecies);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -383,18 +384,18 @@ SetSpecies_BasilarM_Zhang(char * theSpecies)
  */
 
 BOOLN
-SetMicroPaInput_BasilarM_Zhang(char * theMicroPaInput)
+SetMicroPaInput_BasilarM_Zhang(WChar * theMicroPaInput)
 {
-	static const char	*funcName = "SetMicroPaInput_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetMicroPaInput_BasilarM_Zhang");
 	int		specifier;
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMicroPaInput,
 		DiagModeList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theMicroPaInput);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMicroPaInput);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -416,10 +417,10 @@ SetMicroPaInput_BasilarM_Zhang(char * theMicroPaInput)
 BOOLN
 SetNbOrder_BasilarM_Zhang(int theNbOrder)
 {
-	static const char	*funcName = "SetNbOrder_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetNbOrder_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -441,10 +442,10 @@ SetNbOrder_BasilarM_Zhang(int theNbOrder)
 BOOLN
 SetWbOrder_BasilarM_Zhang(int theWbOrder)
 {
-	static const char	*funcName = "SetWbOrder_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetWbOrder_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -466,10 +467,10 @@ SetWbOrder_BasilarM_Zhang(int theWbOrder)
 BOOLN
 SetCornerCP_BasilarM_Zhang(double theCornerCP)
 {
-	static const char	*funcName = "SetCornerCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetCornerCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -491,10 +492,10 @@ SetCornerCP_BasilarM_Zhang(double theCornerCP)
 BOOLN
 SetSlopeCP_BasilarM_Zhang(double theSlopeCP)
 {
-	static const char	*funcName = "SetSlopeCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetSlopeCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -516,10 +517,10 @@ SetSlopeCP_BasilarM_Zhang(double theSlopeCP)
 BOOLN
 SetStrenghCP_BasilarM_Zhang(double theStrenghCP)
 {
-	static const char	*funcName = "SetStrenghCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetStrenghCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -541,10 +542,10 @@ SetStrenghCP_BasilarM_Zhang(double theStrenghCP)
 BOOLN
 SetX0CP_BasilarM_Zhang(double theX0CP)
 {
-	static const char	*funcName = "SetX0CP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetX0CP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -566,10 +567,10 @@ SetX0CP_BasilarM_Zhang(double theX0CP)
 BOOLN
 SetS0CP_BasilarM_Zhang(double theS0CP)
 {
-	static const char	*funcName = "SetS0CP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetS0CP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -591,10 +592,10 @@ SetS0CP_BasilarM_Zhang(double theS0CP)
 BOOLN
 SetX1CP_BasilarM_Zhang(double theX1CP)
 {
-	static const char	*funcName = "SetX1CP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetX1CP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -616,10 +617,10 @@ SetX1CP_BasilarM_Zhang(double theX1CP)
 BOOLN
 SetS1CP_BasilarM_Zhang(double theS1CP)
 {
-	static const char	*funcName = "SetS1CP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetS1CP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -641,10 +642,10 @@ SetS1CP_BasilarM_Zhang(double theS1CP)
 BOOLN
 SetShiftCP_BasilarM_Zhang(double theShiftCP)
 {
-	static const char	*funcName = "SetShiftCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetShiftCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -666,10 +667,10 @@ SetShiftCP_BasilarM_Zhang(double theShiftCP)
 BOOLN
 SetCutCP_BasilarM_Zhang(double theCutCP)
 {
-	static const char	*funcName = "SetCutCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetCutCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -691,10 +692,10 @@ SetCutCP_BasilarM_Zhang(double theCutCP)
 BOOLN
 SetKCP_BasilarM_Zhang(int theKCP)
 {
-	static const char	*funcName = "SetKCP_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetKCP_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -716,10 +717,10 @@ SetKCP_BasilarM_Zhang(int theKCP)
 BOOLN
 SetR0_BasilarM_Zhang(double theR0)
 {
-	static const char	*funcName = "SetR0_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetR0_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -740,20 +741,20 @@ SetR0_BasilarM_Zhang(double theR0)
 BOOLN
 SetCFList_BasilarM_Zhang(CFListPtr theCFList)
 {
-	static const char	*funcName = "SetCFList_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetCFList_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not correctly set.",
+		NotifyError(wxT("%s: Centre frequency structure not correctly set."),
 		  funcName);
 		return(FALSE);
 	}
-	if (!SetBandwidths_CFList(theCFList, "internal_dynamic", NULL)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
+	if (!SetBandwidths_CFList(theCFList, wxT("internal_dynamic"), NULL)) {
+		NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	theCFList->bParList->pars[BANDWIDTH_PAR_MODE].enabled = FALSE;
@@ -778,81 +779,81 @@ SetCFList_BasilarM_Zhang(CFListPtr theCFList)
 BOOLN
 CheckPars_BasilarM_Zhang(void)
 {
-	static const char	*funcName = "CheckPars_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("CheckPars_BasilarM_Zhang");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bMZhangPtr->modelFlag) {
-		NotifyError("%s: model variable not set.", funcName);
+		NotifyError(wxT("%s: model variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->speciesFlag) {
-		NotifyError("%s: species variable not set.", funcName);
+		NotifyError(wxT("%s: species variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->microPaInputFlag) {
-		NotifyError("%s: microPaInput variable not set.", funcName);
+		NotifyError(wxT("%s: microPaInput variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->nbOrderFlag) {
-		NotifyError("%s: nbOrder variable not set.", funcName);
+		NotifyError(wxT("%s: nbOrder variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->wbOrderFlag) {
-		NotifyError("%s: wbOrder variable not set.", funcName);
+		NotifyError(wxT("%s: wbOrder variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->cornerCPFlag) {
-		NotifyError("%s: cornerCP variable not set.", funcName);
+		NotifyError(wxT("%s: cornerCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->slopeCPFlag) {
-		NotifyError("%s: slopeCP variable not set.", funcName);
+		NotifyError(wxT("%s: slopeCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->strenghCPFlag) {
-		NotifyError("%s: strenghCP variable not set.", funcName);
+		NotifyError(wxT("%s: strenghCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->x0CPFlag) {
-		NotifyError("%s: x0CP variable not set.", funcName);
+		NotifyError(wxT("%s: x0CP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->s0CPFlag) {
-		NotifyError("%s: s0CP variable not set.", funcName);
+		NotifyError(wxT("%s: s0CP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->x1CPFlag) {
-		NotifyError("%s: x1CP variable not set.", funcName);
+		NotifyError(wxT("%s: x1CP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->s1CPFlag) {
-		NotifyError("%s: s1CP variable not set.", funcName);
+		NotifyError(wxT("%s: s1CP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->shiftCPFlag) {
-		NotifyError("%s: shiftCP variable not set.", funcName);
+		NotifyError(wxT("%s: shiftCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->cutCPFlag) {
-		NotifyError("%s: cutCP variable not set.", funcName);
+		NotifyError(wxT("%s: cutCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->kCPFlag) {
-		NotifyError("%s: kCP variable not set.", funcName);
+		NotifyError(wxT("%s: kCP variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMZhangPtr->r0Flag) {
-		NotifyError("%s: r0 variable not set.", funcName);
+		NotifyError(wxT("%s: r0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMZhangPtr->cFList)) {
-		NotifyError("%s: Centre frequency list parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -868,15 +869,15 @@ CheckPars_BasilarM_Zhang(void)
 CFListPtr
 GetCFListPtr_BasilarM_Zhang(void)
 {
-	static const char	*funcName = "GetCFListPtr_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("GetCFListPtr_BasilarM_Zhang");
 
 	if (bMZhangPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMZhangPtr->cFList == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly set. "
+		  "NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZhangPtr->cFList);
@@ -893,36 +894,37 @@ GetCFListPtr_BasilarM_Zhang(void)
 BOOLN
 PrintPars_BasilarM_Zhang(void)
 {
-	static const char	*funcName = "PrintPars_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("PrintPars_BasilarM_Zhang");
 
 	if (!CheckPars_BasilarM_Zhang()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Zhang et al. BM Module Parameters:-\n");
-	DPrint("\tModel = %s,", bMZhangPtr->modelList[bMZhangPtr->
+	DPrint(wxT("Zhang et al. BM Module Parameters:-\n"));
+	DPrint(wxT("\tModel = %s,"), bMZhangPtr->modelList[bMZhangPtr->
 	  model].name);
-	DPrint("\tspecies = %s \n", SpeciesList_Utility_Zhang(bMZhangPtr->
+	DPrint(wxT("\tspecies = %s \n"), SpeciesList_Utility_Zhang(bMZhangPtr->
 	  species)->name);
-	DPrint("\tMicro Pascal Input = %s,\n", BooleanList_NSpecLists(bMZhangPtr->
-	  microPaInput)->name);
-	DPrint("\tNarrow/wide bandpass filter Orders = %d/%d\n", bMZhangPtr->
+	DPrint(wxT("\tMicro Pascal Input = %s,\n"), BooleanList_NSpecLists(
+	  bMZhangPtr->microPaInput)->name);
+	DPrint(wxT("\tNarrow/wide bandpass filter Orders = %d/%d\n"), bMZhangPtr->
 	  nbOrder, bMZhangPtr->wbOrder);
-	DPrint("\tNonlinearity corner/slope/strengh = %g/%g/%g,\n",
+	DPrint(wxT("\tNonlinearity corner/slope/strengh = %g/%g/%g,\n"),
 	  bMZhangPtr->cornerCP, bMZhangPtr->slopeCP, bMZhangPtr->
 	  strenghCP);
-	DPrint("\tControl path Boltzmann parameters:\n");
-	DPrint("\t\tx0 = %g,", bMZhangPtr->x0CP);
-	DPrint("\ts0 = %g,", bMZhangPtr->s0CP);
-	DPrint("\tx1 = %g,", bMZhangPtr->x1CP);
-	DPrint("\ts1 = %g,", bMZhangPtr->s1CP);
-	DPrint("\tshift = %g,\n", bMZhangPtr->shiftCP);
-	DPrint("\tCut-off frequency of control-path low-path filter, cut = %g "
-	  "(Hz)\n", bMZhangPtr->cutCP);
-	DPrint("\tOrder of control-path low-pass filter, k = %d,\n",
+	DPrint(wxT("\tControl path Boltzmann parameters:\n"));
+	DPrint(wxT("\t\tx0 = %g,"), bMZhangPtr->x0CP);
+	DPrint(wxT("\ts0 = %g,"), bMZhangPtr->s0CP);
+	DPrint(wxT("\tx1 = %g,"), bMZhangPtr->x1CP);
+	DPrint(wxT("\ts1 = %g,"), bMZhangPtr->s1CP);
+	DPrint(wxT("\tshift = %g,\n"), bMZhangPtr->shiftCP);
+	DPrint(wxT("\tCut-off frequency of control-path low-path filter, cut = %g "
+	  "(Hz)\n"), bMZhangPtr->cutCP);
+	DPrint(wxT("\tOrder of control-path low-pass filter, k = %d,\n"),
 	  bMZhangPtr->kCP);
-	DPrint("\t Ratio of tau_LB (lower bound of tau_SP) to tau_narrow, r0 = "
-	  "%g\n", bMZhangPtr->r0);
+	DPrint(wxT("\t Ratio of tau_LB (lower bound of tau_SP) to tau_narrow, r0 = "
+	  "%g\n"), bMZhangPtr->r0);
 	PrintPars_CFList(bMZhangPtr->cFList);
 	return(TRUE);
 
@@ -938,10 +940,10 @@ PrintPars_BasilarM_Zhang(void)
 BOOLN
 SetParsPointer_BasilarM_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("SetParsPointer_BasilarM_Zhang");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bMZhangPtr = (BMZhangPtr) theModule->parsPtr;
@@ -959,14 +961,15 @@ SetParsPointer_BasilarM_Zhang(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_Zhang");
 
 	if (!SetParsPointer_BasilarM_Zhang(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_Zhang(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bMZhangPtr;
@@ -997,10 +1000,10 @@ InitModule_BasilarM_Zhang(ModulePtr theModule)
 BOOLN
 CheckData_BasilarM_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("CheckData_BasilarM_Zhang");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -1296,7 +1299,7 @@ BOOLN
 InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
   int species, double tdres, double cf)
 {
-	static const char *funcName = "initBasilarMembrane";
+	static const WChar *funcName = wxT("initBasilarMembrane");
 	int		bmmodel;
 	double	taumax,taumin,taurange; /* general */
 	double	x, centerfreq,tauwb,tauwbmin,dtmp,wb_gain; /* for wb */
@@ -1304,7 +1307,7 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
 	TNonLinear *p;
 
 	if (!bm) {
-		NotifyError("%s: Basilar membrane structure not initialised.",
+		NotifyError(wxT("%s: Basilar membrane structure not initialised."),
 		  funcName);
 		return(FALSE);
 	}
@@ -1416,7 +1419,7 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
 BOOLN
 InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("InitProcessVariables_BasilarM_Zhang");
 	int		i, cFIndex;
 	BMZhangPtr	p = bMZhangPtr;
 
@@ -1426,11 +1429,12 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 		FreeProcessVariables_BasilarM_Zhang();
 		if ((p->bM = (TBasilarMembrane *) calloc(data->outSignal->numChannels,
 		  sizeof(TBasilarMembrane))) == NULL) {
-		 	NotifyError("%s: Out of memory for coefficients array.", funcName);
+		 	NotifyError(wxT("%s: Out of memory for coefficients array."),
+			  funcName);
 		 	return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
 		SetInfoChannelLabels_SignalData(data->outSignal,
 		   p->cFList->frequency);
 		SetInfoCFArray_SignalData(data->outSignal, p->cFList->frequency);
@@ -1443,8 +1447,8 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 			if (!InitBasilarMembrane_BasilarM_Zhang(&p->bM[i], p->model +
 			  1, p->species, data->outSignal->dt, p->cFList->frequency[
 			  cFIndex])) {
-				NotifyError("%s: Could not initialised BM for channel (%d).",
-				  funcName, i);
+				NotifyError(wxT("%s: Could not initialised BM for channel "
+				  "(%d)."), funcName, i);
 				FreeProcessVariables_BasilarM_Zhang();
 				return(FALSE);
 			}
@@ -1561,7 +1565,7 @@ Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
 BOOLN
 RunModel_BasilarM_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_BasilarM_Zhang";
+	static const WChar	*funcName = wxT("RunModel_BasilarM_Zhang");
 	register ChanData	 *inPtr, *outPtr;
 	uShort	totalChannels;
 	int		chan;
@@ -1571,19 +1575,20 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 		if (!CheckPars_BasilarM_Zhang())
 			return(FALSE);
 		if (!CheckData_BasilarM_Zhang(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Zhang et al. Non-linear BM filtering");
+		SetProcessName_EarObject(data, wxT("Zhang et al. Non-linear BM "
+		  "filtering"));
 
 		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Cannot initialise output channel.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_BasilarM_Zhang(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

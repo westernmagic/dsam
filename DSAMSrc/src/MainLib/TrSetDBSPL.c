@@ -28,6 +28,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "TrSetDBSPL.h"
 
 /******************************************************************************/
@@ -52,8 +53,6 @@ SetDBSPLPtr	setDBSPLPtr = NULL;
 BOOLN
 Free_Transform_SetDBSPL(void)
 {
-	/* static const char	*funcName = "Free_Transform_SetDBSPL";  */
-
 	if (setDBSPLPtr == NULL)
 		return(TRUE);
 	FreeProcessVariables_Transform_SetDBSPL();
@@ -82,18 +81,19 @@ Free_Transform_SetDBSPL(void)
 BOOLN
 Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("Init_Transform_SetDBSPL");
 
 	if (parSpec == GLOBAL) {
 		if (setDBSPLPtr != NULL)
 			Free_Transform_SetDBSPL();
 		if ((setDBSPLPtr = (SetDBSPLPtr) malloc(sizeof(SetDBSPL))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (setDBSPLPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -105,7 +105,7 @@ Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
 	setDBSPLPtr->intensity = 0.0;
 
 	if (!SetUniParList_Transform_SetDBSPL()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Transform_SetDBSPL();
 		return(FALSE);
 	}
@@ -124,22 +124,22 @@ Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Transform_SetDBSPL(void)
 {
-	static const char *funcName = "SetUniParList_Transform_SetDBSPL";
+	static const WChar *funcName = wxT("SetUniParList_Transform_SetDBSPL");
 	UniParPtr	pars;
 
 	if ((setDBSPLPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  SETDBSPL_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = setDBSPLPtr->parList->pars;
-	SetPar_UniParMgr(&pars[SETDBSPL_TIMEOFFSET], "OFFSET",
-	  "Time offset for intensity calculation (s).",
+	SetPar_UniParMgr(&pars[SETDBSPL_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time offset for intensity calculation (s)."),
 	  UNIPAR_REAL,
 	  &setDBSPLPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Transform_SetDBSPL);
-	SetPar_UniParMgr(&pars[SETDBSPL_INTENSITY], "DBSPL",
-	  "Required intensity setting (dB SPL).",
+	SetPar_UniParMgr(&pars[SETDBSPL_INTENSITY], wxT("DBSPL"),
+	  wxT("Required intensity setting (dB SPL)."),
 	  UNIPAR_REAL,
 	  &setDBSPLPtr->intensity, NULL,
 	  (void * (*)) SetIntensity_Transform_SetDBSPL);
@@ -157,15 +157,15 @@ SetUniParList_Transform_SetDBSPL(void)
 UniParListPtr
 GetUniParListPtr_Transform_SetDBSPL(void)
 {
-	static const char *funcName = "GetUniParListPtr_Transform_SetDBSPL";
+	static const WChar *funcName = wxT("GetUniParListPtr_Transform_SetDBSPL");
 
 	if (setDBSPLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (setDBSPLPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(setDBSPLPtr->parList);
@@ -182,7 +182,7 @@ GetUniParListPtr_Transform_SetDBSPL(void)
 BOOLN
 SetPars_Transform_SetDBSPL(double timeOffset, double intensity)
 {
-	static const char	*funcName = "SetPars_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("SetPars_Transform_SetDBSPL");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -191,7 +191,7 @@ SetPars_Transform_SetDBSPL(double timeOffset, double intensity)
 	if (!SetIntensity_Transform_SetDBSPL(intensity))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -207,14 +207,14 @@ SetPars_Transform_SetDBSPL(double timeOffset, double intensity)
 BOOLN
 SetTimeOffset_Transform_SetDBSPL(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("SetTimeOffset_Transform_SetDBSPL");
 
 	if (setDBSPLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal offset (%g ms).", funcName,
+		NotifyError(wxT("%s: Illegal offset (%g ms)."), funcName,
 		  MSEC(theTimeOffset));
 		return(FALSE);
 	}
@@ -235,10 +235,10 @@ SetTimeOffset_Transform_SetDBSPL(double theTimeOffset)
 BOOLN
 SetIntensity_Transform_SetDBSPL(double theIntensity)
 {
-	static const char	*funcName = "SetIntensity_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("SetIntensity_Transform_SetDBSPL");
 
 	if (setDBSPLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -261,20 +261,20 @@ SetIntensity_Transform_SetDBSPL(double theIntensity)
 BOOLN
 CheckPars_Transform_SetDBSPL(void)
 {
-	static const char	*funcName = "CheckPars_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("CheckPars_Transform_SetDBSPL");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (setDBSPLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!setDBSPLPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!setDBSPLPtr->intensityFlag) {
-		NotifyError("%s: intensity variable not set.", funcName);
+		NotifyError(wxT("%s: intensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -291,15 +291,16 @@ CheckPars_Transform_SetDBSPL(void)
 BOOLN
 PrintPars_Transform_SetDBSPL(void)
 {
-	static const char	*funcName = "PrintPars_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("PrintPars_Transform_SetDBSPL");
 
 	if (!CheckPars_Transform_SetDBSPL()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Set Intensity Transform Module Parameters:-\n");
-	DPrint("\tTime offset = %g ms,", MSEC(setDBSPLPtr->timeOffset));
-	DPrint("\tIntensity = %g dB SPL\n", setDBSPLPtr->intensity);
+	DPrint(wxT("Set Intensity Transform Module Parameters:-\n"));
+	DPrint(wxT("\tTime offset = %g ms,"), MSEC(setDBSPLPtr->timeOffset));
+	DPrint(wxT("\tIntensity = %g dB SPL\n"), setDBSPLPtr->intensity);
 	return(TRUE);
 
 }
@@ -311,35 +312,36 @@ PrintPars_Transform_SetDBSPL(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Transform_SetDBSPL(char *fileName)
+ReadPars_Transform_SetDBSPL(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("ReadPars_Transform_SetDBSPL");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	timeOffset, intensity;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &intensity))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Transform_SetDBSPL(timeOffset, intensity)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -356,10 +358,10 @@ ReadPars_Transform_SetDBSPL(char *fileName)
 BOOLN
 SetParsPointer_Transform_SetDBSPL(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("SetParsPointer_Transform_SetDBSPL");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	setDBSPLPtr = (SetDBSPLPtr) theModule->parsPtr;
@@ -376,14 +378,15 @@ SetParsPointer_Transform_SetDBSPL(ModulePtr theModule)
 BOOLN
 InitModule_Transform_SetDBSPL(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("InitModule_Transform_SetDBSPL");
 
 	if (!SetParsPointer_Transform_SetDBSPL(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Transform_SetDBSPL(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = setDBSPLPtr;
@@ -414,18 +417,18 @@ InitModule_Transform_SetDBSPL(ModulePtr theModule)
 BOOLN
 CheckData_Transform_SetDBSPL(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("CheckData_Transform_SetDBSPL");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (setDBSPLPtr->timeOffset >=
 	  _GetDuration_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Time offset (%g ms) is longer than signal duration "
-		  "(%g ms).", funcName, MSEC(setDBSPLPtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
+		  "duration (%g ms)."), funcName, MSEC(setDBSPLPtr->timeOffset),
 		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
 		return(FALSE);
 	}
@@ -446,7 +449,6 @@ CheckData_Transform_SetDBSPL(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Transform_SetDBSPL(EarObjectPtr data)
 {
-	/*static const char *funcName = "InitProcessVariables_Transform_SetDBSPL";*/
 	register ChanData	 *inPtr, sum;
 	int		chan;
 	double	gaindB;
@@ -506,7 +508,7 @@ FreeProcessVariables_Transform_SetDBSPL(void)
 BOOLN
 Process_Transform_SetDBSPL(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Transform_SetDBSPL";
+	static const WChar	*funcName = wxT("Process_Transform_SetDBSPL");
 	register	ChanData	 *inPtr;
 	int		chan;
 	ChanLen	i;
@@ -515,16 +517,16 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 		if (!CheckPars_Transform_SetDBSPL())
 			return(FALSE);
 		if (!CheckData_Transform_SetDBSPL(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Set Intensity Module process");
+		SetProcessName_EarObject(data, wxT("Set Intensity Module process"));
 		if (data->outSignal != data->inSignal[0]) {
 			data->outSignal = data->inSignal[0];
 			data->updateCustomersFlag = TRUE;
 		}
 		if (!InitProcessVariables_Transform_SetDBSPL(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

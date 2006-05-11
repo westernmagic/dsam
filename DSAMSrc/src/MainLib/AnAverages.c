@@ -27,6 +27,7 @@
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
 #include "GeModuleMgr.h"
+#include "UtString.h"
 #include "AnAverages.h"
 
 /******************************************************************************/
@@ -51,8 +52,6 @@ AveragesPtr	averagesPtr = NULL;
 BOOLN
 Free_Analysis_Averages(void)
 {
-	/* static const char	*funcName = "Free_Analysis_Averages"; */
-
 	if (averagesPtr == NULL)
 		return(FALSE);
 	if (averagesPtr->parList)
@@ -76,10 +75,10 @@ InitModeList_Analysis_Averages(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "FULL", AVERAGES_FULL },
-					{ "-WAVE", AVERAGES_NEGATIVE_WAVE },
-					{ "+WAVE", AVERAGES_POSITIVE_WAVE },
-					{ "", AVERAGES_NULL }
+					{ wxT("FULL"), AVERAGES_FULL },
+					{ wxT("-WAVE"), AVERAGES_NEGATIVE_WAVE },
+					{ wxT("+WAVE"), AVERAGES_POSITIVE_WAVE },
+					{ wxT(""), AVERAGES_NULL }
 				};
 	averagesPtr->modeList = modeList;
 	return(TRUE);
@@ -101,18 +100,19 @@ InitModeList_Analysis_Averages(void)
 BOOLN
 Init_Analysis_Averages(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_Averages";
+	static const WChar	*funcName = wxT("Init_Analysis_Averages");
 
 	if (parSpec == GLOBAL) {
 		if (averagesPtr != NULL)
 			Free_Analysis_Averages();
 		if ((averagesPtr = (AveragesPtr) malloc(sizeof(Averages))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (averagesPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -126,7 +126,7 @@ Init_Analysis_Averages(ParameterSpecifier parSpec)
 
 	InitModeList_Analysis_Averages();
 	if (!SetUniParList_Analysis_Averages()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_Averages();
 		return(FALSE);
 	}
@@ -145,27 +145,27 @@ Init_Analysis_Averages(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_Averages(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_Averages";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_Averages");
 	UniParPtr	pars;
 
 	if ((averagesPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_AVERAGES_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = averagesPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_MODE], "MODE",
-	  "Averaging mode ('full', '-wave' or '+wave').",
+	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_MODE], wxT("MODE"),
+	  wxT("Averaging mode ('full', '-wave' or '+wave')."),
 	  UNIPAR_NAME_SPEC,
 	  &averagesPtr->mode, averagesPtr->modeList,
 	  (void * (*)) SetMode_Analysis_Averages);
-	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_TIMEOFFSET], "OFFSET",
-	  "Time offset for start of averaging period (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time offset for start of averaging period (s)."),
 	  UNIPAR_REAL,
 	  &averagesPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_Averages);
-	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_TIMERANGE], "DURATION",
-	  "Averaging period duration: -ve assumes to end of signal (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_AVERAGES_TIMERANGE], wxT("DURATION"),
+	  wxT("Averaging period duration: -ve assumes to end of signal (s)."),
 	  UNIPAR_REAL,
 	  &averagesPtr->timeRange, NULL,
 	  (void * (*)) SetTimeRange_Analysis_Averages);
@@ -183,15 +183,15 @@ SetUniParList_Analysis_Averages(void)
 UniParListPtr
 GetUniParListPtr_Analysis_Averages(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_Averages";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_Averages");
 
 	if (averagesPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (averagesPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(averagesPtr->parList);
@@ -206,9 +206,9 @@ GetUniParListPtr_Analysis_Averages(void)
  */
 
 BOOLN
-SetPars_Analysis_Averages(char *mode, double timeOffset, double timeRange)
+SetPars_Analysis_Averages(WChar *mode, double timeOffset, double timeRange)
 {
-	static const char	*funcName = "SetPars_Analysis_Averages";
+	static const WChar	*funcName = wxT("SetPars_Analysis_Averages");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -219,7 +219,7 @@ SetPars_Analysis_Averages(char *mode, double timeOffset, double timeRange)
 	if (!SetTimeRange_Analysis_Averages(timeRange))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -233,18 +233,18 @@ SetPars_Analysis_Averages(char *mode, double timeOffset, double timeRange)
  */
 
 BOOLN
-SetMode_Analysis_Averages(char *theMode)
+SetMode_Analysis_Averages(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Analysis_Averages";
+	static const WChar	*funcName = wxT("SetMode_Analysis_Averages");
 	int		specifier;
 
 	if (averagesPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, averagesPtr->modeList)) ==
 	  AVERAGES_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	averagesPtr->modeFlag = TRUE;
@@ -264,14 +264,14 @@ SetMode_Analysis_Averages(char *theMode)
 BOOLN
 SetTimeOffset_Analysis_Averages(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Analysis_Averages";
+	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_Averages");
 
 	if (averagesPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal value (%g ms).", funcName,
+		NotifyError(wxT("%s: Illegal value (%g ms)."), funcName,
 		  MSEC(theTimeOffset));
 		return(FALSE);
 	}
@@ -292,10 +292,10 @@ SetTimeOffset_Analysis_Averages(double theTimeOffset)
 BOOLN
 SetTimeRange_Analysis_Averages(double theTimeRange)
 {
-	static const char	*funcName = "SetTimeRange_Analysis_Averages";
+	static const WChar	*funcName = wxT("SetTimeRange_Analysis_Averages");
 
 	if (averagesPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	averagesPtr->timeRangeFlag = TRUE;
@@ -317,24 +317,24 @@ SetTimeRange_Analysis_Averages(double theTimeRange)
 BOOLN
 CheckPars_Analysis_Averages(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_Averages";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_Averages");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!averagesPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (averagesPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!averagesPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!averagesPtr->timeRangeFlag) {
-		NotifyError("%s: timeRange variable not set.", funcName);
+		NotifyError(wxT("%s: timeRange variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -351,22 +351,23 @@ CheckPars_Analysis_Averages(void)
 BOOLN
 PrintPars_Analysis_Averages(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_Averages";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_Averages");
 
 	if (!CheckPars_Analysis_Averages()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Averages Analysis Module Parameters:-\n");
-	DPrint("\tMode = %s,",
+	DPrint(wxT("Averages Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tMode = %s,"),
 	  averagesPtr->modeList[averagesPtr->mode].name);
-	DPrint("\tTime offset = %g ms,\n",
+	DPrint(wxT("\tTime offset = %g ms,\n"),
 	  MSEC(averagesPtr->timeOffset));
-	DPrint("\tTime range = ");
+	DPrint(wxT("\tTime range = "));
 	if (averagesPtr->timeRange < 0.0)
-		DPrint("<end of signal>\n");
+		DPrint(wxT("<end of signal>\n"));
 	else
-		DPrint("%g ms\n", MSEC(averagesPtr->timeRange));
+		DPrint(wxT("%g ms\n"), MSEC(averagesPtr->timeRange));
 	return(TRUE);
 
 }
@@ -378,38 +379,39 @@ PrintPars_Analysis_Averages(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_Averages(char *fileName)
+ReadPars_Analysis_Averages(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_Averages";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_Averages");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	timeOffset, timeRange;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeRange))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeRange))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_Averages(mode, timeOffset, timeRange)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -426,10 +428,10 @@ ReadPars_Analysis_Averages(char *fileName)
 BOOLN
 SetParsPointer_Analysis_Averages(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_Averages";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_Averages");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	averagesPtr = (AveragesPtr) theModule->parsPtr;
@@ -446,14 +448,15 @@ SetParsPointer_Analysis_Averages(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_Averages(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_Averages";
+	static const WChar	*funcName = wxT("InitModule_Analysis_Averages");
 
 	if (!SetParsPointer_Analysis_Averages(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_Averages(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = averagesPtr;
@@ -485,26 +488,26 @@ InitModule_Analysis_Averages(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_Averages(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_Averages";
+	static const WChar	*funcName = wxT("CheckData_Analysis_Averages");
 	double	signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (averagesPtr->timeOffset > signalDuration) {
-		NotifyError("%s: Time offset (%g ms) must be less than the signal\n"
-		  "duration (%g ms).", funcName, MSEC(averagesPtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) must be less than the signal\n"
+		  "duration (%g ms)."), funcName, MSEC(averagesPtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((averagesPtr->timeRange >= 0.0) && (averagesPtr->timeOffset +
 	  averagesPtr->timeRange > signalDuration)) {
-		NotifyError("%s: Time offset (%g ms) + timeRange (%g ms) must be\n"
-		  "less than the signal duration (%g ms).", funcName,
+		NotifyError(wxT("%s: Time offset (%g ms) + timeRange (%g ms) must be\n"
+		  "less than the signal duration (%g ms)."), funcName,
 		  MSEC(averagesPtr->timeOffset), MSEC(averagesPtr->timeRange),
 		  MSEC(signalDuration));
 		return(FALSE);
@@ -531,7 +534,7 @@ CheckData_Analysis_Averages(EarObjectPtr data)
 BOOLN
 Calc_Analysis_Averages(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_Averages";
+	static const WChar	*funcName = wxT("Calc_Analysis_Averages");
 	register	ChanData	 *inPtr, sum;
 	int		chan;
 	double	dt;
@@ -542,13 +545,14 @@ Calc_Analysis_Averages(EarObjectPtr data)
 		if (!CheckPars_Analysis_Averages())
 			return(FALSE);
 		if (!CheckData_Analysis_Averages(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Averages Analysis");
+		SetProcessName_EarObject(data, wxT("Averages Analysis"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
 		  1.0)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		dt = data->inSignal[0]->dt;

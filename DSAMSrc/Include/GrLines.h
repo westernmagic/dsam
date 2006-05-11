@@ -53,7 +53,7 @@ class GrLines
 	void	DrawLines(wxDC& dc, double theXOffset, double theYOffset);
 	double	GetChannelScale(void)		{ return channelScale; }
 	double	GetChannelSpace(void)		{ return chanSpace; }
-	char *	GetLineLabel(int theLine);
+	wxChar *	GetLineLabel(int theLine);
 	ChanLen	GetLength(void)				{ return length; }
 	double	GetMaxY(void)				{ return(maxY); }
 	double	GetMinY(void)				{ return(minY); }

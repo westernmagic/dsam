@@ -83,7 +83,7 @@ BOOLN	PrintPars_Utility_RefractoryAdjust(void);
 
 BOOLN	Process_Utility_RefractoryAdjust(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_RefractoryAdjust(char *fileName);
+BOOLN	ReadPars_Utility_RefractoryAdjust(WChar *fileName);
 
 BOOLN	InitModule_Utility_RefractoryAdjust(ModulePtr theModule);
 

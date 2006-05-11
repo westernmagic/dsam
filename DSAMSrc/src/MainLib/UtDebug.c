@@ -43,10 +43,10 @@ EarObjectPtr	debug = NULL;	/* This is used for debugging modules. */
 BOOLN
 CheckInit_Debug(void)
 {
-	static const char *funcName = "CheckInit_Debug";
+	static const WChar *funcName = wxT("CheckInit_Debug");
 
 	if (debug == NULL) {
-		NotifyError("%s: Debug module not initialised.", funcName);
+		NotifyError(wxT("%s: Debug module not initialised."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -64,7 +64,7 @@ Init_Debug(void)
 {
 	if (debug != NULL)
 		Free_EarObject(&debug);
-	debug = Init_EarObject("null");
+	debug = Init_EarObject(wxT("null"));
 
 }
 
@@ -91,16 +91,16 @@ Free_Debug(void)
 BOOLN
 SetPars_Debug(uShort numChannels, ChanLen length, double samplingInterval)
 {
-	static const char *funcName = "SetPars_Debug";
+	static const WChar *funcName = wxT("SetPars_Debug");
 
 	if (!CheckInit_Debug())
 		return(FALSE);
 	if (!InitOutSignal_EarObject(debug, numChannels, length,
 	  samplingInterval)) {
-		NotifyError("%s: Could not initialise output signal.", funcName);
+		NotifyError(wxT("%s: Could not initialise output signal."), funcName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(debug, "Debug module");
+	SetProcessName_EarObject(debug, wxT("Debug module"));
 	return(TRUE);
 
 }
@@ -116,19 +116,19 @@ SetPars_Debug(uShort numChannels, ChanLen length, double samplingInterval)
 BOOLN
 SetChannelValue_Debug(int channel, ChanLen sample, double value)
 {
-	static const char *funcName = "SetChannelValue_Debug";
+	static const WChar *funcName = wxT("SetChannelValue_Debug");
 
 	if (!CheckInit_Debug()) {
-		NotifyError("%s: Debug module not initialised.", funcName);
+		NotifyError(wxT("%s: Debug module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((channel < 0) || (channel >= debug->outSignal->numChannels)) {
-		NotifyError("%s: Channel must be in range %d - %d.", funcName,
+		NotifyError(wxT("%s: Channel must be in range %d - %d."), funcName,
 		  0, debug->outSignal->numChannels);
 		return(FALSE);
 	}
 	if (sample >= debug->outSignal->length) {
-		NotifyError("%s: Sample must be in range %u - %u.", funcName,
+		NotifyError(wxT("%s: Sample must be in range %u - %u."), funcName,
 		  0, debug->outSignal->length);
 		return(FALSE);
 	}
@@ -145,7 +145,7 @@ SetChannelValue_Debug(int channel, ChanLen sample, double value)
  */
 
 BOOLN
-WriteOutSignal_Debug(char *fileName)
+WriteOutSignal_Debug(WChar *fileName)
 {
 
 	return(OutputToFile_SignalData(fileName, debug->outSignal));

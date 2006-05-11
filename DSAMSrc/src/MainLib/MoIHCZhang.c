@@ -50,8 +50,6 @@ ZhangHCPtr	zhangHCPtr = NULL;
 BOOLN
 Free_IHC_Zhang(void)
 {
-	/* static const char	*funcName = "Free_IHC_Zhang";  */
-
 	if (zhangHCPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IHC_Zhang();
@@ -80,18 +78,18 @@ Free_IHC_Zhang(void)
 BOOLN
 Init_IHC_Zhang(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IHC_Zhang";
+	static const WChar	*funcName = wxT("Init_IHC_Zhang");
 
 	if (parSpec == GLOBAL) {
 		if (zhangHCPtr != NULL)
 			Free_IHC_Zhang();
 		if ((zhangHCPtr = (ZhangHCPtr) malloc(sizeof(ZhangHC))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (zhangHCPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -119,7 +117,7 @@ Init_IHC_Zhang(ParameterSpecifier parSpec)
 	zhangHCPtr->vs3 = 6.0;
 
 	if (!SetUniParList_IHC_Zhang()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHC_Zhang();
 		return(FALSE);
 	}
@@ -140,62 +138,62 @@ Init_IHC_Zhang(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IHC_Zhang(void)
 {
-	static const char *funcName = "SetUniParList_IHC_Zhang";
+	static const WChar *funcName = wxT("SetUniParList_IHC_Zhang");
 	UniParPtr	pars;
 
 	if ((zhangHCPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHC_ZHANG_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = zhangHCPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IHC_ZHANG_SPONT], "SPONT",
-	  "Spontaneous rate of fiber (spikes/s).",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_SPONT], wxT("SPONT"),
+	  wxT("Spontaneous rate of fiber (spikes/s)."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->spont, NULL,
 	  (void * (*)) SetSpont_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_AASS], "A_SS",
-	  "Steady-state rate (spikes/s).",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_AASS], wxT("A_SS"),
+	  wxT("Steady-state rate (spikes/s)."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->aAss, NULL,
 	  (void * (*)) SetAAss_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_TAUST], "TAU_ST",
-	  "Short-term time constant (s).",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_TAUST], wxT("TAU_ST"),
+	  wxT("Short-term time constant (s)."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->tauST, NULL,
 	  (void * (*)) SetTauST_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_TAUR], "TAU_R",
-	  "Rapid time constant (s).",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_TAUR], wxT("TAU_R"),
+	  wxT("Rapid time constant (s)."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->tauR, NULL,
 	  (void * (*)) SetTauR_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_AAROVERAST], "AR_AST",
-	  "Rapid response amplitude to short-term response amplitude ratio.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_AAROVERAST], wxT("AR_AST"),
+	  wxT("Rapid response amplitude to short-term response amplitude ratio."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->aAROverAST, NULL,
 	  (void * (*)) SetAAROverAST_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_PIMAX], "PI_MAX",
-	  "Permeability at high sound level.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_PIMAX], wxT("PI_MAX"),
+	  wxT("Permeability at high sound level."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->pIMax, NULL,
 	  (void * (*)) SetPIMax_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_KS], "K_S",
-	  "Species dependend voltage staturation parameter.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_KS], wxT("K_S"),
+	  wxT("Species dependend voltage staturation parameter."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->ks, NULL,
 	  (void * (*)) SetKs_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_VS1], "V_S1",
-	  "Species dependend voltage staturation parameter.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_VS1], wxT("V_S1"),
+	  wxT("Species dependend voltage staturation parameter."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->vs1, NULL,
 	  (void * (*)) SetVs1_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_VS2], "V_S2",
-	  "Species dependend voltage staturation parameter.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_VS2], wxT("V_S2"),
+	  wxT("Species dependend voltage staturation parameter."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->vs2, NULL,
 	  (void * (*)) SetVs2_IHC_Zhang);
-	SetPar_UniParMgr(&pars[IHC_ZHANG_VS3], "V_S3",
-	  "Species dependend voltage staturation parameter.",
+	SetPar_UniParMgr(&pars[IHC_ZHANG_VS3], wxT("V_S3"),
+	  wxT("Species dependend voltage staturation parameter."),
 	  UNIPAR_REAL,
 	  &zhangHCPtr->vs3, NULL,
 	  (void * (*)) SetVs3_IHC_Zhang);
@@ -213,15 +211,15 @@ SetUniParList_IHC_Zhang(void)
 UniParListPtr
 GetUniParListPtr_IHC_Zhang(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHC_Zhang";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (zhangHCPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(zhangHCPtr->parList);
@@ -239,10 +237,10 @@ GetUniParListPtr_IHC_Zhang(void)
 BOOLN
 SetSpont_IHC_Zhang(double theSpont)
 {
-	static const char	*funcName = "SetSpont_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetSpont_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -264,10 +262,10 @@ SetSpont_IHC_Zhang(double theSpont)
 BOOLN
 SetAAss_IHC_Zhang(double theAAss)
 {
-	static const char	*funcName = "SetAAss_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetAAss_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -289,10 +287,10 @@ SetAAss_IHC_Zhang(double theAAss)
 BOOLN
 SetTauST_IHC_Zhang(double theTauST)
 {
-	static const char	*funcName = "SetTauST_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetTauST_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -314,10 +312,10 @@ SetTauST_IHC_Zhang(double theTauST)
 BOOLN
 SetTauR_IHC_Zhang(double theTauR)
 {
-	static const char	*funcName = "SetTauR_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetTauR_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -339,10 +337,10 @@ SetTauR_IHC_Zhang(double theTauR)
 BOOLN
 SetAAROverAST_IHC_Zhang(double theAAROverAST)
 {
-	static const char	*funcName = "SetAAROverAST_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetAAROverAST_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -364,10 +362,10 @@ SetAAROverAST_IHC_Zhang(double theAAROverAST)
 BOOLN
 SetPIMax_IHC_Zhang(double thePIMax)
 {
-	static const char	*funcName = "SetPIMax_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetPIMax_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -389,10 +387,10 @@ SetPIMax_IHC_Zhang(double thePIMax)
 BOOLN
 SetKs_IHC_Zhang(double theKs)
 {
-	static const char	*funcName = "SetKs_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetKs_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -414,10 +412,10 @@ SetKs_IHC_Zhang(double theKs)
 BOOLN
 SetVs1_IHC_Zhang(double theVs1)
 {
-	static const char	*funcName = "SetVs1_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetVs1_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -439,10 +437,10 @@ SetVs1_IHC_Zhang(double theVs1)
 BOOLN
 SetVs2_IHC_Zhang(double theVs2)
 {
-	static const char	*funcName = "SetVs2_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetVs2_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -464,10 +462,10 @@ SetVs2_IHC_Zhang(double theVs2)
 BOOLN
 SetVs3_IHC_Zhang(double theVs3)
 {
-	static const char	*funcName = "SetVs3_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetVs3_IHC_Zhang");
 
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -491,52 +489,52 @@ SetVs3_IHC_Zhang(double theVs3)
 BOOLN
 CheckPars_IHC_Zhang(void)
 {
-	static const char	*funcName = "CheckPars_IHC_Zhang";
+	static const WChar	*funcName = wxT("CheckPars_IHC_Zhang");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (zhangHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!zhangHCPtr->spontFlag) {
-		NotifyError("%s: spont variable not set.", funcName);
+		NotifyError(wxT("%s: spont variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->aAssFlag) {
-		NotifyError("%s: aAss variable not set.", funcName);
+		NotifyError(wxT("%s: aAss variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->tauSTFlag) {
-		NotifyError("%s: tauST variable not set.", funcName);
+		NotifyError(wxT("%s: tauST variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->tauRFlag) {
-		NotifyError("%s: tauR variable not set.", funcName);
+		NotifyError(wxT("%s: tauR variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->aAROverASTFlag) {
-		NotifyError("%s: aAROverAST variable not set.", funcName);
+		NotifyError(wxT("%s: aAROverAST variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->pIMaxFlag) {
-		NotifyError("%s: pIMax variable not set.", funcName);
+		NotifyError(wxT("%s: pIMax variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->ksFlag) {
-		NotifyError("%s: ks variable not set.", funcName);
+		NotifyError(wxT("%s: ks variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->vs1Flag) {
-		NotifyError("%s: vs1 variable not set.", funcName);
+		NotifyError(wxT("%s: vs1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->vs2Flag) {
-		NotifyError("%s: vs2 variable not set.", funcName);
+		NotifyError(wxT("%s: vs2 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!zhangHCPtr->vs3Flag) {
-		NotifyError("%s: vs3 variable not set.", funcName);
+		NotifyError(wxT("%s: vs3 variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -553,30 +551,33 @@ CheckPars_IHC_Zhang(void)
 BOOLN
 PrintPars_IHC_Zhang(void)
 {
-	static const char	*funcName = "PrintPars_IHC_Zhang";
+	static const WChar	*funcName = wxT("PrintPars_IHC_Zhang");
 
 	if (!CheckPars_IHC_Zhang()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Zhang IHC Synapse Module Parameters:-\n");
-	DPrint("\tSpontaneous rate of fiber, spont = %g (spikes/s),\n", zhangHCPtr->
-	  spont);
-	DPrint("\tSteady-state rate, Ass = %g (spikes/s),\n", zhangHCPtr->aAss);
-	DPrint("\tShort-term time constant, tauST = %g (ms),\n", MILLI(zhangHCPtr->
-	  tauST));
-	DPrint("\tRapid time constant tauR = %g (ms),\n", MILLI(zhangHCPtr->tauR));
-	DPrint("\tResponse ratio, A_R / A_ST = %g,\n", zhangHCPtr->aAROverAST);
-	DPrint("\tPermeability at high sound level, Pi_Max = %g,\n", zhangHCPtr->
-	  pIMax);
-	DPrint("\tSpecies dependend voltage staturation parameter, ks = %g,\n",
+	DPrint(wxT("Zhang IHC Synapse Module Parameters:-\n"));
+	DPrint(wxT("\tSpontaneous rate of fiber, spont = %g (spikes/s),\n"),
+	 zhangHCPtr->spont);
+	DPrint(wxT("\tSteady-state rate, Ass = %g (spikes/s),\n"), zhangHCPtr->
+	  aAss);
+	DPrint(wxT("\tShort-term time constant, tauST = %g (ms),\n"), MILLI(
+	  zhangHCPtr->tauST));
+	DPrint(wxT("\tRapid time constant tauR = %g (ms),\n"), MILLI(zhangHCPtr->
+	  tauR));
+	DPrint(wxT("\tResponse ratio, A_R / A_ST = %g,\n"), zhangHCPtr->aAROverAST);
+	DPrint(wxT("\tPermeability at high sound level, Pi_Max = %g,\n"),
+	  zhangHCPtr->pIMax);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, ks = %g,\n"),
 	  zhangHCPtr->ks);
-	DPrint("\tSpecies dependend voltage staturation parameter, vs1 = %g,\n",
-	  zhangHCPtr->vs1);
-	DPrint("\tSpecies dependend voltage staturation parameter, vs2 = %g,\n",
-	  zhangHCPtr->vs2);
-	DPrint("\tSpecies dependend voltage staturation parameter, vs3 = %g.\n",
-	  zhangHCPtr->vs3);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs1 = %g,"
+	  "\n"), zhangHCPtr->vs1);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs2 = %g,"
+	  "\n"), zhangHCPtr->vs2);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs3 = %g."
+	  "\n"), zhangHCPtr->vs3);
 	return(TRUE);
 
 }
@@ -591,10 +592,10 @@ PrintPars_IHC_Zhang(void)
 BOOLN
 SetParsPointer_IHC_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHC_Zhang";
+	static const WChar	*funcName = wxT("SetParsPointer_IHC_Zhang");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	zhangHCPtr = (ZhangHCPtr) theModule->parsPtr;
@@ -612,14 +613,15 @@ SetParsPointer_IHC_Zhang(ModulePtr theModule)
 BOOLN
 InitModule_IHC_Zhang(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHC_Zhang";
+	static const WChar	*funcName = wxT("InitModule_IHC_Zhang");
 
 	if (!SetParsPointer_IHC_Zhang(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHC_Zhang(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = zhangHCPtr;
@@ -650,10 +652,10 @@ InitModule_IHC_Zhang(ModulePtr theModule)
 BOOLN
 CheckData_IHC_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IHC_Zhang";
+	static const WChar	*funcName = wxT("CheckData_IHC_Zhang");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -823,7 +825,7 @@ RunIHCPPI_IHC_Zhang(TNonLinear* p, const double *in, double *out,
 BOOLN
 InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_IHC_Zhang";
+	static const WChar	*funcName = wxT("InitProcessVariables_IHC_Zhang");
 	int		i, cFIndex;
 	double	kKCF, temp, pst, psl, p2, p1;
 	TSynapsePtr	syn;
@@ -835,14 +837,14 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 		FreeProcessVariables_IHC_Zhang();
 		if ((p->iHCPPI = (TNonLinear *) calloc(data->outSignal->numChannels,
 		  sizeof(TNonLinear))) == NULL) {
-		 	NotifyError("%s: Out of memory for iHCPPI coefficients array.",
+		 	NotifyError(wxT("%s: Out of memory for iHCPPI coefficients array."),
 			  funcName);
 		 	return(FALSE);
 		}
 		if ((p->synapse = (TSynapse *) calloc(data->outSignal->numChannels,
 		  sizeof(TSynapse))) == NULL) {
-		 	NotifyError("%s: Out of memory for synapse coefficients array.",
-			  funcName);
+		 	NotifyError(wxT("%s: Out of memory for synapse coefficients "
+			  "array."), funcName);
 		 	return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
@@ -900,8 +902,6 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IHC_Zhang(void)
 {
-	/* static const char	*funcName = "FreeProcessVariables_IHC_Zhang"; */
-
 	if (zhangHCPtr->iHCPPI) {
 		free(zhangHCPtr->iHCPPI);
 		zhangHCPtr->iHCPPI = NULL;
@@ -932,7 +932,7 @@ FreeProcessVariables_IHC_Zhang(void)
 BOOLN
 RunModel_IHC_Zhang(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_IHC_Zhang";
+	static const WChar	*funcName = wxT("RunModel_IHC_Zhang");
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	TSynapsePtr	syn;
@@ -943,18 +943,19 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 		if (!CheckPars_IHC_Zhang())
 			return(FALSE);
 		if (!CheckData_IHC_Zhang(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Zhang IHC Module process");
+		SetProcessName_EarObject(data, wxT("Zhang IHC Module process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_IHC_Zhang(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

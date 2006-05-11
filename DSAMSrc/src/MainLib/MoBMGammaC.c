@@ -30,6 +30,7 @@
 #include "UtCFList.h"
 #include "UtFilters.h"
 #include "UtGCFilters.h"
+#include "UtString.h"
 #include "MoBMGammaC.h"
 
 /******************************************************************************/
@@ -54,8 +55,6 @@ BMGammaCPtr	bMGammaCPtr = NULL;
 BOOLN
 Free_BasilarM_GammaChirp(void)
 {
-	/* static const char	*funcName = "Free_BasilarM_GammaChirp";  */
-
 	if (bMGammaCPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_BasilarM_GammaChirp();
@@ -85,10 +84,10 @@ InitOpModeList_BasilarM_GammaChirp(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "FEED_BACK",		BASILARM_GAMMACHIRP_OPMODE_FEEDBACK },
-			{ "FEED_FORWARD",	BASILARM_GAMMACHIRP_OPMODE_FEEDFORWARD },
-			{ "NO_CONTROL",		BASILARM_GAMMACHIRP_OPMODE_NOCONTROL },
-			{ "",	BASILARM_GAMMACHIRP_OPMODE_NULL },
+			{ wxT("FEED_BACK"),		BASILARM_GAMMACHIRP_OPMODE_FEEDBACK },
+			{ wxT("FEED_FORWARD"),	BASILARM_GAMMACHIRP_OPMODE_FEEDFORWARD },
+			{ wxT("NO_CONTROL"),	BASILARM_GAMMACHIRP_OPMODE_NOCONTROL },
+			{ wxT(""),				BASILARM_GAMMACHIRP_OPMODE_NULL },
 		};
 	bMGammaCPtr->opModeList = modeList;
 	return(TRUE);
@@ -110,18 +109,19 @@ InitOpModeList_BasilarM_GammaChirp(void)
 BOOLN
 Init_BasilarM_GammaChirp(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("Init_BasilarM_GammaChirp");
 
 	if (parSpec == GLOBAL) {
 		if (bMGammaCPtr != NULL)
 			Free_BasilarM_GammaChirp();
 		if ((bMGammaCPtr = (BMGammaCPtr) malloc(sizeof(BMGammaC))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bMGammaCPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -148,7 +148,7 @@ Init_BasilarM_GammaChirp(ParameterSpecifier parSpec)
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
 	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
 	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 
@@ -157,7 +157,7 @@ Init_BasilarM_GammaChirp(ParameterSpecifier parSpec)
 	  DiagModeList_NSpecLists(0), bMGammaCPtr->diagnosticString)) == NULL)	
 		return(FALSE);
 	if (!SetUniParList_BasilarM_GammaChirp()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_GammaChirp();
 		return(FALSE);
 	}
@@ -186,57 +186,58 @@ Init_BasilarM_GammaChirp(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_BasilarM_GammaChirp(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_GammaChirp";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_GammaChirp");
 	UniParPtr	pars;
 
 	if ((bMGammaCPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BASILARM_GAMMACHIRP_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMGammaCPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_DIAGNOSTICMODE], "DIAG_MODE",
-	  "Diagnostic mode ('off', 'screen' or <file name>).",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_DIAGNOSTICMODE], wxT(
+	  "DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
 	  UNIPAR_NAME_SPEC,
 	  &bMGammaCPtr->diagnosticMode, bMGammaCPtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_OPMODE], "OP_MODE",
-	  "Operation mode ('FEED_BACK', 'FEED_FORWARD' or 'NO_CONTROL').",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_OPMODE], wxT("OP_MODE"),
+	  wxT("Operation mode ('FEED_BACK', 'FEED_FORWARD' or 'NO_CONTROL')."),
 	  UNIPAR_NAME_SPEC,
 	  &bMGammaCPtr->opMode, bMGammaCPtr->opModeList,
 	  (void * (*)) SetOpMode_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CASCADE], "CASCADE",
-	  "Filter cascade.",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CASCADE], wxT("CASCADE"),
+	  wxT("Filter cascade."),
 	  UNIPAR_INT,
 	  &bMGammaCPtr->cascade, NULL,
 	  (void * (*)) SetCascade_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_BCOEFF], "B_COEFF",
-	  "Gamma distribution envelope, 'b' coefficient (units)",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_BCOEFF], wxT("B_COEFF"),
+	  wxT("Gamma distribution envelope, 'b' coefficient (units)"),
 	  UNIPAR_REAL,
 	  &bMGammaCPtr->bCoeff, NULL,
 	  (void * (*)) SetBCoeff_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CCOEFF0], "C0_COEFF",
-	  "'c0' coefficient.",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CCOEFF0], wxT("C0_COEFF"),
+	  wxT("'c0' coefficient."),
 	  UNIPAR_REAL,
 	  &bMGammaCPtr->cCoeff0, NULL,
 	  (void * (*)) SetCCoeff0_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CCOEFF1], "C1_COEFF",
-	  "'c1' coefficient.",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CCOEFF1], wxT("C1_COEFF"),
+	  wxT("'c1' coefficient."),
 	  UNIPAR_REAL,
 	  &bMGammaCPtr->cCoeff1, NULL,
 	  (void * (*)) SetCCoeff1_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CLOWERLIM], "LOWER_C_LIM",
-	  "Lower 'c' coefficient limit.",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CLOWERLIM], wxT("LOWER_C_LIM"),
+	  wxT("Lower 'c' coefficient limit."),
 	  UNIPAR_REAL,
 	  &bMGammaCPtr->cLowerLim, NULL,
 	  (void * (*)) SetCLowerLim_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CUPPERLIM], "UPPER_C_LIM",
-	  "Upper 'c' coefficient limit.",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_CUPPERLIM], wxT("UPPER_C_LIM"),
+	  wxT("Upper 'c' coefficient limit."),
 	  UNIPAR_REAL,
 	  &bMGammaCPtr->cUpperLim, NULL,
 	  (void * (*)) SetCUpperLim_BasilarM_GammaChirp);
-	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_THECFS], "CFLIST",
-	  "Centre frequency specification",
+	SetPar_UniParMgr(&pars[BASILARM_GAMMACHIRP_THECFS], wxT("CFLIST"),
+	  wxT("Centre frequency specification"),
 	  UNIPAR_CFLIST,
 	  &bMGammaCPtr->theCFs, NULL,
 	  (void * (*)) SetCFList_BasilarM_GammaChirp);
@@ -254,15 +255,15 @@ SetUniParList_BasilarM_GammaChirp(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_GammaChirp(void)
 {
-	static const char	*funcName = "GetUniParListPtr_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("GetUniParListPtr_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMGammaCPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaCPtr->parList);
@@ -277,11 +278,11 @@ GetUniParListPtr_BasilarM_GammaChirp(void)
  */
 
 BOOLN
-SetPars_BasilarM_GammaChirp(char * diagnosticMode, char * opMode,
+SetPars_BasilarM_GammaChirp(WChar * diagnosticMode, WChar * opMode,
   int cascade, double bCoeff, double cCoeff0, double cCoeff1, 
   double cLowerLim, double cUpperLim, CFListPtr theCFs)
 {
-	static const char	*funcName = "SetPars_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetPars_BasilarM_GammaChirp");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -304,7 +305,7 @@ SetPars_BasilarM_GammaChirp(char * diagnosticMode, char * opMode,
 	if (!SetCFList_BasilarM_GammaChirp(theCFs))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -318,12 +319,13 @@ SetPars_BasilarM_GammaChirp(char * diagnosticMode, char * opMode,
  */
 
 BOOLN
-SetDiagnosticMode_BasilarM_GammaChirp(char * theDiagnosticMode)
+SetDiagnosticMode_BasilarM_GammaChirp(WChar * theDiagnosticMode)
 {
-	static const char	*funcName = "SetDiagnosticMode_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT(
+	  "SetDiagnosticMode_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->diagnosticModeFlag = TRUE;
@@ -342,18 +344,18 @@ SetDiagnosticMode_BasilarM_GammaChirp(char * theDiagnosticMode)
  */
 
 BOOLN
-SetOpMode_BasilarM_GammaChirp(char * theOpMode)
+SetOpMode_BasilarM_GammaChirp(WChar * theOpMode)
 {
-	static const char	*funcName = "SetOpMode_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetOpMode_BasilarM_GammaChirp");
 	int		specifier;
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theOpMode,
 		bMGammaCPtr->opModeList)) == BASILARM_GAMMACHIRP_OPMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theOpMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOpMode);
 		return(FALSE);
 	}
 	bMGammaCPtr->opModeFlag = TRUE;
@@ -373,10 +375,10 @@ SetOpMode_BasilarM_GammaChirp(char * theOpMode)
 BOOLN
 SetCascade_BasilarM_GammaChirp(int theCascade)
 {
-	static const char	*funcName = "SetCascade_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCascade_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->cascadeFlag = TRUE;
@@ -397,10 +399,10 @@ SetCascade_BasilarM_GammaChirp(int theCascade)
 BOOLN
 SetBCoeff_BasilarM_GammaChirp(double theBCoeff)
 {
-	static const char	*funcName = "SetBCoeff_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetBCoeff_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->bCoeffFlag = TRUE;
@@ -420,10 +422,10 @@ SetBCoeff_BasilarM_GammaChirp(double theBCoeff)
 BOOLN
 SetCCoeff0_BasilarM_GammaChirp(double theCCoeff0)
 {
-	static const char	*funcName = "SetCCoeff0_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCCoeff0_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->cCoeff0Flag = TRUE;
@@ -443,10 +445,10 @@ SetCCoeff0_BasilarM_GammaChirp(double theCCoeff0)
 BOOLN
 SetCCoeff1_BasilarM_GammaChirp(double theCCoeff1)
 {
-	static const char	*funcName = "SetCCoeff1_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCCoeff1_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->cCoeff1Flag = TRUE;
@@ -466,10 +468,10 @@ SetCCoeff1_BasilarM_GammaChirp(double theCCoeff1)
 BOOLN
 SetCLowerLim_BasilarM_GammaChirp(double theCLowerLim)
 {
-	static const char	*funcName = "SetCLowerLim_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCLowerLim_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->cLowerLimFlag = TRUE;
@@ -489,10 +491,10 @@ SetCLowerLim_BasilarM_GammaChirp(double theCLowerLim)
 BOOLN
 SetCUpperLim_BasilarM_GammaChirp(double theCUpperLim)
 {
-	static const char	*funcName = "SetCUpperLim_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCUpperLim_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->cUpperLimFlag = TRUE;
@@ -511,14 +513,14 @@ SetCUpperLim_BasilarM_GammaChirp(double theCUpperLim)
 BOOLN
 SetCFList_BasilarM_GammaChirp(CFListPtr theCFList)
 {
-	static const char	*funcName = "SetCFList_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetCFList_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not correctly set.",
+		NotifyError(wxT("%s: Centre frequency structure not correctly set."),
 		  funcName);
 		return(FALSE);
 	}
@@ -540,17 +542,18 @@ SetCFList_BasilarM_GammaChirp(CFListPtr theCFList)
  */
 
 BOOLN
-SetBandWidths_BasilarM_GammaChirp(char *theBandwidthMode, double *theBandwidths)
+SetBandWidths_BasilarM_GammaChirp(WChar *theBandwidthMode, double
+  *theBandwidths)
 {
-	static const char	*funcName = "SetBandWidths_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetBandWidths_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!SetBandwidths_CFList(bMGammaCPtr->theCFs, theBandwidthMode,
 	  theBandwidths)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
+		NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr->updateProcessVariablesFlag = TRUE;
@@ -571,49 +574,49 @@ SetBandWidths_BasilarM_GammaChirp(char *theBandwidthMode, double *theBandwidths)
 BOOLN
 CheckPars_BasilarM_GammaChirp(void)
 {
-	static const char	*funcName = "CheckPars_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("CheckPars_BasilarM_GammaChirp");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bMGammaCPtr->diagnosticModeFlag) {
-		NotifyError("%s: diagnosticMode variable not set.", funcName);
+		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->opModeFlag) {
-		NotifyError("%s: opMode variable not set.", funcName);
+		NotifyError(wxT("%s: opMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->cascadeFlag) {
-		NotifyError("%s: cascade variable not set.", funcName);
+		NotifyError(wxT("%s: cascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->bCoeffFlag) {
-		NotifyError("%s: bCoeff variable not set.", funcName);
+		NotifyError(wxT("%s: bCoeff variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->cCoeff0Flag) {
-		NotifyError("%s: cCoeff0 variable not set.", funcName);
+		NotifyError(wxT("%s: cCoeff0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->cCoeff1Flag) {
-		NotifyError("%s: cCoeff1 variable not set.", funcName);
+		NotifyError(wxT("%s: cCoeff1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->cLowerLimFlag) {
-		NotifyError("%s: cLowerLim variable not set.", funcName);
+		NotifyError(wxT("%s: cLowerLim variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMGammaCPtr->cUpperLimFlag) {
-		NotifyError("%s: cUpperLim variable not set.", funcName);
+		NotifyError(wxT("%s: cUpperLim variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMGammaCPtr->theCFs)) {
-		NotifyError("%s: Centre frequency list parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -629,15 +632,15 @@ CheckPars_BasilarM_GammaChirp(void)
 CFListPtr
 GetCFListPtr_BasilarM_GammaChirp(void)
 {
-	static const char	*funcName = "GetCFListPtr_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("GetCFListPtr_BasilarM_GammaChirp");
 
 	if (bMGammaCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMGammaCPtr->theCFs == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly "
+		  "set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaCPtr->theCFs);
@@ -654,22 +657,23 @@ GetCFListPtr_BasilarM_GammaChirp(void)
 BOOLN
 PrintPars_BasilarM_GammaChirp(void)
 {
-	static const char	*funcName = "PrintPars_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("PrintPars_BasilarM_GammaChirp");
 
 	if (!CheckPars_BasilarM_GammaChirp()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("GammaChirp BM Filter Module Parameters:-\n");
-	DPrint("\tDiagnostic mode: %s,", bMGammaCPtr->diagnosticModeList[
+	DPrint(wxT("GammaChirp BM Filter Module Parameters:-\n"));
+	DPrint(wxT("\tDiagnostic mode: %s,"), bMGammaCPtr->diagnosticModeList[
 	  bMGammaCPtr->diagnosticMode].name);
-	DPrint("\tOperation mode: %s \n", bMGammaCPtr->opModeList[
+	DPrint(wxT("\tOperation mode: %s \n"), bMGammaCPtr->opModeList[
 	  bMGammaCPtr->opMode].name);
-	DPrint("\tFilter cascade = %d,", bMGammaCPtr->cascade);
-	DPrint("\tCoefficient, b = %g,\n", bMGammaCPtr->bCoeff);
-	DPrint("\tCoefficient, c0 = %g,", bMGammaCPtr->cCoeff0);
-	DPrint("\tCoefficient, c1 = %g\n", bMGammaCPtr->cCoeff1);
-	DPrint("\tLower/upper c coefficient limits = %g / %g\n",
+	DPrint(wxT("\tFilter cascade = %d,"), bMGammaCPtr->cascade);
+	DPrint(wxT("\tCoefficient, b = %g,\n"), bMGammaCPtr->bCoeff);
+	DPrint(wxT("\tCoefficient, c0 = %g,"), bMGammaCPtr->cCoeff0);
+	DPrint(wxT("\tCoefficient, c1 = %g\n"), bMGammaCPtr->cCoeff1);
+	DPrint(wxT("\tLower/upper c coefficient limits = %g / %g\n"),
 	  bMGammaCPtr->cLowerLim, bMGammaCPtr->cUpperLim);
 	PrintPars_CFList(bMGammaCPtr->theCFs);
 	return(TRUE);
@@ -683,38 +687,39 @@ PrintPars_BasilarM_GammaChirp(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_BasilarM_GammaChirp(char *fileName)
+ReadPars_BasilarM_GammaChirp(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("ReadPars_BasilarM_GammaChirp");
 	BOOLN	ok = TRUE;
-	char	*filePath, diagnosticMode[MAXLINE], opMode[MAXLINE];
+	WChar	*filePath, diagnosticMode[MAXLINE], opMode[MAXLINE];
 	int		cascade;
 	double	bCoeff, cCoeff0, cCoeff1, cLowerLim, cUpperLim;
 	CFListPtr	theCFs;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
-	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", opMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), opMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &cascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &cascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &bCoeff))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &bCoeff))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &cCoeff0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cCoeff0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &cCoeff1))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cCoeff1))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &cLowerLim))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cLowerLim))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &cUpperLim))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cUpperLim))
 		ok = FALSE;
 	if ((theCFs = ReadPars_CFList(fp)) == NULL)
 		 ok = FALSE;
@@ -723,13 +728,13 @@ ReadPars_BasilarM_GammaChirp(char *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_GammaChirp(diagnosticMode, opMode, cascade, 
 	  bCoeff, cCoeff0, cCoeff1, cLowerLim, cUpperLim, theCFs)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -746,10 +751,10 @@ ReadPars_BasilarM_GammaChirp(char *fileName)
 BOOLN
 SetParsPointer_BasilarM_GammaChirp(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("SetParsPointer_BasilarM_GammaChirp");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bMGammaCPtr = (BMGammaCPtr) theModule->parsPtr;
@@ -766,14 +771,14 @@ SetParsPointer_BasilarM_GammaChirp(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_GammaChirp(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_GammaChirp");
 
 	if (!SetParsPointer_BasilarM_GammaChirp(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_GammaChirp(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bMGammaCPtr;
@@ -802,10 +807,10 @@ InitModule_BasilarM_GammaChirp(ModulePtr theModule)
 BOOLN
 CheckData_BasilarM_GammaChirp(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("CheckData_BasilarM_GammaChirp");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -883,7 +888,8 @@ FreeProcessVariables_BasilarM_GammaChirp(void)
 BOOLN
 InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_BasilarM_GammaChirp";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_BasilarM_GammaChirp");
 	int	nch, nsmpl, cFIndex, stateVectorLength;
 	double	sampleRate, *ptr;
 	BMGammaCPtr	p = bMGammaCPtr;
@@ -896,38 +902,38 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 		if (p->cascade == 4) {
 			if ((p->coefficientsERBGT = (ERBGammaToneCoeffsPtr *) calloc(
 			  p->numChannels, sizeof(ERBGammaToneCoeffsPtr))) == NULL) {
-				NotifyError("%s: Out of memory.", funcName);
+				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
 		} else {
 			if ((p->coefficientsGT = (GammaToneCoeffsPtr *) calloc(
 			  p->numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
-				NotifyError("%s: Out of memory.", funcName);
+				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
 		}
 				/* Memory allocate of AsymCmpCoeffsPtr */
 		if ((p->coefficientsAC = (AsymCmpCoeffsPtr *) calloc(p->numChannels,
 		  sizeof(AsymCmpCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 				/* Memory allocate of OnePoleCoeffsPtr */
 		if ((p->coefficientsLI = (OnePoleCoeffsPtr *) calloc(p->numChannels,
 		  sizeof(OnePoleCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 
 		if ((p->winPsEst = (double *) calloc(p->numChannels * p->numChannels,
 		  sizeof(double))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 
 		if ((p->cntlGammaC = (CntlGammaCPtr *) calloc(p->numChannels,
 		  sizeof(CntlGammaCPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 
@@ -950,8 +956,8 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 				if ((p->coefficientsGT[nch] = InitGammaToneCoeffs_Filters(
 				  p->theCFs->frequency[cFIndex], p->theCFs->bandwidth[cFIndex],
 				  p->cascade, sampleRate)) == NULL) {
-					NotifyError("%s: Could not initialise coefficients for "
-					  "channel %d.", funcName, nch);
+					NotifyError(wxT("%s: Could not initialise coefficients for "
+					  "channel %d."), funcName, nch);
 					return(FALSE);
 				}
 			}
@@ -966,7 +972,7 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 		  p->numChannels);
 
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
 		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
 		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
@@ -1009,7 +1015,7 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 			p->cntlGammaC[nch]->aEst = 0.0;
 			p->cntlGammaC[nch]->psEst = 0.0;
 			if (p->opMode == BASILARM_GAMMACHIRP_OPMODE_NOCONTROL) 	
-					/* opMode=1 -> "NC" */
+					/* opMode=1 -> wxT("NC") */
 				p->cntlGammaC[nch]->cEst = p->cCoeff0;
 			else
 				p->cntlGammaC[nch]->cEst = 0.0;
@@ -1037,7 +1043,7 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 BOOLN
 RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_BasilarM_GammaChirp";
+	static const WChar	*funcName = wxT("RunModel_BasilarM_GammaChirp");
 	uShort	totalChannels;
 	int		nch, cEstCnt, cFIndex;
 	double	sampleRate;
@@ -1047,24 +1053,24 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 		if (!CheckPars_BasilarM_GammaChirp())
 			return(FALSE);
 		if (!CheckData_BasilarM_GammaChirp(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "GammaChirp basilar membrane filtering "
-		  "(Slaney GT)");
+		SetProcessName_EarObject(data, wxT("GammaChirp basilar membrane "
+		  "filtering (Slaney GT)"));
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		totalChannels = bMGammaCPtr->theCFs->numChannels * data->inSignal[
 		  0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Cannot initialise output channel.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_BasilarM_GammaChirp(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1075,7 +1081,7 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 			bMGammaCPtr->cntlGammaC[nch]->aEst = 0.0;
 			bMGammaCPtr->cntlGammaC[nch]->psEst = 0.0;
 			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_NOCONTROL)
-				 			/* opMode=1 -> "NC" */
+				 			/* opMode=1 -> wxT("NC") */
 				bMGammaCPtr->cntlGammaC[nch]->cEst = bMGammaCPtr->cCoeff0;
 			else
 				bMGammaCPtr->cntlGammaC[nch]->cEst = 0.0;
@@ -1097,13 +1103,13 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 			cEstCnt++;
 
 	if ((bMGammaCPtr->opMode != BASILARM_GAMMACHIRP_OPMODE_NOCONTROL) || 
-				(cEstCnt != 0)) {	/* opMode=2 -> "NC" */
+				(cEstCnt != 0)) {	/* opMode=2 -> wxT("NC") */
 
 		sampleRate = 1.0 / data->inSignal[0]->dt;
 		for (nsmpl = 0; nsmpl < data->outSignal->length; nsmpl++) {
 
 			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_FEEDFORWARD) {
-						/* opMode=1 -> "FF" */
+						/* opMode=1 -> wxT("FF") */
 				CntlGammaChirp_GCFilters(data->outSignal, nsmpl, 
 					bMGammaCPtr->cntlGammaC, bMGammaCPtr->cCoeff0,
 					bMGammaCPtr->cCoeff1, bMGammaCPtr->cLowerLim,
@@ -1126,7 +1132,7 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 			  bMGammaCPtr->coefficientsAC);
 
 			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_FEEDBACK) {
-						/* opMode=0 -> "FB" */
+						/* opMode=0 -> wxT("FB") */
 				CntlGammaChirp_GCFilters(data->outSignal, nsmpl, 
 					bMGammaCPtr->cntlGammaC, bMGammaCPtr->cCoeff0,
 					bMGammaCPtr->cCoeff1, bMGammaCPtr->cLowerLim,

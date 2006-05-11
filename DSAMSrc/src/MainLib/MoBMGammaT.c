@@ -30,6 +30,7 @@
 #include "UtBandwidth.h"
 #include "UtCFList.h"
 #include "UtFilters.h"
+#include "UtString.h"
 #include "MoBMGammaT.h"
 
 /******************************************************************************/
@@ -82,18 +83,18 @@ Free_BasilarM_GammaT(void)
 BOOLN
 Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_BasilarM_GammaT";
+	static const WChar *funcName = wxT("Init_BasilarM_GammaT");
 
 	if (parSpec == GLOBAL) {
 		if (bMGammaTPtr != NULL)
 			Free_BasilarM_GammaT();
 		if ((bMGammaTPtr = (BMGammaTPtr) malloc(sizeof(BMGammaT))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bMGammaTPtr == NULL) { 
-			NotifyError("%s: 'local' pointer not set.", funcName);
+			NotifyError(wxT("%s: 'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -105,12 +106,12 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
 	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
 	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 
 	if (!SetUniParList_BasilarM_GammaT()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_GammaT();
 		return(FALSE);
 	}
@@ -130,22 +131,22 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_BasilarM_GammaT(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_GammaT";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_GammaT");
 	UniParPtr	pars;
 
 	if ((bMGammaTPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BM_GAMMT_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMGammaTPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BM_GAMMT_CASCADE], "CASCADE",
-	  "Filter cascade.",
+	SetPar_UniParMgr(&pars[BM_GAMMT_CASCADE], wxT("CASCADE"),
+	  wxT("Filter cascade."),
 	  UNIPAR_INT,
 	  &bMGammaTPtr->cascade, NULL,
 	  (void * (*)) SetCascade_BasilarM_GammaT);
-	SetPar_UniParMgr(&pars[BM_GAMMAT_THE_CFS], "CFLIST",
-	  "Centre frequency specification",
+	SetPar_UniParMgr(&pars[BM_GAMMAT_THE_CFS], wxT("CFLIST"),
+	  wxT("Centre frequency specification"),
 	  UNIPAR_CFLIST,
 	  &bMGammaTPtr->theCFs, NULL,
 	  (void * (*)) SetCFList_BasilarM_GammaT);
@@ -162,15 +163,15 @@ SetUniParList_BasilarM_GammaT(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_GammaT(void)
 {
-	static const char *funcName = "GetUniParListPtr_BasilarM_GammaT";
+	static const WChar *funcName = wxT("GetUniParListPtr_BasilarM_GammaT");
 
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMGammaTPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaTPtr->parList);
@@ -188,21 +189,21 @@ GetUniParListPtr_BasilarM_GammaT(void)
 BOOLN
 CheckPars_BasilarM_GammaT(void)
 {
-	static const char *funcName = "CheckPars_BasilarM_GammaT";
+	static const WChar *funcName = wxT("CheckPars_BasilarM_GammaT");
 	BOOLN ok;
 	
 	ok = TRUE;
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bMGammaTPtr->cascadeFlag) {
-		NotifyError("%s: Filter cascade not set.", funcName);
+		NotifyError(wxT("%s: Filter cascade not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMGammaTPtr->theCFs)) {
-		NotifyError("%s: Centre frequency list parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -220,10 +221,10 @@ CheckPars_BasilarM_GammaT(void)
 BOOLN
 SetCascade_BasilarM_GammaT(int theCascade)
 {
-	static const char	 *funcName = "SetCascade_BasilarM_GammaT";
+	static const WChar	 *funcName = wxT("SetCascade_BasilarM_GammaT");
 
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bMGammaTPtr->cascadeFlag = TRUE;
@@ -243,14 +244,14 @@ SetCascade_BasilarM_GammaT(int theCascade)
 BOOLN
 SetCFList_BasilarM_GammaT(CFListPtr theCFList)
 {
-	static const char *funcName = "SetCFList_BasilarM_GammaT";
+	static const WChar *funcName = wxT("SetCFList_BasilarM_GammaT");
 
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not correctly set.",
+		NotifyError(wxT("%s: Centre frequency structure not correctly set."),
 		  funcName);
 		return(FALSE);
 	}
@@ -272,17 +273,17 @@ SetCFList_BasilarM_GammaT(CFListPtr theCFList)
  */
 
 BOOLN
-SetBandwidths_BasilarM_GammaT(char *theBandwidthMode, double *theBandwidths)
+SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, double *theBandwidths)
 {
-	static const char *funcName = "SetBandwidths_BasilarM_GammaT";
+	static const WChar *funcName = wxT("SetBandwidths_BasilarM_GammaT");
 
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!SetBandwidths_CFList(bMGammaTPtr->theCFs, theBandwidthMode,
 	  theBandwidths)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
+		NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
@@ -302,7 +303,7 @@ SetBandwidths_BasilarM_GammaT(char *theBandwidthMode, double *theBandwidths)
 BOOLN
 SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
 {
-	static const char *funcName = "SetPars_BasilarM_GammaT";
+	static const WChar *funcName = wxT("SetPars_BasilarM_GammaT");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -311,7 +312,7 @@ SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
 	if (!SetCFList_BasilarM_GammaT(theCFs))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -326,15 +327,15 @@ SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
 CFListPtr
 GetCFListPtr_BasilarM_GammaT(void)
 {
-	static const char *funcName = "GetCFListPtr_BasilarM_GammaT";
+	static const WChar *funcName = wxT("GetCFListPtr_BasilarM_GammaT");
 
 	if (bMGammaTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMGammaTPtr->theCFs == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly set. "
+		  "NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaTPtr->theCFs);
@@ -350,16 +351,16 @@ GetCFListPtr_BasilarM_GammaT(void)
 BOOLN
 PrintPars_BasilarM_GammaT(void)
 {
-	static const char *funcName = "PrintPars_BasilarM_GammaT";
+	static const WChar *funcName = wxT("PrintPars_BasilarM_GammaT");
 	
 	if (!CheckPars_BasilarM_GammaT()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Gamma Tone Basilar Membrane Filter "\
-	  "Module Parameters:-\n");
+	DPrint(wxT("Gamma Tone Basilar Membrane Filter  Module Parameters:-\n"));
 	PrintPars_CFList(bMGammaTPtr->theCFs);
-	DPrint("\tFilter cascade = %d.\n", bMGammaTPtr->cascade);
+	DPrint(wxT("\tFilter cascade = %d.\n"), bMGammaTPtr->cascade);
 	return(TRUE);
 
 }
@@ -372,24 +373,25 @@ PrintPars_BasilarM_GammaT(void)
  */
  
 BOOLN
-ReadPars_BasilarM_GammaT(char *fileName)
+ReadPars_BasilarM_GammaT(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_BasilarM_GammaT";
+	static const WChar *funcName = wxT("ReadPars_BasilarM_GammaT");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		filterCascade;
     FILE    *fp;
     CFListPtr	theCFs;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &filterCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &filterCascade))
 		ok = FALSE;
 	if ((theCFs = ReadPars_CFList(fp)) == NULL)
 		ok = FALSE;
@@ -398,7 +400,7 @@ ReadPars_BasilarM_GammaT(char *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!SetPars_BasilarM_GammaT(filterCascade, theCFs)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(ok);
@@ -415,10 +417,10 @@ ReadPars_BasilarM_GammaT(char *fileName)
 BOOLN
 SetParsPointer_BasilarM_GammaT(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_BasilarM_GammaT";
+	static const WChar	*funcName = wxT("SetParsPointer_BasilarM_GammaT");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bMGammaTPtr = (BMGammaTPtr) theModule->parsPtr;
@@ -435,14 +437,15 @@ SetParsPointer_BasilarM_GammaT(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_GammaT(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_GammaT";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_GammaT");
 
 	if (!SetParsPointer_BasilarM_GammaT(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_GammaT(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bMGammaTPtr;
@@ -489,7 +492,7 @@ FreeProcessVariables_BasilarM_GammaT(void)
 BOOLN
 InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_BasilarM_GammaT";
+	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_GammaT");
 	int		i, j, cFIndex, stateVectorLength;
 	double	sampleRate, *ptr;
 	BMGammaTPtr	p = bMGammaTPtr;
@@ -499,7 +502,7 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 		FreeProcessVariables_BasilarM_GammaT();
 		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(data->outSignal->
 		  numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		sampleRate = 1.0 / data->inSignal[0]->dt;
@@ -509,13 +512,13 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 			if ((p->coefficients[i] = InitGammaToneCoeffs_Filters(p->theCFs->
 			  frequency[cFIndex], p->theCFs->bandwidth[cFIndex], p->cascade,
 			  sampleRate)) == NULL) {
-				NotifyError("%s: Could not initialise coefficients for channel "
-				  "%d.", funcName, i);
+				NotifyError(wxT("%s: Could not initialise coefficients for "
+				  "channel %d."), funcName, i);
 				return(FALSE);
 			}
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
 		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
 		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
@@ -548,12 +551,12 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 BOOLN
 RunModel_BasilarM_GammaT(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_BasilarM_GammaT";
+	static const WChar *funcName = wxT("RunModel_BasilarM_GammaT");
 	uShort	totalChannels;
 				
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_BasilarM_GammaT())
@@ -561,22 +564,22 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 
 		/* Initialise Variables and coefficients */
 
-		SetProcessName_EarObject(data, "Gamma tone basilar membrane filtering");
+		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane filtering"));
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		totalChannels = bMGammaTPtr->theCFs->numChannels *
 		  data->inSignal[0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Cannot initialise output channel.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_BasilarM_GammaT(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

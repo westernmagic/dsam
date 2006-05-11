@@ -91,7 +91,7 @@ BOOLN	Init_PureTone_MultiPulse(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_MultiPulse(void);
 
-BOOLN	ReadPars_PureTone_MultiPulse(char *fileName);
+BOOLN	ReadPars_PureTone_MultiPulse(WChar *fileName);
 
 BOOLN	SetBeginPeriodDuration_PureTone_MultiPulse(
 		  double theBeginPeriodDuration);

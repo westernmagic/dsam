@@ -93,19 +93,19 @@ BOOLN	InitProcessVariables_Filter_LowPass(EarObjectPtr data);
 
 BOOLN	PrintPars_Filter_LowPass(void);
 
-BOOLN	ReadPars_Filter_LowPass(char *fileName);
+BOOLN	ReadPars_Filter_LowPass(WChar *fileName);
 
 BOOLN	RunProcess_Filter_LowPass(EarObjectPtr data);
 
 BOOLN	SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency);
 
-BOOLN	SetMode_Filter_LowPass(char *theMode);
+BOOLN	SetMode_Filter_LowPass(WChar *theMode);
 
 BOOLN	InitModule_Filter_LowPass(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Filter_LowPass(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_LowPass(char *mode, double theLowerCutOffFreq,
+BOOLN	SetPars_Filter_LowPass(WChar *mode, double theLowerCutOffFreq,
 		  double theSignalMultiplier);
  
 BOOLN	SetSignalMultiplier_Filter_LowPass(double theUpperCutOffFreq);

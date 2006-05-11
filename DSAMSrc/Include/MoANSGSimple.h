@@ -58,21 +58,6 @@ typedef struct {
 
 } SimpleSG, *SimpleSGPtr;
 
-typedef struct {
-
-	BOOLN	(* CheckPars)(void);
-	BOOLN	(* Free)(void);
-	BOOLN	(* Init)(ParameterSpecifier parSpec);
-	BOOLN	(* PrintPars)(void);
-	BOOLN	(* ReadPars)(char *fileName);
-	BOOLN	(* RunProcess)(EarObjectPtr data);
-	BOOLN	(* SetRanSeed)(long theRanSeed);
-	BOOLN	(* SetPulseDuration)(double thePulseDuration);
-	BOOLN	(* SetPulseMagnitude)(double thePulseMagnitude);
-	BOOLN	(* SetRefractoryPeriod)(double theRefractoryPeriod);
-
-} SpikeGenFunc, *SpikeGenFuncPtr;
-
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -95,8 +80,6 @@ BOOLN	CheckPars_ANSpikeGen_Simple(void);
 
 BOOLN	Init_ANSpikeGen_Simple(ParameterSpecifier parSpec);
 
-SpikeGenFuncPtr	InitFuncPtr_ANSpikeGen_Simple(void);
-
 BOOLN	Free_ANSpikeGen_Simple(void);
 
 void	FreeProcessVariables_ANSpikeGen_Simple(void);
@@ -107,7 +90,7 @@ BOOLN	InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data);
 
 BOOLN	PrintPars_ANSpikeGen_Simple(void);
 
-BOOLN	ReadPars_ANSpikeGen_Simple(char *fileName);
+BOOLN	ReadPars_ANSpikeGen_Simple(WChar *fileName);
 
 void	ResetProcess_ANSpikeGen_Simple(EarObjectPtr data);
 

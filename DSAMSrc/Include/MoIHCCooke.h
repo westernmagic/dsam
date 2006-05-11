@@ -96,7 +96,7 @@ BOOLN	InitProcessVariables_IHC_Cooke91(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Cooke91(void);
 
-BOOLN	ReadPars_IHC_Cooke91(char *fileName);
+BOOLN	ReadPars_IHC_Cooke91(WChar *fileName);
 
 BOOLN	RunModel_IHC_Cooke91(EarObjectPtr data);
 

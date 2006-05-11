@@ -603,7 +603,7 @@ SetPosition_UPortableIO(FILE *fp, int32 offset, int whence)
 		  uPortableIOPtr->length) {
 			fprintf(stderr, "%s: Attempt to read past the end of memory.\n",
 			  funcName);
-			fprintf(stderr, "%s: offset = %ld\n", funcName, offset);
+			fprintf(stderr, "%s: offset = %d\n", funcName, offset);
 			fprintf(stderr, "%s: difference = %ld\n", funcName,
 			  uPortableIOPtr->memPtr +
 			  offset - uPortableIOPtr->memStart + uPortableIOPtr->length);

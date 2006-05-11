@@ -88,16 +88,16 @@ class SDICommand: public wxCommand
 
   public:
 	// Multi-purpose constructor for creating, deleting shapes
-	SDICommand(char *name, int cmd, SDIDocument *doc, wxClassInfo *shapeInfo =
-	  NULL, int theProcessType = -1, double x = 0.0, double y = 0.0,
-	  bool sel = FALSE, wxShape *theShape = NULL, wxShape *fs = NULL,
+	SDICommand(const wxString& name, int cmd, SDIDocument *doc, wxClassInfo 
+	  *shapeInfo = NULL, int theProcessType = -1, double x = 0.0, double y =
+	  0.0, bool sel = FALSE, wxShape *theShape = NULL, wxShape *fs = NULL,
 	  wxShape *ts = NULL);
 
 	// Property-changing command constructors
-	SDICommand(char *name, int cmd, SDIDocument *ddoc,
+	SDICommand(const wxString& name, int cmd, SDIDocument *ddoc,
 	  wxBrush *backgroundColour, wxShape *theShape);
-	SDICommand(char *name, int cmd, SDIDocument *ddoc, const wxString& lab,
-	  wxShape *theShape);
+	SDICommand(const wxString& name, int cmd, SDIDocument *ddoc, const 
+	  wxString& lab, wxShape *theShape);
 
 	~SDICommand(void);
 

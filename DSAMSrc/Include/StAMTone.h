@@ -82,7 +82,7 @@ BOOLN	Init_PureTone_AM(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_AM(void);
 
-BOOLN	ReadPars_PureTone_AM(char *fileName);
+BOOLN	ReadPars_PureTone_AM(WChar *fileName);
 
 BOOLN	SetFrequency_PureTone_AM(double theFrequency);
 

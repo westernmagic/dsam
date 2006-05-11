@@ -95,17 +95,17 @@ BOOLN	InitModeList_Analysis_FindBin(void);
 
 BOOLN	PrintPars_Analysis_FindBin(void);
 
-BOOLN	ReadPars_Analysis_FindBin(char *fileName);
+BOOLN	ReadPars_Analysis_FindBin(WChar *fileName);
 
 BOOLN	SetBinWidth_Analysis_FindBin(double theBinWidth);
 
-BOOLN	SetMode_Analysis_FindBin(char *theMode);
+BOOLN	SetMode_Analysis_FindBin(WChar *theMode);
 
 BOOLN	InitModule_Analysis_FindBin(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_FindBin(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_FindBin(char *mode, double binWidth,
+BOOLN	SetPars_Analysis_FindBin(WChar *mode, double binWidth,
 			  double timeOffset, double timeWidth);
 
 BOOLN	SetTimeOffset_Analysis_FindBin(double theTimeOffset);

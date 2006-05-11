@@ -54,10 +54,10 @@
 
 NameSpecifier	iCListModeList[] = {
 					
-					{ "BOLTZMANN", 	ICLIST_BOLTZMANN_MODE },
-					{ "HHUXLEY", 	ICLIST_HHUXLEY_MODE },
-					{ "FILE", 		ICLIST_FILE_MODE },
-					{ "",			ICLIST_NULL }
+					{ wxT("BOLTZMANN"), ICLIST_BOLTZMANN_MODE },
+					{ wxT("HHUXLEY"), 	ICLIST_HHUXLEY_MODE },
+					{ wxT("FILE"), 		ICLIST_FILE_MODE },
+					{ wxT(""),			ICLIST_NULL }
 				};
 
 /******************************************************************************/
@@ -114,8 +114,6 @@ FreeIonChannels_IonChanList(IonChanListPtr theICList)
 BOOLN
 Free_IonChanList(IonChanListPtr *theICList)
 {
-	/* static const char	*funcName = "Free_IonChanList"; */
-
 	if (*theICList == NULL)
 		return(FALSE);
 	FreeIonChannels_IonChanList(*theICList);
@@ -136,13 +134,13 @@ Free_IonChanList(IonChanListPtr *theICList)
  */
 
 IonChanListPtr
-Init_IonChanList(const char *callingFunctionName)
+Init_IonChanList(const WChar *callingFunctionName)
 {
-	static const char	*funcName = "Init_IonChanList";
+	static const WChar	*funcName = wxT("Init_IonChanList");
 	IonChanListPtr	theICList;
 
 	if ((theICList = (IonChanListPtr) malloc(sizeof(IonChanList))) == NULL) {
-		NotifyError("%s: Out of memory (called by %s).", funcName,
+		NotifyError(wxT("%s: Out of memory (called by %s)."), funcName,
 		  callingFunctionName);
 		return(NULL);
 	}
@@ -154,7 +152,7 @@ Init_IonChanList(const char *callingFunctionName)
 	theICList->minVoltage = 0.0;
 	theICList->maxVoltage = 0.0;
 	theICList->dV = 0.0;
-	strcpy(theICList->diagFileName, DEFAULT_FILE_NAME);
+	DSAM_strcpy(theICList->diagFileName, DEFAULT_FILE_NAME);
 
 	if ((theICList->printTablesModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), theICList->diagFileName)) == NULL) {
@@ -180,10 +178,10 @@ Init_IonChanList(const char *callingFunctionName)
 BOOLN
 InitICHHuxleyPars_IonChanList(ICHHuxleyParsPtr p)
 {
-	static const char	*funcName = "InitHHuxleyPars_IonChanList";
+	static const WChar	*funcName = wxT("InitHHuxleyPars_IonChanList");
 
 	if (p == NULL) {
-		NotifyError("%s: Pointer not initialised.", funcName);
+		NotifyError(wxT("%s: Pointer not initialised."), funcName);
 		return(FALSE);
 	}
 	SET_IC_GATE_ARRAY(p->aA); SET_IC_GATE_ARRAY(p->aB);
@@ -212,10 +210,10 @@ InitICHHuxleyPars_IonChanList(ICHHuxleyParsPtr p)
 BOOLN
 InitICBoltzmannPars_IonChanList(ICBoltzmannParsPtr p)
 {
-	static const char	*funcName = "InitICBoltzmannPars_IonChanList";
+	static const WChar	*funcName = wxT("InitICBoltzmannPars_IonChanList");
 
 	if (p == NULL) {
-		NotifyError("%s: Pointer not initialised.", funcName);
+		NotifyError(wxT("%s: Pointer not initialised."), funcName);
 		return(FALSE);
 	}
 	SET_IC_GATE_ARRAY(p->halfMaxV);
@@ -234,13 +232,14 @@ InitICBoltzmannPars_IonChanList(ICBoltzmannParsPtr p)
  */
 
 IonChannelPtr
-InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
+InitIonChannel_IonChanList(const WChar *callingFunctionName,
+  int numTableEntries)
 {
-	static const char	*funcName = "InitIonChannel_IonChanList";
+	static const WChar	*funcName = wxT("InitIonChannel_IonChanList");
 	IonChannelPtr	theIC;
 
 	if ((theIC = (IonChannelPtr) calloc(1, sizeof(IonChannel))) == NULL) {
-		NotifyError("%s: Out of memory (called by %s).", funcName,
+		NotifyError(wxT("%s: Out of memory (called by %s)."), funcName,
 		  callingFunctionName);
 		return(NULL);
 	}
@@ -260,12 +259,12 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 	theIC->dV = 0.0;
 	InitICHHuxleyPars_IonChanList(&theIC->hHuxley);
 	InitICBoltzmannPars_IonChanList(&theIC->boltzmann);
-	strcpy(theIC->fileName, DEFAULT_FILE_NAME);
+	DSAM_strcpy(theIC->fileName, DEFAULT_FILE_NAME);
 	theIC->PowFunc = pow;
 	theIC->parList = NULL;
 	if ((theIC->table = (ICTableEntry *) calloc(theIC->numTableEntries,
 	  sizeof(ICTableEntry))) == NULL) {
-		NotifyError("%s: Out of memory for table entries (%d).", funcName,
+		NotifyError(wxT("%s: Out of memory for table entries (%d)."), funcName,
 		 theIC->numTableEntries);
 		FreeIonChannel_IonChanList(&theIC);
 		return(NULL);
@@ -285,7 +284,7 @@ InitIonChannel_IonChanList(const char *callingFunctionName, int numTableEntries)
 BOOLN
 SetGeneralUniParListMode_CFList(IonChanListPtr theICs)
 {
-	static const char *funcName = "SetGeneralUniParListMode_CFList";
+	static const WChar *funcName = wxT("SetGeneralUniParListMode_CFList");
 	int		i;
 
 	if (!CheckInit_IonChanList(theICs, funcName))
@@ -310,7 +309,7 @@ SetGeneralUniParListMode_CFList(IonChanListPtr theICs)
 BOOLN
 SetGeneralUniParList_IonChanList(IonChanListPtr theICs)
 {
-	static const char *funcName = "SetGeneralUniParList_IonChanList";
+	static const WChar *funcName = wxT("SetGeneralUniParList_IonChanList");
 	UniParPtr	pars;
 
 	if (!CheckInit_IonChanList(theICs, funcName))
@@ -318,52 +317,52 @@ SetGeneralUniParList_IonChanList(IonChanListPtr theICs)
 	FreeList_UniParMgr(&theICs->parList);
 	if ((theICs->parList = InitList_UniParMgr(UNIPAR_SET_ICLIST,
 	  ICLIST_NUM_PARS, theICs)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = theICs->parList->pars;
-	SetPar_UniParMgr(&pars[ICLIST_PRINTTABLESMODE], "TABLES_MODE",
-	 "Print ion channel tables mode ('off', 'screen' or filename).",
+	SetPar_UniParMgr(&pars[ICLIST_PRINTTABLESMODE], wxT("TABLES_MODE"),
+	 wxT("Print ion channel tables mode ('off', 'screen' or filename)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &theICs->printTablesMode, theICs->printTablesModeList,
 	  (void * (*)) SetPrintTablesMode_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_BASELEAKAGECOND], "LEAKAGE_COND",
-	 "Base leakage conductance (S).",
+	SetPar_UniParMgr(&pars[ICLIST_BASELEAKAGECOND], wxT("LEAKAGE_COND"),
+	 wxT("Base leakage conductance (S)."),
 	  UNIPAR_REAL,
 	  &theICs->baseLeakageCond, NULL,
 	  (void * (*)) SetBaseLeakageCond_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_LEAKAGEPOT], "LEAKAGE_POT",
-	 "Leakage equilibrium potential (V).",
+	SetPar_UniParMgr(&pars[ICLIST_LEAKAGEPOT], wxT("LEAKAGE_POT"),
+	 wxT("Leakage equilibrium potential (V)."),
 	  UNIPAR_REAL,
 	  &theICs->leakagePot, NULL,
 	  (void * (*)) SetLeakagePot_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_NUMCHANNELS], "NUM_CHANNELS",
-	 "Number of ion channels.",
+	SetPar_UniParMgr(&pars[ICLIST_NUMCHANNELS], wxT("NUM_CHANNELS"),
+	 wxT("Number of ion channels."),
 	  UNIPAR_INT,
 	  &theICs->numChannels, NULL,
 	  (void * (*)) SetNumChannels_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_MIN_VOLT], "MIN_VOLT",
-	 "Minimum voltage for tables (V).",
+	SetPar_UniParMgr(&pars[ICLIST_MIN_VOLT], wxT("MIN_VOLT"),
+	 wxT("Minimum voltage for tables (V)."),
 	  UNIPAR_REAL,
 	  &theICs->minVoltage, NULL,
 	  (void * (*)) SetMinVoltage_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_MAX_VOLT], "MAX_VOLT",
-	 "Maximum voltage for tables (V).",
+	SetPar_UniParMgr(&pars[ICLIST_MAX_VOLT], wxT("MAX_VOLT"),
+	 wxT("Maximum voltage for tables (V)."),
 	  UNIPAR_REAL,
 	  &theICs->maxVoltage, NULL,
 	  (void * (*)) SetMaxVoltage_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_DV], "DV",
-	 "Voltage step for tables (V).",
+	SetPar_UniParMgr(&pars[ICLIST_DV], wxT("DV"),
+	 wxT("Voltage step for tables (V)."),
 	  UNIPAR_REAL,
 	  &theICs->dV, NULL,
 	  (void * (*)) SetVoltageStep_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_TEMPERATURE], "TEMPERATURE",
-	 "Operating temperature (degrees C).",
+	SetPar_UniParMgr(&pars[ICLIST_TEMPERATURE], wxT("TEMPERATURE"),
+	 wxT("Operating temperature (degrees C)."),
 	  UNIPAR_REAL,
 	  &theICs->temperature, NULL,
 	  (void * (*)) SetTemperature_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_LEAKAGE_COND_Q10], "LEAKAGE_C_Q10)",
-	 "Leakage conductance Q10.",
+	SetPar_UniParMgr(&pars[ICLIST_LEAKAGE_COND_Q10], wxT("LEAKAGE_C_Q10)"),
+	 wxT("Leakage conductance Q10."),
 	  UNIPAR_REAL,
 	  &theICs->leakageCondQ10, NULL,
 	  (void * (*)) SetLeakageCondQ10_IonChanList);
@@ -382,11 +381,12 @@ SetGeneralUniParList_IonChanList(IonChanListPtr theICs)
 BOOLN
 SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC)
 {
-	static const char *funcName = "SetIonChannelUniParListMode_IonChanList";
+	static const WChar *funcName = wxT(
+	  "SetIonChannelUniParListMode_IonChanList");
 	int		i;
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	for (i = ICLIST_IC_NUM_CONSTANT_PARS; i < ICLIST_IC_NUM_PARS; i++)
@@ -407,7 +407,7 @@ SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC)
 		theIC->parList->pars[ICLIST_IC_FILE_NAME].enabled = TRUE;
 		break;
 	default:
-		NotifyError("%s: Unknown ion channel mode (%d).\n", funcName,
+		NotifyError(wxT("%s: Unknown ion channel mode (%d).\n"), funcName,
 		  theIC->mode);
 		return(FALSE);
 	}
@@ -425,7 +425,7 @@ SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC)
 BOOLN
 SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 {
-	static const char *funcName = "SetIonChannelUniParList_IonChanList";
+	static const WChar *funcName = wxT("SetIonChannelUniParList_IonChanList");
 	static int numGates = ICLIST_NUM_GATES;
 	UniParPtr	pars;
 
@@ -434,172 +434,172 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 	FreeList_UniParMgr(&theIC->parList);
 	if ((theIC->parList = InitList_UniParMgr(UNIPAR_SET_IC, ICLIST_IC_NUM_PARS,
 	  theICs)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = theIC->parList->pars;
-	SetPar_UniParMgr(&pars[ICLIST_IC_DESCRIPTION], "DESCRIPTION",
-	 "Description.",
+	SetPar_UniParMgr(&pars[ICLIST_IC_DESCRIPTION], wxT("DESCRIPTION"),
+	 wxT("Description."),
 	  UNIPAR_STRING,
 	  &theIC->description, NULL,
 	  (void * (*)) SetICDescription_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_MODE], "MODE",
-	 "Mode option ('file', 'hHuxley' or 'boltzmann').",
+	SetPar_UniParMgr(&pars[ICLIST_IC_MODE], wxT("MODE"),
+	 wxT("Mode option ('file', 'hHuxley' or 'boltzmann')."),
 	  UNIPAR_NAME_SPEC,
 	  &theIC->mode, iCListModeList,
 	  (void * (*)) SetICMode_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ENABLED], "ENABLED",
-	 "Ion channel enabled status ('on' or 'off).",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ENABLED], wxT("ENABLED"),
+	 wxT("Ion channel enabled status ('on' or 'off)."),
 	  UNIPAR_BOOL,
 	  &theIC->enabled, NULL,
 	  (void * (*)) SetICEnabled_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_EQUILIBRIUM_POT], "EQUIL_POT",
-	 "Equilibrium potential (V).",
+	SetPar_UniParMgr(&pars[ICLIST_IC_EQUILIBRIUM_POT], wxT("EQUIL_POT"),
+	 wxT("Equilibrium potential (V)."),
 	  UNIPAR_REAL,
 	  &theIC->equilibriumPot, NULL,
 	  (void * (*)) SetICEquilibriumPot_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_CONDUCTANCE], "BASE_MAX_COND",
-	 "Base maximum conductance (S).",
+	SetPar_UniParMgr(&pars[ICLIST_IC_CONDUCTANCE], wxT("BASE_MAX_COND"),
+	 wxT("Base maximum conductance (S)."),
 	  UNIPAR_REAL,
 	  &theIC->baseMaxConductance, NULL,
 	  (void * (*)) SetICBaseMaxConductance_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ACTIVATION_EXPONENT], "ACTIVATION",
-	 "Activation exponent (real).",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ACTIVATION_EXPONENT], wxT("ACTIVATION"),
+	 wxT("Activation exponent (real)."),
 	  UNIPAR_REAL,
 	  &theIC->activationExponent, NULL,
 	  (void * (*)) SetICActivationExponent_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_CONDUCTANCE_Q10], "COND_Q10",
-	 "Conductance Q10.",
+	SetPar_UniParMgr(&pars[ICLIST_IC_CONDUCTANCE_Q10], wxT("COND_Q10"),
+	 wxT("Conductance Q10."),
 	  UNIPAR_REAL,
 	  &theIC->conductanceQ10, NULL,
 	  (void * (*)) SetICConductanceQ10_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_V_HALF], "V_HALF",
-	 "Voltage at half maximum values (V)",
+	SetPar_UniParMgr(&pars[ICLIST_IC_V_HALF], wxT("V_HALF"),
+	 wxT("Voltage at half maximum values (V)"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->boltzmann.halfMaxV.ptr, &numGates,
 	  (void * (*)) SetICBoltzmannHalfMaxV_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_Z], "Z",
-	 "'Z' Constant values (unit).",
+	SetPar_UniParMgr(&pars[ICLIST_IC_Z], wxT("Z"),
+	 wxT("'Z' Constant values (unit)."),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->boltzmann.zZ.ptr, &numGates,
 	  (void * (*)) SetICBoltzmannZ_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_TAU], "TAU",
-	 "Time constants, tau (s)",
+	SetPar_UniParMgr(&pars[ICLIST_IC_TAU], wxT("TAU"),
+	 wxT("Time constants, tau (s)"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->boltzmann.tau.ptr, &numGates,
 	  (void * (*)) SetICBoltzmannTau_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_FILE_NAME], "FILENAME",
-	 "Ion channel file name.",
+	SetPar_UniParMgr(&pars[ICLIST_IC_FILE_NAME], wxT("FILENAME"),
+	 wxT("Ion channel file name."),
 	  UNIPAR_FILE_NAME,
-	  &theIC->fileName, (char *) "*.par",
+	  &theIC->fileName, (WChar *) wxT("*.par"),
 	  (void * (*)) SetICFileName_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_A], "ALPHA_A",
-	 "Alpha 'a' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_A], wxT("ALPHA_A"),
+	 wxT("Alpha 'a' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aA.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaA_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_B], "ALPHA_B",
-	 "Alpha 'b' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_B], wxT("ALPHA_B"),
+	 wxT("Alpha 'b' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aB.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaB_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_C], "ALPHA_C",
-	 "Alpha 'c' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_C], wxT("ALPHA_C"),
+	 wxT("Alpha 'c' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aC.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaC_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_D], "ALPHA_D",
-	 "Alpha 'd' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_D], wxT("ALPHA_D"),
+	 wxT("Alpha 'd' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aD.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaD_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_E], "ALPHA_E",
-	 "Alpha 'e' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_E], wxT("ALPHA_E"),
+	 wxT("Alpha 'e' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aE.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaE_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_F], "ALPHA_F",
-	 "Alpha 'f' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_F], wxT("ALPHA_F"),
+	 wxT("Alpha 'f' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aF.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaF_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_G], "ALPHA_G",
-	 "Alpha 'g' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_G], wxT("ALPHA_G"),
+	 wxT("Alpha 'g' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aG.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaG_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_H], "ALPHA_H",
-	 "Alpha 'h' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_H], wxT("ALPHA_H"),
+	 wxT("Alpha 'h' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aH.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaH_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_I], "ALPHA_I",
-	 "Alpha 'i' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_I], wxT("ALPHA_I"),
+	 wxT("Alpha 'i' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aI.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaI_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_J], "ALPHA_J",
-	 "Alpha 'j' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_J], wxT("ALPHA_J"),
+	 wxT("Alpha 'j' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aJ.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaJ_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_K], "ALPHA_K",
-	 "Alpha 'k' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_ALPHA_K], wxT("ALPHA_K"),
+	 wxT("Alpha 'k' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.aK.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyAlphaK_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_A], "BETA_A",
-	 "Beta 'a' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_A], wxT("BETA_A"),
+	 wxT("Beta 'a' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bA.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaA_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_B], "BETA_B",
-	 "Beta 'b' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_B], wxT("BETA_B"),
+	 wxT("Beta 'b' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bB.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaB_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_C], "BETA_C",
-	 "Beta 'c' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_C], wxT("BETA_C"),
+	 wxT("Beta 'c' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bC.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaC_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_D], "BETA_D",
-	 "Beta 'd' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_D], wxT("BETA_D"),
+	 wxT("Beta 'd' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bD.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaD_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_E], "BETA_E",
-	 "Beta 'e' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_E], wxT("BETA_E"),
+	 wxT("Beta 'e' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bE.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaE_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_F], "BETA_F",
-	 "Beta 'f' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_F], wxT("BETA_F"),
+	 wxT("Beta 'f' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bF.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaF_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_G], "BETA_G",
-	 "Beta 'g' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_G], wxT("BETA_G"),
+	 wxT("Beta 'g' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bG.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaG_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_H], "BETA_H",
-	 "Beta 'h' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_H], wxT("BETA_H"),
+	 wxT("Beta 'h' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bH.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaH_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_I], "BETA_I",
-	 "Beta 'i' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_I], wxT("BETA_I"),
+	 wxT("Beta 'i' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bI.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaI_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_J], "BETA_J",
-	 "Beta 'j' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_J], wxT("BETA_J"),
+	 wxT("Beta 'j' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bJ.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaJ_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_K], "BETA_K",
-	 "Beta 'k' parameter values for activation and inactivation",
+	SetPar_UniParMgr(&pars[ICLIST_IC_BETA_K], wxT("BETA_K"),
+	 wxT("Beta 'k' parameter values for activation and inactivation"),
 	  UNIPAR_REAL_ARRAY,
 	  &theIC->hHuxley.bK.ptr, &numGates,
 	  (void * (*)) SetICHHuxleyBetaK_IonChanList);
@@ -618,18 +618,18 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 BOOLN
 CheckPars_IonChanList(IonChanListPtr theICList)
 {
-	static const char	*funcName = "CheckPars_IonChanList";
+	static const WChar	*funcName = wxT("CheckPars_IonChanList");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!CheckInit_IonChanList(theICList, funcName))
 		return(FALSE);
 	if (theICList->ionChannels == NULL) {
-		NotifyError("%s: ionChannels array not set.", funcName);
+		NotifyError(wxT("%s: ionChannels array not set."), funcName);
 		ok = FALSE;
 	}
 	if (!theICList->numChannels <= 0) {
-		NotifyError("%s: Number of Channels not correctly set.", funcName);
+		NotifyError(wxT("%s: Number of Channels not correctly set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -646,55 +646,57 @@ CheckPars_IonChanList(IonChanListPtr theICList)
 void
 PrintIonChannelPars_IonChanList(IonChannelPtr theIC)
 {
-	static const char *funcName = "PrintIonChannelPars_IonChanList";
+	static const WChar *funcName = wxT("PrintIonChannelPars_IonChanList");
 	int		i;
 
 	if (!CheckInitIC_IonChanList(theIC, funcName))
 		return;
-	DPrint("\t\t<---- Ion channel %s mode: %s ---->\n", iCListModeList[
+	DPrint(wxT("\t\t<---- Ion channel %s mode: %s ---->\n"), iCListModeList[
 	  theIC->mode].name, theIC->description);
-	DPrint("\t\tEanbled status: %s,", BooleanList_NSpecLists(
+	DPrint(wxT("\t\tEanbled status: %s,"), BooleanList_NSpecLists(
 	  theIC->enabled)->name);
-	DPrint("\tEquilibrium Potential: %g (mV),\n",
+	DPrint(wxT("\tEquilibrium Potential: %g (mV),\n"),
 	  MILLI(theIC->equilibriumPot));
 	switch (theIC->mode) {
 	case ICLIST_BOLTZMANN_MODE: {
 		ICBoltzmannParsPtr	p = &theIC->boltzmann;
-		DPrint("\t\tMax. conductance: %.3g S,", theIC->maxConductance);
-		DPrint("\tConductance Q10: %g,\n", theIC->conductanceQ10);
-		DPrint("\t\t\t%s\t%s\t%s\n", "V_1/2 (mV)", "Z (units)", "tau (ms)");
+		DPrint(wxT("\t\tMax. conductance: %.3g S,"), theIC->maxConductance);
+		DPrint(wxT("\tConductance Q10: %g,\n"), theIC->conductanceQ10);
+		DPrint(wxT("\t\t\t%s\t%s\t%s\n"), wxT("V_1/2 (mV)"), wxT("Z (units)"),
+		  wxT("tau (ms)"));
 		for (i = 0; i < ICLIST_NUM_GATES; i++)
-			DPrint("\t\t\t%g\t\t%g\t\t%g\n", MILLI(p->halfMaxV.array[i]),
+			DPrint(wxT("\t\t\t%g\t\t%g\t\t%g\n"), MILLI(p->halfMaxV.array[i]),
 			  p->zZ.array[i], MILLI(p->tau.array[i]));
 		break; }
 	case ICLIST_HHUXLEY_MODE: {
 		ICHHuxleyParsPtr	p = &theIC->hHuxley;
-		DPrint("\t\tBase max. conductance: %.3g (%.3g @ %g oC.) "
-		  "(S),\n", theIC->baseMaxConductance, theIC->maxConductance,
+		DPrint(wxT("\t\tBase max. conductance: %.3g (%.3g @ %g oC.) "
+		  "(S),\n"), theIC->baseMaxConductance, theIC->maxConductance,
 		  theIC->temperature);
-		DPrint("\t\tConductance Q10: %g,\n", theIC->conductanceQ10);
-		DPrint("\t\t%6s%5s%5s%6s%5s%5s%6s%3s%3s%3s%3s\n", "a", "b", "c", "d",
-		  "e", "f", "g", "h", "i", "j", "k");
+		DPrint(wxT("\t\tConductance Q10: %g,\n"), theIC->conductanceQ10);
+		DPrint(wxT("\t\t%6s%5s%5s%6s%5s%5s%6s%3s%3s%3s%3s\n"), wxT("a"), wxT(
+		  "b"), wxT("c"), wxT("d"), wxT("e"), wxT("f"), wxT("g"), wxT("h"), wxT(
+		  "i"), wxT("j"), wxT("k"));
 		for (i = 0; i < ICLIST_NUM_GATES; i++) {
-			DPrint("\t\t%6g%5g%5g%6g%5g%5g%6g%3g%3g%3g%3g Alpha\n",
+			DPrint(wxT("\t\t%6g%5g%5g%6g%5g%5g%6g%3g%3g%3g%3g Alpha\n"),
 			  p->aA.array[i], p->aB.array[i], p->aC.array[i], p->aD.array[i],
 			  p->aE.array[i], p->aF.array[i], p->aG.array[i], p->aH.array[i],
 			  p->aI.array[i], p->aJ.array[i], p->aK.array[i]);
-			DPrint("\t\t%6g%5g%5g%6g%5g%5g%6g%3g%3g%3g%3g Beta\n",
+			DPrint(wxT("\t\t%6g%5g%5g%6g%5g%5g%6g%3g%3g%3g%3g Beta\n"),
 			  p->bA.array[i], p->bB.array[i], p->bC.array[i], p->bD.array[i],
 			  p->bE.array[i], p->bF.array[i], p->bG.array[i], p->bH.array[i],
 			  p->bI.array[i], p->bJ.array[i], p->bK.array[i]);
 		}
 		break; }
 	case ICLIST_FILE_MODE:
-		DPrint("\t\tIonchannel table file: %s,\n", theIC->fileName);
-		DPrint("\t\tMax. conductance: %.3g S,\n", theIC->maxConductance);
+		DPrint(wxT("\t\tIonchannel table file: %s,\n"), theIC->fileName);
+		DPrint(wxT("\t\tMax. conductance: %.3g S,\n"), theIC->maxConductance);
 		break;
 	default:
 		;
 	}
-	DPrint("\t\tActivation exponent: %g,", theIC->activationExponent);
-	DPrint("\tNo. of table entries: %d\n", theIC->numTableEntries);
+	DPrint(wxT("\t\tActivation exponent: %g,"), theIC->activationExponent);
+	DPrint(wxT("\tNo. of table entries: %d\n"), theIC->numTableEntries);
 
 }
 
@@ -708,7 +710,7 @@ PrintIonChannelPars_IonChanList(IonChannelPtr theIC)
 void
 PrintTables_IonChanList(IonChanListPtr theICList)
 {
-	static const char *funcName = "PrintTables_IonChanList";
+	static const WChar *funcName = wxT("PrintTables_IonChanList");
 	int		i;
 	FILE	*fp = NULL, *savedFp;
 	DynaListPtr	node;
@@ -724,13 +726,13 @@ PrintTables_IonChanList(IonChanListPtr theICList)
 	for (node = theICList->ionChannels; node != NULL; node = node->next) {
 		theIC = (IonChannelPtr) node->data;
 		PrintIonChannelPars_IonChanList(theIC);
-		DPrint("\t\t\t%7s\t%7s\t%7s\t%7s\t%7s\n", "   V   ", "   Y   ",
-		  " tau_y ", "   Z   ", " tau_z ");
-		DPrint("\t\t\t%7s\t%7s\t%7s\t%7s\t%7s\n", "  (mV) ", " (0-1) ",
-		  "  (ms) ", " (0-1) ", "  (ms) ");
+		DPrint(wxT("\t\t\t%7s\t%7s\t%7s\t%7s\t%7s\n"), wxT("   V   "), wxT(
+		  "   Y   "), wxT(" tau_y "), wxT("   Z   "), wxT(" tau_z "));
+		DPrint(wxT("\t\t\t%7s\t%7s\t%7s\t%7s\t%7s\n"), wxT("  (mV) "), wxT(
+		  " (0-1) "), wxT("  (ms) "), wxT(" (0-1) "), wxT("  (ms) "));
 		for (i = 0; i < theIC->numTableEntries; i++) {
 			e = &theIC->table[i];
-			DPrint("\t\t\t%7g\t%7.4f\t%7.4g\t%7.4f\t%7.4g\n",
+			DPrint(wxT("\t\t\t%7g\t%7.4f\t%7.4g\t%7.4f\t%7.4g\n"),
 			  MILLI(theIC->minVoltage + i * theIC->dV), e->yY, MSEC(e->ty),
 			  e->zZ, MSEC(e->tz));
 		}
@@ -749,28 +751,31 @@ PrintTables_IonChanList(IonChanListPtr theICList)
 BOOLN
 PrintPars_IonChanList(IonChanListPtr theICs)
 {
-	static const char *funcName = "PrintPars_IonChanList";
+	static const WChar *funcName = wxT("PrintPars_IonChanList");
 	DynaListPtr	node;
 
 	if (!CheckInit_IonChanList(theICs, funcName)) {
-		NotifyError("%s: Ion channel list parameters not been correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Ion channel list parameters not been correctly "
+		  "set."), funcName);
 		return(FALSE);
 	}
-	DPrint("\t\tIon channel list structure parameters:-\n");
-	DPrint("\t\tPrint tables mode: %s,\n", theICs->printTablesModeList[
+	DPrint(wxT("\t\tIon channel list structure parameters:-\n"));
+	DPrint(wxT("\t\tPrint tables mode: %s,\n"), theICs->printTablesModeList[
 	  theICs->printTablesMode].name);
 	if (theICs->useTemperatureCalcFlag) {
-		DPrint("\t\tBase leakage conductance = %.3g (%.3g @ %g oC.) (S),\n",
-		  theICs->baseLeakageCond, theICs->leakageCond, theICs->temperature);
-		DPrint("\t\tLeakage conductance Q10 = %g,\n", theICs->leakageCondQ10);
+		DPrint(wxT("\t\tBase leakage conductance = %.3g (%.3g @ %g oC.) (S),"
+		  "\n"), theICs->baseLeakageCond, theICs->leakageCond, theICs->
+		  temperature);
+		DPrint(wxT("\t\tLeakage conductance Q10 = %g,\n"), theICs->
+		  leakageCondQ10);
 	} else
-		DPrint("\t\tLeakage conductance = %.3g S,\n", theICs->leakageCond);
-	DPrint("\t\tLeakage potential = %g (mV),\n", MILLI(theICs->leakagePot));
-	DPrint("\t\tNo. ion channels = %d\n", theICs->numChannels);
-	DPrint("\t\tMin./max voltage: %g / %g (mV),", MILLI(theICs->minVoltage),
-	  MILLI(theICs->maxVoltage));
-	DPrint("\tVoltage step: %g (mV),\n", MILLI(theICs->dV));
+		DPrint(wxT("\t\tLeakage conductance = %.3g S,\n"), theICs->leakageCond);
+	DPrint(wxT("\t\tLeakage potential = %g (mV),\n"), MILLI(theICs->
+	  leakagePot));
+	DPrint(wxT("\t\tNo. ion channels = %d\n"), theICs->numChannels);
+	DPrint(wxT("\t\tMin./max voltage: %g / %g (mV),"), MILLI(theICs->
+	  minVoltage), MILLI(theICs->maxVoltage));
+	DPrint(wxT("\tVoltage step: %g (mV),\n"), MILLI(theICs->dV));
 	if (theICs->printTablesMode)
 		PrintTables_IonChanList(theICs);
 	else
@@ -790,49 +795,49 @@ PrintPars_IonChanList(IonChanListPtr theICs)
 BOOLN
 ReadVoltageTable_IonChanList(IonChannelPtr theIC,  FILE *fp)
 {
-	static const char	*funcName = "ReadVoltageTable_IonChanList";
+	static const WChar	*funcName = wxT("ReadVoltageTable_IonChanList");
 	BOOLN	ok = TRUE;
 	int		i;
 	double	v, dV;
 
 	for (i = 0; ok && (i < theIC->numTableEntries); i++) {
-		ok = GetPars_ParFile(fp, "%lf %lf %lf %lf %lf", &v, &theIC->table[i].yY,
-		  &theIC->table[i].ty, &theIC->table[i].zZ, &theIC->table[i].tz);
+		ok = GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf"), &v, &theIC->table[
+		  i].yY, &theIC->table[i].ty, &theIC->table[i].zZ, &theIC->table[i].tz);
 		if (ok && ((fabs(theIC->table[i].ty) < DBL_EPSILON) ||
 		  (fabs(theIC->table[i].ty) < DBL_EPSILON))) {
-			NotifyError("%s: The tau values must be greater than zero "
-			  "(entry %d).", funcName, i);
+			NotifyError(wxT("%s: The tau values must be greater than zero "
+			  "(entry %d)."), funcName, i);
 			ok = FALSE;
 		}
 		if (ok)
 			switch (i) {
 			case 0:
 				if (fabs(theIC->minVoltage - v) > DBL_EPSILON) {
-					NotifyError("%s: Incorrect minimum voltage for cell "
-					  "(%g mV).", funcName, MILLI(v));
+					NotifyError(wxT("%s: Incorrect minimum voltage for cell "
+					  "(%g mV)."), funcName, MILLI(v));
 					ok = FALSE;
 				}
 				break;
 			case 1:
 				dV = v - theIC->minVoltage;
 				if (fabs(theIC->dV - dV) > DBL_EPSILON) {
-					NotifyError("%s: Incorrect voltage step for cell (%g mV).",
-					  funcName, MILLI(dV));
+					NotifyError(wxT("%s: Incorrect voltage step for cell (%g "
+					  "mV)."), funcName, MILLI(dV));
 					ok = FALSE;
 				}
 				break;
 			default:
 				if (fabs(theIC->minVoltage + i * theIC->dV - v) > DBL_EPSILON) {
-					NotifyError("%s: Table entry voltage out of sequence: "
-					  "entry %d = %g mV.", funcName, i, MILLI(v));
+					NotifyError(wxT("%s: Table entry voltage out of sequence: "
+					  "entry %d = %g mV."), funcName, i, MILLI(v));
 					ok = FALSE;
 				}
 			}
 	}
 	fclose(fp);
 	if (!ok)
-		NotifyError("%s: Failed to read table: insufficient entries for\n"
-		  "voltage range specification.", funcName);
+		NotifyError(wxT("%s: Failed to read table: insufficient entries for\n"
+		  "voltage range specification."), funcName);
 	return(ok);
 
 }
@@ -915,23 +920,23 @@ HHuxleyBeta_IonChanList(double a, double b, double c, double d, double e,
 BOOLN
 GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp)
 {
-	static const char	*funcName = "GetParsHHuxley_IonChanList";
+	static const WChar	*funcName = wxT("GetParsHHuxley_IonChanList");
 	BOOLN	ok = TRUE;
 	int		j;
 	ICHHuxleyParsPtr	p;
 
-	if (!GetPars_ParFile(fp, "%lf", &theIC->conductanceQ10))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &theIC->conductanceQ10))
 		ok = FALSE;
 	p = &theIC->hHuxley;
 	for (j = 0; j < ICLIST_NUM_GATES; j++) {
-		if (!GetPars_ParFile(fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
-		  "%lf", &p->aA.array[j], &p->aB.array[j], &p->aC.array[j],
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
+		  "%lf"), &p->aA.array[j], &p->aB.array[j], &p->aC.array[j],
 		  &p->aD.array[j], &p->aE.array[j], &p->aF.array[j],
 		  &p->aG.array[j], &p->aH.array[j], &p->aI.array[j],
 		  &p->aJ.array[j], &p->aK.array[j]))
 			ok = FALSE;
-		if (!GetPars_ParFile(fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
-		  "%lf",  &p->bA.array[j], &p->bB.array[j], &p->bC.array[j],
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
+		  "%lf"),  &p->bA.array[j], &p->bB.array[j], &p->bC.array[j],
 		  &p->bD.array[j], &p->bE.array[j], &p->bF.array[j],
 		  &p->bG.array[j], &p->bH.array[j], &p->bI.array[j],
 		  &p->bJ.array[j], &p->bK.array[j]))
@@ -939,7 +944,7 @@ GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp)
 	}
 
 	if (!ok) {
-		NotifyError("%s: Could not read parameters for channel '%s'.",
+		NotifyError(wxT("%s: Could not read parameters for channel '%s'."),
 		  funcName, theIC->description);
 		return(FALSE);
 	}
@@ -962,7 +967,7 @@ GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp)
 void
 GenerateHHuxley_IonChanList(IonChannelPtr theIC)
 {
-	/* static const char	*funcName = "GenerateHHuxley_IonChanList"; */
+	/* static const WChar	*funcName = wxT("GenerateHHuxley_IonChanList"); */
 	int		j, k;
 	double	mV, mDV, alpha, beta, activation, tauActivation;
 	ICHHuxleyParsPtr	p;
@@ -1012,20 +1017,20 @@ GenerateHHuxley_IonChanList(IonChannelPtr theIC)
 BOOLN
 GetParsBoltzmann_IonChanList(IonChannelPtr theIC, FILE *fp)
 {
-	static const char	*funcName = "GetParsBoltzmann_IonChanList";
+	static const WChar	*funcName = wxT("GetParsBoltzmann_IonChanList");
 	BOOLN	ok = TRUE;
 	int		j;
 	ICBoltzmannParsPtr	p;
 
 	p = &theIC->boltzmann;
-	if (!GetPars_ParFile(fp, "%lf", &theIC->conductanceQ10))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &theIC->conductanceQ10))
 		ok = FALSE;
 	for (j = 0; j < ICLIST_NUM_GATES; j++)
-		if (!GetPars_ParFile(fp, "%lf %lf %lf",
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf"),
 		  &p->halfMaxV.array[j], &p->zZ.array[j], &p->tau.array[j]))
 			ok = FALSE;
 	if (!ok) {
-		NotifyError("%s: Could not read parameters for channel '%s'.",
+		NotifyError(wxT("%s: Could not read parameters for channel '%s'."),
 		  funcName, theIC->description);
 		return(FALSE);
 	}
@@ -1051,7 +1056,7 @@ GetParsBoltzmann_IonChanList(IonChannelPtr theIC, FILE *fp)
 void
 GenerateBoltzmann_IonChanList(IonChannelPtr theIC)
 {
-	/* static const char	*funcName = "GenerateBoltzmann_IonChanList"; */
+	/* static const WChar	*funcName = wxT("GenerateBoltzmann_IonChanList"); */
 	int		j, k;
 	double	v, activation, tauActivation, kelvinTemp;
 	ICBoltzmannParsPtr	p;
@@ -1098,33 +1103,34 @@ GenerateBoltzmann_IonChanList(IonChannelPtr theIC)
 BOOLN
 ReadGeneralPars_IonChanList(FILE *fp, IonChanListPtr theICs)
 {
-	static const char	*funcName = "ReadGeneralPars_IonChanList";
+	static const WChar	*funcName = wxT("ReadGeneralPars_IonChanList");
 	BOOLN	ok = TRUE;
-	char	printTablesModeName[SMALL_STRING];
+	WChar	printTablesModeName[SMALL_STRING];
 	int		numChannels;
 	double	baseLeakageCond, leakagePot, temperature, leakageCondQ10;
 	double	minV, maxV, dV;
 
-	if (!GetPars_ParFile(fp, "%s", printTablesModeName))
+	if (!GetPars_ParFile(fp, wxT("%s"), printTablesModeName))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &baseLeakageCond))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &baseLeakageCond))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &leakagePot))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &leakagePot))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numChannels))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &temperature))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &temperature))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &leakageCondQ10))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &leakageCondQ10))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &minV))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &minV))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxV))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxV))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &dV))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &dV))
 		ok = FALSE;
 	if (!ok) {
-		NotifyError("%s: Could not read general list parameters.", funcName);
+		NotifyError(wxT("%s: Could not read general list parameters."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!SetNumChannels_IonChanList(theICs, numChannels))
@@ -1146,7 +1152,7 @@ ReadGeneralPars_IonChanList(FILE *fp, IonChanListPtr theICs)
 	if (!SetVoltageStep_IonChanList(theICs, dV))
 		ok = FALSE;
 	if (!ok) {
-		NotifyError("%s: Failed to set general parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set general parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1165,39 +1171,39 @@ ReadGeneralPars_IonChanList(FILE *fp, IonChanListPtr theICs)
  */
 
 BOOLN
-ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, char *fileName,
-  char *description, char *enabled, double *equilibriumPot,
+ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, WChar *fileName,
+  WChar *description, WChar *enabled, double *equilibriumPot,
   double *baseMaxConductance, double *activationExponent)
 {
-	static const char	*funcName = "ReadICGeneralPars_IonChanList";
+	static const WChar	*funcName = wxT("ReadICGeneralPars_IonChanList");
 	BOOLN	ok = TRUE;
-	char	*filePath;
+	WChar	*filePath;
 
 	if (mode == ICLIST_FILE_MODE) {
-		if (*fp && !GetPars_ParFile(*fp, "%s", fileName)) {
-			NotifyError("%s: Could not read ion channel file '%s'.", funcName,
-			  fileName);
+		if (*fp && !GetPars_ParFile(*fp, wxT("%s"), fileName)) {
+			NotifyError(wxT("%s: Could not read ion channel file '%s'."),
+			  funcName, fileName);
 			return(FALSE);
 		}
 		filePath = GetParsFileFPath_Common(fileName);
-		if ((*fp = fopen(filePath, "r")) == NULL) {
-			NotifyError("%s: Could not open ion channel file '%s'.", funcName,
-			  filePath);
+		if ((*fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+			NotifyError(wxT("%s: Could not open ion channel file '%s'."),
+			  funcName, filePath);
 			return(FALSE);
 		}
 	}
-	if (!GetPars_ParFile(*fp, "%s", description))
+	if (!GetPars_ParFile(*fp, wxT("%s"), description))
 		ok = FALSE;
-	if (!GetPars_ParFile(*fp, "%s", enabled))
+	if (!GetPars_ParFile(*fp, wxT("%s"), enabled))
 		ok = FALSE;
-	if (!GetPars_ParFile(*fp, "%lf", equilibriumPot))
+	if (!GetPars_ParFile(*fp, wxT("%lf"), equilibriumPot))
 		ok = FALSE;
-	if (!GetPars_ParFile(*fp, "%lf", baseMaxConductance))
+	if (!GetPars_ParFile(*fp, wxT("%lf"), baseMaxConductance))
 		ok = FALSE;
-	if (!GetPars_ParFile(*fp, "%lf", activationExponent))
+	if (!GetPars_ParFile(*fp, wxT("%lf"), activationExponent))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Could not read general parameters.", funcName);
+		NotifyError(wxT("%s: Could not read general parameters."), funcName);
 	return(ok);
 
 }
@@ -1233,10 +1239,10 @@ SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
 
 BOOLN
 SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
-  char *description, char *enabled, double equilibriumPot,
+  WChar *description, WChar *enabled, double equilibriumPot,
   double baseMaxConductance, double activationExponent)
 {
-	static const char	*funcName = "SetICGeneralPars_IonChanList";
+	static const WChar	*funcName = wxT("SetICGeneralPars_IonChanList");
 	BOOLN	ok = TRUE;
 
 	if (!SetICDescription_IonChanList(theIC, description))
@@ -1250,7 +1256,7 @@ SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
 	if (!SetICActivationExponent_IonChanList(theIC, activationExponent))
 		ok = FALSE;	
 	if (!ok) {
-		NotifyError("%s: Could not set general parameters.", funcName);
+		NotifyError(wxT("%s: Could not set general parameters."), funcName);
 		return(FALSE);
 	}
 	theIC->mode = mode;
@@ -1268,30 +1274,31 @@ SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
 BOOLN
 ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 {
-	static const char	*funcName = "ReadICPars_IonChanList";
+	static const WChar	*funcName = wxT("ReadICPars_IonChanList");
 	BOOLN	ok = TRUE;
-	char	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
-	char	enabled[SMALL_STRING], description[MAXLINE];
+	WChar	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
+	WChar	enabled[SMALL_STRING], description[MAXLINE];
 	double	equilibriumPot, baseMaxConductance, activationExponent;
 	ICModeSpecifier mode;
 
-	if (!GetPars_ParFile(fp, "%s", modeName)) {
-		NotifyError("%s: Could not read filename.", funcName);
+	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
+		NotifyError(wxT("%s: Could not read filename."), funcName);
 		return(FALSE);
 	}
 	if ((mode = (ICModeSpecifier) Identify_NameSpecifier(modeName,
 	  iCListModeList)) == ICLIST_NULL) {
-		NotifyError("%s: Unknown ion channel mode (%s).", funcName, modeName);
+		NotifyError(wxT("%s: Unknown ion channel mode (%s)."), funcName,
+		  modeName);
 		return(FALSE);
 	}
 	if (!ReadICGeneralPars_IonChanList(&fp, mode, fileName, description,
 	  enabled, &equilibriumPot, &baseMaxConductance, &activationExponent)) {
-		NotifyError("%s: Could not read general parameters.", funcName);
+		NotifyError(wxT("%s: Could not read general parameters."), funcName);
 		return(FALSE);
 	}
 	if (!SetICGeneralPars_IonChanList(theIC, mode, description, enabled,
 	  equilibriumPot, baseMaxConductance, activationExponent)) {
-		NotifyError("%s: Could not set general parameters.", funcName);
+		NotifyError(wxT("%s: Could not set general parameters."), funcName);
 		return(FALSE);
 	}
 	SetICGeneralParsFromICList_IonChanList(theIC, theICs);
@@ -1309,20 +1316,20 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 			GenerateHHuxley_IonChanList(theIC);
 		break;
 	case ICLIST_FILE_MODE:
-		snprintf(theIC->fileName, MAX_FILE_PATH, "%s", fileName);
+		DSAM_snprintf(theIC->fileName, MAX_FILE_PATH, wxT("%s"), fileName);
 		if (!ReadVoltageTable_IonChanList(theIC, fp)) {
-			NotifyError("%s: Failed to read ion channel from file '%s'.",
+			NotifyError(wxT("%s: Failed to read ion channel from file '%s'."),
 			  funcName, fileName);
 			ok = FALSE;
 		}
 		break;
 	default	:
-		NotifyError("%s: Unknown ion channel mode.", funcName);
+		NotifyError(wxT("%s: Unknown ion channel mode."), funcName);
 		ok = FALSE;
 		break;
 	} /* Switch */
 	if (ok && !SetIonChannelUniParListMode_IonChanList(theIC)) { 
-		NotifyError("%s: Could not set parameter list mode.", funcName);
+		NotifyError(wxT("%s: Could not set parameter list mode."), funcName);
 		ok = FALSE;
 	}
 	SetICPowFunc_IonChanList(theIC);
@@ -1340,17 +1347,17 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 BOOLN
 SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 {
-	static const char	*funcName = "SetGeneratedPars_IonChanList";
+	static const WChar	*funcName = wxT("SetGeneratedPars_IonChanList");
 
 	if (theICs->dV <= DBL_EPSILON) {
-		NotifyError("%s: the voltage step must be greater than zero.",
+		NotifyError(wxT("%s: the voltage step must be greater than zero."),
 		  funcName);
 		return(FALSE);
 	}
 	if ((theICs->numTableEntries = (int) ceil((theICs->maxVoltage -
 	  theICs->minVoltage) / theICs->dV) + 1) <= 0) {
-		NotifyError("%s: Cannot define table from voltage range\n%g -> %g mV "
-		  "and step size %g mV.\n", funcName, theICs->minVoltage,
+		NotifyError(wxT("%s: Cannot define table from voltage range\n%g -> %g "
+		  "mV and step size %g mV.\n"), funcName, theICs->minVoltage,
 		  theICs->maxVoltage, theICs->dV);
 		return(FALSE);
 	}
@@ -1373,42 +1380,43 @@ SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 IonChanListPtr
 ReadPars_IonChanList(FILE *fp)
 {
-	static const char	*funcName = "ReadPars_IonChanList";
+	static const WChar	*funcName = wxT("ReadPars_IonChanList");
 	IonChanListPtr	theICs = NULL;
 	IonChannelPtr	theIC;
 	DynaListPtr		node;
 
-	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
-		NotifyError("%s: Out of memory for ion channel list structure.",
+	if ((theICs = Init_IonChanList((WChar *) funcName)) == NULL) {
+		NotifyError(wxT("%s: Out of memory for ion channel list structure."),
 		  funcName);
 		return(NULL);
 	}
 	if (!ReadGeneralPars_IonChanList(fp, theICs)) {
-		NotifyError("%s: Failed to read general parameters.", funcName);
+		NotifyError(wxT("%s: Failed to read general parameters."), funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
 	if (!SetGeneratedPars_IonChanList(theICs)) {
-		NotifyError("%s: Failed to set the generated parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set the generated parameters."),
+		  funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
 	if (!PrepareIonChannels_IonChanList(theICs)) {
-		NotifyError("%s: Failed to prepare the ion channels.", funcName);
+		NotifyError(wxT("%s: Failed to prepare the ion channels."), funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
 	for (node = theICs->ionChannels; node; node = node->next) {
 		theIC = (IonChannelPtr) node->data;
 		if (!ReadICPars_IonChanList(theICs, theIC, fp)) {
-			NotifyError("%s: Could not read ion channel '%s'.", funcName,
+			NotifyError(wxT("%s: Could not read ion channel '%s'."), funcName,
 			  theIC->description);
 			Free_IonChanList(&theICs);
 			return(NULL);
 		}
 	}
 	if (!SetGeneralUniParList_IonChanList(theICs)) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
@@ -1426,37 +1434,37 @@ ReadPars_IonChanList(FILE *fp)
 IonChanListPtr
 GenerateDefault_IonChanList(void)
 {
-	static const char	*funcName = "GenerateDefault_IonChanList";
+	static const WChar	*funcName = wxT("GenerateDefault_IonChanList");
 	int		i, j;
 	IonChanListPtr	theICs = NULL;
 	IonChannelPtr	theIC;
 	DynaListPtr		node;
 	ICBoltzmannParsPtr	p;
 	struct iC {
-		char *	desc;
+		WChar *	desc;
 		double	equilPot;
 		double	baseMax;
 		double	actExp;
 		double	condQ10;
 		double	currPars[2][3];
 	} iCs[] = {
-		{ "Na_Conner", 0.055, 300e-9, 1.0, 2.5, {{-0.0191, 3.7, 0.10e-3},
+		{ wxT("Na_Conner"), 0.055, 300e-9, 1.0, 2.5, {{-0.0191, 3.7, 0.10e-3},
 		  {-0.053, -3.6, 0.50e-3}}},
-		{ "K+_FastHiT", -0.073, 54e-9, 1.0, 2.5, {{-0.015, 4, 1.61e-3},
+		{ wxT("K+_FastHiT"), -0.073, 54e-9, 1.0, 2.5, {{-0.015, 4, 1.61e-3},
 		  {0.0, 0.0, 0.0}}},
-		{ "K+_SlowLoT", -0.073, 18e-9, 1.0, 2.5, {{-0.028, 4.6, 10.0e-3},
+		{ wxT("K+_SlowLoT"), -0.073, 18e-9, 1.0, 2.5, {{-0.028, 4.6, 10.0e-3},
 		  {0.0, 0.0, 0.0}}},
-		{ "K+_BoltzmannTr", -0.073, 24e-9, 1.0, 2.5, {{-0.0302, 0.6, 1.0e-3},
-		  {-0.0612, -4.9, 3.0e-3}}}
+		{ wxT("K+_BoltzmannTr"), -0.073, 24e-9, 1.0, 2.5, {{-0.0302, 0.6,
+		  1.0e-3}, {-0.0612, -4.9, 3.0e-3}}}
 	};
 
-	if ((theICs = Init_IonChanList((char *) funcName)) == NULL) {
-		NotifyError("%s: Out of memory for ion channel list structure.",
+	if ((theICs = Init_IonChanList((WChar *) funcName)) == NULL) {
+		NotifyError(wxT("%s: Out of memory for ion channel list structure."),
 		  funcName);
 		return(NULL);
 	}
 	SetNumChannels_IonChanList(theICs, 4);
-	SetPrintTablesMode_IonChanList(theICs, "off");
+	SetPrintTablesMode_IonChanList(theICs, wxT("off"));
 	SetBaseLeakageCond_IonChanList(theICs, 0.150e-9);
 	SetLeakagePot_IonChanList(theICs, -0.01);
 	SetTemperature_IonChanList(theICs, 22.0);
@@ -1467,15 +1475,16 @@ GenerateDefault_IonChanList(void)
 
 	SetGeneratedPars_IonChanList(theICs);
 	if (!PrepareIonChannels_IonChanList(theICs)) {
-		NotifyError("%s: Failed to prepare the ion channels.", funcName);
+		NotifyError(wxT("%s: Failed to prepare the ion channels."), funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
 	for (node = theICs->ionChannels, i = 0; node; node = node->next, i++) {
 		theIC = (IonChannelPtr) node->data;
 		if (!SetICGeneralPars_IonChanList(theIC, ICLIST_BOLTZMANN_MODE,
-		  iCs[i].desc, "on", iCs[i].equilPot, iCs[i].baseMax, iCs[i].actExp)) {
-			NotifyError("%s: Could not set general parameters.", funcName);
+		  iCs[i].desc, wxT("on"), iCs[i].equilPot, iCs[i].baseMax, iCs[i].
+		  actExp)) {
+			NotifyError(wxT("%s: Could not set general parameters."), funcName);
 			Free_IonChanList(&theICs);
 			return(NULL);
 		}
@@ -1491,7 +1500,7 @@ GenerateDefault_IonChanList(void)
 		GenerateBoltzmann_IonChanList(theIC);
 	}
 	if (!SetGeneralUniParList_IonChanList(theICs)) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IonChanList(&theICs);
 		return(NULL);
 	}
@@ -1512,7 +1521,7 @@ GenerateDefault_IonChanList(void)
 BOOLN
 PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 {
-	static const char	*funcName = "PrepareIonChannels_IonChanList";
+	static const WChar	*funcName = wxT("PrepareIonChannels_IonChanList");
 	int		i;
 	IonChannelPtr	theIC;
 	DynaListPtr		node, previous;
@@ -1521,7 +1530,8 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 		return(FALSE);
 
 	if (!SetGeneratedPars_IonChanList(theICs)) {
-		NotifyError("%s: Ion channel parameters must be set first.", funcName);
+		NotifyError(wxT("%s: Ion channel parameters must be set first."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!theICs->ionChannels)
@@ -1543,14 +1553,14 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 					return(FALSE);
 				SetICGeneralParsFromICList_IonChanList(theIC, theICs);
 				if (!Append_Utility_DynaList(&theICs->ionChannels, theIC)) {
-					NotifyError("%s: Could not add ion channel [%d] to list.",
-					  funcName, i);
+					NotifyError(wxT("%s: Could not add ion channel [%d] to "
+					  "list."), funcName, i);
 					FreeIonChannel_IonChanList(&theIC);
 					return(FALSE);
 				}
 				if (!SetIonChannelUniParList_IonChanList(theICs, theIC)) { 
-					NotifyError("%s: Could not initialise ion channel '%s' "
-					  "parameter list.", funcName, theIC->description);
+					NotifyError(wxT("%s: Could not initialise ion channel '%s' "
+					  "parameter list."), funcName, theIC->description);
 					return(FALSE);
 				}
 			}
@@ -1629,7 +1639,6 @@ SetICPowFunc_IonChanList(IonChannelPtr theIC)
 
 	if (fabs(theIC->activationExponent) != (intActivation = (int) floor(fabs(
 	  theIC->activationExponent) + 0.5))) {
-		printf("Debug: Using standard 'pow' function.\n");
 		theIC->PowFunc = pow;
 		return;
 	}
@@ -1659,9 +1668,9 @@ SetICPowFunc_IonChanList(IonChannelPtr theIC)
 BOOLN
 ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 {
-	static const char	*funcName = "ResetIonChannel_IonChanList";
+	static const WChar	*funcName = wxT("ResetIonChannel_IonChanList");
 	BOOLN	ok = TRUE;
-	char	enabled[SMALL_STRING], description[MAXLINE];
+	WChar	enabled[SMALL_STRING], description[MAXLINE];
 	double	equilibriumPot, baseMaxConductance, activationExponent;
 	FILE	*fp = NULL;
 
@@ -1673,12 +1682,13 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 		if (!ReadICGeneralPars_IonChanList(&fp, theIC->mode,
 		  theIC->fileName, description, enabled, &equilibriumPot,
 		  &baseMaxConductance, &activationExponent)) {
-			NotifyError("%s: Could not read general parameters.", funcName);
+			NotifyError(wxT("%s: Could not read general parameters."),
+			  funcName);
 			ok = FALSE;
 		}
 		if (ok && !SetICGeneralPars_IonChanList(theIC, theIC->mode, description,
 		  enabled, equilibriumPot, baseMaxConductance, activationExponent)) {
-			NotifyError("%s: Could not set general parameters.", funcName);
+			NotifyError(wxT("%s: Could not set general parameters."), funcName);
 			FreeIonChannel_IonChanList(&theIC);
 			ok = FALSE;
 		}
@@ -1694,7 +1704,7 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 		GenerateHHuxley_IonChanList(theIC);
 		break;
 	default	:
-		NotifyError("%s: Ion channel mode not implemented (%d).", funcName,
+		NotifyError(wxT("%s: Ion channel mode not implemented (%d)."), funcName,
 		  theIC->mode);
 		ok = FALSE;
 	} /* Switch */
@@ -1710,12 +1720,13 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
  */
 
 BOOLN
-CheckInit_IonChanList(IonChanListPtr theICList, const char *callingFunction)
+CheckInit_IonChanList(IonChanListPtr theICList, const WChar *callingFunction)
 {
-	static const char	*funcName = "CheckInit_IonChanList";
+	static const WChar	*funcName = wxT("CheckInit_IonChanList");
 
 	if (theICList == NULL) {
-		NotifyError("%s: ICList not set in %s.", funcName, callingFunction);
+		NotifyError(wxT("%s: ICList not set in %s."), funcName,
+		  callingFunction);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1729,12 +1740,12 @@ CheckInit_IonChanList(IonChanListPtr theICList, const char *callingFunction)
  */
 
 BOOLN
-CheckInitIC_IonChanList(IonChannelPtr theIC, const char *callingFunction)
+CheckInitIC_IonChanList(IonChannelPtr theIC, const WChar *callingFunction)
 {
-	static const char	*funcName = "CheckInitIC_IonChanList";
+	static const WChar	*funcName = wxT("CheckInitIC_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised in %s.", funcName,
+		NotifyError(wxT("%s: Ion channel not initialised in %s."), funcName,
 		  callingFunction);
 		return(FALSE);
 	}
@@ -1756,13 +1767,13 @@ CheckInitIC_IonChanList(IonChannelPtr theIC, const char *callingFunction)
 ICTableEntryPtr
 GetTableEntry_IonChanList(IonChannelPtr theIC, double voltage)
 {
-	static const char	*funcName = "GetTableEntry_IonChanList";
+	static const WChar	*funcName = wxT("GetTableEntry_IonChanList");
 	int		index;
 	
 	index = (int) floor((voltage - theIC->minVoltage) / theIC->dV + 0.5);
 	if ((index < 0) || (index >= theIC->numTableEntries)) {
-		NotifyError("%s: Voltage is outside the table bounds for\nchannel "
-		  "'%s' (%g mV).", funcName, theIC->description, MILLI(voltage));
+		NotifyError(wxT("%s: Voltage is outside the table bounds for\nchannel "
+		  "'%s' (%g mV)."), funcName, theIC->description, MILLI(voltage));
 		return(NULL);
 	}
 	return(&theIC->table[index]);
@@ -1778,13 +1789,14 @@ GetTableEntry_IonChanList(IonChannelPtr theIC, double voltage)
 BOOLN
 SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels)
 {
-	static const char *funcName = "SetNumChannels_IonChanList";
+	static const WChar *funcName = wxT("SetNumChannels_IonChanList");
 	DynaListPtr	node;
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
 	if (numChannels < 1) {
-		NotifyError("%s: Insufficient channels (%d).", funcName, numChannels);
+		NotifyError(wxT("%s: Insufficient channels (%d)."), funcName,
+		  numChannels);
 		return(FALSE);
 	}
 	theICs->numChannels = numChannels;
@@ -1805,7 +1817,7 @@ SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels)
 BOOLN
 SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
 {
-	static const char *funcName = "SetTemperature_IonChanList";
+	static const WChar *funcName = wxT("SetTemperature_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1824,7 +1836,7 @@ SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
 BOOLN
 SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, double theLeakageCondQ10)
 {
-	static const char *funcName = "SetLeakageCondQ10_IonChanList";
+	static const WChar *funcName = wxT("SetLeakageCondQ10_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1840,9 +1852,9 @@ SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, double theLeakageCondQ10)
  */
 
 BOOLN
-SetPrintTablesMode_IonChanList(IonChanListPtr theICs, char *modeName)
+SetPrintTablesMode_IonChanList(IonChanListPtr theICs, WChar *modeName)
 {
-	static const char *funcName = "SetPrintTablesMode_IonChanList";
+	static const WChar *funcName = wxT("SetPrintTablesMode_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1861,7 +1873,7 @@ SetPrintTablesMode_IonChanList(IonChanListPtr theICs, char *modeName)
 BOOLN
 SetBaseLeakageCond_IonChanList(IonChanListPtr theICs, double baseLeakageCond)
 {
-	static const char *funcName = "SetBaseLeakageCond_IonChanList";
+	static const WChar *funcName = wxT("SetBaseLeakageCond_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1879,7 +1891,7 @@ SetBaseLeakageCond_IonChanList(IonChanListPtr theICs, double baseLeakageCond)
 BOOLN
 SetLeakagePot_IonChanList(IonChanListPtr theICs, double leakagePot)
 {
-	static const char *funcName = "SetBaseLeakageCond_IonChanList";
+	static const WChar *funcName = wxT("SetBaseLeakageCond_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1897,7 +1909,7 @@ SetLeakagePot_IonChanList(IonChanListPtr theICs, double leakagePot)
 BOOLN
 SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage)
 {
-	static const char *funcName = "SetMinVoltage_IonChanList";
+	static const WChar *funcName = wxT("SetMinVoltage_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1916,7 +1928,7 @@ SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage)
 BOOLN
 SetMaxVoltage_IonChanList(IonChanListPtr theICs, double theMaxVoltage)
 {
-	static const char *funcName = "SetMaxVoltage_IonChanList";
+	static const WChar *funcName = wxT("SetMaxVoltage_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1935,7 +1947,7 @@ SetMaxVoltage_IonChanList(IonChanListPtr theICs, double theMaxVoltage)
 BOOLN
 SetVoltageStep_IonChanList(IonChanListPtr theICs, double theVoltageStep)
 {
-	static const char *funcName = "SetVoltageStep_IonChanList";
+	static const WChar *funcName = wxT("SetVoltageStep_IonChanList");
 
 	if (!CheckInit_IonChanList(theICs, funcName))
 		return(FALSE);
@@ -1954,16 +1966,16 @@ SetVoltageStep_IonChanList(IonChanListPtr theICs, double theVoltageStep)
  */
 
 BOOLN
-SetICEnabled_IonChanList(IonChannelPtr theIC, char *theICEnabled)
+SetICEnabled_IonChanList(IonChannelPtr theIC, WChar *theICEnabled)
 {
-	static const char	*funcName = "SetICEnabled_IonChanList(";
+	static const WChar	*funcName = wxT("SetICEnabled_IonChanList(");
 	int		specifier;
 
 	if (!CheckInitIC_IonChanList(theIC, funcName))
 		return(FALSE);
 	if ((specifier = Identify_NameSpecifier(theICEnabled,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal status name (%s).", funcName,
+		NotifyError(wxT("%s: Illegal status name (%s)."), funcName,
 		  theICEnabled);
 		return(FALSE);
 	}
@@ -1979,16 +1991,17 @@ SetICEnabled_IonChanList(IonChannelPtr theIC, char *theICEnabled)
  */
 
 BOOLN
-SetICMode_IonChanList(IonChannelPtr theIC, char *modeName)
+SetICMode_IonChanList(IonChannelPtr theIC, WChar *modeName)
 {
-	static const char *funcName = "SetICMode_IonChanList";
+	static const WChar *funcName = wxT("SetICMode_IonChanList");
 	int		mode;
 
 	if (!CheckInitIC_IonChanList(theIC, funcName))
 		return(FALSE);
 	if ((mode = Identify_NameSpecifier(modeName, iCListModeList)) ==
 	  ICLIST_NULL) {
-		NotifyError("%s: Unknown ion channel mode (%s).", funcName, modeName);
+		NotifyError(wxT("%s: Unknown ion channel mode (%s)."), funcName,
+		  modeName);
 		return(FALSE);
 	}
 	theIC->mode = (ICModeSpecifier) mode;
@@ -2008,15 +2021,15 @@ SetICMode_IonChanList(IonChannelPtr theIC, char *modeName)
  */
  
 BOOLN
-SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription)
+SetICDescription_IonChanList(IonChannelPtr theIC, WChar *theDescription)
 {
-	static const char *funcName = "SetICDescription_IonChanList";
+	static const WChar *funcName = wxT("SetICDescription_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
-	snprintf(theIC->description, MAXLINE, "%s", theDescription);
+	DSAM_snprintf(theIC->description, MAXLINE, wxT("%s"), theDescription);
 	return(TRUE);
 
 }
@@ -2030,10 +2043,10 @@ SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription)
 BOOLN
 SetICEquilibriumPot_IonChanList(IonChannelPtr theIC, double theEquilibriumPot)
 {
-	static const char *funcName = "SetICEquilibriumPot_IonChanList";
+	static const WChar *funcName = wxT("SetICEquilibriumPot_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->equilibriumPot = theEquilibriumPot;
@@ -2051,10 +2064,10 @@ BOOLN
 SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
   double theBaseMaxConductance)
 {
-	static const char *funcName = "SetICBaseMaxConductance_IonChanList";
+	static const WChar *funcName = wxT("SetICBaseMaxConductance_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->baseMaxConductance = theBaseMaxConductance;
@@ -2079,10 +2092,10 @@ SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
 BOOLN
 SetICConductanceQ10_IonChanList(IonChannelPtr theIC, double theConductanceQ10)
 {
-	static const char *funcName = "SetICConductanceQ10_IonChanList";
+	static const WChar *funcName = wxT("SetICConductanceQ10_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->conductanceQ10 = theConductanceQ10;
@@ -2100,10 +2113,10 @@ BOOLN
 SetICActivationExponent_IonChanList(IonChannelPtr theIC,
   double theActivationExponent)
 {
-	static const char *funcName = "SetICActivationExponent_IonChanList";
+	static const WChar *funcName = wxT("SetICActivationExponent_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->activationExponent = theActivationExponent;
@@ -2121,10 +2134,10 @@ BOOLN
 SetICBoltzmannHalfMaxV_IonChanList(IonChannelPtr theIC, int index,
   double theHalfMaxV)
 {
-	static const char *funcName = "SetICBoltzmannHalfMaxV_IonChanList";
+	static const WChar *funcName = wxT("SetICBoltzmannHalfMaxV_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->boltzmann.halfMaxV.array[index] = theHalfMaxV;
@@ -2141,10 +2154,10 @@ SetICBoltzmannHalfMaxV_IonChanList(IonChannelPtr theIC, int index,
 BOOLN
 SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index, double theZ)
 {
-	static const char *funcName = "SetICBoltzmannZ_IonChanList";
+	static const WChar *funcName = wxT("SetICBoltzmannZ_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->boltzmann.zZ.array[index] = theZ;
@@ -2161,10 +2174,10 @@ SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index, double theZ)
 BOOLN
 SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index, double theTau)
 {
-	static const char *funcName = "SetICBoltzmannTau_IonChanList";
+	static const WChar *funcName = wxT("SetICBoltzmannTau_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->boltzmann.tau.array[index] = theTau;
@@ -2181,10 +2194,10 @@ SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index, double theTau)
 BOOLN
 SetICHHuxleyAlphaA_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaA_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaA_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aA.array[index] = value;
@@ -2201,10 +2214,10 @@ SetICHHuxleyAlphaA_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaB_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaB_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaB_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aB.array[index] = value;
@@ -2221,10 +2234,10 @@ SetICHHuxleyAlphaB_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaC_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaC_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaC_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aC.array[index] = value;
@@ -2241,10 +2254,10 @@ SetICHHuxleyAlphaC_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaD_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaD_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaD_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aD.array[index] = value;
@@ -2261,10 +2274,10 @@ SetICHHuxleyAlphaD_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaE_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaE_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaE_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aE.array[index] = value;
@@ -2281,10 +2294,10 @@ SetICHHuxleyAlphaE_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaF_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaF_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaF_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aF.array[index] = value;
@@ -2301,10 +2314,10 @@ SetICHHuxleyAlphaF_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaG_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaG_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaG_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aG.array[index] = value;
@@ -2321,10 +2334,10 @@ SetICHHuxleyAlphaG_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaH_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaH_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaH_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aH.array[index] = value;
@@ -2341,10 +2354,10 @@ SetICHHuxleyAlphaH_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaI_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaI_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaI_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aI.array[index] = value;
@@ -2361,10 +2374,10 @@ SetICHHuxleyAlphaI_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaJ_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaJ_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaJ_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aJ.array[index] = value;
@@ -2381,10 +2394,10 @@ SetICHHuxleyAlphaJ_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyAlphaK_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyAlphaK_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyAlphaK_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.aK.array[index] = value;
@@ -2401,10 +2414,10 @@ SetICHHuxleyAlphaK_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaA_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaA_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaA_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bA.array[index] = value;
@@ -2421,10 +2434,10 @@ SetICHHuxleyBetaA_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaB_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaB_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaB_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bB.array[index] = value;
@@ -2441,10 +2454,10 @@ SetICHHuxleyBetaB_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaC_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaC_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaC_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bC.array[index] = value;
@@ -2461,10 +2474,10 @@ SetICHHuxleyBetaC_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaD_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaD_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaD_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bD.array[index] = value;
@@ -2481,10 +2494,10 @@ SetICHHuxleyBetaD_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaE_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaE_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaE_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bE.array[index] = value;
@@ -2501,10 +2514,10 @@ SetICHHuxleyBetaE_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaF_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaF_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaF_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bF.array[index] = value;
@@ -2521,10 +2534,10 @@ SetICHHuxleyBetaF_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaG_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaG_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaG_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bG.array[index] = value;
@@ -2541,10 +2554,10 @@ SetICHHuxleyBetaG_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaH_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaH_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaH_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bH.array[index] = value;
@@ -2561,10 +2574,10 @@ SetICHHuxleyBetaH_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaI_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaI_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaI_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bI.array[index] = value;
@@ -2581,10 +2594,10 @@ SetICHHuxleyBetaI_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaJ_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaJ_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaJ_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bJ.array[index] = value;
@@ -2601,10 +2614,10 @@ SetICHHuxleyBetaJ_IonChanList(IonChannelPtr theIC, int index, double value)
 BOOLN
 SetICHHuxleyBetaK_IonChanList(IonChannelPtr theIC, int index, double value)
 {
-	static const char *funcName = "SetICHHuxleyBetaK_IonChanList";
+	static const WChar *funcName = wxT("SetICHHuxleyBetaK_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
 	theIC->hHuxley.bK.array[index] = value;
@@ -2619,15 +2632,15 @@ SetICHHuxleyBetaK_IonChanList(IonChannelPtr theIC, int index, double value)
  */
  
 BOOLN
-SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName)
+SetICFileName_IonChanList(IonChannelPtr theIC, WChar *fileName)
 {
-	static const char *funcName = "SetICFileName_IonChanList";
+	static const WChar *funcName = wxT("SetICFileName_IonChanList");
 
 	if (!theIC) {
-		NotifyError("%s: Ion channel not initialised.", funcName);
+		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
-	snprintf(theIC->fileName, MAX_FILE_PATH, "%s", fileName);
+	DSAM_snprintf(theIC->fileName, MAX_FILE_PATH, wxT("%s"), fileName);
 	theIC->updateFlag = TRUE;
 	if (theIC->parList)
 		theIC->parList->updateFlag = TRUE;

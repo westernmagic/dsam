@@ -32,6 +32,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtFilters.h"
 #include "FlMultiBPass.h"
 
@@ -57,8 +58,6 @@ MultiBPassFPtr	multiBPassFPtr = NULL;
 BOOLN
 Free_Filter_MultiBPass(void)
 {
-	/* static const char	*funcName = "Free_Filter_MultiBPass";  */
-
 	if (multiBPassFPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Filter_MultiBPass();
@@ -97,8 +96,8 @@ Free_Filter_MultiBPass(void)
 BOOLN
 SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
 {
-	static const char *funcName =
-	  "SetDefaultNumFiltersArrays_Filter_MultiBPass";
+	static const WChar *funcName =
+	  wxT("SetDefaultNumFiltersArrays_Filter_MultiBPass");
 	int		i;
 	int		cascade[] = {2, 2, 2};
 	double	gain[] = {1.5, 6.0, -11.0};
@@ -106,7 +105,7 @@ SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
 	double	upperCutOffFreq[] = {5500.0, 5000.0, 14000.0};
 
 	if (!AllocNumFilters_Filter_MultiBPass(3)) {
-		NotifyError("%s: Could not allocate default arrays.", funcName);
+		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < multiBPassFPtr->numFilters; i++) {
@@ -134,19 +133,20 @@ SetDefaultNumFiltersArrays_Filter_MultiBPass(void)
 BOOLN
 Init_Filter_MultiBPass(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("Init_Filter_MultiBPass");
 
 	if (parSpec == GLOBAL) {
 		if (multiBPassFPtr != NULL)
 			Free_Filter_MultiBPass();
 		if ((multiBPassFPtr = (MultiBPassFPtr) malloc(sizeof(MultiBPassF))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (multiBPassFPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -160,13 +160,13 @@ Init_Filter_MultiBPass(ParameterSpecifier parSpec)
 	multiBPassFPtr->lowerCutOffFreq = NULL;
 
 	if (!SetDefaultNumFiltersArrays_Filter_MultiBPass()) {
-		NotifyError("%s: Could not set the default 'numFilters' arrays.",
+		NotifyError(wxT("%s: Could not set the default 'numFilters' arrays."),
 		  funcName);
 		return(FALSE);
 	}
 
 	if (!SetUniParList_Filter_MultiBPass()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Filter_MultiBPass();
 		return(FALSE);
 	}
@@ -187,44 +187,44 @@ Init_Filter_MultiBPass(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Filter_MultiBPass(void)
 {
-	static const char *funcName = "SetUniParList_Filter_MultiBPass";
+	static const WChar *funcName = wxT("SetUniParList_Filter_MultiBPass");
 	UniParPtr	pars;
 
 	if ((multiBPassFPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  MULTIBPASS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = multiBPassFPtr->parList->pars;
-	SetPar_UniParMgr(&pars[MULTIBPASS_NUMFILTERS], "NUM_FILTERS",
-	  "No. of parallel band pass filters.",
+	SetPar_UniParMgr(&pars[MULTIBPASS_NUMFILTERS], wxT("NUM_FILTERS"),
+	  wxT("No. of parallel band pass filters."),
 	  UNIPAR_INT_AL,
 	  &multiBPassFPtr->numFilters, NULL,
 	  (void * (*)) SetNumFilters_Filter_MultiBPass);
-	SetPar_UniParMgr(&pars[MULTIBPASS_CASCADE], "CASCADE",
-	  "Filter cascades.",
+	SetPar_UniParMgr(&pars[MULTIBPASS_CASCADE], wxT("CASCADE"),
+	  wxT("Filter cascades."),
 	  UNIPAR_INT_ARRAY,
 	  &multiBPassFPtr->cascade, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualCascade_Filter_MultiBPass);
-	SetPar_UniParMgr(&pars[MULTIBPASS_GAIN], "GAIN",
-	  "Filter pre-attentuation (dB SPL).",
+	SetPar_UniParMgr(&pars[MULTIBPASS_GAIN], wxT("GAIN"),
+	  wxT("Filter pre-attentuation (dB SPL)."),
 	  UNIPAR_REAL_ARRAY,
 	  &multiBPassFPtr->gain, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualGain_Filter_MultiBPass);
 	SetPar_UniParMgr(&pars[MULTIBPASS_LOWERCUTOFFFREQ],
-	  "LOWER_FREQ",
-	  "Filter lower cut-off frequencies (Hz).",
+	  wxT("LOWER_FREQ"),
+	  wxT("Filter lower cut-off frequencies (Hz)."),
 	  UNIPAR_REAL_ARRAY,
 	  &multiBPassFPtr->lowerCutOffFreq, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualLowerCutOffFreq_Filter_MultiBPass);
 	SetPar_UniParMgr(&pars[MULTIBPASS_UPPERCUFOFFFREQ],
-	  "UPPER_FREQ",
-	  "Filter upper cut-off frequencies (Hz).",
+	  wxT("UPPER_FREQ"),
+	  wxT("Filter upper cut-off frequencies (Hz)."),
 	  UNIPAR_REAL_ARRAY,
 	  &multiBPassFPtr->upperCutOffFreq, &multiBPassFPtr->numFilters,
 	  (void * (*)) SetIndividualUpperCutOffFreq_Filter_MultiBPass);
 
-	SetAltAbbreviation_UniParMgr(&pars[MULTIBPASS_GAIN], "ATTENUATION");
+	SetAltAbbreviation_UniParMgr(&pars[MULTIBPASS_GAIN], wxT("ATTENUATION"));
 	return(TRUE);
 
 }
@@ -239,15 +239,15 @@ SetUniParList_Filter_MultiBPass(void)
 UniParListPtr
 GetUniParListPtr_Filter_MultiBPass(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(multiBPassFPtr->parList);
@@ -268,7 +268,7 @@ GetUniParListPtr_Filter_MultiBPass(void)
 BOOLN
 AllocNumFilters_Filter_MultiBPass(int numFilters)
 {
-	static const char	*funcName = "AllocNumFilters_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("AllocNumFilters_Filter_MultiBPass");
 
 	if (numFilters == multiBPassFPtr->numFilters)
 		return(TRUE);
@@ -276,15 +276,15 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
 		free(multiBPassFPtr->cascade);
 	if ((multiBPassFPtr->cascade = (int *) calloc(numFilters, sizeof(int))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' cascade.", funcName,
-		  numFilters);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' cascade."),
+		  funcName, numFilters);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->gain)
 		free(multiBPassFPtr->gain);
 	if ((multiBPassFPtr->gain = (double *) calloc(numFilters,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' gain.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' gain."),
 		  funcName, numFilters);
 		return(FALSE);
 	}
@@ -292,7 +292,7 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
 		free(multiBPassFPtr->upperCutOffFreq);
 	if ((multiBPassFPtr->upperCutOffFreq = (double *) calloc(numFilters,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' upperCutOffFreq.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' upperCutOffFreq."),
 		  funcName, numFilters);
 		return(FALSE);
 	}
@@ -300,7 +300,7 @@ AllocNumFilters_Filter_MultiBPass(int numFilters)
 		free(multiBPassFPtr->lowerCutOffFreq);
 	if ((multiBPassFPtr->lowerCutOffFreq = (double *) calloc(numFilters,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' lowerCutOffFreq.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' lowerCutOffFreq."),
 		  funcName, numFilters);
 		return(FALSE);
 	}
@@ -321,7 +321,7 @@ BOOLN
 SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
   double *upperCutOffFreq, double *lowerCutOffFreq)
 {
-	static const char	*funcName = "SetPars_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("SetPars_Filter_MultiBPass");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -336,7 +336,7 @@ SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
 	if (!SetLowerCutOffFreq_Filter_MultiBPass(lowerCutOffFreq))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -354,20 +354,20 @@ SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
 BOOLN
 SetNumFilters_Filter_MultiBPass(int theNumFilters)
 {
-	static const char	*funcName = "SetNumFilters_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("SetNumFilters_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumFilters < 1) {
-		NotifyError("%s: Value must be greater then zero (%d).", funcName,
+		NotifyError(wxT("%s: Value must be greater then zero (%d)."), funcName,
 		  theNumFilters);
 		return(FALSE);
 	}
 	if (!AllocNumFilters_Filter_MultiBPass(theNumFilters)) {
-		NotifyError("%s: Cannot allocate memory for the 'numFilters' arrays.",
-		  funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -388,10 +388,10 @@ SetNumFilters_Filter_MultiBPass(int theNumFilters)
 BOOLN
 SetCascade_Filter_MultiBPass(int *theCascade)
 {
-	static const char	*funcName = "SetCascade_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("SetCascade_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -411,25 +411,25 @@ SetCascade_Filter_MultiBPass(int *theCascade)
 BOOLN
 SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade)
 {
-	static const char	*funcName =
-	  "SetIndividualCascade_Filter_MultiBPass";
+	static const WChar	*funcName =
+	  wxT("SetIndividualCascade_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->cascade == NULL) {
-		NotifyError("%s: Cascade not set.", funcName);
+		NotifyError(wxT("%s: Cascade not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > multiBPassFPtr->numFilters - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, multiBPassFPtr->numFilters - 1, theIndex);
 		return(FALSE);
 	}
 	if (theCascade < 1) {
-		NotifyError("%s: This value must be greater than 0 (%d).\n", funcName,
-		  theCascade);
+		NotifyError(wxT("%s: This value must be greater than 0 (%d).\n"),
+		  funcName, theCascade);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -449,10 +449,10 @@ SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade)
 BOOLN
 SetGain_Filter_MultiBPass(double *theGain)
 {
-	static const char	*funcName = "SetGain_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("SetGain_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -473,19 +473,19 @@ BOOLN
 SetIndividualGain_Filter_MultiBPass(int theIndex,
   double theGain)
 {
-	static const char *funcName =
-	  "SetIndividualGain_Filter_MultiBPass";
+	static const WChar *funcName =
+	  wxT("SetIndividualGain_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->gain == NULL) {
-		NotifyError("%s: Gain not set.", funcName);
+		NotifyError(wxT("%s: Gain not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > multiBPassFPtr->numFilters - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, multiBPassFPtr->numFilters - 1, theIndex);
 		return(FALSE);
 	}
@@ -506,11 +506,11 @@ SetIndividualGain_Filter_MultiBPass(int theIndex,
 BOOLN
 SetUpperCutOffFreq_Filter_MultiBPass(double *theUpperCutOffFreq)
 {
-	static const char	*funcName =
-	  "SetUpperCutOffFreq_Filter_MultiBPass";
+	static const WChar	*funcName =
+	  wxT("SetUpperCutOffFreq_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -531,19 +531,19 @@ BOOLN
 SetIndividualUpperCutOffFreq_Filter_MultiBPass(int theIndex,
   double theUpperCutOffFreq)
 {
-	static const char	*funcName =
-	  "SetIndividualUpperCutOffFreq_Filter_MultiBPass";
+	static const WChar	*funcName =
+	  wxT("SetIndividualUpperCutOffFreq_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->upperCutOffFreq == NULL) {
-		NotifyError("%s: UpperCutOffFreq not set.", funcName);
+		NotifyError(wxT("%s: UpperCutOffFreq not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > multiBPassFPtr->numFilters - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, multiBPassFPtr->numFilters - 1, theIndex);
 		return(FALSE);
 	}
@@ -564,11 +564,11 @@ SetIndividualUpperCutOffFreq_Filter_MultiBPass(int theIndex,
 BOOLN
 SetLowerCutOffFreq_Filter_MultiBPass(double *theLowerCutOffFreq)
 {
-	static const char	*funcName =
-	  "SetLowerCutOffFreq_Filter_MultiBPass";
+	static const WChar	*funcName =
+	  wxT("SetLowerCutOffFreq_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -589,19 +589,19 @@ BOOLN
 SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
  double theLowerCutOffFreq)
 {
-	static const char	*funcName =
-	  "SetIndividualLowerCutOffFreq_Filter_MultiBPass";
+	static const WChar	*funcName =
+	  wxT("SetIndividualLowerCutOffFreq_Filter_MultiBPass");
 
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (multiBPassFPtr->lowerCutOffFreq == NULL) {
-		NotifyError("%s: LowerCutOffFreq not set.", funcName);
+		NotifyError(wxT("%s: LowerCutOffFreq not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > multiBPassFPtr->numFilters - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, multiBPassFPtr->numFilters - 1, theIndex);
 		return(FALSE);
 	}
@@ -624,32 +624,32 @@ SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
 BOOLN
 CheckPars_Filter_MultiBPass(void)
 {
-	static const char	*funcName = "CheckPars_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("CheckPars_Filter_MultiBPass");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (multiBPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!multiBPassFPtr->numFiltersFlag) {
-		NotifyError("%s: numFilters variable not set.", funcName);
+		NotifyError(wxT("%s: numFilters variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (multiBPassFPtr->cascade == NULL) {
-		NotifyError("%s: cascade array not set.", funcName);
+		NotifyError(wxT("%s: cascade array not set."), funcName);
 		ok = FALSE;
 	}
 	if (multiBPassFPtr->gain == NULL) {
-		NotifyError("%s: gain array not set.", funcName);
+		NotifyError(wxT("%s: gain array not set."), funcName);
 		ok = FALSE;
 	}
 	if (multiBPassFPtr->upperCutOffFreq == NULL) {
-		NotifyError("%s: upperCutOffFreq array not set.", funcName);
+		NotifyError(wxT("%s: upperCutOffFreq array not set."), funcName);
 		ok = FALSE;
 	}
 	if (multiBPassFPtr->lowerCutOffFreq == NULL) {
-		NotifyError("%s: lowerCutOffFreq array not set.", funcName);
+		NotifyError(wxT("%s: lowerCutOffFreq array not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -666,20 +666,22 @@ CheckPars_Filter_MultiBPass(void)
 BOOLN
 PrintPars_Filter_MultiBPass(void)
 {
-	static const char	*funcName = "PrintPars_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("PrintPars_Filter_MultiBPass");
 	int		i;
 
 	if (!CheckPars_Filter_MultiBPass()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Multiple Bandpass Filter Module Parameters:-\n");
-	DPrint("\tNo. Filters = %d\n", multiBPassFPtr->numFilters);
-	DPrint("\t%10s\t%10s\t%10s\t%10s\n", "Pre-atten. ","   Cascade  ",
-	  " L. Cutoff", " H. Cutoff");
-	DPrint("\t%10s\t%10s\t%10s\t%10s\n", "(dB)", "", "(Hz)", "(Hz)");
+	DPrint(wxT("Multiple Bandpass Filter Module Parameters:-\n"));
+	DPrint(wxT("\tNo. Filters = %d\n"), multiBPassFPtr->numFilters);
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("Pre-atten. "), wxT(
+	  "   Cascade  "), wxT(" L. Cutoff"), wxT(" H. Cutoff"));
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("(dB)"), wxT(""), wxT("(Hz)"),
+	  wxT("(Hz)"));
 	for (i = 0; i < multiBPassFPtr->numFilters; i++)
-		DPrint("\t%10g\t%10d\t%10g\t%10g\n", multiBPassFPtr->gain[i],
+		DPrint(wxT("\t%10g\t%10d\t%10g\t%10g\n"), multiBPassFPtr->gain[i],
 		  multiBPassFPtr->cascade[i], multiBPassFPtr->lowerCutOffFreq[i],
 		  multiBPassFPtr->upperCutOffFreq[i]);
 	return(TRUE);
@@ -693,45 +695,46 @@ PrintPars_Filter_MultiBPass(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Filter_MultiBPass(char *fileName)
+ReadPars_Filter_MultiBPass(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("ReadPars_Filter_MultiBPass");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		i, numFilters;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numFilters))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numFilters))
 		ok = FALSE;
 	if (!AllocNumFilters_Filter_MultiBPass(numFilters)) {
-		NotifyError("%s: Cannot allocate memory for the 'numFilters' arrays.",
-		 funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numFilters; i++)
-		if (!GetPars_ParFile(fp, "%d %lf %lf %lf", &multiBPassFPtr->cascade[i],
-		  &multiBPassFPtr->gain[i], &multiBPassFPtr->lowerCutOffFreq[i],
-		  &multiBPassFPtr->upperCutOffFreq[i]))
+		if (!GetPars_ParFile(fp, wxT("%d %lf %lf %lf"), &multiBPassFPtr->
+		  cascade[i], &multiBPassFPtr->gain[i], &multiBPassFPtr->
+		  lowerCutOffFreq[i], &multiBPassFPtr->upperCutOffFreq[i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_MultiBPass(numFilters, multiBPassFPtr->cascade,
 	  multiBPassFPtr->gain, multiBPassFPtr->upperCutOffFreq, multiBPassFPtr->
 	  lowerCutOffFreq)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -748,10 +751,10 @@ ReadPars_Filter_MultiBPass(char *fileName)
 BOOLN
 SetParsPointer_Filter_MultiBPass(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("SetParsPointer_Filter_MultiBPass");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	multiBPassFPtr = (MultiBPassFPtr) theModule->parsPtr;
@@ -768,14 +771,15 @@ SetParsPointer_Filter_MultiBPass(ModulePtr theModule)
 BOOLN
 InitModule_Filter_MultiBPass(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("InitModule_Filter_MultiBPass");
 
 	if (!SetParsPointer_Filter_MultiBPass(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Filter_MultiBPass(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = multiBPassFPtr;
@@ -804,16 +808,17 @@ InitModule_Filter_MultiBPass(ModulePtr theModule)
 BOOLN
 CheckData_Filter_MultiBPass(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("CheckData_Filter_MultiBPass");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Input signal not correctly initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -830,7 +835,8 @@ CheckData_Filter_MultiBPass(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Filter_MultiBPass";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_Filter_MultiBPass");
 	BOOLN	ok = TRUE;
 	int		i, j, k;
 	double	*statePtr;
@@ -842,7 +848,7 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 		p->numChannels = data->outSignal->numChannels;
 		if ((p->bPassPars = (BPassParsPtr) calloc(p->numFilters, sizeof(
 		  BPassPars))) == NULL) {
-			NotifyError("%s: Cannot allocate memory for bPassPars array.",
+			NotifyError(wxT("%s: Cannot allocate memory for bPassPars array."),
 			  funcName);
 			return(FALSE);
 		}
@@ -850,15 +856,15 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			bPParsPtr = &p->bPassPars[i];
 			if ((bPParsPtr->coefficients = (BandPassCoeffsPtr *) calloc(
 			  p->numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory for filter %d's coefficients.",
-				  funcName, i);
+		 		NotifyError(wxT("%s: Out of memory for filter %d's "
+				  "coefficients."), funcName, i);
 		 		return(FALSE);
 			}
 			if (i == 0)
 				bPParsPtr->data = data;
 			else {
-				if ((bPParsPtr->data = Init_EarObject("NULL")) == NULL) {
-		 			NotifyError("%s: Out of memory for filter %d's data.",
+				if ((bPParsPtr->data = Init_EarObject(wxT("NULL"))) == NULL) {
+		 			NotifyError(wxT("%s: Out of memory for filter %d's data."),
 					  funcName, i);
 		 			return(FALSE);
 				}
@@ -866,8 +872,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			
 		}
 		if (!InitSubProcessList_EarObject(data, p->numFilters - 1)) {
-			NotifyError("%s: Could not initialise %d sub-process list for "
-			  "process.", funcName, p->numFilters);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
+			  "process."), funcName, p->numFilters);
 			return(FALSE);
 		}
 	 	for (i = 0; (i < p->numFilters) && ok; i++) {
@@ -878,8 +884,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 				if ((bPParsPtr->coefficients[j] = InitBandPassCoeffs_Filters(
 				  p->cascade[i], p->lowerCutOffFreq[i], p->upperCutOffFreq[i],
 				  data->inSignal[0]->dt)) == NULL) {
-				  	NotifyError("%s: Failed initialised filter %d, channel %d.",
-					  funcName, i, j);
+				  	NotifyError(wxT("%s: Failed initialised filter %d, channel "
+					  "%d."), funcName, i, j);
 					ok = FALSE;
 				}
 		}
@@ -952,7 +958,7 @@ FreeProcessVariables_Filter_MultiBPass(void)
 BOOLN
 RunModel_Filter_MultiBPass(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_Filter_MultiBPass";
+	static const WChar	*funcName = wxT("RunModel_Filter_MultiBPass");
 	register	ChanData	 *inPtr, *outPtr;
 	int		i, chan;
 	ChanLen	j;
@@ -963,19 +969,19 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		if (!CheckPars_Filter_MultiBPass())
 			return(FALSE);
 		if (!CheckData_Filter_MultiBPass(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Multiple Bandpass filter Module "
-		  "process.");
+		SetProcessName_EarObject(data, wxT("Multiple Bandpass filter Module ")
+		  wxT("process."));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise the process output signal.",
-			  funcName);
+			NotifyError(wxT("%s: Could not initialise the process output "
+			  "signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_MultiBPass(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

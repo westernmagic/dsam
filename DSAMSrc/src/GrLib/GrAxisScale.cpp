@@ -53,10 +53,10 @@
 /****************************** Set *******************************************/
 
 bool
-AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
+AxisScale::Set(wxChar *numberFormat, double minVal, double maxVal, int minPos,
   int maxPos, int theNumTicks, bool theAutoScale)
 {
-	static const char *funcName = "AxisScale::Set";
+	static const wxChar *funcName = wxT("AxisScale::Set");
 
 	if (minVal > maxVal) {
 		wxLogError(wxT("%s: minmum value (%g) is greater than maximum value "
@@ -104,40 +104,41 @@ AxisScale::Set(char *numberFormat, double minVal, double maxVal, int minPos,
 /****************************** ParseNumberFormat *****************************/
 
 /*
- * This routine parses the number format and routines the number of decimal
- * number of decimal places and exponent as argument pointers.
+ * This routine parses the number format and sets the number of significant
+ * numbers, decimal places and exponent.
  * It returns FALSE if it fails in any way.
  */
 
 bool
-AxisScale::ParseNumberFormat(char *format)
+AxisScale::ParseNumberFormat(const wxString &format)
 {
-	static const char *funcName = "AxisScale::ParseNumberFormat";
-	char	*p1, *p2;
+	static const wxChar *funcName = wxT("AxisScale::ParseNumberFormat");
+	int	p1, p2;
 
-	if (!format || (format[0] == '\0')) {
+	if (format.empty()) {
 		wxLogError(wxT("%s: Format string not set.\n"), funcName);
 		return(FALSE);
 	}
-	if (strcmp(format, "auto") == 0)
+	if (format.compare(wxT("auto")) == 0)
 		return(TRUE);
 	sigDigits = 0;
 	decPlaces = 0;
-	p1 = strchr(format, '.');
-	p2 = strchr((p1)? p1: format, 'e');
-	if (p1)
-		sigDigits = p1 - format;
-	else if (p2)
-		sigDigits = p2 - format;
+	p1 = format.find('.');
+	p2 = format.find('e', p1);
+	if (p1 > 0)
+		sigDigits = p1;
+	else if (p2 > 0)
+		sigDigits = p2;
 	else
-		sigDigits = strlen(format);
-		
-	if (p1 && p2) {
+		sigDigits = format.length();
+	if ((p1 > 0) && (p2 > 0))
 		decPlaces = p2 - p1 - 1;
-	}
-	if (p2)
-		SetExponent(atoi(p2 + 1), 1);
-	else {
+	if (p2 > 0) {
+		long	exponent;
+		wxString	strExp = format.substr(p2 + 1);
+		strExp.ToLong(&exponent);
+		SetExponent((int) exponent, 1);
+	} else {
 		SetExponent(dataExponent - sigDigits, AXIS_SCALE_DELTA_EXPONENT);
 		settingsChanged = !autoScale;
 	}
@@ -244,7 +245,7 @@ AxisScale::GetTickPosition(double tickValue)
  */
 
 wxString
-AxisScale::GetFormatString(char formatChar)
+AxisScale::GetFormatString(wxChar formatChar)
 {
 	int		i;
 	wxString	format;

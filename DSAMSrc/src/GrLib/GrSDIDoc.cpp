@@ -87,7 +87,7 @@ SDIDocument::SetSimWorkingDirectory(const wxString &directory)
 {
 	SET_PARS_POINTER(GetPtr_AppInterface()->audModel);
 	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
-	SetWorkingDirectory_AppInterface((char *) directory.c_str());
+	SetWorkingDirectory_AppInterface((wxChar *) directory.c_str());
 	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->workingDirectory);
 
 }
@@ -117,15 +117,15 @@ SDIDocument::OnCloseDocument(void)
 bool
 SDIDocument::OnNewDocument(void)
 {
-	static const char *funcName = "SDIDocument::OnNewDocument";
+	static const wxChar *funcName = wxT("SDIDocument::OnNewDocument");
 
 	wxDocument::OnNewDocument();
 	FreeSim_AppInterface();
 	wxClientDC dc(diagram.GetCanvas());
 	diagram.Clear(dc);			// This was not being done automatically.
-	if ((GetPtr_AppInterface()->audModel = Init_EarObject("Util_SimScript")) ==
-	  NULL) {
-		NotifyError("%s: Could not initialise process.", funcName);
+	if ((GetPtr_AppInterface()->audModel = Init_EarObject(wxT(
+	  "Util_SimScript"))) == NULL) {
+		NotifyError(wxT("%s: Could not initialise process."), funcName);
 		return(false);
 	}
 	SetSimWorkingDirectory(wxGetCwd());
@@ -166,18 +166,18 @@ SDIDocument::SaveObject(SDI_DOC_OSTREAM& stream)
 		return(SaveXMLObject(stream));
 
 	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
-	tempFileName.AssignTempFileName("diag");
+	tempFileName.AssignTempFileName(wxT("diag"));
 
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (fileName.GetExt().IsSameAs(SDI_DOCUMENT_SIM_FILE_EXT, FALSE)) {
-		WriteParFiles_Datum((char *) fileName.GetPath().c_str(),
+		WriteParFiles_Datum((wxChar *) fileName.GetPath().c_str(),
 		  GetSimulation_AppInterface());
-		WriteSimScript_Datum((char *)tempFileName.GetFullPath().c_str(),
+		WriteSimScript_Datum((wxChar *)tempFileName.GetFullPath().c_str(),
 		  GetSimulation_AppInterface());
 	} else {
 		FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-		SetParsFile_Common((char * )tempFileName.GetFullPath().c_str(),
+		SetParsFile_Common((wxChar * )tempFileName.GetFullPath().c_str(),
 		  OVERWRITE);
 		ListParameters_AppInterface();
 		fclose(GetDSAMPtr_Common()->parsFile);
@@ -198,7 +198,7 @@ SDIDocument::SaveObject(SDI_DOC_OSTREAM& stream)
 SDI_DOC_ISTREAM&
 SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 {
-	static const char *funcName = "SDIDocument::LoadObject";
+	static const wxChar *funcName = wxT("SDIDocument::LoadObject");
 	bool	isXMLFile;
 	wxFileName tempFileName;
 	wxDocument::LoadObject(stream);
@@ -206,11 +206,11 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 	wxFileName	fileName = GetFilename();
 
 	diagram.DeleteAllShapes();
-	if ((isXMLFile = (GetSimFileType_Utility_SimScript((char *) fileName.GetExt(
-	  ).c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) == true) {
+	if ((isXMLFile = (GetSimFileType_Utility_SimScript((wxChar *) fileName.
+	  GetExt().c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) == true) {
 		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
 		if (!wxGetApp().GetGrMainApp()->LoadXMLDocument()) {
-			NotifyError("%s: Could not load XML Document.", funcName);
+			NotifyError(wxT("%s: Could not load XML Document."), funcName);
 			return(stream);
 		}
 		GetPtr_AppInterface()->canLoadSimulationFlag = false;
@@ -256,7 +256,7 @@ SDIDocument::SaveXMLObject(SDI_DOC_OSTREAM& stream)
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	SDIXMLDocument	doc(&diagram);
 	doc.Create();
-	doc.SaveFile(GetFilename());
+	doc.SaveFile((char *) GetFilename().c_str());
 	return(stream);
 
 }

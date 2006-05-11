@@ -24,6 +24,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtSample.h"
 
 /******************************************************************************/
@@ -48,8 +49,6 @@ SamplePtr	samplePtr = NULL;
 BOOLN
 Free_Utility_Sample(void)
 {
-	/* static const char	*funcName = "Free_Utility_Sample";  */
-
 	if (samplePtr == NULL)
 		return(FALSE);
 	if (samplePtr->parList)
@@ -77,18 +76,19 @@ Free_Utility_Sample(void)
 BOOLN
 Init_Utility_Sample(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Sample";
+	static const WChar	*funcName = wxT("Init_Utility_Sample");
 
 	if (parSpec == GLOBAL) {
 		if (samplePtr != NULL)
 			Free_Utility_Sample();
 		if ((samplePtr = (SamplePtr) malloc(sizeof(Sample))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (samplePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -99,7 +99,7 @@ Init_Utility_Sample(ParameterSpecifier parSpec)
 	samplePtr->dt = -1.0;
 
 	if (!SetUniParList_Utility_Sample()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Sample();
 		return(FALSE);
 	}
@@ -118,22 +118,22 @@ Init_Utility_Sample(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Sample(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Sample";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Sample");
 	UniParPtr	pars;
 
 	if ((samplePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_SAMPLE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = samplePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_SAMPLE_TIMEOFFSET], "TIMEOFFSET",
-	  "Time offset (s).",
+	SetPar_UniParMgr(&pars[UTILITY_SAMPLE_TIMEOFFSET], wxT("TIMEOFFSET"),
+	  wxT("Time offset (s)."),
 	  UNIPAR_REAL,
 	  &samplePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Utility_Sample);
-	SetPar_UniParMgr(&pars[UTILITY_SAMPLE_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s) (-ve assumes prev. signal dt).",
+	SetPar_UniParMgr(&pars[UTILITY_SAMPLE_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s) (-ve assumes prev. signal dt)."),
 	  UNIPAR_REAL,
 	  &samplePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_Utility_Sample);
@@ -151,15 +151,15 @@ SetUniParList_Utility_Sample(void)
 UniParListPtr
 GetUniParListPtr_Utility_Sample(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_Sample";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_Sample");
 
 	if (samplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (samplePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(samplePtr->parList);
@@ -176,7 +176,7 @@ GetUniParListPtr_Utility_Sample(void)
 BOOLN
 SetPars_Utility_Sample(double timeOffset, double samplingInterval)
 {
-	static const char	*funcName = "SetPars_Utility_Sample";
+	static const WChar	*funcName = wxT("SetPars_Utility_Sample");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -185,7 +185,7 @@ SetPars_Utility_Sample(double timeOffset, double samplingInterval)
 	if (!SetSamplingInterval_Utility_Sample(samplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -201,10 +201,10 @@ SetPars_Utility_Sample(double timeOffset, double samplingInterval)
 BOOLN
 SetTimeOffset_Utility_Sample(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Utility_Sample";
+	static const WChar	*funcName = wxT("SetTimeOffset_Utility_Sample");
 
 	if (samplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -225,10 +225,10 @@ SetTimeOffset_Utility_Sample(double theTimeOffset)
 BOOLN
 SetSamplingInterval_Utility_Sample(double theSamplingInterval)
 {
-	static const char	*funcName = "SetSamplingInterval_Utility_Sample";
+	static const WChar	*funcName = wxT("SetSamplingInterval_Utility_Sample");
 
 	if (samplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -251,20 +251,20 @@ SetSamplingInterval_Utility_Sample(double theSamplingInterval)
 BOOLN
 CheckPars_Utility_Sample(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Sample";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Sample");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (samplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!samplePtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!samplePtr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -281,19 +281,20 @@ CheckPars_Utility_Sample(void)
 BOOLN
 PrintPars_Utility_Sample(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Sample";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Sample");
 
 	if (!CheckPars_Utility_Sample()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Sample Utility Module Parameters:-\n");
-	DPrint("\tTime offset = %g ms\n", MILLI(samplePtr->timeOffset));
-	DPrint("\tSampling interval = ");
+	DPrint(wxT("Sample Utility Module Parameters:-\n"));
+	DPrint(wxT("\tTime offset = %g ms\n"), MILLI(samplePtr->timeOffset));
+	DPrint(wxT("\tSampling interval = "));
 	if (samplePtr->dt > 0.0)
-		DPrint("%g ms\n", MILLI(samplePtr->dt));
+		DPrint(wxT("%g ms\n"), MILLI(samplePtr->dt));
 	else
-		DPrint("<prev. signal dt>.\n");
+		DPrint(wxT("<prev. signal dt>.\n"));
 	return(TRUE);
 
 }
@@ -305,35 +306,36 @@ PrintPars_Utility_Sample(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_Sample(char *fileName)
+ReadPars_Utility_Sample(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_Sample";
+	static const WChar	*funcName = wxT("ReadPars_Utility_Sample");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	timeOffset, samplingInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Sample(timeOffset, samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -350,10 +352,10 @@ ReadPars_Utility_Sample(char *fileName)
 BOOLN
 SetParsPointer_Utility_Sample(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Sample";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Sample");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	samplePtr = (SamplePtr) theModule->parsPtr;
@@ -370,14 +372,15 @@ SetParsPointer_Utility_Sample(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Sample(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Sample";
+	static const WChar	*funcName = wxT("InitModule_Utility_Sample");
 
 	if (!SetParsPointer_Utility_Sample(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Sample(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = samplePtr;
@@ -409,26 +412,26 @@ InitModule_Utility_Sample(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Sample(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Sample";
+	static const WChar	*funcName = wxT("CheckData_Utility_Sample");
 	double	signalDuration, dt;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if ((samplePtr->dt > 0.0) && (samplePtr->dt < dt)) {
-		NotifyError("%s: Sampling interval (%g ms) is less than signal\n"
-		  "sampling interval (%g ms).", funcName, MSEC(samplePtr->dt),
+		NotifyError(wxT("%s: Sampling interval (%g ms) is less than signal\n"
+		  "sampling interval (%g ms)."), funcName, MSEC(samplePtr->dt),
 		  MSEC(dt));
 		return(FALSE);
 	}
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (samplePtr->timeOffset >= signalDuration) {
-		NotifyError("%s: Time offset (%g ms) is too long for the signal "
-		  "duration (%g ms).", funcName, MSEC(samplePtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal "
+		  "duration (%g ms)."), funcName, MSEC(samplePtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
@@ -454,7 +457,7 @@ CheckData_Utility_Sample(EarObjectPtr data)
 BOOLN
 Process_Utility_Sample(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Sample";
+	static const WChar	*funcName = wxT("Process_Utility_Sample");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	double	dt;
@@ -465,17 +468,18 @@ Process_Utility_Sample(EarObjectPtr data)
 		if (!CheckPars_Utility_Sample())
 			return(FALSE);
 		if (!CheckData_Utility_Sample(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Sample utility process");
+		SetProcessName_EarObject(data, wxT("Sample utility process"));
 		dt = (p->dt > 0.0)? p->dt: data->inSignal[0]->dt;
 		p->dtIndex = (ChanLen) (dt / data->inSignal[0]->dt + 0.5);
 		p->timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
 		  (ChanLen) (p->timeOffset / data->inSignal[0]->dt + 0.5);
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  (data->inSignal[0]->length - p->timeOffsetIndex) / p->dtIndex, dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

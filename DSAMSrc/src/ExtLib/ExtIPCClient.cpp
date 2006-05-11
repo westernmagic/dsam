@@ -49,7 +49,7 @@
 
 IPCClient::IPCClient(const wxString& hostName, uShort theServicePort)
 {
-	static const char *funcName = "IPCClient::IPCClient";
+	static const wxChar *funcName = wxT("IPCClient::IPCClient");
 	wxIPV4address	addr;
 	wxString	salutation;
 
@@ -58,18 +58,18 @@ IPCClient::IPCClient(const wxString& hostName, uShort theServicePort)
 		ok = false;
 		return;
 	}
-	addr.Hostname((hostName.length())? hostName: "localhost");
+	addr.Hostname((hostName.length())? hostName: wxT("localhost"));
 	addr.Service((!theServicePort)? EXTIPCUTILS_DEFAULT_SERVER_PORT:
 	  theServicePort);
 	if (!Connect(addr)) {
-		NotifyError("%s: Failed to connect to %s:%u\n", funcName,
+		NotifyError(wxT("%s: Failed to connect to %s:%u\n"), funcName,
 		  addr.Hostname().c_str(), addr.Service());
 		ok = false;
 		return;
 	}
 	SetFlags(wxSOCKET_WAITALL);
 	ReadString(salutation);
-	DPrint("%s: %s\n", funcName, salutation.c_str());
+	DPrint(wxT("%s: %s\n"), funcName, salutation.c_str());
 
 }
 
@@ -116,7 +116,7 @@ IPCClient::SendCommand(IPCCommandSpecifier command)
 {
 	wxString	s;
 
-	s.Printf("%s\n", iPCUtils.CommandList(command)->name);
+	s.Printf(wxT("%s\n"), iPCUtils.CommandList(command)->name);
 	Write(s, s.length());
 	return(true);
 
@@ -149,7 +149,7 @@ IPCClient::CheckStatus(void)
 bool
 IPCClient::Errors(void)
 {
-	static const char *funcName = "IPCClient::Errors";
+	static const wxChar *funcName = wxT("IPCClient::Errors");
 	unsigned char	numErrors, c;
 	int		i;
 	wxString	errMsg;
@@ -161,7 +161,7 @@ IPCClient::Errors(void)
 	for (i = 0; i < numErrors; i++) {
 		while (!Read(&c, 1).Error() && (c != '\n'))
 			errMsg += c;
-		NotifyError("%s: %s", funcName, errMsg.c_str());
+		NotifyError(wxT("%s: %s"), funcName, errMsg.c_str());
 		errMsg.Empty();
 	}
 	return(true);
@@ -175,17 +175,17 @@ IPCClient::Errors(void)
  */
 
 bool
-IPCClient::InitSimulation(const char *simulation)
+IPCClient::InitSimulation(const wxChar *simulation)
 {
-	static const char *funcName = "IPCClient:::InitSimulation";
+	static const wxChar *funcName = wxT("IPCClient:::InitSimulation");
 	unsigned char	eof = (unsigned char) EOF;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_INIT);
-	Write(simulation, strlen(simulation));
+	Write(simulation, DSAM_strlen(simulation));
 	Write(&eof, 1);
 	if (Errors()) {
-		NotifyError("%s: Could not initialise simulation.", funcName);
+		NotifyError(wxT("%s: Could not initialise simulation."), funcName);
 		return(false);
 	}
 	return(true);
@@ -203,27 +203,30 @@ IPCClient::InitSimulation(const char *simulation)
 bool
 IPCClient::CreateSPFFromSimScript(wxFileName &fileName)
 {
-	static const char *funcName = "IPCClient::CreateSPFFromSimScript";
+	static const wxChar *funcName = wxT("IPCClient::CreateSPFFromSimScript");
 	bool	ok = true;
 	EarObjectPtr	process = NULL;
 
-	if ((process = Init_EarObject("Util_SimScript")) == NULL) {
-		NotifyError("%s: Could not initialise Util_SimCript process", funcName);
+	if ((process = Init_EarObject(wxT("Util_SimScript"))) == NULL) {
+		NotifyError(wxT("%s: Could not initialise Util_SimCript process"),
+		  funcName);
 		return(false);
 	}
 	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	SetDiagMode(COMMON_OFF_DIAG_MODE);
-	if (!ReadPars_ModuleMgr(process, (char *) fileName.GetFullPath().c_str())) {
-		NotifyError("%s: Could not read simulation.", funcName);
+	if (!ReadPars_ModuleMgr(process, (wxChar *) fileName.GetFullPath().
+	  c_str())) {
+		NotifyError(wxT("%s: Could not read simulation."), funcName);
 		ok = false;
 	}
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (ok) {
-		fileName.SetExt("spf");
+		fileName.SetExt(wxT("spf"));
 		FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-		SetParsFile_Common((char *) fileName.GetFullPath().c_str(), OVERWRITE);
+		SetParsFile_Common((wxChar *) fileName.GetFullPath().c_str(),
+		  OVERWRITE);
 		if (!PrintSimParFile_ModuleMgr(process)) {
-			NotifyError("%s: Could not list simulation parameter file.",
+			NotifyError(wxT("%s: Could not list simulation parameter file."),
 			  funcName);
 			ok = false;
 		}
@@ -245,22 +248,22 @@ IPCClient::CreateSPFFromSimScript(wxFileName &fileName)
 bool
 IPCClient::InitSimFromFile(const wxString &simFileName)
 {
-	static const char *funcName = "IPCClient::InitSimFromFile";
+	static const wxChar *funcName = wxT("IPCClient::InitSimFromFile");
 	wxUint32	i, length;
 	wxUint8	byte;
 	unsigned char	eof = (unsigned char) EOF;
 	wxFileName fileName = simFileName;
 
 	WaitForReady();
-	if ((fileName.GetExt().CmpNoCase("sim") == 0) && !CreateSPFFromSimScript(
-	  fileName)) {
-		NotifyError("%s: Could not convert SIM file ('%s') to SPF file.",
+	if ((fileName.GetExt().CmpNoCase(wxT("sim")) == 0) &&
+	  !CreateSPFFromSimScript(fileName)) {
+		NotifyError(wxT("%s: Could not convert SIM file ('%s') to SPF file."),
 		  funcName, fileName.GetFullName().c_str());
 		return(false);
 	}
 	wxFFileInputStream inStream(fileName.GetFullPath());
 	if (!inStream.Ok()) {
-		NotifyError("%s: Could not open simulation file '%s'.", funcName,
+		NotifyError(wxT("%s: Could not open simulation file '%s'."), funcName,
 		  fileName.GetFullName().c_str());
 		return(false);
 	}
@@ -274,7 +277,7 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 	}
 	Write(&eof, 1);
 	if (Errors()) {
-		NotifyError("%s: Could not initialise simulation.", funcName);
+		NotifyError(wxT("%s: Could not initialise simulation."), funcName);
 		return(false);
 	}
 	return(true);
@@ -319,19 +322,19 @@ IPCClient::GetAllOutputFiles(void)
 EarObjectPtr
 IPCClient::GetSimProcess(void)
 {
-	static const char *funcName = "IPCClient::GetSimProcess";
+	static const wxChar *funcName = wxT("IPCClient::GetSimProcess");
 	wxUint32	length;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_GET);
  	Read(&length, sizeof(length));
 	if (!length) {
-		NotifyError("%s: No data available from server.\n", funcName);
+		NotifyError(wxT("%s: No data available from server.\n"), funcName);
 		return(NULL);
 	}
 	if (!iPCUtils.InitInputMemory(length)) {
-		NotifyError("%s: Could not initialise memory for input process signal",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process "
+		  "signal"), funcName);
 		return(NULL);
 	}
 	Read(iPCUtils.GetInUIOPtr()->memStart, length);
@@ -348,12 +351,12 @@ IPCClient::GetSimProcess(void)
 bool
 IPCClient::RunSimulation(void)
 {
-	static const char *funcName = "IPCClient::RunSimulation";
+	static const wxChar *funcName = wxT("IPCClient::RunSimulation");
 	bool	ok = true;
 
 	SendCommand(IPC_COMMAND_RUN);
 	if (Errors()) {
-		NotifyError("%s: Could not run remote simulation.", funcName);
+		NotifyError(wxT("%s: Could not run remote simulation."), funcName);
 		ok = false;
 	}
 	return(ok);
@@ -368,17 +371,17 @@ IPCClient::RunSimulation(void)
 bool
 IPCClient::SendInputProcess(void)
 {
-	static const char *funcName = "IPCClient::SendInputProcess";
+	static const wxChar *funcName = wxT("IPCClient::SendInputProcess");
 	wxUint32	length;
 	UPortableIOPtr	uIOPtr;
 
 	if (!iPCUtils.GetOutProcess()) {
-		NotifyError("%s: output process not initialised.", funcName);
+		NotifyError(wxT("%s: output process not initialised."), funcName);
 		return(false);
 	}
 	if (!iPCUtils.RunOutProcess()) {
-		NotifyError("%s: Could not run the output process (memory file "
-		  "conversion.", funcName);
+		NotifyError(wxT("%s: Could not run the output process (memory file "
+		  "conversion."), funcName);
 		return(false);
 	}
 	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;
@@ -387,7 +390,7 @@ IPCClient::SendInputProcess(void)
 	Write(&length, sizeof(length));
 	Write(uIOPtr->memStart, length);
 	if (Errors()) {
-		NotifyError("%s: Could not send input data.", funcName);
+		NotifyError(wxT("%s: Could not send input data."), funcName);
 		return(false);
 	}
 	return(true);
@@ -402,7 +405,7 @@ IPCClient::SendInputProcess(void)
  */
 
 bool
-IPCClient::SendArguments(int argc, char **argv)
+IPCClient::SendArguments(int argc, wxChar **argv)
 {
 	wxUint8	numArgs;
 	int		i;
@@ -414,7 +417,7 @@ IPCClient::SendArguments(int argc, char **argv)
 	Write(&numArgs, sizeof(numArgs));
 	for (i = 0; i < argc; i++)
 		if (*argv[i])
-			Write(argv[i], strlen(argv[i]) + 1);
+			Write(argv[i], DSAM_strlen(argv[i]) + 1);
 	return(true);
 
 }

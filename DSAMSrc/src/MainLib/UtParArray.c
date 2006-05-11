@@ -58,27 +58,27 @@ Free_ParArray(ParArrayPtr *parArray)
  */
 
 ParArrayPtr
-Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
+Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 {
-	static const char *funcName = "Init_ParArray";
+	static const WChar *funcName = wxT("Init_ParArray");
 	BOOLN	lastListEntryFound = FALSE;
-	char	workStr[LONG_STRING];
+	WChar	workStr[LONG_STRING];
 	ParArrayPtr p;
 	NameSpecifierPtr	list;
 
 	if (!name) {
-		NotifyError("%s: Name not initialised.", funcName);
+		NotifyError(wxT("%s: Name not initialised."), funcName);
 		return(NULL);
 	}
 	if (!modeList) {
-		NotifyError("%s: Mode list not initialised.", funcName);
+		NotifyError(wxT("%s: Mode list not initialised."), funcName);
 		return(NULL);
 	}
 	if ((p = (ParArrayPtr) malloc(sizeof(ParArray))) == NULL) {
-		NotifyError("%s: Out of memory for structure.", funcName);
+		NotifyError(wxT("%s: Out of memory for structure."), funcName);
 		return(NULL);
 	}
-	snprintf(p->name, MAXLINE, "%s", name);
+	DSAM_snprintf(p->name, MAXLINE, wxT("%s"), name);
 	p->updateFlag = TRUE;
 	p->mode = PARARRAY_NULL;
 	p->params = NULL;
@@ -88,25 +88,25 @@ Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	p->parList = NULL;
 
 	ToUpper_Utility_String(workStr, p->name);
-	snprintf(p->abbr[PARARRAY_MODE], MAXLINE, "%s_MODE", workStr);
-	snprintf(p->abbr[PARARRAY_PARAMETER], MAXLINE, "%s_PARAMETER", workStr);
-	snprintf(p->desc[PARARRAY_MODE], MAXLINE, "Variable '%s' mode (", name);
-	snprintf(p->desc[PARARRAY_PARAMETER], MAXLINE, "Parameters for '%s' "
-	  "function", name);
+	DSAM_snprintf(p->abbr[PARARRAY_MODE], MAXLINE, wxT("%s_MODE"), workStr);
+	DSAM_snprintf(p->abbr[PARARRAY_PARAMETER], MAXLINE, wxT("%s_PARAMETER"), workStr);
+	DSAM_snprintf(p->desc[PARARRAY_MODE], MAXLINE, wxT("Variable '%s' mode ("), name);
+	DSAM_snprintf(p->desc[PARARRAY_PARAMETER], MAXLINE, wxT("Parameters for '%s' ")
+	  wxT("function"), name);
 	for (list = p->modeList; *list->name != '\0'; list++) {
-		snprintf(workStr, LONG_STRING, "'%s'", list->name);
+		DSAM_snprintf(workStr, LONG_STRING, wxT("'%s'"), list->name);
 		strcat(p->desc[PARARRAY_MODE], workStr);
 		if (!lastListEntryFound && *(list + 2)->name == '\0') {
-			strcat(p->desc[PARARRAY_MODE], " or ");
+			strcat(p->desc[PARARRAY_MODE], wxT(" or "));
 			lastListEntryFound = TRUE;
 		} else {
 			if (*(list + 1)->name != '\0')
-				strcat(p->desc[PARARRAY_MODE], ", ");
+				strcat(p->desc[PARARRAY_MODE], wxT(", "));
 		}
 	}
-	strcat(p->desc[PARARRAY_MODE], ").");
+	strcat(p->desc[PARARRAY_MODE], wxT(")."));
 	if (!SetMode_ParArray(p, p->modeList[0].name)) {
-		NotifyError("Could not set initial parameter array.", funcName);
+		NotifyError(wxT("Could not set initial parameter array."), funcName);
 		Free_ParArray(&p);
 		return(NULL);
 	}
@@ -122,12 +122,13 @@ Init_ParArray(char *name, NameSpecifier *modeList, int (* GetNumPars)(int))
  */
 
 BOOLN
-CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction)
+CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction)
 {
-	static const char	*funcName = "CheckInit_ParArray";
+	static const WChar	*funcName = wxT("CheckInit_ParArray");
 
 	if (parArray == NULL) {
-		NotifyError("%s: ParArray not set in %s.", funcName, callingFunction);
+		NotifyError(wxT("%s: ParArray not set in %s."), funcName,
+		  callingFunction);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -144,14 +145,14 @@ CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction)
 BOOLN
 SetUniParList_ParArray(ParArrayPtr parArray)
 {
-	static const char *funcName = "SetUniParList_ParArray";
+	static const WChar *funcName = wxT("SetUniParList_ParArray");
 	UniParPtr	pars;
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
 	if (!parArray->parList && (parArray->parList = InitList_UniParMgr(
 	  UNIPAR_SET_PARARRAY, PARARRAY_NUM_PARS, parArray)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = parArray->parList->pars;
@@ -177,17 +178,17 @@ SetUniParList_ParArray(ParArrayPtr parArray)
  */
 
 BOOLN
-SetMode_ParArray(ParArrayPtr parArray, char *modeName)
+SetMode_ParArray(ParArrayPtr parArray, WChar *modeName)
 {
-	static const char *funcName = "SetMode_ParArray";
+	static const WChar *funcName = wxT("SetMode_ParArray");
 	int		mode, newNumParams;
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
 	mode = Identify_NameSpecifier(modeName, parArray->modeList);
 	if (parArray->modeList[mode].name[0] == '\0') {
-		NotifyError("%s: Unknown '%s' mode (%s).", funcName, parArray->name,
-		  modeName);
+		NotifyError(wxT("%s: Unknown '%s' mode (%s)."), funcName, parArray->
+		  name, modeName);
 		return(FALSE);
 	}
 	parArray->mode = mode;
@@ -198,7 +199,7 @@ SetMode_ParArray(ParArrayPtr parArray, char *modeName)
 			free(parArray->params);
 		if ((parArray->params = (double *) calloc(newNumParams, sizeof(
 		  double))) == NULL) {
-			NotifyError("%s: Out of memory for parameters (%d)", funcName,
+			NotifyError(wxT("%s: Out of memory for parameters (%d)"), funcName,
 			  newNumParams);
 			return(FALSE);
 		}
@@ -220,16 +221,16 @@ SetMode_ParArray(ParArrayPtr parArray, char *modeName)
 BOOLN
 SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, double parValue)
 {
-	static const char *funcName = "SetIndividualPar_ParArray";
+	static const WChar *funcName = wxT("SetIndividualPar_ParArray");
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
 	if (parArray->params == NULL) {
-		NotifyError("%s: parameters not set.", funcName);
+		NotifyError(wxT("%s: parameters not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > parArray->numParams - 1) {
-		NotifyError("%s: Index value must be in the\nrange 0 - %d (%d).\n",
+		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, parArray->numParams - 1, theIndex);
 		return(FALSE);
 	}
@@ -249,32 +250,32 @@ SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, double parValue)
 BOOLN
 ReadPars_ParArray(FILE *fp, ParArrayPtr parArray)
 {
-	static const char *funcName = "ReadPars_ParArray";
+	static const WChar *funcName = wxT("ReadPars_ParArray");
 	BOOLN	ok = TRUE;
-	char	modeName[MAXLINE];
+	WChar	modeName[MAXLINE];
 	int		i;
 	
 	if (!parArray) {
-		NotifyError("%s: The 'parArray' structure has not been initialised.",
-		  funcName);
+		NotifyError(wxT("%s: The 'parArray' structure has not been "
+		  "initialised."), funcName);
 		return(FALSE);
 	} 
-	if (!GetPars_ParFile(fp, "%s", modeName)) {
-		NotifyError("%s: Could not find '%s' mode for '%s'.", funcName,
+	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
+		NotifyError(wxT("%s: Could not find '%s' mode for '%s'."), funcName,
 		  modeName, parArray->name);
 		return(FALSE);
 	}
 	
 	if (!SetMode_ParArray(parArray, modeName)) {
-		NotifyError("%s: Unknown '%s' mode (%s).", funcName, parArray->name,
-		  modeName);
+		NotifyError(wxT("%s: Unknown '%s' mode (%s)."), funcName, parArray->
+		  name, modeName);
 		return(FALSE);
 	}
 	for (i = 0; (i < parArray->numParams) && ok; i++)
-		if (!GetPars_ParFile(fp, "%lf", &parArray->params[i]))
+		if (!GetPars_ParFile(fp, wxT("%lf"), &parArray->params[i]))
 			ok = FALSE;
 	if (!ok) {
-		NotifyError("%s: Failed to read '%s' parameters.", funcName,
+		NotifyError(wxT("%s: Failed to read '%s' parameters."), funcName,
 		  parArray->name);
 		return(FALSE);
 	}
@@ -291,19 +292,19 @@ ReadPars_ParArray(FILE *fp, ParArrayPtr parArray)
 void
 PrintPars_ParArray(ParArrayPtr parArray)
 {
-	static const char *funcName = "PrintPars_ParArray";
+	static const WChar *funcName = wxT("PrintPars_ParArray");
 	int		i;
 	
 	if (!CheckInit_ParArray(parArray, funcName)) {
-		NotifyError("%s: Parameter Array not correctly set.",
+		NotifyError(wxT("%s: Parameter Array not correctly set."),
 		  funcName);
 		return;
 	}
-	DPrint("\tVariable '%s' parameters:-\n", parArray->name);
-	DPrint("\t\tmode: %s:\n", parArray->modeList[parArray->mode].name);
-	DPrint("\t\t%10s\t%10s\n", "Param No.", "Parameter");
+	DPrint(wxT("\tVariable '%s' parameters:-\n"), parArray->name);
+	DPrint(wxT("\t\tmode: %s:\n"), parArray->modeList[parArray->mode].name);
+	DPrint(wxT("\t\t%10s\t%10s\n"), wxT("Param No."), wxT("Parameter"));
 	for (i = 0; i < parArray->numParams; i++) {
-		DPrint("\t\t%10d\t%10g\n", i, parArray->params[i]);
+		DPrint(wxT("\t\t%10d\t%10g\n"), i, parArray->params[i]);
 	}
 
 }

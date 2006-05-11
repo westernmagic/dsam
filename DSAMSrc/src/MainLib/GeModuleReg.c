@@ -42,79 +42,79 @@ LibraryList_ModuleReg(uShort index)
 {
 	static ModRegEntry	moduleList[] = {
 
-	{ "ANA_ACF",
+	{ wxT("ANA_ACF"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_ACF },
-	{ "ANA_ALSR",
+	{ wxT("ANA_ALSR"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_ALSR },
-	{ "ANA_AVERAGES",
+	{ wxT("ANA_AVERAGES"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_Averages },
-	{ "ANA_CCF",
+	{ wxT("ANA_CCF"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_CCF },
-	{ "ANA_CONVOLUTION",
+	{ wxT("ANA_CONVOLUTION"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_Convolution },
-	{ "ANA_FINDBIN",
+	{ wxT("ANA_FINDBIN"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_FindBin },
-	{ "ANA_FINDNEXTINDEX",
+	{ wxT("ANA_FINDNEXTINDEX"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_FindNextIndex },
-	{ "ANA_FOURIERT",
+	{ wxT("ANA_FOURIERT"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_FourierT },
-	{ "ANA_HISTOGRAM",
+	{ wxT("ANA_HISTOGRAM"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_Histogram },
-	{ "ANA_INTENSITY",
+	{ wxT("ANA_INTENSITY"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_Intensity },
-	{ "ANA_ISIH",
+	{ wxT("ANA_ISIH"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_ISIH },
-	{ "ANA_SAI",
+	{ wxT("ANA_SAI"),
 		ANALYSIS_MODULE_CLASS, ANA_SAI_MODULE,
 		InitModule_Analysis_SAI },
-	{ "ANA_SYNCHINDEX",
+	{ wxT("ANA_SYNCHINDEX"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_SynchIndex },
-	{ "ANA_SPIKEREGULARITY",
+	{ wxT("ANA_SPIKEREGULARITY"),
 		ANALYSIS_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Analysis_SpikeRegularity },
-	{ "AN_SG_BINOMIAL",
+	{ wxT("AN_SG_BINOMIAL"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_ANSpikeGen_Binomial },
-	{ "AN_SG_CARNEY",
+	{ wxT("AN_SG_CARNEY"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_ANSpikeGen_Carney },
-	{ "AN_SG_MEDDIS02",
+	{ wxT("AN_SG_MEDDIS02"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_ANSpikeGen_Meddis02 },
-	{ "AN_SG_SIMPLE",
+	{ wxT("AN_SG_SIMPLE"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_ANSpikeGen_Simple },
-	{ "BM_CARNEY",
+	{ wxT("BM_CARNEY"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_Carney },
-	{ "BM_COOKE",
+	{ wxT("BM_COOKE"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_Cooke },
-	{ "BM_DRNL",
+	{ wxT("BM_DRNL"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_DRNL },
-	{ "BM_DRNL_TEST",
+	{ wxT("BM_DRNL_TEST"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_DRNL_Test },
-	{ "BM_GAMMAC",
+	{ wxT("BM_GAMMAC"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_GammaChirp },
-	{ "BM_GAMMAT",
+	{ wxT("BM_GAMMAT"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_GammaT },
-	{ "BM_ZHANG",
+	{ wxT("BM_ZHANG"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_Zhang },
 	{ DATAFILE_IN_MOD_NAME,
@@ -123,52 +123,52 @@ LibraryList_ModuleReg(uShort index)
 	{ DATAFILE_OUT_MOD_NAME,
 		IO_MODULE_CLASS, DATAFILE_MODULE,
 		InitModule_DataFile },
-	{ "DISPLAY_SIGNAL",
+	{ wxT("DISPLAY_SIGNAL"),
 		DISPLAY_MODULE_CLASS, DISPLAY_MODULE,
 		InitModule_SignalDisp },
-	{ "FILT_BANDPASS",
+	{ wxT("FILT_BANDPASS"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_BandPass },
-	{ "FILT_FIR",
+	{ wxT("FILT_FIR"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_FIR },
-	{ "FILT_LOWPASS",
+	{ wxT("FILT_LOWPASS"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_LowPass },
-	{ "FILT_MULTIBPASS",
+	{ wxT("FILT_MULTIBPASS"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_MultiBPass },
-	{ "IHC_CARNEY",
+	{ wxT("IHC_CARNEY"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Carney },
-	{ "IHC_COOKE91",
+	{ wxT("IHC_COOKE91"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Cooke91 },
-	{ "IHC_MEDDIS86",
+	{ wxT("IHC_MEDDIS86"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Meddis86 },
-	{ "IHC_MEDDIS86A",
+	{ wxT("IHC_MEDDIS86A"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Meddis86a },
 	{ MEDDIS2000_MOD_NAME,
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Meddis2000 },
-	{ "IHC_ZHANG",
+	{ wxT("IHC_ZHANG"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHC_Zhang },
-	{ "IHCRP_CARNEY",
+	{ wxT("IHCRP_CARNEY"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Carney },
-	{ "IHCRP_MEDDIS",
+	{ wxT("IHCRP_MEDDIS"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Meddis },
-	{ "IHCRP_SHAMMA",
+	{ wxT("IHCRP_SHAMMA"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Shamma },
 	{ IHCRP_SHAMMA3STATEVELIN_MOD_NAME,
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 	  InitModule_IHCRP_Shamma3StateVelIn },
-	{ "IHCRP_ZHANG",
+	{ wxT("IHCRP_ZHANG"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Zhang },
 #	ifdef USE_PORTAUDIO
@@ -176,152 +176,152 @@ LibraryList_ModuleReg(uShort index)
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IO_AudioIn },
 #	endif /* USE_PORTAUDIO */
-	{ "NEUR_ARLEKIM",
+	{ wxT("NEUR_ARLEKIM"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Neuron_ArleKim },
-	{ "NEUR_HHUXLEY",
+	{ wxT("NEUR_HHUXLEY"),
 		MODEL_MODULE_CLASS, NEUR_HHUXLEY_MODULE,
 		InitModule_Neuron_HHuxley },
-	{ "NEUR_MCGREGOR",
+	{ wxT("NEUR_MCGREGOR"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Neuron_McGregor },
-	{ "NULL",
+	{ wxT("NULL"),
 		CONTROL_MODULE_CLASS, NULL_MODULE,
 		SetNull_ModuleMgr },
 #	ifdef _PAMASTER1_H
-	{ "MPI_MASTER1",
+	{ wxT("MPI_MASTER1"),
 		CONTROL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_MPI_Master1 },
 #	endif
-	{ "STIM_CLICK",
+	{ wxT("STIM_CLICK"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Click },
-	{ "STIM_EXPGATEDTONE",
+	{ wxT("STIM_EXPGATEDTONE"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Stimulus_ExpGatedTone },
-	{ "STIM_HARMONIC",
+	{ wxT("STIM_HARMONIC"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Harmonic },
-	{ "STIM_PULSETRAIN",
+	{ wxT("STIM_PULSETRAIN"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PulseTrain },
-	{ "STIM_PURETONE",
+	{ wxT("STIM_PURETONE"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone },
-	{ "STIM_PURETONE_2",
+	{ wxT("STIM_PURETONE_2"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone_2 },
-	{ "STIM_PURETONE_AM",
+	{ wxT("STIM_PURETONE_AM"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone_AM },
-	{ "STIM_PURETONE_BINAURAL",
+	{ wxT("STIM_PURETONE_BINAURAL"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone_Binaural },
-	{ "STIM_PURETONE_FM",
+	{ wxT("STIM_PURETONE_FM"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone_FM },
-	{ "STIM_PURETONE_MULTI",
+	{ wxT("STIM_PURETONE_MULTI"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_PureTone_Multi },
-	{ "STIM_PURETONE_MULTIPULSE",
+	{ wxT("STIM_PURETONE_MULTIPULSE"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 	  InitModule_PureTone_MultiPulse },
-	{ "STIM_STEPFUN",
+	{ wxT("STIM_STEPFUN"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_StepFunction },
-	{ "STIM_WHITENOISE",
+	{ wxT("STIM_WHITENOISE"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_WhiteNoise },
-	{ "TRANS_COLLECTSIGNALS",
+	{ wxT("TRANS_COLLECTSIGNALS"),
 		TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Transform_CollectSignals },
-	{ "TRANS_DAMP", TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
+	{ wxT("TRANS_DAMP"), TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Transform_Gate },
-	{ "TRANS_GATE",
+	{ wxT("TRANS_GATE"),
 		TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Transform_Gate },
-	{ "TRANS_RAMP", TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
+	{ wxT("TRANS_RAMP"), TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Transform_Gate },
-	{ "TRANS_SETDBSPL",
+	{ wxT("TRANS_SETDBSPL"),
 		TRANSFORM_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Transform_SetDBSPL },
-	{ "UTIL_ACCUMULATE",
+	{ wxT("UTIL_ACCUMULATE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Accumulate },
-	{ "UTIL_AMPMOD",
+	{ wxT("UTIL_AMPMOD"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_AmpMod },
-	{ "UTIL_BINSIGNAL",
+	{ wxT("UTIL_BINSIGNAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_BinSignal },
-	{ "UTIL_COMPRESSION",
+	{ wxT("UTIL_COMPRESSION"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Compression },
-	{ "UTIL_CONVMONAURAL",
+	{ wxT("UTIL_CONVMONAURAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_ConvMonaural },
-	{ "UTIL_CREATEBINAURAL",
+	{ wxT("UTIL_CREATEBINAURAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_CreateBinaural },
-	{ "UTIL_CREATEJOINED",
+	{ wxT("UTIL_CREATEJOINED"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_CreateJoined },
-	{ "UTIL_DELAY",
+	{ wxT("UTIL_DELAY"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Delay },
-	{ "UTIL_HALFWAVERECTIFY",
+	{ wxT("UTIL_HALFWAVERECTIFY"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_HalfWaveRectify },
-	{ "UTIL_ITERATEDRIPPLE",
+	{ wxT("UTIL_ITERATEDRIPPLE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_IteratedRipple },
-	{ "UTIL_LOCALCHANS",
+	{ wxT("UTIL_LOCALCHANS"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_LocalChans },
-	{ "UTIL_MATHOP",
+	{ wxT("UTIL_MATHOP"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_MathOp },
-	{ "UTIL_PADSIGNAL",
+	{ wxT("UTIL_PADSIGNAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_PadSignal },
-	{ "UTIL_PAUSE",
+	{ wxT("UTIL_PAUSE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Pause },
-	{ "UTIL_REDUCECHANNELS",
+	{ wxT("UTIL_REDUCECHANNELS"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_ReduceChannels },
-	{ "UTIL_REDUCEDT",
+	{ wxT("UTIL_REDUCEDT"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_ReduceDt },
-	{ "UTIL_REFRACTORYADJUST",
+	{ wxT("UTIL_REFRACTORYADJUST"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_RefractoryAdjust },
-	{ "UTIL_SAMPLE",
+	{ wxT("UTIL_SAMPLE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Sample },
-	{ "UTIL_SELECTCHANNELS",
+	{ wxT("UTIL_SELECTCHANNELS"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_SelectChannels },
-	{ "UTIL_SHAPEPULSE",
+	{ wxT("UTIL_SHAPEPULSE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_ShapePulse },
-	{ "UTIL_SIMSCRIPT",
+	{ wxT("UTIL_SIMSCRIPT"),
 		UTILITY_MODULE_CLASS, SIMSCRIPT_MODULE,
 		InitModule_Utility_SimScript },
-	{ "UTIL_STANDARDISE",
+	{ wxT("UTIL_STANDARDISE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Standardise },
-	{ "UTIL_STROBE",
+	{ wxT("UTIL_STROBE"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Strobe },
-	{ "UTIL_SWAPLR",
+	{ wxT("UTIL_SWAPLR"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_SwapLR },
 	{ UTILITY_TRANSPOSE_MOD_NAME,
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Transpose },
 
-	{ "",
+	{ wxT(""),
 		0, MODULE_SPECIFIER_NULL,
 		NULL }
 
@@ -355,7 +355,7 @@ UserList_ModuleReg(uShort index)
  */
 
 ModRegEntryPtr
-Identify_ModuleReg(ModRegEntryPtr list, char *name)
+Identify_ModuleReg(ModRegEntryPtr list, WChar *name)
 {
 	if (!list)
 		return(NULL);
@@ -378,17 +378,17 @@ Identify_ModuleReg(ModRegEntryPtr list, char *name)
  */
 
 ModRegEntryPtr
-GetRegEntry_ModuleReg(char *name)
+GetRegEntry_ModuleReg(WChar *name)
 {
-	static const char *funcName = "GetRegEntry_ModuleReg";
+	static const WChar *funcName = wxT("GetRegEntry_ModuleReg");
 	ModRegEntryPtr	regEntryPtr;
 
 	if (name == NULL) {
-		NotifyError("%s: Illegal null name.", funcName);
+		NotifyError(wxT("%s: Illegal null name."), funcName);
 		return(NULL);
 	}
-	if (strlen(name) >= MAXLINE) {
-		NotifyError("%s: Search name is too long (%s)", funcName, name);
+	if (DSAM_strlen(name) >= MAXLINE) {
+		NotifyError(wxT("%s: Search name is too long (%s)"), funcName, name);
 		return(NULL);
 	}
 	if ((regEntryPtr = Identify_ModuleReg(LibraryList_ModuleReg(0), name)) !=
@@ -424,7 +424,7 @@ FreeUserModuleList_ModuleReg(void)
 BOOLN
 InitUserModuleList_ModuleReg(int theMaxUserModules)
 {
-	static char *funcName = "InitUserModuleList_ModuleReg";
+	static WChar *funcName = wxT("InitUserModuleList_ModuleReg");
 	int		i;
 	ModRegEntryPtr	regEntry;
 
@@ -433,13 +433,13 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
 	  MODULE_REG_DEFAAULT_USER_MODULES;
 	if ((userModuleList = (ModRegEntryPtr) calloc(maxUserModules + 1, sizeof(
 	  ModRegEntry))) == NULL) {
-		NotifyError("%s: Out of memory for %d entries.", funcName,
+		NotifyError(wxT("%s: Out of memory for %d entries."), funcName,
 		  maxUserModules);
 		return(FALSE);
 	}
 	regEntry = userModuleList;
 	for (i = 0; i < maxUserModules + 1; i++, regEntry++) {
-		regEntry->name = "";
+		regEntry->name = wxT("");
 		regEntry->specifier = PROCESS_MODULE;
 		regEntry->InitModule = NULL;
 	}
@@ -457,33 +457,34 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
  */
 
 BOOLN
-RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
+RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(ModulePtr))
 {
-	static const char *funcName = "RegEntry_ModuleReg";
-	char	upperName[MAXLINE];
+	static const WChar *funcName = wxT("RegEntry_ModuleReg");
+	WChar	upperName[MAXLINE];
 	ModRegEntryPtr	regEntry;
 
 	if (numUserModules == maxUserModules) {
-		NotifyError("%s: Maximum number (%d) of user modules registered.\n"
-		  "Use the SetMaxUserModules_AppInterface to increase this number.",
+		NotifyError(wxT("%s: Maximum number (%d) of user modules registered.\n"
+		  "Use the SetMaxUserModules_AppInterface to increase this number."),
 		  funcName, maxUserModules);
 		return(FALSE);
 	}
 	if (!name || (*name == '\0')) {
-		NotifyError("%s: Illegal null or zero length module name.", funcName);
+		NotifyError(wxT("%s: Illegal null or zero length module name."),
+		  funcName);
 		return(FALSE);
 	}
-	if (GetRegEntry_ModuleReg((char *) name)) {
-		NotifyError("%s: Module name '%s' already used.", funcName, name);
+	if (GetRegEntry_ModuleReg((WChar *) name)) {
+		NotifyError(wxT("%s: Module name '%s' already used."), funcName, name);
 		return(FALSE);
 	}
 	if (!InitModuleFunc) {
-		NotifyError("%s: InitModule function has not been set.", funcName);
+		NotifyError(wxT("%s: InitModule function has not been set."), funcName);
 		return(FALSE);
 	}
-	ToUpper_Utility_String(upperName, (char *) name);
+	ToUpper_Utility_String(upperName, (WChar *) name);
 	regEntry = &userModuleList[numUserModules++];
-	regEntry->name = (char *) name;
+	regEntry->name = (WChar *) name;
 	regEntry->classSpecifier = USER_MODULE_CLASS;
 	regEntry->specifier = PROCESS_MODULE;
 	regEntry->InitModule = InitModuleFunc;
@@ -501,7 +502,6 @@ RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(ModulePtr))
 int
 GetNumUserModules_ModuleReg(void)
 {
-	/*static const char *funcName = "GetNumUserModules_ModuleReg";*/
 
 	return(numUserModules);
 

@@ -62,10 +62,10 @@
 BOOLN
 CheckPars_Ramp(SignalData *theSignal, double timeInterval) 
 {
-	static const char *funcName = "CheckPars_Ramp";
+	static const WChar *funcName = wxT("CheckPars_Ramp");
 
 	if ((ChanLen) (timeInterval / theSignal->dt) > theSignal->length) {
-		NotifyError("%s: Ramp time interval is longer than signal!", funcName);
+		NotifyError(wxT("%s: Ramp time interval is longer than signal!"), funcName);
 		return(FALSE);
 	}
 	theSignal->rampFlag = TRUE;
@@ -117,17 +117,17 @@ void
 RampUpOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
   ChanLen), double timeInterval)
 {
-	static const char *funcName = "RampUpOutSignal_Ramp";
+	static const WChar *funcName = wxT("RampUpOutSignal_Ramp");
 	int		chan;
 	ChanLen	i, intervalIndex;
 	ChanData	*dataPtr, *endPtr;
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}	
 	if (!CheckPars_SignalData(data->outSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		exit(1);
 	}
 	intervalIndex = (ChanLen) (timeInterval / data->outSignal->dt);
@@ -136,8 +136,8 @@ RampUpOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
 		return;
 	}
 	if (!CheckPars_Ramp(data->outSignal, timeInterval)) {
-		NotifyError("%s: Function arguments not correctly initialised\n"
-		  "for EarObject: %s.", funcName, data->processName);
+		NotifyError(wxT("%s: Function arguments not correctly initialised\n"
+		  "for EarObject: %s."), funcName, data->processName);
 		exit(1);
 	}
 	for (chan = 0; chan < data->outSignal->numChannels; chan++) {
@@ -166,22 +166,22 @@ void
 RampDownOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
   ChanLen), double timeInterval)
 {
-	static const char *funcName = "RampDownOutSignal_Ramp";
+	static const WChar *funcName = wxT("RampDownOutSignal_Ramp");
 	int		chan;
 	ChanLen	i, intervalIndex;
 	ChanData	*dataPtr, *startPtr;
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}	
 	if (!CheckPars_SignalData(data->outSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		exit(1);
 	}
 	if (!CheckPars_Ramp(data->outSignal, timeInterval)) {
-		NotifyError("%s: Function arguments not correctly initialised for\n"\
-		  "EarObject: %s.", funcName, data->processName);
+		NotifyError(wxT("%s: Function arguments not correctly initialised for\n"
+		  "EarObject: %s."), funcName, data->processName);
 		exit(1);
 	}
 	intervalIndex = (ChanLen) (timeInterval / data->outSignal->dt);

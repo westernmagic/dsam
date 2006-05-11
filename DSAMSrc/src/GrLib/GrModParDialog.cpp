@@ -115,9 +115,9 @@ ModuleParDialog::ModuleParDialog(wxWindow *parent, const wxString& title,
 
 	// Set up buttons
 	wxBoxSizer *buttonBox = new wxBoxSizer( wxHORIZONTAL );
-	buttonBox->Add(new wxButton(this,  wxID_OK, _T("Ok")), wxSizerFlags().
+	buttonBox->Add(new wxButton(this,  wxID_OK, wxT("Ok")), wxSizerFlags().
 	  Border(wxALL, 7));
-	cancelBtn = new wxButton(this, wxID_CANCEL, _T("Cancel"));
+	cancelBtn = new wxButton(this, wxID_CANCEL, wxT("Cancel"));
 	buttonBox->Add(cancelBtn, wxSizerFlags().Border(wxALL, 7));
 	topSizer->Add(buttonBox, wxSizerFlags().Center());
 
@@ -305,13 +305,13 @@ ModuleParDialog::DeleteDialog(void)
 void 
 ModuleParDialog::OnICButton(wxCommandEvent& event)
 {
-	static const char *funcName = "ModuleParDialog::OnICButton";
+	static const wxChar *funcName = wxT("ModuleParDialog::OnICButton");
 	ParListInfo	*info = parListInfoList->list[
 				  PARLISTINFOLIST_MAIN_ICLIST_PAGES - 1];
 	IonChanListPtr	theICs = info->parList->handlePtr.iCs;
 
 	ResetGUIDialogs();
-	NotifyError("%s: Not yet Implemented.", funcName);
+	NotifyError(wxT("%s: Not yet Implemented."), funcName);
 	return;
 	switch (event.GetId()) {
 	case DL_ID_ADD_IC: {
@@ -319,27 +319,27 @@ ModuleParDialog::OnICButton(wxCommandEvent& event)
 		printf("Add IC\n");
 		if ((iC = InitIonChannel_IonChanList(funcName,
 		  theICs->numTableEntries)) == NULL) {
-			NotifyError("%s: Could not initialise ion channel.", funcName);
+			NotifyError(wxT("%s: Could not initialise ion channel."), funcName);
 			return;
 		}
 		SetICGeneralPars_IonChanList(iC, ICLIST_BOLTZMANN_MODE,
-		  "<description>", "on", 0.0, 0.0, 1);
+		  wxT("<description>"), wxT("on"), 0.0, 0.0, 1);
 		SetICGeneralParsFromICList_IonChanList(iC, theICs);
 		SetIonChannelUniParList_IonChanList(theICs, iC);
 		SetIonChannelUniParListMode_IonChanList(iC);
 		if (!Append_Utility_DynaList(&theICs->ionChannels, iC)) {
-			NotifyError("%s: Could not add ion channel to list.", funcName);
+			NotifyError(wxT("%s: Could not add ion channel to list."), funcName);
 			FreeIonChannel_IonChanList(&iC);
 			return;
 		}
 		parListInfoList->SetStandardInfo(NULL, info->GetPC(), iC->parList,
-		  iC->description);
+		  (wxChar *) iC->description);
 		break; }
 	case DL_ID_DELETE_IC:
 		printf("Delete IC\n");
 		break;
 	default:
-		NotifyError("%s: Unknown button ID (%d).", funcName, event.GetId());
+		NotifyError(wxT("%s: Unknown button ID (%d)."), funcName, event.GetId());
 		return;
 	}
 
@@ -407,12 +407,12 @@ ModuleParDialog::OnButton(wxCommandEvent& event)
 		wxString	path;
 
 		if (par->type == UNIPAR_NAME_SPEC_WITH_FPATH) {
-			wxDirDialog dialog(this, "Choose a directory", wxGetCwd());
+			wxDirDialog dialog(this, wxT("Choose a directory"), wxGetCwd());
 			if (dialog.ShowModal() != wxID_OK)
 				break;
 			path = dialog.GetPath();
 		} else {
-			wxFileDialog dialog(this, "Choose a file", wxGetCwd());
+			wxFileDialog dialog(this, wxT("Choose a file"), wxGetCwd());
 			if (dialog.ShowModal() != wxID_OK)
 				break;
 			path = dialog.GetPath();
@@ -424,8 +424,8 @@ ModuleParDialog::OnButton(wxCommandEvent& event)
 		control->SetUpdateFlag(TRUE);
 		break; }
 	case UNIPAR_FILE_NAME: {
-		wxFileDialog dialog(this, "Choose a file", wxGetCwd(), "",
-		  par->valuePtr.file.defaultExtension);
+		wxFileDialog dialog(this, wxT("Choose a file"), wxGetCwd(), wxT(""),
+		  (wxChar *) par->valuePtr.file.defaultExtension);
 		if (dialog.ShowModal() != wxID_OK)
 			break;
 		wxTextCtrl *textCtrl = control->GetTextCtrl();
@@ -514,7 +514,7 @@ ModuleParDialog::OnComboBox(wxCommandEvent& event)
 void
 ModuleParDialog::OnSliderUpdate(wxCommandEvent& event)
 {
-	static const char *funcName = "ModuleParDialog::OnSliderUpdate";
+	static const wxChar *funcName = wxT("ModuleParDialog::OnSliderUpdate");
 	int		i;
 
 	wxSlider	*slider = (wxSlider *) event.GetEventObject();
@@ -528,7 +528,7 @@ ModuleParDialog::OnSliderUpdate(wxCommandEvent& event)
 		infoCtrl = info->GetParControl(i);
 		if (infoCtrl->GetSlider() == control->GetSlider()) {
 			if (infoCtrl->GetUpdateFlag() && !info->SetParValue(infoCtrl)) {
-				NotifyError("%s: Cannot update array value.", funcName);
+				NotifyError(wxT("%s: Cannot update array value."), funcName);
 				return;
 			}
 			infoCtrl->GetPar()->valuePtr.array.index = index - 1;

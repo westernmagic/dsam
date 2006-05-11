@@ -120,15 +120,15 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	myZoomComboBox = NULL;
 	
 #	ifdef MPI_SUPPORT
-	static const char *funcName = "SDIFrame::MyFrame";
+	static const wxChar *funcName = wxT("SDIFrame::MyFrame");
 	int		argc = 1;
 	
-	if ((initStringPtrs = (char **) calloc(argc, sizeof(char *))) == NULL) {
-		NotifyError("%s: Out of memory for %d initialisation strings.",
+	if ((initStringPtrs = (wxChar **) calloc(argc, sizeof(wxChar *))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for %d initialisation strings."),
 		 funcName, argc);
 		 exit(1);
 	}
-	initStringPtrs[0] = (char *) funcName;
+	initStringPtrs[0] = (wxChar *) funcName;
 	MPI_Init( &argc, &initStringPtrs );
 #	endif
 
@@ -263,7 +263,8 @@ SDIFrame::DeleteFromDialogList(ModuleParDialog *dialog)
 	DynaListPtr	p = FindElement_Utility_DynaList(dialogList,
 	  CmpDialogs_SDIFrame, dialog);
 	if (!p)	
-		wxLogError("SDIFrame::DeleteFromDialogList: Could not find dialog.\n");	
+		wxLogError(wxT("SDIFrame::DeleteFromDialogList: Could not find "
+		  "dialog.\n"));	
 	Remove_Utility_DynaList(&dialogList, p);
 
 }
@@ -334,26 +335,26 @@ SDIFrame::CreateToolbar(void)
 	int currentX = 5;
 
 	toolBar->AddTool(wxID_NEW, newBitmap, wxNullBitmap, FALSE, currentX, -1,
-	  (wxObject *) NULL, "New simulation");
+	  (wxObject *) NULL, wxT("New simulation"));
 	currentX += width + 5;
 	toolBar->AddTool(wxID_OPEN, openBitmap, wxNullBitmap, FALSE, currentX, -1,
-	  (wxObject *) NULL, "Open simulation");
+	  (wxObject *) NULL, wxT("Open simulation"));
 	currentX += width + 5;
 	toolBar->AddTool(wxID_SAVE, saveBitmap, wxNullBitmap, TRUE, currentX, -1,
-	  (wxObject *) NULL, "Save simulation");
+	  (wxObject *) NULL, wxT("Save simulation"));
 	currentX += width + 5;
 	toolBar->AddTool(SDIFRAME_CUT, cutBitmap, wxNullBitmap, FALSE, currentX, -1,
-	  (wxObject *) NULL, "Cut element");
+	  (wxObject *) NULL, wxT("Cut element"));
 	currentX += width + 5;
 	toolBar->AddTool(wxID_PRINT, printBitmap, wxNullBitmap, FALSE, currentX, -1,
-	  (wxObject *) NULL, "Print simulation design");
+	  (wxObject *) NULL, wxT("Print simulation design"));
 	currentX += width + 5;
 	toolBar->AddSeparator();
 	toolBar->AddTool(SDIFRAME_EXECUTE, playBitmap, wxNullBitmap, FALSE,
-	  currentX, -1, (wxObject *) NULL, "Play simulation");
+	  currentX, -1, (wxObject *) NULL, wxT("Play simulation"));
 	currentX += width + 5;
 	toolBar->AddTool(SDIFRAME_STOP_SIMULATION, stopBitmap, wxNullBitmap, FALSE,
-	  currentX, -1, (wxObject *) NULL, "Stop simulation");
+	  currentX, -1, (wxObject *) NULL, wxT("Stop simulation"));
 	currentX += width + 5;
 	toolBar->AddSeparator();
 
@@ -365,7 +366,7 @@ SDIFrame::CreateToolbar(void)
 	SDIFRAME_INC_ZOOM + 1;
 	wxString *zoomStrings = new wxString[numStrings];
 	for (i = 0; i < numStrings; i ++)
-		zoomStrings[numStrings - i - 1].Printf(_T("%d%%"), (i *
+		zoomStrings[numStrings - i - 1].Printf(wxT("%d%%"), (i *
 		  SDIFRAME_INC_ZOOM + SDIFRAME_MIN_ZOOM));
 
 	myZoomComboBox = new wxComboBox(toolBar, SDIFRAME_ZOOM_COMBOBOX,
@@ -380,7 +381,7 @@ SDIFrame::CreateToolbar(void)
 
 	toolBar->AddSeparator();
 	toolBar->AddTool(wxID_HELP, helpBitmap, wxNullBitmap, FALSE, currentX, -1,
-	  (wxObject *) NULL, "Help button");
+	  (wxObject *) NULL, wxT("Help button"));
 
 	// after adding the buttons to the toolbar, must call Realize() to reflect
 	// the changes
@@ -414,10 +415,11 @@ SDIFrame::OnCreateToolBar(long style, wxWindowID id, const wxString& name)
 void
 SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 {
-	static char *funcName = "SDIFrame::OnExecute";
+	static wxChar *funcName = wxT("SDIFrame::OnExecute");
 
 	if (wxGetApp().GetGrMainApp()->simThread) {
-		wxLogWarning("%s: Running simulation not yet terminated!", funcName);
+		wxLogWarning(wxT("%s: Running simulation not yet terminated!"),
+		  funcName);
 		return;
 	}
 
@@ -428,7 +430,7 @@ SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 		if (!CheckChangedValues())
 			return;
 		if (!GetPtr_AppInterface()->audModel) {
-			NotifyError("%s: Simulation not initialised.", funcName);
+			NotifyError(wxT("%s: Simulation not initialised."), funcName);
 			return;
 		}
 	}
@@ -453,7 +455,7 @@ SDIFrame::OnStopSimulation(wxCommandEvent& WXUNUSED(event))
 	if (!wxGetApp().GetGrMainApp()->simThread)
 		return;
 	wxGetApp().GetGrMainApp()->DeleteSimThread();
-	wxLogWarning("Simulation terminated by user.");
+	wxLogWarning(wxT("Simulation terminated by user."));
 
 }
 
@@ -484,21 +486,22 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 	wxString title, authors, message, dsamVersion;
 
 	if (GetPtr_AppInterface()) {
-		title.sprintf("About %s %s", GetPtr_AppInterface()->appName,
+		title.sprintf(wxT("About %s %s"), GetPtr_AppInterface()->appName,
 		  GetPtr_AppInterface()->appVersion);
-		dsamVersion = GetPtr_AppInterface()->compiledDSAMVersion;
-		for (i = 0, authors = "Authors: "; i < APP_MAX_AUTHORS; i++)
+		dsamVersion = (wxChar *) GetPtr_AppInterface()->compiledDSAMVersion;
+		for (i = 0, authors = wxT("Authors: "); i < APP_MAX_AUTHORS; i++)
 			if (GetPtr_AppInterface()->authors[i][0] != '\0')
-				authors += GetPtr_AppInterface()->authors[i];
+				authors += (wxChar *) GetPtr_AppInterface()->authors[i];
 	} else {
-		title.sprintf("About Application");
-		dsamVersion = DSAM_VERSION;
+		title.sprintf(wxT("About Application"));
+		dsamVersion = (wxChar *) DSAM_VERSION;
 	}
-	message.sprintf("%s"
+	message.sprintf(wxT("%s"
 	  "DSAM version: %s (dynamic), compiled with %s\n"
 	  "Author, Dr. Lowel P. O'Mard (with God's support)\n"
-	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n",
-	  authors.GetData(), GetDSAMPtr_Common()->version, dsamVersion.GetData());
+	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n"),
+	  authors.GetData(), (wxChar *) GetDSAMPtr_Common()->version, dsamVersion.
+	  GetData());
 	wxMessageBox(message, title, wxOK | wxICON_INFORMATION, this);
 
 }
@@ -519,7 +522,7 @@ SDIFrame::OnEditMainPars(wxCommandEvent& WXUNUSED(event))
 
 	if (mainParDialog)
 		return;
-	mainParDialog = new ModuleParDialog(this, "Preferences", NULL,
+	mainParDialog = new ModuleParDialog(this, wxT("Preferences"), NULL,
 	  GetPtr_AppInterface()->parList, NULL, 300, 300, 500, 500,
 	  wxDEFAULT_DIALOG_STYLE);
 	mainParDialog->SetNotebookSelection();
@@ -535,7 +538,7 @@ SDIFrame::OnViewSimPars(wxCommandEvent& WXUNUSED(event))
 {
 	FILE	*oldParsFile = GetDSAMPtr_Common()->parsFile;
 
-	SetParsFile_Common("screen", OVERWRITE);
+	SetParsFile_Common(wxT("screen"), OVERWRITE);
 	ListParameters_AppInterface();
 	GetDSAMPtr_Common()->parsFile = oldParsFile;
 
@@ -582,11 +585,11 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
 void
 SDIFrame::OnEditProcess(wxCommandEvent& event)
 {
-	wxMenu menu("Edit Process");
+	wxMenu menu(wxT("Edit Process"));
 
-	menu.Append(SDIFRAME_CUT, "&Cut");
+	menu.Append(SDIFRAME_CUT, wxT("&Cut"));
 	menu.AppendSeparator();
-	menu.Append(SDIFRAME_EDIT_PROCESS, "&Properties");
+	menu.Append(SDIFRAME_EDIT_PROCESS, wxT("&Properties"));
 
 	PopupMenu(&menu, 0, 0);
 

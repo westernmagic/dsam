@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtShapePulse.h"
 
 /******************************************************************************/
@@ -49,8 +50,6 @@ ShapePulsePtr	shapePulsePtr = NULL;
 BOOLN
 Free_Utility_ShapePulse(void)
 {
-	/* static const char	*funcName = "Free_Utility_ShapePulse"; */
-
 	if (shapePulsePtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Utility_ShapePulse();
@@ -79,19 +78,20 @@ Free_Utility_ShapePulse(void)
 BOOLN
 Init_Utility_ShapePulse(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("Init_Utility_ShapePulse");
 
 	if (parSpec == GLOBAL) {
 		if (shapePulsePtr != NULL)
 			Free_Utility_ShapePulse();
 		if ((shapePulsePtr = (ShapePulsePtr) malloc(sizeof(ShapePulse))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (shapePulsePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -106,7 +106,7 @@ Init_Utility_ShapePulse(ParameterSpecifier parSpec)
 	shapePulsePtr->remainingPulseTime = NULL;
 
 	if (!SetUniParList_Utility_ShapePulse()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_ShapePulse();
 		return(FALSE);
 	}
@@ -125,27 +125,27 @@ Init_Utility_ShapePulse(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_ShapePulse(void)
 {
-	static const char *funcName = "SetUniParList_Utility_ShapePulse";
+	static const WChar *funcName = wxT("SetUniParList_Utility_ShapePulse");
 	UniParPtr	pars;
 
 	if ((shapePulsePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_SHAPEPULSE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = shapePulsePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_EVENTTHRESHOLD], "THRESHOLD",
-	  "Event threshold (arbitrary units).",
+	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_EVENTTHRESHOLD], wxT("THRESHOLD"),
+	  wxT("Event threshold (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &shapePulsePtr->eventThreshold, NULL,
 	  (void * (*)) SetEventThreshold_Utility_ShapePulse);
-	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_PULSEDURATION], "DURATION",
-	  "Pulse duration (s).",
+	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_PULSEDURATION], wxT("DURATION"),
+	  wxT("Pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &shapePulsePtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_Utility_ShapePulse);
-	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_PULSEMAGNITUDE], "MAGNITUDE",
-	  "Pulse magnitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[UTILITY_SHAPEPULSE_PULSEMAGNITUDE], wxT("MAGNITUDE"),
+	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &shapePulsePtr->pulseMagnitude, NULL,
 	  (void * (*)) SetPulseMagnitude_Utility_ShapePulse);
@@ -163,15 +163,15 @@ SetUniParList_Utility_ShapePulse(void)
 UniParListPtr
 GetUniParListPtr_Utility_ShapePulse(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_ShapePulse");
 
 	if (shapePulsePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (shapePulsePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(shapePulsePtr->parList);
@@ -189,7 +189,7 @@ BOOLN
 SetPars_Utility_ShapePulse(double eventThreshold, double
   pulseDuration, double pulseMagnitude)
 {
-	static const char	*funcName = "SetPars_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("SetPars_Utility_ShapePulse");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -200,7 +200,7 @@ SetPars_Utility_ShapePulse(double eventThreshold, double
 	if (!SetPulseMagnitude_Utility_ShapePulse(pulseMagnitude))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -216,10 +216,10 @@ SetPars_Utility_ShapePulse(double eventThreshold, double
 BOOLN
 SetEventThreshold_Utility_ShapePulse(double theEventThreshold)
 {
-	static const char	*funcName = "SetEventThreshold_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("SetEventThreshold_Utility_ShapePulse");
 
 	if (shapePulsePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -240,14 +240,14 @@ SetEventThreshold_Utility_ShapePulse(double theEventThreshold)
 BOOLN
 SetPulseDuration_Utility_ShapePulse(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("SetPulseDuration_Utility_ShapePulse");
 
 	if (shapePulsePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseDuration < 0.0) {
-		NotifyError("%s: Pulse duration must be greater than zero.\n",
+		NotifyError(wxT("%s: Pulse duration must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -269,10 +269,10 @@ SetPulseDuration_Utility_ShapePulse(double thePulseDuration)
 BOOLN
 SetPulseMagnitude_Utility_ShapePulse(double thePulseMagnitude)
 {
-	static const char	*funcName = "SetPulseMagnitude_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("SetPulseMagnitude_Utility_ShapePulse");
 
 	if (shapePulsePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -295,24 +295,24 @@ SetPulseMagnitude_Utility_ShapePulse(double thePulseMagnitude)
 BOOLN
 CheckPars_Utility_ShapePulse(void)
 {
-	static const char	*funcName = "CheckPars_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("CheckPars_Utility_ShapePulse");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (shapePulsePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!shapePulsePtr->eventThresholdFlag) {
-		NotifyError("%s: eventThreshold variable not set.", funcName);
+		NotifyError(wxT("%s: eventThreshold variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!shapePulsePtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!shapePulsePtr->pulseMagnitudeFlag) {
-		NotifyError("%s: pulseMagnitude variable not set.", funcName);
+		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -329,18 +329,19 @@ CheckPars_Utility_ShapePulse(void)
 BOOLN
 PrintPars_Utility_ShapePulse(void)
 {
-	static const char	*funcName = "PrintPars_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("PrintPars_Utility_ShapePulse");
 
 	if (!CheckPars_Utility_ShapePulse()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Shape Pulse Utility Module Parameters:-\n");
-	DPrint("\tEvent threshold = %g (arbitrary units),\n",
+	DPrint(wxT("Shape Pulse Utility Module Parameters:-\n"));
+	DPrint(wxT("\tEvent threshold = %g (arbitrary units),\n"),
 	  shapePulsePtr->eventThreshold);
-	DPrint("\tPulse duration = %g ms,",
+	DPrint(wxT("\tPulse duration = %g ms,"),
 	  MSEC(shapePulsePtr->pulseDuration));
-	DPrint("\tPulse magnitude = %g (nA?).\n",
+	DPrint(wxT("\tPulse magnitude = %g (nA?).\n"),
 	  shapePulsePtr->pulseMagnitude);
 	return(TRUE);
 
@@ -353,38 +354,39 @@ PrintPars_Utility_ShapePulse(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_ShapePulse(char *fileName)
+ReadPars_Utility_ShapePulse(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("ReadPars_Utility_ShapePulse");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	eventThreshold, pulseDuration, pulseMagnitude;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &eventThreshold))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &eventThreshold))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseMagnitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_ShapePulse(eventThreshold, pulseDuration,
 	  pulseMagnitude)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -400,14 +402,15 @@ ReadPars_Utility_ShapePulse(char *fileName)
 BOOLN
 InitModule_Utility_ShapePulse(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("InitModule_Utility_ShapePulse");
 
 	if (!SetParsPointer_Utility_ShapePulse(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_ShapePulse(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = shapePulsePtr;
@@ -452,14 +455,15 @@ ResetProcess_Utility_ShapePulse(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Utility_ShapePulse";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_Utility_ShapePulse");
 	ShapePulsePtr	p = shapePulsePtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Utility_ShapePulse();
 		if ((p->remainingPulseTime = (double *) calloc(data->outSignal->
 		  numChannels, sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory for remainingPulseTime array.",
+			NotifyError(wxT("%s: Out of memory for remainingPulseTime array."),
 			  funcName);
 			return(FALSE);
 		}
@@ -500,10 +504,10 @@ FreeProcessVariables_Utility_ShapePulse(void)
 BOOLN
 SetParsPointer_Utility_ShapePulse(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_ShapePulse");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	shapePulsePtr = (ShapePulsePtr) theModule->parsPtr;
@@ -527,17 +531,17 @@ SetParsPointer_Utility_ShapePulse(ModulePtr theModule)
 BOOLN
 CheckData_Utility_ShapePulse(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("CheckData_Utility_ShapePulse");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (shapePulsePtr->pulseDuration < data->inSignal[0]->dt) {
-		NotifyError("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n", funcName,
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
+		  "interval, %g ms (%g ms)\n"), funcName,
 		  MSEC(data->inSignal[0]->dt), MSEC(shapePulsePtr->pulseDuration));
 		return(FALSE);
 	}
@@ -564,7 +568,7 @@ CheckData_Utility_ShapePulse(EarObjectPtr data)
 BOOLN
 Process_Utility_ShapePulse(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_ShapePulse";
+	static const WChar	*funcName = wxT("Process_Utility_ShapePulse");
 	register	ChanData	*inPtr, *outPtr, lastValue;
 	register	double		*remainingPulseTimePtr, dt;
 	BOOLN	riseDetected;
@@ -576,17 +580,18 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 		if (!CheckPars_Utility_ShapePulse())
 			return(FALSE);
 		if (!CheckData_Utility_ShapePulse(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Shape Pulse Utility Process");
+		SetProcessName_EarObject(data, wxT("Shape Pulse Utility Process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Utility_ShapePulse(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -58,11 +58,11 @@ class IPCClient: wxSocketClient {
 	EarObjectPtr	GetSimProcess(void);
 	IPCUtils * GetIPCUtils(void)	{ return &iPCUtils; }
 	bool	InitSimFromFile(const wxString &simFileName);
-	bool	InitSimulation(const char *simulation);
+	bool	InitSimulation(const wxChar *simulation);
 	bool	Ok(void)	{ return ok; }
 	bool	ReadString(wxString &s);
 	bool	RunSimulation(void);
-	bool	SendArguments(int argc, char **argv);
+	bool	SendArguments(int argc, wxChar **argv);
 	bool	SendCommand(IPCCommandSpecifier command);
 	bool	SendInputProcess(void);
 	void	WaitForReady(void)	{ while (CheckStatus() == IPC_STATUS_BUSY); }

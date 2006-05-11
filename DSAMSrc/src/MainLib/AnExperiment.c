@@ -54,7 +54,7 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
   BOOLN (* SetIntensity)(double), double targetThreshold,
   double targetAccuracy, BOOLN *firstPass)
 {
-	static const char *funcName = "FindThresholdIntensity_ExpAnalysis";
+	static const WChar *funcName = wxT("FindThresholdIntensity_ExpAnalysis");
 	int		i;
 	double	intensityDiff, gradient, presentInputIntensity, lastOutIntensity;
 	double	absoluteIntensityDiff, bestIntensityDiff = 0.0;
@@ -63,21 +63,21 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	EarObjectPtr	modelResp;
 	
 	if (targetAccuracy <= 0.0) {
-		NotifyWarning("FindThresholdIntensity_ExpAnalysis: Illegal target "\
-		  "threshold accuracy (= %g).", targetAccuracy);
+		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Illegal target "
+		  "threshold accuracy (= %g)."), targetAccuracy);
 		return(0.0);
 	}
 	if (*firstPass) {
 		*firstPass = FALSE;
 		lastInputIntensity = ANALYSIS_FIRST_INTENSITY_GUESS;
 		if (!(* SetIntensity)(lastInputIntensity)) {
-			NotifyWarning("FindThresholdIntensity_ExpAnalysis: Intensity not "\
-			  "set.");
+			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Intensity "
+			  "not set."));
 			return(0.0);
 		}
 		if ((modelResp = (* RunModel)()) == NULL) {
-			NotifyWarning("FindThresholdIntensity_ExpAnalysis: Could not "\
-			  "calculate present intensity (first pass).  Returning zero.");
+			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Could not "
+			  "calculate present intensity (first pass).  Returning zero."));
 			return(0.0);
 		}
 		presentOutIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
@@ -86,13 +86,13 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	for (i = 0, bestIntensityDiff = HUGE_VAL; i < MAXIMUM_THRESHOLD_LOOP; i++) {
 		lastOutIntensity = presentOutIntensity;
 		if (!(* SetIntensity)(presentInputIntensity)) {
-			NotifyWarning("FindThresholdIntensity_ExpAnalysis: Could not set "\
-			  "intensity.");
+			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Could not "
+			  "set intensity."));
 			return(0.0);
 		}
 		if ((modelResp = (* RunModel)()) == NULL) {
-			NotifyWarning("FindThresholdIntensity_ExpAnalysis: Could not "\
-			  "calculate present output intensity.  Returning zero.");
+			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Could not "
+			  "calculate present output intensity.  Returning zero."));
 			return(0.0);
 		}
 		presentOutIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
@@ -112,8 +112,8 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 		  presentInputIntensity;
 		
 	}
-	NotifyWarning("%s: Looped %d times and couldn't\n\tcome any closer to "\
-	  "the threshold than %g dB.\n", funcName, MAXIMUM_THRESHOLD_LOOP,
+	NotifyWarning(wxT("%s: Looped %d times and couldn't\n\tcome any closer to "
+	  "the threshold than %g dB.\n"), funcName, MAXIMUM_THRESHOLD_LOOP,
 	  bestIntensityDiff);
 	lastInputIntensity = bestInputIntensity;
 	presentOutIntensity = bestOutputIntensity;
@@ -137,27 +137,28 @@ FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
   BOOLN (* SetIntensity)(double), double targetThreshold,
   double targetAccuracy, double initialDeltaIntensity)
 {
-	static const char *funcName = "FindThresholdIntensity_ExpAnalysis_Slow";
+	static const WChar *funcName = wxT(
+	  "FindThresholdIntensity_ExpAnalysis_Slow");
 	double	inputIntensity, deltaIntensity;
 	double	outIntensity;
 	EarObjectPtr	modelResp;
 	
 	if (targetAccuracy <= 0.0) {
-		NotifyWarning("FindThresholdIntensity_ExpAnalysis_Slow: Illegal "\
-		  "target threshold accuracy (= %g).", targetAccuracy);
+		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis_Slow: Illegal "
+		  "target threshold accuracy (= %g)."), targetAccuracy);
 		return(0.0);
 	}
 	inputIntensity = targetThreshold;
 	deltaIntensity = initialDeltaIntensity;
 	do {
 		if (!(* SetIntensity)(inputIntensity + deltaIntensity)) {
-			NotifyWarning("FindThresholdIntensity_ExpAnalysis_Slow: Could not "\
-			  "set intensity.");
+			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis_Slow: Could"
+			  " not set intensity."));
 			return(0.0);
 		}
 		if ((modelResp = (* RunModel)()) == NULL) {
-			NotifyWarning("%s: Could not calculate present output intensity. "\
-			  " Returning zero.", funcName);
+			NotifyWarning(wxT("%s: Could not calculate present output "
+			  "intensity.  Returning zero."), funcName);
 			return(0.0);
 		}
 		outIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
@@ -186,7 +187,7 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
   double variationFromCF, double dBDownDiff, double initialFreqIncrement,
   double accuracy)
 {
-	static const char *funcName = "CalcQValue_ExpAnalysis";
+	static const WChar *funcName = wxT("CalcQValue_ExpAnalysis");
 	BOOLN	forewards;
 	double	intensity, maxIntensity, frequency;
 	double	minTestFreq, maxTestFreq, minFreq, intensityDiff, freqIncrement;
@@ -194,13 +195,13 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	EarObjectPtr	modelResp;
 
 	if ( !(* SetStimulusFreq)(centreFreq) ) {
-		NotifyError("%s: Could not set model frequency parameter (CF).  "\
-		  "Returning Q = -1.0.", funcName);
+		NotifyError(wxT("%s: Could not set model frequency parameter (CF).  "
+		  "Returning Q = -1.0."), funcName);
 		return(-1.0);
 	}
 	if ((modelResp = (* RunModel)()) == NULL) {
-		NotifyError("%s: Could not calculate model intensity (at CF).  "\
-		  "Returning Q = -1.0.", funcName);
+		NotifyError(wxT("%s: Could not calculate model intensity (at CF).  "
+		  "Returning Q = -1.0."), funcName);
 		return(-1.0);
 	}
 	maxIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
@@ -218,20 +219,20 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	while ((frequency > minTestFreq) && (frequency < maxTestFreq) ) {
 		frequency += freqIncrement;
 		if ( !(* SetStimulusFreq)(frequency) ) {
-			NotifyWarning("%s: Could not set model frequency parameter.  "\
-			  "Returning Q = -1.0.", funcName);
+			NotifyWarning(wxT("%s: Could not set model frequency parameter.  "
+			  "Returning Q = -1.0."), funcName);
 			return(-1.0);
 		}
 		if ((modelResp = (* RunModel)()) == NULL) {
-			NotifyError("%s: Could not calculate model intensity.  Returning "\
-			  "Q = -1.0.", funcName);
+			NotifyError(wxT("%s: Could not calculate model intensity.  "
+			  "Returning Q = -1.0."), funcName);
 			return(-1.0);
 		}
 		intensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
 		if ( (intensityDiff = (maxIntensity - intensity)) >= dBDownDiff ) {
 			if (fabs(freqIncrement) < DBL_EPSILON) {
-				NotifyError("%s: Couldn't get closer to %g dB down than\n"
-				  "%g dB down.", funcName, dBDownDiff, intensityDiff);
+				NotifyError(wxT("%s: Couldn't get closer to %g dB down than\n"
+				  "%g dB down."), funcName, dBDownDiff, intensityDiff);
 				return(centreFreq / (frequency - minFreq));
 			}
 			if ((intensityDiff - dBDownDiff) < accuracy) {
@@ -248,8 +249,8 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 			}
 		}
 	}
-	NotifyError("%s: Q value %g dB down not in frequency\nrange %g - %g Hz "\
-	  "(variation from CF = %g).  Returning Q = -1.0.", funcName, dBDownDiff,
+	NotifyError(wxT("%s: Q value %g dB down not in frequency\nrange %g - %g Hz "
+	  "(variation from CF = %g).  Returning Q = -1.0."), funcName, dBDownDiff,
 	  minTestFreq, maxTestFreq, variationFromCF);
 	return(-1.0);
 		
@@ -276,7 +277,7 @@ BOOLN
 Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
   double shortTermT1, double shortTermPeriod, double rapidAdaptPeriod)
 {
-	static const char *funcName = "Calc2CompAdapt_ExpAnalysis";
+	static const WChar *funcName = wxT("Calc2CompAdapt_ExpAnalysis");
 	BOOLN	ok = TRUE;
 	int		chan;
 	double	Ast, Ass, sum;
@@ -286,31 +287,32 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	ChanLen	aveTimeOffsetIndex, avePeriodIndex;
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "Two component adaptation calculation.");
+	SetProcessName_EarObject(data, wxT("Two component adaptation "
+	  "calculation."));
 	if (!CheckPars_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly set.", funcName);		
+		NotifyError(wxT("%s: Input signal not correctly set."), funcName);		
 		return(FALSE);
 	}
 	dt = data->inSignal[0]->dt;
 	sT1Indx = (ChanLen) (shortTermT1 / dt);
 	if (sT1Indx > data->inSignal[0]->length) {
-		NotifyError("%s: Invalid short term T1 (%g ms).", funcName,
+		NotifyError(wxT("%s: Invalid short term T1 (%g ms)."), funcName,
 		  MSEC(shortTermT1));
 		return(FALSE);
 	}
 	sTPeriodIndx = (ChanLen) (shortTermPeriod / dt);
 	if (sTPeriodIndx + sT1Indx > data->inSignal[0]->length) {
-		NotifyError("%s: Invalid short term period (%g ms).", funcName,
+		NotifyError(wxT("%s: Invalid short term period (%g ms)."), funcName,
 		  MSEC(shortTermPeriod));
 		return(FALSE);
 	}
 	rTPeriodIndx = (ChanLen) (rapidAdaptPeriod / dt);
 	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
+		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 		return(FALSE);
 	}
 	ResetOutSignal_EarObject(data);
@@ -342,7 +344,7 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 				rT1Indx = i;
 			}
 		if (rT1Indx + rTPeriodIndx > data->inSignal[0]->length) {
-			NotifyError("%s: Invalid rapid adaptation period (%g ms).",
+			NotifyError(wxT("%s: Invalid rapid adaptation period (%g ms)."),
 			  funcName, MSEC(rapidAdaptPeriod));
 			return(FALSE);
 		}

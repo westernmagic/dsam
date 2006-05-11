@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRandom.h"
 #include "MoANSGBinom.h"
 
@@ -54,8 +55,6 @@ BinomialSGPtr	binomialSGPtr = NULL;
 BOOLN
 Free_ANSpikeGen_Binomial(void)
 {
-	/* static const char	*funcName = "Free_ANSpikeGen_Binomial";  */
-
 	if (binomialSGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Binomial();
@@ -84,19 +83,20 @@ Free_ANSpikeGen_Binomial(void)
 BOOLN
 Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("Init_ANSpikeGen_Binomial");
 
 	if (parSpec == GLOBAL) {
 		if (binomialSGPtr != NULL)
 			Free_ANSpikeGen_Binomial();
 		if ((binomialSGPtr = (BinomialSGPtr) malloc(sizeof(
 		  BinomialSG))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (binomialSGPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -114,7 +114,7 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	binomialSGPtr->refractoryPeriod = 1e-3;
 
 	if (!SetUniParList_ANSpikeGen_Binomial()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Binomial();
 		return(FALSE);
 	}
@@ -137,37 +137,39 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_ANSpikeGen_Binomial(void)
 {
-	static const char *funcName = "SetUniParList_ANSpikeGen_Binom";
+	static const WChar *funcName = wxT("SetUniParList_ANSpikeGen_Binom");
 	UniParPtr	pars;
 
 	if ((binomialSGPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANSPIKEGEN_BINOM_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = binomialSGPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_NUMFIBRES], "NUM_FIBRES",
-	  "Number of fibres.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_NUMFIBRES], wxT("NUM_FIBRES"),
+	  wxT("Number of fibres."),
 	  UNIPAR_INT,
 	  &binomialSGPtr->numFibres, NULL,
 	  (void * (*)) SetNumFibres_ANSpikeGen_Binomial);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_RANSEED], "RAN_SEED",
-	  "Random number seed (0 for different seed for each run).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random number seed (0 for different seed for each run)."),
 	  UNIPAR_LONG,
 	  &binomialSGPtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_ANSpikeGen_Binomial);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_PULSEDURATION], "PULSE_DURATION",
-	  "Pulse duration (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_PULSEDURATION], wxT(
+	  "PULSE_DURATION"),
+	  wxT("Pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &binomialSGPtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_ANSpikeGen_Binomial);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_PULSEMAGNITUDE], "MAGNITUDE",
-	  "Pulse magnitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_PULSEMAGNITUDE], wxT("MAGNITUDE"),
+	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &binomialSGPtr->pulseMagnitude, NULL,
 	  (void * (*)) SetPulseMagnitude_ANSpikeGen_Binomial);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_REFRACTORYPERIOD], "REFRAC_PERIOD",
-	  "Refractory period (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_REFRACTORYPERIOD], wxT(
+	  "REFRAC_PERIOD"),
+	  wxT("Refractory period (s)."),
 	  UNIPAR_REAL,
 	  &binomialSGPtr->refractoryPeriod, NULL,
 	  (void * (*)) SetRefractoryPeriod_ANSpikeGen_Binomial);
@@ -185,15 +187,15 @@ SetUniParList_ANSpikeGen_Binomial(void)
 UniParListPtr
 GetUniParListPtr_ANSpikeGen_Binomial(void)
 {
-	static const char	*funcName = "GetUniParListPtr_ANSpikeGen_Binom";
+	static const WChar	*funcName = wxT("GetUniParListPtr_ANSpikeGen_Binom");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (binomialSGPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(binomialSGPtr->parList);
@@ -211,7 +213,7 @@ BOOLN
 SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
   double pulseDuration, double pulseMagnitude, double refractoryPeriod)
 {
-	static const char	*funcName = "SetPars_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("SetPars_ANSpikeGen_Binomial");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -226,7 +228,7 @@ SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
 	if (!SetRefractoryPeriod_ANSpikeGen_Binomial(refractoryPeriod))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -242,10 +244,10 @@ SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
 BOOLN
 SetNumFibres_ANSpikeGen_Binomial(int theNumFibres)
 {
-	static const char	*funcName = "SetNumFibres_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("SetNumFibres_ANSpikeGen_Binomial");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	binomialSGPtr->numFibresFlag = TRUE;
@@ -265,10 +267,10 @@ SetNumFibres_ANSpikeGen_Binomial(int theNumFibres)
 BOOLN
 SetRanSeed_ANSpikeGen_Binomial(long theRanSeed)
 {
-	static const char	*funcName = "SetRanSeed_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("SetRanSeed_ANSpikeGen_Binomial");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	binomialSGPtr->ranSeedFlag = TRUE;
@@ -289,14 +291,14 @@ SetRanSeed_ANSpikeGen_Binomial(long theRanSeed)
 BOOLN
 SetPulseDuration_ANSpikeGen_Binomial(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Binomial");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePulseDuration < 0.0) {
-		NotifyError("%s: Pulse duration must be greater than zero.\n",
+		NotifyError(wxT("%s: Pulse duration must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -318,10 +320,11 @@ SetPulseDuration_ANSpikeGen_Binomial(double thePulseDuration)
 BOOLN
 SetPulseMagnitude_ANSpikeGen_Binomial(double thePulseMagnitude)
 {
-	static const char	*funcName = "SetPulseMagnitude_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT(
+	  "SetPulseMagnitude_ANSpikeGen_Binomial");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -342,16 +345,16 @@ SetPulseMagnitude_ANSpikeGen_Binomial(double thePulseMagnitude)
 BOOLN
 SetRefractoryPeriod_ANSpikeGen_Binomial(double theRefractoryPeriod)
 {
-	static const char	*funcName =
-	  "SetRefractoryPeriod_ANSpikeGen_Binomial";
+	static const WChar	*funcName =
+	  wxT("SetRefractoryPeriod_ANSpikeGen_Binomial");
 
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError("%s: Refractory period must be greater than zero (%g ms).",
-		  funcName, MSEC(theRefractoryPeriod));
+		NotifyError(wxT("%s: Refractory period must be greater than zero "
+		  "(%g ms)."), funcName, MSEC(theRefractoryPeriod));
 		return(FALSE);
 	}
 	binomialSGPtr->refractoryPeriodFlag = TRUE;
@@ -373,37 +376,37 @@ SetRefractoryPeriod_ANSpikeGen_Binomial(double theRefractoryPeriod)
 BOOLN
 CheckPars_ANSpikeGen_Binomial(void)
 {
-	static const char	*funcName = "CheckPars_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("CheckPars_ANSpikeGen_Binomial");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (binomialSGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!binomialSGPtr->numFibresFlag) {
-		NotifyError("%s: numFibres variable not set.", funcName);
+		NotifyError(wxT("%s: numFibres variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!binomialSGPtr->ranSeedFlag) {
-		NotifyError("%s: ranSeed variable not set.", funcName);
+		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!binomialSGPtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!binomialSGPtr->pulseMagnitudeFlag) {
-		NotifyError("%s: pulseMagnitude variable not set.", funcName);
+		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!binomialSGPtr->refractoryPeriodFlag) {
-		NotifyError("%s: refractoryPeriod variable not set.", funcName);
+		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (binomialSGPtr->pulseDuration >= binomialSGPtr->refractoryPeriod) {
-		NotifyError("%s: Pulse duration must be smaller than the\n"
-		  "refractory period, %g ms (%g ms).", funcName,
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n"
+		  "refractory period, %g ms (%g ms)."), funcName,
 		  MSEC(binomialSGPtr->refractoryPeriod),
 		  MSEC(binomialSGPtr->pulseDuration));
 		ok = FALSE;
@@ -422,18 +425,21 @@ CheckPars_ANSpikeGen_Binomial(void)
 BOOLN
 PrintPars_ANSpikeGen_Binomial(void)
 {
-	static const char	*funcName = "PrintPars_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("PrintPars_ANSpikeGen_Binomial");
 
 	if (!CheckPars_ANSpikeGen_Binomial()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Binomial Post-synaptic Firing Module:-\n");
-	DPrint("\tNo. fibres = %d,", binomialSGPtr->numFibres);
-	DPrint("\tRandom no. seed = %ld\n", binomialSGPtr->ranSeed);
-	DPrint("\tPulse duration = %g ms,", MSEC(binomialSGPtr->pulseDuration));
-	DPrint("\tPulse magnitude = %g (nA?),\n", binomialSGPtr->pulseMagnitude);
-	DPrint("\trefractoryPeriod = %g ms\n", MSEC(binomialSGPtr->
+	DPrint(wxT("Binomial Post-synaptic Firing Module:-\n"));
+	DPrint(wxT("\tNo. fibres = %d,"), binomialSGPtr->numFibres);
+	DPrint(wxT("\tRandom no. seed = %ld\n"), binomialSGPtr->ranSeed);
+	DPrint(wxT("\tPulse duration = %g ms,"), MSEC(binomialSGPtr->
+	  pulseDuration));
+	DPrint(wxT("\tPulse magnitude = %g (nA?),\n"), binomialSGPtr->
+	  pulseMagnitude);
+	DPrint(wxT("\trefractoryPeriod = %g ms\n"), MSEC(binomialSGPtr->
 	  refractoryPeriod));
 	return(TRUE);
 
@@ -446,44 +452,45 @@ PrintPars_ANSpikeGen_Binomial(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_ANSpikeGen_Binomial(char *fileName)
+ReadPars_ANSpikeGen_Binomial(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("ReadPars_ANSpikeGen_Binomial");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		numFibres;
 	long	ranSeed;
 	double	pulseDuration, pulseMagnitude, refractoryPeriod;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numFibres))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numFibres))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pulseMagnitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &refractoryPeriod))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_ANSpikeGen_Binomial(numFibres, ranSeed, pulseDuration,
 	  pulseMagnitude, refractoryPeriod)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -500,10 +507,10 @@ ReadPars_ANSpikeGen_Binomial(char *fileName)
 BOOLN
 SetParsPointer_ANSpikeGen_Binomial(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("SetParsPointer_ANSpikeGen_Binomial");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	binomialSGPtr = (BinomialSGPtr) theModule->parsPtr;
@@ -520,14 +527,15 @@ SetParsPointer_ANSpikeGen_Binomial(ModulePtr theModule)
 BOOLN
 InitModule_ANSpikeGen_Binomial(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("InitModule_ANSpikeGen_Binomial");
 
 	if (!SetParsPointer_ANSpikeGen_Binomial(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_ANSpikeGen_Binomial(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = binomialSGPtr;
@@ -559,18 +567,18 @@ InitModule_ANSpikeGen_Binomial(ModulePtr theModule)
 BOOLN
 CheckData_ANSpikeGen_Binomial(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("CheckData_ANSpikeGen_Binomial");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (binomialSGPtr->pulseDuration < data->inSignal[0]->dt) {
-		NotifyError("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n", funcName,
-		  MSEC(data->inSignal[0]->dt), MSEC(binomialSGPtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
+		  "interval, %g ms (%g ms)\n"), funcName, MSEC(data->inSignal[0]->dt),
+		  MSEC(binomialSGPtr->pulseDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -588,7 +596,8 @@ CheckData_ANSpikeGen_Binomial(EarObjectPtr data)
 BOOLN
 InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_ANSpikeGen_Binomial";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_ANSpikeGen_Binomial");
 	int		i;
 	BinomialSGPtr	p = binomialSGPtr;
 
@@ -596,29 +605,32 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		FreeProcessVariables_ANSpikeGen_Binomial();
 		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 			return(FALSE);
-		if ((p->refractAdjData = Init_EarObject("Util_Refractory")) == NULL) {
-			NotifyError("%s: Out of memory for refractAdjData EarObject.",
+		if ((p->refractAdjData = Init_EarObject(wxT("Util_Refractory"))) ==
+		  NULL) {
+			NotifyError(wxT("%s: Out of memory for refractAdjData EarObject."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitSubProcessList_EarObject(data,
 		  ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES)) {
-			NotifyError("%s: Could not initialise %d sub-process list for "
-			  "process.", funcName, ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
+			  "process."), funcName, ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[ANSPIKEGEN_REFRACTADJDATA] = p->refractAdjData;
-		SetRealPar_ModuleMgr(p->refractAdjData, "period", p->refractoryPeriod);
+		SetRealPar_ModuleMgr(p->refractAdjData, wxT("period"), p->
+		  refractoryPeriod);
 		p->numChannels = data->outSignal->numChannels;
 		if ((p->remainingPulseIndex = (ChanLen *) calloc(p->numChannels, sizeof(
 		  ChanLen))) == NULL) {
-			NotifyError("%s: Out of memory for remainingPulseIndex array.",
+			NotifyError(wxT("%s: Out of memory for remainingPulseIndex array."),
 			  funcName);
 			return(FALSE);
 		}
 		if ((p->lastOutput = (double *) calloc(p->numChannels, sizeof(
 		  double))) == NULL) {
-			NotifyError("%s: Out of memory for lastOutput array.", funcName);
+			NotifyError(wxT("%s: Out of memory for lastOutput array."),
+			  funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -678,7 +690,7 @@ FreeProcessVariables_ANSpikeGen_Binomial(void)
 BOOLN
 RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_ANSpikeGen_Binomial";
+	static const WChar	*funcName = wxT("RunModel_ANSpikeGen_Binomial");
 	register	ChanData	*inPtr, *outPtr, *pulsePtr;
 	register	double		output = 0.0;
 	int		chan;
@@ -693,17 +705,18 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		if (!CheckPars_ANSpikeGen_Binomial())
 			return(FALSE);
 		if (!CheckData_ANSpikeGen_Binomial(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Binomial Post-synaptic Firing");
+		SetProcessName_EarObject(data, wxT("Binomial Post-synaptic Firing"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_ANSpikeGen_Binomial(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -44,16 +44,16 @@ ModeList_Bandwidth(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-			{"ERB",			BANDWIDTH_ERB },
-			{"CAT",			BANDWIDTH_CAT },
-			{"CUSTOM_ERB",	BANDWIDTH_CUSTOM_ERB },
-			{"GUINEA_PIG",	BANDWIDTH_GUINEA_PIG },
-			{"USER",		BANDWIDTH_USER },
-			{"NONLINEAR",	BANDWIDTH_NONLINEAR },
-			{"INTERNAL_DYNAMIC",	BANDWIDTH_INTERNAL_DYNAMIC },
-			{"INTERNAL_STATIC",	BANDWIDTH_INTERNAL_STATIC },
-			{"DISABLED",	BANDWIDTH_DISABLED },
-			{"",			BANDWIDTH_NULL }
+			{wxT("ERB"),				BANDWIDTH_ERB },
+			{wxT("CAT"),				BANDWIDTH_CAT },
+			{wxT("CUSTOM_ERB"),			BANDWIDTH_CUSTOM_ERB },
+			{wxT("GUINEA_PIG"),			BANDWIDTH_GUINEA_PIG },
+			{wxT("USER"),				BANDWIDTH_USER },
+			{wxT("NONLINEAR"),			BANDWIDTH_NONLINEAR },
+			{wxT("INTERNAL_DYNAMIC"),	BANDWIDTH_INTERNAL_DYNAMIC },
+			{wxT("INTERNAL_STATIC"),	BANDWIDTH_INTERNAL_STATIC },
+			{wxT("DISABLED"),			BANDWIDTH_DISABLED },
+			{wxT(""),					BANDWIDTH_NULL }
 
 		};
 	return (&modeList[index]);
@@ -73,9 +73,9 @@ ModeList_Bandwidth(int index)
  */
 
 BOOLN
-SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName)
+SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName)
 {
-	static const char *funcName = "SetMode_Bandwidth";
+	static const WChar *funcName = wxT("SetMode_Bandwidth");
 	int		specifier;
 	double (* Func)(BandwidthModePtr, double);
 	BandwidthMode modeList[] = {
@@ -94,12 +94,14 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName)
 	};
 
 	if (modePtr == NULL) {
-		NotifyError("%s: Mode pointer is not set ('%s').", funcName, modeName);
+		NotifyError(wxT("%s: Mode pointer is not set ('%s')."), funcName,
+		  modeName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(modeName, ModeList_Bandwidth(0))) ==
 	  BANDWIDTH_NULL) {
-		NotifyError("%s: Unknown bandwidth  mode (%s).", funcName, modeName);
+		NotifyError(wxT("%s: Unknown bandwidth  mode (%s)."), funcName,
+		  modeName);
 		return(FALSE);
 	}
 	if (specifier == BANDWIDTH_INTERNAL_STATIC)
@@ -122,9 +124,10 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName)
 double
 BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 {
-	static const char *funcName = "BandwidthFromF_Bandwith";
+	static const WChar *funcName = wxT("BandwidthFromF_Bandwith");
 	if (p == NULL) {
-		NotifyError("%s: BandwidthMode structure not initialised.", funcName);
+		NotifyError(wxT("%s: BandwidthMode structure not initialised."),
+		  funcName);
 		return(-1.0);
 	}
 	switch (p->specifier) {
@@ -139,7 +142,7 @@ BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 	case BANDWIDTH_NONLINEAR:
 		return(NonLinearFromF_Bandwidth(theFrequency));
 	default:
-		NotifyError("%s: Bandwidth mode not implemented (%d).", funcName,
+		NotifyError(wxT("%s: Bandwidth mode not implemented (%d)."), funcName,
 		  p->specifier);	
 	}
 	return(-1.0);

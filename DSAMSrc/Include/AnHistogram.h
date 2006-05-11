@@ -149,17 +149,17 @@ BOOLN	PrintPars_Analysis_Histogram(void);
 void	PushDataBuffer_Analysis_Histogram(EarObjectPtr data,
 		  ChanLen lastSamples);
 
-BOOLN	ReadPars_Analysis_Histogram(char *fileName);
+BOOLN	ReadPars_Analysis_Histogram(WChar *fileName);
 
 void	ResetProcess_Analysis_Histogram(EarObjectPtr data);
 
 BOOLN	SetBinWidth_Analysis_Histogram(double theBinWidth);
 
-BOOLN	SetDetectionMode_Analysis_Histogram(char *theDetectionMode);
+BOOLN	SetDetectionMode_Analysis_Histogram(WChar *theDetectionMode);
 
 BOOLN	SetEventThreshold_Analysis_Histogram(double theEventThreshold);
 
-BOOLN	SetOutputMode_Analysis_Histogram(char *theOutputMode);
+BOOLN	SetOutputMode_Analysis_Histogram(WChar *theOutputMode);
 
 BOOLN	SetTimeOffset_Analysis_Histogram(double theTimeOffset);
 
@@ -167,13 +167,13 @@ BOOLN	InitModule_Analysis_Histogram(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_Histogram(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_Histogram(char *detectionMode, char *typeMode,
+BOOLN	SetPars_Analysis_Histogram(WChar *detectionMode, WChar *typeMode,
 		  double eventThreshold, double binWidth, double period,
 		  double timeOffset);
 
 BOOLN	SetPeriod_Analysis_Histogram(double thePeriod);
 
-BOOLN	SetTypeMode_Analysis_Histogram(char *theTypeMode);
+BOOLN	SetTypeMode_Analysis_Histogram(WChar *theTypeMode);
 
 BOOLN	SetUniParList_Analysis_Histogram(void);
 

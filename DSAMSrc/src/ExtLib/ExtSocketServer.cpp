@@ -47,7 +47,7 @@ SocketServer::Accept(bool wait)
 	if (!usingSuperServer) {
 		SocketBase *socket = new SocketBase();
 		if (!wxSocketServer::AcceptWith(*socket, wait)) {
-			wxLogError("%s: Could not accept connection.", funcName);
+			wxLogError(wxT("%s: Could not accept connection."), funcName);
 			return(NULL);
 		}
 		return(socket);

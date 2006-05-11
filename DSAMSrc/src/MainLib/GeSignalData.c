@@ -50,9 +50,9 @@ InitInfo_SignalData(SignalInfoPtr info)
 {
 	info->chanLabel = NULL;
 	info->cFArray = NULL;
-	snprintf(info->channelTitle, SIGNALDATA_MAX_TITLE, "Channel Data");
-	snprintf(info->chanDataTitle, SIGNALDATA_MAX_TITLE, "Amplitude (uPa)");
-	snprintf(info->sampleTitle, SIGNALDATA_MAX_TITLE, "Time (s)");
+	DSAM_snprintf(info->channelTitle, SIGNALDATA_MAX_TITLE, wxT("Channel Data"));
+	DSAM_snprintf(info->chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("Amplitude (uPa)"));
+	DSAM_snprintf(info->sampleTitle, SIGNALDATA_MAX_TITLE, wxT("Time (s)"));
 	return(TRUE);
 
 }
@@ -68,13 +68,13 @@ InitInfo_SignalData(SignalInfoPtr info)
  */
 
 SignalDataPtr
-Init_SignalData(const char *callingFunctionName)
+Init_SignalData(const WChar *callingFunctionName)
 {
-	static const char *funcName = "Init_SignalData";
+	static const WChar *funcName = wxT("Init_SignalData");
 	SignalData	*theData;
 	
 	if ((theData = (SignalData *) malloc(sizeof(SignalData))) == NULL ) {
-		NotifyError("%s: Out of Memory (called by %s).", funcName,
+		NotifyError(wxT("%s: Out of Memory (called by %s)."), funcName,
 		  callingFunctionName);
 		exit(1);
 	}
@@ -160,14 +160,15 @@ Free_SignalData(SignalDataPtr *theData)
 BOOLN
 ResetInfo_SignalData(SignalDataPtr signal)
 {
-	if (!CheckInit_SignalData(signal, "ResetInfo_SignalData"))
+	if (!CheckInit_SignalData(signal, wxT("ResetInfo_SignalData")))
 		return(FALSE);
 	SetInfoChannelLabels_SignalData(signal, NULL);
 	SetInfoCFArray_SignalData(signal, NULL);
-	snprintf(signal->info.channelTitle, SIGNALDATA_MAX_TITLE, "Channel Data");
-	snprintf(signal->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "Amplitude "
-	  "(uPa)");
-	snprintf(signal->info.sampleTitle, SIGNALDATA_MAX_TITLE, "Time (s)");
+	DSAM_snprintf(signal->info.channelTitle, SIGNALDATA_MAX_TITLE, wxT(
+	  "Channel Data"));
+	DSAM_snprintf(signal->info.chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("Amplitude "
+	  "(uPa)"));
+	DSAM_snprintf(signal->info.sampleTitle, SIGNALDATA_MAX_TITLE, wxT("Time (s)"));
 	return(TRUE);
 
 }
@@ -180,13 +181,14 @@ ResetInfo_SignalData(SignalDataPtr signal)
  */
  
 BOOLN
-CheckInit_SignalData(SignalDataPtr theSignal, const char *callingFunction)
+CheckInit_SignalData(SignalDataPtr theSignal, const WChar *callingFunction)
 {
-	static const char *funcName = "CheckInit_SignalData";
+	static const WChar *funcName = wxT("CheckInit_SignalData");
 	if (theSignal != NULL)
 		return(TRUE);
 	else {
-		NotifyError("%s: Signal not set in %s.", funcName, callingFunction);
+		NotifyError(wxT("%s: Signal not set in %s."), funcName,
+		  callingFunction);
 		return(FALSE);
 	}
 	
@@ -209,27 +211,27 @@ BOOLN
 InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
   BOOLN externalDataFlag)
 {
-	static const char *funcName = "InitChannels_SignalData";
+	static const WChar *funcName = wxT("InitChannels_SignalData");
 	int			i, j;
 	ChanData	**p;
 	
-	if (!CheckInit_SignalData(theData, "InitChannels_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("InitChannels_SignalData")))
 		return(FALSE);
 	if (theData->length < 1) {
-		NotifyError("%s: Invalid signal length = %u.", funcName,
+		NotifyError(wxT("%s: Invalid signal length = %u."), funcName,
 		  theData->length);
 		return(FALSE);
 	}
 	if ((p = (ChanData **) calloc(numChannels, sizeof(ChanData *))) == NULL) {
-		NotifyError("%s: Out of memory for channel pointers.", funcName);
+		NotifyError(wxT("%s: Out of memory for channel pointers."), funcName);
 		return(FALSE);
 	}
 	if (!externalDataFlag) {
 		for (i = 0; i < numChannels; i++)
 			if ((p[i] = (ChanData *) calloc(theData->length, sizeof(
 			  ChanData))) == NULL) {
-				NotifyError("%s: Out of memory for channel[%d] data (length = "
-				  "%u).", funcName, i, theData->length);
+				NotifyError(wxT("%s: Out of memory for channel[%d] data "
+				  "(length = %u)."), funcName, i, theData->length);
 				for (j = 0; j < i - 1; j++)
 					free(p[j]);
 				free(p);
@@ -242,13 +244,14 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 	theData->externalDataFlag = externalDataFlag;
 	if ((theData->info.chanLabel = (double *) calloc(numChannels,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory for channel info labels.", funcName);
+		NotifyError(wxT("%s: Out of memory for channel info labels."),
+		  funcName);
 		FreeChannels_SignalData(theData);
 		return(FALSE);
 	}
 	if ((theData->info.cFArray = (double *) calloc(numChannels,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory for CF Array.", funcName);
+		NotifyError(wxT("%s: Out of memory for CF Array."), funcName);
 		FreeChannels_SignalData(theData);
 		return(FALSE);
 	}
@@ -270,20 +273,20 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 BOOLN
 CheckPars_SignalData(SignalDataPtr theSignal)
 {
-	static const char *funcName = "CheckPars_SignalData";
+	static const WChar *funcName = wxT("CheckPars_SignalData");
 
 	if (!CheckInit_SignalData(theSignal, funcName))
 		return(FALSE);
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No Channels have been set.", funcName);
+		NotifyError(wxT("%s: No Channels have been set."), funcName);
 		return(FALSE);
 	}
 	if (theSignal->length == 0) {
-		NotifyError("%s: Invalid zero signal length.", funcName);
+		NotifyError(wxT("%s: Invalid zero signal length."), funcName);
 		return(FALSE);
 	}
 	if (theSignal->dt <= 0.0) {
-		NotifyError("%s: Invalid signal sampling interval = %lg.", funcName,
+		NotifyError(wxT("%s: Invalid signal sampling interval = %lg."), funcName,
 		  theSignal->dt);
 		return(FALSE);
 	}
@@ -305,10 +308,11 @@ CheckPars_SignalData(SignalDataPtr theSignal)
 BOOLN
 CheckRamp_SignalData(SignalDataPtr theSignal)
 {
-	static const char *funcName = "CheckRamp_SignalData";
+	static const WChar *funcName = wxT("CheckRamp_SignalData");
 
 	if (!theSignal->rampFlag)
-		NotifyWarning("%s: Signal is not ramped (see Trans_Gate).", funcName);
+		NotifyWarning(wxT("%s: Signal is not ramped (see Trans_Gate)."),
+		  funcName);
 	return(TRUE);
 	
 }
@@ -353,17 +357,17 @@ SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 BOOLN
 SameType_SignalData(SignalDataPtr a, SignalDataPtr b)
 {
-	static const char *funcName = "SameType_SignalData";
+	static const WChar *funcName = wxT("SameType_SignalData");
 
 	if (!a->lengthFlag || !b->lengthFlag) {
-		NotifyError("%s: Both data set length values must be set! (lengths:- "\
-		  "a = %u, b = %u).", funcName, a->length, b->length);
+		NotifyError(wxT("%s: Both data set length values must be set! "
+		  "(lengths:- a = %u, b = %u)."), funcName, a->length, b->length);
 		return(FALSE);
 	}
 	if  ((a->length != b->length) || (a->numChannels != b->numChannels)) {
-		NotifyError("%s: Both data sets must have the same length and number "\
-		  "of channels! (lengths:- a = %lu, b = %lu; channels:-  a = %d, b = "\
-		  "%d.)", funcName, a->length, b->length, a->numChannels,
+		NotifyError(wxT("%s: Both data sets must have the same length and "
+		  "number of channels! (lengths:- a = %lu, b = %lu; channels:-  a = %d,"
+		  " b = %d.)"), funcName, a->length, b->length, a->numChannels,
 		  b->numChannels);
 		return(FALSE);
 	}
@@ -405,7 +409,7 @@ Scale_SignalData(SignalDataPtr d, double multiplier)
 	ChanLen	j;
 	ChanData	*dataPtr;
 	
-	if (!CheckInit_SignalData(d, "Scale_SignalData (theSignal)"))
+	if (!CheckInit_SignalData(d, wxT("Scale_SignalData (theSignal)")))
 		return(FALSE);
 	for (i = d->offset; i < d->numChannels; i++)
 		for (j = 0, dataPtr = d->channel[i]; j < d->length; j++)
@@ -428,8 +432,8 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 	ChanLen	j;
 	ChanData	*aPtr, *bPtr;
 	
-	if (!CheckInit_SignalData(a, "AddScaledData_SignalData (a)") ||
-	  !CheckInit_SignalData(b, "AddScaledData_SignalData (b)"))
+	if (!CheckInit_SignalData(a, wxT("AddScaledData_SignalData (a)")) ||
+	  !CheckInit_SignalData(b, wxT("AddScaledData_SignalData (b)")))
 		return(FALSE);
 	if (!SameType_SignalData(a, b))
 		return(FALSE);
@@ -453,7 +457,7 @@ void
 SetSamplingInterval_SignalData(SignalDataPtr theData,
   double theSamplingInterval)
 {
-	if (!CheckInit_SignalData(theData, "SetSamplingInterval_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetSamplingInterval_SignalData")))
 		exit(1);
 	theData->dt = theSamplingInterval;
 	theData->dtFlag = TRUE;
@@ -471,7 +475,7 @@ void
 SetOutputTimeOffset_SignalData(SignalDataPtr theData,
   double theOutputTimeOffset)
 {
-	if (!CheckInit_SignalData(theData, "SetOutputTimeOffset_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetOutputTimeOffset_SignalData")))
 		exit(1);
 	theData->outputTimeOffset = theOutputTimeOffset;
 
@@ -490,7 +494,7 @@ SetTimeIndex_SignalData(SignalDataPtr theData, ChanLen theTimeIndex)
 {
 	if (!GetDSAMPtr_Common()->segmentedMode)
 		return;
-	if (!CheckInit_SignalData(theData,"SetTimeIndex_SignalData" ))
+	if (!CheckInit_SignalData(theData,wxT("SetTimeIndex_SignalData") ))
 		exit(1);
 	theData->timeIndex = theTimeIndex;
 
@@ -505,7 +509,7 @@ SetTimeIndex_SignalData(SignalDataPtr theData, ChanLen theTimeIndex)
 void
 SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
 {
-	static const char *funcName = "SetLength_SignalData";
+	static const WChar *funcName = wxT("SetLength_SignalData");
 
 	if (!CheckInit_SignalData(theData, funcName))
 		exit(1);
@@ -513,7 +517,7 @@ SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
 		theData->length = theLength;
 		theData->lengthFlag = TRUE;
 	} else
-		NotifyError("%s: Data set length cannot be changed.", funcName);
+		NotifyError(wxT("%s: Data set length cannot be changed."), funcName);
 		
 }
 
@@ -528,12 +532,12 @@ SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
 void
 SetInterleaveLevel_SignalData(SignalDataPtr theData, uShort theInterleaveLevel)
 {
-	static const char *funcName = "SetInterleaveLevel_SignalData";
+	static const WChar *funcName = wxT("SetInterleaveLevel_SignalData");
 
 	if (!CheckInit_SignalData(theData, funcName))
 		exit(1);
 	if (theInterleaveLevel < SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL) {
-		NotifyError("%s: Illegal interleave level (%d).", funcName,
+		NotifyError(wxT("%s: Illegal interleave level (%d)."), funcName,
 		  theInterleaveLevel);
 		exit(1);
 	}
@@ -551,7 +555,7 @@ SetInterleaveLevel_SignalData(SignalDataPtr theData, uShort theInterleaveLevel)
 void
 SetNumWindowFrames_SignalData(SignalDataPtr theData, uShort theNumWindowFrames)
 {
-	static const char *funcName = "SetNumWindowFrames_SignalData";
+	static const WChar *funcName = wxT("SetNumWindowFrames_SignalData");
 
 	if (!CheckInit_SignalData(theData, funcName))
 		exit(1);
@@ -568,7 +572,7 @@ SetNumWindowFrames_SignalData(SignalDataPtr theData, uShort theNumWindowFrames)
 void
 SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag)
 {
-	if (!CheckInit_SignalData(theData, "SetLocalInfoFlag_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetLocalInfoFlag_SignalData")))
 		exit(1);
 	theData->localInfoFlag = flag;
 
@@ -580,8 +584,8 @@ SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag)
  * This routine sets the channel labels for the signal's info structure,
  * but only if the information is local, and not just a copy.
  * It does not verify that the array of value's provided is the correct length.
- * If the "labels" array is null, then the values will be set to the channel
- * index divided by the interleave level.
+ * If the wxT("labels") array is null, then the values will be set to the
+ * channel index divided by the interleave level.
  */
 
 void
@@ -589,7 +593,7 @@ SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
 {
 	int		i;
 
-	if (!CheckInit_SignalData(signal, "SetInfoChannelLabels_SignalData"))
+	if (!CheckInit_SignalData(signal, wxT("SetInfoChannelLabels_SignalData")))
 		exit(1);
 	if (!signal->localInfoFlag)
 		return;
@@ -613,15 +617,15 @@ SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
 BOOLN
 SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
 {
-	static const char *funcName = "SetInfoChannelLabel_SignalData";
+	static const WChar *funcName = wxT("SetInfoChannelLabel_SignalData");
 
 	if (!CheckInit_SignalData(theData, funcName))
 		return(FALSE);
 	if (!theData->localInfoFlag)
 		return(TRUE);
 	if ((index < 0) || (index >= theData->numChannels)) {
-		NotifyError("%s: Illegal label index (%d), must be in range 0 - %d.",
-		  funcName, index, theData->numChannels - 1);
+		NotifyError(wxT("%s: Illegal label index (%d), must be in range 0 - "
+		  "%d."), funcName, index, theData->numChannels - 1);
 		return(FALSE);
 	}
 	theData->info.chanLabel[index] = label;
@@ -643,7 +647,7 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 {
 	int		i;
 
-	if (!CheckInit_SignalData(theData, "SetInfoCFArray_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetInfoCFArray_SignalData")))
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
@@ -667,15 +671,15 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 BOOLN
 SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
 {
-	static const char *funcName = "SetInfoCF_SignalData";
+	static const WChar *funcName = wxT("SetInfoCF_SignalData");
 
 	if (!CheckInit_SignalData(theData, funcName))
 		return(FALSE);
 	if (!theData->localInfoFlag)
 		return(TRUE);
 	if ((index < 0) || (index >= theData->numChannels)) {
-		NotifyError("%s: Illegal CF array index (%d), must be in range 0 - %d.",
-		  funcName, index, theData->numChannels - 1);
+		NotifyError(wxT("%s: Illegal CF array index (%d), must be in range 0 - "
+		  "%d."), funcName, index, theData->numChannels - 1);
 		return(FALSE);
 	}
 	theData->info.cFArray[index] = cF;
@@ -691,13 +695,14 @@ SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
  */
 
 void
-SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title)
+SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title)
 {
-	if (!CheckInit_SignalData(theData, "SetInfoChannelTitle_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetInfoChannelTitle_SignalData")))
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	DSAM_snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, wxT("%s"),
+	  title);
 
 }
 
@@ -709,13 +714,14 @@ SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title)
  */
 
 void
-SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title)
+SetInfoChanDataTitle_SignalData(SignalDataPtr theData, WChar *title)
 {
-	if (!CheckInit_SignalData(theData, "SetInfoChanDataTitle_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetInfoChanDataTitle_SignalData")))
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	DSAM_snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("%s"),
+	  title);
 
 }
 
@@ -727,13 +733,13 @@ SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title)
  */
 
 void
-SetInfoSampleTitle_SignalData(SignalDataPtr theData, char *title)
+SetInfoSampleTitle_SignalData(SignalDataPtr theData, WChar *title)
 {
-	if (!CheckInit_SignalData(theData, "SetInfoSampleTitle_SignalData"))
+	if (!CheckInit_SignalData(theData, wxT("SetInfoSampleTitle_SignalData")))
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, "%s", title);
+	DSAM_snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, wxT("%s"), title);
 
 }
 
@@ -756,9 +762,9 @@ CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b)
 	int			i, interleaveLevel;
 	double		*tempChanLabel, *tempCFArray;
 
-	if (!CheckInit_SignalData(a, "CopyInfo_SignalData: signal a"))
+	if (!CheckInit_SignalData(a, wxT("CopyInfo_SignalData: signal a")))
 		return(FALSE);
-	if (!CheckInit_SignalData(b, "CopyInfo_SignalData: signal b"))
+	if (!CheckInit_SignalData(b, wxT("CopyInfo_SignalData: signal b")))
 		return(FALSE);
 	tempChanLabel = a->info.chanLabel;
 	tempCFArray = a->info.cFArray;
@@ -786,43 +792,43 @@ CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b)
  */
 
 BOOLN
-OutputToFile_SignalData(char *fileName, SignalDataPtr theData)
+OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
 {
-	static const char *funcName = "OutputToFile_SignalData";
-	char	*parFilePath;
+	static const WChar *funcName = wxT("OutputToFile_SignalData");
+	WChar	*parFilePath;
 	int		j, k;
     ChanLen	i, t;
 	FILE	*fp;
 	
 	if (!CheckPars_SignalData(theData)) {
-		NotifyError("%s: Parameters not set for data-set.", funcName);
+		NotifyError(wxT("%s: Parameters not set for data-set."), funcName);
 		return(FALSE);
 	}
 	if(!GetDSAMPtr_Common()->segmentedMode)
-		DPrint("Output sent to file '%s'.\n", fileName);
+		DPrint(wxT("Output sent to file '%s'.\n"), fileName);
 	if (*fileName == '-')
 		fp = stdout;
 	else {
 		parFilePath = GetParsFileFPath_Common(fileName);
 		fp = (GetDSAMPtr_Common()->segmentedMode && (theData->timeIndex !=
-		  PROCESS_START_TIME))? fopen(parFilePath, "a"): fopen(parFilePath,
-		  "w");
+		  PROCESS_START_TIME))? fopen((char *)parFilePath, "a"): fopen((char *)
+		  parFilePath, "w");
 	}
 	if (fp == NULL) {
-		NotifyError("%s: Cannot open file '%s'", funcName, fileName);
+		NotifyError(wxT("%s: Cannot open file '%s'"), funcName, fileName);
 		return(FALSE);
 	}
 	if (theData->timeIndex == PROCESS_START_TIME) {
-		fprintf(fp,"%s", theData->info.sampleTitle);
+		DSAM_fprintf(fp,wxT("%s"), theData->info.sampleTitle);
 		for (k = 0; k < theData->numChannels; k++)
-			fprintf(fp, "\t%g", theData->info.chanLabel[k]);
-		fprintf(fp, "\n");
+			DSAM_fprintf(fp, wxT("\t%g"), theData->info.chanLabel[k]);
+		DSAM_fprintf(fp, wxT("\n"));
 	}
 	for (i = 0, t = theData->timeIndex; i < theData->length; i++, t++) {
-		fprintf(fp, "%8.5e", t * theData->dt + theData->outputTimeOffset);
+		DSAM_fprintf(fp, wxT("%8.5e"), t * theData->dt + theData->outputTimeOffset);
 		for (j = 0; j < theData->numChannels; j++)
-			fprintf(fp, "\t %g", theData->channel[j][i]);
-		fprintf(fp, "\n");
+			DSAM_fprintf(fp, wxT("\t %g"), theData->channel[j][i]);
+		DSAM_fprintf(fp, wxT("\n"));
 	}
 	CloseFile(fp);
 	return(TRUE);
@@ -838,10 +844,10 @@ OutputToFile_SignalData(char *fileName, SignalDataPtr theData)
 double
 GetDuration_SignalData(SignalDataPtr theSignal)
 {
-	static const char *funcName = "GetDuration_SignalData";
+	static const WChar *funcName = wxT("GetDuration_SignalData");
 
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Parameters not set for data-set, returned zero.",
+		NotifyError(wxT("%s: Parameters not set for data-set, returned zero."),
 		  funcName);
 		return(0.0);
 	}
@@ -859,10 +865,10 @@ GetDuration_SignalData(SignalDataPtr theSignal)
 double
 GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample)
 {
-	static const char *funcName = "GetDuration_SignalData";
+	static const WChar *funcName = wxT("GetDuration_SignalData");
 
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Parameters not set for data-set, returned zero.",
+		NotifyError(wxT("%s: Parameters not set for data-set, returned zero."),
 		  funcName);
 		return(0.0);
 	}
@@ -883,7 +889,7 @@ GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample)
 BOOLN
 GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
 {
-	static const char *funcName = "GaindBIndividual_SignalData";
+	static const WChar *funcName = wxT("GaindBIndividual_SignalData");
 	int		i;
 	double	*scale;
 	ChanLen	j;
@@ -892,7 +898,7 @@ GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
 	if (!CheckInit_SignalData(d, funcName))
 		return(FALSE);
 	if ((scale = (double *) calloc(d->numChannels, sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
+		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < d->numChannels; i++)
@@ -922,7 +928,8 @@ GaindB_SignalData(SignalDataPtr d, double gaindB)
 	ChanLen	j;
 	ChanData	*dataPtr;
 	
-	if (!CheckInit_SignalData(d, "GaindBIndividual_SignalData (theSignal)"))
+	if (!CheckInit_SignalData(d, wxT("GaindBIndividual_SignalData "
+	  "(theSignal)")))
 		return(FALSE);
 	scale = pow(10.0, gaindB / 20.0);
 	for (i = d->offset; i < d->numChannels; i++)
@@ -946,8 +953,8 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 	ChanLen	j;
 	ChanData	*aPtr, *bPtr;
 	
-	if (!CheckInit_SignalData(a, "Divide_SignalData (a)") ||
-	  !CheckInit_SignalData(b, "Divide_SignalData (b)"))
+	if (!CheckInit_SignalData(a, wxT("Divide_SignalData (a)")) ||
+	  !CheckInit_SignalData(b, wxT("Divide_SignalData (b)")))
 		return(FALSE);
 	if (!SameType_SignalData(a, b))
 		return(FALSE);
@@ -974,15 +981,15 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 BOOLN
 Delay_SignalData(SignalDataPtr signal, double delay)
 {
-	static const char *funcName = "Delay_SignalData";
+	static const WChar *funcName = wxT("Delay_SignalData");
 	int			chan;
 	ChanLen		i, samplesDelay;
 	ChanData	*dataPtr;
 
 	samplesDelay = (ChanLen) ( fabs(delay) / signal->dt);
 	if (samplesDelay > signal->length)	{
-		NotifyError("%s: Delay (%g ms) is longer than the signal duration "
-		  "(%g ms)", funcName, MSEC(delay), MSEC(_GetDuration_SignalData(
+		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration "
+		  "(%g ms)"), funcName, MSEC(delay), MSEC(_GetDuration_SignalData(
 		  signal)));
 		return(FALSE);
 	}
@@ -1035,9 +1042,9 @@ LimitModeList_SignalData(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "OCTAVE",		SIGNALDATA_LIMIT_MODE_OCTAVE },
-			{ "CHANNEL",	SIGNALDATA_LIMIT_MODE_CHANNEL },
-			{ "",			SIGNALDATA_LIMIT_MODE_NULL },
+			{ wxT("OCTAVE"),	SIGNALDATA_LIMIT_MODE_OCTAVE },
+			{ wxT("CHANNEL"),	SIGNALDATA_LIMIT_MODE_CHANNEL },
+			{ wxT(""),			SIGNALDATA_LIMIT_MODE_NULL },
 		};
 	return (&modeList[index]);
 
@@ -1056,7 +1063,7 @@ BOOLN
 GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
   double lowerLimit, double upperLimit, SignalDataLimitModeSpecifier mode)
 {
-	static const char	*funcName = "GetChannelLimits_SignalData";
+	static const WChar	*funcName = wxT("GetChannelLimits_SignalData");
 
 	switch (mode) {
 	case SIGNALDATA_LIMIT_MODE_OCTAVE:
@@ -1077,8 +1084,8 @@ GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
 		;
 	}
 	if (*maxChan < *minChan) {
-		NotifyError("%s: Invalid channel limits calculated from averaging "
-		  "limits (%d -> %d).", funcName, *minChan, *maxChan);
+		NotifyError(wxT("%s: Invalid channel limits calculated from averaging "
+		  "limits (%d -> %d)."), funcName, *minChan, *maxChan);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1100,7 +1107,7 @@ GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
   double frequency, double lowerLimit, double upperLimit,
   SignalDataLimitModeSpecifier mode)
 {
-	/* static const char	*funcName = "GetWindowLimits_SignalData"; */
+	/* static const WChar	*funcName = wxT("GetWindowLimits_SignalData"); */
 	int		chan;
 	double	requiredFreq;
 

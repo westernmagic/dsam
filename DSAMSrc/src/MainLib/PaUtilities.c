@@ -36,31 +36,32 @@ BOOLN
 ProcessBatch_MPI_Utility(EarObjectPtr audModel, BOOLN (* SetPars)(int),
   void (* CalcResult)(EarObjectPtr, int), int numSettings)
 {
-	static char	*funcName = "ProcessBatch";
+	static WChar	*funcName = wxT("ProcessBatch");
 	int		i, j, numBatches, batchOffset, numWorkChannels;
 
 	numWorkChannels = DoFun(GetNumWorkers, audModel);
 	numBatches = (int) ceil((double) numSettings / numWorkChannels);
 	for (j = 0; j < numBatches; j++) {
 		if (j == 0)
-			DoFun6(QueueCommand, audModel, NULL, 0, PA_VOID, "*", PRINT_PARS,
-			  ALL_WORKERS);
+			DoFun6(QueueCommand, audModel, NULL, 0, PA_VOID, wxT("*"),
+			  PRINT_PARS, ALL_WORKERS);
 		batchOffset = j * numWorkChannels;
 		for (i = 0; i < numWorkChannels; i++)
 			if (!(* SetPars)((i + batchOffset) % numSettings)) {
-				NotifyError("%s: Could not set parameters for worker[%d].",
+				NotifyError(wxT("%s: Could not set parameters for worker[%d]."),
 				  funcName, i);
 				return(FALSE);
 			}
 		if (!DoProcess(audModel))
 			return(FALSE);
-		/* DoFun6(QueueCommand, audModel, NULL, 0, PA_VOID, "*",
+		/* DoFun6(QueueCommand, audModel, NULL, 0, PA_VOID, wxT("*"),
 		   WRITE_OUT_SIGNAL, ALL_WORKERS);
 		DoFun(SendQueuedCommands, audModel); */
 		for (i = 0; (i < numWorkChannels) && (i + batchOffset < numSettings);
 		  i++)
 			(* CalcResult)(audModel, i);
-		DPrint("%s: Finished batch %d of %d...\n", funcName, j + 1, numBatches);
+		DPrint(wxT("%s: Finished batch %d of %d...\n"), funcName, j + 1,
+		  numBatches);
 	}
 	return(TRUE);
 

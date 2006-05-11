@@ -82,7 +82,7 @@ BOOLN	PrintPars_Utility_ShapePulse(void);
 
 BOOLN	Process_Utility_ShapePulse(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ShapePulse(char *fileName);
+BOOLN	ReadPars_Utility_ShapePulse(WChar *fileName);
 
 void	ResetProcess_Utility_ShapePulse(EarObjectPtr data);
 

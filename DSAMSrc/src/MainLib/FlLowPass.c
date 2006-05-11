@@ -27,6 +27,7 @@
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
 #include "UtFilters.h"
+#include "UtString.h"
 #include "FlLowPass.h"
 
 /******************************************************************************/
@@ -50,9 +51,9 @@ InitModeList_Filter_LowPass(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ "NORMAL", FILTER_LOW_PASS_MODE_NORMAL },
-					{ "SCALED", FILTER_LOW_PASS_MODE_SCALED },
-					{ "", FILTER_LOW_PASS_MODE_NULL }
+					{ wxT("NORMAL"),	FILTER_LOW_PASS_MODE_NORMAL },
+					{ wxT("SCALED"),	FILTER_LOW_PASS_MODE_SCALED },
+					{ wxT(""), 			FILTER_LOW_PASS_MODE_NULL }
 				};
 	lowPassFPtr->modeList = list;
 	return(TRUE);
@@ -73,18 +74,19 @@ InitModeList_Filter_LowPass(void)
 BOOLN
 Init_Filter_LowPass(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_Filter_LowPass";
+	static const WChar *funcName = wxT("Init_Filter_LowPass");
 
 	if (parSpec == GLOBAL) {
 		if (lowPassFPtr != NULL)
 			Free_Filter_LowPass();
 		if ((lowPassFPtr = (LowPassFPtr) malloc(sizeof(LowPassF))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (lowPassFPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -101,7 +103,7 @@ Init_Filter_LowPass(ParameterSpecifier parSpec)
 
 	InitModeList_Filter_LowPass();
 	if (!SetUniParList_Filter_LowPass()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Filter_LowPass();
 		return(FALSE);
 	}
@@ -145,27 +147,28 @@ Free_Filter_LowPass(void)
 BOOLN
 SetUniParList_Filter_LowPass(void)
 {
-	static const char *funcName = "SetUniParList_Filter_LowPass";
+	static const WChar *funcName = wxT("SetUniParList_Filter_LowPass");
 	UniParPtr	pars;
 
 	if ((lowPassFPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  FILTER_LOW_PASS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = lowPassFPtr->parList->pars;
-	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_MODE], "MODE",
-	  "Output mode for model ('normal' or 'scaled').",
+	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_MODE], wxT("MODE"),
+	  wxT("Output mode for model ('normal' or 'scaled')."),
 	  UNIPAR_NAME_SPEC,
 	  &lowPassFPtr->mode, lowPassFPtr->modeList,
 	  (void * (*)) SetMode_Filter_LowPass);
-	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_CUTOFFFREQUENCY], "CUT_OFF_FREQ",
-	  "Cut-off frequency (3 dB down point - Hz).",
+	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_CUTOFFFREQUENCY], wxT(
+	  "CUT_OFF_FREQ"),
+	  wxT("Cut-off frequency (3 dB down point - Hz)."),
 	  UNIPAR_REAL,
 	  &lowPassFPtr->cutOffFrequency, NULL,
 	  (void * (*)) SetCutOffFrequency_Filter_LowPass);
-	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_SIGNALMULTIPLIER], "SCALE",
-	  "Signal multiplier scale ('scaled' mode only).",
+	SetPar_UniParMgr(&pars[FILTER_LOW_PASS_SIGNALMULTIPLIER], wxT("SCALE"),
+	  wxT("Signal multiplier scale ('scaled' mode only)."),
 	  UNIPAR_REAL,
 	  &lowPassFPtr->signalMultiplier, NULL,
 	  (void * (*)) SetSignalMultiplier_Filter_LowPass);
@@ -183,15 +186,15 @@ SetUniParList_Filter_LowPass(void)
 UniParListPtr
 GetUniParListPtr_Filter_LowPass(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Filter_LowPass";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Filter_LowPass");
 
 	if (lowPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (lowPassFPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(lowPassFPtr->parList);
@@ -207,18 +210,18 @@ GetUniParListPtr_Filter_LowPass(void)
  */
 
 BOOLN
-SetMode_Filter_LowPass(char *theMode)
+SetMode_Filter_LowPass(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Filter_LowPass";
+	static const WChar	*funcName = wxT("SetMode_Filter_LowPass");
 	int		specifier;
 
 	if (lowPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, lowPassFPtr->modeList)) ==
 	  FILTER_LOW_PASS_MODE_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	lowPassFPtr->modeFlag = TRUE;
@@ -239,10 +242,10 @@ SetMode_Filter_LowPass(char *theMode)
 BOOLN
 SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency)
 {
-	static const char	 *funcName = "SetCutOffFrequency_Filter_LowPass";
+	static const WChar	 *funcName = wxT("SetCutOffFrequency_Filter_LowPass");
 
 	if (lowPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	lowPassFPtr->cutOffFrequencyFlag = TRUE;
@@ -262,10 +265,10 @@ SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency)
 BOOLN
 SetSignalMultiplier_Filter_LowPass(double theSignalMultiplier)
 {
-	static const char	 *funcName = "SetSignalMultiplier_Filter_LowPass";
+	static const WChar	 *funcName = wxT("SetSignalMultiplier_Filter_LowPass");
 
 	if (lowPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	lowPassFPtr->signalMultiplierFlag = TRUE;
@@ -285,25 +288,25 @@ SetSignalMultiplier_Filter_LowPass(double theSignalMultiplier)
 BOOLN
 CheckPars_Filter_LowPass(void)
 {
-	static const char *funcName = "CheckPars_Filter_LowPass";
+	static const WChar *funcName = wxT("CheckPars_Filter_LowPass");
 
 	BOOLN ok;
 	
 	ok = TRUE;
 	if (lowPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!lowPassFPtr->modeFlag) {
-		NotifyError("%s: Mode not set.", funcName);
+		NotifyError(wxT("%s: Mode not set."), funcName);
 		ok = FALSE;
 	}
 	if (!lowPassFPtr->cutOffFrequencyFlag) {
-		NotifyError("%s: Cut-off frequency not set.", funcName);
+		NotifyError(wxT("%s: Cut-off frequency not set."), funcName);
 		ok = FALSE;
 	}
 	if (!lowPassFPtr->signalMultiplierFlag) {
-		NotifyError("%s: Signal multiplying factor not set.", funcName);
+		NotifyError(wxT("%s: Signal multiplying factor not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -318,10 +321,10 @@ CheckPars_Filter_LowPass(void)
  */
  
 BOOLN
-SetPars_Filter_LowPass(char *theMode, double theLowerCutOffFreq, 
+SetPars_Filter_LowPass(WChar *theMode, double theLowerCutOffFreq, 
   double theSignalMultiplier)
 {
-	static const char *funcName = "SetPars_Filter_LowPass";
+	static const WChar *funcName = wxT("SetPars_Filter_LowPass");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -332,7 +335,7 @@ SetPars_Filter_LowPass(char *theMode, double theLowerCutOffFreq,
 	if (!SetSignalMultiplier_Filter_LowPass(theSignalMultiplier))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -346,18 +349,19 @@ SetPars_Filter_LowPass(char *theMode, double theLowerCutOffFreq,
 BOOLN
 PrintPars_Filter_LowPass(void)
 {
-	static const char *funcName = "PrintPars_Filter_LowPass";
+	static const WChar *funcName = wxT("PrintPars_Filter_LowPass");
 
 	if (!CheckPars_Filter_LowPass()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Low-Pass Filter Module Parameters:-\n");
-	DPrint("\tMode = %s,",
+	DPrint(wxT("Low-Pass Filter Module Parameters:-\n"));
+	DPrint(wxT("\tMode = %s,"),
 	  lowPassFPtr->modeList[lowPassFPtr->mode].name);
-	DPrint("\tCut-off Frequency = %g Hz\n", lowPassFPtr->cutOffFrequency);
+	DPrint(wxT("\tCut-off Frequency = %g Hz\n"), lowPassFPtr->cutOffFrequency);
 	if (lowPassFPtr->mode == FILTER_LOW_PASS_MODE_SCALED)
-		DPrint("\tSignal multiplying factor = %g (?).\n",
+		DPrint(wxT("\tSignal multiplying factor = %g (?).\n"),
 		  lowPassFPtr->signalMultiplier);
 	return(TRUE);
 
@@ -371,38 +375,39 @@ PrintPars_Filter_LowPass(void)
  */
  
 BOOLN
-ReadPars_Filter_LowPass(char *fileName)
+ReadPars_Filter_LowPass(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_Filter_LowPass";
+	static const WChar *funcName = wxT("ReadPars_Filter_LowPass");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	cutOffFrequency, signalMultiplier;
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;;
-	if (!GetPars_ParFile(fp, "%lf", &cutOffFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cutOffFrequency))
 		ok = FALSE;;
-	if (!GetPars_ParFile(fp, "%lf", &signalMultiplier))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
 		ok = FALSE;;
    fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_LowPass(mode, cutOffFrequency, signalMultiplier)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -419,10 +424,10 @@ ReadPars_Filter_LowPass(char *fileName)
 BOOLN
 SetParsPointer_Filter_LowPass(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Filter_LowPass";
+	static const WChar	*funcName = wxT("SetParsPointer_Filter_LowPass");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	lowPassFPtr = (LowPassFPtr) theModule->parsPtr;
@@ -439,14 +444,15 @@ SetParsPointer_Filter_LowPass(ModulePtr theModule)
 BOOLN
 InitModule_Filter_LowPass(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Filter_LowPass";
+	static const WChar	*funcName = wxT("InitModule_Filter_LowPass");
 
 	if (!SetParsPointer_Filter_LowPass(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Filter_LowPass(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = lowPassFPtr;
@@ -471,7 +477,7 @@ InitModule_Filter_LowPass(ModulePtr theModule)
 BOOLN
 InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Filter_LowPass";
+	static const WChar *funcName = wxT("InitProcessVariables_Filter_LowPass");
 	int		i, j;
 	double	*statePtr;
 	LowPassFPtr	p = lowPassFPtr;
@@ -480,14 +486,14 @@ InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 		FreeProcessVariables_Filter_LowPass();
 		if ((p->coefficients = (ContButt1CoeffsPtr *) calloc(data->outSignal->
 		  numChannels, sizeof(ContButt1CoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		p->numChannels = data->outSignal->numChannels;
 	 	for (i = 0; i < data->outSignal->numChannels; i++)
 			if ((p->coefficients[i] = InitIIR1ContCoeffs_Filters(
 			  p->cutOffFrequency, data->inSignal[0]->dt, LOWPASS)) == NULL) {
-				NotifyError("%s: Could not allocate filter coefficients.",
+				NotifyError(wxT("%s: Could not allocate filter coefficients."),
 				  funcName);
 				return(FALSE);
 			}
@@ -538,33 +544,33 @@ FreeProcessVariables_Filter_LowPass(void)
 BOOLN
 RunProcess_Filter_LowPass(EarObjectPtr data)
 {
-	static const char *funcName = "RunProcess_Filter_LowPass";
+	static const WChar *funcName = wxT("RunProcess_Filter_LowPass");
 	int			chan;
 	ChanLen		i;
 	register ChanData	*inPtr, *outPtr;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
-		SetProcessName_EarObject(data, "Low-pass filter process");
+		SetProcessName_EarObject(data, wxT("Low-pass filter process"));
 		if (!CheckPars_Filter_LowPass())
 			return(FALSE);
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Couldn't initialse output signal.", funcName);
+			NotifyError(wxT("%s: Couldn't initialse output signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_LowPass(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

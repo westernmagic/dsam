@@ -74,7 +74,7 @@ BOOLN	PrintPars_Utility_Sample(void);
 
 BOOLN	Process_Utility_Sample(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Sample(char *fileName);
+BOOLN	ReadPars_Utility_Sample(WChar *fileName);
 
 BOOLN	InitModule_Utility_Sample(ModulePtr theModule);
 

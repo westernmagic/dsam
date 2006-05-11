@@ -30,6 +30,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRandom.h"
 #include "GeNSpecLists.h"
 #include "MoIHCMeddis2000.h"
@@ -56,8 +57,6 @@ HairCell2Ptr	hairCell2Ptr = NULL;
 BOOLN
 Free_IHC_Meddis2000(void)
 {
-	/* static const char	*funcName = "Free_IHC_Meddis2000";  */
-
 	if (hairCell2Ptr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IHC_Meddis2000();
@@ -84,9 +83,9 @@ InitOpModeList_IHC_Meddis2000(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "SPIKE",	IHC_MEDDIS2000_OPMODE_SPIKE },
-			{ "PROB",	IHC_MEDDIS2000_OPMODE_PROB },
-			{ "",	IHC_MEDDIS2000_OPMODE_NULL },
+			{ wxT("SPIKE"),	IHC_MEDDIS2000_OPMODE_SPIKE },
+			{ wxT("PROB"),	IHC_MEDDIS2000_OPMODE_PROB },
+			{ wxT(""),		IHC_MEDDIS2000_OPMODE_NULL },
 		};
 	hairCell2Ptr->opModeList = modeList;
 	return(TRUE);
@@ -104,9 +103,9 @@ InitCaCondModeList_IHC_Meddis2000(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "ORIGINAL",	IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
-			{ "REVISION_1",	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
-			{ "",			IHC_MEDDIS2000_CACONDMODE_NULL },
+			{ wxT("ORIGINAL"),		IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
+			{ wxT("REVISION_1"),	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
+			{ wxT(""),				IHC_MEDDIS2000_CACONDMODE_NULL },
 		};
 	hairCell2Ptr->caCondModeList = modeList;
 	return(TRUE);
@@ -124,9 +123,9 @@ InitCleftReplenishModeList_IHC_Meddis2000(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "ORIGINAL",	IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL },
-			{ "UNITY",		IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY },
-			{ "",			IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL },
+			{ wxT("ORIGINAL"),	IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL },
+			{ wxT("UNITY"),		IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY },
+			{ wxT(""),			IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL },
 		};
 	hairCell2Ptr->cleftReplenishModeList = modeList;
 	return(TRUE);
@@ -148,18 +147,19 @@ InitCleftReplenishModeList_IHC_Meddis2000(void)
 BOOLN
 Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("Init_IHC_Meddis2000");
 
 	if (parSpec == GLOBAL) {
 		if (hairCell2Ptr != NULL)
 			Free_IHC_Meddis2000();
 		if ((hairCell2Ptr = (HairCell2Ptr) malloc(sizeof(HairCell2))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (hairCell2Ptr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -214,12 +214,12 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 		return(FALSE);
 
 	if (!SetUniParList_IHC_Meddis2000()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHC_Meddis2000();
 		return(FALSE);
 	}
 	SetEnabledPars_IHC_Meddis2000();
-	strcpy(hairCell2Ptr->diagFileName, DEFAULT_FILE_NAME);
+	DSAM_strcpy(hairCell2Ptr->diagFileName, DEFAULT_FILE_NAME);
 	hairCell2Ptr->hCChannels = NULL;
 	hairCell2Ptr->fp = NULL;
 	return(TRUE);
@@ -237,109 +237,110 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IHC_Meddis2000(void)
 {
-	static const char *funcName = "SetUniParList_IHC_Meddis2000";
+	static const WChar *funcName = wxT("SetUniParList_IHC_Meddis2000");
 	UniParPtr	pars;
 
 	if ((hairCell2Ptr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHC_MEDDIS2000_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = hairCell2Ptr->parList->pars;
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_OPMODE], "OP_MODE",
-	  "Output mode: stochastic ('spike') or probability ('prob').",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_OPMODE], wxT("OP_MODE"),
+	  wxT("Output mode: stochastic ('spike') or probability ('prob')."),
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->opMode, hairCell2Ptr->opModeList,
 	  (void * (*)) SetOpMode_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_DIAGMODE], "DIAG_MODE",
-	  "Diagnostic mode. Outputs internal states of running model in non-"
-	  "threaded mode('off', 'screen' or <file name>).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_DIAGMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode. Outputs internal states of running model in non-"
+	  "threaded mode('off', 'screen' or <file name>)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CACONDMODE], "CA_COND_MODE",
-	  "Calcium conductance mode ('original' or 'revision_1').",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CACONDMODE], wxT("CA_COND_MODE"),
+	  wxT("Calcium conductance mode ('original' or 'revision_1')."),
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->caCondMode, hairCell2Ptr->caCondModeList,
 	  (void * (*)) SetCaCondMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CLEFTREPLENISHMODE],
-	  "CLEFT_REPLENISH_MODE",
-	  "Cleft replenishment mode ('original' or 'unity').",
+	  wxT("CLEFT_REPLENISH_MODE"),
+	  wxT("Cleft replenishment mode ('original' or 'unity')."),
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->cleftReplenishMode, hairCell2Ptr->cleftReplenishModeList,
 	  (void * (*)) SetCleftReplenishMode_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], "RAN_SEED",
-	  "Random number seed (0 for different seed for each run).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random number seed (0 for different seed for each run)."),
 	  UNIPAR_LONG,
 	  &hairCell2Ptr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CAVREV], "REV_POT_ECA",
-	  "Calcium reversal potential, E_Ca (Volts).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CAVREV], wxT("REV_POT_ECA"),
+	  wxT("Calcium reversal potential, E_Ca (Volts)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->CaVrev, NULL,
 	  (void * (*)) SetCaVrev_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_BETACA], "BETA_CA",
-	  "Calcium channel Boltzmann function parameter, beta.",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_BETACA], wxT("BETA_CA"),
+	  wxT("Calcium channel Boltzmann function parameter, beta."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->betaCa, NULL,
 	  (void * (*)) SetBetaCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GAMMACA], "GAMMA_CA",
-	  "Calcium channel Boltzmann function parameter, gamma.",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GAMMACA], wxT("GAMMA_CA"),
+	  wxT("Calcium channel Boltzmann function parameter, gamma."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->gammaCa, NULL,
 	  (void * (*)) SetGammaCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PCA], "POWER_CA",
-	  "Calcium channel transmitter release exponent (power).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PCA], wxT("POWER_CA"),
+	  wxT("Calcium channel transmitter release exponent (power)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->pCa, NULL,
 	  (void * (*)) SetPCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GCAMAX], "GMAX_CA",
-	  "Maximum calcium conductance (Siemens).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_GCAMAX], wxT("GMAX_CA"),
+	  wxT("Maximum calcium conductance (Siemens)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->GCaMax, NULL,
 	  (void * (*)) SetGCaMax_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], "CONC_THRESH_CA",
-	  "Calcium threshold Concentration.",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_CA0], wxT("CONC_THRESH_CA"),
+	  wxT("Calcium threshold Concentration."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_Ca0, NULL,
 	  (void * (*)) SetPerm_Ca0_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_Z], "PERM_Z",
-	  "Transmitter release permeability, Z (unitless gain)",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_PERM_Z], wxT("PERM_Z"),
+	  wxT("Transmitter release permeability, Z (unitless gain)"),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->perm_z, NULL,
 	  (void * (*)) SetPerm_z_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCACHAN], "TAU_M",
-	  "Calcium current time constant (s).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCACHAN], wxT("TAU_M"),
+	  wxT("Calcium current time constant (s)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauCaChan, NULL,
 	  (void * (*)) SetTauCaChan_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCONCCA], "TAU_CA",
-	  "Calcium ion diffusion (accumulation) time constant (s).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_TAUCONCCA], wxT("TAU_CA"),
+	  wxT("Calcium ion diffusion (accumulation) time constant (s)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->tauConcCa, NULL,
 	  (void * (*)) SetTauConcCa_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_MAXFREEPOOL_M], "MAX_FREE_POOL_M",
-	  "Max. no. of transmitter packets in free pool (integer).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_MAXFREEPOOL_M], wxT(
+	  "MAX_FREE_POOL_M"),
+	  wxT("Max. no. of transmitter packets in free pool (integer)."),
 	  UNIPAR_INT,
 	  &hairCell2Ptr->maxFreePool_M, NULL,
 	  (void * (*)) SetMaxFreePool_M_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_REPLENISHRATE_Y], "REPLENISH_Y",
-	  "Replenishment rate (units per second).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_REPLENISHRATE_Y], wxT("REPLENISH_Y"),
+	  wxT("Replenishment rate (units per second)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->replenishRate_y, NULL,
 	  (void * (*)) SetReplenishRate_y_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_LOSSRATE_L], "LOSS_L",
-	  "Loss rate (units per second).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_LOSSRATE_L], wxT("LOSS_L"),
+	  wxT("Loss rate (units per second)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->lossRate_l, NULL,
 	  (void * (*)) SetLossRate_l_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_REPROCESSRATE_X], "REPROCESS_X",
-	  "Reprocessing rate (units per second).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_REPROCESSRATE_X], wxT("REPROCESS_X"),
+	  wxT("Reprocessing rate (units per second)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->reprocessRate_x, NULL,
 	  (void * (*)) SetReprocessRate_x_IHC_Meddis2000);
-	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RECOVERYRATE_R], "RECOVERY_R",
-	  "Recovery rate (units per second).",
+	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_RECOVERYRATE_R], wxT("RECOVERY_R"),
+	  wxT("Recovery rate (units per second)."),
 	  UNIPAR_REAL,
 	  &hairCell2Ptr->recoveryRate_r, NULL,
 	  (void * (*)) SetRecoveryRate_r_IHC_Meddis2000);
@@ -372,15 +373,15 @@ SetEnabledPars_IHC_Meddis2000(void)
 UniParListPtr
 GetUniParListPtr_IHC_Meddis2000(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (hairCell2Ptr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hairCell2Ptr->parList);
@@ -395,13 +396,13 @@ GetUniParListPtr_IHC_Meddis2000(void)
  */
 
 BOOLN
-SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
+SetPars_IHC_Meddis2000(WChar * opMode, WChar * diagMode, long ranSeed,
   double CaVrev, double betaCa, double gammaCa,
   double pCa, double GCaMax, double perm_Ca0, double perm_z, double tauCaChan,
   double tauConcCa, int maxFreePool_M, double replenishRate_y,
   double lossRate_l, double reprocessRate_x, double recoveryRate_r)
 {
-	static const char	*funcName = "SetPars_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetPars_IHC_Meddis2000");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -440,7 +441,7 @@ SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
 	if (!SetRecoveryRate_r_IHC_Meddis2000(recoveryRate_r))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -454,18 +455,18 @@ SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
  */
 
 BOOLN
-SetOpMode_IHC_Meddis2000(char * theOpMode)
+SetOpMode_IHC_Meddis2000(WChar * theOpMode)
 {
-	static const char	*funcName = "SetOpMode_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetOpMode_IHC_Meddis2000");
 	int		specifier;
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theOpMode,
 		hairCell2Ptr->opModeList)) == IHC_MEDDIS2000_OPMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theOpMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOpMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -485,12 +486,12 @@ SetOpMode_IHC_Meddis2000(char * theOpMode)
  */
 
 BOOLN
-SetDiagMode_IHC_Meddis2000(char * theDiagMode)
+SetDiagMode_IHC_Meddis2000(WChar * theDiagMode)
 {
-	static const char	*funcName = "SetDiagMode_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetDiagMode_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 
@@ -512,18 +513,18 @@ SetDiagMode_IHC_Meddis2000(char * theDiagMode)
  */
 
 BOOLN
-SetCaCondMode_IHC_Meddis2000(char * theCaCondMode)
+SetCaCondMode_IHC_Meddis2000(WChar * theCaCondMode)
 {
-	static const char	*funcName = "SetCaCondMode_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetCaCondMode_IHC_Meddis2000");
 	int		specifier;
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theCaCondMode,
 		hairCell2Ptr->caCondModeList)) == IHC_MEDDIS2000_CACONDMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theCaCondMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theCaCondMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -543,19 +544,20 @@ SetCaCondMode_IHC_Meddis2000(char * theCaCondMode)
  */
 
 BOOLN
-SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode)
+SetCleftReplenishMode_IHC_Meddis2000(WChar * theCleftReplenishMode)
 {
-	static const char	*funcName = "SetCleftReplenishMode_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetCleftReplenishMode_IHC_Meddis2000");
 	int		specifier;
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theCleftReplenishMode,
 		hairCell2Ptr->cleftReplenishModeList)) ==
 		  IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theCleftReplenishMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName,
+		  theCleftReplenishMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -578,10 +580,10 @@ SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode)
 BOOLN
 SetRanSeed_IHC_Meddis2000(long theRanSeed)
 {
-	static const char	*funcName = "SetRanSeed_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetRanSeed_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -603,10 +605,10 @@ SetRanSeed_IHC_Meddis2000(long theRanSeed)
 BOOLN
 SetCaVrev_IHC_Meddis2000(double theCaVrev)
 {
-	static const char	*funcName = "SetCaVrev_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetCaVrev_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -628,10 +630,10 @@ SetCaVrev_IHC_Meddis2000(double theCaVrev)
 BOOLN
 SetBetaCa_IHC_Meddis2000(double theBetaCa)
 {
-	static const char	*funcName = "SetBetaCa_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetBetaCa_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -653,10 +655,10 @@ SetBetaCa_IHC_Meddis2000(double theBetaCa)
 BOOLN
 SetGammaCa_IHC_Meddis2000(double theGammaCa)
 {
-	static const char	*funcName = "SetGammaCa_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetGammaCa_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -678,10 +680,10 @@ SetGammaCa_IHC_Meddis2000(double theGammaCa)
 BOOLN
 SetPCa_IHC_Meddis2000(double thePCa)
 {
-	static const char	*funcName = "SetPCa_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetPCa_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -703,10 +705,10 @@ SetPCa_IHC_Meddis2000(double thePCa)
 BOOLN
 SetGCaMax_IHC_Meddis2000(double theGCaMax)
 {
-	static const char	*funcName = "SetGCaMax_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetGCaMax_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -728,10 +730,10 @@ SetGCaMax_IHC_Meddis2000(double theGCaMax)
 BOOLN
 SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0)
 {
-	static const char	*funcName = "SetPerm_Ca0_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetPerm_Ca0_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -753,10 +755,10 @@ SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0)
 BOOLN
 SetPerm_z_IHC_Meddis2000(double thePerm_z)
 {
-	static const char	*funcName = "SetPerm_z_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetPerm_z_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -778,10 +780,10 @@ SetPerm_z_IHC_Meddis2000(double thePerm_z)
 BOOLN
 SetTauCaChan_IHC_Meddis2000(double theTauCaChan)
 {
-	static const char	*funcName = "SetTauCaChan_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetTauCaChan_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -803,10 +805,10 @@ SetTauCaChan_IHC_Meddis2000(double theTauCaChan)
 BOOLN
 SetTauConcCa_IHC_Meddis2000(double theTauConcCa)
 {
-	static const char	*funcName = "SetTauConcCa_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetTauConcCa_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -828,10 +830,10 @@ SetTauConcCa_IHC_Meddis2000(double theTauConcCa)
 BOOLN
 SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M)
 {
-	static const char	*funcName = "SetMaxFreePool_M_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetMaxFreePool_M_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -853,10 +855,10 @@ SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M)
 BOOLN
 SetReplenishRate_y_IHC_Meddis2000(double theReplenishRate_y)
 {
-	static const char	*funcName = "SetReplenishRate_y_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetReplenishRate_y_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -878,10 +880,10 @@ SetReplenishRate_y_IHC_Meddis2000(double theReplenishRate_y)
 BOOLN
 SetLossRate_l_IHC_Meddis2000(double theLossRate_l)
 {
-	static const char	*funcName = "SetLossRate_l_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetLossRate_l_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -903,10 +905,10 @@ SetLossRate_l_IHC_Meddis2000(double theLossRate_l)
 BOOLN
 SetReprocessRate_x_IHC_Meddis2000(double theReprocessRate_x)
 {
-	static const char	*funcName = "SetReprocessRate_x_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetReprocessRate_x_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -928,10 +930,10 @@ SetReprocessRate_x_IHC_Meddis2000(double theReprocessRate_x)
 BOOLN
 SetRecoveryRate_r_IHC_Meddis2000(double theRecoveryRate_r)
 {
-	static const char	*funcName = "SetRecoveryRate_r_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetRecoveryRate_r_IHC_Meddis2000");
 
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -955,88 +957,88 @@ SetRecoveryRate_r_IHC_Meddis2000(double theRecoveryRate_r)
 BOOLN
 CheckPars_IHC_Meddis2000(void)
 {
-	static const char	*funcName = "CheckPars_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("CheckPars_IHC_Meddis2000");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (hairCell2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!hairCell2Ptr->opModeFlag) {
-		NotifyError("%s: opMode variable not set.", funcName);
+		NotifyError(wxT("%s: opMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->diagModeFlag) {
-		NotifyError("%s: diagMode variable not set.", funcName);
+		NotifyError(wxT("%s: diagMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->caCondModeFlag) {
-		NotifyError("%s: caCondMode variable not set.", funcName);
+		NotifyError(wxT("%s: caCondMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->cleftReplenishModeFlag) {
-		NotifyError("%s: cleftReplenishMode variable not set.", funcName);
+		NotifyError(wxT("%s: cleftReplenishMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->ranSeedFlag) {
-		NotifyError("%s: ranSeed variable not set.", funcName);
+		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->CaVrevFlag) {
-		NotifyError("%s: CaVrev variable not set.", funcName);
+		NotifyError(wxT("%s: CaVrev variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->betaCaFlag) {
-		NotifyError("%s: betaCa variable not set.", funcName);
+		NotifyError(wxT("%s: betaCa variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->gammaCaFlag) {
-		NotifyError("%s: gammaCa variable not set.", funcName);
+		NotifyError(wxT("%s: gammaCa variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->pCaFlag) {
-		NotifyError("%s: pCa variable not set.", funcName);
+		NotifyError(wxT("%s: pCa variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->GCaMaxFlag) {
-		NotifyError("%s: GCaMax variable not set.", funcName);
+		NotifyError(wxT("%s: GCaMax variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->perm_Ca0Flag) {
-		NotifyError("%s: Perm_Ca0 variable not set.", funcName);
+		NotifyError(wxT("%s: Perm_Ca0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->perm_zFlag) {
-		NotifyError("%s: Perm_z variable not set.", funcName);
+		NotifyError(wxT("%s: Perm_z variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->tauCaChanFlag) {
-		NotifyError("%s: tauCaChan variable not set.", funcName);
+		NotifyError(wxT("%s: tauCaChan variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->tauConcCaFlag) {
-		NotifyError("%s: tauConcCa variable not set.", funcName);
+		NotifyError(wxT("%s: tauConcCa variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->maxFreePool_MFlag) {
-		NotifyError("%s: maxFreePool_M variable not set.", funcName);
+		NotifyError(wxT("%s: maxFreePool_M variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->replenishRate_yFlag) {
-		NotifyError("%s: replenishRate_y variable not set.", funcName);
+		NotifyError(wxT("%s: replenishRate_y variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->lossRate_lFlag) {
-		NotifyError("%s: lossRate_l variable not set.", funcName);
+		NotifyError(wxT("%s: lossRate_l variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->reprocessRate_xFlag) {
-		NotifyError("%s: reprocessRate_x variable not set.", funcName);
+		NotifyError(wxT("%s: reprocessRate_x variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell2Ptr->recoveryRate_rFlag) {
-		NotifyError("%s: recoveryRate_r variable not set.", funcName);
+		NotifyError(wxT("%s: recoveryRate_r variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -1053,41 +1055,44 @@ CheckPars_IHC_Meddis2000(void)
 BOOLN
 PrintPars_IHC_Meddis2000(void)
 {
-	static const char	*funcName = "PrintPars_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("PrintPars_IHC_Meddis2000");
 
 	if (!CheckPars_IHC_Meddis2000()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Meddis 2000 IHC Module Parameters:-\n");
-	DPrint("\tOperational mode = %s \n",
+	DPrint(wxT("Meddis 2000 IHC Module Parameters:-\n"));
+	DPrint(wxT("\tOperational mode = %s \n"),
 	  hairCell2Ptr->opModeList[hairCell2Ptr->opMode].name);
-	DPrint("\tDiagnostic mode = %s \n",
+	DPrint(wxT("\tDiagnostic mode = %s \n"),
 	  hairCell2Ptr->diagModeList[hairCell2Ptr->diagMode].name);
-	DPrint("\tCalcium conductance mode = %s\n", hairCell2Ptr->caCondModeList[
-	  hairCell2Ptr->caCondMode].name);
-	DPrint("\tCleft replenishment mode = %s \n", hairCell2Ptr->
+	DPrint(wxT("\tCalcium conductance mode = %s\n"), hairCell2Ptr->
+	  caCondModeList[hairCell2Ptr->caCondMode].name);
+	DPrint(wxT("\tCleft replenishment mode = %s \n"), hairCell2Ptr->
 	  cleftReplenishModeList[hairCell2Ptr->cleftReplenishMode].name);
-	DPrint("\tRandom Seed = %ld \n", hairCell2Ptr->ranSeed);
-	DPrint("\tCalcium reversal potential = %g (V)\n", hairCell2Ptr->CaVrev);
-	DPrint("\tBeta = %g \n", hairCell2Ptr->betaCa);
-	DPrint("\tGamma = %g \n", hairCell2Ptr->gammaCa);
-	DPrint("\tcalcium stoichiometry = %g \n", hairCell2Ptr->pCa);
-	DPrint("\tMax calcium conductance = %g (S)\n", hairCell2Ptr->GCaMax);
-	DPrint("\tZero calcium transmitter permeability = %g \n",
+	DPrint(wxT("\tRandom Seed = %ld \n"), hairCell2Ptr->ranSeed);
+	DPrint(wxT("\tCalcium reversal potential = %g (V)\n"), hairCell2Ptr->
+	  CaVrev);
+	DPrint(wxT("\tBeta = %g \n"), hairCell2Ptr->betaCa);
+	DPrint(wxT("\tGamma = %g \n"), hairCell2Ptr->gammaCa);
+	DPrint(wxT("\tcalcium stoichiometry = %g \n"), hairCell2Ptr->pCa);
+	DPrint(wxT("\tMax calcium conductance = %g (S)\n"), hairCell2Ptr->GCaMax);
+	DPrint(wxT("\tZero calcium transmitter permeability = %g \n"),
 	  hairCell2Ptr->perm_Ca0);
-	DPrint("\tTransmitter release permeability constant, Z = %g \n",
+	DPrint(wxT("\tTransmitter release permeability constant, Z = %g \n"),
 	  hairCell2Ptr->perm_z);
-	DPrint("\tCalcium channel time constant = %g (s)\n",
+	DPrint(wxT("\tCalcium channel time constant = %g (s)\n"),
 	  hairCell2Ptr->tauCaChan);
-	DPrint("\tCalcium accumulation time constant = %g (s)\n",
+	DPrint(wxT("\tCalcium accumulation time constant = %g (s)\n"),
 	  hairCell2Ptr->tauConcCa);
-	DPrint("\tMaximum transmitter packets in free pool, M  = %d \n",
+	DPrint(wxT("\tMaximum transmitter packets in free pool, M  = %d \n"),
 	  hairCell2Ptr->maxFreePool_M);
-	DPrint("\tReplenishment rate, y = %g /s\n", hairCell2Ptr->replenishRate_y);
-	DPrint("\tLoss rate, l = %g /s,\tReprocessing rate, x = %g /s\n",
+	DPrint(wxT("\tReplenishment rate, y = %g /s\n"), hairCell2Ptr->
+	  replenishRate_y);
+	DPrint(wxT("\tLoss rate, l = %g /s,\tReprocessing rate, x = %g /s\n"),
 	  hairCell2Ptr->lossRate_l, hairCell2Ptr->reprocessRate_x);
-	DPrint("\tRecovery rate, r = %g /s\n", hairCell2Ptr->recoveryRate_r);
+	DPrint(wxT("\tRecovery rate, r = %g /s\n"), hairCell2Ptr->recoveryRate_r);
 	return(TRUE);
 
 }
@@ -1099,11 +1104,11 @@ PrintPars_IHC_Meddis2000(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_IHC_Meddis2000(char *fileName)
+ReadPars_IHC_Meddis2000(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("ReadPars_IHC_Meddis2000");
 	BOOLN	ok;
-	char	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
+	WChar	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
 	int		maxFreePool_M;
 	long	ranSeed;
 	double	recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
@@ -1112,61 +1117,62 @@ ReadPars_IHC_Meddis2000(char *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", opMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), opMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", diagMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), diagMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &recPotOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &recPotOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &CaVrev))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &CaVrev))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &betaCa))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &betaCa))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &gammaCa))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &gammaCa))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &pCa))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &pCa))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &GCaMax))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &GCaMax))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &perm_Ca0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &perm_Ca0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &perm_z))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &perm_z))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &tauCaChan))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &tauCaChan))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &tauConcCa))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &tauConcCa))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &maxFreePool_M))
+	if (!GetPars_ParFile(fp, wxT("%d"), &maxFreePool_M))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &replenishRate_y))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &replenishRate_y))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lossRate_l))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &lossRate_l))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &reprocessRate_x))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &reprocessRate_x))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &recoveryRate_r))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &recoveryRate_r))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Meddis2000(opMode, diagMode, ranSeed,
 	  CaVrev, betaCa, gammaCa, pCa, GCaMax, perm_Ca0, perm_z, tauCaChan,
 	  tauConcCa, maxFreePool_M, replenishRate_y, lossRate_l, reprocessRate_x,
 	  recoveryRate_r)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1183,10 +1189,10 @@ ReadPars_IHC_Meddis2000(char *fileName)
 BOOLN
 SetParsPointer_IHC_Meddis2000(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("SetParsPointer_IHC_Meddis2000");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	hairCell2Ptr = (HairCell2Ptr) theModule->parsPtr;
@@ -1203,14 +1209,15 @@ SetParsPointer_IHC_Meddis2000(ModulePtr theModule)
 BOOLN
 InitModule_IHC_Meddis2000(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("InitModule_IHC_Meddis2000");
 
 	if (!SetParsPointer_IHC_Meddis2000(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHC_Meddis2000(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = hairCell2Ptr;
@@ -1243,12 +1250,12 @@ InitModule_IHC_Meddis2000(ModulePtr theModule)
 BOOLN
 CheckData_IHC_Meddis2000(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("CheckData_IHC_Meddis2000");
 	double	dt;
 	BOOLN		ok;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInit_SignalData(data->inSignal[0], funcName))
@@ -1259,40 +1266,40 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 	/* Checks taken and modified from MoIHC95Meddis.c (CJS 1/2/00) */
 	dt = data->inSignal[0]->dt;
 	if (dt > MEDDIS2000_MAX_DT) {
-		NotifyError("%s: Maximum sampling interval exceeded.", funcName);
+		NotifyError(wxT("%s: Maximum sampling interval exceeded."), funcName);
 		return(FALSE);
 	}
 	ok = TRUE;
 	if (hairCell2Ptr->replenishRate_y * dt >= 1.0) {
-		NotifyError("%s: Replenishment rate, y = %g /s is too high for the "
-		  "sampling interval.", funcName, hairCell2Ptr->replenishRate_y);
+		NotifyError(wxT("%s: Replenishment rate, y = %g /s is too high for the "
+		  "sampling interval."), funcName, hairCell2Ptr->replenishRate_y);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->lossRate_l * dt >= 1.0) {
-		NotifyError("%s: Loss rate, l = %g /s is too high for the sampling "
-		  "interval.", funcName, hairCell2Ptr->lossRate_l);
+		NotifyError(wxT("%s: Loss rate, l = %g /s is too high for the sampling "
+		  "interval."), funcName, hairCell2Ptr->lossRate_l);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->recoveryRate_r * dt >= 1.0) {
-		NotifyError("%s: Recovery rate, r = %g /s is too high for the "
-		  "sampling interval.", funcName, hairCell2Ptr->recoveryRate_r);
+		NotifyError(wxT("%s: Recovery rate, r = %g /s is too high for the "
+		  "sampling interval."), funcName, hairCell2Ptr->recoveryRate_r);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->reprocessRate_x * dt >= 1.0) {
-		NotifyError("%s: Reprocess rate, x = %g /s is too high for the "
-		  "sampling interval.", funcName, hairCell2Ptr->reprocessRate_x);
+		NotifyError(wxT("%s: Reprocess rate, x = %g /s is too high for the "
+		  "sampling interval."), funcName, hairCell2Ptr->reprocessRate_x);
 		ok = FALSE;
 	}
 
 	/* Additional checks added for the new code */
 	if ( dt/hairCell2Ptr->tauCaChan  >= 1.0) {
-		NotifyError("%s: tauCaChan = %g /s is too high for the " 
-		  "sampling interval.", funcName, hairCell2Ptr->tauCaChan);
+		NotifyError(wxT("%s: tauCaChan = %g /s is too high for the " 
+		  "sampling interval."), funcName, hairCell2Ptr->tauCaChan);
 		ok = FALSE;
 	}
 	if ( dt/hairCell2Ptr->tauConcCa  >= 1.0) {
-		NotifyError("%s: tauConcCa = %g /s is too high for the "
-		  "sampling interval.", funcName, hairCell2Ptr->tauConcCa);
+		NotifyError(wxT("%s: tauConcCa = %g /s is too high for the "
+		  "sampling interval."), funcName, hairCell2Ptr->tauConcCa);
 		ok = FALSE;
 	}	
 
@@ -1373,7 +1380,7 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_IHC_Meddis2000";
+	static const WChar *funcName = wxT("InitProcessVariables_IHC_Meddis2000");
 	HairCell2Ptr	p = hairCell2Ptr; /* Shorter variable for long formulae. */
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -1384,7 +1391,7 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 
 		if ((p->hCChannels = (HairCellVars2Ptr) calloc(
 		  data->outSignal->numChannels, sizeof (HairCellVars2))) == NULL) {
-			NotifyError("%s: Out of memory.", funcName);
+			NotifyError(wxT("%s: Out of memory."), funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -1438,7 +1445,7 @@ FreeProcessVariables_IHC_Meddis2000(void)
 BOOLN
 RunModel_IHC_Meddis2000(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_IHC_Meddis2000";
+	static const WChar	*funcName = wxT("RunModel_IHC_Meddis2000");
 	register	ChanData	 *inPtr, *outPtr;
 	register double kdt, replenish, reprocessed, ejected;
 	BOOLN	debug;
@@ -1451,22 +1458,23 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 		if (!CheckPars_IHC_Meddis2000())
 			return(FALSE);
 		if (!CheckData_IHC_Meddis2000(data)) {
-	 		NotifyError("%s: Process data invalid.", funcName);
+	 		NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Meddis 2000 IHC. Calcium transmitter "
-		  "release and quantal synapse");
+		SetProcessName_EarObject(data, wxT("Meddis 2000 IHC. Calcium "
+		  "transmitter release and quantal synapse"));
 
 		/*** Put your code here: Initialise output signal. ***/
 
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_IHC_Meddis2000(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1492,9 +1500,9 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	debug = (!data->threadRunFlag && (hairCell2Ptr->diagMode !=
 	  GENERAL_DIAGNOSTIC_OFF_MODE));
 	if (debug) {
-		fprintf(hairCell2Ptr->fp, "Time(s)\tVm (V)\tactCa (-)\tICa (A)\tconcCa "
-		  "(-)\tkdt (P)\tQ \tC \tW \tEjected");
-		fprintf(hairCell2Ptr->fp, "\n");
+		DSAM_fprintf(hairCell2Ptr->fp, wxT("Time(s)\tVm (V)\tactCa (-)\tICa "
+		  "(A)\tconcCa (-)\tkdt (P)\tQ \tC \tW \tEjected"));
+		DSAM_fprintf(hairCell2Ptr->fp, wxT("\n"));
 	}
 
 	/*** Put your code here: process output signal. ***/
@@ -1591,19 +1599,19 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 
 				/* neither mode set. error and exit */
 				default: 
-					NotifyError("%s: Illegal output mode.", funcName);
+					NotifyError(wxT("%s: Illegal output mode."), funcName);
 					exit(0);
 				}
 
 			/* diagnostic mode output */
 			if (debug) {
-				fprintf(hairCell2Ptr->fp,
-				  "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g", j *
+				DSAM_fprintf(hairCell2Ptr->fp,
+				  wxT("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g"), j *
 				  data->outSignal->dt, Vin, p->hCChannels[i].actCa, ICa,
 				  p->hCChannels[i].concCa, kdt, p->hCChannels[i].reservoirQ,
 				  p->hCChannels[i].cleftC, p->hCChannels[i].reprocessedW,
 				  ejected);
-				fprintf(hairCell2Ptr->fp, "\n");
+				DSAM_fprintf(hairCell2Ptr->fp, wxT("\n"));
 			}		 
 
 		}

@@ -72,7 +72,7 @@ typedef struct {
 	NameSpecifier			*diagnosticModeList;
 	NameSpecifier			*opModeList;
 	UniParListPtr			parList;
-	char					diagnosticString[MAX_FILE_PATH];	
+	WChar					diagnosticString[MAX_FILE_PATH];	
 	int						numChannels;
 	GammaToneCoeffsPtr		*coefficientsGT;	/* Gammatone coeffs (OZ)  */
 	ERBGammaToneCoeffsPtr	*coefficientsERBGT;	/* Gammatone coeffs (ERB) */
@@ -124,13 +124,13 @@ BOOLN	Init_BasilarM_GammaChirp(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_BasilarM_GammaChirp(void);
 
-BOOLN	ReadPars_BasilarM_GammaChirp(char *fileName);
+BOOLN	ReadPars_BasilarM_GammaChirp(WChar *fileName);
 
 BOOLN	RunModel_BasilarM_GammaChirp(EarObjectPtr data);
 
 BOOLN	SetBCoeff_BasilarM_GammaChirp(double theBCoeff);
 
-BOOLN	SetBandWidths_BasilarM_GammaChirp(char *theBandwidthMode,
+BOOLN	SetBandWidths_BasilarM_GammaChirp(WChar *theBandwidthMode,
 		  double *theBandwidths);
 
 BOOLN	SetCCoeff0_BasilarM_GammaChirp(double theCCoeff0);
@@ -145,15 +145,15 @@ BOOLN	SetCUpperLim_BasilarM_GammaChirp(double theCUpperLim);
 
 BOOLN	SetCascade_BasilarM_GammaChirp(int theCascade);
 
-BOOLN	SetDiagnosticMode_BasilarM_GammaChirp(char * theDiagnosticMode);
+BOOLN	SetDiagnosticMode_BasilarM_GammaChirp(WChar * theDiagnosticMode);
 
 BOOLN	InitModule_BasilarM_GammaChirp(ModulePtr theModule);
 
-BOOLN	SetOpMode_BasilarM_GammaChirp(char * theOpMode);
+BOOLN	SetOpMode_BasilarM_GammaChirp(WChar * theOpMode);
 
 BOOLN	SetParsPointer_BasilarM_GammaChirp(ModulePtr theModule);
 
-BOOLN	SetPars_BasilarM_GammaChirp(char * diagnosticMode, char * opMode,
+BOOLN	SetPars_BasilarM_GammaChirp(WChar * diagnosticMode, WChar * opMode,
 		  int cascade, double bCoeff, double cCoeff0, double cCoeff1,
 		  double cLowerLim, double cUpperLim, CFListPtr theCFs);
 

@@ -30,6 +30,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "StStepFun.h"
 
 /********************************* Global variables ***************************/
@@ -54,19 +55,19 @@ StepFunPtr	stepFunPtr = NULL;
 BOOLN
 Init_StepFunction(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_StepFunction";
+	static const WChar *funcName = wxT("Init_StepFunction");
 
 	if (parSpec == GLOBAL) {
 		if (stepFunPtr != NULL)
 			free(stepFunPtr);
 		if ((stepFunPtr = (StepFunPtr) malloc(sizeof(StepFun))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (stepFunPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -85,7 +86,7 @@ Init_StepFunction(ParameterSpecifier parSpec)
 	stepFunPtr->beginEndAmplitude = 0.0;
 
 	if (!SetUniParList_StepFunction()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_StepFunction();
 		return(FALSE);
 	}
@@ -128,42 +129,42 @@ Free_StepFunction(void)
 BOOLN
 SetUniParList_StepFunction(void)
 {
-	static const char *funcName = "SetUniParList_StepFunction";
+	static const WChar *funcName = wxT("SetUniParList_StepFunction");
 	UniParPtr	pars;
 
 	if ((stepFunPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  STEPFUNCTION_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = stepFunPtr->parList->pars;
-	SetPar_UniParMgr(&pars[STEPFUNCTION_AMPLITUDE], "AMPLITUDE",
-	  "Amplitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_AMPLITUDE], wxT("AMPLITUDE"),
+	  wxT("Amplitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->amplitude, NULL,
 	  (void * (*)) SetAmplitude_StepFunction);
-	SetPar_UniParMgr(&pars[STEPFUNCTION_BEGINENDAMPLITUDE], "B_E_AMP",
-	  "Begin-end period amplitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_BEGINENDAMPLITUDE], wxT("B_E_AMP"),
+	  wxT("Begin-end period amplitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->beginEndAmplitude, NULL,
 	  (void * (*)) SetBeginEndAmplitude_StepFunction);
-	SetPar_UniParMgr(&pars[STEPFUNCTION_BEGINPERIODDURATION], "BEGIN_PERIOD",
-	  "Period before the signal begins (s).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_BEGINPERIODDURATION], wxT("BEGIN_PERIOD"),
+	  wxT("Period before the signal begins (s)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->beginPeriodDuration, NULL,
 	  (void * (*)) SetBeginPeriodDuration_StepFunction);
-	SetPar_UniParMgr(&pars[STEPFUNCTION_ENDPERIODDURATION], "END_PERIOD",
-	  "Period after the signal ends (s).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_ENDPERIODDURATION], wxT("END_PERIOD"),
+	  wxT("Period after the signal ends (s)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->endPeriodDuration, NULL,
 	  (void * (*)) SetEndPeriodDuration_StepFunction);
-	SetPar_UniParMgr(&pars[STEPFUNCTION_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->duration, NULL,
 	  (void * (*)) SetDuration_StepFunction);
-	SetPar_UniParMgr(&pars[STEPFUNCTION_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[STEPFUNCTION_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &stepFunPtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_StepFunction);
@@ -181,15 +182,15 @@ SetUniParList_StepFunction(void)
 UniParListPtr
 GetUniParListPtr_StepFunction(void)
 {
-	static const char	*funcName = "GetUniParListPtr_StepFunction";
+	static const WChar	*funcName = wxT("GetUniParListPtr_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (stepFunPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
+		  "NULL returned."), funcName);
 		return(NULL);
 	}
 	return(stepFunPtr->parList);
@@ -207,42 +208,42 @@ GetUniParListPtr_StepFunction(void)
 BOOLN
 CheckPars_StepFunction(void)
 {
-	static const char *funcName = "CheckPars_StepFunction";
+	static const WChar *funcName = wxT("CheckPars_StepFunction");
 	BOOLN ok;
 	
 	ok = TRUE;
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!stepFunPtr->amplitudeFlag) {
-		NotifyError("%s: step amplitude variable not set.", funcName);
+		NotifyError(wxT("%s: step amplitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!stepFunPtr->durationFlag) {
-		NotifyError("%s: step duration variable not set.", funcName);
+		NotifyError(wxT("%s: step duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!stepFunPtr->beginPeriodDurationFlag) {
-		NotifyError("%s: beginPeriodDuration variable not set.", funcName);
+		NotifyError(wxT("%s: beginPeriodDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!stepFunPtr->endPeriodDurationFlag) {
-		NotifyError("%s: endPeriodDuration variable not set.", funcName);
+		NotifyError(wxT("%s: endPeriodDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!stepFunPtr->beginEndAmplitudeFlag) {
-		NotifyError("%s: beginEndAmplitude variable not set.", funcName);
+		NotifyError(wxT("%s: beginEndAmplitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!stepFunPtr->dtFlag) {
-		NotifyError("%s: dtFlag variable not set.", funcName);
+		NotifyError(wxT("%s: dtFlag variable not set."), funcName);
 		ok = FALSE;
 	}
 	/* if ( (stepFunPtr->beginPeriodDuration > stepFunPtr->duration) ||
 	  (stepFunPtr->endPeriodDuration > stepFunPtr->duration) ) {
-	  	NotifyError("%s:  begin and/or end length parameters are longer than "\
-	  	  "the signal duration.", funcName);
+	  	NotifyError(wxT("%s:  begin and/or end length parameters are longer than "\
+	  	  "the signal duration."), funcName);
 		ok = FALSE;
 	} */
 	return(ok);
@@ -260,10 +261,10 @@ CheckPars_StepFunction(void)
 BOOLN
 SetAmplitude_StepFunction(double theAmplitude)
 {
-	static const char *funcName = "SetAmplitude_StepFunction";
+	static const WChar *funcName = wxT("SetAmplitude_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr->amplitudeFlag = TRUE;
@@ -283,10 +284,10 @@ SetAmplitude_StepFunction(double theAmplitude)
 BOOLN
 SetDuration_StepFunction(double theDuration)
 {
-	static const char *funcName = "SetDuration_StepFunction";
+	static const WChar *funcName = wxT("SetDuration_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr->durationFlag = TRUE;
@@ -306,10 +307,10 @@ SetDuration_StepFunction(double theDuration)
 BOOLN
 SetBeginPeriodDuration_StepFunction(double theBeginPeriodDuration)
 {
-	static const char *funcName = "SetBeginPeriodDuration_StepFunction";
+	static const WChar *funcName = wxT("SetBeginPeriodDuration_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr->beginPeriodDurationFlag = TRUE;
@@ -329,10 +330,10 @@ SetBeginPeriodDuration_StepFunction(double theBeginPeriodDuration)
 BOOLN
 SetEndPeriodDuration_StepFunction(double theEndPeriodDuration)
 {
-	static const char *funcName = "SetEndPeriodDuration_StepFunction";
+	static const WChar *funcName = wxT("SetEndPeriodDuration_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr->endPeriodDurationFlag = TRUE;
@@ -352,10 +353,10 @@ SetEndPeriodDuration_StepFunction(double theEndPeriodDuration)
 BOOLN
 SetBeginEndAmplitude_StepFunction(double theBeginEndAmplitude)
 {
-	static const char *funcName = "SetBeginEndAmplitude_StepFunction";
+	static const WChar *funcName = wxT("SetBeginEndAmplitude_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr->beginEndAmplitudeFlag = TRUE;
@@ -375,14 +376,14 @@ SetBeginEndAmplitude_StepFunction(double theBeginEndAmplitude)
 BOOLN
 SetSamplingInterval_StepFunction(double theSamplingInterval)
 {
-	static const char *funcName = "SetSamplingInterval_StepFunction";
+	static const WChar *funcName = wxT("SetSamplingInterval_StepFunction");
 
 	if (stepFunPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -404,7 +405,7 @@ SetPars_StepFunction(double theAmplitude, double theDuration,
   double theSamplingInterval, double theBeginPeriodDuration,
   double theEndPeriodDuration, double theBeginEndAmplitude)
 {
-	static const char *funcName = "SetPars_StepFunction";
+	static const WChar *funcName = wxT("SetPars_StepFunction");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -421,7 +422,7 @@ SetPars_StepFunction(double theAmplitude, double theDuration,
 	if (!SetBeginEndAmplitude_StepFunction(theBeginEndAmplitude))
 		ok = FALSE;
 		if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -435,20 +436,20 @@ SetPars_StepFunction(double theAmplitude, double theDuration,
 BOOLN
 PrintPars_StepFunction(void)
 {
-	static const char *funcName = "PrintPars_StepFunction";
+	static const WChar *funcName = wxT("PrintPars_StepFunction");
 
 	if (!CheckPars_StepFunction()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
 		return(FALSE);
 	}
-	DPrint("Step Function Module Parameters:-\n");
-	DPrint("\tStep amplitude = %g,\t\tStep duration = "\
-	  "%g ms,\n", stepFunPtr->amplitude, MSEC(stepFunPtr->duration));
-	DPrint("\tBegin-end Amplitude = %g,\tBeing/end period "\
-	  "duration = %g/%g ms\n", stepFunPtr->beginEndAmplitude,
+	DPrint(wxT("Step Function Module Parameters:-\n"));
+	DPrint(wxT("\tStep amplitude = %g,\t\tStep duration = "
+	  "%g ms,\n"), stepFunPtr->amplitude, MSEC(stepFunPtr->duration));
+	DPrint(wxT("\tBegin-end Amplitude = %g,\tBeing/end period "
+	  "duration = %g/%g ms\n"), stepFunPtr->beginEndAmplitude,
 	  MSEC(stepFunPtr->beginPeriodDuration),
 	  MSEC(stepFunPtr->endPeriodDuration));
-	DPrint("\tSampling interval = %g ms\n",
+	DPrint(wxT("\tSampling interval = %g ms\n"),
 	  MSEC(stepFunPtr->dt));
 	return(TRUE);
 
@@ -462,45 +463,45 @@ PrintPars_StepFunction(void)
  */
  
 BOOLN
-ReadPars_StepFunction(char *fileName)
+ReadPars_StepFunction(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_StepFunction";
+	static const WChar *funcName = wxT("ReadPars_StepFunction");
 	BOOLN	ok;
 	char	*filePath;
 	double  amplitude, beginPeriodDuration, endPeriodDuration;
 	double  duration, samplingInterval, beginEndAmplitude;
     FILE    *fp;
     
-	filePath = GetParsFileFPath_Common(fileName);
+	filePath = ConvUTF8_Utility_String(GetParsFileFPath_Common(fileName));
     if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName, filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-    if (!GetPars_ParFile(fp, "%lf", &amplitude))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &amplitude))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &duration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-   if (!GetPars_ParFile(fp, "%lf", &beginEndAmplitude))
+   if (!GetPars_ParFile(fp, wxT("%lf"), &beginEndAmplitude))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &beginPeriodDuration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &beginPeriodDuration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &endPeriodDuration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &endPeriodDuration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in module "
+		  "parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_StepFunction(amplitude, duration, samplingInterval,
 	  beginPeriodDuration, endPeriodDuration, beginEndAmplitude)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -517,10 +518,10 @@ ReadPars_StepFunction(char *fileName)
 BOOLN
 SetParsPointer_StepFunction(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_StepFunction";
+	static const WChar	*funcName = wxT("SetParsPointer_StepFunction");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	stepFunPtr = (StepFunPtr) theModule->parsPtr;
@@ -537,14 +538,14 @@ SetParsPointer_StepFunction(ModulePtr theModule)
 BOOLN
 InitModule_StepFunction(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_StepFunction";
+	static const WChar	*funcName = wxT("InitModule_StepFunction");
 
 	if (!SetParsPointer_StepFunction(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_StepFunction(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = stepFunPtr;
@@ -574,25 +575,25 @@ InitModule_StepFunction(ModulePtr theModule)
 BOOLN
 GenerateSignal_StepFunction(EarObjectPtr data)
 {
-	static const char *funcName = "GenerateSignal_StepFunction";
+	static const WChar *funcName = wxT("GenerateSignal_StepFunction");
 	double		totalDuration;
 	register	ChanData	*dataPtr;
 	ChanLen		i, beginPeriodDurationIndex, endSignalIndex;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_StepFunction())
 			return(FALSE);
-		SetProcessName_EarObject(data, "Step-function stimulus");
+		SetProcessName_EarObject(data, wxT("Step-function stimulus"));
 		totalDuration = stepFunPtr->beginPeriodDuration +
 		  stepFunPtr->duration + stepFunPtr->endPeriodDuration;
 		data->updateProcessFlag = TRUE;
 		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(totalDuration /
 		  stepFunPtr->dt + 0.5), stepFunPtr->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoHCRPMeddis.h"
 
 /******************************************************************************/
@@ -53,18 +54,18 @@ MeddisRPPtr	meddisRPPtr = NULL;
 BOOLN
 Init_IHCRP_Meddis(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_IHCRP_Meddis";
+	static const WChar *funcName = wxT("Init_IHCRP_Meddis");
 
 	if (parSpec == GLOBAL) {
 		if (meddisRPPtr != NULL)
 			Free_IHCRP_Meddis();
 		if ((meddisRPPtr = (MeddisRPPtr) malloc(sizeof(MeddisRP))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (meddisRPPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -80,7 +81,7 @@ Init_IHCRP_Meddis(ParameterSpecifier parSpec)
 	meddisRPPtr->mTimeConst_tm = 0.1e-3;
 
 	if (!SetUniParList_IHCRP_Meddis()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHCRP_Meddis();
 		return(FALSE);
 	}
@@ -125,32 +126,32 @@ Free_IHCRP_Meddis(void)
 BOOLN
 SetUniParList_IHCRP_Meddis(void)
 {
-	static const char *funcName = "SetUniParList_IHCRP_Meddis";
+	static const WChar *funcName = wxT("SetUniParList_IHCRP_Meddis");
 	UniParPtr	pars;
 
 	if ((meddisRPPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHCRP_MEDDIS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = meddisRPPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_PERMCONST_A], "PERM_CONST_A",
-	  "Permeability constant A (units/s).",
+	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_PERMCONST_A], wxT("PERM_CONST_A"),
+	  wxT("Permeability constant A (units/s)."),
 	  UNIPAR_REAL,
 	  &meddisRPPtr->permConst_A, NULL,
 	  (void * (*)) SetPermConstA_IHCRP_Meddis);
-	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_PERMCONST_B], "PERM_CONST_B",
-	  "Permeability constant B (units/s).",
+	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_PERMCONST_B], wxT("PERM_CONST_B"),
+	  wxT("Permeability constant B (units/s)."),
 	  UNIPAR_REAL,
 	  &meddisRPPtr->permConst_B, NULL,
 	  (void * (*)) SetPermConstB_IHCRP_Meddis);
-	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_RELEASERATE_G], "RELEASE_G",
-	  "Release rate (units/s).",
+	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_RELEASERATE_G], wxT("RELEASE_G"),
+	  wxT("Release rate (units/s)."),
 	  UNIPAR_REAL,
 	  &meddisRPPtr->releaseRate_g, NULL,
 	  (void * (*)) SetReleaseRate_IHCRP_Meddis);
-	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_MTIMECONST_TM], "TIME_CONST_TM",
-	  "Receptor potential time constant for IHC model (s).",
+	SetPar_UniParMgr(&pars[IHCRP_MEDDIS_MTIMECONST_TM], wxT("TIME_CONST_TM"),
+	  wxT("Receptor potential time constant for IHC model (s)."),
 	  UNIPAR_REAL,
 	  &meddisRPPtr->mTimeConst_tm, NULL,
 	  (void * (*)) SetMTimeConstTm_IHCRP_Meddis);
@@ -168,15 +169,15 @@ SetUniParList_IHCRP_Meddis(void)
 UniParListPtr
 GetUniParListPtr_IHCRP_Meddis(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHCRP_Meddis";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IHCRP_Meddis");
 
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (meddisRPPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  "initialised. NULL returned.", funcName);
 		return(NULL);
 	}
 	return(meddisRPPtr->parList);
@@ -193,10 +194,10 @@ GetUniParListPtr_IHCRP_Meddis(void)
 BOOLN
 SetPermConstA_IHCRP_Meddis(double thePermConstA)
 {
-	static const char	 *funcName = "SetPermConstA_IHCRP_Meddis";
+	static const WChar	 *funcName = wxT("SetPermConstA_IHCRP_Meddis");
 
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	meddisRPPtr->permConstAFlag = TRUE;
@@ -216,10 +217,10 @@ SetPermConstA_IHCRP_Meddis(double thePermConstA)
 BOOLN
 SetPermConstB_IHCRP_Meddis(double thePermConstB)
 {
-	static const char	 *funcName = "SetPermConstB_IHCRP_Meddis";
+	static const WChar	 *funcName = wxT("SetPermConstB_IHCRP_Meddis");
 
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	meddisRPPtr->permConstBFlag = TRUE;
@@ -239,10 +240,10 @@ SetPermConstB_IHCRP_Meddis(double thePermConstB)
 BOOLN
 SetReleaseRate_IHCRP_Meddis(double theReleaseRate)
 {
-	static const char	*funcName = "SetReleaseRate_IHCRP_Meddis";
+	static const WChar	*funcName = wxT("SetReleaseRate_IHCRP_Meddis");
 
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	meddisRPPtr->releaseRateFlag = TRUE;
@@ -263,10 +264,10 @@ SetReleaseRate_IHCRP_Meddis(double theReleaseRate)
 BOOLN
 SetMTimeConstTm_IHCRP_Meddis(double theMTimeConstTm)
 {
-	static const char	 *funcName = "SetMTimeConstTm_IHCRP_Meddis";
+	static const WChar	 *funcName = wxT("SetMTimeConstTm_IHCRP_Meddis");
 
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	meddisRPPtr->mTimeConstTmFlag = TRUE;
@@ -312,32 +313,32 @@ SetPars_IHCRP_Meddis(double aA, double bB, double g, double tm)
 BOOLN
 CheckPars_IHCRP_Meddis(void)
 {
-	static const char *funcName = "CheckPars_IHCRP_Meddis";
+	static const WChar *funcName = wxT("CheckPars_IHCRP_Meddis");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (meddisRPPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!meddisRPPtr->permConstAFlag) {
-		NotifyError("%s: Permeability constant, A, not correctly set.",
+		NotifyError(wxT("%s: Permeability constant, A, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!meddisRPPtr->permConstBFlag) {
-		NotifyError("%s: Permeability constant, B, not correctly set.",
+		NotifyError(wxT("%s: Permeability constant, B, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!meddisRPPtr->releaseRateFlag) {
-		NotifyError("%s: Release rate constant, g, not correctly set.",
+		NotifyError(wxT("%s: Release rate constant, g, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!meddisRPPtr->mTimeConstTmFlag) {
-		NotifyError("%s: Basilar membrane time constant, tm, not correctly "\
-		  "set.", funcName);
+		NotifyError(wxT("%s: Basilar membrane time constant, tm, not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -353,17 +354,18 @@ CheckPars_IHCRP_Meddis(void)
 BOOLN
 PrintPars_IHCRP_Meddis(void)
 {
-	static const char *funcName = "PrintPars_IHCRP_Meddis";
+	static const WChar *funcName = wxT("PrintPars_IHCRP_Meddis");
 
 	if (!CheckPars_IHCRP_Meddis()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Receptor Potential Module Parameters:-\n");
-	DPrint("\tPermeability constant, A = %g,\t", meddisRPPtr->permConst_A);
-	DPrint("\tPermeability constant, B = %g,\n", meddisRPPtr->permConst_B);
-	DPrint("\tRelease rate, g = %g,\t", meddisRPPtr->releaseRate_g);
-	DPrint("Time constant = %g ms\n", MSEC(meddisRPPtr->mTimeConst_tm));
+	DPrint(wxT("Receptor Potential Module Parameters:-\n"));
+	DPrint(wxT("\tPermeability constant, A = %g,\t"), meddisRPPtr->permConst_A);
+	DPrint(wxT("\tPermeability constant, B = %g,\n"), meddisRPPtr->permConst_B);
+	DPrint(wxT("\tRelease rate, g = %g,\t"), meddisRPPtr->releaseRate_g);
+	DPrint(wxT("Time constant = %g ms\n"), MSEC(meddisRPPtr->mTimeConst_tm));
 	return(TRUE);
 
 }
@@ -376,40 +378,41 @@ PrintPars_IHCRP_Meddis(void)
  */
  
 BOOLN
-ReadPars_IHCRP_Meddis(char *fileName)
+ReadPars_IHCRP_Meddis(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_IHCRP_Meddis";
+	static const WChar *funcName = wxT("ReadPars_IHCRP_Meddis");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	permConstA, permConstB, releaseRate_g, MTimeConst;
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &permConstA))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &permConstA))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &permConstB))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &permConstB))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &releaseRate_g))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &releaseRate_g))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &MTimeConst))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &MTimeConst))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in module ")
+		  wxT("parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHCRP_Meddis(permConstA, permConstB, releaseRate_g,
 	  MTimeConst)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -426,10 +429,10 @@ ReadPars_IHCRP_Meddis(char *fileName)
 BOOLN
 SetParsPointer_IHCRP_Meddis(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHCRP_Meddis";
+	static const WChar	*funcName = wxT("SetParsPointer_IHCRP_Meddis");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	meddisRPPtr = (MeddisRPPtr) theModule->parsPtr;
@@ -446,14 +449,15 @@ SetParsPointer_IHCRP_Meddis(ModulePtr theModule)
 BOOLN
 InitModule_IHCRP_Meddis(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHCRP_Meddis";
+	static const WChar	*funcName = wxT("InitModule_IHCRP_Meddis");
 
 	if (!SetParsPointer_IHCRP_Meddis(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHCRP_Meddis(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = meddisRPPtr;
@@ -480,17 +484,18 @@ InitModule_IHCRP_Meddis(ModulePtr theModule)
 BOOLN
 CheckData_IHCRP_Meddis(EarObjectPtr data)
 {
-	static const char *funcName = "CheckData_IHCRP_Meddis";
+	static const WChar *funcName = wxT("CheckData_IHCRP_Meddis");
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (meddisRPPtr->mTimeConst_tm <= data->inSignal[0]->dt / 2.0) {
-		NotifyError("%s: Membrane time constant (%g ms) is too small it must\n"
-		  "be greater than %g ms", funcName, MILLI(meddisRPPtr->mTimeConst_tm),
+		NotifyError(wxT("%s: Membrane time constant (%g ms) is too small it "
+		  "must\nbe greater than %g ms"), funcName, MILLI(meddisRPPtr->
+		  mTimeConst_tm),
 		  MILLI(data->inSignal[0]->dt / 2.0));
 		return(FALSE);
 	}
@@ -510,7 +515,7 @@ CheckData_IHCRP_Meddis(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_IHCRP_Meddis";
+	static const WChar *funcName = wxT("InitProcessVariables_IHCRP_Meddis");
 	int		i;
 	double	spontPerm_k0;
 	MeddisRPPtr p = meddisRPPtr;
@@ -521,7 +526,7 @@ InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 			FreeProcessVariables_IHCRP_Meddis();
 			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
 			   sizeof(double))) == NULL) {
-			 	NotifyError("%s: Out of memory.", funcName);
+			 	NotifyError(wxT("%s: Out of memory."), funcName);
 			 	return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -572,7 +577,7 @@ FreeProcessVariables_IHCRP_Meddis(void)
 BOOLN
 RunModel_IHCRP_Meddis(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_IHCRP_Meddis";
+	static const WChar *funcName = wxT("RunModel_IHCRP_Meddis");
 	register ChanData	*inPtr, *outPtr;
 	register double		permeability_K, st_Plus_A;
 	int		chan;
@@ -581,21 +586,23 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 	
 	if (!data->threadRunFlag) {
 		if (!CheckPars_IHCRP_Meddis()) {
-			NotifyError("%s: Parameters have not been correctly set.", funcName);
+			NotifyError(wxT("%s: Parameters have not been correctly set."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!CheckData_IHCRP_Meddis(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Hair cell receptor potential");
+		SetProcessName_EarObject(data, wxT("Hair cell receptor potential"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_IHCRP_Meddis(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

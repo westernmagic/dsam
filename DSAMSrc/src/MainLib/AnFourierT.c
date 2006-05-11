@@ -27,6 +27,7 @@
 #include "GeModuleMgr.h"
 #include "UtCmplxM.h"
 #include "UtFFT.h"
+#include "UtString.h"
 #include "AnFourierT.h"
 
 /******************************************************************************/
@@ -55,8 +56,6 @@ FourierTPtr	fourierTPtr = NULL;
 BOOLN
 Free_Analysis_FourierT(void)
 {
-	/* static const char	*funcName = "Free_Analysis_FourierT"; */
-
 	if (fourierTPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_FourierT();
@@ -81,11 +80,11 @@ InitOutputModeList_Analysis_FourierT(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "MODULUS",	ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE },
-			{ "PHASE",		ANALYSIS_FOURIERT_PHASE_OUTPUTMODE },
-			{ "COMPLEX",	ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE },
-			{ "DB_SPL",		ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE },
-			{ "",	ANALYSIS_FOURIERT_OUTPUTMODE_NULL },
+			{ wxT("MODULUS"),	ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE },
+			{ wxT("PHASE"),		ANALYSIS_FOURIERT_PHASE_OUTPUTMODE },
+			{ wxT("COMPLEX"),	ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE },
+			{ wxT("DB_SPL"),	ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE },
+			{ wxT(""),			ANALYSIS_FOURIERT_OUTPUTMODE_NULL },
 		};
 	fourierTPtr->outputModeList = modeList;
 	return(TRUE);
@@ -107,18 +106,19 @@ InitOutputModeList_Analysis_FourierT(void)
 BOOLN
 Init_Analysis_FourierT(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_FourierT";
+	static const WChar	*funcName = wxT("Init_Analysis_FourierT");
 
 	if (parSpec == GLOBAL) {
 		if (fourierTPtr != NULL)
 			free(fourierTPtr);
 		if ((fourierTPtr = (FourierTPtr) malloc(sizeof(FourierT))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (fourierTPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -129,7 +129,7 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 
 	InitOutputModeList_Analysis_FourierT();
 	if (!SetUniParList_Analysis_FourierT()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_FourierT();
 		return(FALSE);
 	}
@@ -151,17 +151,18 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_FourierT(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_FourierT";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_FourierT");
 	UniParPtr	pars;
 
 	if ((fourierTPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_FOURIERT_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = fourierTPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_FOURIERT_OUTPUTMODE], "OUTPUT_MODE",
-	  "Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' (approximation).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FOURIERT_OUTPUTMODE], wxT("OUTPUT_MODE"),
+	  wxT("Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' "
+	  "(approximation)."),
 	  UNIPAR_NAME_SPEC,
 	  &fourierTPtr->outputMode, fourierTPtr->outputModeList,
 	  (void * (*)) SetOutputMode_Analysis_FourierT);
@@ -179,15 +180,15 @@ SetUniParList_Analysis_FourierT(void)
 UniParListPtr
 GetUniParListPtr_Analysis_FourierT(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_FourierT";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_FourierT");
 
 	if (fourierTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fourierTPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fourierTPtr->parList);
@@ -202,16 +203,16 @@ GetUniParListPtr_Analysis_FourierT(void)
  */
 
 BOOLN
-SetPars_Analysis_FourierT(char * outputMode)
+SetPars_Analysis_FourierT(WChar * outputMode)
 {
-	static const char	*funcName = "SetPars_Analysis_FourierT";
+	static const WChar	*funcName = wxT("SetPars_Analysis_FourierT");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!SetOutputMode_Analysis_FourierT(outputMode))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -225,18 +226,18 @@ SetPars_Analysis_FourierT(char * outputMode)
  */
 
 BOOLN
-SetOutputMode_Analysis_FourierT(char * theOutputMode)
+SetOutputMode_Analysis_FourierT(WChar * theOutputMode)
 {
-	static const char	*funcName = "SetOutputMode_Analysis_FourierT";
+	static const WChar	*funcName = wxT("SetOutputMode_Analysis_FourierT");
 	int		specifier;
 
 	if (fourierTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theOutputMode,
 		fourierTPtr->outputModeList)) == ANALYSIS_FOURIERT_OUTPUTMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theOutputMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOutputMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -259,16 +260,16 @@ SetOutputMode_Analysis_FourierT(char * theOutputMode)
 BOOLN
 CheckPars_Analysis_FourierT(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_FourierT";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_FourierT");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (fourierTPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!fourierTPtr->outputModeFlag) {
-		NotifyError("%s: outputMode variable not set.", funcName);
+		NotifyError(wxT("%s: outputMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -285,14 +286,15 @@ CheckPars_Analysis_FourierT(void)
 BOOLN
 PrintPars_Analysis_FourierT(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_FourierT";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_FourierT");
 
 	if (!CheckPars_Analysis_FourierT()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Fourier Transform Analysis Module Parameters:-\n");
-	DPrint("\tOutput mode = %s \n",
+	DPrint(wxT("Fourier Transform Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tOutput mode = %s \n"),
 	  fourierTPtr->outputModeList[fourierTPtr->outputMode].name);
 	return(TRUE);
 
@@ -305,33 +307,34 @@ PrintPars_Analysis_FourierT(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_FourierT(char *fileName)
+ReadPars_Analysis_FourierT(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_FourierT";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_FourierT");
 	BOOLN	ok;
-	char	*filePath;
-	char	outputMode[MAXLINE];
+	WChar	*filePath;
+	WChar	outputMode[MAXLINE];
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", outputMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), outputMode))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FourierT(outputMode)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -348,10 +351,10 @@ ReadPars_Analysis_FourierT(char *fileName)
 BOOLN
 SetParsPointer_Analysis_FourierT(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_FourierT";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_FourierT");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	fourierTPtr = (FourierTPtr) theModule->parsPtr;
@@ -368,14 +371,15 @@ SetParsPointer_Analysis_FourierT(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_FourierT(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_FourierT";
+	static const WChar	*funcName = wxT("InitModule_Analysis_FourierT");
 
 	if (!SetParsPointer_Analysis_FourierT(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_FourierT(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = fourierTPtr;
@@ -408,10 +412,10 @@ InitModule_Analysis_FourierT(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_FourierT(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_FourierT";
+	static const WChar	*funcName = wxT("CheckData_Analysis_FourierT");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -447,7 +451,8 @@ ResetProcess_Analysis_FourierT(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Analysis_FourierT";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_Analysis_FourierT");
 	int		i;
 	FourierTPtr	p = fourierTPtr;
 
@@ -457,15 +462,15 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 		p->numThreads = data->numThreads;
 		if ((p->fT = (ComplexPtr *) calloc(p->numThreads, sizeof(
 		  ComplexPtr))) == NULL) {
-			NotifyError("%s: Couldn't allocate memory for complex data pointer "
-			  " array.", funcName);
+			NotifyError(wxT("%s: Couldn't allocate memory for complex data "
+			  "pointer array."), funcName);
 			return(FALSE);
 		}
 		for (i = 0; i < data->numThreads; i++)
 			if ((p->fT[i] = (Complex *) calloc(p->fTLength, sizeof(
 			  Complex))) == NULL) {
-				NotifyError("%s: Couldn't allocate memory for complex data "
-				  "array (%d).", funcName, i);
+				NotifyError(wxT("%s: Couldn't allocate memory for complex data "
+				  "array (%d)."), funcName, i);
 				return(FALSE);
 			}
 		p->updateProcessVariablesFlag = FALSE;
@@ -517,7 +522,7 @@ FreeProcessVariables_Analysis_FourierT(void)
 BOOLN
 Calc_Analysis_FourierT(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_FourierT";
+	static const WChar	*funcName = wxT("Calc_Analysis_FourierT");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, outChan;
 	double	dF;
@@ -529,10 +534,10 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		if (!CheckPars_Analysis_FourierT())
 			return(FALSE);
 		if (!CheckData_Analysis_FourierT(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Fourier Transform: modulus");
+		SetProcessName_EarObject(data, wxT("Fourier Transform: modulus"));
 		p->numOutChans = (p->outputMode ==
 		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
 		if (data->outSignal)
@@ -541,20 +546,21 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 		  numChannels * p->numOutChans), data->inSignal[0]->length, data->
 		  inSignal[0]->dt)) {
-			NotifyError("%s: Couldn't initialse output signal.", funcName);
+			NotifyError(wxT("%s: Couldn't initialse output signal."), funcName);
 			return(FALSE);
 		}
 		ResetProcess_Analysis_FourierT(data);
 		if (!InitProcessVariables_Analysis_FourierT(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
 		dF = 1.0 / (data->inSignal[0]->dt * p->fTLength);
 		SetSamplingInterval_SignalData(data->outSignal, dF);
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz)");
-		SetInfoChannelTitle_SignalData(data->outSignal, "Arbitrary Amplitude");
+		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Arbitrary "
+		  "Amplitude"));
 		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 		SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
 		SetInterleaveLevel_SignalData(data->outSignal, (uShort) (

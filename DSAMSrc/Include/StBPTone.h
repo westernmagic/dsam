@@ -90,7 +90,7 @@ BOOLN	Init_PureTone_Binaural(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_Binaural(void);
 
-BOOLN	ReadPars_PureTone_Binaural(char *fileName);
+BOOLN	ReadPars_PureTone_Binaural(WChar *fileName);
 
 BOOLN	SetDuration_PureTone_Binaural(double theDuration);
 

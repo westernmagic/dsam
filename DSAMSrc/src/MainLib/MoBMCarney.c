@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoBMCarney.h"
 
 /******************************************************************************/
@@ -51,8 +52,6 @@ BMCarneyPtr	bMCarneyPtr = NULL;
 BOOLN
 Free_BasilarM_Carney(void)
 {
-	/* static const char	*funcName = "Free_BasilarM_Carney"; */
-
 	if (bMCarneyPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_BasilarM_Carney();
@@ -82,18 +81,18 @@ Free_BasilarM_Carney(void)
 BOOLN
 Init_BasilarM_Carney(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_BasilarM_Carney";
+	static const WChar	*funcName = wxT("Init_BasilarM_Carney");
 
 	if (parSpec == GLOBAL) {
 		if (bMCarneyPtr != NULL)
 			Free_BasilarM_Carney();
 		if ((bMCarneyPtr = (BMCarneyPtr) malloc(sizeof(BMCarney))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bMCarneyPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -111,13 +110,13 @@ Init_BasilarM_Carney(ParameterSpecifier parSpec)
 	bMCarneyPtr->maxHCVoltage = 10.0;
 	if ((bMCarneyPtr->cFList = GenerateDefault_CFList(
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS, 200.0, 5000.0,
-	  "internal_dynamic", CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+	  wxT("internal_dynamic"), CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 
 	if (!SetUniParList_BasilarM_Carney()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_Carney();
 		return(FALSE);
 	}
@@ -138,42 +137,42 @@ Init_BasilarM_Carney(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_BasilarM_Carney(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_Carney";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_Carney");
 	UniParPtr	pars;
 
 	if ((bMCarneyPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BASILARM_CARNEY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMCarneyPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CASCADE], "CASCADE",
-	  "Filter cascade.",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CASCADE], wxT("CASCADE"),
+	  wxT("Filter cascade."),
 	  UNIPAR_INT,
 	  &bMCarneyPtr->cascade, NULL,
 	  (void * (*)) SetCascade_BasilarM_Carney);
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CUTOFFFREQUENCY], "FC",
-	  "Cut-off frequency for OHC low-pass filter, Fc (Hz).",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CUTOFFFREQUENCY], wxT("FC"),
+	  wxT("Cut-off frequency for OHC low-pass filter, Fc (Hz)."),
 	  UNIPAR_REAL,
 	  &bMCarneyPtr->cutOffFrequency, NULL,
 	  (void * (*)) SetCutOffFrequency_BasilarM_Carney);
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_HCOPERATINGPOINT], "P_DFB",
-	  "Operating point of OHC (feedback) non-linearity, P_Dfb (Pa).",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_HCOPERATINGPOINT], wxT("P_DFB"),
+	  wxT("Operating point of OHC (feedback) non-linearity, P_Dfb (Pa)."),
 	  UNIPAR_REAL,
 	  &bMCarneyPtr->hCOperatingPoint, NULL,
 	  (void * (*)) SetHCOperatingPoint_BasilarM_Carney);
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_ASYMMETRICALBIAS], "P0",
-	  "Asymmetrical bias for OHC non-linearity, P0 (rad).",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_ASYMMETRICALBIAS], wxT("P0"),
+	  wxT("Asymmetrical bias for OHC non-linearity, P0 (rad)."),
 	  UNIPAR_REAL,
 	  &bMCarneyPtr->asymmetricalBias, NULL,
 	  (void * (*)) SetAsymmetricalBias_BasilarM_Carney);
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_MAXHCVOLTAGE], "V_MAX",
-	  "Maximum depolarising hair cell voltage, Vmax (V).",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_MAXHCVOLTAGE], wxT("V_MAX"),
+	  wxT("Maximum depolarising hair cell voltage, Vmax (V)."),
 	  UNIPAR_REAL,
 	  &bMCarneyPtr->maxHCVoltage, NULL,
 	  (void * (*)) SetMaxHCVoltage_BasilarM_Carney);
-	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CFLIST], "CFLIST",
-	  "",
+	SetPar_UniParMgr(&pars[BASILARM_CARNEY_CFLIST], wxT("CFLIST"),
+	  wxT(""),
 	  UNIPAR_CFLIST,
 	  &bMCarneyPtr->cFList, NULL,
 	  (void * (*)) SetCFList_BasilarM_Carney);
@@ -191,15 +190,15 @@ SetUniParList_BasilarM_Carney(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_Carney(void)
 {
-	static const char	*funcName = "GetUniParListPtr_BasilarM_Carney";
+	static const WChar	*funcName = wxT("GetUniParListPtr_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMCarneyPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMCarneyPtr->parList);
@@ -218,7 +217,7 @@ SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
   double hCOperatingPoint, double asymmetricalBias, double maxHCVoltage,
   CFListPtr cFList)
 {
-	static const char	*funcName = "SetPars_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetPars_BasilarM_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -235,7 +234,7 @@ SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
 	if (!SetCFList_BasilarM_Carney(cFList))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -252,14 +251,14 @@ SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
 BOOLN
 SetCascade_BasilarM_Carney(int theCascade)
 {
-	static const char	*funcName = "SetCascade_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetCascade_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theCascade < 1) {
-		NotifyError("%s: The cascade must be greater than 0.", funcName);
+		NotifyError(wxT("%s: The cascade must be greater than 0."), funcName);
 		return(FALSE);
 	}
 	bMCarneyPtr->cascadeFlag = TRUE;
@@ -280,10 +279,10 @@ SetCascade_BasilarM_Carney(int theCascade)
 BOOLN
 SetCutOffFrequency_BasilarM_Carney(double theCutOffFrequency)
 {
-	static const char	*funcName = "SetCutOffFrequency_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetCutOffFrequency_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -305,10 +304,10 @@ SetCutOffFrequency_BasilarM_Carney(double theCutOffFrequency)
 BOOLN
 SetHCOperatingPoint_BasilarM_Carney(double theHCOperatingPoint)
 {
-	static const char	*funcName = "SetHCOperatingPoint_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetHCOperatingPoint_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -330,10 +329,10 @@ SetHCOperatingPoint_BasilarM_Carney(double theHCOperatingPoint)
 BOOLN
 SetAsymmetricalBias_BasilarM_Carney(double theAsymmetricalBias)
 {
-	static const char	*funcName = "SetAsymmetricalBias_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetAsymmetricalBias_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -355,10 +354,10 @@ SetAsymmetricalBias_BasilarM_Carney(double theAsymmetricalBias)
 BOOLN
 SetMaxHCVoltage_BasilarM_Carney(double theMaxHCVoltage)
 {
-	static const char	*funcName = "SetMaxHCVoltage_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetMaxHCVoltage_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -373,8 +372,8 @@ SetMaxHCVoltage_BasilarM_Carney(double theMaxHCVoltage)
 
 /*
  * This function sets the module's cFList parameter.
- * This function also sets the bandwidth mode to "internal", as the bandwidth
- * is variable, controlled by the main process.
+ * This function also sets the bandwidth mode to wxT("internal"), as the
+ * bandwidth is variable, controlled by the main process.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
@@ -382,19 +381,19 @@ SetMaxHCVoltage_BasilarM_Carney(double theMaxHCVoltage)
 BOOLN
 SetCFList_BasilarM_Carney(CFListPtr theCFList)
 {
-	static const char	*funcName = "SetCFList_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetCFList_BasilarM_Carney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not initialised "\
-		  "correctly set.", funcName);
+		NotifyError(wxT("%s: Centre frequency structure not initialised "
+		  "correctly set."), funcName);
 		return(FALSE);
 	}
-	if (!SetBandwidths_CFList(theCFList, "internal_dynamic", NULL)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
+	if (!SetBandwidths_CFList(theCFList, wxT("internal_dynamic"), NULL)) {
+		NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	theCFList->bParList->pars[BANDWIDTH_PAR_MODE].enabled = FALSE;
@@ -419,37 +418,37 @@ SetCFList_BasilarM_Carney(CFListPtr theCFList)
 BOOLN
 CheckPars_BasilarM_Carney(void)
 {
-	static const char	*funcName = "CheckPars_BasilarM_Carney";
+	static const WChar	*funcName = wxT("CheckPars_BasilarM_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bMCarneyPtr->cascadeFlag) {
-		NotifyError("%s: cascade variable not set.", funcName);
+		NotifyError(wxT("%s: cascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMCarneyPtr->cutOffFrequencyFlag) {
-		NotifyError("%s: cutOffFrequency variable not set.", funcName);
+		NotifyError(wxT("%s: cutOffFrequency variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMCarneyPtr->hCOperatingPointFlag) {
-		NotifyError("%s: hCOperatingPoint variable not set.", funcName);
+		NotifyError(wxT("%s: hCOperatingPoint variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMCarneyPtr->asymmetricalBiasFlag) {
-		NotifyError("%s: asymmetricalBias variable not set.", funcName);
+		NotifyError(wxT("%s: asymmetricalBias variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMCarneyPtr->maxHCVoltageFlag) {
-		NotifyError("%s: maxHCVoltage variable not set.", funcName);
+		NotifyError(wxT("%s: maxHCVoltage variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMCarneyPtr->cFList)) {
-		NotifyError("%s: Centre frequency list  parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list  parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -466,15 +465,15 @@ CheckPars_BasilarM_Carney(void)
 CFListPtr
 GetCFListPtr_BasilarM_Carney(void)
 {
-	static const char *funcName = "GetCFListPtr_BasilarM_GCarney";
+	static const WChar *funcName = wxT("GetCFListPtr_BasilarM_GCarney");
 
 	if (bMCarneyPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMCarneyPtr->cFList == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "\
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly set.  ")\
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMCarneyPtr->cFList);
@@ -491,24 +490,22 @@ GetCFListPtr_BasilarM_Carney(void)
 BOOLN
 PrintPars_BasilarM_Carney(void)
 {
-	static const char	*funcName = "PrintPars_BasilarM_Carney";
+	static const WChar	*funcName = wxT("PrintPars_BasilarM_Carney");
 
 	if (!CheckPars_BasilarM_Carney()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
 		return(FALSE);
 	}
-	DPrint("Carney Non-Linear Basilar Membrane Module "
-	  "Parameters:-\n");
+	DPrint(wxT("Carney Non-Linear Basilar Membrane Module Parameters:-\n"));
 	PrintPars_CFList(bMCarneyPtr->cFList);
-	DPrint("\tFilter cascade = %d,\n", bMCarneyPtr->cascade);
-	DPrint("\tLow-pass cut-off frequency, Fc = %g (Hz),\n",
+	DPrint(wxT("\tFilter cascade = %d,\n"), bMCarneyPtr->cascade);
+	DPrint(wxT("\tLow-pass cut-off frequency, Fc = %g (Hz),\n"),
 	  bMCarneyPtr->cutOffFrequency);
-	DPrint("\tOHC operating point, P_Dfb = %g (uPa),\n",
+	DPrint(wxT("\tOHC operating point, P_Dfb = %g (uPa),\n"),
 	  bMCarneyPtr->hCOperatingPoint);
-	DPrint("\tAsymmetrical bias (OHC non-linearity), P0 = "
-	  "%g (rad.)\n", bMCarneyPtr->asymmetricalBias);
-	DPrint("\tMax, HC voltage, Vmax = %g V,\n",
-	  bMCarneyPtr->maxHCVoltage);
+	DPrint(wxT("\tAsymmetrical bias (OHC non-linearity), P0 = %g (rad.)\n"),
+	  bMCarneyPtr->asymmetricalBias);
+	DPrint(wxT("\tMax, HC voltage, Vmax = %g V,\n"), bMCarneyPtr->maxHCVoltage);
 	return(TRUE);
 
 }
@@ -520,46 +517,47 @@ PrintPars_BasilarM_Carney(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_BasilarM_Carney(char *fileName)
+ReadPars_BasilarM_Carney(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_BasilarM_Carney";
+	static const WChar	*funcName = wxT("ReadPars_BasilarM_Carney");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		cascade;
 	double	cutOffFrequency, hCOperatingPoint, asymmetricalBias, maxHCVoltage;
 	CFListPtr	cFList;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &cascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &cascade))
 		ok = FALSE;
 	if ((cFList = ReadPars_CFList(fp)) == NULL)
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &cutOffFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &cutOffFrequency))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &hCOperatingPoint))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &hCOperatingPoint))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &asymmetricalBias))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &asymmetricalBias))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxHCVoltage))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxHCVoltage))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_Carney(cascade, cutOffFrequency, hCOperatingPoint,
 	  asymmetricalBias, maxHCVoltage, cFList)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -576,10 +574,10 @@ ReadPars_BasilarM_Carney(char *fileName)
 BOOLN
 SetParsPointer_BasilarM_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_BasilarM_Carney";
+	static const WChar	*funcName = wxT("SetParsPointer_BasilarM_Carney");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bMCarneyPtr = (BMCarneyPtr) theModule->parsPtr;
@@ -596,14 +594,15 @@ SetParsPointer_BasilarM_Carney(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_Carney";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_Carney");
 
 	if (!SetParsPointer_BasilarM_Carney(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_Carney(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bMCarneyPtr;
@@ -632,16 +631,17 @@ InitModule_BasilarM_Carney(ModulePtr theModule)
 BOOLN
 CheckData_BasilarM_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_BasilarM_Carney";
+	static const WChar	*funcName = wxT("CheckData_BasilarM_Carney");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!CheckRamp_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Input signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Input signal not correctly initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -706,15 +706,15 @@ FreeCarneyGTCoeffs_BasilarM_Carney(CarneyGTCoeffsPtr *p)
 CarneyGTCoeffsPtr
 InitCarneyGTCoeffs_BasilarM_Carney(int cascade, double cF)
 {
-	static const char *funcName = "InitCarneyGTCoeffs_BasilarM_Carney";
+	static const WChar *funcName = wxT("InitCarneyGTCoeffs_BasilarM_Carney");
 	CarneyGTCoeffsPtr p;
 	
 	if ((p = (CarneyGTCoeffsPtr) malloc(sizeof(CarneyGTCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory for coefficient.", funcName);
+		NotifyError(wxT("%s: Out of memory for coefficient."), funcName);
 		return(NULL);
 	}
 	if ((p->fLast = (Complex *) calloc(cascade + 1, sizeof(Complex))) == NULL) {
-		NotifyError("%s: Out of memory for 'fLast' array (%d elements).",
+		NotifyError(wxT("%s: Out of memory for 'fLast' array (%d elements)."),
 		  funcName, cascade);
 		FreeCarneyGTCoeffs_BasilarM_Carney(&p);
 		return(NULL);
@@ -737,7 +737,7 @@ InitCarneyGTCoeffs_BasilarM_Carney(int cascade, double cF)
 BOOLN
 InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_BasilarM_Carney";
+	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_Carney");
 	int		i, j, cFIndex, chan;
 	BMCarneyPtr	p = bMCarneyPtr;
 
@@ -750,7 +750,7 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 			p->numChannels = data->outSignal->numChannels;
 			if ((p->coefficients = (CarneyGTCoeffsPtr *) calloc(p->numChannels,
 			   sizeof(CarneyGTCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory for coefficients array.",
+		 		NotifyError(wxT("%s: Out of memory for coefficients array."),
 		 		  funcName);
 		 		return(FALSE);
 			}
@@ -758,7 +758,7 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 				cFIndex = i / data->inSignal[0]->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyGTCoeffs_BasilarM_Carney(
 				  p->cascade, p->cFList->frequency[cFIndex])) == NULL) {
-					NotifyError("%s: Out of memory for coefficient (%d).",
+					NotifyError(wxT("%s: Out of memory for coefficient (%d)."),
 					  funcName, i);
 					FreeProcessVariables_BasilarM_Carney();
 					return(FALSE);
@@ -767,20 +767,21 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 			p->numComplexCoeffs = p->cascade + 1;
 			if ((p->f = (ComplexPtr *) calloc(p->numThreads, sizeof(
 			  ComplexPtr))) == NULL) {
-				NotifyError("%s: Out of memory for 'f' array pointers.",
+				NotifyError(wxT("%s: Out of memory for 'f' array pointers."),
 				  funcName);
 				return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++)
 				if ((p->f[i] = (Complex *) calloc(p->numComplexCoeffs,
 				  sizeof(Complex))) == NULL) {
-					NotifyError("%s: Out of memory for 'f[%d]' array (%d "
-					  "elements).", funcName, i, p->numComplexCoeffs);
+					NotifyError(wxT("%s: Out of memory for 'f[%d]' array (%d "
+					  "elements)."), funcName, i, p->numComplexCoeffs);
 					FreeProcessVariables_BasilarM_Carney();
 					return(FALSE);
 				}
 			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-			SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+			SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency "
+			  "(Hz)"));
 			SetInfoChannelLabels_SignalData(data->outSignal,
 			   p->cFList->frequency);
 			SetInfoCFArray_SignalData(data->outSignal, p->cFList->frequency);
@@ -822,7 +823,7 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 BOOLN
 RunModel_BasilarM_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_BasilarM_Carney";
+	static const WChar	*funcName = wxT("RunModel_BasilarM_Carney");
 	register	ChanData	 *inPtr, *outPtr;
 	uShort	totalChannels;
 	int		j, chan, cFIndex;
@@ -836,18 +837,19 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 		if (!CheckPars_BasilarM_Carney())
 			return(FALSE);
 		if (!CheckData_BasilarM_Carney(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Carney non-linear basilar membrane "
-		  "filtering");
+		SetProcessName_EarObject(data, wxT("Carney non-linear basilar membrane "
+		  "filtering"));
 		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Could not initialise output channels.", funcName);
+			NotifyError(wxT("%s: Could not initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_BasilarM_Carney(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

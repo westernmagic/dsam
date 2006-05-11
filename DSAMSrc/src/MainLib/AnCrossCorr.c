@@ -39,6 +39,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "GeModuleMgr.h"
 #include "AnCrossCorr.h"
 
@@ -64,8 +65,6 @@ CrossCorrPtr	crossCorrPtr = NULL;
 BOOLN
 Free_Analysis_CCF(void)
 {
-	/* static const char	*funcName = "Free_Analysis_CCF"; */
-
 	if (crossCorrPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_CCF();
@@ -94,18 +93,19 @@ Free_Analysis_CCF(void)
 BOOLN
 Init_Analysis_CCF(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_CCF";
+	static const WChar	*funcName = wxT("Init_Analysis_CCF");
 
 	if (parSpec == GLOBAL) {
 		if (crossCorrPtr != NULL)
 			Free_Analysis_CCF();
 		if ((crossCorrPtr = (CrossCorrPtr) malloc(sizeof(CrossCorr))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (crossCorrPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -120,7 +120,7 @@ Init_Analysis_CCF(ParameterSpecifier parSpec)
 	crossCorrPtr->exponentDt = NULL;
 
 	if (!SetUniParList_Analysis_CCF()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_CCF();
 		return(FALSE);
 	}
@@ -139,27 +139,27 @@ Init_Analysis_CCF(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_CCF(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_CCF";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_CCF");
 	UniParPtr	pars;
 
 	if ((crossCorrPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_CCF_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = crossCorrPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_CCF_TIMEOFFSET], "OFFSET",
-	  "Time offset, t0 (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_CCF_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time offset, t0 (s)."),
 	  UNIPAR_REAL,
 	  &crossCorrPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_CCF);
-	SetPar_UniParMgr(&pars[ANALYSIS_CCF_TIMECONSTANT], "TIME_CONST",
-	  "Time constant, tw (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_CCF_TIMECONSTANT], wxT("TIME_CONST"),
+	  wxT("Time constant, tw (s)."),
 	  UNIPAR_REAL,
 	  &crossCorrPtr->timeConstant, NULL,
 	  (void * (*)) SetTimeConstant_Analysis_CCF);
-	SetPar_UniParMgr(&pars[ANALYSIS_CCF_PERIOD], "MAX_LAG",
-	  "Maximum lag period, t (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_CCF_PERIOD], wxT("MAX_LAG"),
+	  wxT("Maximum lag period, t (s)."),
 	  UNIPAR_REAL,
 	  &crossCorrPtr->period, NULL,
 	  (void * (*)) SetPeriod_Analysis_CCF);
@@ -177,15 +177,15 @@ SetUniParList_Analysis_CCF(void)
 UniParListPtr
 GetUniParListPtr_Analysis_CCF(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_CCF";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_CCF");
 
 	if (crossCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (crossCorrPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been  "
+		  "initialised.NULL returned."), funcName);
 		return(NULL);
 	}
 	return(crossCorrPtr->parList);
@@ -203,7 +203,7 @@ BOOLN
 SetPars_Analysis_CCF(double timeOffset, double timeConstant,
   double period)
 {
-	static const char	*funcName = "SetPars_Analysis_CCF";
+	static const WChar	*funcName = wxT("SetPars_Analysis_CCF");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -214,7 +214,7 @@ SetPars_Analysis_CCF(double timeOffset, double timeConstant,
 	if (!SetPeriod_Analysis_CCF(period))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -230,14 +230,14 @@ SetPars_Analysis_CCF(double timeOffset, double timeConstant,
 BOOLN
 SetTimeOffset_Analysis_CCF(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Analysis_CCF";
+	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_CCF");
 
 	if (crossCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g s)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g s)"), funcName,
 		  theTimeOffset);
 		return(FALSE);
 	}
@@ -258,14 +258,14 @@ SetTimeOffset_Analysis_CCF(double theTimeOffset)
 BOOLN
 SetTimeConstant_Analysis_CCF(double theTimeConstant)
 {
-	static const char	*funcName = "SetTimeConstant_Analysis_CCF";
+	static const WChar	*funcName = wxT("SetTimeConstant_Analysis_CCF");
 
 	if (crossCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeConstant < 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g s)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g s)"), funcName,
 		  theTimeConstant);
 		return(FALSE);
 	}
@@ -286,14 +286,14 @@ SetTimeConstant_Analysis_CCF(double theTimeConstant)
 BOOLN
 SetPeriod_Analysis_CCF(double thePeriod)
 {
-	static const char	*funcName = "SetPeriod_Analysis_CCF";
+	static const WChar	*funcName = wxT("SetPeriod_Analysis_CCF");
 
 	if (crossCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (thePeriod < 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g s)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g s)"), funcName,
 		  thePeriod);
 		return(FALSE);
 	}
@@ -316,24 +316,24 @@ SetPeriod_Analysis_CCF(double thePeriod)
 BOOLN
 CheckPars_Analysis_CCF(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_CCF";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_CCF");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (crossCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!crossCorrPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!crossCorrPtr->timeConstantFlag) {
-		NotifyError("%s: timeConstant variable not set.", funcName);
+		NotifyError(wxT("%s: timeConstant variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!crossCorrPtr->periodFlag) {
-		NotifyError("%s: period variable not set.", funcName);
+		NotifyError(wxT("%s: period variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -350,22 +350,22 @@ CheckPars_Analysis_CCF(void)
 BOOLN
 PrintPars_Analysis_CCF(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_CCF";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_CCF");
 
 	if (!CheckPars_Analysis_CCF()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Cross-correlation Analysis Module "
-	  "Parameters:-\n");
-	DPrint("\tTime Offset = ");
+	DPrint(wxT("Cross-correlation Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tTime Offset = "));
 	if (crossCorrPtr->timeOffset < 0.0)
-		DPrint("end of signal,\n");
+		DPrint(wxT("end of signal,\n"));
 	else
-		DPrint("%g ms,\n", MSEC(crossCorrPtr->timeOffset));
-	DPrint("\tTime constant = %g ms,\t",
+		DPrint(wxT("%g ms,\n"), MSEC(crossCorrPtr->timeOffset));
+	DPrint(wxT("\tTime constant = %g ms,\t"),
 	  MSEC(crossCorrPtr->timeConstant));
-	DPrint("\tPeriod = %g ms\n", MSEC(crossCorrPtr->period));
+	DPrint(wxT("\tPeriod = %g ms\n"), MSEC(crossCorrPtr->period));
 	return(TRUE);
 
 }
@@ -377,37 +377,38 @@ PrintPars_Analysis_CCF(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_CCF(char *fileName)
+ReadPars_Analysis_CCF(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_CCF";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_CCF");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	timeOffset, timeConstant, period;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeConstant))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeConstant))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &period))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &period))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_CCF(timeOffset, timeConstant, period)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -424,10 +425,10 @@ ReadPars_Analysis_CCF(char *fileName)
 BOOLN
 SetParsPointer_Analysis_CCF(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_CCF";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_CCF");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	crossCorrPtr = (CrossCorrPtr) theModule->parsPtr;
@@ -444,14 +445,15 @@ SetParsPointer_Analysis_CCF(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_CCF(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_CCF";
+	static const WChar	*funcName = wxT("InitModule_Analysis_CCF");
 
 	if (!SetParsPointer_Analysis_CCF(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_CCF(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = crossCorrPtr;
@@ -485,29 +487,30 @@ InitModule_Analysis_CCF(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_CCF(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_CCF";
+	static const WChar	*funcName = wxT("CheckData_Analysis_CCF");
 	double	signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (crossCorrPtr->timeOffset > signalDuration) {
-		NotifyError("%s: Time offset is longer than signal duration.",
+		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
 		return(FALSE);
 	}		
 	if ((crossCorrPtr->timeOffset - crossCorrPtr->period * 2.0 < 0.0) ||
 	  (crossCorrPtr->timeOffset + crossCorrPtr->period > signalDuration)) {
-		NotifyError("%s: cross-correlation period extends outside the range "
-		  "of the signal.", funcName);
+		NotifyError(wxT("%s: cross-correlation period extends outside the "
+		  "range of the signal."), funcName);
 		return(FALSE);
 	}		
 	if (data->inSignal[0]->numChannels % 2 != 0) {
-		NotifyError("%s: Number of channels must be a factor of 2.", funcName);
+		NotifyError(wxT("%s: Number of channels must be a factor of 2."),
+		  funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -525,7 +528,7 @@ CheckData_Analysis_CCF(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Analysis_CCF";
+	static const WChar *funcName = wxT("InitProcessVariables_Analysis_CCF");
 	
 	double	*expDtPtr, dt;
 	ChanLen	i, maxPeriodIndex;
@@ -537,7 +540,7 @@ InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 		maxPeriodIndex = (ChanLen) floor(p->period / dt + 0.05);
 		if ((p->exponentDt = (double *) calloc(maxPeriodIndex, sizeof(
 		  double))) == NULL) {
-			NotifyError("%s: Out of memory for exponent lookup table.",
+			NotifyError(wxT("%s: Out of memory for exponent lookup table."),
 			  funcName);
 			return(FALSE);
 		}
@@ -586,7 +589,7 @@ FreeProcessVariables_Analysis_CCF(void)
 BOOLN
 Calc_Analysis_CCF(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_CCF";
+	static const WChar	*funcName = wxT("Calc_Analysis_CCF");
 	register	double	*expDtPtr;
 	register	ChanData	 *inPtrL, *inPtrR, *outPtr;
 	int		chan, inChan;
@@ -599,17 +602,18 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		if (!CheckPars_Analysis_CCF())
 			return(FALSE);
 		if (!CheckData_Analysis_CCF(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Cross Correlation Function (CCF) "
-		  "analysis");
+		SetProcessName_EarObject(data, wxT("Cross Correlation Function (CCF) "
+		  "analysis"));
 		dt = data->inSignal[0]->dt;
 		p->periodIndex = (ChanLen) floor(p->period / dt + 0.5);
 		totalPeriodIndex = p->periodIndex * 2 + 1;
 		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 		  numChannels / 2), totalPeriodIndex, dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(data->outSignal, 1);
@@ -617,12 +621,12 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		for (chan = 0; chan < data->outSignal->numChannels; chan++)
 			data->outSignal->info.cFArray[chan] =
 			  data->inSignal[0]->info.cFArray[chan];
-		SetInfoSampleTitle_SignalData(data->outSignal, "Delay period (s)");
+		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Delay period (s)"));
 		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 		SetOutputTimeOffset_SignalData(data->outSignal, -p->period);
 		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5) - 1;
 		if (!InitProcessVariables_Analysis_CCF(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -96,7 +96,7 @@ void	SetEnabledState_Transform_CollectSignals(void);
 BOOLN	SetIndividualLabel_Transform_CollectSignals(int theIndex, double
 		  theLabel);
 
-BOOLN	SetLabelMode_Transform_CollectSignals(char * theLabelMode);
+BOOLN	SetLabelMode_Transform_CollectSignals(WChar * theLabelMode);
 
 BOOLN	SetLabels_Transform_CollectSignals(double *theLabels);
 

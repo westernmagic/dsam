@@ -33,9 +33,9 @@
 #define DIAGRAM_DEFAULT_Y_SEPARATION	20.0
 #define	DIAGRAM_LABEL_WIDTH_MARGIN		10.0
 #define	DIAGRAM_LABEL_HEIGHT_MARGIN		5.0
-#define	DIAGRAM_ARROW_TEXT				"Arrow head connection"
+#define	DIAGRAM_ARROW_TEXT				wxT("Arrow head connection")
 #define DIAGRAM_ARROW_SIZE				10.0
-#define	DIAGRAM_REPEAT_ARROW_TEXT		"Arrow head 'repeat' connection"
+#define	DIAGRAM_REPEAT_ARROW_TEXT		wxT("Arrow head 'repeat' connection")
 #define DIAGRAM_REPEAT_ARROW_SIZE		10.0
 #define DIAGRAM_ENABLED_BRUSH			wxCYAN_BRUSH
 #define DIAGRAM_DISENABLED_BRUSH		wxGREY_BRUSH

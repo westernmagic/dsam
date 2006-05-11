@@ -74,7 +74,7 @@ BOOLN	Init_Click(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Click(void);
 
-BOOLN	ReadPars_Click(char *fileName);
+BOOLN	ReadPars_Click(WChar *fileName);
 
 BOOLN	SetClickTime_Click(double theClickTime);
 

@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoNCArleKim.h"
 
 /******************************************************************************/
@@ -55,18 +56,19 @@ ArleKimPtr	arleKimPtr = NULL;
 BOOLN
 Init_Neuron_ArleKim(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_Neuron_ArleKim";
+	static const WChar *funcName = wxT("Init_Neuron_ArleKim");
 
 	if (parSpec == GLOBAL) {
 		if (arleKimPtr != NULL)
 			Free_Neuron_ArleKim();
 		if ((arleKimPtr = (ArleKimPtr) malloc(sizeof(ArleKim))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (arleKimPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -98,7 +100,7 @@ Init_Neuron_ArleKim(ParameterSpecifier parSpec)
 	arleKimPtr->bRestingCond_gb = 0.0;
 
 	if (!SetUniParList_Neuron_ArleKim()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Neuron_ArleKim();
 		return(FALSE);
 	}
@@ -143,72 +145,72 @@ Free_Neuron_ArleKim(void)
 BOOLN
 SetUniParList_Neuron_ArleKim(void)
 {
-	static const char *funcName = "SetUniParList_Neuron_ArleKim";
+	static const WChar *funcName = wxT("SetUniParList_Neuron_ArleKim");
 	UniParPtr	pars;
 
 	if ((arleKimPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  NEURON_ARLEKIM_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = arleKimPtr->parList->pars;
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_MEMBRANETCONST_TM], "T_M",
-	  "Cell membrane time-constant, tm (s).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_MEMBRANETCONST_TM], wxT("T_M"),
+	  wxT("Cell membrane time-constant, tm (s)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->membraneTConst_Tm, NULL,
 	  (void * (*)) SetMembraneTConst_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KDECAYTCONST_TGK], "T_GK",
-	  "Potassium decay time-constant, tGk (s).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KDECAYTCONST_TGK], wxT("T_GK"),
+	  wxT("Potassium decay time-constant, tGk (s)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->kDecayTConst_TGk, NULL,
 	  (void * (*)) SetKDecayTConst_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_THRESHOLDTCONST_TTH], "T_TH",
-	  "Threshold time-constant, tTh (s).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_THRESHOLDTCONST_TTH], wxT("T_TH"),
+	  wxT("Threshold time-constant, tTh (s)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->thresholdTConst_TTh, NULL,
 	  (void * (*)) SetThresholdTConst_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_ACCOMCONST_C], "C",
-	  "Accommodation constant, c (dimensionless).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_ACCOMCONST_C], wxT("C"),
+	  wxT("Accommodation constant, c (dimensionless)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->accomConst_c, NULL,
 	  (void * (*)) SetAccomConst_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_DELAYEDRECTKCOND_B], "B",
-	  "Delayed rectifier postassium conductance, b (nano-Siemens).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_DELAYEDRECTKCOND_B], wxT("B"),
+	  wxT("Delayed rectifier postassium conductance, b (nano-Siemens)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->delayedRectKCond_b, NULL,
 	  (void * (*)) SetDelayedRectKCond_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_RESTINGTHRESHOLD_TH0], "TH0",
-	  "Cell resting Threshold, Th0 (mV).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_RESTINGTHRESHOLD_TH0], wxT("TH0"),
+	  wxT("Cell resting Threshold, Th0 (mV)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->restingThreshold_Th0, NULL,
 	  (void * (*)) SetRestingThreshold_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_ACTIONPOTENTIAL], "ACTION_POT",
-	  "Action potential (mV).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_ACTIONPOTENTIAL], wxT("ACTION_POT"),
+	  wxT("Action potential (mV)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->actionPotential, NULL,
 	  (void * (*)) SetActionPotential_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_NONLINEARVCONST_VNL], "V_NL",
-	  "Non-linear voltage constant, Vnl (mV).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_NONLINEARVCONST_VNL], wxT("V_NL"),
+	  wxT("Non-linear voltage constant, Vnl (mV)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->nonLinearVConst_Vnl, NULL,
 	  (void * (*)) SetNonLinearVConst_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KREVERSALPOTEN_EK], "E_K",
-	  "Reversal potential of the potassium conductance, Ek (mV).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KREVERSALPOTEN_EK], wxT("E_K"),
+	  wxT("Reversal potential of the potassium conductance, Ek (mV)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->kReversalPoten_Ek, NULL,
 	  (void * (*)) SetKReversalPoten_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_BREVERSALPOTEN_EB], "E_B",
-	  "Reversal potential of all other conductances, Eb (mV).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_BREVERSALPOTEN_EB], wxT("E_B"),
+	  wxT("Reversal potential of all other conductances, Eb (mV)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->bReversalPoten_Eb, NULL,
 	  (void * (*)) SetBReversalPoten_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KRESTINGCOND_GK], "G_K",
-	  "Resting potassium conductance, gk (nS).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_KRESTINGCOND_GK], wxT("G_K"),
+	  wxT("Resting potassium conductance, gk (nS)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->kRestingCond_gk, NULL,
 	  (void * (*)) SetKRestingCond_Neuron_ArleKim);
-	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_BRESTINGCOND_GB], "G_B",
-	  "Resting component of all other conductances, gb (nS).",
+	SetPar_UniParMgr(&pars[NEURON_ARLEKIM_BRESTINGCOND_GB], wxT("G_B"),
+	  wxT("Resting component of all other conductances, gb (nS)."),
 	  UNIPAR_REAL,
 	  &arleKimPtr->bRestingCond_gb, NULL,
 	  (void * (*)) SetBRestingCond_Neuron_ArleKim);
@@ -226,15 +228,15 @@ SetUniParList_Neuron_ArleKim(void)
 UniParListPtr
 GetUniParListPtr_Neuron_ArleKim(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (arleKimPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(arleKimPtr->parList);
@@ -251,14 +253,15 @@ GetUniParListPtr_Neuron_ArleKim(void)
 BOOLN
 SetMembraneTConst_Neuron_ArleKim(double theMembraneTConst)
 {
-	static const char *funcName = "SetMembraneTConst_Neuron_ArleKim";
+	static const WChar *funcName = wxT("SetMembraneTConst_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theMembraneTConst == 0.0) {
-		NotifyError("%s: Invalid value = %g mV\n", funcName, theMembraneTConst);
+		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
+		  theMembraneTConst);
 		return(FALSE);
 	} 
 	arleKimPtr->membraneTConstFlag = TRUE;
@@ -279,14 +282,15 @@ SetMembraneTConst_Neuron_ArleKim(double theMembraneTConst)
 BOOLN
 SetKDecayTConst_Neuron_ArleKim(double theKDecayTConst)
 {
-	static const char *funcName = "SetKDecayTConst_Neuron_ArleKim";
+	static const WChar *funcName = wxT("SetKDecayTConst_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theKDecayTConst == 0.0) {
-		NotifyError("%s: Invalid value = %g mV\n", funcName, theKDecayTConst);
+		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
+		  theKDecayTConst);
 		return(FALSE);
 	} 
 	arleKimPtr->kDecayTConstFlag = TRUE;
@@ -306,14 +310,14 @@ SetKDecayTConst_Neuron_ArleKim(double theKDecayTConst)
 BOOLN
 SetThresholdTConst_Neuron_ArleKim(double theThresholdTConst)
 {
-	static const char *funcName = "SetThresholdTConst_Neuron_ArleKim";
+	static const WChar *funcName = wxT("SetThresholdTConst_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theThresholdTConst == 0.0) {
-		NotifyError("%s: Invalid value = %g mV\n", funcName,
+		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
 		  theThresholdTConst);
 		return(FALSE);
 	} 
@@ -334,10 +338,10 @@ SetThresholdTConst_Neuron_ArleKim(double theThresholdTConst)
 BOOLN
 SetAccomConst_Neuron_ArleKim(double theAccomConst)
 {
-	static const char	*funcName = "SetAccomConst_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetAccomConst_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->accomConstFlag = TRUE;
@@ -358,10 +362,10 @@ SetAccomConst_Neuron_ArleKim(double theAccomConst)
 BOOLN
 SetDelayedRectKCond_Neuron_ArleKim(double theDelayedRectKCond)
 {
-	static const char	*funcName = "SetDelayedRectKCond_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetDelayedRectKCond_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->delayedRectKCondFlag = TRUE;
@@ -381,10 +385,10 @@ SetDelayedRectKCond_Neuron_ArleKim(double theDelayedRectKCond)
 BOOLN
 SetRestingThreshold_Neuron_ArleKim(double theRestingThreshold)
 {
-	static const char	*funcName = "SetRestingThreshold_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetRestingThreshold_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->restingThresholdFlag = TRUE;
@@ -404,10 +408,10 @@ SetRestingThreshold_Neuron_ArleKim(double theRestingThreshold)
 BOOLN
 SetActionPotential_Neuron_ArleKim(double theActionPotential)
 {
-	static const char	*funcName = "SetActionPotential_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetActionPotential_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->actionPotentialFlag = TRUE;
@@ -426,17 +430,17 @@ SetActionPotential_Neuron_ArleKim(double theActionPotential)
 BOOLN
 SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst)
 {
-	static const char *funcName = "SetNonLinearVConst_Neuron_ArleKim";
+	static const WChar *funcName = wxT("SetNonLinearVConst_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNonLinearVConst == 0.0) {
-		NotifyError("%s: Invalid value = %g mV\n", funcName,
+		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
 		  theNonLinearVConst);
-		NotifyWarning("SetNonLinearVConst_Neuron_ArleKim: To set the term "\
-		  "involving this parameter to zero set gb to zero.");
+		NotifyWarning(wxT("SetNonLinearVConst_Neuron_ArleKim: To set the term "
+		  "involving this parameter to zero set gb to zero."));
 		return(FALSE);
 	} 
 	arleKimPtr->nonLinearVConstFlag = TRUE;
@@ -457,10 +461,10 @@ SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst)
 BOOLN
 SetKReversalPoten_Neuron_ArleKim(double theKReversalPoten)
 {
-	static const char	*funcName = "SetKReversalPoten_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetKReversalPoten_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->kReversalPotenFlag = TRUE;
@@ -481,10 +485,10 @@ SetKReversalPoten_Neuron_ArleKim(double theKReversalPoten)
 BOOLN
 SetBReversalPoten_Neuron_ArleKim(double theBReversalPoten)
 {
-	static const char	*funcName = "SetBReversalPoten_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetBReversalPoten_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->bReversalPotenFlag = TRUE;
@@ -504,10 +508,10 @@ SetBReversalPoten_Neuron_ArleKim(double theBReversalPoten)
 BOOLN
 SetKRestingCond_Neuron_ArleKim(double theKRestingCond)
 {
-	static const char	*funcName = "SetKRestingCond_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetKRestingCond_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->kRestingCondFlag = TRUE;
@@ -528,10 +532,10 @@ SetKRestingCond_Neuron_ArleKim(double theKRestingCond)
 BOOLN
 SetBRestingCond_Neuron_ArleKim(double theBRestingCond)
 {
-	static const char	*funcName = "SetBRestingCond_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetBRestingCond_Neuron_ArleKim");
 
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr->bRestingCondFlag = TRUE;
@@ -595,72 +599,72 @@ SetPars_Neuron_ArleKim(double tm, double tGk, double tTh, double c, double b,
 BOOLN
 CheckPars_Neuron_ArleKim(void)
 {
-	static const char *funcName = "CheckPars_Neuron_ArleKim";
+	static const WChar *funcName = wxT("CheckPars_Neuron_ArleKim");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (arleKimPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!arleKimPtr->membraneTConstFlag) {
-		NotifyError("%s: Membrane time constant, Tm, not correctly set.",
+		NotifyError(wxT("%s: Membrane time constant, Tm, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kDecayTConstFlag) {
-		NotifyError("%s: Potassium decay time  constant, TGk, not correctly "\
-		  "set.", funcName);
+		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->thresholdTConstFlag) {
-		NotifyError("%s: Threshold time constant, TTh, not correctly set.",
+		NotifyError(wxT("%s: Threshold time constant, TTh, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->accomConstFlag) {
-		NotifyError("%s: Accomodation constant, c, not correctly set.",
+		NotifyError(wxT("%s: Accomodation constant, c, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->delayedRectKCondFlag) {
-		NotifyError("%s: Delayed rectifier potassium conductance, b, not "\
-		  "correctly set.", funcName);
+		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not "
+		  "correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->restingThresholdFlag) {
-		NotifyError("%s: Resting threshold constant, Th0, not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->actionPotentialFlag) {
-		NotifyError("%s: Action potential constant not correctly set.",
+		NotifyError(wxT("%s: Action potential constant not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->nonLinearVConstFlag) {
-		NotifyError("%s: Non-linear voltage constant, Vnl, not correctly set.",
+		NotifyError(wxT("%s: Non-linear voltage constant, Vnl, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kReversalPotenFlag) {
-		NotifyError("%s: Reversal potential of the potassium conductance, "\
-		  "Ek, not correctly set.", funcName);
+		NotifyError(wxT("%s: Reversal potential of the potassium conductance, "
+		  "Ek, not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->bReversalPotenFlag) {
-		NotifyError("%s: Reversal potential of all other conductances, Eb, "\
-		  "not correctly set.", funcName);
+		NotifyError(wxT("%s: Reversal potential of all other conductances, Eb, "
+		  "not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kRestingCondFlag) {
-		NotifyError("%s: Resting potassium conductance, gk, not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Resting potassium conductance, gk, not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->bRestingCondFlag) {
-		NotifyError("%s: Resting component for all other conductances, gb, "\
-		  "not correctly set.", funcName);
+		NotifyError(wxT("%s: Resting component for all other conductances, gb, "
+		  "not correctly set."), funcName);
 		ok = FALSE;
 	}
 	/*
@@ -668,9 +672,9 @@ CheckPars_Neuron_ArleKim(void)
 	dEExpression = (arleKimPtr->kRestingCond_gk +
 	  arleKimPtr->bRestingCond_gb) / arleKimPtr->membraneTConst_Tm;
 	if (dEExpression < ARLEKIM_DE_LIMIT) {
-		NotifyError("%s:  The total conductance, gk + gb, is too high or the "\
-		  "membrane time-constant is too low.\n  This may cause the model "\
-		  "output to produce a floating-point error.\n", funcName);
+		NotifyError(wxT("%s:  The total conductance, gk + gb, is too high or the "
+		  "membrane time-constant is too low.\n  This may cause the model "
+		  "output to produce a floating-point error.\n"), funcName);
 	} */
 	return(ok);
 		
@@ -687,13 +691,13 @@ CheckPars_Neuron_ArleKim(void)
 void *
 GetPotentialResponse_Neuron_ArleKim(void *potentialPtr)
 {
-	static const char *funcName = "GetPotentialResponse_Neuron_ArleKim";
+	static const WChar *funcName = wxT("GetPotentialResponse_Neuron_ArleKim");
 	double		restingPotential_Er, totalConductance_G, *potential;
 	ArleKimPtr	p;
 
 	if (!CheckPars_Neuron_ArleKim()) {
-		NotifyError("%s: Parameters have not been correctly set, zero "\
-		  "returned.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set, zero "
+		  "returned."), funcName);
 		return(NULL);
 	}
 	potential = (double *) potentialPtr;
@@ -718,35 +722,36 @@ GetPotentialResponse_Neuron_ArleKim(void *potentialPtr)
 BOOLN
 PrintPars_Neuron_ArleKim(void)
 {
-	static const char *funcName = "PrintPars_Neuron_ArleKim";
+	static const WChar *funcName = wxT("PrintPars_Neuron_ArleKim");
 
 	if (!CheckPars_Neuron_ArleKim()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("ArleKim Neural Cell Module Parameters:-\n");
-	DPrint("\tMembrane time constant, Tm = %g ms,\n",
+	DPrint(wxT("ArleKim Neural Cell Module Parameters:-\n"));
+	DPrint(wxT("\tMembrane time constant, Tm = %g ms,\n"),
 	  MSEC(arleKimPtr->membraneTConst_Tm));
-	DPrint("\tPotassium decay time constant, TGk = %g ms,\n",
+	DPrint(wxT("\tPotassium decay time constant, TGk = %g ms,\n"),
 	  MSEC(arleKimPtr->kDecayTConst_TGk));
-	DPrint("\tThreshold rise time constant, TTh = %g ms,\n",
+	DPrint(wxT("\tThreshold rise time constant, TTh = %g ms,\n"),
 	  MSEC(arleKimPtr->thresholdTConst_TTh));
-	DPrint("\tAccommodation constant, c = %g,\n",
+	DPrint(wxT("\tAccommodation constant, c = %g,\n"),
 	  arleKimPtr->accomConst_c);
-	DPrint("\tDelayed rectifier potassium conductance, b = "\
-	  "%g nano Siemens.\n", arleKimPtr->delayedRectKCond_b);
-	DPrint("\tResting threshold, Th0 = %g mV,\tAction "\
-	  "potential = %g mV.\n", arleKimPtr->restingThreshold_Th0,
+	DPrint(wxT("\tDelayed rectifier potassium conductance, b = "
+	  "%g nano Siemens.\n"), arleKimPtr->delayedRectKCond_b);
+	DPrint(wxT("\tResting threshold, Th0 = %g mV,\tAction ")\
+	  wxT("potential = %g mV.\n"), arleKimPtr->restingThreshold_Th0,
 	  arleKimPtr->actionPotential);
-	DPrint("\tNon-linear voltage constant, Vnl = %g mV,\n",
+	DPrint(wxT("\tNon-linear voltage constant, Vnl = %g mV,\n"),
 	  arleKimPtr->nonLinearVConst_Vnl);
-	DPrint("\tReversal potential of the potassium "\
-	  "conductance, Ek = %g mV,\n", arleKimPtr->kReversalPoten_Ek);
-	DPrint("\tReversal potential of all other "\
-	  "conductances, Eb = %g mV,\n", arleKimPtr->bReversalPoten_Eb);
-	DPrint("\tResting potassium conductance, gk = %g nS,\n",
+	DPrint(wxT("\tReversal potential of the potassium "
+	  "conductance, Ek = %g mV,\n"), arleKimPtr->kReversalPoten_Ek);
+	DPrint(wxT("\tReversal potential of all other ")\
+	  wxT("conductances, Eb = %g mV,\n"), arleKimPtr->bReversalPoten_Eb);
+	DPrint(wxT("\tResting potassium conductance, gk = %g nS,\n"),
 	  arleKimPtr->kRestingCond_gk);
-	DPrint("\tAll other resting conductances, gb = %g nS,\n",
+	DPrint(wxT("\tAll other resting conductances, gb = %g nS,\n"),
 	  arleKimPtr->bRestingCond_gb);
 	return(TRUE);
 
@@ -760,11 +765,11 @@ PrintPars_Neuron_ArleKim(void)
  */
  
 BOOLN
-ReadPars_Neuron_ArleKim(char *fileName)
+ReadPars_Neuron_ArleKim(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_Neuron_ArleKim";
+	static const WChar *funcName = wxT("ReadPars_Neuron_ArleKim");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	membraneTConst_Tm, kDecayTConst_TGk, thresholdTConst_TTh;
 	double	accomConst_c, delayedRectKCond_b, restingThreshold_Th0;
 	double	actionPotential, nonLinearVConst_Vnl, kReversalPoten_Ek;
@@ -772,50 +777,51 @@ ReadPars_Neuron_ArleKim(char *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &membraneTConst_Tm))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &membraneTConst_Tm))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &kDecayTConst_TGk))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &kDecayTConst_TGk))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &thresholdTConst_TTh))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &thresholdTConst_TTh))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &accomConst_c))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &accomConst_c))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &delayedRectKCond_b))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &delayedRectKCond_b))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &restingThreshold_Th0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &restingThreshold_Th0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &actionPotential))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &actionPotential))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &nonLinearVConst_Vnl))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &nonLinearVConst_Vnl))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &kReversalPoten_Ek))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &kReversalPoten_Ek))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &bReversalPoten_Eb))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &bReversalPoten_Eb))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &kRestingCond_gk))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &kRestingCond_gk))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &bRestingCond_gb))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &bRestingCond_gb))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Neuron_ArleKim(membraneTConst_Tm, kDecayTConst_TGk,
 	  thresholdTConst_TTh, accomConst_c, delayedRectKCond_b, 
 	  restingThreshold_Th0, actionPotential, nonLinearVConst_Vnl,
 	  kReversalPoten_Ek, bReversalPoten_Eb, kRestingCond_gk, bRestingCond_gb)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -832,10 +838,10 @@ ReadPars_Neuron_ArleKim(char *fileName)
 BOOLN
 SetParsPointer_Neuron_ArleKim(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("SetParsPointer_Neuron_ArleKim");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	arleKimPtr = (ArleKimPtr) theModule->parsPtr;
@@ -852,14 +858,14 @@ SetParsPointer_Neuron_ArleKim(ModulePtr theModule)
 BOOLN
 InitModule_Neuron_ArleKim(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Neuron_ArleKim";
+	static const WChar	*funcName = wxT("InitModule_Neuron_ArleKim");
 
 	if (!SetParsPointer_Neuron_ArleKim(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Neuron_ArleKim(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = arleKimPtr;
@@ -887,10 +893,10 @@ InitModule_Neuron_ArleKim(ModulePtr theModule)
 BOOLN
 CheckData_Neuron_ArleKim(EarObjectPtr data)
 {
-	static const char *funcName = "CheckData_Neuron_ArleKim";
+	static const WChar *funcName = wxT("CheckData_Neuron_ArleKim");
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -910,7 +916,7 @@ CheckData_Neuron_ArleKim(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Neuron_ArleKim(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Neuron_ArleKim";
+	static const WChar *funcName = wxT("InitProcessVariables_Neuron_ArleKim");
 	int		i;
 	ArleKimPtr	p = arleKimPtr;
 	
@@ -920,7 +926,7 @@ InitProcessVariables_Neuron_ArleKim(EarObjectPtr data)
 			FreeProcessVariables_Neuron_ArleKim();
 			if ((p->state = (ArleKimStatePtr) calloc(data->outSignal->
 			  numChannels, sizeof(ArleKimState))) == NULL) {
-			 	NotifyError("%s: Out of memory.", funcName);
+			 	NotifyError(wxT("%s: Out of memory."), funcName);
 			 	return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -971,7 +977,7 @@ FreeProcessVariables_Neuron_ArleKim(void)
 BOOLN
 RunModel_Neuron_ArleKim(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_Neuron_ArleKim";
+	static const WChar *funcName = wxT("RunModel_Neuron_ArleKim");
 	int			i, spikeState_s;
 	double		dt;
 	register double	dGk, dTh, dV;
@@ -986,12 +992,13 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 			return(FALSE);
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "ArleKim neural cell");
+		SetProcessName_EarObject(data, wxT("ArleKim neural cell"));
 		if (!InitProcessVariables_Neuron_ArleKim(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

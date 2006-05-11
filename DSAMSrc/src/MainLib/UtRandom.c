@@ -43,11 +43,11 @@
 RandParsPtr
 InitPars_Random(long idum, long offset)
 {
-	static const char *funcName = "InitPars_Random";
+	static const WChar *funcName = wxT("InitPars_Random");
 	RandParsPtr	p;
 
 	if ((p = (RandParsPtr) malloc(sizeof(RandPars))) == NULL) {
-		NotifyError("%s: Could not initialises structure.", funcName);
+		NotifyError(wxT("%s: Could not initialises structure."), funcName);
 		return(NULL);
 	}
 	p->idum = idum;
@@ -84,9 +84,9 @@ FreePars_Random(RandParsPtr *p)
 BOOLN
 SetSeed_Random(RandParsPtr p, long ranSeed, long offset)
 {
-	static const char *funcName = "SetSeed_Random";
+	static const WChar *funcName = wxT("SetSeed_Random");
 	if (!p) {
-		NotifyError("%s: Structure is not initialised.", funcName);
+		NotifyError(wxT("%s: Structure is not initialised."), funcName);
 		return(FALSE);
 	}
 	p->idum = ranSeed;
@@ -172,9 +172,9 @@ GeomDist_Random(double probability, int numTrials, RandParsPtr p)
 	double	sum, logNotProbable;
 	
 	#ifdef DEBUG
-	static const char *funcName = "GeomDist_Random";
+	static const WChar *funcName = wxT("GeomDist_Random");
 		if (probability >= 1.0) {
-			NotifyError("%s: probability = %g: greater than 1.", funcName,
+			NotifyError(wxT("%s: probability = %g: greater than 1."), funcName,
 			  probability);
 			exit(1);
 		}

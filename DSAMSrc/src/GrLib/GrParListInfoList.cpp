@@ -65,7 +65,7 @@
 ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
   UniParListPtr parList)
 {
-	static const char *funcName = "ParListInfoList::ParListInfoList";
+	static const wxChar *funcName = wxT("ParListInfoList::ParListInfoList");
 
 	notebookPanel = 0;
 	parent = theParent;
@@ -73,15 +73,15 @@ ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
 	useNotebookControls = FALSE;
 
 	if ((pc == NULL) && (parList == NULL)) {
-		NotifyError("%s: Both the simulation (pc) and the parameter list are "
-		  "NULL.", funcName);
+		NotifyError(wxT("%s: Both the simulation (pc) and the parameter list "
+		  "are NULL."), funcName);
 		return;
 	}
 	
 	if (parList->GetPanelList)
 		SetPanelledModuleInfo((wxPanel *) parent, pc, parList);
 	else
-		SetStandardInfo((wxPanel *) parent, pc, parList, "General");
+		SetStandardInfo((wxPanel *) parent, pc, parList, wxT("General"));
 	if (notebook) {
 		if (parList->notebookPanel < 0)
 			parList->notebookPanel = notebookPanel;
@@ -157,7 +157,7 @@ ParListInfoList::GetNotebookSize(void) const
 wxPanel *
 ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 {
-	/* static const char *funcName = "ParListInfoList::UsingNotebook"; */
+	/* static const wxChar *funcName = "ParListInfoList::UsingNotebook"; */
 	bool	useNewNotebook = FALSE;
 	int		i;
 	wxPanel	*panel = NULL;
@@ -221,7 +221,8 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	if (panelSpec1->name[0] == '\0')
 		return;
 
-	if ((newPanel = UsingNotebook(parList, panelSpec1->name)) != NULL)
+	if ((newPanel = UsingNotebook(parList, (wxChar *) panelSpec1->name)) !=
+	  NULL)
 		panel = newPanel;
 	panelSpec2 = ( *parList->GetPanelList)(panelNum + 1);
 	numPars = panelSpec2->specifier - panelSpec1->specifier;
@@ -243,7 +244,7 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 void
 ParListInfoList::SetSubParListInfo(ParListInfo *info)
 {
-	static const char *funcName = "ParListInfoList::SetSubParListInfo";
+	static const wxChar *funcName = wxT("ParListInfoList::SetSubParListInfo");
 	int		i;
 	UniParPtr	p;
 	wxPanel		*panel = info->GetParent();
@@ -258,35 +259,38 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 			switch (p->type) {
 			case UNIPAR_CFLIST: {
 				CFListPtr	theCFs = *p->valuePtr.cFPtr;
-				SetStandardInfo(panel, pc, theCFs->cFParList, "CF List");
+				SetStandardInfo(panel, pc, theCFs->cFParList, wxT("CF List"));
 				if ((theCFs->bandwidthMode.specifier !=
 				  BANDWIDTH_INTERNAL_DYNAMIC) && (theCFs->bandwidthMode.
 				  specifier !=BANDWIDTH_DISABLED))
-					SetStandardInfo(panel, pc, theCFs->bParList, "Bandwidths");
+					SetStandardInfo(panel, pc, theCFs->bParList, wxT(
+					"Bandwidths"));
 				break; }
 			case UNIPAR_ICLIST: {
 				IonChanListPtr	theICs = *p->valuePtr.iCPtr;
 				DynaListPtr	node;
 				IonChannelPtr	iC;
 
-				SetStandardInfo(panel, pc, theICs->parList, "IC List Gen.");
+				SetStandardInfo(panel, pc, theICs->parList,  wxT("IC List "
+				  "Gen."));
 				for (node = theICs->ionChannels; node; node = node->next) {
 					iC = (IonChannelPtr) node->data;
-					SetStandardInfo(panel, pc, iC->parList, iC->description);
+					SetStandardInfo(panel, pc, iC->parList, (wxChar *) iC->
+					  description);
 				}
 				break; }
 			case UNIPAR_MODULE: {
-				char *moduleName;
+				wxChar *moduleName;
 
 				switch (pc->data->module->specifier) {
 				case ANA_SAI_MODULE:
-					moduleName = "Strobe";
+					moduleName = wxT("Strobe");
 					break;
 				default:
-					moduleName = "Sub-Module";
+					moduleName = wxT("Sub-Module");
 				}
 				SetStandardInfo(panel, pc, p->valuePtr.module.parList,
-				  moduleName);
+				  (wxChar *) moduleName);
 				break; }
 			case UNIPAR_PARLIST: {
 				if (!*p->valuePtr.parList.list)
@@ -297,11 +301,12 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 					SetPanelledModuleInfo(panel, pc, *p->valuePtr.parList.list);
 				else
 					SetStandardInfo(panel, pc, *p->valuePtr.parList.list,
-					  p->desc);
+					  (wxChar *) p->desc);
 				break; }
 			case UNIPAR_PARARRAY: {
 				ParArrayPtr	parArray = *p->valuePtr.pAPtr;
-				SetStandardInfo(panel, pc, parArray->parList, parArray->name);
+				SetStandardInfo(panel, pc, parArray->parList, (wxChar *)
+				  parArray->name);
 				break; }
 			case UNIPAR_SIMSCRIPT: {
 //				DatumPtr	pc = *p->valuePtr.simScript.simulation;
@@ -315,7 +320,7 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 //				
 				break; }
 			default:
-				NotifyError("%s: Unknown universal parameter type (%d).",
+				NotifyError(wxT("%s: Unknown universal parameter type (%d)."),
 				  funcName, p->type);
 				return;
 			}
@@ -335,7 +340,6 @@ void
 ParListInfoList::SetStandardInfo(wxPanel *panel, DatumPtr pc,
   UniParListPtr parList, const wxString& title, int offset, int numPars)
 {
-	/* static const char *funcName = "ParListInfoList::SetStandardInfo"; */
 	wxPanel	*newPanel;
 	ParListInfo	*infoPtr;
 

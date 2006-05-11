@@ -24,6 +24,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtAmpMod.h"
 
 /******************************************************************************/
@@ -48,8 +49,6 @@ AmpModPtr	ampModPtr = NULL;
 BOOLN
 Free_Utility_AmpMod(void)
 {
-	/* static const char	*funcName = "Free_Utility_AmpMod";  */
-
 	if (ampModPtr == NULL)
 		return(FALSE);
 	if (ampModPtr->modulationDepths) {
@@ -83,15 +82,15 @@ Free_Utility_AmpMod(void)
 BOOLN
 SetDefaultNumFrequenciesArrays_Utility_AmpMod(void)
 {
-	static const char *funcName =
-	  "SetDefaultNumFrequenciesArrays_Utility_AmpMod";
+	static const WChar *funcName =
+	  wxT("SetDefaultNumFrequenciesArrays_Utility_AmpMod");
 	int		i;
 	double	modulationDepths[] = {50.0};
 	double	frequencies[] = {100.0};
 	double	phases[] = {0.0};
 
 	if (!AllocNumFrequencies_Utility_AmpMod(1)) {
-		NotifyError("%s: Could not allocate default arrays.", funcName);
+		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < ampModPtr->numFrequencies; i++) {
@@ -118,18 +117,19 @@ SetDefaultNumFrequenciesArrays_Utility_AmpMod(void)
 BOOLN
 Init_Utility_AmpMod(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_AmpMod";
+	static const WChar	*funcName = wxT("Init_Utility_AmpMod");
 
 	if (parSpec == GLOBAL) {
 		if (ampModPtr != NULL)
 			Free_Utility_AmpMod();
 		if ((ampModPtr = (AmpModPtr) malloc(sizeof(AmpMod))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (ampModPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -141,13 +141,13 @@ Init_Utility_AmpMod(ParameterSpecifier parSpec)
 	ampModPtr->phases = NULL;
 
 	if (!SetDefaultNumFrequenciesArrays_Utility_AmpMod()) {
-		NotifyError("%s: Could not set the default 'numFrequencies' arrays.",
-		  funcName);
+		NotifyError(wxT("%s: Could not set the default 'numFrequencies' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 
 	if (!SetUniParList_Utility_AmpMod()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_AmpMod();
 		return(FALSE);
 	}
@@ -166,32 +166,32 @@ Init_Utility_AmpMod(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_AmpMod(void)
 {
-	static const char *funcName = "SetUniParList_Utility_AmpMod";
+	static const WChar *funcName = wxT("SetUniParList_Utility_AmpMod");
 	UniParPtr	pars;
 
 	if ((ampModPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_AMPMOD_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = ampModPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_NUMFREQUENCIES], "NUM_FREQS",
-	  "Number of modulation frequencies.",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_NUMFREQUENCIES], wxT("NUM_FREQS"),
+	  wxT("Number of modulation frequencies."),
 	  UNIPAR_INT_AL,
 	  &ampModPtr->numFrequencies, NULL,
 	  (void * (*)) SetNumFrequencies_Utility_AmpMod);
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_MODULATIONDEPTHS], "DEPTH",
-	  "Modulation depths (%).",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_MODULATIONDEPTHS], wxT("DEPTH"),
+	  wxT("Modulation depths (%)."),
 	  UNIPAR_REAL_ARRAY,
 	  &ampModPtr->modulationDepths, &ampModPtr->numFrequencies,
 	  (void * (*)) SetIndividualDepth_Utility_AmpMod);
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_FREQUENCIES], "FREQUENCY",
-	  "Modulation frequencies (Hz).",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_FREQUENCIES], wxT("FREQUENCY"),
+	  wxT("Modulation frequencies (Hz)."),
 	  UNIPAR_REAL_ARRAY,
 	  &ampModPtr->frequencies, &ampModPtr->numFrequencies,
 	  (void * (*)) SetIndividualFreq_Utility_AmpMod);
-	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_PHASES], "PHASE",
-	  "Modulation phases (degrees).",
+	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_PHASES], wxT("PHASE"),
+	  wxT("Modulation phases (degrees)."),
 	  UNIPAR_REAL_ARRAY,
 	  &ampModPtr->phases, &ampModPtr->numFrequencies,
 	  (void * (*)) SetIndividualPhase_Utility_AmpMod);
@@ -209,15 +209,15 @@ SetUniParList_Utility_AmpMod(void)
 UniParListPtr
 GetUniParListPtr_Utility_AmpMod(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_AmpMod";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (ampModPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(ampModPtr->parList);
@@ -238,7 +238,7 @@ GetUniParListPtr_Utility_AmpMod(void)
 BOOLN
 AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 {
-	static const char	*funcName = "AllocNumFrequencies_Utility_AmpMod";
+	static const WChar	*funcName = wxT("AllocNumFrequencies_Utility_AmpMod");
 
 	if (numFrequencies == ampModPtr->numFrequencies)
 		return(TRUE);
@@ -246,15 +246,15 @@ AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 		free(ampModPtr->modulationDepths);
 	if ((ampModPtr->modulationDepths = (double *) calloc(numFrequencies,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' modulationDepths.",
-		  funcName, numFrequencies);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' "
+		  "modulationDepths."), funcName, numFrequencies);
 		return(FALSE);
 	}
 	if (ampModPtr->frequencies)
 		free(ampModPtr->frequencies);
 	if ((ampModPtr->frequencies = (double *) calloc(numFrequencies, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' frequencies.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' frequencies."),
 		  funcName, numFrequencies);
 		return(FALSE);
 	}
@@ -262,8 +262,8 @@ AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 		free(ampModPtr->phases);
 	if ((ampModPtr->phases = (double *) calloc(numFrequencies, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' phases.", funcName,
-		  numFrequencies);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' phases."),
+		  funcName, numFrequencies);
 		return(FALSE);
 	}
 	ampModPtr->numFrequencies = numFrequencies;
@@ -283,7 +283,7 @@ BOOLN
 SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
   double *frequencies, double *phases)
 {
-	static const char	*funcName = "SetPars_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetPars_Utility_AmpMod");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -296,7 +296,7 @@ SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
 	if (!SetPhases_Utility_AmpMod(phases))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -314,20 +314,20 @@ SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
 BOOLN
 SetNumFrequencies_Utility_AmpMod(int theNumFrequencies)
 {
-	static const char	*funcName = "SetNumFrequencies_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetNumFrequencies_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumFrequencies < 1) {
-		NotifyError("%s: Value must be greater then zero (%d).", funcName,
+		NotifyError(wxT("%s: Value must be greater then zero (%d)."), funcName,
 		  theNumFrequencies);
 		return(FALSE);
 	}
 	if (!AllocNumFrequencies_Utility_AmpMod(theNumFrequencies)) {
 		NotifyError(
-		  "%%s: Cannot allocate memory for the 'numFrequencies' arrays.",
+		  wxT("%%s: Cannot allocate memory for the 'numFrequencies' arrays."),
 		  funcName);
 		return(FALSE);
 	}
@@ -348,10 +348,10 @@ SetNumFrequencies_Utility_AmpMod(int theNumFrequencies)
 BOOLN
 SetModulationDepths_Utility_AmpMod(double *theModulationDepths)
 {
-	static const char	*funcName = "SetModulationDepths_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetModulationDepths_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -371,10 +371,10 @@ SetModulationDepths_Utility_AmpMod(double *theModulationDepths)
 BOOLN
 SetFrequencies_Utility_AmpMod(double *theFrequencies)
 {
-	static const char	*funcName = "SetFrequencies_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetFrequencies_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -394,10 +394,10 @@ SetFrequencies_Utility_AmpMod(double *theFrequencies)
 BOOLN
 SetPhases_Utility_AmpMod(double *thePhases)
 {
-	static const char	*funcName = "SetPhases_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetPhases_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -416,18 +416,18 @@ SetPhases_Utility_AmpMod(double *thePhases)
 BOOLN
 SetIndividualFreq_Utility_AmpMod(int theIndex, double theFrequency)
 {
-	static const char *funcName = "SetIndividualFreq_Utility_AmpMod";
+	static const WChar *funcName = wxT("SetIndividualFreq_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (ampModPtr->frequencies == NULL) {
-		NotifyError("%s: Frequencies not set.", funcName);
+		NotifyError(wxT("%s: Frequencies not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > ampModPtr->numFrequencies - 1) {
-		NotifyError("%s: Index value must be in the\nrange 0 - %d (%d).\n",
+		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, ampModPtr->numFrequencies - 1, theIndex);
 		return(FALSE);
 	}
@@ -446,18 +446,18 @@ SetIndividualFreq_Utility_AmpMod(int theIndex, double theFrequency)
 BOOLN
 SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase)
 {
-	static const char *funcName = "SetIndividualPhase_Utility_AmpMod";
+	static const WChar *funcName = wxT("SetIndividualPhase_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (ampModPtr->phases == NULL) {
-		NotifyError("%s: Phases not set.", funcName);
+		NotifyError(wxT("%s: Phases not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > ampModPtr->numFrequencies - 1) {
-		NotifyError("%s: Index value must be in the\nrange 0 - %d (%d).\n",
+		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, ampModPtr->numFrequencies - 1, theIndex);
 		return(FALSE);
 	}
@@ -476,18 +476,18 @@ SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase)
 BOOLN
 SetIndividualDepth_Utility_AmpMod(int theIndex, double theModDepth)
 {
-	static const char *funcName = "SetIndividualIndex_Utility_AmpMod";
+	static const WChar *funcName = wxT("SetIndividualIndex_Utility_AmpMod");
 
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (ampModPtr->modulationDepths == NULL) {
-		NotifyError("%s: Modulation depths not set.", funcName);
+		NotifyError(wxT("%s: Modulation depths not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > ampModPtr->numFrequencies - 1) {
-		NotifyError("%s: Index value must be in the\nrange 0 - %d (%d).\n",
+		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, ampModPtr->numFrequencies - 1, theIndex);
 		return(FALSE);
 	}
@@ -509,36 +509,36 @@ SetIndividualDepth_Utility_AmpMod(int theIndex, double theModDepth)
 BOOLN
 CheckPars_Utility_AmpMod(void)
 {
-	static const char	*funcName = "CheckPars_Utility_AmpMod";
+	static const WChar	*funcName = wxT("CheckPars_Utility_AmpMod");
 	BOOLN	ok;
 	int		i;
 
 	ok = TRUE;
 	if (ampModPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (ampModPtr->modulationDepths == NULL) {
-		NotifyError("%s: modulationDepths array not set.", funcName);
+		NotifyError(wxT("%s: modulationDepths array not set."), funcName);
 		ok = FALSE;
 	}
 	if (ampModPtr->frequencies == NULL) {
-		NotifyError("%s: frequencies array not set.", funcName);
+		NotifyError(wxT("%s: frequencies array not set."), funcName);
 		ok = FALSE;
 	}
 	if (ampModPtr->phases == NULL) {
-		NotifyError("%s: phases array not set.", funcName);
+		NotifyError(wxT("%s: phases array not set."), funcName);
 		ok = FALSE;
 	}
 	if (!ampModPtr->numFrequenciesFlag) {
-		NotifyError("%s: numFrequencies variable not set.", funcName);
+		NotifyError(wxT("%s: numFrequencies variable not set."), funcName);
 		ok = FALSE;
 	}
 	for (i = 0; i < ampModPtr->numFrequencies; i++)
 		if (ampModPtr->modulationDepths[i] / 100.0 > (1.0 /
 		  ampModPtr->numFrequencies)) {
-			NotifyError("%s: Illegal modulation index, [%d] = %g)", funcName,
-			  i, ampModPtr->modulationDepths[i]);
+			NotifyError(wxT("%s: Illegal modulation index, [%d] = %g)"),
+			  funcName, i, ampModPtr->modulationDepths[i]);
 			ok = FALSE;
 		}
 	return(ok);
@@ -555,23 +555,24 @@ CheckPars_Utility_AmpMod(void)
 BOOLN
 PrintPars_Utility_AmpMod(void)
 {
-	static const char	*funcName = "PrintPars_Utility_AmpMod";
+	static const WChar	*funcName = wxT("PrintPars_Utility_AmpMod");
 	int		i;
 
 	if (!CheckPars_Utility_AmpMod()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Amplitude Modulation Module Parameters:-\n");
-	DPrint("\t%10s\t%10s\t%10s\n", "Mod. Depth",
-	  "Frequencies", "Phases");
-	DPrint("\t%10s\t%10s\t%10s\n", "(%)", "(Hz)",
-	  "(degrees)");
+	DPrint(wxT("Amplitude Modulation Module Parameters:-\n"));
+	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("Mod. Depth"), wxT("Frequencies"),
+	  wxT("Phases"));
+	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("(%)"), wxT("(Hz)"),
+	  wxT("(degrees)"));
 	for (i = 0; i < ampModPtr->numFrequencies; i++)
-		DPrint("\t%10g\t%10g\t%10g\n",
+		DPrint(wxT("\t%10g\t%10g\t%10g\n"),
 		  ampModPtr->modulationDepths[i], ampModPtr->frequencies[i],
 		  ampModPtr->phases[i]);
-	DPrint("\tNo. of frequencies = %d\n",
+	DPrint(wxT("\tNo. of frequencies = %d\n"),
 	  ampModPtr->numFrequencies);
 	return(TRUE);
 
@@ -584,44 +585,46 @@ PrintPars_Utility_AmpMod(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_AmpMod(char *fileName)
+ReadPars_Utility_AmpMod(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_AmpMod";
+	static const WChar	*funcName = wxT("ReadPars_Utility_AmpMod");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		i, numFrequencies;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numFrequencies))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numFrequencies))
 		ok = FALSE;
 	if (!AllocNumFrequencies_Utility_AmpMod(numFrequencies)) {
 		NotifyError(
-		  "%%s: Cannot allocate memory for the 'numFrequencies' arrays.",
+		  wxT("%%s: Cannot allocate memory for the 'numFrequencies' arrays."),
 		  funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numFrequencies; i++)
-		if (!GetPars_ParFile(fp, "%lf %lf %lf", &ampModPtr->modulationDepths[
-		  i], &ampModPtr->frequencies[i], &ampModPtr->phases[i]))
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf"), &ampModPtr->
+		  modulationDepths[i], &ampModPtr->frequencies[i], &ampModPtr->phases[
+		  i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_AmpMod(numFrequencies, ampModPtr->modulationDepths,
 	  ampModPtr->frequencies, ampModPtr->phases)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -638,10 +641,10 @@ ReadPars_Utility_AmpMod(char *fileName)
 BOOLN
 SetParsPointer_Utility_AmpMod(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_AmpMod";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_AmpMod");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	ampModPtr = (AmpModPtr) theModule->parsPtr;
@@ -658,14 +661,15 @@ SetParsPointer_Utility_AmpMod(ModulePtr theModule)
 BOOLN
 InitModule_Utility_AmpMod(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_AmpMod";
+	static const WChar	*funcName = wxT("InitModule_Utility_AmpMod");
 
 	if (!SetParsPointer_Utility_AmpMod(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_AmpMod(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = ampModPtr;
@@ -697,10 +701,10 @@ InitModule_Utility_AmpMod(ModulePtr theModule)
 BOOLN
 CheckData_Utility_AmpMod(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_AmpMod";
+	static const WChar	*funcName = wxT("CheckData_Utility_AmpMod");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -728,7 +732,7 @@ CheckData_Utility_AmpMod(EarObjectPtr data)
 BOOLN
 Process_Utility_AmpMod(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_AmpMod";
+	static const WChar	*funcName = wxT("Process_Utility_AmpMod");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, j;
 	double	sum, time;
@@ -738,13 +742,15 @@ Process_Utility_AmpMod(EarObjectPtr data)
 		if (!CheckPars_Utility_AmpMod())
 			return(FALSE);
 		if (!CheckData_Utility_AmpMod(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Amplitude modulation utility module.");
+		SetProcessName_EarObject(data, wxT("Amplitude modulation utility "
+		  "module."));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

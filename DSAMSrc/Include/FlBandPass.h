@@ -87,7 +87,7 @@ UniParListPtr	GetUniParListPtr_Filter_BandPass(void);
 
 BOOLN	PrintPars_Filter_BandPass(void);
 
-BOOLN	ReadPars_Filter_BandPass(char *fileName);
+BOOLN	ReadPars_Filter_BandPass(WChar *fileName);
 
 void	ResetProcess_Filter_BandPass(EarObjectPtr data);
 

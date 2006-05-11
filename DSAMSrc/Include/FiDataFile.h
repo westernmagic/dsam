@@ -54,9 +54,9 @@
 /*************************** Misc definitions *********************************/
 
 #define DATAFILE_NUM_PARS		9
-#define DATAFILE_MOD_NAME_PREFIX	"DataFile_"
-#define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX "IN"
-#define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX "OUT"
+#define DATAFILE_MOD_NAME_PREFIX	wxT("DataFile_")
+#define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("IN")
+#define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("OUT")
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
 #define	MEMORY_FILE_DIRN		'+'		/*           "                 */
 #define	MAXLINE_LARGE			256		/* For very "wide" ASCII files */
@@ -128,7 +128,7 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	char	name[MAX_FILE_PATH];/* - used by Generate Signal, set by ReadPars.*/
+	WChar	name[MAX_FILE_PATH];/* - used by Generate Signal, set by ReadPars.*/
 	int		wordSize;			/* can be either 1 or 2 byte words. */
 	int		endian;				/* can be either 0 or 1, little- or big-endian*/
 	int		numChannels;		/* used only by Raw binary support at present.*/
@@ -193,7 +193,7 @@ BOOLN	CheckParsRead_DataFile(void);
 
 ChanLen	FileLength_DataFile(FILE *fp);
 
-FileFormatSpecifier		Format_DataFile(char *formatExtension);
+FileFormatSpecifier		Format_DataFile(WChar *formatExtension);
 
 BOOLN	Free_DataFile(void);
 
@@ -210,29 +210,29 @@ BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 
 int		NumberOfColumns_DataFile(FILE *fp);
 
-FILE *	OpenFile_DataFile(char *fileName, char *mode);
+FILE *	OpenFile_DataFile(WChar *fileName, char *mode);
 
 BOOLN	PrintPars_DataFile(void);
 
-int32	ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype);
+int32	ReadFileIdentifier_DataFile(FILE *fp, int32 target, WChar *filetype);
 
-BOOLN	ReadPars_DataFile(char *fileName);
+BOOLN	ReadPars_DataFile(WChar *fileName);
 
 ChanData	ReadSample_DataFile(FILE *fp);
 
-BOOLN	ReadSignal_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	ReadSignal_DataFile(WChar *fileName, EarObjectPtr data);
 
 BOOLN	ReadSignal_DataFile_Named(EarObjectPtr data);
 
-BOOLN	ReadSignalMain_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data);
 
 BOOLN	SetDefaultSampleRate_DataFile(double theDefaultSampleRate);
 
 BOOLN	SetDuration_DataFile(double theDuration);
 
-BOOLN	SetEndian_DataFile(char *endian);
+BOOLN	SetEndian_DataFile(WChar *endian);
 
-BOOLN	SetFileName_DataFile(char *fileName);
+BOOLN	SetFileName_DataFile(WChar *fileName);
 
 BOOLN	SetGain_DataFile(double theGain);
 
@@ -246,8 +246,8 @@ BOOLN	SetNormalisation_DataFile(double normalisation);
 
 BOOLN	SetParsPointer_DataFile(ModulePtr theModule);
 
-BOOLN	SetPars_DataFile(char *theFileName, int theWordSize,
-		  char *theEndian, int theNumChannels, double theDefaultSampleRate,
+BOOLN	SetPars_DataFile(WChar *theFileName, int theWordSize,
+		  WChar *theEndian, int theNumChannels, double theDefaultSampleRate,
 		  double theDuration, double theTimeOffset, double theGain,
 		  double normalisation);
 
@@ -259,11 +259,11 @@ BOOLN	SetUniParList_DataFile(void);
 
 BOOLN	SetWordSize_DataFile(int wordSize);
 
-BOOLN	WriteOutSignal_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	WriteOutSignal_DataFile(WChar *fileName, EarObjectPtr data);
 
 BOOLN	WriteOutSignal_DataFile_Named(EarObjectPtr data);
 
-BOOLN	WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data);
+BOOLN	WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data);
 
 BOOLN	WriteSignal_DataFile(FILE *fp, SignalDataPtr signal);
 

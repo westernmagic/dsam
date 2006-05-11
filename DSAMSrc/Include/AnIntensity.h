@@ -75,7 +75,7 @@ BOOLN	Init_Analysis_Intensity(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Analysis_Intensity(void);
 
-BOOLN	ReadPars_Analysis_Intensity(char *fileName);
+BOOLN	ReadPars_Analysis_Intensity(WChar *fileName);
 
 BOOLN	InitModule_Analysis_Intensity(ModulePtr theModule);
 

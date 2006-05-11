@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnIntensity.h"
 
 /******************************************************************************/
@@ -49,8 +50,6 @@ IntensityPtr	intensityPtr = NULL;
 BOOLN
 Free_Analysis_Intensity(void)
 {
-	/* static const char	*funcName = "Free_Analysis_Intensity";  */
-
 	if (intensityPtr == NULL)
 		return(FALSE);
 	if (intensityPtr->parList)
@@ -78,18 +77,18 @@ Free_Analysis_Intensity(void)
 BOOLN
 Init_Analysis_Intensity(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_Intensity";
+	static const WChar	*funcName = wxT("Init_Analysis_Intensity");
 
 	if (parSpec == GLOBAL) {
 		if (intensityPtr != NULL)
 			Free_Analysis_Intensity();
 		if ((intensityPtr = (IntensityPtr) malloc(sizeof(Intensity))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (intensityPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -100,7 +99,7 @@ Init_Analysis_Intensity(ParameterSpecifier parSpec)
 	intensityPtr->extent = -1.0;
 
 	if (!SetUniParList_Analysis_Intensity()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_Intensity();
 		return(FALSE);
 	}
@@ -119,23 +118,23 @@ Init_Analysis_Intensity(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_Intensity(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_Intensity";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_Intensity");
 	UniParPtr	pars;
 
 	if ((intensityPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_INTENSITY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = intensityPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_INTENSITY_TIMEOFFSET], "OFFSET",
-	  "Time from which to start calculation (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_INTENSITY_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time from which to start calculation (s)."),
 	  UNIPAR_REAL,
 	  &intensityPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_Intensity);
-	SetPar_UniParMgr(&pars[ANALYSIS_INTENSITY_EXTENT], "EXTENT",
-	  "Time over which calculation is performed: -ve value assumes end of "
-	  "signal (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_INTENSITY_EXTENT], wxT("EXTENT"),
+	  wxT("Time over which calculation is performed: -ve value assumes end of ")
+	  wxT("signal (s)."),
 	  UNIPAR_REAL,
 	  &intensityPtr->extent, NULL,
 	  (void * (*)) SetExtent_Analysis_Intensity);
@@ -153,15 +152,15 @@ SetUniParList_Analysis_Intensity(void)
 UniParListPtr
 GetUniParListPtr_Analysis_Intensity(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_Intensity";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_Intensity");
 
 	if (intensityPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (intensityPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(intensityPtr->parList);
@@ -178,14 +177,14 @@ GetUniParListPtr_Analysis_Intensity(void)
 BOOLN
 SetPars_Analysis_Intensity(double timeOffset)
 {
-	static const char	*funcName = "SetPars_Analysis_Intensity";
+	static const WChar	*funcName = wxT("SetPars_Analysis_Intensity");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!SetTimeOffset_Analysis_Intensity(timeOffset))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -201,14 +200,14 @@ SetPars_Analysis_Intensity(double timeOffset)
 BOOLN
 SetTimeOffset_Analysis_Intensity(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Analysis_Intensity";
+	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_Intensity");
 
 	if (intensityPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal offset (%g ms).", funcName, MSEC(
+		NotifyError(wxT("%s: Illegal offset (%g ms)."), funcName, MSEC(
 		  theTimeOffset));
 		return(FALSE);
 	}
@@ -229,10 +228,10 @@ SetTimeOffset_Analysis_Intensity(double theTimeOffset)
 BOOLN
 SetExtent_Analysis_Intensity(double theExtent)
 {
-	static const char	*funcName = "SetExtent_Analysis_Intensity";
+	static const WChar	*funcName = wxT("SetExtent_Analysis_Intensity");
 
 	if (intensityPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -255,20 +254,20 @@ SetExtent_Analysis_Intensity(double theExtent)
 BOOLN
 CheckPars_Analysis_Intensity(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_Intensity";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_Intensity");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (intensityPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!intensityPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!intensityPtr->extentFlag) {
-		NotifyError("%s: extent variable not set.", funcName);
+		NotifyError(wxT("%s: extent variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -285,20 +284,21 @@ CheckPars_Analysis_Intensity(void)
 BOOLN
 PrintPars_Analysis_Intensity(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_Intensity";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_Intensity");
 
 	if (!CheckPars_Analysis_Intensity()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Intensity Analysis Module Parameters:-\n");
-	DPrint("\tTime offset = %g ms,", MSEC(intensityPtr->timeOffset));
-	DPrint("\tTime extent = ");
+	DPrint(wxT("Intensity Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tTime offset = %g ms,"), MSEC(intensityPtr->timeOffset));
+	DPrint(wxT("\tTime extent = "));
 	if (intensityPtr->extent < 0.0)
-		DPrint("<end of signal>");
+		DPrint(wxT("<end of signal>"));
 	else
-		DPrint("%g ms\n", MSEC(intensityPtr->extent));
-	DPrint(".\n");
+		DPrint(wxT("%g ms\n"), MSEC(intensityPtr->extent));
+	DPrint(wxT(".\n"));
 	return(TRUE);
 
 }
@@ -310,33 +310,34 @@ PrintPars_Analysis_Intensity(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_Intensity(char *fileName)
+ReadPars_Analysis_Intensity(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_Intensity";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_Intensity");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	timeOffset;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_Intensity(timeOffset)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -353,10 +354,10 @@ ReadPars_Analysis_Intensity(char *fileName)
 BOOLN
 SetParsPointer_Analysis_Intensity(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_Intensity";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_Intensity");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	intensityPtr = (IntensityPtr) theModule->parsPtr;
@@ -373,14 +374,15 @@ SetParsPointer_Analysis_Intensity(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_Intensity(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_Intensity";
+	static const WChar	*funcName = wxT("InitModule_Analysis_Intensity");
 
 	if (!SetParsPointer_Analysis_Intensity(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_Intensity(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = intensityPtr;
@@ -412,32 +414,33 @@ InitModule_Analysis_Intensity(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_Intensity(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_Intensity";
+	static const WChar	*funcName = wxT("CheckData_Analysis_Intensity");
 	double	duration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	duration =  _GetDuration_SignalData(data->inSignal[0]);
 	if (intensityPtr->timeOffset >= duration) {
-		NotifyError("%s: Time offset (%g ms) is longer than signal duration "
-		  "(%g ms).", funcName, MSEC(intensityPtr->timeOffset), MSEC(duration));
+		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
+		  "duration (%g ms)."), funcName, MSEC(intensityPtr->timeOffset), MSEC(
+		  duration));
 		return(FALSE);
 	}
 	if (intensityPtr->extent > 0.0) {
 		if ((intensityPtr->timeOffset + intensityPtr->extent) > duration) {
-			NotifyError("%s: Time offset (%g ms) + extent (%g ms) is longer "
-			  "than signal duration (%g).", funcName,  MSEC(
+			NotifyError(wxT("%s: Time offset (%g ms) + extent (%g ms) is longer "
+			  "than signal duration (%g)."), funcName,  MSEC(
 			  intensityPtr->timeOffset), MSEC(intensityPtr->extent), MSEC(
 			  duration));
 			return(FALSE);
 		}
 		if (intensityPtr->extent < data->inSignal[0]->dt) {
-			NotifyError("%s: Time extent is too small (%g ms).  It should be "
-			  "greater than the sampling interval (%g ms).", funcName, MSEC(
+			NotifyError(wxT("%s: Time extent is too small (%g ms).  It should "
+			  "be greater than the sampling interval (%g ms)."), funcName, MSEC(
 			  intensityPtr->extent), MSEC(data->inSignal[0]->dt));
 			return(FALSE);
 		}
@@ -464,7 +467,7 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 BOOLN
 Calc_Analysis_Intensity(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_Intensity";
+	static const WChar	*funcName = wxT("Calc_Analysis_Intensity");
 	register	ChanData	 *inPtr, sum;
 	int		chan;
 	ChanLen	i;
@@ -474,13 +477,14 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 		if (!CheckPars_Analysis_Intensity())
 			return(FALSE);
 		if (!CheckData_Analysis_Intensity(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Intensity Analysis Module");
+		SetProcessName_EarObject(data, wxT("Intensity Analysis Module"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
 		  1.0)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		p->timeOffsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +

@@ -51,14 +51,15 @@ ParFilePtr		parFile = NULL;
 BOOLN
 Init_ParFile(void)
 {
-	static const char *funcName = "Init_ParFile";
+	static const WChar *funcName = wxT("Init_ParFile");
 	
 	if (parFile != NULL) {
-		NotifyError("%s: Module already initialised!", funcName);
+		NotifyError(wxT("%s: Module already initialised!"), funcName);
 		return(FALSE);
 	}
 	if ((parFile = (ParFile *) malloc(sizeof(ParFile))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for parameters.", funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for parameters."),
+		  funcName);
 		return(FALSE);
 	}
 	parFile->diagnosticsFlag = FALSE;
@@ -80,11 +81,11 @@ Init_ParFile(void)
 BOOLN
 CheckInit_ParFile(void)
 {
-	static const char *funcName = "CheckInit_ParFile";
+	static const WChar *funcName = wxT("CheckInit_ParFile");
 
 	if (parFile == NULL) {
-		NotifyError("%s: General parameter file routines module not "
-		  "initialised.", funcName);
+		NotifyError(wxT("%s: General parameter file routines module not "
+		  "initialised."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -100,10 +101,10 @@ CheckInit_ParFile(void)
 BOOLN
 Free_ParFile(void)
 {
-	static const char *funcName = "";
+	static const WChar *funcName = wxT("Free_ParFile");
 
 	if (!CheckInit_ParFile()) {
-		NotifyError("%s: Module not initialised!", funcName);
+		NotifyError(wxT("%s: Module not initialised!"), funcName);
 		return(FALSE);
 	}
 	free(parFile);
@@ -120,8 +121,8 @@ Free_ParFile(void)
  * It returns a pointer to the string store if successful, and a NULL if not.
  */
 
-char *
-GetLine_ParFile(char *line, int maxChars, FILE *fp)
+WChar *
+GetLine_ParFile(WChar *line, int maxChars, FILE *fp)
 {
 	int		i, c;
 	
@@ -148,13 +149,13 @@ GetLine_ParFile(char *line, int maxChars, FILE *fp)
  */
 
 BOOLN
-CommentOrBlankLine_ParFile(char *line)
+CommentOrBlankLine_ParFile(WChar *line)
 {
-	char	*p;
+	WChar	*p;
 	
 	for (p = line; (*p != '\0') && isspace(*p); p++)
 		;
-	if ((strlen(p) == 0) || (*p == '#')) {
+	if ((DSAM_strlen(p) == 0) || (*p == '#')) {
 		parFile->parLineCount++;
 		return(TRUE);
 	}
@@ -173,10 +174,10 @@ CommentOrBlankLine_ParFile(char *line)
  */
 
 int
-IdentifyFormat_ParFile(char *fmt, char *extraFmt)
+IdentifyFormat_ParFile(WChar *fmt, WChar *extraFmt)
 {
-	static const char *funcName = "IdentifyFormat_ParFile";
-	char	*p;
+	static const WChar *funcName = wxT("IdentifyFormat_ParFile");
+	WChar	*p;
 
 	p = fmt;
 	*extraFmt = '\0';
@@ -191,7 +192,8 @@ IdentifyFormat_ParFile(char *fmt, char *extraFmt)
 			case 'i':	/* Identifier. */
 				return((int) *p);
 			default:
-				NotifyError("%s: Illegal format string, '%s'.", funcName, fmt);
+				NotifyError(wxT("%s: Illegal format string, '%s'."), funcName,
+				  fmt);
 				return('\0');
 		}
 	} else
@@ -222,9 +224,9 @@ SetEmptyLineMessage_ParFile(BOOLN status)
  */
 
 BOOLN
-ExtractQuotedString_ParFile(char *string, char *source)
+ExtractQuotedString_ParFile(WChar *string, WChar *source)
 {
-	char	*p, *s = string;
+	WChar	*p, *s = string;
 
 	for (p = source; *p && isspace(*p); p++)
 		;
@@ -249,11 +251,14 @@ ExtractQuotedString_ParFile(char *string, char *source)
  */
  
 BOOLN
-GetPars_ParFile(FILE *fp, char *fmt, ...)
+GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 {
-	static const char *funcName = "GetPars_ParFile";
-	static char	line[LONG_STRING], fmtScanLine[MAXLINE], extraFmt[MAXLINE];
-	char	c, *formatToken, *restOfLine;
+	static const WChar *funcName = wxT("GetPars_ParFile");
+	static WChar	line[LONG_STRING], fmtScanLine[MAXLINE], extraFmt[MAXLINE];
+	WChar	c, *formatToken, *restOfLine;
+#	if DSAM_USE_UNICODE
+	WChar	*state;
+#	endif
 	int		formatType;
 	va_list	args;
 	
@@ -263,8 +268,8 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 		if (GetLine_ParFile(line, LONG_STRING, fp) == NULL) {
 			c = (parFile->parLineCount > 1)? 's': ' ';
 			if (parFile->emptyLineMessageFlag)
-				NotifyError("%s: Premature end of parameter file!  Only %d "
-				  "line%c read.", funcName, parFile->parLineCount, c);
+				NotifyError(wxT("%s: Premature end of parameter file!  Only %d "
+				  "line%c read."), funcName, parFile->parLineCount, c);
 			return(FALSE);
 		}
 	} while(CommentOrBlankLine_ParFile(line));
@@ -274,42 +279,52 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 	va_start(args, fmt);
 
 	/* This next line is needed because strtok bashes its string argument. */
-	snprintf(fmtScanLine, MAXLINE, "%s", fmt);
-	formatToken = strtok(fmtScanLine, FORMAT_DELIMITERS);
+	DSAM_snprintf(fmtScanLine, MAXLINE, wxT("%s"), fmt);
+#	if DSAM_USE_UNICODE
+	formatToken = DSAM_strtok(fmtScanLine, FORMAT_DELIMITERS, &state);
+#	else
+	formatToken = DSAM_strtok(fmtScanLine, FORMAT_DELIMITERS);
+#	endif
 	while ((formatToken != NULL) && (restOfLine != NULL) &&
 	  ((formatType = IdentifyFormat_ParFile(formatToken, extraFmt)) != EOF)) {
 		switch (formatType) {
 			case 'u':
-				sscanf(restOfLine, formatToken, va_arg(args, unsigned long *));
+				DSAM_sscanf(restOfLine, formatToken, va_arg(args, unsigned
+				  long *));
 				break;
 			case 'd':
-				sscanf(restOfLine, formatToken, va_arg(args, int *));
+				DSAM_sscanf(restOfLine, formatToken, va_arg(args, int *));
 				break;
 			case 'f':
-				sscanf(restOfLine, formatToken, va_arg(args, double *));
+				DSAM_sscanf(restOfLine, formatToken, va_arg(args, double *));
 				break;
 			case 's':
 				if (extraFmt[0] == 'l')
-					strcpy(va_arg(args, char *), restOfLine);
+					DSAM_strcpy(va_arg(args, WChar *), restOfLine);
 				else {
-					char	*string = va_arg(args, char *);
+					WChar	*string = va_arg(args, WChar *);
 					if (!ExtractQuotedString_ParFile(string, restOfLine))
-						sscanf(restOfLine, formatToken, string);
+						DSAM_sscanf(restOfLine, formatToken, string);
 				}
 				break;
 			default:
-				NotifyError("%s: Could not identify format string.", funcName);
+				NotifyError(wxT("%s: Could not identify format string."),
+				  funcName);
 				return(FALSE);
 		}
-		formatToken = strtok(NULL, FORMAT_DELIMITERS);
+#		if DSAM_USE_UNICODE
+		formatToken = DSAM_strtok(NULL, FORMAT_DELIMITERS, &state);
+#		else
+		formatToken = DSAM_strtok(NULL, FORMAT_DELIMITERS);
+#		endif
 		/* This next section gets rid of the white space */
-		for (restOfLine = strpbrk(restOfLine, FORMAT_DELIMITERS);
+		for (restOfLine = DSAM_strpbrk(restOfLine, FORMAT_DELIMITERS);
 		  (restOfLine != NULL) && isspace(*restOfLine); restOfLine++)
 			;
 	}
 	va_end(args);
 	if (parFile->diagnosticsFlag)
-		DPrint("GetPars_ParFile: Read line: '%s'\n", line);
+		DPrint(wxT("GetPars_ParFile: Read line: '%s'\n"), line);
 	return(TRUE);
 
 }
@@ -323,7 +338,7 @@ GetPars_ParFile(FILE *fp, char *fmt, ...)
 int
 GetLineCount_ParFile(void)
 {
-	/* static const char *funcName = "GetLineCount_ParFile"; */
+	/* static const WChar *funcName = wxT("GetLineCount_ParFile"); */
 
 	if (!CheckInit_ParFile())
 		exit(1);

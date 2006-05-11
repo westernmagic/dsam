@@ -115,7 +115,7 @@ BOOLN	Init_ANSpikeGen_Carney(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_ANSpikeGen_Carney(void);
 
-BOOLN	ReadPars_ANSpikeGen_Carney(char *fileName);
+BOOLN	ReadPars_ANSpikeGen_Carney(WChar *fileName);
 
 void	ResetProcess_ANSpikeGen_Carney(EarObjectPtr data);
 
@@ -129,7 +129,7 @@ BOOLN	SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0);
 
 BOOLN	SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1);
 
-BOOLN	SetInputMode_ANSpikeGen_Carney(char * theInputMode);
+BOOLN	SetInputMode_ANSpikeGen_Carney(WChar * theInputMode);
 
 BOOLN	SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold);
 

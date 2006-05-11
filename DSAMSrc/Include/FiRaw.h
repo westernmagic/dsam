@@ -41,13 +41,13 @@
  */
 __BEGIN_DECLS
 
-FILE *	InitialFileRead_Raw(char *fileName);
+FILE *	InitialFileRead_Raw(WChar *fileName);
 
-double	GetDuration_Raw(char *fileName);
+double	GetDuration_Raw(WChar *fileName);
 
-BOOLN	ReadFile_Raw(char *fileName, EarObjectPtr data);
+BOOLN	ReadFile_Raw(WChar *fileName, EarObjectPtr data);
 
-BOOLN	WriteFile_Raw(char *fileName, EarObjectPtr data);
+BOOLN	WriteFile_Raw(WChar *fileName, EarObjectPtr data);
 
 __END_DECLS
 

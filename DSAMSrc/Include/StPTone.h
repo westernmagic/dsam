@@ -72,7 +72,7 @@ BOOLN	Init_PureTone(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone(void);
 
-BOOLN	ReadPars_PureTone(char *fileName);
+BOOLN	ReadPars_PureTone(WChar *fileName);
 
 BOOLN	SetDuration_PureTone(double theDuration);
 

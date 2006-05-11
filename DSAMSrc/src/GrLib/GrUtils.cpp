@@ -85,7 +85,7 @@ Box::Reset(double theLeft, double theRight, double theTop, double theBottom)
  */
 
 uInt
-Hash_Utils(const char *s)
+Hash_Utils(const wxChar *s)
 {
 	uInt	hashValue;
 	
@@ -104,16 +104,18 @@ Hash_Utils(const char *s)
  */
 
 wxString
-FileSelector_Utils(char *message, char *defaultPath, char *defaultFileName,
-  char *defaultExtension, char *wildcard, int flags, wxWindow *parent)
+FileSelector_Utils(wxChar *message, wxChar *defaultPath,
+  wxChar *defaultFileName, wxChar *defaultExtension, wxChar *wildcard,
+  int flags, wxWindow *parent)
 {
-	char *path, *fileName;
+	wxChar *path, *fileName;
 
 	path = ((defaultPath == NULL) || (defaultPath[0] == '\0'))? NULL:
 	  defaultPath;
 	fileName = ((defaultFileName == NULL) || (defaultFileName[0] == '\0'))?
 	  NULL: defaultFileName;
-	return(wxFileSelector(message, path, fileName, defaultExtension, wildcard,
-	  flags, parent));
+	return(wxFileSelector( message,  path, 
+	  fileName,  defaultExtension,  wildcard, flags,
+	  parent));
 
 }

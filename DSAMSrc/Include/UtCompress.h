@@ -91,17 +91,17 @@ BOOLN	PrintPars_Utility_Compression(void);
 
 BOOLN	Process_Utility_Compression(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Compression(char *fileName);
+BOOLN	ReadPars_Utility_Compression(WChar *fileName);
 
 BOOLN	SetMinResponse_Utility_Compression(double theMinResponse);
 
-BOOLN	SetMode_Utility_Compression(char *theMode);
+BOOLN	SetMode_Utility_Compression(WChar *theMode);
 
 BOOLN	InitModule_Utility_Compression(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Compression(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Compression(char *mode, double signalMultiplier,
+BOOLN	SetPars_Utility_Compression(WChar *mode, double signalMultiplier,
 		  double powerExponent, double minResponse);
 
 BOOLN	SetPowerExponent_Utility_Compression(double thePowerExponent);

@@ -97,33 +97,33 @@ void
 SDIEvtHandler::ResetLabel(void)
 {
 	label.Empty();
-	label.Printf("{ %s }\n", pc->label);
+	label.Printf(wxT("{ %s }\n"), pc->label);
 	label.MakeLower();
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
-		strCount.Printf("%s\n[ %d ]", GetProcessName_Utility_Datum(pc),
+		strCount.Printf(wxT("%s\n[ %d ]"), GetProcessName_Utility_Datum(pc),
 		  pc->u.loop.count);
 		label += strCount;
 		break; }
 	case RESET: {
 		wxString str;
-		str.Printf("%s\n[ %s ]", GetProcessName_Utility_Datum(pc), pc->u.ref.
-		  string);
+		str.Printf(wxT("%s\n[ %s ]"), GetProcessName_Utility_Datum(pc), pc->u.
+		  ref.string);
 		label += str;
 		break; }
 	case PROCESS: {
 		if (pc->data->module->specifier != DISPLAY_MODULE) {
-			label += GetProcessName_Utility_Datum(pc);
+			label += (wxChar *) GetProcessName_Utility_Datum(pc);
 			break;
 		}
 		wxString str;
-		str.Printf("%s\n\"%s\"", GetProcessName_Utility_Datum(pc),
-		  GetUniParPtr_ModuleMgr(pc->data, "win_title")->valuePtr.s);
+		str.Printf(wxT("%s\n\"%s\""), GetProcessName_Utility_Datum(pc),
+		  GetUniParPtr_ModuleMgr(pc->data, wxT("win_title"))->valuePtr.s);
 		label += str;
 		break; }
 	default:
-		label += GetProcessName_Utility_Datum(pc);
+		label += (wxChar *) GetProcessName_Utility_Datum(pc);
 	}
 	
 }
@@ -135,19 +135,19 @@ SDIEvtHandler::ResetLabel(void)
 bool
 SDIEvtHandler::InitInstruction(void)
 {
-	static const char	*funcName = "SDIEvtHandler::InitInstruction";
+	static const wxChar	*funcName = wxT("SDIEvtHandler::InitInstruction");
 
 	if (pc) {
-		NotifyError("%s: datum already initialised!", funcName);
+		NotifyError(wxT("%s: datum already initialised!"), funcName);
 		return(false);
 	}
 	switch (processType) {
 	case CONTROL_MODULE_CLASS: {
 		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(wxGetApp().GetGrMainApp(
-		  )->GetSymList(), (char *) label.c_str());
+		  )->GetSymList(), (wxChar *) label.c_str());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
-			NotifyError("%s: Could not create '%s' control intruction for "
-			  "process '%s'.", funcName, (char *) label.GetData());
+			NotifyError(wxT("%s: Could not create '%s' control intruction for "
+			  "process '%s'."), funcName, (wxChar *) label.c_str());
 			return(false);
 		}
 		break; }
@@ -160,13 +160,13 @@ SDIEvtHandler::InitInstruction(void)
 	case USER_MODULE_CLASS:
 	case UTILITY_MODULE_CLASS:
 		if ((pc = InitInst_Utility_Datum(PROCESS)) == NULL) {
-			NotifyError("%s: Could not create new intruction for process '%s'.",
-			  funcName, (char *) label.GetData());
+			NotifyError(wxT("%s: Could not create new intruction for process '%s'."),
+			  funcName, (wxChar *) label.c_str());
 			return(false);
 		}
 		break;
 	default:
-		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
+		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName, processType);
 		return(false);
 	}
 	EarObjectPtr simProcess = ((SDIDiagram *) GetShape()->GetCanvas()->
@@ -174,13 +174,13 @@ SDIEvtHandler::InitInstruction(void)
 	DynaBListPtr labelBList = (!simProcess)? NULL: ((SimScriptPtr) simProcess->
 	  module->parsPtr)->labelBList;
 	if (!SetDefaultLabel_Utility_Datum(pc, labelBList)) {
-		NotifyError("%s: Could not create set the default process label.",
+		NotifyError(wxT("%s: Could not create set the default process label."),
 		  funcName);
 		return(false);
 	}
 	if (simProcess && !Insert_Utility_DynaBList(((SimScriptPtr) simProcess->
 	  module->parsPtr)->labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
-		NotifyError("%s: Could not insert label '%s' into the label list.",
+		NotifyError(wxT("%s: Could not insert label '%s' into the label list."),
 		  funcName, pc->label);
 		return(false);
 	}
@@ -196,7 +196,7 @@ SDIEvtHandler::InitInstruction(void)
 bool
 SDIEvtHandler::EditInstruction(void)
 {
-	static const char	*funcName = "SDIEvtHandler::EditInstruction";
+	static const wxChar	*funcName = wxT("SDIEvtHandler::EditInstruction");
 
 	if (label.IsEmpty())
 		return(true);
@@ -225,8 +225,8 @@ SDIEvtHandler::EditInstruction(void)
 	case UTILITY_MODULE_CLASS:
 		if (*pc->u.proc.moduleName != '\0')
 			free(pc->u.proc.moduleName);
-		pc->u.proc.moduleName = InitString_Utility_String((char *) label.
-		  GetData());
+		pc->u.proc.moduleName = InitString_Utility_String((wxChar *) label.
+		  c_str());
 		if (!pc->data)
 			InitProcessInst_Utility_Datum(pc);
 		else {
@@ -237,7 +237,7 @@ SDIEvtHandler::EditInstruction(void)
 		pc->data->clientData = pc->clientData;
 		break;
 	default:
-		NotifyError("%s: Unknown process type (%d).\n", funcName, processType);
+		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName, processType);
 		return(false);
 	}
 	return(true);
@@ -324,17 +324,17 @@ SDIEvtHandler::ProcessProperties(double x, double y)
 				break;
 			switch (parList->mode) {
 			case UNIPAR_SET_SIMSPEC: {
-				printf("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
-				  "window.\n");
+				DSAM_printf(wxT("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
+				  "window.\n"));
 				break; }
 			default: {
 				int		winX, winY;
 				SDICanvas	*canvas = (SDICanvas *) GetShape()->GetCanvas();
 				canvas->parent->GetPosition(&winX, &winY);
 
-				title = (pc->data->module->specifier == DISPLAY_MODULE)?
-				  parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.s:
-				  NameAndLabel_Utility_Datum(pc);
+				title = (wxChar *) ((pc->data->module->specifier ==
+				  DISPLAY_MODULE)? parList->pars[DISPLAY_WINDOW_TITLE].valuePtr.
+				  s: NameAndLabel_Utility_Datum(pc));
 				dialog = new ModuleParDialog(canvas->parent, title, pc,
 				  parList, this, (int) (winX + x), (int) (winY + y), 500,
 				  500, wxDEFAULT_DIALOG_STYLE);
@@ -440,18 +440,18 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 		SetSelectedShape(dc);
 		if (!pc)
 			return;
-		wxMenu menu("Edit Process");
+		wxMenu menu(wxT("Edit Process"));
 		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, (pc->data->module->onFlag)?
-		  "Disa&ble": "Ena&ble", "Enable/disable process");
-		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, "&Change process",
-		  "Change process");
+		  wxT("Disa&ble"): wxT("Ena&ble"), wxT("Enable/disable process"));
+		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, wxT("&Change process"),
+		  wxT("Change process"));
 		menu.AppendSeparator();
-		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, "&Read par. file",
-		  "Read parameter file.");
-		menu.Append(SDIFRAME_EDIT_MENU_WRITE_PAR_FILE, "&Write par. file",
-		  "Write parameter file.");
+		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, wxT("&Read par. file"),
+		  wxT("Read parameter file."));
+		menu.Append(SDIFRAME_EDIT_MENU_WRITE_PAR_FILE, wxT("&Write par. file"),
+		  wxT("Write parameter file."));
 		menu.AppendSeparator();
-		menu.Append(SDIFRAME_EDIT_MENU_PROPERTIES, "&Properties...");
+		menu.Append(SDIFRAME_EDIT_MENU_PROPERTIES, wxT("&Properties..."));
 
 		canvas->PopupMenu(&menu, (int) x, (int) y);
 		
@@ -541,14 +541,15 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 			if (pc->u.loop.stopPC)	/* Existing repeat connection */
 				break;
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("'repeat' connection", SDIFRAME_ADD_REPEAT_LINE,
-			  (SDIDocument *) canvas->view->GetDocument(), CLASSINFO(
-			  wxLineShape), -1, 0.0, 0.0, FALSE, NULL, GetShape(), otherShape));
+			  new SDICommand(wxT("'repeat' connection"),
+			  SDIFRAME_ADD_REPEAT_LINE, (SDIDocument *) canvas->view->
+			  GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0, FALSE, NULL,
+			  GetShape(), otherShape));
 			return;
 		case RESET:
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Set 'reset'", SDIFRAME_SET_RESET, (SDIDocument *)
-			  canvas->view->GetDocument(), NULL,
+			  new SDICommand(wxT("Set 'reset'"), SDIFRAME_SET_RESET,
+			  (SDIDocument *) canvas->view->GetDocument(), NULL,
 			  -1, 0.0, 0.0, FALSE, NULL, GetShape(), otherShape));
 			return;
 		default:
@@ -557,8 +558,8 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 		
 	}
 	canvas->view->GetDocument()->GetCommandProcessor()->Submit(new SDICommand(
-	  "process connection", SDIFRAME_ADD_LINE, (SDIDocument *) canvas->view->
-	  GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0, FALSE, NULL,
+	  wxT("process connection"), SDIFRAME_ADD_LINE, (SDIDocument *) canvas->
+	  view->GetDocument(), CLASSINFO(wxLineShape), -1, 0.0, 0.0, FALSE, NULL,
 	  GetShape(), otherShape));
 
 }
@@ -573,7 +574,7 @@ SDIEvtHandler::OnEndSize(double x, double y)
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
-	GetShape()->FormatText(dc, (char*) (const char*) label);
+	GetShape()->FormatText(dc, label);
 
 }
 

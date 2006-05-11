@@ -23,7 +23,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define FORMAT_DELIMITERS		" ,\t"		/* Characters to separate
+#define FORMAT_DELIMITERS		wxT(" ,\t")		/* Characters to separate
 											 * formatting commands. */
 											 
 /******************************************************************************/
@@ -60,19 +60,19 @@ __BEGIN_DECLS
 
 BOOLN	CheckInit_ParFile(void);
 
-BOOLN	CommentOrBlankLine_ParFile(char *line);
+BOOLN	CommentOrBlankLine_ParFile(WChar *line);
 
-BOOLN	ExtractQuotedString_ParFile(char *string, char *source);
+BOOLN	ExtractQuotedString_ParFile(WChar *string, WChar *source);
 
 BOOLN	Free_ParFile(void);
 
-char	*GetLine_ParFile(char *line, int maxChars, FILE *fp);
+WChar	*GetLine_ParFile(WChar *line, int maxChars, FILE *fp);
 
 int		GetLineCount_ParFile(void);
 
-BOOLN	GetPars_ParFile(FILE *fp, char *fmt, ...);
+BOOLN	GetPars_ParFile(FILE *fp, WChar *fmt, ...);
 
-int		IdentifyFormat_ParFile(char *fmt, char *extraFmt);
+int		IdentifyFormat_ParFile(WChar *fmt, WChar *extraFmt);
 
 BOOLN	Init_ParFile(void);
 

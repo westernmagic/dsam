@@ -93,19 +93,19 @@ BOOLN	PrintPars_Utility_BinSignal(void);
 
 BOOLN	Process_Utility_BinSignal(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_BinSignal(char *fileName);
+BOOLN	ReadPars_Utility_BinSignal(WChar *fileName);
 
 void	ResetProcess_Utility_BinSignal(EarObjectPtr data);
 
 BOOLN	SetBinWidth_Utility_BinSignal(double theBinWidth);
 
-BOOLN	SetMode_Utility_BinSignal(char * theMode);
+BOOLN	SetMode_Utility_BinSignal(WChar * theMode);
 
 BOOLN	InitModule_Utility_BinSignal(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_BinSignal(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_BinSignal(char * mode, double binWidth);
+BOOLN	SetPars_Utility_BinSignal(WChar * mode, double binWidth);
 
 BOOLN	SetUniParList_Utility_BinSignal(void);
 

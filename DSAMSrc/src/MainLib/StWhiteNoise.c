@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRandom.h"
 #include "StWhiteNoise.h"
 
@@ -50,19 +51,19 @@ WhiteNoisePtr	whiteNoisePtr = NULL;
 BOOLN
 Init_WhiteNoise(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_WhiteNoise";
+	static const WChar *funcName = wxT("Init_WhiteNoise");
 
 	if (parSpec == GLOBAL) {
 		if (whiteNoisePtr != NULL)
 			Free_WhiteNoise();
 		if ((whiteNoisePtr = (WhiteNoisePtr) malloc(sizeof(WhiteNoise))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (whiteNoisePtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -83,7 +84,7 @@ Init_WhiteNoise(ParameterSpecifier parSpec)
 	whiteNoisePtr->ranSeed = 0;
 
 	if (!SetUniParList_WhiteNoise()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_WhiteNoise();
 		return(FALSE);
 	}
@@ -126,48 +127,48 @@ Free_WhiteNoise(void)
 BOOLN
 SetUniParList_WhiteNoise(void)
 {
-	static const char *funcName = "SetUniParList_WhiteNoise";
+	static const WChar *funcName = wxT("SetUniParList_WhiteNoise");
 	UniParPtr	pars;
 
 	if ((whiteNoisePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  WHITENOISE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = whiteNoisePtr->parList->pars;
-	SetPar_UniParMgr(&pars[WHITENOISE_NUMCHANNELS], "NUM_CHANNELS",
-	  "Number of Sound Channels (Binaural = 2; Monaural = 1).",
+	SetPar_UniParMgr(&pars[WHITENOISE_NUMCHANNELS], wxT("NUM_CHANNELS"),
+	  wxT("Number of Sound Channels (Binaural = 2; Monaural = 1)."),
 	  UNIPAR_INT,
 	  &whiteNoisePtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_CORRELATIONDEGREE], "DEGREE_CORR",
-	  "Degree of Binaural noise correlation (Correlated = 1; "
-	  "Uncorrelated = -1).",
+	SetPar_UniParMgr(&pars[WHITENOISE_CORRELATIONDEGREE], wxT("DEGREE_CORR"),
+	  wxT("Degree of Binaural noise correlation (Correlated = 1; ")
+	  wxT("Uncorrelated = -1)."),
 	  UNIPAR_INT,
 	  &whiteNoisePtr->correlationDegree, NULL,
 	  (void * (*)) SetCorrelationDegree_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_RANDOMIZATIONINDEX], "RAN_INDEX",
-	  "Noise Randomization Index (greater than 12).",
+	SetPar_UniParMgr(&pars[WHITENOISE_RANDOMIZATIONINDEX], wxT("RAN_INDEX"),
+	  wxT("Noise Randomization Index (greater than 12)."),
 	  UNIPAR_INT,
 	  &whiteNoisePtr->randomizationIndex, NULL,
 	  (void * (*)) SetRandomizationIndex_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_RANSEED], "RAN_SEED",
-	  "Random Number Seed.",
+	SetPar_UniParMgr(&pars[WHITENOISE_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random Number Seed."),
 	  UNIPAR_LONG,
 	  &whiteNoisePtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_INTENSITY], "INTENSITY",
-	  "Intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[WHITENOISE_INTENSITY], wxT("INTENSITY"),
+	  wxT("Intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &whiteNoisePtr->intensity, NULL,
 	  (void * (*)) SetIntensity_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[WHITENOISE_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &whiteNoisePtr->duration, NULL,
 	  (void * (*)) SetDuration_WhiteNoise);
-	SetPar_UniParMgr(&pars[WHITENOISE_SAMPLINGINTERVAL], "DT",
-	  "Sampling Interval, dt (s).",
+	SetPar_UniParMgr(&pars[WHITENOISE_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling Interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &whiteNoisePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_WhiteNoise);
@@ -185,15 +186,15 @@ SetUniParList_WhiteNoise(void)
 UniParListPtr
 GetUniParListPtr_WhiteNoise(void)
 {
-	static const char	*funcName = "GetUniParListPtr_WhiteNoise";
+	static const WChar	*funcName = wxT("GetUniParListPtr_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (whiteNoisePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(whiteNoisePtr->parList);
@@ -211,40 +212,40 @@ GetUniParListPtr_WhiteNoise(void)
 BOOLN
 CheckPars_WhiteNoise(void)
 {
-	static const char *funcName = "CheckPars_WhiteNoise";
+	static const WChar *funcName = wxT("CheckPars_WhiteNoise");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!whiteNoisePtr->numChannelsFlag) {
-		NotifyError("%s: binaural variable not set.", funcName);
+		NotifyError(wxT("%s: binaural variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->intensityFlag) {
-		NotifyError("%s: intensity variable not set.", funcName);
+		NotifyError(wxT("%s: intensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->correlationDegreeFlag) {
-		NotifyError("%s: Correlation degree variable not set.", funcName);
+		NotifyError(wxT("%s: Correlation degree variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->randomizationIndexFlag) {
-		NotifyError("%s: Randomization index variable not set.", funcName);
+		NotifyError(wxT("%s: Randomization index variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!whiteNoisePtr->ranSeedFlag) {
-		NotifyError("%s: Random seed variable not set.", funcName);
+		NotifyError(wxT("%s: Random seed variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -262,14 +263,14 @@ CheckPars_WhiteNoise(void)
 BOOLN
 SetNumChannels_WhiteNoise(int theNumChannels)
 {
-	static const char *funcName = "SetNumChannels_WhiteNoise";
+	static const WChar *funcName = wxT("SetNumChannels_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( (theNumChannels != 1) && (theNumChannels != 2) ) {
-		NotifyError("%s: Illegal numChannels value = %d!", funcName,
+		NotifyError(wxT("%s: Illegal numChannels value = %d!"), funcName,
 		  theNumChannels);
 		return(FALSE);
 	}
@@ -290,10 +291,10 @@ SetNumChannels_WhiteNoise(int theNumChannels)
 BOOLN
 SetIntensity_WhiteNoise(double theIntensity)
 {
-	static const char *funcName = "SetIntensity_WhiteNoise";
+	static const WChar *funcName = wxT("SetIntensity_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	whiteNoisePtr->intensityFlag = TRUE;
@@ -313,10 +314,10 @@ SetIntensity_WhiteNoise(double theIntensity)
 BOOLN
 SetDuration_WhiteNoise(double theDuration)
 {
-	static const char *funcName = "SetDuration_WhiteNoise";
+	static const WChar *funcName = wxT("SetDuration_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	whiteNoisePtr->durationFlag = TRUE;
@@ -336,14 +337,14 @@ SetDuration_WhiteNoise(double theDuration)
 BOOLN
 SetSamplingInterval_WhiteNoise(double theSamplingInterval)
 {
-	static const char *funcName = "SetSamplingInterval_WhiteNoise";
+	static const WChar *funcName = wxT("SetSamplingInterval_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -364,14 +365,14 @@ SetSamplingInterval_WhiteNoise(double theSamplingInterval)
 BOOLN
 SetCorrelationDegree_WhiteNoise(int theCorrelationDegree)
 {
-	static const char *funcName = "SetCorrelationDegree_WhiteNoise";
+	static const WChar *funcName = wxT("SetCorrelationDegree_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( (theCorrelationDegree != 1) && (theCorrelationDegree != -1) ) {
-		NotifyError("%s: Illegal correlationDegree value = %d!", funcName,
+		NotifyError(wxT("%s: Illegal correlationDegree value = %d!"), funcName,
 		  theCorrelationDegree);
 		return(FALSE);
 	}
@@ -393,15 +394,15 @@ SetCorrelationDegree_WhiteNoise(int theCorrelationDegree)
 BOOLN
 SetRandomizationIndex_WhiteNoise(int theRandomizationIndex)
 {
-	static const char *funcName = "SetRandomizationIndex_WhiteNoise";
+	static const WChar *funcName = wxT("SetRandomizationIndex_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRandomizationIndex < 12) {
-		NotifyError("%s: The value of randomizationIndex (= %d) should not "\
-		  "be greater than 12!", funcName, theRandomizationIndex);
+		NotifyError(wxT("%s: The value of randomizationIndex (= %d) should "
+		  "not be greater than 12!"), funcName, theRandomizationIndex);
 		return(FALSE);
 	}
 	whiteNoisePtr->randomizationIndexFlag = TRUE;
@@ -421,10 +422,10 @@ SetRandomizationIndex_WhiteNoise(int theRandomizationIndex)
 BOOLN
 SetRanSeed_WhiteNoise(long theRanSeed)
 {
-	static const char *funcName = "SetRanSeed_WhiteNoise";
+	static const WChar *funcName = wxT("SetRanSeed_WhiteNoise");
 
 	if (whiteNoisePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	whiteNoisePtr->ranSeedFlag = TRUE;
@@ -445,7 +446,7 @@ SetPars_WhiteNoise(int theNumChannels, double theIntensity,
   double theDuration, double theSamplingInterval, int theCorrelationDegree,
   int theRandomizationIndex, long theRanSeed)
 {
-	static const char *funcName = "SetPars_WhiteNoise";
+	static const WChar *funcName = wxT("SetPars_WhiteNoise");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -464,7 +465,7 @@ SetPars_WhiteNoise(int theNumChannels, double theIntensity,
 	if (!SetRanSeed_WhiteNoise(theRanSeed))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -478,22 +479,23 @@ SetPars_WhiteNoise(int theNumChannels, double theIntensity,
 BOOLN
 PrintPars_WhiteNoise(void)
 {
-	static const char *funcName = "PrintPars_WhiteNoise";
+	static const WChar *funcName = wxT("PrintPars_WhiteNoise");
 
 	if (!CheckPars_WhiteNoise()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("White Noise Module Parameters:-\n");
-	DPrint("\tNumber of Sound Channels = %d,\tCorrelation "\
-	  "Degree = %d,\n", whiteNoisePtr->numChannels,
+	DPrint(wxT("White Noise Module Parameters:-\n"));
+	DPrint(wxT("\tNumber of Sound Channels = %d,\tCorrelation "
+	  "Degree = %d,\n"), whiteNoisePtr->numChannels,
 	  whiteNoisePtr->correlationDegree);
-	DPrint("\tRandomization Index = %d,\tRandomization "\
-	  "Seed = %ld.\n", whiteNoisePtr->randomizationIndex,
+	DPrint(wxT("\tRandomization Index = %d,\tRandomization "
+	  "Seed = %ld.\n"), whiteNoisePtr->randomizationIndex,
 	  whiteNoisePtr->ranSeed);
-	DPrint("\tIntensity = %g dB SPL,\n",
+	DPrint(wxT("\tIntensity = %g dB SPL,\n"),
 	  whiteNoisePtr->intensity);
-	DPrint("\tDuration = %g ms,\tSampling interval = %g ms\n",
+	DPrint(wxT("\tDuration = %g ms,\tSampling interval = %g ms\n"),
 	  MSEC(whiteNoisePtr->duration), MSEC(whiteNoisePtr->dt));
 	return(TRUE);
 
@@ -507,11 +509,11 @@ PrintPars_WhiteNoise(void)
  */
  
 BOOLN
-ReadPars_WhiteNoise(char *fileName)
+ReadPars_WhiteNoise(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_WhiteNoise";
+	static const WChar *funcName = wxT("ReadPars_WhiteNoise");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double  intensity;
 	double  duration, samplingInterval;
     int		numChannels, correlationDegree, randomizationIndex;
@@ -519,37 +521,37 @@ ReadPars_WhiteNoise(char *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName, filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numChannels))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &correlationDegree))
+	if (!GetPars_ParFile(fp, wxT("%d"), &correlationDegree))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &randomizationIndex))
+	if (!GetPars_ParFile(fp, wxT("%d"), &randomizationIndex))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%ld", &ranSeed))
+	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &intensity))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_WhiteNoise(numChannels, intensity, duration,
 	  samplingInterval, correlationDegree, randomizationIndex, ranSeed)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -566,10 +568,10 @@ ReadPars_WhiteNoise(char *fileName)
 BOOLN
 SetParsPointer_WhiteNoise(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_WhiteNoise";
+	static const WChar	*funcName = wxT("SetParsPointer_WhiteNoise");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	whiteNoisePtr = (WhiteNoisePtr) theModule->parsPtr;
@@ -586,14 +588,15 @@ SetParsPointer_WhiteNoise(ModulePtr theModule)
 BOOLN
 InitModule_WhiteNoise(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_WhiteNoise";
+	static const WChar	*funcName = wxT("InitModule_WhiteNoise");
 
 	if (!SetParsPointer_WhiteNoise(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_WhiteNoise(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = whiteNoisePtr;
@@ -624,7 +627,7 @@ InitModule_WhiteNoise(ModulePtr theModule)
 BOOLN
 GenerateSignal_WhiteNoise(EarObjectPtr data)
 {
-	static const char *funcName = "GenerateSignal_WhiteNoise";
+	static const WChar *funcName = wxT("GenerateSignal_WhiteNoise");
 	
 	int			j;
 	ChanLen		i;
@@ -634,15 +637,15 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_WhiteNoise())
 			return(FALSE);
-		SetProcessName_EarObject(data, "White Noise stimulus");
+		SetProcessName_EarObject(data, wxT("White Noise stimulus"));
 		if ( !InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
 		  floor(p->duration / p->dt + 0.5), p->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (data->updateProcessFlag && !SetRandPars_EarObject(data, p->ranSeed,

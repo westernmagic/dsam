@@ -49,40 +49,40 @@ FIRCoeffsPtr
 InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
   double *bands, double *desired, double *weights, int type)
 {
-	static const char *funcName = "InitFIRCoeffs_FIRFilters";
+	static const WChar *funcName = wxT("InitFIRCoeffs_FIRFilters");
 	int		i;
 	double	*scaledFreq, nyquestFreq;
 	FIRCoeffsPtr	p;
 	
 	if (numTaps < 1) {
-		NotifyError("%s: Illegal number of coefficients (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of coefficients (%d)."), funcName,
 		  numTaps);
 		return(NULL);
 	}
 	if (numBands < 3) {
-		NotifyError("%s: Illegal number of coefficients (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of coefficients (%d)."), funcName,
 		  numBands);
 		return(NULL);
 	}
 	if (numChannels < 1) {
-		NotifyError("%s: Illegal number of channels (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of channels (%d)."), funcName,
 		  numChannels);
 		return(NULL);
 	}
 	if ((p = (FIRCoeffsPtr) malloc(sizeof(FIRCoeffs))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for FIR filter coefficients.",
-		  funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for FIR filter "
+		  "coefficients."), funcName);
 		return(NULL);
 	}
 	p->numChannels = numChannels;
 	if ((p->c = (double *) calloc(numTaps, sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory for coefficients!", funcName);
+		NotifyError(wxT("%s: Out of memory for coefficients!"), funcName);
 		FreeFIRCoeffs_FIRFilters(&p);
 		return(NULL);
 	}
 	if ((p->state = (double *) calloc(numTaps * numChannels, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Out of memory state variables!", funcName);
+		NotifyError(wxT("%s: Out of memory state variables!"), funcName);
 		FreeFIRCoeffs_FIRFilters(&p);
 		return(NULL);
 	}
@@ -92,14 +92,15 @@ InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
 		p->m = numTaps;
 	} else {
 		if ((scaledFreq = (double *) calloc(numTaps, sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory for frequency scale.", funcName);
+			NotifyError(wxT("%s: Out of memory for frequency scale."),
+			  funcName);
 			FreeFIRCoeffs_FIRFilters(&p);
 			return(NULL);
 		}
 		nyquestFreq = bands[numBands - 1] * 2.0;
 		for (i = 0; i < numBands; i++) {
 			scaledFreq[i] = bands[i] / nyquestFreq;
-			/*printf("freq[%3d] = %g\n", i, scaledFreq[i]);*/
+			/*printf(wxT("freq[%3d] = %g\n"), i, scaledFreq[i]);*/
 		}
 		if (type == -BANDPASS) {
 			type = -type;
@@ -193,7 +194,7 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 void
 FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 {
-	/*static const char *funcName = "FIR_FIRFilters";*/
+	/*static const WChar *funcName = wxT("FIR_FIRFilters");*/
 	int		chan;
 	ChanLen	i, j;
 	register ChanData	*yi, *xi, *xi2, *state, *c, *xStart, summ;

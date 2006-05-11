@@ -86,7 +86,7 @@ BOOLN	Init_PureTone_FM(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_FM(void);
 
-BOOLN	ReadPars_PureTone_FM(char *fileName);
+BOOLN	ReadPars_PureTone_FM(WChar *fileName);
 
 BOOLN	SetModulationDepth_PureTone_FM(double theModulationDepth);
 

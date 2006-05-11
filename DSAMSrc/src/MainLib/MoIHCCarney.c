@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoIHCCarney.h"
 
 /******************************************************************************/
@@ -51,8 +52,6 @@ CarneyHCPtr	carneyHCPtr = NULL;
 BOOLN
 Free_IHC_Carney(void)
 {
-	/* static const char	*funcName = "Free_IHC_Carney"; */
-
 	if (carneyHCPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IHC_Carney();
@@ -81,18 +80,19 @@ Free_IHC_Carney(void)
 BOOLN
 Init_IHC_Carney(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IHC_Carney";
+	static const WChar	*funcName = wxT("Init_IHC_Carney");
 
 	if (parSpec == GLOBAL) {
 		if (carneyHCPtr != NULL)
 			Free_IHC_Carney();
 		if ((carneyHCPtr = (CarneyHCPtr) malloc(sizeof(CarneyHC))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (carneyHCPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -120,7 +120,7 @@ Init_IHC_Carney(ParameterSpecifier parSpec)
 	carneyHCPtr->minImmediateVolume = 0.0001;
 
 	if (!SetUniParList_IHC_Carney()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHC_Carney();
 		return(FALSE);
 	}
@@ -140,62 +140,62 @@ Init_IHC_Carney(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IHC_Carney(void)
 {
-	static const char *funcName = "SetUniParList_IHC_Carney";
+	static const WChar *funcName = wxT("SetUniParList_IHC_Carney");
 	UniParPtr	pars;
 
 	if ((carneyHCPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHC_CARNEY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = carneyHCPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXHCVOLTAGE], "V_MAX",
-	  "Maximum depolarising hair cell voltage, Vmax (V).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXHCVOLTAGE], wxT("V_MAX"),
+	  wxT("Maximum depolarising hair cell voltage, Vmax (V)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxHCVoltage, NULL,
 	  (void * (*)) SetMaxHCVoltage_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_RESTINGRELEASERATE], "R0",
-	  "Resting release from synapse, R0 (spikes/s).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_RESTINGRELEASERATE], wxT("R0"),
+	  wxT("Resting release from synapse, R0 (spikes/s)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->restingReleaseRate, NULL,
 	  (void * (*)) SetRestingReleaseRate_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_RESTINGPERM], "P_REST",
-	  "Resting permeability, Prest ('volume'/s).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_RESTINGPERM], wxT("P_REST"),
+	  wxT("Resting permeability, Prest ('volume'/s)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->restingPerm, NULL,
 	  (void * (*)) SetRestingPerm_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXGLOBALPERM], "PG_MAX",
-	  "Maximum global permeability, PGmax ('volume'/s).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXGLOBALPERM], wxT("PG_MAX"),
+	  wxT("Maximum global permeability, PGmax ('volume'/s)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxGlobalPerm, NULL,
 	  (void * (*)) SetMaxGlobalPerm_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXLOCALPERM], "PL_MAX",
-	  "Maximum local permeability, PLmax ('volume'/s).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXLOCALPERM], wxT("PL_MAX"),
+	  wxT("Maximum local permeability, PLmax ('volume'/s)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxLocalPerm, NULL,
 	  (void * (*)) SetMaxLocalPerm_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXIMMEDIATEPERM], "PI_MAX",
-	  "Maximum immediate permeability, PImax ('volume'/s).",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXIMMEDIATEPERM], wxT("PI_MAX"),
+	  wxT("Maximum immediate permeability, PImax ('volume'/s)."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxImmediatePerm, NULL,
 	  (void * (*)) SetMaxImmediatePerm_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXLOCALVOLUME], "VL_MAX",
-	  "Maximum local volume, VLmax ('volume').",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXLOCALVOLUME], wxT("VL_MAX"),
+	  wxT("Maximum local volume, VLmax ('volume')."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxLocalVolume, NULL,
 	  (void * (*)) SetMaxLocalVolume_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MINLOCALVOLUME], "VL_MIN",
-	  "Minimum local volume, VLmin ('volume').",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MINLOCALVOLUME], wxT("VL_MIN"),
+	  wxT("Minimum local volume, VLmin ('volume')."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->minLocalVolume, NULL,
 	  (void * (*)) SetMinLocalVolume_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXIMMEDIATEVOLUME], "VI_MAX",
-	  "Maximum immediate volume, VImax ('volume').",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MAXIMMEDIATEVOLUME], wxT("VI_MAX"),
+	  wxT("Maximum immediate volume, VImax ('volume')."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->maxImmediateVolume, NULL,
 	  (void * (*)) SetMaxImmediateVolume_IHC_Carney);
-	SetPar_UniParMgr(&pars[IHC_CARNEY_MINIMMEDIATEVOLUME], "VI_MIN",
-	  "Minimum immediate volume, VImin ('volume').",
+	SetPar_UniParMgr(&pars[IHC_CARNEY_MINIMMEDIATEVOLUME], wxT("VI_MIN"),
+	  wxT("Minimum immediate volume, VImin ('volume')."),
 	  UNIPAR_REAL,
 	  &carneyHCPtr->minImmediateVolume, NULL,
 	  (void * (*)) SetMinImmediateVolume_IHC_Carney);
@@ -213,15 +213,15 @@ SetUniParList_IHC_Carney(void)
 UniParListPtr
 GetUniParListPtr_IHC_Carney(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHC_Carney";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (carneyHCPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(carneyHCPtr->parList);
@@ -241,7 +241,7 @@ SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
   double maxImmediatePerm, double maxLocalVolume, double minLocalVolume,
   double maxImmediateVolume, double minImmediateVolume)
 {
-	static const char	*funcName = "SetPars_IHC_Carney";
+	static const WChar	*funcName = wxT("SetPars_IHC_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -266,7 +266,7 @@ SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
 	if (!SetMinImmediateVolume_IHC_Carney(minImmediateVolume))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -282,14 +282,14 @@ SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
 BOOLN
 SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage)
 {
-	static const char	*funcName = "SetMaxHCVoltage_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxHCVoltage_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fabs(theMaxHCVoltage) < DBL_EPSILON) {
-		NotifyError("%s: Illegal value (%g V).", theMaxHCVoltage);
+		NotifyError(wxT("%s: Illegal value (%g V)."), theMaxHCVoltage);
 		return(FALSE);
 	}
 	carneyHCPtr->maxHCVoltageFlag = TRUE;
@@ -310,10 +310,10 @@ SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage)
 BOOLN
 SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate)
 {
-	static const char	*funcName = "SetRestingReleaseRate_IHC_Carney";
+	static const WChar	*funcName = wxT("SetRestingReleaseRate_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -335,10 +335,10 @@ SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate)
 BOOLN
 SetRestingPerm_IHC_Carney(double theRestingPerm)
 {
-	static const char	*funcName = "SetRestingPerm_IHC_Carney";
+	static const WChar	*funcName = wxT("SetRestingPerm_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -360,10 +360,10 @@ SetRestingPerm_IHC_Carney(double theRestingPerm)
 BOOLN
 SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm)
 {
-	static const char	*funcName = "SetMaxGlobalPerm_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxGlobalPerm_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -385,10 +385,10 @@ SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm)
 BOOLN
 SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm)
 {
-	static const char	*funcName = "SetMaxLocalPerm_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxLocalPerm_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -410,10 +410,10 @@ SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm)
 BOOLN
 SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm)
 {
-	static const char	*funcName = "SetMaxImmediatePerm_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxImmediatePerm_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -435,10 +435,10 @@ SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm)
 BOOLN
 SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume)
 {
-	static const char	*funcName = "SetMaxLocalVolume_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxLocalVolume_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -460,10 +460,10 @@ SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume)
 BOOLN
 SetMinLocalVolume_IHC_Carney(double theMinLocalVolume)
 {
-	static const char	*funcName = "SetMinLocalVolume_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMinLocalVolume_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -485,10 +485,10 @@ SetMinLocalVolume_IHC_Carney(double theMinLocalVolume)
 BOOLN
 SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume)
 {
-	static const char	*funcName = "SetMaxImmediateVolume_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMaxImmediateVolume_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -510,10 +510,10 @@ SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume)
 BOOLN
 SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume)
 {
-	static const char	*funcName = "SetMinImmediateVolume_IHC_Carney";
+	static const WChar	*funcName = wxT("SetMinImmediateVolume_IHC_Carney");
 
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -537,52 +537,52 @@ SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume)
 BOOLN
 CheckPars_IHC_Carney(void)
 {
-	static const char	*funcName = "CheckPars_IHC_Carney";
+	static const WChar	*funcName = wxT("CheckPars_IHC_Carney");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (carneyHCPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!carneyHCPtr->maxHCVoltageFlag) {
-		NotifyError("%s: maxHCVoltage variable not set.", funcName);
+		NotifyError(wxT("%s: maxHCVoltage variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->restingReleaseRateFlag) {
-		NotifyError("%s: restingReleaseRate variable not set.", funcName);
+		NotifyError(wxT("%s: restingReleaseRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->restingPermFlag) {
-		NotifyError("%s: restingPerm variable not set.", funcName);
+		NotifyError(wxT("%s: restingPerm variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->maxGlobalPermFlag) {
-		NotifyError("%s: maxGlobalPerm variable not set.", funcName);
+		NotifyError(wxT("%s: maxGlobalPerm variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->maxLocalPermFlag) {
-		NotifyError("%s: maxLocalPerm variable not set.", funcName);
+		NotifyError(wxT("%s: maxLocalPerm variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->maxImmediatePermFlag) {
-		NotifyError("%s: maxImmediatePerm variable not set.", funcName);
+		NotifyError(wxT("%s: maxImmediatePerm variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->maxLocalVolumeFlag) {
-		NotifyError("%s: maxLocalVolume variable not set.", funcName);
+		NotifyError(wxT("%s: maxLocalVolume variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->minLocalVolumeFlag) {
-		NotifyError("%s: minLocalVolume variable not set.", funcName);
+		NotifyError(wxT("%s: minLocalVolume variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->maxImmediateVolumeFlag) {
-		NotifyError("%s: maxImmediateVolume variable not set.", funcName);
+		NotifyError(wxT("%s: maxImmediateVolume variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!carneyHCPtr->minImmediateVolumeFlag) {
-		NotifyError("%s: minImmediateVolume variable not set.", funcName);
+		NotifyError(wxT("%s: minImmediateVolume variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -599,32 +599,33 @@ CheckPars_IHC_Carney(void)
 BOOLN
 PrintPars_IHC_Carney(void)
 {
-	static const char	*funcName = "PrintPars_IHC_Carney";
+	static const WChar	*funcName = wxT("PrintPars_IHC_Carney");
 
 	if (!CheckPars_IHC_Carney()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Carney IHC Synapse Module Parameters:-\n");
-	DPrint("\tMax. depolarizing HC voltage, Vmax = %g (V)\n",
+	DPrint(wxT("Carney IHC Synapse Module Parameters:-\n"));
+	DPrint(wxT("\tMax. depolarizing HC voltage, Vmax = %g (V)\n"),
 	  carneyHCPtr->maxHCVoltage);
-	DPrint("\tResting release rate, R0 = %g (spikes/s)\n",
+	DPrint(wxT("\tResting release rate, R0 = %g (spikes/s)\n"),
 	  carneyHCPtr->restingReleaseRate);
-	DPrint("\tResting permeability, Prest = %g "
-	  "('volume'/s)\n", carneyHCPtr->restingPerm);
-	DPrint("\tMax. global permeability, PGmax = %g "
-	  "('volume'/s)\n", carneyHCPtr->maxGlobalPerm);
-	DPrint("\tMax. local , PLmax = %g ('volume'/s)\n",
+	DPrint(wxT("\tResting permeability, Prest = %g ('volume'/s)\n"),
+	  carneyHCPtr->restingPerm);
+	DPrint(wxT("\tMax. global permeability, PGmax = %g ('volume'/s)\n"), 
+	  carneyHCPtr->maxGlobalPerm);
+	DPrint(wxT("\tMax. local , PLmax = %g ('volume'/s)\n"),
 	  carneyHCPtr->maxLocalPerm);
-	DPrint("\tMax. immediate permeability, PImax = %g "
-	  "('volume'/s)\n", carneyHCPtr->maxImmediatePerm);
-	DPrint("\tMax. local volume, VLmax = %g ('volume')\n",
+	DPrint(wxT("\tMax. immediate permeability, PImax = %g ('volume'/s)\n"),
+	  carneyHCPtr->maxImmediatePerm);
+	DPrint(wxT("\tMax. local volume, VLmax = %g ('volume')\n"),
 	  carneyHCPtr->maxLocalVolume);
-	DPrint("\tMin. local volume, VLmin = %g ('volume')\n",
+	DPrint(wxT("\tMin. local volume, VLmin = %g ('volume')\n"),
 	  carneyHCPtr->minLocalVolume);
-	DPrint("\tMax. immediate volume, VImax = %g ('volume')\n",
+	DPrint(wxT("\tMax. immediate volume, VImax = %g ('volume')\n"),
 	  carneyHCPtr->maxImmediateVolume);
-	DPrint("\tMin. immediate volume, VLmax = %g ('volume')\n",
+	DPrint(wxT("\tMin. immediate volume, VLmax = %g ('volume')\n"),
 	  carneyHCPtr->minImmediateVolume);
 	return(TRUE);
 
@@ -637,55 +638,56 @@ PrintPars_IHC_Carney(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_IHC_Carney(char *fileName)
+ReadPars_IHC_Carney(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_IHC_Carney";
+	static const WChar	*funcName = wxT("ReadPars_IHC_Carney");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	maxHCVoltage, restingReleaseRate, restingPerm, maxGlobalPerm;
 	double	maxLocalPerm, maxImmediatePerm, maxLocalVolume, minLocalVolume;
 	double	maxImmediateVolume, minImmediateVolume;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &maxHCVoltage))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxHCVoltage))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &restingReleaseRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &restingReleaseRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &restingPerm))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &restingPerm))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxGlobalPerm))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxGlobalPerm))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxLocalPerm))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxLocalPerm))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxImmediatePerm))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxImmediatePerm))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxLocalVolume))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxLocalVolume))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &minLocalVolume))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &minLocalVolume))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxImmediateVolume))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxImmediateVolume))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &minImmediateVolume))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &minImmediateVolume))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Carney(maxHCVoltage, restingReleaseRate, restingPerm,
 	  maxGlobalPerm, maxLocalPerm, maxImmediatePerm, maxLocalVolume,
 	  minLocalVolume, maxImmediateVolume, minImmediateVolume)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -702,10 +704,10 @@ ReadPars_IHC_Carney(char *fileName)
 BOOLN
 SetParsPointer_IHC_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHC_Carney";
+	static const WChar	*funcName = wxT("SetParsPointer_IHC_Carney");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	carneyHCPtr = (CarneyHCPtr) theModule->parsPtr;
@@ -722,14 +724,14 @@ SetParsPointer_IHC_Carney(ModulePtr theModule)
 BOOLN
 InitModule_IHC_Carney(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHC_Carney";
+	static const WChar	*funcName = wxT("InitModule_IHC_Carney");
 
 	if (!SetParsPointer_IHC_Carney(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHC_Carney(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = carneyHCPtr;
@@ -761,10 +763,10 @@ InitModule_IHC_Carney(ModulePtr theModule)
 BOOLN
 CheckData_IHC_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IHC_Carney";
+	static const WChar	*funcName = wxT("CheckData_IHC_Carney");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -786,7 +788,7 @@ CheckData_IHC_Carney(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHC_Carney(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_IHC_Carney";
+	static const WChar *funcName = wxT("InitProcessVariables_IHC_Carney");
 	int		i;
 	double	restingImmediateConc_CI0, restingLocalConc_CL0;
 	CarneyHCPtr	p = carneyHCPtr;
@@ -798,7 +800,7 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 			FreeProcessVariables_IHC_Carney();
 			if ((p->hCChannels = (CarneyHCVarsPtr) calloc(
 			  data->outSignal->numChannels, sizeof (CarneyHCVars))) == NULL) {
-				NotifyError("%s: Out of memory.", funcName);
+				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
 			carneyHCPtr->updateProcessVariablesFlag = FALSE;
@@ -854,7 +856,7 @@ FreeProcessVariables_IHC_Carney(void)
 BOOLN
 RunModel_IHC_Carney(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_IHC_Carney";
+	static const WChar	*funcName = wxT("RunModel_IHC_Carney");
 	register	ChanData	 *inPtr, *outPtr;
 	int			chan;
 	double		releaseProb, pI, pL, pG;
@@ -866,17 +868,17 @@ RunModel_IHC_Carney(EarObjectPtr data)
 		if (!CheckPars_IHC_Carney())
 			return(FALSE);
 		if (!CheckData_IHC_Carney(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Carney IHC Synapse");
+		SetProcessName_EarObject(data, wxT("Carney IHC Synapse"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_IHC_Carney(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

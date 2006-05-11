@@ -117,25 +117,25 @@ EditorToolPalette::Set(void)
 	SetToolBitmapSize(wxSize(22, 22));
 
 	AddTool(PALETTE_ARROW, PaletteArrow, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Pointer");
+	  wxT("Pointer"));
 	AddTool(ANALYSIS_MODULE_CLASS, PaletteAnaTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Analysis Process");
+	  NULL, wxT("Analysis Process"));
 	AddTool(CONTROL_MODULE_CLASS, PaletteCtrlTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Control Process");
+	  NULL, wxT("Control Process"));
 	AddTool(DISPLAY_MODULE_CLASS, PaletteDisplayTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Display Process");
+	  NULL, wxT("Display Process"));
 	AddTool(FILTER_MODULE_CLASS, PaletteFiltTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Filter Process");
+	  NULL, wxT("Filter Process"));
 	AddTool(IO_MODULE_CLASS, PaletteIOTool, wxNullBitmap, TRUE, 0, -1, NULL,
-	  "Input/Output Process");
+	  wxT("Input/Output Process"));
 	AddTool(MODEL_MODULE_CLASS, PaletteModelTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Model Process");
+	  NULL, wxT("Model Process"));
 	AddTool(TRANSFORM_MODULE_CLASS, PaletteTransTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Transform Process");
+	  NULL, wxT("Transform Process"));
 	AddTool(USER_MODULE_CLASS, PaletteUserTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "User defined Process");
+	  NULL, wxT("User defined Process"));
 	AddTool(UTILITY_MODULE_CLASS, PaletteUtilTool, wxNullBitmap, TRUE, 0, -1,
-	  NULL, "Utility Process");
+	  NULL, wxT("Utility Process"));
 
 	Realize();
 

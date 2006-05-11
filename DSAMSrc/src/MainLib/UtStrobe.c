@@ -52,6 +52,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtStrobe.h"
 
 /******************************************************************************/
@@ -76,7 +77,7 @@ StrobePtr	strobePtr = NULL;
 BOOLN
 Free_Utility_Strobe(void)
 {
-	/* static const char	*funcName = "Free_Utility_Strobe";  */
+	/* static const WChar	*funcName = wxT("Free_Utility_Strobe");  */
 
 	if (strobePtr == NULL)
 		return(FALSE);
@@ -104,13 +105,13 @@ InitTypeModeList_Utility_Strobe(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "USER", 			STROBE_USER_MODE },
-					{ "THRESHOLD", 		STROBE_THRESHOLD_MODE },
-					{ "PEAK", 			STROBE_PEAK_MODE },
-					{ "PEAK_SHADOW-",	STROBE_PEAK_SHADOW_NEGATIVE_MODE },
-					{ "PEAK_SHADOW+",	STROBE_PEAK_SHADOW_POSITIVE_MODE },
-					{ "DELTA_GAMMA",	STROBE_DELTA_GAMMA_MODE },
-					{ "", STROBE_MODE_NULL }
+					{ wxT("USER"), 			STROBE_USER_MODE },
+					{ wxT("THRESHOLD"), 	STROBE_THRESHOLD_MODE },
+					{ wxT("PEAK"), 			STROBE_PEAK_MODE },
+					{ wxT("PEAK_SHADOW-"),	STROBE_PEAK_SHADOW_NEGATIVE_MODE },
+					{ wxT("PEAK_SHADOW+"),	STROBE_PEAK_SHADOW_POSITIVE_MODE },
+					{ wxT("DELTA_GAMMA"),	STROBE_DELTA_GAMMA_MODE },
+					{ wxT(""), STROBE_MODE_NULL }
 				};
 	strobePtr->typeModeList = modeList;
 	return(TRUE);
@@ -132,18 +133,19 @@ InitTypeModeList_Utility_Strobe(void)
 BOOLN
 Init_Utility_Strobe(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Strobe";
+	static const WChar	*funcName = wxT("Init_Utility_Strobe");
 
 	if (parSpec == GLOBAL) {
 		if (strobePtr != NULL)
 			Free_Utility_Strobe();
 		if ((strobePtr = (StrobePtr) malloc(sizeof(Strobe))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (strobePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -167,7 +169,7 @@ Init_Utility_Strobe(ParameterSpecifier parSpec)
 	  DiagModeList_NSpecLists(0), strobePtr->diagnosticString)) == NULL)
 		return(FALSE);
 	if (!SetUniParList_Utility_Strobe()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Strobe();
 		return(FALSE);
 	}
@@ -191,43 +193,43 @@ Init_Utility_Strobe(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Strobe(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Strobe";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Strobe");
 	UniParPtr	pars;
 
 	if ((strobePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  STROBE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = strobePtr->parList->pars;
-	SetPar_UniParMgr(&pars[STROBE_TYPE_MODE], "CRITERION",
-	  "Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), "
-	  "'peak_shadow-' (3), or 'peak_shadow+' (4/5).",
+	SetPar_UniParMgr(&pars[STROBE_TYPE_MODE], wxT("CRITERION"),
+	  wxT("Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), "
+	  "'peak_shadow-' (3), or 'peak_shadow+' (4/5)."),
 	  UNIPAR_NAME_SPEC,
 	  &strobePtr->typeMode, strobePtr->typeModeList,
 	  (void * (*)) SetTypeMode_Utility_Strobe);
-	SetPar_UniParMgr(&pars[STROBE_DIAGNOSTIC_MODE], "STROBE_DIAGNOSTICS",
-	  "Diagnostic mode ('off', 'screen', 'error' or <file name>).",
+	SetPar_UniParMgr(&pars[STROBE_DIAGNOSTIC_MODE], wxT("STROBE_DIAGNOSTICS"),
+	  wxT("Diagnostic mode ('off', 'screen', 'error' or <file name>)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &strobePtr->diagnosticMode, strobePtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_Utility_Strobe);
-	SetPar_UniParMgr(&pars[STROBE_THRESHOLD], "THRESHOLD",
-	  "Threshold for strobing: 'user', 'threshold' and 'peak' modes only.",
+	SetPar_UniParMgr(&pars[STROBE_THRESHOLD], wxT("THRESHOLD"),
+	  wxT("Threshold for strobing: 'user', 'threshold' and 'peak' modes only."),
 	  UNIPAR_REAL,
 	  &strobePtr->threshold, NULL,
 	  (void * (*)) SetThreshold_Utility_Strobe);
-	SetPar_UniParMgr(&pars[STROBE_THRESHOLD_DECAY_RATE], "THRESHOLD_DECAY",
-	  "Threshold decay rate (%/s).",
+	SetPar_UniParMgr(&pars[STROBE_THRESHOLD_DECAY_RATE], wxT("THRESHOLD_DECAY"),
+	  wxT("Threshold decay rate (%/s)."),
 	  UNIPAR_REAL,
 	  &strobePtr->thresholdDecayRate, NULL,
 	  (void * (*)) SetThresholdDecayRate_Utility_Strobe);
-	SetPar_UniParMgr(&pars[STROBE_DELAY], "STROBE_LAG",
-	  "Strobe lag (delay) time (s).",
+	SetPar_UniParMgr(&pars[STROBE_DELAY], wxT("STROBE_LAG"),
+	  wxT("Strobe lag (delay) time (s)."),
 	  UNIPAR_REAL,
 	  &strobePtr->delay, NULL,
 	  (void * (*)) SetDelay_Utility_Strobe);
-	SetPar_UniParMgr(&pars[STROBE_DELAY_TIMEOUT], "TIMEOUT",
-	  "Strobe lag (delay) timeout (s).",
+	SetPar_UniParMgr(&pars[STROBE_DELAY_TIMEOUT], wxT("TIMEOUT"),
+	  wxT("Strobe lag (delay) timeout (s)."),
 	  UNIPAR_REAL,
 	  &strobePtr->delayTimeout, NULL,
 	  (void * (*)) SetDelayTimeout_Utility_Strobe);
@@ -245,15 +247,15 @@ SetUniParList_Utility_Strobe(void)
 UniParListPtr
 GetUniParListPtr_Utility_Strobe(void)
 {
-	static const char *funcName = "GetUniParListPtr_Utility_Strobe";
+	static const WChar *funcName = wxT("GetUniParListPtr_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (strobePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(strobePtr->parList);
@@ -268,10 +270,10 @@ GetUniParListPtr_Utility_Strobe(void)
  */
 
 BOOLN
-SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode, double threshold,
+SetPars_Utility_Strobe(WChar *typeMode, WChar *diagnosticMode, double threshold,
   double thresholdDecayRate, double delay, double delayTimeout)
 {
-	static const char	*funcName = "SetPars_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetPars_Utility_Strobe");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -288,7 +290,7 @@ SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode, double threshold,
 	if (!SetDelayTimeout_Utility_Strobe(delayTimeout))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -302,18 +304,19 @@ SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode, double threshold,
  */
 
 BOOLN
-SetTypeMode_Utility_Strobe(char *theTypeMode)
+SetTypeMode_Utility_Strobe(WChar *theTypeMode)
 {
-	static const char	*funcName = "SetTypeMode_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetTypeMode_Utility_Strobe");
 	int		specifier;
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theTypeMode,
 	  strobePtr->typeModeList)) == STROBE_MODE_NULL) {
-		NotifyError("%s: Illegal type mode name (%s).", funcName, theTypeMode);
+		NotifyError(wxT("%s: Illegal type mode name (%s)."), funcName,
+		  theTypeMode);
 		return(FALSE);
 	}
 	strobePtr->typeModeFlag = TRUE;
@@ -361,12 +364,12 @@ SetTypeMode_Utility_Strobe(char *theTypeMode)
  */
 
 BOOLN
-SetDiagnosticMode_Utility_Strobe(char *theDiagnosticMode)
+SetDiagnosticMode_Utility_Strobe(WChar *theDiagnosticMode)
 {
-	static const char	*funcName = "SetDiagnosticMode_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetDiagnosticMode_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	strobePtr->diagnosticModeFlag = TRUE;
@@ -387,10 +390,10 @@ SetDiagnosticMode_Utility_Strobe(char *theDiagnosticMode)
 BOOLN
 SetThreshold_Utility_Strobe(double theThreshold)
 {
-	static const char	*funcName = "SetThreshold_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetThreshold_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -411,10 +414,10 @@ SetThreshold_Utility_Strobe(double theThreshold)
 BOOLN
 SetThresholdDecayRate_Utility_Strobe(double theThresholdDecayRate)
 {
-	static const char	*funcName = "SetThresholdDecayRate_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetThresholdDecayRate_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -436,10 +439,10 @@ SetThresholdDecayRate_Utility_Strobe(double theThresholdDecayRate)
 BOOLN
 SetDelay_Utility_Strobe(double theDelay)
 {
-	static const char	*funcName = "SetDelay_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetDelay_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -461,10 +464,10 @@ SetDelay_Utility_Strobe(double theDelay)
 BOOLN
 SetDelayTimeout_Utility_Strobe(double theDelayTimeout)
 {
-	static const char	*funcName = "SetDelayTimeout_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetDelayTimeout_Utility_Strobe");
 
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -487,36 +490,36 @@ SetDelayTimeout_Utility_Strobe(double theDelayTimeout)
 BOOLN
 CheckPars_Utility_Strobe(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Strobe";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Strobe");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (strobePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!strobePtr->typeModeFlag) {
-		NotifyError("%s: Type mode variable not set.", funcName);
+		NotifyError(wxT("%s: Type mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!strobePtr->diagnosticModeFlag) {
-		NotifyError("%s: diagnosticMode variable not set.", funcName);
+		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!strobePtr->thresholdFlag) {
-		NotifyError("%s: Threshold variable not set.", funcName);
+		NotifyError(wxT("%s: Threshold variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!strobePtr->thresholdDecayRateFlag) {
-		NotifyError("%s: ThresholdDecayRate variable not set.", funcName);
+		NotifyError(wxT("%s: ThresholdDecayRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!strobePtr->delayFlag) {
-		NotifyError("%s: Delay variable not set.", funcName);
+		NotifyError(wxT("%s: Delay variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!strobePtr->delayTimeoutFlag) {
-		NotifyError("%s: Delay limit variable not set.", funcName);
+		NotifyError(wxT("%s: Delay limit variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -533,34 +536,35 @@ CheckPars_Utility_Strobe(void)
 BOOLN
 PrintPars_Utility_Strobe(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Strobe";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Strobe");
 
 	if (!CheckPars_Utility_Strobe()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Strobe Utility Module Parameters:-\n");
-	DPrint("\tType mode: %s,", strobePtr->typeModeList[
+	DPrint(wxT("Strobe Utility Module Parameters:-\n"));
+	DPrint(wxT("\tType mode: %s,"), strobePtr->typeModeList[
 	  strobePtr->typeMode].name);
-	DPrint("\tDiagnostic mode: %s,\n", strobePtr->diagnosticModeList[
+	DPrint(wxT("\tDiagnostic mode: %s,\n"), strobePtr->diagnosticModeList[
 	  strobePtr->diagnosticMode].name);
 	if ((strobePtr->typeMode == STROBE_USER_MODE) ||
 	  (strobePtr->typeMode == STROBE_THRESHOLD_MODE))
-		DPrint("\tThreshold = %g units,", strobePtr->threshold);
+		DPrint(wxT("\tThreshold = %g units,"), strobePtr->threshold);
 	if ((strobePtr->typeMode == STROBE_PEAK_MODE) ||
 	  (strobePtr->typeMode == STROBE_PEAK_SHADOW_NEGATIVE_MODE) ||
 	  (strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE)) 
-		DPrint("\tThreshold decay rate = %g %/s,\n", strobePtr->
+		DPrint(wxT("\tThreshold decay rate = %g %/s,\n"), strobePtr->
 		  thresholdDecayRate);
 	else
-		DPrint("\n");
+		DPrint(wxT("\n"));
 	if (strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) {
-		DPrint("\tDelay = %g ms,", MSEC(strobePtr->delay));
-		DPrint("\tDelay timeout = ");
+		DPrint(wxT("\tDelay = %g ms,"), MSEC(strobePtr->delay));
+		DPrint(wxT("\tDelay timeout = "));
 		if (strobePtr->delayTimeout < 0.0)
-			DPrint("unlimited.\n");
+			DPrint(wxT("unlimited.\n"));
 		else
-			DPrint("%g ms.\n", MSEC(strobePtr->delayTimeout));
+			DPrint(wxT("%g ms.\n"), MSEC(strobePtr->delayTimeout));
 	}
 	return(TRUE);
 
@@ -573,45 +577,46 @@ PrintPars_Utility_Strobe(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_Strobe(char *fileName)
+ReadPars_Utility_Strobe(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_Strobe";
+	static const WChar	*funcName = wxT("ReadPars_Utility_Strobe");
 	BOOLN	ok;
-	char	*filePath;
-	char	typeMode[MAXLINE], diagnosticMode[MAXLINE];
+	WChar	*filePath;
+	WChar	typeMode[MAXLINE], diagnosticMode[MAXLINE];
 	double	threshold, thresholdDecayRate, delay, delayTimeout;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", typeMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), typeMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &threshold))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &threshold))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &thresholdDecayRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &thresholdDecayRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &delay))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &delay))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &delayTimeout))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &delayTimeout))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Strobe(typeMode, diagnosticMode, threshold,
 	  thresholdDecayRate, delay, delayTimeout)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -628,10 +633,10 @@ ReadPars_Utility_Strobe(char *fileName)
 BOOLN
 SetParsPointer_Utility_Strobe(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Strobe";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Strobe");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	strobePtr = (StrobePtr) theModule->parsPtr;
@@ -648,14 +653,15 @@ SetParsPointer_Utility_Strobe(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Strobe(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Strobe";
+	static const WChar	*funcName = wxT("InitModule_Utility_Strobe");
 
 	if (!SetParsPointer_Utility_Strobe(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Strobe(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = strobePtr;
@@ -687,18 +693,18 @@ InitModule_Utility_Strobe(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Strobe(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Strobe";
+	static const WChar	*funcName = wxT("CheckData_Utility_Strobe");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) &&
 	  (_GetDuration_SignalData(data->inSignal[0]) <= strobePtr->delay)) {
-		NotifyError("%s: Strobe delay (%g ms) is not less than signal\n"
-		  "duration (%g ms).", funcName, MSEC(strobePtr->delay),
+		NotifyError(wxT("%s: Strobe delay (%g ms) is not less than signal\n"
+		  "duration (%g ms)."), funcName, MSEC(strobePtr->delay),
 		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
 		return(FALSE);
 	}
@@ -736,18 +742,18 @@ FreeStateVariables_Utility_Strobe(StrobeStatePtr *p)
 StrobeStatePtr
 InitStateVariables_Utility_Strobe(ChanLen numLastSamples)
 {
-	static const char *funcName = "InitStateVariables_Utility_Strobe";
+	static const WChar *funcName = wxT("InitStateVariables_Utility_Strobe");
 	StrobeStatePtr	p;
 	
 	if ((p = (StrobeStatePtr) malloc(sizeof(StrobeState))) == NULL) {
-		NotifyError("%s: Out of memory for state variables.", funcName);
+		NotifyError(wxT("%s: Out of memory for state variables."), funcName);
 		return(NULL);
 	}
 	if (numLastSamples) {
 		if ((p->lastInput = (ChanData *) calloc(numLastSamples, sizeof(
 		  ChanData))) == NULL) {
-			NotifyError("%s: Out of memory for 'lastInput' array (%u "
-			  "elements).", funcName, numLastSamples);
+			NotifyError(wxT("%s: Out of memory for 'lastInput' array (%u "
+			  "elements)."), funcName, numLastSamples);
 			FreeStateVariables_Utility_Strobe(&p);
 			return(NULL);
 		}
@@ -779,7 +785,7 @@ InitStateVariables_Utility_Strobe(ChanLen numLastSamples)
 BOOLN
 InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Utility_Strobe";
+	static const WChar *funcName = wxT("InitProcessVariables_Utility_Strobe");
 	register ChanData	*lastInput, *outPtr;
 	int			i;
 	ChanLen		j;
@@ -793,11 +799,11 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 			OpenDiagnostics_NSpecLists(&strobePtr->fp,
 			  strobePtr->diagnosticModeList, strobePtr->diagnosticMode);
 			if (strobePtr->diagnosticMode)
-				fprintf(strobePtr->fp, "Time (s)\tThreshold\n");
+				DSAM_fprintf(strobePtr->fp, wxT("Time (s)\tThreshold\n"));
 			p->numChannels = data->outSignal->numChannels;
 			if ((p->stateVars = (StrobeStatePtr *) calloc(
 			  p->numChannels, sizeof(StrobeState))) == NULL) {
-		 		NotifyError("%s: Out of memory for state variables array.",
+		 		NotifyError(wxT("%s: Out of memory for state variables array."),
 		 		  funcName);
 		 		return(FALSE);
 			}
@@ -820,8 +826,8 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 			for (i = 0; i < p->numChannels; i++) {
 				if ((p->stateVars[i] = InitStateVariables_Utility_Strobe(
 				  p->numLastSamples)) == NULL) {
-					NotifyError("%s: Out of memory for state variable (%d).",
-					  funcName, i);
+					NotifyError(wxT("%s: Out of memory for state variable "
+					  "(%d)."), funcName, i);
 					FreeProcessVariables_Utility_Strobe();
 					return(FALSE);
 				}
@@ -896,8 +902,6 @@ FreeProcessVariables_Utility_Strobe(void)
 void
 ProcessThesholdModes_Utility_Strobe(EarObjectPtr data)
 {
-	/* static const char	*funcName = "ProcessThesholdModes_Utility_Strobe";
-	*/
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
@@ -932,7 +936,6 @@ void
 ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
   StrobeChanProcessSpecifier chanProcessSpecifier)
 {
-	/* static const char	*funcName = "ProcessPeakChannel_Utility_Strobe"; */
 	register	ChanData	 *inPtr, *outPtr;
 	BOOLN		delayTimeout, gradient, foundPeak;
 	int			chan;
@@ -996,7 +999,7 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 					s->widthIndex++;
 			}
 			if (p->diagnosticMode)
-				fprintf(p->fp, "%g\t%g\n", (data->timeIndex + i) * data->
+				DSAM_fprintf(p->fp, wxT("%g\t%g\n"), (data->timeIndex + i) * data->
 				  outSignal->dt, s->threshold);
 			s->threshold -= s->deltaThreshold;
 			if (p->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) {
@@ -1054,7 +1057,6 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 void
 ProcessPeakModes_Utility_Strobe(EarObjectPtr data)
 {
-	/* static const char	*funcName = "ProcessPeakModes_Utility_Strobe"; */
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
@@ -1091,23 +1093,24 @@ ProcessPeakModes_Utility_Strobe(EarObjectPtr data)
 BOOLN
 Process_Utility_Strobe(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Strobe";
+	static const WChar	*funcName = wxT("Process_Utility_Strobe");
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_Strobe())
 			return(FALSE);
 		if (!CheckData_Utility_Strobe(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Strobe Utility Module process");
+		SetProcessName_EarObject(data, wxT("Strobe Utility Module process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Utility_Strobe(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1127,7 +1130,7 @@ Process_Utility_Strobe(EarObjectPtr data)
 		ProcessPeakModes_Utility_Strobe(data);
 		break;
 	default:
-		NotifyError("%s: Unimplemented mode (%d).", funcName,
+		NotifyError(wxT("%s: Unimplemented mode (%d)."), funcName,
 		  strobePtr->typeMode);
 		return(FALSE);			  
 	} /* switch */

@@ -101,9 +101,9 @@ InitListingModeList_AppInterface(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "PARAMETERS", APP_INT_PARAMETERS_LIST_MODE },
-			{ "CFINFO", 	APP_INT_CFLIST_LIST_MODE },
-			{ "",			APP_INT_LIST_NULL }
+			{ wxT("PARAMETERS"),	APP_INT_PARAMETERS_LIST_MODE },
+			{ wxT("CFINFO"),		APP_INT_CFLIST_LIST_MODE },
+			{ wxT(""),				APP_INT_LIST_NULL }
 		};
 	appInterfacePtr->listingModeList = modeList;
 	return(TRUE);
@@ -121,9 +121,9 @@ InitThreadModeList_AppInterface(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "PROCESS",		APP_INT_THREAD_MODE_PROCESS },
-			{ "CHANNEL_CHAIN",	APP_INT_THREAD_MODE_CHANNEL_CHAIN },
-			{ "",				APP_INT_THREAD_MODE_NULL }
+			{ wxT("PROCESS"),		APP_INT_THREAD_MODE_PROCESS },
+			{ wxT("CHANNEL_CHAIN"),	APP_INT_THREAD_MODE_CHANNEL_CHAIN },
+			{ wxT(""),				APP_INT_THREAD_MODE_NULL }
 		};
 	appInterfacePtr->threadModeList = modeList;
 	return(TRUE);
@@ -145,7 +145,7 @@ InitThreadModeList_AppInterface(void)
 BOOLN
 Init_AppInterface(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_AppInterface";
+	static const WChar	*funcName = wxT("Init_AppInterface");
 	int		i;
 
 	if (parSpec == GLOBAL) {
@@ -153,12 +153,13 @@ Init_AppInterface(ParameterSpecifier parSpec)
 			Free_AppInterface();
 		if ((appInterfacePtr = (AppInterfacePtr) malloc(sizeof(
 		  AppInterface))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (!appInterfacePtr) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -177,14 +178,14 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->printUsageFlag = FALSE;
 	appInterfacePtr->simulationFinishedFlag = TRUE;
 	DSAM_strcpy(appInterfacePtr->appName, wxT("No Name"));
-	strcpy(appInterfacePtr->appParFile, NO_FILE);
-	strcpy(appInterfacePtr->appVersion, "?.?.?");
-	strcpy(appInterfacePtr->compiledDSAMVersion, "?.?.?");
-	strcpy(appInterfacePtr->title, "No title");
+	DSAM_strcpy(appInterfacePtr->appParFile, NO_FILE);
+	DSAM_strcpy(appInterfacePtr->appVersion, wxT("?.?.?"));
+	DSAM_strcpy(appInterfacePtr->compiledDSAMVersion, wxT("?.?.?"));
+	DSAM_strcpy(appInterfacePtr->title, wxT("No title"));
 	for (i = 0; i < APP_MAX_AUTHORS; i++)
 		appInterfacePtr->authors[i][0] = '\0';
 	DSAM_strcpy(appInterfacePtr->simulationFile, wxT(NO_FILE));
-	strcpy(appInterfacePtr->diagMode, DEFAULT_FILE_NAME);
+	DSAM_strcpy(appInterfacePtr->diagMode, DEFAULT_FILE_NAME);
 	DSAM_strcpy(appInterfacePtr->installDir, wxT("."));
 	appInterfacePtr->argv = NULL;
 	appInterfacePtr->argc = 0;
@@ -203,7 +204,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	  DiagModeList_NSpecLists(0), appInterfacePtr->diagMode)) == NULL)
 		return(FALSE);
 	if (!SetUniParList_AppInterface()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_AppInterface();
 		return(FALSE);
 	}
@@ -235,43 +236,44 @@ Init_AppInterface(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_AppInterface(void)
 {
-	static const char *funcName = "SetUniParList_AppInterface";
+	static const WChar *funcName = wxT("SetUniParList_AppInterface");
 	UniParPtr	pars;
 
 	if ((appInterfacePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  APP_INT_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = appInterfacePtr->parList->pars;
-	SetPar_UniParMgr(&pars[APP_INT_DIAGNOSTICMODE], "DIAG_MODE",
-	  "Diagnostics mode specifier ('off', 'screen' or <filename>).",
+	SetPar_UniParMgr(&pars[APP_INT_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostics mode specifier ('off', 'screen' or <filename>)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &appInterfacePtr->diagModeSpecifier, appInterfacePtr->diagModeList,
 	  (void * (*)) SetDiagMode_AppInterface);
-	SetPar_UniParMgr(&pars[APP_INT_SIMULATIONFILE], "SIM_FILE",
-	  "Simulation file.",
+	SetPar_UniParMgr(&pars[APP_INT_SIMULATIONFILE], wxT("SIM_FILE"),
+	  wxT("Simulation file."),
 	  UNIPAR_FILE_NAME,
-	  &appInterfacePtr->simulationFile, (WChar *) "Sim. Par File (*.spf)|*.spf|"
-	  "Sim. script (*.sim)|*.sim|All files (*.*)|*.*",
+	  &appInterfacePtr->simulationFile, (WChar *) wxT("Sim. Par File (*.spf)|"
+	    "*.spf|Sim. script (*.sim)|*.sim|All files (*.*)|*.*"),
 	  (void * (*)) SetSimulationFile_AppInterface);
-	SetPar_UniParMgr(&pars[APP_INT_SEGMENTMODE], "SEGMENT_MODE",
-	  "Segmented or frame-base processing mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[APP_INT_SEGMENTMODE], wxT("SEGMENT_MODE"),
+	  wxT("Segmented or frame-base processing mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &appInterfacePtr->segmentModeSpecifier, NULL,
 	  (void * (*)) SetSegmentMode_AppInterface);
-	SetPar_UniParMgr(&pars[APP_INT_THREADMODE], "THREAD_MODE",
-	  "Thread mode ('process' or 'equi_channel').",
+	SetPar_UniParMgr(&pars[APP_INT_THREADMODE], wxT("THREAD_MODE"),
+	  wxT("Thread mode ('process' or 'equi_channel')."),
 	  UNIPAR_NAME_SPEC,
 	  &appInterfacePtr->threadMode, appInterfacePtr->threadModeList,
 	  (void * (*)) SetThreadMode_AppInterface);
-	SetPar_UniParMgr(&pars[APP_INT_NUMTHREADS], "NUM_THREADS",
-	  "No. of processing threads for simulation (-ve defaults to no. CPU's).",
+	SetPar_UniParMgr(&pars[APP_INT_NUMTHREADS], wxT("NUM_THREADS"),
+	  wxT("No. of processing threads for simulation (-ve defaults to no. "
+	  "CPU's)."),
 	  UNIPAR_INT,
 	  &appInterfacePtr->numThreads, NULL,
 	  (void * (*)) SetNumThreads_AppInterface);
-	SetPar_UniParMgr(&pars[APP_INT_PARLIST], "PAR_LIST",
-	  "App. Specific Pars.",
+	SetPar_UniParMgr(&pars[APP_INT_PARLIST], wxT("PAR_LIST"),
+	  wxT("App. Specific Pars."),
 	  UNIPAR_PARLIST,
 	  &appInterfacePtr->appParList, NULL,
 	  (void * (*)) SetUniParList_AppInterface);
@@ -287,12 +289,13 @@ SetUniParList_AppInterface(void)
  */
 
 BOOLN
-SetDiagMode_AppInterface(char *theDiagMode)
+SetDiagMode_AppInterface(WChar *theDiagMode)
 {
-	static const char	*funcName = "SetDiagMode_AppInterface";
+	static const WChar	*funcName = wxT("SetDiagMode_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->diagModeSpecifier = IdentifyDiag_NSpecLists(theDiagMode,
@@ -327,17 +330,18 @@ SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
 BOOLN
 SetSimulationFile_AppInterface(WChar *theSimulationFile)
 {
-	static const char	*funcName = "SetSimulationFile_AppInterface";
+	static const WChar	*funcName = wxT("SetSimulationFile_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (*theSimulationFile == wxT('\0')) {
-		NotifyError("%s: Illegal zero length name.", funcName);
+		NotifyError(wxT("%s: Illegal zero length name."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, "%s",
+	DSAM_snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, wxT("%s"),
 	  theSimulationFile);
 	appInterfacePtr->simulationFileFlag = TRUE;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
@@ -353,21 +357,22 @@ SetSimulationFile_AppInterface(WChar *theSimulationFile)
  */
 
 BOOLN
-SetSegmentMode_AppInterface(char *theSegmentMode)
+SetSegmentMode_AppInterface(WChar *theSegmentMode)
 {
-	static const char	*funcName = "SetSegmentMode_AppInterface";
+	static const WChar	*funcName = wxT("SetSegmentMode_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if ((appInterfacePtr->segmentModeSpecifier = Identify_NameSpecifier(
 	  theSegmentMode, BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal segment processing mode (%s): must be "
-		  "'on' or 'off'.", funcName, theSegmentMode);
+		NotifyError(wxT("%s: Illegal segment processing mode (%s): must be ")
+		  wxT("'on' or 'off'."), funcName, theSegmentMode);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->segmentMode, theSegmentMode);
+	DSAM_strcpy(appInterfacePtr->segmentMode, theSegmentMode);
 	SetSegmentedMode(appInterfacePtr->segmentModeSpecifier);
 	return(TRUE);
 
@@ -382,18 +387,18 @@ SetSegmentMode_AppInterface(char *theSegmentMode)
  */
 
 BOOLN
-SetThreadMode_AppInterface(char * theThreadMode)
+SetThreadMode_AppInterface(WChar * theThreadMode)
 {
-	static const char	*funcName = "SetThreadMode_AppInterface";
+	static const WChar	*funcName = wxT("SetThreadMode_AppInterface");
 	int		specifier;
 
 	if (appInterfacePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theThreadMode,
 		appInterfacePtr->threadModeList)) == APP_INT_THREAD_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theThreadMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theThreadMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -414,10 +419,11 @@ SetThreadMode_AppInterface(char * theThreadMode)
 BOOLN
 SetNumThreads_AppInterface(int numThreads)
 {
-	static const char	*funcName = "SetNumThreads_AppInterface";
+	static const WChar	*funcName = wxT("SetNumThreads_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->numThreads = numThreads;
@@ -437,10 +443,11 @@ SetNumThreads_AppInterface(int numThreads)
 BOOLN
 SetMaxUserModules_AppInterface(int maxUserModules)
 {
-	static const char	*funcName = "SetMaxUserModules_AppInterface";
+	static const WChar	*funcName = wxT("SetMaxUserModules_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->maxUserModules = maxUserModules;
@@ -458,13 +465,14 @@ SetMaxUserModules_AppInterface(int maxUserModules)
 BOOLN
 SetInstallDir_AppInterface(WChar *theInstallDir)
 {
-	static const char	*funcName = "SetInstallDir_AppInterface";
+	static const WChar	*funcName = wxT("SetInstallDir_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, wxT("%s"),
+	DSAM_snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, wxT(wxT("%s")),
 	  theInstallDir);
 	return(TRUE);
 
@@ -478,19 +486,20 @@ SetInstallDir_AppInterface(WChar *theInstallDir)
  */
 
 BOOLN
-SetAppParFile_AppInterface(char *fileName)
+SetAppParFile_AppInterface(WChar *fileName)
 {
-	static const char	*funcName = "SetAppParFile_AppInterface";
+	static const WChar	*funcName = wxT("SetAppParFile_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if ((fileName == NULL) || (*fileName == '\0')) {
-		NotifyError("%s: illegal file name.", funcName);
+		NotifyError(wxT("%s: illegal file name."), funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, "%s", fileName);
+	DSAM_snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, wxT("%s"), fileName);
 	appInterfacePtr->appParFileFlag = TRUE;
 	return(TRUE);
 
@@ -507,10 +516,11 @@ BOOLN
 SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
   *parList))
 {
-	static const char	*funcName = "SetAppSetUniParList_AppInterface";
+	static const WChar	*funcName = wxT("SetAppSetUniParList_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->SetUniParList = SetUniParList;
@@ -528,10 +538,11 @@ SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
 BOOLN
 SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void))
 {
-	static const char	*funcName = "SetAppFreeProcessVars_AppInterface";
+	static const WChar	*funcName = wxT("SetAppFreeProcessVars_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->FreeAppProcessVars = FreeAppProcessVars;
@@ -549,10 +560,11 @@ SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void))
 BOOLN
 SetAppPrintUsage_AppInterface(void (* PrintUsage)(void))
 {
-	static const char	*funcName = "SetAppPrintUsage_AppInterface";
+	static const WChar	*funcName = wxT("SetAppPrintUsage_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->PrintUsage = PrintUsage;
@@ -568,12 +580,13 @@ SetAppPrintUsage_AppInterface(void (* PrintUsage)(void))
  */
 
 BOOLN
-SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **, int *))
+SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **, int *))
 {
-	static const char	*funcName = "SetAppProcessOptions_AppInterface";
+	static const WChar	*funcName = wxT("SetAppProcessOptions_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->ProcessOptions = ProcessOptions;
@@ -593,10 +606,11 @@ SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **, int *))
 BOOLN
 SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void))
 {
-	static const char	*funcName = "SetAppPostInitFunc_AppInterface";
+	static const WChar	*funcName = wxT("SetAppPostInitFunc_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->PostInitFunc = PostInitFunc;
@@ -616,10 +630,12 @@ SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void))
 BOOLN
 SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
 {
-	static const char	*funcName = "SetAppRegisterUserModules_AppInterface";
+	static const WChar	*funcName = wxT(
+	  "SetAppRegisterUserModules_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->RegisterUserModules = RegisterUserModules;
@@ -638,10 +654,11 @@ SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
 BOOLN
 SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
 {
-	static const char	*funcName = "SetOnExecute_AppInterface";
+	static const WChar	*funcName = wxT("SetOnExecute_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->OnExecute = OnExecute;
@@ -660,10 +677,11 @@ SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
 BOOLN
 SetOnExit_AppInterface(void (* OnExit)(void))
 {
-	static const char	*funcName = "SetOnExit_AppInterface";
+	static const WChar	*funcName = wxT("SetOnExit_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->OnExit = OnExit;
@@ -680,20 +698,21 @@ SetOnExit_AppInterface(void (* OnExit)(void))
 void
 PrintPars_AppInterface(void)
 {
-	static const char *funcName = "PrintPars_AppInterface";
+	static const WChar *funcName = wxT("PrintPars_AppInterface");
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return;
 	}
-	DPrint("Simulation script application interface settings:\n");
-	DPrint("Diagnostics specifier is set to '%s'.\n",
+	DPrint(wxT("Simulation script application interface settings:\n"));
+	DPrint(wxT("Diagnostics specifier is set to '%s'.\n"),
 	  appInterfacePtr->diagModeList[appInterfacePtr->diagModeSpecifier].name);
-	DPrint("This simulation is run from the file " STR_FMT ".\n",
+	DPrint(wxT("This simulation is run from the file " STR_FMT ".\n"),
 	  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
-	DPrint("Thread mode '%' used with '%d' threads.\n", appInterfacePtr->
+	DPrint(wxT("Thread mode '%' used with '%d' threads.\n"), appInterfacePtr->
 	  threadModeList[appInterfacePtr->threadMode].name,
 	  appInterfacePtr->numThreads);
-	DPrint("\n");
+	DPrint(wxT("\n"));
 
 }
 
@@ -705,10 +724,11 @@ PrintPars_AppInterface(void)
 void
 PrintUsage_AppInterface(void)
 {
-	static const char *funcName = "PrintUsage_AppInterface";
+	static const WChar *funcName = wxT("PrintUsage_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return;
 	}
 	DSAM_fprintf(stderr, wxT("\n"
@@ -735,13 +755,14 @@ PrintUsage_AppInterface(void)
 BOOLN
 ProcessParComs_AppInterface(void)
 {
-	static const char *funcName = "ProcessParComs_AppInterface";
+	static const WChar *funcName = wxT("ProcessParComs_AppInterface");
 	int		i;
 	DatumPtr	simulation = NULL;
 	AppInterfacePtr	p = appInterfacePtr;
 
 	if (!p) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!p->useParComsFlag)
@@ -749,12 +770,12 @@ ProcessParComs_AppInterface(void)
 
 	if (p->audModel && (simulation = GetSimulation_ModuleMgr(p->audModel)) ==
 	  NULL) {
-		NotifyError("%s: No simulation has been initialised.", funcName);
+		NotifyError(wxT("%s: No simulation has been initialised."), funcName);
 		return(FALSE);
 	}
 	if (p->argc && ((p->argc - p->initialCommand) % 2 != 0)) {
-		NotifyError("%s: parameter values must be in <name> <value> pairs.",
-		  funcName);
+		NotifyError(wxT("%s: parameter values must be in <name> <value> "
+		  "pairs."), funcName);
 		return(FALSE);
 	}
 	for (i = p->initialCommand; i < p->argc; i += 2) {
@@ -762,7 +783,7 @@ ProcessParComs_AppInterface(void)
 		  FALSE) || (simulation && SetPar_ModuleMgr(p->audModel, p->argv[i],
 		    p->argv[i + 1])) || !simulation)
 			continue;
-		NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
+		NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."), funcName,
 		  p->argv[i], p->argv[i + 1]);
 		return(FALSE);
 	}
@@ -783,17 +804,18 @@ ProcessParComs_AppInterface(void)
 BOOLN
 ProcessOptions_AppInterface(void)
 {
-	static const char *funcName = "ProcessOptions_AppInterface";
+	static const WChar *funcName = wxT("ProcessOptions_AppInterface");
 	BOOLN	optionFound = FALSE, ok = TRUE;
 	int		optInd = 1, optSub = 0;
-	char	c, *argument;
+	WChar	c, *argument;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	while ((c = Process_Options(appInterfacePtr->argc, appInterfacePtr->argv,
-	  &optInd, &optSub, &argument, "@#:d:hl:P:s:Sp:"))) {
+	  &optInd, &optSub, &argument, wxT("@#:d:hl:P:s:Sp:")))) {
 		optionFound = TRUE;
 		switch (c) {
 		case '@':
@@ -816,18 +838,18 @@ ProcessOptions_AppInterface(void)
 				appInterfacePtr->listCFListAndExit = TRUE;
 				break;
 			default:
-				fprintf(stderr, "Unknown list mode (%s).\n", argument);
+				DSAM_fprintf(stderr, wxT("Unknown list mode (%s).\n"), argument);
 				appInterfacePtr->printUsageFlag = TRUE;
 			}
 			break;
 		case 'P':
-			snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, "%s",
+			DSAM_snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, wxT("%s"),
 			  argument);
 			appInterfacePtr->readAppParFileFlag = TRUE;
 			break;
 		case 's':
 			MarkIgnore_Options(appInterfacePtr->argc, appInterfacePtr->argv,
-			  "-s", OPTIONS_WITH_ARG);
+			  wxT("-s"), OPTIONS_WITH_ARG);
 			if (!SetSimulationFile_AppInterface(argument))
 				ok = FALSE;
 			break;
@@ -855,14 +877,14 @@ ProcessOptions_AppInterface(void)
  * document/view code.
  */
 
-char *
-GetFilePath_AppInterface(char *filePath)
+WChar *
+GetFilePath_AppInterface(WChar *filePath)
 {
-	static char guiFilePath[MAX_FILE_PATH];
+	static WChar guiFilePath[MAX_FILE_PATH];
 
 	if (!GetDSAMPtr_Common()->usingExtFlag)
 		return(filePath);
-	snprintf(guiFilePath, MAX_FILE_PATH, "%s/%s", appInterfacePtr->
+	DSAM_snprintf(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"), appInterfacePtr->
 	  workingDirectory, appInterfacePtr->simulationFile);
 	return(guiFilePath);
 	
@@ -876,19 +898,20 @@ GetFilePath_AppInterface(char *filePath)
  */
 
 void
-ParseParSpecifiers_AppInterface(char *parName, char *appName, char *subProcess)
+ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
+  WChar *subProcess)
 {
-	char	*p;
+	WChar	*p;
 
 	*appName = *subProcess = '\0';
 	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL)
 		return;
 	*p = '\0';
-	snprintf(appName, MAXLINE, "%s", p + 1);
+	DSAM_snprintf(appName, MAXLINE, wxT("%s"), p + 1);
 	if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) == NULL)
 		return;
 	*p = '\0';
-	snprintf(subProcess, MAXLINE, "%s", p + 1);
+	DSAM_snprintf(subProcess, MAXLINE, wxT("%s"), p + 1);
 
 }
 
@@ -901,15 +924,15 @@ ParseParSpecifiers_AppInterface(char *parName, char *appName, char *subProcess)
  */
 
 BOOLN
-SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
+SetProgramParValue_AppInterface(WChar *parName, WChar *parValue, BOOLN readSPF)
 {
-	static const char *funcName = "SetProgramParValue_AppInterface";
+	static const WChar *funcName = wxT("SetProgramParValue_AppInterface");
 	BOOLN	ok = TRUE, creatorApp = TRUE;
-	char	parNameCopy[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
+	WChar	parNameCopy[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
 	UniParPtr	par;
 	UniParListPtr	parList;
 
-	snprintf(parNameCopy, MAXLINE, "%s", parName);
+	DSAM_snprintf(parNameCopy, MAXLINE, wxT("%s"), parName);
 	ParseParSpecifiers_AppInterface(parNameCopy, appName, subProcess);
 	if (*appName)  {
 		creatorApp = (StrNCmpNoCase_Utility_String(appInterfacePtr->appName,
@@ -921,7 +944,7 @@ SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 	if (*subProcess && (*subProcess != '0')) {
 		if ((par = FindUniPar_UniParMgr(&parList, subProcess,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown sub-process '%s' for application.",
+			NotifyError(wxT("%s: Unknown sub-process '%s' for application."),
 			  funcName, subProcess);
 			return(FALSE);
 		} else
@@ -951,20 +974,21 @@ SetProgramParValue_AppInterface(char *parName, char *parValue, BOOLN readSPF)
 DatumPtr
 GetSimulation_AppInterface(void)
 {
-	static const char *funcName = "GetSimulation_AppInterface";
+	static const WChar *funcName = wxT("GetSimulation_AppInterface");
 	DatumPtr	simulation;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	if (!appInterfacePtr->audModel) {
-		NotifyError("%s: Simulation EarObject nod initialised.", funcName);
+		NotifyError(wxT("%s: Simulation EarObject nod initialised."), funcName);
 		return(NULL);
 	}
 	if ((simulation = GetSimulation_ModuleMgr(appInterfacePtr->audModel)) ==
 	   NULL) {
-		NotifyError("%s: Simulation not initialised.", funcName);
+		NotifyError(wxT("%s: Simulation not initialised."), funcName);
 		return(NULL);
 	}
 	return(simulation);
@@ -981,19 +1005,20 @@ GetSimulation_AppInterface(void)
 DatumPtr *
 GetSimPtr_AppInterface(void)
 {
-	static const char *funcName = "GetSimPtr_AppInterface";
+	static const WChar *funcName = wxT("GetSimPtr_AppInterface");
 	DatumPtr	*simPtr;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	if (!appInterfacePtr->audModel) {
-		NotifyError("%s: Simulation EarObject nod initialised.", funcName);
+		NotifyError(wxT("%s: Simulation EarObject nod initialised."), funcName);
 		return(NULL);
 	}
 	if ((simPtr = GetSimPtr_ModuleMgr(appInterfacePtr->audModel)) == NULL) {
-		NotifyError("%s: Simulation not initialised.", funcName);
+		NotifyError(wxT("%s: Simulation not initialised."), funcName);
 		return(NULL);
 	}
 	return(simPtr);
@@ -1009,32 +1034,33 @@ GetSimPtr_AppInterface(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_AppInterface(char *parFileName)
+ReadPars_AppInterface(WChar *parFileName)
 {
-	static const char *funcName = "ReadPars_AppInterface";
+	static const WChar *funcName = wxT("ReadPars_AppInterface");
 	BOOLN	ok = TRUE;
-	char	*filePath;
-	char	parName[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
-	char	parValue[MAX_FILE_PATH];
+	WChar	*filePath;
+	WChar	parName[MAXLINE], appName[MAXLINE], subProcess[MAXLINE];
+	WChar	parValue[MAX_FILE_PATH];
 	FILE	*fp;
 	UniParPtr	par;
 	UniParListPtr	tempParList;
 
 	filePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  parFileName);
 		return(FALSE);
 	}
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
+	while (GetPars_ParFile(fp, wxT("%s %s"), parName, parValue)) {
 		ParseParSpecifiers_AppInterface(parName, appName, subProcess);
 		tempParList = appInterfacePtr->parList;
 		if (*subProcess) {
 			if ((par = FindUniPar_UniParMgr(&tempParList, subProcess,
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
-				NotifyError("%s: Unknown sub-process '%s' for application.",
-				  funcName, subProcess);
+				NotifyError(wxT("%s: Unknown sub-process '%s' for "
+				  "application."), funcName, subProcess);
 				ok = FALSE;
 				break;
 			} else
@@ -1042,8 +1068,8 @@ ReadPars_AppInterface(char *parFileName)
 		}
 		if ((par = FindUniPar_UniParMgr(&tempParList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Unknown parameter '%s' for application.", funcName,
-			  parName);
+			NotifyError(wxT("%s: Unknown parameter '%s' for application."),
+			  funcName, parName);
 			ok = FALSE;
 		} else {
 			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
@@ -1055,7 +1081,8 @@ ReadPars_AppInterface(char *parFileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Could not set parameters for application.", funcName);
+		NotifyError(wxT("%s: Could not set parameters for application."),
+		  funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1079,49 +1106,51 @@ ReadPars_AppInterface(char *parFileName)
 BOOLN
 ReadProgParFile_AppInterface(void)
 {
-	static const char	*funcName = "ReadProgParFile_AppInterface";
+	static const WChar	*funcName = wxT("ReadProgParFile_AppInterface");
 	static BOOLN	readProgParFileFlag = FALSE;
 	BOOLN	ok = TRUE, foundDivider = FALSE;
-	char	parName[MAXLINE], parValue[MAX_FILE_PATH], oldSPF[MAX_FILE_PATH];
+	WChar	parName[MAXLINE], parValue[MAX_FILE_PATH], oldSPF[MAX_FILE_PATH];
 	FILE	*fp;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (readProgParFileFlag)
 		return(TRUE);
 	readProgParFileFlag = TRUE;
-	if ((fp = fopen(appInterfacePtr->simulationFile, "r")) == NULL) {
-		NotifyError("%s: Could not open '%s' parameter file.", funcName,
+	if ((fp = fopen((char *) appInterfacePtr->simulationFile, "r")) == NULL) {
+		NotifyError(wxT("%s: Could not open '%s' parameter file."), funcName,
 		  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 		readProgParFileFlag = FALSE;
 		return(FALSE);
 	}
-	strcpy(oldSPF, appInterfacePtr->simulationFile);
+	DSAM_strcpy(oldSPF, appInterfacePtr->simulationFile);
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
-	while (!foundDivider && GetPars_ParFile(fp, "%s %s", parName, parValue))
-		if (strcmp(parName, SIMSCRIPT_SIMPARFILE_DIVIDER) == 0)
+	while (!foundDivider && GetPars_ParFile(fp, wxT("%s %s"), parName,
+	  parValue))
+		if (DSAM_strcmp(parName, SIMSCRIPT_SIMPARFILE_DIVIDER) == 0)
 			foundDivider = TRUE;
 	if (!foundDivider) {
 		Free_ParFile();
 		readProgParFileFlag = FALSE;
 		return(TRUE);
 	}
-	while (ok && GetPars_ParFile(fp, "%s %s", parName, parValue))
+	while (ok && GetPars_ParFile(fp, wxT("%s %s"), parName, parValue))
 		ok = SetProgramParValue_AppInterface(parName, parValue, TRUE);
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
 	readProgParFileFlag = FALSE;
-	if (!ok && (strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
-		NotifyError("%s: Invalid parameters in file '%s', program parameter "
-		  "section (%s).", funcName, GetFilePath_AppInterface(appInterfacePtr->
-		  simulationFile), parName);
+	if (!ok && (DSAM_strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
+		NotifyError(wxT("%s: Invalid parameters in file '%s', program "
+		  "parameter  section (%s)."), funcName, GetFilePath_AppInterface(
+		  appInterfacePtr->simulationFile), parName);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->simulationFile, oldSPF);
+	DSAM_strcpy(appInterfacePtr->simulationFile, oldSPF);
 	return(TRUE);
 
 }
@@ -1135,17 +1164,18 @@ ReadProgParFile_AppInterface(void)
 BOOLN
 InitSimFromSimScript_AppInterface(void)
 {
-	static const char *funcName = "InitSimFromSimScript_AppInterface";
+	static const WChar *funcName = wxT("InitSimFromSimScript_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!appInterfacePtr->audModel) {
 		FreeSim_AppInterface();
-		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
-		  NULL) {
-			NotifyError("%s: Could not initialise process.", funcName);
+		if ((appInterfacePtr->audModel = Init_EarObject(wxT(
+		  "Util_SimScript"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise process."), funcName);
 			FreeSim_AppInterface();
 			appInterfacePtr->checkMainInit = TRUE;
 			return(FALSE);
@@ -1180,10 +1210,11 @@ FreeSim_AppInterface(void)
 BOOLN
 SetSimFileType_AppInterface(int simFileType)
 {
-	static const char	*funcName = "SetSimFileType_AppInterface";
+	static const WChar	*funcName = wxT("SetSimFileType_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->simFileType = simFileType;
@@ -1198,15 +1229,15 @@ SetSimFileType_AppInterface(int simFileType)
  */
 
 BOOLN
-SetWorkingDirectory_AppInterface(char * workingDirectory)
+SetWorkingDirectory_AppInterface(WChar * workingDirectory)
 {
-	static const char	*funcName = "SetWorkingDirectory_AppInterface";
+	static const WChar	*funcName = wxT("SetWorkingDirectory_AppInterface");
 
 	if (appInterfacePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->workingDirectory, MAX_FILE_PATH, "%s",
+	DSAM_snprintf(appInterfacePtr->workingDirectory, MAX_FILE_PATH, wxT("%s"),
 	  workingDirectory);
 	return(TRUE);
 
@@ -1221,18 +1252,19 @@ SetWorkingDirectory_AppInterface(char * workingDirectory)
 BOOLN
 InitSimulation_AppInterface(void)
 {
-	static const char *funcName = "InitSimulation_AppInterface";
+	static const WChar *funcName = wxT("InitSimulation_AppInterface");
 	BOOLN	ok = TRUE;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!appInterfacePtr->audModel) {
 		FreeSim_AppInterface();
-		if ((appInterfacePtr->audModel = Init_EarObject("Util_SimScript")) ==
-		  NULL) {
-			NotifyError("%s: Could not initialise process.", funcName);
+		if ((appInterfacePtr->audModel = Init_EarObject(wxT(
+		  "Util_SimScript"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise process."), funcName);
 			ok = FALSE;
 		}
 		if (GetDSAMPtr_Common()->usingGUIFlag) {
@@ -1267,14 +1299,15 @@ InitSimulation_AppInterface(void)
 BOOLN
 SetAppName_AppInterface(WChar *appName)
 {
-	static const char *funcName = "SetAppName_AppInterface";
+	static const WChar *funcName = wxT("SetAppName_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 
-	snprintf(appInterfacePtr->appName, MAX_FILE_PATH, "%s", appName);
+	DSAM_snprintf(appInterfacePtr->appName, MAX_FILE_PATH, wxT("%s"), appName);
 	return(TRUE);
 
 } 
@@ -1286,16 +1319,17 @@ SetAppName_AppInterface(WChar *appName)
  */
 
 BOOLN
-SetAppVersion_AppInterface(char *appVersion)
+SetAppVersion_AppInterface(WChar *appVersion)
 {
-	static const char *funcName = "SetAppVersion_AppInterface";
+	static const WChar *funcName = wxT("SetAppVersion_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 
-	strcpy(appInterfacePtr->appVersion, appVersion);
+	DSAM_strcpy(appInterfacePtr->appVersion, appVersion);
 	return(TRUE);
 
 } 
@@ -1308,16 +1342,17 @@ SetAppVersion_AppInterface(char *appVersion)
  */
 
 BOOLN
-SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion)
+SetCompiledDSAMVersion_AppInterface(WChar *compiledDSAMVersion)
 {
-	static const char *funcName = "SetCompiledDSAMVersion_AppInterface";
+	static const WChar *funcName = wxT("SetCompiledDSAMVersion_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 
-	strcpy(appInterfacePtr->compiledDSAMVersion, compiledDSAMVersion);
+	DSAM_strcpy(appInterfacePtr->compiledDSAMVersion, compiledDSAMVersion);
 	return(TRUE);
 
 } 
@@ -1329,15 +1364,16 @@ SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion)
  */
 
 BOOLN
-SetTitle_AppInterface(char *title)
+SetTitle_AppInterface(WChar *title)
 {
-	static const char *funcName = "SetTitle_AppInterface";
+	static const WChar *funcName = wxT("SetTitle_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
-	snprintf(appInterfacePtr->title, MAX_FILE_PATH, "%s", title);
+	DSAM_snprintf(appInterfacePtr->title, MAX_FILE_PATH, wxT("%s"), title);
 	return(TRUE);
 
 } 
@@ -1350,24 +1386,25 @@ SetTitle_AppInterface(char *title)
  */
 
 BOOLN
-AddAppHelpBook_AppInterface(const char *bookName)
+AddAppHelpBook_AppInterface(const WChar *bookName)
 {
-	static const char *funcName = "AddAppHelpBook_AppInterface";
+	static const WChar *funcName = wxT("AddAppHelpBook_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (*bookName == '\0') {
-		NotifyError("%s: Book name not set.\n", funcName);
+		NotifyError(wxT("%s: Book name not set.\n"), funcName);
 		return(FALSE);
 	}
 	if ((appInterfacePtr->numHelpBooks - 1) == APP_MAX_HELP_BOOKS) {
-		NotifyError("%s: Maximum number of help books added (%d).", funcName,
-		  APP_MAX_HELP_BOOKS);
+		NotifyError(wxT("%s: Maximum number of help books added (%d)."),
+		  funcName, APP_MAX_HELP_BOOKS);
 		return(FALSE);
 	}
-	strcpy(appInterfacePtr->appHelpBooks[appInterfacePtr->numHelpBooks++],
+	DSAM_strcpy(appInterfacePtr->appHelpBooks[appInterfacePtr->numHelpBooks++],
 	  bookName);
 	return(TRUE);
 
@@ -1381,24 +1418,26 @@ AddAppHelpBook_AppInterface(const char *bookName)
  */
 
 BOOLN
-SetPars_AppInterface(char *diagMode, char *simulationFile, char *segmentMode)
+SetPars_AppInterface(WChar *diagMode, WChar *simulationFile, WChar *segmentMode)
 {
-	static const char *funcName = "SetPars_AppInterface";
+	static const WChar *funcName = wxT("SetPars_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!SetDiagMode_AppInterface(diagMode)) {
-		NotifyError("%s: Could not set diagnostic mode.", funcName);
+		NotifyError(wxT("%s: Could not set diagnostic mode."), funcName);
 		return(FALSE);
 	}
 	if (!SetSimulationFile_AppInterface(simulationFile)) {
-		NotifyError("%s: Could not set simulation file mode.", funcName);
+		NotifyError(wxT("%s: Could not set simulation file mode."), funcName);
 		return(FALSE);
 	}
 	if (!SetSegmentMode_AppInterface(segmentMode)) {
-		NotifyError("%s: Could not set segment processing mode.", funcName);
+		NotifyError(wxT("%s: Could not set segment processing mode."),
+		  funcName);
 		return(FALSE);
 	}
 	appInterfacePtr->checkMainInit = FALSE;
@@ -1416,7 +1455,7 @@ void
 ListParsAndExit_AppInterface(void)
 {	
 	SetUsingGUIStatus(FALSE);
-	SetParsFile_Common("screen", OVERWRITE);
+	SetParsFile_Common(wxT("screen"), OVERWRITE);
 	ListParameters_AppInterface();
 	exit(0);
 
@@ -1431,20 +1470,22 @@ ListParsAndExit_AppInterface(void)
 BOOLN
 ListParameters_AppInterface(void)
 {
-	static const char *funcName = "ListParameters_AppInterface";
-	char	suffix[MAXLINE];
+	static const WChar *funcName = wxT("ListParameters_AppInterface");
+	WChar	suffix[MAXLINE];
 	
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!PrintSimParFile_ModuleMgr(appInterfacePtr->audModel)) {
-		NotifyError("%s: Could not print simulation parameter file.", funcName);
+		NotifyError(wxT("%s: Could not print simulation parameter file."),
+		  funcName);
 		return(FALSE);
 	}
-	snprintf(suffix, MAXLINE, ".%s%s", appInterfacePtr->appName,
+	DSAM_snprintf(suffix, MAXLINE, wxT(".%s%s"), appInterfacePtr->appName,
 	  UNIPAR_TOP_PARENT_LABEL);
-	PrintPars_UniParMgr(appInterfacePtr->parList, "", suffix);
+	PrintPars_UniParMgr(appInterfacePtr->parList, wxT(""), suffix);
 	return(TRUE);
 
 }
@@ -1458,25 +1499,26 @@ ListParameters_AppInterface(void)
 void
 ListCFListAndExit_AppInterface(void)
 {
-	static const char *funcName = "ListCFListAndExit_AppInterface";
+	static const WChar *funcName = wxT("ListCFListAndExit_AppInterface");
 	CFListPtr	theBMCFs;
 	DatumPtr	simulation, bMDatumPtr;
 	
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		exit(1);
 	}
 	if ((simulation = GetSimulation_ModuleMgr(appInterfacePtr->audModel)) ==
 	   NULL) {
-		NotifyError("%s: Simulation not initialised.", funcName);
+		NotifyError(wxT("%s: Simulation not initialised."), funcName);
 		exit(1);
 	}
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-	SetParsFile_Common("screen", OVERWRITE);
+	SetParsFile_Common(wxT("screen"), OVERWRITE);
 	if (((bMDatumPtr = FindModuleProcessInst_Utility_Datum(simulation,
-	  "BM_")) == NULL) || ((theBMCFs = *GetUniParPtr_ModuleMgr(bMDatumPtr->data,
-	  "cflist")->valuePtr.cFPtr) == NULL)) {
-		NotifyError("%s: Could not list CFList.", funcName);
+	  wxT("BM_"))) == NULL) || ((theBMCFs = *GetUniParPtr_ModuleMgr(
+	  bMDatumPtr->data, wxT("cflist"))->valuePtr.cFPtr) == NULL)) {
+		NotifyError(wxT("%s: Could not list CFList."), funcName);
 		exit(1);
 	}
 	PrintList_CFList(theBMCFs);
@@ -1495,10 +1537,11 @@ ListCFListAndExit_AppInterface(void)
 void
 ResetCommandArgFlags_AppInterface(void)
 {
-	static const char *funcName = "ResetCommandArgFlags_AppInterface";
+	static const WChar *funcName = wxT("ResetCommandArgFlags_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		exit(1);
 	}
 	appInterfacePtr->checkMainInit = TRUE;
@@ -1514,12 +1557,13 @@ ResetCommandArgFlags_AppInterface(void)
  */
 
 void
-SetArgcAndArgV_AppInterface(int theArgc, char **theArgv)
+SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv)
 {
-	static const char *funcName = "SetArgcAndArgV_AppInterface";
+	static const WChar *funcName = wxT("SetArgcAndArgV_AppInterface");
 	
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		exit(1);
 	}
 	appInterfacePtr->argc = theArgc;
@@ -1537,12 +1581,12 @@ SetArgcAndArgV_AppInterface(int theArgc, char **theArgv)
 
 BOOLN
 InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
-  char **theArgv)
+  WChar **theArgv)
 {
-	static const char *funcName = "InitProcessVariables_AppInterface";
+	static const WChar *funcName = wxT("InitProcessVariables_AppInterface");
 
 	if (!appInterfacePtr && !Init_AppInterface(GLOBAL)) {
-		NotifyError("%s: Could not initialise the application interface.",
+		NotifyError(wxT("%s: Could not initialise the application interface."),
 		  funcName);
 		exit(1);
 	}
@@ -1555,12 +1599,12 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			if (appInterfacePtr->RegisterUserModules) {
 				if (!InitUserModuleList_ModuleReg(appInterfacePtr->
 				  maxUserModules)) {
-					NotifyError("%s: Could not initialise user module list.",
-					  funcName);
+					NotifyError(wxT("%s: Could not initialise user module "
+					  "list."), funcName);
 					return(FALSE);
 				}
 				if (!(* appInterfacePtr->RegisterUserModules)()) {
-					NotifyError("%s: Failed to register user modules.",
+					NotifyError(wxT("%s: Failed to register user modules."),
 					  funcName);
 					return(FALSE);
 				}
@@ -1583,8 +1627,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 				(* appInterfacePtr->PrintUsage)();
 			exit(0);
 		}
-		DPrint("Starting %s Application version %s [DSAM Version: %s "
-		  "(dynamic),\n%s (compiled)]...\n", appInterfacePtr->appName,
+		DPrint(wxT("Starting %s Application version %s [DSAM Version: %s "
+		  "(dynamic),\n%s (compiled)]...\n"), appInterfacePtr->appName,
 		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
 		  appInterfacePtr->compiledDSAMVersion);
 
@@ -1592,7 +1636,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 	if (appInterfacePtr->updateProcessVariablesFlag) {
 		if (appInterfacePtr->readAppParFileFlag) {
 			if (!ReadPars_AppInterface(appInterfacePtr->appParFile)) {
-				NotifyError("%s: Failed to set application parameters.",
+				NotifyError(wxT("%s: Failed to set application parameters."),
 				  funcName);
 				return(FALSE);
 			}
@@ -1601,16 +1645,17 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		if (appInterfacePtr->canLoadSimulationFlag &&
 		  appInterfacePtr->simulationFileFlag) {
 			if (!InitSimulation_AppInterface()) {
-				NotifyError("%s: Could not Initialise simulation.", funcName);
+				NotifyError(wxT("%s: Could not Initialise simulation."),
+				  funcName);
 				return(FALSE);
 			}
 			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
 			  audModel));
 			if ((GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
 			  UTILITY_SIMSCRIPT_SPF_FILE) && !ReadProgParFile_AppInterface()) {
-				NotifyError("%s: Could not read the program settings in\nfile "
-				  "'%s'.", funcName, GetFilePath_AppInterface(appInterfacePtr->
-				  simulationFile));
+				NotifyError(wxT("%s: Could not read the program settings in\n"
+				  "file '%s'."), funcName, GetFilePath_AppInterface(
+				  appInterfacePtr->simulationFile));
 				return(FALSE);
 			}
 			if (!ProcessParComs_AppInterface())
@@ -1618,7 +1663,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		}
 		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
 		  PostInitFunc)()) {
-			NotifyError("%s: Failed to run post initialisation function.",
+			NotifyError(wxT("%s: Failed to run post initialisation function."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1648,10 +1693,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 BOOLN
 SetCanFreePtrFlag_AppInterface(BOOLN status)
 {
-	/*static const char *funcName = "SetCanFreePtrFlag_AppInterface";*/
-
 	if (!appInterfacePtr) {
-		/*NotifyError("%s: Application interface not initialised.",funcName);*/
 		return(FALSE);
 	}
 	appInterfacePtr->canFreePtrFlag = status;
@@ -1669,10 +1711,11 @@ SetCanFreePtrFlag_AppInterface(BOOLN status)
 AppInterfacePtr
 GetPtr_AppInterface(void)
 {
-	static const char *funcName = "GetPtr_AppInterface";
+	static const WChar *funcName = wxT("GetPtr_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	return(appInterfacePtr);
@@ -1688,19 +1731,20 @@ GetPtr_AppInterface(void)
  */
 
 UniParPtr
-GetUniParPtr_AppInterface(char *parName)
+GetUniParPtr_AppInterface(WChar *parName)
 {
-	static const char *funcName = "GetUniParPtr_AppInterface";
+	static const WChar *funcName = wxT("GetUniParPtr_AppInterface");
 	UniParPtr	par;
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	if ((par = GetUniParPtr_ModuleMgr(appInterfacePtr->audModel, parName)) ==
 	  NULL) {
-		NotifyError("%s: Could not find simulation parameter '%s'.", funcName,
-		  parName);
+		NotifyError(wxT("%s: Could not find simulation parameter '%s'."),
+		  funcName, parName);
 		return(NULL);
 	}
 	return(par);
@@ -1717,10 +1761,11 @@ GetUniParPtr_AppInterface(char *parName)
 BOOLN
 PrintSimPars_AppInterface(void)
 {
-	static const char *funcName = "PrintSimPars_AppInterface";
+	static const WChar *funcName = wxT("PrintSimPars_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	return(PrintPars_ModuleMgr(appInterfacePtr->audModel));
@@ -1736,10 +1781,11 @@ PrintSimPars_AppInterface(void)
 BOOLN
 ResetSim_AppInterface(void)
 {
-	static const char *funcName = "ResetSim_AppInterface";
+	static const WChar *funcName = wxT("ResetSim_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	ResetProcess_EarObject(appInterfacePtr->audModel);
@@ -1757,15 +1803,16 @@ ResetSim_AppInterface(void)
 BOOLN
 RunSim_AppInterface(void)
 {
-	static const char *funcName = "RunSim_AppInterface";
+	static const WChar *funcName = wxT("RunSim_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	if (!RunProcess_ModuleMgr(appInterfacePtr->audModel)) {
-		NotifyError("%s: Could not run main auditory model simulation '%s'.",
-		  funcName, appInterfacePtr->simulationFile);
+		NotifyError(wxT("%s: Could not run main auditory model simulation "
+		  "'%s'."), funcName, appInterfacePtr->simulationFile);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1781,14 +1828,16 @@ RunSim_AppInterface(void)
 EarObjectPtr
 GetSimProcess_AppInterface(void)
 {
-	static const char *funcName = "GetSimProcess_AppInterface";
+	static const WChar *funcName = wxT("GetSimProcess_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	if (!appInterfacePtr->audModel) {
-		NotifyError("%s: Simulation EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: Simulation EarObject not initialised."),
+		  funcName);
 		return(NULL);
 	}
 	return(appInterfacePtr->audModel);
@@ -1804,12 +1853,13 @@ GetSimProcess_AppInterface(void)
  */
 
 BOOLN
-SetSimPar_AppInterface(char *parName, char *value)
+SetSimPar_AppInterface(WChar *parName, WChar *value)
 {
-	static const char *funcName = "SetSimPar_AppInterface";
+	static const WChar *funcName = wxT("SetSimPar_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	return(SetPar_ModuleMgr(appInterfacePtr->audModel, parName, value));
@@ -1825,12 +1875,13 @@ SetSimPar_AppInterface(char *parName, char *value)
  */
 
 BOOLN
-SetRealSimPar_AppInterface(char *parName, double value)
+SetRealSimPar_AppInterface(WChar *parName, double value)
 {
-	static const char *funcName = "SetRealSimPar_AppInterface";
+	static const WChar *funcName = wxT("SetRealSimPar_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	return(SetRealPar_ModuleMgr(appInterfacePtr->audModel, parName, value));
@@ -1846,12 +1897,13 @@ SetRealSimPar_AppInterface(char *parName, double value)
  */
 
 BOOLN
-SetRealArraySimPar_AppInterface(char *parName, int index, double value)
+SetRealArraySimPar_AppInterface(WChar *parName, int index, double value)
 {
-	static const char *funcName = "SetRealArraySimPar_AppInterface";
+	static const WChar *funcName = wxT("SetRealArraySimPar_AppInterface");
 
 	if (!appInterfacePtr) {
-		NotifyError("%s: Application interface not initialised.", funcName);
+		NotifyError(wxT("%s: Application interface not initialised."),
+		  funcName);
 		return(FALSE);
 	}
 	return(SetRealArrayPar_ModuleMgr(appInterfacePtr->audModel, parName, index,

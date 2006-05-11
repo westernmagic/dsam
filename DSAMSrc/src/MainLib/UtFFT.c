@@ -173,7 +173,7 @@ Calc_FFT(double *data, unsigned long nn, int isign)
 BOOLN
 CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 {
-	static const char *funcName = "CalcReal_FFT";
+	static const WChar *funcName = wxT("CalcReal_FFT");
 	BOOLN	localFTArray = FALSE;
 	ChanLen	i, k, n;
 	double	h1r, h1i, h2r, h2i;
@@ -182,15 +182,15 @@ CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 	register ChanData	*ptr;
 	
 	if (!CheckPars_SignalData(signal)) {
-		NotifyError("%s: Signal not correctly set.", funcName);		
+		NotifyError(wxT("%s: Signal not correctly set."), funcName);		
 		return(FALSE);
 	}
 	n = Length_FFT(signal->length);
 	if (!fT) {
 		localFTArray = TRUE;
 		if ((fT = (double *) calloc(n, sizeof(double))) == NULL) {
-			NotifyError("%s: Couldn't allocate memory for complex data array.",
-			  funcName);
+			NotifyError(wxT("%s: Couldn't allocate memory for complex data "
+			  "array."), funcName);
 			return(FALSE);
 		}
 	}

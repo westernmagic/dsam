@@ -59,8 +59,8 @@ DiagFrame::DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	// Make text window for diagnostics
 	int width, height;
 	parent->GetClientSize(&width, &height);
-	diagnosticsText = new wxTextCtrl(this, -1, "DSAM Diagnostics "
-	  "Window\n", wxPoint(0, 0), wxSize(width, height), wxTE_MULTILINE);
+	diagnosticsText = new wxTextCtrl(this, -1, wxT("DSAM Diagnostics "
+	  "Window\n"), wxPoint(0, 0), wxSize(width, height), wxTE_MULTILINE);
 	diagnosticsText->SetFont(*diagnosticsWindowFont);
 
 }

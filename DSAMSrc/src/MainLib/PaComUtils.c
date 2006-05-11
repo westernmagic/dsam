@@ -43,40 +43,40 @@
 
 BOOLN
 AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
-  TypeSpecifier type, char *label, CommandSpecifier command,
+  TypeSpecifier type, WChar *label, CommandSpecifier command,
   ScopeSpecifier scope)
 {
-	static const char *funcName = "AddToQueue_SetComUtil";
+	static const WChar *funcName = wxT("AddToQueue_SetComUtil");
 	int			i;
 	SetComPtr	p, pp;
 	
 	if ((p = (SetComPtr) malloc(sizeof(SetCom))) == NULL) {
-		NotifyError("%s: Out of memory for SetComPtr (label = '%s').", funcName,
-		  label);
+		NotifyError(wxT("%s: Out of memory for SetComPtr (label = '%s')."),
+		  funcName, label);
 		return(FALSE);
 	}
-	if ((p->label = (char *) malloc(strlen(label) + 1)) == NULL) {
-		NotifyError("%s: Out of memory for label.", funcName);
+	if ((p->label = (WChar *) malloc(strlen(label) + 1)) == NULL) {
+		NotifyError(wxT("%s: Out of memory for label."), funcName);
 		free(p);
 		return(FALSE);
 	}
-	strcpy(p->label, label);
+	DSAM_strcpy(p->label, label);
 	p->parCount = parCount;
 	p->scope = scope;
 	p->command = command;
 	p->type = type;
 	switch (type) {
 	case PA_STRING:
-		if ((p->u.string = (char *) malloc(p->parCount)) == NULL) {
-			NotifyError("%s: Out of memory for string '%s'.",
-			  (char *) parameter);
+		if ((p->u.string = (WChar *) malloc(p->parCount)) == NULL) {
+			NotifyError(wxT("%s: Out of memory for string '%s'."),
+			  (WChar *) parameter);
 			return(FALSE);
 		}
-		strcpy(p->u.string, (char *) parameter);
+		DSAM_strcpy(p->u.string, (WChar *) parameter);
 		break;
 	case PA_INT:
 		if ((p->u.intVal = (int *) calloc(p->parCount, sizeof(int))) == NULL) {
-			NotifyError("%s: Out of memory for integer array ([%d]).",
+			NotifyError(wxT("%s: Out of memory for integer array ([%d])."),
 			  p->parCount);
 			return(FALSE);
 		}
@@ -86,7 +86,7 @@ AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
 	case PA_DOUBLE:
 		if ((p->u.doubleVal = (double *) calloc(p->parCount, sizeof(double))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for double array ([%d]).",
+			NotifyError(wxT("%s: Out of memory for double array ([%d])."),
 			  p->parCount);
 			return(FALSE);
 		}
@@ -96,7 +96,7 @@ AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
 	case PA_LONG:
 		if ((p->u.longVal = (long *) calloc(p->parCount, sizeof(long))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for long array ([%d]).",
+			NotifyError(wxT("%s: Out of memory for long array ([%d])."),
 			  p->parCount);
 			return(FALSE);
 		}
@@ -107,7 +107,8 @@ AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
 		/* Nothing to be done here. */
 		break;
 	default:
-		NotifyError("%s: Illegal parameter type (%d).", funcName, (int) type);
+		NotifyError(wxT("%s: Illegal parameter type (%d)."), funcName, (int)
+		  type);
 		free(p->label);
 		free(p);
 		return(FALSE);
@@ -136,7 +137,7 @@ AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
 void
 RemoveFromQueue_SetComUtil(SetComPtr *head)
 {
-	static const char *funcName = "RemoveFromQueue_SetComUtil";
+	static const WChar *funcName = wxT("RemoveFromQueue_SetComUtil");
 	SetComPtr	p;
 
 	if (*head == NULL)
@@ -166,7 +167,7 @@ RemoveFromQueue_SetComUtil(SetComPtr *head)
 		/* Nothing to be done here. */
 		break;
 	default:
-		NotifyError("%s: Illegal parameter type (%d).", funcName,
+		NotifyError(wxT("%s: Illegal parameter type (%d)."), funcName,
 		  (int) p->type);
 	} /* switch */
 	free(p);
@@ -200,35 +201,35 @@ RemoveQueue_SetComUtil(SetComPtr *head)
 void
 PrintQueue_SetComUtil(SetComPtr p)
 {
-	static const char *funcName = "Execute_SetComUtil";
+	static const WChar *funcName = wxT("Execute_SetComUtil");
 	int		i;
 	
-	printf("Command queue:-\n");
+	printf(wxT("Command queue:-\n"));
 	while (p != NULL) {
-		printf("label = '%s', ", p->label);
-		printf("value = ");
+		printf(wxT("label = '%s', "), p->label);
+		printf(wxT("value = "));
 		switch (p->type) {
 		case PA_STRING:
-			printf("'%s'", p->u.string);
+			printf(wxT("'%s'"), p->u.string);
 			break;
 		case PA_INT:
 			for (i = 0; i < p->parCount; i++)
-				printf("[%d]: %d", i, p->u.intVal[i]);
+				printf(wxT("[%d]: %d"), i, p->u.intVal[i]);
 			break;
 		case PA_DOUBLE:
 			for (i = 0; i < p->parCount; i++)
-				printf("[%d]: %g", i, p->u.doubleVal[i]);
+				printf(wxT("[%d]: %g"), i, p->u.doubleVal[i]);
 			break;
 		case PA_LONG:
 			for (i = 0; i < p->parCount; i++)
-				printf("[%d]: %lu", i, p->u.longVal[i]);
+				printf(wxT("[%d]: %lu"), i, p->u.longVal[i]);
 			break;
 		default:
-			NotifyError("%s: Illegal parameter type (%d).", funcName,
+			NotifyError(wxT("%s: Illegal parameter type (%d)."), funcName,
 			  (int) p->type);
 			break;
 		} /* switch */
-		printf("\n");
+		printf(wxT("\n"));
 		p = p->next;
 	}
 

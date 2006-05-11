@@ -51,8 +51,6 @@ AudioInPtr	audioInPtr = NULL;
 BOOLN
 Free_IO_AudioIn(void)
 {
-	/* static const char	*funcName = "Free_IO_AudioIn";  */
-
 	if (audioInPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IO_AudioIn();
@@ -81,18 +79,19 @@ Free_IO_AudioIn(void)
 BOOLN
 Init_IO_AudioIn(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IO_AudioIn";
+	static const WChar	*funcName = wxT("Init_IO_AudioIn");
 
 	if (parSpec == GLOBAL) {
 		if (audioInPtr != NULL)
 			Free_IO_AudioIn();
 		if ((audioInPtr = (AudioInPtr) malloc(sizeof(AudioIn))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (audioInPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -114,7 +113,7 @@ Init_IO_AudioIn(ParameterSpecifier parSpec)
 	audioInPtr->gain = 0.0;
 
 	if (!SetUniParList_IO_AudioIn()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IO_AudioIn();
 		return(FALSE);
 	}
@@ -137,47 +136,49 @@ Init_IO_AudioIn(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IO_AudioIn(void)
 {
-	static const char *funcName = "SetUniParList_IO_AudioIn";
+	static const WChar *funcName = wxT("SetUniParList_IO_AudioIn");
 	UniParPtr	pars;
 
 	if ((audioInPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IO_AUDIOIN_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = audioInPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_DEVICEID], "DEVICE_ID",
-	  "Device ID/number (int).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_DEVICEID], wxT("DEVICE_ID"),
+	  wxT("Device ID/number (int)."),
 	  UNIPAR_INT,
 	  &audioInPtr->deviceID, NULL,
 	  (void * (*)) SetDeviceID_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_NUMCHANNELS], "NUM_CHANNELS",
-	  "Number of input channels, i.e. 1 = mono, 2 = stereo (int.)",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_NUMCHANNELS], wxT("NUM_CHANNELS"),
+	  wxT("Number of input channels, i.e. 1 = mono, 2 = stereo (int.)"),
 	  UNIPAR_INT,
 	  &audioInPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_SEGMENTSPERBUFFER], "SEGMENTS_PER_BUFFER",
-	  "Main input buffer length: multiples of the (segment) duration (int).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_SEGMENTSPERBUFFER], wxT(
+	  "SEGMENTS_PER_BUFFER"),
+	  wxT("Main input buffer length: multiples of the (segment) duration "
+	  "(int)."),
 	  UNIPAR_INT,
 	  &audioInPtr->segmentsPerBuffer, NULL,
 	  (void * (*)) SetSegmentsPerBuffer_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_SAMPLERATE], "SAMPLE_RATE",
-	  "Input sample rate = 1 / sampling interval (Hz).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_SAMPLERATE], wxT("SAMPLE_RATE"),
+	  wxT("Input sample rate = 1 / sampling interval (Hz)."),
 	  UNIPAR_REAL,
 	  &audioInPtr->sampleRate, NULL,
 	  (void * (*)) SetSampleRate_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_DURATION], "DURATION",
-	  "Input duration or segment duration (s).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_DURATION], wxT("DURATION"),
+	  wxT("Input duration or segment duration (s)."),
 	  UNIPAR_REAL,
 	  &audioInPtr->duration, NULL,
 	  (void * (*)) SetDuration_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_SLEEP], "SLEEP",
-	  "Sleep time between process reads (ms).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_SLEEP], wxT("SLEEP"),
+	  wxT("Sleep time between process reads (ms)."),
 	  UNIPAR_REAL,
 	  &audioInPtr->sleep, NULL,
 	  (void * (*)) SetSleep_IO_AudioIn);
-	SetPar_UniParMgr(&pars[IO_AUDIOIN_GAIN], "GAIN",
-	  "Signal gain (dB).",
+	SetPar_UniParMgr(&pars[IO_AUDIOIN_GAIN], wxT("GAIN"),
+	  wxT("Signal gain (dB)."),
 	  UNIPAR_REAL,
 	  &audioInPtr->gain, NULL,
 	  (void * (*)) SetGain_IO_AudioIn);
@@ -195,15 +196,15 @@ SetUniParList_IO_AudioIn(void)
 UniParListPtr
 GetUniParListPtr_IO_AudioIn(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IO_AudioIn";
+	static const WChar	*funcName = wxT("GetUniParListPtr_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (audioInPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(audioInPtr->parList);
@@ -221,10 +222,10 @@ GetUniParListPtr_IO_AudioIn(void)
 BOOLN
 SetDeviceID_IO_AudioIn(int theDeviceID)
 {
-	static const char	*funcName = "SetDeviceID_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetDeviceID_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -246,14 +247,15 @@ SetDeviceID_IO_AudioIn(int theDeviceID)
 BOOLN
 SetNumChannels_IO_AudioIn(int theNumChannels)
 {
-	static const char	*funcName = "SetNumChannels_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetNumChannels_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((theNumChannels < 1 ) || (theNumChannels > 2)) {
-		NotifyError("%s: The number of channels must be 1 or 2.", funcName);
+		NotifyError(wxT("%s: The number of channels must be 1 or 2."),
+		  funcName);
 		return(FALSE);
 	}
 	audioInPtr->numChannelsFlag = TRUE;
@@ -274,10 +276,10 @@ SetNumChannels_IO_AudioIn(int theNumChannels)
 BOOLN
 SetSampleRate_IO_AudioIn(double theSampleRate)
 {
-	static const char	*funcName = "SetSampleRate_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetSampleRate_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -299,10 +301,10 @@ SetSampleRate_IO_AudioIn(double theSampleRate)
 BOOLN
 SetDuration_IO_AudioIn(double theDuration)
 {
-	static const char	*funcName = "SetDuration_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetDuration_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -324,10 +326,10 @@ SetDuration_IO_AudioIn(double theDuration)
 BOOLN
 SetSegmentsPerBuffer_IO_AudioIn(int theSegmentsPerBuffer)
 {
-	static const char	*funcName = "SetSegmentsPerBuffer_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetSegmentsPerBuffer_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -349,10 +351,10 @@ SetSegmentsPerBuffer_IO_AudioIn(int theSegmentsPerBuffer)
 BOOLN
 SetSleep_IO_AudioIn(double theSleep)
 {
-	static const char	*funcName = "SetSleep_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetSleep_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -374,10 +376,10 @@ SetSleep_IO_AudioIn(double theSleep)
 BOOLN
 SetGain_IO_AudioIn(double theGain)
 {
-	static const char	*funcName = "SetGain_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetGain_IO_AudioIn");
 
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -401,40 +403,40 @@ SetGain_IO_AudioIn(double theGain)
 BOOLN
 CheckPars_IO_AudioIn(void)
 {
-	static const char	*funcName = "CheckPars_IO_AudioIn";
+	static const WChar	*funcName = wxT("CheckPars_IO_AudioIn");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (audioInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!audioInPtr->deviceIDFlag) {
-		NotifyError("%s: deviceID variable not set.", funcName);
+		NotifyError(wxT("%s: deviceID variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->numChannelsFlag) {
-		NotifyError("%s: numChannels variable not set.", funcName);
+		NotifyError(wxT("%s: numChannels variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->sampleRateFlag) {
-		NotifyError("%s: sampleRate variable not set.", funcName);
+		NotifyError(wxT("%s: sampleRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->segmentsPerBufferFlag) {
-		NotifyError("%s: segmentsPerBuffer variable not set.", funcName);
+		NotifyError(wxT("%s: segmentsPerBuffer variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->sleepFlag) {
-		NotifyError("%s: sleep variable not set.", funcName);
+		NotifyError(wxT("%s: sleep variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!audioInPtr->gainFlag) {
-		NotifyError("%s: gain variable not set.", funcName);
+		NotifyError(wxT("%s: gain variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -451,20 +453,21 @@ CheckPars_IO_AudioIn(void)
 BOOLN
 PrintPars_IO_AudioIn(void)
 {
-	static const char	*funcName = "PrintPars_IO_AudioIn";
+	static const WChar	*funcName = wxT("PrintPars_IO_AudioIn");
 
 	if (!CheckPars_IO_AudioIn()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Audio Module Parameters:-\n");
-	DPrint("\tdeviceID = %d ??\n", audioInPtr->deviceID);
-	DPrint("\tnumChannels = %d ??\n", audioInPtr->numChannels);
-	DPrint("\tsegmentsPerBuffer = %g ??\n", audioInPtr->segmentsPerBuffer);
-	DPrint("\tsampleRate = %g ??\n", audioInPtr->sampleRate);
-	DPrint("\tduration = %g ??\n", audioInPtr->duration);
-	DPrint("\tsleep = %g ??\n", audioInPtr->sleep);
-	DPrint("\tgain = %g ??\n", audioInPtr->gain);
+	DPrint(wxT("Audio Module Parameters:-\n"));
+	DPrint(wxT("\tdeviceID = %d ??\n"), audioInPtr->deviceID);
+	DPrint(wxT("\tnumChannels = %d ??\n"), audioInPtr->numChannels);
+	DPrint(wxT("\tsegmentsPerBuffer = %g ??\n"), audioInPtr->segmentsPerBuffer);
+	DPrint(wxT("\tsampleRate = %g ??\n"), audioInPtr->sampleRate);
+	DPrint(wxT("\tduration = %g ??\n"), audioInPtr->duration);
+	DPrint(wxT("\tsleep = %g ??\n"), audioInPtr->sleep);
+	DPrint(wxT("\tgain = %g ??\n"), audioInPtr->gain);
 	return(TRUE);
 
 }
@@ -479,10 +482,10 @@ PrintPars_IO_AudioIn(void)
 BOOLN
 SetParsPointer_IO_AudioIn(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IO_AudioIn";
+	static const WChar	*funcName = wxT("SetParsPointer_IO_AudioIn");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	audioInPtr = (AudioInPtr) theModule->parsPtr;
@@ -500,14 +503,15 @@ SetParsPointer_IO_AudioIn(ModulePtr theModule)
 BOOLN
 InitModule_IO_AudioIn(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IO_AudioIn";
+	static const WChar	*funcName = wxT("InitModule_IO_AudioIn");
 
 	if (!SetParsPointer_IO_AudioIn(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IO_AudioIn(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = audioInPtr;
@@ -537,10 +541,10 @@ InitModule_IO_AudioIn(ModulePtr theModule)
 BOOLN
 CheckData_IO_AudioIn(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IO_AudioIn";
+	static const WChar	*funcName = wxT("CheckData_IO_AudioIn");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -555,15 +559,15 @@ CheckData_IO_AudioIn(EarObjectPtr data)
  */
 
 void
-NotifyError_IO_AudioIn(char *format, ...)
+NotifyError_IO_AudioIn(WChar *format, ...)
 {
-	char	msg[LONG_STRING];
+	WChar	msg[LONG_STRING];
 	va_list	args;
 	
 	va_start(args, format);
-	vsnprintf(msg, LONG_STRING, format, args);
+	DSAM_vsnprintf(msg, LONG_STRING, format, args);
 	va_end(args);
-	NotifyError("%s (PortAudioError [%d]: %s)\n", msg, audioInPtr->pAError,
+	NotifyError(wxT("%s (PortAudioError [%d]: %s)\n"), msg, audioInPtr->pAError,
 	  Pa_GetErrorText(audioInPtr->pAError));
 
 }
@@ -604,7 +608,7 @@ RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
   unsigned long framesPerBuffer, PaTimestamp outTime, void *userData)
 #endif /* IO_AUDIOIN_PORTAUDIO_V_19 */
 {
-	/*static const char *funcName = "RecordCallback_IO_AudioIn";*/
+	/*static const WChar *funcName = wxT("RecordCallback_IO_AudioIn");*/
 	long	i, framesToCalc;
 
 	AudioInPtr p = (AudioInPtr) userData;
@@ -630,18 +634,18 @@ RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
 				*outPtr[RIGHT_CHAN]++ = (ChanData) IO_AUDIOIN_SAMPLE_SILENCE;
 		}
 	}
-	printf("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld, %ld\n",
-	  p->frameIndex, p->segmentIndex);
+	DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,"
+	  " %ld\n"), p->frameIndex, p->segmentIndex);
 	p->frameIndex += framesToCalc;
 	if ((ChanLen) (p->frameIndex - p->segmentIndex) >= p->data->outSignal->
 	  length) {
-		/*printf("RecordCallback_IO_AudioIn: Debug: Got segment, length = %d"
-		  ".\n", p->frameIndex - p->segmentIndex);*/
+		/*printf(wxT("RecordCallback_IO_AudioIn: Debug: Got segment, length = "
+		 "%d.\n"), p->frameIndex - p->segmentIndex);*/
 		p->segmentReadyFlag = TRUE;
 	}
 	/*if (p->frameIndex <= p->segmentIndex) {
-		NotifyError("RecordCallback_IO_AudioIn: Debug: Buffer pointers "
-		  "colliding.\n");
+		NotifyError(wxT("RecordCallback_IO_AudioIn: Debug: Buffer pointers ")
+		  wxT("colliding.\n"));
 		return(paComplete);
 	}*/
 	if ((ChanLen) p->frameIndex >= bufSignal->length)
@@ -662,27 +666,27 @@ RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
 BOOLN
 InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_IO_AudioIn";
+	static const WChar	*funcName = wxT("InitProcessVariables_IO_AudioIn");
 	PaStreamParameters  inputParameters;
 	AudioInPtr p = audioInPtr;
   
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_IO_AudioIn();
-		if ((p->buffer = Init_EarObject("NULL")) == NULL) {
-			NotifyError("%s: Could not initialise previous data EarObject",
+		if ((p->buffer = Init_EarObject(wxT("NULL"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise previous data EarObject"),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(p->buffer, data->outSignal->numChannels,
 		  data->outSignal->length * p->segmentsPerBuffer, data->outSignal->
 		  dt)) {
-			NotifyError("%s: Cannot initialise channels for previous data.",
-			  funcName);
+			NotifyError(wxT("%s: Cannot initialise channels for previous "
+			  "data."), funcName);
 			return(FALSE);
 		}
 		p->data = data;
 		if ((p->pAError = Pa_Initialize()) != paNoError) {
-			NotifyError_IO_AudioIn("%s: Could not initialise PortAudio",
+			NotifyError_IO_AudioIn(wxT("%s: Could not initialise PortAudio"),
 			  funcName);
 			return(FALSE);
 		}
@@ -712,13 +716,13 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 		  p));
 #		endif
 		if ( p->pAError != paNoError) {
-			NotifyError_IO_AudioIn("%s: Could not open stream", funcName);
+			NotifyError_IO_AudioIn(wxT("%s: Could not open stream"), funcName);
 			return(FALSE);
 		}
 		p->frameIndex = 0;
 		p->segmentIndex = 0;
 		if ((p->pAError = Pa_StartStream(p->stream)) != paNoError) {
-			NotifyError_IO_AudioIn("%s: Could not start PortAudio stream",
+			NotifyError_IO_AudioIn(wxT("%s: Could not start PortAudio stream"),
 			  funcName);
 			return(FALSE);
 		}
@@ -741,13 +745,13 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IO_AudioIn(void)
 {
-	static const char	*funcName = "FreeProcessVariables_IO_AudioIn";
+	static const WChar	*funcName = wxT("FreeProcessVariables_IO_AudioIn");
 	AudioInPtr p = audioInPtr;
 
 	Free_EarObject(&p->buffer);
 	if (p->stream) {
 		if ((p->pAError = Pa_CloseStream(p->stream)) != paNoError) {
-			NotifyError_IO_AudioIn("%s: Could not close PortAudio stream",
+			NotifyError_IO_AudioIn(wxT("%s: Could not close PortAudio stream"),
 			  funcName);
 		}
 	}
@@ -775,7 +779,7 @@ FreeProcessVariables_IO_AudioIn(void)
 BOOLN
 ReadSignal_IO_AudioIn(EarObjectPtr data)
 {
-	static const char	*funcName = "ReadSignal_IO_AudioIn";
+	static const WChar	*funcName = wxT("ReadSignal_IO_AudioIn");
 	BOOLN	ok = TRUE;
 	AudioInPtr p = audioInPtr;
 
@@ -783,19 +787,20 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		if (!CheckPars_IO_AudioIn())
 			return(FALSE);
 		if (!CheckData_IO_AudioIn(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Audio input module process");
+		SetProcessName_EarObject(data, wxT("Audio input module process"));
 		data->externalDataFlag = TRUE;
 		if (!InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen)
 		  floor(p->duration * p->sampleRate + 0.5), 1.0 / p->sampleRate)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		data->outSignal->rampFlag = TRUE;
 		if (!InitProcessVariables_IO_AudioIn(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -821,7 +826,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		p->segmentIndex = 0;
 	p->segmentReadyFlag = FALSE;
 	if ((p->pAError < 0) && !GetDSAMPtr_Common()->segmentedMode)
-		NotifyError_IO_AudioIn("%s: Failed to record sound.", funcName);
+		NotifyError_IO_AudioIn(wxT("%s: Failed to record sound."), funcName);
 	if (p->pAError < 1)
 		ok = FALSE;
 	if (ok && (fabs(p->gain) > DBL_EPSILON))

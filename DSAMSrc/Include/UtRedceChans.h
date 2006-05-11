@@ -101,11 +101,11 @@ BOOLN	PrintPars_Utility_ReduceChannels(void);
 
 BOOLN	Process_Utility_ReduceChannels(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ReduceChannels(char *fileName);
+BOOLN	ReadPars_Utility_ReduceChannels(WChar *fileName);
 
 void	ResetProcess_Utility_ReduceChannels(EarObjectPtr data);
 
-BOOLN	SetMode_Utility_ReduceChannels(char *theMode);
+BOOLN	SetMode_Utility_ReduceChannels(WChar *theMode);
 
 BOOLN	InitModule_Utility_ReduceChannels(ModulePtr theModule);
 
@@ -113,7 +113,7 @@ BOOLN	SetNumChannels_Utility_ReduceChannels(int theNumChannels);
 
 BOOLN	SetParsPointer_Utility_ReduceChannels(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_ReduceChannels(char *mode, int numChannels);
+BOOLN	SetPars_Utility_ReduceChannels(WChar *mode, int numChannels);
 
 BOOLN	SetUniParList_Utility_ReduceChannels(void);
 

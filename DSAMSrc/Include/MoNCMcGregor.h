@@ -111,7 +111,7 @@ BOOLN	InitProcessVariables_Neuron_McGregor(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_McGregor(void);
 
-BOOLN	ReadPars_Neuron_McGregor(char *fileName);
+BOOLN	ReadPars_Neuron_McGregor(WChar *fileName);
 
 BOOLN	RunModel_Neuron_McGregor(EarObjectPtr data);
 

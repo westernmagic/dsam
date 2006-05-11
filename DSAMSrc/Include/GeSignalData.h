@@ -59,9 +59,9 @@ typedef struct {
 
 	double	*chanLabel;					/* Contains channel labels, e.g. CF */
 	double	*cFArray;					/* Contains only CF information. */
-	char	channelTitle[SIGNALDATA_MAX_TITLE];	/* Channel axis title */
-	char	chanDataTitle[SIGNALDATA_MAX_TITLE];/* Channel axis title */
-	char	sampleTitle[SIGNALDATA_MAX_TITLE];	/* Sample (e.g. dt) axis title*/
+	WChar	channelTitle[SIGNALDATA_MAX_TITLE];	/* Channel axis title */
+	WChar	chanDataTitle[SIGNALDATA_MAX_TITLE];/* Channel axis title */
+	WChar	sampleTitle[SIGNALDATA_MAX_TITLE];	/* Sample (e.g. dt) axis title*/
 
 } SignalInfo, *SignalInfoPtr;
 
@@ -104,7 +104,7 @@ BOOLN	Delay_SignalData(SignalDataPtr signal, double delay);
 BOOLN	Divide_SignalData(SignalDataPtr a, SignalDataPtr b);
 
 BOOLN	CheckInit_SignalData(SignalDataPtr theSignal,
-		  const char *callingFunction);
+		  const WChar *callingFunction);
 
 BOOLN	CheckPars_SignalData(SignalDataPtr theSignal);
 
@@ -135,7 +135,7 @@ void	GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan,
 		  int *maxChan, double frequency, double lowerLimit, double upperLimit,
 		  SignalDataLimitModeSpecifier mode);
 
-SignalDataPtr	Init_SignalData(const char *callingFunctionName);
+SignalDataPtr	Init_SignalData(const WChar *callingFunctionName);
 
 BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 		  BOOLN externalDataFlag);
@@ -144,7 +144,7 @@ BOOLN	InitInfo_SignalData(SignalInfoPtr info);
 
 NameSpecifier *	LimitModeList_SignalData(int index);
 
-BOOLN	OutputToFile_SignalData(char *fileName, SignalDataPtr theData);
+BOOLN	OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData);
 
 BOOLN	ResetInfo_SignalData(SignalDataPtr signal);
 
@@ -166,11 +166,11 @@ void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels);
 BOOLN	SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index,
 		  double label);
 
-void	SetInfoChanDataTitle_SignalData(SignalDataPtr theData, char *title);
+void	SetInfoChanDataTitle_SignalData(SignalDataPtr theData, WChar *title);
 
-void	SetInfoChannelTitle_SignalData(SignalDataPtr theData, char *title);
+void	SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title);
 
-void	SetInfoSampleTitle_SignalData(SignalDataPtr theData, char *title);
+void	SetInfoSampleTitle_SignalData(SignalDataPtr theData, WChar *title);
 
 void	SetInterleaveLevel_SignalData(SignalDataPtr theData,
 		  uShort theInterleaveLevel);

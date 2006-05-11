@@ -61,17 +61,17 @@ __BEGIN_DECLS
 
 int		GetNumUserModules_ModuleReg(void);
 
-ModRegEntryPtr	Identify_ModuleReg(ModRegEntryPtr list, char *name);
+ModRegEntryPtr	Identify_ModuleReg(ModRegEntryPtr list, WChar *name);
 
 BOOLN	InitUserModuleList_ModuleReg(int theMaxUserModules);
 
 void	FreeUserModuleList_ModuleReg(void);
 
-ModRegEntryPtr	GetRegEntry_ModuleReg(char *name);
+ModRegEntryPtr	GetRegEntry_ModuleReg(WChar *name);
 
 ModRegEntryPtr	LibraryList_ModuleReg(uShort index);
 
-BOOLN	RegEntry_ModuleReg(const char *name, BOOLN (* InitModuleFunc)(
+BOOLN	RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(
 		  ModulePtr));
 
 ModRegEntryPtr	UserList_ModuleReg(uShort index);

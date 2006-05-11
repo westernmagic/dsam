@@ -30,6 +30,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtIterRipple.h"
 
 /******************************************************************************/
@@ -54,8 +55,6 @@ IterRipplePtr	iterRipplePtr = NULL;
 BOOLN
 Free_Utility_IteratedRipple(void)
 {
-	/* static const char	*funcName = "Free_Utility_IteratedRipple";  */
-
 	if (iterRipplePtr == NULL)
 		return(FALSE);
 	if (iterRipplePtr->parList)
@@ -79,9 +78,9 @@ InitModeList_Utility_IteratedRipple(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "IRSO", ITERRIPPLE_IRSO_MODE },
-					{ "IRSS", ITERRIPPLE_IRSS_MODE },
-					{ "", ITERRIPPLE_NULL }
+					{ wxT("IRSO"),	ITERRIPPLE_IRSO_MODE },
+					{ wxT("IRSS"),	ITERRIPPLE_IRSS_MODE },
+					{ wxT(""),		ITERRIPPLE_NULL }
 				};
 	iterRipplePtr->modeList = modeList;
 	return(TRUE);
@@ -103,19 +102,20 @@ InitModeList_Utility_IteratedRipple(void)
 BOOLN
 Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("Init_Utility_IteratedRipple");
 
 	if (parSpec == GLOBAL) {
 		if (iterRipplePtr != NULL)
 			Free_Utility_IteratedRipple();
 		if ((iterRipplePtr = (IterRipplePtr) malloc(sizeof(IterRipple))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (iterRipplePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -131,7 +131,7 @@ Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_IteratedRipple();
 	if (!SetUniParList_Utility_IteratedRipple()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_IteratedRipple();
 		return(FALSE);
 	}
@@ -150,32 +150,33 @@ Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_IteratedRipple(void)
 {
-	static const char *funcName = "SetUniParList_Utility_IteratedRipple";
+	static const WChar *funcName = wxT("SetUniParList_Utility_IteratedRipple");
 	UniParPtr	pars;
 
 	if ((iterRipplePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_ITERATEDRIPPLE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = iterRipplePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_NUMITERATIONS], "NUM_IT",
-	  "Number of iterations.",
+	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_NUMITERATIONS], wxT("NUM_IT"),
+	  wxT("Number of iterations."),
 	  UNIPAR_INT,
 	  &iterRipplePtr->numIterations, NULL,
 	  (void * (*)) SetNumIterations_Utility_IteratedRipple);
-	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_MODE], "MODE",
-	  "Ripple signal mode: 'IRSO' - add original, 'IRSS' - add same.",
+	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_MODE], wxT("MODE"),
+	  wxT("Ripple signal mode: 'IRSO' - add original, 'IRSS' - add same."),
 	  UNIPAR_NAME_SPEC,
 	  &iterRipplePtr->mode, iterRipplePtr->modeList,
 	  (void * (*)) SetMode_Utility_IteratedRipple);
-	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_DELAY], "DELAY",
-	  "Delay (s).",
+	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_DELAY], wxT("DELAY"),
+	  wxT("Delay (s)."),
 	  UNIPAR_REAL,
 	  &iterRipplePtr->delay, NULL,
 	  (void * (*)) SetDelay_Utility_IteratedRipple);
-	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_SIGNALMULTIPLIER], "GAIN",
-	  "Gain (scalar).",
+	SetPar_UniParMgr(&pars[UTILITY_ITERATEDRIPPLE_SIGNALMULTIPLIER],
+	  wxT("GAIN"),
+	  wxT("Gain (scalar)."),
 	  UNIPAR_REAL,
 	  &iterRipplePtr->signalMultiplier, NULL,
 	  (void * (*)) SetSignalMultiplier_Utility_IteratedRipple);
@@ -193,15 +194,16 @@ SetUniParList_Utility_IteratedRipple(void)
 UniParListPtr
 GetUniParListPtr_Utility_IteratedRipple(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_Utility_IteratedRipple");
 
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (iterRipplePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(iterRipplePtr->parList);
@@ -216,10 +218,10 @@ GetUniParListPtr_Utility_IteratedRipple(void)
  */
 
 BOOLN
-SetPars_Utility_IteratedRipple(int numIterations, char *mode, double delay,
+SetPars_Utility_IteratedRipple(int numIterations, WChar *mode, double delay,
   double signalMultiplier)
 {
-	static const char	*funcName = "SetPars_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("SetPars_Utility_IteratedRipple");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -232,7 +234,7 @@ SetPars_Utility_IteratedRipple(int numIterations, char *mode, double delay,
 	if (!SetSignalMultiplier_Utility_IteratedRipple(signalMultiplier))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -248,16 +250,17 @@ SetPars_Utility_IteratedRipple(int numIterations, char *mode, double delay,
 BOOLN
 SetNumIterations_Utility_IteratedRipple(int theNumIterations)
 {
-	static const char	*funcName = "SetNumIterations_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT(
+	  "SetNumIterations_Utility_IteratedRipple");
 
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (theNumIterations <= 0) {
-		NotifyError("%s: The number of iterations must be bigger the 0 (%d).", 
-		  funcName, theNumIterations);
+		NotifyError(wxT("%s: The number of iterations must be bigger the 0 "
+		  "(%d)."), funcName, theNumIterations);
 		return(FALSE);
 	}	
 	iterRipplePtr->numIterationsFlag = TRUE;
@@ -275,18 +278,18 @@ SetNumIterations_Utility_IteratedRipple(int theNumIterations)
  */
 
 BOOLN
-SetMode_Utility_IteratedRipple(char *theMode)
+SetMode_Utility_IteratedRipple(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("SetMode_Utility_IteratedRipple");
 	int		specifier;
 
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 	  iterRipplePtr->modeList)) == ITERRIPPLE_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	iterRipplePtr->modeFlag = TRUE;
@@ -306,10 +309,10 @@ SetMode_Utility_IteratedRipple(char *theMode)
 BOOLN
 SetDelay_Utility_IteratedRipple(double theDelay)
 {
-	static const char	*funcName = "SetDelay_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("SetDelay_Utility_IteratedRipple");
 
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -330,14 +333,15 @@ SetDelay_Utility_IteratedRipple(double theDelay)
 BOOLN
 SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier)
 {
-	static const char *funcName = "SetSignalMultiplier_Utility_IteratedRipple";
+	static const WChar *funcName = wxT(
+	  "SetSignalMultiplier_Utility_IteratedRipple");
 
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((theSignalMultiplier < -1.0) || (theSignalMultiplier > 1.0)) {
-		NotifyError("%s: Value must be between (-1, +1) (%d).", funcName,
+		NotifyError(wxT("%s: Value must be between (-1, +1) (%d)."), funcName,
 		  theSignalMultiplier);
 		return(FALSE);
 	}
@@ -360,28 +364,28 @@ SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier)
 BOOLN
 CheckPars_Utility_IteratedRipple(void)
 {
-	static const char	*funcName = "CheckPars_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("CheckPars_Utility_IteratedRipple");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (iterRipplePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!iterRipplePtr->numIterationsFlag) {
-		NotifyError("%s: numIterations variable not set.", funcName);
+		NotifyError(wxT("%s: numIterations variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iterRipplePtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iterRipplePtr->delayFlag) {
-		NotifyError("%s: delay variable not set.", funcName);
+		NotifyError(wxT("%s: delay variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!iterRipplePtr->signalMultiplierFlag) {
-		NotifyError("%s: signalMultiplier variable not set.", funcName);
+		NotifyError(wxT("%s: signalMultiplier variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -398,19 +402,20 @@ CheckPars_Utility_IteratedRipple(void)
 BOOLN
 PrintPars_Utility_IteratedRipple(void)
 {
-	static const char	*funcName = "PrintPars_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("PrintPars_Utility_IteratedRipple");
 
 	if (!CheckPars_Utility_IteratedRipple()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Iterated Ripple Utility Module Parameters:-\n");
-	DPrint("\tNumber of iterations = %d,",
+	DPrint(wxT("Iterated Ripple Utility Module Parameters:-\n"));
+	DPrint(wxT("\tNumber of iterations = %d,"),
 	  iterRipplePtr->numIterations);
-	DPrint("\tNetwork mode = %s,",
+	DPrint(wxT("\tNetwork mode = %s,"),
 	  iterRipplePtr->modeList[iterRipplePtr->mode].name);
-	DPrint("\tDelay = %g (ms),\n", MSEC(iterRipplePtr->delay));
-	DPrint("\tSignal multiplier = %g (units).\n",
+	DPrint(wxT("\tDelay = %g (ms),\n"), MSEC(iterRipplePtr->delay));
+	DPrint(wxT("\tSignal multiplier = %g (units).\n"),
 	  iterRipplePtr->signalMultiplier);
 	return(TRUE);
 
@@ -423,42 +428,43 @@ PrintPars_Utility_IteratedRipple(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_IteratedRipple(char *fileName)
+ReadPars_Utility_IteratedRipple(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("ReadPars_Utility_IteratedRipple");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	int		numIterations;
 	double	delay, signalMultiplier;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &numIterations))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numIterations))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &delay))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &delay))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &signalMultiplier))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_IteratedRipple(numIterations, mode, delay,
 	  signalMultiplier)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -475,10 +481,11 @@ ReadPars_Utility_IteratedRipple(char *fileName)
 BOOLN
 SetParsPointer_Utility_IteratedRipple(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Utility_IteratedRipple");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	iterRipplePtr = (IterRipplePtr) theModule->parsPtr;
@@ -495,14 +502,15 @@ SetParsPointer_Utility_IteratedRipple(ModulePtr theModule)
 BOOLN
 InitModule_Utility_IteratedRipple(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("InitModule_Utility_IteratedRipple");
 
 	if (!SetParsPointer_Utility_IteratedRipple(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_IteratedRipple(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = iterRipplePtr;
@@ -534,19 +542,19 @@ InitModule_Utility_IteratedRipple(ModulePtr theModule)
 BOOLN
 CheckData_Utility_IteratedRipple(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("CheckData_Utility_IteratedRipple");
 	double signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (iterRipplePtr->delay > signalDuration)	{
-		NotifyError("%s: Delay (%g ms) is longer than the signal duration "
-		  "(%g ms)", funcName, MSEC(iterRipplePtr->delay), MSEC(
+		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration "
+		  "(%g ms)"), funcName, MSEC(iterRipplePtr->delay), MSEC(
 		  signalDuration));
 		return(FALSE);
 	}
@@ -575,7 +583,7 @@ CheckData_Utility_IteratedRipple(EarObjectPtr data)
 BOOLN
 Process_Utility_IteratedRipple(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_IteratedRipple";
+	static const WChar	*funcName = wxT("Process_Utility_IteratedRipple");
 	register	ChanData	 *inPtr, *outPtr;
 	int		j, chan;
 	ChanLen		i, samplesDelay;
@@ -584,12 +592,13 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 		if (!CheckPars_Utility_IteratedRipple())
 			return(FALSE);
 		if (!CheckData_Utility_IteratedRipple(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Iterated Ripple Utility process.");
+		SetProcessName_EarObject(data, wxT("Iterated Ripple Utility process."));
 		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

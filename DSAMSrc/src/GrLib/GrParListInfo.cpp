@@ -69,7 +69,7 @@
 ParListInfo::ParListInfo(wxPanel *theParent, DatumPtr thePC,
   UniParListPtr theParList, int theInfoNum, int theoffset, int theNumPars)
 {
-	static char *funcName = "ParListInfo::ParListInfo";
+	static wxChar *funcName = wxT("ParListInfo::ParListInfo");
 
 	parent = theParent;
 	pc = thePC;
@@ -82,7 +82,7 @@ ParListInfo::ParListInfo(wxPanel *theParent, DatumPtr thePC,
 	// Set Up parameters list.
 	if ((controlList = (ParControl **) calloc(numPars, sizeof(ParControl *))) ==
 	  NULL) {
-		NotifyError("%s: Out of memory for controlList", funcName);
+		NotifyError(wxT("%s: Out of memory for controlList"), funcName);
 		return;
 	}
 	sizer = new wxBoxSizer(wxVERTICAL);
@@ -114,7 +114,7 @@ ParListInfo::~ParListInfo(void)
 			if (controlList[i])
 				delete controlList[i];
 			else
-				wxMessageBox("ParListInfo::~ParListInfo unset control!");
+				wxMessageBox(wxT("ParListInfo::~ParListInfo unset control!"));
 		free(controlList);
 	}
 
@@ -130,9 +130,9 @@ void
 ParListInfo::SetParBoolean(UniParPtr par, int index)
 {
 	wxCheckBox *checkBox = new wxCheckBox(parent, DL_ID_CHECK_BOX + index,
-	  par->abbr);
+	  (wxChar *) par->abbr);
 	checkBox->SetValue(CXX_BOOL(*par->valuePtr.i));
-	checkBox->SetToolTip(par->desc);
+	checkBox->SetToolTip((wxChar *) par->desc);
 
 	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(1, PARCONTROL_VGAP,
 	  PARCONTROL_HGAP);
@@ -155,15 +155,16 @@ ParListInfo::SetParNameList(UniParPtr par, int index)
 {
 	NameSpecifierPtr list; 
 
-	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, "",
+	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxSize(PARLISTINFO_CHOICE_ITEM_WIDTH,-1), 0, NULL,
 	  wxCB_READONLY);
 	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
-		cBox->Append(list->name);
+		cBox->Append((wxChar *) list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
-	cBox->SetToolTip(par->desc);
+	cBox->SetToolTip((wxChar *) par->desc);
 
-	wxStaticText *labelText = new wxStaticText(parent, -1, par->abbr);
+	wxStaticText *labelText = new wxStaticText(parent, -1, (wxChar *) par->
+	  abbr);
 
 	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(2, PARCONTROL_VGAP,
 	  PARCONTROL_HGAP);
@@ -191,21 +192,23 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 {
 	NameSpecifierPtr list; 
 
-	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, "",
+	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
 	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
-		cBox->Append(list->name);
+		cBox->Append((wxChar *) list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
 	cBox->SetInsertionPointEnd();
-	cBox->SetToolTip(par->desc);
+	cBox->SetToolTip((wxChar *) par->desc);
 
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
 	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
-	browseBtn->SetToolTip("Click this button to browse for a file (path).");
+	browseBtn->SetToolTip(wxT("Click this button to browse for a file "
+	  "(path)."));
 	browseBtn->Enable(cBox->GetSelection() == (cBox->GetCount() - 1));
 
-	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
+	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
+	  abbr);
 
 	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(3, PARCONTROL_VGAP,
 	  PARCONTROL_HGAP);
@@ -235,18 +238,19 @@ void
 ParListInfo::SetParFileName(UniParPtr par, int index)
 {
 	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
-	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
+	  (wxChar *) GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxHSCROLL);
 
-	textCtrl->SetToolTip(par->desc);
+	textCtrl->SetToolTip((wxChar *) par->desc);
 	textCtrl->SetInsertionPointEnd();
 
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
-	  _T(PARLISTINFO_BROWSE_BUTTON_TEXT), wxDefaultPosition, wxSize(
+	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
-	browseBtn->SetToolTip(_T("Click this button to browse for a file."));
+	browseBtn->SetToolTip(wxT("Click this button to browse for a file."));
 
-	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
+	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
+	  abbr);
 
 	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(3, PARCONTROL_VGAP,
 	  PARCONTROL_HGAP);
@@ -274,17 +278,18 @@ void
 ParListInfo::SetParStandard(UniParPtr par, int index)
 {
 
-	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT,
+	wxTextCtrl	*textCtrl = new wxTextCtrl(parent, DL_ID_TEXT, (wxChar *)
 	  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 	  PARLISTINFO_TEXT_ITEM_WIDTH, -1), wxTE_PROCESS_ENTER);
 	if (par->type != UNIPAR_INT_AL)
-		textCtrl->SetToolTip(par->desc);
+		textCtrl->SetToolTip((wxChar *) par->desc);
 	else
-		textCtrl->SetToolTip((wxString) par->desc + _T("\nYou must press "
-		  "<return> after changing this parameter."));
+		textCtrl->SetToolTip(wxString((wxChar *) par->desc) + wxT("\nYou must "
+		  "press <return> after changing this parameter."));
 	textCtrl->SetInsertionPointEnd();
 
-	wxStaticText *labelText = new wxStaticText(parent, index, par->abbr);
+	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
+	  abbr);
 
 	wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(2, PARCONTROL_VGAP,
 	  PARCONTROL_HGAP);
@@ -415,7 +420,7 @@ ParListInfo::SetParListIonChannel(void)
 	}
 	
 	for (i = 0; i < numHHCols; i++) {
-		heading.sprintf("    %c", 'A' + i);
+		heading.sprintf(wxT("    %c"), 'A' + i);
 		hHuxleyLabel[i] = new wxStaticText(parent, -1, heading,
 		  wxDefaultPosition, wxSize(PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
 
@@ -423,10 +428,10 @@ ParListInfo::SetParListIonChannel(void)
 		par = &parList->pars[index];
 		if (i == 0)
 			slider = CreateSlider(index, *par->valuePtr.array.numElements);
-		hHuxleyAlphaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT,
+		hHuxleyAlphaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT, (wxChar *)
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 		  PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
-		hHuxleyAlphaTC[i]->SetToolTip(par->desc);
+		hHuxleyAlphaTC[i]->SetToolTip((wxChar *) par->desc);
 		controlList[index] = new ParControl(par, infoNum, NULL, hHuxleyAlphaTC[
 		  i], hHuxleyLabel[i]);
 		controlList[index]->SetEnable();
@@ -435,10 +440,10 @@ ParListInfo::SetParListIonChannel(void)
 	for (i = 0; i < numHHCols; i++) {
 		index = i + ICLIST_IC_BETA_A;
 		par = &parList->pars[index];
-		hHuxleyBetaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT,
+		hHuxleyBetaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT, (wxChar *)
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
 		  PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
-		hHuxleyBetaTC[i]->SetToolTip(par->desc);
+		hHuxleyBetaTC[i]->SetToolTip((wxChar *) par->desc);
 		controlList[index] = new ParControl(par, infoNum, NULL,
 		  hHuxleyBetaTC[i], hHuxleyLabel[i]);
 		controlList[index]->SetSlider(slider);
@@ -518,7 +523,8 @@ ParListInfo::SetEnabledControls(void)
 		if (controlList[i])
 			controlList[i]->SetEnable();
 		else
-			wxMessageBox("ParListInfo::SetEnabledControls: Unset control!");
+			wxMessageBox(wxT("ParListInfo::SetEnabledControls: Unset "
+			  "control!"));
 
 }
 
@@ -535,9 +541,9 @@ ParListInfo::SetParValue(ParControl *control)
 
 	switch (control->GetTag()) {
 	case ParControl::CHECK_BOX:
-		value = (control->GetCheckBox()->GetValue())? BooleanList_NSpecLists(
-		  GENERAL_BOOLEAN_ON)->name: BooleanList_NSpecLists(
-		  GENERAL_BOOLEAN_OFF)->name;
+		value = (wxChar *) ((control->GetCheckBox()->GetValue())?
+		  BooleanList_NSpecLists(GENERAL_BOOLEAN_ON)->name:
+		  BooleanList_NSpecLists(GENERAL_BOOLEAN_OFF)->name);
 		break;
 	case ParControl::CHOICE:
 		value = control->GetChoice()->GetStringSelection();
@@ -549,11 +555,11 @@ ParListInfo::SetParValue(ParControl *control)
 		value = control->GetTextCtrl()->GetValue();
 		break;
 	default:
-		value = "Value not yet being set!";
+		value = wxT("Value not yet being set!");
 	}
 	if (pc)
 		SET_PARS_POINTER(pc->data);
-	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (char *)
+	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (wxChar *)
 	  value.c_str())) {
 		control->SetUpdateFlag(FALSE);
 		return(TRUE);
@@ -595,10 +601,10 @@ ParListInfo::CheckChangedValues(void)
 ParControl *
 ParListInfo::GetParControl(int i)
 {
-	static const char *funcName = "ParListInfo::GetParControl";
+	static const wxChar *funcName = wxT("ParListInfo::GetParControl");
 	if (i < numPars)
 		return(controlList[i]);
-	NotifyError("%s: Control index %d is out of bound.", funcName, i);
+	NotifyError(wxT("%s: Control index %d is out of bound."), funcName, i);
 	return(NULL);
 
 }

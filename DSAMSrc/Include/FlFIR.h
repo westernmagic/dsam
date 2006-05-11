@@ -106,7 +106,7 @@ BOOLN	Init_Filter_FIR(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Filter_FIR(void);
 
-BOOLN	ReadPars_Filter_FIR(char *fileName);
+BOOLN	ReadPars_Filter_FIR(WChar *fileName);
 
 BOOLN	RunProcess_Filter_FIR(EarObjectPtr data);
 
@@ -114,7 +114,7 @@ BOOLN	SetBandFreqs_Filter_FIR(double *theBandFreqs);
 
 BOOLN	SetDesired_Filter_FIR(double *theDesired);
 
-BOOLN	SetDiagnosticMode_Filter_FIR(char * theDiagnosticMode);
+BOOLN	SetDiagnosticMode_Filter_FIR(WChar * theDiagnosticMode);
 
 BOOLN	SetIndividualBand_Filter_FIR(int theIndex, double theBand);
 
@@ -130,10 +130,10 @@ BOOLN	SetNumTaps_Filter_FIR(int theNumTaps);
 
 BOOLN	SetParsPointer_Filter_FIR(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_FIR(char * diagnosticMode, char * type, int numTaps,
+BOOLN	SetPars_Filter_FIR(WChar * diagnosticMode, WChar * type, int numTaps,
 		  int numBands, double *bandFreqs, double *desired, double *weights);
 
-BOOLN	SetType_Filter_FIR(char * theType);
+BOOLN	SetType_Filter_FIR(WChar * theType);
 
 BOOLN	SetUniParList_Filter_FIR(void);
 

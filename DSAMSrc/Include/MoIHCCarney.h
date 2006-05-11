@@ -111,7 +111,7 @@ BOOLN	InitProcessVariables_IHC_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Carney(void);
 
-BOOLN	ReadPars_IHC_Carney(char *fileName);
+BOOLN	ReadPars_IHC_Carney(WChar *fileName);
 
 BOOLN	RunModel_IHC_Carney(EarObjectPtr data);
 

@@ -59,13 +59,13 @@ GetLastInst_Utility_DynaList(DynaListPtr head)
 DynaListPtr
 Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 {
-	static const char *funcName = "Append_Utility_DynaList";
+	static const WChar *funcName = wxT("Append_Utility_DynaList");
 	DynaListPtr	newNode;
 
 	if (nodePtr && *nodePtr && (*nodePtr)->next)
 		return(Append_Utility_DynaList(&(*nodePtr)->next, data));
 	if ((newNode = (DynaListPtr) malloc(sizeof (DynaList))) == NULL) {
-		NotifyError("%s: Out of memory for DynaList.", funcName);
+		NotifyError(wxT("%s: Out of memory for DynaList."), funcName);
 		return(NULL);
 	}
 	newNode->data = data;
@@ -99,11 +99,11 @@ Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 DynaListPtr
 Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 {
-	static const char *funcName = "Insert_Utility_DynaList";
+	static const WChar *funcName = wxT("Insert_Utility_DynaList");
 	DynaListPtr	newNode;
 
 	if ((newNode = (DynaListPtr) malloc(sizeof (DynaList))) == NULL) {
-		NotifyError("%s: Out of memory for DynaList.", funcName);
+		NotifyError(wxT("%s: Out of memory for DynaList."), funcName);
 		return(NULL);
 	}
 	newNode->data = data;
@@ -126,12 +126,12 @@ Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 void *
 Pull_Utility_DynaList(DynaListPtr *nodePtr)
 {
-	static const char *funcName = "Pull_Utility_DynaList";
+	static const WChar *funcName = wxT("Pull_Utility_DynaList");
 	void *data;
 	DynaListPtr	ptr;
 
 	if (!*nodePtr) {
-		NotifyError("%s: Attempt to 'pull' from empty list.", funcName);
+		NotifyError(wxT("%s: Attempt to 'pull' from empty list."), funcName);
 		return (NULL);
 	}
 	ptr = *nodePtr;
@@ -153,14 +153,14 @@ Pull_Utility_DynaList(DynaListPtr *nodePtr)
 BOOLN
 Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 {
-	static const char *funcName = "Remove_Utility_DynaList";
+	static const WChar *funcName = wxT("Remove_Utility_DynaList");
 
 	if (!*list) {
-		NotifyError("%s: List is empty.", funcName);
+		NotifyError(wxT("%s: List is empty."), funcName);
 		return (FALSE);
 	}
 	if (!ptr) {
-		NotifyError("%s: Node is NULL.", funcName);
+		NotifyError(wxT("%s: Node is NULL."), funcName);
 		return (FALSE);
 	}
 	if (!ptr->previous) {
@@ -187,7 +187,7 @@ Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 void *
 GetMemberData_Utility_DynaList(DynaListPtr list, int index)
 {
-	static const char *funcName = "GetMemberData_Utility_DynaList";
+	static const WChar *funcName = wxT("GetMemberData_Utility_DynaList");
 	int		count;
 
 	count = 0;
@@ -197,8 +197,8 @@ GetMemberData_Utility_DynaList(DynaListPtr list, int index)
 		list = list->next;
 		count++;
 	}
-	NotifyError("%s: Could not find list member %d of %d.\n", funcName, index,
-	  count);
+	NotifyError(wxT("%s: Could not find list member %d of %d.\n"), funcName,
+	  index, count);
 	return(NULL);
 
 }
@@ -247,13 +247,13 @@ DynaListPtr
 FindElement_Utility_DynaList(DynaListPtr start, int (* CmpFunc)(void *,
   void *), void *data)
 {
-	static const char *funcName = "FindElement_Utility_DynaList";
+	static const WChar *funcName = wxT("FindElement_Utility_DynaList");
 	DynaListPtr	p;
 
 	for (p = start; p != NULL; p = p->next)
 		if (CmpFunc(p->data, data) == 0)
 			return(p);
-	NotifyError("%s: Element not found.", funcName);
+	NotifyError(wxT("%s: Element not found."), funcName);
 	return(NULL);
 
 }

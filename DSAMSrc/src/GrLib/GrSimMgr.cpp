@@ -265,7 +265,7 @@ MyApp::OnInit(void)
 	frame->canvas = frame->CreateCanvas(NULL, frame);
 
 	if (GetPtr_AppInterface())
-		SetAppName(GetPtr_AppInterface()->appName);
+		SetAppName((wxChar *) GetPtr_AppInterface()->appName);
 	else
 		SetAppName(wxT("DSAM_App"));
 
@@ -273,7 +273,7 @@ MyApp::OnInit(void)
 	CreateProcessLists();
 
 	if (GetPtr_AppInterface()->simulationFileFlag)
-		CreateDocument(GetPtr_AppInterface()->simulationFile);
+		CreateDocument((wxChar *) GetPtr_AppInterface()->simulationFile);
 	else
 		myDocManager->CreateDocument(wxT(""), wxDOC_NEW);
 
@@ -299,9 +299,10 @@ MyApp::InitHelp(void)
 	help.UseConfig(wxConfig::Get());
 	// help.SetTempDir(wxT("."));  -- causes crashes on solaris
 	if (GetPtr_AppInterface()) {
-		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, wxString(GetPtr_AppInterface(
-		  )->installDir) + wxT("/") + SIM_MANAGER_HELP_DIR, wxString(
-		  GetPtr_AppInterface()->appName).Upper() + wxT("Help"));
+		AddHelpBook(SIM_MANAGER_REG_APP_HELP_PATH, wxString((wxChar *)
+		  GetPtr_AppInterface()->installDir) + wxT("/") + SIM_MANAGER_HELP_DIR,
+		  wxString((wxChar *) GetPtr_AppInterface()->appName).Upper() + wxT(
+		  "Help"));
 		AddHelpBook(SIM_MANAGER_REG_DSAM_HELP_PATH, wxString(
 		  DSAM_DATA_INSTALL_DIR) + wxT("/") + SIM_MANAGER_HELP_DIR,
 		  DSAM_PACKAGE);
@@ -415,7 +416,7 @@ MyApp::GetProcessList(int classSpecifier)
 	case UTILITY_MODULE_CLASS:
 		return(&wxGetApp().utilList);
 	default:
-		NotifyError("%s: Unknown process type (%d).\n", funcName,
+		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName,
 		  classSpecifier);
 		return(NULL);
 	}
@@ -434,15 +435,15 @@ MyApp::CreateProcessLists(void)
 	ModRegEntryPtr	modReg;
 
 	for (modReg = LibraryList_ModuleReg(0); (modReg->name[0] != '\0'); modReg++)
-		GetProcessList(modReg->classSpecifier)->Add(modReg->name);
+		GetProcessList(modReg->classSpecifier)->Add((wxChar *) modReg->name);
 	for (modReg = UserList_ModuleReg(0); modReg && (modReg->name[0] != '\0');
 	  modReg++)
-		userList.Add(modReg->name);
+		userList.Add((wxChar *) modReg->name);
 	InitKeyWords_Utility_SSSymbols(&symList);
 	for (p = symList; p; p = p->next) {
 		if ((p->type == STOP) || (p->type == BEGIN))
 			continue;
-		ctrlList.Add(p->name);
+		ctrlList.Add((wxChar *) p->name);
 	}
 	FreeSymbols_Utility_SSSymbols(&symList);
 
@@ -476,7 +477,7 @@ MyApp::InitServer(void)
 {
 	wxIPV4address	addr;
 
-	iPCServer = new GrIPCServer("", grMainApp->GetServerPort());
+	iPCServer = new GrIPCServer(wxT(""), grMainApp->GetServerPort());
 	if (iPCServer->Ok())
 		iPCServer->SetNotification(this);
 	return(TRUE);
@@ -502,10 +503,10 @@ MyApp::ExitMain(void)
 		int		x, y, w, h;
 		frame->GetSize(&w, &h);
 		frame->GetPosition(&x, &y);
-		pConfig->Write("x", (long) x);
-		pConfig->Write("y", (long) y);
-		pConfig->Write("w", (long) w);
-		pConfig->Write("h", (long) h);
+		pConfig->Write(wxT("x"), (long) x);
+		pConfig->Write(wxT("y"), (long) y);
+		pConfig->Write(wxT("w"), (long) w);
+		pConfig->Write(wxT("h"), (long) h);
 		myDocManager->FileHistorySave(*pConfig);
 	}
 
@@ -573,19 +574,19 @@ MyApp::SetConfiguration(UniParListPtr parList)
 		case UNIPAR_STRING_ARRAY:
 		case UNIPAR_NAME_SPEC_ARRAY:
 			for (j = 0; j < *p->valuePtr.array.numElements; j++) {
-				indexedName.Printf("%s.%d", p->abbr, j);
-				parValue = pConfig->Read(indexedName, "");
+				indexedName.Printf(wxT("%s.%d"), p->abbr, j);
+				parValue = pConfig->Read(indexedName, wxT(""));
 				if (parValue.Len() != 0) {
-					indexedParValue.Printf("%d:%s", j, parValue.c_str());
-					SetParValue_UniParMgr(&parList, i, (char *) indexedParValue.
-					  c_str());
+					indexedParValue.Printf(wxT("%d:%s"), j, parValue.c_str());
+					SetParValue_UniParMgr(&parList, i, (wxChar *) 
+					  indexedParValue.c_str());
 				}
 			}
 			break;
 		default:
-			parValue = pConfig->Read(p->abbr, "");
+			parValue = pConfig->Read((wxChar *) p->abbr, wxT(""));
 			if (parValue.Len() != 0)
-				SetParValue_UniParMgr(&parList, i, (char *) parValue.GetData());
+				SetParValue_UniParMgr(&parList, i, (wxChar *) parValue.c_str());
 		}
 	}
 	SetSimulationFileFlag_AppInterface(FALSE); //Don't use sim file name
@@ -613,13 +614,13 @@ MyApp::SaveConfiguration(UniParListPtr parList, const wxString& processSuffix)
 
 	for (i = 0; i < parList->numPars; i++) {
 		p = &parList->pars[i];
-		name = FormatPar_UniParMgr(p, (char *) processSuffix.c_str());
+		name = FormatPar_UniParMgr(p, (wxChar *) processSuffix.c_str());
 		switch (p->type) {
 		case UNIPAR_PARLIST:
 			if (p->valuePtr.parList.process)
 				SET_PARS_POINTER(*p->valuePtr.parList.process);
-			SaveConfiguration(*p->valuePtr.parList.list, "." + wxString(p->
-			  abbr));
+			SaveConfiguration(*p->valuePtr.parList.list, wxT(".") + wxString(
+			  (wxChar *) p->abbr));
 			break;
 		case UNIPAR_INT_ARRAY:
 		case UNIPAR_REAL_ARRAY:
@@ -629,7 +630,7 @@ MyApp::SaveConfiguration(UniParListPtr parList, const wxString& processSuffix)
 			for (j = 0; j < *p->valuePtr.array.numElements; j++) {
 				oldIndex = p->valuePtr.array.index;
 				p->valuePtr.array.index = j;
-				value.Printf("%d:%s", j, GetParString_UniParMgr(p));
+				value.Printf(wxT("%d:%s"), j, GetParString_UniParMgr(p));
 				pConfig->Write(name, value);
 			}
 			p->valuePtr.array.index = oldIndex;
@@ -649,7 +650,7 @@ MyApp::OpenDiagWindow(void)
 	if (diagFrame)
 		return;
 
-	diagFrame = new DiagFrame(frame, "DSAM Diagnostics");
+	diagFrame = new DiagFrame(frame, wxT("DSAM Diagnostics"));
 	diagFrame->Show(TRUE);
 
 }
@@ -674,13 +675,13 @@ MyApp::AddHelpBook(const wxString& path, const wxString& defaultPath,
 	wxFileName	helpFile;
 
 	pConfig->SetPath(SIM_MANAGER_REG_PATHS);
-	helpFilePath = pConfig->Read(path, "");
+	helpFilePath = pConfig->Read(path, wxT(""));
 	if (GetPtr_AppInterface()) {
 		if (!helpFilePath.Len())
 			helpFilePath = defaultPath;
-		helpFile = wxFileName(helpFilePath, fileName, "zip");
+		helpFile = wxFileName(helpFilePath, fileName, wxT("zip"));
 	} else
-		helpFile = wxFileName(defaultPath, "DSAMApp.zip");
+		helpFile = wxFileName(defaultPath, wxT("DSAMApp.zip"));
 	if (helpFile.FileExists() && help.AddBook(helpFile))
 		 helpCount++;
 
@@ -700,12 +701,12 @@ MyApp::OnServerEvent(wxSocketEvent& event)
 
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
-		NotifyError("%s: Unexpected socket event.", funcName);
+		NotifyError(wxT("%s: Unexpected socket event."), funcName);
 		return;
 	}
 	SocketBase *sock = iPCServer->InitConnection(false);
 	if (!sock) {
-		NotifyError("%s: Couldn't initialise connection.\n");
+		NotifyError(wxT("%s: Couldn't initialise connection.\n"));
 		return;
 	}
 	sock->SetEventHandler(*this, IPC_APP_SOCKET_ID);
@@ -789,7 +790,7 @@ void
 EmptyDiagWinBuffer_MyApp(char *s, int *c)
 {
 	*(s + *c) = '\0';
-	*(wxGetApp().GetDiagFrame()->diagnosticsText) << s;
+	*(wxGetApp().GetDiagFrame()->diagnosticsText) << (wxChar *) s;
 	*c = 0;
 
 }
@@ -809,7 +810,7 @@ EmptyDiagWinBuffer_MyApp(char *s, int *c)
  */
  
 void
-DPrint_MyApp(char *format, va_list args)
+DPrint_MyApp(wxChar *format, va_list args)
 {
 	if (!wxGetApp().GetDiagFrame())
 		return;
@@ -830,17 +831,17 @@ DPrint_MyApp(char *format, va_list args)
  */
 
 void
-Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
+Notify_MyApp(const wxChar *format, va_list args, CommonDiagSpecifier type)
 {
-	char	message[LONG_STRING], *heading;
+	wxChar	message[LONG_STRING], *heading;
 	long	style = wxOK;
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
-		vsnprintf(message, LONG_STRING, format, args);
+		DSAM_vsnprintf(message, LONG_STRING, format, args);
 		if (type == COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL)
 			style |= wxCANCEL;
-		if ((wxMessageBox(message, DiagnosticTitle(type), style) == wxCANCEL) &&
-		  wxGetApp().GetGrMainApp()->simThread) {
+		if ((wxMessageBox((wxChar *) message, (wxChar *) DiagnosticTitle(type),
+		  style) == wxCANCEL) && wxGetApp().GetGrMainApp()->simThread) {
 			wxGetApp().GetGrMainApp()->DeleteSimThread();
 			wxLogWarning(wxT("Simulation terminated by user."));
 		}
@@ -848,10 +849,10 @@ Notify_MyApp(const char *format, va_list args, CommonDiagSpecifier type)
 		if ((type != COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL) ||
 		  GetDSAMPtr_Common()->interruptRequestedFlag)
 			SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-		heading = "\nDiagnostics:-\n";
+		heading = wxT("\nDiagnostics:-\n");
 	} else
-		heading = "";
-	snprintf(message, LONG_STRING, "%s%s\n", heading, format);
+		heading = wxT("");
+	DSAM_snprintf(message, LONG_STRING, wxT("%s%s\n"), heading, format);
 	(GetDSAMPtr_Common()->DPrint)(message, args);
 
 }

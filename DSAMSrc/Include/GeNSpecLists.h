@@ -81,10 +81,10 @@ NameSpecifier *	FitFuncModeList_NSpecLists(int index);
 
 int		GetNumListEntries_NSpecLists(NameSpecifierPtr list);
 
-int		IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list);
+int		IdentifyDiag_NSpecLists(WChar *mode, NameSpecifierPtr list);
 
 NameSpecifier *	InitNameList_NSpecLists(NameSpecifierPtr prototypeList,
-				  char *textPtr);
+				  WChar *textPtr);
 
 BOOLN	OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode);
 

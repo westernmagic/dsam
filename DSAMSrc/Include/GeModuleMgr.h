@@ -138,13 +138,13 @@ typedef struct moduleStruct {
 	BOOLN	(* PrintPars)(void);
 #	ifdef _PAMASTER1_H
 		BOOLN (* QueueCommand)(void *parameter, int parCount,
-		  TypeSpecifier type, char *label, CommandSpecifier command,
+		  TypeSpecifier type, WChar *label, CommandSpecifier command,
 		  ScopeSpecifier scope);
 		BOOLN (* SendQueuedCommands)(void);
 #	endif
 	BOOLN	(* RunProcess)(EarObjectPtr theObject);
-	BOOLN	(* ReadPars)(char *fileName);
-	BOOLN	(* ReadSignal)(char *fileName, EarObjectPtr data);
+	BOOLN	(* ReadPars)(WChar *fileName);
+	BOOLN	(* ReadSignal)(WChar *fileName, EarObjectPtr data);
 	void	(* ResetProcess)(EarObjectPtr data);
 	BOOLN	(* InitModule )(struct moduleStruct *);
 	BOOLN	(* SetParsPointer)(struct moduleStruct *);
@@ -193,7 +193,7 @@ __BEGIN_DECLS
 
 BOOLN	AddModuleRef_ModuleMgr(ModuleRefPtr *theList, ModulePtr theModule);
 
-BOOLN	CheckData_ModuleMgr(EarObjectPtr data, const char *callingFunction);
+BOOLN	CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction);
 
 ModuleRefPtr	CreateModuleRef_ModuleMgr(ModulePtr theModule);
 
@@ -209,11 +209,12 @@ void	FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle theHandle);
 
 void *	GetData_ModuleMgr(EarObjectPtr data, void *inArg);
 
-EarObjectPtr	GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label);
+EarObjectPtr	GetLabelledProcess_ModuleMgr(EarObjectPtr data, WChar *label);
 
-char *	GetParsFilePath_ModuleMgr(EarObjectPtr data);
+WChar *	GetParsFilePath_ModuleMgr(EarObjectPtr data);
 
-EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier);
+EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, WChar
+				  *processSpecifier);
 
 int		GetSimFileType_ModuleMgr(EarObjectPtr data);
 
@@ -221,9 +222,9 @@ DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
 
 DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
 
-UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName);
+UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName);
 
-ModulePtr	Init_ModuleMgr(char *name);
+ModulePtr	Init_ModuleMgr(WChar *name);
 
 void	LinkGlueRoutine_ModuleMgr(void);
 
@@ -233,11 +234,11 @@ void *	NullFunction_ModuleMgr(void);
 
 BOOLN	PrintPars_ModuleMgr(EarObjectPtr data);
 
-BOOLN	PrintSimFile_ModuleMgr(char *fileName, EarObjectPtr data);
+BOOLN	PrintSimFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
 BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
-BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, char *fileName);
+BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName);
 
 BOOLN	ResetProcess_ModuleMgr(EarObjectPtr data);
 
@@ -249,12 +250,12 @@ void	SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void));
 
 BOOLN	SetNull_ModuleMgr(ModulePtr module);
 
-BOOLN	SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value);
+BOOLN	SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value);
 
-BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
+BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, WChar *name, int index,
 		  double value);
 
-BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value);
+BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, WChar *name, double value);
 
 void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
 
@@ -262,9 +263,9 @@ void	SetTestDestroy_ModuleMgr(BOOLN (* Func)(void));
 
 void *	TrueFunction_ModuleMgr(void);
 
-BOOLN	WriteSimParFile_ModuleMgr(char *fileName, EarObjectPtr data);
+BOOLN	WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
-BOOLN	WritePars_ModuleMgr(char *baseFileName, EarObjectPtr process);
+BOOLN	WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process);
 
 __END_DECLS
 

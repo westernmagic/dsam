@@ -25,7 +25,7 @@
 
 typedef struct {
 
-	char	*name;
+	WChar	*name;
 	int		specifier;
 
 } NameSpecifier, *NameSpecifierPtr;
@@ -44,7 +44,7 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-int		Identify_NameSpecifier(char *name, NameSpecifierPtr list);
+int		Identify_NameSpecifier(WChar *name, NameSpecifierPtr list);
 
 int		GetNullSpec_NameSpecifier(NameSpecifierPtr list);
 

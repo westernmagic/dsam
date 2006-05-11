@@ -58,15 +58,15 @@
  */
 
 FILE *
-InitialFileRead_Raw(char *fileName)
+InitialFileRead_Raw(WChar *fileName)
 {
-	static const char *funcName = "InitialFileRead_Wave";
+	static const WChar *funcName = wxT("InitialFileRead_Wave");
 	FILE	*fp;
 
 	if (dataFilePtr->endian == 0)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
 	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
+		NotifyError(wxT("%s: Couldn't open file."), funcName);
 		return(FALSE);
 	}
 	return(fp);
@@ -90,19 +90,19 @@ InitialFileRead_Raw(char *fileName)
  */
 
 BOOLN
-ReadFile_Raw(char *fileName, EarObjectPtr data)
+ReadFile_Raw(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "ReadFile_Raw";
+	static const WChar *funcName = wxT("ReadFile_Raw");
 	int		chan, endChan;
 	ChanLen	i, length, index, requestedLength, numSamples;
 	FILE	*fp;
 
 	if ((fp = InitialFileRead_Raw(fileName)) == NULL) {
-		NotifyError("%s: Could not read initial file structure from '%s'.",
+		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' byte (raw) file",
+	SetProcessName_EarObject(data, wxT("'%s' byte (raw) file"),
 	  GetFileNameFPath_Utility_String(fileName));
 	if (fp == stdin) {
 		requestedLength = (int32) floor(dataFilePtr->duration * dataFilePtr->
@@ -114,14 +114,15 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
 	}
 	if (!InitProcessVariables_DataFile(data, requestedLength,
 	  dataFilePtr->defaultSampleRate)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
+		NotifyError(wxT("%s: Could not initialise process variables."),
+		  funcName);
 		return(FALSE);
 	}
 	if ((length = SetIOSectionLength_DataFile(data)) <= 0)
 		return(FALSE);
 	if (!InitOutSignal_EarObject(data, (uShort) dataFilePtr->numChannels,
 	  length, 1.0 / dataFilePtr->defaultSampleRate) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
+		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
 	if (dataFilePtr->numChannels == 2)
@@ -157,21 +158,21 @@ ReadFile_Raw(char *fileName, EarObjectPtr data)
  */
 
 double
-GetDuration_Raw(char *fileName)
+GetDuration_Raw(WChar *fileName)
 {
-	static const char *funcName = "GetDuration_Wave";
+	static const WChar *funcName = wxT("GetDuration_Wave");
 	double	duration;
 	FILE	*fp;
 
 	if ((fp = InitialFileRead_Raw(fileName)) == NULL) {
-		NotifyError("%s: Could not do initial file operations for '%s'.",
+		NotifyError(wxT("%s: Could not do initial file operations for '%s'."),
 		  funcName, fileName);
 		CloseFile(fp);
 		return(-1.0);
 	}
 	if (fp == stdin) {
-		NotifyError("%s: Reading from stdin disables this function for this "
-		  "format.", funcName);
+		NotifyError(wxT("%s: Reading from stdin disables this function for "
+		  "this format."), funcName);
 		CloseFile(fp);
 		return(-1.0);
 	}
@@ -195,9 +196,9 @@ GetDuration_Raw(char *fileName)
  */
 
 BOOLN
-WriteFile_Raw(char *fileName, EarObjectPtr data)
+WriteFile_Raw(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "WriteFile_Raw";
+	static const WChar *funcName = wxT("WriteFile_Raw");
 	int		chan, endChan, outputVal;
 	register ChanLen	i, index, numSamples;
 	FILE	*fp;
@@ -209,7 +210,7 @@ WriteFile_Raw(char *fileName, EarObjectPtr data)
 	  OpenFile_DataFile(fileName, FOR_BINARY_APPENDING):
 	  OpenFile_DataFile(fileName, FOR_BINARY_WRITING);
 	if (fp == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
+		NotifyError(wxT("%s: Couldn't open file."), funcName);
 		return(FALSE);
 	}
 	if (_WorldTime_EarObject(data) == PROCESS_START_TIME)
@@ -233,7 +234,7 @@ WriteFile_Raw(char *fileName, EarObjectPtr data)
 			break;
 		default:
 			CloseFile(fp);
-			NotifyError("%s: Unsupported sample size.", funcName);
+			NotifyError(wxT("%s: Unsupported sample size."), funcName);
 			return(FALSE);
 		} /* switch */
 		if (chan == endChan)

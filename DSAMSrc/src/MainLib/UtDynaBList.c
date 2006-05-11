@@ -42,14 +42,14 @@ DynaBListPtr
 Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
-	static const char *funcName = "Insert_Utility_DynaBList";
+	static const WChar *funcName = wxT("Insert_Utility_DynaBList");
 	int		cmpResult;
 	DynaBListPtr	newNode;
 
 	if (nodePtr && *nodePtr) {
 		cmpResult = CmpFunc(data, (*nodePtr)->data);
 		if (cmpResult == 0) {
-			NotifyError("%s: Duplicated data.", funcName);
+			NotifyError(wxT("%s: Duplicated data."), funcName);
 			return(NULL);
 		}
 		if (cmpResult > 0)
@@ -58,11 +58,11 @@ Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
 			return(Insert_Utility_DynaBList(&(*nodePtr)->left, CmpFunc, data));
 	}
 	if (*nodePtr) {
-		NotifyError("%s: Duplicate label entry. Not inserted.", funcName);
+		NotifyError(wxT("%s: Duplicate label entry. Not inserted."), funcName);
 		return(NULL);
 	}
 	if ((newNode = (DynaBListPtr) malloc(sizeof (DynaBList))) == NULL) {
-		NotifyError("%s: Out of memory for DynaList.", funcName);
+		NotifyError(wxT("%s: Out of memory for DynaList."), funcName);
 		return(NULL);
 	}
 	newNode->data = data;
@@ -85,12 +85,12 @@ BOOLN
 Remove_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
-	static const char *funcName = "Remove_Utility_DynaBList";
+	static const WChar *funcName = wxT("Remove_Utility_DynaBList");
 	int		cmpResult;
 	DynaBListPtr	p;
 
 	if (!*nodePtr) {
-		NotifyError("%s: Element not found.", funcName);
+		NotifyError(wxT("%s: Element not found."), funcName);
 		return(FALSE);
 	}
 	cmpResult = CmpFunc(data, (*nodePtr)->data);
@@ -157,11 +157,11 @@ DynaBListPtr
 FindElement_Utility_DynaBList(DynaBListPtr nodePtr, int (* CmpFunc)(void *,
   void *), void *data)
 {
-	static const char *funcName = "FindElement_Utility_DynaBList";
+	static const WChar *funcName = wxT("FindElement_Utility_DynaBList");
 	int		cmpResult;
 
 	if (!nodePtr) {
-		NotifyError("%s: Element not found.", funcName);
+		NotifyError(wxT("%s: Element not found."), funcName);
 		return(NULL);
 	}
 	cmpResult = CmpFunc(data, nodePtr->data);

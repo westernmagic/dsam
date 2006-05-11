@@ -164,7 +164,7 @@ ReadParams_AIFF(FILE *fp, AIFFParamsPtr p)
 BOOLN
 ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 {
-	static const char *funcName = "ReadSoundChunkData_AIFF";
+	static const WChar *funcName = wxT("ReadSoundChunkData_AIFF");
 	int		j;
 	ChanLen	i, length;
 
@@ -172,7 +172,7 @@ ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 		return(FALSE);
 	if (!InitOutSignal_EarObject(data, p->numChannels, length, 1.0 /
 	  p->sampleRate) ) {
-		NotifyError("%s: Cannot initialise output signal.", funcName);
+		NotifyError(wxT("%s: Cannot initialise output signal."), funcName);
 		return(FALSE);
 	}	
 	SetPosition_UPortableIO(fp, (int32) (p->soundPosition +
@@ -230,32 +230,33 @@ ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
  */
 
 FILE *
-InitialFileRead_AIFF(char *fileName, AIFFParams *pars)
+InitialFileRead_AIFF(WChar *fileName, AIFFParams *pars)
 {
-	static const char *funcName = "InitialFileRead_AIFF";
+	static const WChar *funcName = wxT("InitialFileRead_AIFF");
 	FILE	*fp;
 
-	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
+	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) ==
+	  NULL) {
+		NotifyError(wxT("%s: Couldn't open file."), funcName);
 		return(NULL);
 	}
 	if (fp == stdin) {
-		NotifyError("%s: Reading from stdin not supported for this format.",
-		  funcName);
+		NotifyError(wxT("%s: Reading from stdin not supported for this "
+		  "format."), funcName);
 		return(NULL);
 	}
 	InitParams_AIFF(pars);
 	if (dataFilePtr->endian == 0)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
-	if (!ReadFileIdentifier_DataFile(fp, AIFF_FORM, "AIFF")) {
-		NotifyError("%s: Couldn't find initial chunk in file '%s'.", funcName,
-		  fileName);
+	if (!ReadFileIdentifier_DataFile(fp, AIFF_FORM, wxT("AIFF"))) {
+		NotifyError(wxT("%s: Couldn't find initial chunk in file '%s'."),
+		  funcName, fileName);
 		return(NULL);
 	}
 	pars->chunkSize = dataFilePtr->Read32Bits(fp);
 	if (dataFilePtr->Read32Bits(fp) != AIFF_AIFF){
-		NotifyError("%s: Couldn't find AIFF chunk in file '%s'.", funcName,
+		NotifyError(wxT("%s: Couldn't find AIFF chunk in file '%s'."), funcName,
 		  fileName);
 		return(NULL);
 	}
@@ -279,25 +280,25 @@ InitialFileRead_AIFF(char *fileName, AIFFParams *pars)
  */
 
 BOOLN
-ReadFile_AIFF(char *fileName, EarObjectPtr data)
+ReadFile_AIFF(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "ReadFile_AIFF";
+	static const WChar *funcName = wxT("ReadFile_AIFF");
 	FILE	*fp;
 	AIFFParams	pars;
 
 	if ((fp = InitialFileRead_AIFF(fileName, &pars)) == NULL) {
-		NotifyError("%s: Could not read initial file structure from '%s'.",
+		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(FALSE);
 	}
 
 	ReadParams_AIFF(fp, &pars);
 
-	SetProcessName_EarObject(data, "'%s' AIFF file",
+	SetProcessName_EarObject(data, wxT("'%s' AIFF file"),
 	  GetFileNameFPath_Utility_String(fileName));
 
 	if (!pars.soundPosition) {
-		NotifyError("%s: Didn't find a SSND chunk in file '%s'.", funcName,
+		NotifyError(wxT("%s: Didn't find a SSND chunk in file '%s'."), funcName,
 		  fileName);
 		return(FALSE);
 	}
@@ -305,20 +306,21 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
 	dataFilePtr->outputTimeOffset = pars.dSAMChunk.outputTimeOffset;
 	if (!InitProcessVariables_DataFile(data, pars.numSampleFrames,
 	  pars.sampleRate)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
+		NotifyError(wxT("%s: Could not initialise process variables."),
+		  funcName);
 		return(FALSE);
 	}
 	if (pars.dSAMChunk.flag)
 		dataFilePtr->normalise = pars.dSAMChunk.normalise;
 	if (!ReadSoundChunkData_AIFF(fp, data, &pars)) {
 		if (!GetDSAMPtr_Common()->segmentedMode)
-			NotifyError("%s: Couldn't read the SSND chunk in file '%s'.",
+			NotifyError(wxT("%s: Couldn't read the SSND chunk in file '%s'."),
 			  funcName ,fileName);
 		return(FALSE);
 	}
 	if (pars.dSAMChunk.flag) {
 		if (!ReadDSAMChunkData_AIFF(fp, data, &pars)) {
-			NotifyError("%s: Couldn't read the DSAM chunk in file '%s'.",
+			NotifyError(wxT("%s: Couldn't read the DSAM chunk in file '%s'."),
 			  funcName, fileName);
 			return(FALSE);
 		}
@@ -340,14 +342,14 @@ ReadFile_AIFF(char *fileName, EarObjectPtr data)
  */
 
 double
-GetDuration_AIFF(char *fileName)
+GetDuration_AIFF(WChar *fileName)
 {
-	static const char *funcName = "GetDuration_AIFF";
+	static const WChar *funcName = wxT("GetDuration_AIFF");
 	FILE	*fp;
 	AIFFParams	pars;
 
 	if ((fp = InitialFileRead_AIFF(fileName, &pars)) == NULL) {
-		NotifyError("%s: Could not read initial file structure from '%s'.",
+		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(-1.0);
 	}
@@ -497,11 +499,11 @@ WriteDSAMChunk_AIFF(FILE *fp, SignalDataPtr signal, BOOLN updating)
 BOOLN
 ReadPartialHeader_AIFF(FILE *fp, AIFFParamsPtr p)
 {
-	static const char *funcName = "ReadPartialHeader_AIFF";
+	static const WChar *funcName = wxT("ReadPartialHeader_AIFF");
 
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if (dataFilePtr->Read32Bits(fp) != AIFF_FORM) {
-		NotifyError("%s: Could not find initial chunk.", funcName);
+		NotifyError(wxT("%s: Could not find initial chunk."), funcName);
 		return(FALSE);
 	}
 	p->chunkSize = dataFilePtr->Read32Bits(fp);
@@ -513,7 +515,7 @@ ReadPartialHeader_AIFF(FILE *fp, AIFFParamsPtr p)
 	p->sampleSize = dataFilePtr->Read16Bits(fp);
 	p->sampleRate = dataFilePtr->ReadIEEEExtended(fp);
 	if (dataFilePtr->Read32Bits(fp) != AIFF_DSAM) {
-		NotifyError("%s: Could not find DSAM chunk.", funcName);
+		NotifyError(wxT("%s: Could not find DSAM chunk."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr->Read32Bits(fp);	/* Chunk Size */
@@ -536,9 +538,9 @@ ReadPartialHeader_AIFF(FILE *fp, AIFFParamsPtr p)
  */
 
 BOOLN
-WriteFile_AIFF(char *fileName, EarObjectPtr data)
+WriteFile_AIFF(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "WriteFile_AIFF";
+	static const WChar *funcName = wxT("WriteFile_AIFF");
 	int32	previousSamples;
 	FILE	*fp;
 	AIFFParams pars;
@@ -547,7 +549,8 @@ WriteFile_AIFF(char *fileName, EarObjectPtr data)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->firstSectionFlag)) {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_WRITING)) == NULL) {
-			NotifyError("%s: Couldn't open file '%s'.", funcName, fileName);
+			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
+			  fileName);
 			return(FALSE);
 		}
 		previousSamples = 0L;
@@ -555,12 +558,13 @@ WriteFile_AIFF(char *fileName, EarObjectPtr data)
 		  data->outSignal);
 	} else {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_UPDATING)) == NULL) {
-			NotifyError("%s: Couldn't open file '%s'.", funcName, fileName);
+			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
+			  fileName);
 			return(FALSE);
 		}
 		if (!ReadPartialHeader_AIFF(fp, &pars)) {
-			NotifyError("%s: Could not read header (using segmented mode).",
-			  funcName );
+			NotifyError(wxT("%s: Could not read header (using segmented "
+			  "mode)."), funcName );
 			CloseFile(fp);
 			return(FALSE);
 		}
@@ -569,7 +573,7 @@ WriteFile_AIFF(char *fileName, EarObjectPtr data)
 		  AIFF_SMALL_VALUE) || (BITS_TO_BYTES(pars.sampleSize) !=
 		  dataFilePtr->wordSize) || (pars.dSAMChunk.interleaveLevel !=
 		  data->outSignal->interleaveLevel)) {
-			NotifyError("%s: Cannot append to different format file!",
+			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
 			return(FALSE);
 		}
@@ -578,7 +582,7 @@ WriteFile_AIFF(char *fileName, EarObjectPtr data)
 	WriteHeader_AIFF(fp, data, previousSamples);
 	WriteDSAMChunk_AIFF(fp, data->outSignal, (previousSamples != 0));
 	if (!WriteSSNDChunk_AIFF(fp, data->outSignal, previousSamples)) {
-		NotifyError("%s: Couldn't write SSND chunk.", funcName);
+		NotifyError(wxT("%s: Couldn't write SSND chunk."), funcName);
 		return(FALSE);
 	}
 	if (fp != stdin)

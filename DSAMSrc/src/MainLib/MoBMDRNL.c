@@ -39,6 +39,7 @@
 #include "UtBandwidth.h"
 #include "UtCFList.h"
 #include "UtFilters.h"
+#include "UtString.h"
 #include "MoBMDRNL.h"
 
 /******************************************************************************/
@@ -63,8 +64,6 @@ BMDRNLPtr	bMDRNLPtr = NULL;
 BOOLN
 Free_BasilarM_DRNL(void)
 {
-	/* static const char	*funcName = "Free_BasilarM_DRNL";  */
-
 	if (bMDRNLPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_BasilarM_DRNL();
@@ -96,7 +95,7 @@ Free_BasilarM_DRNL(void)
 int
 GetFitFuncPars_BasilarM_DRNL(int mode)
 {
-	static const char	*funcName = "GetFitFuncPars_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("GetFitFuncPars_BasilarM_DRNL");
 
 	switch (mode) {
 	case GENERAL_FIT_FUNC_EXP1_MODE:
@@ -107,7 +106,7 @@ GetFitFuncPars_BasilarM_DRNL(int mode)
 	case GENERAL_FIT_FUNC_POLY1_MODE:
 		return(3);
 	default:
-		NotifyError("%s: Mode not listed (%d), returning zero.", funcName,
+		NotifyError(wxT("%s: Mode not listed (%d), returning zero."), funcName,
 		  mode);
 	}
 	return(0);
@@ -124,7 +123,7 @@ GetFitFuncPars_BasilarM_DRNL(int mode)
 double
 GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
 {
-	static const char	*funcName = "GetFitFuncValue_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("GetFitFuncValue_BasilarM_DRNL");
 
 	switch (p->mode) {
 	case GENERAL_FIT_FUNC_EXP1_MODE:
@@ -139,7 +138,7 @@ GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
 		return(p->params[0] + p->params[1] * linCF + p->params[2] * linCF *
 		  linCF);
 	default:
-		NotifyError("%s: Mode (%d) not listed, returning zero.", funcName,
+		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
 		  p->mode);
 	}
 	return(0.0);
@@ -163,22 +162,22 @@ SetDefaultParArrayPars_BasilarM_DRNL(void)
 	double	linBwidth[] = {1.3, 0.53};
 	double	linScaleG[] = {5.48, -0.97};
 
-	SetMode_ParArray(bMDRNLPtr->nonLinBwidth, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->nonLinBwidth, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->nonLinBwidth->numParams; i++)
 		bMDRNLPtr->nonLinBwidth->params[i] = nonLinBwidth[i];
-	SetMode_ParArray(bMDRNLPtr->comprScaleA, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->comprScaleA, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->comprScaleA->numParams; i++)
 		bMDRNLPtr->comprScaleA->params[i] = comprScaleA[i];
-	SetMode_ParArray(bMDRNLPtr->comprScaleB, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->comprScaleB, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->comprScaleB->numParams; i++)
 		bMDRNLPtr->comprScaleB->params[i] = comprScaleB[i];
-	SetMode_ParArray(bMDRNLPtr->linCF, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->linCF, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->linCF->numParams; i++)
 		bMDRNLPtr->linCF->params[i] = linCF[i];
-	SetMode_ParArray(bMDRNLPtr->linBwidth, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->linBwidth, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->linBwidth->numParams; i++)
 		bMDRNLPtr->linBwidth->params[i] = linBwidth[i];
-	SetMode_ParArray(bMDRNLPtr->linScaleG, "Log_func1");
+	SetMode_ParArray(bMDRNLPtr->linScaleG, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->linScaleG->numParams; i++)
 		bMDRNLPtr->linScaleG->params[i] = linScaleG[i];
 
@@ -199,18 +198,19 @@ SetDefaultParArrayPars_BasilarM_DRNL(void)
 BOOLN
 Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("Init_BasilarM_DRNL");
 
 	if (parSpec == GLOBAL) {
 		if (bMDRNLPtr != NULL)
 			Free_BasilarM_DRNL();
 		if ((bMDRNLPtr = (BMDRNLPtr) malloc(sizeof(BMDRNL))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bMDRNLPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -223,62 +223,62 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	bMDRNLPtr->linLPCascadeFlag = TRUE;
 	bMDRNLPtr->nonLinGTCascade = 3;
 	bMDRNLPtr->nonLinLPCascade = 4;
-	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray("NonLinBwidth", 
+	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"), 
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise NonLinBwidth parArray structure",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise NonLinBwidth parArray "
+		  "structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	if ((bMDRNLPtr->comprScaleA = Init_ParArray("ComprScaleA",
+	if ((bMDRNLPtr->comprScaleA = Init_ParArray(wxT("ComprScaleA"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise ComprScaleA parArray structure",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise ComprScaleA parArray "
+		  "structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	if ((bMDRNLPtr->comprScaleB = Init_ParArray("ComprScaleB",
+	if ((bMDRNLPtr->comprScaleB = Init_ParArray(wxT("ComprScaleB"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise ComprScaleB parArray structure",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise ComprScaleB parArray "
+		  "structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	bMDRNLPtr->comprExponent = 0.1;
 	bMDRNLPtr->linGTCascade = 3;
 	bMDRNLPtr->linLPCascade = 4;
-	if ((bMDRNLPtr->linCF = Init_ParArray("LinCF", FitFuncModeList_NSpecLists(
-	  0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise LinCF parArray structure",
+	if ((bMDRNLPtr->linCF = Init_ParArray(wxT("LinCF"),
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+		NotifyError(wxT("%s: Could not initialise LinCF parArray structure"),
 		  funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	if ((bMDRNLPtr->linBwidth = Init_ParArray("LinBwidth",
+	if ((bMDRNLPtr->linBwidth = Init_ParArray(wxT("LinBwidth"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise LinBwidth parArray structure",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise LinBwidth parArray "
+		  "structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
-	if ((bMDRNLPtr->linScaleG = Init_ParArray("linScaleG",
+	if ((bMDRNLPtr->linScaleG = Init_ParArray(wxT("linScaleG"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: Could not initialise linScaleG parArray structure",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise linScaleG parArray "
+		  "structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->theCFs = GenerateDefault_CFList(
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
-	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, "internal_static",
+	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ, wxT("internal_static"),
 	  GetNonLinBandwidth_BasilarM_DRNL)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 	SetDefaultParArrayPars_BasilarM_DRNL();
 
 	if (!SetUniParList_BasilarM_DRNL()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
@@ -305,72 +305,72 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_BasilarM_DRNL(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_DRNL";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_DRNL");
 	UniParPtr	pars;
 
 	if ((bMDRNLPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BM_DRNL_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMDRNLPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BM_DRNL_NONLINGTCASCADE], "NL_GT_CASCADE",
-	  "Nonlinear gammatone filter cascade.",
+	SetPar_UniParMgr(&pars[BM_DRNL_NONLINGTCASCADE], wxT("NL_GT_CASCADE"),
+	  wxT("Nonlinear gammatone filter cascade."),
 	  UNIPAR_INT,
 	  &bMDRNLPtr->nonLinGTCascade, NULL,
 	  (void * (*)) SetNonLinGTCascade_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_NONLINLPCASCADE], "NL_LP_CASCADE",
-	  "Nonlinear low-pass filter cascade.",
+	SetPar_UniParMgr(&pars[BM_DRNL_NONLINLPCASCADE], wxT("NL_LP_CASCADE"),
+	  wxT("Nonlinear low-pass filter cascade."),
 	  UNIPAR_INT,
 	  &bMDRNLPtr->nonLinLPCascade, NULL,
 	  (void * (*)) SetNonLinLPCascade_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_NONLINBWIDTH], "NL_BW_VAR_FUNC",
-	  "Non-linear bandwidth variable function (Hz vs non-linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_NONLINBWIDTH], wxT("NL_BW_VAR_FUNC"),
+	  wxT("Non-linear bandwidth variable function (Hz vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->nonLinBwidth, NULL,
 	  (void * (*)) SetNonLinBwidth_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_COMPRSCALEA], "COMP_A_VAR_FUNC",
-	  "Compression A (linear) scale variable function (vs non-linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_COMPRSCALEA], wxT("COMP_A_VAR_FUNC"),
+	  wxT("Compression A (linear) scale variable function (vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->comprScaleA, NULL,
 	  (void * (*)) SetComprScaleA_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_COMPRSCALEB], "COMP_B_VAR_FUNC",
-	  "Compression b (gain) scale variable function (vs non-linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_COMPRSCALEB], wxT("COMP_B_VAR_FUNC"),
+	  wxT("Compression b (gain) scale variable function (vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->comprScaleB, NULL,
 	  (void * (*)) SetComprScaleB_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_COMPREXPONENT], "COMP_N_EXPON",
-	  "Compression exponent, n (units).",
+	SetPar_UniParMgr(&pars[BM_DRNL_COMPREXPONENT], wxT("COMP_N_EXPON"),
+	  wxT("Compression exponent, n (units)."),
 	  UNIPAR_REAL,
 	  &bMDRNLPtr->comprExponent, NULL,
 	  (void * (*)) SetComprExponent_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_LINGTCASCADE], "L_GT_CASCADE",
-	  "Linear gammatone filter cascade.",
+	SetPar_UniParMgr(&pars[BM_DRNL_LINGTCASCADE], wxT("L_GT_CASCADE"),
+	  wxT("Linear gammatone filter cascade."),
 	  UNIPAR_INT,
 	  &bMDRNLPtr->linGTCascade, NULL,
 	  (void * (*)) SetLinGTCascade_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_LINLPCASCADE], "L_LP_CASCADE",
-	  "Linear low-pass filter cascade.",
+	SetPar_UniParMgr(&pars[BM_DRNL_LINLPCASCADE], wxT("L_LP_CASCADE"),
+	  wxT("Linear low-pass filter cascade."),
 	  UNIPAR_INT,
 	  &bMDRNLPtr->linLPCascade, NULL,
 	  (void * (*)) SetLinLPCascade_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_LINCF], "L_CF_VAR_FUNC",
-	  "Linear CF variable function (Hz vs linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_LINCF], wxT("L_CF_VAR_FUNC"),
+	  wxT("Linear CF variable function (Hz vs linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->linCF, NULL,
 	  (void * (*)) SetLinCF_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_LINBWIDTH], "L_BW_VAR_FUNC",
-	  "Linear bandwidth variable function (Hz vs non-linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_LINBWIDTH], wxT("L_BW_VAR_FUNC"),
+	  wxT("Linear bandwidth variable function (Hz vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->linBwidth, NULL,
 	  (void * (*)) SetLinBwidth_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_LINSCALEG], "L_SCALER",
-	  "Linear filter scale variable function (vs non-linear CF).",
+	SetPar_UniParMgr(&pars[BM_DRNL_LINSCALEG], wxT("L_SCALER"),
+	  wxT("Linear filter scale variable function (vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->linScaleG, NULL,
 	  (void * (*)) SetLinScaleG_BasilarM_DRNL);
-	SetPar_UniParMgr(&pars[BM_DRNL_THECFS], "CFLIST",
-	  "Centre frequency specification.",
+	SetPar_UniParMgr(&pars[BM_DRNL_THECFS], wxT("CFLIST"),
+	  wxT("Centre frequency specification."),
 	  UNIPAR_CFLIST,
 	  &bMDRNLPtr->theCFs, NULL,
 	  (void * (*)) SetCFList_BasilarM_DRNL);
@@ -388,15 +388,15 @@ SetUniParList_BasilarM_DRNL(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_DRNL(void)
 {
-	static const char	*funcName = "GetUniParListPtr_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("GetUniParListPtr_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bMDRNLPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMDRNLPtr->parList);
@@ -416,7 +416,7 @@ SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
   double comprExponent, int linGTCascade, int linLPCascade, ParArrayPtr
   linCF, ParArrayPtr linBwidth, ParArrayPtr linScaleG, CFListPtr theCFs)
 {
-	static const char	*funcName = "SetPars_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetPars_BasilarM_DRNL");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -445,7 +445,7 @@ SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
 	if (!SetCFList_BasilarM_DRNL(theCFs))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -461,10 +461,10 @@ SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
 BOOLN
 SetNonLinGTCascade_BasilarM_DRNL(int theNonLinGTCascade)
 {
-	static const char	*funcName = "SetNonLinGTCascade_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetNonLinGTCascade_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -485,10 +485,10 @@ SetNonLinGTCascade_BasilarM_DRNL(int theNonLinGTCascade)
 BOOLN
 SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade)
 {
-	static const char	*funcName = "SetNonLinLPCascade_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetNonLinLPCascade_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -508,23 +508,24 @@ SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade)
 BOOLN
 SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth)
 {
-	static const char	*funcName = "SetNonLinBwidth_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetNonLinBwidth_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theNonLinBwidth, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
 	if (bMDRNLPtr->theCFs) {
 		bMDRNLPtr->theCFs->bandwidthMode.Func = 
 		  GetNonLinBandwidth_BasilarM_DRNL;
-		if (!SetBandwidths_CFList(bMDRNLPtr->theCFs, "internal_static", NULL)) {
-			NotifyError("%s: Failed to set bandwidth mode.", funcName);
+		if (!SetBandwidths_CFList(bMDRNLPtr->theCFs, wxT("internal_static"),
+		  NULL)) {
+			NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 			return(FALSE);
 		}
 	}
@@ -543,15 +544,15 @@ SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth)
 BOOLN
 SetComprScaleA_BasilarM_DRNL(ParArrayPtr theComprScaleA)
 {
-	static const char	*funcName = "SetComprScaleA_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetComprScaleA_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theComprScaleA, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -570,15 +571,15 @@ SetComprScaleA_BasilarM_DRNL(ParArrayPtr theComprScaleA)
 BOOLN
 SetComprScaleB_BasilarM_DRNL(ParArrayPtr theComprScaleB)
 {
-	static const char	*funcName = "SetComprScaleB_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetComprScaleB_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theComprScaleB, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -598,10 +599,10 @@ SetComprScaleB_BasilarM_DRNL(ParArrayPtr theComprScaleB)
 BOOLN
 SetComprExponent_BasilarM_DRNL(double theComprExponent)
 {
-	static const char	*funcName = "SetComprExponent_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetComprExponent_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -622,10 +623,10 @@ SetComprExponent_BasilarM_DRNL(double theComprExponent)
 BOOLN
 SetLinGTCascade_BasilarM_DRNL(int theLinGTCascade)
 {
-	static const char	*funcName = "SetLinGTCascade_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetLinGTCascade_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -646,10 +647,10 @@ SetLinGTCascade_BasilarM_DRNL(int theLinGTCascade)
 BOOLN
 SetLinLPCascade_BasilarM_DRNL(int theLinLPCascade)
 {
-	static const char	*funcName = "SetLinLPCascade_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetLinLPCascade_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -669,15 +670,15 @@ SetLinLPCascade_BasilarM_DRNL(int theLinLPCascade)
 BOOLN
 SetLinCF_BasilarM_DRNL(ParArrayPtr theLinCF)
 {
-	static const char	*funcName = "SetLinCF_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetLinCF_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theLinCF, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -696,15 +697,15 @@ SetLinCF_BasilarM_DRNL(ParArrayPtr theLinCF)
 BOOLN
 SetLinBwidth_BasilarM_DRNL(ParArrayPtr theLinBwidth)
 {
-	static const char	*funcName = "SetLinBwidth_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetLinBwidth_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theLinBwidth, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -723,15 +724,15 @@ SetLinBwidth_BasilarM_DRNL(ParArrayPtr theLinBwidth)
 BOOLN
 SetLinScaleG_BasilarM_DRNL(ParArrayPtr theLinScaleG)
 {
-	static const char	*funcName = "SetLinScaleG_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetLinScaleG_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckInit_ParArray(theLinScaleG, funcName)) {
-		NotifyError("%s: ParArray structure not correctly set.",  funcName);
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -750,22 +751,22 @@ SetLinScaleG_BasilarM_DRNL(ParArrayPtr theLinScaleG)
 BOOLN
 SetCFList_BasilarM_DRNL(CFListPtr theCFList)
 {
-	static const char	*funcName = "SetCFList_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("SetCFList_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not correctly set.",
+		NotifyError(wxT("%s: Centre frequency structure not correctly set."),
 		  funcName);
 		return(FALSE);
 	}
 	if (bMDRNLPtr->nonLinBwidth) {
 		theCFList->bandwidthMode.Func = GetNonLinBandwidth_BasilarM_DRNL;
-		if (!SetBandwidths_CFList(theCFList, "internal_static", NULL)) {
-			NotifyError("%s: Failed to set bandwidth mode.", funcName);
+		if (!SetBandwidths_CFList(theCFList, wxT("internal_static"), NULL)) {
+			NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 			return(FALSE);
 		}
 		theCFList->bParList->pars[BANDWIDTH_PAR_MODE].enabled = FALSE;
@@ -791,67 +792,67 @@ SetCFList_BasilarM_DRNL(CFListPtr theCFList)
 BOOLN
 CheckPars_BasilarM_DRNL(void)
 {
-	static const char	*funcName = "CheckPars_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("CheckPars_BasilarM_DRNL");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bMDRNLPtr->nonLinGTCascadeFlag) {
-		NotifyError("%s: nonLinGTCascade variable not set.", funcName);
+		NotifyError(wxT("%s: nonLinGTCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMDRNLPtr->nonLinLPCascadeFlag) {
-		NotifyError("%s: nonLinLPCascade variable not set.", funcName);
+		NotifyError(wxT("%s: nonLinLPCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->nonLinBwidth, funcName)) {
-		NotifyError("%s: Variable nonLinBwidth parameter array not correctly "
-		  "set.", funcName);
+		NotifyError(wxT("%s: Variable nonLinBwidth parameter array not "
+		  "correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleA, funcName)) {
-		NotifyError("%s: Variable comprScaleA parameter array not correctly "
-		  "set.", funcName);
+		NotifyError(wxT("%s: Variable comprScaleA parameter array not "
+		  "correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleB, funcName)) {
-		NotifyError("%s: Variable comprScaleB parameter array not correctly "
-		  "set.", funcName);
+		NotifyError(wxT("%s: Variable comprScaleB parameter array not "
+		  "correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMDRNLPtr->comprExponentFlag) {
-		NotifyError("%s: comprExponent variable not set.", funcName);
+		NotifyError(wxT("%s: comprExponent variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMDRNLPtr->linGTCascadeFlag) {
-		NotifyError("%s: linGTCascade variable not set.", funcName);
+		NotifyError(wxT("%s: linGTCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMDRNLPtr->linLPCascadeFlag) {
-		NotifyError("%s: linLPCascade variable not set.", funcName);
+		NotifyError(wxT("%s: linLPCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linCF, funcName)) {
-		NotifyError("%s: Variable linCF parameter array not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Variable linCF parameter array not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linBwidth, funcName)) {
-		NotifyError("%s: Variable linBwidth parameter array not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Variable linBwidth parameter array not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linScaleG, funcName)) {
-		NotifyError("%s: Variable linScaleG parameter array not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Variable linScaleG parameter array not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMDRNLPtr->theCFs)) {
-		NotifyError("%s: Centre frequency list parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -867,15 +868,15 @@ CheckPars_BasilarM_DRNL(void)
 CFListPtr
 GetCFListPtr_BasilarM_DRNL(void)
 {
-	static const char	*funcName = "GetCFListPtr_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("GetCFListPtr_BasilarM_DRNL");
 
 	if (bMDRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(NULL);
 	}
 	if (bMDRNLPtr->theCFs == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly "
+		  "set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMDRNLPtr->theCFs);
@@ -905,24 +906,26 @@ GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr, double theCF)
 BOOLN
 PrintPars_BasilarM_DRNL(void)
 {
-	static const char	*funcName = "PrintPars_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("PrintPars_BasilarM_DRNL");
 
 	if (!CheckPars_BasilarM_DRNL()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("DRNL Basilar Membrane Filter Module Parameters:-\n");
-	DPrint("\tNonlinear gammatone filter cascade  = %d,\n",
+	DPrint(wxT("DRNL Basilar Membrane Filter Module Parameters:-\n"));
+	DPrint(wxT("\tNonlinear gammatone filter cascade  = %d,\n"),
 	  bMDRNLPtr->nonLinGTCascade);
-	DPrint("\tNonlinear low-pass filter cascade = %d,\n",
+	DPrint(wxT("\tNonlinear low-pass filter cascade = %d,\n"),
 	  bMDRNLPtr->nonLinLPCascade);
 	PrintPars_ParArray(bMDRNLPtr->nonLinBwidth);
 	PrintPars_ParArray(bMDRNLPtr->comprScaleA);
 	PrintPars_ParArray(bMDRNLPtr->comprScaleB);
-	DPrint("\tCompression exponent  = %g,\n", bMDRNLPtr->comprExponent);
-	DPrint("\tLinear gammatone filter cascade = %d,\n",
+	DPrint(wxT("\tCompression exponent  = %g,\n"), bMDRNLPtr->comprExponent);
+	DPrint(wxT("\tLinear gammatone filter cascade = %d,\n"),
 	  bMDRNLPtr->linGTCascade);
-	DPrint("\tLinear low-pass filter cascade = %d,\n", bMDRNLPtr->linLPCascade);
+	DPrint(wxT("\tLinear low-pass filter cascade = %d,\n"), bMDRNLPtr->
+	  linLPCascade);
 	PrintPars_ParArray(bMDRNLPtr->linCF);
 	PrintPars_ParArray(bMDRNLPtr->linBwidth);
 	PrintPars_ParArray(bMDRNLPtr->linScaleG);
@@ -938,26 +941,27 @@ PrintPars_BasilarM_DRNL(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_BasilarM_DRNL(char *fileName)
+ReadPars_BasilarM_DRNL(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("ReadPars_BasilarM_DRNL");
 	BOOLN	ok = TRUE;
-	char	*filePath;
+	WChar	*filePath;
 	int		nonLinGTCascade, nonLinLPCascade, linGTCascade, linLPCascade;
 	double	comprExponent;
 	FILE	*fp;
 	CFListPtr	theCFs;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
-	if (!GetPars_ParFile(fp, "%d", &nonLinGTCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinGTCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &nonLinLPCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinLPCascade))
 		ok = FALSE;
 	if (!ReadPars_ParArray(fp, bMDRNLPtr->nonLinBwidth))
 		 ok = FALSE;
@@ -965,11 +969,11 @@ ReadPars_BasilarM_DRNL(char *fileName)
 		 ok = FALSE;
 	if (!ReadPars_ParArray(fp, bMDRNLPtr->comprScaleB))
 		 ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &comprExponent))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &comprExponent))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &linGTCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &linGTCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &linLPCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &linLPCascade))
 		ok = FALSE;
 	if (!ReadPars_ParArray(fp, bMDRNLPtr->linCF))
 		 ok = FALSE;
@@ -982,15 +986,15 @@ ReadPars_BasilarM_DRNL(char *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_DRNL(nonLinGTCascade, nonLinLPCascade,
 	  bMDRNLPtr->nonLinBwidth, bMDRNLPtr->comprScaleA, bMDRNLPtr->comprScaleB,
 	  comprExponent, linGTCascade, linLPCascade, bMDRNLPtr->linCF,
 	  bMDRNLPtr->linBwidth, bMDRNLPtr->linScaleG, theCFs)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1007,10 +1011,10 @@ ReadPars_BasilarM_DRNL(char *fileName)
 BOOLN
 SetParsPointer_BasilarM_DRNL(ModulePtr theModule)
 {
-	static const char *funcName = "SetParsPointer_BasilarM_DRNL";
+	static const WChar *funcName = wxT("SetParsPointer_BasilarM_DRNL");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bMDRNLPtr = (BMDRNLPtr) theModule->parsPtr;
@@ -1027,14 +1031,15 @@ SetParsPointer_BasilarM_DRNL(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_DRNL(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_DRNL");
 
 	if (!SetParsPointer_BasilarM_DRNL(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_DRNL(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bMDRNLPtr;
@@ -1063,10 +1068,10 @@ InitModule_BasilarM_DRNL(ModulePtr theModule)
 BOOLN
 CheckData_BasilarM_DRNL(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("CheckData_BasilarM_DRNL");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -1091,7 +1096,7 @@ CheckData_BasilarM_DRNL(EarObjectPtr data)
 BOOLN
 InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_BasilarM_DRNL";
+	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_DRNL");
 	int		i, j, cFIndex;
 	double	sampleRate, centreFreq, linearFCentreFreq;
 	BMDRNLPtr	p = bMDRNLPtr;
@@ -1099,47 +1104,47 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  p->theCFs->updateFlag) {
 		FreeProcessVariables_BasilarM_DRNL();
-		p->linearF = Init_EarObject("NULL");
+		p->linearF = Init_EarObject(wxT("NULL"));
 		p->numChannels = data->outSignal->numChannels;
 		if (!InitSubProcessList_EarObject(data, BM_DRNL_NUM_SUB_PROCESSES)) {
-			NotifyError("%s: Could not initialise %d sub-process list for "
-			  "process.", funcName, BM_DRNL_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
+			  "process."), funcName, BM_DRNL_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[BM_DRNL_LINEARF] = p->linearF;
 		if ((p->compressionA = (double *) calloc(p->numChannels, sizeof(
 		  double))) == NULL) {
-		 	NotifyError("%s: Out of memory (compressionA).", funcName);
+		 	NotifyError(wxT("%s: Out of memory (compressionA)."), funcName);
 		 	return(FALSE);
 		}
 		if ((p->compressionB = (double *) calloc(p->numChannels, sizeof(
 		  double))) == NULL) {
-		 	NotifyError("%s: Out of memory (compressionB).", funcName);
+		 	NotifyError(wxT("%s: Out of memory (compressionB)."), funcName);
 		 	return(FALSE);
 		}
 		if ((p->nonLinearGT1 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 		  sizeof(GammaToneCoeffsPtr))) == NULL) {
-			NotifyError("%s: Out of memory (nonLinearGT1).", funcName);
+			NotifyError(wxT("%s: Out of memory (nonLinearGT1)."), funcName);
 			return(FALSE);
 		}
 		if ((p->nonLinearGT2 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 		  sizeof(GammaToneCoeffsPtr))) == NULL) {
-			NotifyError("%s: Out of memory (nonLinearGT2).", funcName);
+			NotifyError(wxT("%s: Out of memory (nonLinearGT2)."), funcName);
 			return(FALSE);
 		}
 		if ((p->linearGT = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 		  sizeof(GammaToneCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory (linearGT).", funcName);
+		 	NotifyError(wxT("%s: Out of memory (linearGT)."), funcName);
 		 	return(FALSE);
 		}
 		if ((p->nonLinLPCascade > 0) && ((p->nonLinearLP = (ContButtCoeffsPtr *)
 		  calloc( p->numChannels, sizeof(ContButtCoeffsPtr))) == NULL)) {
-		 	NotifyError("%s: Out of memory (linearLP).", funcName);
+		 	NotifyError(wxT("%s: Out of memory (linearLP)."), funcName);
 		 	return(FALSE);
 		}
 		if ((p->linLPCascade > 0) && ((p->linearLP = (ContButtCoeffsPtr *)
 		  calloc(p->numChannels, sizeof(ContButtCoeffsPtr))) == NULL)) {
-		 	NotifyError("%s: Out of memory (linearLP).", funcName);
+		 	NotifyError(wxT("%s: Out of memory (linearLP)."), funcName);
 		 	return(FALSE);
 		}
 		sampleRate = 1.0 / data->inSignal[0]->dt;
@@ -1149,19 +1154,22 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			if ((p->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(centreFreq,
 			  p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade, sampleRate)) ==
 			  NULL) {
-				NotifyError("%s: Could not set nonLinearGT1[%d].", funcName, i);
+				NotifyError(wxT("%s: Could not set nonLinearGT1[%d]."),
+				  funcName, i);
 				return(FALSE);
 			}
 			if ((p->nonLinearGT2[i] = InitGammaToneCoeffs_Filters(centreFreq,
 			  p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade, sampleRate)) ==
 			  NULL) {
-				NotifyError("%s: Could not set nonLinearGT2[%d].", funcName, i);
+				NotifyError(wxT("%s: Could not set nonLinearGT2[%d]."),
+				  funcName, i);
 				return(FALSE);
 			}
 			if (p->nonLinearLP && ((p->nonLinearLP[i] =
 			  InitIIR2ContCoeffs_Filters(p->nonLinLPCascade, centreFreq,
 			  data->inSignal[0]->dt, LOWPASS)) == NULL)) {
-				NotifyError("%s: Could not set nonLinearLP[%d].", funcName, i);
+				NotifyError(wxT("%s: Could not set nonLinearLP[%d]."), funcName,
+				  i);
 				return(FALSE);
 			}
 			linearFCentreFreq = GetFitFuncValue_BasilarM_DRNL(p->linCF,
@@ -1169,13 +1177,15 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			if ((p->linearGT[i] = InitGammaToneCoeffs_Filters(linearFCentreFreq,
 			  GetFitFuncValue_BasilarM_DRNL(p->linBwidth, centreFreq),
 			  p->linGTCascade, sampleRate)) == NULL) {
-				NotifyError("%s: Could not set linearGT[%d].", funcName, i);
+				NotifyError(wxT("%s: Could not set linearGT[%d]."), funcName,
+				  i);
 				return(FALSE);
 			}
 			if (p->linearLP && ((p->linearLP[i] = InitIIR2ContCoeffs_Filters(
 			  p->linLPCascade, linearFCentreFreq, data->inSignal[0]->dt,
 			  LOWPASS)) == NULL)) {
-				NotifyError("%s: Could not set linearLP[%d].", funcName, i);
+				NotifyError(wxT("%s: Could not set linearLP[%d]."), funcName,
+				  i);
 				return(FALSE);
 			}
 			p->compressionA[i] = GetFitFuncValue_BasilarM_DRNL(p->comprScaleA,
@@ -1184,7 +1194,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			  centreFreq);
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
 		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
 		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
@@ -1311,7 +1321,7 @@ ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal, ParArrayPtr p)
 BOOLN
 RunModel_BasilarM_DRNL(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_BasilarM_DRNL";
+	static const WChar	*funcName = wxT("RunModel_BasilarM_DRNL");
 	uShort	totalChannels;
 	EarObjectPtr	linearF;
 	BMDRNLPtr	p = bMDRNLPtr;
@@ -1320,23 +1330,23 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 		if (!CheckPars_BasilarM_DRNL())
 			return(FALSE);
 		if (!CheckData_BasilarM_DRNL(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "DRNL Basilar Membrane Filtering");
+		SetProcessName_EarObject(data, wxT("DRNL Basilar Membrane Filtering"));
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Output channels not initialised (%d).", funcName,
-			  totalChannels);
+			NotifyError(wxT("%s: Output channels not initialised (%d)."),
+			  funcName, totalChannels);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_BasilarM_DRNL(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

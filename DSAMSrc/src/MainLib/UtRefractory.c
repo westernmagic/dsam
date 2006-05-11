@@ -28,6 +28,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRefractory.h"
 
 /******************************************************************************/
@@ -52,7 +53,6 @@ RefractAdjPtr	refractAdjPtr = NULL;
 BOOLN
 Free_Utility_RefractoryAdjust(void)
 {
-	/* static const char	*funcName = "Free_Utility_RefractoryAdjust";  */
 
 	if (refractAdjPtr == NULL)
 		return(FALSE);
@@ -82,19 +82,19 @@ Free_Utility_RefractoryAdjust(void)
 BOOLN
 Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("Init_Utility_RefractoryAdjust");
 
 	if (parSpec == GLOBAL) {
 		if (refractAdjPtr != NULL)
 			Free_Utility_RefractoryAdjust();
 		if ((refractAdjPtr = (RefractAdjPtr) malloc(sizeof(RefractAdj))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (refractAdjPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -104,7 +104,7 @@ Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 	refractAdjPtr->refractoryPeriod = 0.0;
 
 	if (!SetUniParList_Utility_RefractoryAdjust()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_RefractoryAdjust();
 		return(FALSE);
 	}
@@ -125,18 +125,19 @@ Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_RefractoryAdjust(void)
 {
-	static const char *funcName = "SetUniParList_Utility_RefractoryAdjust";
+	static const WChar *funcName = wxT(
+	  "SetUniParList_Utility_RefractoryAdjust");
 	UniParPtr	pars;
 
 	if ((refractAdjPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_REFRACTORYADJUST_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = refractAdjPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_REFRACTORYADJUST_REFRACTORYPERIOD],
-	  "PERIOD",
-	  "Refractory period (s).",
+	  wxT("PERIOD"),
+	  wxT("Refractory period (s)."),
 	  UNIPAR_REAL,
 	  &refractAdjPtr->refractoryPeriod, NULL,
 	  (void * (*)) SetRefractoryPeriod_Utility_RefractoryAdjust);
@@ -154,15 +155,16 @@ SetUniParList_Utility_RefractoryAdjust(void)
 UniParListPtr
 GetUniParListPtr_Utility_RefractoryAdjust(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_Utility_RefractoryAdjust");
 
 	if (refractAdjPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (refractAdjPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(refractAdjPtr->parList);
@@ -179,14 +181,14 @@ GetUniParListPtr_Utility_RefractoryAdjust(void)
 BOOLN
 SetPars_Utility_RefractoryAdjust(double refractoryPeriod)
 {
-	static const char	*funcName = "SetPars_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("SetPars_Utility_RefractoryAdjust");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!SetRefractoryPeriod_Utility_RefractoryAdjust(refractoryPeriod))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -202,15 +204,15 @@ SetPars_Utility_RefractoryAdjust(double refractoryPeriod)
 BOOLN
 SetRefractoryPeriod_Utility_RefractoryAdjust(double theRefractoryPeriod)
 {
-	static const char	*funcName =
-	  "SetRefractoryPeriod_Utility_RefractoryAdjust";
+	static const WChar	*funcName =
+	  wxT("SetRefractoryPeriod_Utility_RefractoryAdjust");
 
 	if (refractAdjPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError("%s: Refractory period must be greater than zero.",
+		NotifyError(wxT("%s: Refractory period must be greater than zero."),
 		  funcName);
 		return(FALSE);
 	}
@@ -234,16 +236,16 @@ SetRefractoryPeriod_Utility_RefractoryAdjust(double theRefractoryPeriod)
 BOOLN
 CheckPars_Utility_RefractoryAdjust(void)
 {
-	static const char	*funcName = "CheckPars_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("CheckPars_Utility_RefractoryAdjust");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (refractAdjPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!refractAdjPtr->refractoryPeriodFlag) {
-		NotifyError("%s: refractoryPeriod variable not set.", funcName);
+		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -260,16 +262,16 @@ CheckPars_Utility_RefractoryAdjust(void)
 BOOLN
 PrintPars_Utility_RefractoryAdjust(void)
 {
-	static const char	*funcName = "PrintPars_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("PrintPars_Utility_RefractoryAdjust");
 
 	if (!CheckPars_Utility_RefractoryAdjust()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("AN Refractory Adjustment Utility Module "
-	  "Parameters:-\n");
-	DPrint("\tRefractory period = %g ms\n",
-	  MSEC(refractAdjPtr->refractoryPeriod));
+	DPrint(wxT("AN Refractory Adjustment Utility Module Parameters:-\n"));
+	DPrint(wxT("\tRefractory period = %g ms\n"), MSEC(refractAdjPtr->
+	  refractoryPeriod));
 	return(TRUE);
 
 }
@@ -281,33 +283,34 @@ PrintPars_Utility_RefractoryAdjust(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_RefractoryAdjust(char *fileName)
+ReadPars_Utility_RefractoryAdjust(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("ReadPars_Utility_RefractoryAdjust");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	refractoryPeriod;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &refractoryPeriod))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_RefractoryAdjust(refractoryPeriod)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -324,10 +327,11 @@ ReadPars_Utility_RefractoryAdjust(char *fileName)
 BOOLN
 SetParsPointer_Utility_RefractoryAdjust(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Utility_RefractoryAdjust");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	refractAdjPtr = (RefractAdjPtr) theModule->parsPtr;
@@ -344,14 +348,15 @@ SetParsPointer_Utility_RefractoryAdjust(ModulePtr theModule)
 BOOLN
 InitModule_Utility_RefractoryAdjust(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("InitModule_Utility_RefractoryAdjust");
 
 	if (!SetParsPointer_Utility_RefractoryAdjust(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_RefractoryAdjust(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = refractAdjPtr;
@@ -383,18 +388,18 @@ InitModule_Utility_RefractoryAdjust(ModulePtr theModule)
 BOOLN
 CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("CheckData_Utility_RefractoryAdjust");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(data->
 	  inSignal[0])) {
-		NotifyError("%s: Refractory period (%g ms) is too long for signal "
-		  "length (%g ms).", funcName, MSEC(refractAdjPtr->refractoryPeriod),
+		NotifyError(wxT("%s: Refractory period (%g ms) is too long for signal "
+		  "length (%g ms)."), funcName, MSEC(refractAdjPtr->refractoryPeriod),
 		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
 		return(FALSE);
 	}
@@ -412,8 +417,8 @@ CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 {
-	static const char *funcName =
-	  "InitProcessVariables_Utility_RefractoryAdjust";
+	static const WChar *funcName =
+	  wxT("InitProcessVariables_Utility_RefractoryAdjust");
 	int		i, j;
 	RefractAdjPtr	p = refractAdjPtr;
 
@@ -425,15 +430,15 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 		  	p->numChannels = data->outSignal->numChannels;
 			if ((p->lastOutput = (double **) calloc(p->numChannels, sizeof(
 			  double *))) == NULL) {
-			 	NotifyError("%s: Out of memory for 'lastOutput pointers'.",
+			 	NotifyError(wxT("%s: Out of memory for 'lastOutput pointers'."),
 			 	  funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numChannels; i++)
 				if ((p->lastOutput[i] = (double *) calloc(p->
 				  refractoryPeriodIndex, sizeof(double))) == NULL) {
-					NotifyError("%s: Out of memory for 'lastOutput arrays'.",
-					  funcName);
+					NotifyError(wxT("%s: Out of memory for 'lastOutput "
+					  "arrays'."), funcName);
 					for (j = 0; j < i - 1; j++)
 						free(p->lastOutput[j]);
 					free(p->lastOutput);
@@ -487,7 +492,7 @@ FreeProcessVariables_Utility_RefractoryAdjust(void)
 BOOLN
 Process_Utility_RefractoryAdjust(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_Utility_RefractoryAdjust";
+	static const WChar	*funcName = wxT("RunModel_Utility_RefractoryAdjust");
 	register	ChanData	 *outPtr, *sumPtr;
 	register	double		sum;
 	int		chan;
@@ -499,17 +504,18 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 		if (!CheckPars_Utility_RefractoryAdjust())
 			return(FALSE);
 		if (!CheckData_Utility_RefractoryAdjust(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Meddis 91 AN Refractory Adustment "
-		  "Process");
+		SetProcessName_EarObject(data, wxT("Meddis 91 AN Refractory Adustment "
+		  "Process"));
 		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Utility_RefractoryAdjust(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

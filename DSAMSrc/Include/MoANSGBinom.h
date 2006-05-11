@@ -101,7 +101,7 @@ BOOLN	InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data);
 
 BOOLN	PrintPars_ANSpikeGen_Binomial(void);
 
-BOOLN	ReadPars_ANSpikeGen_Binomial(char *fileName);
+BOOLN	ReadPars_ANSpikeGen_Binomial(WChar *fileName);
 
 BOOLN	RunModel_ANSpikeGen_Binomial(EarObjectPtr data);
 

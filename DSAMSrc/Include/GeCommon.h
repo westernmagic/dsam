@@ -49,7 +49,13 @@
 
 #include <stdarg.h>
 #include <limits.h>		/* - sort out DBL_MAX previously defined problems. */
-#include <wchar.h>
+
+#if DSAM_USE_UNICODE
+#	ifndef __USE_UNIX98			/* For FC5 headers */
+#		define __USE_UNIX98 1
+#	endif /* __USE_UNIX98 */
+#	include <wchar.h>
+#endif
 
 #ifdef DMALLOC
 #	include "dmalloc.h"
@@ -97,15 +103,15 @@
 #define SMALL_STRING		10		/* For small string operations. */
 #define LONG_STRING			255		/* For very long strings. */
 #define MAX_FILE_PATH		255		/* For file names - can have long paths */
-#define UNSET_STRING		"<unset>" /* initial string value for arrays. */
+#define UNSET_STRING		wxT("<unset>") /* initial string value for arrays.*/
 #define TAB_SPACES			4		/* Spaces per tab with GRAPHICS_SUPPORT */
-#define	NO_FILE				"not_set" /*-for when this must be indicated.*/
-#define	DEFAULT_FILE_NAME	"<file name>"
+#define	NO_FILE				wxT("not_set") /*-for when this must be indicated.*/
+#define	DEFAULT_FILE_NAME	wxT("<file name>")
 #define DEFAULT_ERRORS_FILE		stderr
 #define DEFAULT_WARNINGS_FILE	stdout
 #define DEFAULT_PARS_FILE		stdout
 #define UNSET_FILE_PTR			(FILE *) -1
-#define NULL_MODULE_PROCESS_NAME	"Null process module"
+#define NULL_MODULE_PROCESS_NAME	wxT("Null process module")
 #define DEFAULT_DT				0.01e-3
 #define DEFAULT_INTENSITY		56.0
 #define	DSAM_VERSION_SEPARATOR	'.'
@@ -149,15 +155,44 @@
  */
 
 #if DSAM_USE_UNICODE
-#	define DSAM_fprintf		wprintf
+#	define DSAM_fgets		fgetws
+#	define DSAM_fprintf		fwprintf
+#	define DSAM_fscanf		fwscanf
+#	define DSAM_printf		wprintf
 #	define DSAM_snprintf	swprintf
+#	define DSAM_sscanf		swscanf
+#	define DSAM_strchr		wcschr
+#	define DSAM_strcmp		wcscmp
 #	define DSAM_strcpy		wcscpy
+#	define DSAM_strlen		wcslen
+#	define DSAM_strncmp		wcsncmp
+#	define DSAM_strncpy		wcsncpy
+#	define DSAM_strpbrk		wcspbrk
+#	define DSAM_strrchr		wcsrchr
+#	define DSAM_strstr		wcsstr
+#	define DSAM_strtok		wcstok
+#	define DSAM_vfprintf	vfwprintf
+#	define DSAM_vsnprintf	vswprintf
 #	define STR_FMT			wxT("%ls")
 #else
+#	define DSAM_fgets		fgets
 #	define DSAM_fprintf		fprintf
+#	define DSAM_fscanf		fscanf
+#	define DSAM_printf		printf
 #	define DSAM_snprintf	snprintf
+#	define DSAM_sscanf		sscanf
+#	define DSAM_strchr		strchr
+#	define DSAM_strcmp		strcmp
 #	define DSAM_strcpy		strcpy
-#	define STR_FMT			"%s"
+#	define DSAM_strlen		strlen
+#	define DSAM_strncmp		strncmp
+#	define DSAM_strncpy		strncpy
+#	define DSAM_strpbrk		strpbrk
+#	define DSAM_strrchr		strrchr
+#	define DSAM_strstr		strstr
+#	define DSAM_vfprintf	vfprintf
+#	define DSAM_vsnprintf	vsnprintf
+#	define STR_FMT			wxT("%s")
 #endif /* DSAM_USE_UNICODE */
 
 // ----------------------------------------------------------------------------
@@ -318,16 +353,16 @@ typedef struct {
 	BOOLN	lockGUIFlag;		/* TRUE when the GUI locker should be used. */
 	BOOLN	usingExtFlag;		/* TRUE when the extensions are being used. */
 	BOOLN	interruptRequestedFlag;	/* TRUE, when an interrupt is in process. */
-	char	*diagnosticsPrefix;	/* Printed before diagnostics output. */
-	char	*version;			/* Global version; shared library will show */
-	char	*parsFilePath;		/* File path for parameter files. */
+	WChar	*diagnosticsPrefix;	/* Printed before diagnostics output. */
+	WChar	*version;			/* Global version; shared library will show */
+	WChar	*parsFilePath;		/* File path for parameter files. */
 	int		notificationCount;	/* Count of notification diagnostics. */
 	FILE	*warningsFile;		/* File to which warnings should be sent. */
 	FILE	*errorsFile;		/* File to which errors should be sent. */
 	FILE	*parsFile;			/* File for parameter listings. */
 	DiagModeSpecifier	diagMode; /* Output form for diagnostics. */
-	void	(* DPrint)(char *, va_list);	/* Generic routine. */
-	void 	(* Notify)(const char *, va_list, CommonDiagSpecifier);/* Gen. Rtn*/
+	void	(* DPrint)(WChar *, va_list);	/* Generic routine. */
+	void 	(* Notify)(const WChar *, va_list, CommonDiagSpecifier);/*Gen. Rtn*/
 
 } DSAM, *DSAMPtr;
 
@@ -370,52 +405,52 @@ void	CloseFile(FILE *fp);
 
 void	CloseFiles(void);
 
-char *	DiagnosticTitle(CommonDiagSpecifier type);
+WChar *	DiagnosticTitle(CommonDiagSpecifier type);
 
-void	DPrint(char *format, ...);
+void	DPrint(WChar *format, ...);
 
-void	DPrintBuffer_Common(char *format, va_list args,
-		  void (* EmptyDiagBuffer)(char *, int *));
+void	DPrintBuffer_Common(WChar *format, va_list args,
+		  void (* EmptyDiagBuffer)(WChar *, int *));
 
-void	DPrintStandard(char *format, va_list args);
+void	DPrintStandard(WChar *format, va_list args);
 
-void	FindFilePathAndName_Common(char *filePath, char *path, char *name);
+void	FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name);
 
 void	FreeDoubleArray_Common(double **p);
 
 DSAMPtr	GetDSAMPtr_Common(void);
 
-FILE *	GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode);
+FILE *	GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode);
 
-char *	GetParsFileFPath_Common(char *parFile);
+WChar *	GetParsFileFPath_Common(WChar *parFile);
 
-void	NotifyError(char *format, ...);
+void	NotifyError(WChar *format, ...);
 
-void	NotifyStandard(const char *format, va_list args,
+void	NotifyStandard(const WChar *format, va_list args,
 		  CommonDiagSpecifier type);
 
-void	NotifyWarning(char *format, ...);
+void	NotifyWarning(WChar *format, ...);
 
-void	ReadParsFromFile(char *fileName);		/* Used in test programs. */
+void	ReadParsFromFile(WChar *fileName);		/* Used in test programs. */
 
 void	ResetGUIDialogs(void);
 
-void	SetDiagnosticsPrefix(char *prefix);
+void	SetDiagnosticsPrefix(WChar *prefix);
 
 void	SetDiagMode(DiagModeSpecifier mode);
 
-void	SetDPrintFunc(void (* Func)(char *, va_list));
+void	SetDPrintFunc(void (* Func)(WChar *, va_list));
 
-void	SetErrorsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
+void	SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetInterruptRequestStatus_Common(BOOLN status);
 
-void	SetNotifyFunc(void (* Func)(const char *, va_list,
+void	SetNotifyFunc(void (* Func)(const WChar *, va_list,
 		  CommonDiagSpecifier));
 
-BOOLN	SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
+BOOLN	SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 
-void	SetParsFilePath_Common(char *name);
+void	SetParsFilePath_Common(WChar *name);
 
 void	SetSegmentedMode(BOOLN setting);
 
@@ -423,7 +458,7 @@ void	SetUsingExtStatus(BOOLN status);
 
 void	SetUsingGUIStatus(BOOLN status);
 
-void	SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode);
+void	SetWarningsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);
 

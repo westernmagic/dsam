@@ -121,7 +121,7 @@ BOOLN	PrintPars_Utility_SelectChannels(void);
 
 BOOLN	Process_Utility_SelectChannels(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_SelectChannels(char *fileName);
+BOOLN	ReadPars_Utility_SelectChannels(WChar *fileName);
 
 BOOLN	SetDefaulEnabledPars_Utility_SelectChannels(void);
 
@@ -130,7 +130,7 @@ void	SetEnabledState_Utility_SelectChannels(void);
 BOOLN	SetIndividualSelection_Utility_SelectChannels(int theIndex,
 		  double theSelection);
 
-BOOLN	SetMode_Utility_SelectChannels(char *theMode);
+BOOLN	SetMode_Utility_SelectChannels(WChar *theMode);
 
 BOOLN	InitModule_Utility_SelectChannels(ModulePtr theModule);
 
@@ -138,12 +138,12 @@ BOOLN	SetNumChannels_Utility_SelectChannels(int theNumChannels);
 
 BOOLN	SetParsPointer_Utility_SelectChannels(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_SelectChannels(char *mode, int numChannels,
+BOOLN	SetPars_Utility_SelectChannels(WChar *mode, int numChannels,
 		  double *selectionArray);
 
 BOOLN	SetSelectionArray_Utility_SelectChannels(double *theSelectionArray);
 
-BOOLN	SetSelectionMode_Utility_SelectChannels(char * theSelectionMode);
+BOOLN	SetSelectionMode_Utility_SelectChannels(WChar * theSelectionMode);
 
 BOOLN	SetUniParList_Utility_SelectChannels(void);
 

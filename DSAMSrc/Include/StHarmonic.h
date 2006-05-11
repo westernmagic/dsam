@@ -143,7 +143,7 @@ BOOLN	SetMistuningFactor_Harmonic(double theMistuningFactor);
 
 BOOLN	PrintPars_Harmonic(void);
 
-BOOLN	ReadPars_Harmonic(char *fileName);
+BOOLN	ReadPars_Harmonic(WChar *fileName);
 
 BOOLN	SetDuration_Harmonic(double theDuration);
 
@@ -165,7 +165,7 @@ BOOLN	SetOrder_Harmonic(int theOrder);
 
 BOOLN	SetParsPointer_Harmonic(ModulePtr theModule);
 
-BOOLN	SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
+BOOLN	SetPars_Harmonic(WChar *thePhaseMode, int theLowestHarmonic,
 		  int theHighestHarmonic, int theMistunedHarmonic,
 		  double theMistuningFactor, double thePhaseVariable,
 		  double theFrequency, double theIntensity, double theDuration,
@@ -173,7 +173,7 @@ BOOLN	SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
 		  double theModulationPhase, double theModulationDepth, int theOrder,
 		  double theLowerCutFreq, double theUpperCutFreq);
 
-BOOLN	SetPhaseMode_Harmonic(char *thePhaseMode);
+BOOLN	SetPhaseMode_Harmonic(WChar *thePhaseMode);
 
 BOOLN	SetPhaseVariable_Harmonic(double thePhaseVariable);
 

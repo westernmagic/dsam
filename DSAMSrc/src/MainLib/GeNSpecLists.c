@@ -42,9 +42,9 @@ BooleanList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "OFF",	GENERAL_BOOLEAN_OFF},
-					{ "ON",		GENERAL_BOOLEAN_ON},
-					{ "",		GENERAL_BOOLEAN_NULL},
+					{ wxT("OFF"),	GENERAL_BOOLEAN_OFF},
+					{ wxT("ON"),	GENERAL_BOOLEAN_ON},
+					{ wxT(""),		GENERAL_BOOLEAN_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -66,11 +66,11 @@ DiagModeList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "OFF",				GENERAL_DIAGNOSTIC_OFF_MODE},
-					{ "SCREEN",				GENERAL_DIAGNOSTIC_SCREEN_MODE},
-					{ "ERROR",				GENERAL_DIAGNOSTIC_ERROR_MODE},
+					{ wxT("OFF"),			GENERAL_DIAGNOSTIC_OFF_MODE},
+					{ wxT("SCREEN"),		GENERAL_DIAGNOSTIC_SCREEN_MODE},
+					{ wxT("ERROR"),			GENERAL_DIAGNOSTIC_ERROR_MODE},
 					{ DEFAULT_FILE_NAME,	GENERAL_DIAGNOSTIC_FILE_MODE},
-					{ "",					GENERAL_DIAGNOSTIC_MODE_NULL},
+					{ wxT(""),				GENERAL_DIAGNOSTIC_MODE_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -90,12 +90,12 @@ FitFuncModeList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "EXP_FUNC1",	GENERAL_FIT_FUNC_EXP1_MODE},
-					{ "LINEAR_FUNC1",	GENERAL_FIT_FUNC_LINEAR1_MODE},
-					{ "LOG_FUNC1",		GENERAL_FIT_FUNC_LOG1_MODE},
-					{ "LOG_FUNC2",		GENERAL_FIT_FUNC_LOG2_MODE},
-					{ "POLY_FUNC1",		GENERAL_FIT_FUNC_POLY1_MODE},
-					{ "",				GENERAL_FIT_FUNC_NULL},
+					{ wxT("EXP_FUNC1"),		GENERAL_FIT_FUNC_EXP1_MODE},
+					{ wxT("LINEAR_FUNC1"),	GENERAL_FIT_FUNC_LINEAR1_MODE},
+					{ wxT("LOG_FUNC1"),		GENERAL_FIT_FUNC_LOG1_MODE},
+					{ wxT("LOG_FUNC2"),		GENERAL_FIT_FUNC_LOG2_MODE},
+					{ wxT("POLY_FUNC1"),	GENERAL_FIT_FUNC_POLY1_MODE},
+					{ wxT(""),				GENERAL_FIT_FUNC_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -113,11 +113,12 @@ FitFuncModeList_NSpecLists(int index)
 int
 GetNumListEntries_NSpecLists(NameSpecifierPtr list)
 {
-	static char *funcName = "GetNumListEntries_NSpecLists";
+	static WChar *funcName = wxT("GetNumListEntries_NSpecLists");
 	int		count = 0;
 
 	if (!list) {
-		NotifyError("%s: list not initialised, -1 will be returned.", funcName);
+		NotifyError(wxT("%s: list not initialised, -1 will be returned."),
+		  funcName);
 		return(-1);
 	}
 	while ((list++)->name[0] != '\0')
@@ -133,19 +134,20 @@ GetNumListEntries_NSpecLists(NameSpecifierPtr list)
  */
 
 NameSpecifier *
-InitNameList_NSpecLists(NameSpecifierPtr prototypeList, char *textPtr)
+InitNameList_NSpecLists(NameSpecifierPtr prototypeList, WChar *textPtr)
 {
-	static char *funcName = "InitNameList_NSpecLists";
+	static WChar *funcName = wxT("InitNameList_NSpecLists");
 	int		i, numEntries;
 	NameSpecifierPtr	list;
 	
 	if ((numEntries = GetNumListEntries_NSpecLists(prototypeList)) < 1) {
-		NotifyError("%s: Prototyp list not set up correctly.", funcName);
+		NotifyError(wxT("%s: Prototyp list not set up correctly."), funcName);
 		return(NULL);
 	}
 	if ((list = (NameSpecifier *) calloc(numEntries, sizeof(NameSpecifier))) ==
 	  NULL) {
-		NotifyError("%s: Could not allocate memory for %d entries.", funcName,
+		NotifyError(wxT("%s: Could not allocate memory for %d entries."),
+		  funcName,
 		  numEntries);
 		return(NULL);
 	}
@@ -161,13 +163,13 @@ InitNameList_NSpecLists(NameSpecifierPtr prototypeList, char *textPtr)
 
 /*
  * This is a special indentify routine for the diagnostic mode.
- * If the mode cannot be found or is the "file" mode then the second from
+ * If the mode cannot be found or is the wxT("file") mode then the second from
  * last, i.e. the mode string will be copied to the string pointed to by the
  * name specifier 'name' field of the 'GENERAL_DIAGNOSTIC_FILE_MODE' entry.
  */
 
 int
-IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list)
+IdentifyDiag_NSpecLists(WChar *mode, NameSpecifierPtr list)
 {
 	int		specifier;
 
@@ -175,8 +177,8 @@ IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list)
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
 	case GENERAL_DIAGNOSTIC_MODE_NULL:
 		specifier = GENERAL_DIAGNOSTIC_FILE_MODE;
-		snprintf(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, MAX_FILE_PATH,
-		  "%s", mode);
+		DSAM_snprintf(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, MAX_FILE_PATH,
+		  wxT("%s"), mode);
 		break;
 	default:
 		;
@@ -195,8 +197,8 @@ IdentifyDiag_NSpecLists(char *mode, NameSpecifierPtr list)
 BOOLN
 OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 {
-	static const char *funcName = "OpenDiagnostics_NSpecLists";
-	char	*filePath, *fileName;
+	static const WChar *funcName = wxT("OpenDiagnostics_NSpecLists");
+	WChar	*filePath, *fileName;
 
 	switch (mode) {
 	case GENERAL_DIAGNOSTIC_OFF_MODE:
@@ -205,8 +207,8 @@ OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 		fileName = list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
 		filePath = (IS_ABSOLUTE_PATH(fileName))? fileName:
 		  GetParsFileFPath_Common(fileName);
-		if ((*fp = fopen(filePath, "w")) == NULL) {
-			NotifyError("%s: Could not open file '%s' for diagnostics.",
+		if ((*fp = fopen((char *) filePath, "w")) == NULL) {
+			NotifyError(wxT("%s: Could not open file '%s' for diagnostics."),
 			  funcName, filePath);
 			return(FALSE);
 		}
@@ -215,7 +217,8 @@ OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 		*fp = stdout;
 		break;
 	default:
-		NotifyError("%s: Mode was not correctly set (%d).", funcName, mode);
+		NotifyError(wxT("%s: Mode was not correctly set (%d)."), funcName,
+		  mode);
 		return(FALSE);
 	} /* switch */
 	return(TRUE);

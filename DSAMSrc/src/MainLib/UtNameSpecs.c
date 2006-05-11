@@ -42,11 +42,12 @@
 int
 GetNullSpec_NameSpecifier(NameSpecifierPtr list)
 {
-	static char *funcName = "GetNullSpec_NameSpecifier";
+	static WChar *funcName = wxT("GetNullSpec_NameSpecifier");
+
 	for (  ; list->name[0] != '\0'; list++)
 		;
 	if (list->name[0] != '\0') {
-		NotifyError("%s: Incorrectly set up list.", funcName);
+		NotifyError(wxT("%s: Incorrectly set up list."), funcName);
 		exit(1);
 	}	
 	return(list->specifier);
@@ -64,20 +65,20 @@ GetNullSpec_NameSpecifier(NameSpecifierPtr list)
  */
 
 int
-Identify_NameSpecifier(char *name, NameSpecifierPtr list)
+Identify_NameSpecifier(WChar *name, NameSpecifierPtr list)
 {
-	static char *funcName = "Identify_NameSpecifier";
+	static WChar *funcName = wxT("Identify_NameSpecifier");
 	int		length;
 
 	if (list == NULL) {
-		NotifyError("%s: List not correctly initialised.", funcName);
+		NotifyError(wxT("%s: List not correctly initialised."), funcName);
 		exit(1);
 	}
 	if (name == NULL) {
-		NotifyError("%s: Illegal null name.", funcName);
+		NotifyError(wxT("%s: Illegal null name."), funcName);
 		return(GetNullSpec_NameSpecifier(list));
 	}
-	length = strlen(name);
+	length = DSAM_strlen(name);
 	if (!length)
 		return(GetNullSpec_NameSpecifier(list));
 	for (  ; StrNCmpNoCase_Utility_String(list->name, name) != 0 &&
@@ -96,15 +97,15 @@ Identify_NameSpecifier(char *name, NameSpecifierPtr list)
 void
 PrintList_NameSpecifier(NameSpecifierPtr list)
 {
-	static char *funcName = "PrintList_NameSpecifier";
+	static WChar *funcName = wxT("PrintList_NameSpecifier");
 
 	if (list == NULL) {
-		NotifyError("%s: List not correctly initialised.", funcName);
+		NotifyError(wxT("%s: List not correctly initialised."), funcName);
 		exit(1);
 	}
-	DPrint("Name specifier list:-\n");
+	DPrint(wxT("Name specifier list:-\n"));
 	for (  ; list->name[0] != '\0'; list++)
-		DPrint("\t%s\n", list->name);
+		DPrint(wxT("\t%s\n"), list->name);
 
 }
 

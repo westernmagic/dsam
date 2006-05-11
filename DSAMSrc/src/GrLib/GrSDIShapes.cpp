@@ -81,12 +81,12 @@ SDIAnalysisShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIAnalysisShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIAnalysisShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIAnalysisShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(
 	  SHAPE_XML_ANALYSIS_SHAPE_ELEMENT)) == NULL) {
-		NotifyError("%s: Could not find analysis element.", funcName);
+		NotifyError(wxT("%s: Could not find analysis element."), funcName);
 		return(false);
 	}
 	SDIEllipseShape::GetXMLInfo(myElement);
@@ -125,12 +125,12 @@ SDIDisplayShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIDisplayShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIDisplayShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIDisplayShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(
 	  SHAPE_XML_DISPLAY_SHAPE_ELEMENT)) == NULL) {
-		NotifyError("%s: Could not find display element.", funcName);
+		NotifyError(wxT("%s: Could not find display element."), funcName);
 		return(false);
 	}
 	SDIRectangleShape::GetXMLInfo(myElement);
@@ -247,12 +247,12 @@ SDIFilterShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIFilterShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIFilterShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIFilterShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_FILTER_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find filter element.", funcName);
+		NotifyError(wxT("%s: Could not find filter element."), funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -308,12 +308,12 @@ SDIIOShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIIOShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIIOShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIIOShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_IO_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find IO element.", funcName);
+		NotifyError(wxT("%s: Could not find IO element."), funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -356,7 +356,8 @@ SDILineShape::AddXMLArrowListInfo(TiXmlNode &node, wxNode *aNode)
 		wxArrowHead *head = (wxArrowHead *) aNode->GetData();
 		TiXmlElement arrowElement(SHAPE_XML_ARROW_ELEMENT);
 		arrowElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, head->GetId());
-		arrowElement.SetAttribute(SHAPE_XML_NAME_ATTRIBUTE, head->GetName());
+		arrowElement.SetAttribute(SHAPE_XML_NAME_ATTRIBUTE, (char *) head->
+		  GetName().c_str());
 		arrowElement.SetAttribute(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
 		arrowElement.SetAttribute(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
 		arrowElement.SetDoubleAttribute(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
@@ -409,7 +410,7 @@ SDILineShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
 {
-	static const char *funcName = "SDILineShape::GetXMLControlPointsInfo";
+	static const wxChar *funcName = wxT("SDILineShape::GetXMLControlPointsInfo");
 	bool	ok = true;
 	wxRealPoint	*point;
 	TiXmlNode	*pointNode;
@@ -426,7 +427,7 @@ SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
 	  pointNode; pointNode = myElement->IterateChildren(SHAPE_XML_POINT_ELEMENT,
 	  pointNode)) {
 		if ((point = GetPointInfo(pointNode->ToElement())) == NULL) {
-			NotifyError("%s: Could not set point.", funcName);
+			NotifyError(wxT("%s: Could not set point."), funcName);
 			ok = false;
 			break;
 		}
@@ -442,7 +443,7 @@ SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
 bool
 SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
 {
-	static const char *funcName = "SDILineShape::GetXMLArrowListInfo";
+	static const wxChar *funcName = wxT("SDILineShape::GetXMLArrowListInfo");
 	bool	ok = true;
 	int		arrowEnd = 0, id = -1, type = ARROW_ARROW;
 	double	xOffset = 0.0, yOffset = 0.0, size = 0.0, spacing = 5.0;
@@ -487,14 +488,14 @@ SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
 bool
 SDILineShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDILineShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDILineShape::GetXMLInfo");
 	bool	ok = true;
 	int		iVal;
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_LINE_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find line shape element.", funcName);
+		NotifyError(wxT("%s: Could not find line shape element."), funcName);
 		return(false);
 	}
 	ATTRIBUTE_VAL(myElement, SHAPE_XML_ISSPLINE_ATTRIBUTE, iVal, true);
@@ -503,7 +504,7 @@ SDILineShape::GetXMLInfo(TiXmlNode *node)
 	// Compatibility: check for no regions.
 	if (m_regions.GetCount() == 0) {
 		wxShapeRegion *newRegion = new wxShapeRegion;
-		newRegion->SetName(_T("Middle"));
+		newRegion->SetName(wxT("Middle"));
 		newRegion->SetSize(150, 50);
 		m_regions.Append((wxObject *)newRegion);
 		if (m_text.GetCount() > 0) {
@@ -599,12 +600,12 @@ SDIModelShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIModelShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIModelShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIModelShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_MODEL_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find model element.", funcName);
+		NotifyError(wxT("%s: Could not find model element."), funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -667,12 +668,12 @@ SDIUserShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIUserShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIUserShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIUserShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_USER_SHAPE_ELEMENT)) ==
 	  NULL) {
-		NotifyError("%s: Could not find user element.", funcName);
+		NotifyError(wxT("%s: Could not find user element."), funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -719,12 +720,12 @@ SDITransformShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDITransformShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDITransformShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDITransformShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(
 	  SHAPE_XML_TRANSFORM_SHAPE_ELEMENT)) == NULL) {
-		NotifyError("%s: Could not find transform element.", funcName);
+		NotifyError(wxT("%s: Could not find transform element."), funcName);
 		return(false);
 	}
 	SDIPolygonShape::GetXMLInfo(myElement);
@@ -761,12 +762,12 @@ SDIUtilityShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDIUtilityShape::GetXMLInfo(TiXmlNode *node)
 {
-	static const char *funcName = "SDIUtilityShape::GetXMLInfo";
+	static const wxChar *funcName = wxT("SDIUtilityShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(
 	  SHAPE_XML_UTILITY_SHAPE_ELEMENT)) == NULL) {
-		NotifyError("%s: Could not find utility element.", funcName);
+		NotifyError(wxT("%s: Could not find utility element."), funcName);
 		return(false);
 	}
 	SDIRectangleShape::GetXMLInfo(myElement);

@@ -82,17 +82,17 @@ IPCUtils::CommandList(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "QUIT",		IPC_COMMAND_QUIT},
-					{ "ERRMSGS",	IPC_COMMAND_ERRMSGS},
-					{ "GET",		IPC_COMMAND_GET},
-					{ "GETFILES",	IPC_COMMAND_GETFILES},
-					{ "INIT",		IPC_COMMAND_INIT},
-					{ "PUT",		IPC_COMMAND_PUT},
-					{ "PUT_ARGS",	IPC_COMMAND_PUT_ARGS},
-					{ "RUN",		IPC_COMMAND_RUN},
-					{ "SET",		IPC_COMMAND_SET},
-					{ "STATUS",		IPC_COMMAND_STATUS},
-					{ "",			IPC_COMMAND_NULL},
+					{ wxT("QUIT"),		IPC_COMMAND_QUIT},
+					{ wxT("ERRMSGS"),	IPC_COMMAND_ERRMSGS},
+					{ wxT("GET"),		IPC_COMMAND_GET},
+					{ wxT("GETFILES"),	IPC_COMMAND_GETFILES},
+					{ wxT("INIT"),		IPC_COMMAND_INIT},
+					{ wxT("PUT"),		IPC_COMMAND_PUT},
+					{ wxT("PUT_ARGS"),	IPC_COMMAND_PUT_ARGS},
+					{ wxT("RUN"),		IPC_COMMAND_RUN},
+					{ wxT("SET"),		IPC_COMMAND_SET},
+					{ wxT("STATUS"),	IPC_COMMAND_STATUS},
+					{ wxT(""),			IPC_COMMAND_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -107,15 +107,15 @@ IPCUtils::CommandList(int index)
 bool
 IPCUtils::InitOutProcess(void)
 {
-	static const char *funcName = "IPCServer::InitOutProcess";
+	static const wxChar *funcName = wxT("IPCServer::InitOutProcess");
 
-	if (!outProcess && ((outProcess = Init_EarObject("DataFile_Out")) ==
+	if (!outProcess && ((outProcess = Init_EarObject(wxT("DataFile_Out"))) ==
 	  NULL)) {
-		NotifyError("%s: Cannot initialised input process EarObject.", 
+		NotifyError(wxT("%s: Cannot initialised input process EarObject."), 
 		  funcName);
 		return(false);
 	}
-	SetPar_ModuleMgr(outProcess, "filename", EXTIPCUTILS_MEMORY_FILE_NAME);
+	SetPar_ModuleMgr(outProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
 	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	return(true);
 
@@ -129,14 +129,15 @@ IPCUtils::InitOutProcess(void)
 bool
 IPCUtils::InitInProcess(void)
 {
-	static const char *funcName = "IPCUtils::InitInProcess";
+	static const wxChar *funcName = wxT("IPCUtils::InitInProcess");
 
-	if (!inProcess && ((inProcess = Init_EarObject("DataFile_In")) == NULL)) {
-		NotifyError("%s: Cannot initialised input process EarObject.", 
+	if (!inProcess && ((inProcess = Init_EarObject(wxT("DataFile_In"))) ==
+	  NULL)) {
+		NotifyError(wxT("%s: Cannot initialised input process EarObject."), 
 		  funcName);
 		return(false);
 	}
-	SetPar_ModuleMgr(inProcess, "filename", EXTIPCUTILS_MEMORY_FILE_NAME);
+	SetPar_ModuleMgr(inProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
 	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	return(true);
 
@@ -245,21 +246,21 @@ IPCUtils::ResetInProcess(void)
 bool
 IPCUtils::RunOutProcess(void)
 {
-	static const char *funcName = "IPCUtils::RunOutProcess";
+	static const wxChar *funcName = wxT("IPCUtils::RunOutProcess");
 	bool	ok = true;
 	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
 	BOOLN	oldSegmentedMode = GetDSAMPtr_Common()->segmentedMode;
 
 	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
 	  outProcessSupplier->outSignal, 0L))) {
-		NotifyError("%s: Could not prepare output data buffer.", funcName);
+		NotifyError(wxT("%s: Could not prepare output data buffer."), funcName);
 		return(false);
 	}
 	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = outUIOPtr;
 	GetDSAMPtr_Common()->segmentedMode = FALSE;
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
 	if (!RunProcess_ModuleMgr(outProcess)) {
-		NotifyError("%s: Could not run output process.", funcName);
+		NotifyError(wxT("%s: Could not run output process."), funcName);
 		ok = false;
 	}
 	GetDSAMPtr_Common()->segmentedMode = oldSegmentedMode;
@@ -276,11 +277,11 @@ IPCUtils::RunOutProcess(void)
 bool
 IPCUtils::InitInputMemory(ChanLen length)
 {
-	static const char *funcName = "IPCUtils::InitInputMemory";
+	static const wxChar *funcName = wxT("IPCUtils::InitInputMemory");
 
 	if (!InitMemory_UPortableIO(&inUIOPtr, length)) {
-		NotifyError("%s: Could not initialise memory for input process signal",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process "
+		  "signal"), funcName);
 		return(false);
 	}
 	return(true);
@@ -297,7 +298,7 @@ IPCUtils::InitInputMemory(ChanLen length)
 bool
 IPCUtils::RunInProcess(void)
 {
-	static const char *funcName = "IPCUtils::RunInProcess";
+	static const wxChar *funcName = wxT("IPCUtils::RunInProcess");
 	bool	ok = true;
 	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
 
@@ -307,7 +308,7 @@ IPCUtils::RunInProcess(void)
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
 	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	if (!RunProcess_ModuleMgr(inProcess)) {
-		NotifyError("%s: Could not run input process.", funcName);
+		NotifyError(wxT("%s: Could not run input process."), funcName);
 		ok = false;
 	}
 	GetDSAMPtr_Common()->usingGUIFlag = oldUsingGUIFlag;

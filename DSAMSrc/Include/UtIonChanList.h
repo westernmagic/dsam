@@ -161,7 +161,7 @@ typedef struct {
 	BOOLN	updateFlag;
 	ICModeSpecifier		mode;
 	BOOLN	enabled;
-	char	description[MAXLINE];
+	WChar	description[MAXLINE];
 	int		numTableEntries;
 	double	activationExponent;
 	double	equilibriumPot;
@@ -172,7 +172,7 @@ typedef struct {
 	double	dV;
 	ICBoltzmannPars	boltzmann;
 	ICHHuxleyPars	hHuxley;
-	char			fileName[MAX_FILE_PATH];
+	WChar			fileName[MAX_FILE_PATH];
 	double			(* PowFunc)(double, double);
 	ICTableEntry	*table;
 	UniParListPtr	parList;
@@ -200,7 +200,7 @@ typedef struct IonChanList {
 	int		oldNumChannels;
 	int		numTableEntries;
 	int		oldNumTableEntries;
-	char	diagFileName[MAX_FILE_PATH];
+	WChar	diagFileName[MAX_FILE_PATH];
 
 } IonChanList, *IonChanListPtr;
 
@@ -219,10 +219,10 @@ typedef struct IonChanList {
 __BEGIN_DECLS
 
 BOOLN	CheckInit_IonChanList(IonChanListPtr theICList,
-		  const char *callingFunction);
+		  const WChar *callingFunction);
 
 BOOLN	CheckInitIC_IonChanList(IonChannelPtr theIC,
-		  const char *callingFunction);
+		  const WChar *callingFunction);
 
 BOOLN	CheckPars_IonChanList(IonChanListPtr theICList);
 
@@ -244,9 +244,9 @@ void	GenerateBoltzmann_IonChanList(IonChannelPtr theIC);
 
 void	GenerateHHuxley_IonChanList(IonChannelPtr theIC);
 
-IonChanListPtr	Init_IonChanList(const char *callingFunctionName);
+IonChanListPtr	Init_IonChanList(const WChar *callingFunctionName);
 
-IonChannelPtr	InitIonChannel_IonChanList(const char *callingFunctionName,
+IonChannelPtr	InitIonChannel_IonChanList(const WChar *callingFunctionName,
 				  int numTableEntries);
 
 void	PrintIonChannelPars_IonChanList(IonChannelPtr theIC);
@@ -262,7 +262,7 @@ BOOLN	ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp);
 IonChanListPtr	ReadPars_IonChanList(FILE *fp);
 
 BOOLN	ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode,
-		  char *fileName, char *description, char *enabled,
+		  WChar *fileName, WChar *description, WChar *enabled,
 		  double *equilibriumPot, double *baseMaxConductance,
 		  double *activationExponent);
 
@@ -299,17 +299,18 @@ BOOLN	SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
 BOOLN	SetICConductanceQ10_IonChanList(IonChannelPtr theIC,
 		  double theConductanceQ10);
 
-BOOLN	SetICDescription_IonChanList(IonChannelPtr theIC, char *theDescription);
+BOOLN	SetICDescription_IonChanList(IonChannelPtr theIC,
+		  WChar *theDescription);
 
-BOOLN	SetICEnabled_IonChanList(IonChannelPtr theIC, char *theICEnabled);
+BOOLN	SetICEnabled_IonChanList(IonChannelPtr theIC, WChar *theICEnabled);
 
 BOOLN	SetICEquilibriumPot_IonChanList(IonChannelPtr theIC,
 		  double theEquilibriumPot);
 
-BOOLN	SetICFileName_IonChanList(IonChannelPtr theIC, char *fileName);
+BOOLN	SetICFileName_IonChanList(IonChannelPtr theIC, WChar *fileName);
 
 BOOLN	SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
-		  char *description, char *enabled, double equilibriumPot,
+		  WChar *description, WChar *enabled, double equilibriumPot,
 		  double baseMaxConductance, double activationExponent);
 
 void	SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
@@ -324,7 +325,7 @@ BOOLN	SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index,
 BOOLN	SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index,
 		  double theTau);
 
-BOOLN	SetICMode_IonChanList(IonChannelPtr theIC, char *modeName);
+BOOLN	SetICMode_IonChanList(IonChannelPtr theIC, WChar *modeName);
 
 BOOLN	SetICHHuxleyAlphaA_IonChanList(IonChannelPtr theIC, int index,
 		  double value);
@@ -410,7 +411,7 @@ BOOLN	SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage);
 
 BOOLN	SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels);
 
-BOOLN	SetPrintTablesMode_IonChanList(IonChanListPtr theICs, char *modeName);
+BOOLN	SetPrintTablesMode_IonChanList(IonChanListPtr theICs, WChar *modeName);
 
 BOOLN	SetTemperature_IonChanList(IonChanListPtr theICs,
 		  double theTemperature);

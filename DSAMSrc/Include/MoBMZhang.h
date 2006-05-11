@@ -197,9 +197,9 @@ BOOLN	SetCutCP_BasilarM_Zhang(double theCutCP);
 
 BOOLN	SetKCP_BasilarM_Zhang(int theKCP);
 
-BOOLN	SetMicroPaInput_BasilarM_Zhang(char * theMicroPaInput);
+BOOLN	SetMicroPaInput_BasilarM_Zhang(WChar * theMicroPaInput);
 
-BOOLN	SetModel_BasilarM_Zhang(char * theModel);
+BOOLN	SetModel_BasilarM_Zhang(WChar * theModel);
 
 BOOLN	SetNbOrder_BasilarM_Zhang(int theNbOrder);
 
@@ -215,7 +215,7 @@ BOOLN	SetShiftCP_BasilarM_Zhang(double theShiftCP);
 
 BOOLN	SetSlopeCP_BasilarM_Zhang(double theSlopeCP);
 
-BOOLN	SetSpecies_BasilarM_Zhang(char * theSpecies);
+BOOLN	SetSpecies_BasilarM_Zhang(WChar * theSpecies);
 
 BOOLN	SetStrenghCP_BasilarM_Zhang(double theStrenghCP);
 

@@ -25,6 +25,7 @@
 #include "GeModuleMgr.h"
 #include "GeNSpecLists.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "StEGatedTone.h"
 
 /******************************************************************************/
@@ -49,8 +50,6 @@ EGatedTonePtr	eGatedTonePtr = NULL;
 BOOLN
 Free_Stimulus_ExpGatedTone(void)
 {
-	/* static const char	*funcName = "Free_Stimulus_ExpGatedTone";  */
-
 	if (eGatedTonePtr == NULL)
 		return(FALSE);
 	if (eGatedTonePtr->parList)
@@ -74,9 +73,9 @@ InitTypeModeList_Stimulus_ExpGatedTone(void)
 {
 	static NameSpecifier	typeModeList[] = {
 
-					{"RAMPED",	EGATED_TONE_RAMPED_MODE },
-					{"DAMPED",	EGATED_TONE_DAMPED_MODE },
-					{"",		EGATED_TONE_MODE_NULL }
+					{wxT("RAMPED"),	EGATED_TONE_RAMPED_MODE },
+					{wxT("DAMPED"),	EGATED_TONE_DAMPED_MODE },
+					{wxT(""),		EGATED_TONE_MODE_NULL }
 
 				};
 	eGatedTonePtr->typeModeList = typeModeList;
@@ -99,19 +98,20 @@ InitTypeModeList_Stimulus_ExpGatedTone(void)
 BOOLN
 Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("Init_Stimulus_ExpGatedTone");
 
 	if (parSpec == GLOBAL) {
 		if (eGatedTonePtr != NULL)
 			Free_Stimulus_ExpGatedTone();
 		if ((eGatedTonePtr = (EGatedTonePtr) malloc(sizeof(EGatedTone))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (eGatedTonePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -141,7 +141,7 @@ Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 
 	InitTypeModeList_Stimulus_ExpGatedTone();
 	if (!SetUniParList_Stimulus_ExpGatedTone()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Stimulus_ExpGatedTone();
 		return(FALSE);
 	}
@@ -161,77 +161,77 @@ Init_Stimulus_ExpGatedTone(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Stimulus_ExpGatedTone(void)
 {
-	static const char *funcName = "SetUniParList_Stimulus_ExpGatedTone";
+	static const WChar *funcName = wxT("SetUniParList_Stimulus_ExpGatedTone");
 	UniParPtr	pars;
 
 	if ((eGatedTonePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  EGATED_TONE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_TYPEMODE], "T_MODE",
-	  "Type mode ('ramped' or 'damped').",
+	SetPar_UniParMgr(&pars[EGATED_TONE_TYPEMODE], wxT("T_MODE"),
+	  wxT("Type mode ('ramped' or 'damped')."),
 	  UNIPAR_NAME_SPEC,
 	  &eGatedTonePtr->typeMode, eGatedTonePtr->typeModeList,
 	  (void * (*)) SetTypeMode_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_FLOORMODE], "F_MODE",
-	  "Floor mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[EGATED_TONE_FLOORMODE], wxT("F_MODE"),
+	  wxT("Floor mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &eGatedTonePtr->floorMode, NULL,
 	  (void * (*)) SetFloorMode_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_CARRIERFREQUENCY], "FREQUENCY",
-	  "Carrier frequency (Hz).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_CARRIERFREQUENCY], wxT("FREQUENCY"),
+	  wxT("Carrier frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->carrierFrequency, NULL,
 	  (void * (*)) SetCarrierFrequency_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_AMPLITUDE], "AMPLITUDE",
-	  "Amplitude (uPa).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_AMPLITUDE], wxT("AMPLITUDE"),
+	  wxT("Amplitude (uPa)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->amplitude, NULL,
 	  (void * (*)) SetAmplitude_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_PHASE], "PHASE",
-	  "Phase (degrees).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_PHASE], wxT("PHASE"),
+	  wxT("Phase (degrees)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->phase, NULL,
 	  (void * (*)) SetPhase_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_BEGINPERIODDURATION], "SILENCE",
-	  "Begin period duration - silence (s).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_BEGINPERIODDURATION], wxT("SILENCE"),
+	  wxT("Begin period duration - silence (s)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->beginPeriodDuration, NULL,
 	  (void * (*)) SetBeginPeriodDuration_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_REPETITIONRATE], "R_RATE",
-	  "Repetition rate (Hz).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_REPETITIONRATE], wxT("R_RATE"),
+	  wxT("Repetition rate (Hz)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->repetitionRate, NULL,
 	  (void * (*)) SetRepetitionRate_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_HALFLIFE], "HALF_LIFE",
-	  "Half life (s).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_HALFLIFE], wxT("HALF_LIFE"),
+	  wxT("Half life (s)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->halfLife, NULL,
 	  (void * (*)) SetHalfLife_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_FLOOR], "FLOOR",
-	  "Floor value (uPa).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_FLOOR], wxT("FLOOR"),
+	  wxT("Floor value (uPa)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->floor, NULL,
 	  (void * (*)) SetFloor_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->duration, NULL,
 	  (void * (*)) SetDuration_Stimulus_ExpGatedTone);
 	pars = eGatedTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[EGATED_TONE_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[EGATED_TONE_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &eGatedTonePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_Stimulus_ExpGatedTone);
@@ -248,15 +248,16 @@ SetUniParList_Stimulus_ExpGatedTone(void)
 UniParListPtr
 GetUniParListPtr_Stimulus_ExpGatedTone(void)
 {
-	static const char *funcName = "GetUniParListPtr_Stimulus_ExpGatedTone";
+	static const WChar *funcName = wxT(
+	  "GetUniParListPtr_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (eGatedTonePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(eGatedTonePtr->parList);
@@ -271,12 +272,12 @@ GetUniParListPtr_Stimulus_ExpGatedTone(void)
  */
 
 BOOLN
-SetPars_Stimulus_ExpGatedTone(char *typeMode, char *floorMode,
+SetPars_Stimulus_ExpGatedTone(WChar *typeMode, WChar *floorMode,
   double carrierFrequency, double amplitude, double phase, double
   beginPeriodDuration, double repetitionRate, double halfLife, double floor,
   double duration, double samplingInterval)
 {
-	static const char	*funcName = "SetPars_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetPars_Stimulus_ExpGatedTone");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -303,7 +304,7 @@ SetPars_Stimulus_ExpGatedTone(char *typeMode, char *floorMode,
 	if (!SetSamplingInterval_Stimulus_ExpGatedTone(samplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -317,18 +318,18 @@ SetPars_Stimulus_ExpGatedTone(char *typeMode, char *floorMode,
  */
 
 BOOLN
-SetTypeMode_Stimulus_ExpGatedTone(char *theTypeMode)
+SetTypeMode_Stimulus_ExpGatedTone(WChar *theTypeMode)
 {
-	static const char	*funcName = "SetTypeMode_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetTypeMode_Stimulus_ExpGatedTone");
 	int		specifier;
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theTypeMode,
 	  eGatedTonePtr->typeModeList)) == EGATED_TONE_MODE_NULL) {
-		NotifyError("%s: Illegal type mode (%s).", funcName,
+		NotifyError(wxT("%s: Illegal type mode (%s)."), funcName,
 		  theTypeMode);
 		return(FALSE);
 	}
@@ -347,18 +348,18 @@ SetTypeMode_Stimulus_ExpGatedTone(char *theTypeMode)
  */
 
 BOOLN
-SetFloorMode_Stimulus_ExpGatedTone(char *theFloorMode)
+SetFloorMode_Stimulus_ExpGatedTone(WChar *theFloorMode)
 {
-	static const char	*funcName = "SetFloorMode_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetFloorMode_Stimulus_ExpGatedTone");
 	int		specifier;
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theFloorMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theFloorMode);
 		return(FALSE);
 	}
@@ -379,10 +380,11 @@ SetFloorMode_Stimulus_ExpGatedTone(char *theFloorMode)
 BOOLN
 SetCarrierFrequency_Stimulus_ExpGatedTone(double theCarrierFrequency)
 {
-	static const char	*funcName = "SetCarrierFrequency_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT(
+	  "SetCarrierFrequency_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -403,10 +405,10 @@ SetCarrierFrequency_Stimulus_ExpGatedTone(double theCarrierFrequency)
 BOOLN
 SetAmplitude_Stimulus_ExpGatedTone(double theAmplitude)
 {
-	static const char	*funcName = "SetAmplitude_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetAmplitude_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -427,10 +429,10 @@ SetAmplitude_Stimulus_ExpGatedTone(double theAmplitude)
 BOOLN
 SetPhase_Stimulus_ExpGatedTone(double thePhase)
 {
-	static const char	*funcName = "SetPhase_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetPhase_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -451,11 +453,11 @@ SetPhase_Stimulus_ExpGatedTone(double thePhase)
 BOOLN
 SetBeginPeriodDuration_Stimulus_ExpGatedTone(double theBeginPeriodDuration)
 {
-	static const char	*funcName =
-	  "SetBeginPeriodDuration_Stimulus_ExpGatedTone";
+	static const WChar	*funcName =
+	  wxT("SetBeginPeriodDuration_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -476,10 +478,11 @@ SetBeginPeriodDuration_Stimulus_ExpGatedTone(double theBeginPeriodDuration)
 BOOLN
 SetRepetitionRate_Stimulus_ExpGatedTone(double theRepetitionRate)
 {
-	static const char	*funcName = "SetRepetitionRate_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT(
+	  "SetRepetitionRate_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -500,10 +503,10 @@ SetRepetitionRate_Stimulus_ExpGatedTone(double theRepetitionRate)
 BOOLN
 SetHalfLife_Stimulus_ExpGatedTone(double theHalfLife)
 {
-	static const char	*funcName = "SetHalfLife_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetHalfLife_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -524,10 +527,10 @@ SetHalfLife_Stimulus_ExpGatedTone(double theHalfLife)
 BOOLN
 SetFloor_Stimulus_ExpGatedTone(double theFloor)
 {
-	static const char	*funcName = "SetFloor_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetFloor_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -548,10 +551,10 @@ SetFloor_Stimulus_ExpGatedTone(double theFloor)
 BOOLN
 SetDuration_Stimulus_ExpGatedTone(double theDuration)
 {
-	static const char	*funcName = "SetDuration_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetDuration_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -572,10 +575,11 @@ SetDuration_Stimulus_ExpGatedTone(double theDuration)
 BOOLN
 SetSamplingInterval_Stimulus_ExpGatedTone(double theSamplingInterval)
 {
-	static const char	*funcName = "SetSamplingInterval_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT(
+	  "SetSamplingInterval_Stimulus_ExpGatedTone");
 
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -598,56 +602,56 @@ SetSamplingInterval_Stimulus_ExpGatedTone(double theSamplingInterval)
 BOOLN
 CheckPars_Stimulus_ExpGatedTone(void)
 {
-	static const char	*funcName = "CheckPars_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("CheckPars_Stimulus_ExpGatedTone");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (eGatedTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!eGatedTonePtr->typeModeFlag) {
-		NotifyError("%s: typeMode variable not set.", funcName);
+		NotifyError(wxT("%s: typeMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->floorModeFlag) {
-		NotifyError("%s: floorMode variable not set.", funcName);
+		NotifyError(wxT("%s: floorMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->carrierFrequencyFlag) {
-		NotifyError("%s: carrierFrequency variable not set.", funcName);
+		NotifyError(wxT("%s: carrierFrequency variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->amplitudeFlag) {
-		NotifyError("%s: amplitude variable not set.", funcName);
+		NotifyError(wxT("%s: amplitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->phaseFlag) {
-		NotifyError("%s: phase variable not set.", funcName);
+		NotifyError(wxT("%s: phase variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->beginPeriodDurationFlag) {
-		NotifyError("%s: beginPeriodDuration variable not set.", funcName);
+		NotifyError(wxT("%s: beginPeriodDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->repetitionRateFlag) {
-		NotifyError("%s: repetitionRate variable not set.", funcName);
+		NotifyError(wxT("%s: repetitionRate variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->halfLifeFlag) {
-		NotifyError("%s: halfLife variable not set.", funcName);
+		NotifyError(wxT("%s: halfLife variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->floorFlag) {
-		NotifyError("%s: floor variable not set.", funcName);
+		NotifyError(wxT("%s: floor variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!eGatedTonePtr->dtFlag) {
-		NotifyError("%s: dt variable not set.", funcName);
+		NotifyError(wxT("%s: dt variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -664,28 +668,30 @@ CheckPars_Stimulus_ExpGatedTone(void)
 BOOLN
 PrintPars_Stimulus_ExpGatedTone(void)
 {
-	static const char	*funcName = "PrintPars_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("PrintPars_Stimulus_ExpGatedTone");
 
 	if (!CheckPars_Stimulus_ExpGatedTone()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Exponentially Gated Pure Tone Module Parameters:-\n");
-	DPrint("\tType mode = %s", eGatedTonePtr->typeModeList[
+	DPrint(wxT("Exponentially Gated Pure Tone Module Parameters:-\n"));
+	DPrint(wxT("\tType mode = %s"), eGatedTonePtr->typeModeList[
 	  eGatedTonePtr->typeMode].name);
-	DPrint("\tCarrier frequency = %g Hz,\n", eGatedTonePtr->carrierFrequency);
-	DPrint("\tAmplitude (maximum) = %g uPa,", eGatedTonePtr->amplitude);
-	DPrint("\tPhase = %g (degrees),\n", eGatedTonePtr->phase);
-	DPrint("\tRepetition rate = %g Hz,", eGatedTonePtr->repetitionRate);
-	DPrint("\tHalf Life = %g ms,", MSEC(eGatedTonePtr->halfLife));
-	DPrint("\tFloor mode: %s,\n", BooleanList_NSpecLists(
+	DPrint(wxT("\tCarrier frequency = %g Hz,\n"), eGatedTonePtr->
+	  carrierFrequency);
+	DPrint(wxT("\tAmplitude (maximum) = %g uPa,"), eGatedTonePtr->amplitude);
+	DPrint(wxT("\tPhase = %g (degrees),\n"), eGatedTonePtr->phase);
+	DPrint(wxT("\tRepetition rate = %g Hz,"), eGatedTonePtr->repetitionRate);
+	DPrint(wxT("\tHalf Life = %g ms,"), MSEC(eGatedTonePtr->halfLife));
+	DPrint(wxT("\tFloor mode: %s,\n"), BooleanList_NSpecLists(
 	  eGatedTonePtr->floorMode)->name);
 	if (eGatedTonePtr->floorMode == GENERAL_BOOLEAN_ON)
-		DPrint("\tFloor = %g uPa,", eGatedTonePtr->floor);
-	DPrint("\tBegin period duration = %g ms\n",
+		DPrint(wxT("\tFloor = %g uPa,"), eGatedTonePtr->floor);
+	DPrint(wxT("\tBegin period duration = %g ms\n"),
 	  MSEC(eGatedTonePtr->beginPeriodDuration));
-	DPrint("\tDuration = %g ms,", MSEC(eGatedTonePtr->duration));
-	DPrint("\tSampling interval = %g ms\n", MSEC(eGatedTonePtr->dt));
+	DPrint(wxT("\tDuration = %g ms,"), MSEC(eGatedTonePtr->duration));
+	DPrint(wxT("\tSampling interval = %g ms\n"), MSEC(eGatedTonePtr->dt));
 	return(TRUE);
 
 }
@@ -697,57 +703,58 @@ PrintPars_Stimulus_ExpGatedTone(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Stimulus_ExpGatedTone(char *fileName)
+ReadPars_Stimulus_ExpGatedTone(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("ReadPars_Stimulus_ExpGatedTone");
 	BOOLN	ok;
-	char	*filePath;
-	char	typeMode[MAXLINE], floorMode[MAXLINE];
+	WChar	*filePath;
+	WChar	typeMode[MAXLINE], floorMode[MAXLINE];
 	double	carrierFrequency, amplitude, phase, beginPeriodDuration;
 	double	repetitionRate, halfLife, floor, duration, samplingInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", typeMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), typeMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &carrierFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &carrierFrequency))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &amplitude))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &amplitude))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &phase))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &phase))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &repetitionRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &repetitionRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &halfLife))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &halfLife))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", floorMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), floorMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &floor))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &floor))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &beginPeriodDuration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &beginPeriodDuration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Stimulus_ExpGatedTone(typeMode, floorMode, carrierFrequency,
 	  amplitude, phase, beginPeriodDuration, repetitionRate, halfLife, floor,
 	  duration, samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -764,10 +771,10 @@ ReadPars_Stimulus_ExpGatedTone(char *fileName)
 BOOLN
 SetParsPointer_Stimulus_ExpGatedTone(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("SetParsPointer_Stimulus_ExpGatedTone");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	eGatedTonePtr = (EGatedTonePtr) theModule->parsPtr;
@@ -784,14 +791,14 @@ SetParsPointer_Stimulus_ExpGatedTone(ModulePtr theModule)
 BOOLN
 InitModule_Stimulus_ExpGatedTone(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("InitModule_Stimulus_ExpGatedTone");
 
 	if (!SetParsPointer_Stimulus_ExpGatedTone(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Stimulus_ExpGatedTone(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = eGatedTonePtr;
@@ -824,7 +831,7 @@ InitModule_Stimulus_ExpGatedTone(ModulePtr theModule)
 BOOLN
 GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 {
-	static const char	*funcName = "GenerateSignal_Stimulus_ExpGatedTone";
+	static const WChar	*funcName = wxT("GenerateSignal_Stimulus_ExpGatedTone");
 	register ChanData	 *outPtr;
 	register double		time, cycle, expFactor, phaseRads, cyclePeriod;
 	ChanLen		i, t;
@@ -832,16 +839,16 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}
 		if (!CheckPars_Stimulus_ExpGatedTone())
 			return(FALSE);
-		SetProcessName_EarObject(data, "Exponentially Gated Pure Tone Module "
-		  "Process");
+		SetProcessName_EarObject(data, wxT("Exponentially Gated Pure Tone"
+		  " Module Process"));
 		if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
 		  (ChanLen) floor(p->duration / p->dt + 0.5), p->dt)) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

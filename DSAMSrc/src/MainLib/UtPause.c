@@ -54,8 +54,6 @@ PausePtr	pausePtr = NULL;
 BOOLN
 Free_Utility_Pause(void)
 {
-	/* static const char	*funcName = "Free_Utility_Pause";  */
-
 	if (pausePtr == NULL)
 		return(FALSE);
 	if (pausePtr->parList)
@@ -83,18 +81,19 @@ Free_Utility_Pause(void)
 BOOLN
 Init_Utility_Pause(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Pause";
+	static const WChar	*funcName = wxT("Init_Utility_Pause");
 
 	if (parSpec == GLOBAL) {
 		if (pausePtr != NULL)
 			Free_Utility_Pause();
 		if ((pausePtr = (PausePtr) malloc(sizeof(Pause))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (pausePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -104,10 +103,10 @@ Init_Utility_Pause(ParameterSpecifier parSpec)
 	pausePtr->messageFlag = TRUE;
 	pausePtr->alertMode = GENERAL_BOOLEAN_ON;
 	pausePtr->delay = -1;
-	sprintf(pausePtr->message, "Processing paused");
+	DSAM_snprintf(pausePtr->message, MAXLINE, wxT("Processing paused"));
 
 	if (!SetUniParList_Utility_Pause()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Pause();
 		return(FALSE);
 	}
@@ -126,27 +125,27 @@ Init_Utility_Pause(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Pause(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Pause";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Pause");
 	UniParPtr	pars;
 
 	if ((pausePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_PAUSE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = pausePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_PAUSE_ALERTMODE], "ALERT_MODE",
-	  "Bell mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[UTILITY_PAUSE_ALERTMODE], wxT("ALERT_MODE"),
+	  wxT("Bell mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &pausePtr->alertMode, NULL,
 	  (void * (*)) SetAlertMode_Utility_Pause);
-	SetPar_UniParMgr(&pars[UTILITY_PAUSE_DELAY], "DELAY",
-	  "Delay time: negative values mean indefinite period (s).",
+	SetPar_UniParMgr(&pars[UTILITY_PAUSE_DELAY], wxT("DELAY"),
+	  wxT("Delay time: negative values mean indefinite period (s)."),
 	  UNIPAR_INT,
 	  &pausePtr->delay, NULL,
 	  (void * (*)) SetDelay_Utility_Pause);
-	SetPar_UniParMgr(&pars[UTILITY_PAUSE_MESSAGE], "MESSAGE",
-	  "Pause diagnostic message.",
+	SetPar_UniParMgr(&pars[UTILITY_PAUSE_MESSAGE], wxT("MESSAGE"),
+	  wxT("Pause diagnostic message."),
 	  UNIPAR_STRING,
 	  &pausePtr->message, NULL,
 	  (void * (*)) SetMessage_Utility_Pause);
@@ -164,15 +163,15 @@ SetUniParList_Utility_Pause(void)
 UniParListPtr
 GetUniParListPtr_Utility_Pause(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_Pause";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_Pause");
 
 	if (pausePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (pausePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pausePtr->parList);
@@ -187,9 +186,9 @@ GetUniParListPtr_Utility_Pause(void)
  */
 
 BOOLN
-SetPars_Utility_Pause(char * alertMode, int delay, char *message)
+SetPars_Utility_Pause(WChar * alertMode, int delay, WChar *message)
 {
-	static const char	*funcName = "SetPars_Utility_Pause";
+	static const WChar	*funcName = wxT("SetPars_Utility_Pause");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -200,7 +199,7 @@ SetPars_Utility_Pause(char * alertMode, int delay, char *message)
 	if (!SetMessage_Utility_Pause(message))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -214,18 +213,18 @@ SetPars_Utility_Pause(char * alertMode, int delay, char *message)
  */
 
 BOOLN
-SetAlertMode_Utility_Pause(char * theAlertMode)
+SetAlertMode_Utility_Pause(WChar * theAlertMode)
 {
-	static const char	*funcName = "SetAlertMode_Utility_Pause";
+	static const WChar	*funcName = wxT("SetAlertMode_Utility_Pause");
 	int		specifier;
 
 	if (pausePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theAlertMode,
 		BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theAlertMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theAlertMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -246,10 +245,10 @@ SetAlertMode_Utility_Pause(char * theAlertMode)
 BOOLN
 SetDelay_Utility_Pause(int theDelay)
 {
-	static const char	*funcName = "SetDelay_Utility_Pause";
+	static const WChar	*funcName = wxT("SetDelay_Utility_Pause");
 
 	if (pausePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -268,17 +267,17 @@ SetDelay_Utility_Pause(int theDelay)
  */
 
 BOOLN
-SetMessage_Utility_Pause(char *theMessage)
+SetMessage_Utility_Pause(WChar *theMessage)
 {
-	static const char	*funcName = "SetMessage_Utility_Pause";
+	static const WChar	*funcName = wxT("SetMessage_Utility_Pause");
 
 	if (pausePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	pausePtr->messageFlag = TRUE;
-	snprintf(pausePtr->message, LONG_STRING, "%s", theMessage);
+	DSAM_snprintf(pausePtr->message, LONG_STRING, wxT("%s"), theMessage);
 	return(TRUE);
 
 }
@@ -296,24 +295,24 @@ SetMessage_Utility_Pause(char *theMessage)
 BOOLN
 CheckPars_Utility_Pause(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Pause";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Pause");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (pausePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!pausePtr->alertModeFlag) {
-		NotifyError("%s: alertMode variable not set.", funcName);
+		NotifyError(wxT("%s: alertMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pausePtr->delayFlag) {
-		NotifyError("%s: delay variable not set.", funcName);
+		NotifyError(wxT("%s: delay variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!pausePtr->messageFlag) {
-		NotifyError("%s: message array not set.", funcName);
+		NotifyError(wxT("%s: message array not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -330,21 +329,22 @@ CheckPars_Utility_Pause(void)
 BOOLN
 PrintPars_Utility_Pause(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Pause";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Pause");
 
 	if (!CheckPars_Utility_Pause()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Pause Utility Module Parameters:-\n");
-	DPrint("\tBell mode = %s,", BooleanList_NSpecLists(
+	DPrint(wxT("Pause Utility Module Parameters:-\n"));
+	DPrint(wxT("\tBell mode = %s,"), BooleanList_NSpecLists(
 	  pausePtr->alertMode)->name);
-	DPrint("\tdelay = ");
+	DPrint(wxT("\tdelay = "));
 	if (pausePtr->delay < 0)
-		DPrint("indefinite.\n");
+		DPrint(wxT("indefinite.\n"));
 	else
-		DPrint("%d (s)\n", pausePtr->delay);
-	DPrint("\tmessage: %s\n", pausePtr->message);
+		DPrint(wxT("%d (s)\n"), pausePtr->delay);
+	DPrint(wxT("\tmessage: %s\n"), pausePtr->message);
 	return(TRUE);
 
 }
@@ -356,37 +356,38 @@ PrintPars_Utility_Pause(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_Pause(char *fileName)
+ReadPars_Utility_Pause(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_Pause";
+	static const WChar	*funcName = wxT("ReadPars_Utility_Pause");
 	BOOLN	ok;
-	char	*filePath, alertMode[MAXLINE], message[LONG_STRING];
+	WChar	*filePath, alertMode[MAXLINE], message[LONG_STRING];
 	int		delay;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", alertMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), alertMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &delay))
+	if (!GetPars_ParFile(fp, wxT("%d"), &delay))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", message))
+	if (!GetPars_ParFile(fp, wxT("%s"), message))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Pause(alertMode, delay, message)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -403,10 +404,10 @@ ReadPars_Utility_Pause(char *fileName)
 BOOLN
 SetParsPointer_Utility_Pause(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Pause";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Pause");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	pausePtr = (PausePtr) theModule->parsPtr;
@@ -423,14 +424,15 @@ SetParsPointer_Utility_Pause(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Pause(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Pause";
+	static const WChar	*funcName = wxT("InitModule_Utility_Pause");
 
 	if (!SetParsPointer_Utility_Pause(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Pause(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = pausePtr;
@@ -461,10 +463,10 @@ InitModule_Utility_Pause(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Pause(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Pause";
+	static const WChar	*funcName = wxT("CheckData_Utility_Pause");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -487,7 +489,7 @@ CheckData_Utility_Pause(EarObjectPtr data)
  */
 
 void
-Notify_Utility_Pause(char *format, ...)
+Notify_Utility_Pause(WChar *format, ...)
 {
 	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	va_list	args;
@@ -501,7 +503,7 @@ Notify_Utility_Pause(char *format, ...)
 		return;
 	}
 	if (GetDSAMPtr_Common()->diagMode == COMMON_CONSOLE_DIAG_MODE) {
-		printf("Press <return> to continue...");
+		DSAM_printf(wxT("Press <return> to continue..."));
 		getchar();
 	}
 	va_end(args);
@@ -526,7 +528,7 @@ Notify_Utility_Pause(char *format, ...)
 BOOLN
 Process_Utility_Pause(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Pause";
+	static const WChar	*funcName = wxT("Process_Utility_Pause");
 	time_t	startTime;
 	FILE	*oldParsFile;
 
@@ -534,10 +536,10 @@ Process_Utility_Pause(EarObjectPtr data)
 		if (!CheckPars_Utility_Pause())
 			return(FALSE);
 		if (!CheckData_Utility_Pause(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Pause utility module process");
+		SetProcessName_EarObject(data, wxT("Pause utility module process"));
 		data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
 		data->outSignal = data->inSignal[0];
 		if (data->initThreadRunFlag)
@@ -545,19 +547,19 @@ Process_Utility_Pause(EarObjectPtr data)
 	}
 
 	if (pausePtr->alertMode == GENERAL_BOOLEAN_ON)
-		fprintf(stderr, "\07");
+		DSAM_fprintf(stderr, wxT("\07"));
  	if (pausePtr->delay > 0.0) {
 		oldParsFile = GetDSAMPtr_Common()->parsFile;
 		GetDSAMPtr_Common()->parsFile = stdout;
-		DPrint("\n%s\n", pausePtr->message);
-		DPrint("\n>> Pausing for %d seconds...\n", pausePtr->delay);
+		DPrint(wxT("\n%s\n"), pausePtr->message);
+		DPrint(wxT("\n>> Pausing for %d seconds...\n"), pausePtr->delay);
 		for (startTime = time(NULL); (difftime(time(NULL), startTime) <
 		  pausePtr->delay); )
  			if (GetDSAMPtr_Common()->interruptRequestedFlag)
 				break;
 		GetDSAMPtr_Common()->parsFile = oldParsFile;
 	} else if (pausePtr->alertMode == GENERAL_BOOLEAN_ON) {
-		Notify_Utility_Pause("%s", pausePtr->message);
+		Notify_Utility_Pause(wxT("%s"), pausePtr->message);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

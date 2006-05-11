@@ -65,7 +65,7 @@ IPCServer	*iPCServer = NULL;
 IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
   bool superServerFlag)
 {
-	static const char *funcName = "IPCServer::IPCServer";
+	static const wxChar *funcName = wxT("IPCServer::IPCServer");
 	wxIPV4address	addr;
 
 	iPCServer = this;
@@ -80,7 +80,7 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
 	  theServicePort);
 	myServer = new SocketServer(addr, superServerFlag, wxSOCKET_NONE);
 	if (!myServer->Ok()) {
-		NotifyError("%s: Could not listen at port %u.", funcName,
+		NotifyError(wxT("%s: Could not listen at port %u."), funcName,
 		  theServicePort);
 		ok = FALSE;
 	}
@@ -116,19 +116,19 @@ IPCServer::~IPCServer(void)
 SocketBase *
 IPCServer::InitConnection(bool wait)
 {
-	static const char *funcName = "IPCServer::OnServerEvent";
+	static const wxChar *funcName = wxT("IPCServer::OnServerEvent");
 	wxString	salutation;
 	wxIPV4address	addr;
 
 	sock = myServer->Accept(wait);
 	if (!sock) {
-		NotifyError("%s: Couldn't accept a new connection.\n", funcName);
+		NotifyError(wxT("%s: Couldn't accept a new connection.\n"), funcName);
 		return(NULL);
 	}
 	sock->SetFlags(wxSOCKET_WAITALL);
 	myServer->GetLocal(addr);
-	salutation.Printf("Host %s running %s, DSAM version %s.\n", addr.Hostname(
-	  ).c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
+	salutation.Printf(wxT("Host %s running %s, DSAM version %s.\n"), addr.
+	  Hostname().c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
 	sock->Write(salutation.GetData(), salutation.length());
 	return(sock);
 
@@ -143,7 +143,7 @@ IPCServer::InitConnection(bool wait)
 void
 IPCServer::OnInit(void)
 {
-	static const char *funcName = "IPCServer::OnInit";
+	static const wxChar *funcName = wxT("IPCServer::OnInit");
 	unsigned char c;
 	bool	simLoaded;
 
@@ -152,12 +152,12 @@ IPCServer::OnInit(void)
 	}
 	iPCUtils.ResetInProcess();
 	iPCUtils.ResetOutProcess();
-	wxString tempFileName = wxFileName::CreateTempFileName("simFile");
+	wxString tempFileName = wxFileName::CreateTempFileName(wxT("simFile"));
 	wxRemoveFile(tempFileName);
-	tempFileName.append(".spf");
+	tempFileName.append(wxT(".spf"));
 	wxFFileOutputStream	*oStream = new wxFFileOutputStream(tempFileName);
 	if (!oStream->Ok()) {
-		NotifyError("%s: Could not open temporary file '%s'.", funcName,
+		NotifyError(wxT("%s: Could not open temporary file '%s'."), funcName,
 		  tempFileName.c_str());
 		return;
 	}
@@ -167,7 +167,7 @@ IPCServer::OnInit(void)
 	simLoaded = LoadSimFile(tempFileName);
 	wxRemoveFile(tempFileName);
 	if (!simLoaded) {
-		NotifyError("%s: Could not load simulation.", funcName);
+		NotifyError(wxT("%s: Could not load simulation."), funcName);
 		return;
 	}
 	iPCUtils.InitOutProcess();
@@ -185,14 +185,14 @@ IPCServer::OnInit(void)
 void
 IPCServer::OnPut(void)
 {
-	static const char *funcName = "IPCServer::OnPut";
+	static const wxChar *funcName = wxT("IPCServer::OnPut");
 	char	*p;
 	wxUint32	i, length;
 
  	sock->Read(&length, sizeof(length));
 	if (!iPCUtils.InitInputMemory(length)) {
-		NotifyError("%s: Could not initialise memory for input process signal",
-		  funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process "
+		  "signal"), funcName);
 		return;
 	}
 	p = iPCUtils.GetInUIOPtr()->memStart;
@@ -200,7 +200,8 @@ IPCServer::OnPut(void)
 		sock->Read(p++, 1);
 	
 	if (!iPCUtils.InitInProcess()) {
-		NotifyError("%s: Could not initialise the input process.", funcName);
+		NotifyError(wxT("%s: Could not initialise the input process."),
+		  funcName);
 		return;
 	}
 
@@ -225,8 +226,8 @@ IPCServer::OnPutArgs(void)
 		s.Clear();
 		while (!sock->Read(&c, 1).Error() && (c != '\0'))
 			s += c;
-		s += '\0';
-		dSAMMainApp->SetArgvString(i, (char *) s.c_str(), s.length());
+		s += wxT('\0');
+		dSAMMainApp->SetArgvString(i, (wxChar *) s.c_str(), s.length());
 	}
 	ResetCommandArgFlags_AppInterface();
 
@@ -273,8 +274,8 @@ IPCServer::BuildFileList(wxArrayString &list, DatumPtr pc)
 				if (!pc->onFlag || ((DataFilePtr) pc->data->module->parsPtr)->
 				  inputMode)
 					break;
-				list.Add(GetUniParPtr_ModuleMgr(pc->data, "fileName")->valuePtr.
-				  s);
+				list.Add((wxChar *) GetUniParPtr_ModuleMgr(pc->data,
+				  wxT("fileName"))->valuePtr.s);
 				break;
 			default:
 				;
@@ -291,7 +292,7 @@ IPCServer::BuildFileList(wxArrayString &list, DatumPtr pc)
 void
 IPCServer::OnGetFiles(void)
 {
-	static const char *funcName = "IPCServer::OnGetFiles";
+	static const wxChar *funcName = wxT("IPCServer::OnGetFiles");
 	wxUint8	byte, numFiles = 0;
 	wxUint32	i, j, length;
 	wxArrayString	list;
@@ -306,13 +307,13 @@ IPCServer::OnGetFiles(void)
 	numFiles = list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
-		fileName = GetParsFileFPath_Common((char *) list[i].c_str());
+		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].c_str());
 		nameOnly = fileName.GetFullName();
 		sock->Write(nameOnly, nameOnly.length());
-		sock->Write("\n", 1);
+		sock->Write(wxT("\n"), 1);
 		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
-			NotifyError("%s: Could not open '%s' for transfer.", funcName,
+			NotifyError(wxT("%s: Could not open '%s' for transfer."), funcName,
 			  list[i].c_str());
 			return;
 		}
@@ -325,7 +326,7 @@ IPCServer::OnGetFiles(void)
 			sock->Write(&byte, 1);
 		}
 		if (!wxRemoveFile(fileName.GetFullPath()))
-			NotifyError("%s: Could not remove file '%s' from server.", funcName,
+			NotifyError(wxT("%s: Could not remove file '%s' from server."), funcName,
 			  fileName.GetFullPath().c_str());
 	}
 
@@ -339,7 +340,7 @@ IPCServer::OnGetFiles(void)
 void
 IPCServer::OnSet(void)
 {
-	static const char *funcName = "IPCServer::SetParameters";
+	static const wxChar *funcName = wxT("IPCServer::SetParameters");
 	int		i, numTokens;
 	unsigned char c;
 	wxString	cmdStr, parameter, value;
@@ -349,19 +350,19 @@ IPCServer::OnSet(void)
 			cmdStr += c;
 	wxStringTokenizer tokenizer(cmdStr);
 	if ((numTokens = tokenizer.CountTokens()) % 2 != 0) {
-		NotifyError("%s: parameter settings must be in <name> <value> pairs.",
+		NotifyError(wxT("%s: parameter settings must be in <name> <value> pairs."),
 		  funcName);
 		return;
 	}
 	for (i = 0; i < numTokens / 2; i++) {
 		parameter = tokenizer.GetNextToken().c_str();
 		value = tokenizer.GetNextToken().c_str();
-		if (!SetProgramParValue_AppInterface((char *) parameter.c_str(),
-		  (char *) value.c_str(), FALSE) && !SetUniParValue_Utility_Datum(
-		  GetSimulation_AppInterface(), (char *) parameter.c_str(),
-		  (char *) value.c_str())) {
-			NotifyError("%s: Could not set '%s' parameter to '%s'.", funcName,
-			 (char *)  parameter.c_str(), (char *) value.c_str());
+		if (!SetProgramParValue_AppInterface((wxChar *) parameter.c_str(),
+		  (wxChar *) value.c_str(), FALSE) && !SetUniParValue_Utility_Datum(
+		  GetSimulation_AppInterface(), (wxChar *) parameter.c_str(),
+		  (wxChar *) value.c_str())) {
+			NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."), funcName,
+			 (wxChar *)  parameter.c_str(), (wxChar *) value.c_str());
 			return;
 		}
 	}
@@ -376,13 +377,13 @@ IPCServer::OnSet(void)
 void
 IPCServer::OnExecute(void)
 {
-	static const char *funcName = "IPCServer::OnExecute";
+	static const wxChar *funcName = wxT("IPCServer::OnExecute");
 
 	if (!GetPtr_AppInterface()->simulationFinishedFlag) {
 		return;
 	}
 	if (!simulationInitialisedFlag) {
-		NotifyError("%s: Simulation not initialised.", funcName);
+		NotifyError(wxT("%s: Simulation not initialised."), funcName);
 		return;
 	}
 	if (iPCUtils.GetInProcess() && !iPCUtils.InProcessConnected())
@@ -430,7 +431,7 @@ IPCServer::OnStatus(void)
 bool
 IPCServer::ProcessInput(void)
 {
-	static const char *funcName = "IPCServer::ProcessInput";
+	static const wxChar *funcName = wxT("IPCServer::ProcessInput");
 	bool endProcessing;
 	unsigned char c;
 
@@ -440,7 +441,7 @@ IPCServer::ProcessInput(void)
 	  '\n'))
 		if (c != '\r')
 			buffer += c;
-	switch (Identify_NameSpecifier((char *) buffer.c_str(), iPCUtils.
+	switch (Identify_NameSpecifier((wxChar *) buffer.c_str(), iPCUtils.
 	  CommandList(0))) {
 	case IPC_COMMAND_QUIT:
 		endProcessing = true;
@@ -476,7 +477,7 @@ IPCServer::ProcessInput(void)
 		break;
 	default:
 		if (buffer.Length())
-			NotifyError("%s: Unknown command given (%s).", funcName, buffer.
+			NotifyError(wxT("%s: Unknown command given (%s)."), funcName, buffer.
 			  c_str());
 	}
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
@@ -529,7 +530,7 @@ IPCServer::LoadSimFile(const wxString& fileName)
 {
 	FreeSim_AppInterface();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (char *) fileName.c_str()))
+	  APP_INT_SIMULATIONFILE, (wxChar *) fileName.c_str()))
 		return(false);
 	return(dSAMMainApp->ResetSimulation());
 
@@ -551,10 +552,10 @@ IPCServer::LoadSimFile(const wxString& fileName)
 IPCServer *
 GetPtr_IPCServer(void)
 {
-	static const char *funcName = "GetPtr_IPCServer";
+	static const wxChar *funcName = wxT("GetPtr_IPCServer");
 
 	if (!iPCServer) {
-		NotifyError("%s: Server not initialised.\n", funcName);
+		NotifyError(wxT("%s: Server not initialised.\n"), funcName);
 		return(NULL);
 	}
 	return(iPCServer);
@@ -569,16 +570,16 @@ GetPtr_IPCServer(void)
  */
 
 void
-Notify_IPCServer(const char *format, va_list args, CommonDiagSpecifier type)
+Notify_IPCServer(const wxChar *format, va_list args, CommonDiagSpecifier type)
 {
 	wxString	message;
 
 	if (!GetDSAMPtr_Common()->notificationCount)
 		GetPtr_IPCServer()->ClearNotifications();
-	message.PrintfV(format, args);
-	message.insert(0, ": ");
-	message.insert(0, DiagnosticTitle(type));
-	message.append("\n");
+	message.PrintfV((wxChar *) format, args);
+	message.insert(0, wxT(": "));
+	message.insert(0, (wxChar *) DiagnosticTitle(type));
+	message.append(wxT("\n"));
 	GetPtr_IPCServer()->AddNotification(message);
 
 } /* NotifyMessage */

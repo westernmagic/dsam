@@ -95,7 +95,7 @@ BOOLN	InitProcessVariables_Analysis_ISIH(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_ISIH(void);
 
-BOOLN	ReadPars_Analysis_ISIH(char *fileName);
+BOOLN	ReadPars_Analysis_ISIH(WChar *fileName);
 
 void	ResetProcess_Analysis_ISIH(EarObjectPtr data);
 

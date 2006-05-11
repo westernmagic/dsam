@@ -54,14 +54,14 @@
 #define	DEFAULT_X_RESOLUTION			0.01
 #define	DEFAULT_WIDTH					-1.0
 #define	DEFAULT_CHANNEL_STEP			1
-#define	DEFAULT_X_NUMBER_FORMAT			"xe-3"
-#define	DEFAULT_Y_NUMBER_FORMAT			"y"
+#define	DEFAULT_X_NUMBER_FORMAT			wxT("xe-3")
+#define	DEFAULT_Y_NUMBER_FORMAT			wxT("y")
 #define	DEFAULT_X_TICKS					6
 #define	DEFAULT_Y_TICKS					15
 #define DEFAULT_X_DEC_PLACES			0
 #define DEFAULT_Y_DEC_PLACES			0
 
-#define	DISPLAY_PROCESS_NAME				"DSAM Display"
+#define	DISPLAY_PROCESS_NAME				wxT("DSAM Display")
 #define	DISPLAY_DEFAULT_FRAME_WIDTH			440
 #define	DISPLAY_DEFAULT_FRAME_HEIGHT		500
 #define	DISPLAY_DEFAULT_FRAME_DELAY			0.0
@@ -184,20 +184,20 @@ typedef struct {
 	double	width;
 	double	xResolution;
 	int		yNormalisationMode;
-	char	yAxisTitle[MAXLINE];
+	WChar	yAxisTitle[MAXLINE];
 	int		yAxisMode;
-	char	yNumberFormat[MAXLINE];
+	WChar	yNumberFormat[MAXLINE];
 	int		yDecPlaces;
 	int		yTicks;
 	int		yInsetScale;
-	char	xAxisTitle[MAXLINE];
-	char	xNumberFormat[MAXLINE];
+	WChar	xAxisTitle[MAXLINE];
+	WChar	xNumberFormat[MAXLINE];
 	int		xDecPlaces;
 	int		xTicks;
 	BOOLN	autoXScale;
 	double	xOffset;
 	double	xExtent;
-	char	title[MAXLINE];
+	WChar	title[MAXLINE];
 	int		mode;
 	double	frameDelay;
 	double	topMargin;
@@ -278,7 +278,7 @@ void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
 
 void	SetAutoXScaleParsState_SignalDisp(BOOLN state);
 
-BOOLN	SetAutoYScale_SignalDisp(char *theAutoYScale);
+BOOLN	SetAutoYScale_SignalDisp(WChar *theAutoYScale);
 
 void	SetAutoYScaleParsState_SignalDisp(BOOLN state);
 
@@ -300,7 +300,7 @@ BOOLN	SetMaxY_SignalDisp(double maxY);
 
 BOOLN	SetMinY_SignalDisp(double minY);
 
-BOOLN	SetMode_SignalDisp(char *theMode);
+BOOLN	SetMode_SignalDisp(WChar *theMode);
 
 BOOLN	InitModule_SignalDisp(ModulePtr theModule);
 
@@ -312,9 +312,9 @@ BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
 BOOLN	SetMagnification_SignalDisp(double magnification);
 
-BOOLN	SetSummaryDisplay_SignalDisp(char *summaryDisplay_SignalDis);
+BOOLN	SetSummaryDisplay_SignalDisp(WChar *summaryDisplay_SignalDis);
 
-BOOLN	SetTitle_SignalDisp(char *title);
+BOOLN	SetTitle_SignalDisp(WChar *title);
 
 BOOLN	SetTopMargin_SignalDisp(double topMargin);
 
@@ -322,7 +322,7 @@ BOOLN	SetUniParList_SignalDisp(void);
 
 BOOLN	SetWidth_SignalDisp(double width);
 
-BOOLN	SetXAxisTitle_SignalDisp(char *xAxisTitle);
+BOOLN	SetXAxisTitle_SignalDisp(WChar *xAxisTitle);
 
 BOOLN	SetXDecPlaces_SignalDisp(int xDecPlaces);
 
@@ -330,25 +330,25 @@ BOOLN	SetXExtent_SignalDisp(double theMaxX);
 
 BOOLN	SetXResolution_SignalDisp(double xResolution);
 
-BOOLN	SetXNumberFormat_SignalDisp(char *xNumberFormat);
+BOOLN	SetXNumberFormat_SignalDisp(WChar *xNumberFormat);
 
 BOOLN	SetXOffset_SignalDisp(double theXOffset);
 
 BOOLN	SetXTicks_SignalDisp(int xTicks);
 
-BOOLN	SetAutoXScale_SignalDisp(char *autoXScale);
+BOOLN	SetAutoXScale_SignalDisp(WChar *autoXScale);
 
-BOOLN	SetYAxisMode_SignalDisp(char *theYAxisMode);
+BOOLN	SetYAxisMode_SignalDisp(WChar *theYAxisMode);
 
-BOOLN	SetYAxisTitle_SignalDisp(char *yAxisTitle);
+BOOLN	SetYAxisTitle_SignalDisp(WChar *yAxisTitle);
 
 BOOLN	SetYDecPlaces_SignalDisp(int yDecPlaces);
 
-BOOLN	SetYNumberFormat_SignalDisp(char *yNumberFormat);
+BOOLN	SetYNumberFormat_SignalDisp(WChar *yNumberFormat);
 
-BOOLN	SetYInsetScale_SignalDisp(char *yInsetScale);
+BOOLN	SetYInsetScale_SignalDisp(WChar *yInsetScale);
 
-BOOLN	SetYNormalisationMode_SignalDisp(char *theYNormalisationMode);
+BOOLN	SetYNormalisationMode_SignalDisp(WChar *theYNormalisationMode);
 
 BOOLN	SetYTicks_SignalDisp(int yTicks);
 

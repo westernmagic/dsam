@@ -132,7 +132,7 @@ SDICanvas::OnLeftClick(double x, double y, int keys)
 
 	if (info) {
 		view->GetDocument()->GetCommandProcessor()->Submit(new SDICommand(
-		  (char*) info->GetClassName(), SDIFRAME_ADD_SHAPE, (SDIDocument *)
+		  (wxChar *) info->GetClassName(), SDIFRAME_ADD_SHAPE, (SDIDocument *)
 		  view->GetDocument(), info, palette->currentlySelected, x, y));
 	}
 }

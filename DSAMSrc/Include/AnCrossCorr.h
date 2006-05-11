@@ -98,7 +98,7 @@ BOOLN	InitProcessVariables_Analysis_CCF(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_CCF(void);
 
-BOOLN	ReadPars_Analysis_CCF(char *fileName);
+BOOLN	ReadPars_Analysis_CCF(WChar *fileName);
 
 BOOLN	InitModule_Analysis_CCF(ModulePtr theModule);
 

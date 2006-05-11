@@ -72,7 +72,7 @@ RunThreadedProc::RunThreadedProc(void)
 #	endif
 	numThreads = wxThread::GetCPUCount();
 	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
-	SetErrorsFile_Common("off", OVERWRITE);
+	SetErrorsFile_Common(wxT("off"), OVERWRITE);
 	SetThreadMode((GetPtr_AppInterface())? GetPtr_AppInterface()->threadMode:
 	  APP_INT_THREAD_MODE_PROCESS);
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
@@ -101,7 +101,7 @@ RunThreadedProc::SetNumThreads(int theNumThreads)
 bool
 RunThreadedProc::SetThreadMode(int mode)
 {
-	static const char *funcName = "RunThreadedProc::SetThreadMode";
+	static const wxChar *funcName = wxT("RunThreadedProc::SetThreadMode");
 
 	threadMode = mode;
 	switch (threadMode) {
@@ -114,7 +114,7 @@ RunThreadedProc::SetThreadMode(int mode)
 		SetExecute_Utility_Datum(ExecuteStandard_Utility_Datum);
 		break;
 	default:
-		NotifyError("%s: Unknown thread mode (%d).", funcName, mode);
+		NotifyError(wxT("%s: Unknown thread mode (%d)."), funcName, mode);
 		return(false);
 	} /* switch */
 	return(true);
@@ -130,7 +130,8 @@ RunThreadedProc::SetThreadMode(int mode)
 bool
 RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 {
-	static const char *funcName = "RunThreadedProc::PreThreadProcessInit";
+	static const wxChar *funcName = wxT(
+	  "RunThreadedProc::PreThreadProcessInit");
 	bool	ok = true;
 	int		i;
 
@@ -154,8 +155,8 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 #	endif
 	data->initThreadRunFlag = FALSE;
 	if (!ok) {
-		NotifyError("%s: Could not do pre-thread process initialisation run.",
-		  funcName);
+		NotifyError(wxT("%s: Could not do pre-thread process initialisation "
+		  "run."), funcName);
 		return(false);
 	}
 #	if DEBUG
@@ -184,8 +185,8 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	for (i = 0; i < data->numSubProcesses; i++)
 		if ((data->subProcessList[i]->module->specifier != NULL_MODULE) &&
 		  !PreThreadProcessInit(data->subProcessList[i])) {
-			NotifyError("%s: Failed to initialise sub-process [%d].", funcName,
-			  i);
+			NotifyError(wxT("%s: Failed to initialise sub-process [%d]."),
+			  funcName, i);
 			return(false);
 		}
 	return(true);
@@ -197,14 +198,14 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 bool
 RunThreadedProc::InitThreadProcesses(EarObjectPtr data)
 {
-	static const char *funcName = "RunThreadedProc::InitThreadProcesses";
+	static const wxChar *funcName = wxT("RunThreadedProc::InitThreadProcesses");
 
 #	if DEBUG
 	printf("%s: Debug: Thread processes initialised for '%s'\n", funcName,
 	  data->processName);
 #	endif
 	if (!InitThreadProcs_EarObject(data)) {
-		wxLogFatalError("%s: Could not initialise thread EarObjects.",
+		wxLogFatalError(wxT("%s: Could not initialise thread EarObjects."),
 		  funcName);
 		return(false);
 	}
@@ -241,7 +242,7 @@ RunThreadedProc::SetThreadDistribution(int numChannels)
 bool
 RunThreadedProc::RunProcess(EarObjectPtr data)
 {
-	static const char *funcName = "RunThreadedProc::RunProcess";
+	static const wxChar *funcName = wxT("RunThreadedProc::RunProcess");
 
 	if ((numThreads < 2) || !MODULE_THREAD_ENABLED(data))
 		return(CXX_BOOL(RunProcessStandard_ModuleMgr(data)));
@@ -263,7 +264,8 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 	SetThreadDistribution(data->outSignal->numChannels);
 
 	if (!InitThreadProcesses(data)) {
-		wxLogFatalError("%s: Could not initialise thread processes.", funcName);
+		wxLogFatalError(wxT("%s: Could not initialise thread processes."),
+		  funcName);
 		return(false);
 	}
 	for (i = 0; i < numThreads; i++) {
@@ -271,11 +273,11 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 		  chansPerThread + ((i == numThreads - 1)? remainderChans: 0), data,
 		  &mutex, &condition, &threadCount);
 		if (procThread->Create() != wxTHREAD_NO_ERROR) {
-			wxLogFatalError("%s: Can't create process thread!", funcName);
+			wxLogFatalError(wxT("%s: Can't create process thread!"), funcName);
 			procThread->Delete();
 		}
 		if (procThread->Run() != wxTHREAD_NO_ERROR) {
-			wxLogError("%s: Cannot start process thread.", funcName);
+			wxLogError(wxT("%s: Cannot start process thread."), funcName);
 			procThread->Delete();
 		}
 	}
@@ -309,7 +311,7 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 bool
 RunThreadedProc::InitialiseProcesses(DatumPtr start)
 {
-	static const char *funcName = "RunThreadedProc::InitialiseProcesses";
+	static const wxChar *funcName = wxT("RunThreadedProc::InitialiseProcesses");
 	DatumPtr	pc;
 
 	for (pc = start; pc != NULL; pc = pc->next)
@@ -322,22 +324,22 @@ RunThreadedProc::InitialiseProcesses(DatumPtr start)
 #			endif
 			if ((pc->data->module->specifier == SIMSCRIPT_MODULE) &&
 			  !InitialiseProcesses(GetSimulation_ModuleMgr(pc->data))) {
-				NotifyError("%s: Could initialise sub-simulation process.",
+				NotifyError(wxT("%s: Could initialise sub-simulation process."),
 				  funcName);
 				return(false);
 			}
 			if (!PreThreadProcessInit(pc->data))
 				return(false);
 			if (pc->data->useThreadsFlag && !InitThreadProcesses(pc->data)) {
-				wxLogFatalError("%s: Could not initialise thread processes.",
-				  funcName);
+				wxLogFatalError(wxT("%s: Could not initialise thread "
+				  "processes."), funcName);
 				return(false);
 			}
 			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
 			break;
 		case REPEAT:
 			if (!InitialiseProcesses(pc->next)) {
-				NotifyError("%s: Could not do process initialisation.",
+				NotifyError(wxT("%s: Could not do process initialisation."),
 				  funcName);
 				return(false);
 			}
@@ -362,7 +364,8 @@ RunThreadedProc::InitialiseProcesses(DatumPtr start)
 bool
 RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 {
-	static const char *funcName = "RunThreadedProc::DetermineChannelChains";
+	static const wxChar *funcName = wxT(
+	  "RunThreadedProc::DetermineChannelChains");
 	bool	linkBreak;
 	int		chainCount = 0;
 	DatumPtr	pc, pc1, pc2, threadStartPc = NULL;
@@ -376,8 +379,8 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 			break;
 		case REPEAT:
 			if (!DetermineChannelChains(pc->next, &linkBreak)) {
-				NotifyError("%s: Could not do pre-thread simulation "
-				  "initialisation.", funcName);
+				NotifyError(wxT("%s: Could not do pre-thread simulation "
+				  "initialisation."), funcName);
 				return(false);
 			}
 			pc->threadSafe = !linkBreak;
@@ -402,8 +405,8 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 				chainCount++;
 			else {
 #				if DEBUG
-				printf("%s: Debug: label '%s' marked as thread start, %d "
-				  "processes\n", funcName, threadStartPc->label, chainCount);
+				printf(wxT("%s: Debug: label '%s' marked as thread start, %d "
+				  "processes\n"), funcName, threadStartPc->label, chainCount);
 #				endif
 				threadStartPc->passedThreadEnd = pc;
 				threadStartPc = pc;
@@ -429,15 +432,17 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 bool
 RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 {
-	static const char *funcName = "RunThreadedProc::PreThreadSimulationInit";
+	static const wxChar *funcName = wxT(
+	  "RunThreadedProc::PreThreadSimulationInit");
 
 	if (!InitialiseProcesses(start)) {
-		NotifyError("%s: Could not initialise the simulation processes.",
+		NotifyError(wxT("%s: Could not initialise the simulation processes."),
 		  funcName);
 		return(false);
 	}	
 	if (!DetermineChannelChains(start, brokenChain)) {
-		NotifyError("%s: Could not determine the channel chains.", funcName);
+		NotifyError(wxT("%s: Could not determine the channel chains."),
+		  funcName);
 		return(false);
 	}
 	return(true);
@@ -522,7 +527,8 @@ RunThreadedProc::CleanUpThreadRuns(DatumPtr start)
 DatumPtr
 RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 {
-	static const char *funcName = "RunThreadedProc::ExecuteMultiThreadChain";
+	static const wxChar *funcName = wxT(
+	  "RunThreadedProc::ExecuteMultiThreadChain");
 	int		i;
 	DatumPtr	pc, lastInstruction = NULL;
 	wxMutex		mutex;
@@ -545,7 +551,7 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 		  chansPerThread + ((i == numThreads - 1)? remainderChans: 0),
 		  start, &mutex, &condition, &threadCount);
 		if (procChainThread->Create() != wxTHREAD_NO_ERROR) {
-			wxLogFatalError("%s: Can't create process thread!",
+			wxLogFatalError(wxT("%s: Can't create process thread!"),
 			  funcName);
 			procChainThread->Delete();
 		}
@@ -556,7 +562,7 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 		  startTime, chainStart));
 #		endif
 		if (procChainThread->Run() != wxTHREAD_NO_ERROR) {
-			wxLogError("%s: Cannot start process thread.", funcName);
+			wxLogError(wxT("%s: Cannot start process thread."), funcName);
 			procChainThread->Delete();
 		}
 	}
@@ -591,7 +597,6 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 DatumPtr
 RunThreadedProc::ExecuteStandardChain(DatumPtr start)
 {
-	/*static const char *funcName = "RunThreadedProc::ExecuteStandardChain";*/
 	DatumPtr	lastInstruction;
 
 	lastInstruction = ExecuteStandard_Utility_Datum(start, start->
@@ -610,7 +615,7 @@ RunThreadedProc::ExecuteStandardChain(DatumPtr start)
 DatumPtr
 RunThreadedProc::Execute(DatumPtr start)
 {
-	static const char *funcName = "RunThreadedProc::Execute";
+	static const wxChar *funcName = wxT("RunThreadedProc::Execute");
 	bool	brokenChain = false;
 
 	if (start == NULL)
@@ -624,8 +629,8 @@ RunThreadedProc::Execute(DatumPtr start)
 	printf("%s: start [0] = %lx\n", funcName, (unsigned long) start);
 #	endif
 	if (!PreThreadSimulationInit(start, &brokenChain)) {
-		NotifyError("%s: Could not do pre-thread simulation initialisation.",
-		  funcName);
+		NotifyError(wxT("%s: Could not do pre-thread simulation "
+		  "initialisation."), funcName);
 		return(NULL);
 	}
 #	if DEBUG

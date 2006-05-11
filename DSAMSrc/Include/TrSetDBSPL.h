@@ -84,7 +84,7 @@ BOOLN	PrintPars_Transform_SetDBSPL(void);
 
 BOOLN	Process_Transform_SetDBSPL(EarObjectPtr data);
 
-BOOLN	ReadPars_Transform_SetDBSPL(char *fileName);
+BOOLN	ReadPars_Transform_SetDBSPL(WChar *fileName);
 
 BOOLN	SetIntensity_Transform_SetDBSPL(double theIntensity);
 

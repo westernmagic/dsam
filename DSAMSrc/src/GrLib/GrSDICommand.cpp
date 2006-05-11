@@ -96,7 +96,7 @@
  * Implementation of drawing command
  */
 
-SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+SDICommand::SDICommand(const wxString& name, int command, SDIDocument *ddoc,
   wxClassInfo *info, int theProcessType, double xx, double yy, bool sel,
   wxShape *theShape, wxShape *fs, wxShape *ts): wxCommand(TRUE, name)
 {
@@ -115,7 +115,7 @@ SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
 /****************************** Constructor 2 *********************************/
 /******************************************************************************/
 
-SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+SDICommand::SDICommand(const wxString& name, int command, SDIDocument *ddoc,
   wxBrush *backgroundColour, wxShape *theShape): wxCommand(TRUE, name)
 {
 	SetBasic(command, ddoc, theShape);
@@ -127,7 +127,7 @@ SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
 /****************************** Constructor 3 *********************************/
 /******************************************************************************/
 
-SDICommand::SDICommand(char *name, int command, SDIDocument *ddoc,
+SDICommand::SDICommand(const wxString& name, int command, SDIDocument *ddoc,
   const wxString& lab, wxShape *theShape): wxCommand(TRUE, name)
 {
 	SetBasic(command, ddoc, theShape);
@@ -190,8 +190,8 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 	DatumPtr	fromPc = SHAPE_PC(fromShape);
 
 	if (!fromPc || !toPc) {
-		wxLogError("%s: Both processes must be set before a connection\n"
-		  "can be made.", funcName);
+		wxLogError(wxT("%s: Both processes must be set before a connection\n"
+		  "can be made."), funcName);
 		return(false);
 	}
 	ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
@@ -245,7 +245,7 @@ SDICommand::RedrawShapeLabel(wxShape *shape)
 
 //	((SDIDiagram *) doc->GetDiagram())->AdjustShapeToLabel(dc, shape,
 //	  myHandler->label);
-	shape->FormatText(dc, (const char *) myHandler->label);
+	shape->FormatText(dc, myHandler->label);
 	shape->Draw(dc);
 
 	doc->Modify(TRUE);
@@ -402,7 +402,7 @@ SDICommand::Do(void)
 			return(false);
 
 		savedInfo = fromPc;
-		shapeLabel = fromPc->u.ref.string;
+		shapeLabel = (wxChar *) fromPc->u.ref.string;
 		fromPc->u.ref.string = toPc->label;
 		
 		fromPc->u.ref.pc = toPc;
@@ -514,8 +514,8 @@ SDICommand::Undo(void)
 		DatumPtr	fromPc = SHAPE_PC(fromShape);
 
 		wxString	oldLabel;
-		oldLabel = fromPc->u.ref.string;
-		fromPc->u.ref.string = (char *) shapeLabel.c_str();
+		oldLabel = (wxChar *) fromPc->u.ref.string;
+		fromPc->u.ref.string = (wxChar *) shapeLabel.c_str();
 		shapeLabel = oldLabel;
 
 		DatumPtr	oldPc = fromPc;
@@ -542,8 +542,8 @@ SDICommand::RemoveLines(wxShape *shape)
 	wxNode *node = shape->GetLines().GetFirst();
 	while (node) {
 		wxLineShape *line = (wxLineShape *)node->GetData();
-		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDIFRAME_CUT,
-		  doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
+		doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Cut"),
+		  SDIFRAME_CUT, doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
 
 		node = shape->GetLines().GetFirst();
 	}

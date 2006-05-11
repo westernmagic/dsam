@@ -46,7 +46,7 @@
 BOOLN
 SetParsPointer_Analysis_SynchIndex(ModulePtr theModule)
 {
-	/* static const char *funcName = "SetParsPointer_Analysis_SynchIndex"; */
+	/* static const WChar *funcName = "SetParsPointer_Analysis_SynchIndex"; */
 
 	return(TRUE);
 
@@ -61,8 +61,6 @@ SetParsPointer_Analysis_SynchIndex(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_SynchIndex(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Analysis_SynchIndex"; */
-
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->RunProcess = Calc_Analysis_SynchIndex;
@@ -87,10 +85,10 @@ InitModule_Analysis_SynchIndex(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_SynchIndex(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_SynchIndex";
+	static const WChar	*funcName = wxT("CheckData_Analysis_SynchIndex");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -118,7 +116,7 @@ CheckData_Analysis_SynchIndex(EarObjectPtr data)
 BOOLN
 Calc_Analysis_SynchIndex(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_SynchIndex";
+	static const WChar	*funcName = wxT("Calc_Analysis_SynchIndex");
 	register	ChanData	 *r;
 	int		chan;
 	double	theta, sineSum, cosineSum, rSum;
@@ -126,13 +124,14 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Analysis_SynchIndex(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Synchronisation Index Analysis");
+		SetProcessName_EarObject(data, wxT("Synchronisation Index Analysis"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
 		  1.0)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

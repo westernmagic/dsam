@@ -74,7 +74,7 @@ wxPrintData *printData = (wxPrintData*) NULL ;
  * Define a constructor for my canvas.
  */
 
-PrintDisp::PrintDisp(MyCanvas *theCanvas, char *title): wxPrintout(title)
+PrintDisp::PrintDisp(MyCanvas *theCanvas, wxChar *title): wxPrintout(title)
 {
 	canvas = theCanvas;
 
@@ -88,7 +88,7 @@ PrintDisp::OnPrintPage(int page)
 	wxDC *dc = GetDC();
 
 	if (dc) {
-		char	buf[LONG_STRING];
+		wxChar	buf[LONG_STRING];
 		int		w, h, ppiScreenX, ppiScreenY, ppiPrinterX, ppiPrinterY;
 		int		pageWidth, pageHeight;
 		float	scale, overAllScale;
@@ -103,8 +103,8 @@ PrintDisp::OnPrintPage(int page)
 		dc->SetUserScale(PRINTDISP_X_SCALE * overAllScale, PRINTDISP_Y_SCALE *
 		  overAllScale);
 
-		snprintf(buf, LONG_STRING, "%s: %s", canvas->GetSignalDispPtr()->title,
-		  wxNow().GetData());
+		DSAM_snprintf(buf, LONG_STRING, wxT("%s: %s"), canvas->GetSignalDispPtr(
+		  )->title, wxNow().c_str());
 		dc->DrawText(buf, (int) PRINTDISP_PS_X_OFFSET, (int)
 		  PRINTDISP_PS_Y_OFFSET);
 

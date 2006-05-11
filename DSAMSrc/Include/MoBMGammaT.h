@@ -80,11 +80,11 @@ UniParListPtr	GetUniParListPtr_BasilarM_GammaT(void);
 
 BOOLN	PrintPars_BasilarM_GammaT(void);
 
-BOOLN	ReadPars_BasilarM_GammaT(char *fileName);
+BOOLN	ReadPars_BasilarM_GammaT(WChar *fileName);
 
 BOOLN	RunModel_BasilarM_GammaT(EarObjectPtr data);
 
-BOOLN	SetBandwidths_BasilarM_GammaT(char *theBandwidthMode,
+BOOLN	SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode,
 		  double *theBandwidths);
 
 BOOLN SetCFList_BasilarM_GammaT(CFListPtr theCFList);

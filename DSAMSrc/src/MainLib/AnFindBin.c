@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnFindBin.h"
 
 /******************************************************************************/
@@ -51,8 +52,6 @@ FindBinPtr	findBinPtr = NULL;
 BOOLN
 Free_Analysis_FindBin(void)
 {
-	/* static const char	*funcName = "Free_Analysis_FindBin"; */
-
 	if (findBinPtr == NULL)
 		return(FALSE);
 	if (findBinPtr->parList)
@@ -76,11 +75,11 @@ InitModeList_Analysis_FindBin(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "MIN_VALUE", FIND_BIN_MIN_VALUE_MODE},
-					{ "MIN_INDEX", FIND_BIN_MIN_INDEX_MODE},
-					{ "MAX_VALUE", FIND_BIN_MAX_VALUE_MODE},
-					{ "MAX_INDEX", FIND_BIN_MAX_INDEX_MODE},
-					{ "", FIND_BIN_NULL }
+					{ wxT("MIN_VALUE"), FIND_BIN_MIN_VALUE_MODE},
+					{ wxT("MIN_INDEX"), FIND_BIN_MIN_INDEX_MODE},
+					{ wxT("MAX_VALUE"), FIND_BIN_MAX_VALUE_MODE},
+					{ wxT("MAX_INDEX"), FIND_BIN_MAX_INDEX_MODE},
+					{ wxT(""), FIND_BIN_NULL }
 				
 				};
 	findBinPtr->modeList = modeList;
@@ -103,18 +102,19 @@ InitModeList_Analysis_FindBin(void)
 BOOLN
 Init_Analysis_FindBin(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_FindBin";
+	static const WChar	*funcName = wxT("Init_Analysis_FindBin");
 
 	if (parSpec == GLOBAL) {
 		if (findBinPtr != NULL)
 			Free_Analysis_FindBin();
 		if ((findBinPtr = (FindBinPtr) malloc(sizeof(FindBin))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (findBinPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -130,7 +130,7 @@ Init_Analysis_FindBin(ParameterSpecifier parSpec)
 
 	InitModeList_Analysis_FindBin();
 	if (!SetUniParList_Analysis_FindBin()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_FindBin();
 		return(FALSE);
 	}
@@ -149,33 +149,35 @@ Init_Analysis_FindBin(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_FindBin(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_FindBin";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_FindBin");
 	UniParPtr	pars;
 
 	if ((findBinPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_FINDBIN_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = findBinPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_MODE], "MODE",
-	  "Search mode ('max_value', 'max_index', 'min_value' or 'min_index').",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_MODE], wxT("MODE"),
+	  wxT("Search mode ('max_value', 'max_index', 'min_value' or "
+	  "'min_index')."),
 	  UNIPAR_NAME_SPEC,
 	  &findBinPtr->mode, findBinPtr->modeList,
 	  (void * (*)) SetMode_Analysis_FindBin);
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_BINWIDTH], "BIN_WIDTH",
-	  "Bin width (time window) for search bin: -ve assumes dt for previous "
-	  "signal (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_BINWIDTH], wxT("BIN_WIDTH"),
+	  wxT("Bin width (time window) for search bin: -ve assumes dt for previous "
+	  "signal (s)."),
 	  UNIPAR_REAL,
 	  &findBinPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Analysis_FindBin);
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEOFFSET], "OFFSET",
-	  "Offset from which to start search (s?).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Offset from which to start search (s?)."),
 	  UNIPAR_REAL,
 	  &findBinPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_FindBin);
-	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEWIDTH], "WIDTH",
-	  "Analysis window width for search: -ve assume to end of signal (s?).",
+	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEWIDTH], wxT("WIDTH"),
+	  wxT("Analysis window width for search: -ve assume to end of signal "
+	  "(s?)."),
 	  UNIPAR_REAL,
 	  &findBinPtr->timeWidth, NULL,
 	  (void * (*)) SetTimeWidth_Analysis_FindBin);
@@ -193,15 +195,15 @@ SetUniParList_Analysis_FindBin(void)
 UniParListPtr
 GetUniParListPtr_Analysis_FindBin(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_FindBin";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_FindBin");
 
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (findBinPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(findBinPtr->parList);
@@ -216,10 +218,10 @@ GetUniParListPtr_Analysis_FindBin(void)
  */
 
 BOOLN
-SetPars_Analysis_FindBin(char *mode, double binWidth,
+SetPars_Analysis_FindBin(WChar *mode, double binWidth,
   double timeOffset, double timeWidth)
 {
-	static const char	*funcName = "SetPars_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetPars_Analysis_FindBin");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -232,7 +234,7 @@ SetPars_Analysis_FindBin(char *mode, double binWidth,
 	if (!SetTimeWidth_Analysis_FindBin(timeWidth))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -246,18 +248,18 @@ SetPars_Analysis_FindBin(char *mode, double binWidth,
  */
 
 BOOLN
-SetMode_Analysis_FindBin(char *theMode)
+SetMode_Analysis_FindBin(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetMode_Analysis_FindBin");
 	int		specifier;
 
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, findBinPtr->modeList)) ==
 	  FIND_BIN_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	findBinPtr->modeFlag = TRUE;
@@ -277,10 +279,10 @@ SetMode_Analysis_FindBin(char *theMode)
 BOOLN
 SetBinWidth_Analysis_FindBin(double theBinWidth)
 {
-	static const char	*funcName = "SetBinWidth_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetBinWidth_Analysis_FindBin");
 
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	findBinPtr->binWidthFlag = TRUE;
@@ -300,14 +302,14 @@ SetBinWidth_Analysis_FindBin(double theBinWidth)
 BOOLN
 SetTimeOffset_Analysis_FindBin(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_FindBin");
 
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal time offset = %g ms.", funcName,
+		NotifyError(wxT("%s: Illegal time offset = %g ms."), funcName,
 		  theTimeOffset);
 		return(FALSE);
 	}
@@ -328,10 +330,10 @@ SetTimeOffset_Analysis_FindBin(double theTimeOffset)
 BOOLN
 SetTimeWidth_Analysis_FindBin(double theTimeWidth)
 {
-	static const char	*funcName = "SetTimeWidth_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetTimeWidth_Analysis_FindBin");
 
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	findBinPtr->timeWidthFlag = TRUE;
@@ -353,28 +355,28 @@ SetTimeWidth_Analysis_FindBin(double theTimeWidth)
 BOOLN
 CheckPars_Analysis_FindBin(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_FindBin";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_FindBin");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (findBinPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!findBinPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!findBinPtr->binWidthFlag) {
-		NotifyError("%s: binWidth variable not set.", funcName);
+		NotifyError(wxT("%s: binWidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!findBinPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!findBinPtr->timeWidthFlag) {
-		NotifyError("%s: timeWidth variable not set.", funcName);
+		NotifyError(wxT("%s: timeWidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -391,27 +393,27 @@ CheckPars_Analysis_FindBin(void)
 BOOLN
 PrintPars_Analysis_FindBin(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_FindBin";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_FindBin");
 
 	if (!CheckPars_Analysis_FindBin()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
 		return(FALSE);
 	}
-	DPrint("Find Max. bin Values Module Parameters:-\n");
-	DPrint("\tSearch mode = %s,",
+	DPrint(wxT("Find Max. bin Values Module Parameters:-\n"));
+	DPrint(wxT("\tSearch mode = %s,"),
 	  findBinPtr->modeList[findBinPtr->mode].name);
-	DPrint("\tBin width = ");
+	DPrint(wxT("\tBin width = "));
 	if (findBinPtr->binWidth <= 0.0)
-		DPrint("<prev. signal dt>,\n");
+		DPrint(wxT("<prev. signal dt>,\n"));
 	else
-		DPrint("%g ms,\n", MSEC(findBinPtr->binWidth));
-	DPrint("\tTime offset = %g ms,",
+		DPrint(wxT("%g ms,\n"), MSEC(findBinPtr->binWidth));
+	DPrint(wxT("\tTime offset = %g ms,"),
 	  MSEC(findBinPtr->timeOffset));
-	DPrint("\tTime range = ");
+	DPrint(wxT("\tTime range = "));
 	if (findBinPtr->timeWidth < 0.0)
-		DPrint("<end of signal>\n");
+		DPrint(wxT("<end of signal>\n"));
 	else
-		DPrint("%g ms\n", MSEC(findBinPtr->timeWidth));
+		DPrint(wxT("%g ms\n"), MSEC(findBinPtr->timeWidth));
 	return(TRUE);
 
 }
@@ -423,41 +425,42 @@ PrintPars_Analysis_FindBin(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_FindBin(char *fileName)
+ReadPars_Analysis_FindBin(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_FindBin";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_FindBin");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	binWidth, timeOffset, timeWidth;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &binWidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &binWidth))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeWidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeWidth))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FindBin(mode, binWidth, timeOffset,
 	  timeWidth)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -474,10 +477,10 @@ ReadPars_Analysis_FindBin(char *fileName)
 BOOLN
 SetParsPointer_Analysis_FindBin(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_FindBin";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_FindBin");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	findBinPtr = (FindBinPtr) theModule->parsPtr;
@@ -494,14 +497,15 @@ SetParsPointer_Analysis_FindBin(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_FindBin(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_FindBin";
+	static const WChar	*funcName = wxT("InitModule_Analysis_FindBin");
 
 	if (!SetParsPointer_Analysis_FindBin(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_FindBin(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = findBinPtr;
@@ -533,39 +537,39 @@ InitModule_Analysis_FindBin(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_FindBin(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_FindBin";
+	static const WChar	*funcName = wxT("CheckData_Analysis_FindBin");
 	double	signalDuration, dt;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->binWidth < dt)) {
-		NotifyError("%s: Bin width (%g ms) is less than sampling interval, "
-		  "(%g ms).", funcName, MSEC(findBinPtr->binWidth), MSEC(dt));
+		NotifyError(wxT("%s: Bin width (%g ms) is less than sampling interval, "
+		  "(%g ms)."), funcName, MSEC(findBinPtr->binWidth), MSEC(dt));
 		return(FALSE);
 	}
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (findBinPtr->timeOffset >= signalDuration) {
-		NotifyError("%s: Time offset (%g ms) is too long for the signal "
-		  "duration (%g ms).", funcName, MSEC(findBinPtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal "
+		  "duration (%g ms)."), funcName, MSEC(findBinPtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->timeOffset +
 	  findBinPtr->binWidth >= signalDuration)) {
-		NotifyError("%s: Time offset + bin width (%g ms) must not "
-		  "exceed the signal duration (%g ms).", funcName, MSEC(findBinPtr->
+		NotifyError(wxT("%s: Time offset + bin width (%g ms) must not "
+		  "exceed the signal duration (%g ms)."), funcName, MSEC(findBinPtr->
 		  timeOffset + findBinPtr->binWidth), MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((findBinPtr->timeWidth > 0.0) && (findBinPtr->timeOffset +
 	  findBinPtr->timeWidth >= signalDuration)) {
-		NotifyError("%s: Time offset + range (%g ms) must not exceed the "
-		  "signal duration (%g ms).", funcName, MSEC(findBinPtr->timeOffset +
+		NotifyError(wxT("%s: Time offset + range (%g ms) must not exceed the "
+		  "signal duration (%g ms)."), funcName, MSEC(findBinPtr->timeOffset +
 		  findBinPtr->timeWidth), MSEC(signalDuration));
 		return(FALSE);
 	}
@@ -591,7 +595,7 @@ CheckData_Analysis_FindBin(EarObjectPtr data)
 BOOLN
 Calc_Analysis_FindBin(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_FindBin";
+	static const WChar	*funcName = wxT("Calc_Analysis_FindBin");
 	register	ChanData	*inPtr, *binPtr;
 	register	double		sum, binSum;
 	int		chan;
@@ -603,13 +607,14 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 		if (!CheckPars_Analysis_FindBin())
 			return(FALSE);
 		if (!CheckData_Analysis_FindBin(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Find Maximum Bin Value Analysis");
+		SetProcessName_EarObject(data, wxT("Find Maximum Bin Value Analysis"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
 		  1.0)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		p->findMinimum = (p->mode == FIND_BIN_MIN_VALUE_MODE) || (p->mode ==

@@ -32,6 +32,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtBinSignal.h"
 
 /******************************************************************************/
@@ -56,8 +57,6 @@ BinSignalPtr	binSignalPtr = NULL;
 BOOLN
 Free_Utility_BinSignal(void)
 {
-	/* static const char	*funcName = "Free_Utility_BinSignal"; */
-
 	if (binSignalPtr == NULL)
 		return(FALSE);
 	if (binSignalPtr->parList)
@@ -81,9 +80,9 @@ InitModeList_Utility_BinSignal(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "AVERAGE",	UTILITY_BINSIGNAL_AVERAGE_MODE },
-			{ "SUM",		UTILITY_BINSIGNAL_SUM_MODE },
-			{ "",	UTILITY_BINSIGNAL_MODE_NULL },
+			{ wxT("AVERAGE"),	UTILITY_BINSIGNAL_AVERAGE_MODE },
+			{ wxT("SUM"),		UTILITY_BINSIGNAL_SUM_MODE },
+			{ wxT(""),			UTILITY_BINSIGNAL_MODE_NULL },
 		};
 	binSignalPtr->modeList = modeList;
 	return(TRUE);
@@ -105,18 +104,19 @@ InitModeList_Utility_BinSignal(void)
 BOOLN
 Init_Utility_BinSignal(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_BinSignal";
+	static const WChar	*funcName = wxT("Init_Utility_BinSignal");
 
 	if (parSpec == GLOBAL) {
 		if (binSignalPtr != NULL)
 			Free_Utility_BinSignal();
 		if ((binSignalPtr = (BinSignalPtr) malloc(sizeof(BinSignal))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (binSignalPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -128,7 +128,7 @@ Init_Utility_BinSignal(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_BinSignal();
 	if (!SetUniParList_Utility_BinSignal()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_BinSignal();
 		return(FALSE);
 	}
@@ -147,22 +147,22 @@ Init_Utility_BinSignal(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_BinSignal(void)
 {
-	static const char *funcName = "SetUniParList_Utility_BinSignal";
+	static const WChar *funcName = wxT("SetUniParList_Utility_BinSignal");
 	UniParPtr	pars;
 
 	if ((binSignalPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_BINSIGNAL_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = binSignalPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_MODE], "MODE",
-	  "Bining mode ('average' or 'sum').",
+	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_MODE], wxT("MODE"),
+	  wxT("Bining mode ('average' or 'sum')."),
 	  UNIPAR_NAME_SPEC,
 	  &binSignalPtr->mode, binSignalPtr->modeList,
 	  (void * (*)) SetMode_Utility_BinSignal);
-	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_BINWIDTH], "BIN_WIDTH",
-	  "Bin width for binned signal (s) (-ve: prev. signal duration).",
+	SetPar_UniParMgr(&pars[UTILITY_BINSIGNAL_BINWIDTH], wxT("BIN_WIDTH"),
+	  wxT("Bin width for binned signal (s) (-ve: prev. signal duration)."),
 	  UNIPAR_REAL,
 	  &binSignalPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Utility_BinSignal);
@@ -180,15 +180,15 @@ SetUniParList_Utility_BinSignal(void)
 UniParListPtr
 GetUniParListPtr_Utility_BinSignal(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_BinSignal";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_BinSignal");
 
 	if (binSignalPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (binSignalPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(binSignalPtr->parList);
@@ -203,9 +203,9 @@ GetUniParListPtr_Utility_BinSignal(void)
  */
 
 BOOLN
-SetPars_Utility_BinSignal(char * mode, double binWidth)
+SetPars_Utility_BinSignal(WChar * mode, double binWidth)
 {
-	static const char	*funcName = "SetPars_Utility_BinSignal";
+	static const WChar	*funcName = wxT("SetPars_Utility_BinSignal");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -214,7 +214,7 @@ SetPars_Utility_BinSignal(char * mode, double binWidth)
 	if (!SetBinWidth_Utility_BinSignal(binWidth))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -228,18 +228,18 @@ SetPars_Utility_BinSignal(char * mode, double binWidth)
  */
 
 BOOLN
-SetMode_Utility_BinSignal(char * theMode)
+SetMode_Utility_BinSignal(WChar * theMode)
 {
-	static const char	*funcName = "SetMode_Utility_BinSignal";
+	static const WChar	*funcName = wxT("SetMode_Utility_BinSignal");
 	int		specifier;
 
 	if (binSignalPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, binSignalPtr->modeList)) ==
 	   UTILITY_BINSIGNAL_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -260,10 +260,10 @@ SetMode_Utility_BinSignal(char * theMode)
 BOOLN
 SetBinWidth_Utility_BinSignal(double theBinWidth)
 {
-	static const char	*funcName = "SetBinWidth_Utility_BinSignal";
+	static const WChar	*funcName = wxT("SetBinWidth_Utility_BinSignal");
 
 	if (binSignalPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	binSignalPtr->binWidthFlag = TRUE;
@@ -285,20 +285,20 @@ SetBinWidth_Utility_BinSignal(double theBinWidth)
 BOOLN
 CheckPars_Utility_BinSignal(void)
 {
-	static const char	*funcName = "CheckPars_Utility_BinSignal";
+	static const WChar	*funcName = wxT("CheckPars_Utility_BinSignal");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (binSignalPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!binSignalPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!binSignalPtr->binWidthFlag) {
-		NotifyError("%s: binWidth variable not set.", funcName);
+		NotifyError(wxT("%s: binWidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -315,20 +315,21 @@ CheckPars_Utility_BinSignal(void)
 BOOLN
 PrintPars_Utility_BinSignal(void)
 {
-	static const char	*funcName = "PrintPars_Utility_BinSignal";
+	static const WChar	*funcName = wxT("PrintPars_Utility_BinSignal");
 
 	if (!CheckPars_Utility_BinSignal()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Bin Signal Utility Module Parameters:-\n");
-	DPrint("\tBining mode = %s, \t", binSignalPtr->modeList[
+	DPrint(wxT("Bin Signal Utility Module Parameters:-\n"));
+	DPrint(wxT("\tBining mode = %s, \t"), binSignalPtr->modeList[
 	  binSignalPtr->mode].name);
-	DPrint("\tBin width = ");
+	DPrint(wxT("\tBin width = "));
 	if (binSignalPtr->binWidth < 0.0)
-		DPrint("signal/segment duration.\n");
+		DPrint(wxT("signal/segment duration.\n"));
 	else
-		DPrint("%g (ms).\n", MSEC(binSignalPtr->binWidth));
+		DPrint(wxT("%g (ms).\n"), MSEC(binSignalPtr->binWidth));
 	return(TRUE);
 
 }
@@ -340,35 +341,36 @@ PrintPars_Utility_BinSignal(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_BinSignal(char *fileName)
+ReadPars_Utility_BinSignal(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_BinSignal";
+	static const WChar	*funcName = wxT("ReadPars_Utility_BinSignal");
 	BOOLN	ok;
-	char	*filePath, mode[MAXLINE];
+	WChar	*filePath, mode[MAXLINE];
 	double	binWidth;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &binWidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &binWidth))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_BinSignal(mode, binWidth)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -385,10 +387,10 @@ ReadPars_Utility_BinSignal(char *fileName)
 BOOLN
 SetParsPointer_Utility_BinSignal(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_BinSignal";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_BinSignal");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	binSignalPtr = (BinSignalPtr) theModule->parsPtr;
@@ -405,14 +407,15 @@ SetParsPointer_Utility_BinSignal(ModulePtr theModule)
 BOOLN
 InitModule_Utility_BinSignal(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_BinSignal";
+	static const WChar	*funcName = wxT("InitModule_Utility_BinSignal");
 
 	if (!SetParsPointer_Utility_BinSignal(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_BinSignal(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = binSignalPtr;
@@ -445,11 +448,11 @@ InitModule_Utility_BinSignal(ModulePtr theModule)
 BOOLN
 CheckData_Utility_BinSignal(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_BinSignal";
+	static const WChar	*funcName = wxT("CheckData_Utility_BinSignal");
 	double	dt;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -457,7 +460,7 @@ CheckData_Utility_BinSignal(EarObjectPtr data)
 	dt = data->inSignal[0]->dt;
 	if (((binSignalPtr->binWidth > 0.0) && (binSignalPtr->binWidth < dt)) ||
 	  (binSignalPtr->binWidth > _GetDuration_SignalData(data->inSignal[0]))) {
-		NotifyError("%s: Invalid binWidth (%g ms).", funcName,
+		NotifyError(wxT("%s: Invalid binWidth (%g ms)."), funcName,
 		  MSEC(binSignalPtr->binWidth));
 		return(FALSE);
 	}
@@ -496,7 +499,7 @@ ResetProcess_Utility_BinSignal(EarObjectPtr data)
 BOOLN
 Process_Utility_BinSignal(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_BinSignal";
+	static const WChar	*funcName = wxT("Process_Utility_BinSignal");
 	register	ChanData	 *inPtr, *outPtr, binSum, nextBinCutOff;
 	int		chan;
 	double duration;
@@ -507,10 +510,10 @@ Process_Utility_BinSignal(EarObjectPtr data)
 		if (!CheckPars_Utility_BinSignal())
 			return(FALSE);
 		if (!CheckData_Utility_BinSignal(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Signal binning routine");
+		SetProcessName_EarObject(data, wxT("Signal binning routine"));
 		duration = _GetDuration_SignalData(data->inSignal[0]);
 		p->dt = data->inSignal[0]->dt;
 		if (p->binWidth < 0.0)
@@ -521,7 +524,8 @@ Process_Utility_BinSignal(EarObjectPtr data)
 			p->wBinWidth = p->binWidth;
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  (ChanLen) floor(duration / p->wBinWidth + 0.5), p->wBinWidth)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_BinSignal(data);

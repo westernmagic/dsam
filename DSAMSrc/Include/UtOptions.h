@@ -50,11 +50,11 @@ extern int	optionsPleaseLink;
  */
 __BEGIN_DECLS
 
-void	MarkIgnore_Options(int argc, register char **argv, char *optionString,
+void	MarkIgnore_Options(int argc, register WChar **argv, WChar *optionString,
 		  OptionsArgSpecifier state);
 
-int		Process_Options(int ac, register char **av, int *optind, int *optsub,
-		  char **argument, char *proto);
+int		Process_Options(int ac, register WChar **av, int *optind, int *optsub,
+		  WChar **argument, WChar *proto);
 
 __END_DECLS
 

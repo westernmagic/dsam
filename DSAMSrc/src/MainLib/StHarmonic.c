@@ -32,6 +32,7 @@
 #include "UtRandom.h"
 #include "FiParFile.h"
 #include "StHarmonic.h"
+#include "UtString.h"
 #include "UtFilters.h"
 
 /********************************* Global variables ***************************/
@@ -53,14 +54,14 @@ InitPhaseModeList_Harmonic(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "RANDOM", HARMONIC_RANDOM },
-					{ "SINE", HARMONIC_SINE },
-					{ "COSINE", HARMONIC_COSINE },
-					{ "ALTERNATING", HARMONIC_ALTERNATING },
-					{ "SCHROEDER", HARMONIC_SCHROEDER },
-					{ "PLACK_AND_WHITE", HARMONIC_PLACK_AND_WHITE },
-					{ "USER", HARMONIC_USER },
-					{ "", HARMONIC_NULL },
+					{ wxT("RANDOM"),			HARMONIC_RANDOM },
+					{ wxT("SINE"), 				HARMONIC_SINE },
+					{ wxT("COSINE"), 			HARMONIC_COSINE },
+					{ wxT("ALTERNATING"),		HARMONIC_ALTERNATING },
+					{ wxT("SCHROEDER"),			HARMONIC_SCHROEDER },
+					{ wxT("PLACK_AND_WHITE"),	HARMONIC_PLACK_AND_WHITE },
+					{ wxT("USER"),				HARMONIC_USER },
+					{ wxT(""),					HARMONIC_NULL },
 				};
 	harmonicPtr->phaseModeList = modeList;
 	return(TRUE);
@@ -81,18 +82,18 @@ InitPhaseModeList_Harmonic(void)
 BOOLN
 Init_Harmonic(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "nit_Harmonic";
+	static const WChar *funcName = wxT("nit_Harmonic");
 
 	if (parSpec == GLOBAL) {
 		if (harmonicPtr != NULL)
 			Free_Harmonic();
 		if ((harmonicPtr = (HarmonicPtr) malloc(sizeof(Harmonic))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (harmonicPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -137,7 +138,7 @@ Init_Harmonic(ParameterSpecifier parSpec)
 
 	InitPhaseModeList_Harmonic();
 	if (!SetUniParList_Harmonic()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Harmonic();
 		return(FALSE);
 	}
@@ -181,92 +182,93 @@ Free_Harmonic(void)
 BOOLN
 SetUniParList_Harmonic(void)
 {
-	static const char *funcName = "SetUniParList_Harmonic";
+	static const WChar *funcName = wxT("SetUniParList_Harmonic");
 	UniParPtr	pars;
 
 	if ((harmonicPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  HARMONIC_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = harmonicPtr->parList->pars;
-	SetPar_UniParMgr(&pars[HARMONIC_LOWESTHARMONIC], "LOW_HARMONIC",
-	  "Lowest harmonic number.",
+	SetPar_UniParMgr(&pars[HARMONIC_LOWESTHARMONIC], wxT("LOW_HARMONIC"),
+	  wxT("Lowest harmonic number."),
 	  UNIPAR_INT,
 	  &harmonicPtr->lowestHarmonic, NULL,
 	  (void * (*)) SetLowestHarmonic_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_HIGHESTHARMONIC], "HIGH_HARMONIC",
-	  "Highest harmonic number.",
+	SetPar_UniParMgr(&pars[HARMONIC_HIGHESTHARMONIC], wxT("HIGH_HARMONIC"),
+	  wxT("Highest harmonic number."),
 	  UNIPAR_INT,
 	  &harmonicPtr->highestHarmonic, NULL,
 	  (void * (*)) SetHighestHarmonic_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_PHASEMODE], "PHASE_MODE",
-	  "Phase mode (ALTERNATING, COSINE, RANDOM, SCHROEDER, SINE, USER).",
+	SetPar_UniParMgr(&pars[HARMONIC_PHASEMODE], wxT("PHASE_MODE"),
+	  wxT("Phase mode (ALTERNATING, COSINE, RANDOM, SCHROEDER, SINE, USER)."),
 	  UNIPAR_NAME_SPEC,
 	  &harmonicPtr->phaseMode, harmonicPtr->phaseModeList,
 	  (void * (*)) SetPhaseMode_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_PHASE_PAR], "PHASE_PAR",
-	  "Phase parameter (Shroeder phase: C value, Random: random number seed).",
+	SetPar_UniParMgr(&pars[HARMONIC_PHASE_PAR], wxT("PHASE_PAR"),
+	  wxT("Phase parameter (Shroeder phase: C value, Random: random number "
+	  "seed)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->phaseVariable, NULL,
 	  (void * (*)) SetPhaseVariable_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MISTUNEDHARMONIC], "MISTUNED_HARM",
-	  "Mistuned harmonic number (0 = F0, -ve implies none mistuned).",
+	SetPar_UniParMgr(&pars[HARMONIC_MISTUNEDHARMONIC], wxT("MISTUNED_HARM"),
+	  wxT("Mistuned harmonic number (0 = F0, -ve implies none mistuned)."),
 	  UNIPAR_INT,
 	  &harmonicPtr->mistunedHarmonic, NULL,
 	  (void * (*)) SetMistunedHarmonic_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MISTUNINGFACTOR], "MT_FACTOR",
-	  "Mistuning factor (%).",
+	SetPar_UniParMgr(&pars[HARMONIC_MISTUNINGFACTOR], wxT("MT_FACTOR"),
+	  wxT("Mistuning factor (%)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->mistuningFactor, NULL,
 	  (void * (*)) SetMistuningFactor_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_FREQUENCY], "FUND_FREQ",
-	  "Fundamental frequency (Hz).",
+	SetPar_UniParMgr(&pars[HARMONIC_FREQUENCY], wxT("FUND_FREQ"),
+	  wxT("Fundamental frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->frequency, NULL,
 	  (void * (*)) SetFrequency_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_INTENSITY], "INTENSITY",
-	  "Intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[HARMONIC_INTENSITY], wxT("INTENSITY"),
+	  wxT("Intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->intensity, NULL,
 	  (void * (*)) SetIntensity_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[HARMONIC_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->duration, NULL,
 	  (void * (*)) SetDuration_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[HARMONIC_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONFREQUENCY], "MOD_FREQ",
-	  "Modulation Frequency (Hz).",
+	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONFREQUENCY], wxT("MOD_FREQ"),
+	  wxT("Modulation Frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->modulationFrequency, NULL,
 	  (void * (*)) SetModulationFrequency_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONPHASE], "MOD_PHASE",
-	  "Modulation Phase (degrees).",
+	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONPHASE], wxT("MOD_PHASE"),
+	  wxT("Modulation Phase (degrees)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->modulationPhase, NULL,
 	  (void * (*)) SetModulationPhase_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONDEPTH], "MOD_DEPTH",
-	  "Modulation depth (%).",
+	SetPar_UniParMgr(&pars[HARMONIC_MODULATIONDEPTH], wxT("MOD_DEPTH"),
+	  wxT("Modulation depth (%)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->modulationDepth, NULL,
 	  (void * (*)) SetModulationDepth_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_ORDER], "ORDER",
-	  "Filter order.",
+	SetPar_UniParMgr(&pars[HARMONIC_ORDER], wxT("ORDER"),
+	  wxT("Filter order."),
 	  UNIPAR_INT,
 	  &harmonicPtr->order, NULL,
 	  (void * (*)) SetOrder_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_LOWERCUTOFFFREQ], "LOW_CUTOFF",
-	  "Lower cut off frequency 3 dB down (Hz).",
+	SetPar_UniParMgr(&pars[HARMONIC_LOWERCUTOFFFREQ], wxT("LOW_CUTOFF"),
+	  wxT("Lower cut off frequency 3 dB down (Hz)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->lowerCutOffFreq, NULL,
 	  (void * (*)) SetLowerCutOffFreq_Harmonic);
-	SetPar_UniParMgr(&pars[HARMONIC_UPPERCUTOFFFREQ], "UPPER_CUTOFF",
-	  "Upper cut off frequency 3 dB down (Hz).",
+	SetPar_UniParMgr(&pars[HARMONIC_UPPERCUTOFFFREQ], wxT("UPPER_CUTOFF"),
+	  wxT("Upper cut off frequency 3 dB down (Hz)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->upperCutOffFreq, NULL,
 	  (void * (*)) SetUpperCutOffFreq_Harmonic);
@@ -284,15 +286,15 @@ SetUniParList_Harmonic(void)
 UniParListPtr
 GetUniParListPtr_Harmonic(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Harmonic";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (harmonicPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(harmonicPtr->parList);
@@ -311,101 +313,104 @@ GetUniParListPtr_Harmonic(void)
 BOOLN
 CheckPars_Harmonic(void)
 {
-	static const char *funcName = "CheckPars_Harmonic";
+	static const WChar *funcName = wxT("CheckPars_Harmonic");
 	BOOLN	ok;
 	double	criticalFrequency;
 	
 	ok = TRUE;
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!harmonicPtr->lowestHarmonicFlag) {
-		NotifyError("%s: Lowest harmonic variable not set.", funcName);
+		NotifyError(wxT("%s: Lowest harmonic variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->highestHarmonicFlag) {
-		NotifyError("%s: Highest harmonic variable not set.", funcName);
+		NotifyError(wxT("%s: Highest harmonic variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->mistunedHarmonicFlag) {
-		NotifyError("%s: Mistuned harmonic variable not set.", funcName);
+		NotifyError(wxT("%s: Mistuned harmonic variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->phaseModeFlag) {
-		NotifyError("%s: Phase mode not set.", funcName);
+		NotifyError(wxT("%s: Phase mode not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->mistuningFactorFlag) {
-		NotifyError("%s: Mistuning factor variable not set.", funcName);
+		NotifyError(wxT("%s: Mistuning factor variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->phaseVariableFlag) {
-		NotifyError("%s: Phase variable variable not set.", funcName);
+		NotifyError(wxT("%s: Phase variable variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->frequencyFlag) {
-		NotifyError("%s: Frequency variable not set.", funcName);
+		NotifyError(wxT("%s: Frequency variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->intensityFlag) {
-		NotifyError("%s: Intensity variable not set.", funcName);
+		NotifyError(wxT("%s: Intensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->durationFlag) {
-		NotifyError("%s: Duration variable not set.", funcName);
+		NotifyError(wxT("%s: Duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->dtFlag) {
-		NotifyError("%s: Sampling interval (dt) variable not set.", funcName);
+		NotifyError(wxT("%s: Sampling interval (dt) variable not set."),
+		  funcName);
 		ok = FALSE;
 	}
 	if (!harmonicPtr->modulationDepthFlag) {
-		NotifyError("%s: Modulation depth variable not set.", funcName);
+		NotifyError(wxT("%s: Modulation depth variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (harmonicPtr->modulationDepth > DBL_EPSILON) {
 		if (!harmonicPtr->modulationFrequencyFlag) {
-			NotifyError("%s: Modulation frequency variable not set.", funcName);
+			NotifyError(wxT("%s: Modulation frequency variable not set."),
+			  funcName);
 			ok = FALSE;
 		}
 		if (!harmonicPtr->modulationPhaseFlag) {
-			NotifyError("%s: Modulation phase variable not set.", funcName);
+			NotifyError(wxT("%s: Modulation phase variable not set."),
+			  funcName);
 			ok = FALSE;
 		}
 	}
 	if (!harmonicPtr->orderFlag) {
-		NotifyError("%s: Filter order variable not set.", funcName);
+		NotifyError(wxT("%s: Filter order variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (harmonicPtr->order > 0) {
 		if (!harmonicPtr->lowerCutOffFreqFlag) {
-			NotifyError("%s: Filter lower cut-off frequency variable not set.",
-			  funcName);
+			NotifyError(wxT("%s: Filter lower cut-off frequency variable not "
+			  "set."), funcName);
 			ok = FALSE;
 		}
 		if (!harmonicPtr->upperCutOffFreqFlag) {
-			NotifyError("%s: Filter upper cut-off frequency variable not set.",
+			NotifyError(wxT("%s: Filter upper cut-off frequency variable not set."),
 			  funcName);
 			ok = FALSE;
 		}
 		if (harmonicPtr->lowerCutOffFreq > harmonicPtr->upperCutOffFreq) {
-			NotifyError("%s: Illegal cut-off frequency range (%g - %g Hz).",
+			NotifyError(wxT("%s: Illegal cut-off frequency range (%g - %g Hz)."),
 			  funcName, harmonicPtr->lowerCutOffFreq,
 			  harmonicPtr->upperCutOffFreq);
 			ok = FALSE;
 		}
 	}
 	if (harmonicPtr->lowestHarmonic > harmonicPtr->highestHarmonic) {
-		NotifyError("%s: Illegal harmonic range (%d - %d).", funcName,
+		NotifyError(wxT("%s: Illegal harmonic range (%d - %d)."), funcName,
 		  harmonicPtr->lowestHarmonic, harmonicPtr->highestHarmonic);
 		ok = FALSE;
 	}
 	criticalFrequency = 1.0 / (2.0 * harmonicPtr->dt);
 	if (ok && (criticalFrequency <= harmonicPtr->frequency *
 	   harmonicPtr->highestHarmonic)) {
-		NotifyError("%s: Sampling rate (dt = %g ms) is too low for the "\
-		  "highest frequency.", funcName, MSEC(harmonicPtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
+		  "highest frequency."), funcName, MSEC(harmonicPtr->dt));
 		ok = FALSE;
 	}
 	return(ok);
@@ -423,11 +428,11 @@ CheckPars_Harmonic(void)
 BOOLN
 SetLowestHarmonic_Harmonic(int theLowestHarmonic)
 {
-	static const char *funcName = "SetLowestHarmonic_Harmonic";
+	static const WChar *funcName = wxT("SetLowestHarmonic_Harmonic");
 
 	harmonicPtr->lowestHarmonicFlag = TRUE;
 	if (theLowestHarmonic < 1) {
-		NotifyError("%s: Lowest harmonic must be > 1 (%d).", funcName,
+		NotifyError(wxT("%s: Lowest harmonic must be > 1 (%d)."), funcName,
 		  theLowestHarmonic);
 		return(FALSE);
 	}
@@ -482,18 +487,18 @@ SetMistunedHarmonic_Harmonic(int theMistunedHarmonic)
 C */
 
 BOOLN
-SetPhaseMode_Harmonic(char *thePhaseMode)
+SetPhaseMode_Harmonic(WChar *thePhaseMode)
 {
-	static const char *funcName = "SetPhaseMode_Harmonic";
+	static const WChar *funcName = wxT("SetPhaseMode_Harmonic");
 	int		specifier;
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(thePhaseMode,
 	  harmonicPtr->phaseModeList)) == HARMONIC_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, thePhaseMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, thePhaseMode);
 		return(FALSE);
 	}
 	harmonicPtr->phaseModeFlag = TRUE;
@@ -604,10 +609,10 @@ SetDuration_Harmonic(double theDuration)
 BOOLN
 SetSamplingInterval_Harmonic(double theSamplingInterval)
 {
-	static const char *funcName = "SetSamplingInterval_Harmonic";
+	static const WChar *funcName = wxT("SetSamplingInterval_Harmonic");
 
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -628,18 +633,18 @@ SetSamplingInterval_Harmonic(double theSamplingInterval)
 BOOLN
 SetModulationFrequency_Harmonic(double theModulationFrequency)
 {
-	static const char	*funcName = "SetModulationFrequency_Harmonic";
+	static const WChar	*funcName = wxT("SetModulationFrequency_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	harmonicPtr->modulationFrequencyFlag = TRUE;
 	harmonicPtr->modulationFrequency = theModulationFrequency;
 	if (harmonicPtr->modulationFrequency == 0.0) {
-		NotifyError("%s: The modulation frequency must be greater than zero.", 
-		funcName);
+		NotifyError(wxT("%s: The modulation frequency must be greater than "
+		  "zero."), funcName);
 		return(FALSE);
 	}	
 	return(TRUE);
@@ -657,10 +662,10 @@ SetModulationFrequency_Harmonic(double theModulationFrequency)
 BOOLN
 SetModulationPhase_Harmonic(double theModulationPhase)
 {
-	static const char	*funcName = "SetModulationPhase_Harmonic";
+	static const WChar	*funcName = wxT("SetModulationPhase_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -681,10 +686,10 @@ SetModulationPhase_Harmonic(double theModulationPhase)
 BOOLN
 SetModulationDepth_Harmonic(double theModulationDepth)
 {
-	static const char	*funcName = "SetModulationDepth_Harmonic";
+	static const WChar	*funcName = wxT("SetModulationDepth_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -706,15 +711,15 @@ SetModulationDepth_Harmonic(double theModulationDepth)
 BOOLN
 SetOrder_Harmonic(int theorder)
 {
-	static const char	*funcName = "SetOrder_Harmonic";
+	static const WChar	*funcName = wxT("SetOrder_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	if (harmonicPtr->order < 0)	{
-		NotifyError("%s: Filter order must be > 0.", funcName);
+		NotifyError(wxT("%s: Filter order must be > 0."), funcName);
 		return(FALSE);
 	}
 	harmonicPtr->orderFlag = TRUE;
@@ -734,10 +739,10 @@ SetOrder_Harmonic(int theorder)
 BOOLN
 SetLowerCutOffFreq_Harmonic(double theLowerCutOffFreq)
 {
-	static const char	*funcName = "SetLowerCutOffFreq_Harmonic";
+	static const WChar	*funcName = wxT("SetLowerCutOffFreq_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -758,10 +763,10 @@ SetLowerCutOffFreq_Harmonic(double theLowerCutOffFreq)
 BOOLN
 SetUpperCutOffFreq_Harmonic(double theUpperCutOffFreq)
 {
-	static const char	*funcName = "SetUpperCutOffFreq_Harmonic";
+	static const WChar	*funcName = wxT("SetUpperCutOffFreq_Harmonic");
 
 	if (harmonicPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -778,14 +783,14 @@ SetUpperCutOffFreq_Harmonic(double theUpperCutOffFreq)
  */
  
 BOOLN
-SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
+SetPars_Harmonic(WChar *thePhaseMode, int theLowestHarmonic,
   int theHighestHarmonic, int theMistunedHarmonic, double theMistuningFactor,
   double thePhaseVariable, double theFrequency, double theIntensity,
   double theDuration, double theSamplingInterval, double theModulationFrequency,
   double theModulationPhase, double theModulationDepth, int theOrder,
   double theLowCutFreq, double theHighCutFreq)
 {
-	static const char *funcName = "SetPars_Harmonic";
+	static const WChar *funcName = wxT("SetPars_Harmonic");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -822,7 +827,7 @@ SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
 	if (!SetUpperCutOffFreq_Harmonic(theHighCutFreq))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -836,48 +841,48 @@ SetPars_Harmonic(char *thePhaseMode, int theLowestHarmonic,
 BOOLN
 PrintPars_Harmonic(void)
 {
-	static const char *funcName = "PrintPars_Harmonic";
+	static const WChar *funcName = wxT("PrintPars_Harmonic");
 
 	if (!CheckPars_Harmonic()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Harmonic series Module Parameters:-\n");
-	DPrint("\tLowest/highest harmonic = %d / %d,\n",
+	DPrint(wxT("Harmonic series Module Parameters:-\n"));
+	DPrint(wxT("\tLowest/highest harmonic = %d / %d,\n"),
 	  harmonicPtr->lowestHarmonic, harmonicPtr->highestHarmonic);
-	DPrint("\tPhase mode = %s,\t",
+	DPrint(wxT("\tPhase mode = %s,\t"),
 	  harmonicPtr->phaseModeList[harmonicPtr->phaseMode].name);
-	DPrint("Phase variable = %g", harmonicPtr->phaseVariable);
+	DPrint(wxT("Phase variable = %g"), harmonicPtr->phaseVariable);
 	switch (harmonicPtr->phaseMode) {
 	case HARMONIC_SCHROEDER:
-		DPrint(" (C value)");
+		DPrint(wxT(" (C value)"));
 		break;
 	case HARMONIC_RANDOM:
-		DPrint(" (random number seed)");
+		DPrint(wxT(" (random number seed)"));
 		break;
 	default:
 		;
 	}
-	DPrint(",\n");
-	DPrint("\tMistuned harmonic = %d,\tmistuning factor = "\
-	  "%g %%,\n", harmonicPtr->mistunedHarmonic, harmonicPtr->mistuningFactor);
-	DPrint("\tFundamental frequency = %g Hz,\tIntensity = "
-	  "%g dB SPL,\n", harmonicPtr->frequency, harmonicPtr->intensity);
-	DPrint("\tDuration = %g ms,\tSampling interval = %g ms\n",
-	  MSEC(harmonicPtr->duration), MSEC(harmonicPtr->dt));
+	DPrint(wxT(",\n"));
+	DPrint(wxT("\tMistuned harmonic = %d,\tmistuning factor = %g %%,\n"),
+	  harmonicPtr->mistunedHarmonic, harmonicPtr->mistuningFactor);
+	DPrint(wxT("\tFundamental frequency = %g Hz,\tIntensity = %g dB SPL,\n"),
+	  harmonicPtr->frequency, harmonicPtr->intensity);
+	DPrint(wxT("\tDuration = %g ms,\tSampling interval = %g ms\n"), MSEC(
+	  harmonicPtr->duration), MSEC(harmonicPtr->dt));
 	if (harmonicPtr->modulationDepth > DBL_EPSILON) {
-		DPrint("\tModulation frequency = %g Hz\n",
-		  harmonicPtr->modulationFrequency);
-		DPrint("\tModulation phase = %g degrees,",
-		  harmonicPtr->modulationPhase);
-		DPrint("\tmodulationDepth = %g %%\n",
-		  harmonicPtr->modulationDepth);
+		DPrint(wxT("\tModulation frequency = %g Hz\n"), harmonicPtr->
+		  modulationFrequency);
+		DPrint(wxT("\tModulation phase = %g degrees,"), harmonicPtr->
+		  modulationPhase);
+		DPrint(wxT("\tmodulationDepth = %g %%\n"), harmonicPtr->
+		  modulationDepth);
 	}
 	if (harmonicPtr->order > 0) {
-		DPrint("\tFilter order = %d \n", harmonicPtr->order);
-		DPrint("\tFilter low/high cut-off frequencys = %g / "
-		  "%g Hz\n", harmonicPtr->lowerCutOffFreq,
-		  harmonicPtr->upperCutOffFreq);
+		DPrint(wxT("\tFilter order = %d \n"), harmonicPtr->order);
+		DPrint(wxT("\tFilter low/high cut-off frequencys = %g / %g Hz\n"),
+		  harmonicPtr->lowerCutOffFreq, harmonicPtr->upperCutOffFreq);
 	}
 	return(TRUE);
 
@@ -891,12 +896,12 @@ PrintPars_Harmonic(void)
  */
  
 BOOLN
-ReadPars_Harmonic(char *fileName)
+ReadPars_Harmonic(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_Harmonic";
+	static const WChar *funcName = wxT("ReadPars_Harmonic");
 	BOOLN	ok;
-	char	*filePath;
-	char	phaseMode[MAXLINE];
+	WChar	*filePath;
+	WChar	phaseMode[MAXLINE];
 	int		lowestHarmonic, highestHarmonic, mistunedHarmonic, order;
 	double	phaseVariable, mistuningFactor, frequency, intensity, duration;
 	double	samplingInterval, modulationFrequency, modulationPhase;
@@ -904,57 +909,58 @@ ReadPars_Harmonic(char *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-    if (!GetPars_ParFile(fp, "%lf", &frequency))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &frequency))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%d", &lowestHarmonic))
+    if (!GetPars_ParFile(fp, wxT("%d"), &lowestHarmonic))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%d", &highestHarmonic))
+    if (!GetPars_ParFile(fp, wxT("%d"), &highestHarmonic))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%d", &mistunedHarmonic))
+    if (!GetPars_ParFile(fp, wxT("%d"), &mistunedHarmonic))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &mistuningFactor))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &mistuningFactor))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%s", &phaseMode))
+    if (!GetPars_ParFile(fp, wxT("%s"), &phaseMode))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &phaseVariable))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &phaseVariable))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &modulationFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationFrequency))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &modulationPhase))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationPhase))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &modulationDepth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationDepth))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &order))
+	if (!GetPars_ParFile(fp, wxT("%d"), &order))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lowerCutOffFreq))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &lowerCutOffFreq))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &upperCutOffFreq))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &upperCutOffFreq))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &intensity))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &duration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Harmonic(phaseMode, lowestHarmonic, highestHarmonic,
 	  mistunedHarmonic, mistuningFactor, phaseVariable, frequency, intensity,
 	  duration, samplingInterval, modulationFrequency, modulationPhase, 
 	  modulationDepth, order, lowerCutOffFreq, upperCutOffFreq)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -971,10 +977,10 @@ ReadPars_Harmonic(char *fileName)
 BOOLN
 SetParsPointer_Harmonic(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Harmonic";
+	static const WChar	*funcName = wxT("SetParsPointer_Harmonic");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	harmonicPtr = (HarmonicPtr) theModule->parsPtr;
@@ -991,14 +997,15 @@ SetParsPointer_Harmonic(ModulePtr theModule)
 BOOLN
 InitModule_Harmonic(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Harmonic";
+	static const WChar	*funcName = wxT("InitModule_Harmonic");
 
 	if (!SetParsPointer_Harmonic(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Harmonic(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = harmonicPtr;
@@ -1022,7 +1029,7 @@ InitModule_Harmonic(ModulePtr theModule)
 BOOLN
 InitProcessVariables_Harmonic(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Harmonic";
+	static const WChar *funcName = wxT("InitProcessVariables_Harmonic");
 	int		totalNumberOfHarmonics;
 	HarmonicPtr	p = harmonicPtr;
 	
@@ -1033,18 +1040,19 @@ InitProcessVariables_Harmonic(EarObjectPtr data)
 			return(FALSE);
 		if ((p->phase = (double *) calloc(totalNumberOfHarmonics, sizeof(
 		  double))) == NULL) {
-			NotifyError("%s: Out of memory for 'phase' array", funcName);
+			NotifyError(wxT("%s: Out of memory for 'phase' array"), funcName);
 			return(FALSE);
 		}
 		if ((p->harmonicFrequency = (double *) calloc(totalNumberOfHarmonics,
 		  sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory for 'harmonic frequencies' array",
-			  funcName);
+			NotifyError(wxT("%s: Out of memory for 'harmonic frequencies' "
+			  "array"), funcName);
 			return(FALSE);
 		}
 		if ((p->modIndex = (double *) calloc(totalNumberOfHarmonics, sizeof(
 		  double))) == NULL) {
-			NotifyError("%s: Out of memory for 'modIndex' array", funcName);
+			NotifyError(wxT("%s: Out of memory for 'modIndex' array"),
+			  funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -1095,7 +1103,7 @@ FreeProcessVariables_Harmonic(void)
 BOOLN
 GenerateSignal_Harmonic(EarObjectPtr data)
 {
-	static const char *funcName = "GenerateSignal_Harmonic";
+	static const WChar *funcName = wxT("GenerateSignal_Harmonic");
 	int			j, totalNumberOfHarmonics, harmonicNumber;
 	ChanLen		i, t;
 	double		instantFreq, piOver2;
@@ -1105,20 +1113,20 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_Harmonic())
 			return(FALSE);
-		SetProcessName_EarObject(data, "Harmonic series stimulus");
+		SetProcessName_EarObject(data, wxT("Harmonic series stimulus"));
 		if ( !InitOutSignal_EarObject(data, HARMONIC_NUM_CHANNELS,
 		  (ChanLen) floor(harmonicPtr->duration / harmonicPtr->dt + 0.5),
 	    	harmonicPtr->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Harmonic(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -91,7 +91,7 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
 	int		integrationMode;
-	char	strobeSpecification[MAX_FILE_PATH];
+	WChar	strobeSpecification[MAX_FILE_PATH];
 	double	negativeWidth;
 	double	positiveWidth;
 	double	inputDecayRate;
@@ -101,7 +101,7 @@ typedef struct {
 	NameSpecifier	*diagnosticModeList;
 	NameSpecifier	*integrationModeList;
 	UniParListPtr	parList;
-	char			diagnosticString[MAX_FILE_PATH];
+	WChar			diagnosticString[MAX_FILE_PATH];
 	int				strobeInSignalIndex;
 	double			*inputDecay;
 	FILE			*fp;
@@ -161,17 +161,17 @@ void	ProcessFrameSection_Analysis_SAI(EarObjectPtr data,
 
 void	PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength);
 
-BOOLN	ReadPars_Analysis_SAI(char *fileName);
+BOOLN	ReadPars_Analysis_SAI(WChar *fileName);
 
 void	ResetProcess_Analysis_SAI(EarObjectPtr data);
 
-BOOLN	SetDiagnosticMode_Analysis_SAI(char *theDiagnosticMode);
+BOOLN	SetDiagnosticMode_Analysis_SAI(WChar *theDiagnosticMode);
 
 BOOLN	SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife);
 
 BOOLN	SetInputDecayRate_Analysis_SAI(double theInputDecayRate);
 
-BOOLN	SetIntegrationMode_Analysis_SAI(char * theIntegrationMode);
+BOOLN	SetIntegrationMode_Analysis_SAI(WChar * theIntegrationMode);
 
 BOOLN	SetDelay_Analysis_SAI(double theDelay);
 
@@ -183,19 +183,19 @@ BOOLN	SetNegativeWidth_Analysis_SAI(double theNegativeWidth);
 
 BOOLN	SetParsPointer_Analysis_SAI(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_SAI(char *diagnosticMode, char *integrationMode,
-		  char *strobeSpecification, double negativeWidth, double
+BOOLN	SetPars_Analysis_SAI(WChar *diagnosticMode, WChar *integrationMode,
+		  WChar *strobeSpecification, double negativeWidth, double
 		  positiveWidth, double inputDecayRate, double imageDecayHalfLife);
 
 BOOLN	SetPositiveWidth_Analysis_SAI(double thePositiveWidth);
 
-BOOLN	SetStrobeSpecification_Analysis_SAI(char *theStrobeSpecification);
+BOOLN	SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification);
 
 BOOLN	SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate);
 
 BOOLN	SetThreshold_Analysis_SAI(double theThreshold);
 
-BOOLN	SetTypeMode_Analysis_SAI(char *theTypeMode);
+BOOLN	SetTypeMode_Analysis_SAI(WChar *theTypeMode);
 
 BOOLN	SetUniParList_Analysis_SAI(void);
 

@@ -56,7 +56,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 	ModuleParDialog	*dialog;
 
 	SDIEvtHandler(wxShapeEvtHandler *prev = NULL, wxShape *shape = NULL,
-	  const wxString& lab = "", int theProcessType = -1);
+	  const wxString& lab = wxT(""), int theProcessType = -1);
 	~SDIEvtHandler(void);
 
 	bool	EditInstruction(void);

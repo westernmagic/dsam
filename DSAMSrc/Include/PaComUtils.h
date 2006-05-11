@@ -60,13 +60,13 @@ typedef enum {
 
 typedef	struct SetCom {
 
-	char	*label;
+	WChar	*label;
 	int		parCount;
 	ScopeSpecifier		scope;
 	CommandSpecifier	command;
 	TypeSpecifier	type;
 	union {
-		char	*string;
+		WChar	*string;
 		int		*intVal;
 		double	*doubleVal;
 		long	*longVal;
@@ -94,7 +94,7 @@ typedef	struct SetCom {
 __BEGIN_DECLS
 
 BOOLN	AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int ParCount,
-		  TypeSpecifier type, char *label, CommandSpecifier command,
+		  TypeSpecifier type, WChar *label, CommandSpecifier command,
 		  ScopeSpecifier scope);
 
 void	PrintQueue_SetComUtil(SetComPtr p);

@@ -31,6 +31,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnInterSIH.h"
 
 /******************************************************************************/
@@ -55,8 +56,6 @@ InterSIHPtr	interSIHPtr = NULL;
 BOOLN
 Free_Analysis_ISIH(void)
 {
-	/* static const char	*funcName = "Free_Analysis_ISIH"; */
-
 	if (interSIHPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_ISIH();
@@ -85,18 +84,18 @@ Free_Analysis_ISIH(void)
 BOOLN
 Init_Analysis_ISIH(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_ISIH";
+	static const WChar	*funcName = wxT("Init_Analysis_ISIH");
 
 	if (parSpec == GLOBAL) {
 		if (interSIHPtr != NULL)
 			Free_Analysis_ISIH();
 		if ((interSIHPtr = (InterSIHPtr) malloc(sizeof(InterSIH))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (interSIHPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -110,7 +109,7 @@ Init_Analysis_ISIH(ParameterSpecifier parSpec)
 	interSIHPtr->maxInterval = -1.0;
 
 	if (!SetUniParList_Analysis_ISIH()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_ISIH();
 		return(FALSE);
 	}
@@ -130,27 +129,27 @@ Init_Analysis_ISIH(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_ISIH(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_ISIH";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_ISIH");
 	UniParPtr	pars;
 
 	if ((interSIHPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_ISIH_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = interSIHPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_ORDER], "ORDER",
-	  "Order of spike interactions (1 = 1st, 2 = 2nd, -1 = all order).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_ORDER], wxT("ORDER"),
+	  wxT("Order of spike interactions (1 = 1st, 2 = 2nd, -1 = all order)."),
 	  UNIPAR_INT,
 	  &interSIHPtr->order, NULL,
 	  (void * (*)) SetOrder_Analysis_ISIH);
-	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_EVENTTHRESHOLD], "THRESHOLD",
-	  "Event threshold (arbitrary units).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_EVENTTHRESHOLD], wxT("THRESHOLD"),
+	  wxT("Event threshold (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &interSIHPtr->eventThreshold, NULL,
 	  (void * (*)) SetEventThreshold_Analysis_ISIH);
-	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_MAXINTERVAL], "MAX_INTERVAL",
-	  "Max. interval for histogram: -ve assumes end of signal (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ISIH_MAXINTERVAL], wxT("MAX_INTERVAL"),
+	  wxT("Max. interval for histogram: -ve assumes end of signal (s)."),
 	  UNIPAR_REAL,
 	  &interSIHPtr->maxInterval, NULL,
 	  (void * (*)) SetMaxInterval_Analysis_ISIH);
@@ -168,15 +167,15 @@ SetUniParList_Analysis_ISIH(void)
 UniParListPtr
 GetUniParListPtr_Analysis_ISIH(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_ISIH";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_ISIH");
 
 	if (interSIHPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (interSIHPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(interSIHPtr->parList);
@@ -194,7 +193,7 @@ BOOLN
 SetPars_Analysis_ISIH(int order, double eventThreshold,
   double maxInterval)
 {
-	static const char	*funcName = "SetPars_Analysis_ISIH";
+	static const WChar	*funcName = wxT("SetPars_Analysis_ISIH");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -205,7 +204,7 @@ SetPars_Analysis_ISIH(int order, double eventThreshold,
 	if (!SetMaxInterval_Analysis_ISIH(maxInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -221,10 +220,10 @@ SetPars_Analysis_ISIH(int order, double eventThreshold,
 BOOLN
 SetOrder_Analysis_ISIH(int theOrder)
 {
-	static const char	*funcName = "SetOrder_Analysis_ISIH";
+	static const WChar	*funcName = wxT("SetOrder_Analysis_ISIH");
 
 	if (interSIHPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -245,10 +244,10 @@ SetOrder_Analysis_ISIH(int theOrder)
 BOOLN
 SetEventThreshold_Analysis_ISIH(double theEventThreshold)
 {
-	static const char	*funcName = "SetEventThreshold_Analysis_ISIH";
+	static const WChar	*funcName = wxT("SetEventThreshold_Analysis_ISIH");
 
 	if (interSIHPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -269,10 +268,10 @@ SetEventThreshold_Analysis_ISIH(double theEventThreshold)
 BOOLN
 SetMaxInterval_Analysis_ISIH(double theMaxInterval)
 {
-	static const char	*funcName = "SetMaxInterval_Analysis_ISIH";
+	static const WChar	*funcName = wxT("SetMaxInterval_Analysis_ISIH");
 
 	if (interSIHPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -295,24 +294,24 @@ SetMaxInterval_Analysis_ISIH(double theMaxInterval)
 BOOLN
 CheckPars_Analysis_ISIH(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_ISIH";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_ISIH");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (interSIHPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!interSIHPtr->orderFlag) {
-		NotifyError("%s: order variable not set.", funcName);
+		NotifyError(wxT("%s: order variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!interSIHPtr->eventThresholdFlag) {
-		NotifyError("%s: eventThreshold variable not set.", funcName);
+		NotifyError(wxT("%s: eventThreshold variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!interSIHPtr->maxIntervalFlag) {
-		NotifyError("%s: maxInterval variable not set.", funcName);
+		NotifyError(wxT("%s: maxInterval variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -329,26 +328,26 @@ CheckPars_Analysis_ISIH(void)
 BOOLN
 PrintPars_Analysis_ISIH(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_ISIH";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_ISIH");
 
 	if (!CheckPars_Analysis_ISIH()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Inter-Spike Interval Histogram (ISIH) Module "
-	  "Parameters:-\n");
-	DPrint("\tOrder = ");
+	DPrint(wxT("Inter-Spike Interval Histogram (ISIH) Module Parameters:-\n"));
+	DPrint(wxT("\tOrder = "));
 	if (interSIHPtr->order > 0)
-		DPrint("%d,", interSIHPtr->order);
+		DPrint(wxT("%d,"), interSIHPtr->order);
 	else
-		DPrint("unlimited,");
-	DPrint("\tEvent threshold = %g units,\n",
+		DPrint(wxT("unlimited,"));
+	DPrint(wxT("\tEvent threshold = %g units,\n"),
 	  interSIHPtr->eventThreshold);
-	DPrint("\tMax. interval = ");
+	DPrint(wxT("\tMax. interval = "));
 	if (interSIHPtr->maxInterval > 0.0)
-		DPrint("%g ms.\n", MSEC(interSIHPtr->maxInterval));
+		DPrint(wxT("%g ms.\n"), MSEC(interSIHPtr->maxInterval));
 	else
-		DPrint("end of signal.\n");
+		DPrint(wxT("end of signal.\n"));
 	return(TRUE);
 
 }
@@ -360,38 +359,39 @@ PrintPars_Analysis_ISIH(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_ISIH(char *fileName)
+ReadPars_Analysis_ISIH(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_ISIH";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_ISIH");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		order;
 	double	eventThreshold, maxInterval;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &order))
+	if (!GetPars_ParFile(fp, wxT("%d"), &order))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &eventThreshold))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &eventThreshold))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxInterval))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxInterval))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_ISIH(order, eventThreshold, maxInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -408,10 +408,10 @@ ReadPars_Analysis_ISIH(char *fileName)
 BOOLN
 SetParsPointer_Analysis_ISIH(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_ISIH";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_ISIH");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	interSIHPtr = (InterSIHPtr) theModule->parsPtr;
@@ -428,14 +428,15 @@ SetParsPointer_Analysis_ISIH(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_ISIH(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_ISIH";
+	static const WChar	*funcName = wxT("InitModule_Analysis_ISIH");
 
 	if (!SetParsPointer_Analysis_ISIH(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_ISIH(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = interSIHPtr;
@@ -468,19 +469,19 @@ InitModule_Analysis_ISIH(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_ISIH(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_ISIH";
+	static const WChar	*funcName = wxT("CheckData_Analysis_ISIH");
 	double	signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = data->inSignal[0]->dt * data->inSignal[0]->length;
 	if (interSIHPtr->maxInterval > signalDuration) {
-		NotifyError("%s: Maximum interval is longer than signal (value must\n"
-		  "be <= %g ms).", funcName, signalDuration);
+		NotifyError(wxT("%s: Maximum interval is longer than signal (value "
+		  "must\nbe <= %g ms)."), funcName, signalDuration);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -514,7 +515,7 @@ ResetProcess_Analysis_ISIH(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Analysis_ISIH(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Analysis_ISIH";
+	static const WChar *funcName = wxT("InitProcessVariables_Analysis_ISIH");
 	InterSIHPtr	p = interSIHPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
@@ -523,7 +524,8 @@ InitProcessVariables_Analysis_ISIH(EarObjectPtr data)
 			FreeProcessVariables_Analysis_ISIH();
 			if ((p->spikeListSpec = InitListSpec_SpikeList(
 			  data->inSignal[0]->numChannels)) == NULL) {
-				NotifyError("%s: Out of memory for spikeListSpec.", funcName);
+				NotifyError(wxT("%s: Out of memory for spikeListSpec."),
+				  funcName);
 				return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -566,7 +568,7 @@ FreeProcessVariables_Analysis_ISIH(void)
 BOOLN
 Calc_Analysis_ISIH(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_ISIH";
+	static const WChar	*funcName = wxT("Calc_Analysis_ISIH");
 	register	ChanData	 *outPtr;
 	int		chan;
 	ChanLen	spikeIntervalIndex;
@@ -577,21 +579,22 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 		if (!CheckPars_Analysis_ISIH())
 			return(FALSE);
 		if (!CheckData_Analysis_ISIH(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Inter-Spike Interval Histogram (ISIH) "
-		  "analysis");
+		SetProcessName_EarObject(data, wxT("Inter-Spike Interval Histogram "
+		  "(ISIH) analysis"));
 		p->maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
 		  maxInterval / data->inSignal[0]->dt + 0.5): data->inSignal[0]->length;
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  p->maxIntervalIndex, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
 		if (!InitProcessVariables_Analysis_ISIH(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -85,7 +85,7 @@ BOOLN	InitProcessVariables_IHCRP_Meddis(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Meddis(void);
 
-BOOLN	ReadPars_IHCRP_Meddis(char *fileName);
+BOOLN	ReadPars_IHCRP_Meddis(WChar *fileName);
 
 BOOLN	RunModel_IHCRP_Meddis(EarObjectPtr data);
 

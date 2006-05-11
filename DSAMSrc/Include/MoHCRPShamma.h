@@ -107,7 +107,7 @@ BOOLN	InitProcessVariables_IHCRP_Shamma(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Shamma(void);
 
-BOOLN	ReadPars_IHCRP_Shamma(char *fileName);
+BOOLN	ReadPars_IHCRP_Shamma(WChar *fileName);
 
 BOOLN	RunModel_IHCRP_Shamma(EarObjectPtr data);
 

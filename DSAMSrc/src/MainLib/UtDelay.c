@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtDelay.h"
 
 /******************************************************************************/
@@ -53,8 +54,6 @@ Delay2Ptr	delay2Ptr = NULL;
 BOOLN
 Free_Utility_Delay(void)
 {
-	/* static const char	*funcName = "Free_Utility_Delay";  */
-
 	if (delay2Ptr == NULL)
 		return(FALSE);
 	if (delay2Ptr->parList)
@@ -78,9 +77,9 @@ InitModeList_Utility_Delay(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "SINGLE",	DELAY_SINGLE_MODE },
-					{ "LINEAR",	DELAY_LINEAR_MODE },
-					{ "", 		DELAY_NULL }
+					{ wxT("SINGLE"),	DELAY_SINGLE_MODE },
+					{ wxT("LINEAR"),	DELAY_LINEAR_MODE },
+					{ wxT(""),			DELAY_NULL }
 				};
 	delay2Ptr->modeList = modeList;
 	return(TRUE);
@@ -102,18 +101,19 @@ InitModeList_Utility_Delay(void)
 BOOLN
 Init_Utility_Delay(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Delay";
+	static const WChar	*funcName = wxT("Init_Utility_Delay");
 
 	if (parSpec == GLOBAL) {
 		if (delay2Ptr != NULL)
 			Free_Utility_Delay();
 		if ((delay2Ptr = (Delay2Ptr) malloc(sizeof(Delay2))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (delay2Ptr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -127,7 +127,7 @@ Init_Utility_Delay(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_Delay();
 	if (!SetUniParList_Utility_Delay()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Delay();
 		return(FALSE);
 	}
@@ -147,27 +147,27 @@ Init_Utility_Delay(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Delay(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Delay";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Delay");
 	UniParPtr	pars;
 
 	if ((delay2Ptr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_DELAY_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = delay2Ptr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_DELAY_MODE], "MODE",
-	  "Operation mode ('single' or 'linear').",
+	SetPar_UniParMgr(&pars[UTILITY_DELAY_MODE], wxT("MODE"),
+	  wxT("Operation mode ('single' or 'linear')."),
 	  UNIPAR_NAME_SPEC,
 	  &delay2Ptr->mode, delay2Ptr->modeList,
 	  (void * (*)) SetMode_Utility_Delay);
-	SetPar_UniParMgr(&pars[UTILITY_DELAY_INITIALDELAY], "INITIAL_DELAY",
-	  "Initial time delay (s).",
+	SetPar_UniParMgr(&pars[UTILITY_DELAY_INITIALDELAY], wxT("INITIAL_DELAY"),
+	  wxT("Initial time delay (s)."),
 	  UNIPAR_REAL,
 	  &delay2Ptr->initialDelay, NULL,
 	  (void * (*)) SetInitialDelay_Utility_Delay);
-	SetPar_UniParMgr(&pars[UTILITY_DELAY_FINALDELAY], "FINAL_DELAY",
-	  "Final time delay (not used with 'single' mode).",
+	SetPar_UniParMgr(&pars[UTILITY_DELAY_FINALDELAY], wxT("FINAL_DELAY"),
+	  wxT("Final time delay (not used with 'single' mode)."),
 	  UNIPAR_REAL,
 	  &delay2Ptr->finalDelay, NULL,
 	  (void * (*)) SetFinalDelay_Utility_Delay);
@@ -199,15 +199,15 @@ SetEnabledPars_Utility_Delay(void)
 UniParListPtr
 GetUniParListPtr_Utility_Delay(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_Delay";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_Delay");
 
 	if (delay2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (delay2Ptr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(delay2Ptr->parList);
@@ -222,9 +222,9 @@ GetUniParListPtr_Utility_Delay(void)
  */
 
 BOOLN
-SetPars_Utility_Delay(char *mode, double initialDelay, double finalDelay)
+SetPars_Utility_Delay(WChar *mode, double initialDelay, double finalDelay)
 {
-	static const char	*funcName = "SetPars_Utility_Delay";
+	static const WChar	*funcName = wxT("SetPars_Utility_Delay");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -235,7 +235,7 @@ SetPars_Utility_Delay(char *mode, double initialDelay, double finalDelay)
 	if (!SetFinalDelay_Utility_Delay(finalDelay))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -249,18 +249,18 @@ SetPars_Utility_Delay(char *mode, double initialDelay, double finalDelay)
  */
 
 BOOLN
-SetMode_Utility_Delay(char *theMode)
+SetMode_Utility_Delay(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Utility_Delay";
+	static const WChar	*funcName = wxT("SetMode_Utility_Delay");
 	int		specifier;
 
 	if (delay2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode, delay2Ptr->modeList)) ==
 	  DELAY_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -282,10 +282,10 @@ SetMode_Utility_Delay(char *theMode)
 BOOLN
 SetInitialDelay_Utility_Delay(double theInitialDelay)
 {
-	static const char	*funcName = "SetInitialDelay_Utility_Delay";
+	static const WChar	*funcName = wxT("SetInitialDelay_Utility_Delay");
 
 	if (delay2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -306,10 +306,10 @@ SetInitialDelay_Utility_Delay(double theInitialDelay)
 BOOLN
 SetFinalDelay_Utility_Delay(double theFinalDelay)
 {
-	static const char	*funcName = "SetFinalDelay_Utility_Delay";
+	static const WChar	*funcName = wxT("SetFinalDelay_Utility_Delay");
 
 	if (delay2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -332,24 +332,24 @@ SetFinalDelay_Utility_Delay(double theFinalDelay)
 BOOLN
 CheckPars_Utility_Delay(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Delay";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Delay");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (delay2Ptr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!delay2Ptr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!delay2Ptr->initialDelayFlag) {
-		NotifyError("%s: initialDelay variable not set.", funcName);
+		NotifyError(wxT("%s: initialDelay variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!delay2Ptr->finalDelayFlag) {
-		NotifyError("%s: finalDelay variable not set.", funcName);
+		NotifyError(wxT("%s: finalDelay variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -366,18 +366,19 @@ CheckPars_Utility_Delay(void)
 BOOLN
 PrintPars_Utility_Delay(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Delay";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Delay");
 
 	if (!CheckPars_Utility_Delay()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Create binaural ITD Utility Module Parameters:-\n");
-	DPrint("\tMode = %s,\n", delay2Ptr->modeList[delay2Ptr->mode].name);
-	DPrint("\tInitial delay = %g ms", MSEC(delay2Ptr->initialDelay));
+	DPrint(wxT("Create binaural ITD Utility Module Parameters:-\n"));
+	DPrint(wxT("\tMode = %s,\n"), delay2Ptr->modeList[delay2Ptr->mode].name);
+	DPrint(wxT("\tInitial delay = %g ms"), MSEC(delay2Ptr->initialDelay));
 	if (delay2Ptr->mode == DELAY_LINEAR_MODE)
-		DPrint(",\tfinalDelay = %g ms", MSEC(delay2Ptr->finalDelay));
-	DPrint(".\n");
+		DPrint(wxT(",\tfinalDelay = %g ms"), MSEC(delay2Ptr->finalDelay));
+	DPrint(wxT(".\n"));
 	return(TRUE);
 
 }
@@ -389,38 +390,39 @@ PrintPars_Utility_Delay(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_Delay(char *fileName)
+ReadPars_Utility_Delay(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_Delay";
+	static const WChar	*funcName = wxT("ReadPars_Utility_Delay");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	initialDelay, finalDelay;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &initialDelay))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &initialDelay))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &finalDelay))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &finalDelay))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Delay(mode, initialDelay, finalDelay)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -437,10 +439,10 @@ ReadPars_Utility_Delay(char *fileName)
 BOOLN
 SetParsPointer_Utility_Delay(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Delay";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Delay");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	delay2Ptr = (Delay2Ptr) theModule->parsPtr;
@@ -457,14 +459,15 @@ SetParsPointer_Utility_Delay(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Delay(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Delay";
+	static const WChar	*funcName = wxT("InitModule_Utility_Delay");
 
 	if (!SetParsPointer_Utility_Delay(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Delay(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = delay2Ptr;
@@ -496,37 +499,37 @@ InitModule_Utility_Delay(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Delay(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Delay";
+	static const WChar	*funcName = wxT("CheckData_Utility_Delay");
 	double	signalDuration;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (fabs(delay2Ptr->initialDelay) > signalDuration) {
-		NotifyError("%s: Delay (%g ms) is longer than signal.", funcName,
+		NotifyError(wxT("%s: Delay (%g ms) is longer than signal."), funcName,
 		  delay2Ptr->initialDelay, _GetDuration_SignalData(data->inSignal[0]));
 		return(FALSE);
 	}
 	if (fabs(delay2Ptr->finalDelay) > signalDuration) {
-		NotifyError("%s: Delay (%g ms) is longer than signal.", funcName,
+		NotifyError(wxT("%s: Delay (%g ms) is longer than signal."), funcName,
 		  delay2Ptr->initialDelay, _GetDuration_SignalData(data->inSignal[0]));
 		return(FALSE);
 	}
 	switch (delay2Ptr->mode) {
 	case DELAY_LINEAR_MODE:
 		if ((delay2Ptr->finalDelay < delay2Ptr->initialDelay)) {
-			NotifyError("%s: Illegal delay range (%g - %g ms).", funcName,
+			NotifyError(wxT("%s: Illegal delay range (%g - %g ms)."), funcName,
 			  delay2Ptr->initialDelay, delay2Ptr->finalDelay);
 			return(FALSE);
 		}
 		if ((data->inSignal[0]->numChannels /
 		  data->inSignal[0]->interleaveLevel) < 2) {
-			NotifyError("%s: LINEAR mode can only be used with multi-channel\n"
-			  "monaural or binaural signals.", funcName);
+			NotifyError(wxT("%s: LINEAR mode can only be used with multi-"
+			  "channel\nmonaural or binaural signals."), funcName);
 			return(FALSE);
 		}
 		break;
@@ -556,7 +559,7 @@ CheckData_Utility_Delay(EarObjectPtr data)
 BOOLN
 Process_Utility_Delay(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Delay";
+	static const WChar	*funcName = wxT("Process_Utility_Delay");
 	register	ChanData	*inPtr, *outPtr;
 	BOOLN	delayChannel;
 	int		chan;
@@ -568,17 +571,19 @@ Process_Utility_Delay(EarObjectPtr data)
 		if (!CheckPars_Utility_Delay())
 			return(FALSE);
 		if (!CheckData_Utility_Delay(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Introduce ITD into binaural signal");
+		SetProcessName_EarObject(data, wxT("Introduce ITD into binaural "
+		  "signal"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Delay-ITD ms");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Delay-ITD ms"));
 		p->delayPerChannel = (p->mode != DELAY_LINEAR_MODE)? 0.0: (p->
 		  finalDelay - p->initialDelay) / (data->outSignal->numChannels / data->
 		  outSignal->interleaveLevel - 1);

@@ -115,7 +115,7 @@ BOOLN	InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_SpikeRegularity(void);
 
-BOOLN	ReadPars_Analysis_SpikeRegularity(char *fileName);
+BOOLN	ReadPars_Analysis_SpikeRegularity(WChar *fileName);
 
 void	ResetProcess_Analysis_SpikeRegularity(EarObjectPtr data);
 

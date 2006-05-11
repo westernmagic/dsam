@@ -108,11 +108,11 @@ class IPCServer {
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
-void	EmptyDiagBuffer_IPCServer(char *s, int *c);
+void	EmptyDiagBuffer_IPCServer(WChar *s, int *c);
 
 IPCServer *	GetPtr_IPCServer(void);
 
-void	Notify_IPCServer(const char *format, va_list args,
+void	Notify_IPCServer(const WChar *format, va_list args,
 		  CommonDiagSpecifier type);
 
 /******************************************************************************/

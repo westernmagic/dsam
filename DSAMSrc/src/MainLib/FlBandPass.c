@@ -33,6 +33,7 @@
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
 #include "UtFilters.h"
+#include "UtString.h"
 #include "FlBandPass.h"
 
 /******************************************************************************/
@@ -59,19 +60,19 @@ BandPassFPtr	bandPassFPtr = NULL;
 BOOLN
 Init_Filter_BandPass(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_Filter_BandPass";
+	static const WChar *funcName = wxT("Init_Filter_BandPass");
 
 	if (parSpec == GLOBAL) {
 		if (bandPassFPtr != NULL)
 			Free_Filter_BandPass();
 		if ((bandPassFPtr = (BandPassFPtr) malloc(sizeof(BandPassF))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bandPassFPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -87,7 +88,7 @@ Init_Filter_BandPass(ParameterSpecifier parSpec)
 	bandPassFPtr->preAttenuation = 0.0;
 
 	if (!SetUniParList_Filter_BandPass()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Filter_BandPass();
 		return(FALSE);
 	}
@@ -134,37 +135,38 @@ Free_Filter_BandPass(void)
 BOOLN
 SetUniParList_Filter_BandPass(void)
 {
-	static const char *funcName = "SetUniParList_Filter_BandPass";
+	static const WChar *funcName = wxT("SetUniParList_Filter_BandPass");
 	UniParPtr	pars;
 
 	if ((bandPassFPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BANDPASS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bandPassFPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BANDPASS_FILTERCASCADE], "CASCADE",
-	  "Filter cascade.",
+	SetPar_UniParMgr(&pars[BANDPASS_FILTERCASCADE], wxT("CASCADE"),
+	  wxT("Filter cascade."),
 	  UNIPAR_INT,
 	  &bandPassFPtr->cascade, NULL,
 	  (void * (*)) SetCascade_Filter_BandPass);
-	SetPar_UniParMgr(&pars[BANDPASS_PREATTENUATION], "GAIN",
-	  "Pre-attenuation for filter (dB).",
+	SetPar_UniParMgr(&pars[BANDPASS_PREATTENUATION], wxT("GAIN"),
+	  wxT("Pre-attenuation for filter (dB)."),
 	  UNIPAR_REAL,
 	  &bandPassFPtr->preAttenuation, NULL,
 	  (void * (*)) SetPreAttenuation_Filter_BandPass);
-	SetPar_UniParMgr(&pars[BANDPASS_LOWERCUTOFFFREQ], "LOWER_FREQ",
-	  "Lower, 3 dB down cut-off frequency (Hz).",
+	SetPar_UniParMgr(&pars[BANDPASS_LOWERCUTOFFFREQ], wxT("LOWER_FREQ"),
+	  wxT("Lower, 3 dB down cut-off frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &bandPassFPtr->lowerCutOffFreq, NULL,
 	  (void * (*)) SetLowerCutOffFreq_Filter_BandPass);
-	SetPar_UniParMgr(&pars[BANDPASS_UPPERCUTOFFFREQ], "UPPER_FREQ",
-	  "Upper, 3 dB down cut-off frequency (Hz).",
+	SetPar_UniParMgr(&pars[BANDPASS_UPPERCUTOFFFREQ], wxT("UPPER_FREQ"),
+	  wxT("Upper, 3 dB down cut-off frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &bandPassFPtr->upperCutOffFreq, NULL,
 	  (void * (*)) SetUpperCutOffFreq_Filter_BandPass);
 
-	SetAltAbbreviation_UniParMgr(&pars[BANDPASS_PREATTENUATION], "ATTENUATION");
+	SetAltAbbreviation_UniParMgr(&pars[BANDPASS_PREATTENUATION], wxT(
+	  "ATTENUATION"));
 	return(TRUE);
 
 }
@@ -178,15 +180,15 @@ SetUniParList_Filter_BandPass(void)
 UniParListPtr
 GetUniParListPtr_Filter_BandPass(void)
 {
-	static const char *funcName = "GetUniParListPtr_Filter_BandPass";
+	static const WChar *funcName = wxT("GetUniParListPtr_Filter_BandPass");
 
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bandPassFPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bandPassFPtr->parList);
@@ -204,28 +206,28 @@ GetUniParListPtr_Filter_BandPass(void)
 BOOLN
 CheckPars_Filter_BandPass(void)
 {
-	static const char *funcName = "CheckPars_Filter_BandPass";
+	static const WChar *funcName = wxT("CheckPars_Filter_BandPass");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bandPassFPtr->cascadeFlag) {
-		NotifyError("%s: Filter cascade not set.", funcName);
+		NotifyError(wxT("%s: Filter cascade not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bandPassFPtr->lowerCutOffFreqFlag) {
-		NotifyError("%s: Lower cut off frequency not set.", funcName);
+		NotifyError(wxT("%s: Lower cut off frequency not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bandPassFPtr->upperCutOffFreqFlag) {
-		NotifyError("%s: Upper cut off frequency not set.", funcName);
+		NotifyError(wxT("%s: Upper cut off frequency not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bandPassFPtr->preAttenuationFlag) {
-		NotifyError("%s: Pre-attenuation parameter not set.", funcName);
+		NotifyError(wxT("%s: Pre-attenuation parameter not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -242,16 +244,16 @@ CheckPars_Filter_BandPass(void)
 BOOLN
 SetCascade_Filter_BandPass(int theCascade)
 {
-	static const char *funcName = "SetCascade_Filter_BandPass";
+	static const WChar *funcName = wxT("SetCascade_Filter_BandPass");
 
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bandPassFPtr->cascadeFlag = TRUE;
 	if (theCascade < 1) {
-		NotifyError("%s: This value must be greater than 0 (%d).\n", funcName,
-		  theCascade);
+		NotifyError(wxT("%s: This value must be greater than 0 (%d).\n"),
+		  funcName, theCascade);
 		return(FALSE);
 	}
 	bandPassFPtr->cascade = theCascade;
@@ -269,10 +271,10 @@ SetCascade_Filter_BandPass(int theCascade)
 BOOLN
 SetLowerCutOffFreq_Filter_BandPass(double theLowerCutOffFreq)
 {
-	static const char	*funcName = "SetLowerCutOffFreq_Filter_BandPass";
+	static const WChar	*funcName = wxT("SetLowerCutOffFreq_Filter_BandPass");
 
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bandPassFPtr->lowerCutOffFreqFlag = TRUE;
@@ -292,10 +294,10 @@ SetLowerCutOffFreq_Filter_BandPass(double theLowerCutOffFreq)
 BOOLN
 SetUpperCutOffFreq_Filter_BandPass(double theUpperCutOffFreq)
 {
-	static const char	*funcName = "SetUpperCutOffFreq_Filter_BandPass";
+	static const WChar	*funcName = wxT("SetUpperCutOffFreq_Filter_BandPass");
 
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bandPassFPtr->upperCutOffFreqFlag = TRUE;
@@ -315,10 +317,10 @@ SetUpperCutOffFreq_Filter_BandPass(double theUpperCutOffFreq)
 BOOLN
 SetPreAttenuation_Filter_BandPass(double thePreAttenuation)
 {
-	static const char	*funcName = "SetPreAttenuation_Filter_BandPass";
+	static const WChar	*funcName = wxT("SetPreAttenuation_Filter_BandPass");
 
 	if (bandPassFPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	bandPassFPtr->preAttenuationFlag = TRUE;
@@ -339,7 +341,7 @@ BOOLN
 SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
   double theUpperCutOffFreq, double preAttenuation)
 {
-	static const char *funcName = "SetPars_Filter_BandPass";
+	static const WChar *funcName = wxT("SetPars_Filter_BandPass");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -352,7 +354,7 @@ SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
 	if (!SetPreAttenuation_Filter_BandPass(preAttenuation))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -366,17 +368,18 @@ SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
 BOOLN
 PrintPars_Filter_BandPass(void)
 {
-	static const char *funcName = "PrintPars_Filter_BandPass";
+	static const WChar *funcName = wxT("PrintPars_Filter_BandPass");
 
 	if (!CheckPars_Filter_BandPass()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Band Pass Filter Module Parameters:-\n");
-	DPrint("\tFilter cascade = %d,\tPre-attenuation = %g dB\n",
+	DPrint(wxT("Band Pass Filter Module Parameters:-\n"));
+	DPrint(wxT("\tFilter cascade = %d,\tPre-attenuation = %g dB\n"),
 	  bandPassFPtr->cascade, bandPassFPtr->preAttenuation);
-	DPrint("\tLower/Upper cut-off Frequencies = %g / %g Hz."\
-	  "\n", bandPassFPtr->lowerCutOffFreq, bandPassFPtr->upperCutOffFreq);
+	DPrint(wxT("\tLower/Upper cut-off Frequencies = %g / %g Hz.\n"),
+	  bandPassFPtr->lowerCutOffFreq, bandPassFPtr->upperCutOffFreq);
 	return(TRUE);
 
 }
@@ -389,41 +392,42 @@ PrintPars_Filter_BandPass(void)
  */
  
 BOOLN
-ReadPars_Filter_BandPass(char *fileName)
+ReadPars_Filter_BandPass(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_Filter_BandPass";
+	static const WChar *funcName = wxT("ReadPars_Filter_BandPass");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		cascade;
 	double	lowerCutOffFrequency, upperCutOffFrequency, preAttenuation;
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &cascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &cascade))
 		ok = FALSE;;
-	if (!GetPars_ParFile(fp, "%lf", &preAttenuation))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &preAttenuation))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lowerCutOffFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &lowerCutOffFrequency))
 		ok = FALSE;;
-	if (!GetPars_ParFile(fp, "%lf", &upperCutOffFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &upperCutOffFrequency))
 		ok = FALSE;;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_BandPass(cascade, lowerCutOffFrequency,
 	  upperCutOffFrequency, preAttenuation)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -440,10 +444,10 @@ ReadPars_Filter_BandPass(char *fileName)
 BOOLN
 SetParsPointer_Filter_BandPass(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Filter_BandPass";
+	static const WChar	*funcName = wxT("SetParsPointer_Filter_BandPass");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bandPassFPtr = (BandPassFPtr) theModule->parsPtr;
@@ -460,14 +464,15 @@ SetParsPointer_Filter_BandPass(ModulePtr theModule)
 BOOLN
 InitModule_Filter_BandPass(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Filter_BandPass";
+	static const WChar	*funcName = wxT("InitModule_Filter_BandPass");
 
 	if (!SetParsPointer_Filter_BandPass(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Filter_BandPass(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bandPassFPtr;
@@ -492,7 +497,7 @@ InitModule_Filter_BandPass(ModulePtr theModule)
 BOOLN
 InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Filter_BandPass";
+	static const WChar *funcName = wxT("InitProcessVariables_Filter_BandPass");
 	BOOLN	ok = TRUE;
 	int		i, j;
 	double	*statePtr;
@@ -502,7 +507,7 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 		FreeProcessVariables_Filter_BandPass();
 		if ((p->coefficients = (BandPassCoeffsPtr *) calloc(data->outSignal->
 		  numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		p->numChannels = data->outSignal->numChannels;
@@ -510,7 +515,7 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 			if ((p->coefficients[i] = InitBandPassCoeffs_Filters(p->cascade,
 			  p->lowerCutOffFreq, p->upperCutOffFreq, data->inSignal[0]->dt)) ==
 			  NULL) {
-				NotifyError("%s: Failed initialised filter channel %d.",
+				NotifyError(wxT("%s: Failed initialised filter channel %d."),
 				  funcName, i);
 				ok = FALSE;
 			}
@@ -565,31 +570,31 @@ FreeProcessVariables_Filter_BandPass(void)
 BOOLN
 RunModel_Filter_BandPass(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_Filter_BandPass";
+	static const WChar *funcName = wxT("RunModel_Filter_BandPass");
 	BandPassFPtr	p = bandPassFPtr;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_Filter_BandPass())
 			return(FALSE);
-		SetProcessName_EarObject(data, "Band pass filter module process");
+		SetProcessName_EarObject(data, wxT("Band pass filter module process"));
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
-			NotifyError("%s: Could not initialise the process output signal.",
-			  funcName);
+			NotifyError(wxT("%s: Could not initialise the process output "
+			  "signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_BandPass(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

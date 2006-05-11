@@ -77,7 +77,7 @@ BOOLN	PrintPars_Utility_AmpMod(void);
 
 BOOLN	Process_Utility_AmpMod(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_AmpMod(char *fileName);
+BOOLN	ReadPars_Utility_AmpMod(WChar *fileName);
 
 BOOLN	SetDefaultNumFrequenciesArrays_Utility_AmpMod(void);
 

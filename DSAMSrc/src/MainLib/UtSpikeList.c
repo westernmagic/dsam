@@ -43,7 +43,6 @@
 void
 Free_SpikeList(SpikeSpecPtr *head)
 {
-	/* static const char *funcName = "Free_SpikeList"; */
 	SpikeSpecPtr	p, temp;
 
 	for (p = *head; p != NULL; ) {
@@ -98,53 +97,53 @@ FreeListSpec_SpikeList(SpikeListSpecPtr *p)
 SpikeListSpecPtr
 InitListSpec_SpikeList(int numChannels)
 {
-	static const char *funcName = "InitListSpec_SpikeList";
+	static const WChar *funcName = wxT("InitListSpec_SpikeList");
 	BOOLN	ok = TRUE;
 	SpikeListSpecPtr p;
 
 	if (numChannels < 1) {
-		NotifyError("%s: Illegal number of channels (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of channels (%d)."), funcName,
 		  numChannels);
 		return(NULL);
 	}
 	if ((p = (SpikeListSpecPtr) malloc(sizeof(SpikeListSpec))) == NULL) {
-		NotifyError("%s: Out of memory SpikeListSpecPtr.", funcName);
+		NotifyError(wxT("%s: Out of memory SpikeListSpecPtr."), funcName);
 		return(NULL);
 	}
 	p->numChannels = numChannels;
 	if ((p->head = (SpikeSpecPtr *) calloc(p->numChannels,
 	  sizeof(SpikeSpecPtr))) == NULL) {
-		NotifyError("%s: Out of memory for %d 'head' pointers.", funcName,
+		NotifyError(wxT("%s: Out of memory for %d 'head' pointers."), funcName,
 		  p->numChannels);
 		ok = FALSE;
 	}
 	if ((p->tail = (SpikeSpecPtr *) calloc(p->numChannels,
 	  sizeof(SpikeSpecPtr))) == NULL) {
-		NotifyError("%s: Out of memory for %d 'tail' pointers.", funcName,
+		NotifyError(wxT("%s: Out of memory for %d 'tail' pointers."), funcName,
 		  p->numChannels);
 		ok = FALSE;
 	}
 	if ((p->current = (SpikeSpecPtr *) calloc(p->numChannels,
 	  sizeof(SpikeSpecPtr))) == NULL) {
-		NotifyError("%s: Out of memory for %d 'current' pointers. ",
+		NotifyError(wxT("%s: Out of memory for %d 'current' pointers. "),
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
 	if ((p->riseDetected = (BOOLN *) calloc(p->numChannels, sizeof(BOOLN))) ==
 	 NULL) {
-		NotifyError("%s: Out of memory for the 'riseDetected[%d]' array. ",
+		NotifyError(wxT("%s: Out of memory for the 'riseDetected[%d]' array. "),
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
 	if ((p->lastValue = (double *) calloc(p->numChannels, sizeof(double))) ==
 	 NULL) {
-		NotifyError("%s: Out of memory for 'lastValue[%d]' array. ",
+		NotifyError(wxT("%s: Out of memory for 'lastValue[%d]' array. "),
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
 	if ((p->timeIndex = (ChanLen *) calloc(p->numChannels, sizeof(ChanLen))) ==
 	 NULL) {
-		NotifyError("%s: Out of memory for 'timeIndex[%d]' array. ",
+		NotifyError(wxT("%s: Out of memory for 'timeIndex[%d]' array. "),
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
@@ -172,13 +171,14 @@ BOOLN
 InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
   ChanLen timeIndex)
 {
-	static const char *funcName = "InsertSpikeSpec_SpikeSpec";
+	static const WChar *funcName = wxT("InsertSpikeSpec_SpikeSpec");
 	SpikeSpecPtr	p;
 
 	if ((listSpec->head[channel] == NULL) || (listSpec->current[channel] ==
 	  NULL)) {
 		if ((p = (SpikeSpecPtr) malloc(sizeof(SpikeSpec))) == NULL) {
-			NotifyError("%s: Out of memory for spike specification.", funcName);
+			NotifyError(wxT("%s: Out of memory for spike specification."),
+			  funcName);
 			return(FALSE);
 		}
 		if (listSpec->head[channel] == NULL) {
@@ -209,11 +209,12 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 BOOLN
 ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 {
-	static const char *funcName = "ResetListSpec_SpikeList";
+	static const WChar *funcName = wxT("ResetListSpec_SpikeList");
 	int		chan;
 
 	if (listSpec == NULL) {
-		NotifyError("%s: Attempt to reset NULL list specification.", funcName);
+		NotifyError(wxT("%s: Attempt to reset NULL list specification."),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = signal->offset; chan < signal->numChannels; chan++)
@@ -235,14 +236,15 @@ BOOLN
 GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
   SignalDataPtr signal)
 {
-	static char	*funcName = "GenerateList_SpikeList";
+	static WChar	*funcName = wxT("GenerateList_SpikeList");
 	register	BOOLN		*riseDetected;
 	register	ChanData	*inPtr, *lastValue;
 	uShort		chan;
 	ChanLen	i, startTime, *timeIndex;
 
 	if (listSpec == NULL) {
-		NotifyError("%s: Attempt to use NULL list specification.", funcName);
+		NotifyError(wxT("%s: Attempt to use NULL list specification."),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = signal->offset; chan < signal->numChannels; chan++) {
@@ -266,8 +268,8 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 					if (*lastValue > eventThreshold) {
 						if (!InsertSpikeSpec_SpikeList(listSpec, chan,
 						  *timeIndex + i - 1)) {
-							NotifyError("%s: Could not insert spike "
-							  "specification.", funcName);
+							NotifyError(wxT("%s: Could not insert spike "
+							  "specification."), funcName);
 							return(FALSE);
 						}
 					}

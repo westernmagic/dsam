@@ -29,16 +29,16 @@
 #define SDI_STANDARD_SHAPE_WIDTH      100
 
 // Shape elements.
-#define SHAPE_XML_ANALYSIS_SHAPE_ELEMENT	_T("analysis_shape")
-#define SHAPE_XML_CONTROL_SHAPE_ELEMENT		_T("control_shape")
-#define SHAPE_XML_DISPLAY_SHAPE_ELEMENT		_T("display_shape")
-#define SHAPE_XML_FILTER_SHAPE_ELEMENT		_T("filter_shape")
-#define SHAPE_XML_IO_SHAPE_ELEMENT			_T("io_shape")
-#define SHAPE_XML_LINE_SHAPE_ELEMENT		_T("line_shape")
-#define SHAPE_XML_MODEL_SHAPE_ELEMENT		_T("model_shape")
-#define SHAPE_XML_USER_SHAPE_ELEMENT		_T("user_shape")
-#define SHAPE_XML_TRANSFORM_SHAPE_ELEMENT	_T("transform_shape")
-#define SHAPE_XML_UTILITY_SHAPE_ELEMENT		_T("utility_shape")
+#define SHAPE_XML_ANALYSIS_SHAPE_ELEMENT	"analysis_shape"
+#define SHAPE_XML_CONTROL_SHAPE_ELEMENT		"control_shape"
+#define SHAPE_XML_DISPLAY_SHAPE_ELEMENT		"display_shape"
+#define SHAPE_XML_FILTER_SHAPE_ELEMENT		"filter_shape"
+#define SHAPE_XML_IO_SHAPE_ELEMENT			"io_shape"
+#define SHAPE_XML_LINE_SHAPE_ELEMENT		"line_shape"
+#define SHAPE_XML_MODEL_SHAPE_ELEMENT		"model_shape"
+#define SHAPE_XML_USER_SHAPE_ELEMENT		"user_shape"
+#define SHAPE_XML_TRANSFORM_SHAPE_ELEMENT	"transform_shape"
+#define SHAPE_XML_UTILITY_SHAPE_ELEMENT		"utility_shape"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/

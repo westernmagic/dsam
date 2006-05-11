@@ -26,6 +26,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "StAMTone.h"
+#include "UtString.h"
 #include "FiParFile.h"
 
 /********************************* Global variables ***************************/
@@ -50,18 +51,19 @@ AMTonePtr	aMTonePtr = NULL;
 BOOLN
 Init_PureTone_AM(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_PureTone_AM";
+	static const WChar *funcName = wxT("Init_PureTone_AM");
 
 	if (parSpec == GLOBAL) {
 		if (aMTonePtr != NULL)
 			Free_PureTone_AM();
 		if ((aMTonePtr = (AMTonePtr) malloc(sizeof(AMTone))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (aMTonePtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -80,7 +82,7 @@ Init_PureTone_AM(ParameterSpecifier parSpec)
 	aMTonePtr->dt = 0.1e-5;
 
 	if (!SetUniParList_PureTone_AM()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_PureTone_AM();
 		return(FALSE);
 	}
@@ -122,42 +124,42 @@ Free_PureTone_AM(void)
 BOOLN
 SetUniParList_PureTone_AM(void)
 {
-	static const char *funcName = "SetUniParList_PureTone_AM";
+	static const WChar *funcName = wxT("SetUniParList_PureTone_AM");
 	UniParPtr	pars;
 
 	if ((aMTonePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  PURETONE_AM_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = aMTonePtr->parList->pars;
-	SetPar_UniParMgr(&pars[AM_TONE_FREQUENCY], "CARRIER_FREQ",
-	  "Carrier frequency (Hz).",
+	SetPar_UniParMgr(&pars[AM_TONE_FREQUENCY], wxT("CARRIER_FREQ"),
+	  wxT("Carrier frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->frequency, NULL,
 	  (void * (*)) SetFrequency_PureTone_AM);
-	SetPar_UniParMgr(&pars[AM_TONE_MODULATIONFREQUENCY],"MOD_FREQUENCY",
-	  "Modulation frequency (Hz).",
+	SetPar_UniParMgr(&pars[AM_TONE_MODULATIONFREQUENCY],wxT("MOD_FREQUENCY"),
+	  wxT("Modulation frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->modulationFrequency, NULL,
 	  (void * (*)) SetModulationFrequency_PureTone_AM);
-	SetPar_UniParMgr(&pars[AM_TONE_MODULATIONDEPTH], "DEPTH",
-	  "Amplitude modulation depth (%).",
+	SetPar_UniParMgr(&pars[AM_TONE_MODULATIONDEPTH], wxT("DEPTH"),
+	  wxT("Amplitude modulation depth (%)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->modulationDepth, NULL,
 	  (void * (*)) SetModulationDepth_PureTone_AM);
-	SetPar_UniParMgr(&pars[AM_TONE_INTENSITY], "INTENSITY",
-	  "Intensity (dB SPL).",
+	SetPar_UniParMgr(&pars[AM_TONE_INTENSITY], wxT("INTENSITY"),
+	  wxT("Intensity (dB SPL)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->intensity, NULL,
 	  (void * (*)) SetIntensity_PureTone_AM);
-	SetPar_UniParMgr(&pars[AM_TONE_DURATION], "DURATION",
-	  "Duration (s).",
+	SetPar_UniParMgr(&pars[AM_TONE_DURATION], wxT("DURATION"),
+	  wxT("Duration (s)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->duration, NULL,
 	  (void * (*)) SetDuration_PureTone_AM);
-	SetPar_UniParMgr(&pars[AM_TONE_SAMPLINGINTERVAL], "DT",
-	  "Sampling interval, dt (s).",
+	SetPar_UniParMgr(&pars[AM_TONE_SAMPLINGINTERVAL], wxT("DT"),
+	  wxT("Sampling interval, dt (s)."),
 	  UNIPAR_REAL,
 	  &aMTonePtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_PureTone_AM);
@@ -174,15 +176,15 @@ SetUniParList_PureTone_AM(void)
 UniParListPtr
 GetUniParListPtr_PureTone_AM(void)
 {
-	static const char *funcName = "GetUniParListPtr_PureTone_AM";
+	static const WChar *funcName = wxT("GetUniParListPtr_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (aMTonePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(aMTonePtr->parList);
@@ -201,48 +203,49 @@ GetUniParListPtr_PureTone_AM(void)
 BOOLN
 CheckPars_PureTone_AM(void)
 {
-	static const char *funcName = "CheckPars_PureTone_AM";
+	static const WChar *funcName = wxT("CheckPars_PureTone_AM");
 	BOOLN	ok;
 	double	criticalFrequency;
 	
 	ok = TRUE;
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!aMTonePtr->frequencyFlag) {
-		NotifyError("%s: Carrier frequency variable not set.", funcName);
+		NotifyError(wxT("%s: Carrier frequency variable not set."), funcName);
 		ok = FALSE;
 	}	
 	if (!aMTonePtr->modulationFrequencyFlag) {
-		NotifyError("%s: Modulation frequency variable not set.", funcName);
+		NotifyError(wxT("%s: Modulation frequency variable not set."),
+		  funcName);
 		ok = FALSE;
 	}
 	if (!aMTonePtr->modulationDepthFlag) {
-		NotifyError("%s: Percent AM variable not set.", funcName);
+		NotifyError(wxT("%s: Percent AM variable not set."), funcName);
 		ok = FALSE;
 	}
 		if (!aMTonePtr->intensityFlag) {
-		NotifyError("%s: intensity variable not set.", funcName);
+		NotifyError(wxT("%s: intensity variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!aMTonePtr->durationFlag) {
-		NotifyError("%s: duration variable not set.", funcName);
+		NotifyError(wxT("%s: duration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!aMTonePtr->dtFlag) {
-		NotifyError("%s: dtFlag variable not set.", funcName);
+		NotifyError(wxT("%s: dtFlag variable not set."), funcName);
 		ok = FALSE;
 	}
 	criticalFrequency = 1.0 / (2.0 * aMTonePtr->dt);
 	if (ok && (criticalFrequency <= aMTonePtr->frequency)) {
-		NotifyError("%s: Sampling rate (dt = %g ms) is to low for the "\
-		  "carrier frequency.", funcName, MSEC(aMTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is to low for the "
+		  "carrier frequency."), funcName, MSEC(aMTonePtr->dt));
 		ok = FALSE;
 	} 
 	if (ok && (criticalFrequency <= aMTonePtr->modulationFrequency)) {
-		NotifyError("%s: Sampling rate (dt = %g ms) is too low for the "\
-		  "modulation frequency.", funcName, MSEC(aMTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
+		  "modulation frequency."), funcName, MSEC(aMTonePtr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -259,10 +262,10 @@ CheckPars_PureTone_AM(void)
 BOOLN
 SetFrequency_PureTone_AM(double theFrequency)
 {
-	static const char *funcName = "SetFrequency_PureTone_AM";
+	static const WChar *funcName = wxT("SetFrequency_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr->frequencyFlag = TRUE;
@@ -281,10 +284,10 @@ SetFrequency_PureTone_AM(double theFrequency)
 BOOLN
 SetModulationFrequency_PureTone_AM(double theModulationFrequency)
 {
-	static const char *funcName = "SetModulationFrequency_PureTone_AM";
+	static const WChar *funcName = wxT("SetModulationFrequency_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr->modulationFrequencyFlag = TRUE;
@@ -303,10 +306,10 @@ SetModulationFrequency_PureTone_AM(double theModulationFrequency)
 BOOLN
 SetModulationDepth_PureTone_AM(double theModulationDepth)
 {
-	static const char *funcName = "SetModulationDepth_PureTone_AM";
+	static const WChar *funcName = wxT("SetModulationDepth_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr->modulationDepthFlag = TRUE;
@@ -326,10 +329,10 @@ SetModulationDepth_PureTone_AM(double theModulationDepth)
 BOOLN
 SetIntensity_PureTone_AM(double theIntensity)
 {
-	static const char *funcName = "SetIntensity_PureTone_AM";
+	static const WChar *funcName = wxT("SetIntensity_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr->intensityFlag = TRUE;
@@ -348,10 +351,10 @@ SetIntensity_PureTone_AM(double theIntensity)
 BOOLN
 SetDuration_PureTone_AM(double theDuration)
 {
-	static const char *funcName = "SetDuration_PureTone_AM";
+	static const WChar *funcName = wxT("SetDuration_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr->durationFlag = TRUE;
@@ -370,14 +373,14 @@ SetDuration_PureTone_AM(double theDuration)
 BOOLN
 SetSamplingInterval_PureTone_AM(double theSamplingInterval)
 {
-	static const char *funcName = "SetSamplingInterval_PureTone_AM";
+	static const WChar *funcName = wxT("SetSamplingInterval_PureTone_AM");
 
 	if (aMTonePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ( theSamplingInterval <= 0.0 ) {
-		NotifyError("%s: Illegal sampling interval value = %g!", funcName,
+		NotifyError(wxT("%s: Illegal sampling interval value = %g!"), funcName,
 		  theSamplingInterval);
 		return(FALSE);
 	}
@@ -399,7 +402,7 @@ SetPars_PureTone_AM(double theFrequency, double theModulationFrequency,
   double theModulationDepth, double theIntensity, double theDuration,
   double theSamplingInterval)
 {
-	static const char *funcName = "SetPars_PureTone_AM";
+	static const WChar *funcName = wxT("SetPars_PureTone_AM");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -416,7 +419,7 @@ SetPars_PureTone_AM(double theFrequency, double theModulationFrequency,
 	if (!SetSamplingInterval_PureTone_AM(theSamplingInterval))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -430,19 +433,19 @@ SetPars_PureTone_AM(double theFrequency, double theModulationFrequency,
 BOOLN
 PrintPars_PureTone_AM(void)
 {
-	static const char *funcName = "PrintPars_PureTone_AM";
+	static const WChar *funcName = wxT("PrintPars_PureTone_AM");
 
 	if (!CheckPars_PureTone_AM()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Amplitude Modulated Tone Module Parameters:-\n");
-	DPrint("\tCarrier frequency = %g Hz,\tModulation "\
-	  "frequency = %g\n", aMTonePtr->frequency,
-	  aMTonePtr->modulationFrequency);
-	DPrint("\tPecentage Amplitude = %g,\tIntensity = %g dB "\
-	  "SPL,\n", aMTonePtr->modulationDepth, aMTonePtr->intensity);
-	DPrint("\tDuration = %g ms,\tSampling interval = %g ms\n",
+	DPrint(wxT("Amplitude Modulated Tone Module Parameters:-\n"));
+	DPrint(wxT("\tCarrier frequency = %g Hz,\tModulation frequency = %g\n"),
+	  aMTonePtr->frequency, aMTonePtr->modulationFrequency);
+	DPrint(wxT("\tPecentage Amplitude = %g,\tIntensity = %g dB SPL,\n"),
+	  aMTonePtr->modulationDepth, aMTonePtr->intensity);
+	DPrint(wxT("\tDuration = %g ms,\tSampling interval = %g ms\n"),
 	  MSEC(aMTonePtr->duration), MSEC(aMTonePtr->dt));
 	return(TRUE);
 
@@ -456,45 +459,46 @@ PrintPars_PureTone_AM(void)
  */
  
 BOOLN
-ReadPars_PureTone_AM(char *fileName)
+ReadPars_PureTone_AM(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_PureTone_AM";
+	static const WChar *funcName = wxT("ReadPars_PureTone_AM");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double  frequency, modulationFrequency, modulationDepth, intensity;
 	double  duration, samplingInterval;
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &frequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &frequency))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &modulationFrequency))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationFrequency))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &modulationDepth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationDepth))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &intensity))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &duration))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-    if (!GetPars_ParFile(fp, "%lf", &samplingInterval))
+    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s:  Not enough, lines or invalid parameters, in "\
-		  "module parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_AM(frequency, modulationFrequency, modulationDepth,
 	  intensity, duration, samplingInterval)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -511,10 +515,10 @@ ReadPars_PureTone_AM(char *fileName)
 BOOLN
 SetParsPointer_PureTone_AM(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_PureTone_AM";
+	static const WChar	*funcName = wxT("SetParsPointer_PureTone_AM");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	aMTonePtr = (AMTonePtr) theModule->parsPtr;
@@ -531,14 +535,15 @@ SetParsPointer_PureTone_AM(ModulePtr theModule)
 BOOLN
 InitModule_PureTone_AM(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_PureTone_AM";
+	static const WChar	*funcName = wxT("InitModule_PureTone_AM");
 
 	if (!SetParsPointer_PureTone_AM(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_PureTone_AM(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = aMTonePtr;
@@ -568,7 +573,7 @@ InitModule_PureTone_AM(ModulePtr theModule)
 BOOLN
 GenerateSignal_PureTone_AM(EarObjectPtr data)
 {
-	static const char *funcName = "GenerateSignal_PureTone_AM";
+	static const WChar *funcName = wxT("GenerateSignal_PureTone_AM");
 	ChanLen		i, t;
 	double 		modulationIndex;
 	register	double		time, amplitude;
@@ -576,16 +581,16 @@ GenerateSignal_PureTone_AM(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckPars_PureTone_AM())
 			return(FALSE);
-		SetProcessName_EarObject(data, "AM Tone stimulus");
+		SetProcessName_EarObject(data, wxT("AM Tone stimulus"));
 		if ( !InitOutSignal_EarObject(data, AM_TONE_NUM_CHANNELS,
 		  (ChanLen) floor(aMTonePtr->duration / aMTonePtr->dt + 0.5),
 		  aMTonePtr->dt) ) {
-			NotifyError("%s: Cannot initialise output signal", funcName);
+			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

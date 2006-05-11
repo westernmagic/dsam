@@ -29,6 +29,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtReduceDt.h"
 
 /******************************************************************************/
@@ -53,8 +54,6 @@ ReduceDtPtr	reduceDtPtr = NULL;
 BOOLN
 Free_Utility_ReduceDt(void)
 {
-	/* static const char	*funcName = "Free_Utility_ReduceDt"; */
-
 	if (reduceDtPtr == NULL)
 		return(FALSE);
 	if (reduceDtPtr->parList)
@@ -82,18 +81,19 @@ Free_Utility_ReduceDt(void)
 BOOLN
 Init_Utility_ReduceDt(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("Init_Utility_ReduceDt");
 
 	if (parSpec == GLOBAL) {
 		if (reduceDtPtr != NULL)
 			Free_Utility_ReduceDt();
 		if ((reduceDtPtr = (ReduceDtPtr) malloc(sizeof(ReduceDt))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (reduceDtPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -102,7 +102,7 @@ Init_Utility_ReduceDt(ParameterSpecifier parSpec)
 	reduceDtPtr->denominator = 1;
 
 	if (!SetUniParList_Utility_ReduceDt()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_ReduceDt();
 		return(FALSE);
 	}
@@ -121,23 +121,23 @@ Init_Utility_ReduceDt(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_ReduceDt(void)
 {
-	static const char *funcName = "SetUniParList_Utility_ReduceDt";
+	static const WChar *funcName = wxT("SetUniParList_Utility_ReduceDt");
 	UniParPtr	pars;
 
 	if ((reduceDtPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_REDUCEDT_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = reduceDtPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR], "DENOMINATOR",
-	  "Reduction denominator (integer).",
+	SetPar_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR], wxT("DENOMINATOR"),
+	  wxT("Reduction denominator (integer)."),
 	  UNIPAR_INT,
 	  &reduceDtPtr->denominator, NULL,
 	  (void * (*)) SetDenominator_Utility_ReduceDt);
 
 	SetAltAbbreviation_UniParMgr(&pars[UTILITY_REDUCEDT_DENOMINATOR],
-	  "DENOMINTOR");
+	  wxT("DENOMINTOR"));
 	return(TRUE);
 
 }
@@ -152,15 +152,15 @@ SetUniParList_Utility_ReduceDt(void)
 UniParListPtr
 GetUniParListPtr_Utility_ReduceDt(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_ReduceDt");
 
 	if (reduceDtPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (reduceDtPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(reduceDtPtr->parList);
@@ -177,14 +177,14 @@ GetUniParListPtr_Utility_ReduceDt(void)
 BOOLN
 SetPars_Utility_ReduceDt(int denominator)
 {
-	static const char	*funcName = "SetPars_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("SetPars_Utility_ReduceDt");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!SetDenominator_Utility_ReduceDt(denominator))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -200,16 +200,16 @@ SetPars_Utility_ReduceDt(int denominator)
 BOOLN
 SetDenominator_Utility_ReduceDt(int theDenominator)
 {
-	static const char	*funcName =
-	  "SetDenominator_Utility_ReduceDt";
+	static const WChar	*funcName =
+	  wxT("SetDenominator_Utility_ReduceDt");
 
 	if (reduceDtPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theDenominator < 1) {
-		NotifyError("%s: Illegal denomitor = %d; valid values are\ngreater "\
-		  "than 0.", funcName, theDenominator);
+		NotifyError(wxT("%s: Illegal denomitor = %d; valid values are\ngreater "
+		  "than 0."), funcName, theDenominator);
 		return(FALSE);
 	}
 	reduceDtPtr->denominatorFlag = TRUE;
@@ -231,16 +231,16 @@ SetDenominator_Utility_ReduceDt(int theDenominator)
 BOOLN
 CheckPars_Utility_ReduceDt(void)
 {
-	static const char	*funcName = "CheckPars_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("CheckPars_Utility_ReduceDt");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (reduceDtPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!reduceDtPtr->denominatorFlag) {
-		NotifyError("%s: denominator variable not set.", funcName);
+		NotifyError(wxT("%s: denominator variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -257,15 +257,15 @@ CheckPars_Utility_ReduceDt(void)
 BOOLN
 PrintPars_Utility_ReduceDt(void)
 {
-	static const char	*funcName = "PrintPars_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("PrintPars_Utility_ReduceDt");
 
 	if (!CheckPars_Utility_ReduceDt()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Reduce Sampling Interval, dt, Utility Module "
-	  "Parameters:-\n");
-	DPrint("\tReduction denominator = %d.\n",
+	DPrint(wxT("Reduce Sampling Interval, dt, Utility Module parameters:-\n"));
+	DPrint(wxT("\tReduction denominator = %d.\n"),
 	  reduceDtPtr->denominator);
 	return(TRUE);
 
@@ -278,33 +278,34 @@ PrintPars_Utility_ReduceDt(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_ReduceDt(char *fileName)
+ReadPars_Utility_ReduceDt(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("ReadPars_Utility_ReduceDt");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	int		denominator;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &denominator))
+	if (!GetPars_ParFile(fp, wxT("%d"), &denominator))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_ReduceDt(denominator)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -321,10 +322,10 @@ ReadPars_Utility_ReduceDt(char *fileName)
 BOOLN
 SetParsPointer_Utility_ReduceDt(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_ReduceDt");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	reduceDtPtr = (ReduceDtPtr) theModule->parsPtr;
@@ -341,14 +342,15 @@ SetParsPointer_Utility_ReduceDt(ModulePtr theModule)
 BOOLN
 InitModule_Utility_ReduceDt(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("InitModule_Utility_ReduceDt");
 
 	if (!SetParsPointer_Utility_ReduceDt(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_ReduceDt(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = reduceDtPtr;
@@ -381,10 +383,10 @@ InitModule_Utility_ReduceDt(ModulePtr theModule)
 BOOLN
 CheckData_Utility_ReduceDt(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("CheckData_Utility_ReduceDt");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -425,7 +427,7 @@ ResetProcess_Utility_ReduceDt(EarObjectPtr data)
 BOOLN
 Process_Utility_ReduceDt(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_ReduceDt";
+	static const WChar	*funcName = wxT("Process_Utility_ReduceDt");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, j;
 	double	gradient;
@@ -436,14 +438,15 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 		if (!CheckPars_Utility_ReduceDt())
 			return(FALSE);
 		if (!CheckData_Utility_ReduceDt(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Module process ??");
+		SetProcessName_EarObject(data, wxT("Module process ??"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length * p->denominator, data->inSignal[0]->dt /
 		  p->denominator)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}	
 		if (data->initThreadRunFlag)

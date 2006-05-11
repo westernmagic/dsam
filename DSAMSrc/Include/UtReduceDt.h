@@ -76,7 +76,7 @@ BOOLN	PrintPars_Utility_ReduceDt(void);
 
 BOOLN	Process_Utility_ReduceDt(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ReduceDt(char *fileName);
+BOOLN	ReadPars_Utility_ReduceDt(WChar *fileName);
 
 void	ResetProcess_Utility_ReduceDt(EarObjectPtr data);
 

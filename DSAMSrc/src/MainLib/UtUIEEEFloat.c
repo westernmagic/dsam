@@ -570,11 +570,11 @@ TestFromIEEESingle(char *hex)
 	p.s = f;
 
 #ifdef IEEE
-	fprintf(stderr, "IEEE(%g) [%s] --> float(%g) [%08lX]\n",
+	DSAM_fprintf(stderr, "IEEE(%g) [%s] --> float(%g) [%08lX]\n",
 	  MachineIEEESingle(bytes),
 	hex, f, p.i);
 #else /* IEEE */
-	fprintf(stderr, "IEEE[%s] --> float(%g) [%08lX]\n", hex, f, p.i);
+	DSAM_fprintf(stderr, "IEEE[%s] --> float(%g) [%08lX]\n", hex, f, p.i);
 #endif /* IEEE */
 }
 
@@ -591,12 +591,12 @@ TestToIEEESingle(DefDouble f)
 	ConvertToIEEESingle(f, bytes);
 	Bytes2Hex(bytes, hex, 4);
 #ifdef IEEE
-	fprintf(stderr, "float(%g) [%08lX] --> IEEE(%g) [%s]\n", 		f, p.i,
+	DSAM_fprintf(stderr, "float(%g) [%08lX] --> IEEE(%g) [%s]\n", 		f, p.i,
 		MachineIEEESingle(bytes),
 		hex
 	);
 #else /* IEEE */
-	fprintf(stderr, "float(%g) [%08lX] --> IEEE[%s]\n", f, p.i, hex);
+	DSAM_fprintf(stderr, "float(%g) [%08lX] --> IEEE[%s]\n", f, p.i, hex);
 #endif /* IEEE */
 }
 
@@ -613,11 +613,11 @@ TestFromIEEEDouble(char *hex)
 	p.d = f;
 
 #ifdef IEEE
-	fprintf(stderr, "IEEE(%g) [%.8s %.8s] --> double(%g) [%08lX %08lX]\n",
+	DSAM_fprintf(stderr, "IEEE(%g) [%.8s %.8s] --> double(%g) [%08lX %08lX]\n",
 	  MachineIEEEDouble(bytes),
 	hex, hex+8, f, p.i[0], p.i[1]);
 #else /* IEEE */
-	fprintf(stderr, "IEEE[%.8s %.8s] --> double(%g) [%08lX %08lX]\n",
+	DSAM_fprintf(stderr, "IEEE[%.8s %.8s] --> double(%g) [%08lX %08lX]\n",
 	  hex, hex+8, f, p.i[0], p.i[1]);
 #endif /* IEEE */
 
@@ -635,10 +635,10 @@ TestToIEEEDouble(DefDouble f)
 	ConvertToIEEEDouble(f, bytes);
 	Bytes2Hex(bytes, hex, 8);
 #ifdef IEEE
-	fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE(%g) [%.8s %.8s]\n",
+	DSAM_fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE(%g) [%.8s %.8s]\n",
 	  f, p.i[0], p.i[1], MachineIEEEDouble(bytes), hex, hex+8 );
 #else /* IEEE */
-	fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE[%.8s %.8s]\n", f, p.i[0],
+	DSAM_fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE[%.8s %.8s]\n", f, p.i[0],
 	  p.i[1], hex, hex+8 );
 #endif /* IEEE */
 
@@ -668,12 +668,12 @@ TestFromIEEEExtended(char *hex)
 	bytes[2] = 0;
 
 #if defined(applec) || defined(THINK_C)
-	fprintf(stderr, "IEEE(%g) [%.4s %.8s %.8s] --> extended(%g) "\
+	DSAM_fprintf(stderr, "IEEE(%g) [%.4s %.8s %.8s] --> extended(%g) "\
 	  "[%04X %04X%04X %04X%04X]\n", *((DefDouble*)(bytes)), hex, hex+4, hex+12,
 	  f, p.i[0]&0xFFFF, p.i[2]&0xFFFF, p.i[3]&0xFFFF, p.i[4]&0xFFFF,
 	  p.i[5]&0xFFFF );
 #else /* !Macintosh */
-	fprintf(stderr, "IEEE[%.4s %.8s %.8s] --> extended(%g) "\
+	DSAM_fprintf(stderr, "IEEE[%.4s %.8s %.8s] --> extended(%g) "\
 	  "[%04X %04X%04X %04X%04X]\n", hex, hex+4, hex+12, f, p.i[0]&0xFFFF,
 	  p.i[2]&0xFFFF, p.i[3]&0xFFFF, p.i[4]&0xFFFF, p.i[5]&0xFFFF);
 #endif /* Macintosh */
@@ -701,10 +701,10 @@ TestToIEEEExtended(DefDouble f)
 	bytes[2] = 0;
 
 #if defined(applec) || defined(THINK_C)
-	fprintf(stderr, "extended(%g) --> IEEE(%g) [%.4s %.8s %.8s]\n", f,
+	DSAM_fprintf(stderr, "extended(%g) --> IEEE(%g) [%.4s %.8s %.8s]\n", f,
 	  *((DefDouble*)(bytes)), hex, hex+4, hex+12);
 #else /* !Macintosh */
-	fprintf(stderr, "extended(%g) --> IEEE[%.4s %.8s %.8s]\n", f, hex, hex+4,
+	DSAM_fprintf(stderr, "extended(%g) --> IEEE[%.4s %.8s %.8s]\n", f, hex, hex+4,
 	  hex+12);
 #endif /* Macintosh */
 }

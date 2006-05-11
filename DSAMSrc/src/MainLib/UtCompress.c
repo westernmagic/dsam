@@ -24,6 +24,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtCompress.h"
 
 /******************************************************************************/
@@ -48,8 +49,6 @@ CompressionPtr	compressionPtr = NULL;
 BOOLN
 Free_Utility_Compression(void)
 {
-	/* static const char	*funcName = "Free_Utility_Compression";  */
-
 	if (compressionPtr == NULL)
 		return(FALSE);
 	if (compressionPtr->parList)
@@ -73,9 +72,9 @@ InitModeList_Utility_Compression(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "LOG",			COMPRESS_LOG_MODE },
-					{ "POWER",			COMPRESS_POWER_MODE },
-					{ "",				COMPRESS_NULL }
+					{ wxT("LOG"),			COMPRESS_LOG_MODE },
+					{ wxT("POWER"),			COMPRESS_POWER_MODE },
+					{ wxT(""),				COMPRESS_NULL }
 				
 				};
 	compressionPtr->modeList = modeList;
@@ -98,19 +97,20 @@ InitModeList_Utility_Compression(void)
 BOOLN
 Init_Utility_Compression(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Compression";
+	static const WChar	*funcName = wxT("Init_Utility_Compression");
 
 	if (parSpec == GLOBAL) {
 		if (compressionPtr != NULL)
 			Free_Utility_Compression();
 		if ((compressionPtr = (CompressionPtr) malloc(sizeof(Compression))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (compressionPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -126,7 +126,7 @@ Init_Utility_Compression(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_Compression();
 	if (!SetUniParList_Utility_Compression()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Compression();
 		return(FALSE);
 	}
@@ -145,32 +145,34 @@ Init_Utility_Compression(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Compression(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Compression";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Compression");
 	UniParPtr	pars;
 
 	if ((compressionPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_COMPRESSION_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = compressionPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_MODE], "MODE",
-	  "Compression mode ('log' or 'power').",
+	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_MODE], wxT("MODE"),
+	  wxT("Compression mode ('log' or 'power')."),
 	  UNIPAR_NAME_SPEC,
 	  &compressionPtr->mode, compressionPtr->modeList,
 	  (void * (*)) SetMode_Utility_Compression);
-	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_SIGNALMULTIPLIER], "MULTIPLIER",
-	  "Signal multiplier (arbitrary units).",
+	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_SIGNALMULTIPLIER], wxT(
+	  "MULTIPLIER"),
+	  wxT("Signal multiplier (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &compressionPtr->signalMultiplier, NULL,
 	  (void * (*)) SetSignalMultiplier_Utility_Compression);
-	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_POWEREXPONENT], "EXPONENT",
-	  "Power exponent ('power' mode only).",
+	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_POWEREXPONENT], wxT("EXPONENT"),
+	  wxT("Power exponent ('power' mode only)."),
 	  UNIPAR_REAL,
 	  &compressionPtr->powerExponent, NULL,
 	  (void * (*)) SetPowerExponent_Utility_Compression);
-	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_MINRESPONSE], "MIN_RESPONSE",
-	  "Minimum response from module (arbitrary units).",
+	SetPar_UniParMgr(&pars[UTILITY_COMPRESSION_MINRESPONSE], wxT(
+	  "MIN_RESPONSE"),
+	  wxT("Minimum response from module (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &compressionPtr->minResponse, NULL,
 	  (void * (*)) SetMinResponse_Utility_Compression);
@@ -188,15 +190,15 @@ SetUniParList_Utility_Compression(void)
 UniParListPtr
 GetUniParListPtr_Utility_Compression(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_Compression";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_Compression");
 
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (compressionPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(compressionPtr->parList);
@@ -211,10 +213,10 @@ GetUniParListPtr_Utility_Compression(void)
  */
 
 BOOLN
-SetPars_Utility_Compression(char *mode, double signalMultiplier,
+SetPars_Utility_Compression(WChar *mode, double signalMultiplier,
   double powerExponent, double minResponse)
 {
-	static const char	*funcName = "SetPars_Utility_Compression";
+	static const WChar	*funcName = wxT("SetPars_Utility_Compression");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -227,7 +229,7 @@ SetPars_Utility_Compression(char *mode, double signalMultiplier,
 	if (!SetMinResponse_Utility_Compression(minResponse))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -241,18 +243,18 @@ SetPars_Utility_Compression(char *mode, double signalMultiplier,
  */
 
 BOOLN
-SetMode_Utility_Compression(char *theMode)
+SetMode_Utility_Compression(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Utility_Compression";
+	static const WChar	*funcName = wxT("SetMode_Utility_Compression");
 	int		specifier;
 
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 	  compressionPtr->modeList)) == COMPRESS_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	compressionPtr->modeFlag = TRUE;
@@ -289,10 +291,11 @@ SetMode_Utility_Compression(char *theMode)
 BOOLN
 SetSignalMultiplier_Utility_Compression(double theSignalMultiplier)
 {
-	static const char	*funcName = "SetSignalMultiplier_Utility_Compression";
+	static const WChar	*funcName = wxT(
+	  "SetSignalMultiplier_Utility_Compression");
 
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -313,14 +316,14 @@ SetSignalMultiplier_Utility_Compression(double theSignalMultiplier)
 BOOLN
 SetPowerExponent_Utility_Compression(double thePowerExponent)
 {
-	static const char	*funcName = "SetPowerExponent_Utility_Compression";
+	static const WChar	*funcName = wxT("SetPowerExponent_Utility_Compression");
 
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((thePowerExponent > 1.0) || (thePowerExponent < 0.0)) {
-		NotifyError("%s: Value must be between 0 and 1 (%g).",
+		NotifyError(wxT("%s: Value must be between 0 and 1 (%g)."),
 		  thePowerExponent);
 		return(FALSE);
 	}
@@ -341,15 +344,15 @@ SetPowerExponent_Utility_Compression(double thePowerExponent)
 BOOLN
 SetMinResponse_Utility_Compression(double theMinResponse)
 {
-	static const char	*funcName = "SetMinResponse_Utility_Compression";
+	static const WChar	*funcName = wxT("SetMinResponse_Utility_Compression");
 
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theMinResponse < 0.0) {
-		NotifyError("%s: This value must be greater then zero (%d).", funcName,
-		  theMinResponse);
+		NotifyError(wxT("%s: This value must be greater then zero (%d)."),
+		  funcName, theMinResponse);
 		return(FALSE);
 	}
 	compressionPtr->minResponseFlag = TRUE;
@@ -371,28 +374,28 @@ SetMinResponse_Utility_Compression(double theMinResponse)
 BOOLN
 CheckPars_Utility_Compression(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Compression";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Compression");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (compressionPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!compressionPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!compressionPtr->signalMultiplierFlag) {
-		NotifyError("%s: signalMultiplier variable not set.", funcName);
+		NotifyError(wxT("%s: signalMultiplier variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!compressionPtr->powerExponentFlag) {
-		NotifyError("%s: powerExponent variable not set.", funcName);
+		NotifyError(wxT("%s: powerExponent variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!compressionPtr->minResponseFlag) {
-		NotifyError("%s: minResponse variable not set.", funcName);
+		NotifyError(wxT("%s: minResponse variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -409,19 +412,21 @@ CheckPars_Utility_Compression(void)
 BOOLN
 PrintPars_Utility_Compression(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Compression";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Compression");
 
 	if (!CheckPars_Utility_Compression()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Compression Utility Module Parameters:-\n");
-	DPrint("\tMode = %s,",
+	DPrint(wxT("Compression Utility Module Parameters:-\n"));
+	DPrint(wxT("\tMode = %s,"),
 	  compressionPtr->modeList[compressionPtr->mode].name);
-	DPrint("\tSignal multiplier = %g (units)\n",
+	DPrint(wxT("\tSignal multiplier = %g (units)\n"),
 	  compressionPtr->signalMultiplier);
-	DPrint("\tPower exponent = %g,", compressionPtr->powerExponent);
-	DPrint("\tMinimum response = %g (units).\n", compressionPtr->minResponse);
+	DPrint(wxT("\tPower exponent = %g,"), compressionPtr->powerExponent);
+	DPrint(wxT("\tMinimum response = %g (units).\n"), compressionPtr->
+	  minResponse);
 	return(TRUE);
 
 }
@@ -433,41 +438,42 @@ PrintPars_Utility_Compression(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_Compression(char *fileName)
+ReadPars_Utility_Compression(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_Compression";
+	static const WChar	*funcName = wxT("ReadPars_Utility_Compression");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	double	signalMultiplier, powerExponent, minResponse;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &signalMultiplier))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &powerExponent))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &powerExponent))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &minResponse))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &minResponse))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Compression(mode, signalMultiplier, powerExponent,
 	  minResponse)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -484,10 +490,10 @@ ReadPars_Utility_Compression(char *fileName)
 BOOLN
 SetParsPointer_Utility_Compression(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Compression";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Compression");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	compressionPtr = (CompressionPtr) theModule->parsPtr;
@@ -504,14 +510,15 @@ SetParsPointer_Utility_Compression(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Compression(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Compression";
+	static const WChar	*funcName = wxT("InitModule_Utility_Compression");
 
 	if (!SetParsPointer_Utility_Compression(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Compression(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = compressionPtr;
@@ -543,10 +550,10 @@ InitModule_Utility_Compression(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Compression(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Compression";
+	static const WChar	*funcName = wxT("CheckData_Utility_Compression");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -574,7 +581,7 @@ CheckData_Utility_Compression(EarObjectPtr data)
 BOOLN
 Process_Utility_Compression(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Compression";
+	static const WChar	*funcName = wxT("Process_Utility_Compression");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
@@ -584,13 +591,14 @@ Process_Utility_Compression(EarObjectPtr data)
 		if (!CheckPars_Utility_Compression())
 			return(FALSE);
 		if (!CheckData_Utility_Compression(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Compression Utility Module");
+		SetProcessName_EarObject(data, wxT("Compression Utility Module"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}	
 		p->minInput = pow(10, p->minResponse);

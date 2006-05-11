@@ -53,11 +53,11 @@
  */
 
 BOOLN
-ReadFile_ASCII(char *fileName, EarObjectPtr data)
+ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "ReadFile_ASCII";
+	static const WChar *funcName = wxT("ReadFile_ASCII");
 	BOOLN	endOfSignal;
-	char	line[MAXLINE_LARGE];
+	WChar	line[MAXLINE_LARGE];
 	uShort	numColumns;
 	int		chan;
 	double	dt;
@@ -65,48 +65,52 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
 	FILE	*fp;
 
 	if (!CheckPars_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
 	if ((fp = OpenFile_DataFile(fileName, FOR_ASCII_READING)) == NULL) {
-		NotifyError("%s: Couldn't open file.", funcName);
+		NotifyError(wxT("%s: Couldn't open file."), funcName);
 		return(FALSE);
 	}
 	if ((numColumns = NumberOfColumns_DataFile(fp)) == 0) {
-		NotifyError("%s: Illegal no. of columns: '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Illegal no. of columns: '%s'."), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' ASCII (dat) file",
+	SetProcessName_EarObject(data, wxT("'%s' ASCII (dat) file"),
 	  GetFileNameFPath_Utility_String(fileName));
 	numSamples = (int32) floor(dataFilePtr->duration * dataFilePtr->
 	  defaultSampleRate + 0.5);
 	if (!InitProcessVariables_DataFile(data, numSamples,
 	  dataFilePtr->defaultSampleRate)) {
-		NotifyError("%s: Could not initialise process variables.", funcName);
+		NotifyError(wxT("%s: Could not initialise process variables."),
+		  funcName);
 		return(FALSE);
 	}
 	dt = 1.0 / dataFilePtr->defaultSampleRate;
 	length = dataFilePtr->maxSamples;
 	if (!InitOutSignal_EarObject(data, numColumns, length, dt) ) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
+		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
 	if (numColumns == 2)
 		SetInterleaveLevel_SignalData(data->outSignal, 2);
 	for (i = 0; i < data->timeIndex; i++)
-		if (fgets(line, MAXLINE_LARGE, fp) == NULL)
+		if (DSAM_fgets(line, MAXLINE_LARGE, fp) == NULL)
 			return(FALSE);
 	for (i = 0, endOfSignal = FALSE; !endOfSignal && (i < length); i++)
 		for (chan = 0; (chan < data->outSignal->numChannels); chan++)
-			if (fscanf(fp, "%lf", &data->outSignal->channel[chan][i]) == EOF) {
+			if (DSAM_fscanf(fp, wxT("%lf"), &data->outSignal->channel[chan][
+			  i]) == EOF) {
 				endOfSignal = TRUE;
 				break;
 			}
 	if (endOfSignal) {
 		if ((data->outSignal->length = i - 1) == 0) {
 			if (!GetDSAMPtr_Common()->segmentedMode)
-				NotifyError("%s: Couldn't read samples from the file '%s'.",
-				  funcName ,fileName);
+				NotifyError(wxT("%s: Couldn't read samples from the file "
+				  "'%s'."), funcName ,fileName);
 			return(FALSE);
 		}
 	}
@@ -125,12 +129,12 @@ ReadFile_ASCII(char *fileName, EarObjectPtr data)
  */
 
 double
-GetDuration_ASCII(char *fileName)
+GetDuration_ASCII(WChar *fileName)
 {
-	static const char *funcName = "GetDuration_ASCII";
+	static const WChar *funcName = wxT("GetDuration_ASCII");
 
-	NotifyError("%s: Signal duration cannot be calculated for this file type.",
-	  funcName);
+	NotifyError(wxT("%s: Signal duration cannot be calculated for this file "
+	  "type."), funcName);
 	return(-1.0);
 
 }
@@ -143,22 +147,22 @@ GetDuration_ASCII(char *fileName)
  */
  
 BOOLN
-WriteFile_ASCII(char *fileName, EarObjectPtr data)
+WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "WriteFile_ASCII";
+	static const WChar *funcName = wxT("WriteFile_ASCII");
 
 	if (!CheckPars_SignalData(data->outSignal)) {
-		NotifyError("%s: Output signal not initialised.", funcName);
+		NotifyError(wxT("%s: Output signal not initialised."), funcName);
 		return(FALSE);
 	}
 	SetTimeIndex_SignalData(data->outSignal, _WorldTime_EarObject(data));
 	if (!OutputToFile_SignalData(fileName, data->outSignal)) {
 		if (data->processName != NULL)
-			NotifyWarning("%s: Data from EarObject: %s, has not been output "
-			  "to file.", funcName, data->processName);
+			NotifyWarning(wxT("%s: Data from EarObject: %s, has not been "
+			  "output to file."), funcName, data->processName);
 		else
-			NotifyWarning("%s: Data from EarObject: <no name>, has not been "
-			  "output to file.", funcName);
+			NotifyWarning(wxT("%s: Data from EarObject: <no name>, has not been "
+			  "output to file."), funcName);
 		return(FALSE);
 	} else {
 		return(TRUE);

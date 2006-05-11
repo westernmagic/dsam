@@ -86,13 +86,14 @@ SDIView::ProcessListDialog(void)
 	if (theShape) {
 		wxArrayString	*procList = wxGetApp().GetProcessList(((SDIEvtHandler *)
 		  theShape->GetEventHandler())->processType);
-		wxSingleChoiceDialog dialog(theShape->GetCanvas(), "Select a process",
-		  "Please select a process", procList->Count(), &procList->Item(0));
+		wxSingleChoiceDialog dialog(theShape->GetCanvas(), wxT("Select a "
+		  "process"), wxT("Please select a process"), procList->Count(),
+		  &procList->Item(0));
 
 		if (dialog.ShowModal() == wxID_OK) {
 			SDICanvas *canvas = (SDICanvas *) theShape->GetCanvas();
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Edit process name", SDIFRAME_EDIT_PROCESS,
+			  new SDICommand(wxT("Edit process name"), SDIFRAME_EDIT_PROCESS,
 			  (SDIDocument *) canvas->view->GetDocument(),
 			  dialog.GetStringSelection(), theShape));
 		
@@ -102,7 +103,7 @@ SDIView::ProcessListDialog(void)
 }
 
 /******************************************************************************/
-/****************************** EditCtrlProperties *************************/
+/****************************** EditCtrlProperties ****************************/
 /******************************************************************************/
 
 void
@@ -117,13 +118,13 @@ SDIView::EditCtrlProperties(void)
 		switch (pc->type) {
 		case REPEAT: {
 			wxString	oldStrCount;
-			oldStrCount.Printf("%d", pc->u.loop.count);
-			wxString newStrCount = wxGetTextFromUser("Enter repeat count",
-			  "Shape Control Par", oldStrCount);
+			oldStrCount.Printf(wxT("%d"), pc->u.loop.count);
+			wxString newStrCount = wxGetTextFromUser(wxT("Enter repeat count"),
+			  wxT("Shape Control Par"), oldStrCount);
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
-			  new SDICommand("Edit control parameters", SDIFRAME_EDIT_PROCESS,
-			  (SDIDocument *) canvas->view->GetDocument(), newStrCount,
-			  theShape));
+			  new SDICommand(wxT("Edit control parameters"),
+			  SDIFRAME_EDIT_PROCESS, (SDIDocument *) canvas->view->
+			  GetDocument(), newStrCount, theShape));
 			break; }
 		default:
 			;
@@ -319,8 +320,8 @@ SDIView::OnCut(wxCommandEvent& event)
 
 	wxShape *theShape = FindSelectedShape();
 	if (theShape)
-		doc->GetCommandProcessor()->Submit(new SDICommand("Cut", SDIFRAME_CUT,
-		  doc, NULL, -1, 0.0, 0.0, TRUE, theShape));
+		doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Cut"),
+		  SDIFRAME_CUT, doc, NULL, -1, 0.0, 0.0, TRUE, theShape));
 
 }
 
@@ -349,7 +350,7 @@ SDIView::OnChangeBackgroundColour(wxCommandEvent& event)
 		dialog->Close();
 
 		if (theBrush)
-			doc->GetCommandProcessor()->Submit(new SDICommand("Change colour",
+			doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Change colour"),
 			  SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush, theShape));
 	}
 
@@ -409,18 +410,18 @@ SDIView::OnEditProperties(wxCommandEvent& WXUNUSED(event))
 void
 SDIView::OnReadParFile(wxCommandEvent& WXUNUSED(event))
 {
-	static const char *funcName = "SDIView::OnReadParFile";
+	static const wxChar *funcName = wxT("SDIView::OnReadParFile");
 
 	wxShape *shape = FindSelectedShape();
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-	wxFileDialog dialog(shape->GetCanvas(), "Choose a file", wxGetCwd());
+	wxFileDialog dialog(shape->GetCanvas(), wxT("Choose a file"), wxGetCwd());
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 	wxFileName fileName = dialog.GetPath();
-	if (!ReadPars_ModuleMgr(myHandler->pc->data, (char *) fileName.GetFullPath(
-	  ).c_str()))
-		NotifyWarning("%s: Could not read parameters from file '%s'.",
+	if (!ReadPars_ModuleMgr(myHandler->pc->data, (wxChar *) fileName.
+	  GetFullPath().c_str()))
+		NotifyWarning(wxT("%s: Could not read parameters from file '%s'."),
 		  funcName, fileName.GetFullPath().c_str());
 
 }

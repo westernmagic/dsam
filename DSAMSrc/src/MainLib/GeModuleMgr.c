@@ -81,10 +81,10 @@ BOOLN	(* RunProcess_ModuleMgr)(EarObjectPtr) = RunProcessStandard_ModuleMgr;
 void *
 NoFunction_ModuleMgr(void)
 {
-	static const char *funcName = "NoFunction_ModuleMgr";
+	static const WChar *funcName = wxT("NoFunction_ModuleMgr");
 
-	NotifyError("%s: Attempted to use a function which does not\nexist for "\
-	  "module.", funcName );
+	NotifyError(wxT("%s: Attempted to use a function which does not\nexist for "
+	  "module."), funcName );
 	return(NULL);
 
 }
@@ -135,12 +135,12 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 	module->GetUniParListPtr = (UniParListPtr (*)(void)) NullFunction_ModuleMgr;
 	module->PrintPars = (BOOLN (*)(void)) DefaultFunc;
 #	ifdef _PAMASTER1_H
-		module->QueueCommand = (BOOLN (*)(void *, int, TypeSpecifier, char *,
+		module->QueueCommand = (BOOLN (*)(void *, int, TypeSpecifier, WChar *,
 		  CommandSpecifier, ScopeSpecifier)) DefaultFunc;
 		module->SendQueuedCommands = (BOOLN (*)(void)) DefaultFunc;
 #	endif
 	module->ReadPars = NULL;
-	module->ReadSignal = (BOOLN (*)(char *, EarObjectPtr)) DefaultFunc;
+	module->ReadSignal = (BOOLN (*)(WChar *, EarObjectPtr)) DefaultFunc;
 	module->ResetProcess = (void (*)(EarObjectPtr)) DefaultFunc;
 	module->RunProcess = (BOOLN (*)(EarObjectPtr)) DefaultFunc;
 	module->InitModule = (BOOLN (*)(ModulePtr)) DefaultFunc;
@@ -161,15 +161,15 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
  */
 
 ModulePtr
-Init_ModuleMgr(char *theModuleName)
+Init_ModuleMgr(WChar *theModuleName)
 {
-	static const char *funcName = "Init_ModuleMgr";
+	static const WChar *funcName = wxT("Init_ModuleMgr");
 	static ModuleHandle handleNumber = 0;
 	ModulePtr	theModule;
 	ModRegEntryPtr	modRegEntryPtr;
 
 	if ((modRegEntryPtr = GetRegEntry_ModuleReg(theModuleName)) == NULL) {
-		NotifyError("%s: Unknown module '%s'.", funcName, theModuleName);
+		NotifyError(wxT("%s: Unknown module '%s'."), funcName, theModuleName);
 		return(NULL);
 	}		
 	if (modRegEntryPtr->specifier == NULL_MODULE) {
@@ -177,11 +177,11 @@ Init_ModuleMgr(char *theModuleName)
 			return(nullModule);
 	} else {
 		if (!nullModule)
-			nullModule = Init_ModuleMgr("NULL");
+			nullModule = Init_ModuleMgr(wxT("NULL"));
 	}
 		
 	if ((theModule = (ModulePtr) (malloc(sizeof (Module)))) == NULL) {
-		NotifyError("%s: Could not allocate memory.", funcName);
+		NotifyError(wxT("%s: Could not allocate memory."), funcName);
 		return(NULL);
 	}
 	theModule->specifier = modRegEntryPtr->specifier;
@@ -194,7 +194,7 @@ Init_ModuleMgr(char *theModuleName)
 	(* modRegEntryPtr->InitModule)(theModule);
 	theModule->handle = handleNumber++;		/* Unique handle for each module. */
 	if (!AddModuleRef_ModuleMgr(&moduleList, theModule)) {
-		NotifyError("%s: Could not register new module.", funcName);
+		NotifyError(wxT("%s: Could not register new module."), funcName);
 		Free_ModuleMgr(&theModule);
 		return(NULL);
 	}
@@ -212,11 +212,11 @@ Init_ModuleMgr(char *theModuleName)
 ModuleRefPtr
 CreateModuleRef_ModuleMgr(ModulePtr theModule)
 {
-	static const char *funcName = "CreateModuleRef_ModuleMgr";
+	static const WChar *funcName = wxT("CreateModuleRef_ModuleMgr");
 	ModuleRef	*newNode;
 	
 	if ((newNode = (ModuleRef *) malloc(sizeof (ModuleRef))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
+		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
 	}
 	newNode->module = theModule;
@@ -235,12 +235,12 @@ CreateModuleRef_ModuleMgr(ModulePtr theModule)
 BOOLN
 AddModuleRef_ModuleMgr(ModuleRefPtr *theList, ModulePtr theModule)
 {
-	static const char *funcName = "AddModuleRef_ModuleMgr";
+	static const WChar *funcName = wxT("AddModuleRef_ModuleMgr");
 	ModuleRefPtr	temp, p;
 
     if (*theList == NULL) {
     	if ((*theList = CreateModuleRef_ModuleMgr(theModule)) == NULL) {
-    		NotifyError("%s: Could not create new node.", funcName);
+    		NotifyError(wxT("%s: Could not create new node."), funcName);
     		return(FALSE);
     	}
 		return(TRUE);
@@ -249,11 +249,11 @@ AddModuleRef_ModuleMgr(ModuleRefPtr *theList, ModulePtr theModule)
 	  theModule->handle); p = p->next)
 		;
 	if (p->module->handle == theModule->handle) {
-		NotifyWarning("%s: Module already in list.", funcName);
+		NotifyWarning(wxT("%s: Module already in list."), funcName);
 		return(TRUE);
 	}
 	if ((temp = CreateModuleRef_ModuleMgr(theModule)) == NULL) {
-		NotifyError("%s: Could not create temp node.", funcName);
+		NotifyError(wxT("%s: Could not create temp node."), funcName);
 		return(FALSE);
 	}
 	if (p->module->handle > theModule->handle) {
@@ -344,16 +344,16 @@ FreeAll_ModuleMgr(void)
 BOOLN
 RunModel_ModuleMgr_Null(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_ModuleMgr_Null";
+	static const WChar *funcName = wxT("RunModel_ModuleMgr_Null");
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		SetProcessName_EarObject(data, NULL_MODULE_PROCESS_NAME);
 		if (!data->inSignal || !CheckPars_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not set correctly.", funcName);
+			NotifyError(wxT("%s: Input signal not set correctly."), funcName);
 			return(FALSE);
 		}
 		if (!data->module->onFlag)
@@ -391,17 +391,17 @@ LinkGlueRoutine_ModuleMgr(void)
  */
 
 BOOLN
-CheckData_ModuleMgr(EarObjectPtr data, const char *callingFunction)
+CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction)
 {
-	static const char *funcName = "CheckData_ModuleMgr";
+	static const WChar *funcName = wxT("CheckData_ModuleMgr");
 
 	if (data == NULL) {
-		NotifyError("%s: %s: Process EarObject not initialised.", funcName,
+		NotifyError(wxT("%s: %s: Process EarObject not initialised."), funcName,
 		  callingFunction);
 		return(FALSE);
 	}
 	if (data->module == NULL) {
-		NotifyError("%s: %s: Process EarObject  module not initialised.",
+		NotifyError(wxT("%s: %s: Process EarObject  module not initialised."),
 		  funcName, callingFunction);
 		return(FALSE);
 	}
@@ -420,14 +420,14 @@ CheckData_ModuleMgr(EarObjectPtr data, const char *callingFunction)
 BOOLN
 Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 {
-	static const char *funcName = "Enable_ModuleMgr";
+	static const WChar *funcName = wxT("Enable_ModuleMgr");
 
 	if (!data) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!data->module) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	
@@ -452,7 +452,7 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 void *
 GetData_ModuleMgr(EarObjectPtr data, void *inArg)
 {
-	static const char *funcName = "GetData_ModuleMgr";
+	static const WChar *funcName = wxT("GetData_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
@@ -471,7 +471,7 @@ GetData_ModuleMgr(EarObjectPtr data, void *inArg)
 DatumPtr
 GetSimulation_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetSimulation_ModuleMgr";
+	static const WChar *funcName = wxT("GetSimulation_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
@@ -491,7 +491,7 @@ GetSimulation_ModuleMgr(EarObjectPtr data)
 DatumPtr *
 GetSimPtr_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetSimPtr_ModuleMgr";
+	static const WChar *funcName = wxT("GetSimPtr_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
@@ -509,9 +509,9 @@ GetSimPtr_ModuleMgr(EarObjectPtr data)
  */
 
 EarObjectPtr
-GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier)
+GetProcess_ModuleMgr(EarObjectPtr data, WChar *processSpecifier)
 {
-	static const char *funcName = "GetProcess_ModuleMgr";
+	static const WChar *funcName = wxT("GetProcess_ModuleMgr");
 	EarObjectPtr	process;
 
 	if (!CheckData_ModuleMgr(data, funcName))
@@ -523,7 +523,7 @@ GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier)
 	  parsPtr)->simulation, processSpecifier)) != NULL)
 		return(process);
 
-	NotifyError("%s: Could not find process.", funcName);
+	NotifyError(wxT("%s: Could not find process."), funcName);
 	return(NULL);
 
 }
@@ -535,9 +535,9 @@ GetProcess_ModuleMgr(EarObjectPtr data, char *processSpecifier)
  */
 
 EarObjectPtr
-GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label)
+GetLabelledProcess_ModuleMgr(EarObjectPtr data, WChar *label)
 {
-	static const char *funcName = "GetLabelledProcess_ModuleMgr";
+	static const WChar *funcName = wxT("GetLabelledProcess_ModuleMgr");
 	EarObjectPtr	process;
 
 	if (!CheckData_ModuleMgr(data, funcName))
@@ -549,7 +549,7 @@ GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label)
 	  module->parsPtr)->simulation, label)) != NULL)
 		return(process);
 
-	NotifyError("%s: Could not find process.", funcName);
+	NotifyError(wxT("%s: Could not find process."), funcName);
 	return(NULL);
 
 }
@@ -561,9 +561,9 @@ GetLabelledProcess_ModuleMgr(EarObjectPtr data, char *label)
  */
 
 UniParPtr
-GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
+GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName)
 {
-	static const char *funcName = "GetUniParPtr_ModuleMgr";
+	static const WChar *funcName = wxT("GetUniParPtr_ModuleMgr");
 	UniParPtr	par;
 	UniParListPtr	parList;
 
@@ -573,8 +573,8 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 	parList = (* data->module->GetUniParListPtr)();
 	if ((par = FindUniPar_UniParMgr(&parList, parName, UNIPAR_SEARCH_ABBR)) ==
 	  NULL) {
-		NotifyError("%s: Could not find parameter '%s' for process '" STR_FMT
-		  "'", funcName, parName, data->module->name);
+		NotifyError(wxT("%s: Could not find parameter '%s' for process '")
+		  STR_FMT wxT("'"), funcName, parName, data->module->name);
 		return(NULL);
 	}
 	return(par);
@@ -590,7 +590,7 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, char *parName)
 UniParListPtr
 GetUniParListPtr_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetUniParListPtr_ModuleMgr";
+	static const WChar *funcName = wxT("GetUniParListPtr_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
@@ -609,7 +609,7 @@ GetUniParListPtr_ModuleMgr(EarObjectPtr data)
 BOOLN
 PrintPars_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "PrintPars_ModuleMgr";
+	static const WChar *funcName = wxT("PrintPars_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -632,12 +632,12 @@ PrintPars_ModuleMgr(EarObjectPtr data)
  */
 
 BOOLN
-ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
+ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 {
-	static const char *funcName = "ReadPars_ModuleMgr";
+	static const WChar *funcName = wxT("ReadPars_ModuleMgr");
 	BOOLN	ok = TRUE, useOldReadPars;
-	char	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
-	char	failedParName[MAXLINE] = "";
+	WChar	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
+	WChar	failedParName[MAXLINE] = wxT("");
 	int		newParCount = 0, parCount = 0;
 	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 	UniParPtr	par;
@@ -649,22 +649,23 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	if (data->module->specifier == SIMSCRIPT_MODULE)
 		return((* data->module->ReadPars)(fileName));
 	parList = (* data->module->GetUniParListPtr)();
-	if ((strcmp(fileName, NO_FILE) == 0) || !parList)
+	if ((DSAM_strcmp(fileName, NO_FILE) == 0) || !parList)
 		return(TRUE);
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen((char *) filePath, "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
 	if (!data->module->ReadPars)
 		useOldReadPars = FALSE;
 	else {
 		useOldReadPars = TRUE;
-		SetErrorsFile_Common("off", OVERWRITE);
+		SetErrorsFile_Common(wxT("off"), OVERWRITE);
 	}
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
-	while (GetPars_ParFile(fp, "%s %s", parName, parValue)) {
+	while (GetPars_ParFile(fp, wxT("%s %s"), parName, parValue)) {
 		parCount++;
 		tempParList = parList;
 		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
@@ -676,13 +677,13 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 				}
 			} else {
 				ok = FALSE;
-				strcpy(failedParName, parName);
+				DSAM_strcpy(failedParName, parName);
 			}
 		}
 		if (par || !useOldReadPars) {
 			if (!par) {
-				NotifyError("%s: Unknown parameter '%s' for module '" STR_FMT
-				  "'.", funcName, parName, data->module->name);
+				NotifyError(wxT("%s: Unknown parameter '%s' for module '")
+				  STR_FMT wxT("'."), funcName, parName, data->module->name);
 				ok = FALSE;
 			} else {
 				if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
@@ -696,16 +697,16 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 	if ((parCount != newParCount) && useOldReadPars) {
 		GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 		/* Enable this following line after an adjustment period. */
-		/* NotifyWarning("%s: Using old parameter format for module '%s'.",
+		/* NotifyWarning(wxT("%s: Using old parameter format for module '%s'."),
 		  funcName, data->module->name); */
 		return((* data->module->ReadPars)(fileName));
 	}
 	if (!ok) {
 		if (*failedParName)
-			NotifyError("%s: Unknown parameter '%s' for module '" STR_FMT "'.",
-			  funcName, failedParName, data->module->name);
-		NotifyError("%s: Invalid parameters, in " STR_FMT " module parameter "
-		  "file '%s'.", funcName, data->module->name, fileName);
+			NotifyError(wxT("%s: Unknown parameter '%s' for module '" STR_FMT
+			  wxT("'.")), funcName, failedParName, data->module->name);
+		NotifyError(wxT("%s: Invalid parameters, in " STR_FMT " module "
+		  "parameter file '%s'."), funcName, data->module->name, fileName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -722,14 +723,14 @@ ReadPars_ModuleMgr(EarObjectPtr data, char *fileName)
 BOOLN
 PrintSimParFile_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "PrintSimParFile_ModuleMgr";
+	static const WChar *funcName = wxT("PrintSimParFile_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 	SET_PARS_POINTER(data);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError("%s: This function can only be used with a simulation.",
-		  funcName);
+		NotifyError(wxT("%s: This function can only be used with a "
+		  "simulation."), funcName);
 		return(FALSE);
 	}
 	return(PrintSimParFile_Utility_SimScript());
@@ -739,14 +740,14 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
 /*************************** WriteSimParFile **********************************/
 
 /*
- * This function prints a simulation as a ".spf" file.
+ * This function prints a simulation as a wxT(".spf") file.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
-WriteSimParFile_ModuleMgr(char *fileName, EarObjectPtr data)
+WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data)
 {
-	/*static const char *funcName = "WriteSimParFile_ModuleMgr";*/
+	/*static const WChar *funcName = wxT("WriteSimParFile_ModuleMgr");*/
 	BOOLN	ok = TRUE;
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 
@@ -767,18 +768,18 @@ WriteSimParFile_ModuleMgr(char *fileName, EarObjectPtr data)
  */
 
 BOOLN
-WritePars_ModuleMgr(char *baseFileName, EarObjectPtr process)
+WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process)
 {
 	BOOLN	ok = TRUE;
-	char	filePath[MAX_FILE_PATH];
+	WChar	filePath[MAX_FILE_PATH];
 
-	strcpy(filePath, GetParsFileFPath_Common(baseFileName));
+	DSAM_strcpy(filePath, GetParsFileFPath_Common(baseFileName));
 	if (process->module->specifier != SIMSCRIPT_MODULE) {
-		strcat(filePath, ".par");
+		strcat(filePath, wxT(".par"));
 		ok = WriteParFile_UniParMgr(filePath, GetUniParListPtr_ModuleMgr(
 		  process));
 	} else {
-		strcat(filePath, ".spf");
+		strcat(filePath, wxT(".spf"));
 		ok = WriteSimParFile_ModuleMgr(filePath, process);
 	}
 	return(ok);
@@ -798,13 +799,13 @@ WritePars_ModuleMgr(char *baseFileName, EarObjectPtr process)
 int
 GetSimFileType_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetSimFileType_ModuleMgr";
+	static const WChar *funcName = wxT("GetSimFileType_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError("%s: This function can only be used with a simulation.",
-		  funcName);
+		NotifyError(wxT("%s: This function can only be used with a "
+		  "simulation."), funcName);
 		return(FALSE);
 	}
 	return((int) ((SimScriptPtr) data->module->parsPtr)->simFileType);
@@ -820,16 +821,16 @@ GetSimFileType_ModuleMgr(EarObjectPtr data)
  * It is not being called in places where it will fail.
  */
 
-char *
+WChar *
 GetParsFilePath_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "GetParsFilePath_ModuleMgr";
+	static const WChar *funcName = wxT("GetParsFilePath_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError("%s: This function can only be used with a simulation.",
-		  funcName);
+		NotifyError(wxT("%s: This function can only be used with a "
+		  "simulation."), funcName);
 		return(NULL);
 	}
 	return(((SimScriptPtr) data->module->parsPtr)->parsFilePath);
@@ -845,7 +846,7 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
 BOOLN
 ResetProcess_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "ResetProcess_ModuleMgr";
+	static const WChar *funcName = wxT("ResetProcess_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -867,7 +868,7 @@ ResetProcess_ModuleMgr(EarObjectPtr data)
 BOOLN
 RunProcessStandard_ModuleMgr(EarObjectPtr data)
 {
-	static const char *funcName = "RunProcessStandard_ModuleMgr";
+	static const WChar *funcName = wxT("RunProcessStandard_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -894,9 +895,9 @@ RunProcessStandard_ModuleMgr(EarObjectPtr data)
  */
 
 BOOLN
-SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
+SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value)
 {
-	static const char *funcName = "SetPar_ModuleMgr";
+	static const WChar *funcName = wxT("SetPar_ModuleMgr");
 
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
@@ -907,16 +908,16 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
 			return(TRUE);
 		if (SetSimUniParValue_Utility_SimScript(parName, value))
 			return(TRUE);
-		NotifyError("%s: Could not find parameter '%s' for process '" STR_FMT
-		  "'", funcName, parName, data->module->name);
+		NotifyError(wxT("%s: Could not find parameter '%s' for process '")
+		  STR_FMT wxT("'"), funcName, parName, data->module->name);
 		return(FALSE);
 	default: {
 		UniParPtr	par;
 		UniParListPtr	parList = (* data->module->GetUniParListPtr)();
 		if ((par = FindUniPar_UniParMgr(&parList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError("%s: Could not find parameter '%s' for process '"
-			  STR_FMT "'", funcName, parName, data->module->name);
+			NotifyError(wxT("%s: Could not find parameter '%s' for process '")
+			  STR_FMT wxT("'"), funcName, parName, data->module->name);
 			return(FALSE);
 		}
 		return(SetParValue_UniParMgr(&parList, par->index, value));
@@ -934,12 +935,11 @@ SetPar_ModuleMgr(EarObjectPtr data, char *parName, char *value)
  */
 
 BOOLN
-SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value)
+SetRealPar_ModuleMgr(EarObjectPtr data, WChar *name, double value)
 {
-	/* static const char *funcName = "SetRealPar_ModuleMgr"; */
-	char	stringValue[MAXLINE];
+	WChar	stringValue[MAXLINE];
 
-	snprintf(stringValue, MAXLINE, "%g", value);
+	DSAM_snprintf(stringValue, MAXLINE, wxT("%g"), value);
 	return(SetPar_ModuleMgr(data, name, stringValue));
 
 }
@@ -953,13 +953,13 @@ SetRealPar_ModuleMgr(EarObjectPtr data, char *name, double value)
  */
 
 BOOLN
-SetRealArrayPar_ModuleMgr(EarObjectPtr data, char *name, int index,
+SetRealArrayPar_ModuleMgr(EarObjectPtr data, WChar *name, int index,
   double value)
 {
-	/* static const char *funcName = "SetRealPar_ModuleMgr"; */
-	char	arrayElementString[MAXLINE];
+	/* static const WChar *funcName = wxT("SetRealPar_ModuleMgr"); */
+	WChar	arrayElementString[MAXLINE];
 
-	snprintf(arrayElementString, MAXLINE, "%d:%g", index, value);
+	DSAM_snprintf(arrayElementString, MAXLINE, wxT("%d:%g"), index, value);
 	return(SetPar_ModuleMgr(data, name, arrayElementString));
 
 }

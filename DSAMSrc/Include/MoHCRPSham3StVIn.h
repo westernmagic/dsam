@@ -22,7 +22,7 @@
 /******************************************************************************/
 
 #define IHCRP_SHAMMA3STATEVELIN_NUM_PARS	14
-#define IHCRP_SHAMMA3STATEVELIN_MOD_NAME	"IHCRP_SHAMMA3STATEVELIN"
+#define IHCRP_SHAMMA3STATEVELIN_MOD_NAME	wxT("IHCRP_SHAMMA3STATEVELIN")
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -116,7 +116,7 @@ BOOLN	Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_IHCRP_Shamma3StateVelIn(void);
 
-BOOLN	ReadPars_IHCRP_Shamma3StateVelIn(char *fileName);
+BOOLN	ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName);
 
 BOOLN	RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data);
 

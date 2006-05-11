@@ -42,9 +42,9 @@
  */
 
 void
-ToUpper_Utility_String(char *upperCaseString, char *string)
+ToUpper_Utility_String(WChar *upperCaseString, WChar *string)
 {
-	char		*p, *pp;
+	WChar		*p, *pp;
 
 	for (p = upperCaseString, pp = string; *pp != '\0'; )
 		*p++ = toupper(*pp++);
@@ -55,28 +55,28 @@ ToUpper_Utility_String(char *upperCaseString, char *string)
 /****************************** StrCmpNoCase *********************************/
 
 /*
- * This routine carries out the standard strcmp function, but it ignores the
- * case of the operands by converting them both to uppercase.
+ * This routine carries out the standard DSAM_strcmp function, but it ignores
+ * the case of the operands by converting them both to uppercase.
  */
 
 int
-StrCmpNoCase_Utility_String(char *s1, char *s2)
+StrCmpNoCase_Utility_String(WChar *s1, WChar *s2)
 {
-	static char *funcName = "StrCmpNoCase_Utility_String";
-	char	upperString[2][LONG_STRING], *string[2];
+	static WChar *funcName = wxT("StrCmpNoCase_Utility_String");
+	WChar	upperString[2][LONG_STRING], *string[2];
 	int		i, len[2];
 
 	string[0] = s1;
 	string[1] = s2;
 	for (i = 0; i < 2; i++) {
-		if ((len[i] = strlen(string[i])) > LONG_STRING) {
-			NotifyError("%s: String '%s' exceeds current available length "
-			  "(%d).", funcName, string[i], LONG_STRING);
+		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
+			NotifyError(wxT("%s: String '%s' exceeds current available length "
+			  "(%d)."), funcName, string[i], LONG_STRING);
 			return (-1);
 		}
 		ToUpper_Utility_String(upperString[i], string[i]);
 	}
-	return(strcmp(upperString[0], upperString[1]));
+	return(DSAM_strcmp(upperString[0], upperString[1]));
 
 }
 
@@ -89,23 +89,23 @@ StrCmpNoCase_Utility_String(char *s1, char *s2)
  */
 
 int
-StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString)
+StrNCmpNoCase_Utility_String(WChar *fullString, WChar *abbrevString)
 {
-	static char *funcName = "StrNCmpNoCase_Utility_String";
-	char	upperString[2][LONG_STRING], *string[2];
+	static WChar *funcName = wxT("StrNCmpNoCase_Utility_String");
+	WChar	upperString[2][LONG_STRING], *string[2];
 	int		i, len[2];
 
 	string[0] = fullString;
 	string[1] = abbrevString;
 	for (i = 0; i < 2; i++) {
-		if ((len[i] = strlen(string[i])) > LONG_STRING) {
-			NotifyError("%s: String '%s' exceeds current available length "
-			  "(%d).", funcName, string[i], LONG_STRING);
+		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
+			NotifyError(wxT("%s: String '%s' exceeds current available length "
+			  "(%d)."), funcName, string[i], LONG_STRING);
 			return (-1);
 		}
 		ToUpper_Utility_String(upperString[i], string[i]);
 	}
-	return(strncmp(upperString[0], upperString[1], len[1]));
+	return(DSAM_strncmp(upperString[0], upperString[1], len[1]));
 
 }
 
@@ -117,18 +117,19 @@ StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString)
  * It exits terminally if it fails.
  */
 
-char *
-InitString_Utility_String(char *string)
+WChar *
+InitString_Utility_String(WChar *string)
 {
-	static const char	*funcName = "InitString_Utility_String";
-	char	*p;
+	static const WChar	*funcName = wxT("InitString_Utility_String");
+	WChar	*p;
 
-	if ((p = (char *) malloc(strlen(string) + 1)) == NULL) {
-		NotifyError("%s: Out of memory for string '%s'.", funcName,
+	if ((p = (WChar *) calloc((DSAM_strlen(string) + 1), sizeof(WChar))) ==
+	  NULL) {
+		NotifyError(wxT("%s: Out of memory for string '%s'."), funcName,
 		  string);
 		exit(1);
 	}
-	strcpy(p, string);
+	DSAM_strcpy(p, string);
 	return(p);
 
 }
@@ -140,12 +141,12 @@ InitString_Utility_String(char *string)
  * be made if a permanent string is required.
  */
 
-char *
-QuotedString_Utility_String(char *string)
+WChar *
+QuotedString_Utility_String(WChar *string)
 {
-	static char		newString[LONG_STRING];
+	static WChar		newString[LONG_STRING];
 
-	snprintf(newString, LONG_STRING, "\"%s\"", string);
+	DSAM_snprintf(newString, LONG_STRING, wxT("\"%s\""), string);
 	return (newString);
 
 }
@@ -153,17 +154,17 @@ QuotedString_Utility_String(char *string)
 /**************************** GetSuffix ***************************************/
 
 /*
- * This routine returns the suffix of a file name i.e. any characters
+ * This routine returns the suffix of a file name i.e. any WCharacters
  * after a ".".
  * It returns the entire file name if no suffix is returned.
  */
  
-char *
-GetSuffix_Utility_String(char *fileName)
+WChar *
+GetSuffix_Utility_String(WChar *fileName)
 {
-	char	*p;
+	WChar	*p;
 
-	if ((p = strrchr(fileName, '.')) != NULL)
+	if ((p = DSAM_strrchr(fileName, '.')) != NULL)
 		return(p + 1);
 	else 
 		return(fileName);
@@ -178,14 +179,14 @@ GetSuffix_Utility_String(char *fileName)
  * 
  */
  
-char *
-GetFileNameFPath_Utility_String(char *fileName)
+WChar *
+GetFileNameFPath_Utility_String(WChar *fileName)
 {
-	char	*p;
+	WChar	*p;
 
-	p = strrchr(fileName, '/');
+	p = DSAM_strrchr(fileName, '/');
 	if (!p)
-		p = strrchr(fileName, '\\');
+		p = DSAM_strrchr(fileName, '\\');
 	if (p == NULL)
 		return(fileName);
 	return(++p);
@@ -199,10 +200,10 @@ GetFileNameFPath_Utility_String(char *fileName)
  * It expects the string to be properly terminated with a null character.
  */
  
-char *
-RemoveChar_Utility_String(char *string, char c)
+WChar *
+RemoveChar_Utility_String(WChar *string, WChar c)
 {
-	char	*p1, *p2;
+	WChar	*p1, *p2;
 
 	for (p1 = p2 = string; *p2; p1++)
 		if (*p1 != c)
@@ -224,16 +225,43 @@ RemoveChar_Utility_String(char *string, char c)
  * string.
  */
  
-char *
-SubStrReplace_Utility_String(char *string, char *subString, char *repString)
+WChar *
+SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
 {
-	char	*s;
-	int		subSLen = strlen(subString), repSLen = strlen(repString);
+	WChar	*s;
+	int		subSLen = DSAM_strlen(subString), repSLen = DSAM_strlen(repString);
 
-	if ((s = strstr(string, subString)) == NULL)
+	if ((s = DSAM_strstr(string, subString)) == NULL)
 		return(NULL);
-	memmove(s + repSLen, s + subSLen, strlen(s) - subSLen + 1);
+	memmove(s + repSLen, s + subSLen, DSAM_strlen(s) - subSLen + 1);
 	memcpy(s, repString, repSLen);
 	return(string);
+
+}
+
+/**************************** ConvUTF8 ****************************************/
+
+/*
+ * This function returns a pointer to a UTF8 string.  if working in non-unicode
+ * format, then the original string is returned.
+ * The returned string should be considered as temporary.
+ */
+ 
+char *
+ConvUTF8_Utility_String(WChar *src)
+{
+#	ifndef DSAM_USE_UNICODE
+	return(src);
+#	else
+	static const WChar *funcName = wxT("ConvUTF8_Utility_String");
+	static char	dest[MAXLINE];
+
+	if (wcstombs(dest, src, MAXLINE - 1) < 0 ) {
+		NotifyError(wxT("%s: Failed to convert wide character string (%d)."),
+		  funcName, MAXLINE);
+		return(NULL);
+	}
+	return(dest);
+#endif
 
 }

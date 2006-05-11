@@ -41,24 +41,26 @@
  */
 __BEGIN_DECLS
 
-char *	GetFileNameFPath_Utility_String(char *fileName);
+char *	ConvUTF8_Utility_String(WChar *src);
 
-char *	GetSuffix_Utility_String(char *fileName);
+WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
 
-char *	InitString_Utility_String(char *string);
+WChar *	GetSuffix_Utility_String(WChar *fileName);
 
-char *	QuotedString_Utility_String(char *string);
+WChar *	InitString_Utility_String(WChar *string);
 
-void	ToUpper_Utility_String(char *upperCaseString, char *string);
+WChar *	QuotedString_Utility_String(WChar *string);
 
-char *	RemoveChar_Utility_String(char *string, char c);
+void	ToUpper_Utility_String(WChar *upperCaseString, WChar *string);
 
-int		StrCmpNoCase_Utility_String(char *s1, char *s2);
+WChar *	RemoveChar_Utility_String(WChar *string, WChar c);
 
-int		StrNCmpNoCase_Utility_String(char *fullString, char *abbrevString);
+int		StrCmpNoCase_Utility_String(WChar *s1, WChar *s2);
 
-char *	SubStrReplace_Utility_String(char *string, char *subString,
-		  char *repString);
+int		StrNCmpNoCase_Utility_String(WChar *fullString, WChar *abbrevString);
+
+WChar *	SubStrReplace_Utility_String(WChar *string, WChar *subString,
+		  WChar *repString);
 
 __END_DECLS
 

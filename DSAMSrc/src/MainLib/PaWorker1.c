@@ -25,14 +25,14 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	SIMULATION_SPEC_MODULE_NAME	"Utility_SimScript"
+#define	SIMULATION_SPEC_MODULE_NAME	wxT("Utility_SimScript")
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-static char	charBuffer[BUFSIZ], hostName[MPI_MAX_PROCESSOR_NAME];
-char	simScriptParFile[MAX_FILE_PATH], workerName[MAXLINE];
+static WChar	charBuffer[BUFSIZ], hostName[MPI_MAX_PROCESSOR_NAME];
+WChar	simScriptParFile[MAX_FILE_PATH], workerName[MAXLINE];
 int		masterRank, myRank, diagnosticsMode, channelMode;
 int		workCount = 0;
 
@@ -54,7 +54,7 @@ EarObjectPtr	preProcess[PA_WORKER1_MAX_SIMULATIONS];
 BOOLN
 GetParsFromMaster(WorkPtr workPtr)
 {
-	static const char *funcName = "GetParsFromMaster";
+	static const WChar *funcName = wxT("GetParsFromMaster");
 	BOOLN	ok = TRUE, response;
 	int		i, numChannels;
 	double	dummy, *frequencies, *bandwidths;
@@ -71,8 +71,8 @@ GetParsFromMaster(WorkPtr workPtr)
 	if (channelMode == WORKER_CHANNEL_SET_TO_BM_MODE) {
 		if ((frequencies = (double *) calloc(numChannels, sizeof(double))) ==
 		  NULL) {
-			NotifyError("%s: %s: Out of memory for %d frequencies.", workerName,
-			  funcName, numChannels);
+			NotifyError(wxT("%s: %s: Out of memory for %d frequencies."),
+			  workerName, funcName, numChannels);
 			for (i = 0; i < numChannels; i++)
 				MPI_Recv(&dummy, 1, MPI_DOUBLE, masterRank, MASTER_MESG_TAG,
 				  MPI_COMM_WORLD, &status);
@@ -82,8 +82,8 @@ GetParsFromMaster(WorkPtr workPtr)
 		  MASTER_MESG_TAG, MPI_COMM_WORLD, &status);
 		if ((bandwidths = (double *) calloc(numChannels, sizeof(double))) ==
 		  NULL) {
-			NotifyError("%s: %s: Out of memory for %d bandwidths.", workerName,
-			  funcName, numChannels);
+			NotifyError(wxT("%s: %s: Out of memory for %d bandwidths."),
+			  workerName, funcName, numChannels);
 			for (i = 0; i < numChannels; i++)
 				MPI_Recv(&dummy, 1, MPI_DOUBLE, masterRank, MASTER_MESG_TAG,
 				  MPI_COMM_WORLD, &status);
@@ -92,12 +92,12 @@ GetParsFromMaster(WorkPtr workPtr)
 		MPI_Recv(bandwidths, numChannels, MPI_DOUBLE, masterRank,
 		  MASTER_MESG_TAG, MPI_COMM_WORLD, &status);
 		if ((theCFs = GenerateUser_CFList(numChannels, frequencies)) == NULL) {
-			NotifyError("%s: %s: Out of memory for CFList", workerName,
+			NotifyError(wxT("%s: %s: Out of memory for CFList"), workerName,
 			  funcName);
 			free(frequencies);
 			return(FALSE);
 		}
-		SetBandwidths_CFList(theCFs, "USER", bandwidths);
+		SetBandwidths_CFList(theCFs, wxT("USER"), bandwidths);
 	}
 	MPI_Probe(masterRank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 	if (status.MPI_TAG != MASTER_INIT_TAG)
@@ -105,11 +105,11 @@ GetParsFromMaster(WorkPtr workPtr)
 		  MPI_COMM_WORLD, &status);
 	else {
 		Free_EarObject(&workPtr->preProcessData);
-		if ((workPtr->preProcessData = Init_EarObject("null")) == NULL)
+		if ((workPtr->preProcessData = Init_EarObject(wxT("null"))) == NULL)
 			ok = FALSE;
 		if (!ok || !SetOutSignal_MPI_General(workPtr->preProcessData,
 		  ReceiveSignalPars_MPI_General(masterRank, MASTER_INIT_TAG))) {
-			NotifyError("%s: %s: Could not initialise pre-process data.",
+			NotifyError(wxT("%s: %s: Could not initialise pre-process data."),
 			  workerName, funcName);
 			ok = FALSE;
 		}
@@ -128,14 +128,14 @@ GetParsFromMaster(WorkPtr workPtr)
 WorkPtr
 GetWorkPtr(EarObjHandle handle)
 {
-	static char *funcName = "GetWorkPtr";
+	static WChar *funcName = wxT("GetWorkPtr");
 	int		i;
 
 	for (i = 0; i < workCount; i++)
 		if (work[i].handle == handle)
 			return(&work[i]);
-	NotifyError("%s: %s: Could not find work with handle '%u'.", workerName,
-	  funcName, handle);
+	NotifyError(wxT("%s: %s: Could not find work with handle '%u'."),
+	  workerName, funcName, handle);
 	 return(NULL);
 
 }
@@ -154,7 +154,7 @@ GetWorkPtr(EarObjHandle handle)
 WorkPtr
 AddWork(EarObjHandle handle)
 {
-	static char *funcName = "AddWork";
+	static WChar *funcName = wxT("AddWork");
 	int		i;
 	WorkPtr	workPtr;
 	
@@ -164,7 +164,7 @@ AddWork(EarObjHandle handle)
 			return(&work[i]);
 	
 	if (workCount == PA_WORKER1_MAX_SIMULATIONS) {
-		NotifyError("%s: %s: Attempt to exceed maximum simulations (%d).",
+		NotifyError(wxT("%s: %s: Attempt to exceed maximum simulations (%d)."),
 		  workerName, funcName, PA_WORKER1_MAX_SIMULATIONS);
 		return(NULL);
 	}
@@ -190,9 +190,9 @@ AddWork(EarObjHandle handle)
 void
 ProcessSetTag(void)
 {
-	static const char *funcName = "ProcessSetTag";
+	static const WChar *funcName = wxT("ProcessSetTag");
 	BOOLN	foundLabel;
-	char	label[MAXLINE];
+	WChar	label[MAXLINE];
 	int		command, ok;
 	long	longArray[PA_WORKER1_SET_COMMAND_MAX_ARRAY];
 	double	doubleArray[PA_WORKER1_SET_COMMAND_MAX_ARRAY];
@@ -210,25 +210,26 @@ ProcessSetTag(void)
 	MPI_Recv(charBuffer, BUFSIZ, MPI_CHAR, masterRank, MASTER_SET_TAG,
 	  MPI_COMM_WORLD, &status);
 	if (strlen(charBuffer) >= MAXLINE) {
-		NotifyError("Worker[%d]: %s: Label '%s' too long.", myRank, funcName,
-		  charBuffer);
+		NotifyError(wxT("Worker[%d]: %s: Label '%s' too long."), myRank,
+		  funcName, charBuffer);
 		ok = FALSE;
 		MPI_Send(&ok, 1, MPI_INT, masterRank, WORKER_SET_TAG, MPI_COMM_WORLD);
 		return;
 	}
 	if ((workPtr = GetWorkPtr(handle)) == NULL) {
-		NotifyError("%s: %s: Could not find work pointer (%d).", workerName,
-		  funcName);
+		NotifyError(wxT("%s: %s: Could not find work pointer (%d)."),
+		  workerName, funcName);
 		ok = FALSE;
 		MPI_Send(&ok, 1, MPI_INT, masterRank, WORKER_SET_TAG, MPI_COMM_WORLD);
 		return;
 	}
-	strcpy(label, charBuffer);
+	DSAM_strcpy(label, charBuffer);
 	pc = FindLabelledProcessInst_Utility_Datum(*GetUniParPtr_ModuleMgr(
-	  workPtr->simulation, "simulation")->valuePtr.simScript.simulation, label);
+	  workPtr->simulation, wxT("simulation"))->valuePtr.simScript.simulation,
+	  label);
 	if ((foundLabel = pc != NULL) == FALSE) {
-		NotifyError("Worker[%d]: %s: Labelled process not initialised, or "
-		  "label '%s' not found.", myRank, funcName, label);
+		NotifyError(wxT("Worker[%d]: %s: Labelled process not initialised, or "
+		  "label '%s' not found."), myRank, funcName, label);
 		ok = FALSE;
 	}
 	switch (command) {
@@ -329,7 +330,7 @@ ProcessSetTag(void)
 	case WRITE_OUT_SIGNAL:
 		if (foundLabel)
 			do {
-	   			sprintf(charBuffer, "worker%d_step%d.dat", myRank,
+	   			sprintf(charBuffer, wxT("worker%d_step%d.dat"), myRank,
 	   			  pc->stepNumber);
 				if (!WriteOutSignal_DataFile(charBuffer, pc->data))
 					ok = FALSE;
@@ -338,8 +339,8 @@ ProcessSetTag(void)
 			  label)) != NULL));
 		break;
 	default:
-		NotifyError("Worker[%d]: %s: Received unknown command (%d).", myRank,
-		  funcName, command);
+		NotifyError(wxT("Worker[%d]: %s: Received unknown command (%d)."),
+		  myRank, funcName, command);
 		ok = FALSE;
 		break;
 	} /* switch */
@@ -357,7 +358,7 @@ ProcessSetTag(void)
 void
 ProcessMesgTag(void)
 {
-	static char *funcName = "ProcessMesgTag";
+	static WChar *funcName = wxT("ProcessMesgTag");
 	int		control, ok, tag;
 	DatumPtr	bMInst = NULL;
 	CFListPtr	oldCFs;
@@ -371,8 +372,8 @@ ProcessMesgTag(void)
 	  MPI_COMM_WORLD, &status);
 	if ((control != INIT_SIMULATION) && ((workPtr = GetWorkPtr(handle)) ==
 	  NULL)) {
-		NotifyError("%s: %s: Could not find work pointer (%d).", workerName,
-		  funcName, handle);
+		NotifyError(wxT("%s: %s: Could not find work pointer (%d)."),
+		  workerName, funcName, handle);
 		ok = FALSE;
 		MPI_Send(&ok, 1, MPI_INT, masterRank, WORKER_MESG_TAG, MPI_COMM_WORLD);
 		return;
@@ -382,7 +383,8 @@ ProcessMesgTag(void)
 	switch (control) {
 	case INIT_SIMULATION:
 		if ((workPtr = AddWork(handle)) == NULL) {
-			NotifyError("%s: %s: Could not add work.", workerName, funcName);
+			NotifyError(wxT("%s: %s: Could not add work."), workerName,
+			  funcName);
 			ok = FALSE;
 			break;
 		}
@@ -390,11 +392,11 @@ ProcessMesgTag(void)
 			ok = FALSE;
 		if ((diagnosticsMode == WORKER_DIAGNOSTICS_OFF) ||
 		  (diagnosticsMode == WORKER_DIAGNOSTICS_FILE)) {
-			sprintf(charBuffer, "worker%d.warnings", myRank);
+			sprintf(charBuffer, wxT("worker%d.warnings"), myRank);
 			SetWarningsFile(charBuffer, OVERWRITE);
 		}
 		if (diagnosticsMode == WORKER_DIAGNOSTICS_FILE) {
-			sprintf(charBuffer, "worker%d.params", myRank);
+			sprintf(charBuffer, wxT("worker%d.params"), myRank);
 			SetParsFile(charBuffer, OVERWRITE);
 		}
 		if (ok && (workPtr->simulation == NULL) && ((workPtr->simulation =
@@ -408,8 +410,8 @@ ProcessMesgTag(void)
 			switch (channelMode) {
 			case WORKER_CHANNEL_SET_TO_BM_MODE:
 				if (((bMInst = FindModuleProcessInst_Utility_Datum(
-				  *GetUniParPtr_ModuleMgr(workPtr->simulation,
-				  "simulation")->valuePtr.simScript.simulation, "BM_")) !=
+				  *GetUniParPtr_ModuleMgr(workPtr->simulation, wxT(
+				  "simulation"))->valuePtr.simScript.simulation, wxT("BM_"))) !=
 				  NULL) && ((oldCFs = DoFun(GetCFListPtr, bMInst->data)) !=
 				  NULL)) {
 					Free_CFList(&oldCFs);
@@ -442,7 +444,7 @@ ProcessMesgTag(void)
 		tag = WORKER_END_SIGNAL_TAG;
 		break;
 	default:
-		NotifyError("Worker[%d]: Received unknown control (%d).",
+		NotifyError(wxT("Worker[%d]: Received unknown control (%d)."),
 		  myRank, control);
 		ok = FALSE;
 		break;
@@ -462,7 +464,7 @@ ProcessMesgTag(void)
 void
 ProcessInitTag(void)
 {
-	static const char *funcName = "ProcessInitTag";
+	static const WChar *funcName = wxT("ProcessInitTag");
 	BOOLN			ok = TRUE, finished = FALSE, response;
 	unsigned int	handle;
 	int				packageLength;
@@ -484,8 +486,8 @@ ProcessInitTag(void)
 			MPI_Get_count(&status, MPI_DOUBLE, &packageLength);
 			if (data->outSignal->length < workPtr->sampleCount +
 			  packageLength) {
-				NotifyError("%s: %s: Channel length is longer than the "
-				  "initialised length for this pre-process data.", workerName,
+				NotifyError(wxT("%s: %s: Channel length is longer than the "
+				  "initialised length for this pre-process data."), workerName,
 				  funcName);
 				ok = FALSE;
 				finished = TRUE;
@@ -502,8 +504,8 @@ ProcessInitTag(void)
 			  MPI_COMM_WORLD, &status);
 			outPtr = data->outSignal->channel[workPtr->chanCount++];
 			if (data->outSignal->length != workPtr->sampleCount) {
-				NotifyError("%s: %s: Channel length (%u) is shorter than the "
-				  "\ninitialised length for this pre-process data (%u).",
+				NotifyError(wxT("%s: %s: Channel length (%u) is shorter than "
+				  "the \ninitialised length for this pre-process data (%u)."),
 				  workerName, funcName, workPtr->sampleCount,
 				  data->outSignal->length);
 				ok = FALSE;
@@ -517,7 +519,7 @@ ProcessInitTag(void)
 			finished = TRUE;
 			break;
 		default:
-			NotifyError("%s: %s: Unknown tag received (%d).", workerName,
+			NotifyError(wxT("%s: %s: Unknown tag received (%d)."), workerName,
 			  funcName, status.MPI_TAG);
 			break;
 		} /* switch */
@@ -543,8 +545,8 @@ Initialise(void)
 
 	MPI_Comm_rank( MPI_COMM_WORLD, &myRank);
 	MPI_Get_processor_name(hostName, &nameLength);
-	sprintf(workerName, "Worker[%d]", myRank);
-	printf("%s: Initialised on %s...\n", workerName, hostName);
+	sprintf(workerName, wxT("Worker[%d]"), myRank);
+	printf(wxT("%s: Initialised on %s...\n"), workerName, hostName);
 	MPI_Recv(&masterRank, 1, MPI_INT, MPI_ANY_SOURCE, MASTER_INIT_TAG,
 	  MPI_COMM_WORLD, &status);
 	MPI_Recv(charBuffer, BUFSIZ, MPI_CHAR, MPI_ANY_SOURCE, MASTER_INIT_TAG,
@@ -558,7 +560,7 @@ Initialise(void)
 /****************************** Main Body *************************************/
 /******************************************************************************/
 
-int main(int argc, char *argv[])
+int main(int argc, WChar *argv[])
 {
 	int		finished, ok;
 	MPI_Status		status;
@@ -579,14 +581,14 @@ int main(int argc, char *argv[])
 			MPI_Recv(&ok, 1, MPI_INT, masterRank, MASTER_EXIT_TAG,
 			  MPI_COMM_WORLD, &status);
 			finished = TRUE;
-			printf("Worker, rank = %d finished (Master says: %s).\n", myRank,
-			  (ok == TRUE)? "OK": "ERROR");
+			printf(wxT("Worker, rank = %d finished (Master says: %s).\n"), myRank,
+			  (ok == TRUE)? wxT("OK": "ERROR"));
 			break;
 		case MASTER_INIT_TAG:
 			ProcessInitTag();
 			break;
 		default:
-			NotifyError("%s: Received unknown tag (%d).", workerName,
+			NotifyError(wxT("%s: Received unknown tag (%d)."), workerName,
 			  status.MPI_TAG);
 			finished = TRUE;
 			break;

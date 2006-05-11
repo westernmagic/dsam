@@ -50,8 +50,6 @@ Meddis02SGPtr	meddis02SGPtr = NULL;
 BOOLN
 Free_ANSpikeGen_Meddis02(void)
 {
-	/* static const char	*funcName = "Free_ANSpikeGen_Meddis02";  */
-
 	if (meddis02SGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Meddis02();
@@ -80,19 +78,19 @@ Free_ANSpikeGen_Meddis02(void)
 BOOLN
 Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("Init_ANSpikeGen_Meddis02");
 
 	if (parSpec == GLOBAL) {
 		if (meddis02SGPtr != NULL)
 			Free_ANSpikeGen_Meddis02();
 		if ((meddis02SGPtr = (Meddis02SGPtr) malloc(sizeof(Meddis02SG))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (meddis02SGPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -112,7 +110,7 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	meddis02SGPtr->recoveryTau = 0.8e-3;
 
 	if (!SetUniParList_ANSpikeGen_Meddis02()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Meddis02();
 		return(FALSE);
 	}
@@ -133,43 +131,46 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_ANSpikeGen_Meddis02(void)
 {
-	static const char *funcName = "SetUniParList_ANSpikeGen_Meddis02";
+	static const WChar *funcName = wxT("SetUniParList_ANSpikeGen_Meddis02");
 	UniParPtr	pars;
 
 	if ((meddis02SGPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANSPIKEGEN_MEDDIS02_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = meddis02SGPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_RANSEED], "RAN_SEED",
-	  "Random number seed (0 produces a different seed each run).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_RANSEED], wxT("RAN_SEED"),
+	  wxT("Random number seed (0 produces a different seed each run)."),
 	  UNIPAR_LONG,
 	  &meddis02SGPtr->ranSeed, NULL,
 	  (void * (*)) SetRanSeed_ANSpikeGen_Meddis02);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_NUMFIBRES], "NUM_FIBRES",
-	  "Number of parallel independent fibres contacting the same IHC.",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_NUMFIBRES], wxT("NUM_FIBRES"),
+	  wxT("Number of parallel independent fibres contacting the same IHC."),
 	  UNIPAR_INT,
 	  &meddis02SGPtr->numFibres, NULL,
 	  (void * (*)) SetNumFibres_ANSpikeGen_Meddis02);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_PULSEDURATION], "PULSE_DURATION",
-	  "Excitary post-synaptic pulse duration (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_PULSEDURATION], wxT(
+	  "PULSE_DURATION"),
+	  wxT("Excitary post-synaptic pulse duration (s)."),
 	  UNIPAR_REAL,
 	  &meddis02SGPtr->pulseDuration, NULL,
 	  (void * (*)) SetPulseDuration_ANSpikeGen_Meddis02);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_PULSEMAGNITUDE], "MAGNITUDE",
-	  "Pulse magnitude (arbitrary units).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_PULSEMAGNITUDE], wxT(
+	  "MAGNITUDE"),
+	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
 	  &meddis02SGPtr->pulseMagnitude, NULL,
 	  (void * (*)) SetPulseMagnitude_ANSpikeGen_Meddis02);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_REFRACTORYPERIOD],
-	  "REFRAC_PERIOD",
-	  "Absolute refractory period (s).",
+	  wxT("REFRAC_PERIOD"),
+	  wxT("Absolute refractory period (s)."),
 	  UNIPAR_REAL,
 	  &meddis02SGPtr->refractoryPeriod, NULL,
 	  (void * (*)) SetRefractoryPeriod_ANSpikeGen_Meddis02);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_RECOVERYTAU], "RECOVERY_TAU",
-	  "Recovery time constant, tau (s).",
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_RECOVERYTAU], wxT(
+	  "RECOVERY_TAU"),
+	  wxT("Recovery time constant, tau (s)."),
 	  UNIPAR_REAL,
 	  &meddis02SGPtr->recoveryTau, NULL,
 	  (void * (*)) SetRecoveryTau_ANSpikeGen_Meddis02);
@@ -187,15 +188,15 @@ SetUniParList_ANSpikeGen_Meddis02(void)
 UniParListPtr
 GetUniParListPtr_ANSpikeGen_Meddis02(void)
 {
-	static const char	*funcName = "GetUniParListPtr_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("GetUniParListPtr_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (meddis02SGPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(meddis02SGPtr->parList);
@@ -213,10 +214,10 @@ GetUniParListPtr_ANSpikeGen_Meddis02(void)
 BOOLN
 SetRanSeed_ANSpikeGen_Meddis02(long theRanSeed)
 {
-	static const char	*funcName = "SetRanSeed_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("SetRanSeed_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -238,14 +239,15 @@ SetRanSeed_ANSpikeGen_Meddis02(long theRanSeed)
 BOOLN
 SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres)
 {
-	static const char	*funcName = "SetNumFibres_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("SetNumFibres_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumFibres < 1) {
-		NotifyError("%s: Illegal no. of fibres (%d).", funcName, theNumFibres);
+		NotifyError(wxT("%s: Illegal no. of fibres (%d)."), funcName,
+		  theNumFibres);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -267,10 +269,10 @@ SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres)
 BOOLN
 SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration)
 {
-	static const char	*funcName = "SetPulseDuration_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -292,10 +294,11 @@ SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration)
 BOOLN
 SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude)
 {
-	static const char	*funcName = "SetPulseMagnitude_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT(
+	  "SetPulseMagnitude_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -317,14 +320,15 @@ SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude)
 BOOLN
 SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod)
 {
-	static const char	*funcName = "SetRefractoryPeriod_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT(
+	  "SetRefractoryPeriod_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError("%s: Refractory period must be greater than zero.\n",
+		NotifyError(wxT("%s: Refractory period must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
@@ -347,10 +351,10 @@ SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod)
 BOOLN
 SetRecoveryTau_ANSpikeGen_Meddis02(double theRecoveryTau)
 {
-	static const char	*funcName = "SetRecoveryTau_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("SetRecoveryTau_ANSpikeGen_Meddis02");
 
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -374,36 +378,36 @@ SetRecoveryTau_ANSpikeGen_Meddis02(double theRecoveryTau)
 BOOLN
 CheckPars_ANSpikeGen_Meddis02(void)
 {
-	static const char	*funcName = "CheckPars_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("CheckPars_ANSpikeGen_Meddis02");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (meddis02SGPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!meddis02SGPtr->ranSeedFlag) {
-		NotifyError("%s: ranSeed variable not set.", funcName);
+		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!meddis02SGPtr->numFibresFlag) {
-		NotifyError("%s: numFibres variable not set.", funcName);
+		NotifyError(wxT("%s: numFibres variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!meddis02SGPtr->pulseDurationFlag) {
-		NotifyError("%s: pulseDuration variable not set.", funcName);
+		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!meddis02SGPtr->pulseMagnitudeFlag) {
-		NotifyError("%s: pulseMagnitude variable not set.", funcName);
+		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!meddis02SGPtr->refractoryPeriodFlag) {
-		NotifyError("%s: refractoryPeriod variable not set.", funcName);
+		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!meddis02SGPtr->recoveryTauFlag) {
-		NotifyError("%s: recoveryTau variable not set.", funcName);
+		NotifyError(wxT("%s: recoveryTau variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -420,24 +424,26 @@ CheckPars_ANSpikeGen_Meddis02(void)
 BOOLN
 PrintPars_ANSpikeGen_Meddis02(void)
 {
-	static const char	*funcName = "PrintPars_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("PrintPars_ANSpikeGen_Meddis02");
 
 	if (!CheckPars_ANSpikeGen_Meddis02()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Meddis 2002 post-synaptic firing module Parameters:-\n");
-	DPrint("\tRandom number seed = %ld,", meddis02SGPtr->ranSeed);
-	DPrint("\tNumber of fibres = %d,\n", meddis02SGPtr->numFibres);
-	DPrint("\tPulse duration = ");
+	DPrint(wxT("Meddis 2002 post-synaptic firing module Parameters:-\n"));
+	DPrint(wxT("\tRandom number seed = %ld,"), meddis02SGPtr->ranSeed);
+	DPrint(wxT("\tNumber of fibres = %d,\n"), meddis02SGPtr->numFibres);
+	DPrint(wxT("\tPulse duration = "));
 	if (meddis02SGPtr->pulseDuration > 0.0)
-		DPrint("%g ms,", MSEC(meddis02SGPtr->pulseDuration));
+		DPrint(wxT("%g ms,"), MSEC(meddis02SGPtr->pulseDuration));
 	else
-		DPrint("< prev. signal dt>,");
-	DPrint("\tPulse magnitude = %g (nA?),\n", meddis02SGPtr->pulseMagnitude);
-	DPrint("\tAbsolute refractory period = %g (s),",
+		DPrint(wxT("< prev. signal dt>,"));
+	DPrint(wxT("\tPulse magnitude = %g (nA?),\n"), meddis02SGPtr->
+	  pulseMagnitude);
+	DPrint(wxT("\tAbsolute refractory period = %g (s),"),
 	  meddis02SGPtr->refractoryPeriod);
-	DPrint("\tRecovery time constant, tau = %g (s)\n",
+	DPrint(wxT("\tRecovery time constant, tau = %g (s)\n"),
 	  meddis02SGPtr->recoveryTau);
 	return(TRUE);
 
@@ -453,10 +459,10 @@ PrintPars_ANSpikeGen_Meddis02(void)
 BOOLN
 SetParsPointer_ANSpikeGen_Meddis02(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("SetParsPointer_ANSpikeGen_Meddis02");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	meddis02SGPtr = (Meddis02SGPtr) theModule->parsPtr;
@@ -474,14 +480,15 @@ SetParsPointer_ANSpikeGen_Meddis02(ModulePtr theModule)
 BOOLN
 InitModule_ANSpikeGen_Meddis02(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("InitModule_ANSpikeGen_Meddis02");
 
 	if (!SetParsPointer_ANSpikeGen_Meddis02(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_ANSpikeGen_Meddis02(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = meddis02SGPtr;
@@ -513,18 +520,18 @@ InitModule_ANSpikeGen_Meddis02(ModulePtr theModule)
 BOOLN
 CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("CheckData_ANSpikeGen_Meddis02");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration <
 	  data->inSignal[0]->dt)) {
-		NotifyError("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n", funcName,
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
+		  "interval, %g ms (%g ms)\n"), funcName,
 		  MSEC(data->inSignal[0]->dt), MSEC(meddis02SGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -594,7 +601,7 @@ ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
 BOOLN
 InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("InitProcessVariables_ANSpikeGen_Meddis02");
 	int		i;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
@@ -608,26 +615,27 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 			p->numThreads = data->numThreads;
 			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
 			  double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for timer pointer array.",
+			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
 			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
 			  sizeof(double*))) == NULL) {
-			 	NotifyError("%s: Out of memory for remainingPulseTime pointer "
-				  "array.", funcName);
+			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+				  "pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
 				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
 				  double))) == NULL) {
-			 		NotifyError("%s: Out of memory for timer array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for timer array."),
+					  funcName);
 			 		return(FALSE);
 				}
 				if ((p->remainingPulseTime[i] = (double *) calloc(p->
 				  arrayLength, sizeof(double))) == NULL) {
-			 		NotifyError("%s: Out of memory for remainingPulseTime "
-					  "array.", funcName);
+			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime "
+					  "array."), funcName);
 			 		return(FALSE);
 				}
 			}
@@ -689,7 +697,7 @@ FreeProcessVariables_ANSpikeGen_Meddis02(void)
 BOOLN
 RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_ANSpikeGen_Meddis02";
+	static const WChar	*funcName = wxT("RunModel_ANSpikeGen_Meddis02");
 	register ChanData	 *inPtr, *outPtr;
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
@@ -701,18 +709,19 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		if (!CheckPars_ANSpikeGen_Meddis02())
 			return(FALSE);
 		if (!CheckData_ANSpikeGen_Meddis02(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Meddis 2002 Post-Synaptic Spike "
-		  "Firing");
+		SetProcessName_EarObject(data, wxT("Meddis 2002 Post-Synaptic Spike "
+		  "Firing"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_ANSpikeGen_Meddis02(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

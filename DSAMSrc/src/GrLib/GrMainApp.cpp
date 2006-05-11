@@ -51,8 +51,8 @@
  * changed by the options.
  */
 
-GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
-  MainSimulation)
+GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc,
+  (wxChar **) theArgv, MainSimulation)
 {
 	dSAMMainApp = this;
 	wxGetApp().ResetDefaultDisplayPos();
@@ -98,8 +98,8 @@ void
 GrMainApp::SetRunIndicators(bool on)
 {
 	wxGetApp().programMenu->Enable(SDIFRAME_STOP_SIMULATION, on);
-	wxGetApp().GetFrame()->SetStatusText((on)? "Simulation Running...":
-	  "Simulation finished.", SDIFRAME_SIM_STATUS_FIELD);
+	wxGetApp().GetFrame()->SetStatusText((on)? wxT("Simulation Running..."):
+	  wxT("Simulation finished."), SDIFRAME_SIM_STATUS_FIELD);
 
 }
 

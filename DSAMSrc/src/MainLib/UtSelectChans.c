@@ -36,6 +36,7 @@
 #include "GeModuleMgr.h"
 #include "GeNSpecLists.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtSelectChans.h"
 
 /******************************************************************************/
@@ -60,8 +61,6 @@ SelectChanPtr	selectChanPtr = NULL;
 BOOLN
 Free_Utility_SelectChannels(void)
 {
-	/* static const char	*funcName = "Free_Utility_SelectChannels";  */
-
 	if (selectChanPtr == NULL)
 		return(FALSE);
 	if (selectChanPtr->selectionArray) {
@@ -89,10 +88,10 @@ InitModeList_Utility_SelectChannels(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "ZERO",	SELECT_CHANS_ZERO_MODE },
-					{ "REMOVE",	SELECT_CHANS_REMOVE_MODE },
-					{ "EXPAND",	SELECT_CHANS_EXPAND_MODE },
-					{ "", 		SELECT_CHANS_NULL }
+					{ wxT("ZERO"),		SELECT_CHANS_ZERO_MODE },
+					{ wxT("REMOVE"),	SELECT_CHANS_REMOVE_MODE },
+					{ wxT("EXPAND"),	SELECT_CHANS_EXPAND_MODE },
+					{ wxT(""), 		SELECT_CHANS_NULL }
 				};
 	selectChanPtr->modeList = modeList;
 	return(TRUE);
@@ -110,12 +109,12 @@ InitSelectionModeList_Utility_SelectChannels(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "ALL",		UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL },
-			{ "MIDDLE",		UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE },
-			{ "LOWEST",		UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST },
-			{ "HIGHEST",	UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST },
-			{ "USER",		UTILITY_SELECTCHANNELS_SELECTIONMODE_USER },
-			{ "",			UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL },
+			{ wxT("ALL"),		UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL },
+			{ wxT("MIDDLE"),	UTILITY_SELECTCHANNELS_SELECTIONMODE_MIDDLE },
+			{ wxT("LOWEST"),	UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST },
+			{ wxT("HIGHEST"),	UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST },
+			{ wxT("USER"),		UTILITY_SELECTCHANNELS_SELECTIONMODE_USER },
+			{ wxT(""),			UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL },
 		};
 	selectChanPtr->selectionModeList = modeList;
 	return(TRUE);
@@ -137,19 +136,20 @@ InitSelectionModeList_Utility_SelectChannels(void)
 BOOLN
 Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("Init_Utility_SelectChannels");
 
 	if (parSpec == GLOBAL) {
 		if (selectChanPtr != NULL)
 			Free_Utility_SelectChannels();
 		if ((selectChanPtr = (SelectChanPtr) malloc(sizeof(SelectChan))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (selectChanPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -165,7 +165,7 @@ Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 	InitModeList_Utility_SelectChannels();
 	InitSelectionModeList_Utility_SelectChannels();
 	if (!SetUniParList_Utility_SelectChannels()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_SelectChannels();
 		return(FALSE);
 	}
@@ -185,33 +185,35 @@ Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_SelectChannels(void)
 {
-	static const char *funcName = "SetUniParList_Utility_SelectChannels";
+	static const WChar *funcName = wxT("SetUniParList_Utility_SelectChannels");
 	UniParPtr	pars;
 
 	if ((selectChanPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_SELECTCHANNELS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = selectChanPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_MODE], "MODE",
-	  "Selection mode - 'zero', 'remove' or 'expand'.",
+	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_MODE], wxT("MODE"),
+	  wxT("Selection mode - 'zero', 'remove' or 'expand'."),
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->mode, selectChanPtr->modeList,
 	  (void * (*)) SetMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONMODE],
-	  "SELECTION_MODE",
-	  "Channel selection mode ('all', 'middle', 'lowest', 'highest' or 'user'.",
+	  wxT("SELECTION_MODE"),
+	  wxT("Channel selection mode ('all', 'middle', 'lowest', 'highest' or "
+	    "'user'."),
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->selectionMode, selectChanPtr->selectionModeList,
 	  (void * (*)) SetSelectionMode_Utility_SelectChannels);
-	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], "NUM_CHANNELS",
-	  "No. of channels in selection field (This is no longer used).",
+	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_NUMCHANNELS], wxT(
+	  "NUM_CHANNELS"),
+	  wxT("No. of channels in selection field (This is no longer used)."),
 	  UNIPAR_INT_AL,
 	  &selectChanPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_SelectChannels);
-	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONARRAY], "ARRAY",
-	  "Selection array 0 = off, 1 = on.",
+	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONARRAY], wxT("ARRAY"),
+	  wxT("Selection array 0 = off, 1 = on."),
 	  UNIPAR_REAL_DYN_ARRAY,
 	  &selectChanPtr->selectionArray, &selectChanPtr->numChannels,
 	  (void * (*)) SetIndividualSelection_Utility_SelectChannels);
@@ -248,15 +250,16 @@ SetEnabledState_Utility_SelectChannels(void)
 UniParListPtr
 GetUniParListPtr_Utility_SelectChannels(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_SelectChannels";
+	static const WChar	*funcName =
+	  wxT("GetUniParListPtr_Utility_SelectChannels");
 
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (selectChanPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(selectChanPtr->parList);
@@ -277,7 +280,8 @@ GetUniParListPtr_Utility_SelectChannels(void)
 BOOLN
 AllocNumChannels_Utility_SelectChannels(int numChannels)
 {
-	static const char	*funcName = "AllocNumChannels_Utility_SelectChannels";
+	static const WChar	*funcName =
+	  wxT("AllocNumChannels_Utility_SelectChannels");
 
 	if (numChannels == selectChanPtr->numChannels)
 		return(TRUE);
@@ -285,7 +289,7 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
 		free(selectChanPtr->selectionArray);
 	if ((selectChanPtr->selectionArray = (double *) calloc(numChannels,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, numChannels);
 		return(FALSE);
 	}
@@ -303,10 +307,10 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
  */
 
 BOOLN
-SetPars_Utility_SelectChannels(char *mode, int numChannels,
+SetPars_Utility_SelectChannels(WChar *mode, int numChannels,
   double *selectionArray)
 {
-	static const char	*funcName = "SetPars_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("SetPars_Utility_SelectChannels");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -317,7 +321,7 @@ SetPars_Utility_SelectChannels(char *mode, int numChannels,
 	if (!SetSelectionArray_Utility_SelectChannels(selectionArray))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -331,18 +335,18 @@ SetPars_Utility_SelectChannels(char *mode, int numChannels,
  */
 
 BOOLN
-SetMode_Utility_SelectChannels(char *theMode)
+SetMode_Utility_SelectChannels(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("SetMode_Utility_SelectChannels");
 	int		specifier;
 
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 	  selectChanPtr->modeList)) == SELECT_CHANS_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -361,19 +365,20 @@ SetMode_Utility_SelectChannels(char *theMode)
  */
 
 BOOLN
-SetSelectionMode_Utility_SelectChannels(char * theSelectionMode)
+SetSelectionMode_Utility_SelectChannels(WChar * theSelectionMode)
 {
-	static const char	*funcName = "SetSelectionMode_Utility_SelectChannels";
+	static const WChar	*funcName = wxT(
+	  "SetSelectionMode_Utility_SelectChannels");
 	int		specifier;
 
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theSelectionMode,
 	  selectChanPtr->selectionModeList)) ==
 	  UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theSelectionMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSelectionMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -398,20 +403,21 @@ SetSelectionMode_Utility_SelectChannels(char * theSelectionMode)
 BOOLN
 SetNumChannels_Utility_SelectChannels(int theNumChannels)
 {
-	static const char	*funcName = "SetNumChannels_Utility_SelectChannels";
+	static const WChar	*funcName = wxT(
+	  "SetNumChannels_Utility_SelectChannels");
 
     if (selectChanPtr == NULL) {
-        NotifyError("%s: Module not initialised.", funcName);
+        NotifyError(wxT("%s: Module not initialised."), funcName);
         return(FALSE);
     }
     if (theNumChannels < 1) {
-        NotifyError("%s: Illegal number of selection channels.\n", funcName,
-          theNumChannels);
+        NotifyError(wxT("%s: Illegal number of selection channels.\n"),
+		  funcName, theNumChannels);
         return(FALSE);
     }
     if (!AllocNumChannels_Utility_SelectChannels(theNumChannels)) {
-        NotifyError("%s: Cannot allocate memory for the 'numChannels' arrays.",
-         funcName);
+        NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' "
+		  "arrays."), funcName);
         return(FALSE);
     }
     /*** Put any other required checks here. ***/
@@ -432,10 +438,11 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
 BOOLN
 SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
 {
-	static const char	*funcName = "SetSelectionArray_Utility_SelectChannels";
+	static const WChar	*funcName = wxT(
+	 "SetSelectionArray_Utility_SelectChannels");
 
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -455,28 +462,28 @@ SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
 BOOLN
 SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 {
-	static const char *funcName =
-	  "SetIndividualSelectionArray_Utility_SelectChannels";
+	static const WChar *funcName =
+	  wxT("SetIndividualSelectionArray_Utility_SelectChannels");
 
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (selectChanPtr->selectionMode !=
 	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) {
-		NotifyError("%s: Channels can only be selected in 'user' selection "
-		  "mode.", funcName);
+		NotifyError(wxT("%s: Channels can only be selected in 'user' selection "
+		  "mode."), funcName);
 		return(FALSE);
 	}
 	if (theSelection < 0.0) {
-		NotifyError("%s: The selection values must be greater than zero ('%g'",
-		  funcName, theSelection);
+		NotifyError(wxT("%s: The selection values must be greater than zero "
+		  "('%g'"), funcName, theSelection);
 		return(FALSE);
 	}
 	if ((theIndex > selectChanPtr->numChannels - 1) &&
 	  !ResizeDoubleArray_UniParMgr(&selectChanPtr->selectionArray,
 	    &selectChanPtr->numChannels, theIndex + 1)) {
-		NotifyError("%s: Could not resize the selection array.", funcName);
+		NotifyError(wxT("%s: Could not resize the selection array."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -498,26 +505,26 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 BOOLN
 CheckPars_Utility_SelectChannels(void)
 {
-	static const char	*funcName = "CheckPars_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("CheckPars_Utility_SelectChannels");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (selectChanPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!selectChanPtr->selectionModeFlag) {
-		NotifyError("%s: selectionMode variable not set.", funcName);
+		NotifyError(wxT("%s: selectionMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if ((selectChanPtr->selectionMode == 
 	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) &&
 	  selectChanPtr->selectionArray == NULL) {
-		NotifyError("%s: selectionArray array not set.", funcName);
+		NotifyError(wxT("%s: selectionArray array not set."), funcName);
 		ok = FALSE;
 	}
 	if (!selectChanPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -534,24 +541,26 @@ CheckPars_Utility_SelectChannels(void)
 BOOLN
 PrintPars_Utility_SelectChannels(void)
 {
-	static const char	*funcName = "PrintPars_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("PrintPars_Utility_SelectChannels");
 	int		i;
 
 	if (!CheckPars_Utility_SelectChannels()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Channel Selection Utility Module Parameters:-\n");
-	DPrint("\t%10s\n", "Selection Array");
-	DPrint("\t%10s\n", "(state)");
+	DPrint(wxT("Channel Selection Utility Module Parameters:-\n"));
+	DPrint(wxT("\t%10s\n"), wxT("Selection Array"));
+	DPrint(wxT("\t%10s\n"), wxT("(state)"));
 	for (i = 0; i < selectChanPtr->numChannels; i++)
 		if (selectChanPtr->selectionArray[i] > 0.0)
-			DPrint("\t    on * %g\n", selectChanPtr->selectionArray[i]);
+			DPrint(wxT("\t    on * %g\n"), selectChanPtr->selectionArray[i]);
 		else
-			DPrint("\t    off\n");
-	DPrint("\tMode = %s,", selectChanPtr->modeList[selectChanPtr->mode].name);
-	DPrint("\tChannel selection mode = %s.\n", selectChanPtr->selectionModeList[
-	  selectChanPtr->selectionMode].name);
+			DPrint(wxT("\t    off\n"));
+	DPrint(wxT("\tMode = %s,"), selectChanPtr->modeList[selectChanPtr->mode].
+	  name);
+	DPrint(wxT("\tChannel selection mode = %s.\n"), selectChanPtr->
+	  selectionModeList[selectChanPtr->selectionMode].name);
 	return(TRUE);
 
 }
@@ -563,45 +572,46 @@ PrintPars_Utility_SelectChannels(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_SelectChannels(char *fileName)
+ReadPars_Utility_SelectChannels(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("ReadPars_Utility_SelectChannels");
 	BOOLN	ok;
-	char	*filePath, mode[MAXLINE];
+	WChar	*filePath, mode[MAXLINE];
 	int		i, numChannels;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numChannels))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
 	if (!AllocNumChannels_Utility_SelectChannels(numChannels)) {
-		NotifyError("%s: Cannot allocate memory for the 'numChannels' arrays.",
-		  funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < selectChanPtr->numChannels; i++)
-		if (!GetPars_ParFile(fp, "%lf", &selectChanPtr->selectionArray[i]))
+		if (!GetPars_ParFile(fp, wxT("%lf"), &selectChanPtr->selectionArray[i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_USER;
 	if (!SetPars_Utility_SelectChannels(mode, numChannels,
 	  selectChanPtr->selectionArray)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -618,10 +628,11 @@ ReadPars_Utility_SelectChannels(char *fileName)
 BOOLN
 SetParsPointer_Utility_SelectChannels(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_SelectChannels";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Utility_SelectChannels");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	selectChanPtr = (SelectChanPtr) theModule->parsPtr;
@@ -638,14 +649,15 @@ SetParsPointer_Utility_SelectChannels(ModulePtr theModule)
 BOOLN
 InitModule_Utility_SelectChannels(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("InitModule_Utility_SelectChannels");
 
 	if (!SetParsPointer_Utility_SelectChannels(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_SelectChannels(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = selectChanPtr;
@@ -676,11 +688,11 @@ InitModule_Utility_SelectChannels(ModulePtr theModule)
 BOOLN
 CheckData_Utility_SelectChannels(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("CheckData_Utility_SelectChannels");
 	int		numInChans;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -688,8 +700,8 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 	numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
 	  interleaveLevel;
 	if (selectChanPtr->numChannels > numInChans) {
-		NotifyError("%s: The specified channel field (%d) is greater than\n"
-		  "as the input signal channels (%d, interleave level %d).", funcName,
+		NotifyError(wxT("%s: The specified channel field (%d) is greater than\n"
+		  "as the input signal channels (%d, interleave level %d)."), funcName,
 		  selectChanPtr->numChannels, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->interleaveLevel);
 			return(FALSE);
@@ -709,7 +721,8 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Utility_SelectChannels";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_Utility_SelectChannels");
 	int		i, numInChans;
 	SelectChanPtr	p = selectChanPtr;
 
@@ -719,7 +732,7 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 		  interleaveLevel;
 		if ((p->numChannels < numInChans) && !ResizeDoubleArray_UniParMgr(
 		  &p->selectionArray, &p->numChannels, numInChans)) {
-			NotifyError("%s: Could not set selection array.", funcName);
+			NotifyError(wxT("%s: Could not set selection array."), funcName);
 			return(FALSE);
 		}
 		switch (p->selectionMode) {
@@ -769,7 +782,7 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 BOOLN
 Process_Utility_SelectChannels(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_SelectChannels";
+	static const WChar	*funcName = wxT("Process_Utility_SelectChannels");
 	register	ChanData	 *inPtr, *outPtr, multiplier;
 	uShort	numChannels = 0;
 	int		i, k, l, chan, inChanIndex;
@@ -780,12 +793,13 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		if (!CheckPars_Utility_SelectChannels())
 			return(FALSE);
 		if (!CheckData_Utility_SelectChannels(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Select Channels Utility Module process");
+		SetProcessName_EarObject(data, wxT("Select Channels Utility Module "
+		  "process"));
 		if (!InitProcessVariables_Utility_SelectChannels(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -811,7 +825,7 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	} /* switch */
 	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
 	  data->inSignal[0]->dt)) {
-		NotifyError("%s: Cannot initialise output channels.", funcName);
+		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 		return(FALSE);
 	}
 	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->

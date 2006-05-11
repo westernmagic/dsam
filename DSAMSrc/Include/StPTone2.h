@@ -80,7 +80,7 @@ BOOLN	Init_PureTone_2(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_2(void);
 
-BOOLN	ReadPars_PureTone_2(char *fileName);
+BOOLN	ReadPars_PureTone_2(WChar *fileName);
 
 BOOLN	SetBeginPeriodDuration_PureTone_2(double theBeginPeriodDuration);
 

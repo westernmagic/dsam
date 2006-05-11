@@ -93,15 +93,15 @@ BOOLN	InitModeList_Analysis_FindNextIndex(void);
 
 BOOLN	PrintPars_Analysis_FindNextIndex(void);
 
-BOOLN	ReadPars_Analysis_FindNextIndex(char *fileName);
+BOOLN	ReadPars_Analysis_FindNextIndex(WChar *fileName);
 
-BOOLN	SetMode_Analysis_FindNextIndex(char *theMode);
+BOOLN	SetMode_Analysis_FindNextIndex(WChar *theMode);
 
 BOOLN	InitModule_Analysis_FindNextIndex(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_FindNextIndex(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_FindNextIndex(char *mode, double timeOffset);
+BOOLN	SetPars_Analysis_FindNextIndex(WChar *mode, double timeOffset);
 
 BOOLN	SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset);
 

@@ -28,6 +28,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoHCRPSham3StVIn.h"
 
 /******************************************************************************/
@@ -52,8 +53,6 @@ Sham3StVInPtr	sham3StVInPtr = NULL;
 BOOLN
 Free_IHCRP_Shamma3StateVelIn(void)
 {
-	/* static const char	*funcName = "Free_IHCRP_Shamma3StateVelIn";  */
-
 	if (sham3StVInPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_IHCRP_Shamma3StateVelIn();
@@ -82,19 +81,20 @@ Free_IHCRP_Shamma3StateVelIn(void)
 BOOLN
 Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("Init_IHCRP_Shamma3StateVelIn");
 
 	if (parSpec == GLOBAL) {
 		if (sham3StVInPtr != NULL)
 			Free_IHCRP_Shamma3StateVelIn();
 		if ((sham3StVInPtr = (Sham3StVInPtr) malloc(sizeof(Sham3StVIn))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (sham3StVInPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -130,7 +130,7 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 	sham3StVInPtr->offset_u1 = 7e-09;
 
 	if (!SetUniParList_IHCRP_Shamma3StateVelIn()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHCRP_Shamma3StateVelIn();
 		return(FALSE);
 	}
@@ -152,86 +152,90 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char *funcName = "SetUniParList_IHCRP_Shamma3StateVelIn";
+	static const WChar *funcName = wxT("SetUniParList_IHCRP_Shamma3StateVelIn");
 	UniParPtr	pars;
 
 	if ((sham3StVInPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  IHCRP_SHAMMA3STATEVELIN_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = sham3StVInPtr->parList->pars;
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_ENDOCOCHLEARPOT_ET], "E_T",
-	  "Endocochlear potential, Et (V).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_ENDOCOCHLEARPOT_ET], wxT(
+	  "E_T"),
+	  wxT("Endocochlear potential, Et (V)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->endocochlearPot_Et, NULL,
 	  (void * (*)) SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REVERSALPOT_EK], "E_K",
-	  "Reversal potential, Ek (V).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REVERSALPOT_EK], wxT("E_K"),
+	  wxT("Reversal potential, Ek (V)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->reversalPot_Ek, NULL,
 	  (void * (*)) SetReversalPot_Ek_IHCRP_Shamma3StateVelIn);
 	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REVERSALPOTCORRECTION],
-	  "RP_CORRECTION",
-	  "Reversal potential correction, Rp/(Rt+Rp).",
+	  wxT("RP_CORRECTION"),
+	  wxT("Reversal potential correction, Rp/(Rt+Rp)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->reversalPotCorrection, NULL,
 	  (void * (*)) SetReversalPotCorrection_IHCRP_Shamma3StateVelIn);
 	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_TOTALCAPACITANCE_C],
-	  "C_TOTAL",
-	  "Total capacitance, C = Ca + Cb (F).",
+	  wxT("C_TOTAL"),
+	  wxT("Total capacitance, C = Ca + Cb (F)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->totalCapacitance_C, NULL,
 	  (void * (*)) SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_RESTINGCONDUCTANCE_G0], "G0",
-	  "Resting conductance, G0 (S).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_RESTINGCONDUCTANCE_G0], wxT(
+	  "G0"),
+	  wxT("Resting conductance, G0 (S)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->restingConductance_G0, NULL,
 	  (void * (*)) SetRestingConductance_G0_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_KCONDUCTANCE_GK], "G_K",
-	  "Potassium conductance, Gk (S = Siemens).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_KCONDUCTANCE_GK], wxT("G_K"),
+	  wxT("Potassium conductance, Gk (S = Siemens)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->kConductance_Gk, NULL,
 	  (void * (*)) SetKConductance_Gk_IHCRP_Shamma3StateVelIn);
 	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_MAXMCONDUCTANCE_GMAX],
-	  "G_MAXC",
-	  "Maximum mechanical conductance, Gmax (S).",
+	  wxT("G_MAXC"),
+	  wxT("Maximum mechanical conductance, Gmax (S)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->maxMConductance_Gmax, NULL,
 	  (void * (*)) SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_CILIATIMECONST_TC], "T_C",
-	  "Cilia/BM time constant (s).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_CILIATIMECONST_TC], wxT(
+	  "T_C"),
+	  wxT("Cilia/BM time constant (s)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->ciliaTimeConst_tc, NULL,
 	  (void * (*)) SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn);
 	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_CILIACOUPLINGGAIN_C],
-	  "GAIN_C",
-	  "Cilia/BM coupling gain, C (dB).",
+	  wxT("GAIN_C"),
+	  wxT("Cilia/BM coupling gain, C (dB)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->ciliaCouplingGain_C, NULL,
 	  (void * (*)) SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REFERENCEPOT], "REF_POT",
-	  "Reference potential (V).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_REFERENCEPOT], wxT(
+	  "REF_POT"),
+	  wxT("Reference potential (V)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->referencePot, NULL,
 	  (void * (*)) SetReferencePot_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S0], "S0",
-	  "Sensitivity constant, S0 (/m).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S0], wxT("S0"),
+	  wxT("Sensitivity constant, S0 (/m)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->sensitivity_s0, NULL,
 	  (void * (*)) SetSensitivity_s0_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S1], "S1",
-	  "Sensitivity constant, S1 (/m).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_SENSITIVITY_S1], wxT("S1"),
+	  wxT("Sensitivity constant, S1 (/m)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->sensitivity_s1, NULL,
 	  (void * (*)) SetSensitivity_s1_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U0], "U0",
-	  "Offset constant, U0 (m).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U0], wxT("U0"),
+	  wxT("Offset constant, U0 (m)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->offset_u0, NULL,
 	  (void * (*)) SetOffset_u0_IHCRP_Shamma3StateVelIn);
-	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U1], "U1",
-	  "Offset constant, U1 (m).",
+	SetPar_UniParMgr(&pars[IHCRP_SHAMMA3STATEVELIN_OFFSET_U1], wxT("U1"),
+	  wxT("Offset constant, U1 (m)."),
 	  UNIPAR_REAL,
 	  &sham3StVInPtr->offset_u1, NULL,
 	  (void * (*)) SetOffset_u1_IHCRP_Shamma3StateVelIn);
@@ -249,15 +253,16 @@ SetUniParList_IHCRP_Shamma3StateVelIn(void)
 UniParListPtr
 GetUniParListPtr_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char	*funcName = "GetUniParListPtr_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (sham3StVInPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(sham3StVInPtr->parList);
@@ -280,7 +285,7 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
   double sensitivity_s0, double sensitivity_s1, double offset_u0,
   double offset_u1)
 {
-	static const char	*funcName = "SetPars_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("SetPars_IHCRP_Shamma3StateVelIn");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -315,7 +320,7 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 	if (!SetOffset_u1_IHCRP_Shamma3StateVelIn(offset_u1))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -331,11 +336,11 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
 BOOLN
 SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
 {
-	static const char	*funcName =
-	  "SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -357,11 +362,11 @@ SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
 BOOLN
 SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
 {
-	static const char	*funcName =
-	  "SetReversalPot_Ek_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetReversalPot_Ek_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -384,11 +389,11 @@ BOOLN
 SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
   theReversalPotCorrection)
 {
-	static const char	*funcName =
-	  "SetReversalPotCorrection_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetReversalPotCorrection_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -410,11 +415,11 @@ SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
 BOOLN
 SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
 {
-	static const char	*funcName =
-	  "SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -437,11 +442,11 @@ BOOLN
 SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
   theRestingConductance_G0)
 {
-	static const char	*funcName =
-	  "SetRestingConductance_G0_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetRestingConductance_G0_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -463,11 +468,11 @@ SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
 BOOLN
 SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
 {
-	static const char	*funcName =
-	  "SetKConductance_Gk_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetKConductance_Gk_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -489,11 +494,11 @@ SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
 BOOLN
 SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
 {
-	static const char	*funcName =
-	  "SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -515,11 +520,11 @@ SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
 BOOLN
 SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
 {
-	static const char	*funcName =
-	  "SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -541,11 +546,11 @@ SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
 BOOLN
 SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
 {
-	static const char	*funcName =
-	  "SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -567,10 +572,11 @@ SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
 BOOLN
 SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot)
 {
-	static const char	*funcName = "SetReferencePot_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT(
+	  "SetReferencePot_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -592,11 +598,11 @@ SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot)
 BOOLN
 SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0)
 {
-	static const char	*funcName =
-	  "SetSensitivity_s0_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetSensitivity_s0_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -618,11 +624,11 @@ SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0)
 BOOLN
 SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
 {
-	static const char	*funcName =
-	  "SetSensitivity_s1_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("SetSensitivity_s1_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -644,10 +650,10 @@ SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
 BOOLN
 SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
 {
-	static const char	*funcName = "SetOffset_u0_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("SetOffset_u0_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -669,10 +675,10 @@ SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
 BOOLN
 SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1)
 {
-	static const char	*funcName = "SetOffset_u1_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("SetOffset_u1_IHCRP_Shamma3StateVelIn");
 
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -696,68 +702,71 @@ SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1)
 BOOLN
 CheckPars_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char	*funcName = "CheckPars_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("CheckPars_IHCRP_Shamma3StateVelIn");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (sham3StVInPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!sham3StVInPtr->endocochlearPot_EtFlag) {
-		NotifyError("%s: endocochlearPot_Et variable not set.", funcName);
+		NotifyError(wxT("%s: endocochlearPot_Et variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->reversalPot_EkFlag) {
-		NotifyError("%s: reversalPot_Ek variable not set.", funcName);
+		NotifyError(wxT("%s: reversalPot_Ek variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->reversalPotCorrectionFlag) {
-		NotifyError("%s: reversalPotCorrection variable not set.", funcName);
+		NotifyError(wxT("%s: reversalPotCorrection variable not set."),
+		  funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->totalCapacitance_CFlag) {
-		NotifyError("%s: totalCapacitance_C variable not set.", funcName);
+		NotifyError(wxT("%s: totalCapacitance_C variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->restingConductance_G0Flag) {
-		NotifyError("%s: restingConductance_G0 variable not set.", funcName);
+		NotifyError(wxT("%s: restingConductance_G0 variable not set."),
+		  funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->kConductance_GkFlag) {
-		NotifyError("%s: kConductance_Gk variable not set.", funcName);
+		NotifyError(wxT("%s: kConductance_Gk variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->maxMConductance_GmaxFlag) {
-		NotifyError("%s: maxMConductance_Gmax variable not set.", funcName);
+		NotifyError(wxT("%s: maxMConductance_Gmax variable not set."),
+		  funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->ciliaTimeConst_tcFlag) {
-		NotifyError("%s: ciliaTimeConst_tc variable not set.", funcName);
+		NotifyError(wxT("%s: ciliaTimeConst_tc variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->ciliaCouplingGain_CFlag) {
-		NotifyError("%s: ciliaCouplingGain_C variable not set.", funcName);
+		NotifyError(wxT("%s: ciliaCouplingGain_C variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->referencePotFlag) {
-		NotifyError("%s: referencePot variable not set.", funcName);
+		NotifyError(wxT("%s: referencePot variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->sensitivity_s0Flag) {
-		NotifyError("%s: sensitivity_s0 variable not set.", funcName);
+		NotifyError(wxT("%s: sensitivity_s0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->sensitivity_s1Flag) {
-		NotifyError("%s: sensitivity_s1 variable not set.", funcName);
+		NotifyError(wxT("%s: sensitivity_s1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->offset_u0Flag) {
-		NotifyError("%s: offset_u0 variable not set.", funcName);
+		NotifyError(wxT("%s: offset_u0 variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!sham3StVInPtr->offset_u1Flag) {
-		NotifyError("%s: offset_u1 variable not set.", funcName);
+		NotifyError(wxT("%s: offset_u1 variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -774,37 +783,39 @@ CheckPars_IHCRP_Shamma3StateVelIn(void)
 BOOLN
 PrintPars_IHCRP_Shamma3StateVelIn(void)
 {
-	static const char	*funcName = "PrintPars_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("PrintPars_IHCRP_Shamma3StateVelIn");
 
 	if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Modified Shamma Receptor Potential Module  Module Parameters:-\n");
-	DPrint("\tEndocochlear potential, Et = %g V,\n", sham3StVInPtr->
+	DPrint(wxT("Modified Shamma Receptor Potential Module  Module Parameters:-"
+	  "\n"));
+	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"), sham3StVInPtr->
 	  endocochlearPot_Et);
-	DPrint( "\tReversal potential, Ek = %g V,\n", sham3StVInPtr->
+	DPrint( wxT("\tReversal potential, Ek = %g V,\n"), sham3StVInPtr->
 	  reversalPot_Ek);
-	DPrint("\tReversal potential correction Rp/(Rt+Rp) = %g,\n", sham3StVInPtr->
-	  reversalPotCorrection);
-	DPrint("\tTotal capacitance, Cm = %g F,\n", sham3StVInPtr->
+	DPrint(wxT("\tReversal potential correction Rp/(Rt+Rp) = %g,\n"),
+	  sham3StVInPtr->reversalPotCorrection);
+	DPrint(wxT("\tTotal capacitance, Cm = %g F,\n"), sham3StVInPtr->
 	  totalCapacitance_C);
-	DPrint("\tResting conductance, G0 = %g S,\n", sham3StVInPtr->
+	DPrint(wxT("\tResting conductance, G0 = %g S,\n"), sham3StVInPtr->
 	  restingConductance_G0);
-	DPrint("\tPotassium conductance, Gk = %g S,\n", sham3StVInPtr->
+	DPrint(wxT("\tPotassium conductance, Gk = %g S,\n"), sham3StVInPtr->
 	  kConductance_Gk);
-	DPrint("\tMaximum mechanically sensitive Conductance, Gmax = %g S,\n",
+	DPrint(wxT("\tMaximum mechanically sensitive Conductance, Gmax = %g S,\n"),
 	  sham3StVInPtr->maxMConductance_Gmax);
-	DPrint("\tBM/Cilia: time constant = %g ms,", sham3StVInPtr->
+	DPrint(wxT("\tBM/Cilia: time constant = %g ms,"), sham3StVInPtr->
 	  ciliaTimeConst_tc);
-	DPrint("\tGain = %g dB,\n", sham3StVInPtr->ciliaCouplingGain_C);
-	DPrint("\tReference potential = %g V,\n", sham3StVInPtr->referencePot);
-	DPrint("\tTransduction function 0:\n\t\tSensitivity, s0 = %g (/m), ", 
+	DPrint(wxT("\tGain = %g dB,\n"), sham3StVInPtr->ciliaCouplingGain_C);
+	DPrint(wxT("\tReference potential = %g V,\n"), sham3StVInPtr->referencePot);
+	DPrint(wxT("\tTransduction function 0:\n\t\tSensitivity, s0 = %g (/m), "), 
 	  sham3StVInPtr->sensitivity_s0);
-	DPrint("\tOffset, u0 = %g (m)\n", sham3StVInPtr->offset_u0  );
-	DPrint("\tTransduction function 1:\n\t\tSensitivity, s1 = %g (/m),",
+	DPrint(wxT("\tOffset, u0 = %g (m)\n"), sham3StVInPtr->offset_u0  );
+	DPrint(wxT("\tTransduction function 1:\n\t\tSensitivity, s1 = %g (/m),"),
 	  sham3StVInPtr->sensitivity_s1);
-	DPrint("\tOffset, u1 = %g (m)\n", sham3StVInPtr->offset_u1 );
+	DPrint(wxT("\tOffset, u1 = %g (m)\n"), sham3StVInPtr->offset_u1 );
 	return(TRUE);
 
 }
@@ -816,11 +827,11 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
+ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("ReadPars_IHCRP_Shamma3StateVelIn");
 	BOOLN	ok = TRUE;
-	char	*filePath;
+	WChar	*filePath;
 	double	endocochlearPot_Et, reversalPot_Ek, reversalPotCorrection;
 	double	totalCapacitance_C, restingConductance_G0, kConductance_Gk;
 	double	maxMConductance_Gmax, ciliaTimeConst_tc, ciliaCouplingGain_C;
@@ -828,45 +839,46 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
-	if (!GetPars_ParFile(fp, "%lf", &endocochlearPot_Et))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &endocochlearPot_Et))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &reversalPot_Ek))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPot_Ek))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &reversalPotCorrection))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPotCorrection))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &totalCapacitance_C))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &totalCapacitance_C))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &restingConductance_G0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &restingConductance_G0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &kConductance_Gk))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &kConductance_Gk))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxMConductance_Gmax))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxMConductance_Gmax))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &ciliaTimeConst_tc))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaTimeConst_tc))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &ciliaCouplingGain_C))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaCouplingGain_C))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &referencePot))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &referencePot))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &sensitivity_s0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &sensitivity_s0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &offset_u0))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &offset_u0))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &sensitivity_s1))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &sensitivity_s1))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &offset_u1))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &offset_u1))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_IHCRP_Shamma3StateVelIn(endocochlearPot_Et, reversalPot_Ek,
@@ -874,7 +886,7 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 	  kConductance_Gk, maxMConductance_Gmax, ciliaTimeConst_tc,
 	  ciliaCouplingGain_C, referencePot, sensitivity_s0, sensitivity_s1,
 	  offset_u0, offset_u1)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -891,10 +903,11 @@ ReadPars_IHCRP_Shamma3StateVelIn(char *fileName)
 BOOLN
 SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_IHCRP_Shamma3StateVelIn");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	sham3StVInPtr = (Sham3StVInPtr) theModule->parsPtr;
@@ -912,14 +925,15 @@ SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 BOOLN
 InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("InitModule_IHCRP_Shamma3StateVelIn");
 
 	if (!SetParsPointer_IHCRP_Shamma3StateVelIn(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHCRP_Shamma3StateVelIn(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = sham3StVInPtr;
@@ -948,10 +962,10 @@ InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 BOOLN
 CheckData_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("CheckData_IHCRP_Shamma3StateVelIn");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -972,8 +986,8 @@ CheckData_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 {
-	static const char	*funcName =
-	  "InitProcessVariables_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName =
+	  wxT("InitProcessVariables_IHCRP_Shamma3StateVelIn");
 	int		i;
 	double	restingPotential_V0;
 	Sham3StVInPtr p = sham3StVInPtr;
@@ -985,18 +999,20 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
 			if ((p->lastInput = (double *) calloc(data->outSignal->numChannels,
 			  sizeof(double))) == NULL) {
-				NotifyError("%s: Out of memory for 'lastInput'.", funcName);
+				NotifyError(wxT("%s: Out of memory for 'lastInput'."),
+				  funcName);
 				return(FALSE);
 			}
 			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
 			  sizeof(double))) == NULL) {
-				NotifyError("%s: Out of memory for 'lastOutput'.", funcName);
+				NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
+				  funcName);
 				return(FALSE);
 			}
 			if ((p->lastCiliaDisplacement_u = (double *)
 				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
-				NotifyError("%s: Out of memory for 'lastCiliaDisplacement_u'.",
-				  funcName);
+				NotifyError(wxT("%s: Out of memory for "
+				  "'lastCiliaDisplacement_u'."), funcName);
 				return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -1064,7 +1080,7 @@ FreeProcessVariables_IHCRP_Shamma3StateVelIn(void)
 BOOLN
 RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 {
-	static const char	*funcName = "RunModel_IHCRP_Shamma3StateVelIn";
+	static const WChar	*funcName = wxT("RunModel_IHCRP_Shamma3StateVelIn");
 	register ChanData	 *inPtr, *outPtr;
 	int	chan;
 	ChanLen	i;
@@ -1074,29 +1090,30 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
-			NotifyError("%s: Parameters invalid.", funcName);
+			NotifyError(wxT("%s: Parameters invalid."), funcName);
 			return(FALSE);
 			}
 		if (!CheckData_IHCRP_Shamma3StateVelIn(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
- 		SetProcessName_EarObject(data, "Modified Shamma hair cell receptor "
-		  "potential");
+ 		SetProcessName_EarObject(data, wxT("Modified Shamma hair cell receptor "
+		  "potential"));
 
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_IHCRP_Shamma3StateVelIn(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -55,11 +55,11 @@ class Box
 /****************************** Function Prototypes ***************************/
 /******************************************************************************/
 
-wxString	FileSelector_Utils(char *message, char *defaultPath,
-			  char *defaultFileName, char *defaultExtension, char *wildcard,
-			  int flags, wxWindow *parent);
+wxString	FileSelector_Utils(wxChar *message, wxChar *defaultPath,
+			  wxChar *defaultFileName, wxChar *defaultExtension, 
+			  wxChar *wildcard, int flags, wxWindow *parent);
 
-uInt	Hash_Utils(const char *s);
+uInt	Hash_Utils(const wxChar *s);
 
 
 #endif

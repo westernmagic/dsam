@@ -97,13 +97,13 @@ BOOLN	PrintPars_Utility_IteratedRipple(void);
 
 BOOLN	Process_Utility_IteratedRipple(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_IteratedRipple(char *fileName);
+BOOLN	ReadPars_Utility_IteratedRipple(WChar *fileName);
 
 BOOLN	SetDelay_Utility_IteratedRipple(double theDelay);
 
 BOOLN	SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier);
 
-BOOLN	SetMode_Utility_IteratedRipple(char *theMode);
+BOOLN	SetMode_Utility_IteratedRipple(WChar *theMode);
 
 BOOLN	InitModule_Utility_IteratedRipple(ModulePtr theModule);
 
@@ -111,7 +111,7 @@ BOOLN	SetNumIterations_Utility_IteratedRipple(int theNumIterations);
 
 BOOLN	SetParsPointer_Utility_IteratedRipple(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_IteratedRipple(int numIterations, char *mode,
+BOOLN	SetPars_Utility_IteratedRipple(int numIterations, WChar *mode,
 		  double delay, double signalMultiplier);
 
 BOOLN	SetUniParList_Utility_IteratedRipple(void);

@@ -51,17 +51,17 @@ class AxisScale
 	bool	CalculateScales(void);
 	double	GetDecPlaces(void)		{ return decPlaces; }
 	int		GetExponent(void)		{ return exponent; }
-	wxString	GetFormatString(char formatChar);
+	wxString	GetFormatString(wxChar formatChar);
 	int		GetNumTicks(void)		{ return numTicks; }
 	bool	GetSettingsChanged()	{ return settingsChanged; }
-	char *	GetOutputFormatString(void)	{ return (char *) outputFormat.GetData(
-			  ); }
+	wxChar *	GetOutputFormatString(void)	{ return (wxChar *) outputFormat.
+				  GetData(); }
 	double	GetTickValue(int i);
 	int		GetTickPosition(double tickValue);
 	double	GetValueScale(void)			{ return valueScale; }
-	bool	ParseNumberFormat(char *numberFormat);
+	bool	ParseNumberFormat(const wxString &numberFormat);
 	double	RoundedValue(double value);
-	bool	Set(char *numberFormat, double minVal, double maxVal, int minPos,
+	bool	Set(wxChar *numberFormat, double minVal, double maxVal, int minPos,
 			  int maxPos, int theNumTicks, bool theAutoScale);
 	void	SetExponent(int requestedExp, int deltaExp);
 

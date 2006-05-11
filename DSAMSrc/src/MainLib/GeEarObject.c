@@ -64,14 +64,14 @@ BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
  */
 
 EarObjectPtr
-Init_EarObject(char *moduleName)
+Init_EarObject(WChar *moduleName)
 {
-	static const char *funcName = "Init_EarObject";
+	static const WChar *funcName = wxT("Init_EarObject");
 	EarObjectPtr	data;
 
 	if ((data = (EarObjectPtr) malloc(sizeof(EarObject))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject - used with the '%s' "
-		  "module.", funcName, moduleName);
+		NotifyError(wxT("%s: Out of memory for EarObject - used with the '%s' "
+		  "module."), funcName, moduleName);
 		return(NULL);
 	}
 	data->processName = NULL;
@@ -93,13 +93,13 @@ Init_EarObject(char *moduleName)
 	data->supplierList = NULL;
 	data->handle = earObjectCount++;	/* Unique handle for each EarObject. */
 	if (!AddEarObjRef_EarObject(&mainEarObjectList, data)) {
-		NotifyError("%s: Could not register new EarObject.", funcName);
+		NotifyError(wxT("%s: Could not register new EarObject."), funcName);
 		Free_EarObject(&data);
 		return(NULL);
 	}
 #   ifndef _NO_MODULEMGR
 	if ((data->module = Init_ModuleMgr(moduleName)) == NULL) {
-		NotifyError("%s: Could not set module type.", funcName);
+		NotifyError(wxT("%s: Could not set module type."), funcName);
 		Free_EarObject(&data);
 		return(NULL);
 	}
@@ -123,17 +123,17 @@ Init_EarObject(char *moduleName)
 BOOLN
 AddInSignal_EarObject(EarObjectPtr data)
 {
-	static const char *funcName = "AddInSignal_EarObject";
+	static const WChar *funcName = wxT("AddInSignal_EarObject");
 	SignalDataPtr	*signals;
 
 	if (!data) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
 	  numInSignals + 1) * sizeof(SignalDataPtr)))) == NULL) {
-		NotifyError("%s: Out of memory for EarObject input signals (EarObject "
-		  "process %lu).", funcName, data->handle);
+		NotifyError(wxT("%s: Out of memory for EarObject input signals (EarObject "
+		  "process %lu)."), funcName, data->handle);
 		return(FALSE);
 	}
 	signals[data->numInSignals++] = NULL;
@@ -156,14 +156,14 @@ AddInSignal_EarObject(EarObjectPtr data)
 BOOLN
 DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 {
-	static const char *funcName = "DelInSignal_EarObject";
+	static const WChar *funcName = wxT("DelInSignal_EarObject");
 	BOOLN	found = FALSE;
 	int		i = 0, j;
 	SignalDataPtr	*signals;
 	EarObjRefPtr	p;	
 
 	if (!data) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!data->numInSignals)
@@ -172,7 +172,7 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 		found = (data->inSignal[i++] == signal);
 
 	if (!found) {
-		NotifyError("%s: Signal pointer not found for '%s' EarObject process.",
+		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject process."),
 		  funcName, data->processName);
 		return(FALSE);
 	}
@@ -185,8 +185,8 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 	} else {
 		if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
 		  numInSignals - 1) * sizeof(SignalDataPtr)))) == NULL) {
-			NotifyError("%s: memory reallocation problem for EarObject input "
-			  "signals ('%s' Earobject process).", funcName, data->processName);
+			NotifyError(wxT("%s: memory reallocation problem for EarObject input "
+			  "signals ('%s' Earobject process)."), funcName, data->processName);
 			return(FALSE);
 		}
 		data->inSignal = signals;
@@ -292,24 +292,24 @@ FreeAll_EarObject(void)
  */
  
 void
-SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...)
+SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...)
 {
-	static const char *funcName = "SetProcessName_EarObject";
-	char	string[MAXLINE];
+	static const WChar *funcName = wxT("SetProcessName_EarObject");
+	WChar	string[MAXLINE];
 	va_list	args;
 	
 	if (theObject->processName != NULL)
 		free(theObject->processName);
 	va_start(args, format);
-	vsnprintf(string, MAXLINE, format, args);
+	DSAM_vsnprintf(string, MAXLINE, format, args);
 	va_end(args);
-	if ((theObject->processName = (char *) malloc(strlen(string) + 1)) ==
-	   NULL) {
-		NotifyError("%s: Out of memory, cannot allocate name.", funcName);
-		NotifyError("%s: string = '%s'.", funcName, string);
+	if ((theObject->processName = (WChar *) calloc(DSAM_strlen(string) + 1,
+	  sizeof(WChar))) == NULL) {
+		NotifyError(wxT("%s: Out of memory, cannot allocate name."), funcName);
+		NotifyError(wxT("%s: string = '%s'."), funcName, string);
 		return;
 	}
-	strcpy(theObject->processName, string);
+	DSAM_strcpy(theObject->processName, string);
 
 } /* SetProcessName_EarObject */
 
@@ -332,7 +332,7 @@ BOOLN
 SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   double samplingInterval)
 {
-	static const char *funcName = "SetNewOutSignal_EarObject";
+	static const WChar *funcName = wxT("SetNewOutSignal_EarObject");
 	BOOLN	createNewSignal = TRUE, deletedOldOutSignal = FALSE;
 	SignalData	oldOutSignal;
 
@@ -360,8 +360,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
 		if (!InitChannels_SignalData(data->outSignal, numChannels,
 		  data->externalDataFlag)) {
-			NotifyError("%s: Cannot initialise output channels for "
-			  "EarObject '%s'.", funcName, POSSIBLY_NULL_STRING_PTR(data->
+			NotifyError(wxT("%s: Cannot initialise output channels for "
+			  "EarObject '%s'."), funcName, POSSIBLY_NULL_STRING_PTR(data->
 			  processName));
 			Free_SignalData(&data->outSignal);
 			data->localOutSignalFlag = FALSE;
@@ -393,10 +393,10 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 void
 ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
 {
-	static const char *funcName = "ResetSignalContinuity_EarObject";
+	static const WChar *funcName = wxT("ResetSignalContinuity_EarObject");
 
 	if (!CheckPars_SignalData(data->outSignal)) {
-		NotifyError("%s: Output signal not correctly set.", funcName);
+		NotifyError(wxT("%s: Output signal not correctly set."), funcName);
 		exit(1);
 	}
 	if (!data->inSignal || (data->inSignal[0] == NULL)) {
@@ -448,16 +448,16 @@ BOOLN
 InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   double samplingInterval)
 {
-	static const char *funcName = "InitOutSignal_EarObject";
+	static const WChar *funcName = wxT("InitOutSignal_EarObject");
 	
 	if (samplingInterval == 0.0) {
-		NotifyError("%s: Time step is zero for EarObject '%s'!", funcName,
+		NotifyError(wxT("%s: Time step is zero for EarObject '%s'!"), funcName,
 		  POSSIBLY_NULL_STRING_PTR(data->processName));
 		return(FALSE);
 	}
 	if (!SetNewOutSignal_EarObject(data, numChannels, length,
 	  samplingInterval)) {
-		NotifyError("%s: Could not set output signal.", funcName);
+		NotifyError(wxT("%s: Could not set output signal."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -507,15 +507,15 @@ ResetOutSignal_EarObject(EarObjectPtr data)
 BOOLN
 InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
-	static const char *funcName = "InitOutFromInSignal_EarObject";
+	static const WChar *funcName = wxT("InitOutFromInSignal_EarObject");
 	uShort	channelsToSet;
 
 	if (!data->inSignal) {
-		NotifyError("%s: No connected input processes.", funcName);
+		NotifyError(wxT("%s: No connected input processes."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}
 	channelsToSet = (numChannels == 0) ? data->inSignal[0]->numChannels:
@@ -523,7 +523,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 
 	if (!SetNewOutSignal_EarObject(data, channelsToSet,
 		data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not set output signal.", funcName);
+		NotifyError(wxT("%s: Could not set output signal."), funcName);
 		return(FALSE);
 	}
 	SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0]);
@@ -577,15 +577,15 @@ InitOutDataFromInSignal_EarObject(EarObjectPtr data)
 BOOLN
 InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
-	static const char *funcName = "InitOutTypeFromInSignal_EarObject";
+	static const WChar *funcName = wxT("InitOutTypeFromInSignal_EarObject");
 	uShort	channelsToSet;
 
 	if (!data->inSignal) {
-		NotifyError("%s: No connected input processes.", funcName);
+		NotifyError(wxT("%s: No connected input processes."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(data->inSignal[0])) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}
 	channelsToSet = (numChannels == 0) ? data->inSignal[0]->numChannels:
@@ -593,7 +593,7 @@ InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 
 	if (!SetNewOutSignal_EarObject(data, channelsToSet,
 		data->inSignal[0]->length, data->inSignal[0]->dt)) {
-		NotifyError("%s: Could not set output signal.", funcName);
+		NotifyError(wxT("%s: Could not set output signal."), funcName);
 		return(FALSE);
 	}
 	if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
@@ -617,12 +617,12 @@ InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
  */
  
 void
-PrintProcessName_EarObject(char *message, EarObjectPtr data)
+PrintProcessName_EarObject(WChar *message, EarObjectPtr data)
 {
 	if (data->processName != NULL)
-		printf(message, data->processName);
+		DSAM_printf(message, data->processName);
 	else
-		printf(message, "<no name set>");
+		DSAM_printf(message, wxT("<no name set>"));
 }
 
 /**************************** ConnectOutSignalToIn ****************************/
@@ -638,22 +638,22 @@ PrintProcessName_EarObject(char *message, EarObjectPtr data)
 BOOLN
 ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 {
-	static const char *funcName = "ConnectOutSignalToIn_EarObject";
+	static const WChar *funcName = wxT("ConnectOutSignalToIn_EarObject");
 
 	if (supplier == NULL) {
-		NotifyError("%s: Supplier EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: Supplier EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (customer == NULL) {
-		NotifyError("%s: Customer EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: Customer EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (supplier == customer) {
-		NotifyError("%s: Attempted to connect EarObject to itself!", funcName);
+		NotifyError(wxT("%s: Attempted to connect EarObject to itself!"), funcName);
 		return(FALSE);
 	}
 	if (!AddInSignal_EarObject(customer)) {
-		NotifyError("%s: Could not add input signal for customer (%lu).",
+		NotifyError(wxT("%s: Could not add input signal for customer (%lu)."),
 		  funcName, customer->handle);
 		return(FALSE);
 	}
@@ -680,23 +680,23 @@ BOOLN
 DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
   EarObjectPtr customer)
 {
-	static const char *funcName = "DisconnectOutSignalFromIn_EarObject";
+	static const WChar *funcName = wxT("DisconnectOutSignalFromIn_EarObject");
 	
 	if (supplier == NULL) {
-		NotifyError("%s: Supplier EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: Supplier EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (customer == NULL) {
-		NotifyError("%s: Customer EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: Customer EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (supplier == customer) {
-		NotifyError("%s: Attempted to disconnect EarObject from itself!",
+		NotifyError(wxT("%s: Attempted to disconnect EarObject from itself!"),
 		  funcName);
 		return(FALSE);
 	}
 	if (!DelInSignal_EarObject(customer, supplier->outSignal)) {
-		NotifyError("%s: Could not delete input signal for customer (%lu).",
+		NotifyError(wxT("%s: Could not delete input signal for customer (%lu)."),
 		  funcName, customer->handle);
 		return(FALSE);
 	}
@@ -718,11 +718,11 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 EarObjRefPtr
 CreateEarObjRef_EarObject(EarObjectPtr theObject)
 {
-	static const char *funcName = "CreateEarObjRef_EarObject";
+	static const WChar *funcName = wxT("CreateEarObjRef_EarObject");
 	EarObjRef	*newNode;
 
 	if ((newNode = (EarObjRef *) malloc(sizeof (EarObjRef))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
+		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
 	}
 	newNode->earObject = theObject;
@@ -744,13 +744,13 @@ CreateEarObjRef_EarObject(EarObjectPtr theObject)
 BOOLN
 AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 {
-	static const char *funcName = "AddEarObjRef_EarObject";
+	static const WChar *funcName = wxT("AddEarObjRef_EarObject");
 	EarObjRefPtr	temp, p, last;
 
     if (*theList == NULL) {
     	if ((*theList = CreateEarObjRef_EarObject(theObject)) ==
     	  NULL) {
-    		NotifyError("%s: Could not create new node.", funcName);
+    		NotifyError(wxT("%s: Could not create new node."), funcName);
     		return(FALSE);
     	}
     	
@@ -760,12 +760,12 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 	  theObject->handle); p = p->next)
 		last = p;
 	if (p->earObject->handle == theObject->handle) {
-		/* NotifyWarning("AddEarObjRef_EarObject: EarObject already in list.");
+		/* NotifyWarning(wxT("AddEarObjRef_EarObject: EarObject already in list."));
 		 */
 		return(TRUE);
 	}
 	if ((temp = CreateEarObjRef_EarObject(theObject)) == NULL) {
-		NotifyError("%s: Could not create temp node.", funcName);
+		NotifyError(wxT("%s: Could not create temp node."), funcName);
 		return(FALSE);
 	}
 	if (p->earObject->handle > theObject->handle) {
@@ -974,10 +974,10 @@ SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 void
 SetProcessForReset_EarObject(EarObjectPtr theObject)
 {
-	static const char *funcName = "SetProcessForReset_EarObject";
+	static const WChar *funcName = wxT("SetProcessForReset_EarObject");
 
 	if (!theObject) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}
 	theObject->updateProcessFlag = TRUE;
@@ -1009,12 +1009,12 @@ SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr))
 BOOLN
 ResetProcessStandard_EarObject(EarObjectPtr theObject)
 {
-	static const char *funcName = "ResetProcessStandard_EarObject";
+	static const WChar *funcName = wxT("ResetProcessStandard_EarObject");
 	int		i;
 	EarObjectPtr	p;
 
 	if (!theObject) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	SetProcessForReset_EarObject(theObject);
@@ -1035,21 +1035,21 @@ ResetProcessStandard_EarObject(EarObjectPtr theObject)
 double
 GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
 {
-	static const char	*funcName = "GetSample_EarObject";
+	static const WChar	*funcName = wxT("GetSample_EarObject");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}
 	if (!CheckInit_SignalData(data->outSignal, funcName))
 		exit(1);
 	if (channel >= data->outSignal->numChannels) {
-		NotifyError("%s: Illegal channel number (%u) for '%s' EarObject.",
+		NotifyError(wxT("%s: Illegal channel number (%u) for '%s' EarObject."),
 		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
 	if (sample >= data->outSignal->length) {
-		NotifyError("%s: Illegal sample number (%u) for '%s' EarObject.",
+		NotifyError(wxT("%s: Illegal sample number (%u) for '%s' EarObject."),
 		  funcName, sample, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
@@ -1069,21 +1069,21 @@ GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
 double
 GetResult_EarObject(EarObjectPtr data, uShort channel)
 {
-	static const char	*funcName = "GetResult_EarObject";
+	static const WChar	*funcName = wxT("GetResult_EarObject");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}
 	if (!CheckInit_SignalData(data->outSignal, funcName))
 		exit(1);
 	if (channel >= data->outSignal->numChannels) {
-		NotifyError("%s: Illegal channel number (%u) for '%s' EarObject.",
+		NotifyError(wxT("%s: Illegal channel number (%u) for '%s' EarObject."),
 		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
 	if (data->outSignal->length < 1) {
-		NotifyError("%s: Illegal signal length.", funcName);
+		NotifyError(wxT("%s: Illegal signal length."), funcName);
 		exit(1);
 	}
 	return(data->outSignal->channel[channel][0]);
@@ -1100,20 +1100,20 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
  */
  
 BOOLN
-CheckInSignal_EarObject(EarObjectPtr data, const char *callingFuncName)
+CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
 {
-	static const char	*funcName = "CheckInSignal_EarObject";
+	static const WChar	*funcName = wxT("CheckInSignal_EarObject");
 	int		i;
 
 	if (data->numInSignals < 1) {
-		NotifyError("%s: No connected input signals for process (called from "
-		  "'%s').", funcName,
+		NotifyError(wxT("%s: No connected input signals for process (called from "
+		  "'%s')."), funcName,
 		  callingFuncName);
 		return(FALSE);
 	}
 	for (i = 0; i < data->numInSignals; i++)
 		if (!CheckInit_SignalData(data->inSignal[i], funcName)) {
-			NotifyError("%s: Signal %d not initialised.", funcName, i);
+			NotifyError(wxT("%s: Signal %d not initialised."), funcName, i);
 			return(FALSE);
 		}
 	return(TRUE);
@@ -1133,11 +1133,11 @@ BOOLN
 TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
   int numInSignals)
 {
-	static const char	*funcName = "TempInputConnection_EarObject";
+	static const WChar	*funcName = wxT("TempInputConnection_EarObject");
 	int		i;
 
 	if (numInSignals > base->numInSignals) {
-		NotifyError("%s: Base process has only %d input signals (%d).",
+		NotifyError(wxT("%s: Base process has only %d input signals (%d)."),
 		  funcName, base->numInSignals);
 		return(FALSE);
 	}
@@ -1167,7 +1167,7 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
  */
 
 BOOLN
-SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const char *callingFunc)
+SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 {
 	
 	if (p->randPars) {
@@ -1176,7 +1176,8 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const char *callingFunc)
 	}
 	if ((p->randPars = InitPars_Random(ranSeed, (long) p->threadIndex)) ==
 	  NULL) {
-		NotifyError("%s: Out of memory for 'random' parameters.", callingFunc);
+		NotifyError(wxT("%s: Out of memory for 'random' parameters."),
+		  callingFunc);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1221,30 +1222,30 @@ FreeThreadSubProcs_EarObject(EarObjectPtr p)
 BOOLN
 InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 {
-	static const char *funcName = "InitThreadSubProcs_EarObject";
+	static const WChar *funcName = wxT("InitThreadSubProcs_EarObject");
 	int		i;
 	EarObjectPtr	*sP, *oSP, earObjectList;
 	SignalDataPtr	signalList;
 
 #	if DEBUG
-	printf("%s: Debug: process '%s' * %d\n", funcName, baseP->processName, 
+	wprintf(wxT("%s: Debug: process '%s' * %d\n"), funcName, baseP->processName, 
 	  baseP->numSubProcesses);
 #	endif
 	if (!InitSubProcessList_EarObject(p, baseP->numSubProcesses)) {
-		NotifyError("%s: Could not initialise subProcesses.", funcName);
+		NotifyError(wxT("%s: Could not initialise subProcesses."), funcName);
 		return(FALSE);
 	}
 	if (*p->subProcessList)
 		return(TRUE);
 	if ((earObjectList = (EarObject *) calloc(p->numSubProcesses, sizeof(
 	  EarObject))) == NULL) {
-		NotifyError("%s: Could not initialise sub-process EarObject Copy "
-		  "list (%d copies).", funcName, p->numSubProcesses);
+		NotifyError(wxT("%s: Could not initialise sub-process EarObject Copy "
+		  "list (%d copies)."), funcName, p->numSubProcesses);
 		return(FALSE);
 	}
 	if ((signalList = (SignalData *) calloc(p->numSubProcesses, sizeof(
 	  SignalData))) == NULL) {
-		NotifyError("%s: Out of memory for %d signal copies.", funcName,
+		NotifyError(wxT("%s: Out of memory for %d signal copies."), funcName,
 		  p->numSubProcesses);
 		return(FALSE);
 	}
@@ -1281,7 +1282,7 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
 	if (!p->threadProcs)
 		return;
 #	if DEBUG
-	printf("FreeThreadProcs_EarObject: Debug: process '%s' * %d\n",
+	printf(wxT("FreeThreadProcs_EarObject: Debug: process '%s' * %d\n"),
 	  p->processName, p->numThreads - 1);
 #	endif
 	for (i = 0, pI = p->threadProcs; i < p->numThreads - 1; i++, pI++) {
@@ -1306,7 +1307,7 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
 void
 InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 {
-	static const char *funcName = "InitThreadRandPars_EarObject";
+	static const WChar *funcName = wxT("InitThreadRandPars_EarObject");
 
 	if (!baseP->randPars)
 		return;
@@ -1326,13 +1327,13 @@ InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 BOOLN
 InitThreadProcs_EarObject(EarObjectPtr p)
 {
-	static const char *funcName = "InitThreadProcs_EarObject";
+	static const WChar *funcName = wxT("InitThreadProcs_EarObject");
 	int		i, numCopies;
 	EarObjectPtr	tP;
 	SignalDataPtr	s;
 
 #	if DEBUG
-	printf("%s: numThreads = %d.\n", funcName, p->numThreads);
+	printf(wxT("%s: numThreads = %d.\n"), funcName, p->numThreads);
 #	endif
 	SetThreadRunFlag_EarObject(p, TRUE);
 	if (p->threadProcs)
@@ -1340,18 +1341,18 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 	numCopies = p->numThreads - 1;
 	if ((p->threadProcs = (EarObject *) calloc(numCopies, sizeof(
 	  EarObject))) == NULL) {
-		NotifyError("%s: Could not initialise EarObject Copy list (%d "
-		  "copies).", funcName, numCopies);
+		NotifyError(wxT("%s: Could not initialise EarObject Copy list (%d "
+		  "copies)."), funcName, numCopies);
 		return(FALSE);
 	}
 	if ((s = (SignalData *) calloc(numCopies, sizeof(SignalData))) ==
 	  NULL) {
-		NotifyError("%s: Out of memory for %d signal copies.", funcName,
+		NotifyError(wxT("%s: Out of memory for %d signal copies."), funcName,
 		  numCopies);
 		return(FALSE);
 	}
 #	ifdef DEBUG
-	printf("%s: Debug: Main outSignal = %x.\n", funcName, p->outSignal);
+	printf(wxT("%s: Debug: Main outSignal = %x.\n"), funcName, p->outSignal);
 #	endif
 	for (i = 0, tP = p->threadProcs; i < numCopies; i++, tP++, s++) {
 		*tP = *p;
@@ -1359,7 +1360,7 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 		tP->outSignal = s;
 		tP->threadIndex = i + 1;
 #		ifdef DEBUG
-		printf("%s: Debug: Thread outSignal = %x (%x).\n", funcName, tP->
+		printf(wxT("%s: Debug: Thread outSignal = %x (%x).\n"), funcName, tP->
 		  outSignal, p->outSignal);
 #		endif
 		*tP->outSignal = *p->outSignal;
@@ -1367,7 +1368,7 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 		tP->subProcessList = NULL;
 		InitThreadRandPars_EarObject(tP, p);
 		if (p->subProcessList && !InitThreadSubProcs_EarObject(tP, p)) {
-			NotifyError("%s: Could not initialise sub process copies.",
+			NotifyError(wxT("%s: Could not initialise sub process copies."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1426,7 +1427,7 @@ FreeSubProcessList_EarObject(EarObjectPtr p)
 BOOLN
 InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses)
 {
-	static const char	*funcName = "InitSubProcessList_EarObject";
+	static const WChar	*funcName = wxT("InitSubProcessList_EarObject");
 
 	if (p->subProcessList) {
 		if (numSubProcesses == p->numSubProcesses)
@@ -1435,7 +1436,7 @@ InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses)
 	}
 	if ((p->subProcessList = (EarObjectPtr *) calloc(numSubProcesses, sizeof(
 	  EarObjectPtr))) == NULL) {
-	  	NotifyError("%s: Out of memory for %d element sub-process list.",
+	  	NotifyError(wxT("%s: Out of memory for %d element sub-process list."),
 		  funcName, numSubProcesses);
 		return(FALSE);
 	}

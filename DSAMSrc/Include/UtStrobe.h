@@ -113,7 +113,7 @@ typedef struct {
 	NameSpecifier	*diagnosticModeList;
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
-	char			diagnosticString[MAX_FILE_PATH];
+	WChar			diagnosticString[MAX_FILE_PATH];
 	int				numChannels;
 	double			thresholdDecay;
 	FILE			*fp;
@@ -170,21 +170,21 @@ void	ProcessPeakModes_Utility_Strobe(EarObjectPtr data);
 
 void	ProcessThesholdModes_Utility_Strobe(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Strobe(char *fileName);
+BOOLN	ReadPars_Utility_Strobe(WChar *fileName);
 
-BOOLN	SetDiagnosticMode_Utility_Strobe(char *theDiagnosticMode);
+BOOLN	SetDiagnosticMode_Utility_Strobe(WChar *theDiagnosticMode);
 
 BOOLN	SetDelay_Utility_Strobe(double theDelay);
 
 BOOLN	SetDelayTimeout_Utility_Strobe(double theDelayTimeout);
 
-BOOLN	SetTypeMode_Utility_Strobe(char *theTypeMode);
+BOOLN	SetTypeMode_Utility_Strobe(WChar *theTypeMode);
 
 BOOLN	InitModule_Utility_Strobe(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Strobe(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Strobe(char *typeMode, char *diagnosticMode,
+BOOLN	SetPars_Utility_Strobe(WChar *typeMode, WChar *diagnosticMode,
 		  double threshold, double thresholdDecayRate, double delay,
 		  double delayTimeout);
 

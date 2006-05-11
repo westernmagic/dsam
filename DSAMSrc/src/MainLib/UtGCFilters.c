@@ -45,7 +45,7 @@ double	Filters_AsymCmpCoef0[6] = {1.35, -0.19, 0.29, -0.004, 0.23, 0.0072};
 AsymCmpCoeffsPtr
 InitAsymCmpCoeffs_GCFilters(void)
 {
-	static const char *funcName = "InitAsymCmpCoeffs_GCFilters";
+	static const WChar *funcName = wxT("InitAsymCmpCoeffs_GCFilters");
 	int    stateVectorLength, cascadeAC, coeffsLength;
 	AsymCmpCoeffsPtr p;
 
@@ -53,18 +53,19 @@ InitAsymCmpCoeffs_GCFilters(void)
 	coeffsLength = cascadeAC * GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER + 1;
 
 	if ((p = (AsymCmpCoeffs *) malloc(sizeof(AsymCmpCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
     }
 	if ((p->numCoeffs = (double *) calloc(coeffsLength, sizeof(double))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate space for numCoeffs.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for numCoeffs."), funcName);
 		free(p);
 		exit(1);
 	}
 	if ((p->denomCoeffs = (double *) calloc(coeffsLength, sizeof(double))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate space for denomCoeffs.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for denomCoeffs."),
+		  funcName);
 		free(p);
 		exit(1);
 	}
@@ -72,14 +73,14 @@ InitAsymCmpCoeffs_GCFilters(void)
 	stateVectorLength = cascadeAC * GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER + 1;
 	if ((p->stateFVector = (double *) calloc(stateVectorLength, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for state Forward-vector.",
+		NotifyError(wxT("%s: Cannot allocate space for state Forward-vector."),
 		  funcName);
 		free(p);
 		exit(1);
 	}
 	if ((p->stateBVector = (double *) calloc(stateVectorLength, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for state Backward-vector.",
+		NotifyError(wxT("%s: Cannot allocate space for state Backward-vector."),
 		  funcName);
 		free(p);
 		exit(1);
@@ -102,7 +103,7 @@ void
 CalcAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr p, double centreFreq, 
 double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
 {
-	static const char *funcName = "CalcAsymCmpCoeffs_GCFilters";
+	static const WChar *funcName = wxT("CalcAsymCmpCoeffs_GCFilters");
 	int    kth, nth, coeffsLength;
 	double coef_r, coef_th, coef_fn, r, th, fn;
 	double k0num, k1num, k2num;				/* numerator coefficients */
@@ -114,7 +115,7 @@ double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
 	Complex cf_num, cf_denom, Tf, var1, var2, var3;
 
 	if (p == NULL) {
-		NotifyError("%s: Memory for coefficients have not been allocated.", 
+		NotifyError(wxT("%s: Memory for coefficients have not been allocated."),
 					funcName);
 		exit(1);
 	}
@@ -183,7 +184,7 @@ double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
 
 		if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)){
 					/* invert to get normalised values */
-			NotifyError("%s: Filter failed to initialise.", funcName);
+			NotifyError(wxT("%s: Filter failed to initialise."), funcName);
 			exit(1);
 		}
 		Convert_CmplxM(&Tf,&Tf);
@@ -237,7 +238,7 @@ ERBGammaToneCoeffsPtr
 InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB, 
   double bCoeff, int cascade, double sampleClk)
 {
-	static const char *funcName = "InitERBGammaToneCoeffs_GCFilters";
+	static const WChar *funcName = wxT("InitERBGammaToneCoeffs_GCFilters");
 	int	   stateVectorLength, kth;
 	double bERBw, sin_theta, cos_theta, dt;
 /*	double k0num, k1num[GCFILTERS_NUM_CASCADE_ERBGT_FILTER], k2num;	*/
@@ -265,33 +266,33 @@ InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB,
 	k2denom = exp(-2.0 * bERBw / sampleClk);;
 
 	if ((p = (ERBGammaToneCoeffs *) malloc(sizeof(GammaToneCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
 	}
 	if ((p->a0 = (double *) calloc(cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for a0.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for a0."), funcName);
 		exit(1);
 	}
 	if ((p->a1 = (double *) calloc(cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for a1.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for a1."), funcName);
 		exit(1);
 	}
 	if ((p->a2 = (double *) calloc(cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for a2.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for a2."), funcName);
 		exit(1);
 	}
 	if ((p->b1 = (double *) calloc(cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for b1.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for b1."), funcName);
 		exit(1);
 	}
 	if ((p->b2 = (double *) calloc(cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for b2.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for b2."), funcName);
 		exit(1);
 	}
 	stateVectorLength = cascade * FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
 	if ((p->stateVector = (double *) calloc(stateVectorLength,
 			sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for state vector.", 
+		NotifyError(wxT("%s: Cannot allocate space for state vector."), 
 						funcName);
 		free(p);
 		exit(1);
@@ -322,7 +323,7 @@ InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB,
 
 		if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)) {/* invert to get normalised 
 																	values */
-			NotifyError("%s: Filter failed to initialise.", funcName);
+			NotifyError(wxT("%s: Filter failed to initialise."), funcName);
 			exit(1);
 		}
 		Convert_CmplxM(&Tf,&Tf);
@@ -374,7 +375,7 @@ FreeERBGammaToneCoeffs_GCFilters(ERBGammaToneCoeffsPtr *p)
 OnePoleCoeffsPtr 
 InitLeakyIntCoeffs_GCFilters(double Tcnst, double sampleClk)
 {
-	static const char *funcName = "InitLeakyIntCoeffs_GCFilters";
+	static const WChar *funcName = wxT("InitLeakyIntCoeffs_GCFilters");
 	int		stateVectorLength;
 	double k0num;	/* numerator coefficients */
 	double k1denom;	/* denominator coefficients */
@@ -384,13 +385,14 @@ InitLeakyIntCoeffs_GCFilters(double Tcnst, double sampleClk)
 	k0num=1.0+k1denom;
 
 	if ((p = (OnePoleCoeffs *) malloc(sizeof(OnePoleCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
     }
 	stateVectorLength = GCFILTERS_NUM_LI_STATE_VARS_PER_FILTER;
 	if ((p->stateVector = (double *) calloc(stateVectorLength, sizeof(
 	  double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for state vector.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for state vector."),
+		  funcName);
 		free(p);
 		exit(1);
 	}
@@ -430,12 +432,12 @@ FreeLeakyIntCoeffs_GCFilters(OnePoleCoeffsPtr *p)
 double *
 InitHammingWindow_GCFilters(int winLength)
 {
-	static const char *funcName = "InitHammingWindow";
+	static const WChar *funcName = wxT("InitHammingWindow");
 	int	nsmpl;
         double 	*win;
 
 	if ((win = (double *) calloc(winLength,sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
 	}
 
@@ -461,7 +463,7 @@ InitHammingWindow_GCFilters(int winLength)
 double *
 InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 {
-	static const char *funcName = "InitERBWindow_GCFilters";
+	static const WChar *funcName = wxT("InitERBWindow_GCFilters");
 	int	winLength, winMtrxLength, nch, mch, nwin, nee, strPos, endPos;
 	double 	*p, *win, sumWin, diffERB;
 
@@ -473,7 +475,7 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 		winMtrxLength = numChannels * numChannels;
 
 		if ((p = (double *) calloc(winMtrxLength,sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory!", funcName);
+			NotifyError(wxT("%s: Out of memory!"), funcName);
 			exit(1);
 		}
 
@@ -501,7 +503,7 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 
 		if ((p = (double *) calloc(numChannels * numChannels,
 				sizeof(double))) == NULL) {
-			NotifyError("%s: Out of memory!", funcName);
+			NotifyError(wxT("%s: Out of memory!"), funcName);
 			exit(1);
 		}
 
@@ -532,7 +534,7 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 void
 AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, AsymCmpCoeffs *p[])
 {
-	/* static const char *funcName = "AsymCmp_GCFilters"; */
+	/* static const WChar *funcName = wxT("AsymCmp_GCFilters"); */
 	int			kth, nch;
 	register	double		*ptr1, *ptr2, wn; /* Inner loop variables */
 	register	ChanData	*data;
@@ -570,14 +572,14 @@ AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, AsymCmpCoeffs *p[])
 void
 ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
 { 
-	static const char *funcName = "ERBGammaTone_GCFilters";
+	static const WChar *funcName = wxT("ERBGammaTone_GCFilters");
 	int			nch, kth;
 	ChanLen		nsmpl;
 	register	double      *ptr1, *ptr2, wn;   /* Inner loop variables */
 	register	ChanData    *data;
 
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		exit(1);
 	}
 
@@ -618,12 +620,12 @@ ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
 void
 LeakyInt_GCFilters(CntlGammaCPtr *p, OnePoleCoeffsPtr *q, int numChannels)
 {
-	static const char *funcName = "LeakyInt_GCFilters";
+	static const WChar *funcName = wxT("LeakyInt_GCFilters");
 	int			nch;
 	register	double	*ptr1;    /* Inner loop variables */
 
 	if (!CheckCntlInit_GCFilters(p)) {
-		NotifyError("%s: cntlGammaC not set in %s.", funcName);
+		NotifyError(wxT("%s: cntlGammaC not set in %s."), funcName);
 		exit(1);
 	}	
 	 
@@ -646,10 +648,10 @@ LeakyInt_GCFilters(CntlGammaCPtr *p, OnePoleCoeffsPtr *q, int numChannels)
 BOOLN
 CheckCntlInit_GCFilters(CntlGammaCPtr *cntlGammaC)
 {
-	static const char *funcName = "CheckPars_CntlGammaC";
+	static const WChar *funcName = wxT("CheckPars_CntlGammaC");
 
 	if (cntlGammaC == NULL) {
-		NotifyError("%s: cntlGammaC not set in %s.", funcName);
+		NotifyError(wxT("%s: cntlGammaC not set in %s."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -666,7 +668,7 @@ void
 SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
   double *winPsEst, double coefPsEst)
 {
-	/* static const char *funcName = "SetpsEst_GCFilters"; */
+	/* static const WChar *funcName = wxT("SetpsEst_GCFilters"); */
 	int	mch, nch;
 	double	winOut, maxPsEst;
 
@@ -683,7 +685,7 @@ SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
 			maxPsEst = cntlGammaC[mch]->psEst;
 	}
 /*	if (maxPsEst > 120) {
-		NotifyError("%s: Estimated Ps is too large.", funcName);
+		NotifyError(wxT("%s: Estimated Ps is too large."), funcName);
 		exit(1);
 	}	
 */
@@ -699,7 +701,7 @@ void
 SetcEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
   double cCoeff0, double cCoeff1, double cLowerLim, double cUpperLim)
 {
-	/* static const char *funcName = "SetcEst_GCFilters"; */
+	/* static const WChar *funcName = wxT("SetcEst_GCFilters"); */
 	int	nch;
 
 	for (nch = 0; nch < numChannels; nch++) 
@@ -730,7 +732,7 @@ SetcEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
 void
 SetaEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels, double cmprs)
 {
-	/* static const char *funcName = "SetaEst_GCFilters"; */
+	/* static const WChar *funcName = wxT("SetaEst_GCFilters"); */
 	int	nch;
 
 	if (cmprs == 1.0) {
@@ -765,7 +767,7 @@ CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
   double cUpperLim, double *winPsEst, double coefPsEst, double cmprs, 
   OnePoleCoeffsPtr *coefficientsLI)
 {
-	/* static const char *funcName = "CntlGammaChirp_GCFilters"; */
+	/* static const WChar *funcName = wxT("CntlGammaChirp_GCFilters"); */
 	int nch;
 
 	
@@ -795,11 +797,11 @@ CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
 CntlGammaCPtr 
 InitCntlGammaChirp_GCFilters(void)
 {
-	static const char *funcName = "InitCntlGammaChirp_GCFilters";
+	static const WChar *funcName = wxT("InitCntlGammaChirp_GCFilters");
         CntlGammaCPtr p;
 
 	if ((p = (CntlGammaC *) malloc(sizeof(CntlGammaC))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
     }
 	p->outSignalLI = 0.0; 

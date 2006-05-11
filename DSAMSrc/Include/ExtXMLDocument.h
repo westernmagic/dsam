@@ -33,31 +33,31 @@ class istream;
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DSAM_XML_APPLICATION_ELEMENT		_T("application")
-#define DSAM_XML_CFLIST_ELEMENT				_T("cflist")
-#define DSAM_XML_CONNECTIONS_ELEMENT		_T("connections")
-#define DSAM_XML_DSAM_ELEMENT				_T("dsam")
-#define DSAM_XML_INPUT_ELEMENT				_T("input")
-#define DSAM_XML_PAR_ELEMENT				_T("par")
-#define DSAM_XML_PAR_LIST_ELEMENT			_T("par_list")
-#define DSAM_XML_PARARRAY_ELEMENT			_T("par_array")
-#define DSAM_XML_OBJECT_ELEMENT				_T("object")
-#define DSAM_XML_OUTPUT_ELEMENT				_T("output")
-#define DSAM_XML_SIMULAION_ELEMENT			_T("simulation")
+#define DSAM_XML_APPLICATION_ELEMENT		"application"
+#define DSAM_XML_CFLIST_ELEMENT				"cflist"
+#define DSAM_XML_CONNECTIONS_ELEMENT		"connections"
+#define DSAM_XML_DSAM_ELEMENT				"dsam"
+#define DSAM_XML_INPUT_ELEMENT				"input"
+#define DSAM_XML_PAR_ELEMENT				"par"
+#define DSAM_XML_PAR_LIST_ELEMENT			"par_list"
+#define DSAM_XML_PARARRAY_ELEMENT			"par_array"
+#define DSAM_XML_OBJECT_ELEMENT				"object"
+#define DSAM_XML_OUTPUT_ELEMENT				"output"
+#define DSAM_XML_SIMULAION_ELEMENT			"simulation"
 
-#define DSAM_XML_COUNT_ATTRIBUTE			_T("count")
-#define DSAM_XML_ID_ATTRIBUTE				_T("id")
-#define DSAM_XML_ENABLED_ATTRIBUTE			_T("enabled")
-#define DSAM_XML_LABEL_ATTRIBUTE			_T("label")
-#define DSAM_XML_NAME_ATTRIBUTE				_T("name")
-#define DSAM_XML_OBJLABEL_ATTRIBUTE			_T("obj_label")
-#define DSAM_XML_TYPE_ATTRIBUTE				_T("type")
-#define DSAM_XML_VALUE_ATTRIBUTE			_T("value")
-#define DSAM_XML_VERSION_ATTRIBUTE			_T("version")
+#define DSAM_XML_COUNT_ATTRIBUTE			"count"
+#define DSAM_XML_ID_ATTRIBUTE				"id"
+#define DSAM_XML_ENABLED_ATTRIBUTE			"enabled"
+#define DSAM_XML_LABEL_ATTRIBUTE			"label"
+#define DSAM_XML_NAME_ATTRIBUTE				"name"
+#define DSAM_XML_OBJLABEL_ATTRIBUTE			"obj_label"
+#define DSAM_XML_TYPE_ATTRIBUTE				"type"
+#define DSAM_XML_VALUE_ATTRIBUTE			"value"
+#define DSAM_XML_VERSION_ATTRIBUTE			"version"
 
-#define DSAM_XML_CURRENT_ATTRIBUTE_VALUE	_T("current")
-#define DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE	_T("original")
-#define DSAM_XML_PROCESS_ATTRIBUTE_VALUE	_T("process")
+#define DSAM_XML_CURRENT_ATTRIBUTE_VALUE	"current"
+#define DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE	"original"
+#define DSAM_XML_PROCESS_ATTRIBUTE_VALUE	"process"
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -98,14 +98,15 @@ class DSAMXMLDocument: public TiXmlDocument
 
 	void	AddAppInfo(TiXmlNode &parent);
 	void	AddParGeneral(TiXmlNode &node, UniParPtr p);
-	void	AddParList(TiXmlNode &node, UniParListPtr parList, const char
-			  *name = NULL);
+	void	AddParList(TiXmlNode &node, UniParListPtr parList, const wxChar *
+			  name = NULL);
 	void	AddParListStandard(TiXmlNode &node, UniParListPtr parList);
 	void	AddSimConnections(TiXmlNode &node, DynaListPtr list, char * type);
 	DatumPtr	AddSimObjects(TiXmlNode &node, DatumPtr start);
 	void	AddSimulation(TiXmlNode &node, EarObjectPtr simProcess);
 	void	Create(EarObjectPtr simProcess);
-	wxString &	CreateNotification(TiXmlNode *node, char *format, va_list args);
+	wxString &	CreateNotification(TiXmlNode *node, wxChar *format, va_list
+	 			  args);
 	void	GetApplicationInfo(void);
 	bool	GetCFListInfo(TiXmlElement *parentElement, UniParList *parList);
 	bool	GetConnectionInfo(TiXmlElement *objectElement, DynaListPtr *p,
@@ -121,8 +122,8 @@ class DSAMXMLDocument: public TiXmlDocument
 	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
 	bool	ValidVersion(const wxString &s1, const wxString &s2);
-	void	XMLNotifyWarning(TiXmlNode *node, char *format, ...);
-	void	XMLNotifyError(TiXmlNode *node, char *format, ...);
+	void	XMLNotifyWarning(TiXmlNode *node, wxChar *format, ...);
+	void	XMLNotifyError(TiXmlNode *node, wxChar *format, ...);
 	
 };
 

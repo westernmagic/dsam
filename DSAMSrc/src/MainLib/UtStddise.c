@@ -62,7 +62,6 @@ SetParsPointer_Utility_Standardise(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Standardise(ModulePtr theModule)
 {
-	/* static const char	*funcName = "InitModule_Utility_Standardise"; */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
@@ -88,10 +87,10 @@ InitModule_Utility_Standardise(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Standardise(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Standardise";
+	static const WChar	*funcName = wxT("CheckData_Utility_Standardise");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -119,7 +118,7 @@ CheckData_Utility_Standardise(EarObjectPtr data)
 BOOLN
 Process_Utility_Standardise(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Standardise";
+	static const WChar	*funcName = wxT("Process_Utility_Standardise");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	double	mean, sumXX, sumX, standardDev;
@@ -127,13 +126,13 @@ Process_Utility_Standardise(EarObjectPtr data)
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_Standardise(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Signal Standardisation Process");
+		SetProcessName_EarObject(data, wxT("Signal Standardisation Process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}	
 		if (data->initThreadRunFlag)

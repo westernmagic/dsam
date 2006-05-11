@@ -136,7 +136,7 @@ BOOLN	Init_BasilarM_DRNL(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_BasilarM_DRNL(void);
 
-BOOLN	ReadPars_BasilarM_DRNL(char *fileName);
+BOOLN	ReadPars_BasilarM_DRNL(WChar *fileName);
 
 BOOLN	RunModel_BasilarM_DRNL(EarObjectPtr data);
 

@@ -187,7 +187,7 @@ ParControl::PostInit(void)
 wxControl *
 ParControl::GetControl(void)
 {
-	static char *funcName = "ParControl::GetControl";
+	static wxChar *funcName = wxT("ParControl::GetControl");
 
 	switch (tag) {
 	case UNSET:
@@ -204,7 +204,7 @@ ParControl::GetControl(void)
 	case LIST_BOX:
 		return(listBox);
 	default:
-		NotifyError("%s: Illegal tag. (%d);\n", funcName, tag);
+		NotifyError(wxT("%s: Illegal tag. (%d);\n"), funcName, tag);
 		return(NULL);
 	}
 
@@ -286,7 +286,7 @@ ParControl::SetSlider(wxSlider *theSlider)
 void
 ParControl::ResetValue(void)
 {
-	static const char *funcName = "ParControl::ResetValue";
+	static const wxChar *funcName = wxT("ParControl::ResetValue");
 
 	switch (tag) {
 	case UNSET:
@@ -302,12 +302,12 @@ ParControl::ResetValue(void)
 		break;
 	case TEXT_CTRL: {
 		bool	oldUpdateFlag = updateFlag;
-		textCtrl->SetValue(GetParString_UniParMgr(par));
+		textCtrl->SetValue((wxChar *) GetParString_UniParMgr(par));
 		textCtrl->SetInsertionPointEnd();
 		updateFlag = oldUpdateFlag;
 		} break;
 	default:
-		NotifyError("%s: Illegal tag. (%d);\n", funcName, tag);
+		NotifyError(wxT("%s: Illegal tag. (%d);\n"), funcName, tag);
 		return;
 	}
 

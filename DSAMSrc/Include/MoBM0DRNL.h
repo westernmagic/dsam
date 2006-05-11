@@ -163,7 +163,7 @@ BOOLN	InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data);
 
 BOOLN	PrintPars_BasilarM_DRNL_Test(void);
 
-BOOLN	ReadPars_BasilarM_DRNL_Test(char *fileName);
+BOOLN	ReadPars_BasilarM_DRNL_Test(WChar *fileName);
 
 void	ResetLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p);
 
@@ -172,12 +172,12 @@ void	RunLPFilter_BasilarM_DRNL_Test(SignalDataPtr signal,
 
 BOOLN	RunModel_BasilarM_DRNL_Test(EarObjectPtr data);
 
-BOOLN	SetBandWidths_BasilarM_DRNL_Test(char *theBandwidthMode,
+BOOLN	SetBandWidths_BasilarM_DRNL_Test(WChar *theBandwidthMode,
 		  double *theBandwidths);
 
 BOOLN	SetCFList_BasilarM_DRNL_Test(CFListPtr theCFList);
 
-BOOLN	SetCompressionMode_BasilarM_DRNL_Test(char * theCompressionMode);
+BOOLN	SetCompressionMode_BasilarM_DRNL_Test(WChar * theCompressionMode);
 
 BOOLN	SetCompressionPar_BasilarM_DRNL_Test(int index, double parameterValue);
 
@@ -193,7 +193,7 @@ BOOLN	SetLinScaler_BasilarM_DRNL_Test(double theLinScaler);
 
 BOOLN	SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade);
 
-BOOLN	SetLPFilterMode_BasilarM_DRNL_Test(char * theLPFilterMode);
+BOOLN	SetLPFilterMode_BasilarM_DRNL_Test(WChar * theLPFilterMode);
 
 BOOLN	InitModule_BasilarM_DRNL_Test(ModulePtr theModule);
 
@@ -204,7 +204,7 @@ BOOLN	SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade);
 BOOLN	SetParsPointer_BasilarM_DRNL_Test(ModulePtr theModule);
 
 BOOLN	SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
-		  char *lPFilterMode, char *compressionMode,
+		  WChar *lPFilterMode, WChar *compressionMode,
 		  double *compressionParsArray, int linGTCascade, int linLPCascade,
 		  double linCF, double linBwidth, double linScaler, CFListPtr theCFs);
 

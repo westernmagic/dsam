@@ -40,6 +40,7 @@
 #include "UtBandwidth.h"
 #include "UtCFList.h"
 #include "UtFilters.h"
+#include "UtString.h"
 #include "MoBM0DRNL.h"
 
 /******************************************************************************/
@@ -63,14 +64,14 @@ InitCompressionModeList_BasilarM_DRNL_Test(void)
 {
 	static NameSpecifier	compressionModeList[] = {
 
-					{"DISABLED",		DRNLT_COMPRESSION_MODE_DISABLED },
-					{"ORIGINAL",		DRNLT_COMPRESSION_MODE_ORIGINAL },
-					{"INV_POWER",		DRNLT_COMPRESSION_MODE_INVPOWER },
-					{"BROKEN_STICK1",	DRNLT_COMPRESSION_MODE_BROKENSTICK1 },
-					{"UPTON_BSTICK",	DRNLT_COMPRESSION_MODE_UPTON_BSTICK },
-					{"",				DRNLT_COMPRESSION_MODE_NULL }
+				{wxT("DISABLED"),		DRNLT_COMPRESSION_MODE_DISABLED },
+				{wxT("ORIGINAL"),		DRNLT_COMPRESSION_MODE_ORIGINAL },
+				{wxT("INV_POWER"),		DRNLT_COMPRESSION_MODE_INVPOWER },
+				{wxT("BROKEN_STICK1"),	DRNLT_COMPRESSION_MODE_BROKENSTICK1 },
+				{wxT("UPTON_BSTICK"),	DRNLT_COMPRESSION_MODE_UPTON_BSTICK },
+				{wxT(""),				DRNLT_COMPRESSION_MODE_NULL }
 
-				};
+			};
 
 
 	bM0DRNLPtr->compressionModeList = compressionModeList;
@@ -89,10 +90,10 @@ InitLPFilterModeList_BasilarM_DRNL_Test(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "BUTTERWORTH",	BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE },
-			{ "BEAUCHAMP",		BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE },
-			{ "",	BASILARM_DRNL_TEST_LPFILTERMODE_NULL },
-		};
+		{ wxT("BUTTERWORTH"),	BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE },
+		{ wxT("BEAUCHAMP"),		BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE },
+		{ wxT(""),	BASILARM_DRNL_TEST_LPFILTERMODE_NULL },
+	};
 	bM0DRNLPtr->lPFilterModeList = modeList;
 	return(TRUE);
 
@@ -110,7 +111,7 @@ SetDefaultCompressionMode_BasilarM_DRNL_Test(void)
 	int		i;
 	double	defValues[] = { 50.0, 0.008, 0.25};
 
-	SetCompressionMode_BasilarM_DRNL_Test("broken_stick1");
+	SetCompressionMode_BasilarM_DRNL_Test(wxT("broken_stick1"));
 	for (i = 0; i < bM0DRNLPtr->numCompressionPars; i++) {
 		bM0DRNLPtr->compressionPars[i] = defValues[i];
 		bM0DRNLPtr->compressionParsFlag[i] = TRUE;
@@ -132,18 +133,19 @@ SetDefaultCompressionMode_BasilarM_DRNL_Test(void)
 BOOLN
 Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("Init_BasilarM_DRNL_Test");
 
 	if (parSpec == GLOBAL) {
 		if (bM0DRNLPtr != NULL)
 			Free_BasilarM_DRNL_Test();
 		if ((bM0DRNLPtr = (BM0DRNLPtr) malloc(sizeof(BM0DRNL))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (bM0DRNLPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -168,10 +170,10 @@ Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 	bM0DRNLPtr->linCF = 700.0;
 	bM0DRNLPtr->linBwidth = 130.0;
 	bM0DRNLPtr->linScaler = 83.0;
-	if ((bM0DRNLPtr->theCFs = GenerateDefault_CFList("single", 1, 750.0,
+	if ((bM0DRNLPtr->theCFs = GenerateDefault_CFList(wxT("single"), 1, 750.0,
 	  CFLIST_DEFAULT_HIGH_FREQ, CFLIST_DEFAULT_BW_MODE_NAME,
 	  CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
-		NotifyError("%s: could not set default CFList.", funcName);
+		NotifyError(wxT("%s: could not set default CFList."), funcName);
 		return(FALSE);
 	}
 	bM0DRNLPtr->nonLinearGT1 = NULL;
@@ -183,7 +185,7 @@ Init_BasilarM_DRNL_Test(ParameterSpecifier parSpec)
 	InitCompressionModeList_BasilarM_DRNL_Test();
 	InitLPFilterModeList_BasilarM_DRNL_Test();
 	if (!SetUniParList_BasilarM_DRNL_Test()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_BasilarM_DRNL_Test();
 		return(FALSE);
 	}
@@ -237,68 +239,73 @@ Free_BasilarM_DRNL_Test(void)
 BOOLN
 SetUniParList_BasilarM_DRNL_Test(void)
 {
-	static const char *funcName = "SetUniParList_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("SetUniParList_BasilarM_DRNL_Test");
 	UniParPtr	pars;
 
 	if ((bM0DRNLPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  BASILARM_DRNL_TEST_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bM0DRNLPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_NONLINGTCASCADE], "NL_GT_CASCADE",
-	  "Nonlinear gammatone filter cascade ('order').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_NONLINGTCASCADE], wxT(
+	  "NL_GT_CASCADE"),
+	  wxT("Nonlinear gammatone filter cascade ('order')."),
 	  UNIPAR_INT,
 	  &bM0DRNLPtr->nonLinGTCascade, NULL,
 	  (void * (*)) SetNonLinGTCascade_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_NONLINLPCASCADE], "NL_LP_CASCADE",
-	  "Nonlinear low-pass filter cascade ('order').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_NONLINLPCASCADE], wxT(
+	  "NL_LP_CASCADE"),
+	  wxT("Nonlinear low-pass filter cascade ('order')."),
 	  UNIPAR_INT,
 	  &bM0DRNLPtr->nonLinLPCascade, NULL,
 	  (void * (*)) SetNonLinLPCascade_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LPFILTERMODE], "LP_FILTER",
-	  "Low-pass filter mode ('butterworth' or 'Beauchamp').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LPFILTERMODE], wxT("LP_FILTER"),
+	  wxT("Low-pass filter mode ('butterworth' or 'Beauchamp')."),
 	  UNIPAR_NAME_SPEC,
 	  &bM0DRNLPtr->lPFilterMode, bM0DRNLPtr->lPFilterModeList,
 	  (void * (*)) SetLPFilterMode_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_COMPRESSIONMODE], "COMP_MODE",
-	  "Compression mode ('original', 'inv_power', 'broken_stick1' or "
-	    "'upton_bstick').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_COMPRESSIONMODE], wxT(
+	  "COMP_MODE"),
+	  wxT("Compression mode ('original', 'inv_power', 'broken_stick1' or ")
+	    wxT("'upton_bstick')."),
 	  UNIPAR_NAME_SPEC,
 	  &bM0DRNLPtr->compressionMode, bM0DRNLPtr->compressionModeList,
 	  (void * (*)) SetCompressionMode_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_COMPRESSIONPARS], "COMP_PAR",
-	  "Compression parameters.",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_COMPRESSIONPARS], wxT("COMP_PAR"),
+	  wxT("Compression parameters."),
 	  UNIPAR_REAL_ARRAY,
 	  &bM0DRNLPtr->compressionPars, &bM0DRNLPtr->numCompressionPars,
 	  (void * (*)) SetCompressionPar_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINGTCASCADE], "L_GT_CASCADE",
-	  "Linear gammatone filter cascade ('order').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINGTCASCADE], wxT(
+	  "L_GT_CASCADE"),
+	  wxT("Linear gammatone filter cascade ('order')."),
 	  UNIPAR_INT,
 	  &bM0DRNLPtr->linGTCascade, NULL,
 	  (void * (*)) SetLinGTCascade_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINLPCASCADE], "L_LP_CASCADE",
-	  "Linear low-pass filter cascade ('order').",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINLPCASCADE], wxT(
+	  "L_LP_CASCADE"),
+	  wxT("Linear low-pass filter cascade ('order')."),
 	  UNIPAR_INT,
 	  &bM0DRNLPtr->linLPCascade, NULL,
 	  (void * (*)) SetLinLPCascade_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINCF], "L_CF",
-	  "Linear filter Centre Frequency (Hz).",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINCF], wxT("L_CF"),
+	  wxT("Linear filter Centre Frequency (Hz)."),
 	  UNIPAR_REAL,
 	  &bM0DRNLPtr->linCF, NULL,
 	  (void * (*)) SetLinCF_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINBWIDTH], "L_BWIDTH",
-	  "Linear filter band width (Hz).",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINBWIDTH], wxT("L_BWIDTH"),
+	  wxT("Linear filter band width (Hz)."),
 	  UNIPAR_REAL,
 	  &bM0DRNLPtr->linBwidth, NULL,
 	  (void * (*)) SetLinBwidth_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINSCALER], "L_SCALER",
-	  "Linear filter scale (units).",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_LINSCALER], wxT("L_SCALER"),
+	  wxT("Linear filter scale (units)."),
 	  UNIPAR_REAL,
 	  &bM0DRNLPtr->linScaler, NULL,
 	  (void * (*)) SetLinScaler_BasilarM_DRNL_Test);
-	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_THECFS], "CFLIST",
-	  "",
+	SetPar_UniParMgr(&pars[BASILARM_DRNL_TEST_THECFS], wxT("CFLIST"),
+	  wxT(""),
 	  UNIPAR_CFLIST,
 	  &bM0DRNLPtr->theCFs, NULL,
 	  (void * (*)) SetCFList_BasilarM_DRNL_Test);
@@ -316,15 +323,15 @@ SetUniParList_BasilarM_DRNL_Test(void)
 UniParListPtr
 GetUniParListPtr_BasilarM_DRNL_Test(void)
 {
-	static const char	*funcName = "GetUniParListPtr_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("GetUniParListPtr_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0DRNLPtr->parList);
@@ -344,61 +351,61 @@ GetUniParListPtr_BasilarM_DRNL_Test(void)
 BOOLN
 CheckPars_BasilarM_DRNL_Test(void)
 {
-	static const char	*funcName = "CheckPars_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("CheckPars_BasilarM_DRNL_Test");
 	BOOLN	ok;
 	int		i;
 
 	ok = TRUE;
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!bM0DRNLPtr->nonLinGTCascadeFlag) {
-		NotifyError("%s: nonLinGTCascade variable not set.", funcName);
+		NotifyError(wxT("%s: nonLinGTCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->nonLinLPCascadeFlag) {
-		NotifyError("%s: nonLinLPCascade variable not set.", funcName);
+		NotifyError(wxT("%s: nonLinLPCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->lPFilterModeFlag) {
-		NotifyError("%s: lPFilterMode variable not set.", funcName);
+		NotifyError(wxT("%s: lPFilterMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->compressionModeFlag) {
-		NotifyError("%s: compressionMode variable not set.", funcName);
+		NotifyError(wxT("%s: compressionMode variable not set."), funcName);
 		ok = FALSE;
 	} else {
 		for (i = 0; i < bM0DRNLPtr->numCompressionPars; i++)
 			if (!bM0DRNLPtr->compressionParsFlag[i]) {
-				NotifyError("%s: Compression parameter [%d] not set.", funcName,
-				  i);
+				NotifyError(wxT("%s: Compression parameter [%d] not set."),
+				  funcName, i);
 				ok = FALSE;
 			}
 	}
 	if (!bM0DRNLPtr->linGTCascadeFlag) {
-		NotifyError("%s: linGTCascade variable not set.", funcName);
+		NotifyError(wxT("%s: linGTCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->linLPCascadeFlag) {
-		NotifyError("%s: linLPCascade variable not set.", funcName);
+		NotifyError(wxT("%s: linLPCascade variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->linCFFlag) {
-		NotifyError("%s: linCF variable not set.", funcName);
+		NotifyError(wxT("%s: linCF variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->linBwidthFlag) {
-		NotifyError("%s: linBwidth variable not set.", funcName);
+		NotifyError(wxT("%s: linBwidth variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!bM0DRNLPtr->linScalerFlag) {
-		NotifyError("%s: linScaler variable not set.", funcName);
+		NotifyError(wxT("%s: linScaler variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bM0DRNLPtr->theCFs)) {
-		NotifyError("%s: Centre frequency list parameters not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -416,15 +423,15 @@ CheckPars_BasilarM_DRNL_Test(void)
 BOOLN
 SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade)
 {
-	static const char	*funcName = "SetNonLinGTCascade_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetNonLinGTCascade_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNonLinGTCascade < 0) {
-		NotifyError("%s: Illegal value (%d).  Use zero to disable.", funcName,
-		  theNonLinGTCascade);
+		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."),
+		  funcName, theNonLinGTCascade);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -446,14 +453,14 @@ SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade)
 BOOLN
 SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade)
 {
-	static const char	*funcName = "SetNonLinLPCascade_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetNonLinLPCascade_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNonLinLPCascade < 0) {
-		NotifyError("%s: Illegal value (%d).  Use zero to disable.", funcName,
+		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."), funcName,
 		  theNonLinLPCascade);
 		return(FALSE);
 	}
@@ -477,11 +484,12 @@ SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade)
 BOOLN
 SetCompressionParsArray_BasilarM_DRNL_Test(int mode)
 {
-	static const char *funcName = "SetCompressionParsArray_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT(
+	  "SetCompressionParsArray_BasilarM_DRNL_Test");
 	int		numPars;
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	switch (mode) {
@@ -508,16 +516,15 @@ SetCompressionParsArray_BasilarM_DRNL_Test(int mode)
 			free(bM0DRNLPtr->compressionParsFlag);
 		if ((bM0DRNLPtr->compressionPars = (double *) calloc(numPars,
 		  sizeof(double))) == NULL) {
-			NotifyError("%s: Output of memory for compression parameter "
-			  "array([%d]).",
+			NotifyError(wxT("%s: Output of memory for compression parameter ")
+			  wxT("array([%d])."),
 			  funcName, numPars);
 			return(FALSE);
 		}
 		if ((bM0DRNLPtr->compressionParsFlag = (BOOLN *) calloc(numPars,
 		  sizeof(BOOLN))) == NULL) {
-			NotifyError("%s: Output of memory for compression parameter "
-			  "flags array([%d]).",
-			  funcName, numPars);
+			NotifyError(wxT("%s: Output of memory for compression parameter "
+			  "flags array([%d])."), funcName, numPars);
 			return(FALSE);
 		}
 		bM0DRNLPtr->numCompressionPars = numPars;
@@ -535,19 +542,19 @@ SetCompressionParsArray_BasilarM_DRNL_Test(int mode)
  */
 
 BOOLN
-SetLPFilterMode_BasilarM_DRNL_Test(char * theLPFilterMode)
+SetLPFilterMode_BasilarM_DRNL_Test(WChar * theLPFilterMode)
 {
-	static const char	*funcName = "SetLPFilterMode_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLPFilterMode_BasilarM_DRNL_Test");
 	int		specifier;
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theLPFilterMode,
 		bM0DRNLPtr->lPFilterModeList)) ==
 		BASILARM_DRNL_TEST_LPFILTERMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theLPFilterMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theLPFilterMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -568,18 +575,19 @@ SetLPFilterMode_BasilarM_DRNL_Test(char * theLPFilterMode)
  */
 
 BOOLN
-SetCompressionMode_BasilarM_DRNL_Test(char *theCompressionMode)
+SetCompressionMode_BasilarM_DRNL_Test(WChar *theCompressionMode)
 {
-	static const char	*funcName = "SetCompressionMode_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT(
+	  "SetCompressionMode_BasilarM_DRNL_Test");
 	int specifier;
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theCompressionMode,
 	  bM0DRNLPtr->compressionModeList)) == DRNLT_COMPRESSION_MODE_NULL) {
-		NotifyError("%s: Illegal compression mode  (%s).", funcName,
+		NotifyError(wxT("%s: Illegal compression mode  (%s)."), funcName,
 		  theCompressionMode);
 		return(FALSE);
 	}
@@ -603,14 +611,14 @@ SetCompressionMode_BasilarM_DRNL_Test(char *theCompressionMode)
 BOOLN
 SetCompressionPar_BasilarM_DRNL_Test(int index, double parameterValue)
 {
-	static const char *funcName = "SetCompressionPar_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("SetCompressionPar_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (index > bM0DRNLPtr->numCompressionPars) {
-		NotifyError("%s: Illegal index value (max: %d).", funcName,
+		NotifyError(wxT("%s: Illegal index value (max: %d)."), funcName,
 		  bM0DRNLPtr->numCompressionPars);
 		return(FALSE);
 	}
@@ -631,15 +639,15 @@ SetCompressionPar_BasilarM_DRNL_Test(int index, double parameterValue)
 BOOLN
 SetLinGTCascade_BasilarM_DRNL_Test(int theLinGTCascade)
 {
-	static const char	*funcName = "SetLinGTCascade_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLinGTCascade_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theLinGTCascade < 0) {
-		NotifyError("%s: Illegal value (%d).  Use zero to disable.", funcName,
-		  theLinGTCascade);
+		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."),
+		  funcName, theLinGTCascade);
 		return(FALSE);
 	}
 	bM0DRNLPtr->linGTCascadeFlag = TRUE;
@@ -660,15 +668,15 @@ SetLinGTCascade_BasilarM_DRNL_Test(int theLinGTCascade)
 BOOLN
 SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade)
 {
-	static const char	*funcName = "SetLinLPCascade_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLinLPCascade_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theLinLPCascade < 0) {
-		NotifyError("%s: Illegal value (%d).  Use zero to disable.", funcName,
-		  theLinLPCascade);
+		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."),
+		  funcName, theLinLPCascade);
 		return(FALSE);
 	}
 	bM0DRNLPtr->linLPCascadeFlag = TRUE;
@@ -689,14 +697,14 @@ SetLinLPCascade_BasilarM_DRNL_Test(int theLinLPCascade)
 BOOLN
 SetLinCF_BasilarM_DRNL_Test(double theLinCF)
 {
-	static const char	*funcName = "SetLinCF_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLinCF_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theLinCF <= 0.0) {
-		NotifyError("%s: Illegal value (%g)!", funcName, theLinCF);
+		NotifyError(wxT("%s: Illegal value (%g)!"), funcName, theLinCF);
 		return(FALSE);
 	}
 	bM0DRNLPtr->linCFFlag = TRUE;
@@ -717,14 +725,14 @@ SetLinCF_BasilarM_DRNL_Test(double theLinCF)
 BOOLN
 SetLinBwidth_BasilarM_DRNL_Test(double theLinBwidth)
 {
-	static const char	*funcName = "SetLinBwidth_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLinBwidth_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theLinBwidth <= 0.0) {
-		NotifyError("%s: Illegal value (%g)!", funcName, theLinBwidth);
+		NotifyError(wxT("%s: Illegal value (%g)!"), funcName, theLinBwidth);
 		return(FALSE);
 	}
 	bM0DRNLPtr->linBwidthFlag = TRUE;
@@ -745,10 +753,10 @@ SetLinBwidth_BasilarM_DRNL_Test(double theLinBwidth)
 BOOLN
 SetLinScaler_BasilarM_DRNL_Test(double theLinScaler)
 {
-	static const char	*funcName = "SetLinScaler_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetLinScaler_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -769,15 +777,15 @@ SetLinScaler_BasilarM_DRNL_Test(double theLinScaler)
 BOOLN
 SetCFList_BasilarM_DRNL_Test(CFListPtr theCFList)
 {
-	static const char *funcName = "SetCFList_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("SetCFList_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError("%s: Centre frequency structure not initialised "\
-		  "correctly set.", funcName);
+		NotifyError(wxT("%s: Centre frequency structure not initialised "
+		  "correctly set."), funcName);
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->theCFs != NULL)
@@ -799,17 +807,17 @@ SetCFList_BasilarM_DRNL_Test(CFListPtr theCFList)
  */
 
 BOOLN
-SetBandwidths_BasilarM_DRNL_Test(char *theBandwidthMode, double *theBandwidths)
+SetBandwidths_BasilarM_DRNL_Test(WChar *theBandwidthMode, double *theBandwidths)
 {
-	static const char *funcName = "SetBandwidths_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("SetBandwidths_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!SetBandwidths_CFList(bM0DRNLPtr->theCFs, theBandwidthMode,
 	  theBandwidths)) {
-		NotifyError("%s: Failed to set bandwidth mode.", funcName);
+		NotifyError(wxT("%s: Failed to set bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	bM0DRNLPtr->updateProcessVariablesFlag = TRUE;
@@ -826,11 +834,11 @@ SetBandwidths_BasilarM_DRNL_Test(char *theBandwidthMode, double *theBandwidths)
 
 BOOLN
 SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
-  char * lPFilterMode, char * compressionMode, double *compressionParsArray,
+  WChar * lPFilterMode, WChar * compressionMode, double *compressionParsArray,
   int linGTCascade, int linLPCascade, double linCF, double linBwidth,
   double linScaler, CFListPtr theCFs)
 {
-	static const char	*funcName = "SetPars_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetPars_BasilarM_DRNL_Test");
 	BOOLN	ok;
 	int		i;
 
@@ -861,7 +869,7 @@ SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
 	if (!SetCFList_BasilarM_DRNL_Test(theCFs))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -876,15 +884,15 @@ SetPars_BasilarM_DRNL_Test(int nonLinGTCascade, int nonLinLPCascade,
 CFListPtr
 GetCFListPtr_BasilarM_DRNL_Test(void)
 {
-	static const char *funcName = "GetCFListPtr_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("GetCFListPtr_BasilarM_DRNL_Test");
 	
 	if (bM0DRNLPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->theCFs == NULL) {
-		NotifyError("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly "
+		  "set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0DRNLPtr->theCFs);
@@ -900,54 +908,58 @@ GetCFListPtr_BasilarM_DRNL_Test(void)
 BOOLN
 PrintPars_BasilarM_DRNL_Test(void)
 {
-	static const char *funcName = "PrintPars_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("PrintPars_BasilarM_DRNL_Test");
 	
 	if (!CheckPars_BasilarM_DRNL_Test()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("DRNL Test Basilar Membrane Filter Module Parameters:-\n");
+	DPrint(wxT("DRNL Test Basilar Membrane Filter Module Parameters:-\n"));
 	PrintPars_CFList(bM0DRNLPtr->theCFs);
-	DPrint("\tNonlinear gammatone filter cascade ('order') = %d\n",
+	DPrint(wxT("\tNonlinear gammatone filter cascade ('order') = %d\n"),
 	  bM0DRNLPtr->nonLinGTCascade);
-	DPrint("\tNonlinear low-pass filter cascade ('order')  = %d\n",\
+	DPrint(wxT("\tNonlinear low-pass filter cascade ('order')  = %d\n"),
 	  bM0DRNLPtr->nonLinLPCascade);
-	DPrint("\tLow-pass filter mode = %s ,\n", bM0DRNLPtr->lPFilterModeList[
-	  bM0DRNLPtr->lPFilterMode].name);
-	DPrint("\tCompression mode: %s,\n",
+	DPrint(wxT("\tLow-pass filter mode = %s ,\n"), bM0DRNLPtr->
+	  lPFilterModeList[bM0DRNLPtr->lPFilterMode].name);
+	DPrint(wxT("\tCompression mode: %s,\n"),
 	  bM0DRNLPtr->compressionModeList[bM0DRNLPtr->compressionMode].name);
 	switch (bM0DRNLPtr->compressionMode) {
 	case DRNLT_COMPRESSION_MODE_DISABLED:
-		DPrint("\tCompression disabled.\n");
+		DPrint(wxT("\tCompression disabled.\n"));
 		break;
 	case DRNLT_COMPRESSION_MODE_ORIGINAL:
-		DPrint("\tCompression threshold = %g,", bM0DRNLPtr->compressionPars[0]);
-		DPrint("\tCompression exponent = %g,\n",
+		DPrint(wxT("\tCompression threshold = %g,"), bM0DRNLPtr->
+		  compressionPars[0]);
+		DPrint(wxT("\tCompression exponent = %g,\n"),
 		  bM0DRNLPtr->compressionPars[1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_INVPOWER:
-		DPrint("\tCompression shift = %g,", bM0DRNLPtr->compressionPars[0]);
-		DPrint("\tCompression slope = %g,\n", bM0DRNLPtr->compressionPars[1]);
+		DPrint(wxT("\tCompression shift = %g,"), bM0DRNLPtr->compressionPars[
+		  0]);
+		DPrint(wxT("\tCompression slope = %g,\n"), bM0DRNLPtr->compressionPars[
+		  1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_BROKENSTICK1:
-		DPrint("\tCompression: a = %g,", bM0DRNLPtr->compressionPars[0]);
-		DPrint("\tb = %g,", bM0DRNLPtr->compressionPars[1]);
-		DPrint("\tc = %g,\n", bM0DRNLPtr->compressionPars[2]);
+		DPrint(wxT("\tCompression: a = %g,"), bM0DRNLPtr->compressionPars[0]);
+		DPrint(wxT("\tb = %g,"), bM0DRNLPtr->compressionPars[1]);
+		DPrint(wxT("\tc = %g,\n"), bM0DRNLPtr->compressionPars[2]);
 		break;
 	case DRNLT_COMPRESSION_MODE_UPTON_BSTICK:
-		DPrint("\tCompression: a = %g,", bM0DRNLPtr->compressionPars[0]);
-		DPrint("\tb = %g,", bM0DRNLPtr->compressionPars[1]);
-		DPrint("\tc = %g,", bM0DRNLPtr->compressionPars[2]);
-		DPrint("\td = %g,\n", bM0DRNLPtr->compressionPars[3]);
+		DPrint(wxT("\tCompression: a = %g,"), bM0DRNLPtr->compressionPars[0]);
+		DPrint(wxT("\tb = %g,"), bM0DRNLPtr->compressionPars[1]);
+		DPrint(wxT("\tc = %g,"), bM0DRNLPtr->compressionPars[2]);
+		DPrint(wxT("\td = %g,\n"), bM0DRNLPtr->compressionPars[3]);
 		break;
 	}
-	DPrint("\tLinear gammatone filter cascade ('order') = %d\n",
+	DPrint(wxT("\tLinear gammatone filter cascade ('order') = %d\n"),
 	  bM0DRNLPtr->linGTCascade);
-	DPrint("\tLinear low-pass filter cascade ('order')  = %d\n",\
+	DPrint(wxT("\tLinear low-pass filter cascade ('order')  = %d\n"),
 	  bM0DRNLPtr->linLPCascade);
-	DPrint("\tLinear CF = %g (Hz),", bM0DRNLPtr->linCF);
-	DPrint("\tBandwidth = %g (Hz),", bM0DRNLPtr->linBwidth);
-	DPrint("\tScale = %g (units.)\n", bM0DRNLPtr->linScaler);
+	DPrint(wxT("\tLinear CF = %g (Hz),"), bM0DRNLPtr->linCF);
+	DPrint(wxT("\tBandwidth = %g (Hz),"), bM0DRNLPtr->linBwidth);
+	DPrint(wxT("\tScale = %g (units.)\n"), bM0DRNLPtr->linScaler);
 	return(TRUE);
 
 }
@@ -959,50 +971,51 @@ PrintPars_BasilarM_DRNL_Test(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_BasilarM_DRNL_Test(char *fileName)
+ReadPars_BasilarM_DRNL_Test(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("ReadPars_BasilarM_DRNL_Test");
 	BOOLN	ok;
-	char	*filePath, compressionMode[MAXLINE], lPFilterMode[MAXLINE];
+	WChar	*filePath, compressionMode[MAXLINE], lPFilterMode[MAXLINE];
 	int		i, nonLinGTCascade, nonLinLPCascade, linGTCascade, linLPCascade;
 	double	linCF, linBwidth, linScaler;
 	CFListPtr	theCFs;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%d", &nonLinGTCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinGTCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &nonLinLPCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinLPCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", lPFilterMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), lPFilterMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", compressionMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), compressionMode))
 		ok = FALSE;
 	if (!SetCompressionParsArray_BasilarM_DRNL_Test(Identify_NameSpecifier(
 	  compressionMode, bM0DRNLPtr->compressionModeList))) {
-		NotifyError("%s: Could not set compression parameters arrays.",
+		NotifyError(wxT("%s: Could not set compression parameters arrays."),
 		  funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < bM0DRNLPtr->numCompressionPars; i++)
-		if (!GetPars_ParFile(fp, "%lf", &bM0DRNLPtr->compressionPars[i]))
+		if (!GetPars_ParFile(fp, wxT("%lf"), &bM0DRNLPtr->compressionPars[i]))
 			ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &linGTCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &linGTCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &linLPCascade))
+	if (!GetPars_ParFile(fp, wxT("%d"), &linLPCascade))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &linCF))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &linCF))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &linBwidth))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &linBwidth))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &linScaler))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &linScaler))
 		ok = FALSE;
 	if ((theCFs = ReadPars_CFList(fp)) == NULL)
 		 ok = FALSE;
@@ -1011,14 +1024,14 @@ ReadPars_BasilarM_DRNL_Test(char *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_DRNL_Test(nonLinGTCascade, nonLinLPCascade,
 	  lPFilterMode, compressionMode, bM0DRNLPtr->compressionPars, linGTCascade,
 	  linLPCascade, linCF, linBwidth, linScaler, theCFs)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1035,10 +1048,10 @@ ReadPars_BasilarM_DRNL_Test(char *fileName)
 BOOLN
 SetParsPointer_BasilarM_DRNL_Test(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("SetParsPointer_BasilarM_DRNL_Test");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	bM0DRNLPtr = (BM0DRNLPtr) theModule->parsPtr;
@@ -1055,14 +1068,15 @@ SetParsPointer_BasilarM_DRNL_Test(ModulePtr theModule)
 BOOLN
 InitModule_BasilarM_DRNL_Test(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_BasilarM_DRNL_Test";
+	static const WChar	*funcName = wxT("InitModule_BasilarM_DRNL_Test");
 
 	if (!SetParsPointer_BasilarM_DRNL_Test(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_BasilarM_DRNL_Test(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = bM0DRNLPtr;
@@ -1088,7 +1102,7 @@ InitModule_BasilarM_DRNL_Test(ModulePtr theModule)
 BOOLN
 InitLPFilterArray_BasilarM_DRNL_Test(LowPassFilterPtr p, int cascade)
 {
-	static const char *funcName = "InitLPFilterArray_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("InitLPFilterArray_BasilarM_DRNL_Test");
 
 	if (!cascade)
 		return(TRUE);
@@ -1097,7 +1111,7 @@ InitLPFilterArray_BasilarM_DRNL_Test(LowPassFilterPtr p, int cascade)
 	case BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE:
 		if ((p->ptr.butt = (TwoPoleCoeffsPtr *) calloc(bM0DRNLPtr->numChannels,
 		  sizeof(TwoPoleCoeffsPtr))) == NULL) {
-		 	NotifyError("%s: Out of memory.", funcName);
+		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		p->stateVectorLen = FILTERS_NUM_IIR2_STATE_VARS;
@@ -1105,7 +1119,7 @@ InitLPFilterArray_BasilarM_DRNL_Test(LowPassFilterPtr p, int cascade)
 	case BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE:
 			if ((p->ptr.beau = (ContButtCoeffsPtr *) calloc(
 			  bM0DRNLPtr->numChannels, sizeof(ContButtCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory (linearLP).", funcName);
+		 		NotifyError(wxT("%s: Out of memory (linearLP)."), funcName);
 		 		return(FALSE);
 			}
 		p->stateVectorLen = FILTERS_NUM_CONTBUTT2_STATE_VARS;
@@ -1130,7 +1144,7 @@ BOOLN
 InitLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p, int index,
   double cutOffFrequency, double dt)
 {
-	static const char *funcName = "InitLPFilter_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("InitLPFilter_BasilarM_DRNL_Test");
 
 	if (!p->set)
 		return(TRUE);
@@ -1139,15 +1153,15 @@ InitLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p, int index,
 	case BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE:
 		if ((p->ptr.butt[index] = InitIIR2Coeffs_Filters(Filters_butt2Poly,
 		  p->cascade, cutOffFrequency, 1.0 / dt, LOWPASS)) == NULL) {
-			NotifyError("%s: Could not initialise butterworth filter (%d).",
-			  funcName, index);
+			NotifyError(wxT("%s: Could not initialise butterworth filter "
+			  "(%d)."), funcName, index);
 			return(FALSE);
 		}
 		break;
 	case BASILARM_DRNL_TEST_BEAUCHAMP_LPFILTERMODE:
 		if ((p->ptr.beau[index] = InitIIR2ContCoeffs_Filters(p->cascade,
 		  cutOffFrequency, dt, LOWPASS)) == NULL) {
-			NotifyError("%s: Could not initialise Beauchamp filter (%d).",
+			NotifyError(wxT("%s: Could not initialise Beauchamp filter (%d)."),
 			  funcName, index);
 			return(FALSE);
 		}
@@ -1203,7 +1217,8 @@ ResetLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p)
 BOOLN
 InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT(
+	  "InitProcessVariables_BasilarM_DRNL_Test");
 	int		i, j, cFIndex;
 	double	sampleRate, centreFreq;
 	BM0DRNLPtr	p = bM0DRNLPtr;
@@ -1211,37 +1226,37 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_DRNL_Test();
-		p->linearF = Init_EarObject("NULL");
+		p->linearF = Init_EarObject(wxT("NULL"));
 		p->numChannels = data->outSignal->numChannels;
 		if (p->nonLinGTCascade) {
 			if ((p->nonLinearGT1 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 			  sizeof(GammaToneCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory (nonLinearGT1).", funcName);
+		 		NotifyError(wxT("%s: Out of memory (nonLinearGT1)."), funcName);
 		 		return(FALSE);
 			}
 			if ((p->nonLinearGT2 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 			  sizeof(GammaToneCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory (nonLinearGT2).", funcName);
+		 		NotifyError(wxT("%s: Out of memory (nonLinearGT2)."), funcName);
 		 		return(FALSE);
 			}
 		}
 		if (p->linGTCascade) {
 			if ((p->linearGT = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 			  sizeof(GammaToneCoeffsPtr))) == NULL) {
-		 		NotifyError("%s: Out of memory (linearGT).", funcName);
+		 		NotifyError(wxT("%s: Out of memory (linearGT)."), funcName);
 		 		return(FALSE);
 			}
 		}
 
 		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->nonLinearLP,
 		  p->nonLinLPCascade)) {
-			NotifyError("%s: Could not initialise nonlinear low-pass filter.",
-			  funcName);
+			NotifyError(wxT("%s: Could not initialise nonlinear low-pass "
+			  "filter."), funcName);
 			return(FALSE);
 		}
 		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->linearLP,
 		  p->linLPCascade)) {
-			NotifyError("%s: Could not initialise linear low-pass filter.",
+			NotifyError(wxT("%s: Could not initialise linear low-pass filter."),
 			  funcName);
 			return(FALSE);
 		}
@@ -1254,42 +1269,42 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 				if ((p->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(
 				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
 				  sampleRate)) == NULL) {
-					NotifyError("%s: Could not initialise nonlinear GT 1 "
-					  "coefficients for channel %d.", funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 1 "
+					  "coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 				if ((p->nonLinearGT2[i] = InitGammaToneCoeffs_Filters(
 				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
 				  sampleRate)) == NULL) {
-					NotifyError("%s: Could not initialise nonlinear GT 2 "
-					  "coefficients for channel %d.", funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 "
+					  "coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 			}
 			if (p->linearGT) {
 				if ((p->linearGT[i] = InitGammaToneCoeffs_Filters(p->linCF,
 				  p->linBwidth, p->linGTCascade, sampleRate)) == NULL) {
-					NotifyError("%s: Could not initialise nonlinear GT 2 "
-					  "coefficients for channel %d.", funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 "
+					  "coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 			}
 
 			if (!InitLPFilter_BasilarM_DRNL_Test(&p->nonLinearLP, i, centreFreq,
 			  data->inSignal[0]->dt)) {
-				NotifyError("%s: Could not initialise low-pass filter.",
+				NotifyError(wxT("%s: Could not initialise low-pass filter."),
 				  funcName);
 				return(FALSE);
 			}
 			if (!InitLPFilter_BasilarM_DRNL_Test(&p->linearLP, i, p->linCF,
 			  data->inSignal[0]->dt)) {
-				NotifyError("%s: Could not initialise low-pass filter.",
+				NotifyError(wxT("%s: Could not initialise low-pass filter."),
 				  funcName);
 				return(FALSE);
 			}
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, "Frequency (Hz)");
+		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
 		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
 		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
@@ -1424,13 +1439,13 @@ RunLPFilter_BasilarM_DRNL_Test(SignalDataPtr signal, LowPassFilterPtr p)
 BOOLN
 RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_BasilarM_DRNL_Test";
+	static const WChar *funcName = wxT("RunModel_BasilarM_DRNL_Test");
 	uShort	totalChannels;
 	BM0DRNLPtr	p = bM0DRNLPtr;
 				
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
-			NotifyError("%s: EarObject not initialised.", funcName);
+			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
 		}	
 		if (!CheckInSignal_EarObject(data, funcName))
@@ -1440,19 +1455,20 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 
 		/* Initialise Variables and coefficients */
 
-		SetProcessName_EarObject(data, "DRNL_Test Basilar Membrane Filtering");
+		SetProcessName_EarObject(data, wxT("DRNL_Test Basilar Membrane "
+		  "Filtering"));
 		if (!CheckRamp_SignalData(data->inSignal[0])) {
-			NotifyError("%s: Input signal not correctly initialised.",
+			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
-			NotifyError("%s: Cannot initialise output channel.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_BasilarM_DRNL_Test(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -107,18 +107,18 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-double		GetDuration_AIFF(char *fileName);
+double		GetDuration_AIFF(WChar *fileName);
 
 int32		GetFileSize_AIFF(SignalDataPtr theSignal, int32 previousSamples);
 
 int32		GetFormChunkSize_AIFF(SignalDataPtr theSignal,
 			  int32 previousSamples);
 
-FILE *		InitialFileRead_AIFF(char *fileName, AIFFParams *pars);
+FILE *		InitialFileRead_AIFF(WChar *fileName, AIFFParams *pars);
 
 void		InitParams_AIFF(AIFFParamsPtr p);
 
-BOOLN		ReadFile_AIFF(char *fileName, EarObjectPtr data);
+BOOLN		ReadFile_AIFF(WChar *fileName, EarObjectPtr data);
 
 void		ReadParams_AIFF(FILE *fp, AIFFParamsPtr p);
 
@@ -130,7 +130,7 @@ BOOLN		ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data,
 BOOLN		ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data,
 			  AIFFParamsPtr p);
 			  
-BOOLN		WriteFile_AIFF(char *fileName, EarObjectPtr data);
+BOOLN		WriteFile_AIFF(WChar *fileName, EarObjectPtr data);
 
 void		WriteHeader_AIFF(FILE *fp, EarObjectPtr data,
 			  int32 previousSamples);

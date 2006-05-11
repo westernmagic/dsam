@@ -70,11 +70,11 @@ typedef struct Datum {
 	int		type;
 	int		classSpecifier;
 	uInt	stepNumber;
-	char	*label;
+	WChar	*label;
 	union {
 		struct {
-			char	*parFile;
-			char	*moduleName;
+			WChar	*parFile;
+			WChar	*moduleName;
 			DynaListPtr		inputList;
 			DynaListPtr		outputList;
 		} proc;
@@ -83,7 +83,7 @@ typedef struct Datum {
 			int				count;
 		} loop;
 		struct {
-			char			*string;
+			WChar			*string;
 			struct Datum	*pc;
 		} ref;
 	} u;
@@ -144,21 +144,21 @@ BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
 DatumPtr	ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 			  int threadIndex);
 
-DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, char *label);
+DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, WChar *label);
 
-EarObjectPtr	FindLabelledProcess_Utility_Datum(DatumPtr start, char *label);
+EarObjectPtr	FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label);
 
-DatumPtr	FindLabelledProcessInst_Utility_Datum(DatumPtr start, char *label);
+DatumPtr	FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label);
 
 DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
-			  char *moduleName);
+			  WChar *moduleName);
 
 BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
-		  DatumPtr *pc, char *parSpecifier, BOOLN diagnosticsOn);
+		  DatumPtr *pc, WChar *parSpecifier, BOOLN diagnosticsOn);
 
 BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc);
 
-EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, char *processSpecifier);
+EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier);
 
 void	FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc);
 
@@ -172,7 +172,7 @@ EarObjectPtr	GetFirstProcess_Utility_Datum(DatumPtr start);
 
 DatumPtr	GetFirstProcessInst_Utility_Datum(DatumPtr start);
 
-int		GetInstIntVal_Utility_Datum(DatumPtr start, char *label);
+int		GetInstIntVal_Utility_Datum(DatumPtr start, WChar *label);
 
 DatumPtr	GetLastInst_Utility_Datum(DatumPtr head);
 
@@ -180,7 +180,7 @@ EarObjectPtr	GetLastProcess_Utility_Datum(DatumPtr start);
 
 DatumPtr	GetPreviousProcessInst_Utility_Datum(DatumPtr start);
 
-char *	GetProcessName_Utility_Datum(DatumPtr pc);
+WChar *	GetProcessName_Utility_Datum(DatumPtr pc);
 
 UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 
@@ -201,19 +201,19 @@ void	PrintConnections_Utility_Datum(DynaListPtr list);
 
 void	PrintIndentAndLabel_Utility_Datum(DatumPtr pc, int indentLevel);
 
-void	PrintInstructions_Utility_Datum(DatumPtr pc, char *scriptName,
-		  int indentLevel, char *prefix);
+void	PrintInstructions_Utility_Datum(DatumPtr pc, WChar *scriptName,
+		  int indentLevel, WChar *prefix);
 
-BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, char *prefix);
+BOOLN	PrintParListModules_Utility_Datum(DatumPtr start, WChar *prefix);
 
 BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 
-BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, char *scriptName,
-		  int indentLevel, char *prefix, BOOLN checkForSubSimScripts);
+BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName,
+		  int indentLevel, WChar *prefix, BOOLN checkForSubSimScripts);
 
-char *	NameAndLabel_Utility_Datum(DatumPtr pc);
+WChar *	NameAndLabel_Utility_Datum(DatumPtr pc);
 
-void	RemoveConnection_Utility_Datum(DynaListPtr *list, char *label);
+void	RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label);
 
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
@@ -222,8 +222,8 @@ void	ResetStepCount_Utility_Datum(void);
 BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 		  labelBList);
 
-BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, char *label,
-		  char *value, BOOLN diagsOn);
+BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, WChar *label,
+		  WChar *value, BOOLN diagsOn);
 
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
@@ -238,12 +238,12 @@ void	SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int));
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
 
-BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, char *parName,
-		  char *parValue);
+BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, WChar *parName,
+		  WChar *parValue);
 
-BOOLN	WriteParFiles_Datum(char *filePath, DatumPtr start);
+BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
 
-BOOLN	WriteSimScript_Datum(char *fileName, DatumPtr start);
+BOOLN	WriteSimScript_Datum(WChar *fileName, DatumPtr start);
 
 __END_DECLS
 

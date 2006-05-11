@@ -97,19 +97,19 @@ BOOLN	Init_Utility_LocalChans(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Utility_LocalChans(void);
 
-BOOLN	ReadPars_Utility_LocalChans(char *fileName);
+BOOLN	ReadPars_Utility_LocalChans(WChar *fileName);
 
 void	ResetProcess_Utility_LocalChans(EarObjectPtr data);
 
 BOOLN	SetLowerLimit_Utility_LocalChans(double theLowerLimit);
 
-BOOLN	SetLimitMode_Utility_LocalChans(char * theLimitMode);
+BOOLN	SetLimitMode_Utility_LocalChans(WChar * theLimitMode);
 
-BOOLN	SetMode_Utility_LocalChans(char * theMode);
+BOOLN	SetMode_Utility_LocalChans(WChar * theMode);
 
 BOOLN	SetParsPointer_Utility_LocalChans(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_LocalChans(char * mode, char * limitMode,
+BOOLN	SetPars_Utility_LocalChans(WChar * mode, WChar * limitMode,
 		  double lowerLimit, double upperLimit);
 
 BOOLN	SetUniParList_Utility_LocalChans(void);

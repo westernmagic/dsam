@@ -54,8 +54,6 @@ ALSRPtr	aLSRPtr = NULL;
 BOOLN
 Free_Analysis_ALSR(void)
 {
-	/* static const char	*funcName = "Free_Analysis_ALSR";  */
-
 	if (aLSRPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Analysis_ALSR();
@@ -84,18 +82,18 @@ Free_Analysis_ALSR(void)
 BOOLN
 Init_Analysis_ALSR(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_ALSR";
+	static const WChar	*funcName = wxT("Init_Analysis_ALSR");
 
 	if (parSpec == GLOBAL) {
 		if (aLSRPtr != NULL)
 			Free_Analysis_ALSR();
 		if ((aLSRPtr = (ALSRPtr) malloc(sizeof(ALSR))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (aLSRPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -109,7 +107,7 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 	aLSRPtr->normalise = 1.0;
 
 	if (!SetUniParList_Analysis_ALSR()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_ALSR();
 		return(FALSE);
 	}
@@ -129,27 +127,27 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_ALSR(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_ALSR";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_ALSR");
 	UniParPtr	pars;
 
 	if ((aLSRPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_ALSR_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = aLSRPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_LOWERAVELIMIT], "LOWER_LIMIT",
-	  "Averaging window limit below CF (octaves)",
+	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_LOWERAVELIMIT], wxT("LOWER_LIMIT"),
+	  wxT("Averaging window limit below CF (octaves)"),
 	  UNIPAR_REAL,
 	  &aLSRPtr->lowerAveLimit, NULL,
 	  (void * (*)) SetLowerAveLimit_Analysis_ALSR);
-	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_UPPERAVELIMIT], "UPPER_LIMIT",
-	  "Averaging window limit above CF (octaves)",
+	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_UPPERAVELIMIT], wxT("UPPER_LIMIT"),
+	  wxT("Averaging window limit above CF (octaves)"),
 	  UNIPAR_REAL,
 	  &aLSRPtr->upperAveLimit, NULL,
 	  (void * (*)) SetUpperAveLimit_Analysis_ALSR);
-	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_NORMALISE], "NORMALISE",
-	  "Normalisation factor (units.)",
+	SetPar_UniParMgr(&pars[ANALYSIS_ALSR_NORMALISE], wxT("NORMALISE"),
+	  wxT("Normalisation factor (units.)"),
 	  UNIPAR_REAL,
 	  &aLSRPtr->normalise, NULL,
 	  (void * (*)) SetNormalise_Analysis_ALSR);
@@ -167,15 +165,15 @@ SetUniParList_Analysis_ALSR(void)
 UniParListPtr
 GetUniParListPtr_Analysis_ALSR(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_ALSR";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_ALSR");
 
 	if (aLSRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (aLSRPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(aLSRPtr->parList);
@@ -193,10 +191,10 @@ GetUniParListPtr_Analysis_ALSR(void)
 BOOLN
 SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit)
 {
-	static const char	*funcName = "SetLowerAveLimit_Analysis_ALSR";
+	static const WChar	*funcName = wxT("SetLowerAveLimit_Analysis_ALSR");
 
 	if (aLSRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -218,10 +216,10 @@ SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit)
 BOOLN
 SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit)
 {
-	static const char	*funcName = "SetUpperAveLimit_Analysis_ALSR";
+	static const WChar	*funcName = wxT("SetUpperAveLimit_Analysis_ALSR");
 
 	if (aLSRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -243,10 +241,10 @@ SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit)
 BOOLN
 SetNormalise_Analysis_ALSR(double theNormalise)
 {
-	static const char	*funcName = "SetNormalise_Analysis_ALSR";
+	static const WChar	*funcName = wxT("SetNormalise_Analysis_ALSR");
 
 	if (aLSRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -270,24 +268,24 @@ SetNormalise_Analysis_ALSR(double theNormalise)
 BOOLN
 CheckPars_Analysis_ALSR(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_ALSR";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_ALSR");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (aLSRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!aLSRPtr->lowerAveLimitFlag) {
-		NotifyError("%s: lowerAveLimit variable not set.", funcName);
+		NotifyError(wxT("%s: lowerAveLimit variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!aLSRPtr->upperAveLimitFlag) {
-		NotifyError("%s: upperAveLimit variable not set.", funcName);
+		NotifyError(wxT("%s: upperAveLimit variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!aLSRPtr->normaliseFlag) {
-		NotifyError("%s: normalise variable not set.", funcName);
+		NotifyError(wxT("%s: normalise variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -304,16 +302,19 @@ CheckPars_Analysis_ALSR(void)
 BOOLN
 PrintPars_Analysis_ALSR(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_ALSR";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_ALSR");
 
 	if (!CheckPars_Analysis_ALSR()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("ALSR Analysis Module Parameters:-\n");
-	DPrint("\tAveraging window limit below CF = %g,\n", aLSRPtr->lowerAveLimit);
-	DPrint("\tAveraging window limit above CF = %g,\n", aLSRPtr->upperAveLimit);
-	DPrint("\tNormalisation factor = %g(units).\n", aLSRPtr->normalise);
+	DPrint(wxT("ALSR Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tAveraging window limit below CF = %g,\n"), aLSRPtr->
+	  lowerAveLimit);
+	DPrint(wxT("\tAveraging window limit above CF = %g,\n"), aLSRPtr->
+	  upperAveLimit);
+	DPrint(wxT("\tNormalisation factor = %g(units).\n"), aLSRPtr->normalise);
 	return(TRUE);
 
 }
@@ -328,10 +329,10 @@ PrintPars_Analysis_ALSR(void)
 BOOLN
 SetParsPointer_Analysis_ALSR(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Analysis_ALSR";
+	static const WChar	*funcName = wxT("SetParsPointer_Analysis_ALSR");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	aLSRPtr = (ALSRPtr) theModule->parsPtr;
@@ -349,14 +350,15 @@ SetParsPointer_Analysis_ALSR(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_ALSR(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_ALSR";
+	static const WChar	*funcName = wxT("InitModule_Analysis_ALSR");
 
 	if (!SetParsPointer_Analysis_ALSR(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_ALSR(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = aLSRPtr;
@@ -388,16 +390,17 @@ InitModule_Analysis_ALSR(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_ALSR(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_ALSR";
+	static const WChar	*funcName = wxT("CheckData_Analysis_ALSR");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (data->inSignal[0]->numChannels < 2) {
-		NotifyError("%s: This module expects multi-channel input.", funcName);
+		NotifyError(wxT("%s: This module expects multi-channel input."),
+		  funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -430,21 +433,21 @@ ResetProcess_Analysis_ALSR(EarObjectPtr data)
 BOOLN
 InitProcessVariables_Analysis_ALSR(EarObjectPtr data)
 {
-	static const char	*funcName = "InitProcessVariables_Analysis_ALSR";
+	static const WChar	*funcName = wxT("InitProcessVariables_Analysis_ALSR");
 	ALSRPtr	p = aLSRPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_Analysis_ALSR();
-		if ((p->modulusFT = Init_EarObject("Ana_FourierT")) == NULL) {
-			NotifyError("%s: Could not initialise the 'modulusFT' EarObject.",
-			  funcName);
+		if ((p->modulusFT = Init_EarObject(wxT("Ana_FourierT"))) == NULL) {
+			NotifyError(wxT("%s: Could not initialise the 'modulusFT' "
+			  "EarObject."), funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
 	}
-	if (!SetPar_ModuleMgr(p->modulusFT, "output_mode", "modulus")) {
-		NotifyError("%s: Could not set the 'Ana_FourierT' output mode.",
+	if (!SetPar_ModuleMgr(p->modulusFT, wxT("output_mode"), wxT("modulus"))) {
+		NotifyError(wxT("%s: Could not set the 'Ana_FourierT' output mode."),
 		  funcName);
 		return(FALSE);
 	}
@@ -466,8 +469,6 @@ InitProcessVariables_Analysis_ALSR(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_Analysis_ALSR(void)
 {
-	/*static const char	*funcName = "FreeProcessVariables_Analysis_ALSR";*/
-
 	Free_EarObject(&aLSRPtr->modulusFT);
 	return(TRUE);
 
@@ -492,9 +493,9 @@ FreeProcessVariables_Analysis_ALSR(void)
 BOOLN
 Calc_Analysis_ALSR(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_ALSR";
+	static const WChar	*funcName = wxT("Calc_Analysis_ALSR");
 	register ChanData	 *outPtr;
-	char	channelTitle[MAXLINE];
+	WChar	channelTitle[MAXLINE];
 	int		chan, minChan, maxChan, minWinChan, maxWinChan, numChannels;
 	double	dF, *cFs;
 	ChanLen	i, minIndex, maxIndex;
@@ -504,27 +505,28 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		if (!CheckPars_Analysis_ALSR())
 			return(FALSE);
 		if (!CheckData_Analysis_ALSR(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "ALSR Analysis Module process");
+		SetProcessName_EarObject(data, wxT("ALSR Analysis Module process"));
 
 		/*** Example Initialise output signal - ammend/change if required. ***/
 		if (!InitOutSignal_EarObject(data, 1, data->inSignal[0]->length, data->
 		  inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_Analysis_ALSR(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoSampleTitle_SignalData(data->outSignal, "Frequency (Hz) ");
-		snprintf(channelTitle, MAXLINE, "ALSR function (+%g / -%g octaves)",
-		  p->lowerAveLimit, p->upperAveLimit);
+		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Frequency (Hz) "));
+		DSAM_snprintf(channelTitle, MAXLINE, wxT("ALSR function (+%g / -%g "
+		  "octaves)"), p->lowerAveLimit, p->upperAveLimit);
 		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 		SetInfoCFArray_SignalData(data->outSignal, NULL);
@@ -533,13 +535,13 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	}
 	if (!GetChannelLimits_SignalData(data->inSignal[0], &minChan, &maxChan, 
 	  p->lowerAveLimit, p->upperAveLimit, SIGNALDATA_LIMIT_MODE_OCTAVE)) {
-		NotifyError("%s: Could not find a channel limits for signal.",
+		NotifyError(wxT("%s: Could not find a channel limits for signal."),
 		  funcName);
 		return(FALSE);
 	}
 	TempInputConnection_EarObject(data, p->modulusFT, 1);
 	if (!RunProcess_ModuleMgr(p->modulusFT)) {
-		NotifyError("%s: Could not run 'Ana_FourierT' process.", funcName);
+		NotifyError(wxT("%s: Could not run 'Ana_FourierT' process."), funcName);
 		return(FALSE);
 	}
 	dF = p->modulusFT->outSignal->dt;

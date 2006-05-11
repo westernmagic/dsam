@@ -21,7 +21,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	IO_AUDIOIN_MOD_NAME			"IO_AudioIn"
+#define	IO_AUDIOIN_MOD_NAME			wxT("IO_AudioIn")
 #define IO_AUDIOIN_NUM_PARS			7
 #define	IO_AUDIOIN_SAMPLE_FORMAT	paFloat32
 #define IO_AUDIOIN_SAMPLE_SILENCE	0.0f
@@ -129,7 +129,7 @@ BOOLN	InitProcessVariables_IO_AudioIn(EarObjectPtr data);
 
 BOOLN	Init_IO_AudioIn(ParameterSpecifier parSpec);
 
-void	NotifyError_IO_AudioIn(char *format, ...);
+void	NotifyError_IO_AudioIn(WChar *format, ...);
 
 BOOLN	PrintPars_IO_AudioIn(void);
 

@@ -105,7 +105,7 @@ UniParListPtr	GetUniParListPtr_IHC_Meddis86(void);
 
 BOOLN	PrintPars_IHC_Meddis86(void);
 
-BOOLN	ReadPars_IHC_Meddis86(char *fileName);
+BOOLN	ReadPars_IHC_Meddis86(WChar *fileName);
 
 BOOLN	RunModel_IHC_Meddis86(EarObjectPtr data);
 

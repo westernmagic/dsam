@@ -161,21 +161,21 @@ void	Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 double	GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
 		  double dt);
 
-BOOLN	ReadPars_Transform_Gate(char *fileName);
+BOOLN	ReadPars_Transform_Gate(WChar *fileName);
 
 BOOLN	InitModule_Transform_Gate(ModulePtr theModule);
 
 BOOLN	SetDefaulEnabledPars_Transform_Gate(void);
 
-BOOLN	SetOperationMode_Transform_Gate(char *theOperationMode);
+BOOLN	SetOperationMode_Transform_Gate(WChar *theOperationMode);
 
 BOOLN	SetParsPointer_Transform_Gate(ModulePtr theModule);
 
-BOOLN	SetPars_Transform_Gate(char *positionMode, char *operationMode,
-		  char *typeMode, double timeOffset, double duration,
+BOOLN	SetPars_Transform_Gate(WChar *positionMode, WChar *operationMode,
+		  WChar *typeMode, double timeOffset, double duration,
 		  double slopeParameter);
 
-BOOLN	SetPositionMode_Transform_Gate(char *thePositionMode);
+BOOLN	SetPositionMode_Transform_Gate(WChar *thePositionMode);
 
 BOOLN	SetSlopeParameter_Transform_Gate(double theSlopeParameter);
 
@@ -183,7 +183,7 @@ BOOLN	SetDuration_Transform_Gate(double theDuration);
 
 BOOLN	SetTimeOffset_Transform_Gate(double theTimeOffset);
 
-BOOLN	SetTypeMode_Transform_Gate(char *theTypeMode);
+BOOLN	SetTypeMode_Transform_Gate(WChar *theTypeMode);
 
 BOOLN	SetUniParList_Transform_Gate(void);
 

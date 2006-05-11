@@ -28,7 +28,7 @@
 /******************************************************************************/
 
 #define EXTIPCUTILS_MAX_COMMAND_CHAR		10
-#define EXTIPCUTILS_MEMORY_FILE_NAME		"+.aif"
+#define EXTIPCUTILS_MEMORY_FILE_NAME		wxT("+.aif")
 #define EXTIPCUTILS_DEFAULT_SERVER_PORT		3300
 
 

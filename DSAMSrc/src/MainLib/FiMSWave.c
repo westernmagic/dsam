@@ -49,15 +49,15 @@
 BOOLN
 ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 {
-	static const char *funcName = "ReadHeader_Wave";
+	static const WChar *funcName = wxT("ReadHeader_Wave");
 	int32	subSize, chunkSize, iD;
 
 	if ((p->identifier = ReadFileIdentifier_DataFile(fp, WAVE_RIFF,
-	  "MS WAVE")) == 0)
+	  wxT("MS WAVE"))) == 0)
 		return(FALSE);
 	p->length = chunkSize = dataFilePtr->Read32Bits(fp);
 	if ((p->chunkType = dataFilePtr->Read32Bits(fp)) != WAVE_WAVE) {
-		NotifyError("%s: Could not find chunk identifier.", funcName);
+		NotifyError(wxT("%s: Could not find chunk identifier."), funcName);
 		return(FALSE);
 	}
 	p->subChunkLength = p->dataChunkLength = 0;
@@ -93,11 +93,11 @@ ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 		}
 	}
 	if (!p->subChunkLength) {
-		NotifyError("%s: Could not find FMT chunk identifier.", funcName);
+		NotifyError(wxT("%s: Could not find FMT chunk identifier."), funcName);
 		return(FALSE);
 	}
 	if (!p->dataChunkLength) {
-		NotifyError("%s: Could not find DATA chunk identifier.", funcName);
+		NotifyError(wxT("%s: Could not find DATA chunk identifier."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -115,15 +115,15 @@ ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
  */
 
 FILE *
-InitialFileRead_Wave(char *fileName)
+InitialFileRead_Wave(WChar *fileName)
 {
-	static const char *funcName = "InitialFileRead_Wave";
+	static const WChar *funcName = wxT("InitialFileRead_Wave");
 	FILE	*fp;
 
 	if (dataFilePtr->endian == DATA_FILE_DEFAULT_ENDIAN)
 		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN);
 	if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_READING)) == NULL) {
-		NotifyError("%s: Couldn't read file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Couldn't read file '%s'."), funcName, fileName);
 		return(NULL);
 	}
 	return(fp);
@@ -159,25 +159,25 @@ GetNumSamples_Wave(WaveHeader *p)
  */
 
 BOOLN
-ReadFile_Wave(char *fileName, EarObjectPtr data)
+ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "ReadFile_Wave";
+	static const WChar *funcName = wxT("ReadFile_Wave");
 	int		j;
 	ChanLen	i, length;
 	FILE	*fp;
 	WaveHeader	pars;
 
 	if ((fp = InitialFileRead_Wave(fileName)) == NULL) {
-		NotifyError("%s: Could not read initial file structure from '%s'.",
+		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(FALSE);
 	}
-	SetProcessName_EarObject(data, "'%s' Microsoft Wave file",
+	SetProcessName_EarObject(data, wxT("'%s' Microsoft Wave file"),
 	  GetFileNameFPath_Utility_String(fileName));
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->timeIndex ==
 	  PROCESS_START_TIME) || (fp != stdin)) {
 		if (!ReadHeader_Wave(fp, &pars)) {
-			NotifyError("%s: Could not read header.", funcName);
+			NotifyError(wxT("%s: Could not read header."), funcName);
 			CloseFile(fp);
 			return(FALSE);
 		}
@@ -187,7 +187,7 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 		dataFilePtr->numSamples = GetNumSamples_Wave(&pars);
 		if (!InitProcessVariables_DataFile(data, dataFilePtr->numSamples,
 		  pars.sampleRate)) {
-			NotifyError("%s: Could not initialise process variables.",
+			NotifyError(wxT("%s: Could not initialise process variables."),
 			  funcName);
 			return(FALSE);
 		}
@@ -196,7 +196,7 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
 		return(FALSE);
 	if (!InitOutSignal_EarObject(data, (uShort) dataFilePtr->numChannels,
 	  length, 1.0 / dataFilePtr->defaultSampleRate)) {
-		NotifyError("%s: Cannot initialise output signal", funcName);
+		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
 	if (pars.numChannels == 2)
@@ -227,19 +227,19 @@ ReadFile_Wave(char *fileName, EarObjectPtr data)
  */
 
 double
-GetDuration_Wave(char *fileName)
+GetDuration_Wave(WChar *fileName)
 {
-	static const char *funcName = "GetDuration_Wave";
+	static const WChar *funcName = wxT("GetDuration_Wave");
 	FILE	*fp;
 	WaveHeader	pars;
 
 	if ((fp = InitialFileRead_Wave(fileName)) == NULL) {
-		NotifyError("%s: Could not read initial file structure from '%s'.",
+		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(-1.0);
 	}
 	if (!ReadHeader_Wave(fp, &pars)) {
-		NotifyError("%s: Could not read header.", funcName);
+		NotifyError(wxT("%s: Could not read header."), funcName);
 		CloseFile(fp);
 		return(FALSE);
 	}
@@ -300,9 +300,9 @@ WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset)
  */
 
 BOOLN
-WriteFile_Wave(char *fileName, EarObjectPtr data)
+WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "WriteFile_Wave";
+	static const WChar *funcName = wxT("WriteFile_Wave");
 	BOOLN	ok;
 	int32	dataOffset;
 	FILE	*fp;
@@ -312,7 +312,8 @@ WriteFile_Wave(char *fileName, EarObjectPtr data)
 		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN_UNSIGNED);
 	if (!GetDSAMPtr_Common()->segmentedMode || data->firstSectionFlag) {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_WRITING)) == NULL) {
-			NotifyError("%s: Couldn't open file '%s'.", funcName, fileName);
+			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
+			  fileName);
 			return(FALSE);
 		}
 		dataOffset = 0L;
@@ -320,19 +321,20 @@ WriteFile_Wave(char *fileName, EarObjectPtr data)
 		  data->outSignal);
 	} else {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_UPDATING)) == NULL) {
-			NotifyError("%s: Couldn't open file '%s'.", funcName, fileName);
+			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
+			  fileName);
 			return(FALSE);
 		}
 		if (!ReadHeader_Wave(fp, &pars)) {
-			NotifyError("%s: Could not read header (using segmented mode).",
-			  funcName);
+			NotifyError(wxT("%s: Could not read header (using segmented "
+			  "mode)."), funcName);
 			CloseFile(fp);
 			return(FALSE);
 		}
 		if ((pars.numChannels != data->outSignal->numChannels) ||
 		  (pars.sampleRate != (int32) (1.0 / data->outSignal->dt + 0.5)) ||
 		  ((pars.bitsPerSample / 8) != dataFilePtr->wordSize)) {
-			NotifyError("%s: Cannot append to different format file!",
+			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
 			return(FALSE);
 		}

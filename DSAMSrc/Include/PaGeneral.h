@@ -99,8 +99,8 @@ extern "C" int	MPI_Comm_rank(MPI_Comm comm, int *rank);
 extern "C" int	MPI_Finalize(void);
 extern "C" int	MPI_Get_count(MPI_Status *status, MPI_Datatype datatype,
 				  int *count);
-extern "C" int	MPI_Get_processor_name(char *name, int *resultlen);
-extern "C" int	MPI_Init(int *argc, char ***argv);
+extern "C" int	MPI_Get_processor_name(WChar *name, int *resultlen);
+extern "C" int	MPI_Init(int *argc, WChar ***argv);
 extern "C" int	MPI_Iprobe(int source, int tag, MPI_Comm comm, int *flag,
 				  MPI_Status *status);
 extern "C" int	 MPI_Irecv(void* buf, int count, MPI_Datatype datatype,
@@ -127,7 +127,7 @@ extern "C" int	MPI_Wait(MPI_Request *request, MPI_Status *status);
  */
 __BEGIN_DECLS
 
-char *	ControlStr_MPI_General(ControlSpecifier control);
+WChar *	ControlStr_MPI_General(ControlSpecifier control);
 
 NameSpecifier *	InitWorkerChanModeList_MPI_General(void);
 

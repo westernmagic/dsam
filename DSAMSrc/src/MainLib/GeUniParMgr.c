@@ -86,16 +86,17 @@
 UniParListPtr
 InitList_UniParMgr(UniParModeSpecifier mode, int numPars, void *handlePtr)
 {
-	static const char *funcName = "IniList_UniParMgr";
+	static const WChar *funcName = wxT("IniList_UniParMgr");
 	int		i;
 	UniParListPtr	p;
 
 	if ((p = (UniParListPtr) malloc(sizeof(UniParList))) == NULL) {
-		NotifyError("%s: Could not allocate UniParList.", funcName);
+		NotifyError(wxT("%s: Could not allocate UniParList."), funcName);
 		return(NULL);
 	}
 	if ((p->pars = (UniPar *) calloc(numPars, sizeof(UniPar))) == NULL) {
-		NotifyError("%s: Could not allocate %d UniPars.", funcName, numPars);
+		NotifyError(wxT("%s: Could not allocate %d UniPars."), funcName,
+		  numPars);
 		FreeList_UniParMgr(&p);
 		return(NULL);
 	}
@@ -155,10 +156,10 @@ FreeList_UniParMgr(UniParListPtr *list)
  */
 
 void
-SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
+SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
   UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func))
 {
-	static const char	*funcName = "SetPar_UniParMgr";
+	static const WChar	*funcName = wxT("SetPar_UniParMgr");
 
 	par->enabled = TRUE;
 	par->type = type;
@@ -189,19 +190,19 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		par->valuePtr.array.numElements = (int *) ptr2;
 		break;
 	case UNIPAR_STRING:
-		par->valuePtr.s = (char *) ptr1;
+		par->valuePtr.s = (WChar *) ptr1;
 		break;
 	case UNIPAR_STRING_ARRAY:
 		par->valuePtr.array.index = 0;
-		par->valuePtr.array.pPtr.s = (char ***) ptr1;
+		par->valuePtr.array.pPtr.s = (WChar ***) ptr1;
 		par->valuePtr.array.numElements = (int *) ptr2;
 		break;
 	case UNIPAR_FILE_NAME:
-		par->valuePtr.file.name = (char *) ptr1;
-		par->valuePtr.file.defaultExtension = (char *) ptr2;
+		par->valuePtr.file.name = (WChar *) ptr1;
+		par->valuePtr.file.defaultExtension = (WChar *) ptr2;
 		break;
 	case UNIPAR_MODULE:
-		par->valuePtr.module.parFile = (char *) ptr1;
+		par->valuePtr.module.parFile = (WChar *) ptr1;
 		par->valuePtr.module.parList = (UniParListPtr) ptr2;
 		break;
 	case UNIPAR_CFLIST:
@@ -228,14 +229,14 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		break;
 	case UNIPAR_SIMSCRIPT:
 		par->valuePtr.simScript.simulation = (DatumPtr *) ptr1;
-		par->valuePtr.simScript.fileName = (char *) ptr2;
+		par->valuePtr.simScript.fileName = (WChar *) ptr2;
 		break;
 	case UNIPAR_PARLIST:
 		par->valuePtr.parList.list = (UniParListPtr *) ptr1;
 		par->valuePtr.parList.process = (EarObjectPtr *) ptr2;
 		break;
 	default:
-		NotifyError("%s: Universal parameter not yet implemented (%d).",
+		NotifyError(wxT("%s: Universal parameter not yet implemented (%d)."),
 		  funcName, type);
 	}
 	switch (par->mode) {
@@ -267,18 +268,18 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_FILE_NAME:
 		case UNIPAR_PARLIST:
-			par->FuncPtr.SetString = (BOOLN (*)(char *)) Func;
+			par->FuncPtr.SetString = (BOOLN (*)(WChar *)) Func;
 			break;
 		case UNIPAR_STRING_ARRAY:
 		case UNIPAR_NAME_SPEC_ARRAY:
-			par->FuncPtr.SetStringArrayElement = (BOOLN (*)(int, char *)) Func;
+			par->FuncPtr.SetStringArrayElement = (BOOLN (*)(int, WChar *)) Func;
 			break;
 		case UNIPAR_CFLIST:
 			par->FuncPtr.SetCFList = (BOOLN (*)(CFListPtr)) Func;
 			break;
 		case UNIPAR_PARARRAY:
 			if (!*par->valuePtr.pAPtr || !(*par->valuePtr.pAPtr)->parList)
-				NotifyError("%s: Could not set par array handle function.",
+				NotifyError(wxT("%s: Could not set par array handle function."),
 				  funcName);			
 			(*par->valuePtr.pAPtr)->parList->handlePtr.parArray.SetFunc =
 			  (BOOLN (*)(ParArrayPtr)) Func;
@@ -290,8 +291,8 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 			par->FuncPtr.SetDatumPtr = (BOOLN (*)(DatumPtr)) Func;
 			break;
 		default:
-			NotifyError("%s: Universal parameter not yet implemented (%d).",
-			  funcName, type);
+			NotifyError(wxT("%s: Universal parameter not yet implemented "
+			  "(%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_CFLIST:
@@ -313,11 +314,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_NAME_SPEC:
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
-			par->FuncPtr.SetCFListString = (BOOLN (*)(CFListPtr, char *)) Func;
+			par->FuncPtr.SetCFListString = (BOOLN (*)(CFListPtr, WChar *)) Func;
 			break;
 		default:
-			NotifyError("%s: Universal parameter (CFList) not yet implemented "
-			  "(%d).", funcName, type);
+			NotifyError(wxT("%s: Universal parameter (CFList) not yet "
+			  "implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_PARARRAY:
@@ -336,11 +337,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 			par->FuncPtr.SetParArrayString = (BOOLN (*)(ParArrayPtr,
-			  char *)) Func;
+			  WChar *)) Func;
 			break;
 		default:
-			NotifyError("%s: Universal parameter (ParArray) not yet "
-			  "implemented (%d).", funcName, type);
+			NotifyError(wxT("%s: Universal parameter (ParArray) not yet "
+			  "implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_ICLIST:
@@ -360,11 +361,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 			par->FuncPtr.SetICListString = (BOOLN (*)(IonChanListPtr,
-			  char *)) Func;
+			  WChar *)) Func;
 			break;
 		default:
-			NotifyError("%s: Universal parameter (IonChanList) not yet "
-			  "implemented (%d).", funcName, type);
+			NotifyError(wxT("%s: Universal parameter (IonChanList) not yet "
+			  "implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_IC:
@@ -387,11 +388,11 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_FILE_NAME:
-			par->FuncPtr.SetICString = (BOOLN (*)(IonChannelPtr, char *)) Func;
+			par->FuncPtr.SetICString = (BOOLN (*)(IonChannelPtr, WChar *)) Func;
 			break;
 		default:
-			NotifyError("%s: Universal parameter (IonChannel) not yet "
-			  "implemented (%d).", funcName, type);
+			NotifyError(wxT("%s: Universal parameter (IonChannel) not yet "
+			  "implemented (%d)."), funcName, type);
 		}
 		break;
 	default:
@@ -410,10 +411,10 @@ SetPar_UniParMgr(UniParPtr par, char *abbreviation, char *description,
 BOOLN
 SetGetPanelListFunc_UniParMgr(UniParListPtr list, NameSpecifier * (* Func)(int))
 {
-	static const char *funcName = "SetPanelListFunc_UniParMgr";
+	static const WChar *funcName = wxT("SetPanelListFunc_UniParMgr");
 
 	if (!list) {
-		NotifyError("%s: List not initialised.", funcName);
+		NotifyError(wxT("%s: List not initialised."), funcName);
 		return(FALSE);
 	}
 	list->GetPanelList = Func;
@@ -430,12 +431,12 @@ SetGetPanelListFunc_UniParMgr(UniParListPtr list, NameSpecifier * (* Func)(int))
  */
 
 void
-SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr)
+SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr)
 {
-	static const char	*funcName = "SetAltAbbreviation_UniParMgr";
+	static const WChar	*funcName = wxT("SetAltAbbreviation_UniParMgr");
 
 	if (!altAbbr || (*altAbbr == '\0')) {
-		NotifyError("%s: No string given!", funcName);
+		NotifyError(wxT("%s: No string given!"), funcName);
 		return;
 	}
 	p->altAbbr = altAbbr;
@@ -449,12 +450,12 @@ SetAltAbbreviation_UniParMgr(UniParPtr p, char *altAbbr)
  * The string is static and is overwritten each time it is used.
  */
 
-char *
-FormatPar_UniParMgr(UniParPtr p, char *suffix)
+WChar *
+FormatPar_UniParMgr(UniParPtr p, WChar *suffix)
 {
-	static char	string[MAXLINE];
+	static WChar	string[MAXLINE];
 
-	snprintf(string, MAXLINE, "%s%s", p->abbr, suffix);
+	DSAM_snprintf(string, MAXLINE, wxT("%s%s"), p->abbr, suffix);
 	return(string);
 
 }
@@ -468,36 +469,37 @@ FormatPar_UniParMgr(UniParPtr p, char *suffix)
 BOOLN
 PrintValue_UniParMgr(UniParPtr p)
 {
-	static const char	*funcName = "PrintValue_UniParMgr";
+	static const WChar	*funcName = wxT("PrintValue_UniParMgr");
 
 	switch (p->type) {
 	case UNIPAR_BOOL:
-		DPrint("%-10s\t", BooleanList_NSpecLists(*p->valuePtr.i)->name);
+		DPrint(wxT("%-10s\t"), BooleanList_NSpecLists(*p->valuePtr.i)->name);
 		break;
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		DPrint("%-10d\t", *p->valuePtr.i);
+		DPrint(wxT("%-10d\t"), *p->valuePtr.i);
 		break;
 	case UNIPAR_LONG:
-		DPrint("%-10ld\t", *p->valuePtr.l);
+		DPrint(wxT("%-10ld\t"), *p->valuePtr.l);
 		break;
 	case UNIPAR_REAL:
-		DPrint("%-10g\t", *p->valuePtr.r);
+		DPrint(wxT("%-10g\t"), *p->valuePtr.r);
 		break;
 	case UNIPAR_STRING:
-		DPrint("%-10s\t", QuotedString_Utility_String(p->valuePtr.s));
+		DPrint(wxT("%-10s\t"), QuotedString_Utility_String(p->valuePtr.s));
 		break;
 	case UNIPAR_FILE_NAME:
-		DPrint("%-10s\t", QuotedString_Utility_String(p->valuePtr.file.name));
+		DPrint(wxT("%-10s\t"), QuotedString_Utility_String(p->valuePtr.file.
+		  name));
 		break;
 	case UNIPAR_NAME_SPEC:
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
-		DPrint("%-10s\t", QuotedString_Utility_String(p->valuePtr.nameList.list[
-		  *p->valuePtr.nameList.specifier].name));
+		DPrint(wxT("%-10s\t"), QuotedString_Utility_String(p->valuePtr.nameList.
+		  list[*p->valuePtr.nameList.specifier].name));
 		break;
 	default:
-		NotifyError("%s: Universal parameter not yet implemented (%d).",
+		NotifyError(wxT("%s: Universal parameter not yet implemented (%d)."),
 		  funcName, p->type);
 		return(FALSE);
 	}
@@ -511,36 +513,36 @@ PrintValue_UniParMgr(UniParPtr p)
  * This routine formats the array string.
  */
 
-char *
-FormatArrayString_UniParMgr(UniParPtr p, int index, char *suffix)
+WChar *
+FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix)
 {
-	static const char	*funcName = "FormatArrayString_UniParMgr";
-	static char	string[MAXLINE];
+	static const WChar	*funcName = wxT("FormatArrayString_UniParMgr");
+	static WChar	string[MAXLINE];
 
 	switch (p->type) {
 	case UNIPAR_INT_ARRAY:
-		snprintf(string, MAXLINE, "\t%s\t%3d:%-10d\n", FormatPar_UniParMgr(
+		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10d\n"), FormatPar_UniParMgr(
 		   p, suffix), index, (*p->valuePtr.array.pPtr.i)[index]);
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
-		snprintf(string, MAXLINE, "\t%s\t%3d:%-10g\n", FormatPar_UniParMgr(
+		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10g\n"), FormatPar_UniParMgr(
 		  p, suffix), index, (*p->valuePtr.array.pPtr.r)[index]);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		snprintf(string, MAXLINE, "\t%s\t%3d:%-10s\n", FormatPar_UniParMgr(
-		  p, suffix), index, QuotedString_Utility_String((*p->valuePtr.
-		  array.pPtr.s)[index]));
+		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"), 
+		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
+		  (*p->valuePtr.array.pPtr.s)[index]));
 		break;
 	case UNIPAR_NAME_SPEC_ARRAY:
-		snprintf(string, MAXLINE, "\t%s\t%3d:%-10s\n", FormatPar_UniParMgr(
-		  p, suffix), index, QuotedString_Utility_String(p->valuePtr.
-		  array.pPtr.nameList.list[(*p->valuePtr.array.pPtr.nameList.
-		  specifier)[index]].name));
+		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"),
+		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
+		  p->valuePtr.array.pPtr.nameList.list[(*p->valuePtr.array.pPtr.
+		  nameList.specifier)[index]].name));
 		break;
 	default:
-		snprintf(string, MAXLINE, "%s: Universal parameter not yet "
-		  "implemented (%d).", funcName, p->type);
+		DSAM_snprintf(string, MAXLINE, wxT("%s: Universal parameter not yet "
+		  "implemented (%d)."), funcName, p->type);
 	}
 	return(string);
 
@@ -553,15 +555,15 @@ FormatArrayString_UniParMgr(UniParPtr p, int index, char *suffix)
  */
 
 BOOLN
-PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
+PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix)
 {
-	static const char *funcName = "PrintPar_UniParMgr";
+	static const WChar *funcName = wxT("PrintPar_UniParMgr");
 	BOOLN	ok = TRUE;
-	char	string[LONG_STRING];
+	WChar	string[LONG_STRING];
 	DynaListPtr	node;
 
 	if (p == NULL) {
-		NotifyError("%s: Universal parameter not initialised.", funcName);
+		NotifyError(wxT("%s: Universal parameter not initialised."), funcName);
 		return(FALSE);
 	}
 	switch (p->type) {
@@ -575,33 +577,33 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
 	case UNIPAR_FILE_NAME:
-		if ((strlen(p->abbr) + strlen(suffix)) >= LONG_STRING) {
-			NotifyError("%s: Combined string '%s%s' is greater than %d.",
+		if ((DSAM_strlen(p->abbr) + DSAM_strlen(suffix)) >= LONG_STRING) {
+			NotifyError(wxT("%s: Combined string '%s%s' is greater than %d."),
 			  funcName, p->abbr, suffix, MAXLINE);
 			return(FALSE);
 		}
-		snprintf(string, LONG_STRING, "%s%s", p->abbr, suffix);
-		DPrint("%s%-25s\t", prefix, string);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s%s"), p->abbr, suffix);
+		DPrint(wxT("%s%-25s\t"), prefix, string);
 		PrintValue_UniParMgr(p);
-		DPrint("%s\n", p->desc);
+		DPrint(wxT("%s\n"), p->desc);
 		break;
 	case UNIPAR_MODULE:
-		DPrint("# Module parameter file: %s\n",
+		DPrint(wxT("# Module parameter file: %s\n"),
 		  p->valuePtr.module.parFile);
 		ok = PrintPars_UniParMgr(p->valuePtr.module.parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix);
 		break;
 	case UNIPAR_PARLIST: {
-		char newSuffix[MAXLINE];
+		WChar newSuffix[MAXLINE];
 		if (!*(p->valuePtr.parList.list))
 			break;
 		if (p->valuePtr.parList.process)
 			SET_PARS_POINTER(*p->valuePtr.parList.process);
-		DPrint("# Sub-parameter list: %s: \n", p->desc);
-		strcpy(newSuffix, suffix);
+		DPrint(wxT("# Sub-parameter list: %s: \n"), p->desc);
+		DSAM_strcpy(newSuffix, suffix);
 		if (!p->FuncPtr.SetString) {	/* Lowest parList */
-			char 	newLabel[MAXLINE];
-			snprintf(newLabel, MAXLINE, ".%s", p->abbr);
+			WChar 	newLabel[MAXLINE];
+			DSAM_snprintf(newLabel, MAXLINE, wxT(".%s"), p->abbr);
 			SubStrReplace_Utility_String(newSuffix, UNIPAR_TOP_PARENT_LABEL,
 			  newLabel);
 		}
@@ -609,7 +611,7 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 		  UNIPAR_SUB_PAR_LIST_MARKER, newSuffix);
 		break; }
 	case UNIPAR_CFLIST:
-		DPrint("# CFList parameters:\n");
+		DPrint(wxT("# CFList parameters:\n"));
 		if (!PrintPars_UniParMgr((*p->valuePtr.cFPtr)->cFParList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
@@ -619,27 +621,27 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 			ok = FALSE;
 		break;
 	case UNIPAR_PARARRAY:
-		DPrint("# %s parameters:\n", (*p->valuePtr.pAPtr)->name);
+		DPrint(wxT("# %s parameters:\n"), (*p->valuePtr.pAPtr)->name);
 		if (!PrintPars_UniParMgr((*p->valuePtr.pAPtr)->parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
 		break;
 	case UNIPAR_ICLIST:
-		DPrint("# IonChanList parameters:\n");
+		DPrint(wxT("# IonChanList parameters:\n"));
 		if (!PrintPars_UniParMgr((*p->valuePtr.iCPtr)->parList,
 		  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 			ok = FALSE;
 		for (node = (*p->valuePtr.iCPtr)->ionChannels; node; node =
 		  node->next) {
 			IonChannelPtr iC = (IonChannelPtr) node->data;
-			DPrint("# <---- Ion channel %s ---->\n", iC->description);
+			DPrint(wxT("# <---- Ion channel %s ---->\n"), iC->description);
 			if (!PrintPars_UniParMgr(iC->parList,
 			  UNIPAR_SUB_PAR_LIST_MARKER, suffix))
 				ok = FALSE;
 		}
 		break;
 	case UNIPAR_SIMSCRIPT:
-		DPrint("# Parameters for '%s' simulation:\n",
+		DPrint(wxT("# Parameters for '%s' simulation:\n"),
 		  p->valuePtr.simScript.fileName);
 		PrintParListModules_Utility_Datum(*p->valuePtr.simScript.simulation,
 		  UNIPAR_SUB_PAR_LIST_MARKER);
@@ -650,12 +652,12 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY: {
 		int		i;
-		DPrint("# %s:\n", p->desc);
+		DPrint(wxT("# %s:\n"), p->desc);
 		for (i = 0; i < *p->valuePtr.array.numElements; i++)
-			DPrint("%s", FormatArrayString_UniParMgr(p, i, suffix));
+			DPrint(wxT("%s"), FormatArrayString_UniParMgr(p, i, suffix));
 		break; }
 	default:
-		NotifyError("%s: Universal parameter not yet implemented (%d).",
+		NotifyError(wxT("%s: Universal parameter not yet implemented (%d)."),
 		  funcName, p->type);
 		ok = FALSE;
 	}
@@ -670,18 +672,18 @@ PrintPar_UniParMgr(UniParPtr p, char *prefix, char *suffix)
  */
 
 BOOLN
-PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
+PrintPars_UniParMgr(UniParListPtr list, WChar *prefix, WChar *suffix)
 {
-	static const char *funcName = "PrintPars_UniParMgr";
+	static const WChar *funcName = wxT("PrintPars_UniParMgr");
 	int		i;
 
 	if (list == NULL) {
-		NotifyError("%s: List not initialised.", funcName);
+		NotifyError(wxT("%s: List not initialised."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < list->numPars; i++) {
 		if (!PrintPar_UniParMgr(&list->pars[i], prefix, suffix)) {
-			NotifyError("%s: Could not print '%s' parameter.", funcName,
+			NotifyError(wxT("%s: Could not print '%s' parameter."), funcName,
 				list->pars[i].abbr);
 			return(FALSE);
 		}
@@ -703,12 +705,12 @@ PrintPars_UniParMgr(UniParListPtr list, char *prefix, char *suffix)
 BOOLN
 ResetCFList_UniParMgr(UniParListPtr parList)
 {
-	static const char *funcName = "ResetCFListPointer_UniParMgr";
+	static const WChar *funcName = wxT("ResetCFListPointer_UniParMgr");
 	CFListPtr	theCFs;
 	
 	theCFs = parList->handlePtr.cFs;
 	if (!RegenerateList_CFList(theCFs)) {
-		NotifyError("%s: Could not regenerate CFList.", funcName);
+		NotifyError(wxT("%s: Could not regenerate CFList."), funcName);
 		return(FALSE);
 	}
 	theCFs->bParList->updateFlag = FALSE;
@@ -728,13 +730,13 @@ ResetCFList_UniParMgr(UniParListPtr parList)
 BOOLN
 CheckParList_UniParMgr(UniParListPtr list)
 {
-	static const char *funcName = "CheckParList_UniParMgr";
+	static const WChar *funcName = wxT("CheckParList_UniParMgr");
 	BOOLN	ok = TRUE;
 	int		i;
 	UniParPtr	p;
 
 	if (list == NULL) {
-		NotifyError("%s: List not initialised.", funcName);
+		NotifyError(wxT("%s: List not initialised."), funcName);
 		return(FALSE);
 	}
 	switch (list->mode) {
@@ -816,73 +818,75 @@ CheckParList_UniParMgr(UniParListPtr list)
  * This function returns a pointer to string version of a universal parameter.
  */
 
-char *
+WChar *
 GetParString_UniParMgr(UniParPtr p)
 {
-	static const char *funcName = "GetParString_UniParMgr";
-	static char string[LONG_STRING];
+	static const WChar *funcName = wxT("GetParString_UniParMgr");
+	static WChar string[LONG_STRING];
 
 	if (p == NULL) {
-		NotifyError("%s: Parameter not initialised.", funcName);
+		NotifyError(wxT("%s: Parameter not initialised."), funcName);
 		return(NULL);
 	}
 	if (((p->type == UNIPAR_INT_ARRAY) || (p->type == UNIPAR_REAL_ARRAY) ||
 	  (p->type == UNIPAR_REAL_DYN_ARRAY) || (p->type == UNIPAR_STRING_ARRAY) ||
 	  (p->type == UNIPAR_NAME_SPEC_ARRAY)) && (*p->valuePtr.array.numElements ==
 	  0))
-		return("");
+		return(wxT(""));
 		
 	switch (p->type) {
 	case UNIPAR_BOOL:
-		sprintf(string, "%s", BooleanList_NSpecLists(*p->valuePtr.i)->name);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), BooleanList_NSpecLists(
+		  *p->valuePtr.i)->name);
 		break;
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		sprintf(string, "%d", *p->valuePtr.i);
+		DSAM_snprintf(string, LONG_STRING, wxT("%d"), *p->valuePtr.i);
 		break;
 	case UNIPAR_INT_ARRAY:
-		sprintf(string, "%d", (*p->valuePtr.array.pPtr.i)[
-		  p->valuePtr.array.index]);
+		DSAM_snprintf(string, LONG_STRING, wxT("%d"), (*p->valuePtr.array.pPtr.
+		  i)[p->valuePtr.array.index]);
 		break;
 	case UNIPAR_LONG:
-		sprintf(string, "%ld", *p->valuePtr.l);
+		DSAM_snprintf(string, LONG_STRING, wxT("%ld"), *p->valuePtr.l);
 		break;
 	case UNIPAR_REAL:
-		sprintf(string, "%g", *p->valuePtr.r);
+		DSAM_snprintf(string, LONG_STRING, wxT("%g"), *p->valuePtr.r);
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
-		sprintf(string, "%g", (*p->valuePtr.array.pPtr.r)[p->valuePtr.array.
-		  index]);
+		DSAM_snprintf(string, LONG_STRING, wxT("%g"), (*p->valuePtr.array.pPtr.
+		  r)[p->valuePtr.array.index]);
 		break;
 	case UNIPAR_STRING:
-		snprintf(string, LONG_STRING, "%s", p->valuePtr.s);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.s);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		snprintf(string, LONG_STRING, "%s", (*p->valuePtr.array.pPtr.s)[p->
-		  valuePtr.array.index]);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), (*p->valuePtr.array.pPtr.
+		  s)[p->valuePtr.array.index]);
 		break;
 	case UNIPAR_FILE_NAME:
-		snprintf(string, LONG_STRING, "%s", p->valuePtr.file.name);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.file.name);
 		break;
 	case UNIPAR_MODULE:
-		snprintf(string, LONG_STRING, "%s", p->valuePtr.module.parFile);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.module.
+		  parFile);
 		break;
 	case UNIPAR_NAME_SPEC:
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
-		snprintf(string, LONG_STRING, "%s", p->valuePtr.nameList.list[
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.nameList.list[
 		  *p->valuePtr.nameList.specifier].name);
 		break;
 	case UNIPAR_NAME_SPEC_ARRAY:
-		snprintf(string, LONG_STRING, "%s", p->valuePtr.array.pPtr.nameList.
-		  list[*p->valuePtr.array.pPtr.nameList.specifier[p->valuePtr.array.
-		  index]].name);
+		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.array.pPtr.
+		  nameList.list[*p->valuePtr.array.pPtr.nameList.specifier[p->valuePtr.
+		  array.index]].name);
 		break;
 	default:
-		NotifyError("%s: Universal parameter not yet implemented (%d).",
+		NotifyError(wxT("%s: Universal parameter not yet implemented (%d)."),
 		  funcName, p->type);
-		return("");
+		return(wxT(""));
 	}
 	return(string);
 
@@ -899,37 +903,37 @@ GetParString_UniParMgr(UniParPtr p)
  */
 
 BOOLN
-ParseArrayValue_UniParMgr(UniParPtr par, char *parValue, char **parValuePtr,
+ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
   int *index)
 {
-	static const char *funcName = "ParseArrayValue_UniParMgr";
-	char	*p, *s, string[MAXLINE];
+	static const WChar *funcName = wxT("ParseArrayValue_UniParMgr");
+	WChar	*p, *s, string[MAXLINE];
 	int		i, pos;
 
 	if (!par) {
-		NotifyError("%s: Universal parameter not initalised.\n", funcName);
+		NotifyError(wxT("%s: Universal parameter not initalised.\n"), funcName);
 		return(FALSE);
 	}
 	if ((par->type != UNIPAR_INT_ARRAY) && (par->type != UNIPAR_REAL_ARRAY) &&
 	  (par->type != UNIPAR_STRING_ARRAY) && (par->type !=
 	  UNIPAR_NAME_SPEC_ARRAY) && (par->type != UNIPAR_REAL_DYN_ARRAY)) {
-		NotifyError("%s: Universal parameter is not array type (%d).\n",
+		NotifyError(wxT("%s: Universal parameter is not array type (%d).\n"),
 		  funcName, par->type);
 		return(FALSE);
 	}
 	index[0] = par->valuePtr.array.index;
-	for (i = 0, s = parValue; (i < UNIPAR_MAX_ARRAY_INDEX) && (p = strchr(s,
-	  UNIPAR_INDEX_SEPARATOR)); i++) {
+	for (i = 0, s = parValue; (i < UNIPAR_MAX_ARRAY_INDEX) && (p = DSAM_strchr(
+	  s, UNIPAR_INDEX_SEPARATOR)); i++) {
 		pos = p - s;
-		strncpy(string, s, pos);
+		DSAM_strncpy(string, s, pos);
 		string[pos] = '\0';
-		index[i] = atoi(string);
+		index[i] = atoi((char *) string);
 		s = p + 1;
 	}
 	if ((par->type != UNIPAR_REAL_DYN_ARRAY) && (index[0] >=
 	  *par->valuePtr.array.numElements)) {
-		NotifyError("%s: Index range must be 0 - %d for '%s' (%d).", funcName,
-		  *par->valuePtr.array.numElements - 1, par->abbr, index[0]);
+		NotifyError(wxT("%s: Index range must be 0 - %d for '%s' (%d)."),
+		  funcName, *par->valuePtr.array.numElements - 1, par->abbr, index[0]);
 		return(FALSE);
 	}
 	*parValuePtr = s;
@@ -947,11 +951,11 @@ ParseArrayValue_UniParMgr(UniParPtr par, char *parValue, char **parValuePtr,
  */
 
 BOOLN
-SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
+SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 {
-	static const char *funcName = "SetGeneralParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetGeneralParValue_UniParMgr");
 	BOOLN	ok = FALSE;
-	char	*arrayValue;
+	WChar	*arrayValue;
 	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	UniParPtr	p;
 
@@ -959,34 +963,35 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetInt)(atoi(parValue));
+		ok = (* p->FuncPtr.SetInt)(atoi((char *) parValue));
 		break;
 	case UNIPAR_INT_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
-		ok = (* p->FuncPtr.SetIntArrayElement)(arrayIndex[0], atoi(arrayValue));
+		ok = (* p->FuncPtr.SetIntArrayElement)(arrayIndex[0], atoi((char *)
+		  arrayValue));
 		break;
 	case UNIPAR_LONG:
-		ok = (* p->FuncPtr.SetLong)(atol(parValue));
+		ok = (* p->FuncPtr.SetLong)(atol((char *) parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetReal)(atof(parValue));
+		ok = (* p->FuncPtr.SetReal)(atof((char *) parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetRealArrayElement)(arrayIndex[0],
-		  atof(arrayValue));
+		  atof((char *)arrayValue));
 		break;
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
 		RemoveChar_Utility_String(arrayValue, '"');
@@ -1010,8 +1015,8 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	case UNIPAR_PARARRAY:
 		break;
 	default:
-		NotifyError("%s: Universal parameter type not yet implemented (%d).",
-		  funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented "
+		  "(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	return(ok);
@@ -1026,11 +1031,11 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
  */
 
 BOOLN
-SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
+SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 {
-	static const char *funcName = "SetCFListParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetCFListParValue_UniParMgr");
 	BOOLN	ok = FALSE;
-	char	*arrayValue;
+	WChar	*arrayValue;
 	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	UniParPtr	p;
 
@@ -1039,19 +1044,19 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
 		ok = (* p->FuncPtr.SetCFListInt)((*parList)->handlePtr.cFs,
-		  atoi(parValue));
+		  atoi((char *) parValue));
 		break;
 	case UNIPAR_REAL:
 		ok = (* p->FuncPtr.SetCFListReal)((*parList)->handlePtr.cFs,
-		  atof(parValue));
+		  atof((char *)parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetCFListRealArrayElement)(
-		  (*parList)->handlePtr.cFs, arrayIndex[0], atof(arrayValue));
+		  (*parList)->handlePtr.cFs, arrayIndex[0], atof((char *) arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1063,8 +1068,8 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 		  parValue);
 		break;
 	default:
-		NotifyError("%s: Universal parameter type not yet implemented (%d).",
-		  funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented "
+		  "(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok && (*parList)->updateFlag)
@@ -1082,11 +1087,11 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 
 BOOLN
 SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
-  char *parValue)
+  WChar *parValue)
 {
-	static const char *funcName = "SetParArrayParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetParArrayParValue_UniParMgr");
 	BOOLN	ok = FALSE;
-	char	*arrayValue;
+	WChar	*arrayValue;
 	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	UniParPtr	p;
 
@@ -1094,15 +1099,16 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 	switch (p->type) {
 	case UNIPAR_INT:
 		ok = (* p->FuncPtr.SetParArrayInt)((*parList)->handlePtr.parArray.ptr,
-		  atoi(parValue));
+		  atoi((char *) parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetParArrayRealArrayElement)(
-		  (*parList)->handlePtr.parArray.ptr, arrayIndex[0], atof(arrayValue));
+		  (*parList)->handlePtr.parArray.ptr, arrayIndex[0], atof((char *)
+		  arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1114,8 +1120,8 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  ptr, parValue);
 		break;
 	default:
-		NotifyError("%s: Universal parameter type not yet implemented (%d).",
-		  funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented "
+		  "(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok)
@@ -1135,7 +1141,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
  */
 
 BOOLN
-SetCurrentIC_UniParMgr(IonChanListPtr theICs, char *description)
+SetCurrentIC_UniParMgr(IonChanListPtr theICs, WChar *description)
 {
 	DynaListPtr	node;
 	IonChannelPtr	iC;
@@ -1160,11 +1166,11 @@ SetCurrentIC_UniParMgr(IonChanListPtr theICs, char *description)
  */
 
 BOOLN
-SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
+SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 {
-	static const char *funcName = "SetICParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetICParValue_UniParMgr");
 	BOOLN	ok = FALSE;
-	char	*arrayValue;
+	WChar	*arrayValue;
 	int		arrayIndex[UNIPAR_MAX_ARRAY_INDEX];
 	UniParPtr	p;
 	IonChanListPtr	theICs = parList->handlePtr.iCs;
@@ -1173,18 +1179,19 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, atoi(parValue));
+		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, atoi((char *) parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, atof(parValue));
+		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, atof((char *)
+		  parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
-			NotifyError("%s: Could not set array value.", funcName);
+			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetICRealArrayElement)(theICs->currentIC,
-		  arrayIndex[0], atof(arrayValue));
+		  arrayIndex[0], atof((char *)arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1195,15 +1202,15 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
 	case UNIPAR_FILE_NAME:
 		if ((index == ICLIST_IC_DESCRIPTION) && !SetCurrentIC_UniParMgr(theICs,
 		  parValue)) {
-			NotifyError("%s: Could not find '%s' ion channel.", funcName,
+			NotifyError(wxT("%s: Could not find '%s' ion channel."), funcName,
 			  parValue);
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetICString)(theICs->currentIC, parValue);
 		break;
 	default:
-		NotifyError("%s: Universal parameter type not yet implemented (%d).",
-		  funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented "
+		  "(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	return(ok);
@@ -1218,9 +1225,9 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, char *parValue)
  */
 
 BOOLN
-SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
+SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 {
-	static const char *funcName = "SetICListParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetICListParValue_UniParMgr");
 	BOOLN	ok = FALSE;
 	UniParPtr	p = &(*parList)->pars[index];
 	IonChanListPtr	theICs = (*parList)->handlePtr.iCs;
@@ -1228,10 +1235,10 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetICListInt)(theICs, atoi(parValue));
+		ok = (* p->FuncPtr.SetICListInt)(theICs, atoi((char *) parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetICListReal)(theICs, atof(parValue));
+		ok = (* p->FuncPtr.SetICListReal)(theICs, atof((char *)parValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1242,8 +1249,8 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 		ok = (* p->FuncPtr.SetICListString)(theICs, parValue);
 		break;
 	default:
-		NotifyError("%s: Universal parameter type not yet implemented "
-		  "(%d).", funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented "
+		  "(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok && (*parList)->updateFlag)
@@ -1260,13 +1267,13 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
  */
 
 BOOLN
-SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
+SetParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 {
-	static const char *funcName = "SetParValue_UniParMgr";
+	static const WChar *funcName = wxT("SetParValue_UniParMgr");
 	BOOLN	ok = TRUE;
 
 	if ((*parList) == NULL) {
-		NotifyError("%s: universal parameter not initialised.", funcName);
+		NotifyError(wxT("%s: universal parameter not initialised."), funcName);
 		return(FALSE);
 	}
 	switch ((*parList)->mode) {
@@ -1287,8 +1294,8 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 		ok = SetICListParValue_UniParMgr(parList, index, parValue);
 		break;
 	default:
-		NotifyError("%s: Universal parameter mode not yet implemented (%d).",
-		  funcName, (*parList)->mode);
+		NotifyError(wxT("%s: Universal parameter mode not yet implemented "
+		  "(%d)."), funcName, (*parList)->mode);
 		ok = FALSE;
 	}
 	(*parList)->updateFlag = ok;
@@ -1307,9 +1314,9 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, char *parValue)
 BOOLN
 SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index, double parValue)
 {
-	char	stringValue[MAXLINE];
+	WChar	stringValue[MAXLINE];
 
-	snprintf(stringValue, MAXLINE, "%g", parValue);
+	DSAM_snprintf(stringValue, MAXLINE, wxT("%g"), parValue);
 	return(SetParValue_UniParMgr(parList, index, stringValue));
 
 }
@@ -1329,10 +1336,10 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
 {
 	switch (mode) {
 	case UNIPAR_SEARCH_ABBR:
-		if (StrNCmpNoCase_Utility_String(p->abbr, (char *) item) == 0)
+		if (StrNCmpNoCase_Utility_String(p->abbr, (WChar *) item) == 0)
 			return(0);
 		if (p->altAbbr)
-			return(StrNCmpNoCase_Utility_String(p->altAbbr, (char *) item));
+			return(StrNCmpNoCase_Utility_String(p->altAbbr, (WChar *) item));
 		break;
 	case UNIPAR_SEARCH_TYPE:
 		return(p->type - *((int *) item));
@@ -1350,23 +1357,23 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
  * It searches recursively down lists for 'UNIPAR_PARLIST' types.
  * It searches through simulation scripts, i.e. 'UNIPAR_SIMSCRIPT' types.
  * It assumes that 'parName' points to a valid string.
- * It removes any strings after a period, "." including the period.
+ * It removes any strings after a period, wxT(".") including the period.
  * It returns NULL if it fails in any way.
  * The function sets the argument 'parList' so the recursive searches return
  * the correct parList.
  */
 
 UniParPtr
-FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
+FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
   UniParSearchSpecifier mode)
 {
-	static const char *funcName = "FindUniPar_UniParMgr";
+	static const WChar *funcName = wxT("FindUniPar_UniParMgr");
 	int		i;
 	UniParPtr	p, par = NULL;
 	UniParListPtr	tempParList;
 
 	if (*parList == NULL) {
-		NotifyError("%s: Parameter list not initialised.", funcName);
+		NotifyError(wxT("%s: Parameter list not initialised."), funcName);
 		return(NULL);
 	}
 	for (i = 0; (i < (*parList)->numPars) && !par; i++) {
@@ -1451,7 +1458,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, char *parName,
 			}
 			if (!theICs->ionChannels) {
 				if (!PrepareIonChannels_IonChanList(theICs)) {
-					NotifyError("%s: Could not set the ion channels.",
+					NotifyError(wxT("%s: Could not set the ion channels."),
 					  funcName);
 					return(FALSE);
 				}
@@ -1506,7 +1513,7 @@ PrintSubParList_UniParMgr(UniParListPtr parList)
 	for (i = 0; i < parList->numPars; i++) {
 		par = &parList->pars[i];
 		if (par->enabled)
-			PrintPar_UniParMgr(par, "", "");
+			PrintPar_UniParMgr(par, wxT(""), wxT(""));
 	}
 }
 
@@ -1520,11 +1527,11 @@ PrintSubParList_UniParMgr(UniParListPtr parList)
 BOOLN
 PrintParList_UniParMgr(UniParListPtr parList)
 {
-	static char *funcName = "PrintParList_UniParMgr";
+	static WChar *funcName = wxT("PrintParList_UniParMgr");
 	int		i;
 
 	if (!parList) {
-		NotifyError("%s: Parameter list not initialised.", funcName);
+		NotifyError(wxT("%s: Parameter list not initialised."), funcName);
 		return(FALSE);
 	}
 	switch (parList->mode) {
@@ -1533,28 +1540,29 @@ PrintParList_UniParMgr(UniParListPtr parList)
 	case UNIPAR_SET_PARARRAY:
 		for (i = 0; i < parList->numPars; i++)
 			if (parList->pars[i].enabled)
-				PrintPar_UniParMgr(&parList->pars[i], "", "");
+				PrintPar_UniParMgr(&parList->pars[i], wxT(""), wxT(""));
 		break;
 	case UNIPAR_SET_CFLIST: {
 		CFListPtr	theCFs = parList->handlePtr.cFs;
-		DPrint("\n#CF List Parameters:-\n");
+		DPrint(wxT("\n#CF List Parameters:-\n"));
 		PrintSubParList_UniParMgr(theCFs->cFParList);
-		DPrint("\n");
+		DPrint(wxT("\n"));
 		PrintSubParList_UniParMgr(theCFs->bParList);
 		break; }
 	case UNIPAR_SET_ICLIST: {
 		DynaListPtr	node;
 		IonChanListPtr	theICs = parList->handlePtr.iCs;
 		IonChannelPtr	iC;
-		DPrint("\n#IC List Parameters:-\n");
+		DPrint(wxT("\n#IC List Parameters:-\n"));
 		for (node = theICs->ionChannels; node; node = node->next) {
 			iC = (IonChannelPtr) node->data;
 			PrintSubParList_UniParMgr(iC->parList);
-			DPrint("\n");
+			DPrint(wxT("\n"));
 		}
 		break; }
 	default:
-		NotifyError("%s: Mode '%d' not implemented.", funcName, parList->mode);
+		NotifyError(wxT("%s: Mode '%d' not implemented."), funcName, parList->
+		  mode);
 	}
 	return(TRUE);
 
@@ -1569,7 +1577,7 @@ PrintParList_UniParMgr(UniParListPtr parList)
 BOOLN
 ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
 {
-	static const char *funcName = "ResizeDoubleArray_UniParMgr";
+	static const WChar *funcName = wxT("ResizeDoubleArray_UniParMgr");
 	register double	*newArray, *oldArray;
 	int		i;
 	double	*savedArray = NULL;
@@ -1579,7 +1587,7 @@ ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
 	if (*array)
 		savedArray = *array;
 	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, length);
 		return(FALSE);
 	}
@@ -1602,13 +1610,13 @@ ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
  */
 
 BOOLN
-WriteParFile_UniParMgr(char *fileName, UniParListPtr parList)
+WriteParFile_UniParMgr(WChar *fileName, UniParListPtr parList)
 {
-	static const char *funcName = "WriteParFile_UniParMgr";
+	static const WChar *funcName = wxT("WriteParFile_UniParMgr");
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 
 	if (!SetParsFile_Common(fileName, OVERWRITE)) {
-		NotifyError("%s: Could not open parameter file '%s' for writing.",
+		NotifyError(wxT("%s: Could not open parameter file '%s' for writing."),
 		  funcName, fileName);
 		return(FALSE);
 	}

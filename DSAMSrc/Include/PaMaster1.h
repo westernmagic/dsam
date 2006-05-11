@@ -52,8 +52,8 @@ typedef struct {
 
 	BOOLN		updateProcessVariablesFlag;
 	BOOLN		diagnosticsModeFlag, channelModeFlag, numWorkersFlag;
-	char		*simScriptParFile;
-	char		*cFListParFile;
+	WChar		*simScriptParFile;
+	WChar		*cFListParFile;
 	int			diagnosticsMode;
 	int			channelMode;
 	int			numWorkers;
@@ -115,12 +115,12 @@ BOOLN	InitProcessVariables_MPI_Master1(EarObjectPtr data);
 BOOLN	PrintPars_MPI_Master1(void);
 
 BOOLN	QueueCommand_MPI_Master1(void *parameter, int parCount,
-		  TypeSpecifier type, char *label, CommandSpecifier command,
+		  TypeSpecifier type, WChar *label, CommandSpecifier command,
 		  ScopeSpecifier scope);
 
 BOOLN	ReadCFListParFile_MPI_Master1(void);
 
-BOOLN	ReadPars_MPI_Master1(char *fileName);
+BOOLN	ReadPars_MPI_Master1(WChar *fileName);
 
 BOOLN	DriveWorkers_MPI_Master1(EarObjectPtr data);
 
@@ -137,11 +137,11 @@ BOOLN	SendQueuedCommands_MPI_Master1(void);
   
 BOOLN	SendSetCommandToWorker_MPI_Master1(WorkDetailPtr work, SetComPtr com);
 
-BOOLN	SetCFListParFile_MPI_Master1(char *theCFListParFile);
+BOOLN	SetCFListParFile_MPI_Master1(WChar *theCFListParFile);
 
-BOOLN	SetChannelMode_MPI_Master1(char *theChannelMode);
+BOOLN	SetChannelMode_MPI_Master1(WChar *theChannelMode);
 
-BOOLN	SetDiagnosticsMode_MPI_Master1(char *theDiagnosticsMode);
+BOOLN	SetDiagnosticsMode_MPI_Master1(WChar *theDiagnosticsMode);
 
 BOOLN	InitModule_MPI_Master1(ModulePtr theModule);
 
@@ -149,10 +149,10 @@ BOOLN	SetNumWorkers_MPI_Master1(int theNumWorkers);
 
 BOOLN	SetParsPointer_MPI_Master1(ModulePtr theModule);
 
-BOOLN	SetSimScriptParFile_MPI_Master1(char *theSimScriptParFile);
+BOOLN	SetSimScriptParFile_MPI_Master1(WChar *theSimScriptParFile);
 
-BOOLN	SetPars_MPI_Master1(char *simScriptParFile, char *cFListParFile, 
-		  char *diagnosticsMode, char *channelMode, int numWorkers);
+BOOLN	SetPars_MPI_Master1(WChar *simScriptParFile, WChar *cFListParFile, 
+		  WChar *diagnosticsMode, WChar *channelMode, int numWorkers);
 
 BOOLN	SetWorkDivision_MPI_Master1(int masterRank);
 

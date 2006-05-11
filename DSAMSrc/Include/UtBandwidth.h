@@ -115,7 +115,7 @@ double	NonLinearFromF_Bandwidth(double f);
 
 NameSpecifier *	ModeList_Bandwidth(int index);
 
-BOOLN	SetMode_Bandwidth(BandwidthModePtr modePtr, char *modeName);
+BOOLN	SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName);
 
 __END_DECLS
 

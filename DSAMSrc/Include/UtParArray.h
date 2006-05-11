@@ -39,7 +39,7 @@ typedef enum {
 typedef struct {
 
 	BOOLN	updateFlag;
-	char	name[MAXLINE];
+	WChar	name[MAXLINE];
 	int		mode;
 	int		numParams;
 	double	*params;
@@ -48,8 +48,8 @@ typedef struct {
 	int (* GetNumPars)(int);
 
 	UniParListPtr	parList;
-	char	desc[PARARRAY_NUM_PARS][MAXLINE];
-	char	abbr[PARARRAY_NUM_PARS][MAXLINE];
+	WChar	desc[PARARRAY_NUM_PARS][MAXLINE];
+	WChar	abbr[PARARRAY_NUM_PARS][MAXLINE];
 
 } ParArray, *ParArrayPtr;
 
@@ -71,11 +71,11 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const char *callingFunction);
+BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction);
 
 void	Free_ParArray(ParArrayPtr *parArray);
 
-ParArrayPtr	Init_ParArray(char *name, NameSpecifier *modeList,
+ParArrayPtr	Init_ParArray(WChar *name, NameSpecifier *modeList,
 			  int (* GetNumPars)(int));
 
 void	PrintPars_ParArray(ParArrayPtr parArray);
@@ -85,7 +85,7 @@ BOOLN	ReadPars_ParArray(FILE *fp, ParArrayPtr parArray);
 BOOLN	SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex,
 		  double parValue);
 
-BOOLN	SetMode_ParArray(ParArrayPtr parArray, char *modeName);
+BOOLN	SetMode_ParArray(ParArrayPtr parArray, WChar *modeName);
 
 BOOLN	SetUniParList_ParArray(ParArrayPtr parArray);
 

@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "MoIHC86Meddis.h"
 
 /******************************************************************************/
@@ -51,18 +52,19 @@ HairCellPtr	hairCellPtr = NULL;
 BOOLN
 Init_IHC_Meddis86(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_IHC_Meddis86";
+	static const WChar *funcName = wxT("Init_IHC_Meddis86");
 
 	if (parSpec == GLOBAL) {
 		if (hairCellPtr != NULL)
 			Free_IHC_Meddis86();
 		if ((hairCellPtr = (HairCellPtr) malloc(sizeof(HairCell))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (hairCellPtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -89,7 +91,7 @@ Init_IHC_Meddis86(ParameterSpecifier parSpec)
 	hairCellPtr->firingRate_h = 50000.0;
 
 	if (!SetUniParList_IHC_Meddis86()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHC_Meddis86();
 		return(FALSE);
 	}
@@ -133,57 +135,57 @@ Free_IHC_Meddis86(void)
 BOOLN
 SetUniParList_IHC_Meddis86(void)
 {
-	static const char *funcName = "SetUniParList_IHC_Meddis86";
+	static const WChar *funcName = wxT("SetUniParList_IHC_Meddis86");
 	UniParPtr	pars;
 
 	if ((hairCellPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  MEDDIS86_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = hairCellPtr->parList->pars;
-	SetPar_UniParMgr(&pars[MEDDIS86_PERM_CONST_A], "PERM_CONST_A",
-	  "Permeability constant A (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_PERM_CONST_A], wxT("PERM_CONST_A"),
+	  wxT("Permeability constant A (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->permConst_A, NULL,
 	  (void * (*)) SetPermConstA_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_PERM_CONST_B], "PERM_CONST_B",
-	  "Permeability constant B (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_PERM_CONST_B], wxT("PERM_CONST_B"),
+	  wxT("Permeability constant B (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->permConst_B, NULL,
 	  (void * (*)) SetPermConstB_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_RELEASE_RATE_G], "RELEASE_G",
-	  "Release rate (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_RELEASE_RATE_G], wxT("RELEASE_G"),
+	  wxT("Release rate (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->releaseRate_g, NULL,
 	  (void * (*)) SetReleaseRate_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_REPLENISH_RATE_Y], "REPLENISH_Y",
-	  "Replenishment rate (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_REPLENISH_RATE_Y], wxT("REPLENISH_Y"),
+	  wxT("Replenishment rate (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->replenishRate_y, NULL,
 	  (void * (*)) SetReplenishRate_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_LOSS_RATE_L], "LOSS_L",
-	  "Loss rate (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_LOSS_RATE_L], wxT("LOSS_L"),
+	  wxT("Loss rate (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->lossRate_l, NULL,
 	  (void * (*)) SetLossRate_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_REPROCESS_RATE_X], "REPROCESS_X",
-	  "Reprocessing rate (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_REPROCESS_RATE_X], wxT("REPROCESS_X"),
+	  wxT("Reprocessing rate (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->reprocessRate_x, NULL,
 	  (void * (*)) SetReprocessRate_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_RECOVERY_RATE_R], "RECOVERY_R",
-	  "Recovery rate (units/s).",
+	SetPar_UniParMgr(&pars[MEDDIS86_RECOVERY_RATE_R], wxT("RECOVERY_R"),
+	  wxT("Recovery rate (units/s)."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->recoveryRate_r, NULL,
 	  (void * (*)) SetRecoveryRate_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_MAX_FREE_POOL_M], "MAX_FREE_POOL_M",
-	  "Max. no. of transmitter packets in free pool.",
+	SetPar_UniParMgr(&pars[MEDDIS86_MAX_FREE_POOL_M], wxT("MAX_FREE_POOL_M"),
+	  wxT("Max. no. of transmitter packets in free pool."),
 	  UNIPAR_REAL,
 	  &hairCellPtr->maxFreePool_M, NULL,
 	  (void * (*)) SetMaxFreePool_IHC_Meddis86);
-	SetPar_UniParMgr(&pars[MEDDIS86_FIRING_RATE_H], "FIRING_RATE_H",
-	  "Firing rate (spikes/s)",
+	SetPar_UniParMgr(&pars[MEDDIS86_FIRING_RATE_H], wxT("FIRING_RATE_H"),
+	  wxT("Firing rate (spikes/s)"),
 	  UNIPAR_REAL,
 	  &hairCellPtr->firingRate_h, NULL,
 	  (void * (*)) SetFiringRate_IHC_Meddis86);
@@ -201,15 +203,15 @@ SetUniParList_IHC_Meddis86(void)
 UniParListPtr
 GetUniParListPtr_IHC_Meddis86(void)
 {
-	static const char *funcName = "GetUniParListPtr_IHC_Meddis86";
+	static const WChar *funcName = wxT("GetUniParListPtr_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (hairCellPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hairCellPtr->parList);
@@ -226,10 +228,10 @@ GetUniParListPtr_IHC_Meddis86(void)
 BOOLN
 SetPermConstA_IHC_Meddis86(double thePermConstA)
 {
-	static const char	*funcName = "SetPermConstA_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetPermConstA_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->permConstAFlag = TRUE;
@@ -249,10 +251,10 @@ SetPermConstA_IHC_Meddis86(double thePermConstA)
 BOOLN
 SetPermConstB_IHC_Meddis86(double thePermConstB)
 {
-	static const char	*funcName = "SetPermConstB_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetPermConstB_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->permConstBFlag = TRUE;
@@ -272,10 +274,10 @@ SetPermConstB_IHC_Meddis86(double thePermConstB)
 BOOLN
 SetReleaseRate_IHC_Meddis86(double theReleaseRate)
 {
-	static const char	*funcName = "SetReleaseRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetReleaseRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->releaseRateFlag = TRUE;
@@ -295,10 +297,10 @@ SetReleaseRate_IHC_Meddis86(double theReleaseRate)
 BOOLN
 SetReplenishRate_IHC_Meddis86(double theReplenishRate)
 {
-	static const char	*funcName = "SetReplenishRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetReplenishRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->replenishRateFlag = TRUE;
@@ -318,10 +320,10 @@ SetReplenishRate_IHC_Meddis86(double theReplenishRate)
 BOOLN
 SetLossRate_IHC_Meddis86(double theLossRate)
 {
-	static const char	*funcName = "SetLossRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetLossRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->lossRateFlag = TRUE;
@@ -341,10 +343,10 @@ SetLossRate_IHC_Meddis86(double theLossRate)
 BOOLN
 SetReprocessRate_IHC_Meddis86(double theReprocessRate)
 {
-	static const char	*funcName = "SetReprocessRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetReprocessRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->reprocessRateFlag = TRUE;
@@ -364,10 +366,10 @@ SetReprocessRate_IHC_Meddis86(double theReprocessRate)
 BOOLN
 SetRecoveryRate_IHC_Meddis86(double theRecoveryRate)
 {
-	static const char	*funcName = "SetRecoveryRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetRecoveryRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->recoveryRateFlag = TRUE;
@@ -387,10 +389,10 @@ SetRecoveryRate_IHC_Meddis86(double theRecoveryRate)
 BOOLN
 SetMaxFreePool_IHC_Meddis86(double theMaxFreePool)
 {
-	static const char	*funcName = "SetMaxFreePool_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetMaxFreePool_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->maxFreePoolFlag = TRUE;
@@ -410,10 +412,10 @@ SetMaxFreePool_IHC_Meddis86(double theMaxFreePool)
 BOOLN
 SetFiringRate_IHC_Meddis86(double theFiringRate)
 {
-	static const char	*funcName = "SetFiringRate_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetFiringRate_IHC_Meddis86");
 
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr->firingRateFlag = TRUE;
@@ -470,56 +472,56 @@ SetPars_IHC_Meddis86(double A, double B, double g, double y, double l, double x,
 BOOLN
 CheckPars_IHC_Meddis86(void)
 {
-	static const char *funcName = "CheckPars_IHC_Meddis86";
+	static const WChar *funcName = wxT("CheckPars_IHC_Meddis86");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (hairCellPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!hairCellPtr->permConstAFlag) {
-		NotifyError("%s: Permeability constant, A, not correctly set.",
+		NotifyError(wxT("%s: Permeability constant, A, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->permConstBFlag) {
-		NotifyError("%s: Permeability constant, B, not correctly set.",
+		NotifyError(wxT("%s: Permeability constant, B, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->releaseRateFlag) {
-		NotifyError("%s: Release rate constant, g, not correctly set.",
+		NotifyError(wxT("%s: Release rate constant, g, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->replenishRateFlag) {
-		NotifyError("%s: Replenish rate constant, y, not correctly set.",
+		NotifyError(wxT("%s: Replenish rate constant, y, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->lossRateFlag) {
-		NotifyError("%s: Loss rate constant, l, not correctly set.",
+		NotifyError(wxT("%s: Loss rate constant, l, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->reprocessRateFlag) {
-		NotifyError("%s: Reprocessing rate constant, x, not correctly set.",
-		  funcName);
+		NotifyError(wxT("%s: Reprocessing rate constant, x, not correctly "
+		  "set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->recoveryRateFlag) {
-		NotifyError("%s: Recovery rate constant, r, not correctly set.",
+		NotifyError(wxT("%s: Recovery rate constant, r, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->maxFreePoolFlag) {
-		NotifyError("%s: Max. free transmitter in pool constant, M, not "\
-		  "correctly set.", funcName);
+		NotifyError(wxT("%s: Max. free transmitter in pool constant, M, not "
+		  "correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->firingRateFlag) {
-		NotifyError("%s: Firing rate constant, h, not correctly set.",
+		NotifyError(wxT("%s: Firing rate constant, h, not correctly set."),
 		  funcName);
 		ok = FALSE;
 	}
@@ -536,24 +538,24 @@ CheckPars_IHC_Meddis86(void)
 BOOLN
 PrintPars_IHC_Meddis86(void)
 {
-	static const char *funcName = "PrintPars_IHC_Meddis86";
+	static const WChar *funcName = wxT("PrintPars_IHC_Meddis86");
 
 	if (!CheckPars_IHC_Meddis86()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Meddis 86 IHC Synapse Module Parameters:-\n");
-	DPrint("\tPermeability constant, A = %g,\tand B = %g\n",
+	DPrint(wxT("Meddis 86 IHC Synapse Module Parameters:-\n"));
+	DPrint(wxT("\tPermeability constant, A = %g,\tand B = %g\n"),
 	  hairCellPtr->permConst_A, hairCellPtr->permConst_B);
-	DPrint("\tRelease rate, g = %g /s,\tReplenishment "\
-	  "rate, y = %g /s\n", hairCellPtr->releaseRate_g,
-	    hairCellPtr->replenishRate_y);
-	DPrint("\tLoss rate, l = %g /s,\tReprocessing rate, "\
-	  "x = %g /s\n", hairCellPtr->lossRate_l, hairCellPtr->reprocessRate_x);
-	DPrint("\tRecovery rate, r = %g /s,\t Firing rate, h = "\
-	  "%g spikes/s\n", hairCellPtr->recoveryRate_r, hairCellPtr->firingRate_h);
-	DPrint("\tMaximum transmitter packets in free pool, M "\
-	  "= %g.\n", hairCellPtr->maxFreePool_M);
+	DPrint(wxT("\tRelease rate, g = %g /s,\tReplenishment rate, y = %g /s\n"),
+	  hairCellPtr->releaseRate_g, hairCellPtr->replenishRate_y);
+	DPrint(wxT("\tLoss rate, l = %g /s,\tReprocessing rate, x = %g /s\n"),
+	  hairCellPtr->lossRate_l, hairCellPtr->reprocessRate_x);
+	DPrint(wxT("\tRecovery rate, r = %g /s,\t Firing rate, h = %g spikes/s\n"),
+	  hairCellPtr->recoveryRate_r, hairCellPtr->firingRate_h);
+	DPrint(wxT("\tMaximum transmitter packets in free pool, M = %g.\n"),
+	  hairCellPtr->maxFreePool_M);
 	return(TRUE);
 
 }
@@ -566,53 +568,54 @@ PrintPars_IHC_Meddis86(void)
  */
  
 BOOLN
-ReadPars_IHC_Meddis86(char *fileName)
+ReadPars_IHC_Meddis86(WChar *fileName)
 {
-	static const char *funcName = "ReadPars_IHC_Meddis86";
+	static const WChar *funcName = wxT("ReadPars_IHC_Meddis86");
 	BOOLN	ok;
-	char	*filePath;
+	WChar	*filePath;
 	double	permConst_A, permConst_B, releaseRate_g, replenishRate_y;
 	double	lossRate_l, reprocessRate_x, recoveryRate_r, maxFreePool_M;
 	double	firingRate_h;
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(filePath, "r")) == NULL) {
-        NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
     }
-    DPrint("%s: Reading from '%s':\n", funcName, filePath);
+    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
     Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%lf", &permConst_A))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &permConst_A))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &permConst_B))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &permConst_B))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &releaseRate_g))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &releaseRate_g))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &replenishRate_y))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &replenishRate_y))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lossRate_l))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &lossRate_l))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &reprocessRate_x))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &reprocessRate_x))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &recoveryRate_r))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &recoveryRate_r))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxFreePool_M))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxFreePool_M))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &firingRate_h))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &firingRate_h))
 		ok = FALSE;
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Meddis86(permConst_A, permConst_B, releaseRate_g,
 	  replenishRate_y, lossRate_l, reprocessRate_x, recoveryRate_r,
 	  maxFreePool_M, firingRate_h)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -629,10 +632,10 @@ ReadPars_IHC_Meddis86(char *fileName)
 BOOLN
 SetParsPointer_IHC_Meddis86(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_IHC_Meddis86";
+	static const WChar	*funcName = wxT("SetParsPointer_IHC_Meddis86");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	hairCellPtr = (HairCellPtr) theModule->parsPtr;
@@ -649,14 +652,15 @@ SetParsPointer_IHC_Meddis86(ModulePtr theModule)
 BOOLN
 InitModule_IHC_Meddis86(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_IHC_Meddis86";
+	static const WChar	*funcName = wxT("InitModule_IHC_Meddis86");
 
 	if (!SetParsPointer_IHC_Meddis86(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_IHC_Meddis86(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = hairCellPtr;
@@ -683,11 +687,11 @@ InitModule_IHC_Meddis86(ModulePtr theModule)
 BOOLN
 CheckData_IHC_Meddis86(EarObjectPtr data)
 {
-	static const char *funcName = "CheckData_IHC_Meddis86";
+	static const WChar *funcName = wxT("CheckData_IHC_Meddis86");
 	double	dt;
 	
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -696,7 +700,7 @@ CheckData_IHC_Meddis86(EarObjectPtr data)
 		return(FALSE);
 	dt = data->inSignal[0]->dt;
 	if (dt > MEDDIS86_MAX_DT) {
-		NotifyError("%s: Maximum sampling interval exceeded.", funcName);
+		NotifyError(wxT("%s: Maximum sampling interval exceeded."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -715,7 +719,7 @@ CheckData_IHC_Meddis86(EarObjectPtr data)
 BOOLN
 InitProcessVariables_IHC_Meddis86(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_IHC_Meddis86";
+	static const WChar *funcName = wxT("InitProcessVariables_IHC_Meddis86");
 	int		i;
 	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
 	HairCellPtr	hC;
@@ -728,7 +732,7 @@ InitProcessVariables_IHC_Meddis86(EarObjectPtr data)
 			FreeProcessVariables_IHC_Meddis86();
 			if ((hC->hCChannels = (HairCellVarsPtr) calloc(
 			  data->outSignal->numChannels, sizeof (HairCellVars))) == NULL) {
-				NotifyError("%s: Out of memory.", funcName);
+				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
 			hairCellPtr->updateProcessVariablesFlag = FALSE;
@@ -782,7 +786,7 @@ FreeProcessVariables_IHC_Meddis86(void)
 BOOLN
 RunModel_IHC_Meddis86(EarObjectPtr data)
 {
-	static const char *funcName = "RunModel_IHC_Meddis86";
+	static const WChar *funcName = wxT("RunModel_IHC_Meddis86");
 	register	double	replenish, reprocessed, ejected, reUptake;
 	register	double	reUptakeAndLost;
 	int		i;
@@ -795,18 +799,19 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 		if (!CheckPars_IHC_Meddis86())		
 			return(FALSE);
 		if (!CheckData_IHC_Meddis86(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Meddis 86 IHC Synapse");
+		SetProcessName_EarObject(data, wxT("Meddis 86 IHC Synapse"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise output signal.", funcName);
+			NotifyError(wxT("%s: Could not initialise output signal."),
+			  funcName);
 			return(FALSE);
 		}
 
 		if (!InitProcessVariables_IHC_Meddis86(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

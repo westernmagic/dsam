@@ -83,7 +83,7 @@ BOOLN	Init_PulseTrain(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PulseTrain(void);
 
-BOOLN	ReadPars_PulseTrain(char *fileName);
+BOOLN	ReadPars_PulseTrain(WChar *fileName);
 
 BOOLN	SetAmplitude_PulseTrain(double theAmplitude);
 

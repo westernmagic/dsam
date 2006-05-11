@@ -94,7 +94,7 @@ BOOLN	PrintPars_Utility_Delay(void);
 
 BOOLN	Process_Utility_Delay(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Delay(char *fileName);
+BOOLN	ReadPars_Utility_Delay(WChar *fileName);
 
 void	SetEnabledPars_Utility_Delay(void);
 
@@ -102,13 +102,13 @@ BOOLN	SetFinalDelay_Utility_Delay(double theFinalDelay);
 
 BOOLN	SetInitialDelay_Utility_Delay(double theInitialDelay);
 
-BOOLN	SetMode_Utility_Delay(char *theMode);
+BOOLN	SetMode_Utility_Delay(WChar *theMode);
 
 BOOLN	InitModule_Utility_Delay(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Delay(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Delay(char *mode, double initialDelay,
+BOOLN	SetPars_Utility_Delay(WChar *mode, double initialDelay,
 		  double finalDelay);
 
 BOOLN	SetUniParList_Utility_Delay(void);

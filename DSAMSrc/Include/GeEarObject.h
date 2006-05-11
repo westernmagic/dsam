@@ -81,7 +81,7 @@ typedef struct _EarObject {
 	BOOLN		updateProcessFlag;	/* Set when dt is changed for a signal. */
 	BOOLN			firstSectionFlag;/* Set for first signal section. */
 	EarObjHandle	handle;			/* Reference handle for manager. */
-	char			*processName;	/* The origins of the output stimulus */
+	WChar			*processName;	/* The origins of the output stimulus */
 	int				numInSignals;	/* Count of input signals. */
 	int				numThreads;		/* No. of thread process using EarObject */
 	int				threadIndex;	/* Identifies the thread process. */
@@ -134,7 +134,7 @@ __BEGIN_DECLS
 
 /*************************** External Functions *******************************/
 
-ModulePtr	Init_ModuleMgr(char *name);
+ModulePtr	Init_ModuleMgr(WChar *name);
 
 void		Free_ModuleMgr(ModulePtr *theModule);
 
@@ -144,7 +144,8 @@ BOOLN	AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theCustomer);
 			
 BOOLN	AddInSignal_EarObject(EarObjectPtr data);
 
-BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const char *callingFuncName);
+BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const WChar 
+		  *callingFuncName);
 
 BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
 		  EarObjectPtr customer);
@@ -172,7 +173,7 @@ void	FreeOutSignal_EarObject(EarObjectPtr data);
 
 void	Free_EarObject(EarObjectPtr *theObject);	
 			
-EarObjectPtr	Init_EarObject(char *moduleName);		
+EarObjectPtr	Init_EarObject(WChar *moduleName);		
 
 void	InitOutDataFromInSignal_EarObject(EarObjectPtr data);
 
@@ -196,7 +197,7 @@ double	GetResult_EarObject(EarObjectPtr data, uShort channel);
 
 double	GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample);
 
-void	PrintProcessName_EarObject(char *message, EarObjectPtr data);	
+void	PrintProcessName_EarObject(WChar *message, EarObjectPtr data);	
 
 void	RemoveEarObjRefs_EarObject(EarObjectPtr theObject);	
 			
@@ -214,10 +215,10 @@ void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
 void	SetProcessForReset_EarObject(EarObjectPtr theObject);
 
-void	SetProcessName_EarObject(EarObjectPtr theObject, char *format, ...);
+void	SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...);
 			
 BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
-		  const char *callingFunc);
+		  const WChar *callingFunc);
 
 void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
 

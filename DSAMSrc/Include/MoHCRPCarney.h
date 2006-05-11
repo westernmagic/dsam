@@ -111,7 +111,7 @@ BOOLN	InitProcessVariables_IHCRP_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Carney(void);
 
-BOOLN	ReadPars_IHCRP_Carney(char *fileName);
+BOOLN	ReadPars_IHCRP_Carney(WChar *fileName);
 
 BOOLN	RunModel_IHCRP_Carney(EarObjectPtr data);
 

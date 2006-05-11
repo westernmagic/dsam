@@ -39,6 +39,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnAutoCorr.h"
 
 /******************************************************************************/
@@ -87,10 +88,10 @@ InitNormalisationModeList_Analysis_ACF(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "NONE",		ANALYSIS_NORM_MODE_NONE },
-			{ "STANDARD",	ANALYSIS_NORM_MODE_STANDARD },
-			{ "UNITY",		ANALYSIS_NORM_MODE_UNITY },
-			{ "",			ANALYSIS_NORM_MODE_NULL }
+			{ wxT("NONE"),		ANALYSIS_NORM_MODE_NONE },
+			{ wxT("STANDARD"),	ANALYSIS_NORM_MODE_STANDARD },
+			{ wxT("UNITY"),		ANALYSIS_NORM_MODE_UNITY },
+			{ wxT(""),			ANALYSIS_NORM_MODE_NULL }
 		};
 	autoCorrPtr->normalisationModeList = modeList;
 	return(TRUE);
@@ -108,9 +109,9 @@ InitTimeConstModeList_Analysis_ACF(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "LICKLIDER",	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER },
-			{ "WIEGREBE",	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE },
-			{ "",			ANALYSIS_ACF_TIMECONSTMODE_NULL },
+			{ wxT("LICKLIDER"),	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER },
+			{ wxT("WIEGREBE"),	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE },
+			{ wxT(""),			ANALYSIS_ACF_TIMECONSTMODE_NULL },
 		};
 	autoCorrPtr->timeConstModeList = modeList;
 	return(TRUE);
@@ -132,18 +133,19 @@ InitTimeConstModeList_Analysis_ACF(void)
 BOOLN
 Init_Analysis_ACF(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Analysis_ACF";
+	static const WChar	*funcName = wxT("Init_Analysis_ACF");
 
 	if (parSpec == GLOBAL) {
 		if (autoCorrPtr != NULL)
 			Free_Analysis_ACF();
 		if ((autoCorrPtr = (AutoCorrPtr) malloc(sizeof(AutoCorr))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (autoCorrPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -165,7 +167,7 @@ Init_Analysis_ACF(ParameterSpecifier parSpec)
 	InitNormalisationModeList_Analysis_ACF();
 	InitTimeConstModeList_Analysis_ACF();
 	if (!SetUniParList_Analysis_ACF()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_ACF();
 		return(FALSE);
 	}
@@ -185,42 +187,42 @@ Init_Analysis_ACF(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Analysis_ACF(void)
 {
-	static const char *funcName = "SetUniParList_Analysis_ACF";
+	static const WChar *funcName = wxT("SetUniParList_Analysis_ACF");
 	UniParPtr	pars;
 
 	if ((autoCorrPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  ANALYSIS_ACF_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = autoCorrPtr->parList->pars;
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_NORMALISATIONMODE], "MODE",
-	  "Normalisation mode ('none', 'standard' or 'unity').",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_NORMALISATIONMODE], wxT("MODE"),
+	  wxT("Normalisation mode ('none', 'standard' or 'unity')."),
 	  UNIPAR_NAME_SPEC,
 	  &autoCorrPtr->normalisationMode, autoCorrPtr->normalisationModeList,
 	  (void * (*)) SetNormalisationMode_Analysis_ACF);
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTMODE], "T_CONST_MODE",
-	  "Time constant mode ('Licklider' or 'Wiegrebe'.)",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTMODE], wxT("T_CONST_MODE"),
+	  wxT("Time constant mode ('Licklider' or 'Wiegrebe'.)"),
 	  UNIPAR_NAME_SPEC,
 	  &autoCorrPtr->timeConstMode, autoCorrPtr->timeConstModeList,
 	  (void * (*)) SetTimeConstMode_Analysis_ACF);
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMEOFFSET], "OFFSET",
-	  "Time offset, t0 (if -ve the end of the signal is assumed) (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMEOFFSET], wxT("OFFSET"),
+	  wxT("Time offset, t0 (if -ve the end of the signal is assumed) (s)."),
 	  UNIPAR_REAL,
 	  &autoCorrPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_ACF);
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTANT], "TIME_CONST",
-	  "Time constant (or minimum time constant in 'Wiegrebe' mode) (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTANT], wxT("TIME_CONST"),
+	  wxT("Time constant (or minimum time constant in 'Wiegrebe' mode) (s)."),
 	  UNIPAR_REAL,
 	  &autoCorrPtr->timeConstant, NULL,
 	  (void * (*)) SetTimeConstant_Analysis_ACF);
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTSCALE], "T_CONST_SCALE",
-	  "Time constant scale (only used in 'Wiegrebe' mode).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTSCALE], wxT("T_CONST_SCALE"),
+	  wxT("Time constant scale (only used in 'Wiegrebe' mode)."),
 	  UNIPAR_REAL,
 	  &autoCorrPtr->timeConstScale, NULL,
 	  (void * (*)) SetTimeConstScale_Analysis_ACF);
-	SetPar_UniParMgr(&pars[ANALYSIS_ACF_MAXLAG], "MAX_LAG",
-	  "Maximum autocorrelation lag (s).",
+	SetPar_UniParMgr(&pars[ANALYSIS_ACF_MAXLAG], wxT("MAX_LAG"),
+	  wxT("Maximum autocorrelation lag (s)."),
 	  UNIPAR_REAL,
 	  &autoCorrPtr->maxLag, NULL,
 	  (void * (*)) SetMaxLag_Analysis_ACF);
@@ -238,15 +240,15 @@ SetUniParList_Analysis_ACF(void)
 UniParListPtr
 GetUniParListPtr_Analysis_ACF(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Analysis_ACF";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Analysis_ACF");
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (autoCorrPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(autoCorrPtr->parList);
@@ -261,10 +263,10 @@ GetUniParListPtr_Analysis_ACF(void)
  */
 
 BOOLN
-SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
+SetPars_Analysis_ACF(WChar * normalisationMode, double timeOffset,
   double timeConstant, double maxLag)
 {
-	static const char	*funcName = "SetPars_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetPars_Analysis_ACF");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -277,7 +279,7 @@ SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
 	if (!SetMaxLag_Analysis_ACF(maxLag))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -291,18 +293,19 @@ SetPars_Analysis_ACF(char * normalisationMode, double timeOffset,
  */
 
 BOOLN
-SetNormalisationMode_Analysis_ACF(char * theNormalisationMode)
+SetNormalisationMode_Analysis_ACF(WChar * theNormalisationMode)
 {
-	static const char	*funcName = "SetNormalisationMode_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetNormalisationMode_Analysis_ACF");
 	int		specifier;
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theNormalisationMode,
 		autoCorrPtr->normalisationModeList)) == ANALYSIS_NORM_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theNormalisationMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName,
+		  theNormalisationMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -321,19 +324,19 @@ SetNormalisationMode_Analysis_ACF(char * theNormalisationMode)
  */
 
 BOOLN
-SetTimeConstMode_Analysis_ACF(char * theTimeConstMode)
+SetTimeConstMode_Analysis_ACF(WChar * theTimeConstMode)
 {
-	static const char	*funcName = "SetTimeConstMode_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetTimeConstMode_Analysis_ACF");
 	int		specifier;
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theTimeConstMode,
 		autoCorrPtr->timeConstModeList)) ==
 		  ANALYSIS_ACF_TIMECONSTMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theTimeConstMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theTimeConstMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -355,10 +358,10 @@ SetTimeConstMode_Analysis_ACF(char * theTimeConstMode)
 BOOLN
 SetTimeOffset_Analysis_ACF(double theTimeOffset)
 {
-	static const char	*funcName = "SetTimeOffset_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_ACF");
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	autoCorrPtr->timeOffsetFlag = TRUE;
@@ -378,14 +381,14 @@ SetTimeOffset_Analysis_ACF(double theTimeOffset)
 BOOLN
 SetTimeConstant_Analysis_ACF(double theTimeConstant)
 {
-	static const char	*funcName = "SetTimeConstant_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetTimeConstant_Analysis_ACF");
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeConstant < 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g s)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g s)"), funcName,
 		  theTimeConstant);
 		return(FALSE);
 	}
@@ -407,15 +410,15 @@ SetTimeConstant_Analysis_ACF(double theTimeConstant)
 BOOLN
 SetTimeConstScale_Analysis_ACF(double theTimeConstScale)
 {
-	static const char	*funcName = "SetTimeConstScale_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetTimeConstScale_Analysis_ACF");
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeConstScale < 0.0) {
-		NotifyError("%s: The time constant scale must be greater than zero "
-		  "(%g).", funcName, theTimeConstScale);
+		NotifyError(wxT("%s: The time constant scale must be greater than zero "
+		  "(%g)."), funcName, theTimeConstScale);
 		return(FALSE);
 	}
 	autoCorrPtr->timeConstScaleFlag = TRUE;
@@ -436,14 +439,14 @@ SetTimeConstScale_Analysis_ACF(double theTimeConstScale)
 BOOLN
 SetMaxLag_Analysis_ACF(double theMaxLag)
 {
-	static const char	*funcName = "SetMaxLag_Analysis_ACF";
+	static const WChar	*funcName = wxT("SetMaxLag_Analysis_ACF");
 
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theMaxLag < 0.0) {
-		NotifyError("%s: Value must be greater than zero (%g s)", funcName,
+		NotifyError(wxT("%s: Value must be greater than zero (%g s)"), funcName,
 		  theMaxLag);
 		return(FALSE);
 	}
@@ -466,36 +469,36 @@ SetMaxLag_Analysis_ACF(double theMaxLag)
 BOOLN
 CheckPars_Analysis_ACF(void)
 {
-	static const char	*funcName = "CheckPars_Analysis_ACF";
+	static const WChar	*funcName = wxT("CheckPars_Analysis_ACF");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!autoCorrPtr->normalisationModeFlag) {
-		NotifyError("%s: normalisationMode variable not set.", funcName);
+		NotifyError(wxT("%s: normalisationMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->timeConstModeFlag) {
-		NotifyError("%s: timeConstMode variable not set.", funcName);
+		NotifyError(wxT("%s: timeConstMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->timeOffsetFlag) {
-		NotifyError("%s: timeOffset variable not set.", funcName);
+		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->timeConstantFlag) {
-		NotifyError("%s: timeConstant variable not set.", funcName);
+		NotifyError(wxT("%s: timeConstant variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->timeConstScaleFlag) {
-		NotifyError("%s: timeConstScale variable not set.", funcName);
+		NotifyError(wxT("%s: timeConstScale variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!autoCorrPtr->maxLagFlag) {
-		NotifyError("%s: maxLag variable not set.", funcName);
+		NotifyError(wxT("%s: maxLag variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -512,30 +515,32 @@ CheckPars_Analysis_ACF(void)
 BOOLN
 PrintPars_Analysis_ACF(void)
 {
-	static const char	*funcName = "PrintPars_Analysis_ACF";
+	static const WChar	*funcName = wxT("PrintPars_Analysis_ACF");
 
 	if (!CheckPars_Analysis_ACF()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Auto-correlation analysis module parameters:-\n");
-	DPrint("\tNormalisation mode = %s,",
+	DPrint(wxT("Auto-correlation analysis module parameters:-\n"));
+	DPrint(wxT("\tNormalisation mode = %s,"),
 	  autoCorrPtr->normalisationModeList[autoCorrPtr->normalisationMode].name);
-	DPrint("\tTime constant mode = %s,\n", autoCorrPtr->timeConstModeList[
+	DPrint(wxT("\tTime constant mode = %s,\n"), autoCorrPtr->timeConstModeList[
 	  autoCorrPtr->timeConstMode].name);
-	DPrint("\tTime offset = ");
+	DPrint(wxT("\tTime offset = "));
 	if (autoCorrPtr->timeOffset < 0.0)
-		DPrint("end of signal,\n");
+		DPrint(wxT("end of signal,\n"));
 	else
-		DPrint("%g ms,\n", MSEC(autoCorrPtr->timeOffset));
+		DPrint(wxT("%g ms,\n"), MSEC(autoCorrPtr->timeOffset));
 	if (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
-		DPrint("\tMinimum time constant = %g ms,", MSEC(autoCorrPtr->
+		DPrint(wxT("\tMinimum time constant = %g ms,"), MSEC(autoCorrPtr->
 		  timeConstant));
-		DPrint("\tTime constant scale = %g (units),\n", autoCorrPtr->
+		DPrint(wxT("\tTime constant scale = %g (units),\n"), autoCorrPtr->
 		  timeConstScale);
 	} else
-		DPrint("\tTime constant = %g ms,\n", MSEC(autoCorrPtr->timeConstant));
-	DPrint("\tMaximum lag = %g ms.\n", MSEC(autoCorrPtr->maxLag));
+		DPrint(wxT("\tTime constant = %g ms,\n"), MSEC(autoCorrPtr->
+		  timeConstant));
+	DPrint(wxT("\tMaximum lag = %g ms.\n"), MSEC(autoCorrPtr->maxLag));
 	return(TRUE);
 
 }
@@ -547,45 +552,46 @@ PrintPars_Analysis_ACF(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Analysis_ACF(char *fileName)
+ReadPars_Analysis_ACF(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Analysis_ACF";
+	static const WChar	*funcName = wxT("ReadPars_Analysis_ACF");
 	BOOLN	ok;
-	char	*filePath;
-	char	normalisationMode[MAXLINE];
+	WChar	*filePath;
+	WChar	normalisationMode[MAXLINE];
 	double	timeOffset, timeConstant, maxLag;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
 	if (autoCorrPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", normalisationMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), normalisationMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeConstant))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeConstant))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &maxLag))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &maxLag))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
     if (!SetPars_Analysis_ACF(normalisationMode, timeOffset, timeConstant,
       maxLag)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -602,10 +608,10 @@ ReadPars_Analysis_ACF(char *fileName)
 BOOLN
 SetParsPointer_Analysis_ACF(ModulePtr theModule)
 {
-	static const char *funcName = "SetParsPointer_Analysis_ACF";
+	static const WChar *funcName = wxT("SetParsPointer_Analysis_ACF");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	autoCorrPtr = (AutoCorrPtr) theModule->parsPtr;
@@ -622,14 +628,15 @@ SetParsPointer_Analysis_ACF(ModulePtr theModule)
 BOOLN
 InitModule_Analysis_ACF(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Analysis_ACF";
+	static const WChar	*funcName = wxT("InitModule_Analysis_ACF");
 
 	if (!SetParsPointer_Analysis_ACF(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Analysis_ACF(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = autoCorrPtr;
@@ -663,38 +670,38 @@ InitModule_Analysis_ACF(ModulePtr theModule)
 BOOLN
 CheckData_Analysis_ACF(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Analysis_ACF";
+	static const WChar	*funcName = wxT("CheckData_Analysis_ACF");
 	double	signalDuration, timeOffset;
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
 	if (autoCorrPtr->timeOffset > signalDuration + DBL_EPSILON) {
-		NotifyError("%s: Time offset is longer than signal duration.",
+		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
 		return(FALSE);
 	}		
 	if (autoCorrPtr->maxLag > signalDuration + DBL_EPSILON) {
-		NotifyError("%s: maximum auto-correlation lag is longer than signal "
-		  "duration.", funcName);
+		NotifyError(wxT("%s: maximum auto-correlation lag is longer than "
+		  "signal duration."), funcName);
 		return(FALSE);
 	}
 	timeOffset = (autoCorrPtr->timeOffset < 0.0)? signalDuration:
 	  autoCorrPtr->timeOffset;
 	if (autoCorrPtr->maxLag > (timeOffset + DBL_EPSILON)) {
-		NotifyError("%s: Time offset (%g ms) too for short maximum lag (%g "
-		  "ms).", funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->
+		NotifyError(wxT("%s: Time offset (%g ms) too for short maximum lag (%g "
+		  "ms)."), funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->
 		  maxLag));
 		return(FALSE);
 	}
 	if ((autoCorrPtr->normalisationMode == ANALYSIS_NORM_MODE_UNITY) &&
 	  (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)) {
-		NotifyError("%s: The 'unity' normalisation mode cannot be used with "
-		  "the\n'Wiegrebe' tau mode.\n");
+		NotifyError(wxT("%s: The 'unity' normalisation mode cannot be used "
+		  "with the\n'Wiegrebe' tau mode.\n"));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -747,7 +754,7 @@ SunLimitIndex_Analysis_ACF(EarObjectPtr data, double timeConstant)
 BOOLN
 InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Analysis_ACF";
+	static const WChar *funcName = wxT("InitProcessVariables_Analysis_ACF");
 	register double	*expDtPtr, dt;
 	int		chan;
 	double	minDecay;
@@ -760,7 +767,7 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 			dt = data->inSignal[0]->dt;
 			if ((p->exponentDt = (double *) calloc(p->maxLagIndex, sizeof(
 			  double))) == NULL) {
-				NotifyError("%s: Out of memory for exponent lookup table.",
+				NotifyError(wxT("%s: Out of memory for exponent lookup table."),
 				  funcName);
 				return(FALSE);
 			}
@@ -779,7 +786,7 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 		for (chan = 0; chan < data->outSignal->numChannels; chan++)
 			data->outSignal->info.cFArray[chan] = data->inSignal[0]->info.
 			  cFArray[chan];
-		SetInfoSampleTitle_SignalData(data->outSignal, "Delay Lag (s)");
+		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Delay Lag (s)"));
 		SetNumWindowFrames_SignalData(data->outSignal, 0);
 		p->updateProcessVariablesFlag = FALSE;
 	}
@@ -826,7 +833,7 @@ FreeProcessVariables_Analysis_ACF(void)
 BOOLN
 Calc_Analysis_ACF(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Analysis_ACF";
+	static const WChar	*funcName = wxT("Calc_Analysis_ACF");
 	register    double  *expDtPtr = NULL;
 	register    ChanData    *inPtr, *outPtr;
 	int		chan;
@@ -838,20 +845,21 @@ Calc_Analysis_ACF(EarObjectPtr data)
 		if (!CheckPars_Analysis_ACF())
 			return(FALSE);
 		if (!CheckData_Analysis_ACF(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Auto Correlation Function (ACF) "
-		  "analysis");
+		SetProcessName_EarObject(data, wxT("Auto Correlation Function (ACF) "
+		  "analysis"));
 		p->dt = data->inSignal[0]->dt;
 		p->maxLagIndex = (ChanLen) floor(p->maxLag / p->dt + 0.5);
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  p->maxLagIndex, p->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Analysis_ACF(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

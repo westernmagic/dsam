@@ -75,7 +75,7 @@ GammaToneCoeffsPtr
 InitGammaToneCoeffs_Filters(double centreFreq, double bWidth3dB, int cascade,
   double sampleClk)
 {
-	static const char *funcName = "InitGammaToneCoeffs_Filters";
+	static const WChar *funcName = wxT("InitGammaToneCoeffs_Filters");
 	int		stateVectorLength;
 	double bWidth3dBdt, sin_theta, cos_theta;
 	double k0num, k1num;	/* numerator coefficients */
@@ -108,19 +108,20 @@ InitGammaToneCoeffs_Filters(double centreFreq, double bWidth3dB, int cascade,
 	Add_CmplxM (&var1,&var2,&cf_denom); /* sigma(bi*exp(-isT) */
 
 	if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)){/* invert to get normalised values */
-		NotifyError("%s: Filter failed to initialise.", funcName);
+		NotifyError(wxT("%s: Filter failed to initialise."), funcName);
 		return(NULL);
 	}
 	Convert_CmplxM(&Tf,&Tf); k1num *= Tf.re; k0num *= Tf.re;
 
 	if ((p = (GammaToneCoeffs *) malloc(sizeof(GammaToneCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		return(NULL);
     }
 	stateVectorLength = cascade * FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
 	if ((p->stateVector = (double *) calloc(stateVectorLength,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate space for state vector.", funcName);
+		NotifyError(wxT("%s: Cannot allocate space for state vector."),
+		  funcName);
 		free(p);
 		return(NULL);
 	}
@@ -166,14 +167,14 @@ TwoPoleCoeffs *
 InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs, 
   int low_or_high)
 {
-	static const char *funcName = "InitIIR2Coeffs_Filters";
+	static const WChar *funcName = wxT("InitIIR2Coeffs_Filters");
 	double A,A0,A1,A2,B0,B1,B2,C;
 	double a0,a1,a2,b1,b2;
 	double ai_tot, bi_tot, Tf;
     TwoPoleCoeffs	*p;
 
 	if (cascade < 1) {
-		NotifyError("%s: Illegal cascade (%d).", funcName, cascade);
+		NotifyError(wxT("%s: Illegal cascade (%d)."), funcName, cascade);
 		return(NULL);
 	}
 	if (low_or_high == HIGHPASS){ /* reverse coefficient order out of splane */
@@ -185,8 +186,8 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 		B0 = *splane; B1 = *(splane+1); B2 = *(splane+2); /* general 2 pole */
 	}
 	if (DBL_GREATER(f3dB / fs, 0.5)) {
-		NotifyError("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms.", funcName, MSEC(0.5 / f3dB));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
+		  "%g ms."), funcName, MSEC(0.5 / f3dB));
 		return(NULL);
 	}
 	C = 1.0 / tan(Pi * f3dB / fs); /* true bilinear transform eq 7-8, p172 */
@@ -216,7 +217,7 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 
 	if ((p = (TwoPoleCoeffs *) calloc(cascade, sizeof(TwoPoleCoeffs))) ==
 	  NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		return(NULL);
 	}
 
@@ -226,7 +227,7 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 	p->gainLossFactor = *(splane+3);
 	if ((p->state = (double *) calloc(cascade * FILTERS_NUM_IIR2_STATE_VARS,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		return(NULL);
 	}
 	return(p);
@@ -282,18 +283,19 @@ FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p)
 BOOLN
 IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 {
-	static const char *funcName = "IIR2_Filters";
+	static const WChar *funcName = wxT("IIR2_Filters");
 	int		i, chan;
 	ChanLen	j;
 	register	double 		temp0, temp1, *state, *state1;
 	register	ChanData	*data;
 	
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		exit(1);
 	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
@@ -327,17 +329,18 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 BOOLN
 Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 {
-	static const char *funcName = "Compression_Filters";
+	static const WChar *funcName = wxT("Compression_Filters");
 	int		chan;
 	ChanLen	i;
 	register	ChanData	*data;
 
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
@@ -367,17 +370,18 @@ BOOLN
 InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
   double slope)
 {
-	static const char *funcName = "InversePowerCompression_Filters";
+	static const WChar *funcName = wxT("InversePowerCompression_Filters");
 	int		chan;
 	ChanLen	i;
 	register	ChanData	*data;
 
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
@@ -402,18 +406,19 @@ BOOLN
 BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC)
 {
-	static const char *funcName = "BrokenStick1Compression_Filters";
+	static const WChar *funcName = wxT("BrokenStick1Compression_Filters");
 	register ChanData	*data;
 	register double		aTerm, bCTerm;
 	int		chan;
 	ChanLen	i;
 
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
@@ -447,18 +452,19 @@ BOOLN
 BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
   double *bB, double cC)
 {
-	static const char *funcName = "BrokenStick1Compression2_Filters";
+	static const WChar *funcName = wxT("BrokenStick1Compression2_Filters");
 	register ChanData	*data;
 	register double		aTerm, bCTerm;
 	int		chan;
 	ChanLen	i;
 
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
@@ -493,17 +499,18 @@ BOOLN
 UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC, double dD)
 {
-	static const char *funcName = "UptonBStick1Compression_Filters";
+	static const WChar *funcName = wxT("UptonBStick1Compression_Filters");
 	register ChanData	*data;
 	int		chan;
 	ChanLen	i;
 
 	if (!theSignal->lengthFlag) {
-		NotifyError("%s: Signal data length is not set!", funcName);
+		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
 	}
 	if (theSignal->numChannels == 0) {
-		NotifyError("%s: No signal channels have been initialised!", funcName);
+		NotifyError(wxT("%s: No signal channels have been initialised!"),
+		  funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
@@ -531,7 +538,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 BOOLN
 GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 {
-	static const char *funcName = "GammaTone_Filters";
+	static const WChar *funcName = wxT("GammaTone_Filters");
 	int		j, chan;
 	ChanLen	i;
 	GammaToneCoeffs *gC;
@@ -539,7 +546,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	register	ChanData	*data;
 
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}	
 	/* For the allocation of space to the state vector, the filter for all
@@ -582,28 +589,28 @@ BandPassCoeffsPtr
 InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
   double upperCutOffFreq, double dt)
 {
-	static const char *funcName = "InitBandPassCoeffs_Filters";
+	static const WChar *funcName = wxT("InitBandPassCoeffs_Filters");
 	double	theta, tanTheta, frequencyDiff;
 	BandPassCoeffsPtr	p;
 	
 	if (cascade < 1) {
-		NotifyError("%s: Illegal cascade (%d).", funcName, cascade);
+		NotifyError(wxT("%s: Illegal cascade (%d)."), funcName, cascade);
 		return(NULL);
 	}
 	if ((frequencyDiff = upperCutOffFreq - lowerCutOffFreq) < 0.001) {
-		NotifyError("%s: Illegal frequency band width = %g Hz.", funcName,
+		NotifyError(wxT("%s: Illegal frequency band width = %g Hz."), funcName,
 		  frequencyDiff);
 		return(NULL);
 	}
 	if ((p = (BandPassCoeffsPtr) malloc(sizeof(BandPassCoeffs))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for band pass filter "\
-		  "coefficients.", funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for band pass filter "
+		  "coefficients."), funcName);
 		return(NULL);
 	}
 
 	if (DBL_GREATER(dt * frequencyDiff, 0.5)) {
-		NotifyError("%s: Sampling interval, dt = %g ms is too low for the\n"
-		  "filter specification (largest, dt = %g ms.", funcName, MSEC(dt),
+		NotifyError(wxT("%s: Sampling interval, dt = %g ms is too low for the\n"
+		  "filter specification (largest, dt = %g ms."), funcName, MSEC(dt),
 		  MSEC(0.5 / frequencyDiff));
 		free(p);
 		return(NULL);
@@ -618,7 +625,7 @@ InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
 	p->gainLossFactor = 1.0 / p->j;
 	if ((p->state = (double *) calloc(cascade * FILTERS_NUM_BP_STATE_VARS,
 	  sizeof(double))) == NULL) {
-		NotifyError("%s: Out of memory!", funcName);
+		NotifyError(wxT("%s: Out of memory!"), funcName);
 		free(p);
 		return(NULL);
 	}
@@ -664,13 +671,13 @@ FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p)
 BOOLN
 BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 {
-	static const char *funcName = "BandPass_Filters";
+	static const WChar *funcName = wxT("BandPass_Filters");
 	int		i, chan;
 	ChanLen	j;
 	register ChanData	*yi, xi, *xState, *yState, *state;
 	
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}	
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
@@ -710,19 +717,19 @@ ContButtCoeffsPtr
 InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
   double samplingInterval, int highOrLowPass)
 {
-	static const char *funcName = "InitIIR2ContCoeffs_Filters";
+	static const WChar *funcName = wxT("InitIIR2ContCoeffs_Filters");
 	int		i;
 	double	sqrt2, theta, cotOrTan, cotOrTanSquared, cC, dD, eE;
 	ContButtCoeffsPtr	p;
 
 	if (cascade < 1) {
-		NotifyError("%s: Illegal cascade (%d).", funcName, cascade);
+		NotifyError(wxT("%s: Illegal cascade (%d)."), funcName, cascade);
 		return(NULL);
 	}
 	sqrt2 = sqrt(2.0);
 	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
-		NotifyError("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms.", funcName, MSEC(0.5 / cutOffFrequency));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
+		  "%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;
@@ -734,13 +741,13 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 	eE = cC * (1.0 - sqrt2 * cotOrTan + cotOrTanSquared);
 	
 	if ((p = (ContButtCoeffsPtr) malloc(sizeof(ContButtCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
+		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
 	}
 	if ((p->state = (double *) calloc(FILTERS_NUM_CONTBUTT2_STATE_VARS *
 	  cascade, sizeof(double))) == NULL) {
-		NotifyError("%s: Could not allocate the state vector (%d).", funcName,
-		  FILTERS_NUM_CONTBUTT2_STATE_VARS * cascade);
+		NotifyError(wxT("%s: Could not allocate the state vector (%d)."),
+		  funcName, FILTERS_NUM_CONTBUTT2_STATE_VARS * cascade);
 		return(NULL);
 	}
 	p->cascade = cascade;
@@ -777,7 +784,7 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 BOOLN
 IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 {
-	static const char *funcName = "IIR2Cont_Filters";
+	static const WChar *funcName = wxT("IIR2Cont_Filters");
 	register double		*xState, *yState;	
 	register ChanData	*yi, xi;				/* Inner loop variables */
 	int		j, chan;
@@ -785,7 +792,7 @@ IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 	ContButtCoeffsPtr	p;
 
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
@@ -823,21 +830,21 @@ ContButt1CoeffsPtr
 InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
  int highOrLowPass)
 {
-	static const char *funcName = "InitIIR1ContCoeffs_Filters";
+	static const WChar *funcName = wxT("InitIIR1ContCoeffs_Filters");
 	int		i;
 	double	theta, cotOrTan;
 	ContButt1CoeffsPtr	p;
 
 	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
-		NotifyError("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms.", funcName, MSEC(0.5 / cutOffFrequency));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
+		  "%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;
 	cotOrTan = (highOrLowPass == HIGHPASS)? tan(theta): 1.0 / tan(theta);
 	
 	if ((p = (ContButt1CoeffsPtr) malloc(sizeof(ContButtCoeffs))) == NULL) {
-		NotifyError("%s: Out of memory.", funcName);
+		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
 	}
 	p->gG = 1.0 / (1.0 + cotOrTan);
@@ -866,14 +873,14 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 BOOLN
 IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 {
-	static const char *funcName = "IIR1ContSingle_Filters";
+	static const WChar *funcName = wxT("IIR1ContSingle_Filters");
 	int		chan;
 	ChanLen	i;
 	register double		*xi_1, *yi_1;	/* Inner loop variables */
-	register ChanData	*yi, xi;	/*  "		"	"		*/
+	register ChanData	*yi, xi;	/*  wxT("		"	")		*/
 	
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}	
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
@@ -908,15 +915,15 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 BOOLN
 IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 {
-	static const char *funcName = "IIR1Cont_Filters";
+	static const WChar *funcName = wxT("IIR1Cont_Filters");
 	int		chan;
 	ChanLen	i;
 	ContButt1CoeffsPtr	ptr;
 	register double		*xi_1, *yi_1;	/* Inner loop variables */
-	register ChanData	*yi, xi;	/*  "		"	"		*/
+	register ChanData	*yi, xi;	/*  wxT("		"	")		*/
 	
 	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError("%s: Signal not correctly initialised.", funcName);
+		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
 	}	
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {

@@ -36,7 +36,7 @@
 #	define ARGV		NULL
 #else
 #	define MainSimulation	main
-#	define	MAIN_ARGS	int argc, char **argv
+#	define	MAIN_ARGS	int argc, WChar **argv
 #	define ARGC		argc
 #	define ARGV		argv
 #endif /* GRAPHICS_SUPPORT */
@@ -86,18 +86,18 @@ typedef struct {
 	BOOLN	numThreadsFlag, threadModeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	WChar	appName[MAXLINE];
-	char	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
-	char	appParFile[MAX_FILE_PATH];
-	char	appVersion[MAXLINE];
-	char	compiledDSAMVersion[MAXLINE];
-	char	title[MAX_FILE_PATH];
-	char	authors[APP_MAX_AUTHORS][MAXLINE];
+	WChar	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
+	WChar	appParFile[MAX_FILE_PATH];
+	WChar	appVersion[MAXLINE];
+	WChar	compiledDSAMVersion[MAXLINE];
+	WChar	title[MAX_FILE_PATH];
+	WChar	authors[APP_MAX_AUTHORS][MAXLINE];
 	WChar	simulationFile[MAX_FILE_PATH];
-	char	segmentMode[SMALL_STRING];
-	char	diagMode[MAX_FILE_PATH];
+	WChar	segmentMode[SMALL_STRING];
+	WChar	diagMode[MAX_FILE_PATH];
 	WChar	installDir[MAX_FILE_PATH];
-	char	workingDirectory[MAX_FILE_PATH];
-	char	**argv;
+	WChar	workingDirectory[MAX_FILE_PATH];
+	WChar	**argv;
 	int		argc;
 	int		initialCommand;
 	int		segmentModeSpecifier;
@@ -122,7 +122,7 @@ typedef struct {
 	void	(* OnExit)(void);
 	void	(* PrintExtMainAppUsage)(void);
 	void	(* PrintUsage)(void);
-	int		(* ProcessOptions)(int , char **, int *);
+	int		(* ProcessOptions)(int , WChar **, int *);
 	BOOLN	(* RegisterUserModules)(void);
 	BOOLN	(* PostInitFunc)(void);
 	BOOLN	(* SetUniParList)(UniParListPtr *);
@@ -139,7 +139,7 @@ typedef struct stat *StatPtr;
 /*************************** External Variables *******************************/
 /******************************************************************************/
 
-extern char **argv;
+extern WChar **argv;
 extern int	argc;
 
 /* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
@@ -162,7 +162,7 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-BOOLN	AddAppHelpBook_AppInterface(const char *bookName);
+BOOLN	AddAppHelpBook_AppInterface(const WChar *bookName);
 
 BOOLN	Free_AppInterface(void);
 
@@ -170,7 +170,7 @@ void	FreeSim_AppInterface(void);
 
 AppInterfacePtr	GetPtr_AppInterface(void);
 
-char *	GetFilePath_AppInterface(char *filePath);
+WChar *	GetFilePath_AppInterface(WChar *filePath);
 
 DatumPtr *	GetSimPtr_AppInterface(void);
 
@@ -178,12 +178,12 @@ EarObjectPtr	GetSimProcess_AppInterface(void);
 
 DatumPtr	GetSimulation_AppInterface(void);
 
-UniParPtr	GetUniParPtr_AppInterface(char *parName);
+UniParPtr	GetUniParPtr_AppInterface(WChar *parName);
 
 BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
-		  char **theArgv);
+		  WChar **theArgv);
 
 BOOLN	InitSimulation_AppInterface(void);
 
@@ -199,8 +199,8 @@ BOOLN	OnExecute_AppInterface(void);
 
 void	OnExit_AppInterface(void);
 
-void	ParseParSpecifiers_AppInterface(char *parName, char *appName,
-		  char *subProcess);
+void	ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
+		  WChar *subProcess);
 		  
 void	PrintPars_AppInterface(void);
 
@@ -212,7 +212,7 @@ BOOLN	PrintSimPars_AppInterface(void);
 
 void	PrintUsage_AppInterface(void);
 
-BOOLN	ReadPars_AppInterface(char *parFileName);
+BOOLN	ReadPars_AppInterface(WChar *parFileName);
 
 BOOLN	ReadProgParFile_AppInterface(void);
 
@@ -222,13 +222,13 @@ BOOLN	ResetSim_AppInterface(void);
 
 BOOLN	RunSim_AppInterface(void);
 
-BOOLN	SetAppParFile_AppInterface(char *fileName);
+BOOLN	SetAppParFile_AppInterface(WChar *fileName);
 
 BOOLN	SetAppName_AppInterface(WChar *appName);
 
 BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 
-BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, char **,
+BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **,
 		  int *));
 
 BOOLN	SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(
@@ -239,19 +239,19 @@ BOOLN	SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void));
 BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
 		  *parList));
 
-BOOLN	SetAppVersion_AppInterface(char *appVersion);
+BOOLN	SetAppVersion_AppInterface(WChar *appVersion);
 
-void	SetArgcAndArgV_AppInterface(int theArgc, char **theArgv);
+void	SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv);
 
 BOOLN	SetCanFreePtrFlag_AppInterface(BOOLN status);
 
-BOOLN	SetCompiledDSAMVersion_AppInterface(char *compiledDSAMVersion);
+BOOLN	SetCompiledDSAMVersion_AppInterface(WChar *compiledDSAMVersion);
 
-BOOLN	SetDiagMode_AppInterface(char *theDiagMode);
+BOOLN	SetDiagMode_AppInterface(WChar *theDiagMode);
 
 BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 
-BOOLN	SetInstallDir_AppInterface(char *theInstallDir);
+BOOLN	SetInstallDir_AppInterface(WChar *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
@@ -261,28 +261,28 @@ BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
 BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
-BOOLN	SetWorkingDirectory_AppInterface(char * workingDirectory);
+BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
 
-BOOLN	SetProgramParValue_AppInterface(char *parName, char *parValue,
+BOOLN	SetProgramParValue_AppInterface(WChar *parName, WChar *parValue,
 		  BOOLN readSPF);
 
-BOOLN	SetRealArraySimPar_AppInterface(char *parName, int index, double value);
+BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, double value);
 
-BOOLN	SetRealSimPar_AppInterface(char *parName, double value);
+BOOLN	SetRealSimPar_AppInterface(WChar *parName, double value);
 
-BOOLN	SetSegmentMode_AppInterface(char *theSegmentMode);
+BOOLN	SetSegmentMode_AppInterface(WChar *theSegmentMode);
 
 BOOLN	SetSimFileType_AppInterface(int simFileType);
 
-BOOLN	SetSimPar_AppInterface(char *parName, char *value);
+BOOLN	SetSimPar_AppInterface(WChar *parName, WChar *value);
 
 BOOLN	SetSimulationFile_AppInterface(WChar *theSimulationFile);
 
 void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
 
-BOOLN	SetThreadMode_AppInterface(char * theThreadMode);
+BOOLN	SetThreadMode_AppInterface(WChar * theThreadMode);
 
-BOOLN	SetTitle_AppInterface(char *title);
+BOOLN	SetTitle_AppInterface(WChar *title);
 
 BOOLN	SetUniParList_AppInterface(void);
 

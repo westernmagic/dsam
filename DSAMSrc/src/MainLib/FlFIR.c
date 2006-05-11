@@ -29,6 +29,7 @@
 #include "FiParFile.h"
 #include "UtRemez.h"
 #include "UtFIRFilters.h"
+#include "UtString.h"
 #include "FlFIR.h"
 
 /******************************************************************************/
@@ -53,8 +54,6 @@ FIRPtr	fIRPtr = NULL;
 BOOLN
 Free_Filter_FIR(void)
 {
-	/* static const char	*funcName = "Free_Filter_FIR";  */
-
 	if (fIRPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_Filter_FIR();
@@ -91,12 +90,12 @@ InitTypeList_Filter_FIR(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "ARBITRARY",		FILTER_FIR_ARBITRARY_TYPE },
-			{ "BANDPASS",		FILTER_FIR_BANDPASS_TYPE },
-			{ "DIFFERENTIATOR",	FILTER_FIR_DIFFERENTIATOR_TYPE },
-			{ "HILBERT",		FILTER_FIR_HILBERT_TYPE },
-			{ "USER",			FILTER_FIR_USER_TYPE },
-			{ "",	FILTER_FIR_TYPE_NULL },
+			{ wxT("ARBITRARY"),			FILTER_FIR_ARBITRARY_TYPE },
+			{ wxT("BANDPASS"),			FILTER_FIR_BANDPASS_TYPE },
+			{ wxT("DIFFERENTIATOR"),	FILTER_FIR_DIFFERENTIATOR_TYPE },
+			{ wxT("HILBERT"),			FILTER_FIR_HILBERT_TYPE },
+			{ wxT("USER"),				FILTER_FIR_USER_TYPE },
+			{ wxT(""),					FILTER_FIR_TYPE_NULL },
 		};
 	fIRPtr->typeList = modeList;
 	return(TRUE);
@@ -118,18 +117,19 @@ InitTypeList_Filter_FIR(void)
 BOOLN
 Init_Filter_FIR(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Filter_FIR";
+	static const WChar	*funcName = wxT("Init_Filter_FIR");
 
 	if (parSpec == GLOBAL) {
 		if (fIRPtr != NULL)
 			Free_Filter_FIR();
 		if ((fIRPtr = (FIRPtr) malloc(sizeof(FIR))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (fIRPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -149,7 +149,7 @@ Init_Filter_FIR(ParameterSpecifier parSpec)
 
 	InitTypeList_Filter_FIR();
 	if (!SetUniParList_Filter_FIR()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Filter_FIR();
 		return(FALSE);
 	}
@@ -169,47 +169,47 @@ Init_Filter_FIR(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Filter_FIR(void)
 {
-	static const char *funcName = "SetUniParList_Filter_FIR";
+	static const WChar *funcName = wxT("SetUniParList_Filter_FIR");
 	UniParPtr	pars;
 
 	if ((fIRPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  FILTER_FIR_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = fIRPtr->parList->pars;
-	SetPar_UniParMgr(&pars[FILTER_FIR_DIAGNOSTICMODE], "DIAG_MODE",
-	  "Diagnostic mode ('off', 'screen' or <file name>).",
+	SetPar_UniParMgr(&pars[FILTER_FIR_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
 	  UNIPAR_BOOL,
 	  &fIRPtr->diagnosticMode, NULL,
 	  (void * (*)) SetDiagnosticMode_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_TYPE], "TYPE",
-	  "FIR filter type 'bandpass', 'differentiator' or 'Hilber').",
+	SetPar_UniParMgr(&pars[FILTER_FIR_TYPE], wxT("TYPE"),
+	  wxT("FIR filter type 'bandpass', 'differentiator' or 'Hilber')."),
 	  UNIPAR_NAME_SPEC,
 	  &fIRPtr->type, fIRPtr->typeList,
 	  (void * (*)) SetType_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_NUMTAPS], "NUM_TAPS",
-	  "Number of filter tapsl",
+	SetPar_UniParMgr(&pars[FILTER_FIR_NUMTAPS], wxT("NUM_TAPS"),
+	  wxT("Number of filter tapsl"),
 	  UNIPAR_INT,
 	  &fIRPtr->numTaps, NULL,
 	  (void * (*)) SetNumTaps_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_NUMBANDS], "NUM_BANDS",
-	  "No. of frequency bands.",
+	SetPar_UniParMgr(&pars[FILTER_FIR_NUMBANDS], wxT("NUM_BANDS"),
+	  wxT("No. of frequency bands."),
 	  UNIPAR_INT_AL,
 	  &fIRPtr->numBands, NULL,
 	  (void * (*)) SetNumBands_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_BANDFREQS], "BAND_FREQ",
-	  "Frequency response bands/Frequencies (Hz).",
+	SetPar_UniParMgr(&pars[FILTER_FIR_BANDFREQS], wxT("BAND_FREQ"),
+	  wxT("Frequency response bands/Frequencies (Hz)."),
 	  UNIPAR_REAL_ARRAY,
 	  &fIRPtr->bandFreqs, &fIRPtr->numBands,
 	  (void * (*)) SetIndividualBand_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_DESIRED], "FREQ_RESP",
-	  "Desired frequency response (dB).",
+	SetPar_UniParMgr(&pars[FILTER_FIR_DESIRED], wxT("FREQ_RESP"),
+	  wxT("Desired frequency response (dB)."),
 	  UNIPAR_REAL_ARRAY,
 	  &fIRPtr->desired, &fIRPtr->numBands,
 	  (void * (*)) SetIndividualDesired_Filter_FIR);
-	SetPar_UniParMgr(&pars[FILTER_FIR_WEIGHTS], "WEIGHTS",
-	  "Positive weighting for each band",
+	SetPar_UniParMgr(&pars[FILTER_FIR_WEIGHTS], wxT("WEIGHTS"),
+	  wxT("Positive weighting for each band"),
 	  UNIPAR_REAL_ARRAY,
 	  &fIRPtr->weights, &fIRPtr->numBands,
 	  (void * (*)) SetIndividualWeight_Filter_FIR);
@@ -227,15 +227,15 @@ SetUniParList_Filter_FIR(void)
 UniParListPtr
 GetUniParListPtr_Filter_FIR(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Filter_FIR";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fIRPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fIRPtr->parList);
@@ -256,7 +256,7 @@ GetUniParListPtr_Filter_FIR(void)
 BOOLN
 AllocNumBands_Filter_FIR(int numBands)
 {
-	static const char	*funcName = "AllocNumBands_Filter_FIR";
+	static const WChar	*funcName = wxT("AllocNumBands_Filter_FIR");
 
 	if (numBands == fIRPtr->numBands)
 		return(TRUE);
@@ -264,7 +264,7 @@ AllocNumBands_Filter_FIR(int numBands)
 		free(fIRPtr->bandFreqs);
 	if ((fIRPtr->bandFreqs = (double *) calloc(numBands, sizeof(double))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' bands/Freqs.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' bands/Freqs."),
 		  funcName, numBands);
 		return(FALSE);
 	}
@@ -272,16 +272,16 @@ AllocNumBands_Filter_FIR(int numBands)
 		free(fIRPtr->desired);
 	if ((fIRPtr->desired = (double *) calloc(numBands, sizeof(double))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' desired.", funcName,
-		  numBands);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' desired."),
+		  funcName, numBands);
 		return(FALSE);
 	}
 	if (fIRPtr->weights)
 		free(fIRPtr->weights);
 	if ((fIRPtr->weights = (double *) calloc(numBands, sizeof(double))) ==
 	  NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' weights.", funcName,
-		  numBands);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' weights."),
+		  funcName, numBands);
 		return(FALSE);
 	}
 	fIRPtr->numBands = numBands;
@@ -297,10 +297,10 @@ AllocNumBands_Filter_FIR(int numBands)
  */
 
 BOOLN
-SetPars_Filter_FIR(char *diagnosticMode, char * type, int numTaps, int numBands,
-  double *bandFreqs, double *desired, double *weights)
+SetPars_Filter_FIR(WChar *diagnosticMode, WChar * type, int numTaps,
+  int numBands, double *bandFreqs, double *desired, double *weights)
 {
-	static const char	*funcName = "SetPars_Filter_FIR";
+	static const WChar	*funcName = wxT("SetPars_Filter_FIR");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -319,7 +319,7 @@ SetPars_Filter_FIR(char *diagnosticMode, char * type, int numTaps, int numBands,
 	if (!SetWeights_Filter_FIR(weights))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -333,18 +333,18 @@ SetPars_Filter_FIR(char *diagnosticMode, char * type, int numTaps, int numBands,
  */
 
 BOOLN
-SetDiagnosticMode_Filter_FIR(char * theDiagnosticMode)
+SetDiagnosticMode_Filter_FIR(WChar * theDiagnosticMode)
 {
-	static const char	*funcName = "SetDiagnosticMode_Filter_FIR";
+	static const WChar	*funcName = wxT("SetDiagnosticMode_Filter_FIR");
 	int		specifier;
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theDiagnosticMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal switch state (%s).", funcName,
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
 		  theDiagnosticMode);
 		return(FALSE);
 	}
@@ -363,18 +363,18 @@ SetDiagnosticMode_Filter_FIR(char * theDiagnosticMode)
  */
 
 BOOLN
-SetType_Filter_FIR(char * theType)
+SetType_Filter_FIR(WChar * theType)
 {
-	static const char	*funcName = "SetType_Filter_FIR";
+	static const WChar	*funcName = wxT("SetType_Filter_FIR");
 	int		specifier;
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theType,
 		fIRPtr->typeList)) == FILTER_FIR_TYPE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theType);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theType);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -395,10 +395,10 @@ SetType_Filter_FIR(char * theType)
 BOOLN
 SetNumTaps_Filter_FIR(int theNumTaps)
 {
-	static const char	*funcName = "SetNumTaps_Filter_FIR";
+	static const WChar	*funcName = wxT("SetNumTaps_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -420,20 +420,20 @@ SetNumTaps_Filter_FIR(int theNumTaps)
 BOOLN
 SetNumBands_Filter_FIR(int theNumBands)
 {
-	static const char	*funcName = "SetNumBands_Filter_FIR";
+	static const WChar	*funcName = wxT("SetNumBands_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumBands < 1) {
-		NotifyError("%s: Value must be greater then zero (%d).", funcName,
+		NotifyError(wxT("%s: Value must be greater then zero (%d)."), funcName,
 		  theNumBands);
 		return(FALSE);
 	}
 	if (!AllocNumBands_Filter_FIR(theNumBands)) {
-		NotifyError("%%s: Cannot allocate memory for the 'numBands' arrays.",
-		  funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -453,10 +453,10 @@ SetNumBands_Filter_FIR(int theNumBands)
 BOOLN
 SetBandFreqs_Filter_FIR(double *theBandFreqs)
 {
-	static const char	*funcName = "SetBandFreqs_Filter_FIR";
+	static const WChar	*funcName = wxT("SetBandFreqs_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -477,18 +477,18 @@ SetBandFreqs_Filter_FIR(double *theBandFreqs)
 BOOLN
 SetIndividualBand_Filter_FIR(int theIndex, double theBand)
 {
-	static const char	*funcName = "SetIndividualBand_Filter_FIR";
+	static const WChar	*funcName = wxT("SetIndividualBand_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fIRPtr->bandFreqs == NULL) {
-		NotifyError("%s: BandFreqs not set.", funcName);
+		NotifyError(wxT("%s: BandFreqs not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > fIRPtr->numBands - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, fIRPtr->numBands - 1, theIndex);
 		return(FALSE);
 	}
@@ -510,10 +510,10 @@ SetIndividualBand_Filter_FIR(int theIndex, double theBand)
 BOOLN
 SetDesired_Filter_FIR(double *theDesired)
 {
-	static const char	*funcName = "SetDesired_Filter_FIR";
+	static const WChar	*funcName = wxT("SetDesired_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -534,18 +534,18 @@ SetDesired_Filter_FIR(double *theDesired)
 BOOLN
 SetIndividualDesired_Filter_FIR(int theIndex, double theDesired)
 {
-	static const char	*funcName = "SetIndividualDesired_Filter_FIR";
+	static const WChar	*funcName = wxT("SetIndividualDesired_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fIRPtr->desired == NULL) {
-		NotifyError("%s: Desired not set.", funcName);
+		NotifyError(wxT("%s: Desired not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > fIRPtr->numBands - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, fIRPtr->numBands - 1, theIndex);
 		return(FALSE);
 	}
@@ -567,10 +567,10 @@ SetIndividualDesired_Filter_FIR(int theIndex, double theDesired)
 BOOLN
 SetWeights_Filter_FIR(double *theWeights)
 {
-	static const char	*funcName = "SetWeights_Filter_FIR";
+	static const WChar	*funcName = wxT("SetWeights_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -591,18 +591,18 @@ SetWeights_Filter_FIR(double *theWeights)
 BOOLN
 SetIndividualWeight_Filter_FIR(int theIndex, double theWeight)
 {
-	static const char	*funcName = "SetIndividualWeight_Filter_FIR";
+	static const WChar	*funcName = wxT("SetIndividualWeight_Filter_FIR");
 
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (fIRPtr->weights == NULL) {
-		NotifyError("%s: Weights not set.", funcName);
+		NotifyError(wxT("%s: Weights not set."), funcName);
 		return(FALSE);
 	}
 	if (theIndex > fIRPtr->numBands - 1) {
-		NotifyError("%s: Index value must be in the range 0 - %d (%d).",
+		NotifyError(wxT("%s: Index value must be in the range 0 - %d (%d)."),
 		  funcName, fIRPtr->numBands - 1, theIndex);
 		return(FALSE);
 	}
@@ -626,56 +626,56 @@ SetIndividualWeight_Filter_FIR(int theIndex, double theWeight)
 BOOLN
 CheckPars_Filter_FIR(void)
 {
-	static const char	*funcName = "CheckPars_Filter_FIR";
+	static const WChar	*funcName = wxT("CheckPars_Filter_FIR");
 	BOOLN	ok;
 	int		i;
 
 	ok = TRUE;
 	if (fIRPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!fIRPtr->diagnosticModeFlag) {
-		NotifyError("%s: diagnosticMode variable not set.", funcName);
+		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!fIRPtr->typeFlag) {
-		NotifyError("%s: type variable not set.", funcName);
+		NotifyError(wxT("%s: type variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!fIRPtr->numTapsFlag) {
-		NotifyError("%s: numTaps variable not set.", funcName);
+		NotifyError(wxT("%s: numTaps variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!fIRPtr->numBandsFlag) {
-		NotifyError("%s: numBands variable not set.", funcName);
+		NotifyError(wxT("%s: numBands variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (fIRPtr->bandFreqs == NULL) {
-		NotifyError("%s: bandFreqs array not set.", funcName);
+		NotifyError(wxT("%s: bandFreqs array not set."), funcName);
 		ok = FALSE;
 	}
 	if (fIRPtr->desired == NULL) {
-		NotifyError("%s: desired array not set.", funcName);
+		NotifyError(wxT("%s: desired array not set."), funcName);
 		ok = FALSE;
 	}
 	if (fIRPtr->weights == NULL) {
-		NotifyError("%s: weights array not set.", funcName);
+		NotifyError(wxT("%s: weights array not set."), funcName);
 		ok = FALSE;
 	}
 	if (fIRPtr->type == FILTER_FIR_USER_TYPE) {
 		SetNumTaps_Filter_FIR(fIRPtr->numBands);
 		for (i = 0; ok && (i < fIRPtr->numBands - 1); i++)
 			if ((fIRPtr->bandFreqs[i] != 0.0) || (fIRPtr->weights[i] != 0.0)) {
-				NotifyError("%s: the frequency bands and weights columns must "
-				  "have zero values in USER type filters.", funcName);
+				NotifyError(wxT("%s: the frequency bands and weights columns "
+				  "must have zero values in USER type filters."), funcName);
 				ok = FALSE;
 			}
 	} else {
 		for (i = 0; ok && (i < fIRPtr->numBands - 1); i++)
 			if (fIRPtr->bandFreqs[i] >= fIRPtr->bandFreqs[i + 1]) {
-				NotifyError("%s: Band centres/Frequencies must be in ascending "
-				  "order (No.s %d and %d).", funcName, i, i + 1);
+				NotifyError(wxT("%s: Band centres/Frequencies must be in "
+				  "ascending order (No.s %d and %d)."), funcName, i, i + 1);
 				ok = FALSE;
 			}
 	}
@@ -693,28 +693,31 @@ CheckPars_Filter_FIR(void)
 BOOLN
 PrintPars_Filter_FIR(void)
 {
-	static const char	*funcName = "PrintPars_Filter_FIR";
+	static const WChar	*funcName = wxT("PrintPars_Filter_FIR");
 	int		i;
 
 	if (!CheckPars_Filter_FIR()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("FIR Filter Module Parameters:-\n");
-	DPrint("\tDiagnostics mode: %s,\n", BooleanList_NSpecLists(fIRPtr->
+	DPrint(wxT("FIR Filter Module Parameters:-\n"));
+	DPrint(wxT("\tDiagnostics mode: %s,\n"), BooleanList_NSpecLists(fIRPtr->
 	  diagnosticMode)->name);
-	DPrint("\t%10s\t%10s\t%10s\n", "Band/Freqs", "desired", "weights");
-	DPrint("\t%10s\t%10s\t%10s\n", "(Hz)", "(\?\?)", "(>0)");
+	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("Band/Freqs"), wxT("desired"),
+	  wxT("weights"));
+	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("(Hz)"), wxT("(\?\?)"), wxT(
+	  "(>0)"));
 	if (fIRPtr->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
 		for (i = 0; i < fIRPtr->numBands; i++)
-			DPrint("\t%10g\t%10g\t%10g\n", fIRPtr->bandFreqs[i], fIRPtr->
+			DPrint(wxT("\t%10g\t%10g\t%10g\n"), fIRPtr->bandFreqs[i], fIRPtr->
 			  desired[i], fIRPtr->weights[i]);
 	} else
-		DPrint("\tList of %d elements (off because of diagnostic mode).\n",
+		DPrint(wxT("\tList of %d elements (off because of diagnostic mode).\n"),
 		  fIRPtr->numBands);
-	DPrint("\tFilter type = %s \n", fIRPtr->typeList[fIRPtr->type].name);
-	DPrint("\tnumTaps = %d ??\n", fIRPtr->numTaps);
-	DPrint("\tnumBands = %d ??\n", fIRPtr->numBands);
+	DPrint(wxT("\tFilter type = %s \n"), fIRPtr->typeList[fIRPtr->type].name);
+	DPrint(wxT("\tnumTaps = %d ??\n"), fIRPtr->numTaps);
+	DPrint(wxT("\tnumBands = %d ??\n"), fIRPtr->numBands);
 	return(TRUE);
 
 }
@@ -726,49 +729,50 @@ PrintPars_Filter_FIR(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Filter_FIR(char *fileName)
+ReadPars_Filter_FIR(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Filter_FIR";
+	static const WChar	*funcName = wxT("ReadPars_Filter_FIR");
 	BOOLN	ok;
-	char	*filePath, type[MAXLINE], diagnosticMode[MAX_FILE_PATH];
+	WChar	*filePath, type[MAXLINE], diagnosticMode[MAX_FILE_PATH];
 	int		i, numTaps, numBands = 0;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", diagnosticMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", type))
+	if (!GetPars_ParFile(fp, wxT("%s"), type))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numTaps))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numTaps))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numBands))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numBands))
 		ok = FALSE;
 	if (ok && !AllocNumBands_Filter_FIR(numBands)) {
-		NotifyError("%%s: Cannot allocate memory for the 'numBands' arrays.",
-		  funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' "
+		  "arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numBands; i++)
-		if (!GetPars_ParFile(fp, "%lf %lf %lf", &fIRPtr->bandFreqs[i],
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf"), &fIRPtr->bandFreqs[i],
 		  &fIRPtr->desired[i], &fIRPtr->weights[i]))
 			ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_FIR(diagnosticMode, type, numTaps, numBands, fIRPtr->
 	  bandFreqs, fIRPtr->desired, fIRPtr->weights)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -785,10 +789,10 @@ ReadPars_Filter_FIR(char *fileName)
 BOOLN
 SetParsPointer_Filter_FIR(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Filter_FIR";
+	static const WChar	*funcName = wxT("SetParsPointer_Filter_FIR");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	fIRPtr = (FIRPtr) theModule->parsPtr;
@@ -805,14 +809,15 @@ SetParsPointer_Filter_FIR(ModulePtr theModule)
 BOOLN
 InitModule_Filter_FIR(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Filter_FIR";
+	static const WChar	*funcName = wxT("InitModule_Filter_FIR");
 
 	if (!SetParsPointer_Filter_FIR(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Filter_FIR(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = fIRPtr;
@@ -844,10 +849,10 @@ InitModule_Filter_FIR(ModulePtr theModule)
 BOOLN
 CheckData_Filter_FIR(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Filter_FIR";
+	static const WChar	*funcName = wxT("CheckData_Filter_FIR");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -892,7 +897,7 @@ GetType_Filter_FIR(void)
 BOOLN
 InitProcessVariables_Filter_FIR(EarObjectPtr data)
 {
-	static const char *funcName = "InitProcessVariables_Filter_FIR";
+	static const WChar *funcName = wxT("InitProcessVariables_Filter_FIR");
 	int		i, totalStateLength;
 	double	*statePtr;
 	
@@ -902,7 +907,7 @@ InitProcessVariables_Filter_FIR(EarObjectPtr data)
 		  data->outSignal->numChannels, fIRPtr->numTaps, fIRPtr->numBands,
 		  fIRPtr->bandFreqs, fIRPtr->desired, fIRPtr->weights,
 		  GetType_Filter_FIR())) == NULL) {
-			NotifyError("%s: Could not initialises FIR coefficients.",
+			NotifyError(wxT("%s: Could not initialises FIR coefficients."),
 			  funcName);
 			FreeProcessVariables_Filter_FIR();
 			return(FALSE);
@@ -954,24 +959,24 @@ FreeProcessVariables_Filter_FIR(void)
 BOOLN
 RunProcess_Filter_FIR(EarObjectPtr data)
 {
-	static const char	*funcName = "RunProcess_Filter_FIR";
+	static const WChar	*funcName = wxT("RunProcess_Filter_FIR");
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Filter_FIR())
 			return(FALSE);
 		if (!CheckData_Filter_FIR(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "FIR filter module process");
+		SetProcessName_EarObject(data, wxT("FIR filter module process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Could not initialise the process output signal.",
-			  funcName);
+			NotifyError(wxT("%s: Could not initialise the process output "
+			  "signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_FIR(data)) {
-			NotifyError("%s: Could not initialise the process variables.",
+			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}

@@ -26,7 +26,7 @@
 
 #define IHC_MEDDIS2000_NUM_PARS		19
 #define MEDDIS2000_MAX_DT			0.00005		/* Magic number for model */
-#define MEDDIS2000_MOD_NAME			"IHC_MEDDIS2000"
+#define MEDDIS2000_MOD_NAME			wxT("IHC_MEDDIS2000")
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -129,7 +129,7 @@ typedef struct {
 	NameSpecifier	*cleftReplenishModeList;
 	UniParListPtr	parList;
 	HairCellVars2	*hCChannels;
-	char		diagFileName[MAX_FILE_PATH];
+	WChar		diagFileName[MAX_FILE_PATH];
 	FILE		*fp;
 	double		ydt, rdt, xdt, zdt, k0pow, l_Plus_rdt, dt_Over_tauConcCa;
 	double		dtOverTauCaChan;
@@ -172,7 +172,7 @@ BOOLN	Init_IHC_Meddis2000(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_IHC_Meddis2000(void);
 
-BOOLN	ReadPars_IHC_Meddis2000(char *fileName);
+BOOLN	ReadPars_IHC_Meddis2000(WChar *fileName);
 
 void	ResetProcess_IHC_Meddis2000(EarObjectPtr data);
 
@@ -180,13 +180,13 @@ BOOLN	RunModel_IHC_Meddis2000(EarObjectPtr data);
 
 BOOLN	SetBetaCa_IHC_Meddis2000(double theBetaCa);
 
-BOOLN	SetCaCondMode_IHC_Meddis2000(char * theCaCondMode);
+BOOLN	SetCaCondMode_IHC_Meddis2000(WChar * theCaCondMode);
 
 BOOLN	SetCaVrev_IHC_Meddis2000(double theCaVrev);
 
-BOOLN	SetCleftReplenishMode_IHC_Meddis2000(char * theCleftReplenishMode);
+BOOLN	SetCleftReplenishMode_IHC_Meddis2000(WChar * theCleftReplenishMode);
 
-BOOLN	SetDiagMode_IHC_Meddis2000(char * theDiagMode);
+BOOLN	SetDiagMode_IHC_Meddis2000(WChar * theDiagMode);
 
 void	SetEnabledPars_IHC_Meddis2000(void);
 
@@ -200,13 +200,13 @@ BOOLN	SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M);
 
 BOOLN	InitModule_IHC_Meddis2000(ModulePtr theModule);
 
-BOOLN	SetOpMode_IHC_Meddis2000(char * theOpMode);
+BOOLN	SetOpMode_IHC_Meddis2000(WChar * theOpMode);
 
 BOOLN	SetPCa_IHC_Meddis2000(double thePCa);
 
 BOOLN	SetParsPointer_IHC_Meddis2000(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Meddis2000(char * opMode, char * diagMode, long ranSeed,
+BOOLN	SetPars_IHC_Meddis2000(WChar * opMode, WChar * diagMode, long ranSeed,
 		  double CaVrev, double betaCa, double gammaCa,
 		  double pCa, double GCaMax, double perm_Ca0, double perm_z,
 		  double tauCaChan, double tauConcCa, int maxFreePool_M,

@@ -88,7 +88,8 @@ simulation_list:
 simulation:
 			BEGIN '{' statement_list '}'
 			{ if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError_Utility_SimScript("parser: error for simulation.");
+				NotifyError_Utility_SimScript(wxT("parser: error for "
+				  "simulation."));
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -97,7 +98,8 @@ simulation:
 		|	BEGIN simulation_name '{' statement_list '}'
 			{ $$ = $2;
 			  if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError_Utility_SimScript("parser: error for simulation.");
+				NotifyError_Utility_SimScript(wxT("parser: error for "
+				  "simulation."));
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -108,13 +110,13 @@ simulation_name:
 			STRING
 			{ if (!simScriptPtr->subSimList) {
 			    $$ = *simScriptPtr->simPtr;
-				strcpy(simScriptPtr->simFileName, $1->name);
+				DSAM_strcpy(simScriptPtr->simFileName, $1->name);
 				
 			  } else {
 			  $$ = (DatumPtr) Pull_Utility_DynaList(&simScriptPtr->subSimList);
-			  if (strcmp($$->u.proc.parFile, $1->name) != 0) {
-			    NotifyError_Utility_SimScript("parser: '%s' simulation script "
-				  "does not correspond with '%s' .", $$->u.proc.parFile,
+			  if (DSAM_strcmp($$->u.proc.parFile, $1->name) != 0) {
+			    NotifyError_Utility_SimScript(wxT("parser: '%s' simulation "
+				  "script does not correspond with '%s' ."), $$->u.proc.parFile,
 				  $1->name);
 			    return 1;
 			  }
@@ -240,7 +242,7 @@ reset:
 int
 yyerror(char *s)
 {
-	NotifyError_Utility_SimScript("%s", s);
+	NotifyError_Utility_SimScript(wxT("%s"), s);
 	return 1;
 }
 
@@ -272,7 +274,7 @@ IgnoreToEndOfLine(void)
 int
 yylex(void)
 {
-	static const char *funcName = "yylex";
+	static const WChar *funcName = wxT("yylex");
 	int		c;
 	
 	while (isspace((c = fgetc(simScriptPtr->fp))))
@@ -289,26 +291,26 @@ yylex(void)
 	if (isdigit(c)) {	/* number */
 		int		d;
 		ungetc(c, simScriptPtr->fp);
-		fscanf(simScriptPtr->fp, "%d", &d);
+		DSAM_fscanf(simScriptPtr->fp, wxT("%d"), &d);
 		yylval.num = d;
 		return NUMBER;
 	}
 	if (c == '"') {
 		Symbol *s;
-		char	sbuf[LONG_STRING], *p = sbuf;
+		WChar	sbuf[LONG_STRING], *p = sbuf;
 		while ((c = fgetc(simScriptPtr->fp)) != '"' && (c != EOF)) {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
-				NotifyError_Utility_SimScript("%s: String in quotes is too "
-				  "long (%s)", funcName, sbuf);
+				NotifyError_Utility_SimScript(wxT("%s: String in quotes is too "
+				  "long (%s)"), funcName, sbuf);
 				exit(1);
 			}
 			*p++ = c;
 		}
 		*p = '\0';
 		if (c == EOF) {
-			NotifyError_Utility_SimScript("%s: File ends before terminating "
-			  "quotes.", funcName);
+			NotifyError_Utility_SimScript(wxT("%s: File ends before "
+			  "terminating quotes."), funcName);
 			exit(1);
 		}
 		s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList, sbuf,
@@ -318,11 +320,11 @@ yylex(void)
 	}		
 	if (IS_FILE_PATH_CHAR(c)) {
 		Symbol *s;
-		char	sbuf[LONG_STRING], *p = sbuf;
+		WChar	sbuf[LONG_STRING], *p = sbuf;
 		do {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
-				NotifyError_Utility_SimScript("%s: Name too long (%s)",
+				NotifyError_Utility_SimScript(wxT("%s: Name too long (%s)"),
 				  funcName, sbuf);
 				exit(1);
 			}

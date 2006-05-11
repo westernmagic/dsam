@@ -70,7 +70,7 @@ DSAM	dSAM = {
 			FALSE,		/* usingExtFlag */
 			FALSE,		/* interruptRequestedFlag */
 			NULL,		/* diagnosticsPrefix */
-			VERSION,	/* version */
+			(WChar *) VERSION,	/* version */
 			NULL,		/* parsFilePath */
 			0,			/* notificationCount */
 			UNSET_FILE_PTR,	/* warningsFile */
@@ -95,12 +95,12 @@ DSAM	dSAM = {
  */
  
 void
-DPrintStandard(char *format, va_list args)
+DPrintStandard(WChar *format, va_list args)
 {
 	CheckInitParsFile_Common();
 	if (dSAM.diagnosticsPrefix)
-		fprintf(dSAM.parsFile, "%s", dSAM.diagnosticsPrefix);
-	vfprintf(dSAM.parsFile, format, args);
+		DSAM_fprintf(dSAM.parsFile, wxT("%s"), dSAM.diagnosticsPrefix);
+	DSAM_vfprintf(dSAM.parsFile, format, args);
 	
 }
 
@@ -113,7 +113,7 @@ DPrintStandard(char *format, va_list args)
  */
  
 void
-DPrint(char *format, ...)
+DPrint(WChar *format, ...)
 {
 	va_list	args;
 
@@ -138,26 +138,26 @@ DPrint(char *format, ...)
  */
 
 void
-DPrintBuffer_Common(char *format, va_list args,	void (* EmptyDiagBuffer)(char *,
-  int *))
+DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
+  WChar *, int *))
 {
-	static	const char *funcName = "DPrintBuffer_Common";
+	static	const WChar *funcName = wxT("DPrintBuffer_Common");
 	BOOLN	longVar;
-	char	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
+	WChar	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
 	int		i, c, tabPosition;
 
 	if (dSAM.diagMode == COMMON_OFF_DIAG_MODE)
 		return;
 	if (!EmptyDiagBuffer) {
-		NotifyError("%s: The 'EmptyDiagBuffer' routine has not been set.",
+		NotifyError(wxT("%s: The 'EmptyDiagBuffer' routine has not been set."),
 		  funcName);
 		return;
 	}
 	if (dSAM.diagnosticsPrefix)
-		sprintf(buffer, "%s", dSAM.diagnosticsPrefix);
+		DSAM_snprintf(buffer, MAXLINE, wxT("%s"), dSAM.diagnosticsPrefix);
 	else
 		*buffer = '\0';
-	for (p = format, c = strlen(buffer); *p != '\0'; p++)
+	for (p = format, c = DSAM_strlen(buffer); *p != '\0'; p++)
 		if (c >= LONG_STRING - 1)
 			(* EmptyDiagBuffer)(buffer, &c);
 		else if (*p == '%') {
@@ -173,36 +173,36 @@ DPrintBuffer_Common(char *format, va_list args,	void (* EmptyDiagBuffer)(char *,
 			switch (*p) {
 			case 'f':
 			case 'g':
-				sprintf(buffer, subFormat, va_arg(args, double));
+				DSAM_snprintf(buffer, MAXLINE, subFormat, va_arg(args, double));
 				break;
 			case 'd':
-				sprintf(buffer, subFormat, (longVar)? va_arg(args, long):
-				  va_arg(args, int));
+				DSAM_snprintf(buffer, MAXLINE, subFormat, (longVar)? va_arg(
+				  args, long): va_arg(args, int));
 				break;
 			case 'u':
-				sprintf(buffer, subFormat, (longVar)? va_arg(args,
-				  unsigned long): va_arg(args, unsigned));
+				DSAM_snprintf(buffer, MAXLINE, subFormat, (longVar)? va_arg(
+				  args, unsigned long): va_arg(args, unsigned));
 				break;
 			case 'c':
-				sprintf(buffer, subFormat, va_arg(args, int));
+				DSAM_snprintf(buffer, MAXLINE, subFormat, va_arg(args, int));
 				break;
 			case 's':
-				s = va_arg(args, char *);
-				if (strlen(s) >= LONG_STRING) {
-					NotifyError("%s: Buffer(%d) is too small for string (%d).",
-					  funcName, LONG_STRING, strlen(s));
+				s = va_arg(args, WChar *);
+				if (DSAM_strlen(s) >= LONG_STRING) {
+					NotifyError(wxT("%s: Buffer(%d) is too small for string "
+					  "(%d)."), funcName, LONG_STRING, DSAM_strlen(s));
 					return;
 				}
-				sprintf(buffer, subFormat, s);
+				DSAM_snprintf(buffer, MAXLINE, subFormat, s);
 				break;
 			case '%':
-				sprintf(buffer, "%%");
+				DSAM_snprintf(buffer, MAXLINE, wxT("%%"));
 				break;
 			default:
-				sprintf(buffer, "%c", *p);
+				DSAM_snprintf(buffer, MAXLINE, wxT("%c"), *p);
 				break;
 			}
-			c = strlen(buffer);
+			c = DSAM_strlen(buffer);
 		} else if (*p == '\t') {
 			tabPosition = TAB_SPACES * (c / TAB_SPACES + 1);
 			for (i = c; (i < tabPosition) && (c < LONG_STRING - 1); i++)
@@ -221,15 +221,15 @@ DPrintBuffer_Common(char *format, va_list args,	void (* EmptyDiagBuffer)(char *,
  * This is a simple routine to return the pointer to a diagnostic title.
  */
 
-char *
+WChar *
 DiagnosticTitle(CommonDiagSpecifier type)
 {
 	static NameSpecifier	list[] = {
 
-			{ "Error",		COMMON_ERROR_DIAGNOSTIC },
-			{ "Warning",	COMMON_WARNING_DIAGNOSTIC },
-			{ "Alert",		COMMON_GENERAL_DIAGNOSTIC },
-			{ "Alert (stop)",	COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL }
+			{ wxT("Error"),			COMMON_ERROR_DIAGNOSTIC },
+			{ wxT("Warning"),		COMMON_WARNING_DIAGNOSTIC },
+			{ wxT("Alert"),			COMMON_GENERAL_DIAGNOSTIC },
+			{ wxT("Alert (stop)"),	COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL }
 		};
 
 	return(list[type].name);
@@ -246,7 +246,7 @@ DiagnosticTitle(CommonDiagSpecifier type)
  */
 
 void
-NotifyStandard(const char *format, va_list args, CommonDiagSpecifier type)
+NotifyStandard(const WChar *format, va_list args, CommonDiagSpecifier type)
 {
 	FILE	*fp;
 
@@ -260,8 +260,8 @@ NotifyStandard(const char *format, va_list args, CommonDiagSpecifier type)
 	default:
 		fp = stdout;
 	}
-	vfprintf(fp, format, args);
-	fprintf(fp, "\n");
+	DSAM_vfprintf(fp, format, args);
+	DSAM_fprintf(fp, wxT("\n"));
 
 } /* NotifyStandard */
 
@@ -277,7 +277,7 @@ NotifyStandard(const char *format, va_list args, CommonDiagSpecifier type)
  */
 
 void
-NotifyError(char *format, ...)
+NotifyError(WChar *format, ...)
 {
 	va_list	args;
 
@@ -287,7 +287,7 @@ NotifyError(char *format, ...)
 	va_start(args, format);
 	if ((dSAM.errorsFile == stderr) && (!dSAM.usingGUIFlag ||
 	  (dSAM.diagMode == COMMON_DIALOG_DIAG_MODE)))
-		fprintf(stderr, "\07");
+		DSAM_fprintf(stderr, wxT("\07"));
 	(* dSAM.Notify)(format, args, COMMON_ERROR_DIAGNOSTIC);
 	va_end(args);
 	dSAM.notificationCount++;
@@ -303,7 +303,7 @@ NotifyError(char *format, ...)
  */
  
 void
-NotifyWarning(char *format, ...)
+NotifyWarning(WChar *format, ...)
 {
 	va_list	args;
 	
@@ -327,9 +327,9 @@ NotifyWarning(char *format, ...)
  */
 
 FILE *
-GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode)
+GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
 {
-	static const char *funcName = "GetFilePtr";
+	static const WChar *funcName = wxT("GetFilePtr");
 	char	*fileAccess;
 	FILE	*fp;
 
@@ -343,9 +343,9 @@ GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode)
 		return(stderr);
 	default:
 		fileAccess = (mode == APPEND)? "a": "w";
-		if ((fp = fopen(outputSpecifier, fileAccess)) == NULL) {
-			NotifyError("%s: Could not open file '%s' output sent to stderr.",
-			  funcName, outputSpecifier);
+		if ((fp = fopen((char *) outputSpecifier, fileAccess)) == NULL) {
+			NotifyError(wxT("%s: Could not open file '%s' output sent to "
+			  "stderr."), funcName, outputSpecifier);
 			return(stderr); 
 		}
 	}
@@ -363,7 +363,7 @@ GetFilePtr(char *outputSpecifier, FileAccessSpecifier mode)
  */
 
 void
-SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
+SetWarningsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.warningsFile = GetFilePtr(outputSpecifier, mode);
 
@@ -379,7 +379,7 @@ SetWarningsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
  */
 
 BOOLN
-SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
+SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.parsFile = GetFilePtr(outputSpecifier, mode);
 	return(dSAM.parsFile != stderr);
@@ -396,7 +396,7 @@ SetParsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
  */
 
 void
-SetErrorsFile_Common(char *outputSpecifier, FileAccessSpecifier mode)
+SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.errorsFile = GetFilePtr(outputSpecifier, mode);
 
@@ -425,7 +425,7 @@ SetSegmentedMode(BOOLN setting)
  */
 
 void
-SetDiagnosticsPrefix(char *prefix)
+SetDiagnosticsPrefix(WChar *prefix)
 {
 	dSAM.diagnosticsPrefix = prefix;
 
@@ -499,7 +499,7 @@ SetDiagMode(DiagModeSpecifier mode)
  */
 
 void
-SetDPrintFunc(void (* Func)(char *, va_list))
+SetDPrintFunc(void (* Func)(WChar *, va_list))
 {
 	dSAM.DPrint = Func;
 
@@ -512,7 +512,7 @@ SetDPrintFunc(void (* Func)(char *, va_list))
  */
 
 void
-SetNotifyFunc(void (* Func)(const char *, va_list, CommonDiagSpecifier))
+SetNotifyFunc(void (* Func)(const WChar *, va_list, CommonDiagSpecifier))
 {
 	dSAM.Notify = Func;
 
@@ -568,7 +568,7 @@ SetInterruptRequestStatus_Common(BOOLN status)
  */
 
 void
-SetParsFilePath_Common(char *name)
+SetParsFilePath_Common(WChar *name)
 {
 	if ((name == NULL) || (name[0] == '\0'))
 		dSAM.parsFilePath = NULL;
@@ -587,25 +587,25 @@ SetParsFilePath_Common(char *name)
  */
 
 void
-FindFilePathAndName_Common(char *filePath, char *path, char *name)
+FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name)
 {
-	char *p;
+	WChar *p;
 
-	if (filePath && (((p = strrchr(filePath, '/')) != NULL) || ((p = strrchr(
-	  filePath, '\\')) != NULL))) {
+	if (filePath && (((p = DSAM_strrchr(filePath, '/')) != NULL) || ((p =
+	  DSAM_strrchr(filePath, '\\')) != NULL))) {
 		if (path) {
-			strncpy(path, filePath, p - filePath);
+			DSAM_strncpy(path, filePath, p - filePath);
 			path[p - filePath] = '\0';
 		}
 		if (name)
-			strcpy(name, p + 1);
+			DSAM_strcpy(name, p + 1);
 		return;
 	}
 	if (path)
 		path[0] = '\0';
 	if (name) {
 		if (filePath)
-			strcpy(name, filePath);
+			DSAM_strcpy(name, filePath);
 		else
 			name[0] = '\0';
 	}
@@ -621,23 +621,24 @@ FindFilePathAndName_Common(char *filePath, char *path, char *name)
  * ":\" when an absolute path is assumed.
  */
 
-char *
-GetParsFileFPath_Common(char *parFile)
+WChar *
+GetParsFileFPath_Common(WChar *parFile)
 {
-	static const char *funcName = "GetParsFileFPath_Common";
-	static char filePath[MAX_FILE_PATH];
+	static const WChar *funcName = wxT("GetParsFileFPath_Common");
+	static WChar filePath[MAX_FILE_PATH];
 	
 	if (!dSAM.parsFilePath)
 		return(parFile);
-	if (strlen(parFile) >= MAX_FILE_PATH) {
+	if (DSAM_strlen(parFile) >= MAX_FILE_PATH) {
 		parFile[MAX_FILE_PATH - 1] = '\0';
-		NotifyWarning("%s: file path is too long, truncating to '%s'", funcName,
-		  parFile);
+		NotifyWarning(wxT("%s: file path is too long, truncating to '%s'"),
+		  funcName, parFile);
 	}
-	if ((parFile[0] == '/') || strstr(parFile, ":\\"))
-		strcpy(filePath, parFile);
+	if ((parFile[0] == '/') || DSAM_strstr(parFile, wxT(":\\")))
+		DSAM_strcpy(filePath, parFile);
 	else
-		sprintf(filePath, "%s/%s", dSAM.parsFilePath, parFile);
+		DSAM_snprintf(filePath, MAX_FILE_PATH, wxT("%s/%s"), dSAM.parsFilePath,
+		  parFile);
 	return (filePath);
 
 }
@@ -786,7 +787,7 @@ SwitchGUILocking_Common(BOOLN on)
 BOOLN
 ResizeDoubleArray_Common(double **array, int *oldLength, int length)
 {
-	static const char *funcName = "ResizeDoubleArray_Common";
+	static const WChar *funcName = wxT("ResizeDoubleArray_Common");
 	register double	*newArray, *oldArray;
 	int		i;
 	double	*savedArray = NULL;
@@ -796,7 +797,7 @@ ResizeDoubleArray_Common(double **array, int *oldLength, int length)
 	if (*array)
 		savedArray = *array;
 	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
-		NotifyError("%s: Cannot allocate memory for '%d' selectionArray.",
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, length);
 		return(FALSE);
 	}

@@ -94,7 +94,7 @@ SDIDiagram::AddShape(wxShape *shape)
 	if (myHandler->pc) {
 		myHandler->ResetLabel();
 		wxClientDC dc(shape->GetCanvas());
-		shape->FormatText(dc, (char*) (const char *) myHandler->label);
+		shape->FormatText(dc, myHandler->label);
 		shape->GetCanvas()->PrepareDC(dc);
 	}
 
@@ -199,8 +199,8 @@ SDIDiagram::DrawSimShapes()
 			pc->clientData = shape;
 			break; }
 		default:
-			wxLogError("SDIDiagram::DrawSimShapes: datum type %d not "
-			  "implemented.\n", pc->type);
+			wxLogError(wxT("SDIDiagram::DrawSimShapes: datum type %d not "
+			  "implemented.\n"), pc->type);
 		} /* switch */
 		pc = pc->next;
 	}
@@ -367,8 +367,8 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
 	if (!loadIDsFromFile)
 		theShape->AssignNewIds();
-	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape, wxString(
-	  ""), type));
+	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape, wxT(""),
+	  type));
 	theShape->SetCentreResize(false);
 	theShape->SetPen(wxBLACK_PEN);
 	theShape->SetBrush(brush);
@@ -409,8 +409,8 @@ SDIDiagram::VerifyDiagram(void)
 			wxShape *fromShape = lineShape->GetFrom();
 			wxShape *toShape = lineShape->GetTo();
 			if (!fromShape || !toShape) {
-				wxLogWarning("%s: Diagram line is not connected to a valid "
-				  "process.", funcName);
+				wxLogWarning(wxT("%s: Diagram line is not connected to a valid "
+				  "process."), funcName);
 				return (false);
 			}
 			if ((SHAPE_PC(fromShape)->type == PROCESS) && (SHAPE_PC(toShape)->
@@ -421,8 +421,8 @@ SDIDiagram::VerifyDiagram(void)
 				  earObject->handle != toProcess->handle); p = p->next)
 					;
 				if (!p) {
-					wxLogWarning("%s: Diagram line does not correspond to a "
-					  "simulation connection.", funcName);
+					wxLogWarning(wxT("%s: Diagram line does not correspond to "
+					  "a simulation connection."), funcName);
 					return(false);
 				}
 			}
@@ -436,8 +436,8 @@ SDIDiagram::VerifyDiagram(void)
 	while (pc) {
 		if (pc->type == PROCESS) {
 			if (!pc->clientData && pc->data) {
-				wxLogWarning("%s: Process has no description (step %d, label "
-				  "%s'.", funcName, pc->stepNumber, pc->label);
+				wxLogWarning(wxT("%s: Process has no description (step %d, "
+				  "label %s'."), funcName, pc->stepNumber, pc->label);
 				return (false);
 			}
 			for (p = pc->data->customerList; (p != NULL); p = p->next)
@@ -452,9 +452,9 @@ SDIDiagram::VerifyDiagram(void)
 		pc = pc->next;
 	}
 	if (numDiagConnections != numSimConnections) {
-		wxLogWarning("%s: The number of diagram lines (%d) does not "
-		  "correspond\nto the number of simulation connections (%d).", funcName,
-		  numDiagConnections, numSimConnections);
+		wxLogWarning(wxT("%s: The number of diagram lines (%d) does not "
+		  "correspond\nto the number of simulation connections (%d)."),
+		  funcName, numDiagConnections, numSimConnections);
 		return(false);
 	}
 	return(TRUE);
@@ -474,7 +474,7 @@ SDIDiagram::RedrawShapeLabel(wxShape *shape)
 	shape->GetCanvas()->PrepareDC(dc);
     SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
-	shape->FormatText(dc, (const char *) myHandler->label);
+	shape->FormatText(dc, myHandler->label);
 	shape->Draw(dc);
 
 }

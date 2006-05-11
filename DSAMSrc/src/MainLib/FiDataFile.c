@@ -97,12 +97,12 @@ InitEndianModeList_DataFile(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "DEFAULT",			DATA_FILE_DEFAULT_ENDIAN },
-			{ "LITTLE",				DATA_FILE_LITTLE_ENDIAN },
-			{ "LITTLE_UNSIGNED",	DATA_FILE_LITTLE_ENDIAN_UNSIGNED },
-			{ "BIG",				DATA_FILE_BIG_ENDIAN },
-			{ "BIG_UNSIGNED",		DATA_FILE_BIG_ENDIAN_UNSIGNED },
-			{ "",					DATA_FILE_ENDIAN_NULL }
+			{ wxT("DEFAULT"),			DATA_FILE_DEFAULT_ENDIAN },
+			{ wxT("LITTLE"),			DATA_FILE_LITTLE_ENDIAN },
+			{ wxT("LITTLE_UNSIGNED"),	DATA_FILE_LITTLE_ENDIAN_UNSIGNED },
+			{ wxT("BIG"),				DATA_FILE_BIG_ENDIAN },
+			{ wxT("BIG_UNSIGNED"),		DATA_FILE_BIG_ENDIAN_UNSIGNED },
+			{ wxT(""),					DATA_FILE_ENDIAN_NULL }
 		};
 	dataFilePtr->endianModeList = modeList;
 	return(TRUE);
@@ -120,7 +120,7 @@ InitEndianModeList_DataFile(void)
 double
 GetDuration_DataFile(void)
 {
-	static const char *funcName = "GetDuration_DataFile";
+	static const WChar *funcName = wxT("GetDuration_DataFile");
 	double	duration;
 
 	switch (Format_DataFile(GetSuffix_Utility_String(dataFilePtr->name))) {
@@ -140,8 +140,8 @@ GetDuration_DataFile(void)
 		duration = -1.0;
 	} /* switch */
 	if (duration < 0.0)
-		NotifyError("%s: Could not calculate the total duration of the signal "
-		  "for '%s'", funcName, dataFilePtr->name);
+		NotifyError(wxT("%s: Could not calculate the total duration of the "
+		  "signal for '%s'"), funcName, dataFilePtr->name);
 	return(duration);
 
 }
@@ -160,24 +160,25 @@ GetDuration_DataFile(void)
 BOOLN
 Init_DataFile(ParameterSpecifier parSpec)
 {
-	static const char *funcName = "Init_DataFile";
+	static const WChar *funcName = wxT("Init_DataFile");
 
 	if (parSpec == GLOBAL) {
 		if (dataFilePtr != NULL)
 			Free_DataFile();
 		if ((dataFilePtr = (DataFilePtr) malloc(sizeof(DataFile))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (dataFilePtr == NULL) { 
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	dataFilePtr->parSpec = parSpec;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
-	sprintf(dataFilePtr->name, "output.dat");
+	DSAM_snprintf(dataFilePtr->name, MAXLINE, wxT("output.dat"));
 	dataFilePtr->wordSize = 2;
 	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
@@ -197,7 +198,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->GetDuration = GetDuration_DataFile;
 	InitEndianModeList_DataFile();
 	if (!SetUniParList_DataFile()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_DataFile();
 		return(FALSE);
 	}
@@ -250,57 +251,57 @@ Free_DataFile(void)
 BOOLN
 SetUniParList_DataFile(void)
 {
-	static const char *funcName = "SetUniParList_DataFile";
+	static const WChar *funcName = wxT("SetUniParList_DataFile");
 	UniParPtr	pars;
 
 	if ((dataFilePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  DATAFILE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = dataFilePtr->parList->pars;
-	SetPar_UniParMgr(&pars[DATAFILE_FILENAME], "FILENAME",
-	  "Stimulus file name.",
+	SetPar_UniParMgr(&pars[DATAFILE_FILENAME], wxT("FILENAME"),
+	  wxT("Stimulus file name."),
 	  UNIPAR_FILE_NAME,
-	  &dataFilePtr->name, (char *) "*.*",
+	  &dataFilePtr->name, (WChar *) wxT("*.*"),
 	  (void * (*)) SetFileName_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_WORDSIZE], "WORDSIZE",
-	  "Default word size for sound data (1,2 or 4 bytes)",
+	SetPar_UniParMgr(&pars[DATAFILE_WORDSIZE], wxT("WORDSIZE"),
+	  wxT("Default word size for sound data (1,2 or 4 bytes)"),
 	  UNIPAR_INT,
 	  &dataFilePtr->wordSize, NULL,
 	  (void * (*)) SetWordSize_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_ENDIAN], "ENDIAN_MODE",
-	  "Default (for format), 'little' or 'big'-endian.",
+	SetPar_UniParMgr(&pars[DATAFILE_ENDIAN], wxT("ENDIAN_MODE"),
+	  wxT("Default (for format), 'little' or 'big'-endian."),
 	  UNIPAR_NAME_SPEC,
 	  &dataFilePtr->endian, dataFilePtr->endianModeList,
 	  (void * (*)) SetEndian_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_NUMCHANNELS], "CHANNELS",
-	  "No. of Channels: for raw binary and ASCII files.)",
+	SetPar_UniParMgr(&pars[DATAFILE_NUMCHANNELS], wxT("CHANNELS"),
+	  wxT("No. of Channels: for raw binary and ASCII files.)"),
 	  UNIPAR_INT,
 	  &dataFilePtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_NORMALISE], "NORM_MODE",
-	  "Normalisation factor for writing (either 0 or -ve: automatic).",
+	SetPar_UniParMgr(&pars[DATAFILE_NORMALISE], wxT("NORM_MODE"),
+	  wxT("Normalisation factor for writing (either 0 or -ve: automatic)."),
 	  UNIPAR_REAL,
 	  &dataFilePtr->normalisation, NULL,
 	  (void * (*)) SetNormalisation_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_DEFAULTSAMPLERATE], "SAMPLERATE",
-	  "Default sample rate: for raw binary and ASCII files (Hz).",
+	SetPar_UniParMgr(&pars[DATAFILE_DEFAULTSAMPLERATE], wxT("SAMPLERATE"),
+	  wxT("Default sample rate: for raw binary and ASCII files (Hz)."),
 	  UNIPAR_REAL,
 	  &dataFilePtr->defaultSampleRate, NULL,
 	  (void * (*)) SetDefaultSampleRate_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_DURATION], "DURATION",
-	  "Duration of read signal: -ve = unlimited (s)",
+	SetPar_UniParMgr(&pars[DATAFILE_DURATION], wxT("DURATION"),
+	  wxT("Duration of read signal: -ve = unlimited (s)"),
 	  UNIPAR_REAL,
 	  &dataFilePtr->duration, NULL,
 	  (void * (*)) SetDuration_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_TIMEOFFSET], "STARTTIME",
-	  "Start time (offset) for signal (s).",
+	SetPar_UniParMgr(&pars[DATAFILE_TIMEOFFSET], wxT("STARTTIME"),
+	  wxT("Start time (offset) for signal (s)."),
 	  UNIPAR_REAL,
 	  &dataFilePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_DataFile);
-	SetPar_UniParMgr(&pars[DATAFILE_GAIN], "GAIN",
-	  "Relative signal gain (dB).",
+	SetPar_UniParMgr(&pars[DATAFILE_GAIN], wxT("GAIN"),
+	  wxT("Relative signal gain (dB)."),
 	  UNIPAR_REAL,
 	  &dataFilePtr->gain, NULL,
 	  (void * (*)) SetGain_DataFile);
@@ -318,15 +319,15 @@ SetUniParList_DataFile(void)
 UniParListPtr
 GetUniParListPtr_DataFile(void)
 {
-	static const char *funcName = "GetUniParListPtr_DataFile";
+	static const WChar *funcName = wxT("GetUniParListPtr_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (dataFilePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(dataFilePtr->parList);
@@ -343,15 +344,15 @@ GetUniParListPtr_DataFile(void)
 BOOLN
 SetWordSize_DataFile(int wordSize)
 {
-	static const char *funcName = "SetWordSize_DataFile";
+	static const WChar *funcName = wxT("SetWordSize_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((wordSize != 1) && (wordSize != 2) && (wordSize != 4)) {
-		NotifyError("%s: Illegal value - must be 1, 2 or 4 (%d).", funcName,
-		  wordSize);
+		NotifyError(wxT("%s: Illegal value - must be 1, 2 or 4 (%d)."),
+		  funcName, wordSize);
 		return(FALSE);
 	}
 	dataFilePtr->wordSize = wordSize;
@@ -369,10 +370,10 @@ SetWordSize_DataFile(int wordSize)
 BOOLN
 SetNormalisation_DataFile(double normalisation)
 {
-	static const char *funcName = "SetNormalisation_DataFile";
+	static const WChar *funcName = wxT("SetNormalisation_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr->normalisation = normalisation;
@@ -390,14 +391,14 @@ SetNormalisation_DataFile(double normalisation)
 BOOLN
 SetNumChannels_DataFile(int numChannels)
 {
-	static const char *funcName = "SetNumChannels_DataFile";
+	static const WChar *funcName = wxT("SetNumChannels_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (numChannels < 1) {
-		NotifyError("%s: Value - must be > 1 (%d).", funcName,
+		NotifyError(wxT("%s: Value - must be > 1 (%d)."), funcName,
 		  numChannels);
 		return(FALSE);
 	}
@@ -418,7 +419,7 @@ DataFileEndianModeSpecifier
 GetMachineByteOrder_DataFile(void)
 {
 	short int	word = 0x0001;
-	char		*byte = (char *) &word;
+	WChar		*byte = (WChar *) &word;
 
 	return((byte[0])? DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN);
 
@@ -435,10 +436,10 @@ GetMachineByteOrder_DataFile(void)
 void
 SetRWFormat_DataFile(int dataFormat)
 {
-	static const char *funcName = "SetRWFormat_DataFile";
+	static const WChar *funcName = wxT("SetRWFormat_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return;
 	}
 	if (dataFormat == DATA_FILE_DEFAULT_ENDIAN)
@@ -479,18 +480,18 @@ SetRWFormat_DataFile(int dataFormat)
  */
 
 BOOLN
-SetEndian_DataFile(char *endian)
+SetEndian_DataFile(WChar *endian)
 {
-	static const char *funcName = "SetEndian_DataFile";
+	static const WChar *funcName = wxT("SetEndian_DataFile");
 	int		specifier;
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(endian,
 		dataFilePtr->endianModeList)) == DATA_FILE_ENDIAN_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, endian);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, endian);
 		return(FALSE);
 	}
 	dataFilePtr->endian = specifier;
@@ -507,9 +508,9 @@ SetEndian_DataFile(char *endian)
  */
 
 int32
-ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
+ReadFileIdentifier_DataFile(FILE *fp, int32 target, WChar *filetype)
 {
-	static const char *funcName = "ReadFileIdentifier_DataFile";
+	static const WChar *funcName = wxT("ReadFileIdentifier_DataFile");
 	int32	identifier;
 
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
@@ -521,7 +522,7 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
 		return(identifier);
-	NotifyError("%s: Could not find %s identifier.", funcName, filetype);
+	NotifyError(wxT("%s: Could not find %s identifier."), funcName, filetype);
 	return(0);
 
 }
@@ -534,17 +535,17 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, char *filetype)
  */
 
 FileFormatSpecifier
-Format_DataFile(char *suffix)
+Format_DataFile(WChar *suffix)
 {
 	static NameSpecifier soundFormatList[] = {
 
-		{"AIF", AIFF_DATA_FILE},
-		{"AIFF", AIFF_DATA_FILE},
-		{"DAT", ASCII_DATA_FILE},
-		{"RAW", RAW_DATA_FILE},
-		{"WAV", WAVE_DATA_FILE},
-		{"WAVE", WAVE_DATA_FILE},
-		{"", NULL_DATA_FILE}
+		{wxT("AIF"),	AIFF_DATA_FILE},
+		{wxT("AIFF"),	AIFF_DATA_FILE},
+		{wxT("DAT"),	ASCII_DATA_FILE},
+		{wxT("RAW"),	RAW_DATA_FILE},
+		{wxT("WAV"),	WAVE_DATA_FILE},
+		{wxT("WAVE"),	WAVE_DATA_FILE},
+		{wxT(""),		NULL_DATA_FILE}
 
 	};
 
@@ -615,10 +616,10 @@ SetIOSectionLength_DataFile(EarObjectPtr data)
  */
 
 FILE *
-OpenFile_DataFile(char *fileName, char *mode)
+OpenFile_DataFile(WChar *fileName, char *mode)
 {
-	static const char *funcName = "OpenFile_DataFile";
-	char	*parFilePath;
+	static const WChar *funcName = wxT("OpenFile_DataFile");
+	WChar	*parFilePath;
 	FILE	*fp, *dummy = stdout;
 
 	uPortableIOPtr = dataFilePtr->uIOPtr;
@@ -633,9 +634,10 @@ OpenFile_DataFile(char *fileName, char *mode)
 	default:
 		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);
 		parFilePath = GetParsFileFPath_Common(fileName);
-		if ((fp = fopen(parFilePath, mode)) == NULL) {
-			NotifyError("%s: Couldn't open '%s' ('%s').", funcName, fileName,
-			  mode);
+		if ((fp = fopen(ConvUTF8_Utility_String(parFilePath), (char *) 
+		  mode)) == NULL) {
+			NotifyError(wxT("%s: Couldn't open '%s' ('%s')."), funcName,
+			  fileName, mode);
 			return((FILE *) NULL);
 		}
 		else
@@ -654,10 +656,10 @@ int
 NumberOfColumns_DataFile(FILE *fp)
 {
 	BOOLN	number;
-	char	*c, line[MAXLINE_LARGE];
+	WChar	*c, line[MAXLINE_LARGE];
 	int		numcols;
 
-	if (fgets(line, MAXLINE_LARGE, fp) == NULL)
+	if (DSAM_fgets(line, MAXLINE_LARGE, fp) == NULL)
 		return(0);
 	/* Find the start of the first number */
 	for(c = line; !isdigit(*c) && (*c != '.') && (*c != '-'); c++)
@@ -726,7 +728,7 @@ CalculateNormalisation_DataFile(SignalDataPtr signal)
 BOOLN
 WriteSignal_DataFile(FILE *fp, SignalDataPtr signal)
 {
-	static const char *funcName = "WriteSignal_DataFile";
+	static const WChar *funcName = wxT("WriteSignal_DataFile");
 	int		j;
 	ChanLen	i;
 	
@@ -750,7 +752,7 @@ WriteSignal_DataFile(FILE *fp, SignalDataPtr signal)
 				  dataFilePtr->normOffset) *  dataFilePtr->normalise + 0.5));
 		break;
 	default:
-		NotifyError("%s: Unsupported sample size.", funcName);
+		NotifyError(wxT("%s: Unsupported sample size."), funcName);
 		return(FALSE);
 	} /* Switch */
 	return(TRUE);
@@ -767,10 +769,10 @@ WriteSignal_DataFile(FILE *fp, SignalDataPtr signal)
 BOOLN
 SetDefaultSampleRate_DataFile(double theDefaultSampleRate)
 {
-	static const char *funcName = "SetDefaultSampleRate_DataFile";
+	static const WChar *funcName = wxT("SetDefaultSampleRate_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr->defaultSampleRate = theDefaultSampleRate;
@@ -789,10 +791,10 @@ SetDefaultSampleRate_DataFile(double theDefaultSampleRate)
 BOOLN
 SetDuration_DataFile(double theDuration)
 {
-	static const char *funcName = "SetDuration_DataFile";
+	static const WChar *funcName = wxT("SetDuration_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr->duration = theDuration;
@@ -811,14 +813,14 @@ SetDuration_DataFile(double theDuration)
 BOOLN
 SetTimeOffset_DataFile(double theTimeOffset)
 {
-	static const char *funcName = "SetTimeOffset_DataFile";
+	static const WChar *funcName = wxT("SetTimeOffset_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theTimeOffset < 0.0) {
-		NotifyError("%s: Illegal value (%g ms).", MILLI(theTimeOffset));
+		NotifyError(wxT("%s: Illegal value (%g ms)."), MILLI(theTimeOffset));
 		return(FALSE);
 	}
 	dataFilePtr->timeOffset = theTimeOffset;
@@ -837,10 +839,10 @@ SetTimeOffset_DataFile(double theTimeOffset)
 BOOLN
 SetGain_DataFile(double theGain)
 {
-	static const char *funcName = "SetGain_DataFile";
+	static const WChar *funcName = wxT("SetGain_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr->gain = theGain;
@@ -857,19 +859,19 @@ SetGain_DataFile(double theGain)
  */
 
 BOOLN
-SetFileName_DataFile(char *fileName)
+SetFileName_DataFile(WChar *fileName)
 {
-	static const char *funcName = "SetFileName_DataFile";
+	static const WChar *funcName = wxT("SetFileName_DataFile");
 
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (*fileName == (char) NULL) {
-		NotifyError("%s: Illegal file name.", funcName);
+		NotifyError(wxT("%s: Illegal file name."), funcName);
 		return(FALSE);
 	}
-	snprintf(dataFilePtr->name, MAX_FILE_PATH, "%s", fileName);
+	DSAM_snprintf(dataFilePtr->name, MAX_FILE_PATH, wxT("%s"), fileName);
 	Format_DataFile(GetSuffix_Utility_String(fileName));
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -887,27 +889,27 @@ SetFileName_DataFile(char *fileName)
 BOOLN
 CheckPars_DataFile(void)
 {
-	static const char *funcName = "CheckPars_DataFile";
+	static const WChar *funcName = wxT("CheckPars_DataFile");
 	BOOLN	ok;
 	
 	ok = TRUE;
 	if (dataFilePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (dataFilePtr->name[0] == (char) NULL) {
-		NotifyError("%s: File name not set.", funcName);
+		NotifyError(wxT("%s: File name not set."), funcName);
 		ok = FALSE;
 	}
 	if (dataFilePtr->name[0] == (char) NULL) {
-		NotifyError("%s: File name not set.", funcName);
+		NotifyError(wxT("%s: File name not set."), funcName);
 		ok = FALSE;
 	}
 	if ((dataFilePtr->type == RAW_DATA_FILE) || (dataFilePtr->type ==
 	  ASCII_DATA_FILE)) {
 		if (dataFilePtr->numChannels < 1) {
-			NotifyError("%s: Number of channels parameter incorrectly set.",
-			  funcName);
+			NotifyError(wxT("%s: Number of channels parameter incorrectly "
+			  "set."), funcName);
 			ok = FALSE;
 		}
 	}
@@ -928,7 +930,7 @@ CheckPars_DataFile(void)
 BOOLN
 CheckParsRead_DataFile(void)
 {
-	static const char *funcName = "CheckParsRead_DataFile";
+	static const WChar *funcName = wxT("CheckParsRead_DataFile");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -936,8 +938,8 @@ CheckParsRead_DataFile(void)
 	  ASCII_DATA_FILE)) {
 		if ((dataFilePtr->name[0] == STDIN_STDOUT_FILE_DIRN) &&
 		  (dataFilePtr->duration <= 0.0)) {
-			NotifyError("%s: Duration must be set, i.e.greater than zero,\n"
-			  "for pipes (%g s).", funcName, dataFilePtr->duration);
+			NotifyError(wxT("%s: Duration must be set, i.e.greater than zero"
+			  ",\nfor pipes (%g s)."), funcName, dataFilePtr->duration);
 			ok = FALSE;
 		}
 	}
@@ -953,11 +955,11 @@ CheckParsRead_DataFile(void)
  */
  
 BOOLN
-SetPars_DataFile(char *theFileName, int theWordSize, char *theEndian,
+SetPars_DataFile(WChar *theFileName, int theWordSize, WChar *theEndian,
   int theNumChannels, double theDefaultSampleRate, double theDuration,
   double theTimeOffset, double theGain, double theNormalisation)
 {
-	static const char *funcName = "SetPars_DataFile";
+	static const WChar *funcName = wxT("SetPars_DataFile");
 	BOOLN	ok;
 	
 	ok = TRUE;
@@ -980,7 +982,7 @@ SetPars_DataFile(char *theFileName, int theWordSize, char *theEndian,
 	if (!SetNormalisation_DataFile(theNormalisation))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters.", funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
 	
 }
@@ -994,30 +996,31 @@ SetPars_DataFile(char *theFileName, int theWordSize, char *theEndian,
 BOOLN
 PrintPars_DataFile(void)
 {
-	static const char *funcName = "PrintPars_DataFile";
+	static const WChar *funcName = wxT("PrintPars_DataFile");
 	if (!CheckPars_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("DataFile Module Parameters:-\n");
-	DPrint("\tFile name = %s\n", dataFilePtr->name);
-	DPrint("\t%s endian format,\tDefault word size = %d\n",
+	DPrint(wxT("DataFile Module Parameters:-\n"));
+	DPrint(wxT("\tFile name = %s\n"), dataFilePtr->name);
+	DPrint(wxT("\t%s endian format,\tDefault word size = %d\n"),
 	  dataFilePtr->endianModeList[dataFilePtr->endian].name,
 	  dataFilePtr->wordSize);
-	DPrint("\tNumber of channels = %d,", dataFilePtr->numChannels);
-	DPrint("\tGain = %g dB\n", dataFilePtr->gain);
-	DPrint("\tDefault sample rate = %g,\tDuration = ",
+	DPrint(wxT("\tNumber of channels = %d,"), dataFilePtr->numChannels);
+	DPrint(wxT("\tGain = %g dB\n"), dataFilePtr->gain);
+	DPrint(wxT("\tDefault sample rate = %g,\tDuration = "),
 	  dataFilePtr->defaultSampleRate);
 	if (dataFilePtr->duration < 0.0)
-		DPrint("No limit,\n");
+		DPrint(wxT("No limit,\n"));
 	else
-		DPrint("%g ms,\n", MILLI(dataFilePtr->duration));
-	DPrint("\tTime offset = %g ms.\n", MILLI(dataFilePtr->timeOffset));
-	DPrint("\tNormalisation const: ");
+		DPrint(wxT("%g ms,\n"), MILLI(dataFilePtr->duration));
+	DPrint(wxT("\tTime offset = %g ms.\n"), MILLI(dataFilePtr->timeOffset));
+	DPrint(wxT("\tNormalisation const: "));
 	if (dataFilePtr->normalisation < DBL_EPSILON)
-		DPrint("automatic.\n");
+		DPrint(wxT("automatic.\n"));
 	else
-		DPrint("%g\n", dataFilePtr->normalisation);
+		DPrint(wxT("%g\n"), dataFilePtr->normalisation);
 	return(TRUE);
 
 }
@@ -1030,53 +1033,54 @@ PrintPars_DataFile(void)
  */
  
 BOOLN
-ReadPars_DataFile(char *parFileName)
+ReadPars_DataFile(WChar *parFileName)
 {
-	static const char *funcName = "ReadPars_DataFile";
+	static const WChar *funcName = wxT("ReadPars_DataFile");
 	BOOLN	ok;
-	char	fileName[MAX_FILE_PATH], *parFilePath, endian[MAXLINE];
+	WChar	fileName[MAX_FILE_PATH], *parFilePath, endian[MAXLINE];
 	int		wordSize, numChannels;
 	double  defaultSampleRate, duration, timeOffset, gain, normalisation;
 	FILE	*fp;
 	
-    if (strcmp(parFileName, NO_FILE) == 0)
+    if (DSAM_strcmp(parFileName, NO_FILE) == 0)
     	return(TRUE);
 	parFilePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(parFilePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, parFilePath);
+	if ((fp = fopen((char *) parFilePath, "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  parFilePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, parFilePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, parFilePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", fileName))
+	if (!GetPars_ParFile(fp, wxT("%s"), fileName))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &wordSize))
+	if (!GetPars_ParFile(fp, wxT("%d"), &wordSize))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", endian))
+	if (!GetPars_ParFile(fp, wxT("%s"), endian))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numChannels))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &normalisation))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &normalisation))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &defaultSampleRate))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &defaultSampleRate))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &duration))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &timeOffset))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &gain))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &gain))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s:  Not enough, lines or invalid parameters, in module "\
-		  "parameter file '%s'.", funcName, parFilePath);
+		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, parFilePath);
 		return(FALSE);
 	}
 	if (!SetPars_DataFile(fileName, wordSize, endian, numChannels,
 	  defaultSampleRate, duration, timeOffset, gain, normalisation)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1093,10 +1097,10 @@ ReadPars_DataFile(char *parFileName)
 BOOLN
 SetParsPointer_DataFile(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_DataFile";
+	static const WChar	*funcName = wxT("SetParsPointer_DataFile");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	dataFilePtr = (DataFilePtr) theModule->parsPtr;
@@ -1113,17 +1117,18 @@ SetParsPointer_DataFile(ModulePtr theModule)
 BOOLN
 InitModule_DataFile(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_DataFile";
+	static const WChar	*funcName = wxT("InitModule_DataFile");
 
 	if (!SetParsPointer_DataFile(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_DataFile(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
-	dataFilePtr->inputMode = (strcmp(theModule->name, "DATAFILE_IN") == 0);
+	dataFilePtr->inputMode = (DSAM_strcmp(theModule->name, wxT("DATAFILE_IN")) == 0);
 	if (dataFilePtr->inputMode)
 		dataFilePtr->parList->pars[DATAFILE_NORMALISE].enabled = FALSE;
 	else {
@@ -1159,14 +1164,14 @@ BOOLN
 InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
   double sampleRate)
 {
-	static char *funcName = "InitProcessVariables_DataFile";
+	static WChar *funcName = wxT("InitProcessVariables_DataFile");
 	
 	if (dataFilePtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_DataFile();
 		if ((dataFilePtr->timeOffsetIndex = (ChanLen) floor(
 		  dataFilePtr->timeOffset * sampleRate + 0.5)) >= length) {
-			NotifyError("%s: Time offset (%g ms) must be shorter than signal.",
-			  funcName, MILLI(dataFilePtr->timeOffset));
+			NotifyError(wxT("%s: Time offset (%g ms) must be shorter than "
+			  "signal."), funcName, MILLI(dataFilePtr->timeOffset));
 			return(FALSE);
 		}
 		dataFilePtr->timeOffsetCount = dataFilePtr->timeOffsetIndex;
@@ -1177,7 +1182,7 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 		else {
 			if ((dataFilePtr->maxSamples = (int32) floor(dataFilePtr->duration *
 			  sampleRate + 0.5)) > (int32) dataFilePtr->numSamples) {
-				NotifyError("%s: Duration (%g ms) is longer than signal.",
+				NotifyError(wxT("%s: Duration (%g ms) is longer than signal."),
 				  funcName, MILLI(dataFilePtr->duration));
 				return(FALSE);
 			}
@@ -1193,7 +1198,7 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 			dataFilePtr->normalise = (double) (0xffffffff >> 1);
 			break;
 		default:
-			NotifyError("%s: Unsupported sample bit size = %d.", funcName,
+			NotifyError(wxT("%s: Unsupported sample bit size = %d."), funcName,
 			  dataFilePtr->wordSize);
 			return(FALSE);
 		} /* switch */		
@@ -1232,7 +1237,7 @@ FreeProcessVariables_DataFile(void)
 ChanData
 ReadSample_DataFile(FILE *fp)
 {
-	static const char *funcName = "ReadSample_DataFile";
+	static const WChar *funcName = wxT("ReadSample_DataFile");
 	ChanData	sample;
 
 	switch (dataFilePtr->wordSize) {
@@ -1246,7 +1251,7 @@ ReadSample_DataFile(FILE *fp)
 		sample = (ChanData) dataFilePtr->Read32Bits(fp);
 		break;
 	default:
-		NotifyError("%s: Unsupported sample bit size = %d.", funcName,
+		NotifyError(wxT("%s: Unsupported sample bit size = %d."), funcName,
 		  dataFilePtr->wordSize);
 		return(0.0);
 	} /* switch */		
@@ -1265,9 +1270,9 @@ ReadSample_DataFile(FILE *fp)
  */
 
 BOOLN
-ReadSignal_DataFile(char *fileName, EarObjectPtr data)
+ReadSignal_DataFile(WChar *fileName, EarObjectPtr data)
 {
-	/* static const char *funcName = "ReadSignal_DataFile"; */
+	/* static const WChar *funcName = wxT("ReadSignal_DataFile"); */
 	BOOLN	ok;
 	DataFile	tempDataFile, *oldPtr;
 
@@ -1291,18 +1296,19 @@ ReadSignal_DataFile(char *fileName, EarObjectPtr data)
  */
 
 BOOLN
-ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
+ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "ReadSignalMain_DataFile";
+	static const WChar *funcName = wxT("ReadSignalMain_DataFile");
 	BOOLN	ok;
 
 	if (dataFilePtr == NULL) {
 		if (!Init_DataFile(GLOBAL)) {
-			NotifyError("%s: Could not initialise parameters.", funcName);
+			NotifyError(wxT("%s: Could not initialise parameters."), funcName);
 			return(FALSE);
 		}
 	} else if (!CheckPars_DataFile() || !CheckParsRead_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
 	Format_DataFile(GetSuffix_Utility_String(fileName));
@@ -1323,7 +1329,7 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
 		break;
 	} /* switch */
 	if (!ok && !GetDSAMPtr_Common()->segmentedMode)
-		NotifyError("%s: Could not read file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Could not read file '%s'."), funcName, fileName);
 	if (ok) {
 		if (fabs(dataFilePtr->gain) > DBL_EPSILON)
 			GaindB_SignalData(data->outSignal, dataFilePtr->gain);
@@ -1348,9 +1354,9 @@ ReadSignalMain_DataFile(char *fileName, EarObjectPtr data)
  */
 
 BOOLN
-WriteOutSignal_DataFile(char *fileName, EarObjectPtr data)
+WriteOutSignal_DataFile(WChar *fileName, EarObjectPtr data)
 {
-	/* static const char *funcName = "WriteOutSignal_DataFile"; */
+	/* static const WChar *funcName = wxT("WriteOutSignal_DataFile"); */
 	BOOLN	ok;
 	DataFile	tempDataFile, *oldPtr;
 
@@ -1373,23 +1379,24 @@ WriteOutSignal_DataFile(char *fileName, EarObjectPtr data)
  */
 
 BOOLN
-WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data)
+WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 {
-	static const char *funcName = "WriteOutSignalMain_DataFile";
+	static const WChar *funcName = wxT("WriteOutSignalMain_DataFile");
 	BOOLN	ok = FALSE;
 	
 	if (!data || !data->outSignal) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (dataFilePtr == NULL) {
 		if (!Init_DataFile(GLOBAL)) {
-			NotifyError("%s: Could not initialise parameters.", funcName);
+			NotifyError(wxT("%s: Could not initialise parameters."), funcName);
 			return(FALSE);
 		}
 		dataFilePtr->inputMode = FALSE;
 	} else if (!CheckPars_DataFile()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
 	uPortableIOPtr = dataFilePtr->uIOPtr;
@@ -1409,7 +1416,7 @@ WriteOutSignalMain_DataFile(char *fileName, EarObjectPtr data)
 		break;
 	}
 	if (!ok)
-		NotifyError("%s: Could not write file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Could not write file '%s'."), funcName, fileName);
 	return(ok);
 
 }
@@ -1439,8 +1446,6 @@ ReadSignal_DataFile_Named(EarObjectPtr data)
 BOOLN
 WriteOutSignal_DataFile_Named(EarObjectPtr data)
 {
-	/* static const char *funcName = "WriteOutSignal_DataFile_Named"; */
-
 	if (!data->threadRunFlag) {
 		data->outSignal = data->inSignal[0];
 		if (data->initThreadRunFlag)

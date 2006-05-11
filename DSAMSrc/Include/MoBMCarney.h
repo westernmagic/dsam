@@ -129,7 +129,7 @@ BOOLN	InitProcessVariables_BasilarM_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_BasilarM_Carney(void);
 
-BOOLN	ReadPars_BasilarM_Carney(char *fileName);
+BOOLN	ReadPars_BasilarM_Carney(WChar *fileName);
 
 BOOLN	RunModel_BasilarM_Carney(EarObjectPtr data);
 

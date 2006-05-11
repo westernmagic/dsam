@@ -44,10 +44,10 @@ int		optionsPleaseLink = 0;
  */
 
 int
-Process_Options(int argc, register char **argv, int *optind, int *optsub,
-  char **argument, char *proto)
+Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
+  WChar **argument, WChar *proto)
 {
-	register char	*idx;
+	register WChar	*idx;
 	register int	c;
 
 	*argument = NULL;
@@ -67,7 +67,7 @@ Process_Options(int argc, register char **argv, int *optind, int *optsub,
 	case ':':
 		return ('?');
 	}
-	if ((idx = strchr (proto, c)) == NULL)
+	if ((idx = DSAM_strchr (proto, c)) == NULL)
 		return ('?');
 	if (idx[1] != ':')
 		return (c);
@@ -90,14 +90,14 @@ Process_Options(int argc, register char **argv, int *optind, int *optsub,
  */
 
 void
-MarkIgnore_Options(int argc, register char **argv, char *optionString,
+MarkIgnore_Options(int argc, register WChar **argv, WChar *optionString,
   OptionsArgSpecifier state)
 {
 	int		i, length;
 
-	length = strlen(optionString);
-	for (i = 1; (strncmp(argv[i], optionString, length) != 0) && (i < argc);
-	  i++)
+	length = DSAM_strlen(optionString);
+	for (i = 1; (DSAM_strncmp(argv[i], optionString, length) != 0) && (i <
+	  argc); i++)
 		;
 	argv[i][1] = (state == OPTIONS_NO_ARG)? OPTIONS_IGNORE_OPTION:
 	  OPTIONS_IGNORE_ARG_OPTION;

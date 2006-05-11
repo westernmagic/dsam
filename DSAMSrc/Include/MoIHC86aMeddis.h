@@ -103,7 +103,7 @@ BOOLN	InitProcessVariables_IHC_Meddis86a(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Meddis86a(void);
 
-BOOLN	ReadPars_IHC_Meddis86a(char *fileName);
+BOOLN	ReadPars_IHC_Meddis86a(WChar *fileName);
 
 BOOLN	RunModel_IHC_Meddis86a(EarObjectPtr data);
 

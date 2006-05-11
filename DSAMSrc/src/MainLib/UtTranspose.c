@@ -52,7 +52,6 @@ TransposePtr	transposePtr = NULL;
 BOOLN
 Free_Utility_Transpose(void)
 {
-	/* static const char	*funcName = "Free_Utility_Transpose";  */
 
 	if (transposePtr == NULL)
 		return(FALSE);
@@ -77,9 +76,9 @@ InitModeList_Utility_Transpose(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "STANDARD",		UTILITY_TRANSPOSE_STANDARD_MODE },
-			{ "FIRST_CHANNEL",	UTILITY_TRANSPOSE_FIRST_CHANNEL_MODE },
-			{ "",				UTILITY_TRANSPOSE_MODE_NULL },
+			{ wxT("STANDARD"),		UTILITY_TRANSPOSE_STANDARD_MODE },
+			{ wxT("FIRST_CHANNEL"),	UTILITY_TRANSPOSE_FIRST_CHANNEL_MODE },
+			{ wxT(""),				UTILITY_TRANSPOSE_MODE_NULL },
 		};
 	transposePtr->modeList = modeList;
 	return(TRUE);
@@ -101,18 +100,18 @@ InitModeList_Utility_Transpose(void)
 BOOLN
 Init_Utility_Transpose(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_Transpose";
+	static const WChar	*funcName = wxT("Init_Utility_Transpose");
 
 	if (parSpec == GLOBAL) {
 		if (transposePtr != NULL)
 			Free_Utility_Transpose();
 		if ((transposePtr = (TransposePtr) malloc(sizeof(Transpose))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (transposePtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -122,7 +121,7 @@ Init_Utility_Transpose(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_Transpose();
 	if (!SetUniParList_Utility_Transpose()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Transpose();
 		return(FALSE);
 	}
@@ -141,17 +140,17 @@ Init_Utility_Transpose(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_Transpose(void)
 {
-	static const char *funcName = "SetUniParList_Utility_Transpose";
+	static const WChar *funcName = wxT("SetUniParList_Utility_Transpose");
 	UniParPtr	pars;
 
 	if ((transposePtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_TRANSPOSE_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = transposePtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_TRANSPOSE_MODE], "MODE",
-	  "Sample labelling mode ('standard' or 'first channel'.",
+	SetPar_UniParMgr(&pars[UTILITY_TRANSPOSE_MODE], wxT("MODE"),
+	  wxT("Sample labelling mode ('standard' or 'first channel'."),
 	  UNIPAR_NAME_SPEC,
 	  &transposePtr->mode, transposePtr->modeList,
 	  (void * (*)) SetMode_Utility_Transpose);
@@ -169,15 +168,15 @@ SetUniParList_Utility_Transpose(void)
 UniParListPtr
 GetUniParListPtr_Utility_Transpose(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_Transpose";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_Transpose");
 
 	if (transposePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (transposePtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(transposePtr->parList);
@@ -193,18 +192,18 @@ GetUniParListPtr_Utility_Transpose(void)
  */
 
 BOOLN
-SetMode_Utility_Transpose(char * theMode)
+SetMode_Utility_Transpose(WChar * theMode)
 {
-	static const char	*funcName = "SetMode_Utility_Transpose";
+	static const WChar	*funcName = wxT("SetMode_Utility_Transpose");
 	int		specifier;
 
 	if (transposePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 		transposePtr->modeList)) == UTILITY_TRANSPOSE_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -227,16 +226,16 @@ SetMode_Utility_Transpose(char * theMode)
 BOOLN
 CheckPars_Utility_Transpose(void)
 {
-	static const char	*funcName = "CheckPars_Utility_Transpose";
+	static const WChar	*funcName = wxT("CheckPars_Utility_Transpose");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (transposePtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!transposePtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -253,14 +252,15 @@ CheckPars_Utility_Transpose(void)
 BOOLN
 PrintPars_Utility_Transpose(void)
 {
-	static const char	*funcName = "PrintPars_Utility_Transpose";
+	static const WChar	*funcName = wxT("PrintPars_Utility_Transpose");
 
 	if (!CheckPars_Utility_Transpose()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Transpose Utility Module Parameters:-\n");
-	DPrint("\tSample labelling mode = %s\n", transposePtr->modeList[
+	DPrint(wxT("Transpose Utility Module Parameters:-\n"));
+	DPrint(wxT("\tSample labelling mode = %s\n"), transposePtr->modeList[
 	  transposePtr->mode].name);
 	return(TRUE);
 
@@ -276,10 +276,10 @@ PrintPars_Utility_Transpose(void)
 BOOLN
 SetParsPointer_Utility_Transpose(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_Transpose";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_Transpose");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	transposePtr = (TransposePtr) theModule->parsPtr;
@@ -297,14 +297,14 @@ SetParsPointer_Utility_Transpose(ModulePtr theModule)
 BOOLN
 InitModule_Utility_Transpose(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_Transpose";
+	static const WChar	*funcName = wxT("InitModule_Utility_Transpose");
 
 	if (!SetParsPointer_Utility_Transpose(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_Transpose(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = transposePtr;
@@ -334,10 +334,10 @@ InitModule_Utility_Transpose(ModulePtr theModule)
 BOOLN
 CheckData_Utility_Transpose(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_Transpose";
+	static const WChar	*funcName = wxT("CheckData_Utility_Transpose");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -365,7 +365,7 @@ CheckData_Utility_Transpose(EarObjectPtr data)
 BOOLN
 Process_Utility_Transpose(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_Transpose";
+	static const WChar	*funcName = wxT("Process_Utility_Transpose");
 	register ChanData	 *inPtr;
 	BOOLN	regularLabels;
 	int		i, chan;
@@ -375,10 +375,10 @@ Process_Utility_Transpose(EarObjectPtr data)
 		if (!CheckPars_Utility_Transpose())
 			return(FALSE);
 		if (!CheckData_Utility_Transpose(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Transpose Utility Module process");
+		SetProcessName_EarObject(data, wxT("Transpose Utility Module process"));
 		chanLabel = data->inSignal[0]->info.chanLabel;
 		if ((data->inSignal[0]->numChannels > 2)) {
 			delta1 = chanLabel[1] - chanLabel[0];
@@ -396,7 +396,7 @@ Process_Utility_Transpose(EarObjectPtr data)
 
 		if (!InitOutSignal_EarObject(data, (uShort) data->inSignal[0]->length,
 		  (ChanLen) data->inSignal[0]->numChannels, newDt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
 		SetOutputTimeOffset_SignalData(data->outSignal, timeOffset);

@@ -48,8 +48,6 @@ MathOpPtr	mathOpPtr = NULL;
 BOOLN
 Free_Utility_MathOp(void)
 {
-	/* static const char	*funcName = "Free_Utility_MathOp";  */
-
 	if (mathOpPtr == NULL)
 		return(FALSE);
 	if (mathOpPtr->parList)
@@ -73,12 +71,12 @@ InitOperatorModeList_Utility_MathOp(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "ADD",		UTILITY_MATHOP_OPERATORMODE_ADD },
-			{ "ABSOLUTE",	UTILITY_MATHOP_OPERATORMODE_ABSOLUTE },
-			{ "SCALE",		UTILITY_MATHOP_OPERATORMODE_SCALE },
-			{ "SQR",		UTILITY_MATHOP_OPERATORMODE_SQR },
-			{ "SUBTRACT",	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
-			{ "",	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
+			{ wxT("ADD"),		UTILITY_MATHOP_OPERATORMODE_ADD },
+			{ wxT("ABSOLUTE"),	UTILITY_MATHOP_OPERATORMODE_ABSOLUTE },
+			{ wxT("SCALE"),		UTILITY_MATHOP_OPERATORMODE_SCALE },
+			{ wxT("SQR"),		UTILITY_MATHOP_OPERATORMODE_SQR },
+			{ wxT("SUBTRACT"),	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
+			{ wxT(""),			UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
 		};
 	mathOpPtr->operatorModeList = modeList;
 	return(TRUE);
@@ -100,18 +98,19 @@ InitOperatorModeList_Utility_MathOp(void)
 BOOLN
 Init_Utility_MathOp(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_MathOp";
+	static const WChar	*funcName = wxT("Init_Utility_MathOp");
 
 	if (parSpec == GLOBAL) {
 		if (mathOpPtr != NULL)
 			Free_Utility_MathOp();
 		if ((mathOpPtr = (MathOpPtr) malloc(sizeof(MathOp))) == NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (mathOpPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -123,7 +122,7 @@ Init_Utility_MathOp(ParameterSpecifier parSpec)
 
 	InitOperatorModeList_Utility_MathOp();
 	if (!SetUniParList_Utility_MathOp()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_MathOp();
 		return(FALSE);
 	}
@@ -142,22 +141,23 @@ Init_Utility_MathOp(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_MathOp(void)
 {
-	static const char *funcName = "SetUniParList_Utility_MathOp";
+	static const WChar *funcName = wxT("SetUniParList_Utility_MathOp");
 	UniParPtr	pars;
 
 	if ((mathOpPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_MATHOP_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = mathOpPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERATORMODE], "OPERATOR",
-	  "Mathematical operator ('add', 'modulus', 'scale', 'sqr' or 'subtract').",
+	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERATORMODE], wxT("OPERATOR"),
+	  wxT("Mathematical operator ('add', 'modulus', 'scale', 'sqr' or "
+	  "'subtract')."),
 	  UNIPAR_NAME_SPEC,
 	  &mathOpPtr->operatorMode, mathOpPtr->operatorModeList,
 	  (void * (*)) SetOperatorMode_Utility_MathOp);
-	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERAND], "OPERAND",
-	  "Operand (only used in scale mode at present).",
+	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERAND], wxT("OPERAND"),
+	  wxT("Operand (only used in scale mode at present)."),
 	  UNIPAR_REAL,
 	  &mathOpPtr->operand, NULL,
 	  (void * (*)) SetOperand_Utility_MathOp);
@@ -175,15 +175,15 @@ SetUniParList_Utility_MathOp(void)
 UniParListPtr
 GetUniParListPtr_Utility_MathOp(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_MathOp";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_MathOp");
 
 	if (mathOpPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (mathOpPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(mathOpPtr->parList);
@@ -199,18 +199,18 @@ GetUniParListPtr_Utility_MathOp(void)
  */
 
 BOOLN
-SetOperatorMode_Utility_MathOp(char * theOperatorMode)
+SetOperatorMode_Utility_MathOp(WChar * theOperatorMode)
 {
-	static const char	*funcName = "SetOperatorMode_Utility_MathOp";
+	static const WChar	*funcName = wxT("SetOperatorMode_Utility_MathOp");
 	int		specifier;
 
 	if (mathOpPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theOperatorMode,
 		mathOpPtr->operatorModeList)) == UTILITY_MATHOP_OPERATORMODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theOperatorMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOperatorMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -234,10 +234,10 @@ SetOperatorMode_Utility_MathOp(char * theOperatorMode)
 BOOLN
 SetOperand_Utility_MathOp(double theOperand)
 {
-	static const char	*funcName = "SetOperand_Utility_MathOp";
+	static const WChar	*funcName = wxT("SetOperand_Utility_MathOp");
 
 	if (mathOpPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -260,20 +260,20 @@ SetOperand_Utility_MathOp(double theOperand)
 BOOLN
 CheckPars_Utility_MathOp(void)
 {
-	static const char	*funcName = "CheckPars_Utility_MathOp";
+	static const WChar	*funcName = wxT("CheckPars_Utility_MathOp");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (mathOpPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!mathOpPtr->operatorModeFlag) {
-		NotifyError("%s: operatorMode variable not set.", funcName);
+		NotifyError(wxT("%s: operatorMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!mathOpPtr->operandFlag) {
-		NotifyError("%s: operand variable not set.", funcName);
+		NotifyError(wxT("%s: operand variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -290,19 +290,20 @@ CheckPars_Utility_MathOp(void)
 BOOLN
 PrintPars_Utility_MathOp(void)
 {
-	static const char	*funcName = "PrintPars_Utility_MathOp";
+	static const WChar	*funcName = wxT("PrintPars_Utility_MathOp");
 
 	if (!CheckPars_Utility_MathOp()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Mathematicl Operation Utility Module Parameters:-\n");
-	DPrint("\tOperatorMode = %s, ", mathOpPtr->operatorModeList[mathOpPtr->
+	DPrint(wxT("Mathematicl Operation Utility Module Parameters:-\n"));
+	DPrint(wxT("\tOperatorMode = %s, "), mathOpPtr->operatorModeList[mathOpPtr->
 	  operatorMode].name);
 	if (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SCALE)
-		DPrint("\tOperand = %g (units).\n", mathOpPtr->operand);
+		DPrint(wxT("\tOperand = %g (units).\n"), mathOpPtr->operand);
 	else
-		DPrint("\n");
+		DPrint(wxT("\n"));
 	return(TRUE);
 
 }
@@ -317,10 +318,10 @@ PrintPars_Utility_MathOp(void)
 BOOLN
 SetParsPointer_Utility_MathOp(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_MathOp";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_MathOp");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	mathOpPtr = (MathOpPtr) theModule->parsPtr;
@@ -338,14 +339,15 @@ SetParsPointer_Utility_MathOp(ModulePtr theModule)
 BOOLN
 InitModule_Utility_MathOp(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_MathOp";
+	static const WChar	*funcName = wxT("InitModule_Utility_MathOp");
 
 	if (!SetParsPointer_Utility_MathOp(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_MathOp(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = mathOpPtr;
@@ -376,10 +378,10 @@ InitModule_Utility_MathOp(ModulePtr theModule)
 BOOLN
 CheckData_Utility_MathOp(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_MathOp";
+	static const WChar	*funcName = wxT("CheckData_Utility_MathOp");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
@@ -388,23 +390,23 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 	if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 	  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT)) {
 		if (data->numInSignals != 2) {
-			NotifyError("%s: Process must be receive 2 inputs in '%s' mode.",
-			  funcName, mathOpPtr->operatorModeList[mathOpPtr-> operatorMode].
-			  name);
+			NotifyError(wxT("%s: Process must be receive 2 inputs in '%s' "
+			  "mode."), funcName, mathOpPtr->operatorModeList[mathOpPtr->
+			  operatorMode].name);
 			return(FALSE);
 		}
 		if (!CheckPars_SignalData(data->inSignal[1])) {
-			NotifyError("%s: Input signals not correctly set.", funcName);		
+			NotifyError(wxT("%s: Input signals not correctly set."), funcName);
 			return(FALSE);
 		}
 		if (!SameType_SignalData(data->inSignal[0], data->inSignal[1])) {
-			NotifyError("%s: Input signals are not the same.", funcName);		
+			NotifyError(wxT("%s: Input signals are not the same."), funcName);
 			return(FALSE);
 		}
 		if (data->inSignal[0]->interleaveLevel != data->inSignal[1]->
 		  interleaveLevel) {
-			NotifyError("%s: Input signals do not have the same interleave "
-			  "level.", funcName);		
+			NotifyError(wxT("%s: Input signals do not have the same interleave "
+			  "level."), funcName);		
 			return(FALSE);
 		}
 	}
@@ -430,7 +432,7 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 BOOLN
 Process_Utility_MathOp(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_MathOp";
+	static const WChar	*funcName = wxT("Process_Utility_MathOp");
 	register ChanData	 *inPtr1, *inPtr2 = NULL, *outPtr;
 	int		chan;
 	ChanLen	i;
@@ -439,13 +441,15 @@ Process_Utility_MathOp(EarObjectPtr data)
 		if (!CheckPars_Utility_MathOp())
 			return(FALSE);
 		if (!CheckData_Utility_MathOp(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Mathematical operation module process");
+		SetProcessName_EarObject(data, wxT("Mathematical operation module "
+		  "process"));
 		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		if (data->initThreadRunFlag)

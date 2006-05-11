@@ -84,7 +84,7 @@ BOOLN	Init_StepFunction(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_StepFunction(void);
 
-BOOLN	ReadPars_StepFunction(char *fileName);
+BOOLN	ReadPars_StepFunction(WChar *fileName);
 
 BOOLN	SetBeginPeriodDuration_StepFunction(double theBeginPeriodDuration);
 

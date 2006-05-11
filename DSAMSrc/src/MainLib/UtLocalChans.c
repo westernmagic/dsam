@@ -25,6 +25,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtLocalChans.h"
 
 /******************************************************************************/
@@ -49,8 +50,6 @@ LocalChansPtr	localChansPtr = NULL;
 BOOLN
 Free_Utility_LocalChans(void)
 {
-	/* static const char	*funcName = "Free_Utility_LocalChans";  */
-
 	if (localChansPtr == NULL)
 		return(FALSE);
 	if (localChansPtr->parList)
@@ -74,9 +73,9 @@ InitModeList_Utility_LocalChans(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ "SUM",		UTILITY_LOCALCHANS_MODE_SUM },
-			{ "AVERAGE",	UTILITY_LOCALCHANS_MODE_AVERAGE },
-			{ "",			UTILITY_LOCALCHANS_MODE_NULL },
+			{ wxT("SUM"),		UTILITY_LOCALCHANS_MODE_SUM },
+			{ wxT("AVERAGE"),	UTILITY_LOCALCHANS_MODE_AVERAGE },
+			{ wxT(""),			UTILITY_LOCALCHANS_MODE_NULL },
 		};
 	localChansPtr->modeList = modeList;
 	return(TRUE);
@@ -98,19 +97,20 @@ InitModeList_Utility_LocalChans(void)
 BOOLN
 Init_Utility_LocalChans(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_LocalChans";
+	static const WChar	*funcName = wxT("Init_Utility_LocalChans");
 
 	if (parSpec == GLOBAL) {
 		if (localChansPtr != NULL)
 			Free_Utility_LocalChans();
 		if ((localChansPtr = (LocalChansPtr) malloc(sizeof(LocalChans))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (localChansPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -126,7 +126,7 @@ Init_Utility_LocalChans(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_LocalChans();
 	if (!SetUniParList_Utility_LocalChans()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_LocalChans();
 		return(FALSE);
 	}
@@ -145,34 +145,34 @@ Init_Utility_LocalChans(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_LocalChans(void)
 {
-	static const char *funcName = "SetUniParList_Utility_LocalChans";
+	static const WChar *funcName = wxT("SetUniParList_Utility_LocalChans");
 	UniParPtr	pars;
 
 	if ((localChansPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_LOCALCHANS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = localChansPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_MODE], "MODE",
-	  "Operation mode ('sum' or 'average').",
+	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_MODE], wxT("MODE"),
+	  wxT("Operation mode ('sum' or 'average')."),
 	  UNIPAR_NAME_SPEC,
 	  &localChansPtr->mode, localChansPtr->modeList,
 	  (void * (*)) SetMode_Utility_LocalChans);
-	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_LIMITMODE], "LIMIT_MODE",
-	  "Limit mode ('octave' or 'channel').",
+	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_LIMITMODE], wxT("LIMIT_MODE"),
+	  wxT("Limit mode ('octave' or 'channel')."),
 	  UNIPAR_NAME_SPEC,
 	  &localChansPtr->limitMode, LimitModeList_SignalData(0),
 	  (void * (*)) SetLimitMode_Utility_LocalChans);
 	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_LOWERAVELIMIT],
-	  "LOWER_AVE_LIMIT",
-	  "Local window limit below channel.",
+	  wxT("LOWER_AVE_LIMIT"),
+	  wxT("Local window limit below channel."),
 	  UNIPAR_REAL,
 	  &localChansPtr->lowerLimit, NULL,
 	  (void * (*)) SetLowerLimit_Utility_LocalChans);
 	SetPar_UniParMgr(&pars[UTILITY_LOCALCHANS_UPPERAVELIMIT],
-	  "UPPER_AVE_LIMIT",
-	  "Local window limit above channel.",
+	  wxT("UPPER_AVE_LIMIT"),
+	  wxT("Local window limit above channel."),
 	  UNIPAR_REAL,
 	  &localChansPtr->upperLimit, NULL,
 	  (void * (*)) SetUpperLimit_Utility_LocalChans);
@@ -190,15 +190,15 @@ SetUniParList_Utility_LocalChans(void)
 UniParListPtr
 GetUniParListPtr_Utility_LocalChans(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_LocalChans";
+	static const WChar	*funcName = wxT("GetUniParListPtr_Utility_LocalChans");
 
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (localChansPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(localChansPtr->parList);
@@ -213,10 +213,10 @@ GetUniParListPtr_Utility_LocalChans(void)
  */
 
 BOOLN
-SetPars_Utility_LocalChans(char * mode, char * limitMode, double lowerLimit,
+SetPars_Utility_LocalChans(WChar * mode, WChar * limitMode, double lowerLimit,
   double upperLimit)
 {
-	static const char	*funcName = "SetPars_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetPars_Utility_LocalChans");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -229,7 +229,7 @@ SetPars_Utility_LocalChans(char * mode, char * limitMode, double lowerLimit,
 	if (!SetUpperLimit_Utility_LocalChans(upperLimit))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -243,18 +243,18 @@ SetPars_Utility_LocalChans(char * mode, char * limitMode, double lowerLimit,
  */
 
 BOOLN
-SetMode_Utility_LocalChans(char * theMode)
+SetMode_Utility_LocalChans(WChar * theMode)
 {
-	static const char	*funcName = "SetMode_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetMode_Utility_LocalChans");
 	int		specifier;
 
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 		localChansPtr->modeList)) == UTILITY_LOCALCHANS_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -273,18 +273,18 @@ SetMode_Utility_LocalChans(char * theMode)
  */
 
 BOOLN
-SetLimitMode_Utility_LocalChans(char * theLimitMode)
+SetLimitMode_Utility_LocalChans(WChar * theLimitMode)
 {
-	static const char	*funcName = "SetLimitMode_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetLimitMode_Utility_LocalChans");
 	int		specifier;
 
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theLimitMode,
 	  LimitModeList_SignalData(0))) == SIGNALDATA_LIMIT_MODE_NULL) {
-		NotifyError("%s: Illegal name (%s).", funcName, theLimitMode);
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theLimitMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -305,10 +305,10 @@ SetLimitMode_Utility_LocalChans(char * theLimitMode)
 BOOLN
 SetLowerLimit_Utility_LocalChans(double theLowerLimit)
 {
-	static const char	*funcName = "SetLowerLimit_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetLowerLimit_Utility_LocalChans");
 
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -329,10 +329,10 @@ SetLowerLimit_Utility_LocalChans(double theLowerLimit)
 BOOLN
 SetUpperLimit_Utility_LocalChans(double theUpperLimit)
 {
-	static const char	*funcName = "SetUpperLimit_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetUpperLimit_Utility_LocalChans");
 
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -355,28 +355,28 @@ SetUpperLimit_Utility_LocalChans(double theUpperLimit)
 BOOLN
 CheckPars_Utility_LocalChans(void)
 {
-	static const char	*funcName = "CheckPars_Utility_LocalChans";
+	static const WChar	*funcName = wxT("CheckPars_Utility_LocalChans");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (!localChansPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (localChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!localChansPtr->limitModeFlag) {
-		NotifyError("%s: limitMode variable not set.", funcName);
+		NotifyError(wxT("%s: limitMode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!localChansPtr->lowerLimitFlag) {
-		NotifyError("%s: lowerLimit variable not set.", funcName);
+		NotifyError(wxT("%s: lowerLimit variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!localChansPtr->upperLimitFlag) {
-		NotifyError("%s: upperLimit variable not set.", funcName);
+		NotifyError(wxT("%s: upperLimit variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -393,21 +393,24 @@ CheckPars_Utility_LocalChans(void)
 BOOLN
 PrintPars_Utility_LocalChans(void)
 {
-	static const char	*funcName = "PrintPars_Utility_LocalChans";
+	static const WChar	*funcName = wxT("PrintPars_Utility_LocalChans");
 
 	if (!CheckPars_Utility_LocalChans()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Channel localisation Utility Module Parameters:-\n");
-	DPrint("\tOperation mode = %s,", localChansPtr->modeList[localChansPtr->
-	  mode].name);
-	DPrint("\tLimit mode = %s,\n", LimitModeList_SignalData(localChansPtr->
+	DPrint(wxT("Channel localisation Utility Module Parameters:-\n"));
+	DPrint(wxT("\tOperation mode = %s,"), localChansPtr->modeList[
+	  localChansPtr->mode].name);
+	DPrint(wxT("\tLimit mode = %s,\n"), LimitModeList_SignalData(localChansPtr->
 	  limitMode)->name);
-	DPrint("\tLower window limit below channel = %g (%s),\n", localChansPtr->
-	  lowerLimit, LimitModeList_SignalData(localChansPtr->limitMode)->name);
-	DPrint("\tUpper window limit above channel = %g (%s).\n", localChansPtr->
-	  upperLimit, LimitModeList_SignalData(localChansPtr->limitMode)->name);
+	DPrint(wxT("\tLower window limit below channel = %g (%s),\n"),
+	  localChansPtr-> lowerLimit, LimitModeList_SignalData(localChansPtr->
+	  limitMode)->name);
+	DPrint(wxT("\tUpper window limit above channel = %g (%s).\n"),
+	  localChansPtr->upperLimit, LimitModeList_SignalData(localChansPtr->
+	  limitMode)->name);
 	return(TRUE);
 
 }
@@ -419,38 +422,39 @@ PrintPars_Utility_LocalChans(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_LocalChans(char *fileName)
+ReadPars_Utility_LocalChans(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_LocalChans";
+	static const WChar	*funcName = wxT("ReadPars_Utility_LocalChans");
 	BOOLN	ok = TRUE;
-	char	*filePath, mode[MAX_FILE_PATH], limitMode[MAX_FILE_PATH];
+	WChar	*filePath, mode[MAX_FILE_PATH], limitMode[MAX_FILE_PATH];
 	double	lowerLimit, upperLimit;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, fileName);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  fileName);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, fileName);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
 	Init_ParFile();
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%s", limitMode))
+	if (!GetPars_ParFile(fp, wxT("%s"), limitMode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &lowerLimit))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &lowerLimit))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%lf", &upperLimit))
+	if (!GetPars_ParFile(fp, wxT("%lf"), &upperLimit))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_LocalChans(mode, limitMode, lowerLimit, upperLimit)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -467,10 +471,10 @@ ReadPars_Utility_LocalChans(char *fileName)
 BOOLN
 SetParsPointer_Utility_LocalChans(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_LocalChans";
+	static const WChar	*funcName = wxT("SetParsPointer_Utility_LocalChans");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	localChansPtr = (LocalChansPtr) theModule->parsPtr;
@@ -488,14 +492,15 @@ SetParsPointer_Utility_LocalChans(ModulePtr theModule)
 BOOLN
 InitModule_Utility_LocalChans(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_LocalChans";
+	static const WChar	*funcName = wxT("InitModule_Utility_LocalChans");
 
 	if (!SetParsPointer_Utility_LocalChans(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_LocalChans(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = localChansPtr;
@@ -528,16 +533,17 @@ InitModule_Utility_LocalChans(ModulePtr theModule)
 BOOLN
 CheckData_Utility_LocalChans(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_LocalChans";
+	static const WChar	*funcName = wxT("CheckData_Utility_LocalChans");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (data->inSignal[0]->numChannels < 2) {
-		NotifyError("%s: This module expects multi-channel input.", funcName);
+		NotifyError(wxT("%s: This module expects multi-channel input."),
+		  funcName);
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -576,9 +582,9 @@ ResetProcess_Utility_LocalChans(EarObjectPtr data)
 BOOLN
 Calc_Utility_LocalChans(EarObjectPtr data)
 {
-	static const char	*funcName = "Calc_Utility_LocalChans";
+	static const WChar	*funcName = wxT("Calc_Utility_LocalChans");
 	register ChanData	 *inPtr, *outPtr;
-	char	channelTitle[MAXLINE];
+	WChar	channelTitle[MAXLINE];
 	int		outChan, inChan, maxChan, lowerChanLimit, upperChanLimit;
 	int		numChannels;
 	ChanLen	i;
@@ -588,25 +594,27 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 		if (!CheckPars_Utility_LocalChans())
 			return(FALSE);
 		if (!CheckData_Utility_LocalChans(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Channel localisation Module process");
+		SetProcessName_EarObject(data, wxT("Channel localisation Module "
+		  "process"));
 
 		if (!GetChannelLimits_SignalData(data->inSignal[0], &p->minChan,
 		  &maxChan, p->lowerLimit, p->upperLimit, p->limitMode)) {
-			NotifyError("%s: Could not find a channel limits for signal.",
+			NotifyError(wxT("%s: Could not find a channel limits for signal."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(data, (uShort) (maxChan - p->minChan + 1),
 		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channels.", funcName);
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_LocalChans(data);
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		snprintf(channelTitle, MAXLINE, "Averaged channels ('%s' mode)",
+		DSAM_snprintf(channelTitle, MAXLINE, wxT("Averaged channels ('%s' mode)"),
 		  LimitModeList_SignalData(p->limitMode)->name);
 		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.

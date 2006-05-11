@@ -50,15 +50,15 @@ InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
 	int		i;
 	static struct {
 
-		char	*name;
+		WChar	*name;
 		int		type;
 
 	} keywords[] = {
 
-		{ "begin",	BEGIN },
-		{ "repeat",	REPEAT },
-		{ "reset",	RESET },
-		{ "stop",	STOP },
+		{ wxT("begin"),	BEGIN },
+		{ wxT("repeat"),	REPEAT },
+		{ wxT("reset"),	RESET },
+		{ wxT("stop"),	STOP },
 		{ 0,		0 }
 
 	};
@@ -76,12 +76,12 @@ InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
  */
 
 SymbolPtr
-LookUpSymbol_Utility_SSSymbols(SymbolPtr list, char *s)
+LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s)
 {
 	Symbol	*sp;
 	
 	for (sp = list; sp != (SymbolPtr) 0; sp = sp->next)
-		if (strcmp(sp->name, s) == 0)
+		if (DSAM_strcmp(sp->name, s) == 0)
 			return sp;
 	return 0;
 
@@ -94,13 +94,13 @@ LookUpSymbol_Utility_SSSymbols(SymbolPtr list, char *s)
  */
 
 SymbolPtr
-InstallSymbol_Utility_SSSymbols(SymbolPtr *list, char *s, int type)
+InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s, int type)
 {
-	static const char	*funcName = "InstallSymbol_Utility_SSSymbols";
+	static const WChar	*funcName = wxT("InstallSymbol_Utility_SSSymbols");
 	Symbol	*sp;
 	
 	if ((sp = (SymbolPtr) malloc(sizeof (Symbol))) == NULL) {
-		NotifyError("%s: Out of memory for symbol entry.", funcName);
+		NotifyError(wxT("%s: Out of memory for symbol entry."), funcName);
 		exit(1);
 	}
 	sp->name = InitString_Utility_String(s);
@@ -142,7 +142,7 @@ void
 PrintSymbols_Utility_SSSymbols(SymbolPtr list)
 {
 	while (list) {
-		printf("\t%s\n", list->name);
+		DSAM_printf(wxT("\t%s\n"), list->name);
 		list = list->next;
 	}
 

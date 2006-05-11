@@ -87,7 +87,7 @@ BOOLN	Init_PureTone_Multi(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_Multi(void);
 
-BOOLN	ReadPars_PureTone_Multi(char *fileName);
+BOOLN	ReadPars_PureTone_Multi(WChar *fileName);
 
 BOOLN	SetDefaultNumPTonesArrays_PureTone_Multi(void);
 

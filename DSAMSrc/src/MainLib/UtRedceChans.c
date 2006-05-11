@@ -39,6 +39,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "UtRedceChans.h"
 
 /******************************************************************************/
@@ -63,8 +64,6 @@ ReduceChansPtr	reduceChansPtr = NULL;
 BOOLN
 Free_Utility_ReduceChannels(void)
 {
-	/* static const char	*funcName = "Free_Utility_ReduceChannels"; */
-
 	if (reduceChansPtr == NULL)
 		return(FALSE);
 	if (reduceChansPtr->parList)
@@ -88,9 +87,9 @@ InitModeList_Utility_ReduceChannels(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ "AVERAGE",	REDUCE_CHANS_AVERAGE_MODE },
-					{ "SUM", 		REDUCE_CHANS_SUM_MODE },
-					{ "", REDUCE_CHANS_NULL }
+					{ wxT("AVERAGE"),	REDUCE_CHANS_AVERAGE_MODE },
+					{ wxT("SUM"), 		REDUCE_CHANS_SUM_MODE },
+					{ wxT(""), 			REDUCE_CHANS_NULL }
 				};
 	reduceChansPtr->modeList = modeList;
 	return(TRUE);
@@ -112,19 +111,20 @@ InitModeList_Utility_ReduceChannels(void)
 BOOLN
 Init_Utility_ReduceChannels(ParameterSpecifier parSpec)
 {
-	static const char	*funcName = "Init_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("Init_Utility_ReduceChannels");
 
 	if (parSpec == GLOBAL) {
 		if (reduceChansPtr != NULL)
 			Free_Utility_ReduceChannels();
 		if ((reduceChansPtr = (ReduceChansPtr) malloc(sizeof(ReduceChans))) ==
 		  NULL) {
-			NotifyError("%s: Out of memory for 'global' pointer", funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
 		if (reduceChansPtr == NULL) {
-			NotifyError("%s:  'local' pointer not set.", funcName);
+			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
@@ -136,7 +136,7 @@ Init_Utility_ReduceChannels(ParameterSpecifier parSpec)
 
 	InitModeList_Utility_ReduceChannels();
 	if (!SetUniParList_Utility_ReduceChannels()) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_ReduceChannels();
 		return(FALSE);
 	}
@@ -155,22 +155,23 @@ Init_Utility_ReduceChannels(ParameterSpecifier parSpec)
 BOOLN
 SetUniParList_Utility_ReduceChannels(void)
 {
-	static const char *funcName = "SetUniParList_Utility_ReduceChannels";
+	static const WChar *funcName = wxT("SetUniParList_Utility_ReduceChannels");
 	UniParPtr	pars;
 
 	if ((reduceChansPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  UTILITY_REDUCECHANNELS_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = reduceChansPtr->parList->pars;
-	SetPar_UniParMgr(&pars[UTILITY_REDUCECHANNELS_MODE], "MODE",
-	  "Mode - 'average' or simple 'sum'.",
+	SetPar_UniParMgr(&pars[UTILITY_REDUCECHANNELS_MODE], wxT("MODE"),
+	  wxT("Mode - 'average' or simple 'sum'."),
 	  UNIPAR_NAME_SPEC,
 	  &reduceChansPtr->mode, reduceChansPtr->modeList,
 	  (void * (*)) SetMode_Utility_ReduceChannels);
-	SetPar_UniParMgr(&pars[UTILITY_REDUCECHANNELS_NUMCHANNELS], "NUM_CHANNELS",
-	  "Number of channels signal is to be averaged to.",
+	SetPar_UniParMgr(&pars[UTILITY_REDUCECHANNELS_NUMCHANNELS], wxT(
+	  "NUM_CHANNELS"),
+	  wxT("Number of channels signal is to be averaged to."),
 	  UNIPAR_INT,
 	  &reduceChansPtr->numChannels, NULL,
 	  (void * (*)) SetNumChannels_Utility_ReduceChannels);
@@ -188,15 +189,16 @@ SetUniParList_Utility_ReduceChannels(void)
 UniParListPtr
 GetUniParListPtr_Utility_ReduceChannels(void)
 {
-	static const char	*funcName = "GetUniParListPtr_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT(
+	  "GetUniParListPtr_Utility_ReduceChannels");
 
 	if (reduceChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (reduceChansPtr->parList == NULL) {
-		NotifyError("%s: UniParList data structure has not been initialised. "
-		  "NULL returned.", funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been "
+		  "initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(reduceChansPtr->parList);
@@ -211,9 +213,9 @@ GetUniParListPtr_Utility_ReduceChannels(void)
  */
 
 BOOLN
-SetPars_Utility_ReduceChannels(char *mode, int numChannels)
+SetPars_Utility_ReduceChannels(WChar *mode, int numChannels)
 {
-	static const char	*funcName = "SetPars_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("SetPars_Utility_ReduceChannels");
 	BOOLN	ok;
 
 	ok = TRUE;
@@ -222,7 +224,7 @@ SetPars_Utility_ReduceChannels(char *mode, int numChannels)
 	if (!SetNumChannels_Utility_ReduceChannels(numChannels))
 		ok = FALSE;
 	if (!ok)
-		NotifyError("%s: Failed to set all module parameters." ,funcName);
+		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
 
 }
@@ -236,18 +238,18 @@ SetPars_Utility_ReduceChannels(char *mode, int numChannels)
  */
 
 BOOLN
-SetMode_Utility_ReduceChannels(char *theMode)
+SetMode_Utility_ReduceChannels(WChar *theMode)
 {
-	static const char	*funcName = "SetMode_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("SetMode_Utility_ReduceChannels");
 	int		specifier;
 
 	if (reduceChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
 	  reduceChansPtr->modeList)) == REDUCE_CHANS_NULL) {
-		NotifyError("%s: Illegal mode name (%s).", funcName, theMode);
+		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
 	reduceChansPtr->modeFlag = TRUE;
@@ -267,14 +269,15 @@ SetMode_Utility_ReduceChannels(char *theMode)
 BOOLN
 SetNumChannels_Utility_ReduceChannels(int theNumChannels)
 {
-	static const char	*funcName = "SetNumChannels_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT(
+	  "SetNumChannels_Utility_ReduceChannels");
 
 	if (reduceChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNumChannels < 1) {
-		NotifyError("%s: Cannot reduce channels to %d.\n", funcName,
+		NotifyError(wxT("%s: Cannot reduce channels to %d.\n"), funcName,
 		  theNumChannels);
 		return(FALSE);
 	}
@@ -297,20 +300,20 @@ SetNumChannels_Utility_ReduceChannels(int theNumChannels)
 BOOLN
 CheckPars_Utility_ReduceChannels(void)
 {
-	static const char	*funcName = "CheckPars_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("CheckPars_Utility_ReduceChannels");
 	BOOLN	ok;
 
 	ok = TRUE;
 	if (reduceChansPtr == NULL) {
-		NotifyError("%s: Module not initialised.", funcName);
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!reduceChansPtr->modeFlag) {
-		NotifyError("%s: mode variable not set.", funcName);
+		NotifyError(wxT("%s: mode variable not set."), funcName);
 		ok = FALSE;
 	}
 	if (!reduceChansPtr->numChannelsFlag) {
-		NotifyError("%s: numChannels variable not set.", funcName);
+		NotifyError(wxT("%s: numChannels variable not set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -327,17 +330,17 @@ CheckPars_Utility_ReduceChannels(void)
 BOOLN
 PrintPars_Utility_ReduceChannels(void)
 {
-	static const char	*funcName = "PrintPars_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("PrintPars_Utility_ReduceChannels");
 
 	if (!CheckPars_Utility_ReduceChannels()) {
-		NotifyError("%s: Parameters have not been correctly set.", funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
-	DPrint("Reduce Channels Utility Module Parameters:-\n");
-	DPrint("\tMode = %s,",
-	  reduceChansPtr->modeList[reduceChansPtr->mode].name);
-	DPrint("\tNo. of channels = %d.\n",
-	  reduceChansPtr->numChannels);
+	DPrint(wxT("Reduce Channels Utility Module Parameters:-\n"));
+	DPrint(wxT("\tMode = %s,"), reduceChansPtr->modeList[reduceChansPtr->mode].
+	  name);
+	DPrint(wxT("\tNo. of channels = %d.\n"), reduceChansPtr->numChannels);
 	return(TRUE);
 
 }
@@ -349,36 +352,37 @@ PrintPars_Utility_ReduceChannels(void)
  * It returns FALSE if it fails in any way.n */
 
 BOOLN
-ReadPars_Utility_ReduceChannels(char *fileName)
+ReadPars_Utility_ReduceChannels(WChar *fileName)
 {
-	static const char	*funcName = "ReadPars_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("ReadPars_Utility_ReduceChannels");
 	BOOLN	ok;
-	char	*filePath;
-	char	mode[MAXLINE];
+	WChar	*filePath;
+	WChar	mode[MAXLINE];
 	int		numChannels;
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(filePath, "r")) == NULL) {
-		NotifyError("%s: Cannot open data file '%s'.\n", funcName, filePath);
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+		  filePath);
 		return(FALSE);
 	}
-	DPrint("%s: Reading from '%s':\n", funcName, filePath);
+	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
 	Init_ParFile();
 	ok = TRUE;
-	if (!GetPars_ParFile(fp, "%s", mode))
+	if (!GetPars_ParFile(fp, wxT("%s"), mode))
 		ok = FALSE;
-	if (!GetPars_ParFile(fp, "%d", &numChannels))
+	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'.", funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
+		  "module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_ReduceChannels(mode, numChannels)) {
-		NotifyError("%s: Could not set parameters.", funcName);
+		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -395,10 +399,11 @@ ReadPars_Utility_ReduceChannels(char *fileName)
 BOOLN
 SetParsPointer_Utility_ReduceChannels(ModulePtr theModule)
 {
-	static const char	*funcName = "SetParsPointer_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT(
+	  "SetParsPointer_Utility_ReduceChannels");
 
 	if (!theModule) {
-		NotifyError("%s: The module is not set.", funcName);
+		NotifyError(wxT("%s: The module is not set."), funcName);
 		return(FALSE);
 	}
 	reduceChansPtr = (ReduceChansPtr) theModule->parsPtr;
@@ -415,14 +420,15 @@ SetParsPointer_Utility_ReduceChannels(ModulePtr theModule)
 BOOLN
 InitModule_Utility_ReduceChannels(ModulePtr theModule)
 {
-	static const char	*funcName = "InitModule_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("InitModule_Utility_ReduceChannels");
 
 	if (!SetParsPointer_Utility_ReduceChannels(theModule)) {
-		NotifyError("%s: Cannot set parameters pointer.", funcName);
+		NotifyError(wxT("%s: Cannot set parameters pointer."), funcName);
 		return(FALSE);
 	}
 	if (!Init_Utility_ReduceChannels(GLOBAL)) {
-		NotifyError("%s: Could not initialise process structure.", funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = reduceChansPtr;
@@ -454,16 +460,16 @@ InitModule_Utility_ReduceChannels(ModulePtr theModule)
 BOOLN
 CheckData_Utility_ReduceChannels(EarObjectPtr data)
 {
-	static const char	*funcName = "CheckData_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("CheckData_Utility_ReduceChannels");
 
 	if (data == NULL) {
-		NotifyError("%s: EarObject not initialised.", funcName);
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((data->inSignal[0]->numChannels % reduceChansPtr->numChannels) != 0) {
-		NotifyError("%s: Cannot reduce %d channels to %d.\n", funcName,
+		NotifyError(wxT("%s: Cannot reduce %d channels to %d.\n"), funcName,
 		  data->inSignal[0]->numChannels, reduceChansPtr->numChannels);
 		return(FALSE);
 	}
@@ -502,9 +508,9 @@ ResetProcess_Utility_ReduceChannels(EarObjectPtr data)
 BOOLN
 Process_Utility_ReduceChannels(EarObjectPtr data)
 {
-	static const char	*funcName = "Process_Utility_ReduceChannels";
+	static const WChar	*funcName = wxT("Process_Utility_ReduceChannels");
 	register	ChanData	 *inPtr, *outPtr;
-	char	channelTitle[MAXLINE];
+	WChar	channelTitle[MAXLINE];
 	uShort	numChannels;
 	int		j, chan, channelBinWidth, binRatio;
 	ChanLen	i;
@@ -514,15 +520,15 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		if (!CheckPars_Utility_ReduceChannels())
 			return(FALSE);
 		if (!CheckData_Utility_ReduceChannels(data)) {
-			NotifyError("%s: Process data invalid.", funcName);
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, "Average across channels utility");
+		SetProcessName_EarObject(data, wxT("Average across channels utility"));
 		numChannels = p->numChannels * data->inSignal[0]->interleaveLevel;
 		data->updateProcessFlag = TRUE;
-		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
-		  data->inSignal[0]->dt)) {
-			NotifyError("%s: Cannot initialise output channel.", funcName);
+		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->
+		  length, data->inSignal[0]->dt)) {
+			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_ReduceChannels(data);
@@ -531,8 +537,8 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 		SetInfoCFArray_SignalData(data->outSignal, NULL);
-		snprintf(channelTitle, MAXLINE, "Channel summary (%d -> %d)", data->
-		  inSignal[0]->numChannels, data->outSignal->numChannels);
+		DSAM_snprintf(channelTitle, MAXLINE, wxT("Channel summary (%d -> %d)"),
+		  data->inSignal[0]->numChannels, data->outSignal->numChannels);
 		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);

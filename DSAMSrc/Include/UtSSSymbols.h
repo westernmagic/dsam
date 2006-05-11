@@ -25,7 +25,7 @@
 
 typedef struct	Symbol	{	/* Symbol table entry. */
 
-	char	*name;
+	WChar	*name;
 	short	type;			/* IDENTIFIER, KEYWORD */
 	struct Symbol	*next;	/* To link to next symbol */
 
@@ -51,9 +51,10 @@ void		FreeSymbols_Utility_SSSymbols(SymbolPtr *list);
 
 void		InitKeyWords_Utility_SSSymbols(SymbolPtr *list);
 
-SymbolPtr	InstallSymbol_Utility_SSSymbols(SymbolPtr *list, char *s, int type);
+SymbolPtr	InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s,
+			  int type);
 
-SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, char *s);
+SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s);
 
 void		PrintSymbols_Utility_SSSymbols(SymbolPtr list);
 

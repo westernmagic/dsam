@@ -89,7 +89,7 @@ BOOLN	Init_Analysis_ALSR(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Analysis_ALSR(void);
 
-BOOLN	ReadPars_Analysis_ALSR(char *fileName);
+BOOLN	ReadPars_Analysis_ALSR(WChar *fileName);
 
 void	ResetProcess_Analysis_ALSR(EarObjectPtr data);
 
