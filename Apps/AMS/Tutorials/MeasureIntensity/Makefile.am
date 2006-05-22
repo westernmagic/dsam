@@ -15,7 +15,7 @@ ParFiles	= fileIn.par
 MatlabFiles	= 
 
 
-DataFiles	= myFile.wav
+DataFiles	= myfile.wav
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
 

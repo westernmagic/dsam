@@ -70,8 +70,8 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	fileLockingMode[MAXLINE] = "off";
-char	autoNumRunsMode[MAXLINE] = "off";
+WChar	fileLockingMode[MAXLINE] = wxT("off");
+WChar	autoNumRunsMode[MAXLINE] = wxT("off");
 
 int		numberOfRuns = 1;
 int		fileLockingModeSpecifier = GENERAL_BOOLEAN_OFF;
@@ -92,27 +92,27 @@ int		autoNumRunsModeSpecifier = GENERAL_BOOLEAN_OFF;
 BOOLN
 SetUniParList(UniParListPtr *parList)
 {
-	static const char *funcName = "SetUniParList";
+	static const WChar *funcName = wxT("SetUniParList");
 	UniParPtr	pars;
 
 	if ((*parList = InitList_UniParMgr(UNIPAR_SET_GENERAL, AMS_NUM_PARS,
 	  NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = (*parList)->pars;
-	SetPar_UniParMgr(&pars[AMS_FILELOCKINGMODE], "FILELOCKING_MODE",
-	  "File locking mode ('on' or 'off').",
+	SetPar_UniParMgr(&pars[AMS_FILELOCKINGMODE], wxT("FILELOCKING_MODE"),
+	  wxT("File locking mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &fileLockingModeSpecifier, NULL,
 	  (void * (*)) SetFileLockingMode);
-	SetPar_UniParMgr(&pars[AMS_AUTONUMRUNSMODE], "AUTO_NUM_RUNS_MODE",
-	  "Auto-setting of the number of runs (data files only) ('on' or 'off').",
+	SetPar_UniParMgr(&pars[AMS_AUTONUMRUNSMODE], wxT("AUTO_NUM_RUNS_MODE"),
+	  wxT("Auto-setting of the number of runs (data files only) ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &autoNumRunsModeSpecifier, NULL,
 	  (void * (*)) SetAutoNumRunsMode);
-	SetPar_UniParMgr(&pars[AMS_NUMBEROFRUNS], "NUM_RUNS",
-	  "Number of repeat runs, or segments/frames.",
+	SetPar_UniParMgr(&pars[AMS_NUMBEROFRUNS], wxT("NUM_RUNS"),
+	  wxT("Number of repeat runs, or segments/frames."),
 	  UNIPAR_INT,
 	  &numberOfRuns, NULL,
 	  (void * (*)) SetNumberOfRuns);
@@ -128,17 +128,17 @@ SetUniParList(UniParListPtr *parList)
  */
 
 BOOLN
-SetFileLockingMode(char *theFileLockingMode)
+SetFileLockingMode(WChar *theFileLockingMode)
 {
-	static const char	*funcName = PROGRAM_NAME": SetFileLockingMode";
+	static const WChar	*funcName = PROGRAM_NAME wxT(": SetFileLockingMode");
 
 	if ((fileLockingModeSpecifier = Identify_NameSpecifier(theFileLockingMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal file locking mode (%s): must be "
-		  "'on' or 'off'.", funcName, fileLockingMode);
+		NotifyError(wxT("%s: Illegal file locking mode (%s): must be "
+		  "'on' or 'off'."), funcName, fileLockingMode);
 		return(FALSE);
 	}
-	strcpy(fileLockingMode, theFileLockingMode);
+	DSAM_strcpy(fileLockingMode, theFileLockingMode);
 	return(TRUE);
 
 }
@@ -151,17 +151,17 @@ SetFileLockingMode(char *theFileLockingMode)
  */
 
 BOOLN
-SetAutoNumRunsMode(char *theAutoNumRunsMode)
+SetAutoNumRunsMode(WChar *theAutoNumRunsMode)
 {
-	static const char	*funcName = PROGRAM_NAME": SetAutoNumRunsMode";
+	static const WChar	*funcName = PROGRAM_NAME wxT(": SetAutoNumRunsMode");
 
 	if ((autoNumRunsModeSpecifier = Identify_NameSpecifier(theAutoNumRunsMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal auto. number of runs mode mode (%s): must be "
-		  "'on' or 'off'.", funcName, theAutoNumRunsMode);
+		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must "
+		  "be 'on' or 'off'."), funcName, theAutoNumRunsMode);
 		return(FALSE);
 	}
-	strcpy(autoNumRunsMode, theAutoNumRunsMode);
+	DSAM_strcpy(autoNumRunsMode, theAutoNumRunsMode);
 	return(TRUE);
 
 }
@@ -176,10 +176,10 @@ SetAutoNumRunsMode(char *theAutoNumRunsMode)
 BOOLN
 SetNumberOfRuns(int theNumberOfRuns)
 {
-	static const char	*funcName = PROGRAM_NAME": SetNumberOfRuns";
+	static const WChar	*funcName = PROGRAM_NAME wxT(": SetNumberOfRuns");
 
 	if (theNumberOfRuns < 0) {
-		NotifyError("%s: Illegal number of runs (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of runs (%d)."), funcName,
 		  theNumberOfRuns);
 		return(FALSE);
 	}
@@ -198,18 +198,17 @@ SetNumberOfRuns(int theNumberOfRuns)
 EarObjectPtr
 GetDataFileInProcess(void)
 {
-	/*static const char *funcName = PROGRAM_NAME": GetDataFileInProcess"; */
 	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
 	EarObjectPtr	process;
 
-	SetErrorsFile_Common("off", OVERWRITE);
+	SetErrorsFile_Common(wxT("off"), OVERWRITE);
 	process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
 	  GetPtr_AppInterface()->audModel));
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
 	if (!process)
 		return(NULL);
-	if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
-	  0)
+	if (StrCmpNoCase_Utility_String(process->module->name, wxT(
+	  "DataFile_In")) != 0)
 		return(NULL);
 	return(process);
 
@@ -226,7 +225,7 @@ GetDataFileInProcess(void)
 BOOLN
 AutoSetNumberOfRuns(void)
 {
-	static char *funcName = PROGRAM_NAME": AutoSetNumberOfRuns";
+	static WChar *funcName = PROGRAM_NAME wxT(": AutoSetNumberOfRuns");
 	double	totalDuration, segmentDuration;
 	EarObjectPtr	process;
 
@@ -238,21 +237,22 @@ AutoSetNumberOfRuns(void)
 	if ((process = GetDataFileInProcess()) == NULL)
 		return(TRUE);
 	numberOfRuns = 1;	/* Default value */
-	segmentDuration = *GetUniParPtr_ModuleMgr(process, "duration")->valuePtr.r;
+	segmentDuration = *GetUniParPtr_ModuleMgr(process, wxT("duration"))->
+	  valuePtr.r;
 	if (segmentDuration < 0.0) {
-		NotifyError("%s: Segment size must be set when using auto 'number of "
-		  "runs' mode.", funcName);
+		NotifyError(wxT("%s: Segment size must be set when using auto 'number "
+		  "of runs' mode."), funcName);
 		return(FALSE);
 	}
 	if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
 	  GetDuration)()) < 0.0) {
-		NotifyError("%s: Could not determine signal size for data file.",
+		NotifyError(wxT("%s: Could not determine signal size for data file."),
 		  funcName);
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
-		NotifyError("%s: Segment size (%g ms) is larger than total signal "
-		  "duration (%g ms).", funcName, MILLI(segmentDuration), MILLI(
+		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal "
+		  "duration (%g ms)."), funcName, MILLI(segmentDuration), MILLI(
 		  totalDuration));
 		return(FALSE);
 	}
@@ -270,9 +270,10 @@ AutoSetNumberOfRuns(void)
 void
 PrintInitialDiagnostics(void)
 {
-	DPrint("This test routine calculates the response of a model.\n");
-	DPrint("The model simulation is run %d times.\n", numberOfRuns);
-	DPrint("\n");
+	DPrint(wxT("This test routine calculates the response of a model.\n"));
+	DPrint(wxT("The model simulation is run %d time%s.\n"), numberOfRuns,
+	  (numberOfRuns == 1)? wxT(""): wxT("s"));
+	DPrint(wxT("\n"));
 
 }
 
@@ -284,10 +285,10 @@ PrintInitialDiagnostics(void)
 void
 PrintUsage(void)
 {
-	fprintf(stderr, "\n"
+	DSAM_fprintf(stderr, wxT("\n"
 	  "%s specific options:\n"
 	  "\t-r <x>        \t: Repeat the simulation 'x' times.\n"
-	  "\t-v            \t: Print program version\n",
+	  "\t-v            \t: Print program version\n"),
 	  GetPtr_AppInterface()->appName);
 	exit(1);
 
@@ -303,31 +304,31 @@ PrintUsage(void)
  */
 
 BOOLN
-ProcessOptions(int argc, char **argv, int *optInd)
+ProcessOptions(int argc, WChar **argv, int *optInd)
 {
-	static char *funcName = PROGRAM_NAME": ProcessOptions";
+	static WChar *funcName = PROGRAM_NAME wxT(": ProcessOptions");
 	BOOLN	foundOption = FALSE;
-	char	c, *argument;
+	WChar	c, *argument;
 	int		optSub = 0;
 
 	while ((c = Process_Options(argc, argv, optInd, &optSub, &argument,
-	  "@#:r:v")) != '\0')
+	  wxT("@#:r:v"))) != '\0')
 		switch (c) {
 		case '@':
 		case '#':
 			break;
 		case 'r':
-			if ((numberOfRuns = atoi(argument)) <= 0) {
-				NotifyError("%s: No. of simulation runs must be greater than "
-				"zero (%d).", funcName, numberOfRuns);
+			if ((numberOfRuns = DSAM_atoi(argument)) <= 0) {
+				NotifyError(wxT("%s: No. of simulation runs must be greater "
+				"than zero (%d)."), funcName, numberOfRuns);
 				exit(1);
 			}
 			foundOption = TRUE;
 			break;
 		case 'v':
-			fprintf(stderr, "Version %s, compile date %s, DSAM %s (dynamic), "
-			  "%s (compiled).\n", AMS_VERSION, __DATE__, GetDSAMPtr_Common()->
-			  version, DSAM_VERSION);
+			DSAM_fprintf(stderr, wxT("Version %s, compile date %s, DSAM %s "
+			  "(dynamic), %s (compiled).\n"), AMS_VERSION, __DATE__,
+			  GetDSAMPtr_Common()->version, DSAM_VERSION);
 			exit(0);
 			break;
 		default:
@@ -346,18 +347,18 @@ ProcessOptions(int argc, char **argv, int *optInd)
 BOOLN
 SetLockFile(BOOLN on)
 {
-	static char *funcName = PROGRAM_NAME": SetLockFile";
+	static WChar *funcName = PROGRAM_NAME wxT(": SetLockFile");
 	FILE	*fp;
 
 	if (on) {
-		if ((fp = fopen(LOCK_FILE, "w")) == NULL) {
-			NotifyError("%s: Could not create lock file '%s'.", funcName,
+		if ((fp = fopen(ConvUTF8_Utility_String(LOCK_FILE), "w")) == NULL) {
+			NotifyError(wxT("%s: Could not create lock file '%s'."), funcName,
 			  LOCK_FILE);
 			return(FALSE);
 		}
 		fclose(fp);
 	} else
-		remove(LOCK_FILE);
+		remove(ConvUTF8_Utility_String(LOCK_FILE));
 	return(TRUE);
 
 }
@@ -372,7 +373,7 @@ SetLockFile(BOOLN on)
 BOOLN
 PostInitFunc(void)
 {
-	/*static char *funcName = PROGRAM_NAME": PostInitFunc";*/
+	/*static WChar *funcName = PROGRAM_NAMEwxT(": PostInitFunc");*/
 
 	return(TRUE);
 
@@ -387,7 +388,7 @@ PostInitFunc(void)
 BOOLN
 RegisterUserModules(void)
 {
-	/*RegEntry_ModuleReg("BM_Carney2001", InitModule_BasilarM_Carney2001); */
+	/*RegEntry_ModuleReg(wxT("BM_Carney2001"),InitModule_BasilarM_Carney2001);*/
 	return(TRUE);
 
 }
@@ -402,7 +403,7 @@ RegisterUserModules(void)
 BOOLN
 Init(void)
 {
-	/* static char *funcName = PROGRAM_NAME": Init"; */
+	/* static WChar *funcName = PROGRAM_NAMEwxT(": Init"); */
 
 	SetAppName_AppInterface(PROGRAM_NAME);
 	SetAppVersion_AppInterface(AMS_VERSION);
@@ -443,7 +444,7 @@ int MainSimulation(MAIN_ARGS)
 		PrintInitialDiagnostics();
 	PrintSimPars_AppInterface();
 
-	DPrint("Starting process...\n");
+	DPrint(wxT("Starting process...\n"));
 	startTime = time(NULL);
 	ResetSim_AppInterface();
 
@@ -458,11 +459,11 @@ int MainSimulation(MAIN_ARGS)
 	if (fileLockingModeSpecifier)
 		SetLockFile(FALSE);
 
-	DPrint("The process took %g seconds to run.\n", difftime(time(NULL),
+	DPrint(wxT("The process took %g seconds to run.\n"), difftime(time(NULL),
 	  startTime));
 
 	Free_AppInterface();
-	DPrint("Finished test.\n");
+	DPrint(wxT("Finished test.\n"));
 	return(0);
 	
 }

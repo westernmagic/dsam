@@ -1,4 +1,4 @@
-# Microsoft Developer Studio Project File - Name="AMS_ng" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="AMS_ng" - Package Owner=<4> 
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 

@@ -55,19 +55,18 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PROGRAM_NAME				"ams"
+#define	PROGRAM_NAME				wxT("ams")
 #ifndef AMS_VERSION
-#	define	AMS_VERSION					"?.?.?"
+#	define	AMS_VERSION					wxT("?.?.?")
 #endif
 
 #define	AMS_NUM_PARS				3		/* No. of application parameters. */
-#define DEFAULT_ERRORS_MODE			"screen"
-#define	LOCK_FILE					"."PROGRAM_NAME"_LCK"
-#define AMS_HELP					"AMSHelp"
-#define AMS_TUTORIAL_HELP			"AMSTutorials"
+#define	LOCK_FILE					wxT("."PROGRAM_NAME"_LCK")
+#define AMS_HELP					wxT("AMSHelp")
+#define AMS_TUTORIAL_HELP			wxT("AMSTutorials")
 
 #ifndef AMS_DATA_INSTALL_DIR
-#	define	AMS_DATA_INSTALL_DIR	"."	/* To find the DSAM help files, etc. */
+#	define	AMS_DATA_INSTALL_DIR	wxT(".") /* To find the DSAM help files...*/
 #endif
 
 /******************************************************************************/
@@ -110,9 +109,9 @@ BOOLN	ProcessOptions(int argc, char **argv, int *optInd);
 
 BOOLN	SetAppInterfacePars(void);
 
-BOOLN	SetAutoNumRunsMode(char *theAutoNumRunsMode);
+BOOLN	SetAutoNumRunsMode(WChar *theAutoNumRunsMode);
 
-BOOLN	SetFileLockingMode(char *theFileLockingMode);
+BOOLN	SetFileLockingMode(WChar *theFileLockingMode);
 
 BOOLN	SetLockFile(BOOLN on);
 
