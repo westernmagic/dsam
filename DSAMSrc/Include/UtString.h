@@ -41,6 +41,14 @@
  */
 __BEGIN_DECLS
 
+void	ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src);
+
+BOOLN	ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size);
+
+WChar *	MBSToWCS_Utility_String(const char *mb);
+
+WChar	MBToWC_Utility_String(const char *mb);
+
 char *	ConvUTF8_Utility_String(WChar *src);
 
 WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
@@ -54,6 +62,8 @@ WChar *	QuotedString_Utility_String(WChar *string);
 void	ToUpper_Utility_String(WChar *upperCaseString, WChar *string);
 
 WChar *	RemoveChar_Utility_String(WChar *string, WChar c);
+
+int		Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...);
 
 int		StrCmpNoCase_Utility_String(WChar *s1, WChar *s2);
 

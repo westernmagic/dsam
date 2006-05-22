@@ -37,7 +37,7 @@
 #define SHAPE_XML_ALIGNMENT_END_ELEMENT		"align_end"
 #define SHAPE_XML_ALIGNMENT_START_ELEMENT	"align_start"
 #define SHAPE_XML_ATTACHMENT_FROM_ELEMENT	"attachment_from"
-#define SHAPE_XML_ATTACHMENT_TO_ELEMENT	"attachment_To"
+#define SHAPE_XML_ATTACHMENT_TO_ELEMENT		"attachment_To"
 #define SHAPE_XML_ATTACHMENTS_ELEMENT		"attachments"
 #define SHAPE_XML_BRUSH_ELEMENT				"brush"
 #define	SHAPE_XML_CONTROL_POINTS_ELEMENT	"control_points"
@@ -125,8 +125,8 @@
 	}
 
 #define STR_ATTRIBUTE_VAL(ELMNT, ATTR, X, WARN) \
-	(X) = (wxChar *) (ELMNT)->Attribute(ATTR); \
-	if ((X).IsEmpty() && (WARN)) { \
+	(X) = wxConvUTF8.cMB2WX((ELMNT)->Attribute(ATTR)); \
+	if ((X).empty() && (WARN)) { \
 		NotifyWarning(wxT("%s: Could not get '%s' attribute value."), \
 		  funcName, (ATTR)); \
 		ok = false; \

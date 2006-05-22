@@ -176,7 +176,7 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 	}
 	simScriptPtr->symList = NULL;
 	simScriptPtr->simFileType = UTILITY_SIMSCRIPT_UNKNOWN_FILE;
-	DSAM_snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, wxT("No path"));
+	DSAM_strcpy(simScriptPtr->parsFilePath, wxT("No path"));
 	simScriptPtr->lineNumber = 0;
 	simScriptPtr->simPtr = NULL;
 	simScriptPtr->subSimList = NULL;
@@ -363,8 +363,8 @@ SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode)
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH:
 	case UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL:
 		simScriptPtr->parFilePathMode = UTILITY_SIMSCRIPT_PARFILEPATHMODE_PATH;
-		DSAM_snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, wxT("%s"),
-		  theParFilePathMode);
+		DSAM_strncpy(simScriptPtr->parsFilePath, theParFilePathMode,
+		  MAX_FILE_PATH);
 		break;
 	default:
 		;
@@ -492,7 +492,7 @@ SetSimFileName_Utility_SimScript(WChar * simFileName)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(simScriptPtr->simFileName, MAX_FILE_PATH, wxT("%s"), simFileName);
+	DSAM_strncpy(simScriptPtr->simFileName, simFileName, MAX_FILE_PATH);
 	return(TRUE);
 
 }
@@ -532,8 +532,7 @@ SetParsFilePath_Utility_SimScript(WChar * parsFilePath)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(simScriptPtr->parsFilePath, MAX_FILE_PATH, wxT("%s"),
-	  parsFilePath);
+	DSAM_strncpy(simScriptPtr->parsFilePath, parsFilePath, MAX_FILE_PATH);
 	return(TRUE);
 
 }
@@ -774,8 +773,8 @@ GetFilePath_Utility_SimScript(WChar *filePath)
 
 	if (!GetDSAMPtr_Common()->usingGUIFlag)
 		return(filePath);
-	DSAM_snprintf(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"), simScriptPtr->
-	  parsFilePath, simScriptPtr->simFileName);
+	Snprintf_Utility_String(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"),
+	  simScriptPtr->parsFilePath, simScriptPtr->simFileName);
 	return(guiFilePath);
 	
 }
@@ -923,8 +922,7 @@ ReadPars_Utility_SimScript(WChar *fileName)
 		return(FALSE);
 	}
 	DPrint(wxT("%s: Reading from '%s':\n"), funcName,
-	  GetFilePath_Utility_SimScript(
-	  filePath));
+	  GetFilePath_Utility_SimScript(filePath));
 	switch (p->simFileType) {
 	case UTILITY_SIMSCRIPT_SIM_FILE:
 		if (!ReadSimScript_Utility_SimScript(fp)) {
@@ -1312,9 +1310,9 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 
 	if (localSimScriptPtr->parFilePathMode ==
 	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {
-		DSAM_snprintf(localSimScriptPtr->parsFilePath, MAX_FILE_PATH, wxT("%s"),
-		  localSimScriptPtr->parFilePathModeList[
-		  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name);
+		DSAM_strncpy(localSimScriptPtr->parsFilePath, localSimScriptPtr->
+		  parFilePathModeList[UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name,
+		  MAX_FILE_PATH);
 	}
 	for (pc = localSimScriptPtr->simulation; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS) {

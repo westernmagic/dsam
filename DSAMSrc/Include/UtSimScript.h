@@ -55,7 +55,7 @@
 
 #define UTILITY_SIMSCRIPT_NUM_PARS			3
 #define	MAX_IDENTIFIERS						20
-#define	NULL_STRING							""
+#define	NULL_STRING							wxT("")
 #define SIMSCRIPT_SIMPARFILE_DIVIDER		wxT("<<>>")
 #define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	wxT("<()>")
 #define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'

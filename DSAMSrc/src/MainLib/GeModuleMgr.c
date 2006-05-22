@@ -44,6 +44,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
@@ -573,8 +577,8 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName)
 	parList = (* data->module->GetUniParListPtr)();
 	if ((par = FindUniPar_UniParMgr(&parList, parName, UNIPAR_SEARCH_ABBR)) ==
 	  NULL) {
-		NotifyError(wxT("%s: Could not find parameter '%s' for process '")
-		  STR_FMT wxT("'"), funcName, parName, data->module->name);
+		NotifyError(wxT("%s: Could not find parameter '%s' for process '%s'"),
+		  funcName, parName, data->module->name);
 		return(NULL);
 	}
 	return(par);
@@ -652,8 +656,8 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 	if ((DSAM_strcmp(fileName, NO_FILE) == 0) || !parList)
 		return(TRUE);
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen((char *) filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
+	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		NotifyError(wxT("%s: Cannot open parameter file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
 	}
@@ -682,8 +686,8 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 		}
 		if (par || !useOldReadPars) {
 			if (!par) {
-				NotifyError(wxT("%s: Unknown parameter '%s' for module '")
-				  STR_FMT wxT("'."), funcName, parName, data->module->name);
+				NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
+				  funcName, parName, data->module->name);
 				ok = FALSE;
 			} else {
 				if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
@@ -703,10 +707,10 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 	}
 	if (!ok) {
 		if (*failedParName)
-			NotifyError(wxT("%s: Unknown parameter '%s' for module '" STR_FMT
-			  wxT("'.")), funcName, failedParName, data->module->name);
-		NotifyError(wxT("%s: Invalid parameters, in " STR_FMT " module "
-		  "parameter file '%s'."), funcName, data->module->name, fileName);
+			NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
+			  funcName, failedParName, data->module->name);
+		NotifyError(wxT("%s: Invalid parameters, in %s module parameter "
+		  "file '%s'."), funcName, data->module->name, fileName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -775,11 +779,11 @@ WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process)
 
 	DSAM_strcpy(filePath, GetParsFileFPath_Common(baseFileName));
 	if (process->module->specifier != SIMSCRIPT_MODULE) {
-		strcat(filePath, wxT(".par"));
+		DSAM_strcat(filePath, wxT(".par"));
 		ok = WriteParFile_UniParMgr(filePath, GetUniParListPtr_ModuleMgr(
 		  process));
 	} else {
-		strcat(filePath, wxT(".spf"));
+		DSAM_strcat(filePath, wxT(".spf"));
 		ok = WriteSimParFile_ModuleMgr(filePath, process);
 	}
 	return(ok);
@@ -908,16 +912,16 @@ SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value)
 			return(TRUE);
 		if (SetSimUniParValue_Utility_SimScript(parName, value))
 			return(TRUE);
-		NotifyError(wxT("%s: Could not find parameter '%s' for process '")
-		  STR_FMT wxT("'"), funcName, parName, data->module->name);
+		NotifyError(wxT("%s: Could not find parameter '%s' for process '%s'"),
+		  funcName, parName, data->module->name);
 		return(FALSE);
 	default: {
 		UniParPtr	par;
 		UniParListPtr	parList = (* data->module->GetUniParListPtr)();
 		if ((par = FindUniPar_UniParMgr(&parList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError(wxT("%s: Could not find parameter '%s' for process '")
-			  STR_FMT wxT("'"), funcName, parName, data->module->name);
+			NotifyError(wxT("%s: Could not find parameter '%s' for process "
+			  "'%s'"), funcName, parName, data->module->name);
 			return(FALSE);
 		}
 		return(SetParValue_UniParMgr(&parList, par->index, value));

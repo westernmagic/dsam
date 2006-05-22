@@ -5,6 +5,8 @@
  *				applications.
  * Comments:	The 'PostInitFunc' routine is run at the end of the
  *				'InitProcessVariables' routine.
+ *				17 May 2006: LPO: ToDO: This code module needs to be moved into
+ *				ExtMainApp.cpp.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
  * Updated:		
@@ -24,11 +26,11 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define DEFAULT_ERRORS_MODE			"screen"
+#define DEFAULT_ERRORS_MODE			wxT("screen")
 #define	APP_INT_NUM_PARS			6		/* Number of main parameters. */
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
-#define APP_PARLIST_NAME			"app_specific"
+#define APP_PARLIST_NAME			wxT("app_specific")
 
 #if defined(USE_GUI) || defined(EXTENSIONS_SUPPORT)
 #	define	MAIN_ARGS	void

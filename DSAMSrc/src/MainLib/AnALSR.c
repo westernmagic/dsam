@@ -525,8 +525,8 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		}
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
 		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Frequency (Hz) "));
-		DSAM_snprintf(channelTitle, MAXLINE, wxT("ALSR function (+%g / -%g "
-		  "octaves)"), p->lowerAveLimit, p->upperAveLimit);
+		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("ALSR function (+%g "
+		  "/ -%g octaves)"), p->lowerAveLimit, p->upperAveLimit);
 		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
 		SetInfoCFArray_SignalData(data->outSignal, NULL);

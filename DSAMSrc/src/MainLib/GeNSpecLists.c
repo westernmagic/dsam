@@ -20,6 +20,7 @@
 
 #include "GeCommon.h"
 #include "GeNSpecLists.h"
+#include "UtString.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -177,8 +178,8 @@ IdentifyDiag_NSpecLists(WChar *mode, NameSpecifierPtr list)
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
 	case GENERAL_DIAGNOSTIC_MODE_NULL:
 		specifier = GENERAL_DIAGNOSTIC_FILE_MODE;
-		DSAM_snprintf(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, MAX_FILE_PATH,
-		  wxT("%s"), mode);
+		DSAM_strncpy(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, mode,
+		  MAX_FILE_PATH);
 		break;
 	default:
 		;
@@ -207,7 +208,7 @@ OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 		fileName = list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
 		filePath = (IS_ABSOLUTE_PATH(fileName))? fileName:
 		  GetParsFileFPath_Common(fileName);
-		if ((*fp = fopen((char *) filePath, "w")) == NULL) {
+		if ((*fp = fopen(ConvUTF8_Utility_String(filePath), "w")) == NULL) {
 			NotifyError(wxT("%s: Could not open file '%s' for diagnostics."),
 			  funcName, filePath);
 			return(FALSE);

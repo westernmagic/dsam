@@ -43,12 +43,11 @@ int		optionsPleaseLink = 0;
  * leaves giving "optind" indexing the first remaining argument.
  */
 
-int
+WChar
 Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
   WChar **argument, WChar *proto)
 {
-	register WChar	*idx;
-	register int	c;
+	register WChar	*idx, c;
 
 	*argument = NULL;
 	if (*optind >= argc)

@@ -51,9 +51,10 @@
  * changed by the options.
  */
 
-GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc,
-  (wxChar **) theArgv, MainSimulation)
+GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
+  MainSimulation)
 {
+
 	dSAMMainApp = this;
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())

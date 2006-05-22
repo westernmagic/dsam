@@ -395,8 +395,8 @@ SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification)
 		}
 	}
 	sAImagePtr->strobeSpecificationFlag = TRUE;
-	DSAM_snprintf(sAImagePtr->strobeSpecification, MAX_FILE_PATH, wxT("%s"),
-	  theStrobeSpecification);
+	DSAM_strncpy(sAImagePtr->strobeSpecification, theStrobeSpecification,
+	  MAX_FILE_PATH);
 	return(TRUE);
 
 }

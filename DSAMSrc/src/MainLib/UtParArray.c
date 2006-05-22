@@ -11,6 +11,10 @@
  *
  *********************/
 
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdlib.h> 
 #include <stdio.h>
 #include <string.h>
@@ -78,7 +82,7 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 		NotifyError(wxT("%s: Out of memory for structure."), funcName);
 		return(NULL);
 	}
-	DSAM_snprintf(p->name, MAXLINE, wxT("%s"), name);
+	DSAM_strncpy(p->name, name, MAXLINE);
 	p->updateFlag = TRUE;
 	p->mode = PARARRAY_NULL;
 	p->params = NULL;
@@ -88,23 +92,27 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	p->parList = NULL;
 
 	ToUpper_Utility_String(workStr, p->name);
-	DSAM_snprintf(p->abbr[PARARRAY_MODE], MAXLINE, wxT("%s_MODE"), workStr);
-	DSAM_snprintf(p->abbr[PARARRAY_PARAMETER], MAXLINE, wxT("%s_PARAMETER"), workStr);
-	DSAM_snprintf(p->desc[PARARRAY_MODE], MAXLINE, wxT("Variable '%s' mode ("), name);
-	DSAM_snprintf(p->desc[PARARRAY_PARAMETER], MAXLINE, wxT("Parameters for '%s' ")
-	  wxT("function"), name);
+	Snprintf_Utility_String(p->abbr[PARARRAY_MODE], MAXLINE, wxT("%s_MODE"),
+	  workStr);
+	Snprintf_Utility_String(p->abbr[PARARRAY_PARAMETER], MAXLINE, wxT(
+	  "%s_PARAMETER"), workStr);
+	Snprintf_Utility_String(p->desc[PARARRAY_MODE], MAXLINE, wxT("Variable "
+	  "'%s' mode ("), name);
+	Snprintf_Utility_String(p->desc[PARARRAY_PARAMETER], MAXLINE, wxT(
+	  "Parameters for '%s' function"), name);
 	for (list = p->modeList; *list->name != '\0'; list++) {
-		DSAM_snprintf(workStr, LONG_STRING, wxT("'%s'"), list->name);
-		strcat(p->desc[PARARRAY_MODE], workStr);
+		Snprintf_Utility_String(workStr, LONG_STRING, wxT("'%s'"),
+		  list->name);
+		DSAM_strcat(p->desc[PARARRAY_MODE], workStr);
 		if (!lastListEntryFound && *(list + 2)->name == '\0') {
-			strcat(p->desc[PARARRAY_MODE], wxT(" or "));
+			DSAM_strcat(p->desc[PARARRAY_MODE], wxT(" or "));
 			lastListEntryFound = TRUE;
 		} else {
 			if (*(list + 1)->name != '\0')
-				strcat(p->desc[PARARRAY_MODE], wxT(", "));
+				DSAM_strcat(p->desc[PARARRAY_MODE], wxT(", "));
 		}
 	}
-	strcat(p->desc[PARARRAY_MODE], wxT(")."));
+	DSAM_strcat(p->desc[PARARRAY_MODE], wxT(")."));
 	if (!SetMode_ParArray(p, p->modeList[0].name)) {
 		NotifyError(wxT("Could not set initial parameter array."), funcName);
 		Free_ParArray(&p);

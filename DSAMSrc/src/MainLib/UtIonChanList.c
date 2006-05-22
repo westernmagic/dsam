@@ -1316,7 +1316,7 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 			GenerateHHuxley_IonChanList(theIC);
 		break;
 	case ICLIST_FILE_MODE:
-		DSAM_snprintf(theIC->fileName, MAX_FILE_PATH, wxT("%s"), fileName);
+		DSAM_strncpy(theIC->fileName, fileName, MAX_FILE_PATH);
 		if (!ReadVoltageTable_IonChanList(theIC, fp)) {
 			NotifyError(wxT("%s: Failed to read ion channel from file '%s'."),
 			  funcName, fileName);
@@ -2029,7 +2029,7 @@ SetICDescription_IonChanList(IonChannelPtr theIC, WChar *theDescription)
 		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(theIC->description, MAXLINE, wxT("%s"), theDescription);
+	DSAM_strncpy(theIC->description, theDescription, MAXLINE);
 	return(TRUE);
 
 }
@@ -2640,7 +2640,7 @@ SetICFileName_IonChanList(IonChannelPtr theIC, WChar *fileName)
 		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(theIC->fileName, MAX_FILE_PATH, wxT("%s"), fileName);
+	DSAM_strncpy(theIC->fileName, fileName, MAX_FILE_PATH);
 	theIC->updateFlag = TRUE;
 	if (theIC->parList)
 		theIC->parList->updateFlag = TRUE;

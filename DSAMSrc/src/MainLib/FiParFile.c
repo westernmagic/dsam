@@ -185,16 +185,16 @@ IdentifyFormat_ParFile(WChar *fmt, WChar *extraFmt)
 		if (*p == 'l')
 			*extraFmt = *p++;
 		switch (*p) {
-			case 'u':
-			case 'd':
-			case 'f':
-			case 's':
-			case 'i':	/* Identifier. */
-				return((int) *p);
-			default:
-				NotifyError(wxT("%s: Illegal format string, '%s'."), funcName,
-				  fmt);
-				return('\0');
+		case 'u':
+		case 'd':
+		case 'f':
+		case 's':
+		case 'i':	/* Identifier. */
+			return((int) *p);
+		default:
+			NotifyError(wxT("%s: Illegal format string, '%s'."), funcName,
+			  p);
+			return('\0');
 		}
 	} else
 		return(EOF);
@@ -279,7 +279,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 	va_start(args, fmt);
 
 	/* This next line is needed because strtok bashes its string argument. */
-	DSAM_snprintf(fmtScanLine, MAXLINE, wxT("%s"), fmt);
+	DSAM_strncpy(fmtScanLine, fmt, MAXLINE);
 #	if DSAM_USE_UNICODE
 	formatToken = DSAM_strtok(fmtScanLine, FORMAT_DELIMITERS, &state);
 #	else
@@ -303,8 +303,15 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 					DSAM_strcpy(va_arg(args, WChar *), restOfLine);
 				else {
 					WChar	*string = va_arg(args, WChar *);
-					if (!ExtractQuotedString_ParFile(string, restOfLine))
+					if (!ExtractQuotedString_ParFile(string, restOfLine)) {
+#						if DSAM_USE_UNICODE
+						WChar	newFormat[MAXLINE];
+						ConvIOFormat_Utility_String(newFormat, formatToken,
+						  MAXLINE);
+						formatToken = newFormat;
+#						endif
 						DSAM_sscanf(restOfLine, formatToken, string);
+					}
 				}
 				break;
 			default:

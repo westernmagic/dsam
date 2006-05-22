@@ -49,9 +49,9 @@ class DSAMXMLDocument;
 
 class MainApp {
 
-	bool	initOk, serverFlag, superServerFlag, argsAreLocalFlag, diagsOn;
+	bool	initOk, serverFlag, superServerFlag, diagsOn;
 	bool	threadedSimExecutionFlag;
-	WChar	**argv;
+	wxChar	**argv;
 	int		argc;
 	int		serverPort;
 	int		(* ExternalMain)(void);
@@ -65,7 +65,7 @@ class MainApp {
 	RunThreadedProc	*runThreadedProc;
 	wxCriticalSection	mainCritSect;
 
-  	MainApp(int theArgc = 0, WChar **theArgv = NULL, int (* TheExternalMain)(
+  	MainApp(int theArgc = 0, wxChar **theArgv = NULL, int (* TheExternalMain)(
 	  void) = NULL, int (* TheExternalRunSimulation)(void) = NULL);
   	virtual ~MainApp(void);
 
@@ -85,23 +85,24 @@ class MainApp {
 	void	DeleteSimThread(void);
 	void	FreeArgStrings(void);
 	int		GetArgc(void)	{ return argc; }
-	WChar **	GetArgv(void)	{ return argv; }
+	wxChar **	GetArgv(void)	{ return argv; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
 	wxFileName &	GetSimFileName(void)	{ return simFileName; }
 	SymbolPtr GetSymList(void)	{ return symList; }
 	bool	InitArgv(int theArgc);
+	bool	InitCommandLineArgs(int theArgc, wxChar **theArgv);
 	bool	InitMain(bool loadSimulationFlag = false);
 	bool	LoadXMLDocument(void);
-	bool	ProtectQuotedStr(WChar *str);
-	void	RemoveCommands(int offset, WChar *prefix);
-	WChar *	RestoreQuotedStr(WChar *str);
+	bool	ProtectQuotedStr(wxChar *str);
+	void	RemoveCommands(int offset, wxChar *prefix);
+	wxChar *	RestoreQuotedStr(wxChar *str);
 	int		RunServer(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
-	void	SetArgv(WChar **theArgv)	{ argv = theArgv; }
-	bool	SetArgvString(int index, WChar *string, int size);
+	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
+	bool	SetArgvString(int index, const wxChar *string, int size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
-	int		SetParameterOptionArgs(int indexStart, WChar *parameterOptions,
+	int		SetParameterOptionArgs(int indexStart, wxChar *parameterOptions,
 			  bool countOnly);
 	void	SetSimulationFile(wxFileName &fileName);
 	void	SetThreadPars(void);
@@ -123,7 +124,7 @@ extern MainApp	*dSAMMainApp;
 #if defined(EXTENSIONS_SUPPORT) && !defined(USE_GUI)
 #	if !defined(LIBRARY_COMPILE)
 	int
-	main(int argc, WChar **argv)
+	main(int argc, wxChar **argv)
 	{
 		wxInitializer initializer;
 		if (!initializer) {
@@ -139,13 +140,13 @@ extern MainApp	*dSAMMainApp;
 
 #endif /* defined(EXTENSIONS_SUPPORT) && !defined(GRAPHICS_SUPPORT) */
 
-void	DPrintSysLog_MainApp(WChar *format, va_list args);
+void	DPrintSysLog_MainApp(wxChar *format, va_list args);
 
 void	PrintUsage_MainApp(void);
 
 BOOLN	OnExecute_MainApp(void);
 
-BOOLN	ReadXMLSimFile_MainApp(WChar *fileName);
+BOOLN	ReadXMLSimFile_MainApp(wxChar *fileName);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

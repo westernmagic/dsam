@@ -55,6 +55,7 @@
 #include <ctype.h>
 
 #include "GeCommon.h"
+#include "UtString.h"
 #include "GeNSpecLists.h"
 
 /******************************************************************************/
@@ -70,7 +71,7 @@ DSAM	dSAM = {
 			FALSE,		/* usingExtFlag */
 			FALSE,		/* interruptRequestedFlag */
 			NULL,		/* diagnosticsPrefix */
-			(WChar *) VERSION,	/* version */
+			DSAM_VERSION,/* version */
 			NULL,		/* parsFilePath */
 			0,			/* notificationCount */
 			UNSET_FILE_PTR,	/* warningsFile */
@@ -99,7 +100,7 @@ DPrintStandard(WChar *format, va_list args)
 {
 	CheckInitParsFile_Common();
 	if (dSAM.diagnosticsPrefix)
-		DSAM_fprintf(dSAM.parsFile, wxT("%s"), dSAM.diagnosticsPrefix);
+		DSAM_fprintf(dSAM.parsFile, STR_FMT, dSAM.diagnosticsPrefix);
 	DSAM_vfprintf(dSAM.parsFile, format, args);
 	
 }
@@ -121,6 +122,11 @@ DPrint(WChar *format, ...)
 	if (!dSAM.parsFile || !dSAM.DPrint || (dSAM.diagMode ==
 	  COMMON_OFF_DIAG_MODE))
 		return;
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
+	format = newFormat;
+#	endif
 	va_start(args, format);
 	if (dSAM.diagMode == COMMON_CONSOLE_DIAG_MODE)
 		DPrintStandard(format, args);
@@ -154,7 +160,7 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 		return;
 	}
 	if (dSAM.diagnosticsPrefix)
-		DSAM_snprintf(buffer, MAXLINE, wxT("%s"), dSAM.diagnosticsPrefix);
+		DSAM_strncpy(buffer, dSAM.diagnosticsPrefix, MAXLINE);
 	else
 		*buffer = '\0';
 	for (p = format, c = DSAM_strlen(buffer); *p != '\0'; p++)
@@ -184,7 +190,7 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 				  args, unsigned long): va_arg(args, unsigned));
 				break;
 			case 'c':
-				DSAM_snprintf(buffer, MAXLINE, subFormat, va_arg(args, int));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args, int));
 				break;
 			case 's':
 				s = va_arg(args, WChar *);
@@ -193,13 +199,13 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 					  "(%d)."), funcName, LONG_STRING, DSAM_strlen(s));
 					return;
 				}
-				DSAM_snprintf(buffer, MAXLINE, subFormat, s);
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, s);
 				break;
 			case '%':
 				DSAM_snprintf(buffer, MAXLINE, wxT("%%"));
 				break;
 			default:
-				DSAM_snprintf(buffer, MAXLINE, wxT("%c"), *p);
+				Snprintf_Utility_String(buffer, MAXLINE, wxT("%c"), *p);
 				break;
 			}
 			c = DSAM_strlen(buffer);
@@ -243,7 +249,7 @@ DiagnosticTitle(CommonDiagSpecifier type)
  * GUI mode.
  * It does not take any further action, as responses to errors differ: some
  * errors are recoverable while others are fatal.
- */
+ */ 
 
 void
 NotifyStandard(const WChar *format, va_list args, CommonDiagSpecifier type)
@@ -284,10 +290,16 @@ NotifyError(WChar *format, ...)
 	CheckInitErrorsFile_Common();
 	if (!dSAM.errorsFile)
 		return;
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
+	format = newFormat;
+#	endif
 	va_start(args, format);
 	if ((dSAM.errorsFile == stderr) && (!dSAM.usingGUIFlag ||
 	  (dSAM.diagMode == COMMON_DIALOG_DIAG_MODE)))
 		DSAM_fprintf(stderr, wxT("\07"));
+	
 	(* dSAM.Notify)(format, args, COMMON_ERROR_DIAGNOSTIC);
 	va_end(args);
 	dSAM.notificationCount++;
@@ -310,6 +322,11 @@ NotifyWarning(WChar *format, ...)
 	CheckInitWarningsFile_Common();
 	if (!dSAM.warningsFile)
 		return;
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
+	format = newFormat;
+#	endif
 	va_start(args, format);
 	(* dSAM.Notify)(format, args, COMMON_WARNING_DIAGNOSTIC);
 	va_end(args);
@@ -343,7 +360,8 @@ GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
 		return(stderr);
 	default:
 		fileAccess = (mode == APPEND)? "a": "w";
-		if ((fp = fopen((char *) outputSpecifier, fileAccess)) == NULL) {
+		if ((fp = fopen(ConvUTF8_Utility_String(outputSpecifier),
+		  fileAccess)) == NULL) {
 			NotifyError(wxT("%s: Could not open file '%s' output sent to "
 			  "stderr."), funcName, outputSpecifier);
 			return(stderr); 
@@ -637,8 +655,8 @@ GetParsFileFPath_Common(WChar *parFile)
 	if ((parFile[0] == '/') || DSAM_strstr(parFile, wxT(":\\")))
 		DSAM_strcpy(filePath, parFile);
 	else
-		DSAM_snprintf(filePath, MAX_FILE_PATH, wxT("%s/%s"), dSAM.parsFilePath,
-		  parFile);
+		Snprintf_Utility_String(filePath, MAX_FILE_PATH, wxT("%s/%s"),
+		  dSAM.parsFilePath, parFile);
 	return (filePath);
 
 }

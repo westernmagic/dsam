@@ -178,7 +178,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	}
 	dataFilePtr->parSpec = parSpec;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
-	DSAM_snprintf(dataFilePtr->name, MAXLINE, wxT("output.dat"));
+	DSAM_strncpy(dataFilePtr->name, wxT("output.dat"), MAXLINE);
 	dataFilePtr->wordSize = 2;
 	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
@@ -871,7 +871,7 @@ SetFileName_DataFile(WChar *fileName)
 		NotifyError(wxT("%s: Illegal file name."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(dataFilePtr->name, MAX_FILE_PATH, wxT("%s"), fileName);
+	DSAM_strncpy(dataFilePtr->name, fileName, MAX_FILE_PATH);
 	Format_DataFile(GetSuffix_Utility_String(fileName));
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1045,7 +1045,7 @@ ReadPars_DataFile(WChar *parFileName)
     if (DSAM_strcmp(parFileName, NO_FILE) == 0)
     	return(TRUE);
 	parFilePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen((char *) parFilePath, "r")) == NULL) {
+	if ((fp = fopen(ConvUTF8_Utility_String(parFilePath), "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  parFilePath);
 		return(FALSE);
@@ -1128,7 +1128,8 @@ InitModule_DataFile(ModulePtr theModule)
 		  funcName);
 		return(FALSE);
 	}
-	dataFilePtr->inputMode = (DSAM_strcmp(theModule->name, wxT("DATAFILE_IN")) == 0);
+	dataFilePtr->inputMode = (DSAM_strcmp(theModule->name, wxT(
+	  "DATAFILE_IN")) == 0);
 	if (dataFilePtr->inputMode)
 		dataFilePtr->parList->pars[DATAFILE_NORMALISE].enabled = FALSE;
 	else {

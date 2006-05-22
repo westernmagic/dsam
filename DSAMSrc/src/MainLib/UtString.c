@@ -19,7 +19,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+
+#if DSAM_USE_UNICODE
+#	include <wctype.h>
+#else
+#	include <ctype.h>
+#endif
+
 
 #include "GeCommon.h"
 #include "UtString.h"
@@ -47,7 +53,7 @@ ToUpper_Utility_String(WChar *upperCaseString, WChar *string)
 	WChar		*p, *pp;
 
 	for (p = upperCaseString, pp = string; *pp != '\0'; )
-		*p++ = toupper(*pp++);
+		*p++ = DSAM_toupper(*pp++);
 	*p = '\0';
 
 }
@@ -146,7 +152,7 @@ QuotedString_Utility_String(WChar *string)
 {
 	static WChar		newString[LONG_STRING];
 
-	DSAM_snprintf(newString, LONG_STRING, wxT("\"%s\""), string);
+	Snprintf_Utility_String(newString, LONG_STRING, wxT("\"%s\""), string);
 	return (newString);
 
 }
@@ -262,6 +268,166 @@ ConvUTF8_Utility_String(WChar *src)
 		return(NULL);
 	}
 	return(dest);
-#endif
+#	endif
+
+}
+
+/**************************** MbToWC ******************************************/
+
+/*
+ * This function returns a wChar from a multi-byte character.
+ * It returns NULL if it fails in any way.
+ */
+ 
+WChar
+MBToWC_Utility_String(const char *mb)
+{
+#	ifndef DSAM_USE_UNICODE
+	return(*mb);
+#	else
+	static const WChar *funcName = wxT("MBToWC_Utility_String");
+	WChar	wc;
+
+	if (mbtowc(&wc, mb, MB_CUR_MAX) < 0 ) {
+		NotifyError(wxT("%s: Failed to convert wide character (%d)."),
+		  funcName, MAXLINE);
+		return('\0');
+	}
+	return(wc);
+#	endif
+
+}
+
+/**************************** MBSToWCS ****************************************/
+
+/*
+ * This function returns a WChar string from a multi-btye string.
+ * The converted string pointer is a static string which should be considered as
+ * temporary.
+ * The function 'mbsrtowcs' is thread-safe while 'mbstwcs' is not.
+ * It returns NULL if it fails in any way.
+ */
+ 
+WChar *
+MBSToWCS_Utility_String(const char *mb)
+{
+#	ifndef DSAM_USE_UNICODE
+	return(mb);
+#	else
+	static const WChar *funcName = wxT("MBSToWCS_Utility_String");
+	static WChar	dest[LONG_STRING];
+	mbstate_t	state;
+
+
+	if (mbsrtowcs(dest, &mb, LONG_STRING, &state) < 0 ) {
+		NotifyError(wxT("%s: Failed to convert wide character (%d)."),
+		  funcName, MAXLINE);
+		return(NULL);
+	}
+	return(dest);
+#	endif
+
+}
+
+/**************************** ConvWCSIOFormat *********************************/
+
+/*
+ * This routine converts the '%s' formats to the wide char '%S' in a string.
+ * It expects the memory for both of the strings to of been previously allocated
+ * and of equal lengths.
+ */
+
+void
+ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
+{
+	BOOLN	fmtOn = FALSE;
+	wchar_t	*d = dest, *s = src;
+
+	for (*d++ = *s++; (*s); d++, s++) {
+		if (*(s - 1) == '%')
+			fmtOn = TRUE;
+		if (fmtOn && ((*s == 'c') || (*s == 's'))) {
+			*d = towupper(*s);
+			fmtOn = FALSE;
+		} else
+			*d = *s;
+	}
+	*d = '\0';
+
+}
+ 
+/**************************** ConvIOFormat ************************************/
+
+/*
+ * This function converts all instances of '%s' to '%S' and '%c' to '%C' to
+ * allow the correct output of wide characters when using UNICODE format.
+ * The switch statement is used because 'toupper' does not work with wide chars.
+ * When the string is too long, NotifyError cannot be used as it calls this
+ * function and we will get into a loop.
+ * No checks a made for NULL destination strings.
+ * I returns 'FALSE' if it fails in any way.
+ */
+ 
+BOOLN
+ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
+{
+	static const WChar	*funcName = wxT("ConvIOFormat_Utility_String");
+
+	if (!s || *s == '\0') {
+		*dest = '\0';
+		return(TRUE);
+	}
+	if (DSAM_strlen(s) > size) {
+		fwprintf(stderr, wxT("%S: Error.  String too long (%d)\n"), funcName);
+		*dest = '\0';
+		return(FALSE);
+	}
+#	if DSAM_USE_UNICODE
+	ConvWCSIOFormat_Utility_String(dest, (wchar_t *) s);
+#	else
+	strcpy(dest, s);
+#	endif
+	return(TRUE);
+
+}
+
+/**************************** Snprintf ****************************************/
+
+/*
+ * This function replaces the standard 'snprintf' routine which needs changes
+ * to the string '%s' format in UNICODE mode.
+ */
+ 
+int
+Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
+{
+	static const WChar *funcName = wxT("Snprintf_Utility_String");
+	BOOLN	ok = TRUE;
+	int		result = 0;
+
+	va_list	args;
+	va_start(args, format);
+
+#	if DSAM_USE_UNICODE
+	WChar	*p;
+	if ((p = (WChar *) calloc(wcslen(format), sizeof(WChar))) == NULL) {
+		NotifyError(wxT("%s: Out of memory."), funcName);
+		ok = FALSE;
+	}
+	if (ok) {
+		ConvWCSIOFormat_Utility_String(p, format);
+		format = p;
+		result = vswprintf(str, size, format, args);
+		free(p);
+	} else
+		result = -1;
+	
+#	else
+	result = vsnprintf(str, size, format, args);
+#	endif
+
+	va_end(args);
+	
+	return(result);
 
 }

@@ -127,18 +127,19 @@ wxClassInfo *
 SDIXMLDocument::GetClassInfo(TiXmlElement *shapeElement)
 {
 	static const char *funcName = "SDIXMLDocument::GetClassInfo";
-	const char	*type;
+	wxString	type;
 
-	if ((type = shapeElement->Attribute(DSAM_XML_TYPE_ATTRIBUTE)) == NULL) {
+	type = wxConvUTF8.cMB2WX(shapeElement->Attribute(DSAM_XML_TYPE_ATTRIBUTE));
+	if (type.empty()) {
 		XMLNotifyWarning(shapeElement, wxT("%s: Could not find shape type"),
 		  funcName);
 		diagram->SetOk(false);
 		return(NULL);
 	}
-	wxClassInfo *classInfo = wxClassInfo::FindClass((wxChar *) type);
+	wxClassInfo *classInfo = wxClassInfo::FindClass(type);
 	if (!classInfo) {
 		XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class for "
-		  "'%s' shape type"), funcName, type);
+		  "'%s' shape type"), funcName, type.c_str());
 		diagram->SetOk(false);
 		return(NULL);
 	}
@@ -165,7 +166,8 @@ SDIXMLDocument::CreateLoadShape(TiXmlElement *myElement, DatumPtr pc)
 	SDIShape *shape = (SDIShape *) diagram->CreateLoadShape(pc, classInfo,
 	  NULL);
 	if (!shape) {
-		XMLNotifyWarning(myElement, wxT("%s: Could not create shape."), funcName);
+		XMLNotifyWarning(myElement, wxT("%s: Could not create shape."),
+		  funcName);
 		delete classInfo;
 		return(NULL);
 	}

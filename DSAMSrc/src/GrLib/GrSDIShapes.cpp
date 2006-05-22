@@ -356,8 +356,8 @@ SDILineShape::AddXMLArrowListInfo(TiXmlNode &node, wxNode *aNode)
 		wxArrowHead *head = (wxArrowHead *) aNode->GetData();
 		TiXmlElement arrowElement(SHAPE_XML_ARROW_ELEMENT);
 		arrowElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, head->GetId());
-		arrowElement.SetAttribute(SHAPE_XML_NAME_ATTRIBUTE, (char *) head->
-		  GetName().c_str());
+		arrowElement.SetAttribute(SHAPE_XML_NAME_ATTRIBUTE, head->
+		  GetName().mb_str());
 		arrowElement.SetAttribute(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
 		arrowElement.SetAttribute(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
 		arrowElement.SetDoubleAttribute(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
@@ -410,7 +410,8 @@ SDILineShape::AddXMLInfo(TiXmlNode &node)
 bool
 SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
 {
-	static const wxChar *funcName = wxT("SDILineShape::GetXMLControlPointsInfo");
+	static const wxChar *funcName = wxT(
+	  "SDILineShape::GetXMLControlPointsInfo");
 	bool	ok = true;
 	wxRealPoint	*point;
 	TiXmlNode	*pointNode;

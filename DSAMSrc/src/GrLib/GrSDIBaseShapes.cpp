@@ -89,11 +89,9 @@ SDIShape::AddPenInfo(TiXmlNode &parent)
 	if (penColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myPen->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, (const char *) hex.
-		  mb_str());
+		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex.mb_str());
 	} else if (penColour != wxT("BLACK"))
-		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, (const char *)
-		  penColour.mb_str());
+		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, penColour.mb_str());
 	if (penElement.FirstAttribute())
 		parent.InsertEndChild(penElement);
 
@@ -117,11 +115,10 @@ SDIShape::AddBrushInfo(TiXmlNode &parent)
 	if (brushColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myBrush->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, (const char *)
-		  hex.mb_str());
+		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex.mb_str());
 	} else if (brushColour != wxT("WHITE"))
-		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, (const char *)
-		  brushColour.mb_str());
+		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, brushColour.
+		  mb_str());
 
 	if (myBrush->GetStyle() != wxSOLID)
 		brushElement.SetAttribute(SHAPE_XML_TYPE_ATTRIBUTE, myBrush->GetStyle(
@@ -236,12 +233,12 @@ SDIShape::AddRegions(TiXmlNode &parent)
 
 		AddFontInfo(regionElement, region->m_font);
 
-		regionElement.SetAttribute(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, (const 
-		  char *) region->m_textColour.mb_str());
+		regionElement.SetAttribute(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, region->
+		  m_textColour.mb_str());
 
 		// New members for pen colour/style
-		regionElement.SetAttribute(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, (const 
-		  char *) region->m_penColour.mb_str());
+		regionElement.SetAttribute(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, region->
+		  m_penColour.mb_str());
 		regionElement.SetAttribute(SHAPE_XML_PEN_STYLE_ATTRIBUTE, (long)region->
 		  m_penStyle);
 
@@ -254,7 +251,7 @@ SDIShape::AddRegions(TiXmlNode &parent)
 			wxShapeTextLine *line = (wxShapeTextLine *)textNode->GetData();
 			textElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, line->GetX());
 			textElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, line->GetY());
-			TiXmlText text((const char *) line->GetText().mb_str());
+			TiXmlText text(line->GetText().mb_str());
 			textElement.InsertEndChild(text);
 			regionElement.InsertEndChild(textElement);
 			textNode = textNode->GetNext();
@@ -277,8 +274,8 @@ void
 SDIShape::AddShapeInfo(TiXmlNode &node)
 {
 	TiXmlElement shapeElement(SHAPE_XML_SHAPE_ELEMENT);
-	shapeElement.SetAttribute(DSAM_XML_TYPE_ATTRIBUTE, (const char *) wxString(
-	  GetClassInfo()->GetClassName()).mb_str());
+	shapeElement.SetAttribute(DSAM_XML_TYPE_ATTRIBUTE, wxConvUTF8.cWX2MB(
+	  GetClassInfo()->GetClassName()));
 	shapeElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, GetId());
 	shapeElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, GetX());
 	shapeElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, GetY());
@@ -521,14 +518,14 @@ SDIShape::GetRegionsInfo(TiXmlNode *parent)
 		wxString regionTextColour = wxEmptyString;
 		STR_ATTRIBUTE_VAL(regionElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE,
 		  regionTextColour, false);
-		if (regionTextColour.IsEmpty())
+		if (regionTextColour.empty())
 			regionTextColour = wxT("BLACK");
 		region->m_textColour = regionTextColour;
 
     	wxString penColour = wxEmptyString;
 		STR_ATTRIBUTE_VAL(regionElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE,
 		  penColour, false);
-		if (penColour)
+		if (!penColour.empty())
 			region->SetPenColour(penColour);
 
 		ATTRIBUTE_VAL(regionElement, SHAPE_XML_PEN_STYLE_ATTRIBUTE, penStyle,
@@ -542,8 +539,8 @@ SDIShape::GetRegionsInfo(TiXmlNode *parent)
 			ATTRIBUTE_VAL(textElement, SHAPE_XML_Y_ATTRIBUTE, y, false);
 			TiXmlText* text = textElement->FirstChild()->ToText();
 			if (text) {
-				wxShapeTextLine *line = new wxShapeTextLine(x, y, (wxChar *)
-				  text->Value());
+				wxShapeTextLine *line = new wxShapeTextLine(x, y, wxConvUTF8.
+				  cMB2WX(text->Value()));
 				region->m_formattedText.Append(line);
 			}
 		}
@@ -580,7 +577,8 @@ SDIShape::GetShapeInfo(TiXmlElement *myElement)
 
 	STR_ATTRIBUTE_VAL(myElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, strValue,
 	  false);
-	SetTextColour(strValue);
+	if (!strValue.empty())
+		SetTextColour(strValue);
 
 	GetPenInfo(myElement);
 	GetBrushInfo(myElement);
@@ -727,7 +725,7 @@ SDIPolygonShape::GetXMLInfo(TiXmlNode *elementNode)
 		pointsListElement = node->ToElement();
 		wxString id = wxEmptyString;
 		STR_ATTRIBUTE_VAL(pointsListElement, DSAM_XML_ID_ATTRIBUTE, id, true);
-		if (id.IsSameAs((wxChar *) DSAM_XML_CURRENT_ATTRIBUTE_VALUE)) {
+		if (id.IsSameAs(wxT(DSAM_XML_CURRENT_ATTRIBUTE_VALUE))) {
 			for (pointNode = pointsListElement->IterateChildren(
 			  SHAPE_XML_POINT_ELEMENT, NULL); pointNode; pointNode =
 			  pointsListElement->IterateChildren(SHAPE_XML_POINT_ELEMENT,
@@ -740,7 +738,7 @@ SDIPolygonShape::GetXMLInfo(TiXmlNode *elementNode)
 				points->Append((wxObject*) point);
 			}
 		}
-		if (id.IsSameAs((wxChar *) DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE)) {
+		if (id.IsSameAs(wxT(DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE))) {
 			double minX = 1000;
 			double minY = 1000;
 			double maxX = -1000;

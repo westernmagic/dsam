@@ -256,7 +256,7 @@ SDIDocument::SaveXMLObject(SDI_DOC_OSTREAM& stream)
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	SDIXMLDocument	doc(&diagram);
 	doc.Create();
-	doc.SaveFile((char *) GetFilename().c_str());
+	doc.SaveFile(GetFilename().mb_str());
 	return(stream);
 
 }

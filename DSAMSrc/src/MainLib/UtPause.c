@@ -277,7 +277,7 @@ SetMessage_Utility_Pause(WChar *theMessage)
 	}
 	/*** Put any other required checks here. ***/
 	pausePtr->messageFlag = TRUE;
-	DSAM_snprintf(pausePtr->message, LONG_STRING, wxT("%s"), theMessage);
+	DSAM_strncpy(pausePtr->message, theMessage, LONG_STRING);
 	return(TRUE);
 
 }

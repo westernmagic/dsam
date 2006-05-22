@@ -68,9 +68,12 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
 	initOk = true;
-	argc = theArgc;
-	argv = theArgv;
-	argsAreLocalFlag = (!argc || !argv);
+	argc = 0;
+	argv = NULL;
+	if (!InitCommandLineArgs(theArgc, theArgv)) {
+		NotifyError(wxT("%s: Could not initialise command-line arguments.\n"));
+		return;
+	}
 	ExternalMain = TheExternalMain;
 	threadedSimExecutionFlag = true;	/* should be set by command-line */
 	ExternalRunSimulation = (TheExternalRunSimulation)?
@@ -105,9 +108,8 @@ MainApp::~MainApp(void)
 	DeleteSimThread();
 	if (runThreadedProc)
 		delete runThreadedProc;
+	FreeArgStrings();
 	FreeSymbols_Utility_SSSymbols(&symList);
-	if( argsAreLocalFlag)
-		FreeArgStrings();
 	SetCanFreePtrFlag_AppInterface(TRUE);
 	if (!initOk)
 		CloseFiles();
@@ -115,6 +117,32 @@ MainApp::~MainApp(void)
 	FreeAll_EarObject();
 	FreeNull_ModuleMgr();
 	dSAMMainApp = NULL;
+
+}
+
+/****************************** InitCommandLineArgs ***************************/
+
+/*
+ * This routine prepares space and initialises the command line arguments.
+ * It converts them from multi-byte format to wide char format.
+ */
+
+bool
+MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv)
+{
+	int		i;
+
+	argc = theArgc;
+	if (!InitArgv(argc)) {
+		NotifyError(wxT("%s: Could not initialise argv pointer list.\n"));
+		return false;
+	}
+	for (i = 0; i < argc; i++) {
+		wxString arg = (GetDSAMPtr_Common()->usingGUIFlag)? theArgv[i]:
+		  wxConvUTF8.cMB2WX((char *) theArgv[i]);
+		SetArgvString(i, arg.c_str(), arg.length());
+	}
+	return(true);
 
 }
 
@@ -221,7 +249,7 @@ MainApp::CheckOptions(void)
 			MarkIgnore_Options(argc, argv, wxT("-S"), OPTIONS_NO_ARG);
 			break;
 		case 'I':
-			serverPort = (int) wcstol(argument, NULL, 0);
+			serverPort = DSAM_atoi(argument);
 			MarkIgnore_Options(argc, argv, wxT("-I"), OPTIONS_WITH_ARG);
 			break;
 		case 'd':
@@ -252,25 +280,28 @@ MainApp::InitArgv(int theArgc)
 {
 	static const wxChar *funcName = wxT("MainApp::InitArgv");
 
+	wprintf(wxT("%S: Entered\n"), funcName);
 	if (!theArgc)
-		return(TRUE);
+		return(true);
 	argc = theArgc;
 	if ((argv = (wxChar **) calloc(argc, sizeof(wxChar *))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for argv[%d] array."), funcName,
 		  argc);
-		return(FALSE);
+		return(false);
 	}
-	return(TRUE);
+	return(true);
 
 }
 
 /****************************** SetArgvString *********************************/
 
 bool
-MainApp::SetArgvString(int index, wxChar *string, int size)
+MainApp::SetArgvString(int index, const  wxChar *string, int size)
 {
 	static const wxChar *funcName = wxT("MainApp::SetArgvString");
-	
+
+	if (argv[index])
+		free(argv[index]);
 	if ((argv[index] = (wxChar *) calloc(size + 1, sizeof(wxChar))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for argv[%d]."), funcName, index);
 		return(FALSE);

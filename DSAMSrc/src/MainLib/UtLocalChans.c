@@ -614,8 +614,8 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 		}
 		ResetProcess_Utility_LocalChans(data);
 		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		DSAM_snprintf(channelTitle, MAXLINE, wxT("Averaged channels ('%s' mode)"),
-		  LimitModeList_SignalData(p->limitMode)->name);
+		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("Averaged channels "
+		  "('%s' mode)"), LimitModeList_SignalData(p->limitMode)->name);
 		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
 		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
 		  sampleTitle);

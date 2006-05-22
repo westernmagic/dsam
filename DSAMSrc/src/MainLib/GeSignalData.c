@@ -50,9 +50,10 @@ InitInfo_SignalData(SignalInfoPtr info)
 {
 	info->chanLabel = NULL;
 	info->cFArray = NULL;
-	DSAM_snprintf(info->channelTitle, SIGNALDATA_MAX_TITLE, wxT("Channel Data"));
-	DSAM_snprintf(info->chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("Amplitude (uPa)"));
-	DSAM_snprintf(info->sampleTitle, SIGNALDATA_MAX_TITLE, wxT("Time (s)"));
+	DSAM_strncpy(info->channelTitle, wxT("Channel Data"), SIGNALDATA_MAX_TITLE);
+	DSAM_strncpy(info->chanDataTitle, wxT("Amplitude (uPa)"),
+	  SIGNALDATA_MAX_TITLE);
+	DSAM_strncpy(info->sampleTitle, wxT("Time (s)"), SIGNALDATA_MAX_TITLE);
 	return(TRUE);
 
 }
@@ -164,11 +165,12 @@ ResetInfo_SignalData(SignalDataPtr signal)
 		return(FALSE);
 	SetInfoChannelLabels_SignalData(signal, NULL);
 	SetInfoCFArray_SignalData(signal, NULL);
-	DSAM_snprintf(signal->info.channelTitle, SIGNALDATA_MAX_TITLE, wxT(
-	  "Channel Data"));
-	DSAM_snprintf(signal->info.chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("Amplitude "
-	  "(uPa)"));
-	DSAM_snprintf(signal->info.sampleTitle, SIGNALDATA_MAX_TITLE, wxT("Time (s)"));
+	DSAM_strncpy(signal->info.channelTitle, wxT("Channel Data"),
+	  SIGNALDATA_MAX_TITLE);
+	DSAM_strncpy(signal->info.chanDataTitle, wxT("Amplitude (uPa)"),
+	  SIGNALDATA_MAX_TITLE);
+	DSAM_strncpy(signal->info.sampleTitle, wxT("Time (s)"),
+	  SIGNALDATA_MAX_TITLE);
 	return(TRUE);
 
 }
@@ -286,8 +288,8 @@ CheckPars_SignalData(SignalDataPtr theSignal)
 		return(FALSE);
 	}
 	if (theSignal->dt <= 0.0) {
-		NotifyError(wxT("%s: Invalid signal sampling interval = %lg."), funcName,
-		  theSignal->dt);
+		NotifyError(wxT("%s: Invalid signal sampling interval = %lg."),
+		  funcName, theSignal->dt);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -701,8 +703,7 @@ SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	DSAM_snprintf(theData->info.channelTitle, SIGNALDATA_MAX_TITLE, wxT("%s"),
-	  title);
+	DSAM_strncpy(theData->info.channelTitle, title, SIGNALDATA_MAX_TITLE);
 
 }
 
@@ -720,8 +721,7 @@ SetInfoChanDataTitle_SignalData(SignalDataPtr theData, WChar *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	DSAM_snprintf(theData->info.chanDataTitle, SIGNALDATA_MAX_TITLE, wxT("%s"),
-	  title);
+	DSAM_strncpy(theData->info.chanDataTitle, title, SIGNALDATA_MAX_TITLE);
 
 }
 
@@ -739,7 +739,7 @@ SetInfoSampleTitle_SignalData(SignalDataPtr theData, WChar *title)
 		exit(1);
 	if (!theData->localInfoFlag)
 		return;
-	DSAM_snprintf(theData->info.sampleTitle, SIGNALDATA_MAX_TITLE, wxT("%s"), title);
+	DSAM_strncpy(theData->info.sampleTitle, title, SIGNALDATA_MAX_TITLE);
 
 }
 
@@ -811,21 +811,22 @@ OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
 	else {
 		parFilePath = GetParsFileFPath_Common(fileName);
 		fp = (GetDSAMPtr_Common()->segmentedMode && (theData->timeIndex !=
-		  PROCESS_START_TIME))? fopen((char *)parFilePath, "a"): fopen((char *)
-		  parFilePath, "w");
+		  PROCESS_START_TIME))? fopen(ConvUTF8_Utility_String(parFilePath),
+		    "a"): fopen(ConvUTF8_Utility_String(parFilePath), "w");
 	}
 	if (fp == NULL) {
 		NotifyError(wxT("%s: Cannot open file '%s'"), funcName, fileName);
 		return(FALSE);
 	}
 	if (theData->timeIndex == PROCESS_START_TIME) {
-		DSAM_fprintf(fp,wxT("%s"), theData->info.sampleTitle);
+		DSAM_fprintf(fp, "%s", theData->info.sampleTitle);
 		for (k = 0; k < theData->numChannels; k++)
 			DSAM_fprintf(fp, wxT("\t%g"), theData->info.chanLabel[k]);
 		DSAM_fprintf(fp, wxT("\n"));
 	}
 	for (i = 0, t = theData->timeIndex; i < theData->length; i++, t++) {
-		DSAM_fprintf(fp, wxT("%8.5e"), t * theData->dt + theData->outputTimeOffset);
+		DSAM_fprintf(fp, wxT("%8.5e"), t * theData->dt + theData->
+		  outputTimeOffset);
 		for (j = 0; j < theData->numChannels; j++)
 			DSAM_fprintf(fp, wxT("\t %g"), theData->channel[j][i]);
 		DSAM_fprintf(fp, wxT("\n"));

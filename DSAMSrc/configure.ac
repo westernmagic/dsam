@@ -44,7 +44,7 @@ AC_SUBST(DSAM_MINOR_VERSION)
 AC_SUBST(DSAM_MICRO_VERSION)
 AC_SUBST(DSAM_INTERFACE_AGE)
 AC_SUBST(DSAM_BINARY_AGE)
-AC_DEFINE_UNQUOTED(DSAM_VERSION,"$DSAM_VERSION", "DSAM version")
+AC_DEFINE_UNQUOTED(DSAM_VERSION,wxT("$DSAM_VERSION"), "DSAM version")
 AC_SUBST(DSAM_VERSION)
 
 # libtool versioning
@@ -95,7 +95,7 @@ AC_ARG_ENABLE(portaudio,
 AC_ARG_ENABLE(unicode,
    [  --disable-unicode        Do not compile Unicode support],
    [enable_unicode="$enableval"],
-   [enable_unicode="no"]
+   [enable_unicode="yes"]
 )
 
 AC_ARG_ENABLE(wx_ogl,
@@ -551,9 +551,20 @@ AC_ARG_ENABLE(parallel,
 	fi
 	], [ mpi=no ])
 
+dnl ----------------------------------------------------------------------------
+dnl Unicode option
+dnl ----------------------------------------------------------------------------
+
+if test x$enable_unicode = xyes; then
+	AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
+	DSAM_UNICODE="-DDSAM_USE_UNICODE"
+fi
+AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
+
 DSAM_DEFS="$DSAM_GRAPHICS $DSAM_MPI -fPIC"
 AC_SUBST(DSAM_GRAPHICS)
 AC_SUBST(DSAM_MPI)
+AC_SUBST(DSAM_UNICODE)
 AC_SUBST(DSAM_DEFS)
 
 dnl ----------------------------------------------------------------------------
@@ -608,11 +619,6 @@ if test x$using_portaudio = xyes; then
 	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
 AM_CONDITIONAL(USE_PORTAUDI, test x$using_portaudio = xyes)
-
-if test x$enable_unicode = xyes; then
-	AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
-fi
-AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
 
 dnl ============================================================================
 dnl Checks for system services or capabilities.

@@ -932,7 +932,8 @@ ReadCFListParFile_MPI_Master1(void)
 
 	if (master1Ptr->theCFs != NULL)
 		return(TRUE);
-	if ((fp = fopen((char *) master1Ptr->cFListParFile, "r")) == NULL) {
+	if ((fp = fopen(ConvUTF8_Utility_String(master1Ptr->cFListParFile), "r")) ==
+	  NULL) {
 		NotifyError(wxT("%s: Cannot parameter file '%s'.\n"), funcName,
 		  master1Ptr->cFListParFile);
 		return(FALSE);

@@ -5,6 +5,8 @@
  *				application's.
  * Comments:	The 'PostInitFunc' routine is run at the end of the
  *				'InitProcessVariables' routine.
+ *				17 May 2006: LPO: ToDO: This code module needs to be moved into
+ *				ExtMainApp.cpp.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
  * Updated:		
@@ -17,7 +19,11 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
+#include <locale.h>
 
+#ifdef HAVE_CONFIG_H
+#	include "DSAMSetup.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -184,7 +190,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	DSAM_strcpy(appInterfacePtr->title, wxT("No title"));
 	for (i = 0; i < APP_MAX_AUTHORS; i++)
 		appInterfacePtr->authors[i][0] = '\0';
-	DSAM_strcpy(appInterfacePtr->simulationFile, wxT(NO_FILE));
+	DSAM_strcpy(appInterfacePtr->simulationFile, NO_FILE);
 	DSAM_strcpy(appInterfacePtr->diagMode, DEFAULT_FILE_NAME);
 	DSAM_strcpy(appInterfacePtr->installDir, wxT("."));
 	appInterfacePtr->argv = NULL;
@@ -341,8 +347,8 @@ SetSimulationFile_AppInterface(WChar *theSimulationFile)
 		NotifyError(wxT("%s: Illegal zero length name."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->simulationFile, MAX_FILE_PATH, wxT("%s"),
-	  theSimulationFile);
+	DSAM_strncpy(appInterfacePtr->simulationFile, theSimulationFile,
+	  MAX_FILE_PATH);
 	appInterfacePtr->simulationFileFlag = TRUE;
 	appInterfacePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -472,8 +478,7 @@ SetInstallDir_AppInterface(WChar *theInstallDir)
 		  funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->installDir, MAX_FILE_PATH, wxT(wxT("%s")),
-	  theInstallDir);
+	DSAM_strncpy(appInterfacePtr->installDir, theInstallDir, MAX_FILE_PATH);
 	return(TRUE);
 
 }
@@ -499,7 +504,7 @@ SetAppParFile_AppInterface(WChar *fileName)
 		NotifyError(wxT("%s: illegal file name."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, wxT("%s"), fileName);
+	DSAM_strncpy(appInterfacePtr->appParFile, fileName, MAX_FILE_PATH);
 	appInterfacePtr->appParFileFlag = TRUE;
 	return(TRUE);
 
@@ -707,7 +712,7 @@ PrintPars_AppInterface(void)
 	DPrint(wxT("Simulation script application interface settings:\n"));
 	DPrint(wxT("Diagnostics specifier is set to '%s'.\n"),
 	  appInterfacePtr->diagModeList[appInterfacePtr->diagModeSpecifier].name);
-	DPrint(wxT("This simulation is run from the file " STR_FMT ".\n"),
+	DPrint(wxT("This simulation is run from the file %s.\n"),
 	  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 	DPrint(wxT("Thread mode '%' used with '%d' threads.\n"), appInterfacePtr->
 	  threadModeList[appInterfacePtr->threadMode].name,
@@ -838,13 +843,13 @@ ProcessOptions_AppInterface(void)
 				appInterfacePtr->listCFListAndExit = TRUE;
 				break;
 			default:
-				DSAM_fprintf(stderr, wxT("Unknown list mode (%s).\n"), argument);
+				DSAM_fprintf(stderr, wxT("Unknown list mode (%s).\n"),
+				  argument);
 				appInterfacePtr->printUsageFlag = TRUE;
 			}
 			break;
 		case 'P':
-			DSAM_snprintf(appInterfacePtr->appParFile, MAX_FILE_PATH, wxT("%s"),
-			  argument);
+			DSAM_strncpy(appInterfacePtr->appParFile, argument, MAX_FILE_PATH);
 			appInterfacePtr->readAppParFileFlag = TRUE;
 			break;
 		case 's':
@@ -884,8 +889,8 @@ GetFilePath_AppInterface(WChar *filePath)
 
 	if (!GetDSAMPtr_Common()->usingExtFlag)
 		return(filePath);
-	DSAM_snprintf(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"), appInterfacePtr->
-	  workingDirectory, appInterfacePtr->simulationFile);
+	Snprintf_Utility_String(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"),
+	  appInterfacePtr->workingDirectory, appInterfacePtr->simulationFile);
 	return(guiFilePath);
 	
 }
@@ -904,14 +909,14 @@ ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
 	WChar	*p;
 
 	*appName = *subProcess = '\0';
-	if ((p = strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL)
+	if ((p = DSAM_strchr(parName, UNIPAR_NAME_SEPARATOR)) == NULL)
 		return;
 	*p = '\0';
-	DSAM_snprintf(appName, MAXLINE, wxT("%s"), p + 1);
-	if ((p = strchr(appName, UNIPAR_NAME_SEPARATOR)) == NULL)
+	DSAM_strncpy(appName, p + 1, MAXLINE);
+	if ((p = DSAM_strchr(appName, UNIPAR_NAME_SEPARATOR)) == NULL)
 		return;
 	*p = '\0';
-	DSAM_snprintf(subProcess, MAXLINE, wxT("%s"), p + 1);
+	DSAM_strncpy(subProcess, p + 1, MAXLINE);
 
 }
 
@@ -932,7 +937,7 @@ SetProgramParValue_AppInterface(WChar *parName, WChar *parValue, BOOLN readSPF)
 	UniParPtr	par;
 	UniParListPtr	parList;
 
-	DSAM_snprintf(parNameCopy, MAXLINE, wxT("%s"), parName);
+	DSAM_strncpy(parNameCopy, parName, MAXLINE);
 	ParseParSpecifiers_AppInterface(parNameCopy, appName, subProcess);
 	if (*appName)  {
 		creatorApp = (StrNCmpNoCase_Utility_String(appInterfacePtr->appName,
@@ -1120,7 +1125,8 @@ ReadProgParFile_AppInterface(void)
 	if (readProgParFileFlag)
 		return(TRUE);
 	readProgParFileFlag = TRUE;
-	if ((fp = fopen((char *) appInterfacePtr->simulationFile, "r")) == NULL) {
+	if ((fp = fopen(ConvUTF8_Utility_String(appInterfacePtr->simulationFile),
+	  "r")) == NULL) {
 		NotifyError(wxT("%s: Could not open '%s' parameter file."), funcName,
 		  GetFilePath_AppInterface(appInterfacePtr->simulationFile));
 		readProgParFileFlag = FALSE;
@@ -1237,8 +1243,8 @@ SetWorkingDirectory_AppInterface(WChar * workingDirectory)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->workingDirectory, MAX_FILE_PATH, wxT("%s"),
-	  workingDirectory);
+	DSAM_strncpy(appInterfacePtr->workingDirectory, workingDirectory,
+	  MAX_FILE_PATH);
 	return(TRUE);
 
 }
@@ -1307,7 +1313,7 @@ SetAppName_AppInterface(WChar *appName)
 		return(FALSE);
 	}
 
-	DSAM_snprintf(appInterfacePtr->appName, MAX_FILE_PATH, wxT("%s"), appName);
+	DSAM_strncpy(appInterfacePtr->appName, appName, MAX_FILE_PATH);
 	return(TRUE);
 
 } 
@@ -1373,7 +1379,7 @@ SetTitle_AppInterface(WChar *title)
 		  funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(appInterfacePtr->title, MAX_FILE_PATH, wxT("%s"), title);
+	DSAM_strncpy(appInterfacePtr->title, title, MAX_FILE_PATH);
 	return(TRUE);
 
 } 
@@ -1483,8 +1489,8 @@ ListParameters_AppInterface(void)
 		  funcName);
 		return(FALSE);
 	}
-	DSAM_snprintf(suffix, MAXLINE, wxT(".%s%s"), appInterfacePtr->appName,
-	  UNIPAR_TOP_PARENT_LABEL);
+	Snprintf_Utility_String(suffix, MAXLINE, wxT(".%s%s"), appInterfacePtr->
+	  appName, UNIPAR_TOP_PARENT_LABEL);
 	PrintPars_UniParMgr(appInterfacePtr->parList, wxT(""), suffix);
 	return(TRUE);
 
@@ -1553,6 +1559,7 @@ ResetCommandArgFlags_AppInterface(void)
 
 /*
  * This routine sets the appInterfacePtr argc and argv parameters.
+ * It creates its own copy of the values.
  * The global variables are also set.
  */
 
@@ -1590,7 +1597,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  funcName);
 		exit(1);
 	}
-
+	setlocale(LC_ALL, "");
 	if (Init) {
 		if (!GetDSAMPtr_Common()->appInitialisedFlag && !(* Init)())
 			return(FALSE);
@@ -1631,7 +1638,6 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  "(dynamic),\n%s (compiled)]...\n"), appInterfacePtr->appName,
 		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
 		  appInterfacePtr->compiledDSAMVersion);
-
 	}
 	if (appInterfacePtr->updateProcessVariablesFlag) {
 		if (appInterfacePtr->readAppParFileFlag) {

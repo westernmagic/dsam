@@ -88,7 +88,7 @@ if [ "$echo_exec_prefix" = "yes" ]; then
 	echo $exec_prefix
 fi
 if test "$echo_cflags" = "yes"; then
-	cflags="@DEFS@ -I@includedir@/@PACKAGE@"
+	cflags="@DEFS@ @DSAM_UNICODE@ -I@includedir@/@PACKAGE@"
 	if [ "$use_debug" = "yes" ]; then
 		cflags="$cflags -ggdb3 -DDMALLOC"
 	fi

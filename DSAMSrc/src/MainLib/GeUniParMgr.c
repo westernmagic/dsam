@@ -455,7 +455,7 @@ FormatPar_UniParMgr(UniParPtr p, WChar *suffix)
 {
 	static WChar	string[MAXLINE];
 
-	DSAM_snprintf(string, MAXLINE, wxT("%s%s"), p->abbr, suffix);
+	Snprintf_Utility_String(string, MAXLINE, wxT("%s%s"), p->abbr, suffix);
 	return(string);
 
 }
@@ -521,28 +521,30 @@ FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix)
 
 	switch (p->type) {
 	case UNIPAR_INT_ARRAY:
-		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10d\n"), FormatPar_UniParMgr(
-		   p, suffix), index, (*p->valuePtr.array.pPtr.i)[index]);
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10d\n"),
+		  FormatPar_UniParMgr(p, suffix), index, (*p->valuePtr.array.pPtr.i)[
+		  index]);
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
-		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10g\n"), FormatPar_UniParMgr(
-		  p, suffix), index, (*p->valuePtr.array.pPtr.r)[index]);
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10g\n"),
+		  FormatPar_UniParMgr(p, suffix), index, (*p->valuePtr.array.pPtr.r)[
+		  index]);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"), 
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"), 
 		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
 		  (*p->valuePtr.array.pPtr.s)[index]));
 		break;
 	case UNIPAR_NAME_SPEC_ARRAY:
-		DSAM_snprintf(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"),
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"),
 		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
 		  p->valuePtr.array.pPtr.nameList.list[(*p->valuePtr.array.pPtr.
 		  nameList.specifier)[index]].name));
 		break;
 	default:
-		DSAM_snprintf(string, MAXLINE, wxT("%s: Universal parameter not yet "
-		  "implemented (%d)."), funcName, p->type);
+		Snprintf_Utility_String(string, MAXLINE, wxT("%s: Universal parameter "
+		  "not yet implemented (%d)."), funcName, p->type);
 	}
 	return(string);
 
@@ -582,7 +584,8 @@ PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix)
 			  funcName, p->abbr, suffix, MAXLINE);
 			return(FALSE);
 		}
-		DSAM_snprintf(string, LONG_STRING, wxT("%s%s"), p->abbr, suffix);
+		Snprintf_Utility_String(string, LONG_STRING, wxT("%s%s"), p->abbr,
+		  suffix);
 		DPrint(wxT("%s%-25s\t"), prefix, string);
 		PrintValue_UniParMgr(p);
 		DPrint(wxT("%s\n"), p->desc);
@@ -603,7 +606,7 @@ PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix)
 		DSAM_strcpy(newSuffix, suffix);
 		if (!p->FuncPtr.SetString) {	/* Lowest parList */
 			WChar 	newLabel[MAXLINE];
-			DSAM_snprintf(newLabel, MAXLINE, wxT(".%s"), p->abbr);
+			Snprintf_Utility_String(newLabel, MAXLINE, wxT(".%s"), p->abbr);
 			SubStrReplace_Utility_String(newSuffix, UNIPAR_TOP_PARENT_LABEL,
 			  newLabel);
 		}
@@ -836,8 +839,8 @@ GetParString_UniParMgr(UniParPtr p)
 		
 	switch (p->type) {
 	case UNIPAR_BOOL:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), BooleanList_NSpecLists(
-		  *p->valuePtr.i)->name);
+		DSAM_strncpy(string, BooleanList_NSpecLists(*p->valuePtr.i)->name,
+		  LONG_STRING);
 		break;
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
@@ -859,29 +862,28 @@ GetParString_UniParMgr(UniParPtr p)
 		  r)[p->valuePtr.array.index]);
 		break;
 	case UNIPAR_STRING:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.s);
+		DSAM_strncpy(string, p->valuePtr.s, LONG_STRING);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), (*p->valuePtr.array.pPtr.
-		  s)[p->valuePtr.array.index]);
+		DSAM_strncpy(string, (*p->valuePtr.array.pPtr.s)[p->valuePtr.array.
+		  index], LONG_STRING);
 		break;
 	case UNIPAR_FILE_NAME:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.file.name);
+		DSAM_strncpy(string, p->valuePtr.file.name, LONG_STRING);
 		break;
 	case UNIPAR_MODULE:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.module.
-		  parFile);
+		DSAM_strncpy(string, p->valuePtr.module.parFile, LONG_STRING);
 		break;
 	case UNIPAR_NAME_SPEC:
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.nameList.list[
-		  *p->valuePtr.nameList.specifier].name);
+		DSAM_strncpy(string, p->valuePtr.nameList.list[*p->valuePtr.nameList.
+		  specifier].name, LONG_STRING);
 		break;
 	case UNIPAR_NAME_SPEC_ARRAY:
-		DSAM_snprintf(string, LONG_STRING, wxT("%s"), p->valuePtr.array.pPtr.
-		  nameList.list[*p->valuePtr.array.pPtr.nameList.specifier[p->valuePtr.
-		  array.index]].name);
+		DSAM_strncpy(string, p->valuePtr.array.pPtr.nameList.list[*p->valuePtr.
+		  array.pPtr.nameList.specifier[p->valuePtr.array.index]].name,
+		  LONG_STRING);
 		break;
 	default:
 		NotifyError(wxT("%s: Universal parameter not yet implemented (%d)."),
@@ -927,7 +929,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
 		pos = p - s;
 		DSAM_strncpy(string, s, pos);
 		string[pos] = '\0';
-		index[i] = atoi((char *) string);
+		index[i] = DSAM_atoi(string);
 		s = p + 1;
 	}
 	if ((par->type != UNIPAR_REAL_DYN_ARRAY) && (index[0] >=
@@ -963,21 +965,21 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetInt)(atoi((char *) parValue));
+		ok = (* p->FuncPtr.SetInt)(DSAM_atoi(parValue));
 		break;
 	case UNIPAR_INT_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
 			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
-		ok = (* p->FuncPtr.SetIntArrayElement)(arrayIndex[0], atoi((char *)
+		ok = (* p->FuncPtr.SetIntArrayElement)(arrayIndex[0], DSAM_atoi(
 		  arrayValue));
 		break;
 	case UNIPAR_LONG:
-		ok = (* p->FuncPtr.SetLong)(atol((char *) parValue));
+		ok = (* p->FuncPtr.SetLong)(DSAM_atol(parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetReal)(atof((char *) parValue));
+		ok = (* p->FuncPtr.SetReal)(DSAM_atof(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
@@ -985,8 +987,8 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}
-		ok = (* p->FuncPtr.SetRealArrayElement)(arrayIndex[0],
-		  atof((char *)arrayValue));
+		ok = (* p->FuncPtr.SetRealArrayElement)(arrayIndex[0], DSAM_atof(
+		  arrayValue));
 		break;
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
@@ -1043,12 +1045,12 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetCFListInt)((*parList)->handlePtr.cFs,
-		  atoi((char *) parValue));
+		ok = (* p->FuncPtr.SetCFListInt)((*parList)->handlePtr.cFs, DSAM_atoi(
+		  parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetCFListReal)((*parList)->handlePtr.cFs,
-		  atof((char *)parValue));
+		ok = (* p->FuncPtr.SetCFListReal)((*parList)->handlePtr.cFs, DSAM_atof(
+		  parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
@@ -1056,7 +1058,7 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetCFListRealArrayElement)(
-		  (*parList)->handlePtr.cFs, arrayIndex[0], atof((char *) arrayValue));
+		  (*parList)->handlePtr.cFs, arrayIndex[0], DSAM_atof(arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1099,7 +1101,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 	switch (p->type) {
 	case UNIPAR_INT:
 		ok = (* p->FuncPtr.SetParArrayInt)((*parList)->handlePtr.parArray.ptr,
-		  atoi((char *) parValue));
+		  DSAM_atoi(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
@@ -1107,7 +1109,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetParArrayRealArrayElement)(
-		  (*parList)->handlePtr.parArray.ptr, arrayIndex[0], atof((char *)
+		  (*parList)->handlePtr.parArray.ptr, arrayIndex[0], DSAM_atof(
 		  arrayValue));
 		break;
 	case UNIPAR_BOOL:
@@ -1179,11 +1181,10 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, atoi((char *) parValue));
+		ok = (* p->FuncPtr.SetICInt)(theICs->currentIC, DSAM_atoi(parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, atof((char *)
-		  parValue));
+		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, DSAM_atof(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
@@ -1191,7 +1192,7 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 			return(FALSE);
 		}
 		ok = (* p->FuncPtr.SetICRealArrayElement)(theICs->currentIC,
-		  arrayIndex[0], atof((char *)arrayValue));
+		  arrayIndex[0], DSAM_atof(arrayValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:
@@ -1235,10 +1236,10 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 	switch (p->type) {
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
-		ok = (* p->FuncPtr.SetICListInt)(theICs, atoi((char *) parValue));
+		ok = (* p->FuncPtr.SetICListInt)(theICs, DSAM_atoi(parValue));
 		break;
 	case UNIPAR_REAL:
-		ok = (* p->FuncPtr.SetICListReal)(theICs, atof((char *)parValue));
+		ok = (* p->FuncPtr.SetICListReal)(theICs, DSAM_atof(parValue));
 		break;
 	case UNIPAR_BOOL:
 	case UNIPAR_STRING:

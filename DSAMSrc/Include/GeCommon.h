@@ -155,44 +155,56 @@
  */
 
 #if DSAM_USE_UNICODE
+#	define DSAM_atof(X)		wcstod((X), NULL)
+#	define DSAM_atoi(X)		(int) wcstol((X), NULL, 0)
+#	define DSAM_atol(X)		wcstol((X), NULL, 0)
 #	define DSAM_fgets		fgetws
 #	define DSAM_fprintf		fwprintf
 #	define DSAM_fscanf		fwscanf
 #	define DSAM_printf		wprintf
 #	define DSAM_snprintf	swprintf
 #	define DSAM_sscanf		swscanf
+#	define DSAM_strcat		wcscat
 #	define DSAM_strchr		wcschr
 #	define DSAM_strcmp		wcscmp
 #	define DSAM_strcpy		wcscpy
 #	define DSAM_strlen		wcslen
+#	define DSAM_strncat		wcsncat
 #	define DSAM_strncmp		wcsncmp
 #	define DSAM_strncpy		wcsncpy
 #	define DSAM_strpbrk		wcspbrk
 #	define DSAM_strrchr		wcsrchr
 #	define DSAM_strstr		wcsstr
 #	define DSAM_strtok		wcstok
+#	define DSAM_toupper		towupper
 #	define DSAM_vfprintf	vfwprintf
 #	define DSAM_vsnprintf	vswprintf
-#	define STR_FMT			wxT("%ls")
+#	define STR_FMT			wxT("%S")
 #else
+#	define DSAM_atof		atof
+#	define DSAM_atoi		atoi
+#	define DSAM_atol		atol
 #	define DSAM_fgets		fgets
 #	define DSAM_fprintf		fprintf
 #	define DSAM_fscanf		fscanf
 #	define DSAM_printf		printf
 #	define DSAM_snprintf	snprintf
 #	define DSAM_sscanf		sscanf
+#	define DSAM_strcat		strcat
 #	define DSAM_strchr		strchr
 #	define DSAM_strcmp		strcmp
 #	define DSAM_strcpy		strcpy
 #	define DSAM_strlen		strlen
+#	define DSAM_strncat		strncat
 #	define DSAM_strncmp		strncmp
 #	define DSAM_strncpy		strncpy
 #	define DSAM_strpbrk		strpbrk
 #	define DSAM_strrchr		strrchr
 #	define DSAM_strstr		strstr
+#	define DSAM_toupper		toupper
 #	define DSAM_vfprintf	vfprintf
 #	define DSAM_vsnprintf	vsnprintf
-#	define STR_FMT			wxT("%s")
+#	define STR_FMT			"%s"
 #endif /* DSAM_USE_UNICODE */
 
 // ----------------------------------------------------------------------------
