@@ -350,8 +350,9 @@ SDIView::OnChangeBackgroundColour(wxCommandEvent& event)
 		dialog->Close();
 
 		if (theBrush)
-			doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Change colour"),
-			  SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush, theShape));
+			doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Change "
+			  "colour"), SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush,
+			  theShape));
 	}
 
 }
@@ -385,6 +386,10 @@ SDIView::OnEditEnable(wxCommandEvent& WXUNUSED(event))
 	Enable_ModuleMgr(myHandler->pc->data, !myHandler->pc->data->module->onFlag);
 	shape->SetBrush((myHandler->pc->data->module->onFlag)?
 	  DIAGRAM_ENABLED_BRUSH: DIAGRAM_DISENABLED_BRUSH);
+
+	wxClientDC dc(shape->GetCanvas());
+	shape->GetCanvas()->PrepareDC(dc);
+	shape->Move(dc, shape->GetX(), shape->GetY());
 
 }
 
