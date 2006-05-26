@@ -650,7 +650,7 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		return(FALSE);
 	}
 	if (supplier == customer) {
-		NotifyError(wxT("%s: Attempted to connect EarObject to itself
+		NotifyError(wxT("%s: Attempted to connect EarObject to itself!"),
 		  funcName);
 		return(FALSE);
 	}
