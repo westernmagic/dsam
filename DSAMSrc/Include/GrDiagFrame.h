@@ -35,11 +35,11 @@
 
 class DiagFrame: public wxFrame
 {
-	DECLARE_CLASS(DiagFrame)
 
   public:
 	wxMenu *fileMenu;
 	wxTextCtrl	*diagnosticsText;
+	wxScrolledWindow   *scrolledWindow;
 
 	DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos =
 	  wxDefaultPosition, const wxSize& size = wxDefaultSize, long style =
@@ -50,6 +50,7 @@ class DiagFrame: public wxFrame
 	void	OnSize(wxSizeEvent& event);
 
 
+	DECLARE_DYNAMIC_CLASS(DiagFrame)
 	DECLARE_EVENT_TABLE()
 
 };
