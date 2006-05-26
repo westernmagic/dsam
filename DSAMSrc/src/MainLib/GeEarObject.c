@@ -132,8 +132,8 @@ AddInSignal_EarObject(EarObjectPtr data)
 	}
 	if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
 	  numInSignals + 1) * sizeof(SignalDataPtr)))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for EarObject input signals (EarObject "
-		  "process %lu)."), funcName, data->handle);
+		NotifyError(wxT("%s: Out of memory for EarObject input signals "
+		  "(EarObject process %lu)."), funcName, data->handle);
 		return(FALSE);
 	}
 	signals[data->numInSignals++] = NULL;
@@ -172,8 +172,8 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 		found = (data->inSignal[i++] == signal);
 
 	if (!found) {
-		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject process."),
-		  funcName, data->processName);
+		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject "
+		  "process."), funcName, data->processName);
 		return(FALSE);
 	}
 	for (j = i; j < data->numInSignals; j++)
@@ -185,8 +185,9 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 	} else {
 		if ((signals = (SignalDataPtr *) realloc(data->inSignal, ((data->
 		  numInSignals - 1) * sizeof(SignalDataPtr)))) == NULL) {
-			NotifyError(wxT("%s: memory reallocation problem for EarObject input "
-			  "signals ('%s' Earobject process)."), funcName, data->processName);
+			NotifyError(wxT("%s: memory reallocation problem for EarObject "
+			  "input signals ('%s' Earobject process)."), funcName, data->
+			  processName);
 			return(FALSE);
 		}
 		data->inSignal = signals;
@@ -649,7 +650,8 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		return(FALSE);
 	}
 	if (supplier == customer) {
-		NotifyError(wxT("%s: Attempted to connect EarObject to itself!"), funcName);
+		NotifyError(wxT("%s: Attempted to connect EarObject to itself
+		  funcName);
 		return(FALSE);
 	}
 	if (!AddInSignal_EarObject(customer)) {
@@ -696,8 +698,8 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 		return(FALSE);
 	}
 	if (!DelInSignal_EarObject(customer, supplier->outSignal)) {
-		NotifyError(wxT("%s: Could not delete input signal for customer (%lu)."),
-		  funcName, customer->handle);
+		NotifyError(wxT("%s: Could not delete input signal for customer "
+		  "(%lu)."), funcName, customer->handle);
 		return(FALSE);
 	}
 	FreeEarObjRef_EarObject(&supplier->customerList, customer->handle);
@@ -760,7 +762,8 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 	  theObject->handle); p = p->next)
 		last = p;
 	if (p->earObject->handle == theObject->handle) {
-		/* NotifyWarning(wxT("AddEarObjRef_EarObject: EarObject already in list."));
+		/* NotifyWarning(wxT("AddEarObjRef_EarObject: EarObject already in "
+		    "list."));
 		 */
 		return(TRUE);
 	}
@@ -1106,9 +1109,8 @@ CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
 	int		i;
 
 	if (data->numInSignals < 1) {
-		NotifyError(wxT("%s: No connected input signals for process (called from "
-		  "'%s')."), funcName,
-		  callingFuncName);
+		NotifyError(wxT("%s: No connected input signals for process (called "
+		  "from '%s')."), funcName, callingFuncName);
 		return(FALSE);
 	}
 	for (i = 0; i < data->numInSignals; i++)
@@ -1228,7 +1230,7 @@ InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 	SignalDataPtr	signalList;
 
 #	if DEBUG
-	wprintf(wxT("%s: Debug: process '%s' * %d\n"), funcName, baseP->processName, 
+	wprintf(wxT("%s: Debug: process '%s' * %d\n"), funcName, baseP->processName,
 	  baseP->numSubProcesses);
 #	endif
 	if (!InitSubProcessList_EarObject(p, baseP->numSubProcesses)) {
