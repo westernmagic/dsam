@@ -34,6 +34,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtRandom.h"
+#include "UtString.h"
 
 /******************************************************************************/
 /*************************** Global Variables *********************************/
@@ -301,6 +302,11 @@ SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...)
 	
 	if (theObject->processName != NULL)
 		free(theObject->processName);
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[MAXLINE];
+	ConvIOFormat_Utility_String(newFormat, format, MAXLINE);
+	format = newFormat;
+#	endif
 	va_start(args, format);
 	DSAM_vsnprintf(string, MAXLINE, format, args);
 	va_end(args);
