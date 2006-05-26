@@ -185,6 +185,7 @@ bool
 SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 {
 	static const char *funcName = "SDICommand::ConnectInstructions";
+	bool	ok = true;
 
 	DatumPtr	toPc = SHAPE_PC(toShape);
 	DatumPtr	fromPc = SHAPE_PC(fromShape);
@@ -194,13 +195,13 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 		  "can be made."), funcName);
 		return(false);
 	}
-	ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
 
 	// Ensure only process instructions are connected for data flow.
-	
 	if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
-		ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data);
-	return(true);
+		ok = ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data);
+	if (ok)
+		ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
+	return(ok);
 
 }
 
