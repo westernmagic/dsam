@@ -98,7 +98,7 @@ InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s, int type)
 {
 	static const WChar	*funcName = wxT("InstallSymbol_Utility_SSSymbols");
 	Symbol	*sp;
-	
+
 	if ((sp = (SymbolPtr) malloc(sizeof (Symbol))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for symbol entry."), funcName);
 		exit(1);

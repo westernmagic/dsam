@@ -291,19 +291,18 @@ yylex(void)
 	if (isdigit(c)) {	/* number */
 		int		d;
 		ungetc(c, simScriptPtr->fp);
-		DSAM_fscanf(simScriptPtr->fp, wxT("%d"), &d);
-		wprintf(wxT("%S: c = '%C', number = %d\n"), funcName, c, d);
+		fscanf(simScriptPtr->fp, "%d", &d);
 		yylval.num = d;
 		return NUMBER;
 	}
 	if (c == '"') {
 		Symbol *s;
-		WChar	sbuf[LONG_STRING], *p = sbuf;
+		char	sbuf[LONG_STRING], *p = sbuf;
 		while ((c = fgetc(simScriptPtr->fp)) != '"' && (c != EOF)) {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
 				NotifyError_Utility_SimScript(wxT("%s: String in quotes is too "
-				  "long (%s)"), funcName, sbuf);
+				  "long (%s)"), funcName, MBSToWCS_Utility_String(sbuf));
 				exit(1);
 			}
 			*p++ = c;
@@ -314,33 +313,35 @@ yylex(void)
 			  "terminating quotes."), funcName);
 			exit(1);
 		}
-		s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList, sbuf,
-		  QUOTED_STRING);
+		s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList,
+		  MBSToWCS_Utility_String(sbuf),QUOTED_STRING);
 		yylval.sym = s;
 		return QUOTED_STRING;
 	}		
 	if (IS_FILE_PATH_CHAR(c)) {
 		Symbol *s;
-		WChar	sbuf[LONG_STRING], *p = sbuf;
+		char	sbuf[LONG_STRING], *p = sbuf;
+		WChar	*wSbuf;
 		do {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
 				NotifyError_Utility_SimScript(wxT("%s: Name too long (%s)"),
-				  funcName, sbuf);
+				  funcName, MBSToWCS_Utility_String(sbuf));
 				exit(1);
 			}
 			*p++ = c;
 		} while ((c = fgetc(simScriptPtr->fp)) != EOF && IS_FILE_PATH_CHAR(c) );
 		ungetc(c, simScriptPtr->fp);
 		*p = '\0';
-		if ((s = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList, sbuf)) ==
-		  0)
-			s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList, sbuf,
+		wSbuf = MBSToWCS_Utility_String(sbuf);
+		if ((s = LookUpSymbol_Utility_SSSymbols(simScriptPtr->symList,
+		  wSbuf)) == 0)
+			s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList, wSbuf,
 			  STRING);
 		else
 			if ((s->type == STRING) || (s->type == QUOTED_STRING))
 				s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList,
-				  sbuf, STRING);
+				  wSbuf, STRING);
 		yylval.sym = s;
 		return s->type;
 	}
