@@ -292,6 +292,7 @@ yylex(void)
 		int		d;
 		ungetc(c, simScriptPtr->fp);
 		DSAM_fscanf(simScriptPtr->fp, wxT("%d"), &d);
+		wprintf(wxT("%S: c = '%C', number = %d\n"), funcName, c, d);
 		yylval.num = d;
 		return NUMBER;
 	}
