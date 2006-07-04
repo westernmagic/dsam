@@ -41,15 +41,15 @@ MatMainApp	*matMainAppPtr = NULL;
  * re-initialise the global variables on subsequent runs.
  */
 
-MatMainApp::MatMainApp(char *programName, char *simFile, char *parameterOptions,
-  double *theInputData, int theNumChannels, int theInterleaveLevel,
-  ChanLen theLength, double theDt, bool theStaticTimeFlag,
-  double theOutputTimeOffset): MainApp(0, NULL)
+MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
+  const wxChar *parameterOptions, double *theInputData, int theNumChannels,
+  int theInterleaveLevel, ChanLen theLength, double theDt,
+  bool theStaticTimeFlag, double theOutputTimeOffset): MainApp(0, NULL)
 {
-	static const char *funcName = "MatMainApp::MatMainApp";
+	static const wxChar *funcName = wxT("MatMainApp::MatMainApp");
 
 	matMainAppPtr = this;
-	strcpy(serverHost, "");
+	DSAM_strcpy(serverHost, wxT(""));
 	autoNumRunsMode = GENERAL_BOOLEAN_OFF;
 	serverMode = GENERAL_BOOLEAN_OFF;
 	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
@@ -57,7 +57,7 @@ MatMainApp::MatMainApp(char *programName, char *simFile, char *parameterOptions,
 	updateProcessVariablesFlag = false;
 
 	if (!SetUniParList_MatMainApp(&parList)) {
-		NotifyError("%s: Could not initialise parameter list.", funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		SetInitStatus(false);
 		return;
 	}
@@ -77,7 +77,7 @@ MatMainApp::MatMainApp(char *programName, char *simFile, char *parameterOptions,
 	length = theLength;
 	inputData = theInputData;
 	if (!SetArgStrings(programName, simFile, parameterOptions)) {
-		NotifyError("%s: Could not set argument strings.", funcName);
+		NotifyError(wxT("%s: Could not set argument strings."), funcName);
 		SetInitStatus(false);
 		return;
 	}
@@ -86,7 +86,7 @@ MatMainApp::MatMainApp(char *programName, char *simFile, char *parameterOptions,
 		printf("%s: %2d: %s\n", funcName, i, GetArgv()[i]);
 #	endif /* DSAM_DEBUG */
 	if (!InitRun()) {
-		NotifyError("%s: Could not execute initialisation run.", funcName);
+		NotifyError(wxT("%s: Could not execute initialisation run."), funcName);
 		SetInitStatus(false);
 		return;
 	}
@@ -126,7 +126,7 @@ MatMainApp::InitRun(void)
 {
 	InitProcessVariables_AppInterface(InitApp_MatMainApp, GetArgc(), GetArgv());
 	if (!GetDSAMPtr_Common()->appInitialisedFlag) {
-		NotifyError("RunDSAMSim: Could not initialise process variables.");
+		NotifyError(wxT("RunDSAMSim: Could not initialise process variables."));
 		return(false);
 	}
 	return(true);
@@ -140,24 +140,24 @@ MatMainApp::InitRun(void)
  */
 
 bool
-MatMainApp::SetArgStrings(char *programName, char *simFile,
-  char *parameterOptions)
+MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
+  const wxChar *parameterOptions)
 {
-	static const char *funcName = "MainApp::SetArgStrings";
+	static const wxChar *funcName = wxT("MainApp::SetArgStrings");
 	int		numArgs = NUM_BASE_ARGUMENTS;
 
 	if ((numArgs = SetParameterOptionArgs(0, parameterOptions, TRUE)) < 0) {
-		NotifyError("%s: Could not count the parameter options", funcName);
+		NotifyError(wxT("%s: Could not count the parameter options"), funcName);
 		return(false);
 	}
 	numArgs += NUM_BASE_ARGUMENTS;
 	if (!InitArgv(numArgs)) {
-		NotifyError("%s: could not initialise arg strings.", funcName);
+		NotifyError(wxT("%s: could not initialise arg strings."), funcName);
 		return(false);
 	}
-	SetArgvString(0, programName, strlen(programName));
-	SetArgvString(1, "-s", 2);
-	SetArgvString(2, simFile, strlen(simFile));
+	SetArgvString(0, programName, DSAM_strlen(programName));
+	SetArgvString(1, wxT("-s"), 2);
+	SetArgvString(2, simFile, DSAM_strlen(simFile));
 	SetParameterOptionArgs(NUM_BASE_ARGUMENTS, parameterOptions, false);
 	return(true);
 
@@ -174,7 +174,7 @@ MatMainApp::SetArgStrings(char *programName, char *simFile,
 bool
 MatMainApp::AutoSetNumberOfRuns(ChanLen inputLength, double dt)
 {
-	static char *funcName = "MatMainApp::AutoSetNumberOfRuns";
+	static wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
 	double	totalDuration;
 	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
 	EarObjectPtr	process;
@@ -187,37 +187,37 @@ MatMainApp::AutoSetNumberOfRuns(ChanLen inputLength, double dt)
 	if (inputLength)
 		totalDuration = inputLength * dt;
 	else {
-		SetErrorsFile_Common("off", OVERWRITE);
+		SetErrorsFile_Common(wxT("off"), OVERWRITE);
 		process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
 		  GetPtr_AppInterface()->audModel));
 		GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
 		if (!process)
 			return(TRUE);
 		numberOfRuns = 1;	/* Default value */
-		if (StrCmpNoCase_Utility_String(process->module->name, "DataFile_In") !=
-		  0) {
-			NotifyError("%s: Operation failed. First process is not "
-			  "DataFile_In or the input signal is not a matlab matrix.\n",
+		if (StrCmpNoCase_Utility_String(process->module->name, wxT(
+		  "DataFile_In")) !=  0) {
+			NotifyError(wxT("%s: Operation failed. First process is not "
+			  "DataFile_In or the input signal is not a matlab matrix.\n"),
 			  funcName);
 			return(TRUE);
 		}
-		segmentDuration = *GetUniParPtr_ModuleMgr(process, "duration")->
+		segmentDuration = *GetUniParPtr_ModuleMgr(process, wxT("duration"))->
 		  valuePtr.r;
 		if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
 		  GetDuration)()) < 0.0) {
-			NotifyError("%s: Could not determine signal size for data file.",
-			  funcName);
+			NotifyError(wxT("%s: Could not determine signal size for data "
+			  "file."), funcName);
 			return(FALSE);
 		}
 	}
 	if (segmentDuration < 0.0) {
-		NotifyError("%s: Segment duration must be set when using auto 'number "
-		  "of runs' mode.", funcName);
+		NotifyError(wxT("%s: Segment duration must be set when using auto "
+		  "'number of runs' mode."), funcName);
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
-		NotifyError("%s: Segment size (%g ms) is larger than total signal "
-		  "duration (%g ms).", funcName, MILLI(segmentDuration),
+		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal "
+		  "duration (%g ms)."), funcName, MILLI(segmentDuration),
 		  MILLI(totalDuration));
 		return(FALSE);
 	}
@@ -266,22 +266,22 @@ MatMainApp::SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
 bool
 MatMainApp::InitInputEarObject(ChanLen segmentLength)
 {
-	static char	*funcName = "InitResultEarObject";
+	static wxChar	*funcName = wxT("InitResultEarObject");
 
 	if (dt <= 0.0) {
-		NotifyError("%s: dt must be greater than zero.", funcName);
+		NotifyError(wxT("%s: dt must be greater than zero."), funcName);
 		return(false);
 	}
 	if (inputProcess)
 		Free_EarObject(&inputProcess); 	/* Just in case */
-	if ((inputProcess = Init_EarObject("NULL")) == NULL) {
-		NotifyError("%s: Could not initialise data results earObject.",
+	if ((inputProcess = Init_EarObject(wxT("NULL"))) == NULL) {
+		NotifyError(wxT("%s: Could not initialise data results earObject."),
 		  funcName);
 		return(false);
 	}
 	if (!InitOutSignal_EarObject(inputProcess, numChannels, segmentLength,
 	  dt)) {
-		NotifyError("%s: Cannot initialise input process", funcName);
+		NotifyError(wxT("%s: Cannot initialise input process"), funcName);
 		return(false);
 	}
 	SetStaticTimeFlag_SignalData(inputProcess->outSignal, staticTimeFlag);
@@ -303,14 +303,14 @@ MatMainApp::InitInputEarObject(ChanLen segmentLength)
 bool
 MatMainApp::RunSimulationLocal(void)
 {
-	static const char *funcName = "RunSimulation";
+	static const wxChar *funcName = wxT("RunSimulation");
 	bool	ok = true;
 	int		i;
 	ChanLen	segmentLength = 0;
 	
 	GetPtr_AppInterface()->updateProcessVariablesFlag = TRUE;
 	if (!ResetSimulation()) {
-		NotifyError("%s: Could not set the simulation\n", funcName);
+		NotifyError(wxT("%s: Could not set the simulation\n"), funcName);
 		return(false);
 	}
 	if (autoNumRunsMode) {
@@ -323,7 +323,7 @@ MatMainApp::RunSimulationLocal(void)
 	EarObjectPtr	audModel = GetSimProcess_AppInterface();
 	if (ok && inputData) {
 		if (!InitInputEarObject(segmentLength)) {
-			NotifyError("Could not initialise input process.");
+			NotifyError(wxT("Could not initialise input process."));
 			return(false);
 		}
 		ConnectOutSignalToIn_EarObject(inputProcess, audModel);
@@ -356,19 +356,21 @@ MatMainApp::RunSimulationLocal(void)
 bool
 MatMainApp::RunSimulationRemote(void)
 {
-	static const char *funcName = "MatMainApp::RunSimulationRemote";
+	static const wxChar *funcName = wxT("MatMainApp::RunSimulationRemote");
 
 	if (!myClient)
 		myClient = new IPCClient(serverHost, serverPort);
 	if (!myClient->Ok())
 		return(false);
-	RemoveCommands(NUM_BASE_ARGUMENTS - 1, MATMAINAPP_COMMAND_PREFIX);
+	RemoveCommands(NUM_BASE_ARGUMENTS - 1, DSAMMAT_COMMAND_PREFIX);
 	if (!myClient->SendArguments(GetArgc(), GetArgv())) {
-		NotifyError("%s: Could not initialise remote simulation.", funcName);
+		NotifyError(wxT("%s: Could not initialise remote simulation."),
+		  funcName);
 		return(false);
 	}
 	if (!myClient->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
-		NotifyError("%s: Could not initialise remote simulation.", funcName);
+		NotifyError(wxT("%s: Could not initialise remote simulation."),
+		  funcName);
 		return(false);
 	}
 #	if DSAM_DEBUG
@@ -377,22 +379,23 @@ MatMainApp::RunSimulationRemote(void)
 #	endif /* DSAM_DEBUG */
 	if (inputData) {
 		if (!InitInputEarObject(length)) {
-			NotifyError("%s: Could not initialise input process.", funcName);
+			NotifyError(wxT("%s: Could not initialise input process."),
+			  funcName);
 			return(false);
 		}
 		if (!myClient->GetIPCUtils()->InitOutProcess()) {
-			NotifyError("%s: Could not initialise output process for input "
-			  "data.", funcName);
+			NotifyError(wxT("%s: Could not initialise output process for input "
+			  "data."), funcName);
 			return(false);
 		}
 		myClient->GetIPCUtils()->ConnectToOutProcess(inputProcess);
 		if (!myClient->SendInputProcess()) {
-			NotifyError("%s: Could not send the input data.", funcName);
+			NotifyError(wxT("%s: Could not send the input data."), funcName);
 			return(false);
 		}
 	}
 	if (!myClient->RunSimulation()) {
-		NotifyError("%s: Could not run remote simulation.", funcName);
+		NotifyError(wxT("%s: Could not run remote simulation."), funcName);
 		return(false);
 	}
 	myClient->GetAllOutputFiles();
@@ -424,10 +427,10 @@ MatMainApp::GetSimProcess(void)
 int
 MatMainApp::Main(void)
 {
-	static const char *funcName = "MatMainApp::Main";
+	static const wxChar *funcName = wxT("MatMainApp::Main");
 
 	if (!InitMain(FALSE)) {
-		 NotifyError("%s: Could not initialise the main program.",
+		 NotifyError(wxT("%s: Could not initialise the main program."),
 		   funcName);
 		return(false);
 	}
@@ -451,10 +454,10 @@ MatMainApp::Main(void)
 BOOLN
 InitApp_MatMainApp(void)
 {
-	static const char *funcName = "InitApp_MatMainApp";
+	static const wxChar *funcName = wxT("InitApp_MatMainApp");
 
 	if (!GetPtr_AppInterface() && !Init_AppInterface(GLOBAL)) {
-		NotifyError("%s: Could not initialise the application interface.",
+		NotifyError(wxT("%s: Could not initialise the application interface."),
 		  funcName);
 		exit(1);
 	}
@@ -485,47 +488,49 @@ InitApp_MatMainApp(void)
 BOOLN
 SetUniParList_MatMainApp(UniParListPtr *parList)
 {
-	static const char *funcName = "SetUniParList_MatMainApp";
+	static const wxChar *funcName = wxT("SetUniParList_MatMainApp");
 	UniParPtr	pars;
 
 	if ((*parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
 	  DSAMMAT_NUM_PARS, NULL)) == NULL) {
-		NotifyError("%s: Could not initialise parList.", funcName);
+		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = (*parList)->pars;
-	SetPar_UniParMgr(&pars[DSAMMATRIX_AUTONUMRUNSMODE], "AUTO_NUM_RUNS_MODE",
-	  "Auto-setting of the number of runs (matlab matrix or data files only) "
-	  "('on' or 'off').",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_AUTONUMRUNSMODE], wxT(
+	  "AUTO_NUM_RUNS_MODE"),
+	  wxT("Auto-setting of the number of runs (matlab matrix or data files "
+	  "only) ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &matMainAppPtr->autoNumRunsMode, NULL,
 	  (void * (*)) SetAutoNumRunsMode_MatMainApp);
-	SetPar_UniParMgr(&pars[DSAMMATRIX_NUMBEROFRUNS], "NUM_RUNS",
-	  "Number of repeat runs, or segments/frames.",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_NUMBEROFRUNS], wxT("NUM_RUNS"),
+	  wxT("Number of repeat runs, or segments/frames."),
 	  UNIPAR_INT,
 	  &matMainAppPtr->numberOfRuns, NULL,
 	  (void * (*)) SetNumberOfRuns_MatMainApp);
-	SetPar_UniParMgr(&pars[DSAMMATRIX_SEGMENTDURATION], "SEGMENT_DURATION",
-	  "Segment duration for automatic number of runs operation (segment mode).",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_SEGMENTDURATION], wxT("SEGMENT_DURATION"),
+	  wxT("Segment duration for automatic number of runs operation (segment "
+	  "mode)."),
 	  UNIPAR_REAL,
 	  &matMainAppPtr->segmentDuration, NULL,
 	  (void * (*)) SetSegmentDuration_MatMainApp);
-	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERMODE], MATMAINAPP_COMMAND_PREFIX
-	  "MODE",
-	  "Enables the server mode to run simulations on a remote system ('on' or "
-	  "'off').",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERMODE], DSAMMAT_COMMAND_PREFIX
+	  wxT("MODE"),
+	  wxT("Enables the server mode to run simulations on a remote system ('on' "
+	  "or 'off')."),
 	  UNIPAR_BOOL,
 	  &matMainAppPtr->serverMode, NULL,
 	  (void * (*)) SetServerMode_MatMainApp);
-	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERHOST], MATMAINAPP_COMMAND_PREFIX
-	  "HOST",
-	  "Sets the remote server host - default is the local host.",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERHOST], DSAMMAT_COMMAND_PREFIX
+	  wxT("HOST"),
+	  wxT("Sets the remote server host - default is the local host."),
 	  UNIPAR_STRING,
 	  &matMainAppPtr->serverHost, NULL,
 	  (void * (*)) SetServerHost_MatMainApp);
-	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERPORT], MATMAINAPP_COMMAND_PREFIX
-	  "PORT",
-	  "Sets the remote server host port for connections.",
+	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERPORT], DSAMMAT_COMMAND_PREFIX
+	  wxT("PORT"),
+	  wxT("Sets the remote server host port for connections."),
 	  UNIPAR_INT,
 	  &matMainAppPtr->serverPort, NULL,
 	  (void * (*)) SetServerPort_MatMainApp);
@@ -541,15 +546,15 @@ SetUniParList_MatMainApp(UniParListPtr *parList)
  */
 
 BOOLN
-SetAutoNumRunsMode_MatMainApp(char *theAutoNumRunsMode)
+SetAutoNumRunsMode_MatMainApp(wxChar *theAutoNumRunsMode)
 {
-	static const char	*funcName = PROGRAM_NAME": SetAutoNumRunsMode";
+	static const wxChar	*funcName = PROGRAM_NAME wxT(": SetAutoNumRunsMode");
 	int		specifier;
 
 	if ((specifier = Identify_NameSpecifier(theAutoNumRunsMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal auto. number of runs mode mode (%s): must be "
-		  "'on' or 'off'.", funcName, theAutoNumRunsMode);
+		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must "
+		  "be 'on' or 'off'."), funcName, theAutoNumRunsMode);
 		return(FALSE);
 	}
 	matMainAppPtr->updateProcessVariablesFlag = true;
@@ -568,10 +573,10 @@ SetAutoNumRunsMode_MatMainApp(char *theAutoNumRunsMode)
 BOOLN
 SetNumberOfRuns_MatMainApp(int theNumberOfRuns)
 {
-	static const char	*funcName = PROGRAM_NAME": SetNumberOfRuns";
+	static const wxChar	*funcName = PROGRAM_NAME wxT(": SetNumberOfRuns");
 
 	if (theNumberOfRuns < 0) {
-		NotifyError("%s: Illegal number of runs (%d).", funcName,
+		NotifyError(wxT("%s: Illegal number of runs (%d)."), funcName,
 		  theNumberOfRuns);
 		return(FALSE);
 	}
@@ -590,7 +595,8 @@ SetNumberOfRuns_MatMainApp(int theNumberOfRuns)
 BOOLN
 SetSegmentDuration_MatMainApp(double theSegmentDuration)
 {
-	static const char *funcName = PROGRAM_NAME": SetSegmentDuration_MatMainApp";
+	static const wxChar *funcName = PROGRAM_NAME
+	  wxT(": SetSegmentDuration_MatMainApp");
 
 	matMainAppPtr->segmentDuration = theSegmentDuration;
 	return(TRUE);
@@ -606,15 +612,15 @@ SetSegmentDuration_MatMainApp(double theSegmentDuration)
  */
 
 BOOLN
-SetServerMode_MatMainApp(char * theServerMode)
+SetServerMode_MatMainApp(wxChar * theServerMode)
 {
-	static const char	*funcName = "SetServerMode_MatMainApp";
+	static const wxChar	*funcName = wxT("SetServerMode_MatMainApp");
 	int		specifier;
 
 	if ((specifier = Identify_NameSpecifier(theServerMode,
 		BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError("%s: Illegal server mode (%s): must be 'on' or 'off'.",
-		  funcName, theServerMode);
+		NotifyError(wxT("%s: Illegal server mode (%s): must be 'on' or "
+		  "'off'."), funcName, theServerMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -633,11 +639,12 @@ SetServerMode_MatMainApp(char * theServerMode)
  */
 
 BOOLN
-SetServerHost_MatMainApp(char *theServerHost)
+SetServerHost_MatMainApp(wxChar *theServerHost)
 {
-	static const char	*funcName = PROGRAM_NAME": SetServerHost_MatMainApp";
+	static const wxChar	*funcName = PROGRAM_NAME
+	  wxT(": SetServerHost_MatMainApp");
 
-	snprintf(matMainAppPtr->serverHost, MAXLINE, "%s", theServerHost);
+	DSAM_snprintf(matMainAppPtr->serverHost, MAXLINE, wxT("%s"), theServerHost);
 	return(TRUE);
 
 }
@@ -652,10 +659,12 @@ SetServerHost_MatMainApp(char *theServerHost)
 BOOLN
 SetServerPort_MatMainApp(int theServerPort)
 {
-	static const char	*funcName = PROGRAM_NAME": SetServerPort_MatMainApp";
+	static const wxChar	*funcName = PROGRAM_NAME
+	  wxT(": SetServerPort_MatMainApp");
 
 	if (theServerPort < 0) {
-		NotifyError("%s: Illegal port number (%d).", funcName, theServerPort);
+		NotifyError(wxT("%s: Illegal port number (%d)."), funcName,
+		  theServerPort);
 		return(FALSE);
 	}
 	matMainAppPtr->serverPort = theServerPort;
@@ -672,7 +681,8 @@ SetServerPort_MatMainApp(int theServerPort)
 BOOLN
 RegisterUserModules_MatMainApp(void)
 {
-	/*RegEntry_ModuleReg("BM_Carney2001", InitModule_BasilarM_Carney2001); */
+	/*RegEntry_ModuleReg(wxT("BM_Carney2001"),
+	  InitModule_BasilarM_Carney2001);*/
 	return(TRUE);
 
 }

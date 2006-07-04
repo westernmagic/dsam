@@ -24,10 +24,11 @@
 /******************************************************************************/
 
 #define	NUM_BASE_ARGUMENTS			3
-#define	DSAMMAT_VERSION				"MatMainApp: 1.1.0"
+#define	DSAMMAT_VERSION				wxT("MatMainApp: 1.1.0")
 #define	DSAMMAT_NUM_PARS			6		/* No. of application parameters. */
 #define	DSAMMAT_AUTO_INTERLEAVE_LEVEL	-1
-#define	PROGRAM_NAME				"RunDSAMSim"
+#define DSAMMAT_COMMAND_PREFIX	wxT("SERVER_")
+#define	PROGRAM_NAME				wxT("RunDSAMSim")
 
 /******************************************************************************/
 /*************************** enum Definitions *********************************/
@@ -45,8 +46,6 @@ enum {
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
 /******************************************************************************/
-
-#define MATMAINAPP_COMMAND_PREFIX	"SERVER_"
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -86,17 +85,17 @@ class MatMainApp: public MainApp {
 
   public:
 	bool	updateProcessVariablesFlag;
-	char	serverHost[MAXLINE];
+	wxChar	serverHost[MAXLINE];
 	int		numberOfRuns;
 	int		autoNumRunsMode;
 	int		serverMode;
 	int		serverPort;
 	double	segmentDuration;
 
-	MatMainApp(char *programName, char *simFile, char *parameterOptions,
-	  double *theInputData, int theNumChannels, int theInterleaveLevel,
-	  ChanLen theLength, double theDt, bool theStaticTimeFlag,
-	  double theOutputTimeOffset);
+	MatMainApp(wxChar *programName, const wxChar *simFile,
+	  const wxChar * parameterOptions, double *theInputData, int theNumChannels,
+	  int theInterleaveLevel, ChanLen theLength, double theDt,
+	  bool theStaticTimeFlag, double theOutputTimeOffset);
 	~MatMainApp(void);
 
 	bool	AutoSetNumberOfRuns(ChanLen inputLength, double dt);
@@ -106,8 +105,8 @@ class MatMainApp: public MainApp {
 	int		Main(void);
 	bool	RunSimulationLocal(void);
 	bool	RunSimulationRemote(void);
-	bool	SetArgStrings(char *programName, char *simFile,
-			  char *parameterOptions);
+	bool	SetArgStrings(wxChar *programName, const wxChar *simFile,
+			  const wxChar *parameterOptions);
 	void	SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
 			  double *data);
 
@@ -139,26 +138,26 @@ EarObjectPtr	RunSimulation_MatMainApp(void);
 
 EarObjectPtr	RunSimulationLocal_MatMainApp(void);
 
-BOOLN	SetAutoNumRunsMode_MatMainApp(char *theAutoNumRunsMode);
+BOOLN	SetAutoNumRunsMode_MatMainApp(wxChar *theAutoNumRunsMode);
 
-BOOLN	SetArgvString_MatMainApp(int index, char *string, int size);
+BOOLN	SetArgvString_MatMainApp(int index, wxChar *string, int size);
 
-BOOLN	SetArgStrings_MatMainApp(char *programName, char *simFile,
-		  char *parameterOptions);
+BOOLN	SetArgStrings_MatMainApp(wxChar *programName, wxChar *simFile,
+		  wxChar *parameterOptions);
 
 void	SetInputProcessData_MatMainApp(EarObjectPtr process, ChanLen
 		  signalLength, double *data);
 
 int		SetParameterOptionArgs_MatMainApp(int indexStart,
-		  char *parameterOptions, BOOLN countOnly);
+		  wxChar *parameterOptions, BOOLN countOnly);
 
 BOOLN	SetNumberOfRuns_MatMainApp(int theNumberOfRuns);
 
 BOOLN	SetSegmentDuration_MatMainApp(double theSegmentDuration);
 
-BOOLN	SetServerHost_MatMainApp(char *theServerHost);
+BOOLN	SetServerHost_MatMainApp(wxChar *theServerHost);
 
-BOOLN	SetServerMode_MatMainApp(char *theServerMode);
+BOOLN	SetServerMode_MatMainApp(wxChar *theServerMode);
 
 BOOLN	SetServerPort_MatMainApp(int theServerPort);
 

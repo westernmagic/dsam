@@ -38,7 +38,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	PROGRAM_NAME				"RunDSAMSim"
+#define	PROGRAM_NAME				wxT("RunDSAMSim")
 #define	USAGE_MESSAGE \
   "RunDSAMSim:\n" \
   "\n" \
@@ -58,9 +58,36 @@
 /*************************** Global Variables *********************************/
 /******************************************************************************/
 
+static wxInitializer	*initializer = NULL;
+
 /******************************************************************************/
 /*************************** Subroutines and functions ************************/
 /******************************************************************************/
+
+/**************************** InitWxWidgets ***********************************/
+
+/*
+ * This routine initialises wxWidgets, but ensures that it is only done once
+ * If it is done more than once, then an error will occur - contrary to the
+ * wxWidgets documentation.
+ */
+
+bool
+InitWxWidgets(void)
+{
+	if (initializer)
+		return(true);
+	initializer = new wxInitializer;
+	
+	if (!*initializer) {
+		NotifyError(wxT("main: Failed to initialize the wxWidgets library, "
+		  "aborting."));
+		return(false);
+	}
+	return(true);
+
+}
+
 
 /******************************************************************************/
 #if MATLAB_COMPILE
@@ -74,9 +101,9 @@
  */
 
 void
-MyDPrint(char *format, va_list args)
+MyDPrint(wxChar *format, va_list args)
 {
-	char 	workStr[LONG_STRING];
+	wxChar 	workStr[LONG_STRING];
 
 	vsnprintf(workStr, LONG_STRING, format, args);
 	mexPrintf(workStr);
@@ -91,17 +118,17 @@ MyDPrint(char *format, va_list args)
  */
 
 void
-MyNotify(const char *format, va_list args, CommonDiagSpecifier type)
+MyNotify(const wxChar *format, va_list args, CommonDiagSpecifier type)
 {
-	char	message[LONG_STRING], *heading;
+	wxChar	message[LONG_STRING], *heading;
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
 		SetDiagMode(COMMON_DIALOG_DIAG_MODE);
-		heading = "\nDiagnostics:-\n";
+		heading = wxT("\nDiagnostics:-\n");
 	} else
-		heading = "";
-	snprintf(message, LONG_STRING, "%s%s: %s\n", heading, DiagnosticTitle(type),
-	  format);
+		heading = wxT("");
+	snprintf(message, LONG_STRING, wxT("%s%s: %s\n"), heading, DiagnosticTitle(
+	  type), format);
 	(GetDSAMPtr_Common()->DPrint)(message, args);
 
 }
@@ -122,17 +149,18 @@ PrintHelp(void)
 /**************************** CheckDoubleField ********************************/
 
 bool
-CheckDoubleField (const mxArray *info, char *field)
+CheckDoubleField (const mxArray *info, wxChar *field)
 {
-	static const char *funcName = "CheckDoubleField";
+	static const wxChar *funcName = wxT("CheckDoubleField");
 	const mxArray	*entry;
 
-	if ((entry = mxGetField(info, 0, "dt")) == NULL) {
-		NotifyError("%s: Structure '%s' element not present.", funcName, field);
+	if ((entry = mxGetField(info, 0, wxT("dt"))) == NULL) {
+		NotifyError(wxT("%s: Structure '%s' element not present."), funcName,
+		  field);
 		return(false);
 	}
 	if (!mxIsDouble(entry)) {
-		NotifyError("%s: Structure '%s' element must be a real value.",
+		NotifyError(wxT("%s: Structure '%s' element must be a real value."),
 		  funcName, field);
 		return(false);
 	}
@@ -145,33 +173,33 @@ CheckDoubleField (const mxArray *info, char *field)
 bool
 AnyBadArgument(int nrhs, const mxArray *prhs[])
 {
-	static const char *funcName = "AnyBadArgument";
+	static const wxChar *funcName = wxT("AnyBadArgument");
 	if (nrhs < 1)
 		PrintHelp();
 
 	if (!mxIsChar(prhs[SIM_FILE])) {
-		NotifyError("%s: The <file name> argument (no. %d) must be a string.",
+		NotifyError(wxT("%s: The <file name> argument (no. %d) must be a string."),
 		  funcName, SIM_FILE);
 		return(true);
 	}
 	if (nrhs > PARAMETER_OPTIONS) {
 		if (!mxIsChar(prhs[PARAMETER_OPTIONS])) {
-			NotifyError("%s: The <paramter options> argument (no. %d) must be "
-			  "a string.",  funcName, PARAMETER_OPTIONS);
+			NotifyError(wxT("%s: The <paramter options> argument (no. %d) must "
+			  "be a string."),  funcName, PARAMETER_OPTIONS);
 			return(true);
 		}
 	}
 	if (nrhs > INPUT_SIGNAL) {
 		if (!mxIsDouble(prhs[INPUT_SIGNAL])) {
-			NotifyError("%s: The <signal> argument must be (no. %d) real "
-			  "matrix type.",  funcName, INPUT_SIGNAL);
+			NotifyError(wxT("%s: The <signal> argument must be (no. %d) real "
+			  "matrix type."),  funcName, INPUT_SIGNAL);
 			return(true);
 		}
 	}
 	if (nrhs > INFO_STRUCT) {
 		const mxArray *info = prhs[INFO_STRUCT];
 
-		CheckDoubleField(info, "dt");
+		CheckDoubleField(info, wxT("dt"));
 	}
 	return false;
 
@@ -183,17 +211,17 @@ AnyBadArgument(int nrhs, const mxArray *prhs[])
  * Returns a C string from a MX string.
  */
 
-char *
+wxChar *
 GetString(const mxArray *str)
 {
-	char	*s;
+	wxChar	*s;
 	int		bufferLength;
 
 	bufferLength = STR_BUFFER_LEN(str);
-	s = (char *) mxCalloc(bufferLength, sizeof(mxChar));
+	s = (wxChar *) mxCalloc(bufferLength, sizeof(mxChar));
 	if (mxGetString(str, s, bufferLength) != 0) {
-		NotifyError("GetString: Not enough space for string. String is "
-		  "truncated.");
+		NotifyError(wxT("GetString: Not enough space for string. String is "
+		  "truncated."));
 		return(NULL);
 	}
 	return(s);
@@ -210,11 +238,12 @@ GetString(const mxArray *str)
 mxArray *
 GetOutputInfoStruct(SignalDataPtr signal)
 {
-	static const char *funcName = "GetOutputInfoStruct";
-	const char	*fieldNames[] = {"dt", "staticTimeFlag", "length", "labels",
-				  "numChannels", "numWindowFrames", "outputTimeOffset",
-				  "interleaveLevel", "wordSize", ""};
-	const char	**p;
+	static const wxChar *funcName = wxT("GetOutputInfoStruct");
+	const wxChar	*fieldNames[] = {wxT("dt", "staticTimeFlag", "length",
+					 "labels"), wxT("numChannels"), wxT("numWindowFrames"),
+					 wxT("outputTimeOffset"), wxT("interleaveLevel"),
+					 wxT("wordSize", "")};
+	const wxChar	**p;
 	int		i, numFields = 0;
 	double	*lPtr;
 	mxArray	*info, *labels;
@@ -224,24 +253,24 @@ GetOutputInfoStruct(SignalDataPtr signal)
 	numFields--;
 	info = mxCreateStructMatrix(1, 1, numFields, fieldNames);
 
-	mxSetField(info, 0, "dt", mxCreateScalarDouble(signal->dt));
-	mxSetField(info, 0, "staticTimeFlag", mxCreateScalarDouble(signal->
+	mxSetField(info, 0, wxT("dt"), mxCreateScalarDouble(signal->dt));
+	mxSetField(info, 0, wxT("staticTimeFlag"), mxCreateScalarDouble(signal->
 	  staticTimeFlag));
-	mxSetField(info, 0, "length", mxCreateScalarDouble(signal->length));
+	mxSetField(info, 0, wxT("length"), mxCreateScalarDouble(signal->length));
 	labels = mxCreateDoubleMatrix(1, signal->numChannels, mxREAL);
 	lPtr = mxGetPr(labels);
 	for (i = 0; i < signal->numChannels; i++)
 		*lPtr++ = signal->info.chanLabel[i];
-	mxSetField(info, 0, "labels", labels);
-	mxSetField(info, 0, "numChannels", mxCreateScalarDouble(signal->
+	mxSetField(info, 0, wxT("labels"), labels);
+	mxSetField(info, 0, wxT("numChannels"), mxCreateScalarDouble(signal->
 	  numChannels));
-	mxSetField(info, 0, "numWindowFrames", mxCreateScalarDouble(signal->
+	mxSetField(info, 0, wxT("numWindowFrames"), mxCreateScalarDouble(signal->
 	  numWindowFrames));
-	mxSetField(info, 0, "outputTimeOffset", mxCreateScalarDouble(signal->
+	mxSetField(info, 0, wxT("outputTimeOffset"), mxCreateScalarDouble(signal->
 	  outputTimeOffset));
-	mxSetField(info, 0, "interleaveLevel", mxCreateScalarDouble(signal->
+	mxSetField(info, 0, wxT("interleaveLevel"), mxCreateScalarDouble(signal->
 	  interleaveLevel));
-	mxSetField(info, 0, "wordSize", mxCreateScalarDouble(2.0));
+	mxSetField(info, 0, wxT("wordSize"), mxCreateScalarDouble(2.0));
 	
 	return info;
 
@@ -254,7 +283,7 @@ GetOutputInfoStruct(SignalDataPtr signal)
  * signal.
  */
 
-mxArray *
+Matrix
 GetOutputSignalMatrix(SignalDataPtr signal)
 {
 	register ChanData	*inPtr, *outPtr;
@@ -262,7 +291,7 @@ GetOutputSignalMatrix(SignalDataPtr signal)
 	ChanLen	i;
 	double	*mPtr;
 
-	mxArray	*m= mxCreateDoubleMatrix((int) signal->numChannels,
+	mxaArray *m = mxCreateDoubleMatrix((int) signal->numChannels,
 	  (int) signal->length, mxREAL);
 	mPtr = mxGetPr(m);
 	for (chan = 0; chan < signal->numChannels; chan++) {
@@ -286,13 +315,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 {
 	BOOLN	staticTimeFlag = FALSE;
-	char	*simFile, *parameterOptions;
+	wxChar	*simFile, *parameterOptions;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
 	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset= 0.0;
 	EarObjectPtr	audModel;
 
-	SetErrorsFile_Common("screen", OVERWRITE);
+	if (!InitWxWidgets())
+		return;
+	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
 	SetDPrintFunc(MyDPrint);
 	SetNotifyFunc(MyNotify);
 	if (AnyBadArgument(nrhs, prhs))
@@ -300,29 +331,29 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	simFile = GetString(prhs[SIM_FILE]);
 	parameterOptions = (nrhs > PARAMETER_OPTIONS)? GetString(prhs[
-	  PARAMETER_OPTIONS]): (char *) "";
+	  PARAMETER_OPTIONS]): (wxChar *) wxT("");
 
 	if (nrhs > INFO_STRUCT) {
 		const mxArray *info = prhs[INFO_STRUCT];
 		inputMatrixPtr = mxGetPr(prhs[INPUT_SIGNAL]);
  		numChannels = mxGetM(prhs[INPUT_SIGNAL]);
 		length = (ChanLen) mxGetN(prhs[INPUT_SIGNAL]);
-		dt =  *mxGetPr(mxGetField(info, 0, "dt"));
-		staticTimeFlag = (BOOLN) GET_INFO_PAR("staticTimeFlag", FALSE);
-		outputTimeOffset = GET_INFO_PAR("outputTimeOffset", 0.0);
-		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
+		dt =  *mxGetPr(mxGetField(info, 0, wxT("dt")));
+		staticTimeFlag = (BOOLN) GET_INFO_PAR(wxT("staticTimeFlag"), FALSE);
+		outputTimeOffset = GET_INFO_PAR(wxT("outputTimeOffset"), 0.0);
+		interleaveLevel = (int) GET_INFO_PAR(wxT("interleaveLevel"),
 		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
 	}
 	MatMainApp	mainApp(PROGRAM_NAME, simFile, parameterOptions,
 	  inputMatrixPtr, numChannels, interleaveLevel, length, dt, CXX_BOOL(
 	  staticTimeFlag), outputTimeOffset);
 	if (!mainApp) {
-		NotifyError("%s: Could not initialise the MatMainApp module.",
+		NotifyError(wxT("%s: Could not initialise the MatMainApp module."),
 		  PROGRAM_NAME);
 		return;
 	}
 	if (!mainApp.Main()) {
-		NotifyError("%s: Could not run simulation.", PROGRAM_NAME);
+		NotifyError(wxT("%s: Could not run simulation."), PROGRAM_NAME);
 		return;
 	}
 	audModel = mainApp.GetSimProcess();
@@ -348,7 +379,8 @@ AnyBadArgument(const octave_value_list& args)
 	int		nArgIn = args.length();
 
 	if (nArgIn < 1) {
-		error("A simulation file name must be given as the first argument.");
+		error("A simulation file name must be given as the first "
+		  "argument.");
 		return true;
 	}
 
@@ -400,7 +432,8 @@ GetOutputInfoStruct(SignalDataPtr signal)
 	static Octave_map	info;
 
 	info.assign("dt", octave_value(signal->dt));
-	info.assign("staticTimeFlag", octave_value((bool) signal->staticTimeFlag));
+	info.assign("staticTimeFlag", octave_value((bool) signal->
+	  staticTimeFlag));
 	info.assign("length", octave_value((double) signal->length));
 	ColumnVector	labels(signal->numChannels);
 	for (i = 0; i < signal->numChannels; i++)
@@ -429,7 +462,7 @@ GetOutputSignalMatrix(SignalDataPtr signal)
 {
 	register ChanData	*inPtr;
 	int		chan, i;
-	static Matrix	m((int) signal->numChannels, (int) signal->length);
+	Matrix	m = Matrix((int) signal->numChannels, (int) signal->length);
 
 	for (chan = 0; chan < signal->numChannels; chan++) {
 		inPtr = signal->channel[chan];
@@ -459,16 +492,19 @@ DEFUN_DLD (RunDSAMSim, args, , USAGE_MESSAGE)
 	ChanLen	length = 0;
 	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset= 0.0;
 	double	segmentDuration = -1.0;
-	std::string	parameterOptions;
+	wxString	parameterOptions;
+	wxFileName	simFile;
 	EarObjectPtr	audModel;
 	octave_value_list retVal;
 
+	if (!InitWxWidgets())
+		return octave_value_list();
 	if (AnyBadArgument(args))
 		return octave_value_list();
 
 	int nArgsIn = args.length();
-	parameterOptions = (nArgsIn > PARAMETER_OPTIONS)? &args(PARAMETER_OPTIONS).
-	  string_value()[0]: (char *) "";
+	parameterOptions = (nArgsIn > PARAMETER_OPTIONS)? wxConvUTF8.cMB2WX((char*)
+	  &args(PARAMETER_OPTIONS).string_value()[0]): wxT("");
 
 	Matrix	inputMatrix;
 
@@ -484,17 +520,18 @@ DEFUN_DLD (RunDSAMSim, args, , USAGE_MESSAGE)
 		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
 		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
 	}
-	MatMainApp	mainApp(PROGRAM_NAME, &args(SIM_FILE).string_value()[0],
-	  &parameterOptions[0], inputMatrixPtr, numChannels, interleaveLevel,
+	simFile = wxConvUTF8.cMB2WX((char *) &args(SIM_FILE).string_value()[0]);
+	MatMainApp	mainApp(PROGRAM_NAME, simFile.GetFullPath().c_str(),
+	  parameterOptions.c_str(), inputMatrixPtr, numChannels, interleaveLevel,
 	  length, dt, staticTimeFlag, outputTimeOffset);
 
 	if (!mainApp) {
-		NotifyError("%s: Could not initialise the MatMainApp module.",
+		NotifyError(wxT("%s: Could not initialise the MatMainApp module."),
 		  PROGRAM_NAME);
 		return octave_value_list();
 	}
 	if (!mainApp.Main()) {
-		NotifyError("%s: Could not run simulation.", PROGRAM_NAME);
+		NotifyError(wxT("%s: Could not run simulation."), PROGRAM_NAME);
 		return octave_value_list();
 	}
 	audModel = mainApp.GetSimProcess();
