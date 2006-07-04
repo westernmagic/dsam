@@ -55,7 +55,8 @@ AddToQueue_SetComUtil(SetComPtr *start, void *parameter, int parCount,
 		  funcName, label);
 		return(FALSE);
 	}
-	if ((p->label = (WChar *) malloc(strlen(label) + 1)) == NULL) {
+	if ((p->label = (WChar *) calloc(DSAM_strlen(label) + 1, sizeof(WChar))) ==
+	  NULL) {
 		NotifyError(wxT("%s: Out of memory for label."), funcName);
 		free(p);
 		return(FALSE);

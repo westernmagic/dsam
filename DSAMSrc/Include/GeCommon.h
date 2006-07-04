@@ -158,6 +158,7 @@
 #	define DSAM_atof(X)		wcstod((X), NULL)
 #	define DSAM_atoi(X)		(int) wcstol((X), NULL, 0)
 #	define DSAM_atol(X)		wcstol((X), NULL, 0)
+#	define DSAM_fgetc		fgetwc
 #	define DSAM_fgets		fgetws
 #	define DSAM_fprintf		fwprintf
 #	define DSAM_fscanf		fwscanf
@@ -177,6 +178,7 @@
 #	define DSAM_strstr		wcsstr
 #	define DSAM_strtok		wcstok
 #	define DSAM_toupper		towupper
+#	define DSAM_ungetc		ungetwc
 #	define DSAM_vfprintf	vfwprintf
 #	define DSAM_vsnprintf	vswprintf
 #	define STR_FMT			wxT("%S")
@@ -184,6 +186,7 @@
 #	define DSAM_atof		atof
 #	define DSAM_atoi		atoi
 #	define DSAM_atol		atol
+#	define DSAM_fgetc		fgetwc
 #	define DSAM_fgets		fgets
 #	define DSAM_fprintf		fprintf
 #	define DSAM_fscanf		fscanf
@@ -202,6 +205,7 @@
 #	define DSAM_strrchr		strrchr
 #	define DSAM_strstr		strstr
 #	define DSAM_toupper		toupper
+#	define DSAM_ungetc		ungetc
 #	define DSAM_vfprintf	vfprintf
 #	define DSAM_vsnprintf	vsnprintf
 #	define STR_FMT			"%s"
@@ -329,8 +333,10 @@ typedef	unsigned short	uInt;
 		
 #if DSAM_USE_UNICODE
 	typedef wchar_t		WChar;		/* Type for unicode text */
+	typedef wint_t		CInt;
 #else
 	typedef char		WChar;
+	typedef int			CInt;
 #endif
 
 typedef enum {
@@ -374,7 +380,7 @@ typedef struct {
 	FILE	*parsFile;			/* File for parameter listings. */
 	DiagModeSpecifier	diagMode; /* Output form for diagnostics. */
 	void	(* DPrint)(WChar *, va_list);	/* Generic routine. */
-	void 	(* Notify)(const WChar *, va_list, CommonDiagSpecifier);/*Gen. Rtn*/
+	void 	(* Notify)(const WChar *, CommonDiagSpecifier);/*Gen. Rtn*/
 
 } DSAM, *DSAMPtr;
 
@@ -438,8 +444,7 @@ WChar *	GetParsFileFPath_Common(WChar *parFile);
 
 void	NotifyError(WChar *format, ...);
 
-void	NotifyStandard(const WChar *format, va_list args,
-		  CommonDiagSpecifier type);
+void	NotifyStandard(const WChar *message, CommonDiagSpecifier type);
 
 void	NotifyWarning(WChar *format, ...);
 
@@ -457,8 +462,7 @@ void	SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetInterruptRequestStatus_Common(BOOLN status);
 
-void	SetNotifyFunc(void (* Func)(const WChar *, va_list,
-		  CommonDiagSpecifier));
+void	SetNotifyFunc(void (* Func)(WChar *, CommonDiagSpecifier));
 
 BOOLN	SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 

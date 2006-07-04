@@ -780,9 +780,9 @@ MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 		mySignalDispPtr->dialog->Raise();
 		return;
 	}
-	ModuleParDialog dialog(this, (wxChar *)mySignalDispPtr->title, NULL,
-	  mySignalDispPtr->parList, NULL, 300, 300, 500, 500,
-	  wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODAL);
+	ModuleParDialog dialog(this, mySignalDispPtr->title, NULL, mySignalDispPtr->
+	  parList, NULL, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE |
+	  wxDIALOG_MODAL);
 
 	signalDispPtr = mySignalDispPtr;
 	if (dialog.ShowModal() == wxID_OK) {

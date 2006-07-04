@@ -343,7 +343,7 @@ SetSimulationFile_AppInterface(WChar *theSimulationFile)
 		  funcName);
 		return(FALSE);
 	}
-	if (*theSimulationFile == wxT('\0')) {
+	if (*theSimulationFile == '\0') {
 		NotifyError(wxT("%s: Illegal zero length name."), funcName);
 		return(FALSE);
 	}
@@ -736,13 +736,20 @@ PrintUsage_AppInterface(void)
 		  funcName);
 		return;
 	}
-	DSAM_fprintf(stderr, wxT("\n"
+	fprintf_Utility_String(stderr, wxT("\n"
 	  "Usage: %s [options] [parameter1 value1 parameter2 value2 ...]\n"
 	  "\t-d <state>    \t: Diagnostics mode ('off', 'screen' or filename).\n"
 	  "\t-h            \t: Produce this help message.\n"
+#	  if USE_EXTENSIONS_LIBRARY
+	  "\t-I <x>        \t: User server ID 'x' when running in server mode.\n"
+#	  endif
 	  "\t-l <list>     \t: List options: 'parameters', 'cfinfo'.\n"
 	  "\t-P <file name>\t: Use this main parameter file\n"
-	  "\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n"),
+	  "\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n"
+#	  if USE_EXTENSIONS_LIBRARY
+	  "\t-S            \t: Run AMS in server mode.\n"
+#	  endif
+	  ),
 	  appInterfacePtr->appName);
 
 }
@@ -1461,6 +1468,7 @@ void
 ListParsAndExit_AppInterface(void)
 {	
 	SetUsingGUIStatus(FALSE);
+	SetDPrintFunc(DPrintStandard);
 	SetParsFile_Common(wxT("screen"), OVERWRITE);
 	ListParameters_AppInterface();
 	exit(0);
@@ -1591,34 +1599,34 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
   WChar **theArgv)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_AppInterface");
+	AppInterfacePtr	p;
 
 	if (!appInterfacePtr && !Init_AppInterface(GLOBAL)) {
 		NotifyError(wxT("%s: Could not initialise the application interface."),
 		  funcName);
 		exit(1);
 	}
+	p = appInterfacePtr;
 	setlocale(LC_ALL, "");
 	if (Init) {
 		if (!GetDSAMPtr_Common()->appInitialisedFlag && !(* Init)())
 			return(FALSE);
 		if (!GetDSAMPtr_Common()->appInitialisedFlag) {
-			appInterfacePtr->Init = Init;
-			if (appInterfacePtr->RegisterUserModules) {
-				if (!InitUserModuleList_ModuleReg(appInterfacePtr->
-				  maxUserModules)) {
+			p->Init = Init;
+			if (p->RegisterUserModules) {
+				if (!InitUserModuleList_ModuleReg(p->maxUserModules)) {
 					NotifyError(wxT("%s: Could not initialise user module "
 					  "list."), funcName);
 					return(FALSE);
 				}
-				if (!(* appInterfacePtr->RegisterUserModules)()) {
+				if (!(* p->RegisterUserModules)()) {
 					NotifyError(wxT("%s: Failed to register user modules."),
 					  funcName);
 					return(FALSE);
 				}
 			}
-			if (appInterfacePtr->SetUniParList)
-				(* appInterfacePtr->SetUniParList)(&appInterfacePtr->
-				  appParList);
+			if (p->SetUniParList)
+				(* p->SetUniParList)(&p->appParList);
 			GetDSAMPtr_Common()->appInitialisedFlag = TRUE;
 			if (GetDSAMPtr_Common()->usingExtFlag)
 				return(FALSE);
@@ -1626,63 +1634,60 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 	}
 
 	SetArgcAndArgV_AppInterface(theArgc, theArgv);
-	if (appInterfacePtr->checkMainInit) {
+	if (p->checkMainInit) {
 		ProcessOptions_AppInterface();
-		if (appInterfacePtr->printUsageFlag) {
+		if (p->printUsageFlag) {
 			PrintUsage_AppInterface();
-			if (appInterfacePtr->PrintUsage)
-				(* appInterfacePtr->PrintUsage)();
+			if (p->PrintUsage)
+				(* p->PrintUsage)();
 			exit(0);
 		}
 		DPrint(wxT("Starting %s Application version %s [DSAM Version: %s "
-		  "(dynamic),\n%s (compiled)]...\n"), appInterfacePtr->appName,
-		  appInterfacePtr->appVersion, GetDSAMPtr_Common()->version,
-		  appInterfacePtr->compiledDSAMVersion);
+		  "(dynamic),\n%s (compiled)]...\n"), p->appName, p->appVersion,
+		  GetDSAMPtr_Common()->version, p->compiledDSAMVersion);
 	}
-	if (appInterfacePtr->updateProcessVariablesFlag) {
-		if (appInterfacePtr->readAppParFileFlag) {
-			if (!ReadPars_AppInterface(appInterfacePtr->appParFile)) {
+	if (p->updateProcessVariablesFlag) {
+		if (p->readAppParFileFlag) {
+			if (!ReadPars_AppInterface(p->appParFile)) {
 				NotifyError(wxT("%s: Failed to set application parameters."),
 				  funcName);
 				return(FALSE);
 			}
-			appInterfacePtr->readAppParFileFlag = FALSE;
+			p->readAppParFileFlag = FALSE;
 		}
-		if (appInterfacePtr->canLoadSimulationFlag &&
-		  appInterfacePtr->simulationFileFlag) {
+		if ((p->canLoadSimulationFlag || p->listParsAndExit) && p->
+		  simulationFileFlag) {
 			if (!InitSimulation_AppInterface()) {
 				NotifyError(wxT("%s: Could not Initialise simulation."),
 				  funcName);
 				return(FALSE);
 			}
-			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(appInterfacePtr->
-			  audModel));
-			if ((GetSimFileType_ModuleMgr(appInterfacePtr->audModel) ==
+			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(p->audModel));
+			if ((GetSimFileType_ModuleMgr(p->audModel) ==
 			  UTILITY_SIMSCRIPT_SPF_FILE) && !ReadProgParFile_AppInterface()) {
 				NotifyError(wxT("%s: Could not read the program settings in\n"
 				  "file '%s'."), funcName, GetFilePath_AppInterface(
-				  appInterfacePtr->simulationFile));
+				  p->simulationFile));
 				return(FALSE);
 			}
 			if (!ProcessParComs_AppInterface())
 				return(FALSE);
 		}
-		if (appInterfacePtr->PostInitFunc && !(* appInterfacePtr->
-		  PostInitFunc)()) {
+		if (p->PostInitFunc && !(* p->PostInitFunc)()) {
 			NotifyError(wxT("%s: Failed to run post initialisation function."),
 			  funcName);
 			return(FALSE);
 		}
 
-		if (appInterfacePtr->listParsAndExit)
+		if (p->listParsAndExit)
 			ListParsAndExit_AppInterface();
-		if (appInterfacePtr->listCFListAndExit)
+		if (p->listCFListAndExit)
 			ListCFListAndExit_AppInterface();
 
-		appInterfacePtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 
 	}
-	appInterfacePtr->checkMainInit = FALSE;
+	p->checkMainInit = FALSE;
 	if (!ProcessParComs_AppInterface())
 		return(FALSE);
 	return(TRUE);

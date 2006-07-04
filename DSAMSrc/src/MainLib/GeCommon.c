@@ -179,20 +179,23 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 			switch (*p) {
 			case 'f':
 			case 'g':
-				DSAM_snprintf(buffer, MAXLINE, subFormat, va_arg(args, double));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
+				  double));
 				break;
 			case 'd':
-				DSAM_snprintf(buffer, MAXLINE, subFormat, (longVar)? va_arg(
-				  args, long): va_arg(args, int));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, (longVar)?
+				  va_arg(args, long): va_arg(args, int));
 				break;
 			case 'u':
-				DSAM_snprintf(buffer, MAXLINE, subFormat, (longVar)? va_arg(
-				  args, unsigned long): va_arg(args, unsigned));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, (longVar)?
+				  va_arg(args, unsigned long): va_arg(args, unsigned));
 				break;
 			case 'c':
-				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args, int));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
+				  int));
 				break;
 			case 's':
+			case 'S':
 				s = va_arg(args, WChar *);
 				if (DSAM_strlen(s) >= LONG_STRING) {
 					NotifyError(wxT("%s: Buffer(%d) is too small for string "
@@ -202,7 +205,7 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 				Snprintf_Utility_String(buffer, MAXLINE, subFormat, s);
 				break;
 			case '%':
-				DSAM_snprintf(buffer, MAXLINE, wxT("%%"));
+				Snprintf_Utility_String(buffer, MAXLINE, wxT("%%"));
 				break;
 			default:
 				Snprintf_Utility_String(buffer, MAXLINE, wxT("%c"), *p);
@@ -252,7 +255,7 @@ DiagnosticTitle(CommonDiagSpecifier type)
  */ 
 
 void
-NotifyStandard(const WChar *format, va_list args, CommonDiagSpecifier type)
+NotifyStandard(const WChar *message, CommonDiagSpecifier type)
 {
 	FILE	*fp;
 
@@ -266,7 +269,7 @@ NotifyStandard(const WChar *format, va_list args, CommonDiagSpecifier type)
 	default:
 		fp = stdout;
 	}
-	DSAM_vfprintf(fp, format, args);
+	DSAM_fprintf(fp, message);
 	DSAM_fprintf(fp, wxT("\n"));
 
 } /* NotifyStandard */
@@ -285,23 +288,19 @@ NotifyStandard(const WChar *format, va_list args, CommonDiagSpecifier type)
 void
 NotifyError(WChar *format, ...)
 {
+	WChar	message[LONG_STRING];
 	va_list	args;
 
 	CheckInitErrorsFile_Common();
 	if (!dSAM.errorsFile)
 		return;
-#	if DSAM_USE_UNICODE
-	WChar	newFormat[LONG_STRING];
-	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
-	format = newFormat;
-#	endif
-	va_start(args, format);
 	if ((dSAM.errorsFile == stderr) && (!dSAM.usingGUIFlag ||
 	  (dSAM.diagMode == COMMON_DIALOG_DIAG_MODE)))
 		DSAM_fprintf(stderr, wxT("\07"));
-	
-	(* dSAM.Notify)(format, args, COMMON_ERROR_DIAGNOSTIC);
+	va_start(args, format);
+	Vsnprintf_Utility_String(message, LONG_STRING, format, args);
 	va_end(args);
+	(* dSAM.Notify)(message, COMMON_ERROR_DIAGNOSTIC);
 	dSAM.notificationCount++;
 
 } /* NotifyError */
@@ -317,19 +316,17 @@ NotifyError(WChar *format, ...)
 void
 NotifyWarning(WChar *format, ...)
 {
+	WChar	message[LONG_STRING];
 	va_list	args;
 	
 	CheckInitWarningsFile_Common();
 	if (!dSAM.warningsFile)
 		return;
-#	if DSAM_USE_UNICODE
-	WChar	newFormat[LONG_STRING];
-	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
-	format = newFormat;
-#	endif
 	va_start(args, format);
-	(* dSAM.Notify)(format, args, COMMON_WARNING_DIAGNOSTIC);
+	Vsnprintf_Utility_String(message, LONG_STRING, format, args);
 	va_end(args);
+	(* dSAM.Notify)(message, COMMON_WARNING_DIAGNOSTIC);
+	va_start(args, format);
 	dSAM.notificationCount++;
 
 } /* NotifyWarning */
@@ -530,7 +527,7 @@ SetDPrintFunc(void (* Func)(WChar *, va_list))
  */
 
 void
-SetNotifyFunc(void (* Func)(const WChar *, va_list, CommonDiagSpecifier))
+SetNotifyFunc(void (* Func)(WChar *, CommonDiagSpecifier))
 {
 	dSAM.Notify = Func;
 

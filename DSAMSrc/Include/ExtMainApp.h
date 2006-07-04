@@ -102,8 +102,8 @@ class MainApp {
 	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, const wxChar *string, int size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
-	int		SetParameterOptionArgs(int indexStart, wxChar *parameterOptions,
-			  bool countOnly);
+	int		SetParameterOptionArgs(int indexStart,
+			  const wxChar *parameterOptions, bool countOnly);
 	void	SetSimulationFile(wxFileName &fileName);
 	void	SetThreadPars(void);
 	void	StartSimThread(wxThreadKind kind = wxTHREAD_DETACHED);

@@ -56,6 +56,7 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 {
 
 	dSAMMainApp = this;
+	diagram = NULL;
 	wxGetApp().ResetDefaultDisplayPos();
 	if (GetPtr_AppInterface())
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
@@ -72,13 +73,14 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 /****************************** InitXMLDocument *******************************/
 
 /*
- * This initialises the 
+ * This initialises the document from an XML file.  If the 'diagram' is NULL
+ * then the non-gui form is used - for list and exit.
  */
 
 void
 GrMainApp::InitXMLDocument(void)
 {
-	doc = new SDIXMLDocument(diagram);
+	doc = (diagram)? new SDIXMLDocument(diagram): new DSAMXMLDocument();
 
 }
 

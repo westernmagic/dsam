@@ -71,6 +71,7 @@
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"
 #include "UtAppInterface.h"
+#include "UtString.h"
 
 #include "GrSDIPalette.h"
 #include "GrSDIFrame.h"
@@ -265,7 +266,7 @@ MyApp::OnInit(void)
 	frame->canvas = frame->CreateCanvas(NULL, frame);
 
 	if (GetPtr_AppInterface())
-		SetAppName((wxChar *) GetPtr_AppInterface()->appName);
+		SetAppName(GetPtr_AppInterface()->appName);
 	else
 		SetAppName(wxT("DSAM_App"));
 
@@ -273,7 +274,7 @@ MyApp::OnInit(void)
 	CreateProcessLists();
 
 	if (GetPtr_AppInterface()->simulationFileFlag)
-		CreateDocument((wxChar *) GetPtr_AppInterface()->simulationFile);
+		CreateDocument(GetPtr_AppInterface()->simulationFile);
 	else
 		myDocManager->CreateDocument(wxT(""), wxDOC_NEW);
 
@@ -790,7 +791,7 @@ void
 EmptyDiagWinBuffer_MyApp(wxChar *s, int *c)
 {
 	*(s + *c) = '\0';
-	*(wxGetApp().GetDiagFrame()->diagnosticsText) << (wxChar *) s;
+	*(wxGetApp().GetDiagFrame()->diagnosticsText) << s;
 	*c = 0;
 
 }
@@ -831,16 +832,16 @@ DPrint_MyApp(wxChar *format, va_list args)
  */
 
 void
-Notify_MyApp(const wxChar *format, va_list args, CommonDiagSpecifier type)
+Notify_MyApp(wxChar *message, CommonDiagSpecifier type)
 {
-	wxChar	message[LONG_STRING], *heading;
+	wxChar	*heading;
+	wxString	mesg;
 	long	style = wxOK;
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
-		DSAM_vsnprintf(message, LONG_STRING, format, args);
 		if (type == COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL)
 			style |= wxCANCEL;
-		if ((wxMessageBox((wxChar *) message, (wxChar *) DiagnosticTitle(type),
+		if ((wxMessageBox(message, DiagnosticTitle(type),
 		  style) == wxCANCEL) && wxGetApp().GetGrMainApp()->simThread) {
 			wxGetApp().GetGrMainApp()->DeleteSimThread();
 			wxLogWarning(wxT("Simulation terminated by user."));
@@ -852,7 +853,7 @@ Notify_MyApp(const wxChar *format, va_list args, CommonDiagSpecifier type)
 		heading = wxT("\nDiagnostics:-\n");
 	} else
 		heading = wxT("");
-	DSAM_snprintf(message, LONG_STRING, wxT("%s%s\n"), heading, format);
-	(GetDSAMPtr_Common()->DPrint)(message, args);
+	mesg.Printf(wxT("%s%s\n"), heading, message);
+	DPrint(message);
 
 }

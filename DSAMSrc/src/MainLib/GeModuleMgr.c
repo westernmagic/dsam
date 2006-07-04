@@ -769,21 +769,25 @@ WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data)
  * This function writes the parameters for a process.  If the process is a
  * simulation then it will write an SPF file.
  * The base file name is given, and the extension is added as appropriate.
+ * If the base file name already has an extension, then that is used.
  */
 
 BOOLN
 WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process)
 {
-	BOOLN	ok = TRUE;
+	BOOLN	ok = TRUE, addExtension;
 	WChar	filePath[MAX_FILE_PATH];
 
 	DSAM_strcpy(filePath, GetParsFileFPath_Common(baseFileName));
+	addExtension = (!DSAM_strrchr(filePath, '.'));
 	if (process->module->specifier != SIMSCRIPT_MODULE) {
-		DSAM_strcat(filePath, wxT(".par"));
+		if (addExtension)
+			DSAM_strcat(filePath, wxT(".par"));
 		ok = WriteParFile_UniParMgr(filePath, GetUniParListPtr_ModuleMgr(
 		  process));
 	} else {
-		DSAM_strcat(filePath, wxT(".spf"));
+		if (addExtension)
+			DSAM_strcat(filePath, wxT(".spf"));
 		ok = WriteSimParFile_ModuleMgr(filePath, process);
 	}
 	return(ok);

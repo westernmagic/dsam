@@ -333,6 +333,7 @@ MBSToWCS_Utility_String(const char *mb)
 
 /*
  * This routine converts the '%s' formats to the wide char '%S' in a string.
+ * It also does the conversion of '%c' to '%C'.
  * It expects the memory for both of the strings to of been previously allocated
  * and of equal lengths.
  */
@@ -391,26 +392,23 @@ ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
 
 }
 
-/**************************** Snprintf ****************************************/
+/**************************** Vsnprintf ***************************************/
 
 /*
- * This function replaces the standard 'snprintf' routine which needs changes
+ * This function replaces the standard 'vsnprintf' routine which needs changes
  * to the string '%s' format in UNICODE mode.
  */
  
 int
-Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
+Vsnprintf_Utility_String(WChar *str, size_t size,  WChar *format, va_list args)
 {
-	static const WChar *funcName = wxT("Snprintf_Utility_String");
+	static const WChar *funcName = wxT("Vsnprintf_Utility_String");
 	BOOLN	ok = TRUE;
 	int		result = 0;
 
-	va_list	args;
-	va_start(args, format);
-
 #	if DSAM_USE_UNICODE
 	WChar	*p;
-	if ((p = (WChar *) calloc(wcslen(format), sizeof(WChar))) == NULL) {
+	if ((p = (WChar *) calloc(wcslen(format) + 1, sizeof(WChar))) == NULL) {
 		NotifyError(wxT("%s: Out of memory."), funcName);
 		ok = FALSE;
 	}
@@ -425,8 +423,72 @@ Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
 #	else
 	result = vsnprintf(str, size, format, args);
 #	endif
+	
+	return(result);
 
+}
+
+/**************************** Snprintf ****************************************/
+
+/*
+ * This function replaces the standard 'snprintf' routine which needs changes
+ * to the string '%s' format in UNICODE mode.
+ */
+ 
+int
+Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
+{
+	static const WChar *funcName = wxT("Snprintf_Utility_String");
+	BOOLN	ok = TRUE;
+	int		result = 0;
+	va_list	args;
+
+	va_start(args, format);
+	result = Vsnprintf_Utility_String(str, size, format, args);
 	va_end(args);
+	
+	return(result);
+
+}
+
+/**************************** fprintf *****************************************/
+
+/*
+ * This function replaces the standard 'fprintf' routine which needs changes
+ * to the string '%s' and '%c' formats in UNICODE mode.
+ */
+ 
+int
+fprintf_Utility_String(FILE *fp,  WChar *format, ...)
+{
+	static const WChar *funcName = wxT("fprintf_Utility_String");
+	BOOLN	ok = TRUE;
+	int		result = 0;
+
+	va_list	args;
+
+#	if DSAM_USE_UNICODE
+	WChar	*p;
+	if ((p = (WChar *) calloc(wcslen(format) + 1, sizeof(WChar))) == NULL) {
+		NotifyError(wxT("%s: Out of memory."), funcName);
+		ok = FALSE;
+	}
+	if (ok) {
+		ConvWCSIOFormat_Utility_String(p, format);
+		format = p;
+		va_start(args, format);
+		result = vfwprintf(fp, format, args);
+		va_end(args);
+		free(p);
+	} else
+		result = -1;
+	
+#	else
+	va_start(args, format);
+	result = vfprintf(fp, format, args);
+	va_end(args);
+#	endif
+
 	
 	return(result);
 

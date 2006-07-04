@@ -3,6 +3,7 @@
  * File:		ExtIPCServer.cpp
  * Purpose:		Inter-process communication server extension code module.
  * Comments:	This code module was revised from the GrSimMgr.cpp code module.
+ *				Communication is always done in multi-byte format.
  * Author:		L. P. O'Mard
  * Created:		06 Nov 2003
  * Updated:		
@@ -37,6 +38,7 @@
 #include "UtAppInterface.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtString.h"
 #include "FiDataFile.h"
 #include "UtSSParser.h"
 #include "ExtMainApp.h"
@@ -129,7 +131,7 @@ IPCServer::InitConnection(bool wait)
 	myServer->GetLocal(addr);
 	salutation.Printf(wxT("Host %s running %s, DSAM version %s.\n"), addr.
 	  Hostname().c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
-	sock->Write(salutation.GetData(), salutation.length());
+	sock->Write(salutation.mb_str(), salutation.length());
 	return(sock);
 
 
@@ -307,9 +309,10 @@ IPCServer::OnGetFiles(void)
 	numFiles = list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
-		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].c_str());
+		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].c_str(
+		  ));
 		nameOnly = fileName.GetFullName();
-		sock->Write(nameOnly, nameOnly.length());
+		sock->Write(nameOnly.mb_str(), nameOnly.length());
 		sock->Write(wxT("\n"), 1);
 		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
@@ -326,8 +329,8 @@ IPCServer::OnGetFiles(void)
 			sock->Write(&byte, 1);
 		}
 		if (!wxRemoveFile(fileName.GetFullPath()))
-			NotifyError(wxT("%s: Could not remove file '%s' from server."), funcName,
-			  fileName.GetFullPath().c_str());
+			NotifyError(wxT("%s: Could not remove file '%s' from server."),
+			  funcName, fileName.GetFullPath().c_str());
 	}
 
 }
@@ -350,8 +353,8 @@ IPCServer::OnSet(void)
 			cmdStr += c;
 	wxStringTokenizer tokenizer(cmdStr);
 	if ((numTokens = tokenizer.CountTokens()) % 2 != 0) {
-		NotifyError(wxT("%s: parameter settings must be in <name> <value> pairs."),
-		  funcName);
+		NotifyError(wxT("%s: parameter settings must be in <name> <value> "
+		  "pairs."), funcName);
 		return;
 	}
 	for (i = 0; i < numTokens / 2; i++) {
@@ -361,8 +364,9 @@ IPCServer::OnSet(void)
 		  (wxChar *) value.c_str(), FALSE) && !SetUniParValue_Utility_Datum(
 		  GetSimulation_AppInterface(), (wxChar *) parameter.c_str(),
 		  (wxChar *) value.c_str())) {
-			NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."), funcName,
-			 (wxChar *)  parameter.c_str(), (wxChar *) value.c_str());
+			NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."),
+			  funcName, (wxChar *)  parameter.c_str(), (wxChar *) value.
+			  c_str());
 			return;
 		}
 	}
@@ -477,8 +481,8 @@ IPCServer::ProcessInput(void)
 		break;
 	default:
 		if (buffer.Length())
-			NotifyError(wxT("%s: Unknown command given (%s)."), funcName, buffer.
-			  c_str());
+			NotifyError(wxT("%s: Unknown command given (%s)."), funcName,
+			  buffer.c_str());
 	}
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
 	return(!endProcessing);
@@ -496,7 +500,7 @@ IPCServer::ProcessInput(void)
 void
 IPCServer::OnErrMsgs(int index)
 {
-	unsigned char numNotifications;
+	wxUint8 numNotifications;
 
 	if (!notificationList.GetCount() || ((index >= 0) && ((notificationList.
 	  GetCount() < (size_t) index)))) {
@@ -508,11 +512,13 @@ IPCServer::OnErrMsgs(int index)
 		numNotifications = notificationList.GetCount();
 		sock->Write(&numNotifications, 1);
 		for (unsigned int i = 0; i < notificationList.GetCount(); i++)
-			sock->Write(notificationList[i], notificationList[i].length());
+			sock->Write(notificationList[i].mb_str(), notificationList[i].
+			  length());
 	} else {
 		numNotifications = 1;
 		sock->Write(&numNotifications, 1);
-		sock->Write(notificationList[index], notificationList[index].length());
+		sock->Write(notificationList[index].mb_str(), notificationList[index].
+		  length());
 	}
 		
 }
@@ -570,17 +576,14 @@ GetPtr_IPCServer(void)
  */
 
 void
-Notify_IPCServer(const wxChar *format, va_list args, CommonDiagSpecifier type)
+Notify_IPCServer(wxChar *message, CommonDiagSpecifier type)
 {
-	wxString	message;
+	wxString	mesg;
 
 	if (!GetDSAMPtr_Common()->notificationCount)
 		GetPtr_IPCServer()->ClearNotifications();
-	message.PrintfV((wxChar *) format, args);
-	message.insert(0, wxT(": "));
-	message.insert(0, (wxChar *) DiagnosticTitle(type));
-	message.append(wxT("\n"));
-	GetPtr_IPCServer()->AddNotification(message);
+	mesg.Printf(wxT("%s: %s\n"), DiagnosticTitle(type), message);
+	GetPtr_IPCServer()->AddNotification(mesg);
 
 } /* NotifyMessage */
 

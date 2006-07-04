@@ -51,6 +51,8 @@ WChar	MBToWC_Utility_String(const char *mb);
 
 char *	ConvUTF8_Utility_String(WChar *src);
 
+int	fprintf_Utility_String(FILE *fp,  WChar *format, ...);
+
 WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
 
 WChar *	GetSuffix_Utility_String(WChar *fileName);

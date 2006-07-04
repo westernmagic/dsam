@@ -280,7 +280,6 @@ MainApp::InitArgv(int theArgc)
 {
 	static const wxChar *funcName = wxT("MainApp::InitArgv");
 
-	wprintf(wxT("%S: Entered\n"), funcName);
 	if (!theArgc)
 		return(true);
 	argc = theArgc;
@@ -375,7 +374,7 @@ MainApp::RestoreQuotedStr(wxChar *str)
  */
 
 int
-MainApp::SetParameterOptionArgs(int indexStart, wxChar *parameterOptions,
+MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
   bool countOnly)
 {
 	static const wxChar *funcName = wxT("MainApp::SetParameterOptionArgs");
@@ -760,8 +759,13 @@ PrintUsage_MainApp(void)
 void
 DPrintSysLog_MainApp(wxChar *format, va_list args)
 {
-	//vsyslog(LOG_INFO, format, args);
-	printf("DPrintSysLog_MainApp: Debug: Needs correction.\n");
+#	if DSAM_USE_UNICODE
+	wxChar	src[LONG_STRING];
+	vswprintf(src, LONG_STRING, format, args);
+	syslog(LOG_INFO, ConvUTF8_Utility_String(src));
+#	else
+	vsyslog(LOG_INFO, format, args);
+#	endif
 	
 }
 

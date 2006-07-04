@@ -70,6 +70,7 @@ BEGIN_EVENT_TABLE(SDIView, wxView)
 	EVT_MENU(SDIFRAME_EDIT_MENU_ENABLE, SDIView::OnEditEnable)
 	EVT_MENU(SDIFRAME_EDIT_MENU_PROPERTIES, SDIView::OnEditProperties)
 	EVT_MENU(SDIFRAME_EDIT_MENU_READ_PAR_FILE, SDIView::OnReadParFile)
+	EVT_MENU(SDIFRAME_EDIT_MENU_WRITE_PAR_FILE, SDIView::OnWriteParFile)
 	EVT_MENU(SDIFRAME_EDIT_PROCESS, SDIView::OnSetProcessLabel)
     EVT_TEXT_ENTER(SDIFRAME_ZOOM_COMBOBOX, SDIView::OnZoomSel)
 END_EVENT_TABLE()
@@ -380,7 +381,6 @@ SDIView::OnSetProcessLabel(wxCommandEvent& WXUNUSED(event))
 void
 SDIView::OnEditEnable(wxCommandEvent& WXUNUSED(event))
 {
-	printf("SDIView::OnEditEnable: Entered\n");
 	wxShape *shape = FindSelectedShape();
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 	Enable_ModuleMgr(myHandler->pc->data, !myHandler->pc->data->module->onFlag);
@@ -428,6 +428,34 @@ SDIView::OnReadParFile(wxCommandEvent& WXUNUSED(event))
 	  GetFullPath().c_str()))
 		NotifyWarning(wxT("%s: Could not read parameters from file '%s'."),
 		  funcName, fileName.GetFullPath().c_str());
+
+}
+
+/******************************************************************************/
+/****************************** OnWriteParFile ********************************/
+/******************************************************************************/
+
+void
+SDIView::OnWriteParFile(wxCommandEvent& WXUNUSED(event))
+{
+	static const wxChar *funcName = wxT("SDIView::OnWriteParFile");
+
+	wxShape *shape = FindSelectedShape();
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
+
+	wxFileDialog dialog(shape->GetCanvas(), wxT("Save a file"), wxGetCwd(),
+	  wxT(""), wxT("*.par"), wxSAVE);
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+	wxFileName fileName = dialog.GetPath();
+
+	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
+	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
+	if (!WritePars_ModuleMgr((wxChar *) fileName.GetFullPath().c_str(),
+	  myHandler->pc->data))
+		NotifyWarning(wxT("%s: Could not write parameters to file '%s'."),
+		  funcName, fileName.GetFullPath().c_str());
+	SetDiagMode(oldDiagMode);
 
 }
 

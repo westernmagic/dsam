@@ -66,6 +66,7 @@ class SDIView: public wxView
 	void	OnReadParFile(wxCommandEvent& event);
 	void	OnSetProcessLabel(wxCommandEvent& event);
 	void	OnZoomSel(wxCommandEvent& event);
+	void	OnWriteParFile(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()
 };

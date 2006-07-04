@@ -41,7 +41,7 @@ class wxFileName;
 
 /*************************** IPCClient ****************************************/
 
-class IPCClient: wxSocketClient {
+class IPCClient: public wxSocketClient {
 
 	bool	ok;
 	IPCUtils	iPCUtils;
@@ -58,7 +58,7 @@ class IPCClient: wxSocketClient {
 	EarObjectPtr	GetSimProcess(void);
 	IPCUtils * GetIPCUtils(void)	{ return &iPCUtils; }
 	bool	InitSimFromFile(const wxString &simFileName);
-	bool	InitSimulation(const wxChar *simulation);
+	bool	InitSimulation(const wxString& simulation);
 	bool	Ok(void)	{ return ok; }
 	bool	ReadString(wxString &s);
 	bool	RunSimulation(void);

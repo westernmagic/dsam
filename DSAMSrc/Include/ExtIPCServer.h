@@ -30,7 +30,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	EXTIPC_DEFAULT_SERVER_NAME		"DSAM IPC Server"
+#define	EXTIPC_DEFAULT_SERVER_NAME		wxT("DSAM IPC Server")
 
 #ifndef __WINDOWS__
 #	include <syslog.h>
@@ -112,8 +112,7 @@ void	EmptyDiagBuffer_IPCServer(WChar *s, int *c);
 
 IPCServer *	GetPtr_IPCServer(void);
 
-void	Notify_IPCServer(const WChar *format, va_list args,
-		  CommonDiagSpecifier type);
+void	Notify_IPCServer(WChar *message, CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

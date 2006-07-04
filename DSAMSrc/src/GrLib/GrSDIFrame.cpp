@@ -93,9 +93,7 @@ BEGIN_EVENT_TABLE(SDIFrame, wxDocParentFrame)
 	EVT_MENU(SDIFRAME_DIAG_WINDOW, SDIFrame::OnDiagWindow)
 	EVT_MENU(SDIFRAME_EDIT_MAIN_PARS, SDIFrame::OnEditMainPars)
 	EVT_MENU(wxID_HELP, SDIFrame::OnHelp)
-	/*
 	EVT_MENU(MYFRAME_ID_VIEW_SIM_PARS, SDIFrame::OnViewSimPars)
-	*/
 	EVT_MENU(SDIFRAME_SIM_THREAD_DISPLAY_EVENT, SDIFrame::OnSimThreadEvent)
 	EVT_MENU(SDIFRAME_STOP_SIMULATION, SDIFrame::OnStopSimulation)
 	EVT_MENU(SDIFRAME_EXECUTE, SDIFrame::OnExecute)
@@ -488,19 +486,19 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 	if (GetPtr_AppInterface()) {
 		title.sprintf(wxT("About %s %s"), GetPtr_AppInterface()->appName,
 		  GetPtr_AppInterface()->appVersion);
-		dsamVersion = (wxChar *) GetPtr_AppInterface()->compiledDSAMVersion;
+		dsamVersion = GetPtr_AppInterface()->compiledDSAMVersion;
 		for (i = 0, authors = wxT("Authors: "); i < APP_MAX_AUTHORS; i++)
 			if (GetPtr_AppInterface()->authors[i][0] != '\0')
-				authors += (wxChar *) GetPtr_AppInterface()->authors[i];
+				authors += GetPtr_AppInterface()->authors[i];
 	} else {
 		title.sprintf(wxT("About Application"));
-		dsamVersion = (wxChar *) DSAM_VERSION;
+		dsamVersion = DSAM_VERSION;
 	}
 	message.sprintf(wxT("%s"
 	  "DSAM version: %s (dynamic), compiled with %s\n"
 	  "Author, Dr. Lowel P. O'Mard (with God's support)\n"
 	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n"),
-	  authors.GetData(), (wxChar *) GetDSAMPtr_Common()->version, dsamVersion.
+	  authors.GetData(), GetDSAMPtr_Common()->version, dsamVersion.
 	  GetData());
 	wxMessageBox(message, title, wxOK | wxICON_INFORMATION, this);
 

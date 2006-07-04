@@ -795,7 +795,7 @@ SetYAxisTitle_SignalDisp(WChar *yAxisTitle)
 		return(FALSE);
 	}
 	signalDispPtr->yAxisTitleFlag = TRUE;
-	DSAM_snprintf(signalDispPtr->yAxisTitle, MAXLINE, wxT("%s"), yAxisTitle);
+	DSAM_strncpy(signalDispPtr->yAxisTitle, yAxisTitle, MAXLINE);
 	return(TRUE);
 
 }
@@ -1137,7 +1137,7 @@ SetTitle_SignalDisp(WChar *title)
 		return(FALSE);
 	}
 	signalDispPtr->titleFlag = TRUE;
-	DSAM_snprintf(signalDispPtr->title, MAXLINE, wxT("%s"), title);
+	DSAM_strncpy(signalDispPtr->title, title, MAXLINE);
 	signalDispPtr->redrawGraphFlag = TRUE;
 	return(TRUE);
 
@@ -1187,7 +1187,7 @@ SetXAxisTitle_SignalDisp(WChar *xAxisTitle)
 		return(FALSE);
 	}
 	signalDispPtr->xAxisTitleFlag = TRUE;
-	DSAM_snprintf(signalDispPtr->xAxisTitle, MAXLINE, wxT("%s"), xAxisTitle);
+	DSAM_strncpy(signalDispPtr->xAxisTitle, xAxisTitle, MAXLINE);
 	return(TRUE);
 
 }
@@ -1214,8 +1214,7 @@ SetXNumberFormat_SignalDisp(WChar *xNumberFormat)
 		  funcName, xNumberFormat);
 		return(FALSE);
 	}
-	DSAM_snprintf(signalDispPtr->xNumberFormat, MAXLINE, wxT("%s"),
-	  xNumberFormat);
+	DSAM_strncpy(signalDispPtr->xNumberFormat, xNumberFormat, MAXLINE);
 	signalDispPtr->xNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -1347,8 +1346,7 @@ SetYNumberFormat_SignalDisp(WChar *yNumberFormat)
 		  funcName, yNumberFormat);
 		return(FALSE);
 	}
-	DSAM_snprintf(signalDispPtr->yNumberFormat, MAXLINE, wxT("%s"),
-	  yNumberFormat);
+	DSAM_strncpy(signalDispPtr->yNumberFormat, yNumberFormat, MAXLINE);
 	signalDispPtr->yNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);

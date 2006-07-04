@@ -491,11 +491,14 @@ CheckData_Utility_Pause(EarObjectPtr data)
 void
 Notify_Utility_Pause(WChar *format, ...)
 {
+	WChar	message[LONG_STRING];
 	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	va_list	args;
 
 	va_start(args, format);
-	(GetDSAMPtr_Common()->Notify)(format, args,
+	Snprintf_Utility_String(message, LONG_STRING, format, args);
+	va_end(args);
+	(GetDSAMPtr_Common()->Notify)(message,
 	  COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL);
 	SetDiagMode(oldDiagMode);
 	if (GetDSAMPtr_Common()->interruptRequestedFlag) {
@@ -506,7 +509,6 @@ Notify_Utility_Pause(WChar *format, ...)
 		DSAM_printf(wxT("Press <return> to continue..."));
 		getchar();
 	}
-	va_end(args);
 
 } /* NotifyError */
 

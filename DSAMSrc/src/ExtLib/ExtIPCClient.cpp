@@ -93,7 +93,7 @@ IPCClient::~IPCClient(void)
 bool
 IPCClient::ReadString(wxString &s)
 {
-	wxChar	ch = _T('\0');
+	wxUint8	ch = '\0';
 
 	s.Clear();
 	while (!Read(&ch, sizeof(ch)).Error()) {
@@ -117,7 +117,7 @@ IPCClient::SendCommand(IPCCommandSpecifier command)
 	wxString	s;
 
 	s.Printf(wxT("%s\n"), iPCUtils.CommandList(command)->name);
-	Write(s, s.length());
+	Write(s.mb_str(), s.length());
 	return(true);
 
 }
@@ -175,14 +175,14 @@ IPCClient::Errors(void)
  */
 
 bool
-IPCClient::InitSimulation(const wxChar *simulation)
+IPCClient::InitSimulation(const wxString &simulation)
 {
 	static const wxChar *funcName = wxT("IPCClient:::InitSimulation");
 	unsigned char	eof = (unsigned char) EOF;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_INIT);
-	Write(simulation, DSAM_strlen(simulation));
+	Write(simulation.mb_str(), simulation.length());
 	Write(&eof, 1);
 	if (Errors()) {
 		NotifyError(wxT("%s: Could not initialise simulation."), funcName);

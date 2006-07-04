@@ -373,7 +373,6 @@ SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
-	printf("SDIEvtHandler::OnLeftClick: Entered\n");
 	if (keys == 0) {
 		if (SetSelectedShape(dc)) {
 			GetShape()->Select(false, &dc);
@@ -443,8 +442,6 @@ SDIEvtHandler::OnRightClick(double x, double y, int keys, int attachment)
 		wxMenu menu(wxT("Edit Process"));
 		menu.Append(SDIFRAME_EDIT_MENU_ENABLE, (pc->data->module->onFlag)?
 		  wxT("Disa&ble"): wxT("Ena&ble"), wxT("Enable/disable process"));
-		menu.Append(SDIFRAME_EDIT_MENU_CHANGE_PROCESS, wxT("&Change process"),
-		  wxT("Change process"));
 		menu.AppendSeparator();
 		menu.Append(SDIFRAME_EDIT_MENU_READ_PAR_FILE, wxT("&Read par. file"),
 		  wxT("Read parameter file."));
