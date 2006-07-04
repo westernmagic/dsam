@@ -462,8 +462,9 @@ GetOutputSignalMatrix(SignalDataPtr signal)
 {
 	register ChanData	*inPtr;
 	int		chan, i;
-	Matrix	m = Matrix((int) signal->numChannels, (int) signal->length);
-
+	static Matrix	m;
+	
+	m = Matrix((int) signal->numChannels, (int) signal->length);
 	for (chan = 0; chan < signal->numChannels; chan++) {
 		inPtr = signal->channel[chan];
 		for (i = 0; i < signal->length; i++)
