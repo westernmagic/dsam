@@ -49,7 +49,7 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 	static const wxChar *funcName = wxT("MatMainApp::MatMainApp");
 
 	matMainAppPtr = this;
-	DSAM_strcpy(serverHost, wxT(""));
+	DSAM_strcpy(serverHost, wxT("localhost"));
 	autoNumRunsMode = GENERAL_BOOLEAN_OFF;
 	serverMode = GENERAL_BOOLEAN_OFF;
 	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
@@ -644,7 +644,8 @@ SetServerHost_MatMainApp(wxChar *theServerHost)
 	static const wxChar	*funcName = PROGRAM_NAME
 	  wxT(": SetServerHost_MatMainApp");
 
-	DSAM_snprintf(matMainAppPtr->serverHost, MAXLINE, wxT("%s"), theServerHost);
+	Snprintf_Utility_String(matMainAppPtr->serverHost, MAXLINE, wxT("%s"),
+	  theServerHost);
 	return(TRUE);
 
 }
