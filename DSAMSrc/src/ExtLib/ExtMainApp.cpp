@@ -388,6 +388,8 @@ MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
 	wxStringTokenizer tkz(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
 	while (tkz.HasMoreTokens()) {
 		token = tkz.GetNextToken();
+		if (token.length() < 1)
+			continue;
 		if (!countOnly)
 			SetArgvString(indexStart + count, RestoreQuotedStr((wxChar *) token.
 			  c_str()), token.length());
