@@ -417,7 +417,7 @@ IPCClient::SendArguments(int argc, wxChar **argv)
 	Write(&numArgs, sizeof(numArgs));
 	for (i = 0; i < argc; i++)
 		if (*argv[i])
-			Write(argv[i], DSAM_strlen(argv[i]) + 1);
+			Write(wxConvUTF8.cWX2MB(argv[i]), DSAM_strlen(argv[i]) + 1);
 	return(true);
 
 }
