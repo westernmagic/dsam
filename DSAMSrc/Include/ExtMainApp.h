@@ -27,6 +27,7 @@
 #define MAINAPP_PARAMETER_STR_DELIMITERS	wxT(" ,\t")
 #define MAINAPP_QUOTE						'"'
 #define MAINAPP_SPACE_SUBST					'\1'
+#define	MAINAPP_NUM_BASE_ARGUMENTS			3
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -44,6 +45,7 @@
 class SimThread;
 class RunThreadedProc;
 class DSAMXMLDocument;
+class IPCClient;
 
 /*************************** MainApp ******************************************/
 
@@ -53,13 +55,15 @@ class MainApp {
 	bool	threadedSimExecutionFlag;
 	wxChar	**argv;
 	int		argc;
-	int		serverPort;
 	int		(* ExternalMain)(void);
 	int		(* ExternalRunSimulation)(void);
 	SymbolPtr	symList;
+	IPCClient	*myClient;
 	wxFileName	simFileName;
 
   public:
+	wxChar	serverHost[MAXLINE];
+	int		serverPort;
 	SimThread	*simThread;
 	DSAMXMLDocument	*doc;
 	RunThreadedProc	*runThreadedProc;
@@ -82,10 +86,12 @@ class MainApp {
 
 	bool	CheckInitialisation(void);
 	void	CheckOptions(void);
+	bool	CreateClient(wxChar * serverHost, uShort serverPort);
 	void	DeleteSimThread(void);
 	void	FreeArgStrings(void);
 	int		GetArgc(void)	{ return argc; }
 	wxChar **	GetArgv(void)	{ return argv; }
+	IPCClient *	GetClient(void)	{ return myClient; }
 	int		GetServerFlag(void)	{ return(serverFlag); }
 	int		GetServerPort(void)	{ return(serverPort); }
 	wxFileName &	GetSimFileName(void)	{ return simFileName; }
@@ -97,7 +103,9 @@ class MainApp {
 	bool	ProtectQuotedStr(wxChar *str);
 	void	RemoveCommands(int offset, wxChar *prefix);
 	wxChar *	RestoreQuotedStr(wxChar *str);
+	int		RunIPCMode(void);
 	int		RunServer(void);
+	int		RunClient(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
 	bool	SetArgvString(int index, const wxChar *string, int size);

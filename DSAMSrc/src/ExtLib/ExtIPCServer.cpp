@@ -67,7 +67,6 @@ IPCServer	*iPCServer = NULL;
 IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
   bool superServerFlag)
 {
-	static const wxChar *funcName = wxT("IPCServer::IPCServer");
 	wxIPV4address	addr;
 
 	iPCServer = this;
@@ -82,9 +81,8 @@ IPCServer::IPCServer(const wxString& hostName, uShort theServicePort,
 	  theServicePort);
 	myServer = new SocketServer(addr, superServerFlag, wxSOCKET_NONE);
 	if (!myServer->Ok()) {
-		NotifyError(wxT("%s: Could not listen at port %u."), funcName,
-		  theServicePort);
 		ok = FALSE;
+		return;
 	}
 	SetNotifyFunc(Notify_IPCServer);
 

@@ -827,7 +827,7 @@ ProcessOptions_AppInterface(void)
 		return(FALSE);
 	}
 	while ((c = Process_Options(appInterfacePtr->argc, appInterfacePtr->argv,
-	  &optInd, &optSub, &argument, wxT("@#:d:hl:P:s:Sp:")))) {
+	  &optInd, &optSub, &argument, wxT("@#:d:hl:P:R:s:Sp:")))) {
 		optionFound = TRUE;
 		switch (c) {
 		case '@':

@@ -62,8 +62,6 @@ IPCClient::IPCClient(const wxString& hostName, uShort theServicePort)
 	addr.Service((!theServicePort)? EXTIPCUTILS_DEFAULT_SERVER_PORT:
 	  theServicePort);
 	if (!Connect(addr)) {
-		NotifyError(wxT("%s: Failed to connect to %s:%u\n"), funcName,
-		  addr.Hostname().c_str(), addr.Service());
 		ok = false;
 		return;
 	}
@@ -295,13 +293,16 @@ IPCClient::GetAllOutputFiles(void)
 {
 	wxUint8		byte, numFiles;
 	wxUint32	i, j, length;
-	wxString	fileName;
+	wxString	baseFileName, fileName;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_GETFILES);
 	Read(&numFiles, sizeof(numFiles));
 	for (i = 0; i < numFiles; i++) {
-		ReadString(fileName);
+		ReadString(baseFileName);
+		fileName = GetParsFileFPath_Common((wxChar *) baseFileName.c_str());
+		wprintf(wxT("IPCClient::GetAllOutputFiles: Debug: Getting %d: '%S'.\n"),
+		  i, fileName.c_str());
 		Read(&length, sizeof(length));
 		wxFFileOutputStream outStream(fileName);
 		wxDataOutputStream	data(outStream);

@@ -39,6 +39,7 @@
 #include "UtAppInterface.h"
 #include "ExtSimThread.h"
 #include "ExtIPCUtils.h"
+#include "ExtIPCClient.h"
 #include "ExtSocket.h"
 #include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
@@ -82,7 +83,9 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	serverFlag = false;
 	superServerFlag = false;
 	diagsOn = false;
+	DSAM_strcpy(serverHost, wxT("localhost"));
 	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
+	myClient = NULL;
 	simThread = NULL;
 	dSAMMainApp = this;
 	SetUsingExtStatus(TRUE);
@@ -106,6 +109,8 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 MainApp::~MainApp(void)
 {
 	DeleteSimThread();
+	if (myClient)
+		delete myClient;
 	if (runThreadedProc)
 		delete runThreadedProc;
 	FreeArgStrings();
@@ -163,7 +168,7 @@ MainApp::Main(void)
 		return(false);
 	}
 	if (serverFlag)
-		return(RunServer());
+		return(RunIPCMode());
 	if (!InitMain(TRUE)) {
 		 NotifyError(wxT("%s: Could not initialise the main program."),
 		   funcName);
@@ -178,10 +183,91 @@ MainApp::Main(void)
 
 }
 
-/****************************** RunServer *************************************/
+/****************************** RunIPCMode ************************************/
 
 /*
- * This function runs the server.
+ * This function runs in IPC mode if there is server on the same host and
+ * port, then run the client mode.
+ * Note that the diagnostics are set to off by default.  Only the -d option
+ * can turn them on.
+ */
+
+int
+MainApp::RunIPCMode(void)
+{
+	if (diagsOn)
+		SetDiagMode(COMMON_DIALOG_DIAG_MODE);
+	else
+		SetDiagMode(COMMON_OFF_DIAG_MODE);
+	InitMain(FALSE);
+	if (!CreateClient(serverHost, serverPort))
+		return(RunServer());
+	return(RunClient());
+
+}
+
+/****************************** RunClient ************************************/
+
+/*
+ * This function runs the simulation in client mode.
+ * The function deals with piped signals by the server setting up for piped
+ * signals and the client then asking if an input (piped) signal is required.
+ */
+
+int
+MainApp::RunClient(void)
+{
+	static const wxChar *funcName = wxT("MainApp::RunClient");
+
+	wprintf(wxT("%S: Debug: Run client mode\n"), funcName);
+	if (!GetClient()->SendArguments(GetArgc(), GetArgv())) {
+		NotifyError(wxT("%s: Could not initialise remote simulation."),
+		  funcName);
+		return(false);
+	}
+	wprintf(wxT("%S: Debug: simulationFile = '%S'.\n"), funcName,
+	  GetPtr_AppInterface()->simulationFile);
+	if (!GetClient()->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
+		NotifyError(wxT("%s: Could not initialise remote simulation."),
+		  funcName);
+		return(false);
+	}
+#	if DSAM_DEBUG
+	for (int i = 0; i < GetArgc(); i++)
+		printf("%s: %2d: %s\n", funcName, i, GetArgv()[i]);
+#	endif /* DSAM_DEBUG */
+// 	if (inputData) {
+// 		if (!InitInputEarObject(length)) {
+// 			NotifyError(wxT("%s: Could not initialise input process."),
+// 			  funcName);
+// 			return(false);
+// 		}
+// 		if (!GetClient()->GetIPCUtils()->InitOutProcess()) {
+// 			NotifyError(wxT("%s: Could not initialise output process for input "
+// 			  "data."), funcName);
+// 			return(false);
+// 		}
+// 		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputProcess);
+// 		if (!GetClient()->SendInputProcess()) {
+// 			NotifyError(wxT("%s: Could not send the input data."), funcName);
+// 			return(false);
+// 		}
+// 	}
+	if (!GetClient()->RunSimulation()) {
+		NotifyError(wxT("%s: Could not run remote simulation."), funcName);
+		return(false);
+	}
+	GetClient()->GetAllOutputFiles();
+	return(true);
+
+	return(0);
+
+}
+
+/****************************** RunServer ************************************/
+
+/*
+ * This function runs in server mode.
  * Note that the diagnostics are set to off by default.  Only the -d option
  * can turn them on.
  */
@@ -200,7 +286,8 @@ MainApp::RunServer(void)
 	InitMain(FALSE);
 	IPCServer *server = new IPCServer(wxT(""), serverPort, superServerFlag);
 	if (!server->Ok()) {
-		NotifyError(wxT("%s: Could not start server.\n"), funcName);
+		NotifyError(wxT("%s: Could not start server on port %u.\n"), funcName,
+		  serverPort);
 		return(false);
 	}
 	for ( ; ; ) {
@@ -239,8 +326,14 @@ MainApp::CheckOptions(void)
 	wxChar	c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  wxT("SI:d:"))))
+	  wxT("R:SI:d:"))))
 		switch (c) {
+		case 'R':
+			DSAM_strcpy(serverHost, argument);
+			wprintf(wxT("MainApp::CheckOptions: Debug: serverHost = '%S'\n"),
+			  serverHost);
+			MarkIgnore_Options(argc, argv, wxT("-R"), OPTIONS_WITH_ARG);
+			break;
 		case 'S':
 			if (!serverFlag)
 				serverFlag = TRUE;
@@ -685,6 +778,35 @@ MainApp::SetSimulationFile(wxFileName &fileName)
 	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((wxChar *)
 	  fileName.GetExt().c_str()));
 	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().c_str());
+
+}
+
+/******************************************************************************/
+/****************************** CreateClient **********************************/
+/******************************************************************************/
+
+/*
+ */
+
+bool
+MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
+{
+	static const wxChar *funcName = wxT("MainApp::CreateClient");
+
+	if (!myClient)
+		myClient = new IPCClient(serverHost, serverPort);
+	if (!myClient->Ok()) {
+		if (diagsOn)
+			NotifyError(wxT("%s: Failed to connect to %s:%u\n"), funcName,
+			  serverHost, serverPort);
+		delete myClient;
+		myClient = NULL;
+		return(false);
+	}
+	if (diagsOn)
+		NotifyWarning(wxT("%s: Connected to %s:%u.\n"), funcName, serverHost,
+		  serverPort);
+	return(true);
 
 }
 
