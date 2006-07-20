@@ -333,6 +333,35 @@ IPCServer::OnGetFiles(void)
 
 }
 
+/****************************** OnGetPar **************************************/
+
+/*
+ */
+
+void
+IPCServer::OnGetPar(void)
+{
+	static const wxChar *funcName = wxT("IPCServer::OnGetPar");
+	unsigned char c;
+	wxString	parName, value;
+	UniParPtr	par;
+
+	while (!sock->Read(&c, 1).Error() && (c != '\n'))
+		if (c != '\r')
+			parName += c;
+	if ((par = GetUniParPtr_ModuleMgr(GetSimProcess_AppInterface(), (wxChar *)
+	  parName.c_str())) == NULL) {
+		NotifyError(wxT("%s: Could not find '%s' parameter."), funcName,
+		  parName.c_str());
+		sock->Write("", 1);
+		return;
+	}
+	value = GetParString_UniParMgr(par);
+	sock->Write(value.mb_str(), value.length());
+	sock->Write(wxT("\n"), 1);
+
+}
+
 /****************************** OnSet *****************************************/
 
 /*
@@ -458,6 +487,9 @@ IPCServer::ProcessInput(void)
 		break;
 	case IPC_COMMAND_GETFILES:
 		OnGetFiles();
+		break;
+	case IPC_COMMAND_GETPAR:
+		OnGetPar();
 		break;
 	case IPC_COMMAND_INIT:
 		OnInit();

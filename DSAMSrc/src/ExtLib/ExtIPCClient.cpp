@@ -32,6 +32,9 @@
 #include "GeModuleMgr.h"
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
+#include "UtDatum.h"
+#include "UtSSSymbols.h"
+#include "UtSimScript.h"
 #include "FiDataFile.h"
 #include "FiAIFF.h"
 #include "ExtIPCUtils.h"
@@ -250,7 +253,8 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 	wxUint32	i, length;
 	wxUint8	byte;
 	unsigned char	eof = (unsigned char) EOF;
-	wxFileName fileName = simFileName;
+	wxFileName	fileName = simFileName;
+	wxString	parFilePathModeParName = wxT("PAR_FILE_PATH_MODE\n");
 
 	WaitForReady();
 	if ((fileName.GetExt().CmpNoCase(wxT("sim")) == 0) &&
@@ -278,7 +282,31 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 		NotifyError(wxT("%s: Could not initialise simulation."), funcName);
 		return(false);
 	}
+	GetParValue(parFilePathModeParName);
+	if (Identify_NameSpecifier((wxChar *) buffer.c_str(),
+	  ParFilePathModePrototypeList_Utility_SimScript()) ==
+	   UTILITY_SIMSCRIPT_PARFILEPATHMODE_RELATIVE)
+		SetParsFilePath_Common((wxChar *) fileName.GetPath().c_str());
+	else
+		SetParsFilePath_Common((wxChar *) buffer.c_str());
 	return(true);
+
+}
+
+/****************************** GetParValue ***********************************/
+
+/*
+ * This function returns a parameter value from a simulation.
+ */
+
+bool
+IPCClient::GetParValue(const wxString &parName)
+{
+	buffer.Clear();
+	SendCommand(IPC_COMMAND_GETPAR);
+	Write(parName.mb_str(), parName.length());
+	ReadString(buffer);
+	return(buffer.length());
 
 }
 
@@ -294,6 +322,7 @@ IPCClient::GetAllOutputFiles(void)
 	wxUint8		byte, numFiles;
 	wxUint32	i, j, length;
 	wxString	baseFileName, fileName;
+	wxString	parFilePathModeParName = wxT("PAR_FILE_PATH_MODE\n");
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_GETFILES);
@@ -301,8 +330,6 @@ IPCClient::GetAllOutputFiles(void)
 	for (i = 0; i < numFiles; i++) {
 		ReadString(baseFileName);
 		fileName = GetParsFileFPath_Common((wxChar *) baseFileName.c_str());
-		wprintf(wxT("IPCClient::GetAllOutputFiles: Debug: Getting %d: '%S'.\n"),
-		  i, fileName.c_str());
 		Read(&length, sizeof(length));
 		wxFFileOutputStream outStream(fileName);
 		wxDataOutputStream	data(outStream);

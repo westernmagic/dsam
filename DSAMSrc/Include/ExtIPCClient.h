@@ -55,6 +55,8 @@ class IPCClient: public wxSocketClient {
 	bool	CreateSPFFromSimScript(wxFileName &fileName);
 	bool	Errors(void);
 	bool	GetAllOutputFiles(void);
+	wxString& GetBuffer(void)	{ return buffer; }
+	bool	GetParValue(const wxString &parName);
 	EarObjectPtr	GetSimProcess(void);
 	IPCUtils * GetIPCUtils(void)	{ return &iPCUtils; }
 	bool	InitSimFromFile(const wxString &simFileName);

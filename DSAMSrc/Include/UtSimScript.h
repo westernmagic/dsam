@@ -171,6 +171,8 @@ DatumPtr	InstallProcessInst_Utility_SimScripts(WChar *moduleName);
 
 void	NotifyError_Utility_SimScript(WChar *format, ...);
 
+NameSpecifierPtr	ParFilePathModePrototypeList_Utility_SimScript(void);
+
 BOOLN	PrintPars_Utility_SimScript(void);
 
 BOOLN	PrintSimParFile_Utility_SimScript(void);

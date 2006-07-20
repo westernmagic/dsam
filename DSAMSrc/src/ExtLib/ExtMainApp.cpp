@@ -219,14 +219,11 @@ MainApp::RunClient(void)
 {
 	static const wxChar *funcName = wxT("MainApp::RunClient");
 
-	wprintf(wxT("%S: Debug: Run client mode\n"), funcName);
 	if (!GetClient()->SendArguments(GetArgc(), GetArgv())) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
 		  funcName);
 		return(false);
 	}
-	wprintf(wxT("%S: Debug: simulationFile = '%S'.\n"), funcName,
-	  GetPtr_AppInterface()->simulationFile);
 	if (!GetClient()->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
 		  funcName);

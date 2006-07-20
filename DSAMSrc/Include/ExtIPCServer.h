@@ -87,6 +87,7 @@ class IPCServer {
 	void	OnGet(void);
 	bool	Ok(void)	{ return ok; }
 	void	OnGetFiles(void);
+	void	OnGetPar(void);
 	void	OnPut(void);
 	void	OnPutArgs(void);
 	void	OnSet(void);

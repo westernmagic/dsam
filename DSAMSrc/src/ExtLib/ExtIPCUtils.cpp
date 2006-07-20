@@ -86,6 +86,7 @@ IPCUtils::CommandList(int index)
 					{ wxT("ERRMSGS"),	IPC_COMMAND_ERRMSGS},
 					{ wxT("GET"),		IPC_COMMAND_GET},
 					{ wxT("GETFILES"),	IPC_COMMAND_GETFILES},
+					{ wxT("GETPAR"),	IPC_COMMAND_GETPAR},
 					{ wxT("INIT"),		IPC_COMMAND_INIT},
 					{ wxT("PUT"),		IPC_COMMAND_PUT},
 					{ wxT("PUT_ARGS"),	IPC_COMMAND_PUT_ARGS},
