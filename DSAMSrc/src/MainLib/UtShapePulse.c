@@ -363,7 +363,7 @@ ReadPars_Utility_ShapePulse(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -440,7 +440,7 @@ ResetProcess_Utility_ShapePulse(EarObjectPtr data)
 
 	ResetOutSignal_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+		for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
 			shapePulsePtr->remainingPulseTime[i] = 0.0;
 	}
 
@@ -461,7 +461,7 @@ InitProcessVariables_Utility_ShapePulse(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Utility_ShapePulse();
-		if ((p->remainingPulseTime = (double *) calloc(data->outSignal->
+		if ((p->remainingPulseTime = (double *) calloc(_OutSig_EarObject(data)->
 		  numChannels, sizeof(double))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for remainingPulseTime array."),
 			  funcName);
@@ -599,14 +599,14 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 			return(TRUE);
 	}
 	dt = data->inSignal[0]->dt;
-	remainingPulseTimePtr = p->remainingPulseTime + data->outSignal->offset;
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	remainingPulseTimePtr = p->remainingPulseTime + _OutSig_EarObject(data)->offset;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		riseDetected = FALSE;
 		lastValue = *inPtr++;
-		for (j = 1; j < data->outSignal->length; j++) {
+		for (j = 1; j < _OutSig_EarObject(data)->length; j++) {
 			if (!riseDetected)
 				riseDetected = (*inPtr > lastValue);
 			else {

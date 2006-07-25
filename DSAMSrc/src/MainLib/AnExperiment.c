@@ -326,13 +326,13 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 			sum += *inPtr++;
 		Ass = sum / avePeriodIndex;
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = 0; i < data->inSignal[0]->length; i++) {
 			deltaY = *inPtr++ - Ass;
 			*outPtr++ = log(deltaY * deltaY);
 		}
 		if (!LinearRegression_GenAnalysis(&constant, &gradient,
-		  data->outSignal->channel[chan], dt, sT1Indx, sTPeriodIndx))
+		  _OutSig_EarObject(data)->channel[chan], dt, sT1Indx, sTPeriodIndx))
 			ok = FALSE;
 		Tst[chan] = -2.0 / gradient;
 		Ast = exp(constant / 2.0);
@@ -349,13 +349,13 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 			return(FALSE);
 		}
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = rT1Indx; i < (rT1Indx + rTPeriodIndx); i++) {
 			deltaY = *inPtr++ - Ast * exp(-(i * dt) / Tst[chan]) - Ass;
 			*outPtr++ = log(deltaY * deltaY);
 		}
 		if (!LinearRegression_GenAnalysis(&constant, &gradient,
-		  data->outSignal->channel[chan], dt, rT1Indx, rTPeriodIndx))
+		  _OutSig_EarObject(data)->channel[chan], dt, rT1Indx, rTPeriodIndx))
 			ok = FALSE;
 		Tr[chan] = -2.0 / gradient;
 	}

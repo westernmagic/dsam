@@ -200,7 +200,7 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	if (pars.numChannels == 2)
-		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 	if (fp != stdin)
 		SetPosition_UPortableIO(fp, pars.soundPosition + (int32)
 		  (data->timeIndex + dataFilePtr->timeOffsetCount) * dataFilePtr->
@@ -212,7 +212,7 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 	}
 	for (i = 0; i < length; i++)
 		for (j = 0; j < dataFilePtr->numChannels; j++)
-			data->outSignal->channel[j][i] = ReadSample_DataFile(fp);
+			_OutSig_EarObject(data)->channel[j][i] = ReadSample_DataFile(fp);
 	CloseFile(fp);
 	return(TRUE);
 
@@ -263,8 +263,8 @@ WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset)
 {
 	int32		totalLength, dataLength;
 	
-	dataLength = (int32) (offset + data->outSignal->length *
-	  data->outSignal->numChannels * dataFilePtr->wordSize);
+	dataLength = (int32) (offset + _OutSig_EarObject(data)->length *
+	  _OutSig_EarObject(data)->numChannels * dataFilePtr->wordSize);
 	totalLength = WAVE_HEADER_SIZE + dataLength;
 
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
@@ -275,11 +275,11 @@ WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset)
 	dataFilePtr->Write32Bits(fp, WAVE_FMT);	/* Sub chunk type */
 	dataFilePtr->Write32Bits(fp, 16);			/* Sub chunk Size */
 	dataFilePtr->Write16Bits(fp, WAVE_PCM_CODE); /* No idea what this is for. */
-	dataFilePtr->Write16Bits(fp, data->outSignal->numChannels);
-	dataFilePtr->Write32Bits(fp,(int32) (1.0 / data->outSignal->dt + 0.5));
+	dataFilePtr->Write16Bits(fp, _OutSig_EarObject(data)->numChannels);
+	dataFilePtr->Write32Bits(fp,(int32) (1.0 / _OutSig_EarObject(data)->dt + 0.5));
 											/*Sample rate*/
 	dataFilePtr->Write32Bits(fp, (int32) (dataFilePtr->wordSize /
-	  data->outSignal->dt + 0.5));
+	  _OutSig_EarObject(data)->dt + 0.5));
 	dataFilePtr->Write16Bits(fp, (int16) (dataFilePtr->wordSize * data->
 	  outSignal->numChannels));	/* block align */
 	/* Next line: S. size in bits*/
@@ -318,7 +318,7 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 		}
 		dataOffset = 0L;
 		dataFilePtr->normalise = CalculateNormalisation_DataFile(
-		  data->outSignal);
+		  _OutSig_EarObject(data));
 	} else {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_UPDATING)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
@@ -331,8 +331,8 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 			CloseFile(fp);
 			return(FALSE);
 		}
-		if ((pars.numChannels != data->outSignal->numChannels) ||
-		  (pars.sampleRate != (int32) (1.0 / data->outSignal->dt + 0.5)) ||
+		if ((pars.numChannels != _OutSig_EarObject(data)->numChannels) ||
+		  (pars.sampleRate != (int32) (1.0 / _OutSig_EarObject(data)->dt + 0.5)) ||
 		  ((pars.bitsPerSample / 8) != dataFilePtr->wordSize)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
@@ -342,7 +342,7 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 	}
 	WriteHeader_Wave(fp, data, dataOffset);
 	SetPosition_UPortableIO(fp, 0L, SEEK_END);
-	ok = WriteSignal_DataFile(fp, data->outSignal);
+	ok = WriteSignal_DataFile(fp, _OutSig_EarObject(data));
 	CloseFile(fp);
 	return(ok);
 	

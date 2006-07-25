@@ -155,15 +155,15 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal,
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data),
 		  data->inSignal[0]->interleaveLevel);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
 			inR = data->inSignal[1]->channel[chan];
 			endInR = inR + data->inSignal[1]->length;
 			inS = data->inSignal[0]->channel[chan] + i;

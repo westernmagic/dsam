@@ -157,18 +157,18 @@ Process_Utility_CreateBinaural(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	transferLevel = (data->inSignal[0]->interleaveLevel == 2)? 1: 2;
 	for (j = 0; j < 2; j++) {
 		outChanOffset = j * (transferLevel - 1);
-		for (chan = 0; chan < data->outSignal->numChannels; chan +=
+		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan +=
 		  transferLevel) {
 			inPtr = data->inSignal[j]->channel[chan / transferLevel];
-			outPtr = data->outSignal->channel[chan + outChanOffset];
-			for (i = 0; i < data->outSignal->length; i++)
+			outPtr = _OutSig_EarObject(data)->channel[chan + outChanOffset];
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ += *inPtr++;
 		}
 	}

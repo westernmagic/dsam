@@ -649,7 +649,7 @@ ReadPars_IHC_Carney(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -799,7 +799,7 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 		  updateProcessFlag) {
 			FreeProcessVariables_IHC_Carney();
 			if ((p->hCChannels = (CarneyHCVarsPtr) calloc(
-			  data->outSignal->numChannels, sizeof (CarneyHCVars))) == NULL) {
+			  _OutSig_EarObject(data)->numChannels, sizeof (CarneyHCVars))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
@@ -809,7 +809,7 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 		  carneyHCPtr->restingPerm;
 		restingLocalConc_CL0 = CARNEY_IHC_RESTING_LOCAL_CONC_FACTOR *
 		  restingImmediateConc_CI0;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			p->hCChannels[i].vI = carneyHCPtr->minImmediateVolume;
 			p->hCChannels[i].vL = carneyHCPtr->minLocalVolume;
 			p->hCChannels[i].cI = restingImmediateConc_CI0;
@@ -882,7 +882,7 @@ RunModel_IHC_Carney(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dt = data->outSignal->dt;
+		p->dt = _OutSig_EarObject(data)->dt;
 		p->cG = CARNEY_IHC_RESTING_GLOBAL_CONC_FACTOR * p->restingReleaseRate /
 		  p->restingPerm;
 		p->pIMaxMinusPrest = p->maxImmediatePerm - p->restingPerm;
@@ -891,12 +891,12 @@ RunModel_IHC_Carney(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		vPtr = &p->hCChannels[chan];
-		for (i = 0; i < data->outSignal->length; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 			releaseProb = *inPtr++ / p->maxHCVoltage;
 			if ((pI = p->pIMaxMinusPrest * releaseProb + p->restingPerm) < 0.0)
 				pI = 0.0;

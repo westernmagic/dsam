@@ -721,7 +721,7 @@ ReadPars_PureTone_Multi(WChar *fileName)
 	FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -858,11 +858,11 @@ GenerateSignal_PureTone_Multi(EarObjectPtr data)
 	for (j = 0; j < mPureTonePtr->numPTones; j++) {
 		amplitude = RMS_AMP(mPureTonePtr->intensities[j]) * SQRT_2;
 		phase = DEGREES_TO_RADS(mPureTonePtr->phases[j]);
-		dataPtr = data->outSignal->channel[0];
-		for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++,
+		dataPtr = _OutSig_EarObject(data)->channel[0];
+		for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++,
 		  t++)
 			*dataPtr++ += (ChanData) (amplitude * sin(PIx2 * mPureTonePtr->
-			  frequencies[j] * (t * data->outSignal->dt) + phase));
+			  frequencies[j] * (t * _OutSig_EarObject(data)->dt) + phase));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

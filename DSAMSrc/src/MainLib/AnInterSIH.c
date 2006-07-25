@@ -369,7 +369,7 @@ ReadPars_Analysis_ISIH(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -498,7 +498,7 @@ void
 ResetProcess_Analysis_ISIH(EarObjectPtr data)
 {
 	ResetOutSignal_EarObject(data);
-	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, data->outSignal);
+	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, _OutSig_EarObject(data));
 
 }
 
@@ -592,7 +592,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
+		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		if (!InitProcessVariables_Analysis_ISIH(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
@@ -605,9 +605,9 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		headSpikeList = p->spikeListSpec->head[chan];
 		currentSpikeSpec = p->spikeListSpec->current[chan];
 		for (p1 = headSpikeList; p1 != currentSpikeSpec; p1 = p1->next)

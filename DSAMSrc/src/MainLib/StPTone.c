@@ -395,7 +395,7 @@ ReadPars_PureTone(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName, filePath);
 		return(FALSE);
     }
@@ -519,10 +519,10 @@ GenerateSignal_PureTone(EarObjectPtr data)
 			return(TRUE);
 	}
 	amplitude = RMS_AMP(pureTonePtr->intensity) * SQRT_2;
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++)
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++)
 		*(dataPtr++) = amplitude * sin(PIx2 * pureTonePtr->frequency *
-		  (t * data->outSignal->dt));
+		  (t * _OutSig_EarObject(data)->dt));
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

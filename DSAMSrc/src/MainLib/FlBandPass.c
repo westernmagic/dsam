@@ -402,7 +402,7 @@ ReadPars_Filter_BandPass(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -505,13 +505,13 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_BandPass();
-		if ((p->coefficients = (BandPassCoeffsPtr *) calloc(data->outSignal->
+		if ((p->coefficients = (BandPassCoeffsPtr *) calloc(_OutSig_EarObject(data)->
 		  numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
-		p->numChannels = data->outSignal->numChannels;
-	 	for (i = 0; (i < data->outSignal->numChannels) && ok; i++)
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
+	 	for (i = 0; (i < _OutSig_EarObject(data)->numChannels) && ok; i++)
 			if ((p->coefficients[i] = InitBandPassCoeffs_Filters(p->cascade,
 			  p->lowerCutOffFreq, p->upperCutOffFreq, data->inSignal[0]->dt)) ==
 			  NULL) {
@@ -525,7 +525,7 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 		}
 		p->updateProcessVariablesFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			statePtr = p->coefficients[i]->state;
 			for (j = 0; j < p->cascade * FILTERS_NUM_CONTBUTT2_STATE_VARS; j++)
 				*statePtr++ = 0.0;
@@ -607,8 +607,8 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 	/* Filter signal */
 	
 	if (fabs(p->preAttenuation) > DBL_EPSILON)
-		GaindB_SignalData(data->outSignal, p->preAttenuation);
-	BandPass_Filters(data->outSignal, p->coefficients);
+		GaindB_SignalData(_OutSig_EarObject(data), p->preAttenuation);
+	BandPass_Filters(_OutSig_EarObject(data), p->coefficients);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

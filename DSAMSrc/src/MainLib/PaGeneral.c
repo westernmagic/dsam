@@ -252,11 +252,11 @@ SetOutSignal_MPI_General(EarObjectPtr data, SignalDataPtr templateSignal)
 		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
-	data->outSignal->rampFlag = templateSignal->rampFlag;
-	SetInterleaveLevel_SignalData(data->outSignal,
+	_OutSig_EarObject(data)->rampFlag = templateSignal->rampFlag;
+	SetInterleaveLevel_SignalData(_OutSig_EarObject(data),
 	  templateSignal->interleaveLevel);
-	SetTimeIndex_SignalData(data->outSignal, templateSignal->timeIndex);
-	SetOutputTimeOffset_SignalData(data->outSignal,
+	SetTimeIndex_SignalData(_OutSig_EarObject(data), templateSignal->timeIndex);
+	SetOutputTimeOffset_SignalData(_OutSig_EarObject(data),
 	  templateSignal->outputTimeOffset);
 	return(TRUE);
 

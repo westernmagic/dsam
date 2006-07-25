@@ -146,9 +146,9 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = 0; i < data->numInSignals; i++) {
 			inPtr = data->inSignal[i]->channel[chan];
 			for (j = 0; j < data->inSignal[i]->length; j++)

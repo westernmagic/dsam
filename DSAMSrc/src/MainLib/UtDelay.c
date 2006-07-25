@@ -400,7 +400,7 @@ ReadPars_Utility_Delay(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -582,47 +582,47 @@ Process_Utility_Delay(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Delay-ITD ms"));
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Delay-ITD ms"));
 		p->delayPerChannel = (p->mode != DELAY_LINEAR_MODE)? 0.0: (p->
-		  finalDelay - p->initialDelay) / (data->outSignal->numChannels / data->
+		  finalDelay - p->initialDelay) / (_OutSig_EarObject(data)->numChannels / data->
 		  outSignal->interleaveLevel - 1);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		switch (p->mode) {
 		case DELAY_SINGLE_MODE:
 			delay = p->initialDelay;
 			break;
 		case DELAY_LINEAR_MODE:
-			delay = p->delayPerChannel * (chan / data->outSignal->
+			delay = p->delayPerChannel * (chan / _OutSig_EarObject(data)->
 			  interleaveLevel) + p->initialDelay;
 			break;
 		} /* switch */
 		delayChannel = FALSE;
-		if (data->outSignal->interleaveLevel == 1)
+		if (_OutSig_EarObject(data)->interleaveLevel == 1)
 			delayChannel = TRUE;
 		else {
 			if (p->initialDelay > 0.0) {
-				if ((chan % data->outSignal->interleaveLevel) == 1)
+				if ((chan % _OutSig_EarObject(data)->interleaveLevel) == 1)
 					delayChannel = TRUE;
 			} else {
-				if ((chan % data->outSignal->interleaveLevel) == 0)
+				if ((chan % _OutSig_EarObject(data)->interleaveLevel) == 0)
 					delayChannel = TRUE;
 			}	
 		}
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		if (delayChannel) {
 			delayIndex = (ChanLen) fabs(delay / data->inSignal[0]->dt + 0.5);
 			for (i = 0; i < delayIndex; i++)
 				*outPtr++ = 0.0;
-			SetInfoChannelLabel_SignalData(data->outSignal, chan, MSEC(delay));
+			SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan, MSEC(delay));
 		} else
 			delayIndex = 0;
-		for (i = delayIndex; i < data->outSignal->length; i++)
+		for (i = delayIndex; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ = *inPtr++;
 	}
 	SetProcessContinuity_EarObject(data);

@@ -932,7 +932,7 @@ ReadCFListParFile_MPI_Master1(void)
 
 	if (master1Ptr->theCFs != NULL)
 		return(TRUE);
-	if ((fp = fopen(ConvUTF8_Utility_String(master1Ptr->cFListParFile), "r")) ==
+	if ((fp = DSAM_fopen(master1Ptr->cFListParFile, "r")) ==
 	  NULL) {
 		NotifyError(wxT("%s: Cannot parameter file '%s'.\n"), funcName,
 		  master1Ptr->cFListParFile);
@@ -1261,10 +1261,10 @@ SendControlToWorkers_MPI_Master1(EarObjectPtr data, int numWorkers,
 			if (!SetOutSignal_MPI_General(data, templateSignal))
 				return(FALSE);
 			if (master1Ptr->channelMode == WORKER_CHANNEL_SET_TO_BM_MODE) {
-				SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-				SetInfoChannelLabels_SignalData(data->outSignal,
+				SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+				SetInfoChannelLabels_SignalData(_OutSig_EarObject(data),
 				  master1Ptr->theCFs->frequency);
-				SetInfoCFArray_SignalData(data->outSignal,
+				SetInfoCFArray_SignalData(_OutSig_EarObject(data),
 				  master1Ptr->theCFs->frequency);
 			}
 			break;
@@ -1371,9 +1371,9 @@ DriveWorkers_MPI_Master1(EarObjectPtr data)
 		return(FALSE);
 	for (i = 0, ok = TRUE; i < master1Ptr->numWorkers; i++) {
 		work = &master1Ptr->workDetails[i];
-		work->chanCount = work->offset * data->outSignal->numChannels / 
+		work->chanCount = work->offset * _OutSig_EarObject(data)->numChannels / 
 		  master1Ptr->numChannels;
-		master1Ptr->dataPtr[i] = data->outSignal->channel[work->chanCount];
+		master1Ptr->dataPtr[i] = _OutSig_EarObject(data)->channel[work->chanCount];
 	}
 	for (i = 0, ok = TRUE; i < master1Ptr->numWorkers; i++) {
 		control = REQUEST_CHANNEL_DATA;
@@ -1389,7 +1389,7 @@ DriveWorkers_MPI_Master1(EarObjectPtr data)
 		switch (status.MPI_TAG) {
 		case WORKER_DATA_TAG:
 			MPI_Get_count(&status, MPI_DOUBLE, &packageLength);
-			if (data->outSignal->length < work->sampleCount + packageLength) {
+			if (_OutSig_EarObject(data)->length < work->sampleCount + packageLength) {
 				NotifyError(wxT("%s: Worker channel length is longer than the "
 				  "initialised length for this process."), funcName);
 				return(FALSE);
@@ -1404,12 +1404,12 @@ DriveWorkers_MPI_Master1(EarObjectPtr data)
 		case WORKER_END_CHANNEL_TAG:
 			MPI_Recv(&response, 1, MPI_INT, status.MPI_SOURCE,
 			  WORKER_END_CHANNEL_TAG, MPI_COMM_WORLD, &status);
-			master1Ptr->dataPtr[workIndex] = data->outSignal->channel[
+			master1Ptr->dataPtr[workIndex] = _OutSig_EarObject(data)->channel[
 			  ++work->chanCount];
-			if (data->outSignal->length != work->sampleCount)
+			if (_OutSig_EarObject(data)->length != work->sampleCount)
 				NotifyWarning(wxT("%s: Worker channel length is shorter than "
 				  "the initialised\nlength for this process (%u)."), funcName,
-				  data->outSignal->length);
+				  _OutSig_EarObject(data)->length);
 			work->sampleCount = 0;
 			break;
 		case WORKER_END_SIGNAL_TAG:

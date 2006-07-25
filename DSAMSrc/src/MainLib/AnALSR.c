@@ -523,13 +523,13 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Frequency (Hz) "));
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz) "));
 		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("ALSR function (+%g "
 		  "/ -%g octaves)"), p->lowerAveLimit, p->upperAveLimit);
-		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
-		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
-		SetInfoCFArray_SignalData(data->outSignal, NULL);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), NULL);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), NULL);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -546,13 +546,13 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	}
 	dF = p->modulusFT->outSignal->dt;
 	cFs = data->inSignal[0]->info.cFArray;
-	SetSamplingInterval_SignalData(data->outSignal, dF);
+	SetSamplingInterval_SignalData(_OutSig_EarObject(data), dF);
 	minIndex = (ChanLen) floor(cFs[minChan] / dF + 0.5);
 	maxIndex = (ChanLen) floor(cFs[maxChan] / dF + 0.5);
-	outPtr = data->outSignal->channel[0];
+	outPtr = _OutSig_EarObject(data)->channel[0];
 	for (i = 0; i < minIndex - 1; i++)
 		*outPtr++ = 0.0;
-	outPtr = data->outSignal->channel[0] + minIndex;
+	outPtr = _OutSig_EarObject(data)->channel[0] + minIndex;
 	for (i = minIndex; i <= maxIndex; i++, outPtr++) {
 		GetWindowLimits_SignalData(data->inSignal[0], &minWinChan, &maxWinChan,
 		  i * dF, p->lowerAveLimit, p->upperAveLimit,
@@ -560,9 +560,9 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		for (chan = minWinChan, *outPtr = 0.0; chan <= maxWinChan; chan++)
 			*outPtr += p->modulusFT->outSignal->channel[chan][i];
 	}
-	for (i = maxIndex + 1; i < data->outSignal->length; i++)
+	for (i = maxIndex + 1; i < _OutSig_EarObject(data)->length; i++)
 		*outPtr++ = 0.0;
-	outPtr = data->outSignal->channel[0] + minIndex;
+	outPtr = _OutSig_EarObject(data)->channel[0] + minIndex;
 	numChannels = maxIndex - minIndex + 1;
 	for (i = minIndex; i <= maxIndex; i++)
 		*outPtr++ /= numChannels;

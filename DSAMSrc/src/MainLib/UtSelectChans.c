@@ -581,7 +581,7 @@ ReadPars_Utility_SelectChannels(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -828,21 +828,21 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 		return(FALSE);
 	}
-	SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+	SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 	  interleaveLevel);
-	SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+	SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
 		for (i = 0; i < data->inSignal[0]->numChannels; i++) {
-			outPtr = data->outSignal->channel[i];
+			outPtr = _OutSig_EarObject(data)->channel[i];
 			if (p->selectionArray[i] > 0.0) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 				inPtr = data->inSignal[0]->channel[i];
 				multiplier = p->selectionArray[inChanIndex];
-				for (j = 0; j < data->outSignal->length; j++)
+				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 			} else
-				for (j = 0; j < data->outSignal->length; j++)
+				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 					*outPtr++ = 0.0;
 		}
 		break;
@@ -850,14 +850,14 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++) {
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 			if (p->selectionArray[inChanIndex] > 0.0) {
-				SetInfoChannelLabel_SignalData(data->outSignal, chan, data->
+				SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan, data->
 				  inSignal[0]->info.chanLabel[i]);
-				SetInfoCF_SignalData(data->outSignal, chan, data->inSignal[0]->
+				SetInfoCF_SignalData(_OutSig_EarObject(data), chan, data->inSignal[0]->
 				  info.cFArray[i]);
 				inPtr = data->inSignal[0]->channel[i];
-				outPtr = data->outSignal->channel[chan];
+				outPtr = _OutSig_EarObject(data)->channel[chan];
 				multiplier = p->selectionArray[inChanIndex];
-				for (j = 0; j < data->outSignal->length; j++)
+				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 				chan++;
 			}
@@ -869,14 +869,14 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 			inChanIndex = i / data->inSignal[0]->interleaveLevel;
 			if (p->selectionArray[inChanIndex] > 0.0)
 				for (k = 0; k < p->selectionArray[inChanIndex]; k++)
-					for (l = 0; l < data->outSignal->interleaveLevel; l++) {
-						SetInfoChannelLabel_SignalData(data->outSignal, chan,
+					for (l = 0; l < _OutSig_EarObject(data)->interleaveLevel; l++) {
+						SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan,
 						  data->inSignal[0]->info.chanLabel[i + l]);
-						SetInfoCF_SignalData(data->outSignal, chan, data->
+						SetInfoCF_SignalData(_OutSig_EarObject(data), chan, data->
 						  inSignal[0]->info.cFArray[i + l]);
 						inPtr = data->inSignal[0]->channel[i + l];
-						outPtr = data->outSignal->channel[chan];
-						for (j = 0; j < data->outSignal->length; j++)
+						outPtr = _OutSig_EarObject(data)->channel[chan];
+						for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 							*outPtr++ = *inPtr++;
 						chan++;
 					}

@@ -363,8 +363,8 @@ RunModel_ModuleMgr_Null(EarObjectPtr data)
 		if (!data->module->onFlag)
 			FreeOutSignal_EarObject(data);
 		data->localOutSignalFlag = FALSE;
-		data->updateCustomersFlag = (data->inSignal[0] != data->outSignal);
-		data->outSignal = data->inSignal[0];
+		data->updateCustomersFlag = (data->inSignal[0] != _OutSig_EarObject(data));
+		_OutSig_EarObject(data) = data->inSignal[0];
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -416,7 +416,7 @@ CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction)
 
 /*
  * This routine sets the onFlag for an EarObject structure.
- * On re-enabling a process the data->outSignal pointer must be set to NULL
+ * On re-enabling a process the _OutSig_EarObject(data) pointer must be set to NULL
  * because it will have been set manually by the 'RunModel_ModuleMgr_NulL'
  * routine. 
  */
@@ -437,7 +437,7 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 	
 	if (on) {
 		data->module->onFlag = TRUE;
-		data->outSignal = NULL;
+		_OutSig_EarObject(data) = NULL;
 	} else {
 		data->module->onFlag = FALSE;
 		FreeOutSignal_EarObject(data);
@@ -656,7 +656,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 	if ((DSAM_strcmp(fileName, NO_FILE) == 0) || !parList)
 		return(TRUE);
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open parameter file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);

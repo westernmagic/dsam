@@ -350,7 +350,7 @@ ReadPars_Utility_BinSignal(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -533,16 +533,16 @@ Process_Utility_BinSignal(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		nextBinCutOff = p->wBinWidth - p->dt;
 		for (i = 0, binSum = 0.0; i < data->inSignal[0]->length; i++) {
 			binSum += *(inPtr++);
 			if (DBL_GREATER((i + 1) * p->dt, nextBinCutOff)) {
-				if ((ChanLen) (outPtr - data->outSignal->channel[chan]) <
-				  data->outSignal->length)
+				if ((ChanLen) (outPtr - _OutSig_EarObject(data)->channel[chan]) <
+				  _OutSig_EarObject(data)->length)
 					*outPtr++ += (p->mode == UTILITY_BINSIGNAL_AVERAGE_MODE)?
 					  binSum / p->numBins: binSum;
 				binSum = 0.0;

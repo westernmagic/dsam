@@ -386,7 +386,7 @@ ReadPars_Analysis_CCF(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -544,7 +544,7 @@ InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetNumWindowFrames_SignalData(data->outSignal, 0);
+		SetNumWindowFrames_SignalData(_OutSig_EarObject(data), 0);
 		for (i = 0, expDtPtr = p->exponentDt; i < maxPeriodIndex; i++,
 		  expDtPtr++)
 			*expDtPtr = exp( -(i * dt) / p->timeConstant);
@@ -616,14 +616,14 @@ Calc_Analysis_CCF(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, 1);
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		for (chan = 0; chan < data->outSignal->numChannels; chan++)
-			data->outSignal->info.cFArray[chan] =
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 1);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
+			_OutSig_EarObject(data)->info.cFArray[chan] =
 			  data->inSignal[0]->info.cFArray[chan];
-		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Delay period (s)"));
-		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-		SetOutputTimeOffset_SignalData(data->outSignal, -p->period);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay period (s)"));
+		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), -p->period);
 		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5) - 1;
 		if (!InitProcessVariables_Analysis_CCF(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
@@ -633,9 +633,9 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		inChan = chan * 2;
 		for (deltaT = -((long) p->periodIndex); deltaT <= (long) p->periodIndex;
 		  deltaT++, outPtr++) {
@@ -648,8 +648,8 @@ Calc_Analysis_CCF(EarObjectPtr data)
 			*outPtr /= p->periodIndex;
 		}
 	}
-	if (!data->outSignal->offset)	/* Do this only for one (first) thread */
-		data->outSignal->numWindowFrames++;
+	if (!_OutSig_EarObject(data)->offset)	/* Do this only for one (first) thread */
+		_OutSig_EarObject(data)->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

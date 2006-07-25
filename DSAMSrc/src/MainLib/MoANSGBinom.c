@@ -463,7 +463,7 @@ ReadPars_ANSpikeGen_Binomial(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -620,7 +620,7 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		data->subProcessList[ANSPIKEGEN_REFRACTADJDATA] = p->refractAdjData;
 		SetRealPar_ModuleMgr(p->refractAdjData, wxT("period"), p->
 		  refractoryPeriod);
-		p->numChannels = data->outSignal->numChannels;
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if ((p->remainingPulseIndex = (ChanLen *) calloc(p->numChannels, sizeof(
 		  ChanLen))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for remainingPulseIndex array."),
@@ -728,20 +728,20 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	}
 	refractAdjData = data->subProcessList[ANSPIKEGEN_REFRACTADJDATA];
 	RunProcessStandard_ModuleMgr(refractAdjData);
-	remainingPulseIndexPtr = p->remainingPulseIndex + data->outSignal->offset;
-	lastOutputPtr = p->lastOutput + data->outSignal->offset;
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	remainingPulseIndexPtr = p->remainingPulseIndex + _OutSig_EarObject(data)->offset;
+	lastOutputPtr = p->lastOutput + _OutSig_EarObject(data)->offset;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = refractAdjData->outSignal->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++)
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ = 0.0;
 		if (p->numFibres < 1)
 			continue;
-		outPtr = data->outSignal->channel[chan];
-		pastEndOfData = data->outSignal->channel[chan] +
-		  data->outSignal->length;
-		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		pastEndOfData = _OutSig_EarObject(data)->channel[chan] +
+		  _OutSig_EarObject(data)->length;
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
 			output = p->pulseMagnitude * GeomDist_Random(*inPtr++,
 			  p->numFibres, data->randPars);
 			if (output > 0.0) {

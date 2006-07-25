@@ -629,7 +629,7 @@ ReadPars_Neuron_McGregor(WChar *fileName)
 	FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -747,14 +747,14 @@ InitProcessVariables_Neuron_McGregor(EarObjectPtr data)
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_McGregor();
-			if ((p->state = (McGregorStatePtr) calloc(data->outSignal->
+			if ((p->state = (McGregorStatePtr) calloc(_OutSig_EarObject(data)->
 			  numChannels, sizeof(McGregorState))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory."), funcName);
 			 	return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			p->state[i].potential_E = 0.0;
 			p->state[i].kConductance_Gk = 0.0;
 			p->state[i].threshold_Th = p->restingThreshold_Th0;
@@ -833,7 +833,7 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 
 		c->dtOverTm = dt / c->membraneTConst_Tm;
 		c->condDecay = exp( -dt / c->kDecayTConst_TGk );
@@ -842,12 +842,12 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
 		s = &c->state[i];
 		spikeState_s = s->lastSpikeState;
 		inPtr = data->inSignal[0]->channel[i];
-		outPtr = data->outSignal->channel[i];
-		for (j = 0; j < data->outSignal->length; j++, outPtr++) {
+		outPtr = _OutSig_EarObject(data)->channel[i];
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++, outPtr++) {
 			totalConductance = 1.0 + s->kConductance_Gk;
 			potDecay = exp(-totalConductance * c->dtOverTm);
 			s->potential_E = s->potential_E * potDecay + (*inPtr++ +

@@ -316,7 +316,7 @@ ReadPars_Analysis_FourierT(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -540,8 +540,8 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Fourier Transform: modulus"));
 		p->numOutChans = (p->outputMode ==
 		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
-		if (data->outSignal)
-			SetSamplingInterval_SignalData(data->outSignal, data->inSignal[
+		if (_OutSig_EarObject(data))
+			SetSamplingInterval_SignalData(_OutSig_EarObject(data), data->inSignal[
 			  0]->dt);
 		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
 		  numChannels * p->numOutChans), data->inSignal[0]->length, data->
@@ -556,26 +556,26 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			return(FALSE);
 		}
 		dF = 1.0 / (data->inSignal[0]->dt * p->fTLength);
-		SetSamplingInterval_SignalData(data->outSignal, dF);
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Arbitrary "
+		SetSamplingInterval_SignalData(_OutSig_EarObject(data), dF);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Arbitrary "
 		  "Amplitude"));
-		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-		SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
-		SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
+		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), 0.0);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) (
 		  data->inSignal[0]->interleaveLevel * p->numOutChans));
 		p->dBSPLFactor = SQRT_2 / data->inSignal[0]->length;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		outChan = chan * p->numOutChans;
 		fT = p->fT[data->threadIndex];
 		fT->re = fT->im = 0.0;
 		inPtr = data->inSignal[0]->channel[outChan] + 1;
-		for (i = 1, fT++; i < data->outSignal->length; i++, fT++) {
+		for (i = 1, fT++; i < _OutSig_EarObject(data)->length; i++, fT++) {
 			fT->im = 0.0;
 			fT->re = *inPtr++;
 		}
@@ -584,27 +584,27 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			fT->im = 0.0;
 		}
 		fT = p->fT[data->threadIndex];
-		outPtr = data->outSignal->channel[outChan];
+		outPtr = _OutSig_EarObject(data)->channel[outChan];
 		CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
-			for (i = 0; i < data->outSignal->length; i++, fT++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
 				*outPtr++ = (ChanData) MODULUS_CMPLX(*fT);
 			break;
 		case ANALYSIS_FOURIERT_PHASE_OUTPUTMODE:
-			for (i = 0; i < data->outSignal->length; i++, fT++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
 				*outPtr++ = (ChanData) atan2(fT->im, fT->re);
 			break;
 		case ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE:
-			for (i = 0; i < data->outSignal->length; i++, fT++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->re;
 			fT = p->fT[data->threadIndex];
-			outPtr = data->outSignal->channel[outChan + 1];
-			for (i = 0; i < data->outSignal->length; i++, fT++)
+			outPtr = _OutSig_EarObject(data)->channel[outChan + 1];
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->im;
 			break;
 		case ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE:
-			for (i = 0; i < data->outSignal->length; i++, fT++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
 				*outPtr++ = (ChanData) DB_SPL(MODULUS_CMPLX(*fT) *
 				  p->dBSPLFactor);
 			break;

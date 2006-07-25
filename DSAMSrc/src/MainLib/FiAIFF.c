@@ -180,7 +180,7 @@ ReadSoundChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 	  dataFilePtr->wordSize), SEEK_SET);
 	for (i = 0; i < length; i++)
 		for (j = 0; j < p->numChannels; j++)
-			data->outSignal->channel[j][i] = ReadSample_DataFile(fp);
+			_OutSig_EarObject(data)->channel[j][i] = ReadSample_DataFile(fp);
 	return(TRUE);
 
 }
@@ -199,20 +199,20 @@ ReadDSAMChunkData_AIFF(FILE *fp, EarObjectPtr data, AIFFParamsPtr p)
 	int		i, j, chan;
 	double	labelValue;
 
-	SetInterleaveLevel_SignalData(data->outSignal, p->dSAMChunk.
+	SetInterleaveLevel_SignalData(_OutSig_EarObject(data), p->dSAMChunk.
 	  interleaveLevel);
-	SetNumWindowFrames_SignalData(data->outSignal, p->dSAMChunk.
+	SetNumWindowFrames_SignalData(_OutSig_EarObject(data), p->dSAMChunk.
 	  numWindowFrames);
-	SetOutputTimeOffset_SignalData(data->outSignal, p->dSAMChunk.
+	SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->dSAMChunk.
 	  outputTimeOffset);
-	SetStaticTimeFlag_SignalData(data->outSignal, p->dSAMChunk.staticTimeFlag);
+	SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), p->dSAMChunk.staticTimeFlag);
 	SetPosition_UPortableIO(fp, p->dSAMChunk.posOfChannelLabels, SEEK_SET);
 	for (i = 0, chan = 0; i < p->numChannels / p->dSAMChunk.interleaveLevel;
 	  i++) {
 		labelValue = dataFilePtr->ReadIEEEExtended(fp);
 		for (j = 0; j < p->dSAMChunk.interleaveLevel; j++) {
-			data->outSignal->info.cFArray[chan] = labelValue;
-			data->outSignal->info.chanLabel[chan++] = labelValue;
+			_OutSig_EarObject(data)->info.cFArray[chan] = labelValue;
+			_OutSig_EarObject(data)->info.chanLabel[chan++] = labelValue;
 		}
 	}
 	return(TRUE);
@@ -325,8 +325,8 @@ ReadFile_AIFF(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 	} else {
-		if (data->outSignal->numChannels == 2)
-			SetInterleaveLevel_SignalData(data->outSignal, 2);
+		if (_OutSig_EarObject(data)->numChannels == 2)
+			SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 	}
 	CloseFile(fp);
 	return(TRUE);
@@ -413,7 +413,7 @@ WriteHeader_AIFF(FILE *fp, EarObjectPtr data, int32 previousSamples)
 {
 	int32		chunkSize;
 	
-	chunkSize = GetFormChunkSize_AIFF(data->outSignal, previousSamples);
+	chunkSize = GetFormChunkSize_AIFF(_OutSig_EarObject(data), previousSamples);
 
 	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
 	dataFilePtr->Write32Bits(fp, AIFF_FORM);	/* Magic Number */
@@ -423,12 +423,12 @@ WriteHeader_AIFF(FILE *fp, EarObjectPtr data, int32 previousSamples)
 						/* AIFF Common Chunk */
 	dataFilePtr->Write32Bits(fp, AIFF_COMM);
 	dataFilePtr->Write32Bits(fp, 18);		/* Chunk Size */
-	dataFilePtr->Write16Bits(fp, data->outSignal->numChannels);
-	dataFilePtr->Write32Bits(fp, (int32) data->outSignal->length +
+	dataFilePtr->Write16Bits(fp, _OutSig_EarObject(data)->numChannels);
+	dataFilePtr->Write32Bits(fp, (int32) _OutSig_EarObject(data)->length +
 	  previousSamples);
 	 /* next line: write Sample Size */
 	dataFilePtr->Write16Bits(fp, (int16) (8 * dataFilePtr->wordSize));
-	dataFilePtr->WriteIEEEExtended(fp, 1.0 / data->outSignal->dt);
+	dataFilePtr->WriteIEEEExtended(fp, 1.0 / _OutSig_EarObject(data)->dt);
 
 }
 
@@ -555,7 +555,7 @@ WriteFile_AIFF(WChar *fileName, EarObjectPtr data)
 		}
 		previousSamples = 0L;
 		dataFilePtr->normalise = CalculateNormalisation_DataFile(
-		  data->outSignal);
+		  _OutSig_EarObject(data));
 	} else {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_UPDATING)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
@@ -568,11 +568,11 @@ WriteFile_AIFF(WChar *fileName, EarObjectPtr data)
 			CloseFile(fp);
 			return(FALSE);
 		}
-		if ((pars.numChannels != data->outSignal->numChannels) ||
-		  (fabs(pars.sampleRate - (1.0 / data->outSignal->dt)) >
+		if ((pars.numChannels != _OutSig_EarObject(data)->numChannels) ||
+		  (fabs(pars.sampleRate - (1.0 / _OutSig_EarObject(data)->dt)) >
 		  AIFF_SMALL_VALUE) || (BITS_TO_BYTES(pars.sampleSize) !=
 		  dataFilePtr->wordSize) || (pars.dSAMChunk.interleaveLevel !=
-		  data->outSignal->interleaveLevel)) {
+		  _OutSig_EarObject(data)->interleaveLevel)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
 			return(FALSE);
@@ -580,8 +580,8 @@ WriteFile_AIFF(WChar *fileName, EarObjectPtr data)
 		previousSamples = pars.numSampleFrames;
 	}
 	WriteHeader_AIFF(fp, data, previousSamples);
-	WriteDSAMChunk_AIFF(fp, data->outSignal, (previousSamples != 0));
-	if (!WriteSSNDChunk_AIFF(fp, data->outSignal, previousSamples)) {
+	WriteDSAMChunk_AIFF(fp, _OutSig_EarObject(data), (previousSamples != 0));
+	if (!WriteSSNDChunk_AIFF(fp, _OutSig_EarObject(data), previousSamples)) {
 		NotifyError(wxT("%s: Couldn't write SSND chunk."), funcName);
 		return(FALSE);
 	}

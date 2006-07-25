@@ -132,11 +132,11 @@ Process_Utility_HalfWaveRectify(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++, inPtr++)
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr++)
 			*(outPtr++) = (*inPtr > 0.0)? *inPtr: 0.0;
 	}
 	SetProcessContinuity_EarObject(data);

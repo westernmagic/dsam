@@ -439,7 +439,7 @@ ReadPars_Utility_IteratedRipple(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -608,12 +608,12 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 	switch (iterRipplePtr->mode) {
 	case ITERRIPPLE_IRSO_MODE:
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
-			Delay_SignalData(data->outSignal, iterRipplePtr->delay);
-			for (chan = data->outSignal->offset; chan < data->outSignal->
+			Delay_SignalData(_OutSig_EarObject(data), iterRipplePtr->delay);
+			for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 			  numChannels; chan++) {
 			  	inPtr = data->inSignal[0]->channel[chan];
-				outPtr = data->outSignal->channel[chan];
-				for (i = 0; i < data->outSignal->length ; i++) {
+				outPtr = _OutSig_EarObject(data)->channel[chan];
+				for (i = 0; i < _OutSig_EarObject(data)->length ; i++) {
 					*outPtr *= iterRipplePtr->signalMultiplier;
 					*outPtr++ += *inPtr++;
 				}
@@ -621,13 +621,13 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 		}	
 		break;
 	case ITERRIPPLE_IRSS_MODE:	
-		samplesDelay = (ChanLen) ( iterRipplePtr->delay / data->outSignal->dt);
+		samplesDelay = (ChanLen) ( iterRipplePtr->delay / _OutSig_EarObject(data)->dt);
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
-			for (chan = data->outSignal->offset; chan < data->outSignal->
+			for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 			  numChannels; chan++) {
-				outPtr = data->outSignal->channel[chan] + data->outSignal->
+				outPtr = _OutSig_EarObject(data)->channel[chan] + _OutSig_EarObject(data)->
 				  length - samplesDelay - 1;
-				for (i = 0; i < data->outSignal->length - samplesDelay; i++,
+				for (i = 0; i < _OutSig_EarObject(data)->length - samplesDelay; i++,
 				  outPtr--)
 					*(outPtr + samplesDelay) += *outPtr *
 					  iterRipplePtr->signalMultiplier;

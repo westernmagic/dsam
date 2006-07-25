@@ -469,7 +469,7 @@ ReadPars_PureTone_AM(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -598,10 +598,10 @@ GenerateSignal_PureTone_AM(EarObjectPtr data)
 	}
 	amplitude = RMS_AMP(aMTonePtr->intensity) * SQRT_2;
 	modulationIndex = aMTonePtr->modulationDepth / 100.0;
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++,
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++,
 	  t++) {
-		time = t * data->outSignal->dt;
+		time = t * _OutSig_EarObject(data)->dt;
 		*(dataPtr++) = amplitude * (1.0 + modulationIndex * sin(PIx2 *
 		  aMTonePtr->modulationFrequency * time)) *
 		  sin(PIx2 * aMTonePtr->frequency * time);

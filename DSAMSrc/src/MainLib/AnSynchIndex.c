@@ -137,7 +137,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		sineSum = cosineSum = rSum = 0.0;
 		r = data->inSignal[0]->channel[chan];
@@ -147,7 +147,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 			cosineSum += *r * cos(theta);
 			rSum += fabs(*r++);
 		}
-		data->outSignal->channel[chan][0] = (rSum == 0.0)? 0.0: sqrt(sineSum *
+		_OutSig_EarObject(data)->channel[chan][0] = (rSum == 0.0)? 0.0: sqrt(sineSum *
 		  sineSum + cosineSum * cosineSum) / rSum;
 	}
 	SetProcessContinuity_EarObject(data);

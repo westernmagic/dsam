@@ -556,7 +556,7 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_IHCRP_Zhang();
-		if ((p->hCRP = (THairCell *) calloc(data->outSignal->numChannels,
+		if ((p->hCRP = (THairCell *) calloc(_OutSig_EarObject(data)->numChannels,
 		  sizeof(THairCell))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for coefficients array."),
 			  funcName);
@@ -565,7 +565,7 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			hCRP = &p->hCRP[i];
 			InitLowPass_Utility_Zhang(&(hCRP->hclp), data->inSignal[0]->dt,
 			  p->cut, 1.0, p->k);
@@ -645,13 +645,13 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		hCRP = &p->hCRP[chan];
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		hCRP->hcnl.Run2(&hCRP->hcnl, inPtr, outPtr, data->outSignal->length);
-		hCRP->hclp.Run2(&hCRP->hclp, outPtr, outPtr, data->outSignal->length);
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		hCRP->hcnl.Run2(&hCRP->hcnl, inPtr, outPtr, _OutSig_EarObject(data)->length);
+		hCRP->hclp.Run2(&hCRP->hclp, outPtr, outPtr, _OutSig_EarObject(data)->length);
 	}
 
 	SetProcessContinuity_EarObject(data);

@@ -468,10 +468,10 @@ Process_Utility_PadSignal(EarObjectPtr data)
 			return(TRUE);
 	}
 
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = 0; i < p->beginDurationIndex; i++)
 			*outPtr++ = p->beginValue;
 		for (i = 0; i < data->inSignal[0]->length; i++)

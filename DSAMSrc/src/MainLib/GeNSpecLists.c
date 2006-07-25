@@ -208,7 +208,7 @@ OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 		fileName = list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
 		filePath = (IS_ABSOLUTE_PATH(fileName))? fileName:
 		  GetParsFileFPath_Common(fileName);
-		if ((*fp = fopen(ConvUTF8_Utility_String(filePath), "w")) == NULL) {
+		if ((*fp = DSAM_fopen(filePath, "w")) == NULL) {
 			NotifyError(wxT("%s: Could not open file '%s' for diagnostics."),
 			  funcName, filePath);
 			return(FALSE);

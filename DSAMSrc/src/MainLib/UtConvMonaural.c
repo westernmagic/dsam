@@ -132,23 +132,23 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, 1);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 1);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (outChan = data->outSignal->offset; outChan < data->outSignal->
+	for (outChan = _OutSig_EarObject(data)->offset; outChan < _OutSig_EarObject(data)->
 	  numChannels; outChan++) {
 		inChan = outChan * data->inSignal[0]->interleaveLevel;
-		outPtr = data->outSignal->channel[outChan];
+		outPtr = _OutSig_EarObject(data)->channel[outChan];
 		for (i = 0; i < data->inSignal[0]->interleaveLevel; i++) {
 			inPtr = data->inSignal[0]->channel[inChan];
-			outPtr = data->outSignal->channel[outChan];
+			outPtr = _OutSig_EarObject(data)->channel[outChan];
 			for (j = 0; j < data->inSignal[0]->length; j++)
 				*(outPtr++) = *(inPtr++);
 		}
 		for (i = 1; i < data->inSignal[0]->interleaveLevel; i++) {
 			inPtr = data->inSignal[0]->channel[inChan + i];
-			outPtr = data->outSignal->channel[outChan];
+			outPtr = _OutSig_EarObject(data)->channel[outChan];
 			for (j = 0; j < data->inSignal[0]->length; j++)
 				*(outPtr++) += *(inPtr++);
 		}

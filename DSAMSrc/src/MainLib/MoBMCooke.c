@@ -464,7 +464,7 @@ ReadPars_BasilarM_Cooke(WChar *fileName)
     CFListPtr	theCFs;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -566,7 +566,7 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag || (data->timeIndex == PROCESS_START_TIME)) {
-		twoPiDt = PIx2 * data->outSignal->dt;
+		twoPiDt = PIx2 * _OutSig_EarObject(data)->dt;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->
 		  theCFs->updateFlag) {
 			FreeProcessVariables_BasilarM_Cooke();
@@ -575,7 +575,7 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 				NotifyError(wxT("%s: Out of memory for coeffients."), funcName);
 				return(FALSE);
 			}
-			p->intSampleRate = (unsigned long) ceil(1.0 / data->outSignal->dt);
+			p->intSampleRate = (unsigned long) ceil(1.0 / _OutSig_EarObject(data)->dt);
 			if ((p->sine = (double *) calloc(p->intSampleRate, sizeof(
 			  double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for sine table."), funcName);
@@ -597,15 +597,15 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 				bandwidth = p->theCFs->bandwidth[i] *
 				  p->broadeningCoeff;
 				c[i].z = exp(-twoPiDt * bandwidth);
-				c[i].gain = SQR(SQR(2 * PI * bandwidth * data->outSignal->dt)) /
+				c[i].gain = SQR(SQR(2 * PI * bandwidth * _OutSig_EarObject(data)->dt)) /
 				  3.0;
 			}
-			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-			SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency "
+			SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
 			  "(Hz)"));
-			SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->
+			SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->
 			  frequency);
-			SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+			SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
 			p->updateProcessVariablesFlag = FALSE;
 			p->theCFs->updateFlag = FALSE;
 		}
@@ -700,12 +700,12 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		cFIndex = chan / data->outSignal->interleaveLevel;
+		cFIndex = chan / _OutSig_EarObject(data)->interleaveLevel;
 		c = p->coefficients + cFIndex;
-		outPtr = inPtr = data->outSignal->channel[chan];
-		for (i = 0, cosPtr = 0.0; i < data->outSignal->length; i++, inPtr++,
+		outPtr = inPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0, cosPtr = 0.0; i < _OutSig_EarObject(data)->length; i++, inPtr++,
 		  outPtr++) {
 			tablePtr = (unsigned long) cosPtr;
 			zz = c->z;

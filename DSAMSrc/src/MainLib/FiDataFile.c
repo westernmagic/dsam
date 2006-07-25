@@ -592,7 +592,7 @@ FileLength_DataFile(FILE *fp)
 ChanLen
 SetIOSectionLength_DataFile(EarObjectPtr data)
 {
-	if (!GetDSAMPtr_Common()->segmentedMode || (data->outSignal == NULL))
+	if (!GetDSAMPtr_Common()->segmentedMode || (_OutSig_EarObject(data) == NULL))
 		return((ChanLen) ((dataFilePtr->numSamples > dataFilePtr->maxSamples)?
 		 dataFilePtr->maxSamples: dataFilePtr->numSamples));
 
@@ -634,7 +634,7 @@ OpenFile_DataFile(WChar *fileName, char *mode)
 	default:
 		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);
 		parFilePath = GetParsFileFPath_Common(fileName);
-		if ((fp = fopen(ConvUTF8_Utility_String(parFilePath), (char *) 
+		if ((fp = DSAM_fopen(parFilePath, (char *) 
 		  mode)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open '%s' ('%s')."), funcName,
 			  fileName, mode);
@@ -1045,7 +1045,7 @@ ReadPars_DataFile(WChar *parFileName)
     if (DSAM_strcmp(parFileName, NO_FILE) == 0)
     	return(TRUE);
 	parFilePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(parFilePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(parFilePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  parFilePath);
 		return(FALSE);
@@ -1333,12 +1333,12 @@ ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 		NotifyError(wxT("%s: Could not read file '%s'."), funcName, fileName);
 	if (ok) {
 		if (fabs(dataFilePtr->gain) > DBL_EPSILON)
-			GaindB_SignalData(data->outSignal, dataFilePtr->gain);
-		if (!data->outSignal->staticTimeFlag)
-			SetOutputTimeOffset_SignalData(data->outSignal,
-			  dataFilePtr->timeOffsetIndex * data->outSignal->dt +
+			GaindB_SignalData(_OutSig_EarObject(data), dataFilePtr->gain);
+		if (!_OutSig_EarObject(data)->staticTimeFlag)
+			SetOutputTimeOffset_SignalData(_OutSig_EarObject(data),
+			  dataFilePtr->timeOffsetIndex * _OutSig_EarObject(data)->dt +
 			  dataFilePtr->outputTimeOffset);
-		data->outSignal->rampFlag = TRUE;	/* Let user sort out ramps */
+		_OutSig_EarObject(data)->rampFlag = TRUE;	/* Let user sort out ramps */
 		SetProcessContinuity_EarObject(data);
 	}
 	return(ok);
@@ -1385,7 +1385,7 @@ WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 	static const WChar *funcName = wxT("WriteOutSignalMain_DataFile");
 	BOOLN	ok = FALSE;
 	
-	if (!data || !data->outSignal) {
+	if (!data || !_OutSig_EarObject(data)) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
@@ -1448,7 +1448,7 @@ BOOLN
 WriteOutSignal_DataFile_Named(EarObjectPtr data)
 {
 	if (!data->threadRunFlag) {
-		data->outSignal = data->inSignal[0];
+		_OutSig_EarObject(data) = data->inSignal[0];
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

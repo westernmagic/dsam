@@ -521,7 +521,7 @@ ReadPars_WhiteNoise(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName, filePath);
 		return(FALSE);
     }
@@ -651,22 +651,22 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 		if (data->updateProcessFlag && !SetRandPars_EarObject(data, p->ranSeed,
 		  funcName))
 			return(FALSE);
-		SetInterleaveLevel_SignalData(data->outSignal, (uShort) p->numChannels);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) p->numChannels);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	amplitude = RMS_AMP(p->intensity) * SQRT_2;
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0; i < data->outSignal->length; i++) {
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 		for (j = 0, sum = 0.0; j < p->randomizationIndex; j++)
 			sum += Ran01_Random(data->randPars);
 		sum = sum - p->randomizationIndex / 2; 
 		*(dataPtr++) = amplitude * (sum / sqrt(p->randomizationIndex / 12));
 	}
 	if (p->numChannels == 2) {
-		dataPtrA = data->outSignal->channel[0];
-		dataPtrB = data->outSignal->channel[1];
-		for (i = 0; i < data->outSignal->length; i++)
+		dataPtrA = _OutSig_EarObject(data)->channel[0];
+		dataPtrB = _OutSig_EarObject(data)->channel[1];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 		  *(dataPtrB++) = p->correlationDegree * *(dataPtrA++);
 	}
 	SetProcessContinuity_EarObject(data);

@@ -728,7 +728,7 @@ ReadPars_ANSpikeGen_Carney(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -930,7 +930,7 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
-		p->arrayLength = data->outSignal->numChannels * p->numFibres;
+		p->arrayLength = _OutSig_EarObject(data)->numChannels * p->numFibres;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
@@ -1051,9 +1051,9 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		}
 		p->dt = data->inSignal[0]->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;
-		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-			outPtr = data->outSignal->channel[chan];
-			for (j = 0; j < data->outSignal->length; j++)
+		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
+			outPtr = _OutSig_EarObject(data)->channel[chan];
+			for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 				*outPtr++ = 0.0;
 		}
 		if (data->initThreadRunFlag)
@@ -1061,11 +1061,11 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	}
 	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
 	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = data->outSignal->offset; chan < data->outSignal->
+		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 		  numChannels; chan++) {
 			inPtr = data->inSignal[0]->channel[chan];
-			outPtr = data->outSignal->channel[chan];
-			for (j = 0; j < data->outSignal->length; j++) {
+			outPtr = _OutSig_EarObject(data)->channel[chan];
+			for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
 				if (*timerPtr > p->refractoryPeriod) {
 					excessTime = *timerPtr - p->refractoryPeriod;
 					threshold = p->maxThreshold * (p->dischargeCoeffC0 * 

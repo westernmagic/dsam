@@ -909,7 +909,7 @@ ReadPars_Harmonic(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -1176,10 +1176,10 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 		  modulationFrequency);
 	}
 	amplitude = RMS_AMP(harmonicPtr->intensity) * SQRT_2;
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++,
 	  dataPtr++) {
-	  	timexPix2 = PIx2 * t * data->outSignal->dt;
+	  	timexPix2 = PIx2 * t * _OutSig_EarObject(data)->dt;
 		for (j = 0, *dataPtr = 0.0; j < totalNumberOfHarmonics; j++) {
 	  		modulation = harmonicPtr->modIndex[j] *
 	  		  cos(harmonicPtr->modulationFrequency * timexPix2 +

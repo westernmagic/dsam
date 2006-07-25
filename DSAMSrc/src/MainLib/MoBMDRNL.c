@@ -952,7 +952,7 @@ ReadPars_BasilarM_DRNL(WChar *fileName)
 	CFListPtr	theCFs;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -1105,7 +1105,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 	  p->theCFs->updateFlag) {
 		FreeProcessVariables_BasilarM_DRNL();
 		p->linearF = Init_EarObject(wxT("NULL"));
-		p->numChannels = data->outSignal->numChannels;
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if (!InitSubProcessList_EarObject(data, BM_DRNL_NUM_SUB_PROCESSES)) {
 			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
 			  "process."), funcName, BM_DRNL_NUM_SUB_PROCESSES);
@@ -1148,7 +1148,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 		 	return(FALSE);
 		}
 		sampleRate = 1.0 / data->inSignal[0]->dt;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
 			centreFreq = p->theCFs->frequency[cFIndex];
 			if ((p->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(centreFreq,
@@ -1193,14 +1193,14 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			p->compressionB[i] = GetFitFuncValue_BasilarM_DRNL(p->comprScaleB,
 			  centreFreq);
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			for (j = 0; j < p->nonLinGTCascade * 
 			  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER; j++) {
 				p->nonLinearGT1[i]->stateVector[j] = 0.0;
@@ -1294,8 +1294,8 @@ ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal, ParArrayPtr p)
 	ChanLen	i;
 	ChanData	*dataPtr;
 
-	for (chan = data->outSignal->offset; chan < signal->numChannels; chan++) {
-		scale = GetFitFuncValue_BasilarM_DRNL(p, data->outSignal->info.cFArray[
+	for (chan = _OutSig_EarObject(data)->offset; chan < signal->numChannels; chan++) {
+		scale = GetFitFuncValue_BasilarM_DRNL(p, _OutSig_EarObject(data)->info.cFArray[
 		  chan]);
 		for (i = 0, dataPtr = signal->channel[chan]; i < signal->length; i++)
 			*(dataPtr++) *= scale;
@@ -1361,19 +1361,19 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	InitOutDataFromInSignal_EarObject(linearF);
 
 	/* Filter signal */
-	GammaTone_Filters(data->outSignal, p->nonLinearGT1);
-	BrokenStick1Compression2_Filters(data->outSignal, p->compressionA,
+	GammaTone_Filters(_OutSig_EarObject(data), p->nonLinearGT1);
+	BrokenStick1Compression2_Filters(_OutSig_EarObject(data), p->compressionA,
 	  p->compressionB, p->comprExponent);
-	GammaTone_Filters(data->outSignal, p->nonLinearGT2);
+	GammaTone_Filters(_OutSig_EarObject(data), p->nonLinearGT2);
 	if (p->nonLinearLP)
-		IIR2Cont_Filters(data->outSignal, p->nonLinearLP);
+		IIR2Cont_Filters(_OutSig_EarObject(data), p->nonLinearLP);
 
 	GammaTone_Filters(linearF->outSignal, p->linearGT);
 	if (p->linearLP)
 		IIR2Cont_Filters(linearF->outSignal, p->linearLP);
 	
 	ApplyScale_BasilarM_DRNL(data, linearF->outSignal, p->linScaleG);
-	Add_SignalData(data->outSignal, linearF->outSignal);
+	Add_SignalData(_OutSig_EarObject(data), linearF->outSignal);
 	
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

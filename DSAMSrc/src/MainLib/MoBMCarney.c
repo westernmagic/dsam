@@ -528,7 +528,7 @@ ReadPars_BasilarM_Carney(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -747,14 +747,14 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 		  p->cFList->updateFlag) {
 			FreeProcessVariables_BasilarM_Carney();
 			p->numThreads = data->numThreads;
-			p->numChannels = data->outSignal->numChannels;
+			p->numChannels = _OutSig_EarObject(data)->numChannels;
 			if ((p->coefficients = (CarneyGTCoeffsPtr *) calloc(p->numChannels,
 			   sizeof(CarneyGTCoeffsPtr))) == NULL) {
 		 		NotifyError(wxT("%s: Out of memory for coefficients array."),
 		 		  funcName);
 		 		return(FALSE);
 			}
-			for (i = 0; i < data->outSignal->numChannels; i++) {
+			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 				cFIndex = i / data->inSignal[0]->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyGTCoeffs_BasilarM_Carney(
 				  p->cascade, p->cFList->frequency[cFIndex])) == NULL) {
@@ -779,17 +779,17 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 					FreeProcessVariables_BasilarM_Carney();
 					return(FALSE);
 				}
-			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-			SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency "
+			SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
 			  "(Hz)"));
-			SetInfoChannelLabels_SignalData(data->outSignal,
+			SetInfoChannelLabels_SignalData(_OutSig_EarObject(data),
 			   p->cFList->frequency);
-			SetInfoCFArray_SignalData(data->outSignal, p->cFList->frequency);
+			SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->cFList->frequency);
 			p->updateProcessVariablesFlag = FALSE;
 			p->cFList->updateFlag = FALSE;
 		}
 		p->pix2xDt = PIx2 * data->inSignal[0]->dt;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			chan = i % data->inSignal[0]->interleaveLevel;
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
 			RThetaSet_CmplxM(data->inSignal[0]->channel[chan][0], -p->pix2xDt *
@@ -865,17 +865,17 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 	}
 	InitOutDataFromInSignal_EarObject(data);
 	f = p->f[data->threadIndex];
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		cFIndex = chan / data->outSignal->interleaveLevel;
+		cFIndex = chan / _OutSig_EarObject(data)->interleaveLevel;
 		cC = *(p->coefficients + chan);
 		aCoeff = BM_CARNEY_A(p->c, cC->tau0);
 		cF = p->cFList->frequency[cFIndex];
 		pix2xDtxCF = p->pix2xDt * cF;
 		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
 		  interleaveLevel];
-		outPtr = data->outSignal->channel[chan];
-		for(i = 0; i < data->outSignal->length; i++) {	
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for(i = 0; i < _OutSig_EarObject(data)->length; i++) {	
 			/* FREQUENCY SHIFT THE ARRAY BUF  */
 			RThetaSet_CmplxM(*inPtr++, -pix2xDtxCF * (i + 1), &f[0]);
 			fF = (cC->tau0 * 3.0 / 2.0 - (cC->tau0 / 2.0) * (cC->oHCLast /

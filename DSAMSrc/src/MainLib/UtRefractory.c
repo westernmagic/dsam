@@ -292,7 +292,7 @@ ReadPars_Utility_RefractoryAdjust(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -427,7 +427,7 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 		  outSignal->dt + 0.5);
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Utility_RefractoryAdjust();
-		  	p->numChannels = data->outSignal->numChannels;
+		  	p->numChannels = _OutSig_EarObject(data)->numChannels;
 			if ((p->lastOutput = (double **) calloc(p->numChannels, sizeof(
 			  double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastOutput pointers'."),
@@ -524,23 +524,23 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 	}
 	InitOutDataFromInSignal_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (chan = data->outSignal->offset; chan < data->outSignal->
+		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 		  numChannels; chan++) {
 			outPtr = p->lastOutput[chan];
 			for (i = 0; i < p->refractoryPeriodIndex; i++)
 				*outPtr++ = 0.0;
 		}
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 			sum = 0.0;
 			if (i < p->refractoryPeriodIndex) {
 				lastOutputPtr = p->lastOutput[chan] + i;
 				for (j = i; j < p->refractoryPeriodIndex; j++)
 					sum += *lastOutputPtr++;
-				sumPtr = data->outSignal->channel[chan];
+				sumPtr = _OutSig_EarObject(data)->channel[chan];
 			} else
 				sumPtr = outPtr - p->refractoryPeriodIndex;
 			while (sumPtr < outPtr)

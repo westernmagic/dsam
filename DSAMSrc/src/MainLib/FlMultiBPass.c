@@ -704,7 +704,7 @@ ReadPars_Filter_MultiBPass(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -845,7 +845,7 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_MultiBPass();
-		p->numChannels = data->outSignal->numChannels;
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if ((p->bPassPars = (BPassParsPtr) calloc(p->numFilters, sizeof(
 		  BPassPars))) == NULL) {
 			NotifyError(wxT("%s: Cannot allocate memory for bPassPars array."),
@@ -880,7 +880,7 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			bPParsPtr = &p->bPassPars[i];
 			if (i != 0)
 				data->subProcessList[i - 1] = bPParsPtr->data;
-	 		for (j = 0; j < data->outSignal->numChannels; j++)
+	 		for (j = 0; j < _OutSig_EarObject(data)->numChannels; j++)
 				if ((bPParsPtr->coefficients[j] = InitBandPassCoeffs_Filters(
 				  p->cascade[i], p->lowerCutOffFreq[i], p->upperCutOffFreq[i],
 				  data->inSignal[0]->dt)) == NULL) {
@@ -897,7 +897,7 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (k = 0; k < p->numFilters; k++) {
 			bPParsPtr = &p->bPassPars[k];
-			for (i = 0; i < data->outSignal->numChannels; i++) {
+			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 				statePtr = bPParsPtr->coefficients[i]->state;
 				for (j = 0; j < p->cascade[k] *
 				  FILTERS_NUM_CONTBUTT2_STATE_VARS; j++)
@@ -998,15 +998,15 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 	for (i = 0; i < p->numFilters; i++) {
 		bPParsPtr = &p->bPassPars[i];
 		if (fabs(p->gain[i]) > DBL_EPSILON)
-			GaindB_SignalData(bPParsPtr->data->outSignal, p->gain[i]);
-		BandPass_Filters(bPParsPtr->data->outSignal, bPParsPtr->coefficients);
+			GaindB_SignalData(_OutSig_EarObject(bPParsPtr->data), p->gain[i]);
+		BandPass_Filters(_OutSig_EarObject(bPParsPtr->data), bPParsPtr->coefficients);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		for (i = 1; i < p->numFilters; i++) {
-			inPtr = p->bPassPars[i].data->outSignal->channel[chan];
-			outPtr = data->outSignal->channel[chan];
-			for (j = 0; j < data->outSignal->length; j++)
+			inPtr = _OutSig_EarObject(p->bPassPars[i].data)->channel[chan];
+			outPtr = _OutSig_EarObject(data)->channel[chan];
+			for (j = 0; j < _OutSig_EarObject(data)->length; j++)
 				*outPtr++ += *inPtr++;
 		}
 	}

@@ -126,7 +126,7 @@ ReadFile_Raw(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	if (dataFilePtr->numChannels == 2)
-		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 	if (fp != stdin)
 		SetPosition_UPortableIO(fp, (int32) ((dataFilePtr->timeOffsetIndex +
 		  data->timeIndex) * dataFilePtr->numChannels * dataFilePtr->wordSize),
@@ -140,7 +140,7 @@ ReadFile_Raw(WChar *fileName, EarObjectPtr data)
 	numSamples = dataFilePtr->numChannels * length;
 	for (i = 0, index = 0; i < numSamples; i++) {
 		chan = i % dataFilePtr->numChannels;
-		*(data->outSignal->channel[chan] + index) = ReadSample_DataFile(fp);
+		*(_OutSig_EarObject(data)->channel[chan] + index) = ReadSample_DataFile(fp);
 		if (chan == endChan)
 			index++;
 	}
@@ -215,12 +215,12 @@ WriteFile_Raw(WChar *fileName, EarObjectPtr data)
 	}
 	if (_WorldTime_EarObject(data) == PROCESS_START_TIME)
 		dataFilePtr->normalise = CalculateNormalisation_DataFile(
-		  data->outSignal);
-	endChan = data->outSignal->numChannels - 1;
-	numSamples = data->outSignal->numChannels * data->outSignal->length;
+		  _OutSig_EarObject(data));
+	endChan = _OutSig_EarObject(data)->numChannels - 1;
+	numSamples = _OutSig_EarObject(data)->numChannels * _OutSig_EarObject(data)->length;
 	for (i = 0, index = 0; i < numSamples; i++) {
-		chan = i % data->outSignal->numChannels;
-		outputVal = (int) (*(data->outSignal->channel[chan] + index) *
+		chan = i % _OutSig_EarObject(data)->numChannels;
+		outputVal = (int) (*(_OutSig_EarObject(data)->channel[chan] + index) *
 		  dataFilePtr->normalise);
 		switch (dataFilePtr->wordSize) {
 		case	1:

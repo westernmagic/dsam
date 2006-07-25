@@ -383,7 +383,7 @@ ReadPars_BasilarM_GammaT(WChar *fileName)
     CFListPtr	theCFs;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -500,14 +500,14 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_GammaT();
-		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(data->outSignal->
+		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(_OutSig_EarObject(data)->
 		  numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		sampleRate = 1.0 / data->inSignal[0]->dt;
-		p->numChannels = data->outSignal->numChannels;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
 			if ((p->coefficients[i] = InitGammaToneCoeffs_Filters(p->theCFs->
 			  frequency[cFIndex], p->theCFs->bandwidth[cFIndex], p->cascade,
@@ -517,16 +517,16 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 				return(FALSE);
 			}
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		stateVectorLength = p->cascade * 
 		  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			ptr = p->coefficients[i]->stateVector;
 			for (j = 0; j < stateVectorLength; j++)
 				*ptr++ = 0.0;
@@ -587,7 +587,7 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
-	GammaTone_Filters(data->outSignal, bMGammaTPtr->coefficients);
+	GammaTone_Filters(_OutSig_EarObject(data), bMGammaTPtr->coefficients);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

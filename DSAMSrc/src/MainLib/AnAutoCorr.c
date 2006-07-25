@@ -566,7 +566,7 @@ ReadPars_Analysis_ACF(WChar *fileName)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -679,7 +679,7 @@ CheckData_Analysis_ACF(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (autoCorrPtr->timeOffset > signalDuration + DBL_EPSILON) {
 		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
@@ -737,9 +737,10 @@ SunLimitIndex_Analysis_ACF(EarObjectPtr data, double timeConstant)
 {
 	ChanLen	sumLimitIndex;
 
-	sumLimitIndex = (ChanLen) floor(timeConstant / data->outSignal->dt + 0.5);
-	return((sumLimitIndex < data->outSignal->length)? sumLimitIndex:
-	  data->outSignal->length);
+	sumLimitIndex = (ChanLen) floor(timeConstant / _OutSig_EarObject(data)->dt +
+	  0.5);
+	return((sumLimitIndex < _OutSig_EarObject(data)->length)? sumLimitIndex:
+	  _OutSig_EarObject(data)->length);
 
 }
 
@@ -764,7 +765,7 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_ACF();
 		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
-			dt = data->inSignal[0]->dt;
+			dt = _InSig_EarObject(data, 0)->dt;
 			if ((p->exponentDt = (double *) calloc(p->maxLagIndex, sizeof(
 			  double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for exponent lookup table."),
@@ -780,14 +781,15 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 				  timeConstScale)): minDecay;
 			
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-		SetOutputTimeOffset_SignalData(data->outSignal, 0.0);
-		for (chan = 0; chan < data->outSignal->numChannels; chan++)
-			data->outSignal->info.cFArray[chan] = data->inSignal[0]->info.
-			  cFArray[chan];
-		SetInfoSampleTitle_SignalData(data->outSignal, wxT("Delay Lag (s)"));
-		SetNumWindowFrames_SignalData(data->outSignal, 0);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), 0.0);
+		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
+			_OutSig_EarObject(data)->info.cFArray[chan] = _InSig_EarObject(data,
+			  0)->info.cFArray[chan];
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay Lag "
+		  "(s)"));
+		SetNumWindowFrames_SignalData(_OutSig_EarObject(data), 0);
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
@@ -850,10 +852,10 @@ Calc_Analysis_ACF(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Auto Correlation Function (ACF) "
 		  "analysis"));
-		p->dt = data->inSignal[0]->dt;
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->maxLagIndex = (ChanLen) floor(p->maxLag / p->dt + 0.5);
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  p->maxLagIndex, p->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, p->maxLagIndex, p->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -875,9 +877,9 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	}
 	if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER)
 		expDtPtr = &p->expDecay;
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
-	  chan++) {
-		outPtr = data->outSignal->channel[chan];
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
+	  data)->numChannels; chan++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
 			expDtPtr = p->exponentDt;
 		for (deltaT = 0; deltaT < p->maxLagIndex; deltaT++, outPtr++) {
@@ -886,8 +888,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 				p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 				  wiegrebeTimeConst);
 			}
-			inPtr = data->inSignal[0]->channel[chan] + (p->timeOffsetIndex -
-			  p->sumLimitIndex);
+			inPtr = _InSig_EarObject(data, 0)->channel[chan] + (p->
+			  timeOffsetIndex - p->sumLimitIndex);
 			for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
 				*outPtr =  (*outPtr * *expDtPtr) + (*inPtr * *(inPtr - deltaT));
 			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
@@ -905,8 +907,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 			} /* switch */
 		}
 	}
-	if (!data->outSignal->offset)	/* Do this only for one (first) thread */
-		data->outSignal->numWindowFrames++;
+	if (!_OutSig_EarObject(data)->offset)	/* - only for one (first) thread */
+		_OutSig_EarObject(data)->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

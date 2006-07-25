@@ -138,20 +138,20 @@ Process_Utility_SwapLR(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  interleaveLevel);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels -
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels -
 	  1; chan += data->inSignal[0]->interleaveLevel) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan + 1];
-		for (i = 0; i < data->outSignal->length; i++)
+		outPtr = _OutSig_EarObject(data)->channel[chan + 1];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ = *inPtr++;
 		inPtr = data->inSignal[0]->channel[chan + 1];
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++)
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ = *inPtr++;
 	}
 	SetProcessContinuity_EarObject(data);

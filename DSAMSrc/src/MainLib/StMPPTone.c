@@ -707,7 +707,7 @@ ReadPars_PureTone_MultiPulse(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -852,20 +852,20 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 	  pureTone4Ptr->dt + 0.5);
 	if (data->timeIndex == PROCESS_START_TIME) {
 		pureTone4Ptr->beginIndex = (ChanLen) floor(pureTone4Ptr->
-		  beginPeriodDuration / data->outSignal->dt + 0.5);
+		  beginPeriodDuration / _OutSig_EarObject(data)->dt + 0.5);
 		pureTone4Ptr->pulseOn = TRUE;
 		pureTone4Ptr->pulseNumber = 0;
 		pureTone4Ptr->pulseCount = 0;
 	}
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++,
 	  dataPtr++) {
 	  	if (t < pureTone4Ptr->beginIndex)
 	  		continue;
 		if (pureTone4Ptr->pulseOn) {
 			*dataPtr = amplitude * sin(PIx2 *
 			  pureTone4Ptr->frequencies[pureTone4Ptr->pulseNumber] *
-			  (pureTone4Ptr->pulseCount++ * data->outSignal->dt));
+			  (pureTone4Ptr->pulseCount++ * _OutSig_EarObject(data)->dt));
 			pureTone4Ptr->pulseOn = (pureTone4Ptr->pulseCount <
 			  pulseDurationIndex);
 		} else {

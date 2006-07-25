@@ -95,19 +95,19 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	if (numColumns == 2)
-		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 	for (i = 0; i < data->timeIndex; i++)
 		if (DSAM_fgets(line, MAXLINE_LARGE, fp) == NULL)
 			return(FALSE);
 	for (i = 0, endOfSignal = FALSE; !endOfSignal && (i < length); i++)
-		for (chan = 0; (chan < data->outSignal->numChannels); chan++)
-			if (DSAM_fscanf(fp, wxT("%lf"), &data->outSignal->channel[chan][
+		for (chan = 0; (chan < _OutSig_EarObject(data)->numChannels); chan++)
+			if (DSAM_fscanf(fp, wxT("%lf"), &_OutSig_EarObject(data)->channel[chan][
 			  i]) == EOF) {
 				endOfSignal = TRUE;
 				break;
 			}
 	if (endOfSignal) {
-		if ((data->outSignal->length = i - 1) == 0) {
+		if ((_OutSig_EarObject(data)->length = i - 1) == 0) {
 			if (!GetDSAMPtr_Common()->segmentedMode)
 				NotifyError(wxT("%s: Couldn't read samples from the file "
 				  "'%s'."), funcName ,fileName);
@@ -151,12 +151,12 @@ WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("WriteFile_ASCII");
 
-	if (!CheckPars_SignalData(data->outSignal)) {
+	if (!CheckPars_SignalData(_OutSig_EarObject(data))) {
 		NotifyError(wxT("%s: Output signal not initialised."), funcName);
 		return(FALSE);
 	}
-	SetTimeIndex_SignalData(data->outSignal, _WorldTime_EarObject(data));
-	if (!OutputToFile_SignalData(fileName, data->outSignal)) {
+	SetTimeIndex_SignalData(_OutSig_EarObject(data), _WorldTime_EarObject(data));
+	if (!OutputToFile_SignalData(fileName, _OutSig_EarObject(data))) {
 		if (data->processName != NULL)
 			NotifyWarning(wxT("%s: Data from EarObject: %s, has not been "
 			  "output to file."), funcName, data->processName);

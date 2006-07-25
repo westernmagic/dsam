@@ -714,7 +714,7 @@ ReadPars_Stimulus_ExpGatedTone(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -861,8 +861,8 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 		p->cycleTimer = 0.0;
 		p->nextCycle = cyclePeriod;
 	}
-	outPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++,
+	outPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++,
 	  outPtr++) {
 		time = t * p->dt;
 	  	if (time < p->beginPeriodDuration) {

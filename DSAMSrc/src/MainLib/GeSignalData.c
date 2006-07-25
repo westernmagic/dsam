@@ -811,8 +811,8 @@ OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
 	else {
 		parFilePath = GetParsFileFPath_Common(fileName);
 		fp = (GetDSAMPtr_Common()->segmentedMode && (theData->timeIndex !=
-		  PROCESS_START_TIME))? fopen(ConvUTF8_Utility_String(parFilePath),
-		    "a"): fopen(ConvUTF8_Utility_String(parFilePath), "w");
+		  PROCESS_START_TIME))? DSAM_fopen(parFilePath,
+		    "a"): DSAM_fopen(parFilePath, "w");
 	}
 	if (fp == NULL) {
 		NotifyError(wxT("%s: Cannot open file '%s'"), funcName, fileName);

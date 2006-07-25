@@ -777,7 +777,7 @@ ReadPars_Neuron_ArleKim(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -924,14 +924,14 @@ InitProcessVariables_Neuron_ArleKim(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_ArleKim();
-			if ((p->state = (ArleKimStatePtr) calloc(data->outSignal->
+			if ((p->state = (ArleKimStatePtr) calloc(_OutSig_EarObject(data)->
 			  numChannels, sizeof(ArleKimState))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory."), funcName);
 			 	return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			p->state[i].potential_V = 0.0;
 			p->state[i].kConductance_Gk = 0.0;
 			p->state[i].bConductance_Gb = 0.0;
@@ -1002,7 +1002,7 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 
 		p->totalConductance_G = p->kRestingCond_gk + p->bRestingCond_gb;
 		p->restingPotential_Er = (p->kRestingCond_gk * p->kReversalPoten_Ek +
@@ -1017,11 +1017,11 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
 		spikeState_s = p->state[i].lastSpikeState;
 		inPtr = data->inSignal[0]->channel[i];
-		outPtr = data->outSignal->channel[i];
-		for (j = 0; j < data->outSignal->length; j++, outPtr++) {
+		outPtr = _OutSig_EarObject(data)->channel[i];
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++, outPtr++) {
 			p->state[i].bConductance_Gb = p->bRestingCond_gb *
 			 (exp(p->state[i].potential_V / p->nonLinearVConst_Vnl) - 1.0);
 			dV =  (-p->state[i].potential_V + (*(inPtr++) +

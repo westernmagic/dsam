@@ -637,8 +637,8 @@ RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
 	DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,"
 	  " %ld\n"), p->frameIndex, p->segmentIndex);
 	p->frameIndex += framesToCalc;
-	if ((ChanLen) (p->frameIndex - p->segmentIndex) >= p->data->outSignal->
-	  length) {
+	if ((ChanLen) (p->frameIndex - p->segmentIndex) >= _OutSig_EarObject(p->
+	  data)->length) {
 		/*printf(wxT("RecordCallback_IO_AudioIn: Debug: Got segment, length = "
 		 "%d.\n"), p->frameIndex - p->segmentIndex);*/
 		p->segmentReadyFlag = TRUE;
@@ -677,8 +677,8 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(p->buffer, data->outSignal->numChannels,
-		  data->outSignal->length * p->segmentsPerBuffer, data->outSignal->
+		if (!InitOutSignal_EarObject(p->buffer, _OutSig_EarObject(data)->numChannels,
+		  _OutSig_EarObject(data)->length * p->segmentsPerBuffer, _OutSig_EarObject(data)->
 		  dt)) {
 			NotifyError(wxT("%s: Cannot initialise channels for previous "
 			  "data."), funcName);
@@ -798,7 +798,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		data->outSignal->rampFlag = TRUE;
+		_OutSig_EarObject(data)->rampFlag = TRUE;
 		if (!InitProcessVariables_IO_AudioIn(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
@@ -816,12 +816,12 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		if (p->sleep > 0)
 			Pa_Sleep((int) p->sleep);
 	} while (!p->segmentReadyFlag && (p->pAError == 1));
-	data->outSignal->channel[LEFT_CHAN] = p->buffer->outSignal->channel[
+	_OutSig_EarObject(data)->channel[LEFT_CHAN] = p->buffer->outSignal->channel[
 	  LEFT_CHAN] + p->segmentIndex;
 	if (p->buffer->outSignal->numChannels == 2)
-		data->outSignal->channel[RIGHT_CHAN] = p->buffer->outSignal->channel[
+		_OutSig_EarObject(data)->channel[RIGHT_CHAN] = p->buffer->outSignal->channel[
 		  RIGHT_CHAN] + p->segmentIndex;
-	p->segmentIndex += data->outSignal->length;
+	p->segmentIndex += _OutSig_EarObject(data)->length;
 	if ((ChanLen) p->segmentIndex > p->buffer->outSignal->length)
 		p->segmentIndex = 0;
 	p->segmentReadyFlag = FALSE;
@@ -830,7 +830,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 	if (p->pAError < 1)
 		ok = FALSE;
 	if (ok && (fabs(p->gain) > DBL_EPSILON))
-		GaindB_SignalData(data->outSignal, p->gain);
+		GaindB_SignalData(_OutSig_EarObject(data), p->gain);
 	SetProcessContinuity_EarObject(data);
 	return(ok);
 

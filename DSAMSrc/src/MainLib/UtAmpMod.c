@@ -594,7 +594,7 @@ ReadPars_Utility_AmpMod(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -756,13 +756,13 @@ Process_Utility_AmpMod(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0, t = data->timeIndex; i < data->outSignal->length; i++,
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0, t = data->timeIndex; i < _OutSig_EarObject(data)->length; i++,
 		  t++) {
-			time = t * data->outSignal->dt;
+			time = t * _OutSig_EarObject(data)->dt;
 			for (j = 0, sum = 0.0; j < ampModPtr->numFrequencies; j++)
 				sum += ampModPtr->modulationDepths[j] / 100.0 * sin(PIx2 *
 				  ampModPtr->frequencies[j] * time +

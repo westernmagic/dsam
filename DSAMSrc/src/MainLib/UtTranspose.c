@@ -399,22 +399,22 @@ Process_Utility_Transpose(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
-		SetOutputTimeOffset_SignalData(data->outSignal, timeOffset);
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChanDataTitle_SignalData(data->outSignal, data->inSignal[0]->
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), timeOffset);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChanDataTitle_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  info.sampleTitle);
-		SetInfoSampleTitle_SignalData(data->outSignal, data->inSignal[0]->info.
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), data->inSignal[0]->info.
 		  chanDataTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		for (i = 0; i < data->outSignal->numChannels; i++)
-			data->outSignal->channel[i][chan] = *inPtr++;
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++)
+			_OutSig_EarObject(data)->channel[i][chan] = *inPtr++;
 	}
-	for (chan = 0; chan < data->outSignal->numChannels; chan++)
-		data->outSignal->info.chanLabel[chan] = chan * data->inSignal[0]->dt;
+	for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
+		_OutSig_EarObject(data)->info.chanLabel[chan] = chan * data->inSignal[0]->dt;
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

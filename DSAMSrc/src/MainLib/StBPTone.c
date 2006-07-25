@@ -528,7 +528,7 @@ ReadPars_PureTone_Binaural(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -681,7 +681,7 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output signal."), funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, 2);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -695,11 +695,11 @@ GenerateSignal_PureTone_Binaural(EarObjectPtr data)
 			intensity = bPureTonePtr->rightIntensity;
 		}
 		amplitude = RMS_AMP(intensity) * SQRT_2;
-		dataPtr = data->outSignal->channel[j];
-		for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++,
+		dataPtr = _OutSig_EarObject(data)->channel[j];
+		for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++,
 		  t++)
 			*(dataPtr++) = (ChanData) (amplitude * sin(PIx2 * frequency * (t *
-			data->outSignal->dt) + phase * j));
+			_OutSig_EarObject(data)->dt) + phase * j));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

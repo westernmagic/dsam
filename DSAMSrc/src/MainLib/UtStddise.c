@@ -139,10 +139,10 @@ Process_Utility_Standardise(EarObjectPtr data)
 			return(TRUE);
 	}
 
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels; 
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels; 
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = 0, sumX = sumXX = 0.0; i < data->inSignal[0]->length; i++,
 		  inPtr++) {
 			sumX += *inPtr;

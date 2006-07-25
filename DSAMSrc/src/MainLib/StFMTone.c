@@ -544,7 +544,7 @@ ReadPars_PureTone_FM(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -707,11 +707,11 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 	modulationIndex = fMTonePtr->modulationDepth / 100.0 * fMTonePtr->
 	  frequency / fMTonePtr->modulationFrequency;
 	amplitude = RMS_AMP(fMTonePtr->intensity) * SQRT_2;
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < data->outSignal->length; i++, t++)
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++)
 		*(dataPtr++) = amplitude * sin(PIx2 * fMTonePtr->frequency *
-		  t * data->outSignal->dt - modulationIndex * cos(2 * PI *
-		  fMTonePtr->modulationFrequency * t * data->outSignal->dt +
+		  t * _OutSig_EarObject(data)->dt - modulationIndex * cos(2 * PI *
+		  fMTonePtr->modulationFrequency * t * _OutSig_EarObject(data)->dt +
 		  DEGREES_TO_RADS(fMTonePtr->modulationPhase)) +
 		    DEGREES_TO_RADS(fMTonePtr->phase));
 

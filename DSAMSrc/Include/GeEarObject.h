@@ -51,6 +51,10 @@
 #define _GetResult_EarObject(EAROBJ, CHAN) \
   ((EAROBJ)->outSignal->channel[CHAN][0])
 
+#define _InSig_EarObject(EAROBJ, NUM)	((EAROBJ)->inSignal[(NUM)])
+
+#define _OutSig_EarObject(EAROBJ)	((EAROBJ)->outSignal)
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/

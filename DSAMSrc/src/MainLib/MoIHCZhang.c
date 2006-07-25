@@ -835,30 +835,30 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_IHC_Zhang();
-		if ((p->iHCPPI = (TNonLinear *) calloc(data->outSignal->numChannels,
+		if ((p->iHCPPI = (TNonLinear *) calloc(_OutSig_EarObject(data)->numChannels,
 		  sizeof(TNonLinear))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for iHCPPI coefficients array."),
 			  funcName);
 		 	return(FALSE);
 		}
-		if ((p->synapse = (TSynapse *) calloc(data->outSignal->numChannels,
+		if ((p->synapse = (TSynapse *) calloc(_OutSig_EarObject(data)->numChannels,
 		  sizeof(TSynapse))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for synapse coefficients "
 			  "array."), funcName);
 		 	return(FALSE);
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		CopyInfo_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
-			cFIndex = i / data->outSignal->interleaveLevel;
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
+			cFIndex = i / _OutSig_EarObject(data)->interleaveLevel;
 			syn = &p->synapse[i];
 			iHCPPI = &p->iHCPPI[i];
 			syn->Ass = p->aAss;
-			syn->tdres = data->outSignal->dt;
-			syn->cf = data->outSignal->info.cFArray[cFIndex];
+			syn->tdres = _OutSig_EarObject(data)->dt;
+			syn->cf = _OutSig_EarObject(data)->info.cFArray[cFIndex];
 			syn->spont = p->spont;
 			syn->Pimax = p->pIMax;
 			syn->PTS = 1.0 + 9 * p->spont / (9 + p->spont);
@@ -962,14 +962,14 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		syn = &p->synapse[chan];
 		iHCPPI = &p->iHCPPI[chan];
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		iHCPPI->Run2(iHCPPI, inPtr, outPtr, data->outSignal->length);
-		syn->Run2(syn, outPtr, outPtr, data->outSignal->length);
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		iHCPPI->Run2(iHCPPI, inPtr, outPtr, _OutSig_EarObject(data)->length);
+		syn->Run2(syn, outPtr, outPtr, _OutSig_EarObject(data)->length);
 	}
 
 	SetProcessContinuity_EarObject(data);

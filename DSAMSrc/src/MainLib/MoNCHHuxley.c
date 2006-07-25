@@ -810,7 +810,7 @@ ReadPars_Neuron_HHuxley(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -1031,7 +1031,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 	if (!p->restingRun && (p->updateProcessVariablesFlag ||
 	  data->updateProcessFlag || p->iCList->updateFlag || (data->timeIndex ==
 	  PROCESS_START_TIME))) {
-		p->numChannels = data->outSignal->numChannels;
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_HHuxley();
 			OpenDiagnostics_NSpecLists(&hHuxleyNCPtr->fp,
@@ -1069,7 +1069,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 				}
 				p->restingPotential = FindRestingPotential_Neuron_HHuxley(
 				  p->restingCriteria, p->restingSignalDuration,
-				  data->outSignal->dt);
+				  _OutSig_EarObject(data)->dt);
 			}
 			p->updateProcessVariablesFlag = FALSE;
 			p->iCList->updateFlag = FALSE;
@@ -1203,7 +1203,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dt = data->outSignal->dt;
+		p->dt = _OutSig_EarObject(data)->dt;
 		p->dtOverC = p->dt / p->cellCapacitance;
 		p->debug = !p->restingRun && (p->diagnosticMode !=
 		  GENERAL_DIAGNOSTIC_OFF_MODE);
@@ -1225,7 +1225,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		DSAM_fprintf(p->fp, wxT("\n"));
 	}
 
-	for (i = 0; i < data->outSignal->numChannels; i++) {
+	for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 		s = &p->state[i];
 		inSignal = 0;
 		injPtr = (p->injectionMode == HHUXLEYNC_INJECTION_OFF)?
@@ -1236,10 +1236,10 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
 		gSInPtr = (inSignal < data->numInSignals)?
 		  data->inSignal[inSignal++]->channel[i]: (ChanData *) NULL;
-		outPtr = data->outSignal->channel[i];
+		outPtr = _OutSig_EarObject(data)->channel[i];
 		switch (p->operationMode) {
 		case HHUXLEYNC_OPERATION_NORMAL_MODE:
-			for (j = 0; j < data->outSignal->length; j++, outPtr++) {
+			for (j = 0; j < _OutSig_EarObject(data)->length; j++, outPtr++) {
 				yPtr = s->y;
 				zPtr = s->z;
 				if (p->debug)
@@ -1297,7 +1297,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 			}
 			break;
 		case HHUXLEYNC_OPERATION_VOLTAGE_CLAMP_MODE:
-			for (j = 0; j < data->outSignal->length; j++, outPtr++, injPtr++) {
+			for (j = 0; j < _OutSig_EarObject(data)->length; j++, outPtr++, injPtr++) {
 				if (p->debug)
 					DSAM_fprintf(p->fp, wxT("%g\t%g\t%g"), MILLI(j * p->dt), MILLI(
 					  *injPtr), NANO(p->iCList->leakageCond * (*injPtr -

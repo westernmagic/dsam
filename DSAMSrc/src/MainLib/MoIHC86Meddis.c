@@ -579,7 +579,7 @@ ReadPars_IHC_Meddis86(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -731,7 +731,7 @@ InitProcessVariables_IHC_Meddis86(EarObjectPtr data)
 		  data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Meddis86();
 			if ((hC->hCChannels = (HairCellVarsPtr) calloc(
-			  data->outSignal->numChannels, sizeof (HairCellVars))) == NULL) {
+			  _OutSig_EarObject(data)->numChannels, sizeof (HairCellVars))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
@@ -747,7 +747,7 @@ InitProcessVariables_IHC_Meddis86(EarObjectPtr data)
 		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r /
 		  hC->reprocessRate_x;
 
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			hC->hCChannels[i].cleftC = spontCleft_c0;
 			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
 			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
@@ -815,7 +815,7 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		hC->dt = data->outSignal->dt;
+		hC->dt = _OutSig_EarObject(data)->dt;
 		hC->ymdt = hC->replenishRate_y * hC->maxFreePool_M * hC->dt;
 		hC->xdt = hC->reprocessRate_x * hC->dt;
 		hC->ydt = hC->replenishRate_y * hC->dt;
@@ -826,10 +826,10 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
-		outPtr = data->outSignal->channel[i];
-		for (j = 0; j < data->outSignal->length; j++) {
+		outPtr = _OutSig_EarObject(data)->channel[i];
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
 			if ((st_Plus_A = *inPtr++ + hC->permConst_A) > 0.0)
 				kdt = hC->gdt * st_Plus_A / (st_Plus_A + hC->permConst_B);
 			else

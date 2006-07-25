@@ -389,7 +389,7 @@ ReadPars_Analysis_Averages(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -562,7 +562,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
 		for (i = 0, sum = 0.0; i < p->timeRangeIndex; i++, inPtr++)
@@ -580,7 +580,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 				break;
 			} /* switch */
 				
-		data->outSignal->channel[chan][0] = (ChanData) (sum /
+		_OutSig_EarObject(data)->channel[chan][0] = (ChanData) (sum /
 		  p->timeRangeIndex);
 	}
 	SetProcessContinuity_EarObject(data);

@@ -161,6 +161,7 @@
 #	define DSAM_fgetc		fgetwc
 #	define DSAM_fgets		fgetws
 #	define DSAM_fprintf		fwprintf
+#	define DSAM_fopen(P, M)	(fopen(ConvUTF8_Utility_String(P), (M)))
 #	define DSAM_fscanf		fwscanf
 #	define DSAM_printf		wprintf
 #	define DSAM_snprintf	swprintf
@@ -189,6 +190,7 @@
 #	define DSAM_fgetc		fgetwc
 #	define DSAM_fgets		fgets
 #	define DSAM_fprintf		fprintf
+#	define DSAM_fopen(P, M)	(fopen((P), (M))
 #	define DSAM_fscanf		fscanf
 #	define DSAM_printf		printf
 #	define DSAM_snprintf	snprintf

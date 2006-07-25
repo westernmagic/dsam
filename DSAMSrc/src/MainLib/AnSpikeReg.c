@@ -481,7 +481,7 @@ ReadPars_Analysis_SpikeRegularity(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -628,14 +628,14 @@ ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data)
 	int		outChan, inChan;
 	ChanLen	i;
 
-	for (outChan = data->outSignal->offset; outChan <
-	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
+	for (outChan = _OutSig_EarObject(data)->offset; outChan <
+	  _OutSig_EarObject(data)->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
 		countPtr = spikeRegPtr->countEarObj->outSignal->channel[inChan];
-		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr = data->outSignal->channel[outChan +
+		sumPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_MEAN];
+		sumSqrsPtr = _OutSig_EarObject(data)->channel[outChan +
 		  SPIKE_REG_STANDARD_DEV];
-		for (i = 0; i < data->outSignal->length; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 			*sumPtr++ = 0.0;
 			*sumSqrsPtr++ = 0.0;
 			*countPtr++ = 0;
@@ -691,7 +691,7 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		if (!InitOutSignal_EarObject(p->countEarObj, data->inSignal[0]->
-		  numChannels, data->outSignal->length, data->outSignal->dt)) {
+		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise countEarObj."), funcName);
 			return(FALSE);
 		}
@@ -777,16 +777,16 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise sumEarObj."), funcName);
 			return(FALSE);
 		}
-		SetOutputTimeOffset_SignalData(data->outSignal, p->timeOffset + data->
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->timeOffset + data->
 		  outSignal->dt);
-		SetInterleaveLevel_SignalData(data->outSignal, (uShort) (
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) (
 		  data->inSignal[0]->interleaveLevel * SPIKE_REG_NUM_RETURNS));
 		if (!InitProcessVariables_Analysis_SpikeRegularity(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
-		p->convertDt = p->dt / data->outSignal->dt;
+		p->convertDt = p->dt / _OutSig_EarObject(data)->dt;
 		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data->
 		  inSignal[0]);
 		if (data->initThreadRunFlag)
@@ -802,13 +802,13 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			  *runningTimeOffsetIndex;
 	}
 	/* First recover previous sums from signal (when not in segment mode).*/
-	for (outChan = 0; outChan < data->outSignal->numChannels; outChan +=
+	for (outChan = 0; outChan < _OutSig_EarObject(data)->numChannels; outChan +=
 	  SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
 		countPtr = p->countEarObj->outSignal->channel[inChan];
-		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		for (i = 0; i < data->outSignal->length; i++, sumPtr++, sumSqrsPtr++,
+		sumPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_MEAN];
+		sumSqrsPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_STANDARD_DEV];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, sumPtr++, sumSqrsPtr++,
 		  countPtr++) {
 			oldMean = *sumPtr;
 			*sumPtr *= *countPtr;
@@ -819,12 +819,12 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			}
 		}
 	}
-	for (outChan = data->outSignal->offset; outChan <
-	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
+	for (outChan = _OutSig_EarObject(data)->offset; outChan <
+	  _OutSig_EarObject(data)->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
 		countPtr = p->countEarObj->outSignal->channel[inChan];
-		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
+		sumPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_MEAN];
+		sumSqrsPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_STANDARD_DEV];
 		if ((headSpikeList = p->spikeListSpec->head[inChan]) == NULL)
 			continue;
 		currentSpikeSpec = p->spikeListSpec->current[inChan];
@@ -834,7 +834,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			if (s->next && (spikeTime >= p->timeOffset) &&
 			  ((spikeTimeHistIndex = (ChanLen) floor((s->timeIndex -
 				  p->runningTimeOffsetIndex[inChan]) * p->convertDt)) <
-				  data->outSignal->length)) {
+				  _OutSig_EarObject(data)->length)) {
 				interval = s->next->timeIndex * p->dt - spikeTime;
 				*(sumPtr + spikeTimeHistIndex) += interval;
 				*(sumSqrsPtr + spikeTimeHistIndex) += interval * interval;
@@ -843,14 +843,14 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 		}
 	}
 	/* Re-calculate statics */
-	for (outChan = data->outSignal->offset; outChan <
-	  data->outSignal->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
+	for (outChan = _OutSig_EarObject(data)->offset; outChan <
+	  _OutSig_EarObject(data)->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
 		inChan = outChan / SPIKE_REG_NUM_RETURNS;
 		countPtr = p->countEarObj->outSignal->channel[inChan];
-		sumPtr = data->outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr = data->outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		covarPtr = data->outSignal->channel[outChan + SPIKE_REG_CO_VARIANCE];
-		for (i = 0; i < data->outSignal->length; i++, sumPtr++, sumSqrsPtr++,
+		sumPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_MEAN];
+		sumSqrsPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_STANDARD_DEV];
+		covarPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_CO_VARIANCE];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, sumPtr++, sumSqrsPtr++,
 		  covarPtr++, countPtr++)
 			if (*countPtr > 0.0) {
 				*sumPtr /= *countPtr;

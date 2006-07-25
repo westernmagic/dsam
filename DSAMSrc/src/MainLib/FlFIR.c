@@ -738,7 +738,7 @@ ReadPars_Filter_FIR(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -904,7 +904,7 @@ InitProcessVariables_Filter_FIR(EarObjectPtr data)
 	if (fIRPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_FIR();
 		if ((fIRPtr->coeffs = InitFIRCoeffs_FIRFilters(
-		  data->outSignal->numChannels, fIRPtr->numTaps, fIRPtr->numBands,
+		  _OutSig_EarObject(data)->numChannels, fIRPtr->numTaps, fIRPtr->numBands,
 		  fIRPtr->bandFreqs, fIRPtr->desired, fIRPtr->weights,
 		  GetType_Filter_FIR())) == NULL) {
 			NotifyError(wxT("%s: Could not initialises FIR coefficients."),

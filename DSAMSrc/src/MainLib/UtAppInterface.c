@@ -1058,7 +1058,7 @@ ReadPars_AppInterface(WChar *parFileName)
 	UniParListPtr	tempParList;
 
 	filePath = GetParsFileFPath_Common(parFileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  parFileName);
 		return(FALSE);
@@ -1132,7 +1132,7 @@ ReadProgParFile_AppInterface(void)
 	if (readProgParFileFlag)
 		return(TRUE);
 	readProgParFileFlag = TRUE;
-	if ((fp = fopen(ConvUTF8_Utility_String(appInterfacePtr->simulationFile),
+	if ((fp = DSAM_fopen(appInterfacePtr->simulationFile,
 	  "r")) == NULL) {
 		NotifyError(wxT("%s: Could not open '%s' parameter file."), funcName,
 		  GetFilePath_AppInterface(appInterfacePtr->simulationFile));

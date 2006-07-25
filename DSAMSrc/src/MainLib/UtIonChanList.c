@@ -1186,7 +1186,7 @@ ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, WChar *fileName,
 			return(FALSE);
 		}
 		filePath = GetParsFileFPath_Common(fileName);
-		if ((*fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+		if ((*fp = DSAM_fopen(filePath, "r")) == NULL) {
 			NotifyError(wxT("%s: Could not open ion channel file '%s'."),
 			  funcName, filePath);
 			return(FALSE);

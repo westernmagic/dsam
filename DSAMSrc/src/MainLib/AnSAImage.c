@@ -691,7 +691,7 @@ ReadPars_Analysis_SAI(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -903,16 +903,16 @@ InitInputDecayArray_Analysis_SAI(EarObjectPtr data)
 	double	decayPerSample, *decayPtr, totalDecay;
 	ChanLen	i;
 
-	if ((sAImagePtr->inputDecay = (double *) calloc(data->outSignal->length,
+	if ((sAImagePtr->inputDecay = (double *) calloc(_OutSig_EarObject(data)->length,
 	  sizeof(double))) == NULL) {
 		NotifyError(wxT("%s: Could not initialise input decay array"),
 		  funcName);
 		return(FALSE);
 	}
-	decayPerSample = -sAImagePtr->inputDecayRate / 100.0 * data->outSignal->dt;
+	decayPerSample = -sAImagePtr->inputDecayRate / 100.0 * _OutSig_EarObject(data)->dt;
 	totalDecay = 1.0 + sAImagePtr->zeroIndex * decayPerSample;
 	decayPtr = sAImagePtr->inputDecay;
-	for (i = 0; i < data->outSignal->length; i++) {
+	for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 		if (totalDecay >= 1.0)
 			*decayPtr++ = 1.0;
 		else if (totalDecay <= 0.0)
@@ -938,7 +938,7 @@ ResetProcess_Analysis_SAI(EarObjectPtr data)
 	SAImagePtr	p = sAImagePtr;
 
 	ResetOutSignal_EarObject(data);
-	SetNumWindowFrames_SignalData(data->outSignal, 0);
+	SetNumWindowFrames_SignalData(_OutSig_EarObject(data), 0);
 	ResetOutSignal_EarObject(p->dataBuffer);
 	ResetOutSignal_EarObject(p->strobeDataBuffer);
 	if (data->threadRunFlag)
@@ -947,7 +947,7 @@ ResetProcess_Analysis_SAI(EarObjectPtr data)
 		for (i = 0; i < data->numThreads; i++)
 			p->inputCount[i] = 0;
 	}
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
 		p->decayCount[i] = 0;
 
 }
@@ -988,13 +988,13 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		}
 		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / data->inSignal[0]->
 		  dt + 0.5);
-		p->positiveWidthIndex = data->outSignal->length - p->zeroIndex;
+		p->positiveWidthIndex = _OutSig_EarObject(data)->length - p->zeroIndex;
 		if (!InitInputDecayArray_Analysis_SAI(data)) {
 			NotifyError(wxT("%s: failed in to initialise input decay array"),
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->decayCount = (ChanLen *) calloc(data->outSignal->numChannels,
+		if ((p->decayCount = (ChanLen *) calloc(_OutSig_EarObject(data)->numChannels,
 		  sizeof(ChanLen))) == NULL) {
 			NotifyError(wxT("%s: Could not initialise decayCount array"),
 			  funcName);
@@ -1009,14 +1009,14 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		p->strobeInSignalIndex = (*GetUniParPtr_ModuleMgr(p->strobeData,
 		  wxT("criterion"))->valuePtr.nameList.specifier == STROBE_USER_MODE)?
 		  1: 0;
-		if (!InitOutSignal_EarObject(p->dataBuffer, data->outSignal->
-		  numChannels, data->outSignal->length, data->outSignal->dt)) {
+		if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(data)->
+		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise channels for previous data."),
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(p->strobeDataBuffer, data->outSignal->
-		  numChannels, data->outSignal->length, data->outSignal->dt)) {
+		if (!InitOutSignal_EarObject(p->strobeDataBuffer, _OutSig_EarObject(data)->
+		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise channels for previous "
 			  "strobe data."), funcName);
 			return(FALSE);
@@ -1080,9 +1080,9 @@ PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength)
 	SAImagePtr	p = sAImagePtr;
 
 	inputCount = *(p->inputCount + data->threadIndex);
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		if (frameLength == data->outSignal->length) {
+		if (frameLength == _OutSig_EarObject(data)->length) {
 			inPtr = data->inSignal[0]->channel[chan] + inputCount;
 			inStrobePtr = p->strobeData->outSignal->channel[chan] + inputCount;
 			shiftLength = frameLength;
@@ -1090,7 +1090,7 @@ PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength)
 			inPtr = p->dataBuffer->outSignal->channel[chan] + frameLength;
 			inStrobePtr = p->strobeDataBuffer->outSignal->channel[
 			  chan] + frameLength;
-			shiftLength = data->outSignal->length - frameLength;
+			shiftLength = _OutSig_EarObject(data)->length - frameLength;
 		}
 		outPtr = p->dataBuffer->outSignal->channel[chan];
 		outStrobePtr = p->strobeDataBuffer->outSignal->channel[chan];
@@ -1098,7 +1098,7 @@ PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength)
 			*outPtr++ = *inPtr++;
 			*outStrobePtr++ = *inStrobePtr++;
 		}
-		if (frameLength < data->outSignal->length) {
+		if (frameLength < _OutSig_EarObject(data)->length) {
 			inPtr = data->inSignal[0]->channel[chan] + inputCount;
 			inStrobePtr = p->strobeData->outSignal->channel[chan] + inputCount;
 			for (i = 0; i < frameLength; i++) {
@@ -1127,8 +1127,8 @@ DecayImage_Analysis_SAI(EarObjectPtr data, int chan)
 		return;
 	scale = exp(-LN_2 / sAImagePtr->imageDecayHalfLife * sAImagePtr->decayCount[
 	  chan] * data->inSignal[0]->dt);
-	dataPtr = data->outSignal->channel[chan];
-	for (i = 0; i < data->outSignal->length; i++)
+	dataPtr = _OutSig_EarObject(data)->channel[chan];
+	for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 		*dataPtr++ *= scale;
 	sAImagePtr->decayCount[chan] = 0;
 
@@ -1160,18 +1160,18 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 		return;
 	inputCount = *(p->inputCount + data->threadIndex);
 	sectionEnd = frameOffset + sectionLength;
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		strobeStatePtr = strobeStatePtrs[chan] + strobeOffset;
 		for (i = frameOffset; i < sectionEnd; i++, strobeStatePtr++) {
 			if (*strobeStatePtr > 0.0) {
 				DecayImage_Analysis_SAI(data, chan);
 				inPtr = p->dataBuffer->outSignal->channel[chan] + i;
-				outPtr = data->outSignal->channel[chan];
+				outPtr = _OutSig_EarObject(data)->channel[chan];
 				inputDecayPtr = p->inputDecay;
 				switch (p->integrationMode) {
 				case SAI_INTEGRATION_MODE_STI:
-					for (j = i; j < data->outSignal->length; j++)
+					for (j = i; j < _OutSig_EarObject(data)->length; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++;
 					inPtr = data->inSignal[0]->channel[chan] + inputCount;
 					for (j = 0; j < i; j++)
@@ -1179,7 +1179,7 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 					break;
 				case SAI_INTEGRATION_MODE_AC:
 					scaler = *(dataPtrs[chan] + strobeOffset + i - frameOffset);
-					for (j = i; j < data->outSignal->length; j++)
+					for (j = i; j < _OutSig_EarObject(data)->length; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++ * scaler;
 					inPtr = data->inSignal[0]->channel[chan] + inputCount;
 					for (j = 0; j < i; j++)
@@ -1241,8 +1241,8 @@ Process_Analysis_SAI(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetStaticTimeFlag_SignalData(data->outSignal, TRUE);
-		SetOutputTimeOffset_SignalData(data->outSignal, p->negativeWidth);
+		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->negativeWidth);
 		if (!InitProcessVariables_Analysis_SAI(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
@@ -1263,9 +1263,9 @@ Process_Analysis_SAI(EarObjectPtr data)
 	inputCountPtr = p->inputCount + data->threadIndex;
 	positiveWidthIndex = p->positiveWidthIndex - strobePtr->numLastSamples;
 	negativeWidthIndex = p->zeroIndex + strobePtr->numLastSamples;
-	for (frameLength = data->outSignal->length, endOfData = FALSE;
+	for (frameLength = _OutSig_EarObject(data)->length, endOfData = FALSE;
 	  !endOfData; ) {
-		if (*inputCountPtr + data->outSignal->length > data->inSignal[0]->
+		if (*inputCountPtr + _OutSig_EarObject(data)->length > data->inSignal[0]->
 		  length) {
 			endOfData = TRUE;
 			frameLength = data->inSignal[0]->length - *inputCountPtr;
@@ -1284,10 +1284,10 @@ Process_Analysis_SAI(EarObjectPtr data)
 		PushBufferData_Analysis_SAI(data, frameLength);
 		*inputCountPtr = (endOfData)? 0: *inputCountPtr + frameLength;
 	}
-	 for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	 for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++)
 		DecayImage_Analysis_SAI(data, chan);
-	data->outSignal->numWindowFrames++;
+	_OutSig_EarObject(data)->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

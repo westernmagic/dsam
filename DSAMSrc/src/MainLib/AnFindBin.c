@@ -435,7 +435,7 @@ ReadPars_Analysis_FindBin(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -628,7 +628,7 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
 		binSum = (p->findMinimum)? DBL_MAX: -DBL_MAX;
@@ -644,11 +644,11 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 		switch (p->mode) {
 		case FIND_BIN_MIN_VALUE_MODE:
 		case FIND_BIN_MAX_VALUE_MODE:
-			data->outSignal->channel[chan][0] = binSum / p->binWidthIndex;
+			_OutSig_EarObject(data)->channel[chan][0] = binSum / p->binWidthIndex;
 			break;
 		case FIND_BIN_MIN_INDEX_MODE:
 		case FIND_BIN_MAX_INDEX_MODE:
-			data->outSignal->channel[chan][0] = binIndex;
+			_OutSig_EarObject(data)->channel[chan][0] = binIndex;
 			break;
 		} /* switch */
 	}

@@ -430,7 +430,7 @@ ReadPars_IHC_Cooke91(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -562,18 +562,18 @@ InitProcessVariables_IHC_Cooke91(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Cooke91();
-			if ((p->hCChannels = (CookeHCVarsPtr) calloc(data->outSignal->
+			if ((p->hCChannels = (CookeHCVarsPtr) calloc(_OutSig_EarObject(data)->
 			  numChannels, sizeof (CookeHCVars))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 		vmin = p->spontRate / p->maxSpikeRate;
 		k = p->releaseFraction * dt;
 		l = p->refillFraction * dt;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			p->hCChannels[i].vimm = vmin;
 			p->hCChannels[i].vrel = 0.0;
 			p->hCChannels[i].crel = 0.0;
@@ -642,7 +642,7 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 		p->vmin = p->spontRate / p->maxSpikeRate;
 		p->k = p->releaseFraction * dt;
 		p->l = p->refillFraction * dt;
@@ -651,11 +651,11 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			return(TRUE);
 	}
 		
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
-		outPtr = data->outSignal->channel[i];
+		outPtr = _OutSig_EarObject(data)->channel[i];
 		c = &p->hCChannels[i];
-		for (j = 0; j < data->outSignal->length; j++, inPtr++, outPtr++) {
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++, inPtr++, outPtr++) {
 			rp = *inPtr / (*inPtr + p->crawfordConst);
    			if (rp < 0.0)
    				rp = 0.0;

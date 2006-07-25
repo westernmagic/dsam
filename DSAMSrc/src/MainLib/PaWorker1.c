@@ -478,13 +478,13 @@ ProcessInitTag(void)
 	  MPI_COMM_WORLD, &status);
 	workPtr = GetWorkPtr(handle);
 	data = workPtr->preProcessData;
-	outPtr = data->outSignal->channel[workPtr->chanCount++];
+	outPtr = _OutSig_EarObject(data)->channel[workPtr->chanCount++];
 	while (!finished) {
 		MPI_Probe(masterRank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		switch (status.MPI_TAG) {
 		case MASTER_DATA_TAG:
 			MPI_Get_count(&status, MPI_DOUBLE, &packageLength);
-			if (data->outSignal->length < workPtr->sampleCount +
+			if (_OutSig_EarObject(data)->length < workPtr->sampleCount +
 			  packageLength) {
 				NotifyError(wxT("%s: %s: Channel length is longer than the "
 				  "initialised length for this pre-process data."), workerName,
@@ -502,12 +502,12 @@ ProcessInitTag(void)
 		case MASTER_END_CHANNEL_TAG:
 			MPI_Recv(&response, 1, MPI_INT, masterRank, MASTER_END_CHANNEL_TAG,
 			  MPI_COMM_WORLD, &status);
-			outPtr = data->outSignal->channel[workPtr->chanCount++];
-			if (data->outSignal->length != workPtr->sampleCount) {
+			outPtr = _OutSig_EarObject(data)->channel[workPtr->chanCount++];
+			if (_OutSig_EarObject(data)->length != workPtr->sampleCount) {
 				NotifyError(wxT("%s: %s: Channel length (%u) is shorter than "
 				  "the \ninitialised length for this pre-process data (%u)."),
 				  workerName, funcName, workPtr->sampleCount,
-				  data->outSignal->length);
+				  _OutSig_EarObject(data)->length);
 				ok = FALSE;
 			}
 			workPtr->sampleCount = 0;

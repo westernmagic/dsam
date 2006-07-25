@@ -321,7 +321,7 @@ ReadPars_Transform_SetDBSPL(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -521,8 +521,8 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Set Intensity Module process"));
-		if (data->outSignal != data->inSignal[0]) {
-			data->outSignal = data->inSignal[0];
+		if (_OutSig_EarObject(data) != data->inSignal[0]) {
+			_OutSig_EarObject(data) = data->inSignal[0];
 			data->updateCustomersFlag = TRUE;
 		}
 		if (!InitProcessVariables_Transform_SetDBSPL(data)) {

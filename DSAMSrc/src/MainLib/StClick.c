@@ -394,7 +394,7 @@ ReadPars_Click(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -515,11 +515,11 @@ GenerateSignal_Click(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	dataPtr = data->outSignal->channel[0];
+	dataPtr = _OutSig_EarObject(data)->channel[0];
 	/* The channel is initialised to zero by InitOutSignal_EarObject. */
 	timeIndex = (ChanLen) floor(clickPtr->clickTime / clickPtr->dt + 0.5) - 1;
 	dataPtr[timeIndex] = clickPtr->amplitude;
-	data->outSignal->rampFlag = TRUE;	/* Clicks cannot really be ramped. */
+	_OutSig_EarObject(data)->rampFlag = TRUE;	/* Clicks cannot really be ramped. */
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

@@ -357,7 +357,7 @@ GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
 		return(stderr);
 	default:
 		fileAccess = (mode == APPEND)? "a": "w";
-		if ((fp = fopen(ConvUTF8_Utility_String(outputSpecifier),
+		if ((fp = DSAM_fopen(outputSpecifier,
 		  fileAccess)) == NULL) {
 			NotifyError(wxT("%s: Could not open file '%s' output sent to "
 			  "stderr."), funcName, outputSpecifier);

@@ -1117,7 +1117,7 @@ ReadPars_IHC_Meddis2000(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -1351,7 +1351,7 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 	spontReprocess_w0 = spontCleft_c0 * p->recoveryRate_r /
 	  p->reprocessRate_x;
 
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++) {
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
 		p->hCChannels[i].actCa = ssactCa;
 		p->hCChannels[i].concCa = -ICa;
 		p->hCChannels[i].reservoirQ = spontFreePool_q0;
@@ -1390,7 +1390,7 @@ InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 		OpenDiagnostics_NSpecLists(&p->fp, p->diagModeList, p->diagMode);
 
 		if ((p->hCChannels = (HairCellVars2Ptr) calloc(
-		  data->outSignal->numChannels, sizeof (HairCellVars2))) == NULL) {
+		  _OutSig_EarObject(data)->numChannels, sizeof (HairCellVars2))) == NULL) {
 			NotifyError(wxT("%s: Out of memory."), funcName);
 			return(FALSE);
 		}
@@ -1479,7 +1479,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			return(FALSE);
 		}
 
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 		p->ydt = p->replenishRate_y * dt;
 		p->rdt = p->recoveryRate_r * dt;
 		p->xdt = p->reprocessRate_x * dt;
@@ -1508,10 +1508,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	/*** Put your code here: process output signal. ***/
 	/*** (using 'inPtr' and 'outPtr' for each channel?) ***/
 
-	for (i = data->outSignal->offset, timer = DBL_MAX; i < data->outSignal->
+	for (i = _OutSig_EarObject(data)->offset, timer = DBL_MAX; i < _OutSig_EarObject(data)->
 	  numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
-		for (j = 0, outPtr = data->outSignal->channel[i]; j < data->outSignal->
+		for (j = 0, outPtr = _OutSig_EarObject(data)->channel[i]; j < _OutSig_EarObject(data)->
 		  length; j++, outPtr++) {
 
 			/*** Calcium controlled transmitter release function ***/
@@ -1530,7 +1530,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
 			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
 			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) *
-			  data->outSignal->dt;
+			  _OutSig_EarObject(data)->dt;
 
 			/* power law release function */
 			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
@@ -1607,7 +1607,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			if (debug) {
 				DSAM_fprintf(hairCell2Ptr->fp,
 				  wxT("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g"), j *
-				  data->outSignal->dt, Vin, p->hCChannels[i].actCa, ICa,
+				  _OutSig_EarObject(data)->dt, Vin, p->hCChannels[i].actCa, ICa,
 				  p->hCChannels[i].concCa, kdt, p->hCChannels[i].reservoirQ,
 				  p->hCChannels[i].cleftC, p->hCChannels[i].reprocessedW,
 				  ejected);

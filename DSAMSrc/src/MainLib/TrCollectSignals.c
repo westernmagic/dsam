@@ -511,14 +511,14 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  interleaveLevel);
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	outChannels = data->outSignal->channel;
-	chanLabels = data->outSignal->info.chanLabel;
+	outChannels = _OutSig_EarObject(data)->channel;
+	chanLabels = _OutSig_EarObject(data)->info.chanLabel;
 	userLabels = p->labels;
 	for (i = 0; i < data->numInSignals; i++)
 		for (chan = 0; chan < data->inSignal[i]->numChannels; chan++) {
@@ -532,7 +532,7 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 				break;
 			default:
 				*chanLabels++ = (double) (outChannels -
-				  data->outSignal->channel - 1);
+				  _OutSig_EarObject(data)->channel - 1);
 			} /* switch */
 		}
 

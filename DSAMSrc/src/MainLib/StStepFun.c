@@ -600,16 +600,16 @@ GenerateSignal_StepFunction(EarObjectPtr data)
 			return(TRUE);
 	}
 	beginPeriodDurationIndex = (ChanLen) floor(stepFunPtr->beginPeriodDuration /
-	  data->outSignal->dt + 0.5);
+	  _OutSig_EarObject(data)->dt + 0.5);
 	endSignalIndex = beginPeriodDurationIndex + (ChanLen) floor(stepFunPtr->
 	  duration / stepFunPtr->dt + 0.5);
-	dataPtr = data->outSignal->channel[0];
-	for (i = 0; i < data->outSignal->length; i++)
+	dataPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 		if ( (i >= beginPeriodDurationIndex) && (i <= endSignalIndex) )
 			*(dataPtr++) = stepFunPtr->amplitude;
 		else
 			*(dataPtr++) = stepFunPtr->beginEndAmplitude;
-	data->outSignal->rampFlag = TRUE;/* Step functions should not be ramped. */
+	_OutSig_EarObject(data)->rampFlag = TRUE;/* Step functions should not be ramped. */
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

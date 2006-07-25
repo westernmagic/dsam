@@ -362,7 +362,7 @@ ReadPars_Utility_ReduceChannels(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -532,14 +532,14 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 			return(FALSE);
 		}
 		ResetProcess_Utility_ReduceChannels(data);
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  interleaveLevel);
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelLabels_SignalData(data->outSignal, NULL);
-		SetInfoCFArray_SignalData(data->outSignal, NULL);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), NULL);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), NULL);
 		DSAM_snprintf(channelTitle, MAXLINE, wxT("Channel summary (%d -> %d)"),
-		  data->inSignal[0]->numChannels, data->outSignal->numChannels);
-		SetInfoChannelTitle_SignalData(data->outSignal, channelTitle);
+		  data->inSignal[0]->numChannels, _OutSig_EarObject(data)->numChannels);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -548,16 +548,16 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	  data->inSignal[0]->interleaveLevel)
 		for (j = 0; j < data->inSignal[0]->interleaveLevel; j++) {
 			inPtr = data->inSignal[0]->channel[chan + j];
-			outPtr = data->outSignal->channel[chan / binRatio *
+			outPtr = _OutSig_EarObject(data)->channel[chan / binRatio *
 			 data->inSignal[0]->interleaveLevel + j];
 			for (i = 0; i < data->inSignal[0]->length; i++)
 				*outPtr++ += *inPtr++;
 	}
 	channelBinWidth = data->inSignal[0]->numChannels / numChannels;
 	if (p->mode == REDUCE_CHANS_AVERAGE_MODE)
-		for (chan = 0; chan < data->outSignal->numChannels; chan++) {
-			outPtr = data->outSignal->channel[chan];
-			for (i = 0; i < data->outSignal->length; i++)
+		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
+			outPtr = _OutSig_EarObject(data)->channel[chan];
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ /= channelBinWidth;
 		}
 	SetUtilityProcessContinuity_EarObject(data);

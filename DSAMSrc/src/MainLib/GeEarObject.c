@@ -89,7 +89,7 @@ Init_EarObject(WChar *moduleName)
 	data->timeIndex = PROCESS_START_TIME;
 	data->randPars = NULL;
 	data->inSignal = NULL;
-	data->outSignal = NULL;
+	_OutSig_EarObject(data) = NULL;
 	data->customerList = NULL;
 	data->supplierList = NULL;
 	data->handle = earObjectCount++;	/* Unique handle for each EarObject. */
@@ -215,9 +215,9 @@ FreeOutSignal_EarObject(EarObjectPtr data)
 	if (!data)
 		return;
 	if (data->localOutSignalFlag)
-		Free_SignalData(&data->outSignal);
+		Free_SignalData(&_OutSig_EarObject(data));
 	else
-		data->outSignal = NULL;
+		_OutSig_EarObject(data) = NULL;
 
 }
 
@@ -345,14 +345,14 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 
 	if (data->chainInitRunFlag)
 		return(TRUE);
-	if (data->localOutSignalFlag && (data->outSignal != NULL)) {
-		if (!data->outSignal->dtFlag || (data->outSignal->dt !=
-		  samplingInterval) || !data->outSignal->lengthFlag ||
-		  (data->outSignal->length != length) ||
-		  !data->outSignal->numChannels || (data->outSignal->numChannels !=
+	if (data->localOutSignalFlag && (_OutSig_EarObject(data) != NULL)) {
+		if (!_OutSig_EarObject(data)->dtFlag || (_OutSig_EarObject(data)->dt !=
+		  samplingInterval) || !_OutSig_EarObject(data)->lengthFlag ||
+		  (_OutSig_EarObject(data)->length != length) ||
+		  !_OutSig_EarObject(data)->numChannels || (_OutSig_EarObject(data)->numChannels !=
 		  numChannels)) {
-		 	oldOutSignal = *data->outSignal;
-			Free_SignalData(&data->outSignal);
+		 	oldOutSignal = *_OutSig_EarObject(data);
+			Free_SignalData(&_OutSig_EarObject(data));
 			data->updateCustomersFlag = TRUE;
 			deletedOldOutSignal = TRUE;
 		} else
@@ -361,16 +361,16 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		data->updateCustomersFlag = TRUE;/* Customers must be updated anyway. */
 	
 	if (createNewSignal) {
-		data->outSignal = Init_SignalData(funcName);
-		SetLength_SignalData(data->outSignal, length);
-		SetSamplingInterval_SignalData(data->outSignal, samplingInterval);
-		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
-		if (!InitChannels_SignalData(data->outSignal, numChannels,
+		_OutSig_EarObject(data) = Init_SignalData(funcName);
+		SetLength_SignalData(_OutSig_EarObject(data), length);
+		SetSamplingInterval_SignalData(_OutSig_EarObject(data), samplingInterval);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), samplingInterval);
+		if (!InitChannels_SignalData(_OutSig_EarObject(data), numChannels,
 		  data->externalDataFlag)) {
 			NotifyError(wxT("%s: Cannot initialise output channels for "
 			  "EarObject '%s'."), funcName, POSSIBLY_NULL_STRING_PTR(data->
 			  processName));
-			Free_SignalData(&data->outSignal);
+			Free_SignalData(&_OutSig_EarObject(data));
 			data->localOutSignalFlag = FALSE;
 			return(FALSE);
 		}
@@ -402,34 +402,34 @@ ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
 {
 	static const WChar *funcName = wxT("ResetSignalContinuity_EarObject");
 
-	if (!CheckPars_SignalData(data->outSignal)) {
+	if (!CheckPars_SignalData(_OutSig_EarObject(data))) {
 		NotifyError(wxT("%s: Output signal not correctly set."), funcName);
 		exit(1);
 	}
 	if (!data->inSignal || (data->inSignal[0] == NULL)) {
 		if (oldOutSignal != NULL) {
-			data->outSignal->rampFlag = oldOutSignal->rampFlag;
-			data->outSignal->interleaveLevel = oldOutSignal->interleaveLevel;
-			data->outSignal->timeIndex = oldOutSignal->timeIndex;
+			_OutSig_EarObject(data)->rampFlag = oldOutSignal->rampFlag;
+			_OutSig_EarObject(data)->interleaveLevel = oldOutSignal->interleaveLevel;
+			_OutSig_EarObject(data)->timeIndex = oldOutSignal->timeIndex;
 		} else {
-			data->outSignal->rampFlag = FALSE;
-			data->outSignal->interleaveLevel =
+			_OutSig_EarObject(data)->rampFlag = FALSE;
+			_OutSig_EarObject(data)->interleaveLevel =
 			  SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
-			data->outSignal->timeIndex = PROCESS_START_TIME;
+			_OutSig_EarObject(data)->timeIndex = PROCESS_START_TIME;
 		}
-		ResetInfo_SignalData(data->outSignal);
+		ResetInfo_SignalData(_OutSig_EarObject(data));
 	} else {
-		data->outSignal->rampFlag = data->inSignal[0]->rampFlag;
-		if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
-			SetInterleaveLevel_SignalData(data->outSignal,
+		_OutSig_EarObject(data)->rampFlag = data->inSignal[0]->rampFlag;
+		if (_OutSig_EarObject(data)->numChannels != data->inSignal[0]->numChannels)
+			SetInterleaveLevel_SignalData(_OutSig_EarObject(data),
 			  SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL);
 		else
-			SetInterleaveLevel_SignalData(data->outSignal,
+			SetInterleaveLevel_SignalData(_OutSig_EarObject(data),
 			  data->inSignal[0]->interleaveLevel);
-		data->outSignal->timeIndex = data->inSignal[0]->timeIndex;
-		data->outSignal->outputTimeOffset = data->inSignal[0]->outputTimeOffset;
-		if (!data->outSignal->localInfoFlag)
-			CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
+		_OutSig_EarObject(data)->timeIndex = data->inSignal[0]->timeIndex;
+		_OutSig_EarObject(data)->outputTimeOffset = data->inSignal[0]->outputTimeOffset;
+		if (!_OutSig_EarObject(data)->localInfoFlag)
+			CopyInfo_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
 	}
 
 }
@@ -487,8 +487,8 @@ ResetOutSignal_EarObject(EarObjectPtr data)
 
 	if (!data->updateProcessFlag || data->externalDataFlag)
 		return;
-	for (i = data->outSignal->offset; i < data->outSignal->numChannels; i++)
-		for (j = 0, dataPtr = data->outSignal->channel[i]; j < data->outSignal->
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
+		for (j = 0, dataPtr = _OutSig_EarObject(data)->channel[i]; j < _OutSig_EarObject(data)->
 		  length; j++)
 			*(dataPtr++) = 0.0;
 
@@ -533,12 +533,12 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 		NotifyError(wxT("%s: Could not set output signal."), funcName);
 		return(FALSE);
 	}
-	SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0]);
-	if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+	SetChannelsFromSignal_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
+	if (_OutSig_EarObject(data)->numChannels != data->inSignal[0]->numChannels)
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  numChannels);
 	else
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  interleaveLevel);
 	return(TRUE);
 	
@@ -560,7 +560,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 void
 InitOutDataFromInSignal_EarObject(EarObjectPtr data)
 {
-	SetChannelsFromSignal_SignalData(data->outSignal, data->inSignal[0]);
+	SetChannelsFromSignal_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
 
 }
 
@@ -603,11 +603,11 @@ InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 		NotifyError(wxT("%s: Could not set output signal."), funcName);
 		return(FALSE);
 	}
-	if (data->outSignal->numChannels != data->inSignal[0]->numChannels)
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+	if (_OutSig_EarObject(data)->numChannels != data->inSignal[0]->numChannels)
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  numChannels);
 	else
-		SetInterleaveLevel_SignalData(data->outSignal, data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
 		  interleaveLevel);
 	return(TRUE);
 	
@@ -899,7 +899,7 @@ SetTimeContinuity_EarObject(EarObjectPtr data)
 		return;
 	if (data->timeIndex > 1)
 		data->firstSectionFlag = FALSE;
-	data->timeIndex += data->outSignal->length;
+	data->timeIndex += _OutSig_EarObject(data)->length;
 
 }
 
@@ -909,14 +909,14 @@ SetTimeContinuity_EarObject(EarObjectPtr data)
  * This routine sets the various process continuity requirements, such as
  * time, customer updating, etc.
  * It assumes that the EarObjectPtr has been initialised.
- * The 'data->outSignal->offset' comparison ensures that only the first thread
+ * The '_OutSig_EarObject(data)->offset' comparison ensures that only the first thread
  * of a multi-threaded run will set the process continuity information.
  */
 
 void
 SetProcessContinuity_EarObject(EarObjectPtr data)
 {
-	if (data->outSignal->offset)
+	if (_OutSig_EarObject(data)->offset)
 		return;
 	SetTimeContinuity_EarObject(data);
 	if (data->updateCustomersFlag)
@@ -931,19 +931,19 @@ SetProcessContinuity_EarObject(EarObjectPtr data)
  * This routine sets the various process continuity requirements for utility 
  * modules, such as staticTimeFlag, outputTimeOffset etc.
  * It assumes that the EarObjectPtr has been initialised.
- * The 'data->outSignal->offset' comparison ensures that only the first thread
+ * The '_OutSig_EarObject(data)->offset' comparison ensures that only the first thread
  * of a multi-threaded run will set the process continuity information.
  */
 
 void
 SetUtilityProcessContinuity_EarObject(EarObjectPtr data)
 {
-	if (data->outSignal->offset)
+	if (_OutSig_EarObject(data)->offset)
 		return;
 	if (data->inSignal[0]) {
-		data->outSignal->staticTimeFlag = data->inSignal[0]->staticTimeFlag;
-		data->outSignal->numWindowFrames = data->inSignal[0]->numWindowFrames;
-		data->outSignal->outputTimeOffset = data->inSignal[0]->outputTimeOffset;
+		_OutSig_EarObject(data)->staticTimeFlag = data->inSignal[0]->staticTimeFlag;
+		_OutSig_EarObject(data)->numWindowFrames = data->inSignal[0]->numWindowFrames;
+		_OutSig_EarObject(data)->outputTimeOffset = data->inSignal[0]->outputTimeOffset;
 	}
 
 }
@@ -1050,19 +1050,19 @@ GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}
-	if (!CheckInit_SignalData(data->outSignal, funcName))
+	if (!CheckInit_SignalData(_OutSig_EarObject(data), funcName))
 		exit(1);
-	if (channel >= data->outSignal->numChannels) {
+	if (channel >= _OutSig_EarObject(data)->numChannels) {
 		NotifyError(wxT("%s: Illegal channel number (%u) for '%s' EarObject."),
 		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
-	if (sample >= data->outSignal->length) {
+	if (sample >= _OutSig_EarObject(data)->length) {
 		NotifyError(wxT("%s: Illegal sample number (%u) for '%s' EarObject."),
 		  funcName, sample, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
-	return(data->outSignal->channel[channel][sample]);
+	return(_OutSig_EarObject(data)->channel[channel][sample]);
 
 }
 
@@ -1084,18 +1084,18 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
 	}
-	if (!CheckInit_SignalData(data->outSignal, funcName))
+	if (!CheckInit_SignalData(_OutSig_EarObject(data), funcName))
 		exit(1);
-	if (channel >= data->outSignal->numChannels) {
+	if (channel >= _OutSig_EarObject(data)->numChannels) {
 		NotifyError(wxT("%s: Illegal channel number (%u) for '%s' EarObject."),
 		  funcName, channel, POSSIBLY_NULL_STRING_PTR(data->processName));
 		exit(1);
 	}
-	if (data->outSignal->length < 1) {
+	if (_OutSig_EarObject(data)->length < 1) {
 		NotifyError(wxT("%s: Illegal signal length."), funcName);
 		exit(1);
 	}
-	return(data->outSignal->channel[channel][0]);
+	return(_OutSig_EarObject(data)->channel[channel][0]);
 
 }
 

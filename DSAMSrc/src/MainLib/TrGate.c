@@ -656,7 +656,7 @@ ReadPars_Transform_Gate(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -854,10 +854,10 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	ChanLen	i;
 	ChanData	*dataPtr, *endPtr;
 	
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		dataPtr = data->outSignal->channel[chan];
-		endPtr = dataPtr + data->outSignal->length - 1;
+		dataPtr = _OutSig_EarObject(data)->channel[chan];
+		endPtr = dataPtr + _OutSig_EarObject(data)->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
 			dataPtr += offsetIndex;
 		else
@@ -866,7 +866,7 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 				;
 		for (i = 0; (i < intervalIndex) && (dataPtr < endPtr); i++)
 			*dataPtr++ *= GateFunction_Transform_Gate(i, intervalIndex,
-			  data->outSignal->dt);
+			  _OutSig_EarObject(data)->dt);
 	}
 
 }
@@ -885,10 +885,10 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	int		chan;
 	ChanLen	i;
 
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		startPtr = data->outSignal->channel[chan];
-		dataPtr = startPtr + data->outSignal->length - 1;
+		startPtr = _OutSig_EarObject(data)->channel[chan];
+		dataPtr = startPtr + _OutSig_EarObject(data)->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
 			dataPtr -= offsetIndex;
 		else
@@ -897,7 +897,7 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 				;
 		for (i = 0; (i < intervalIndex) && ( dataPtr > startPtr); i++)
 			*dataPtr-- *= GateFunction_Transform_Gate(i, intervalIndex,
-			  data->outSignal->dt);
+			  _OutSig_EarObject(data)->dt);
 	}
 
 }
@@ -936,15 +936,15 @@ Process_Transform_Gate(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Gate Module process"));
-		if (data->outSignal != data->inSignal[0]) {
-			data->outSignal = data->inSignal[0];
+		if (_OutSig_EarObject(data) != data->inSignal[0]) {
+			_OutSig_EarObject(data) = data->inSignal[0];
 			data->updateCustomersFlag = TRUE;
 		}
-		data->outSignal->rampFlag = TRUE;
+		_OutSig_EarObject(data)->rampFlag = TRUE;
 		p->offsetIndex = (p->positionMode == GATE_ABSOLUTE_POSITION_MODE)?
-		  (ChanLen) floor(p->timeOffset / data->outSignal->dt + 0.5): 0;
+		  (ChanLen) floor(p->timeOffset / _OutSig_EarObject(data)->dt + 0.5): 0;
 		p->intervalIndex = (p->duration < 0.0)? data->inSignal[0]->length:
-		  (ChanLen) floor(p->duration / data->outSignal->dt + 0.5);
+		  (ChanLen) floor(p->duration / _OutSig_EarObject(data)->dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

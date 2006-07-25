@@ -1427,25 +1427,25 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 	  updateFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_BasilarM_Zhang();
-		if ((p->bM = (TBasilarMembrane *) calloc(data->outSignal->numChannels,
+		if ((p->bM = (TBasilarMembrane *) calloc(_OutSig_EarObject(data)->numChannels,
 		  sizeof(TBasilarMembrane))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for coefficients array."),
 			  funcName);
 		 	return(FALSE);
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(data->outSignal,
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data),
 		   p->cFList->frequency);
-		SetInfoCFArray_SignalData(data->outSignal, p->cFList->frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->cFList->frequency);
 		bMZhangPtr->updateProcessVariablesFlag = FALSE;
 		p->cFList->updateFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
 			if (!InitBasilarMembrane_BasilarM_Zhang(&p->bM[i], p->model +
-			  1, p->species, data->outSignal->dt, p->cFList->frequency[
+			  1, p->species, _OutSig_EarObject(data)->dt, p->cFList->frequency[
 			  cFIndex])) {
 				NotifyError(wxT("%s: Could not initialised BM for channel "
 				  "(%d)."), funcName, i);
@@ -1596,13 +1596,13 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
 		  interleaveLevel];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		Run2BasilarMembrane_BasilarM_Zhang(&p->bM[chan], inPtr, outPtr,
-		  data->outSignal->length);
+		  _OutSig_EarObject(data)->length);
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

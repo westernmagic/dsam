@@ -556,7 +556,7 @@ ReadPars_IHC_Meddis86a(WChar *fileName)
 	FILE	*fp;
 	
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -737,7 +737,7 @@ InitProcessVariables_IHC_Meddis86a(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Meddis86a();
 			if ((p->hCChannels = (HairCellVars3Ptr) calloc(
-			  data->outSignal->numChannels, sizeof (HairCellVars3))) == NULL) {
+			  _OutSig_EarObject(data)->numChannels, sizeof (HairCellVars3))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
@@ -753,7 +753,7 @@ InitProcessVariables_IHC_Meddis86a(EarObjectPtr data)
 		spontReprocess_w0 = spontCleft_c0 * p->recoveryRate_r /
 		  p->reprocessRate_x;
 
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			p->hCChannels[i].cleftC = spontCleft_c0;
 			p->hCChannels[i].reservoirQ = spontFreePool_q0;
 			p->hCChannels[i].reprocessedW = spontReprocess_w0;
@@ -819,7 +819,7 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->outSignal->dt;
+		dt = _OutSig_EarObject(data)->dt;
 
 		p->ymdt = p->replenishRate_y * p->maxFreePool_M * dt;
 		p->xdt = p->reprocessRate_x * dt;
@@ -831,11 +831,11 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = data->outSignal->offset, clipped = FALSE; i < data->outSignal->
+	for (i = _OutSig_EarObject(data)->offset, clipped = FALSE; i < _OutSig_EarObject(data)->
 	  numChannels; i++) {
 		inPtr = data->inSignal[0]->channel[i];
-		outPtr = data->outSignal->channel[i];
-		for (j = 0; j < data->outSignal->length; j++) {
+		outPtr = _OutSig_EarObject(data)->channel[i];
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
 			kdt = p->zdt * exp(p->permeabilityPH_h * *inPtr++);
 			if (kdt >= 1.0) {
 				kdt = 0.99;

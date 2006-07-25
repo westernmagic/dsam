@@ -455,32 +455,32 @@ Process_Utility_MathOp(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr1 = data->inSignal[0]->channel[chan];
 		if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 		  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT))
 			inPtr2 = data->inSignal[1]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		switch (mathOpPtr->operatorMode) {
 		case UTILITY_MATHOP_OPERATORMODE_ADD:
-			for (i = 0; i < data->outSignal->length; i++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ = *inPtr1++ + *inPtr2++;
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_ABSOLUTE:
-			for (i = 0; i < data->outSignal->length; i++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ = fabs(*inPtr1++);
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SCALE:
-			for (i = 0; i < data->outSignal->length; i++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ = *inPtr1++ * mathOpPtr->operand;
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SQR:
-			for (i = 0; i < data->outSignal->length; i++, inPtr1++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr1++)
 				*outPtr++ = SQR(*inPtr1);
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SUBTRACT:
-			for (i = 0; i < data->outSignal->length; i++)
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*outPtr++ = *inPtr1++ - *inPtr2++;
 			break;
 		default:

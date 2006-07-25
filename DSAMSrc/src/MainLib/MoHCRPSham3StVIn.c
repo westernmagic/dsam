@@ -839,7 +839,7 @@ ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -997,20 +997,20 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 
 			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
-			if ((p->lastInput = (double *) calloc(data->outSignal->numChannels,
+			if ((p->lastInput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
 			  sizeof(double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for 'lastInput'."),
 				  funcName);
 				return(FALSE);
 			}
-			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
+			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
 			  sizeof(double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 				  funcName);
 				return(FALSE);
 			}
 			if ((p->lastCiliaDisplacement_u = (double *)
-				calloc(data->outSignal->numChannels, sizeof(double))) == NULL) {
+				calloc(_OutSig_EarObject(data)->numChannels, sizeof(double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for "
 				  "'lastCiliaDisplacement_u'."), funcName);
 				return(FALSE);
@@ -1024,7 +1024,7 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		  (p->restingConductance_G0 + p->kConductance_Gk);
 
 		if (data->timeIndex == PROCESS_START_TIME) {
-			for (i = 0; i < data->outSignal->numChannels; i++) {
+			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 				p->lastInput[i] = 0.0;
 				p->lastOutput[i] = restingPotential_V0;
 				p->lastCiliaDisplacement_u[i] = 0.0;
@@ -1118,7 +1118,7 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			return(FALSE);
 		}
 
-		p->dtOverC = data->outSignal->dt / p->totalCapacitance_C;
+		p->dtOverC = _OutSig_EarObject(data)->dt / p->totalCapacitance_C;
 		p->gkEpk = p->kConductance_Gk * (p->reversalPot_Ek +
 		  p->endocochlearPot_Et * p->reversalPotCorrection);
 		ciliaAct = 1.0 / (1.0 + exp(p->offset_u0 / p->sensitivity_s0) *
@@ -1128,19 +1128,19 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 
 		p->cGaindt = pow(10.0, p->ciliaCouplingGain_C / 20.0) * data->
 		  outSignal->dt;
-		p->dtOverTc = data->outSignal->dt / p->ciliaTimeConst_tc;
+		p->dtOverTc = _OutSig_EarObject(data)->dt / p->ciliaTimeConst_tc;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
 		potential_V = p->lastOutput[chan];
 		lastInput = p->lastInput[chan];
-		for (i = 0; i < data->outSignal->length; i++, inPtr++, outPtr++) {
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += p->cGaindt * (*inPtr ) - 
 			  ciliaDisplacement_u * p->dtOverTc;
 			ciliaAct = 1.0 / (1.0 + exp((p->offset_u0 - ciliaDisplacement_u) /
@@ -1157,8 +1157,8 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		p->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
 		p->lastInput[chan] = lastInput;
 		p->lastOutput[chan] = potential_V;
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++)
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ += p->referencePot;
 	}
 

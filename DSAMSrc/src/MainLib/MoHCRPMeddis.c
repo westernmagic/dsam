@@ -387,7 +387,7 @@ ReadPars_IHCRP_Meddis(WChar *fileName)
     FILE    *fp;
     
 	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -524,7 +524,7 @@ InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Meddis();
-			if ((p->lastOutput = (double *) calloc(data->outSignal->numChannels,
+			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
 			   sizeof(double))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory."), funcName);
 			 	return(FALSE);
@@ -533,7 +533,7 @@ InitProcessVariables_IHCRP_Meddis(EarObjectPtr data)
 		}
 		spontPerm_k0 = p->releaseRate_g * p->permConst_A / (p->permConst_A +
 		  p->permConst_B);
-		for (i = 0; i < data->outSignal->numChannels; i++)
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++)
 			p->lastOutput[i] = spontPerm_k0;
 	}
 	return(TRUE);
@@ -606,18 +606,18 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dtOverTm = data->outSignal->dt / p->mTimeConst_tm;
+		p->dtOverTm = _OutSig_EarObject(data)->dt / p->mTimeConst_tm;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		permeability_K = PERMEABILITY(*inPtr++);
 		*outPtr++ = LOWPASSFILTER(p->lastOutput[chan]);
 		/* Probability calculation for the rest of the signal. */
-		for (i = 1; i < data->outSignal->length; i++) {
+		for (i = 1; i < _OutSig_EarObject(data)->length; i++) {
 			permeability_K = PERMEABILITY(*inPtr++);
 			*outPtr = LOWPASSFILTER(*(outPtr - 1));
 			outPtr++;	/* Compiler complains if things not done this way. */

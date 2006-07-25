@@ -169,11 +169,11 @@ Process_Utility_Accumulate(EarObjectPtr data)
 			return(TRUE);
 	}
 	for (input = 0; input < data->numInSignals; input++)
-		for (chan = data->outSignal->offset; chan < data->outSignal->
+		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 		  numChannels; chan++) {
 			inPtr = data->inSignal[input]->channel[chan];
-			outPtr = data->outSignal->channel[chan];
-			for (i = 0; i < data->outSignal->length; i++)
+			outPtr = _OutSig_EarObject(data)->channel[chan];
+			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 				*(outPtr++) += *(inPtr++);
 		}
 	SetUtilityProcessContinuity_EarObject(data);

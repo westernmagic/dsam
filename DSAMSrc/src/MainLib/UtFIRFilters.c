@@ -156,11 +156,11 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	ChanData	*stateBuffer;
 	register ChanData	*xi, *s, *s2;
 
-	if ((ChanLen) p->m < data->outSignal->length)		/* Shift unnessary */
+	if ((ChanLen) p->m < _OutSig_EarObject(data)->length)		/* Shift unnessary */
 		stateSampleLen = p->m;
 	else {
-		stateSampleLen = data->outSignal->length;
-		for (chan = data->outSignal->offset; chan < data->outSignal->
+		stateSampleLen = _OutSig_EarObject(data)->length;
+		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
 		  numChannels; chan++) {
 			stateBuffer =  p->state + p->m * chan;
 			s = stateBuffer + p->m - 1;
@@ -169,7 +169,7 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 				*s-- = *s2--;
 		}
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		s = p->state + p->m * chan;
 		xi = data->inSignal[0]->channel[chan] + stateSampleLen - 1;
@@ -199,11 +199,11 @@ FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	ChanLen	i, j;
 	register ChanData	*yi, *xi, *xi2, *state, *c, *xStart, summ;
 	
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		xi = xStart = data->inSignal[0]->channel[chan];
-		yi = data->outSignal->channel[chan];
-		for (i = data->outSignal->length; i ; i--, xi++, yi++) {
+		yi = _OutSig_EarObject(data)->channel[chan];
+		for (i = _OutSig_EarObject(data)->length; i ; i--, xi++, yi++) {
 			c = p->c;
 			for (j = p->m, xi2 = xi, summ = 0.0; j && (xi2 >= xStart); j--)
 				summ += *c++ * *xi2--;

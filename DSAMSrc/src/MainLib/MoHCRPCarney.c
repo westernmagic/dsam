@@ -512,7 +512,7 @@ ReadPars_IHCRP_Carney(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -732,7 +732,7 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_IHCRP_Carney");
 	int		i, cFIndex;
-	double	*ptr1, *ptr2, dt = data->outSignal->dt;
+	double	*ptr1, *ptr2, dt = _OutSig_EarObject(data)->dt;
 	ChanLen	j;
 	CarneyRPPtr	p = carneyRPPtr;
 
@@ -740,19 +740,19 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Carney();
-			p->numChannels = data->outSignal->numChannels;
+			p->numChannels = _OutSig_EarObject(data)->numChannels;
 			if ((p->coefficients = (CarneyRPCoeffsPtr *) calloc(
 			  p->numChannels, sizeof(CarneyRPCoeffs))) == NULL) {
 		 		NotifyError(wxT("%s: Out of memory for coefficients array."),
 		 		  funcName);
 		 		return(FALSE);
 			}
-			SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-			CopyInfo_SignalData(data->outSignal, data->inSignal[0]);
+			SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+			CopyInfo_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
 			for (i = 0; i < p->numChannels; i++) {
-				cFIndex = i / data->outSignal->interleaveLevel;
+				cFIndex = i / _OutSig_EarObject(data)->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyRPCoeffs_IHCRP_Carney(
-				  data->outSignal->info.cFArray[cFIndex], dt)) == NULL) {
+				  _OutSig_EarObject(data)->info.cFArray[cFIndex], dt)) == NULL) {
 					NotifyError(wxT("%s: Out of memory for coefficient (%d)."),
 					  funcName, i);
 					FreeProcessVariables_IHCRP_Carney();
@@ -761,10 +761,10 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 			}
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		for (i = 0; i < data->outSignal->numChannels; i++) {
-			cFIndex = i / data->outSignal->interleaveLevel;
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
+			cFIndex = i / _OutSig_EarObject(data)->interleaveLevel;
 			p->coefficients[i]->x = BANDWIDTH_CARNEY_X(
-			  data->outSignal->info.cFArray[cFIndex]);
+			  _OutSig_EarObject(data)->info.cFArray[cFIndex]);
 			ptr1 = p->coefficients[i]->lastOutputSection;
 			ptr2 = p->coefficients[i]->lastOutputStore;
 			for (j = 0; j < p->coefficients[i]->numLastSamples; j++)
@@ -778,7 +778,7 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 	}
 	for (i = 0; i < carneyRPPtr->numChannels; i++)
 		if (carneyRPPtr->coefficients[i]->numLastSamples >=
-		  data->outSignal->length) {
+		  _OutSig_EarObject(data)->length) {
 			NotifyError(wxT("%s: Signal too short for wave delay (%g ms)."),
 			  funcName, carneyRPPtr->coefficients[i]->numLastSamples * dt);
 			FreeProcessVariables_IHCRP_Carney();
@@ -847,12 +847,12 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = data->outSignal->offset; chan < data->outSignal->numChannels;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		cC = *(p->coefficients + chan);
 		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = data->outSignal->channel[chan];
-		for(i = 0; i < data->outSignal->length; i++, outPtr++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for(i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
 			temp = 0.746 * *inPtr++ / p->hCOperatingPoint;
 			waveNow = p->aA * (tanh(temp - p->asymmetricalBias) +
 			  tanh(p->asymmetricalBias));
@@ -862,8 +862,8 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 			cC->waveLast = waveNow;
 		}
 		/* lowpass filter the IHC voltage once more  */
- 		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++, outPtr++) {
+ 		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
 			iHCTemp = *outPtr;
 			*outPtr = p->c1LP * cC->iHCLast + p->c2LP * (*outPtr +
 			  cC->iHCTempLast);
@@ -871,19 +871,19 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 			cC->iHCLast = *outPtr;
 		}
 		/* DELAY THE WAVEFORM */
-		inPtr = data->outSignal->channel[chan] + data->outSignal->length - 
+		inPtr = _OutSig_EarObject(data)->channel[chan] + _OutSig_EarObject(data)->length - 
 		  cC->numLastSamples;
 		outPtr = cC->lastOutputStore;
 		for(i = 0; i < cC->numLastSamples; i++)
 			*outPtr++ = *inPtr++;
 
-		outPtr = data->outSignal->channel[chan] + data->outSignal->length - 1;
-		for(i = cC->numLastSamples; i < data->outSignal->length; i++,
+		outPtr = _OutSig_EarObject(data)->channel[chan] + _OutSig_EarObject(data)->length - 1;
+		for(i = cC->numLastSamples; i < _OutSig_EarObject(data)->length; i++,
 		  outPtr--)
 			*outPtr = *(outPtr - cC->numLastSamples);
 
 		inPtr = cC->lastOutputSection;
-		outPtr = data->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for(i = 0; i < cC->numLastSamples; i++)
 			*outPtr++ = *inPtr++;
 
@@ -892,8 +892,8 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 		for(i = 0; i < cC->numLastSamples; i++)
 			*outPtr++ = *inPtr++;
 
-		outPtr = data->outSignal->channel[chan];
-		for (i = 0; i < data->outSignal->length; i++)
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 			*outPtr++ += carneyRPPtr->referencePot;
 	}
 	SetProcessContinuity_EarObject(data);

@@ -1409,11 +1409,11 @@ Process_Utility_SimScript(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetParsFilePath_Common(oldParsFilePath);
-	lastOutSignal = data->outSignal;
-	data->outSignal = GetLastProcess_Utility_Datum(
+	lastOutSignal = _OutSig_EarObject(data);
+	_OutSig_EarObject(data) = GetLastProcess_Utility_Datum(
  	  localSimScriptPtr->simulation)->outSignal;
 	simScriptPtr = localSimScriptPtr;
-	data->updateCustomersFlag = (lastOutSignal != data->outSignal);
+	data->updateCustomersFlag = (lastOutSignal != _OutSig_EarObject(data));
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

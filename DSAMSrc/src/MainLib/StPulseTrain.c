@@ -442,7 +442,7 @@ ReadPars_PulseTrain(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  filePath);
 		return(FALSE);
@@ -616,7 +616,7 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
-		data->outSignal->rampFlag = TRUE; /* Do not ramp. */
+		_OutSig_EarObject(data)->rampFlag = TRUE; /* Do not ramp. */
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -625,8 +625,8 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 		p->nextPulseTime = pulsePeriod;
 		p->remainingPulseTime = p->pulseDuration;
 	}
-	outPtr = data->outSignal->channel[0];
-	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < data->outSignal->length;
+	outPtr = _OutSig_EarObject(data)->channel[0];
+	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < _OutSig_EarObject(data)->length;
 	  i++, t += p->dt, outPtr++) {
 		if (p->remainingPulseTime > 0.0) {
 			*outPtr = p->amplitude;

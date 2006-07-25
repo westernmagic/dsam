@@ -982,7 +982,7 @@ ReadPars_BasilarM_DRNL_Test(WChar *fileName)
 	FILE	*fp;
 
 	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = fopen(ConvUTF8_Utility_String(filePath), "r")) == NULL) {
+	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
 		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
 		  fileName);
 		return(FALSE);
@@ -1227,7 +1227,7 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_DRNL_Test();
 		p->linearF = Init_EarObject(wxT("NULL"));
-		p->numChannels = data->outSignal->numChannels;
+		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if (p->nonLinGTCascade) {
 			if ((p->nonLinearGT1 = (GammaToneCoeffsPtr *) calloc(p->numChannels,
 			  sizeof(GammaToneCoeffsPtr))) == NULL) {
@@ -1262,7 +1262,7 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 		}
 
 		sampleRate = 1.0 / data->inSignal[0]->dt;
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			cFIndex = i / data->inSignal[0]->interleaveLevel;
 			centreFreq = p->theCFs->frequency[cFIndex];
 			if (p->nonLinearGT1) {
@@ -1303,14 +1303,14 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 				return(FALSE);
 			}
 		}
-		SetLocalInfoFlag_SignalData(data->outSignal, TRUE);
-		SetInfoChannelTitle_SignalData(data->outSignal, wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(data->outSignal, p->theCFs->frequency);
-		SetInfoCFArray_SignalData(data->outSignal, p->theCFs->frequency);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < data->outSignal->numChannels; i++) {
+		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			for (j = 0; j < p->nonLinGTCascade * 
 			  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER; j++) {
 				p->nonLinearGT1[i]->stateVector[j] = 0.0;
@@ -1483,32 +1483,32 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 	
 	/* Filter non-linear signal path */
 	if (p->nonLinearGT1)
-		GammaTone_Filters(data->outSignal, p->nonLinearGT1);
+		GammaTone_Filters(_OutSig_EarObject(data), p->nonLinearGT1);
 
 	switch (p->compressionMode) {
 	case DRNLT_COMPRESSION_MODE_ORIGINAL:
-		Compression_Filters(data->outSignal, p->compressionPars[0],
+		Compression_Filters(_OutSig_EarObject(data), p->compressionPars[0],
 		  p->compressionPars[1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_INVPOWER:
-		InversePowerCompression_Filters(data->outSignal, p->compressionPars[0],
+		InversePowerCompression_Filters(_OutSig_EarObject(data), p->compressionPars[0],
 		  p->compressionPars[1]);
 		break;
 	case DRNLT_COMPRESSION_MODE_BROKENSTICK1:
-		BrokenStick1Compression_Filters(data->outSignal, p->compressionPars[0],
+		BrokenStick1Compression_Filters(_OutSig_EarObject(data), p->compressionPars[0],
 		  p->compressionPars[1], p->compressionPars[2]);
 		break;
 	case DRNLT_COMPRESSION_MODE_UPTON_BSTICK:
-		UptonBStick1Compression_Filters(data->outSignal, p->compressionPars[0],
+		UptonBStick1Compression_Filters(_OutSig_EarObject(data), p->compressionPars[0],
 		  p->compressionPars[1], p->compressionPars[2], p->compressionPars[3]);
 		break;
 	default:
 		;
 	}
 	if (p->nonLinearGT2)
-		GammaTone_Filters(data->outSignal, p->nonLinearGT2);
+		GammaTone_Filters(_OutSig_EarObject(data), p->nonLinearGT2);
 
-	RunLPFilter_BasilarM_DRNL_Test(data->outSignal, &p->nonLinearLP);
+	RunLPFilter_BasilarM_DRNL_Test(_OutSig_EarObject(data), &p->nonLinearLP);
 	
 	/* Filter linear signal path */
 	if (p->linearGT)
@@ -1517,7 +1517,7 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 	RunLPFilter_BasilarM_DRNL_Test(p->linearF->outSignal, &p->linearLP);
 	
 	Scale_SignalData(p->linearF->outSignal, p->linScaler);
-	Add_SignalData(data->outSignal, p->linearF->outSignal);
+	Add_SignalData(_OutSig_EarObject(data), p->linearF->outSignal);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
