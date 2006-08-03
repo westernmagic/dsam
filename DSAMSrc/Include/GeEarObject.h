@@ -51,9 +51,9 @@
 #define _GetResult_EarObject(EAROBJ, CHAN) \
   ((EAROBJ)->outSignal->channel[CHAN][0])
 
-#define _InSig_EarObject(EAROBJ, NUM)	((EAROBJ)->inSignal[(NUM)])
+#define _InSig_EarObject(EAROBJ, NUM)	(*(EAROBJ)->inSignal[(NUM)])
 
-#define _OutSig_EarObject(EAROBJ)	((EAROBJ)->outSignal)
+#define _OutSig_EarObject(EAROBJ)	(*(EAROBJ)->outSignalPtr)
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -80,8 +80,6 @@ typedef struct _EarObject {
 	BOOLN		threadRunFlag;		/* Set when running thread. */
 	BOOLN		useThreadsFlag;		/* Set when multiple channels processed. */
 	BOOLN		chainInitRunFlag;	/* For chain initialisation run. */
-	BOOLN		updateCustomersFlag;	/* This is set when an update is */
-										/* required */
 	BOOLN		updateProcessFlag;	/* Set when dt is changed for a signal. */
 	BOOLN			firstSectionFlag;/* Set for first signal section. */
 	EarObjHandle	handle;			/* Reference handle for manager. */
@@ -92,8 +90,9 @@ typedef struct _EarObject {
 	int				numSubProcesses;/* No. of associated. sub-processes. */
 	ChanLen			timeIndex;		/* used in segmented mode processing */
 	RandParsPtr		randPars;		/* Used to store random number pars. */
-	SignalDataPtr	*inSignal;		/* The original signals */
+	SignalDataPtr * *inSignal;		/* The original signals */
 	SignalDataPtr	outSignal;		/* The signal set by the process stages */
+	SignalDataPtr	*outSignalPtr;	/* Pointer to the output signal */
 	EarObjRefPtr	customerList;	/* Pointer to list of customers. */
 	EarObjRefPtr	supplierList;	/* Pointer to list of suppliers. */
 #	ifndef _NO_MODULEMGR
@@ -237,8 +236,6 @@ void	SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
 BOOLN	TempInputConnection_EarObject(EarObjectPtr base,
 		  EarObjectPtr supporting, int numInSignals);
 
-void	UpdateCustomers_EarObject(EarObjectPtr theObject);	
-			
 __END_DECLS
 
 #endif

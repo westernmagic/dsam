@@ -551,7 +551,7 @@ CheckData_Utility_IteratedRipple(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (iterRipplePtr->delay > signalDuration)	{
 		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration "
 		  "(%g ms)"), funcName, MSEC(iterRipplePtr->delay), MSEC(
@@ -587,6 +587,7 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr;
 	int		j, chan;
 	ChanLen		i, samplesDelay;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_IteratedRipple())
@@ -605,15 +606,16 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
+	outSignal = _OutSig_EarObject(data);
 	switch (iterRipplePtr->mode) {
 	case ITERRIPPLE_IRSO_MODE:
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
-			Delay_SignalData(_OutSig_EarObject(data), iterRipplePtr->delay);
-			for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-			  numChannels; chan++) {
-			  	inPtr = data->inSignal[0]->channel[chan];
-				outPtr = _OutSig_EarObject(data)->channel[chan];
-				for (i = 0; i < _OutSig_EarObject(data)->length ; i++) {
+			Delay_SignalData(outSignal, iterRipplePtr->delay);
+			for (chan = outSignal->offset; chan < outSignal->numChannels;
+			  chan++) {
+			  	inPtr = _InSig_EarObject(data, 0)->channel[chan];
+				outPtr = outSignal->channel[chan];
+				for (i = 0; i < outSignal->length ; i++) {
 					*outPtr *= iterRipplePtr->signalMultiplier;
 					*outPtr++ += *inPtr++;
 				}
@@ -621,14 +623,13 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 		}	
 		break;
 	case ITERRIPPLE_IRSS_MODE:	
-		samplesDelay = (ChanLen) ( iterRipplePtr->delay / _OutSig_EarObject(data)->dt);
+		samplesDelay = (ChanLen) ( iterRipplePtr->delay / outSignal->dt);
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
-			for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-			  numChannels; chan++) {
-				outPtr = _OutSig_EarObject(data)->channel[chan] + _OutSig_EarObject(data)->
-				  length - samplesDelay - 1;
-				for (i = 0; i < _OutSig_EarObject(data)->length - samplesDelay; i++,
-				  outPtr--)
+			for (chan = outSignal->offset; chan < outSignal->numChannels;
+			  chan++) {
+				outPtr = outSignal->channel[chan] + outSignal->length -
+				  samplesDelay - 1;
+				for (i = 0; i < outSignal->length - samplesDelay; i++, outPtr--)
 					*(outPtr + samplesDelay) += *outPtr *
 					  iterRipplePtr->signalMultiplier;
 			}

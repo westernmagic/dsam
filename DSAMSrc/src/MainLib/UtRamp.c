@@ -170,6 +170,7 @@ RampDownOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
 	int		chan;
 	ChanLen	i, intervalIndex;
 	ChanData	*dataPtr, *startPtr;
+	SignalDataPtr	outSignal;
 	
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -184,13 +185,14 @@ RampDownOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
 		  "EarObject: %s."), funcName, data->processName);
 		exit(1);
 	}
-	intervalIndex = (ChanLen) (timeInterval / _OutSig_EarObject(data)->dt);
-	for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
-		startPtr = _OutSig_EarObject(data)->channel[chan];
-		dataPtr = startPtr + _OutSig_EarObject(data)->length;
+	outSignal = _OutSig_EarObject(data);
+	intervalIndex = (ChanLen) (timeInterval / outSignal->dt);
+	for (chan = 0; chan < outSignal->numChannels; chan++) {
+		startPtr = outSignal->channel[chan];
+		dataPtr = startPtr + outSignal->length;
 		for ( ; (dataPtr > startPtr) && (*dataPtr == 0.0); dataPtr--)
 			;
-		if (dataPtr < startPtr + _OutSig_EarObject(data)->length)
+		if (dataPtr < startPtr + outSignal->length)
 			dataPtr++;
 		for (i = 0; (i < intervalIndex) && ( dataPtr >= startPtr); i++)
 			*--dataPtr *= (*RampFunction)(i, intervalIndex);

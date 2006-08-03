@@ -58,7 +58,8 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 		if (simpleSGPtr != NULL)
 			Free_ANSpikeGen_Simple();
 		if ((simpleSGPtr = (SimpleSGPtr) malloc(sizeof(SimpleSG))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -698,9 +699,10 @@ CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (simpleSGPtr->pulseDuration < data->inSignal[0]->dt) {
+	if (simpleSGPtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName, MSEC(data->inSignal[0]->dt),
+		  "interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(data,
+		  0)->dt),
 		  MSEC(simpleSGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -724,6 +726,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 	register	double		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
 	ChanLen	j;
+	SignalDataPtr	outSignal;
 	SimpleSGPtr	p = simpleSGPtr;
 
 	if (!data->threadRunFlag) {
@@ -735,8 +738,9 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike "
 		  "Firing"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -746,7 +750,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dt = data->inSignal[0]->dt;
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
 			outPtr = _OutSig_EarObject(data)->channel[chan];
 			for (j = 0; j < _OutSig_EarObject(data)->length; j++)
@@ -755,13 +759,13 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
 	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan];
-			outPtr = _OutSig_EarObject(data)->channel[chan];
-			for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+			inPtr = _InSig_EarObject(data, 0)->channel[chan];
+			outPtr = outSignal->channel[chan];
+			for (j = 0; j < outSignal->length; j++) {
 				if ((*timerPtr > p->refractoryPeriod) && (*inPtr > Ran01_Random(
 				  data->randPars))) {
 					*remainingPulseTimePtr = p->pulseDuration;

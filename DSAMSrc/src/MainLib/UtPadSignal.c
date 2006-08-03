@@ -443,6 +443,7 @@ Process_Utility_PadSignal(EarObjectPtr data)
 	int		chan;
 	double	dt;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	PadSignalPtr	p = padSignalPtr;
 
 	if (!data->threadRunFlag) {
@@ -454,11 +455,11 @@ Process_Utility_PadSignal(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Signal padding Module process"));
 
-		dt = data->inSignal[0]->dt;
+		dt = _InSig_EarObject(data, 0)->dt;
 		p->beginDurationIndex = (ChanLen) floor(p->beginDuration / dt + 0.05);
 		p->endDurationIndex = (ChanLen) floor(p->endDuration / dt + 0.05);
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  p->beginDurationIndex + data->inSignal[0]->length +
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  p->beginDurationIndex + _InSig_EarObject(data, 0)->length +
 		  p->endDurationIndex, dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
@@ -468,13 +469,13 @@ Process_Utility_PadSignal(EarObjectPtr data)
 			return(TRUE);
 	}
 
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		for (i = 0; i < p->beginDurationIndex; i++)
 			*outPtr++ = p->beginValue;
-		for (i = 0; i < data->inSignal[0]->length; i++)
+		for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 			*outPtr++ = *inPtr++;
 		for (i = 0; i < p->endDurationIndex; i++)
 			*outPtr++ = p->endValue;

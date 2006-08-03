@@ -202,6 +202,7 @@ WriteFile_Raw(WChar *fileName, EarObjectPtr data)
 	int		chan, endChan, outputVal;
 	register ChanLen	i, index, numSamples;
 	FILE	*fp;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 	
 	if (dataFilePtr->endian == 0)
 		SetRWFormat_DataFile(DATA_FILE_BIG_ENDIAN);
@@ -214,13 +215,12 @@ WriteFile_Raw(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	if (_WorldTime_EarObject(data) == PROCESS_START_TIME)
-		dataFilePtr->normalise = CalculateNormalisation_DataFile(
-		  _OutSig_EarObject(data));
-	endChan = _OutSig_EarObject(data)->numChannels - 1;
-	numSamples = _OutSig_EarObject(data)->numChannels * _OutSig_EarObject(data)->length;
+		dataFilePtr->normalise = CalculateNormalisation_DataFile(outSignal);
+	endChan = outSignal->numChannels - 1;
+	numSamples = outSignal->numChannels * outSignal->length;
 	for (i = 0, index = 0; i < numSamples; i++) {
-		chan = i % _OutSig_EarObject(data)->numChannels;
-		outputVal = (int) (*(_OutSig_EarObject(data)->channel[chan] + index) *
+		chan = i % outSignal->numChannels;
+		outputVal = (int) (*(outSignal->channel[chan] + index) *
 		  dataFilePtr->normalise);
 		switch (dataFilePtr->wordSize) {
 		case	1:
@@ -244,4 +244,3 @@ WriteFile_Raw(WChar *fileName, EarObjectPtr data)
 	return(TRUE);
 
 }
-

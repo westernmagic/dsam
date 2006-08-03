@@ -172,7 +172,7 @@ ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		s = p->state + p->m * chan;
-		xi = data->inSignal[0]->channel[chan] + stateSampleLen - 1;
+		xi = _InSig_EarObject(data, 0)->channel[chan] + stateSampleLen - 1;
 		for (i = 0; i < stateSampleLen; i++)
 			*s++ = *xi--;
 	}
@@ -201,7 +201,7 @@ FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	
 	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		xi = xStart = data->inSignal[0]->channel[chan];
+		xi = xStart = _InSig_EarObject(data, 0)->channel[chan];
 		yi = _OutSig_EarObject(data)->channel[chan];
 		for (i = _OutSig_EarObject(data)->length; i ; i--, xi++, yi++) {
 			c = p->c;

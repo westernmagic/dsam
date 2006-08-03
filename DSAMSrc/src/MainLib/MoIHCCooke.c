@@ -537,7 +537,7 @@ CheckData_IHC_Cooke91(EarObjectPtr data)
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0]))
+	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0)))
 		return(FALSE);
 	return(TRUE);
 	
@@ -562,8 +562,8 @@ InitProcessVariables_IHC_Cooke91(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Cooke91();
-			if ((p->hCChannels = (CookeHCVarsPtr) calloc(_OutSig_EarObject(data)->
-			  numChannels, sizeof (CookeHCVars))) == NULL) {
+			if ((p->hCChannels = (CookeHCVarsPtr) calloc(_OutSig_EarObject(
+			  data)->numChannels, sizeof (CookeHCVars))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
@@ -620,6 +620,7 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 	ChanLen	j;
 	ChanData	*inPtr, *outPtr;
 	CookeHCPtr	p = cookeHCPtr; /* Shorter name for use with long equations. */
+	SignalDataPtr	outSignal;
 	CookeHCVarsPtr	c;
 	
 	if (!data->threadRunFlag) {
@@ -629,8 +630,9 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(
+		  data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -651,11 +653,12 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			return(TRUE);
 	}
 		
-	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
-		inPtr = data->inSignal[0]->channel[i];
-		outPtr = _OutSig_EarObject(data)->channel[i];
+	outSignal = _OutSig_EarObject(data);
+	for (i = outSignal->offset; i < outSignal->numChannels; i++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[i];
+		outPtr = outSignal->channel[i];
 		c = &p->hCChannels[i];
-		for (j = 0; j < _OutSig_EarObject(data)->length; j++, inPtr++, outPtr++) {
+		for (j = 0; j < outSignal->length; j++, inPtr++, outPtr++) {
 			rp = *inPtr / (*inPtr + p->crawfordConst);
    			if (rp < 0.0)
    				rp = 0.0;

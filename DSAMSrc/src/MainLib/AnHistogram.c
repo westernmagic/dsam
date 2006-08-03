@@ -587,14 +587,15 @@ PrintPars_Analysis_Histogram(void)
 		return(FALSE);
 	}
 	if (!CheckPars_Analysis_Histogram()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Histogram analysis module parameters:-\n"));
 	DPrint(wxT("\tDetection mode = %s,"), histogramPtr->detectionModeList[
 	  histogramPtr->detectionMode].name);
-	DPrint(wxT("\tOutput mode = %s,"), histogramPtr->outputModeList[histogramPtr->
-	  outputMode].name);
+	DPrint(wxT("\tOutput mode = %s,"), histogramPtr->outputModeList[
+	  histogramPtr->outputMode].name);
 	DPrint(wxT("\tType mode = %s,\n"), histogramPtr->typeModeList[histogramPtr->
 	  typeMode].name);
 	if (histogramPtr->detectionMode == HISTOGRAM_DETECT_SPIKES)
@@ -748,6 +749,7 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_Histogram");
 	double	signalDuration;
+	SignalDataPtr	inSignal;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -755,19 +757,20 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if ((histogramPtr->binWidth > 0.0) && (histogramPtr->binWidth <
-	  data->inSignal[0]->dt)) {
+	inSignal = _InSig_EarObject(data, 0);
+	if ((histogramPtr->binWidth > 0.0) && (histogramPtr->binWidth < inSignal->
+	  dt)) {
 		NotifyError(wxT("%s: Bin width is too small for sampling interval "
 		  "(%g ms)."), funcName, MSEC(histogramPtr->binWidth));
 		return(FALSE);
 	}
-	signalDuration = data->inSignal[0]->length * data->inSignal[0]->dt;
+	signalDuration = inSignal->length * inSignal->dt;
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
-		if ((histogramPtr->period > 0.0) && (histogramPtr->period < data->
-		  inSignal[0]->dt)) {
+		if ((histogramPtr->period > 0.0) && (histogramPtr->period < inSignal->
+		  dt)) {
 			NotifyError(wxT("%s: The period (%g ms) is less than the input "
 			  "signal sampling interval (%g ms)!"), funcName, MILLI(
-			  histogramPtr->period), MILLI(data->inSignal[0]->dt));
+			  histogramPtr->period), MILLI(inSignal->dt));
 			return(FALSE);
 		}
 	}
@@ -788,8 +791,8 @@ ResetProcessThread_Analysis_Histogram(EarObjectPtr data, int i)
 
 	p->bufferSamples[i] = 0;
 	p->numPeriods[i] = 0;
-	p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / data->inSignal[0]->dt +
-	 0.5);
+	p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / _InSig_EarObject(data,
+	  0)->dt + 0.5);
 	p->extraSample[i] = (p->offsetIndex[i])? 0: 1;
 
 }
@@ -815,11 +818,13 @@ ResetProcess_Analysis_Histogram(EarObjectPtr data)
 			ResetProcessThread_Analysis_Histogram(data, i);
 		}
 	}
-	if (p->offsetIndex[0] < data->inSignal[0]->length)
-		for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
-			p->dataBuffer->outSignal->channel[i][0] = data->inSignal[
-			  0]->channel[i][p->offsetIndex[0] + p->extraSample[0] - 1];
-	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
+	if (p->offsetIndex[0] < _InSig_EarObject(data, 0)->length)
+		for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->
+		  numChannels; i++)
+			p->dataBuffer->outSignal->channel[i][0] = _InSig_EarObject(data,
+			  0)->channel[i][p->offsetIndex[0] + p->extraSample[0] - 1];
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->
+	  numChannels; i++)
 		p->riseDetected[i] = FALSE;
 
 }
@@ -891,10 +896,12 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 				return(FALSE);
 			}
 			bufferLength = (p->typeMode == HISTOGRAM_PSTH)? 1: (p->period >
-			  0.0)? (ChanLen) floor(p->period / data->inSignal[0]->dt + 0.5):
-			  data->inSignal[0]->length;
-			if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(data)->
-			  numChannels, bufferLength, data->inSignal[0]->dt)) {
+			  0.0)? (ChanLen) floor(p->period / _InSig_EarObject(data, 0)->dt +
+			  0.5):
+			  _InSig_EarObject(data, 0)->length;
+			if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(
+			  data)->numChannels, bufferLength, _InSig_EarObject(data, 0)->
+			  dt)) {
 				NotifyError(wxT("%s: Cannot initialise channels for PH "
 				  "Buffer."), funcName);
 				return(FALSE);
@@ -958,10 +965,10 @@ PushDataBuffer_Analysis_Histogram(EarObjectPtr data, ChanLen lastSamples)
 	int		chan;
 	ChanLen	i;
 
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + data->inSignal[0]->length -
-		  lastSamples;
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
+	  data)->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan] + _InSig_EarObject(
+		  data, 0)->length - lastSamples;
 		buffPtr = data->subProcessList[ANALYSIS_HISTOGRAM_DATABUFFER]->
 		  outSignal->channel[chan] + histogramPtr->bufferSamples[
 		  data->threadIndex];
@@ -999,6 +1006,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	double	extraTimeInterval;
 	ChanLen	i, bufferSamples, processLength, availableLength, *offsetIndexPtr;
 	ChanLen	*numPeriodsPtr, *extraSamplePtr;
+	SignalDataPtr	inSignal, outSignal;
 	HistogramPtr	p = histogramPtr;
 
 	if (!data->threadRunFlag) {
@@ -1009,18 +1017,19 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Histogram Analysis Module"));
-		p->dt = data->inSignal[0]->dt;
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->wPeriod = ((p->typeMode == HISTOGRAM_PSTH) || (p->period <=
-		  0.0))? data->inSignal[0]->length * p->dt: p->period;
+		  0.0))? _InSig_EarObject(data, 0)->length * p->dt: p->period;
 		p->wBinWidth = (p->binWidth <= 0.0)? p->dt: p->binWidth;
 		if (p->binWidth < 0.0)
 			p->wBinWidth = p->dt;
 		else if (p->binWidth == 0.0)
-			p->wBinWidth = _GetDuration_SignalData(data->inSignal[0]);
+			p->wBinWidth = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 		else
 			p->wBinWidth = p->binWidth;
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  (ChanLen) floor(p->wPeriod / p->wBinWidth + 0.5), p->wBinWidth)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, (ChanLen) floor(p->wPeriod / p->wBinWidth + 0.5), p->
+		  wBinWidth)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -1035,15 +1044,17 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
 	offsetIndexPtr = p->offsetIndex + data->threadIndex;
 	numPeriodsPtr = p->numPeriods + data->threadIndex;
 	extraSamplePtr = p->extraSample + data->threadIndex;
-	if (*offsetIndexPtr > data->inSignal[0]->length) {
+	if (*offsetIndexPtr > inSignal->length) {
 		processLength = 0;
 		availableLength = 0; /* ?? is this right?*/
 	} else {
-		availableLength = data->inSignal[0]->length - *offsetIndexPtr -
-		  *extraSamplePtr + p->bufferSamples[data->threadIndex] + 1;
+		availableLength = inSignal->length - *offsetIndexPtr - *extraSamplePtr +
+		  p->bufferSamples[data->threadIndex] + 1;
 		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
 		  (ChanLen) floor(floor(availableLength * p->dt / p->wPeriod) *
 		  p->wPeriod / p->dt + DBL_EPSILON);
@@ -1052,18 +1063,16 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
 		  HISTOGRAM_OUTPUT_SPIKE_RATE) && *numPeriodsPtr) {
 			totalBinDuration = p->wBinWidth * *numPeriodsPtr;
-			for (chan = _OutSig_EarObject(data)->offset; chan < data->inSignal[0]->
-			  numChannels; chan++) {
-				outPtr = _OutSig_EarObject(data)->channel[chan];
-				for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (chan = outSignal->offset; chan < inSignal->numChannels;
+			   chan++) {
+				outPtr = outSignal->channel[chan];
+				for (i = 0; i < outSignal->length; i++)
 					*outPtr++ *= totalBinDuration;
 			}
 		}
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan] + *offsetIndexPtr +
-			  *extraSamplePtr;
-			outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+			inPtr = inSignal->channel[chan] + *offsetIndexPtr + *extraSamplePtr;
+			outPtr = outSignal->channel[chan];
 			buffPtr = data->subProcessList[ANALYSIS_HISTOGRAM_DATABUFFER]->
 			  outSignal->channel[chan];
 			bufferSamples = p->bufferSamples[data->threadIndex];
@@ -1095,20 +1104,20 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 				}
 				time = i * p->dt;
 				if (DBL_GREATER(time, nextBinCutOff)) {
-					if ((ChanLen) (outPtr - _OutSig_EarObject(data)->channel[chan]) <
-					  _OutSig_EarObject(data)->length) /* - because of rounding errors*/
+					if ((ChanLen) (outPtr - outSignal->channel[chan]) <
+					  outSignal->length) /* - because of rounding errors*/
 						*outPtr++ += binSum;
 					binSum = 0;
 					nextBinCutOff += p->wBinWidth;
 				}
 				if (DBL_GREATER(time, nextCutOff)) {
-					outPtr = _OutSig_EarObject(data)->channel[chan];
+					outPtr = outSignal->channel[chan];
 					nextCutOff += p->wPeriod;
 					(*numPeriodsPtr)++;
 				}
 			}
-			if ((ChanLen) (outPtr - _OutSig_EarObject(data)->channel[chan]) <
-			  _OutSig_EarObject(data)->length)	/* Last incomplete bin */
+			if ((ChanLen) (outPtr - outSignal->channel[chan]) < outSignal->
+			  length)	/* Last incomplete bin */
 				*outPtr +=  binSum;
 		}
 		if (p->typeMode == HISTOGRAM_PSTH)
@@ -1116,22 +1125,22 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==
 		  HISTOGRAM_OUTPUT_SPIKE_RATE)) {
 			totalBinDuration = p->wBinWidth * *numPeriodsPtr;
-			for (chan = _OutSig_EarObject(data)->offset; chan < data->inSignal[0]->
-			  numChannels; chan++) {
-				outPtr = _OutSig_EarObject(data)->channel[chan];
-				for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (chan = outSignal->offset; chan < inSignal->numChannels;
+			  chan++) {
+				outPtr = outSignal->channel[chan];
+				for (i = 0; i < outSignal->length; i++)
 					*outPtr++ /= totalBinDuration;
 			}
 		}
 	}
 	if (*offsetIndexPtr + *extraSamplePtr) {
-		if (*offsetIndexPtr < data->inSignal[0]->length) {
+		if (*offsetIndexPtr < inSignal->length) {
 			if (processLength < availableLength)
 				PushDataBuffer_Analysis_Histogram(data, availableLength -
 				  processLength);
 			*offsetIndexPtr = 0;
 		} else {
-			*offsetIndexPtr -= data->inSignal[0]->length;
+			*offsetIndexPtr -= inSignal->length;
 			PushDataBuffer_Analysis_Histogram(data, 1);
 		}
 		*extraSamplePtr = 0;

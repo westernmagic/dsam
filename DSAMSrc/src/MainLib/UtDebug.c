@@ -132,7 +132,7 @@ SetChannelValue_Debug(int channel, ChanLen sample, double value)
 		  0, debug->outSignal->length);
 		return(FALSE);
 	}
-	debug->outSignal->channel[channel][sample] = value;
+	_OutSig_EarObject(debug)->channel[channel][sample] = value;
 	return(TRUE);
 	
 }

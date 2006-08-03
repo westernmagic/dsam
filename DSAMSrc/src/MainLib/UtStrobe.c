@@ -702,10 +702,10 @@ CheckData_Utility_Strobe(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) &&
-	  (_GetDuration_SignalData(data->inSignal[0]) <= strobePtr->delay)) {
+	  (_GetDuration_SignalData(_InSig_EarObject(data, 0)) <= strobePtr->delay)) {
 		NotifyError(wxT("%s: Strobe delay (%g ms) is not less than signal\n"
 		  "duration (%g ms)."), funcName, MSEC(strobePtr->delay),
-		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
+		  MSEC(_GetDuration_SignalData(_InSig_EarObject(data, 0))));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -838,15 +838,15 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 			statePtr = p->stateVars[i];
 			lastInput = statePtr->lastInput;
 			outPtr = _OutSig_EarObject(data)->channel[i];
-			statePtr->lastSample = data->inSignal[0]->channel[i][0];
+			statePtr->lastSample = _InSig_EarObject(data, 0)->channel[i][0];
 			for (j = 0; j < p->numLastSamples; j++) {
-				*lastInput++ = data->inSignal[0]->channel[i][0];
+				*lastInput++ = _InSig_EarObject(data, 0)->channel[i][0];
 				*outPtr++ = 0.0;
 			}
 			statePtr->gradient = FALSE;
 			statePtr->widthIndex = 0;
 			statePtr->prevPeakIndex = 0;
-			statePtr->prevPeakHeight = data->inSignal[0]->channel[i][0];
+			statePtr->prevPeakHeight = _InSig_EarObject(data, 0)->channel[i][0];
 			statePtr->delayCount = 0;
 			statePtr->delayTimeoutCount = 0;
 			statePtr->deltaThreshold = 0.0;
@@ -856,7 +856,7 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 				break;
 			case STROBE_PEAK_SHADOW_NEGATIVE_MODE:
 			case STROBE_PEAK_SHADOW_POSITIVE_MODE:
-				statePtr->threshold = data->inSignal[0]->channel[i][0];
+				statePtr->threshold = _InSig_EarObject(data, 0)->channel[i][0];
 				break;
 			default:
 				;
@@ -908,9 +908,9 @@ ProcessThesholdModes_Utility_Strobe(EarObjectPtr data)
 
 	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
 		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < data->inSignal[0]->length; i++)
+		for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 			*outPtr++ = (*inPtr++ > strobePtr->threshold)? 1.0: 0.0;
 	}
 
@@ -948,9 +948,9 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 	  chan++) {
 		s = p->stateVars[chan];
 		if (chanProcessSpecifier == STROBE_PROCESS_DATA_CHANNEL) {
-			inPtr = data->inSignal[0]->channel[chan];
+			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = _OutSig_EarObject(data)->channel[chan] + p->numLastSamples;
-			length = data->inSignal[0]->length - p->numLastSamples;
+			length = _InSig_EarObject(data, 0)->length - p->numLastSamples;
 		} else {
 			inPtr = s->lastInput;
 			outPtr = _OutSig_EarObject(data)->channel[chan];
@@ -963,7 +963,7 @@ ProcessPeakChannel_Utility_Strobe(EarObjectPtr data,
 			if (s->gradient) {
 				nextSample = ((chanProcessSpecifier ==
 				  STROBE_PROCESS_DATA_CHANNEL) || (i < length - 1))? *(inPtr +
-				  1): *(data->inSignal[0]->channel[chan]);
+				  1): *(_InSig_EarObject(data, 0)->channel[chan]);
 				if (*inPtr > nextSample) {
 					if (*inPtr > s->threshold) {
 						switch (p->typeMode) {
@@ -1060,14 +1060,16 @@ ProcessPeakModes_Utility_Strobe(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	inSignal, outSignal;
 
 	ProcessPeakChannel_Utility_Strobe(data, STROBE_PROCESS_BUFFER_CHANNEL);
 	ProcessPeakChannel_Utility_Strobe(data, STROBE_PROCESS_DATA_CHANNEL);
+	inSignal =_InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
 	if (strobePtr->numLastSamples)
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan] +
-			  data->inSignal[0]->length - strobePtr->numLastSamples;
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+			inPtr = inSignal->channel[chan] + inSignal->length - strobePtr->
+			  numLastSamples;
 			outPtr = strobePtr->stateVars[chan]->lastInput;
 			for (i = 0; i < strobePtr->numLastSamples; i++)
 				*outPtr++ = *inPtr++;
@@ -1103,8 +1105,9 @@ Process_Utility_Strobe(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Strobe Utility Module process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -1114,8 +1117,8 @@ Process_Utility_Strobe(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), -_OutSig_EarObject(data)->dt *
-		 strobePtr->numLastSamples);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data),
+		  -_OutSig_EarObject(data)->dt * strobePtr->numLastSamples);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

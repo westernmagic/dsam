@@ -30,6 +30,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "UtString.h"
 #include "AnALSR.h"
 
 /******************************************************************************/
@@ -88,7 +89,8 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 		if (aLSRPtr != NULL)
 			Free_Analysis_ALSR();
 		if ((aLSRPtr = (ALSRPtr) malloc(sizeof(ALSR))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -398,7 +400,7 @@ CheckData_Analysis_ALSR(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (data->inSignal[0]->numChannels < 2) {
+	if (_InSig_EarObject(data, 0)->numChannels < 2) {
 		NotifyError(wxT("%s: This module expects multi-channel input."),
 		  funcName);
 		return(FALSE);
@@ -499,6 +501,7 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	int		chan, minChan, maxChan, minWinChan, maxWinChan, numChannels;
 	double	dF, *cFs;
 	ChanLen	i, minIndex, maxIndex;
+	SignalDataPtr	inSignal, outSignal;
 	ALSRPtr	p = aLSRPtr;
 
 	if (!data->threadRunFlag) {
@@ -511,8 +514,8 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("ALSR Analysis Module process"));
 
 		/*** Example Initialise output signal - ammend/change if required. ***/
-		if (!InitOutSignal_EarObject(data, 1, data->inSignal[0]->length, data->
-		  inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, 1, _InSig_EarObject(data, 0)->length,
+		  _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -524,7 +527,8 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz) "));
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
+		  "(Hz) "));
 		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("ALSR function (+%g "
 		  "/ -%g octaves)"), p->lowerAveLimit, p->upperAveLimit);
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
@@ -533,8 +537,10 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	if (!GetChannelLimits_SignalData(data->inSignal[0], &minChan, &maxChan, 
-	  p->lowerAveLimit, p->upperAveLimit, SIGNALDATA_LIMIT_MODE_OCTAVE)) {
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	if (!GetChannelLimits_SignalData(inSignal, &minChan, &maxChan, p->
+	  lowerAveLimit, p->upperAveLimit, SIGNALDATA_LIMIT_MODE_OCTAVE)) {
 		NotifyError(wxT("%s: Could not find a channel limits for signal."),
 		  funcName);
 		return(FALSE);
@@ -545,24 +551,24 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 		return(FALSE);
 	}
 	dF = p->modulusFT->outSignal->dt;
-	cFs = data->inSignal[0]->info.cFArray;
-	SetSamplingInterval_SignalData(_OutSig_EarObject(data), dF);
+	cFs = inSignal->info.cFArray;
+	SetSamplingInterval_SignalData(outSignal, dF);
 	minIndex = (ChanLen) floor(cFs[minChan] / dF + 0.5);
 	maxIndex = (ChanLen) floor(cFs[maxChan] / dF + 0.5);
-	outPtr = _OutSig_EarObject(data)->channel[0];
+	outPtr = outSignal->channel[0];
 	for (i = 0; i < minIndex - 1; i++)
 		*outPtr++ = 0.0;
-	outPtr = _OutSig_EarObject(data)->channel[0] + minIndex;
+	outPtr = outSignal->channel[0] + minIndex;
 	for (i = minIndex; i <= maxIndex; i++, outPtr++) {
-		GetWindowLimits_SignalData(data->inSignal[0], &minWinChan, &maxWinChan,
+		GetWindowLimits_SignalData(inSignal, &minWinChan, &maxWinChan,
 		  i * dF, p->lowerAveLimit, p->upperAveLimit,
 		  SIGNALDATA_LIMIT_MODE_OCTAVE);
 		for (chan = minWinChan, *outPtr = 0.0; chan <= maxWinChan; chan++)
 			*outPtr += p->modulusFT->outSignal->channel[chan][i];
 	}
-	for (i = maxIndex + 1; i < _OutSig_EarObject(data)->length; i++)
+	for (i = maxIndex + 1; i < outSignal->length; i++)
 		*outPtr++ = 0.0;
-	outPtr = _OutSig_EarObject(data)->channel[0] + minIndex;
+	outPtr = outSignal->channel[0] + minIndex;
 	numChannels = maxIndex - minIndex + 1;
 	for (i = minIndex; i <= maxIndex; i++)
 		*outPtr++ /= numChannels;
@@ -570,4 +576,3 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	return(TRUE);
 
 }
-

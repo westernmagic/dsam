@@ -82,7 +82,6 @@ Init_EarObject(WChar *moduleName)
 	data->threadRunFlag = FALSE;
 	data->useThreadsFlag = FALSE;
 	data->chainInitRunFlag = FALSE;
-	data->updateCustomersFlag = TRUE;
 	data->updateProcessFlag = TRUE;
 	data->firstSectionFlag = TRUE;
 	data->numInSignals = 0;
@@ -247,7 +246,6 @@ Free_EarObject(EarObjectPtr *theObject)
 	/* This next line unregisters the object from the main list. */
 	FreeEarObjRef_EarObject(&mainEarObjectList, (*theObject)->handle);
 	/* This next line will set the customer input signals to NULL. */
-	UpdateCustomers_EarObject(*theObject);
 	RemoveEarObjRefs_EarObject(*theObject);
 	if ((*theObject)->processName != NULL)
 		free((*theObject)->processName);
@@ -327,8 +325,7 @@ SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...)
  * This function checks the parameters of an EarObject's output  SignalData
  * data structure and decides whether or not to create a new data signal
  * element, i.e. if the dimensions of the SignalData object have changed.
- * It destroys the old output signal and re-creates it if necessary, in which
- * case the updateCustomersFlag is set.
+ * It destroys the old output signal and re-creates it if necessary.
  * If the sampling interval is changed, then the "updateProcessFlag" is set.
  * I have introduced a check for processes that have been used by the 
  * NULL process, RunModel_ModuleMgr_Null.  In these processes the 'outSignal'
@@ -354,12 +351,10 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		  numChannels)) {
 		 	oldOutSignal = *data->outSignal;
 			Free_SignalData(&data->outSignal);
-			data->updateCustomersFlag = TRUE;
 			deletedOldOutSignal = TRUE;
 		} else
 			createNewSignal = FALSE;
-	} else
-		data->updateCustomersFlag = TRUE;/* Customers must be updated anyway. */
+	}
 	
 	if (createNewSignal) {
 		data->outSignal = Init_SignalData(funcName);
@@ -717,7 +712,6 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 	}
 	FreeEarObjRef_EarObject(&supplier->customerList, customer->handle);
 	FreeEarObjRef_EarObject(&customer->supplierList, supplier->handle);
-	supplier->updateCustomersFlag = FALSE;
 	return(TRUE);
 	
 }
@@ -845,29 +839,6 @@ FreeEarObjRefList_EarObject(EarObjRefPtr *theList)
 
 }
 
-/**************************** UpdateCustomers *********************************/
-
-/*
- * This routine updates all of an EarObject's customers, i.e. all customers
- * pointing to its output signal are reset, but only if they are not already
- * pointing to the correct signal.
- */
-
-void
-UpdateCustomers_EarObject(EarObjectPtr theObject)
-{
-	EarObjRefPtr	p;
-	
-	for (p = theObject->customerList; p != NULL; p = p->next)
-		if (p->earObject->inSignal[p->inSignalRef] != theObject->outSignalPtr) {
-			/*p->earObject->inSignal[p->inSignalRef] =
-			theObject->outSignalPtr;*/
-			p->earObject->updateProcessFlag = TRUE;
-		}
-	theObject->updateCustomersFlag = FALSE;
-	
-}
-
 /**************************** RemoveEarObjRefs ********************************/
 
 /*
@@ -888,7 +859,6 @@ RemoveEarObjRefs_EarObject(EarObjectPtr theObject)
 	for (p = theObject->customerList; p != NULL; p = p->next) {
 		FreeEarObjRef_EarObject(&p->earObject->supplierList, theObject->handle);
 	}
-	theObject->updateCustomersFlag = FALSE;
 	
 }
 
@@ -927,8 +897,6 @@ SetProcessContinuity_EarObject(EarObjectPtr data)
 	if (data->outSignal->offset)
 		return;
 	SetTimeContinuity_EarObject(data);
-	if (data->updateCustomersFlag)
-		UpdateCustomers_EarObject(data);
 	data->updateProcessFlag = FALSE;
 
 }

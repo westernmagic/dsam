@@ -11,7 +11,7 @@
  * Author:		L. P. O'Mard
  * Created:		27 May 1996
  * Updated:	
- * Copyright:	(c) Loughborough University
+ * Copyright:	(c) 2006, L. P. O'Mard
  *
  *********************/
 

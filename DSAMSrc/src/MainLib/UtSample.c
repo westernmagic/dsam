@@ -421,14 +421,14 @@ CheckData_Utility_Sample(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	dt = data->inSignal[0]->dt;
+	dt = _InSig_EarObject(data, 0)->dt;
 	if ((samplePtr->dt > 0.0) && (samplePtr->dt < dt)) {
 		NotifyError(wxT("%s: Sampling interval (%g ms) is less than signal\n"
 		  "sampling interval (%g ms)."), funcName, MSEC(samplePtr->dt),
 		  MSEC(dt));
 		return(FALSE);
 	}
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (samplePtr->timeOffset >= signalDuration) {
 		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal "
 		  "duration (%g ms)."), funcName, MSEC(samplePtr->timeOffset),
@@ -462,6 +462,7 @@ Process_Utility_Sample(EarObjectPtr data)
 	int		chan;
 	double	dt;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	SamplePtr	p = samplePtr;
 
 	if (!data->threadRunFlag) {
@@ -472,12 +473,12 @@ Process_Utility_Sample(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Sample utility process"));
-		dt = (p->dt > 0.0)? p->dt: data->inSignal[0]->dt;
-		p->dtIndex = (ChanLen) (dt / data->inSignal[0]->dt + 0.5);
+		dt = (p->dt > 0.0)? p->dt: _InSig_EarObject(data, 0)->dt;
+		p->dtIndex = (ChanLen) (dt / _InSig_EarObject(data, 0)->dt + 0.5);
 		p->timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
-		  (ChanLen) (p->timeOffset / data->inSignal[0]->dt + 0.5);
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  (data->inSignal[0]->length - p->timeOffsetIndex) / p->dtIndex, dt)) {
+		  (ChanLen) (p->timeOffset / _InSig_EarObject(data, 0)->dt + 0.5);
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 
+		  (_InSig_EarObject(data, 0)->length - p->timeOffsetIndex) / p->dtIndex, dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -485,11 +486,11 @@ Process_Utility_Sample(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr += p->dtIndex)
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan] + p->timeOffsetIndex;
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++, inPtr += p->dtIndex)
 			*outPtr++ = *inPtr;
 	}
 	SetUtilityProcessContinuity_EarObject(data);

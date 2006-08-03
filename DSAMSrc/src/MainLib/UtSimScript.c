@@ -1377,7 +1377,7 @@ Process_Utility_SimScript(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Process_Utility_SimScript");
 	WChar	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
-	SignalDataPtr	lastOutSignal;
+	SignalDataPtr	*lastOutSignalPtr;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (!data->threadRunFlag) {
@@ -1409,11 +1409,11 @@ Process_Utility_SimScript(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetParsFilePath_Common(oldParsFilePath);
-	lastOutSignal = _OutSig_EarObject(data);
-	_OutSig_EarObject(data) = GetLastProcess_Utility_Datum(
- 	  localSimScriptPtr->simulation)->outSignal;
+	lastOutSignalPtr = data->outSignalPtr;
+	data->outSignalPtr = GetLastProcess_Utility_Datum(localSimScriptPtr->
+	  simulation)->outSignalPtr;
 	simScriptPtr = localSimScriptPtr;
-	data->updateCustomersFlag = (lastOutSignal != _OutSig_EarObject(data));
+	data->outSignal = _OutSig_EarObject(data);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

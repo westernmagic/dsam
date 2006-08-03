@@ -819,19 +819,20 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 			  "are\nrequired (%d)"), funcName, data->numInSignals);
 			return(FALSE);
 		}
-		if (!CheckInit_SignalData(data->inSignal[1],
+		if (!CheckInit_SignalData(_InSig_EarObject(data, 1),
 		  wxT("CheckData_Analysis_SAI"))) {
 			NotifyError(wxT("%s: Second EarObject required for USER mode not "
 			  "initialised."), funcName);
 			return(FALSE);
 		}
-		if (!SameType_SignalData(data->inSignal[0], data->inSignal[1])) {
+		if (!SameType_SignalData(_InSig_EarObject(data, 0), _InSig_EarObject(
+		  data, 1))) {
 			NotifyError(wxT("%s: Input signals are not the same."), funcName);
 			return(FALSE);
 		}
 	}
 	width = sAImagePtr->positiveWidth - sAImagePtr->negativeWidth +
-	  data->inSignal[0]->dt;
+	  _InSig_EarObject(data, 0)->dt;
 	if (width <= 0.0) {
 		NotifyError(wxT("%s: Illegal frame width (%g -> %g ms)."), funcName,
 		  MSEC(sAImagePtr->negativeWidth), MSEC(sAImagePtr->positiveWidth));
@@ -865,7 +866,7 @@ OutputStrobeData_Analysis_SAI(void)
 	ChanLen	i, t;
 	SignalDataPtr	signal;
 
-	signal = sAImagePtr->strobeData->outSignal;
+	signal = _OutSig_EarObject(sAImagePtr->strobeData);
 	DSAM_fprintf(sAImagePtr->fp, wxT("Time (s)"));
 	for (chan = signal->offset; chan < signal->numChannels; chan++)
 		DSAM_fprintf(sAImagePtr->fp, wxT("\t[%d]"), chan);
@@ -903,13 +904,14 @@ InitInputDecayArray_Analysis_SAI(EarObjectPtr data)
 	double	decayPerSample, *decayPtr, totalDecay;
 	ChanLen	i;
 
-	if ((sAImagePtr->inputDecay = (double *) calloc(_OutSig_EarObject(data)->length,
-	  sizeof(double))) == NULL) {
+	if ((sAImagePtr->inputDecay = (double *) calloc(_OutSig_EarObject(data)->
+	  length, sizeof(double))) == NULL) {
 		NotifyError(wxT("%s: Could not initialise input decay array"),
 		  funcName);
 		return(FALSE);
 	}
-	decayPerSample = -sAImagePtr->inputDecayRate / 100.0 * _OutSig_EarObject(data)->dt;
+	decayPerSample = -sAImagePtr->inputDecayRate / 100.0 * _OutSig_EarObject(
+	  data)->dt;
 	totalDecay = 1.0 + sAImagePtr->zeroIndex * decayPerSample;
 	decayPtr = sAImagePtr->inputDecay;
 	for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
@@ -947,7 +949,8 @@ ResetProcess_Analysis_SAI(EarObjectPtr data)
 		for (i = 0; i < data->numThreads; i++)
 			p->inputCount[i] = 0;
 	}
-	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
+	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->
+	  numChannels; i++)
 		p->decayCount[i] = 0;
 
 }
@@ -986,16 +989,16 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 			  "EarObject"), funcName);
 			return(FALSE);
 		}
-		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / data->inSignal[0]->
-		  dt + 0.5);
+		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / _InSig_EarObject(
+		  data, 0)->dt + 0.5);
 		p->positiveWidthIndex = _OutSig_EarObject(data)->length - p->zeroIndex;
 		if (!InitInputDecayArray_Analysis_SAI(data)) {
 			NotifyError(wxT("%s: failed in to initialise input decay array"),
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->decayCount = (ChanLen *) calloc(_OutSig_EarObject(data)->numChannels,
-		  sizeof(ChanLen))) == NULL) {
+		if ((p->decayCount = (ChanLen *) calloc(_OutSig_EarObject(data)->
+		  numChannels, sizeof(ChanLen))) == NULL) {
 			NotifyError(wxT("%s: Could not initialise decayCount array"),
 			  funcName);
 			return(FALSE);
@@ -1010,13 +1013,15 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		  wxT("criterion"))->valuePtr.nameList.specifier == STROBE_USER_MODE)?
 		  1: 0;
 		if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(data)->
-		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
-			NotifyError(wxT("%s: Cannot initialise channels for previous data."),
-			  funcName);
+		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(
+		  data)->dt)) {
+			NotifyError(wxT("%s: Cannot initialise channels for previous "
+			  "data."), funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(p->strobeDataBuffer, _OutSig_EarObject(data)->
-		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
+		if (!InitOutSignal_EarObject(p->strobeDataBuffer, _OutSig_EarObject(
+		  data)->numChannels, _OutSig_EarObject(data)->length,
+		  _OutSig_EarObject(data)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise channels for previous "
 			  "strobe data."), funcName);
 			return(FALSE);
@@ -1080,27 +1085,30 @@ PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength)
 	SAImagePtr	p = sAImagePtr;
 
 	inputCount = *(p->inputCount + data->threadIndex);
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
+	  data)->numChannels; chan++) {
 		if (frameLength == _OutSig_EarObject(data)->length) {
-			inPtr = data->inSignal[0]->channel[chan] + inputCount;
-			inStrobePtr = p->strobeData->outSignal->channel[chan] + inputCount;
+			inPtr = _InSig_EarObject(data, 0)->channel[chan] + inputCount;
+			inStrobePtr = _OutSig_EarObject(p->strobeData)->channel[chan] +
+			  inputCount;
 			shiftLength = frameLength;
 		} else {
-			inPtr = p->dataBuffer->outSignal->channel[chan] + frameLength;
-			inStrobePtr = p->strobeDataBuffer->outSignal->channel[
+			inPtr = _OutSig_EarObject(p->dataBuffer)->channel[chan] +
+			  frameLength;
+			inStrobePtr = _OutSig_EarObject(p->strobeDataBuffer)->channel[
 			  chan] + frameLength;
 			shiftLength = _OutSig_EarObject(data)->length - frameLength;
 		}
-		outPtr = p->dataBuffer->outSignal->channel[chan];
-		outStrobePtr = p->strobeDataBuffer->outSignal->channel[chan];
+		outPtr = _OutSig_EarObject(p->dataBuffer)->channel[chan];
+		outStrobePtr = _OutSig_EarObject(p->strobeDataBuffer)->channel[chan];
 		for (i = 0; i < shiftLength; i++) {
 			*outPtr++ = *inPtr++;
 			*outStrobePtr++ = *inStrobePtr++;
 		}
 		if (frameLength < _OutSig_EarObject(data)->length) {
-			inPtr = data->inSignal[0]->channel[chan] + inputCount;
-			inStrobePtr = p->strobeData->outSignal->channel[chan] + inputCount;
+			inPtr = _InSig_EarObject(data, 0)->channel[chan] + inputCount;
+			inStrobePtr = _OutSig_EarObject(p->strobeData)->channel[chan] +
+			  inputCount;
 			for (i = 0; i < frameLength; i++) {
 				*outPtr++ = *inPtr++;
 				*outStrobePtr++ = *inStrobePtr++;
@@ -1126,7 +1134,7 @@ DecayImage_Analysis_SAI(EarObjectPtr data, int chan)
 	if (!sAImagePtr->decayCount[chan])
 		return;
 	scale = exp(-LN_2 / sAImagePtr->imageDecayHalfLife * sAImagePtr->decayCount[
-	  chan] * data->inSignal[0]->dt);
+	  chan] * _InSig_EarObject(data, 0)->dt);
 	dataPtr = _OutSig_EarObject(data)->channel[chan];
 	for (i = 0; i < _OutSig_EarObject(data)->length; i++)
 		*dataPtr++ *= scale;
@@ -1160,20 +1168,21 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 		return;
 	inputCount = *(p->inputCount + data->threadIndex);
 	sectionEnd = frameOffset + sectionLength;
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
+	  data)->numChannels; chan++) {
 		strobeStatePtr = strobeStatePtrs[chan] + strobeOffset;
 		for (i = frameOffset; i < sectionEnd; i++, strobeStatePtr++) {
 			if (*strobeStatePtr > 0.0) {
 				DecayImage_Analysis_SAI(data, chan);
-				inPtr = p->dataBuffer->outSignal->channel[chan] + i;
+				inPtr = _OutSig_EarObject(p->dataBuffer)->channel[chan] + i;
 				outPtr = _OutSig_EarObject(data)->channel[chan];
 				inputDecayPtr = p->inputDecay;
 				switch (p->integrationMode) {
 				case SAI_INTEGRATION_MODE_STI:
 					for (j = i; j < _OutSig_EarObject(data)->length; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++;
-					inPtr = data->inSignal[0]->channel[chan] + inputCount;
+					inPtr = _InSig_EarObject(data, 0)->channel[chan] +
+					  inputCount;
 					for (j = 0; j < i; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++;
 					break;
@@ -1181,7 +1190,8 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 					scaler = *(dataPtrs[chan] + strobeOffset + i - frameOffset);
 					for (j = i; j < _OutSig_EarObject(data)->length; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++ * scaler;
-					inPtr = data->inSignal[0]->channel[chan] + inputCount;
+					inPtr = _InSig_EarObject(data, 0)->channel[chan] +
+					  inputCount;
 					for (j = 0; j < i; j++)
 						*outPtr++ += *inPtr++ * *inputDecayPtr++ * scaler;
 					break;
@@ -1222,6 +1232,7 @@ Process_Analysis_SAI(EarObjectPtr data)
 	double	dt;
 	ChanLen	frameLength, positiveWidthIndex, negativeWidthIndex, *inputCountPtr;
 	SAImagePtr	p = sAImagePtr;
+	SignalDataPtr	inSignal, outSignal;
 	EarObjectPtr	strobeData;
 
 	if (!data->threadRunFlag) {
@@ -1233,23 +1244,24 @@ Process_Analysis_SAI(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Stabilised Auditory Image Module "
 		  "process"));
-		dt = data->inSignal[0]->dt;
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  (ChanLen) floor((p->positiveWidth - p->negativeWidth) / dt + 1.5),
-		  dt)) {
+		dt = _InSig_EarObject(data, 0)->dt;
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels,  (ChanLen) floor((p->positiveWidth - p->negativeWidth) /
+		  dt + 1.5), dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
 		}
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->negativeWidth);
+		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->
+		  negativeWidth);
 		if (!InitProcessVariables_Analysis_SAI(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
 		TempInputConnection_EarObject(data, p->strobeData, 1);
-		p->strobeData->inSignal[0] = data->inSignal[p->strobeInSignalIndex];
+		 p->strobeData->inSignal[0] = data->inSignal[p->strobeInSignalIndex];
 		if (p->diagnosticMode)
 			OutputStrobeData_Analysis_SAI();
 		if (data->initThreadRunFlag)
@@ -1260,34 +1272,33 @@ Process_Analysis_SAI(EarObjectPtr data)
 		NotifyError(wxT("%s: Could not process strobe data ."), funcName);
 		return(FALSE);
 	}
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
 	inputCountPtr = p->inputCount + data->threadIndex;
 	positiveWidthIndex = p->positiveWidthIndex - strobePtr->numLastSamples;
 	negativeWidthIndex = p->zeroIndex + strobePtr->numLastSamples;
-	for (frameLength = _OutSig_EarObject(data)->length, endOfData = FALSE;
-	  !endOfData; ) {
-		if (*inputCountPtr + _OutSig_EarObject(data)->length > data->inSignal[0]->
-		  length) {
+	for (frameLength = outSignal->length, endOfData = FALSE; !endOfData; ) {
+		if (*inputCountPtr + outSignal->length > inSignal->length) {
 			endOfData = TRUE;
-			frameLength = data->inSignal[0]->length - *inputCountPtr;
+			frameLength = inSignal->length - *inputCountPtr;
 			if (frameLength < positiveWidthIndex) {
 				positiveWidthIndex = frameLength;
 				negativeWidthIndex = 0;
 			} else if ((frameLength - positiveWidthIndex) < negativeWidthIndex)
 				negativeWidthIndex = frameLength - positiveWidthIndex;
 		}
-		ProcessFrameSection_Analysis_SAI(data, p->strobeDataBuffer->outSignal->
-		  channel, p->dataBuffer->outSignal->channel, p->zeroIndex +
-		  strobePtr->numLastSamples, 0, positiveWidthIndex);
-		ProcessFrameSection_Analysis_SAI(data, strobeData->outSignal->
-		  channel, data->inSignal[0]->channel, *inputCountPtr,
-		  positiveWidthIndex, negativeWidthIndex);
+		ProcessFrameSection_Analysis_SAI(data, _OutSig_EarObject(p->
+		  strobeDataBuffer)->channel, _OutSig_EarObject(p->dataBuffer)->channel,
+		  p->zeroIndex + strobePtr->numLastSamples, 0, positiveWidthIndex);
+		ProcessFrameSection_Analysis_SAI(data, _OutSig_EarObject(strobeData)->
+		  channel, inSignal->channel, *inputCountPtr, positiveWidthIndex,
+		  negativeWidthIndex);
 		PushBufferData_Analysis_SAI(data, frameLength);
 		*inputCountPtr = (endOfData)? 0: *inputCountPtr + frameLength;
 	}
-	 for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++)
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++)
 		DecayImage_Analysis_SAI(data, chan);
-	_OutSig_EarObject(data)->numWindowFrames++;
+	outSignal->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

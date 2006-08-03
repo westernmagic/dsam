@@ -508,15 +508,15 @@ CheckData_Utility_Delay(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (fabs(delay2Ptr->initialDelay) > signalDuration) {
 		NotifyError(wxT("%s: Delay (%g ms) is longer than signal."), funcName,
-		  delay2Ptr->initialDelay, _GetDuration_SignalData(data->inSignal[0]));
+		  delay2Ptr->initialDelay, _GetDuration_SignalData(_InSig_EarObject(data, 0)));
 		return(FALSE);
 	}
 	if (fabs(delay2Ptr->finalDelay) > signalDuration) {
 		NotifyError(wxT("%s: Delay (%g ms) is longer than signal."), funcName,
-		  delay2Ptr->initialDelay, _GetDuration_SignalData(data->inSignal[0]));
+		  delay2Ptr->initialDelay, _GetDuration_SignalData(_InSig_EarObject(data, 0)));
 		return(FALSE);
 	}
 	switch (delay2Ptr->mode) {
@@ -526,8 +526,8 @@ CheckData_Utility_Delay(EarObjectPtr data)
 			  delay2Ptr->initialDelay, delay2Ptr->finalDelay);
 			return(FALSE);
 		}
-		if ((data->inSignal[0]->numChannels /
-		  data->inSignal[0]->interleaveLevel) < 2) {
+		if ((_InSig_EarObject(data, 0)->numChannels /
+		  _InSig_EarObject(data, 0)->interleaveLevel) < 2) {
 			NotifyError(wxT("%s: LINEAR mode can only be used with multi-"
 			  "channel\nmonaural or binaural signals."), funcName);
 			return(FALSE);
@@ -565,6 +565,7 @@ Process_Utility_Delay(EarObjectPtr data)
 	int		chan;
 	double	delay = 0.0;
 	ChanLen	i, delayIndex;
+	SignalDataPtr	inSignal, outSignal;
 	Delay2Ptr	p = delay2Ptr;
 
 	if (!data->threadRunFlag) {
@@ -576,8 +577,8 @@ Process_Utility_Delay(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Introduce ITD into binaural "
 		  "signal"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -590,39 +591,40 @@ Process_Utility_Delay(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		switch (p->mode) {
 		case DELAY_SINGLE_MODE:
 			delay = p->initialDelay;
 			break;
 		case DELAY_LINEAR_MODE:
-			delay = p->delayPerChannel * (chan / _OutSig_EarObject(data)->
-			  interleaveLevel) + p->initialDelay;
+			delay = p->delayPerChannel * (chan / outSignal->interleaveLevel) +
+			  p->initialDelay;
 			break;
 		} /* switch */
 		delayChannel = FALSE;
-		if (_OutSig_EarObject(data)->interleaveLevel == 1)
+		if (outSignal->interleaveLevel == 1)
 			delayChannel = TRUE;
 		else {
 			if (p->initialDelay > 0.0) {
-				if ((chan % _OutSig_EarObject(data)->interleaveLevel) == 1)
+				if ((chan % outSignal->interleaveLevel) == 1)
 					delayChannel = TRUE;
 			} else {
-				if ((chan % _OutSig_EarObject(data)->interleaveLevel) == 0)
+				if ((chan % outSignal->interleaveLevel) == 0)
 					delayChannel = TRUE;
 			}	
 		}
-		inPtr = data->inSignal[0]->channel[chan];
+		inPtr = inSignal->channel[chan];
 		outPtr = _OutSig_EarObject(data)->channel[chan];
 		if (delayChannel) {
-			delayIndex = (ChanLen) fabs(delay / data->inSignal[0]->dt + 0.5);
+			delayIndex = (ChanLen) fabs(delay / inSignal->dt + 0.5);
 			for (i = 0; i < delayIndex; i++)
 				*outPtr++ = 0.0;
-			SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan, MSEC(delay));
+			SetInfoChannelLabel_SignalData(outSignal, chan, MSEC(delay));
 		} else
 			delayIndex = 0;
-		for (i = delayIndex; i < _OutSig_EarObject(data)->length; i++)
+		for (i = delayIndex; i < outSignal->length; i++)
 			*outPtr++ = *inPtr++;
 	}
 	SetProcessContinuity_EarObject(data);

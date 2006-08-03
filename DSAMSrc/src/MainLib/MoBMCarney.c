@@ -639,7 +639,7 @@ CheckData_BasilarM_Carney(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0])) {
+	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 		NotifyError(wxT("%s: Input signal not correctly initialised."),
 		  funcName);
 		return(FALSE);
@@ -755,7 +755,7 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 		 		return(FALSE);
 			}
 			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-				cFIndex = i / data->inSignal[0]->interleaveLevel;
+				cFIndex = i / _InSig_EarObject(data, 0)->interleaveLevel;
 				if ((p->coefficients[i] = InitCarneyGTCoeffs_BasilarM_Carney(
 				  p->cascade, p->cFList->frequency[cFIndex])) == NULL) {
 					NotifyError(wxT("%s: Out of memory for coefficient (%d)."),
@@ -788,11 +788,11 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 			p->cFList->updateFlag = FALSE;
 		}
-		p->pix2xDt = PIx2 * data->inSignal[0]->dt;
+		p->pix2xDt = PIx2 * _InSig_EarObject(data, 0)->dt;
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-			chan = i % data->inSignal[0]->interleaveLevel;
-			cFIndex = i / data->inSignal[0]->interleaveLevel;
-			RThetaSet_CmplxM(data->inSignal[0]->channel[chan][0], -p->pix2xDt *
+			chan = i % _InSig_EarObject(data, 0)->interleaveLevel;
+			cFIndex = i / _InSig_EarObject(data, 0)->interleaveLevel;
+			RThetaSet_CmplxM(_InSig_EarObject(data, 0)->channel[chan][0], -p->pix2xDt *
 			  p->cFList->frequency[cFIndex], &p->coefficients[i]->fLast[0]);
 			for (j = 1; j < p->cascade + 1; j++)
 				RThetaSet_CmplxM(0.0, 0.0, &p->coefficients[i]->fLast[j]);
@@ -831,6 +831,7 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 	ChanLen	i;
 	Complex	z, *f;
 	BMCarneyPtr	p = bMCarneyPtr;
+	SignalDataPtr	outSignal;
 	CarneyGTCoeffsPtr	cC;
 
 	if (!data->threadRunFlag) {
@@ -842,7 +843,7 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Carney non-linear basilar membrane "
 		  "filtering"));
-		totalChannels = p->cFList->numChannels * data->inSignal[0]->numChannels;
+		totalChannels = p->cFList->numChannels * _InSig_EarObject(data, 0)->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Could not initialise output channels."),
 			  funcName);
@@ -854,7 +855,7 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 			return(FALSE);
 		}
 		/* Main Processing. */
-		p->c = 2.0 / data->inSignal[0]->dt;
+		p->c = 2.0 / _InSig_EarObject(data, 0)->dt;
 		p->aA = p->maxHCVoltage / (1.0 + tanh(p->asymmetricalBias));
 		p->c1LP = (p->c - PIx2 * p->cutOffFrequency) / (p->c + PIx2 *
 		  p->cutOffFrequency);
@@ -864,18 +865,18 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
+	outSignal = _OutSig_EarObject(data);
 	f = p->f[data->threadIndex];
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		cFIndex = chan / _OutSig_EarObject(data)->interleaveLevel;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		cFIndex = chan / outSignal->interleaveLevel;
 		cC = *(p->coefficients + chan);
 		aCoeff = BM_CARNEY_A(p->c, cC->tau0);
 		cF = p->cFList->frequency[cFIndex];
 		pix2xDtxCF = p->pix2xDt * cF;
-		inPtr = data->inSignal[0]->channel[chan % data->inSignal[0]->
+		inPtr = _InSig_EarObject(data, 0)->channel[chan % _InSig_EarObject(data, 0)->
 		  interleaveLevel];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for(i = 0; i < _OutSig_EarObject(data)->length; i++) {	
+		outPtr = outSignal->channel[chan];
+		for(i = 0; i < outSignal->length; i++) {	
 			/* FREQUENCY SHIFT THE ARRAY BUF  */
 			RThetaSet_CmplxM(*inPtr++, -pix2xDtxCF * (i + 1), &f[0]);
 			fF = (cC->tau0 * 3.0 / 2.0 - (cC->tau0 / 2.0) * (cC->oHCLast /

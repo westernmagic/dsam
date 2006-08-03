@@ -449,9 +449,9 @@ CheckData_Transform_CollectSignals(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	for (i = 1; ok && (i < data->numInSignals); i++)
-		if ((data->inSignal[0]->length != data->inSignal[i]->length) ||
-		  (fabs(data->inSignal[0]->dt - data->inSignal[i]->dt) > DBL_EPSILON) ||
-		  (data->inSignal[0]->interleaveLevel != data->inSignal[i]->
+		if ((_InSig_EarObject(data, 0)->length != _InSig_EarObject(data, i)->length) ||
+		  (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, i)->dt) > DBL_EPSILON) ||
+		  (_InSig_EarObject(data, 0)->interleaveLevel != _InSig_EarObject(data, i)->
 		  interleaveLevel)) {
 			NotifyError(wxT("%s: Input signal [%d] does not have the same "
 			  "length and sampling interval as the first, [0]."), funcName, i);
@@ -497,7 +497,7 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Collect channels transform module "
 		  "process"));
 		for (i = 0, numChannels = 0; i < data->numInSignals; i++)
-			numChannels += data->inSignal[i]->numChannels;
+			numChannels += _InSig_EarObject(data, i)->numChannels;
 		if ((p->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && (p->
 		  numChannels != numChannels)) {
 			NotifyError(wxT("%s: The number of labels (%d) be equal to the "
@@ -506,12 +506,12 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 			return(FALSE);
 		}
 		data->externalDataFlag = TRUE;
-		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
-		  data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data, 0)->length,
+		  _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->
 		  interleaveLevel);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		if (data->initThreadRunFlag)
@@ -521,11 +521,11 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 	chanLabels = _OutSig_EarObject(data)->info.chanLabel;
 	userLabels = p->labels;
 	for (i = 0; i < data->numInSignals; i++)
-		for (chan = 0; chan < data->inSignal[i]->numChannels; chan++) {
-			*outChannels++ = data->inSignal[i]->channel[chan];
+		for (chan = 0; chan < _InSig_EarObject(data, i)->numChannels; chan++) {
+			*outChannels++ = _InSig_EarObject(data, i)->channel[chan];
 			switch (p->labelMode) {
 			case TRANSFORM_COLLECTSIGNALS_LABELMODE_INPUT_LABELS:
-				*chanLabels++ = data->inSignal[i]->info.chanLabel[chan];
+				*chanLabels++ = _InSig_EarObject(data, i)->info.chanLabel[chan];
 				break;
 			case TRANSFORM_COLLECTSIGNALS_LABELMODE_USER:
 				*chanLabels++ = *userLabels++;

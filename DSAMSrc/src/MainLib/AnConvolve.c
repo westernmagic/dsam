@@ -100,18 +100,18 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		  "other processes."), funcName);
 		return(FALSE);
 	}
-	if (!CheckPars_SignalData(data->inSignal[0]) ||
-	  !CheckPars_SignalData(data->inSignal[1])) {
+	if (!CheckPars_SignalData(_InSig_EarObject(data, 0)) ||
+	  !CheckPars_SignalData(_InSig_EarObject(data, 1))) {
 		NotifyError(wxT("%s: Input signals not correctly set."), funcName);		
 		return(FALSE);
 	}
-	if ((fabs(data->inSignal[0]->dt - data->inSignal[1]->dt) > DBL_EPSILON) ||
-	  (data->inSignal[0]->numChannels != data->inSignal[1]->numChannels)) {
+	if ((fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) > DBL_EPSILON) ||
+	  (_InSig_EarObject(data, 0)->numChannels != _InSig_EarObject(data, 1)->numChannels)) {
 		NotifyError(wxT("%s: Input signals are not the same."), funcName);		
 		return(FALSE);
 	}
-	if (data->inSignal[0]->interleaveLevel !=
-	  data->inSignal[1]->interleaveLevel) {
+	if (_InSig_EarObject(data, 0)->interleaveLevel != _InSig_EarObject(data,
+	  1)->interleaveLevel) {
 		NotifyError(wxT("%s: Input signals do not have the same interleave "
 		  "level."), funcName);		
 		return(FALSE);
@@ -142,6 +142,7 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 	int		chan;
 	register	ChanData	*inR, *inS, *outPtr, *endInR;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Analysis_Convolution(data)) {
@@ -149,25 +150,25 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Auto-convolution Process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
 		}
 		SetInterleaveLevel_SignalData(_OutSig_EarObject(data),
-		  data->inSignal[0]->interleaveLevel);
+		  _InSig_EarObject(data, 0)->interleaveLevel);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
-			inR = data->inSignal[1]->channel[chan];
-			endInR = inR + data->inSignal[1]->length;
-			inS = data->inSignal[0]->channel[chan] + i;
-			for (*outPtr = 0.0;(inS >= data->inSignal[0]->channel[chan]) &&
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++, outPtr++) {
+			inR = _InSig_EarObject(data, 1)->channel[chan];
+			endInR = inR + _InSig_EarObject(data, 1)->length;
+			inS = _InSig_EarObject(data, 0)->channel[chan] + i;
+			for (*outPtr = 0.0;(inS >= _InSig_EarObject(data, 0)->channel[chan]) &&
 			  (inR < endInR); inR++, inS--)
 				*outPtr += *inR * *inS;
 		}

@@ -121,6 +121,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 	int		chan;
 	double	theta, sineSum, cosineSum, rSum;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Analysis_SynchIndex(data)) {
@@ -128,7 +129,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Synchronisation Index Analysis"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 1,
 		  1.0)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
@@ -137,17 +138,17 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		sineSum = cosineSum = rSum = 0.0;
-		r = data->inSignal[0]->channel[chan];
-		for (i = 0; i < data->inSignal[0]->length; i++) {
-			theta = PIx2 * i / data->inSignal[0]->length; 
+		r = _InSig_EarObject(data, 0)->channel[chan];
+		for (i = 0; i < _InSig_EarObject(data, 0)->length; i++) {
+			theta = PIx2 * i / _InSig_EarObject(data, 0)->length; 
 			sineSum += *r * sin(theta);
 			cosineSum += *r * cos(theta);
 			rSum += fabs(*r++);
 		}
-		_OutSig_EarObject(data)->channel[chan][0] = (rSum == 0.0)? 0.0: sqrt(sineSum *
+		outSignal->channel[chan][0] = (rSum == 0.0)? 0.0: sqrt(sineSum *
 		  sineSum + cosineSum * cosineSum) / rSum;
 	}
 	SetProcessContinuity_EarObject(data);

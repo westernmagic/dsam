@@ -432,6 +432,7 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 	int		chan, j;
 	double	gradient;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	ReduceDtPtr	p = reduceDtPtr;
 
 	if (!data->threadRunFlag) {
@@ -442,8 +443,8 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Module process ??"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length * p->denominator, data->inSignal[0]->dt /
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length * p->denominator, _InSig_EarObject(data, 0)->dt /
 		  p->denominator)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
@@ -452,12 +453,12 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		gradient = 0.0;
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < data->inSignal[0]->length - 1; i++, inPtr++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < _InSig_EarObject(data, 0)->length - 1; i++, inPtr++) {
 			gradient = (*(inPtr + 1) - *inPtr) / p->denominator;
 			for (j = 0; j < p->denominator; j++)
 				*(outPtr++) = *inPtr + gradient * j;

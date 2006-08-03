@@ -567,7 +567,7 @@ InitProcessVariables_IHCRP_Zhang(EarObjectPtr data)
 	if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			hCRP = &p->hCRP[i];
-			InitLowPass_Utility_Zhang(&(hCRP->hclp), data->inSignal[0]->dt,
+			InitLowPass_Utility_Zhang(&(hCRP->hclp), _InSig_EarObject(data, 0)->dt,
 			  p->cut, 1.0, p->k);
 			hCRP->hcnl.A0 = p->a0;  /* Inner Hair Cell Nonlinear Function */
 			hCRP->hcnl.B = p->b;
@@ -620,6 +620,7 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	THairCellPtr	hCRP;
+	SignalDataPtr	outSignal;
 	IHCRPZhangPtr	p = iHCRPZhangPtr;
 
 	if (!data->threadRunFlag) {
@@ -631,8 +632,8 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Zhang et al. IHC Receptor "
 		  "Potential."));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 			return(FALSE);
 		}
@@ -645,13 +646,13 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		hCRP = &p->hCRP[chan];
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		hCRP->hcnl.Run2(&hCRP->hcnl, inPtr, outPtr, _OutSig_EarObject(data)->length);
-		hCRP->hclp.Run2(&hCRP->hclp, outPtr, outPtr, _OutSig_EarObject(data)->length);
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
+		hCRP->hcnl.Run2(&hCRP->hcnl, inPtr, outPtr, outSignal->length);
+		hCRP->hclp.Run2(&hCRP->hclp, outPtr, outPtr, outSignal->length);
 	}
 
 	SetProcessContinuity_EarObject(data);

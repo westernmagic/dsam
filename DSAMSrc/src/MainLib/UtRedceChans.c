@@ -468,9 +468,9 @@ CheckData_Utility_ReduceChannels(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if ((data->inSignal[0]->numChannels % reduceChansPtr->numChannels) != 0) {
+	if ((_InSig_EarObject(data, 0)->numChannels % reduceChansPtr->numChannels) != 0) {
 		NotifyError(wxT("%s: Cannot reduce %d channels to %d.\n"), funcName,
-		  data->inSignal[0]->numChannels, reduceChansPtr->numChannels);
+		  _InSig_EarObject(data, 0)->numChannels, reduceChansPtr->numChannels);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -514,6 +514,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	uShort	numChannels;
 	int		j, chan, channelBinWidth, binRatio;
 	ChanLen	i;
+	SignalDataPtr	inSignal, outSignal;
 	ReduceChansPtr	p = reduceChansPtr;
 
 	if (!data->threadRunFlag) {
@@ -524,40 +525,42 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Average across channels utility"));
-		numChannels = p->numChannels * data->inSignal[0]->interleaveLevel;
+		numChannels = p->numChannels * _InSig_EarObject(data, 0)->interleaveLevel;
 		data->updateProcessFlag = TRUE;
-		if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->
-		  length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data, 0)->
+		  length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_ReduceChannels(data);
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->
 		  interleaveLevel);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), NULL);
 		SetInfoCFArray_SignalData(_OutSig_EarObject(data), NULL);
 		DSAM_snprintf(channelTitle, MAXLINE, wxT("Channel summary (%d -> %d)"),
-		  data->inSignal[0]->numChannels, _OutSig_EarObject(data)->numChannels);
+		  _InSig_EarObject(data, 0)->numChannels, _OutSig_EarObject(data)->numChannels);
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	binRatio = data->inSignal[0]->numChannels / p->numChannels;
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan +=
-	  data->inSignal[0]->interleaveLevel)
-		for (j = 0; j < data->inSignal[0]->interleaveLevel; j++) {
-			inPtr = data->inSignal[0]->channel[chan + j];
-			outPtr = _OutSig_EarObject(data)->channel[chan / binRatio *
-			 data->inSignal[0]->interleaveLevel + j];
-			for (i = 0; i < data->inSignal[0]->length; i++)
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	binRatio = inSignal->numChannels / p->numChannels;
+	for (chan = 0; chan < inSignal->numChannels; chan += inSignal->
+	  interleaveLevel)
+		for (j = 0; j < inSignal->interleaveLevel; j++) {
+			inPtr = inSignal->channel[chan + j];
+			outPtr = outSignal->channel[chan / binRatio * inSignal->
+			  interleaveLevel + j];
+			for (i = 0; i < inSignal->length; i++)
 				*outPtr++ += *inPtr++;
 	}
-	channelBinWidth = data->inSignal[0]->numChannels / numChannels;
+	channelBinWidth = inSignal->numChannels / numChannels;
 	if (p->mode == REDUCE_CHANS_AVERAGE_MODE)
-		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
-			outPtr = _OutSig_EarObject(data)->channel[chan];
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+		for (chan = 0; chan < outSignal->numChannels; chan++) {
+			outPtr = outSignal->channel[chan];
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ /= channelBinWidth;
 		}
 	SetUtilityProcessContinuity_EarObject(data);

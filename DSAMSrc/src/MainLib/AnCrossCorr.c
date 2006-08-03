@@ -496,7 +496,7 @@ CheckData_Analysis_CCF(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (crossCorrPtr->timeOffset > signalDuration) {
 		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
@@ -508,7 +508,7 @@ CheckData_Analysis_CCF(EarObjectPtr data)
 		  "range of the signal."), funcName);
 		return(FALSE);
 	}		
-	if (data->inSignal[0]->numChannels % 2 != 0) {
+	if (_InSig_EarObject(data, 0)->numChannels % 2 != 0) {
 		NotifyError(wxT("%s: Number of channels must be a factor of 2."),
 		  funcName);
 		return(FALSE);
@@ -536,7 +536,7 @@ InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 	
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_CCF();
-		dt = data->inSignal[0]->dt;
+		dt = _InSig_EarObject(data, 0)->dt;
 		maxPeriodIndex = (ChanLen) floor(p->period / dt + 0.05);
 		if ((p->exponentDt = (double *) calloc(maxPeriodIndex, sizeof(
 		  double))) == NULL) {
@@ -596,6 +596,7 @@ Calc_Analysis_CCF(EarObjectPtr data)
 	long	deltaT;
 	double	dt;
 	ChanLen	i, totalPeriodIndex;
+	SignalDataPtr	outSignal;
 	CrossCorrPtr	p = crossCorrPtr;
 
 	if (!data->threadRunFlag) {
@@ -607,10 +608,10 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Cross Correlation Function (CCF) "
 		  "analysis"));
-		dt = data->inSignal[0]->dt;
+		dt = _InSig_EarObject(data, 0)->dt;
 		p->periodIndex = (ChanLen) floor(p->period / dt + 0.5);
 		totalPeriodIndex = p->periodIndex * 2 + 1;
-		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
+		if (!InitOutSignal_EarObject(data, (uShort) (_InSig_EarObject(data, 0)->
 		  numChannels / 2), totalPeriodIndex, dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
@@ -620,8 +621,9 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
 			_OutSig_EarObject(data)->info.cFArray[chan] =
-			  data->inSignal[0]->info.cFArray[chan];
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay period (s)"));
+			  _InSig_EarObject(data, 0)->info.cFArray[chan];
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay "
+		  "period (s)"));
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), -p->period);
 		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5) - 1;
@@ -633,23 +635,24 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
 		inChan = chan * 2;
 		for (deltaT = -((long) p->periodIndex); deltaT <= (long) p->periodIndex;
 		  deltaT++, outPtr++) {
-			inPtrL = data->inSignal[0]->channel[inChan] + p->timeOffsetIndex;
-			inPtrR = data->inSignal[0]->channel[inChan + 1] +
-			  p->timeOffsetIndex;
+			inPtrL = _InSig_EarObject(data, 0)->channel[inChan] + p->
+			  timeOffsetIndex;
+			inPtrR = _InSig_EarObject(data, 0)->channel[inChan + 1] + p->
+			  timeOffsetIndex;
 			for (i = 0, *outPtr = 0.0, expDtPtr = p->exponentDt;
 			  i < p->periodIndex; i++, expDtPtr++, inPtrL--, inPtrR--)
 				*outPtr += *inPtrL * *(inPtrR - deltaT) * *expDtPtr;
 			*outPtr /= p->periodIndex;
 		}
 	}
-	if (!_OutSig_EarObject(data)->offset)	/* Do this only for one (first) thread */
-		_OutSig_EarObject(data)->numWindowFrames++;
+	if (!outSignal->offset)	/* Do this only for one (first) thread */
+		outSignal->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

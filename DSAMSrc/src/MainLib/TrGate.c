@@ -785,7 +785,7 @@ CheckData_Transform_Gate(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	duration = (gatePtr->duration < 0.0)? signalDuration - gatePtr->timeOffset:
 	  gatePtr->duration;
  	if (duration > signalDuration) {
@@ -853,11 +853,11 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	int		chan;
 	ChanLen	i;
 	ChanData	*dataPtr, *endPtr;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 	
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		dataPtr = _OutSig_EarObject(data)->channel[chan];
-		endPtr = dataPtr + _OutSig_EarObject(data)->length - 1;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		dataPtr = outSignal->channel[chan];
+		endPtr = dataPtr + outSignal->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
 			dataPtr += offsetIndex;
 		else
@@ -866,7 +866,7 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 				;
 		for (i = 0; (i < intervalIndex) && (dataPtr < endPtr); i++)
 			*dataPtr++ *= GateFunction_Transform_Gate(i, intervalIndex,
-			  _OutSig_EarObject(data)->dt);
+			  outSignal->dt);
 	}
 
 }
@@ -884,11 +884,11 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	register ChanData	*dataPtr, *startPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		startPtr = _OutSig_EarObject(data)->channel[chan];
-		dataPtr = startPtr + _OutSig_EarObject(data)->length - 1;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		startPtr = outSignal->channel[chan];
+		dataPtr = startPtr + outSignal->length - 1;
 		if (gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE)
 			dataPtr -= offsetIndex;
 		else
@@ -897,7 +897,7 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 				;
 		for (i = 0; (i < intervalIndex) && ( dataPtr > startPtr); i++)
 			*dataPtr-- *= GateFunction_Transform_Gate(i, intervalIndex,
-			  _OutSig_EarObject(data)->dt);
+			  outSignal->dt);
 	}
 
 }
@@ -936,14 +936,11 @@ Process_Transform_Gate(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Gate Module process"));
-		if (_OutSig_EarObject(data) != data->inSignal[0]) {
-			_OutSig_EarObject(data) = data->inSignal[0];
-			data->updateCustomersFlag = TRUE;
-		}
+		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		_OutSig_EarObject(data)->rampFlag = TRUE;
 		p->offsetIndex = (p->positionMode == GATE_ABSOLUTE_POSITION_MODE)?
 		  (ChanLen) floor(p->timeOffset / _OutSig_EarObject(data)->dt + 0.5): 0;
-		p->intervalIndex = (p->duration < 0.0)? data->inSignal[0]->length:
+		p->intervalIndex = (p->duration < 0.0)? _InSig_EarObject(data, 0)->length:
 		  (ChanLen) floor(p->duration / _OutSig_EarObject(data)->dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);

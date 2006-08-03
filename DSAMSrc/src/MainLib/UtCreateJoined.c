@@ -92,8 +92,8 @@ CheckData_Utility_CreateJoined(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	for (i = 0; i < data->numInSignals; i++) {
-		if ((i != 0) && ((data->inSignal[0]->dt != data->inSignal[i]->dt) ||
-		  (data->inSignal[0]->numChannels != data->inSignal[i]->numChannels))) {
+		if ((i != 0) && ((_InSig_EarObject(data, 0)->dt != _InSig_EarObject(data, i)->dt) ||
+		  (_InSig_EarObject(data, 0)->numChannels != _InSig_EarObject(data, i)->numChannels))) {
 			NotifyError(wxT("%s: All signals must of the same number of "
 			  "channels\nand sampling Interval (signal %d is different).\n"),
 			  funcName, i);
@@ -127,6 +127,7 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr;
 	int		i, chan;
 	ChanLen	j, joinedLength;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_CreateJoined(data)) {
@@ -136,9 +137,9 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Create Joined Utility module "
 		  "process"));
 		for (i = 0, joinedLength = 0; i < data->numInSignals; i++)
-			joinedLength += data->inSignal[i]->length;
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  joinedLength, data->inSignal[0]->dt)) {
+			joinedLength += _InSig_EarObject(data, i)->length;
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  joinedLength, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -146,12 +147,12 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
 		for (i = 0; i < data->numInSignals; i++) {
-			inPtr = data->inSignal[i]->channel[chan];
-			for (j = 0; j < data->inSignal[i]->length; j++)
+			inPtr = _InSig_EarObject(data, i)->channel[chan];
+			for (j = 0; j < _InSig_EarObject(data, i)->length; j++)
 				*outPtr++ = *inPtr++;
 		}			
 	}

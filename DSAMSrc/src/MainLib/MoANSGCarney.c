@@ -853,10 +853,10 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration <
-	  data->inSignal[0]->dt)) {
+	  _InSig_EarObject(data, 0)->dt)) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
 		  "interval, %g ms (%g ms)\n"), funcName,
-		  MSEC(data->inSignal[0]->dt), MSEC(carneySGPtr->pulseDuration));
+		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(carneySGPtr->pulseDuration));
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -1027,6 +1027,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	int		i, chan;
 	double	threshold, excessTime;
 	ChanLen	j;
+	SignalDataPtr	outSignal;
 	CarneySGPtr	p = carneySGPtr;
 	
 	if (!data->threadRunFlag) {
@@ -1038,8 +1039,8 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Carney Post-Synaptic Spike "
 		  "Firing"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -1049,7 +1050,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dt = data->inSignal[0]->dt;
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
 			outPtr = _OutSig_EarObject(data)->channel[chan];
@@ -1059,13 +1060,13 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
 	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan];
-			outPtr = _OutSig_EarObject(data)->channel[chan];
-			for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+			inPtr = _InSig_EarObject(data, 0)->channel[chan];
+			outPtr = outSignal->channel[chan];
+			for (j = 0; j < outSignal->length; j++) {
 				if (*timerPtr > p->refractoryPeriod) {
 					excessTime = *timerPtr - p->refractoryPeriod;
 					threshold = p->maxThreshold * (p->dischargeCoeffC0 * 

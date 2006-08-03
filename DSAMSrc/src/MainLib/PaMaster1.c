@@ -900,10 +900,10 @@ SendParsToWorkers_MPI_Master1(EarObjectPtr data, int worker)
 		MPI_Send(ptr, work->numChannels, MPI_DOUBLE, work->rank,
 		  MASTER_MESG_TAG, MPI_COMM_WORLD);
 	}
-	if (data->inSignal[0] == NULL)
+	if (_InSig_EarObject(data, 0) == NULL)
 		MPI_Send(&ok, 1, MPI_INT, work->rank, MASTER_MESG_TAG, MPI_COMM_WORLD);
 	else {
-		if (!SendSignalPars_MPI_General(data->inSignal[0], work->numChannels,
+		if (!SendSignalPars_MPI_General(_InSig_EarObject(data, 0), work->numChannels,
 		  work->rank, MASTER_INIT_TAG))
 			ok = FALSE;
 		MPI_Send(&ok, 1, MPI_INT, work->rank, MASTER_INIT_TAG, MPI_COMM_WORLD);
@@ -977,8 +977,8 @@ InitProcessVariables_MPI_Master1(EarObjectPtr data)
 			return(FALSE);
 		}
 		master1Ptr->handle = data->handle;
-		master1Ptr->interleaveLevel = (data->inSignal[0] == NULL)? 1:
-		  data->inSignal[0]->interleaveLevel;
+		master1Ptr->interleaveLevel = (_InSig_EarObject(data, 0) == NULL)? 1:
+		  _InSig_EarObject(data, 0)->interleaveLevel;
 		if (!ReadCFListParFile_MPI_Master1()) {
 			NotifyError(wxT("%s: Could not read CF list parameters."),
 			  funcName);
@@ -990,13 +990,13 @@ InitProcessVariables_MPI_Master1(EarObjectPtr data)
 				PrintPars_CFList(master1Ptr->theCFs);
 				master1Ptr->printTheCFs = FALSE;
 			}
-			master1Ptr->numChannels = (data->inSignal[0])?
-			  master1Ptr->theCFs->numChannels * data->inSignal[0]->numChannels:
+			master1Ptr->numChannels = (_InSig_EarObject(data, 0))?
+			  master1Ptr->theCFs->numChannels * _InSig_EarObject(data, 0)->numChannels:
 			  master1Ptr->theCFs->numChannels;
 			break;
 		default:
-			master1Ptr->numChannels = (data->inSignal[0] == NULL)?
-			  master1Ptr->numWorkers: data->inSignal[0]->numChannels;
+			master1Ptr->numChannels = (_InSig_EarObject(data, 0) == NULL)?
+			  master1Ptr->numWorkers: _InSig_EarObject(data, 0)->numChannels;
 			break;
 		} /* switch */
 		if (!SetWorkDivision_MPI_Master1(masterAdmin.myRank)) {
@@ -1298,13 +1298,13 @@ SendInSignalToWorkers_MPI_Master1(EarObjectPtr data)
 	int		i;
 	WorkDetailPtr	work;
 
-	if (data->inSignal[0] == NULL)
+	if (_InSig_EarObject(data, 0) == NULL)
 		return(TRUE);
 	for (i = 0; i < master1Ptr->numWorkers; i++) {
 		work = &master1Ptr->workDetails[i];
 		MPI_Send(&data->handle, 1, MPI_UNSIGNED, work->rank, MASTER_INIT_TAG,
 		  MPI_COMM_WORLD);
-		if (!SendChannelData_MPI_General(data->inSignal[0], work->offset,
+		if (!SendChannelData_MPI_General(_InSig_EarObject(data, 0), work->offset,
 		  work->numChannels, work->rank, MASTER_DATA_TAG,
 		  MASTER_END_CHANNEL_TAG))
 			ok = FALSE;

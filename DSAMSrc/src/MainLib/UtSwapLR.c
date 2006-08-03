@@ -94,7 +94,7 @@ CheckData_Utility_SwapLR(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (data->inSignal[0]->interleaveLevel != 2) {
+	if (_InSig_EarObject(data, 0)->interleaveLevel != 2) {
 		NotifyError(wxT("%s: This utility only works with binaural signals."),
 		  funcName);
 		return(FALSE);
@@ -126,6 +126,7 @@ Process_Utility_SwapLR(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	inSignal, outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_Utility_SwapLR(data)) {
@@ -133,25 +134,29 @@ Process_Utility_SwapLR(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Swap L->R Utility Module process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
-			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
-		  interleaveLevel);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(
+		  data, 0)->interleaveLevel);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels -
-	  1; chan += data->inSignal[0]->interleaveLevel) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan + 1];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels - 1; chan +=
+	  inSignal->interleaveLevel) {
+		inPtr = inSignal->channel[chan];
+		outPtr = outSignal->channel[chan + 1];
+		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ = *inPtr++;
-		inPtr = data->inSignal[0]->channel[chan + 1];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+		inPtr = inSignal->channel[chan + 1];
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ = *inPtr++;
 	}
 	SetProcessContinuity_EarObject(data);

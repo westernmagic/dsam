@@ -782,6 +782,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 	static const WChar	*funcName = wxT("ReadSignal_IO_AudioIn");
 	BOOLN	ok = TRUE;
 	AudioInPtr p = audioInPtr;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_IO_AudioIn())
@@ -807,6 +808,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	do {
 #		ifdef IO_AUDIOIN_PORTAUDIO_V_19
 		p->pAError = Pa_IsStreamActive(p->stream);
@@ -816,12 +818,12 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		if (p->sleep > 0)
 			Pa_Sleep((int) p->sleep);
 	} while (!p->segmentReadyFlag && (p->pAError == 1));
-	_OutSig_EarObject(data)->channel[LEFT_CHAN] = p->buffer->outSignal->channel[
+	outSignal->channel[LEFT_CHAN] = p->buffer->outSignal->channel[
 	  LEFT_CHAN] + p->segmentIndex;
 	if (p->buffer->outSignal->numChannels == 2)
-		_OutSig_EarObject(data)->channel[RIGHT_CHAN] = p->buffer->outSignal->channel[
+		outSignal->channel[RIGHT_CHAN] = p->buffer->outSignal->channel[
 		  RIGHT_CHAN] + p->segmentIndex;
-	p->segmentIndex += _OutSig_EarObject(data)->length;
+	p->segmentIndex += outSignal->length;
 	if ((ChanLen) p->segmentIndex > p->buffer->outSignal->length)
 		p->segmentIndex = 0;
 	p->segmentReadyFlag = FALSE;
@@ -830,7 +832,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 	if (p->pAError < 1)
 		ok = FALSE;
 	if (ok && (fabs(p->gain) > DBL_EPSILON))
-		GaindB_SignalData(_OutSig_EarObject(data), p->gain);
+		GaindB_SignalData(outSignal, p->gain);
 	SetProcessContinuity_EarObject(data);
 	return(ok);
 

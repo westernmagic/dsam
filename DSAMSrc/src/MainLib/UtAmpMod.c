@@ -737,6 +737,7 @@ Process_Utility_AmpMod(EarObjectPtr data)
 	int		chan, j;
 	double	sum, time;
 	ChanLen	i, t;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_AmpMod())
@@ -747,8 +748,8 @@ Process_Utility_AmpMod(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Amplitude modulation utility "
 		  "module."));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -756,13 +757,12 @@ Process_Utility_AmpMod(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0, t = data->timeIndex; i < _OutSig_EarObject(data)->length; i++,
-		  t++) {
-			time = t * _OutSig_EarObject(data)->dt;
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
+		for (i = 0, t = data->timeIndex; i < outSignal->length; i++, t++) {
+			time = t * outSignal->dt;
 			for (j = 0, sum = 0.0; j < ampModPtr->numFrequencies; j++)
 				sum += ampModPtr->modulationDepths[j] / 100.0 * sin(PIx2 *
 				  ampModPtr->frequencies[j] * time +

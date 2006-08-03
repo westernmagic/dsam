@@ -920,6 +920,7 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	double	ciliaDisplacement_u, lastInput, denom_val;
 	register	double		dt;
 	register	ChanData	*inPtr, *outPtr;
+	SignalDataPtr	outSignal;
 	ShammaPtr	p = shammaPtr;
 	
 	if (!data->threadRunFlag) {
@@ -934,15 +935,15 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		}	
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Shamma hair cell "
 		  "receptor potential"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -964,14 +965,14 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		potential_V = p->lastOutput[chan];
 		lastInput = p->lastInput[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr++, outPtr++) {
+		for (i = 0; i < outSignal->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += p->cGain * (*inPtr - lastInput) - 
 			  ciliaDisplacement_u *  p->dtOverTc;
 
@@ -991,8 +992,8 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		p->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
 		p->lastInput[chan] = lastInput;
 		p->lastOutput[chan] = potential_V;
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ += p->referencePot;
 	}
 	SetProcessContinuity_EarObject(data);

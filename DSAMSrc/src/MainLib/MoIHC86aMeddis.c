@@ -672,9 +672,9 @@ CheckData_IHC_Meddis86a(EarObjectPtr data)
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0]))
+	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0)))
 		return(FALSE);
-	dt = data->inSignal[0]->dt;
+	dt = _InSig_EarObject(data, 0)->dt;
 	if (dt > MEDDIS86A_MAX_DT) {
 		NotifyError(wxT("%s: Maximum sampling interval exceeded."), funcName);
 		return(FALSE);
@@ -744,7 +744,7 @@ InitProcessVariables_IHC_Meddis86a(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		spontPerm_k0 = p->permeabilityPZ_z * exp(p->permeabilityPH_h *
-		  data->inSignal[0]->channel[0][0]);
+		  _InSig_EarObject(data, 0)->channel[0][0]);
 		spontCleft_c0 = p->maxFreePool_M * p->replenishRate_y *
 		   spontPerm_k0 / (p->replenishRate_y * (p->lossRate_l +
 		   p->recoveryRate_r) + spontPerm_k0 * p->lossRate_l);
@@ -798,6 +798,7 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 	double	dt, kdt;
 	double	reUptake, reUptakeAndLost,replenish, reprocessed, ejected;
 	ChanData	*inPtr, *outPtr;
+	SignalDataPtr	outSignal;
 	HairCell3Ptr	p = hairCell3Ptr;
 	
 	if (!data->threadRunFlag) {
@@ -807,8 +808,8 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -831,11 +832,12 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = _OutSig_EarObject(data)->offset, clipped = FALSE; i < _OutSig_EarObject(data)->
-	  numChannels; i++) {
-		inPtr = data->inSignal[0]->channel[i];
-		outPtr = _OutSig_EarObject(data)->channel[i];
-		for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
+	outSignal = _OutSig_EarObject(data);
+	for (i = outSignal->offset, clipped = FALSE; i < outSignal->numChannels;
+	  i++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[i];
+		outPtr = outSignal->channel[i];
+		for (j = 0; j < outSignal->length; j++) {
 			kdt = p->zdt * exp(p->permeabilityPH_h * *inPtr++);
 			if (kdt >= 1.0) {
 				kdt = 0.99;

@@ -1301,6 +1301,7 @@ ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("ReadSignalMain_DataFile");
 	BOOLN	ok;
+	SignalDataPtr	outSignal;
 
 	if (dataFilePtr == NULL) {
 		if (!Init_DataFile(GLOBAL)) {
@@ -1329,16 +1330,16 @@ ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 		ok = ReadFile_Raw(fileName, data);
 		break;
 	} /* switch */
+	outSignal = _OutSig_EarObject(data);
 	if (!ok && !GetDSAMPtr_Common()->segmentedMode)
 		NotifyError(wxT("%s: Could not read file '%s'."), funcName, fileName);
 	if (ok) {
 		if (fabs(dataFilePtr->gain) > DBL_EPSILON)
-			GaindB_SignalData(_OutSig_EarObject(data), dataFilePtr->gain);
-		if (!_OutSig_EarObject(data)->staticTimeFlag)
-			SetOutputTimeOffset_SignalData(_OutSig_EarObject(data),
-			  dataFilePtr->timeOffsetIndex * _OutSig_EarObject(data)->dt +
-			  dataFilePtr->outputTimeOffset);
-		_OutSig_EarObject(data)->rampFlag = TRUE;	/* Let user sort out ramps */
+			GaindB_SignalData(outSignal, dataFilePtr->gain);
+		if (!outSignal->staticTimeFlag)
+			SetOutputTimeOffset_SignalData(outSignal, dataFilePtr->
+			  timeOffsetIndex * outSignal->dt + dataFilePtr->outputTimeOffset);
+		outSignal->rampFlag = TRUE;	/* Let user sort out ramps */
 		SetProcessContinuity_EarObject(data);
 	}
 	return(ok);
@@ -1448,7 +1449,7 @@ BOOLN
 WriteOutSignal_DataFile_Named(EarObjectPtr data)
 {
 	if (!data->threadRunFlag) {
-		_OutSig_EarObject(data) = data->inSignal[0];
+		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

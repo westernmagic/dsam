@@ -529,10 +529,10 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration <
-	  data->inSignal[0]->dt)) {
+	  _InSig_EarObject(data, 0)->dt)) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
 		  "interval, %g ms (%g ms)\n"), funcName,
-		  MSEC(data->inSignal[0]->dt), MSEC(meddis02SGPtr->pulseDuration));
+		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(meddis02SGPtr->pulseDuration));
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -601,7 +601,8 @@ ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
 BOOLN
 InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
-	static const WChar	*funcName = wxT("InitProcessVariables_ANSpikeGen_Meddis02");
+	static const WChar	*funcName =
+	  wxT("InitProcessVariables_ANSpikeGen_Meddis02");
 	int		i;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
@@ -703,6 +704,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 	int		i, chan;
 	double	spikeProb, excessTime;
 	ChanLen	j;
+	SignalDataPtr	outSignal;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
 	if (!data->threadRunFlag) {
@@ -714,8 +716,9 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Meddis 2002 Post-Synaptic Spike "
 		  "Firing"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -725,7 +728,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->dt = data->inSignal[0]->dt;
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
 			outPtr = _OutSig_EarObject(data)->channel[chan];
@@ -735,13 +738,13 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
 	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
-			inPtr = data->inSignal[0]->channel[chan];
-			outPtr = _OutSig_EarObject(data)->channel[chan];
-			for (j = 0; j < _OutSig_EarObject(data)->length; j++) {
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+			inPtr = _InSig_EarObject(data, 0)->channel[chan];
+			outPtr = outSignal->channel[chan];
+			for (j = 0; j < outSignal->length; j++) {
 				if ((*inPtr > 0.0) && (*timerPtr > p->refractoryPeriod)) {
 					excessTime = *timerPtr - p->refractoryPeriod;
 					spikeProb = 1.0 - exp(-excessTime / p->recoveryTau);

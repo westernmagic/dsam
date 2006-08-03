@@ -307,6 +307,7 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 	int32	dataOffset;
 	FILE	*fp;
 	WaveHeader	pars;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	if (dataFilePtr->endian == DATA_FILE_DEFAULT_ENDIAN)
 		SetRWFormat_DataFile(DATA_FILE_LITTLE_ENDIAN_UNSIGNED);
@@ -317,8 +318,7 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 		dataOffset = 0L;
-		dataFilePtr->normalise = CalculateNormalisation_DataFile(
-		  _OutSig_EarObject(data));
+		dataFilePtr->normalise = CalculateNormalisation_DataFile(outSignal);
 	} else {
 		if ((fp = OpenFile_DataFile(fileName, FOR_BINARY_UPDATING)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open file '%s'."), funcName,
@@ -331,9 +331,9 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 			CloseFile(fp);
 			return(FALSE);
 		}
-		if ((pars.numChannels != _OutSig_EarObject(data)->numChannels) ||
-		  (pars.sampleRate != (int32) (1.0 / _OutSig_EarObject(data)->dt + 0.5)) ||
-		  ((pars.bitsPerSample / 8) != dataFilePtr->wordSize)) {
+		if ((pars.numChannels != outSignal->numChannels) || (pars.sampleRate !=
+		  (int32) (1.0 / outSignal->dt + 0.5)) || ((pars.bitsPerSample / 8) !=
+		  dataFilePtr->wordSize)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
 			return(FALSE);
@@ -342,7 +342,7 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 	}
 	WriteHeader_Wave(fp, data, dataOffset);
 	SetPosition_UPortableIO(fp, 0L, SEEK_END);
-	ok = WriteSignal_DataFile(fp, _OutSig_EarObject(data));
+	ok = WriteSignal_DataFile(fp, outSignal);
 	CloseFile(fp);
 	return(ok);
 	

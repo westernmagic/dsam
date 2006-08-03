@@ -541,7 +541,7 @@ CheckData_Utility_LocalChans(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (data->inSignal[0]->numChannels < 2) {
+	if (_InSig_EarObject(data, 0)->numChannels < 2) {
 		NotifyError(wxT("%s: This module expects multi-channel input."),
 		  funcName);
 		return(FALSE);
@@ -588,6 +588,7 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 	int		outChan, inChan, maxChan, lowerChanLimit, upperChanLimit;
 	int		numChannels;
 	ChanLen	i;
+	SignalDataPtr	inSignal, outSignal;
 	LocalChansPtr	p = localChansPtr;
 
 	if (!data->threadRunFlag) {
@@ -600,14 +601,14 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Channel localisation Module "
 		  "process"));
 
-		if (!GetChannelLimits_SignalData(data->inSignal[0], &p->minChan,
+		if (!GetChannelLimits_SignalData(_InSig_EarObject(data, 0), &p->minChan,
 		  &maxChan, p->lowerLimit, p->upperLimit, p->limitMode)) {
 			NotifyError(wxT("%s: Could not find a channel limits for signal."),
 			  funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(data, (uShort) (maxChan - p->minChan + 1),
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -617,33 +618,33 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("Averaged channels "
 		  "('%s' mode)"), LimitModeList_SignalData(p->limitMode)->name);
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), data->inSignal[0]->info.
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->info.
 		  sampleTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 
-	for (outChan = _OutSig_EarObject(data)->offset; outChan < _OutSig_EarObject(data)->
-	  numChannels; outChan++) {
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (outChan = outSignal->offset; outChan < outSignal->numChannels;
+	  outChan++) {
 		inChan = p->minChan + outChan;
-		_OutSig_EarObject(data)->info.chanLabel[outChan] = data->inSignal[0]->info.
-		  chanLabel[inChan];
-		_OutSig_EarObject(data)->info.cFArray[outChan] = data->inSignal[0]->info.
-		  cFArray[inChan];
-		GetWindowLimits_SignalData(data->inSignal[0], &lowerChanLimit,
-		  &upperChanLimit, data->inSignal[0]->info.cFArray[inChan],
-		  p->lowerLimit, p->upperLimit, p->limitMode);
+		outSignal->info.chanLabel[outChan] = inSignal->info.chanLabel[inChan];
+		outSignal->info.cFArray[outChan] = inSignal->info.cFArray[inChan];
+		GetWindowLimits_SignalData(inSignal, &lowerChanLimit, &upperChanLimit,
+		  inSignal->info.cFArray[inChan], p->lowerLimit, p->upperLimit,
+		  p->limitMode);
 		for (inChan = lowerChanLimit; inChan <= upperChanLimit; inChan++) {
-			inPtr = data->inSignal[0]->channel[inChan];
-			outPtr = _OutSig_EarObject(data)->channel[outChan];
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			inPtr = inSignal->channel[inChan];
+			outPtr = outSignal->channel[outChan];
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ += *inPtr++;
 		}
 		if ((p->mode == UTILITY_LOCALCHANS_MODE_AVERAGE) &&
 		  (lowerChanLimit != upperChanLimit)) {
 			numChannels = upperChanLimit - lowerChanLimit + 1;
-			outPtr = _OutSig_EarObject(data)->channel[outChan];
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			outPtr = outSignal->channel[outChan];
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ /= numChannels;
 		}
 			

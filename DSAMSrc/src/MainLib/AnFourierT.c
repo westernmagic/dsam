@@ -458,7 +458,7 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_FourierT();
-		p->fTLength = Length_FFT(data->inSignal[0]->length);
+		p->fTLength = Length_FFT(_InSig_EarObject(data, 0)->length);
 		p->numThreads = data->numThreads;
 		if ((p->fT = (ComplexPtr *) calloc(p->numThreads, sizeof(
 		  ComplexPtr))) == NULL) {
@@ -528,6 +528,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	double	dF;
 	ChanLen	i;
 	Complex	*fT;
+	SignalDataPtr	outSignal;
 	FourierTPtr	p = fourierTPtr;
 
 	if (!data->threadRunFlag) {
@@ -541,11 +542,11 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		p->numOutChans = (p->outputMode ==
 		  ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE)? 2: 1;
 		if (_OutSig_EarObject(data))
-			SetSamplingInterval_SignalData(_OutSig_EarObject(data), data->inSignal[
-			  0]->dt);
-		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
-		  numChannels * p->numOutChans), data->inSignal[0]->length, data->
-		  inSignal[0]->dt)) {
+			SetSamplingInterval_SignalData(_OutSig_EarObject(data),
+			  _InSig_EarObject(data, 0)->dt);
+		if (!InitOutSignal_EarObject(data, (uShort) (_InSig_EarObject(data, 0)->
+		  numChannels * p->numOutChans), _InSig_EarObject(data, 0)->length,
+		  _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Couldn't initialse output signal."), funcName);
 			return(FALSE);
 		}
@@ -555,27 +556,28 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		dF = 1.0 / (data->inSignal[0]->dt * p->fTLength);
+		dF = 1.0 / (_InSig_EarObject(data, 0)->dt * p->fTLength);
 		SetSamplingInterval_SignalData(_OutSig_EarObject(data), dF);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
+		  "(Hz)"));
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Arbitrary "
 		  "Amplitude"));
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), 0.0);
 		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) (
-		  data->inSignal[0]->interleaveLevel * p->numOutChans));
-		p->dBSPLFactor = SQRT_2 / data->inSignal[0]->length;
+		  _InSig_EarObject(data, 0)->interleaveLevel * p->numOutChans));
+		p->dBSPLFactor = SQRT_2 / _InSig_EarObject(data, 0)->length;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		outChan = chan * p->numOutChans;
 		fT = p->fT[data->threadIndex];
 		fT->re = fT->im = 0.0;
-		inPtr = data->inSignal[0]->channel[outChan] + 1;
-		for (i = 1, fT++; i < _OutSig_EarObject(data)->length; i++, fT++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[outChan] + 1;
+		for (i = 1, fT++; i < outSignal->length; i++, fT++) {
 			fT->im = 0.0;
 			fT->re = *inPtr++;
 		}
@@ -584,27 +586,27 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			fT->im = 0.0;
 		}
 		fT = p->fT[data->threadIndex];
-		outPtr = _OutSig_EarObject(data)->channel[outChan];
+		outPtr = outSignal->channel[outChan];
 		CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
+			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) MODULUS_CMPLX(*fT);
 			break;
 		case ANALYSIS_FOURIERT_PHASE_OUTPUTMODE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
+			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) atan2(fT->im, fT->re);
 			break;
 		case ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
+			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->re;
 			fT = p->fT[data->threadIndex];
-			outPtr = _OutSig_EarObject(data)->channel[outChan + 1];
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
+			outPtr = outSignal->channel[outChan + 1];
+			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) fT->im;
 			break;
 		case ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, fT++)
+			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) DB_SPL(MODULUS_CMPLX(*fT) *
 				  p->dBSPLFactor);
 			break;

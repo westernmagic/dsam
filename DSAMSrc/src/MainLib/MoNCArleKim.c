@@ -901,7 +901,7 @@ CheckData_Neuron_ArleKim(EarObjectPtr data)
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (!CheckRamp_SignalData(data->inSignal[0]))
+	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0)))
 		return(FALSE);
 	return(TRUE);
 	
@@ -983,6 +983,7 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 	register double	dGk, dTh, dV;
 	ChanLen		j;
 	ChanData	*inPtr, *outPtr;
+	SignalDataPtr	outSignal;
 	ArleKimPtr	p = arleKimPtr;
 	
 	if (!data->threadRunFlag) {
@@ -990,8 +991,8 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 			return(FALSE);
 		if (!CheckData_Neuron_ArleKim(data))
 			return(FALSE);
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -1017,11 +1018,12 @@ RunModel_Neuron_ArleKim(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++) {
+	outSignal = _OutSig_EarObject(data);
+	for (i = outSignal->offset; i < outSignal->numChannels; i++) {
 		spikeState_s = p->state[i].lastSpikeState;
-		inPtr = data->inSignal[0]->channel[i];
-		outPtr = _OutSig_EarObject(data)->channel[i];
-		for (j = 0; j < _OutSig_EarObject(data)->length; j++, outPtr++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[i];
+		outPtr = outSignal->channel[i];
+		for (j = 0; j < outSignal->length; j++, outPtr++) {
 			p->state[i].bConductance_Gb = p->bRestingCond_gb *
 			 (exp(p->state[i].potential_V / p->nonLinearVConst_Vnl) - 1.0);
 			dV =  (-p->state[i].potential_V + (*(inPtr++) +

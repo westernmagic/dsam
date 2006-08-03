@@ -89,7 +89,8 @@ Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 			Free_Utility_RefractoryAdjust();
 		if ((refractAdjPtr = (RefractAdjPtr) malloc(sizeof(RefractAdj))) ==
 		  NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -389,6 +390,7 @@ BOOLN
 CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_RefractoryAdjust");
+	SignalDataPtr	inSignal;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -396,11 +398,11 @@ CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(data->
-	  inSignal[0])) {
+	inSignal = _InSig_EarObject(data, 0);
+	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(inSignal)) {
 		NotifyError(wxT("%s: Refractory period (%g ms) is too long for signal "
 		  "length (%g ms)."), funcName, MSEC(refractAdjPtr->refractoryPeriod),
-		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
+		  MSEC(_GetDuration_SignalData(inSignal)));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -421,13 +423,14 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 	  wxT("InitProcessVariables_Utility_RefractoryAdjust");
 	int		i, j;
 	RefractAdjPtr	p = refractAdjPtr;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
-		p->refractoryPeriodIndex = (ChanLen) (p->refractoryPeriod / data->
-		  outSignal->dt + 0.5);
+		p->refractoryPeriodIndex = (ChanLen) (p->refractoryPeriod / outSignal->
+		  dt + 0.5);
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Utility_RefractoryAdjust();
-		  	p->numChannels = _OutSig_EarObject(data)->numChannels;
+		  	p->numChannels = outSignal->numChannels;
 			if ((p->lastOutput = (double **) calloc(p->numChannels, sizeof(
 			  double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastOutput pointers'."),
@@ -499,6 +502,7 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 	double	*lastOutputPtr;
 	ChanLen	i, j;
 	RefractAdjPtr	p = refractAdjPtr;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_RefractoryAdjust())
@@ -523,24 +527,23 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
+	outSignal = _OutSig_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->
-		  numChannels; chan++) {
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 			outPtr = p->lastOutput[chan];
 			for (i = 0; i < p->refractoryPeriodIndex; i++)
 				*outPtr++ = 0.0;
 		}
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++) {
 			sum = 0.0;
 			if (i < p->refractoryPeriodIndex) {
 				lastOutputPtr = p->lastOutput[chan] + i;
 				for (j = i; j < p->refractoryPeriodIndex; j++)
 					sum += *lastOutputPtr++;
-				sumPtr = _OutSig_EarObject(data)->channel[chan];
+				sumPtr = outSignal->channel[chan];
 			} else
 				sumPtr = outPtr - p->refractoryPeriodIndex;
 			while (sumPtr < outPtr)

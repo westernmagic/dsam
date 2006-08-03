@@ -1258,13 +1258,13 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!CheckInit_SignalData(data->inSignal[0], funcName))
+	if (!CheckInit_SignalData(_InSig_EarObject(data, 0), funcName))
 		return(FALSE);
 
 	/*** Put additional checks here. ***/
 
 	/* Checks taken and modified from MoIHC95Meddis.c (CJS 1/2/00) */
-	dt = data->inSignal[0]->dt;
+	dt = _InSig_EarObject(data, 0)->dt;
 	if (dt > MEDDIS2000_MAX_DT) {
 		NotifyError(wxT("%s: Maximum sampling interval exceeded."), funcName);
 		return(FALSE);
@@ -1325,9 +1325,9 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 	double	  	ICa;		/* Calcium current */
 	double	  	ssactCa;	/* steady state Calcium activation */
 
-	ssactCa = 1.0 / ( 1.0 + (exp(- (p->gammaCa*(data->inSignal[0]->channel[
+	ssactCa = 1.0 / ( 1.0 + (exp(- (p->gammaCa*(_InSig_EarObject(data, 0)->channel[
 	  0][0]))) / p->betaCa));		
-	ICa = p->GCaMax * pow(ssactCa, 3) * (data->inSignal[0]->channel[0][0] -
+	ICa = p->GCaMax * pow(ssactCa, 3) * (_InSig_EarObject(data, 0)->channel[0][0] -
 	  p->CaVrev);
 	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
 		ICa *= p->tauConcCa;
@@ -1452,6 +1452,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	int		i;
 	ChanLen	j;
 	double	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
+	SignalDataPtr	outSignal;
 	HairCell2Ptr	p = hairCell2Ptr;
 
 	if (!data->threadRunFlag) {
@@ -1466,8 +1467,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 
 		/*** Put your code here: Initialise output signal. ***/
 
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -1492,6 +1493,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			return(TRUE);
 	}
 
+	outSignal = _OutSig_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
 		ResetProcess_IHC_Meddis2000(data);
 	}
@@ -1508,11 +1510,11 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	/*** Put your code here: process output signal. ***/
 	/*** (using 'inPtr' and 'outPtr' for each channel?) ***/
 
-	for (i = _OutSig_EarObject(data)->offset, timer = DBL_MAX; i < _OutSig_EarObject(data)->
-	  numChannels; i++) {
-		inPtr = data->inSignal[0]->channel[i];
-		for (j = 0, outPtr = _OutSig_EarObject(data)->channel[i]; j < _OutSig_EarObject(data)->
-		  length; j++, outPtr++) {
+	for (i = outSignal->offset, timer = DBL_MAX; i < outSignal->numChannels;
+	  i++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[i];
+		for (j = 0, outPtr = outSignal->channel[i]; j < outSignal->length; j++,
+		  outPtr++) {
 
 			/*** Calcium controlled transmitter release function ***/
 			Vin = *inPtr;
@@ -1529,8 +1531,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			p->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
 			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
 			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
-			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) *
-			  _OutSig_EarObject(data)->dt;
+			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) * outSignal->dt;
 
 			/* power law release function */
 			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
@@ -1606,11 +1607,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			/* diagnostic mode output */
 			if (debug) {
 				DSAM_fprintf(hairCell2Ptr->fp,
-				  wxT("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g"), j *
-				  _OutSig_EarObject(data)->dt, Vin, p->hCChannels[i].actCa, ICa,
-				  p->hCChannels[i].concCa, kdt, p->hCChannels[i].reservoirQ,
-				  p->hCChannels[i].cleftC, p->hCChannels[i].reprocessedW,
-				  ejected);
+				  wxT("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g"), j * outSignal->
+				  dt, Vin, p->hCChannels[i].actCa, ICa, p->hCChannels[i].concCa,
+				  kdt, p->hCChannels[i].reservoirQ, p->hCChannels[i].cleftC, p->
+				  hCChannels[i].reprocessedW, ejected);
 				DSAM_fprintf(hairCell2Ptr->fp, wxT("\n"));
 			}		 
 

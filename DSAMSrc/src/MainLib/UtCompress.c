@@ -585,6 +585,7 @@ Process_Utility_Compression(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	CompressionPtr p = compressionPtr;
 
 	if (!data->threadRunFlag) {
@@ -595,8 +596,8 @@ Process_Utility_Compression(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Compression Utility Module"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -606,20 +607,20 @@ Process_Utility_Compression(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		switch (p->mode) {
 		case COMPRESS_LOG_MODE:
-			for (i = 0; i < data->inSignal[0]->length; i++) {
+			for (i = 0; i < _InSig_EarObject(data, 0)->length; i++) {
 				*outPtr = (p->minInput > *inPtr)? p->minResponse: log10(*inPtr);
 				 *outPtr++ *= p->signalMultiplier;
 				 inPtr++;
 			}
 			break;
 		case COMPRESS_POWER_MODE:
-			for (i = 0; i < data->inSignal[0]->length; i++)
+			for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 				*outPtr++ = pow(fabs(*inPtr++),
 				  p->powerExponent) * p->scale;
 			break;

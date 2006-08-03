@@ -454,7 +454,7 @@ CheckData_Analysis_FindNextIndex(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (findIndexPtr->timeOffset > signalDuration) {
 		NotifyError(wxT("%s: Offset value (%g ms)is longer than the signal "
 		  "duration (%g ms)."), funcName, MSEC(findIndexPtr->timeOffset),
@@ -489,6 +489,7 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 	BOOLN	found, gradient;
 	int		chan;
 	ChanLen	i, index, widthIndex;
+	SignalDataPtr	inSignal, outSignal;
 	FindIndexPtr	p = findIndexPtr;
 
 	if (!data->threadRunFlag) {
@@ -499,25 +500,25 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Find Value Analysis"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-		  1.0)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, 1, 1.0)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
 		}
-		p->offsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +
-		  0.5);
+		p->offsetIndex = (ChanLen) (p->timeOffset / _InSig_EarObject(data, 0)->
+		  dt + 0.5);
 		p->findMinimum = (p->mode == FIND_INDEX_MINIMUM);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + p->offsetIndex;
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = inSignal->channel[chan] + p->offsetIndex;
 		gradient = FALSE;
 		for (i = p->offsetIndex + 1, lastValue = *inPtr++, found = FALSE,
-		  widthIndex = 0; (i < data->inSignal[0]->length - 1) && !found; i++,
-		    inPtr++) {
+		  widthIndex = 0; (i < inSignal->length - 1) && !found; i++, inPtr++) {
 			if (!gradient)
 				gradient = (p->findMinimum)? (*inPtr < lastValue): (*inPtr >
 				  lastValue);
@@ -525,7 +526,7 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 				if ((p->findMinimum)? (*inPtr < *(inPtr + 1)): (*inPtr >
 				  *(inPtr + 1)))  {
 				  	index = i - widthIndex / 2;
-					_OutSig_EarObject(data)->channel[chan][0] = (ChanData) index;
+					outSignal->channel[chan][0] = (ChanData) index;
 					found = TRUE;
 					break;
 				} else if (*inPtr == *(inPtr + 1)) /* check for flats troughs.*/
@@ -536,9 +537,8 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 		if (!found) {
 			NotifyWarning(wxT("%s: %s not found. Returning end of channel "
 			  "index = %u."), funcName, (p->findMinimum)? wxT("Minimum"): wxT(
-			  "Maximum"), data->inSignal[0]->length - 1);
-			_OutSig_EarObject(data)->channel[chan][0] = (ChanData) (data->inSignal[
-			  0]->length - 1);
+			  "Maximum"), inSignal->length - 1);
+			outSignal->channel[chan][0] = (ChanData) (inSignal->length - 1);
 		}
 	}
 

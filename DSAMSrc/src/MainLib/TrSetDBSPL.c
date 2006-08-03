@@ -426,10 +426,10 @@ CheckData_Transform_SetDBSPL(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (setDBSPLPtr->timeOffset >=
-	  _GetDuration_SignalData(data->inSignal[0])) {
+	  _GetDuration_SignalData(_InSig_EarObject(data, 0))) {
 		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
 		  "duration (%g ms)."), funcName, MSEC(setDBSPLPtr->timeOffset),
-		  MSEC(_GetDuration_SignalData(data->inSignal[0])));
+		  MSEC(_GetDuration_SignalData(_InSig_EarObject(data, 0))));
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -458,17 +458,17 @@ InitProcessVariables_Transform_SetDBSPL(EarObjectPtr data)
 	  (data->timeIndex == PROCESS_START_TIME)) {
 		setDBSPLPtr->updateProcessVariablesFlag = FALSE;
 		timeOffsetIndex = (ChanLen) (setDBSPLPtr->timeOffset /
-		  data->inSignal[0]->dt + 0.5);
-		for (chan = 0, sum = 0.0; chan < data->inSignal[0]->numChannels;
+		  _InSig_EarObject(data, 0)->dt + 0.5);
+		for (chan = 0, sum = 0.0; chan < _InSig_EarObject(data, 0)->numChannels;
 		  chan++) {
-			inPtr = data->inSignal[0]->channel[chan] + timeOffsetIndex;
-			for (i = timeOffsetIndex; i < data->inSignal[0]->length; i++,
+			inPtr = _InSig_EarObject(data, 0)->channel[chan] + timeOffsetIndex;
+			for (i = timeOffsetIndex; i < _InSig_EarObject(data, 0)->length; i++,
 			  inPtr++)
 				sum += *inPtr * *inPtr;
 		}
 		gaindB = setDBSPLPtr->intensity - DB_SPL(sqrt(sum /
-		  (data->inSignal[0]->length - timeOffsetIndex) /
-		  data->inSignal[0]->numChannels));
+		  (_InSig_EarObject(data, 0)->length - timeOffsetIndex) /
+		  _InSig_EarObject(data, 0)->numChannels));
 		setDBSPLPtr->scale = pow(10.0, gaindB / 20.0);
 	}
 	return(TRUE);
@@ -521,10 +521,7 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Set Intensity Module process"));
-		if (_OutSig_EarObject(data) != data->inSignal[0]) {
-			_OutSig_EarObject(data) = data->inSignal[0];
-			data->updateCustomersFlag = TRUE;
-		}
+		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		if (!InitProcessVariables_Transform_SetDBSPL(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
@@ -533,9 +530,9 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		for (i = 0; i < data->inSignal[0]->length; i++)
+	for (chan = 0; chan < _InSig_EarObject(data, 0)->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 			*inPtr++ *= setDBSPLPtr->scale;
 	}
 	SetProcessContinuity_EarObject(data);

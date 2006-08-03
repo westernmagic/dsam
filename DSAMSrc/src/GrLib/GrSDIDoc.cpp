@@ -93,6 +93,22 @@ SDIDocument::SetSimWorkingDirectory(const wxString &directory)
 }
 
 /******************************************************************************/
+/****************************** ClearDocument *********************************/
+/******************************************************************************/
+
+void
+SDIDocument::ClearDocument(void)
+{
+	diagram.DeleteAllShapes();
+	FreeSim_AppInterface();
+	wxClientDC dc(diagram.GetCanvas());
+	diagram.Clear(dc);			// This was not being done automatically.
+	diagram.SetSimProcess(NULL);
+	wxGetApp().SetAudModelLoadedFlag(false);
+
+}
+
+/******************************************************************************/
 /****************************** OnCloseDocument *******************************/
 /******************************************************************************/
 
@@ -100,13 +116,28 @@ bool
 SDIDocument::OnCloseDocument(void)
 {
 	wxDocument::OnCloseDocument();
-	diagram.DeleteAllShapes();
-	FreeSim_AppInterface();
-	wxClientDC dc(diagram.GetCanvas());
-	diagram.Clear(dc);			// This was not being done automatically.
-	diagram.SetSimProcess(NULL);
-	wxGetApp().SetAudModelLoadedFlag(false);
+	ClearDocument();
 	return true;
+
+}
+
+/******************************************************************************/
+/****************************** OnOpenDocument ********************************/
+/******************************************************************************/
+
+bool
+SDIDocument::OnOpenDocument(const wxString& fileName)
+{
+	static const wxChar *funcName = wxT("SDIDocument::OnOpenDocument");
+	bool	ok = wxDocument::OnOpenDocument(fileName);
+
+	if (ok && !diagram.VerifyDiagram()) {
+		NotifyError(wxT("%s: Diagram verification failed.\n"), funcName);
+		ClearDocument();
+		ok = false;
+	}
+
+	return (ok);
 
 }
 
@@ -230,7 +261,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	if (!isXMLFile)
 		diagram.DrawSimulation();
-
+		
 //	if (!isXMLFile) {
 //		wxRemoveFile(tempFileName.GetFullName());
 //		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);

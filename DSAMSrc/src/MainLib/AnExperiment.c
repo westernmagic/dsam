@@ -285,6 +285,7 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	register	ChanData	*inPtr, *outPtr;
 	ChanLen	sT1Indx, sTPeriodIndx, i, rT1Indx, rTPeriodIndx;
 	ChanLen	aveTimeOffsetIndex, avePeriodIndex;
+	SignalDataPtr	inSignal, outSignal;
 	
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -292,42 +293,43 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	}
 	SetProcessName_EarObject(data, wxT("Two component adaptation "
 	  "calculation."));
-	if (!CheckPars_SignalData(data->inSignal[0])) {
+	if (!CheckPars_SignalData(_InSig_EarObject(data, 0))) {
 		NotifyError(wxT("%s: Input signal not correctly set."), funcName);		
 		return(FALSE);
 	}
-	dt = data->inSignal[0]->dt;
+	inSignal = _InSig_EarObject(data, 0);
+	dt = inSignal->dt;
 	sT1Indx = (ChanLen) (shortTermT1 / dt);
-	if (sT1Indx > data->inSignal[0]->length) {
+	if (sT1Indx > inSignal->length) {
 		NotifyError(wxT("%s: Invalid short term T1 (%g ms)."), funcName,
 		  MSEC(shortTermT1));
 		return(FALSE);
 	}
 	sTPeriodIndx = (ChanLen) (shortTermPeriod / dt);
-	if (sTPeriodIndx + sT1Indx > data->inSignal[0]->length) {
+	if (sTPeriodIndx + sT1Indx > inSignal->length) {
 		NotifyError(wxT("%s: Invalid short term period (%g ms)."), funcName,
 		  MSEC(shortTermPeriod));
 		return(FALSE);
 	}
 	rTPeriodIndx = (ChanLen) (rapidAdaptPeriod / dt);
-	if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-	  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+	if (!InitOutSignal_EarObject(data, inSignal->numChannels, inSignal->length,
+	  inSignal->dt)) {
 		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 		return(FALSE);
 	}
 	ResetOutSignal_EarObject(data);
-	aveTimeOffsetIndex = (ChanLen) (data->inSignal[0]->length *
+	outSignal = _OutSig_EarObject(data);
+	aveTimeOffsetIndex = (ChanLen) (inSignal->length *
 	  STEADY_STATE_REGION_PERCENTAGE);
-	avePeriodIndex = data->inSignal[0]->length - aveTimeOffsetIndex -
-	  1; /* Miss last bin. */
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + aveTimeOffsetIndex;
+	avePeriodIndex = inSignal->length - aveTimeOffsetIndex - 1;/*Miss last bin*/
+	for (chan = 0; chan < inSignal->numChannels; chan++) {
+		inPtr = inSignal->channel[chan] + aveTimeOffsetIndex;
 		for (i = 0, sum = 0.0; i < avePeriodIndex; i++)
 			sum += *inPtr++;
 		Ass = sum / avePeriodIndex;
-		inPtr = data->inSignal[0]->channel[chan];
+		inPtr = inSignal->channel[chan];
 		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < data->inSignal[0]->length; i++) {
+		for (i = 0; i < inSignal->length; i++) {
 			deltaY = *inPtr++ - Ass;
 			*outPtr++ = log(deltaY * deltaY);
 		}
@@ -337,18 +339,18 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 		Tst[chan] = -2.0 / gradient;
 		Ast = exp(constant / 2.0);
 		rT1Indx = 0;
-		for (i = 0, maxValue = 0.0, inPtr = data->inSignal[0]->channel[chan];
-		  i < data->inSignal[0]->length; i++, inPtr++)
+		for (i = 0, maxValue = 0.0, inPtr = inSignal->channel[chan]; i <
+		  inSignal->length; i++, inPtr++)
 			if (*inPtr > maxValue) {
 				maxValue = *inPtr;
 				rT1Indx = i;
 			}
-		if (rT1Indx + rTPeriodIndx > data->inSignal[0]->length) {
+		if (rT1Indx + rTPeriodIndx > inSignal->length) {
 			NotifyError(wxT("%s: Invalid rapid adaptation period (%g ms)."),
 			  funcName, MSEC(rapidAdaptPeriod));
 			return(FALSE);
 		}
-		inPtr = data->inSignal[0]->channel[chan];
+		inPtr = inSignal->channel[chan];
 		outPtr = _OutSig_EarObject(data)->channel[chan];
 		for (i = rT1Indx; i < (rT1Indx + rTPeriodIndx); i++) {
 			deltaY = *inPtr++ - Ast * exp(-(i * dt) / Tst[chan]) - Ass;
@@ -359,8 +361,6 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 			ok = FALSE;
 		Tr[chan] = -2.0 / gradient;
 	}
-	if (data->updateCustomersFlag)
-		UpdateCustomers_EarObject(data);
 	return(ok);
 	
 }

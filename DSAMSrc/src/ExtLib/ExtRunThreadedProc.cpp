@@ -164,7 +164,6 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	  long) data->outSignal);
 #	endif
 		
-	UpdateCustomers_EarObject(data);
 #	if DEBUG
 	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned
 	  long) data->outSignal);

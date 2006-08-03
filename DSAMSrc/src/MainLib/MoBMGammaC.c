@@ -937,7 +937,7 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 		 	return(FALSE);
 		}
 
-		sampleRate = 1.0 / data->inSignal[0]->dt;
+		sampleRate = 1.0 / _InSig_EarObject(data, 0)->dt;
 
 		p->coefPsEst = BASILARM_GAMMACHIRP_COEFF_PS_EST;
 		p->cmprs = BASILARM_GAMMACHIRP_COEFF_CMPRS;
@@ -945,14 +945,14 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 
 		if (p->cascade == 4) {
 			for (nch = 0; nch < p->numChannels; nch++) {
-				cFIndex = nch / data->inSignal[0]->interleaveLevel;
+				cFIndex = nch / _InSig_EarObject(data, 0)->interleaveLevel;
 				p->coefficientsERBGT[nch] = InitERBGammaToneCoeffs_GCFilters(
 				  p->theCFs->frequency[cFIndex], p->theCFs->bandwidth[cFIndex],
 				  p->bCoeff, p->cascade, sampleRate);
 			}
 		} else {
 			for (nch = 0; nch < p->numChannels; nch++) {
-				cFIndex = nch / data->inSignal[0]->interleaveLevel;
+				cFIndex = nch / _InSig_EarObject(data, 0)->interleaveLevel;
 				if ((p->coefficientsGT[nch] = InitGammaToneCoeffs_Filters(
 				  p->theCFs->frequency[cFIndex], p->theCFs->bandwidth[cFIndex],
 				  p->cascade, sampleRate)) == NULL) {
@@ -1047,6 +1047,7 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 	uShort	totalChannels;
 	int		nch, cEstCnt, cFIndex;
 	double	sampleRate;
+	SignalDataPtr	outSignal;
 	ChanLen	nsmpl;
 
 	if (!data->threadRunFlag) {
@@ -1058,13 +1059,13 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("GammaChirp basilar membrane "
 		  "filtering (Slaney GT)"));
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
-		totalChannels = bMGammaCPtr->theCFs->numChannels * data->inSignal[
-		  0]->numChannels;
+		totalChannels = bMGammaCPtr->theCFs->numChannels * _InSig_EarObject(
+		  data, 0)->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
@@ -1091,26 +1092,26 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
+	outSignal = _OutSig_EarObject(data);
 	if (bMGammaCPtr->cascade == 4)
-		ERBGammaTone_GCFilters(_OutSig_EarObject(data), bMGammaCPtr->coefficientsERBGT);
+		ERBGammaTone_GCFilters(outSignal, bMGammaCPtr->coefficientsERBGT);
 	else
-		GammaTone_Filters(_OutSig_EarObject(data), bMGammaCPtr->coefficientsGT);
+		GammaTone_Filters(outSignal, bMGammaCPtr->coefficientsGT);
 
 	cEstCnt = 0;
-	for (nch = _OutSig_EarObject(data)->offset; nch < _OutSig_EarObject(data)->numChannels;
-	  nch++)
+	for (nch = outSignal->offset; nch < outSignal->numChannels; nch++)
 		if (bMGammaCPtr->cntlGammaC[nch]->cEst != 0.0)
 			cEstCnt++;
 
 	if ((bMGammaCPtr->opMode != BASILARM_GAMMACHIRP_OPMODE_NOCONTROL) || 
 				(cEstCnt != 0)) {	/* opMode=2 -> wxT("NC") */
 
-		sampleRate = 1.0 / data->inSignal[0]->dt;
-		for (nsmpl = 0; nsmpl < _OutSig_EarObject(data)->length; nsmpl++) {
+		sampleRate = 1.0 / _InSig_EarObject(data, 0)->dt;
+		for (nsmpl = 0; nsmpl < outSignal->length; nsmpl++) {
 
 			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_FEEDFORWARD) {
 						/* opMode=1 -> wxT("FF") */
-				CntlGammaChirp_GCFilters(_OutSig_EarObject(data), nsmpl, 
+				CntlGammaChirp_GCFilters(outSignal, nsmpl, 
 					bMGammaCPtr->cntlGammaC, bMGammaCPtr->cCoeff0,
 					bMGammaCPtr->cCoeff1, bMGammaCPtr->cLowerLim,
 					bMGammaCPtr->cUpperLim, bMGammaCPtr->winPsEst,
@@ -1118,9 +1119,8 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 					bMGammaCPtr->coefficientsLI);
             }
 
-			for (nch = _OutSig_EarObject(data)->offset; nch < _OutSig_EarObject(data)->
-			  numChannels; nch++) {
-				cFIndex = nch / data->inSignal[0]->interleaveLevel;
+			for (nch = outSignal->offset; nch < outSignal->numChannels; nch++) {
+				cFIndex = nch / _InSig_EarObject(data, 0)->interleaveLevel;
 				CalcAsymCmpCoeffs_GCFilters(bMGammaCPtr->coefficientsAC[nch],
 					bMGammaCPtr->theCFs->frequency[cFIndex],
 					bMGammaCPtr->theCFs->bandwidth[cFIndex],
@@ -1128,12 +1128,11 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 					bMGammaCPtr->cascade, sampleRate);
 			}
 
-			AsymCmp_GCFilters(_OutSig_EarObject(data), nsmpl,
-			  bMGammaCPtr->coefficientsAC);
+			AsymCmp_GCFilters(outSignal, nsmpl, bMGammaCPtr->coefficientsAC);
 
 			if (bMGammaCPtr->opMode == BASILARM_GAMMACHIRP_OPMODE_FEEDBACK) {
 						/* opMode=0 -> wxT("FB") */
-				CntlGammaChirp_GCFilters(_OutSig_EarObject(data), nsmpl, 
+				CntlGammaChirp_GCFilters(outSignal, nsmpl, 
 					bMGammaCPtr->cntlGammaC, bMGammaCPtr->cCoeff0,
 					bMGammaCPtr->cCoeff1, bMGammaCPtr->cLowerLim,
 					bMGammaCPtr->cUpperLim, bMGammaCPtr->winPsEst,
@@ -1149,4 +1148,3 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 	return(TRUE);
 
 }
-

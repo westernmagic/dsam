@@ -370,6 +370,7 @@ Process_Utility_Transpose(EarObjectPtr data)
 	BOOLN	regularLabels;
 	int		i, chan;
 	double	*chanLabel, delta1, newDt, timeOffset;
+	SignalDataPtr	inSignal, outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_Transpose())
@@ -379,8 +380,8 @@ Process_Utility_Transpose(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Transpose Utility Module process"));
-		chanLabel = data->inSignal[0]->info.chanLabel;
-		if ((data->inSignal[0]->numChannels > 2)) {
+		chanLabel = _InSig_EarObject(data, 0)->info.chanLabel;
+		if ((_InSig_EarObject(data, 0)->numChannels > 2)) {
 			delta1 = chanLabel[1] - chanLabel[0];
 			regularLabels = (!DBL_GREATER(delta1, chanLabel[2] - chanLabel[1]));
 		} else
@@ -394,27 +395,30 @@ Process_Utility_Transpose(EarObjectPtr data)
 			timeOffset = 0.0;
 		}
 
-		if (!InitOutSignal_EarObject(data, (uShort) data->inSignal[0]->length,
-		  (ChanLen) data->inSignal[0]->numChannels, newDt)) {
-			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
+		if (!InitOutSignal_EarObject(data, (uShort) _InSig_EarObject(data, 0)->
+		  length, (ChanLen) _InSig_EarObject(data, 0)->numChannels, newDt)) {
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
 		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), timeOffset);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChanDataTitle_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
-		  info.sampleTitle);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), data->inSignal[0]->info.
-		  chanDataTitle);
+		SetInfoChanDataTitle_SignalData(_OutSig_EarObject(data),
+		  _InSig_EarObject(data, 0)->info.sampleTitle);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), _InSig_EarObject(
+		  data, 0)->info.chanDataTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = 0; chan < data->inSignal[0]->numChannels; chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++)
-			_OutSig_EarObject(data)->channel[i][chan] = *inPtr++;
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (chan = 0; chan < inSignal->numChannels; chan++) {
+		inPtr = inSignal->channel[chan];
+		for (i = 0; i < outSignal->numChannels; i++)
+			outSignal->channel[i][chan] = *inPtr++;
 	}
-	for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
-		_OutSig_EarObject(data)->info.chanLabel[chan] = chan * data->inSignal[0]->dt;
+	for (chan = 0; chan < outSignal->numChannels; chan++)
+		outSignal->info.chanLabel[chan] = chan * inSignal->dt;
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

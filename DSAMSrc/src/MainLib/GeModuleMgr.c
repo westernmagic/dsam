@@ -356,15 +356,14 @@ RunModel_ModuleMgr_Null(EarObjectPtr data)
 			return(FALSE);
 		}	
 		SetProcessName_EarObject(data, NULL_MODULE_PROCESS_NAME);
-		if (!data->inSignal || !CheckPars_SignalData(data->inSignal[0])) {
+		if (!data->inSignal || !CheckPars_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not set correctly."), funcName);
 			return(FALSE);
 		}
 		if (!data->module->onFlag)
 			FreeOutSignal_EarObject(data);
 		data->localOutSignalFlag = FALSE;
-		data->updateCustomersFlag = (data->inSignal[0] != _OutSig_EarObject(data));
-		_OutSig_EarObject(data) = data->inSignal[0];
+		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

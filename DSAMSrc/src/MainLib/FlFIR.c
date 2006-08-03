@@ -969,8 +969,9 @@ RunProcess_Filter_FIR(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("FIR filter module process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise the process output "
 			  "signal."), funcName);
 			return(FALSE);

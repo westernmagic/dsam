@@ -539,10 +539,10 @@ CheckData_Utility_ShapePulse(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (shapePulsePtr->pulseDuration < data->inSignal[0]->dt) {
+	if (shapePulsePtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
 		  "interval, %g ms (%g ms)\n"), funcName,
-		  MSEC(data->inSignal[0]->dt), MSEC(shapePulsePtr->pulseDuration));
+		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(shapePulsePtr->pulseDuration));
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -574,6 +574,7 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 	BOOLN	riseDetected;
 	int		chan;
 	ChanLen	j;
+	SignalDataPtr	outSignal, inSignal;
 	ShapePulsePtr	p = shapePulsePtr;
 
 	if (!data->threadRunFlag) {
@@ -584,8 +585,8 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Shape Pulse Utility Process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -598,15 +599,16 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	dt = data->inSignal[0]->dt;
-	remainingPulseTimePtr = p->remainingPulseTime + _OutSig_EarObject(data)->offset;
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	dt = inSignal->dt;
+	remainingPulseTimePtr = p->remainingPulseTime + outSignal->offset;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = inSignal->channel[chan];
+		outPtr = outSignal->channel[chan];
 		riseDetected = FALSE;
 		lastValue = *inPtr++;
-		for (j = 1; j < _OutSig_EarObject(data)->length; j++) {
+		for (j = 1; j < outSignal->length; j++) {
 			if (!riseDetected)
 				riseDetected = (*inPtr > lastValue);
 			else {

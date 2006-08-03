@@ -575,9 +575,10 @@ CheckData_ANSpikeGen_Binomial(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (binomialSGPtr->pulseDuration < data->inSignal[0]->dt) {
+	if (binomialSGPtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName, MSEC(data->inSignal[0]->dt),
+		  "interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(data,
+		  0)->dt),
 		  MSEC(binomialSGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -699,6 +700,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	ChanLen	*remainingPulseIndexPtr;
 	ChanData	*pastEndOfData;
 	EarObjectPtr	refractAdjData;
+	SignalDataPtr	outSignal;
 	BinomialSGPtr	p = binomialSGPtr;
 
 	if (!data->threadRunFlag) {
@@ -709,8 +711,9 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Binomial Post-synaptic Firing"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -721,27 +724,26 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 			return(FALSE);
 		}
 		TempInputConnection_EarObject(data, p->refractAdjData, 1);
-		p->pulseDurationIndex = (ChanLen) (p->pulseDuration / data->inSignal[
-		  0]->dt + 0.5);
+		p->pulseDurationIndex = (ChanLen) (p->pulseDuration / _InSig_EarObject(
+		  data, 0)->dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	refractAdjData = data->subProcessList[ANSPIKEGEN_REFRACTADJDATA];
 	RunProcessStandard_ModuleMgr(refractAdjData);
-	remainingPulseIndexPtr = p->remainingPulseIndex + _OutSig_EarObject(data)->offset;
-	lastOutputPtr = p->lastOutput + _OutSig_EarObject(data)->offset;
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	remainingPulseIndexPtr = p->remainingPulseIndex + outSignal->offset;
+	lastOutputPtr = p->lastOutput + outSignal->offset;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = refractAdjData->outSignal->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ = 0.0;
 		if (p->numFibres < 1)
 			continue;
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		pastEndOfData = _OutSig_EarObject(data)->channel[chan] +
-		  _OutSig_EarObject(data)->length;
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++, outPtr++) {
+		outPtr = outSignal->channel[chan];
+		pastEndOfData = outSignal->channel[chan] + outSignal->length;
+		for (i = 0; i < outSignal->length; i++, outPtr++) {
 			output = p->pulseMagnitude * GeomDist_Random(*inPtr++,
 			  p->numFibres, data->randPars);
 			if (output > 0.0) {

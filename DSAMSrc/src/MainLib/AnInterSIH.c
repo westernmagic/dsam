@@ -90,7 +90,8 @@ Init_Analysis_ISIH(ParameterSpecifier parSpec)
 		if (interSIHPtr != NULL)
 			Free_Analysis_ISIH();
 		if ((interSIHPtr = (InterSIHPtr) malloc(sizeof(InterSIH))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -478,7 +479,8 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = data->inSignal[0]->dt * data->inSignal[0]->length;
+	signalDuration = _InSig_EarObject(data, 0)->dt * _InSig_EarObject(data, 0)->
+	  length;
 	if (interSIHPtr->maxInterval > signalDuration) {
 		NotifyError(wxT("%s: Maximum interval is longer than signal (value "
 		  "must\nbe <= %g ms)."), funcName, signalDuration);
@@ -498,7 +500,8 @@ void
 ResetProcess_Analysis_ISIH(EarObjectPtr data)
 {
 	ResetOutSignal_EarObject(data);
-	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, _OutSig_EarObject(data));
+	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, _OutSig_EarObject(
+	  data));
 
 }
 
@@ -523,7 +526,7 @@ InitProcessVariables_Analysis_ISIH(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_ISIH();
 			if ((p->spikeListSpec = InitListSpec_SpikeList(
-			  data->inSignal[0]->numChannels)) == NULL) {
+			  _InSig_EarObject(data, 0)->numChannels)) == NULL) {
 				NotifyError(wxT("%s: Out of memory for spikeListSpec."),
 				  funcName);
 				return(FALSE);
@@ -573,6 +576,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 	int		chan;
 	ChanLen	spikeIntervalIndex;
 	SpikeSpecPtr	p1, p2, headSpikeList, currentSpikeSpec;
+	SignalDataPtr	inSignal, outSignal;
 	InterSIHPtr	p = interSIHPtr;
 
 	if (!data->threadRunFlag) {
@@ -582,12 +586,13 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
+		inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Inter-Spike Interval Histogram "
 		  "(ISIH) analysis"));
 		p->maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
-		  maxInterval / data->inSignal[0]->dt + 0.5): data->inSignal[0]->length;
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  p->maxIntervalIndex, data->inSignal[0]->dt)) {
+		  maxInterval / inSignal->dt + 0.5): inSignal->length;
+		if (!InitOutSignal_EarObject(data, inSignal->numChannels, p->
+		  maxIntervalIndex, inSignal->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -598,16 +603,14 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data->
-		  inSignal[0]);
-		p->maxSpikes = (p->order > 0)? p->order: abs((int) data->inSignal[0]->
-		  length);
+		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
+		p->maxSpikes = (p->order > 0)? p->order: abs((int) inSignal->length);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
 		headSpikeList = p->spikeListSpec->head[chan];
 		currentSpikeSpec = p->spikeListSpec->current[chan];
 		for (p1 = headSpikeList; p1 != currentSpikeSpec; p1 = p1->next)

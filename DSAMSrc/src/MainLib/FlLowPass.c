@@ -484,15 +484,16 @@ InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_LowPass();
-		if ((p->coefficients = (ContButt1CoeffsPtr *) calloc(_OutSig_EarObject(data)->
-		  numChannels, sizeof(ContButt1CoeffsPtr))) == NULL) {
+		if ((p->coefficients = (ContButt1CoeffsPtr *) calloc(_OutSig_EarObject(
+		  data)->numChannels, sizeof(ContButt1CoeffsPtr))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 	 	for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++)
 			if ((p->coefficients[i] = InitIIR1ContCoeffs_Filters(
-			  p->cutOffFrequency, data->inSignal[0]->dt, LOWPASS)) == NULL) {
+			  p->cutOffFrequency, _InSig_EarObject(data, 0)->dt, LOWPASS)) ==
+			  NULL) {
 				NotifyError(wxT("%s: Could not allocate filter coefficients."),
 				  funcName);
 				return(FALSE);
@@ -548,6 +549,7 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 	int			chan;
 	ChanLen		i;
 	register ChanData	*inPtr, *outPtr;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
@@ -559,13 +561,14 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 			return(FALSE);
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Couldn't initialse output signal."), funcName);
 			return(FALSE);
 		}
@@ -577,17 +580,17 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		switch (lowPassFPtr->mode) {
 		case FILTER_LOW_PASS_MODE_NORMAL:
-			for (i = 0; i < data->inSignal[0]->length; i++)
+			for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 				*outPtr++ = *inPtr++;
 			break;
 		case FILTER_LOW_PASS_MODE_SCALED:
-			for (i = 0; i < data->inSignal[0]->length; i++)
+			for (i = 0; i < _InSig_EarObject(data, 0)->length; i++)
 				*outPtr++ = *inPtr++ * lowPassFPtr->signalMultiplier;
 			break;
 		} /* switch */
@@ -596,7 +599,7 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 
 	/* Filter signal */
 	
-	IIR1Cont_Filters(_OutSig_EarObject(data), lowPassFPtr->coefficients);
+	IIR1Cont_Filters(outSignal, lowPassFPtr->coefficients);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

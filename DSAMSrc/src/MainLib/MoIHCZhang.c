@@ -848,7 +848,7 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 		 	return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		CopyInfo_SignalData(_OutSig_EarObject(data), data->inSignal[0]);
+		CopyInfo_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0));
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
@@ -937,6 +937,7 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 	int		chan;
 	TSynapsePtr	syn;
 	TNonLinearPtr	iHCPPI;
+	SignalDataPtr	outSignal;
 	ZhangHCPtr	p = zhangHCPtr;
 
 	if (!data->threadRunFlag) {
@@ -947,8 +948,8 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Zhang IHC Module process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -962,14 +963,14 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		syn = &p->synapse[chan];
 		iHCPPI = &p->iHCPPI[chan];
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		iHCPPI->Run2(iHCPPI, inPtr, outPtr, _OutSig_EarObject(data)->length);
-		syn->Run2(syn, outPtr, outPtr, _OutSig_EarObject(data)->length);
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
+		iHCPPI->Run2(iHCPPI, inPtr, outPtr, outSignal->length);
+		syn->Run2(syn, outPtr, outPtr, outSignal->length);
 	}
 
 	SetProcessContinuity_EarObject(data);

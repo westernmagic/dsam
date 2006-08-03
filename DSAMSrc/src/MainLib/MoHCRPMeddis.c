@@ -492,11 +492,11 @@ CheckData_IHCRP_Meddis(EarObjectPtr data)
 	}	
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (meddisRPPtr->mTimeConst_tm <= data->inSignal[0]->dt / 2.0) {
+	if (meddisRPPtr->mTimeConst_tm <= _InSig_EarObject(data, 0)->dt / 2.0) {
 		NotifyError(wxT("%s: Membrane time constant (%g ms) is too small it "
 		  "must\nbe greater than %g ms"), funcName, MILLI(meddisRPPtr->
 		  mTimeConst_tm),
-		  MILLI(data->inSignal[0]->dt / 2.0));
+		  MILLI(_InSig_EarObject(data, 0)->dt / 2.0));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -582,6 +582,7 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 	register double		permeability_K, st_Plus_A;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	MeddisRPPtr p = meddisRPPtr;
 	
 	if (!data->threadRunFlag) {
@@ -595,8 +596,8 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Hair cell receptor potential"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -610,14 +611,14 @@ RunModel_IHCRP_Meddis(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		permeability_K = PERMEABILITY(*inPtr++);
 		*outPtr++ = LOWPASSFILTER(p->lastOutput[chan]);
 		/* Probability calculation for the rest of the signal. */
-		for (i = 1; i < _OutSig_EarObject(data)->length; i++) {
+		for (i = 1; i < outSignal->length; i++) {
 			permeability_K = PERMEABILITY(*inPtr++);
 			*outPtr = LOWPASSFILTER(*(outPtr - 1));
 			outPtr++;	/* Compiler complains if things not done this way. */

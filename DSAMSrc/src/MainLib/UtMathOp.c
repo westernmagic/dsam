@@ -379,6 +379,7 @@ BOOLN
 CheckData_Utility_MathOp(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_MathOp");
+	SignalDataPtr	inSignal[2];
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -395,16 +396,17 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 			  operatorMode].name);
 			return(FALSE);
 		}
-		if (!CheckPars_SignalData(data->inSignal[1])) {
+		inSignal[0] = _InSig_EarObject(data, 0);
+		inSignal[1] = _InSig_EarObject(data, 1);
+		if (!CheckPars_SignalData(inSignal[1])) {
 			NotifyError(wxT("%s: Input signals not correctly set."), funcName);
 			return(FALSE);
 		}
-		if (!SameType_SignalData(data->inSignal[0], data->inSignal[1])) {
+		if (!SameType_SignalData(inSignal[0], inSignal[1])) {
 			NotifyError(wxT("%s: Input signals are not the same."), funcName);
 			return(FALSE);
 		}
-		if (data->inSignal[0]->interleaveLevel != data->inSignal[1]->
-		  interleaveLevel) {
+		if (inSignal[0]->interleaveLevel != inSignal[1]->interleaveLevel) {
 			NotifyError(wxT("%s: Input signals do not have the same interleave "
 			  "level."), funcName);		
 			return(FALSE);
@@ -436,6 +438,7 @@ Process_Utility_MathOp(EarObjectPtr data)
 	register ChanData	 *inPtr1, *inPtr2 = NULL, *outPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_MathOp())
@@ -446,8 +449,8 @@ Process_Utility_MathOp(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Mathematical operation module "
 		  "process"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -455,32 +458,32 @@ Process_Utility_MathOp(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr1 = data->inSignal[0]->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr1 = _InSig_EarObject(data, 0)->channel[chan];
 		if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 		  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT))
-			inPtr2 = data->inSignal[1]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+			inPtr2 = _InSig_EarObject(data, 1)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		switch (mathOpPtr->operatorMode) {
 		case UTILITY_MATHOP_OPERATORMODE_ADD:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ = *inPtr1++ + *inPtr2++;
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_ABSOLUTE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ = fabs(*inPtr1++);
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SCALE:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ = *inPtr1++ * mathOpPtr->operand;
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SQR:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++, inPtr1++)
+			for (i = 0; i < outSignal->length; i++, inPtr1++)
 				*outPtr++ = SQR(*inPtr1);
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SUBTRACT:
-			for (i = 0; i < _OutSig_EarObject(data)->length; i++)
+			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ = *inPtr1++ - *inPtr2++;
 			break;
 		default:

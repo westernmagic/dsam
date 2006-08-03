@@ -497,7 +497,7 @@ CheckData_Analysis_Averages(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _GetDuration_SignalData(data->inSignal[0]);
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (averagesPtr->timeOffset > signalDuration) {
 		NotifyError(wxT("%s: Time offset (%g ms) must be less than the signal\n"
 		  "duration (%g ms)."), funcName, MSEC(averagesPtr->timeOffset),
@@ -539,6 +539,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 	int		chan;
 	double	dt;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	AveragesPtr	p = averagesPtr;
 
 	if (!data->threadRunFlag) {
@@ -549,22 +550,22 @@ Calc_Analysis_Averages(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Averages Analysis"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-		  1.0)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, 1, 1.0)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
 		}
-		dt = data->inSignal[0]->dt;
+		dt = _InSig_EarObject(data, 0)->dt;
 		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5);
-		p->timeRangeIndex = (p->timeRange <= 0.0)? data->inSignal[0]->length -
-		  p->timeOffsetIndex: (ChanLen) floor(p->timeRange / dt + 0.5);
+		p->timeRangeIndex = (p->timeRange <= 0.0)? _InSig_EarObject(data, 0)->
+		  length - p->timeOffsetIndex: (ChanLen) floor(p->timeRange / dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan] + p->timeOffsetIndex;
 		for (i = 0, sum = 0.0; i < p->timeRangeIndex; i++, inPtr++)
 			switch (p->mode) {
 			case AVERAGES_FULL:
@@ -580,7 +581,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 				break;
 			} /* switch */
 				
-		_OutSig_EarObject(data)->channel[chan][0] = (ChanData) (sum /
+		outSignal->channel[chan][0] = (ChanData) (sum /
 		  p->timeRangeIndex);
 	}
 	SetProcessContinuity_EarObject(data);

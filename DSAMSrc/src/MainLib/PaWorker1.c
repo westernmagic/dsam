@@ -423,7 +423,7 @@ ProcessMesgTag(void)
 			} /* switch */
 			if (workPtr->preProcessData)
 				  workPtr->simulation->inSignal[0] =
-				    workPtr->preProcessData->outSignal;
+				    workPtr->preProcessData->outSignalPtr;
 			workPtr->simulation->updateProcessFlag = FALSE;
 		}
 		break;

@@ -116,6 +116,7 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_ConvMonaural");
 	register	ChanData	 *inPtr, *outPtr;
 	int		i, outChan, inChan;
+	SignalDataPtr	inSignal, outSignal;
 	ChanLen	j;
 
 	if (!data->threadRunFlag) {
@@ -125,9 +126,9 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Convert binaural -> monaural "
 		  "utility"));
-		if (!InitOutSignal_EarObject(data, (uShort) (data->inSignal[0]->
-		  numChannels / data->inSignal[0]->interleaveLevel), data->inSignal[0]->
-		  length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, (uShort) (_InSig_EarObject(data, 0)->
+		  numChannels / _InSig_EarObject(data, 0)->interleaveLevel), _InSig_EarObject(data, 0)->
+		  length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -136,20 +137,22 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (outChan = _OutSig_EarObject(data)->offset; outChan < _OutSig_EarObject(data)->
-	  numChannels; outChan++) {
-		inChan = outChan * data->inSignal[0]->interleaveLevel;
-		outPtr = _OutSig_EarObject(data)->channel[outChan];
-		for (i = 0; i < data->inSignal[0]->interleaveLevel; i++) {
-			inPtr = data->inSignal[0]->channel[inChan];
-			outPtr = _OutSig_EarObject(data)->channel[outChan];
-			for (j = 0; j < data->inSignal[0]->length; j++)
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
+	for (outChan = outSignal->offset; outChan < outSignal->numChannels;
+	  outChan++) {
+		inChan = outChan * inSignal->interleaveLevel;
+		outPtr = outSignal->channel[outChan];
+		for (i = 0; i < inSignal->interleaveLevel; i++) {
+			inPtr = inSignal->channel[inChan];
+			outPtr = outSignal->channel[outChan];
+			for (j = 0; j < inSignal->length; j++)
 				*(outPtr++) = *(inPtr++);
 		}
-		for (i = 1; i < data->inSignal[0]->interleaveLevel; i++) {
-			inPtr = data->inSignal[0]->channel[inChan + i];
-			outPtr = _OutSig_EarObject(data)->channel[outChan];
-			for (j = 0; j < data->inSignal[0]->length; j++)
+		for (i = 1; i < inSignal->interleaveLevel; i++) {
+			inPtr = inSignal->channel[inChan + i];
+			outPtr = outSignal->channel[outChan];
+			for (j = 0; j < inSignal->length; j++)
 				*(outPtr++) += *(inPtr++);
 		}
 	}

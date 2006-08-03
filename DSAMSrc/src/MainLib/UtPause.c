@@ -542,8 +542,7 @@ Process_Utility_Pause(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Pause utility module process"));
-		data->updateCustomersFlag = (data->inSignal[0] != _OutSig_EarObject(data));
-		_OutSig_EarObject(data) = data->inSignal[0];
+		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

@@ -457,9 +457,9 @@ CheckData_Utility_BinSignal(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	dt = data->inSignal[0]->dt;
+	dt = _InSig_EarObject(data, 0)->dt;
 	if (((binSignalPtr->binWidth > 0.0) && (binSignalPtr->binWidth < dt)) ||
-	  (binSignalPtr->binWidth > _GetDuration_SignalData(data->inSignal[0]))) {
+	  (binSignalPtr->binWidth > _GetDuration_SignalData(_InSig_EarObject(data, 0)))) {
 		NotifyError(wxT("%s: Invalid binWidth (%g ms)."), funcName,
 		  MSEC(binSignalPtr->binWidth));
 		return(FALSE);
@@ -504,6 +504,7 @@ Process_Utility_BinSignal(EarObjectPtr data)
 	int		chan;
 	double duration;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	BinSignalPtr	p = binSignalPtr;
 
 	if (!data->threadRunFlag) {
@@ -514,15 +515,15 @@ Process_Utility_BinSignal(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Signal binning routine"));
-		duration = _GetDuration_SignalData(data->inSignal[0]);
-		p->dt = data->inSignal[0]->dt;
+		duration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
+		p->dt = _InSig_EarObject(data, 0)->dt;
 		if (p->binWidth < 0.0)
 			p->wBinWidth = duration;
 		else if (p->binWidth == 0.0)
 			p->wBinWidth = p->dt;
 		else
 			p->wBinWidth = p->binWidth;
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  (ChanLen) floor(duration / p->wBinWidth + 0.5), p->wBinWidth)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
@@ -533,16 +534,16 @@ Process_Utility_BinSignal(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		nextBinCutOff = p->wBinWidth - p->dt;
-		for (i = 0, binSum = 0.0; i < data->inSignal[0]->length; i++) {
+		for (i = 0, binSum = 0.0; i < _InSig_EarObject(data, 0)->length; i++) {
 			binSum += *(inPtr++);
 			if (DBL_GREATER((i + 1) * p->dt, nextBinCutOff)) {
-				if ((ChanLen) (outPtr - _OutSig_EarObject(data)->channel[chan]) <
-				  _OutSig_EarObject(data)->length)
+				if ((ChanLen) (outPtr - outSignal->channel[chan]) < outSignal->
+				  length)
 					*outPtr++ += (p->mode == UTILITY_BINSIGNAL_AVERAGE_MODE)?
 					  binSum / p->numBins: binSum;
 				binSum = 0.0;

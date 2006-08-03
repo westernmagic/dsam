@@ -513,7 +513,7 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 	 	for (i = 0; (i < _OutSig_EarObject(data)->numChannels) && ok; i++)
 			if ((p->coefficients[i] = InitBandPassCoeffs_Filters(p->cascade,
-			  p->lowerCutOffFreq, p->upperCutOffFreq, data->inSignal[0]->dt)) ==
+			  p->lowerCutOffFreq, p->upperCutOffFreq, _InSig_EarObject(data, 0)->dt)) ==
 			  NULL) {
 				NotifyError(wxT("%s: Failed initialised filter channel %d."),
 				  funcName, i);
@@ -583,7 +583,7 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Band pass filter module process"));
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);

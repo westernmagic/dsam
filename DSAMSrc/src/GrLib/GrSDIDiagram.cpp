@@ -393,11 +393,11 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 bool
 SDIDiagram::VerifyDiagram(void)
 {
-	static const char *funcName = "SDIDiagram::VerifyDiagram";
-	int		numDiagConnections = 0, numSimConnections = 0;
+	static const wxChar *funcName = wxT("SDIDiagram::VerifyDiagram");
+	bool	connectionOk;
+	int		i, numDiagConnections = 0, numSimConnections = 0;
 	DatumPtr	pc, toPc;
 	EarObjectPtr	fromProcess, toProcess;
-	EarObjRefPtr p;
 	wxNode *node = GetShapeList()->GetFirst();
 
 	// Check processes exist for each shape line, and that the connection
@@ -409,7 +409,7 @@ SDIDiagram::VerifyDiagram(void)
 			wxShape *fromShape = lineShape->GetFrom();
 			wxShape *toShape = lineShape->GetTo();
 			if (!fromShape || !toShape) {
-				wxLogWarning(wxT("%s: Diagram line is not connected to a valid "
+				NotifyError(wxT("%s: Diagram line is not connected to a valid "
 				  "process."), funcName);
 				return (false);
 			}
@@ -417,12 +417,13 @@ SDIDiagram::VerifyDiagram(void)
 			  type == PROCESS)) {
 				fromProcess = SHAPE_PC(fromShape)->data;
 				toProcess = SHAPE_PC(toShape)->data;
-				for (p = fromProcess->customerList; (p != NULL) && (p->
-				  earObject->handle != toProcess->handle); p = p->next)
-					;
-				if (!p) {
-					wxLogWarning(wxT("%s: Diagram line does not correspond to "
-					  "a simulation connection."), funcName);
+				for (i = 0, connectionOk = false; !connectionOk && (i <
+				  toProcess->numInSignals); i++)
+					 connectionOk = (fromProcess->outSignalPtr == toProcess->
+					   inSignal[i]);
+				if (!connectionOk) {
+					NotifyError(wxT("%s: Diagram line does not correspond to "
+					  "a simulation connection.\n"), funcName);
 					return(false);
 				}
 			}
@@ -436,12 +437,11 @@ SDIDiagram::VerifyDiagram(void)
 	while (pc) {
 		if (pc->type == PROCESS) {
 			if (!pc->clientData && pc->data) {
-				wxLogWarning(wxT("%s: Process has no description (step %d, "
+				NotifyError(wxT("%s: Process has no description (step %d, "
 				  "label %s'."), funcName, pc->stepNumber, pc->label);
 				return (false);
 			}
-			for (p = pc->data->customerList; (p != NULL); p = p->next)
-				numSimConnections++;
+				numSimConnections += pc->data->numInSignals;
 		} else {
 			for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
 			  toPc->next)
@@ -452,7 +452,7 @@ SDIDiagram::VerifyDiagram(void)
 		pc = pc->next;
 	}
 	if (numDiagConnections != numSimConnections) {
-		wxLogWarning(wxT("%s: The number of diagram lines (%d) does not "
+		NotifyError(wxT("%s: The number of diagram lines (%d) does not "
 		  "correspond\nto the number of simulation connections (%d)."),
 		  funcName, numDiagConnections, numSimConnections);
 		return(false);

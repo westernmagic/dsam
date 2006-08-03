@@ -423,7 +423,7 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	duration =  _GetDuration_SignalData(data->inSignal[0]);
+	duration =  _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (intensityPtr->timeOffset >= duration) {
 		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
 		  "duration (%g ms)."), funcName, MSEC(intensityPtr->timeOffset), MSEC(
@@ -438,10 +438,10 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 			  duration));
 			return(FALSE);
 		}
-		if (intensityPtr->extent < data->inSignal[0]->dt) {
+		if (intensityPtr->extent < _InSig_EarObject(data, 0)->dt) {
 			NotifyError(wxT("%s: Time extent is too small (%g ms).  It should "
 			  "be greater than the sampling interval (%g ms)."), funcName, MSEC(
-			  intensityPtr->extent), MSEC(data->inSignal[0]->dt));
+			  intensityPtr->extent), MSEC(_InSig_EarObject(data, 0)->dt));
 			return(FALSE);
 		}
 	}
@@ -471,6 +471,7 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 	register	ChanData	 *inPtr, sum;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal;
 	IntensityPtr	p = intensityPtr;
 
 	if (!data->threadRunFlag) {
@@ -481,26 +482,26 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Intensity Analysis Module"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels, 1,
-		  1.0)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, 1, 1.0)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
 		}
-		p->timeOffsetIndex = (ChanLen) (p->timeOffset / data->inSignal[0]->dt +
+		p->timeOffsetIndex = (ChanLen) (p->timeOffset / _InSig_EarObject(data,
+		  0)->dt + 0.5);
+		p->wExtent = (p->extent < 0.0)? _InSig_EarObject(data, 0)->length - p->
+		  timeOffsetIndex: (ChanLen) (p->extent / _InSig_EarObject(data, 0)->dt +
 		  0.5);
-		p->wExtent = (p->extent < 0.0)? data->inSignal[0]->length - p->
-		  timeOffsetIndex: (ChanLen) (p->extent / data->inSignal[0]->dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan] + p->timeOffsetIndex;
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan] + p->timeOffsetIndex;
 		for (i = 0, sum = 0.0; i < p->wExtent; i++, inPtr++)
 			sum += *inPtr * *inPtr;
-		_OutSig_EarObject(data)->channel[chan][0] = (ChanData) DB_SPL(sqrt(sum /
-		  p->wExtent));
+		outSignal->channel[chan][0] = (ChanData) DB_SPL(sqrt(sum / p->wExtent));
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

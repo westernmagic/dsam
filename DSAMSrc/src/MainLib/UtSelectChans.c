@@ -697,13 +697,13 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
-	  interleaveLevel;
+	numInChans = _InSig_EarObject(data, 0)->numChannels / _InSig_EarObject(data,
+	  0)->interleaveLevel;
 	if (selectChanPtr->numChannels > numInChans) {
 		NotifyError(wxT("%s: The specified channel field (%d) is greater than\n"
 		  "as the input signal channels (%d, interleave level %d)."), funcName,
-		  selectChanPtr->numChannels, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->interleaveLevel);
+		  selectChanPtr->numChannels, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->interleaveLevel);
 			return(FALSE);
 	}
 	return(TRUE);
@@ -728,8 +728,8 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
-		numInChans = data->inSignal[0]->numChannels / data->inSignal[0]->
-		  interleaveLevel;
+		numInChans = _InSig_EarObject(data, 0)->numChannels / _InSig_EarObject(
+		  data, 0)->interleaveLevel;
 		if ((p->numChannels < numInChans) && !ResizeDoubleArray_UniParMgr(
 		  &p->selectionArray, &p->numChannels, numInChans)) {
 			NotifyError(wxT("%s: Could not set selection array."), funcName);
@@ -788,6 +788,7 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	int		i, k, l, chan, inChanIndex;
 	ChanLen	j;
 	SelectChanPtr	p = selectChanPtr;
+	SignalDataPtr	inSignal, outSignal;
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Utility_SelectChannels())
@@ -806,77 +807,78 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	inSignal = _InSig_EarObject(data, 0);
 	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
-		numChannels = data->inSignal[0]->numChannels;
+		numChannels = inSignal->numChannels;
 		break;
 	case SELECT_CHANS_REMOVE_MODE:
 		for (i = 0, numChannels = 0; i < p->numChannels; i++)
 			if (p->selectionArray[i] > 0.0)
 				numChannels++;
-			numChannels *= data->inSignal[0]->interleaveLevel;
+			numChannels *= inSignal->interleaveLevel;
 			break;
 	case SELECT_CHANS_EXPAND_MODE:
 		for (i = 0, numChannels = 0; i < p->numChannels; i++)
 			if (p->selectionArray[i] > 0.0)
 				numChannels += (uShort) p->selectionArray[i];
-			numChannels *= data->inSignal[0]->interleaveLevel;
+			numChannels *= inSignal->interleaveLevel;
 		break;
 	} /* switch */
-	if (!InitOutSignal_EarObject(data, numChannels, data->inSignal[0]->length,
-	  data->inSignal[0]->dt)) {
+	if (!InitOutSignal_EarObject(data, numChannels, inSignal->length, inSignal->
+	  dt)) {
 		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
 		return(FALSE);
 	}
-	SetInterleaveLevel_SignalData(_OutSig_EarObject(data), data->inSignal[0]->
-	  interleaveLevel);
-	SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
+	outSignal = _OutSig_EarObject(data);
+	SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
+	SetLocalInfoFlag_SignalData(outSignal, TRUE);
 	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
-		for (i = 0; i < data->inSignal[0]->numChannels; i++) {
-			outPtr = _OutSig_EarObject(data)->channel[i];
+		for (i = 0; i < inSignal->numChannels; i++) {
+			outPtr = outSignal->channel[i];
 			if (p->selectionArray[i] > 0.0) {
-			inChanIndex = i / data->inSignal[0]->interleaveLevel;
-				inPtr = data->inSignal[0]->channel[i];
+			inChanIndex = i / inSignal->interleaveLevel;
+				inPtr = inSignal->channel[i];
 				multiplier = p->selectionArray[inChanIndex];
-				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+				for (j = 0; j < outSignal->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 			} else
-				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+				for (j = 0; j < outSignal->length; j++)
 					*outPtr++ = 0.0;
 		}
 		break;
 	case SELECT_CHANS_REMOVE_MODE:
-		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i++) {
-			inChanIndex = i / data->inSignal[0]->interleaveLevel;
+		for (i = 0, chan = 0; i < inSignal->numChannels; i++) {
+			inChanIndex = i / inSignal->interleaveLevel;
 			if (p->selectionArray[inChanIndex] > 0.0) {
-				SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan, data->
-				  inSignal[0]->info.chanLabel[i]);
-				SetInfoCF_SignalData(_OutSig_EarObject(data), chan, data->inSignal[0]->
-				  info.cFArray[i]);
-				inPtr = data->inSignal[0]->channel[i];
-				outPtr = _OutSig_EarObject(data)->channel[chan];
+				SetInfoChannelLabel_SignalData(outSignal, chan, inSignal->info.
+				  chanLabel[i]);
+				SetInfoCF_SignalData(outSignal, chan, inSignal->info.cFArray[
+				  i]);
+				inPtr = inSignal->channel[i];
+				outPtr = outSignal->channel[chan];
 				multiplier = p->selectionArray[inChanIndex];
-				for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+				for (j = 0; j < outSignal->length; j++)
 					*outPtr++ = *inPtr++ * multiplier;
 				chan++;
 			}
 		}
 		break;
 	case SELECT_CHANS_EXPAND_MODE:
-		for (i = 0, chan = 0; i < data->inSignal[0]->numChannels; i += data->
-		  inSignal[0]->interleaveLevel) {
-			inChanIndex = i / data->inSignal[0]->interleaveLevel;
+		for (i = 0, chan = 0; i < inSignal->numChannels; i += inSignal->
+		  interleaveLevel) {
+			inChanIndex = i / inSignal->interleaveLevel;
 			if (p->selectionArray[inChanIndex] > 0.0)
 				for (k = 0; k < p->selectionArray[inChanIndex]; k++)
-					for (l = 0; l < _OutSig_EarObject(data)->interleaveLevel; l++) {
-						SetInfoChannelLabel_SignalData(_OutSig_EarObject(data), chan,
-						  data->inSignal[0]->info.chanLabel[i + l]);
-						SetInfoCF_SignalData(_OutSig_EarObject(data), chan, data->
-						  inSignal[0]->info.cFArray[i + l]);
-						inPtr = data->inSignal[0]->channel[i + l];
-						outPtr = _OutSig_EarObject(data)->channel[chan];
-						for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+					for (l = 0; l < outSignal->interleaveLevel; l++) {
+						SetInfoChannelLabel_SignalData(outSignal, chan,
+						  inSignal->info.chanLabel[i + l]);
+						SetInfoCF_SignalData(outSignal, chan, inSignal->info.
+						  cFArray[i + l]);
+						inPtr = inSignal->channel[i + l];
+						outPtr = outSignal->channel[chan];
+						for (j = 0; j < outSignal->length; j++)
 							*outPtr++ = *inPtr++;
 						chan++;
 					}

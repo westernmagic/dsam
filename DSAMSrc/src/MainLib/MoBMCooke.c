@@ -664,6 +664,7 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 	double	zz, pow, cosPtr;
 	register double	*inPtr, *outPtr;
 	CookeCoeffsPtr	c;
+	SignalDataPtr	outSignal;
 	BM0CookePtr	p = bM0CookePtr;
  				
 	if (!data->threadRunFlag) {
@@ -680,12 +681,12 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 
 		SetProcessName_EarObject(data, wxT("Cooke gammatone basilar membrane "
 		  "filtering"));
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
-		totalChannels = p->theCFs->numChannels * data->inSignal[0]->numChannels;
+		totalChannels = p->theCFs->numChannels * _InSig_EarObject(data, 0)->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Could not initialise output channels."),
 			  funcName);
@@ -700,12 +701,12 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 			return(TRUE);
 	}
 	InitOutDataFromInSignal_EarObject(data);
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		cFIndex = chan / _OutSig_EarObject(data)->interleaveLevel;
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		cFIndex = chan / outSignal->interleaveLevel;
 		c = p->coefficients + cFIndex;
-		outPtr = inPtr = _OutSig_EarObject(data)->channel[chan];
-		for (i = 0, cosPtr = 0.0; i < _OutSig_EarObject(data)->length; i++, inPtr++,
+		outPtr = inPtr = outSignal->channel[chan];
+		for (i = 0, cosPtr = 0.0; i < outSignal->length; i++, inPtr++,
 		  outPtr++) {
 			tablePtr = (unsigned long) cosPtr;
 			zz = c->z;

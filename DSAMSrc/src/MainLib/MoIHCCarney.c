@@ -862,6 +862,7 @@ RunModel_IHC_Carney(EarObjectPtr data)
 	double		releaseProb, pI, pL, pG;
 	ChanLen		i;
 	CarneyHCPtr	p = carneyHCPtr;
+	SignalDataPtr	outSignal;
 	CarneyHCVarsPtr	vPtr;
 
 	if (!data->threadRunFlag) {
@@ -872,8 +873,8 @@ RunModel_IHC_Carney(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Carney IHC Synapse"));
-		if (!InitOutSignal_EarObject(data, data->inSignal[0]->numChannels,
-		  data->inSignal[0]->length, data->inSignal[0]->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."), funcName);
 			return(FALSE);
 		}
@@ -891,12 +892,12 @@ RunModel_IHC_Carney(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
-	  chan++) {
-		inPtr = data->inSignal[0]->channel[chan];
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	outSignal = _OutSig_EarObject(data);
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		inPtr = _InSig_EarObject(data, 0)->channel[chan];
+		outPtr = outSignal->channel[chan];
 		vPtr = &p->hCChannels[chan];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
+		for (i = 0; i < outSignal->length; i++) {
 			releaseProb = *inPtr++ / p->maxHCVoltage;
 			if ((pI = p->pIMaxMinusPrest * releaseProb + p->restingPerm) < 0.0)
 				pI = 0.0;

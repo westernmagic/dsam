@@ -1594,13 +1594,8 @@ SetProcessMode_SignalDisp(EarObjectPtr data)
 		  (DSAM_strcmp(data->processName, NULL_MODULE_PROCESS_NAME) == 0)) {
 		SetProcessName_EarObject(data, wxT("%s (%d)"), DISPLAY_PROCESS_NAME,
 		  (int) data->handle);
-		if (data->outSignal != NULL)
-			if (!SameType_SignalData_NoDiagnostics(data->inSignal[0],
-			  data->outSignal))
-				data->updateCustomersFlag = TRUE;
-		if (data->outSignal != data->inSignal[0])
-			data->updateCustomersFlag = TRUE;
-		data->outSignal = data->inSignal[0];
+		data->outSignalPtr = data->inSignal[0];
+		data->outSignal = _OutSig_EarObject(data);
 		signalDispPtr->inLineProcess = TRUE;
 	} else {
 		if (!CheckPars_SignalData(data->outSignal)) {

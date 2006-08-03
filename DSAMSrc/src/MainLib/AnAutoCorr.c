@@ -841,6 +841,7 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	int		chan;
 	double	wiegrebeTimeConst;
 	ChanLen i, deltaT;
+	SignalDataPtr	inSignal, outSignal;
 	AutoCorrPtr	p = autoCorrPtr;
 
 	if (!data->threadRunFlag) {
@@ -865,8 +866,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		p->timeOffsetIndex = (ChanLen) ((p->timeOffset < 0.0)? data->inSignal[
-		  0]->length: p->timeOffset / p->dt + 0.5);
+		p->timeOffsetIndex = (ChanLen) ((p->timeOffset < 0.0)? _InSig_EarObject(
+		  data, 0)->length: p->timeOffset / p->dt + 0.5);
 		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER) {
 			p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 			  p->timeConstant * 3.0);
@@ -875,11 +876,12 @@ Calc_Analysis_ACF(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	inSignal = _InSig_EarObject(data, 0);
+	outSignal = _OutSig_EarObject(data);
 	if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER)
 		expDtPtr = &p->expDecay;
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
-	  data)->numChannels; chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
 		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)
 			expDtPtr = p->exponentDt;
 		for (deltaT = 0; deltaT < p->maxLagIndex; deltaT++, outPtr++) {
@@ -888,8 +890,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 				p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 				  wiegrebeTimeConst);
 			}
-			inPtr = _InSig_EarObject(data, 0)->channel[chan] + (p->
-			  timeOffsetIndex - p->sumLimitIndex);
+			inPtr = inSignal->channel[chan] + (p->timeOffsetIndex - p->
+			  sumLimitIndex);
 			for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
 				*outPtr =  (*outPtr * *expDtPtr) + (*inPtr * *(inPtr - deltaT));
 			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
@@ -907,8 +909,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 			} /* switch */
 		}
 	}
-	if (!_OutSig_EarObject(data)->offset)	/* - only for one (first) thread */
-		_OutSig_EarObject(data)->numWindowFrames++;
+	if (!outSignal->offset)	/* - only for one (first) thread */
+		outSignal->numWindowFrames++;
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

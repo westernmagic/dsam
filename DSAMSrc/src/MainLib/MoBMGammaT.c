@@ -505,10 +505,10 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
-		sampleRate = 1.0 / data->inSignal[0]->dt;
+		sampleRate = 1.0 / _InSig_EarObject(data, 0)->dt;
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-			cFIndex = i / data->inSignal[0]->interleaveLevel;
+			cFIndex = i / _InSig_EarObject(data, 0)->interleaveLevel;
 			if ((p->coefficients[i] = InitGammaToneCoeffs_Filters(p->theCFs->
 			  frequency[cFIndex], p->theCFs->bandwidth[cFIndex], p->cascade,
 			  sampleRate)) == NULL) {
@@ -567,13 +567,13 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane filtering"));
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
-		if (!CheckRamp_SignalData(data->inSignal[0])) {
+		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
 		totalChannels = bMGammaTPtr->theCFs->numChannels *
-		  data->inSignal[0]->numChannels;
+		  _InSig_EarObject(data, 0)->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
