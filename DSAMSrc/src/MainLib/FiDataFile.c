@@ -592,7 +592,8 @@ FileLength_DataFile(FILE *fp)
 ChanLen
 SetIOSectionLength_DataFile(EarObjectPtr data)
 {
-	if (!GetDSAMPtr_Common()->segmentedMode || (_OutSig_EarObject(data) == NULL))
+	if (!GetDSAMPtr_Common()->segmentedMode || (_OutSig_EarObject(data) ==
+	  NULL))
 		return((ChanLen) ((dataFilePtr->numSamples > dataFilePtr->maxSamples)?
 		 dataFilePtr->maxSamples: dataFilePtr->numSamples));
 
@@ -634,10 +635,9 @@ OpenFile_DataFile(WChar *fileName, char *mode)
 	default:
 		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);
 		parFilePath = GetParsFileFPath_Common(fileName);
-		if ((fp = DSAM_fopen(parFilePath, (char *) 
-		  mode)) == NULL) {
+		if ((fp = DSAM_fopen(parFilePath, mode)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open '%s' ('%s')."), funcName,
-			  fileName, mode);
+			  fileName, MBSToWCS_Utility_String(mode));
 			return((FILE *) NULL);
 		}
 		else
