@@ -476,7 +476,8 @@ void	SetUsingExtStatus(BOOLN status);
 
 void	SetUsingGUIStatus(BOOLN status);
 
-void	SetWarningsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
+void	SetWarningsFile_Common(WChar *outputSpecifier,
+		  FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);
 
