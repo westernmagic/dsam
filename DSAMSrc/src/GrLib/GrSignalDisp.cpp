@@ -1903,7 +1903,8 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 	static const WChar *funcName = wxT("ShowSignal_SignalDisp");
 	time_t	startTime;
 	BOOLN	notReady;
-	int		i;
+	int		i, numWindowFrames;
+	SignalDataPtr	outSignal;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -1933,10 +1934,12 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 	}
 	if (signalDispPtr->inLineProcess)
 		SetProcessContinuity_EarObject(data);
-	for (i = 0, startTime = time(NULL); i < data->outSignal->numWindowFrames;
-	  i++) {
+	outSignal = _OutSig_EarObject(data);
+	numWindowFrames = (GetDSAMPtr_Common()->segmentedMode)? 1: outSignal->
+	  numWindowFrames;
+	for (i = 0, startTime = time(NULL); i < numWindowFrames; i++) {
 		if (signalDispPtr->buffer)
-			ProcessBuffer_SignalDisp(data->outSignal, signalDispPtr->buffer, i);
+			ProcessBuffer_SignalDisp(outSignal, signalDispPtr->buffer, i);
 #		if !defined(linux)
   	  	if (signalDispPtr->frameDelay > DBL_EPSILON) {
   			while (difftime(time(NULL), startTime) < signalDispPtr->frameDelay)
