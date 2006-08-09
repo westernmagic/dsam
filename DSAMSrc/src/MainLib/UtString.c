@@ -260,11 +260,16 @@ ConvUTF8_Utility_String(WChar *src)
 	return(src);
 #	else
 	static const WChar *funcName = wxT("ConvUTF8_Utility_String");
-	static char	dest[MAXLINE];
+	static char	dest[LONG_STRING];
 
-	if (wcstombs(dest, src, MAXLINE - 1) < 0 ) {
+	if (wcslen(src) > LONG_STRING - 1) {
+		NotifyError(wxT("%s: Static string length (%d) is too short for string "
+		  "'%s'"), funcName, LONG_STRING, src);
+		return(NULL);
+	}
+	if (wcstombs(dest, src, LONG_STRING - 1) < 0 ) {
 		NotifyError(wxT("%s: Failed to convert wide character string (%d)."),
-		  funcName, MAXLINE);
+		  funcName, LONG_STRING);
 		return(NULL);
 	}
 	return(dest);
@@ -318,10 +323,15 @@ MBSToWCS_Utility_String(const char *mb)
 	static WChar	dest[LONG_STRING];
 	mbstate_t	state;
 
+	if (strlen(mb) > LONG_STRING - 1) {
+		NotifyError(wxT("%s: Static string length (%d) is too short for string "
+		  " argument."), funcName, LONG_STRING);
+		return(NULL);
+	}
 
 	if (mbsrtowcs(dest, &mb, LONG_STRING, &state) < 0 ) {
 		NotifyError(wxT("%s: Failed to convert wide character (%d)."),
-		  funcName, MAXLINE);
+		  funcName, LONG_STRING);
 		return(NULL);
 	}
 	return(dest);
@@ -350,8 +360,11 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
 		if (fmtOn && ((*s == 'c') || (*s == 's'))) {
 			*d = towupper(*s);
 			fmtOn = FALSE;
-		} else
+		} else {
 			*d = *s;
+			if (iswspace(*s))
+				fmtOn = FALSE;
+		}
 	}
 	*d = '\0';
 
@@ -438,8 +451,6 @@ Vsnprintf_Utility_String(WChar *str, size_t size,  WChar *format, va_list args)
 int
 Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
 {
-	static const WChar *funcName = wxT("Snprintf_Utility_String");
-	BOOLN	ok = TRUE;
 	int		result = 0;
 	va_list	args;
 

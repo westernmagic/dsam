@@ -74,6 +74,9 @@ int		StrNCmpNoCase_Utility_String(WChar *fullString, WChar *abbrevString);
 WChar *	SubStrReplace_Utility_String(WChar *string, WChar *subString,
 		  WChar *repString);
 
+int		Vsnprintf_Utility_String(WChar *str, size_t size,  WChar *format,
+		  va_list args);
+
 __END_DECLS
 
 #endif
