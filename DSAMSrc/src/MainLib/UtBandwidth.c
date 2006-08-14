@@ -178,18 +178,18 @@ NonLinearFromF_Bandwidth(double f)
 /*
  * Calculate the band width of a guinea-pig's filter at a characteristic 
  * frequency, f.
- * At present Alan Palmer's data (unpublished) is used.
- * N.B. The parameters have been divided by 2 to convert from 10 dB down
- * bandwidth to 3 dB down bandwidth, as used by the gamma tone filter algorithm.
+ * This function uses the equation ERB = 0.29 CF^0.56 from: Evens E. F. (2001)
+ * "Latest comparisons between physiological and behavioural frequency
+ * selectivity" In: Breebaart, D. Houtsma A., Kohlrausch A. Prijs V.,
+ * Schoonhoven R. (Eds), "Proceedings of the 12th Internation Symposium on
+ * Hearing, Physiological and Psychological Bases of Audtiory Function."
+ * Maastrict: Shaker BV. pp 382-387.
  */
 
 double
 GuineaPigFromF_Bandwidth(double f)
 {
-	double	ff;
-	
-	ff = f * f;
-	return(207.2 + 0.0553 * f - 3.254e-7 * ff + 2.501e-11 * (ff * f));
+	return(290.0 * pow(f / 1000.0, 0.56));
 	
 }
 
