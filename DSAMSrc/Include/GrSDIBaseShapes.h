@@ -184,7 +184,7 @@ class SDIShape: public wxShape
 	void	AddFontInfo(TiXmlNode &parent, wxFont *font);
 	void	AddLineInfo(TiXmlNode &parent);
 	void	AddPenInfo(TiXmlNode &parent);
-	friend void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
+	friend	void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
 	void	AddRegions(TiXmlNode &parent);
 	void	AddShapeInfo(TiXmlNode &node);
 	bool	GetAttachmentsInfo(TiXmlNode *parent);
@@ -248,5 +248,13 @@ class SDIRectangleShape: public wxRectangleShape
 	virtual	bool GetXMLInfo(TiXmlNode *node);
 
 };
+
+/******************************************************************************/
+/*************************** Subroutine declarations **************************/
+/******************************************************************************/
+
+void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
+
+wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
 
 #endif
