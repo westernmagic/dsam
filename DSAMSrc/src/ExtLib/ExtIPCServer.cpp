@@ -243,8 +243,8 @@ IPCServer::OnGet(void)
 {
 	wxUint32	length = 0;
 
-	if (!GetPtr_AppInterface()->simulationFinishedFlag ||
-	  !GetSimProcess_AppInterface()->outSignal) {
+	if (!GetPtr_AppInterface()->simulationFinishedFlag || !_OutSig_EarObject(
+	  GetSimProcess_AppInterface())) {
 		sock->Write(&length, sizeof(length));
 		return;
 	}
@@ -606,7 +606,7 @@ GetPtr_IPCServer(void)
  */
 
 void
-Notify_IPCServer(wxChar *message, CommonDiagSpecifier type)
+Notify_IPCServer(const wxChar *message, CommonDiagSpecifier type)
 {
 	wxString	mesg;
 

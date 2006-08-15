@@ -113,7 +113,7 @@ void	EmptyDiagBuffer_IPCServer(WChar *s, int *c);
 
 IPCServer *	GetPtr_IPCServer(void);
 
-void	Notify_IPCServer(WChar *message, CommonDiagSpecifier type);
+void	Notify_IPCServer(const WChar *message, CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
