@@ -1955,3 +1955,29 @@ OnExecute_AppInterface(void)
 	return(ok);
 
 }
+
+/****************************** GetDataFileInProcess **************************/
+
+/*
+ * This routine returns a pointer to the a 'DataFile_In' process at the
+ * beginning of a simulation.  If it is not there, then it returns NULL.
+ */
+
+EarObjectPtr
+GetDataFileInProcess_AppInterface(void)
+{
+	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
+	EarObjectPtr	process;
+
+	SetErrorsFile_Common(wxT("off"), OVERWRITE);
+	process = GetFirstProcess_Utility_Datum(GetSimulation_AppInterface());
+	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
+	if (!process)
+		return(NULL);
+	if (StrCmpNoCase_Utility_String(process->module->name, wxT(
+	  "DataFile_In")) != 0)
+		return(NULL);
+	return(process);
+
+}
+

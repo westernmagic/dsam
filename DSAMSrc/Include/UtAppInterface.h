@@ -170,9 +170,11 @@ BOOLN	Free_AppInterface(void);
 
 void	FreeSim_AppInterface(void);
 
-AppInterfacePtr	GetPtr_AppInterface(void);
+EarObjectPtr	GetDataFileInProcess_AppInterface(void);
 
 WChar *	GetFilePath_AppInterface(WChar *filePath);
+
+AppInterfacePtr	GetPtr_AppInterface(void);
 
 DatumPtr *	GetSimPtr_AppInterface(void);
 
