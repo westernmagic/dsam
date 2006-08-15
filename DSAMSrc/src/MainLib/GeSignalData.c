@@ -819,7 +819,7 @@ OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
 		return(FALSE);
 	}
 	if (theData->timeIndex == PROCESS_START_TIME) {
-		DSAM_fprintf(fp, wxT("%s"), theData->info.sampleTitle);
+		fprintf_Utility_String(fp, wxT("%s"), theData->info.sampleTitle);
 		for (k = 0; k < theData->numChannels; k++)
 			DSAM_fprintf(fp, wxT("\t%g"), theData->info.chanLabel[k]);
 		DSAM_fprintf(fp, wxT("\n"));
