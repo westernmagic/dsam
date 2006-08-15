@@ -464,7 +464,7 @@ void	SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetInterruptRequestStatus_Common(BOOLN status);
 
-void	SetNotifyFunc(void (* Func)(WChar *, CommonDiagSpecifier));
+void	SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier));
 
 BOOLN	SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
 

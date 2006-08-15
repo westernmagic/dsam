@@ -527,7 +527,7 @@ SetDPrintFunc(void (* Func)(WChar *, va_list))
  */
 
 void
-SetNotifyFunc(void (* Func)(WChar *, CommonDiagSpecifier))
+SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier))
 {
 	dSAM.Notify = Func;
 
