@@ -32,6 +32,7 @@ class istream;
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
+#define SDI_DOCUMENT_ALL_FILES_EXT		wxT("*")
 #define SDI_DOCUMENT_SIM_FILE_EXT		wxT("sim")
 #define SDI_DOCUMENT_SPF_FILE_EXT		wxT("spf")
 #define SDI_DOCUMENT_XML_FILE_EXT		wxT("xml")

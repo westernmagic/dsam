@@ -234,6 +234,10 @@ MyApp::OnInit(void)
 	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
+	  SDI_DOCUMENT_ALL_FILES_EXT, grMainApp->GetSimFileName().GetCwd(),
+	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
+	  "view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_XML_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
 	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
 	  "view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
@@ -832,7 +836,7 @@ DPrint_MyApp(wxChar *format, va_list args)
  */
 
 void
-Notify_MyApp(wxChar *message, CommonDiagSpecifier type)
+Notify_MyApp(const wxChar *message, CommonDiagSpecifier type)
 {
 	wxChar	*heading;
 	wxString	mesg;
@@ -854,6 +858,6 @@ Notify_MyApp(wxChar *message, CommonDiagSpecifier type)
 	} else
 		heading = wxT("");
 	mesg.Printf(wxT("%s%s\n"), heading, message);
-	DPrint(message);
+	DPrint((wxChar *) message);
 
 }

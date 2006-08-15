@@ -192,7 +192,7 @@ void	DPrint_MyApp(wxChar *format, va_list args);
 
 void	EmptyDiagWinBuffer_MyApp(wxChar *s, int *c);
 
-void	Notify_MyApp(wxChar *message, CommonDiagSpecifier type);
+void	Notify_MyApp(const wxChar *message, CommonDiagSpecifier type);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/
