@@ -152,9 +152,11 @@ class SDILineShape: public wxLineShape
 
   public:
  
+	friend	void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
 	void	AddXMLArrowListInfo(TiXmlNode &node, wxNode *aNode);
 	void	AddXMLControlPointsInfo(TiXmlNode &node, wxNode *cPNode);
 	void	AddXMLInfo(TiXmlNode &node);
+	friend	wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
 	bool	GetXMLArrowListInfo(TiXmlNode *parent);
 	bool	GetXMLControlPointsInfo(TiXmlNode *node);
 	bool	GetXMLInfo(TiXmlNode *node);
