@@ -122,6 +122,38 @@ ParControl::ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
 
 }
 
+/****************************** Destructors ***********************************/
+
+ParControl::~ParControl(void)
+{
+	ParControlHandle *handle = NULL;
+
+	switch (tag) {
+	case UNSET:
+	case SPECIAL:
+		break;
+	case CHOICE:
+		handle = (ParControlHandle *) choice->GetClientData();
+		break;
+	case COMBO_BOX:
+		handle = (ParControlHandle *)comboBox->GetClientData();
+		break;
+	case LIST_BOX:
+		handle = (ParControlHandle *)listBox->GetClientData();
+		break;
+	default: {
+		wxControl *control = GetControl();
+
+		if (control)
+			handle = (ParControlHandle *) control->GetClientData();
+		break; }
+	}
+	if (handle)
+		delete handle;
+	
+}
+
+
 /****************************** Init ******************************************/
 
 /*

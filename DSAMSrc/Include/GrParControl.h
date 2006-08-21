@@ -84,6 +84,7 @@ class ParControl {
 	  wxListBox *lB, wxStaticText *labelTC);
 	ParControl(UniParPtr thePar, int theInfoNum, wxSizer *theSizer,
 	  ParControlTypeSpecifier t);
+	~ParControl(void);
 
 	void	Init(Tag theTag, int theInfoNum, wxSizer *theSizer,
 			  UniParPtr thePar);
