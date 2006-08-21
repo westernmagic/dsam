@@ -174,10 +174,10 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 		break;
 	case MODULE_THREAD_MODE_TRANSFER:
 		data->useThreadsFlag = (threadMode == APP_INT_THREAD_MODE_PROCESS)?
-		  FALSE: (data->outSignal->numChannels > 1);
+		  FALSE: (_OutSig_EarObject(data)->numChannels > 1);
 		break;
 	default:
-		data->useThreadsFlag = (data->outSignal->numChannels > 1);
+		data->useThreadsFlag = (_OutSig_EarObject(data)->numChannels > 1);
 	} /* switch */
 	if (!data->useThreadsFlag)
 		data->numThreads = 1;
@@ -260,7 +260,7 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 	if (!data->useThreadsFlag)
 		return(CXX_BOOL(RunProcessStandard_ModuleMgr(data)));
 	mutex.Lock();
-	SetThreadDistribution(data->outSignal->numChannels);
+	SetThreadDistribution(_OutSig_EarObject(data)->numChannels);
 
 	if (!InitThreadProcesses(data)) {
 		wxLogFatalError(wxT("%s: Could not initialise thread processes."),
@@ -399,8 +399,8 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 		} else {
 			pc1 = (threadStartPc->type == PROCESS)? threadStartPc:
 			  GetPreviousProcessInst_Utility_Datum(threadStartPc);
-			if (!pc1 || !pc2 || (!linkBreak && (pc1->data->outSignal->
-			  numChannels == pc2->data->outSignal->numChannels)))
+			if (!pc1 || !pc2 || (!linkBreak && (_OutSig_EarObject(pc1->data)->
+			  numChannels == _OutSig_EarObject(pc2->data)->numChannels)))
 				chainCount++;
 			else {
 #				if DEBUG
@@ -453,12 +453,14 @@ RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 void
 RunThreadedProc::RestoreProcess(EarObjectPtr process)
 {
+	SignalDataPtr	outSignal, subOutSignal;
+
 	if (!process->localOutSignalFlag)
 		return;
 #	if DEBUG
 	printf("RunThreadedProc::RestoreProcess: Debug: '%s' offset %d, "
 	  "threadIndex = %d.\n", (process->processName)? process->processName:
-	  "unknown", process->outSignal->offset, process->threadIndex);
+	  "unknown", _OutSig_EarObject(process)->offset, process->threadIndex);
 #	endif
 	if (!process->useThreadsFlag)
 		return;
@@ -469,12 +471,13 @@ RunThreadedProc::RestoreProcess(EarObjectPtr process)
 		  process->outSignal->origNumChannels);
 #		endif
 		int		i;
-		process->outSignal->offset = 0;
-		process->outSignal->numChannels = process->outSignal->origNumChannels;
+		outSignal = _OutSig_EarObject(process);
+		outSignal->offset = 0;
+		outSignal->numChannels = outSignal->origNumChannels;
 		for (i = 0; i < process->numSubProcesses; i++) {
-			process->subProcessList[i]->outSignal->offset = 0;
-			process->subProcessList[i]->outSignal->numChannels =
-			  process->outSignal->origNumChannels;
+			subOutSignal = _OutSig_EarObject(process->subProcessList[i]);
+			subOutSignal->offset = 0;
+			subOutSignal->numChannels = subOutSignal->origNumChannels;
 		}
 	}
 
@@ -539,7 +542,7 @@ RunThreadedProc::ExecuteMultiThreadChain(DatumPtr start)
 		pc = start;
 		SetThreadDistribution(1);
 	} else
-		SetThreadDistribution(pc->data->outSignal->numChannels);
+		SetThreadDistribution(_OutSig_EarObject(pc->data)->numChannels);
 #	if DEBUG
 	printf("%s: Debug: numThreads = %d for %s\n", funcName, numThreads,
 	  start->label);

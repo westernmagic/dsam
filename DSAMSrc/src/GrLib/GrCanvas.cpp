@@ -136,6 +136,10 @@ MyCanvas::~MyCanvas(void)
 		memDC.SelectObject(wxNullBitmap);
 		delete memBmp;
 	}
+	delete labelFont;
+	delete superLabelFont;
+	delete insetLabelFont;
+	delete axisTitleFont;
 
 }
 
@@ -265,7 +269,7 @@ MyCanvas::InitGraph(void)
 void
 MyCanvas::InitData(EarObjectPtr data)
 {
-	SignalDataPtr signal = data->outSignal;
+	SignalDataPtr signal = _OutSig_EarObject(data);
 
 	if (mySignalDispPtr->autoXScale) {
 		offset = 0;
@@ -278,9 +282,10 @@ MyCanvas::InitData(EarObjectPtr data)
 	}
 		
 	timeIndex = _WorldTime_EarObject(data);
-	dt = data->outSignal->dt;
-	signalLines.Set(data->outSignal, offset, chanLength);
-	summaryLine.Set(mySignalDispPtr->summary->outSignal, offset, chanLength);
+	dt = signal->dt;
+	signalLines.Set(signal, offset, chanLength);
+	summaryLine.Set(_OutSig_EarObject(mySignalDispPtr->summary), offset,
+	  chanLength);
 	if (xTitle.compare(mySignalDispPtr->xAxisTitle) != 0)
 		xTitle =  mySignalDispPtr->xAxisTitle;
 	if (yTitle.compare(mySignalDispPtr->yAxisTitle) != 0)

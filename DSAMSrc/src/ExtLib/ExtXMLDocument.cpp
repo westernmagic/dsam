@@ -620,8 +620,8 @@ DSAMXMLDocument::GetApplicationInfo(void)
 		return;
 	appName = wxConvUTF8.cMB2WX(appElement->Attribute(DSAM_XML_NAME_ATTRIBUTE));
 	if (appName.compare((wxChar *) GetPtr_AppInterface()->appName) != 0) {
-		NotifyWarning(wxT("%s: Invalid application '%s', element ignored."),
-		  funcName, appName.c_str());
+		/*NotifyWarning(wxT("%s: Invalid application '%s', element ignored."),
+		  funcName, appName.c_str());*/
 		return;
 	}
 	appVersion = wxConvUTF8.cMB2WX(appElement->Attribute(

@@ -83,21 +83,23 @@ EarObjectPtr
 ProcThread::ConfigProcess(EarObjectPtr theDataPtr)
 {
 	int		i;
-	EarObjectPtr	process, subProcess;
+	EarObjectPtr	process;
+	SignalDataPtr	outSignal, subOutSignal;
 
 	if (!theDataPtr->localOutSignalFlag)
 		return(theDataPtr);
 	process = (index)? &theDataPtr->threadProcs[index - 1]: theDataPtr;
+	outSignal = _OutSig_EarObject(process);
 #	ifdef DEBUG
 	printf("ProcThread::ConfigProcess: outsignal %lx, index = %d\n",
-	  (unsigned long) process->outSignal, index);
+	  (unsigned long) outSignal, index);
 #	endif
-	process->outSignal->offset = offset;
-	process->outSignal->numChannels = offset + numChannels;
+	outSignal->offset = offset;
+	outSignal->numChannels = offset + numChannels;
 	for (i = 0; i < theDataPtr->numSubProcesses; i++) {
-		subProcess = process->subProcessList[i];
-		subProcess->outSignal->offset = process->outSignal->offset;
-		subProcess->outSignal->numChannels = process->outSignal->numChannels;
+		subOutSignal = _OutSig_EarObject(process->subProcessList[i]);
+		subOutSignal->offset = outSignal->offset;
+		subOutSignal->numChannels = outSignal->numChannels;
 	}
 	return(process);
 

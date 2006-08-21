@@ -76,14 +76,16 @@ SingleProcThread::Entry()
 {
 #	if DEBUG
 	static const char *funcName = "SingleProcThread::Entry";
+	SignalDataPtr outSignal = _OutSig_EarObject(process);
 	printf("%s: Debug: Entered\n", funcName);
-	printf("%s: Debug: Running with channels %d -> %d.\n", funcName,
-	  process->outSignal->offset, process->outSignal->numChannels - 1);
+	printf("%s: Debug: Running with channels %d -> %d.\n", funcName, outSignal->
+	  offset, outSignal->numChannels - 1);
 	if (process->subProcessList) {
+		SignalDataPtr subOutSignal = _OutSig_EarObject(process->subProcessList[
+		  0]);
 		printf("%s: Debug: subProcess [%lx], offset = %d, numChannels = %d\n",
-		  funcName, (unsigned long) process->subProcessList[0], process->
-		  subProcessList[0]->outSignal->offset, process->subProcessList[0]->
-		  outSignal->numChannels);
+		  funcName, (unsigned long) process->subProcessList[0], subOutSignal->
+		  offset, subOutSignal->numChannels);
 	}
 	clock_t	processStart = clock();
 	printf("%s: Debug: T[%d]: Starting main process at %g s\n", funcName,

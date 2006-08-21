@@ -253,7 +253,7 @@ IPCUtils::RunOutProcess(void)
 	BOOLN	oldSegmentedMode = GetDSAMPtr_Common()->segmentedMode;
 
 	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
-	  outProcessSupplier->outSignal, 0L))) {
+	  _OutSig_EarObject(outProcessSupplier), 0L))) {
 		NotifyError(wxT("%s: Could not prepare output data buffer."), funcName);
 		return(false);
 	}

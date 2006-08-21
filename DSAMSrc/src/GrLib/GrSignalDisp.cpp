@@ -1697,11 +1697,10 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_SignalDisp");
 	double	definedDuration;
-	SignalDataPtr	signal, buffer;
+	SignalDataPtr	signal = _OutSig_EarObject(data), buffer;
 	
 	if (signalDispPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		signal = data->outSignal;
 		if (signalDispPtr->autoXScale)
 			definedDuration = -1.0;
 		else
@@ -1722,8 +1721,8 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 			}
 			ConnectOutSignalToIn_EarObject(data, signalDispPtr->summary);
 			if ((definedDuration > _GetDuration_SignalData(signal)) ||
-			  (signal->numWindowFrames !=
-			  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES)) {
+			  (!signal->staticTimeFlag && (signal->
+			  numWindowFrames != SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES))) {
 				if ((signalDispPtr->buffer = Init_EarObject(wxT("NULL"))) ==
 				  NULL) {
 					NotifyError(wxT("%s: Out of memory for buffer EarObject."),
@@ -1738,11 +1737,11 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				}
 			}
 			if (signalDispPtr->xAxisTitle[0] == '\0')
-				SetXAxisTitle_SignalDisp(data->outSignal->info.sampleTitle);
+				SetXAxisTitle_SignalDisp(signal->info.sampleTitle);
 			if (signalDispPtr->yAxisTitle[0] == '\0')
-				SetYAxisTitle_SignalDisp(data->outSignal->info.channelTitle);
+				SetYAxisTitle_SignalDisp(signal->info.channelTitle);
 			if (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_AUTO)
-				signalDispPtr->yAxisMode = (data->outSignal->numChannels > 1)?
+				signalDispPtr->yAxisMode = (signal->numChannels > 1)?
 				  GRAPH_Y_AXIS_MODE_CHANNEL: GRAPH_Y_AXIS_MODE_LINEAR_SCALE;
 			signalDispPtr->parList->updateFlag = TRUE;
 			signalDispPtr->updateProcessVariablesFlag = FALSE;
@@ -1757,7 +1756,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 				  funcName);
 				return(FALSE);
 			}
-			buffer = signalDispPtr->buffer->outSignal;
+			buffer = _OutSig_EarObject(signalDispPtr->buffer);
 			SetInterleaveLevel_SignalData(buffer, signal->interleaveLevel);
 			SetNumWindowFrames_SignalData(buffer, signal->numWindowFrames);
 			SetOutputTimeOffset_SignalData(buffer, signal->outputTimeOffset);
@@ -1813,7 +1812,7 @@ ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
 	ChanLen	j, shift, signalLength;
 	SignalDataPtr buffer;
 
-	buffer = bufferEarObj->outSignal;
+	buffer = _OutSig_EarObject(bufferEarObj);
 	signalLength = signal->length / signal->numWindowFrames;
 	if (signalDispPtr->bufferCount + signalLength > buffer->length) {
 		shift = signalLength - (buffer->length - signalDispPtr->bufferCount);
