@@ -155,7 +155,7 @@ AddInSignal_EarObject(EarObjectPtr data)
  */
  
 BOOLN
-DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
+DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
 {
 	static const WChar *funcName = wxT("DelInSignal_EarObject");
 	BOOLN	found = FALSE;
@@ -170,7 +170,7 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal)
 	if (!data->numInSignals)
 		return(TRUE);
 	while (!found && (i < data->numInSignals))
-		found = (_InSig_EarObject(data, i++) == signal);
+		found = (data->inSignal[i++] == signal);
 
 	if (!found) {
 		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject "
@@ -705,7 +705,7 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 		  funcName);
 		return(FALSE);
 	}
-	if (!DelInSignal_EarObject(customer, supplier->outSignal)) {
+	if (!DelInSignal_EarObject(customer, supplier->outSignalPtr)) {
 		NotifyError(wxT("%s: Could not delete input signal for customer "
 		  "(%lu)."), funcName, customer->handle);
 		return(FALSE);

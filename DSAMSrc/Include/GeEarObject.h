@@ -155,7 +155,7 @@ BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
 			
 EarObjRefPtr	CreateEarObjRef_EarObject(EarObjectPtr theObject);		
 			
-BOOLN	DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr signal);
+BOOLN	DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal);
 
 BOOLN	DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 		  EarObjectPtr customer);
