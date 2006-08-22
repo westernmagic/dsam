@@ -222,8 +222,7 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 	DatumPtr	tempToPc = SHAPE_PC(toShape);
 	DatumPtr	tempFromPc = SHAPE_PC(fromShape);
 
-	if (FindNearestProcesses_Utility_Datum(&tempFromPc, &tempToPc) &&
-	  (tempToPc->type == PROCESS) && (tempFromPc->type == PROCESS))
+	if (FindNearestProcesses_Utility_Datum(&tempFromPc, &tempToPc))
 		DisconnectOutSignalFromIn_EarObject(tempFromPc->data, tempToPc->data);
 	DisconnectInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(fromShape),
 	  SHAPE_PC(toShape));
@@ -312,7 +311,8 @@ SDICommand::Do(void)
 			shape->Select(FALSE);
 
 			// Generate commands to explicitly remove each connected line.
-			RemoveLines(shape);
+			if (!shape->IsKindOf(CLASSINFO(wxLineShape)))
+				RemoveLines(shape);
 
 			doc->GetDiagram()->RemoveShape(shape);
 			if (shape->IsKindOf(CLASSINFO(wxLineShape))) {
