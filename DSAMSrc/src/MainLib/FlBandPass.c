@@ -187,8 +187,8 @@ GetUniParListPtr_Filter_BandPass(void)
 		return(FALSE);
 	}
 	if (bandPassFPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bandPassFPtr->parList);
@@ -421,8 +421,8 @@ ReadPars_Filter_BandPass(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_BandPass(cascade, lowerCutOffFrequency,
@@ -513,8 +513,8 @@ InitProcessVariables_Filter_BandPass(EarObjectPtr data)
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 	 	for (i = 0; (i < _OutSig_EarObject(data)->numChannels) && ok; i++)
 			if ((p->coefficients[i] = InitBandPassCoeffs_Filters(p->cascade,
-			  p->lowerCutOffFreq, p->upperCutOffFreq, _InSig_EarObject(data, 0)->dt)) ==
-			  NULL) {
+			  p->lowerCutOffFreq, p->upperCutOffFreq, _InSig_EarObject(data,
+			  0)->dt)) == NULL) {
 				NotifyError(wxT("%s: Failed initialised filter channel %d."),
 				  funcName, i);
 				ok = FALSE;
@@ -589,8 +589,8 @@ RunModel_Filter_BandPass(EarObjectPtr data)
 			return(FALSE);
 		}
 		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
-			NotifyError(wxT("%s: Could not initialise the process output "
-			  "signal."), funcName);
+			NotifyError(wxT("%s: Could not initialise the process output ")
+			  wxT("signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_BandPass(data)) {

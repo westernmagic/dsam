@@ -138,8 +138,8 @@ SDIXMLDocument::GetClassInfo(TiXmlElement *shapeElement)
 	}
 	wxClassInfo *classInfo = wxClassInfo::FindClass(type);
 	if (!classInfo) {
-		XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class for "
-		  "'%s' shape type"), funcName, type.c_str());
+		XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class for ")
+		  wxT("'%s' shape type"), funcName, type.c_str());
 		diagram->SetOk(false);
 		return(NULL);
 	}
@@ -158,8 +158,8 @@ SDIXMLDocument::CreateLoadShape(TiXmlElement *myElement, DatumPtr pc)
 
 	wxClassInfo *classInfo = GetClassInfo(myElement);
 	if (!classInfo) {
-		XMLNotifyWarning(myElement, wxT("%s: Could not identify class for "
-		  "shape type"), funcName);
+		XMLNotifyWarning(myElement, wxT("%s: Could not identify class for ")
+		  wxT("shape type"), funcName);
 		diagram->SetOk(false);
 		return(NULL);
 	}
@@ -242,8 +242,8 @@ SDIXMLDocument::GetLineShapeInfo(TiXmlNode *parent)
 		shapeElement = node->ToElement();
 		wxClassInfo *classInfo = GetClassInfo(shapeElement);
 		if (!classInfo) {
-			XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class "
-			  "for '%s' shape type"), funcName, type);
+			XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class ")
+			  wxT("for '%s' shape type"), funcName, type);
 			diagram->SetOk(false);
 			return;
 		}

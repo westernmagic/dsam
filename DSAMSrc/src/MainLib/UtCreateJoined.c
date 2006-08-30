@@ -92,11 +92,12 @@ CheckData_Utility_CreateJoined(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	for (i = 0; i < data->numInSignals; i++) {
-		if ((i != 0) && ((_InSig_EarObject(data, 0)->dt != _InSig_EarObject(data, i)->dt) ||
-		  (_InSig_EarObject(data, 0)->numChannels != _InSig_EarObject(data, i)->numChannels))) {
-			NotifyError(wxT("%s: All signals must of the same number of "
-			  "channels\nand sampling Interval (signal %d is different).\n"),
-			  funcName, i);
+		if ((i != 0) && ((_InSig_EarObject(data, 0)->dt != _InSig_EarObject(
+		  data, i)->dt) || (_InSig_EarObject(data, 0)->numChannels !=
+		  _InSig_EarObject(data, i)->numChannels))) {
+			NotifyError(wxT("%s: All signals must of the same number of ")
+			  wxT("channels\nand sampling Interval (signal %d is different).")
+			  wxT("\n"), funcName, i);
 			return(FALSE);
 		}
 	}
@@ -134,12 +135,12 @@ Process_Utility_CreateJoined(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Create Joined Utility module "
-		  "process"));
+		SetProcessName_EarObject(data, wxT("Create Joined Utility module ")
+		  wxT("process"));
 		for (i = 0, joinedLength = 0; i < data->numInSignals; i++)
 			joinedLength += _InSig_EarObject(data, i)->length;
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  joinedLength, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, joinedLength, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);

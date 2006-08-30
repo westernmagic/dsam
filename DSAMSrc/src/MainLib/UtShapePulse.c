@@ -170,8 +170,8 @@ GetUniParListPtr_Utility_ShapePulse(void)
 		return(FALSE);
 	}
 	if (shapePulsePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(shapePulsePtr->parList);
@@ -380,8 +380,8 @@ ReadPars_Utility_ShapePulse(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_ShapePulse(eventThreshold, pulseDuration,
@@ -440,7 +440,8 @@ ResetProcess_Utility_ShapePulse(EarObjectPtr data)
 
 	ResetOutSignal_EarObject(data);
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->numChannels; i++)
+		for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->
+		  numChannels; i++)
 			shapePulsePtr->remainingPulseTime[i] = 0.0;
 	}
 
@@ -540,9 +541,10 @@ CheckData_Utility_ShapePulse(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (shapePulsePtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
-		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName,
-		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(shapePulsePtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
+		  wxT("interval, %g ms (%g ms)\n"), funcName,
+		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(shapePulsePtr->
+		    pulseDuration));
 		return(FALSE);
 	}
 	/*** Put additional checks here. ***/
@@ -585,8 +587,9 @@ Process_Utility_ShapePulse(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Shape Pulse Utility Process"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);

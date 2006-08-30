@@ -197,8 +197,8 @@ GetUniParListPtr_Utility_Compression(void)
 		return(FALSE);
 	}
 	if (compressionPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(compressionPtr->parList);
@@ -467,8 +467,8 @@ ReadPars_Utility_Compression(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Compression(mode, signalMultiplier, powerExponent,
@@ -596,8 +596,9 @@ Process_Utility_Compression(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Compression Utility Module"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);

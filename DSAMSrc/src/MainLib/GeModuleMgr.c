@@ -87,8 +87,8 @@ NoFunction_ModuleMgr(void)
 {
 	static const WChar *funcName = wxT("NoFunction_ModuleMgr");
 
-	NotifyError(wxT("%s: Attempted to use a function which does not\nexist for "
-	  "module."), funcName );
+	NotifyError(wxT("%s: Attempted to use a function which does not\nexist for ")
+	  wxT("module."), funcName );
 	return(NULL);
 
 }
@@ -708,8 +708,8 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 		if (*failedParName)
 			NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
 			  funcName, failedParName, data->module->name);
-		NotifyError(wxT("%s: Invalid parameters, in %s module parameter "
-		  "file '%s'."), funcName, data->module->name, fileName);
+		NotifyError(wxT("%s: Invalid parameters, in %s module parameter ")
+		  wxT("file '%s'."), funcName, data->module->name, fileName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -732,8 +732,8 @@ PrintSimParFile_ModuleMgr(EarObjectPtr data)
 		return(FALSE);
 	SET_PARS_POINTER(data);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError(wxT("%s: This function can only be used with a "
-		  "simulation."), funcName);
+		NotifyError(wxT("%s: This function can only be used with a ")
+		  wxT("simulation."), funcName);
 		return(FALSE);
 	}
 	return(PrintSimParFile_Utility_SimScript());
@@ -811,8 +811,8 @@ GetSimFileType_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(FALSE);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError(wxT("%s: This function can only be used with a "
-		  "simulation."), funcName);
+		NotifyError(wxT("%s: This function can only be used with a ")
+		  wxT("simulation."), funcName);
 		return(FALSE);
 	}
 	return((int) ((SimScriptPtr) data->module->parsPtr)->simFileType);
@@ -836,8 +836,8 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
 	if (!CheckData_ModuleMgr(data, funcName))
 		return(NULL);
 	if (data->module->specifier != SIMSCRIPT_MODULE) {
-		NotifyError(wxT("%s: This function can only be used with a "
-		  "simulation."), funcName);
+		NotifyError(wxT("%s: This function can only be used with a ")
+		  wxT("simulation."), funcName);
 		return(NULL);
 	}
 	return(((SimScriptPtr) data->module->parsPtr)->parsFilePath);
@@ -923,8 +923,8 @@ SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value)
 		UniParListPtr	parList = (* data->module->GetUniParListPtr)();
 		if ((par = FindUniPar_UniParMgr(&parList, parName,
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			NotifyError(wxT("%s: Could not find parameter '%s' for process "
-			  "'%s'"), funcName, parName, data->module->name);
+			NotifyError(wxT("%s: Could not find parameter '%s' for process ")
+			  wxT("'%s'"), funcName, parName, data->module->name);
 			return(FALSE);
 		}
 		return(SetParValue_UniParMgr(&parList, par->index, value));

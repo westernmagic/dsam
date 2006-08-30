@@ -244,8 +244,8 @@ SetUniParList_Analysis_Histogram(void)
 	  &histogramPtr->eventThreshold, NULL,
 	  (void * (*)) SetEventThreshold_Analysis_Histogram);
 	SetPar_UniParMgr(&pars[ANALYSIS_HISTOGRAM_BINWIDTH], wxT("BIN_WIDTH"),
-	  wxT("Histogram Bin width (-ve: previous signal dt, zero: one bin = input "
-	  " signal length) (s)."),
+	  wxT("Histogram Bin width (-ve: previous signal dt, zero: one bin = input ")
+	    wxT(" signal length) (s)."),
 	  UNIPAR_REAL,
 	  &histogramPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Analysis_Histogram);
@@ -280,8 +280,8 @@ GetUniParListPtr_Analysis_Histogram(void)
 		return(FALSE);
 	}
 	if (histogramPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(histogramPtr->parList);
@@ -550,8 +550,8 @@ CheckPars_Analysis_Histogram(void)
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
 		if ((histogramPtr->period > 0.0) && (histogramPtr->binWidth >
 		  histogramPtr->period)) {
-			NotifyError(wxT("%s: The bin width is too small for the period "
-			  "value (%g ms & %g ms respectively)."), funcName,
+			NotifyError(wxT("%s: The bin width is too small for the period ")
+			  wxT("value (%g ms & %g ms respectively)."), funcName,
 			  MSEC(histogramPtr->binWidth), MSEC(histogramPtr->period));
 			ok = FALSE;
 		}
@@ -562,8 +562,8 @@ CheckPars_Analysis_Histogram(void)
 	}
 	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) && (histogramPtr->
 	  outputMode == HISTOGRAM_OUTPUT_SPIKE_RATE)) {
-		NotifyError(wxT("%s: The spike rate histogram modes cannot be used in "
-		  "continuous detection mode."), funcName);
+		NotifyError(wxT("%s: The spike rate histogram modes cannot be used in ")
+		  wxT("continuous detection mode."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -663,8 +663,8 @@ ReadPars_Analysis_Histogram(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_Histogram(detectionMode, typeMode, eventThreshold,
@@ -760,16 +760,16 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 	inSignal = _InSig_EarObject(data, 0);
 	if ((histogramPtr->binWidth > 0.0) && (histogramPtr->binWidth < inSignal->
 	  dt)) {
-		NotifyError(wxT("%s: Bin width is too small for sampling interval "
-		  "(%g ms)."), funcName, MSEC(histogramPtr->binWidth));
+		NotifyError(wxT("%s: Bin width is too small for sampling interval ")
+		  wxT("(%g ms)."), funcName, MSEC(histogramPtr->binWidth));
 		return(FALSE);
 	}
 	signalDuration = inSignal->length * inSignal->dt;
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
 		if ((histogramPtr->period > 0.0) && (histogramPtr->period < inSignal->
 		  dt)) {
-			NotifyError(wxT("%s: The period (%g ms) is less than the input "
-			  "signal sampling interval (%g ms)!"), funcName, MILLI(
+			NotifyError(wxT("%s: The period (%g ms) is less than the input ")
+			  wxT("signal sampling interval (%g ms)!"), funcName, MILLI(
 			  histogramPtr->period), MILLI(inSignal->dt));
 			return(FALSE);
 		}
@@ -853,14 +853,14 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_Histogram();
 			if ((p->dataBuffer = Init_EarObject(wxT("NULL"))) == NULL) {
-				NotifyError(wxT("%s: Could not initialise data buffer "
-				  "EarObject"), funcName);
+				NotifyError(wxT("%s: Could not initialise data buffer ")
+				  wxT("EarObject"), funcName);
 				return(FALSE);
 			}
 			if (!InitSubProcessList_EarObject(data,
 			  ANALYSIS_HISTOGRAM_NUM_SUB_PROCESSES)) {
-				NotifyError(wxT("%s: Could not initialise %d sub-process list "
-				  "for process."), funcName,
+				NotifyError(wxT("%s: Could not initialise %d sub-process list ")
+				  wxT("for process."), funcName,
 				  ANALYSIS_HISTOGRAM_NUM_SUB_PROCESSES);
 				return(FALSE);
 			}
@@ -902,8 +902,8 @@ InitProcessVariables_Analysis_Histogram(EarObjectPtr data)
 			if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(
 			  data)->numChannels, bufferLength, _InSig_EarObject(data, 0)->
 			  dt)) {
-				NotifyError(wxT("%s: Cannot initialise channels for PH "
-				  "Buffer."), funcName);
+				NotifyError(wxT("%s: Cannot initialise channels for PH ")
+				  wxT("Buffer."), funcName);
 				return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;

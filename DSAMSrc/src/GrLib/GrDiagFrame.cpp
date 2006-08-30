@@ -61,8 +61,8 @@ DiagFrame::DiagFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	scrolledWindow->SetScrollbars( 10, 10, 50, 50 );
 	// Make text window for diagnostics
 
-	diagnosticsText = new wxTextCtrl(this, wxID_ANY, wxT("DSAM Diagnostics "
-	  "Window\n"), wxPoint(0,0), wxSize(100,100), wxTE_MULTILINE);
+	diagnosticsText = new wxTextCtrl(this, wxID_ANY, wxT("DSAM Diagnostics ")
+	  wxT("Window\n"), wxPoint(0,0), wxSize(100,100), wxTE_MULTILINE);
 	diagnosticsText->SetFont(*diagnosticsWindowFont);
 	wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
 	topSizer->Add(scrolledWindow, 1, wxEXPAND);

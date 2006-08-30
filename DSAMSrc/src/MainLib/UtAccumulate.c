@@ -105,8 +105,8 @@ CheckData_Utility_Accumulate(EarObjectPtr data)
 	for (i = 1; ok && (i < data->numInSignals); i++)
 		if (!SameType_SignalData_NoDiagnostics(_InSig_EarObject(data, 0),
 		  _InSig_EarObject(data, i))) {
-			NotifyError(wxT("%s: Input signal [%d] is not the same as the "
-			  "first [0]."), funcName, i);
+			NotifyError(wxT("%s: Input signal [%d] is not the same as the ")
+			  wxT("first [0]."), funcName, i);
 			ok = FALSE;
 		}
 	if (!ok)

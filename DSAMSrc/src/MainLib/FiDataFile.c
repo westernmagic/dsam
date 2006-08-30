@@ -140,8 +140,8 @@ GetDuration_DataFile(void)
 		duration = -1.0;
 	} /* switch */
 	if (duration < 0.0)
-		NotifyError(wxT("%s: Could not calculate the total duration of the "
-		  "signal for '%s'"), funcName, dataFilePtr->name);
+		NotifyError(wxT("%s: Could not calculate the total duration of the ")
+		  wxT("signal for '%s'"), funcName, dataFilePtr->name);
 	return(duration);
 
 }
@@ -326,8 +326,8 @@ GetUniParListPtr_DataFile(void)
 		return(FALSE);
 	}
 	if (dataFilePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(dataFilePtr->parList);
@@ -908,8 +908,8 @@ CheckPars_DataFile(void)
 	if ((dataFilePtr->type == RAW_DATA_FILE) || (dataFilePtr->type ==
 	  ASCII_DATA_FILE)) {
 		if (dataFilePtr->numChannels < 1) {
-			NotifyError(wxT("%s: Number of channels parameter incorrectly "
-			  "set."), funcName);
+			NotifyError(wxT("%s: Number of channels parameter incorrectly ")
+			  wxT("set."), funcName);
 			ok = FALSE;
 		}
 	}
@@ -938,8 +938,8 @@ CheckParsRead_DataFile(void)
 	  ASCII_DATA_FILE)) {
 		if ((dataFilePtr->name[0] == STDIN_STDOUT_FILE_DIRN) &&
 		  (dataFilePtr->duration <= 0.0)) {
-			NotifyError(wxT("%s: Duration must be set, i.e.greater than zero"
-			  ",\nfor pipes (%g s)."), funcName, dataFilePtr->duration);
+			NotifyError(wxT("%s: Duration must be set, i.e.greater than zero")
+			  wxT(",\nfor pipes (%g s)."), funcName, dataFilePtr->duration);
 			ok = FALSE;
 		}
 	}
@@ -1074,8 +1074,8 @@ ReadPars_DataFile(WChar *parFileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, parFilePath);
+		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, parFilePath);
 		return(FALSE);
 	}
 	if (!SetPars_DataFile(fileName, wordSize, endian, numChannels,
@@ -1171,8 +1171,8 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 		FreeProcessVariables_DataFile();
 		if ((dataFilePtr->timeOffsetIndex = (ChanLen) floor(
 		  dataFilePtr->timeOffset * sampleRate + 0.5)) >= length) {
-			NotifyError(wxT("%s: Time offset (%g ms) must be shorter than "
-			  "signal."), funcName, MILLI(dataFilePtr->timeOffset));
+			NotifyError(wxT("%s: Time offset (%g ms) must be shorter than ")
+			  wxT("signal."), funcName, MILLI(dataFilePtr->timeOffset));
 			return(FALSE);
 		}
 		dataFilePtr->timeOffsetCount = dataFilePtr->timeOffsetIndex;

@@ -191,8 +191,8 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 	DatumPtr	fromPc = SHAPE_PC(fromShape);
 
 	if (!fromPc || !toPc) {
-		wxLogError(wxT("%s: Both processes must be set before a connection\n"
-		  "can be made."), funcName);
+		wxLogError(wxT("%s: Both processes must be set before a connection\n")
+		  wxT("can be made."), funcName);
 		return(false);
 	}
 

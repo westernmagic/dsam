@@ -164,8 +164,8 @@ GetUniParListPtr_Utility_RefractoryAdjust(void)
 		return(FALSE);
 	}
 	if (refractAdjPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(refractAdjPtr->parList);
@@ -306,8 +306,8 @@ ReadPars_Utility_RefractoryAdjust(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_RefractoryAdjust(refractoryPeriod)) {
@@ -400,9 +400,9 @@ CheckData_Utility_RefractoryAdjust(EarObjectPtr data)
 		return(FALSE);
 	inSignal = _InSig_EarObject(data, 0);
 	if (refractAdjPtr->refractoryPeriod >= _GetDuration_SignalData(inSignal)) {
-		NotifyError(wxT("%s: Refractory period (%g ms) is too long for signal "
-		  "length (%g ms)."), funcName, MSEC(refractAdjPtr->refractoryPeriod),
-		  MSEC(_GetDuration_SignalData(inSignal)));
+		NotifyError(wxT("%s: Refractory period (%g ms) is too long for signal ")
+		  wxT("length (%g ms)."), funcName, MSEC(refractAdjPtr->
+		  refractoryPeriod), MSEC(_GetDuration_SignalData(inSignal)));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -440,8 +440,8 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 			for (i = 0; i < p->numChannels; i++)
 				if ((p->lastOutput[i] = (double *) calloc(p->
 				  refractoryPeriodIndex, sizeof(double))) == NULL) {
-					NotifyError(wxT("%s: Out of memory for 'lastOutput "
-					  "arrays'."), funcName);
+					NotifyError(wxT("%s: Out of memory for 'lastOutput ")
+					  wxT("arrays'."), funcName);
 					for (j = 0; j < i - 1; j++)
 						free(p->lastOutput[j]);
 					free(p->lastOutput);
@@ -511,8 +511,8 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Meddis 91 AN Refractory Adustment "
-		  "Process"));
+		SetProcessName_EarObject(data, wxT("Meddis 91 AN Refractory Adustment ")
+		  wxT("Process"));
 		if (!InitOutTypeFromInSignal_EarObject(data, 0)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);

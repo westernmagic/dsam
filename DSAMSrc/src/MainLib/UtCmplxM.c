@@ -38,7 +38,7 @@
 #include "GeCommon.h"
 #include "UtCmplxM.h"
 
-/*-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 
 /*
  * Complex multiply c = a * b
@@ -55,10 +55,12 @@ Mult_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 	(*c).im = SumIm;
 }
 
-/*-------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
+
+/* Complex divide c = a/b */
 
 BOOLN
-Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c) /* Complex divide c = a/b */
+Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
 	Complex Num;
 	double Denom;
@@ -80,7 +82,7 @@ Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c) /* Complex divide c = a/b *
 	return(div_succs); /* return whether divide happened or not */
 }
 
-/*------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 
 /* Complex addition c = a + b */
 
@@ -95,9 +97,11 @@ Add_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 	(*c).im = SumIm;
 }
 
-/*----------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 
-void Subt_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c) /* Complex subtraction c = a - b */
+/* Complex subtraction c = a - b */
+
+void Subt_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
 	double SumRe,SumIm;
 	

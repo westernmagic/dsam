@@ -186,8 +186,8 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 		B0 = *splane; B1 = *(splane+1); B2 = *(splane+2); /* general 2 pole */
 	}
 	if (DBL_GREATER(f3dB / fs, 0.5)) {
-		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms."), funcName, MSEC(0.5 / f3dB));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = ")
+		  wxT("%g ms."), funcName, MSEC(0.5 / f3dB));
 		return(NULL);
 	}
 	C = 1.0 / tan(Pi * f3dB / fs); /* true bilinear transform eq 7-8, p172 */
@@ -603,15 +603,15 @@ InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
 		return(NULL);
 	}
 	if ((p = (BandPassCoeffsPtr) malloc(sizeof(BandPassCoeffs))) == NULL) {
-		NotifyError(wxT("%s: Cannot allocate memory for band pass filter "
-		  "coefficients."), funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for band pass filter ")
+		  wxT("coefficients."), funcName);
 		return(NULL);
 	}
 
 	if (DBL_GREATER(dt * frequencyDiff, 0.5)) {
-		NotifyError(wxT("%s: Sampling interval, dt = %g ms is too low for the\n"
-		  "filter specification (largest, dt = %g ms."), funcName, MSEC(dt),
-		  MSEC(0.5 / frequencyDiff));
+		NotifyError(wxT("%s: Sampling interval, dt = %g ms is too low for ")
+		  wxT("the\nfilter specification (largest, dt = %g ms."), funcName,
+		  MSEC(dt), MSEC(0.5 / frequencyDiff));
 		free(p);
 		return(NULL);
 	}
@@ -728,8 +728,8 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 	}
 	sqrt2 = sqrt(2.0);
 	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
-		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = ")
+		  wxT("%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;
@@ -836,8 +836,8 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 	ContButt1CoeffsPtr	p;
 
 	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
-		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = "
-		  "%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
+		NotifyError(wxT("%s: Maximum sampling for filter specification, dt = ")
+		  wxT("%g ms."), funcName, MSEC(0.5 / cutOffFrequency));
 		return(NULL);
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;

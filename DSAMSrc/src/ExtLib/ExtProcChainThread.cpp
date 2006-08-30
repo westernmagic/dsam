@@ -72,8 +72,8 @@ ProcChainThread::ProcChainThread(int theIndex, int offset, int numChannels,
 	for (pc = simulation; pc != simulation->passedThreadEnd; pc = pc->next) {
 		if (pc->type == PROCESS) {
 #			if DEBUG
-			printf("ProcChainThread::ProcChainThread: Debug: Process '%s' "
-			  "listed: Main outsignal = %lx.\n", pc->label, (unsigned long)
+			printf("ProcChainThread::ProcChainThread: Debug: Process '%s' ")
+			  wxT("listed: Main outsignal = %lx.\n", pc->label, (unsigned long)
 			  _OutSig_EarObject(pc->data));
 #			endif
 			ConfigProcess(pc->data);

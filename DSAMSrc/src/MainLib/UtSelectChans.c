@@ -201,8 +201,8 @@ SetUniParList_Utility_SelectChannels(void)
 	  (void * (*)) SetMode_Utility_SelectChannels);
 	SetPar_UniParMgr(&pars[UTILITY_SELECTCHANNELS_SELECTIONMODE],
 	  wxT("SELECTION_MODE"),
-	  wxT("Channel selection mode ('all', 'middle', 'lowest', 'highest' or "
-	    "'user'."),
+	  wxT("Channel selection mode ('all', 'middle', 'lowest', 'highest' or ")
+	  wxT("'user'."),
 	  UNIPAR_NAME_SPEC,
 	  &selectChanPtr->selectionMode, selectChanPtr->selectionModeList,
 	  (void * (*)) SetSelectionMode_Utility_SelectChannels);
@@ -258,8 +258,8 @@ GetUniParListPtr_Utility_SelectChannels(void)
 		return(FALSE);
 	}
 	if (selectChanPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(selectChanPtr->parList);
@@ -416,8 +416,8 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
         return(FALSE);
     }
     if (!AllocNumChannels_Utility_SelectChannels(theNumChannels)) {
-        NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' "
-		  "arrays."), funcName);
+        NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' ")
+		  wxT("arrays."), funcName);
         return(FALSE);
     }
     /*** Put any other required checks here. ***/
@@ -471,13 +471,13 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 	}
 	if (selectChanPtr->selectionMode !=
 	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) {
-		NotifyError(wxT("%s: Channels can only be selected in 'user' selection "
-		  "mode."), funcName);
+		NotifyError(wxT("%s: Channels can only be selected in 'user' ")
+		  wxT("selection mode."), funcName);
 		return(FALSE);
 	}
 	if (theSelection < 0.0) {
-		NotifyError(wxT("%s: The selection values must be greater than zero "
-		  "('%g'"), funcName, theSelection);
+		NotifyError(wxT("%s: The selection values must be greater than zero ")
+		  wxT("('%g'"), funcName, theSelection);
 		return(FALSE);
 	}
 	if ((theIndex > selectChanPtr->numChannels - 1) &&
@@ -594,8 +594,8 @@ ReadPars_Utility_SelectChannels(WChar *fileName)
 	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
 		ok = FALSE;
 	if (!AllocNumChannels_Utility_SelectChannels(numChannels)) {
-		NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < selectChanPtr->numChannels; i++)
@@ -604,8 +604,8 @@ ReadPars_Utility_SelectChannels(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_USER;
@@ -700,10 +700,10 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 	numInChans = _InSig_EarObject(data, 0)->numChannels / _InSig_EarObject(data,
 	  0)->interleaveLevel;
 	if (selectChanPtr->numChannels > numInChans) {
-		NotifyError(wxT("%s: The specified channel field (%d) is greater than\n"
-		  "as the input signal channels (%d, interleave level %d)."), funcName,
-		  selectChanPtr->numChannels, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->interleaveLevel);
+		NotifyError(wxT("%s: The specified channel field (%d) is greater ")
+		  wxT("than\nas the input signal channels (%d, interleave level %d)."),
+		  funcName, selectChanPtr->numChannels, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->interleaveLevel);
 			return(FALSE);
 	}
 	return(TRUE);
@@ -797,8 +797,8 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Select Channels Utility Module "
-		  "process"));
+		SetProcessName_EarObject(data, wxT("Select Channels Utility Module ")
+		  wxT("process"));
 		if (!InitProcessVariables_Utility_SelectChannels(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);

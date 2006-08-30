@@ -185,8 +185,8 @@ GetUniParListPtr_ANSpikeGen_Simple(void)
 		return(FALSE);
 	}
 	if (simpleSGPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(simpleSGPtr->parList);
@@ -394,8 +394,8 @@ CheckPars_ANSpikeGen_Simple(void)
 		ok = FALSE;
 	}
 	if (simpleSGPtr->pulseDuration >= simpleSGPtr->refractoryPeriod) {
-		NotifyError(wxT("%s: Pulse duration must be smaller than the\n"
-		  "refractory period, %g ms (%g ms)."), funcName, MSEC(
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
+		  wxT("refractory period, %g ms (%g ms)."), funcName, MSEC(
 		  simpleSGPtr->refractoryPeriod), MSEC(simpleSGPtr->pulseDuration));
 		ok = FALSE;
 	}
@@ -470,8 +470,8 @@ ReadPars_ANSpikeGen_Simple(WChar *fileName)
 	fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_ANSpikeGen_Simple(ranSeed, numFibres, pulseDuration,
@@ -618,8 +618,8 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 			}
 			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
 			  sizeof(double*))) == NULL) {
-			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime "
-				  "pointer array."), funcName);
+			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
+				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
@@ -631,8 +631,8 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 				}
 				if ((p->remainingPulseTime[i] = (double *) calloc(p->
 				  arrayLength, sizeof(double))) == NULL) {
-			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime "
-					  "array."), funcName);
+			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
+					  wxT("array."), funcName);
 			 		return(FALSE);
 				}
 			}
@@ -700,10 +700,9 @@ CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (simpleSGPtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
-		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(data,
-		  0)->dt),
-		  MSEC(simpleSGPtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
+		  wxT("interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(
+		  data, 0)->dt), MSEC(simpleSGPtr->pulseDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -736,8 +735,8 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike "
-		  "Firing"));
+		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike ")
+		  wxT("Firing"));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
 		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
 		  0)->dt)) {

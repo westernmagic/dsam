@@ -140,7 +140,8 @@ ReadFile_Raw(WChar *fileName, EarObjectPtr data)
 	numSamples = dataFilePtr->numChannels * length;
 	for (i = 0, index = 0; i < numSamples; i++) {
 		chan = i % dataFilePtr->numChannels;
-		*(_OutSig_EarObject(data)->channel[chan] + index) = ReadSample_DataFile(fp);
+		*(_OutSig_EarObject(data)->channel[chan] + index) = ReadSample_DataFile(
+		  fp);
 		if (chan == endChan)
 			index++;
 	}
@@ -171,8 +172,8 @@ GetDuration_Raw(WChar *fileName)
 		return(-1.0);
 	}
 	if (fp == stdin) {
-		NotifyError(wxT("%s: Reading from stdin disables this function for "
-		  "this format."), funcName);
+		NotifyError(wxT("%s: Reading from stdin disables this function for ")
+		  wxT("this format."), funcName);
 		CloseFile(fp);
 		return(-1.0);
 	}

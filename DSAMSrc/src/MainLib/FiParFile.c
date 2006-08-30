@@ -84,8 +84,8 @@ CheckInit_ParFile(void)
 	static const WChar *funcName = wxT("CheckInit_ParFile");
 
 	if (parFile == NULL) {
-		NotifyError(wxT("%s: General parameter file routines module not "
-		  "initialised."), funcName);
+		NotifyError(wxT("%s: General parameter file routines module not ")
+		  wxT("initialised."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -268,8 +268,8 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 		if (GetLine_ParFile(line, LONG_STRING, fp) == NULL) {
 			c = (parFile->parLineCount > 1)? 's': ' ';
 			if (parFile->emptyLineMessageFlag)
-				NotifyError(wxT("%s: Premature end of parameter file!  Only %d "
-				  "line%c read."), funcName, parFile->parLineCount, c);
+				NotifyError(wxT("%s: Premature end of parameter file!  Only ")
+				  wxT("%d line%c read."), funcName, parFile->parLineCount, c);
 			return(FALSE);
 		}
 	} while(CommentOrBlankLine_ParFile(line));

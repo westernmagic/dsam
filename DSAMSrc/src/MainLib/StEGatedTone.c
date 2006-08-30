@@ -256,8 +256,8 @@ GetUniParListPtr_Stimulus_ExpGatedTone(void)
 		return(FALSE);
 	}
 	if (eGatedTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(eGatedTonePtr->parList);
@@ -747,8 +747,8 @@ ReadPars_Stimulus_ExpGatedTone(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Stimulus_ExpGatedTone(typeMode, floorMode, carrierFrequency,
@@ -798,7 +798,8 @@ InitModule_Stimulus_ExpGatedTone(ModulePtr theModule)
 		return(FALSE);
 	}
 	if (!Init_Stimulus_ExpGatedTone(GLOBAL)) {
-		NotifyError(wxT("%s: Could not initialise process structure."), funcName);
+		NotifyError(wxT("%s: Could not initialise process structure."),
+		  funcName);
 		return(FALSE);
 	}
 	theModule->parsPtr = eGatedTonePtr;
@@ -844,8 +845,8 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 		}
 		if (!CheckPars_Stimulus_ExpGatedTone())
 			return(FALSE);
-		SetProcessName_EarObject(data, wxT("Exponentially Gated Pure Tone"
-		  " Module Process"));
+		SetProcessName_EarObject(data, wxT("Exponentially Gated Pure Tone")
+		  wxT(" Module Process"));
 		if ( !InitOutSignal_EarObject(data, EGATED_TONE_NUM_CHANNELS,
 		  (ChanLen) floor(p->duration / p->dt + 0.5), p->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
@@ -862,8 +863,8 @@ GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data)
 		p->nextCycle = cyclePeriod;
 	}
 	outPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++,
-	  outPtr++) {
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length;
+	  i++, t++, outPtr++) {
 		time = t * p->dt;
 	  	if (time < p->beginPeriodDuration) {
 			*outPtr = 0.0;

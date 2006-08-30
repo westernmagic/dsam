@@ -124,8 +124,8 @@ Process_Utility_ConvMonaural(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Convert binaural -> monaural "
-		  "utility"));
+		SetProcessName_EarObject(data, wxT("Convert binaural -> monaural ")
+		  wxT("utility"));
 		if (!InitOutSignal_EarObject(data, (uShort) (_InSig_EarObject(data, 0)->
 		  numChannels / _InSig_EarObject(data, 0)->interleaveLevel), _InSig_EarObject(data, 0)->
 		  length, _InSig_EarObject(data, 0)->dt)) {

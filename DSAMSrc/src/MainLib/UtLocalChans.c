@@ -197,8 +197,8 @@ GetUniParListPtr_Utility_LocalChans(void)
 		return(FALSE);
 	}
 	if (localChansPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(localChansPtr->parList);
@@ -449,8 +449,8 @@ ReadPars_Utility_LocalChans(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_LocalChans(mode, limitMode, lowerLimit, upperLimit)) {
@@ -598,8 +598,8 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Channel localisation Module "
-		  "process"));
+		SetProcessName_EarObject(data, wxT("Channel localisation Module ")
+		  wxT("process"));
 
 		if (!GetChannelLimits_SignalData(_InSig_EarObject(data, 0), &p->minChan,
 		  &maxChan, p->lowerLimit, p->upperLimit, p->limitMode)) {
@@ -615,11 +615,11 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 		}
 		ResetProcess_Utility_LocalChans(data);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("Averaged channels "
-		  "('%s' mode)"), LimitModeList_SignalData(p->limitMode)->name);
+		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("Averaged channels ")
+		  wxT("('%s' mode)"), LimitModeList_SignalData(p->limitMode)->name);
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->info.
-		  sampleTitle);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), _InSig_EarObject(
+		  data, 0)->info.sampleTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

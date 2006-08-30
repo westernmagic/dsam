@@ -199,8 +199,8 @@ SDIDiagram::DrawSimShapes()
 			pc->clientData = shape;
 			break; }
 		default:
-			wxLogError(wxT("SDIDiagram::DrawSimShapes: datum type %d not "
-			  "implemented.\n"), pc->type);
+			wxLogError(wxT("SDIDiagram::DrawSimShapes: datum type %d not ")
+			  wxT("implemented.\n"), pc->type);
 		} /* switch */
 		pc = pc->next;
 	}
@@ -409,8 +409,8 @@ SDIDiagram::VerifyDiagram(void)
 			wxShape *fromShape = lineShape->GetFrom();
 			wxShape *toShape = lineShape->GetTo();
 			if (!fromShape || !toShape) {
-				NotifyError(wxT("%s: Diagram line is not connected to a valid "
-				  "process."), funcName);
+				NotifyError(wxT("%s: Diagram line is not connected to a valid ")
+				  wxT("process."), funcName);
 				return (false);
 			}
 			if ((SHAPE_PC(fromShape)->type == PROCESS) && (SHAPE_PC(toShape)->
@@ -422,8 +422,8 @@ SDIDiagram::VerifyDiagram(void)
 					 connectionOk = (fromProcess->outSignalPtr == toProcess->
 					   inSignal[i]);
 				if (!connectionOk) {
-					NotifyError(wxT("%s: Diagram line does not correspond to "
-					  "a simulation connection.\n"), funcName);
+					NotifyError(wxT("%s: Diagram line does not correspond to ")
+					  wxT("a simulation connection.\n"), funcName);
 					return(false);
 				}
 			}
@@ -437,8 +437,8 @@ SDIDiagram::VerifyDiagram(void)
 	while (pc) {
 		if (pc->type == PROCESS) {
 			if (!pc->clientData && pc->data) {
-				NotifyError(wxT("%s: Process has no description (step %d, "
-				  "label %s'."), funcName, pc->stepNumber, pc->label);
+				NotifyError(wxT("%s: Process has no description (step %d, ")
+				  wxT("label %s'."), funcName, pc->stepNumber, pc->label);
 				return (false);
 			}
 				numSimConnections += pc->data->numInSignals;
@@ -452,8 +452,8 @@ SDIDiagram::VerifyDiagram(void)
 		pc = pc->next;
 	}
 	if (numDiagConnections != numSimConnections) {
-		NotifyError(wxT("%s: The number of diagram lines (%d) does not "
-		  "correspond\nto the number of simulation connections (%d)."),
+		NotifyError(wxT("%s: The number of diagram lines (%d) does not ")
+		  wxT("correspond\nto the number of simulation connections (%d)."),
 		  funcName, numDiagConnections, numSimConnections);
 		return(false);
 	}

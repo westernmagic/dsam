@@ -261,8 +261,8 @@ SDIFrame::DeleteFromDialogList(ModuleParDialog *dialog)
 	DynaListPtr	p = FindElement_Utility_DynaList(dialogList,
 	  CmpDialogs_SDIFrame, dialog);
 	if (!p)	
-		wxLogError(wxT("SDIFrame::DeleteFromDialogList: Could not find "
-		  "dialog.\n"));	
+		wxLogError(wxT("SDIFrame::DeleteFromDialogList: Could not find ")
+		  wxT("dialog.\n"));	
 	Remove_Utility_DynaList(&dialogList, p);
 
 }
@@ -494,10 +494,10 @@ SDIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 		title.sprintf(wxT("About Application"));
 		dsamVersion = DSAM_VERSION;
 	}
-	message.sprintf(wxT("%s"
-	  "DSAM version: %s (dynamic), compiled with %s\n"
-	  "Author, Dr. Lowel P. O'Mard (with God's support)\n"
-	  "(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n"),
+	message.sprintf(wxT("%s")
+	  wxT("DSAM version: %s (dynamic), compiled with %s\n")
+	  wxT("Author, Dr. Lowel P. O'Mard (with God's support)\n")
+	  wxT("(c) 2001 Centre for the Neural Basis of Hearing (CNBH)\n"),
 	  authors.GetData(), GetDSAMPtr_Common()->version, dsamVersion.
 	  GetData());
 	wxMessageBox(message, title, wxOK | wxICON_INFORMATION, this);

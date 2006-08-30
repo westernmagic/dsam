@@ -146,8 +146,8 @@ SDIEvtHandler::InitInstruction(void)
 		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(wxGetApp().GetGrMainApp(
 		  )->GetSymList(), (wxChar *) label.c_str());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
-			NotifyError(wxT("%s: Could not create '%s' control intruction for "
-			  "process '%s'."), funcName, (wxChar *) label.c_str());
+			NotifyError(wxT("%s: Could not create '%s' control intruction for ")
+			  wxT("process '%s'."), funcName, (wxChar *) label.c_str());
 			return(false);
 		}
 		break; }
@@ -160,13 +160,14 @@ SDIEvtHandler::InitInstruction(void)
 	case USER_MODULE_CLASS:
 	case UTILITY_MODULE_CLASS:
 		if ((pc = InitInst_Utility_Datum(PROCESS)) == NULL) {
-			NotifyError(wxT("%s: Could not create new intruction for process '%s'."),
-			  funcName, (wxChar *) label.c_str());
+			NotifyError(wxT("%s: Could not create new intruction for process ")
+			  wxT("'%s'."), funcName, (wxChar *) label.c_str());
 			return(false);
 		}
 		break;
 	default:
-		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName, processType);
+		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName,
+		  processType);
 		return(false);
 	}
 	EarObjectPtr simProcess = ((SDIDiagram *) GetShape()->GetCanvas()->
@@ -324,8 +325,8 @@ SDIEvtHandler::ProcessProperties(double x, double y)
 				break;
 			switch (parList->mode) {
 			case UNIPAR_SET_SIMSPEC: {
-				DSAM_printf(wxT("SDIEvtHandler::OnLeftDoubleClick: Open child SDI "
-				  "window.\n"));
+				DSAM_printf(wxT("SDIEvtHandler::OnLeftDoubleClick: Open child ")
+				  wxT("SDI window.\n"));
 				break; }
 			default: {
 				int		winX, winY;

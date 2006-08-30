@@ -163,8 +163,8 @@ MainApp::Main(void)
 	bool	ok = false;
 
 	if (!initOk) {
-		NotifyWarning(wxT("%s: Program not using application interface or not "
-		  "correctly initialised.\n"), funcName);
+		NotifyWarning(wxT("%s: Program not using application interface or not ")
+		  wxT("correctly initialised.\n"), funcName);
 		return(false);
 	}
 	if (serverFlag)
@@ -240,8 +240,8 @@ MainApp::RunClient(void)
 // 			return(false);
 // 		}
 // 		if (!GetClient()->GetIPCUtils()->InitOutProcess()) {
-// 			NotifyError(wxT("%s: Could not initialise output process for input "
-// 			  "data."), funcName);
+// 			NotifyError(wxT("%s: Could not initialise output process for input ")
+// 			  wxT("data."), funcName);
 // 			return(false);
 // 		}
 // 		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputProcess);
@@ -864,10 +864,10 @@ OnExecute_MainApp(void)
 void
 PrintUsage_MainApp(void)
 {
-	DSAM_fprintf(stderr, wxT("\n"
-	  "\t-S            \t: Run in server mode (add another -S with (x)inetd).\n"
-	  "\t-I <x>        \t: Run using server ID <x>.\n"
-	  ));
+	DSAM_fprintf(stderr, wxT("\n")
+	  wxT("\t-S         : Run in server mode (add another -S with (x)inetd).\n")
+	  wxT("\t-I <x>     : Run using server ID <x>.\n")
+	  );
 
 }
 

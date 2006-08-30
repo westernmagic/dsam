@@ -157,8 +157,8 @@ SetUniParList_IO_AudioIn(void)
 	  (void * (*)) SetNumChannels_IO_AudioIn);
 	SetPar_UniParMgr(&pars[IO_AUDIOIN_SEGMENTSPERBUFFER], wxT(
 	  "SEGMENTS_PER_BUFFER"),
-	  wxT("Main input buffer length: multiples of the (segment) duration "
-	  "(int)."),
+	  wxT("Main input buffer length: multiples of the (segment) duration ")
+	    wxT("(int)."),
 	  UNIPAR_INT,
 	  &audioInPtr->segmentsPerBuffer, NULL,
 	  (void * (*)) SetSegmentsPerBuffer_IO_AudioIn);
@@ -203,8 +203,8 @@ GetUniParListPtr_IO_AudioIn(void)
 		return(FALSE);
 	}
 	if (audioInPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(audioInPtr->parList);
@@ -634,13 +634,13 @@ RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
 				*outPtr[RIGHT_CHAN]++ = (ChanData) IO_AUDIOIN_SAMPLE_SILENCE;
 		}
 	}
-	DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,"
-	  " %ld\n"), p->frameIndex, p->segmentIndex);
+	DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,")
+	  wxT(" %ld\n"), p->frameIndex, p->segmentIndex);
 	p->frameIndex += framesToCalc;
 	if ((ChanLen) (p->frameIndex - p->segmentIndex) >= _OutSig_EarObject(p->
 	  data)->length) {
-		/*printf(wxT("RecordCallback_IO_AudioIn: Debug: Got segment, length = "
-		 "%d.\n"), p->frameIndex - p->segmentIndex);*/
+		/*printf(wxT("RecordCallback_IO_AudioIn: Debug: Got segment, length = ")
+		 wxT("%d.\n"), p->frameIndex - p->segmentIndex);*/
 		p->segmentReadyFlag = TRUE;
 	}
 	/*if (p->frameIndex <= p->segmentIndex) {
@@ -677,11 +677,11 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		if (!InitOutSignal_EarObject(p->buffer, _OutSig_EarObject(data)->numChannels,
-		  _OutSig_EarObject(data)->length * p->segmentsPerBuffer, _OutSig_EarObject(data)->
-		  dt)) {
-			NotifyError(wxT("%s: Cannot initialise channels for previous "
-			  "data."), funcName);
+		if (!InitOutSignal_EarObject(p->buffer, _OutSig_EarObject(data)->
+		  numChannels, _OutSig_EarObject(data)->length * p->segmentsPerBuffer,
+		  _OutSig_EarObject(data)->dt)) {
+			NotifyError(wxT("%s: Cannot initialise channels for previous ")
+			  wxT("data."), funcName);
 			return(FALSE);
 		}
 		p->data = data;

@@ -247,8 +247,8 @@ GetUniParListPtr_Analysis_ACF(void)
 		return(FALSE);
 	}
 	if (autoCorrPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(autoCorrPtr->parList);
@@ -417,8 +417,8 @@ SetTimeConstScale_Analysis_ACF(double theTimeConstScale)
 		return(FALSE);
 	}
 	if (theTimeConstScale < 0.0) {
-		NotifyError(wxT("%s: The time constant scale must be greater than zero "
-		  "(%g)."), funcName, theTimeConstScale);
+		NotifyError(wxT("%s: The time constant scale must be greater than zero ")
+		  wxT("(%g)."), funcName, theTimeConstScale);
 		return(FALSE);
 	}
 	autoCorrPtr->timeConstScaleFlag = TRUE;
@@ -585,8 +585,8 @@ ReadPars_Analysis_ACF(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
     if (!SetPars_Analysis_ACF(normalisationMode, timeOffset, timeConstant,
@@ -686,22 +686,22 @@ CheckData_Analysis_ACF(EarObjectPtr data)
 		return(FALSE);
 	}		
 	if (autoCorrPtr->maxLag > signalDuration + DBL_EPSILON) {
-		NotifyError(wxT("%s: maximum auto-correlation lag is longer than "
-		  "signal duration."), funcName);
+		NotifyError(wxT("%s: maximum auto-correlation lag is longer than ")
+		  wxT("signal duration."), funcName);
 		return(FALSE);
 	}
 	timeOffset = (autoCorrPtr->timeOffset < 0.0)? signalDuration:
 	  autoCorrPtr->timeOffset;
 	if (autoCorrPtr->maxLag > (timeOffset + DBL_EPSILON)) {
-		NotifyError(wxT("%s: Time offset (%g ms) too for short maximum lag (%g "
-		  "ms)."), funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->
+		NotifyError(wxT("%s: Time offset (%g ms) too for short maximum lag (%g ")
+		  wxT("ms)."), funcName, MILLI(autoCorrPtr->timeOffset), MILLI(autoCorrPtr->
 		  maxLag));
 		return(FALSE);
 	}
 	if ((autoCorrPtr->normalisationMode == ANALYSIS_NORM_MODE_UNITY) &&
 	  (autoCorrPtr->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE)) {
-		NotifyError(wxT("%s: The 'unity' normalisation mode cannot be used "
-		  "with the\n'Wiegrebe' tau mode.\n"));
+		NotifyError(wxT("%s: The 'unity' normalisation mode cannot be used ")
+		  wxT("with the\n'Wiegrebe' tau mode.\n"));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -787,8 +787,8 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
 			_OutSig_EarObject(data)->info.cFArray[chan] = _InSig_EarObject(data,
 			  0)->info.cFArray[chan];
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay Lag "
-		  "(s)"));
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay Lag ")
+		  wxT("(s)"));
 		SetNumWindowFrames_SignalData(_OutSig_EarObject(data), 0);
 		p->updateProcessVariablesFlag = FALSE;
 	}
@@ -851,8 +851,8 @@ Calc_Analysis_ACF(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Auto Correlation Function (ACF) "
-		  "analysis"));
+		SetProcessName_EarObject(data, wxT("Auto Correlation Function (ACF) ")
+		  wxT("analysis"));
 		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->maxLagIndex = (ChanLen) floor(p->maxLag / p->dt + 0.5);
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->

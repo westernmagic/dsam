@@ -96,8 +96,8 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		return(FALSE);
 	}
 	if (data->numInSignals != 2) {
-		NotifyError(wxT("%s: The process EarObject must have 2 inputs from "
-		  "other processes."), funcName);
+		NotifyError(wxT("%s: The process EarObject must have 2 inputs from ")
+		  wxT("other processes."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(_InSig_EarObject(data, 0)) ||
@@ -105,15 +105,16 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		NotifyError(wxT("%s: Input signals not correctly set."), funcName);		
 		return(FALSE);
 	}
-	if ((fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) > DBL_EPSILON) ||
-	  (_InSig_EarObject(data, 0)->numChannels != _InSig_EarObject(data, 1)->numChannels)) {
+	if ((fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) >
+	  DBL_EPSILON) || (_InSig_EarObject(data, 0)->numChannels !=
+	  _InSig_EarObject(data, 1)->numChannels)) {
 		NotifyError(wxT("%s: Input signals are not the same."), funcName);		
 		return(FALSE);
 	}
 	if (_InSig_EarObject(data, 0)->interleaveLevel != _InSig_EarObject(data,
 	  1)->interleaveLevel) {
-		NotifyError(wxT("%s: Input signals do not have the same interleave "
-		  "level."), funcName);		
+		NotifyError(wxT("%s: Input signals do not have the same interleave ")
+		  wxT("level."), funcName);		
 		return(FALSE);
 	}
 	return(TRUE);
@@ -150,8 +151,9 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Auto-convolution Process"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -168,8 +170,8 @@ Calc_Analysis_Convolution(EarObjectPtr data)
 			inR = _InSig_EarObject(data, 1)->channel[chan];
 			endInR = inR + _InSig_EarObject(data, 1)->length;
 			inS = _InSig_EarObject(data, 0)->channel[chan] + i;
-			for (*outPtr = 0.0;(inS >= _InSig_EarObject(data, 0)->channel[chan]) &&
-			  (inR < endInR); inR++, inS--)
+			for (*outPtr = 0.0;(inS >= _InSig_EarObject(data, 0)->channel[
+			  chan]) && (inR < endInR); inR++, inS--)
 				*outPtr += *inR * *inS;
 		}
 	}

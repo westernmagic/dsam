@@ -71,8 +71,8 @@ Init_EarObject(WChar *moduleName)
 	EarObjectPtr	data;
 
 	if ((data = (EarObjectPtr) malloc(sizeof(EarObject))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for EarObject - used with the '%s' "
-		  "module."), funcName, moduleName);
+		NotifyError(wxT("%s: Out of memory for EarObject - used with the '%s' ")
+		  wxT("module."), funcName, moduleName);
 		return(NULL);
 	}
 	data->processName = NULL;
@@ -133,8 +133,8 @@ AddInSignal_EarObject(EarObjectPtr data)
 	}
 	if ((signals = (SignalDataPtr **) realloc(data->inSignal, ((data->
 	  numInSignals + 1) * sizeof(SignalDataPtr *)))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for EarObject input signals "
-		  "(EarObject process %lu)."), funcName, data->handle);
+		NotifyError(wxT("%s: Out of memory for EarObject input signals ")
+		  wxT("(EarObject process %lu)."), funcName, data->handle);
 		return(FALSE);
 	}
 	signals[data->numInSignals++] = NULL;
@@ -173,8 +173,8 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
 		found = (data->inSignal[i++] == signal);
 
 	if (!found) {
-		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject "
-		  "process."), funcName, data->processName);
+		NotifyError(wxT("%s: Signal pointer not found for '%s' EarObject ")
+		  wxT("process."), funcName, data->processName);
 		return(FALSE);
 	}
 	for (j = i; j < data->numInSignals; j++)
@@ -186,8 +186,8 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
 	} else {
 		if ((signals = (SignalDataPtr **) realloc(data->inSignal, ((data->
 		  numInSignals - 1) * sizeof(SignalDataPtr *)))) == NULL) {
-			NotifyError(wxT("%s: memory reallocation problem for EarObject "
-			  "input signals ('%s' Earobject process)."), funcName, data->
+			NotifyError(wxT("%s: memory reallocation problem for EarObject ")
+			  wxT("input signals ('%s' Earobject process)."), funcName, data->
 			  processName);
 			return(FALSE);
 		}
@@ -363,8 +363,8 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		SetOutputTimeOffset_SignalData(data->outSignal, samplingInterval);
 		if (!InitChannels_SignalData(data->outSignal, numChannels,
 		  data->externalDataFlag)) {
-			NotifyError(wxT("%s: Cannot initialise output channels for "
-			  "EarObject '%s'."), funcName, POSSIBLY_NULL_STRING_PTR(data->
+			NotifyError(wxT("%s: Cannot initialise output channels for ")
+			  wxT("EarObject '%s'."), funcName, POSSIBLY_NULL_STRING_PTR(data->
 			  processName));
 			Free_SignalData(&data->outSignal);
 			data->localOutSignalFlag = FALSE;
@@ -706,8 +706,8 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 		return(FALSE);
 	}
 	if (!DelInSignal_EarObject(customer, supplier->outSignalPtr)) {
-		NotifyError(wxT("%s: Could not delete input signal for customer "
-		  "(%lu)."), funcName, customer->handle);
+		NotifyError(wxT("%s: Could not delete input signal for customer ")
+		  wxT("(%lu)."), funcName, customer->handle);
 		return(FALSE);
 	}
 	FreeEarObjRef_EarObject(&supplier->customerList, customer->handle);
@@ -769,8 +769,8 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 	  theObject->handle); p = p->next)
 		last = p;
 	if (p->earObject->handle == theObject->handle) {
-		/* NotifyWarning(wxT("AddEarObjRef_EarObject: EarObject already in "
-		    "list."));
+		/* NotifyWarning(wxT("AddEarObjRef_EarObject: EarObject already in ")
+		    wxT("list."));
 		 */
 		return(TRUE);
 	}
@@ -1094,8 +1094,8 @@ CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
 	int		i;
 
 	if (data->numInSignals < 1) {
-		NotifyError(wxT("%s: No connected input signals for process (called "
-		  "from '%s')."), funcName, callingFuncName);
+		NotifyError(wxT("%s: No connected input signals for process (called ")
+		  wxT("from '%s')."), funcName, callingFuncName);
 		return(FALSE);
 	}
 	for (i = 0; i < data->numInSignals; i++)
@@ -1226,8 +1226,8 @@ InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 		return(TRUE);
 	if ((earObjectList = (EarObject *) calloc(p->numSubProcesses, sizeof(
 	  EarObject))) == NULL) {
-		NotifyError(wxT("%s: Could not initialise sub-process EarObject Copy "
-		  "list (%d copies)."), funcName, p->numSubProcesses);
+		NotifyError(wxT("%s: Could not initialise sub-process EarObject Copy ")
+		  wxT("list (%d copies)."), funcName, p->numSubProcesses);
 		return(FALSE);
 	}
 	if ((signalList = (SignalData *) calloc(p->numSubProcesses, sizeof(
@@ -1329,8 +1329,8 @@ InitThreadProcs_EarObject(EarObjectPtr p)
 	numCopies = p->numThreads - 1;
 	if ((p->threadProcs = (EarObject *) calloc(numCopies, sizeof(
 	  EarObject))) == NULL) {
-		NotifyError(wxT("%s: Could not initialise EarObject Copy list (%d "
-		  "copies)."), funcName, numCopies);
+		NotifyError(wxT("%s: Could not initialise EarObject Copy list (%d ")
+		  wxT("copies)."), funcName, numCopies);
 		return(FALSE);
 	}
 	if ((s = (SignalData *) calloc(numCopies, sizeof(SignalData))) ==

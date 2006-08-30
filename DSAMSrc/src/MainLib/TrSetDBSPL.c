@@ -164,8 +164,8 @@ GetUniParListPtr_Transform_SetDBSPL(void)
 		return(FALSE);
 	}
 	if (setDBSPLPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(setDBSPLPtr->parList);
@@ -336,8 +336,8 @@ ReadPars_Transform_SetDBSPL(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Transform_SetDBSPL(timeOffset, intensity)) {
@@ -427,8 +427,8 @@ CheckData_Transform_SetDBSPL(EarObjectPtr data)
 		return(FALSE);
 	if (setDBSPLPtr->timeOffset >=
 	  _GetDuration_SignalData(_InSig_EarObject(data, 0))) {
-		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
-		  "duration (%g ms)."), funcName, MSEC(setDBSPLPtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal ")
+		  wxT("duration (%g ms)."), funcName, MSEC(setDBSPLPtr->timeOffset),
 		  MSEC(_GetDuration_SignalData(_InSig_EarObject(data, 0))));
 		return(FALSE);
 	}

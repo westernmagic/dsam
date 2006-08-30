@@ -93,8 +93,8 @@ CheckData_Utility_CreateBinaural(EarObjectPtr data)
 		return(FALSE);
 	}
 	if (data->numInSignals != 2) {
-		NotifyError(wxT("%s: The process EarObject must have 2 inputs from "
-		  "other processes."), funcName);
+		NotifyError(wxT("%s: The process EarObject must have 2 inputs from ")
+		  wxT("other processes."), funcName);
 		return(FALSE);
 	}
 	if (!CheckPars_SignalData(_InSig_EarObject(data, 0)) ||
@@ -102,15 +102,16 @@ CheckData_Utility_CreateBinaural(EarObjectPtr data)
 		NotifyError(wxT("%s: Input signals not correctly set."), funcName);		
 		return(FALSE);
 	}
-	if (!SameType_SignalData(_InSig_EarObject(data, 0), _InSig_EarObject(data, 1))) {
+	if (!SameType_SignalData(_InSig_EarObject(data, 0), _InSig_EarObject(data,
+	  1))) {
 		NotifyError(wxT("%s: Input signals are not the same."), funcName);		
 		return(FALSE);
 	}
 	
 	if (_InSig_EarObject(data, 0)->interleaveLevel !=
 	  _InSig_EarObject(data, 1)->interleaveLevel) {
-		NotifyError(wxT("%s: Input signals do not have the same interleave "
-		  "level."), funcName);		
+		NotifyError(wxT("%s: Input signals do not have the same interleave ")
+		  wxT("level."), funcName);		
 		return(FALSE);
 	}
 	return(TRUE);
@@ -147,10 +148,11 @@ Process_Utility_CreateBinaural(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Create/merge binaural signal "
-		  "routine"));
+		SetProcessName_EarObject(data, wxT("Create/merge binaural signal ")
+		  wxT("routine"));
 		numChannelsToSet = (_InSig_EarObject(data, 0)->interleaveLevel == 2)?
-		  _InSig_EarObject(data, 0)->numChannels: _InSig_EarObject(data, 0)->numChannels * 2;
+		  _InSig_EarObject(data, 0)->numChannels: _InSig_EarObject(data, 0)->
+		  numChannels * 2;
 		data->updateProcessFlag = TRUE;
 		if (!InitOutSignal_EarObject(data, numChannelsToSet,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {

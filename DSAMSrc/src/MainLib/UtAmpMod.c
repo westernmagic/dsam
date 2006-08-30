@@ -141,8 +141,8 @@ Init_Utility_AmpMod(ParameterSpecifier parSpec)
 	ampModPtr->phases = NULL;
 
 	if (!SetDefaultNumFrequenciesArrays_Utility_AmpMod()) {
-		NotifyError(wxT("%s: Could not set the default 'numFrequencies' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%s: Could not set the default 'numFrequencies' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 
@@ -216,8 +216,8 @@ GetUniParListPtr_Utility_AmpMod(void)
 		return(FALSE);
 	}
 	if (ampModPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(ampModPtr->parList);
@@ -246,8 +246,8 @@ AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 		free(ampModPtr->modulationDepths);
 	if ((ampModPtr->modulationDepths = (double *) calloc(numFrequencies,
 	  sizeof(double))) == NULL) {
-		NotifyError(wxT("%s: Cannot allocate memory for '%d' "
-		  "modulationDepths."), funcName, numFrequencies);
+		NotifyError(wxT("%s: Cannot allocate memory for '%d' ")
+		  wxT("modulationDepths."), funcName, numFrequencies);
 		return(FALSE);
 	}
 	if (ampModPtr->frequencies)
@@ -618,8 +618,8 @@ ReadPars_Utility_AmpMod(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_AmpMod(numFrequencies, ampModPtr->modulationDepths,
@@ -746,10 +746,11 @@ Process_Utility_AmpMod(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Amplitude modulation utility "
-		  "module."));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		SetProcessName_EarObject(data, wxT("Amplitude modulation utility ")
+		  wxT("module."));
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);

@@ -89,7 +89,8 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 		if (bMGammaTPtr != NULL)
 			Free_BasilarM_GammaT();
 		if ((bMGammaTPtr = (BMGammaTPtr) malloc(sizeof(BMGammaT))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -170,8 +171,8 @@ GetUniParListPtr_BasilarM_GammaT(void)
 		return(FALSE);
 	}
 	if (bMGammaTPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaTPtr->parList);
@@ -202,8 +203,8 @@ CheckPars_BasilarM_GammaT(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMGammaTPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -334,8 +335,8 @@ GetCFListPtr_BasilarM_GammaT(void)
 		return(FALSE);
 	}
 	if (bMGammaTPtr->theCFs == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly set. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaTPtr->theCFs);
@@ -500,8 +501,8 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_GammaT();
-		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(_OutSig_EarObject(data)->
-		  numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
+		if ((p->coefficients = (GammaToneCoeffsPtr *) calloc(_OutSig_EarObject(
+		  data)->numChannels, sizeof(GammaToneCoeffsPtr))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory."), funcName);
 		 	return(FALSE);
 		}
@@ -512,15 +513,18 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 			if ((p->coefficients[i] = InitGammaToneCoeffs_Filters(p->theCFs->
 			  frequency[cFIndex], p->theCFs->bandwidth[cFIndex], p->cascade,
 			  sampleRate)) == NULL) {
-				NotifyError(wxT("%s: Could not initialise coefficients for "
-				  "channel %d."), funcName, i);
+				NotifyError(wxT("%s: Could not initialise coefficients for ")
+				  wxT("channel %d."), funcName, i);
 				return(FALSE);
 			}
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
-		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data),
+		  wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
@@ -564,7 +568,8 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 
 		/* Initialise Variables and coefficients */
 
-		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane filtering"));
+		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane ")
+		  wxT("filtering"));
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {

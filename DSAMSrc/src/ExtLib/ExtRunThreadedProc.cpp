@@ -155,8 +155,8 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 #	endif
 	data->initThreadRunFlag = FALSE;
 	if (!ok) {
-		NotifyError(wxT("%s: Could not do pre-thread process initialisation "
-		  "run."), funcName);
+		NotifyError(wxT("%s: Could not do pre-thread process initialisation ")
+		  wxT("run."), funcName);
 		return(false);
 	}
 #	if DEBUG
@@ -330,8 +330,8 @@ RunThreadedProc::InitialiseProcesses(DatumPtr start)
 			if (!PreThreadProcessInit(pc->data))
 				return(false);
 			if (pc->data->useThreadsFlag && !InitThreadProcesses(pc->data)) {
-				wxLogFatalError(wxT("%s: Could not initialise thread "
-				  "processes."), funcName);
+				wxLogFatalError(wxT("%s: Could not initialise thread ")
+				  wxT("processes."), funcName);
 				return(false);
 			}
 			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
@@ -378,8 +378,8 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 			break;
 		case REPEAT:
 			if (!DetermineChannelChains(pc->next, &linkBreak)) {
-				NotifyError(wxT("%s: Could not do pre-thread simulation "
-				  "initialisation."), funcName);
+				NotifyError(wxT("%s: Could not do pre-thread simulation ")
+				  wxT("initialisation."), funcName);
 				return(false);
 			}
 			pc->threadSafe = !linkBreak;
@@ -404,7 +404,7 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 				chainCount++;
 			else {
 #				if DEBUG
-				printf(wxT("%s: Debug: label '%s' marked as thread start, %d "
+				printf("%S: Debug: label '%S' marked as thread start, %d ")
 				  "processes\n"), funcName, threadStartPc->label, chainCount);
 #				endif
 				threadStartPc->passedThreadEnd = pc;
@@ -631,8 +631,8 @@ RunThreadedProc::Execute(DatumPtr start)
 	printf("%s: start [0] = %lx\n", funcName, (unsigned long) start);
 #	endif
 	if (!PreThreadSimulationInit(start, &brokenChain)) {
-		NotifyError(wxT("%s: Could not do pre-thread simulation "
-		  "initialisation."), funcName);
+		NotifyError(wxT("%s: Could not do pre-thread simulation ")
+		  wxT("initialisation."), funcName);
 		return(NULL);
 	}
 #	if DEBUG

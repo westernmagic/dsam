@@ -239,8 +239,8 @@ InitialFileRead_AIFF(WChar *fileName, AIFFParams *pars)
 		return(NULL);
 	}
 	if (fp == stdin) {
-		NotifyError(wxT("%s: Reading from stdin not supported for this "
-		  "format."), funcName);
+		NotifyError(wxT("%s: Reading from stdin not supported for this ")
+		  wxT("format."), funcName);
 		return(NULL);
 	}
 	InitParams_AIFF(pars);
@@ -561,8 +561,8 @@ WriteFile_AIFF(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 		if (!ReadPartialHeader_AIFF(fp, &pars)) {
-			NotifyError(wxT("%s: Could not read header (using segmented "
-			  "mode)."), funcName );
+			NotifyError(wxT("%s: Could not read header (using segmented ")
+			  wxT("mode)."), funcName );
 			CloseFile(fp);
 			return(FALSE);
 		}

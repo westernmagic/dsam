@@ -101,16 +101,16 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 	for (i = 0, endOfSignal = FALSE; !endOfSignal && (i < length); i++)
 		for (chan = 0; (chan < _OutSig_EarObject(data)->numChannels); chan++)
-			if (DSAM_fscanf(fp, wxT("%lf"), &_OutSig_EarObject(data)->channel[chan][
-			  i]) == EOF) {
+			if (DSAM_fscanf(fp, wxT("%lf"), &_OutSig_EarObject(data)->channel[
+			  chan][i]) == EOF) {
 				endOfSignal = TRUE;
 				break;
 			}
 	if (endOfSignal) {
 		if ((_OutSig_EarObject(data)->length = i - 1) == 0) {
 			if (!GetDSAMPtr_Common()->segmentedMode)
-				NotifyError(wxT("%s: Couldn't read samples from the file "
-				  "'%s'."), funcName ,fileName);
+				NotifyError(wxT("%s: Couldn't read samples from the file ")
+				  wxT("'%s'."), funcName ,fileName);
 			return(FALSE);
 		}
 	}
@@ -133,8 +133,8 @@ GetDuration_ASCII(WChar *fileName)
 {
 	static const WChar *funcName = wxT("GetDuration_ASCII");
 
-	NotifyError(wxT("%s: Signal duration cannot be calculated for this file "
-	  "type."), funcName);
+	NotifyError(wxT("%s: Signal duration cannot be calculated for this file ")
+	  wxT("type."), funcName);
 	return(-1.0);
 
 }
@@ -158,11 +158,11 @@ WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 	SetTimeIndex_SignalData(_OutSig_EarObject(data), _WorldTime_EarObject(data));
 	if (!OutputToFile_SignalData(fileName, _OutSig_EarObject(data))) {
 		if (data->processName != NULL)
-			NotifyWarning(wxT("%s: Data from EarObject: %s, has not been "
-			  "output to file."), funcName, data->processName);
+			NotifyWarning(wxT("%s: Data from EarObject: %s, has not been ")
+			  wxT("output to file."), funcName, data->processName);
 		else
-			NotifyWarning(wxT("%s: Data from EarObject: <no name>, has not been "
-			  "output to file."), funcName);
+			NotifyWarning(wxT("%s: Data from EarObject: <no name>, has not ")
+			  wxT("been output to file."), funcName);
 		return(FALSE);
 	} else {
 		return(TRUE);

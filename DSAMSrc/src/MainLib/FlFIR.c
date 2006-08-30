@@ -234,8 +234,8 @@ GetUniParListPtr_Filter_FIR(void)
 		return(FALSE);
 	}
 	if (fIRPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fIRPtr->parList);
@@ -432,8 +432,8 @@ SetNumBands_Filter_FIR(int theNumBands)
 		return(FALSE);
 	}
 	if (!AllocNumBands_Filter_FIR(theNumBands)) {
-		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -667,15 +667,15 @@ CheckPars_Filter_FIR(void)
 		SetNumTaps_Filter_FIR(fIRPtr->numBands);
 		for (i = 0; ok && (i < fIRPtr->numBands - 1); i++)
 			if ((fIRPtr->bandFreqs[i] != 0.0) || (fIRPtr->weights[i] != 0.0)) {
-				NotifyError(wxT("%s: the frequency bands and weights columns "
-				  "must have zero values in USER type filters."), funcName);
+				NotifyError(wxT("%s: the frequency bands and weights columns ")
+				  wxT("must have zero values in USER type filters."), funcName);
 				ok = FALSE;
 			}
 	} else {
 		for (i = 0; ok && (i < fIRPtr->numBands - 1); i++)
 			if (fIRPtr->bandFreqs[i] >= fIRPtr->bandFreqs[i + 1]) {
-				NotifyError(wxT("%s: Band centres/Frequencies must be in "
-				  "ascending order (No.s %d and %d)."), funcName, i, i + 1);
+				NotifyError(wxT("%s: Band centres/Frequencies must be in ")
+				  wxT("ascending order (No.s %d and %d)."), funcName, i, i + 1);
 				ok = FALSE;
 			}
 	}
@@ -755,8 +755,8 @@ ReadPars_Filter_FIR(WChar *fileName)
 	if (!GetPars_ParFile(fp, wxT("%d"), &numBands))
 		ok = FALSE;
 	if (ok && !AllocNumBands_Filter_FIR(numBands)) {
-		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numBands' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numBands; i++)
@@ -766,8 +766,8 @@ ReadPars_Filter_FIR(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_FIR(diagnosticMode, type, numTaps, numBands, fIRPtr->
@@ -904,8 +904,8 @@ InitProcessVariables_Filter_FIR(EarObjectPtr data)
 	if (fIRPtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_FIR();
 		if ((fIRPtr->coeffs = InitFIRCoeffs_FIRFilters(
-		  _OutSig_EarObject(data)->numChannels, fIRPtr->numTaps, fIRPtr->numBands,
-		  fIRPtr->bandFreqs, fIRPtr->desired, fIRPtr->weights,
+		  _OutSig_EarObject(data)->numChannels, fIRPtr->numTaps, fIRPtr->
+		  numBands, fIRPtr->bandFreqs, fIRPtr->desired, fIRPtr->weights,
 		  GetType_Filter_FIR())) == NULL) {
 			NotifyError(wxT("%s: Could not initialises FIR coefficients."),
 			  funcName);
@@ -972,8 +972,8 @@ RunProcess_Filter_FIR(EarObjectPtr data)
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
 		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
 		  0)->dt)) {
-			NotifyError(wxT("%s: Could not initialise the process output "
-			  "signal."), funcName);
+			NotifyError(wxT("%s: Could not initialise the process output ")
+			  wxT("signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_FIR(data)) {

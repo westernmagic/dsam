@@ -76,8 +76,8 @@ DSAMXMLDocument::~DSAMXMLDocument(void)
 void
 DSAMXMLDocument::Create(EarObjectPtr simProcess)
 {
-	const wxChar* rootDecleration = wxT("<?xml version=\"1.0\" standalone=\"no"
-	  "\" ?>");
+	const wxChar* rootDecleration = wxT("<?xml version=\"1.0\" standalone=\"no")
+	  wxT("\" ?>");
 
 	Parse(wxConvUTF8.cWX2MB(rootDecleration));
 	TiXmlElement dSAMElement(DSAM_XML_DSAM_ELEMENT);
@@ -421,28 +421,28 @@ DSAMXMLDocument::GetParArrayInfo(TiXmlElement * myElement, UniParList *parList)
 		parName = wxConvUTF8.cMB2WX(parArrayElement->Attribute(
 		  DSAM_XML_NAME_ATTRIBUTE));
 		if (parName.empty()) {
-			XMLNotifyError(parArrayElement, wxT("%s: '%s' element must have a "
-			  "name."), funcName, wxT(DSAM_XML_PARARRAY_ELEMENT));
+			XMLNotifyError(parArrayElement, wxT("%s: '%s' element must have a ")
+			  wxT("name."), funcName, wxT(DSAM_XML_PARARRAY_ELEMENT));
 			return(false);
 		}
 		subParList = parList;
 		if ((par = FindUniPar_UniParMgr(&subParList, (wxChar *) parName.c_str(),
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			XMLNotifyError(parArrayElement, wxT("%s: '%s' parameter '%s' not "
-			  "found"), funcName, DSAM_XML_PARARRAY_ELEMENT, (wxChar *)
+			XMLNotifyError(parArrayElement, wxT("%s: '%s' parameter '%s' not ")
+			  wxT("found"), funcName, DSAM_XML_PARARRAY_ELEMENT, (wxChar *)
 			  parName.c_str());
 			return(false);
 		}
 		if ((node2 = parArrayElement->FirstChildElement(
 		  DSAM_XML_PAR_LIST_ELEMENT)) == NULL) {
-		  	XMLNotifyError(parArrayElement, wxT("%s: Could not find sub-"
-			  "parameter list for '%s' par_array."), funcName, (wxChar *)
+		  	XMLNotifyError(parArrayElement, wxT("%s: Could not find sub-")
+			  wxT("parameter list for '%s' par_array."), funcName, (wxChar *)
 			  parName.c_str());
 			return(false);
 		}
 		if (!GetParListInfo(node2, subParList)) {
-			XMLNotifyError(parArrayElement, wxT("%s: Could not set sub-"
-			  "parameter list"), funcName);
+			XMLNotifyError(parArrayElement, wxT("%s: Could not set sub-")
+			  wxT("parameter list"), funcName);
 			return(false);
 		}
 	}
@@ -478,8 +478,8 @@ DSAMXMLDocument::GetCFListInfo(TiXmlElement *parentElement,
 			return(false);
 		}
 		if (!GetParListInfo(node, (*par->valuePtr.cFPtr)->cFParList)) {
-			XMLNotifyError(node->ToElement(), wxT("%s: Could not set CFList "
-			  "parameters"), funcName);
+			XMLNotifyError(node->ToElement(), wxT("%s: Could not set CFList ")
+			  wxT("parameters"), funcName);
 			return(false);
 		}
 		if ((node = cFListElement->IterateChildren(DSAM_XML_PAR_LIST_ELEMENT,
@@ -489,8 +489,8 @@ DSAMXMLDocument::GetCFListInfo(TiXmlElement *parentElement,
 			return(false);
 		}
 		if (!GetParListInfo(node, (*par->valuePtr.cFPtr)->bParList)) {
-			XMLNotifyError(node->ToElement(), wxT("%s: Could not set CFList "
-			  "bandwidth parameters"), funcName);
+			XMLNotifyError(node->ToElement(), wxT("%s: Could not set CFList ")
+			  wxT("bandwidth parameters"), funcName);
 			return(false);
 		}
 	}
@@ -518,8 +518,8 @@ DSAMXMLDocument::GetParInfo(TiXmlNode *parentElement, UniParList *parList)
 		parName = wxConvUTF8.cMB2WX(parElement->Attribute(
 		  DSAM_XML_NAME_ATTRIBUTE));
 		if (parName.empty()) {
-			XMLNotifyError(parElement, wxT("%s: Missing parameter '%s' in '%s' "
-			  "element."), funcName, wxT(DSAM_XML_NAME_ATTRIBUTE),
+			XMLNotifyError(parElement, wxT("%s: Missing parameter '%s' in ")
+			  wxT("'%s' element."), funcName, wxT(DSAM_XML_NAME_ATTRIBUTE),
 			  wxT(DSAM_XML_PAR_ELEMENT));
 			return(false);
 		}
@@ -532,15 +532,15 @@ DSAMXMLDocument::GetParInfo(TiXmlNode *parentElement, UniParList *parList)
 		parValue = wxConvUTF8.cMB2WX(parElement->Attribute(
 		  DSAM_XML_VALUE_ATTRIBUTE));
 		if (parValue.empty()) {
-			XMLNotifyError(parElement, wxT("%s: Missing parameter '%s' in '%s' "
-			  "element."), funcName, wxT(DSAM_XML_VALUE_ATTRIBUTE),
+			XMLNotifyError(parElement, wxT("%s: Missing parameter '%s' in ")
+			  wxT("'%s' element."), funcName, wxT(DSAM_XML_VALUE_ATTRIBUTE),
 			  wxT(DSAM_XML_PAR_ELEMENT));
 			return(false);
 		}
 		if (!SetParValue_UniParMgr(&parList, par->index, (wxChar *) parValue.
 		  c_str())) {
-			XMLNotifyError(parElement, wxT("%s: Could not set %s parameter to "
-			  "%s."), funcName, parName.c_str(), parValue.c_str());
+			XMLNotifyError(parElement, wxT("%s: Could not set %s parameter to ")
+			  wxT("%s."), funcName, parName.c_str(), parValue.c_str());
 			return(false);
 		}
 	}
@@ -573,31 +573,31 @@ DSAMXMLDocument::GetParListInfo(TiXmlNode *parListNode, UniParList *parList)
 		parName = wxConvUTF8.cMB2WX(node->ToElement()->Attribute(
 		  DSAM_XML_NAME_ATTRIBUTE));
 		if (parName.empty()) {
-			XMLNotifyError(node->ToElement(), wxT("%s: '%s' Sub-parameter must "
-			  "have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
+			XMLNotifyError(node->ToElement(), wxT("%s: '%s' Sub-parameter ")
+			  wxT("must have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
 			return(false);
 		}
 		if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.c_str(),
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			XMLNotifyError(node->ToElement(), wxT("%s: Sub-parameter list '%s' "
-			  "parameter '%s' not found"), funcName, DSAM_XML_PAR_LIST_ELEMENT,
-			  parName.c_str());
+			XMLNotifyError(node->ToElement(), wxT("%s: Sub-parameter list ")
+			  wxT("'%s' parameter '%s' not found"), funcName,
+			  DSAM_XML_PAR_LIST_ELEMENT, parName.c_str());
 			return(false);
 		}
 		if (!GetParListInfo(node, *par->valuePtr.parList.list)) {
-			XMLNotifyError(node->ToElement(), wxT("%s: Could not set sub-"
-			  "parameter list"), funcName);
+			XMLNotifyError(node->ToElement(), wxT("%s: Could not set sub-")
+			  wxT("parameter list"), funcName);
 			return(false);
 		}
 	}
 	if (!GetCFListInfo(parListElement, parList)) {
-		XMLNotifyError(parListElement, wxT("%s: Failed reading CFList "
-		  "parameters."), funcName);
+		XMLNotifyError(parListElement, wxT("%s: Failed reading CFList ")
+		  wxT("parameters."), funcName);
 		return(false);
 	}
 	if (!GetParArrayInfo(parListElement, parList)) {
-		XMLNotifyError(parListElement, wxT("%s: Failed reading parArray "
-		  "parameters."), funcName);
+		XMLNotifyError(parListElement, wxT("%s: Failed reading parArray ")
+		  wxT("parameters."), funcName);
 		return(false);
 	}
 	return(true);
@@ -628,8 +628,8 @@ DSAMXMLDocument::GetApplicationInfo(void)
 	  DSAM_XML_VERSION_ATTRIBUTE));
 	if (appVersion.empty() || !ValidVersion((wxChar *) appVersion.c_str(),
 	  (wxChar *) GetPtr_AppInterface()->appVersion)) {
-		XMLNotifyWarning(appElement, wxT("%s: Invalid application version, "
-		  "element ignored."), funcName);
+		XMLNotifyWarning(appElement, wxT("%s: Invalid application version, ")
+		  wxT("element ignored."), funcName);
 		return;
 	}
 	if ((parListElement = appElement->FirstChildElement(
@@ -689,15 +689,15 @@ DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 		return(NULL);
 	}
 	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
-		XMLNotifyError(objectElement, wxT("%s: Could not initialise "
-		  "instruction for '%s'"), funcName, (wxChar *) moduleName.c_str());
+		XMLNotifyError(objectElement, wxT("%s: Could not initialise ")
+		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
 	}
 	pc->u.proc.moduleName = InitString_Utility_String((wxChar *) moduleName.
 	  c_str());
 	if (!InitProcessInst_Utility_Datum(pc)) {
-		XMLNotifyError(objectElement, wxT("%s: Could not initialise process "
-		  "'%s'"), funcName, (wxChar *) moduleName.c_str());
+		XMLNotifyError(objectElement, wxT("%s: Could not initialise process ")
+		  wxT("'%s'"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
 	}
 	enabledStatus = wxConvUTF8.cMB2WX(objectElement->Attribute(
@@ -707,25 +707,26 @@ DSAMXMLDocument::InstallProcess(TiXmlElement *objectElement)
 	if (((parListElement = objectElement->FirstChildElement(
 	  DSAM_XML_PAR_LIST_ELEMENT)) != NULL) && !GetParListInfo(parListElement,
 	  GetUniParListPtr_ModuleMgr(pc->data))) {
-		XMLNotifyError(objectElement, wxT("%s: Could not initialise '%s' "
-		  "module parameters"), funcName, (wxChar *) moduleName.c_str());
+		XMLNotifyError(objectElement, wxT("%s: Could not initialise '%s' ")
+		  wxT("module parameters"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
 	}
 	if (!GetConnectionInfo(objectElement, &pc->u.proc.inputList,
 	  DSAM_XML_INPUT_ELEMENT)) {
-		XMLNotifyError(objectElement, wxT("%s: Could not '%s' module input "
-		  "connections"), funcName, (wxChar *) moduleName.c_str());
+		XMLNotifyError(objectElement, wxT("%s: Could not '%s' module input ")
+		  wxT("connections"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
 	}
 	if (!GetConnectionInfo(objectElement, &pc->u.proc.outputList,
 	  DSAM_XML_OUTPUT_ELEMENT)) {
-		XMLNotifyError(objectElement, wxT("%s: Could not '%s' module output "
-		  "connections"), funcName, (wxChar *) moduleName.c_str());
+		XMLNotifyError(objectElement, wxT("%s: Could not '%s' module output ")
+		  wxT("connections"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
 	}
 	if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
-		XMLNotifyError(objectElement, wxT("%s: Must process sub simulation.  "
-		  "Remember to check the preservation of the simProcess pars pointer."),
+		XMLNotifyError(objectElement, wxT("%s: Must process sub simulation.  ")
+		  wxT("Remember to check the preservation of the simProcess pars ")
+		  wxT("pointer."),
 		  funcName);
 
 	}
@@ -745,8 +746,8 @@ DSAMXMLDocument::InstallInst(TiXmlElement *objectElement, int type)
 	DatumPtr	pc;
 
 	if ((pc = InstallInst_Utility_Datum(simScriptPtr->simPtr, type)) == NULL) {
-		XMLNotifyError(objectElement, wxT("%s: Could not install "
-		  "instruction"), funcName);
+		XMLNotifyError(objectElement, wxT("%s: Could not install ")
+		  wxT("instruction"), funcName);
 		return(NULL);
 	}
 	label = wxConvUTF8.cMB2WX(objectElement->Attribute(
@@ -778,14 +779,14 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 		objectType = wxConvUTF8.cMB2WX(objectElement->Attribute(
 		  DSAM_XML_TYPE_ATTRIBUTE));
 		if (objectType.empty()) {
-			XMLNotifyError(objectElement, wxT("%s: Missing object 'type' in "
-			  "simulation"), funcName);
+			XMLNotifyError(objectElement, wxT("%s: Missing object 'type' in ")
+			  wxT("simulation"), funcName);
 			return(false);
 		}
 		if (objectType.compare(wxT(DSAM_XML_PROCESS_ATTRIBUTE_VALUE)) == 0) {
 			if ((pc = InstallProcess(objectElement)) == NULL) {
-				XMLNotifyError(objectElement, wxT("%s: Could not install "
-				  "simulation object"), funcName);
+				XMLNotifyError(objectElement, wxT("%s: Could not install ")
+				  wxT("simulation object"), funcName);
 				return(false);
 			}
 			GetShapeInfo(objectElement, pc);
@@ -797,8 +798,8 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 					break;
 				if (!objectElement->Attribute(DSAM_XML_COUNT_ATTRIBUTE, &pc->u.
 				  loop.count)) {
-					XMLNotifyError(objectElement, wxT("%s: Could not find "
-					  "count."), funcName);
+					XMLNotifyError(objectElement, wxT("%s: Could not find ")
+					  wxT("count."), funcName);
 					return(false);
 				}
 				GetShapeInfo(objectElement, pc);
@@ -813,8 +814,8 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 				label = wxConvUTF8.cMB2WX(objectElement->Attribute(
 				  DSAM_XML_OBJLABEL_ATTRIBUTE));
 				if (label.empty()) {
-					XMLNotifyError(objectElement, wxT("%s: reset process label "
-					  "missing"), funcName);
+					XMLNotifyError(objectElement, wxT("%s: reset process label ")
+					  wxT("missing"), funcName);
 					return(false);
 				}
 				pc->u.ref.string = InitString_Utility_String((wxChar *) label.
@@ -825,15 +826,15 @@ DSAMXMLDocument::InstallSimulationNodes(TiXmlElement *simElement)
 				;
 			}
 			if (!pc) {
-				XMLNotifyError(objectElement, wxT("%s: Could not install "
-				  "simulation '%s' object"), funcName, sp->name);
+				XMLNotifyError(objectElement, wxT("%s: Could not install ")
+				  wxT("simulation '%s' object"), funcName, sp->name);
 				return(false);
 			}
 		}
 		if (pc->label && *pc->label &&  !Insert_Utility_DynaBList(
 		  simScriptPtr->labelBListPtr, CmpProcessLabels_Utility_Datum, pc)) {
-			XMLNotifyError(objectElement, wxT("%s: Cannot insert process "
-			  "labelled '%s' into simulation."), funcName, pc->label);
+			XMLNotifyError(objectElement, wxT("%s: Cannot insert process ")
+			  wxT("labelled '%s' into simulation."), funcName, pc->label);
 			return(false);
 		}
 	}
@@ -877,15 +878,15 @@ DSAMXMLDocument::GetSimulationInfo(TiXmlNode *simNode)
 		ok = CXX_BOOL(ResolveInstLabels_Utility_Datum(simulation,
 		  simScriptPtr->labelBList));
 	if (ok && !SetDefaultConnections_Utility_Datum(simulation)) {
-		XMLNotifyError(simElement, wxT("%s Could not set default forward "
-		  "connections"), funcName);
+		XMLNotifyError(simElement, wxT("%s Could not set default forward ")
+		  wxT("connections"), funcName);
 		ok = false;
 	}
 		if (ok)
 			GetLineShapeInfo(simElement);
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {
-		XMLNotifyError(simElement, wxT("%s: Not enough lines, or invalid "
-		  "parameters, in simulation node"), funcName);
+		XMLNotifyError(simElement, wxT("%s: Not enough lines, or invalid ")
+		  wxT("parameters, in simulation node"), funcName);
 		ok = false;
 	}
 	//simElement->Print(stdout, 0);	// Debug

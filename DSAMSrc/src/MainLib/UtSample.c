@@ -158,8 +158,8 @@ GetUniParListPtr_Utility_Sample(void)
 		return(FALSE);
 	}
 	if (samplePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(samplePtr->parList);
@@ -330,8 +330,8 @@ ReadPars_Utility_Sample(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Sample(timeOffset, samplingInterval)) {
@@ -423,15 +423,15 @@ CheckData_Utility_Sample(EarObjectPtr data)
 		return(FALSE);
 	dt = _InSig_EarObject(data, 0)->dt;
 	if ((samplePtr->dt > 0.0) && (samplePtr->dt < dt)) {
-		NotifyError(wxT("%s: Sampling interval (%g ms) is less than signal\n"
-		  "sampling interval (%g ms)."), funcName, MSEC(samplePtr->dt),
+		NotifyError(wxT("%s: Sampling interval (%g ms) is less than signal\n")
+		  wxT("sampling interval (%g ms)."), funcName, MSEC(samplePtr->dt),
 		  MSEC(dt));
 		return(FALSE);
 	}
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (samplePtr->timeOffset >= signalDuration) {
-		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal "
-		  "duration (%g ms)."), funcName, MSEC(samplePtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal ")
+		  wxT("duration (%g ms)."), funcName, MSEC(samplePtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}

@@ -511,8 +511,8 @@ SetUniParList_SignalDisp(void)
 	  &signalDispPtr->xOffset, NULL,
 	  (void * (*)) SetXOffset_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_X_EXTENT], wxT("X_EXTENT"),
-	  wxT("X extent for display in zoom mode (x units or -1 for end of "
-	  "signal)."),
+	  wxT("X extent for display in zoom mode (x units or -1 for end of ")
+	    wxT("signal)."),
 	  UNIPAR_REAL,
 	  &signalDispPtr->xExtent, NULL,
 	  (void * (*)) SetXExtent_SignalDisp);
@@ -572,8 +572,8 @@ GetUniParListPtr_SignalDisp(void)
 		return(NULL);
 	}
 	if (signalDispPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(signalDispPtr->parList);
@@ -1052,8 +1052,8 @@ SetMode_SignalDisp(WChar *theMode)
 	}
 	if ((specifier == GRAPH_MODE_GREY_SCALE) && (signalDispPtr->autoYScale ==
 	  GENERAL_BOOLEAN_OFF)) {
-		NotifyError(wxT("%s: Automatic Y scaling must be on to use the grey-"
-		  "scale mode."), funcName);
+		NotifyError(wxT("%s: Automatic Y scaling must be on to use the grey-")
+		  wxT("scale mode."), funcName);
 		return(FALSE);
 	}
 	signalDispPtr->mode = specifier;
@@ -1288,8 +1288,8 @@ SetXOffset_SignalDisp(double theXOffset)
 		return(FALSE);
 	}
 	if (theXOffset < 0.0) {
-		NotifyError(wxT("%s: Cannot set the X offset less than zero (%g "
-		  "units)."), funcName, theXOffset);
+		NotifyError(wxT("%s: Cannot set the X offset less than zero (%g ")
+		  wxT("units)."), funcName, theXOffset);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -1489,21 +1489,21 @@ CheckPars_SignalDisp(void)
 	}
 	if (signalDispPtr->autoYScaleFlag && !signalDispPtr->autoYScale &&
 	  (!signalDispPtr->minYFlag || !signalDispPtr->maxYFlag)) {
-		NotifyError(wxT("%s: When the automatic y scale is off, the minimum "
-		  "and maximum Y value must also be set."), funcName);
+		NotifyError(wxT("%s: When the automatic y scale is off, the minimum ")
+		  wxT("and maximum Y value must also be set."), funcName);
 		return(FALSE);
 	}
 	if (!signalDispPtr->autoYScale && (signalDispPtr->minY >= signalDispPtr->
 	  maxY)) {
-		NotifyError(wxT("%s: the minimum y value (%g) should be less than than "
-		  "the maximum y value (%g)."), funcName, signalDispPtr->minY,
+		NotifyError(wxT("%s: the minimum y value (%g) should be less than ")
+		  wxT("than the maximum y value (%g)."), funcName, signalDispPtr->minY,
 		  signalDispPtr->maxY);
 		return(FALSE);
 	}
 	if (signalDispPtr->autoXScaleFlag && !signalDispPtr->autoXScale &&
 	  (!signalDispPtr->xOffsetFlag || !signalDispPtr->xExtentFlag)) {
-		NotifyError(wxT("%s: When automatic x-scale is off, the x offset and "
-		  "x extent values must both be set."), funcName);
+		NotifyError(wxT("%s: When automatic x-scale is off, the x offset and ")
+		  wxT("x extent values must both be set."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1599,8 +1599,8 @@ SetProcessMode_SignalDisp(EarObjectPtr data)
 		signalDispPtr->inLineProcess = TRUE;
 	} else {
 		if (!CheckPars_SignalData(data->outSignal)) {
-			NotifyError(wxT("%s: Output signal not correctly set for 'sample' "
-			  "use."), funcName);
+			NotifyError(wxT("%s: Output signal not correctly set for 'sample' ")
+			  wxT("use."), funcName);
 			return(FALSE);
 		}
 		signalDispPtr->inLineProcess = FALSE;

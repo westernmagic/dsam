@@ -291,8 +291,8 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 			par->FuncPtr.SetDatumPtr = (BOOLN (*)(DatumPtr)) Func;
 			break;
 		default:
-			NotifyError(wxT("%s: Universal parameter not yet implemented "
-			  "(%d)."), funcName, type);
+			NotifyError(wxT("%s: Universal parameter not yet implemented ")
+			  wxT("(%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_CFLIST:
@@ -317,8 +317,8 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 			par->FuncPtr.SetCFListString = (BOOLN (*)(CFListPtr, WChar *)) Func;
 			break;
 		default:
-			NotifyError(wxT("%s: Universal parameter (CFList) not yet "
-			  "implemented (%d)."), funcName, type);
+			NotifyError(wxT("%s: Universal parameter (CFList) not yet ")
+			  wxT("implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_PARARRAY:
@@ -340,8 +340,8 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 			  WChar *)) Func;
 			break;
 		default:
-			NotifyError(wxT("%s: Universal parameter (ParArray) not yet "
-			  "implemented (%d)."), funcName, type);
+			NotifyError(wxT("%s: Universal parameter (ParArray) not yet ")
+			  wxT("implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_ICLIST:
@@ -364,8 +364,8 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 			  WChar *)) Func;
 			break;
 		default:
-			NotifyError(wxT("%s: Universal parameter (IonChanList) not yet "
-			  "implemented (%d)."), funcName, type);
+			NotifyError(wxT("%s: Universal parameter (IonChanList) not yet ")
+			  wxT("implemented (%d)."), funcName, type);
 		}
 		break;
 	case UNIPAR_SET_IC:
@@ -391,8 +391,8 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 			par->FuncPtr.SetICString = (BOOLN (*)(IonChannelPtr, WChar *)) Func;
 			break;
 		default:
-			NotifyError(wxT("%s: Universal parameter (IonChannel) not yet "
-			  "implemented (%d)."), funcName, type);
+			NotifyError(wxT("%s: Universal parameter (IonChannel) not yet ")
+			  wxT("implemented (%d)."), funcName, type);
 		}
 		break;
 	default:
@@ -543,8 +543,8 @@ FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix)
 		  nameList.specifier)[index]].name));
 		break;
 	default:
-		Snprintf_Utility_String(string, MAXLINE, wxT("%s: Universal parameter "
-		  "not yet implemented (%d)."), funcName, p->type);
+		Snprintf_Utility_String(string, MAXLINE, wxT("%s: Universal parameter ")
+		  wxT("not yet implemented (%d)."), funcName, p->type);
 	}
 	return(string);
 
@@ -1017,8 +1017,8 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 	case UNIPAR_PARARRAY:
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter type not yet implemented "
-		  "(%d)."), funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented ")
+		  wxT("(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	return(ok);
@@ -1070,8 +1070,8 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 		  parValue);
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter type not yet implemented "
-		  "(%d)."), funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented ")
+		  wxT("(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok && (*parList)->updateFlag)
@@ -1122,8 +1122,8 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  ptr, parValue);
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter type not yet implemented "
-		  "(%d)."), funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented ")
+		  wxT("(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok)
@@ -1210,8 +1210,8 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 		ok = (* p->FuncPtr.SetICString)(theICs->currentIC, parValue);
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter type not yet implemented "
-		  "(%d)."), funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented ")
+		  wxT("(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	return(ok);
@@ -1250,8 +1250,8 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 		ok = (* p->FuncPtr.SetICListString)(theICs, parValue);
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter type not yet implemented "
-		  "(%d)."), funcName, p->type);
+		NotifyError(wxT("%s: Universal parameter type not yet implemented ")
+		  wxT("(%d)."), funcName, p->type);
 		ok = FALSE;
 	}
 	if (ok && (*parList)->updateFlag)
@@ -1295,8 +1295,8 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 		ok = SetICListParValue_UniParMgr(parList, index, parValue);
 		break;
 	default:
-		NotifyError(wxT("%s: Universal parameter mode not yet implemented "
-		  "(%d)."), funcName, (*parList)->mode);
+		NotifyError(wxT("%s: Universal parameter mode not yet implemented ")
+		  wxT("(%d)."), funcName, (*parList)->mode);
 		ok = FALSE;
 	}
 	(*parList)->updateFlag = ok;

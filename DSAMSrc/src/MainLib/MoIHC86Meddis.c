@@ -210,8 +210,8 @@ GetUniParListPtr_IHC_Meddis86(void)
 		return(FALSE);
 	}
 	if (hairCellPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hairCellPtr->parList);
@@ -506,8 +506,8 @@ CheckPars_IHC_Meddis86(void)
 		ok = FALSE;
 	}
 	if (!hairCellPtr->reprocessRateFlag) {
-		NotifyError(wxT("%s: Reprocessing rate constant, x, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Reprocessing rate constant, x, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->recoveryRateFlag) {
@@ -516,8 +516,8 @@ CheckPars_IHC_Meddis86(void)
 		ok = FALSE;
 	}
 	if (!hairCellPtr->maxFreePoolFlag) {
-		NotifyError(wxT("%s: Max. free transmitter in pool constant, M, not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Max. free transmitter in pool constant, M, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCellPtr->firingRateFlag) {
@@ -608,8 +608,8 @@ ReadPars_IHC_Meddis86(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Meddis86(permConst_A, permConst_B, releaseRate_g,

@@ -266,8 +266,8 @@ GetUniParListPtr_Analysis_SAI(void)
 		return(FALSE);
 	}
 	if (sAImagePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(sAImagePtr->parList);
@@ -389,8 +389,8 @@ SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification)
 		ok = ReadPars_ModuleMgr(sAImagePtr->strobeData, theStrobeSpecification);
 		parFile = oldPtr;
 		if (!ok) {
-			NotifyError(wxT("%s: Could not read strobe utility module "
-			  "parameters."), funcName);
+			NotifyError(wxT("%s: Could not read strobe utility module ")
+			  wxT("parameters."), funcName);
 			return(FALSE);
 		}
 	}
@@ -716,8 +716,8 @@ ReadPars_Analysis_SAI(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_SAI(diagnosticMode, integrationMode,
@@ -815,14 +815,14 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 	  "criterion"))->valuePtr.nameList.specifier;
 	if (strobeType == STROBE_USER_MODE) {
 		if (data->numInSignals < 2) {
-			NotifyError(wxT("%s: In strobe 'USER' mode two input EarObjects "
-			  "are\nrequired (%d)"), funcName, data->numInSignals);
+			NotifyError(wxT("%s: In strobe 'USER' mode two input EarObjects ")
+			  wxT("are\nrequired (%d)"), funcName, data->numInSignals);
 			return(FALSE);
 		}
 		if (!CheckInit_SignalData(_InSig_EarObject(data, 1),
 		  wxT("CheckData_Analysis_SAI"))) {
-			NotifyError(wxT("%s: Second EarObject required for USER mode not "
-			  "initialised."), funcName);
+			NotifyError(wxT("%s: Second EarObject required for USER mode not ")
+			  wxT("initialised."), funcName);
 			return(FALSE);
 		}
 		if (!SameType_SignalData(_InSig_EarObject(data, 0), _InSig_EarObject(
@@ -842,9 +842,9 @@ CheckData_Analysis_SAI(EarObjectPtr data)
 	  wxT("strobe_lag"))->valuePtr.r;
 	if ((strobeType == STROBE_PEAK_SHADOW_POSITIVE_MODE) && (sAImagePtr->
 	  positiveWidth < strobeDelay)) {
-		NotifyError(wxT("%s: The positive width (%g ms) must be less than "
-		  "strobe delay (%g ms)."), funcName, MSEC(sAImagePtr->positiveWidth),
-		  MSEC(strobeDelay));
+		NotifyError(wxT("%s: The positive width (%g ms) must be less than ")
+		  wxT("strobe delay (%g ms)."), funcName, MSEC(sAImagePtr->
+		  positiveWidth), MSEC(strobeDelay));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -974,8 +974,8 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList,
 		  p->diagnosticMode);
 		if (!InitSubProcessList_EarObject(data, SAI_NUM_SUB_PROCESSES)) {
-			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
-			  "process."), funcName, SAI_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
+			  wxT("process."), funcName, SAI_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[SAI_STROBEDATA] = p->strobeData;
@@ -985,8 +985,8 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 			return(FALSE);
 		}
 		if ((p->strobeDataBuffer = Init_EarObject(wxT("NULL"))) == NULL) {
-			NotifyError(wxT("%s: Could not initialise previous strobe data "
-			  "EarObject"), funcName);
+			NotifyError(wxT("%s: Could not initialise previous strobe data ")
+			  wxT("EarObject"), funcName);
 			return(FALSE);
 		}
 		p->zeroIndex = (ChanLen) floor(-p->negativeWidth / _InSig_EarObject(
@@ -1015,15 +1015,15 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 		if (!InitOutSignal_EarObject(p->dataBuffer, _OutSig_EarObject(data)->
 		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(
 		  data)->dt)) {
-			NotifyError(wxT("%s: Cannot initialise channels for previous "
-			  "data."), funcName);
+			NotifyError(wxT("%s: Cannot initialise channels for previous ")
+			  wxT("data."), funcName);
 			return(FALSE);
 		}
 		if (!InitOutSignal_EarObject(p->strobeDataBuffer, _OutSig_EarObject(
 		  data)->numChannels, _OutSig_EarObject(data)->length,
 		  _OutSig_EarObject(data)->dt)) {
-			NotifyError(wxT("%s: Cannot initialise channels for previous "
-			  "strobe data."), funcName);
+			NotifyError(wxT("%s: Cannot initialise channels for previous ")
+			  wxT("strobe data."), funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -1242,8 +1242,8 @@ Process_Analysis_SAI(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Stabilised Auditory Image Module "
-		  "process"));
+		SetProcessName_EarObject(data, wxT("Stabilised Auditory Image Module ")
+		  wxT("process"));
 		dt = _InSig_EarObject(data, 0)->dt;
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
 		  numChannels,  (ChanLen) floor((p->positiveWidth - p->negativeWidth) /

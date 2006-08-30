@@ -211,8 +211,8 @@ GetUniParListPtr_IHC_Meddis86a(void)
 		return(FALSE);
 	}
 	if (hairCell3Ptr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hairCell3Ptr->parList);
@@ -473,8 +473,8 @@ CheckPars_IHC_Meddis86a(void)
 		ok = FALSE;
 	}
 	if (!hairCell3Ptr->reprocessRateFlag) {
-		NotifyError(wxT("%s: Reprocessing rate constant, x, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Reprocessing rate constant, x, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell3Ptr->recoveryRateFlag) {
@@ -483,8 +483,8 @@ CheckPars_IHC_Meddis86a(void)
 		ok = FALSE;
 	}
 	if (!hairCell3Ptr->maxFreePoolFlag) {
-		NotifyError(wxT("%s: Max. free transmitter in pool constant, M, not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Max. free transmitter in pool constant, M, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!hairCell3Ptr->permeabilityPHFlag) {
@@ -583,8 +583,8 @@ ReadPars_IHC_Meddis86a(WChar *fileName)
  	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Meddis86a(replenishRate_y, lossRate_l, reprocessRate_x,
@@ -681,30 +681,30 @@ CheckData_IHC_Meddis86a(EarObjectPtr data)
 	}
 	ok = TRUE;
 	if (hairCell3Ptr->replenishRate_y * dt >= 1.0) {
-		NotifyError(wxT("%s: Replenishment rate, y = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell3Ptr->replenishRate_y);
+		NotifyError(wxT("%s: Replenishment rate, y = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell3Ptr->replenishRate_y);
 		ok = FALSE;
 	}
 	if (hairCell3Ptr->lossRate_l * dt >= 1.0) {
-		NotifyError(wxT("%s: Loss rate, l = %g /s is too high for the sampling "
-		  "interval."), funcName, hairCell3Ptr->lossRate_l);
+		NotifyError(wxT("%s: Loss rate, l = %g /s is too high for the sampling ")
+		  wxT("interval."), funcName, hairCell3Ptr->lossRate_l);
 		ok = FALSE;
 	}
 	if (hairCell3Ptr->recoveryRate_r * dt >= 1.0) {
-		NotifyError(wxT("%s: Recovery rate, r = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell3Ptr->recoveryRate_r);
+		NotifyError(wxT("%s: Recovery rate, r = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell3Ptr->recoveryRate_r);
 		ok = FALSE;
 	}
 	if (hairCell3Ptr->reprocessRate_x * dt >= 1.0) {
-		NotifyError(wxT("%s: Reprocess rate, x = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell3Ptr->reprocessRate_x);
+		NotifyError(wxT("%s: Reprocess rate, x = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell3Ptr->reprocessRate_x);
 		ok = FALSE;
 	}
 	/* if (hairCell3Ptr->permeabilityPH_h > maximumH) {
 		maximumH = log(1.0 / (hairCell3Ptr->permeabilityPZ_z * dt));
-		NotifyError(wxT("%s: The permeability constant, h = %g, is too high "
-		  "for\nthe signal sampling interval, dt = %g ms, and the "
-		  "permeability constant, z = %g (h < %g)."), funcName,
+		NotifyError(wxT("%s: The permeability constant, h = %g, is too high ")
+		  wxT("for\nthe signal sampling interval, dt = %g ms, and the ")
+		  wxT("permeability constant, z = %g (h < %g)."), funcName,
 		  hairCell3Ptr->permeabilityPH_h, dt, hairCell3Ptr->permeabilityPZ_z);
 		ok = FALSE;
 	} */

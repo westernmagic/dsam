@@ -161,8 +161,8 @@ SetUniParList_Analysis_FourierT(void)
 	}
 	pars = fourierTPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_FOURIERT_OUTPUTMODE], wxT("OUTPUT_MODE"),
-	  wxT("Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' "
-	  "(approximation)."),
+	  wxT("Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' ")
+	  wxT("(approximation)."),
 	  UNIPAR_NAME_SPEC,
 	  &fourierTPtr->outputMode, fourierTPtr->outputModeList,
 	  (void * (*)) SetOutputMode_Analysis_FourierT);
@@ -187,8 +187,8 @@ GetUniParListPtr_Analysis_FourierT(void)
 		return(FALSE);
 	}
 	if (fourierTPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fourierTPtr->parList);
@@ -329,8 +329,8 @@ ReadPars_Analysis_FourierT(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FourierT(outputMode)) {
@@ -462,15 +462,15 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 		p->numThreads = data->numThreads;
 		if ((p->fT = (ComplexPtr *) calloc(p->numThreads, sizeof(
 		  ComplexPtr))) == NULL) {
-			NotifyError(wxT("%s: Couldn't allocate memory for complex data "
-			  "pointer array."), funcName);
+			NotifyError(wxT("%s: Couldn't allocate memory for complex data ")
+			  wxT("pointer array."), funcName);
 			return(FALSE);
 		}
 		for (i = 0; i < data->numThreads; i++)
 			if ((p->fT[i] = (Complex *) calloc(p->fTLength, sizeof(
 			  Complex))) == NULL) {
-				NotifyError(wxT("%s: Couldn't allocate memory for complex data "
-				  "array (%d)."), funcName, i);
+				NotifyError(wxT("%s: Couldn't allocate memory for complex ")
+				  wxT("data array (%d)."), funcName, i);
 				return(FALSE);
 			}
 		p->updateProcessVariablesFlag = FALSE;
@@ -559,10 +559,10 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		dF = 1.0 / (_InSig_EarObject(data, 0)->dt * p->fTLength);
 		SetSamplingInterval_SignalData(_OutSig_EarObject(data), dF);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
-		  "(Hz)"));
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Arbitrary "
-		  "Amplitude"));
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency ")
+		  wxT("(Hz)"));
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT(
+		  "Arbitrary Amplitude"));
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), 0.0);
 		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) (

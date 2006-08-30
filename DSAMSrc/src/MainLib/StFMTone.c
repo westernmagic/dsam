@@ -199,8 +199,8 @@ GetUniParListPtr_PureTone_FM(void)
 		return(FALSE);
 	}
 	if (fMTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fMTonePtr->parList);
@@ -571,8 +571,8 @@ ReadPars_PureTone_FM(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_FM(frequency, intensity, duration, samplingInterval,
@@ -694,8 +694,8 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Frequency Modulated Pure Tone "
-		  "stimulus"));
+		SetProcessName_EarObject(data, wxT("Frequency Modulated Pure Tone ")
+		  wxT("stimulus"));
 		if ( !InitOutSignal_EarObject(data, 1, (ChanLen) floor(fMTonePtr->
 		  duration / fMTonePtr->dt + 0.5), fMTonePtr->dt) ) {
 			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
@@ -708,7 +708,8 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 	  frequency / fMTonePtr->modulationFrequency;
 	amplitude = RMS_AMP(fMTonePtr->intensity) * SQRT_2;
 	dataPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++)
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length;
+	   i++, t++)
 		*(dataPtr++) = amplitude * sin(PIx2 * fMTonePtr->frequency *
 		  t * _OutSig_EarObject(data)->dt - modulationIndex * cos(2 * PI *
 		  fMTonePtr->modulationFrequency * t * _OutSig_EarObject(data)->dt +

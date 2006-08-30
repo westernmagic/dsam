@@ -206,8 +206,8 @@ GetUniParListPtr_Utility_Delay(void)
 		return(FALSE);
 	}
 	if (delay2Ptr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(delay2Ptr->parList);
@@ -417,8 +417,8 @@ ReadPars_Utility_Delay(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Delay(mode, initialDelay, finalDelay)) {
@@ -528,8 +528,8 @@ CheckData_Utility_Delay(EarObjectPtr data)
 		}
 		if ((_InSig_EarObject(data, 0)->numChannels /
 		  _InSig_EarObject(data, 0)->interleaveLevel) < 2) {
-			NotifyError(wxT("%s: LINEAR mode can only be used with multi-"
-			  "channel\nmonaural or binaural signals."), funcName);
+			NotifyError(wxT("%s: LINEAR mode can only be used with multi-")
+			  wxT("channel\nmonaural or binaural signals."), funcName);
 			return(FALSE);
 		}
 		break;
@@ -575,8 +575,8 @@ Process_Utility_Delay(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Introduce ITD into binaural "
-		  "signal"));
+		SetProcessName_EarObject(data, wxT("Introduce ITD into binaural ")
+		  wxT("signal"));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),

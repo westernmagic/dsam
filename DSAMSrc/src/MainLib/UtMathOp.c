@@ -151,8 +151,8 @@ SetUniParList_Utility_MathOp(void)
 	}
 	pars = mathOpPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERATORMODE], wxT("OPERATOR"),
-	  wxT("Mathematical operator ('add', 'modulus', 'scale', 'sqr' or "
-	  "'subtract')."),
+	  wxT("Mathematical operator ('add', 'modulus', 'scale', 'sqr' or ")
+	  wxT("'subtract')."),
 	  UNIPAR_NAME_SPEC,
 	  &mathOpPtr->operatorMode, mathOpPtr->operatorModeList,
 	  (void * (*)) SetOperatorMode_Utility_MathOp);
@@ -182,8 +182,8 @@ GetUniParListPtr_Utility_MathOp(void)
 		return(FALSE);
 	}
 	if (mathOpPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(mathOpPtr->parList);
@@ -391,8 +391,8 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 	if ((mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_ADD) ||
 	  (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SUBTRACT)) {
 		if (data->numInSignals != 2) {
-			NotifyError(wxT("%s: Process must be receive 2 inputs in '%s' "
-			  "mode."), funcName, mathOpPtr->operatorModeList[mathOpPtr->
+			NotifyError(wxT("%s: Process must be receive 2 inputs in '%s' ")
+			  wxT("mode."), funcName, mathOpPtr->operatorModeList[mathOpPtr->
 			  operatorMode].name);
 			return(FALSE);
 		}
@@ -407,8 +407,8 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 			return(FALSE);
 		}
 		if (inSignal[0]->interleaveLevel != inSignal[1]->interleaveLevel) {
-			NotifyError(wxT("%s: Input signals do not have the same interleave "
-			  "level."), funcName);		
+			NotifyError(wxT("%s: Input signals do not have the same ")
+			  wxT("interleave level."), funcName);		
 			return(FALSE);
 		}
 	}
@@ -447,9 +447,10 @@ Process_Utility_MathOp(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Mathematical operation module "
-		  "process"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
+		SetProcessName_EarObject(data, wxT("Mathematical operation module ")
+		  wxT("process"));
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);

@@ -17,7 +17,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "DSAM.h"
+#include "DSAM.h")
 #include "PaWorker1.h"
 #include "UtSSParser.h"
 
@@ -228,8 +228,8 @@ ProcessSetTag(void)
 	  workPtr->simulation, wxT("simulation"))->valuePtr.simScript.simulation,
 	  label);
 	if ((foundLabel = pc != NULL) == FALSE) {
-		NotifyError(wxT("Worker[%d]: %s: Labelled process not initialised, or "
-		  "label '%s' not found."), myRank, funcName, label);
+		NotifyError(wxT("Worker[%d]: %s: Labelled process not initialised, or ")
+		  wxT("label '%s' not found."), myRank, funcName, label);
 		ok = FALSE;
 	}
 	switch (command) {
@@ -486,9 +486,9 @@ ProcessInitTag(void)
 			MPI_Get_count(&status, MPI_DOUBLE, &packageLength);
 			if (_OutSig_EarObject(data)->length < workPtr->sampleCount +
 			  packageLength) {
-				NotifyError(wxT("%s: %s: Channel length is longer than the "
-				  "initialised length for this pre-process data."), workerName,
-				  funcName);
+				NotifyError(wxT("%s: %s: Channel length is longer than the ")
+				  wxT("initialised length for this pre-process data."),
+				  workerName, funcName);
 				ok = FALSE;
 				finished = TRUE;
 			}
@@ -504,9 +504,9 @@ ProcessInitTag(void)
 			  MPI_COMM_WORLD, &status);
 			outPtr = _OutSig_EarObject(data)->channel[workPtr->chanCount++];
 			if (_OutSig_EarObject(data)->length != workPtr->sampleCount) {
-				NotifyError(wxT("%s: %s: Channel length (%u) is shorter than "
-				  "the \ninitialised length for this pre-process data (%u)."),
-				  workerName, funcName, workPtr->sampleCount,
+				NotifyError(wxT("%s: %s: Channel length (%u) is shorter than ")
+				  wxT("the \ninitialised length for this pre-process data ")
+				  wxT("(%u)."), workerName, funcName, workPtr->sampleCount,
 				  _OutSig_EarObject(data)->length);
 				ok = FALSE;
 			}

@@ -76,8 +76,8 @@ StrCmpNoCase_Utility_String(WChar *s1, WChar *s2)
 	string[1] = s2;
 	for (i = 0; i < 2; i++) {
 		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
-			NotifyError(wxT("%s: String '%s' exceeds current available length "
-			  "(%d)."), funcName, string[i], LONG_STRING);
+			NotifyError(wxT("%s: String '%s' exceeds current available length ")
+			  wxT("(%d)."), funcName, string[i], LONG_STRING);
 			return (-1);
 		}
 		ToUpper_Utility_String(upperString[i], string[i]);
@@ -105,8 +105,8 @@ StrNCmpNoCase_Utility_String(WChar *fullString, WChar *abbrevString)
 	string[1] = abbrevString;
 	for (i = 0; i < 2; i++) {
 		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
-			NotifyError(wxT("%s: String '%s' exceeds current available length "
-			  "(%d)."), funcName, string[i], LONG_STRING);
+			NotifyError(wxT("%s: String '%s' exceeds current available length ")
+			  wxT("(%d)."), funcName, string[i], LONG_STRING);
 			return (-1);
 		}
 		ToUpper_Utility_String(upperString[i], string[i]);
@@ -263,8 +263,8 @@ ConvUTF8_Utility_String(WChar *src)
 	static char	dest[LONG_STRING];
 
 	if (wcslen(src) > LONG_STRING - 1) {
-		NotifyError(wxT("%s: Static string length (%d) is too short for string "
-		  "'%s'"), funcName, LONG_STRING, src);
+		NotifyError(wxT("%s: Static string length (%d) is too short for ")
+		  wxT("string '%s'"), funcName, LONG_STRING, src);
 		return(NULL);
 	}
 	if (wcstombs(dest, src, LONG_STRING - 1) < 0 ) {
@@ -324,8 +324,8 @@ MBSToWCS_Utility_String(const char *mb)
 	mbstate_t	state;
 
 	if (strlen(mb) > LONG_STRING - 1) {
-		NotifyError(wxT("%s: Static string length (%d) is too short for string "
-		  " argument."), funcName, LONG_STRING);
+		NotifyError(wxT("%s: Static string length (%d) is too short for ")
+		  wxT("string argument."), funcName, LONG_STRING);
 		return(NULL);
 	}
 

@@ -262,8 +262,8 @@ GetUniParListPtr_BasilarM_GammaChirp(void)
 		return(FALSE);
 	}
 	if (bMGammaCPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaCPtr->parList);
@@ -615,8 +615,8 @@ CheckPars_BasilarM_GammaChirp(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMGammaCPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -639,8 +639,8 @@ GetCFListPtr_BasilarM_GammaChirp(void)
 		return(FALSE);
 	}
 	if (bMGammaCPtr->theCFs == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly "
-		  "set.  NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMGammaCPtr->theCFs);
@@ -728,8 +728,8 @@ ReadPars_BasilarM_GammaChirp(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_GammaChirp(diagnosticMode, opMode, cascade, 
@@ -956,8 +956,8 @@ InitProcessVariables_BasilarM_GammaChirp(EarObjectPtr data)
 				if ((p->coefficientsGT[nch] = InitGammaToneCoeffs_Filters(
 				  p->theCFs->frequency[cFIndex], p->theCFs->bandwidth[cFIndex],
 				  p->cascade, sampleRate)) == NULL) {
-					NotifyError(wxT("%s: Could not initialise coefficients for "
-					  "channel %d."), funcName, nch);
+					NotifyError(wxT("%s: Could not initialise coefficients ")
+					  wxT("for channel %d."), funcName, nch);
 					return(FALSE);
 				}
 			}
@@ -1057,8 +1057,8 @@ RunModel_BasilarM_GammaChirp(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("GammaChirp basilar membrane "
-		  "filtering (Slaney GT)"));
+		SetProcessName_EarObject(data, wxT("GammaChirp basilar membrane ")
+		  wxT("filtering (Slaney GT)"));
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);

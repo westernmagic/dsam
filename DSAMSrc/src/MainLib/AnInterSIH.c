@@ -175,8 +175,8 @@ GetUniParListPtr_Analysis_ISIH(void)
 		return(FALSE);
 	}
 	if (interSIHPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(interSIHPtr->parList);
@@ -387,8 +387,8 @@ ReadPars_Analysis_ISIH(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_ISIH(order, eventThreshold, maxInterval)) {
@@ -482,8 +482,8 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 	signalDuration = _InSig_EarObject(data, 0)->dt * _InSig_EarObject(data, 0)->
 	  length;
 	if (interSIHPtr->maxInterval > signalDuration) {
-		NotifyError(wxT("%s: Maximum interval is longer than signal (value "
-		  "must\nbe <= %g ms)."), funcName, signalDuration);
+		NotifyError(wxT("%s: Maximum interval is longer than signal (value ")
+		  wxT("must\nbe <= %g ms)."), funcName, signalDuration);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -587,8 +587,8 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			return(FALSE);
 		}
 		inSignal = _InSig_EarObject(data, 0);
-		SetProcessName_EarObject(data, wxT("Inter-Spike Interval Histogram "
-		  "(ISIH) analysis"));
+		SetProcessName_EarObject(data, wxT("Inter-Spike Interval Histogram ")
+		  wxT("(ISIH) analysis"));
 		p->maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
 		  maxInterval / inSignal->dt + 0.5): inSignal->length;
 		if (!InitOutSignal_EarObject(data, inSignal->numChannels, p->

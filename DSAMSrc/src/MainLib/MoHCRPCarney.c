@@ -197,8 +197,8 @@ GetUniParListPtr_IHCRP_Carney(void)
 		return(FALSE);
 	}
 	if (carneyRPPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(carneyRPPtr->parList);
@@ -445,8 +445,8 @@ CheckPars_IHCRP_Carney(void)
 		ok = FALSE;
 	}
 	if (!carneyRPPtr->referencePotFlag) {
-		NotifyError(wxT("CheckPars_IHCRP_Carney: Reference potential, Eref, "
-		  "not set."));
+		NotifyError(wxT("CheckPars_IHCRP_Carney: Reference potential, Eref, ")
+		  wxT("not set."));
 		ok = FALSE;
 	}
 	if (!carneyRPPtr->waveDelayCoeffFlag) {
@@ -537,8 +537,8 @@ ReadPars_IHCRP_Carney(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHCRP_Carney(cutOffFrequency, HCOperatingPoint,
@@ -704,15 +704,15 @@ InitCarneyRPCoeffs_IHCRP_Carney(double cF, double dt)
 	p->numLastSamples = (delay < dt)? 1: (ChanLen) (delay / dt);
 	if ((p->lastOutputSection = (ChanData *) calloc(p->numLastSamples,
 	  sizeof(ChanData))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for 'lastOutputSection' array (%u "
-		  "elements)."), funcName, p->numLastSamples);
+		NotifyError(wxT("%s: Out of memory for 'lastOutputSection' array (%u ")
+		  wxT("elements)."), funcName, p->numLastSamples);
 		FreeCarneyRPCoeffs_IHCRP_Carney(&p);
 		return(NULL);
 	}
 	if ((p->lastOutputStore = (ChanData *) calloc(p->numLastSamples,
 	  sizeof(ChanData))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for 'lastOutputStore' array (%u "
-		  "elements)."), funcName, p->numLastSamples);
+		NotifyError(wxT("%s: Out of memory for 'lastOutputStore' array (%u ")
+		  wxT("elements)."), funcName, p->numLastSamples);
 		FreeCarneyRPCoeffs_IHCRP_Carney(&p);
 		return(NULL);
 	}
@@ -826,8 +826,8 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Carney hair cell receptor "
-		  "potential"));
+		SetProcessName_EarObject(data, wxT("Carney hair cell receptor ")
+		  wxT("potential"));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),

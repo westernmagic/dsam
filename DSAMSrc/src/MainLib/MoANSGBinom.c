@@ -194,8 +194,8 @@ GetUniParListPtr_ANSpikeGen_Binomial(void)
 		return(FALSE);
 	}
 	if (binomialSGPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(binomialSGPtr->parList);
@@ -353,8 +353,8 @@ SetRefractoryPeriod_ANSpikeGen_Binomial(double theRefractoryPeriod)
 		return(FALSE);
 	}
 	if (theRefractoryPeriod < 0.0) {
-		NotifyError(wxT("%s: Refractory period must be greater than zero "
-		  "(%g ms)."), funcName, MSEC(theRefractoryPeriod));
+		NotifyError(wxT("%s: Refractory period must be greater than zero ")
+		  wxT("(%g ms)."), funcName, MSEC(theRefractoryPeriod));
 		return(FALSE);
 	}
 	binomialSGPtr->refractoryPeriodFlag = TRUE;
@@ -405,8 +405,8 @@ CheckPars_ANSpikeGen_Binomial(void)
 		ok = FALSE;
 	}
 	if (binomialSGPtr->pulseDuration >= binomialSGPtr->refractoryPeriod) {
-		NotifyError(wxT("%s: Pulse duration must be smaller than the\n"
-		  "refractory period, %g ms (%g ms)."), funcName,
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
+		  wxT("refractory period, %g ms (%g ms)."), funcName,
 		  MSEC(binomialSGPtr->refractoryPeriod),
 		  MSEC(binomialSGPtr->pulseDuration));
 		ok = FALSE;
@@ -484,8 +484,8 @@ ReadPars_ANSpikeGen_Binomial(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_ANSpikeGen_Binomial(numFibres, ranSeed, pulseDuration,
@@ -576,9 +576,9 @@ CheckData_ANSpikeGen_Binomial(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (binomialSGPtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
-		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(data,
-		  0)->dt),
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
+		  wxT("interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(
+		  data, 0)->dt),
 		  MSEC(binomialSGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -614,8 +614,8 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		}
 		if (!InitSubProcessList_EarObject(data,
 		  ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES)) {
-			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
-			  "process."), funcName, ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
+			  wxT("process."), funcName, ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[ANSPIKEGEN_REFRACTADJDATA] = p->refractAdjData;

@@ -170,8 +170,8 @@ GetUniParListPtr_Click(void)
 		return(FALSE);
 	}
 	if (clickPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(clickPtr->parList);
@@ -223,8 +223,8 @@ CheckPars_Click(void)
 	remainder = fmod(clickPtr->clickTime, clickPtr->dt);
 	if ((remainder > DBL_EPSILON) && (fabs(remainder - clickPtr->dt) >
 	  DBL_EPSILON)) {
-		NotifyError(wxT("%s: The click time should be a multiple of the "
-		  "sampling interval (%g ms)"), funcName, MILLI(clickPtr->dt));
+		NotifyError(wxT("%s: The click time should be a multiple of the ")
+		  wxT("sampling interval (%g ms)"), funcName, MILLI(clickPtr->dt));
 		ok = FALSE;
 	}
 	return(ok);
@@ -413,8 +413,8 @@ ReadPars_Click(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s:  Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s:  Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Click(clickTime, amplitude, duration,

@@ -259,8 +259,8 @@ SetUniParList_AppInterface(void)
 	SetPar_UniParMgr(&pars[APP_INT_SIMULATIONFILE], wxT("SIM_FILE"),
 	  wxT("Simulation file."),
 	  UNIPAR_FILE_NAME,
-	  &appInterfacePtr->simulationFile, (WChar *) wxT("Sim. Par File (*.spf)|"
-	    "*.spf|Sim. script (*.sim)|*.sim|All files (*.*)|*.*"),
+	  &appInterfacePtr->simulationFile, (WChar *) wxT("Sim. Par File (*.spf)|")
+	    wxT("*.spf|Sim. script (*.sim)|*.sim|All files (*.*)|*.*"),
 	  (void * (*)) SetSimulationFile_AppInterface);
 	SetPar_UniParMgr(&pars[APP_INT_SEGMENTMODE], wxT("SEGMENT_MODE"),
 	  wxT("Segmented or frame-base processing mode ('on' or 'off')."),
@@ -273,8 +273,8 @@ SetUniParList_AppInterface(void)
 	  &appInterfacePtr->threadMode, appInterfacePtr->threadModeList,
 	  (void * (*)) SetThreadMode_AppInterface);
 	SetPar_UniParMgr(&pars[APP_INT_NUMTHREADS], wxT("NUM_THREADS"),
-	  wxT("No. of processing threads for simulation (-ve defaults to no. "
-	  "CPU's)."),
+	  wxT("No. of processing threads for simulation (-ve defaults to no. ")
+	  wxT("CPU's)."),
 	  UNIPAR_INT,
 	  &appInterfacePtr->numThreads, NULL,
 	  (void * (*)) SetNumThreads_AppInterface);
@@ -736,20 +736,20 @@ PrintUsage_AppInterface(void)
 		  funcName);
 		return;
 	}
-	fprintf_Utility_String(stderr, wxT("\n"
-	  "Usage: %s [options] [parameter1 value1 parameter2 value2 ...]\n"
-	  "\t-d <state>    \t: Diagnostics mode ('off', 'screen' or filename).\n"
-	  "\t-h            \t: Produce this help message.\n"
+	fprintf_Utility_String(stderr, wxT("\n")
+	   wxT("Usage: %s [options] [parameter1 value1 parameter2 value2 ...]\n")
+	   wxT("\t-d <state>    \t: Diagnostics mode ('off', 'screen' or filename).\n")
+	   wxT("\t-h            \t: Produce this help message.\n")
 #	  if USE_EXTENSIONS_LIBRARY
-	  "\t-I <x>        \t: User server ID 'x' when running in server mode.\n"
+	   wxT("\t-I <x>        \t: User server ID 'x' when running in server mode.\n")
 #	  endif
-	  "\t-l <list>     \t: List options: 'parameters', 'cfinfo'.\n"
-	  "\t-P <file name>\t: Use this main parameter file\n"
-	  "\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n"
+	   wxT("\t-l <list>     \t: List options: 'parameters', 'cfinfo'.\n")
+	   wxT("\t-P <file name>\t: Use this main parameter file\n")
+	   wxT("\t-s <file name>\t: Use this simulation file (*.spf or *.sim)\n")
 #	  if USE_EXTENSIONS_LIBRARY
-	  "\t-S            \t: Run AMS in server mode.\n"
+	   wxT("\t-S            \t: Run AMS in server mode.\n")
 #	  endif
-	  ),
+	  ,
 	  appInterfacePtr->appName);
 
 }
@@ -786,8 +786,8 @@ ProcessParComs_AppInterface(void)
 		return(FALSE);
 	}
 	if (p->argc && ((p->argc - p->initialCommand) % 2 != 0)) {
-		NotifyError(wxT("%s: parameter values must be in <name> <value> "
-		  "pairs."), funcName);
+		NotifyError(wxT("%s: parameter values must be in <name> <value> ")
+		  wxT("pairs."), funcName);
 		return(FALSE);
 	}
 	for (i = p->initialCommand; i < p->argc; i += 2) {
@@ -1071,8 +1071,8 @@ ReadPars_AppInterface(WChar *parFileName)
 		if (*subProcess) {
 			if ((par = FindUniPar_UniParMgr(&tempParList, subProcess,
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
-				NotifyError(wxT("%s: Unknown sub-process '%s' for "
-				  "application."), funcName, subProcess);
+				NotifyError(wxT("%s: Unknown sub-process '%s' for ")
+				  wxT("application."), funcName, subProcess);
 				ok = FALSE;
 				break;
 			} else
@@ -1158,8 +1158,8 @@ ReadProgParFile_AppInterface(void)
 	Free_ParFile();
 	readProgParFileFlag = FALSE;
 	if (!ok && (DSAM_strcmp(parName, SIMSCRIPT_SIMPARFILE_SDI_DIVIDER) != 0)) {
-		NotifyError(wxT("%s: Invalid parameters in file '%s', program "
-		  "parameter  section (%s)."), funcName, GetFilePath_AppInterface(
+		NotifyError(wxT("%s: Invalid parameters in file '%s', program ")
+		  wxT("parameter  section (%s)."), funcName, GetFilePath_AppInterface(
 		  appInterfacePtr->simulationFile), parName);
 		return(FALSE);
 	}
@@ -1615,8 +1615,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			p->Init = Init;
 			if (p->RegisterUserModules) {
 				if (!InitUserModuleList_ModuleReg(p->maxUserModules)) {
-					NotifyError(wxT("%s: Could not initialise user module "
-					  "list."), funcName);
+					NotifyError(wxT("%s: Could not initialise user module ")
+					  wxT("list."), funcName);
 					return(FALSE);
 				}
 				if (!(* p->RegisterUserModules)()) {
@@ -1642,8 +1642,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 				(* p->PrintUsage)();
 			exit(0);
 		}
-		DPrint(wxT("Starting %s Application version %s [DSAM Version: %s "
-		  "(dynamic),\n%s (compiled)]...\n"), p->appName, p->appVersion,
+		DPrint(wxT("Starting %s Application version %s [DSAM Version: %s ")
+		  wxT("(dynamic),\n%s (compiled)]...\n"), p->appName, p->appVersion,
 		  GetDSAMPtr_Common()->version, p->compiledDSAMVersion);
 	}
 	if (p->updateProcessVariablesFlag) {
@@ -1665,8 +1665,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			SetParsFilePath_Common(GetParsFilePath_ModuleMgr(p->audModel));
 			if ((GetSimFileType_ModuleMgr(p->audModel) ==
 			  UTILITY_SIMSCRIPT_SPF_FILE) && !ReadProgParFile_AppInterface()) {
-				NotifyError(wxT("%s: Could not read the program settings in\n"
-				  "file '%s'."), funcName, GetFilePath_AppInterface(
+				NotifyError(wxT("%s: Could not read the program settings in\n")
+				  wxT("file '%s'."), funcName, GetFilePath_AppInterface(
 				  p->simulationFile));
 				return(FALSE);
 			}
@@ -1822,8 +1822,8 @@ RunSim_AppInterface(void)
 		return(FALSE);
 	}
 	if (!RunProcess_ModuleMgr(appInterfacePtr->audModel)) {
-		NotifyError(wxT("%s: Could not run main auditory model simulation "
-		  "'%s'."), funcName, appInterfacePtr->simulationFile);
+		NotifyError(wxT("%s: Could not run main auditory model simulation ")
+		  wxT("'%s'."), funcName, appInterfacePtr->simulationFile);
 		return(FALSE);
 	}
 	return(TRUE);

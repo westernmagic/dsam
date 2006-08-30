@@ -82,8 +82,8 @@ GrBrushes::SetGreyScales(int theNumGreyScales)
 	float	redScale, blueScale, greenScale;
 
 	if (theNumGreyScales > MAX_BRUSHES) {
-		wxLogError(_T("GrBrushes::SetGreyScales: Illegal no. of scales "
-		  "given."));
+		wxLogError(_T("GrBrushes::SetGreyScales: Illegal no. of scales ")
+		  wxT("given."));
 		exit(1);
 	}
 	redScale = BRUSHES_GREYSCALE_MAX_RED / (theNumGreyScales - 1.0);

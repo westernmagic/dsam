@@ -281,8 +281,8 @@ IPCUtils::InitInputMemory(ChanLen length)
 	static const wxChar *funcName = wxT("IPCUtils::InitInputMemory");
 
 	if (!InitMemory_UPortableIO(&inUIOPtr, length)) {
-		NotifyError(wxT("%s: Could not initialise memory for input process "
-		  "signal"), funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process ")
+		  wxT("signal"), funcName);
 		return(false);
 	}
 	return(true);

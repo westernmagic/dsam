@@ -212,8 +212,8 @@ GetUniParListPtr_Analysis_SpikeRegularity(void)
 		return(FALSE);
 	}
 	if (spikeRegPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(spikeRegPtr->parList);
@@ -500,8 +500,8 @@ ReadPars_Analysis_SpikeRegularity(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_SpikeRegularity(eventThreshold, windowWidth,
@@ -595,16 +595,16 @@ CheckData_Analysis_SpikeRegularity(EarObjectPtr data)
 		return(FALSE);
 	if ((spikeRegPtr->windowWidth > 0.0) && (spikeRegPtr->windowWidth <
 	 _InSig_EarObject(data, 0)->dt)) {
-		NotifyError(wxT("%s: Bin width (%g ms) is too small for sampling\n"
-		  "interval (%g ms)."), funcName, MSEC(spikeRegPtr->windowWidth),
+		NotifyError(wxT("%s: Bin width (%g ms) is too small for sampling\n")
+		  wxT("interval (%g ms)."), funcName, MSEC(spikeRegPtr->windowWidth),
 		  MSEC(_InSig_EarObject(data, 0)->dt));
 		return(FALSE);
 	}
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if ((spikeRegPtr->timeRange > 0.0) && ((spikeRegPtr->timeRange +
 	  spikeRegPtr->timeOffset) > signalDuration)) {
-		NotifyError(wxT("%s: Time offset (%g ms) plus range (%g ms) is "
-		  "longer than signal (%g ms)."), funcName, MSEC(spikeRegPtr->
+		NotifyError(wxT("%s: Time offset (%g ms) plus range (%g ms) is ")
+		  wxT("longer than signal (%g ms)."), funcName, MSEC(spikeRegPtr->
 		  timeOffset), MSEC(spikeRegPtr->timeRange), signalDuration);
 		return(FALSE);
 	}
@@ -681,8 +681,8 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_SpikeRegularity();
-			if ((p->spikeListSpec = InitListSpec_SpikeList(_InSig_EarObject(data, 0)->
-			  numChannels)) == NULL) {
+			if ((p->spikeListSpec = InitListSpec_SpikeList(_InSig_EarObject(
+			  data, 0)->numChannels)) == NULL) {
 				NotifyError(wxT("%s: Out of memory for spikeListSpec."),
 				  funcName);
 				return(FALSE);
@@ -691,14 +691,16 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		if (!InitOutSignal_EarObject(p->countEarObj, _InSig_EarObject(data, 0)->
-		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(data)->dt)) {
+		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(
+		  data)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise countEarObj."), funcName);
 			return(FALSE);
 		}
-		if ((p->runningTimeOffsetIndex = (ChanLen *) calloc(_InSig_EarObject(data, 0)->
-		  numChannels, sizeof(ChanLen))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'runningTimeOffsetIndex"
-			  "[%d]' array."), funcName, _InSig_EarObject(data, 0)->numChannels);
+		if ((p->runningTimeOffsetIndex = (ChanLen *) calloc(_InSig_EarObject(
+		  data, 0)->numChannels, sizeof(ChanLen))) == NULL) {
+			NotifyError(wxT("%s: Out of memory for 'runningTimeOffsetIndex")
+			  wxT("[%d]' array."), funcName, _InSig_EarObject(data, 0)->
+			  numChannels);
 			return(FALSE);
 		}
 		ResetProcess_Analysis_SpikeRegularity(data);

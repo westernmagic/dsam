@@ -198,8 +198,8 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 			case 'S':
 				s = va_arg(args, WChar *);
 				if (DSAM_strlen(s) >= LONG_STRING) {
-					NotifyError(wxT("%s: Buffer(%d) is too small for string "
-					  "(%d)."), funcName, LONG_STRING, DSAM_strlen(s));
+					NotifyError(wxT("%s: Buffer(%d) is too small for string ")
+					  wxT("(%d)."), funcName, LONG_STRING, DSAM_strlen(s));
 					return;
 				}
 				Snprintf_Utility_String(buffer, MAXLINE, subFormat, s);
@@ -359,8 +359,8 @@ GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
 		fileAccess = (mode == APPEND)? "a": "w";
 		if ((fp = DSAM_fopen(outputSpecifier,
 		  fileAccess)) == NULL) {
-			NotifyError(wxT("%s: Could not open file '%s' output sent to "
-			  "stderr."), funcName, outputSpecifier);
+			NotifyError(wxT("%s: Could not open file '%s' output sent to ")
+			  wxT("stderr."), funcName, outputSpecifier);
 			return(stderr); 
 		}
 	}

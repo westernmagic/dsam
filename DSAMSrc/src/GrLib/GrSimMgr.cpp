@@ -235,20 +235,20 @@ MyApp::OnInit(void)
 	// Create templates relating drawing documents to their views
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_ALL_FILES_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
-	  "view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT(
+	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_XML_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
-	  "view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT(
+	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Parameter File"),
 	  wxT("*.") SDI_DOCUMENT_SPF_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
 	  SDI_DOCUMENT_SPF_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
 	  "view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_SIM_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_SIM_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
-	  "view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	  SDI_DOCUMENT_SIM_FILE_EXT, wxT("Simulation Design"), wxT(
+	  "Simulation view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);
 
 	// Get frame position and size
@@ -259,8 +259,9 @@ MyApp::OnInit(void)
 	int		h = pConfig->Read(wxT("h"), (long int) SIM_MANAGER_DEFAULT_HEIGHT);
 
 	// Create the main frame window
-	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, wxT("Simulation "
-	  "Manager"), wxPoint(x, y), wxSize(w, h), wxDEFAULT_FRAME_STYLE);
+	frame = new SDIFrame(myDocManager, (wxFrame *) NULL, wxT(
+	  "Simulation Manager"), wxPoint(x, y), wxSize(w, h),
+	  wxDEFAULT_FRAME_STYLE);
 
 	frame->SetMenuBar(CreateMenuBar());
 	frame->editMenu = editMenu;
@@ -325,21 +326,21 @@ wxMenuBar *
 MyApp::CreateMenuBar(void)
 {
 	fileMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
-	fileMenu->Append(wxID_NEW, wxT("&New\tCtrl-N"), wxT("Design new "
-	  "simulation."));
-	fileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl-O"), wxT("Load Simulation "
-	  "from file."));
-	fileMenu->Append(wxID_REVERT, wxT("&Reload\tCtrl-R"), wxT("Reload "
-	  "Simulation."));
+	fileMenu->Append(wxID_NEW, wxT("&New\tCtrl-N"), wxT("Design new ")
+	  wxT("simulation."));
+	fileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl-O"), wxT("Load Simulation ")
+	  wxT("from file."));
+	fileMenu->Append(wxID_REVERT, wxT("&Reload\tCtrl-R"), wxT("Reload ")
+	  wxT("Simulation."));
 	fileMenu->Append(wxID_CLOSE, wxT("&Close\tCtrl-W"));
  	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save "
-	  "simulation parameter file."));
-	fileMenu->Append(wxID_SAVEAS,  wxT("Save as..."),  wxT("Save simulation "
-	  "parameter file..."));
+	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save ")
+	  wxT("simulation parameter file."));
+	fileMenu->Append(wxID_SAVEAS,  wxT("Save as..."),  wxT("Save simulation ")
+	  wxT("parameter file..."));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, wxT("E&xit\tCtrl-Q"), wxT("Exit from "
-	  "program."));
+	fileMenu->Append(wxID_EXIT, wxT("E&xit\tCtrl-Q"), wxT("Exit from ")
+	  wxT("program."));
 	myDocManager->FileHistoryUseMenu(fileMenu);
 
 	editMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
@@ -348,8 +349,8 @@ MyApp::CreateMenuBar(void)
 	editMenu->AppendSeparator();
 	editMenu->Append(SDIFRAME_CUT, wxT("&Cut\tCtrl-X"));
 	editMenu->AppendSeparator();
-	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Preferences..."
-	  "\tCtrl-M"), wxT("Edit main program preferences"));
+	editMenu->Append(SDIFRAME_EDIT_MAIN_PARS, wxT("&Preferences...")
+	  wxT("\tCtrl-M"), wxT("Edit main program preferences"));
 
 	viewMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
 	viewMenu->Append(MYFRAME_ID_VIEW_SIM_PARS, wxT("&Simulation parameters"),
@@ -358,8 +359,8 @@ MyApp::CreateMenuBar(void)
 	programMenu = new wxMenu;
 	programMenu->Append(SDIFRAME_EXECUTE, wxT("&Execute\tCtrl-G"), wxT(
 	  "Execute simulation"));
-	programMenu->Append(SDIFRAME_STOP_SIMULATION, wxT("S&top "
-	  "simulation\tCtrl-C"), wxT("Stop simulation execution."));
+	programMenu->Append(SDIFRAME_STOP_SIMULATION, wxT("S&top ")
+	  wxT("simulation\tCtrl-C"), wxT("Stop simulation execution."));
 
 	windowsMenu = new wxMenu(wxT(""), wxMENU_TEAROFF);
 	windowsMenu->Append(SDIFRAME_DIAG_WINDOW, wxT("Diagnostic Window"),

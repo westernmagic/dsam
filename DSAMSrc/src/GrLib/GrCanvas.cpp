@@ -736,12 +736,12 @@ MyCanvas::OnRightDown(wxMouseEvent &event)
 {
 	wxMenu *menu = new wxMenu;
 
-	menu->Append(DISPLAY_MENU_PRINT, wxT("&Print"), wxT("Print the display "
-	  "window"));
-	menu->Append(DISPLAY_MENU_PREFERENCES, wxT("P&references"), wxT("Set the "
-	  "display user preferences"));
-	menu->Append(DISPLAY_MENU_EXIT, wxT("&Close"), wxT("Close the display "
-	  "window"));
+	menu->Append(DISPLAY_MENU_PRINT, wxT("&Print"), wxT("Print the display ")
+	  wxT("window"));
+	menu->Append(DISPLAY_MENU_PREFERENCES, wxT("P&references"), wxT("Set the ")
+	  wxT("display user preferences"));
+	menu->Append(DISPLAY_MENU_EXIT, wxT("&Close"), wxT("Close the display ")
+	  wxT("window"));
 
     PopupMenu( menu, event.GetX(), event.GetY() );
 
@@ -764,8 +764,8 @@ MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 		PrintDisp printout(this);
 
 		if (!printer.Print(this, &printout, TRUE))
-			wxLogWarning(wxT("%s:There was a problem printing.\nPerhaps your "
-			  "current printer is not set correctly?"),funcName);
+			wxLogWarning(wxT("%s:There was a problem printing.\nPerhaps your ")
+			  wxT("current printer is not set correctly?"),funcName);
 		else
 			*printData = printer.GetPrintDialogData().GetPrintData();
 #	endif // wxUSE_PRINTING_ARCHITECTURE

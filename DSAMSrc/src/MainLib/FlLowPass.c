@@ -193,8 +193,8 @@ GetUniParListPtr_Filter_LowPass(void)
 		return(FALSE);
 	}
 	if (lowPassFPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(lowPassFPtr->parList);
@@ -402,8 +402,8 @@ ReadPars_Filter_LowPass(WChar *fileName)
    fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_LowPass(mode, cutOffFrequency, signalMultiplier)) {

@@ -197,8 +197,8 @@ GetUniParListPtr_BasilarM_Carney(void)
 		return(FALSE);
 	}
 	if (bMCarneyPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMCarneyPtr->parList);
@@ -388,8 +388,8 @@ SetCFList_BasilarM_Carney(CFListPtr theCFList)
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError(wxT("%s: Centre frequency structure not initialised "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Centre frequency structure not initialised ")
+		  wxT("correctly set."), funcName);
 		return(FALSE);
 	}
 	if (!SetBandwidths_CFList(theCFList, wxT("internal_dynamic"), NULL)) {
@@ -447,8 +447,8 @@ CheckPars_BasilarM_Carney(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMCarneyPtr->cFList)) {
-		NotifyError(wxT("%s: Centre frequency list  parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list  parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -551,8 +551,8 @@ ReadPars_BasilarM_Carney(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_Carney(cascade, cutOffFrequency, hCOperatingPoint,
@@ -774,14 +774,14 @@ InitProcessVariables_BasilarM_Carney(EarObjectPtr data)
 			for (i = 0; i < p->numThreads; i++)
 				if ((p->f[i] = (Complex *) calloc(p->numComplexCoeffs,
 				  sizeof(Complex))) == NULL) {
-					NotifyError(wxT("%s: Out of memory for 'f[%d]' array (%d "
-					  "elements)."), funcName, i, p->numComplexCoeffs);
+					NotifyError(wxT("%s: Out of memory for 'f[%d]' array (%d ")
+					  wxT("elements)."), funcName, i, p->numComplexCoeffs);
 					FreeProcessVariables_BasilarM_Carney();
 					return(FALSE);
 				}
 			SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
-			  "(Hz)"));
+			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT(
+			  "Frequency (Hz)"));
 			SetInfoChannelLabels_SignalData(_OutSig_EarObject(data),
 			   p->cFList->frequency);
 			SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->cFList->frequency);
@@ -841,9 +841,10 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Carney non-linear basilar membrane "
-		  "filtering"));
-		totalChannels = p->cFList->numChannels * _InSig_EarObject(data, 0)->numChannels;
+		SetProcessName_EarObject(data, wxT("Carney non-linear basilar ")
+		  wxT("membrane filtering"));
+		totalChannels = p->cFList->numChannels * _InSig_EarObject(data, 0)->
+		  numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Could not initialise output channels."),
 			  funcName);
@@ -873,8 +874,8 @@ RunModel_BasilarM_Carney(EarObjectPtr data)
 		aCoeff = BM_CARNEY_A(p->c, cC->tau0);
 		cF = p->cFList->frequency[cFIndex];
 		pix2xDtxCF = p->pix2xDt * cF;
-		inPtr = _InSig_EarObject(data, 0)->channel[chan % _InSig_EarObject(data, 0)->
-		  interleaveLevel];
+		inPtr = _InSig_EarObject(data, 0)->channel[chan % _InSig_EarObject(data,
+		  0)->interleaveLevel];
 		outPtr = outSignal->channel[chan];
 		for(i = 0; i < outSignal->length; i++) {	
 			/* FREQUENCY SHIFT THE ARRAY BUF  */

@@ -203,8 +203,8 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 	wxButton *browseBtn = new wxButton(parent, DL_ID_BUTTON + index,
 	  PARLISTINFO_BROWSE_BUTTON_TEXT, wxDefaultPosition, wxSize(
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
-	browseBtn->SetToolTip(wxT("Click this button to browse for a file "
-	  "(path)."));
+	browseBtn->SetToolTip(wxT("Click this button to browse for a file ")
+	  wxT("(path)."));
 	browseBtn->Enable(cBox->GetSelection() == (cBox->GetCount() - 1));
 
 	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
@@ -284,8 +284,8 @@ ParListInfo::SetParStandard(UniParPtr par, int index)
 	if (par->type != UNIPAR_INT_AL)
 		textCtrl->SetToolTip((wxChar *) par->desc);
 	else
-		textCtrl->SetToolTip(wxString((wxChar *) par->desc) + wxT("\nYou must "
-		  "press <return> after changing this parameter."));
+		textCtrl->SetToolTip(wxString((wxChar *) par->desc) + wxT("\nYou must ")
+		  wxT("press <return> after changing this parameter."));
 	textCtrl->SetInsertionPointEnd();
 
 	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
@@ -523,8 +523,8 @@ ParListInfo::SetEnabledControls(void)
 		if (controlList[i])
 			controlList[i]->SetEnable();
 		else
-			wxMessageBox(wxT("ParListInfo::SetEnabledControls: Unset "
-			  "control!"));
+			wxMessageBox(wxT("ParListInfo::SetEnabledControls: Unset ")
+			  wxT("control!"));
 
 }
 

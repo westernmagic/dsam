@@ -330,8 +330,8 @@ GetUniParListPtr_BasilarM_DRNL_Test(void)
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0DRNLPtr->parList);
@@ -404,8 +404,8 @@ CheckPars_BasilarM_DRNL_Test(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bM0DRNLPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -453,15 +453,16 @@ SetNonLinGTCascade_BasilarM_DRNL_Test(int theNonLinGTCascade)
 BOOLN
 SetNonLinLPCascade_BasilarM_DRNL_Test(int theNonLinLPCascade)
 {
-	static const WChar	*funcName = wxT("SetNonLinLPCascade_BasilarM_DRNL_Test");
+	static const WChar	*funcName = wxT(
+	  "SetNonLinLPCascade_BasilarM_DRNL_Test");
 
 	if (bM0DRNLPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if (theNonLinLPCascade < 0) {
-		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."), funcName,
-		  theNonLinLPCascade);
+		NotifyError(wxT("%s: Illegal value (%d).  Use zero to disable."),
+		  funcName, theNonLinLPCascade);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -523,8 +524,8 @@ SetCompressionParsArray_BasilarM_DRNL_Test(int mode)
 		}
 		if ((bM0DRNLPtr->compressionParsFlag = (BOOLN *) calloc(numPars,
 		  sizeof(BOOLN))) == NULL) {
-			NotifyError(wxT("%s: Output of memory for compression parameter "
-			  "flags array([%d])."), funcName, numPars);
+			NotifyError(wxT("%s: Output of memory for compression parameter ")
+			  wxT("flags array([%d])."), funcName, numPars);
 			return(FALSE);
 		}
 		bM0DRNLPtr->numCompressionPars = numPars;
@@ -784,8 +785,8 @@ SetCFList_BasilarM_DRNL_Test(CFListPtr theCFList)
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError(wxT("%s: Centre frequency structure not initialised "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Centre frequency structure not initialised ")
+		  wxT("correctly set."), funcName);
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->theCFs != NULL)
@@ -891,8 +892,8 @@ GetCFListPtr_BasilarM_DRNL_Test(void)
 		return(FALSE);
 	}
 	if (bM0DRNLPtr->theCFs == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly "
-		  "set.  NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0DRNLPtr->theCFs);
@@ -1024,8 +1025,8 @@ ReadPars_BasilarM_DRNL_Test(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_DRNL_Test(nonLinGTCascade, nonLinLPCascade,
@@ -1153,8 +1154,8 @@ InitLPFilter_BasilarM_DRNL_Test(LowPassFilterPtr p, int index,
 	case BASILARM_DRNL_TEST_BUTTERWORTH_LPFILTERMODE:
 		if ((p->ptr.butt[index] = InitIIR2Coeffs_Filters(Filters_butt2Poly,
 		  p->cascade, cutOffFrequency, 1.0 / dt, LOWPASS)) == NULL) {
-			NotifyError(wxT("%s: Could not initialise butterworth filter "
-			  "(%d)."), funcName, index);
+			NotifyError(wxT("%s: Could not initialise butterworth filter ")
+			  wxT("(%d)."), funcName, index);
 			return(FALSE);
 		}
 		break;
@@ -1250,8 +1251,8 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 
 		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->nonLinearLP,
 		  p->nonLinLPCascade)) {
-			NotifyError(wxT("%s: Could not initialise nonlinear low-pass "
-			  "filter."), funcName);
+			NotifyError(wxT("%s: Could not initialise nonlinear low-pass ")
+			  wxT("filter."), funcName);
 			return(FALSE);
 		}
 		if (!InitLPFilterArray_BasilarM_DRNL_Test(&p->linearLP,
@@ -1269,23 +1270,23 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 				if ((p->nonLinearGT1[i] = InitGammaToneCoeffs_Filters(
 				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
 				  sampleRate)) == NULL) {
-					NotifyError(wxT("%s: Could not initialise nonlinear GT 1 "
-					  "coefficients for channel %d."), funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 1 ")
+					  wxT("coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 				if ((p->nonLinearGT2[i] = InitGammaToneCoeffs_Filters(
 				  centreFreq, p->theCFs->bandwidth[cFIndex], p->nonLinGTCascade,
 				  sampleRate)) == NULL) {
-					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 "
-					  "coefficients for channel %d."), funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 ")
+					  wxT("coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 			}
 			if (p->linearGT) {
 				if ((p->linearGT[i] = InitGammaToneCoeffs_Filters(p->linCF,
 				  p->linBwidth, p->linGTCascade, sampleRate)) == NULL) {
-					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 "
-					  "coefficients for channel %d."), funcName, i);
+					NotifyError(wxT("%s: Could not initialise nonlinear GT 2 ")
+					  wxT("coefficients for channel %d."), funcName, i);
 					return(FALSE);
 				}
 			}
@@ -1304,9 +1305,12 @@ InitProcessVariables_BasilarM_DRNL_Test(EarObjectPtr data)
 			}
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
-		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT(
+		  "Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
@@ -1456,8 +1460,8 @@ RunModel_BasilarM_DRNL_Test(EarObjectPtr data)
 
 		/* Initialise Variables and coefficients */
 
-		SetProcessName_EarObject(data, wxT("DRNL_Test Basilar Membrane "
-		  "Filtering"));
+		SetProcessName_EarObject(data, wxT("DRNL_Test Basilar Membrane ")
+		  wxT("Filtering"));
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);

@@ -207,8 +207,8 @@ SetUniParList_Harmonic(void)
 	  &harmonicPtr->phaseMode, harmonicPtr->phaseModeList,
 	  (void * (*)) SetPhaseMode_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_PHASE_PAR], wxT("PHASE_PAR"),
-	  wxT("Phase parameter (Shroeder phase: C value, Random: random number "
-	  "seed)."),
+	  wxT("Phase parameter (Shroeder phase: C value, Random: random number ")
+	    wxT("seed)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->phaseVariable, NULL,
 	  (void * (*)) SetPhaseVariable_Harmonic);
@@ -293,8 +293,8 @@ GetUniParListPtr_Harmonic(void)
 		return(FALSE);
 	}
 	if (harmonicPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(harmonicPtr->parList);
@@ -385,8 +385,8 @@ CheckPars_Harmonic(void)
 	}
 	if (harmonicPtr->order > 0) {
 		if (!harmonicPtr->lowerCutOffFreqFlag) {
-			NotifyError(wxT("%s: Filter lower cut-off frequency variable not "
-			  "set."), funcName);
+			NotifyError(wxT("%s: Filter lower cut-off frequency variable not ")
+			  wxT("set."), funcName);
 			ok = FALSE;
 		}
 		if (!harmonicPtr->upperCutOffFreqFlag) {
@@ -409,8 +409,8 @@ CheckPars_Harmonic(void)
 	criticalFrequency = 1.0 / (2.0 * harmonicPtr->dt);
 	if (ok && (criticalFrequency <= harmonicPtr->frequency *
 	   harmonicPtr->highestHarmonic)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
-		  "highest frequency."), funcName, MSEC(harmonicPtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
+		  wxT("highest frequency."), funcName, MSEC(harmonicPtr->dt));
 		ok = FALSE;
 	}
 	return(ok);
@@ -643,8 +643,8 @@ SetModulationFrequency_Harmonic(double theModulationFrequency)
 	harmonicPtr->modulationFrequencyFlag = TRUE;
 	harmonicPtr->modulationFrequency = theModulationFrequency;
 	if (harmonicPtr->modulationFrequency == 0.0) {
-		NotifyError(wxT("%s: The modulation frequency must be greater than "
-		  "zero."), funcName);
+		NotifyError(wxT("%s: The modulation frequency must be greater than ")
+		  wxT("zero."), funcName);
 		return(FALSE);
 	}	
 	return(TRUE);
@@ -952,8 +952,8 @@ ReadPars_Harmonic(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Harmonic(phaseMode, lowestHarmonic, highestHarmonic,
@@ -1045,8 +1045,8 @@ InitProcessVariables_Harmonic(EarObjectPtr data)
 		}
 		if ((p->harmonicFrequency = (double *) calloc(totalNumberOfHarmonics,
 		  sizeof(double))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'harmonic frequencies' "
-			  "array"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'harmonic frequencies' ")
+			  wxT("array"), funcName);
 			return(FALSE);
 		}
 		if ((p->modIndex = (double *) calloc(totalNumberOfHarmonics, sizeof(

@@ -174,8 +174,8 @@ GetUniParListPtr_Analysis_ALSR(void)
 		return(FALSE);
 	}
 	if (aLSRPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(aLSRPtr->parList);
@@ -442,8 +442,8 @@ InitProcessVariables_Analysis_ALSR(EarObjectPtr data)
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_Analysis_ALSR();
 		if ((p->modulusFT = Init_EarObject(wxT("Ana_FourierT"))) == NULL) {
-			NotifyError(wxT("%s: Could not initialise the 'modulusFT' "
-			  "EarObject."), funcName);
+			NotifyError(wxT("%s: Could not initialise the 'modulusFT' ")
+			  wxT("EarObject."), funcName);
 			return(FALSE);
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -527,10 +527,10 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
-		  "(Hz) "));
-		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("ALSR function (+%g "
-		  "/ -%g octaves)"), p->lowerAveLimit, p->upperAveLimit);
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency ")
+		  wxT("(Hz) "));
+		Snprintf_Utility_String(channelTitle, MAXLINE, wxT("ALSR function ")
+		  wxT("(+%g / -%g octaves)"), p->lowerAveLimit, p->upperAveLimit);
 		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
 		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), NULL);
 		SetInfoCFArray_SignalData(_OutSig_EarObject(data), NULL);

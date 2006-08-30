@@ -232,8 +232,8 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 		for (i = 0; i < numChannels; i++)
 			if ((p[i] = (ChanData *) calloc(theData->length, sizeof(
 			  ChanData))) == NULL) {
-				NotifyError(wxT("%s: Out of memory for channel[%d] data "
-				  "(length = %u)."), funcName, i, theData->length);
+				NotifyError(wxT("%s: Out of memory for channel[%d] data ")
+				  wxT("(length = %u)."), funcName, i, theData->length);
 				for (j = 0; j < i - 1; j++)
 					free(p[j]);
 				free(p);
@@ -362,15 +362,15 @@ SameType_SignalData(SignalDataPtr a, SignalDataPtr b)
 	static const WChar *funcName = wxT("SameType_SignalData");
 
 	if (!a->lengthFlag || !b->lengthFlag) {
-		NotifyError(wxT("%s: Both data set length values must be set! "
-		  "(lengths:- a = %u, b = %u)."), funcName, a->length, b->length);
+		NotifyError(wxT("%s: Both data set length values must be set! ")
+		  wxT("(lengths:- a = %u, b = %u)."), funcName, a->length, b->length);
 		return(FALSE);
 	}
 	if  ((a->length != b->length) || (a->numChannels != b->numChannels)) {
-		NotifyError(wxT("%s: Both data sets must have the same length and "
-		  "number of channels! (lengths:- a = %lu, b = %lu; channels:-  a = %d,"
-		  " b = %d.)"), funcName, a->length, b->length, a->numChannels,
-		  b->numChannels);
+		NotifyError(wxT("%s: Both data sets must have the same length and ")
+		  wxT("number of channels! (lengths:- a = %lu, b = %lu; channels:- ")
+		  wxT(" a = %d, b = %d.)"), funcName, a->length, b->length, a->
+		  numChannels, b->numChannels);
 		return(FALSE);
 	}
     return(TRUE);
@@ -626,8 +626,8 @@ SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
 	if (!theData->localInfoFlag)
 		return(TRUE);
 	if ((index < 0) || (index >= theData->numChannels)) {
-		NotifyError(wxT("%s: Illegal label index (%d), must be in range 0 - "
-		  "%d."), funcName, index, theData->numChannels - 1);
+		NotifyError(wxT("%s: Illegal label index (%d), must be in range 0 - ")
+		  wxT("%d."), funcName, index, theData->numChannels - 1);
 		return(FALSE);
 	}
 	theData->info.chanLabel[index] = label;
@@ -680,8 +680,8 @@ SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
 	if (!theData->localInfoFlag)
 		return(TRUE);
 	if ((index < 0) || (index >= theData->numChannels)) {
-		NotifyError(wxT("%s: Illegal CF array index (%d), must be in range 0 - "
-		  "%d."), funcName, index, theData->numChannels - 1);
+		NotifyError(wxT("%s: Illegal CF array index (%d), must be in range 0 ")
+		  wxT("- %d."), funcName, index, theData->numChannels - 1);
 		return(FALSE);
 	}
 	theData->info.cFArray[index] = cF;
@@ -929,8 +929,8 @@ GaindB_SignalData(SignalDataPtr d, double gaindB)
 	ChanLen	j;
 	ChanData	*dataPtr;
 	
-	if (!CheckInit_SignalData(d, wxT("GaindBIndividual_SignalData "
-	  "(theSignal)")))
+	if (!CheckInit_SignalData(d, wxT("GaindBIndividual_SignalData ")
+	  wxT("(theSignal)")))
 		return(FALSE);
 	scale = pow(10.0, gaindB / 20.0);
 	for (i = d->offset; i < d->numChannels; i++)
@@ -989,8 +989,8 @@ Delay_SignalData(SignalDataPtr signal, double delay)
 
 	samplesDelay = (ChanLen) ( fabs(delay) / signal->dt);
 	if (samplesDelay > signal->length)	{
-		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration "
-		  "(%g ms)"), funcName, MSEC(delay), MSEC(_GetDuration_SignalData(
+		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration ")
+		  wxT("(%g ms)"), funcName, MSEC(delay), MSEC(_GetDuration_SignalData(
 		  signal)));
 		return(FALSE);
 	}
@@ -1085,8 +1085,8 @@ GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
 		;
 	}
 	if (*maxChan < *minChan) {
-		NotifyError(wxT("%s: Invalid channel limits calculated from averaging "
-		  "limits (%d -> %d)."), funcName, *minChan, *maxChan);
+		NotifyError(wxT("%s: Invalid channel limits calculated from averaging ")
+		  wxT("limits (%d -> %d)."), funcName, *minChan, *maxChan);
 		return(FALSE);
 	}
 	return(TRUE);

@@ -86,7 +86,8 @@ Init_PulseTrain(ParameterSpecifier parSpec)
 			Free_PulseTrain();
 		if ((pulseTrainPtr = (PulseTrainPtr) malloc(sizeof(PulseTrain))) ==
 		  NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -182,8 +183,8 @@ GetUniParListPtr_PulseTrain(void)
 		return(FALSE);
 	}
 	if (pulseTrainPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pulseTrainPtr->parList);
@@ -408,7 +409,8 @@ PrintPars_PulseTrain(void)
 	static const WChar	*funcName = wxT("PrintPars_PulseTrain");
 
 	if (!CheckPars_PulseTrain()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set."),
+		  funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Pulse-Train Module Parameters:-\n"));
@@ -463,8 +465,8 @@ ReadPars_PulseTrain(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PulseTrain(pulseRate, pulseDuration, amplitude,
@@ -554,24 +556,26 @@ CheckData_PulseTrain(EarObjectPtr data)
 	}
 	pulsePeriod = 1.0 / pulseTrainPtr->pulseRate;
 	if (pulsePeriod <= pulseTrainPtr->pulseDuration) {
-		NotifyError(wxT("%s: Pulse rate is too high for the pulse "
-		  "duration\n(rate must be < %g /s)"), funcName, 1.0 / pulseTrainPtr->
-		  pulseDuration);
+		NotifyError(wxT("%s: Pulse rate is too high for the pulse ")
+		  wxT("duration\n(rate must be < %g /s)"), funcName, 1.0 /
+		    pulseTrainPtr->pulseDuration);
 		return(FALSE);
 	}
 	if (pulsePeriod / pulseTrainPtr->dt < 2.0) {
-		NotifyError(wxT("%s: Pulse rate is too low for the sampling interval\n"
-		  "(rate must be > %g /s)"), funcName, 1.0 / (pulseTrainPtr->dt * 2.0));
+		NotifyError(wxT("%s: Pulse rate is too low for the sampling interval\n")
+		  wxT("(rate must be > %g /s)"), funcName, 1.0 / (pulseTrainPtr->dt *
+		  2.0));
 		return(FALSE);
 	}
 	if (pulsePeriod > pulseTrainPtr->duration) {
-		NotifyError(wxT("%s: Pulse rate is too low for the signal duration\n"
-		  "(rate must be > %g /s)"), funcName, 1.0 / pulseTrainPtr->duration);
+		NotifyError(wxT("%s: Pulse rate is too low for the signal duration\n")
+		  wxT("(rate must be > %g /s)"), funcName, 1.0 / pulseTrainPtr->
+		  duration);
 		return(FALSE);
 	}
 	if (pulseTrainPtr->pulseDuration < pulseTrainPtr->dt) {
-		NotifyError(wxT("%s: Pulse duration is less then sampling interval "
-		  "( use > %g ms)."), funcName, MSEC(pulseTrainPtr->pulseDuration));
+		NotifyError(wxT("%s: Pulse duration is less then sampling interval ")
+		  wxT("( use > %g ms)."), funcName, MSEC(pulseTrainPtr->pulseDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -626,8 +630,8 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 		p->remainingPulseTime = p->pulseDuration;
 	}
 	outPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < _OutSig_EarObject(data)->length;
-	  i++, t += p->dt, outPtr++) {
+	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < _OutSig_EarObject(data)->
+	  length; i++, t += p->dt, outPtr++) {
 		if (p->remainingPulseTime > 0.0) {
 			*outPtr = p->amplitude;
 			p->remainingPulseTime -= p->dt;

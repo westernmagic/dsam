@@ -209,8 +209,8 @@ GetUniParListPtr_Neuron_McGregor(void)
 		return(FALSE);
 	}
 	if (mcGregorPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(mcGregorPtr->parList);
@@ -234,7 +234,8 @@ SetMembraneTConst_Neuron_McGregor(double theMembraneTConst)
 		return(FALSE);
 	}
 	if (theMembraneTConst == 0.0) {
-		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName, theMembraneTConst);
+		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
+		  theMembraneTConst);
 		return(FALSE);
 	} 
 	mcGregorPtr->membraneTConstFlag = TRUE;
@@ -501,8 +502,8 @@ CheckPars_Neuron_McGregor(void)
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->kDecayTConstFlag) {
-		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->thresholdTConstFlag) {
@@ -521,8 +522,8 @@ CheckPars_Neuron_McGregor(void)
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->restingThresholdFlag) {
-		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly set."),
-		  funcName);
+		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->actionPotentialFlag) {
@@ -531,8 +532,8 @@ CheckPars_Neuron_McGregor(void)
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->kEquilibriumPotFlag) {
-		NotifyError(wxT("%s: Equilibrium potential of the potassium conductance, "
-		  "Ek, not correctly set."), funcName);
+		NotifyError(wxT("%s: Equilibrium potential of the potassium ")
+		  wxT("conductance, Ek, not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->cellRestingPotFlag) {
@@ -559,8 +560,8 @@ GetPotentialResponse_Neuron_McGregor(void *potentialPtr)
 	double	*potential;
 
 	if (!CheckPars_Neuron_McGregor()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set, zero "
-		  "returned."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set, zero ")
+		  wxT("returned."), funcName);
 		return(NULL);
 	}
 	potential = (double *) potentialPtr;
@@ -597,13 +598,13 @@ PrintPars_Neuron_McGregor(void)
 	  MSEC(mcGregorPtr->thresholdTConst_TTh));
 	DPrint(wxT("\tAccommodation constant, c = %g,\n"),
 	  mcGregorPtr->accomConst_c);
-	DPrint(wxT("\tDelayed rectifier potassium conductance, "
-	  "b = %g nano Siemens.\n"), mcGregorPtr->delayedRectKCond_b);
-	DPrint(wxT("\tResting threshold, Th0 = %g mV,\tAction "
-	  "potential = %g mV.\n"), mcGregorPtr->restingThreshold_Th0,
+	DPrint(wxT("\tDelayed rectifier potassium conductance, ")
+	  wxT("b = %g nano Siemens.\n"), mcGregorPtr->delayedRectKCond_b);
+	DPrint(wxT("\tResting threshold, Th0 = %g mV,\tAction ")
+	  wxT("potential = %g mV.\n"), mcGregorPtr->restingThreshold_Th0,
 	  mcGregorPtr->actionPotential);
-	DPrint(wxT("\tEquilibrium potential of the potassium conductance, Ek = %g "
-	  "mV,\n"), mcGregorPtr->kEquilibriumPot_Ek);
+	DPrint(wxT("\tEquilibrium potential of the potassium conductance, Ek = %g ")
+	  wxT("mV,\n"), mcGregorPtr->kEquilibriumPot_Ek);
 	DPrint(wxT("\tCell resting potential, Er = %g mV,\n"), mcGregorPtr->
 	  cellRestingPot_Er);
 	return(TRUE);
@@ -659,8 +660,8 @@ ReadPars_Neuron_McGregor(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Neuron_McGregor(membraneTConst_Tm, kDecayTConst_TGk,

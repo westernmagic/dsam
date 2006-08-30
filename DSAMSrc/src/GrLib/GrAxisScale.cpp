@@ -59,13 +59,13 @@ AxisScale::Set(wxChar *numberFormat, double minVal, double maxVal, int minPos,
 	static const wxChar *funcName = wxT("AxisScale::Set");
 
 	if (minVal > maxVal) {
-		wxLogError(wxT("%s: minmum value (%g) is greater than maximum value "
-		  "(%g)\n"), funcName, minVal, maxVal);
+		wxLogError(wxT("%s: minmum value (%g) is greater than maximum value ")
+		  wxT("(%g)\n"), funcName, minVal, maxVal);
 		return(FALSE);
 	}
 	if (minPos > maxPos) {
-		wxLogError(wxT("%s: minmum position (%d) is greater than maximum "
-		  "position (%d)\n"), funcName, minPos, maxPos);
+		wxLogError(wxT("%s: minmum position (%d) is greater than maximum ")
+		  wxT("position (%d)\n"), funcName, minPos, maxPos);
 		return(FALSE);
 	}
 	settingsChanged = FALSE;

@@ -87,8 +87,8 @@ SDIView::ProcessListDialog(void)
 	if (theShape) {
 		wxArrayString	*procList = wxGetApp().GetProcessList(((SDIEvtHandler *)
 		  theShape->GetEventHandler())->processType);
-		wxSingleChoiceDialog dialog(theShape->GetCanvas(), wxT("Select a "
-		  "process"), wxT("Please select a process"), procList->Count(),
+		wxSingleChoiceDialog dialog(theShape->GetCanvas(), wxT("Select a ")
+		  wxT("process"), wxT("Please select a process"), procList->Count(),
 		  &procList->Item(0));
 
 		if (dialog.ShowModal() == wxID_OK) {
@@ -351,8 +351,8 @@ SDIView::OnChangeBackgroundColour(wxCommandEvent& event)
 		dialog->Close();
 
 		if (theBrush)
-			doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Change "
-			  "colour"), SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush,
+			doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Change ")
+			  wxT("colour"), SDIFRAME_CHANGE_BACKGROUND_COLOUR, doc, theBrush,
 			  theShape));
 	}
 

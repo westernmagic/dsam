@@ -252,8 +252,8 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->opMode, hairCell2Ptr->opModeList,
 	  (void * (*)) SetOpMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_DIAGMODE], wxT("DIAG_MODE"),
-	  wxT("Diagnostic mode. Outputs internal states of running model in non-"
-	  "threaded mode('off', 'screen' or <file name>)."),
+	  wxT("Diagnostic mode. Outputs internal states of running model in non-")
+	    wxT("threaded mode('off', 'screen' or <file name>)."),
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
@@ -380,8 +380,8 @@ GetUniParListPtr_IHC_Meddis2000(void)
 		return(FALSE);
 	}
 	if (hairCell2Ptr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hairCell2Ptr->parList);
@@ -1164,8 +1164,8 @@ ReadPars_IHC_Meddis2000(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Meddis2000(opMode, diagMode, ranSeed,
@@ -1271,23 +1271,23 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 	}
 	ok = TRUE;
 	if (hairCell2Ptr->replenishRate_y * dt >= 1.0) {
-		NotifyError(wxT("%s: Replenishment rate, y = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell2Ptr->replenishRate_y);
+		NotifyError(wxT("%s: Replenishment rate, y = %g /s is too high for ")
+		  wxT("the sampling interval."), funcName, hairCell2Ptr->replenishRate_y);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->lossRate_l * dt >= 1.0) {
-		NotifyError(wxT("%s: Loss rate, l = %g /s is too high for the sampling "
-		  "interval."), funcName, hairCell2Ptr->lossRate_l);
+		NotifyError(wxT("%s: Loss rate, l = %g /s is too high for the sampling ")
+		  wxT("interval."), funcName, hairCell2Ptr->lossRate_l);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->recoveryRate_r * dt >= 1.0) {
-		NotifyError(wxT("%s: Recovery rate, r = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell2Ptr->recoveryRate_r);
+		NotifyError(wxT("%s: Recovery rate, r = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell2Ptr->recoveryRate_r);
 		ok = FALSE;
 	}
 	if (hairCell2Ptr->reprocessRate_x * dt >= 1.0) {
-		NotifyError(wxT("%s: Reprocess rate, x = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell2Ptr->reprocessRate_x);
+		NotifyError(wxT("%s: Reprocess rate, x = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell2Ptr->reprocessRate_x);
 		ok = FALSE;
 	}
 
@@ -1298,8 +1298,8 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		ok = FALSE;
 	}
 	if ( dt/hairCell2Ptr->tauConcCa  >= 1.0) {
-		NotifyError(wxT("%s: tauConcCa = %g /s is too high for the "
-		  "sampling interval."), funcName, hairCell2Ptr->tauConcCa);
+		NotifyError(wxT("%s: tauConcCa = %g /s is too high for the ")
+		  wxT("sampling interval."), funcName, hairCell2Ptr->tauConcCa);
 		ok = FALSE;
 	}	
 
@@ -1462,8 +1462,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	 		NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Meddis 2000 IHC. Calcium "
-		  "transmitter release and quantal synapse"));
+		SetProcessName_EarObject(data, wxT("Meddis 2000 IHC. Calcium ")
+		  wxT("transmitter release and quantal synapse"));
 
 		/*** Put your code here: Initialise output signal. ***/
 
@@ -1502,8 +1502,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	debug = (!data->threadRunFlag && (hairCell2Ptr->diagMode !=
 	  GENERAL_DIAGNOSTIC_OFF_MODE));
 	if (debug) {
-		DSAM_fprintf(hairCell2Ptr->fp, wxT("Time(s)\tVm (V)\tactCa (-)\tICa "
-		  "(A)\tconcCa (-)\tkdt (P)\tQ \tC \tW \tEjected"));
+		DSAM_fprintf(hairCell2Ptr->fp, wxT("Time(s)\tVm (V)\tactCa (-)\tICa ")
+		  wxT("(A)\tconcCa (-)\tkdt (P)\tQ \tC \tW \tEjected"));
 		DSAM_fprintf(hairCell2Ptr->fp, wxT("\n"));
 	}
 

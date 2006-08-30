@@ -159,8 +159,8 @@ GetUniParListPtr_Analysis_Intensity(void)
 		return(FALSE);
 	}
 	if (intensityPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(intensityPtr->parList);
@@ -332,8 +332,8 @@ ReadPars_Analysis_Intensity(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_Intensity(timeOffset)) {
@@ -425,23 +425,23 @@ CheckData_Analysis_Intensity(EarObjectPtr data)
 		return(FALSE);
 	duration =  _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (intensityPtr->timeOffset >= duration) {
-		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal "
-		  "duration (%g ms)."), funcName, MSEC(intensityPtr->timeOffset), MSEC(
-		  duration));
+		NotifyError(wxT("%s: Time offset (%g ms) is longer than signal ")
+		  wxT("duration (%g ms)."), funcName, MSEC(intensityPtr->timeOffset),
+		    MSEC(duration));
 		return(FALSE);
 	}
 	if (intensityPtr->extent > 0.0) {
 		if ((intensityPtr->timeOffset + intensityPtr->extent) > duration) {
-			NotifyError(wxT("%s: Time offset (%g ms) + extent (%g ms) is longer "
-			  "than signal duration (%g)."), funcName,  MSEC(
+			NotifyError(wxT("%s: Time offset (%g ms) + extent (%g ms) is ")
+			  wxT("longer than signal duration (%g)."), funcName,  MSEC(
 			  intensityPtr->timeOffset), MSEC(intensityPtr->extent), MSEC(
 			  duration));
 			return(FALSE);
 		}
 		if (intensityPtr->extent < _InSig_EarObject(data, 0)->dt) {
-			NotifyError(wxT("%s: Time extent is too small (%g ms).  It should "
-			  "be greater than the sampling interval (%g ms)."), funcName, MSEC(
-			  intensityPtr->extent), MSEC(_InSig_EarObject(data, 0)->dt));
+			NotifyError(wxT("%s: Time extent is too small (%g ms).  It should ")
+			  wxT("be greater than the sampling interval (%g ms)."), funcName,
+			  MSEC(intensityPtr->extent), MSEC(_InSig_EarObject(data, 0)->dt));
 			return(FALSE);
 		}
 	}

@@ -204,8 +204,8 @@ GetUniParListPtr_Transform_CollectSignals(void)
 		return(FALSE);
 	}
 	if (collectSigsPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(collectSigsPtr->parList);
@@ -287,8 +287,8 @@ SetIndividualLabel_Transform_CollectSignals(int theIndex, double theLabel)
 		return(FALSE);
 	}
 	if (collectSigsPtr->labelMode != TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) {
-		NotifyError(wxT("%s: Channels can only be selected in 'user' Label "
-		  "mode."), funcName);
+		NotifyError(wxT("%s: Channels can only be selected in 'user' Label ")
+		  wxT("mode."), funcName);
 		return(FALSE);
 	}
 	if ((theIndex > collectSigsPtr->numChannels - 1) &&
@@ -449,12 +449,14 @@ CheckData_Transform_CollectSignals(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	for (i = 1; ok && (i < data->numInSignals); i++)
-		if ((_InSig_EarObject(data, 0)->length != _InSig_EarObject(data, i)->length) ||
-		  (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, i)->dt) > DBL_EPSILON) ||
-		  (_InSig_EarObject(data, 0)->interleaveLevel != _InSig_EarObject(data, i)->
+		if ((_InSig_EarObject(data, 0)->length != _InSig_EarObject(data, i)->
+		  length) || (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(
+		  data, i)->dt) > DBL_EPSILON) || (_InSig_EarObject(data, 0)->
+		  interleaveLevel != _InSig_EarObject(data, i)->
 		  interleaveLevel)) {
-			NotifyError(wxT("%s: Input signal [%d] does not have the same "
-			  "length and sampling interval as the first, [0]."), funcName, i);
+			NotifyError(wxT("%s: Input signal [%d] does not have the same ")
+			  wxT("length and sampling interval as the first, [0]."), funcName,
+			  i);
 			ok = FALSE;
 		}
 	if (!ok)
@@ -494,25 +496,26 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Collect channels transform module "
-		  "process"));
+		SetProcessName_EarObject(data, wxT("Collect channels transform module ")
+		  wxT("process"));
 		for (i = 0, numChannels = 0; i < data->numInSignals; i++)
 			numChannels += _InSig_EarObject(data, i)->numChannels;
 		if ((p->labelMode == TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && (p->
 		  numChannels != numChannels)) {
-			NotifyError(wxT("%s: The number of labels (%d) be equal to the "
-			  "number of channels in the output signal (%d)."), funcName, p->
-			  numChannels, numChannels);
+			NotifyError(wxT("%s: The number of labels (%d) be equal to the ")
+			  wxT("number of channels in the output signal (%d)."), funcName,
+			  p->numChannels, numChannels);
 			return(FALSE);
 		}
 		data->externalDataFlag = TRUE;
-		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data, 0)->length,
-		  _InSig_EarObject(data, 0)->dt)) {
-			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
+		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data,
+		  0)->length, _InSig_EarObject(data, 0)->dt)) {
+			NotifyError(wxT("%s: Cannot initialise output channels."),
+			  funcName);
 			return(FALSE);
 		}
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->
-		  interleaveLevel);
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(
+		  data, 0)->interleaveLevel);
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		if (data->initThreadRunFlag)
 			return(TRUE);

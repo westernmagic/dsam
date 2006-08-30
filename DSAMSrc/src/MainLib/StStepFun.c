@@ -189,8 +189,8 @@ GetUniParListPtr_StepFunction(void)
 		return(FALSE);
 	}
 	if (stepFunPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(stepFunPtr->parList);
@@ -443,10 +443,10 @@ PrintPars_StepFunction(void)
 		return(FALSE);
 	}
 	DPrint(wxT("Step Function Module Parameters:-\n"));
-	DPrint(wxT("\tStep amplitude = %g,\t\tStep duration = "
-	  "%g ms,\n"), stepFunPtr->amplitude, MSEC(stepFunPtr->duration));
-	DPrint(wxT("\tBegin-end Amplitude = %g,\tBeing/end period "
-	  "duration = %g/%g ms\n"), stepFunPtr->beginEndAmplitude,
+	DPrint(wxT("\tStep amplitude = %g,\t\tStep duration = ")
+	  wxT("%g ms,\n"), stepFunPtr->amplitude, MSEC(stepFunPtr->duration));
+	DPrint(wxT("\tBegin-end Amplitude = %g,\tBeing/end period ")
+	  wxT("duration = %g/%g ms\n"), stepFunPtr->beginEndAmplitude,
 	  MSEC(stepFunPtr->beginPeriodDuration),
 	  MSEC(stepFunPtr->endPeriodDuration));
 	DPrint(wxT("\tSampling interval = %g ms\n"),
@@ -495,8 +495,8 @@ ReadPars_StepFunction(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in module "
-		  "parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_StepFunction(amplitude, duration, samplingInterval,

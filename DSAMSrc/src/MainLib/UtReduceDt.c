@@ -159,8 +159,8 @@ GetUniParListPtr_Utility_ReduceDt(void)
 		return(FALSE);
 	}
 	if (reduceDtPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(reduceDtPtr->parList);
@@ -208,8 +208,8 @@ SetDenominator_Utility_ReduceDt(int theDenominator)
 		return(FALSE);
 	}
 	if (theDenominator < 1) {
-		NotifyError(wxT("%s: Illegal denomitor = %d; valid values are\ngreater "
-		  "than 0."), funcName, theDenominator);
+		NotifyError(wxT("%s: Illegal denomitor = %d; valid values are\n")
+		  wxT("greater than 0."), funcName, theDenominator);
 		return(FALSE);
 	}
 	reduceDtPtr->denominatorFlag = TRUE;
@@ -300,8 +300,8 @@ ReadPars_Utility_ReduceDt(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_ReduceDt(denominator)) {

@@ -186,8 +186,8 @@ GetUniParListPtr_Analysis_FindNextIndex(void)
 		return(FALSE);
 	}
 	if (findIndexPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(findIndexPtr->parList);
@@ -362,8 +362,8 @@ ReadPars_Analysis_FindNextIndex(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FindNextIndex(mode, timeOffset)) {
@@ -456,8 +456,8 @@ CheckData_Analysis_FindNextIndex(EarObjectPtr data)
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (findIndexPtr->timeOffset > signalDuration) {
-		NotifyError(wxT("%s: Offset value (%g ms)is longer than the signal "
-		  "duration (%g ms)."), funcName, MSEC(findIndexPtr->timeOffset),
+		NotifyError(wxT("%s: Offset value (%g ms)is longer than the signal ")
+		  wxT("duration (%g ms)."), funcName, MSEC(findIndexPtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
@@ -535,9 +535,9 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 			lastValue = *inPtr;
 		}
 		if (!found) {
-			NotifyWarning(wxT("%s: %s not found. Returning end of channel "
-			  "index = %u."), funcName, (p->findMinimum)? wxT("Minimum"): wxT(
-			  "Maximum"), inSignal->length - 1);
+			NotifyWarning(wxT("%s: %s not found. Returning end of channel ")
+			  wxT("index = %u."), funcName, (p->findMinimum)? wxT("Minimum"):
+			  wxT("Maximum"), inSignal->length - 1);
 			outSignal->channel[chan][0] = (ChanData) (inSignal->length - 1);
 		}
 	}

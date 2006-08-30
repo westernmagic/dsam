@@ -84,7 +84,8 @@ Init_IHC_Zhang(ParameterSpecifier parSpec)
 		if (zhangHCPtr != NULL)
 			Free_IHC_Zhang();
 		if ((zhangHCPtr = (ZhangHCPtr) malloc(sizeof(ZhangHC))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -218,8 +219,8 @@ GetUniParListPtr_IHC_Zhang(void)
 		return(FALSE);
 	}
 	if (zhangHCPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(zhangHCPtr->parList);
@@ -572,12 +573,12 @@ PrintPars_IHC_Zhang(void)
 	  zhangHCPtr->pIMax);
 	DPrint(wxT("\tSpecies dependend voltage staturation parameter, ks = %g,\n"),
 	  zhangHCPtr->ks);
-	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs1 = %g,"
-	  "\n"), zhangHCPtr->vs1);
-	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs2 = %g,"
-	  "\n"), zhangHCPtr->vs2);
-	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs3 = %g."
-	  "\n"), zhangHCPtr->vs3);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs1 = %g,")
+	  wxT("\n"), zhangHCPtr->vs1);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs2 = %g,")
+	  wxT("\n"), zhangHCPtr->vs2);
+	DPrint(wxT("\tSpecies dependend voltage staturation parameter, vs3 = %g.")
+	  wxT("\n"), zhangHCPtr->vs3);
 	return(TRUE);
 
 }
@@ -835,16 +836,16 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		/*** Additional update flags can be added to above line ***/
 		FreeProcessVariables_IHC_Zhang();
-		if ((p->iHCPPI = (TNonLinear *) calloc(_OutSig_EarObject(data)->numChannels,
-		  sizeof(TNonLinear))) == NULL) {
+		if ((p->iHCPPI = (TNonLinear *) calloc(_OutSig_EarObject(data)->
+		  numChannels, sizeof(TNonLinear))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for iHCPPI coefficients array."),
 			  funcName);
 		 	return(FALSE);
 		}
-		if ((p->synapse = (TSynapse *) calloc(_OutSig_EarObject(data)->numChannels,
-		  sizeof(TSynapse))) == NULL) {
-		 	NotifyError(wxT("%s: Out of memory for synapse coefficients "
-			  "array."), funcName);
+		if ((p->synapse = (TSynapse *) calloc(_OutSig_EarObject(data)->
+		  numChannels, sizeof(TSynapse))) == NULL) {
+		 	NotifyError(wxT("%s: Out of memory for synapse coefficients ")
+			  wxT("array."), funcName);
 		 	return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);

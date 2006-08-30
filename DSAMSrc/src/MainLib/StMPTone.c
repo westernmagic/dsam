@@ -47,7 +47,8 @@ MPureTonePtr	mPureTonePtr = NULL;
 BOOLN
 SetDefaultNumPTonesArrays_PureTone_Multi(void)
 {
-	static const WChar	*funcName = wxT("SetDefaultNumPTonesArrays_PureTone_Multi");
+	static const WChar	*funcName = wxT(
+	  "SetDefaultNumPTonesArrays_PureTone_Multi");
 	int		i;
 	double	intensities[] = {DEFAULT_INTENSITY, DEFAULT_INTENSITY};
 	double	frequencies[] = {100.0, 200.0};
@@ -86,7 +87,8 @@ Init_PureTone_Multi(ParameterSpecifier parSpec)
 		if (mPureTonePtr != NULL)
 			free(mPureTonePtr);
 		if ((mPureTonePtr = (MPureTonePtr) malloc(sizeof(MPureTone))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -222,8 +224,8 @@ GetUniParListPtr_PureTone_Multi(void)
 		return(FALSE);
 	}
 	if (mPureTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(mPureTonePtr->parList);
@@ -280,9 +282,9 @@ CheckPars_PureTone_Multi(void)
 	if (ok)
 		for (i = 0; i < mPureTonePtr->numPTones; i++)
 			if (criticalFrequency <= mPureTonePtr->frequencies[i]) {
-				NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low "
-				  "for one of the stimulus\nfrequencies (frequency[%d] = %g)."),
-				  funcName, MSEC(mPureTonePtr->dt), i,
+				NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low ")
+				  wxT("for one of the stimulus\nfrequencies (frequency[%d] = ")
+				  wxT("%g)."), funcName, MSEC(mPureTonePtr->dt), i,
 				  mPureTonePtr->frequencies[i]);
 				ok = FALSE;
 			} 
@@ -582,13 +584,13 @@ GetIndividualFreq_PureTone_Multi(int index)
 		return(FALSE);
 	}
 	if (!CheckPars_PureTone_Multi()) {
-		NotifyError(wxT("%s: Parameters have not been correctly\nset.  "
-		  "Returning zero."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly\nset.  ")
+		  wxT("Returning zero."), funcName);
 		return(0.0);
 	}
 	if (index < 0 || index >= mPureTonePtr->numPTones) {
-		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning "
-		  "zero.\n"), funcName, mPureTonePtr->numPTones - 1);
+		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning ")
+		  wxT("zero.\n"), funcName, mPureTonePtr->numPTones - 1);
 		return(0.0);
 	}
 	return(mPureTonePtr->frequencies[index]);
@@ -611,13 +613,13 @@ GetIndividualIntensity_PureTone_Multi(int index)
 		return(FALSE);
 	}
 	if (!CheckPars_PureTone_Multi()) {
-		NotifyError(wxT("%s: Parameters have not been correctly\nset. "
-		  " Returning zero."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly\nset. ")
+		  wxT(" Returning zero."), funcName);
 		return(0.0);
 	}
 	if (index < 0 || index >= mPureTonePtr->numPTones) {
-		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning "
-		  "zero.\n"), funcName, mPureTonePtr->numPTones - 1);
+		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning ")
+		  wxT("zero.\n"), funcName, mPureTonePtr->numPTones - 1);
 		return(0.0);
 	}
 	return(mPureTonePtr->intensities[index]);
@@ -747,8 +749,8 @@ ReadPars_PureTone_Multi(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_Multi(numberOfPTones, mPureTonePtr->frequencies,

@@ -208,8 +208,8 @@ SetUniParList_BasilarM_Zhang(void)
 	  &bMZhangPtr->species, SpeciesList_Utility_Zhang(0),
 	  (void * (*)) SetSpecies_BasilarM_Zhang);
 	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MICROPAINPUT], wxT("MICRO_PASCALS"),
-	  wxT("Input expected in micro pascals instead of pascals ('on' or 'off'"
-	    ")."),
+	  wxT("Input expected in micro pascals instead of pascals ('on' or 'off'")
+	    wxT(")."),
 	  UNIPAR_NAME_SPEC,
 	  &bMZhangPtr->microPaInput, BooleanList_NSpecLists(0),
 	  (void * (*)) SetMicroPaInput_BasilarM_Zhang);
@@ -304,8 +304,8 @@ GetUniParListPtr_BasilarM_Zhang(void)
 		return(FALSE);
 	}
 	if (bMZhangPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZhangPtr->parList);
@@ -852,8 +852,8 @@ CheckPars_BasilarM_Zhang(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMZhangPtr->cFList)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -876,8 +876,8 @@ GetCFListPtr_BasilarM_Zhang(void)
 		return(FALSE);
 	}
 	if (bMZhangPtr->cFList == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly set. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZhangPtr->cFList);
@@ -919,12 +919,12 @@ PrintPars_BasilarM_Zhang(void)
 	DPrint(wxT("\tx1 = %g,"), bMZhangPtr->x1CP);
 	DPrint(wxT("\ts1 = %g,"), bMZhangPtr->s1CP);
 	DPrint(wxT("\tshift = %g,\n"), bMZhangPtr->shiftCP);
-	DPrint(wxT("\tCut-off frequency of control-path low-path filter, cut = %g "
-	  "(Hz)\n"), bMZhangPtr->cutCP);
+	DPrint(wxT("\tCut-off frequency of control-path low-path filter, cut = %g ")
+	  wxT("(Hz)\n"), bMZhangPtr->cutCP);
 	DPrint(wxT("\tOrder of control-path low-pass filter, k = %d,\n"),
 	  bMZhangPtr->kCP);
-	DPrint(wxT("\t Ratio of tau_LB (lower bound of tau_SP) to tau_narrow, r0 = "
-	  "%g\n"), bMZhangPtr->r0);
+	DPrint(wxT("\t Ratio of tau_LB (lower bound of tau_SP) to tau_narrow, r0 = ")
+	  wxT("%g\n"), bMZhangPtr->r0);
 	PrintPars_CFList(bMZhangPtr->cFList);
 	return(TRUE);
 
@@ -1434,8 +1434,8 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 		 	return(FALSE);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
-		  "(Hz)"));
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency ")
+		  wxT("(Hz)"));
 		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data),
 		   p->cFList->frequency);
 		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->cFList->
@@ -1449,8 +1449,8 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 			if (!InitBasilarMembrane_BasilarM_Zhang(&p->bM[i], p->model +
 			  1, p->species, _OutSig_EarObject(data)->dt, p->cFList->frequency[
 			  cFIndex])) {
-				NotifyError(wxT("%s: Could not initialised BM for channel "
-				  "(%d)."), funcName, i);
+				NotifyError(wxT("%s: Could not initialised BM for channel ")
+				  wxT("(%d)."), funcName, i);
 				FreeProcessVariables_BasilarM_Zhang();
 				return(FALSE);
 			}
@@ -1581,8 +1581,8 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Zhang et al. Non-linear BM "
-		  "filtering"));
+		SetProcessName_EarObject(data, wxT("Zhang et al. Non-linear BM ")
+		  wxT("filtering"));
 
 		totalChannels = p->cFList->numChannels * _InSig_EarObject(data, 0)->
 		  numChannels;

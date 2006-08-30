@@ -243,8 +243,8 @@ GetUniParListPtr_Utility_SimScript(void)
 		return(FALSE);
 	}
 	if (simScriptPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(simScriptPtr->parList);
@@ -449,8 +449,8 @@ SetControlParValue_Utility_SimScript(WChar *label, WChar *value, BOOLN diagsOn)
 	if (!SetControlParValue_Utility_Datum(simScriptPtr->simulation, label,
 	  value, diagsOn)) {
 		if (diagsOn)
-			NotifyError(wxT("%s: Could not set control labelled '%s' value to "
-			  "'%s'."), funcName, label, value);
+			NotifyError(wxT("%s: Could not set control labelled '%s' value to ")
+			  wxT("'%s'."), funcName, label, value);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -555,12 +555,12 @@ PrintSimParFile_Utility_SimScript(void)
 		return(FALSE);
 	}
 	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE);
-	DPrint(wxT("## Simulation parameter file (SPF) written using DSAM version "
-	  "%s.\n"), GetDSAMPtr_Common()->version);
+	DPrint(wxT("## Simulation parameter file (SPF) written using DSAM version ")
+	  wxT("%s.\n"), GetDSAMPtr_Common()->version);
 	DPrint(SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE wxT("\n"));
 
-	DPrint(wxT("##--------------- Simulation script ----------------------##"
-	  "\n"));
+	DPrint(wxT("##--------------- Simulation script ----------------------##")
+	  wxT("\n"));
 	for (i = 0; i < UTILITY_SIMSCRIPT_NUM_PARS; i++)
 		if (simScriptPtr->parList->pars[i].index !=
 		  UTILITY_SIMSCRIPT_SIMULATION)
@@ -628,8 +628,8 @@ ReadSimParFileOld_Utility_SimScript(FILE *fp)
 	Free_ParFile();
 	simScriptPtr = localSimScriptPtr;
 	if (!ok) {
-		NotifyError(wxT("%s: Invalid parameters, in simulation parameter "
-		  "file."), funcName);
+		NotifyError(wxT("%s: Invalid parameters, in simulation parameter ")
+		  wxT("file."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -660,8 +660,8 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	if ((simulation = Read_Utility_SimScript(fp)) == NULL)
 		ok = FALSE;
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "simulation parameter file."), funcName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("simulation parameter file."), funcName);
 		ok = FALSE;
 	}
 	SetEmptyLineMessage_ParFile(FALSE);
@@ -681,8 +681,8 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	if (!ok) {
 		/* The following code should be uncommented when ReadSimParFileOld is
 		 * removed
-		NotifyError(wxT("%s: Invalid parameters, in simulation parameter file "
-		  "'%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Invalid parameters, in simulation parameter file ")
+		  wxT("'%s'."), funcName, filePath);
 		return(FALSE); */
 		NotifyWarning(wxT("%s: Using old SPF format."), funcName);
 		ResetGUIDialogs();
@@ -809,8 +809,8 @@ ReadSimScriptOld_Utility_SimScript(FILE *fp)
 		ok = FALSE;
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "simulation script file."), funcName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("simulation script file."), funcName);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_SimScript(simulation, operationMode,
@@ -854,8 +854,8 @@ ReadSimScript_Utility_SimScript(FILE *fp)
 		return(ReadSimScriptOld_Utility_SimScript(fp));
 	}
 	if (!SetSimulation_Utility_SimScript(simulation)) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "simulation script file."), funcName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("simulation script file."), funcName);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -926,15 +926,15 @@ ReadPars_Utility_SimScript(WChar *fileName)
 	switch (p->simFileType) {
 	case UTILITY_SIMSCRIPT_SIM_FILE:
 		if (!ReadSimScript_Utility_SimScript(fp)) {
-			NotifyError(wxT("%s: Could not read simulation script from\nfile "
-			  "'%s'."), funcName, GetFilePath_Utility_SimScript(filePath));
+			NotifyError(wxT("%s: Could not read simulation script from\nfile ")
+			  wxT("'%s'."), funcName, GetFilePath_Utility_SimScript(filePath));
 			ok = FALSE;
 		}
 		break;
 	case UTILITY_SIMSCRIPT_SPF_FILE:
 		if (!ReadSimParFile_Utility_SimScript(fp)) {
-			NotifyError(wxT("%s: Could not read simulation parameter file "
-			  "from\n file '%s'."), funcName, GetFilePath_Utility_SimScript(
+			NotifyError(wxT("%s: Could not read simulation parameter file ")
+			  wxT("from\n file '%s'."), funcName, GetFilePath_Utility_SimScript(
 			  filePath));
 			ok = FALSE;
 		}
@@ -1042,8 +1042,8 @@ Read_Utility_SimScript(FILE *fp)
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (localSimScriptPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised, the 'Init_...' function "
-		  "must\nbe called."), funcName);
+		NotifyError(wxT("%s: Module not initialised, the 'Init_...' function ")
+		  wxT("must\nbe called."), funcName);
 		return(NULL);
 	}
 	FreeSimulation_Utility_SimScript();

@@ -658,22 +658,22 @@ SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		label = (WChar *) p->data;
 		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
 		  CmpProcessLabel_Utility_Datum, label)) == NULL) {
-			NotifyError(wxT("%s: Could not find process '%s%% %s.%lu' input "
-			  "labelled '%s' in the simulation script."), funcName, pc->
+			NotifyError(wxT("%s: Could not find process '%s%% %s.%lu' input ")
+			  wxT("labelled '%s' in the simulation script."), funcName, pc->
 			  label, pc->data->module->name, pc->data->handle, label);
 			return(FALSE);
 		}
 		foundPC = (DatumPtr) foundPtr->data;
 		if (!FindElement_Utility_DynaList(foundPC->u.proc.inputList,
 		  CmpLabel_Utility_Datum, pc->label)) {
-			NotifyError(wxT("%s: Could not find label '%s' in\nprocess "
-			  "'%s%% %s.%lu' inputs."), funcName, pc->label, foundPC->label,
+			NotifyError(wxT("%s: Could not find label '%s' in\nprocess ")
+			  wxT("'%s%% %s.%lu' inputs."), funcName, pc->label, foundPC->label,
 			  foundPC->data->module->name, foundPC->data->handle);
 			return(FALSE);
 		}
 		if (!ConnectOutSignalToIn_EarObject(pc->data, foundPC->data)) {
-			NotifyError(wxT("%s: Could not set '%s' connection for process "
-			  "%s.%lu."), funcName, label, pc->data->module->name, pc->data->
+			NotifyError(wxT("%s: Could not set '%s' connection for process ")
+			  wxT("%s.%lu."), funcName, label, pc->data->module->name, pc->data->
 			  handle);
 			return(FALSE);
 		}
@@ -709,9 +709,9 @@ CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		foundPC = (DatumPtr) foundPtr->data;
 		if (!FindElement_Utility_DynaList(foundPC->u.proc.outputList,
 		  CmpLabel_Utility_Datum, pc->label)) {
-			NotifyError(wxT("%s: Could not find label '%s' in\nprocess "
-			  "'%s%% %s.%lu' outputs."), funcName, pc->label, foundPC->label,
-			  foundPC->data->module->name, foundPC->data->handle);
+			NotifyError(wxT("%s: Could not find label '%s' in\nprocess ")
+			  wxT("'%s%% %s.%lu' outputs."), funcName, pc->label, foundPC->
+			  label, foundPC->data->module->name, foundPC->data->handle);
 			return(FALSE);
 		}
 	}
@@ -749,8 +749,8 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 		case RESET:
 			if ((p = FindElement_Utility_DynaBList(labelBList,
 			  CmpProcessLabel_Utility_Datum, pc->u.ref.string)) == NULL) {
-				NotifyError(wxT("%s: Could not find label '%s' in the "
-				  "simulation script."), funcName, pc->u.ref.string);
+				NotifyError(wxT("%s: Could not find label '%s' in the ")
+				  wxT("simulation script."), funcName, pc->u.ref.string);
 				ok = FALSE;
 			} else
 				pc->u.ref.pc = (DatumPtr) p->data;
@@ -863,8 +863,8 @@ SetDefaultLabels_Utility_Datum(DatumPtr start)
 
 	for (pc = start; (pc != NULL); pc = pc->next)
 		if (!SetDefaultLabel_Utility_Datum(pc, NULL)) {
-			NotifyError(wxT("%s: Could not set default label '%s' for process "
-			  "'%s'."), funcName, pc->stepNumber, pc->u.proc.moduleName);
+			NotifyError(wxT("%s: Could not set default label '%s' for process ")
+			  wxT("'%s'."), funcName, pc->stepNumber, pc->u.proc.moduleName);
 			return(FALSE);
 		}
 	return(TRUE);
@@ -927,8 +927,8 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 			}
 			if ((pc->label[0] != '\0') && !Insert_Utility_DynaBList(labelBList,
 			  CmpProcessLabels_Utility_Datum, pc)) {
-				NotifyError(wxT("%s: Cannot insert process labelled '%s' into "
-				  "simulation."), funcName, pc->label);
+				NotifyError(wxT("%s: Cannot insert process labelled '%s' into ")
+				  wxT("simulation."), funcName, pc->label);
 				ok = FALSE;
 			}
 		}
@@ -1485,10 +1485,10 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		if (processLabel[0] == '\0')
 			processStr[0] = '\0';
 		else
-			Snprintf_Utility_String(processStr, MAXLINE, wxT(" for process "
-			  "[%s] "), processLabel);
-		NotifyError(wxT("%s: Could not find parameter '%s'%s in the simulation "
-		  "script."), funcName, parName, processStr);
+			Snprintf_Utility_String(processStr, MAXLINE, wxT(" for process ")
+			  wxT("[%s] "), processLabel);
+		NotifyError(wxT("%s: Could not find parameter '%s'%s in the ")
+		  wxT("simulation script."), funcName, parName, processStr);
 	}
 	if (!pList)
 		*parList = NULL;
@@ -1541,8 +1541,8 @@ FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier)
 	else
 		Snprintf_Utility_String(processStr, MAXLINE, wxT(", label [%s] "),
 		  processLabel);
-	NotifyError(wxT("%s: Could not find process '%s'%s in the simulation "
-	  "script."), funcName, processName, processStr);
+	NotifyError(wxT("%s: Could not find process '%s'%s in the simulation ")
+	  wxT("script."), funcName, processName, processStr);
 	return(NULL);
 
 }
@@ -1570,8 +1570,8 @@ GetInstIntVal_Utility_Datum(DatumPtr start, WChar *label)
 		exit(1);
 	}
 	if (pc->type != REPEAT) {
-		NotifyError(wxT("%s: Labelled instruction has no associated integer "
-		  "value."), funcName);
+		NotifyError(wxT("%s: Labelled instruction has no associated integer ")
+		  wxT("value."), funcName);
 		exit(1);
 	}
 	return (pc->u.loop.count);
@@ -1599,8 +1599,8 @@ SetControlParValue_Utility_Datum(DatumPtr start, WChar *label, WChar *value,
 	}
 	if ((pc = FindLabelledInst_Utility_Datum(start, label)) == NULL) {
 		if (diagsOn)
-			NotifyError(wxT("%s: Could not find label '%s' in simulation "
-			  "script."), funcName, label);
+			NotifyError(wxT("%s: Could not find label '%s' in simulation ")
+			  wxT("script."), funcName, label);
 		return(FALSE);
 	}
 	switch (pc->type) {
@@ -1614,8 +1614,8 @@ SetControlParValue_Utility_Datum(DatumPtr start, WChar *label, WChar *value,
 		pc->u.loop.count = count;
 		break; }
 	default:
-		NotifyError(wxT("%s: Labelled instruction, '%s' has no associated "
-		  "integer value."), funcName, label);
+		NotifyError(wxT("%s: Labelled instruction, '%s' has no associated ")
+		  wxT("integer value."), funcName, label);
 		return(FALSE);
 	} /* switch */
 	return(TRUE);

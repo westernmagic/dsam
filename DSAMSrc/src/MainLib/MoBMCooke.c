@@ -208,7 +208,7 @@ GetUniParListPtr_BasilarM_Cooke(void)
 	}
 	if (bM0CookePtr->parList == NULL) {
 		NotifyError(wxT("%s: UniParList data structure has not been ")
-		  "initialised. NULL returned.", funcName);
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0CookePtr->parList);
@@ -244,8 +244,8 @@ CheckPars_BasilarM_Cooke(void)
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bM0CookePtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list  parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list  parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -324,8 +324,8 @@ SetCFList_BasilarM_Cooke(CFListPtr theCFList)
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFList)) {
-		NotifyError(wxT("%s: Centre frequency structure not initialised "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Centre frequency structure not initialised ")
+		  wxT("correctly set."), funcName);
 		return(FALSE);
 	}
 	if (bM0CookePtr->theCFs != NULL)
@@ -411,8 +411,8 @@ GetCFListPtr_BasilarM_Cooke(void)
 		return(FALSE);
 	}
 	if (bM0CookePtr->theCFs == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly "
-		  "set.  NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bM0CookePtr->theCFs);
@@ -575,7 +575,8 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 				NotifyError(wxT("%s: Out of memory for coeffients."), funcName);
 				return(FALSE);
 			}
-			p->intSampleRate = (unsigned long) ceil(1.0 / _OutSig_EarObject(data)->dt);
+			p->intSampleRate = (unsigned long) ceil(1.0 / _OutSig_EarObject(
+			  data)->dt);
 			if ((p->sine = (double *) calloc(p->intSampleRate, sizeof(
 			  double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for sine table."), funcName);
@@ -597,15 +598,16 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 				bandwidth = p->theCFs->bandwidth[i] *
 				  p->broadeningCoeff;
 				c[i].z = exp(-twoPiDt * bandwidth);
-				c[i].gain = SQR(SQR(2 * PI * bandwidth * _OutSig_EarObject(data)->dt)) /
-				  3.0;
+				c[i].gain = SQR(SQR(2 * PI * bandwidth * _OutSig_EarObject(
+				  data)->dt)) / 3.0;
 			}
 			SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency "
-			  "(Hz)"));
+			SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT(
+			  "Frequency (Hz)"));
 			SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->
 			  frequency);
-			SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+			SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->
+			  frequency);
 			p->updateProcessVariablesFlag = FALSE;
 			p->theCFs->updateFlag = FALSE;
 		}
@@ -679,14 +681,15 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 
 		/* Initialise Variables and coefficients */
 
-		SetProcessName_EarObject(data, wxT("Cooke gammatone basilar membrane "
-		  "filtering"));
+		SetProcessName_EarObject(data, wxT("Cooke gammatone basilar membrane ")
+		  wxT("filtering"));
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not correctly initialised."),
 			  funcName);
 			return(FALSE);
 		}
-		totalChannels = p->theCFs->numChannels * _InSig_EarObject(data, 0)->numChannels;
+		totalChannels = p->theCFs->numChannels * _InSig_EarObject(data, 0)->
+		  numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Could not initialise output channels."),
 			  funcName);

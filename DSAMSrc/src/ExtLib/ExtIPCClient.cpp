@@ -361,8 +361,8 @@ IPCClient::GetSimProcess(void)
 		return(NULL);
 	}
 	if (!iPCUtils.InitInputMemory(length)) {
-		NotifyError(wxT("%s: Could not initialise memory for input process "
-		  "signal"), funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process ")
+		  wxT("signal"), funcName);
 		return(NULL);
 	}
 	Read(iPCUtils.GetInUIOPtr()->memStart, length);
@@ -408,8 +408,8 @@ IPCClient::SendInputProcess(void)
 		return(false);
 	}
 	if (!iPCUtils.RunOutProcess()) {
-		NotifyError(wxT("%s: Could not run the output process (memory file "
-		  "conversion."), funcName);
+		NotifyError(wxT("%s: Could not run the output process (memory file ")
+		  wxT("conversion."), funcName);
 		return(false);
 	}
 	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;

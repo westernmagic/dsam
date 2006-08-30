@@ -310,8 +310,8 @@ GetUniParListPtr_Neuron_HHuxley(void)
 		return(FALSE);
 	}
 	if (hHuxleyNCPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(hHuxleyNCPtr->parList);
@@ -843,8 +843,8 @@ ReadPars_Neuron_HHuxley(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Neuron_HHuxley(iCList, diagnosticMode, operationMode,
@@ -999,8 +999,8 @@ FindRestingPotential_Neuron_HHuxley(double restingCriteria, double duration,
 	Free_EarObject(&stimulus);
 	Free_EarObject(&findResting);
 	if (i == HHUXLEY_FIND_REST_MAX_LOOP)
-		NotifyWarning(wxT("%s: Failed to satisfy resting criteria\nafter %d "
-		  "loops."), funcName, i);
+		NotifyWarning(wxT("%s: Failed to satisfy resting criteria\nafter %d ")
+		  wxT("loops."), funcName, i);
 	hHuxleyNCPtr->operationMode = oldOperationMode;
 	hHuxleyNCPtr->injectionMode = oldInjectionMode;
 	hHuxleyNCPtr->restingRun = FALSE;

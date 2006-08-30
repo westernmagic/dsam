@@ -184,8 +184,8 @@ GetUniParListPtr_Analysis_CCF(void)
 		return(FALSE);
 	}
 	if (crossCorrPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been  "
-		  "initialised.NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been  ")
+		  wxT("initialised.NULL returned."), funcName);
 		return(NULL);
 	}
 	return(crossCorrPtr->parList);
@@ -403,8 +403,8 @@ ReadPars_Analysis_CCF(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_CCF(timeOffset, timeConstant, period)) {
@@ -504,8 +504,8 @@ CheckData_Analysis_CCF(EarObjectPtr data)
 	}		
 	if ((crossCorrPtr->timeOffset - crossCorrPtr->period * 2.0 < 0.0) ||
 	  (crossCorrPtr->timeOffset + crossCorrPtr->period > signalDuration)) {
-		NotifyError(wxT("%s: cross-correlation period extends outside the "
-		  "range of the signal."), funcName);
+		NotifyError(wxT("%s: cross-correlation period extends outside the ")
+		  wxT("range of the signal."), funcName);
 		return(FALSE);
 	}		
 	if (_InSig_EarObject(data, 0)->numChannels % 2 != 0) {
@@ -606,8 +606,8 @@ Calc_Analysis_CCF(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Cross Correlation Function (CCF) "
-		  "analysis"));
+		SetProcessName_EarObject(data, wxT("Cross Correlation Function (CCF) ")
+		  wxT("analysis"));
 		dt = _InSig_EarObject(data, 0)->dt;
 		p->periodIndex = (ChanLen) floor(p->period / dt + 0.5);
 		totalPeriodIndex = p->periodIndex * 2 + 1;
@@ -622,8 +622,8 @@ Calc_Analysis_CCF(EarObjectPtr data)
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++)
 			_OutSig_EarObject(data)->info.cFArray[chan] =
 			  _InSig_EarObject(data, 0)->info.cFArray[chan];
-		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay "
-		  "period (s)"));
+		SetInfoSampleTitle_SignalData(_OutSig_EarObject(data), wxT("Delay ")
+		  wxT("period (s)"));
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), -p->period);
 		p->timeOffsetIndex = (ChanLen) floor(p->timeOffset / dt + 0.5) - 1;

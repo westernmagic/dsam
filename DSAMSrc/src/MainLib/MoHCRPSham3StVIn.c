@@ -261,8 +261,8 @@ GetUniParListPtr_IHCRP_Shamma3StateVelIn(void)
 		return(FALSE);
 	}
 	if (sham3StVInPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(sham3StVInPtr->parList);
@@ -790,8 +790,8 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
 		  funcName);
 		return(FALSE);
 	}
-	DPrint(wxT("Modified Shamma Receptor Potential Module  Module Parameters:-"
-	  "\n"));
+	DPrint(wxT("Modified Shamma Receptor Potential Module  Module Parameters:-")
+	  wxT("\n"));
 	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"), sham3StVInPtr->
 	  endocochlearPot_Et);
 	DPrint( wxT("\tReversal potential, Ek = %g V,\n"), sham3StVInPtr->
@@ -877,8 +877,8 @@ ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_IHCRP_Shamma3StateVelIn(endocochlearPot_Et, reversalPot_Ek,
@@ -1011,8 +1011,8 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			}
 			if ((p->lastCiliaDisplacement_u = (double *)
 				calloc(_OutSig_EarObject(data)->numChannels, sizeof(double))) == NULL) {
-				NotifyError(wxT("%s: Out of memory for "
-				  "'lastCiliaDisplacement_u'."), funcName);
+				NotifyError(wxT("%s: Out of memory for ")
+				  wxT("'lastCiliaDisplacement_u'."), funcName);
 				return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -1103,8 +1103,8 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
- 		SetProcessName_EarObject(data, wxT("Modified Shamma hair cell receptor "
-		  "potential"));
+ 		SetProcessName_EarObject(data, wxT("Modified Shamma hair cell receptor ")
+		  wxT("potential"));
 
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {

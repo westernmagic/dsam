@@ -232,8 +232,8 @@ GetUniParListPtr_PureTone_MultiPulse(void)
 		return(FALSE);
 	}
 	if (pureTone4Ptr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pureTone4Ptr->parList);
@@ -328,21 +328,21 @@ CheckPars_PureTone_MultiPulse(void)
 		ok = FALSE;
 	}
 	if ( (pureTone4Ptr->pulseDuration > pureTone4Ptr->duration) ) {
-	  	NotifyError(wxT("%s: The pulse duration  is longer than the signal "
-		  "duration."), funcName);
+	  	NotifyError(wxT("%s: The pulse duration  is longer than the signal ")
+		  wxT("duration."), funcName);
 	  	ok = FALSE;
 	}
 	if ( (pureTone4Ptr->pulseDuration > pureTone4Ptr->repetitionPeriod) ) {
-	  	NotifyError(wxT("%s: The pulse duration  is longer than the repetition "
-		  "period."), funcName);
+	  	NotifyError(wxT("%s: The pulse duration  is longer than the ")
+		  wxT("repetition period."), funcName);
 	  	ok = FALSE;
 	}
 	criticalFrequency = 1.0 / (2.0 * pureTone4Ptr->dt);
 	if (ok)
 		for (i = 0; i < pureTone4Ptr->numPulses; i++)
 			if (criticalFrequency <= pureTone4Ptr->frequencies[i]) {
-				NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for "
-				  "frequency No. %d."), funcName, MSEC(pureTone4Ptr->dt), i);
+				NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low ")
+				  wxT("for frequency No. %d."), funcName, MSEC(pureTone4Ptr->dt), i);
 				ok = FALSE;
 			}
 	return(ok);
@@ -419,8 +419,8 @@ SetNumPulses_PureTone_MultiPulse(int theNumPulses)
 		return(FALSE);
 	}
 	if (!AllocNumPulses_PureTone_MultiPulse(theNumPulses)) {
-		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -644,13 +644,13 @@ GetIndividualFreq_PureTone_MultiPulse(int index)
 		return(FALSE);
 	}
 	if (!CheckPars_PureTone_MultiPulse()) {
-		NotifyError(wxT("%s: Parameters have not been correctly\nset. "
-		  " Returning zero."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly\nset. ")
+		  wxT(" Returning zero."), funcName);
 		return(0.0);
 	}
 	if (index < 0 || index >= pureTone4Ptr->numPulses) {
-		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning "
-		  "zero.\n"), funcName, pureTone4Ptr->numPulses - 1);
+		NotifyError(wxT("%s: The valid index range is 0 to %d.  Returning ")
+		  wxT("zero.\n"), funcName, pureTone4Ptr->numPulses - 1);
 		return(0.0);
 	}
 	return(pureTone4Ptr->frequencies[index]);
@@ -718,8 +718,8 @@ ReadPars_PureTone_MultiPulse(WChar *fileName)
 	if (!GetPars_ParFile(fp, wxT("%d"), &numPulses))
 		ok = FALSE;
 	if (!AllocNumPulses_PureTone_MultiPulse(numPulses)) {
-		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%%s: Cannot allocate memory for the 'numPulses' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numPulses; i++)
@@ -740,8 +740,8 @@ ReadPars_PureTone_MultiPulse(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_MultiPulse(numPulses, pureTone4Ptr->frequencies,
@@ -834,8 +834,8 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 		}	
 		if (!CheckPars_PureTone_MultiPulse())
 			return(FALSE);
-		SetProcessName_EarObject(data, wxT("Multi-frequency pulsed pure-tone "
-		  "stimulus"));
+		SetProcessName_EarObject(data, wxT("Multi-frequency pulsed pure-tone ")
+		  wxT("stimulus"));
 		if ( !InitOutSignal_EarObject(data, PURE_TONE_3_NUM_CHANNELS,
 		  (ChanLen) (pureTone4Ptr->duration / pureTone4Ptr->dt + 0.5),
 		  pureTone4Ptr->dt) ) {
@@ -858,8 +858,8 @@ GenerateSignal_PureTone_MultiPulse(EarObjectPtr data)
 		pureTone4Ptr->pulseCount = 0;
 	}
 	dataPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length; i++, t++,
-	  dataPtr++) {
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->length;
+	  i++, t++, dataPtr++) {
 	  	if (t < pureTone4Ptr->beginIndex)
 	  		continue;
 		if (pureTone4Ptr->pulseOn) {

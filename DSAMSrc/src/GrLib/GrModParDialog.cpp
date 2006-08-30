@@ -272,7 +272,7 @@ ModuleParDialog::DeleteDialog(void)
 //			Close();
 //		break;
 //	default:
-//		printf("ModuleParDialog::DeleteDialog: calling dialog pointer needs "
+//		printf("ModuleParDialog::DeleteDialog: calling dialog pointer needs ")
 //		  "to be set to NULL\n");
 //	}
 

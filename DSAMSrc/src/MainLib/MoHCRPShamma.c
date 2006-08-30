@@ -241,8 +241,8 @@ GetUniParListPtr_IHCRP_Shamma(void)
 		return(FALSE);
 	}
 	if (shammaPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(shammaPtr->parList);
@@ -600,8 +600,8 @@ CheckPars_IHCRP_Shamma(void)
 		ok = FALSE;
 	}
 	if (!shammaPtr->reversalPotCorrectionFlag) {
-		NotifyError(wxT("%s: Reversal potential correction, Rp/(Rt+Rp), not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Reversal potential correction, Rp/(Rt+Rp), not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!shammaPtr->totalCapacitanceCFlag) {
@@ -620,8 +620,8 @@ CheckPars_IHCRP_Shamma(void)
 		ok = FALSE;
 	}
 	if (!shammaPtr->maxMConductanceGmaxFlag) {
-		NotifyError(wxT("%s: Maximum mechinally sensitive, Gmax, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Maximum mechinally sensitive, Gmax, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!shammaPtr->betaFlag) {
@@ -633,18 +633,18 @@ CheckPars_IHCRP_Shamma(void)
 		ok = FALSE;
 	}
 	if (!shammaPtr->ciliaTimeConstTcFlag) {
-		NotifyError(wxT("%s: BM/Cilia displacement time constant, tc, not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: BM/Cilia displacement time constant, tc, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!shammaPtr->ciliaCouplingGainFlag) {
-		NotifyError(wxT("%s: BM/Cilia coupling gain constant, n, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: BM/Cilia coupling gain constant, n, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!shammaPtr->referencePotFlag) {
-		NotifyError(wxT("CheckPars_IHCRP_Shamma: Reference potential, Eref, "
-		  "not set."));
+		NotifyError(wxT("CheckPars_IHCRP_Shamma: Reference potential, Eref, ")
+		  wxT("not set."));
 		ok = FALSE;
 	}
 	return(ok);
@@ -747,8 +747,8 @@ ReadPars_IHCRP_Shamma(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHCRP_Shamma(endocochlearPot_Et, reversalPot_Ek,
@@ -837,22 +837,22 @@ InitProcessVariables_IHCRP_Shamma(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Shamma();
-			if ((p->lastInput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
-			   sizeof(double))) == NULL) {
+			if ((p->lastInput = (double *) calloc(_OutSig_EarObject(data)->
+			  numChannels, sizeof(double))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastInput'."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
-			   sizeof(double))) == NULL) {
+			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->
+			  numChannels, sizeof(double))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 				  funcName);
 			 	return(FALSE);
 			}
 			if ((p->lastCiliaDisplacement_u = (double *) calloc(data->
 			  outSignal->numChannels, sizeof(double))) == NULL) {
-			 	NotifyError(wxT("%s: Out of memory for "
-				  "'lastCiliaDisplacement_u'."), funcName);
+			 	NotifyError(wxT("%s: Out of memory for ")
+				  wxT("'lastCiliaDisplacement_u'."), funcName);
 			 	return(FALSE);
 			}
 			p->updateProcessVariablesFlag = FALSE;
@@ -940,10 +940,11 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Shamma hair cell "
-		  "receptor potential"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		SetProcessName_EarObject(data, wxT("Shamma hair cell receptor ")
+		  wxT("potential"));
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);

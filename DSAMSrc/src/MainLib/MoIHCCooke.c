@@ -61,7 +61,8 @@ Init_IHC_Cooke91(ParameterSpecifier parSpec)
 		if (cookeHCPtr != NULL)
 			Free_IHC_Cooke91();
 		if ((cookeHCPtr = (CookeHCPtr) malloc(sizeof(CookeHC))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -185,8 +186,8 @@ GetUniParListPtr_IHC_Cooke91(void)
 		return(FALSE);
 	}
 	if (cookeHCPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(cookeHCPtr->parList);
@@ -404,10 +405,11 @@ PrintPars_IHC_Cooke91(void)
 	DPrint(wxT("Cooke 91 Inner Hair Cell Module Parameters:-\n"));
 	DPrint(wxT("\tCrawford constant = %g\n"),
 	  cookeHCPtr->crawfordConst);
-	DPrint(wxT("\tRelease fraction = %g,\tRefill fraction = "
-	  "%g,\n"), cookeHCPtr->releaseFraction, cookeHCPtr->refillFraction);
-	DPrint(wxT("\tSpontaneous firing rate = %g /s,\tMaximum "
-	  "firing rate = %g\n"), cookeHCPtr->spontRate, cookeHCPtr->maxSpikeRate);
+	DPrint(wxT("\tRelease fraction = %g,\tRefill fraction = ")
+	  wxT("%g,\n"), cookeHCPtr->releaseFraction, cookeHCPtr->refillFraction);
+	DPrint(wxT("\tSpontaneous firing rate = %g /s,\tMaximum ")
+	  wxT("firing rate = %g\n"), cookeHCPtr->spontRate, cookeHCPtr->
+	  maxSpikeRate);
 	return(TRUE);
 
 }
@@ -451,8 +453,8 @@ ReadPars_IHC_Cooke91(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_IHC_Cooke91(crawfordConst, releaseFraction, refillFraction,
@@ -637,8 +639,8 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Meddis 94 probabilistic hair "
-		  "cell"));
+		SetProcessName_EarObject(data, wxT("Meddis 94 probabilistic hair ")
+		  wxT("cell"));
 		if (!InitProcessVariables_IHC_Cooke91(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);

@@ -464,9 +464,9 @@ RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(ModulePtr))
 	ModRegEntryPtr	regEntry;
 
 	if (numUserModules == maxUserModules) {
-		NotifyError(wxT("%s: Maximum number (%d) of user modules registered.\n"
-		  "Use the SetMaxUserModules_AppInterface to increase this number."),
-		  funcName, maxUserModules);
+		NotifyError(wxT("%s: Maximum number (%d) of user modules registered.\n")
+		  wxT("Use the SetMaxUserModules_AppInterface to increase this ")
+		  wxT("number."), funcName, maxUserModules);
 		return(FALSE);
 	}
 	if (!name || (*name == '\0')) {

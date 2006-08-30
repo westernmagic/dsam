@@ -324,8 +324,8 @@ GetUniParListPtr_Transform_Gate(void)
 		return(FALSE);
 	}
 	if (gatePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(gatePtr->parList);
@@ -679,8 +679,8 @@ ReadPars_Transform_Gate(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Transform_Gate(positionMode, operationMode, typeMode,
@@ -789,21 +789,21 @@ CheckData_Transform_Gate(EarObjectPtr data)
 	duration = (gatePtr->duration < 0.0)? signalDuration - gatePtr->timeOffset:
 	  gatePtr->duration;
  	if (duration > signalDuration) {
-		NotifyError(wxT("%s: Gate time interval (%g ms) is longer than signal "
-		  "(%g ms)."), funcName, MSEC(duration), signalDuration);
+		NotifyError(wxT("%s: Gate time interval (%g ms) is longer than signal ")
+		  wxT("(%g ms)."), funcName, MSEC(duration), signalDuration);
 		return(FALSE);
 	}
 	if ((gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE) &&
 	  (gatePtr->timeOffset + duration - signalDuration) > DBL_EPSILON) {
-		NotifyError(wxT("%s: Time offset (%g ms) plus gate interval (%g ms) is "
-		  "longer than signal (%g ms)."), funcName, MSEC(gatePtr->timeOffset),
-		  MSEC(duration), MSEC(signalDuration));
+		NotifyError(wxT("%s: Time offset (%g ms) plus gate interval (%g ms) ")
+		  wxT("is longer than signal (%g ms)."), funcName, MSEC(gatePtr->
+		  timeOffset), MSEC(duration), MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((gatePtr->typeMode == GATE_EXP_DECAY_TYPE_MODE) &&
 	  (gatePtr->slopeParameter <= 0.0)) {
-		NotifyError(wxT("%s: Illegal slope parameter (half-life) value (%g "
-		  "ms)."), funcName, MSEC(gatePtr->slopeParameter));
+		NotifyError(wxT("%s: Illegal slope parameter (half-life) value (%g ")
+		  wxT("ms)."), funcName, MSEC(gatePtr->slopeParameter));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -940,8 +940,9 @@ Process_Transform_Gate(EarObjectPtr data)
 		_OutSig_EarObject(data)->rampFlag = TRUE;
 		p->offsetIndex = (p->positionMode == GATE_ABSOLUTE_POSITION_MODE)?
 		  (ChanLen) floor(p->timeOffset / _OutSig_EarObject(data)->dt + 0.5): 0;
-		p->intervalIndex = (p->duration < 0.0)? _InSig_EarObject(data, 0)->length:
-		  (ChanLen) floor(p->duration / _OutSig_EarObject(data)->dt + 0.5);
+		p->intervalIndex = (p->duration < 0.0)? _InSig_EarObject(data, 0)->
+		  length: (ChanLen) floor(p->duration / _OutSig_EarObject(data)->dt +
+		  0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

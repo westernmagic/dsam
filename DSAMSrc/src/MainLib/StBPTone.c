@@ -202,8 +202,8 @@ GetUniParListPtr_PureTone_Binaural(void)
 		return(FALSE);
 	}
 	if (bPureTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bPureTonePtr->parList);
@@ -473,8 +473,8 @@ CheckPars_PureTone_Binaural(void)
 	criticalFrequency = 1.0 / (2.0 * bPureTonePtr->dt);
 	if (ok && ((criticalFrequency <= bPureTonePtr->leftFrequency) ||
 	  (criticalFrequency <= bPureTonePtr->rightFrequency))) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for one of "
-		  "the stimulus\nfrequencies."), funcName, MSEC(bPureTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for one of ")
+		  wxT("the stimulus\nfrequencies."), funcName, MSEC(bPureTonePtr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -549,8 +549,8 @@ ReadPars_PureTone_Binaural(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_Binaural(leftFrequency, rightFrequency,

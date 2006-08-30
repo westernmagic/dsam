@@ -56,7 +56,8 @@ Init_PureTone(ParameterSpecifier parSpec)
 		if (pureTonePtr != NULL)
 			Free_PureTone();
 		if ((pureTonePtr = (PureTonePtr) malloc(sizeof(PureTone))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -167,8 +168,8 @@ GetUniParListPtr_PureTone(void)
 		return(FALSE);
 	}
 	if (pureTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pureTonePtr->parList);
@@ -214,8 +215,8 @@ CheckPars_PureTone(void)
 	}
 	criticalFrequency = 1.0 / (2.0 * pureTonePtr->dt);
 	if (ok && (criticalFrequency <= pureTonePtr->frequency)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
-		  "frequency."), funcName, MSEC(pureTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
+		  wxT("frequency."), funcName, MSEC(pureTonePtr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -413,8 +414,8 @@ ReadPars_PureTone(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone(frequency, intensity, duration,

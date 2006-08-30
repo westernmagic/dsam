@@ -202,8 +202,8 @@ GetUniParListPtr_Utility_IteratedRipple(void)
 		return(FALSE);
 	}
 	if (iterRipplePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(iterRipplePtr->parList);
@@ -259,8 +259,8 @@ SetNumIterations_Utility_IteratedRipple(int theNumIterations)
 	}
 	/*** Put any other required checks here. ***/
 	if (theNumIterations <= 0) {
-		NotifyError(wxT("%s: The number of iterations must be bigger the 0 "
-		  "(%d)."), funcName, theNumIterations);
+		NotifyError(wxT("%s: The number of iterations must be bigger the 0 ")
+		  wxT("(%d)."), funcName, theNumIterations);
 		return(FALSE);
 	}	
 	iterRipplePtr->numIterationsFlag = TRUE;
@@ -458,8 +458,8 @@ ReadPars_Utility_IteratedRipple(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_IteratedRipple(numIterations, mode, delay,
@@ -553,8 +553,8 @@ CheckData_Utility_IteratedRipple(EarObjectPtr data)
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (iterRipplePtr->delay > signalDuration)	{
-		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration "
-		  "(%g ms)"), funcName, MSEC(iterRipplePtr->delay), MSEC(
+		NotifyError(wxT("%s: Delay (%g ms) is longer than the signal duration ")
+		  wxT("(%g ms)"), funcName, MSEC(iterRipplePtr->delay), MSEC(
 		  signalDuration));
 		return(FALSE);
 	}

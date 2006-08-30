@@ -326,8 +326,8 @@ WriteFile_Wave(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 		if (!ReadHeader_Wave(fp, &pars)) {
-			NotifyError(wxT("%s: Could not read header (using segmented "
-			  "mode)."), funcName);
+			NotifyError(wxT("%s: Could not read header (using segmented ")
+			  wxT("mode)."), funcName);
 			CloseFile(fp);
 			return(FALSE);
 		}

@@ -191,8 +191,8 @@ GetUniParListPtr_IHCRP_Zhang(void)
 		return(FALSE);
 	}
 	if (iHCRPZhangPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(iHCRPZhangPtr->parList);
@@ -630,8 +630,8 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Zhang et al. IHC Receptor "
-		  "Potential."));
+		SetProcessName_EarObject(data, wxT("Zhang et al. IHC Receptor ")
+		  wxT("Potential."));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);

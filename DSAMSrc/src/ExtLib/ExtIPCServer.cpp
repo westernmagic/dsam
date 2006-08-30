@@ -191,8 +191,8 @@ IPCServer::OnPut(void)
 
  	sock->Read(&length, sizeof(length));
 	if (!iPCUtils.InitInputMemory(length)) {
-		NotifyError(wxT("%s: Could not initialise memory for input process "
-		  "signal"), funcName);
+		NotifyError(wxT("%s: Could not initialise memory for input process ")
+		  wxT("signal"), funcName);
 		return;
 	}
 	p = iPCUtils.GetInUIOPtr()->memStart;
@@ -380,8 +380,8 @@ IPCServer::OnSet(void)
 			cmdStr += c;
 	wxStringTokenizer tokenizer(cmdStr);
 	if ((numTokens = tokenizer.CountTokens()) % 2 != 0) {
-		NotifyError(wxT("%s: parameter settings must be in <name> <value> "
-		  "pairs."), funcName);
+		NotifyError(wxT("%s: parameter settings must be in <name> <value> ")
+		  wxT("pairs."), funcName);
 		return;
 	}
 	for (i = 0; i < numTokens / 2; i++) {

@@ -193,8 +193,8 @@ GetUniParListPtr_WhiteNoise(void)
 		return(FALSE);
 	}
 	if (whiteNoisePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(whiteNoisePtr->parList);
@@ -401,8 +401,8 @@ SetRandomizationIndex_WhiteNoise(int theRandomizationIndex)
 		return(FALSE);
 	}
 	if (theRandomizationIndex < 12) {
-		NotifyError(wxT("%s: The value of randomizationIndex (= %d) should "
-		  "not be greater than 12!"), funcName, theRandomizationIndex);
+		NotifyError(wxT("%s: The value of randomizationIndex (= %d) should ")
+		  wxT("not be greater than 12!"), funcName, theRandomizationIndex);
 		return(FALSE);
 	}
 	whiteNoisePtr->randomizationIndexFlag = TRUE;
@@ -487,11 +487,11 @@ PrintPars_WhiteNoise(void)
 		return(FALSE);
 	}
 	DPrint(wxT("White Noise Module Parameters:-\n"));
-	DPrint(wxT("\tNumber of Sound Channels = %d,\tCorrelation "
-	  "Degree = %d,\n"), whiteNoisePtr->numChannels,
+	DPrint(wxT("\tNumber of Sound Channels = %d,\tCorrelation ")
+	  wxT("Degree = %d,\n"), whiteNoisePtr->numChannels,
 	  whiteNoisePtr->correlationDegree);
-	DPrint(wxT("\tRandomization Index = %d,\tRandomization "
-	  "Seed = %ld.\n"), whiteNoisePtr->randomizationIndex,
+	DPrint(wxT("\tRandomization Index = %d,\tRandomization ")
+	  wxT("Seed = %ld.\n"), whiteNoisePtr->randomizationIndex,
 	  whiteNoisePtr->ranSeed);
 	DPrint(wxT("\tIntensity = %g dB SPL,\n"),
 	  whiteNoisePtr->intensity);
@@ -545,8 +545,8 @@ ReadPars_WhiteNoise(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_WhiteNoise(numChannels, intensity, duration,

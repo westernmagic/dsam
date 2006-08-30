@@ -190,8 +190,8 @@ GetUniParListPtr_Analysis_Averages(void)
 		return(FALSE);
 	}
 	if (averagesPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(averagesPtr->parList);
@@ -406,8 +406,8 @@ ReadPars_Analysis_Averages(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_Averages(mode, timeOffset, timeRange)) {
@@ -499,15 +499,15 @@ CheckData_Analysis_Averages(EarObjectPtr data)
 		return(FALSE);
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (averagesPtr->timeOffset > signalDuration) {
-		NotifyError(wxT("%s: Time offset (%g ms) must be less than the signal\n"
-		  "duration (%g ms)."), funcName, MSEC(averagesPtr->timeOffset),
-		  MSEC(signalDuration));
+		NotifyError(wxT("%s: Time offset (%g ms) must be less than the ")
+		  wxT("signal\nduration (%g ms)."), funcName, MSEC(averagesPtr->
+		  timeOffset), MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((averagesPtr->timeRange >= 0.0) && (averagesPtr->timeOffset +
 	  averagesPtr->timeRange > signalDuration)) {
-		NotifyError(wxT("%s: Time offset (%g ms) + timeRange (%g ms) must be\n"
-		  "less than the signal duration (%g ms)."), funcName,
+		NotifyError(wxT("%s: Time offset (%g ms) + timeRange (%g ms) must be\n")
+		  wxT("less than the signal duration (%g ms)."), funcName,
 		  MSEC(averagesPtr->timeOffset), MSEC(averagesPtr->timeRange),
 		  MSEC(signalDuration));
 		return(FALSE);

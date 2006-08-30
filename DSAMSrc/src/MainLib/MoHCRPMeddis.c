@@ -337,8 +337,8 @@ CheckPars_IHCRP_Meddis(void)
 		ok = FALSE;
 	}
 	if (!meddisRPPtr->mTimeConstTmFlag) {
-		NotifyError(wxT("%s: Basilar membrane time constant, tm, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Basilar membrane time constant, tm, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -493,8 +493,8 @@ CheckData_IHCRP_Meddis(EarObjectPtr data)
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (meddisRPPtr->mTimeConst_tm <= _InSig_EarObject(data, 0)->dt / 2.0) {
-		NotifyError(wxT("%s: Membrane time constant (%g ms) is too small it "
-		  "must\nbe greater than %g ms"), funcName, MILLI(meddisRPPtr->
+		NotifyError(wxT("%s: Membrane time constant (%g ms) is too small it ")
+		  wxT("must\nbe greater than %g ms"), funcName, MILLI(meddisRPPtr->
 		  mTimeConst_tm),
 		  MILLI(_InSig_EarObject(data, 0)->dt / 2.0));
 		return(FALSE);

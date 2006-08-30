@@ -174,8 +174,8 @@ GetUniParListPtr_Utility_PadSignal(void)
 		return(FALSE);
 	}
 	if (padSignalPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(padSignalPtr->parList);

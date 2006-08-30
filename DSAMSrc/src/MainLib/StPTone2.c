@@ -56,7 +56,8 @@ Init_PureTone_2(ParameterSpecifier parSpec)
 		if (pureTone2Ptr != NULL)
 			Free_PureTone_2();
 		if ((pureTone2Ptr = (PureTone2Ptr) malloc(sizeof(PureTone2))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'global' pointer"), funcName);
+			NotifyError(wxT("%s: Out of memory for 'global' pointer"),
+			  funcName);
 			return(FALSE);
 		}
 	} else { /* LOCAL */
@@ -184,8 +185,8 @@ GetUniParListPtr_PureTone_2(void)
 		return(FALSE);
 	}
 	if (pureTone2Ptr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(pureTone2Ptr->parList);
@@ -239,14 +240,14 @@ CheckPars_PureTone_2(void)
 	}
 	/* if ( (pureTone2Ptr->beginPeriodDuration > pureTone2Ptr->duration) ||
 	  (pureTone2Ptr->endPeriodDuration > pureTone2Ptr->duration) ) {
-	  	NotifyError(wxT("%s: A silence length parameters is longer than the "
-	  	  "signal duration."), funcName);
+	  	NotifyError(wxT("%s: A silence length parameters is longer than the ")
+	  	  wxT("signal duration."), funcName);
 	  	ok = FALSE;
 	} */
 	criticalFrequency = 1.0 / (2.0 * pureTone2Ptr->dt);
 	if (ok && (criticalFrequency <= pureTone2Ptr->frequency)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
-		  "frequency."), funcName, MSEC(pureTone2Ptr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
+		  wxT("frequency."), funcName, MSEC(pureTone2Ptr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -499,8 +500,8 @@ ReadPars_PureTone_2(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_2(frequency, intensity, duration,

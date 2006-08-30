@@ -189,8 +189,8 @@ CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 	if (!fT) {
 		localFTArray = TRUE;
 		if ((fT = (double *) calloc(n, sizeof(double))) == NULL) {
-			NotifyError(wxT("%s: Couldn't allocate memory for complex data "
-			  "array."), funcName);
+			NotifyError(wxT("%s: Couldn't allocate memory for complex data ")
+			  wxT("array."), funcName);
 			return(FALSE);
 		}
 	}

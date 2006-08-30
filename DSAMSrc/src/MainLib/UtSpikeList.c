@@ -268,8 +268,8 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 					if (*lastValue > eventThreshold) {
 						if (!InsertSpikeSpec_SpikeList(listSpec, chan,
 						  *timeIndex + i - 1)) {
-							NotifyError(wxT("%s: Could not insert spike "
-							  "specification."), funcName);
+							NotifyError(wxT("%s: Could not insert spike ")
+							  wxT("specification."), funcName);
 							return(FALSE);
 						}
 					}

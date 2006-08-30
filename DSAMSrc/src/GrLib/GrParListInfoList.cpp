@@ -73,8 +73,8 @@ ParListInfoList::ParListInfoList(ModuleParDialog *theParent, DatumPtr pc,
 	useNotebookControls = FALSE;
 
 	if ((pc == NULL) && (parList == NULL)) {
-		NotifyError(wxT("%s: Both the simulation (pc) and the parameter list "
-		  "are NULL."), funcName);
+		NotifyError(wxT("%s: Both the simulation (pc) and the parameter list ")
+		  wxT("are NULL."), funcName);
 		return;
 	}
 	
@@ -271,8 +271,8 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 				DynaListPtr	node;
 				IonChannelPtr	iC;
 
-				SetStandardInfo(panel, pc, theICs->parList,  wxT("IC List "
-				  "Gen."));
+				SetStandardInfo(panel, pc, theICs->parList,  wxT("IC List ")
+				  wxT("Gen."));
 				for (node = theICs->ionChannels; node; node = node->next) {
 					iC = (IonChannelPtr) node->data;
 					SetStandardInfo(panel, pc, iC->parList, (wxChar *) iC->

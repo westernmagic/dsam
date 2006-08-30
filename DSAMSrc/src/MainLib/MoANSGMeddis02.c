@@ -195,8 +195,8 @@ GetUniParListPtr_ANSpikeGen_Meddis02(void)
 		return(FALSE);
 	}
 	if (meddis02SGPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(meddis02SGPtr->parList);
@@ -530,8 +530,8 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 		return(FALSE);
 	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration <
 	  _InSig_EarObject(data, 0)->dt)) {
-		NotifyError(wxT("%s: Pulse duration is too small for sampling\n"
-		  "interval, %g ms (%g ms)\n"), funcName,
+		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
+		  wxT("interval, %g ms (%g ms)\n"), funcName,
 		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(meddis02SGPtr->pulseDuration));
 		return(FALSE);
 	}
@@ -622,8 +622,8 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 			}
 			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
 			  sizeof(double*))) == NULL) {
-			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime "
-				  "pointer array."), funcName);
+			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
+				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numThreads; i++) {
@@ -635,8 +635,8 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 				}
 				if ((p->remainingPulseTime[i] = (double *) calloc(p->
 				  arrayLength, sizeof(double))) == NULL) {
-			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime "
-					  "array."), funcName);
+			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
+					  wxT("array."), funcName);
 			 		return(FALSE);
 				}
 			}
@@ -714,8 +714,8 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("Meddis 2002 Post-Synaptic Spike "
-		  "Firing"));
+		SetProcessName_EarObject(data, wxT("Meddis 2002 Post-Synaptic Spike ")
+		  wxT("Firing"));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
 		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
 		  0)->dt)) {

@@ -670,8 +670,8 @@ PrintIonChannelPars_IonChanList(IonChannelPtr theIC)
 		break; }
 	case ICLIST_HHUXLEY_MODE: {
 		ICHHuxleyParsPtr	p = &theIC->hHuxley;
-		DPrint(wxT("\t\tBase max. conductance: %.3g (%.3g @ %g oC.) "
-		  "(S),\n"), theIC->baseMaxConductance, theIC->maxConductance,
+		DPrint(wxT("\t\tBase max. conductance: %.3g (%.3g @ %g oC.) ")
+		  wxT("(S),\n"), theIC->baseMaxConductance, theIC->maxConductance,
 		  theIC->temperature);
 		DPrint(wxT("\t\tConductance Q10: %g,\n"), theIC->conductanceQ10);
 		DPrint(wxT("\t\t%6s%5s%5s%6s%5s%5s%6s%3s%3s%3s%3s\n"), wxT("a"), wxT(
@@ -755,16 +755,16 @@ PrintPars_IonChanList(IonChanListPtr theICs)
 	DynaListPtr	node;
 
 	if (!CheckInit_IonChanList(theICs, funcName)) {
-		NotifyError(wxT("%s: Ion channel list parameters not been correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Ion channel list parameters not been correctly ")
+		  wxT("set."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("\t\tIon channel list structure parameters:-\n"));
 	DPrint(wxT("\t\tPrint tables mode: %s,\n"), theICs->printTablesModeList[
 	  theICs->printTablesMode].name);
 	if (theICs->useTemperatureCalcFlag) {
-		DPrint(wxT("\t\tBase leakage conductance = %.3g (%.3g @ %g oC.) (S),"
-		  "\n"), theICs->baseLeakageCond, theICs->leakageCond, theICs->
+		DPrint(wxT("\t\tBase leakage conductance = %.3g (%.3g @ %g oC.) (S),")
+		  wxT("\n"), theICs->baseLeakageCond, theICs->leakageCond, theICs->
 		  temperature);
 		DPrint(wxT("\t\tLeakage conductance Q10 = %g,\n"), theICs->
 		  leakageCondQ10);
@@ -805,39 +805,39 @@ ReadVoltageTable_IonChanList(IonChannelPtr theIC,  FILE *fp)
 		  i].yY, &theIC->table[i].ty, &theIC->table[i].zZ, &theIC->table[i].tz);
 		if (ok && ((fabs(theIC->table[i].ty) < DBL_EPSILON) ||
 		  (fabs(theIC->table[i].ty) < DBL_EPSILON))) {
-			NotifyError(wxT("%s: The tau values must be greater than zero "
-			  "(entry %d)."), funcName, i);
+			NotifyError(wxT("%s: The tau values must be greater than zero ")
+			  wxT("(entry %d)."), funcName, i);
 			ok = FALSE;
 		}
 		if (ok)
 			switch (i) {
 			case 0:
 				if (fabs(theIC->minVoltage - v) > DBL_EPSILON) {
-					NotifyError(wxT("%s: Incorrect minimum voltage for cell "
-					  "(%g mV)."), funcName, MILLI(v));
+					NotifyError(wxT("%s: Incorrect minimum voltage for cell ")
+					  wxT("(%g mV)."), funcName, MILLI(v));
 					ok = FALSE;
 				}
 				break;
 			case 1:
 				dV = v - theIC->minVoltage;
 				if (fabs(theIC->dV - dV) > DBL_EPSILON) {
-					NotifyError(wxT("%s: Incorrect voltage step for cell (%g "
-					  "mV)."), funcName, MILLI(dV));
+					NotifyError(wxT("%s: Incorrect voltage step for cell (%g ")
+					  wxT("mV)."), funcName, MILLI(dV));
 					ok = FALSE;
 				}
 				break;
 			default:
 				if (fabs(theIC->minVoltage + i * theIC->dV - v) > DBL_EPSILON) {
-					NotifyError(wxT("%s: Table entry voltage out of sequence: "
-					  "entry %d = %g mV."), funcName, i, MILLI(v));
+					NotifyError(wxT("%s: Table entry voltage out of sequence: ")
+					  wxT("entry %d = %g mV."), funcName, i, MILLI(v));
 					ok = FALSE;
 				}
 			}
 	}
 	fclose(fp);
 	if (!ok)
-		NotifyError(wxT("%s: Failed to read table: insufficient entries for\n"
-		  "voltage range specification."), funcName);
+		NotifyError(wxT("%s: Failed to read table: insufficient entries for\n")
+		  wxT("voltage range specification."), funcName);
 	return(ok);
 
 }
@@ -929,14 +929,14 @@ GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp)
 		ok = FALSE;
 	p = &theIC->hHuxley;
 	for (j = 0; j < ICLIST_NUM_GATES; j++) {
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
-		  "%lf"), &p->aA.array[j], &p->aB.array[j], &p->aC.array[j],
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf ")
+		  wxT("%lf"), &p->aA.array[j], &p->aB.array[j], &p->aC.array[j],
 		  &p->aD.array[j], &p->aE.array[j], &p->aF.array[j],
 		  &p->aG.array[j], &p->aH.array[j], &p->aI.array[j],
 		  &p->aJ.array[j], &p->aK.array[j]))
 			ok = FALSE;
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
-		  "%lf"),  &p->bA.array[j], &p->bB.array[j], &p->bC.array[j],
+		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf ")
+		  wxT("%lf"),  &p->bA.array[j], &p->bB.array[j], &p->bC.array[j],
 		  &p->bD.array[j], &p->bE.array[j], &p->bF.array[j],
 		  &p->bG.array[j], &p->bH.array[j], &p->bI.array[j],
 		  &p->bJ.array[j], &p->bK.array[j]))
@@ -1356,8 +1356,8 @@ SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 	}
 	if ((theICs->numTableEntries = (int) ceil((theICs->maxVoltage -
 	  theICs->minVoltage) / theICs->dV) + 1) <= 0) {
-		NotifyError(wxT("%s: Cannot define table from voltage range\n%g -> %g "
-		  "mV and step size %g mV.\n"), funcName, theICs->minVoltage,
+		NotifyError(wxT("%s: Cannot define table from voltage range\n%g -> %g ")
+		  wxT("mV and step size %g mV.\n"), funcName, theICs->minVoltage,
 		  theICs->maxVoltage, theICs->dV);
 		return(FALSE);
 	}
@@ -1553,14 +1553,14 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
 					return(FALSE);
 				SetICGeneralParsFromICList_IonChanList(theIC, theICs);
 				if (!Append_Utility_DynaList(&theICs->ionChannels, theIC)) {
-					NotifyError(wxT("%s: Could not add ion channel [%d] to "
-					  "list."), funcName, i);
+					NotifyError(wxT("%s: Could not add ion channel [%d] to ")
+					  wxT("list."), funcName, i);
 					FreeIonChannel_IonChanList(&theIC);
 					return(FALSE);
 				}
 				if (!SetIonChannelUniParList_IonChanList(theICs, theIC)) { 
-					NotifyError(wxT("%s: Could not initialise ion channel '%s' "
-					  "parameter list."), funcName, theIC->description);
+					NotifyError(wxT("%s: Could not initialise ion channel ")
+					  wxT("'%s' parameter list."), funcName, theIC->description);
 					return(FALSE);
 				}
 			}
@@ -1772,8 +1772,8 @@ GetTableEntry_IonChanList(IonChannelPtr theIC, double voltage)
 	
 	index = (int) floor((voltage - theIC->minVoltage) / theIC->dV + 0.5);
 	if ((index < 0) || (index >= theIC->numTableEntries)) {
-		NotifyError(wxT("%s: Voltage is outside the table bounds for\nchannel "
-		  "'%s' (%g mV)."), funcName, theIC->description, MILLI(voltage));
+		NotifyError(wxT("%s: Voltage is outside the table bounds for\nchannel ")
+		  wxT("'%s' (%g mV)."), funcName, theIC->description, MILLI(voltage));
 		return(NULL);
 	}
 	return(&theIC->table[index]);

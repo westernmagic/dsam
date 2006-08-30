@@ -215,8 +215,8 @@ ReceiveSignalPars_MPI_General(int sourceRank, int tag)
 	  &status);
 	MPI_Recv(&response, 1, MPI_INT, sourceRank, tag, MPI_COMM_WORLD, &status);
 	if (response == FALSE) {
-		NotifyError(wxT("%s: Worker[%d] failed to return the signal "
-		  "parameters."), funcName, sourceRank);
+		NotifyError(wxT("%s: Worker[%d] failed to return the signal ")
+		  wxT("parameters."), funcName, sourceRank);
 		return(FALSE);
 	}
 	signal.rampFlag = (BOOLN) rampFlag;

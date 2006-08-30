@@ -70,8 +70,8 @@ InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
 		return(NULL);
 	}
 	if ((p = (FIRCoeffsPtr) malloc(sizeof(FIRCoeffs))) == NULL) {
-		NotifyError(wxT("%s: Cannot allocate memory for FIR filter "
-		  "coefficients."), funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for FIR filter ")
+		  wxT("coefficients."), funcName);
 		return(NULL);
 	}
 	p->numChannels = numChannels;

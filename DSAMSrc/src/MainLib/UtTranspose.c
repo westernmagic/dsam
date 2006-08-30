@@ -175,8 +175,8 @@ GetUniParListPtr_Utility_Transpose(void)
 		return(FALSE);
 	}
 	if (transposePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised.  NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(transposePtr->parList);

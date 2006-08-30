@@ -203,8 +203,8 @@ SetUniParList_Utility_Strobe(void)
 	}
 	pars = strobePtr->parList->pars;
 	SetPar_UniParMgr(&pars[STROBE_TYPE_MODE], wxT("CRITERION"),
-	  wxT("Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), "
-	  "'peak_shadow-' (3), or 'peak_shadow+' (4/5)."),
+	  wxT("Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), ")
+	    wxT("'peak_shadow-' (3), or 'peak_shadow+' (4/5)."),
 	  UNIPAR_NAME_SPEC,
 	  &strobePtr->typeMode, strobePtr->typeModeList,
 	  (void * (*)) SetTypeMode_Utility_Strobe);
@@ -254,8 +254,8 @@ GetUniParListPtr_Utility_Strobe(void)
 		return(FALSE);
 	}
 	if (strobePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(strobePtr->parList);
@@ -610,8 +610,8 @@ ReadPars_Utility_Strobe(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Utility_Strobe(typeMode, diagnosticMode, threshold,
@@ -703,8 +703,8 @@ CheckData_Utility_Strobe(EarObjectPtr data)
 		return(FALSE);
 	if ((strobePtr->typeMode == STROBE_PEAK_SHADOW_POSITIVE_MODE) &&
 	  (_GetDuration_SignalData(_InSig_EarObject(data, 0)) <= strobePtr->delay)) {
-		NotifyError(wxT("%s: Strobe delay (%g ms) is not less than signal\n"
-		  "duration (%g ms)."), funcName, MSEC(strobePtr->delay),
+		NotifyError(wxT("%s: Strobe delay (%g ms) is not less than signal\n")
+		  wxT("duration (%g ms)."), funcName, MSEC(strobePtr->delay),
 		  MSEC(_GetDuration_SignalData(_InSig_EarObject(data, 0))));
 		return(FALSE);
 	}
@@ -752,8 +752,8 @@ InitStateVariables_Utility_Strobe(ChanLen numLastSamples)
 	if (numLastSamples) {
 		if ((p->lastInput = (ChanData *) calloc(numLastSamples, sizeof(
 		  ChanData))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for 'lastInput' array (%u "
-			  "elements)."), funcName, numLastSamples);
+			NotifyError(wxT("%s: Out of memory for 'lastInput' array (%u ")
+			  wxT("elements)."), funcName, numLastSamples);
 			FreeStateVariables_Utility_Strobe(&p);
 			return(NULL);
 		}
@@ -826,8 +826,8 @@ InitProcessVariables_Utility_Strobe(EarObjectPtr data)
 			for (i = 0; i < p->numChannels; i++) {
 				if ((p->stateVars[i] = InitStateVariables_Utility_Strobe(
 				  p->numLastSamples)) == NULL) {
-					NotifyError(wxT("%s: Out of memory for state variable "
-					  "(%d)."), funcName, i);
+					NotifyError(wxT("%s: Out of memory for state variable ")
+					  wxT("(%d)."), funcName, i);
 					FreeProcessVariables_Utility_Strobe();
 					return(FALSE);
 				}

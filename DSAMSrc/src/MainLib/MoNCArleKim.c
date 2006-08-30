@@ -235,8 +235,8 @@ GetUniParListPtr_Neuron_ArleKim(void)
 		return(FALSE);
 	}
 	if (arleKimPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(arleKimPtr->parList);
@@ -439,8 +439,8 @@ SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst)
 	if (theNonLinearVConst == 0.0) {
 		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
 		  theNonLinearVConst);
-		NotifyWarning(wxT("SetNonLinearVConst_Neuron_ArleKim: To set the term "
-		  "involving this parameter to zero set gb to zero."));
+		NotifyWarning(wxT("SetNonLinearVConst_Neuron_ArleKim: To set the term ")
+		  wxT("involving this parameter to zero set gb to zero."));
 		return(FALSE);
 	} 
 	arleKimPtr->nonLinearVConstFlag = TRUE;
@@ -613,8 +613,8 @@ CheckPars_Neuron_ArleKim(void)
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kDecayTConstFlag) {
-		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->thresholdTConstFlag) {
@@ -628,13 +628,13 @@ CheckPars_Neuron_ArleKim(void)
 		ok = FALSE;
 	}
 	if (!arleKimPtr->delayedRectKCondFlag) {
-		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->restingThresholdFlag) {
-		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->actionPotentialFlag) {
@@ -648,23 +648,23 @@ CheckPars_Neuron_ArleKim(void)
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kReversalPotenFlag) {
-		NotifyError(wxT("%s: Reversal potential of the potassium conductance, "
-		  "Ek, not correctly set."), funcName);
+		NotifyError(wxT("%s: Reversal potential of the potassium conductance, ")
+		  wxT("Ek, not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->bReversalPotenFlag) {
-		NotifyError(wxT("%s: Reversal potential of all other conductances, Eb, "
-		  "not correctly set."), funcName);
+		NotifyError(wxT("%s: Reversal potential of all other conductances, Eb, ")
+		  wxT("not correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->kRestingCondFlag) {
-		NotifyError(wxT("%s: Resting potassium conductance, gk, not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Resting potassium conductance, gk, not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!arleKimPtr->bRestingCondFlag) {
-		NotifyError(wxT("%s: Resting component for all other conductances, gb, "
-		  "not correctly set."), funcName);
+		NotifyError(wxT("%s: Resting component for all other conductances, gb, ")
+		  wxT("not correctly set."), funcName);
 		ok = FALSE;
 	}
 	/*
@@ -672,9 +672,9 @@ CheckPars_Neuron_ArleKim(void)
 	dEExpression = (arleKimPtr->kRestingCond_gk +
 	  arleKimPtr->bRestingCond_gb) / arleKimPtr->membraneTConst_Tm;
 	if (dEExpression < ARLEKIM_DE_LIMIT) {
-		NotifyError(wxT("%s:  The total conductance, gk + gb, is too high or the "
-		  "membrane time-constant is too low.\n  This may cause the model "
-		  "output to produce a floating-point error.\n"), funcName);
+		NotifyError(wxT("%s:  The total conductance, gk + gb, is too high or the ")
+		  wxT("membrane time-constant is too low.\n  This may cause the model ")
+		  wxT("output to produce a floating-point error.\n"), funcName);
 	} */
 	return(ok);
 		
@@ -696,8 +696,8 @@ GetPotentialResponse_Neuron_ArleKim(void *potentialPtr)
 	ArleKimPtr	p;
 
 	if (!CheckPars_Neuron_ArleKim()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set, zero "
-		  "returned."), funcName);
+		NotifyError(wxT("%s: Parameters have not been correctly set, zero ")
+		  wxT("returned."), funcName);
 		return(NULL);
 	}
 	potential = (double *) potentialPtr;
@@ -738,15 +738,15 @@ PrintPars_Neuron_ArleKim(void)
 	  MSEC(arleKimPtr->thresholdTConst_TTh));
 	DPrint(wxT("\tAccommodation constant, c = %g,\n"),
 	  arleKimPtr->accomConst_c);
-	DPrint(wxT("\tDelayed rectifier potassium conductance, b = "
-	  "%g nano Siemens.\n"), arleKimPtr->delayedRectKCond_b);
+	DPrint(wxT("\tDelayed rectifier potassium conductance, b = ")
+	  wxT("%g nano Siemens.\n"), arleKimPtr->delayedRectKCond_b);
 	DPrint(wxT("\tResting threshold, Th0 = %g mV,\tAction ")\
 	  wxT("potential = %g mV.\n"), arleKimPtr->restingThreshold_Th0,
 	  arleKimPtr->actionPotential);
 	DPrint(wxT("\tNon-linear voltage constant, Vnl = %g mV,\n"),
 	  arleKimPtr->nonLinearVConst_Vnl);
-	DPrint(wxT("\tReversal potential of the potassium "
-	  "conductance, Ek = %g mV,\n"), arleKimPtr->kReversalPoten_Ek);
+	DPrint(wxT("\tReversal potential of the potassium ")
+	  wxT("conductance, Ek = %g mV,\n"), arleKimPtr->kReversalPoten_Ek);
 	DPrint(wxT("\tReversal potential of all other ")\
 	  wxT("conductances, Eb = %g mV,\n"), arleKimPtr->bReversalPoten_Eb);
 	DPrint(wxT("\tResting potassium conductance, gk = %g nS,\n"),
@@ -813,8 +813,8 @@ ReadPars_Neuron_ArleKim(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Neuron_ArleKim(membraneTConst_Tm, kDecayTConst_TGk,

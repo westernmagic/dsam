@@ -96,8 +96,8 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	  workStr);
 	Snprintf_Utility_String(p->abbr[PARARRAY_PARAMETER], MAXLINE, wxT(
 	  "%s_PARAMETER"), workStr);
-	Snprintf_Utility_String(p->desc[PARARRAY_MODE], MAXLINE, wxT("Variable "
-	  "'%s' mode ("), name);
+	Snprintf_Utility_String(p->desc[PARARRAY_MODE], MAXLINE, wxT("Variable ")
+	  wxT("'%s' mode ("), name);
 	Snprintf_Utility_String(p->desc[PARARRAY_PARAMETER], MAXLINE, wxT(
 	  "Parameters for '%s' function"), name);
 	for (list = p->modeList; *list->name != '\0'; list++) {
@@ -264,8 +264,8 @@ ReadPars_ParArray(FILE *fp, ParArrayPtr parArray)
 	int		i;
 	
 	if (!parArray) {
-		NotifyError(wxT("%s: The 'parArray' structure has not been "
-		  "initialised."), funcName);
+		NotifyError(wxT("%s: The 'parArray' structure has not been ")
+		  wxT("initialised."), funcName);
 		return(FALSE);
 	} 
 	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {

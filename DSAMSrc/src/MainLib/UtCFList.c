@@ -376,9 +376,9 @@ SetNumChannels_CFList(CFListPtr theCFs, int numChannels)
 		return(FALSE);
 	}
 	if ((theCFs->centreFreqMode == CFLIST_SINGLE_MODE) && (numChannels != 1)) {
-		NotifyError(wxT("%s: You cannot set the number of channels to more "
-		  "than 1 when the 'single' CF mode is set.  First change the mode."),
-		  funcName);
+		NotifyError(wxT("%s: You cannot set the number of channels to more ")
+		  wxT("than 1 when the 'single' CF mode is set.  First change the ")
+		  wxT("mode."), funcName);
 		return(FALSE);
 	}
 	theCFs->numChannels = numChannels;
@@ -955,8 +955,9 @@ GenerateERB_CFList(CFListPtr theCFs)
 	theCFs->numChannels = (int) ceil((ERBRateFromF_Bandwidth(theCFs->maxCF) - 
 	  ERBRateFromF_Bandwidth(theCFs->minCF)) * theCFs->eRBDensity);
 	if (theCFs->numChannels < 1) {
-		NotifyError(wxT("%s: Illegal frequency range %g - %g, or ERB density, "
-		  "%g."), funcName, theCFs->minCF, theCFs->maxCF, theCFs->eRBDensity);
+		NotifyError(wxT("%s: Illegal frequency range %g - %g, or ERB density, ")
+		  wxT("%g."), funcName, theCFs->minCF, theCFs->maxCF, theCFs->
+		  eRBDensity);
 		return(FALSE);
 	}
 	if (!AllocateFrequencies_CFList(theCFs)) {
@@ -1095,8 +1096,8 @@ GenerateFocalLog_CFList(CFListPtr theCFs)
 		return(FALSE);
 	if ((theCFs->focalCF <= theCFs->minCF) || (theCFs->focalCF >=
 	  theCFs->maxCF)) {
-		NotifyError(wxT("%s: Focal frequency %g is not within the frequency "
-		  "range %g - %g."), funcName, theCFs->focalCF, theCFs->minCF,
+		NotifyError(wxT("%s: Focal frequency %g is not within the frequency ")
+		  wxT("range %g - %g."), funcName, theCFs->focalCF, theCFs->minCF,
 		  theCFs->maxCF);
 		return(FALSE);
 	}
@@ -1334,8 +1335,9 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 		;
 	} /* Switch */
 	if (!ok) {
-		NotifyError(wxT("%s: Could not generate CFList for '%s' frequency "
-		  "mode."), funcName, CFModeList_CFList(theCFs->centreFreqMode)->name);
+		NotifyError(wxT("%s: Could not generate CFList for '%s' frequency ")
+		  wxT("mode."), funcName, CFModeList_CFList(theCFs->centreFreqMode)->
+		  name);
 		return(FALSE);
 	}
 	theCFs->oldNumChannels = theCFs->numChannels;
@@ -1432,8 +1434,8 @@ GenerateList_CFList(WChar *modeName, WChar *diagModeName, int numberOfCFs,
 		return(NULL);
 	}
 	if (!SetGeneratedPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Could not set CF list generated parameters '%s'"
-		  "frequency mode."), funcName, modeName);
+		NotifyError(wxT("%s: Could not set CF list generated parameters '%s'")
+		  wxT("frequency mode."), funcName, modeName);
 		Free_CFList(&theCFs);
 		return(NULL);
 	}
@@ -1615,8 +1617,8 @@ SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, double *theBandwidths)
 	static const WChar *funcName = wxT("SetBandwidths_CFList");
 	
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list  parameters not correctly "
-		  "set, cannot add bandwidths."), funcName);
+		NotifyError(wxT("%s: Centre frequency list  parameters not correctly ")
+		  wxT("set, cannot add bandwidths."), funcName);
 		return(FALSE);
 	}
 	if (modeName && !SetMode_Bandwidth(&theCFs->bandwidthMode, modeName)) {
@@ -1629,8 +1631,8 @@ SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, double *theBandwidths)
 	}
 	theCFs->updateFlag = TRUE;
 	if (!SetBandwidthUniParList_CFList(theCFs)) {
-		NotifyError(wxT("%s: Could not initialise parameter list for "
-		  "bandwidths."), funcName);
+		NotifyError(wxT("%s: Could not initialise parameter list for ")
+		  wxT("bandwidths."), funcName);
 		return(FALSE);
 	}
 	SetBandwidthUniParListMode_CFList(theCFs);
@@ -1656,8 +1658,8 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
 	int		i;
 		
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set, cannot add bandwidths."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set, cannot add bandwidths."), funcName);
 		return(FALSE);
 	}
 	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
@@ -1692,8 +1694,8 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
 			return(FALSE);
 		}
 		if (!GetPars_ParFile(fp, wxT("%lf"), &theCFs->bandwidthMode.quality)) {
-			NotifyError(wxT("%s: Could not read 'quality' for Custom ERB "
-			  "mode."), funcName);
+			NotifyError(wxT("%s: Could not read 'quality' for Custom ERB ")
+			  wxT("mode."), funcName);
 			return(FALSE);
 		}
 	default:
@@ -1727,8 +1729,8 @@ GetCF_CFList(CFListPtr theCFs, int channel)
 		return(0.0);
 	}
 	if (channel < 0 || channel >= theCFs->numChannels) {
-		NotifyError(wxT("%s: Channel number must be in the range 0 to %d.  "
-		  "Zero returned."), funcName, theCFs->numChannels - 1);
+		NotifyError(wxT("%s: Channel number must be in the range 0 to %d.  ")
+		  wxT("Zero returned."), funcName, theCFs->numChannels - 1);
 		return(0.0);
 	}
 	return(theCFs->frequency[channel]);
@@ -1756,8 +1758,8 @@ ResetCF_CFList(CFListPtr theCFs, int channel, double theFrequency)
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		return(FALSE);
 	}
 	if (channel < 0 || channel >= theCFs->numChannels) {
@@ -1799,13 +1801,13 @@ ResetBandwidth_CFList(CFListPtr theCFs, int channel, double theBandwidth)
 		return(FALSE);
 	}
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters  not correctly "
-		  "set"), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters  not correctly ")
+		  wxT("set"), funcName);
 		return(FALSE);
 	}
 	if (theCFs->bandwidthMode.specifier != BANDWIDTH_USER) {
-		NotifyError(wxT("%s: Individual bandwidths can only be set in USER "
-		  "bandwidth mode."), funcName);
+		NotifyError(wxT("%s: Individual bandwidths can only be set in USER ")
+		  wxT("bandwidth mode."), funcName);
 		return(FALSE);
 	}
 	if (channel < 0 || channel >= theCFs->numChannels) {
@@ -1833,19 +1835,19 @@ GetBandwidth_CFList(CFListPtr theCFs, int channel)
 	static const WChar *funcName = wxT("GetBandwidth_CFList");
 
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set.  Zero returned."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set.  Zero returned."), funcName);
 		return(0.0);
 	}
 	if ((theCFs->bandwidthMode.specifier == BANDWIDTH_INTERNAL_DYNAMIC) ||
 	  (theCFs->bandwidthMode.specifier == BANDWIDTH_DISABLED)) {
-		NotifyError(wxT("%s: Internal/disabled bandwidths cannot be read.  "
-		  "Zero returned"), funcName);
+		NotifyError(wxT("%s: Internal/disabled bandwidths cannot be read.  ")
+		  wxT("Zero returned"), funcName);
 		return(0.0);
 	}
 	if (channel < 0 || channel >= theCFs->numChannels) {
-		NotifyError(wxT("%s: Channel number must be in the range 0 to %d, zero "
-		  "returned."), funcName, theCFs->numChannels - 1);
+		NotifyError(wxT("%s: Channel number must be in the range 0 to %d, ")
+		  wxT("zero returned."), funcName, theCFs->numChannels - 1);
 		return(0.0);
 	}
 	return(theCFs->bandwidth[channel]);
@@ -1865,8 +1867,8 @@ PrintList_CFList(CFListPtr theCFs)
 	int		i;
 	
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		return;
 	}
 	DPrint(wxT("\t\t%10s\t%10s\t%10s\n"), wxT("Filter No."), wxT("Frequency"),
@@ -1902,8 +1904,8 @@ PrintPars_CFList(CFListPtr theCFs)
 	static const WChar *funcName = wxT("PrintPars_CFList");
 	
 	if (!CheckPars_CFList(theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		return;
 	}
 	DPrint(wxT("\tCentre Frequency structure parameters:-\n"));

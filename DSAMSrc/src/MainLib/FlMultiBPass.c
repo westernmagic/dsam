@@ -246,8 +246,8 @@ GetUniParListPtr_Filter_MultiBPass(void)
 		return(FALSE);
 	}
 	if (multiBPassFPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(multiBPassFPtr->parList);
@@ -366,8 +366,8 @@ SetNumFilters_Filter_MultiBPass(int theNumFilters)
 		return(FALSE);
 	}
 	if (!AllocNumFilters_Filter_MultiBPass(theNumFilters)) {
-		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -715,8 +715,8 @@ ReadPars_Filter_MultiBPass(WChar *fileName)
 	if (!GetPars_ParFile(fp, wxT("%d"), &numFilters))
 		ok = FALSE;
 	if (!AllocNumFilters_Filter_MultiBPass(numFilters)) {
-		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' "
-		  "arrays."), funcName);
+		NotifyError(wxT("%s: Cannot allocate memory for the 'numFilters' ")
+		  wxT("arrays."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < numFilters; i++)
@@ -727,8 +727,8 @@ ReadPars_Filter_MultiBPass(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_Filter_MultiBPass(numFilters, multiBPassFPtr->cascade,
@@ -856,8 +856,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			bPParsPtr = &p->bPassPars[i];
 			if ((bPParsPtr->coefficients = (BandPassCoeffsPtr *) calloc(
 			  p->numChannels, sizeof(BandPassCoeffsPtr))) == NULL) {
-		 		NotifyError(wxT("%s: Out of memory for filter %d's "
-				  "coefficients."), funcName, i);
+		 		NotifyError(wxT("%s: Out of memory for filter %d's ")
+				  wxT("coefficients."), funcName, i);
 		 		return(FALSE);
 			}
 			if (i == 0)
@@ -872,8 +872,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 			
 		}
 		if (!InitSubProcessList_EarObject(data, p->numFilters - 1)) {
-			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
-			  "process."), funcName, p->numFilters);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
+			  wxT("process."), funcName, p->numFilters);
 			return(FALSE);
 		}
 	 	for (i = 0; (i < p->numFilters) && ok; i++) {
@@ -884,8 +884,8 @@ InitProcessVariables_Filter_MultiBPass(EarObjectPtr data)
 				if ((bPParsPtr->coefficients[j] = InitBandPassCoeffs_Filters(
 				  p->cascade[i], p->lowerCutOffFreq[i], p->upperCutOffFreq[i],
 				  _InSig_EarObject(data, 0)->dt)) == NULL) {
-				  	NotifyError(wxT("%s: Failed initialised filter %d, channel "
-					  "%d."), funcName, i, j);
+				  	NotifyError(wxT("%s: Failed initialised filter %d, ")
+					  wxT("channel %d."), funcName, i, j);
 					ok = FALSE;
 				}
 		}
@@ -977,8 +977,8 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		  wxT("process."));
 		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
-			NotifyError(wxT("%s: Could not initialise the process output "
-			  "signal."), funcName);
+			NotifyError(wxT("%s: Could not initialise the process output ")
+			  wxT("signal."), funcName);
 			return(FALSE);
 		}
 		if (!InitProcessVariables_Filter_MultiBPass(data)) {

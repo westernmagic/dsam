@@ -183,8 +183,8 @@ GetUniParListPtr_PureTone_AM(void)
 		return(FALSE);
 	}
 	if (aMTonePtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(aMTonePtr->parList);
@@ -239,13 +239,13 @@ CheckPars_PureTone_AM(void)
 	}
 	criticalFrequency = 1.0 / (2.0 * aMTonePtr->dt);
 	if (ok && (criticalFrequency <= aMTonePtr->frequency)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is to low for the "
-		  "carrier frequency."), funcName, MSEC(aMTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is to low for the ")
+		  wxT("carrier frequency."), funcName, MSEC(aMTonePtr->dt));
 		ok = FALSE;
 	} 
 	if (ok && (criticalFrequency <= aMTonePtr->modulationFrequency)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the "
-		  "modulation frequency."), funcName, MSEC(aMTonePtr->dt));
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
+		  wxT("modulation frequency."), funcName, MSEC(aMTonePtr->dt));
 		ok = FALSE;
 	} 
 	return(ok);
@@ -492,8 +492,8 @@ ReadPars_PureTone_AM(WChar *fileName)
     fclose(fp);
     Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s:  Not enough, lines or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_PureTone_AM(frequency, modulationFrequency, modulationDepth,

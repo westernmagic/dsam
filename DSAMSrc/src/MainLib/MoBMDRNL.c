@@ -225,22 +225,22 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	bMDRNLPtr->nonLinLPCascade = 4;
 	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"), 
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError(wxT("%s: Could not initialise NonLinBwidth parArray "
-		  "structure"), funcName);
+		NotifyError(wxT("%s: Could not initialise NonLinBwidth parArray ")
+		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->comprScaleA = Init_ParArray(wxT("ComprScaleA"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError(wxT("%s: Could not initialise ComprScaleA parArray "
-		  "structure"), funcName);
+		NotifyError(wxT("%s: Could not initialise ComprScaleA parArray ")
+		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->comprScaleB = Init_ParArray(wxT("ComprScaleB"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError(wxT("%s: Could not initialise ComprScaleB parArray "
-		  "structure"), funcName);
+		NotifyError(wxT("%s: Could not initialise ComprScaleB parArray ")
+		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
@@ -256,15 +256,15 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	}
 	if ((bMDRNLPtr->linBwidth = Init_ParArray(wxT("LinBwidth"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError(wxT("%s: Could not initialise LinBwidth parArray "
-		  "structure"), funcName);
+		NotifyError(wxT("%s: Could not initialise LinBwidth parArray ")
+		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->linScaleG = Init_ParArray(wxT("linScaleG"),
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
-		NotifyError(wxT("%s: Could not initialise linScaleG parArray "
-		  "structure"), funcName);
+		NotifyError(wxT("%s: Could not initialise linScaleG parArray ")
+		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
@@ -395,8 +395,8 @@ GetUniParListPtr_BasilarM_DRNL(void)
 		return(FALSE);
 	}
 	if (bMDRNLPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMDRNLPtr->parList);
@@ -809,18 +809,18 @@ CheckPars_BasilarM_DRNL(void)
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->nonLinBwidth, funcName)) {
-		NotifyError(wxT("%s: Variable nonLinBwidth parameter array not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Variable nonLinBwidth parameter array not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleA, funcName)) {
-		NotifyError(wxT("%s: Variable comprScaleA parameter array not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Variable comprScaleA parameter array not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleB, funcName)) {
-		NotifyError(wxT("%s: Variable comprScaleB parameter array not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Variable comprScaleB parameter array not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!bMDRNLPtr->comprExponentFlag) {
@@ -836,23 +836,23 @@ CheckPars_BasilarM_DRNL(void)
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linCF, funcName)) {
-		NotifyError(wxT("%s: Variable linCF parameter array not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Variable linCF parameter array not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linBwidth, funcName)) {
-		NotifyError(wxT("%s: Variable linBwidth parameter array not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Variable linBwidth parameter array not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckInit_ParArray(bMDRNLPtr->linScaleG, funcName)) {
-		NotifyError(wxT("%s: Variable linScaleG parameter array not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Variable linScaleG parameter array not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	if (!CheckPars_CFList(bMDRNLPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly "
-		  "set."), funcName);
+		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
+		  wxT("set."), funcName);
 		ok = FALSE;
 	}
 	return(ok);
@@ -875,8 +875,8 @@ GetCFListPtr_BasilarM_DRNL(void)
 		return(NULL);
 	}
 	if (bMDRNLPtr->theCFs == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly "
-		  "set.  NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly ")
+		  wxT("set.  NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMDRNLPtr->theCFs);
@@ -986,8 +986,8 @@ ReadPars_BasilarM_DRNL(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, fileName);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, fileName);
 		return(FALSE);
 	}
 	if (!SetPars_BasilarM_DRNL(nonLinGTCascade, nonLinLPCascade,
@@ -1107,8 +1107,8 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 		p->linearF = Init_EarObject(wxT("NULL"));
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if (!InitSubProcessList_EarObject(data, BM_DRNL_NUM_SUB_PROCESSES)) {
-			NotifyError(wxT("%s: Could not initialise %d sub-process list for "
-			  "process."), funcName, BM_DRNL_NUM_SUB_PROCESSES);
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
+			  wxT("process."), funcName, BM_DRNL_NUM_SUB_PROCESSES);
 			return(FALSE);
 		}
 		data->subProcessList[BM_DRNL_LINEARF] = p->linearF;

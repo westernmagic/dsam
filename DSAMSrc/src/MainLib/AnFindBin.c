@@ -159,14 +159,14 @@ SetUniParList_Analysis_FindBin(void)
 	}
 	pars = findBinPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_MODE], wxT("MODE"),
-	  wxT("Search mode ('max_value', 'max_index', 'min_value' or "
-	  "'min_index')."),
+	  wxT("Search mode ('max_value', 'max_index', 'min_value' or ")
+	    wxT("'min_index')."),
 	  UNIPAR_NAME_SPEC,
 	  &findBinPtr->mode, findBinPtr->modeList,
 	  (void * (*)) SetMode_Analysis_FindBin);
 	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_BINWIDTH], wxT("BIN_WIDTH"),
-	  wxT("Bin width (time window) for search bin: -ve assumes dt for previous "
-	  "signal (s)."),
+	  wxT("Bin width (time window) for search bin: -ve assumes dt for ")
+	    wxT("previous signal (s)."),
 	  UNIPAR_REAL,
 	  &findBinPtr->binWidth, NULL,
 	  (void * (*)) SetBinWidth_Analysis_FindBin);
@@ -176,8 +176,8 @@ SetUniParList_Analysis_FindBin(void)
 	  &findBinPtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Analysis_FindBin);
 	SetPar_UniParMgr(&pars[ANALYSIS_FINDBIN_TIMEWIDTH], wxT("WIDTH"),
-	  wxT("Analysis window width for search: -ve assume to end of signal "
-	  "(s?)."),
+	  wxT("Analysis window width for search: -ve assume to end of signal ")
+	    wxT("(s?)."),
 	  UNIPAR_REAL,
 	  &findBinPtr->timeWidth, NULL,
 	  (void * (*)) SetTimeWidth_Analysis_FindBin);
@@ -202,8 +202,8 @@ GetUniParListPtr_Analysis_FindBin(void)
 		return(FALSE);
 	}
 	if (findBinPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been "
-		  "initialised. NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been ")
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(findBinPtr->parList);
@@ -454,8 +454,8 @@ ReadPars_Analysis_FindBin(WChar *fileName)
 	fclose(fp);
 	Free_ParFile();
 	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in "
-		  "module parameter file '%s'."), funcName, filePath);
+		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
+		  wxT("module parameter file '%s'."), funcName, filePath);
 		return(FALSE);
 	}
 	if (!SetPars_Analysis_FindBin(mode, binWidth, timeOffset,
@@ -548,29 +548,29 @@ CheckData_Analysis_FindBin(EarObjectPtr data)
 		return(FALSE);
 	dt = _InSig_EarObject(data, 0)->dt;
 	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->binWidth < dt)) {
-		NotifyError(wxT("%s: Bin width (%g ms) is less than sampling interval, "
-		  "(%g ms)."), funcName, MSEC(findBinPtr->binWidth), MSEC(dt));
+		NotifyError(wxT("%s: Bin width (%g ms) is less than sampling interval, ")
+		  wxT("(%g ms)."), funcName, MSEC(findBinPtr->binWidth), MSEC(dt));
 		return(FALSE);
 	}
 	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (findBinPtr->timeOffset >= signalDuration) {
-		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal "
-		  "duration (%g ms)."), funcName, MSEC(findBinPtr->timeOffset),
+		NotifyError(wxT("%s: Time offset (%g ms) is too long for the signal ")
+		  wxT("duration (%g ms)."), funcName, MSEC(findBinPtr->timeOffset),
 		  MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((findBinPtr->binWidth > 0.0) && (findBinPtr->timeOffset +
 	  findBinPtr->binWidth >= signalDuration)) {
-		NotifyError(wxT("%s: Time offset + bin width (%g ms) must not "
-		  "exceed the signal duration (%g ms)."), funcName, MSEC(findBinPtr->
-		  timeOffset + findBinPtr->binWidth), MSEC(signalDuration));
+		NotifyError(wxT("%s: Time offset + bin width (%g ms) must not ")
+		  wxT("exceed the signal duration (%g ms)."), funcName, MSEC(
+		  findBinPtr->timeOffset + findBinPtr->binWidth), MSEC(signalDuration));
 		return(FALSE);
 	}
 	if ((findBinPtr->timeWidth > 0.0) && (findBinPtr->timeOffset +
 	  findBinPtr->timeWidth >= signalDuration)) {
-		NotifyError(wxT("%s: Time offset + range (%g ms) must not exceed the "
-		  "signal duration (%g ms)."), funcName, MSEC(findBinPtr->timeOffset +
-		  findBinPtr->timeWidth), MSEC(signalDuration));
+		NotifyError(wxT("%s: Time offset + range (%g ms) must not exceed the ")
+		  wxT("signal duration (%g ms)."), funcName, MSEC(findBinPtr->
+		  timeOffset + findBinPtr->timeWidth), MSEC(signalDuration));
 		return(FALSE);
 	}
 	return(TRUE);
@@ -612,8 +612,8 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Find Maximum Bin Value Analysis"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 1,
-		  1.0)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, 1, 1.0)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
@@ -624,8 +624,8 @@ Calc_Analysis_FindBin(EarObjectPtr data)
 		p->binWidthIndex = (p->binWidth <= 0.0)? (ChanLen) 1: (ChanLen) (p->
 		  binWidth / dt + 0.5);
 		p->timeOffsetIndex = (ChanLen) (p->timeOffset / dt + 0.5);
-		p->timeWidthIndex = (p->timeWidth <= 0.0)? _InSig_EarObject(data, 0)->length -
-		  p->timeOffsetIndex: (ChanLen) (p->timeWidth / dt + 0.5);
+		p->timeWidthIndex = (p->timeWidth <= 0.0)? _InSig_EarObject(data, 0)->
+		  length - p->timeOffsetIndex: (ChanLen) (p->timeWidth / dt + 0.5);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
