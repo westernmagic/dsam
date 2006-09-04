@@ -184,7 +184,7 @@ SDICommand::SetBasic(int command, SDIDocument *ddoc, wxShape *theShape)
 bool
 SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 {
-	static const char *funcName = "SDICommand::ConnectInstructions";
+	static const wxChar *funcName = wxT("SDICommand::ConnectInstructions");
 	bool	ok = true;
 
 	DatumPtr	toPc = SHAPE_PC(toShape);
@@ -195,12 +195,11 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 		  wxT("can be made."), funcName);
 		return(false);
 	}
-
 	// Ensure only process instructions are connected for data flow.
 	if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
 		ok = CXX_BOOL(ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data));
 	if (ok)
-		ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
+		ok = ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
 	return(ok);
 
 }
@@ -265,22 +264,20 @@ SDICommand::AddLineShape(int lineType)
 	else if (!SHAPE_PC(fromShape) || !SHAPE_PC(toShape))
 		return(false);
 	else {
-		theShape = ((SDIDiagram *) doc->GetDiagram())->AddLineShape(fromShape,
-		  toShape, lineType);
-
 		switch (lineType) {
 		case REPEAT:
+			if (!AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			  toShape), SHAPE_PC(fromShape)->u.loop.stopPC))
+				return(false);
 			SHAPE_PC(fromShape)->u.loop.stopPC = InitInst_Utility_Datum(STOP);
-			AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
-			  toShape), SHAPE_PC(fromShape)->u.loop.stopPC);
 			break;
 		default:
 			if (!ConnectInstructions(fromShape, toShape)) {
-				delete theShape;
-				shape = NULL;
 				return(false);
 			}
 		} /* switch */
+		theShape = ((SDIDiagram *) doc->GetDiagram())->AddLineShape(fromShape,
+		  toShape, lineType);
 	}
 
 	shape = theShape;

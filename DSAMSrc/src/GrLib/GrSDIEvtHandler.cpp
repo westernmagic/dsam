@@ -238,7 +238,8 @@ SDIEvtHandler::EditInstruction(void)
 		pc->data->clientData = pc->clientData;
 		break;
 	default:
-		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName, processType);
+		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName,
+		  processType);
 		return(false);
 	}
 	return(true);

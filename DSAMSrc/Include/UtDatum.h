@@ -57,8 +57,6 @@
 /****************************** Macro definitions *****************************/
 /******************************************************************************/
 
-#define DATUM_IN_SIMULATION(PC)	((PC)->previous || (PC)->next)
-
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
@@ -121,7 +119,7 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-void	AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
+BOOLN	AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
 
 BOOLN	CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
@@ -134,7 +132,7 @@ int		CmpProcessLabel_Utility_Datum(void *a, void *b);
 
 int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
-void	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
+BOOLN	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 
 void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
 		  DatumPtr to);
@@ -168,6 +166,8 @@ void	FreeInstructions_Utility_Datum(DatumPtr *pc);
 
 BOOLN	FreeEarObjects_Utility_Datum(DatumPtr start);
 
+DatumPtr	GetChainStart_Utility_Datum(DatumPtr pc);
+
 EarObjectPtr	GetFirstProcess_Utility_Datum(DatumPtr start);
 
 DatumPtr	GetFirstProcessInst_Utility_Datum(DatumPtr start);
@@ -192,8 +192,6 @@ BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 DatumPtr	InitInst_Utility_Datum(int type);
 
 BOOLN	InitProcessInst_Utility_Datum(DatumPtr pc);
-
-void	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
 
 DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 

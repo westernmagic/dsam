@@ -234,10 +234,6 @@ MyApp::OnInit(void)
 	myDocManager = new SDIDocManager;
 	// Create templates relating drawing documents to their views
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
-	  SDI_DOCUMENT_ALL_FILES_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT(
-	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
-	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_XML_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
 	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT(
 	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
@@ -249,6 +245,10 @@ MyApp::OnInit(void)
 	  SDI_DOCUMENT_SIM_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
 	  SDI_DOCUMENT_SIM_FILE_EXT, wxT("Simulation Design"), wxT(
 	  "Simulation view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
+	  SDI_DOCUMENT_ALL_FILES_EXT, grMainApp->GetSimFileName().GetCwd(),
+	  SDI_DOCUMENT_XML_FILE_EXT, wxT("Simulation Design"), wxT(
+	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	myDocManager->SetMaxDocsOpen(1);
 
 	// Get frame position and size
