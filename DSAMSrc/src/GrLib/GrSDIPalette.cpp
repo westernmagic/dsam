@@ -90,16 +90,16 @@ EditorToolPalette::Set(void)
 {
 	// Load palette bitmaps
 	#ifdef __WXMSW__
-	wxBitmap PaletteAnaTool("ANALYSIS_TOOL");
-	wxBitmap PaletteCtrlTool("CONTROL_TOOL");
-	wxBitmap PaletteDisplayTool("DISPLAY_TOOL");
-	wxBitmap PaletteFiltTool("FILTER_TOOL");
-	wxBitmap PaletteIOTool("IO_TOOL");
-	wxBitmap PaletteArrow("ARROWTOOL");
-	wxBitmap PaletteModelTool("MODEL_TOOL");
-	wxBitmap PaletteTransTool("TRANSFORM_TOOL");
-	wxBitmap PaletteUserTool("USER_TOOL");
-	wxBitmap PaletteUtilTool("UTILITY_TOOL");
+	wxBitmap PaletteAnaTool(wxT("ANALYSIS_TOOL"));
+	wxBitmap PaletteCtrlTool(wxT("CONTROL_TOOL"));
+	wxBitmap PaletteDisplayTool(wxT("DISPLAY_TOOL"));
+	wxBitmap PaletteFiltTool(wxT("FILTER_TOOL"));
+	wxBitmap PaletteIOTool(wxT("IO_TOOL"));
+	wxBitmap PaletteArrow(wxT("ARROWTOOL"));
+	wxBitmap PaletteModelTool(wxT("MODEL_TOOL"));
+	wxBitmap PaletteTransTool(wxT("TRANSFORM_TOOL"));
+	wxBitmap PaletteUserTool(wxT("USER_TOOL"));
+	wxBitmap PaletteUtilTool(wxT("UTILITY_TOOL"));
 	#elif defined(__WXGTK__) || defined(__WXMOTIF__)
 	wxBitmap PaletteAnaTool(analysis_tool_xpm);
 	wxBitmap PaletteCtrlTool(control_tool_xpm);

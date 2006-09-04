@@ -243,8 +243,8 @@ MyApp::OnInit(void)
 	  "Simulation view"),CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Parameter File"),
 	  wxT("*.") SDI_DOCUMENT_SPF_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
-	  SDI_DOCUMENT_SPF_FILE_EXT, wxT("Simulation Design"), wxT("Simulation "
-	  "view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
+	  SDI_DOCUMENT_SPF_FILE_EXT, wxT("Simulation Design"), wxT("Simulation ")
+	  wxT("view"), CLASSINFO(SDIDocument), CLASSINFO(SDIView));
 	(void) new wxDocTemplate(myDocManager, wxT("Simulation Script"), wxT("*.")
 	  SDI_DOCUMENT_SIM_FILE_EXT, grMainApp->GetSimFileName().GetCwd(),
 	  SDI_DOCUMENT_SIM_FILE_EXT, wxT("Simulation Design"), wxT(

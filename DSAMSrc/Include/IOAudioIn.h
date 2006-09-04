@@ -13,7 +13,7 @@
 #ifndef _IOAUDIOIN_H
 #define _IOAUDIOIN_H 1
 
-#ifdef USE_PORTAUDIO
+#if USE_PORTAUDIO
 
 #include <portaudio.h>
 

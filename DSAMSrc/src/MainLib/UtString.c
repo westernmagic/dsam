@@ -354,6 +354,9 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
 	BOOLN	fmtOn = FALSE;
 	wchar_t	*d = dest, *s = src;
 
+#	if defined(_MSC_VER)
+	DSAM_strcpy(dest, src);
+#	else
 	for (*d++ = *s++; (*s); d++, s++) {
 		if (*(s - 1) == '%')
 			fmtOn = TRUE;
@@ -367,6 +370,7 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
 		}
 	}
 	*d = '\0';
+#	endif /* _MSC_VER */
 
 }
  

@@ -306,7 +306,7 @@ IPCClient::GetParValue(const wxString &parName)
 	SendCommand(IPC_COMMAND_GETPAR);
 	Write(parName.mb_str(), parName.length());
 	ReadString(buffer);
-	return(buffer.length());
+	return(!buffer.empty());
 
 }
 

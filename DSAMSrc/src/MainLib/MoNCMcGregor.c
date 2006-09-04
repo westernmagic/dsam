@@ -517,8 +517,8 @@ CheckPars_Neuron_McGregor(void)
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->delayedRectKCondFlag) {
-		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not "
-		  "correctly set."), funcName);
+		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not ")
+		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
 	if (!mcGregorPtr->restingThresholdFlag) {

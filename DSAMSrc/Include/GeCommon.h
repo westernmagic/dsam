@@ -48,7 +48,7 @@
 #define _GECOMMON_H	1
 
 #include <stdarg.h>
-#include <limits.h>		/* - sort out DBL_MAX previously defined problems. */
+#include <float.h>		/* - sort out DBL_MAX previously defined problems. */
 
 #if DSAM_USE_UNICODE
 #	ifndef __USE_UNIX98			/* For FC5 headers */
@@ -126,7 +126,6 @@
 #ifndef FALSE
 #	define	FALSE		0
 #endif
-
 
 #ifndef DBL_MAX
 #	define	DBL_MAX		((double) 1.0e37)

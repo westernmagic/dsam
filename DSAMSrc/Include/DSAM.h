@@ -238,7 +238,7 @@
 #	endif /* GRAPHICS_SUPPORT */
 #endif /* __cplusplus */
 
-#ifdef USE_PORTAUDIO
+#if USE_PORTAUDIO
 #	include "IOAudioIn.h"
 #endif
 

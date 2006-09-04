@@ -171,7 +171,7 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("IHCRP_ZHANG"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IHCRP_Zhang },
-#	ifdef USE_PORTAUDIO
+#	if USE_PORTAUDIO
 	{ IO_AUDIOIN_MOD_NAME,
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_IO_AudioIn },

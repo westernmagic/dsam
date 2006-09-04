@@ -177,7 +177,7 @@ GetUniParListPtr_IHCRP_Meddis(void)
 	}
 	if (meddisRPPtr->parList == NULL) {
 		NotifyError(wxT("%s: UniParList data structure has not been ")
-		  "initialised. NULL returned.", funcName);
+		  wxT("initialised. NULL returned."), funcName);
 		return(NULL);
 	}
 	return(meddisRPPtr->parList);

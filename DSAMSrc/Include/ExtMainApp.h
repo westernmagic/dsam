@@ -136,8 +136,8 @@ extern MainApp	*dSAMMainApp;
 	{
 		wxInitializer initializer;
 		if (!initializer) {
-			NotifyError(wxT("main: Failed to initialize the wxWidgets library, "
-			  "aborting."));
+			NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
+			  wxT("aborting."));
 			return -1;
 		}
 		MainApp	mainApp(argc, argv, MainSimulation);

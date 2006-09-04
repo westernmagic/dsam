@@ -63,8 +63,8 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	EarObjectPtr	modelResp;
 	
 	if (targetAccuracy <= 0.0) {
-		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Illegal target "
-		  "threshold accuracy (= %g)."), targetAccuracy);
+		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Illegal target ")
+		  wxT("threshold accuracy (= %g)."), targetAccuracy);
 		return(0.0);
 	}
 	if (*firstPass) {

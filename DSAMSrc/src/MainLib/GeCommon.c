@@ -117,13 +117,14 @@ void
 DPrint(WChar *format, ...)
 {
 	va_list	args;
-
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+#	endif
 	CheckInitParsFile_Common();
 	if (!dSAM.parsFile || !dSAM.DPrint || (dSAM.diagMode ==
 	  COMMON_OFF_DIAG_MODE))
 		return;
 #	if DSAM_USE_UNICODE
-	WChar	newFormat[LONG_STRING];
 	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
 	format = newFormat;
 #	endif

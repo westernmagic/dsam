@@ -173,7 +173,8 @@ AxisScale::CalculateScales(void)
 
 	roundingScaler = pow(10.0, decPlaces);
 	baseScale = (maxValue - minValue) / (numTicks - 1);
-	while (fabs(RoundedValue(baseScale * pow(10.0, -exponent)) < DBL_EPSILON)) {
+	while (fabs(RoundedValue(baseScale * pow(10.0, -exponent))) <
+	  DBL_EPSILON) {
 	  	settingsChanged = !autoScale;
 		exponent -= AXIS_SCALE_DELTA_EXPONENT;
 	}

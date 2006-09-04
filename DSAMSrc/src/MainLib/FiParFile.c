@@ -256,7 +256,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 	static const WChar *funcName = wxT("GetPars_ParFile");
 	static WChar	line[LONG_STRING], fmtScanLine[MAXLINE], extraFmt[MAXLINE];
 	WChar	c, *formatToken, *restOfLine;
-#	if DSAM_USE_UNICODE
+#	if DSAM_USE_UNICODE && !_MSC_VER
 	WChar	*state;
 #	endif
 	int		formatType;
@@ -280,7 +280,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 
 	/* This next line is needed because strtok bashes its string argument. */
 	DSAM_strncpy(fmtScanLine, fmt, MAXLINE);
-#	if DSAM_USE_UNICODE
+#	if DSAM_USE_UNICODE && !_MSC_VER
 	formatToken = DSAM_strtok(fmtScanLine, FORMAT_DELIMITERS, &state);
 #	else
 	formatToken = DSAM_strtok(fmtScanLine, FORMAT_DELIMITERS);
@@ -319,7 +319,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 				  funcName);
 				return(FALSE);
 		}
-#		if DSAM_USE_UNICODE
+#		if DSAM_USE_UNICODE && !_MSC_VER
 		formatToken = DSAM_strtok(NULL, FORMAT_DELIMITERS, &state);
 #		else
 		formatToken = DSAM_strtok(NULL, FORMAT_DELIMITERS);

@@ -297,12 +297,14 @@ SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...)
 {
 	static const WChar *funcName = wxT("SetProcessName_EarObject");
 	WChar	string[MAXLINE];
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+#	endif
 	va_list	args;
 	
 	if (theObject->processName != NULL)
 		free(theObject->processName);
 #	if DSAM_USE_UNICODE
-	WChar	newFormat[MAXLINE];
 	ConvIOFormat_Utility_String(newFormat, format, MAXLINE);
 	format = newFormat;
 #	endif

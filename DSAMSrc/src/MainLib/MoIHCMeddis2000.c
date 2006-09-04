@@ -1293,8 +1293,8 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 
 	/* Additional checks added for the new code */
 	if ( dt/hairCell2Ptr->tauCaChan  >= 1.0) {
-		NotifyError(wxT("%s: tauCaChan = %g /s is too high for the " 
-		  "sampling interval."), funcName, hairCell2Ptr->tauCaChan);
+		NotifyError(wxT("%s: tauCaChan = %g /s is too high for the ") 
+		  wxT("sampling interval."), funcName, hairCell2Ptr->tauCaChan);
 		ok = FALSE;
 	}
 	if ( dt/hairCell2Ptr->tauConcCa  >= 1.0) {

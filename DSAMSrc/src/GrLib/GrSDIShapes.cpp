@@ -491,7 +491,7 @@ SDILineShape::GetXMLInfo(TiXmlNode *node)
 {
 	static const wxChar *funcName = wxT("SDILineShape::GetXMLInfo");
 	bool	ok = true;
-	int		iVal;
+	int		iVal = 0;
 	TiXmlElement *myElement;
 
 	if ((myElement = node->FirstChildElement(SHAPE_XML_LINE_SHAPE_ELEMENT)) ==

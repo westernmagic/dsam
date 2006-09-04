@@ -198,7 +198,7 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 
 	// Ensure only process instructions are connected for data flow.
 	if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
-		ok = ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data);
+		ok = CXX_BOOL(ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data));
 	if (ok)
 		ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
 	return(ok);

@@ -59,8 +59,8 @@
 #define SIMSCRIPT_SIMPARFILE_DIVIDER		wxT("<<>>")
 #define SIMSCRIPT_SIMPARFILE_SDI_DIVIDER	wxT("<()>")
 #define SIMSCRIPT_DISABLED_MODULE_CHAR		'@'
-#define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE wxT("#####################"\
-		  "###########################################################\n")
+#define SIMSCRIPT_SIMPARFILE_VISUAL_SEPARATION_LINE wxT("#####################")\
+		  wxT("###########################################################\n")
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
