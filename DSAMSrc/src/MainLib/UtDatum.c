@@ -186,31 +186,19 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 
 }
 
-/****************************** InsertInst ************************************/
+/****************************** GetChainStart *********************************/
 
 /*
- * Insert a code datum instruction into a list before the current position.
- * It expects to the datum to have been already created elsewhere.
+ * This routine finds the start of a datum chain.
+ * It expects the argument, "pc" to be correctly initialised.
  */
 
-void
-InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
+DatumPtr
+GetChainStart_Utility_Datum(DatumPtr pc)
 {
-	if (!*head) {	/* Start of simulation list */
-		*head = datum;
-		return;
-	}
-	if (!pos) {
-		*head = datum;
-		return;
-	}
-	if (pos == *head)
-		*head = datum;
-	if (pos->previous)
-		pos->previous->next = datum;
-	datum->previous = pos->previous;
-	pos->previous = datum;
-	datum->next = pos;
+	while (pc->previous)
+		pc = pc->previous;
+	return(pc);
 
 }
 
@@ -218,19 +206,28 @@ InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 
 /*
  * Append a code datum instruction into a list after the current position.
- * It expects to the datum to have been already created elsewhere.
+ * It expects the datum to have been already created elsewhere.
+ * It expects the datum not to have the "previous" pointer set, i.e. should
+ * not be connected after any other process.
  */
 
-void
+BOOLN
 AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 {
-	if (!*head) {	/* Start of simulation list */
-		*head = datum;
-		return;
+	static const WChar *funcName = wxT("AppendInst_Utility_Datum");
+	
+	if (datum->previous || pos->next) {
+		NotifyError(wxT("%s: You can only connect the end of one process ")
+		  wxT("chain to the beginning of another."), funcName);
+		return(FALSE);
 	}
+	if (!*head)	/* Start of simulation list */
+		*head = pos;
+	else if (datum == *head)
+		*head = GetChainStart_Utility_Datum(pos);
 	datum->previous = pos;
-	datum->next = pos->next;
 	pos->next = datum;
+	return(TRUE);
 
 }
 
@@ -269,9 +266,9 @@ DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	from->next = NULL;
 	to->previous = NULL;
-	if (!DATUM_IN_SIMULATION(from) && (*head == from))
-		*head = (DATUM_IN_SIMULATION(to))? to: NULL;
-	if (!DATUM_IN_SIMULATION(to) && (*head == to))
+	if ((*head == from) && !from->previous)
+		*head = (to->next)? to: NULL;
+	else if ((*head == to) && !to->next)
 		*head = NULL;
 	if ((from->type == PROCESS) && (to->type == PROCESS)) {
 		RemoveConnection_Utility_Datum(&from->u.proc.outputList, to->label);
@@ -286,26 +283,21 @@ DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
  * Connect datum instructions in a list.
  */
 
-void
+BOOLN
 ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
-	if (!DATUM_IN_SIMULATION(from)) {
-		if (DATUM_IN_SIMULATION(to)) {
-			InsertInst_Utility_Datum(head, to, from);
-		} else {
-			AppendInst_Utility_Datum(head, *head, from);
-			AppendInst_Utility_Datum(head, from, to);
-		}
-	} else if (!DATUM_IN_SIMULATION(to))
-		AppendInst_Utility_Datum(head, from, to);
-	else {
-		from->next = to;
-		to->previous = from;
+	static const WChar *funcName = wxT("ConnectInst_Utility_Datum");
+
+	if (!AppendInst_Utility_Datum(head, from, to)) {
+		NotifyError(wxT("%s: Could not add process to chain."),
+		  funcName);
+		return(FALSE);
 	}
 	if ((from->type == PROCESS) && (to->type == PROCESS)) {
 		Append_Utility_DynaList(&from->u.proc.outputList, to->label);
 		Append_Utility_DynaList(&to->u.proc.inputList, from->label);
 	}
+	return(TRUE);
 
 }
 
@@ -673,8 +665,8 @@ SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		}
 		if (!ConnectOutSignalToIn_EarObject(pc->data, foundPC->data)) {
 			NotifyError(wxT("%s: Could not set '%s' connection for process ")
-			  wxT("%s.%lu."), funcName, label, pc->data->module->name, pc->data->
-			  handle);
+			  wxT("%s.%lu."), funcName, label, pc->data->module->name, pc->
+			  data->handle);
 			return(FALSE);
 		}
 	}
