@@ -3,4 +3,4 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= DSAM_ext.dsp
+EXTRA_DIST	= DSAM_ext.vcproj

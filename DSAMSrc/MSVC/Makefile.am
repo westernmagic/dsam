@@ -3,6 +3,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= DSAMvc.dsw
+EXTRA_DIST	= DSAMvc.sln
 
 SUBDIRS		= DSAM DSAM_std DSAM_ext DSAM_g
