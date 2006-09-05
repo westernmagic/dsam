@@ -199,7 +199,8 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 	if (FindNearestProcesses_Utility_Datum(&fromPc, &toPc))
 		ok = CXX_BOOL(ConnectOutSignalToIn_EarObject(fromPc->data, toPc->data));
 	if (ok)
-		ok = ConnectInst_Utility_Datum(GetSimPtr_AppInterface(), fromPc, toPc);
+		ok = CXX_BOOL(ConnectInst_Utility_Datum(GetSimPtr_AppInterface(),
+		  fromPc, toPc));
 	return(ok);
 
 }
