@@ -88,8 +88,8 @@ simulation_list:
 simulation:
 			BEGIN '{' statement_list '}'
 			{ if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError_Utility_SimScript(wxT("parser: error for "
-				  "simulation."));
+				NotifyError_Utility_SimScript(wxT("parser: error for ")
+				  wxT("simulation."));
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -98,8 +98,8 @@ simulation:
 		|	BEGIN simulation_name '{' statement_list '}'
 			{ $$ = $2;
 			  if (!InitialiseEarObjects_Utility_SimScript()) {
-				NotifyError_Utility_SimScript(wxT("parser: error for "
-				  "simulation."));
+				NotifyError_Utility_SimScript(wxT("parser: error for ")
+				  wxT("simulation."));
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -115,9 +115,9 @@ simulation_name:
 			  } else {
 			  $$ = (DatumPtr) Pull_Utility_DynaList(&simScriptPtr->subSimList);
 			  if (DSAM_strcmp($$->u.proc.parFile, $1->name) != 0) {
-			    NotifyError_Utility_SimScript(wxT("parser: '%s' simulation "
-				  "script does not correspond with '%s' ."), $$->u.proc.parFile,
-				  $1->name);
+			    NotifyError_Utility_SimScript(wxT("parser: '%s' simulation ")
+				  wxT("script does not correspond with '%s' ."), $$->u.proc.
+				  parFile, $1->name);
 			    return 1;
 			  }
 			  simScriptPtr->simPtr = GetSimScriptSimulation_Utility_SimScript(
@@ -301,16 +301,17 @@ yylex(void)
 		while ((c = fgetc(simScriptPtr->fp)) != '"' && (c != EOF)) {
 			if (p >= sbuf + LONG_STRING - 1) {
 				*p = '\0';
-				NotifyError_Utility_SimScript(wxT("%s: String in quotes is too "
-				  "long (%s)"), funcName, MBSToWCS_Utility_String(sbuf));
+				NotifyError_Utility_SimScript(wxT("%s: String in quotes is ")
+				  wxT("too long (%s)"), funcName, MBSToWCS_Utility_String(
+				  sbuf));
 				exit(1);
 			}
 			*p++ = c;
 		}
 		*p = '\0';
 		if (c == EOF) {
-			NotifyError_Utility_SimScript(wxT("%s: File ends before "
-			  "terminating quotes."), funcName);
+			NotifyError_Utility_SimScript(wxT("%s: File ends before ")
+			  wxT("terminating quotes."), funcName);
 			exit(1);
 		}
 		s = InstallSymbol_Utility_SSSymbols(&simScriptPtr->symList,
