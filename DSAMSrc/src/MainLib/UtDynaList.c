@@ -169,7 +169,8 @@ Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 	}
 	if (!ptr->previous) {
 		*list = ptr->next;
-		ptr->previous = NULL;
+		if (ptr->next)
+			ptr->next->previous = NULL;
 	} else {
 		ptr->previous->next = ptr->next;
 		if (ptr->next)
