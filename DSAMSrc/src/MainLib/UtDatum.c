@@ -202,29 +202,26 @@ GetChainStart_Utility_Datum(DatumPtr pc)
 
 }
 
-/****************************** AppendInst ************************************/
+/****************************** InsertsInst ***********************************/
 
 /*
- * Append a code datum instruction into a list after the current position.
+ * Insert a code datum instruction into a list
  * It expects the datum to have been already created elsewhere.
- * It expects the datum not to have the "previous" pointer set, i.e. should
- * not be connected after any other process.
+ * If the datum instruction already has a, "previous" pointer set, then the
+ * 'pos' datum will be placed before the 'datum' datum instead.
  */
 
 BOOLN
-AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
+InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 {
-	static const WChar *funcName = wxT("AppendInst_Utility_Datum");
-	
-	if (datum->previous || pos->next) {
-		NotifyError(wxT("%s: You can only connect the end of one process ")
-		  wxT("chain to the beginning of another."), funcName);
-		return(FALSE);
-	}
 	if (!*head)	/* Start of simulation list */
 		*head = pos;
 	else if (datum == *head)
 		*head = GetChainStart_Utility_Datum(pos);
+	if (datum->previous) {
+		datum->previous->next = pos;
+		pos->previous = datum->previous;
+	}
 	datum->previous = pos;
 	pos->next = datum;
 	return(TRUE);
@@ -259,21 +256,26 @@ RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label)
 
 /*
  * Disconnect datum instructions in a list.
+ * Bear in mind that when disconnecting to processes, there may be processes
+ * in between, i.e. multiply connected processes.  They need to be between for
+ * process run flow.
  */
 
 void
 DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
+	if ((from->type == PROCESS) && (to->type == PROCESS)) {
+		RemoveConnection_Utility_Datum(&from->u.proc.outputList, to->label);
+		RemoveConnection_Utility_Datum(&to->u.proc.inputList, from->label);
+	}
+	if (from->next != to)
+		to = from->next;
 	from->next = NULL;
 	to->previous = NULL;
 	if ((*head == from) && !from->previous)
 		*head = (to->next)? to: NULL;
 	else if ((*head == to) && !to->next)
 		*head = NULL;
-	if ((from->type == PROCESS) && (to->type == PROCESS)) {
-		RemoveConnection_Utility_Datum(&from->u.proc.outputList, to->label);
-		RemoveConnection_Utility_Datum(&to->u.proc.inputList, from->label);
-	}
 
 }
 
@@ -288,7 +290,7 @@ ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	static const WChar *funcName = wxT("ConnectInst_Utility_Datum");
 
-	if (!AppendInst_Utility_Datum(head, from, to)) {
+	if (!InsertInst_Utility_Datum(head, from, to)) {
 		NotifyError(wxT("%s: Could not add process to chain."),
 		  funcName);
 		return(FALSE);
@@ -1299,8 +1301,8 @@ FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label)
 		return(NULL);
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label, pc->
-		  label) == 0)))
+		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label,
+		  pc->label) == 0)))
 			return(pc->data);
 	return(NULL);
 
@@ -1328,8 +1330,8 @@ FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label)
 		return(NULL);
 	}
 	for (pc = start; pc != NULL; pc = pc->next)
-		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label, pc->
-		  label) == 0)))
+		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label,
+		  pc->label) == 0)))
 			return(pc);
 	return(NULL);
 

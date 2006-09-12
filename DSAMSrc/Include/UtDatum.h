@@ -119,7 +119,7 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-BOOLN	AppendInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
+BOOLN	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
 
 BOOLN	CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);

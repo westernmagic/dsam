@@ -267,7 +267,7 @@ SDICommand::AddLineShape(int lineType)
 	else {
 		switch (lineType) {
 		case REPEAT:
-			if (!AppendInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			if (!InsertInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
 			  toShape), SHAPE_PC(fromShape)->u.loop.stopPC))
 				return(false);
 			SHAPE_PC(fromShape)->u.loop.stopPC = InitInst_Utility_Datum(STOP);
