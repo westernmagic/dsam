@@ -43,7 +43,7 @@ typedef enum {
 	UTILITY_BINSIGNAL_SUM_MODE,
 	UTILITY_BINSIGNAL_MODE_NULL
 
-} UtilityModeSpecifier;
+} UtilityBinSignalModeSpecifier;
 
 typedef struct {
 
