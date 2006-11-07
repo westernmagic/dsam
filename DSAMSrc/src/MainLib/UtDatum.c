@@ -1168,6 +1168,8 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 			break; }
 		case RESET:
 			process = GET_PROCESS(pc->u.ref.pc->data);
+			if (!process->module->onFlag)
+				break;
 			ResetProcess_EarObject(process);
 			break;
 		case STOP:
