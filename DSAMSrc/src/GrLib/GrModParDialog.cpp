@@ -39,6 +39,7 @@
 #include "GeModuleMgr.h"
 
 #include "GrSimMgr.h"
+#include "GrSDICanvas.h"
 #include "GrSDIFrame.h"
 #include "GrSDIEvtHandler.h"
 #include "GrModParDialog.h"
@@ -177,6 +178,21 @@ ModuleParDialog::EnableControls(void)
 
 }
 
+/****************************** UpdateParent **********************************/
+
+/*
+ * This function takes care of paremt updating that is required.
+ */
+
+bool
+ModuleParDialog::UpdateParent(void)
+{
+	updateParent = false;
+	wxGetApp().GetFrame()->canvas->view->GetDocument()->Modify(true);
+	return (true);
+
+}
+
 /****************************** CheckChangedValues ****************************/
 
 /*
@@ -202,8 +218,12 @@ ModuleParDialog::CheckChangedValues(void)
 				cancelBtn->Enable(FALSE);
 		}
 	}
-	if (ok && !CheckParList_UniParMgr(parListInfoList->list[0]->parList))
-		ok = false;
+	if (ok) {
+		if (parListInfoList->list[0]->parList->updateFlag)
+			updateParent = true;
+		if (!CheckParList_UniParMgr(parListInfoList->list[0]->parList))
+			ok = false;
+	}
 	if (ok && !UpdateParent())
 		ok = false;
 	return(ok);

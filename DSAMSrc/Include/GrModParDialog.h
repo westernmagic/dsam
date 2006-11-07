@@ -95,7 +95,7 @@ class ModuleParDialog: public wxDialog {
 	  wxDEFAULT_DIALOG_STYLE);
 	~ModuleParDialog(void);
 
-	bool	UpdateParent(void) { updateParent = FALSE; return TRUE; }
+	bool	UpdateParent(void);
 
 	void	DeleteDialog(void);
 	void	OnICButton(wxCommandEvent& event);
