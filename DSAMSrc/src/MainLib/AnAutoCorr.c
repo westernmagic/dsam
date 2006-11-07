@@ -110,6 +110,7 @@ InitTimeConstModeList_Analysis_ACF(void)
 	static NameSpecifier	modeList[] = {
 
 			{ wxT("LICKLIDER"),	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER },
+			{ wxT("NONE"),		ANALYSIS_ACF_TIMECONSTMODE_NONE },
 			{ wxT("WIEGREBE"),	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE },
 			{ wxT(""),			ANALYSIS_ACF_TIMECONSTMODE_NULL },
 		};
@@ -868,10 +869,17 @@ Calc_Analysis_ACF(EarObjectPtr data)
 		}
 		p->timeOffsetIndex = (ChanLen) ((p->timeOffset < 0.0)? _InSig_EarObject(
 		  data, 0)->length: p->timeOffset / p->dt + 0.5);
-		if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER) {
+		switch (p->timeConstMode) {
+		case ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER:
 			p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 			  p->timeConstant * 3.0);
 			p->expDecay = exp(-p->dt / p->timeConstant);
+			break;
+		case ANALYSIS_ACF_TIMECONSTMODE_NONE:
+			p->sumLimitIndex = _OutSig_EarObject(data)->length;
+			break;
+		default:
+			;
 		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
@@ -890,10 +898,15 @@ Calc_Analysis_ACF(EarObjectPtr data)
 				p->sumLimitIndex = SunLimitIndex_Analysis_ACF(data,
 				  wiegrebeTimeConst);
 			}
-			inPtr = inSignal->channel[chan] + (p->timeOffsetIndex - p->
-			  sumLimitIndex);
-			for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
-				*outPtr =  (*outPtr * *expDtPtr) + (*inPtr * *(inPtr - deltaT));
+			inPtr = inSignal->channel[chan] + p->timeOffsetIndex - p->
+			  sumLimitIndex;
+			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_NONE)
+				for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
+					*outPtr += (*inPtr * *(inPtr - deltaT));
+			else
+				for (i = 0, *outPtr = 0.0; i < p->sumLimitIndex; i++, inPtr++)
+					*outPtr = (*outPtr * *expDtPtr) + (*inPtr * *(inPtr -
+					  deltaT));
 			if (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE) {
 				expDtPtr++;
 				*outPtr /= wiegrebeTimeConst;
