@@ -68,6 +68,7 @@ Free_BasilarM_DRNL(void)
 		return(FALSE);
 	FreeProcessVariables_BasilarM_DRNL();
 	Free_ParArray(&bMDRNLPtr->nonLinBwidth);
+	Free_ParArray(&bMDRNLPtr->nonLinScaleG);
 	Free_ParArray(&bMDRNLPtr->comprScaleA);
 	Free_ParArray(&bMDRNLPtr->comprScaleB);
 	Free_ParArray(&bMDRNLPtr->linCF);
@@ -156,6 +157,7 @@ SetDefaultParArrayPars_BasilarM_DRNL(void)
 {
 	int		i;
 	double	nonLinBwidth[] = {0.8, 58};
+	double	nonLinScaleG[] = {1.0, 0.0};
 	double	comprScaleA[] = {1.67, 0.45};
 	double	comprScaleB[] = {-5.85, 0.875};
 	double	linCF[] = {0.14, 0.95};
@@ -165,6 +167,9 @@ SetDefaultParArrayPars_BasilarM_DRNL(void)
 	SetMode_ParArray(bMDRNLPtr->nonLinBwidth, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->nonLinBwidth->numParams; i++)
 		bMDRNLPtr->nonLinBwidth->params[i] = nonLinBwidth[i];
+	SetMode_ParArray(bMDRNLPtr->nonLinScaleG, wxT("Linear_func1"));
+	for (i = 0; i < bMDRNLPtr->nonLinScaleG->numParams; i++)
+		bMDRNLPtr->nonLinScaleG->params[i] = nonLinScaleG[i];
 	SetMode_ParArray(bMDRNLPtr->comprScaleA, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->comprScaleA->numParams; i++)
 		bMDRNLPtr->comprScaleA->params[i] = comprScaleA[i];
@@ -226,6 +231,13 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"), 
 	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise NonLinBwidth parArray ")
+		  wxT("structure"), funcName);
+		Free_BasilarM_DRNL();
+		return(FALSE);
+	}
+	if ((bMDRNLPtr->nonLinScaleG = Init_ParArray(wxT("nonLinScaleG"),
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+		NotifyError(wxT("%s: Could not initialise nonLinScaleG parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
@@ -329,6 +341,11 @@ SetUniParList_BasilarM_DRNL(void)
 	  UNIPAR_PARARRAY,
 	  &bMDRNLPtr->nonLinBwidth, NULL,
 	  (void * (*)) SetNonLinBwidth_BasilarM_DRNL);
+	SetPar_UniParMgr(&pars[BM_DRNL_NONLINSCALEG], wxT("NL_SCALER"),
+	  wxT("Nonlinear filter scale variable function (vs non-linear CF)."),
+	  UNIPAR_PARARRAY,
+	  &bMDRNLPtr->nonLinScaleG, NULL,
+	  (void * (*)) SetNonLinScaleG_BasilarM_DRNL);
 	SetPar_UniParMgr(&pars[BM_DRNL_COMPRSCALEA], wxT("COMP_A_VAR_FUNC"),
 	  wxT("Compression A (linear) scale variable function (vs non-linear CF)."),
 	  UNIPAR_PARARRAY,
@@ -530,6 +547,33 @@ SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth)
 		}
 	}
 	bMDRNLPtr->nonLinBwidth = theNonLinBwidth;
+	return(TRUE);
+
+}
+
+/****************************** SetNonLinScaleG *******************************/
+
+/*
+ * This function sets the ParArray data structure for the module.
+ * It returns TRUE if the operation is successful.
+ */
+
+BOOLN
+SetNonLinScaleG_BasilarM_DRNL(ParArrayPtr theNonLinScaleG)
+{
+	static const WChar	*funcName = wxT("SetNonLinScaleG_BasilarM_DRNL");
+
+	if (bMDRNLPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	if (!CheckInit_ParArray(theNonLinScaleG, funcName)) {
+		NotifyError(wxT("%s: ParArray structure not correctly set."), funcName);
+		return(FALSE);
+	}
+	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
+	bMDRNLPtr->nonLinScaleG = theNonLinScaleG;
 	return(TRUE);
 
 }
@@ -813,6 +857,11 @@ CheckPars_BasilarM_DRNL(void)
 		  wxT("correctly set."), funcName);
 		ok = FALSE;
 	}
+	if (!CheckInit_ParArray(bMDRNLPtr->nonLinScaleG, funcName)) {
+		NotifyError(wxT("%s: Variable nonLinScaleG parameter array not ")
+		  wxT("correctly set."), funcName);
+		ok = FALSE;
+	}
 	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleA, funcName)) {
 		NotifyError(wxT("%s: Variable comprScaleA parameter array not ")
 		  wxT("correctly set."), funcName);
@@ -919,6 +968,7 @@ PrintPars_BasilarM_DRNL(void)
 	DPrint(wxT("\tNonlinear low-pass filter cascade = %d,\n"),
 	  bMDRNLPtr->nonLinLPCascade);
 	PrintPars_ParArray(bMDRNLPtr->nonLinBwidth);
+	PrintPars_ParArray(bMDRNLPtr->nonLinScaleG);
 	PrintPars_ParArray(bMDRNLPtr->comprScaleA);
 	PrintPars_ParArray(bMDRNLPtr->comprScaleB);
 	DPrint(wxT("\tCompression exponent  = %g,\n"), bMDRNLPtr->comprExponent);
@@ -1194,9 +1244,12 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			  centreFreq);
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT("Frequency (Hz)"));
-		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
-		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->frequency);
+		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), wxT(
+		  "Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
+		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->theCFs->
+		  frequency);
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
@@ -1283,7 +1336,8 @@ FreeProcessVariables_BasilarM_DRNL(void)
  * This routine applies the respective scales each channel of the signal.
  * It assumes that the signal and the parameter array have been correctly
  * initialised.
- *
+ * This function returns without scaling if the default linear scale of 1.0 is
+ * set.
  */
 
 void
@@ -1294,9 +1348,13 @@ ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal, ParArrayPtr p)
 	ChanLen	i;
 	ChanData	*dataPtr;
 
-	for (chan = _OutSig_EarObject(data)->offset; chan < signal->numChannels; chan++) {
-		scale = GetFitFuncValue_BasilarM_DRNL(p, _OutSig_EarObject(data)->info.cFArray[
-		  chan]);
+	if ((p->mode == GENERAL_FIT_FUNC_LINEAR1_MODE) && (p->params[0] == 1.0) &&
+	  (p->params[1] == 0.0))
+		return;
+	for (chan = _OutSig_EarObject(data)->offset; chan < signal->numChannels;
+	  chan++) {
+		scale = GetFitFuncValue_BasilarM_DRNL(p, _OutSig_EarObject(data)->info.
+		  cFArray[chan]);
 		for (i = 0, dataPtr = signal->channel[chan]; i < signal->length; i++)
 			*(dataPtr++) *= scale;
 	}
@@ -1340,7 +1398,8 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		totalChannels = p->theCFs->numChannels * _InSig_EarObject(data, 0)->numChannels;
+		totalChannels = p->theCFs->numChannels * _InSig_EarObject(data, 0)->
+		  numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Output channels not initialised (%d)."),
 			  funcName, totalChannels);
@@ -1363,7 +1422,9 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	outSignal = _OutSig_EarObject(data);
 
 	/* Filter signal */
+	ApplyScale_BasilarM_DRNL(data, outSignal, p->nonLinScaleG);
 	GammaTone_Filters(outSignal, p->nonLinearGT1);
+	ApplyScale_BasilarM_DRNL(data, outSignal, p->nonLinScaleG);
 	BrokenStick1Compression2_Filters(outSignal, p->compressionA, p->
 	  compressionB, p->comprExponent);
 	GammaTone_Filters(outSignal, p->nonLinearGT2);

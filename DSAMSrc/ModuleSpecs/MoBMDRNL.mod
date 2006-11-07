@@ -12,6 +12,7 @@ typedef struct {
 	int				nonLinGTCascade;
 	int				nonLinLPCascade;
 	ParArrayPtr		nonLinBwidth;
+	ParArrayPtr		nonLinScaleG;
 
 	ParArrayPtr		comprScaleA;
 	ParArrayPtr		comprScaleB;

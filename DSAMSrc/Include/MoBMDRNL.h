@@ -27,7 +27,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define BM_DRNL_NUM_PARS			12
+#define BM_DRNL_NUM_PARS			13
 #define BM_DRNL_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
@@ -45,6 +45,7 @@ typedef enum {
 	BM_DRNL_NONLINGTCASCADE,
 	BM_DRNL_NONLINLPCASCADE,
 	BM_DRNL_NONLINBWIDTH,
+	BM_DRNL_NONLINSCALEG,
 	BM_DRNL_COMPRSCALEA,
 	BM_DRNL_COMPRSCALEB,
 	BM_DRNL_COMPREXPONENT,
@@ -67,6 +68,7 @@ typedef struct {
 	int		nonLinGTCascade;
 	int		nonLinLPCascade;
 	ParArrayPtr	nonLinBwidth;
+	ParArrayPtr	nonLinScaleG;
 	ParArrayPtr	comprScaleA;
 	ParArrayPtr	comprScaleB;
 	double	comprExponent;
@@ -165,6 +167,8 @@ BOOLN	SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth);
 BOOLN	SetNonLinGTCascade_BasilarM_DRNL(int theNonLinGTCascade);
 
 BOOLN	SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade);
+
+BOOLN	SetNonLinScaleG_BasilarM_DRNL(ParArrayPtr theNonLinScaleG);
 
 BOOLN	SetParsPointer_BasilarM_DRNL(ModulePtr theModule);
 
