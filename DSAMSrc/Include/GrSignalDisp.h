@@ -48,7 +48,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DISPLAY_NUM_PARS			32
+#define DISPLAY_NUM_PARS			33
 
 #define	DEFAULT_SIGNAL_Y_SCALE			1.0
 #define	DEFAULT_X_RESOLUTION			0.01
@@ -125,6 +125,7 @@ typedef	enum {
 	DISPLAY_WINDOW_TITLE,
 	DISPLAY_MODE,
 	DISPLAY_SUMMARY_DISPLAY,
+	DISPLAY_CHAN_ACTIVITY_DISPLAY,
 	DISPLAY_FRAME_DELAY,
 	DISPLAY_TOP_MARGIN,
 	DISPLAY_WINDOW_HEIGHT,
@@ -173,6 +174,7 @@ typedef struct {
 	BOOLN	frameWidthFlag, frameXPosFlag, frameYPosFlag, summaryDisplayFlag;
 	BOOLN	autoYScaleFlag, titleFlag, xAxisTitleFlag, xNumberFormatFlag;
 	BOOLN	yAxisTitleFlag, yNumberFormatFlag, autoXScaleFlag;
+	BOOLN	chanActivityDisplayFlag;
 
 	BOOLN	updateProcessVariablesFlag;
 	BOOLN	autoYScale;
@@ -206,6 +208,7 @@ typedef struct {
 	int		frameXPos;
 	int		frameYPos;
 	int		summaryDisplay;
+	int		chanActivityDisplay;
 	
 	/* Private variables */
 	NameSpecifier	*modeList;
@@ -214,11 +217,13 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			inLineProcess;
 	BOOLN			redrawGraphFlag;
+	BOOLN			redrawSubDisplaysFlag;
 	BOOLN			drawCompletedFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	data;
 	EarObjectPtr	summary;
+	EarObjectPtr	chanActivity;
 	DisplayS		*display;
 	wxDialog		*dialog;
 	wxCriticalSection	*critSect;
@@ -282,6 +287,8 @@ BOOLN	SetAutoYScale_SignalDisp(WChar *theAutoYScale);
 
 void	SetAutoYScaleParsState_SignalDisp(BOOLN state);
 
+BOOLN	SetChanActivityDisplay_SignalDisp(WChar *summaryDisplay_SignalDis);
+
 BOOLN	SetChannelStep_SignalDisp(int theChannelStep);
 
 BOOLN	SetDefaulEnabledPars_SignalDisp(void);
@@ -301,6 +308,8 @@ BOOLN	SetMaxY_SignalDisp(double maxY);
 BOOLN	SetMinY_SignalDisp(double minY);
 
 BOOLN	SetMode_SignalDisp(WChar *theMode);
+
+void	SetSubDisplays_SignalDisp(void);
 
 BOOLN	InitModule_SignalDisp(ModulePtr theModule);
 

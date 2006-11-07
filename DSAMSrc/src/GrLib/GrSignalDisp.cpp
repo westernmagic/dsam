@@ -90,8 +90,6 @@ wxIcon		*sigDispIcon = NULL;
 /*************************** NonGlobal declarations ***************************/
 /******************************************************************************/
 
-void	SetDisplay_SignalDisp(EarObjectPtr data);
-
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
 /******************************************************************************/
@@ -219,6 +217,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->numGreyScalesFlag = TRUE;
 	signalDispPtr->magnificationFlag = TRUE;
 	signalDispPtr->summaryDisplayFlag = TRUE;
+	signalDispPtr->chanActivityDisplayFlag = TRUE;
 	signalDispPtr->xResolutionFlag = TRUE;
 	signalDispPtr->minYFlag = FALSE;
 	signalDispPtr->maxYFlag = FALSE;
@@ -259,6 +258,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->numGreyScales = GRAPH_NUM_GREY_SCALES;
 	signalDispPtr->magnification = DEFAULT_SIGNAL_Y_SCALE;
 	signalDispPtr->summaryDisplay = GENERAL_BOOLEAN_OFF;
+	signalDispPtr->chanActivityDisplay = GENERAL_BOOLEAN_OFF;
 	signalDispPtr->topMargin = GRAPH_TOP_MARGIN_PERCENT;
 	signalDispPtr->width = DEFAULT_WIDTH;
 	signalDispPtr->channelStep = DEFAULT_CHANNEL_STEP;
@@ -291,8 +291,10 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->buffer = NULL;
 	signalDispPtr->data = NULL;
 	signalDispPtr->summary = NULL;
+	signalDispPtr->chanActivity = NULL;
 	signalDispPtr->inLineProcess = FALSE;
 	signalDispPtr->redrawGraphFlag = FALSE;
+	signalDispPtr->redrawSubDisplaysFlag = FALSE;
 	signalDispPtr->drawCompletedFlag = TRUE;
 	signalDispPtr->display = NULL;
 	signalDispPtr->dialog = NULL;
@@ -410,6 +412,12 @@ SetUniParList_SignalDisp(void)
 	  UNIPAR_BOOL,
 	  &signalDispPtr->summaryDisplay, NULL,
 	  (void * (*)) SetSummaryDisplay_SignalDisp);
+	SetPar_UniParMgr(&pars[DISPLAY_CHAN_ACTIVITY_DISPLAY], wxT(
+	  "CHAN_ACTIVITY_DISPLAY"),
+	  wxT("Channel activity display mode ('on' or 'off')."),
+	  UNIPAR_BOOL,
+	  &signalDispPtr->chanActivityDisplay, NULL,
+	  (void * (*)) SetChanActivityDisplay_SignalDisp);
 	SetPar_UniParMgr(&pars[DISPLAY_TOP_MARGIN], wxT("TOPMARGIN"),
 	  wxT("Top margin for display (percent of display height)."),
 	  UNIPAR_REAL,
@@ -1116,6 +1124,39 @@ SetSummaryDisplay_SignalDisp(WChar *theSummaryDisplay)
 	}
 	signalDispPtr->summaryDisplayFlag = TRUE;
 	signalDispPtr->summaryDisplay = specifier;
+	signalDispPtr->redrawSubDisplaysFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	return(TRUE);
+	
+}
+
+/**************************** SetChanActivityDisplay **************************/
+
+/*
+ * This routine sets the summary display mode for the display.
+ * If set to true, the scaling will be direct and related only to the
+ * signal yScale parameter.
+ */
+
+BOOLN
+SetChanActivityDisplay_SignalDisp(WChar *theChanActivityDisplay)
+{
+	static const WChar *funcName = wxT("SetChanActivityDisplay_SignalDisp");
+	int		specifier;
+
+	if (signalDispPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theChanActivityDisplay,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
+		  theChanActivityDisplay);
+		return(FALSE);
+	}
+	signalDispPtr->chanActivityDisplayFlag = TRUE;
+	signalDispPtr->chanActivityDisplay = specifier;
+	signalDispPtr->redrawSubDisplaysFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
@@ -1542,6 +1583,8 @@ PrintPars_SignalDisp(void)
 	  signalDispPtr->yNormModeList[signalDispPtr->yNormalisationMode].name);
 	DPrint(wxT("\tSummary display mode: %s\n"),
 	  BooleanList_NSpecLists(signalDispPtr->summaryDisplay)->name);
+	DPrint(wxT("\tChannel Activity display mode: %s\n"),
+	  BooleanList_NSpecLists(signalDispPtr->chanActivityDisplay)->name);
 	DPrint(wxT("\tSignal Y scale = %g.\n"), signalDispPtr->magnification);
 	DPrint(wxT("\tY axis title = %s\n"), signalDispPtr->yAxisTitle);
 	DPrint(wxT("\tY-axis mode = %s,\n"),
@@ -1688,6 +1731,7 @@ CheckData_SignalDisp(EarObjectPtr data)
 /*
  * This function allocates the memory for the process variables.
  * It initialises the summary EarObject used in the display module.
+ * It initialises the channel activity EarObject used in the display module.
  * It assumes that the centre frequency list is set up correctly.
  * It also assumes that the output signal has already been initialised.
  */
@@ -1698,65 +1742,70 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 	static const WChar *funcName = wxT("InitProcessVariables_SignalDisp");
 	double	definedDuration;
 	SignalDataPtr	signal = _OutSig_EarObject(data), buffer;
+	SignalDispPtr	p = signalDispPtr;
 	
-	if (signalDispPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
-	  (data->timeIndex == PROCESS_START_TIME)) {
-		if (signalDispPtr->autoXScale)
+	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
+	  timeIndex == PROCESS_START_TIME)) {
+		if (p->autoXScale)
 			definedDuration = -1.0;
 		else
-			definedDuration = (signalDispPtr->xExtent > DBL_EPSILON)?
-			  signalDispPtr->xOffset + signalDispPtr->xExtent:
-			  _GetDuration_SignalData(signal) - signalDispPtr->xOffset;
-		if (signalDispPtr->updateProcessVariablesFlag || data->
-		  updateProcessFlag) {
+			definedDuration = (p->xExtent > DBL_EPSILON)? p->xOffset + p->
+			  xExtent: _GetDuration_SignalData(signal) - p->xOffset;
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
 #			ifndef STANDARD_C_SIGNALDISP_COMPILE
-			signalDispPtr->critSect = new wxCriticalSection();
+			p->critSect = new wxCriticalSection();
 #			endif
-			if ((signalDispPtr->summary = Init_EarObject(
-			  wxT("Util_ReduceChannels"))) == NULL) {
+			if ((p->summary = Init_EarObject(wxT("Util_ReduceChannels"))) ==
+			  NULL) {
 				NotifyError(wxT("%s: Out of memory for summary EarObject."),
 				  funcName);
 				return(FALSE);
 			}
-			ConnectOutSignalToIn_EarObject(data, signalDispPtr->summary);
+			if ((p->chanActivity = Init_EarObject(wxT("Ana_Intensity"))) ==
+			  NULL) {
+				NotifyError(wxT("%s: Out of memory for channel activity ")
+				  wxT("EarObject."), funcName);
+				return(FALSE);
+			}
+			ConnectOutSignalToIn_EarObject(data, p->summary);
+			ConnectOutSignalToIn_EarObject(data, p->chanActivity);
 			if ((definedDuration > _GetDuration_SignalData(signal)) ||
 			  (!signal->staticTimeFlag && (signal->
 			  numWindowFrames != SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES))) {
-				if ((signalDispPtr->buffer = Init_EarObject(wxT("NULL"))) ==
-				  NULL) {
+				if ((p->buffer = Init_EarObject(wxT("NULL"))) == NULL) {
 					NotifyError(wxT("%s: Out of memory for buffer EarObject."),
 					  funcName);
 					return(FALSE);
 				}
 				if (signal->numWindowFrames !=
 				  SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES) {
-					signalDispPtr->xExtent = _GetDuration_SignalData(signal) /
-				      signal->numWindowFrames;
-					signalDispPtr->xOffset = 0.0;
+					p->xExtent = _GetDuration_SignalData(signal) / signal->
+					  numWindowFrames;
+					p->xOffset = 0.0;
 				}
 			}
-			if (signalDispPtr->xAxisTitle[0] == '\0')
+			if (p->xAxisTitle[0] == '\0')
 				SetXAxisTitle_SignalDisp(signal->info.sampleTitle);
-			if (signalDispPtr->yAxisTitle[0] == '\0')
+			if (p->yAxisTitle[0] == '\0')
 				SetYAxisTitle_SignalDisp(signal->info.channelTitle);
-			if (signalDispPtr->yAxisMode == GRAPH_Y_AXIS_MODE_AUTO)
-				signalDispPtr->yAxisMode = (signal->numChannels > 1)?
+			if (p->yAxisMode == GRAPH_Y_AXIS_MODE_AUTO)
+				p->yAxisMode = (signal->numChannels > 1)?
 				  GRAPH_Y_AXIS_MODE_CHANNEL: GRAPH_Y_AXIS_MODE_LINEAR_SCALE;
-			signalDispPtr->parList->updateFlag = TRUE;
-			signalDispPtr->updateProcessVariablesFlag = FALSE;
+			p->parList->updateFlag = TRUE;
+			p->updateProcessVariablesFlag = FALSE;
 			data->updateProcessFlag = FALSE;
 		}
-		signalDispPtr->bufferCount = 0;
-		if (signalDispPtr->buffer) {
-			if (!InitOutSignal_EarObject(signalDispPtr->buffer, signal->
-			  numChannels, (ChanLen) floor(definedDuration / signal->dt + 0.5),
-			  signal->dt)) {
+		p->bufferCount = 0;
+		if (p->buffer) {
+			if (!InitOutSignal_EarObject(p->buffer, signal->numChannels,
+			  (ChanLen) floor(definedDuration / signal->dt + 0.5), signal->
+			  dt)) {
 				NotifyError(wxT("%s: Could not initialise buffer signal."),
 				  funcName);
 				return(FALSE);
 			}
-			buffer = _OutSig_EarObject(signalDispPtr->buffer);
+			buffer = _OutSig_EarObject(p->buffer);
 			SetInterleaveLevel_SignalData(buffer, signal->interleaveLevel);
 			SetNumWindowFrames_SignalData(buffer, signal->numWindowFrames);
 			SetOutputTimeOffset_SignalData(buffer, signal->outputTimeOffset);
@@ -1782,15 +1831,16 @@ BOOLN
 FreeProcessVariables_SignalDisp(void)
 {
 
- 	Free_EarObject(&signalDispPtr->buffer);
- 	Free_EarObject(&signalDispPtr->summary);
+	Free_EarObject(&signalDispPtr->buffer);
+	Free_EarObject(&signalDispPtr->summary);
+	Free_EarObject(&signalDispPtr->chanActivity);
 
 #	ifndef STANDARD_C_SIGNALDISP_COMPILE
 	if (signalDispPtr->critSect)
 		delete signalDispPtr->critSect;
 #	endif
 
- 	signalDispPtr->updateProcessVariablesFlag = TRUE;
+	signalDispPtr->updateProcessVariablesFlag = TRUE;
  	return(TRUE);
 
 }
@@ -1839,23 +1889,29 @@ ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
 
 }
 
-/**************************** SetDisplay **************************************/
+/**************************** SetSubDisplays **********************************/
 
 /*
- * This routine sets up the canvas display control parameters.
+ * This routine sets up the canvas sub-display control parameters, i.e. for the
+ * summary and channel activity displays.
  */
 
 void
-SetDisplay_SignalDisp(EarObjectPtr data)
+SetSubDisplays_SignalDisp(void)
 {
-	/* static const WChar *funcName = wxT("SetDisplay_SignalDisp"); */
+	/* static const WChar *funcName = wxT("SetSubDisplays_SignalDisp"); */
 
-	SetPar_ModuleMgr(signalDispPtr->summary, wxT("mode"), wxT("average"));
-	SetPar_ModuleMgr(signalDispPtr->summary, wxT("num_Channels"), wxT("1"));
-	RunProcess_ModuleMgr(signalDispPtr->summary);
-	signalDispPtr->data = data;
-
-	signalDispPtr->redrawGraphFlag = TRUE;
+	if (signalDispPtr->summaryDisplay) {
+		SetPar_ModuleMgr(signalDispPtr->summary, wxT("mode"), wxT("average"));
+		SetPar_ModuleMgr(signalDispPtr->summary, wxT("num_Channels"), wxT("1"));
+		RunProcess_ModuleMgr(signalDispPtr->summary);
+	}
+	if (signalDispPtr->chanActivityDisplay) {
+		SetRealPar_ModuleMgr(signalDispPtr->chanActivity, wxT("offset"), 0.0);
+		SetRealPar_ModuleMgr(signalDispPtr->chanActivity, wxT("extent"), -1.0);
+		RunProcess_ModuleMgr(signalDispPtr->chanActivity);
+	}
+	signalDispPtr->redrawSubDisplaysFlag = FALSE;
 
 }
 
@@ -1954,8 +2010,10 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 		}
 		signalDispPtr->drawCompletedFlag = FALSE;
 		signalDispPtr->critSect->Enter();
-		SetDisplay_SignalDisp((signalDispPtr->buffer)? signalDispPtr->buffer:
-		  data);
+		SetSubDisplays_SignalDisp();
+		signalDispPtr->data = (signalDispPtr->buffer)? signalDispPtr->buffer:
+		  data;
+		signalDispPtr->redrawGraphFlag = TRUE;
 		signalDispPtr->critSect->Leave();
 		PostDisplayEvent_SignalDisp();
 	}

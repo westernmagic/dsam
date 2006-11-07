@@ -41,6 +41,7 @@ typedef struct {
 	int		frameXPos;
 	int		frameYPos;
 	int		summaryDisplay;
+	int		chanActivityDisplay;
 	
 
 } SignalDisp;

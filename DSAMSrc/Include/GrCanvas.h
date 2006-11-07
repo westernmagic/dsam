@@ -61,6 +61,7 @@
 #define	GRAPH_X_TICK_LENGTH_SCALE			0.08
 #define	GRAPH_Y_TICK_LENGTH_SCALE			0.04
 #define GRAPH_SUMMARY_SIGNAL_SCALE			0.14
+#define GRAPH_CHAN_ACTIVITY_SIGNAL_SCALE	0.10
 #define	GRAPH_SIGNAL_PEN_WIDTH				1
 
 /* The following is needed because of errors in scale position - can't get
@@ -104,7 +105,7 @@ class MyCanvas: public wxWindow
 	double	dt;
 	ChanLen	offset, chanLength, timeIndex;
 	wxFont  *labelFont, *insetLabelFont, *axisTitleFont, *superLabelFont;
-	wxRect	signal, summary, *xAxis, *yAxis;
+	wxRect	signal, summary, chanActivity, *xAxis, *yAxis;
 	wxPoint	pointer;
 	wxFrame	*parent;
 	GrLines	signalLines, summaryLine;

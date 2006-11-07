@@ -170,7 +170,7 @@ MyCanvas::CreateBackingBitmap(void)
 void
 MyCanvas::SetGraphAreas(void)
 {
-	int		xAxisSpace, yAxisSpace, summarySpace, topMargin;
+	int		xAxisSpace, yAxisSpace, summarySpace, topMargin, chanActivitySpace;
 	
 	wxRect	graph(wxDefaultPosition, parent->GetClientSize());
 
@@ -186,13 +186,16 @@ MyCanvas::SetGraphAreas(void)
 	yAxisSpace = (yAxis)? (int) floor(graph.GetWidth() * (GRAPH_Y_AXIS_SCALE +
 	  GRAPH_Y_TITLE_SCALE) + 0.5): 0;
 	summarySpace = (int) (graph.GetHeight() * GRAPH_SUMMARY_SIGNAL_SCALE);
+	chanActivitySpace = (int) (graph.GetWidth() *
+	  GRAPH_CHAN_ACTIVITY_SIGNAL_SCALE);
 
 	if (xAxis) {
 		graph.SetHeight(graph.GetHeight() - xAxisSpace);
 		xAxis->SetX(graph.GetX() + yAxisSpace);
 		xAxis->SetY(graph.GetBottom() + 1);
 		xAxis->SetHeight(xAxisSpace);
-		xAxis->SetWidth(graph.GetWidth() - yAxisSpace);
+		xAxis->SetWidth(graph.GetWidth() - yAxisSpace - ((mySignalDispPtr->
+		  chanActivityDisplay)? chanActivitySpace: 0));
 	}
 
 	if (yAxis) {
@@ -203,6 +206,12 @@ MyCanvas::SetGraphAreas(void)
 		graph.SetWidth(graph.GetWidth() - yAxisSpace);
 		graph.SetX(yAxis->GetRight() + 1);
 	}
+	// Channel activity signal dimensions
+	chanActivity = graph;
+	chanActivity.SetWidth(chanActivitySpace);
+	chanActivity.SetX(graph.GetRight() - chanActivity.GetWidth());
+	if (mySignalDispPtr->chanActivityDisplay)
+		graph.SetRight(chanActivity.GetLeft() + 1);
 	// Summary signal dimensions
 	summary = graph;
 	summary.SetHeight(summarySpace);
@@ -230,7 +239,8 @@ MyCanvas::InitGraph(void)
 	InitData(mySignalDispPtr->data);
 	signalLines.SetChannelStep(mySignalDispPtr->channelStep);
 	signalLines.SetYMagnification(mySignalDispPtr->magnification);
-	summaryLine.SetChannelStep(1);
+	if (mySignalDispPtr->summaryDisplay)
+		summaryLine.SetChannelStep(1);
 	greyBrushes->SetGreyScales(mySignalDispPtr->numGreyScales);
 
 	if (mySignalDispPtr->autoYScale) {
@@ -239,24 +249,30 @@ MyCanvas::InitGraph(void)
 		mySignalDispPtr->minYFlag = TRUE;
 		mySignalDispPtr->maxY = signalLines.GetMaxY();
 		mySignalDispPtr->maxYFlag = TRUE;
-		summaryLine.CalcMaxMinLimits();
+		if (mySignalDispPtr->summaryDisplay)
+			summaryLine.CalcMaxMinLimits();
 	} else {
 		signalLines.SetYLimits(mySignalDispPtr->minY, mySignalDispPtr->maxY);
-		summaryLine.SetYLimits(mySignalDispPtr->minY, mySignalDispPtr->maxY);
+		if (mySignalDispPtr->summaryDisplay)
+			summaryLine.SetYLimits(mySignalDispPtr->minY, mySignalDispPtr->
+			  maxY);
 	}
 	
 	switch (mySignalDispPtr->mode) {
 	case GRAPH_MODE_LINE:
 		SetLines(signalLines);
-		SetLines(summaryLine);
+		if (mySignalDispPtr->summaryDisplay)
+			SetLines(summaryLine);
 		break;
 	case GRAPH_MODE_GREY_SCALE:
 		SetGreyScaleLines(signalLines);
-		SetGreyScaleLines(summaryLine);
+		if (mySignalDispPtr->summaryDisplay)
+			SetGreyScaleLines(summaryLine);
 		break;
 	} /* switch */
 	signalLines.Rescale(signal);
-	summaryLine.Rescale(summary);
+	if (mySignalDispPtr->summaryDisplay)
+		summaryLine.Rescale(summary);
 
 }
 
@@ -284,8 +300,9 @@ MyCanvas::InitData(EarObjectPtr data)
 	timeIndex = _WorldTime_EarObject(data);
 	dt = signal->dt;
 	signalLines.Set(signal, offset, chanLength);
-	summaryLine.Set(_OutSig_EarObject(mySignalDispPtr->summary), offset,
-	  chanLength);
+	if (mySignalDispPtr->summaryDisplay)
+		summaryLine.Set(_OutSig_EarObject(mySignalDispPtr->summary), offset,
+		  chanLength);
 	if (xTitle.compare(mySignalDispPtr->xAxisTitle) != 0)
 		xTitle =  mySignalDispPtr->xAxisTitle;
 	if (yTitle.compare(mySignalDispPtr->yAxisTitle) != 0)
@@ -792,6 +809,8 @@ MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 	signalDispPtr = mySignalDispPtr;
 	if (dialog.ShowModal() == wxID_OK) {
 		GetSignalDispPtr()->redrawGraphFlag = TRUE;
+		if (GetSignalDispPtr()->redrawSubDisplaysFlag)
+			SetSubDisplays_SignalDisp();
 		InitGraph();
 		Refresh(FALSE);
 	}
