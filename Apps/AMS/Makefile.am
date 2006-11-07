@@ -16,7 +16,7 @@ BUILT_SOURCES	= ams.spec
 
 EXTRA_DIST		= ams.par ams.rc amsicon.ico mkunxinst.env LICENSE
 
-INCLUDES		= -DAMS_DATA_INSTALL_DIR="\"$(pkgdatadir)\""
+INCLUDES		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 
 SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
 

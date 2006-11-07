@@ -95,8 +95,6 @@ typedef enum {
 
 BOOLN	AutoSetNumberOfRuns(void);
 
-EarObjectPtr	GetDataFileInProcess(void);
-
 BOOLN	Init(void);
 
 BOOLN	PostInitFunc(void);

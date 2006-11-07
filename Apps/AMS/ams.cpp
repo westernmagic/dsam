@@ -107,7 +107,8 @@ SetUniParList(UniParListPtr *parList)
 	  &fileLockingModeSpecifier, NULL,
 	  (void * (*)) SetFileLockingMode);
 	SetPar_UniParMgr(&pars[AMS_AUTONUMRUNSMODE], wxT("AUTO_NUM_RUNS_MODE"),
-	  wxT("Auto-setting of the number of runs (data files only) ('on' or 'off')."),
+	  wxT("Auto-setting of the number of runs (data files only) ('on' or ")
+	    wxT("'off')."),
 	  UNIPAR_BOOL,
 	  &autoNumRunsModeSpecifier, NULL,
 	  (void * (*)) SetAutoNumRunsMode);
@@ -134,8 +135,8 @@ SetFileLockingMode(WChar *theFileLockingMode)
 
 	if ((fileLockingModeSpecifier = Identify_NameSpecifier(theFileLockingMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError(wxT("%s: Illegal file locking mode (%s): must be "
-		  "'on' or 'off'."), funcName, fileLockingMode);
+		NotifyError(wxT("%s: Illegal file locking mode (%s): must be ")
+		  wxT("'on' or 'off'."), funcName, fileLockingMode);
 		return(FALSE);
 	}
 	DSAM_strcpy(fileLockingMode, theFileLockingMode);
@@ -157,8 +158,8 @@ SetAutoNumRunsMode(WChar *theAutoNumRunsMode)
 
 	if ((autoNumRunsModeSpecifier = Identify_NameSpecifier(theAutoNumRunsMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must "
-		  "be 'on' or 'off'."), funcName, theAutoNumRunsMode);
+		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must ")
+		  wxT("be 'on' or 'off'."), funcName, theAutoNumRunsMode);
 		return(FALSE);
 	}
 	DSAM_strcpy(autoNumRunsMode, theAutoNumRunsMode);
@@ -188,32 +189,6 @@ SetNumberOfRuns(int theNumberOfRuns)
 
 }
 
-/****************************** GetDataFileInProcess **************************/
-
-/*
- * This routine returns a pointer to the a 'DataFile_In' process at the
- * beginning of a simulation.  If it is not there, then it returns NULL.
- */
-
-EarObjectPtr
-GetDataFileInProcess(void)
-{
-	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
-	EarObjectPtr	process;
-
-	SetErrorsFile_Common(wxT("off"), OVERWRITE);
-	process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
-	  GetPtr_AppInterface()->audModel));
-	GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
-	if (!process)
-		return(NULL);
-	if (StrCmpNoCase_Utility_String(process->module->name, wxT(
-	  "DataFile_In")) != 0)
-		return(NULL);
-	return(process);
-
-}
-
 /****************************** AutoSetNumberOfRuns ***************************/
 
 /*
@@ -234,14 +209,14 @@ AutoSetNumberOfRuns(void)
 		return(TRUE);
 	}
 
-	if ((process = GetDataFileInProcess()) == NULL)
+	if ((process = GetDataFileInProcess_AppInterface()) == NULL)
 		return(TRUE);
 	numberOfRuns = 1;	/* Default value */
 	segmentDuration = *GetUniParPtr_ModuleMgr(process, wxT("duration"))->
 	  valuePtr.r;
 	if (segmentDuration < 0.0) {
-		NotifyError(wxT("%s: Segment size must be set when using auto 'number "
-		  "of runs' mode."), funcName);
+		NotifyError(wxT("%s: Segment size must be set when using auto 'number ")
+		  wxT("of runs' mode."), funcName);
 		return(FALSE);
 	}
 	if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
@@ -251,8 +226,8 @@ AutoSetNumberOfRuns(void)
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
-		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal "
-		  "duration (%g ms)."), funcName, MILLI(segmentDuration), MILLI(
+		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal ")
+		  wxT("duration (%g ms)."), funcName, MILLI(segmentDuration), MILLI(
 		  totalDuration));
 		return(FALSE);
 	}
@@ -285,10 +260,10 @@ PrintInitialDiagnostics(void)
 void
 PrintUsage(void)
 {
-	DSAM_fprintf(stderr, wxT("\n"
-	  "%s specific options:\n"
-	  "\t-r <x>        \t: Repeat the simulation 'x' times.\n"
-	  "\t-v            \t: Print program version\n"),
+	fprintf_Utility_String(stderr, wxT("\n")
+	  wxT("%s specific options:\n")
+	  wxT("\t-r <x>        \t: Repeat the simulation 'x' times.\n")
+	  wxT("\t-v            \t: Print program version\n"),
 	  GetPtr_AppInterface()->appName);
 	exit(1);
 
@@ -319,16 +294,16 @@ ProcessOptions(int argc, WChar **argv, int *optInd)
 			break;
 		case 'r':
 			if ((numberOfRuns = DSAM_atoi(argument)) <= 0) {
-				NotifyError(wxT("%s: No. of simulation runs must be greater "
-				"than zero (%d)."), funcName, numberOfRuns);
+				NotifyError(wxT("%s: No. of simulation runs must be greater ")
+				  wxT("than zero (%d)."), funcName, numberOfRuns);
 				exit(1);
 			}
 			foundOption = TRUE;
 			break;
 		case 'v':
-			DSAM_fprintf(stderr, wxT("Version %s, compile date %s, DSAM %s "
-			  "(dynamic), %s (compiled).\n"), AMS_VERSION, __DATE__,
-			  GetDSAMPtr_Common()->version, DSAM_VERSION);
+			fprintf_Utility_String(stderr, wxT("Version %s, compile date %s, ")
+			  wxT("DSAM %s (dynamic), %s (compiled).\n"), AMS_VERSION, wxT(
+			  __DATE__), GetDSAMPtr_Common()->version, DSAM_VERSION);
 			exit(0);
 			break;
 		default:
@@ -450,8 +425,7 @@ int MainSimulation(MAIN_ARGS)
 
 	if (fileLockingModeSpecifier)
 		SetLockFile(TRUE);
-	if (autoNumRunsModeSpecifier && GetDataFileInProcess() &&
-	  !AutoSetNumberOfRuns())
+	if (autoNumRunsModeSpecifier && !AutoSetNumberOfRuns())
 		return(FALSE);
 	for (i = 0; i < numberOfRuns; i++)
 		if (!RunSim_AppInterface())
