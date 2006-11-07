@@ -330,8 +330,8 @@ MyApp::CreateMenuBar(void)
 	  wxT("simulation."));
 	fileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl-O"), wxT("Load Simulation ")
 	  wxT("from file."));
-	fileMenu->Append(wxID_REVERT, wxT("&Reload\tCtrl-R"), wxT("Reload ")
-	  wxT("Simulation."));
+//	fileMenu->Append(wxID_REVERT, wxT("&Reload\tCtrl-R"), wxT("Reload ")
+//	  wxT("Simulation."));
 	fileMenu->Append(wxID_CLOSE, wxT("&Close\tCtrl-W"));
  	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_SAVE,  wxT("&Save...\tCtrl-S"),  wxT("Save ")
