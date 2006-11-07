@@ -178,8 +178,8 @@ AnyBadArgument(int nrhs, const mxArray *prhs[])
 		PrintHelp();
 
 	if (!mxIsChar(prhs[SIM_FILE])) {
-		NotifyError(wxT("%s: The <file name> argument (no. %d) must be a string."),
-		  funcName, SIM_FILE);
+		NotifyError(wxT("%s: The <file name> argument (no. %d) must be a "
+		  "string."), funcName, SIM_FILE);
 		return(true);
 	}
 	if (nrhs > PARAMETER_OPTIONS) {
@@ -320,6 +320,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	ChanLen	length = 0;
 	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset= 0.0;
 	EarObjectPtr	audModel;
+	SignalDataPtr	outSignal;
 
 	if (!InitWxWidgets())
 		return;
@@ -362,8 +363,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nrhs > PARAMETER_OPTIONS)
 		mxFree(parameterOptions);
 
-	plhs[0] = GetOutputSignalMatrix(audModel->outSignal);
-	plhs[1] = GetOutputInfoStruct(audModel->outSignal);
+	if (audModel && ((outSignal = _OutSig_EarObject(audModel)) != NULL)) {
+		outSignal = _OutSig_EarObject(audModel);
+		plhs[0] = GetOutputSignalMatrix(audModel->outSignal);
+		plhs[1] = GetOutputInfoStruct(audModel->outSignal);
+	}
 
 }
 
@@ -496,6 +500,7 @@ DEFUN_DLD (RunDSAMSim, args, , USAGE_MESSAGE)
 	wxString	parameterOptions;
 	wxFileName	simFile;
 	EarObjectPtr	audModel;
+	SignalDataPtr	outSignal;
 	octave_value_list retVal;
 
 	if (!InitWxWidgets())
@@ -536,9 +541,9 @@ DEFUN_DLD (RunDSAMSim, args, , USAGE_MESSAGE)
 		return octave_value_list();
 	}
 	audModel = mainApp.GetSimProcess();
-	if (audModel) {
-		retVal(0) = GetOutputSignalMatrix(audModel->outSignal);
-		retVal(1) = GetOutputInfoStruct(audModel->outSignal);
+	if (audModel && ((outSignal = _OutSig_EarObject(audModel)) != NULL)) {
+		retVal(0) = GetOutputSignalMatrix(outSignal);
+		retVal(1) = GetOutputInfoStruct(outSignal);
 	}
 	return (audModel)? retVal: octave_value_list();
 

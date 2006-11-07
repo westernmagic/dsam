@@ -23,7 +23,6 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	NUM_BASE_ARGUMENTS			3
 #define	DSAMMAT_VERSION				wxT("MatMainApp: 1.1.0")
 #define	DSAMMAT_NUM_PARS			6		/* No. of application parameters. */
 #define	DSAMMAT_AUTO_INTERLEAVE_LEVEL	-1
@@ -78,18 +77,15 @@ class MatMainApp: public MainApp {
 	int		numChannels, interleaveLevel;
 	ChanLen	length;
 	double	*inputData, dt, outputTimeOffset;
-	IPCClient	*myClient;
 	UniParListPtr	parList;
 	EarObjectPtr	inputProcess;
 	wxInitializer initializer;
 
   public:
 	bool	updateProcessVariablesFlag;
-	wxChar	serverHost[MAXLINE];
 	int		numberOfRuns;
 	int		autoNumRunsMode;
 	int		serverMode;
-	int		serverPort;
 	double	segmentDuration;
 
 	MatMainApp(wxChar *programName, const wxChar *simFile,
@@ -98,7 +94,7 @@ class MatMainApp: public MainApp {
 	  bool theStaticTimeFlag, double theOutputTimeOffset);
 	~MatMainApp(void);
 
-	bool	AutoSetNumberOfRuns(ChanLen inputLength, double dt);
+	bool	AutoSetNumberOfRuns(double dt);
 	EarObjectPtr	GetSimProcess(void);
 	bool	InitInputEarObject(ChanLen segmentLength);
 	bool	InitRun(void);
@@ -131,6 +127,8 @@ class MatMainApp: public MainApp {
 __BEGIN_DECLS
 
 BOOLN	InitApp_MatMainApp(void);
+
+void	Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type);
 
 BOOLN	RegisterUserModules_MatMainApp(void);
 

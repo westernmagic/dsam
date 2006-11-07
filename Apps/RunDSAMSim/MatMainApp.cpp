@@ -49,12 +49,11 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 	static const wxChar *funcName = wxT("MatMainApp::MatMainApp");
 
 	matMainAppPtr = this;
-	DSAM_strcpy(serverHost, wxT("localhost"));
 	autoNumRunsMode = GENERAL_BOOLEAN_OFF;
 	serverMode = GENERAL_BOOLEAN_OFF;
-	serverPort = EXTIPCUTILS_DEFAULT_SERVER_PORT;
 	segmentDuration = -1.0;
 	updateProcessVariablesFlag = false;
+	SetNotifyFunc(Notify_MatMainApp);
 
 	if (!SetUniParList_MatMainApp(&parList)) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
@@ -63,7 +62,6 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 	}
 	numberOfRuns = 1;
 	inputProcess = NULL;
-	myClient = NULL;
 	SetParsFilePath_Common(NULL);
 	numChannels = theNumChannels;
 	if (theInterleaveLevel < 0) 
@@ -106,8 +104,6 @@ MatMainApp::~MatMainApp(void)
 			  GetSimProcess_AppInterface());
 		Free_EarObject(&inputProcess);
 	}
-	if (myClient)
-		delete myClient;
 	if (parList)
 		FreeList_UniParMgr(&parList);
 	matMainAppPtr = NULL;
@@ -144,13 +140,13 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
   const wxChar *parameterOptions)
 {
 	static const wxChar *funcName = wxT("MainApp::SetArgStrings");
-	int		numArgs = NUM_BASE_ARGUMENTS;
+	int		numArgs = MAINAPP_NUM_BASE_ARGUMENTS;
 
 	if ((numArgs = SetParameterOptionArgs(0, parameterOptions, TRUE)) < 0) {
 		NotifyError(wxT("%s: Could not count the parameter options"), funcName);
 		return(false);
 	}
-	numArgs += NUM_BASE_ARGUMENTS;
+	numArgs += MAINAPP_NUM_BASE_ARGUMENTS;
 	if (!InitArgv(numArgs)) {
 		NotifyError(wxT("%s: could not initialise arg strings."), funcName);
 		return(false);
@@ -158,7 +154,7 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
 	SetArgvString(0, programName, DSAM_strlen(programName));
 	SetArgvString(1, wxT("-s"), 2);
 	SetArgvString(2, simFile, DSAM_strlen(simFile));
-	SetParameterOptionArgs(NUM_BASE_ARGUMENTS, parameterOptions, false);
+	SetParameterOptionArgs(MAINAPP_NUM_BASE_ARGUMENTS, parameterOptions, false);
 	return(true);
 
 }
@@ -172,11 +168,10 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
  */
 
 bool
-MatMainApp::AutoSetNumberOfRuns(ChanLen inputLength, double dt)
+MatMainApp::AutoSetNumberOfRuns(double dt)
 {
 	static wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
 	double	totalDuration;
-	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;
 	EarObjectPtr	process;
 
 	if (!GetDSAMPtr_Common()->segmentedMode) {
@@ -184,23 +179,12 @@ MatMainApp::AutoSetNumberOfRuns(ChanLen inputLength, double dt)
 		return(TRUE);
 	}
 
-	if (inputLength)
-		totalDuration = inputLength * dt;
+	if (length)
+		totalDuration = length * dt;
 	else {
-		SetErrorsFile_Common(wxT("off"), OVERWRITE);
-		process = GetFirstProcess_Utility_Datum(GetSimulation_ModuleMgr(
-		  GetPtr_AppInterface()->audModel));
-		GetDSAMPtr_Common()->errorsFile = savedErrorsFilePtr;
-		if (!process)
+		if ((process = GetDataFileInProcess_AppInterface()) == NULL)
 			return(TRUE);
 		numberOfRuns = 1;	/* Default value */
-		if (StrCmpNoCase_Utility_String(process->module->name, wxT(
-		  "DataFile_In")) !=  0) {
-			NotifyError(wxT("%s: Operation failed. First process is not "
-			  "DataFile_In or the input signal is not a matlab matrix.\n"),
-			  funcName);
-			return(TRUE);
-		}
 		segmentDuration = *GetUniParPtr_ModuleMgr(process, wxT("duration"))->
 		  valuePtr.r;
 		if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
@@ -210,9 +194,9 @@ MatMainApp::AutoSetNumberOfRuns(ChanLen inputLength, double dt)
 			return(FALSE);
 		}
 	}
-	if (segmentDuration < 0.0) {
+	if (inputData && (segmentDuration < 0.0)) {
 		NotifyError(wxT("%s: Segment duration must be set when using auto "
-		  "'number of runs' mode."), funcName);
+		  "'number of runs' mode with an external signal."), funcName);
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
@@ -241,12 +225,12 @@ MatMainApp::SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
 	register ChanData	*outPtr, *inPtr;
 	int		chan;
 	ChanLen	i;
+	SignalDataPtr	outSignal = _OutSig_EarObject(process);
 
-	for (chan = 0; chan < process->outSignal->numChannels; chan++) {
-		outPtr = process->outSignal->channel[chan];
+	for (chan = 0; chan < outSignal->numChannels; chan++) {
+		outPtr = outSignal->channel[chan];
 		inPtr = data + process->timeIndex - PROCESS_START_TIME + chan;
-		for (i = 0; i < signalLength; i++, inPtr += process->outSignal->
-		  numChannels)
+		for (i = 0; i < signalLength; i++, inPtr += outSignal->numChannels)
 			*outPtr++ = *inPtr;
 	}
 	SetTimeContinuity_EarObject(process);
@@ -284,11 +268,12 @@ MatMainApp::InitInputEarObject(ChanLen segmentLength)
 		NotifyError(wxT("%s: Cannot initialise input process"), funcName);
 		return(false);
 	}
-	SetStaticTimeFlag_SignalData(inputProcess->outSignal, staticTimeFlag);
-	SetLocalInfoFlag_SignalData(inputProcess->outSignal, TRUE);
-	SetInterleaveLevel_SignalData(inputProcess->outSignal, interleaveLevel);
-	inputProcess->outSignal->rampFlag = TRUE;
-	SetInputProcessData(inputProcess, length, inputData);
+	SignalDataPtr	outSignal = _OutSig_EarObject(inputProcess);
+	SetStaticTimeFlag_SignalData(outSignal, staticTimeFlag);
+	SetLocalInfoFlag_SignalData(outSignal, TRUE);
+	SetInterleaveLevel_SignalData(outSignal, interleaveLevel);
+	outSignal->rampFlag = TRUE;
+	SetInputProcessData(inputProcess, segmentLength, inputData);
 	return(true);
 
 }
@@ -314,7 +299,7 @@ MatMainApp::RunSimulationLocal(void)
 		return(false);
 	}
 	if (autoNumRunsMode) {
-		if (!AutoSetNumberOfRuns(length, dt))
+		if (!AutoSetNumberOfRuns(dt))
 			ok = FALSE;
 		else
 			segmentLength = (ChanLen) floor(segmentDuration  / dt + 0.5);
@@ -335,7 +320,7 @@ MatMainApp::RunSimulationLocal(void)
 			ResetProcess_EarObject(inputProcess);
 		for (i = 0; i < numberOfRuns; i++) {
 			if (inputProcess)
-				SetInputProcessData(inputProcess, length, inputData);
+				SetInputProcessData(inputProcess, segmentLength, inputData);
 			if (!RunSim_AppInterface()) {
 				ok = false;
 				break;
@@ -358,17 +343,15 @@ MatMainApp::RunSimulationRemote(void)
 {
 	static const wxChar *funcName = wxT("MatMainApp::RunSimulationRemote");
 
-	if (!myClient)
-		myClient = new IPCClient(serverHost, serverPort);
-	if (!myClient->Ok())
+	if (!CreateClient(serverHost, serverPort))
 		return(false);
-	RemoveCommands(NUM_BASE_ARGUMENTS - 1, DSAMMAT_COMMAND_PREFIX);
-	if (!myClient->SendArguments(GetArgc(), GetArgv())) {
+	RemoveCommands(MAINAPP_NUM_BASE_ARGUMENTS - 1, DSAMMAT_COMMAND_PREFIX);
+	if (!GetClient()->SendArguments(GetArgc(), GetArgv())) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
 		  funcName);
 		return(false);
 	}
-	if (!myClient->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
+	if (!GetClient()->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
 		  funcName);
 		return(false);
@@ -383,22 +366,22 @@ MatMainApp::RunSimulationRemote(void)
 			  funcName);
 			return(false);
 		}
-		if (!myClient->GetIPCUtils()->InitOutProcess()) {
+		if (!GetClient()->GetIPCUtils()->InitOutProcess()) {
 			NotifyError(wxT("%s: Could not initialise output process for input "
 			  "data."), funcName);
 			return(false);
 		}
-		myClient->GetIPCUtils()->ConnectToOutProcess(inputProcess);
-		if (!myClient->SendInputProcess()) {
+		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputProcess);
+		if (!GetClient()->SendInputProcess()) {
 			NotifyError(wxT("%s: Could not send the input data."), funcName);
 			return(false);
 		}
 	}
-	if (!myClient->RunSimulation()) {
+	if (!GetClient()->RunSimulation()) {
 		NotifyError(wxT("%s: Could not run remote simulation."), funcName);
 		return(false);
 	}
-	myClient->GetAllOutputFiles();
+	GetClient()->GetAllOutputFiles();
 	return(true);
 
 }
@@ -413,7 +396,7 @@ EarObjectPtr
 MatMainApp::GetSimProcess(void)
 {
 	if (serverMode)
-		return((myClient)? myClient->GetSimProcess(): NULL);
+		return((GetClient())? GetClient()->GetSimProcess(): NULL);
 	return(GetSimProcess_AppInterface());
 
 }
@@ -687,3 +670,32 @@ RegisterUserModules_MatMainApp(void)
 	return(TRUE);
 
 }
+
+/***************************** Notify *****************************************/
+
+/*
+ * All notification messages are stored in the notification list.
+ * This list is reset when the noficiationCount is zero.
+ */
+
+void
+Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
+{
+	FILE	*fp;
+
+	switch (type) {
+	case COMMON_ERROR_DIAGNOSTIC:
+		fp = dSAM.errorsFile;
+		break;
+	case COMMON_WARNING_DIAGNOSTIC:
+		fp = dSAM.warningsFile;
+		break;
+	default:
+		fp = stdout;
+	}
+	fprintf(fp, wxConvUTF8.cWX2MB(message));
+	fprintf(fp, "\n");
+
+
+} /* NotifyMessage */
+
