@@ -400,7 +400,6 @@ SDIView::OnEditEnable(wxCommandEvent& WXUNUSED(event))
 void
 SDIView::OnEditProperties(wxCommandEvent& WXUNUSED(event))
 {
-	printf("SDIView::OnEditProperties: Entered\n");
 	wxShape *shape = FindSelectedShape();
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
