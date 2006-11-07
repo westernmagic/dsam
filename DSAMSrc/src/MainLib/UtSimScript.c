@@ -840,12 +840,9 @@ ReadSimScript_Utility_SimScript(FILE *fp)
 {
 	static const WChar	*funcName = wxT("ReadSimScript_Utility_SimScript");
 	DatumPtr	simulation;
-	FILE	*savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
 
 	Init_ParFile();
-	SetErrorsFile_Common(wxT("off"), OVERWRITE);
 	simulation = Read_Utility_SimScript(fp);
-	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
 	Free_ParFile();
 	if (!simulation) {	/* To be removed when ReadSimScriptOld is removed. */
 		NotifyWarning(wxT("%s: Using old script format."), funcName);
@@ -1070,7 +1067,14 @@ NotifyError_Utility_SimScript(WChar *format, ...)
 {
 	WChar	msg[LONG_STRING];
 	va_list	args;
+#	if DSAM_USE_UNICODE
+	WChar	newFormat[LONG_STRING];
+#	endif
 	
+#	if DSAM_USE_UNICODE
+	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
+	format = newFormat;
+#	endif
 	va_start(args, format);
 	DSAM_vsnprintf(msg, LONG_STRING, format, args);
 	va_end(args);
@@ -1377,7 +1381,6 @@ Process_Utility_SimScript(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Process_Utility_SimScript");
 	WChar	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
-	SignalDataPtr	*lastOutSignalPtr;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (!data->threadRunFlag) {
@@ -1409,11 +1412,9 @@ Process_Utility_SimScript(EarObjectPtr data)
 		return(FALSE);
 	}
 	SetParsFilePath_Common(oldParsFilePath);
-	lastOutSignalPtr = data->outSignalPtr;
-	data->outSignalPtr = GetLastProcess_Utility_Datum(localSimScriptPtr->
+	data->outSignal = *GetLastProcess_Utility_Datum(localSimScriptPtr->
 	  simulation)->outSignalPtr;
 	simScriptPtr = localSimScriptPtr;
-	data->outSignal = _OutSig_EarObject(data);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
