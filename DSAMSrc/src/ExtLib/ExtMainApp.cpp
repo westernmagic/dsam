@@ -616,7 +616,8 @@ MainApp::LoadXMLDocument(void)
 	InitXMLDocument();
 	if (!doc->LoadFile((const char *) simFileName.GetFullPath().mb_str())) {
 		NotifyError(wxT("%s: Could not load XML file '%s' (Error: %s)."),
-		  funcName, simFileName.GetFullPath().c_str(), doc->ErrorDesc());
+		  funcName, simFileName.GetFullPath().c_str(), MBSToWCS_Utility_String(
+		  doc->ErrorDesc()));
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {
