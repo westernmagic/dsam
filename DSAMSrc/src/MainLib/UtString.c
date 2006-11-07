@@ -239,8 +239,8 @@ SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
 
 	if ((s = DSAM_strstr(string, subString)) == NULL)
 		return(NULL);
-	memmove(s + repSLen, s + subSLen, DSAM_strlen(s) - subSLen + 1);
-	memcpy(s, repString, repSLen);
+	DSAM_memmove(s + repSLen, s + subSLen, DSAM_strlen(s) - subSLen + 1);
+	DSAM_memcpy(s, repString, repSLen);
 	return(string);
 
 }
