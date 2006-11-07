@@ -18,7 +18,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define ANALYSIS_FIRST_INTENSITY_GUESS 50.0	/* Initial threshold intensity. */
+#define ANALYSIS_MAX_INTENSITY_GUESS 50.0	/* Initial threshold intensity. */
 #define MAXIMUM_THRESHOLD_LOOP		20	/* - FindThresholdIntensity routine. */
     
 /******************************************************************************/

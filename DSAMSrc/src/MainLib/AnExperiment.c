@@ -28,7 +28,7 @@
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
-/******************************************************************************/ 
+/******************************************************************************/
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -69,7 +69,7 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	}
 	if (*firstPass) {
 		*firstPass = FALSE;
-		lastInputIntensity = ANALYSIS_FIRST_INTENSITY_GUESS;
+		lastInputIntensity = ANALYSIS_MAX_INTENSITY_GUESS;
 		if (!(* SetIntensity)(lastInputIntensity)) {
 			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Intensity ")
 			  wxT("not set."));
@@ -77,7 +77,8 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 		}
 		if ((modelResp = (* RunModel)()) == NULL) {
 			NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Could not ")
-			  wxT("calculate present intensity (first pass).  Returning zero."));
+			  wxT("calculate present intensity (first pass).  Returning ")
+			  wxT("zero."));
 			return(0.0);
 		}
 		presentOutIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
