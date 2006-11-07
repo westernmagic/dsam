@@ -5,6 +5,6 @@ mod_name		Utility;
 qualifier		ConvMonaural;
 typedef struct {
 
-	int		dummy;
+	NameSpecifier	mode;
 
-} Dummy;
+} CMonaural;
