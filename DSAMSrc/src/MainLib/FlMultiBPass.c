@@ -975,8 +975,9 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Multiple Bandpass filter Module ")
 		  wxT("process."));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
+		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
+		  0)->dt)) {
 			NotifyError(wxT("%s: Could not initialise the process output ")
 			  wxT("signal."), funcName);
 			return(FALSE);
@@ -1001,7 +1002,8 @@ RunModel_Filter_MultiBPass(EarObjectPtr data)
 		bPParsPtr = &p->bPassPars[i];
 		if (fabs(p->gain[i]) > DBL_EPSILON)
 			GaindB_SignalData(_OutSig_EarObject(bPParsPtr->data), p->gain[i]);
-		BandPass_Filters(_OutSig_EarObject(bPParsPtr->data), bPParsPtr->coefficients);
+		BandPass_Filters(_OutSig_EarObject(bPParsPtr->data), bPParsPtr->
+		  coefficients);
 	}
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		for (i = 1; i < p->numFilters; i++) {
