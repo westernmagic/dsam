@@ -127,6 +127,24 @@
 #	define	FALSE		0
 #endif
 
+#ifndef HAVE_INT16
+#	define HAVE_INT16
+#	if defined(SIZEOF_INT) && (SIZEOF_INT == 2)
+		typedef	 int	int16;
+#	else /* Assume sizeof(short) == 2 */
+		typedef	 short	int16;
+#	endif /* SIZEOF_INT */
+#endif /* HAVE_INT16 */
+
+#ifndef HAVE_INT32
+#	define HAVE_INT32
+#	if defined(SIZEOF_LONG) && (SIZEOF_LONG == 8)
+		typedef  int	int32;
+#	else /* Assume sizeof(long) == 4 */
+		typedef  long	int32;
+#	endif /* SIZEOF_LONG */
+#endif /* HAVE_INT32 */
+
 #ifndef DBL_MAX
 #	define	DBL_MAX		((double) 1.0e37)
 #endif

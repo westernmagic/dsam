@@ -88,7 +88,7 @@ if [ "$echo_exec_prefix" = "yes" ]; then
 	echo $exec_prefix
 fi
 if test "$echo_cflags" = "yes"; then
-	cflags="@DEFS@ @DSAM_UNICODE@ -I@includedir@/@PACKAGE@"
+	cflags="@DEFS@ @DSAM_UNICODE@ -I@includedir@/@PACKAGE@ @SNDFILE_CFLAGS@"
 	if [ "$use_debug" = "yes" ]; then
 		cflags="$cflags -ggdb3 -DDMALLOC"
 	fi
@@ -107,7 +107,7 @@ if [ "$echo_rflags" = "yes" ]; then
 	echo $rflags
 fi
 if [ "$echo_libs" = "yes" ]; then
-	libs="-L@libdir@  @DSAMEXTLIB@ -l@PACKAGE@ @PORTAUDIO_LDFLAGS@"
+	libs="-L@libdir@  @DSAMEXTLIB@ -l@PACKAGE@ @PORTAUDIO_LDFLAGS@ @SNDFILE_LIBS@"
 	if test "$use_debug" = "yes"; then
 		libs="$libs -ldmalloc"
 		if test "$use_gui" = "yes"; then

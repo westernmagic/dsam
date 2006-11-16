@@ -22,11 +22,12 @@
 
 /*************************** Microsoft Wave definitions format ****************/
 
-#define WAVE_RIFF		0x46464952		/* "FFIR" (RIFF) */
-#define WAVE_WAVE		0x45564157		/* "EVAW" (WAVE) */
-#define WAVE_FMT		0x20746D66		/* " tmf" (fmt ) */
-#define WAVE_DATA		0x61746164		/* "atad" (data) */
-#define WAVE_PCM_CODE	1
+#define WAVE_RIFF				0x46464952		/* "FFIR" (RIFF) */
+#define WAVE_WAVE				0x45564157		/* "EVAW" (WAVE) */
+#define WAVE_FMT				0x20746D66		/* " tmf" (fmt ) */
+#define WAVE_DATA				0x61746164		/* "atad" (data) */
+#define WAVE_FORMAT_PCM			0x001			/* Microsoft PCM format */
+#define WAVE_FORMAT_IEEE_FLOAT	0x003			/* Micrososft 32 bit float format */
 #define WAVE_MONO		1
 #define WAVE_STEREO		2
 #define WAVE_HEADER_SIZE	44

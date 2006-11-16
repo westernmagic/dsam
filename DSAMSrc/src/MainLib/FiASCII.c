@@ -24,8 +24,6 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"

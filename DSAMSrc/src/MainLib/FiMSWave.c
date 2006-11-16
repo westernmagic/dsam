@@ -104,8 +104,34 @@ ReadHeader_Wave(FILE *fp, WaveHeaderPtr p)
 
 }
 
-/**************************** InitialFileRead *********************************/
 
+/**************************** SetMSFormat ***********************************/
+
+/*
+ * This routine checks the Microsoft format to ensure that it is support.
+ */
+
+BOOLN
+SetMSFormat_Wave(WaveHeaderPtr p)
+{
+	static const WChar *funcName = wxT("SetMSFormat_Wave");
+
+	switch (p->format) {
+	case WAVE_FORMAT_PCM:
+		return(TRUE);
+	case WAVE_FORMAT_IEEE_FLOAT:
+		dataFilePtr->ReadSample = (p->bitsPerSample == 8)? dataFilePtr->ReadIEEEFloat:
+		  dataFilePtr->ReadIEEEDouble;
+		return(TRUE);
+	default:
+		NotifyError(wxT("%s: Unspported Microsoft WAVE sound format (%d)."),
+		  funcName, p->format);
+	}
+	return(FALSE);
+
+}
+
+/**************************** InitialFileRead *********************************/
 /*
  * This function returns a file pointer from the initial reading of a MS Wave
  * file.
@@ -166,6 +192,7 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 	ChanLen	i, length;
 	FILE	*fp;
 	WaveHeader	pars;
+	DataFilePtr	p = dataFilePtr;
 
 	if ((fp = InitialFileRead_Wave(fileName)) == NULL) {
 		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
@@ -181,11 +208,15 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 			CloseFile(fp);
 			return(FALSE);
 		}
-		dataFilePtr->numChannels = pars.numChannels;
-		dataFilePtr->defaultSampleRate = pars.sampleRate;
-		dataFilePtr->wordSize = pars.bitsPerSample / 8;
-		dataFilePtr->numSamples = GetNumSamples_Wave(&pars);
-		if (!InitProcessVariables_DataFile(data, dataFilePtr->numSamples,
+		if (!SetMSFormat_Wave(&pars)) {
+			NotifyError(wxT("%s: Could not set the format for the sound data."), funcName);
+			return(FALSE);
+		}
+		p->numChannels = pars.numChannels;
+		p->defaultSampleRate = pars.sampleRate;
+		p->wordSize = pars.bitsPerSample / 8;
+		p->numSamples = GetNumSamples_Wave(&pars);
+		if (!InitProcessVariables_DataFile(data, p->numSamples,
 		  pars.sampleRate)) {
 			NotifyError(wxT("%s: Could not initialise process variables."),
 			  funcName);
@@ -194,8 +225,8 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 	}
 	if ((length = SetIOSectionLength_DataFile(data)) <= 0)
 		return(FALSE);
-	if (!InitOutSignal_EarObject(data, (uShort) dataFilePtr->numChannels,
-	  length, 1.0 / dataFilePtr->defaultSampleRate)) {
+	if (!InitOutSignal_EarObject(data, (uShort) p->numChannels,
+	  length, 1.0 / p->defaultSampleRate)) {
 		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
@@ -203,16 +234,16 @@ ReadFile_Wave(WChar *fileName, EarObjectPtr data)
 		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
 	if (fp != stdin)
 		SetPosition_UPortableIO(fp, pars.soundPosition + (int32)
-		  (data->timeIndex + dataFilePtr->timeOffsetCount) * dataFilePtr->
-		  numChannels * dataFilePtr->wordSize, SEEK_SET);
+		  (data->timeIndex + p->timeOffsetCount) * p->
+		  numChannels * p->wordSize, SEEK_SET);
 	else if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < dataFilePtr->timeOffsetCount * dataFilePtr->numChannels;
+		for (i = 0; i < p->timeOffsetCount * p->numChannels;
 		  i++)
-			ReadSample_DataFile(fp);
+			(p->ReadSample)(fp);
 	}
 	for (i = 0; i < length; i++)
-		for (j = 0; j < dataFilePtr->numChannels; j++)
-			_OutSig_EarObject(data)->channel[j][i] = ReadSample_DataFile(fp);
+		for (j = 0; j < p->numChannels; j++)
+			_OutSig_EarObject(data)->channel[j][i] = (p->ReadSample)(fp);
 	CloseFile(fp);
 	return(TRUE);
 
@@ -274,7 +305,7 @@ WriteHeader_Wave(FILE *fp, EarObjectPtr data, int32 offset)
 
 	dataFilePtr->Write32Bits(fp, WAVE_FMT);	/* Sub chunk type */
 	dataFilePtr->Write32Bits(fp, 16);			/* Sub chunk Size */
-	dataFilePtr->Write16Bits(fp, WAVE_PCM_CODE); /* No idea what this is for. */
+	dataFilePtr->Write16Bits(fp, WAVE_FORMAT_PCM); /* No idea what this is for. */
 	dataFilePtr->Write16Bits(fp, _OutSig_EarObject(data)->numChannels);
 	dataFilePtr->Write32Bits(fp,(int32) (1.0 / _OutSig_EarObject(data)->dt + 0.5));
 											/*Sample rate*/

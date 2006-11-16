@@ -82,8 +82,6 @@
 #include "UtSpikeList.h"
 #include "UtStddise.h"
 #include "UtStrobe.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtString.h"
 #include "UtSwapLR.h"
 #include "UtParArray.h"

@@ -53,24 +53,18 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <float.h>
-#include <limits.h>
-
+#include <sndfile.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtString.h"
 #include "FiParFile.h"
 #include "FiDataFile.h"
-#include "FiRaw.h"
-#include "FiAIFF.h"
 #include "FiASCII.h"
-#include "FiMSWave.h"
+#include "FiSndFile.h"
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -99,9 +93,8 @@ InitEndianModeList_DataFile(void)
 
 			{ wxT("DEFAULT"),			DATA_FILE_DEFAULT_ENDIAN },
 			{ wxT("LITTLE"),			DATA_FILE_LITTLE_ENDIAN },
-			{ wxT("LITTLE_UNSIGNED"),	DATA_FILE_LITTLE_ENDIAN_UNSIGNED },
 			{ wxT("BIG"),				DATA_FILE_BIG_ENDIAN },
-			{ wxT("BIG_UNSIGNED"),		DATA_FILE_BIG_ENDIAN_UNSIGNED },
+			{ wxT("CPU"),				DATA_FILE_CPU_ENDIAN },
 			{ wxT(""),					DATA_FILE_ENDIAN_NULL }
 		};
 	dataFilePtr->endianModeList = modeList;
@@ -124,17 +117,8 @@ GetDuration_DataFile(void)
 	double	duration;
 
 	switch (Format_DataFile(GetSuffix_Utility_String(dataFilePtr->name))) {
-	case	AIFF_DATA_FILE:
-		duration = GetDuration_AIFF(dataFilePtr->name);
-		break;
 	case	ASCII_DATA_FILE:
 		duration = GetDuration_ASCII(dataFilePtr->name);
-		break;
-	case	WAVE_DATA_FILE:
-		duration = GetDuration_Wave(dataFilePtr->name);
-		break;
-	case	RAW_DATA_FILE:
-		duration = GetDuration_Raw(dataFilePtr->name);
 		break;
 	default:
 		duration = -1.0;
@@ -143,6 +127,24 @@ GetDuration_DataFile(void)
 		NotifyError(wxT("%s: Could not calculate the total duration of the ")
 		  wxT("signal for '%s'"), funcName, dataFilePtr->name);
 	return(duration);
+
+}
+
+/********************************* ResetSFInfo ********************************/
+
+/*
+ * Reset the SFInfo structure.
+ */
+
+void
+ResetSFInfo_DataFile(SF_INFO *p)
+{
+	p->frames = 0;
+	p->samplerate = 0;
+	p->channels = 0;
+	p->format = 0;
+	p->sections = 0;
+	p->seekable = 0;	
 
 }
 
@@ -187,13 +189,6 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->timeOffset = 0.0;
 	dataFilePtr->gain = 0.0;
 	dataFilePtr->normalisation = -1.0;
-	dataFilePtr->Write8Bits = Write8Bits;
-	dataFilePtr->Write16Bits = Write16BitsHighLow;
-	dataFilePtr->Write32Bits = Write32BitsHighLow;
-	dataFilePtr->WriteIEEEExtended = WriteIEEEExtendedHighLow;
-	dataFilePtr->Read16Bits = Read16BitsHighLow;
-	dataFilePtr->Read32Bits = Read32BitsHighLow;
-	dataFilePtr->ReadIEEEExtended = ReadIEEEExtendedHighLow;
 
 	dataFilePtr->GetDuration = GetDuration_DataFile;
 	InitEndianModeList_DataFile();
@@ -202,14 +197,14 @@ Init_DataFile(ParameterSpecifier parSpec)
 		Free_DataFile();
 		return(FALSE);
 	}
-	dataFilePtr->normalise = 0.0;
-	dataFilePtr->normOffset = 0.0;
 	dataFilePtr->outputTimeOffset = 0.0;
 	dataFilePtr->timeOffsetIndex = 0;
 	dataFilePtr->timeOffsetCount = 0;
 	dataFilePtr->maxSamples = 0;
 	dataFilePtr->type = NULL_DATA_FILE;
-	dataFilePtr->uIOPtr = NULL;
+	ResetSFInfo_DataFile(&dataFilePtr->sFInfo);
+	dataFilePtr->sndFile = NULL;
+	dataFilePtr->buffer = NULL;
 	return(TRUE);
 
 }
@@ -230,6 +225,8 @@ Free_DataFile(void)
 {
 	if (dataFilePtr == NULL)
 		return(TRUE);
+	Free_SndFile();
+	FreeProcessVariables_DataFile();
 	if (dataFilePtr->parList)
 		FreeList_UniParMgr(&dataFilePtr->parList);
 
@@ -350,8 +347,8 @@ SetWordSize_DataFile(int wordSize)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if ((wordSize != 1) && (wordSize != 2) && (wordSize != 4)) {
-		NotifyError(wxT("%s: Illegal value - must be 1, 2 or 4 (%d)."),
+	if ((wordSize < 1) || (wordSize > 4)) {
+		NotifyError(wxT("%s: Illegal value - must be an integer 1 - 4 (%d)."),
 		  funcName, wordSize);
 		return(FALSE);
 	}
@@ -370,14 +367,6 @@ SetWordSize_DataFile(int wordSize)
 BOOLN
 SetNormalisation_DataFile(double normalisation)
 {
-	static const WChar *funcName = wxT("SetNormalisation_DataFile");
-
-	if (dataFilePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	dataFilePtr->normalisation = normalisation;
-	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 	
 }
@@ -407,67 +396,6 @@ SetNumChannels_DataFile(int numChannels)
 	return(TRUE);
 }
 
-
-
-/**************************** GetMachineByteOrder *****************************/
-
-/*
- * Sets the byte order according to the machine.
- */
-
-DataFileEndianModeSpecifier
-GetMachineByteOrder_DataFile(void)
-{
-	short int	word = 0x0001;
-	WChar		*byte = (WChar *) &word;
-
-	return((byte[0])? DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN);
-
-}
-
-/**************************** SetRWFormat *************************************/
-
-/*
- * Sets the reading and writing routines of the 'dataFile' structure.
- * It also sets the DataFile structure's endian field, in case the default
- * endian was set and the calling routine has changed it.
- */
-
-void
-SetRWFormat_DataFile(int dataFormat)
-{
-	static const WChar *funcName = wxT("SetRWFormat_DataFile");
-
-	if (dataFilePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return;
-	}
-	if (dataFormat == DATA_FILE_DEFAULT_ENDIAN)
-		dataFormat = GetMachineByteOrder_DataFile();
-	switch (dataFormat) {
-	case DATA_FILE_LITTLE_ENDIAN:
-	case DATA_FILE_LITTLE_ENDIAN_UNSIGNED:
-		dataFilePtr->Write8Bits = Write8Bits;
-		dataFilePtr->Write16Bits = Write16BitsLowHigh;
-		dataFilePtr->Write32Bits = Write32BitsLowHigh;
-		dataFilePtr->WriteIEEEExtended = WriteIEEEExtendedLowHigh;
-		dataFilePtr->Read16Bits = Read16BitsLowHigh;
-		dataFilePtr->Read32Bits = Read32BitsLowHigh;
-		dataFilePtr->ReadIEEEExtended = ReadIEEEExtendedLowHigh;
-		break;
-	default:
-		dataFilePtr->Write8Bits = Write8Bits;
-		dataFilePtr->Write16Bits = Write16BitsHighLow;
-		dataFilePtr->Write32Bits = Write32BitsHighLow;
-		dataFilePtr->WriteIEEEExtended = WriteIEEEExtendedHighLow;
-		dataFilePtr->Read16Bits = Read16BitsHighLow;
-		dataFilePtr->Read32Bits = Read32BitsHighLow;
-		dataFilePtr->ReadIEEEExtended = ReadIEEEExtendedHighLow;
-		break;
-	} /* Switch */
-
-}
-
 /**************************** SetEndian ***************************************/
 
 /*
@@ -495,39 +423,44 @@ SetEndian_DataFile(WChar *endian)
 		return(FALSE);
 	}
 	dataFilePtr->endian = specifier;
-	SetRWFormat_DataFile(specifier);
 	return(TRUE);
+
 }
 
-/**************************** ReadFileIdentifier ******************************/
+/**************************** SoundFormatList *********************************/
 
 /*
- * This routine attempts to read the specified identifier in one format then
- * changes to the other format if it fails.
- * It returns zero if it fails.
+ * File format specifier list.
+  * This routine makes no checks on limits.
  */
 
-int32
-ReadFileIdentifier_DataFile(FILE *fp, int32 target, WChar *filetype)
+NameSpecifier *
+SoundFormatList_DataFile(int index)
 {
-	static const WChar *funcName = wxT("ReadFileIdentifier_DataFile");
-	int32	identifier;
+	static NameSpecifier soundFormatList[] = {
 
-	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
-	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
-		return(identifier);
-	dataFilePtr->endian = (dataFilePtr->endian == DATA_FILE_BIG_ENDIAN)?
-	  DATA_FILE_LITTLE_ENDIAN: DATA_FILE_BIG_ENDIAN;
-	SetRWFormat_DataFile(dataFilePtr->endian);
-	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
-	if ((identifier = dataFilePtr->Read32Bits(fp)) == target)
-		return(identifier);
-	NotifyError(wxT("%s: Could not find %s identifier."), funcName, filetype);
-	return(0);
+		{wxT("AIF"),	SF_FORMAT_AIFF},
+		{wxT("AIFF"),	SF_FORMAT_AIFF},
+		{wxT("AU"),		SF_FORMAT_AU},
+		{wxT("AVR"),	SF_FORMAT_AVR},
+		{wxT("DAT"),	ASCII_DATA_FILE},
+		{wxT("FLAC"),	SF_FORMAT_FLAC},
+		{wxT("IRCAM"),	SF_FORMAT_IRCAM},
+		{wxT("MAT"),	SF_FORMAT_MAT5},
+		{wxT("RAW"),	SF_FORMAT_RAW},
+		{wxT("SD2"),	SF_FORMAT_SD2},
+		{wxT("SDS"),	SF_FORMAT_SDS},
+		{wxT("SND"),	SF_FORMAT_AU},
+		{wxT("WAV"),	SF_FORMAT_WAV},
+		{wxT("VOC"),	SF_FORMAT_VOC},
+		{wxT("VOX"),	SF_FORMAT_RAW},
+		{wxT(""),		NULL_DATA_FILE}
 
+	};
+	return(&soundFormatList[index]);
 }
-	
-/**************************** Format_DataFile *********************************/
+
+/**************************** Format ******************************************/
 
 /*
  * This routine returns the pointer to a data file format.
@@ -537,42 +470,10 @@ ReadFileIdentifier_DataFile(FILE *fp, int32 target, WChar *filetype)
 FileFormatSpecifier
 Format_DataFile(WChar *suffix)
 {
-	static NameSpecifier soundFormatList[] = {
 
-		{wxT("AIF"),	AIFF_DATA_FILE},
-		{wxT("AIFF"),	AIFF_DATA_FILE},
-		{wxT("DAT"),	ASCII_DATA_FILE},
-		{wxT("RAW"),	RAW_DATA_FILE},
-		{wxT("WAV"),	WAVE_DATA_FILE},
-		{wxT("WAVE"),	WAVE_DATA_FILE},
-		{wxT(""),		NULL_DATA_FILE}
+	return(dataFilePtr->type = Identify_NameSpecifier(suffix,
+	  SoundFormatList_DataFile(0)));
 
-	};
-
-	return(dataFilePtr->type = Identify_NameSpecifier(suffix, soundFormatList));
-
-}
-
-/**************************** FileLength **************************************/
-
-/*
- * This function returns with the length of a file.
- * It assumes that the file has alread been opened.
- * It will not work with memory files.
- */
-
-ChanLen
-FileLength_DataFile(FILE *fp)
-{
-	ChanLen	pos, end;
-
-	uPortableIOPtr = dataFilePtr->uIOPtr;
-	pos = (ChanLen) GetPosition_UPortableIO(fp);
-	SetPosition_UPortableIO(fp, 0L, SEEK_END);
-	end = (ChanLen) GetPosition_UPortableIO(fp);
-	SetPosition_UPortableIO(fp, (int32) pos, 0);
-	return(end);
-	
 }
 
 /**************************** SetIOSectionLength ******************************/
@@ -621,19 +522,19 @@ OpenFile_DataFile(WChar *fileName, char *mode)
 {
 	static const WChar *funcName = wxT("OpenFile_DataFile");
 	WChar	*parFilePath;
-	FILE	*fp, *dummy = stdout;
+	FILE	*fp /*, *dummy = stdout*/;
 
-	uPortableIOPtr = dataFilePtr->uIOPtr;
+	/*uPortableIOPtr = dataFilePtr->uIOPtr;*/
 	switch (*fileName) {
 	case STDIN_STDOUT_FILE_DIRN:
 		return((mode[0] == 'r')? stdin: stdout);
 	case MEMORY_FILE_DIRN: /* Memory pointer */
-		if (uPortableIOPtr == NULL)
+/*		if (uPortableIOPtr == NULL)
 			return((FILE *) NULL);
 		uPortableIOPtr->memPtr = uPortableIOPtr->memStart;
 		return(dummy);
-	default:
-		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);
+*/	default:
+/*		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);*/
 		parFilePath = GetParsFileFPath_Common(fileName);
 		if ((fp = DSAM_fopen(parFilePath, mode)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open '%s' ('%s')."), funcName,
@@ -674,90 +575,10 @@ NumberOfColumns_DataFile(FILE *fp)
 		} else
 			number = FALSE;
 	}
-	SetPosition_UPortableIO(fp, 0L, SEEK_SET);
+	/*SetPosition_UPortableIO(fp, 0L, SEEK_SET);*/
 	return(numcols);
 	
 } /* NumberOfColumns_DataFile */
-
-/**************************** CalculateNormalisation **************************/
-
-/*
- * This routine calculates the normalisation factor for a signal.
- * It expects the signal to be correctly initialised.
- * It returns zero if the maximum value is 0.0.
- * It returns the normalisation argument value, if it is greater than zero in
- * non-auto mode.
- */
-
-double
-CalculateNormalisation_DataFile(SignalDataPtr signal)
-{
-	int		chan;
-	double 	maxValue;
-	ChanLen	i;
-	ChanData	*dataPtr;
-
-	if (dataFilePtr->normalisation > DBL_EPSILON)
-		maxValue = dataFilePtr->normalisation;
-	else
-		for (chan = 0, maxValue = -DBL_MAX; chan < signal->numChannels;
-		  chan++) {
-			dataPtr = signal->channel[chan];
-			for (i = 0; i < signal->length; i++, dataPtr++)
-				if (fabs(*dataPtr) > maxValue)
-					maxValue = fabs(*dataPtr);
-		}
-	if (maxValue < DBL_EPSILON)
-		return(1.0);
-	dataFilePtr->normOffset = ((dataFilePtr->endian !=
-	  DATA_FILE_LITTLE_ENDIAN_UNSIGNED) && (dataFilePtr->endian !=
-	  DATA_FILE_BIG_ENDIAN_UNSIGNED))? 0.0: maxValue;
-	return(DATAFILE_NORMALISE32(dataFilePtr->wordSize, maxValue));
-
-}
-
-/**************************** WriteSignal *************************************/
-
-/*
- * This function writes out the channel data, dependent upon the
- * wordSize setting.
- * It assumes that the signal has been initialised.
- * It also assumes that the dataFilePtr->normalise field has been set.
- */
-
-BOOLN
-WriteSignal_DataFile(FILE *fp, SignalDataPtr signal)
-{
-	static const WChar *funcName = wxT("WriteSignal_DataFile");
-	int		j;
-	ChanLen	i;
-	
-	switch (dataFilePtr->wordSize) {
-	case	1:
-		for (i = 0; i < signal->length; i++)
-			for (j = 0; j < signal->numChannels; j++)
-				dataFilePtr->Write8Bits(fp, (int) ((signal->channel[j][i] + 
-				  dataFilePtr->normOffset) * dataFilePtr->normalise + 0.5));
-		break;
-	case	2:
-		for (i = 0; i < signal->length; i++)
-			for (j = 0; j < signal->numChannels; j++)
-				dataFilePtr->Write16Bits(fp, (int16) ((signal->channel[j][i] + 
-				  dataFilePtr->normOffset) * dataFilePtr->normalise + 0.5));
-		break;
-	case	4:
-		for (i = 0; i < signal->length; i++)
-			for (j = 0; j < signal->numChannels; j++)
-				dataFilePtr->Write32Bits(fp, (int32) ((signal->channel[j][i] + 
-				  dataFilePtr->normOffset) *  dataFilePtr->normalise + 0.5));
-		break;
-	default:
-		NotifyError(wxT("%s: Unsupported sample size."), funcName);
-		return(FALSE);
-	} /* Switch */
-	return(TRUE);
-
-}
 
 /********************************* SetDefaultSampleRate ***********************/
 
@@ -873,6 +694,7 @@ SetFileName_DataFile(WChar *fileName)
 	}
 	DSAM_strncpy(dataFilePtr->name, fileName, MAX_FILE_PATH);
 	Format_DataFile(GetSuffix_Utility_String(fileName));
+	Free_SndFile();
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
@@ -905,14 +727,6 @@ CheckPars_DataFile(void)
 		NotifyError(wxT("%s: File name not set."), funcName);
 		ok = FALSE;
 	}
-	if ((dataFilePtr->type == RAW_DATA_FILE) || (dataFilePtr->type ==
-	  ASCII_DATA_FILE)) {
-		if (dataFilePtr->numChannels < 1) {
-			NotifyError(wxT("%s: Number of channels parameter incorrectly ")
-			  wxT("set."), funcName);
-			ok = FALSE;
-		}
-	}
 	return(ok);
 	
 }	
@@ -934,8 +748,7 @@ CheckParsRead_DataFile(void)
 	BOOLN	ok;
 	
 	ok = TRUE;
-	if ((dataFilePtr->type == RAW_DATA_FILE) || (dataFilePtr->type ==
-	  ASCII_DATA_FILE)) {
+	if (dataFilePtr->type == ASCII_DATA_FILE) {
 		if ((dataFilePtr->name[0] == STDIN_STDOUT_FILE_DIRN) &&
 		  (dataFilePtr->duration <= 0.0)) {
 			NotifyError(wxT("%s: Duration must be set, i.e.greater than zero")
@@ -955,9 +768,9 @@ CheckParsRead_DataFile(void)
  */
  
 BOOLN
-SetPars_DataFile(WChar *theFileName, int theWordSize, WChar *theEndian,
-  int theNumChannels, double theDefaultSampleRate, double theDuration,
-  double theTimeOffset, double theGain, double theNormalisation)
+SetPars_DataFile(WChar *theFileName, int theWordSize, int theNumChannels,
+  double theDefaultSampleRate, double theDuration, double theTimeOffset,
+  double theGain)
 {
 	static const WChar *funcName = wxT("SetPars_DataFile");
 	BOOLN	ok;
@@ -966,8 +779,6 @@ SetPars_DataFile(WChar *theFileName, int theWordSize, WChar *theEndian,
 	if (!SetFileName_DataFile(theFileName))
 		ok = FALSE;
 	if (!SetWordSize_DataFile(theWordSize))
-		ok = FALSE;
-	if (!SetEndian_DataFile(theEndian))
 		ok = FALSE;
 	if (!SetNumChannels_DataFile(theNumChannels))
 		ok = FALSE;
@@ -978,8 +789,6 @@ SetPars_DataFile(WChar *theFileName, int theWordSize, WChar *theEndian,
 	if (!SetTimeOffset_DataFile(theTimeOffset))
 		ok = FALSE;
 	if (!SetGain_DataFile(theGain))
-		ok = FALSE;
-	if (!SetNormalisation_DataFile(theNormalisation))
 		ok = FALSE;
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
@@ -1004,9 +813,6 @@ PrintPars_DataFile(void)
 	}
 	DPrint(wxT("DataFile Module Parameters:-\n"));
 	DPrint(wxT("\tFile name = %s\n"), dataFilePtr->name);
-	DPrint(wxT("\t%s endian format,\tDefault word size = %d\n"),
-	  dataFilePtr->endianModeList[dataFilePtr->endian].name,
-	  dataFilePtr->wordSize);
 	DPrint(wxT("\tNumber of channels = %d,"), dataFilePtr->numChannels);
 	DPrint(wxT("\tGain = %g dB\n"), dataFilePtr->gain);
 	DPrint(wxT("\tDefault sample rate = %g,\tDuration = "),
@@ -1016,11 +822,6 @@ PrintPars_DataFile(void)
 	else
 		DPrint(wxT("%g ms,\n"), MILLI(dataFilePtr->duration));
 	DPrint(wxT("\tTime offset = %g ms.\n"), MILLI(dataFilePtr->timeOffset));
-	DPrint(wxT("\tNormalisation const: "));
-	if (dataFilePtr->normalisation < DBL_EPSILON)
-		DPrint(wxT("automatic.\n"));
-	else
-		DPrint(wxT("%g\n"), dataFilePtr->normalisation);
 	return(TRUE);
 
 }
@@ -1029,6 +830,7 @@ PrintPars_DataFile(void)
 
 /*
  * This program reads a specified number of parameters from a file.
+ * The "endian" parameter is no longer used.
  * It returns FALSE if it fails in any way.
  */
  
@@ -1078,8 +880,8 @@ ReadPars_DataFile(WChar *parFileName)
 		  wxT("module parameter file '%s'."), funcName, parFilePath);
 		return(FALSE);
 	}
-	if (!SetPars_DataFile(fileName, wordSize, endian, numChannels,
-	  defaultSampleRate, duration, timeOffset, gain, normalisation)) {
+	if (!SetPars_DataFile(fileName, wordSize, numChannels, defaultSampleRate,
+	  duration, timeOffset, gain)) {
 		NotifyError(wxT("%s: Could not set parameters."), funcName);
 		return(FALSE);
 	}
@@ -1130,15 +932,16 @@ InitModule_DataFile(ModulePtr theModule)
 	}
 	dataFilePtr->inputMode = (DSAM_strcmp(theModule->name, wxT(
 	  "DATAFILE_IN")) == 0);
-	if (dataFilePtr->inputMode)
-		dataFilePtr->parList->pars[DATAFILE_NORMALISE].enabled = FALSE;
-	else {
+	if (!dataFilePtr->inputMode) {
 		dataFilePtr->parList->pars[DATAFILE_NUMCHANNELS].enabled = FALSE;
 		dataFilePtr->parList->pars[DATAFILE_DEFAULTSAMPLERATE].enabled = FALSE;
 		dataFilePtr->parList->pars[DATAFILE_DURATION].enabled = FALSE;
 		dataFilePtr->parList->pars[DATAFILE_TIMEOFFSET].enabled = FALSE;
 		dataFilePtr->parList->pars[DATAFILE_GAIN].enabled = FALSE;
 	}
+	/* Disabled parameters */
+	dataFilePtr->parList->pars[DATAFILE_NORMALISE].enabled = FALSE;
+
 	theModule->parsPtr = dataFilePtr;
 	theModule->CheckPars = CheckPars_DataFile;
 	theModule->Free = Free_DataFile;
@@ -1188,29 +991,37 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 				return(FALSE);
 			}
 		}
-		switch (dataFilePtr->wordSize) {
-		case 1:
-			dataFilePtr->normalise = (double) (0xff >> 1);
-			break;
-		case 2:
-			dataFilePtr->normalise = (double) (0xffff >> 1);
-			break;
-		case 4:
-			dataFilePtr->normalise = (double) (0xffffffff >> 1);
-			break;
-		default:
-			NotifyError(wxT("%s: Unsupported sample bit size = %d."), funcName,
-			  dataFilePtr->wordSize);
-			return(FALSE);
-		} /* switch */		
-		if (dataFilePtr->normalisation > DBL_EPSILON)
-		 	dataFilePtr->normalise /= dataFilePtr->normalisation;
 		dataFilePtr->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
 
 }
 
+/**************************** InitBuffer **************************************/
+
+/*
+ * This routine initialised the data buffer.  It is used for sound file
+ * processing.
+ */
+
+BOOLN
+InitBuffer_DataFile(const WChar *callingFunction)
+{
+	static const WChar *funcName = wxT("InitBuffer_DataFile");
+	DataFilePtr	p = dataFilePtr;
+
+	if (p->buffer)
+		return(TRUE);
+	if ((p->buffer = (ChanData *) calloc(p->numChannels *
+	  DATAFILE_BUFFER_FRAMES, sizeof(ChanData))) == NULL) {
+		NotifyError(wxT("%s (%s): Out of memory for dataBuffer."),
+		  callingFunction, funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}
+	  
 /**************************** FreeProcessVariables ****************************/
 
 /*
@@ -1221,42 +1032,9 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 void
 FreeProcessVariables_DataFile(void)
 {
+	if (dataFilePtr->buffer)
+		free(dataFilePtr->buffer);
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
-
-}
-
-/**************************** ReadSample **************************************/
-
-/*
- * This function reads a sample from a specified file pointer.
- * It assumes that the file pointer has been correctly initialised, and that
- * no other checking, such as end of file, is required.
- * This routine is required because the Windows platform disliked the use of the
- * ReadSample pointer.
- */
-
-ChanData
-ReadSample_DataFile(FILE *fp)
-{
-	static const WChar *funcName = wxT("ReadSample_DataFile");
-	ChanData	sample;
-
-	switch (dataFilePtr->wordSize) {
-	case 1:
-		sample = (ChanData) Read8Bits(fp);
-		break;
-	case 2:
-		sample = (ChanData) dataFilePtr->Read16Bits(fp);
-		break;
-	case 4:
-		sample = (ChanData) dataFilePtr->Read32Bits(fp);
-		break;
-	default:
-		NotifyError(wxT("%s: Unsupported sample bit size = %d."), funcName,
-		  dataFilePtr->wordSize);
-		return(0.0);
-	} /* switch */		
-	return(sample / dataFilePtr->normalise);
 
 }
 
@@ -1314,20 +1092,12 @@ ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	Format_DataFile(GetSuffix_Utility_String(fileName));
-	uPortableIOPtr = dataFilePtr->uIOPtr;
 	switch (dataFilePtr->type) {
-	case	AIFF_DATA_FILE:
-		ok = ReadFile_AIFF(fileName, data);
-		break;
 	case	ASCII_DATA_FILE:
 		ok = ReadFile_ASCII(fileName, data);
 		break;
-	case	WAVE_DATA_FILE:
-		ok = ReadFile_Wave(fileName, data);
-		break;
-	case	RAW_DATA_FILE:
 	default	:
-		ok = ReadFile_Raw(fileName, data);
+		ok = ReadFile_SndFile(fileName, data);
 		break;
 	} /* switch */
 	outSignal = _OutSig_EarObject(data);
@@ -1401,20 +1171,12 @@ WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 		  funcName);
 		return(FALSE);
 	}
-	uPortableIOPtr = dataFilePtr->uIOPtr;
 	switch (Format_DataFile(GetSuffix_Utility_String(fileName))) {
-	case	AIFF_DATA_FILE:
-		ok = WriteFile_AIFF(fileName, data);
-		break;
 	case	ASCII_DATA_FILE:
 		ok = WriteFile_ASCII(fileName, data);
 		break;
-	case	WAVE_DATA_FILE:
-		ok = WriteFile_Wave(fileName, data);
-		break;
-	case	RAW_DATA_FILE:
 	default	:
-		ok = WriteFile_Raw(fileName, data);
+		ok = WriteFile_SndFile(fileName, data);
 		break;
 	}
 	if (!ok)

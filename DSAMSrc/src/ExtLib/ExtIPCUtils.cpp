@@ -117,7 +117,7 @@ IPCUtils::InitOutProcess(void)
 		return(false);
 	}
 	SetPar_ModuleMgr(outProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
-	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = inUIOPtr;
+// tmp	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	return(true);
 
 }
@@ -139,7 +139,7 @@ IPCUtils::InitInProcess(void)
 		return(false);
 	}
 	SetPar_ModuleMgr(inProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
-	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
+// tmp	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	return(true);
 
 }
@@ -252,12 +252,12 @@ IPCUtils::RunOutProcess(void)
 	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
 	BOOLN	oldSegmentedMode = GetDSAMPtr_Common()->segmentedMode;
 
-	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
-	  _OutSig_EarObject(outProcessSupplier), 0L))) {
-		NotifyError(wxT("%s: Could not prepare output data buffer."), funcName);
-		return(false);
-	}
-	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = outUIOPtr;
+// tmp	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
+// tmp	  _OutSig_EarObject(outProcessSupplier), 0L))) {
+// tmp		NotifyError(wxT("%s: Could not prepare output data buffer."), funcName);
+// tmp		return(false);
+// tmp	}
+// tmp	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = outUIOPtr;
 	GetDSAMPtr_Common()->segmentedMode = FALSE;
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
 	if (!RunProcess_ModuleMgr(outProcess)) {
@@ -307,7 +307,7 @@ IPCUtils::RunInProcess(void)
 		return(false);
 	ResetProcess_EarObject(inProcess);
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
-	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
+// tmp	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	if (!RunProcess_ModuleMgr(inProcess)) {
 		NotifyError(wxT("%s: Could not run input process."), funcName);
 		ok = false;

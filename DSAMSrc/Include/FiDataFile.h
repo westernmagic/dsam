@@ -47,6 +47,8 @@
 #ifndef	_FIDATAFILE_H
 #define _FIDATAFILE_H	1
 
+#include <sndfile.h>
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -57,27 +59,18 @@
 #define DATAFILE_MOD_NAME_PREFIX	wxT("DataFile_")
 #define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("IN")
 #define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("OUT")
+#define DATAFILE_BUFFER_FRAMES	1024	
+#define DATAFILE_NEGLIGIBLE_SR_DIFF		1.0e-10
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
 #define	MEMORY_FILE_DIRN		'+'		/*           "                 */
 #define	MAXLINE_LARGE			256		/* For very "wide" ASCII files */
 #define	FOR_ASCII_READING		"r"
 #define	FOR_ASCII_APPENDING		"a"
 #define	FOR_ASCII_WRITING		"w"
-#define	FOR_BINARY_READING		"rb"
-#define	FOR_BINARY_WRITING		"wb"
-#define	FOR_BINARY_APPENDING	"ab"
-#define	FOR_BINARY_UPDATING		"r+b"
 
 /******************************************************************************/
 /*************************** Macro Definitions ********************************/
 /******************************************************************************/
-
-#define	BITS_TO_BYTES(BITS)		(((BITS) + 7) / 8)
-
-#define	DATAFILE_MAXWORDVAL(WORDSIZE)	(0xffffffffL >> (32 - (WORDSIZE) * 8))
-
-#define	DATAFILE_NORMALISE32(WORDSIZE, NORMALISE)	((DATAFILE_MAXWORDVAL( \
-		  (WORDSIZE)) >> 1) / (NORMALISE))
 
 /******************************************************************************/
 /*************************** Enum Specifiers **********************************/
@@ -99,11 +92,8 @@ typedef enum {
 
 typedef enum {
 
-	AIFF_DATA_FILE,
-	ASCII_DATA_FILE,
-	RAW_DATA_FILE,
-	WAVE_DATA_FILE,
-	NULL_DATA_FILE
+	ASCII_DATA_FILE	= 0,
+	NULL_DATA_FILE	= 0xFFFFFFFF
 
 }  FileFormatSpecifier;
 
@@ -111,9 +101,8 @@ typedef enum {
 
 	DATA_FILE_DEFAULT_ENDIAN,
 	DATA_FILE_LITTLE_ENDIAN,
-	DATA_FILE_LITTLE_ENDIAN_UNSIGNED,
 	DATA_FILE_BIG_ENDIAN,
-	DATA_FILE_BIG_ENDIAN_UNSIGNED,
+	DATA_FILE_CPU_ENDIAN,
 	DATA_FILE_ENDIAN_NULL
 
 } DataFileEndianModeSpecifier;
@@ -138,16 +127,6 @@ typedef struct {
 	double	gain;				/* gain for normalised input signals. */
 	double	normalisation;		/* AIFF, Raw, MS Wave support, <0.0 for auto. */
 	
-	/* Generic IO routines for reading big/little-endian data. */
-	
-	void	(* Write8Bits)(FILE *, int);
-	void	(* Write16Bits)(FILE *, int16);
-	void	(* Write32Bits)(FILE *, int32);
-	void	(* WriteIEEEExtended)(FILE *, double);
-	int16	(* Read16Bits)(FILE *);
-	int32	(* Read32Bits)(FILE *);
-	double	(* ReadIEEEExtended)(FILE *);
-
 	/* Call back routines. */
 	double (* GetDuration)(void);
 
@@ -155,15 +134,15 @@ typedef struct {
 	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;
 	BOOLN	inputMode;
-	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave support*/
-	double	normOffset;			/* Set for scaling: AIFF, Raw, MS Wave support*/
 	double	outputTimeOffset;
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
 	int32 	maxSamples;		/* This can be set to restrict the data size. */
 	int32	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;
-	UPortableIOPtr	uIOPtr;
+	SF_INFO	sFInfo;
+	SNDFILE	*sndFile;
+	ChanData	*buffer;
 
 } DataFile, *DataFilePtr;
 
@@ -202,6 +181,8 @@ void	FreeProcessVariables_DataFile(void);
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
 BOOLN	Init_DataFile(ParameterSpecifier parSpec);
+
+BOOLN	InitBuffer_DataFile(const WChar *callingFunction);
 
 BOOLN	InitEndianModeList_DataFile(void);
 
@@ -247,15 +228,16 @@ BOOLN	SetNormalisation_DataFile(double normalisation);
 BOOLN	SetParsPointer_DataFile(ModulePtr theModule);
 
 BOOLN	SetPars_DataFile(WChar *theFileName, int theWordSize,
-		  WChar *theEndian, int theNumChannels, double theDefaultSampleRate,
-		  double theDuration, double theTimeOffset, double theGain,
-		  double normalisation);
+		  int theNumChannels, double theDefaultSampleRate,
+		  double theDuration, double theTimeOffset, double theGain);
 
 void	SetRWFormat_DataFile(int endian);
 
 BOOLN	SetTimeOffset_DataFile(double timeOffset);
 
 BOOLN	SetUniParList_DataFile(void);
+
+NameSpecifier *	SoundFormatList_DataFile(int index);
 
 BOOLN	SetWordSize_DataFile(int wordSize);
 

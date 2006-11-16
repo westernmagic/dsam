@@ -10,8 +10,7 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
 				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h
   
-IO_Headers	= FiDataFile.h FiAIFF.h FiASCII.h FiMSWave.h FiRaw.h FiParFile.h \
-				IOAudioIn.h
+IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
 
 Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
 

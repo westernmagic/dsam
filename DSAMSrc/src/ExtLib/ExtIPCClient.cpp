@@ -412,7 +412,7 @@ IPCClient::SendInputProcess(void)
 		  wxT("conversion."), funcName);
 		return(false);
 	}
-	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;
+// tmp	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;
 	length = (wxUint32) uIOPtr->length;
 	SendCommand(IPC_COMMAND_PUT);
 	Write(&length, sizeof(length));

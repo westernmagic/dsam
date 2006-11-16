@@ -532,6 +532,17 @@ if test x$enable_portaudio = xyes; then
 fi
 
 dnl ----------------------------------------------------------------------------
+dnl libsndfile library
+dnl ----------------------------------------------------------------------------
+
+PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.2, ac_cv_sndfile=1, ac_cv_sndfile=0)
+AC_DEFINE_UNQUOTED([HAVE_SNDFILE],${ac_cv_sndfile},
+	[Set to 1 if you have libsndfile.])
+
+AC_SUBST(SNDFILE_CFLAGS)
+AC_SUBST(SNDFILE_LIBS)
+
+dnl ----------------------------------------------------------------------------
 dnl Parallel library option
 dnl ----------------------------------------------------------------------------
 
@@ -561,7 +572,7 @@ if test x$enable_unicode = xyes; then
 fi
 AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
 
-DSAM_DEFS="$DSAM_GRAPHICS $DSAM_MPI -fPIC"
+DSAM_DEFS="$DSAM_GRAPHICS $DSAM_MPI -fPIC $SNDFILE_CFLAGS"
 AC_SUBST(DSAM_GRAPHICS)
 AC_SUBST(DSAM_MPI)
 AC_SUBST(DSAM_UNICODE)

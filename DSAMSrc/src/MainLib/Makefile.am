@@ -23,8 +23,7 @@ An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnGeneral.c AnHistogram.c AnIntensity.c AnInterSIH.c \
 				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c
   
-IO_Sources	= FiDataFile.c FiAIFF.c FiASCII.c FiMSWave.c FiRaw.c FiParFile.c \
-				IOAudioIn.c
+IO_Sources	= FiDataFile.c FiASCII.c FiSndFile.c FiParFile.c IOAudioIn.c
 
 Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c
 
@@ -47,17 +46,17 @@ St_Sources	= StAMTone.c StBPTone.c StClick.c StFMTone.c StHarmonic.c \
 				StStepFun.c StWhiteNoise.c StEGatedTone.c
 
 Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
-				UtBinSignal.c UtCFList.c UtCmplxM.c \
-				UtCompress.c UtConvMonaural.c UtCreateBinaural.c UtDatum.c \
-				UtDebug.c UtDelay.c UtFilters.c UtIonChanList.c UtIterRipple.c \
+				UtBinSignal.c UtCFList.c UtCmplxM.c UtCompress.c \
+				UtConvMonaural.c UtCreateBinaural.c UtDatum.c UtDebug.c \
+				UtDelay.c UtFilters.c UtIonChanList.c UtIterRipple.c \
 				UtNameSpecs.c UtRamp.c UtRandom.c UtRedceChans.c UtReduceDt.c \
 				UtRefractory.c UtSample.c UtSelectChans.c UtShapePulse.c \
 				UtSSSymbols.c UtSimScript.c UtSpikeList.c UtStddise.c \
-				UtUIEEEFloat.c UtUPortableIO.c UtCreateJoined.c UtStrobe.c \
-				UtOptions.c UtString.c UtPause.c UtHalfWRectify.c UtDynaList.c \
-				UtAppInterface.c UtFFT.c UtParArray.c UtGCFilters.c \
-				UtFIRFilters.c UtRemez.c UtDynaBList.c UtLocalChans.c \
-				UtSwapLR.c UtPadSignal.c UtMathOp.c UtZhang.c UtTranspose.c
+				UtCreateJoined.c UtStrobe.c UtOptions.c UtString.c UtPause.c \
+				UtHalfWRectify.c UtDynaList.c UtAppInterface.c UtFFT.c \
+				UtParArray.c UtGCFilters.c UtFIRFilters.c UtRemez.c \
+				UtDynaBList.c UtLocalChans.c UtSwapLR.c UtPadSignal.c \
+				UtMathOp.c UtZhang.c UtTranspose.c UtUIEEEFloat.c UtUPortableIO.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectSignals.c
 
