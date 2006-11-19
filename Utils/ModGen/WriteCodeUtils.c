@@ -360,9 +360,9 @@ GetTypeFormatStr(SymbolPtr sym, BOOLN isPointer)
 	case BOOLSPECIFIER:
 	case NAMESPECIFIER:
 		if (isPointer)
-			return("char *");
+			return("WChar *");
 		else
-			return("char");
+			return("WChar");
 		break;
 	case DATUMPTR:
 		return("DatumPtr");

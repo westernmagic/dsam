@@ -130,6 +130,20 @@ PrintGlobalVariables(FILE *fp)
 
 }
 
+/****************************** PrintStaticFuncName ***************************/
+
+/*
+ * Prints the static declaration for the function name, to be use by error
+ * routines.
+ */
+
+void
+PrintStaticFuncNameDeclaration(FILE *fp, char *funcName)
+{
+	fprintf(fp, "\tstatic const WChar\t*funcName = wxT(\"%s\");\n", funcName);
+
+}
+
 /****************************** PrintNameSpecInitListRoutines *****************/
 
 /*
@@ -164,8 +178,8 @@ PrintNameSpecInitListRoutines(FILE *fp)
 				  qualifier, TRUE), UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "%s\n{\n", funcDeclaration);
 				fprintf(fp, "\tstatic NameSpecifier\tmodeList[] = {\n\n");
-				fprintf(fp, "\t\t\t{ \"\",\t%s },\n", nameSpecBase);
-				fprintf(fp, "\t\t\t{ \"\",\t%sNULL },\n", nameSpecBase);
+				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%s },\n", nameSpecBase);
+				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%sNULL },\n", nameSpecBase);
 				fprintf(fp, "\t\t};\n");
 				fprintf(fp, "\t%s->%sList = modeList;\n", ptrVar, strVariable);
 				fprintf(fp, "\treturn(TRUE);\n");
@@ -209,7 +223,7 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 		funcName = CreateFuncName(function, module, qualifier);
 		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 		fprintf(fp, "%s\n{\n", funcDeclaration);
-		fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+		PrintStaticFuncNameDeclaration(fp, funcName);
 
 		fprintf(fp, "\tint\t\ti;\n");
 		for (p = pStart; (p = GetType_IdentifierList(&type, identifierList,
@@ -222,8 +236,8 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 
 		fprintf(fp, "\tif (!Alloc%s(/* Def. no. elements */)) {\n",
 		  CreateFuncName(Capital(GetName(limitSym)), module, qualifier));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Could not allocate default arrays."
-		  "\", funcName);\n");
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not allocate default "
+		  "arrays.\"), funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	
@@ -270,7 +284,8 @@ PrintFreeRoutine(FILE *fp)
 	funcName = CreateFuncName(function, module, qualifier);
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\t/* static const char\t*funcName = \"%s\";  */\n", funcName);
+	fprintf(fp, "\t/* static const WChar\t*funcName = wxT(\"%s\"); */\n",
+	  funcName);
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif (%s == NULL)\n", ptrVar);
 	fprintf(fp, "\t\treturn(FALSE);\n");
@@ -343,20 +358,20 @@ PrintInitRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "ParameterSpecifier parSpec");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif (parSpec == GLOBAL) {\n");
 	fprintf(fp, "\t\tif (%s != NULL)\n", ptrVar);
 	fprintf(fp, "\t\t\t%s();\n", CreateFuncName("Free", module, qualifier));
 	fprintf(fp, "\t\tif ((%s = (%s) malloc(sizeof(%s))) == NULL) {\n",
 	  ptrVar, ptrType, structure);
-	fprintf(fp, "\t\t\tNotifyError(\"%%s: Out of memory for 'global' "
-	  "pointer\", funcName);\n");
+	fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s: Out of memory for 'global' "
+	  "pointer\"), funcName);\n");
 	fprintf(fp, "\t\t\treturn(FALSE);\n");
 	fprintf(fp, "\t\t}\n");
 	fprintf(fp, "\t} else { /* LOCAL */\n");
 	fprintf(fp, "\t\tif (%s == NULL) {\n", ptrVar);
-	fprintf(fp, "\t\t\tNotifyError(\"%%s:  'local' pointer not set.\", "
+	fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s:  'local' pointer not set.\"), "
 	  "funcName);\n");
 	fprintf(fp, "\t\t\treturn(FALSE);\n");
 	fprintf(fp, "\t\t}\n");
@@ -392,8 +407,8 @@ PrintInitRoutine(FILE *fp)
 				  qualifier));
 				Print(fp, "\t  ", ")) == NULL) {\n");
 				Print(fp, "", "");
-				fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise %s "
-				  "parArray structure\",\n\t\t  funcName);\n", GetName((*list)->
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not initialise %s "
+				  "parArray structure\"),\n\t\t  funcName);\n", GetName((*list)->
 				  sym));
 				fprintf(fp, "\t\t%s();\n", CreateFuncName("Free", module,
 				  qualifier));
@@ -412,8 +427,8 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_BW_MODE_NAME, "
 				  "CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {\n");
 				Print(fp, "", "");
-				fprintf(fp, "\t\tNotifyError(\"%%s: Could not set default "
-				  "CFList.\", funcName);\n");
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not set default "
+				  "CFList.\"), funcName);\n");
 				fprintf(fp, "\t\treturn(FALSE);\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == FILENAME)
@@ -457,10 +472,10 @@ PrintInitRoutine(FILE *fp)
 		  GetName(limitSym)));
 		fprintf(fp, "\tif (!%s()) {\n", CreateFuncName(defaultsFunction, module,
 		  qualifier));
-		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Could not set the default "
+		Print(fp, "\t\t  ", "\t\tNotifyError(wxT(\"%s: Could not set the default "
 		  "'");
 		Print(fp, "\t\t  ", GetName(limitSym));
-		Print(fp, "\t\t  ", "' arrays.\", funcName);\n");
+		Print(fp, "\t\t  ", "' arrays.\"), funcName);\n");
 		Print(fp, "", "");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
@@ -484,8 +499,8 @@ PrintInitRoutine(FILE *fp)
 	
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("SetUniParList", module,
 	  qualifier));
-	fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise parameter list.\""
-	  ", funcName);\n");
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not initialise parameter list.\""
+	  "), funcName);\n");
 	fprintf(fp, "\t\t%s();\n", CreateFuncName("Free", module, qualifier));
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
@@ -505,7 +520,7 @@ void
 PrintModuleInitCheck(FILE *fp)
 {
 	fprintf(fp, "\tif (%s == NULL) {\n", ptrVar);
-	fprintf(fp, "\t\tNotifyError(\"%%s: Module not initialised.\", funcName);"
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Module not initialised.\"), funcName);"
 	  "\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
@@ -539,23 +554,23 @@ PrintSetUniParListRoutine(FILE *fp)
 	baseModuleName = CreateBaseModuleName(module, qualifier, TRUE);
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char *funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\tUniParPtr\tpars;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif ((%s->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,\n"
 	  "\t  %s_NUM_PARS, NULL)) == NULL) {\n", ptrVar, baseModuleName);
-	fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise parList.\""
-	  ", funcName);\n");
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not initialise parList.\""
+	  "), funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tpars = %s->parList->pars;\n", ptrVar);
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++) {
-			fprintf(fp, "\tSetPar_UniParMgr(&pars[%s_%s], \"\",\n",
+			fprintf(fp, "\tSetPar_UniParMgr(&pars[%s_%s], wxT(\"\"),\n",
 			  baseModuleName, UpperCase(DT_TO_SAMPLING_INTERVAL(
 			  GetName((*list)->sym))));
-			fprintf(fp, "\t  \"\",\n");
+			fprintf(fp, "\t  wxT(\"\"),\n");
 			fprintf(fp, "\t  %s,\n", GetOutputUniParTypeFormatStr((*list),
 			  type));
 			fprintf(fp, "\t  &%s->%s, ", ptrVar, GetName((*list)->sym));
@@ -616,12 +631,12 @@ PrintGetUniParListPtrRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("UniParListPtr\n", funcName,
 	  "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 	PrintModuleInitCheck(fp);
 	fprintf(fp, "\tif (%s->parList == NULL) {\n", ptrVar);
-	fprintf(fp, "\t\tNotifyError(\"%%s: UniParList data structure has not been "
-	  "initialised. \"\n\t\t  \"NULL returned.\", funcName);"
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: UniParList data structure has not been "
+	  "initialised. \"\n\t\t  \"NULL returned.\"), funcName);"
 	  "\n");
 	fprintf(fp, "\t\treturn(NULL);\n");
 	fprintf(fp, "\t}\n");
@@ -659,7 +674,7 @@ PrintCheckParsRoutine(FILE *fp)
 	funcName = CreateFuncName(function, module, qualifier);
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\tBOOLN\tok;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "\tok = TRUE;\n");
@@ -672,36 +687,36 @@ PrintCheckParsRoutine(FILE *fp)
 			if ((*list)->inst == POINTER) {
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
 				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: %s array not set.\", "
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s array not set.\"), "
 				  "funcName);\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == CFLISTPTR) {
 				fprintf(fp, "\tif (!CheckPars_CFList(%s->%s)) {\n", ptrVar,
 				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: Centre frequency list "
-				  "parameters not correctly set.\",\n\t\t  funcName);\n");
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Centre frequency list "
+				  "parameters not correctly set.\"),\n\t\t  funcName);\n");
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == PARARRAY) {
 				fprintf(fp, "\tif (!CheckInit_ParArray(%s->%s, funcName)) {\n",
 				  ptrVar, GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: Variable %s "
-				  "parameter array not correctly set.\",\n\t\t  funcName);\n",
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Variable %s "
+				  "parameter array not correctly set.\"),\n\t\t  funcName);\n",
 				  GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type == DATUMPTR) {
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
 				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: %s not set.\", funcName);"
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s not set.\"), funcName);"
 				  "\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
 			} else if (type->sym->type != BOOLEAN_VAR) {
 				fprintf(fp, "\tif (!%s->%sFlag) {\n", ptrVar,
 				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: %s variable not set.\", "
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s variable not set.\"), "
 				  "funcName);\n", GetName((*list)->sym));
 				fprintf(fp, "\t\tok = FALSE;\n");
 				fprintf(fp, "\t}\n");
@@ -876,18 +891,18 @@ PrintPrintParsRoutine(FILE *fp)
 	funcName = CreateFuncName(function, module, qualifier);
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	if (FindTokenType(INT_AL, pc))
 		fprintf(fp, "\tint\t\ti;\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("CheckPars", module,
 	  qualifier));
-	fprintf(fp, "\t\tNotifyError(\"%%s: Parameters have not been correctly "
-	  "set.\", funcName);\n");
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Parameters have not been correctly "
+	  "set.\"), funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
-	fprintf(fp, "\tDPrint(\"?? %s Module Parameters:-"
-	  "\\n\");\n", module);
+	fprintf(fp, "\tDPrint(wxT(\"?? %s Module Parameters:-"
+	  "\\n\"));\n", module);
 	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
 	  arrayLimit = arrayLimit->next) {
 		PrintArrayListHeader(fp, arrayLimit);
@@ -910,8 +925,8 @@ PrintPrintParsRoutine(FILE *fp)
 				fprintf(fp, "\tPrintPars_ParArray(%s->%s);\n", ptrVar,
 				  GetName((*list)->sym));
 			else if (type->sym->type == DATUMPTR) {
-				Print(fp, "\t  ", "\tDPrint(\"\\tSimulation instruction list "
-				  "(%%s):-\\n\", ");
+				Print(fp, "\t  ", "\tDPrint(wxT(\"\\tSimulation instruction list "
+				  "(%%s):-\\n\"), ");
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
 				Print(fp, "\t  ", GetName((*list)->sym));
@@ -925,21 +940,21 @@ PrintPrintParsRoutine(FILE *fp)
 				Print(fp, "\t  ", "");
 			} else if (((*list)->inst != POINTER) || (type->sym->type ==
 			  CHAR)) {
-				Print(fp, "\t  ", "\tDPrint(\"\\t");
+				Print(fp, "\t  ", "\tDPrint(wxT(\"\\t");
 				Print(fp, "\t  ", DT_TO_SAMPLING_INTERVAL(GetName((*list)->
 				  sym)));
 				Print(fp, "\t  ", " = ");
 				Print(fp, "\t  ", GetOutputTypeFormatStr(type->sym));
 				switch (type->sym->type) {
 				case BOOLEAN_VAR:
-					Print(fp, "\t  ", " \\n\", (");
+					Print(fp, "\t  ", " \\n\"), (");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", GetName((*list)->sym));
 					Print(fp, "\t  ", ")? \"TRUE\": \"FALSE\"");
 					break;
 				case BOOLSPECIFIER:
-					Print(fp, "\t  ", "\\n\", ");
+					Print(fp, "\t  ", "\\n\"), ");
 					Print(fp, "\t  ", "BooleanList_NSpecLists(");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
@@ -947,7 +962,7 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", ")->name");
 					break;
 				case NAMESPECIFIER:
-					Print(fp, "\t  ", " \\n\", ");
+					Print(fp, "\t  ", " \\n\"), ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", GetName((*list)->sym));
@@ -958,13 +973,13 @@ PrintPrintParsRoutine(FILE *fp)
 					Print(fp, "\t  ", "].name");
 					break;
 				case FILENAME:
-					Print(fp, "\t  ", ".\\n\", ");
+					Print(fp, "\t  ", ".\\n\"), ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", GetName((*list)->sym));
 					break;
 				default:
-					Print(fp, "\t  ", " \?\?\\n\", ");
+					Print(fp, "\t  ", " \?\?\\n\"), ");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", GetName((*list)->sym));
@@ -1018,7 +1033,7 @@ PrintAllocArraysRoutines(FILE *fp)
 		funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 		  funcArguments);
 		fprintf(fp, "%s\n{\n", funcDeclaration);
-		fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+		PrintStaticFuncNameDeclaration(fp, funcName);
 		fprintf(fp, "\n");
 
 		fprintf(fp, "\tif (%s == %s->%s)\n", GetName(limitSym), ptrVar,
@@ -1043,10 +1058,10 @@ PrintAllocArraysRoutines(FILE *fp)
 					Print(fp, "\t  ", GetName(type->sym));
 					Print(fp, "\t  ", "))) == NULL) {\n");
 					Print(fp, "\t  ", "");
-					Print(fp, "\t\t  ", "\t\tNotifyError(_\"%s: Cannot "
+					Print(fp, "\t\t  ", "\t\tNotifyError(wxT(_\"%s: Cannot "
 					  "allocate memory for '%d' ");
 					Print(fp, "\t\t  ", GetName((*list)->sym));
-					Print(fp, "\t\t  ", "._\", funcName, ");
+					Print(fp, "\t\t  ", "._\"), funcName, ");
 					Print(fp, "\t\t  ", GetName(limitSym));
 					Print(fp, "\t\t  ", ");\n");
 					Print(fp, "\t\t  ", "");
@@ -1090,10 +1105,10 @@ PrintArrayCode(FILE *fp, Token *arrayLimit)
 
 	fprintf(fp, "\tif (!Alloc%s_%s(%s)) {\n", Capital(GetName(limitSym)),
 	  CreateBaseModuleName(module, qualifier, FALSE), GetName(limitSym));
-	Print(fp, "\t\t  ", "\t\tNotifyError(_\"%%s: Cannot allocate memory for "
+	Print(fp, "\t\t  ", "\t\tNotifyError(wxT(_\"%%s: Cannot allocate memory for "
 	  "the '");
 	Print(fp, "\t\t  ", GetName(limitSym));
-	Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
+	Print(fp, "\t\t  ", "' arrays._\"), funcName);\n");
 	Print(fp, "\t\t  ", "");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
@@ -1154,11 +1169,11 @@ PrintSetParsPointerRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "ModulePtr theModule");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 
 	fprintf(fp, "\tif (!theModule) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: The module is not set.\", "
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: The module is not set.\"), "
 	  "funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
@@ -1193,24 +1208,25 @@ PrintInitModuleRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "ModulePtr theModule");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 
 	fprintf(fp, "\tif (!%s(theModule)) {\n", CreateFuncName("SetParsPointer",
 	  module, qualifier));
-	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot set parameters pointer.\", "
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Cannot set parameters pointer.\"), "
 	  "funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tif (!%s(GLOBAL)) {\n", CreateFuncName("Init", module,
 	  qualifier));
-	fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise process "
-	  "structure.\", funcName);\n");
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not initialise process "
+	  "structure.\"), funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\ttheModule->parsPtr = %s;\n", ptrVar);
 	fprintf(fp, "\ttheModule->CheckPars = %s;\n", CreateFuncName("CheckPars",
 	  module, qualifier));
+	fprintf(fp, "\ttheModule->threadMode = MODULE_THREAD_MODE_SIMPLE;\n");
 	fprintf(fp, "\ttheModule->Free = %s;\n", CreateFuncName("Free",
 	  module, qualifier));
 	fprintf(fp, "\ttheModule->GetUniParListPtr = %s;\n", CreateFuncName(
@@ -1257,11 +1273,11 @@ PrintCheckDataRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "EarObjectPtr data");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 
 	fprintf(fp, "\tif (data == NULL) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: EarObject not initialised.\", "
+	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: EarObject not initialised.\"), "
 	  "funcName);\n");
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
@@ -1301,12 +1317,12 @@ PrintInitProcessVariablesRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "EarObjectPtr data");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
+	fprintf(fp, "\t%s\tp = %s;\n", ptrType, ptrVar);
 	fprintf(fp, "\n");
 
 	Print(fp, "\t  ", "\tif (");
-	Print(fp, "\t  ", ptrVar);
-	Print(fp, "\t  ", "->updateProcessVariablesFlag || "
+	Print(fp, "\t  ", "p->updateProcessVariablesFlag || "
 	  "data->updateProcessFlag) {\n");
 	Print(fp, "", "");
 	fprintf(fp, "\t\t/*** Additional update flags can be added to above line "
@@ -1314,7 +1330,7 @@ PrintInitProcessVariablesRoutine(FILE *fp)
 	fprintf(fp, "\t\t%s();\n", CreateFuncName("FreeProcessVariables", module,
 	  qualifier));
 	fprintf(fp, "\t\t/*** Put memory allocation etc here ***/\n");
-	fprintf(fp, "\t\t%s->updateProcessVariablesFlag = FALSE;\n", ptrVar);
+	fprintf(fp, "\t\tp->updateProcessVariablesFlag = FALSE;\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tif (data->timeIndex == PROCESS_START_TIME) {\n");
 	fprintf(fp, "\t\t/*** Put reset (to zero ?) code here ***/\n");
@@ -1352,7 +1368,7 @@ PrintFreeProcessVariablesRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "void");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\n");
 
 	fprintf(fp, "\t/** Put memory deallocation code here.    ***/\n");
@@ -1402,53 +1418,55 @@ PrintProcessRoutine(FILE *fp)
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  "EarObjectPtr data");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n", funcName);
+	PrintStaticFuncNameDeclaration(fp, funcName);
 	fprintf(fp, "\tregister ChanData\t *inPtr, *outPtr;\n");
 	fprintf(fp, "\tint\t\ti, chan;\n");
+	fprintf(fp, "\tSignalDataPtr\tinSignal, outSignal;\n");
+	fprintf(fp, "\t%s\tp = %s;\n", ptrType, ptrVar);
 	fprintf(fp, "\n");
 
-	fprintf(fp, "\tif (data == NULL) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: EarObject not initialised.\", "
-	  "funcName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
-
-	fprintf(fp, "\tif (!%s())\n", CreateFuncName("CheckPars", module,
+	fprintf(fp, "\tinSignal = _InSig_EarObject(data, 0);\n");
+	fprintf(fp, "\tif (!data->threadRunFlag) {\n");
+	fprintf(fp, "\t\tif (!%s())\n", CreateFuncName("CheckPars", module,
 	  qualifier));
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\tif (!%s(data)) {\n", CreateFuncName("CheckData", module,
+	fprintf(fp, "\t\t\treturn(FALSE);\n");
+	fprintf(fp, "\t\tif (!%s(data)) {\n", CreateFuncName("CheckData", module,
 	  qualifier));
-	fprintf(fp, "\t\tNotifyError(\"%%s: Process data invalid.\", funcName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
+	fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s: Process data invalid.\"), funcName);\n");
+	fprintf(fp, "\t\t\treturn(FALSE);\n");
+	fprintf(fp, "\t\t}\n");
 
-	fprintf(fp, "\tSetProcessName_EarObject(data, \"Module process \?\?\");\n");
-	fprintf(fp, "\n");
+	fprintf(fp, "\t\tSetProcessName_EarObject(data, wxT(\"Module process \?\?\"));\n");
+	fprintf(fp, "\t\n");
 
-	fprintf(fp, "\t/*** Example Initialise output signal - ammend/change if "
+	fprintf(fp, "\t\t/*** Example Initialise output signal - ammend/change if "
 	  "required. ***/\n");
-	fprintf(fp, "\tif (!InitOutSignal_EarObject(data, data->inSignal[0]->"
-	  "numChannels,\n");
-	fprintf(fp, "\t  data->inSignal[0]->length, data->inSignal[0]->dt)) {\n");
-	fprintf(fp, "\t\tNotifyError(\"%%s: Cannot initialise output channels.\", "
+	fprintf(fp, "\t\tif (!InitOutSignal_EarObject(data, inSignal->numChannels, ");
+	fprintf(fp, "inSignal->length,\n");
+	fprintf(fp, "\t\t  inSignal->dt)) {\n");
+	fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s: Cannot initialise output channels.\"), "
 	  "funcName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
+	fprintf(fp, "\t\t\treturn(FALSE);\n");
+	fprintf(fp, "\t\t}\n");
 	fprintf(fp, "\n");
 
 	if (processVarsFlag) {
-		fprintf(fp, "\tif (!%s(data)) {\n", CreateFuncName(
+		fprintf(fp, "\t\tif (!%s(data)) {\n", CreateFuncName(
 		  "InitProcessVariables", module, qualifier));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Could not initialise the process "
-		  "variables.\",\n\t\t  funcName);\n");
-		fprintf(fp, "\t\treturn(FALSE);\n");
+		fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s: Could not initialise the process "
+		  "variables.\"),\n\t\t  funcName);\n");
+		fprintf(fp, "\t\t\treturn(FALSE);\n");
+		fprintf(fp, "\t\t}\n");
+		fprintf(fp, "\t\tif (data->initThreadRunFlag)\n");
+		fprintf(fp, "\t\t\treturn(TRUE);\n");
 		fprintf(fp, "\t}\n");
 	}
 
-	fprintf(fp, "\tfor (chan = 0; chan < data->inSignal[0]->numChannels; "
+	fprintf(fp, "\toutSignal = _OutSig_EarObject(data);\n");
+	fprintf(fp, "\tfor (chan = outSignal->offset; chan < outSignal->numChannels; "
 	  "chan++) {\n");
-	fprintf(fp, "\t\tinPtr = data->inSignal[0]->channel[chan];\n");
-	fprintf(fp, "\t\toutPtr = data->outSignal->channel[chan];\n");
+	fprintf(fp, "\t\tinPtr = inSignal->channel[chan];\n");
+	fprintf(fp, "\t\toutPtr = outSignal->channel[chan];\n");
 	fprintf(fp, "\t\t/*** Put your code here to process output signal. ***/\n");
 	fprintf(fp, "\t\t/*** The following 'for' loop is an example only. ***/\n");
 	fprintf(fp, "\t\tfor (i = 0; i < data->outSignal->length; i++)\n");
@@ -1578,9 +1596,9 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
 	  funcArguments);
 	fprintf(fp, "%s\n{\n", funcDeclaration);
-	Print(fp, "\t  ", "\tstatic const char\t*funcName = _\"");
+	Print(fp, "\t  ", "\tstatic const WChar\t*funcName = wxT(_\"");
 	Print(fp, "\t  ", funcName);
-	Print(fp, "\t  ", "_\";\n");
+	Print(fp, "\t  ", "_\");\n");
 	Print(fp, "\t  ", "");
 	if ((type->sym->type == NAMESPECIFIER) || (type->sym->type ==
 	  BOOLSPECIFIER))
@@ -1589,15 +1607,15 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	PrintModuleInitCheck(fp);
 	if (functionType == SET_ARRAY_ELEMENT_ROUTINE) {
 		fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar, GetName(token->sym));
-		fprintf(fp, "\t\tNotifyError(\"%%s: %s not set.\", "
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s not set.\"), "
 		  "funcName);\n", Capital(GetName(token->sym)));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 		arrayLimit = FindArrayLimit(pc, GetName(token->sym));
 		fprintf(fp, "\tif (theIndex > %s->%s - 1) {\n", ptrVar,
 		  GetName(arrayLimit->sym));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Index value must be in the range "
-		  "0 - %%d (%%d).\",\n");
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Index value must be in the "
+		  "range 0 - %%d (%%d).\"),\n");
 		fprintf(fp, "\t\t  funcName, %s->%s - 1, theIndex);\n", ptrVar,
 		  GetName(arrayLimit->sym));
 		fprintf(fp, "\t\treturn(FALSE);\n");
@@ -1607,7 +1625,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\tif ((specifier = Identify_NameSpecifier(the%s,\n"
 		  "\t\tBooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {\n",
 		  Capital(variableName));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal switch state (%%s).\", "
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Illegal switch state (%%s).\"), "
 		  "funcName, the%s);\n", Capital(variableName));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
@@ -1617,15 +1635,15 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		  "\t\t%s->%sList)) == %s_%s_NULL) {\n", Capital(variableName),
 		  ptrVar, variableName, CreateBaseModuleName(module, qualifier, TRUE),
 		  UpperCase(GetName(token->sym)));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Illegal name (%%s).\", "
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Illegal name (%%s).\"), "
 		  "funcName, the%s);\n", Capital(variableName));
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
 	if (type->sym->type == INT_AL) {
 		fprintf(fp, "\tif (the%s < 1) {\n", Capital(variableName));
-		Print(fp, "\t\t  ", "\t\tNotifyError(\"%s: Value must be greater then "
-		  "zero (%d).\", funcName, the");
+		Print(fp, "\t\t  ", "\t\tNotifyError(wxT(\"%s: Value must be greater then "
+		  "zero (%d).\"), funcName, the");
 		Print(fp, "\t\t  ", Capital(variableName));
 		Print(fp, "\t\t  ", ");\n");
 		Print(fp, "\t\t  ", "");
@@ -1634,10 +1652,10 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\tif (!Alloc%s_%s(the%s)) {\n", Capital(variableName),
 		  CreateBaseModuleName(module, qualifier, FALSE), Capital(
 		  variableName));
-		Print(fp, "\t\t  ", "\t\tNotifyError(_\"%s: Cannot allocate memory "
+		Print(fp, "\t\t  ", "\t\tNotifyError(wxT(_\"%s: Cannot allocate memory "
 		  "for the '");
 		Print(fp, "\t\t  ", variableName);
-		Print(fp, "\t\t  ", "' arrays._\", funcName);\n");
+		Print(fp, "\t\t  ", "' arrays._\"), funcName);\n");
 		Print(fp, "\t\t  ", "");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
@@ -1648,8 +1666,8 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	if ((type->sym->type == CFLISTPTR) && (functionType !=
 	  SET_BANDWIDTHS_ROUTINE)) { 
 		fprintf(fp, "\tif (!CheckPars_CFList(theCFList)) {\n");
-		fprintf(fp, "\t\tNotifyError(\"%%s: Centre frequency structure not "
-		  "correctly set.\",\n\t\t  funcName);\n");
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Centre frequency structure not "
+		  "correctly set.\"),\n\t\t  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, GetName(token->sym));
@@ -1661,8 +1679,8 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	if (type->sym->type == PARARRAY) { 
 		fprintf(fp, "\tif (!CheckInit_ParArray(the%s, funcName)) {\n", Capital(
 		  GetName(token->sym)));
-		fprintf(fp, "\t\tNotifyError(\"%%s: ParArray structure not correctly "
-		  "set.\",  funcName);\n");
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: ParArray structure not correctly "
+		  "set.\"),  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 		fprintf(fp, "\tif (%s->%s != NULL)\n", ptrVar, GetName(token->sym));
@@ -1673,8 +1691,8 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	if (type->sym->type == DATUMPTR) { 
 		fprintf(fp, "\tif (!InitSimulation_Utility_SimScript((the%s)) {\n",
 		  Capital(GetName(token->sym)));
-		fprintf(fp, "\t\tNotifyError(\"%%s: Simulation not correctly "
-		  "initialised.\",  funcName);\n");
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Simulation not correctly "
+		  "initialised.\"),  funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
@@ -1683,7 +1701,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\tif (!SetBandwidths_CFList(%s->%s, theBandwidthMode,\n",
 		  ptrVar, GetName(token->sym));
 		fprintf(fp, "\t  theBandwidths)) {\n");
-		fprintf(fp, "\t\tNotifyError(\"%%s: Failed to set bandwidth mode.\", "
+		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Failed to set bandwidth mode.\"), "
 		  "funcName);\n");
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
@@ -1777,13 +1795,12 @@ PrintGetFunctions(FILE *fp)
 				funcDeclaration = CreateFuncDeclaration("CFListPtr\n", funcName,
 				  "void");
 				fprintf(fp, "%s\n{\n", funcDeclaration);
-				fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n\n",
-				  funcName);
+				PrintStaticFuncNameDeclaration(fp, funcName);
 				PrintModuleInitCheck(fp);
 				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
 				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(\"%%s: CFList data structure has "
-				  "not been correctly set.  \"\n\t\t  \"NULL returned.\", "
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: CFList data structure has "
+				  "not been correctly set.  \"\n\t\t  \"NULL returned.\"), "
 				  "funcName);\n");
 				fprintf(fp, "\t\treturn(NULL);\n");
 				fprintf(fp, "\t}\n");
@@ -1829,16 +1846,15 @@ PrintGetNumXParsRoutines(FILE *fp)
 				funcDeclaration = CreateFuncDeclaration("int\n", funcName,
 				  "int mode");
 				fprintf(fp, "%s\n{\n", funcDeclaration);
-				fprintf(fp, "\tstatic const char\t*funcName = \"%s\";\n\n",
-				  funcName);
+				PrintStaticFuncNameDeclaration(fp, funcName);
 				baseModuleName = CreateBaseModuleName(module, qualifier, TRUE);
 				fprintf(fp, "\tswitch (mode) {\n");
 				fprintf(fp, "\tcase %s_%s_XXX_MODE:\n", baseModuleName,
 				  UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "\t\tbreak;\n");
 				fprintf(fp, "\tdefault:\n");
-				fprintf(fp, "\t\tNotifyError(\"%%s: Mode not listed (%%d), "
-				  "returning zero.\", funcName,\n");
+				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Mode not listed (%%d), "
+				  "returning zero.\"), funcName,\n");
 				fprintf(fp, "\t\t  mode);\n");
 				fprintf(fp, "\t\treturn(0);\n");
 				fprintf(fp, "\t}\n");
