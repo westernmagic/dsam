@@ -3,6 +3,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= cvsconfigure dos-dist ltmain.sh
+EXTRA_DIST	= dos-dist ltmain.sh
 
 

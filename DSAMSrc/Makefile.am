@@ -7,7 +7,7 @@ pkginclude_HEADERS	= DSAMSetup.h
 
 bin_SCRIPTS		= dsam-config
 BUILT_SOURCES	= dsam.spec dsam-config
-EXTRA_DIST		= LICENSE
+EXTRA_DIST		= autogen.sh LICENSE
 SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC
 
 dsam.spec: dsam.spec.in
