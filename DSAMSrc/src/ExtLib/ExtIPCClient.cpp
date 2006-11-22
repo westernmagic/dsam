@@ -36,7 +36,6 @@
 #include "UtSSSymbols.h"
 #include "UtSimScript.h"
 #include "FiDataFile.h"
-#include "FiAIFF.h"
 #include "ExtIPCUtils.h"
 #include "ExtIPCClient.h"
 

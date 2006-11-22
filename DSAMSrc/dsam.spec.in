@@ -6,6 +6,7 @@
 %define libVer	@LT_RELEASE@
 %define RELEASE @DSAM_BINARY_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+%define numCPUs %{?cpus} %{!?cpus:1}
 
 Name: dsam
 Summary: Development System for Auditory Modelling

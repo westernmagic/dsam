@@ -36,7 +36,6 @@
 #include "UtUIEEEFloat.h"
 #include "UtUPortableIO.h"
 #include "FiDataFile.h"
-#include "FiAIFF.h"
 #include "ExtIPCUtils.h"
 
 /******************************************************************************/

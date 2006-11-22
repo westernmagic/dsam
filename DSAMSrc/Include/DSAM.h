@@ -107,11 +107,7 @@
 
 #include "FiParFile.h"
 #include "FiDataFile.h"
-#include "FiRaw.h"
-#include "FiAIFF.h"
 #include "FiASCII.h"
-#include "FiMSWave.h"
-
 #include "FlBandPass.h"
 #include "FlFIR.h"
 #include "FlLowPass.h"
