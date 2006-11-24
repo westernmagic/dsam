@@ -1032,8 +1032,10 @@ InitBuffer_DataFile(const WChar *callingFunction)
 void
 FreeProcessVariables_DataFile(void)
 {
-	if (dataFilePtr->buffer)
+	if (dataFilePtr->buffer) {
 		free(dataFilePtr->buffer);
+		dataFilePtr->buffer = NULL;
+	}
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 
 }

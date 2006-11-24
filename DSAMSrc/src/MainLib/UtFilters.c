@@ -364,6 +364,7 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
  * This routine filters the signal, returning the result in the same signal
  * passed to the routine.
  * It uses Inverse Power compresion: y = sign(x) / (1 + shift * |x|^(-slope)).
+ * It expects the signal to be correctly initialised.
  */
  
 BOOLN
@@ -375,15 +376,6 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
 	ChanLen	i;
 	register	ChanData	*data;
 
-	if (!theSignal->lengthFlag) {
-		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
-		return(FALSE);
-	}
-	if (theSignal->numChannels == 0) {
-		NotifyError(wxT("%s: No signal channels have been initialised!"),
-		  funcName);
-		return(FALSE);
-	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
@@ -400,6 +392,7 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
  * passed to the routine.
  * It uses Broken stick 1 compresion: y = ax if (a|x| <= b|x|^c), otherwise
  * y = sign(x) * b|x|^c.
+ * It expects the signal to be correctly initialised.
  */
  
 BOOLN
@@ -412,17 +405,8 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 	int		chan;
 	ChanLen	i;
 
-	if (!theSignal->lengthFlag) {
-		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
-		return(FALSE);
-	}
-	if (theSignal->numChannels == 0) {
-		NotifyError(wxT("%s: No signal channels have been initialised!"),
-		  funcName);
-		return(FALSE);
-	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
-		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
+		for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 		  data++) {
 			if (*data < 0.0) {
 		  		aTerm = aA * -*data;
@@ -446,6 +430,7 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
  * It uses Broken stick 1 compresion: y = ax if (a|x| <= b|x|^c), otherwise
  * y = sign(x) * b|x|^c.
  * This version uses arrays for the A and B parameters.
+ * It expects the signal to be correctly initialised.
  */
  
 BOOLN
@@ -453,33 +438,28 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
   double *bB, double cC)
 {
 	static const WChar *funcName = wxT("BrokenStick1Compression2_Filters");
-	register ChanData	*data;
+	register ChanData	*data, a, b, c;
 	register double		aTerm, bCTerm;
 	int		chan;
 	ChanLen	i;
 
-	if (!theSignal->lengthFlag) {
-		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
-		return(FALSE);
-	}
-	if (theSignal->numChannels == 0) {
-		NotifyError(wxT("%s: No signal channels have been initialised!"),
-		  funcName);
-		return(FALSE);
-	}
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
-		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++) {	
+		a = aA[chan];
+		b = bB[chan];
+		c = cC;
+		for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 		  data++) {
 			if (*data < 0.0) {
-		  		aTerm = aA[chan] * -*data;
-				bCTerm = bB[chan] * pow(-*data, cC);
+		  		aTerm = a * -*data;
+				bCTerm = b * pow(-*data, c);
 				*data = (aTerm < bCTerm)? -aTerm: -bCTerm;
 			} else {
-		  		aTerm = aA[chan] * *data;
-				bCTerm = bB[chan] * pow(*data, cC);
+		  		aTerm = a * *data;
+				bCTerm = b * pow(*data, c);
 				*data = (aTerm < bCTerm)? aTerm: bCTerm;
 			}
 		}
+	}
 	return(TRUE);
 
 }
@@ -491,6 +471,7 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
  * passed to the routine.
  * It uses G Uptons (gupton@essex.ac.uk) broken stick 1 compresion:
  * y = sign(x) * (a|x|^b + c|x|^d).
+ * This routine assumes that the signal has been correctly initialised.
  */
 
 #define	FUNC(X)		(aA * pow((X), bB) + cC * pow((X), dD))
@@ -504,17 +485,8 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 	int		chan;
 	ChanLen	i;
 
-	if (!theSignal->lengthFlag) {
-		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
-		return(FALSE);
-	}
-	if (theSignal->numChannels == 0) {
-		NotifyError(wxT("%s: No signal channels have been initialised!"),
-		  funcName);
-		return(FALSE);
-	}
 	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
-		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
+		for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 		  data++) {
 			*data = (*data < 0.0)? -FUNC(-*data): ((*data == 0.0)? 0.0:
 			  FUNC(*data));
@@ -533,6 +505,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
  * No checks are made here as to whether or not the gamma tone coefficients,
  * passed as an argument array, have been initialised.
  * Each channel has its own filter (coefficients).
+ * It expects the signal to be correctly initialised.
  */
 
 BOOLN
@@ -542,31 +515,25 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	int		j, chan;
 	ChanLen	i;
 	GammaToneCoeffs *gC;
-	register	double		*ptr1, *ptr2, wn;	/* Inner loop variables */
+	register	double		*y_1, wn, *ptr1;	/* Inner loop variables */
 	register	ChanData	*data;
 
-	if (!CheckPars_SignalData(theSignal)) {
-		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
-		return(FALSE);
-	}	
 	/* For the allocation of space to the state vector, the filter for all
 	 * channels are assumed to have the same cascade as the first. */
 
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
-		data = theSignal->channel[chan];
 		gC = p[chan];
-		for (i = 0; i < theSignal->length; i++, data++)
-			for (j = 0, ptr1 = gC->stateVector; j < gC->cascade; j++) {
-				ptr2 = ptr1;
-				*data -= gC->b1 * *(ptr1++);
-				*data -= gC->b2 * *ptr1;
-				wn = *data;		/* Temp variable */
-				*data *= gC->a0;
-				*data += gC->a1 * *ptr2; /* Final Yn */
-				*ptr1 = *ptr2;	/* Update Yn-1 to Yn-2 */
-				*ptr2 = wn;
-				ptr1++;
+		for (j = gC->cascade, ptr1 = gC->stateVector; j--; ) {
+			*y_1 = *ptr1++;
+			for (i = theSignal->length, data = theSignal->channel[chan]; i--;
+			   data++) {
+				wn -= gC->b1 * *y_1 + gC->b2 * *ptr1;
+				*data = wn * gC->a0 + gC->a1 * *y_1; /* Final Yn */
+				*ptr1 = *y_1;	/* Update Yn-1 to Yn-2 */
+				*y_1 = wn;
 			}
+			ptr1++;
+		}
 	}
 	return(TRUE);
 
