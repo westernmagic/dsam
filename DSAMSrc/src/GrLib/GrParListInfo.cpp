@@ -158,7 +158,7 @@ ParListInfo::SetParNameList(UniParPtr par, int index)
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxSize(PARLISTINFO_CHOICE_ITEM_WIDTH,-1), 0, NULL,
 	  wxCB_READONLY);
-	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
+	for (list = par->valuePtr.nameList.list; list->name; list++)
 		cBox->Append((wxChar *) list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
 	cBox->SetToolTip((wxChar *) par->desc);
@@ -194,7 +194,7 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
-	for (list = par->valuePtr.nameList.list; list->name[0] != '\0'; list++)
+	for (list = par->valuePtr.nameList.list; list->name; list++)
 		cBox->Append((wxChar *) list->name);
 	cBox->SetSelection(*par->valuePtr.nameList.specifier);
 	cBox->SetInsertionPointEnd();

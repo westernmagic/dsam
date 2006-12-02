@@ -82,7 +82,7 @@ InitModeList_Utility_BinSignal(void)
 
 			{ wxT("AVERAGE"),	UTILITY_BINSIGNAL_AVERAGE_MODE },
 			{ wxT("SUM"),		UTILITY_BINSIGNAL_SUM_MODE },
-			{ wxT(""),			UTILITY_BINSIGNAL_MODE_NULL },
+			{ NULL,				UTILITY_BINSIGNAL_MODE_NULL },
 		};
 	binSignalPtr->modeList = modeList;
 	return(TRUE);

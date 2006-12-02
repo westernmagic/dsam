@@ -321,7 +321,7 @@ LibraryList_ModuleReg(uShort index)
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_Transpose },
 
-	{ wxT(""),
+	{ NULL,
 		0, MODULE_SPECIFIER_NULL,
 		NULL }
 
@@ -360,9 +360,9 @@ Identify_ModuleReg(ModRegEntryPtr list, WChar *name)
 	if (!list)
 		return(NULL);
 	for (  ; (StrNCmpNoCase_Utility_String(list->name, name) != 0) &&
-	  (list->name[0] != '\0'); list++)
+	  (list->name != NULL); list++)
 		;
-	return ((list->name[0] == '\0')? NULL: list);
+	return ((list->name == NULL)? NULL: list);
 
 }
 
@@ -439,7 +439,7 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
 	}
 	regEntry = userModuleList;
 	for (i = 0; i < maxUserModules + 1; i++, regEntry++) {
-		regEntry->name = wxT("");
+		regEntry->name = NULL;
 		regEntry->specifier = PROCESS_MODULE;
 		regEntry->InitModule = NULL;
 	}
@@ -469,7 +469,7 @@ RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(ModulePtr))
 		  wxT("number."), funcName, maxUserModules);
 		return(FALSE);
 	}
-	if (!name || (*name == '\0')) {
+	if (!name) {
 		NotifyError(wxT("%s: Illegal null or zero length module name."),
 		  funcName);
 		return(FALSE);

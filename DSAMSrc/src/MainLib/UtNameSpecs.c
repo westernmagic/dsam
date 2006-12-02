@@ -44,9 +44,9 @@ GetNullSpec_NameSpecifier(NameSpecifierPtr list)
 {
 	static WChar *funcName = wxT("GetNullSpec_NameSpecifier");
 
-	for (  ; list->name[0] != '\0'; list++)
+	for (  ; list->name != NULL; list++)
 		;
-	if (list->name[0] != '\0') {
+	if (list->name != NULL) {
 		NotifyError(wxT("%s: Incorrectly set up list."), funcName);
 		exit(1);
 	}	
@@ -82,7 +82,7 @@ Identify_NameSpecifier(WChar *name, NameSpecifierPtr list)
 	if (!length)
 		return(GetNullSpec_NameSpecifier(list));
 	for (  ; StrNCmpNoCase_Utility_String(list->name, name) != 0 &&
-	  list->name[0] != '\0'; list++)
+	  list->name != NULL; list++)
 		;
 	return(list->specifier);
 
@@ -104,7 +104,7 @@ PrintList_NameSpecifier(NameSpecifierPtr list)
 		exit(1);
 	}
 	DPrint(wxT("Name specifier list:-\n"));
-	for (  ; list->name[0] != '\0'; list++)
+	for (  ; list->name != NULL; list++)
 		DPrint(wxT("\t%s\n"), list->name);
 
 }

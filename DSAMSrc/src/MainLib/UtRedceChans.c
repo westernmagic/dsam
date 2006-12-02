@@ -89,7 +89,7 @@ InitModeList_Utility_ReduceChannels(void)
 
 					{ wxT("AVERAGE"),	REDUCE_CHANS_AVERAGE_MODE },
 					{ wxT("SUM"), 		REDUCE_CHANS_SUM_MODE },
-					{ wxT(""), 			REDUCE_CHANS_NULL }
+					{ NULL, 			REDUCE_CHANS_NULL }
 				};
 	reduceChansPtr->modeList = modeList;
 	return(TRUE);

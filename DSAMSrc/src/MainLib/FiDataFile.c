@@ -75,6 +75,7 @@
 /******************************************************************************/
 
 DataFilePtr dataFilePtr = NULL;
+NameSpecifier	*soundFormatList = NULL;
 
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
@@ -95,7 +96,7 @@ InitEndianModeList_DataFile(void)
 			{ wxT("LITTLE"),			DATA_FILE_LITTLE_ENDIAN },
 			{ wxT("BIG"),				DATA_FILE_BIG_ENDIAN },
 			{ wxT("CPU"),				DATA_FILE_CPU_ENDIAN },
-			{ wxT(""),					DATA_FILE_ENDIAN_NULL }
+			{ NULL,						DATA_FILE_ENDIAN_NULL }
 		};
 	dataFilePtr->endianModeList = modeList;
 	return(TRUE);
@@ -229,7 +230,6 @@ Free_DataFile(void)
 	FreeProcessVariables_DataFile();
 	if (dataFilePtr->parList)
 		FreeList_UniParMgr(&dataFilePtr->parList);
-
 	if (dataFilePtr->parSpec == GLOBAL) {
 		free(dataFilePtr);
 		dataFilePtr = NULL;
@@ -454,10 +454,62 @@ SoundFormatList_DataFile(int index)
 		{wxT("WAV"),	SF_FORMAT_WAV},
 		{wxT("VOC"),	SF_FORMAT_VOC},
 		{wxT("VOX"),	SF_FORMAT_RAW},
-		{wxT(""),		NULL_DATA_FILE}
+		{NULL,			NULL_DATA_FILE}
 
 	};
 	return(&soundFormatList[index]);
+}
+
+/****************************** FreeSoundFormatList ***************************/
+
+void
+FreeSoundFormatList_DataFile(void)
+{
+	NameSpecifierPtr	p;
+
+	if (!soundFormatList)
+		return;
+	for (p = soundFormatList; *p->name; p++)
+		free(p->name);
+
+}
+	
+/****************************** InitSoundFormatList ***************************/
+
+/*
+ * This function initialises the 'soundFormatList' global list array.
+ */
+
+BOOLN
+InitSoundFormatList_DataFile(void)
+{
+	static const WChar *funcName = wxT("InitSoundFormatList_DataFile");
+	int		i, majorFormatCount;
+	NameSpecifierPtr	p;
+	SF_FORMAT_INFO	info ;
+	SF_INFO 		sfinfo ;
+
+	if (soundFormatList)
+		return(TRUE);
+	sf_command (NULL, SFC_GET_FORMAT_MAJOR_COUNT, &majorFormatCount,
+	  sizeof (int)) ;
+	if ((soundFormatList = (NameSpecifier *) calloc(majorFormatCount + 1,
+	  sizeof(NameSpecifier))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for sound format list (%d)"),
+		  funcName, majorFormatCount);
+		  return(FALSE);
+	}
+	for (i = 0, p = soundFormatList; i < majorFormatCount; i++, p++) {
+		info.format = i;
+		sf_command(NULL, SFC_GET_FORMAT_MAJOR, &info, sizeof (info));
+		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
+		  info.extension));
+		p->specifier = i;
+	}
+	p->name = NULL;
+	p->specifier = NULL_DATA_FILE;
+	return(TRUE);
+
 }
 
 /**************************** Format ******************************************/
@@ -1012,8 +1064,8 @@ InitBuffer_DataFile(const WChar *callingFunction)
 
 	if (p->buffer)
 		return(TRUE);
-	if ((p->buffer = (ChanData *) calloc(p->numChannels *
-	  DATAFILE_BUFFER_FRAMES, sizeof(ChanData))) == NULL) {
+	if ((p->buffer = (double *) calloc(p->numChannels *
+	  DATAFILE_BUFFER_FRAMES, sizeof(double))) == NULL) {
 		NotifyError(wxT("%s (%s): Out of memory for dataBuffer."),
 		  callingFunction, funcName);
 		return(FALSE);

@@ -74,7 +74,7 @@ InitModeList_Utility_ConvMonaural(void)
 			{ wxT("ADD"),	UTILITY_CONVMONAURAL_MODE_ADD },
 			{ wxT("LEFT"),	UTILITY_CONVMONAURAL_MODE_LEFT },
 			{ wxT("RIGHT"),	UTILITY_CONVMONAURAL_MODE_RIGHT },
-			{ wxT(""),		UTILITY_CONVMONAURAL_MODE_NULL },
+			{ NULL,			UTILITY_CONVMONAURAL_MODE_NULL },
 		};
 	cMonauralPtr->modeList = modeList;
 	return(TRUE);

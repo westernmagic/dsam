@@ -79,7 +79,7 @@ InitModeList_Utility_Delay(void)
 
 					{ wxT("SINGLE"),	DELAY_SINGLE_MODE },
 					{ wxT("LINEAR"),	DELAY_LINEAR_MODE },
-					{ wxT(""),			DELAY_NULL }
+					{ NULL,				DELAY_NULL }
 				};
 	delay2Ptr->modeList = modeList;
 	return(TRUE);

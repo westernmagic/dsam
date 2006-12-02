@@ -45,7 +45,7 @@ SpeciesList_Utility_Zhang(int index)
 			{ wxT("HUMAN"),		UT_ZHANG_SPECIES_HUMAN },
 			{ wxT("CAT"),		UT_ZHANG_SPECIES_CAT },
 			{ wxT("UNIVERSAL"),	UT_ZHANG_SPECIES_UNIVERSAL },
-			{ wxT(""),			UT_ZHANG_SPECIES_NULL },
+			{ NULL,				UT_ZHANG_SPECIES_NULL },
 		};
 	return (&modeList[index]);
 

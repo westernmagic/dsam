@@ -80,7 +80,7 @@ InitModeList_Utility_IteratedRipple(void)
 
 					{ wxT("IRSO"),	ITERRIPPLE_IRSO_MODE },
 					{ wxT("IRSS"),	ITERRIPPLE_IRSS_MODE },
-					{ wxT(""),		ITERRIPPLE_NULL }
+					{ NULL,			ITERRIPPLE_NULL }
 				};
 	iterRipplePtr->modeList = modeList;
 	return(TRUE);

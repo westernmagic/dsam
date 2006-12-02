@@ -108,7 +108,7 @@ InitIntegrationModeList_Analysis_SAI(void)
 
 			{ wxT("STI"),	SAI_INTEGRATION_MODE_STI },
 			{ wxT("AC"),	SAI_INTEGRATION_MODE_AC },
-			{ wxT(""),		SAI_INTEGRATION_MODE_NULL },
+			{ NULL,			SAI_INTEGRATION_MODE_NULL },
 		};
 	sAImagePtr->integrationModeList = modeList;
 	return(TRUE);

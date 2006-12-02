@@ -57,7 +57,7 @@ NameSpecifier	iCListModeList[] = {
 					{ wxT("BOLTZMANN"), ICLIST_BOLTZMANN_MODE },
 					{ wxT("HHUXLEY"), 	ICLIST_HHUXLEY_MODE },
 					{ wxT("FILE"), 		ICLIST_FILE_MODE },
-					{ wxT(""),			ICLIST_NULL }
+					{ NULL,				ICLIST_NULL }
 				};
 
 /******************************************************************************/

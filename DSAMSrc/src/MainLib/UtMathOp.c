@@ -76,7 +76,7 @@ InitOperatorModeList_Utility_MathOp(void)
 			{ wxT("SCALE"),		UTILITY_MATHOP_OPERATORMODE_SCALE },
 			{ wxT("SQR"),		UTILITY_MATHOP_OPERATORMODE_SQR },
 			{ wxT("SUBTRACT"),	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
-			{ wxT(""),			UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
+			{ NULL,				UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
 		};
 	mathOpPtr->operatorModeList = modeList;
 	return(TRUE);

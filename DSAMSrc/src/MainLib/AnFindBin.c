@@ -79,7 +79,7 @@ InitModeList_Analysis_FindBin(void)
 					{ wxT("MIN_INDEX"), FIND_BIN_MIN_INDEX_MODE},
 					{ wxT("MAX_VALUE"), FIND_BIN_MAX_VALUE_MODE},
 					{ wxT("MAX_INDEX"), FIND_BIN_MAX_INDEX_MODE},
-					{ wxT(""), FIND_BIN_NULL }
+					{ NULL, FIND_BIN_NULL }
 				
 				};
 	findBinPtr->modeList = modeList;

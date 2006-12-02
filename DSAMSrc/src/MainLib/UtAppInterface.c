@@ -109,7 +109,7 @@ InitListingModeList_AppInterface(void)
 
 			{ wxT("PARAMETERS"),	APP_INT_PARAMETERS_LIST_MODE },
 			{ wxT("CFINFO"),		APP_INT_CFLIST_LIST_MODE },
-			{ wxT(""),				APP_INT_LIST_NULL }
+			{ NULL,					APP_INT_LIST_NULL }
 		};
 	appInterfacePtr->listingModeList = modeList;
 	return(TRUE);
@@ -129,7 +129,7 @@ InitThreadModeList_AppInterface(void)
 
 			{ wxT("PROCESS"),		APP_INT_THREAD_MODE_PROCESS },
 			{ wxT("CHANNEL_CHAIN"),	APP_INT_THREAD_MODE_CHANNEL_CHAIN },
-			{ wxT(""),				APP_INT_THREAD_MODE_NULL }
+			{ NULL,					APP_INT_THREAD_MODE_NULL }
 		};
 	appInterfacePtr->threadModeList = modeList;
 	return(TRUE);

@@ -74,7 +74,7 @@ InitModeList_Utility_Compression(void)
 
 					{ wxT("LOG"),			COMPRESS_LOG_MODE },
 					{ wxT("POWER"),			COMPRESS_POWER_MODE },
-					{ wxT(""),				COMPRESS_NULL }
+					{ NULL,					COMPRESS_NULL }
 				
 				};
 	compressionPtr->modeList = modeList;

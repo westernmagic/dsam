@@ -109,7 +109,7 @@ GetPanelList_SignalDisp(int index)
 				{ wxT("Y-axis"),	DISPLAY_Y_AXIS_TITLE },
 				{ wxT("X-axis"),	DISPLAY_X_AXIS_TITLE },
 				{ wxT("General"),	DISPLAY_WINDOW_TITLE },
-				{ wxT(""), 			DISPLAY_NULL }
+				{ NULL, 			DISPLAY_NULL }
 			};
 	;
 	return(&list[index]);
@@ -130,7 +130,7 @@ InitModeList_SignalDisp(void)
 					{ wxT("OFF"),			GRAPH_MODE_OFF },
 					{ wxT("LINE"),			GRAPH_MODE_LINE },
 					{ wxT("GREY_SCALE"),	GRAPH_MODE_GREY_SCALE },
-					{ wxT(""),				GRAPH_MODE_NULL }
+					{ NULL,					GRAPH_MODE_NULL }
 				};
 	signalDispPtr->modeList = list;
 	return(TRUE);
@@ -151,7 +151,7 @@ InitYAxisModeList_SignalDisp(void)
 					{ wxT("AUTO"),			GRAPH_Y_AXIS_MODE_AUTO },
 					{ wxT("CHANNEL"),		GRAPH_Y_AXIS_MODE_CHANNEL },
 					{ wxT("LINEAR_SCALE"),	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
-					{ wxT(""), 				GRAPH_Y_AXIS_MODE_NULL }
+					{ NULL, 				GRAPH_Y_AXIS_MODE_NULL }
 				};
 	signalDispPtr->yAxisModeList = list;
 	return(TRUE);
@@ -171,7 +171,7 @@ InitYNormModeList_SignalDisp(void)
 
 					{wxT("MIDDLE"),		GRAPH_LINE_YNORM_MIDDLE_MODE },
 					{wxT("BOTTOM"),		GRAPH_LINE_YNORM_BOTTOM_MODE },
-					{wxT(""),			GRAPH_LINE_YNORM_MODE_NULL }
+					{NULL,				GRAPH_LINE_YNORM_MODE_NULL }
 				};
 	signalDispPtr->yNormModeList = list;
 	return(TRUE);

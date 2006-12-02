@@ -75,7 +75,7 @@ InitModeList_Utility_LocalChans(void)
 
 			{ wxT("SUM"),		UTILITY_LOCALCHANS_MODE_SUM },
 			{ wxT("AVERAGE"),	UTILITY_LOCALCHANS_MODE_AVERAGE },
-			{ wxT(""),			UTILITY_LOCALCHANS_MODE_NULL },
+			{ NULL,				UTILITY_LOCALCHANS_MODE_NULL },
 		};
 	localChansPtr->modeList = modeList;
 	return(TRUE);

@@ -60,7 +60,7 @@ InitOutputModeList_BasilarM_Cooke(void)
 			{ wxT("BM"),	BM_COOKE_OUTPUTMODE_BM_DETAIL },
 			{ wxT("POW"),	BM_COOKE_OUTPUTMODE_POWER_SPEC },
 			{ wxT("AMP"),	BM_COOKE_OUTPUTMODE_AMP_ENVELOPE },
-			{ wxT(""),		BM_COOKE_OUTPUTMODE_BM_DETAIL },
+			{ NULL,			BM_COOKE_OUTPUTMODE_BM_DETAIL },
 		};
 	bM0CookePtr->outputModeList = modeList;
 	return(TRUE);

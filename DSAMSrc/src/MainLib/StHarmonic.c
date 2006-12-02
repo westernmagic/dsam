@@ -61,7 +61,7 @@ InitPhaseModeList_Harmonic(void)
 					{ wxT("SCHROEDER"),			HARMONIC_SCHROEDER },
 					{ wxT("PLACK_AND_WHITE"),	HARMONIC_PLACK_AND_WHITE },
 					{ wxT("USER"),				HARMONIC_USER },
-					{ wxT(""),					HARMONIC_NULL },
+					{ NULL,						HARMONIC_NULL },
 				};
 	harmonicPtr->phaseModeList = modeList;
 	return(TRUE);

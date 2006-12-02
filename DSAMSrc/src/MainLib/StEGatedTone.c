@@ -75,7 +75,7 @@ InitTypeModeList_Stimulus_ExpGatedTone(void)
 
 					{wxT("RAMPED"),	EGATED_TONE_RAMPED_MODE },
 					{wxT("DAMPED"),	EGATED_TONE_DAMPED_MODE },
-					{wxT(""),		EGATED_TONE_MODE_NULL }
+					{NULL,			EGATED_TONE_MODE_NULL }
 
 				};
 	eGatedTonePtr->typeModeList = typeModeList;

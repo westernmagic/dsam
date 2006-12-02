@@ -111,7 +111,7 @@ InitTypeModeList_Utility_Strobe(void)
 					{ wxT("PEAK_SHADOW-"),	STROBE_PEAK_SHADOW_NEGATIVE_MODE },
 					{ wxT("PEAK_SHADOW+"),	STROBE_PEAK_SHADOW_POSITIVE_MODE },
 					{ wxT("DELTA_GAMMA"),	STROBE_DELTA_GAMMA_MODE },
-					{ wxT(""), STROBE_MODE_NULL }
+					{ NULL,					STROBE_MODE_NULL }
 				};
 	strobePtr->typeModeList = modeList;
 	return(TRUE);

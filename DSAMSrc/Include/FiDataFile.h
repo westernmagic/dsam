@@ -134,6 +134,7 @@ typedef struct {
 	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;
 	BOOLN	inputMode;
+	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave etc. */
 	double	outputTimeOffset;
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
@@ -142,7 +143,7 @@ typedef struct {
 	FileFormatSpecifier	type;
 	SF_INFO	sFInfo;
 	SNDFILE	*sndFile;
-	ChanData	*buffer;
+	double	*buffer;
 
 } DataFile, *DataFilePtr;
 
@@ -164,8 +165,6 @@ extern	DataFilePtr	dataFilePtr;
  */
 __BEGIN_DECLS
 
-double	CalculateNormalisation_DataFile(SignalDataPtr signal);
- 
 BOOLN	CheckPars_DataFile(void);
 
 BOOLN	CheckParsRead_DataFile(void);

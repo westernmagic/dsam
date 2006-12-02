@@ -218,7 +218,7 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	NameSpecifierPtr	panelSpec1, panelSpec2;
 
 	panelSpec1 = ( *parList->GetPanelList)(panelNum);
-	if (panelSpec1->name[0] == '\0')
+	if (!panelSpec1->name)
 		return;
 
 	if ((newPanel = UsingNotebook(parList, (wxChar *) panelSpec1->name)) !=

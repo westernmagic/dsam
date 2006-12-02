@@ -75,10 +75,10 @@ InitModeList_Analysis_Averages(void)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ wxT("FULL"), AVERAGES_FULL },
-					{ wxT("-WAVE"), AVERAGES_NEGATIVE_WAVE },
-					{ wxT("+WAVE"), AVERAGES_POSITIVE_WAVE },
-					{ wxT(""), AVERAGES_NULL }
+					{ wxT("FULL"),	AVERAGES_FULL },
+					{ wxT("-WAVE"),	AVERAGES_NEGATIVE_WAVE },
+					{ wxT("+WAVE"),	AVERAGES_POSITIVE_WAVE },
+					{ NULL, 		AVERAGES_NULL }
 				};
 	averagesPtr->modeList = modeList;
 	return(TRUE);

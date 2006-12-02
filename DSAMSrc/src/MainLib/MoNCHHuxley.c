@@ -103,8 +103,8 @@ InitInjectionModeList_Neuron_HHuxley(void)
 	static NameSpecifier	modeList[] = {
 
 				{ wxT("OFF"),	HHUXLEYNC_INJECTION_OFF},
-				{ wxT("ON"),		HHUXLEYNC_INJECTION_ON},
-				{ wxT(""),		HHUXLEYNC_INJECTION_NULL }
+				{ wxT("ON"),	HHUXLEYNC_INJECTION_ON},
+				{ NULL,			HHUXLEYNC_INJECTION_NULL }
 
 			};
 	hHuxleyNCPtr->injectionModeList = modeList;
@@ -125,7 +125,7 @@ InitOperationModeList_Neuron_HHuxley(void)
 
 				{ wxT("NORMAL"),		HHUXLEYNC_OPERATION_NORMAL_MODE},
 				{ wxT("VOLTAGE_CLAMP"),	HHUXLEYNC_OPERATION_VOLTAGE_CLAMP_MODE},
-				{ wxT(""),				HHUXLEYNC_OPERATION_NULL }
+				{ NULL,					HHUXLEYNC_OPERATION_NULL }
 
 			};
 	hHuxleyNCPtr->operationModeList = modeList;

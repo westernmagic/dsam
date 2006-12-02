@@ -261,36 +261,66 @@ GetDuration_SndFile(WChar *fileName)
  */
  
 BOOLN
-WriteFrames_SndFile(EarObjectPtr data)
+WriteFrames_SndFile(SignalDataPtr inSignal)
 {
 	static const WChar *funcName = wxT("WriteFrames_SndFile");
 	register ChanData	*inPtr, *outPtr;
 	int		chan;
 	sf_count_t	count = 0, frames, i, bufferFrames;
 	DataFilePtr	p = dataFilePtr;
-	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	if (!InitBuffer_DataFile(funcName))
 		return(FALSE);
 	bufferFrames = DATAFILE_BUFFER_FRAMES;
-	while (count < outSignal->length) {
-		if ((outSignal->length - count) < bufferFrames)
-			bufferFrames = outSignal->length - count;
+	while (count < inSignal->length) {
+		if ((inSignal->length - count) < bufferFrames)
+			bufferFrames = inSignal->length - count;
+		for (chan = 0; chan < inSignal->numChannels; chan++) {
+			inPtr = inSignal->channel[chan] + count;
+			for (i = bufferFrames, outPtr = p->buffer + chan; i--; outPtr +=
+			  inSignal->numChannels)
+				*outPtr = *inPtr++ / p->normalise;
+		}
 		frames = sf_writef_double(p->sndFile, p->buffer, bufferFrames);
-		if (!frames)
-			break;
-		for (chan = 0; chan < outSignal->numChannels; chan++) {
-			inPtr = outSignal->channel[chan] + count;
-			outPtr = p->buffer + chan;
-			for (i = 0, inPtr = p->buffer + chan; i < frames; i++, inPtr +=
-			  outSignal->numChannels)
-				*outPtr++ = *inPtr;
+		if (frames != bufferFrames) {
+			NotifyError(wxT("%s: Failed to write sound data."), funcName);
+			return(FALSE);
 		}
 		count += frames;
 	}
-	if (count == outSignal->length)
+	if (count == inSignal->length)
 		return(TRUE);
 	return(FALSE);
+
+}
+
+/**************************** CalculateNormalisation **************************/
+
+/*
+ * This routine calculates the normalisation factor for a signal.
+ * It expects the signal to be correctly initialised.
+ * It returns zero if the maximum value is 0.0.
+ * It returns the normalisation argument value, if it is greater than zero in
+ * non-auto mode.
+ */
+
+double
+CalculateNormalisation_SndFile(SignalDataPtr signal)
+{
+	int		chan;
+	double 	maxValue;
+	ChanLen	i;
+	ChanData	*dataPtr;
+
+	for (chan = signal->numChannels, maxValue = -DBL_MAX; chan-- ;) {
+		dataPtr = signal->channel[chan];
+		for (i = signal->length; i-- ; dataPtr++)
+			if (fabs(*dataPtr) > maxValue)
+				maxValue = fabs(*dataPtr);
+	}
+	if (maxValue < DBL_EPSILON)
+		return(1.0);
+	return(maxValue);
 
 }
 
@@ -309,7 +339,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	static const WChar *funcName = wxT("WriteFile_SndFile");
 	BOOLN	ok = TRUE;
 	DataFilePtr	p = dataFilePtr;
-	SignalDataPtr	outSignal = _OutSig_EarObject(data);
+	SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 
 	SetProcessName_EarObject(data, wxT("Output '%s' Sound data file"),
 	  GetFileNameFPath_Utility_String(fileName));
@@ -319,6 +349,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 			  fileName);
 			return(FALSE);
 		}
+		dataFilePtr->normalise = CalculateNormalisation_SndFile(inSignal);
 	} else {
 		if (!OpenFile_SndFile(fileName, SFM_RDWR)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
@@ -331,8 +362,8 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
  			  funcName, MBSToWCS_Utility_String(sf_strerror(p->sndFile)));
  			return(FALSE);
 		}
-		if ((p->sFInfo.channels != outSignal->numChannels) || (fabs(p->
-		  sFInfo.samplerate - (1.0 / outSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
+		if ((p->sFInfo.channels != inSignal->numChannels) || (fabs(p->
+		  sFInfo.samplerate - (1.0 / inSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
 		  (GetWordSize_SndFile(p->sFInfo.format) != dataFilePtr->wordSize)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
@@ -340,7 +371,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 		}
 		sf_seek(p->sndFile, 0, SEEK_END);
 	}
-	ok = WriteFrames_SndFile(data);
+	ok = WriteFrames_SndFile(inSignal);
 	Free_SndFile();
 	return(ok);
 	

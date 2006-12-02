@@ -79,7 +79,7 @@ InitModeList_Analysis_FindNextIndex(void)
 
 					{ wxT("MINIMUM"),	FIND_INDEX_MINIMUM},
 					{ wxT("MAXIMUM"),	FIND_INDEX_MAXIMUM},
-					{ wxT(""), 			FIND_INDEX_NULL }
+					{ NULL, 			FIND_INDEX_NULL }
 				
 				};
 	findIndexPtr->modeList = modeList;

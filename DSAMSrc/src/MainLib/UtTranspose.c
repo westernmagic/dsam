@@ -78,7 +78,7 @@ InitModeList_Utility_Transpose(void)
 
 			{ wxT("STANDARD"),		UTILITY_TRANSPOSE_STANDARD_MODE },
 			{ wxT("FIRST_CHANNEL"),	UTILITY_TRANSPOSE_FIRST_CHANNEL_MODE },
-			{ wxT(""),				UTILITY_TRANSPOSE_MODE_NULL },
+			{ NULL,					UTILITY_TRANSPOSE_MODE_NULL },
 		};
 	transposePtr->modeList = modeList;
 	return(TRUE);

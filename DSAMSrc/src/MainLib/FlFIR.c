@@ -95,7 +95,7 @@ InitTypeList_Filter_FIR(void)
 			{ wxT("DIFFERENTIATOR"),	FILTER_FIR_DIFFERENTIATOR_TYPE },
 			{ wxT("HILBERT"),			FILTER_FIR_HILBERT_TYPE },
 			{ wxT("USER"),				FILTER_FIR_USER_TYPE },
-			{ wxT(""),					FILTER_FIR_TYPE_NULL },
+			{ NULL,						FILTER_FIR_TYPE_NULL },
 		};
 	fIRPtr->typeList = modeList;
 	return(TRUE);

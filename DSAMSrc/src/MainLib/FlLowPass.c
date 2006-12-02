@@ -53,7 +53,7 @@ InitModeList_Filter_LowPass(void)
 
 					{ wxT("NORMAL"),	FILTER_LOW_PASS_MODE_NORMAL },
 					{ wxT("SCALED"),	FILTER_LOW_PASS_MODE_SCALED },
-					{ wxT(""), 			FILTER_LOW_PASS_MODE_NULL }
+					{ NULL, 			FILTER_LOW_PASS_MODE_NULL }
 				};
 	lowPassFPtr->modeList = list;
 	return(TRUE);

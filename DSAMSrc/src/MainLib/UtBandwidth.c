@@ -53,7 +53,7 @@ ModeList_Bandwidth(int index)
 			{wxT("INTERNAL_DYNAMIC"),	BANDWIDTH_INTERNAL_DYNAMIC },
 			{wxT("INTERNAL_STATIC"),	BANDWIDTH_INTERNAL_STATIC },
 			{wxT("DISABLED"),			BANDWIDTH_DISABLED },
-			{wxT(""),					BANDWIDTH_NULL }
+			{NULL,						BANDWIDTH_NULL }
 
 		};
 	return (&modeList[index]);

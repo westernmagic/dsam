@@ -122,7 +122,7 @@ GetNumListEntries_NSpecLists(NameSpecifierPtr list)
 		  funcName);
 		return(-1);
 	}
-	while ((list++)->name[0] != '\0')
+	while ((list++)->name)
 		count++;
 	return(count + 1);
 

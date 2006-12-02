@@ -94,7 +94,7 @@ InitOperationModeList_Transform_Gate(void)
 
 					{ wxT("RAMP"),	GATE_RAMP_OPERATION_MODE},
 					{ wxT("DAMP"),	GATE_DAMP_OPERATION_MODE},
-					{ wxT(""),		GATE_NULL_OPERATION_MODE}
+					{ NULL,			GATE_NULL_OPERATION_MODE}
 
 				};
 	gatePtr->operationModeList = modeList;
@@ -115,7 +115,7 @@ InitPositionModeList_Transform_Gate(void)
 
 					{ wxT("ABSOLUTE"),	GATE_ABSOLUTE_POSITION_MODE},
 					{ wxT("RELATIVE"),	GATE_RELATIVE_POSITION_MODE},
-					{ wxT(""),			GATE_NULL_POSITION_MODE}
+					{ NULL,				GATE_NULL_POSITION_MODE}
 
 				};
 	gatePtr->positionModeList = modeList;
@@ -138,7 +138,7 @@ InitTypeModeList_Transform_Gate(void)
 					{ wxT("SINE"),			GATE_SINE_TYPE_MODE},
 					{ wxT("RAISED_COS"),	GATE_RAISED_COS_TYPE_MODE},
 					{ wxT("EXP_DECAY"),		GATE_EXP_DECAY_TYPE_MODE},
-					{ wxT(""),				GATE_NULL_TYPE_MODE}
+					{ NULL,					GATE_NULL_TYPE_MODE}
 
 				};
 	gatePtr->typeModeList = modeList;
@@ -160,7 +160,7 @@ InitProcessModeList_Transform_Gate(void)
 					{ wxT("TRANS_GATE"),	GATE_STANDARD_PROCESS_MODE},
 					{ wxT("TRANS_RAMP"),	GATE_RAMP_PROCESS_MODE},
 					{ wxT("TRANS_DAMP"),	GATE_DAMP_PROCESS_MODE},
-					{ wxT(""),				GATE_NULL_TYPE_MODE}
+					{ NULL,					GATE_NULL_TYPE_MODE}
 
 				};
 	gatePtr->processModeList = modeList;

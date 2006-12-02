@@ -55,7 +55,7 @@ static NameSpecifier	cFListDiagModeList[] = {
 
 						{ wxT("LIST"), 			CFLIST_DIAG_MODE },
 						{ wxT("PARAMETERS"),	CFLIST_PARAMETERS_DIAG_MODE },
-						{ wxT(""),				CFLIST_DIAG_NULL }
+						{ NULL,					CFLIST_DIAG_NULL }
 					};
 
 /******************************************************************************/
@@ -146,7 +146,7 @@ CFModeList_CFList(int index)
 			{ wxT("GUINEA_PIG"),	CFLIST_GPIG_MODE },
 			{ wxT("HUMAN"),			CFLIST_HUMAN_MODE },
 			{ wxT("MACAQUE"),		CFLIST_MACAQUEM_MODE },
-			{ wxT(""),				CFLIST_NULL }
+			{ NULL,					CFLIST_NULL }
 		};
 	return (&modeList[index]);
 

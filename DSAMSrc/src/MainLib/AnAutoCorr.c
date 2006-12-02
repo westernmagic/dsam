@@ -91,7 +91,7 @@ InitNormalisationModeList_Analysis_ACF(void)
 			{ wxT("NONE"),		ANALYSIS_NORM_MODE_NONE },
 			{ wxT("STANDARD"),	ANALYSIS_NORM_MODE_STANDARD },
 			{ wxT("UNITY"),		ANALYSIS_NORM_MODE_UNITY },
-			{ wxT(""),			ANALYSIS_NORM_MODE_NULL }
+			{ NULL,				ANALYSIS_NORM_MODE_NULL }
 		};
 	autoCorrPtr->normalisationModeList = modeList;
 	return(TRUE);
@@ -112,7 +112,7 @@ InitTimeConstModeList_Analysis_ACF(void)
 			{ wxT("LICKLIDER"),	ANALYSIS_ACF_TIMECONSTMODE_LICKLIDER },
 			{ wxT("NONE"),		ANALYSIS_ACF_TIMECONSTMODE_NONE },
 			{ wxT("WIEGREBE"),	ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE },
-			{ wxT(""),			ANALYSIS_ACF_TIMECONSTMODE_NULL },
+			{ NULL,				ANALYSIS_ACF_TIMECONSTMODE_NULL },
 		};
 	autoCorrPtr->timeConstModeList = modeList;
 	return(TRUE);

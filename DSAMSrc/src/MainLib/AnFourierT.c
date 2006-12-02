@@ -84,7 +84,7 @@ InitOutputModeList_Analysis_FourierT(void)
 			{ wxT("PHASE"),		ANALYSIS_FOURIERT_PHASE_OUTPUTMODE },
 			{ wxT("COMPLEX"),	ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE },
 			{ wxT("DB_SPL"),	ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE },
-			{ wxT(""),			ANALYSIS_FOURIERT_OUTPUTMODE_NULL },
+			{ NULL,				ANALYSIS_FOURIERT_OUTPUTMODE_NULL },
 		};
 	fourierTPtr->outputModeList = modeList;
 	return(TRUE);

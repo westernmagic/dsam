@@ -85,7 +85,7 @@ InitOpModeList_IHC_Meddis2000(void)
 
 			{ wxT("SPIKE"),	IHC_MEDDIS2000_OPMODE_SPIKE },
 			{ wxT("PROB"),	IHC_MEDDIS2000_OPMODE_PROB },
-			{ wxT(""),		IHC_MEDDIS2000_OPMODE_NULL },
+			{ NULL,			IHC_MEDDIS2000_OPMODE_NULL },
 		};
 	hairCell2Ptr->opModeList = modeList;
 	return(TRUE);
@@ -105,7 +105,7 @@ InitCaCondModeList_IHC_Meddis2000(void)
 
 			{ wxT("ORIGINAL"),		IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
 			{ wxT("REVISION_1"),	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
-			{ wxT(""),				IHC_MEDDIS2000_CACONDMODE_NULL },
+			{ NULL,					IHC_MEDDIS2000_CACONDMODE_NULL },
 		};
 	hairCell2Ptr->caCondModeList = modeList;
 	return(TRUE);
@@ -125,7 +125,7 @@ InitCleftReplenishModeList_IHC_Meddis2000(void)
 
 			{ wxT("ORIGINAL"),	IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL },
 			{ wxT("UNITY"),		IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY },
-			{ wxT(""),			IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL },
+			{ NULL,				IHC_MEDDIS2000_CLEFTREPLENISHMODE_NULL },
 		};
 	hairCell2Ptr->cleftReplenishModeList = modeList;
 	return(TRUE);

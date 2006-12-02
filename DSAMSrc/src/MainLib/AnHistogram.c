@@ -84,7 +84,7 @@ InitDetectionModeList_Analysis_Histogram(void)
 
 					{wxT("SPIKE"),		HISTOGRAM_DETECT_SPIKES },
 					{wxT("CONTINUOUS"),	HISTOGRAM_CONTINUOUS },
-					{wxT(""),			HISTOGRAM_DETECT_NULL }
+					{NULL,				HISTOGRAM_DETECT_NULL }
 
 				};
 
@@ -107,7 +107,7 @@ InitOutputModeList_Analysis_Histogram(void)
 
 					{wxT("BIN_COUNTS"),	HISTOGRAM_OUTPUT_BIN_COUNTS },
 					{wxT("SPIKE_RATE"),	HISTOGRAM_OUTPUT_SPIKE_RATE },
-					{wxT(""),			HISTOGRAM_OUTPUT_NULL }
+					{NULL,				HISTOGRAM_OUTPUT_NULL }
 
 				};
 	histogramPtr->outputModeList = outputModeList;
@@ -128,7 +128,7 @@ InitTypeModeList_Analysis_Histogram(void)
 
 					{wxT("PSTH"),	HISTOGRAM_PSTH },
 					{wxT("PH"),		HISTOGRAM_PH },
-					{wxT(""),		HISTOGRAM_TYPE_NULL }
+					{NULL,			HISTOGRAM_TYPE_NULL }
 
 				};
 	histogramPtr->typeModeList = typeModeList;

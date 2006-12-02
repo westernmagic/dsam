@@ -91,7 +91,7 @@ InitModeList_Utility_SelectChannels(void)
 					{ wxT("ZERO"),		SELECT_CHANS_ZERO_MODE },
 					{ wxT("REMOVE"),	SELECT_CHANS_REMOVE_MODE },
 					{ wxT("EXPAND"),	SELECT_CHANS_EXPAND_MODE },
-					{ wxT(""), 		SELECT_CHANS_NULL }
+					{ NULL, 			SELECT_CHANS_NULL }
 				};
 	selectChanPtr->modeList = modeList;
 	return(TRUE);
@@ -114,7 +114,7 @@ InitSelectionModeList_Utility_SelectChannels(void)
 			{ wxT("LOWEST"),	UTILITY_SELECTCHANNELS_SELECTIONMODE_LOWEST },
 			{ wxT("HIGHEST"),	UTILITY_SELECTCHANNELS_SELECTIONMODE_HIGHEST },
 			{ wxT("USER"),		UTILITY_SELECTCHANNELS_SELECTIONMODE_USER },
-			{ wxT(""),			UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL },
+			{ NULL,				UTILITY_SELECTCHANNELS_SELECTIONMODE_NULL },
 		};
 	selectChanPtr->selectionModeList = modeList;
 	return(TRUE);
