@@ -78,6 +78,7 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, wxT("'%s' ASCII (dat) file"),
 	  GetFileNameFPath_Utility_String(fileName));
+	dataFilePtr->subFormatType = ASCII_DATA_FILE;
 	numSamples = (int32) floor(dataFilePtr->duration * dataFilePtr->
 	  defaultSampleRate + 0.5);
 	if (!InitProcessVariables_DataFile(data, numSamples,
@@ -154,6 +155,7 @@ WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	SetTimeIndex_SignalData(_OutSig_EarObject(data), _WorldTime_EarObject(data));
+	dataFilePtr->subFormatType = ASCII_DATA_FILE;
 	if (!OutputToFile_SignalData(fileName, _OutSig_EarObject(data))) {
 		if (data->processName != NULL)
 			NotifyWarning(wxT("%s: Data from EarObject: %s, has not been ")

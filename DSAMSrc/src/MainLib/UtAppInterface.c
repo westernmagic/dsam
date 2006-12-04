@@ -91,6 +91,7 @@ Free_AppInterface(void)
 		free(appInterfacePtr);
 		appInterfacePtr = NULL;
 	}
+	FreeSoundFormatLists_DataFile();
 	CloseFiles();
 	return(TRUE);
 

@@ -76,6 +76,7 @@
 
 DataFilePtr dataFilePtr = NULL;
 NameSpecifier	*soundFormatList = NULL;
+NameSpecifier	*soundSubFormatList = NULL;
 
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
@@ -99,6 +100,118 @@ InitEndianModeList_DataFile(void)
 			{ NULL,						DATA_FILE_ENDIAN_NULL }
 		};
 	dataFilePtr->endianModeList = modeList;
+	return(TRUE);
+
+}
+
+/****************************** FreeSoundFormatLists **************************/
+
+/*
+ * Free's the global sound file format lists.
+ */
+
+void
+FreeSoundFormatLists_DataFile(void)
+{
+	FreeNameAllocatedList_NameSpecifier(&soundFormatList);
+	FreeNameAllocatedList_NameSpecifier(&soundSubFormatList);
+
+}
+
+/****************************** InitSoundFormatList ***************************/
+
+/*
+ * This function initialises the 'soundFormatList' global list array.
+ * It retrieves the information from the 'libsndFile' library routines.
+ */
+
+BOOLN
+InitSoundFormatList_DataFile(void)
+{
+	static const WChar *funcName = wxT("InitSoundFormatList_DataFile");
+	int		i, majorFormatCount, localFormatCount = 0;
+	NameSpecifierPtr	p;
+	SF_FORMAT_INFO	info ;
+	NameSpecifier localSoundFormatList[] = {
+		{wxT("DAT"),	ASCII_DATA_FILE},
+		{NULL,			NULL_DATA_FILE}
+	};
+
+	if (soundFormatList)
+		return(TRUE);
+	for (p = localSoundFormatList; p->name; p++)
+		localFormatCount++;
+	sf_command (NULL, SFC_GET_FORMAT_MAJOR_COUNT, &majorFormatCount,
+	  sizeof (int)) ;
+	if ((soundFormatList = (NameSpecifier *) calloc(majorFormatCount + 
+	  localFormatCount + 1, sizeof(NameSpecifier))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for sound format list (%d)"),
+		  funcName, majorFormatCount);
+		return(FALSE);
+	}
+	for (i = 0, p = soundFormatList; i < majorFormatCount; i++, p++) {
+		info.format = i;
+		sf_command(NULL, SFC_GET_FORMAT_MAJOR, &info, sizeof (info));
+		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
+		  info.extension));
+		ToUpper_Utility_String(p->name, p->name);
+		p->specifier = info.format;
+	}
+	for (i = 0; i < localFormatCount; i++, p++) {
+		p->name = InitString_Utility_String(localSoundFormatList[i].name);
+		p->specifier = localSoundFormatList[i].specifier;
+	}
+	p->name = NULL;
+	p->specifier = NULL_DATA_FILE;
+	return(TRUE);
+
+}
+
+/****************************** InitSoundSubFormatList *************************/
+
+/*
+ * This function initialises the 'InitSoundSubFormatList' global list array.
+ * It retrieves the information from the 'libsndFile' library routines.
+ */
+
+BOOLN
+InitSoundSubFormatList_DataFile(void)
+{
+	static const WChar *funcName = wxT("InitSoundSubFormatList_DataFile");
+	int		i, subTypeFormatCount, localSubFormatCount = 0;
+	SF_FORMAT_INFO	info ;
+	NameSpecifierPtr	p;
+	NameSpecifier localSoundSubFormatList[] = {
+		{wxT("ASCII"),	ASCII_DATA_FILE},
+		{NULL,			NULL_DATA_FILE}
+	};
+
+	if (soundSubFormatList)
+		return(TRUE);
+	for (p = localSoundSubFormatList; p->name; p++)
+		localSubFormatCount++;
+	sf_command (NULL, SFC_GET_FORMAT_SUBTYPE_COUNT, &subTypeFormatCount,
+	  sizeof (int)) ;
+	if ((soundSubFormatList = (NameSpecifier *) calloc(subTypeFormatCount + 
+	  localSubFormatCount + 1, sizeof(NameSpecifier))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for sound sub-type format list (%d)"),
+		  funcName, subTypeFormatCount);
+		return(FALSE);
+	}
+	for (i = 0, p = soundSubFormatList; i < subTypeFormatCount; i++, p++) {
+		info.format = i;
+		sf_command(NULL, SFC_GET_FORMAT_SUBTYPE, &info, sizeof (info));
+		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
+		  info.name));
+		ToUpper_Utility_String(p->name, p->name);
+		p->specifier = info.format;
+	}
+	for (i = 0; i < localSubFormatCount; i++, p++) {
+		p->name = InitString_Utility_String(localSoundSubFormatList[i].name);
+		p->specifier = localSoundSubFormatList[i].specifier;
+	}
+	p->name = NULL;
+	p->specifier = NULL_DATA_FILE;
 	return(TRUE);
 
 }
@@ -182,6 +295,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->parSpec = parSpec;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	DSAM_strncpy(dataFilePtr->name, wxT("output.dat"), MAXLINE);
+	dataFilePtr->subFormatType = SF_FORMAT_PCM_16;
 	dataFilePtr->wordSize = 2;
 	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
@@ -193,6 +307,18 @@ Init_DataFile(ParameterSpecifier parSpec)
 
 	dataFilePtr->GetDuration = GetDuration_DataFile;
 	InitEndianModeList_DataFile();
+	if (!InitSoundFormatList_DataFile()) {
+		NotifyError(wxT("%s: Could not initialise sound format list."),
+		  funcName);
+		Free_DataFile();
+		return(FALSE);
+	}
+	if (!InitSoundSubFormatList_DataFile()) {
+		NotifyError(wxT("%s: Could not initialise sound sub-type format list."),
+		  funcName);
+		Free_DataFile();
+		return(FALSE);
+	}
 	if (!SetUniParList_DataFile()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_DataFile();
@@ -262,6 +388,11 @@ SetUniParList_DataFile(void)
 	  UNIPAR_FILE_NAME,
 	  &dataFilePtr->name, (WChar *) wxT("*.*"),
 	  (void * (*)) SetFileName_DataFile);
+	SetPar_UniParMgr(&pars[DATAFILE_SUBFORMATTYPE], wxT("SUB_FORMAT_TYPE"),
+	  wxT("Sound file format sub-type."),
+	  UNIPAR_NAME_SPEC,
+	  &dataFilePtr->subFormatType, soundSubFormatList,
+	  (void * (*)) SetSubFormatType_DataFile);
 	SetPar_UniParMgr(&pars[DATAFILE_WORDSIZE], wxT("WORDSIZE"),
 	  wxT("Default word size for sound data (1,2 or 4 bytes)"),
 	  UNIPAR_INT,
@@ -303,6 +434,7 @@ SetUniParList_DataFile(void)
 	  &dataFilePtr->gain, NULL,
 	  (void * (*)) SetGain_DataFile);
 
+	dataFilePtr->parList->pars[DATAFILE_WORDSIZE].enabled = FALSE;
 	return(TRUE);
 
 }
@@ -328,6 +460,36 @@ GetUniParListPtr_DataFile(void)
 		return(NULL);
 	}
 	return(dataFilePtr->parList);
+
+}
+
+/****************************** SetSubFormatType ******************************/
+
+/*
+ * This function sets the module's subFormatType parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetSubFormatType_DataFile(WChar * theSubFormatType)
+{
+	static const WChar	*funcName = wxT("SetSubFormatType_DataFile");
+	int		specifier;
+
+	if (dataFilePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theSubFormatType,
+		soundSubFormatList)) == NULL_DATA_FILE) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSubFormatType);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	dataFilePtr->subFormatType = specifier;
+	dataFilePtr->updateProcessVariablesFlag = TRUE;
+	return(TRUE);
 
 }
 
@@ -427,91 +589,6 @@ SetEndian_DataFile(WChar *endian)
 
 }
 
-/**************************** SoundFormatList *********************************/
-
-/*
- * File format specifier list.
-  * This routine makes no checks on limits.
- */
-
-NameSpecifier *
-SoundFormatList_DataFile(int index)
-{
-	static NameSpecifier soundFormatList[] = {
-
-		{wxT("AIF"),	SF_FORMAT_AIFF},
-		{wxT("AIFF"),	SF_FORMAT_AIFF},
-		{wxT("AU"),		SF_FORMAT_AU},
-		{wxT("AVR"),	SF_FORMAT_AVR},
-		{wxT("DAT"),	ASCII_DATA_FILE},
-		{wxT("FLAC"),	SF_FORMAT_FLAC},
-		{wxT("IRCAM"),	SF_FORMAT_IRCAM},
-		{wxT("MAT"),	SF_FORMAT_MAT5},
-		{wxT("RAW"),	SF_FORMAT_RAW},
-		{wxT("SD2"),	SF_FORMAT_SD2},
-		{wxT("SDS"),	SF_FORMAT_SDS},
-		{wxT("SND"),	SF_FORMAT_AU},
-		{wxT("WAV"),	SF_FORMAT_WAV},
-		{wxT("VOC"),	SF_FORMAT_VOC},
-		{wxT("VOX"),	SF_FORMAT_RAW},
-		{NULL,			NULL_DATA_FILE}
-
-	};
-	return(&soundFormatList[index]);
-}
-
-/****************************** FreeSoundFormatList ***************************/
-
-void
-FreeSoundFormatList_DataFile(void)
-{
-	NameSpecifierPtr	p;
-
-	if (!soundFormatList)
-		return;
-	for (p = soundFormatList; *p->name; p++)
-		free(p->name);
-
-}
-	
-/****************************** InitSoundFormatList ***************************/
-
-/*
- * This function initialises the 'soundFormatList' global list array.
- */
-
-BOOLN
-InitSoundFormatList_DataFile(void)
-{
-	static const WChar *funcName = wxT("InitSoundFormatList_DataFile");
-	int		i, majorFormatCount;
-	NameSpecifierPtr	p;
-	SF_FORMAT_INFO	info ;
-	SF_INFO 		sfinfo ;
-
-	if (soundFormatList)
-		return(TRUE);
-	sf_command (NULL, SFC_GET_FORMAT_MAJOR_COUNT, &majorFormatCount,
-	  sizeof (int)) ;
-	if ((soundFormatList = (NameSpecifier *) calloc(majorFormatCount + 1,
-	  sizeof(NameSpecifier))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for sound format list (%d)"),
-		  funcName, majorFormatCount);
-		  return(FALSE);
-	}
-	for (i = 0, p = soundFormatList; i < majorFormatCount; i++, p++) {
-		info.format = i;
-		sf_command(NULL, SFC_GET_FORMAT_MAJOR, &info, sizeof (info));
-		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
-		  info.extension));
-		p->specifier = i;
-	}
-	p->name = NULL;
-	p->specifier = NULL_DATA_FILE;
-	return(TRUE);
-
-}
-
 /**************************** Format ******************************************/
 
 /*
@@ -523,8 +600,7 @@ FileFormatSpecifier
 Format_DataFile(WChar *suffix)
 {
 
-	return(dataFilePtr->type = Identify_NameSpecifier(suffix,
-	  SoundFormatList_DataFile(0)));
+	return(dataFilePtr->type = Identify_NameSpecifier(suffix, soundFormatList));
 
 }
 
@@ -864,7 +940,9 @@ PrintPars_DataFile(void)
 		return(FALSE);
 	}
 	DPrint(wxT("DataFile Module Parameters:-\n"));
-	DPrint(wxT("\tFile name = %s\n"), dataFilePtr->name);
+	DPrint(wxT("\tFile name = %s,"), dataFilePtr->name);
+	DPrint(wxT("\tSub-format type = %s,\n"), soundSubFormatList[
+	  dataFilePtr->subFormatType].name);
 	DPrint(wxT("\tNumber of channels = %d,"), dataFilePtr->numChannels);
 	DPrint(wxT("\tGain = %g dB\n"), dataFilePtr->gain);
 	DPrint(wxT("\tDefault sample rate = %g,\tDuration = "),

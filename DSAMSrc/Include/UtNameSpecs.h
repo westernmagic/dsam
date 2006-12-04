@@ -46,6 +46,8 @@ __BEGIN_DECLS
 
 int		Identify_NameSpecifier(WChar *name, NameSpecifierPtr list);
 
+void	FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list);
+
 int		GetNullSpec_NameSpecifier(NameSpecifierPtr list);
 
 void	PrintList_NameSpecifier(NameSpecifierPtr list);

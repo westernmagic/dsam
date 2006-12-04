@@ -106,7 +106,12 @@ OpenFile_SndFile(WChar *fileName, int mode)
 	if ((p->type == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
 		p->sFInfo.samplerate = p->defaultSampleRate;
 		p->sFInfo.channels = p->numChannels;
-		p->sFInfo.format = p->type | p->wordSize;
+		p->sFInfo.format = p->type | p->subFormatType;
+		if (!sf_format_check(&p->sFInfo)) {
+			NotifyError(wxT("%s: Illegal output format for sound file."),
+			  funcName);
+			return(FALSE);
+		}
 		if (mode == SFM_WRITE) {
 			switch (p->endian) {
 			case DATA_FILE_LITTLE_ENDIAN:
@@ -190,6 +195,7 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("ReadFile_SndFile");
 	BOOLN	ok = TRUE;
+	const char *titleString;
 	ChanLen	length;
 	DataFilePtr	p = dataFilePtr;
 
@@ -200,8 +206,11 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 	}
 	SetProcessName_EarObject(data, wxT("Read '%s' Sound data file"),
 	  GetFileNameFPath_Utility_String(fileName));
+	titleString = sf_get_string(p->sndFile, SF_STR_TITLE);
+	wprintf(wxT("titleString = '%s'\n"), titleString);
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->timeIndex ==
 	  PROCESS_START_TIME)) {
+	  	p->subFormatType = p->sFInfo.format & SF_FORMAT_SUBMASK;
 		p->numChannels = p->sFInfo.channels;
 		p->defaultSampleRate = p->sFInfo.samplerate;
 		p->wordSize = GetWordSize_SndFile(p->sFInfo.format);
@@ -324,6 +333,30 @@ CalculateNormalisation_SndFile(SignalDataPtr signal)
 
 }
 
+/**************************** CreateTitleString ********************************/
+
+/*
+ * This function creates and returns the title string.
+ * The memory for this string must be "freed" by the calling program.
+ */
+ 
+char *
+CreateTitleString_SndFile(EarObjectPtr data)
+{
+	static const WChar *funcName = wxT("CreateTitleString_SndFile");
+	char *s;
+	size_t	length = 20;
+
+	if ((s = (char *) malloc(length)) == NULL) {
+		NotifyError(wxT("%s: Out of memory for string (%d)."), funcName,
+		  length);
+		return(NULL);
+	}
+	sprintf(s, "DSAM googoo");
+	return(s);
+
+}
+	
 /**************************** WriteFile ***************************************/
 
 /*
@@ -338,11 +371,13 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("WriteFile_SndFile");
 	BOOLN	ok = TRUE;
+	char	*titleString;
 	DataFilePtr	p = dataFilePtr;
 	SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 
 	SetProcessName_EarObject(data, wxT("Output '%s' Sound data file"),
 	  GetFileNameFPath_Utility_String(fileName));
+	p->defaultSampleRate = 1.0 / inSignal->dt;
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->firstSectionFlag)) {
 		if (!OpenFile_SndFile(fileName, SFM_WRITE)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
@@ -350,6 +385,10 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 		dataFilePtr->normalise = CalculateNormalisation_SndFile(inSignal);
+		if ((titleString = CreateTitleString_SndFile(data)) == NULL)
+			return(FALSE);
+		sf_set_string(p->sndFile, SF_STR_TITLE, titleString);
+		free(titleString);
 	} else {
 		if (!OpenFile_SndFile(fileName, SFM_RDWR)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
@@ -364,7 +403,8 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 		}
 		if ((p->sFInfo.channels != inSignal->numChannels) || (fabs(p->
 		  sFInfo.samplerate - (1.0 / inSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
-		  (GetWordSize_SndFile(p->sFInfo.format) != dataFilePtr->wordSize)) {
+		  (p->sFInfo.format | SF_FORMAT_SUBMASK != dataFilePtr->
+		  subFormatType)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);
 			return(FALSE);

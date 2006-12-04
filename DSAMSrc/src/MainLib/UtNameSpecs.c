@@ -88,6 +88,27 @@ Identify_NameSpecifier(WChar *name, NameSpecifierPtr list)
 
 }
 
+/****************************** FreeNameAllocatedList **************************/
+
+/*
+ * This routine frees a list for which the names have been allocated memory.
+ * by the creating routine.
+ */
+
+void
+FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list)
+{
+	NameSpecifierPtr	p;
+
+	if (!*list)
+		return;
+	for (p = *list; p->name; p++)
+		free(p->name);
+	free(*list);
+	*list = NULL;
+
+}
+	
 /************************** PrintList *****************************************/
 
 /*

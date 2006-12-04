@@ -4,6 +4,7 @@ proc_routine	ReadSignal;
 typedef struct {
 
 	char	*name;			/* [MAX_FILE_PATH] */
+	NameSpecifier	subFormatType;
 	int		wordSize;
 	int		endian;
 	int		numChannels;

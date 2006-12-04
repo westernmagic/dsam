@@ -55,7 +55,7 @@
 
 /*************************** Misc definitions *********************************/
 
-#define DATAFILE_NUM_PARS		9
+#define DATAFILE_NUM_PARS		10
 #define DATAFILE_MOD_NAME_PREFIX	wxT("DataFile_")
 #define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("IN")
 #define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("OUT")
@@ -79,6 +79,7 @@
 typedef enum {
 
 	DATAFILE_FILENAME,
+	DATAFILE_SUBFORMATTYPE,
 	DATAFILE_WORDSIZE,
 	DATAFILE_ENDIAN,
 	DATAFILE_NUMCHANNELS,
@@ -118,6 +119,7 @@ typedef struct {
 	ParameterSpecifier parSpec;
 	
 	WChar	name[MAX_FILE_PATH];/* - used by Generate Signal, set by ReadPars.*/
+	int		subFormatType;
 	int		wordSize;			/* can be either 1 or 2 byte words. */
 	int		endian;				/* can be either 0 or 1, little- or big-endian*/
 	int		numChannels;		/* used only by Raw binary support at present.*/
@@ -179,6 +181,8 @@ void	FreeProcessVariables_DataFile(void);
 
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
+BOOLN	InitSubFormatTypeList_DataFile(void);
+
 BOOLN	Init_DataFile(ParameterSpecifier parSpec);
 
 BOOLN	InitBuffer_DataFile(const WChar *callingFunction);
@@ -232,11 +236,11 @@ BOOLN	SetPars_DataFile(WChar *theFileName, int theWordSize,
 
 void	SetRWFormat_DataFile(int endian);
 
+BOOLN	SetSubFormatType_DataFile(WChar * theSubFormatType);
+
 BOOLN	SetTimeOffset_DataFile(double timeOffset);
 
 BOOLN	SetUniParList_DataFile(void);
-
-NameSpecifier *	SoundFormatList_DataFile(int index);
 
 BOOLN	SetWordSize_DataFile(int wordSize);
 
