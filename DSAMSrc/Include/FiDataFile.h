@@ -179,6 +179,8 @@ BOOLN	Free_DataFile(void);
 
 void	FreeProcessVariables_DataFile(void);
 
+void	FreeSoundFormatLists_DataFile(void);
+
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
 BOOLN	InitSubFormatTypeList_DataFile(void);
