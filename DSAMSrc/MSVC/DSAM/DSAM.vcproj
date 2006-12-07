@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO)\pa_common"
+				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO),$(LIBSNDFILE)"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -117,7 +117,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO)\pa_common"
+				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO)\include,$(LIBSNDFILE)"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -525,28 +525,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\MainLib\FiAIFF.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\src\MainLib\FiASCII.c"
 				>
 				<FileConfiguration
@@ -591,51 +569,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\MainLib\FiMSWave.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\src\MainLib\FiParFile.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\src\MainLib\FiRaw.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -3050,10 +2984,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\FiAIFF.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Include\FiASCII.h"
 				>
 			</File>
@@ -3062,15 +2992,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\FiMSWave.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Include\FiParFile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\FiRaw.h"
 				>
 			</File>
 			<File

@@ -17,6 +17,7 @@ MAINLIB=$SRCDIR/MainLib
 STDLIB=$SRCDIR/StdLib
 CFGTOOLS=CfgTools
 TEMP_FILE=file.tmp
+BULDROOT=build
 
 ############################### Usage ##########################################
 
@@ -25,7 +26,7 @@ usage()
 	cat <<EOF
 Usage: dos-dist command
 commands:
-    cvsconfig - configure the cvs source for compilation on windows platform.
+    autogen   - configure the cvs source for compilation on windows platform.
     clean     - remove all windows compilation created directories and files.
 	make      - Create a zip archive distribution.
 EOF
@@ -56,7 +57,7 @@ if [ $# -eq 0 ]; then
 fi
 
 case $1 in
-cvsconfig)
+autogen)
 	CVSConfigure
 	rm -f config.status config.cache
 	;;

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(WXWIN)\include,$(WXWIN)\lib\vc_dll\mswunivu,$(WXWIN)\contrib\include"
+				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(WXWIN)\include,$(WXWIN)\lib\vc_dll\mswunivu,$(WXWIN)\contrib\include,$(LIBSNDFILE)"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;__WXUNIVERSAL__;WXUSINGDLL;_WINDOWS;NOPCH;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(WXWIN)\include,$(WXWIN)\lib\vc_dll\mswunivu,$(WXWIN)\contrib\include"
+				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(WXWIN)\include,$(WXWIN)\lib\vc_dll\mswunivu,$(WXWIN)\contrib\include,$(LIBSNDFILE)"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;__WXUNIVERSAL__;WXUSINGDLL;_WINDOWS;NOPCH;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
