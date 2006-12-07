@@ -81,8 +81,8 @@ Identify_NameSpecifier(WChar *name, NameSpecifierPtr list)
 	length = DSAM_strlen(name);
 	if (!length)
 		return(GetNullSpec_NameSpecifier(list));
-	for (  ; StrNCmpNoCase_Utility_String(list->name, name) != 0 &&
-	  list->name != NULL; list++)
+	for ( ; list->name && StrNCmpNoCase_Utility_String(list->name, name) != 0;
+	  list++)
 		;
 	return(list->specifier);
 

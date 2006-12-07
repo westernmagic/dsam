@@ -359,10 +359,10 @@ Identify_ModuleReg(ModRegEntryPtr list, WChar *name)
 {
 	if (!list)
 		return(NULL);
-	for (  ; (StrNCmpNoCase_Utility_String(list->name, name) != 0) &&
-	  (list->name != NULL); list++)
+	for ( ; list->name && (StrNCmpNoCase_Utility_String(list->name, name) != 0);
+	  list++)
 		;
-	return ((list->name == NULL)? NULL: list);
+	return ((!list->name)? NULL: list);
 
 }
 

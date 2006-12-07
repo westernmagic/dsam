@@ -45,7 +45,7 @@ BooleanList_NSpecLists(int index)
 
 					{ wxT("OFF"),	GENERAL_BOOLEAN_OFF},
 					{ wxT("ON"),	GENERAL_BOOLEAN_ON},
-					{ wxT(""),		GENERAL_BOOLEAN_NULL},
+					{ NULL,			GENERAL_BOOLEAN_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -71,7 +71,7 @@ DiagModeList_NSpecLists(int index)
 					{ wxT("SCREEN"),		GENERAL_DIAGNOSTIC_SCREEN_MODE},
 					{ wxT("ERROR"),			GENERAL_DIAGNOSTIC_ERROR_MODE},
 					{ DEFAULT_FILE_NAME,	GENERAL_DIAGNOSTIC_FILE_MODE},
-					{ wxT(""),				GENERAL_DIAGNOSTIC_MODE_NULL},
+					{ NULL,					GENERAL_DIAGNOSTIC_MODE_NULL},
 				
 				};
 	return (&modeList[index]);
@@ -96,7 +96,7 @@ FitFuncModeList_NSpecLists(int index)
 					{ wxT("LOG_FUNC1"),		GENERAL_FIT_FUNC_LOG1_MODE},
 					{ wxT("LOG_FUNC2"),		GENERAL_FIT_FUNC_LOG2_MODE},
 					{ wxT("POLY_FUNC1"),	GENERAL_FIT_FUNC_POLY1_MODE},
-					{ wxT(""),				GENERAL_FIT_FUNC_NULL},
+					{ NULL,					GENERAL_FIT_FUNC_NULL},
 				
 				};
 	return (&modeList[index]);

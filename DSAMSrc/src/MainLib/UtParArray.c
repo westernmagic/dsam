@@ -100,15 +100,15 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	  wxT("'%s' mode ("), name);
 	Snprintf_Utility_String(p->desc[PARARRAY_PARAMETER], MAXLINE, wxT(
 	  "Parameters for '%s' function"), name);
-	for (list = p->modeList; *list->name != '\0'; list++) {
+	for (list = p->modeList; list->name; list++) {
 		Snprintf_Utility_String(workStr, LONG_STRING, wxT("'%s'"),
 		  list->name);
 		DSAM_strcat(p->desc[PARARRAY_MODE], workStr);
-		if (!lastListEntryFound && *(list + 2)->name == '\0') {
+		if (!lastListEntryFound && !(list + 2)->name) {
 			DSAM_strcat(p->desc[PARARRAY_MODE], wxT(" or "));
 			lastListEntryFound = TRUE;
 		} else {
-			if (*(list + 1)->name != '\0')
+			if ((list + 1)->name)
 				DSAM_strcat(p->desc[PARARRAY_MODE], wxT(", "));
 		}
 	}
@@ -194,7 +194,7 @@ SetMode_ParArray(ParArrayPtr parArray, WChar *modeName)
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
 	mode = Identify_NameSpecifier(modeName, parArray->modeList);
-	if (parArray->modeList[mode].name[0] == '\0') {
+	if (!parArray->modeList[mode].name) {
 		NotifyError(wxT("%s: Unknown '%s' mode (%s)."), funcName, parArray->
 		  name, modeName);
 		return(FALSE);
