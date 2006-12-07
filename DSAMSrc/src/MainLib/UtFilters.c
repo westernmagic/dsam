@@ -371,7 +371,6 @@ BOOLN
 InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
   double slope)
 {
-	static const WChar *funcName = wxT("InversePowerCompression_Filters");
 	int		chan;
 	ChanLen	i;
 	register	ChanData	*data;
@@ -399,7 +398,6 @@ BOOLN
 BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC)
 {
-	static const WChar *funcName = wxT("BrokenStick1Compression_Filters");
 	register ChanData	*data;
 	register double		aTerm, bCTerm;
 	int		chan;
@@ -437,7 +435,6 @@ BOOLN
 BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
   double *bB, double cC)
 {
-	static const WChar *funcName = wxT("BrokenStick1Compression2_Filters");
 	register ChanData	*data, a, b, c;
 	register double		aTerm, bCTerm;
 	int		chan;
@@ -480,7 +477,6 @@ BOOLN
 UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
   double bB, double cC, double dD)
 {
-	static const WChar *funcName = wxT("UptonBStick1Compression_Filters");
 	register ChanData	*data;
 	int		chan;
 	ChanLen	i;
@@ -511,7 +507,6 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
 BOOLN
 GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 {
-	static const WChar *funcName = wxT("GammaTone_Filters");
 	int		j, chan;
 	ChanLen	i;
 	GammaToneCoeffs *gC;
@@ -524,10 +519,10 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		gC = p[chan];
 		for (j = gC->cascade, ptr1 = gC->stateVector; j--; ) {
-			*y_1 = *ptr1++;
+			y_1 = ptr1++;
 			for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 			   data++) {
-				wn -= gC->b1 * *y_1 + gC->b2 * *ptr1;
+				wn = gC->b1 * *y_1 + gC->b2 * *ptr1;
 				*data = wn * gC->a0 + gC->a1 * *y_1; /* Final Yn */
 				*ptr1 = *y_1;	/* Update Yn-1 to Yn-2 */
 				*y_1 = wn;
