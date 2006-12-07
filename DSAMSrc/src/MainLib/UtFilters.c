@@ -522,7 +522,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 			y_1 = ptr1++;
 			for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 			   data++) {
-				wn = gC->b1 * *y_1 + gC->b2 * *ptr1;
+				wn = *data - gC->b1 * *y_1 - gC->b2 * *ptr1;/* Temp. var. */
 				*data = wn * gC->a0 + gC->a1 * *y_1; /* Final Yn */
 				*ptr1 = *y_1;	/* Update Yn-1 to Yn-2 */
 				*y_1 = wn;
