@@ -73,6 +73,7 @@ InitOperatorModeList_Utility_MathOp(void)
 
 			{ wxT("ADD"),		UTILITY_MATHOP_OPERATORMODE_ADD },
 			{ wxT("ABSOLUTE"),	UTILITY_MATHOP_OPERATORMODE_ABSOLUTE },
+			{ wxT("OFFSET"),	UTILITY_MATHOP_OPERATORMODE_OFFSET },
 			{ wxT("SCALE"),		UTILITY_MATHOP_OPERATORMODE_SCALE },
 			{ wxT("SQR"),		UTILITY_MATHOP_OPERATORMODE_SQR },
 			{ wxT("SUBTRACT"),	UTILITY_MATHOP_OPERATORMODE_SUBTRACT },
@@ -117,8 +118,8 @@ Init_Utility_MathOp(ParameterSpecifier parSpec)
 	mathOpPtr->parSpec = parSpec;
 	mathOpPtr->operatorModeFlag = TRUE;
 	mathOpPtr->operandFlag = TRUE;
-	mathOpPtr->operatorMode = UTILITY_MATHOP_OPERATORMODE_SCALE;
-	mathOpPtr->operand = 1.0;
+	mathOpPtr->operatorMode = UTILITY_MATHOP_OPERATORMODE_OFFSET;
+	mathOpPtr->operand = 0.0;
 
 	InitOperatorModeList_Utility_MathOp();
 	if (!SetUniParList_Utility_MathOp()) {
@@ -151,13 +152,13 @@ SetUniParList_Utility_MathOp(void)
 	}
 	pars = mathOpPtr->parList->pars;
 	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERATORMODE], wxT("OPERATOR"),
-	  wxT("Mathematical operator ('add', 'modulus', 'scale', 'sqr' or ")
-	  wxT("'subtract')."),
+	  wxT("Mathematical operator ('add', 'modulus', 'offset', 'scale', 'sqr' ")
+	  wxT("or 'subtract')."),
 	  UNIPAR_NAME_SPEC,
 	  &mathOpPtr->operatorMode, mathOpPtr->operatorModeList,
 	  (void * (*)) SetOperatorMode_Utility_MathOp);
 	SetPar_UniParMgr(&pars[UTILITY_MATHOP_OPERAND], wxT("OPERAND"),
-	  wxT("Operand (only used in scale mode at present)."),
+	  wxT("Operand (only used in 'scale' and 'offset' modes at present)."),
 	  UNIPAR_REAL,
 	  &mathOpPtr->operand, NULL,
 	  (void * (*)) SetOperand_Utility_MathOp);
@@ -216,8 +217,9 @@ SetOperatorMode_Utility_MathOp(WChar * theOperatorMode)
 	/*** Put any other required checks here. ***/
 	mathOpPtr->operatorModeFlag = TRUE;
 	mathOpPtr->operatorMode = specifier;
-	mathOpPtr->parList->pars[UTILITY_MATHOP_OPERAND].enabled = (mathOpPtr->
-	  operatorMode == UTILITY_MATHOP_OPERATORMODE_SCALE);
+	mathOpPtr->parList->pars[UTILITY_MATHOP_OPERAND].enabled = ((mathOpPtr->
+	  operatorMode == UTILITY_MATHOP_OPERATORMODE_OFFSET) || (mathOpPtr->
+	  operatorMode == UTILITY_MATHOP_OPERATORMODE_SCALE));
 	mathOpPtr->parList->updateFlag = TRUE;
 	return(TRUE);
 
@@ -474,6 +476,10 @@ Process_Utility_MathOp(EarObjectPtr data)
 		case UTILITY_MATHOP_OPERATORMODE_ABSOLUTE:
 			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ = fabs(*inPtr1++);
+			break;
+		case UTILITY_MATHOP_OPERATORMODE_OFFSET:
+			for (i = 0; i < outSignal->length; i++)
+				*outPtr++ = *inPtr1++ + mathOpPtr->operand;
 			break;
 		case UTILITY_MATHOP_OPERATORMODE_SCALE:
 			for (i = 0; i < outSignal->length; i++)
