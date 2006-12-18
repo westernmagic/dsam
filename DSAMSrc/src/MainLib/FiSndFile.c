@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <sndfile.h>
 
 #ifdef HAVE_CONFIG_H
@@ -94,7 +95,7 @@ GetWordSize_SndFile(int format)
  */
 
 BOOLN
-OpenFile_SndFile(WChar *fileName, int mode)
+OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 {
 	static const WChar *funcName = wxT("OpenFile_SndFile");
 	WChar	*parFilePath;
@@ -105,7 +106,7 @@ OpenFile_SndFile(WChar *fileName, int mode)
 	parFilePath = GetParsFileFPath_Common(fileName);
 	if ((p->type == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
 		p->sFInfo.samplerate = p->defaultSampleRate;
-		p->sFInfo.channels = p->numChannels;
+		p->sFInfo.channels = signal->numChannels;
 		p->sFInfo.format = p->type | p->subFormatType;
 		if (!sf_format_check(&p->sFInfo)) {
 			NotifyError(wxT("%s: Illegal output format for sound file."),
@@ -144,16 +145,15 @@ OpenFile_SndFile(WChar *fileName, int mode)
  */
  
 BOOLN
-ReadFrames_SndFile(EarObjectPtr data, sf_count_t length)
+ReadFrames_SndFile(SignalDataPtr outSignal, sf_count_t length)
 {
 	static const WChar *funcName = wxT("ReadFrames_SndFile");
 	register ChanData	*inPtr, *outPtr;
 	int		chan;
 	sf_count_t	count = 0, frames, i, bufferFrames;
 	DataFilePtr	p = dataFilePtr;
-	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
-	if (!InitBuffer_DataFile(funcName))
+	if (!InitBuffer_DataFile(outSignal, funcName))
 		return(FALSE);
 	bufferFrames = DATAFILE_BUFFER_FRAMES;
 	while (count < length) {
@@ -167,7 +167,7 @@ ReadFrames_SndFile(EarObjectPtr data, sf_count_t length)
 			inPtr = p->buffer + chan;
 			for (i = 0, inPtr = p->buffer + chan; i < frames; i++, inPtr +=
 			  outSignal->numChannels)
-				*outPtr++ = *inPtr;
+				*outPtr++ = *inPtr * p->normalise;
 		}
 		count += frames;
 	}
@@ -177,7 +177,62 @@ ReadFrames_SndFile(EarObjectPtr data, sf_count_t length)
 
 }
 
+/**************************** ParseTitleString *********************************/
+
+/*
+ * This function parses a title string extracting any valid settings.
+ */
+
+void
+ParseTitleString_SndFile(const char *titleString, SignalDataPtr signal)
+{
+	char	*p, *token, *parName, *parValue;
+
+	for (token = strtok((char *) titleString, SND_FILE_FORMAT_DELIMITERS); token;
+	  token = strtok(NULL, SND_FILE_FORMAT_DELIMITERS)) {
+		if ((p = strchr(token, SND_FILE_FORMAT_PAR_SEPARATOR)) == NULL)
+			continue;
+		*p = '\0';
+		parName = token;
+		parValue = p + 1;
+		if (isdigit(*parName)) {	/* Assume channel label */
+			int		chan = (int) strtol(parName, &p, 10);
+			if ((chan < 0) || (chan > signal->numChannels))
+				continue;
+			signal->info.chanLabel[chan] = strtod(parValue, &p);
+		} else {
+			switch (Identify_NameSpecifier(MBSToWCS_Utility_String(parName),
+			  DSAMFormatList_DataFile(0))) {
+			case DATA_FILE_INTERLEAVELEVEL:
+				SetInterleaveLevel_SignalData(signal, (uShort) strtol(parValue,
+				  &p, 10));
+				break;
+			case DATA_FILE_NUMWINDOWFRAMES:
+				SetNumWindowFrames_SignalData(signal, (uShort) strtol(parValue,
+				  &p, 10));
+				break;
+			case DATA_FILE_STATICTIMEFLAG:
+				SetStaticTimeFlag_SignalData(signal, (BOOLN) strtol(parValue,
+				  &p, 10));
+				break;
+			case DATA_FILE_OUTPUTTIMEOFFSET:
+				SetOutputTimeOffset_SignalData(signal, strtod(parValue, &p));
+				break;
+			case DATA_FILE_NORMALISATION:
+				dataFilePtr->normalise = strtod(parValue, &p);
+				break;
+			case DATA_FILE_DSAMVERSION:
+				break;
+			default:
+				;
+			}
+		}
+	}
+
+}
+
 /**************************** ReadFile ****************************************/
+
 /*
  * This function reads a file in Microsoft Wave format.
  * The data is stored in the output signal of an EarObject which will have
@@ -198,16 +253,15 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 	const char *titleString;
 	ChanLen	length;
 	DataFilePtr	p = dataFilePtr;
+	SignalDataPtr	outSignal;
 
-	if (!OpenFile_SndFile(fileName, SFM_READ)) {
+	if (!OpenFile_SndFile(fileName, SFM_READ, NULL)) {
 		NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
 		  fileName);
 		return(FALSE);
 	}
 	SetProcessName_EarObject(data, wxT("Read '%s' Sound data file"),
 	  GetFileNameFPath_Utility_String(fileName));
-	titleString = sf_get_string(p->sndFile, SF_STR_TITLE);
-	wprintf(wxT("titleString = '%s'\n"), titleString);
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->timeIndex ==
 	  PROCESS_START_TIME)) {
 	  	p->subFormatType = p->sFInfo.format & SF_FORMAT_SUBMASK;
@@ -229,11 +283,14 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}
+	outSignal = _OutSig_EarObject(data);
 	if (p->numChannels == 2)
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), 2);
+		SetInterleaveLevel_SignalData(outSignal, 2);
+	titleString = sf_get_string(p->sndFile, SF_STR_TITLE);
+	ParseTitleString_SndFile(titleString, outSignal);
 	sf_seek(p->sndFile, (int32) (data->timeIndex + p->timeOffsetCount),
 	  SEEK_SET);
-	ok = ReadFrames_SndFile(data, length);
+	ok = ReadFrames_SndFile(outSignal, length);
 	Free_SndFile();
 	return(ok);
 
@@ -252,7 +309,7 @@ GetDuration_SndFile(WChar *fileName)
 {
 	static const WChar *funcName = wxT("GetDuration_SndFile");
 
-	if (OpenFile_SndFile(fileName, SFM_READ)) {
+	if (OpenFile_SndFile(fileName, SFM_READ, NULL)) {
 		NotifyError(wxT("%s: Could not read initial file structure from '%s'."),
 		  funcName, fileName);
 		return(-1.0);
@@ -278,7 +335,7 @@ WriteFrames_SndFile(SignalDataPtr inSignal)
 	sf_count_t	count = 0, frames, i, bufferFrames;
 	DataFilePtr	p = dataFilePtr;
 
-	if (!InitBuffer_DataFile(funcName))
+	if (!InitBuffer_DataFile(inSignal, funcName))
 		return(FALSE);
 	bufferFrames = DATAFILE_BUFFER_FRAMES;
 	while (count < inSignal->length) {
@@ -333,7 +390,31 @@ CalculateNormalisation_SndFile(SignalDataPtr signal)
 
 }
 
-/**************************** CreateTitleString ********************************/
+
+/**************************** AddToString *************************************/
+
+/*
+ * Adds to a string, while checking that the string length is not exceeded.
+ */
+
+BOOLN
+AddToString_SndFile(char *a, size_t *aLen, char *b, size_t maxLen)
+{
+	static const WChar *funcName = wxT("AddToString_SndFile");
+	size_t	bLen = strlen(b);
+
+	if ((bLen + *aLen) > maxLen) {
+		NotifyError(wxT("%s: String too long for string concatination (%u)."),
+		  funcName);
+		return(FALSE);
+	}
+	strcat(a, b);
+	*aLen += bLen;
+	return(TRUE);
+
+}
+
+/**************************** CreateTitleString *******************************/
 
 /*
  * This function creates and returns the title string.
@@ -344,15 +425,73 @@ char *
 CreateTitleString_SndFile(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("CreateTitleString_SndFile");
-	char *s;
-	size_t	length = 20;
+	char *s, *channelString, mainParString[LONG_STRING], workStr[MAXLINE];
+	size_t	length, nameLen, mainStringLen, maxChannelStringLen, channelStringLen;
+	int		i;
+	NameSpecifierPtr	list;
+	DataFilePtr	p = dataFilePtr;
+	SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 
-	if ((s = (char *) malloc(length)) == NULL) {
+	mainStringLen = 0;
+	mainParString[0] = '\0';
+	for (list = DSAMFormatList_DataFile(0); list->name; list++) {
+		if (!AddToString_SndFile(mainParString, &mainStringLen, " ", LONG_STRING))
+			return(NULL);
+		if (!AddToString_SndFile(mainParString, &mainStringLen,
+		  ConvUTF8_Utility_String(list->name), LONG_STRING))
+			return(NULL);
+		switch (list->specifier) {
+		case DATA_FILE_INTERLEAVELEVEL:
+			sprintf(workStr, ":%d", inSignal->interleaveLevel);
+			break;
+		case DATA_FILE_NUMWINDOWFRAMES:
+			sprintf(workStr, ":%d", inSignal->interleaveLevel);
+			break;
+		case DATA_FILE_STATICTIMEFLAG:
+			sprintf(workStr, ":%d", inSignal->staticTimeFlag);
+			break;
+		case DATA_FILE_OUTPUTTIMEOFFSET:
+			sprintf(workStr, ":%g", inSignal->outputTimeOffset);
+			break;
+		case DATA_FILE_NORMALISATION:
+			sprintf(workStr, ":%.10g", p->normalise);
+			break;
+		case DATA_FILE_DSAMVERSION:
+			sprintf(workStr, ":%s", ConvUTF8_Utility_String(DSAM_VERSION));
+			break;
+		default:
+			NotifyError(wxT("%s: Unknown DSAM foramt specifier (%d)"),
+			  funcName);
+			return(NULL);
+		}
+		if (!AddToString_SndFile(mainParString, &mainStringLen, workStr,
+		  LONG_STRING))
+			return(NULL);
+	}
+	maxChannelStringLen = DATAFILE_CHANNEL_LABEL_SPACE * inSignal->numChannels;
+	if ((channelString = (char *) malloc(maxChannelStringLen + 1)) == NULL) {
+		NotifyError(wxT("%s: Out of memory for channelString (%d)."), funcName,
+		  maxChannelStringLen);
+		return(NULL);
+	}
+	channelStringLen = 0;
+	*channelString = '\0';
+	for (i = 0; i < inSignal->numChannels; i++) {
+		sprintf(workStr, " %d:%g", i, inSignal->info.chanLabel[i]);
+		if (!AddToString_SndFile(channelString, &channelStringLen, workStr,
+		  maxChannelStringLen)) {
+			free(channelString);
+			return(NULL);
+		}
+	}
+	if ((s = (char *) malloc(mainStringLen + channelStringLen + 1)) == NULL) {
 		NotifyError(wxT("%s: Out of memory for string (%d)."), funcName,
 		  length);
 		return(NULL);
 	}
-	sprintf(s, "DSAM googoo");
+	strcpy(s, mainParString);
+	strcat(s, channelString);
+	free(channelString);
 	return(s);
 
 }
@@ -379,7 +518,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	  GetFileNameFPath_Utility_String(fileName));
 	p->defaultSampleRate = 1.0 / inSignal->dt;
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->firstSectionFlag)) {
-		if (!OpenFile_SndFile(fileName, SFM_WRITE)) {
+		if (!OpenFile_SndFile(fileName, SFM_WRITE, inSignal)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
 			  fileName);
 			return(FALSE);
@@ -390,7 +529,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 		sf_set_string(p->sndFile, SF_STR_TITLE, titleString);
 		free(titleString);
 	} else {
-		if (!OpenFile_SndFile(fileName, SFM_RDWR)) {
+		if (!OpenFile_SndFile(fileName, SFM_RDWR, inSignal)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
 			  fileName);
 			return(FALSE);

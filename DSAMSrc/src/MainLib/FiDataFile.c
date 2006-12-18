@@ -85,7 +85,7 @@ NameSpecifier	*soundSubFormatList = NULL;
 /****************************** InitEndianModeList ****************************/
 
 /*
- * This function initialises the 'normalisationMode' list array
+ * This function initialises the 'endianMode' list array
  */
 
 BOOLN
@@ -101,6 +101,29 @@ InitEndianModeList_DataFile(void)
 		};
 	dataFilePtr->endianModeList = modeList;
 	return(TRUE);
+
+}
+
+/****************************** InitDSAMFormatList ***************************/
+
+/*
+ * This function initialises the 'DSAM Format' list array
+ */
+
+NameSpecifier *
+DSAMFormatList_DataFile(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("IL"),	DATA_FILE_INTERLEAVELEVEL },
+			{ wxT("NWF"),	DATA_FILE_NUMWINDOWFRAMES },
+			{ wxT("STF"),	DATA_FILE_STATICTIMEFLAG },
+			{ wxT("OTO"),	DATA_FILE_OUTPUTTIMEOFFSET },
+			{ wxT("NORM"),	DATA_FILE_NORMALISATION },
+			{ wxT("VER"),	DATA_FILE_DSAMVERSION },
+			{ NULL,						-1 }
+		};
+	return (&modeList[index]);
 
 }
 
@@ -1121,6 +1144,7 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 				return(FALSE);
 			}
 		}
+		dataFilePtr->normalise = 1.0;
 		dataFilePtr->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
@@ -1135,15 +1159,15 @@ InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
  */
 
 BOOLN
-InitBuffer_DataFile(const WChar *callingFunction)
+InitBuffer_DataFile(SignalDataPtr signal, const WChar *callingFunction)
 {
 	static const WChar *funcName = wxT("InitBuffer_DataFile");
 	DataFilePtr	p = dataFilePtr;
 
 	if (p->buffer)
 		return(TRUE);
-	if ((p->buffer = (double *) calloc(p->numChannels *
-	  DATAFILE_BUFFER_FRAMES, sizeof(double))) == NULL) {
+	if ((p->buffer = (double *) calloc(signal->numChannels * signal->
+	  interleaveLevel * DATAFILE_BUFFER_FRAMES, sizeof(double))) == NULL) {
 		NotifyError(wxT("%s (%s): Out of memory for dataBuffer."),
 		  callingFunction, funcName);
 		return(FALSE);

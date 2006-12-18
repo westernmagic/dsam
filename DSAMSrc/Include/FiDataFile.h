@@ -61,6 +61,7 @@
 #define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("OUT")
 #define DATAFILE_BUFFER_FRAMES	1024	
 #define DATAFILE_NEGLIGIBLE_SR_DIFF		1.0e-10
+#define DATAFILE_CHANNEL_LABEL_SPACE	9
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
 #define	MEMORY_FILE_DIRN		'+'		/*           "                 */
 #define	MAXLINE_LARGE			256		/* For very "wide" ASCII files */
@@ -107,6 +108,17 @@ typedef enum {
 	DATA_FILE_ENDIAN_NULL
 
 } DataFileEndianModeSpecifier;
+
+typedef enum {
+
+	DATA_FILE_INTERLEAVELEVEL,
+	DATA_FILE_NUMWINDOWFRAMES,
+	DATA_FILE_STATICTIMEFLAG,
+	DATA_FILE_OUTPUTTIMEOFFSET,
+	DATA_FILE_NORMALISATION,
+	DATA_FILE_DSAMVERSION
+
+} DataFileDSAMFormatSpecifier;
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -171,6 +183,8 @@ BOOLN	CheckPars_DataFile(void);
 
 BOOLN	CheckParsRead_DataFile(void);
 
+NameSpecifier *	DSAMFormatList_DataFile(int index);
+
 ChanLen	FileLength_DataFile(FILE *fp);
 
 FileFormatSpecifier		Format_DataFile(WChar *formatExtension);
@@ -187,9 +201,11 @@ BOOLN	InitSubFormatTypeList_DataFile(void);
 
 BOOLN	Init_DataFile(ParameterSpecifier parSpec);
 
-BOOLN	InitBuffer_DataFile(const WChar *callingFunction);
+BOOLN	InitBuffer_DataFile(SignalDataPtr signal, const WChar *callingFunction);
 
 BOOLN	InitEndianModeList_DataFile(void);
+
+BOOLN	InitModule_DataFile(ModulePtr theModule);
 
 BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
 		  double sampleRate);
@@ -223,8 +239,6 @@ BOOLN	SetFileName_DataFile(WChar *fileName);
 BOOLN	SetGain_DataFile(double theGain);
 
 ChanLen	SetIOSectionLength_DataFile(EarObjectPtr data);
-
-BOOLN	InitModule_DataFile(ModulePtr theModule);
 
 BOOLN	SetNumChannels_DataFile(int numChannels);
 
