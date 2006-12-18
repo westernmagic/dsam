@@ -782,6 +782,8 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 
 /*
  * This routine resets the process thread-related variables.
+ * The 'numPeriods' values should only be reset when the module's
+ * 'updateProcessVariablesFlag' or the process' 'updateProcessFlag' is set.
  */
 
 void
@@ -790,7 +792,6 @@ ResetProcessThread_Analysis_Histogram(EarObjectPtr data, int i)
 	HistogramPtr	p = histogramPtr;
 
 	p->bufferSamples[i] = 0;
-	p->numPeriods[i] = 0;
 	p->offsetIndex[i] = (ChanLen) floor(p->timeOffset / _InSig_EarObject(data,
 	  0)->dt + 0.5);
 	p->extraSample[i] = (p->offsetIndex[i])? 0: 1;
