@@ -3,5 +3,5 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= AMS_ng.dsp
+EXTRA_DIST	= AMS_ng.vcproj
 

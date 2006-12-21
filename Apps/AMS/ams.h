@@ -61,7 +61,7 @@
 #endif
 
 #define	AMS_NUM_PARS				3		/* No. of application parameters. */
-#define	LOCK_FILE					wxT("."PROGRAM_NAME"_LCK")
+#define	LOCK_FILE					wxT(".") PROGRAM_NAME wxT("_LCK")
 #define AMS_HELP					wxT("AMSHelp")
 #define AMS_TUTORIAL_HELP			wxT("AMSTutorials")
 

@@ -3,5 +3,5 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= AMS.dsp
+EXTRA_DIST	= AMS.vcproj
 
