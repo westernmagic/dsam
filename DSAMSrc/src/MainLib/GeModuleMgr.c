@@ -1037,3 +1037,25 @@ FreeNull_ModuleMgr(void)
 	
 }
 
+/**************************** InLineProcess ***********************************/
+
+/*
+ * This function checks whether this module is being used in-line within an 
+ * EarObject pipline.
+ * This is checked by ensuring that the calling module's "RunProcess" function.
+ * is the same as the process module's "RunProcess" function.
+ */
+
+BOOLN
+InLineProcess_ModuleMgr(EarObjectPtr data, BOOLN (* RunProcess)(
+  EarObjectPtr theObject))
+{
+	static const WChar *funcName = wxT("InLineProcess_ModuleMgr");
+
+	if (data->module && (data->module->RunProcess == RunProcess)) {
+		return(TRUE);
+	}
+	return(FALSE);
+
+}
+

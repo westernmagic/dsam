@@ -226,6 +226,9 @@ UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName);
 
 ModulePtr	Init_ModuleMgr(WChar *name);
 
+BOOLN	InLineProcess_ModuleMgr(EarObjectPtr data, BOOLN (* RunProcess)(
+		  EarObjectPtr theObject));
+
 void	LinkGlueRoutine_ModuleMgr(void);
 
 void *	NoFunction_ModuleMgr(void);

@@ -1632,9 +1632,7 @@ SetProcessMode_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("SetProcessMode_SignalDisp");
 
-	if ((data->processName == NULL) || (DSAM_strncmp(data->processName,
-		  DISPLAY_PROCESS_NAME, DSAM_strlen(DISPLAY_PROCESS_NAME)) == 0) ||
-		  (DSAM_strcmp(data->processName, NULL_MODULE_PROCESS_NAME) == 0)) {
+	if (InLineProcess_ModuleMgr(data, ShowSignal_SignalDisp)) {
 		SetProcessName_EarObject(data, wxT("%s (%d)"), DISPLAY_PROCESS_NAME,
 		  (int) data->handle);
 		data->outSignalPtr = data->inSignal[0];
