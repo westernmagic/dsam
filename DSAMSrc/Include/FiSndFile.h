@@ -14,16 +14,36 @@
 #ifndef	_FISNDFILE_H
 #define _FISNDFILE_H	1
 
+#include <sndfile.h>
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
 #define SND_FILE_FORMAT_DELIMITERS		" "
 #define SND_FILE_FORMAT_PAR_SEPARATOR	':'
+#define SND_FILE_TEST_FILE_MEMORY_SIZE	512
+
+/******************************************************************************/
+/*************************** Macro definitions ********************************/
+/******************************************************************************/
+
+#define SND_FILE_ARRAY_LEN(x)	((int) (sizeof (x)) / (sizeof ((x) [0])))
+#define SND_FILE_VIO_PTR(earObj)	(((DataFilePtr) (earObj)->module->parsPtr)->vIOPtr)
+
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef struct {
+	
+	sf_count_t	offset;
+	sf_count_t	length;
+	sf_count_t	maxLength;
+	unsigned char *data;
+
+} DFVirtualIO, *DFVirtualIOPtr ;
 
 /******************************************************************************/
 /*************************** External variables *******************************/
@@ -41,7 +61,11 @@ __BEGIN_DECLS
 
 void	Free_SndFile(void);
 
+void	FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p);
+
 double	GetDuration_SndFile(WChar *fileName);
+
+BOOLN	InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength);
 
 BOOLN	ReadFile_SndFile(WChar *fileName, EarObjectPtr data);
 

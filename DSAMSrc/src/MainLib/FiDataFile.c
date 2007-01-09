@@ -347,6 +347,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 		Free_DataFile();
 		return(FALSE);
 	}
+	dataFilePtr->titleString = NULL;
 	dataFilePtr->outputTimeOffset = 0.0;
 	dataFilePtr->timeOffsetIndex = 0;
 	dataFilePtr->timeOffsetCount = 0;
@@ -354,6 +355,8 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->type = NULL_DATA_FILE;
 	ResetSFInfo_DataFile(&dataFilePtr->sFInfo);
 	dataFilePtr->sndFile = NULL;
+	dataFilePtr->vIOFuncs = NULL;
+	dataFilePtr->vIOPtr = NULL;
 	dataFilePtr->buffer = NULL;
 	return(TRUE);
 
@@ -375,6 +378,10 @@ Free_DataFile(void)
 {
 	if (dataFilePtr == NULL)
 		return(TRUE);
+	if (dataFilePtr->vIOFuncs)
+		free(dataFilePtr->vIOFuncs);
+	if (dataFilePtr->vIOPtr && !dataFilePtr->inputMode)
+		FreeVirtualIOMemory_SndFile(&dataFilePtr->vIOPtr);
 	Free_SndFile();
 	FreeProcessVariables_DataFile();
 	if (dataFilePtr->parList)
@@ -673,19 +680,16 @@ OpenFile_DataFile(WChar *fileName, char *mode)
 {
 	static const WChar *funcName = wxT("OpenFile_DataFile");
 	WChar	*parFilePath;
-	FILE	*fp /*, *dummy = stdout*/;
+	FILE	*fp, *dummy = stdout;
+	DataFilePtr	p = dataFilePtr;
 
-	/*uPortableIOPtr = dataFilePtr->uIOPtr;*/
 	switch (*fileName) {
 	case STDIN_STDOUT_FILE_DIRN:
 		return((mode[0] == 'r')? stdin: stdout);
 	case MEMORY_FILE_DIRN: /* Memory pointer */
-/*		if (uPortableIOPtr == NULL)
-			return((FILE *) NULL);
-		uPortableIOPtr->memPtr = uPortableIOPtr->memStart;
 		return(dummy);
-*/	default:
-/*		FreeMemory_UPortableIO(&dataFilePtr->uIOPtr);*/
+	default:
+		Free_SndFile();
 		parFilePath = GetParsFileFPath_Common(fileName);
 		if ((fp = DSAM_fopen(parFilePath, mode)) == NULL) {
 			NotifyError(wxT("%s: Couldn't open '%s' ('%s')."), funcName,
@@ -1367,7 +1371,8 @@ BOOLN
 WriteOutSignal_DataFile_Named(EarObjectPtr data)
 {
 	if (!data->threadRunFlag) {
-		_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
+		if (InLineProcess_ModuleMgr(data, WriteOutSignal_DataFile_Named))
+			_OutSig_EarObject(data) = _InSig_EarObject(data, 0);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

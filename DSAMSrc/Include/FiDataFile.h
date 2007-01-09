@@ -48,6 +48,7 @@
 #define _FIDATAFILE_H	1
 
 #include <sndfile.h>
+#include "FiSndFile.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -148,6 +149,7 @@ typedef struct {
 	NameSpecifier	*endianModeList;
 	UniParListPtr	parList;
 	BOOLN	inputMode;
+	char	*titleString;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave etc. */
 	double	outputTimeOffset;
 	ChanLen	timeOffsetIndex;
@@ -157,6 +159,8 @@ typedef struct {
 	FileFormatSpecifier	type;
 	SF_INFO	sFInfo;
 	SNDFILE	*sndFile;
+	SF_VIRTUAL_IO	*vIOFuncs;
+	DFVirtualIOPtr	vIOPtr;
 	double	*buffer;
 
 } DataFile, *DataFilePtr;

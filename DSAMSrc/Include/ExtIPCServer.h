@@ -21,8 +21,6 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtNameSpecs.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtDatum.h"
 #include "ExtIPCUtils.h"
 

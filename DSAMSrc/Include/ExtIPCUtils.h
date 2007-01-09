@@ -20,8 +20,7 @@
 #endif
 
 #include "UtNameSpecs.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
+#include "FiSndFile.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -89,7 +88,7 @@ class IPCUtils {
 	bool	inProcessConnectedFlag, outProcessConnectedFlag;
 	EarObjectPtr	outProcess, inProcess;
 	EarObjectPtr	inProcessCustomer, outProcessSupplier;
-	UPortableIOPtr	inUIOPtr, outUIOPtr;
+	DFVirtualIOPtr	inVIOPtr;
 
   public:
 
@@ -104,9 +103,8 @@ class IPCUtils {
 	EarObjectPtr	GetInProcess(void)	{ return inProcess; }
 	bool	InProcessConnected(void)	{ return inProcessConnectedFlag; }
 	EarObjectPtr	GetOutProcess(void)	{ return outProcess; }
-	UPortableIOPtr	GetInUIOPtr(void)	{ return inUIOPtr; }
-	UPortableIOPtr	GetOutUIOPtr(void)	{ return outUIOPtr; }
-	bool	InitInputMemory(ChanLen length);
+	DFVirtualIOPtr	GetInVIOPtr(void)	{ return inVIOPtr; }
+	bool	InitInputMemory(sf_count_t length);
 	bool	InitInProcess(void);
 	bool	InitOutProcess(void);
 	void	ResetInProcess(void);
@@ -125,8 +123,6 @@ class IPCUtils {
 /******************************************************************************/
 
 NameSpecifier *	CommandList_IPCUtils(int index);
-EarObjectPtr	InitOutProcess_IPCUtils(UPortableIOPtr uIOPtr,
-				  EarObjectPtr simProcess);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

@@ -86,6 +86,222 @@ GetWordSize_SndFile(int format)
 
 }
 
+/**************************** FreeVirtualIOMemory *****************************/
+
+/*
+ * This routine frees the memory allocated for memory reading.
+ */
+
+void
+FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p)
+{
+	if (*p == NULL)
+		return;
+	if ((*p)->data != NULL)
+		free((*p)->data);
+	free((*p));
+	(*p) = NULL;
+
+}
+
+/**************************** InitVirtualIOMemory *****************************/
+
+/*
+ * This routine initialises the memory pointers module parameters to values.
+ * It returns a pointer to the structures memory if successful, otherwise it
+ * returns NULL.
+ */
+
+BOOLN
+InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
+{
+	static const WChar *funcName = wxT("InitMemory_SndFile");
+	
+	if (!(*p)) {
+		if (((*p) = (DFVirtualIOPtr) malloc(sizeof(DFVirtualIO))) == NULL) {
+			NotifyError(wxT("%s: Cannot allocate memoryfor virtual IO memory ")
+			  wxT("pointer."), funcName);
+			return(FALSE);
+		}
+		(*p)->data = NULL;
+	}
+	if ((*p)->maxLength != maxLength) {
+		if ((*p)->data)
+			free((*p)->data);
+		if (((*p)->data = (char *) malloc(maxLength)) == NULL) {
+			NotifyError(wxT("%s: Cannot allocate data memory."), funcName);
+			free((*p));
+			*p = NULL;
+			return(FALSE);
+		}
+	}
+	(*p)->offset = 0;
+	(*p)->length = 0;
+	(*p)->maxLength = maxLength;
+	return(TRUE);
+
+}
+
+/**************************** VirtualIOGetFileLen *****************************/
+
+static sf_count_t
+VirtualIOGetFileLen_SndFile(void *user_data)
+{
+	DFVirtualIOPtr vf = (DFVirtualIOPtr) user_data ;
+
+	return vf->length;
+
+}
+
+/**************************** VirtualIOSeek ***********************************/
+
+static sf_count_t
+VirtualIOSeek_SndFile(sf_count_t offset, int whence, void *user_data)
+{
+	DFVirtualIOPtr vf = (DFVirtualIOPtr) user_data ;
+
+	switch (whence) {
+	case SEEK_SET :
+		vf->offset = offset ;
+		break ;
+	case SEEK_CUR :
+		vf->offset = vf->offset + offset ;
+		break ;
+	case SEEK_END :
+		vf->offset = vf->length + offset ;
+		break ;
+	default :
+		break ;
+	}
+
+	return vf->offset ;
+}
+
+/**************************** VirtualIORead ***********************************/
+
+static sf_count_t
+VirtualIORead_SndFile(void *ptr, sf_count_t count, void *user_data)
+{
+	DFVirtualIOPtr vf = (DFVirtualIOPtr) user_data ;
+
+	/*
+	**	This will break badly for files over 2Gig in length, but
+	**	is sufficient for testing.
+	*/
+	if (vf->offset + count > vf->length)
+		count = vf->length - vf->offset ;
+
+	memcpy (ptr, vf->data + vf->offset, count) ;
+	vf->offset += count ;
+
+	return count;
+
+}
+
+/**************************** VirtualIOWrite **********************************/
+
+static sf_count_t
+VirtualIOWrite_SndFile(const void *ptr, sf_count_t count, void *user_data)
+{
+	DFVirtualIOPtr vf = (DFVirtualIOPtr) user_data ;
+	/*
+	**	This will break badly for files over 2Gig in length, but
+	**	is sufficient for testing.
+	*/
+	if (vf->offset >= vf->maxLength)
+		return 0 ;
+
+	if (vf->offset + count > vf->maxLength)
+		count = sizeof (vf->data) - vf->offset ;
+
+	memcpy (vf->data + vf->offset, ptr, (size_t) count) ;
+	vf->offset += count ;
+
+	if (vf->offset > vf->length)
+		vf->length = vf->offset ;
+
+	return count ;
+
+}
+
+/**************************** VirtualIOTell ***********************************/
+
+static sf_count_t
+VirtualIOTell_SndFile(void *user_data)
+{
+	DFVirtualIOPtr vf = (DFVirtualIOPtr) user_data ;
+
+	return vf->offset ;
+} /* vftell */
+
+/**************************** InitVirtualIO ***********************************/
+
+BOOLN
+InitVirtualIO_SndFile(void)
+{
+	static const WChar *funcName = wxT("InitVirtualIO_SndFile");
+	DataFilePtr	p = dataFilePtr;
+
+	if (p->vIOFuncs)
+		return(TRUE);
+	if ((p->vIOFuncs = (SF_VIRTUAL_IO *) malloc(sizeof(SF_VIRTUAL_IO))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for virtual IO structure."),
+		  funcName);
+		return(FALSE);
+	}
+	p->vIOFuncs->get_filelen = VirtualIOGetFileLen_SndFile;
+	p->vIOFuncs->seek = VirtualIOSeek_SndFile;
+	p->vIOFuncs->read = VirtualIORead_SndFile;
+	p->vIOFuncs->write = VirtualIOWrite_SndFile;
+	p->vIOFuncs->tell = VirtualIOTell_SndFile;
+	return(TRUE);
+
+}
+
+/**************************** DetermineFileSize *******************************/
+
+/*
+ * This routine determines the size of a file by a test writing of the file
+ * format chosen to memory.
+ */
+
+sf_count_t
+DetermineFileSize_SndFile(SignalDataPtr signal)
+{
+	static const WChar *funcName = wxT("DetermineFileSize_SndFile");
+	int		i;
+	double	a[][2] = {{1.0}, {1.0, 2.0}};
+	sf_count_t	length[2], headerSize, sampleSize;
+	DataFilePtr	p = dataFilePtr;
+	DFVirtualIOPtr	vIOPtr = NULL;
+	SNDFILE *	fp;
+	SF_INFO sFInfo = p->sFInfo;
+
+	if (!InitVirtualIOMemory_SndFile(&vIOPtr, SND_FILE_TEST_FILE_MEMORY_SIZE)) {
+		NotifyError(wxT("%s: Out of memory for test memory (%d)"), funcName,
+		  SND_FILE_TEST_FILE_MEMORY_SIZE);
+		return(0);
+	}
+	sFInfo.channels = 1;
+	for (i = 0; i < 2; i++) {
+		if ((fp = sf_open_virtual(p->vIOFuncs, SFM_WRITE, &sFInfo, vIOPtr)) == 
+		  NULL) {
+			NotifyError(wxT("%s: Couldn't open virtual data file: error '%s'"),
+			  funcName, MBSToWCS_Utility_String(sf_strerror(NULL)));
+			return(FALSE);
+		}
+		sf_set_string(fp, SF_STR_TITLE, p->titleString);
+		sf_write_double(fp, a[i], SND_FILE_ARRAY_LEN(a[i]));
+		sf_close(fp);
+		length[i] = vIOPtr->length;
+	}
+	FreeVirtualIOMemory_SndFile(&vIOPtr);
+	sampleSize = length[1] - length[0];
+	headerSize = length[0] - sampleSize;
+	return(headerSize + sampleSize * signal->length * signal->numChannels);
+
+}
+
 /**************************** OpenFile ****************************************/
 
 /*
@@ -103,7 +319,6 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 
 	if (p->sndFile)
 		Free_SndFile();
-	parFilePath = GetParsFileFPath_Common(fileName);
 	if ((p->type == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
 		p->sFInfo.samplerate = p->defaultSampleRate;
 		p->sFInfo.channels = signal->numChannels;
@@ -129,10 +344,49 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 			}
 		}
 	}
-	if ((p->sndFile = sf_open(ConvUTF8_Utility_String(parFilePath), mode,
-	  &p->sFInfo)) == NULL) {
-		NotifyError(wxT("%s: Could not open file '%s'\n"), funcName, fileName);
+	switch (*fileName) {
+	case STDIN_STDOUT_FILE_DIRN:
+		/*return((mode[0] == 'r')? stdin: stdout);*/
+		NotifyWarning(wxT("%s: Pipes not yet implemented."), funcName);
 		return(FALSE);
+	case MEMORY_FILE_DIRN: /* Memory pointer */
+		InitVirtualIO_SndFile();
+		switch (mode) {
+		case SFM_WRITE:
+			if (!InitVirtualIOMemory_SndFile(&p->vIOPtr,
+			  DetermineFileSize_SndFile(signal))) {
+				NotifyError(wxT("%s: Could not initialise virtual memory"),
+				  funcName);
+				return(FALSE);
+			}
+			break;
+		case SFM_READ:
+			if (!p->vIOPtr) {
+				NotifyError(wxT("%s: Memory not allocated for virtual IO ")
+				  wxT("Reading."),
+				  funcName);
+				return(FALSE);
+			}
+			p->vIOPtr->offset = 0;
+			break;
+		default:
+			NotifyError(wxT("%s: Mode not implemented (%d)."), funcName,
+			  mode);
+		}
+		if ((p->sndFile = sf_open_virtual(p->vIOFuncs, mode, &p->sFInfo,
+		  p->vIOPtr)) == NULL) {
+			NotifyError(wxT("%s: Couldn't open virtual data file: error '%s'"),
+			  funcName, MBSToWCS_Utility_String(sf_strerror(NULL)));
+			return(FALSE);
+		}
+		return(TRUE);
+	default:
+		parFilePath = GetParsFileFPath_Common(fileName);
+		if ((p->sndFile = sf_open(ConvUTF8_Utility_String(parFilePath), mode,
+		  &p->sFInfo)) == NULL) {
+			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName, fileName);
+			return(FALSE);
+		}
 	}
 	return(TRUE);
 
@@ -422,7 +676,7 @@ AddToString_SndFile(char *a, size_t *aLen, char *b, size_t maxLen)
  */
  
 char *
-CreateTitleString_SndFile(EarObjectPtr data)
+CreateTitleString_SndFile(SignalDataPtr signal)
 {
 	static const WChar *funcName = wxT("CreateTitleString_SndFile");
 	char *s, *channelString, mainParString[LONG_STRING], workStr[MAXLINE];
@@ -430,7 +684,6 @@ CreateTitleString_SndFile(EarObjectPtr data)
 	int		i;
 	NameSpecifierPtr	list;
 	DataFilePtr	p = dataFilePtr;
-	SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 
 	mainStringLen = 0;
 	mainParString[0] = '\0';
@@ -442,16 +695,16 @@ CreateTitleString_SndFile(EarObjectPtr data)
 			return(NULL);
 		switch (list->specifier) {
 		case DATA_FILE_INTERLEAVELEVEL:
-			sprintf(workStr, ":%d", inSignal->interleaveLevel);
+			sprintf(workStr, ":%d", signal->interleaveLevel);
 			break;
 		case DATA_FILE_NUMWINDOWFRAMES:
-			sprintf(workStr, ":%d", inSignal->interleaveLevel);
+			sprintf(workStr, ":%d", signal->interleaveLevel);
 			break;
 		case DATA_FILE_STATICTIMEFLAG:
-			sprintf(workStr, ":%d", inSignal->staticTimeFlag);
+			sprintf(workStr, ":%d", signal->staticTimeFlag);
 			break;
 		case DATA_FILE_OUTPUTTIMEOFFSET:
-			sprintf(workStr, ":%g", inSignal->outputTimeOffset);
+			sprintf(workStr, ":%g", signal->outputTimeOffset);
 			break;
 		case DATA_FILE_NORMALISATION:
 			sprintf(workStr, ":%.10g", p->normalise);
@@ -468,7 +721,7 @@ CreateTitleString_SndFile(EarObjectPtr data)
 		  LONG_STRING))
 			return(NULL);
 	}
-	maxChannelStringLen = DATAFILE_CHANNEL_LABEL_SPACE * inSignal->numChannels;
+	maxChannelStringLen = DATAFILE_CHANNEL_LABEL_SPACE * signal->numChannels;
 	if ((channelString = (char *) malloc(maxChannelStringLen + 1)) == NULL) {
 		NotifyError(wxT("%s: Out of memory for channelString (%d)."), funcName,
 		  maxChannelStringLen);
@@ -476,8 +729,8 @@ CreateTitleString_SndFile(EarObjectPtr data)
 	}
 	channelStringLen = 0;
 	*channelString = '\0';
-	for (i = 0; i < inSignal->numChannels; i++) {
-		sprintf(workStr, " %d:%g", i, inSignal->info.chanLabel[i]);
+	for (i = 0; i < signal->numChannels; i++) {
+		sprintf(workStr, " %d:%g", i, signal->info.chanLabel[i]);
 		if (!AddToString_SndFile(channelString, &channelStringLen, workStr,
 		  maxChannelStringLen)) {
 			free(channelString);
@@ -510,26 +763,26 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("WriteFile_SndFile");
 	BOOLN	ok = TRUE;
-	char	*titleString;
 	DataFilePtr	p = dataFilePtr;
-	SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	SetProcessName_EarObject(data, wxT("Output '%s' Sound data file"),
 	  GetFileNameFPath_Utility_String(fileName));
-	p->defaultSampleRate = 1.0 / inSignal->dt;
+	p->defaultSampleRate = 1.0 / outSignal->dt;
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->firstSectionFlag)) {
-		if (!OpenFile_SndFile(fileName, SFM_WRITE, inSignal)) {
+		if (p->titleString)
+			free(p->titleString);
+		dataFilePtr->normalise = CalculateNormalisation_SndFile(outSignal);
+		if ((p->titleString = CreateTitleString_SndFile(outSignal)) == NULL)
+			return(FALSE);
+		if (!OpenFile_SndFile(fileName, SFM_WRITE, outSignal)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
 			  fileName);
 			return(FALSE);
 		}
-		dataFilePtr->normalise = CalculateNormalisation_SndFile(inSignal);
-		if ((titleString = CreateTitleString_SndFile(data)) == NULL)
-			return(FALSE);
-		sf_set_string(p->sndFile, SF_STR_TITLE, titleString);
-		free(titleString);
+		sf_set_string(p->sndFile, SF_STR_TITLE, p->titleString);
 	} else {
-		if (!OpenFile_SndFile(fileName, SFM_RDWR, inSignal)) {
+		if (!OpenFile_SndFile(fileName, SFM_RDWR, outSignal)) {
 			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName,
 			  fileName);
 			return(FALSE);
@@ -540,8 +793,8 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
  			  funcName, MBSToWCS_Utility_String(sf_strerror(p->sndFile)));
  			return(FALSE);
 		}
-		if ((p->sFInfo.channels != inSignal->numChannels) || (fabs(p->
-		  sFInfo.samplerate - (1.0 / inSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
+		if ((p->sFInfo.channels != outSignal->numChannels) || (fabs(p->
+		  sFInfo.samplerate - (1.0 / outSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
 		  (p->sFInfo.format | SF_FORMAT_SUBMASK != dataFilePtr->
 		  subFormatType)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
@@ -550,7 +803,9 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 		}
 		sf_seek(p->sndFile, 0, SEEK_END);
 	}
-	ok = WriteFrames_SndFile(inSignal);
+	ok = WriteFrames_SndFile(outSignal);
+	free(p->titleString);
+	p->titleString = NULL;
 	Free_SndFile();
 	return(ok);
 	
