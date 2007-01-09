@@ -33,8 +33,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
+#include "FiSndFile.h"
 #include "FiDataFile.h"
 #include "ExtIPCUtils.h"
 
@@ -50,8 +49,7 @@
 
 IPCUtils::IPCUtils(void)
 {
-	inUIOPtr = NULL;
-	outUIOPtr = NULL;
+	inVIOPtr = NULL;
 	outProcess = NULL;
 	inProcess = NULL;
 	inProcessCustomer = NULL;
@@ -65,10 +63,6 @@ IPCUtils::IPCUtils(void)
 
 IPCUtils::~IPCUtils(void)
 {
-	if (inUIOPtr)
-		FreeMemory_UPortableIO(&inUIOPtr);
-	if (outUIOPtr)
-		FreeMemory_UPortableIO(&outUIOPtr);
 	ResetOutProcess();
 	ResetInProcess();
 
@@ -116,7 +110,6 @@ IPCUtils::InitOutProcess(void)
 		return(false);
 	}
 	SetPar_ModuleMgr(outProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
-// tmp	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	return(true);
 
 }
@@ -138,7 +131,7 @@ IPCUtils::InitInProcess(void)
 		return(false);
 	}
 	SetPar_ModuleMgr(inProcess, wxT("filename"), EXTIPCUTILS_MEMORY_FILE_NAME);
-// tmp	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
+	SND_FILE_VIO_PTR(inProcess) = inVIOPtr;
 	return(true);
 
 }
@@ -251,12 +244,6 @@ IPCUtils::RunOutProcess(void)
 	BOOLN	oldUsingGUIFlag = GetDSAMPtr_Common()->usingGUIFlag;
 	BOOLN	oldSegmentedMode = GetDSAMPtr_Common()->segmentedMode;
 
-// tmp	if (!InitMemory_UPortableIO(&outUIOPtr, GetFileSize_AIFF(
-// tmp	  _OutSig_EarObject(outProcessSupplier), 0L))) {
-// tmp		NotifyError(wxT("%s: Could not prepare output data buffer."), funcName);
-// tmp		return(false);
-// tmp	}
-// tmp	((DataFilePtr) outProcess->module->parsPtr)->uIOPtr = outUIOPtr;
 	GetDSAMPtr_Common()->segmentedMode = FALSE;
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
 	if (!RunProcess_ModuleMgr(outProcess)) {
@@ -275,11 +262,11 @@ IPCUtils::RunOutProcess(void)
  */
 
 bool
-IPCUtils::InitInputMemory(ChanLen length)
+IPCUtils::InitInputMemory(sf_count_t length)
 {
 	static const wxChar *funcName = wxT("IPCUtils::InitInputMemory");
 
-	if (!InitMemory_UPortableIO(&inUIOPtr, length)) {
+	if (!InitVirtualIOMemory_SndFile(&inVIOPtr, length)) {
 		NotifyError(wxT("%s: Could not initialise memory for input process ")
 		  wxT("signal"), funcName);
 		return(false);
@@ -306,7 +293,6 @@ IPCUtils::RunInProcess(void)
 		return(false);
 	ResetProcess_EarObject(inProcess);
 	GetDSAMPtr_Common()->usingGUIFlag = FALSE;
-// tmp	((DataFilePtr) inProcess->module->parsPtr)->uIOPtr = inUIOPtr;
 	if (!RunProcess_ModuleMgr(inProcess)) {
 		NotifyError(wxT("%s: Could not run input process."), funcName);
 		ok = false;

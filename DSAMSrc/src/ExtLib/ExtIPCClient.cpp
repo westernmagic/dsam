@@ -30,8 +30,6 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSimScript.h"
@@ -93,7 +91,7 @@ IPCClient::~IPCClient(void)
 bool
 IPCClient::ReadString(wxString &s)
 {
-	wxUint8	ch = '\0';
+	unsigned char ch = '\0';
 
 	s.Clear();
 	while (!Read(&ch, sizeof(ch)).Error()) {
@@ -249,9 +247,8 @@ bool
 IPCClient::InitSimFromFile(const wxString &simFileName)
 {
 	static const wxChar *funcName = wxT("IPCClient::InitSimFromFile");
-	wxUint32	i, length;
-	wxUint8	byte;
-	unsigned char	eof = (unsigned char) EOF;
+	sf_count_t	i, length;
+	unsigned char	byte, eof = (unsigned char) EOF;
 	wxFileName	fileName = simFileName;
 	wxString	parFilePathModeParName = wxT("PAR_FILE_PATH_MODE\n");
 
@@ -318,8 +315,8 @@ IPCClient::GetParValue(const wxString &parName)
 bool
 IPCClient::GetAllOutputFiles(void)
 {
-	wxUint8		byte, numFiles;
-	wxUint32	i, j, length;
+	unsigned char		byte, numFiles;
+	sf_count_t	i, j, length;
 	wxString	baseFileName, fileName;
 	wxString	parFilePathModeParName = wxT("PAR_FILE_PATH_MODE\n");
 
@@ -350,7 +347,7 @@ EarObjectPtr
 IPCClient::GetSimProcess(void)
 {
 	static const wxChar *funcName = wxT("IPCClient::GetSimProcess");
-	wxUint32	length;
+	sf_count_t	length;
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_GET);
@@ -364,7 +361,7 @@ IPCClient::GetSimProcess(void)
 		  wxT("signal"), funcName);
 		return(NULL);
 	}
-	Read(iPCUtils.GetInUIOPtr()->memStart, length);
+	Read(iPCUtils.GetInVIOPtr()->data, length);
 	iPCUtils.RunInProcess();
 	return(iPCUtils.GetInProcess());
 
@@ -399,8 +396,8 @@ bool
 IPCClient::SendInputProcess(void)
 {
 	static const wxChar *funcName = wxT("IPCClient::SendInputProcess");
-	wxUint32	length;
-	UPortableIOPtr	uIOPtr;
+	sf_count_t	length;
+	DFVirtualIOPtr	vIOPtr;
 
 	if (!iPCUtils.GetOutProcess()) {
 		NotifyError(wxT("%s: output process not initialised."), funcName);
@@ -412,10 +409,10 @@ IPCClient::SendInputProcess(void)
 		return(false);
 	}
 // tmp	uIOPtr = ((DataFilePtr) iPCUtils.GetOutProcess()->module->parsPtr)->uIOPtr;
-	length = (wxUint32) uIOPtr->length;
+	length =  vIOPtr->length;
 	SendCommand(IPC_COMMAND_PUT);
 	Write(&length, sizeof(length));
-	Write(uIOPtr->memStart, length);
+	Write(vIOPtr->data, length);
 	if (Errors()) {
 		NotifyError(wxT("%s: Could not send input data."), funcName);
 		return(false);
@@ -434,7 +431,7 @@ IPCClient::SendInputProcess(void)
 bool
 IPCClient::SendArguments(int argc, wxChar **argv)
 {
-	wxUint8	numArgs;
+	unsigned char	numArgs;
 	int		i;
 	
 	for (i = numArgs = 0; i < argc; i++)

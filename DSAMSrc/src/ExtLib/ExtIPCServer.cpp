@@ -36,8 +36,6 @@
 #include "UtSSSymbols.h"
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "UtString.h"
 #include "FiDataFile.h"
 #include "UtSSParser.h"
@@ -186,8 +184,8 @@ void
 IPCServer::OnPut(void)
 {
 	static const wxChar *funcName = wxT("IPCServer::OnPut");
-	char	*p;
-	wxUint32	i, length;
+	unsigned char	*p;
+	sf_count_t	i, length;
 
  	sock->Read(&length, sizeof(length));
 	if (!iPCUtils.InitInputMemory(length)) {
@@ -195,10 +193,10 @@ IPCServer::OnPut(void)
 		  wxT("signal"), funcName);
 		return;
 	}
-	p = iPCUtils.GetInUIOPtr()->memStart;
+	p = iPCUtils.GetInVIOPtr()->data;
 	for (i = 0; i < length; i++)
-		sock->Read(p++, 1);
-	
+		sock->Read(p++, 1); // Use buffering and reads longer than 1 char here.
+	iPCUtils.GetInVIOPtr()->length = length;
 	if (!iPCUtils.InitInProcess()) {
 		NotifyError(wxT("%s: Could not initialise the input process."),
 		  funcName);
@@ -241,7 +239,8 @@ IPCServer::OnPutArgs(void)
 void
 IPCServer::OnGet(void)
 {
-	wxUint32	length = 0;
+	sf_count_t	length = 0;
+	DFVirtualIOPtr	vIOPtr;
 
 	if (!GetPtr_AppInterface()->simulationFinishedFlag || !_OutSig_EarObject(
 	  GetSimProcess_AppInterface())) {
@@ -249,10 +248,10 @@ IPCServer::OnGet(void)
 		return;
 	}
 	iPCUtils.RunOutProcess();
-	length = (wxUint32) iPCUtils.GetOutUIOPtr()->length; // Must correct this
+	vIOPtr = SND_FILE_VIO_PTR(iPCUtils.GetOutProcess());
+	length = vIOPtr->length;
  	sock->Write(&length, sizeof(length));
-	sock->Write(iPCUtils.GetOutUIOPtr()->memStart, iPCUtils.GetOutUIOPtr()->
-	  length);
+	sock->Write(vIOPtr->data, vIOPtr->length);
 
 }
 
@@ -294,7 +293,7 @@ IPCServer::OnGetFiles(void)
 {
 	static const wxChar *funcName = wxT("IPCServer::OnGetFiles");
 	wxUint8	byte, numFiles = 0;
-	wxUint32	i, j, length;
+	sf_count_t	i, j, length;
 	wxArrayString	list;
 	wxString	nameOnly;
 	wxFileName	fileName;
@@ -472,6 +471,7 @@ IPCServer::ProcessInput(void)
 	  '\n'))
 		if (c != '\r')
 			buffer += c;
+	
 	switch (Identify_NameSpecifier((wxChar *) buffer.c_str(), iPCUtils.
 	  CommandList(0))) {
 	case IPC_COMMAND_QUIT:

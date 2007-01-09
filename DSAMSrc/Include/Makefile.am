@@ -54,11 +54,11 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtNameSpecs.h UtRamp.h UtRandom.h UtRedceChans.h UtReduceDt.h \
 				UtRefractory.h UtSample.h UtSelectChans.h UtShapePulse.h \
 				UtSSSymbols.h UtSimScript.h UtSpikeList.h UtStddise.h \
-				UtUIEEEFloat.h UtUPortableIO.h UtCreateJoined.h UtStrobe.h \
-				UtOptions.h UtString.h UtPause.h UtHalfWRectify.h UtDynaList.h \
-				UtAppInterface.h UtFFT.h UtParArray.h UtGCFilters.h \
-				UtFIRFilters.h UtRemez.h UtDynaBList.h UtLocalChans.h \
-				UtSwapLR.h UtPadSignal.h UtMathOp.h UtZhang.h UtTranspose.h
+				UtCreateJoined.h UtStrobe.h UtOptions.h UtString.h UtPause.h \
+				UtHalfWRectify.h UtDynaList.h UtAppInterface.h UtFFT.h \
+				UtParArray.h UtGCFilters.h UtFIRFilters.h UtRemez.h \
+				UtDynaBList.h UtLocalChans.h UtSwapLR.h UtPadSignal.h \
+				UtMathOp.h UtZhang.h UtTranspose.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 
