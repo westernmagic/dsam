@@ -7,7 +7,7 @@
 # Author:	L.P.O'Mard
 # Created:	21 Nov 2006
 # Updated:	
-# Copyright:(c) 2006, Lowel P. O'Mard
+# Copyright:(c) 2006, Lowel P. O'Mard 
 #
 ##################
 
