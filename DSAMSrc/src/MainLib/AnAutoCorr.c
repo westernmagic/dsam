@@ -203,7 +203,7 @@ SetUniParList_Analysis_ACF(void)
 	  &autoCorrPtr->normalisationMode, autoCorrPtr->normalisationModeList,
 	  (void * (*)) SetNormalisationMode_Analysis_ACF);
 	SetPar_UniParMgr(&pars[ANALYSIS_ACF_TIMECONSTMODE], wxT("T_CONST_MODE"),
-	  wxT("Time constant mode ('Licklider' or 'Wiegrebe'.)"),
+	  wxT("Time constant mode ('Licklider', 'Wiegrebe' or 'none'.)"),
 	  UNIPAR_NAME_SPEC,
 	  &autoCorrPtr->timeConstMode, autoCorrPtr->timeConstModeList,
 	  (void * (*)) SetTimeConstMode_Analysis_ACF);
