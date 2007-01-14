@@ -27,8 +27,6 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
-#include "UtUIEEEFloat.h"
-#include "UtUPortableIO.h"
 #include "ExtIPCUtils.h"
 #include "ExtMainApp.h"
 #include "ExtIPCClient.h"
