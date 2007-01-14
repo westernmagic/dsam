@@ -278,7 +278,6 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 			*lastValue = *(inPtr++);
 		}
 	}
-	*timeIndex += signal->length;
 	return(TRUE);
 
 }

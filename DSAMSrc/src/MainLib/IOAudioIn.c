@@ -600,11 +600,13 @@ ResetBuffer_IO_AudioIn(void)
 
 
 #if	IO_AUDIOIN_PORTAUDIO_V_19
+int
 RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
   unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo,
   PaStreamCallbackFlags statusFlags, void *userData)
 #else
-RecordCallback_IO_AudioIn(const void *inputBuffer, void *outputBuffer,
+int
+RecordCallback_IO_AudioIn(void *inputBuffer, void *outputBuffer,
   unsigned long framesPerBuffer, PaTimestamp outTime, void *userData)
 #endif /* IO_AUDIOIN_PORTAUDIO_V_19 */
 {

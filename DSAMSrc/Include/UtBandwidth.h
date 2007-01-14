@@ -21,8 +21,9 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define BANDWIDTH_NUM_PARS				4
+#define BANDWIDTH_NUM_PARS				5
 #define BANDWIDTH_NUM_CONSTANT_PARS		1
+#define	BW_DEF_SCALER					1.0
 
 #define	K1_ERB		24.7		/* k1 constant. */
 #define K2_ERB		4.37e-3		/* K2 constant, frequency in Hz. */
@@ -50,6 +51,7 @@ typedef enum {
 	BANDWIDTH_CAT,
 	BANDWIDTH_CUSTOM_ERB,
 	BANDWIDTH_GUINEA_PIG,
+	BANDWIDTH_GUINEA_PIG_SCALED,
 	BANDWIDTH_USER,
 	BANDWIDTH_NONLINEAR,
 	BANDWIDTH_INTERNAL_DYNAMIC,
@@ -64,6 +66,7 @@ typedef enum {
 	BANDWIDTH_PAR_MODE,
 	BANDWIDTH_PAR_MIN,
 	BANDWIDTH_PAR_QUALITY,
+	BANDWIDTH_PAR_SCALER,
 	BANDWIDTH_PAR_BANDWIDTH
 
 } BandwidthParSpecifier;
@@ -73,6 +76,7 @@ typedef struct BandwidthMode {
 	BandwidthModeSpecifier specifier;
 	double	bwMin;
 	double	quality;
+	double	scaler;
 	double	(* Func)(struct BandwidthMode *, double);
 
 } BandwidthMode, *BandwidthModePtr;

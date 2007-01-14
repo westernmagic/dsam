@@ -39,6 +39,7 @@
 #include "UtString.h"
 
 #include "FiParFile.h"
+#include "FiDataFile.h"
 
 #include "UtAppInterface.h"
 

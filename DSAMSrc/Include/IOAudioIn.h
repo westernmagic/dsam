@@ -141,7 +141,7 @@ int	RecordCallback_IO_AudioIn(const void *inputBuffer,
 			  const PaStreamCallbackTimeInfo* timeInfo,
 			  PaStreamCallbackFlags statusFlags, void *userData);
 #else
-int	RecordCallback_IO_AudioIn(const void *inputBuffer,
+int	RecordCallback_IO_AudioIn(void *inputBuffer,
 			  void *outputBuffer, unsigned long framesPerBuffer,
 			  PaTimestamp outTime, void *userData);
 #endif /* IO_AUDIOIN_PORTAUDIO_V_19 */

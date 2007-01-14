@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=25
-DSAM_INTERFACE_AGE=25
-DSAM_BINARY_AGE=25
+DSAM_MICRO_VERSION=27
+DSAM_INTERFACE_AGE=27
+DSAM_BINARY_AGE=27
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -255,7 +255,7 @@ AC_ARG_ENABLE(debug,
 	[  --enable-debug          Turn on full debugging options],
 	[case ${enableval} in
 		yes)
-			debugFlags="-ggdb3 -Wall"
+			debugFlags="-ggdb3 -Wall -pedantic"
 			debug=true
 			CFLAGS="${debugFlags} -Wstrict-prototypes"
 			CXXFLAGS=${debugFlags}

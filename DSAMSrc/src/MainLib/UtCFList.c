@@ -686,11 +686,34 @@ SetBandwidthQuality_CFList(CFListPtr theCFs, double quality)
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
 	if (quality <= 0.0) {
-		NotifyError(wxT("%s: Illegal minimum bandwith (%g Hz)."), funcName,
+		NotifyError(wxT("%s: Illegal quality value (%g)."), funcName,
 		  quality);
 		return(FALSE);
 	}
 	theCFs->bandwidthMode.quality = quality;
+	return(TRUE);
+
+}
+
+/********************************* SetBandwidthScalar *************************/
+
+/*
+ * This routine sets the bandwidth scaler parameter.
+ */
+
+BOOLN
+SetBandwidthScaler_CFList(CFListPtr theCFs, double scaler)
+{
+	static const WChar *funcName = wxT("SetBandwidthScalar_CFList");
+
+	if (!CheckInit_CFList(theCFs, funcName))
+		return(FALSE);
+	if (fabs(scaler) < DBL_EPSILON) {
+		NotifyError(wxT("%s: Scaler value must be greater than zero (%g)."),
+		  funcName, scaler);
+		return(FALSE);
+	}
+	theCFs->bandwidthMode.scaler = scaler;
 	return(TRUE);
 
 }
@@ -722,6 +745,9 @@ SetBandwidthUniParListMode_CFList(CFListPtr theCFs)
 	case BANDWIDTH_DISABLED:
 	case BANDWIDTH_INTERNAL_DYNAMIC:
 	case BANDWIDTH_INTERNAL_STATIC:
+		break;
+	case BANDWIDTH_GUINEA_PIG_SCALED:
+		theCFs->bParList->pars[BANDWIDTH_PAR_SCALER].enabled = TRUE;
 		break;
 	case BANDWIDTH_USER:
 		theCFs->bParList->pars[BANDWIDTH_PAR_BANDWIDTH].enabled = TRUE;
@@ -778,6 +804,11 @@ SetBandwidthUniParList_CFList(CFListPtr theCFs)
 	  UNIPAR_REAL,
 	  &theCFs->bandwidthMode.quality, NULL,
 	  (void *(*)) SetBandwidthQuality_CFList);
+	SetPar_UniParMgr(&pars[BANDWIDTH_PAR_SCALER], wxT("SCALER"),
+	  wxT("Scaler multiplier for all bandwidths."),
+	  UNIPAR_REAL,
+	  &theCFs->bandwidthMode.scaler, NULL,
+	  (void *(*)) SetBandwidthScaler_CFList);
 	SetPar_UniParMgr(&pars[BANDWIDTH_PAR_BANDWIDTH], wxT("BANDWIDTH"),
 	  wxT("Filter bandwidths (Hz)."),
 	  UNIPAR_REAL_ARRAY,

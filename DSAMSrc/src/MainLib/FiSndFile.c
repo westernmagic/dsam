@@ -128,7 +128,7 @@ InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
 	if ((*p)->maxLength != maxLength) {
 		if ((*p)->data)
 			free((*p)->data);
-		if (((*p)->data = (char *) malloc(maxLength)) == NULL) {
+		if (((*p)->data = (unsigned char *) malloc(maxLength)) == NULL) {
 			NotifyError(wxT("%s: Cannot allocate data memory."), funcName);
 			free((*p));
 			*p = NULL;

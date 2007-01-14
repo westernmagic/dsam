@@ -511,7 +511,6 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_ReduceChannels");
 	register	ChanData	 *inPtr, *outPtr;
 	WChar	channelTitle[MAXLINE];
-	uShort	numChannels;
 	int		j, chan, channelBinWidth, binRatio;
 	ChanLen	i;
 	SignalDataPtr	inSignal, outSignal;
@@ -525,22 +524,22 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Average across channels utility"));
-		numChannels = p->numChannels * _InSig_EarObject(data, 0)->interleaveLevel;
+		inSignal = _InSig_EarObject(data, 0);
+		outSignal = _OutSig_EarObject(data);
 		data->updateProcessFlag = TRUE;
-		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data, 0)->
-		  length, _InSig_EarObject(data, 0)->dt)) {
+		if (!InitOutSignal_EarObject(data, p->numChannels * inSignal->
+		  interleaveLevel, inSignal->length, inSignal->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
 		}
 		ResetProcess_Utility_ReduceChannels(data);
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data, 0)->
-		  interleaveLevel);
-		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
-		SetInfoChannelLabels_SignalData(_OutSig_EarObject(data), NULL);
-		SetInfoCFArray_SignalData(_OutSig_EarObject(data), NULL);
+		SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
+		SetLocalInfoFlag_SignalData(outSignal, TRUE);
+		SetInfoChannelLabels_SignalData(outSignal, NULL);
+		SetInfoCFArray_SignalData(outSignal, NULL);
 		DSAM_snprintf(channelTitle, MAXLINE, wxT("Channel summary (%d -> %d)"),
-		  _InSig_EarObject(data, 0)->numChannels, _OutSig_EarObject(data)->numChannels);
-		SetInfoChannelTitle_SignalData(_OutSig_EarObject(data), channelTitle);
+		  inSignal->numChannels, outSignal->numChannels);
+		SetInfoChannelTitle_SignalData(outSignal, channelTitle);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
@@ -556,7 +555,8 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 			for (i = 0; i < inSignal->length; i++)
 				*outPtr++ += *inPtr++;
 	}
-	channelBinWidth = inSignal->numChannels / numChannels;
+	channelBinWidth = inSignal->numChannels / (p->numChannels * inSignal->
+	  interleaveLevel);
 	if (p->mode == REDUCE_CHANS_AVERAGE_MODE)
 		for (chan = 0; chan < outSignal->numChannels; chan++) {
 			outPtr = outSignal->channel[chan];

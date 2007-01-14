@@ -48,6 +48,7 @@ ModeList_Bandwidth(int index)
 			{wxT("CAT"),				BANDWIDTH_CAT },
 			{wxT("CUSTOM_ERB"),			BANDWIDTH_CUSTOM_ERB },
 			{wxT("GUINEA_PIG"),			BANDWIDTH_GUINEA_PIG },
+			{wxT("GUINEA_PIG_SCALED"),	BANDWIDTH_GUINEA_PIG_SCALED },
 			{wxT("USER"),				BANDWIDTH_USER },
 			{wxT("NONLINEAR"),			BANDWIDTH_NONLINEAR },
 			{wxT("INTERNAL_DYNAMIC"),	BANDWIDTH_INTERNAL_DYNAMIC },
@@ -80,16 +81,17 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName)
 	double (* Func)(BandwidthModePtr, double);
 	BandwidthMode modeList[] = {
 			
-		{ BANDWIDTH_ERB, 		K1_ERB, K2_ERB, BandwidthFromF_Bandwith},
-		{ BANDWIDTH_CAT, 		K1_ERB, K2_ERB, BandwidthFromF_Bandwith},
-		{ BANDWIDTH_CUSTOM_ERB, K1_ERB, K2_ERB, BandwidthFromF_Bandwith},
-		{ BANDWIDTH_GUINEA_PIG, K1_ERB, K2_ERB, BandwidthFromF_Bandwith},
-		{ BANDWIDTH_USER, 		K1_ERB, K2_ERB, NULL},
-		{ BANDWIDTH_NONLINEAR,	K1_ERB, K2_ERB, BandwidthFromF_Bandwith},
-		{ BANDWIDTH_INTERNAL_DYNAMIC,	K1_ERB, K2_ERB, NULL},
-		{ BANDWIDTH_INTERNAL_STATIC,	K1_ERB, K2_ERB, NULL},
-		{ BANDWIDTH_DISABLED,	K1_ERB, K2_ERB, NULL},
-		{ BANDWIDTH_NULL,		0.0, 0.0, NULL}
+		{ BANDWIDTH_ERB, 		K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_CAT, 		K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_CUSTOM_ERB, K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_GUINEA_PIG, K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_GUINEA_PIG_SCALED, K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_USER, 		K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
+		{ BANDWIDTH_NONLINEAR,	K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
+		{ BANDWIDTH_INTERNAL_DYNAMIC,	K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
+		{ BANDWIDTH_INTERNAL_STATIC,	K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
+		{ BANDWIDTH_DISABLED,	K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
+		{ BANDWIDTH_NULL,		0.0, 0.0, 0.0, NULL}
 				
 	};
 
@@ -139,6 +141,8 @@ BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 		return(CustomERBFromF_Bandwidth(theFrequency, p->bwMin, p->quality));
 	case BANDWIDTH_GUINEA_PIG:
 		return(GuineaPigFromF_Bandwidth(theFrequency));
+	case BANDWIDTH_GUINEA_PIG_SCALED:
+		return(GuineaPigFromF_Bandwidth(theFrequency) * p->scaler);
 	case BANDWIDTH_NONLINEAR:
 		return(NonLinearFromF_Bandwidth(theFrequency));
 	default:
