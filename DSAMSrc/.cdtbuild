@@ -2,8 +2,8 @@
 <?fileVersion 3.1.0?>
 
 <ManagedProjectBuildInfo>
-<project id="DSAM Library.com.redhat.eclipse.cdt.autotools.projectType.787095865" name="Autotools (Gnu)" projectType="com.redhat.eclipse.cdt.autotools.projectType">
-<configuration id="com.redhat.eclipse.cdt.autotools.configuration.build.494714721" name="Build (Gnu)" description="" parent="com.redhat.eclipse.cdt.autotools.configuration.build" artifactName="DSAMLibrary" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" cleanCommand="rm -rf">
+<project id="DSAMSrc.com.redhat.eclipse.cdt.autotools.projectType.787095865" name="Autotools (Gnu)" projectType="com.redhat.eclipse.cdt.autotools.projectType">
+<configuration id="com.redhat.eclipse.cdt.autotools.configuration.build.494714721" name="Build (Gnu)" description="" parent="com.redhat.eclipse.cdt.autotools.configuration.build" artifactName="DSAMSrc" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" cleanCommand="rm -rf">
 <toolChain superClass="com.redhat.eclipse.cdt.autotools.toolChain" id="com.redhat.eclipse.cdt.autotools.toolChain.256802097" name="Autotools Toolchain (Gnu)">
 <tool superClass="com.redhat.eclipse.cdt.autotools.gnu.toolchain.tool.configure" id="com.redhat.eclipse.cdt.autotools.gnu.toolchain.tool.configure.1665061980" name="configure">
 <option superClass="com.redhat.eclipse.cdt.autotools.option.configure.enable_maintainer_mode" id="com.redhat.eclipse.cdt.autotools.option.configure.enable_maintainer_mode.1379825962" value="true" valueType="boolean"/>
