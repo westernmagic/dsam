@@ -26,27 +26,6 @@ RunDSAMSim@DLLEXT@: $(RunDSAMSim@DLLEXT@_OBJECTS)
 
 RunDSAMSim.spec: RunDSAMSim.spec.in
 
-install-exec-local:
-	@$(NORMAL_INSTALL)
-	test -z "$(mylibexecdir)/$(DLLDIR)" || $(mkdir_p) "$(DESTDIR)$(mylibexecdir)/$(DLLDIR)"
-	@list='$(libexec_PROGRAMS)'; for p in $$list; do \
-	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  if test -f $$p \
-	  ; then \
-	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(libexecPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(libexecdir)/$(DLLDIR)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(libexecPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(libexecdir)/$(DLLDIR)/$$f" || exit 1; \
-	  else :; fi; \
-	done		
-
-uninstall-local:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libexec_PROGRAMS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(libexecdir)/$(DLLDIR)/$$f'"; \
-	  rm -f "$(DESTDIR)$(libexecdir)/$(DLLDIR)/$$f"; \
-	done
-
 dist-hook: RunDSAMSim.spec
 	if test -e $(srcdir)/INSTALL.in && test -e $(srcdir)/README.in ; then \
 	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README:$(srcdir)/README.in"\

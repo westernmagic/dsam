@@ -582,8 +582,6 @@ SetNumberOfRuns_MatMainApp(int theNumberOfRuns)
 BOOLN
 SetSegmentDuration_MatMainApp(double theSegmentDuration)
 {
-	static const wxChar *funcName = PROGRAM_NAME
-	  wxT(": SetSegmentDuration_MatMainApp");
 
 	matMainAppPtr->segmentDuration = theSegmentDuration;
 	return(TRUE);
@@ -628,9 +626,6 @@ SetServerMode_MatMainApp(wxChar * theServerMode)
 BOOLN
 SetServerHost_MatMainApp(wxChar *theServerHost)
 {
-	static const wxChar	*funcName = PROGRAM_NAME
-	  wxT(": SetServerHost_MatMainApp");
-
 	Snprintf_Utility_String(matMainAppPtr->serverHost, MAXLINE, wxT("%s"),
 	  theServerHost);
 	return(TRUE);

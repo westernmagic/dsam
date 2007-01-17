@@ -5,10 +5,9 @@
 %define ver		@RUNDSAMSIM_VERSION@
 %define RELEASE @RPM_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
-%define	desktop_vendor	 cnbh
-%define desktop_utils    %(if which desktop-file-install 2>1 >/dev/null ; then echo "yes" ; fi)
+%define	_libexecdir	%{prefix}/libexec/@DLLDIR@
 
-Name: ams
+Name: RunDSAMSim
 Summary: RunDSAMSim function DLL for Octave/Matlab 
 Version: %{ver}
 Release: %{rel}
@@ -32,8 +31,7 @@ new models supplied by the Development System for Auditory Modelling (DSAM).
 
 %prep
 %setup
-RUNDSAMSIM_FLAGS="--prefix=%{prefix}"
-%configure $RUNDSAMSIM_FLAGS
+%configure
 
 %build
 if [ "$SMP" != "" ]; then
@@ -62,5 +60,5 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 
 %doc AUTHORS COPYING README NEWS ChangeLog
-%{_libexecdir}/@DLLDIRNAME@/*
+%{_libexecdir}/*
 
