@@ -15,11 +15,11 @@ EXTRA_DIST		= RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m
 SUBDIRS			= CfgTools MSVC
 
 MatMainApp.$(OBJEXT): MatMainApp.cpp
-					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $(srcdir)/$<
+					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
 
 RunDSAMSim.$(OBJEXT): RunDSAMSim.cpp
-					XTRA_CXXFLAGS="-fPIC -DLIBRARY_COMPILE -w" $(DLLCOMPILE) -c $(srcdir)/$< \
-					 $(DSAMINC)
+					XTRA_CXXFLAGS="-fPIC -DLIBRARY_COMPILE -w" $(DLLCOMPILE) -c $< \
+					 $(DSAMINC) -o $@
 
 RunDSAMSim@DLLEXT@: $(RunDSAMSim@DLLEXT@_OBJECTS)
 					$(DLLCOMPILE) -o $@ $(RunDSAMSim@DLLEXT@_OBJECTS) $(DSAMLDFLAGS)
