@@ -23,7 +23,6 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define	DSAMMAT_VERSION				wxT("MatMainApp: 1.1.0")
 #define	DSAMMAT_NUM_PARS			6		/* No. of application parameters. */
 #define	DSAMMAT_AUTO_INTERLEAVE_LEVEL	-1
 #define DSAMMAT_COMMAND_PREFIX	wxT("SERVER_")

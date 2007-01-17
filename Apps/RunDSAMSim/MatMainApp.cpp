@@ -20,6 +20,10 @@
 
 #include <DSAM.h>
 
+#ifdef HAVE_CONFIG_H
+#	include "RunDSAMSimSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -446,7 +450,7 @@ InitApp_MatMainApp(void)
 	}
 
 	SetAppName_AppInterface(PROGRAM_NAME);
-	SetAppVersion_AppInterface(DSAMMAT_VERSION);
+	SetAppVersion_AppInterface(RUNDSAMSIM_VERSION);
 	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
 
 	SetAppSetUniParList_AppInterface(SetUniParList_MatMainApp);

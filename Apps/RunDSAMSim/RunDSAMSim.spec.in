@@ -1,0 +1,66 @@
+# Spec for building RunDSAMSim RPM Package
+
+# Note that this is NOT a relocatable package
+%define prefix	/usr
+%define ver		@RUNDSAMSIM_VERSION@
+%define RELEASE @RPM_AGE@
+%define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+%define	desktop_vendor	 cnbh
+%define desktop_utils    %(if which desktop-file-install 2>1 >/dev/null ; then echo "yes" ; fi)
+
+Name: ams
+Summary: RunDSAMSim function DLL for Octave/Matlab 
+Version: %{ver}
+Release: %{rel}
+License: LICENSE 
+Group: Applications/Scientific
+Source: http://www.dsam.org.uk/dsam/%{name}-%{ver}.tar.gz
+URL: http://www.dsam.org.uk
+Packager: Lowel P. O'Mard <lpo21@cam.ac.uk> 
+Requires: dsam
+BuildRoot: %{_tmppath}/%{name}-root
+Obsoletes: RunDSAMSim
+
+%description
+The RunDSAMSim function DLL allows Matlab/Octave users run DSAM simulations as a
+Matlab/Octave command.  It is backed up by the extensive collection of published and
+new models supplied by the Development System for Auditory Modelling (DSAM).
+
+%changelog
+* Wed Jan 17 2006 Lowel P. O'Mard <lpo21@cam.ac.uk>
+- Initial skeleton, based on the .specs ams-1.2.0
+
+%prep
+%setup
+RUNDSAMSIM_FLAGS="--prefix=%{prefix}"
+%configure $RUNDSAMSIM_FLAGS
+
+%build
+if [ "$SMP" != "" ]; then
+  export MAKE="make -j$SMP"
+else
+  export MAKE="make"
+fi
+$MAKE
+
+%install
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
+
+%makeinstall
+
+%post
+
+%postun
+
+%preun
+
+%clean
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING README NEWS ChangeLog
+%{_libexecdir}/@DLLDIRNAME@/*
+
