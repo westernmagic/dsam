@@ -8,7 +8,7 @@ AUTOMAKE_OPTIONS = foreign
 An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 				 AnFindBin.mod AnFindNextIndex.mod AnHistogram.mod \
 				 AnIntensity.mod AnInterSIH.mod AnSpikeReg.mod AnFourierT.mod \
-				 AnSynchIndex.mod AnSAImage.mod AnALSR.mod
+				 AnSynchIndex.mod AnSAImage.mod AnALSR.mod AnSAC.mod
 
 IO_Modules	= FiDataFile.mod IOAudioIn.mod
 

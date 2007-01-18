@@ -21,7 +21,7 @@ INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
 				AnGeneral.c AnHistogram.c AnIntensity.c AnInterSIH.c \
-				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c
+				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c AnSAC.c
   
 IO_Sources	= FiDataFile.c FiASCII.c FiSndFile.c FiParFile.c IOAudioIn.c
 

@@ -104,6 +104,7 @@
 #include "AnSAImage.h"
 #include "AnSpikeReg.h"
 #include "AnSynchIndex.h"
+#include "AnSAC.h"
 
 #include "FiParFile.h"
 #include "FiDataFile.h"

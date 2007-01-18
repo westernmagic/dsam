@@ -8,7 +8,7 @@ AUTOMAKE_OPTIONS = foreign
 An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnExperiment.h AnFindBin.h AnFindNextIndex.h AnFourierT.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
-				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h
+				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h AnSAC.h
   
 IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
 

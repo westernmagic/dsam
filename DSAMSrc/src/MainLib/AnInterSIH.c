@@ -479,8 +479,7 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	signalDuration = _InSig_EarObject(data, 0)->dt * _InSig_EarObject(data, 0)->
-	  length;
+	signalDuration = _GetDuration_SignalData(_InSig_EarObject(data, 0));
 	if (interSIHPtr->maxInterval > signalDuration) {
 		NotifyError(wxT("%s: Maximum interval is longer than signal (value ")
 		  wxT("must\nbe <= %g ms)."), funcName, signalDuration);
