@@ -21,10 +21,10 @@ INCLUDES		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
-					$(CXXCOMPILE) $(DSAMGUIINC) -c $(srcdir)/ams.cpp -o ams.$(OBJEXT) $(AMSRESOBJ)
+					$(CXXCOMPILE) $(DSAMGUIINC) -c $(srcdir)/ams.cpp -o $@ $(AMSRESOBJ)
 
 ams_ng.$(OBJEXT):	ams.cpp
-					$(CXXCOMPILE) $(DSAMINC) -c $(srcdir)/ams.cpp -o ams_ng.$(OBJEXT)
+					$(CXXCOMPILE) $(DSAMINC) -c $(srcdir)/ams.cpp -o $@
 
 $(AMSRESOBJ):	Makefile ams.rc
 	@if test x$(MINGW32) = xyes; then \

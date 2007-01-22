@@ -4,9 +4,9 @@ Simple install procedure
   % gzip -cd @PACKAGE@-@VERSION@.tar.gz | tar xvf -  # unpack the sources
   % cd @PACKAGE@-@VERSION@                           # change to the toplevel directory
   % ./configure 				                     # run the `configure' script
-  % make                                    # build DSAM
+  % make                                    # build @PACKAGE@
   [ Become root if necessary ]
-  % make install                            # install DSAM
+  % make install                            # install @PACKAGE@
 
 Basic Installation
 ==================
