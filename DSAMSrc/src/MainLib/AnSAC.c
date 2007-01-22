@@ -28,6 +28,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "AnSAC.h"
 
@@ -104,6 +105,7 @@ Init_Analysis_SAC(ParameterSpecifier parSpec)
 	sACPtr->eventThresholdFlag = TRUE;
 	sACPtr->maxIntervalFlag = TRUE;
 	sACPtr->binWidthFlag = TRUE;
+	sACPtr->normalisation = TRUE;
 	sACPtr->order = -1;
 	sACPtr->eventThreshold = 0.5;
 	sACPtr->maxInterval = -1.0;
@@ -139,6 +141,11 @@ SetUniParList_Analysis_SAC(void)
 		return(FALSE);
 	}
 	pars = sACPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANALYSIS_SAC_NORMALISATION], wxT("NORMALISATION"),
+	  wxT("Normalisation switch ('on' or 'off')."),
+	  UNIPAR_BOOL,
+	  &sACPtr->normalisation, NULL,
+	  (void * (*)) SetNormalisation_Analysis_SAC);
 	SetPar_UniParMgr(&pars[ANALYSIS_SAC_ORDER], wxT("ORDER"),
 	  wxT("Order of spike interactions (1 = 1st, 2 = 2nd, -1 = all order)."),
 	  UNIPAR_INT,
@@ -185,6 +192,38 @@ GetUniParListPtr_Analysis_SAC(void)
 		return(NULL);
 	}
 	return(sACPtr->parList);
+
+}
+
+/****************************** SetNormalisation ******************************/
+
+/*
+ * This function sets the module's normalisation parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetNormalisation_Analysis_SAC(WChar * theNormalisation)
+{
+	static const WChar	*funcName = wxT("SetNormalisation_Analysis_SAC");
+	int		specifier;
+
+	if (sACPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+
+	if ((specifier = Identify_NameSpecifier(theNormalisation,
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName,
+		  theNormalisation);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	sACPtr->updateProcessVariablesFlag = TRUE;
+	sACPtr->normalisation = specifier;
+	return(TRUE);
 
 }
 
@@ -345,11 +384,21 @@ PrintPars_Analysis_SAC(void)
 		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
 		return(FALSE);
 	}
-	DPrint(wxT("?? Analysis Module Parameters:-\n"));
-	DPrint(wxT("\torder = %d ??\n"), sACPtr->order);
-	DPrint(wxT("\teventThreshold = %g ??\n"), sACPtr->eventThreshold);
-	DPrint(wxT("\tmaxInterval = %g ??\n"), sACPtr->maxInterval);
-	DPrint(wxT("\tbinWidth = %g ??\n"), sACPtr->binWidth);
+	DPrint(wxT("Shuffled Autocorrelogram Analysis Module Parameters:-\n"));
+	DPrint(wxT("\tNormalisation switch = %s,"), BooleanList_NSpecLists(sACPtr->
+	  normalisation)->name);
+	DPrint(wxT("\tOrder = "));
+	if (sACPtr->order > 0)
+		DPrint(wxT("%d,"), sACPtr->order);
+	else
+		DPrint(wxT("unlimited,"));
+	DPrint(wxT("\tEvent threshold = %g units\n"), sACPtr->eventThreshold);
+	DPrint(wxT("\tMax. interval = "));
+	if (sACPtr->maxInterval > 0.0)
+		DPrint(wxT("%g ms.\n"), MSEC(sACPtr->maxInterval));
+	else
+		DPrint(wxT("end of signal.\n"));
+	DPrint(wxT("\tAnalysis histogram bin width = %g (ms)\n"), MSEC(sACPtr->binWidth));
 	return(TRUE);
 
 }
@@ -584,11 +633,13 @@ Calc_Analysis_SAC(EarObjectPtr data)
 			}
 		}
 	}
-	normalisationFactor = binScale * (inSignal->length * inSignal->numChannels) / 
-	  ((inSignal->numChannels - 1) * SQR(spikeCount));
-	outPtr = outSignal->channel[0];
-	for (i = 0; i < outSignal->length; i++)
-		*outPtr++ *= normalisationFactor;
+	if (p->normalisation) {
+		normalisationFactor = binScale * (inSignal->length * inSignal->numChannels) / 
+		  ((inSignal->numChannels - 1) * SQR(spikeCount));
+		outPtr = outSignal->channel[0];
+		for (i = 0; i < outSignal->length; i++)
+			*outPtr++ *= normalisationFactor;
+	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

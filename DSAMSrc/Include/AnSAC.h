@@ -24,7 +24,7 @@
 /******************************************************************************/
 
 #define ANALYSIS_SAC_MOD_NAME			wxT("ANA_SAC")
-#define ANALYSIS_SAC_NUM_PARS			4
+#define ANALYSIS_SAC_NUM_PARS			5
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -32,6 +32,7 @@
 
 typedef enum {
 
+	ANALYSIS_SAC_NORMALISATION,
 	ANALYSIS_SAC_ORDER,
 	ANALYSIS_SAC_EVENTTHRESHOLD,
 	ANALYSIS_SAC_MAXINTERVAL,
@@ -45,6 +46,7 @@ typedef struct {
 
 	BOOLN	orderFlag, eventThresholdFlag, maxIntervalFlag, binWidthFlag;
 	BOOLN	updateProcessVariablesFlag;
+	BOOLN	normalisation;
 	int		order;
 	double	eventThreshold;
 	double	maxInterval;
@@ -101,6 +103,8 @@ BOOLN	SetBinWidth_Analysis_SAC(double theBinWidth);
 BOOLN	SetEventThreshold_Analysis_SAC(double theEventThreshold);
 
 BOOLN	SetMaxInterval_Analysis_SAC(double theMaxInterval);
+
+BOOLN	SetNormalisation_Analysis_SAC(WChar * theNormalisation);
 
 BOOLN	SetOrder_Analysis_SAC(int theOrder);
 
