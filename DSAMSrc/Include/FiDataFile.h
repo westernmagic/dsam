@@ -96,7 +96,7 @@ typedef enum {
 typedef enum {
 
 	ASCII_DATA_FILE	= 0,
-	NULL_DATA_FILE	= 0xFFFFFFFF
+	NULL_DATA_FILE	= 0xFFFF
 
 }  FileFormatSpecifier;
 

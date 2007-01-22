@@ -234,13 +234,14 @@
 #	define STR_FMT			"%s"
 #endif /* DSAM_USE_UNICODE */
 
-// ----------------------------------------------------------------------------
-// Making or using DSAM as a Windows DLL
-// ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
+ * Making or using DSAM as a Windows DLL
+ * ----------------------------------------------------------------------------
+ */
 
 #if defined(__WINDOWS)
 
-// __declspec works in BC++ 5 and later, as well as VC++ and gcc
+	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
 #if defined(__VISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
 #  ifdef DSAM_MAKING_DLL
 #    define DSAM_API __declspec( dllexport )
@@ -271,7 +272,7 @@
 
 #  endif
 
-#else  // !(MSW or OS2)
+#else  /* !(MSW or OS2) */
 
 #  define DSAM_API
 

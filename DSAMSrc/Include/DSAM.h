@@ -166,7 +166,7 @@
 #		undef TRUE			/* required because WxWin doesn't check. */
 #		undef FALSE
 
-//		For compilers that support precompilation, includes "wx.h".
+		/* For compilers that support precompilation, includes "wx.h".*/
 #		undef	wxT
 #		include <wx/wxprec.h>
 
@@ -174,15 +174,16 @@
 	   		#pragma hdrstop
 #		endif
 
-//		Any files you want to include if not precompiling by including
-//		the whole of <wx/wx.h>
+		/* Any files you want to include if not precompiling by including
+		 * the whole of <wx/wx.h>
+		 */
 #		ifndef WX_PRECOMP
 #			include <wx/wx.h>
 #		endif
 #	endif /* __WXWIN__ */
 
 #	if USE_EXTENSIONS_LIBRARY
-//		Any files included regardless of precompiled headers
+		/* Any files included regardless of precompiled headers */
 #		include <wx/socket.h>
 #		include <wx/filesys.h>
 #		include "ExtIPCUtils.h"
@@ -193,7 +194,7 @@
 #	endif /* USE_EXTENSIONS_LIBRARY */
 
 #	if defined(GRAPHICS_SUPPORT) && defined(USE_GUI)
-//		Any files included regardless of precompiled headers
+		/* Any files included regardless of precompiled headers */
 #		include <wx/notebook.h>
 #		include <wx/print.h>
 #		include <wx/printdlg.h>
