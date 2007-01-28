@@ -1,0 +1,55 @@
+#Style comment search
+
+\<!-- .* --\>
+
+
+# Table entry replacement
+
+\>\n\<para(\>.*)\</para\>\n
+
+\1
+
+# End of section spacing for convenience
+
+(\</section\>)
+
+\1\n
+
+# Bibliography template
+
+<bibliomixed id = "??">
+  <bibliomset relation = "article">
+	<surname>??</surname> <firstname>??.</firstname> <othername role = "middle">??.</othername>,
+	(<pubdate><emphasis role = "bold">??</emphasis></pubdate>)
+	<title role = "article">??</title>
+  </bibliomset>
+  <bibliomset relation="journal">
+    <title>??</title>
+	[<volumenum>??</volumenum>],
+	<pagenums>??-??</pagenums>.
+  </bibliomset>
+</bibliomixed>
+
+# Module test template
+
+<sect3><title>?? Example: AutoTest/??/??.sim</title>
+
+<informalexample>
+<programlisting>
+<xi:include href = "AutoTest/??/??.sim" parse = "text"
+	xmlns:xi = "http://www.w3.org/2001/XInclude"/>
+</programlisting>
+</informalexample>
+
+<figure id = "fg_??"><title>??</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/??.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect3>
+
+<para>
+</para>

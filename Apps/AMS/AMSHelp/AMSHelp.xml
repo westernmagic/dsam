@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--=============================================================================================-->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+	<!ENTITY APP "AMS">
+	<!ENTITY app "ams">
+]>
+
+<book id="book">
+<bookinfo>
+<title>AMS</title>
+
+<subtitle>Auditory Modelling System</subtitle>
+
+<releaseinfo role="CVS">$Id: </releaseinfo>
+<authorgroup>
+<author>
+	<honorific>Dr</honorific>
+	<firstname>Lowel</firstname>
+	<surname>O'Mard</surname>
+	<othername role='mi'>P</othername>
+	<affiliation>
+	<address><email>lpo21@cam.ac.uk</email></address>
+	</affiliation>
+</author>
+</authorgroup>
+<legalnotice>
+<para>
+This manual has been edited to the best of our ability.  We do not accept any
+responsibility regarding problems caused by any errors in this document.
+However, we are always happy to receive communications regarding corrections
+or suggested revisions. 
+</para>
+</legalnotice>
+<copyright>
+	<year>1993-2007</year>
+	<holder>Dr. Lowel P. O'Mard</holder>
+</copyright>
+<pubdate>8th January 2007</pubdate>
+<revhistory>
+	<revision>
+	<revnumber>1.2-1</revnumber>
+	<date>8th Jan 2007</date>
+	<authorinitials>LPO</authorinitials>
+	<revremark>Revised.</revremark>
+	</revision>
+</revhistory>
+</bookinfo>
+
+<dedication id="dedication"><title>Dedication</title>
+<para>
+I dedicate this work to my wife Rachel, for her love and support and to our beautiful twin girls,
+Anesu and Shamiso who provide us with such joy.
+</para>
+</dedication>
+
+<dedication id="acknowledgements"><title>Acknowledgements</title>
+<para>
+I would first like to acknowledge God as the creator of all things and without whose support none of
+this would be possible.  I would also like to thank all those who have contributed to the making of
+this document.
+</para>
+</dedication>
+
+<preface id="preface"><title>Preface</title>
+
+<para>
+The &APP; application was produced using the Development System for Auditory Modelling (DSAM).
+It's facilities and interface has many features in common with other applications produced using
+DSAM.
+</para>
+
+</preface>
+
+<!--=========================== Process Modules Chapter =========================================-->
+
+<chapter id = "ch_Introduction">
+<title>Getting started with &APP;</title>
+<sect1 id = "sx_Introduction">
+<title>Introduction</title>
+<para>
+The auditory model simulator (&APP;) allows users to design, run and evaluate auditory models. It
+is backed up by the extensive collection of published and new models supplied by the development
+system for auditory modelling (DSAM), formerly known as LUTEar.
+</para>
+</sect1>
+
+<sect1 id = "sx_Installation">
+<title>Installation</title>
+<para>
+The &APP; is available in executable form for PC (Windows(tm) 95/98 NT) and RPM Linux platforms (at the time of writing). These packages will allow you to install &APP; and start using it straight away.  The source code for DSAM and &APP; is also available and can be used for compiling &APP;
+on other systems, including Mac OS X.  The executable installations and source code are available from the the web site: www.dsam.org.uk.
+</para>
+
+<para>
+The Linux binary RPM is dependent upon other pacakges being installed in addition to the DSAM RPM which is also available from the web site.  These libraries are available as a standard part of most linux distributions, and are also readily available as source code packages.
+
+<informaltable colsep = "1" frame="all">
+<tgroup cols="3" align="left" colsep="1" rowsep="1">
+<colspec colwidth="55pt" colname="c1"/>
+<colspec colwidth="155pt" colname="c2"/>
+<colspec colwidth="235pt" colname="c3"/>
+<tbody>
+<row>
+<entry>Package</entry>
+<entry>Source</entry>
+<entry>Description</entry>
+</row>
+<row>
+<entry>DSAM</entry>
+<entry>www.dsam.org.uk</entry>
+<entry>Development System for Auditory Modelling library.</entry>
+</row>
+<row>
+<entry>wxWidgets</entry>
+<entry>www.wxwidgets.org</entry>
+<entry>wxWidgets lets developers create applications for Win32, Mac OS X, GTK+, X11, Motif, WinCE, and more  using one codebase.</entry>
+</row>
+<row>
+<entry>Libsndfile</entry>
+<entry>www.mega-nerd.com/libsndfile/</entry>
+<entry>This is a C library which provides support for reading and writing files containing
+sampled sound.</entry>
+</row>
+<row>
+<entry>PortAudio</entry>
+<entry>www.portaudio.com</entry>
+<entry>PortAudio is a free, cross platform, audio I/O library.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+</para>
+
+
+</sect1>
+
+<sect1 id = "sx_Running_An_Example1">
+<title>Quick start example simulation</title>
+
+<para>
+This is a good starting point for those users who wish to get a quick feel for &APP; and how useful it will be.  This example takes the user through loading an auditory nerve simulation then running it to produce output, providing displays of the simulation process at different stages.  The user is then shown how to change parameters in the simulation which will be reflected by a change in the output.  It also serves as a introduction to the &APP; interface which is described in more detail later in this document.
+</para>
+
+<para>
+Starting the &APP; application will be different on different platforms.  On Windows installations, the application can be found by navigating from <emphasis>start</emphasis> on the task bar: <emphasis>start->All Programs->DSAM Applications</emphasis>.   On unix-like systems, &APP; can be started from the command line using the command <emphasis>&app;</emphasis>. Once started the main &APP; window will appear as show in <xref linkend = "fg_ExampleMainWindow"/>.
+</para>
+
+<figure id = "fg_ExampleMainWindow">
+<title>The main &APP; window</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleMainWindow.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The first step is to load the example auditory nerve simulation from the file "auditoryNerve.spf" found in the "Tutorials/AuditoryNerve" directory.  From the <emphasis>File</emphasis> menu on the menu bar select the <emphasis>Open</emphasis> option.  This will open the <emphasis>Select a file</emphasis> dialog window as shown in <xref linkend = "fg_SelectFileDialog"/>.  Ensure that the "Simulation Parameter File (*.spf)" option is selected for the "Files of type", then open the "auditoryNerve" file (the ".spf" extension is not normally shown in Windows installations).
+</para>
+
+<figure id = "fg_SelectFileDialog"><title>Select a file dialog window.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/SelectFileDialogWindow.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Once loaded the &APP; main window will look as show in <xref linkend = "fg_ExampleAuditoryNerveSim"/>.  Each shape in the simulation design represents a process and the execution/data direction is shown by the connection arrows.  The shape denotes the class of process and the central label gives the process' specific name.  For example, the first process is the "Stim_Harmonic" stimulus generation module which is in the  I/O class.  The process also has an additional label ("p0") which will be explained more fully later in this document.
+</para>
+
+<figure id = "fg_ExampleAuditoryNerveSim"><title>Example auditory nerve simulation.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleAuditoryNerveSim.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Run the simulation by processing the media-player style "play" button as indicated in <xref linkend = "fg_RunButton"/>.  When run four displays will be produced as shown in <xref linkend = "fg_ExampleDisplays"/>. These displays correspond to the display processes in the simulation, labelled, "p3", "p7", "p9" and "p13".  The process shapes also show the display window labels.
+</para>
+
+<figure id = "fg_ExampleDisplays"><title>Ausitory nerve example simulation displays</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleDisplays.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The example simulation describes a non-linear auditory nerve model.  The first four processes
+</para>
+
+
+<figure id = "fg_RunButton"><title>Play button to run the simulation</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/RunButton.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect1>
+
+</chapter>
+
+<chapter id = "ch_Main_Application_Window">
+<title>Main Application Window</title>
+
+<sect1 id = "sx_Application_Menus">
+<title>Application Menus</title>
+
+<sect2 id = "sx_File_Menu">
+<title>File Menu</title>
+<para>
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Edit_Menu">
+<title>Edit Menu</title>
+<para>
+</para>
+
+</sect2>
+
+<sect2 id = "sx_View_Menu">
+<title>View Menu</title>
+<para>
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Program_Menu">
+<title>Pogram Menu</title>
+<para>
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Windows_Menu">
+<title>Windows Menu</title>
+<para>
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Help_Menu">
+<title>Help Menu</title>
+<para>
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id = "sx_Tool_Bar">
+<title>Tool Bar</title>
+<para>
+</para>
+
+</sect1>
+
+<sect1 id = "sx_Simulation_Design_Window">
+<title>Simulation Design Window</title>
+<para>
+</para>
+
+<sect2 id = "sx_Process_Palette">
+<title>Process Palette</title>
+<para>
+</para>
+</sect2>
+
+</sect1>
+
+</chapter>
+
+<index/>
+
+</book>
+
