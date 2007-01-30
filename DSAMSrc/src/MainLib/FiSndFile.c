@@ -315,14 +315,17 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 {
 	static const WChar *funcName = wxT("OpenFile_SndFile");
 	WChar	*parFilePath;
+	int		format;
 	DataFilePtr	p = dataFilePtr;
 
 	if (p->sndFile)
 		Free_SndFile();
-	if ((p->type == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
+	format = GetSndFormat_DataFile(p->type);
+	if ((format == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
 		p->sFInfo.samplerate = p->defaultSampleRate;
 		p->sFInfo.channels = signal->numChannels;
-		p->sFInfo.format = p->type | p->subFormatType;
+		p->sFInfo.format = format | GetSndSubFormat_DataFile(
+		  p->subFormatType);
 		if (!sf_format_check(&p->sFInfo)) {
 			NotifyError(wxT("%s: Illegal output format for sound file."),
 			  funcName);
@@ -680,7 +683,7 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 {
 	static const WChar *funcName = wxT("CreateTitleString_SndFile");
 	char *s, *channelString, mainParString[LONG_STRING], workStr[MAXLINE];
-	size_t	length, nameLen, mainStringLen, maxChannelStringLen, channelStringLen;
+	size_t	length, mainStringLen, maxChannelStringLen, channelStringLen;
 	int		i;
 	NameSpecifierPtr	list;
 	DataFilePtr	p = dataFilePtr;
@@ -737,7 +740,8 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 			return(NULL);
 		}
 	}
-	if ((s = (char *) malloc(mainStringLen + channelStringLen + 1)) == NULL) {
+	length = mainStringLen + channelStringLen + 1;
+	if ((s = (char *) malloc(length)) == NULL) {
 		NotifyError(wxT("%s: Out of memory for string (%d)."), funcName,
 		  length);
 		return(NULL);
@@ -795,7 +799,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 		}
 		if ((p->sFInfo.channels != outSignal->numChannels) || (fabs(p->
 		  sFInfo.samplerate - (1.0 / outSignal->dt)) > DATAFILE_NEGLIGIBLE_SR_DIFF) ||
-		  (p->sFInfo.format | SF_FORMAT_SUBMASK != dataFilePtr->
+		  ((p->sFInfo.format | SF_FORMAT_SUBMASK) != dataFilePtr->
 		  subFormatType)) {
 			NotifyError(wxT("%s: Cannot append to different format file!"),
 			  funcName);

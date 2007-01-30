@@ -75,8 +75,22 @@
 /******************************************************************************/
 
 DataFilePtr dataFilePtr = NULL;
-NameSpecifier	*soundFormatList = NULL;
-NameSpecifier	*soundSubFormatList = NULL;
+
+struct {
+
+	int		*formats;
+	int		*subFormats;
+	NameSpecifier	*formatList;
+	NameSpecifier	*subFormatList;
+
+} dataFileSndFormatInfo = {
+
+	NULL,
+	NULL,
+	NULL,
+	NULL
+
+};
 
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
@@ -136,8 +150,16 @@ DSAMFormatList_DataFile(int index)
 void
 FreeSoundFormatLists_DataFile(void)
 {
-	FreeNameAllocatedList_NameSpecifier(&soundFormatList);
-	FreeNameAllocatedList_NameSpecifier(&soundSubFormatList);
+	if (dataFileSndFormatInfo.formats) {
+		free(dataFileSndFormatInfo.formats);
+		dataFileSndFormatInfo.formats = NULL;
+	}
+	if (dataFileSndFormatInfo.subFormats) {
+		free(dataFileSndFormatInfo.subFormats);
+		dataFileSndFormatInfo.subFormats = NULL;
+	}
+	FreeNameAllocatedList_NameSpecifier(&dataFileSndFormatInfo.formatList);
+	FreeNameAllocatedList_NameSpecifier(&dataFileSndFormatInfo.subFormatList);
 
 }
 
@@ -152,7 +174,7 @@ BOOLN
 InitSoundFormatList_DataFile(void)
 {
 	static const WChar *funcName = wxT("InitSoundFormatList_DataFile");
-	int		i, majorFormatCount, localFormatCount = 0;
+	int		i, majorFormatCount, localFormatCount = 0, count, *iP;
 	NameSpecifierPtr	p;
 	SF_FORMAT_INFO	info ;
 	NameSpecifier localSoundFormatList[] = {
@@ -160,32 +182,42 @@ InitSoundFormatList_DataFile(void)
 		{NULL,			NULL_DATA_FILE}
 	};
 
-	if (soundFormatList)
+	if (dataFileSndFormatInfo.formatList)
 		return(TRUE);
 	for (p = localSoundFormatList; p->name; p++)
 		localFormatCount++;
 	sf_command (NULL, SFC_GET_FORMAT_MAJOR_COUNT, &majorFormatCount,
 	  sizeof (int)) ;
-	if ((soundFormatList = (NameSpecifier *) calloc(majorFormatCount + 
-	  localFormatCount + 1, sizeof(NameSpecifier))) == NULL) {
+	count = majorFormatCount + localFormatCount + 1;
+	if ((dataFileSndFormatInfo.formatList = (NameSpecifier *) calloc(count,
+	  sizeof(NameSpecifier))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for sound format list (%d)"),
-		  funcName, majorFormatCount);
+		  funcName, count);
 		return(FALSE);
 	}
-	for (i = 0, p = soundFormatList; i < majorFormatCount; i++, p++) {
+	if ((dataFileSndFormatInfo.formats = (int *) calloc(count, sizeof(int))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for sound format array (%d)"),
+		  funcName, count);
+		return(FALSE);
+	}
+	for (i = 0, p = dataFileSndFormatInfo.formatList, iP = dataFileSndFormatInfo.formats;
+	  i < localFormatCount; i++, p++, iP++) {
+		p->name = InitString_Utility_String(localSoundFormatList[i].name);
+		p->specifier = localSoundFormatList[i].specifier;
+		*iP = -1;
+	}
+	for (i = 0;  i < majorFormatCount; i++, p++, iP++) {
 		info.format = i;
 		sf_command(NULL, SFC_GET_FORMAT_MAJOR, &info, sizeof (info));
 		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
 		  info.extension));
 		ToUpper_Utility_String(p->name, p->name);
-		p->specifier = info.format;
-	}
-	for (i = 0; i < localFormatCount; i++, p++) {
-		p->name = InitString_Utility_String(localSoundFormatList[i].name);
-		p->specifier = localSoundFormatList[i].specifier;
+		p->specifier = localSoundFormatList[localFormatCount - 1].specifier + i + 1;
+		*iP = info.format;
 	}
 	p->name = NULL;
 	p->specifier = NULL_DATA_FILE;
+	*iP = -1;
 	return(TRUE);
 
 }
@@ -201,7 +233,7 @@ BOOLN
 InitSoundSubFormatList_DataFile(void)
 {
 	static const WChar *funcName = wxT("InitSoundSubFormatList_DataFile");
-	int		i, subTypeFormatCount, localSubFormatCount = 0;
+	int		i, subTypeFormatCount, localSubFormatCount = 0, count, *iP;
 	SF_FORMAT_INFO	info ;
 	NameSpecifierPtr	p;
 	NameSpecifier localSoundSubFormatList[] = {
@@ -209,33 +241,69 @@ InitSoundSubFormatList_DataFile(void)
 		{NULL,			NULL_DATA_FILE}
 	};
 
-	if (soundSubFormatList)
+	if (dataFileSndFormatInfo.subFormatList)
 		return(TRUE);
 	for (p = localSoundSubFormatList; p->name; p++)
 		localSubFormatCount++;
 	sf_command (NULL, SFC_GET_FORMAT_SUBTYPE_COUNT, &subTypeFormatCount,
 	  sizeof (int)) ;
-	if ((soundSubFormatList = (NameSpecifier *) calloc(subTypeFormatCount + 
-	  localSubFormatCount + 1, sizeof(NameSpecifier))) == NULL) {
+	count = subTypeFormatCount + localSubFormatCount + 1;
+	if ((dataFileSndFormatInfo.subFormatList = (NameSpecifier *) calloc(count, sizeof(
+	  NameSpecifier))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for sound sub-type format list (%d)"),
 		  funcName, subTypeFormatCount);
 		return(FALSE);
 	}
-	for (i = 0, p = soundSubFormatList; i < subTypeFormatCount; i++, p++) {
+	if ((dataFileSndFormatInfo.subFormats = (int *) calloc(count, sizeof(int))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for sound sub-format array (%d)"),
+		  funcName, count);
+		return(FALSE);
+	}
+	for (i = 0, p = dataFileSndFormatInfo.subFormatList, iP = dataFileSndFormatInfo.subFormats;
+	  i < localSubFormatCount; i++, p++, iP++) {
+		p->name = InitString_Utility_String(localSoundSubFormatList[i].name);
+		p->specifier = localSoundSubFormatList[i].specifier;
+		*iP = -1;
+	}
+	for (i = 0; i < subTypeFormatCount; i++, p++, iP++) {
 		info.format = i;
 		sf_command(NULL, SFC_GET_FORMAT_SUBTYPE, &info, sizeof (info));
 		p->name = InitString_Utility_String(MBSToWCS_Utility_String(
 		  info.name));
 		ToUpper_Utility_String(p->name, p->name);
-		p->specifier = info.format;
-	}
-	for (i = 0; i < localSubFormatCount; i++, p++) {
-		p->name = InitString_Utility_String(localSoundSubFormatList[i].name);
-		p->specifier = localSoundSubFormatList[i].specifier;
+		p->specifier = localSoundSubFormatList[localSubFormatCount - 1].specifier + i + 1;
+		*iP = info.format;
 	}
 	p->name = NULL;
 	p->specifier = NULL_DATA_FILE;
+	*iP = -1;
 	return(TRUE);
+
+}
+
+/****************************** GetSndFormat ***********************************/
+
+/*
+ * This function returns the corresponding sound format.
+ */
+
+int
+GetSndFormat_DataFile(int specifier)
+{
+	return(dataFileSndFormatInfo.formats[specifier]);
+
+}
+
+/****************************** GetSndSubFormat *******************************/
+
+/*
+ * This function returns the corresponding sound sub-format.
+ */
+
+int
+GetSndSubFormat_DataFile(int specifier)
+{
+	return(dataFileSndFormatInfo.subFormats[specifier]);
 
 }
 
@@ -318,7 +386,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->parSpec = parSpec;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	DSAM_strncpy(dataFilePtr->name, wxT("output.dat"), MAXLINE);
-	dataFilePtr->subFormatType = SF_FORMAT_PCM_16;
+	dataFilePtr->subFormatType = ASCII_DATA_FILE;
 	dataFilePtr->wordSize = 2;
 	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
@@ -421,7 +489,7 @@ SetUniParList_DataFile(void)
 	SetPar_UniParMgr(&pars[DATAFILE_SUBFORMATTYPE], wxT("SUB_FORMAT_TYPE"),
 	  wxT("Sound file format sub-type."),
 	  UNIPAR_NAME_SPEC,
-	  &dataFilePtr->subFormatType, soundSubFormatList,
+	  &dataFilePtr->subFormatType, dataFileSndFormatInfo.subFormatList,
 	  (void * (*)) SetSubFormatType_DataFile);
 	SetPar_UniParMgr(&pars[DATAFILE_WORDSIZE], wxT("WORDSIZE"),
 	  wxT("Default word size for sound data (1,2 or 4 bytes)"),
@@ -512,7 +580,7 @@ SetSubFormatType_DataFile(WChar * theSubFormatType)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theSubFormatType,
-		soundSubFormatList)) == NULL_DATA_FILE) {
+		dataFileSndFormatInfo.subFormatList)) == NULL_DATA_FILE) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSubFormatType);
 		return(FALSE);
 	}
@@ -622,15 +690,15 @@ SetEndian_DataFile(WChar *endian)
 /**************************** Format ******************************************/
 
 /*
- * This routine returns the pointer to a data file format.
- * It also sets the dataFilePtr->type field.
+ * It sets the dataFilePtr->type field.
  */
 
 FileFormatSpecifier
 Format_DataFile(WChar *suffix)
 {
 
-	return(dataFilePtr->type = Identify_NameSpecifier(suffix, soundFormatList));
+	return(dataFilePtr->type = Identify_NameSpecifier(suffix, dataFileSndFormatInfo.
+	  formatList));
 
 }
 
@@ -968,7 +1036,7 @@ PrintPars_DataFile(void)
 	}
 	DPrint(wxT("DataFile Module Parameters:-\n"));
 	DPrint(wxT("\tFile name = %s,"), dataFilePtr->name);
-	DPrint(wxT("\tSub-format type = %s,\n"), soundSubFormatList[
+	DPrint(wxT("\tSub-format type = %s,\n"), dataFileSndFormatInfo.subFormatList[
 	  dataFilePtr->subFormatType].name);
 	DPrint(wxT("\tNumber of channels = %d,"), dataFilePtr->numChannels);
 	DPrint(wxT("\tGain = %g dB\n"), dataFilePtr->gain);

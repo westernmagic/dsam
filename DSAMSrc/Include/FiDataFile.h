@@ -199,6 +199,10 @@ void	FreeProcessVariables_DataFile(void);
 
 void	FreeSoundFormatLists_DataFile(void);
 
+int		GetSndFormat_DataFile(int specifier);
+
+int		GetSndSubFormat_DataFile(int specifier);
+
 UniParListPtr	GetUniParListPtr_DataFile(void);
 
 BOOLN	InitSubFormatTypeList_DataFile(void);

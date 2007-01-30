@@ -126,7 +126,7 @@ PrintList_NameSpecifier(NameSpecifierPtr list)
 	}
 	DPrint(wxT("Name specifier list:-\n"));
 	for (  ; list->name != NULL; list++)
-		DPrint(wxT("\t%s\n"), list->name);
+		DPrint(wxT("\t%s\t(%d)\n"), list->name, list->specifier);
 
 }
 
