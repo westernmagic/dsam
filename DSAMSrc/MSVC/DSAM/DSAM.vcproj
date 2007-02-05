@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO),$(LIBSNDFILE)"
+				AdditionalIncludeDirectories="$(DSAMDIR)\include,$(DSAMDIR),$(PORTAUDIO)\include,$(LIBSNDFILE)"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -459,6 +459,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\src\MainLib\AnSAC.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\MainLib\AnSAImage.c"
 				>
 				<FileConfiguration
@@ -589,6 +593,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\MainLib\FiSndFile.c"
+				>
 			</File>
 			<File
 				RelativePath="..\..\src\MainLib\FlBandPass.c"
@@ -2813,50 +2821,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\MainLib\UtUIEEEFloat.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\src\MainLib\UtUPortableIO.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\src\MainLib\UtZhang.c"
 				>
 				<FileConfiguration
@@ -2936,6 +2900,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\AnSAC.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\AnSAImage.h"
 				>
 			</File>
@@ -2993,6 +2961,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\FiParFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\FiSndFile.h"
 				>
 			</File>
 			<File
@@ -3489,14 +3461,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\UtTranspose.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\UtUIEEEFloat.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\UtUPortableIO.h"
 				>
 			</File>
 			<File

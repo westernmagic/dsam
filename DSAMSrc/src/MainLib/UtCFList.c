@@ -146,6 +146,7 @@ CFModeList_CFList(int index)
 			{ wxT("GUINEA_PIG"),	CFLIST_GPIG_MODE },
 			{ wxT("HUMAN"),			CFLIST_HUMAN_MODE },
 			{ wxT("MACAQUE"),		CFLIST_MACAQUEM_MODE },
+			{ wxT("IDENTICAL"),		CFLIST_IDENTICAL_MODE },
 			{ NULL,					CFLIST_NULL }
 		};
 	return (&modeList[index]);
@@ -168,7 +169,8 @@ RegenerateList_CFList(CFListPtr theCFs)
 	double	*frequencies, *bandwidths;
 
 	if (((theCFs->centreFreqMode == CFLIST_USER_MODE) ||
-	  (theCFs->centreFreqMode == CFLIST_SINGLE_MODE)) &&
+	  (theCFs->centreFreqMode == CFLIST_SINGLE_MODE) ||
+	  (theCFs->centreFreqMode == CFLIST_IDENTICAL_MODE)) &&
 	  (theCFs->oldNumChannels != theCFs->numChannels)) {
 		if ((frequencies = (double *) calloc(theCFs->numChannels,
 		  sizeof(double))) == NULL) {
@@ -253,6 +255,7 @@ SetCFMode_CFList(CFListPtr theCFs, WChar *modeName)
 	theCFs->centreFreqMode = (CFListSpecifier) mode;
 	switch (mode) {
 	case CFLIST_SINGLE_MODE:
+	case CFLIST_IDENTICAL_MODE:
 		theCFs->numChannels = 1;
 		break;
 	case CFLIST_ERB_MODE:
@@ -539,6 +542,10 @@ SetCFUniParListMode_CFList(CFListPtr theCFs)
 		theCFs->cFParList->pars[CFLIST_CF_NUM_CHANNELS].enabled = TRUE;
 		theCFs->cFParList->pars[CFLIST_CF_FREQUENCIES].enabled = TRUE;
 		break;
+	case CFLIST_IDENTICAL_MODE:
+		theCFs->cFParList->pars[CFLIST_CF_SINGLE_FREQ].enabled = TRUE;
+		theCFs->cFParList->pars[CFLIST_CF_NUM_CHANNELS].enabled = TRUE;
+		break;
 	default:
 		NotifyError(wxT("%s: CF mode (%d) not implemented."), funcName,
 		  theCFs->centreFreqMode);
@@ -576,8 +583,8 @@ SetCFUniParList_CFList(CFListPtr theCFs)
 	  (void * (*)) SetDiagnosticMode_CFList);
 	SetPar_UniParMgr(&pars[CFLIST_CF_MODE], wxT("CF_MODE"),
 	 wxT("Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', ")
-	 wxT("'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or ")
-	 wxT("'macaque')."),
+	 wxT("'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig',  ")
+	 wxT("'macaque' or 'identical')."),
 	  UNIPAR_NAME_SPEC,
 	  &theCFs->centreFreqMode, CFModeList_CFList(0),
 	  (void * (*)) SetCFMode_CFList);
@@ -1253,6 +1260,35 @@ GenerateGreenwood_CFList(CFListPtr theCFs)
 
 #undef GREENWOOD_X
 
+/****************************** GenerateIdentical ***********************************/
+
+/*
+ * This function generates frequency list with the same CF.
+ * It assumes that the general parameter checks have been done on the CFList
+ * structure previously.
+ */
+
+BOOLN
+GenerateIdentical_CFList(CFListPtr theCFs)
+{
+	static const WChar *funcName = wxT("GenerateIdentical_CFList");
+	int		i;
+	double	singleCF = theCFs->frequency[0];
+
+	if (!CheckInit_CFList(theCFs, funcName))
+		return(FALSE);
+	if (!AllocateFrequencies_CFList(theCFs)) {
+		NotifyError(wxT("%s: Could not allocate frequencies."), funcName);
+		return(FALSE);
+	}
+	theCFs->minCF = singleCF;
+	theCFs->maxCF = singleCF;
+	for (i = 0; i < theCFs->numChannels; i++)
+		theCFs->frequency[i] = singleCF;
+	return(TRUE);
+
+}
+
 /****************************** RatifyPars ************************************/
 
 /*
@@ -1318,8 +1354,8 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 	default:
 		;
 	};
-	if ((theCFs->centreFreqMode == CFLIST_SINGLE_MODE) && (theCFs->numChannels <
-	  1)) {
+	if (((theCFs->centreFreqMode == CFLIST_SINGLE_MODE) || (theCFs->centreFreqMode ==
+	  CFLIST_IDENTICAL_MODE)) && (theCFs->numChannels < 1)) {
 		NotifyError(wxT("%s: Illegal no. of centre frequencies (%d)."),
 		  funcName, theCFs->numChannels);
 		return(FALSE);
@@ -1361,6 +1397,9 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 	case CFLIST_HUMAN_MODE:
 	case CFLIST_MACAQUEM_MODE:
 		ok = GenerateGreenwood_CFList(theCFs);
+		break;
+	case CFLIST_IDENTICAL_MODE:
+		ok = GenerateIdentical_CFList(theCFs);
 		break;
 	default:
 		;
@@ -1417,6 +1456,7 @@ GenerateList_CFList(WChar *modeName, WChar *diagModeName, int numberOfCFs,
 
 	switch (theCFs->centreFreqMode ) {
 	case CFLIST_USER_MODE:
+	case CFLIST_IDENTICAL_MODE:
 		if (!SetNumChannels_CFList(theCFs, numberOfCFs))
 			ok = FALSE;
 		break;
@@ -1453,6 +1493,7 @@ GenerateList_CFList(WChar *modeName, WChar *diagModeName, int numberOfCFs,
 		break;
 	case CFLIST_USER_MODE:
 	case CFLIST_SINGLE_MODE:
+	case CFLIST_IDENTICAL_MODE:
 		if (!frequencies)
 			ok = FALSE;
 	default:

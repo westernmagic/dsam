@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <ctype.h>
 #include <sndfile.h>
 
 #ifdef HAVE_CONFIG_H
@@ -128,7 +129,7 @@ InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
 	if ((*p)->maxLength != maxLength) {
 		if ((*p)->data)
 			free((*p)->data);
-		if (((*p)->data = (unsigned char *) malloc(maxLength)) == NULL) {
+		if (((*p)->data = (unsigned char *) malloc((size_t) maxLength)) == NULL) {
 			NotifyError(wxT("%s: Cannot allocate data memory."), funcName);
 			free((*p));
 			*p = NULL;
@@ -191,7 +192,7 @@ VirtualIORead_SndFile(void *ptr, sf_count_t count, void *user_data)
 	if (vf->offset + count > vf->length)
 		count = vf->length - vf->offset ;
 
-	memcpy (ptr, vf->data + vf->offset, count) ;
+	memcpy (ptr, vf->data + vf->offset, (size_t) count) ;
 	vf->offset += count ;
 
 	return count;
@@ -322,7 +323,7 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 		Free_SndFile();
 	format = GetSndFormat_DataFile(p->type);
 	if ((format == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
-		p->sFInfo.samplerate = p->defaultSampleRate;
+		p->sFInfo.samplerate = (int) floor(p->defaultSampleRate + 0.5);
 		p->sFInfo.channels = signal->numChannels;
 		p->sFInfo.format = format | GetSndSubFormat_DataFile(
 		  p->subFormatType);
@@ -508,7 +509,7 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 	static const WChar *funcName = wxT("ReadFile_SndFile");
 	BOOLN	ok = TRUE;
 	const char *titleString;
-	ChanLen	length;
+	sf_count_t	length;
 	DataFilePtr	p = dataFilePtr;
 	SignalDataPtr	outSignal;
 
@@ -535,8 +536,8 @@ ReadFile_SndFile(WChar *fileName, EarObjectPtr data)
 	}
 	if ((length = SetIOSectionLength_DataFile(data)) <= 0)
 		return(FALSE);
-	if (!InitOutSignal_EarObject(data, (uShort) p->numChannels,
-	  length, 1.0 / p->defaultSampleRate)) {
+	if (!InitOutSignal_EarObject(data, (uShort) p->numChannels, (ChanLen) length,
+	  1.0 / p->defaultSampleRate)) {
 		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);
 	}

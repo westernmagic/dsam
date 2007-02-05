@@ -716,7 +716,7 @@ Format_DataFile(WChar *suffix)
  * otherwise it returns the I/O section length to be read/written.
  */
 
-ChanLen
+sf_count_t
 SetIOSectionLength_DataFile(EarObjectPtr data)
 {
 	if (!GetDSAMPtr_Common()->segmentedMode || (_OutSig_EarObject(data) ==
@@ -1190,7 +1190,7 @@ InitModule_DataFile(ModulePtr theModule)
  */
 
 BOOLN
-InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
+InitProcessVariables_DataFile(EarObjectPtr data, sf_count_t length,
   double sampleRate)
 {
 	static WChar *funcName = wxT("InitProcessVariables_DataFile");

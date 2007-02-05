@@ -56,6 +56,7 @@ typedef struct {
 	UniParListPtr	parList;
 	SpikeListSpecPtr	spikeListSpec;
 	int		maxSpikes;
+	double	lastNormalisationFactor;
 	ChanLen	maxIntervalIndex;
 
 } SAC, *SACPtr;

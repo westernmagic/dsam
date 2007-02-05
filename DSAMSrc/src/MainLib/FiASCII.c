@@ -88,7 +88,7 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 		return(FALSE);
 	}
 	dt = 1.0 / dataFilePtr->defaultSampleRate;
-	length = dataFilePtr->maxSamples;
+	length = (ChanLen) dataFilePtr->maxSamples;
 	if (!InitOutSignal_EarObject(data, numColumns, length, dt) ) {
 		NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 		return(FALSE);

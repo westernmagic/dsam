@@ -154,8 +154,8 @@ typedef struct {
 	double	outputTimeOffset;
 	ChanLen	timeOffsetIndex;
 	ChanLen	timeOffsetCount;
-	int32 	maxSamples;		/* This can be set to restrict the data size. */
-	int32	numSamples;		/* Set for modes which may lose previous value. */
+	sf_count_t	maxSamples;		/* This can be set to restrict the data size. */
+	sf_count_t	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;
 	SF_INFO	sFInfo;
 	SNDFILE	*sndFile;
@@ -215,7 +215,7 @@ BOOLN	InitEndianModeList_DataFile(void);
 
 BOOLN	InitModule_DataFile(ModulePtr theModule);
 
-BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, ChanLen length,
+BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, sf_count_t length,
 		  double sampleRate);
 
 int		NumberOfColumns_DataFile(FILE *fp);
@@ -246,7 +246,7 @@ BOOLN	SetFileName_DataFile(WChar *fileName);
 
 BOOLN	SetGain_DataFile(double theGain);
 
-ChanLen	SetIOSectionLength_DataFile(EarObjectPtr data);
+sf_count_t	SetIOSectionLength_DataFile(EarObjectPtr data);
 
 BOOLN	SetNumChannels_DataFile(int numChannels);
 

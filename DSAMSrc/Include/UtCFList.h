@@ -66,6 +66,7 @@ typedef enum {
 	CFLIST_GPIG_MODE,		/* - spaced on BM for guinea pig (Greenwood). */
 	CFLIST_HUMAN_MODE,		/* - spaced on BM for humans (Greenwood). */
 	CFLIST_MACAQUEM_MODE,	/* - spaced on BM for macaque monkey (Greenwood). */
+	CFLIST_IDENTICAL_MODE,	/* - all frequencies set to the same value. */
 	CFLIST_NULL
 
 } CFListSpecifier;
@@ -157,6 +158,8 @@ BOOLN		GenerateERBn_CFList(CFListPtr theCFs);
 BOOLN		GenerateFocalLog_CFList(CFListPtr theCFs);
 
 BOOLN		GenerateGreenwood_CFList(CFListPtr theCFs);
+
+BOOLN		GenerateIdentical_CFList(CFListPtr theCFs);
 
 BOOLN		GenerateLinear_CFList(CFListPtr theCFs);
 

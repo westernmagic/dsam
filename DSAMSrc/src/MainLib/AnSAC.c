@@ -116,6 +116,7 @@ Init_Analysis_SAC(ParameterSpecifier parSpec)
 		Free_Analysis_SAC();
 		return(FALSE);
 	}
+	sACPtr->lastNormalisationFactor = 1.0;
 	sACPtr->spikeListSpec = NULL;
 	return(TRUE);
 
@@ -187,8 +188,8 @@ GetUniParListPtr_Analysis_SAC(void)
 		return(FALSE);
 	}
 	if (sACPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(sACPtr->parList);
@@ -502,7 +503,7 @@ ResetProcess_Analysis_SAC(EarObjectPtr data)
 {
 	ResetOutSignal_EarObject(data);
 	ResetListSpec_SpikeList(sACPtr->spikeListSpec, _InSig_EarObject(data, 0));
-
+	sACPtr->lastNormalisationFactor = 1.0;
 }
 
 /****************************** InitProcessVariables **************************/
@@ -571,10 +572,10 @@ Calc_Analysis_SAC(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Calc_Analysis_SAC");
 	register	ChanData	 *outPtr;
-	register	double binScale, normalisationFactor;
+	register	double binScale, normalisationFactor, spikeCount;
 	int		chan, sChan;
 	double	maxInterval;
-	ChanLen	i, spikeIntervalIndex, spikeCount;
+	ChanLen	i, spikeIntervalIndex;
 	SpikeSpecPtr	p1, p2;
 	SpikeListSpecPtr	sL;
 	SignalDataPtr	inSignal, outSignal;
@@ -611,10 +612,16 @@ Calc_Analysis_SAC(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	outPtr = outSignal->channel[0];
 	binScale = inSignal->dt / p->binWidth;
 	sL = p->spikeListSpec;
 	spikeCount = 0;
+	if (p->normalisation) {
+		outPtr = outSignal->channel[0];
+		for (i = 0; i < outSignal->length; i++)
+			*outPtr++ /= p->lastNormalisationFactor;
+	}
+	
+	outPtr = outSignal->channel[0];
 	for (chan = 0; chan < inSignal->numChannels; chan++) {
 		if (sL->tail[chan])
 			spikeCount += sL->tail[chan]->number;

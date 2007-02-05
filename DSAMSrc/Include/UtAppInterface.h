@@ -36,6 +36,9 @@
 #	define	MAIN_ARGS	void
 #	define ARGC		0
 #	define ARGV		NULL
+#	if defined(USE_GUI) && defined(__WXMSW__)
+#		#define	MainSimulation	main
+#	endif
 #else
 #	define MainSimulation	main
 #	define	MAIN_ARGS	int argc, WChar **argv
