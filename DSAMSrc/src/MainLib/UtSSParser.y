@@ -242,7 +242,15 @@ reset:
 int
 yyerror(char *s)
 {
-	NotifyError_Utility_SimScript(wxT("%s"), s);
+	WChar	*string;
+#	if DSAM_USE_UNICODE
+	WChar	newString[LONG_STRING];
+	DSAM_strcpy(newString, MBSToWCS_Utility_String(s));
+	string = newString;
+#	else
+	string = s;
+#	endif
+	NotifyError_Utility_SimScript(wxT("%s"), string);
 	return 1;
 }
 
