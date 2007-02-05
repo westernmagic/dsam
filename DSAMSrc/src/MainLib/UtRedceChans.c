@@ -525,7 +525,6 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Average across channels utility"));
 		inSignal = _InSig_EarObject(data, 0);
-		outSignal = _OutSig_EarObject(data);
 		data->updateProcessFlag = TRUE;
 		if (!InitOutSignal_EarObject(data, p->numChannels * inSignal->
 		  interleaveLevel, inSignal->length, inSignal->dt)) {
@@ -533,6 +532,7 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 			return(FALSE);
 		}
 		ResetProcess_Utility_ReduceChannels(data);
+		outSignal = _OutSig_EarObject(data);
 		SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
 		SetLocalInfoFlag_SignalData(outSignal, TRUE);
 		SetInfoChannelLabels_SignalData(outSignal, NULL);
