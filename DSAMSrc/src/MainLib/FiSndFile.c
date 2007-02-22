@@ -324,7 +324,7 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 	format = GetSndFormat_DataFile(p->type);
 	if ((format == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
 		p->sFInfo.samplerate = (int) floor(p->defaultSampleRate + 0.5);
-		p->sFInfo.channels = signal->numChannels;
+		p->sFInfo.channels = (signal)? signal->numChannels: p->numChannels;
 		p->sFInfo.format = format | GetSndSubFormat_DataFile(
 		  p->subFormatType);
 		if (!sf_format_check(&p->sFInfo)) {
@@ -446,6 +446,8 @@ ParseTitleString_SndFile(const char *titleString, SignalDataPtr signal)
 {
 	char	*p, *token, *parName, *parValue;
 
+	if (!titleString)
+		return;
 	for (token = strtok((char *) titleString, SND_FILE_FORMAT_DELIMITERS); token;
 	  token = strtok(NULL, SND_FILE_FORMAT_DELIMITERS)) {
 		if ((p = strchr(token, SND_FILE_FORMAT_PAR_SEPARATOR)) == NULL)

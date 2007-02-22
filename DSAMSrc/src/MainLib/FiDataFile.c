@@ -386,7 +386,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->parSpec = parSpec;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	DSAM_strncpy(dataFilePtr->name, wxT("output.dat"), MAXLINE);
-	dataFilePtr->subFormatType = ASCII_DATA_FILE;
+	dataFilePtr->subFormatType = 1 + ASCII_DATA_FILE;
 	dataFilePtr->wordSize = 2;
 	dataFilePtr->endian = DATA_FILE_DEFAULT_ENDIAN;
 	dataFilePtr->numChannels = 1;
