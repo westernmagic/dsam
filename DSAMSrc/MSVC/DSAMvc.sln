@@ -12,25 +12,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Release (wxWidgets DLL)|Win32 = Release (wxWidgets DLL)|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|Win32.Build.0 = Debug|Win32
-		{6B9DC988-59D4-421D-9554-24F51304F022}.Release|Win32.ActiveCfg = Release|Win32
-		{6B9DC988-59D4-421D-9554-24F51304F022}.Release|Win32.Build.0 = Release|Win32
+		{6B9DC988-59D4-421D-9554-24F51304F022}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release (wxWidgets DLL)|Win32
+		{6B9DC988-59D4-421D-9554-24F51304F022}.Release (wxWidgets DLL)|Win32.Build.0 = Release (wxWidgets DLL)|Win32
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|Win32.ActiveCfg = Debug|Win32
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|Win32.Build.0 = Debug|Win32
-		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release|Win32.ActiveCfg = Release|Win32
-		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release|Win32.Build.0 = Release|Win32
+		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release(wxWidgets  DLL)|Win32
+		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|Win32.Build.0 = Release(wxWidgets  DLL)|Win32
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|Win32.Build.0 = Debug|Win32
-		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release|Win32.ActiveCfg = Release|Win32
-		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release|Win32.Build.0 = Release|Win32
+		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release (wxWidgets DLL)|Win32
+		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release (wxWidgets DLL)|Win32.Build.0 = Release (wxWidgets DLL)|Win32
 		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Debug|Win32.Build.0 = Debug|Win32
-		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Release|Win32.ActiveCfg = Release|Win32
-		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Release|Win32.Build.0 = Release|Win32
+		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release (wxWidgets DLL)|Win32
+		{1EDB5D77-76F3-4C0B-8DBB-4AD02720DCE0}.Release (wxWidgets DLL)|Win32.Build.0 = Release (wxWidgets DLL)|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

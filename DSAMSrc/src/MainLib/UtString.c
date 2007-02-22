@@ -328,7 +328,7 @@ MBSToWCS_Utility_String(const char *mb)
 		  wxT("string argument."), funcName, LONG_STRING);
 		return(NULL);
 	}
-
+	memset(&state, 0, sizeof(mbstate_t));
 	if (mbsrtowcs(dest, &mb, LONG_STRING, &state) < 0 ) {
 		NotifyError(wxT("%s: Failed to convert wide character (%d)."),
 		  funcName, LONG_STRING);

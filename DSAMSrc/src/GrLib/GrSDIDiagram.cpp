@@ -110,7 +110,7 @@ SDIDiagram::AddShape(wxShape *shape)
 
 wxShape *
 SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
-  wxBrush *brush)
+  const wxBrush *brush)
 {
 	bool	lineShape = (!pc);
 	wxShape *shape = CreateBasicShape(shapeInfo, (lineShape)? -1:
@@ -362,7 +362,8 @@ SDIDiagram::DrawSimulation(void)
 /******************************************************************************/
 
 wxShape *
-SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
+SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type,
+							 const wxBrush *brush)
 {
 	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
 	if (!loadIDsFromFile)
@@ -371,7 +372,7 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type, wxBrush *brush)
 	  type));
 	theShape->SetCentreResize(false);
 	theShape->SetPen(wxBLACK_PEN);
-	theShape->SetBrush(brush);
+	theShape->SetBrush((wxBrush *) brush);
 	theShape->GetFont()->SetPointSize((int) (SHAPE_DEFAULT_FONT_POINTSIZE *
 	  xScale));
 	return(theShape);

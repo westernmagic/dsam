@@ -226,8 +226,6 @@ SDIView::OnDraw(wxDC *dc)
 
 	// This part was added to preform the print preview and printing functions 
 
-	dc->BeginDrawing(); // Allows optimization of drawing code under MS Windows.
-
 	// Get the current diagram
 	wxDiagram *diagram_p=((SDIDocument*)GetDocument())->GetDiagram();
 	if (diagram_p->GetShapeList()) { 
@@ -241,8 +239,6 @@ SDIView::OnDraw(wxDC *dc)
 			current = current->GetNext();//Procede to the next shape in the list
 		}
 	}
-	dc->EndDrawing(); // Allows optimization of drawing code under MS Windows. 
-
 }
 
 /******************************************************************************/

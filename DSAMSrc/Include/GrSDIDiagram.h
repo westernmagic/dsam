@@ -83,9 +83,9 @@ class SDIDiagram: public wxDiagram
 				  int lineType);
 	void	AddShape(wxShape *shape);
 	wxShape *	CreateBasicShape(wxClassInfo *shapeInfo, int type,
-				  wxBrush *brush);
+				  const wxBrush *brush);
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
-				  wxBrush *brush);
+				  const wxBrush *brush);
 	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
 	void	DrawSimConnections(void);
 	void	DrawSimShapes(void);
