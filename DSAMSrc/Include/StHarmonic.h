@@ -8,7 +8,7 @@
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		12 Mar 1997
- * Copyright:	(c) 1997,  University of Essex
+ * Copyright:	(c) 1997,  L. P. O'Mard
  *
  **********************/
 
@@ -50,19 +50,6 @@ typedef enum {
 
 } HarmonicParSpecifier;
 
-typedef enum {
-
-	HARMONIC_RANDOM,
-	HARMONIC_SINE,
-	HARMONIC_COSINE,
-	HARMONIC_ALTERNATING,
-	HARMONIC_SCHROEDER,
-	HARMONIC_PLACK_AND_WHITE,
-	HARMONIC_USER,
-	HARMONIC_NULL
-
-} HarmonicPhaseModeSpecifier;
-
 /*
  * Note that the pointers do not require flags, as they are set to NULL if
  * they have not been set.  This also applies to integers which are initialised
@@ -96,7 +83,6 @@ typedef struct {
 	double	upperCutOffFreq;
 	
 	/* Private process variables */
-	NameSpecifier *phaseModeList;
 	UniParListPtr	parList;
 	long	ranSeed;
 	double	*phase;
@@ -130,8 +116,6 @@ UniParListPtr	GetUniParListPtr_Harmonic(void);
 BOOLN	SetHighestHarmonic_Harmonic(int theHighestHarmonic);
 
 BOOLN	Init_Harmonic(ParameterSpecifier parSpec);
-
-BOOLN	InitPhaseModeList_Harmonic(void);
 
 BOOLN	InitProcessVariables_Harmonic(EarObjectPtr data);
 

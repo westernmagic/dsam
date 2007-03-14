@@ -103,6 +103,80 @@ FitFuncModeList_NSpecLists(int index)
 
 }
 
+/****************************** InitPhaseModeList *****************************/
+
+/*
+ * This routine returns a name specifier for the Phase mode  list.
+ * This routine makes no checks on limits.  It is expected to be used in
+ * conjunction with the UtNameSpecifier routines.
+ */
+
+NameSpecifier *
+PhaseModeList_NSpecLists(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+					{ wxT("RANDOM"),			GENERAL_PHASE_RANDOM },
+					{ wxT("SINE"), 				GENERAL_PHASE_SINE },
+					{ wxT("COSINE"), 			GENERAL_PHASE_COSINE },
+					{ wxT("ALTERNATING"),		GENERAL_PHASE_ALTERNATING },
+					{ wxT("SCHROEDER"),			GENERAL_PHASE_SCHROEDER },
+					{ wxT("PLACK_AND_WHITE"),	GENERAL_PHASE_PLACK_AND_WHITE },
+					{ wxT("USER"),				GENERAL_PHASE_USER },
+					{ NULL,						GENERAL_PHASE_NULL },
+				};
+	return(&modeList[index]);
+
+}
+
+/****************************** SetPhaseArray *********************************/
+
+/*
+ * This routine sets a phase array according to the phase mode.
+ * It assumes that the phase array has the correct memory allocated.
+ */
+
+void
+SetPhaseArray_NSpecLists(double *phase, long *ranSeed, RandParsPtr randPars,
+  int phaseMode, double phaseVariable, int lowestHarmonic, int numHarmonics)
+{
+	int		i, harmonicNumber;
+	double	piOver2 = PI / 2.0;
+
+	for (i = 0; i < numHarmonics; i++) {
+		harmonicNumber = lowestHarmonic + i;
+		switch (phaseMode) {
+			case GENERAL_PHASE_RANDOM:
+				*ranSeed = (long) phaseVariable;
+				phase[i] = PIx2 * Ran01_Random(randPars);
+				break;
+			case GENERAL_PHASE_SINE:
+				phase[i] = 0.0;
+				break;
+			case GENERAL_PHASE_COSINE:
+				phase[i] = PI / 2.0;
+				break;
+			case GENERAL_PHASE_ALTERNATING:
+				phase[i] = ((i % 2) == 0)? 0.0: piOver2;
+				break;
+			case GENERAL_PHASE_SCHROEDER:
+				phase[i] = phaseVariable * PI * harmonicNumber * (harmonicNumber +
+				  1) / numHarmonics;
+				break;
+			case GENERAL_PHASE_PLACK_AND_WHITE:
+				phase[i] = harmonicNumber * phaseVariable;
+				break;
+			case GENERAL_PHASE_USER:
+				phase[i] = phaseVariable;
+				break;
+			case GENERAL_PHASE_NULL:
+				phase[i] = 0.0;
+				break;
+		} /* switch */
+	}
+
+}
+	
 /****************************** GetNumListEntries *****************************/
 
 /*

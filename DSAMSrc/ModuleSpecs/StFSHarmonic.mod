@@ -4,24 +4,18 @@
  */
 
 mod_name		Harmonic;
+qualifier 		FreqSwept;
 proc_routine	GenerateSignal;
 process_vars	true;
 typedef struct {
 
 	int		lowestHarmonic;
 	int		highestHarmonic;
-	int		mistunedHarmonic;
-	int		order;
 	NameSpecifier		phaseMode;
 	double	phaseVariable;
-	double	mistuningFactor;
-	double	frequency;
+	double	initialFreq;
+	double	finalFreq;
 	double	intensity;
 	double	duration, dt;
-	double	modulationFrequency;
-	double	modulationPhase;
-	double	modulationDepth;
-	double	lowerCutOffFreq;
-	double	upperCutOffFreq;
 
-} Harmonic;
+} FSHarm;

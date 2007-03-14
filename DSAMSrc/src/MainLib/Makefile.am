@@ -43,7 +43,7 @@ Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 
 St_Sources	= StAMTone.c StBPTone.c StClick.c StFMTone.c StHarmonic.c \
 				StMPPTone.c StMPTone.c StPTone.c StPTone2.c StPulseTrain.c \
-				StStepFun.c StWhiteNoise.c StEGatedTone.c
+				StStepFun.c StWhiteNoise.c StEGatedTone.c StFSHarmonic.c
 
 Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtBinSignal.c UtCFList.c UtCmplxM.c UtCompress.c \

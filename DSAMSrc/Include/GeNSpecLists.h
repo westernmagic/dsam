@@ -15,6 +15,7 @@
 #define _GENSPECLISTS_H 1
 
 #include "UtNameSpecs.h"
+#include "UtRandom.h"
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -57,6 +58,19 @@ typedef enum {
 
 } GeneralFitFuncModeSpecifier;
 
+typedef enum {
+
+	GENERAL_PHASE_RANDOM,
+	GENERAL_PHASE_SINE,
+	GENERAL_PHASE_COSINE,
+	GENERAL_PHASE_ALTERNATING,
+	GENERAL_PHASE_SCHROEDER,
+	GENERAL_PHASE_PLACK_AND_WHITE,
+	GENERAL_PHASE_USER,
+	GENERAL_PHASE_NULL
+
+} GeneralPhaseModeSpecifier;
+
 /******************************************************************************/
 /****************************** External variables ****************************/
 /******************************************************************************/
@@ -87,6 +101,12 @@ NameSpecifier *	InitNameList_NSpecLists(NameSpecifierPtr prototypeList,
 				  WChar *textPtr);
 
 BOOLN	OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode);
+
+NameSpecifier *	PhaseModeList_NSpecLists(int index);
+
+void	SetPhaseArray_NSpecLists(double *phase, long *ranSeed,
+		  RandParsPtr randPars, int phaseMode, double phaseVariable,
+		  int lowestHarmonic, int numHarmonics);
 
 __END_DECLS
 

@@ -9,7 +9,7 @@
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		16 Jul 1998
- * Copyright:	(c) 1998,  University of Essex
+ * Copyright:	(c) 2007, L. P. O'Mard
  *
  **********************/
 
@@ -29,6 +29,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "UtRandom.h"
 #include "FiParFile.h"
 #include "StHarmonic.h"
@@ -42,31 +43,6 @@ HarmonicPtr	harmonicPtr = NULL;
 /******************************************************************************/
 /********************************* Subroutines and functions ******************/
 /******************************************************************************/
-
-/****************************** InitPhaseModeList *****************************/
-
-/*
- * This routine intialises the Phase Mode list array.
- */
-
-BOOLN
-InitPhaseModeList_Harmonic(void)
-{
-	static NameSpecifier	modeList[] = {
-
-					{ wxT("RANDOM"),			HARMONIC_RANDOM },
-					{ wxT("SINE"), 				HARMONIC_SINE },
-					{ wxT("COSINE"), 			HARMONIC_COSINE },
-					{ wxT("ALTERNATING"),		HARMONIC_ALTERNATING },
-					{ wxT("SCHROEDER"),			HARMONIC_SCHROEDER },
-					{ wxT("PLACK_AND_WHITE"),	HARMONIC_PLACK_AND_WHITE },
-					{ wxT("USER"),				HARMONIC_USER },
-					{ NULL,						HARMONIC_NULL },
-				};
-	harmonicPtr->phaseModeList = modeList;
-	return(TRUE);
-
-}
 
 /********************************* Init ***************************************/
 
@@ -119,7 +95,7 @@ Init_Harmonic(ParameterSpecifier parSpec)
 	harmonicPtr->lowestHarmonic = 1;
 	harmonicPtr->highestHarmonic = 10;
 	harmonicPtr->mistunedHarmonic = -1;
-	harmonicPtr->phaseMode = HARMONIC_SINE;
+	harmonicPtr->phaseMode = GENERAL_PHASE_SINE;
 	harmonicPtr->mistuningFactor = 40.0;
 	harmonicPtr->phaseVariable = 1.0;
 	harmonicPtr->frequency = 100.0;
@@ -132,16 +108,15 @@ Init_Harmonic(ParameterSpecifier parSpec)
 	harmonicPtr->order = 0;
 	harmonicPtr->lowerCutOffFreq = 200.0;
 	harmonicPtr->upperCutOffFreq = 600.0;
-	harmonicPtr->phase = NULL;
-	harmonicPtr->modIndex = NULL;
-	harmonicPtr->harmonicFrequency = NULL;
 
-	InitPhaseModeList_Harmonic();
 	if (!SetUniParList_Harmonic()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Harmonic();
 		return(FALSE);
 	}
+	harmonicPtr->phase = NULL;
+	harmonicPtr->modIndex = NULL;
+	harmonicPtr->harmonicFrequency = NULL;
 	return(TRUE);
 
 }
@@ -202,9 +177,10 @@ SetUniParList_Harmonic(void)
 	  &harmonicPtr->highestHarmonic, NULL,
 	  (void * (*)) SetHighestHarmonic_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_PHASEMODE], wxT("PHASE_MODE"),
-	  wxT("Phase mode (ALTERNATING, COSINE, RANDOM, SCHROEDER, SINE, USER)."),
+	  wxT("Phase mode (ALTERNATING, COSINE, RANDOM, SCHROEDER, SINE, ")
+	  wxT("PLACK_AND_WHITE, USER)."),
 	  UNIPAR_NAME_SPEC,
-	  &harmonicPtr->phaseMode, harmonicPtr->phaseModeList,
+	  &harmonicPtr->phaseMode, PhaseModeList_NSpecLists(0),
 	  (void * (*)) SetPhaseMode_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_PHASE_PAR], wxT("PHASE_PAR"),
 	  wxT("Phase parameter (Shroeder phase: C value, Random: random number ")
@@ -228,7 +204,7 @@ SetUniParList_Harmonic(void)
 	  &harmonicPtr->frequency, NULL,
 	  (void * (*)) SetFrequency_Harmonic);
 	SetPar_UniParMgr(&pars[HARMONIC_INTENSITY], wxT("INTENSITY"),
-	  wxT("Intensity (dB SPL)."),
+	  wxT("Intensity per harmonic (dB SPL)."),
 	  UNIPAR_REAL,
 	  &harmonicPtr->intensity, NULL,
 	  (void * (*)) SetIntensity_Harmonic);
@@ -497,7 +473,7 @@ SetPhaseMode_Harmonic(WChar *thePhaseMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(thePhaseMode,
-	  harmonicPtr->phaseModeList)) == HARMONIC_NULL) {
+	  PhaseModeList_NSpecLists(0))) == GENERAL_PHASE_NULL) {
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, thePhaseMode);
 		return(FALSE);
 	}
@@ -851,14 +827,14 @@ PrintPars_Harmonic(void)
 	DPrint(wxT("Harmonic series Module Parameters:-\n"));
 	DPrint(wxT("\tLowest/highest harmonic = %d / %d,\n"),
 	  harmonicPtr->lowestHarmonic, harmonicPtr->highestHarmonic);
-	DPrint(wxT("\tPhase mode = %s,\t"),
-	  harmonicPtr->phaseModeList[harmonicPtr->phaseMode].name);
+	DPrint(wxT("\tPhase mode = %s,\t"), PhaseModeList_NSpecLists(
+	  harmonicPtr->phaseMode)->name);
 	DPrint(wxT("Phase variable = %g"), harmonicPtr->phaseVariable);
 	switch (harmonicPtr->phaseMode) {
-	case HARMONIC_SCHROEDER:
+	case GENERAL_PHASE_SCHROEDER:
 		DPrint(wxT(" (C value)"));
 		break;
-	case HARMONIC_RANDOM:
+	case GENERAL_PHASE_RANDOM:
 		DPrint(wxT(" (random number seed)"));
 		break;
 	default:
@@ -1106,7 +1082,7 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 	static const WChar *funcName = wxT("GenerateSignal_Harmonic");
 	int			j, totalNumberOfHarmonics, harmonicNumber;
 	ChanLen		i, t;
-	double		instantFreq, piOver2;
+	double		instantFreq;
 	double		amplitude, timexPix2, filterAmp, modulation;
 	register	ChanData	*dataPtr;
 	HarmonicPtr	p = harmonicPtr;
@@ -1133,40 +1109,11 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	totalNumberOfHarmonics = harmonicPtr->highestHarmonic -
-	  harmonicPtr->lowestHarmonic + 1;
-	piOver2 = PI / 2.0;
+	totalNumberOfHarmonics = p->highestHarmonic - p->lowestHarmonic + 1;
+	SetPhaseArray_NSpecLists(p->phase, &p->ranSeed, data->randPars, p->phaseMode,
+	  p->phaseVariable, p->lowestHarmonic, totalNumberOfHarmonics);
 	for (j = 0; j < totalNumberOfHarmonics; j++) {
 		harmonicNumber = p->lowestHarmonic + j;
-		switch (p->phaseMode) {
-			case HARMONIC_RANDOM:
-				p->ranSeed = (long) p->phaseVariable;
-				p->phase[j] = PIx2 * Ran01_Random(data->randPars);
-				break;
-			case HARMONIC_SINE:
-				p->phase[j] = 0.0;
-				break;
-			case HARMONIC_COSINE:
-				p->phase[j] = PI / 2.0;
-				break;
-			case HARMONIC_ALTERNATING:
-				p->phase[j] = ((j % 2) == 0)? 0.0: piOver2;
-				break;
-			case HARMONIC_SCHROEDER:
-				p->phase[j] = p->phaseVariable * PI *
-				  harmonicNumber * (harmonicNumber + 1) /
-				  totalNumberOfHarmonics;
-				break;
-			case HARMONIC_PLACK_AND_WHITE:
-				p->phase[j] = harmonicNumber * p->phaseVariable;
-				break;
-			case HARMONIC_USER:
-				p->phase[j] = p->phaseVariable;
-				break;
-			case HARMONIC_NULL:
-				p->phase[j] = 0.0;
-				break;
-		} /* switch */
 		p->harmonicFrequency[j] = p->frequency * harmonicNumber;
 		if (harmonicNumber == p->mistunedHarmonic)
 			p->harmonicFrequency[j] += p->harmonicFrequency[j] *
@@ -1181,19 +1128,15 @@ GenerateSignal_Harmonic(EarObjectPtr data)
 	  dataPtr++) {
 	  	timexPix2 = PIx2 * t * _OutSig_EarObject(data)->dt;
 		for (j = 0, *dataPtr = 0.0; j < totalNumberOfHarmonics; j++) {
-	  		modulation = harmonicPtr->modIndex[j] *
-	  		  cos(harmonicPtr->modulationFrequency * timexPix2 +
-	  		  DEGREES_TO_RADS(harmonicPtr->modulationPhase));
-			instantFreq = harmonicPtr->harmonicFrequency[j] +
-			  harmonicPtr->modIndex[j] * harmonicPtr->modulationFrequency *
-		  	  sin(harmonicPtr->modulationFrequency * timexPix2 +
-		  	  DEGREES_TO_RADS(harmonicPtr->modulationPhase));
-			filterAmp = BandPassFD_Filters(instantFreq,
-			  harmonicPtr->lowerCutOffFreq, harmonicPtr->upperCutOffFreq,
-			  harmonicPtr->order);
-			*dataPtr += amplitude * filterAmp *
-			  sin(harmonicPtr->harmonicFrequency[j] * timexPix2 +
-			  harmonicPtr->phase[j] - modulation);
+	  		modulation = p->modIndex[j] * cos(p->modulationFrequency * timexPix2 +
+	  		  DEGREES_TO_RADS(p->modulationPhase));
+			instantFreq = p->harmonicFrequency[j] + p->modIndex[j] *
+			  p->modulationFrequency * sin(p->modulationFrequency * timexPix2 +
+		  	  DEGREES_TO_RADS(p->modulationPhase));
+			filterAmp = BandPassFD_Filters(instantFreq, p->lowerCutOffFreq,
+			  p->upperCutOffFreq, p->order);
+			*dataPtr += amplitude * filterAmp * sin(p->harmonicFrequency[j] *
+			  timexPix2 + p->phase[j] - modulation);
 		}
 	}
 	SetProcessContinuity_EarObject(data);

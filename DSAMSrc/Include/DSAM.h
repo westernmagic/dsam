@@ -144,6 +144,7 @@
 #include "StBPTone.h"
 #include "StClick.h"
 #include "StFMTone.h"
+#include "StFSHarmonic.h"
 #include "StEGatedTone.h"
 #include "StHarmonic.h"
 #include "StMPTone.h"

@@ -38,7 +38,7 @@ Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 
 St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
-				StStepFun.h StWhiteNoise.h StEGatedTone.h
+				StStepFun.h StWhiteNoise.h StEGatedTone.h StFSHarmonic.h
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
