@@ -105,10 +105,18 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		NotifyError(wxT("%s: Input signals not correctly set."), funcName);		
 		return(FALSE);
 	}
-	if ((fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) >
-	  DBL_EPSILON) || (_InSig_EarObject(data, 0)->numChannels !=
-	  _InSig_EarObject(data, 1)->numChannels)) {
-		NotifyError(wxT("%s: Input signals are not the same."), funcName);		
+	if (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) >
+	  DBL_EPSILON) {
+		NotifyError(wxT("%s: Input signals do not have the same sampling ")
+		  wxT("interval (%.10g/%.10g s)."), funcName, _InSig_EarObject(data,
+		  0)->dt, _InSig_EarObject(data, 1)->dt);		
+		return(FALSE);
+	}
+	if (_InSig_EarObject(data, 0)->numChannels != _InSig_EarObject(data,
+	  1)->numChannels) {
+		NotifyError(wxT("%s: Input signals have different numbers of channels ")
+		  wxT(" (%d/%d)."), funcName, _InSig_EarObject(data, 0)->
+		    numChannels, _InSig_EarObject(data, 1)->numChannels);		
 		return(FALSE);
 	}
 	if (_InSig_EarObject(data, 0)->interleaveLevel != _InSig_EarObject(data,
