@@ -37,7 +37,7 @@
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
  *				implements the auto-normalisation for calculating the
  *				'datafilePtr->normalise' parameter.
- * Authors:		L. P. O'Mard revised from Malcolm Slaney's code.
+ * Authors:		L. P. O'Mard.
  * Created:		12 Jul 1993
  * Updated:		04 Aug 1999
  * Copyright:	(c) 1999, University of Essex

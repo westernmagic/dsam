@@ -779,7 +779,8 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	if (!GetDSAMPtr_Common()->segmentedMode || (data->firstSectionFlag)) {
 		if (p->titleString)
 			free(p->titleString);
-		dataFilePtr->normalise = CalculateNormalisation_SndFile(outSignal);
+		dataFilePtr->normalise = (p->normalisation > 0.0)? p->normalisation:
+		  CalculateNormalisation_SndFile(outSignal);
 		if ((p->titleString = CreateTitleString_SndFile(outSignal)) == NULL)
 			return(FALSE);
 		if (!OpenFile_SndFile(fileName, SFM_WRITE, outSignal)) {

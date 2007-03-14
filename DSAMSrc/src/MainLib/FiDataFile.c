@@ -37,7 +37,7 @@
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
  *				implements the auto-normalisation for calculating the
  *				'datafilePtr->normalise' parameter.
- * Authors:		L. P. O'Mard revised from Malcolm Slaney's code.
+ * Authors:		L. P. O'Mard.
  * Created:		12 Jul 1993
  * Updated:		04 Aug 1999
  * Copyright:	(c) 1999, University of Essex
@@ -627,6 +627,13 @@ SetWordSize_DataFile(int wordSize)
 BOOLN
 SetNormalisation_DataFile(double normalisation)
 {
+	static const WChar *funcName = wxT("SetNormalisation_DataFile");
+
+	if (dataFilePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	dataFilePtr->normalisation = normalisation;
 	return(TRUE);
 	
 }
@@ -749,7 +756,6 @@ OpenFile_DataFile(WChar *fileName, char *mode)
 	static const WChar *funcName = wxT("OpenFile_DataFile");
 	WChar	*parFilePath;
 	FILE	*fp, *dummy = stdout;
-	DataFilePtr	p = dataFilePtr;
 
 	switch (*fileName) {
 	case STDIN_STDOUT_FILE_DIRN:
@@ -1029,24 +1035,27 @@ BOOLN
 PrintPars_DataFile(void)
 {
 	static const WChar *funcName = wxT("PrintPars_DataFile");
+	DataFilePtr	p = dataFilePtr;
+
 	if (!CheckPars_DataFile()) {
 		NotifyError(wxT("%s: Parameters have not been correctly set."),
 		  funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("DataFile Module Parameters:-\n"));
-	DPrint(wxT("\tFile name = %s,"), dataFilePtr->name);
+	DPrint(wxT("\tFile name = %s,"), p->name);
 	DPrint(wxT("\tSub-format type = %s,\n"), dataFileSndFormatInfo.subFormatList[
-	  dataFilePtr->subFormatType].name);
-	DPrint(wxT("\tNumber of channels = %d,"), dataFilePtr->numChannels);
-	DPrint(wxT("\tGain = %g dB\n"), dataFilePtr->gain);
-	DPrint(wxT("\tDefault sample rate = %g,\tDuration = "),
-	  dataFilePtr->defaultSampleRate);
-	if (dataFilePtr->duration < 0.0)
+	  p->subFormatType].name);
+	DPrint(wxT("\tNumber of channels = %d,"), p->numChannels);
+	DPrint(wxT("\tGain = %g dB\n"), p->gain);
+	DPrint(wxT("\tNormalisation mode: %g (last normalisation: %g),\n"),
+	  p->normalisation, p->normalise);
+	DPrint(wxT("\tDefault sample rate = %g,\tDuration = "), p->defaultSampleRate);
+	if (p->duration < 0.0)
 		DPrint(wxT("No limit,\n"));
 	else
-		DPrint(wxT("%g ms,\n"), MILLI(dataFilePtr->duration));
-	DPrint(wxT("\tTime offset = %g ms.\n"), MILLI(dataFilePtr->timeOffset));
+		DPrint(wxT("%g ms,\n"), MILLI(p->duration));
+	DPrint(wxT("\tTime offset = %g ms.\n"), MILLI(p->timeOffset));
 	return(TRUE);
 
 }
@@ -1164,8 +1173,6 @@ InitModule_DataFile(ModulePtr theModule)
 		dataFilePtr->parList->pars[DATAFILE_TIMEOFFSET].enabled = FALSE;
 		dataFilePtr->parList->pars[DATAFILE_GAIN].enabled = FALSE;
 	}
-	/* Disabled parameters */
-	dataFilePtr->parList->pars[DATAFILE_NORMALISE].enabled = FALSE;
 
 	theModule->parsPtr = dataFilePtr;
 	theModule->CheckPars = CheckPars_DataFile;
