@@ -1050,7 +1050,6 @@ BOOLN
 InLineProcess_ModuleMgr(EarObjectPtr data, BOOLN (* RunProcess)(
   EarObjectPtr theObject))
 {
-	static const WChar *funcName = wxT("InLineProcess_ModuleMgr");
 
 	if (data->module && (data->module->RunProcess == RunProcess)) {
 		return(TRUE);
