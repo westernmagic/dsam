@@ -18,7 +18,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define MEDDIS86_NUM_PARS			9
+#define MEDDIS86_NUM_PARS			10
+#define MEDDIS86_MOD_NAME			wxT("IHC_Meddis86")
 #define	MEDDIS86_MAX_DT	0.0001		/* Magic number for model */
 
 /******************************************************************************/
@@ -27,6 +28,7 @@
 
 typedef enum {
 
+	MEDDIS86_DIAGMODE,
 	MEDDIS86_PERM_CONST_A,
 	MEDDIS86_PERM_CONST_B,
 	MEDDIS86_RELEASE_RATE_G,
@@ -51,11 +53,12 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 	
-	BOOLN	permConstAFlag, permConstBFlag, releaseRateFlag, replenishRateFlag;
-	BOOLN	lossRateFlag, reprocessRateFlag, recoveryRateFlag, maxFreePoolFlag;
-	BOOLN	firingRateFlag;
+	BOOLN	diagModeFlag, permConstAFlag, permConstBFlag, releaseRateFlag;
+	BOOLN	replenishRateFlag, lossRateFlag, reprocessRateFlag;
+	BOOLN	recoveryRateFlag, maxFreePoolFlag, firingRateFlag;
 	BOOLN	updateProcessVariablesFlag;
 	
+	int		diagMode;
 	double	permConst_A;		/* Permeability constant (?). */
 	double	permConst_B;		/* Units per second */
 	double	releaseRate_g;		/* Release rate (units per second). */
@@ -67,10 +70,13 @@ typedef struct {
 	double	firingRate_h;		/* Firing rate (spikes per second). */
 	
 	/* Private members */
+	NameSpecifier	*diagModeList;
 	UniParListPtr	parList;
 	HairCellVars	*hCChannels;
+	WChar		diagFileName[MAX_FILE_PATH];
+	FILE		*fp;
 	double	dt, ymdt, xdt, ydt, l_Plus_rdt, rdt, gdt, hdt;
-	
+
 } HairCell, *HairCellPtr;
 
 /******************************************************************************/
@@ -108,6 +114,8 @@ BOOLN	PrintPars_IHC_Meddis86(void);
 BOOLN	ReadPars_IHC_Meddis86(WChar *fileName);
 
 BOOLN	RunModel_IHC_Meddis86(EarObjectPtr data);
+
+BOOLN	SetDiagMode_IHC_Meddis86(WChar * theDiagMode);
 
 BOOLN	SetFiringRate_IHC_Meddis86(double theSetFiringRate);
 

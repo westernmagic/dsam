@@ -1616,6 +1616,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 
 		}
 	}
+	if (debug && p->fp)
+		fclose(p->fp);
 
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

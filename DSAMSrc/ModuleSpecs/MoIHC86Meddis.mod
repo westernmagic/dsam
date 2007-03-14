@@ -8,6 +8,7 @@ proc_routine	RunModel;
 
 typedef struct {
 
+	NameSpecifier   diagMode;	/* output variables during run (no/filename) */
 	double	permConst_A;		/* Permeability constant (?). */
 	double	permConst_B;		/* Units per second */
 	double	releaseRate_g;		/* Release rate (units per second). */

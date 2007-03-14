@@ -24,6 +24,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtString.h"
 #include "MoIHC86Meddis.h"
@@ -70,6 +71,7 @@ Init_IHC_Meddis86(ParameterSpecifier parSpec)
 	}
 	hairCellPtr->parSpec = parSpec;
 	hairCellPtr->updateProcessVariablesFlag = TRUE;
+	hairCellPtr->diagModeFlag = TRUE;
 	hairCellPtr->permConstAFlag = TRUE;
 	hairCellPtr->permConstBFlag = TRUE;
 	hairCellPtr->releaseRateFlag = TRUE;
@@ -80,6 +82,7 @@ Init_IHC_Meddis86(ParameterSpecifier parSpec)
 	hairCellPtr->maxFreePoolFlag = TRUE;
 	hairCellPtr->firingRateFlag = TRUE;
 					
+	hairCellPtr->diagMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	hairCellPtr->permConst_A = 100.0;
 	hairCellPtr->permConst_B = 6000.0;
 	hairCellPtr->releaseRate_g = 2000.0;
@@ -90,12 +93,18 @@ Init_IHC_Meddis86(ParameterSpecifier parSpec)
 	hairCellPtr->maxFreePool_M = 1.0;
 	hairCellPtr->firingRate_h = 50000.0;
 
+	if ((hairCellPtr->diagModeList = InitNameList_NSpecLists(
+	  DiagModeList_NSpecLists(0), hairCellPtr->diagFileName)) == NULL)
+		return(FALSE);
+
 	if (!SetUniParList_IHC_Meddis86()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_IHC_Meddis86();
 		return(FALSE);
 	}
+	DSAM_strcpy(hairCellPtr->diagFileName, DEFAULT_FILE_NAME);
 	hairCellPtr->hCChannels = NULL;
+	hairCellPtr->fp = NULL;
 	return(TRUE);
 
 }
@@ -144,6 +153,12 @@ SetUniParList_IHC_Meddis86(void)
 		return(FALSE);
 	}
 	pars = hairCellPtr->parList->pars;
+	SetPar_UniParMgr(&pars[MEDDIS86_DIAGMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode. Outputs internal states of running model in non-")
+	    wxT("threaded mode('off', 'screen' or <file name>)."),
+	  UNIPAR_NAME_SPEC_WITH_FILE,
+	  &hairCellPtr->diagMode, hairCellPtr->diagModeList,
+	  (void * (*)) SetDiagMode_IHC_Meddis86);
 	SetPar_UniParMgr(&pars[MEDDIS86_PERM_CONST_A], wxT("PERM_CONST_A"),
 	  wxT("Permeability constant A (units/s)."),
 	  UNIPAR_REAL,
@@ -215,6 +230,33 @@ GetUniParListPtr_IHC_Meddis86(void)
 		return(NULL);
 	}
 	return(hairCellPtr->parList);
+
+}
+
+/****************************** SetDiagMode ***********************************/
+
+/*
+ * This function sets the module's diagMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagMode_IHC_Meddis86(WChar * theDiagMode)
+{
+	static const WChar	*funcName = wxT("SetDiagMode_IHC_Meddis86");
+
+	if (hairCellPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+
+	/*** Put any other required checks here. ***/
+	hairCellPtr->updateProcessVariablesFlag = TRUE;
+	hairCellPtr->diagModeFlag = TRUE;
+	hairCellPtr->diagMode = IdentifyDiag_NSpecLists(theDiagMode,
+	  hairCellPtr->diagModeList);
+	return(TRUE);
 
 }
 
@@ -480,6 +522,10 @@ CheckPars_IHC_Meddis86(void)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
+	if (!hairCellPtr->diagModeFlag) {
+		NotifyError(wxT("%s: diagMode variable not set."), funcName);
+		ok = FALSE;
+	}
 	if (!hairCellPtr->permConstAFlag) {
 		NotifyError(wxT("%s: Permeability constant, A, not correctly set."),
 		  funcName);
@@ -722,35 +768,34 @@ InitProcessVariables_IHC_Meddis86(EarObjectPtr data)
 	static const WChar *funcName = wxT("InitProcessVariables_IHC_Meddis86");
 	int		i;
 	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
-	HairCellPtr	hC;
+	HairCellPtr	p = hairCellPtr;
 	
 	if (hairCellPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
 	  (data->timeIndex == PROCESS_START_TIME)) {
-		hC = hairCellPtr;		/* Shorter variable for long formulae. */
-		if (hairCellPtr->updateProcessVariablesFlag ||
-		  data->updateProcessFlag) {
+		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHC_Meddis86();
-			if ((hC->hCChannels = (HairCellVarsPtr) calloc(
+		OpenDiagnostics_NSpecLists(&p->fp, p->diagModeList, p->diagMode);
+			if ((p->hCChannels = (HairCellVarsPtr) calloc(
 			  _OutSig_EarObject(data)->numChannels, sizeof (HairCellVars))) == NULL) {
 				NotifyError(wxT("%s: Out of memory."), funcName);
 				return(FALSE);
 			}
-			hairCellPtr->updateProcessVariablesFlag = FALSE;
+			p->updateProcessVariablesFlag = FALSE;
 		}
-		spontPerm_k0 = hC->releaseRate_g * hC->permConst_A / (hC->permConst_A +
-		  hC->permConst_B);
-		spontCleft_c0 = (hC->maxFreePool_M * hC->replenishRate_y *
-		  spontPerm_k0 / (hC->replenishRate_y * (hC->lossRate_l +
-		  hC->recoveryRate_r) + spontPerm_k0 * hC->lossRate_l));
-		spontFreePool_q0 = spontCleft_c0 * (hC->lossRate_l +
-		  hC->recoveryRate_r) / spontPerm_k0;
-		spontReprocess_w0 = spontCleft_c0 * hC->recoveryRate_r /
-		  hC->reprocessRate_x;
+		spontPerm_k0 = p->releaseRate_g * p->permConst_A / (p->permConst_A +
+		  p->permConst_B);
+		spontCleft_c0 = (p->maxFreePool_M * p->replenishRate_y *
+		  spontPerm_k0 / (p->replenishRate_y * (p->lossRate_l +
+		  p->recoveryRate_r) + spontPerm_k0 * p->lossRate_l));
+		spontFreePool_q0 = spontCleft_c0 * (p->lossRate_l +
+		  p->recoveryRate_r) / spontPerm_k0;
+		spontReprocess_w0 = spontCleft_c0 * p->recoveryRate_r /
+		  p->reprocessRate_x;
 
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-			hC->hCChannels[i].cleftC = spontCleft_c0;
-			hC->hCChannels[i].reservoirQ = spontFreePool_q0;
-			hC->hCChannels[i].reprocessedW = spontReprocess_w0;
+			p->hCChannels[i].cleftC = spontCleft_c0;
+			p->hCChannels[i].reservoirQ = spontFreePool_q0;
+			p->hCChannels[i].reprocessedW = spontReprocess_w0;
 		}
 	}
 	return(TRUE);
@@ -789,12 +834,13 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 	static const WChar *funcName = wxT("RunModel_IHC_Meddis86");
 	register	double	replenish, reprocessed, ejected, reUptake;
 	register	double	reUptakeAndLost;
+	BOOLN	debug;
 	int		i;
 	ChanLen	j;
 	double	st_Plus_A, kdt;
 	ChanData	*inPtr, *outPtr;
 	SignalDataPtr	outSignal;
-	HairCellPtr	hC = hairCellPtr;
+	HairCellPtr	p = hairCellPtr;
 	
 	if (!data->threadRunFlag) {
 		if (!CheckPars_IHC_Meddis86())		
@@ -816,41 +862,52 @@ RunModel_IHC_Meddis86(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		hC->dt = _OutSig_EarObject(data)->dt;
-		hC->ymdt = hC->replenishRate_y * hC->maxFreePool_M * hC->dt;
-		hC->xdt = hC->reprocessRate_x * hC->dt;
-		hC->ydt = hC->replenishRate_y * hC->dt;
-		hC->l_Plus_rdt = (hC->lossRate_l + hC->recoveryRate_r) * hC->dt;
-		hC->rdt = hC->recoveryRate_r * hC->dt;
-		hC->gdt = hC->releaseRate_g * hC->dt;
-		hC->hdt = hC->firingRate_h * hC->dt;
+		p->dt = _OutSig_EarObject(data)->dt;
+		p->ymdt = p->replenishRate_y * p->maxFreePool_M * p->dt;
+		p->xdt = p->reprocessRate_x * p->dt;
+		p->ydt = p->replenishRate_y * p->dt;
+		p->l_Plus_rdt = (p->lossRate_l + p->recoveryRate_r) * p->dt;
+		p->rdt = p->recoveryRate_r * p->dt;
+		p->gdt = p->releaseRate_g * p->dt;
+		p->hdt = p->firingRate_h * p->dt;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	debug = (!data->threadRunFlag && (p->diagMode != GENERAL_DIAGNOSTIC_OFF_MODE));
+	if (debug)
+		DSAM_fprintf(p->fp, wxT("Time(s)\tInput\tkdt (P)\tQ \tC \tW \tEjected\n"));
+
 	outSignal = _OutSig_EarObject(data);
 	for (i = outSignal->offset; i < outSignal->numChannels; i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
 		outPtr = outSignal->channel[i];
 		for (j = 0; j < outSignal->length; j++) {
-			if ((st_Plus_A = *inPtr++ + hC->permConst_A) > 0.0)
-				kdt = hC->gdt * st_Plus_A / (st_Plus_A + hC->permConst_B);
+			if ((st_Plus_A = *inPtr++ + p->permConst_A) > 0.0)
+				kdt = p->gdt * st_Plus_A / (st_Plus_A + p->permConst_B);
 			else
 				kdt = 0.0;
-			replenish = (hC->hCChannels[i].reservoirQ < hC->maxFreePool_M)?
-			  hC->ymdt - hC->ydt * hC->hCChannels[i].reservoirQ: 0.0;
-			reprocessed = hC->xdt * hC->hCChannels[i].reprocessedW;
-			ejected = kdt * hC->hCChannels[i].reservoirQ;
-			reUptake = hC->rdt * hC->hCChannels[i].cleftC;
-			reUptakeAndLost = hC->l_Plus_rdt * hC->hCChannels[i].cleftC;
+			replenish = (p->hCChannels[i].reservoirQ < p->maxFreePool_M)?
+			  p->ymdt - p->ydt * p->hCChannels[i].reservoirQ: 0.0;
+			reprocessed = p->xdt * p->hCChannels[i].reprocessedW;
+			ejected = kdt * p->hCChannels[i].reservoirQ;
+			reUptake = p->rdt * p->hCChannels[i].cleftC;
+			reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
 
-			hC->hCChannels[i].reservoirQ += replenish - ejected + reprocessed;
-			hC->hCChannels[i].cleftC += ejected - reUptakeAndLost;
-			hC->hCChannels[i].reprocessedW += reUptake - reprocessed;
+			p->hCChannels[i].reservoirQ += replenish - ejected + reprocessed;
+			p->hCChannels[i].cleftC += ejected - reUptakeAndLost;
+			p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 			
 			/* Spike prob. */
-			*outPtr++ = (ChanData) (hC->hdt * hC->hCChannels[i].cleftC);
+			*outPtr++ = (ChanData) (p->hdt * p->hCChannels[i].cleftC);
+			if (debug)
+				DSAM_fprintf(p->fp,
+				  wxT("%g\t%g\t%g\t%g\t%g\t%g\t%g\n"), j * outSignal->
+				  dt, *(inPtr - 1), kdt, p->hCChannels[i].reservoirQ, p->hCChannels[i].cleftC, p->
+				  hCChannels[i].reprocessedW, ejected);
 		}
 	}
+	if (debug && p->fp)
+		fclose(p->fp);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 		
