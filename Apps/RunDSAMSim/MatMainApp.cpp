@@ -193,19 +193,19 @@ MatMainApp::AutoSetNumberOfRuns(double dt)
 		  valuePtr.r;
 		if ((totalDuration = (((DataFilePtr) process->module->parsPtr)->
 		  GetDuration)()) < 0.0) {
-			NotifyError(wxT("%s: Could not determine signal size for data "
-			  "file."), funcName);
+			NotifyError(wxT("%s: Could not determine signal size for data ")
+			  wxT("file."), funcName);
 			return(FALSE);
 		}
 	}
 	if (inputData && (segmentDuration < 0.0)) {
-		NotifyError(wxT("%s: Segment duration must be set when using auto "
-		  "'number of runs' mode with an external signal."), funcName);
+		NotifyError(wxT("%s: Segment duration must be set when using auto ")
+		  wxT("'number of runs' mode with an external signal."), funcName);
 		return(FALSE);
 	}
 	if (segmentDuration > totalDuration) {
-		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal "
-		  "duration (%g ms)."), funcName, MILLI(segmentDuration),
+		NotifyError(wxT("%s: Segment size (%g ms) is larger than total signal ")
+		  wxT("duration (%g ms)."), funcName, MILLI(segmentDuration),
 		  MILLI(totalDuration));
 		return(FALSE);
 	}
@@ -371,8 +371,8 @@ MatMainApp::RunSimulationRemote(void)
 			return(false);
 		}
 		if (!GetClient()->GetIPCUtils()->InitOutProcess()) {
-			NotifyError(wxT("%s: Could not initialise output process for input "
-			  "data."), funcName);
+			NotifyError(wxT("%s: Could not initialise output process for input ")
+			  wxT("data."), funcName);
 			return(false);
 		}
 		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputProcess);
@@ -486,8 +486,8 @@ SetUniParList_MatMainApp(UniParListPtr *parList)
 	pars = (*parList)->pars;
 	SetPar_UniParMgr(&pars[DSAMMATRIX_AUTONUMRUNSMODE], wxT(
 	  "AUTO_NUM_RUNS_MODE"),
-	  wxT("Auto-setting of the number of runs (matlab matrix or data files "
-	  "only) ('on' or 'off')."),
+	  wxT("Auto-setting of the number of runs (matlab matrix or data files ")
+	  wxT("only) ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &matMainAppPtr->autoNumRunsMode, NULL,
 	  (void * (*)) SetAutoNumRunsMode_MatMainApp);
@@ -497,15 +497,15 @@ SetUniParList_MatMainApp(UniParListPtr *parList)
 	  &matMainAppPtr->numberOfRuns, NULL,
 	  (void * (*)) SetNumberOfRuns_MatMainApp);
 	SetPar_UniParMgr(&pars[DSAMMATRIX_SEGMENTDURATION], wxT("SEGMENT_DURATION"),
-	  wxT("Segment duration for automatic number of runs operation (segment "
-	  "mode)."),
+	  wxT("Segment duration for automatic number of runs operation (segment ")
+	  wxT("mode)."),
 	  UNIPAR_REAL,
 	  &matMainAppPtr->segmentDuration, NULL,
 	  (void * (*)) SetSegmentDuration_MatMainApp);
 	SetPar_UniParMgr(&pars[DSAMMATRIX_SERVERMODE], DSAMMAT_COMMAND_PREFIX
 	  wxT("MODE"),
-	  wxT("Enables the server mode to run simulations on a remote system ('on' "
-	  "or 'off')."),
+	  wxT("Enables the server mode to run simulations on a remote system ('on' ")
+	  wxT("or 'off')."),
 	  UNIPAR_BOOL,
 	  &matMainAppPtr->serverMode, NULL,
 	  (void * (*)) SetServerMode_MatMainApp);
@@ -540,8 +540,8 @@ SetAutoNumRunsMode_MatMainApp(wxChar *theAutoNumRunsMode)
 
 	if ((specifier = Identify_NameSpecifier(theAutoNumRunsMode,
 	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must "
-		  "be 'on' or 'off'."), funcName, theAutoNumRunsMode);
+		NotifyError(wxT("%s: Illegal auto. number of runs mode mode (%s): must ")
+		  wxT("be 'on' or 'off'."), funcName, theAutoNumRunsMode);
 		return(FALSE);
 	}
 	matMainAppPtr->updateProcessVariablesFlag = true;
@@ -604,8 +604,8 @@ SetServerMode_MatMainApp(wxChar * theServerMode)
 
 	if ((specifier = Identify_NameSpecifier(theServerMode,
 		BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError(wxT("%s: Illegal server mode (%s): must be 'on' or "
-		  "'off'."), funcName, theServerMode);
+		NotifyError(wxT("%s: Illegal server mode (%s): must be 'on' or ")
+		  wxT("'off'."), funcName, theServerMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -684,10 +684,10 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 
 	switch (type) {
 	case COMMON_ERROR_DIAGNOSTIC:
-		fp = dSAM.errorsFile;
+		fp = GetDSAMPtr_Common()->errorsFile;
 		break;
 	case COMMON_WARNING_DIAGNOSTIC:
-		fp = dSAM.warningsFile;
+		fp = GetDSAMPtr_Common()->warningsFile;
 		break;
 	default:
 		fp = stdout;

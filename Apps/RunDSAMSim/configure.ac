@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 RUNDSAMSIM_MAJOR_VERSION=1
 RUNDSAMSIM_MINOR_VERSION=1
-RUNDSAMSIM_MICRO_VERSION=1
-RUNDSAMSIM_INTERFACE_AGE=1
-RUNDSAMSIM_BINARY_AGE=1
+RUNDSAMSIM_MICRO_VERSION=2
+RUNDSAMSIM_INTERFACE_AGE=2
+RUNDSAMSIM_BINARY_AGE=2
 RUNDSAMSIM_VERSION=$RUNDSAMSIM_MAJOR_VERSION.$RUNDSAMSIM_MINOR_VERSION.$RUNDSAMSIM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -219,7 +219,7 @@ if test x$dsamAvailable = xno; then
 fi
 
 dsam_inc=`$DSAM_CONFIG --cflags`
-dsam_ldflags=`$DSAM_CONFIG --libs`
+dsam_ldflags=`$DSAM_CONFIG --libs | sed s/-pthread/-lpthread/`
 
 dnl ----------------------------------------------------------------------------
 dnl Octave development environment.

@@ -3,5 +3,5 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= RunDSAMSim.dsp RunDSAMSim.dsw
+EXTRA_DIST	= RunDSAMSim.sln RunDSAMSim.vcproj
 

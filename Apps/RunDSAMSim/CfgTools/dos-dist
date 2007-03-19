@@ -31,10 +31,11 @@ fi
 case  $1 in
 make)
 	echo Creating unix distribution directory ...
-	$CFGTOOLS/cvsconfigure > $TEMP_FILE
+	./autogen.sh > $TEMP_FILE
 	./configure > $TEMP_FILE
 	make dist > $TEMP_FILE
-	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d " " -f 7`
+	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d ">" -f 2 | cut -d "." \
+	  -f 0-3`
 	echo archiveName = $archiveName
 	rm -rf $archiveName
 	tar zxf $archiveName.tar.gz
