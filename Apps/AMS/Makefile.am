@@ -14,7 +14,7 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env LICENSE
+EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env ams_inst.iwz LICENSE
 
 INCLUDES		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 

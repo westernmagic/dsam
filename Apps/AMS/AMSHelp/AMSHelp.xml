@@ -138,12 +138,20 @@ sampled sound.</entry>
 
 </sect1>
 
-<sect1 id = "sx_Running_An_Example1">
+<sect1 id = "sx_An_Example1">
 <title>Quick start example simulation</title>
+
+<sect2 id = "sx_Example1_Introduction">
+<title>Introduction</title>
 
 <para>
 This is a good starting point for those users who wish to get a quick feel for &APP; and how useful it will be.  This example takes the user through loading an auditory nerve simulation then running it to produce output, providing displays of the simulation process at different stages.  The user is then shown how to change parameters in the simulation which will be reflected by a change in the output.  It also serves as a introduction to the &APP; interface which is described in more detail later in this document.
 </para>
+
+</sect2>
+
+<sect2 id = "sx_Example1_Starting_Application">
+<title>Starting &APP;</title>
 
 <para>
 Starting the &APP; application will be different on different platforms.  On Windows installations, the application can be found by navigating from <emphasis>start</emphasis> on the task bar: <emphasis>start->All Programs->DSAM Applications</emphasis>.   On unix-like systems, &APP; can be started from the command line using the command <emphasis>&app;</emphasis>. Once started the main &APP; window will appear as show in <xref linkend = "fg_ExampleMainWindow"/>.
@@ -157,6 +165,11 @@ Starting the &APP; application will be different on different platforms.  On Win
 </imageobject>
 </mediaobject>
 </figure>
+
+</sect2>
+
+<sect2 id = "sx_Example1_Loading_Simulation">
+<title>Loading an example simulation into &APP;</title>
 
 <para>
 The first step is to load the example auditory nerve simulation from the file "auditoryNerve.spf" found in the "Tutorials/AuditoryNerve" directory.  From the <emphasis>File</emphasis> menu on the menu bar select the <emphasis>Open</emphasis> option.  This will open the <emphasis>Select a file</emphasis> dialog window as shown in <xref linkend = "fg_SelectFileDialog"/>.  Ensure that the "Simulation Parameter File (*.spf)" option is selected for the "Files of type", then open the "auditoryNerve" file (the ".spf" extension is not normally shown in Windows installations).
@@ -182,22 +195,15 @@ Once loaded the &APP; main window will look as show in <xref linkend = "fg_Examp
 </mediaobject>
 </figure>
 
+</sect2>
+
+
+<sect2 id = "sx_Example1_Running_Simulation">
+<title>Running the example simulation</title>
+
 <para>
 Run the simulation by processing the media-player style "play" button as indicated in <xref linkend = "fg_RunButton"/>.  When run four displays will be produced as shown in <xref linkend = "fg_ExampleDisplays"/>. These displays correspond to the display processes in the simulation, labelled, "p3", "p7", "p9" and "p13".  The process shapes also show the display window labels.
 </para>
-
-<figure id = "fg_ExampleDisplays"><title>Ausitory nerve example simulation displays</title>
-<mediaobject>
-<imageobject>
-<imagedata fileref = "Figures/ExampleDisplays.png" format = "PNG"/>
-</imageobject>
-</mediaobject>
-</figure>
-
-<para>
-The example simulation describes a non-linear auditory nerve model.  The first four processes
-</para>
-
 
 <figure id = "fg_RunButton"><title>Play button to run the simulation</title>
 <mediaobject>
@@ -206,6 +212,67 @@ The example simulation describes a non-linear auditory nerve model.  The first f
 </imageobject>
 </mediaobject>
 </figure>
+
+<figure id = "fg_ExampleDisplays"><title>Auditory nerve example simulation displays</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleDisplays.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect2>
+
+
+<sect2 id = "sx_Example1_Simulation_Description">
+<title>What the example simulation does</title>
+
+<para>
+The example simulation describes a non-linear auditory nerve model.  The first four processes create, gate then display the stimulus.  The stimulus display is the top left display in <xref linkend = "fg_ExampleDisplays"/>.  The next two processes are filter-class processes which are used to model the outer-/middle-ear.  The following "BM_DRNL" process is a non-linear model of basilar membrane processing.  This models the frequency selectivity of the basilar membrane, and as shown in <xref linkend = "fg_ExampleDisplays"/> separates processing into multiple channels.  Each channel represents the response at a particular characteristic frequency.  The next two stages in the simulation model the response of the inner hair-cell, which is the point at which mechanical to neural transduction takes place.  The output from this process is shown in the bottom left display of  <xref linkend = "fg_ExampleDisplays"/>.  The bottom right display shows spike output of the auditory-nerve process which takes as its input the spike probabilities from the previous process.
+The final process outputs the auditory-nerve spike information to a file.
+</para>
+
+</sect2>
+
+
+<sect2 id = "sx_Example1_Changing_Parameters">
+<title>Changing parameters</title>
+
+<para>
+It is possible to examine and change the parameters of processes shown in the <emphasis>Simulation
+Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This will open the process' properties dialog as show in <xref linkend = "fg_Examples_BM_Properties"/>.  Hover over a particular parameter to produce an additional description for the parameter.  Parameters that cannot be changed for a particular mode choice will be greyed-out.  Change the "channels" parameter value from 20 to 10 channels then run the simulation.  There is no need to close the properties dialog before running the simulation again.  The displays will change reflecting the reduction in the properties dialog "channels" parameter.
+</para>
+
+<figure id = "fg_Examples_BM_Properties"><title>BM_DRNL process properties dialog</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleBMPropertiesDialog.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<figure id = "fg_ExampleDisplays2"><title>Example simulation displays after reducing the number of channels</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleDisplays2.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect2>
+
+</sect1>
+
+<sect1 id = "sx_An_Example2">
+<title>Quick start simulation creation example</title>
+
+<sect2 id = "sx_Example2_Introduction">
+<title>Introduction</title>
+<para>
+In this example the user is carried through the process of creating a simulation using the Simulation Design Interface (SDI).
+</para>
+
+</sect2>
 
 </sect1>
 
