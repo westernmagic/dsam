@@ -4,7 +4,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/ANfiberModels
+DIRECTORY	= Tutorials/ANFibreModels
 SUBDIRS		= ANmodelISIH ANmodelPeriodH ANmodelPSTH ANspikeStream
 
 include $(top_srcdir)/mkunxinst.env

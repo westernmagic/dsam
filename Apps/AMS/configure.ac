@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 AMS_MAJOR_VERSION=1
 AMS_MINOR_VERSION=2
-AMS_MICRO_VERSION=1
-AMS_INTERFACE_AGE=1
-AMS_BINARY_AGE=1
+AMS_MICRO_VERSION=2
+AMS_INTERFACE_AGE=2
+AMS_BINARY_AGE=2
 AMS_VERSION=$AMS_MAJOR_VERSION.$AMS_MINOR_VERSION.$AMS_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -268,6 +268,8 @@ cat >> get_port.$ac_ext << _DSAM_EOF
 #define	HEADER_ONLY		1
 
 #include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
 #include "ExtIPCUtils.h"
 
 int main(void)
@@ -299,6 +301,12 @@ AC_OUTPUT(
 	MSVC/AMS_ng/Makefile
 	Octave/Makefile
 	Tutorials/Makefile
+	Tutorials/ANFibreModels/Makefile
+	Tutorials/ANFibreModels/ANmodelPSTH/Makefile
+	Tutorials/ANFibreModels/ANspikeStream/Makefile
+	Tutorials/ANFibreModels/ANmodelISIH/Makefile
+	Tutorials/ANFibreModels/ANmodelPeriodH/Makefile
+	Tutorials/AuditoryNerve/Makefile
 	Tutorials/AuditoryPeriphery/Makefile
 	Tutorials/Autocorrelation/Makefile
 	Tutorials/BinauralPitch/Makefile

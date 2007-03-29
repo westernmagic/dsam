@@ -6,17 +6,17 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials/ImpulseResponse
 
-SimScripts	= fileInTest.sim impulseResponseFileIn.sim impulseResponse.sim
+SimScripts	= fileInTest.sim impulseResponseFileIn.sim impulseResponse.sim \
 				pureToneResponse.sim
 
-SPFFiles	= impulseResponseFileIn.spf impulseResponse.spf
+SPFFiles	= impulseResponseFileIn.spf impulseResponse.spf \
 				pureToneResponse.spf
 
 ParFiles	= BM_DRNLHumanALN.par dataFileInClick.par dataFileOut.par \
 				displayDRNL.par displayMiddleEar.par displayStimulus.par \
 				DRNL_TestALN.par filtFIRELP.par filtMultiBandpass.par \
 				filtScaleToStapes.par findBin.par Fourier.par intensity.par \
-				PTone1.par rampDown.par rampUp.par stimulusClick.par
+				PTone1.par rampDown.par rampUp.par stimulusClick.par 
 
 MatlabFiles	= DRNL_RIfunction.m
 
