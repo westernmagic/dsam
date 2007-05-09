@@ -205,6 +205,23 @@ GrLines::SetSignal(SignalDataPtr theSignal)
 
 }
 
+/****************************** YRange ****************************************/
+
+/*
+ * This routine returns the y-range of the data or a large value if the minimum
+ * and maximum values are two close together.
+ */
+
+double
+GrLines::GetYRange(void)
+{
+	double yRange = maxY - minY;
+
+	if (yRange > DBL_EPSILON)
+		return(yRange);
+	return(HUGE_VAL);
+}
+
 /****************************** Rescale ***************************************/
 
 /*
@@ -219,7 +236,7 @@ GrLines::Rescale(wxRect& newRect)
 {
 	rect = newRect;
 	chanSpace = (double) rect.GetHeight() / numDisplayedLines;
-	channelScale = chanSpace / (maxY - minY);
+	channelScale = chanSpace / GetYRange();
 	if (greyScaleMode)
 		yOffset = (wxCoord) (rect.GetBottom() - chanSpace);
 	else if (yNormalisationMode == GRAPH_LINE_YNORM_MIDDLE_MODE)
@@ -284,7 +301,7 @@ GrLines::DrawLines(wxDC& dc, double theXOffset, double theYOffset)
 	else
 		dc.SetPen(*wxBLACK_PEN);
 	xScale = (double) rect.GetWidth() / (length - ((greyScaleMode)? 0: 1));
-	yScale = (greyScaleMode)? (numGreyScales - 1) / (maxY - minY):
+	yScale = (greyScaleMode)? (numGreyScales - 1) / GetYRange():
 	  yMagnification * channelScale;
 	if (xScale >= 1.0)
 		xIndex = 1;

@@ -60,6 +60,7 @@ class GrLines
 	int		GetNumDisplayedLines(void)	{ return numDisplayedLines; }
 	int		GetNumLines(void)			{ return signal->numChannels; }
 	SignalDataPtr	GetSignalPtr(void)	{ return signal; }
+	double	GetYRange(void);
 	void	Rescale(wxRect& newRect);
 	void	Set(SignalDataPtr theSignal, ChanLen theOffset, ChanLen theLength);
 	void	SetChannelStep(int theChannelStep);
