@@ -420,7 +420,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	}
 	dc.SetFont(*axisTitleFont);
 	dc.GetTextExtent(xTitle, &stringWidth, &stringHeight);
-	xTitlePos = (int) ((xAxis->GetWidth() + stringWidth * tempXAdjust) / 2.0 +
+	xTitlePos = (int) (xAxis->GetLeft() + (xAxis->GetWidth() - stringWidth * tempXAdjust) / 2.0 +
 	  theXOffset);
 	yTitlePos = (int) (xAxis->GetBottom() - stringHeight * tempYAdjust - xAxis->
 	  GetHeight() * GRAPH_X_TITLE_MARGIN_SCALE + theYOffset);
