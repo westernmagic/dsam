@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 AMS_MAJOR_VERSION=1
 AMS_MINOR_VERSION=2
-AMS_MICRO_VERSION=2
-AMS_INTERFACE_AGE=2
-AMS_BINARY_AGE=2
+AMS_MICRO_VERSION=24
+AMS_INTERFACE_AGE=24
+AMS_BINARY_AGE=24
 AMS_VERSION=$AMS_MAJOR_VERSION.$AMS_MINOR_VERSION.$AMS_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -314,7 +314,6 @@ AC_OUTPUT(
 	Tutorials/GenerateStimulus/Makefile
 	Tutorials/ImpulseResponse/Makefile
 	Tutorials/Loudness/Makefile
-	Tutorials/MATLABRunDSAMSim/Makefile
 	Tutorials/MeasureIntensity/Makefile
 	Tutorials/Pre-emphasisFilter/Makefile
 	Tutorials/Precedence/Makefile
