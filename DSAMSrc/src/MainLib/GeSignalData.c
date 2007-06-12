@@ -391,7 +391,7 @@ SameType_SignalData_NoDiagnostics(SignalDataPtr a, SignalDataPtr b)
 	if (!a->lengthFlag || !b->lengthFlag)
 		return(FALSE);
 	if  ((a->length != b->length) || (a->numChannels != b->numChannels) ||
-	  (a->dt != b->dt))
+	  (fabs(a->dt - b->dt) > DBL_EPSILON))
 		return(FALSE);
     return(TRUE);
 
