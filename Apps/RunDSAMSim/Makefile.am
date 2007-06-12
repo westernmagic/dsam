@@ -8,11 +8,11 @@ noinst_HEADERS	= MatMainApp.h
 
 RunDSAMSim@DLLEXT@_SOURCES	= RunDSAMSim.cpp MatMainApp.cpp
 
-BUILT_SOURCES	= RunDSAMSim.spec
+BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m
+EXTRA_DIST		= autogen.sh RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m RunDSAMSim.ise
 
-SUBDIRS			= CfgTools MSVC
+SUBDIRS			= CfgTools MSVC Examples
 
 MatMainApp.$(OBJEXT): MatMainApp.cpp
 					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
@@ -28,13 +28,18 @@ RunDSAMSim.spec: RunDSAMSim.spec.in
 
 dist-hook: RunDSAMSim.spec
 	if test -e $(srcdir)/INSTALL.in && test -e $(srcdir)/README.in ; then \
-	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README:$(srcdir)/README.in"\
+	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README.xml:$(srcdir)/README.in"\
 	     CONFIG_HEADERS= \
 	     $(SHELL) config.status \
 	     && cp INSTALL README $(distdir) \
-		 &&	if [ -x /usr/bin/unix2dos ] ; then \
-		 		/usr/bin/unix2dos -n README README.txt ; \
+		 &&	if [ -x /usr/bin/docbook2txt ] ; then \
+		 		/usr/bin/docbook2txt README.xml ; \
 				cp README.txt $(distdir); \
 			fi \
+		 &&	if [ -x /usr/bin/docbook2rtf ] ; then \
+		 		/usr/bin/docbook2rtf README.xml ; \
+				cp README.rtf $(distdir); \
+			fi \
 	fi \
-	&& cp RunDSAMSim.spec $(distdir)
+	&& cp RunDSAMSim.spec $(distdir) \
+	&& cp RunDSAMSimSetup.h $(distdir)
