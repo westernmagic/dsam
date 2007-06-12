@@ -13,6 +13,10 @@
 #ifndef	_ANFOURIERT_H
 #define _ANFOURIERT_H	1
 
+#if HAVE_FFTW3
+#	include <fftw3.h>
+#endif
+
 #include "UtCmplxM.h"
 #include "UtNameSpecs.h"
 
@@ -23,8 +27,38 @@
 #define ANALYSIS_FOURIERT_NUM_PARS			1
 
 /******************************************************************************/
+/*************************** Macro Definitions ********************************/
+/******************************************************************************/
+
+#if HAVE_FFTW3
+#	define AN_FT_PTR_RE(Z)	(*(Z))[0]
+#	define AN_FT_PTR_IM(Z)	(*(Z))[1]
+#	define AN_FT_RE(Z)		(Z)[0]
+#	define AN_FT_IM(Z)		(Z)[1]
+#	define AN_FT_MODULUS(Z)	(sqrt(AN_FT_RE(Z) * AN_FT_RE(Z) + AN_FT_IM(Z) * \
+			AN_FT_IM(Z)))
+#	define AN_FT_MALLOC		fftw_malloc
+#	define AN_FT_FREE		fftw_free
+#else
+#	define AN_FT_PTR_RE(Z)	(Z)->re
+#	define AN_FT_PTR_IM(Z)	(Z)->im	
+#	define AN_FT_RE(Z)		(Z).re
+#	define AN_FT_IM(Z)		(Z).im
+#	define AN_FT_MODULUS	MODULUS_CMPLX
+#	define AN_FT_MALLOC		malloc
+#	define AN_FT_FREE		free
+#endif
+
+/******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
+
+#if HAVE_FFTW3
+	typedef fftw_complex	Complx, *ComplxPtr;
+#else
+#	define Complx	Complex
+#	define ComplxPtr	ComplexPtr
+#endif
 
 typedef enum {
 
@@ -57,7 +91,11 @@ typedef struct {
 	int		numOutChans;
 	double	dBSPLFactor;
 	ChanLen	fTLength;
-	ComplexPtr	*fT;
+	ComplxPtr	*fT;
+#	if HAVE_FFTW3
+	fftw_plan	*plan;
+	ComplxPtr	*fTOut;
+#	endif
 
 } FourierT, *FourierTPtr;
 
