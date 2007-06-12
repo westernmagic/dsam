@@ -95,6 +95,7 @@ make)
 	zip -r $newArchiveName.zip $newArchiveName > $TEMP_FILE
 	rm -rf $newArchiveName
 	rm $TEMP_FILE
+	make distclean
 	
 	echo Finished creating $newArchiveName.zip.
 	;;

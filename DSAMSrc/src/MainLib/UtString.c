@@ -70,7 +70,7 @@ StrCmpNoCase_Utility_String(WChar *s1, WChar *s2)
 {
 	static WChar *funcName = wxT("StrCmpNoCase_Utility_String");
 	WChar	upperString[2][LONG_STRING], *string[2];
-	int		i, len[2];
+	size_t		i, len[2];
 
 	string[0] = s1;
 	string[1] = s2;
@@ -396,7 +396,8 @@ ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
 		return(TRUE);
 	}
 	if (DSAM_strlen(s) > size) {
-		fwprintf(stderr, wxT("%S: Error.  String too long (%d)\n"), funcName);
+		fwprintf(stderr, wxT("%S: Error.  String too long (%d)\n"), funcName,
+		  DSAM_strlen(s));
 		*dest = '\0';
 		return(FALSE);
 	}

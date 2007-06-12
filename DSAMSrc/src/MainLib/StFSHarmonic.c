@@ -212,8 +212,8 @@ GetUniParListPtr_Harmonic_FreqSwept(void)
 		return(FALSE);
 	}
 	if (fSHarmPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fSHarmPtr->parList);

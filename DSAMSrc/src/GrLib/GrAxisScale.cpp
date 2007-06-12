@@ -124,7 +124,7 @@ AxisScale::ParseNumberFormat(const wxString &format)
 	sigDigits = 0;
 	decPlaces = 0;
 	p1 = format.find('.');
-	p2 = format.find('e', p1);
+	p2 = format.find('e', true);
 	if (p1 > 0)
 		sigDigits = p1;
 	else if (p2 > 0)
