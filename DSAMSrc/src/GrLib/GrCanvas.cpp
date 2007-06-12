@@ -426,8 +426,8 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 	  GetHeight() * GRAPH_X_TITLE_MARGIN_SCALE + theYOffset);
 	dc.DrawText(xTitle, xTitlePos, yTitlePos);
 	if (xAxisScale.GetExponent())
-		DrawExponent(dc, labelFont, xAxisScale.GetExponent(), xAxis->GetRight(
-		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length(), yTitlePos);
+		DrawExponent(dc, labelFont, xAxisScale.GetExponent(), (int) (xAxis->GetRight(
+		  ) - stringWidth * GRAPH_EXPONENT_LENGTH / xTitle.Length()), yTitlePos);
 
 	if (xAxisScale.GetSettingsChanged()) {
 		DSAM_strcpy(mySignalDispPtr->xNumberFormat, xAxisScale.GetFormatString(
