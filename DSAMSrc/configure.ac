@@ -32,9 +32,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=35
-DSAM_INTERFACE_AGE=35
-DSAM_BINARY_AGE=35
+DSAM_MICRO_VERSION=38
+DSAM_INTERFACE_AGE=38
+DSAM_BINARY_AGE=38
 DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
 dnl
 dnl AC_DIVERT_POP()dnl
@@ -541,6 +541,17 @@ AC_DEFINE_UNQUOTED([HAVE_SNDFILE],${ac_cv_sndfile},
 
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
+
+dnl ----------------------------------------------------------------------------
+dnl fftw3 library
+dnl ----------------------------------------------------------------------------
+
+PKG_CHECK_MODULES(FFTW3, fftw3 >= 3.0.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+AC_DEFINE_UNQUOTED([HAVE_FFTW3],${ac_cv_fftw3},
+	[Set to 1 if you have fftw3.])
+
+AC_SUBST(FFTW3_CFLAGS)
+AC_SUBST(FFTW3_LIBS)
 
 dnl ----------------------------------------------------------------------------
 dnl Parallel library option
