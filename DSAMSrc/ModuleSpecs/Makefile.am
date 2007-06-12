@@ -36,7 +36,8 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 				UtRedceChans.mod UtReduceDt.mod UtRefractory.mod UtSample.mod \
 				UtSelectChans.mod UtShapePulse.mod UtSimScript.mod \
 				UtStddise.mod UtStrobe.mod UtPause.mod UtHalfWRectify.mod \
-				UtLocalChans.mod UtSwapLR.mod UtPadSignal.mod UtMathOp.mod
+				UtLocalChans.mod UtSwapLR.mod UtPadSignal.mod UtMathOp.mod \
+				UtCollateSignals.mod
 
 Tr_Modules	= TrGate.mod TrSetDBSPL.mod TrCollectSignals.mod
 
