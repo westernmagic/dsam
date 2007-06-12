@@ -87,6 +87,7 @@
 #include "UtParArray.h"
 #include "UtZhang.h"
 #include "UtTranspose.h"
+#include "UtCollateSignals.h"
 
 #include "AnALSR.h"
 #include "AnAutoCorr.h"
