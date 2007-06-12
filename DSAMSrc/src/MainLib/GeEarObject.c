@@ -105,7 +105,7 @@ Init_EarObject(WChar *moduleName)
 		return(NULL);
 	}
 #	endif
-	data->clientData = NULL;
+	data->shapePtr = NULL;
 	data->numThreads = 1;
 	data->threadIndex = 0;
 	data->numSubProcesses = 0;

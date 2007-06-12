@@ -98,7 +98,7 @@ typedef struct _EarObject {
 #	ifndef _NO_MODULEMGR
 	ModulePtr		module;			/* Module linked with process. */
 #	endif
-	void			*clientData;	/* Used to store misc. handling info. */
+	void			*shapePtr;	/* Used to store misc. handling info. */
 	struct _EarObject	*threadProcs;	/* Pointer to thread EarObject copies */
 	struct _EarObject	**subProcessList;	/* Pointers to subProcesses. */
 

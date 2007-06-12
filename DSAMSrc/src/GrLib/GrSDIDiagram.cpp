@@ -121,9 +121,9 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 		myHandler->pc = pc;
 		shape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH,
 		  DIAGRAM_DEFAULT_SHAPE_HEIGHT);
-		pc->clientData = shape;
+		pc->shapePtr = shape;
 		if (pc->type == PROCESS)
-			pc->data->clientData = shape;
+			pc->data->shapePtr = shape;
 	}
 
 	AddShape(shape);
@@ -195,8 +195,8 @@ SDIDiagram::DrawSimShapes()
 			DatumPtr	ppc = pc;
 			while (ppc && (ppc->type != PROCESS))
 				ppc = ppc->previous;
-			shape = (wxShape *) ppc->clientData;
-			pc->clientData = shape;
+			shape = (wxShape *) ppc->shapePtr;
+			pc->shapePtr = shape;
 			break; }
 		default:
 			wxLogError(wxT("SDIDiagram::DrawSimShapes: datum type %d not ")
@@ -258,7 +258,7 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
 	  next)
 		;
 	if (toPc)
-		AddLineShape(shape, (wxShape *) toPc->clientData, -1);
+		AddLineShape(shape, (wxShape *) toPc->shapePtr, -1);
 
 }
 
@@ -271,7 +271,7 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
  * output connection lists.
  * A "for" loop must be used here and not "while" because "continue" is used
  * and we need pc = pc->next to always be executed.
- * This routine needs the process 'clientData' field to be set.
+ * This routine needs the process 'shapePtr' field to be set.
  */
 
 void
@@ -286,7 +286,7 @@ SDIDiagram::DrawSimConnections(void)
 	for (; pc != NULL; pc = pc->next) {
 		if (pc->type == STOP)
 			continue;
-		wxShape *fromShape = (wxShape *) (pc->clientData);
+		wxShape *fromShape = (wxShape *) (pc->shapePtr);
 		switch (pc->type) {
 		case PROCESS: 
 			if (pc->u.proc.outputList) {
@@ -294,7 +294,7 @@ SDIDiagram::DrawSimConnections(void)
 				  next) {
 					toPc = (DatumPtr) FindElement_Utility_DynaBList(labelBList,
 					  CmpProcessLabel_Utility_Datum, (char *) p->data)->data;
-					AddLineShape(fromShape, (wxShape *) toPc->clientData, -1);
+					AddLineShape(fromShape, (wxShape *) toPc->shapePtr, -1);
 				}
 			} else {
 				for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
@@ -305,13 +305,13 @@ SDIDiagram::DrawSimConnections(void)
 				switch (toPc->type) {
 				case RESET:
 				case REPEAT:
-					AddLineShape(fromShape, (wxShape *) toPc->clientData, -1);
+					AddLineShape(fromShape, (wxShape *) toPc->shapePtr, -1);
 					break;
 				default:
 					EarObjRefPtr	p;
 					for (p = pc->data->customerList; p != NULL; p = p->next)
 						AddLineShape(fromShape, (wxShape *) p->earObject->
-						  clientData, -1);
+						  shapePtr, -1);
 				} /* switch */
 			}
 			break;
@@ -329,7 +329,7 @@ SDIDiagram::DrawSimConnections(void)
 				default:
 					;
 				} /* switch */
-			AddLineShape(fromShape, (wxShape *) toPc->clientData, REPEAT);
+			AddLineShape(fromShape, (wxShape *) toPc->shapePtr, REPEAT);
 			DrawDefaultConnection(pc, fromShape);
 			break; }
 		case RESET:
@@ -437,7 +437,7 @@ SDIDiagram::VerifyDiagram(void)
 		return(false);
 	while (pc) {
 		if (pc->type == PROCESS) {
-			if (!pc->clientData && pc->data) {
+			if (!pc->shapePtr && pc->data) {
 				NotifyError(wxT("%s: Process has no description (step %d, ")
 				  wxT("label %s'."), funcName, pc->stepNumber, pc->label);
 				return (false);

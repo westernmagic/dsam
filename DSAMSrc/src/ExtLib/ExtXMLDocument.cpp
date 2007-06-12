@@ -142,7 +142,7 @@ DSAMXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
 			AddSimConnections(objectElement, pc->u.proc.outputList,
 			  DSAM_XML_OUTPUT_ELEMENT);
 			AddParList(objectElement, GetUniParListPtr_ModuleMgr(pc->data));
-			AddShapeInfo(objectElement, pc->clientData);
+			AddShapeInfo(objectElement, pc->shapePtr);
 			node.InsertEndChild(objectElement);
 			break; }
 		case REPEAT: {
@@ -150,7 +150,7 @@ DSAMXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
 			  GetProcessName_Utility_Datum(pc)));
 			objectElement.SetAttribute(DSAM_XML_COUNT_ATTRIBUTE, pc->u.loop.
 			  count);
-			AddShapeInfo(objectElement, pc->clientData);
+			AddShapeInfo(objectElement, pc->shapePtr);
 			pc = lastInstruction = AddSimObjects(objectElement, pc->next);
 			node.InsertEndChild(objectElement);
 			break; }
@@ -159,7 +159,7 @@ DSAMXMLDocument::AddSimObjects(TiXmlNode &node, DatumPtr start)
 			  GetProcessName_Utility_Datum(pc)));
 			objectElement.SetAttribute(DSAM_XML_OBJLABEL_ATTRIBUTE, wxConvUTF8.
 			  cWX2MB(pc->u.ref.string));
-			AddShapeInfo(objectElement, pc->clientData);
+			AddShapeInfo(objectElement, pc->shapePtr);
 			node.InsertEndChild(objectElement);
 			break; }
 		case STOP:

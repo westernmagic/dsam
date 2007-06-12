@@ -86,7 +86,7 @@ typedef struct Datum {
 		} ref;
 	} u;
 	EarObjectPtr	data;
-	void			*clientData;
+	void			*shapePtr;
 	struct Datum	*previous;			/* To link to previous datum */
 	struct Datum	*next;				/* To link to next datum */
 	struct Datum	*passedThreadEnd;	/* To mark the end of thread chain. */

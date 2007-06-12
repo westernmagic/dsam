@@ -185,7 +185,7 @@ SDIEvtHandler::InitInstruction(void)
 		  funcName, pc->label);
 		return(false);
 	}
-	pc->clientData = GetShape();
+	pc->shapePtr = GetShape();
 	return(true);
 
 }
@@ -235,7 +235,7 @@ SDIEvtHandler::EditInstruction(void)
 			Free_ModuleMgr(&(pc->data->module));
 			pc->data->module = Init_ModuleMgr(pc->u.proc.moduleName);
 		}
-		pc->data->clientData = pc->clientData;
+		pc->data->shapePtr = pc->shapePtr;
 		break;
 	default:
 		NotifyError(wxT("%s: Unknown process type (%d).\n"), funcName,

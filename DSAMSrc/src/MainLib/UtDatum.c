@@ -148,7 +148,7 @@ InitInst_Utility_Datum(int type)
 		;
 	} /* Switch */
 	datum->data = NULL;
-	datum->clientData = NULL;
+	datum->shapePtr = NULL;
 	datum->next = NULL;
 	datum->previous = NULL;
 	datum->passedThreadEnd = NULL;
