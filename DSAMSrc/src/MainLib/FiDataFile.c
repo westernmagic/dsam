@@ -135,6 +135,7 @@ DSAMFormatList_DataFile(int index)
 			{ wxT("OTO"),	DATA_FILE_OUTPUTTIMEOFFSET },
 			{ wxT("NORM"),	DATA_FILE_NORMALISATION },
 			{ wxT("VER"),	DATA_FILE_DSAMVERSION },
+			{ wxT("LDT"),	DATA_FILE_LARGEDT },
 			{ NULL,						-1 }
 		};
 	return (&modeList[index]);

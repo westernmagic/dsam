@@ -309,6 +309,9 @@ DetermineFileSize_SndFile(SignalDataPtr signal)
  * This function opens the interaction with the file.
  * It assumes if the sndFile field is not NULL then a file has been correctly
  * opened.
+ * Because the LibSndFile library format has the sample rate as an integer, the
+ * dt == DF value used by FFT output produces a zero sample rate.  The sample rate is
+ * therefore set to "1" and a string value is provided.  
  */
 
 BOOLN
@@ -316,20 +319,20 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 {
 	static const WChar *funcName = wxT("OpenFile_SndFile");
 	WChar	*parFilePath;
-	int		format;
+	int		format, sampleRate;
 	DataFilePtr	p = dataFilePtr;
 
 	if (p->sndFile)
 		Free_SndFile();
 	format = GetSndFormat_DataFile(p->type);
 	if ((format == SF_FORMAT_RAW) || (mode == SFM_WRITE)) {
-		p->sFInfo.samplerate = (int) floor(p->defaultSampleRate + 0.5);
+		sampleRate = (int) floor(p->defaultSampleRate + 0.5);
+		p->sFInfo.samplerate = (sampleRate > 0)? sampleRate: 1;
 		p->sFInfo.channels = (signal)? signal->numChannels: p->numChannels;
 		p->sFInfo.format = format | GetSndSubFormat_DataFile(
 		  p->subFormatType);
 		if (!sf_format_check(&p->sFInfo)) {
-			NotifyError(wxT("%s: Illegal output format for sound file."),
-			  funcName);
+			NotifyError(wxT("%s: Illegal format for sound file."), funcName);
 			return(FALSE);
 		}
 		if (mode == SFM_WRITE) {
@@ -388,7 +391,9 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 		parFilePath = GetParsFileFPath_Common(fileName);
 		if ((p->sndFile = sf_open(ConvUTF8_Utility_String(parFilePath), mode,
 		  &p->sFInfo)) == NULL) {
-			NotifyError(wxT("%s: Could not open file '%s'\n"), funcName, fileName);
+			NotifyError(wxT("%s: Could not open file '%s' (%s)."), funcName,
+			  fileName, MBSToWCS_Utility_String(sf_error_number(sf_error(
+			  p->sndFile))));
 			return(FALSE);
 		}
 	}
@@ -482,6 +487,9 @@ ParseTitleString_SndFile(const char *titleString, SignalDataPtr signal)
 				dataFilePtr->normalise = strtod(parValue, &p);
 				break;
 			case DATA_FILE_DSAMVERSION:
+				break;
+			case DATA_FILE_LARGEDT:
+				signal->dt = strtod(parValue, &p);
 				break;
 			default:
 				;
@@ -717,6 +725,10 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 			break;
 		case DATA_FILE_DSAMVERSION:
 			sprintf(workStr, ":%s", ConvUTF8_Utility_String(DSAM_VERSION));
+			break;
+		case DATA_FILE_LARGEDT:
+			if (signal->dt > 0.0)
+				sprintf(workStr, ":%.16g", signal->dt);
 			break;
 		default:
 			NotifyError(wxT("%s: Unknown DSAM foramt specifier (%d)"),
