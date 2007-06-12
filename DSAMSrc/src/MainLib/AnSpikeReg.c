@@ -2,7 +2,7 @@
  *
  * File:		AnSpikeReg.c
  * Purpose:		This module carries out a spike regularity analysis,
- *				calculating the mean, standard deviation and covariance
+ *				calculating the mean, standard deviation and coeffient of variation.
  *				measures for a spike train.
  *				The results for each channel are stored in the order:
  *				 - mean, standard deviation, covariance'.
@@ -81,6 +81,28 @@ Free_Analysis_SpikeRegularity(void)
 
 }
 
+/****************************** InitOutputModeList ****************************/
+
+/*
+ * This function initialises the 'outputMode' list array
+ */
+
+BOOLN
+InitOutputModeList_Analysis_SpikeRegularity(void)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("REGULARITY"),	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY },
+			{ wxT("COEFF_VAR"),		ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COVARIANCE },
+			{ wxT("MEAN"),			ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_MEAN },
+			{ wxT("STANDARD_DEV"),	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_STANDARD_DEV },
+			{ NULL,					ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_NULL },
+		};
+	spikeRegPtr->outputModeList = modeList;
+	return(TRUE);
+
+}
+
 /****************************** Init ******************************************/
 
 /*
@@ -114,17 +136,15 @@ Init_Analysis_SpikeRegularity(ParameterSpecifier parSpec)
 	}
 	spikeRegPtr->parSpec = parSpec;
 	spikeRegPtr->updateProcessVariablesFlag = TRUE;
-	spikeRegPtr->eventThresholdFlag = TRUE;
-	spikeRegPtr->windowWidthFlag = TRUE;
-	spikeRegPtr->timeOffsetFlag = TRUE;
-	spikeRegPtr->timeRangeFlag = TRUE;
-	spikeRegPtr->deadTimeFlag = TRUE;
+	spikeRegPtr->outputMode = ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COVARIANCE;
 	spikeRegPtr->eventThreshold = 0.0;
 	spikeRegPtr->windowWidth = -1.0;
 	spikeRegPtr->timeOffset = 0.0;
 	spikeRegPtr->timeRange = -10.0;
 	spikeRegPtr->deadTime = 0.0;
+	spikeRegPtr->countThreshold = SPIKE_REG_MIN_SPIKES_FOR_STATISTICS;
 
+	InitOutputModeList_Analysis_SpikeRegularity();
 	if (!SetUniParList_Analysis_SpikeRegularity()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Analysis_SpikeRegularity();
@@ -158,6 +178,11 @@ SetUniParList_Analysis_SpikeRegularity(void)
 		return(FALSE);
 	}
 	pars = spikeRegPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANALYSIS_SPIKEREGULARITY_OUTPUTMODE], wxT("OUTPUT_MODE"),
+	  wxT("Output mode: 'Coeff_Reg', 'Coeff_Var','Mean' or 'Standard_dev'."),
+	  UNIPAR_NAME_SPEC,
+	  &spikeRegPtr->outputMode, spikeRegPtr->outputModeList,
+	  (void * (*)) SetOutputMode_Analysis_SpikeRegularity);
 	SetPar_UniParMgr(&pars[ANALYSIS_SPIKEREGULARITY_EVENTTHRESHOLD],
 	  wxT("THRESHOLD"),
 	  wxT("Event threshold (arbitrary units)."),
@@ -185,6 +210,11 @@ SetUniParList_Analysis_SpikeRegularity(void)
 	  UNIPAR_REAL,
 	  &spikeRegPtr->deadTime, NULL,
 	  (void * (*)) SetDeadTime_Analysis_SpikeRegularity);
+	SetPar_UniParMgr(&pars[ANALYSIS_SPIKEREGULARITY_COUNTTHRESHOLD], wxT("COUNT_THRESHOLD"),
+	  wxT("Counts above which statistics are calculated (int.)"),
+	  UNIPAR_REAL,
+	  &spikeRegPtr->countThreshold, NULL,
+	  (void * (*)) SetCountThreshold_Analysis_SpikeRegularity);
 
 	SetAltAbbreviation_UniParMgr(&pars[ANALYSIS_SPIKEREGULARITY_TIMERANGE],
 	  wxT("MAX_RANGE"));
@@ -249,6 +279,37 @@ SetPars_Analysis_SpikeRegularity(double eventThreshold, double windowWidth,
 
 }
 
+/****************************** SetOutputMode *********************************/
+
+/*
+ * This function sets the module's outputMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetOutputMode_Analysis_SpikeRegularity(WChar * theOutputMode)
+{
+	static const WChar	*funcName = wxT(
+	  "SetOutputMode_Analysis_SpikeRegularity");
+	int		specifier;
+
+	if (spikeRegPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theOutputMode,
+		spikeRegPtr->outputModeList)) == ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_NULL) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOutputMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	spikeRegPtr->updateProcessVariablesFlag = TRUE;
+	spikeRegPtr->outputMode = specifier;
+	return(TRUE);
+
+}
+
 /****************************** SetEventThreshold *****************************/
 
 /*
@@ -268,7 +329,6 @@ SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	spikeRegPtr->eventThresholdFlag = TRUE;
 	spikeRegPtr->eventThreshold = theEventThreshold;
 	return(TRUE);
 
@@ -293,7 +353,6 @@ SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	spikeRegPtr->windowWidthFlag = TRUE;
 	spikeRegPtr->updateProcessVariablesFlag = TRUE;
 	spikeRegPtr->windowWidth = theWindowWidth;
 	return(TRUE);
@@ -323,7 +382,6 @@ SetTimeOffset_Analysis_SpikeRegularity(double theTimeOffset)
 		  funcName, MSEC(theTimeOffset));
 		return(FALSE);
 	}
-	spikeRegPtr->timeOffsetFlag = TRUE;
 	spikeRegPtr->updateProcessVariablesFlag = TRUE;
 	spikeRegPtr->timeOffset = theTimeOffset;
 	return(TRUE);
@@ -349,7 +407,6 @@ SetTimeRange_Analysis_SpikeRegularity(double theTimeRange)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	spikeRegPtr->timeRangeFlag = TRUE;
 	spikeRegPtr->updateProcessVariablesFlag = TRUE;
 	spikeRegPtr->timeRange = theTimeRange;
 	return(TRUE);
@@ -378,8 +435,35 @@ SetDeadTime_Analysis_SpikeRegularity(double theDeadTime)
 		  MILLI(theDeadTime));
 		return(FALSE);
 	}
-	spikeRegPtr->deadTimeFlag = TRUE;
 	spikeRegPtr->deadTime = theDeadTime;
+	return(TRUE);
+
+}
+
+/****************************** SetCountThreshold *****************************/
+
+/*
+ * This function sets the module's countThreshold parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetCountThreshold_Analysis_SpikeRegularity(double theCountThreshold)
+{
+	static const WChar	*funcName = wxT(
+	  "SetCountThreshold_Analysis_SpikeRegularity");
+
+	if (spikeRegPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if (theCountThreshold < SPIKE_REG_MIN_SPIKES_FOR_STATISTICS) {
+		NotifyError(wxT("%s: Count threshold must be greated than %g (%g)"),
+		  funcName, SPIKE_REG_MIN_SPIKES_FOR_STATISTICS, theCountThreshold);
+		return(FALSE);
+	}
+	spikeRegPtr->countThreshold = theCountThreshold;
 	return(TRUE);
 
 }
@@ -405,26 +489,6 @@ CheckPars_Analysis_SpikeRegularity(void)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!spikeRegPtr->eventThresholdFlag) {
-		NotifyError(wxT("%s: eventThreshold variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!spikeRegPtr->windowWidthFlag) {
-		NotifyError(wxT("%s: windowWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!spikeRegPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!spikeRegPtr->timeRangeFlag) {
-		NotifyError(wxT("%s: timeRange variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!spikeRegPtr->deadTimeFlag) {
-		NotifyError(wxT("%s: deadTime variable not set."), funcName);
-		ok = FALSE;
-	}
 	return(ok);
 
 }
@@ -447,20 +511,23 @@ PrintPars_Analysis_SpikeRegularity(void)
 		return(FALSE);
 	}
 	DPrint(wxT("Spike Regularity Analysis Module Parameters:-\n"));
-	DPrint(wxT("\tEvent threshold = %g units,"),
+	DPrint(wxT("\tOutput mode = %s,"), spikeRegPtr->outputModeList[
+	  spikeRegPtr->outputMode].name);
+	DPrint(wxT("\tEvent threshold = %g units,\n"),
 	  spikeRegPtr->eventThreshold);
 	DPrint(wxT("\tBin width = "));
 	if (spikeRegPtr->windowWidth <= 0.0)
-		DPrint(wxT("<prev. signal dt>,\n"));
+		DPrint(wxT("<prev. signal dt>,"));
 	else
-		DPrint(wxT("%g ms,\n"), MSEC(spikeRegPtr->windowWidth));
-	DPrint(wxT("\tTime offset = %g ms,"), MSEC(spikeRegPtr->timeOffset));
+		DPrint(wxT("%g ms,"), MSEC(spikeRegPtr->windowWidth));
+	DPrint(wxT("\tTime offset = %g ms,\n"), MSEC(spikeRegPtr->timeOffset));
 	DPrint(wxT("\tTime range = "));
 	if (spikeRegPtr->timeRange > 0.0)
-		DPrint(wxT("%g ms.\n"), MSEC(spikeRegPtr->timeRange));
+		DPrint(wxT("%g ms,"), MSEC(spikeRegPtr->timeRange));
 	else
-		DPrint(wxT("end of signal.\n"));
-	DPrint(wxT("\tDead time = %g ms.\n"), MILLI(spikeRegPtr->deadTime));
+		DPrint(wxT("end of signal, "));
+	DPrint(wxT("\tDead time = %g ms\n"), MILLI(spikeRegPtr->deadTime));
+	DPrint(wxT("\tCount threshold = %g.\n"), spikeRegPtr->countThreshold);
 	return(TRUE);
 
 }
@@ -619,26 +686,28 @@ CheckData_Analysis_SpikeRegularity(EarObjectPtr data)
  * This routine resets the statistics to zero values.
  * It expects the process EarObject, "countEarObj" and 'data' to be correctly
  * initialised.
+ * The 'data' EarObject channel parameters are used, as these are correctly set
+ * when in the threaded modes.
  */
 
 void
 ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data)
 {
 	register ChanData	*sumPtr, *sumSqrsPtr, *countPtr;
-	int		outChan, inChan;
+	int		chan;
 	ChanLen	i;
+	SpikeRegPtr	p = spikeRegPtr;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
+	SignalDataPtr	countEarObj = _OutSig_EarObject(p->countEarObj);
 
-	for (outChan = _OutSig_EarObject(data)->offset; outChan <
-	  _OutSig_EarObject(data)->numChannels; outChan += SPIKE_REG_NUM_RETURNS) {
-		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = _OutSig_EarObject(spikeRegPtr->countEarObj)->channel[inChan];
-		sumPtr = _OutSig_EarObject(data)->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr = _OutSig_EarObject(data)->channel[outChan +
-		  SPIKE_REG_STANDARD_DEV];
-		for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		countPtr = countEarObj->channel[chan];
+		sumPtr = countEarObj->channel[chan + SPIKE_REG_SUM];
+		sumSqrsPtr = countEarObj->channel[chan + SPIKE_REG_SUMSQRS ];
+		for (i = 0; i < countEarObj->length; i++) {
 			*sumPtr++ = 0.0;
 			*sumSqrsPtr++ = 0.0;
-			*countPtr++ = 0;
+			*countPtr++ = 0.0;
 		}
 	}
 
@@ -675,14 +744,17 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 {
 	static const WChar *funcName =
 	  wxT("InitProcessVariables_Analysis_SpikeRegularity");
+	SignalDataPtr	inSignal, outSignal;
 	SpikeRegPtr	p = spikeRegPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
+	  	inSignal = _InSig_EarObject(data, 0);
+	  	outSignal = _OutSig_EarObject(data);
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Analysis_SpikeRegularity();
-			if ((p->spikeListSpec = InitListSpec_SpikeList(_InSig_EarObject(
-			  data, 0)->numChannels)) == NULL) {
+			if ((p->spikeListSpec = InitListSpec_SpikeList(inSignal->numChannels)) ==
+			  NULL) {
 				NotifyError(wxT("%s: Out of memory for spikeListSpec."),
 				  funcName);
 				return(FALSE);
@@ -690,22 +762,20 @@ InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data)
 			p->countEarObj = Init_EarObject(wxT("NULL"));
 			p->updateProcessVariablesFlag = FALSE;
 		}
-		if (!InitOutSignal_EarObject(p->countEarObj, _InSig_EarObject(data, 0)->
-		  numChannels, _OutSig_EarObject(data)->length, _OutSig_EarObject(
-		  data)->dt)) {
+		if (!InitOutSignal_EarObject(p->countEarObj, inSignal->numChannels *
+		  SPIKE_REG_NUM_ACCUMULATORS, outSignal->length, outSignal->dt)) {
 			NotifyError(wxT("%s: Cannot initialise countEarObj."), funcName);
 			return(FALSE);
 		}
-		if ((p->runningTimeOffsetIndex = (ChanLen *) calloc(_InSig_EarObject(
-		  data, 0)->numChannels, sizeof(ChanLen))) == NULL) {
+		if ((p->runningTimeOffsetIndex = (ChanLen *) calloc(inSignal->numChannels,
+		  sizeof(ChanLen))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for 'runningTimeOffsetIndex")
-			  wxT("[%d]' array."), funcName, _InSig_EarObject(data, 0)->
-			  numChannels);
+			  wxT("[%d]' array."), funcName, inSignal->numChannels);
 			return(FALSE);
 		}
 		ResetProcess_Analysis_SpikeRegularity(data);
-	} else
 		ResetStatistics_Analysis_SpikeRegularity(data);
+	}
 	return(TRUE);
 
 }
@@ -752,16 +822,16 @@ BOOLN
 Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Calc_Analysis_SpikeRegularity");
-	register ChanData	*sumPtr, *covarPtr, *sumSqrsPtr, *countPtr, diff;
-	int		outChan, inChan;
+	register ChanData	*outPtr, *sumPtr, *sumSqrsPtr, *countPtr, diff, mean, std;
+	int		chan;
 	double	interval, spikeTime, windowWidth, timeRange;
 	ChanLen	i, spikeTimeHistIndex, timeRangeIndex;
 	ChanLen	timeOffsetIndex, *runningTimeOffsetIndex;
-	ChanData	oldMean;
 	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
-	SignalDataPtr	outSignal;
+	SignalDataPtr	outSignal, inSignal, countEarObj;
 	SpikeRegPtr	p = spikeRegPtr;
 
+	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Analysis_SpikeRegularity())
 			return(FALSE);
@@ -770,75 +840,52 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			return(FALSE);
 		}
 		SetProcessName_EarObject(data, wxT("Spike Regularity Analysis"));
-		p->dt = _InSig_EarObject(data, 0)->dt;
+		p->dt = inSignal->dt;
 		timeRange = (p->timeRange > 0.0)? p->timeRange: _GetDuration_SignalData(
-		  _InSig_EarObject(data, 0)) - p->timeOffset;
+		  inSignal) - p->timeOffset;
 		windowWidth = (p->windowWidth > 0.0)? p->windowWidth: timeRange;
 		timeRangeIndex = (ChanLen) floor(timeRange / windowWidth + 0.5);
-		if (!InitOutSignal_EarObject(data, (uShort) (_InSig_EarObject(data, 0)->
-		  numChannels * SPIKE_REG_NUM_RETURNS), timeRangeIndex, windowWidth)) {
+		if (!InitOutSignal_EarObject(data, inSignal->numChannels, timeRangeIndex,
+		  windowWidth)) {
 			NotifyError(wxT("%s: Cannot initialise sumEarObj."), funcName);
 			return(FALSE);
 		}
-		SetOutputTimeOffset_SignalData(_OutSig_EarObject(data), p->timeOffset +
-		  _OutSig_EarObject(data)->dt);
-		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), (uShort) (
-		  _InSig_EarObject(data, 0)->interleaveLevel * SPIKE_REG_NUM_RETURNS));
+		outSignal = _OutSig_EarObject(data);
+		SetOutputTimeOffset_SignalData(outSignal, p->timeOffset + outSignal->dt);
+		SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
 		if (!InitProcessVariables_Analysis_SpikeRegularity(data)) {
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
 		}
-		p->convertDt = p->dt / _OutSig_EarObject(data)->dt;
-		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold,
-		  _InSig_EarObject(data, 0));
+		p->convertDt = p->dt / outSignal->dt;
+		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	outSignal = _OutSig_EarObject(data);
+	countEarObj = _OutSig_EarObject(p->countEarObj);
 	/* Add additional sums. */
 	timeOffsetIndex = (ChanLen) floor(p->timeOffset / p->dt + 0.5);
-	for (inChan = _InSig_EarObject(data, 0)->offset; inChan < _InSig_EarObject(
-	  data, 0)->numChannels; inChan++) {
-		runningTimeOffsetIndex = p->spikeListSpec->timeIndex + inChan;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		runningTimeOffsetIndex = p->spikeListSpec->timeIndex + chan;
 		if (*runningTimeOffsetIndex < timeOffsetIndex)
 			*runningTimeOffsetIndex += timeOffsetIndex -
 			  *runningTimeOffsetIndex;
 	}
-	/* First recover previous sums from signal (when not in segment mode).*/
-	outSignal = _OutSig_EarObject(data);
-	for (outChan = 0; outChan <outSignal->numChannels; outChan +=
-	  SPIKE_REG_NUM_RETURNS) {
-		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = _OutSig_EarObject(p->countEarObj)->channel[inChan];
-		sumPtr = outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr =outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		for (i = 0; i <outSignal->length; i++, sumPtr++, sumSqrsPtr++,
-		  countPtr++) {
-			oldMean = *sumPtr;
-			*sumPtr *= *countPtr;
-			if (*countPtr > SPIKE_REG_MIN_SPIKES_FOR_STATISTICS) {
-				*sumSqrsPtr = SQR(*sumSqrsPtr);
-				*sumSqrsPtr = *sumSqrsPtr * (*countPtr - 1.0) + (*sumPtr *
-				  oldMean);
-			}
-		}
-	}
-	for (outChan =outSignal->offset; outChan < outSignal->numChannels;
-	  outChan += SPIKE_REG_NUM_RETURNS) {
-		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = _OutSig_EarObject(p->countEarObj)->channel[inChan];
-		sumPtr = outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr =outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		if ((headSpikeList = p->spikeListSpec->head[inChan]) == NULL)
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		countPtr = countEarObj->channel[chan];
+		sumPtr = countEarObj->channel[chan + SPIKE_REG_SUM];
+		sumSqrsPtr = countEarObj->channel[chan + SPIKE_REG_SUMSQRS];
+		if ((headSpikeList = p->spikeListSpec->head[chan]) == NULL)
 			continue;
-		currentSpikeSpec = p->spikeListSpec->current[inChan];
+		currentSpikeSpec = p->spikeListSpec->current[chan];
 		for (s = headSpikeList; (s != NULL) && (s->next != NULL) && (s->next !=
 		  currentSpikeSpec); s = s->next) {
 			spikeTime = s->timeIndex * p->dt;
-			if (s->next && (spikeTime >= p->timeOffset) &&
-			  ((spikeTimeHistIndex = (ChanLen) floor((s->timeIndex -
-				  p->runningTimeOffsetIndex[inChan]) * p->convertDt)) <
-				 outSignal->length)) {
+			if (s->next && (spikeTime >= p->timeOffset) && ((spikeTimeHistIndex =
+			  (ChanLen) floor((s->timeIndex - p->runningTimeOffsetIndex[chan]) *
+			  p->convertDt)) < outSignal->length)) {
 				interval = s->next->timeIndex * p->dt - spikeTime;
 				*(sumPtr + spikeTimeHistIndex) += interval;
 				*(sumSqrsPtr + spikeTimeHistIndex) += interval * interval;
@@ -846,26 +893,42 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			}
 		}
 	}
-	/* Re-calculate statics */
-	for (outChan =outSignal->offset; outChan < outSignal->numChannels;
-	  outChan += SPIKE_REG_NUM_RETURNS) {
-		inChan = outChan / SPIKE_REG_NUM_RETURNS;
-		countPtr = _OutSig_EarObject(p->countEarObj)->channel[inChan];
-		sumPtr = outSignal->channel[outChan + SPIKE_REG_MEAN];
-		sumSqrsPtr =outSignal->channel[outChan + SPIKE_REG_STANDARD_DEV];
-		covarPtr =outSignal->channel[outChan + SPIKE_REG_CO_VARIANCE];
-		for (i = 0; i <outSignal->length; i++, sumPtr++, sumSqrsPtr++,
-		  covarPtr++, countPtr++)
+	/* Calculate statics */
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		countPtr = countEarObj->channel[chan];
+		sumPtr = countEarObj->channel[chan + SPIKE_REG_SUM];
+		sumSqrsPtr = countEarObj->channel[chan + SPIKE_REG_SUMSQRS];
+		outPtr = outSignal->channel[chan];
+		for (i = 0; i < outSignal->length; i++, sumPtr++, sumSqrsPtr++, countPtr++,
+		  outPtr++) {
+			*outPtr = 0.0;
 			if (*countPtr > 0.0) {
-				*sumPtr /= *countPtr;
-				if (*countPtr > SPIKE_REG_MIN_SPIKES_FOR_STATISTICS) {
-					diff = *sumSqrsPtr - *countPtr * *sumPtr * *sumPtr;
+				mean = *sumPtr / *countPtr;
+				if (p->outputMode == ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_MEAN) {
+					*outPtr = mean;
+					continue;
+				}
+				if (*countPtr > p->countThreshold) {
+					diff = *sumSqrsPtr - *countPtr * mean * mean;
 					if (diff < 0.0)
 						diff = 0.0;
-					*sumSqrsPtr = sqrt(diff / (*countPtr - 1.0));
-					*covarPtr = *sumSqrsPtr / (*sumPtr - p->deadTime);
+					std = sqrt(diff / (*countPtr - 1.0));
+					if (p->outputMode == ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_STANDARD_DEV) {
+						*outPtr = std;
+						continue;
+					}
+					switch (p->outputMode) {
+					case ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COVARIANCE:
+						*outPtr = std / (mean - p->deadTime);
+						break;
+					case ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY:
+						*outPtr = 10.0 * log10((mean - p->deadTime)/ ((std >
+						  DBL_EPSILON)? std: DBL_EPSILON));
+						break;
+					}
 				}
 			}
+		}
 	}
 	SetProcessContinuity_EarObject(p->countEarObj);
 	SetProcessContinuity_EarObject(data);

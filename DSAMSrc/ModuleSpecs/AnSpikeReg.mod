@@ -6,10 +6,12 @@ qualifier		SpikeRegularity;
 proc_routine	Calc;
 typedef struct {
 
+	NameSpecifier	outputMode;
 	double	eventThreshold;
 	double	windowWidth;
 	double	timeOffset;
 	double	timeRange;
 	double	deadTime;
+	double	countThreshold;
 
 } SpikeReg;

@@ -4,8 +4,6 @@
  * Purpose:		This module carries out a spike regularity analysis,
  *				calculating the mean, standard deviation and covariance
  *				measures for a spike train.
- *				The results for each channel are stored in the order:
- *				 - mean, standard deviation, covariance'.
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
  *				See Hewitt M. J. & Meddis R. (1993) "Regularity of cochlear
  *				nucleus stellate cells: A computational Modeling study",
@@ -38,11 +36,16 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANALYSIS_SPIKEREGULARITY_NUM_PARS		5
-#define SPIKE_REG_NUM_RETURNS					3
-#define	SPIKE_REG_MEAN							0
-#define	SPIKE_REG_STANDARD_DEV					1
-#define	SPIKE_REG_CO_VARIANCE					2
+#define ANALYSIS_SPIKEREGULARITY_MOD_NAME		wxT("ANA_SPIKEREGULARITY")
+#define ANALYSIS_SPIKEREGULARITY_NUM_PARS		7
+#define SPIKE_REG_NUM_ACCUMULATORS				3
+
+enum {
+	SPIKE_REG_COUNT = 0,
+	SPIKE_REG_SUM,
+	SPIKE_REG_SUMSQRS
+};
+
 #define	SPIKE_REG_MIN_SPIKES_FOR_STATISTICS		2.0
 
 /******************************************************************************/
@@ -51,28 +54,41 @@
 
 typedef enum {
 
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE,
 	ANALYSIS_SPIKEREGULARITY_EVENTTHRESHOLD,
 	ANALYSIS_SPIKEREGULARITY_WINDOWWIDTH,
 	ANALYSIS_SPIKEREGULARITY_TIMEOFFSET,
 	ANALYSIS_SPIKEREGULARITY_TIMERANGE,
-	ANALYSIS_SPIKEREGULARITY_DEADTIME
+	ANALYSIS_SPIKEREGULARITY_DEADTIME,
+	ANALYSIS_SPIKEREGULARITY_COUNTTHRESHOLD
 
 } SpikeRegParSpecifier;
+
+typedef enum {
+
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COVARIANCE,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_MEAN,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_STANDARD_DEV,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_NULL
+
+} SpikeRegOutputModeSpecifier;
 
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 	BOOLN	updateProcessVariablesFlag;
 
-	BOOLN	eventThresholdFlag, windowWidthFlag, timeOffsetFlag, timeRangeFlag;
-	BOOLN	deadTimeFlag;
+	int		outputMode;
 	double	eventThreshold;
 	double	windowWidth;
 	double	timeOffset;
 	double	timeRange;
 	double	deadTime;
+	double	countThreshold;
 
 	/* Private members */
+	NameSpecifier	*outputModeList;
 	UniParListPtr	parList;
 	double	dt, convertDt;
 	ChanLen	*runningTimeOffsetIndex;
@@ -111,6 +127,8 @@ UniParListPtr	GetUniParListPtr_Analysis_SpikeRegularity(void);
 
 BOOLN	Init_Analysis_SpikeRegularity(ParameterSpecifier parSpec);
 
+BOOLN	InitOutputModeList_Analysis_SpikeRegularity(void);
+
 BOOLN	InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_SpikeRegularity(void);
@@ -121,6 +139,8 @@ void	ResetProcess_Analysis_SpikeRegularity(EarObjectPtr data);
 
 void	ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data);
 
+BOOLN	SetCountThreshold_Analysis_SpikeRegularity(double theCountThreshold);
+
 BOOLN	SetDeadTime_Analysis_SpikeRegularity(double theDeadTime);
 
 BOOLN	SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth);
@@ -128,6 +148,8 @@ BOOLN	SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth);
 BOOLN	SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold);
 
 BOOLN	InitModule_Analysis_SpikeRegularity(ModulePtr theModule);
+
+BOOLN	SetOutputMode_Analysis_SpikeRegularity(WChar * theOutputMode);
 
 BOOLN	SetParsPointer_Analysis_SpikeRegularity(ModulePtr theModule);
 
