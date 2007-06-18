@@ -14,6 +14,10 @@
 #ifndef	_UTFFT_H
 #define _UTFFT_H	1
 
+#if HAVE_FFTW3
+#	include <fftw3.h>
+#endif
+
 #include "UtCmplxM.h"
 
 /******************************************************************************/
@@ -22,6 +26,17 @@
 
 #define	FORWARD_FT		1			/* Forward FT */
 #define	BACKWARD_FT		-1			/* Backward FT */
+
+/******************************************************************************/
+/****************************** Type definitions ******************************/
+/******************************************************************************/
+
+#if HAVE_FFTW3
+	typedef fftw_complex	Complx, *ComplxPtr;
+#else
+#	define Complx	Complex
+#	define ComplxPtr	ComplexPtr
+#endif
 
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/

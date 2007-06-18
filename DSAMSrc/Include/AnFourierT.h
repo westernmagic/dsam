@@ -13,10 +13,6 @@
 #ifndef	_ANFOURIERT_H
 #define _ANFOURIERT_H	1
 
-#if HAVE_FFTW3
-#	include <fftw3.h>
-#endif
-
 #include "UtCmplxM.h"
 #include "UtNameSpecs.h"
 
@@ -52,13 +48,6 @@
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
-
-#if HAVE_FFTW3
-	typedef fftw_complex	Complx, *ComplxPtr;
-#else
-#	define Complx	Complex
-#	define ComplxPtr	ComplexPtr
-#endif
 
 typedef enum {
 
