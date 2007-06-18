@@ -83,7 +83,6 @@ typedef struct {
 	ComplxPtr	*fT;
 #	if HAVE_FFTW3
 	fftw_plan	*plan;
-	ComplxPtr	*fTOut;
 #	endif
 
 } FourierT, *FourierTPtr;

@@ -136,9 +136,6 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 	fourierTPtr->fTLength = 0;
 	fourierTPtr->numThreads = 0;
 	fourierTPtr->fT = NULL;
-#	if HAVE_FFTW3
-		fourierTPtr->fTOut = NULL;
-#	endif
 	return(TRUE);
 
 }
@@ -469,14 +466,6 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 			  wxT("pointer array."), funcName);
 			return(FALSE);
 		}
-#		if HAVE_FFTW3
-			if ((p->fTOut = (ComplxPtr *) calloc(p->numThreads, sizeof(
-			  ComplxPtr))) == NULL) {
-				NotifyError(wxT("%s: Couldn't allocate memory for output complex data ")
-				  wxT("pointer array."), funcName);
-				return(FALSE);
-			}
-#		endif
 		for (i = 0; i < data->numThreads; i++) {
 			if ((p->fT[i] = (Complx *) AN_FT_MALLOC(p->fTLength * sizeof(
 			  Complx))) == NULL) {
@@ -484,14 +473,6 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 				  wxT("data array (%d)."), funcName, i);
 				return(FALSE);
 			}
-#			if HAVE_FFTW3
-				if ((p->fTOut[i] = (Complx *) AN_FT_MALLOC(p->fTLength * sizeof(
-				  Complx))) == NULL) {
-					NotifyError(wxT("%s: Couldn't allocate memory for output complex ")
-					  wxT("data array (%d)."), funcName, i);
-					return(FALSE);
-				}
-#			endif
 		}
 		p->updateProcessVariablesFlag = FALSE;
 	}
@@ -514,15 +495,8 @@ FreeProcessVariables_Analysis_FourierT(void)
 	if (fourierTPtr->fT) {
 		for (i = 0; i < fourierTPtr->numThreads; i++) {
 			AN_FT_FREE(fourierTPtr->fT[i]);
-#			if HAVE_FFTW3
-				AN_FT_FREE(fourierTPtr->fTOut[i]);
-#			endif
 		}
 		free(fourierTPtr->fT);
-#		if HAVE_FFTW3
-			free(fourierTPtr->fTOut);
-			fourierTPtr->fTOut = NULL;
-#		endif
 		fourierTPtr->fT = NULL;
 	}
 
@@ -555,7 +529,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	int		chan, outChan;
 	double	dF;
 	ChanLen	i;
-	Complx	*fT, *fTOut;
+	Complx	*fT;
 	SignalDataPtr	outSignal;
 	FourierTPtr	p = fourierTPtr;
 #	if HAVE_FFTW3
@@ -608,27 +582,32 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		fT = p->fT[data->threadIndex];
 		AN_FT_PTR_RE(fT) = AN_FT_PTR_IM(fT) = 0.0;
 		inPtr = _InSig_EarObject(data, 0)->channel[outChan] + 1;
-		for (i = 1, fT++; i < outSignal->length; i++, fT++) {
-			AN_FT_PTR_IM(fT) = 0.0;
-			AN_FT_PTR_RE(fT) = *inPtr++;
-		}
-		for (i = i; i < p->fTLength; i++, fT++) {
-			AN_FT_PTR_IM(fT) = 0.0;
-			AN_FT_PTR_RE(fT) = 0.0;
-		}
+#		if HAVE_FFTW3
+			double	*fTIn = (double *) fT++;
+			for (i = 1, fTIn++; i < outSignal->length; i++, fTIn++)
+				*fTIn = *inPtr++;
+			for (; i < p->fTLength; i++, fTIn++)
+				*fTIn = 0.0;
+#		else
+			for (i = 1, fT++; i < outSignal->length; i++, fT++) {
+				AN_FT_PTR_IM(fT) = 0.0;
+				AN_FT_PTR_RE(fT) = *inPtr++;
+			}
+			for (; i < p->fTLength; i++, fT++) {
+				AN_FT_PTR_IM(fT) = 0.0;
+				AN_FT_PTR_RE(fT) = 0.0;
+			}
+#		endif
 		outPtr = outSignal->channel[outChan];
 
+		fT = p->fT[data->threadIndex];
 #		if HAVE_FFTW3
-			fTOut = p->fTOut[data->threadIndex];
-			plan = fftw_plan_dft_1d(p->fTLength, p->fT[data->threadIndex], fTOut,
-			  FFTW_FORWARD, FFTW_ESTIMATE);
+			plan = fftw_plan_dft_r2c_1d(p->fTLength, (double *) fT, fT, FFTW_ESTIMATE);
 			fftw_execute(plan);
 			fftw_destroy_plan(plan);
 #		else
-			fTOut = p->fT[data->threadIndex];
-			CalcComplex_FFT(fTOut, p->fTLength, FORWARD_FT);
+			CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 #		endif
-		fT = fTOut;
 
 		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
@@ -642,7 +621,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		case ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE:
 			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) AN_FT_PTR_RE(fT);
-			fT = fTOut;
+			fT = p->fT[data->threadIndex];
 			outPtr = outSignal->channel[outChan + 1];
 			for (i = 0; i < outSignal->length; i++, fT++)
 				*outPtr++ = (ChanData) AN_FT_PTR_IM(fT);
