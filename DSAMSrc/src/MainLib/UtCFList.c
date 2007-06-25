@@ -1033,7 +1033,7 @@ GenerateERBn_CFList(CFListPtr theCFs)
 		NotifyError(wxT("%s: Could not allocate frequencies."), funcName);
 		return(FALSE);
 	}
-	theCFs->eRBDensity = theCFs->numChannels / (ERBRateFromF_Bandwidth(
+	theCFs->eRBDensity = (theCFs->numChannels - 1) / (ERBRateFromF_Bandwidth(
 	  theCFs->maxCF) - ERBRateFromF_Bandwidth(theCFs->minCF));
 	for (i = 0, theERBRate = ERBRateFromF_Bandwidth(theCFs->minCF); i <
 	  theCFs->numChannels; i++) {
@@ -2039,3 +2039,30 @@ PrintPars_CFList(CFListPtr theCFs)
 	}
 
 }
+
+/****************************** ERBSpace **************************************/
+
+/*
+ * This routine calculates the mean difference in ERB rate for the range of
+ * frequencies in the CF List structure.
+ * It assumes that the CFList structure has been correctly initialised.
+ * An undefined value of "-1" is returned if there are less than two channels.
+ */
+
+double
+ERBSpace_CFList(CFListPtr theCFs)
+{
+	int		i;
+	double	sum;
+
+	if (theCFs->numChannels < 2)
+		return(-1.0);
+	for (i = 0; i < theCFs->numChannels; i++)
+		wprintf(wxT("ERBSpace_CFList: %g\n"), ERBRateFromF_Bandwidth(theCFs->frequency[i]));
+	for (i = 1, sum = 0.0; i < theCFs->numChannels; i++)
+		sum += ERBRateFromF_Bandwidth(theCFs->frequency[i]) - ERBRateFromF_Bandwidth(
+		  theCFs->frequency[i - 1]);
+	return(sum / (theCFs->numChannels - 1));
+
+}
+
