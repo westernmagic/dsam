@@ -31,7 +31,7 @@ dist-hook: RunDSAMSim.spec
 	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README.xml:$(srcdir)/README.in"\
 	     CONFIG_HEADERS= \
 	     $(SHELL) config.status \
-	     && cp INSTALL README $(distdir) \
+	     && cp INSTALL README.xml $(distdir) \
 		 &&	if [ -x /usr/bin/docbook2txt ] ; then \
 		 		/usr/bin/docbook2txt README.xml ; \
 				cp README.txt $(distdir); \
