@@ -374,10 +374,10 @@ dnl ----------------------------------------------------------------------------
 
 if test x$DSAM_EXT = xyes -a x$wxwinAvailable = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
-	CXXFLAGS=`$WX_CONFIG --cxxflags`
+	CXXFLAGS=`$WX_CONFIG --cxxflags base`
 	LDFLAGS_save=$LDFLAGS
 	LDFLAGS=`$WX_CONFIG --libs base`
-	AC_MSG_CHECKING([for wxWidgets support for threaded extensions])
+	AC_MSG_CHECKING([for wxWidgets base support for threaded extensions])
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_PROGRAM(
