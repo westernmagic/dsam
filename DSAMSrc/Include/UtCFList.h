@@ -145,6 +145,8 @@ BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
+double		ERBSpace_CFList(CFListPtr theCFs);
+
 void		Free_CFList(CFListPtr *theCFs);
 
 CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,
