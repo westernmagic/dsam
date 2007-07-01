@@ -467,7 +467,7 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 			return(FALSE);
 		}
 		for (i = 0; i < data->numThreads; i++) {
-			if ((p->fT[i] = (Complx *) AN_FT_MALLOC(p->fTLength * sizeof(
+			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(p->fTLength * sizeof(
 			  Complx))) == NULL) {
 				NotifyError(wxT("%s: Couldn't allocate memory for complex ")
 				  wxT("data array (%d)."), funcName, i);
@@ -494,7 +494,7 @@ FreeProcessVariables_Analysis_FourierT(void)
 
 	if (fourierTPtr->fT) {
 		for (i = 0; i < fourierTPtr->numThreads; i++) {
-			AN_FT_FREE(fourierTPtr->fT[i]);
+			CMPLX_FREE(fourierTPtr->fT[i]);
 		}
 		free(fourierTPtr->fT);
 		fourierTPtr->fT = NULL;
@@ -580,7 +580,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		outChan = chan * p->numOutChans;
 		fT = p->fT[data->threadIndex];
-		AN_FT_PTR_RE(fT) = AN_FT_PTR_IM(fT) = 0.0;
+		CMPLX_PTR_RE(fT) = CMPLX_PTR_IM(fT) = 0.0;
 		inPtr = _InSig_EarObject(data, 0)->channel[outChan] + 1;
 #		if HAVE_FFTW3
 			double	*fTIn = (double *) fT++;
@@ -590,12 +590,12 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 				*fTIn = 0.0;
 #		else
 			for (i = 1, fT++; i < outSignal->length; i++, fT++) {
-				AN_FT_PTR_IM(fT) = 0.0;
-				AN_FT_PTR_RE(fT) = *inPtr++;
+				CMPLX_PTR_IM(fT) = 0.0;
+				CMPLX_PTR_RE(fT) = *inPtr++;
 			}
 			for (; i < p->fTLength; i++, fT++) {
-				AN_FT_PTR_IM(fT) = 0.0;
-				AN_FT_PTR_RE(fT) = 0.0;
+				CMPLX_PTR_IM(fT) = 0.0;
+				CMPLX_PTR_RE(fT) = 0.0;
 			}
 #		endif
 		outPtr = outSignal->channel[outChan];
@@ -612,23 +612,23 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		switch (p->outputMode) {
 		case ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE:
 			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) AN_FT_MODULUS(*fT);
+				*outPtr++ = (ChanData) CMPLX_MODULUS(*fT);
 			break;
 		case ANALYSIS_FOURIERT_PHASE_OUTPUTMODE:
 			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) atan2(AN_FT_PTR_IM(fT), AN_FT_PTR_RE(fT));
+				*outPtr++ = (ChanData) atan2(CMPLX_PTR_IM(fT), CMPLX_PTR_RE(fT));
 			break;
 		case ANALYSIS_FOURIERT_COMPLEX_OUTPUTMODE:
 			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) AN_FT_PTR_RE(fT);
+				*outPtr++ = (ChanData) CMPLX_PTR_RE(fT);
 			fT = p->fT[data->threadIndex];
 			outPtr = outSignal->channel[outChan + 1];
 			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) AN_FT_PTR_IM(fT);
+				*outPtr++ = (ChanData) CMPLX_PTR_IM(fT);
 			break;
 		case ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE:
 			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) DB_SPL(AN_FT_MODULUS(*fT) *
+				*outPtr++ = (ChanData) DB_SPL(CMPLX_MODULUS(*fT) *
 				  p->dBSPLFactor);
 			break;
 		default:

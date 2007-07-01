@@ -38,6 +38,15 @@
 #	define ComplxPtr	ComplexPtr
 #endif
 
+typedef struct {		/* Used so that logical lengths for the arrays can be set */
+
+	double	*data;
+	unsigned long	arrayLen;
+	unsigned long	fftLen;
+	unsigned long	dataLen;
+
+} FFTArray, *FFTArrayPtr;
+
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
@@ -53,6 +62,10 @@ void	Calc_FFT(double *data, unsigned long nn, int isign);
 void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
 BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
+
+FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT);
+
+void	FreeArray_FFT(FFTArrayPtr *p);
 
 unsigned long	Length_FFT(unsigned long length);
 

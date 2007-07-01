@@ -264,3 +264,52 @@ Length_FFT(unsigned long length)
 	return((unsigned long) pow(2.0, (double) ln));
 
 }
+
+/****************************** InitArray *************************************/
+
+/*
+ * Initialise an FFTArray structure.
+ */
+
+FFTArrayPtr
+InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT)
+{
+	static const WChar *funcName = wxT("InitArray_FFT");
+	FFTArrayPtr	p;
+
+	if (dataLen < 2) {
+		NotifyError(wxT("%s: The data length must be greater than 2 (%d)."), 
+		  funcName, dataLen);
+		return(NULL);
+	}
+	if ((p = (FFTArrayPtr) malloc(sizeof(FFTArray))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for structure."), funcName);
+		return(NULL);
+	}
+	p->fftLen = Length_FFT(dataLen);
+	p->arrayLen = (forInPlaceFFT)? p->fftLen << 1: p->fftLen;
+	if ((p->data = (double *) fftw_malloc(p->arrayLen * sizeof(double))) == NULL) {
+		NotifyError(wxT("%s: output of memory for physical array length: %lu."),
+		  funcName, p->arrayLen);
+		free (p);
+		return(NULL);
+	}
+	p->dataLen = dataLen;
+	return(p);
+
+}
+
+/****************************** FreeArray *************************************/
+
+void
+FreeArray_FFT(FFTArrayPtr *p)
+{
+	if (!*p)
+		return;
+	if ((*p)->data)
+		fftw_free((*p)->data);
+	free(*p);
+	*p = NULL;
+
+}
+

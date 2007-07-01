@@ -63,8 +63,6 @@ Free_BasilarM_GammaChirp(void)
 		free(bMGammaCPtr->diagnosticModeList);
 	if (bMGammaCPtr->parList)
 		FreeList_UniParMgr(&bMGammaCPtr->parList);
-	if (bMGammaCPtr->diagnosticModeList)
-		free(bMGammaCPtr->diagnosticModeList);
 	if (bMGammaCPtr->parSpec == GLOBAL) {
 		free(bMGammaCPtr);
 		bMGammaCPtr = NULL;

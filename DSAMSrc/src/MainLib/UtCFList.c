@@ -2040,28 +2040,50 @@ PrintPars_CFList(CFListPtr theCFs)
 
 }
 
-/****************************** ERBSpace **************************************/
+/****************************** CFRateFromF ***********************************/
+
+/*
+ * This function returns the CF Rate according to the frequency spacing used.
+ */
+
+double
+CFRateFromF_CFList(CFListPtr theCFs, double frequency)
+{
+	static const WChar *funcName = wxT("CFRateFromF_CFList");
+	
+	switch (theCFs->centreFreqMode) {
+	case CFLIST_SINGLE_MODE:
+	case CFLIST_ERB_MODE:
+	case CFLIST_ERBN_MODE:
+		return(ERBRateFromF_Bandwidth(frequency));
+	default:
+		NotifyWarning(wxT("%s: Centre frequency mode '%s' not implemented - ")
+		  wxT("returning ERBRate."), funcName, CFModeList_CFList(
+		  theCFs->centreFreqMode)->name);
+		return(ERBRateFromF_Bandwidth(frequency));
+	}
+}
+
+/****************************** CFSpace ***************************************/
 
 /*
  * This routine calculates the mean difference in ERB rate for the range of
  * frequencies in the CF List structure.
  * It assumes that the CFList structure has been correctly initialised.
- * An undefined value of "-1" is returned if there are less than two channels.
+ * An undefined value of "1" is returned if there are less than two channels.
  */
 
 double
-ERBSpace_CFList(CFListPtr theCFs)
+CFSpace_CFList(CFListPtr theCFs)
 {
 	int		i;
 	double	sum;
 
 	if (theCFs->numChannels < 2)
-		return(-1.0);
-	for (i = 0; i < theCFs->numChannels; i++)
-		wprintf(wxT("ERBSpace_CFList: %g\n"), ERBRateFromF_Bandwidth(theCFs->frequency[i]));
+		return(1.0);
 	for (i = 1, sum = 0.0; i < theCFs->numChannels; i++)
-		sum += ERBRateFromF_Bandwidth(theCFs->frequency[i]) - ERBRateFromF_Bandwidth(
-		  theCFs->frequency[i - 1]);
+		sum += CFRateFromF_CFList(theCFs, theCFs->frequency[i]) -
+		  CFRateFromF_CFList(theCFs, theCFs->frequency[i - 1]);
 	return(sum / (theCFs->numChannels - 1));
 
 }

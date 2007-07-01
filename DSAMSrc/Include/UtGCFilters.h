@@ -14,6 +14,8 @@
 #ifndef	_UTGCFILTERS_H
 #define _UTGCFILTERS_H	1
  
+#include "UtFFT.h"
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -22,24 +24,53 @@
 # define PI 3.1415926538
 #endif
 #ifndef TwoPI
-# define TwoPI (2.* PI)
+# define TwoPI (2* PI)
 #endif
 #ifndef winSizeERB
 # define winSizeERB	3
 #endif
 
+#define GCFILTERS_NUM_CASCADE_ACF_FILTER			4 	/* cascadeAC */ 
+#define GCFILTERS_NUM_CASCADE_ERBGT_FILTER			4 	/* cascadeAC */ 
+#define GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER		2 	/* - per cascaded filter*/
+#define GCFILTERS_NUM_LI_STATE_VARS_PER_FILTER		1 	/* - per cascaded filter*/
+#define GCFILTERS_NUM_CNTL_STATE_VARS_PER_FILTER	1 /* - per cascaded filter*/
+#define GCFILTERS_NUM_FRQ_RSL						1024 /* Frequency Resolution */
+
+#define GCFILTERS_REF_FREQ				1000.0	/* Reference frequency */
+#define	GCFILTERS_ACF_P0				2.0;
+#define	GCFILTERS_ACF_P4				1.0724;
+#define	GCFILTERS_ACF_NUM_COEFFS		3
+#define	GCFILTERS_ACF_LEN_STATE_VECTOR	3
+
+/******************************************************************************/
+/*************************** Macro Definitions ********************************/
+/******************************************************************************/
+
 #define MAX(x,y) ((x)<(y)? (y):(x))
 #define MIN(x,y) ((x)<(y)? (x):(y))
 
-#define GCFILTERS_NUM_CASCADE_ACF_FILTER		4 	/* cascadeAC */ 
-#define GCFILTERS_NUM_CASCADE_ERBGT_FILTER		4 	/* cascadeAC */ 
-#define GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER	2 	/* - per cascaded filter*/
-#define GCFILTERS_NUM_LI_STATE_VARS_PER_FILTER	1 	/* - per cascaded filter*/
-#define GCFILTERS_NUM_CNTL_STATE_VARS_PER_FILTER	1 /* - per cascaded filter*/
+#define GCFILTERS_P1(B, C)	(1.7818 * (1 - 0.0791 * (B)) * (1 - 0.1655 * fabs(C)))
+#define GCFILTERS_P2(B, C)	(0.5689 * (1 - 0.1620 * (B)) * (1 - 0.0857 * fabs(C)))
+#define GCFILTERS_P3(B, C)	(0.2523 * (1 - 0.0244 * (B)) * (1 + 0.0574 * fabs(C)))
+
+/* The following macro estimates fr from fpeak: Revised from matlab Fr2Fpeak.m */
+#define GCFILTERS_FR2FPEAK(N, B, C, FR, ERBW) ((FR) + (C) * (ERBW) * (B) / (N))
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef enum {
+
+	GCFILTER_CARRIER_MODE_COMPLEX,
+	GCFILTER_CARRIER_MODE_COS,
+	GCFILTER_CARRIER_MODE_ENVELOPE,
+	GCFILTER_CARRIER_MODE_SIN,
+	GCFILTER_CARRIER_MODE_NULL
+
+} GCCarrierModeSpecifier;
+
 typedef struct {
 
 	int	cascade;				/* The cascade of the filter */
@@ -50,6 +81,20 @@ typedef struct {
 	double	*stateBVector;
 
 } AsymCmpCoeffs, *AsymCmpCoeffsPtr;
+
+typedef struct {
+
+	int		numFilt;			/* The cascade of the filter */
+	double	fs;					/* Sampling rate */
+	double	p0, p1, p2, p3, p4;
+	double	b, c;
+	double	*bz;				/* MA coefficients  (NumCh*3*NumFilt) */
+	double	*ap;				/* AR coefficients  (NumCh*3*NumFilt) */
+	double	*sigInPrev;			/* Input state vector */
+	double	*sigOutPrev;		/* Output state vector */
+	BandwidthModePtr	bMode;
+
+} AsymCmpCoeffs2, *AsymCmpCoeffs2Ptr;
 
 typedef struct {
 
@@ -80,6 +125,13 @@ typedef struct {
 
 } CntlGammaC, *CntlGammaCPtr;
 
+typedef struct {
+
+	FFTArrayPtr	pGC;
+	FFTArrayPtr	pGCOut;
+
+} GammaChirpCoeffs, *GammaChirpCoeffsPtr;
+
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -96,7 +148,25 @@ extern	double	Filters_AsymCmpCoef0[];        	/* ACF coefficents */
  */
 __BEGIN_DECLS
 
+void	ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
+		  ChanLen sample);
+
+void	AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, 
+						AsymCmpCoeffsPtr p[]);
+
+void	ASympCmpFreqResp_GCFilters(double *asymFunc, double frs, double fs, double b,
+		  double c, BandwidthModePtr bMode);
+
+NameSpecifier *	PGCCarrierList_GCFilters(int index);
+
+BOOLN	CheckCntlInit_GCFilters(CntlGammaCPtr *cntlGammaC);
+
+void	ERBGammaTone_GCFilters(SignalDataPtr theSignal, 
+						ERBGammaToneCoeffsPtr p[]);
+
 void	FreeAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr *p);
+
+void	FreeAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr *p);
 
 void	FreeERBGammaToneCoeffs_GCFilters(ERBGammaToneCoeffsPtr *p);
 
@@ -104,22 +174,30 @@ void	FreeOwoPoleCoeffs_GCFilters(OnePoleCoeffsPtr *p);
 
 void	FreeCntlGammaChirp_GCFilters(CntlGammaCPtr *p);
 
+void	FreePGammaChirpCoeffs_GCFilters(GammaChirpCoeffsPtr *p);
+
 void	FreeHammingWindow(double *p);
 
 void	FreeERBWindow_GCFilters(double *p);
 
 void	FreeLeakyIntCoeffs_GCFilters(OnePoleCoeffsPtr *p);
 
-void	AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, 
-						AsymCmpCoeffsPtr p[]);
+void	GammaChirpAmpFreqResp_GCFilters(double *ampFrsp, double frs, double eRBw,
+		  double sR, double orderG, double coefERBw, double coefC, double phase);
 
-BOOLN	CheckCntlInit_GCFilters(CntlGammaCPtr *cntlGammaC);
+AsymCmpCoeffs2Ptr	InitAsymCmpCoeffs2_GCFilters(int cascade, double fs,
+					  double b, double c, BandwidthModePtr bMode);
 
-void	ERBGammaTone_GCFilters(SignalDataPtr theSignal, 
-						ERBGammaToneCoeffsPtr p[]);
+GammaChirpCoeffsPtr	InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR,
+					  double orderG, double coefERBw, double coefC, double phase,
+					  int swCarr, int swNorm, SignalDataPtr inSignal);
 
 void	LeakyInt_GCFilters(CntlGammaCPtr p[], OnePoleCoeffsPtr q[], 
 		  int numChannels);
+
+void	PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs);
+
+void	SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs);
 
 void	SetpsEst_GCFilters(CntlGammaCPtr cntlGammaC[], int numChannels, 
 		  double *winPsEst, double coefPsEst);

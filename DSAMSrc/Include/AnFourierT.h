@@ -26,25 +26,6 @@
 /*************************** Macro Definitions ********************************/
 /******************************************************************************/
 
-#if HAVE_FFTW3
-#	define AN_FT_PTR_RE(Z)	(*(Z))[0]
-#	define AN_FT_PTR_IM(Z)	(*(Z))[1]
-#	define AN_FT_RE(Z)		(Z)[0]
-#	define AN_FT_IM(Z)		(Z)[1]
-#	define AN_FT_MODULUS(Z)	(sqrt(AN_FT_RE(Z) * AN_FT_RE(Z) + AN_FT_IM(Z) * \
-			AN_FT_IM(Z)))
-#	define AN_FT_MALLOC		fftw_malloc
-#	define AN_FT_FREE		fftw_free
-#else
-#	define AN_FT_PTR_RE(Z)	(Z)->re
-#	define AN_FT_PTR_IM(Z)	(Z)->im	
-#	define AN_FT_RE(Z)		(Z).re
-#	define AN_FT_IM(Z)		(Z).im
-#	define AN_FT_MODULUS	MODULUS_CMPLX
-#	define AN_FT_MALLOC		malloc
-#	define AN_FT_FREE		free
-#endif
-
 /******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/

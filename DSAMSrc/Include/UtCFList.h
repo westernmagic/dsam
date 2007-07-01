@@ -141,11 +141,13 @@ BOOLN		AllocateFrequencies_CFList(CFListPtr theCFs);
 
 NameSpecifier *	CFModeList_CFList(int index);
 
+double		CFRateFromF_CFList(CFListPtr theCFs, double frequency);
+
+double		CFSpace_CFList(CFListPtr theCFs);
+
 BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
-
-double		ERBSpace_CFList(CFListPtr theCFs);
 
 void		Free_CFList(CFListPtr *theCFs);
 

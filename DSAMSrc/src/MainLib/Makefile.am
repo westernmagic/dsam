@@ -37,7 +37,7 @@ Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c MoBM0DRNL.c \
 				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
 				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoBMGammaC.c \
 				MoHCRPSham3StVIn.c MoBMZhang.c MoHCRPZhang.c MoIHCZhang.c \
-				MoANSGMeddis02.c
+				MoANSGMeddis02.c MoBMDGammaC.c
 
 Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 

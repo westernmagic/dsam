@@ -36,24 +36,50 @@
 /*************************** Macro Definitions ********************************/
 /******************************************************************************/
 
-#define EXP_CMPLXM(Z, THETA)	{(Z).re = cos(THETA); (Z).im = sin(THETA); }
-
-#define SCALER_MULT_CMPLXM(Z, A, R) \
-			{(Z).re = (A).re * (R); (Z).im = (A).im * (R); }
-
 #define ADD_CMPLXM(Z, A, B) \
 			{(Z).re = (A).re + (B).re; (Z).im = (A).im + (B).im; }
 
-#define SUBT_CMPLXM(Z, A, B) \
-			{(Z).re = (A).re - (B).re; (Z).im = (A).im - (B).im; }
+#define EXP_CMPLXM(Z, THETA)	{(Z).re = cos(THETA); (Z).im = sin(THETA); }
 
 #define MULT_CMPLXM(Z, A, B) \
 			{(Z).re = (A).re * (B).re - (A).im * (B).im; \
 			(Z).im = (A).re * (B).im + (A).im * (B).re; }
 
+#define SCALER_MULT_CMPLXM(Z, A, R) \
+			{(Z).re = (A).re * (R); (Z).im = (A).im * (R); }
+
+#define	SET_CMPLXM(Z, R, I)	{(Z).re = (R); (Z).im = (I); }
+
+#define SUBT_CMPLXM(Z, A, B) \
+			{(Z).re = (A).re - (B).re; (Z).im = (A).im - (B).im; }
+
 #define CONV2CONJ_CMPLX(Z)	{(Z).im = -(Z).im; }
 
 #define MODULUS_CMPLX(Z)	(sqrt((Z).re * (Z).re + (Z).im * (Z).im))
+
+#if HAVE_FFTW3
+#	define CMPLX_PTR_RE(Z)	(*(Z))[0]
+#	define CMPLX_PTR_IM(Z)	(*(Z))[1]
+#	define CMPLX_RE(Z)		(Z)[0]
+#	define CMPLX_IM(Z)		(Z)[1]
+#	define CMPLX_COPY(A, B)	{CMPLX_RE(A) = CMPLX_RE(B); CMPLX_IM(A) = CMPLX_IM(B); }
+#	define CMPLX_MULT(Z, A, B) \
+			{CMPLX_RE(Z) = CMPLX_RE(A) * CMPLX_RE(B) - CMPLX_IM(A) * CMPLX_IM(B); \
+			CMPLX_IM(Z) = CMPLX_RE(A) * CMPLX_IM(B) + CMPLX_IM(A) * CMPLX_RE(B); }
+#	define CMPLX_MODULUS(Z)	(sqrt(CMPLX_RE(Z) * CMPLX_RE(Z) + CMPLX_IM(Z) * \
+			CMPLX_IM(Z)))
+#	define CMPLX_MALLOC		fftw_malloc
+#	define CMPLX_FREE		fftw_free
+#else
+#	define CMPLX_PTR_RE(Z)	(Z)->re
+#	define CMPLX_PTR_IM(Z)	(Z)->im	
+#	define CMPLX_RE(Z)		(Z).re
+#	define CMPLX_IM(Z)		(Z).im
+#	define CMPLX_MULT		MULT_CMPLX
+#	define CMPLX_MODULUS	MODULUS_CMPLX
+#	define CMPLX_MALLOC		malloc
+#	define CMPLX_FREE		free
+#endif
 
 /******************************************************************************/
 /*************************** Type Definitions *********************************/

@@ -89,6 +89,8 @@
 #endif
 
 #define PIx2	6.283185307179584868
+#define PI_2	1.570796326794896217
+
 #define	SQRT_2	1.4142135623730951
 
 #ifndef LN_2

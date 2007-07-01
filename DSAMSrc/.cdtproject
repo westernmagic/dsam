@@ -6,22 +6,58 @@
 <data>
     
     
+    
+    
+    
+    
+    
+    
     <item id="org.eclipse.cdt.core.pathentry">
+      
+      
+      
+      
+      
+      
       
       
       <pathentry kind="src" path=""/>
       
       
+      
+      
+      
+      
+      
+      
       <pathentry kind="out" path=""/>
+      
+      
+      
+      
+      
+      
       
       
       <pathentry kind="con" path="org.eclipse.cdt.managedbuilder.MANAGED_CONTAINER"/>
       
+      
+      
+      
+    
+    
+    
     
     </item>
     
+    
+    
+    
   
-  <item id="org.eclipse.cdt.make.core.buildtargets">
+  
+    
+    
+    <item id="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
 <target name="all" targetID="genmakebuilder" path="">
 <buildCommand>make</buildCommand>
@@ -415,7 +451,41 @@
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 </target>
+<target name="install-dvi" targetID="genmakebuilder" path="">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>install-dvi</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
+<target name="install-html" targetID="genmakebuilder" path="">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>install-html</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
+<target name="install-pdf" targetID="genmakebuilder" path="">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>install-pdf</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
+<target name="install-ps" targetID="genmakebuilder" path="">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>install-ps</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
 </buildTargets>
 </item>
-</data>
+    
+    
+    
+
+  
+  
+  </data>
 </cdtproject>
