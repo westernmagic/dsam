@@ -153,8 +153,8 @@ typedef struct {
 	char	*titleString;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave etc. */
 	double	outputTimeOffset;
-	ChanLen	timeOffsetIndex;
-	ChanLen	timeOffsetCount;
+	sf_count_t	timeOffsetIndex;
+	sf_count_t	timeOffsetCount;
 	sf_count_t	maxSamples;		/* This can be set to restrict the data size. */
 	sf_count_t	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;

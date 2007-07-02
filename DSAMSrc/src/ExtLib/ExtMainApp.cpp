@@ -26,6 +26,9 @@
 #include <wx/tokenzr.h>
 
 #include "GeCommon.h"
+#if USE_FFTW3_THREADS
+#	include <fftw3.h>
+#endif /* USE_FFTW3_THREADS */
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
@@ -68,11 +71,13 @@ MainApp	*dSAMMainApp = NULL;
 MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
   int (* TheExternalRunSimulation)(void))
 {
+	static const WChar *funcName = wxT("MainApp::MainApp");
 	initOk = true;
 	argc = 0;
 	argv = NULL;
 	if (!InitCommandLineArgs(theArgc, theArgv)) {
-		NotifyError(wxT("%s: Could not initialise command-line arguments.\n"));
+		NotifyError(wxT("%s: Could not initialise command-line arguments.\n"),
+		  funcName);
 		return;
 	}
 	ExternalMain = TheExternalMain;
@@ -95,6 +100,14 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 		initOk = InitRun();
 	if (initOk)
 		CheckOptions();
+#	if USE_FFTW3_THREADS
+		if (!fftw_init_threads()) {
+			NotifyError(wxT("%s: Could not initialise FFTW3 threading."), funcName);
+			return;
+		}
+		fftw_plan_with_nthreads((GetPtr_AppInterface()->numThreads < 1)? 1:
+		  GetPtr_AppInterface()->numThreads);
+#	endif /* USE_FFTW3_THREADS */
 	runThreadedProc = new RunThreadedProc();
 	
 }
@@ -113,6 +126,9 @@ MainApp::~MainApp(void)
 		delete myClient;
 	if (runThreadedProc)
 		delete runThreadedProc;
+#	if USE_FFTW3_THREADS
+		fftw_cleanup_threads();
+#	endif /* USE_FFTW3_THREADS */
 	FreeArgStrings();
 	FreeSymbols_Utility_SSSymbols(&symList);
 	SetCanFreePtrFlag_AppInterface(TRUE);

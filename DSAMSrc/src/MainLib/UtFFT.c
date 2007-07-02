@@ -272,7 +272,7 @@ Length_FFT(unsigned long length)
  */
 
 FFTArrayPtr
-InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT)
+InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans)
 {
 	static const WChar *funcName = wxT("InitArray_FFT");
 	FFTArrayPtr	p;
@@ -285,6 +285,17 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT)
 	if ((p = (FFTArrayPtr) malloc(sizeof(FFTArray))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for structure."), funcName);
 		return(NULL);
+	}
+	if (numPlans < 1)
+		p->plan = NULL;
+	else {
+		if ((p->plan = (fftw_plan *) calloc(numPlans, sizeof(fftw_plan))) == NULL) {
+			NotifyError(wxT("%s: output of memory for %d fftw plans."), funcName,
+			  numPlans);
+			free (p);
+			return(NULL);
+		}
+		p->numPlans = numPlans;
 	}
 	p->fftLen = Length_FFT(dataLen);
 	p->arrayLen = (forInPlaceFFT)? p->fftLen << 1: p->fftLen;
@@ -304,10 +315,17 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT)
 void
 FreeArray_FFT(FFTArrayPtr *p)
 {
+	int		i;
+
 	if (!*p)
 		return;
 	if ((*p)->data)
 		fftw_free((*p)->data);
+	if ((*p)->plan) {
+		for (i = 0; i < (*p)->numPlans; i++)
+			fftw_destroy_plan((*p)->plan[i]);
+		free((*p)->plan);
+	}
 	free(*p);
 	*p = NULL;
 

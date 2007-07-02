@@ -606,8 +606,8 @@ WriteFrames_SndFile(SignalDataPtr inSignal)
 	if (!InitBuffer_DataFile(inSignal, funcName))
 		return(FALSE);
 	bufferFrames = DATAFILE_BUFFER_FRAMES;
-	while (count < inSignal->length) {
-		if ((inSignal->length - count) < bufferFrames)
+	while (count < (sf_count_t) inSignal->length) {
+		if (((sf_count_t) inSignal->length - count) < bufferFrames)
 			bufferFrames = inSignal->length - count;
 		for (chan = 0; chan < inSignal->numChannels; chan++) {
 			inPtr = inSignal->channel[chan] + count;

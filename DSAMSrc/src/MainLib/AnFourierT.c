@@ -583,11 +583,13 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		CMPLX_PTR_RE(fT) = CMPLX_PTR_IM(fT) = 0.0;
 		inPtr = _InSig_EarObject(data, 0)->channel[outChan] + 1;
 #		if HAVE_FFTW3
+		{	/*     Braces required by MSVC Studio2005 */
 			double	*fTIn = (double *) fT++;
 			for (i = 1, fTIn++; i < outSignal->length; i++, fTIn++)
 				*fTIn = *inPtr++;
 			for (; i < p->fTLength; i++, fTIn++)
 				*fTIn = 0.0;
+		}
 #		else
 			for (i = 1, fT++; i < outSignal->length; i++, fT++) {
 				CMPLX_PTR_IM(fT) = 0.0;

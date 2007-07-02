@@ -861,6 +861,7 @@ PGCCarrierList_GCFilters(int index)
  * This function returns the peak gain frequency index.
  * i.e. the 'freqz' calculation. 
  * I need to sort out the case when no FFTW3 is available.
+ * This use of fftw_plan is safe because this code is not run threaded.
  */
 
 double
@@ -873,7 +874,7 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
 	FFTArrayPtr	fT;
 	fftw_plan	plan;
 
-	if ((fT = (FFTArrayPtr) InitArray_FFT(len, TRUE)) == NULL) {
+	if ((fT = (FFTArrayPtr) InitArray_FFT(len, TRUE, 1)) == NULL) {
 		NotifyError(wxT("%s: Couldn't allocate memory for FFT array structure."),
 		  funcName);
 		return(FALSE);
@@ -939,8 +940,6 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 	register double *pp, t, gammaEnv, maxGammaEnv;
 	double	lenGC1kHz, peakGain;
 	ChanLen	i, lenGC;
-	FFTArrayPtr	pGC;
-	fftw_plan	plan;
 	GammaChirpCoeffsPtr	p;
 
 	if ((p = (GammaChirpCoeffsPtr) malloc(sizeof(GammaChirpCoeffs))) == NULL) {
@@ -953,19 +952,26 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 		phase -= PI_2;
 	phase += coefC * log(cF / GCFILTERS_REF_FREQ);		/* Relative phase to 1 kHz */
 	lenGC = (ChanLen)floor(lenGC1kHz * ERBFromF_Bandwidth(GCFILTERS_REF_FREQ) / bw);
-	if ((pGC = InitArray_FFT(lenGC + inSignal->length, TRUE)) == NULL) {
+	if ((p->pGC = InitArray_FFT(lenGC + inSignal->length, TRUE, 1)) == NULL) {
 		NotifyError(wxT("%s: Out of memory for coeffients array (CF = %g Hz)."), funcName,
 		  cF);
 		FreePGammaChirpCoeffs_GCFilters(&p);
 		return(NULL);
 	}
-	p->pGC = pGC;
-	if ((p->pGCOut = InitArray_FFT(pGC->dataLen, TRUE)) == NULL) {
+	p->pGC->plan[0] = fftw_plan_dft_r2c_1d(p->pGC->fftLen,
+	  p->pGC->data, (fftw_complex *) p->pGC->data, FFTW_ESTIMATE);
+	if ((p->pGCOut = InitArray_FFT(p->pGC->dataLen, TRUE, 2)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise pGC work FFT array."), funcName);
 		FreePGammaChirpCoeffs_GCFilters(&p);
 	}
-	*pGC->data = 0.0;
-	for (i = 1, pp = pGC->data + 1, maxGammaEnv = 0.0; i < lenGC; i++, pp++) {
+	p->pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN] = fftw_plan_dft_r2c_1d(
+	  p->pGCOut->fftLen, p->pGCOut->data, (fftw_complex *) p->pGCOut->data,
+	  FFTW_ESTIMATE);
+	p->pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN] = fftw_plan_dft_c2r_1d(
+	  p->pGCOut->fftLen, (fftw_complex *) p->pGCOut->data, p->pGCOut->data,
+	  FFTW_ESTIMATE);
+	*p->pGC->data = 0.0;
+	for (i = 1, pp = p->pGC->data + 1, maxGammaEnv = 0.0; i < lenGC; i++, pp++) {
 		t = i / sR;
 		gammaEnv = pow(t, orderG - 1) * exp(-PIx2 * coefERBw * bw * t);
 		switch (swCarr) {
@@ -981,21 +987,18 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 		if (gammaEnv > maxGammaEnv)
 			maxGammaEnv = gammaEnv;
 	}
-	for (i = 0, pp = pGC->data; i < lenGC; i++)
+	for (i = 0, pp = p->pGC->data; i < lenGC; i++)
 		*pp++ /= maxGammaEnv;
 	if (swNorm) {
-		peakGain = FindPeakGainFreq_GCFilters(pGC->data, lenGC, sR, cF + coefC *
+		peakGain = FindPeakGainFreq_GCFilters(p->pGC->data, lenGC, sR, cF + coefC *
 		  bw * coefERBw / orderG);
-		for (i = 0, pp = pGC->data; i < lenGC; i++)
+		for (i = 0, pp = p->pGC->data; i < lenGC; i++)
 			*pp++ /= peakGain;
-		for ( ; i < pGC->fftLen; i++)
+		for ( ; i < p->pGC->fftLen; i++)
 			*pp++ = 0.0;
 	}
 	/* This next calculation was originally the first part of fftfilt.m */
-	plan = fftw_plan_dft_r2c_1d(pGC->fftLen, pGC->data, (fftw_complex *) pGC->data,
-	  FFTW_ESTIMATE);
-	fftw_execute(plan);
-	fftw_destroy_plan(plan);
+	fftw_execute(p->pGC->plan[0]);
 	return (p);
 
 }
@@ -1028,11 +1031,11 @@ void
 PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 {
 	register double	*p1, *p2;
-	register fftw_complex	*c1, *c2, tempC;
+	register fftw_complex	*c1, *c2;
 	int		chan;
 	ChanLen		i;
+	fftw_complex	tempC;
 	FFTArrayPtr	pGC, pGCOut;
-	fftw_plan	plan;
 	SignalDataPtr	inSignal, outSignal;
 
 	inSignal = _InSig_EarObject(data, 0);
@@ -1045,10 +1048,7 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 			*p1++ = *p2++;
 		for ( ; i < pGC->fftLen; i++)
 			*p1++ = 0.0;
-		plan = fftw_plan_dft_r2c_1d(pGCOut->fftLen, pGCOut->data, (fftw_complex *)
-		  pGCOut->data, FFTW_ESTIMATE);
-		fftw_execute(plan);
-		fftw_destroy_plan(plan);
+		fftw_execute(pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN]);
 	
 		for (i = 0, c1 = (fftw_complex *) pGCOut->data, c2 = (fftw_complex *) pGC->data;
 		  i < pGC->fftLen; i++, c1++, c2++) {
@@ -1056,10 +1056,7 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 			CMPLX_COPY(*c1, tempC);
 		}
 	
-		plan = fftw_plan_dft_c2r_1d(pGCOut->fftLen, (fftw_complex *) pGCOut->data,
-		  pGCOut->data, FFTW_ESTIMATE);
-		fftw_execute(plan);
-		fftw_destroy_plan(plan);
+		fftw_execute(pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN]);
 		for (i = 0, p1 = outSignal->channel[chan], p2 = pGCOut->data; i <
 		  outSignal->length; i++)
 			*p1++ = *p2++ / pGCOut->fftLen;

@@ -40,6 +40,8 @@
 
 typedef struct {		/* Used so that logical lengths for the arrays can be set */
 
+	int		numPlans;
+	fftw_plan	*plan;
 	double	*data;
 	unsigned long	arrayLen;
 	unsigned long	fftLen;
@@ -63,7 +65,7 @@ void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
 BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
 
-FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT);
+FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans);
 
 void	FreeArray_FFT(FFTArrayPtr *p);
 
