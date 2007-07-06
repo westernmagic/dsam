@@ -874,21 +874,22 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
 	FFTArrayPtr	fT;
 	fftw_plan	plan;
 
-	if ((fT = (FFTArrayPtr) InitArray_FFT(len, TRUE, 1)) == NULL) {
+	if ((fT = (FFTArrayPtr) InitArray_FFT(len * 2, TRUE, 1)) == NULL) {
 		NotifyError(wxT("%s: Couldn't allocate memory for FFT array structure."),
 		  funcName);
 		return(FALSE);
 	}
-	for (i = 0, p = fT->data; i < fT->dataLen; i++)
+	for (i = 0, p = fT->data; i < len; i++)
 		*p++ = *b++;
 	for (; i < fT->fftLen; i++)
 		*p++ = 0.0;
-	plan = fftw_plan_dft_r2c_1d(fT->fftLen, fT->data, (fftw_complex *) fT->data,
+
+	plan = fftw_plan_dft_r2c_1d(fT->dataLen, fT->data, (fftw_complex *) fT->data,
 	  FFTW_ESTIMATE);
 	fftw_execute(plan);
 	fftw_destroy_plan(plan);
 
-	peakIndex = (size_t) floor(freqPeak / sR * fT->fftLen + 0.5);
+	peakIndex = (size_t) floor(freqPeak / sR * fT->dataLen + 0.5);
 	peakFFT = fT->data + peakIndex * 2;
 	peakFFTModulus = sqrt(SQR(*peakFFT) + SQR(*(peakFFT + 1)));
 	FreeArray_FFT(&fT);
@@ -989,6 +990,7 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 	}
 	for (i = 0, pp = p->pGC->data; i < lenGC; i++)
 		*pp++ /= maxGammaEnv;
+
 	if (swNorm) {
 		peakGain = FindPeakGainFreq_GCFilters(p->pGC->data, lenGC, sR, cF + coefC *
 		  bw * coefERBw / orderG);

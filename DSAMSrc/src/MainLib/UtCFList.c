@@ -2050,17 +2050,20 @@ double
 CFRateFromF_CFList(CFListPtr theCFs, double frequency)
 {
 	static const WChar *funcName = wxT("CFRateFromF_CFList");
-	
+
 	switch (theCFs->centreFreqMode) {
 	case CFLIST_SINGLE_MODE:
 	case CFLIST_ERB_MODE:
 	case CFLIST_ERBN_MODE:
 		return(ERBRateFromF_Bandwidth(frequency));
+	case CFLIST_LOG_MODE:
+	case CFLIST_FOCAL_LOG_MODE:
+		return(log10(frequency));
 	default:
 		NotifyWarning(wxT("%s: Centre frequency mode '%s' not implemented - ")
-		  wxT("returning ERBRate."), funcName, CFModeList_CFList(
+		  wxT("returning log rate."), funcName, CFModeList_CFList(
 		  theCFs->centreFreqMode)->name);
-		return(ERBRateFromF_Bandwidth(frequency));
+		return(log10(frequency));
 	}
 }
 

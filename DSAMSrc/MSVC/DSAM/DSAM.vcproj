@@ -196,7 +196,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -348,7 +348,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -2690,6 +2690,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\MainLib\MoBMDGammaC.c"
+				>
 			</File>
 			<File
 				RelativePath="..\..\src\MainLib\MoBMDRNL.c"
@@ -7680,6 +7684,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\MoBMCooke.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\MoBMDGammaC.h"
 				>
 			</File>
 			<File
