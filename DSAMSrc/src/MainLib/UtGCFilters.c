@@ -883,13 +883,15 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
 		*p++ = *b++;
 	for (; i < fT->fftLen; i++)
 		*p++ = 0.0;
-
+	
 	plan = fftw_plan_dft_r2c_1d(fT->dataLen, fT->data, (fftw_complex *) fT->data,
 	  FFTW_ESTIMATE);
 	fftw_execute(plan);
 	fftw_destroy_plan(plan);
 
 	peakIndex = (size_t) floor(freqPeak / sR * fT->dataLen + 0.5);
+	if (peakIndex >= len)
+		peakIndex = len - 1;
 	peakFFT = fT->data + peakIndex * 2;
 	peakFFTModulus = sqrt(SQR(*peakFFT) + SQR(*(peakFFT + 1)));
 	FreeArray_FFT(&fT);
