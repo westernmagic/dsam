@@ -1,0 +1,70 @@
+# Spec for building DSAM RPM Packages
+
+# Note that this is NOT a relocatable package
+%define prefix	/usr
+%define ver		@FEVAL_VERSION@
+%define RELEASE 0
+%define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+
+Name: feval
+Summary: Auditory Model Simulator 
+Version: %{ver}
+Release: %{rel}
+Copyright: Centre for the Neural Basis of Hearing, UK, Earth.
+Group: Applications/Scientific
+Source: ftp://ftp.essex.ac.uk/pub/omard/dsam/%{name}-%{ver}.tar.gz
+URL: http://www.essex.ac.uk/psychology/hearinglab/dsam
+Packager: Lowel P. O'Mard <lowel@essex.ac.uk> 
+Requires: dsam
+BuildRoot: %{_tmppath}/%{name}-root
+Obsoletes: feval
+
+%description
+The 'feval' routine runs a series of basilar membrane filter tests on a an
+auditory models specified by a Development System for Auditory Modelling (DSAM)
+simulation.
+
+%changelog
+* Wed Mar 31 2000 Lowel P. O'Mard <lowel@essex.ac.uk>
+- Initial skeleton, based on the .specs dsam-2.2.25
+
+%prep
+%setup
+FILTER_TEST_FLAGS="--prefix=%{prefix}"
+%configure $FILTER_TEST_FLAGS
+
+%build
+# Needed for snapshot releases.
+if [ "$SMP" != "" ]; then
+  export MAKE="make -j$SMP"
+else
+  export MAKE="make"
+fi
+$MAKE
+
+%install
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
+
+%makeinstall
+
+%post
+
+%postun
+
+%preun
+
+%clean
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING README NEWS ChangeLog
+%{_datadir}/%{name}/HelpFiles/*
+%{_datadir}/%{name}/GammaC/*
+%{_datadir}/%{name}/Octave/*
+%{_datadir}/%{name}/Matlab/*
+%{_bindir}/*
+
+
