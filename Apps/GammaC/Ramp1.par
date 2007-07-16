@@ -1,7 +1,0 @@
-# Ramp1.par
-relative	Position mode ("absolute" or "relative").
-ramp		Operation mode ("ramp" or "damp").
-sine		Type mode ("linear", "raised_cos", "sine" or "exp_decay").
-0.0			Time offset (ms).
-2.5e-3		Time interval (ms).
-4e-3		Slope parameter (half-life in "decay_par" mode).

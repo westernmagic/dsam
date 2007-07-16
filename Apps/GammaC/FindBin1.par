@@ -1,4 +1,0 @@
-max_value	search mode (MAX_VALUE, MAX_INDEX, MIN_VALUE, MIN_INDEX).
--1			Bin width (time window) for bin (s).
-10e-3		Time from which to start search (s).
--1.0e-3		Time range search (s).
