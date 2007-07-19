@@ -356,10 +356,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_x64.lib dsam_ext_x64.lib dsam_std_x64.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile_x64.lib portaudio_x64.lib"
-				OutputFile=".\Release/AMS_ng.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;"
 				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="17"

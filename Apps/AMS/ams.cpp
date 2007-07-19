@@ -302,8 +302,8 @@ ProcessOptions(int argc, WChar **argv, int *optInd)
 			break;
 		case 'v':
 			fprintf_Utility_String(stderr, wxT("Version %s, compile date %s, ")
-			  wxT("DSAM %s (dynamic), %s (compiled).\n"), AMS_VERSION, wxT(
-			  __DATE__), GetDSAMPtr_Common()->version, DSAM_VERSION);
+			  wxT("DSAM %s (dynamic), %s (compiled).\n"), AMS_VERSION,
+			  __TDATE__, GetDSAMPtr_Common()->version, DSAM_VERSION);
 			exit(0);
 			break;
 		default:
