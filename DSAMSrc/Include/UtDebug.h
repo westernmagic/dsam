@@ -51,4 +51,6 @@ BOOLN	SetPars_Debug(uShort numChannels, ChanLen length,
 
 __END_DECLS
 
+void	WriteArray_Debug(WChar *fileName, double *p, int length, int increment);
+
 BOOLN	WriteOutSignal_Debug(WChar *fileName);

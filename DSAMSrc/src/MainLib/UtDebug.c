@@ -19,6 +19,7 @@
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
+#include "UtString.h"
 #include "UtDebug.h"
 
 /******************************************************************************/
@@ -151,3 +152,30 @@ WriteOutSignal_Debug(WChar *fileName)
 	return(OutputToFile_SignalData(fileName, debug->outSignal));
 	
 }
+
+/*************************** WriteOutSignal_Debug *****************************/
+
+/*
+ * This routine writes out the contents of an array for debug purposes.
+ */
+
+void
+WriteArray_Debug(WChar *fileName, double *p, int length, int increment)
+{
+	static const char *funcName = "WriteArray_Debug";
+	ChanLen	i;
+	FILE	*fp;
+	
+	if ((fp = DSAM_fopen(fileName, "w")) == NULL) {
+		NotifyError(wxT("%s: Could not open file '%s' for writing."), funcName,
+		  fileName);
+		return;
+	}
+	fprintf(fp, "X\tY\n");
+	for (i = 0; i < length; i++, p += increment)
+		fprintf(fp, "%lu\t%g\n", i, *p);
+	fprintf(fp, "\n");
+	fclose(fp);
+
+}
+

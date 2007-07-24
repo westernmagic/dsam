@@ -27,6 +27,9 @@
 #include "UtBandwidth.h"
 #include "UtGCFilters.h"
 
+#if DEBUG
+#	include "UtDebug.h"
+#endif
 
 /******************************************************************************/
 /*************************** Global Variables *********************************/
@@ -889,6 +892,9 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
 	fftw_execute(plan);
 	fftw_destroy_plan(plan);
 
+#	if DEBUG
+		WriteArray_Debug(wxT("testFFT_HB.dat"), fT->data, fT->dataLen, 2);
+#	endif
 	peakIndex = (size_t) floor(freqPeak / sR * fT->dataLen + 0.5);
 	if (peakIndex >= len)
 		peakIndex = len - 1;
@@ -992,6 +998,9 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 	}
 	for (i = 0, pp = p->pGC->data; i < lenGC; i++)
 		*pp++ /= maxGammaEnv;
+#	if DEBUG
+		WriteArray_Debug(wxT("testFFT_GC.dat"), p->pGC->data, p->pGC->dataLen, 1);
+#	endif
 
 	if (swNorm) {
 		peakGain = FindPeakGainFreq_GCFilters(p->pGC->data, lenGC, sR, cF + coefC *
@@ -1044,26 +1053,39 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 
 	inSignal = _InSig_EarObject(data, 0);
 	outSignal = _OutSig_EarObject(data);
+#	if DEBUG
+		WriteArray_Debug(wxT("test_X.dat"), inSignal->channel[0], inSignal->length, 1);
+#	endif
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		pGC = pGCoeffs[chan]->pGC;
 		pGCOut = pGCoeffs[chan]->pGCOut;
 		for (i = 0, p1 = pGCOut->data, p2 = inSignal->channel[chan % inSignal->
 		  interleaveLevel]; i < inSignal->length; i++)
 			*p1++ = *p2++;
-		for ( ; i < pGC->fftLen; i++)
+		for ( ; i < pGCOut->fftLen; i++)
 			*p1++ = 0.0;
 		fftw_execute(pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN]);
+#		if DEBUG
+			WriteArray_Debug(wxT("testFFT_X.dat"), pGCOut->data, pGCOut->fftLen, 2);
+#		endif
 	
 		for (i = 0, c1 = (fftw_complex *) pGCOut->data, c2 = (fftw_complex *) pGC->data;
-		  i < pGC->fftLen; i++, c1++, c2++) {
+		  i < pGCOut->fftLen; i += 2, c1++, c2++) {
 			CMPLX_MULT(tempC, *c1, *c2);
 			CMPLX_COPY(*c1, tempC);
 		}
+#		if DEBUG
+			WriteArray_Debug(wxT("testFFT_XB.dat"), pGCOut->data, pGCOut->fftLen, 2);
+#		endif
 	
 		fftw_execute(pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN]);
 		for (i = 0, p1 = outSignal->channel[chan], p2 = pGCOut->data; i <
 		  outSignal->length; i++)
 			*p1++ = *p2++ / pGCOut->fftLen;
+#		if DEBUG
+			WriteArray_Debug(wxT("testFFT_Y.dat"), outSignal->channel[chan],
+			  outSignal->length, 1);
+#		endif
 	}
 
 }
@@ -1150,6 +1172,27 @@ InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
 
 }
 
+/*************************** ResetAsymCmpCoeffs2State ***********************/
+
+/*
+ * This routine resets the state variables for the Asymetric compensation 
+ * coefficient structure.
+ * It expects the structure to have been correctly initialised.
+ */
+
+void
+ResetAsymCmpCoeffs2State_GCFilters(AsymCmpCoeffs2Ptr p)
+{
+	int		i, stateVectorLength;
+
+	for (i = 0; i < GCFILTERS_ACF_LEN_STATE_VECTOR; i++)
+		p->sigInPrev[i] = 0.0;
+	stateVectorLength = p->numFilt * GCFILTERS_ACF_LEN_STATE_VECTOR;
+	for (i = 0; i < stateVectorLength; i++)
+		p->sigOutPrev[i] = 0.0;
+
+}
+
 /*************************** SetAsymCmpCoeffs2 *****************************/
 
 /*
@@ -1168,7 +1211,7 @@ SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs)
 	Complex	vwrs[GCFILTERS_ACF_NUM_COEFFS], vwrApSum, vwrBzSum, workVar;
 
 	eRBw = BandwidthFromF_Bandwith(p->bMode, frs);
-	for (i = 0, apStart = p->ap, bz = bzStart = p->bz; i < p->numFilt; i++,
+	for (i = 0, apStart = p->ap, bzStart = p->bz; i < p->numFilt; i++,
 	  apStart += GCFILTERS_ACF_NUM_COEFFS, bzStart += GCFILTERS_ACF_NUM_COEFFS) {
 		r = exp(-p->p1 * pow((p->p0 / p->p4), i) * PIx2 * p->b * eRBw / p->fs);
 		delFrs = pow((p->p0 * p->p4), i) * p->p2 * p->c * p->b * eRBw;

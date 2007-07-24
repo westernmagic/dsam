@@ -298,7 +298,7 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans)
 		p->numPlans = numPlans;
 	}
 	p->fftLen = Length_FFT(dataLen);
-	p->arrayLen = (forInPlaceFFT)? p->fftLen << 1: p->fftLen;
+	p->arrayLen = (forInPlaceFFT)? (p->fftLen << 1) + 2: p->fftLen;
 	if ((p->data = (double *) fftw_malloc(p->arrayLen * sizeof(double))) == NULL) {
 		NotifyError(wxT("%s: output of memory for physical array length: %lu."),
 		  funcName, p->arrayLen);

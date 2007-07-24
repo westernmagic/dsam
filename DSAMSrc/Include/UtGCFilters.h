@@ -208,6 +208,8 @@ void	LeakyInt_GCFilters(CntlGammaCPtr p[], OnePoleCoeffsPtr q[],
 
 void	PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs);
 
+void	ResetAsymCmpCoeffs2State_GCFilters(AsymCmpCoeffs2Ptr p);
+
 void	SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs);
 
 void	SetpsEst_GCFilters(CntlGammaCPtr cntlGammaC[], int numChannels, 
