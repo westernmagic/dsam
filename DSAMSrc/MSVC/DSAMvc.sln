@@ -19,7 +19,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|Win32.Build.0 = Debug|Win32
-		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|x64.ActiveCfg = Release|x64
+		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|x64.ActiveCfg = Debug|x64
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Debug|x64.Build.0 = Debug|x64
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release (wxWidgets DLL)|Win32
 		{6B9DC988-59D4-421D-9554-24F51304F022}.Release (wxWidgets DLL)|Win32.Build.0 = Release (wxWidgets DLL)|Win32
@@ -29,14 +29,13 @@ Global
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|Win32.Build.0 = Debug|Win32
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|x64.ActiveCfg = Debug|x64
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|x64.Build.0 = Debug|x64
-		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Debug|x64.Build.2 = Release|x64
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release(wxWidgets  DLL)|Win32
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|Win32.Build.0 = Release(wxWidgets  DLL)|Win32
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|x64.ActiveCfg = Release(wxWidgets  DLL)|x64
 		{21B38666-6109-463E-8DC8-05A5A8D43B15}.Release (wxWidgets DLL)|x64.Build.0 = Release(wxWidgets  DLL)|x64
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|Win32.Build.0 = Debug|Win32
-		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|x64.ActiveCfg = Release|x64
+		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|x64.ActiveCfg = Debug|x64
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Debug|x64.Build.0 = Debug|x64
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release (wxWidgets DLL)|Win32.ActiveCfg = Release (wxWidgets DLL)|Win32
 		{4AF245A8-3264-4256-A393-1E62FCD59EA3}.Release (wxWidgets DLL)|Win32.Build.0 = Release (wxWidgets DLL)|Win32
