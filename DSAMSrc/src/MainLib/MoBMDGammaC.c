@@ -46,6 +46,28 @@ BMDGammaCPtr	bMDGammaCPtr = NULL;
 /****************************** Subroutines and functions *********************/
 /******************************************************************************/
 
+/****************************** PanelList *************************************/
+
+/*
+ * This routine returns the name specifier for the display panel list.
+ */
+
+NameSpecifier *
+GetPanelList_BasilarM_GammaChirp_Dyn(int index)
+{
+	static NameSpecifier	list[] = {
+
+				{ wxT("General"),		BM_GC_DYN_DIAGNOSTICMODE },
+				{ wxT("Gammachirp"),	BM_GC_DYN_GC_CTRL },
+				{ wxT("Level Est."),	BM_GC_DYN_LVEST_LCTERB },
+				{ wxT("CF Info."),		BM_GC_DYN_THECFS },
+				{ NULL,					BM_GC_DYN_NULL }
+			};
+	;
+	return(&list[index]);
+
+}
+
 /****************************** Free ******************************************/
 
 /*
@@ -249,6 +271,8 @@ Init_BasilarM_GammaChirp_Dyn(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	bMDGammaCPtr->numChannels = 0;
+	bMDGammaCPtr->fp = NULL;
+	DSAM_strcpy(bMDGammaCPtr->diagFileName, DEFAULT_FILE_NAME);
 	bMDGammaCPtr->genChanInfo = NULL;
 	bMDGammaCPtr->pGCoeffs = NULL;
 	bMDGammaCPtr->aCFCoeffLvlEst = NULL;
@@ -276,11 +300,14 @@ SetUniParList_BasilarM_GammaChirp_Dyn(void)
 		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
+	SetGetPanelListFunc_UniParMgr(bMDGammaCPtr->parList,
+	  GetPanelList_BasilarM_GammaChirp_Dyn);
+	  
 	pars = bMDGammaCPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BM_GC_DYN_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	SetPar_UniParMgr(&pars[BM_GC_DYN_DIAGNOSTICMODE], wxT("DIAGNOSTIC_MODE"),
 	  wxT("Diagnostic mode. Outputs internal states of running model in non-")
 	    wxT("threaded mode('off', 'screen' or <file name>)."),
-	  UNIPAR_NAME_SPEC,
+	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &bMDGammaCPtr->diagMode, bMDGammaCPtr->diagModeList,
 	  (void * (*)) SetDiagMode_BasilarM_GammaChirp_Dyn);
 	SetPar_UniParMgr(&pars[BM_GC_DYN_PGCCARRIERMODE], wxT("CARRIER_MODE"),
@@ -1541,16 +1568,16 @@ BOOLN
 InitProcessVariables_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_BasilarM_GammaChirp_Dyn");
-	int		i, j, cFIndex, nchShift, cfIndexLvlEst, stateVectorLength;
+	int		i, j, cFIndex, nchShift, cfIndexLvlEst;
 	double	sR, fr2LvlEst, eRBrate1kHz, *pp;
 	BMGCDGenChanInfo	*cInfo;
-	AsymCmpCoeffs2Ptr	aCF;
 	SignalDataPtr	inSignal, outSignal;
 	BMDGammaCPtr	p = bMDGammaCPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_GammaChirp_Dyn();
+		OpenDiagnostics_NSpecLists(&p->fp, p->diagModeList, p->diagMode);
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if ((p->genChanInfo = (BMGCDGenChanInfo *) calloc(p->numChannels,
 		  sizeof(BMGCDGenChanInfo))) == NULL) {
@@ -1641,12 +1668,8 @@ InitProcessVariables_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 				cInfo->lvlLinNow[j] = 0.0;
 			}
 			cInfo->savedPGCOut = 0.0;
-			aCF = p->aCFCoeffLvlEst[i];
-			for (j = 0; j < GCFILTERS_ACF_LEN_STATE_VECTOR; j++)
-				aCF->sigInPrev[j] = 0.0;
-			stateVectorLength = aCF->numFilt * GCFILTERS_ACF_LEN_STATE_VECTOR;
-			for (j = 0; j < stateVectorLength; j++)
-				aCF->sigOutPrev[j] = 0.0;
+			ResetAsymCmpCoeffs2State_GCFilters(p->aCFCoeffLvlEst[i]);
+			ResetAsymCmpCoeffs2State_GCFilters(p->aCFCoeffSigPath[i]);
 		}
 	}
 	return(TRUE);
@@ -1666,6 +1689,10 @@ FreeProcessVariables_BasilarM_GammaChirp_Dyn(void)
 	int		i;
 	BMDGammaCPtr	p = bMDGammaCPtr;
 
+	if (p->fp) {
+		fclose(p->fp);
+		p->fp = NULL;
+	}
 	if (p->genChanInfo) {
 		free(p->genChanInfo);
 		p->genChanInfo = NULL;
@@ -1713,6 +1740,7 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 	static const WChar	*funcName = wxT("RunModel_BasilarM_GammaChirp_Dyn");
 	register ChanData	 **dataPtr, workVar;
 	uShort	totalChannels;
+	BOOLN	debug;
 	int		chan;
 	double	lvlLinTtl, fratVal;
 	ChanLen	i;
@@ -1734,7 +1762,6 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-	
 		totalChannels = p->theCFs->numChannels * inSignal->numChannels;
 		if (!InitOutSignal_EarObject(data, totalChannels, inSignal->length,
 		  inSignal->dt)) {
@@ -1751,7 +1778,20 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 			return(TRUE);
 	}
 	PassiveGCFilter_GCFilters(data, p->pGCoeffs);
+#	if DEBUG
+		for (chan = _OutSig_EarObject(data)->offset; chan <
+		  _OutSig_EarObject(data)->numChannels; chan++)
+			SetAsymCmpCoeffs2_GCFilters(p->aCFCoeffSigPath[chan], p->genChanInfo[
+			chan].fp1);
+#	endif
 	outSignal = _OutSig_EarObject(data);
+	if ((debug = (!data->threadRunFlag && (p->diagMode !=
+	  GENERAL_DIAGNOSTIC_OFF_MODE))) == TRUE) {
+		DSAM_fprintf(p->fp, wxT("Time(s)"));
+		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++)
+			DSAM_fprintf(p->fp, wxT("\tpGC[%d]\tHP-AF[%d]\tcGC[%d]"), chan, chan, chan);
+		DSAM_fprintf(p->fp, wxT("\n"));
+	}
 	dataStart = outSignal->channel + outSignal->offset;
 	cInfoStart = p->genChanInfo + outSignal->offset;
 	aCFCoeffSigPathStart = p->aCFCoeffSigPath + outSignal->offset;
@@ -1797,7 +1837,18 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 		for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
 		  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
 			*(*dataPtr + i) *= cInfo->gainFactor;
+		if (debug) {
+			DSAM_fprintf(p->fp, wxT("%g"), i * outSignal->dt);
+			for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
+			  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
+				DSAM_fprintf(p->fp, wxT("\t%g\t%g\t%g"), cInfo->savedPGCOut,
+				  cInfo->lvldB, *(*dataPtr + i));
+			DSAM_fprintf(p->fp, wxT("\n"));
+		}
+	
 	}
+	if (debug && p->fp)
+		CloseDiagnostics_NSpecLists(&p->fp);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

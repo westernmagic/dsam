@@ -39,9 +39,12 @@
 
 typedef enum {
 
+	/* General parameters */
 	BM_GC_DYN_DIAGNOSTICMODE,
 	BM_GC_DYN_PGCCARRIERMODE,
 	BM_GC_DYN_PEAKSPECTRUMNORMMODE,
+	
+	/* Gammachirp parameters */
 	BM_GC_DYN_GC_CTRL,
 	BM_GC_DYN_GC_N,
 	BM_GC_DYN_GC_B1,
@@ -53,6 +56,8 @@ typedef enum {
 	BM_GC_DYN_GC_PHASE,
 	BM_GC_DYN_GC_GAINREFDB,
 	BM_GC_DYN_GC_GAINCMPNSTDB,
+
+	/* Level estimation parameters. */
 	BM_GC_DYN_LVEST_LCTERB,
 	BM_GC_DYN_LVEST_DECAYHL,
 	BM_GC_DYN_LVEST_B2,
@@ -63,7 +68,8 @@ typedef enum {
 	BM_GC_DYN_LVEST_REFDB,
 	BM_GC_DYN_LVEST_ARRAYN,
 	BM_GC_DYN_LVEST_PWR,
-	BM_GC_DYN_THECFS
+	BM_GC_DYN_THECFS,
+	BM_GC_DYN_NULL
 
 } BMDGammaCParSpecifier;
 
@@ -127,6 +133,7 @@ typedef struct {
 	WChar	diagFileName[MAX_FILE_PATH];
 	int		numChannels;
 	double	expDecayVal, lvlLinRef, lvlLinMinLim;
+	FILE		*fp;
 	BMGCDGenChanInfo	*genChanInfo;
 	GammaChirpCoeffsPtr	*pGCoeffs;
 	AsymCmpCoeffs2Ptr	*aCFCoeffLvlEst;
