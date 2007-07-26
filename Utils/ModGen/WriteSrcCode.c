@@ -50,7 +50,6 @@ StandardFunctions standardFunctions[] = {
 	{"GetUniParListPtr",PrintGetUniParListPtrRoutine},
 	{"Alloc",			PrintAllocArraysRoutines},
 	{"Set",				PrintSetFunctions},
-	{"CheckPars",		PrintCheckParsRoutine},
 	{"Get",				PrintGetFunctions},
 	{"PrintPars",		PrintPrintParsRoutine},
 	{"SetParsPointer",	PrintSetParsPointerRoutine},
@@ -381,16 +380,6 @@ PrintInitRoutine(FILE *fp)
 	if (processVarsFlag)
 		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);
 
-	/* Flags first */
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		for (list = identifierList; *list != 0; list++)
-			if (((*list)->inst != POINTER) && (type->sym->type !=
-			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) &&
-			  (type->sym->type != PARARRAY) && (type->sym->type != DATUMPTR))
-				fprintf(fp, "\t%s->%sFlag = FALSE;\n", ptrVar,
-				  GetName((*list)->sym));
-
 	/* Public parameters */
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
@@ -420,11 +409,11 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", "->");
 				Print(fp, "\t  ", GetName((*list)->sym));
 				Print(fp, "\t  ", " = GenerateDefault_CFList(\n");
-				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_MODE_NAME, "
-				  "CFLIST_DEFAULT_CF_CHANNELS,\n");
-				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_LOW_FREQ, "
-				  "CFLIST_DEFAULT_CF_HIGH_FREQ,\n");
-				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_CF_BW_MODE_NAME, "
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_MODE_NAME, "
+				  "CFLIST_DEFAULT_CHANNELS,\n");
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_LOW_FREQ, "
+				  "CFLIST_DEFAULT_HIGH_FREQ,\n");
+				Print(fp, "\t  ", "\t  CFLIST_DEFAULT_BW_MODE_NAME, "
 				  "CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {\n");
 				Print(fp, "", "");
 				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not set default "
@@ -647,86 +636,6 @@ PrintGetUniParListPtrRoutine(FILE *fp)
 
 }
 
-/****************************** PrintCheckParsRoutine *************************/
-
-/*
- * This routine prints the Module CheckPars routine.
- * It adds the function declaration to the main list.
- */
-
-void
-PrintCheckParsRoutine(FILE *fp)
-{
-	static char	*function = "CheckPars";
-	char	*funcName, *funcDeclaration;
-	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
-	
-	PrintLineCommentHeading(fp, function);
-	fprintf(fp,
-	  "/*\n"
-	  " * This routine checks that the necessary parameters for the module\n"
-	  " * have been correctly initialised.\n"
-	  " * Other 'operational' tests which can only be done when all\n"
-	  " * parameters are present, should also be carried out here.\n"
-	  " * It returns TRUE if there are no problems.\n"
-	  " */\n\n"
-	  );
-	funcName = CreateFuncName(function, module, qualifier);
-	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName, "void");
-	fprintf(fp, "%s\n{\n", funcDeclaration);
-	PrintStaticFuncNameDeclaration(fp, funcName);
-	fprintf(fp, "\tBOOLN\tok;\n");
-	fprintf(fp, "\n");
-	fprintf(fp, "\tok = TRUE;\n");
-	PrintModuleInitCheck(fp);
-	
-	/* Check pointers to arrays, CFLists and other special parameters. */
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		for (list = identifierList; *list != 0; list++)
-			if ((*list)->inst == POINTER) {
-				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
-				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s array not set.\"), "
-				  "funcName);\n", GetName((*list)->sym));
-				fprintf(fp, "\t\tok = FALSE;\n");
-				fprintf(fp, "\t}\n");
-			} else if (type->sym->type == CFLISTPTR) {
-				fprintf(fp, "\tif (!CheckPars_CFList(%s->%s)) {\n", ptrVar,
-				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Centre frequency list "
-				  "parameters not correctly set.\"),\n\t\t  funcName);\n");
-				fprintf(fp, "\t\tok = FALSE;\n");
-				fprintf(fp, "\t}\n");
-			} else if (type->sym->type == PARARRAY) {
-				fprintf(fp, "\tif (!CheckInit_ParArray(%s->%s, funcName)) {\n",
-				  ptrVar, GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Variable %s "
-				  "parameter array not correctly set.\"),\n\t\t  funcName);\n",
-				  GetName((*list)->sym));
-				fprintf(fp, "\t\tok = FALSE;\n");
-				fprintf(fp, "\t}\n");
-			} else if (type->sym->type == DATUMPTR) {
-				fprintf(fp, "\tif (%s->%s == NULL) {\n", ptrVar,
-				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s not set.\"), funcName);"
-				  "\n", GetName((*list)->sym));
-				fprintf(fp, "\t\tok = FALSE;\n");
-				fprintf(fp, "\t}\n");
-			} else if (type->sym->type != BOOLEAN_VAR) {
-				fprintf(fp, "\tif (!%s->%sFlag) {\n", ptrVar,
-				  GetName((*list)->sym));
-				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: %s variable not set.\"), "
-				  "funcName);\n", GetName((*list)->sym));
-				fprintf(fp, "\t\tok = FALSE;\n");
-				fprintf(fp, "\t}\n");
-			}
-	fprintf(fp, "\treturn(ok);\n");
-	fprintf(fp, "\n}\n\n");
-	AddRoutine(funcDeclaration);
-
-}
-
 /****************************** CreateSetParsArguments ************************/
 
 /*
@@ -895,12 +804,6 @@ PrintPrintParsRoutine(FILE *fp)
 	if (FindTokenType(INT_AL, pc))
 		fprintf(fp, "\tint\t\ti;\n");
 	fprintf(fp, "\n");
-	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("CheckPars", module,
-	  qualifier));
-	fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Parameters have not been correctly "
-	  "set.\"), funcName);\n");
-	fprintf(fp, "\t\treturn(FALSE);\n");
-	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tDPrint(wxT(\"?? %s Module Parameters:-"
 	  "\\n\"));\n", module);
 	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit)); 
@@ -1224,8 +1127,6 @@ PrintInitModuleRoutine(FILE *fp)
 	fprintf(fp, "\t\treturn(FALSE);\n");
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\ttheModule->parsPtr = %s;\n", ptrVar);
-	fprintf(fp, "\ttheModule->CheckPars = %s;\n", CreateFuncName("CheckPars",
-	  module, qualifier));
 	fprintf(fp, "\ttheModule->threadMode = MODULE_THREAD_MODE_SIMPLE;\n");
 	fprintf(fp, "\ttheModule->Free = %s;\n", CreateFuncName("Free",
 	  module, qualifier));
@@ -1427,9 +1328,6 @@ PrintProcessRoutine(FILE *fp)
 
 	fprintf(fp, "\tinSignal = _InSig_EarObject(data, 0);\n");
 	fprintf(fp, "\tif (!data->threadRunFlag) {\n");
-	fprintf(fp, "\t\tif (!%s())\n", CreateFuncName("CheckPars", module,
-	  qualifier));
-	fprintf(fp, "\t\t\treturn(FALSE);\n");
 	fprintf(fp, "\t\tif (!%s(data)) {\n", CreateFuncName("CheckData", module,
 	  qualifier));
 	fprintf(fp, "\t\t\tNotifyError(wxT(\"%%s: Process data invalid.\"), funcName);\n");
@@ -1566,7 +1464,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	case SET_BANDWIDTHS_ROUTINE:
 		variableName = PluralToSingular(GetName(token->sym));
 		sprintf(function, "SetBandWidths", Capital(variableName));
-		sprintf(funcArguments, "char *theBandwidthMode, double *theBandwidths");
+		sprintf(funcArguments, "WChar *theBandwidthMode, double *theBandwidths");
 		assignmentString[0] = '\0';
 		break;
 	default:
@@ -1706,16 +1604,6 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		fprintf(fp, "\t\treturn(FALSE);\n");
 		fprintf(fp, "\t}\n");
 	}
-
-	if ((functionType != SET_ARRAY_ELEMENT_ROUTINE) && (token->inst != POINTER))
-		switch(type->sym->type) {
-		case BOOLEAN_VAR:
-		case CFLISTPTR:
-		case PARARRAY:
-			break;
-		default:
-			fprintf(fp, "\t%s->%sFlag = TRUE;\n", ptrVar, GetName(token->sym));
-		}
 	
 	if (processVarsFlag)
 		fprintf(fp, "\t%s->updateProcessVariablesFlag = TRUE;\n", ptrVar);

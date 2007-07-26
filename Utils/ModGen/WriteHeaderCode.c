@@ -176,27 +176,6 @@ PrintExpandedStructure(FILE *fp)
 	fprintf(fp, "typedef struct {\n\n");
 	fprintf(fp, "\tParameterSpecifier	parSpec;\n\n");
 
-	/* Flags first */
-	line[0] = '\0';
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		for (list = identifierList; *list != 0; list++)
-			if (((*list)->inst != POINTER) && (type->sym->type !=
-			  BOOLEAN_VAR) && (type->sym->type != CFLISTPTR) && (type->sym->
-			  type != DATUMPTR)) {
-				sprintf(variable, "%sFlag", GetName((*list)->sym));
-				if (line[0] == '\0')
-					sprintf(line, "\tBOOLN\t%s", variable);
-				else if (RealStringLength(line) + strlen(variable) +
-				  strlen(", ;\n") > MAXLINE - 1) {
-					fprintf(fp, "%s;\n", line);
-					sprintf(line, "\tBOOLN\t%s", variable);
-				} else
-					sprintf(line, "%s, %s", line, variable);
-			}
-	if (line[0] != '\0')
-		fprintf(fp, "%s;\n", line);
-
 	if (processVarsFlag)
 		fprintf(fp, "\tBOOLN\tupdateProcessVariablesFlag;\n");
 
@@ -215,7 +194,7 @@ PrintExpandedStructure(FILE *fp)
 			fprintf(fp, "DatumPtr");
 			break;
 		case FILENAME:
-			fprintf(fp, "char");
+			fprintf(fp, "WChar");
 			break;
 		default:
 			fprintf(fp, "%s", GetName(type->sym));
@@ -250,7 +229,7 @@ PrintExpandedStructure(FILE *fp)
 				  sym), (type->sym->type == PARARRAY)? "Mode": "");
 				break;
 			case DATUMPTR:
-				fprintf(fp, "\tchar\t%s%s[MAX_FILE_PATH];\n", GetName((*list)->
+				fprintf(fp, "\tWChar\t%s%s[MAX_FILE_PATH];\n", GetName((*list)->
 				  sym), SIM_SCRIPT_NAME_SUFFIX);
 				break;
 			default:
