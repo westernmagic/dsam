@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define BM_GC_DYN_NUM_PARS			25
+#define BM_GC_DYN_NUM_PARS			26
 #define BM_GC_DYN_MOD_NAME			wxT("BM_GammaC_Dyn")
 
 #define BM_GC_DYN_NUM_GC_ARRAYS_N		4
@@ -39,8 +39,18 @@
 
 typedef enum {
 
+	BM_GC_DYN_OUTPUTMODE_PASSIVE,
+	BM_GC_DYN_OUTPUTMODE_DYNA_COMP,
+	BM_GC_DYN_OUTPUTMODE_TOTAL,
+	BM_GC_DYN_OUTPUTMODE_NULL
+
+} BMDGammaCOutputModeSpecifier;
+
+typedef enum {
+
 	/* General parameters */
 	BM_GC_DYN_DIAGNOSTICMODE,
+	BM_GC_DYN_OUTPUTMODE,
 	BM_GC_DYN_PGCCARRIERMODE,
 	BM_GC_DYN_PEAKSPECTRUMNORMMODE,
 	
@@ -102,6 +112,7 @@ typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
 	int		diagMode;
+	int		outputMode;
 	int		pGCCarrierMode;
 	BOOLN	peakSpectrumNormMode;
 	int		gC_ctrl;
@@ -248,6 +259,8 @@ BOOLN	SetLvEst_b2_BasilarM_GammaChirp_Dyn(double theLvEst_b2);
 BOOLN	SetLvEst_c2_BasilarM_GammaChirp_Dyn(double theLvEst_c2);
 
 BOOLN	SetLvEst_frat_BasilarM_GammaChirp_Dyn(double theLvEst_frat);
+
+BOOLN	SetOutputMode_BasilarM_GammaChirp_Dyn(WChar * theOutputMode);
 
 BOOLN	SetPGCCarrierMode_BasilarM_GammaChirp_Dyn(WChar * thePGCCarrierMode);
 

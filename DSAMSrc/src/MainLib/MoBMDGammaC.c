@@ -112,7 +112,7 @@ Free_BasilarM_GammaChirp_Dyn(void)
 
 }
 
-/****************************** InitGC_ctrlList *******************************/
+/****************************** GC_ctrlList ************************************/
 
 /*
  * This function initialises the 'gC_ctrl' list array
@@ -125,7 +125,27 @@ GC_CtrlList_BasilarM_GammaChirp_Dyn(int	index)
 
 			{ wxT("FIXED"),			BM_GC_DYN_GC_CTRL_FIXED },
 			{ wxT("TIME_VARYING"),	BM_GC_DYN_GC_CTRL_TIME_VARYING },
-			{ NULL, BM_GC_DYN_GC_CTRL_NULL },
+			{ NULL,					BM_GC_DYN_GC_CTRL_NULL },
+		};
+	return(&modeList[index]);
+
+}
+
+/****************************** OutputModeList *********************************/
+
+/*
+ * This function initialises the 'outputMode' list array
+ */
+
+NameSpecifier *
+OutputModeList_BasilarM_GammaChirp_Dyn(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("PASSIVE"),				BM_GC_DYN_OUTPUTMODE_PASSIVE },
+			{ wxT("DYNAMIC_COMPRESSIVE"),	BM_GC_DYN_OUTPUTMODE_DYNA_COMP },
+			{ wxT("TOTAL"),					BM_GC_DYN_OUTPUTMODE_TOTAL },
+			{ NULL,							BM_GC_DYN_OUTPUTMODE_NULL },
 		};
 	return(&modeList[index]);
 
@@ -220,6 +240,7 @@ Init_BasilarM_GammaChirp_Dyn(ParameterSpecifier parSpec)
 	bMDGammaCPtr->parSpec = parSpec;
 	bMDGammaCPtr->updateProcessVariablesFlag = TRUE;
 	bMDGammaCPtr->diagMode = GENERAL_DIAGNOSTIC_OFF_MODE;
+	bMDGammaCPtr->outputMode = BM_GC_DYN_OUTPUTMODE_TOTAL;
 	bMDGammaCPtr->pGCCarrierMode = GCFILTER_CARRIER_MODE_COS;
 	bMDGammaCPtr->peakSpectrumNormMode = GENERAL_BOOLEAN_ON;
 	bMDGammaCPtr->gC_ctrl = BM_GC_DYN_GC_CTRL_TIME_VARYING;
@@ -310,6 +331,11 @@ SetUniParList_BasilarM_GammaChirp_Dyn(void)
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &bMDGammaCPtr->diagMode, bMDGammaCPtr->diagModeList,
 	  (void * (*)) SetDiagMode_BasilarM_GammaChirp_Dyn);
+	SetPar_UniParMgr(&pars[BM_GC_DYN_OUTPUTMODE], wxT("OUTPUT_MODE"),
+	  wxT("Output mode: 'passive', 'dynamic_compressive' or 'total' response paths."),
+	  UNIPAR_NAME_SPEC,
+	  &bMDGammaCPtr->outputMode, OutputModeList_BasilarM_GammaChirp_Dyn(0),
+	  (void * (*)) SetOutputMode_BasilarM_GammaChirp_Dyn);
 	SetPar_UniParMgr(&pars[BM_GC_DYN_PGCCARRIERMODE], wxT("CARRIER_MODE"),
 	  wxT("Carrier mode ('cos','sin','complex' or 'envelope')"),
 	  UNIPAR_NAME_SPEC,
@@ -564,6 +590,37 @@ SetDiagMode_BasilarM_GammaChirp_Dyn(WChar * theDiagMode)
 
 }
 
+/****************************** SetOutputMode *********************************/
+
+/*
+ * This function sets the module's outputMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetOutputMode_BasilarM_GammaChirp_Dyn(WChar * theOutputMode)
+{
+	static const WChar	*funcName = wxT(
+	  "SetOutputMode_BasilarM_GammaChirp_Dyn");
+	int		specifier;
+
+	if (bMDGammaCPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theOutputMode,
+	  OutputModeList_BasilarM_GammaChirp_Dyn(0))) ==
+	  BM_GC_DYN_OUTPUTMODE_NULL) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOutputMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	bMDGammaCPtr->updateProcessVariablesFlag = TRUE;
+	bMDGammaCPtr->outputMode = specifier;
+	return(TRUE);
+
+}
 /****************************** SetPGCCarrierMode *****************************/
 
 /*
@@ -1412,6 +1469,8 @@ PrintPars_BasilarM_GammaChirp_Dyn(void)
 		DPrint(wxT("\t%10g\n"), bMDGammaCPtr->lvEst_Pwr[i]);
 	DPrint(wxT("\tdiagMode = %s \n"), bMDGammaCPtr->diagModeList[
 	  bMDGammaCPtr->diagMode].name);
+	DPrint(wxT("\toutputMode = %s \n"), OutputModeList_BasilarM_GammaChirp_Dyn(
+	  bMDGammaCPtr->outputMode)->name);
 	DPrint(wxT("\tpGCCarrierMode = %s \n"), PGCCarrierList_GCFilters(
 	  bMDGammaCPtr->pGCCarrierMode)->name);
 	DPrint(wxT("\tpeakSpectrumNormMode = %s \n"), BooleanList_NSpecLists(bMDGammaCPtr->
@@ -1516,7 +1575,12 @@ CheckData_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	/*** Put additional checks here. ***/
+	if ((bMDGammaCPtr->outputMode != BM_GC_DYN_OUTPUTMODE_TOTAL) &&
+	  (bMDGammaCPtr->diagMode != GENERAL_DIAGNOSTIC_OFF_MODE)) {
+		NotifyError(wxT("%s: Diagnostic mode can only be used when the 'output ")
+		  wxT("mode' is set to  'TOTAL'."));
+		return(FALSE);
+	} 
 	return(TRUE);
 
 }
@@ -1777,78 +1841,83 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	PassiveGCFilter_GCFilters(data, p->pGCoeffs);
-#	if DEBUG
-		for (chan = _OutSig_EarObject(data)->offset; chan <
-		  _OutSig_EarObject(data)->numChannels; chan++)
-			SetAsymCmpCoeffs2_GCFilters(p->aCFCoeffSigPath[chan], p->genChanInfo[
-			chan].fp1);
-#	endif
-	outSignal = _OutSig_EarObject(data);
-	if ((debug = (!data->threadRunFlag && (p->diagMode !=
-	  GENERAL_DIAGNOSTIC_OFF_MODE))) == TRUE) {
-		DSAM_fprintf(p->fp, wxT("Time(s)"));
-		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++)
-			DSAM_fprintf(p->fp, wxT("\tpGC[%d]\tHP-AF[%d]\tcGC[%d]"), chan, chan, chan);
-		DSAM_fprintf(p->fp, wxT("\n"));
-	}
-	dataStart = outSignal->channel + outSignal->offset;
-	cInfoStart = p->genChanInfo + outSignal->offset;
-	aCFCoeffSigPathStart = p->aCFCoeffSigPath + outSignal->offset;
-	for (i = 0; i < data->outSignal->length; i++) {
-		for (chan = outSignal->offset, dataPtr = dataStart, cInfo = cInfoStart;
-		  chan < outSignal->numChannels; chan++)
-			(cInfo++)->savedPGCOut = *(*dataPtr++ + i);
-		if (p->gC_ctrl == BM_GC_DYN_GC_CTRL_FIXED)
-			for (chan = outSignal->offset, cInfo = cInfoStart;chan <
-			  outSignal->numChannels; chan++, cInfo++)
-				cInfo->lvldB = p->gC_gainRefdB;
-		else {
-			/* Level estimation path */
-			ACFilterBank_GCFilters(p->aCFCoeffLvlEst, data, i);
-			for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
-			  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++) {
-				if ((cInfo->lvlLinNow[0] = (cInfoStart + cInfo->nchLvlEst)->savedPGCOut) < 0.0)
-					cInfo->lvlLinNow[0] = 0.0;
-				if (cInfo->lvlLinNow[0] < (workVar = cInfo->lvlLinPrev[0] * p->expDecayVal))
-					cInfo->lvlLinNow[0] = workVar;
-				if ((cInfo->lvlLinNow[1] = *(*dataPtr + i)) < 0.0)
-					cInfo->lvlLinNow[1] = 0;
-				if (cInfo->lvlLinNow[1] < (workVar = cInfo->lvlLinPrev[1] * p->expDecayVal))
-					cInfo->lvlLinNow[1] = workVar;
-				cInfo->lvlLinPrev[0] = cInfo->lvlLinNow[0];
-				cInfo->lvlLinPrev[1] = cInfo->lvlLinNow[1];
-				lvlLinTtl = p->lvlLinRef * (p->lvEst_Weight * pow(cInfo->lvlLinNow[0] /
-				  p->lvlLinRef, p->lvEst_Pwr[0]) + (1.0 - p->lvEst_Weight) *
-	          	  pow(cInfo->lvlLinNow[1] / p->lvlLinRef, p->lvEst_Pwr[1]));
-	          	if (lvlLinTtl < p->lvlLinMinLim)
-	          		lvlLinTtl = p->lvlLinMinLim;
-	          	cInfo->lvldB = 20.0 * log10(lvlLinTtl) + p->lvEst_RMStoSPLdB;
-				*(*dataPtr + i) = cInfo->savedPGCOut;
-			}
-		}
-		for (chan = outSignal->offset, cInfo = cInfoStart, aCFCoeffSigPath =
-		  aCFCoeffSigPathStart; chan < outSignal->numChannels; chan++, cInfo++,
-		  aCFCoeffSigPath++) {
-			fratVal = cInfo->fratVal[0] + cInfo->fratVal[1] * cInfo->lvldB;
-			SetAsymCmpCoeffs2_GCFilters(*aCFCoeffSigPath, fratVal * cInfo->fp1);
-		}
-		ACFilterBank_GCFilters(p->aCFCoeffSigPath, data, i);
-		for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
-		  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
-			*(*dataPtr + i) *= cInfo->gainFactor;
-		if (debug) {
-			DSAM_fprintf(p->fp, wxT("%g"), i * outSignal->dt);
-			for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
-			  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
-				DSAM_fprintf(p->fp, wxT("\t%g\t%g\t%g"), cInfo->savedPGCOut,
-				  cInfo->lvldB, *(*dataPtr + i));
+	if (p->outputMode == BM_GC_DYN_OUTPUTMODE_DYNA_COMP)
+		InitOutDataFromInSignal_EarObject(data);
+	else
+		PassiveGCFilter_GCFilters(data, p->pGCoeffs);
+	if (p->outputMode != BM_GC_DYN_OUTPUTMODE_PASSIVE) {
+#		if DEBUG
+			for (chan = _OutSig_EarObject(data)->offset; chan <
+			  _OutSig_EarObject(data)->numChannels; chan++)
+				SetAsymCmpCoeffs2_GCFilters(p->aCFCoeffSigPath[chan], p->genChanInfo[
+				chan].fp1);
+#		endif
+		outSignal = _OutSig_EarObject(data);
+		if ((debug = (!data->threadRunFlag && (p->diagMode !=
+		  GENERAL_DIAGNOSTIC_OFF_MODE))) == TRUE) {
+			DSAM_fprintf(p->fp, wxT("Time(s)"));
+			for (chan = outSignal->offset; chan < outSignal->numChannels; chan++)
+				DSAM_fprintf(p->fp, wxT("\tpGC[%d]\tHP-AF[%d]\tcGC[%d]"), chan, chan, chan);
 			DSAM_fprintf(p->fp, wxT("\n"));
 		}
-	
+		dataStart = outSignal->channel + outSignal->offset;
+		cInfoStart = p->genChanInfo + outSignal->offset;
+		aCFCoeffSigPathStart = p->aCFCoeffSigPath + outSignal->offset;
+		for (i = 0; i < data->outSignal->length; i++) {
+			for (chan = outSignal->offset, dataPtr = dataStart, cInfo = cInfoStart;
+			  chan < outSignal->numChannels; chan++)
+				(cInfo++)->savedPGCOut = *(*dataPtr++ + i);
+			if (p->gC_ctrl == BM_GC_DYN_GC_CTRL_FIXED)
+				for (chan = outSignal->offset, cInfo = cInfoStart;chan <
+				  outSignal->numChannels; chan++, cInfo++)
+					cInfo->lvldB = p->gC_gainRefdB;
+			else {
+				/* Level estimation path */
+				ACFilterBank_GCFilters(p->aCFCoeffLvlEst, data, i);
+				for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
+				  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++) {
+					if ((cInfo->lvlLinNow[0] = (cInfoStart + cInfo->nchLvlEst)->savedPGCOut) < 0.0)
+						cInfo->lvlLinNow[0] = 0.0;
+					if (cInfo->lvlLinNow[0] < (workVar = cInfo->lvlLinPrev[0] * p->expDecayVal))
+						cInfo->lvlLinNow[0] = workVar;
+					if ((cInfo->lvlLinNow[1] = *(*dataPtr + i)) < 0.0)
+						cInfo->lvlLinNow[1] = 0;
+					if (cInfo->lvlLinNow[1] < (workVar = cInfo->lvlLinPrev[1] * p->expDecayVal))
+						cInfo->lvlLinNow[1] = workVar;
+					cInfo->lvlLinPrev[0] = cInfo->lvlLinNow[0];
+					cInfo->lvlLinPrev[1] = cInfo->lvlLinNow[1];
+					lvlLinTtl = p->lvlLinRef * (p->lvEst_Weight * pow(cInfo->lvlLinNow[0] /
+					  p->lvlLinRef, p->lvEst_Pwr[0]) + (1.0 - p->lvEst_Weight) *
+		          	  pow(cInfo->lvlLinNow[1] / p->lvlLinRef, p->lvEst_Pwr[1]));
+		          	if (lvlLinTtl < p->lvlLinMinLim)
+		          		lvlLinTtl = p->lvlLinMinLim;
+		          	cInfo->lvldB = 20.0 * log10(lvlLinTtl) + p->lvEst_RMStoSPLdB;
+					*(*dataPtr + i) = cInfo->savedPGCOut;
+				}
+			}
+			for (chan = outSignal->offset, cInfo = cInfoStart, aCFCoeffSigPath =
+			  aCFCoeffSigPathStart; chan < outSignal->numChannels; chan++, cInfo++,
+			  aCFCoeffSigPath++) {
+				fratVal = cInfo->fratVal[0] + cInfo->fratVal[1] * cInfo->lvldB;
+				SetAsymCmpCoeffs2_GCFilters(*aCFCoeffSigPath, fratVal * cInfo->fp1);
+			}
+			ACFilterBank_GCFilters(p->aCFCoeffSigPath, data, i);
+			for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
+			  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
+				*(*dataPtr + i) *= cInfo->gainFactor;
+			if (debug) {
+				DSAM_fprintf(p->fp, wxT("%g"), i * outSignal->dt);
+				for (chan = outSignal->offset, cInfo = cInfoStart, dataPtr = dataStart;
+				  chan < outSignal->numChannels; chan++, cInfo++, dataPtr++)
+					DSAM_fprintf(p->fp, wxT("\t%g\t%g\t%g"), cInfo->savedPGCOut,
+					  cInfo->lvldB, *(*dataPtr + i));
+				DSAM_fprintf(p->fp, wxT("\n"));
+			}
+		
+		}
+		if (debug && p->fp)
+			CloseDiagnostics_NSpecLists(&p->fp);
 	}
-	if (debug && p->fp)
-		CloseDiagnostics_NSpecLists(&p->fp);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
