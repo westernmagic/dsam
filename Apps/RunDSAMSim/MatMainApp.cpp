@@ -24,6 +24,10 @@
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#if MATLAB_COMPILE
+#	include "mex.h"
+#endif
+
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -692,8 +696,19 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 	default:
 		fp = stdout;
 	}
-	fprintf(fp, wxConvUTF8.cWX2MB(message));
-	fprintf(fp, "\n");
+#	if	MATLAB_COMPILE
+		if (fp == stdout) {
+			mexPrintf(wxConvUTF8.cWX2MB(message));
+			mexPrintf("\n");
+		} else {
+			fprintf(fp, wxConvUTF8.cWX2MB(message));
+			fprintf(fp, "\n");
+		}
+			
+#	else
+		fprintf(fp, wxConvUTF8.cWX2MB(message));
+		fprintf(fp, "\n");
+#	endif /* MATLAB_COMPILE */
 
 
 } /* NotifyMessage */

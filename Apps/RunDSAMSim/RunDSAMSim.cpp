@@ -221,7 +221,7 @@ GetString(const mxArray *str)
 	wxChar	*s2;
 	int		bufferLength;
 
-	bufferLength = STR_BUFFER_LEN(str);
+	bufferLength = (int) STR_BUFFER_LEN(str);
 	s = (char *) mxCalloc(bufferLength, sizeof(mxChar));
 	if (mxGetString(str, s, bufferLength) != 0) {
 		NotifyError(wxT("%s: Not enough space for string. String is ")
@@ -348,7 +348,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nrhs > INFO_STRUCT) {
 		const mxArray *info = prhs[INFO_STRUCT];
 		inputMatrixPtr = mxGetPr(prhs[INPUT_SIGNAL]);
- 		numChannels = mxGetM(prhs[INPUT_SIGNAL]);
+ 		numChannels = (int) mxGetM(prhs[INPUT_SIGNAL]);
 		length = (ChanLen) mxGetN(prhs[INPUT_SIGNAL]);
 		dt =  *mxGetPr(mxGetField(info, 0, "dt"));
 		staticTimeFlag = (BOOLN) GET_INFO_PAR("staticTimeFlag", FALSE);
@@ -370,9 +370,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	audModel = mainApp.GetSimProcess();
 
-	mxFree(simFile);
+	free(simFile);
 	if (nrhs > PARAMETER_OPTIONS)
-		mxFree(parameterOptions);
+		free(parameterOptions);
 
 	if (audModel && ((outSignal = _OutSig_EarObject(audModel)) != NULL)) {
 		outSignal = _OutSig_EarObject(audModel);

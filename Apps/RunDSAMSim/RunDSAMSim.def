@@ -1,4 +1,3 @@
-LIBRARY RunDSAMSim.DLL
 EXPORTS mexFunction
 
  
