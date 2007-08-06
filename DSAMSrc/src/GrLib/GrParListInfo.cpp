@@ -205,7 +205,7 @@ ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 	  PARLISTINFO_BROWSE_BUTTON_WIDTH, -1));
 	browseBtn->SetToolTip(wxT("Click this button to browse for a file ")
 	  wxT("(path)."));
-	browseBtn->Enable(cBox->GetSelection() == (cBox->GetCount() - 1));
+	browseBtn->Enable(cBox->GetCurrentSelection() == ((int) cBox->GetCount() - 1));
 
 	wxStaticText *labelText = new wxStaticText(parent, index, (wxChar *) par->
 	  abbr);

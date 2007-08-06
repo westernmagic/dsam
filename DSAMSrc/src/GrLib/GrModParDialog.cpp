@@ -516,7 +516,7 @@ ModuleParDialog::OnComboBox(wxCommandEvent& event)
 	case UNIPAR_NAME_SPEC_WITH_FILE:
 	case UNIPAR_NAME_SPEC_WITH_FPATH: {
 		wxComboBox *cB = (wxComboBox *) event.GetEventObject();
-		control->GetButton()->Enable(cB->GetSelection() == (cB->GetCount() -
+		control->GetButton()->Enable(cB->GetCurrentSelection() == (int) (cB->GetCount() -
 		  1));
 		cB->SetInsertionPointEnd();
 		break; }

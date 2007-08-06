@@ -268,8 +268,8 @@ ParControl::SetEnable(void)
 		switch (par->type) {
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_NAME_SPEC_WITH_FILE:
-			button->Enable(par->enabled && (comboBox->GetSelection() ==
-			  comboBox->GetCount() - 1));
+			button->Enable(par->enabled && (comboBox->GetCurrentSelection() ==
+			  (int) comboBox->GetCount() - 1));
 			break;
 		default:	
 			button->Enable(CXX_BOOL(par->enabled));
