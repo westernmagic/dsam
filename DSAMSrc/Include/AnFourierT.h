@@ -63,7 +63,7 @@ typedef struct {
 	ChanLen	fTLength;
 	ComplxPtr	*fT;
 #	if HAVE_FFTW3
-	fftw_plan	*plan;
+	fftw_plan	plan;
 #	endif
 
 } FourierT, *FourierTPtr;

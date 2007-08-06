@@ -135,6 +135,7 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 	}
 	fourierTPtr->fTLength = 0;
 	fourierTPtr->numThreads = 0;
+	fourierTPtr->plan = NULL;
 	fourierTPtr->fT = NULL;
 	return(TRUE);
 
@@ -446,6 +447,7 @@ ResetProcess_Analysis_FourierT(EarObjectPtr data)
  * initialised.
  * This routine assumes that calloc sets all of the InterSIHSpikeSpecPtr
  * pointers to NULL.
+ * If using in-place FFTs under FFTW, the length must be the fftLength * 2 + 2.
  */
 
 BOOLN
@@ -454,6 +456,7 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 	static const WChar *funcName = wxT(
 	  "InitProcessVariables_Analysis_FourierT");
 	int		i;
+	ChanLen	arrayLen;
 	FourierTPtr	p = fourierTPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -466,14 +469,23 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 			  wxT("pointer array."), funcName);
 			return(FALSE);
 		}
+#		if HAVE_FFTW3
+		arrayLen = (p->fTLength << 1) + 2;
+#		else
+		arrayLen = p->fTLength;
+#		endif
 		for (i = 0; i < data->numThreads; i++) {
-			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(p->fTLength * sizeof(
+			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(arrayLen * sizeof(
 			  Complx))) == NULL) {
 				NotifyError(wxT("%s: Couldn't allocate memory for complex ")
 				  wxT("data array (%d)."), funcName, i);
 				return(FALSE);
 			}
 		}
+#		if HAVE_FFTW3
+			p->plan = fftw_plan_dft_r2c_1d(p->fTLength, (double *) p->fT[0], p->fT[0],
+			  FFTW_ESTIMATE);
+#		endif
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	return(TRUE);
@@ -492,6 +504,12 @@ FreeProcessVariables_Analysis_FourierT(void)
 {
 	int		i;
 
+#	if HAVE_FFTW3
+		if (fourierTPtr->plan) {
+			fftw_destroy_plan(fourierTPtr->plan);
+			fourierTPtr->plan = NULL;
+		}
+#	endif
 	if (fourierTPtr->fT) {
 		for (i = 0; i < fourierTPtr->numThreads; i++) {
 			CMPLX_FREE(fourierTPtr->fT[i]);
@@ -532,9 +550,6 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	Complx	*fT;
 	SignalDataPtr	outSignal;
 	FourierTPtr	p = fourierTPtr;
-#	if HAVE_FFTW3
-		fftw_plan	plan;
-#	endif
 
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Analysis_FourierT())
@@ -585,10 +600,10 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 #		if HAVE_FFTW3
 		{	/*     Braces required by MSVC Studio2005 */
 			double	*fTIn = (double *) fT++;
-			for (i = 1, fTIn++; i < outSignal->length; i++, fTIn++)
-				*fTIn = *inPtr++;
-			for (; i < p->fTLength; i++, fTIn++)
-				*fTIn = 0.0;
+			for (i = 1; i < outSignal->length; i++)
+				*fTIn++ = *inPtr++;
+			for (; i < p->fTLength; i++)
+				*fTIn++ = 0.0;
 		}
 #		else
 			for (i = 1, fT++; i < outSignal->length; i++, fT++) {
@@ -604,9 +619,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 
 		fT = p->fT[data->threadIndex];
 #		if HAVE_FFTW3
-			plan = fftw_plan_dft_r2c_1d(p->fTLength, (double *) fT, fT, FFTW_ESTIMATE);
-			fftw_execute(plan);
-			fftw_destroy_plan(plan);
+			fftw_execute_dft_r2c(p->plan, (double *) fT, fT);
 #		else
 			CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 #		endif
