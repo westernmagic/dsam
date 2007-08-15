@@ -60,6 +60,7 @@ class ParListInfoList {
 	  UniParListPtr parList);
 	~ParListInfoList(void);
 
+	bool	UseNewNotebook(UniParPtr par);
 	wxPanel *	UsingNotebook(UniParListPtr parList, const wxString& title);
 	wxNotebook *	GetNotebook(void)	{ return notebook; }
 	wxSize		GetNotebookSize(void) const;

@@ -148,6 +148,31 @@ ParListInfoList::GetNotebookSize(void) const
 
 }
 
+/****************************** UseNewNotebook ********************************/
+
+/*
+ * This function checks if a parameter is of a type that requires a new
+ * notebook.
+ */
+
+bool
+ParListInfoList::UseNewNotebook(UniParPtr par)
+{
+	switch(par->type) {
+	case UNIPAR_CFLIST:
+	case UNIPAR_MODULE:
+		return(TRUE);
+	case UNIPAR_PARLIST:
+		return(*par->valuePtr.parList.list != NULL);
+ 	case UNIPAR_ICLIST:
+		useNotebookControls = TRUE;
+ 		return(TRUE);
+	default:
+		return(FALSE);
+	}
+
+}
+
 /****************************** UsingNotebook *********************************/
 
 /*
@@ -158,32 +183,11 @@ wxPanel *
 ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 {
 	/* static const wxChar *funcName = "ParListInfoList::UsingNotebook"; */
-	bool	useNewNotebook = FALSE;
 	int		i;
 	wxPanel	*panel = NULL;
 
-	if (!notebook) {
-		for (i = 0; (i < parList->numPars) && !useNewNotebook; i++)
-			switch (parList->pars[i].type) {
-			case UNIPAR_CFLIST:
-			case UNIPAR_MODULE:
-				useNewNotebook = TRUE;
-		 		break;
-			case UNIPAR_PARLIST:
-				useNewNotebook = (*parList->pars[i].valuePtr.parList.list !=
-				  NULL);
-		 		break;
-			case UNIPAR_ICLIST:
-				useNewNotebook = TRUE;
-				useNotebookControls = TRUE;
-		 		break;
-			default:
-				;
-			}
-		if (parList->GetPanelList)
-			useNewNotebook = TRUE;
-	}
-	if (useNewNotebook) {
+	if (!notebook && (UseNewNotebook(&parList->pars[i]) ||
+	  parList->GetPanelList)) {
 		notebook = new wxNotebook(parent, PARLISTINFOLIST_ID_NOTEBOOK);
 
 		parent->GetSizer()->Add(notebook, 1, wxGROW);
@@ -221,10 +225,10 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	if (!panelSpec1->name)
 		return;
 
-	if ((newPanel = UsingNotebook(parList, (wxChar *) panelSpec1->name)) !=
-	  NULL)
-		panel = newPanel;
 	panelSpec2 = ( *parList->GetPanelList)(panelNum + 1);
+	if ((parList->pars[panelSpec1->specifier].type != UNIPAR_CFLIST) &&
+	  (newPanel = UsingNotebook(parList, (wxChar *) panelSpec1->name)) != NULL)
+		panel = newPanel;
 	numPars = panelSpec2->specifier - panelSpec1->specifier;
 	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
 	  numPars);
@@ -232,6 +236,7 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	panel->GetSizer()->Add(infoPtr->GetSizer(), 0, wxALIGN_CENTER_VERTICAL);
 	SetPanelledModuleInfo(panel, pc, parList, panelSpec2->specifier, panelNum +
 	  1);
+	SetSubParListInfo(infoPtr);
 
 }
 

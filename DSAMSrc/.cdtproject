@@ -19,7 +19,11 @@
     
     
     
+    
+    
     <item id="org.eclipse.cdt.core.pathentry">
+      
+      
       
       
       
@@ -53,7 +57,11 @@
       
       
       
+      
+      
       <pathentry kind="out" path=""/>
+      
+      
       
       
       
@@ -79,6 +87,8 @@
       
       
       
+      
+    
     
     
     
@@ -96,8 +106,10 @@
     
     
     
+    
   
   
+    
     
     
     
@@ -535,7 +547,9 @@
     
     
     
+    
 
+  
   
   
   
