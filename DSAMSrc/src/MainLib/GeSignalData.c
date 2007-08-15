@@ -111,15 +111,14 @@ Init_SignalData(const WChar *callingFunctionName)
 void
 FreeChannels_SignalData(SignalDataPtr theData)
 {
-	int		i;
-
 	if (theData != NULL) {
 		if (theData->channel != NULL) {
-			if (!theData->externalDataFlag)
-				for (i = 0; i < theData->numChannels; i++)
-					free(theData->channel[i]);
-			free(theData->channel);
+			if (!theData->externalDataFlag) {
+				free(theData->channel);
+				free(theData->block);
+			}
 			theData->channel = NULL;
+			theData->block = NULL;
 		}
 		if (theData->info.chanLabel != NULL) {
 			free(theData->info.chanLabel);
@@ -214,8 +213,8 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
   BOOLN externalDataFlag)
 {
 	static const WChar *funcName = wxT("InitChannels_SignalData");
-	int			i, j;
-	ChanData	**p;
+	int			i;
+	ChanData	**p, *pp, *p1;
 	
 	if (!CheckInit_SignalData(theData, wxT("InitChannels_SignalData")))
 		return(FALSE);
@@ -229,18 +228,17 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 		return(FALSE);
 	}
 	if (!externalDataFlag) {
-		for (i = 0; i < numChannels; i++)
-			if ((p[i] = (ChanData *) calloc(theData->length, sizeof(
-			  ChanData))) == NULL) {
-				NotifyError(wxT("%s: Out of memory for channel[%d] data ")
-				  wxT("(length = %u)."), funcName, i, theData->length);
-				for (j = 0; j < i - 1; j++)
-					free(p[j]);
-				free(p);
-				return(FALSE);
-			}
+		if ((pp = (ChanData *) calloc(numChannels * theData->length,
+		  sizeof(double))) == NULL) {
+			NotifyError(wxT("%s: Out of memory for signal block."), funcName);
+			free(p);
+			return(FALSE);
+		}	
+		for (i = 0, p1 = pp; i < numChannels; i++, p1 += theData->length)
+			p[i] = p1; 
 	}
 	theData->channel = p;
+	theData->block = pp;
 	theData->numChannels = numChannels;
 	theData->origNumChannels = numChannels;
 	theData->externalDataFlag = externalDataFlag;

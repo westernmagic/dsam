@@ -84,6 +84,7 @@ typedef struct {
 	double	outputTimeOffset;/* t = {sample no.} * dt  - timeOffset. */
 	SignalInfo	info;		/* Contains channel lebels, titles etc. */
 	ChanData	**channel;	/* Signal data channels */
+	ChanData	*block;		/* The signal channels stored in contiguous block. */
 
 } SignalData, *SignalDataPtr;
 
