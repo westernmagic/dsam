@@ -183,11 +183,18 @@ wxPanel *
 ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 {
 	/* static const wxChar *funcName = "ParListInfoList::UsingNotebook"; */
+	bool	useNewNotebook = FALSE;
 	int		i;
 	wxPanel	*panel = NULL;
 
-	if (!notebook && (UseNewNotebook(&parList->pars[i]) ||
-	  parList->GetPanelList)) {
+	if (!notebook) {
+		for (i = 0; (i < parList->numPars) && !useNewNotebook; i++)
+			if (UseNewNotebook(&parList->pars[i]))
+				useNewNotebook = TRUE;
+		 if (parList->GetPanelList)
+		 	useNewNotebook = TRUE;
+	}
+	if (useNewNotebook) {
 		notebook = new wxNotebook(parent, PARLISTINFOLIST_ID_NOTEBOOK);
 
 		parent->GetSizer()->Add(notebook, 1, wxGROW);
