@@ -103,6 +103,7 @@ typedef struct {
 	double	*ap;				/* AR coefficients  (NumCh*3*NumFilt) */
 	double	*sigInPrev;			/* Input state vector */
 	double	*sigOutPrev;		/* Output state vector */
+	double	*y;					/* Points to result output */
 	BandwidthModePtr	bMode;
 
 } AsymCmpCoeffs2, *AsymCmpCoeffs2Ptr;
@@ -160,7 +161,7 @@ extern	double	Filters_AsymCmpCoef0[];        	/* ACF coefficents */
 __BEGIN_DECLS
 
 void	ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
-		  ChanLen sample);
+		  int chanOffset, int numChannels, ChanLen sample);
 
 void	AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, 
 						AsymCmpCoeffsPtr p[]);

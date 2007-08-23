@@ -2091,3 +2091,22 @@ CFSpace_CFList(CFListPtr theCFs)
 
 }
 
+/****************************** FindCF ***************************************/
+
+/*
+ * This function looks for a specified CF within a CF list.
+ * It returns the index or -1 if a match is not found.
+ * It assumes that the CFList structure has been correctly initialised.
+ */
+
+int
+FindCF_CFList(CFListPtr theCFs, double theCF, double accuracy)
+{
+	int		i;
+
+	for (i = 0; i < theCFs->numChannels; i++)
+		if (fabs(theCFs->frequency[i] - theCF) < fabs(accuracy))
+			return(i);
+	return(-1);
+
+}

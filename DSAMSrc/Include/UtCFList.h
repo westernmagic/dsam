@@ -149,6 +149,8 @@ BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
+int			FindCF_CFList(CFListPtr theCFs, double theCF, double accuracy);
+
 void		Free_CFList(CFListPtr *theCFs);
 
 CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,

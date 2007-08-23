@@ -1123,6 +1123,7 @@ InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
 {
 	const static WChar	*funcName = wxT("InitAsymCmpCoeffs2_GCFilters");
 	int		totalCoeffs = cascade * GCFILTERS_ACF_NUM_COEFFS;
+	int		outputStateVectorLen = cascade * GCFILTERS_ACF_LEN_STATE_VECTOR;
 	AsymCmpCoeffs2Ptr p;
 
 	if ((p = (AsymCmpCoeffs2Ptr) malloc(sizeof(AsymCmpCoeffs2))) == NULL) {
@@ -1147,17 +1148,18 @@ InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
 	if ((p->sigInPrev = (double *) calloc(GCFILTERS_ACF_LEN_STATE_VECTOR,
 	  sizeof(double))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for sigInPrev state vector (%d."), funcName,
-		  totalCoeffs);
+		  GCFILTERS_ACF_LEN_STATE_VECTOR);
 		FreeAsymCmpCoeffs2_GCFilters(&p);
 		return(NULL);
 	}
-	if ((p->sigOutPrev = (double *) calloc(cascade * GCFILTERS_ACF_LEN_STATE_VECTOR,
-	  sizeof(double))) == NULL) {
+	if ((p->sigOutPrev = (double *) calloc(outputStateVectorLen, sizeof(double))) ==
+	  NULL) {
 		NotifyError(wxT("%s: Out of memory for sigOutPrev state vector (%d."), funcName,
-		  totalCoeffs);
+		  outputStateVectorLen);
 		FreeAsymCmpCoeffs2_GCFilters(&p);
 		return(NULL);
 	}
+	p->y = (p->sigOutPrev + outputStateVectorLen - 1);
 	p->p0 = GCFILTERS_ACF_P0;
 	p->p1 = GCFILTERS_P1(b, c);
 	p->p2 = GCFILTERS_P2(b, c);
@@ -1264,21 +1266,21 @@ SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs)
 			
 void
 ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
-  ChanLen sample)
+  int chanOffset, int numChannels, ChanLen sample)
 {
-	register ChanData	**dataPtr, *pp, *p1, forwardSum, backwardSum, y;
+	register ChanData	*dataPtr, *pp, *p1, forwardSum, backwardSum, y;
 	int		chan, i, j;
 	ChanData	*apStart, *bzStart, *x, *sigOutPrev;
 
-	dataPtr = _OutSig_EarObject(data)->channel + _OutSig_EarObject(data)->offset;
-	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(
-	  data)->numChannels; chan++, dataPtr++, aCFCoeffs++) {
-		UPDATE_STATE_VECTOR((*aCFCoeffs)->sigInPrev, *(*dataPtr + sample));
+	for (chan = chanOffset, dataPtr = _OutSig_EarObject(data)->channel[
+	  chanOffset] + sample; chan < numChannels; chan++, dataPtr +=
+	  _OutSig_EarObject(data)->length, aCFCoeffs++) {
+		UPDATE_STATE_VECTOR((*aCFCoeffs)->sigInPrev, *dataPtr);
 	  	x = (*aCFCoeffs)->sigInPrev;
 		for (i = 0, apStart = (*aCFCoeffs)->ap, bzStart = (*aCFCoeffs)->bz,
 		  sigOutPrev = (*aCFCoeffs)->sigOutPrev; i < (*aCFCoeffs)->numFilt;
-		   i++, apStart += GCFILTERS_ACF_NUM_COEFFS, bzStart +=
-		   GCFILTERS_ACF_NUM_COEFFS, sigOutPrev += GCFILTERS_ACF_LEN_STATE_VECTOR) {
+		  i++, apStart += GCFILTERS_ACF_NUM_COEFFS, bzStart +=
+		  GCFILTERS_ACF_NUM_COEFFS, sigOutPrev += GCFILTERS_ACF_LEN_STATE_VECTOR) {
 			for (j = 0, forwardSum = 0.0, p1 = bzStart, pp = x +
 			  GCFILTERS_ACF_LEN_STATE_VECTOR; j < GCFILTERS_ACF_LEN_STATE_VECTOR; j++)
 				forwardSum += *p1++ * *(--pp);
@@ -1289,7 +1291,6 @@ ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
 			UPDATE_STATE_VECTOR(sigOutPrev, y);
 			x = sigOutPrev;
 		}
-		*(*dataPtr + sample) = y;
 	}
 
 }

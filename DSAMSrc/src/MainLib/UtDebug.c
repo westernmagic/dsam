@@ -160,7 +160,7 @@ WriteOutSignal_Debug(WChar *fileName)
  */
 
 void
-WriteArray_Debug(WChar *fileName, double *p, int length, int increment)
+WriteArray_Debug(WChar *fileName, double *p, ChanLen length, int increment)
 {
 	static const char *funcName = "WriteArray_Debug";
 	ChanLen	i;

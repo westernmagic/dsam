@@ -100,9 +100,9 @@ typedef struct {
 	double	gainFactor;
 	double	lvldB;
 	double	fratVal[BM_GC_DYN_FRATVAL_EXPRS];
-	double	savedPGCOut;
 	double	lvlLinPrev[BM_GC_DYN_LVLLIN_SIZE];
 	double	lvlLinNow[BM_GC_DYN_LVLLIN_SIZE];
+	double	*lvlEstChan;
 
 } BMGCDGenChanInfo, *BMGCDGenChanInfoPtr;
 
