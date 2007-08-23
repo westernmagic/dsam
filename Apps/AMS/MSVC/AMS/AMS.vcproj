@@ -51,7 +51,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -249,7 +249,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -275,11 +275,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_g_x86.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x86.lib portaudio_x86.lib"
+				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_g_x86.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
 				OutputFile=".\Release/AMS.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;;&quot;$(FFTW3DIR)&quot;"
 				ProgramDatabaseFile=".\Release/AMS.pdb"
 				SubSystem="2"
 				TargetMachine="1"
@@ -347,7 +347,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -373,10 +373,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dsam_x64.lib dsam_ext_x64.lib dsam_g_x64.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x64.lib portaudio_x64.lib"
+				AdditionalDependencies="dsam_x64.lib dsam_ext_x64.lib dsam_g_x64.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x64.lib portaudio.lib libfftw_x64.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(FFTW3DIR)&quot;"
+				IgnoreDefaultLibraryNames="LIBCMT.lib"
 				ProgramDatabaseFile=".\Release/AMS.pdb"
 				SubSystem="2"
 				TargetMachine="17"
@@ -442,7 +443,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

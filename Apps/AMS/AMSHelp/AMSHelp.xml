@@ -4,6 +4,9 @@
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+	<!ENTITY Bibliography.xml SYSTEM "Bibliography.xml">
+
+	<!-- Common text -->
 	<!ENTITY APP "AMS">
 	<!ENTITY app "ams">
 ]>
@@ -269,7 +272,7 @@ Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This wi
 <sect2 id = "sx_Example2_Introduction">
 <title>Introduction</title>
 <para>
-In this example the user is carried through the process of creating a simulation using the Simulation Design Interface (SDI).
+In this example the user is carried through the process of creating a simulation from scratch using the Simulation Design Interface (SDI).  Building a simulation from scratch requires an understanding of the auditory system, to provide the user with a clear idea of what they trying to achieve.  A good method is to start with an established model and develop the simulation using that model as the basis.  This is the approach that will be used in this example, where we will build a simulation using the Meddis auditory-nerve model (<xref linkend = "Meddis86"/>.
 </para>
 
 </sect2>
@@ -349,6 +352,8 @@ In this example the user is carried through the process of creating a simulation
 </sect1>
 
 </chapter>
+
+&Bibliography.xml;
 
 <index/>
 
