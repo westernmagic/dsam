@@ -6,42 +6,54 @@
     
     
     
+    
 
+    
     
     
     <item id="org.eclipse.cdt.core.pathentry">
       
       
       
+      
 
+      
       
       
       <pathentry kind="src" path=""/>
       
       
       
+      
 
+      
       
       
       <pathentry kind="out" path=""/>
       
       
       
+      
 
+      
       
       
       <pathentry kind="con" path="org.eclipse.cdt.managedbuilder.MANAGED_CONTAINER"/>
       
       
       
+      
 
+    
     
     
     </item>
     
     
     
+    
 
+    
     
     
     <item id="org.eclipse.cdt.make.core.buildtargets">
@@ -450,7 +462,9 @@
     
     
     
+    
 
+  
   
   
   </data>
