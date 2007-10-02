@@ -19,6 +19,12 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG */
 
+/******************************************************************************/
+/****************************** HAVE_FFTW3 compile ****************************/
+/******************************************************************************/
+
+#if	HAVE_FFTW3
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -1920,3 +1926,6 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 	return(TRUE);
 
 }
+
+#endif /* HAVE_FFTW3 */
+

@@ -53,7 +53,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <sndfile.h>
+
+#if HAVE_SNDFILE
+#	include <sndfile.h>
+#endif
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -163,6 +166,8 @@ FreeSoundFormatLists_DataFile(void)
 	FreeNameAllocatedList_NameSpecifier(&dataFileSndFormatInfo.subFormatList);
 
 }
+
+#if HAVE_SNDFILE
 
 /****************************** InitSoundFormatList ***************************/
 
@@ -308,6 +313,26 @@ GetSndSubFormat_DataFile(int specifier)
 
 }
 
+/********************************* ResetSFInfo ********************************/
+
+/*
+ * Reset the SFInfo structure.
+ */
+
+void
+ResetSFInfo_DataFile(SF_INFO *p)
+{
+	p->frames = 0;
+	p->samplerate = 0;
+	p->channels = 0;
+	p->format = 0;
+	p->sections = 0;
+	p->seekable = 0;	
+
+}
+
+#endif /* HAVE_SNDFILE */
+
 /**************************** GetDuration *************************************/
 
 /*
@@ -333,24 +358,6 @@ GetDuration_DataFile(void)
 		NotifyError(wxT("%s: Could not calculate the total duration of the ")
 		  wxT("signal for '%s'"), funcName, dataFilePtr->name);
 	return(duration);
-
-}
-
-/********************************* ResetSFInfo ********************************/
-
-/*
- * Reset the SFInfo structure.
- */
-
-void
-ResetSFInfo_DataFile(SF_INFO *p)
-{
-	p->frames = 0;
-	p->samplerate = 0;
-	p->channels = 0;
-	p->format = 0;
-	p->sections = 0;
-	p->seekable = 0;	
 
 }
 
@@ -399,6 +406,8 @@ Init_DataFile(ParameterSpecifier parSpec)
 
 	dataFilePtr->GetDuration = GetDuration_DataFile;
 	InitEndianModeList_DataFile();
+
+#	if HAVE_SNDFILE
 	if (!InitSoundFormatList_DataFile()) {
 		NotifyError(wxT("%s: Could not initialise sound format list."),
 		  funcName);
@@ -411,6 +420,11 @@ Init_DataFile(ParameterSpecifier parSpec)
 		Free_DataFile();
 		return(FALSE);
 	}
+	ResetSFInfo_DataFile(&dataFilePtr->sFInfo);
+	dataFilePtr->sndFile = NULL;
+	dataFilePtr->vIOFuncs = NULL;
+	dataFilePtr->vIOPtr = NULL;
+#	endif /* HAVE_SNDFILE */
 	if (!SetUniParList_DataFile()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_DataFile();
@@ -422,10 +436,6 @@ Init_DataFile(ParameterSpecifier parSpec)
 	dataFilePtr->timeOffsetCount = 0;
 	dataFilePtr->maxSamples = 0;
 	dataFilePtr->type = NULL_DATA_FILE;
-	ResetSFInfo_DataFile(&dataFilePtr->sFInfo);
-	dataFilePtr->sndFile = NULL;
-	dataFilePtr->vIOFuncs = NULL;
-	dataFilePtr->vIOPtr = NULL;
 	dataFilePtr->buffer = NULL;
 	return(TRUE);
 
@@ -447,10 +457,12 @@ Free_DataFile(void)
 {
 	if (dataFilePtr == NULL)
 		return(TRUE);
+#	if HAVE_SNDFILE
 	if (dataFilePtr->vIOFuncs)
 		free(dataFilePtr->vIOFuncs);
 	if (dataFilePtr->vIOPtr && !dataFilePtr->inputMode)
 		FreeVirtualIOMemory_SndFile(&dataFilePtr->vIOPtr);
+#	endif
 	Free_SndFile();
 	FreeProcessVariables_DataFile();
 	if (dataFilePtr->parList)

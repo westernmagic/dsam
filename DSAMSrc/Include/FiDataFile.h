@@ -47,8 +47,10 @@
 #ifndef	_FIDATAFILE_H
 #define _FIDATAFILE_H	1
 
-#include <sndfile.h>
-#include "FiSndFile.h"
+#if HAVE_SNDFILE
+#	include <sndfile.h>
+#	include "FiSndFile.h"
+#endif
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -126,6 +128,10 @@ typedef enum {
 /*************************** Type definitions *********************************/
 /******************************************************************************/
 
+#if !HAVE_SNDFILE
+	typedef ChanLen	sf_count_t;
+#endif /* HAVE_SNDFILE */
+
 typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
@@ -158,10 +164,12 @@ typedef struct {
 	sf_count_t	maxSamples;		/* This can be set to restrict the data size. */
 	sf_count_t	numSamples;		/* Set for modes which may lose previous value. */
 	FileFormatSpecifier	type;
-	SF_INFO	sFInfo;
-	SNDFILE	*sndFile;
-	SF_VIRTUAL_IO	*vIOFuncs;
-	DFVirtualIOPtr	vIOPtr;
+#	if HAVE_SNDFILE
+		SF_INFO	sFInfo;
+		SNDFILE	*sndFile;
+		SF_VIRTUAL_IO	*vIOFuncs;
+		DFVirtualIOPtr	vIOPtr;
+#	endif /* HAVE_SNDFILE */
 	double	*buffer;
 
 } DataFile, *DataFilePtr;

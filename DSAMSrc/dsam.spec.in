@@ -4,7 +4,7 @@
 %define prefix	/usr
 %define ver		@VERSION@
 %define libVer	@LT_RELEASE@
-%define RELEASE @DSAM_BINARY_AGE@
+%define RELEASE @DSAM_RPM_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
 %define numCPUs %{?cpus} %{!?cpus:1}
 

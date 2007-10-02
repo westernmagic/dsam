@@ -14,6 +14,8 @@
 #ifndef	_FISNDFILE_H
 #define _FISNDFILE_H	1
 
+#if HAVE_SNDFILE
+
 #include <sndfile.h>
 
 /******************************************************************************/
@@ -73,4 +75,5 @@ BOOLN	WriteFile_SndFile(WChar *fileName, EarObjectPtr data);
 
 __END_DECLS
 
-#endif
+#endif /* HAVE_SNDFILE */
+#endif /* _FISNDFILE_H */

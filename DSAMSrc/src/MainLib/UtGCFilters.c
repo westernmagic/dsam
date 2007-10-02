@@ -858,6 +858,12 @@ PGCCarrierList_GCFilters(int index)
 
 }
 
+/*******************************************************************************/
+/*********************** HAVE_FFTW3 compile ************************************/
+/*******************************************************************************/
+
+#if HAVE_FFTW3
+
 /*************************** FindPeakGainFreq **********************************/
 
 /*
@@ -1317,3 +1323,6 @@ ASympCmpFreqResp_GCFilters(double *asymFunc, double frs, double fs, double b,
 	  deltaFreq)
 		*p++ = exp(c * atan2(f - frs, be));
 }
+
+#endif /* HAVE_FFTW3 */
+

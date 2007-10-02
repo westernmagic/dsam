@@ -88,7 +88,9 @@ class IPCUtils {
 	bool	inProcessConnectedFlag, outProcessConnectedFlag;
 	EarObjectPtr	outProcess, inProcess;
 	EarObjectPtr	inProcessCustomer, outProcessSupplier;
+#	if HAVE_SNDFILE
 	DFVirtualIOPtr	inVIOPtr;
+#	endif
 
   public:
 
@@ -103,14 +105,17 @@ class IPCUtils {
 	EarObjectPtr	GetInProcess(void)	{ return inProcess; }
 	bool	InProcessConnected(void)	{ return inProcessConnectedFlag; }
 	EarObjectPtr	GetOutProcess(void)	{ return outProcess; }
-	DFVirtualIOPtr	GetInVIOPtr(void)	{ return inVIOPtr; }
-	bool	InitInputMemory(sf_count_t length);
 	bool	InitInProcess(void);
 	bool	InitOutProcess(void);
 	void	ResetInProcess(void);
 	void	ResetOutProcess(void);
 	bool	RunOutProcess(void);
 	bool	RunInProcess(void);
+
+#	if HAVE_SNDFILE
+	DFVirtualIOPtr	GetInVIOPtr(void)	{ return inVIOPtr; }
+	bool	InitInputMemory(sf_count_t length);
+#	endif
 
 };
 

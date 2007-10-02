@@ -137,12 +137,14 @@ typedef struct {
 
 } CntlGammaC, *CntlGammaCPtr;
 
-typedef struct {
+#if HAVE_FFTW3
+	typedef struct {
 
-	FFTArrayPtr	pGC;
-	FFTArrayPtr	pGCOut;
+		FFTArrayPtr	pGC;
+		FFTArrayPtr	pGCOut;
 
-} GammaChirpCoeffs, *GammaChirpCoeffsPtr;
+	} GammaChirpCoeffs, *GammaChirpCoeffsPtr;
+#endif /* HAVE_FFTW3 */
 
 /******************************************************************************/
 /*************************** External Variables *******************************/
@@ -159,6 +161,20 @@ extern	double	Filters_AsymCmpCoef0[];        	/* ACF coefficents */
  * in GeCommon.h.
  */
 __BEGIN_DECLS
+
+/*************************** HAVE_FFTW3 Prototypes ****************************/
+
+#if HAVE_FFTW3
+	void	FreePGammaChirpCoeffs_GCFilters(GammaChirpCoeffsPtr *p);
+
+	GammaChirpCoeffsPtr	InitPGammaChirpCoeffs_GCFilters(double cF, double bw,
+						  double sR, double orderG, double coefERBw, double coefC,
+						  double phase, int swCarr, int swNorm,
+						  SignalDataPtr inSignal);
+
+	void	PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs);
+
+#endif /* HAVE_FFTW3 */
 
 void	ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
 		  int chanOffset, int numChannels, ChanLen sample);
@@ -186,8 +202,6 @@ void	FreeOwoPoleCoeffs_GCFilters(OnePoleCoeffsPtr *p);
 
 void	FreeCntlGammaChirp_GCFilters(CntlGammaCPtr *p);
 
-void	FreePGammaChirpCoeffs_GCFilters(GammaChirpCoeffsPtr *p);
-
 void	FreeHammingWindow(double *p);
 
 void	FreeERBWindow_GCFilters(double *p);
@@ -200,14 +214,9 @@ void	GammaChirpAmpFreqResp_GCFilters(double *ampFrsp, double frs, double eRBw,
 AsymCmpCoeffs2Ptr	InitAsymCmpCoeffs2_GCFilters(int cascade, double fs,
 					  double b, double c, BandwidthModePtr bMode);
 
-GammaChirpCoeffsPtr	InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR,
-					  double orderG, double coefERBw, double coefC, double phase,
-					  int swCarr, int swNorm, SignalDataPtr inSignal);
 
 void	LeakyInt_GCFilters(CntlGammaCPtr p[], OnePoleCoeffsPtr q[], 
 		  int numChannels);
-
-void	PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs);
 
 void	ResetAsymCmpCoeffs2State_GCFilters(AsymCmpCoeffs2Ptr p);
 

@@ -135,7 +135,9 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 	}
 	fourierTPtr->fTLength = 0;
 	fourierTPtr->numThreads = 0;
-	fourierTPtr->plan = NULL;
+#	if HAVE_FFTW3
+		fourierTPtr->plan = NULL;
+#	endif /* HAVE_FFTW3 */
 	fourierTPtr->fT = NULL;
 	return(TRUE);
 

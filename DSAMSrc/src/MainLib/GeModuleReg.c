@@ -114,9 +114,11 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("BM_GAMMAC"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_GammaChirp },
-	{ BM_GC_DYN_MOD_NAME,
-		MODEL_MODULE_CLASS, PROCESS_MODULE,
-		InitModule_BasilarM_GammaChirp_Dyn },
+#	if HAVE_FFTW3
+		{ BM_GC_DYN_MOD_NAME,
+			MODEL_MODULE_CLASS, PROCESS_MODULE,
+			InitModule_BasilarM_GammaChirp_Dyn },
+#	endif
 	{ wxT("BM_GAMMAT"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_GammaT },

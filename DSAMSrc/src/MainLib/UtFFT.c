@@ -265,6 +265,8 @@ Length_FFT(unsigned long length)
 
 }
 
+#if HAVE_FFTW3
+
 /****************************** InitArray *************************************/
 
 /*
@@ -330,4 +332,6 @@ FreeArray_FFT(FFTArrayPtr *p)
 	*p = NULL;
 
 }
+
+#endif /* HAVE_FFTW3 */
 

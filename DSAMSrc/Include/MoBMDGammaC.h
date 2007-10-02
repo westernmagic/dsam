@@ -18,6 +18,8 @@
 #ifndef _MOBMDGAMMAC_H
 #define _MOBMDGAMMAC_H 1
 
+#if HAVE_FFTW3
+
 #include "UtNameSpecs.h"
 
 /******************************************************************************/
@@ -273,4 +275,7 @@ BOOLN	SetUniParList_BasilarM_GammaChirp_Dyn(void);
 
 __END_DECLS
 
-#endif
+#endif /* HAVE_FFTW3 */
+
+#endif /* _MOBMDGAMMAC_H */
+

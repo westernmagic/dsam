@@ -16,11 +16,20 @@
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
-#include <sndfile.h>
+
+#if HAVE_FTTW3
+#	include <sndfile.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
+
+/******************************************************************************/
+/****************************** HAVE_FFTW3 compile ****************************/
+/******************************************************************************/
+
+#if	HAVE_FFTW3
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -830,4 +839,6 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	return(ok);
 	
 }
+
+#endif /* HAVE_FFTW3 */
 

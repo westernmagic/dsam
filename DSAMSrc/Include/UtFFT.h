@@ -33,21 +33,21 @@
 
 #if HAVE_FFTW3
 	typedef fftw_complex	Complx, *ComplxPtr;
+
+	typedef struct {		/* Used so that logical lengths for the arrays can be set */
+
+		int		numPlans;
+		fftw_plan	*plan;
+		double	*data;
+		unsigned long	arrayLen;
+		unsigned long	fftLen;
+		unsigned long	dataLen;
+
+	} FFTArray, *FFTArrayPtr;
 #else
 #	define Complx	Complex
 #	define ComplxPtr	ComplexPtr
 #endif
-
-typedef struct {		/* Used so that logical lengths for the arrays can be set */
-
-	int		numPlans;
-	fftw_plan	*plan;
-	double	*data;
-	unsigned long	arrayLen;
-	unsigned long	fftLen;
-	unsigned long	dataLen;
-
-} FFTArray, *FFTArrayPtr;
 
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
@@ -65,9 +65,11 @@ void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
 BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
 
-FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans);
+#if HAVE_FFTW3
+	FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans);
 
-void	FreeArray_FFT(FFTArrayPtr *p);
+	void	FreeArray_FFT(FFTArrayPtr *p);
+#endif /* HAVE_FFTW3 */
 
 unsigned long	Length_FFT(unsigned long length);
 
