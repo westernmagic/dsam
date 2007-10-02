@@ -1,8 +1,8 @@
-# This function closes the figure.
-#
-# usage DataXAxis(<info>)
-#
-# info -     info structure from DSAM AIFF data
+% This function calculates the t array using the DSAM info structure.
+%
+% usage DataXAxis(<info>)
+%
+% info -     info structure from DSAM AIFF data
 
 function x = DataXAxis(info)
 
