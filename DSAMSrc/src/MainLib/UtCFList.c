@@ -514,7 +514,6 @@ SetCFUniParListMode_CFList(CFListPtr theCFs)
 	switch (theCFs->centreFreqMode) {
 	case CFLIST_ERBN_MODE:
 	case CFLIST_LOG_MODE:
-	case CFLIST_LINEAR_MODE:
 	case CFLIST_CAT_MODE:
 	case CFLIST_CHINCHILLA_MODE:
 	case CFLIST_GPIG_MODE:
@@ -530,6 +529,7 @@ SetCFUniParListMode_CFList(CFListPtr theCFs)
 		theCFs->cFParList->pars[CFLIST_CF_ERB_DENSITY].enabled = TRUE;
 		break;
 	case CFLIST_FOCAL_LOG_MODE:
+	case CFLIST_LINEAR_MODE:
 		theCFs->cFParList->pars[CFLIST_CF_FOCAL_FREQ].enabled = TRUE;
 		theCFs->cFParList->pars[CFLIST_CF_MIN_FREQ].enabled = TRUE;
 		theCFs->cFParList->pars[CFLIST_CF_MAX_FREQ].enabled = TRUE;
@@ -1173,17 +1173,29 @@ GenerateLinear_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateLinear_CFList");
 	int		i;
-	double	scale;
+	double	scale, offset;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
 	scale = (theCFs->maxCF - theCFs->minCF) / (theCFs->numChannels - 1);
+	if (theCFs->focalCF > 0.0) {
+		if ((theCFs->focalCF <= theCFs->minCF) || (theCFs->focalCF >=
+		  theCFs->maxCF)) {
+			NotifyError(wxT("%s: Focal frequency (%g) must be within the frequency ")
+			  wxT("range %g - %g."), funcName, theCFs->focalCF, theCFs->minCF,
+			  theCFs->maxCF);
+			return(FALSE);
+		}
+		offset = scale * (int) floor((theCFs->focalCF - theCFs->minCF) / scale) +
+		  theCFs->minCF - theCFs->focalCF;
+	} else
+		offset = 0.0;
 	if (!AllocateFrequencies_CFList(theCFs)) {
 		NotifyError(wxT("%s: Could not allocate frequencies."), funcName);
 		return(FALSE);
 	}
 	for (i = 0; i < theCFs->numChannels; i++)
-		theCFs->frequency[i] = scale * i + theCFs->minCF;
+		theCFs->frequency[i] = scale * i + theCFs->minCF - offset;
 	return(TRUE);
 
 }
@@ -1484,6 +1496,7 @@ GenerateList_CFList(WChar *modeName, WChar *diagModeName, int numberOfCFs,
 
 	switch (theCFs->centreFreqMode) {
 	case CFLIST_FOCAL_LOG_MODE:
+	case CFLIST_LINEAR_MODE:
 		if (!SetFocalCF_CFList(theCFs, focalCF))
 			ok = FALSE;
 		break;
@@ -2002,7 +2015,6 @@ PrintPars_CFList(CFListPtr theCFs)
 			break;
 		case CFLIST_ERBN_MODE:
 		case CFLIST_LOG_MODE:
-		case CFLIST_LINEAR_MODE:
 		case CFLIST_CAT_MODE:
 		case CFLIST_CHINCHILLA_MODE:
 		case CFLIST_GPIG_MODE:
@@ -2013,6 +2025,7 @@ PrintPars_CFList(CFListPtr theCFs)
 			DPrint(wxT("\t\tNumber of CF's: %d.\n"), theCFs->numChannels);
 			break;
 		case CFLIST_FOCAL_LOG_MODE:
+		case CFLIST_LINEAR_MODE:
 			DPrint(wxT("\t\tMinimum/maximum frequency: %g / %g Hz,\n"),
 			  theCFs->minCF, theCFs->maxCF);
 			DPrint(wxT("\t\tFocal CF: %g (Hz),\tNumber of CF's: %d.\n"),
