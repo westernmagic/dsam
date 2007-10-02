@@ -11,7 +11,7 @@ SPFFiles	= gammatoneDemo.spf LGuineaPigCN001_721Hz_HS1.spf \
 ParFiles	= BM_gammatone.par filtMultiBandpassGP.par mathOpStapes.par
 
 
-MatlabFiles	= MatlabDemo.m MatlabDemoRunDSAMsim.m readDatFile.m \
+MatlabFiles	= DataXAxis.m MatlabDemo.m MatlabDemoRunDSAMsim.m readDatFile.m \
 				ExternalIn1.m Simple1.m
 
 DataFiles	= 
