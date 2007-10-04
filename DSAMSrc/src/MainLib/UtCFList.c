@@ -349,10 +349,6 @@ SetFocalCF_CFList(CFListPtr theCFs, double focalCF)
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
-	if (focalCF <= 0.0) {
-		NotifyError(wxT("%s: Illegal frequency (%g Hz)."), funcName, focalCF);
-		return(FALSE);
-	}
 	theCFs->focalCF = focalCF;
 	if (theCFs->cFParList)
 		theCFs->cFParList->updateFlag = TRUE;
