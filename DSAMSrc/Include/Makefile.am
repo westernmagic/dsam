@@ -26,7 +26,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSDIShapes.h GrDiagFrame.h GrSDIDoc.h GrIPCServer.h \
 				GrSDIDocManager.h GrSDIXMLDoc.h GrSDIBaseShapes.h
 
-Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h MoBM0DRNL.h \
+Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \

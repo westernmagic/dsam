@@ -16,7 +16,7 @@ Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod
 
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoBMCarney.mod MoBMCooke.mod MoBMGammaT.mod MoBMDRNL.mod \
-				MoBM0DRNL.mod FlLowPass.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
+				FlLowPass.mod MoHCRPCarney.mod MoHCRPMeddis.mod \
 				MoHCRPShamma.mod MoIHCCarney.mod MoIHCCooke.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
