@@ -37,7 +37,9 @@ class istream;
 #define DSAM_XML_CFLIST_ELEMENT				"cflist"
 #define DSAM_XML_CONNECTIONS_ELEMENT		"connections"
 #define DSAM_XML_DSAM_ELEMENT				"dsam"
+#define DSAM_XML_ICLIST_ELEMENT				"iclist"
 #define DSAM_XML_INPUT_ELEMENT				"input"
+#define DSAM_XML_ION_CHANNELS_ELEMENT		"ion_channels"
 #define DSAM_XML_PAR_ELEMENT				"par"
 #define DSAM_XML_PAR_LIST_ELEMENT			"par_list"
 #define DSAM_XML_PARARRAY_ELEMENT			"par_array"
@@ -111,6 +113,7 @@ class DSAMXMLDocument: public TiXmlDocument
 	bool	GetCFListInfo(TiXmlElement *parentElement, UniParList *parList);
 	bool	GetConnectionInfo(TiXmlElement *objectElement, DynaListPtr *p,
 			  const char * type);
+	bool	GetICListInfo(TiXmlElement *parentElement, UniParList *parList);
 	bool	GetParArrayInfo(TiXmlElement * myElement, UniParList *parList);
 	bool	GetParListInfo(TiXmlNode *parListNode, UniParList *parList);
 	bool	GetParInfo(TiXmlNode *parentElement, UniParList *parList);

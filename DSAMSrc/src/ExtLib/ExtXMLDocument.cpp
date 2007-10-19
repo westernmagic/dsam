@@ -194,7 +194,7 @@ DSAMXMLDocument::AddSimulation(TiXmlNode &node, EarObjectPtr simProcess)
 }
 
 /******************************************************************************/
-/****************************** AddParGeneral ******************************/
+/****************************** AddParGeneral *********************************/
 /******************************************************************************/
 
 void
@@ -209,6 +209,18 @@ DSAMXMLDocument::AddParGeneral(TiXmlNode &node, UniParPtr p)
 		AddParList(cFListElement, (*p->valuePtr.cFPtr)->cFParList);
 		AddParList(cFListElement, (*p->valuePtr.cFPtr)->bParList);
 		node.InsertEndChild(cFListElement);
+		break; }
+	case UNIPAR_ICLIST: {
+		DynaListPtr	iCNode;
+		TiXmlElement iCListElement(DSAM_XML_ICLIST_ELEMENT);
+		AddParList(iCListElement, (*p->valuePtr.iCPtr)->parList);
+		TiXmlElement iCElement(DSAM_XML_ION_CHANNELS_ELEMENT);		
+		for (iCNode = (*p->valuePtr.iCPtr)->ionChannels; iCNode; iCNode =
+		  iCNode->next) {
+			AddParList(iCElement, ((IonChannelPtr) iCNode->data)->parList);
+		}
+		iCListElement.InsertEndChild(iCElement);
+		node.InsertEndChild(iCListElement);
 		break; }
 	case UNIPAR_PARARRAY: {
 		TiXmlElement parArrayElement(DSAM_XML_PARARRAY_ELEMENT);
@@ -282,13 +294,7 @@ DSAMXMLDocument::AddParList(TiXmlNode &node, UniParListPtr parList, const wxChar
 	if (name)
 		parListElement.SetAttribute(DSAM_XML_NAME_ATTRIBUTE, wxConvUTF8.cWX2MB(
 		  name));
-	switch (parList->mode) {
-	case UNIPAR_SET_IC:
-		printf("DSAMXMLDocument::AddParList:Debug not yet implemented.\n"); 
-		//break; - go to default.
-	default:
-		AddParListStandard(parListElement, parList);
-	}
+	AddParListStandard(parListElement, parList);
 	node.InsertEndChild(parListElement);
 
 }
@@ -467,7 +473,7 @@ DSAMXMLDocument::GetCFListInfo(TiXmlElement *parentElement,
 	  DSAM_XML_CFLIST_ELEMENT)) != NULL) {
 		if ((par = FindUniPar_UniParMgr(&parList, wxT("CFLIST"),
 		  UNIPAR_SEARCH_ABBR)) == NULL) {
-			XMLNotifyError(cFListElement, wxT("%s: CFlist list not found"),
+			XMLNotifyError(cFListElement, wxT("%s: CFlist not found"),
 			  funcName);
 			return(false);
 		}
@@ -492,6 +498,58 @@ DSAMXMLDocument::GetCFListInfo(TiXmlElement *parentElement,
 			XMLNotifyError(node->ToElement(), wxT("%s: Could not set CFList ")
 			  wxT("bandwidth parameters"), funcName);
 			return(false);
+		}
+	}
+	return(true);
+
+}
+
+/******************************************************************************/
+/****************************** GetICListInfo *********************************/
+/******************************************************************************/
+
+bool
+DSAMXMLDocument::GetICListInfo(TiXmlElement *parentElement, 
+  UniParList *parList)
+{
+	static const wxChar *funcName = wxT("DSAMXMLDocument::GetICListInfo");
+	UniParPtr	par;
+	TiXmlNode	*node;
+	TiXmlElement	*iCListElement, *iCElement;
+
+	if ((iCListElement = parentElement->FirstChildElement(
+	  DSAM_XML_ICLIST_ELEMENT)) != NULL) {
+		if ((par = FindUniPar_UniParMgr(&parList, wxT("ICLIST"),
+		  UNIPAR_SEARCH_ABBR)) == NULL) {
+			XMLNotifyError(iCListElement, wxT("%s: IClist not found"),
+			  funcName);
+			return(false);
+		}
+		if ((node = iCListElement->IterateChildren(DSAM_XML_PAR_LIST_ELEMENT,
+		  NULL)) == NULL) {
+			XMLNotifyError(iCListElement, wxT("%s ICList parameters not found"),
+			  funcName);
+			return(false);
+		}
+		if (!GetParListInfo(node, (*par->valuePtr.iCPtr)->parList)) {
+			XMLNotifyError(node->ToElement(), wxT("%s: Could not set main ICList ")
+			  wxT("parameters"), funcName);
+			return(false);
+		}
+		if ((iCElement = iCListElement->FirstChildElement(
+		  DSAM_XML_ION_CHANNELS_ELEMENT)) == NULL) {
+			XMLNotifyError(iCListElement, wxT("%s ICList ion channels not found"),
+			  funcName);
+			return(false);
+		}
+		node = NULL;
+		while ((node = iCElement->IterateChildren(DSAM_XML_PAR_LIST_ELEMENT,
+		  node)) != NULL) {
+			if (!GetParListInfo(node, parList)) {
+				XMLNotifyError(node->ToElement(), wxT("%s: Could not set ion ")
+				  wxT("channel parameters"), funcName);
+				return(false);
+			}
 		}
 	}
 	return(true);
@@ -592,6 +650,11 @@ DSAMXMLDocument::GetParListInfo(TiXmlNode *parListNode, UniParList *parList)
 	}
 	if (!GetCFListInfo(parListElement, parList)) {
 		XMLNotifyError(parListElement, wxT("%s: Failed reading CFList ")
+		  wxT("parameters."), funcName);
+		return(false);
+	}
+	if (!GetICListInfo(parListElement, parList)) {
+		XMLNotifyError(parListElement, wxT("%s: Failed reading ICList ")
 		  wxT("parameters."), funcName);
 		return(false);
 	}
