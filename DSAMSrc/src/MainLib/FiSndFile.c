@@ -17,19 +17,19 @@
 #include <string.h>
 #include <ctype.h>
 
-#if HAVE_FTTW3
-#	include <sndfile.h>
-#endif
-
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#if HAVE_SNDFILE
+#	include <sndfile.h>
+#endif
+
 /******************************************************************************/
-/****************************** HAVE_FFTW3 compile ****************************/
+/****************************** HAVE_SNDFILE compile **************************/
 /******************************************************************************/
 
-#if	HAVE_FFTW3
+#if	HAVE_SNDFILE
 
 #include "GeCommon.h"
 #include "GeSignalData.h"
@@ -681,8 +681,8 @@ AddToString_SndFile(char *a, size_t *aLen, char *b, size_t maxLen)
 	size_t	bLen = strlen(b);
 
 	if ((bLen + *aLen) > maxLen) {
-		NotifyError(wxT("%s: String too long for string concatination (%u)."),
-		  funcName);
+		NotifyError(wxT("%s: String too long for string concatination (%u/%u)."),
+		  funcName, bLen + *aLen, maxLen);
 		return(FALSE);
 	}
 	strcat(a, b);
@@ -757,7 +757,7 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 	channelStringLen = 0;
 	*channelString = '\0';
 	for (i = 0; i < signal->numChannels; i++) {
-		sprintf(workStr, " %d:%g", i, signal->info.chanLabel[i]);
+		sprintf(workStr, " %d:%.0f", i, signal->info.chanLabel[i]);
 		if (!AddToString_SndFile(channelString, &channelStringLen, workStr,
 		  maxChannelStringLen)) {
 			free(channelString);
@@ -840,5 +840,5 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	
 }
 
-#endif /* HAVE_FFTW3 */
+#endif /* HAVE_SNDFILE */
 
