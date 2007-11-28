@@ -104,7 +104,7 @@ EOF
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS COPYING README.txt NEWS ChangeLog
+%doc AUTHORS COPYING INSTALL README.txt NEWS ChangeLog
 %{_datadir}/%{name}/DEFAULT/*
 %{_datadir}/%{name}/HelpFiles/*
 %{_datadir}/%{name}/Tutorials/*
