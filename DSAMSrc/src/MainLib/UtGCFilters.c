@@ -27,6 +27,8 @@
 #include "UtBandwidth.h"
 #include "UtGCFilters.h"
 
+#define DEBUG 1
+
 #if DEBUG
 #	include "UtDebug.h"
 #endif
@@ -1016,8 +1018,14 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 		for ( ; i < p->pGC->fftLen; i++)
 			*pp++ = 0.0;
 	}
+#	if DEBUG
+		WriteArray_Debug(wxT("testFFT_b.dat"), p->pGC->data, p->pGC->dataLen, 1);
+#	endif
 	/* This next calculation was originally the first part of fftfilt.m */
 	fftw_execute(p->pGC->plan[0]);
+#	if DEBUG
+		WriteArray_Debug(wxT("testFFT_B.dat"), p->pGC->data, p->pGC->fftLen, 2);
+#	endif
 	return (p);
 
 }

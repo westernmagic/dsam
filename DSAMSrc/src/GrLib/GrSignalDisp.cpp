@@ -556,10 +556,10 @@ SetDefaulEnabledPars_SignalDisp(void)
 	SetAutoXScale_SignalDisp(BooleanList_NSpecLists(signalDispPtr->autoXScale)->
 	  name);
 	/* The following should not be set from the GUI */
-	signalDispPtr->parList->pars[DISPLAY_WINDOW_HEIGHT].enabled = FALSE;
+	/*signalDispPtr->parList->pars[DISPLAY_WINDOW_HEIGHT].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_WINDOW_WIDTH].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_WINDOW_X_POS].enabled = FALSE;
-	signalDispPtr->parList->pars[DISPLAY_WINDOW_Y_POS].enabled = FALSE;
+	signalDispPtr->parList->pars[DISPLAY_WINDOW_Y_POS].enabled = FALSE;*/
 	return(TRUE);
 
 }

@@ -636,8 +636,8 @@ RecordCallback_IO_AudioIn(void *inputBuffer, void *outputBuffer,
 				*outPtr[RIGHT_CHAN]++ = (ChanData) IO_AUDIOIN_SAMPLE_SILENCE;
 		}
 	}
-	DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,")
-	  wxT(" %ld\n"), p->frameIndex, p->segmentIndex);
+	/*DSAM_printf(wxT("RecordCallback_IO_AudioIn: Debug: frameIndex = %ld,")
+	  wxT(" %ld\n"), p->frameIndex, p->segmentIndex);*/
 	p->frameIndex += framesToCalc;
 	if ((ChanLen) (p->frameIndex - p->segmentIndex) >= _OutSig_EarObject(p->
 	  data)->length) {
@@ -696,6 +696,11 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 #		ifdef IO_AUDIOIN_PORTAUDIO_V_19
 		inputParameters.device = (p->deviceID < 0)? Pa_GetDefaultInputDevice():
 		  p->deviceID;
+		if (inputParameters.device == paNoDevice) {
+			NotifyError_IO_AudioIn(wxT("%s: Input device not available."),
+			  funcName);
+			return(FALSE);
+		}
 		inputParameters.suggestedLatency = Pa_GetDeviceInfo(
 		  inputParameters.device )->defaultLowInputLatency;
 #		else
