@@ -157,6 +157,8 @@ WriteOutSignal_Debug(WChar *fileName)
 
 /*
  * This routine writes out the contents of an array for debug purposes.
+ * The full array length should be given as this is used in conjunction with the
+ * increment value to set the array dimensions.
  */
 
 void
@@ -172,7 +174,7 @@ WriteArray_Debug(WChar *fileName, double *p, ChanLen length, int increment)
 		return;
 	}
 	fprintf(fp, "X\tY\n");
-	for (i = 0; i < length; i++, p += increment)
+	for (i = 0; i < length / increment; i++, p += increment)
 		fprintf(fp, "%lu\t%g\n", i, *p);
 	fprintf(fp, "\n");
 	fclose(fp);
