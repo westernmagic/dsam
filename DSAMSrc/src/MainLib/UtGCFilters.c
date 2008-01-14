@@ -27,7 +27,7 @@
 #include "UtBandwidth.h"
 #include "UtGCFilters.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG
 #	include "UtDebug.h"
@@ -1082,7 +1082,6 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 #		if DEBUG
 			WriteArray_Debug(wxT("testFFT_X.dat"), pGCOut->data, pGCOut->fftLen, 2);
 #		endif
-	
 		for (i = 0, c1 = (fftw_complex *) pGCOut->data, c2 = (fftw_complex *) pGC->data;
 		  i < pGCOut->fftLen; i += 2, c1++, c2++) {
 			CMPLX_MULT(tempC, *c1, *c2);
@@ -1091,7 +1090,11 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 #		if DEBUG
 			WriteArray_Debug(wxT("testFFT_XB.dat"), pGCOut->data, pGCOut->fftLen, 2);
 #		endif
-	
+#		if DEBUG
+			WriteArray_Debug(wxT("testFFT_XB_total.dat"), pGCOut->data, pGCOut->arrayLen, 1);
+#		endif
+		c1 = (fftw_complex *) (pGCOut->data + pGCOut->fftLen);	/* The reverse transform has n / 2 + 1 elements, */
+		CMPLX_RE(*c1) = CMPLX_IM(*c1) = 0.0;					/* so this padding is necessary. */
 		fftw_execute(pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN]);
 		for (i = 0, p1 = outSignal->channel[chan], p2 = pGCOut->data; i <
 		  outSignal->length; i++)
