@@ -1599,7 +1599,7 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	InitOutDataFromInSignal_EarObject(data);
+	/*InitOutDataFromInSignal_EarObject(data); - not needed */
 	outSignal = _OutSig_EarObject(data);
 	for (chan = outSignal->offset; chan < outSignal->numChannels;  chan++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[chan % _InSig_EarObject(
