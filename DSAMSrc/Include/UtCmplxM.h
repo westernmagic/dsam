@@ -4,10 +4,10 @@
  * Purpose:		routines to handle complex numbers in C
  * Comments:	23-02-93 L.P.O'Mard: Incorporated into the DSAM core routines
  *				  library.
- * Author:		M.A.Stone L. P. O'Mard
+ * Author:		M.A.Stone revised by L. P. O'Mard
  * Created:		?? Sep 1992
  * Updated:		31 Jul 1997
- * Copyright:	(c) 1997,  University of Essex
+ * Copyright:	(c) 1997, 2008 University of Cambridge
  *
  **********************/
 
@@ -56,6 +56,8 @@
 #define CONV2CONJ_CMPLX(Z)	{(Z).im = -(Z).im; }
 
 #define MODULUS_CMPLX(Z)	(sqrt((Z).re * (Z).re + (Z).im * (Z).im))
+
+#define COPY_COMPCONJ_CMPLX(A, B)	{(A).re = (B).re; (A).im = -(B).im; }
 
 #if HAVE_FFTW3
 #	define CMPLX_PTR_RE(Z)	(*(Z))[0]

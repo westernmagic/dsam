@@ -716,9 +716,11 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 	CreateBackingBitmap();
 	RescaleGraph();
 	mySignalDispPtr->redrawGraphFlag = TRUE;
-	mySignalDispPtr->critSect->Enter();
+	if (!mySignalDispPtr->initialisationFlag)
+		mySignalDispPtr->critSect->Enter();
 	RedrawGraph();
-	mySignalDispPtr->critSect->Leave();
+	if (!mySignalDispPtr->initialisationFlag)
+		mySignalDispPtr->critSect->Leave();
 
 }
 

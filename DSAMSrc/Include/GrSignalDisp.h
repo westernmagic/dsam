@@ -219,6 +219,7 @@ typedef struct {
 	BOOLN			redrawGraphFlag;
 	BOOLN			redrawSubDisplaysFlag;
 	BOOLN			drawCompletedFlag;
+	BOOLN			initialisationFlag;
 	ChanLen			bufferCount;
 	EarObjectPtr	buffer;
 	EarObjectPtr	data;

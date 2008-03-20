@@ -296,6 +296,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->redrawGraphFlag = FALSE;
 	signalDispPtr->redrawSubDisplaysFlag = FALSE;
 	signalDispPtr->drawCompletedFlag = TRUE;
+	signalDispPtr->initialisationFlag = FALSE;
 	signalDispPtr->display = NULL;
 	signalDispPtr->dialog = NULL;
 	signalDispPtr->critSect = NULL;

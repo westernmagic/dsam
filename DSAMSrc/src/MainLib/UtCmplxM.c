@@ -1,30 +1,15 @@
-/*
- *	UtCmplxm.c: routines to handle complex numbers in C.
- *	M.A.Stone, Cambridge, Sept 1992.
- *	23-02-93 L.P.O'Mard: Incorporated into the DSAM core routines library.
+/**********************
  *
- * Unless otherwise stated all code was written by L. P. O'Mard.
+ * File:		UtCmplxm.c
+ * Purpose:		routines to handle complex numbers in C
+ * Comments:	23-02-93 L.P.O'Mard: Incorporated into the DSAM core routines
+ *				  library.
+ * Author:		M.A.Stone revised by L. P. O'Mard
+ * Created:		?? Sep 1992
+ * Updated:		31 Jul 1997
+ * Copyright:	(c) 1997, 2008 University of Cambridge
  *
- *	E-mail: L.P.OMard@uk.ac.lut
- *
- * COPYRIGHT ©
- *
- *	Speech and Hearing Laboratory,
- *	Department of Human Sciences,
- *	Loughborough University of Technology,
- *	Loughborough,
- *	Leicestershire LE11 3TU.
- *	United Kingdom.
- *
- *	12th July 1993.
- *
- *	DISCLAIMER OF WARRANTY
- *
- * Although every effort has been made to ensure the integrity of this code,
- * the author, Loughborough University and its Laboratories disclaim all
- * liability for direct or consequential damages resulting from its use.
- *
- */
+ **********************/
 
 #include <stdio.h>
 #include <stdlib.h>

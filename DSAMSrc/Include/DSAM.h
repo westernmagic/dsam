@@ -86,6 +86,7 @@
 #include "UtSwapLR.h"
 #include "UtParArray.h"
 #include "UtZhang.h"
+#include "UtZilanyBruce.h"
 #include "UtTranspose.h"
 #include "UtCollateSignals.h"
 
@@ -114,6 +115,7 @@
 #include "FlFIR.h"
 #include "FlLowPass.h"
 #include "FlMultiBPass.h"
+#include "FlZBMiddleEar.h"
 
 #include "MoANSGBinom.h"
 #include "MoANSGCarney.h"
@@ -126,6 +128,7 @@
 #include "MoBMCooke.h"
 #include "MoBMCarney.h"
 #include "MoBMZhang.h"
+#include "MoBMZilanyBruce.h"
 #include "MoHCRPCarney.h"
 #include "MoHCRPMeddis.h"
 #include "MoHCRPSham3StVIn.h"

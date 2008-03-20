@@ -466,6 +466,9 @@ InitProcessVariables_Transform_SetDBSPL(EarObjectPtr data)
 			  inPtr++)
 				sum += *inPtr * *inPtr;
 		}
+		wprintf(wxT("Debug rms amp = %g (%d channels)\n"), sqrt(sum /
+		  (_InSig_EarObject(data, 0)->length - timeOffsetIndex) /
+		  _InSig_EarObject(data, 0)->numChannels), _InSig_EarObject(data, 0)->numChannels);
 		gaindB = setDBSPLPtr->intensity - DB_SPL(sqrt(sum /
 		  (_InSig_EarObject(data, 0)->length - timeOffsetIndex) /
 		  _InSig_EarObject(data, 0)->numChannels));

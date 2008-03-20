@@ -365,7 +365,7 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
 			fmtOn = FALSE;
 		} else {
 			*d = *s;
-			if (iswspace(*s))
+			if (iswspace(*s) || (*s == '%'))
 				fmtOn = FALSE;
 		}
 	}

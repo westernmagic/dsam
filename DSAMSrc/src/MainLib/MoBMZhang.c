@@ -210,8 +210,8 @@ SetUniParList_BasilarM_Zhang(void)
 	SetPar_UniParMgr(&pars[BASILARM_ZHANG_MICROPAINPUT], wxT("MICRO_PASCALS"),
 	  wxT("Input expected in micro pascals instead of pascals ('on' or 'off'")
 	    wxT(")."),
-	  UNIPAR_NAME_SPEC,
-	  &bMZhangPtr->microPaInput, BooleanList_NSpecLists(0),
+	  UNIPAR_BOOL,
+	  &bMZhangPtr->microPaInput, NULL,
 	  (void * (*)) SetMicroPaInput_BasilarM_Zhang);
 	SetPar_UniParMgr(&pars[BASILARM_ZHANG_NBORDER], wxT("N_ORDER"),
 	  wxT("Order of the narrow bandpass filter (int)."),
@@ -394,8 +394,8 @@ SetMicroPaInput_BasilarM_Zhang(WChar * theMicroPaInput)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMicroPaInput,
-		DiagModeList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
-		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMicroPaInput);
+	  BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName, theMicroPaInput);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
@@ -1342,7 +1342,7 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
 		bm->tau = taumax;
 
 	SetZhangGTCoeffs_BasilarM_Zhang(&(bm->bmfilter), tdres, cf, bm->tau,
-	  BASILARM_ZHANG_GAIN(bMZhangPtr->microPaInput), bm->bmorder);
+	  UT_ZHANG_GAIN(bMZhangPtr->microPaInput), bm->bmorder);
 	SetZhangGTCoeffs_BasilarM_Zhang(&(bm->gfagain), tdres, cf, taumin, 1.0 /* *
 	 BASILARM_ZHANG_FILTER_GAIN */, 1);
 	/*
@@ -1524,7 +1524,7 @@ Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
 			/*/ normalize the gain of the wideband pass filter as 0dB at CF */
 			dtmp = taunow*PIx2*(bm->wbfilter.F_shift-bm->bmfilter.F_shift);
 			wb_gain = pow((1+dtmp*dtmp), bm->wbfilter.Order/2.0);
-			bm->wbfilter.gain = wb_gain * BASILARM_ZHANG_GAIN(bMZhangPtr->
+			bm->wbfilter.gain = wb_gain * UT_ZHANG_GAIN(bMZhangPtr->
 			  microPaInput);
 
 			/*/ pass the control signal through OHC model*/

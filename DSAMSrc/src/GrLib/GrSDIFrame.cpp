@@ -562,9 +562,11 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
 
 		signalDispPtr->critSect->Enter();
 		if (!signalDispPtr->display) {
+			signalDispPtr->initialisationFlag = TRUE;
 			signalDispPtr->display = new DisplayS(this, signalDispPtr);
 			signalDispPtr->display->canvas->InitGraph();
 			signalDispPtr->display->Show(TRUE);
+			signalDispPtr->initialisationFlag = FALSE;
 		} else {
 			signalDispPtr->display->canvas->InitGraph();
 			signalDispPtr->display->canvas->RedrawGraph();

@@ -101,8 +101,8 @@ void
 GrMainApp::SetRunIndicators(bool on)
 {
 	wxGetApp().programMenu->Enable(SDIFRAME_STOP_SIMULATION, on);
-	wxGetApp().GetFrame()->SetStatusText((on)? wxT("Simulation Running..."):
-	  wxT("Simulation finished."), SDIFRAME_SIM_STATUS_FIELD);
+//	wxGetApp().GetFrame()->SetStatusText((on)? wxT("Simulation Running..."):
+//	  wxT("Simulation finished."), SDIFRAME_SIM_STATUS_FIELD);
 
 }
 

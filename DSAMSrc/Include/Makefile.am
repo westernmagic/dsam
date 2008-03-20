@@ -12,7 +12,7 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
   
 IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
 
-Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h
+Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h FlZBMiddleEar.h
 
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
@@ -27,7 +27,7 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSDIDocManager.h GrSDIXMLDoc.h GrSDIBaseShapes.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h \
-				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h \
+				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h MoBMZilanyBruce.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
 				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h \
@@ -58,7 +58,8 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtHalfWRectify.h UtDynaList.h UtAppInterface.h UtFFT.h \
 				UtParArray.h UtGCFilters.h UtFIRFilters.h UtRemez.h \
 				UtDynaBList.h UtLocalChans.h UtSwapLR.h UtPadSignal.h \
-				UtMathOp.h UtZhang.h UtTranspose.h UtCollateSignals.h
+				UtMathOp.h UtZhang.h UtTranspose.h UtCollateSignals.h \
+				UtZilanyBruce.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 

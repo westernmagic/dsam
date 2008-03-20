@@ -1859,7 +1859,6 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 				chan].fp1);
 #		endif
 		outSignal = _OutSig_EarObject(data);
-#if 0
 		if ((debug = (!data->threadRunFlag && (p->diagMode !=
 		  GENERAL_DIAGNOSTIC_OFF_MODE))) == TRUE) {
 			DSAM_fprintf(p->fp, wxT("Time(s)"));
@@ -1922,7 +1921,6 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 		}
 		if (debug && p->fp)
 			CloseDiagnostics_NSpecLists(&p->fp);
-#endif
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
