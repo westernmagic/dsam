@@ -172,6 +172,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 	case UNIPAR_BOOL:
 		par->valuePtr.i = (int *) ptr1;
 		break;
+	case UNIPAR_BOOL_ARRAY:
 	case UNIPAR_INT_ARRAY:
 		par->valuePtr.array.index = 0;
 		par->valuePtr.array.pPtr.i = (int **) ptr1;
@@ -270,6 +271,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_PARLIST:
 			par->FuncPtr.SetString = (BOOLN (*)(WChar *)) Func;
 			break;
+		case UNIPAR_BOOL_ARRAY:
 		case UNIPAR_STRING_ARRAY:
 		case UNIPAR_NAME_SPEC_ARRAY:
 			par->FuncPtr.SetStringArrayElement = (BOOLN (*)(int, WChar *)) Func;
@@ -520,6 +522,11 @@ FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix)
 	static WChar	string[MAXLINE];
 
 	switch (p->type) {
+	case UNIPAR_BOOL_ARRAY:
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"),
+		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
+				  BooleanList_NSpecLists(index)->name));
+		break;
 	case UNIPAR_INT_ARRAY:
 		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10d\n"),
 		  FormatPar_UniParMgr(p, suffix), index, (*p->valuePtr.array.pPtr.i)[
@@ -649,6 +656,7 @@ PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix)
 		PrintParListModules_Utility_Datum(*p->valuePtr.simScript.simulation,
 		  UNIPAR_SUB_PAR_LIST_MARKER);
 		break;
+	case UNIPAR_BOOL_ARRAY:
 	case UNIPAR_INT_ARRAY:
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
@@ -842,6 +850,10 @@ GetParString_UniParMgr(UniParPtr p)
 		DSAM_strncpy(string, BooleanList_NSpecLists(*p->valuePtr.i)->name,
 		  LONG_STRING);
 		break;
+	case UNIPAR_BOOL_ARRAY:
+		DSAM_strncpy(string, BooleanList_NSpecLists(p->valuePtr.array.
+		  index)->name, LONG_STRING);
+		break;
 	case UNIPAR_INT:
 	case UNIPAR_INT_AL:
 		DSAM_snprintf(string, LONG_STRING, wxT("%d"), *p->valuePtr.i);
@@ -916,10 +928,10 @@ ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
 		NotifyError(wxT("%s: Universal parameter not initalised.\n"), funcName);
 		return(FALSE);
 	}
-	if ((par->type != UNIPAR_INT_ARRAY) && (par->type != UNIPAR_REAL_ARRAY) &&
-	  (par->type != UNIPAR_STRING_ARRAY) && (par->type !=
-	  UNIPAR_NAME_SPEC_ARRAY) && (par->type != UNIPAR_REAL_DYN_ARRAY)) {
-		NotifyError(wxT("%s: Universal parameter is not array type (%d).\n"),
+	if ((par->type != UNIPAR_BOOL_ARRAY) && (par->type != UNIPAR_INT_ARRAY) &&
+	  (par->type != UNIPAR_REAL_ARRAY) && (par->type != UNIPAR_STRING_ARRAY) &&
+	  (par->type != UNIPAR_NAME_SPEC_ARRAY) && (par->type != UNIPAR_REAL_DYN_ARRAY)) {
+		NotifyError(wxT("%s: Universal parameter is not an array type (%d).\n"),
 		  funcName, par->type);
 		return(FALSE);
 	}
@@ -990,6 +1002,7 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
 		ok = (* p->FuncPtr.SetRealArrayElement)(arrayIndex[0], DSAM_atof(
 		  arrayValue));
 		break;
+	case UNIPAR_BOOL_ARRAY:
 	case UNIPAR_STRING_ARRAY:
 	case UNIPAR_NAME_SPEC_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
