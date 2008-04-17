@@ -68,19 +68,21 @@ SDIAnalysisShape::SDIAnalysisShape(double width, double height):
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIAnalysisShape::AddXMLInfo(TiXmlNode &node)
+SDIAnalysisShape::AddXMLInfo(DSAMXMLNode *parent)
 {
-	TiXmlElement myElement(SHAPE_XML_ANALYSIS_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_ANALYSIS_SHAPE_ELEMENT);
 	SDIEllipseShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	parent->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIAnalysisShape::GetXMLInfo(TiXmlNode *node)
+SDIAnalysisShape::GetXMLInfo(wxXmlNode *myElement)
 {
+#if 0
 	static const wxChar *funcName = wxT("SDIAnalysisShape::GetXMLInfo");
 	TiXmlElement *myElement;
 
@@ -91,7 +93,7 @@ SDIAnalysisShape::GetXMLInfo(TiXmlNode *node)
 	}
 	SDIEllipseShape::GetXMLInfo(myElement);
 	return(true);
-
+#endif
 }
 
 /******************************************************************************/
@@ -112,27 +114,21 @@ SDIDisplayShape::SDIDisplayShape(double width, double height):
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIDisplayShape::AddXMLInfo(TiXmlNode &node)
+SDIDisplayShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_DISPLAY_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_DISPLAY_SHAPE_ELEMENT);
 	SDIRectangleShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIDisplayShape::GetXMLInfo(TiXmlNode *node)
+SDIDisplayShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIDisplayShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(
-	  SHAPE_XML_DISPLAY_SHAPE_ELEMENT)) == NULL) {
-		NotifyError(wxT("%s: Could not find display element."), funcName);
-		return(false);
-	}
 	SDIRectangleShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -168,21 +164,20 @@ SDIControlShape::SDIControlShape(double width, double height): SDIPolygonShape(
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIControlShape::AddXMLInfo(TiXmlNode &node)
+SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_CONTROL_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_CONTROL_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** AddXMLInfo ************************************/
 
 bool
-SDIControlShape::GetXMLInfo(TiXmlNode *node)
+SDIControlShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	TiXmlElement *myElement = node->FirstChildElement(
-	  SHAPE_XML_CONTROL_SHAPE_ELEMENT);
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -234,27 +229,20 @@ SDIFilterShape::SDIFilterShape(double width, double height): SDIPolygonShape(
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIFilterShape::AddXMLInfo(TiXmlNode &node)
+SDIFilterShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_FILTER_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_FILTER_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIFilterShape::GetXMLInfo(TiXmlNode *node)
+SDIFilterShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIFilterShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(SHAPE_XML_FILTER_SHAPE_ELEMENT)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Could not find filter element."), funcName);
-		return(false);
-	}
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -295,27 +283,20 @@ SDIIOShape::SDIIOShape(double width, double height): SDIPolygonShape(width,
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIIOShape::AddXMLInfo(TiXmlNode &node)
+SDIIOShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_IO_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_IO_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIIOShape::GetXMLInfo(TiXmlNode *node)
+SDIIOShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIIOShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(SHAPE_XML_IO_SHAPE_ELEMENT)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Could not find IO element."), funcName);
-		return(false);
-	}
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -330,104 +311,103 @@ IMPLEMENT_DYNAMIC_CLASS(SDILineShape, wxLineShape)
 /****************************** AddXMLControlPointsInfo ***********************/
 
 void
-SDILineShape::AddXMLControlPointsInfo(TiXmlNode &node, wxNode *cPNode)
+SDILineShape::AddXMLControlPointsInfo(DSAMXMLNode *node, wxNode *cPNode)
 {
 	if (!cPNode)
 		return;
-	TiXmlElement myElement(SHAPE_XML_CONTROL_POINTS_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_CONTROL_POINTS_ELEMENT);
 	while (cPNode) {
 		wxRealPoint *point = (wxRealPoint *) cPNode->GetData();
 		AddPointInfo(myElement, point);
 		cPNode = cPNode->GetNext();
 	}
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** AddXMLArrowListInfo ***************************/
 
 void
-SDILineShape::AddXMLArrowListInfo(TiXmlNode &node, wxNode *aNode)
+SDILineShape::AddXMLArrowListInfo(DSAMXMLNode *node, wxNode *aNode)
 {
 	if (!aNode)
 		return;
-	TiXmlElement myElement(SHAPE_XML_ARROW_LIST_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_ARROW_LIST_ELEMENT);
 	while (aNode) {
 		wxArrowHead *head = (wxArrowHead *) aNode->GetData();
-		TiXmlElement arrowElement(SHAPE_XML_ARROW_ELEMENT);
-		arrowElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, head->GetId());
-		arrowElement.SetAttribute(SHAPE_XML_NAME_ATTRIBUTE, head->
-		  GetName().mb_str());
-		arrowElement.SetAttribute(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
-		arrowElement.SetAttribute(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
-		arrowElement.SetDoubleAttribute(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
+		DSAMXMLNode *arrowElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+		  SHAPE_XML_ARROW_ELEMENT);
+		arrowElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, head->GetId());
+		arrowElement->AddProperty(SHAPE_XML_NAME_ATTRIBUTE, head->
+		  GetName());
+		arrowElement->AddProperty(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
+		arrowElement->AddProperty(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
+		arrowElement->AddProperty(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
 		  GetXOffset());
-		arrowElement.SetDoubleAttribute(SHAPE_XML_Y_OFFSET_ATTRIBUTE, head->
+		arrowElement->AddProperty(SHAPE_XML_Y_OFFSET_ATTRIBUTE, head->
 		  GetYOffset());
-		arrowElement.SetDoubleAttribute(SHAPE_XML_SIZE_ATTRIBUTE, head->
+		arrowElement->AddProperty(SHAPE_XML_SIZE_ATTRIBUTE, head->
 		  GetArrowSize());
-		arrowElement.SetDoubleAttribute(SHAPE_XML_SPACING_ATTRIBUTE, head->
+		arrowElement->AddProperty(SHAPE_XML_SPACING_ATTRIBUTE, head->
 		  GetSpacing());
-		myElement.InsertEndChild(arrowElement);
+		myElement->AddChild(arrowElement);
 		aNode = aNode->GetNext();
 	}
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** AddXMLInfo ************************************/
 
 void
-SDILineShape::AddXMLInfo(TiXmlNode &node)
+SDILineShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_LINE_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_LINE_SHAPE_ELEMENT);
 	if (m_from)
-		myElement.SetAttribute(SHAPE_XML_FROM_ATTRIBUTE, m_from->GetId());
+		myElement->AddProperty(SHAPE_XML_FROM_ATTRIBUTE, m_from->GetId());
 	if (m_to)
-		myElement.SetAttribute(SHAPE_XML_TO_ATTRIBUTE, m_to->GetId());
+		myElement->AddProperty(SHAPE_XML_TO_ATTRIBUTE, m_to->GetId());
 	if (m_attachmentFrom)
-		myElement.SetAttribute(SHAPE_XML_ATTACHMENT_FROM_ELEMENT,
+		myElement->AddProperty(SHAPE_XML_ATTACHMENT_FROM_ELEMENT,
 		  m_attachmentFrom);
 	if (m_attachmentTo)
-		myElement.SetAttribute(SHAPE_XML_ATTACHMENT_TO_ELEMENT, m_attachmentTo);
+		myElement->AddProperty(SHAPE_XML_ATTACHMENT_TO_ELEMENT, m_attachmentTo);
 	if (m_alignmentStart)
-		myElement.SetAttribute(SHAPE_XML_ALIGNMENT_START_ELEMENT,
+		myElement->AddProperty(SHAPE_XML_ALIGNMENT_START_ELEMENT,
 		  m_alignmentStart);
 	if (m_alignmentEnd)
-		myElement.SetAttribute(SHAPE_XML_ALIGNMENT_END_ELEMENT, m_alignmentEnd);
-	myElement.SetAttribute(SHAPE_XML_ISSPLINE_ATTRIBUTE, IsSpline());
+		myElement->AddProperty(SHAPE_XML_ALIGNMENT_END_ELEMENT, m_alignmentEnd);
+	myElement->AddProperty(SHAPE_XML_IS_SPLINE_ATTRIBUTE, IsSpline());
 	if (GetMaintainStraightLines())
-		myElement.SetAttribute(SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT,
+		myElement->AddProperty(SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT,
 		  GetMaintainStraightLines());
 	AddXMLControlPointsInfo(myElement, GetLineControlPoints()->GetFirst());
 	AddXMLArrowListInfo(myElement, GetArrows().GetFirst());
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLControlPointsInfo ***********************/
 
 bool
-SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
+SDILineShape::GetXMLControlPointsInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT(
 	  "SDILineShape::GetXMLControlPointsInfo");
 	bool	ok = true;
 	wxRealPoint	*point;
-	TiXmlNode	*pointNode;
-	TiXmlElement	*myElement;
+	wxXmlNode	*child;
 
-	if ((myElement = parent->FirstChildElement(
-	  SHAPE_XML_CONTROL_POINTS_ELEMENT)) == NULL)
-		return(true);
 	if (m_lineControlPoints)
 		ClearPointList(*m_lineControlPoints);
 	else
 		m_lineControlPoints = new wxList;
-	for (pointNode = myElement->IterateChildren(SHAPE_XML_POINT_ELEMENT, NULL);
-	  pointNode; pointNode = myElement->IterateChildren(SHAPE_XML_POINT_ELEMENT,
-	  pointNode)) {
-		if ((point = GetPointInfo(pointNode->ToElement())) == NULL) {
+	for (child = myElement->GetChildren(); child; child = child->GetNext()) {
+		if ((child->GetName() == SHAPE_XML_POINT_ELEMENT) &&
+		  ((point = GetPointInfo(child)) == NULL)) {
 			NotifyError(wxT("%s: Could not set point."), funcName);
 			ok = false;
 			break;
@@ -442,44 +422,44 @@ SDILineShape::GetXMLControlPointsInfo(TiXmlNode *parent)
 /****************************** GetXMLArrowListInfo ***************************/
 
 bool
-SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
+SDILineShape::GetXMLArrowListInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDILineShape::GetXMLArrowListInfo");
 	bool	ok = true;
 	int		arrowEnd = 0, id = -1, type = ARROW_ARROW;
 	double	xOffset = 0.0, yOffset = 0.0, size = 0.0, spacing = 5.0;
     wxString arrowName;
+	wxXmlNode	*child;
+	MyXmlProperty	*prop;
 
-	TiXmlNode	*node;
-	TiXmlElement	*myElement;
-
-	if ((myElement = parent->FirstChildElement(SHAPE_XML_ARROW_LIST_ELEMENT)) ==
-	  NULL)
-		return(true);
-	for (node = myElement->IterateChildren(SHAPE_XML_ARROW_ELEMENT, NULL);
-	  node; node = myElement->IterateChildren(SHAPE_XML_ARROW_ELEMENT, node)) {
-		TiXmlElement *arrowElement = node->ToElement();
-		ATTRIBUTE_VAL(arrowElement, DSAM_XML_ID_ATTRIBUTE, id, true);
-		STR_ATTRIBUTE_VAL(arrowElement, SHAPE_XML_NAME_ATTRIBUTE, arrowName,
-		  true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_TYPE_ATTRIBUTE, type, true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_END_ATTRIBUTE, arrowEnd, true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_X_OFFSET_ATTRIBUTE, xOffset,
-		  true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_Y_OFFSET_ATTRIBUTE, yOffset,
-		  true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_SIZE_ATTRIBUTE, size, true);
-		ATTRIBUTE_VAL(arrowElement, SHAPE_XML_SPACING_ATTRIBUTE, spacing,
-		  false);
-		if (!ok)
-			break;
-		wxRegisterId(id);
-		wxArrowHead *arrowHead = AddArrow(type, arrowEnd, size, xOffset,
-		  arrowName, NULL, id);
-		arrowHead->SetYOffset(yOffset);
-		arrowHead->SetSpacing(spacing);
-	}
-
+	for (child = myElement->GetChildren(); child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_ARROW_ELEMENT) {
+			for (prop = (MyXmlProperty *) child->GetProperties(); prop; prop =
+			  prop->GetNext())
+				if (prop->GetName() == DSAM_XML_ID_ATTRIBUTE)
+					prop->GetPropVal(&id);
+				else if (prop->GetName() == SHAPE_XML_NAME_ATTRIBUTE)
+					arrowName = prop->GetValue();
+				else if (prop->GetName() == SHAPE_XML_TYPE_ATTRIBUTE)
+					prop->GetPropVal(&type);
+				else if (prop->GetName() == SHAPE_XML_END_ATTRIBUTE)
+					prop->GetPropVal(&arrowEnd);
+				else if (prop->GetName() == SHAPE_XML_X_OFFSET_ATTRIBUTE)
+					prop->GetPropVal(&xOffset);
+				else if (prop->GetName() == SHAPE_XML_Y_OFFSET_ATTRIBUTE)
+					prop->GetPropVal(&yOffset);
+				else if (prop->GetName() == SHAPE_XML_SIZE_ATTRIBUTE)
+					prop->GetPropVal(&size);
+				else if (prop->GetName() == SHAPE_XML_SPACING_ATTRIBUTE)
+					prop->GetPropVal(&spacing);
+			if (!ok)
+				break;
+			wxRegisterId(id);
+			wxArrowHead *arrowHead = AddArrow(type, arrowEnd, size, xOffset,
+			  arrowName, NULL, id);
+			arrowHead->SetYOffset(yOffset);
+			arrowHead->SetSpacing(spacing);
+		}
 	return(ok);
 
 }
@@ -487,21 +467,30 @@ SDILineShape::GetXMLArrowListInfo(TiXmlNode *parent)
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDILineShape::GetXMLInfo(TiXmlNode *node)
+SDILineShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDILineShape::GetXMLInfo");
 	bool	ok = true;
 	int		iVal = 0;
-	TiXmlElement *myElement;
+	wxXmlNode	*child;
+	MyXmlProperty	*prop;
 
-	if ((myElement = node->FirstChildElement(SHAPE_XML_LINE_SHAPE_ELEMENT)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Could not find line shape element."), funcName);
-		return(false);
-	}
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ISSPLINE_ATTRIBUTE, iVal, true);
-	SetSpline(iVal != 0);
-
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_IS_SPLINE_ATTRIBUTE) {
+			if (prop->GetPropVal(&iVal)) {
+				SetSpline(iVal != 0);
+				SetMaintainStraightLines(iVal != 0);
+			} else
+				ok = false;
+		} else if (prop->GetName() == SHAPE_XML_ATTACHMENT_FROM_ELEMENT)
+			prop->GetPropVal(&m_attachmentFrom);
+		else if (prop->GetName() == SHAPE_XML_ATTACHMENT_TO_ELEMENT)
+			prop->GetPropVal(&m_attachmentTo);
+		else if (prop->GetName() == SHAPE_XML_ALIGNMENT_START_ELEMENT)
+			prop->GetPropVal(&m_alignmentStart);
+		else if (prop->GetName() == SHAPE_XML_ALIGNMENT_END_ELEMENT)
+			prop->GetPropVal(&m_alignmentEnd);
 	// Compatibility: check for no regions.
 	if (m_regions.GetCount() == 0) {
 		wxShapeRegion *newRegion = new wxShapeRegion;
@@ -530,23 +519,15 @@ SDILineShape::GetXMLInfo(TiXmlNode *node)
 		newRegion->SetSize(150, 50);
 		m_regions.Append((wxObject *)newRegion);
 	}
-
-	m_attachmentTo = 0;
-	m_attachmentFrom = 0;
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ATTACHMENT_FROM_ELEMENT,
-	  m_attachmentFrom, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ATTACHMENT_TO_ELEMENT,
-	  m_attachmentTo, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ISSPLINE_ATTRIBUTE, iVal, true);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ALIGNMENT_START_ELEMENT,
-	  m_alignmentStart, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ALIGNMENT_END_ELEMENT,
-	  m_alignmentEnd, false);
-	SetMaintainStraightLines(iVal != 0);
-	if (ok && !GetXMLControlPointsInfo(myElement))
-		ok = false;
-	if (ok && !GetXMLArrowListInfo(myElement))
-		ok = false;
+	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
+		if ((child->GetName() == SHAPE_XML_CONTROL_POINTS_ELEMENT) && 
+		  !GetXMLControlPointsInfo(child))
+			ok = false;
+		else if ((child->GetName() == SHAPE_XML_ARROW_LIST_ELEMENT) && 
+		  !GetXMLArrowListInfo(myElement))
+			ok = false;
+	if (!ok)
+		NotifyError(wxT("%s: Failed to load XML information."), funcName);
 	return(ok);
 
 }
@@ -588,27 +569,20 @@ SDIModelShape::SDIModelShape(double width, double height): SDIPolygonShape(
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIModelShape::AddXMLInfo(TiXmlNode &node)
+SDIModelShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_MODEL_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_MODEL_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIModelShape::GetXMLInfo(TiXmlNode *node)
+SDIModelShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIModelShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(SHAPE_XML_MODEL_SHAPE_ELEMENT)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Could not find model element."), funcName);
-		return(false);
-	}
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -656,27 +630,20 @@ SDIUserShape::SDIUserShape(double width, double height): SDIPolygonShape(width,
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIUserShape::AddXMLInfo(TiXmlNode &node)
+SDIUserShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_USER_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_USER_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIUserShape::GetXMLInfo(TiXmlNode *node)
+SDIUserShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIUserShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(SHAPE_XML_USER_SHAPE_ELEMENT)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Could not find user element."), funcName);
-		return(false);
-	}
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -708,27 +675,20 @@ SDITransformShape::SDITransformShape(double width, double height):
 /****************************** AddXMLInfo ************************************/
 
 void
-SDITransformShape::AddXMLInfo(TiXmlNode &node)
+SDITransformShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_TRANSFORM_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_TRANSFORM_SHAPE_ELEMENT);
 	SDIPolygonShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDITransformShape::GetXMLInfo(TiXmlNode *node)
+SDITransformShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDITransformShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(
-	  SHAPE_XML_TRANSFORM_SHAPE_ELEMENT)) == NULL) {
-		NotifyError(wxT("%s: Could not find transform element."), funcName);
-		return(false);
-	}
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
@@ -750,27 +710,20 @@ SDIUtilityShape::SDIUtilityShape(double width, double height):
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIUtilityShape::AddXMLInfo(TiXmlNode &node)
+SDIUtilityShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement myElement(SHAPE_XML_UTILITY_SHAPE_ELEMENT);
+	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_UTILITY_SHAPE_ELEMENT);
 	SDIRectangleShape::AddXMLInfo(myElement);
-	node.InsertEndChild(myElement);
+	node->AddChild(myElement);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIUtilityShape::GetXMLInfo(TiXmlNode *node)
+SDIUtilityShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIUtilityShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(
-	  SHAPE_XML_UTILITY_SHAPE_ELEMENT)) == NULL) {
-		NotifyError(wxT("%s: Could not find utility element."), funcName);
-		return(false);
-	}
 	SDIRectangleShape::GetXMLInfo(myElement);
 	return(true);
 

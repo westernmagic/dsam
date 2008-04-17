@@ -20,8 +20,6 @@
 #include <wx/ogl/ogl.h>
 #include <wx/ogl/drawn.h>
 
-#include "tinyxml.h"
-
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -29,16 +27,16 @@
 #define SDI_STANDARD_SHAPE_WIDTH      100
 
 // Shape elements.
-#define SHAPE_XML_ANALYSIS_SHAPE_ELEMENT	"analysis_shape"
-#define SHAPE_XML_CONTROL_SHAPE_ELEMENT		"control_shape"
-#define SHAPE_XML_DISPLAY_SHAPE_ELEMENT		"display_shape"
-#define SHAPE_XML_FILTER_SHAPE_ELEMENT		"filter_shape"
-#define SHAPE_XML_IO_SHAPE_ELEMENT			"io_shape"
-#define SHAPE_XML_LINE_SHAPE_ELEMENT		"line_shape"
-#define SHAPE_XML_MODEL_SHAPE_ELEMENT		"model_shape"
-#define SHAPE_XML_USER_SHAPE_ELEMENT		"user_shape"
-#define SHAPE_XML_TRANSFORM_SHAPE_ELEMENT	"transform_shape"
-#define SHAPE_XML_UTILITY_SHAPE_ELEMENT		"utility_shape"
+#define SHAPE_XML_ANALYSIS_SHAPE_ELEMENT	wxT("analysis_shape")
+#define SHAPE_XML_CONTROL_SHAPE_ELEMENT		wxT("control_shape")
+#define SHAPE_XML_DISPLAY_SHAPE_ELEMENT		wxT("display_shape")
+#define SHAPE_XML_FILTER_SHAPE_ELEMENT		wxT("filter_shape")
+#define SHAPE_XML_IO_SHAPE_ELEMENT			wxT("io_shape")
+#define SHAPE_XML_LINE_SHAPE_ELEMENT		wxT("line_shape")
+#define SHAPE_XML_MODEL_SHAPE_ELEMENT		wxT("model_shape")
+#define SHAPE_XML_USER_SHAPE_ELEMENT		wxT("user_shape")
+#define SHAPE_XML_TRANSFORM_SHAPE_ELEMENT	wxT("transform_shape")
+#define SHAPE_XML_UTILITY_SHAPE_ELEMENT		wxT("utility_shape")
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -76,8 +74,8 @@ class SDIAnalysisShape: public SDIEllipseShape
   public:
 	SDIAnalysisShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -91,8 +89,8 @@ class SDIControlShape: public SDIPolygonShape
   public:
 	SDIControlShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -111,8 +109,8 @@ class SDIDisplayShape: public SDIRectangleShape
   public:
 	SDIDisplayShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -125,8 +123,8 @@ class SDIFilterShape: public SDIPolygonShape
   public:
     SDIFilterShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -139,8 +137,8 @@ class SDIIOShape: public SDIPolygonShape
   public:
     SDIIOShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -152,14 +150,13 @@ class SDILineShape: public wxLineShape
 
   public:
  
-	friend	void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
-	void	AddXMLArrowListInfo(TiXmlNode &node, wxNode *aNode);
-	void	AddXMLControlPointsInfo(TiXmlNode &node, wxNode *cPNode);
-	void	AddXMLInfo(TiXmlNode &node);
-	friend	wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
-	bool	GetXMLArrowListInfo(TiXmlNode *parent);
-	bool	GetXMLControlPointsInfo(TiXmlNode *node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLArrowListInfo(DSAMXMLNode *node, wxNode *aNode);
+	void	AddXMLControlPointsInfo(DSAMXMLNode *node, wxNode *cPNode);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	friend	wxRealPoint *	GetPointInfo(wxXmlNode *myElement);
+	bool	GetXMLArrowListInfo(wxXmlNode *myElement);
+	bool	GetXMLControlPointsInfo(wxXmlNode *myElement);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -172,8 +169,8 @@ class SDIModelShape: public SDIPolygonShape
   public:
     SDIModelShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -186,8 +183,8 @@ class SDITransformShape: public SDIPolygonShape
   public:
     SDITransformShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -200,8 +197,8 @@ class SDIUserShape: public SDIPolygonShape
   public:
     SDIUserShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -214,8 +211,8 @@ class SDIUtilityShape: public SDIRectangleShape
   public:
     SDIUtilityShape(double width = 0.0, double height = 0.0);
 
-	void	AddXMLInfo(TiXmlNode &node);
-	bool	GetXMLInfo(TiXmlNode *node);
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 

@@ -25,12 +25,13 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 
+#include "ExtXMLNode.h"
+
 #include "UtDatum.h"
 #include "UtSSSymbols.h"
 #include "UtSSParser.h"
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
-#include "tinyxml.h"
 
 #include "GrSDIEvtHandler.h"
 #include "GrSDIBaseShapes.h"
@@ -79,10 +80,10 @@ SDIXMLDocument::~SDIXMLDocument(void)
 /******************************************************************************/
 
 void
-SDIXMLDocument::AddShapeInfo(TiXmlNode &node, void *shapePtr)
+SDIXMLDocument::AddShapeInfo(DSAMXMLNode *parent, void *shapePtr)
 {
 	SDIShape *shape = (SDIShape *) shapePtr;
-	shape->AddShapeInfo(node);
+	shape->AddShapeInfo(parent);
 
 }
 
@@ -91,11 +92,12 @@ SDIXMLDocument::AddShapeInfo(TiXmlNode &node, void *shapePtr)
 /******************************************************************************/
 
 void
-SDIXMLDocument::AddLineShapes(TiXmlNode &parent)
+SDIXMLDocument::AddLineShapes(DSAMXMLNode *parent)
 {
 	wxShape *shape;
 
-	TiXmlElement connectionsElement(DSAM_XML_CONNECTIONS_ELEMENT);
+	DSAMXMLNode *connectionsElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  DSAM_XML_CONNECTIONS_ELEMENT);
 
 	wxNode *node = diagram->GetShapeList()->GetFirst();
 	while (node) {
@@ -104,7 +106,7 @@ SDIXMLDocument::AddLineShapes(TiXmlNode &parent)
 			AddShapeInfo(connectionsElement, shape);
 		node = node->GetNext();
 	}
-	parent.InsertEndChild(connectionsElement);
+	parent->AddChild(connectionsElement);
 
 }
 
@@ -124,12 +126,12 @@ SDIXMLDocument::Create(void)
 /******************************************************************************/
 
 wxClassInfo *
-SDIXMLDocument::GetClassInfo(TiXmlElement *shapeElement)
+SDIXMLDocument::GetClassInfo(wxXmlNode *shapeElement)
 {
-	static const char *funcName = "SDIXMLDocument::GetClassInfo";
+	static const wxChar *funcName = wxT("SDIXMLDocument::GetClassInfo");
 	wxString	type;
 
-	type = wxConvUTF8.cMB2WX(shapeElement->Attribute(DSAM_XML_TYPE_ATTRIBUTE));
+	shapeElement->GetPropVal(DSAM_XML_TYPE_ATTRIBUTE, &type);
 	if (type.empty()) {
 		XMLNotifyWarning(shapeElement, wxT("%s: Could not find shape type"),
 		  funcName);
@@ -152,13 +154,13 @@ SDIXMLDocument::GetClassInfo(TiXmlElement *shapeElement)
 /******************************************************************************/
 
 SDIShape *
-SDIXMLDocument::CreateLoadShape(TiXmlElement *myElement, DatumPtr pc)
+SDIXMLDocument::CreateLoadShape(wxXmlNode *shapeElement, DatumPtr pc)
 {
-	static const char *funcName = "SDIXMLDocument::CreateLoadShape";
+	static const wxChar *funcName = wxT("SDIXMLDocument::CreateLoadShape");
 
-	wxClassInfo *classInfo = GetClassInfo(myElement);
+	wxClassInfo *classInfo = GetClassInfo(shapeElement);
 	if (!classInfo) {
-		XMLNotifyWarning(myElement, wxT("%s: Could not identify class for ")
+		XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class for ")
 		  wxT("shape type"), funcName);
 		diagram->SetOk(false);
 		return(NULL);
@@ -166,12 +168,12 @@ SDIXMLDocument::CreateLoadShape(TiXmlElement *myElement, DatumPtr pc)
 	SDIShape *shape = (SDIShape *) diagram->CreateLoadShape(pc, classInfo,
 	  NULL);
 	if (!shape) {
-		XMLNotifyWarning(myElement, wxT("%s: Could not create shape."),
+		XMLNotifyWarning(shapeElement, wxT("%s: Could not create shape."),
 		  funcName);
 		delete classInfo;
 		return(NULL);
 	}
-	if (!((SDIShape *)shape)->GetShapeInfo(myElement))
+	if (!((SDIShape *)shape)->GetShapeInfo(shapeElement))
 		diagram->SetOk(false);
 	return(shape);
 
@@ -182,16 +184,13 @@ SDIXMLDocument::CreateLoadShape(TiXmlElement *myElement, DatumPtr pc)
 /******************************************************************************/
 
 void
-SDIXMLDocument::GetShapeInfo(TiXmlNode *parent, DatumPtr pc)
+SDIXMLDocument::GetShapeInfo(wxXmlNode *shapeElement, DatumPtr pc)
 {
-	TiXmlElement	*shapeElement;
-
 	if (!diagramLoadInitiated) {
 		diagramLoadInitiated = true;
 		diagram->SetOk(true);
 	}
-	if ((shapeElement = parent->FirstChildElement(SHAPE_XML_SHAPE_ELEMENT)) ==
-	  NULL)
+	if (!shapeElement || (shapeElement->GetName() != SHAPE_XML_SHAPE_ELEMENT))
 		return;
 	SDIShape *shape = CreateLoadShape(shapeElement, pc);
 	if (!shape->GetShapeInfo(shapeElement)) {
@@ -222,44 +221,67 @@ SDIXMLDocument::FindShape(long id)
 }
 
 /******************************************************************************/
+/****************************** GetConnectionsInfo ****************************/
+/******************************************************************************/
+
+void
+SDIXMLDocument::GetConnectionsInfo(wxXmlNode *simElement)
+{
+	wxXmlNode	*connectionsElement;
+
+	if ((connectionsElement = FindXMLNode(simElement->GetChildren(),
+	 DSAM_XML_CONNECTIONS_ELEMENT)) != NULL)
+		GetLineShapeInfo(connectionsElement);
+
+}
+
+/******************************************************************************/
 /****************************** GetLineShapeInfo ******************************/
 /******************************************************************************/
 
 void
-SDIXMLDocument::GetLineShapeInfo(TiXmlNode *parent)
+SDIXMLDocument::GetLineShapeInfo(wxXmlNode *myElement)
 {
-	static const char *funcName = "SDIXMLDocument::GetLineShapeInfo";
+	static const wxChar *funcName = wxT("SDIXMLDocument::GetLineShapeInfo");
 	bool	ok = true;
 	int		fromId = -1, toId = -1;
-	TiXmlElement	*myElement, *shapeElement;
-	TiXmlNode		*node;
+	wxXmlNode	*child, *lineShapeElement;
+	MyXmlProperty  *prop;
 
-	if ((myElement = parent->FirstChildElement(DSAM_XML_CONNECTIONS_ELEMENT)) ==
-	  NULL)
-		return;
-	for (node = myElement->IterateChildren(SHAPE_XML_SHAPE_ELEMENT, NULL);
-	  node; node = myElement->IterateChildren(SHAPE_XML_SHAPE_ELEMENT, node)) {
-		shapeElement = node->ToElement();
-		wxClassInfo *classInfo = GetClassInfo(shapeElement);
-		if (!classInfo) {
-			XMLNotifyWarning(shapeElement, wxT("%s: Could not identify class ")
-			  wxT("for '%s' shape type"), funcName, type);
-			diagram->SetOk(false);
-			return;
+	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_SHAPE_ELEMENT) {
+			wxClassInfo *classInfo = GetClassInfo(child);
+			if (!classInfo) {
+				XMLNotifyWarning(child, wxT("%s: Could not identify class."),
+				  funcName);
+				diagram->SetOk(false);
+				return;
+			}
+			SDIShape *shape = CreateLoadShape(child, NULL);
+			if ((lineShapeElement = FindXMLNode(child->GetChildren(),
+			  SHAPE_XML_LINE_SHAPE_ELEMENT)) == NULL) {
+				XMLNotifyWarning(child, wxT("%s: Could not find line_shape information."),
+				  funcName);
+				ok = false;
+				break;
+			}
+			for (prop = (MyXmlProperty *) lineShapeElement->GetProperties();
+			  ok && prop; prop = prop->GetNext())
+				if ((prop->GetName() == SHAPE_XML_FROM_ATTRIBUTE) &&
+					!prop->GetPropVal(&fromId))
+						ok = false;
+				else if ((prop->GetName() == SHAPE_XML_TO_ATTRIBUTE) &&
+				  !prop->GetPropVal(&toId))
+						ok = false;
+	
+			wxLineShape *lineShape = (wxLineShape *) shape;
+			if ((fromId >= 0) && (toId >= 0)) {
+				wxShape *from = FindShape(fromId);
+				wxShape *to = FindShape(toId);
+				from->AddLine((wxLineShape *) shape, to, lineShape->
+				  GetAttachmentFrom(), lineShape->GetAttachmentTo());
+			}
 		}
-		SDIShape *shape = CreateLoadShape(shapeElement, NULL);
-		TiXmlElement *lineShapeElement = shapeElement->FirstChildElement(
-		  SHAPE_XML_LINE_SHAPE_ELEMENT);
-		ATTRIBUTE_VAL(lineShapeElement, SHAPE_XML_FROM_ATTRIBUTE, fromId, true);
-		ATTRIBUTE_VAL(lineShapeElement, SHAPE_XML_TO_ATTRIBUTE, toId, true);
-
-		wxLineShape *lineShape = (wxLineShape *) shape;
-		if ((fromId >= 0) && (toId >= 0)) {
-			wxShape *from = FindShape(fromId);
-			wxShape *to = FindShape(toId);
-			from->AddLine((wxLineShape *) shape, to, lineShape->
-			  GetAttachmentFrom(), lineShape->GetAttachmentTo());
-		}
-	}
+	diagram->SetOk(ok);
 
 }

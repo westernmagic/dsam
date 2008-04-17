@@ -43,7 +43,7 @@ St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
 				ExtRunThreadedProc.h ExtXMLDocument.h ExtSingleProcThread.h \
-				ExtProcChainThread.h
+				ExtProcChainThread.h ExtXMLNode.h
 
 Std_Headers	= 
 
@@ -63,12 +63,10 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 
-TinyXml_Headers	= tinystr.h tinyxml.h
-
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(IO_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
 					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers) \
-					$(Ext_Headers) $(TinyXml_Headers)
+					$(Ext_Headers)
 
 DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(IO_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \

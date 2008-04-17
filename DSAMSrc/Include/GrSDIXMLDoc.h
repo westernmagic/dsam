@@ -52,6 +52,8 @@ class istream;
 
 class SDIDiagram;
 class SDIShape;
+class DSAMXMLNode;
+class wxXmlNode;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -70,14 +72,15 @@ class SDIXMLDocument: public DSAMXMLDocument {
   	SDIXMLDocument(SDIDiagram *theDiagram = NULL);
 	~SDIXMLDocument(void);
 
-	void	AddShapeInfo(TiXmlNode &node, void *shape);
-	void	AddLineShapes(TiXmlNode &parent);
+	void	AddShapeInfo(DSAMXMLNode *parent, void *shape);
+	void	AddLineShapes(DSAMXMLNode *parent);
 	void	Create(void);
-	SDIShape *	CreateLoadShape(TiXmlElement *myElement, DatumPtr pc);
+	SDIShape *	CreateLoadShape(wxXmlNode *shapeElement, DatumPtr pc);
 	wxShape *	FindShape(long id);
-	wxClassInfo *	GetClassInfo(TiXmlElement *shapeElement);
-	void	GetLineShapeInfo(TiXmlNode *parent);
-	void	GetShapeInfo(TiXmlNode *parent, DatumPtr pc);
+	wxClassInfo *	GetClassInfo(wxXmlNode *shapeElement);
+	void	GetConnectionsInfo(wxXmlNode *simElement);
+	void	GetLineShapeInfo(wxXmlNode *myElement);
+	void	GetShapeInfo(wxXmlNode *shapeElement, DatumPtr pc);
 
 };
 

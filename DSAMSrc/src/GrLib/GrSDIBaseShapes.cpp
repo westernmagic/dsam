@@ -39,6 +39,7 @@
 #include "GrSDIBaseShapes.h"
 #include "GrSDIShapes.h"
 #include "UtSSSymbols.h"
+#include "ExtXMLNode.h"
 #include "ExtXMLDocument.h"
 
 /******************************************************************************/
@@ -74,26 +75,31 @@ SDIShape::SDIShape(wxShapeCanvas *can): wxShape(can)
 /******************************************************************************/
 
 void
-SDIShape::AddPenInfo(TiXmlNode &parent)
+SDIShape::AddPenInfo(DSAMXMLNode *parent)
 {
 	wxPen	*myPen;
 
 	if ((myPen = GetPen()) == NULL)
 		return;
-	TiXmlElement penElement(SHAPE_XML_PEN_ELEMENT);
+	DSAMXMLNode *penElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_PEN_ELEMENT);
 	if (myPen->GetWidth() != 1)
-		penElement.SetAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, myPen->GetWidth());
+		penElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, 
+		  myPen->GetWidth());
 	if ( myPen->GetStyle() != wxSOLID)
-		penElement.SetAttribute(SHAPE_XML_STYLE_ATTRIBUTE, myPen->GetStyle());
+		penElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE, 
+		  myPen->GetStyle());
 	wxString penColour = wxTheColourDatabase->FindName(myPen->GetColour());
 	if (penColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myPen->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex.mb_str());
+		penElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
 	} else if (penColour != wxT("BLACK"))
-		penElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, penColour.mb_str());
-	if (penElement.FirstAttribute())
-		parent.InsertEndChild(penElement);
+		penElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, penColour);
+	if (penElement->GetProperties())
+		parent->AddChild(penElement);
+	else
+		delete penElement;
 
 }
 
@@ -102,29 +108,30 @@ SDIShape::AddPenInfo(TiXmlNode &parent)
 /******************************************************************************/
 
 void
-SDIShape::AddBrushInfo(TiXmlNode &parent)
+SDIShape::AddBrushInfo(DSAMXMLNode *parent)
 {
 	wxBrush	*myBrush;
 
 	if ((myBrush = GetBrush()) == NULL)
 		return;
-	TiXmlElement brushElement(SHAPE_XML_BRUSH_ELEMENT);
+	DSAMXMLNode *brushElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_BRUSH_ELEMENT);
 	wxString brushColour = wxTheColourDatabase->FindName(myBrush->GetColour(
 	  ));
 
 	if (brushColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myBrush->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex.mb_str());
+		brushElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
 	} else if (brushColour != wxT("WHITE"))
-		brushElement.SetAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, brushColour.
-		  mb_str());
+		brushElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, brushColour);
 
 	if (myBrush->GetStyle() != wxSOLID)
-		brushElement.SetAttribute(SHAPE_XML_TYPE_ATTRIBUTE, myBrush->GetStyle(
-		  ));
-	if (brushElement.FirstAttribute())
-		parent.InsertEndChild(brushElement);
+		brushElement->AddProperty(SHAPE_XML_TYPE_ATTRIBUTE, myBrush->GetStyle());
+	if (brushElement->GetProperties())
+		parent->AddChild(brushElement);
+	else
+		delete brushElement;
 
 }
 
@@ -133,21 +140,25 @@ SDIShape::AddBrushInfo(TiXmlNode &parent)
 /******************************************************************************/
 
 void
-SDIShape::AddLineInfo(TiXmlNode &parent)
+SDIShape::AddLineInfo(DSAMXMLNode *parent)
 {
 	if (!GetLines().GetCount())
 		return;
-	TiXmlElement arcsElement(SHAPE_XML_ARCS_ELEMENT);
+	DSAMXMLNode *arcsElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_ARCS_ELEMENT);
 	wxNode *node = GetLines().GetFirst();
 	while (node) {
-		TiXmlElement lineElement(SHAPE_XML_LINE_ELEMENT);
+		DSAMXMLNode *lineElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+		  SHAPE_XML_LINE_ELEMENT);
 		wxShape *line = (wxShape *) node->GetData();
-		lineElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, line->GetId());
-		arcsElement.InsertEndChild(lineElement);
+		lineElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, line->GetId());
+		arcsElement->AddChild(lineElement);
 		node = node->GetNext();
 	}
-	if (arcsElement.FirstChild())
-		parent.InsertEndChild(arcsElement);
+	if (arcsElement->GetChildren())
+		parent->AddChild(arcsElement);
+	else
+		delete arcsElement;
 
 }
 
@@ -156,23 +167,27 @@ SDIShape::AddLineInfo(TiXmlNode &parent)
 /******************************************************************************/
 
 void
-SDIShape::AddAttachmentsInfo(TiXmlNode &parent)
+SDIShape::AddAttachmentsInfo(DSAMXMLNode *parent)
 {
 	if (!GetAttachments().GetCount())
 		return;
-	TiXmlElement attachmentsElement(SHAPE_XML_ATTACHMENTS_ELEMENT);
+	DSAMXMLNode *attachmentsElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_ATTACHMENTS_ELEMENT);
 	wxNode *node = GetAttachments().GetFirst();
 	while (node) {
 		wxAttachmentPoint *point = (wxAttachmentPoint *)node->GetData();
-		TiXmlElement pointElement(SHAPE_XML_POINT_ELEMENT);
-		pointElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, point->m_id);
-		pointElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, point->m_x);
-		pointElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, point->m_y);
-		attachmentsElement.InsertEndChild(pointElement);
+		DSAMXMLNode *pointElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+		  SHAPE_XML_POINT_ELEMENT);
+		pointElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, point->m_id);
+		pointElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, point->m_x);
+		pointElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, point->m_y);
+		attachmentsElement->AddChild(pointElement);
 		node = node->GetNext();
 	}
-	if (attachmentsElement.FirstChild())
-		parent.InsertEndChild(attachmentsElement);
+	if (attachmentsElement->GetProperties())
+		parent->AddChild(attachmentsElement);
+	else
+		delete attachmentsElement;
 
 }
 
@@ -181,19 +196,20 @@ SDIShape::AddAttachmentsInfo(TiXmlNode &parent)
 /******************************************************************************/
 
 void
-SDIShape::AddFontInfo(TiXmlNode &parent, wxFont *font)
+SDIShape::AddFontInfo(DSAMXMLNode *parent, wxFont *font)
 {
-	TiXmlElement fontElement(SHAPE_XML_FONT_ELEMENT);
+	DSAMXMLNode *fontElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_FONT_ELEMENT);
 
-	fontElement.SetAttribute(SHAPE_XML_POINTSIZE_ATTRIBUTE, (font)?
+	fontElement->AddProperty(SHAPE_XML_POINTSIZE_ATTRIBUTE, (font)?
 	  font->GetPointSize() : SHAPE_DEFAULT_FONT_POINTSIZE);
-	fontElement.SetAttribute(SHAPE_XML_FAMILY_ATTRIBUTE, (long)((font)?
-	  font->GetFamily() : wxDEFAULT));
-	fontElement.SetAttribute(SHAPE_XML_STYLE_ATTRIBUTE, (long)((font)?
-	  font->GetStyle() : wxDEFAULT));
-	fontElement.SetAttribute(SHAPE_XML_WEIGHT_ATTRIBUTE, (long)((font)?
-	  font->GetWeight() : wxNORMAL));
-	parent.InsertEndChild(fontElement);
+	fontElement->AddProperty(SHAPE_XML_FAMILY_ATTRIBUTE, (font)?
+	  font->GetFamily() : wxDEFAULT);
+	fontElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE, (font)?
+	  font->GetStyle() : wxDEFAULT);
+	fontElement->AddProperty(SHAPE_XML_WEIGHT_ATTRIBUTE, (font)?
+	  font->GetWeight() : wxNORMAL);
+	parent->AddChild(fontElement);
 
 }
 
@@ -202,44 +218,46 @@ SDIShape::AddFontInfo(TiXmlNode &parent, wxFont *font)
 /******************************************************************************/
 
 void
-SDIShape::AddRegions(TiXmlNode &parent)
+SDIShape::AddRegions(DSAMXMLNode *parent)
 {
 	wxNode *node = GetRegions().GetFirst();
-	TiXmlElement regionsElement(SHAPE_XML_REGIONS_ELEMENT);
+	DSAMXMLNode *regionsElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_REGIONS_ELEMENT);
 
 	while (node) {
 		wxShapeRegion *region = (wxShapeRegion *) node->GetData();
 
-		TiXmlElement regionElement(SHAPE_XML_REGION_ELEMENT);
+		DSAMXMLNode *regionElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+		  SHAPE_XML_REGION_ELEMENT);
 
-		regionElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, region->m_x);
-		regionElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, region->m_y);
-		regionElement.SetDoubleAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, region->
+		regionElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, region->m_x);
+		regionElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, region->m_y);
+		regionElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, region->
 		  GetWidth());
-		regionElement.SetDoubleAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, region->
+		regionElement->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, region->
 		  GetHeight());
 
-		regionElement.SetDoubleAttribute(SHAPE_XML_MIN_WIDTH_ATTRIBUTE, region->
+		regionElement->AddProperty(SHAPE_XML_MIN_WIDTH_ATTRIBUTE, region->
 		  m_minWidth);
-		regionElement.SetDoubleAttribute(SHAPE_XML_MIN_HEIGHT_ATTRIBUTE,
+		regionElement->AddProperty(SHAPE_XML_MIN_HEIGHT_ATTRIBUTE,
 		  region->m_minHeight);
-		regionElement.SetDoubleAttribute(SHAPE_XML_PROPORTION_X_ATTRIBUTE,
+		regionElement->AddProperty(SHAPE_XML_PROPORTION_X_ATTRIBUTE,
 		  region->m_regionProportionX);
-		regionElement.SetDoubleAttribute(SHAPE_XML_PROPORTION_Y_ATTRIBUTE,
+		regionElement->AddProperty(SHAPE_XML_PROPORTION_Y_ATTRIBUTE,
 		  region->m_regionProportionY);
 
-		regionElement.SetAttribute(SHAPE_XML_FORMAT_MODE_ATTRIBUTE, region->
+		regionElement->AddProperty(SHAPE_XML_FORMAT_MODE_ATTRIBUTE, region->
 		  m_formatMode);
 
 		AddFontInfo(regionElement, region->m_font);
 
-		regionElement.SetAttribute(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, region->
-		  m_textColour.mb_str());
+		regionElement->AddProperty(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, region->
+		  m_textColour);
 
 		// New members for pen colour/style
-		regionElement.SetAttribute(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, region->
-		  m_penColour.mb_str());
-		regionElement.SetAttribute(SHAPE_XML_PEN_STYLE_ATTRIBUTE, (long)region->
+		regionElement->AddProperty(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, region->
+		  m_penColour);
+		regionElement->AddProperty(SHAPE_XML_PEN_STYLE_ATTRIBUTE, region->
 		  m_penStyle);
 
 		// Formatted text:
@@ -247,22 +265,25 @@ SDIShape::AddRegions(TiXmlNode &parent)
 	
 		wxNode *textNode = region->m_formattedText.GetFirst();
 		while (textNode) {
-			TiXmlElement textElement(SHAPE_XML_TEXT_ELEMENT);
+			DSAMXMLNode *textElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+			  SHAPE_XML_TEXT_ELEMENT);
 			wxShapeTextLine *line = (wxShapeTextLine *)textNode->GetData();
-			textElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, line->GetX());
-			textElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, line->GetY());
-			TiXmlText text(line->GetText().mb_str());
-			textElement.InsertEndChild(text);
-			regionElement.InsertEndChild(textElement);
+			textElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, line->GetX());
+			textElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, line->GetY());
+			wxXmlNode *textElementText = new wxXmlNode(textElement,
+			  wxXML_TEXT_NODE, wxEmptyString, line->GetText());
+			regionElement->AddChild(textElement);
 			textNode = textNode->GetNext();
 		}
 
-		regionsElement.InsertEndChild(regionElement);
+		regionsElement->AddChild(regionElement);
 
 		node = node->GetNext();
 	}
-	if (regionsElement.FirstChild())
-		parent.InsertEndChild(regionsElement);
+	if (regionsElement->GetChildren())
+		parent->AddChild(regionsElement);
+	else
+		delete regionsElement;
 
 }
 
@@ -271,59 +292,63 @@ SDIShape::AddRegions(TiXmlNode &parent)
 /******************************************************************************/
 
 void
-SDIShape::AddShapeInfo(TiXmlNode &node)
+SDIShape::AddShapeInfo(DSAMXMLNode *parent)
 {
-	TiXmlElement shapeElement(SHAPE_XML_SHAPE_ELEMENT);
-	shapeElement.SetAttribute(DSAM_XML_TYPE_ATTRIBUTE, wxConvUTF8.cWX2MB(
-	  GetClassInfo()->GetClassName()));
-	shapeElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE, GetId());
-	shapeElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, GetX());
-	shapeElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, GetY());
+	wxString	str;
+
+	DSAMXMLNode *shapeElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_SHAPE_ELEMENT);
+	shapeElement->AddProperty(DSAM_XML_TYPE_ATTRIBUTE, GetClassInfo()->
+	  GetClassName());
+	shapeElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, GetId());
+	shapeElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, GetX());
+	shapeElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, GetY());
 	AddPenInfo(shapeElement);
 	AddBrushInfo(shapeElement);
 	AddLineInfo(shapeElement);
 
 	// Misc. attributes
 	if (m_attachmentMode != 0)
-		shapeElement.SetAttribute(SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE,
 		  m_attachmentMode);
 	if (m_sensitivity != OP_ALL)
-		shapeElement.SetAttribute(SHAPE_XML_SENSITIVITY_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_SENSITIVITY_ATTRIBUTE, 
 		  m_sensitivity);
 	if (!m_spaceAttachments)
-		shapeElement.SetAttribute(SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE,
+		shapeElement->AddProperty(SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE,
 		  m_spaceAttachments);
 	if (m_fixedWidth)
-		shapeElement.SetAttribute(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE, 
 		  m_fixedWidth);
 	if (m_fixedHeight)
-		shapeElement.SetAttribute(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE, 
 		  m_fixedHeight);
 	if (m_shadowMode != SHADOW_NONE)
-		shapeElement.SetAttribute(SHAPE_XML_SHADOW_MODE_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_SHADOW_MODE_ATTRIBUTE, 
 		  m_shadowMode);
 	if (!m_centreResize)
-		shapeElement.SetAttribute(SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, 0);
-	shapeElement.SetAttribute(SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE,
+		shapeElement->AddProperty(SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, wxT("0"));
+	shapeElement->AddProperty(SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE,
 	  m_maintainAspectRatio);
 	if (m_highlighted)
-		shapeElement.SetAttribute(SHAPE_XML_HILITE_ATTRIBUTE, m_highlighted);
+		shapeElement->AddProperty(SHAPE_XML_HILITE_ATTRIBUTE,
+		  m_highlighted);
 
 	if (m_parent) // For composite objects
-		shapeElement.SetAttribute(SHAPE_XML_PARENT_ATTRIBUTE, m_parent->GetId(
-		  ));
+		shapeElement->AddProperty(SHAPE_XML_PARENT_ATTRIBUTE,
+		  m_parent->GetId());
 	if (m_rotation != 0.0)
-		shapeElement.SetAttribute(SHAPE_XML_ROTATION_ATTRIBUTE, (int)
+		shapeElement->AddProperty(SHAPE_XML_ROTATION_ATTRIBUTE, 
 		  m_rotation);
 
 	if (!IsKindOf(CLASSINFO(wxLineShape))) {
-		shapeElement.SetAttribute(SHAPE_XML_NECK_LENGTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_NECK_LENGTH_ATTRIBUTE, 
 		  GetBranchNeckLength());
-		shapeElement.SetAttribute(SHAPE_XML_STEM_LENGTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_STEM_LENGTH_ATTRIBUTE, 
 		  GetBranchStemLength());
-		shapeElement.SetAttribute(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE, 
 		  GetBranchSpacing());
-		shapeElement.SetAttribute(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE, 
 		  GetBranchStyle());
 	}
 
@@ -350,25 +375,30 @@ SDIShape::AddShapeInfo(TiXmlNode &node)
 	else if (IsKindOf(CLASSINFO(SDIUtilityShape)))
 		((SDIUtilityShape *) this)->AddXMLInfo(shapeElement);
 
-	node.InsertEndChild(shapeElement);
+	parent->AddChild(shapeElement);
 }
 
 /****************************** GetPenInfo ************************************/
 
 bool
-SDIShape::GetPenInfo(TiXmlNode *parent)
+SDIShape::GetPenInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetPenInfo");
 	bool	ok = true;
 	int		penWidth = 1, penStyle = wxSOLID;
 	wxString	penColour = wxEmptyString;
-	TiXmlElement	*myElement;
+	MyXmlProperty	*prop;
 
-	if ((myElement = parent->FirstChildElement(SHAPE_XML_PEN_ELEMENT)) == NULL)
-		return(true);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_WIDTH_ATTRIBUTE, penWidth, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_STYLE_ATTRIBUTE, penStyle, false);
-	STR_ATTRIBUTE_VAL(myElement, SHAPE_XML_COLOUR_ATTRIBUTE, penColour, false);
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_WIDTH_ATTRIBUTE)
+			prop->GetPropVal(&penWidth);
+		else if (prop->GetName() == SHAPE_XML_STYLE_ATTRIBUTE)
+			prop->GetPropVal(&penStyle);
+		else if (prop->GetName() == SHAPE_XML_COLOUR_ATTRIBUTE)
+			penColour = prop->GetValue();
+
+	
 	if (penColour == wxEmptyString)
 		penColour = wxT("BLACK");
 	if (penColour.GetChar(0) == '#') {
@@ -387,20 +417,20 @@ SDIShape::GetPenInfo(TiXmlNode *parent)
 /****************************** GetBrushInfo **********************************/
 
 bool
-SDIShape::GetBrushInfo(TiXmlNode *parent)
+SDIShape::GetBrushInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetBrushInfo");
 	bool	ok = true;
 	int		brushStyle = wxSOLID;
 	wxString	brushColour = wxEmptyString;
-	TiXmlElement	*myElement;
+	MyXmlProperty	*prop;
 
-	if ((myElement = parent->FirstChildElement(SHAPE_XML_BRUSH_ELEMENT)) ==
-	  NULL)
-		return(true);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_STYLE_ATTRIBUTE, brushStyle, false);
-	STR_ATTRIBUTE_VAL(myElement, SHAPE_XML_COLOUR_ATTRIBUTE, brushColour,
-	  false);
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_STYLE_ATTRIBUTE)
+			prop->GetPropVal(&brushStyle);
+		else if (prop->GetName() == SHAPE_XML_COLOUR_ATTRIBUTE)
+			brushColour = prop->GetValue();
 
 	if (brushColour == wxEmptyString)
 		brushColour = wxT("WHITE");
@@ -420,25 +450,26 @@ SDIShape::GetBrushInfo(TiXmlNode *parent)
 /****************************** GetAttachmentsInfo ****************************/
 
 bool
-SDIShape::GetAttachmentsInfo(TiXmlNode *parent)
+SDIShape::GetAttachmentsInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetAttachmentsInfo");
 	bool	ok = true;
-	TiXmlNode	*node;
-	TiXmlElement	*myElement, *pointElement;
+	wxXmlNode	*child;
+	MyXmlProperty	*prop;
 
-	if ((myElement = parent->FirstChildElement(
-	  SHAPE_XML_ATTACHMENTS_ELEMENT)) == NULL)
-		return(true);
-	for (node = myElement->IterateChildren(SHAPE_XML_POINT_ELEMENT, NULL);
-	  node; node = myElement->IterateChildren(SHAPE_XML_POINT_ELEMENT, node)) {
-		pointElement = node->ToElement();
-		wxAttachmentPoint *point = new wxAttachmentPoint;
-		ATTRIBUTE_VAL(pointElement, DSAM_XML_ID_ATTRIBUTE, point->m_id, false);
-		ATTRIBUTE_VAL(pointElement, SHAPE_XML_X_ATTRIBUTE, point->m_x, false);
-		ATTRIBUTE_VAL(pointElement, SHAPE_XML_Y_ATTRIBUTE, point->m_y, false);
-		 m_attachmentPoints.Append((wxObject *)point);
-	}
+	for (child = myElement->GetChildren(); child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_POINT_ELEMENT) {
+			wxAttachmentPoint *point = new wxAttachmentPoint;
+			for (prop = (MyXmlProperty *) child->GetProperties(); prop; prop =
+			  prop->GetNext())
+				if (prop->GetName() == DSAM_XML_ID_ATTRIBUTE)
+					prop->GetPropVal(&point->m_id);
+				else if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE)
+					prop->GetPropVal(&point->m_x);
+				else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE)
+					prop->GetPropVal(&point->m_y);
+			m_attachmentPoints.Append((wxObject *)point);
+		}
 	return(ok);
 
 }
@@ -446,21 +477,24 @@ SDIShape::GetAttachmentsInfo(TiXmlNode *parent)
 /****************************** GetFontInfo ***********************************/
 
 wxFont *
-SDIShape::GetFontInfo(TiXmlNode *parent)
+SDIShape::GetFontInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetFontInfo");
 	bool	ok = true;
 	int		fontSize = SHAPE_DEFAULT_FONT_POINTSIZE, fontFamily = wxSWISS;
 	int		fontStyle = wxNORMAL, fontWeight = wxNORMAL;
-	TiXmlElement	*myElement;
+	MyXmlProperty	*prop;
 
-	if ((myElement = parent->FirstChildElement(SHAPE_XML_FONT_ELEMENT)) == NULL)
-		return(NULL);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_POINTSIZE_ATTRIBUTE, fontSize, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_FAMILY_ATTRIBUTE, fontFamily, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_STYLE_ATTRIBUTE, fontStyle, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_WEIGHT_ATTRIBUTE, fontWeight, false);
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_POINTSIZE_ATTRIBUTE)
+			prop->GetPropVal(&fontSize);
+		else if (prop->GetName() == SHAPE_XML_FAMILY_ATTRIBUTE)
+			prop->GetPropVal(&fontFamily);
+		else if (prop->GetName() == SHAPE_XML_STYLE_ATTRIBUTE)
+			prop->GetPropVal(&fontStyle);
+		else if (prop->GetName() == SHAPE_XML_WEIGHT_ATTRIBUTE)
+			prop->GetPropVal(&fontWeight);
 
 	wxFont *font = wxTheFontList->FindOrCreateFont(fontSize, fontFamily,
 	  fontStyle, fontWeight);
@@ -468,84 +502,97 @@ SDIShape::GetFontInfo(TiXmlNode *parent)
 
 }
 
+/****************************** GetRegionInfo *********************************/
+
+wxShapeRegion *
+SDIShape::GetRegionInfo(wxXmlNode *myElement)
+{
+	static const wxChar *funcName = wxT("SDIShape::GetRegionInfo");
+	bool	ok = true;
+	int		formatMode = FORMAT_NONE, penStyle = wxSOLID;
+	double	x = 0.0, y = 0.0, width = 0.0, height = 0.0, minWidth = 5.0;
+	double	minHeight = 5.0, regionProportionX = -1.0, regionProportionY = -1.0;
+	wxString regionTextColour = wxEmptyString, penColour = wxEmptyString;
+	wxXmlNode *child;
+	MyXmlProperty	*prop;
+
+	wxShapeRegion *region = new wxShapeRegion;
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE)
+			prop->GetPropVal(&x);
+		else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE)
+			prop->GetPropVal(&y);
+		else if (prop->GetName() == SHAPE_XML_WIDTH_ATTRIBUTE)
+			prop->GetPropVal(&width);
+		else if (prop->GetName() == SHAPE_XML_HEIGHT_ATTRIBUTE)
+			prop->GetPropVal(&height);
+		else if (prop->GetName() == SHAPE_XML_MIN_WIDTH_ATTRIBUTE)
+			prop->GetPropVal(&minWidth);
+		else if (prop->GetName() == SHAPE_XML_MIN_HEIGHT_ATTRIBUTE)
+			prop->GetPropVal(&minHeight);
+		else if (prop->GetName() == SHAPE_XML_PROPORTION_X_ATTRIBUTE)
+			prop->GetPropVal(&regionProportionX);
+		else if (prop->GetName() == SHAPE_XML_PROPORTION_Y_ATTRIBUTE)
+			prop->GetPropVal(&regionProportionY);
+		else if (prop->GetName() == SHAPE_XML_FORMAT_MODE_ATTRIBUTE)
+			prop->GetPropVal(&formatMode);
+		else if (prop->GetName() == SHAPE_XML_TEXT_COLOUR_ATTRIBUTE)
+			regionTextColour = prop->GetValue();
+		else if (prop->GetName() == SHAPE_XML_PEN_COLOUR_ATTRIBUTE)
+			penColour = prop->GetValue();
+		else if (prop->GetName() == SHAPE_XML_PEN_STYLE_ATTRIBUTE)
+			prop->GetPropVal(&penStyle);
+
+	region->SetPosition(x, y);
+	region->SetSize(width, height);
+	region->SetMinSize(minWidth, minHeight);
+	region->SetProportions(regionProportionX, regionProportionY);
+	region->SetFormatMode(formatMode);
+
+	if (regionTextColour.empty())
+		regionTextColour = wxT("BLACK");
+	region->m_textColour = regionTextColour;
+
+	if (!penColour.empty())
+		region->SetPenColour(penColour);	
+	region->SetPenStyle(penStyle);
+
+	for (child = myElement->GetChildren(); child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_FONT_ELEMENT)
+			region->SetFont(GetFontInfo(child));
+		else if (child->GetName() == SHAPE_XML_TEXT_ELEMENT) {
+			for (prop = (MyXmlProperty *) child->GetProperties(); prop; prop =
+			  prop->GetNext())
+				if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE)
+					prop->GetPropVal(&x);
+				else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE)
+					prop->GetPropVal(&y);
+				wxShapeTextLine *line = new wxShapeTextLine(x, y,
+				  child->GetNodeContent());
+				region->m_formattedText.Append(line);
+		}
+	return(region);
+
+}
+
 /****************************** GetRegionsInfo ********************************/
 
 bool
-SDIShape::GetRegionsInfo(TiXmlNode *parent)
+SDIShape::GetRegionsInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetRegionsInfo");
 	bool	ok = true;
 	int		formatMode = FORMAT_NONE, penStyle = wxSOLID;
 	double	x = 0.0, y = 0.0, width = 0.0, height = 0.0, minWidth = 5.0;
 	double	minHeight = 5.0, regionProportionX = -1.0, regionProportionY = -1.0;
-	TiXmlNode	*node, *textNode;
-	TiXmlElement	*myElement, *regionElement;
+	wxString regionTextColour = wxEmptyString, penColour = wxEmptyString;
+	wxXmlNode *child;
 
-	if ((myElement = parent->FirstChildElement(SHAPE_XML_REGIONS_ELEMENT)) ==
-	  NULL)
-		return(true);
 	ClearRegions();
-	for (node = myElement->IterateChildren(SHAPE_XML_REGION_ELEMENT, NULL);
-	  node; node = myElement->IterateChildren(SHAPE_XML_REGION_ELEMENT, node)) {
-		regionElement = node->ToElement();
-		wxShapeRegion *region = new wxShapeRegion;
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_X_ATTRIBUTE, x, false);
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_Y_ATTRIBUTE, y, false);
-		region->SetPosition(x, y);
-
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_WIDTH_ATTRIBUTE, width, false);
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_HEIGHT_ATTRIBUTE, height, false);
-		region->SetSize(width, height);
-
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_MIN_WIDTH_ATTRIBUTE, minWidth,
-		  false);
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_MIN_HEIGHT_ATTRIBUTE, minHeight,
-		  false);
-		region->SetMinSize(minWidth, minHeight);
-
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_PROPORTION_X_ATTRIBUTE,
-		  regionProportionX, false);
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_PROPORTION_Y_ATTRIBUTE,
-		  regionProportionY, false);
-		region->SetProportions(regionProportionX, regionProportionY);
-
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_FORMAT_MODE_ATTRIBUTE,
-		  formatMode, false);
-		region->SetFormatMode(formatMode);
-
-		region->SetFont(GetFontInfo(regionElement));
-
-		wxString regionTextColour = wxEmptyString;
-		STR_ATTRIBUTE_VAL(regionElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE,
-		  regionTextColour, false);
-		if (regionTextColour.empty())
-			regionTextColour = wxT("BLACK");
-		region->m_textColour = regionTextColour;
-
-    	wxString penColour = wxEmptyString;
-		STR_ATTRIBUTE_VAL(regionElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE,
-		  penColour, false);
-		if (!penColour.empty())
-			region->SetPenColour(penColour);
-
-		ATTRIBUTE_VAL(regionElement, SHAPE_XML_PEN_STYLE_ATTRIBUTE, penStyle,
-		  false);
-		region->SetPenStyle(penStyle);
-		for (textNode = regionElement->IterateChildren(SHAPE_XML_TEXT_ELEMENT,
-		  NULL); textNode; textNode = regionElement->IterateChildren(
-		  SHAPE_XML_TEXT_ELEMENT, textNode)) {
-			TiXmlElement *textElement = textNode->ToElement();
-			ATTRIBUTE_VAL(textElement, SHAPE_XML_X_ATTRIBUTE, x, false);
-			ATTRIBUTE_VAL(textElement, SHAPE_XML_Y_ATTRIBUTE, y, false);
-			TiXmlText* text = textElement->FirstChild()->ToText();
-			if (text) {
-				wxShapeTextLine *line = new wxShapeTextLine(x, y, wxConvUTF8.
-				  cMB2WX(text->Value()));
-				region->m_formattedText.Append(line);
-			}
-		}
-		m_regions.Append(region);
-	}
+	for (child = myElement->GetChildren(); child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_REGION_ELEMENT)
+			m_regions.Append(GetRegionInfo(child));
 	return(ok);
 
 }
@@ -553,108 +600,113 @@ SDIShape::GetRegionsInfo(TiXmlNode *parent)
 /****************************** GetShapeInfo **********************************/
 
 bool
-SDIShape::GetShapeInfo(TiXmlElement *myElement)
+SDIShape::GetShapeInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIShape::GetShapeInfo");
 	bool	ok = true;
-	int		iVal = 0;
 	double	x = 0.0, y = 0.0;
-	wxString	strValue;
+	wxString	value;
+	wxXmlNode	*child;
+	MyXmlProperty	*prop;
 
-	ATTRIBUTE_VAL(myElement, DSAM_XML_ID_ATTRIBUTE, iVal, true);
-	m_id = iVal;
-	wxRegisterId(m_id);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_X_ATTRIBUTE, x, true);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_Y_ATTRIBUTE, y, true);
-	if (ok) {
-		SetX(x);
-		SetY(y);
-	}
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); ok && prop; prop =
+	  prop->GetNext())
+		if (prop->GetName() == DSAM_XML_ID_ATTRIBUTE) {
+			if (prop->GetPropVal(&m_id))
+				wxRegisterId(m_id);
+			else
+				ok = false;
+		} else if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE) {
+			if (prop->GetPropVal(&x))
+				SetX(x);
+			else
+				ok = false;
+		} else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE) {
+			if (prop->GetPropVal(&y))
+				SetY(y);
+			else
+				ok = false;
+		} else if (prop->GetName() == SHAPE_XML_TEXT_COLOUR_ATTRIBUTE)
+			SetTextColour(prop->GetValue());
+		else if (prop->GetName() == SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE)
+			prop->GetPropVal(&m_attachmentMode);
+		else  if (prop->GetName() == SHAPE_XML_SENSITIVITY_ATTRIBUTE)
+			prop->GetPropVal(&m_sensitivity);
+		else if (prop->GetName() == SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE)
+			prop->GetPropVal(&m_spaceAttachments);
+		else if (prop->GetName() == SHAPE_XML_FIXED_WIDTH_ATTRIBUTE)
+			prop->GetPropVal(&m_fixedWidth);
+		else if (prop->GetName() == SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE)
+			prop->GetPropVal(&m_fixedHeight);
+		else if (prop->GetName() == SHAPE_XML_FORMAT_MODE_ATTRIBUTE)
+			prop->GetPropVal(&m_formatMode);
+		else if (prop->GetName() == SHAPE_XML_SHADOW_MODE_ATTRIBUTE)
+			prop->GetPropVal(&m_shadowMode);
+		else if (prop->GetName() == SHAPE_XML_NECK_LENGTH_ATTRIBUTE)
+			prop->GetPropVal(&m_branchNeckLength);
+		else if (prop->GetName() == SHAPE_XML_STEM_LENGTH_ATTRIBUTE)
+			prop->GetPropVal(&m_branchStemLength);
+		else if (prop->GetName() == SHAPE_XML_BRANCH_SPACING_ATTRIBUTE)
+			prop->GetPropVal(&m_branchSpacing);
+		else if (prop->GetName() == SHAPE_XML_BRANCH_STYLE_ATTRIBUTE)
+			prop->GetPropVal(&m_branchStyle);
+		else if (prop->GetName() == SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE)
+			prop->GetPropVal(&m_centreResize);
+		else if (prop->GetName() == SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE)
+			prop->GetPropVal(&m_maintainAspectRatio);
+		else if (prop->GetName() == SHAPE_XML_HILITE_ATTRIBUTE)
+			prop->GetPropVal(&m_highlighted);
+		else if (prop->GetName() == SHAPE_XML_ROTATION_ATTRIBUTE)
+			prop->GetPropVal(&m_rotation);
+
+	//? SetFont(oglMatchFont((iVal)? iVal: 10));
+
 	ClearText();
 
 	wxString brushString = wxEmptyString;
 	m_attachmentMode = ATTACHMENT_MODE_NONE;
 
-	STR_ATTRIBUTE_VAL(myElement, SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, strValue,
-	  false);
-	if (!strValue.empty())
-		SetTextColour(strValue);
-
-	GetPenInfo(myElement);
-	GetBrushInfo(myElement);
-	GetAttachmentsInfo(myElement);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE,
-	  m_attachmentMode, false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_SENSITIVITY_ATTRIBUTE, m_sensitivity,
-	  false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE, iVal,
-	  false);
-	m_spaceAttachments = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_FIXED_WIDTH_ATTRIBUTE, iVal, false);
-	m_fixedWidth = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE, iVal, false);
-	m_fixedHeight = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_FORMAT_MODE_ATTRIBUTE, m_formatMode,
-	  false);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_SHADOW_MODE_ATTRIBUTE, m_shadowMode,
-	  false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_NECK_LENGTH_ATTRIBUTE,
-	  m_branchNeckLength, false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_STEM_LENGTH_ATTRIBUTE,
-	  m_branchStemLength, false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_BRANCH_SPACING_ATTRIBUTE,
-	  m_branchSpacing, false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_BRANCH_STYLE_ATTRIBUTE, iVal, false);
-	m_branchStyle = iVal;
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, iVal, false);
-	m_centreResize = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE, iVal,
-	  false);
-	m_maintainAspectRatio = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_HILITE_ATTRIBUTE, iVal, false);
-	m_highlighted = (iVal != 0);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ROTATION_ATTRIBUTE, m_rotation, false);
-
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_ROTATION_ATTRIBUTE, iVal, false);
-
-	SetFont(oglMatchFont((iVal)? iVal: 10));
-
-	// Read text regions
-	GetRegionsInfo(myElement);
-	if (IsKindOf(CLASSINFO(SDIAnalysisShape)))
-		((SDIAnalysisShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIControlShape)))
-		((SDIControlShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIDisplayShape)))
-		((SDIDisplayShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIFilterShape)))
-		((SDIFilterShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIIOShape)))
-		((SDIIOShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDILineShape)))
-		((SDILineShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIModelShape)))
-		((SDIModelShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIUserShape)))
-		((SDIUserShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDITransformShape)))
-		((SDITransformShape *) this)->GetXMLInfo(myElement);
-	else if (IsKindOf(CLASSINFO(SDIUtilityShape)))
-		((SDIUtilityShape *) this)->GetXMLInfo(myElement);
+	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_PEN_ELEMENT)
+			GetPenInfo(child);
+		else if (child->GetName() == SHAPE_XML_BRUSH_ELEMENT)
+			GetBrushInfo(child);
+		else if (child->GetName() == SHAPE_XML_ATTACHMENTS_ELEMENT)
+			GetAttachmentsInfo(child);
+		else if (child->GetName() == SHAPE_XML_REGIONS_ELEMENT)
+			GetRegionsInfo(child);
+		else if ((child->GetName() == SHAPE_XML_ANALYSIS_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIAnalysisShape)))
+			((SDIAnalysisShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_CONTROL_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIControlShape)))
+			((SDIControlShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_DISPLAY_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIDisplayShape)))
+			((SDIDisplayShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_FILTER_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIFilterShape)))
+			((SDIFilterShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_IO_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIIOShape)))
+			((SDIIOShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_LINE_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDILineShape)))
+			((SDILineShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_MODEL_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIModelShape)))
+			((SDIModelShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_USER_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIUserShape)))
+			((SDIUserShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_TRANSFORM_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDITransformShape)))
+			((SDITransformShape *) this)->GetXMLInfo(child);
+		else if ((child->GetName() == SHAPE_XML_UTILITY_SHAPE_ELEMENT) &&
+		  IsKindOf(CLASSINFO(SDIUtilityShape)))
+			((SDIUtilityShape *) this)->GetXMLInfo(child);
 	return(ok);
-
+	
 }
 
 /******************************************************************************/
@@ -677,20 +729,22 @@ SDIPolygonShape::SDIPolygonShape(double width, double height): wxPolygonShape()
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIPolygonShape::AddXMLInfo(TiXmlNode &node)
+SDIPolygonShape::AddXMLInfo(DSAMXMLNode *parent)
 {
 	wxObjectList::compatibility_iterator objectNode = GetPoints()->GetFirst();
-	TiXmlElement pointListElement(SHAPE_XML_POINT_LIST_ELEMENT);
-	pointListElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE,
+	DSAMXMLNode *pointListElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_POINT_LIST_ELEMENT);
+	pointListElement->AddProperty(DSAM_XML_ID_ATTRIBUTE,
 	  DSAM_XML_CURRENT_ATTRIBUTE_VALUE);
 	while (objectNode) {
 		wxRealPoint *point = (wxRealPoint *)objectNode->GetData();
 		AddPointInfo(pointListElement, point);
 		objectNode = objectNode->GetNext();
 	}
-	node.InsertEndChild(pointListElement);
-	TiXmlElement originalPointListElement(SHAPE_XML_POINT_LIST_ELEMENT);
-	originalPointListElement.SetAttribute(DSAM_XML_ID_ATTRIBUTE,
+	parent->AddChild(pointListElement);
+	DSAMXMLNode *originalPointListElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_POINT_LIST_ELEMENT);
+	originalPointListElement->AddProperty(DSAM_XML_ID_ATTRIBUTE,
 	  DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE);
 	// Save the original (unscaled) points
 	objectNode = GetOriginalPoints()->GetFirst();
@@ -699,75 +753,81 @@ SDIPolygonShape::AddXMLInfo(TiXmlNode &node)
 		AddPointInfo(originalPointListElement, point);
 		objectNode = objectNode->GetNext();
 	}
-	node.InsertEndChild(originalPointListElement);
+	parent->AddChild(originalPointListElement);
+}
+
+/****************************** GetPointListInfo ******************************/
+
+bool
+SDIPolygonShape::GetPointListInfo(wxXmlNode *myElement, wxList *points)
+{
+	static const WChar *funcName = wxT("SDIPolygonShape::GetPointListInfo");
+	bool	ok = true;
+	wxXmlNode	*child;
+	wxRealPoint	*point;
+
+	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_POINT_ELEMENT) {
+			if ((point = GetPointInfo(child)) == NULL) {
+				NotifyError(wxT("%s: Could not set point."), funcName);
+				ok = false;
+				break;
+			}
+			points->Append((wxObject*) point);
+		}
+	return(ok);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIPolygonShape::GetXMLInfo(TiXmlNode *elementNode)
+SDIPolygonShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIPolygonShape::GetXMLInfo");
 	bool	ok = true;
 	double	height = 100.0, width = 100.0;
 	wxRealPoint	*point;
-	TiXmlNode	*node, *pointNode;
-	TiXmlElement *pointsListElement;
+	wxXmlNode	*child;
+	MyXmlProperty	*prop;
 
-	TiXmlElement *myElement = elementNode->ToElement();
 	Create(NULL);
 	wxList	*points = GetPoints();
 	wxList	*originalPoints = GetOriginalPoints();
-	for (node = myElement->IterateChildren(SHAPE_XML_POINT_LIST_ELEMENT, NULL);
-	  node; node = myElement->IterateChildren(SHAPE_XML_POINT_LIST_ELEMENT,
-	  node)) {
-		pointsListElement = node->ToElement();
-		wxString id = wxEmptyString;
-		STR_ATTRIBUTE_VAL(pointsListElement, DSAM_XML_ID_ATTRIBUTE, id, true);
-		if (id.IsSameAs(wxT(DSAM_XML_CURRENT_ATTRIBUTE_VALUE))) {
-			for (pointNode = pointsListElement->IterateChildren(
-			  SHAPE_XML_POINT_ELEMENT, NULL); pointNode; pointNode =
-			  pointsListElement->IterateChildren(SHAPE_XML_POINT_ELEMENT,
-			  pointNode)) {
-				if ((point = GetPointInfo(pointNode->ToElement())) == NULL) {
-					NotifyError(wxT("%s: Could not set point."), funcName);
+	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
+		if (child->GetName() == SHAPE_XML_POINT_LIST_ELEMENT) {
+			prop = (MyXmlProperty *) child->GetProperties();
+			if (!prop && (prop->GetName() != DSAM_XML_ID_ATTRIBUTE))
+				ok = false;
+			else if (prop->GetValue() == DSAM_XML_CURRENT_ATTRIBUTE_VALUE) {
+				if (!GetPointListInfo(child, points))
 					ok = false;
-					break;
-				}
-				points->Append((wxObject*) point);
+			} else if (prop->GetValue() == DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE) {
+				double minX = 1000;
+				double minY = 1000;
+				double maxX = -1000;
+				double maxY = -1000;
+				if (GetPointListInfo(child, originalPoints)) {
+					wxObjectList::compatibility_iterator objectNode = originalPoints->GetFirst();
+					while (objectNode) {
+						wxRealPoint *point = (wxRealPoint *)objectNode->GetData();
+						if (point->x < minX)
+							minX = point->x;
+						if (point->y < minY)
+							minY = point->y;
+						if (point->x > maxX)
+							maxX = point->x;
+						if (point->y > maxY)
+							maxY = point->y;
+						objectNode = objectNode->GetNext();
+					}
+					SetOriginalWidth(maxX - minX);
+					SetOriginalHeight(maxY - minY);
+				} else
+					ok = false;
 			}
 		}
-		if (id.IsSameAs(wxT(DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE))) {
-			double minX = 1000;
-			double minY = 1000;
-			double maxX = -1000;
-			double maxY = -1000;
-			for (pointNode = pointsListElement->IterateChildren(
-			  SHAPE_XML_POINT_ELEMENT, NULL); pointNode; pointNode =
-			  pointsListElement->IterateChildren(SHAPE_XML_POINT_ELEMENT,
-			  pointNode)) {
-				if ((point = GetPointInfo(pointNode->ToElement())) == NULL) {
-					NotifyError(wxT("%s: Could not set point."), funcName);
-					ok = false;
-					break;
-				}
-				originalPoints->Append((wxObject*) point);
-				if (point->x < minX)
-					minX = point->x;
-				if (point->y < minY)
-					minY = point->y;
-				if (point->x > maxX)
-					maxX = point->x;
-				if (point->y > maxY)
-					maxY = point->y;
-			}
-			SetOriginalWidth(maxX - minX);
-			SetOriginalHeight(maxY - minY);
-		}
-	}
 	if (points->IsEmpty()) { // If no points_list assign a diamond instead.
-
 		point = new wxRealPoint(0.0, (-height/2));
 		points->Append((wxObject*) point);
 
@@ -823,26 +883,30 @@ SDIEllipseShape::SDIEllipseShape(double width, double height): wxEllipseShape(
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIEllipseShape::AddXMLInfo(TiXmlNode &node)
+SDIEllipseShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement *myElement = node.ToElement();
-
-	myElement->SetDoubleAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
-	myElement->SetDoubleAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
+	node->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
+	node->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIEllipseShape::GetXMLInfo(TiXmlNode *node)
+SDIEllipseShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIEllipseShape::GetXMLInfo");
 	bool	ok = true;
+	MyXmlProperty	*prop;
 
-	TiXmlElement *myElement = node->ToElement();
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_WIDTH_ATTRIBUTE, m_width, true)
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_HEIGHT_ATTRIBUTE, m_height, true)
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); ok && prop; prop =
+	  prop->GetNext())
+		if ((prop->GetName() == SHAPE_XML_WIDTH_ATTRIBUTE) && !prop->GetPropVal(
+		  &m_width))
+			ok = false;
+		else if ((prop->GetName() == SHAPE_XML_HEIGHT_ATTRIBUTE) && !prop->
+		  GetPropVal(&m_height))
+			ok = false;
 	return(ok);
 
 }
@@ -864,29 +928,33 @@ SDIRectangleShape::SDIRectangleShape(double width, double height):
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIRectangleShape::AddXMLInfo(TiXmlNode &node)
+SDIRectangleShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	TiXmlElement *myElement = node.ToElement();
 
-	myElement->SetDoubleAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
-	myElement->SetDoubleAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
+	node->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
+	node->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
 	if (m_cornerRadius != 0.0)
-		myElement->SetDoubleAttribute(SHAPE_XML_CORNER_ATTRIBUTE,
-		  m_cornerRadius);
+		node->AddProperty(SHAPE_XML_CORNER_ATTRIBUTE, m_cornerRadius);
 
 }
 
 /****************************** GetXMLInfo ************************************/
 
 bool
-SDIRectangleShape::GetXMLInfo(TiXmlNode *node)
+SDIRectangleShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	static const wxChar *funcName = wxT("SDIRectangleShape::GetXMLInfo");
 	bool	ok = true;
+	MyXmlProperty	*prop;
 
-	TiXmlElement *myElement = node->ToElement();
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_WIDTH_ATTRIBUTE, m_width, true)
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_HEIGHT_ATTRIBUTE, m_height, true)
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); ok && prop; prop =
+	  prop->GetNext())
+		if ((prop->GetName() == SHAPE_XML_WIDTH_ATTRIBUTE) && !prop->GetPropVal(
+		  &m_width))
+			ok = false;
+		else if ((prop->GetName() == SHAPE_XML_HEIGHT_ATTRIBUTE) && !prop->
+		  GetPropVal(&m_height))
+			ok = false;
 	return(ok);
 
 }
@@ -898,30 +966,30 @@ SDIRectangleShape::GetXMLInfo(TiXmlNode *node)
 /****************************** AddPointInfo **********************************/
 
 void
-AddPointInfo(TiXmlNode &parent, wxRealPoint *point)
+AddPointInfo(DSAMXMLNode *parent, wxRealPoint *point)
 {
-	TiXmlElement pointElement(SHAPE_XML_POINT_ELEMENT);
-	pointElement.SetDoubleAttribute(SHAPE_XML_X_ATTRIBUTE, point->x);
-	pointElement.SetDoubleAttribute(SHAPE_XML_Y_ATTRIBUTE, point->y);
-	parent.InsertEndChild(pointElement);
+	DSAMXMLNode *pointElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  SHAPE_XML_POINT_ELEMENT);
+	pointElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, point->x);
+	pointElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, point->y);
+	parent->AddChild(pointElement);
 
 }
 
 /****************************** GetPointInfo **********************************/
 
 wxRealPoint *
-GetPointInfo(TiXmlElement *myElement)
+GetPointInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIPolygonShape::GetPointInfo");
-	bool	ok = true;
+	MyXmlProperty	*prop;
 
 	wxRealPoint *point = new wxRealPoint;
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_X_ATTRIBUTE, point->x, true);
-	ATTRIBUTE_VAL(myElement, SHAPE_XML_Y_ATTRIBUTE, point->y, true);
-	if (!ok) {
-		delete point;
-		return(NULL);
-	}
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop = 
+	  prop->GetNext())
+		if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE)
+			prop->GetPropVal(&point->x);
+		else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE)
+			prop->GetPropVal(&point->y);
 	return(point);
 
 }

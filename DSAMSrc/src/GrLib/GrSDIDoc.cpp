@@ -32,7 +32,6 @@
 #include "UtSSParser.h"
 #include "UtSimScript.h"
 #include "UtAppInterface.h"
-#include "tinyxml.h"
 
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
@@ -268,9 +267,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 //	}
 	SetParsFilePath_Common(GetPtr_AppInterface()->workingDirectory);
 	wxGetApp().SetAudModelLoadedFlag(true);
-	wxString lastDirectory = (fileName.GetPath().StartsWith(wxGetCwd()))?
-	  fileName.GetPath(): wxGetCwd() + fileName.GetPathSeparator() + fileName.
-	  GetPath();
+	wxString lastDirectory = fileName.GetPath();
 	GetDocumentManager( )->SetLastDirectory(lastDirectory);
 	return stream;
 
@@ -287,7 +284,7 @@ SDIDocument::SaveXMLObject(SDI_DOC_OSTREAM& stream)
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	SDIXMLDocument	doc(&diagram);
 	doc.Create();
-	doc.SaveFile(GetFilename().mb_str());
+	doc.Save(GetFilename());
 	return(stream);
 
 }

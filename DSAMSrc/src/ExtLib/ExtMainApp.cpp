@@ -47,7 +47,6 @@
 #include "ExtSocketServer.h"
 #include "ExtIPCServer.h"
 #include "ExtRunThreadedProc.h"
-#include "tinyxml.h"
 #include "ExtXMLDocument.h"
 #include "ExtMainApp.h"
 
@@ -630,10 +629,9 @@ MainApp::LoadXMLDocument(void)
 	bool	ok = true;
 
 	InitXMLDocument();
-	if (!doc->LoadFile((const char *) simFileName.GetFullPath().mb_str())) {
+	if (!doc->Load(simFileName.GetFullPath())) {
 		NotifyError(wxT("%s: Could not load XML file '%s' (Error: %s)."),
-		  funcName, simFileName.GetFullPath().c_str(), MBSToWCS_Utility_String(
-		  doc->ErrorDesc()));
+		  funcName, simFileName.GetFullPath().c_str());
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {

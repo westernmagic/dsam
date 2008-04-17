@@ -30,7 +30,6 @@
 #include "ExtMainApp.h"
 #include "GrSimMgr.h"
 #include "GrSDIFrame.h"
-#include "tinyxml.h"
 #include "ExtXMLDocument.h"
 #include "GrSDIXMLDoc.h"
 #include "GrMainApp.h"

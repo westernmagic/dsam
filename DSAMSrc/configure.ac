@@ -2,9 +2,9 @@ dnl Process this file with autoconf to produce a configure script.
 dnl CVS ID $Id$
 dnl Put in a check for 'bool' for CC and CXX.
 
-AC_REVISION($Revision: 2.13)
+AC_REVISION($Revision: 2.61)
 
-AC_INIT(src/MainLib/GeCommon.c)
+AC_INIT(DSAM, 2.7.43)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_TARGET
@@ -32,11 +32,11 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=7
-DSAM_MICRO_VERSION=42
-DSAM_INTERFACE_AGE=42
-DSAM_BINARY_AGE=42
+DSAM_MICRO_VERSION=43
+DSAM_INTERFACE_AGE=43
+DSAM_BINARY_AGE=43
 DSAM_RPM_AGE=1
-DSAM_VERSION=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION.$DSAM_MICRO_VERSION
+
 dnl
 dnl AC_DIVERT_POP()dnl
 
@@ -46,8 +46,7 @@ AC_SUBST(DSAM_MICRO_VERSION)
 AC_SUBST(DSAM_INTERFACE_AGE)
 AC_SUBST(DSAM_BINARY_AGE)
 AC_SUBST(DSAM_RPM_AGE)
-AC_DEFINE_UNQUOTED(DSAM_VERSION,wxT("$DSAM_VERSION"), "DSAM version")
-AC_SUBST(DSAM_VERSION)
+AC_DEFINE_UNQUOTED(DSAM_VERSION,wxT("$PACKAGE_VERSION"), "DSAM version")
 
 # libtool versioning
 LT_RELEASE=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION
@@ -67,7 +66,7 @@ DSAM_PACKAGE=dsam
 AC_DEFINE_UNQUOTED(DSAM_PACKAGE,wxT("$DSAM_PACKAGE"), "DSAM Package name")
 AC_SUBST(DSAM_PACKAGE)
 
-AM_INIT_AUTOMAKE($DSAM_PACKAGE, $DSAM_VERSION)
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(DSAMSetup.h:DSAMSetup.hin )
 
 dnl ============================================================================
@@ -610,9 +609,9 @@ if test x$wx_base_available = xyes; then
 	AC_SUBST(DSAMEXTINC)
 	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
 	AC_SUBST(DSAMEXTLIB)
-	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base net`"
+	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
 	AC_SUBST(WX_BASE_CXXFLAGS)
-	WX_BASE_LDFLAGS="`$WX_CONFIG --libs base net`"
+	WX_BASE_LDFLAGS="`$WX_CONFIG --libs base net xml`"
 	AC_SUBST(WX_BASE_LDFLAGS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
@@ -667,7 +666,7 @@ dnl ============================================================================
 dnl Final configure outputs.
 dnl ============================================================================
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 	dsam.spec
 	CfgTools/Makefile
 	Makefile
@@ -686,4 +685,6 @@ AC_OUTPUT([
 	MSVC/DSAM_ext/Makefile
 	MSVC/DSAM_std/Makefile
 	MSVC/DSAM_g/Makefile
-],[chmod +x dsam-config])
+], [chmod +x dsam-config])
+
+AC_OUTPUT

@@ -28,38 +28,40 @@ class istream;
 #include "UtDynaBList.h"
 #include "UtSSParser.h"
 #include "UtSimScript.h"
+#include "ExtXMLNode.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define DSAM_XML_APPLICATION_ELEMENT		"application"
-#define DSAM_XML_CFLIST_ELEMENT				"cflist"
-#define DSAM_XML_CONNECTIONS_ELEMENT		"connections"
-#define DSAM_XML_DSAM_ELEMENT				"dsam"
-#define DSAM_XML_ICLIST_ELEMENT				"iclist"
-#define DSAM_XML_INPUT_ELEMENT				"input"
-#define DSAM_XML_ION_CHANNELS_ELEMENT		"ion_channels"
-#define DSAM_XML_PAR_ELEMENT				"par"
-#define DSAM_XML_PAR_LIST_ELEMENT			"par_list"
-#define DSAM_XML_PARARRAY_ELEMENT			"par_array"
-#define DSAM_XML_OBJECT_ELEMENT				"object"
-#define DSAM_XML_OUTPUT_ELEMENT				"output"
-#define DSAM_XML_SIMULAION_ELEMENT			"simulation"
+#define DSAM_XML_APPLICATION_ELEMENT		wxT("application")
+#define DSAM_XML_CFLIST_ELEMENT				wxT("cflist")
+#define DSAM_XML_CONNECTIONS_ELEMENT		wxT("connections")
+#define DSAM_XML_DSAM_ELEMENT				wxT("dsam")
+#define DSAM_XML_ICLIST_ELEMENT				wxT("iclist")
+#define DSAM_XML_INPUT_ELEMENT				wxT("input")
+#define DSAM_XML_ION_CHANNELS_ELEMENT		wxT("ion_channels")
+#define DSAM_XML_PAR_ELEMENT				wxT("par")
+#define DSAM_XML_PAR_LIST_ELEMENT			wxT("par_list")
+#define DSAM_XML_PARARRAY_ELEMENT			wxT("par_array")
+#define DSAM_XML_OBJECT_ELEMENT				wxT("object")
+#define DSAM_XML_OUTPUT_ELEMENT				wxT("output")
+#define DSAM_XML_SHAPE_ELEMENT				wxT("shape")
+#define DSAM_XML_SIMULATION_ELEMENT			wxT("simulation")
 
-#define DSAM_XML_COUNT_ATTRIBUTE			"count"
-#define DSAM_XML_ID_ATTRIBUTE				"id"
-#define DSAM_XML_ENABLED_ATTRIBUTE			"enabled"
-#define DSAM_XML_LABEL_ATTRIBUTE			"label"
-#define DSAM_XML_NAME_ATTRIBUTE				"name"
-#define DSAM_XML_OBJLABEL_ATTRIBUTE			"obj_label"
-#define DSAM_XML_TYPE_ATTRIBUTE				"type"
-#define DSAM_XML_VALUE_ATTRIBUTE			"value"
-#define DSAM_XML_VERSION_ATTRIBUTE			"version"
+#define DSAM_XML_COUNT_ATTRIBUTE			wxT("count")
+#define DSAM_XML_ID_ATTRIBUTE				wxT("id")
+#define DSAM_XML_ENABLED_ATTRIBUTE			wxT("enabled")
+#define DSAM_XML_LABEL_ATTRIBUTE			wxT("label")
+#define DSAM_XML_NAME_ATTRIBUTE				wxT("name")
+#define DSAM_XML_OBJLABEL_ATTRIBUTE			wxT("obj_label")
+#define DSAM_XML_TYPE_ATTRIBUTE				wxT("type")
+#define DSAM_XML_VALUE_ATTRIBUTE			wxT("value")
+#define DSAM_XML_VERSION_ATTRIBUTE			wxT("version")
 
-#define DSAM_XML_CURRENT_ATTRIBUTE_VALUE	"current"
-#define DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE	"original"
-#define DSAM_XML_PROCESS_ATTRIBUTE_VALUE	"process"
+#define DSAM_XML_CURRENT_ATTRIBUTE_VALUE	wxT("current")
+#define DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE	wxT("original")
+#define DSAM_XML_PROCESS_ATTRIBUTE_VALUE	wxT("process")
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -73,15 +75,13 @@ class istream;
 /*************************** Pre reference definitions ************************/
 /******************************************************************************/
 
-class TiXmlNode;
-
 /******************************************************************************/
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
 /*************************** SDIDocument **************************************/
 
-class DSAMXMLDocument: public TiXmlDocument
+class DSAMXMLDocument: public wxXmlDocument
 {
 
   private:
@@ -93,40 +93,40 @@ class DSAMXMLDocument: public TiXmlDocument
 	DSAMXMLDocument(void);
 	~DSAMXMLDocument(void);
 
-	virtual void	AddShapeInfo(TiXmlNode &node, void *shape) { ; }
-	virtual void	AddLineShapes(TiXmlNode &node)	{ ;}
-	virtual void	GetShapeInfo(TiXmlNode *parent, DatumPtr pc)	{ ;}
-	virtual void	GetLineShapeInfo(TiXmlNode *parent)	{ ;}
+	virtual void	AddShapeInfo(DSAMXMLNode *parent, void *shape) { ; }
+	virtual void	AddLineShapes(DSAMXMLNode *node)	{ ; }
+	virtual void	GetShapeInfo(wxXmlNode *shapeElement, DatumPtr pc)	{ ; }
+	virtual void	GetConnectionsInfo(wxXmlNode *parent)	{ ;}
 
-	void	AddAppInfo(TiXmlNode &parent);
-	void	AddParGeneral(TiXmlNode &node, UniParPtr p);
-	void	AddParList(TiXmlNode &node, UniParListPtr parList, const wxChar *
+	void	AddAppInfo(DSAMXMLNode *parent);
+	void	AddParGeneral(DSAMXMLNode *parent, UniParPtr p);
+	void	AddParList(DSAMXMLNode *parent, UniParListPtr parList, const wxChar *
 			  name = NULL);
-	void	AddParListStandard(TiXmlNode &node, UniParListPtr parList);
-	void	AddSimConnections(TiXmlNode &node, DynaListPtr list, char * type);
-	DatumPtr	AddSimObjects(TiXmlNode &node, DatumPtr start);
-	void	AddSimulation(TiXmlNode &node, EarObjectPtr simProcess);
+	void	AddParListStandard(DSAMXMLNode *parent, UniParListPtr parList);
+	void	AddSimConnections(DSAMXMLNode *node, DynaListPtr list, WChar * type);
+	DatumPtr	AddSimObjects(DSAMXMLNode *parent, DatumPtr start);
+	void	AddSimulation(DSAMXMLNode *parent, EarObjectPtr simProcess);
 	void	Create(EarObjectPtr simProcess);
-	wxString &	CreateNotification(TiXmlNode *node, wxChar *format, va_list
+	wxString &	CreateNotification(wxXmlNode *node, wxChar *format, va_list
 	 			  args);
-	void	GetApplicationInfo(void);
-	bool	GetCFListInfo(TiXmlElement *parentElement, UniParList *parList);
-	bool	GetConnectionInfo(TiXmlElement *objectElement, DynaListPtr *p,
-			  const char * type);
-	bool	GetICListInfo(TiXmlElement *parentElement, UniParList *parList);
-	bool	GetParArrayInfo(TiXmlElement * myElement, UniParList *parList);
-	bool	GetParListInfo(TiXmlNode *parListNode, UniParList *parList);
-	bool	GetParInfo(TiXmlNode *parentElement, UniParList *parList);
+	wxXmlNode *	FindXMLNode(wxXmlNode *node, const wxString &name);
+	void	GetApplicationInfo(wxXmlNode *appElement);
+	bool	GetCFListInfo(wxXmlNode *cFListElement, UniParList *parList);
+	bool	GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p);
+	bool	GetICListInfo(wxXmlNode *iCListElement, UniParList *parList);
+	bool	GetParArrayInfo(wxXmlNode * parArrayElement, UniParList *parList);
+	bool	GetParListInfo(wxXmlNode *parListElement, UniParList *parList);
+	bool	GetParInfo(wxXmlNode *parElement, UniParList *parList);
 	EarObjectPtr	GetSimProcess(void)		{ return mySimProcess; }
-	bool	GetSimulationInfo(TiXmlNode *simNode);
-	DatumPtr	InstallInst(TiXmlElement *objectElement, int type);
-	DatumPtr	InstallProcess(TiXmlElement *objectElement);
-	bool	InstallSimulationNodes(TiXmlElement *simElement);
+	bool	GetSimulationInfo(wxXmlNode *simElement);
+	DatumPtr	InstallInst(wxXmlNode *objectElement, int type);
+	DatumPtr	InstallProcess(wxXmlNode *objectElement);
+	bool	InstallSimulationNodes(wxXmlNode *startSimElement);
 	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
 	bool	ValidVersion(const wxString &s1, const wxString &s2);
-	void	XMLNotifyWarning(TiXmlNode *node, wxChar *format, ...);
-	void	XMLNotifyError(TiXmlNode *node, wxChar *format, ...);
+	void	XMLNotifyWarning(wxXmlNode *node, wxChar *format, ...);
+	void	XMLNotifyError(wxXmlNode *node, wxChar *format, ...);
 	
 };
 

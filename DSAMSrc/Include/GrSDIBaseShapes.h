@@ -21,7 +21,7 @@
 #include <wx/ogl/ogl.h>
 #include <wx/ogl/drawn.h>
 
-#include "tinyxml.h"
+#include "ExtXMLNode.h"
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -31,106 +31,83 @@
 #define SDI_STANDARD_SHAPE_WIDTH		100
 
 // Misc. elements.
-#define SHAPE_XML_ARCS_ELEMENT				"arcs"
-#define SHAPE_XML_ARROW_LIST_ELEMENT		"arrow_list"
-#define SHAPE_XML_ARROW_ELEMENT				"arrow"
-#define SHAPE_XML_ALIGNMENT_END_ELEMENT		"align_end"
-#define SHAPE_XML_ALIGNMENT_START_ELEMENT	"align_start"
-#define SHAPE_XML_ATTACHMENT_FROM_ELEMENT	"attachment_from"
-#define SHAPE_XML_ATTACHMENT_TO_ELEMENT		"attachment_To"
-#define SHAPE_XML_ATTACHMENTS_ELEMENT		"attachments"
-#define SHAPE_XML_BRUSH_ELEMENT				"brush"
-#define	SHAPE_XML_CONTROL_POINTS_ELEMENT	"control_points"
-#define SHAPE_XML_FONT_ELEMENT				"font"
+#define SHAPE_XML_ARCS_ELEMENT				wxT("arcs")
+#define SHAPE_XML_ARROW_LIST_ELEMENT		wxT("arrow_list")
+#define SHAPE_XML_ARROW_ELEMENT				wxT("arrow")
+#define SHAPE_XML_ALIGNMENT_END_ELEMENT		wxT("align_end")
+#define SHAPE_XML_ALIGNMENT_START_ELEMENT	wxT("align_start")
+#define SHAPE_XML_ATTACHMENT_FROM_ELEMENT	wxT("attachment_from")
+#define SHAPE_XML_ATTACHMENT_TO_ELEMENT		wxT("attachment_To")
+#define SHAPE_XML_ATTACHMENTS_ELEMENT		wxT("attachments")
+#define SHAPE_XML_BRUSH_ELEMENT				wxT("brush")
+#define	SHAPE_XML_CONTROL_POINTS_ELEMENT	wxT("control_points")
+#define SHAPE_XML_FONT_ELEMENT				wxT("font")
 #define SHAPE_XML_INPUT_ELEMENT				"input"
-#define SHAPE_XML_IS_SPLINE_ELEMENT			"is_spline"
-#define SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT	"is_spline"
-#define SHAPE_XML_LINE_ELEMENT				"line"
+#define SHAPE_XML_IS_SPLINE_ELEMENT			wxT("is_spline")
+#define SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT	wxT("keep_lines_straight")
+#define SHAPE_XML_LINE_ELEMENT				wxT("line")
 #define SHAPE_XML_MISC_ELEMENT				"misc"
 #define SHAPE_XML_OBJECT_ELEMENT			"object"
 #define SHAPE_XML_OUTPUT_ELEMENT			"output"
-#define SHAPE_XML_PEN_ELEMENT				"pen"
-#define SHAPE_XML_REGION_ELEMENT			"region"
-#define SHAPE_XML_REGIONS_ELEMENT			"regions"
-#define SHAPE_XML_SHAPE_ELEMENT				"shape"
-#define SHAPE_XML_TEXT_ELEMENT				"text"
+#define SHAPE_XML_PEN_ELEMENT				wxT("pen")
+#define SHAPE_XML_REGION_ELEMENT			wxT("region")
+#define SHAPE_XML_REGIONS_ELEMENT			wxT("regions")
+#define SHAPE_XML_SHAPE_ELEMENT				wxT("shape")
+#define SHAPE_XML_TEXT_ELEMENT				wxT("text")
 
 // Shape-related attributes.
-#define	SHAPE_XML_BRANCH_SPACING_ATTRIBUTE	"branch_spacing"
-#define	SHAPE_XML_BRANCH_STYLE_ATTRIBUTE	"branch_style"
-#define	SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE	"centre_resize"
-#define	SHAPE_XML_COLOUR_ATTRIBUTE			"colour"
-#define SHAPE_XML_CORNER_ATTRIBUTE			"corner"
+#define	SHAPE_XML_BRANCH_SPACING_ATTRIBUTE	wxT("branch_spacing")
+#define	SHAPE_XML_BRANCH_STYLE_ATTRIBUTE	wxT("branch_style")
+#define	SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE	wxT("centre_resize")
+#define	SHAPE_XML_COLOUR_ATTRIBUTE			wxT("colour")
+#define SHAPE_XML_CORNER_ATTRIBUTE			wxT("corner")
 #define SHAPE_XML_COUNT_ATTRIBUTE			"count"
-#define SHAPE_XML_END_ATTRIBUTE				"end"
-#define SHAPE_XML_FAMILY_ATTRIBUTE			"family"
-#define	SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE	"fixed_height"
-#define	SHAPE_XML_FIXED_WIDTH_ATTRIBUTE		"fixed_width"
-#define SHAPE_XML_FORMAT_MODE_ATTRIBUTE		"format_mode"
-#define SHAPE_XML_FROM_ATTRIBUTE			"from"
-#define SHAPE_XML_HEIGHT_ATTRIBUTE			"height"
-#define	SHAPE_XML_HILITE_ATTRIBUTE			"hilite"
-#define	SHAPE_XML_ISSPLINE_ATTRIBUTE		"is_spline"
+#define SHAPE_XML_END_ATTRIBUTE				wxT("end")
+#define SHAPE_XML_FAMILY_ATTRIBUTE			wxT("family")
+#define	SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE	wxT("fixed_height")
+#define	SHAPE_XML_FIXED_WIDTH_ATTRIBUTE		wxT("fixed_width")
+#define SHAPE_XML_FORMAT_MODE_ATTRIBUTE		wxT("format_mode")
+#define SHAPE_XML_FROM_ATTRIBUTE			wxT("from")
+#define SHAPE_XML_HEIGHT_ATTRIBUTE			wxT("height")
+#define	SHAPE_XML_HILITE_ATTRIBUTE			wxT("hilite")
+#define	SHAPE_XML_IS_SPLINE_ATTRIBUTE		wxT("is_spline")
 #define SHAPE_XML_OBJLABEL_ATTRIBUTE		"obj_label"
-#define	SHAPE_XML_STYLE_ATTRIBUTE			"style"
-#define	SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE	"maintain_aspect_ratio"
-#define	SHAPE_XML_MIN_HEIGHT_ATTRIBUTE		"min_height"
-#define	SHAPE_XML_MIN_WIDTH_ATTRIBUTE		"min_width"
+#define	SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE	wxT("maintain_aspect_ratio")
+#define	SHAPE_XML_MIN_HEIGHT_ATTRIBUTE		wxT("min_height")
+#define	SHAPE_XML_MIN_WIDTH_ATTRIBUTE		wxT("min_width")
 #define	SHAPE_XML_MODE_ATTRIBUTE			"mode"
-#define	SHAPE_XML_NAME_ATTRIBUTE			"name"
-#define	SHAPE_XML_NECK_LENGTH_ATTRIBUTE		"neck_length"
-#define	SHAPE_XML_PARENT_ATTRIBUTE			"parent"
-#define SHAPE_XML_PEN_COLOUR_ATTRIBUTE		"pen_colour"
-#define SHAPE_XML_PEN_STYLE_ATTRIBUTE		"pen_style"
-#define SHAPE_XML_POINT_ELEMENT				"point"
-#define SHAPE_XML_POINT_LIST_ELEMENT		"point_list"
-#define SHAPE_XML_POINTSIZE_ATTRIBUTE		"point_size"
-#define SHAPE_XML_PROPORTION_X_ATTRIBUTE	"proportion_x"
-#define SHAPE_XML_PROPORTION_Y_ATTRIBUTE	"proportion_y"
-#define	SHAPE_XML_ROTATION_ATTRIBUTE		"rotation"
-#define	SHAPE_XML_SENSITIVITY_ATTRIBUTE		"sensitivity"
-#define	SHAPE_XML_SHADOW_MODE_ATTRIBUTE		"shadow_mode"
-#define	SHAPE_XML_SIZE_ATTRIBUTE			"size"
-#define	SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE	"space_attachments"
-#define	SHAPE_XML_SPACING_ATTRIBUTE			"spacing"
-#define SHAPE_XML_STYLE_ATTRIBUTE			"style"
-#define	SHAPE_XML_STEM_LENGTH_ATTRIBUTE		"stem_length"
-#define	SHAPE_XML_TO_ATTRIBUTE				"to"
-#define SHAPE_XML_TEXT_COLOUR_ATTRIBUTE		"text_colour"
-#define SHAPE_XML_TYPE_ATTRIBUTE			"type"
-#define	SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE	"use_attachments"
-#define	SHAPE_XML_WEIGHT_ATTRIBUTE			"weight"
-#define	SHAPE_XML_WIDTH_ATTRIBUTE			"width"
-#define	SHAPE_XML_X_ATTRIBUTE				"x"
-#define	SHAPE_XML_X_OFFSET_ATTRIBUTE		"x_offset"
-#define	SHAPE_XML_Y_ATTRIBUTE				"y"
-#define	SHAPE_XML_Y_OFFSET_ATTRIBUTE		"y_offset"
-
+#define	SHAPE_XML_NAME_ATTRIBUTE			wxT("name")
+#define	SHAPE_XML_NECK_LENGTH_ATTRIBUTE		wxT("neck_length")
+#define	SHAPE_XML_PARENT_ATTRIBUTE			wxT("parent")
+#define SHAPE_XML_PEN_COLOUR_ATTRIBUTE		wxT("pen_colour")
+#define SHAPE_XML_PEN_STYLE_ATTRIBUTE		wxT("pen_style")
+#define SHAPE_XML_POINT_ELEMENT				wxT("point")
+#define SHAPE_XML_POINT_LIST_ELEMENT		wxT("point_list")
+#define SHAPE_XML_POINTSIZE_ATTRIBUTE		wxT("point_size")
+#define SHAPE_XML_PROPORTION_X_ATTRIBUTE	wxT("proportion_x")
+#define SHAPE_XML_PROPORTION_Y_ATTRIBUTE	wxT("proportion_y")
+#define	SHAPE_XML_ROTATION_ATTRIBUTE		wxT("rotation")
+#define	SHAPE_XML_SENSITIVITY_ATTRIBUTE		wxT("sensitivity")
+#define	SHAPE_XML_SHADOW_MODE_ATTRIBUTE		wxT("shadow_mode")
+#define	SHAPE_XML_SIZE_ATTRIBUTE			wxT("size")
+#define	SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE	wxT("space_attachments")
+#define	SHAPE_XML_SPACING_ATTRIBUTE			wxT("spacing")
+#define SHAPE_XML_STYLE_ATTRIBUTE			wxT("style")
+#define	SHAPE_XML_STEM_LENGTH_ATTRIBUTE		wxT("stem_length")
+#define	SHAPE_XML_TO_ATTRIBUTE				wxT("to")
+#define SHAPE_XML_TEXT_COLOUR_ATTRIBUTE		wxT("text_colour")
+#define SHAPE_XML_TYPE_ATTRIBUTE			wxT("type")
+#define	SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE	wxT("use_attachments")
+#define	SHAPE_XML_WEIGHT_ATTRIBUTE			wxT("weight")
+#define	SHAPE_XML_WIDTH_ATTRIBUTE			wxT("width")
+#define	SHAPE_XML_X_ATTRIBUTE				wxT("x")
+#define	SHAPE_XML_X_OFFSET_ATTRIBUTE		wxT("x_offset")
+#define	SHAPE_XML_Y_ATTRIBUTE				wxT("y")
+#define	SHAPE_XML_Y_OFFSET_ATTRIBUTE		wxT("y_offset")
 
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
 /******************************************************************************/
-
-#define ATTRIBUTE_VAL(ELMNT, ATTR, X, WARN) \
-	{ \
-		BackupVar	oldVar = BackupVar(X); \
-		if ((ELMNT)->Attribute((ATTR), &(X)) == NULL) { \
-			X = oldVar.Value(X); \
-			if (WARN) { \
-				NotifyWarning(wxT("%s: Could not get '%s' attribute value."), \
-				  funcName, (ATTR)); \
-				ok = false; \
-			} \
-		} \
-	}
-
-#define STR_ATTRIBUTE_VAL(ELMNT, ATTR, X, WARN) \
-	(X) = wxConvUTF8.cMB2WX((ELMNT)->Attribute(ATTR)); \
-	if ((X).empty() && (WARN)) { \
-		NotifyWarning(wxT("%s: Could not get '%s' attribute value."), \
-		  funcName, (ATTR)); \
-		ok = false; \
-	}
 
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
@@ -144,56 +121,68 @@
 /*************************** Class definitions ********************************/
 /******************************************************************************/
 
-/*************************** BackupVar ****************************************/
+/*************************** MyXmlProperty ************************************/
 
-class BackupVar
+class MyXmlProperty: public wxXmlProperty
 {
-	int		i;
-	long	l;
-	double	r;
-	wxString	s;
-
-  public:
-	BackupVar(int theI)		{ i = theI; }
-	BackupVar(long theL)		{ l = theL; }
-	BackupVar(double theR)	{ r = theR; }
-	BackupVar(wxString &theS)	{ s = theS; }
-
-	int		Value(int theI)				{ return (true)? i: theI; }
-	long	Value(long theL)			{ return (true)? l: theL; }
-	double	Value(double theR)			{ return (true)? r: theR; }
-	wxString	Value(wxString& theS)	{ return (true)? s: theS; }
-
+private:
+	long	lVal;
+public:
+	MyXmlProperty *	GetNext()	{ return (MyXmlProperty *) wxXmlProperty::
+		GetNext(); }
+	bool	PropValOk()	{ if (!GetValue().IsEmpty()) return true;
+			  NotifyError(wxT("%s: Could not find property value."), GetName().c_str());
+			  return false; }
+	bool	GetPropVal(double *val)	{ if (!PropValOk()) return(false);
+			  GetValue().ToDouble(val); return(true);	}
+	bool	GetPropVal(long *val)	{ if (!PropValOk()) return(false);
+			  GetValue().ToLong(val); return(true);	}
+	bool	GetPropVal(int *val)	{ if (!PropValOk()) return(false);
+			  GetValue().ToLong(&lVal); *val = (int) lVal; return(true); }
+	bool	GetPropVal(bool *val)	{ if (!PropValOk()) return(false);
+			  GetValue().ToLong(&lVal); *val = (lVal != 0); return(true);	}
 };
-
+	
 /*************************** SDIShape *****************************************/
 
 class SDIShape: public wxShape
 {
 	DECLARE_ABSTRACT_CLASS(SDIShape)
 
+  private:
+	long	lVal;
+
   public:
 	SDIShape(wxShapeCanvas *can = NULL);
 
-	virtual	void	AddXMLInfo(TiXmlNode &node) { ; }
+	virtual	void	AddXMLInfo(DSAMXMLNode *parent) { ; }
 	virtual	void	MyAddLine(wxShape* from, wxShape *to) { ; };
-	virtual	bool	GetXMLInfo(TiXmlNode *node) { return true; }
+	virtual	bool	GetXMLInfo(wxXmlNode *node) { return true; }
 
-	void	AddAttachmentsInfo(TiXmlNode &parent);
-	void	AddBrushInfo(TiXmlNode &parent);
-	void	AddFontInfo(TiXmlNode &parent, wxFont *font);
-	void	AddLineInfo(TiXmlNode &parent);
-	void	AddPenInfo(TiXmlNode &parent);
-	friend	void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
-	void	AddRegions(TiXmlNode &parent);
-	void	AddShapeInfo(TiXmlNode &node);
-	bool	GetAttachmentsInfo(TiXmlNode *parent);
-	bool	GetBrushInfo(TiXmlNode *parent);
-	wxFont *	GetFontInfo(TiXmlNode *parent);
-	bool	GetPenInfo(TiXmlNode *parent);
-	friend	wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
-	bool	GetRegionsInfo(TiXmlNode *parent);
-	bool	GetShapeInfo(TiXmlElement *myElement);
+	void	AddAttachmentsInfo(DSAMXMLNode *parent);
+	void	AddBrushInfo(DSAMXMLNode *parent);
+	void	AddFontInfo(DSAMXMLNode *parent, wxFont *font);
+	void	AddLineInfo(DSAMXMLNode *parent);
+	void	AddPenInfo(DSAMXMLNode *parent);
+	friend	void	AddPointInfo(DSAMXMLNode *parent, wxRealPoint *point);
+	void	AddRegions(DSAMXMLNode *parent);
+	void	AddShapeInfo(DSAMXMLNode *parent);
+	bool	GetAttachmentsInfo(wxXmlNode *myElement);
+	bool	GetBrushInfo(wxXmlNode *myElement);
+	wxFont *	GetFontInfo(wxXmlNode *myElement);
+	bool	GetPenInfo(wxXmlNode *myElement);
+	friend	wxRealPoint *	GetPointInfo(wxXmlNode *myElement);
+	wxShapeRegion *	GetRegionInfo(wxXmlNode *myElement);
+	bool	GetRegionsInfo(wxXmlNode *myElement);
+	bool	GetShapeInfo(wxXmlNode *myElement);
+	void	GetPropVal(wxXmlProperty *prop, double *val)
+			  { prop->GetValue().ToDouble(val); }
+	void	GetPropVal(wxXmlProperty *prop, long *val)
+			  { prop->GetValue().ToLong(val); }
+	void	GetPropVal(wxXmlProperty *prop, int *val)
+			  { prop->GetValue().ToLong(&lVal); *val = (int) lVal; }
+	void	GetPropVal(wxXmlProperty *prop, bool *val)
+			  { prop->GetValue().ToLong(&lVal); *val = (lVal != 0); }
 
 };
 
@@ -208,10 +197,11 @@ class SDIPolygonShape: public wxPolygonShape
   public:
     SDIPolygonShape(double width = 0.0, double height = 0.0);
 
-	virtual	void AddXMLInfo(TiXmlNode &node);
-	virtual	bool GetXMLInfo(TiXmlNode *node);
+	virtual	void AddXMLInfo(DSAMXMLNode *node);
+	virtual	bool GetXMLInfo(wxXmlNode *node);
 
-	friend	wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
+	friend	wxRealPoint *	GetPointInfo(wxXmlNode *myElement);
+	bool	GetPointListInfo(wxXmlNode *myElement, wxList *points);
 
 };
 
@@ -230,8 +220,8 @@ class SDIEllipseShape: public wxEllipseShape
   public:
 	SDIEllipseShape(double width = 0.0, double height = 0.0);
 
-	virtual	void AddXMLInfo(TiXmlNode &node);
-	virtual	bool GetXMLInfo(TiXmlNode *node);
+	virtual	void AddXMLInfo(DSAMXMLNode *node);
+	virtual	bool GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -244,8 +234,8 @@ class SDIRectangleShape: public wxRectangleShape
   public:
     SDIRectangleShape(double width = 0.0, double height = 0.0);
 
-	virtual	void AddXMLInfo(TiXmlNode &node);
-	virtual	bool GetXMLInfo(TiXmlNode *node);
+	virtual	void AddXMLInfo(DSAMXMLNode *node);
+	virtual	bool GetXMLInfo(wxXmlNode *myElement);
 
 };
 
@@ -253,8 +243,8 @@ class SDIRectangleShape: public wxRectangleShape
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
-void	AddPointInfo(TiXmlNode &parent, wxRealPoint *point);
+void	AddPointInfo(DSAMXMLNode *parent, wxRealPoint *point);
 
-wxRealPoint *	GetPointInfo(TiXmlElement *myElement);
+wxRealPoint *	GetPointInfo(wxXmlNode *myElement);
 
 #endif

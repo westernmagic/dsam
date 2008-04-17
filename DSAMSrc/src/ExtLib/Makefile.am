@@ -18,10 +18,7 @@ DSAM_Ext_Sources	= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp \
 						ExtRunThreadedProc.cpp ExtXMLDocument.cpp \
 						ExtSingleProcThread.cpp ExtProcChainThread.cpp
 
-TinyXml_Sources	= tinystr.cpp tinyxml.cpp tinyxmlerror.cpp tinyxmlparser.cpp
-
-
-libdsam_ext_la_SOURCES= $(DSAM_Ext_Sources) $(TinyXml_Sources)
+libdsam_ext_la_SOURCES= $(DSAM_Ext_Sources)
 
 libdsam_ext_la_LDFLAGS= $(GenLaLDFLAGS)
 
