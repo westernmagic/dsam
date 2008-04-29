@@ -1426,7 +1426,7 @@ SetYTicks_SignalDisp(int yTicks)
 /**************************** SetYInsetScale **********************************/
 
 /*
- * This routine sets the y inste scale mode for the display.
+ * This routine sets the y inset scale mode for the display.
  * If set to true, the scaling will be direct and related only to the
  * signal yScale parameter.
  */
@@ -1593,7 +1593,7 @@ PrintPars_SignalDisp(void)
 	DPrint(wxT("\tY axis scale number format = %s\n"), signalDispPtr->
 	  yNumberFormat);
 	DPrint(wxT("\tY axis ticks = %d\n"), signalDispPtr->yTicks);
-	DPrint(wxT("\tY inste scale mode: %s\n"),
+	DPrint(wxT("\tY inset scale mode: %s\n"),
 	  BooleanList_NSpecLists(signalDispPtr->yInsetScale)->name);
 	DPrint(wxT("\tX resolution = %g (<= 1.0)\n"), signalDispPtr->xResolution);
 	DPrint(wxT("\tX axis title = %s\n"), signalDispPtr->xAxisTitle);

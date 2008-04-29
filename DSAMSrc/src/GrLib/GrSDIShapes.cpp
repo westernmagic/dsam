@@ -77,25 +77,6 @@ SDIAnalysisShape::AddXMLInfo(DSAMXMLNode *parent)
 
 }
 
-/****************************** GetXMLInfo ************************************/
-
-bool
-SDIAnalysisShape::GetXMLInfo(wxXmlNode *myElement)
-{
-#if 0
-	static const wxChar *funcName = wxT("SDIAnalysisShape::GetXMLInfo");
-	TiXmlElement *myElement;
-
-	if ((myElement = node->FirstChildElement(
-	  SHAPE_XML_ANALYSIS_SHAPE_ELEMENT)) == NULL) {
-		NotifyError(wxT("%s: Could not find analysis element."), funcName);
-		return(false);
-	}
-	SDIEllipseShape::GetXMLInfo(myElement);
-	return(true);
-#endif
-}
-
 /******************************************************************************/
 /****************************** SDIDisplayShape Methods ***********************/
 /******************************************************************************/
@@ -128,7 +109,6 @@ SDIDisplayShape::AddXMLInfo(DSAMXMLNode *node)
 bool
 SDIDisplayShape::GetXMLInfo(wxXmlNode *myElement)
 {
-	static const wxChar *funcName = wxT("SDIDisplayShape::GetXMLInfo");
 	SDIRectangleShape::GetXMLInfo(myElement);
 	return(true);
 

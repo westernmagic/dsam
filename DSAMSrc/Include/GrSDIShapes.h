@@ -75,7 +75,6 @@ class SDIAnalysisShape: public SDIEllipseShape
 	SDIAnalysisShape(double width = 0.0, double height = 0.0);
 
 	void	AddXMLInfo(DSAMXMLNode *node);
-	bool	GetXMLInfo(wxXmlNode *myElement);
 
 };
 

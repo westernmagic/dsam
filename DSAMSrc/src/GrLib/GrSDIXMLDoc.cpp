@@ -193,10 +193,6 @@ SDIXMLDocument::GetShapeInfo(wxXmlNode *shapeElement, DatumPtr pc)
 	if (!shapeElement || (shapeElement->GetName() != SHAPE_XML_SHAPE_ELEMENT))
 		return;
 	SDIShape *shape = CreateLoadShape(shapeElement, pc);
-	if (!shape->GetShapeInfo(shapeElement)) {
-		diagram->SetOk(false);
-		return;
-	}
 
 }
 
