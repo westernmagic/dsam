@@ -166,7 +166,7 @@ SetUniParList_IHCRP_Zhang(void)
 	  &iHCRPZhangPtr->cut, NULL,
 	  (void * (*)) SetCut_IHCRP_Zhang);
 	SetPar_UniParMgr(&pars[IHCRP_ZHANG_K], wxT("K"),
-	  wxT("Order of IHC lowe-pass filter."),
+	  wxT("Order of IHC low-pass filter."),
 	  UNIPAR_INT,
 	  &iHCRPZhangPtr->k, NULL,
 	  (void * (*)) SetK_IHCRP_Zhang);
