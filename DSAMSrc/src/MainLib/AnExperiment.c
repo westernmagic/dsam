@@ -83,7 +83,7 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 		}
 		presentOutIntensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
 	}
-	presentInputIntensity = 1.0 + lastInputIntensity;
+	presentInputIntensity = 1.01 * lastInputIntensity;
 	for (i = 0, bestIntensityDiff = HUGE_VAL; i < MAXIMUM_THRESHOLD_LOOP; i++) {
 		lastOutIntensity = presentOutIntensity;
 		if (!(* SetIntensity)(presentInputIntensity)) {

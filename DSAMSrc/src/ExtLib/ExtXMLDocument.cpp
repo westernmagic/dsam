@@ -425,7 +425,7 @@ DSAMXMLDocument::GetParArrayInfo(wxXmlNode * parArrayElement, UniParList *parLis
 	wxString	parName;
 	UniParPtr	par;
 	UniParList	*subParList;
-	wxXmlNode	*child, *parListElement;
+	wxXmlNode	*parListElement;
 
 	if (!parArrayElement->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
 		XMLNotifyError(parArrayElement, wxT("%s: Element must have a ")
@@ -629,8 +629,6 @@ DSAMXMLDocument::GetParListInfo(wxXmlNode *parListElement, UniParList *parList)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::GetParListInfo");
 	wxString	parName;
-	UniParPtr	par;
-	wxXmlNode	*child;
 
 	if (parListElement->GetName() != DSAM_XML_PAR_LIST_ELEMENT) {
 		XMLNotifyError(parListElement, wxT("%s: Element is not a ")
@@ -682,7 +680,6 @@ DSAMXMLDocument::GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::GetConnectionInfo");
 	wxString	label;
-	wxXmlNode		*node;
 
 	if (!connectionElement->GetPropVal(DSAM_XML_LABEL_ATTRIBUTE, &label)) {
 		XMLNotifyError(connectionElement, wxT("%s: Connection has no label."),

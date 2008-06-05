@@ -182,7 +182,7 @@ InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, double dt, double cF,
 {
 	static const WChar	*funcName = wxT("InitZBWBGTCoeffs_Utility_ZilanyBruce");
 	ZBWBGTCoeffsPtr	p;
-	int		i, numComplex;
+	int		numComplex;
 	double	Taumax, Taumin, bmTaubm, bmplace;
 
 	if ((p = (ZBWBGTCoeffsPtr) malloc(sizeof(ZBWBGTCoeffs))) == NULL) {
@@ -223,7 +223,7 @@ InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, double dt, double cF,
 	p->TauWBMin = p->TauWBMax / Taumax * Taumin;
     Set_tau_Utility_ZilanyBruce(p, bmTaubm);
     p->gain = gain_groupdelay_Utility_ZilanyBruce(dt, p->cF, cF, p->tau,
-    	  &p->grdelay);
+      &p->grdelay);
     p->lasttmpgain = p->gain;
     ResetZBWBGTCoeffs_Utility_ZilanyBruce(p);
 	return(p);
@@ -336,7 +336,7 @@ void
 ResetZBGCCoeffs_Utility_ZilanyBruce(ZBGCCoeffsPtr p, double binwidth, double cf,
   double taumax, ZBGCTypeSpecifier type)
 {
-    double  rzero, norm_gain, phase;
+    double  rzero;
 	int		i,r,order_of_pole;
 	Complex	*z;
 
@@ -407,8 +407,8 @@ double
 ChirpFilt_Utility_ZilanyBruce(double x, ZBGCCoeffsPtr p, double rsigma_fcohc)
 {
     static const WChar *funcName = wxT("ChirpFilt_Utility_ZilanyBruce");
-    int		i, order_of_zero, index;
-    double	pimg, preal, phase, rzero, norm_gain;
+    int		i, order_of_zero;
+    double	phase, rzero, norm_gain;
     double	filterout, dy;
     Complex	*z;
 

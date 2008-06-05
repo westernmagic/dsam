@@ -116,6 +116,8 @@ void	ResetZBWBGTCoeffs_Utility_ZilanyBruce(ZBWBGTCoeffsPtr p);
 void	ResetZBGCCoeffs_Utility_ZilanyBruce(ZBGCCoeffsPtr p, double binwidth,
 		  double cf, double taumax, ZBGCTypeSpecifier type);
 
+void	Set_tau_Utility_ZilanyBruce(ZBWBGTCoeffsPtr p, double tau);
+
 double	NLafterohc_Utility_ZilanyBruce(double x,double taumin, double taumax,
 		  double asym);
 

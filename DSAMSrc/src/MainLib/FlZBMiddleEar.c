@@ -160,8 +160,8 @@ GetUniParListPtr_Filter_ZBMiddleEar(void)
 		return(FALSE);
 	}
 	if (fLZBMEarPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(fLZBMEarPtr->parList);
@@ -421,7 +421,7 @@ RunModel_Filter_ZBMiddleEar(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_Filter_ZBMiddleEar");
 	register ChanData	 *inPtr, *outPtr, *mey1, *mey2, *mey3;
-	int		i, chan, n_1, n_2;
+	int		chan, n_1, n_2;
 	ChanLen	n;
 	SignalDataPtr	inSignal, outSignal, mey;
 	FLZBMEarPtr	p = fLZBMEarPtr;

@@ -59,6 +59,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "GeNSpecLists.h"
 #include "GeModuleMgr.h"
 
 #include "UtSSSymbols.h"
@@ -1608,6 +1609,15 @@ SetControlParValue_Utility_Datum(DatumPtr start, WChar *label, WChar *value,
 			return(FALSE);
 		}
 		pc->u.loop.count = count;
+		break; }
+	case PROCESS: {
+		int status = Identify_NameSpecifier(value, BooleanList_NSpecLists(0));
+		wprintf(wxT("%S: Debug: controlling process '%S'...\n"), funcName, label);
+		if (status == GENERAL_BOOLEAN_NULL) {
+			NotifyError(wxT("%s: Illegal switch state (%s)."), funcName, value);
+			return(FALSE);
+		}
+		Enable_ModuleMgr(pc->data, status);
 		break; }
 	default:
 		NotifyError(wxT("%s: Labelled instruction, '%s' has no associated ")

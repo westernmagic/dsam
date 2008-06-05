@@ -329,8 +329,8 @@ GetUniParListPtr_BasilarM_ZilanyBruce(void)
 		return(FALSE);
 	}
 	if (bMZBPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZBPtr->parList);
@@ -883,8 +883,8 @@ GetCFListPtr_BasilarM_ZilanyBruce(void)
 		return(FALSE);
 	}
 	if (bMZBPtr->cFList == NULL) {
-		NotifyError(wxT("%s: CFList data structure has not been correctly set.  "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: CFList data structure has not been correctly set.  ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(bMZBPtr->cFList);
@@ -1167,7 +1167,7 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 	uShort	totalChannels;
 	int		chan, grd;
 	double	cF, wbout1, wbout, ohcnonlinout, ohcout, tmptauc1, dt, tauc1, rsigma;
-	double	wb_gain, c1filterouttmp, c2filterouttmp, c1vihctmp, c2vihctmp, ihcouttmp;
+	double	wb_gain, c1filterouttmp, c2filterouttmp;
 	ChanLen	n, delaypoint;
 	SignalDataPtr	inSignal, outSignal;
 	BMZBPtr	p = bMZBPtr;
