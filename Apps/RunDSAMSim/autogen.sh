@@ -2,8 +2,8 @@
 ##################
 #
 # File:		autogen.sh
-# Purpose:	This script runs all of the commands necessary for configuring DSAM
-#			from the SVN repository. 
+# Purpose:	This script runs all of the commands necessary for configuring
+#			RunDSAMSim from the SVN repository. 
 # Author:	L.P.O'Mard
 # Created:	17 Jan 2007
 # Updated:	

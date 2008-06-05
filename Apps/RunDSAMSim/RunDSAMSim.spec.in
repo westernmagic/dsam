@@ -2,7 +2,7 @@
 
 # Note that this is NOT a relocatable package
 %define prefix	/usr
-%define ver		@RUNDSAMSIM_VERSION@
+%define ver		@PACKAGE_VERSION@
 %define RELEASE @RPM_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
 %define	_libexecdir	%{prefix}/libexec/@DLLDIR@
@@ -59,6 +59,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS COPYING README NEWS ChangeLog
+%doc AUTHORS COPYING README.txt NEWS ChangeLog
 %{_libexecdir}/*
 

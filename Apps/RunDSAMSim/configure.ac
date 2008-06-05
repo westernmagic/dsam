@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim.cpp)
+AC_INIT(RunDSAMSim, 1.1.5)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -25,7 +25,7 @@ RUNDSAMSIM_MICRO_VERSION=4
 RUNDSAMSIM_INTERFACE_AGE=4
 RUNDSAMSIM_BINARY_AGE=4
 RUNDSAMSIM_RPM_AGE=1
-RUNDSAMSIM_VERSION=$RUNDSAMSIM_MAJOR_VERSION.$RUNDSAMSIM_MINOR_VERSION.$RUNDSAMSIM_MICRO_VERSION
+
 dnl
 dnl AC_DIVERT_POP()dnl
 
@@ -33,8 +33,7 @@ AC_SUBST(RUNDSAMSIM_MAJOR_VERSION)
 AC_SUBST(RUNDSAMSIM_MINOR_VERSION)
 AC_SUBST(RUNDSAMSIM_MICRO_VERSION)
 AC_SUBST(RUNDSAMSIM_BINARY_AGE)
-AC_DEFINE_UNQUOTED(RUNDSAMSIM_VERSION,wxT("$RUNDSAMSIM_VERSION"), "RunDSAMSim version")
-AC_SUBST(RUNDSAMSIM_VERSION)
+AC_DEFINE_UNQUOTED(RUNDSAMSIM_VERSION, wxT("$PACKAGE_VERSION"), "RunDSAMSim version")
 
 # RPM versioning
 RPM_RELEASE=$RUNDSAMSIM_MAJOR_VERSION.$RUNDSAMSIM_MINOR_VERSION
@@ -47,7 +46,7 @@ AC_DEFINE_UNQUOTED(RUNDSAMSIM_PACKAGE,"$RUNDSAMSIM_PACKAGE", "RUNDSAMSIM_PACKAGE
 AC_SUBST(RUNDSAMSIM_PACKAGE)
 AM_CONFIG_HEADER(RunDSAMSimSetup.h:RunDSAMSimSetup.hin )
 
-AM_INIT_AUTOMAKE($RUNDSAMSIM_PACKAGE, $RUNDSAMSIM_VERSION, NO-DEFINE)
+AM_INIT_AUTOMAKE
 
 dnl ============================================================================
 dnl 'Global' variable declaration
@@ -219,7 +218,7 @@ if test x$dsamAvailable = xno; then
 	AC_MSG_ERROR(DSAM library must be installed)
 fi
 
-dsam_inc=`$DSAM_CONFIG --cflags`
+dsam_inc=`$DSAM_CONFIG --cflags | sed s/-pthread/-lpthread/`
 dsam_ldflags=`$DSAM_CONFIG --libs | sed s/-pthread/-lpthread/`
 
 dnl ----------------------------------------------------------------------------
@@ -269,10 +268,12 @@ dnl ============================================================================
 dnl Final configure outputs.
 dnl ============================================================================
 
-AC_OUTPUT(
+AC_CONFIG_FILES(
 	Makefile
 	RunDSAMSim.spec
 	CfgTools/Makefile
 	MSVC/Makefile
 	Examples/Makefile
 )
+AC_OUTPUT
+
