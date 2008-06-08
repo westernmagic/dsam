@@ -75,18 +75,18 @@ IPCUtils::CommandList(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ wxT("QUIT"),		IPC_COMMAND_QUIT},
-					{ wxT("ERRMSGS"),	IPC_COMMAND_ERRMSGS},
-					{ wxT("GET"),		IPC_COMMAND_GET},
-					{ wxT("GETFILES"),	IPC_COMMAND_GETFILES},
-					{ wxT("GETPAR"),	IPC_COMMAND_GETPAR},
-					{ wxT("INIT"),		IPC_COMMAND_INIT},
-					{ wxT("PUT"),		IPC_COMMAND_PUT},
-					{ wxT("PUT_ARGS"),	IPC_COMMAND_PUT_ARGS},
-					{ wxT("RUN"),		IPC_COMMAND_RUN},
-					{ wxT("SET"),		IPC_COMMAND_SET},
-					{ wxT("STATUS"),	IPC_COMMAND_STATUS},
-					{ wxT(""),			IPC_COMMAND_NULL},
+					{ (WChar *) wxT("QUIT"),	IPC_COMMAND_QUIT},
+					{ (WChar *) wxT("ERRMSGS"),	IPC_COMMAND_ERRMSGS},
+					{ (WChar *) wxT("GET"),		IPC_COMMAND_GET},
+					{ (WChar *) wxT("GETFILES"),IPC_COMMAND_GETFILES},
+					{ (WChar *) wxT("GETPAR"),	IPC_COMMAND_GETPAR},
+					{ (WChar *) wxT("INIT"),	IPC_COMMAND_INIT},
+					{ (WChar *) wxT("PUT"),		IPC_COMMAND_PUT},
+					{ (WChar *) wxT("PUT_ARGS"),IPC_COMMAND_PUT_ARGS},
+					{ (WChar *) wxT("RUN"),		IPC_COMMAND_RUN},
+					{ (WChar *) wxT("SET"),		IPC_COMMAND_SET},
+					{ (WChar *) wxT("STATUS"),	IPC_COMMAND_STATUS},
+					{ NULL,						IPC_COMMAND_NULL},
 				
 				};
 	return (&modeList[index]);

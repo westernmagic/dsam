@@ -195,7 +195,7 @@ void	ResetProcess_Utility_SimScript(EarObjectPtr data);
 
 BOOLN	InitModule_Utility_SimScript(ModulePtr theModule);
 
-BOOLN	SetControlParValue_Utility_SimScript(WChar *label, WChar *value,
+BOOLN	SetControlParValue_Utility_SimScript(const WChar *label, const WChar *value,
 		  BOOLN diagsOn);
 
 BOOLN	SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr);
@@ -221,7 +221,7 @@ BOOLN	SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType);
 
 BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
 
-BOOLN	SetSimUniParValue_Utility_SimScript(WChar *parName, WChar *parValue);
+BOOLN	SetSimUniParValue_Utility_SimScript(const WChar *parName, const WChar *parValue);
 
 BOOLN	SetUniParList_Utility_SimScript(void);
 

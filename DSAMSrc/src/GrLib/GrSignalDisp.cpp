@@ -105,10 +105,10 @@ GetPanelList_SignalDisp(int index)
 {
 	static NameSpecifier	list[] = {
 
-				{ wxT("Signal"),	DISPLAY_MAGNIFICATION },
-				{ wxT("Y-axis"),	DISPLAY_Y_AXIS_TITLE },
-				{ wxT("X-axis"),	DISPLAY_X_AXIS_TITLE },
-				{ wxT("General"),	DISPLAY_WINDOW_TITLE },
+				{ (WChar *) wxT("Signal"),	DISPLAY_MAGNIFICATION },
+				{ (WChar *) wxT("Y-axis"),	DISPLAY_Y_AXIS_TITLE },
+				{ (WChar *) wxT("X-axis"),	DISPLAY_X_AXIS_TITLE },
+				{ (WChar *) wxT("General"),	DISPLAY_WINDOW_TITLE },
 				{ NULL, 			DISPLAY_NULL }
 			};
 	;
@@ -127,9 +127,9 @@ InitModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ wxT("OFF"),			GRAPH_MODE_OFF },
-					{ wxT("LINE"),			GRAPH_MODE_LINE },
-					{ wxT("GREY_SCALE"),	GRAPH_MODE_GREY_SCALE },
+					{ (WChar *) wxT("OFF"),			GRAPH_MODE_OFF },
+					{ (WChar *) wxT("LINE"),			GRAPH_MODE_LINE },
+					{ (WChar *) wxT("GREY_SCALE"),	GRAPH_MODE_GREY_SCALE },
 					{ NULL,					GRAPH_MODE_NULL }
 				};
 	signalDispPtr->modeList = list;
@@ -148,9 +148,9 @@ InitYAxisModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{ wxT("AUTO"),			GRAPH_Y_AXIS_MODE_AUTO },
-					{ wxT("CHANNEL"),		GRAPH_Y_AXIS_MODE_CHANNEL },
-					{ wxT("LINEAR_SCALE"),	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
+					{ (WChar *) wxT("AUTO"),			GRAPH_Y_AXIS_MODE_AUTO },
+					{ (WChar *) wxT("CHANNEL"),		GRAPH_Y_AXIS_MODE_CHANNEL },
+					{ (WChar *) wxT("LINEAR_SCALE"),	GRAPH_Y_AXIS_MODE_LINEAR_SCALE },
 					{ NULL, 				GRAPH_Y_AXIS_MODE_NULL }
 				};
 	signalDispPtr->yAxisModeList = list;
@@ -169,8 +169,8 @@ InitYNormModeList_SignalDisp(void)
 {
 	static NameSpecifier	list[] = {
 
-					{wxT("MIDDLE"),		GRAPH_LINE_YNORM_MIDDLE_MODE },
-					{wxT("BOTTOM"),		GRAPH_LINE_YNORM_BOTTOM_MODE },
+					{(WChar *) wxT("MIDDLE"),		GRAPH_LINE_YNORM_MIDDLE_MODE },
+					{(WChar *) wxT("BOTTOM"),		GRAPH_LINE_YNORM_BOTTOM_MODE },
 					{NULL,				GRAPH_LINE_YNORM_MODE_NULL }
 				};
 	signalDispPtr->yNormModeList = list;
@@ -1742,7 +1742,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 	double	definedDuration;
 	SignalDataPtr	signal = _OutSig_EarObject(data), buffer;
 	SignalDispPtr	p = signalDispPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->autoXScale)

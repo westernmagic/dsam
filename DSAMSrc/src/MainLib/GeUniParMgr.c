@@ -156,7 +156,7 @@ FreeList_UniParMgr(UniParListPtr *list)
  */
 
 void
-SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
+SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *description,
   UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func))
 {
 	static const WChar	*funcName = wxT("SetPar_UniParMgr");
@@ -269,7 +269,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_FILE_NAME:
 		case UNIPAR_PARLIST:
-			par->FuncPtr.SetString = (BOOLN (*)(WChar *)) Func;
+			par->FuncPtr.SetString = (BOOLN (*)(const WChar *)) Func;
 			break;
 		case UNIPAR_BOOL_ARRAY:
 		case UNIPAR_STRING_ARRAY:
@@ -316,7 +316,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_NAME_SPEC:
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
-			par->FuncPtr.SetCFListString = (BOOLN (*)(CFListPtr, WChar *)) Func;
+			par->FuncPtr.SetCFListString = (BOOLN (*)(CFListPtr, const WChar *)) Func;
 			break;
 		default:
 			NotifyError(wxT("%s: Universal parameter (CFList) not yet ")
@@ -339,7 +339,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 			par->FuncPtr.SetParArrayString = (BOOLN (*)(ParArrayPtr,
-			  WChar *)) Func;
+			  const WChar *)) Func;
 			break;
 		default:
 			NotifyError(wxT("%s: Universal parameter (ParArray) not yet ")
@@ -363,7 +363,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 			par->FuncPtr.SetICListString = (BOOLN (*)(IonChanListPtr,
-			  WChar *)) Func;
+			  const WChar *)) Func;
 			break;
 		default:
 			NotifyError(wxT("%s: Universal parameter (IonChanList) not yet ")
@@ -390,7 +390,7 @@ SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
 		case UNIPAR_NAME_SPEC_WITH_FILE:
 		case UNIPAR_NAME_SPEC_WITH_FPATH:
 		case UNIPAR_FILE_NAME:
-			par->FuncPtr.SetICString = (BOOLN (*)(IonChannelPtr, WChar *)) Func;
+			par->FuncPtr.SetICString = (BOOLN (*)(IonChannelPtr, const WChar *)) Func;
 			break;
 		default:
 			NotifyError(wxT("%s: Universal parameter (IonChannel) not yet ")
@@ -917,7 +917,7 @@ GetParString_UniParMgr(UniParPtr p)
  */
 
 BOOLN
-ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
+ParseArrayValue_UniParMgr(UniParPtr par, const WChar *parValue, WChar **parValuePtr,
   int *index)
 {
 	static const WChar *funcName = wxT("ParseArrayValue_UniParMgr");
@@ -936,7 +936,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
 		return(FALSE);
 	}
 	index[0] = par->valuePtr.array.index;
-	for (i = 0, s = parValue; (i < UNIPAR_MAX_ARRAY_INDEX) && (p = DSAM_strchr(
+	for (i = 0, s = (WChar *) parValue; (i < UNIPAR_MAX_ARRAY_INDEX) && (p = DSAM_strchr(
 	  s, UNIPAR_INDEX_SEPARATOR)); i++) {
 		pos = p - s;
 		DSAM_strncpy(string, s, pos);
@@ -965,7 +965,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue, WChar **parValuePtr,
  */
 
 BOOLN
-SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
+SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetGeneralParValue_UniParMgr");
 	BOOLN	ok = FALSE;
@@ -1046,7 +1046,7 @@ SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
  */
 
 BOOLN
-SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
+SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetCFListParValue_UniParMgr");
 	BOOLN	ok = FALSE;
@@ -1102,7 +1102,7 @@ SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
 
 BOOLN
 SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
-  WChar *parValue)
+  const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetParArrayParValue_UniParMgr");
 	BOOLN	ok = FALSE;
@@ -1156,7 +1156,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
  */
 
 BOOLN
-SetCurrentIC_UniParMgr(IonChanListPtr theICs, WChar *description)
+SetCurrentIC_UniParMgr(IonChanListPtr theICs, const WChar *description)
 {
 	DynaListPtr	node;
 	IonChannelPtr	iC;
@@ -1181,7 +1181,7 @@ SetCurrentIC_UniParMgr(IonChanListPtr theICs, WChar *description)
  */
 
 BOOLN
-SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
+SetICParValue_UniParMgr(UniParListPtr parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetICParValue_UniParMgr");
 	BOOLN	ok = FALSE;
@@ -1239,7 +1239,7 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, WChar *parValue)
  */
 
 BOOLN
-SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
+SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetICListParValue_UniParMgr");
 	BOOLN	ok = FALSE;
@@ -1281,7 +1281,7 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
  */
 
 BOOLN
-SetParValue_UniParMgr(UniParListPtr *parList, uInt index, WChar *parValue)
+SetParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetParValue_UniParMgr");
 	BOOLN	ok = TRUE;
@@ -1378,7 +1378,7 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
  */
 
 UniParPtr
-FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
+FindUniPar_UniParMgr(UniParListPtr *parList, const WChar *parName,
   UniParSearchSpecifier mode)
 {
 	static const WChar *funcName = wxT("FindUniPar_UniParMgr");
@@ -1394,7 +1394,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 		p = &(*parList)->pars[i];
 		switch (p->type) {
 		case UNIPAR_MODULE:
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}
@@ -1408,7 +1408,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 		case UNIPAR_PARLIST:
 			if (p->valuePtr.parList.process)
 				SET_PARS_POINTER(*p->valuePtr.parList.process);
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}
@@ -1421,7 +1421,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 			}
 		   break;
 		case UNIPAR_CFLIST:
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}
@@ -1441,7 +1441,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 			}
 			break;
 		case UNIPAR_PARARRAY:
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}
@@ -1458,7 +1458,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 			DynaListPtr	node;
 			IonChanListPtr	theICs = *p->valuePtr.iCPtr;
 
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}
@@ -1499,7 +1499,7 @@ FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
 			}
 			break; }
 		default:
-			if (Cmp_UniParMgr(p, parName, mode) == 0) {
+			if (Cmp_UniParMgr(p, (WChar *) parName, mode) == 0) {
 				par = p;
 				break;
 			}

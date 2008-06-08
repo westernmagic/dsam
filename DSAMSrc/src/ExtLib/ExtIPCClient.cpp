@@ -205,7 +205,7 @@ IPCClient::CreateSPFFromSimScript(wxFileName &fileName)
 	bool	ok = true;
 	EarObjectPtr	process = NULL;
 
-	if ((process = Init_EarObject(wxT("Util_SimScript"))) == NULL) {
+	if ((process = Init_EarObject((WChar *) wxT("Util_SimScript"))) == NULL) {
 		NotifyError(wxT("%s: Could not initialise Util_SimCript process"),
 		  funcName);
 		return(false);

@@ -43,7 +43,7 @@ class PrintDisp: public wxPrintout
 	MyCanvas	*canvas;
 
   public:
-	PrintDisp(MyCanvas *theCanvas, wxChar *title = wxT("DSAM Print-out"));
+	PrintDisp(MyCanvas *theCanvas, const wxChar *title = wxT("DSAM Print-out"));
 	bool OnPrintPage(int page);
 	bool HasPage(int page);
 	bool OnBeginDocument(int startPage, int endPage);

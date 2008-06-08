@@ -103,11 +103,11 @@ class DSAMXMLDocument: public wxXmlDocument
 	void	AddParList(DSAMXMLNode *parent, UniParListPtr parList, const wxChar *
 			  name = NULL);
 	void	AddParListStandard(DSAMXMLNode *parent, UniParListPtr parList);
-	void	AddSimConnections(DSAMXMLNode *node, DynaListPtr list, WChar * type);
+	void	AddSimConnections(DSAMXMLNode *node, DynaListPtr list, const WChar * type);
 	DatumPtr	AddSimObjects(DSAMXMLNode *parent, DatumPtr start);
 	void	AddSimulation(DSAMXMLNode *parent, EarObjectPtr simProcess);
 	void	Create(EarObjectPtr simProcess);
-	wxString &	CreateNotification(wxXmlNode *node, wxChar *format, va_list
+	wxString &	CreateNotification(wxXmlNode *node, const wxChar *format, va_list
 	 			  args);
 	wxXmlNode *	FindXMLNode(wxXmlNode *node, const wxString &name);
 	void	GetApplicationInfo(wxXmlNode *appElement);
@@ -125,8 +125,8 @@ class DSAMXMLDocument: public wxXmlDocument
 	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
 	bool	ValidVersion(const wxString &s1, const wxString &s2);
-	void	XMLNotifyWarning(wxXmlNode *node, wxChar *format, ...);
-	void	XMLNotifyError(wxXmlNode *node, wxChar *format, ...);
+	void	XMLNotifyWarning(wxXmlNode *node, const wxChar *format, ...);
+	void	XMLNotifyError(wxXmlNode *node, const wxChar *format, ...);
 	
 };
 

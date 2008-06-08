@@ -372,7 +372,7 @@ UserList_ModuleReg(uShort index)
  */
 
 ModRegEntryPtr
-Identify_ModuleReg(ModRegEntryPtr list, WChar *name)
+Identify_ModuleReg(ModRegEntryPtr list, const WChar *name)
 {
 	if (!list)
 		return(NULL);
@@ -395,7 +395,7 @@ Identify_ModuleReg(ModRegEntryPtr list, WChar *name)
  */
 
 ModRegEntryPtr
-GetRegEntry_ModuleReg(WChar *name)
+GetRegEntry_ModuleReg(const WChar *name)
 {
 	static const WChar *funcName = wxT("GetRegEntry_ModuleReg");
 	ModRegEntryPtr	regEntryPtr;

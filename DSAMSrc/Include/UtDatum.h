@@ -142,7 +142,7 @@ BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
 DatumPtr	ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 			  int threadIndex);
 
-DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, WChar *label);
+DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label);
 
 EarObjectPtr	FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label);
 
@@ -152,7 +152,7 @@ DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
 			  WChar *moduleName);
 
 BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
-		  DatumPtr *pc, WChar *parSpecifier, BOOLN diagnosticsOn);
+		  DatumPtr *pc, const WChar *parSpecifier, BOOLN diagnosticsOn);
 
 BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc);
 
@@ -220,8 +220,8 @@ void	ResetStepCount_Utility_Datum(void);
 BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 		  labelBList);
 
-BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, WChar *label,
-		  WChar *value, BOOLN diagsOn);
+BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label,
+		  const WChar *value, BOOLN diagsOn);
 
 BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
@@ -236,8 +236,8 @@ void	SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int));
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
 
-BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, WChar *parName,
-		  WChar *parValue);
+BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
+		  const WChar *parValue);
 
 BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
 

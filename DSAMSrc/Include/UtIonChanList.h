@@ -300,7 +300,7 @@ BOOLN	SetICConductanceQ10_IonChanList(IonChannelPtr theIC,
 		  double theConductanceQ10);
 
 BOOLN	SetICDescription_IonChanList(IonChannelPtr theIC,
-		  WChar *theDescription);
+		  const WChar *theDescription);
 
 BOOLN	SetICEnabled_IonChanList(IonChannelPtr theIC, WChar *theICEnabled);
 
@@ -310,7 +310,7 @@ BOOLN	SetICEquilibriumPot_IonChanList(IonChannelPtr theIC,
 BOOLN	SetICFileName_IonChanList(IonChannelPtr theIC, WChar *fileName);
 
 BOOLN	SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
-		  WChar *description, WChar *enabled, double equilibriumPot,
+		  const WChar *description, WChar *enabled, double equilibriumPot,
 		  double baseMaxConductance, double activationExponent);
 
 void	SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,

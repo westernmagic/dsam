@@ -930,7 +930,7 @@ SetFileName_DataFile(WChar *fileName)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (*fileName == (char) NULL) {
+	if (*fileName == '\0') {
 		NotifyError(wxT("%s: Illegal file name."), funcName);
 		return(FALSE);
 	}
@@ -961,11 +961,11 @@ CheckPars_DataFile(void)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (dataFilePtr->name[0] == (char) NULL) {
+	if (dataFilePtr->name[0] == '\0') {
 		NotifyError(wxT("%s: File name not set."), funcName);
 		ok = FALSE;
 	}
-	if (dataFilePtr->name[0] == (char) NULL) {
+	if (dataFilePtr->name[0] == '\0') {
 		NotifyError(wxT("%s: File name not set."), funcName);
 		ok = FALSE;
 	}

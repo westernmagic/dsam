@@ -343,7 +343,7 @@ ModuleParDialog::OnICButton(wxCommandEvent& event)
 			return;
 		}
 		SetICGeneralPars_IonChanList(iC, ICLIST_BOLTZMANN_MODE,
-		  wxT("<description>"), wxT("on"), 0.0, 0.0, 1);
+		  wxT("<description>"), (WChar *) wxT("on"), 0.0, 0.0, 1);
 		SetICGeneralParsFromICList_IonChanList(iC, theICs);
 		SetIonChannelUniParList_IonChanList(theICs, iC);
 		SetIonChannelUniParListMode_IonChanList(iC);

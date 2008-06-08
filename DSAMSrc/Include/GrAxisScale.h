@@ -61,7 +61,7 @@ class AxisScale
 	double	GetValueScale(void)			{ return valueScale; }
 	bool	ParseNumberFormat(const wxString &numberFormat);
 	double	RoundedValue(double value);
-	bool	Set(wxChar *numberFormat, double minVal, double maxVal, int minPos,
+	bool	Set(const wxChar *numberFormat, double minVal, double maxVal, int minPos,
 			  int maxPos, int theNumTicks, bool theAutoScale);
 	void	SetExponent(int requestedExp, int deltaExp);
 

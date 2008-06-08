@@ -292,7 +292,7 @@ ParListInfoList::SetSubParListInfo(ParListInfo *info)
 				}
 				break; }
 			case UNIPAR_MODULE: {
-				wxChar *moduleName;
+				const wxChar *moduleName;
 
 				switch (pc->data->module->specifier) {
 				case ANA_SAI_MODULE:

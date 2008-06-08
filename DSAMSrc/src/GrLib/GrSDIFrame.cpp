@@ -413,7 +413,7 @@ SDIFrame::OnCreateToolBar(long style, wxWindowID id, const wxString& name)
 void
 SDIFrame::OnExecute(wxCommandEvent& WXUNUSED(event))
 {
-	static wxChar *funcName = wxT("SDIFrame::OnExecute");
+	static const wxChar *funcName = wxT("SDIFrame::OnExecute");
 
 	if (wxGetApp().GetGrMainApp()->simThread) {
 		wxLogWarning(wxT("%s: Running simulation not yet terminated!"),

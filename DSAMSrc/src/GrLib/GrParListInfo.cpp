@@ -69,7 +69,7 @@
 ParListInfo::ParListInfo(wxPanel *theParent, DatumPtr thePC,
   UniParListPtr theParList, int theInfoNum, int theoffset, int theNumPars)
 {
-	static wxChar *funcName = wxT("ParListInfo::ParListInfo");
+	static const wxChar *funcName = wxT("ParListInfo::ParListInfo");
 
 	parent = theParent;
 	pc = thePC;

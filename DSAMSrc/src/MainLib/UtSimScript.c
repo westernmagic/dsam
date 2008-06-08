@@ -411,7 +411,7 @@ SetUniParValue_Utility_SimScript(WChar *parName, WChar *parValue)
  */
 
 BOOLN
-SetSimUniParValue_Utility_SimScript(WChar *parName, WChar *parValue)
+SetSimUniParValue_Utility_SimScript(const WChar *parName, const WChar *parValue)
 {
 	static const WChar	*funcName = wxT("SetSimUniParValue_Utility_SimScript");
 
@@ -438,7 +438,8 @@ SetSimUniParValue_Utility_SimScript(WChar *parName, WChar *parValue)
  */
 
 BOOLN
-SetControlParValue_Utility_SimScript(WChar *label, WChar *value, BOOLN diagsOn)
+SetControlParValue_Utility_SimScript(const WChar *label, const WChar *value,
+  BOOLN diagsOn)
 {
 	static const WChar	*funcName = wxT("SetControlParValue_Utility_SimScript");
 

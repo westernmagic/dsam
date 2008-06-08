@@ -274,7 +274,7 @@ IPCServer::BuildFileList(wxArrayString &list, DatumPtr pc)
 				  inputMode)
 					break;
 				list.Add((wxChar *) GetUniParPtr_ModuleMgr(pc->data,
-				  wxT("fileName"))->valuePtr.s);
+				  (WChar *) wxT("fileName"))->valuePtr.s);
 				break;
 			default:
 				;

@@ -938,7 +938,7 @@ ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
  */
 
 BOOLN
-SetProgramParValue_AppInterface(WChar *parName, WChar *parValue, BOOLN readSPF)
+SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue, BOOLN readSPF)
 {
 	static const WChar *funcName = wxT("SetProgramParValue_AppInterface");
 	BOOLN	ok = TRUE, creatorApp = TRUE;

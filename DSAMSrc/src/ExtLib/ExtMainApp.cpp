@@ -144,7 +144,8 @@ MainApp::~MainApp(void)
 
 /*
  * This routine prepares space and initialises the command line arguments.
- * It converts them from multi-byte format to wide char format.
+ * It is no longer necessary to convert the arguments from muiltbye->to wide char
+ * format, as this is now done in DSAMStart_MainApp if necessary.
  */
 
 bool
@@ -157,11 +158,8 @@ MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv)
 		NotifyError(wxT("%s: Could not initialise argv pointer list.\n"));
 		return false;
 	}
-	for (i = 0; i < argc; i++) {
-		wxString arg = (GetDSAMPtr_Common()->usingGUIFlag)? theArgv[i]:
-		  wxConvUTF8.cMB2WX((char *) theArgv[i]);
-		SetArgvString(i, arg.c_str(), arg.length());
-	}
+	for (i = 0; i < argc; i++)
+		SetArgvString(i, theArgv[i], DSAM_strlen(theArgv[i]));
 	return(true);
 
 }
@@ -830,6 +828,107 @@ MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
 /****************************** Functions *************************************/
 /******************************************************************************/
 
+/****************************** DSAMStart ************************************/
+
+int
+DSAMStart_MainApp(int argc, wxChar **argv)
+{
+	wxInitializer initializer;
+	
+	if (!initializer) {
+		NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
+		  wxT("aborting."));
+		return(false);
+	}
+	MainApp	mainApp(argc, argv, MainSimulation);
+	return(mainApp.Main());
+
+}
+
+#if DSAM_USE_UNICODE && !defined(win32) 
+
+static struct InitData
+{
+    InitData()
+    {
+        nInitCount = 0;
+
+#if wxUSE_UNICODE
+        argc = 0;
+        // argv = NULL; -- not even really needed
+#endif // wxUSE_UNICODE
+    }
+
+    // critical section protecting this struct
+    wxCRIT_SECT_DECLARE_MEMBER(csInit);
+
+    // number of times wxInitialize() was called minus the number of times
+    // wxUninitialize() was
+    size_t nInitCount;
+
+#if wxUSE_UNICODE
+    int argc;
+
+    // if we receive the command line arguments as ASCII and have to convert
+    // them to Unicode ourselves (this is the case under Unix but not Windows,
+    // for example), we remember the converted argv here because we'll have to
+    // free it when doing cleanup to avoid memory leaks
+    wchar_t **argv;
+#endif // wxUSE_UNICODE
+
+    DECLARE_NO_COPY_CLASS(InitData)
+} gs_initData;
+
+static void ConvertArgsToUnicode(int argc, char **argv)
+{
+    gs_initData.argv = new wchar_t *[argc + 1];
+    int wargc = 0;
+    for ( int i = 0; i < argc; i++ )
+    {
+        wxWCharBuffer buf(wxConvLocal.cMB2WX(argv[i]));
+        if ( !buf )
+        {
+            wxLogWarning(_("Command line argument %d couldn't be converted to Unicode and will be ignored."),
+                         i);
+        }
+        else // converted ok
+        {
+            gs_initData.argv[wargc++] = wxStrdup(buf);
+        }
+    }
+
+    gs_initData.argc = wargc;
+    gs_initData.argv[wargc] = NULL;
+}
+
+static void FreeConvertedArgs()
+{
+    if ( gs_initData.argv )
+    {
+        for ( int i = 0; i < gs_initData.argc; i++ )
+        {
+            free(gs_initData.argv[i]);
+        }
+
+        delete [] gs_initData.argv;
+        gs_initData.argv = NULL;
+        gs_initData.argc = 0;
+    }
+}
+
+int
+DSAMStart_MainApp(int argc, char **argv)
+{
+	int 	myReturn;
+
+	ConvertArgsToUnicode(argc, argv);
+	myReturn = DSAMStart_MainApp(gs_initData.argc, gs_initData.argv);
+	FreeConvertedArgs();
+	return(myReturn);
+
+}
+#endif // DSAM_USE_UNICODE && !defined(WIN32) 
+
 /****************************** ReadXMLSimFile ********************************/
 
 /*
@@ -893,7 +992,7 @@ PrintUsage_MainApp(void)
  */
  
 void
-DPrintSysLog_MainApp(wxChar *format, va_list args)
+DPrintSysLog_MainApp(const wxChar *format, va_list args)
 {
 #	if DSAM_USE_UNICODE
 	wxChar	src[LONG_STRING];

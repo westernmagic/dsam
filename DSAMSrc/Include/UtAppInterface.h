@@ -270,7 +270,7 @@ BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
 BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
 
-BOOLN	SetProgramParValue_AppInterface(WChar *parName, WChar *parValue,
+BOOLN	SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue,
 		  BOOLN readSPF);
 
 BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, double value);

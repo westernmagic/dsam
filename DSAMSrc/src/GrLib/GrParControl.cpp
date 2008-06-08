@@ -219,7 +219,7 @@ ParControl::PostInit(void)
 wxControl *
 ParControl::GetControl(void)
 {
-	static wxChar *funcName = wxT("ParControl::GetControl");
+	static const wxChar *funcName = wxT("ParControl::GetControl");
 
 	switch (tag) {
 	case UNSET:

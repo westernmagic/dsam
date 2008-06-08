@@ -53,7 +53,7 @@
 /****************************** Set *******************************************/
 
 bool
-AxisScale::Set(wxChar *numberFormat, double minVal, double maxVal, int minPos,
+AxisScale::Set(const wxChar *numberFormat, double minVal, double maxVal, int minPos,
   int maxPos, int theNumTicks, bool theAutoScale)
 {
 	static const wxChar *funcName = wxT("AxisScale::Set");

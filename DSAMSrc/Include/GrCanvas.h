@@ -127,7 +127,7 @@ class MyCanvas: public wxWindow
 	void	DrawXAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYAxis(wxDC& dc, int theXOffset, int theYOffset);
 	void	DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
-			  wxFont *labelFont, wxChar *numFormat, int theXOffset,
+			  wxFont *labelFont, const wxChar *numFormat, int theXOffset,
 			  int theYOffset, int yTicks, int numDisplayedChans,
 			  double minYValue, double maxYValue, bool autoScale);
 	int		GetMinimumIntLog(double value);

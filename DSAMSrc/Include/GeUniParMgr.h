@@ -136,9 +136,9 @@ typedef struct UniPar {
 
 	BOOLN	enabled;
 	uInt	index;
-	WChar	*abbr;
-	WChar	*altAbbr;
-	WChar	*desc;
+	const WChar	*abbr;
+	const WChar	*altAbbr;
+	const WChar	*desc;
 
 	UniParModeSpecifier	mode;
 	UniParTypeSpecifier	type;
@@ -193,7 +193,7 @@ typedef struct UniPar {
 		BOOLN	(* SetLong)(long);
 		BOOLN	(* SetReal)(double);
 		BOOLN	(* SetRealArrayElement)(int, double);
-		BOOLN	(* SetString)(WChar *);
+		BOOLN	(* SetString)(const WChar *);
 		BOOLN	(* SetStringArrayElement)(int, WChar *);
 		BOOLN	(* SetCFList)(CFListPtr);
 		BOOLN	(* SetICList)(IonChanListPtr);
@@ -202,20 +202,20 @@ typedef struct UniPar {
 		BOOLN	(* SetCFListInt)(CFListPtr, int);
 		BOOLN	(* SetCFListReal)(CFListPtr, double);
 		BOOLN	(* SetCFListRealArrayElement)(CFListPtr, int, double);
-		BOOLN	(* SetCFListString)(CFListPtr, WChar *);
+		BOOLN	(* SetCFListString)(CFListPtr, const WChar *);
 
 		BOOLN	(* SetICListInt)(IonChanListPtr, int);
 		BOOLN	(* SetICListReal)(IonChanListPtr, double);
-		BOOLN	(* SetICListString)(IonChanListPtr, WChar *);
+		BOOLN	(* SetICListString)(IonChanListPtr, const WChar *);
 
 		BOOLN	(* SetICInt)(IonChannelPtr, int);
 		BOOLN	(* SetICReal)(IonChannelPtr, double);
 		BOOLN	(* SetICRealArrayElement)(IonChannelPtr, int, double);
-		BOOLN	(* SetICString)(IonChannelPtr, WChar *);
+		BOOLN	(* SetICString)(IonChannelPtr, const WChar *);
 
 		BOOLN	(* SetParArrayInt)(ParArrayPtr, int);
 		BOOLN	(* SetParArrayRealArrayElement)(ParArrayPtr, int, double);
-		BOOLN	(* SetParArrayString)(ParArrayPtr, WChar *);
+		BOOLN	(* SetParArrayString)(ParArrayPtr, const WChar *);
 
 	} FuncPtr;
 
@@ -262,7 +262,7 @@ BOOLN	CheckParList_UniParMgr(UniParListPtr list);
 
 int		Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode);
 
-UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, WChar *parName,
+UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, const WChar *parName,
 			  UniParSearchSpecifier mode);
 
 WChar *	FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix);
@@ -276,7 +276,7 @@ WChar *	GetParString_UniParMgr(UniParPtr p);
 UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
 				  void *handlePtr);
 
-BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, WChar *parValue,
+BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, const WChar *parValue,
 		  WChar **parValuePtr, int *index);
 
 BOOLN	PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix);
@@ -296,31 +296,31 @@ BOOLN	ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length);
 void	SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr);
 
 BOOLN	SetCFListParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 
-BOOLN	SetCurrentIC_UniParMgr(IonChanListPtr theICs, WChar *description);
+BOOLN	SetCurrentIC_UniParMgr(IonChanListPtr theICs, const WChar *description);
 
 BOOLN	SetGeneralParValue_UniParMgr(UniParListPtr parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 
 BOOLN	SetICEnabled_IonChanList(IonChannelPtr theIC, WChar *theICEnabled);
 
 BOOLN	SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 
 BOOLN	SetICParValue_UniParMgr(UniParListPtr parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 
 BOOLN	SetGetPanelListFunc_UniParMgr(UniParListPtr list,
 		  NameSpecifier * (* Func)(int));
 
 BOOLN	SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 		  
 BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  WChar *parValue);
+		  const WChar *parValue);
 
-void	SetPar_UniParMgr(UniParPtr par, WChar *abbreviation, WChar *description,
+void	SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *description,
 		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
 
 BOOLN	SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index,

@@ -137,7 +137,7 @@ __BEGIN_DECLS
 
 /*************************** External Functions *******************************/
 
-ModulePtr	Init_ModuleMgr(WChar *name);
+ModulePtr	Init_ModuleMgr(const WChar *name);
 
 void		Free_ModuleMgr(ModulePtr *theModule);
 
@@ -176,7 +176,7 @@ void	FreeOutSignal_EarObject(EarObjectPtr data);
 
 void	Free_EarObject(EarObjectPtr *theObject);	
 			
-EarObjectPtr	Init_EarObject(WChar *moduleName);		
+EarObjectPtr	Init_EarObject(const WChar *moduleName);		
 
 void	InitOutDataFromInSignal_EarObject(EarObjectPtr data);
 
@@ -218,7 +218,7 @@ void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
 void	SetProcessForReset_EarObject(EarObjectPtr theObject);
 
-void	SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...);
+void	SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...);
 			
 BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
 		  const WChar *callingFunc);

@@ -48,11 +48,11 @@
  */
 
 void
-ToUpper_Utility_String(WChar *upperCaseString, WChar *string)
+ToUpper_Utility_String(WChar *upperCaseString, const WChar *string)
 {
 	WChar		*p, *pp;
 
-	for (p = upperCaseString, pp = string; *pp != '\0'; )
+	for (p = upperCaseString, pp = (WChar *) string; *pp != '\0'; )
 		*p++ = DSAM_toupper(*pp++);
 	*p = '\0';
 
@@ -95,14 +95,14 @@ StrCmpNoCase_Utility_String(WChar *s1, WChar *s2)
  */
 
 int
-StrNCmpNoCase_Utility_String(WChar *fullString, WChar *abbrevString)
+StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString)
 {
 	static WChar *funcName = wxT("StrNCmpNoCase_Utility_String");
 	WChar	upperString[2][LONG_STRING], *string[2];
 	int		i, len[2];
 
-	string[0] = fullString;
-	string[1] = abbrevString;
+	string[0] = (WChar *) fullString;
+	string[1] = (WChar *) abbrevString;
 	for (i = 0; i < 2; i++) {
 		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
 			NotifyError(wxT("%s: String '%s' exceeds current available length ")
@@ -254,7 +254,7 @@ SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
  */
  
 char *
-ConvUTF8_Utility_String(WChar *src)
+ConvUTF8_Utility_String(const WChar *src)
 {
 #	ifndef DSAM_USE_UNICODE
 	return(src);
@@ -349,10 +349,10 @@ MBSToWCS_Utility_String(const char *mb)
  */
 
 void
-ConvWCSIOFormat_Utility_String(wchar_t *dest, wchar_t *src)
+ConvWCSIOFormat_Utility_String(wchar_t *dest, const wchar_t *src)
 {
 	BOOLN	fmtOn = FALSE;
-	wchar_t	*d = dest, *s = src;
+	wchar_t	*d = dest, *s = (wchar_t *) src;
 
 #	if defined(_MSC_VER)
 	DSAM_strcpy(dest, src);
@@ -418,7 +418,7 @@ ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
  */
  
 int
-Vsnprintf_Utility_String(WChar *str, size_t size,  WChar *format, va_list args)
+Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list args)
 {
 	static const WChar *funcName = wxT("Vsnprintf_Utility_String");
 	BOOLN	ok = TRUE;

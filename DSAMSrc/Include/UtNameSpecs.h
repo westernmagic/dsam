@@ -44,7 +44,7 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-int		Identify_NameSpecifier(WChar *name, NameSpecifierPtr list);
+int		Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list);
 
 void	FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list);
 

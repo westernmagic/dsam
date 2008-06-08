@@ -407,7 +407,7 @@ typedef struct {
 	FILE	*errorsFile;		/* File to which errors should be sent. */
 	FILE	*parsFile;			/* File for parameter listings. */
 	DiagModeSpecifier	diagMode; /* Output form for diagnostics. */
-	void	(* DPrint)(WChar *, va_list);	/* Generic routine. */
+	void	(* DPrint)(const WChar *, va_list);	/* Generic routine. */
 	void 	(* Notify)(const WChar *, CommonDiagSpecifier);/*Gen. Rtn*/
 
 } DSAM, *DSAMPtr;
@@ -453,12 +453,12 @@ void	CloseFiles(void);
 
 WChar *	DiagnosticTitle(CommonDiagSpecifier type);
 
-void	DPrint(WChar *format, ...);
+void	DPrint(const WChar *format, ...);
 
-void	DPrintBuffer_Common(WChar *format, va_list args,
+void	DPrintBuffer_Common(const WChar *format, va_list args,
 		  void (* EmptyDiagBuffer)(WChar *, int *));
 
-void	DPrintStandard(WChar *format, va_list args);
+void	DPrintStandard(const WChar *format, va_list args);
 
 void	FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name);
 
@@ -466,15 +466,15 @@ void	FreeDoubleArray_Common(double **p);
 
 DSAMPtr	GetDSAMPtr_Common(void);
 
-FILE *	GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode);
+FILE *	GetFilePtr(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
 WChar *	GetParsFileFPath_Common(WChar *parFile);
 
-void	NotifyError(WChar *format, ...);
+void	NotifyError(const WChar *format, ...);
 
 void	NotifyStandard(const WChar *message, CommonDiagSpecifier type);
 
-void	NotifyWarning(WChar *format, ...);
+void	NotifyWarning(const WChar *format, ...);
 
 void	ReadParsFromFile(WChar *fileName);		/* Used in test programs. */
 
@@ -484,15 +484,15 @@ void	SetDiagnosticsPrefix(WChar *prefix);
 
 void	SetDiagMode(DiagModeSpecifier mode);
 
-void	SetDPrintFunc(void (* Func)(WChar *, va_list));
+void	SetDPrintFunc(void (* Func)(const WChar *, va_list));
 
-void	SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
+void	SetErrorsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetInterruptRequestStatus_Common(BOOLN status);
 
 void	SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier));
 
-BOOLN	SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode);
+BOOLN	SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
 void	SetParsFilePath_Common(WChar *name);
 
@@ -502,7 +502,7 @@ void	SetUsingExtStatus(BOOLN status);
 
 void	SetUsingGUIStatus(BOOLN status);
 
-void	SetWarningsFile_Common(WChar *outputSpecifier,
+void	SetWarningsFile_Common(const WChar *outputSpecifier,
 		  FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);

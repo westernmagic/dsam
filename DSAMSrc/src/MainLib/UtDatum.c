@@ -1353,7 +1353,7 @@ FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label)
  */
 
 DatumPtr
-FindLabelledInst_Utility_Datum(DatumPtr start, WChar *label)
+FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledInst_Utility_Datum");
 	DatumPtr	pc;
@@ -1425,7 +1425,7 @@ FindModuleProcessInst_Utility_Datum(DatumPtr start, WChar *moduleName)
 
 BOOLN
 FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
-  DatumPtr *pc, WChar *parSpecifier, BOOLN diagnosticsOn)
+  DatumPtr *pc, const WChar *parSpecifier, BOOLN diagnosticsOn)
 {
 	static const WChar *funcName = wxT("FindModuleUniPar_Utility_Datum");
 	WChar		*p, parName[MAXLINE], processName[MAXLINE], processStr[MAXLINE];
@@ -1584,7 +1584,7 @@ GetInstIntVal_Utility_Datum(DatumPtr start, WChar *label)
  */
 
 BOOLN
-SetControlParValue_Utility_Datum(DatumPtr start, WChar *label, WChar *value,
+SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label, const WChar *value,
   BOOLN diagsOn)
 {
 	static const WChar	*funcName = wxT("SetControlParValue_Utility_SimScript");
@@ -1637,7 +1637,7 @@ SetControlParValue_Utility_Datum(DatumPtr start, WChar *label, WChar *value,
  */
 
 BOOLN
-SetUniParValue_Utility_Datum(DatumPtr start, WChar *parName, WChar *parValue)
+SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName, const WChar *parValue)
 {
 	static const WChar	*funcName = wxT("SetUniParValue_Utility_Datum");
 	uInt	index;

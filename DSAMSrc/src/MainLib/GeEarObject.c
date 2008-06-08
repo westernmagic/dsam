@@ -65,7 +65,7 @@ BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
  */
 
 EarObjectPtr
-Init_EarObject(WChar *moduleName)
+Init_EarObject(const WChar *moduleName)
 {
 	static const WChar *funcName = wxT("Init_EarObject");
 	EarObjectPtr	data;
@@ -293,7 +293,7 @@ FreeAll_EarObject(void)
  */
  
 void
-SetProcessName_EarObject(EarObjectPtr theObject, WChar *format, ...)
+SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
 {
 	static const WChar *funcName = wxT("SetProcessName_EarObject");
 	WChar	string[MAXLINE];

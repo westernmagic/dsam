@@ -1822,6 +1822,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\src\MainLib\FlZBMiddleEar.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\MainLib\GeCommon.c"
 				>
 				<FileConfiguration
@@ -2868,6 +2872,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\MainLib\MoBMZilanyBruce.c"
+				>
 			</File>
 			<File
 				RelativePath="..\..\src\MainLib\MoHCRPCarney.c"
@@ -7459,6 +7467,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\src\MainLib\UtZilanyBruce.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -7569,6 +7581,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\FlZBMiddleEar.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\GeCommon.h"
 				>
 			</File>
@@ -7642,6 +7658,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\MoBMZhang.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\MoBMZilanyBruce.h"
 				>
 			</File>
 			<File
@@ -7970,6 +7990,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\UtZhang.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\UtZilanyBruce.h"
 				>
 			</File>
 		</Filter>

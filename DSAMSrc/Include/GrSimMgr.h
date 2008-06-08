@@ -188,7 +188,7 @@ BOOLN	OnExecute_MyApp(void);
 
 void	OnExit_MyApp(void);
 
-void	DPrint_MyApp(wxChar *format, va_list args);
+void	DPrint_MyApp(const wxChar *format, va_list args);
 
 void	EmptyDiagWinBuffer_MyApp(wxChar *s, int *c);
 

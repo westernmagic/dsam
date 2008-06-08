@@ -222,9 +222,9 @@ DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
 
 DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
 
-UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName);
+UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName);
 
-ModulePtr	Init_ModuleMgr(WChar *name);
+ModulePtr	Init_ModuleMgr(const WChar *name);
 
 BOOLN	InLineProcess_ModuleMgr(EarObjectPtr data, BOOLN (* RunProcess)(
 		  EarObjectPtr theObject));
@@ -253,12 +253,12 @@ void	SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void));
 
 BOOLN	SetNull_ModuleMgr(ModulePtr module);
 
-BOOLN	SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value);
+BOOLN	SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value);
 
-BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, WChar *name, int index,
+BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
 		  double value);
 
-BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, WChar *name, double value);
+BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, double value);
 
 void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
 

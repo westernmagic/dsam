@@ -483,7 +483,7 @@ MyCanvas::GetMinimumIntLog(double value)
 
 void
 MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
-  wxFont *labelFont, wxChar *numFormat, int theXOffset, int theYOffset,
+  wxFont *labelFont, const wxChar *numFormat, int theXOffset, int theYOffset,
   int yTicks, int numDisplayedChans, double minYValue, double maxYValue,
   bool autoScale)
 {
@@ -775,7 +775,7 @@ MyCanvas::OnRightDown(wxMouseEvent &event)
 void
 MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 {
-	static char *funcName = "MyCanvas::OnPrint";
+	static const wxChar *funcName = wxT("MyCanvas::OnPrint");
 
 #	if defined(wxUSE_PRINTING_ARCHITECTURE)
 		wxPrintDialogData printDialogData(* printData);
@@ -784,7 +784,7 @@ MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 
 		if (!printer.Print(this, &printout, TRUE))
 			wxLogWarning(wxT("%s:There was a problem printing.\nPerhaps your ")
-			  wxT("current printer is not set correctly?"),funcName);
+			  wxT("current printer is not set correctly?"), funcName);
 		else
 			*printData = printer.GetPrintDialogData().GetPrintData();
 #	endif // wxUSE_PRINTING_ARCHITECTURE

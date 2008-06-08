@@ -1239,7 +1239,7 @@ SetICGeneralParsFromICList_IonChanList(IonChannelPtr theIC,
 
 BOOLN
 SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
-  WChar *description, WChar *enabled, double equilibriumPot,
+  const WChar *description, WChar *enabled, double equilibriumPot,
   double baseMaxConductance, double activationExponent)
 {
 	static const WChar	*funcName = wxT("SetICGeneralPars_IonChanList");
@@ -2021,7 +2021,7 @@ SetICMode_IonChanList(IonChannelPtr theIC, WChar *modeName)
  */
  
 BOOLN
-SetICDescription_IonChanList(IonChannelPtr theIC, WChar *theDescription)
+SetICDescription_IonChanList(IonChannelPtr theIC, const WChar *theDescription)
 {
 	static const WChar *funcName = wxT("SetICDescription_IonChanList");
 

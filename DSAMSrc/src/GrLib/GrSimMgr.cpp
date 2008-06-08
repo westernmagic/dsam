@@ -816,7 +816,7 @@ EmptyDiagWinBuffer_MyApp(wxChar *s, int *c)
  */
  
 void
-DPrint_MyApp(wxChar *format, va_list args)
+DPrint_MyApp(const wxChar *format, va_list args)
 {
 	if (!wxGetApp().GetDiagFrame())
 		return;
@@ -839,7 +839,7 @@ DPrint_MyApp(wxChar *format, va_list args)
 void
 Notify_MyApp(const wxChar *message, CommonDiagSpecifier type)
 {
-	wxChar	*heading;
+	const wxChar	*heading;
 	wxString	mesg;
 	long	style = wxOK;
 

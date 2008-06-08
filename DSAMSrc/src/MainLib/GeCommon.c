@@ -96,7 +96,7 @@ DSAM	dSAM = {
  */
  
 void
-DPrintStandard(WChar *format, va_list args)
+DPrintStandard(const WChar *format, va_list args)
 {
 	CheckInitParsFile_Common();
 	if (dSAM.diagnosticsPrefix)
@@ -114,7 +114,7 @@ DPrintStandard(WChar *format, va_list args)
  */
  
 void
-DPrint(WChar *format, ...)
+DPrint(const WChar *format, ...)
 {
 	va_list	args;
 #	if DSAM_USE_UNICODE
@@ -145,7 +145,7 @@ DPrint(WChar *format, ...)
  */
 
 void
-DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
+DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
   WChar *, int *))
 {
 	static	const WChar *funcName = wxT("DPrintBuffer_Common");
@@ -164,7 +164,7 @@ DPrintBuffer_Common(WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 		DSAM_strncpy(buffer, dSAM.diagnosticsPrefix, MAXLINE);
 	else
 		*buffer = '\0';
-	for (p = format, c = DSAM_strlen(buffer); *p != '\0'; p++)
+	for (p = (WChar *) format, c = DSAM_strlen(buffer); *p != '\0'; p++)
 		if (c >= LONG_STRING - 1)
 			(* EmptyDiagBuffer)(buffer, &c);
 		else if (*p == '%') {
@@ -287,7 +287,7 @@ NotifyStandard(const WChar *message, CommonDiagSpecifier type)
  */
 
 void
-NotifyError(WChar *format, ...)
+NotifyError(const WChar *format, ...)
 {
 	WChar	message[LONG_STRING];
 	va_list	args;
@@ -315,7 +315,7 @@ NotifyError(WChar *format, ...)
  */
  
 void
-NotifyWarning(WChar *format, ...)
+NotifyWarning(const WChar *format, ...)
 {
 	WChar	message[LONG_STRING];
 	va_list	args;
@@ -342,7 +342,7 @@ NotifyWarning(WChar *format, ...)
  */
 
 FILE *
-GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
+GetFilePtr(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	static const WChar *funcName = wxT("GetFilePtr");
 	char	*fileAccess;
@@ -379,7 +379,7 @@ GetFilePtr(WChar *outputSpecifier, FileAccessSpecifier mode)
  */
 
 void
-SetWarningsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
+SetWarningsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.warningsFile = GetFilePtr(outputSpecifier, mode);
 
@@ -395,7 +395,7 @@ SetWarningsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
  */
 
 BOOLN
-SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
+SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.parsFile = GetFilePtr(outputSpecifier, mode);
 	return(dSAM.parsFile != stderr);
@@ -412,7 +412,7 @@ SetParsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
  */
 
 void
-SetErrorsFile_Common(WChar *outputSpecifier, FileAccessSpecifier mode)
+SetErrorsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.errorsFile = GetFilePtr(outputSpecifier, mode);
 
@@ -515,7 +515,7 @@ SetDiagMode(DiagModeSpecifier mode)
  */
 
 void
-SetDPrintFunc(void (* Func)(WChar *, va_list))
+SetDPrintFunc(void (* Func)(const WChar *, va_list))
 {
 	dSAM.DPrint = Func;
 

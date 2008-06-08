@@ -165,7 +165,7 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
  */
 
 ModulePtr
-Init_ModuleMgr(WChar *theModuleName)
+Init_ModuleMgr(const WChar *theModuleName)
 {
 	static const WChar *funcName = wxT("Init_ModuleMgr");
 	static ModuleHandle handleNumber = 0;
@@ -564,7 +564,7 @@ GetLabelledProcess_ModuleMgr(EarObjectPtr data, WChar *label)
  */
 
 UniParPtr
-GetUniParPtr_ModuleMgr(EarObjectPtr data, WChar *parName)
+GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName)
 {
 	static const WChar *funcName = wxT("GetUniParPtr_ModuleMgr");
 	UniParPtr	par;
@@ -902,7 +902,7 @@ RunProcessStandard_ModuleMgr(EarObjectPtr data)
  */
 
 BOOLN
-SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value)
+SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value)
 {
 	static const WChar *funcName = wxT("SetPar_ModuleMgr");
 
@@ -942,7 +942,7 @@ SetPar_ModuleMgr(EarObjectPtr data, WChar *parName, WChar *value)
  */
 
 BOOLN
-SetRealPar_ModuleMgr(EarObjectPtr data, WChar *name, double value)
+SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, double value)
 {
 	WChar	stringValue[MAXLINE];
 
@@ -960,7 +960,7 @@ SetRealPar_ModuleMgr(EarObjectPtr data, WChar *name, double value)
  */
 
 BOOLN
-SetRealArrayPar_ModuleMgr(EarObjectPtr data, WChar *name, int index,
+SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
   double value)
 {
 	/* static const WChar *funcName = wxT("SetRealPar_ModuleMgr"); */

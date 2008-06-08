@@ -65,7 +65,7 @@ GetNullSpec_NameSpecifier(NameSpecifierPtr list)
  */
 
 int
-Identify_NameSpecifier(WChar *name, NameSpecifierPtr list)
+Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list)
 {
 	static WChar *funcName = wxT("Identify_NameSpecifier");
 	int		length;
@@ -103,7 +103,7 @@ FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list)
 	if (!*list)
 		return;
 	for (p = *list; p->name; p++)
-		free(p->name);
+		free((WChar *) p->name);
 	free(*list);
 	*list = NULL;
 

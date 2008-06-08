@@ -45,7 +45,7 @@ int		optionsPleaseLink = 0;
 
 WChar
 Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
-  WChar **argument, WChar *proto)
+  WChar **argument, const WChar *proto)
 {
 	register WChar	*idx, c;
 
@@ -89,7 +89,7 @@ Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
  */
 
 void
-MarkIgnore_Options(int argc, register WChar **argv, WChar *optionString,
+MarkIgnore_Options(int argc, register WChar **argv, const WChar *optionString,
   OptionsArgSpecifier state)
 {
 	int		i, length;

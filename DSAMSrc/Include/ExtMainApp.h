@@ -126,29 +126,28 @@ extern int	MainSimulation(void);
 extern MainApp	*dSAMMainApp;
 
 /******************************************************************************/
+/*************************** Early subroutine declarations ********************/
+/******************************************************************************/
+
+int		DSAMStart_MainApp(int argc, char **argv);
+int		DSAMStart_MainApp(int argc, wxChar **argv);
+
+/******************************************************************************/
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/
 
 #if defined(EXTENSIONS_SUPPORT) && !defined(USE_GUI)
 #	if !defined(LIBRARY_COMPILE)
-	int
-	main(int argc, wxChar **argv)
-	{
-		wxInitializer initializer;
-		if (!initializer) {
-			NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
-			  wxT("aborting."));
-			return -1;
-		}
-		MainApp	mainApp(argc, argv, MainSimulation);
-		return(mainApp.Main());
-
-	}
+#		if defined(WIN32)
+			int main(int argc, wxChar **argv) { return(DSAMStart_MainApp(argc, argv)); }
+#		else
+			int main(int argc, char **argv) { return(DSAMStart_MainApp(argc, argv)); }
+#		endif
 #	endif
 
 #endif /* defined(EXTENSIONS_SUPPORT) && !defined(GRAPHICS_SUPPORT) */
 
-void	DPrintSysLog_MainApp(wxChar *format, va_list args);
+void	DPrintSysLog_MainApp(const wxChar *format, va_list args);
 
 void	PrintUsage_MainApp(void);
 

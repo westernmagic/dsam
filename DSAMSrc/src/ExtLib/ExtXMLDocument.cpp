@@ -91,7 +91,7 @@ DSAMXMLDocument::Create(EarObjectPtr simProcess)
 
 void
 DSAMXMLDocument::AddSimConnections(DSAMXMLNode *node, DynaListPtr list,
-  WChar * type)
+  const WChar * type)
 {
 	DynaListPtr	dNode;
 
@@ -333,7 +333,7 @@ DSAMXMLDocument::AddAppInfo(DSAMXMLNode *parent)
  */
 
 wxString &
-DSAMXMLDocument::CreateNotification(wxXmlNode *node, wxChar *format, va_list
+DSAMXMLDocument::CreateNotification(wxXmlNode *node, const wxChar *format, va_list
   args)
 {
 	static wxString	msg;
@@ -355,7 +355,7 @@ DSAMXMLDocument::CreateNotification(wxXmlNode *node, wxChar *format, va_list
  */
 
 void
-DSAMXMLDocument::XMLNotifyError(wxXmlNode *node, wxChar *format, ...)
+DSAMXMLDocument::XMLNotifyError(wxXmlNode *node, const wxChar *format, ...)
 {
 	va_list	args;
 
@@ -374,7 +374,7 @@ DSAMXMLDocument::XMLNotifyError(wxXmlNode *node, wxChar *format, ...)
  */
 
 void
-DSAMXMLDocument::XMLNotifyWarning(wxXmlNode *node, wxChar *format, ...)
+DSAMXMLDocument::XMLNotifyWarning(wxXmlNode *node, const wxChar *format, ...)
 {
 	va_list	args;
 

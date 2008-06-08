@@ -74,7 +74,7 @@ wxPrintData *printData = (wxPrintData*) NULL ;
  * Define a constructor for my canvas.
  */
 
-PrintDisp::PrintDisp(MyCanvas *theCanvas, wxChar *title): wxPrintout(title)
+PrintDisp::PrintDisp(MyCanvas *theCanvas, const wxChar *title): wxPrintout(title)
 {
 	canvas = theCanvas;
 
