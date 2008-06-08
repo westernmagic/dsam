@@ -200,7 +200,7 @@ SetNumberOfRuns(int theNumberOfRuns)
 BOOLN
 AutoSetNumberOfRuns(void)
 {
-	static WChar *funcName = PROGRAM_NAME wxT(": AutoSetNumberOfRuns");
+	static const WChar *funcName = PROGRAM_NAME wxT(": AutoSetNumberOfRuns");
 	double	totalDuration, segmentDuration;
 	EarObjectPtr	process;
 
@@ -281,7 +281,7 @@ PrintUsage(void)
 BOOLN
 ProcessOptions(int argc, WChar **argv, int *optInd)
 {
-	static WChar *funcName = PROGRAM_NAME wxT(": ProcessOptions");
+	static const WChar *funcName = PROGRAM_NAME wxT(": ProcessOptions");
 	BOOLN	foundOption = FALSE;
 	WChar	c, *argument;
 	int		optSub = 0;
@@ -322,7 +322,7 @@ ProcessOptions(int argc, WChar **argv, int *optInd)
 BOOLN
 SetLockFile(BOOLN on)
 {
-	static WChar *funcName = PROGRAM_NAME wxT(": SetLockFile");
+	static const WChar *funcName = PROGRAM_NAME wxT(": SetLockFile");
 	FILE	*fp;
 
 	if (on) {
