@@ -1587,7 +1587,7 @@ BOOLN
 SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label, const WChar *value,
   BOOLN diagsOn)
 {
-	static const WChar	*funcName = wxT("SetControlParValue_Utility_SimScript");
+	static const WChar	*funcName = wxT("SetControlParValue_Utility_Datum");
 	DatumPtr	pc;
 
 	if (start == NULL) {
@@ -1612,7 +1612,6 @@ SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label, const WChar
 		break; }
 	case PROCESS: {
 		int status = Identify_NameSpecifier(value, BooleanList_NSpecLists(0));
-		wprintf(wxT("%S: Debug: controlling process '%S'...\n"), funcName, label);
 		if (status == GENERAL_BOOLEAN_NULL) {
 			NotifyError(wxT("%s: Illegal switch state (%s)."), funcName, value);
 			return(FALSE);

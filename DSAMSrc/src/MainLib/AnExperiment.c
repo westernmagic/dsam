@@ -111,7 +111,6 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 		lastInputIntensity = presentInputIntensity;
 		presentInputIntensity = intensityDiff / gradient +
 		  presentInputIntensity;
-		
 	}
 	NotifyWarning(wxT("%s: Looped %d times and couldn't\n\tcome any closer to ")
 	  wxT("the threshold than %g dB.\n"), funcName, MAXIMUM_THRESHOLD_LOOP,
