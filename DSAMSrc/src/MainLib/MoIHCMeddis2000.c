@@ -104,7 +104,7 @@ InitCaCondModeList_IHC_Meddis2000(void)
 	static NameSpecifier	modeList[] = {
 
 			{ wxT("ORIGINAL"),		IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
-			{ wxT("REVISION_1"),	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
+			{ wxT("CLEARANCE"),		IHC_MEDDIS2000_CACONDMODE_CLEARANCE },
 			{ NULL,					IHC_MEDDIS2000_CACONDMODE_NULL },
 		};
 	hairCell2Ptr->caCondModeList = modeList;
@@ -258,7 +258,7 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CACONDMODE], wxT("CA_COND_MODE"),
-	  wxT("Calcium conductance mode ('original' or 'revision_1')."),
+	  wxT("Calcium conductance mode ('original' - calcium influx or 'clearance')."),
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->caCondMode, hairCell2Ptr->caCondModeList,
 	  (void * (*)) SetCaCondMode_IHC_Meddis2000);
@@ -360,6 +360,8 @@ SetEnabledPars_IHC_Meddis2000(void)
 	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_MAXFREEPOOL_M].enabled =
 	  (hairCell2Ptr->cleftReplenishMode ==
 	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL);
+	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_PERM_CA0].enabled = 
+		  (hairCell2Ptr->caCondMode != IHC_MEDDIS2000_CACONDMODE_CLEARANCE);
 	
 }
 
@@ -531,6 +533,7 @@ SetCaCondMode_IHC_Meddis2000(WChar * theCaCondMode)
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
 	hairCell2Ptr->caCondModeFlag = TRUE;
 	hairCell2Ptr->caCondMode = specifier;
+	SetEnabledPars_IHC_Meddis2000();
 	return(TRUE);
 
 }
@@ -1329,7 +1332,7 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 	  0][0]))) / p->betaCa));		
 	ICa = p->GCaMax * pow(ssactCa, 3) * (_InSig_EarObject(data, 0)->channel[0][0] -
 	  p->CaVrev);
-	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
+	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_CLEARANCE)
 		ICa *= p->tauConcCa;
 	spontPerm_k0 = ( -ICa > p->perm_Ca0 ) ? (p->perm_z * (pow(-ICa, p-> pCa) -
 	  pow(p->perm_Ca0,p->pCa))) : 0; 
@@ -1527,15 +1530,15 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			ICa = p->GCaMax * pow(p->hCChannels[i].actCa, 3) * (Vin -
 			  p->CaVrev);
 			
-			/* Calcium Ion accumulation and diffusion */			
-			p->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
-			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
-			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
-			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) * outSignal->dt;
-
-			/* power law release function */
-			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
-			  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0; 
+			/* Calcium Ion accumulation and diffusion / power law release function */
+			if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_ORIGINAL) {
+				p->hCChannels[i].concCa += (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa;
+				kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
+				  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0;
+			} else {
+				p->hCChannels[i].concCa += (-ICa - p->hCChannels[i].concCa / p->tauConcCa) * outSignal->dt;
+				kdt = p->zdt * pow(p->hCChannels[i].concCa, p->pCa);
+			}
 
 			/* Increment input pointer */
 			inPtr++; 
