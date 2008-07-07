@@ -471,7 +471,7 @@ SetMaxUserModules_AppInterface(int maxUserModules)
  */
 
 BOOLN
-SetInstallDir_AppInterface(WChar *theInstallDir)
+SetInstallDir_AppInterface(const WChar *theInstallDir)
 {
 	static const WChar	*funcName = wxT("SetInstallDir_AppInterface");
 
@@ -1312,7 +1312,7 @@ InitSimulation_AppInterface(void)
  */
 
 BOOLN
-SetAppName_AppInterface(WChar *appName)
+SetAppName_AppInterface(const WChar *appName)
 {
 	static const WChar *funcName = wxT("SetAppName_AppInterface");
 
@@ -1334,7 +1334,7 @@ SetAppName_AppInterface(WChar *appName)
  */
 
 BOOLN
-SetAppVersion_AppInterface(WChar *appVersion)
+SetAppVersion_AppInterface(const WChar *appVersion)
 {
 	static const WChar *funcName = wxT("SetAppVersion_AppInterface");
 
@@ -1357,7 +1357,7 @@ SetAppVersion_AppInterface(WChar *appVersion)
  */
 
 BOOLN
-SetCompiledDSAMVersion_AppInterface(WChar *compiledDSAMVersion)
+SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion)
 {
 	static const WChar *funcName = wxT("SetCompiledDSAMVersion_AppInterface");
 

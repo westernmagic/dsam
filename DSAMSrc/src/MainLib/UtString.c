@@ -454,7 +454,7 @@ Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list 
  */
  
 int
-Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
+Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
 {
 	int		result = 0;
 	va_list	args;
@@ -475,7 +475,7 @@ Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...)
  */
  
 int
-fprintf_Utility_String(FILE *fp,  WChar *format, ...)
+fprintf_Utility_String(FILE *fp,  const WChar *format, ...)
 {
 	static const WChar *funcName = wxT("fprintf_Utility_String");
 	BOOLN	ok = TRUE;

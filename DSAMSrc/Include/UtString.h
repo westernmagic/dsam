@@ -51,7 +51,7 @@ WChar	MBToWC_Utility_String(const char *mb);
 
 char *	ConvUTF8_Utility_String(const WChar *src);
 
-int	fprintf_Utility_String(FILE *fp,  WChar *format, ...);
+int	fprintf_Utility_String(FILE *fp, const WChar *format, ...);
 
 WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
 
@@ -65,7 +65,7 @@ void	ToUpper_Utility_String(WChar *upperCaseString, const WChar *string);
 
 WChar *	RemoveChar_Utility_String(WChar *string, WChar c);
 
-int		Snprintf_Utility_String(WChar *str, size_t size,  WChar *format, ...);
+int		Snprintf_Utility_String(WChar *str, size_t size,  const WChar *format, ...);
 
 int		StrCmpNoCase_Utility_String(WChar *s1, WChar *s2);
 

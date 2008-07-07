@@ -231,7 +231,7 @@ BOOLN	RunSim_AppInterface(void);
 
 BOOLN	SetAppParFile_AppInterface(WChar *fileName);
 
-BOOLN	SetAppName_AppInterface(WChar *appName);
+BOOLN	SetAppName_AppInterface(const WChar *appName);
 
 BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
 
@@ -246,19 +246,19 @@ BOOLN	SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void));
 BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
 		  *parList));
 
-BOOLN	SetAppVersion_AppInterface(WChar *appVersion);
+BOOLN	SetAppVersion_AppInterface(const WChar *appVersion);
 
 void	SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv);
 
 BOOLN	SetCanFreePtrFlag_AppInterface(BOOLN status);
 
-BOOLN	SetCompiledDSAMVersion_AppInterface(WChar *compiledDSAMVersion);
+BOOLN	SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion);
 
 BOOLN	SetDiagMode_AppInterface(WChar *theDiagMode);
 
 BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 
-BOOLN	SetInstallDir_AppInterface(WChar *theInstallDir);
+BOOLN	SetInstallDir_AppInterface(const WChar *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 

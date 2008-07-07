@@ -512,7 +512,7 @@ MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
  */
 
 void
-MainApp::RemoveCommands(int offset, wxChar *prefix)
+MainApp::RemoveCommands(int offset, const wxChar *prefix)
 {
 	int		i;
 

@@ -101,7 +101,7 @@ class MainApp {
 	bool	InitMain(bool loadSimulationFlag = false);
 	bool	LoadXMLDocument(void);
 	bool	ProtectQuotedStr(wxChar *str);
-	void	RemoveCommands(int offset, wxChar *prefix);
+	void	RemoveCommands(int offset, const wxChar *prefix);
 	wxChar *	RestoreQuotedStr(wxChar *str);
 	int		RunIPCMode(void);
 	int		RunServer(void);
