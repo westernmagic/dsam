@@ -504,7 +504,7 @@ SDILineShape::GetXMLInfo(wxXmlNode *myElement)
 		  !GetXMLControlPointsInfo(child))
 			ok = false;
 		else if ((child->GetName() == SHAPE_XML_ARROW_LIST_ELEMENT) && 
-		  !GetXMLArrowListInfo(myElement))
+		  !GetXMLArrowListInfo(child))
 			ok = false;
 	if (!ok)
 		NotifyError(wxT("%s: Failed to load XML information."), funcName);
