@@ -299,7 +299,7 @@ PrintPars_Utility_MathOp(void)
 		  funcName);
 		return(FALSE);
 	}
-	DPrint(wxT("Mathematicl Operation Utility Module Parameters:-\n"));
+	DPrint(wxT("Mathematical Operation Utility Module Parameters:-\n"));
 	DPrint(wxT("\tOperatorMode = %s, "), mathOpPtr->operatorModeList[mathOpPtr->
 	  operatorMode].name);
 	if (mathOpPtr->operatorMode == UTILITY_MATHOP_OPERATORMODE_SCALE)
