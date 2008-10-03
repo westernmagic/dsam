@@ -1440,7 +1440,7 @@ InitProcessVariables_BasilarM_Zhang(EarObjectPtr data)
 		   p->cFList->frequency);
 		SetInfoCFArray_SignalData(_OutSig_EarObject(data), p->cFList->
 		  frequency);
-		bMZhangPtr->updateProcessVariablesFlag = FALSE;
+		p->updateProcessVariablesFlag = FALSE;
 		p->cFList->updateFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
