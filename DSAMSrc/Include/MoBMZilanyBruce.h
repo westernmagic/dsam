@@ -16,7 +16,7 @@
  * Author:		Revised by L. P. O'Mard
  * Created:		04 Mar 2008
  * Updated:	
- * Copyright:	(c) 2008, 
+ * Copyright:	(c) 2008, L. P. O'Mard
  *
  *********************/
 

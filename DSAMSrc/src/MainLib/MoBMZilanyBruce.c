@@ -172,6 +172,7 @@ Init_BasilarM_ZilanyBruce(ParameterSpecifier parSpec)
 		Free_BasilarM_ZilanyBruce();
 		return(FALSE);
 	}
+	bMZBPtr->numChannels = 0;
 	bMZBPtr->wbgt = NULL;
 	bMZBPtr->c1Filter = NULL;
 	bMZBPtr->c2Filter = NULL;
@@ -1084,7 +1085,12 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 			InitLowPass_Utility_Zhang(&p->ihcLowPass[i], dt, p->cutOffIHCLP, 1.0, 
 			  p->iHCLPOrder);
 		}
+		SetLocalInfoFlag_SignalData(outSignal, TRUE);
+		SetInfoChannelTitle_SignalData(outSignal, wxT("Frequency (Hz)"));
+		SetInfoChannelLabels_SignalData(outSignal, p->cFList->frequency);
+		SetInfoCFArray_SignalData(outSignal, p->cFList->frequency);
 		p->updateProcessVariablesFlag = FALSE;
+		p->cFList->updateFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
 		ResetOutSignal_EarObject(p->tmpgain);
@@ -1199,7 +1205,7 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 	outSignal = _OutSig_EarObject(data);
 	dt = outSignal->dt;
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
-		inPtr = inSignal->channel[chan];
+		inPtr = inSignal->channel[chan % inSignal->interleaveLevel];
 		outPtr = outSignal->channel[chan];
 		tmpgain = _OutSig_EarObject(p->tmpgain)->channel[chan];
 		wbgt = p->wbgt[chan];
