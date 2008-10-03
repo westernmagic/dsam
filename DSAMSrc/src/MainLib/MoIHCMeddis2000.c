@@ -104,7 +104,7 @@ InitCaCondModeList_IHC_Meddis2000(void)
 	static NameSpecifier	modeList[] = {
 
 			{ wxT("ORIGINAL"),		IHC_MEDDIS2000_CACONDMODE_ORIGINAL },
-			{ wxT("CLEARANCE"),		IHC_MEDDIS2000_CACONDMODE_CLEARANCE },
+			{ wxT("REVISION_1"),	IHC_MEDDIS2000_CACONDMODE_REVISION1 },
 			{ NULL,					IHC_MEDDIS2000_CACONDMODE_NULL },
 		};
 	hairCell2Ptr->caCondModeList = modeList;
@@ -258,7 +258,7 @@ SetUniParList_IHC_Meddis2000(void)
 	  &hairCell2Ptr->diagMode, hairCell2Ptr->diagModeList,
 	  (void * (*)) SetDiagMode_IHC_Meddis2000);
 	SetPar_UniParMgr(&pars[IHC_MEDDIS2000_CACONDMODE], wxT("CA_COND_MODE"),
-	  wxT("Calcium conductance mode ('original' - calcium influx or 'clearance')."),
+	  wxT("Calcium conductance mode ('original' or 'revision_1')."),
 	  UNIPAR_NAME_SPEC,
 	  &hairCell2Ptr->caCondMode, hairCell2Ptr->caCondModeList,
 	  (void * (*)) SetCaCondMode_IHC_Meddis2000);
@@ -360,8 +360,6 @@ SetEnabledPars_IHC_Meddis2000(void)
 	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_MAXFREEPOOL_M].enabled =
 	  (hairCell2Ptr->cleftReplenishMode ==
 	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL);
-	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_PERM_CA0].enabled = 
-		  (hairCell2Ptr->caCondMode != IHC_MEDDIS2000_CACONDMODE_CLEARANCE);
 	
 }
 
@@ -1316,6 +1314,9 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
  * This routine resets the process variables.
  * In this module it always needs to be run after the first input sample as
  * it uses this sample to set the resting condition.
+ * The ICa variable is actually the calcuim conductance. This is reflected by
+ * the "IHC_MEDDIS2000_CACONDMODE_REVISION1" multiplication by the calcium
+ * conductance time constant.
  */
 
 void
@@ -1325,17 +1326,17 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
 	HairCell2Ptr	p = hairCell2Ptr; /* Shorter variable for long formulae. */
 	
-	double	  	ICa;		/* Calcium current */
+	double	  	ICa;		/* Calcium conductance not current! */
 	double	  	ssactCa;	/* steady state Calcium activation */
 
 	ssactCa = 1.0 / ( 1.0 + (exp(- (p->gammaCa*(_InSig_EarObject(data, 0)->channel[
 	  0][0]))) / p->betaCa));		
 	ICa = p->GCaMax * pow(ssactCa, 3) * (_InSig_EarObject(data, 0)->channel[0][0] -
 	  p->CaVrev);
-	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_CLEARANCE)
+	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
 		ICa *= p->tauConcCa;
-	spontPerm_k0 = ( -ICa > p->perm_Ca0 ) ? (p->perm_z * (pow(-ICa, p-> pCa) -
-	  pow(p->perm_Ca0,p->pCa))) : 0; 
+	spontPerm_k0 = ( -ICa > p->perm_Ca0 ) ? (p->perm_z * (pow(-ICa, p->pCa) -
+	  pow(p->perm_Ca0, p->pCa))) : 0; 
 	spontCleft_c0 = (p->cleftReplenishMode ==
 	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? p->maxFreePool_M *
 	  p->replenishRate_y * spontPerm_k0 / (p->replenishRate_y * (p->lossRate_l +
@@ -1530,15 +1531,15 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			ICa = p->GCaMax * pow(p->hCChannels[i].actCa, 3) * (Vin -
 			  p->CaVrev);
 			
-			/* Calcium Ion accumulation and diffusion / power law release function */
-			if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_ORIGINAL) {
-				p->hCChannels[i].concCa += (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa;
-				kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
-				  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0;
-			} else {
-				p->hCChannels[i].concCa += (-ICa - p->hCChannels[i].concCa / p->tauConcCa) * outSignal->dt;
-				kdt = p->zdt * pow(p->hCChannels[i].concCa, p->pCa);
-			}
+			/* Calcium Ion accumulation and diffusion */			
+			p->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
+			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
+			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
+			  (-ICa - p->hCChannels[i].concCa / p->tauConcCa) * outSignal->dt;
+
+			/* power law release function */
+			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
+			  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0; 
 
 			/* Increment input pointer */
 			inPtr++; 
