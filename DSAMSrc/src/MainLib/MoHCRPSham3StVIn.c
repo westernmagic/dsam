@@ -135,7 +135,6 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	sham3StVInPtr->lastCiliaDisplacement_u = NULL;
-	sham3StVInPtr->lastInput = NULL;
 	sham3StVInPtr->lastOutput = NULL;
 	return(TRUE);
 
@@ -997,12 +996,6 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 
 			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
-			if ((p->lastInput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
-			  sizeof(double))) == NULL) {
-				NotifyError(wxT("%s: Out of memory for 'lastInput'."),
-				  funcName);
-				return(FALSE);
-			}
 			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
 			  sizeof(double))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
@@ -1025,7 +1018,6 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 
 		if (data->timeIndex == PROCESS_START_TIME) {
 			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-				p->lastInput[i] = 0.0;
 				p->lastOutput[i] = restingPotential_V0;
 				p->lastCiliaDisplacement_u[i] = 0.0;
 			}	
@@ -1045,10 +1037,6 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 BOOLN
 FreeProcessVariables_IHCRP_Shamma3StateVelIn(void)
 {
-	if (sham3StVInPtr->lastInput != NULL) {
-		free(sham3StVInPtr->lastInput);
-		sham3StVInPtr->lastInput = NULL;
-	}
 	if (sham3StVInPtr->lastOutput != NULL) {
 		free(sham3StVInPtr->lastOutput);
 		sham3StVInPtr->lastOutput = NULL;
@@ -1085,7 +1073,7 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	int	chan;
 	ChanLen	i;
 	double	conductance_G, potential_V;
-	double	ciliaDisplacement_u, ciliaAct, lastInput;
+	double	ciliaDisplacement_u, ciliaAct;
 	SignalDataPtr	outSignal;
 	Sham3StVInPtr p = sham3StVInPtr;
 
@@ -1140,7 +1128,6 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		outPtr = outSignal->channel[chan];
 		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
 		potential_V = p->lastOutput[chan];
-		lastInput = p->lastInput[chan];
 		for (i = 0; i < outSignal->length; i++, inPtr++, outPtr++) {
 			ciliaDisplacement_u += p->cGaindt * (*inPtr ) - 
 			  ciliaDisplacement_u * p->dtOverTc;
@@ -1153,10 +1140,8 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *
 			  potential_V - p->gkEpk));
 			potential_V = *outPtr;
-			lastInput = *inPtr;
 		}
 		p->lastCiliaDisplacement_u[chan] = ciliaDisplacement_u;
-		p->lastInput[chan] = lastInput;
 		p->lastOutput[chan] = potential_V;
 		outPtr = outSignal->channel[chan];
 		for (i = 0; i < outSignal->length; i++)
