@@ -71,6 +71,15 @@ typedef enum {
 
 } GeneralPhaseModeSpecifier;
 
+typedef enum {
+
+	GENERAL_EAR_LEFT,
+	GENERAL_EAR_RIGHT,
+	GENERAL_EAR_BOTH,
+	GENERAL_EAR_NULL
+
+} GeneralEarModeSpecifier;
+
 /******************************************************************************/
 /****************************** External variables ****************************/
 /******************************************************************************/
@@ -90,6 +99,8 @@ NameSpecifier *	BooleanList_NSpecLists(int index);
 void			CloseDiagnostics_NSpecLists(FILE **fp);
 
 NameSpecifier *	DiagModeList_NSpecLists(int index);
+
+NameSpecifier * EarModeList_NSpecLists(int index);
 
 NameSpecifier *	FitFuncModeList_NSpecLists(int index);
 

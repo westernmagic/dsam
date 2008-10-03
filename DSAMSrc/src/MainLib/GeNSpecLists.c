@@ -129,6 +129,28 @@ PhaseModeList_NSpecLists(int index)
 
 }
 
+/****************************** EarModeList ********************************/
+
+/*
+ * This routine returns a name specifier for the Phase mode  list.
+ * This routine makes no checks on limits.  It is expected to be used in
+ * conjunction with the UtNameSpecifier routines.
+ */
+
+NameSpecifier *
+EarModeList_NSpecLists(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+					{ wxT("LEFT"),	GENERAL_EAR_LEFT },
+					{ wxT("RIGHT"),	GENERAL_EAR_RIGHT },
+					{ wxT("BOTH"),	GENERAL_EAR_BOTH },
+					{ 0, 0 },
+				};
+	return(&modeList[index]);
+
+}
+
 /****************************** SetPhaseArray *********************************/
 
 /*
