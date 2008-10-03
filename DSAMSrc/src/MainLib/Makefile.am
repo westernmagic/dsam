@@ -36,13 +36,15 @@ Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c \
 				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
 				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoBMGammaC.c \
 				MoHCRPSham3StVIn.c MoBMZhang.c MoHCRPZhang.c MoIHCZhang.c \
-				MoANSGMeddis02.c MoBMDGammaC.c MoBMZilanyBruce.c
+				MoANSGMeddis02.c MoBMDGammaC.c MoBMZilanyBruce.c MoHCRPLopezPoveda.c \
+				MoIHCZilanyBruce.c
 
 Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 
 St_Sources	= StAMTone.c StBPTone.c StClick.c StFMTone.c StHarmonic.c \
 				StMPPTone.c StMPTone.c StPTone.c StPTone2.c StPulseTrain.c \
-				StStepFun.c StWhiteNoise.c StEGatedTone.c StFSHarmonic.c
+				StStepFun.c StWhiteNoise.c StEGatedTone.c StFSHarmonic.c \
+				StCMRNoiseMask.c
 
 Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtBinSignal.c UtCFList.c UtCmplxM.c UtCompress.c \
