@@ -220,3 +220,17 @@ GaussRan01_Random(RandParsPtr p)
 		return (gSet);
 	}
 }
+
+/************************** Ran ***********************************************/
+
+/*
+ * This routine calculates a random number between a set of limits.
+ * Set "seed" to any negative value to initialise or re-intialise the sequence.
+ */
+
+double
+Ran_Random(RandParsPtr p, double minValue, double maxValue)
+{
+	return(Ran01_Random(p) * (maxValue - minValue) + minValue);
+
+}

@@ -58,6 +58,8 @@ double	GaussRan01_Random(RandParsPtr p);
 
 RandParsPtr	InitPars_Random(long idum, long offset);
 
+double	Ran_Random(RandParsPtr p, double minValue, double maxValue);
+
 double	Ran01_Random(RandParsPtr p);
 
 BOOLN	SetSeed_Random(RandParsPtr p, long ranSeed, long offset);
