@@ -2,7 +2,7 @@
  *
  * File:		MoHCRPShamma.c
  * Purpose:		This module contains the model for the Shamme hair cell receptor
- *				potential: Shamm, S. A. Chadwick R. S. Wilbur W. J. Morrish
+ *				potential: Shamma, S. A. Chadwick R. S. Wilbur W. J. Morrish
  *				K. A. and Rinzel J.(1986) "A biophysical model oc cochlear
  *				processing: Intensity dependence of pure tone responses",
  *				J. Acoust. Soc. Am. [80], pp 133-145.
