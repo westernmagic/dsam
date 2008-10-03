@@ -565,6 +565,9 @@ FreeProcessVariables_Analysis_SAC(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The binScale variable is calculated from the sample lengths to avoid precision
+ * errors under 32-bit systems which otherwise produce spike indexes the same length
+ * as the output signal length.
  */
 
 BOOLN
@@ -613,6 +616,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 	}
 	outSignal = _OutSig_EarObject(data);
 	binScale = inSignal->dt / p->binWidth;
+	/*binScale = (double) p->maxIntervalIndex / inSignal->length;*/
 	sL = p->spikeListSpec;
 	spikeCount = 0;
 	if (p->normalisation) {
@@ -635,7 +639,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 						continue;
 					if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
 					  p->maxIntervalIndex)
-						outPtr[(int) floor(spikeIntervalIndex * binScale + 0.5)]++;
+						outPtr[(ChanLen) floor(spikeIntervalIndex * binScale + 0.5)]++;
 				}
 			}
 		}
