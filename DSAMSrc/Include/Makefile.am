@@ -30,15 +30,17 @@ Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h MoBMZilanyBruce.h \
 				MoHCRPCarney.h MoHCRPMeddis.h MoHCRPShamma.h MoIHC86Meddis.h \
 				MoIHC86aMeddis.h MoIHCMeddis2000.h MoIHCCarney.h MoIHCCooke.h \
-				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h \
-				FlMultiBPass.h MoBMGammaC.h MoHCRPSham3StVIn.h \
-				MoBMZhang.h MoHCRPZhang.h MoIHCZhang.h MoANSGMeddis02.h MoBMDGammaC.h
+				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h FlMultiBPass.h \
+				MoBMGammaC.h MoHCRPSham3StVIn.h MoBMZhang.h MoHCRPZhang.h \
+				MoIHCZhang.h MoANSGMeddis02.h MoBMDGammaC.h MoHCRPLopezPoveda.h \
+				MoIHCZilanyBruce.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 
 St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
-				StStepFun.h StWhiteNoise.h StEGatedTone.h StFSHarmonic.h
+				StStepFun.h StWhiteNoise.h StEGatedTone.h StFSHarmonic.h \
+				StCMRNoiseMask.h
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \

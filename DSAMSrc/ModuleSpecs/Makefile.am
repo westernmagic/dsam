@@ -21,14 +21,15 @@ Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoIHC86Meddis.mod MoIHC86aMeddis.mod MoIHCMeddis2000.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
 				MoBMGammaC.mod MoHCRPSham3StVIn.mod MoBMZhang.mod \
-				MoHCRPZhang.mod MoIHCZhang.mod MoANSGMeddis02.mod
+				MoHCRPZhang.mod MoIHCZhang.mod MoANSGMeddis02.mod \
+				MoHCRPLopezPoveda.mod
 
 Pa_Modules	= PaMaster1.mod
 
 St_Modules	= StPTone.mod StFMTone.mod StHarmonic.mod StPulseTrain.mod \
 				StEGatedTone.mod StPTone2.mod StAMTone.mod StBPTone.mod \
 				StMPTone.mod StMPPTone.mod StStepFun.mod StWhiteNoise.mod \
-				StClick.mod StFSHarmonic.mod
+				StClick.mod StFSHarmonic.mod StCMRNoiseMake.mod
 
 Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 				UtCBinauralITD.mod UtCompress.mod UtConvMonaural.mod \
