@@ -76,7 +76,6 @@ typedef struct {
 	/* Private members */
 	UniParListPtr	parList;
 	double	*lastCiliaDisplacement_u;
-	double	*lastInput;
 	double	*lastOutput;
 	double	dtOverC, gkEpk, dtOverTc, cGaindt, leakageConductance_Ga;
 
