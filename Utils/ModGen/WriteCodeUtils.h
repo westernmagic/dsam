@@ -64,6 +64,8 @@ char *	CreateFuncDeclaration(char *type, char *funcName, char *arguments);
 
 char *	CreateFuncName(char *function, char *moduleName, char *qualifier);
 
+char *	CreateListFuncName(char *listName, char *moduleName, char *qualifier);
+
 char *	CreateProcessFuncName(Token *pc, char *moduleName, char *qualifier);
 
 char *	GetInputTypeFormatStr(Symbol *p);

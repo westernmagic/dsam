@@ -163,16 +163,16 @@ PrintNameSpecInitListRoutines(FILE *fp)
 			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(strVariable, "%s%s", GetName((*list)->sym),
 				(type->sym->type == PARARRAY)? "Mode": "");
-				sprintf(function, "Init%sList", Capital(strVariable));
+				sprintf(function, "%sList", Capital(strVariable));
 				PrintLineCommentHeading(fp, function);
 				fprintf(fp,
 				  "/*\n"
-				  " * This function initialises the '%s' list array\n"
+				  " * This function defines the '%s' list array\n"
 				  " */\n\n", strVariable
 				  );
-				funcName = CreateFuncName(function, module, qualifier);
-				funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
-				  "void");
+				funcName = CreateListFuncName(strVariable, module, qualifier);
+				funcDeclaration = CreateFuncDeclaration("NameSpecifier *\n", funcName,
+				  "int index");
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
 				  qualifier, TRUE), UpperCase(GetName((*list)->sym)));
 				fprintf(fp, "%s\n{\n", funcDeclaration);
@@ -180,8 +180,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%s },\n", nameSpecBase);
 				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%sNULL },\n", nameSpecBase);
 				fprintf(fp, "\t\t};\n");
-				fprintf(fp, "\t%s->%sList = modeList;\n", ptrVar, strVariable);
-				fprintf(fp, "\treturn(TRUE);\n");
+				fprintf(fp, "\treturn(&modeList[index]);\n");
 				fprintf(fp, "\n}\n\n");
 				AddRoutine(funcDeclaration);
 			}
@@ -471,20 +470,6 @@ PrintInitRoutine(FILE *fp)
 	}
 	if (printSetDefaults)
 		fprintf(fp, "\n");
-
-	/* Name specifier list initialisation */
-	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
-		for (list = identifierList; *list != 0; list++)
-			if (type->sym->type == NAMESPECIFIER) {
-				sprintf(initListFunc, "Init%s%sList", Capital(
-				  GetName((*list)->sym)), (type->sym->type == PARARRAY)? "Mode":
-				  "");
-				fprintf(fp, "\t%s();\n", CreateFuncName(initListFunc, module,
-				  qualifier));
-			} else if (type->sym->type == DATUMPTR)
-				fprintf(fp, "\tsprintf(%s->%s%s, NO_FILE);\n", ptrVar,
-				  GetName((*list)->sym), SIM_SCRIPT_NAME_SUFFIX);
 	
 	fprintf(fp, "\tif (!%s()) {\n", CreateFuncName("SetUniParList", module,
 	  qualifier));
@@ -571,7 +556,9 @@ PrintSetUniParListRoutine(FILE *fp)
 					fprintf(fp, "&%s->%s,\n", ptrVar, GetName(FindArrayLimit(pc,
 					  GetName((*list)->sym))->sym));
 			} else if (type->sym->type == NAMESPECIFIER)
-				fprintf(fp, "%s->%sList,\n", ptrVar, GetName((*list)->sym));
+				fprintf(fp, "%s(0),\n", CreateListFuncName(GetName((*list)->sym),
+				  module, qualifier));
+				/*fprintf(fp, "%s->%sList,\n", ptrVar, GetName((*list)->sym));*/
 			else if (type->sym->type == DATUMPTR)
 				fprintf(fp, "%s->%s%s,\n", ptrVar, GetName((*list)->sym),
 				  SIM_SCRIPT_NAME_SUFFIX);
@@ -866,14 +853,13 @@ PrintPrintParsRoutine(FILE *fp)
 					break;
 				case NAMESPECIFIER:
 					Print(fp, "\t  ", " \\n\"), ");
+					Print(fp, "\t  ", CreateListFuncName(GetName((*list)->sym),
+					  module,qualifier));
+					Print(fp, "\t  ", "(");
 					Print(fp, "\t  ", ptrVar);
 					Print(fp, "\t  ", "->");
 					Print(fp, "\t  ", GetName((*list)->sym));
-					Print(fp, "\t  ", "List[");
-					Print(fp, "\t  ", ptrVar);
-					Print(fp, "\t  ", "->");
-					Print(fp, "\t  ", GetName((*list)->sym));
-					Print(fp, "\t  ", "].name");
+					Print(fp, "\t  ", ")->name");
 					break;
 				case FILENAME:
 					Print(fp, "\t  ", ".\\n\"), ");
@@ -1530,9 +1516,9 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 	}
 	if (type->sym->type == NAMESPECIFIER) {
 		fprintf(fp, "\tif ((specifier = Identify_NameSpecifier(the%s,\n"
-		  "\t\t%s->%sList)) == %s_%s_NULL) {\n", Capital(variableName),
-		  ptrVar, variableName, CreateBaseModuleName(module, qualifier, TRUE),
-		  UpperCase(GetName(token->sym)));
+		  "\t\t%s(0))) == %s_%s_NULL) {\n", variableName, CreateListFuncName(
+		  variableName, module, qualifier), CreateBaseModuleName(module,
+		  qualifier, TRUE), UpperCase(GetName(token->sym)));
 		fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Illegal name (%%s).\"), "
 		  "funcName, the%s);\n", Capital(variableName));
 		fprintf(fp, "\t\treturn(FALSE);\n");

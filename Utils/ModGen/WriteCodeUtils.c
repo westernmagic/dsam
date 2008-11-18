@@ -236,6 +236,26 @@ CreateFuncDeclaration(char *type, char *funcName, char *arguments)
 
 }
 
+/****************************** CreateListFuncName ****************************/
+
+/*
+ * This routine creates a NameSpecifier list function name.
+ * It returns a pointer to a static string, or 0 if it fails.
+ */
+
+char *
+CreateListFuncName(char *listName, char *moduleName, char *qualifier)
+{
+	static	char funcName[MAXLINE];
+
+	if ((strlen(listName) + strlen(moduleName) + strlen(qualifier)) >= MAXLINE)
+		execerror("List name is too long", listName);
+	sprintf(funcName, "%sList_%s%s%s", Capital(listName), moduleName, (*qualifier)?
+	  "_": "", qualifier);
+	return funcName;
+
+}
+
 /****************************** PrintLineCommentHeading ***********************/
 
 /*
@@ -323,6 +343,7 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 
 	if ((p->inst != POINTER) || (type->sym->type == CHAR))
 		switch (type->sym->type) {
+		case BOOLSPECIFIER:	return("UNIPAR_BOOL");
 		case CHAR:			return("UNIPAR_STRING");
 		case INT:			return("UNIPAR_INT");
 		case INT_AL:		return("UNIPAR_INT_AL");
