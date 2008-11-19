@@ -61,14 +61,14 @@ AxisScale::Set(const wxChar *numberFormat, double minVal, double maxVal, int min
 	if (minVal > maxVal) {
 		wxLogError(wxT("%s: minmum value (%g) is greater than maximum value ")
 		  wxT("(%g)\n"), funcName, minVal, maxVal);
-		return(FALSE);
+		return(false);
 	}
 	if (minPos > maxPos) {
 		wxLogError(wxT("%s: minmum position (%d) is greater than maximum ")
 		  wxT("position (%d)\n"), funcName, minPos, maxPos);
-		return(FALSE);
+		return(false);
 	}
-	settingsChanged = FALSE;
+	settingsChanged = false;
  	if (fabs(maxVal - minVal) <= 0.0) {
 		minValue = minVal - 1.0;
 		maxValue = maxVal + 1.0;
@@ -80,7 +80,12 @@ AxisScale::Set(const wxChar *numberFormat, double minVal, double maxVal, int min
 	maxPosition = maxPos;
 	tickOffset = 0;
 	dataExponent = (int) floor(log10(MAXIMUM(fabs(minValue), fabs(maxValue))) +
-      0.5);
+	  0.5);
+	if ((dataExponent >= INT_MAX) || (dataExponent <= INT_MIN)) {
+		wxLogError(wxT("%s: Maximum representable display magnitude exceeded\n"),
+		  funcName);
+		return(false);
+	}
 	sigDigits = AXIS_SCALE_DEFAULT_SIG_DIGITS;
 	decPlaces = AXIS_SCALE_DEFAULT_DEC_PLACES;
 	SetExponent(dataExponent - sigDigits, AXIS_SCALE_DELTA_EXPONENT);
@@ -97,7 +102,7 @@ AxisScale::Set(const wxChar *numberFormat, double minVal, double maxVal, int min
 	}
 	CalculateScales();
 	outputFormat.Printf(wxT("%%.%df"), decPlaces);
-	return(TRUE);
+	return(true);
 
 }
 
