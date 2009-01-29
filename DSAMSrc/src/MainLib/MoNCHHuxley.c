@@ -965,7 +965,7 @@ FindRestingPotential_Neuron_HHuxley(double restingCriteria, double duration,
 	int		i, oldOperationMode, oldInjectionMode;
 	double	deltaV, newPotential;
 	EarObjectPtr	stimulus = NULL, findResting = NULL;
-	
+
 	hHuxleyNCPtr->restingRun = TRUE;
 	if ((stimulus = Init_EarObject(wxT("null"))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for stimulus EarObjectPtr."),
@@ -1021,7 +1021,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 	static const WChar *funcName = wxT("InitProcessVariables_Neuron_HHuxley");
 	BOOLN	ok = TRUE;
 	int		i, j;
-	double	*yPtr, *zPtr;
+	double	*yPtr, *zPtr, *xPtr;
 	DynaListPtr		node;
 	HHuxleyNCPtr	p;
 	IonChannelPtr	iC;
@@ -1054,6 +1054,12 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 					  funcName);
 					ok = FALSE;
 				}
+				if ((p->state[i].x = (double *) calloc(p->iCList->numChannels,
+				  sizeof(double))) == NULL) {
+					NotifyError(wxT("%s: Out of memory for state->z array"),
+					  funcName);
+					ok = FALSE;
+				}
 			}
 			if (!ok) {
 				FreeProcessVariables_Neuron_HHuxley();
@@ -1064,8 +1070,9 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 					p->state[i].potential_V = -p->restingPotential;
 					yPtr = p->state[i].y;
 					zPtr = p->state[i].z;
+					xPtr = p->state[i].x;
 					for (j = 0; j < p->iCList->numChannels; j++)
-						*yPtr++ = *zPtr++ = 0.0;
+						*yPtr++ = *zPtr++ = *xPtr++ = 0.0;
 				}
 				p->restingPotential = FindRestingPotential_Neuron_HHuxley(
 				  p->restingCriteria, p->restingSignalDuration,
@@ -1078,8 +1085,9 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 			p->state[i].potential_V = p->restingPotential;
 			yPtr = p->state[i].y;
 			zPtr = p->state[i].z;
+			xPtr = p->state[i].x;
 			for (node = p->iCList->ionChannels; node; node = node->next, yPtr++,
-			  zPtr++) {
+			  zPtr++, xPtr++) {
 				iC = (IonChannelPtr) node->data;
 				if (!iC->enabled)
 					continue;
@@ -1090,6 +1098,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 				}
 				*yPtr = e->yY;
 				*zPtr = e->zZ;
+				*xPtr = e->xX;
 			}
 		}
 	}
@@ -1116,6 +1125,8 @@ FreeProcessVariables_Neuron_HHuxley(void)
 			free(hHuxleyNCPtr->state[i].y);
 		if (hHuxleyNCPtr->state[i].z)
 			free(hHuxleyNCPtr->state[i].z);
+		if (hHuxleyNCPtr->state[i].x)
+			free(hHuxleyNCPtr->state[i].x);
 	}
 	free(hHuxleyNCPtr->state);
 	hHuxleyNCPtr->state = NULL;
@@ -1173,9 +1184,8 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_Neuron_HHuxley");
 	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
-	register	double		deltaY, deltaZ;
-	int		i, inSignal;
-	double	*yPtr, *zPtr, ionChanCurrentSum, currentSum;
+	int		i, k, inSignal;
+	double	*yPtr, *zPtr, *xPtr, ionChanCurrentSum, currentSum;
 	double	activation, conductance;
 	ChanLen	j;
 	DynaListPtr		node;
@@ -1216,12 +1226,12 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	if (p->debug) {
 		DynaListPtr	node;
 
-		DSAM_fprintf(p->fp, wxT("Time(s)\tVm (mV)\tIleak (nA)"));
+		DSAM_fprintf(p->fp, wxT("Time(ms)\tVm (mV)\tIleak (nA)"));
 		for (node = p->iCList->ionChannels; node; node = node->next) {
 			iC = (IonChannelPtr) node->data;
 			if (!iC->enabled)
 				continue;
-			DSAM_fprintf(p->fp, wxT("\tG(%s)\tI(%s)"), iC->description, iC->
+			DSAM_fprintf(p->fp, wxT("\tG(%S)\tI(%S)"), iC->description, iC->
 			  description);
 		}
 		DSAM_fprintf(p->fp, wxT("\n"));
@@ -1244,25 +1254,49 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 			for (j = 0; j < outSignal->length; j++, outPtr++) {
 				yPtr = s->y;
 				zPtr = s->z;
+				xPtr = s->x;
 				if (p->debug)
 				  	DSAM_fprintf(p->fp, wxT("%g\t%g\t%g"),  MILLI(j * p->dt),
 					  MILLI(s->potential_V), NANO(p->iCList->leakageCond *
 					  (s->potential_V - p->iCList->leakagePot)));
-				
 				for (node = p->iCList->ionChannels, ionChanCurrentSum = 0.0;
-				  node; node = node->next, yPtr++, zPtr++) {
+				  node; node = node->next, yPtr++, zPtr++, xPtr++) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
-					activation = iC->PowFunc(*yPtr, iC->activationExponent);
+					if ((e = GetTableEntry_IonChanList(iC, s->potential_V)) == NULL) {
+						NotifyError(wxT("%s: Could not find entry."), funcName);
+						return(FALSE);
+					}
+					*yPtr += (e->yY - *yPtr) * p->dt / e->ty;
+					switch (iC->activationMode) {
+					case ICLIST_ACTIVATION_MODE_STANDARD:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						activation = iC->PowFunc(*yPtr, iC->activationExponent) * *zPtr;
+						break;
+					case ICLIST_ACTIVATION_MODE_1_GATE:
+						activation = iC->PowFunc(*yPtr, iC->activationExponent);
+						break;
+					case ICLIST_ACTIVATION_MODE_3_GATE:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						*xPtr += (e->xX - *xPtr) * p->dt / e->tx;
+						activation = iC->PowFunc(*yPtr, iC->activationExponent) * *zPtr *
+						  *xPtr;
+						break;
+					case ICLIST_ACTIVATION_MODE_ROTHMAN_KHT:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						activation = ICLIST_ROTHMAN_PHI * iC->PowFunc(*yPtr,
+						  iC->activationExponent) + (1.0 - ICLIST_ROTHMAN_PHI) * *zPtr;
+						break;
+					}
 					if (p->debug) {
-						conductance = iC->maxConductance * activation * *zPtr;
+						conductance = iC->maxConductance * activation;
 				  		DSAM_fprintf(p->fp, wxT("\t%g\t%g"), NANO(conductance),
 						  NANO(conductance * (s->potential_V -
 						  iC->equilibriumPot)));
 				  	}
 					ionChanCurrentSum += iC->maxConductance * activation *
-					  *zPtr * (s->potential_V - iC->equilibriumPot);
+					  (s->potential_V - iC->equilibriumPot);
 				}
 				if (p->debug)
 					DSAM_fprintf(p->fp, wxT("\n"));
@@ -1280,21 +1314,6 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 					currentSum += *gSInPtr++ * (s->potential_V -
 					  p->shuntInhibitoryReversalPot);
 				*outPtr = s->potential_V - currentSum * p->dtOverC;
-				yPtr = s->y;
-				zPtr = s->z;
-				for (node = p->iCList->ionChannels; node; node = node->next) {
-					iC = (IonChannelPtr) node->data;
-					if (!iC->enabled)
-						continue;
-					if ((e = GetTableEntry_IonChanList(iC, *outPtr)) == NULL) {
-						NotifyError(wxT("%s: Could not find entry."), funcName);
-						return(FALSE);
-					}
-					deltaY = (e->yY - *yPtr) * p->dt / e->ty;
-					deltaZ = (e->zZ - *zPtr) * p->dt / e->tz;
-					*yPtr++ += deltaY;
-					*zPtr++ += deltaZ;
-				}
 				s->potential_V = *outPtr;
 			}
 			break;
@@ -1306,19 +1325,40 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 					  p->iCList->leakagePot)));
 				yPtr = s->y;
 				zPtr = s->z;
+				xPtr = s->x;
 				for (node = p->iCList->ionChannels, ionChanCurrentSum = 0.0;
-				  node; node = node->next, yPtr++, zPtr++) {
+				  node; node = node->next, yPtr++, zPtr++, xPtr++) {
 					iC = (IonChannelPtr) node->data;
 					if (!iC->enabled)
 						continue;
-					activation = iC->PowFunc(*yPtr, iC->activationExponent);
+					*yPtr += (e->yY - *yPtr) * p->dt / e->ty;
+					switch (iC->activationMode) {
+					case ICLIST_ACTIVATION_MODE_STANDARD:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						activation = iC->PowFunc(*yPtr, iC->activationExponent) * *zPtr;
+						break;
+					case ICLIST_ACTIVATION_MODE_1_GATE:
+						activation = iC->PowFunc(*yPtr, iC->activationExponent);
+						break;
+					case ICLIST_ACTIVATION_MODE_3_GATE:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						*xPtr += (e->xX - *xPtr) * p->dt / e->tx;
+						activation = iC->PowFunc(*yPtr, iC->activationExponent) * *zPtr *
+						  *xPtr;
+						break;
+					case ICLIST_ACTIVATION_MODE_ROTHMAN_KHT:
+						*zPtr += (e->zZ - *zPtr) * p->dt / e->tz;
+						activation = ICLIST_ROTHMAN_PHI * iC->PowFunc(*yPtr,
+						  iC->activationExponent) + (1.0 - ICLIST_ROTHMAN_PHI) * *zPtr;
+						break;
+					}
 					if (p->debug) {
-						conductance = iC->maxConductance * activation * *zPtr;
+						conductance = iC->maxConductance * activation;
 				  		DSAM_fprintf(p->fp, wxT("\t%g\t%g"), NANO(conductance),
 						  NANO(conductance * (*injPtr - iC->equilibriumPot)));
 				  	}
 					ionChanCurrentSum += iC->maxConductance *
-					  activation * *zPtr * (*injPtr - iC->equilibriumPot);
+					  activation * (*injPtr - iC->equilibriumPot);
 				}
 				if (p->debug)
 					DSAM_fprintf(p->fp, wxT("\n"));
@@ -1331,21 +1371,6 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 				if (gSInPtr)
 					*outPtr -= *gSInPtr++ * (*injPtr - p->
 					  shuntInhibitoryReversalPot);
-				yPtr = s->y;
-				zPtr = s->z;
-				for (node = p->iCList->ionChannels; node; node = node->next) {
-					iC = (IonChannelPtr) node->data;
-					if (!iC->enabled)
-						continue;
-					if ((e = GetTableEntry_IonChanList(iC, *injPtr)) == NULL) {
-						NotifyError(wxT("%s: Could not find entry."), funcName);
-						return(FALSE);
-					}
-					deltaY = (e->yY - *yPtr) * p->dt / e->ty;
-					deltaZ = (e->zZ - *zPtr) * p->dt / e->tz;
-					*yPtr++ += deltaY;
-					*zPtr++ += deltaZ;
-				}
 			}
 			break;
 		} /* switch */

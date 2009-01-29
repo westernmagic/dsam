@@ -28,9 +28,9 @@
  *********************/
 
 #ifndef _UTIONCHANLIST_H
-#define _UTIONCHANLIST_H 1
-
 #include "UtDynaList.h"
+
+#define _UTIONCHANLIST_H 1
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -39,12 +39,14 @@
 #define ICLIST_NUM_PARS				9
 #define ICLIST_NUM_CONSTANT_PARS	7
 
-#define ICLIST_IC_NUM_PARS			33
+#define ICLIST_IC_NUM_PARS			35
 #define ICLIST_IC_NUM_CONSTANT_PARS	6
 
 #define	E_OVER_R					11.8e3
 #define	ABSOLUTE_ZERO_DEGREES		-273.0
 #define	ICLIST_NUM_GATES			2
+#define	ICLIST_MAX_GATES			3
+#define ICLIST_ROTHMAN_PHI			0.85
 
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
@@ -53,7 +55,7 @@
 #define HHUXLEY_ALL_ZERO_PARS(A, B, C, D, E, F, G, H, I, J, K) ((fabs(A) + \
 		  fabs(B) + fabs(C) + fabs(D) + fabs(E) + fabs(F) + fabs(G) + \
 		  fabs(H) + fabs(I) + fabs(J) + fabs(K)) <= DBL_EPSILON)
-		  
+
 #define HHUXLEY_TF(A, T)	(pow(A, ((T) - 22) / 10))
 
 #define SET_IC_GATE_ARRAY(GATE)	((GATE).ptr = (GATE).array)
@@ -69,23 +71,34 @@
 typedef enum {
 
 	ICLIST_BOLTZMANN_MODE,
-	ICLIST_HHUXLEY_MODE,
 	ICLIST_FILE_MODE,
+	ICLIST_HHUXLEY_MODE,
+	ICLIST_ROTHMAN_MODE,
 	ICLIST_NULL
 
 } ICModeSpecifier;
 
 typedef enum {
 
+	ICLIST_ACTIVATION_MODE_STANDARD,
+	ICLIST_ACTIVATION_MODE_ROTHMAN_KHT,
+	ICLIST_ACTIVATION_MODE_1_GATE,
+	ICLIST_ACTIVATION_MODE_3_GATE,
+	ICLIST_ACTIVATION_MODE_NULL
+
+} ICActivationModeSpecifier;
+
+typedef enum {
+
 	ICLIST_PRINTTABLESMODE,
 	ICLIST_BASELEAKAGECOND,
+	ICLIST_LEAKAGE_COND_Q10,
 	ICLIST_LEAKAGEPOT,
 	ICLIST_NUMCHANNELS,
 	ICLIST_MIN_VOLT,
 	ICLIST_MAX_VOLT,
 	ICLIST_DV,
-	ICLIST_TEMPERATURE,
-	ICLIST_LEAKAGE_COND_Q10
+	ICLIST_TEMPERATURE
 
 } ICListParSpecifier;
 
@@ -96,34 +109,36 @@ typedef enum {
 	ICLIST_IC_ENABLED,
 	ICLIST_IC_EQUILIBRIUM_POT,
 	ICLIST_IC_CONDUCTANCE,
-	ICLIST_IC_ACTIVATION_EXPONENT,
 	ICLIST_IC_CONDUCTANCE_Q10,
+	ICLIST_IC_ACTIVATION_EXPONENT,
 	ICLIST_IC_V_HALF,
 	ICLIST_IC_Z,
 	ICLIST_IC_TAU,
 	ICLIST_IC_FILE_NAME,
-	ICLIST_IC_ALPHA_A,
-	ICLIST_IC_ALPHA_B,
-	ICLIST_IC_ALPHA_C,
-	ICLIST_IC_ALPHA_D,
-	ICLIST_IC_ALPHA_E,
-	ICLIST_IC_ALPHA_F,
-	ICLIST_IC_ALPHA_G,
-	ICLIST_IC_ALPHA_H,
-	ICLIST_IC_ALPHA_I,
-	ICLIST_IC_ALPHA_J,
-	ICLIST_IC_ALPHA_K,
-	ICLIST_IC_BETA_A,
-	ICLIST_IC_BETA_B,
-	ICLIST_IC_BETA_C,
-	ICLIST_IC_BETA_D,
-	ICLIST_IC_BETA_E,
-	ICLIST_IC_BETA_F,
-	ICLIST_IC_BETA_G,
-	ICLIST_IC_BETA_H,
-	ICLIST_IC_BETA_I,
-	ICLIST_IC_BETA_J,
-	ICLIST_IC_BETA_K
+	ICLIST_IC_ACIVATION_MODE,
+	ICLIST_IC_NUM_GATES,
+	ICLIST_IC_FUNC1_A,
+	ICLIST_IC_FUNC1_B,
+	ICLIST_IC_FUNC1_C,
+	ICLIST_IC_FUNC1_D,
+	ICLIST_IC_FUNC1_E,
+	ICLIST_IC_FUNC1_F,
+	ICLIST_IC_FUNC1_G,
+	ICLIST_IC_FUNC1_H,
+	ICLIST_IC_FUNC1_I,
+	ICLIST_IC_FUNC1_J,
+	ICLIST_IC_FUNC1_K,
+	ICLIST_IC_FUNC2_A,
+	ICLIST_IC_FUNC2_B,
+	ICLIST_IC_FUNC2_C,
+	ICLIST_IC_FUNC2_D,
+	ICLIST_IC_FUNC2_E,
+	ICLIST_IC_FUNC2_F,
+	ICLIST_IC_FUNC2_G,
+	ICLIST_IC_FUNC2_H,
+	ICLIST_IC_FUNC2_I,
+	ICLIST_IC_FUNC2_J,
+	ICLIST_IC_FUNC2_K
 
 } IonChannelParSpecifier;
 
@@ -131,31 +146,34 @@ typedef struct {
 
 	double	yY, ty;
 	double	zZ, tz;
-	
+	double	xX, tx;
+
 } ICTableEntry, *ICTableEntryPtr;
 
 typedef struct {
 
-	double	array[ICLIST_NUM_GATES];
+	double	array[ICLIST_MAX_GATES];
 	double	*ptr;
 
 } ICGateArray, *ICGateArrayPtr;
-
-typedef struct {
-
-	ICGateArray	aA, aB, aC, aD, aE, aF, aG, aH, aI, aJ, aK;
-	ICGateArray	bA, bB, bC, bD, bE, bF, bG, bH, bI, bJ, bK;
-	
-} ICHHuxleyPars, *ICHHuxleyParsPtr;	
 
 typedef	struct {
 
 	ICGateArray	halfMaxV;
 	ICGateArray	zZ;
 	ICGateArray	tau;
-	
+
 } ICBoltzmannPars, *ICBoltzmannParsPtr;
-	
+
+typedef	struct {
+
+	ICGateArray	func1A, func1B, func1C, func1D, func1E, func1F, func1G, func1H;
+	ICGateArray	func1I, func1J, func1K;
+	ICGateArray	func2A, func2B, func2C, func2D, func2E, func2F, func2G, func2H;
+	ICGateArray	func2I, func2J, func2K;
+
+} ICHHuxleyPars, *ICHHuxleyParsPtr;
+
 typedef struct {
 
 	BOOLN	updateFlag;
@@ -170,13 +188,15 @@ typedef struct {
 	double	minVoltage;
 	double	maxVoltage;
 	double	dV;
+	int		activationMode;
+	int		numGates;
 	ICBoltzmannPars	boltzmann;
 	ICHHuxleyPars	hHuxley;
 	WChar			fileName[MAX_FILE_PATH];
 	double			(* PowFunc)(double, double);
 	ICTableEntry	*table;
 	UniParListPtr	parList;
-	
+
 } IonChannel, *IonChannelPtr;
 
 typedef struct IonChanList {
@@ -286,12 +306,15 @@ BOOLN	PrepareIonChannels_IonChanList(IonChanListPtr theICs);
 
 BOOLN	SetGeneralUniParList_IonChanList(IonChanListPtr theICs);
 
-BOOLN	SetGeneralUniParListMode_CFList(IonChanListPtr theICs);
+BOOLN	SetGeneralUniParListMode_IonChanList(IonChanListPtr theICs);
 
 BOOLN	SetGeneratedPars_IonChanList(IonChanListPtr theICs);
 
 BOOLN	SetICActivationExponent_IonChanList(IonChannelPtr theIC,
 		  double theActivationExponent);
+
+BOOLN	SetICActivationMode_IonChanList(IonChannelPtr theIC,
+		  WChar * theActivationMode);
 
 BOOLN	SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
 		  double theBaseMaxConductance);
@@ -327,71 +350,53 @@ BOOLN	SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index,
 
 BOOLN	SetICMode_IonChanList(IonChannelPtr theIC, WChar *modeName);
 
-BOOLN	SetICHHuxleyAlphaA_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+void	SetICPowFunc_IonChanList(IonChannelPtr theIC);
 
-BOOLN	SetICHHuxleyAlphaB_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1A_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaC_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1B_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaD_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1C_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaE_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1D_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaF_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1E_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaG_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1F_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaH_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1G_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaI_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1H_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaJ_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1I_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyAlphaK_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1J_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaA_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc1K_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaB_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2A_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaC_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2B_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaD_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2C_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaE_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2D_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaF_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2E_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaG_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2F_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaH_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2G_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaI_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2H_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaJ_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2I_IonChanList(IonChannelPtr theIC, int index, double value);
 
-BOOLN	SetICHHuxleyBetaK_IonChanList(IonChannelPtr theIC, int index,
-		  double value);
+BOOLN	SetICHHFunc2J_IonChanList(IonChannelPtr theIC, int index, double value);
+
+BOOLN	SetICHHFunc2K_IonChanList(IonChannelPtr theIC, int index, double value);
+
+BOOLN	SetICNumGates_IonChanList(IonChannelPtr theIC, int theNumGates);
 
 void	SetICPowFunc_IonChanList(IonChannelPtr theIC);
 
@@ -410,6 +415,8 @@ BOOLN	SetMaxVoltage_IonChanList(IonChanListPtr theICs, double theMaxVoltage);
 BOOLN	SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage);
 
 BOOLN	SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels);
+
+BOOLN	SetNumGates_IonChanList(IonChannelPtr theIC, int numGates);
 
 BOOLN	SetPrintTablesMode_IonChanList(IonChanListPtr theICs, WChar *modeName);
 

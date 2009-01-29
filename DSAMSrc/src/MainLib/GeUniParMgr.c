@@ -12,7 +12,7 @@
  *				parameters have been set.
  *				06-11-98 LPO: Implemented the array handling for the likes of
  *				the StMPTone module.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				11-12-98 LPO: Introduced the second array index for the IC list.
  *				19-01-99 LPO: The 'arrayIndex[0]' always refers to the last
@@ -23,7 +23,7 @@
  *				27-01-99 LPO: Corrected problem in 'FindUniPar_' where it was
  *				returning before checking the rest of a parameter list after a
  *				sub module's parameter list.
- *				29-04-99 LPO: The 'FindUniPar_' routine can now find the 
+ *				29-04-99 LPO: The 'FindUniPar_' routine can now find the
  *				'CFLIST' abbreviation so that the 'CFListPtr' pointer can be
  *				accessed.
  *				19-05-99 LPO: I have changed the 'UNIPAR_FILE_NAME' code so that
@@ -44,7 +44,7 @@
  * Created:		24 Sep 1998
  * Updated:		08 Sep 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #ifdef HAVE_CONFIG_H
@@ -125,7 +125,7 @@ InitList_UniParMgr(UniParModeSpecifier mode, int numPars, void *handlePtr)
 	}
 	p->GetPanelList = NULL;
 	return(p);
-	
+
 }
 
 /************************ FreeList ********************************************/
@@ -210,7 +210,7 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 		par->valuePtr.cFPtr = (CFListPtr *) ptr1;
 		break;
 	case UNIPAR_PARARRAY:
-		par->valuePtr.pAPtr = (ParArrayPtr *) ptr1; 
+		par->valuePtr.pAPtr = (ParArrayPtr *) ptr1;
 		break;
 	case UNIPAR_ICLIST:
 		par->valuePtr.iCPtr = (IonChanListPtr *) ptr1;
@@ -282,7 +282,7 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 		case UNIPAR_PARARRAY:
 			if (!*par->valuePtr.pAPtr || !(*par->valuePtr.pAPtr)->parList)
 				NotifyError(wxT("%s: Could not set par array handle function."),
-				  funcName);			
+				  funcName);
 			(*par->valuePtr.pAPtr)->parList->handlePtr.parArray.SetFunc =
 			  (BOOLN (*)(ParArrayPtr)) Func;
 			break;
@@ -539,7 +539,7 @@ FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix)
 		  index]);
 		break;
 	case UNIPAR_STRING_ARRAY:
-		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"), 
+		Snprintf_Utility_String(string, MAXLINE, wxT("\t%s\t%3d:%-10s\n"),
 		  FormatPar_UniParMgr(p, suffix), index, QuotedString_Utility_String(
 		  (*p->valuePtr.array.pPtr.s)[index]));
 		break;
@@ -718,7 +718,7 @@ ResetCFList_UniParMgr(UniParListPtr parList)
 {
 	static const WChar *funcName = wxT("ResetCFListPointer_UniParMgr");
 	CFListPtr	theCFs;
-	
+
 	theCFs = parList->handlePtr.cFs;
 	if (!RegenerateList_CFList(theCFs)) {
 		NotifyError(wxT("%s: Could not regenerate CFList."), funcName);
@@ -844,7 +844,7 @@ GetParString_UniParMgr(UniParPtr p)
 	  (p->type == UNIPAR_NAME_SPEC_ARRAY)) && (*p->valuePtr.array.numElements ==
 	  0))
 		return(wxT(""));
-		
+
 	switch (p->type) {
 	case UNIPAR_BOOL:
 		DSAM_strncpy(string, BooleanList_NSpecLists(*p->valuePtr.i)->name,
@@ -956,7 +956,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, const WChar *parValue, WChar **parValue
 	return(TRUE);
 
 }
-	
+
 /************************ SetGeneralParValue **********************************/
 
 /*
@@ -1200,7 +1200,13 @@ SetICParValue_UniParMgr(UniParListPtr parList, uInt index, const WChar *parValue
 		ok = (* p->FuncPtr.SetICReal)(theICs->currentIC, DSAM_atof(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
-		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
+		if (!theICs->currentIC) {
+			NotifyError(wxT("%s: Current IC not set but must be set first."),
+			  funcName);
+			return(FALSE);
+		}
+		if (!ParseArrayValue_UniParMgr(&theICs->currentIC->parList->pars[index],
+		  parValue, &arrayValue, arrayIndex)) {
 			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
 		}

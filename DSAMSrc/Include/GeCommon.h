@@ -14,7 +14,7 @@
  *				28-09-98 LPO: Introduced the MAX_FILE_PATH constant definition
  *				and used in in all modules which need to store file names.
  *				29-01-99 LPO: Under the GRAPHICS mode the 'NotifyError' routine
- *				will produce a dialog the first time (if the 
+ *				will produce a dialog the first time (if the
  *				dSAM.'dialogOutputFlag' flag is set to true).  After the first
  *				dialog is created, then subsequent calls will send error
  *				messages to the console.
@@ -41,7 +41,7 @@
  * Created:		12 Jul 1993
  * Updated:		08 Jul 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #ifndef	_GECOMMON_H
@@ -358,7 +358,7 @@ typedef	unsigned long	ChanLen;	/* For the channel indices. */
 typedef	double			ChanData;	/* Data type for channel data. */
 typedef	unsigned short	uShort;
 typedef	unsigned short	uInt;
-		
+
 #if DSAM_USE_UNICODE
 	typedef wchar_t		WChar;		/* Type for unicode text */
 	typedef wint_t		CInt;
@@ -368,7 +368,7 @@ typedef	unsigned short	uInt;
 #endif
 
 typedef enum {
-	
+
 	LOCAL,
 	GLOBAL
 
@@ -383,14 +383,14 @@ typedef enum {
 } DiagModeSpecifier;
 
 typedef enum {
-	
+
 	COMMON_ERROR_DIAGNOSTIC,
 	COMMON_WARNING_DIAGNOSTIC,
 	COMMON_GENERAL_DIAGNOSTIC,
 	COMMON_GENERAL_DIAGNOSTIC_WITH_CANCEL
 
 } CommonDiagSpecifier;
-	
+
 typedef struct {
 
 	BOOLN	appInitialisedFlag;	/* TRUE when application initialised. */

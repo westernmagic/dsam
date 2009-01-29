@@ -80,7 +80,7 @@ typedef enum {
 
 typedef struct {
 
-	double	*y, *z;
+	double	*y, *z, *x;
 	double	potential_V;
 
 } HHuxleyState, *HHuxleyStatePtr;
@@ -107,7 +107,7 @@ typedef struct {
 	double	restingSignalDuration;
 	double	restingCriteria;
 	IonChanListPtr	iCList;
-	
+
 	/* Private Members */
 	NameSpecifier	*diagnosticModeList;
 	NameSpecifier	*operationModeList;

@@ -27,6 +27,7 @@
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
+#include "GeNSpecLists.h"
 #include "UtBandwidth.h"
 #include "UtCFList.h"
 #include "UtFilters.h"
@@ -102,6 +103,7 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 	bMGammaTPtr->parSpec = parSpec;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
 	bMGammaTPtr->cascadeFlag = TRUE;
+	bMGammaTPtr->interleaveMode = GENERAL_BOOLEAN_ON;
 	bMGammaTPtr->cascade = 4;
 	if ((bMGammaTPtr->theCFs = GenerateDefault_CFList(
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
@@ -136,12 +138,17 @@ SetUniParList_BasilarM_GammaT(void)
 	UniParPtr	pars;
 
 	if ((bMGammaTPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
-	  BM_GAMMT_NUM_PARS, NULL)) == NULL) {
+	  BM_GAMMAT_NUM_PARS, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMGammaTPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BM_GAMMT_CASCADE], wxT("CASCADE"),
+	SetPar_UniParMgr(&pars[BASILARM_GAMMAT_INTERLEAVEMODE], wxT("INTERLEAVE_MODE"),
+	  wxT("Interleaving of output channels relative to input channels ('on' or 'off')."),
+	  UNIPAR_BOOL,
+	  &bMGammaTPtr->interleaveMode, NULL,
+	  (void * (*)) SetInterleaveMode_BasilarM_GammaT);
+	SetPar_UniParMgr(&pars[BM_GAMMAT_CASCADE], wxT("CASCADE"),
 	  wxT("Filter cascade."),
 	  UNIPAR_INT,
 	  &bMGammaTPtr->cascade, NULL,
@@ -179,35 +186,33 @@ GetUniParListPtr_BasilarM_GammaT(void)
 
 }
 
-/********************************* CheckPars **********************************/
+/****************************** SetInterleaveMode *****************************/
 
 /*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It returns TRUE if there are no problems.
+ * This function sets the module's interleaveMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
  */
- 
+
 BOOLN
-CheckPars_BasilarM_GammaT(void)
+SetInterleaveMode_BasilarM_GammaT(WChar * theInterleaveMode)
 {
-	static const WChar *funcName = wxT("CheckPars_BasilarM_GammaT");
-	BOOLN ok;
-	
-	ok = TRUE;
+	static const WChar	*funcName = wxT("SetInterleaveMode_BasilarM_GammaT");
+	int		specifier;
+
 	if (bMGammaTPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!bMGammaTPtr->cascadeFlag) {
-		NotifyError(wxT("%s: Filter cascade not set."), funcName);
-		ok = FALSE;
+	if ((specifier = Identify_NameSpecifier(theInterleaveMode,
+		BooleanList_NSpecLists(0))) == GENERAL_BOOLEAN_NULL) {
+		NotifyError(wxT("%s: Illegal switch state (%s)."), funcName, theInterleaveMode);
+		return(FALSE);
 	}
-	if (!CheckPars_CFList(bMGammaTPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
+	/*** Put any other required checks here. ***/
+	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
+	bMGammaTPtr->interleaveMode = specifier;
+	return(TRUE);
 
 }
 
@@ -354,13 +359,10 @@ PrintPars_BasilarM_GammaT(void)
 {
 	static const WChar *funcName = wxT("PrintPars_BasilarM_GammaT");
 	
-	if (!CheckPars_BasilarM_GammaT()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Gamma Tone Basilar Membrane Filter  Module Parameters:-\n"));
 	PrintPars_CFList(bMGammaTPtr->theCFs);
+	DPrint(wxT("\tInterleave mode = %s,\n"),
+	  BooleanList_NSpecLists(bMGammaTPtr->interleaveMode)->name);
 	DPrint(wxT("\tFilter cascade = %d.\n"), bMGammaTPtr->cascade);
 	return(TRUE);
 
@@ -451,7 +453,6 @@ InitModule_BasilarM_GammaT(ModulePtr theModule)
 	}
 	theModule->parsPtr = bMGammaTPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_BasilarM_GammaT;
 	theModule->Free = Free_BasilarM_GammaT;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_GammaT;
 	theModule->PrintPars = PrintPars_BasilarM_GammaT;
@@ -481,6 +482,47 @@ FreeProcessVariables_BasilarM_GammaT(void)
 	free(bMGammaTPtr->coefficients);
 	bMGammaTPtr->coefficients = NULL;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
+
+}
+
+/****************************** CheckData *************************************/
+
+/*
+ * This routine checks that the 'data' EarObject and input signal are
+ * correctly initialised.
+ * It should also include checks that ensure that the module's
+ * parameters are compatible with the signal parameters, i.e. dt is
+ * not too small, etc...
+ * The 'CheckRamp_SignalData()' can be used instead of the
+ * 'CheckInit_SignalData()' routine if the signal must be ramped for
+ * the process.
+ */
+
+BOOLN
+CheckData_BasilarM_GammaT(EarObjectPtr data)
+{
+	static const WChar	*funcName = wxT("CheckData_BasilarM_GammaT");
+
+	if (data == NULL) {
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
+		return(FALSE);
+	}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
+	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
+		NotifyError(wxT("%s: Input signal not correctly initialised."),
+		  funcName);
+		return(FALSE);
+	}
+	if (!bMGammaTPtr->interleaveMode && (_InSig_EarObject(data, 0)->
+	  numChannels != bMGammaTPtr->theCFs->numChannels)) {
+		NotifyError(wxT("%s: No. of input channels (%d) must be the same as ")
+		  wxT("the no. of CFs (%d) when not in interleave mode."),
+		  funcName, _InSig_EarObject(data, 0)->numChannels, bMGammaTPtr->
+		  theCFs->numChannels);
+		return(FALSE);
+	}
+	return(TRUE);
 
 }
 
@@ -557,28 +599,17 @@ RunModel_BasilarM_GammaT(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_BasilarM_GammaT");
 	uShort	totalChannels;
-				
+	BMGammaTPtr p = bMGammaTPtr;
+
 	if (!data->threadRunFlag) {
-		if (data == NULL) {
-			NotifyError(wxT("%s: EarObject not initialised."), funcName);
-			return(FALSE);
-		}	
-		if (!CheckPars_BasilarM_GammaT())
-			return(FALSE);
-
-		/* Initialise Variables and coefficients */
-
-		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane ")
-		  wxT("filtering"));
-		if (!CheckInSignal_EarObject(data, funcName))
-			return(FALSE);
-		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
-			NotifyError(wxT("%s: Input signal not correctly initialised."),
-			  funcName);
+		if (!CheckData_BasilarM_GammaT(data)) {
+			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		totalChannels = bMGammaTPtr->theCFs->numChannels *
-		  _InSig_EarObject(data, 0)->numChannels;
+		SetProcessName_EarObject(data, wxT("Gamma tone basilar membrane ")
+		  wxT("filtering"));
+		totalChannels = (p->interleaveMode)? p->theCFs->numChannels *
+		  _InSig_EarObject(data, 0)->numChannels: p->theCFs->numChannels;
 		if (!InitOutTypeFromInSignal_EarObject(data, totalChannels)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), funcName);
 			return(FALSE);
