@@ -73,16 +73,25 @@ typedef enum {
 
 typedef enum {
 
-	HISTOGRAM_PSTH,		
+	HISTOGRAM_PSTH,
 	HISTOGRAM_PH,
 	HISTOGRAM_TYPE_NULL
 
 } HistogramTypeSpecifier;
-		
+
+typedef struct {
+
+	ChanLen	numPeriods;
+	ChanLen	offsetIndex;
+	ChanLen	extraSample;
+	ChanLen	bufferSamples;
+
+} HistogramState, *HistogramStatePtr;
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
+
 	BOOLN	detectionModeFlag, typeModeFlag, eventThresholdFlag, binWidthFlag;
 	BOOLN	periodFlag, timeOffsetFlag, outputModeFlag;
 	BOOLN	updateProcessVariablesFlag;
@@ -101,7 +110,8 @@ typedef struct {
 	UniParListPtr	parList;
 	BOOLN			*riseDetected;
 	double			wBinWidth, wPeriod, dt;
-	ChanLen			*numPeriods, *offsetIndex, *extraSample, *bufferSamples;
+	int				numInitialisedThreads;
+	HistogramState	*hState;
 	EarObjectPtr	dataBuffer;
 
 } Histogram, *HistogramPtr;

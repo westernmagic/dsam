@@ -103,6 +103,7 @@ typedef struct {
 	UniParListPtr	parList;
 	WChar			diagnosticString[MAX_FILE_PATH];
 	int				strobeInSignalIndex;
+	int				numThreads;
 	double			*inputDecay;
 	FILE			*fp;
 	ChanLen			*inputCount;

@@ -8,7 +8,7 @@
  * Created:		12 Jul 1993
  * Updated:		24 Feb 1997
  * Copyright:	(c) 1998, University of Essex.
- * 
+ *
  ******************/
 
 #include <stdio.h>
@@ -63,7 +63,7 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (simpleSGPtr == NULL) { 
+		if (simpleSGPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
@@ -337,7 +337,7 @@ SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres, double pulseDuration,
   double pulseMagnitude, double theRefractoryPeriod)
 {
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (!SetRanSeed_ANSpikeGen_Simple(theRanSeed))
 		ok = FALSE;
@@ -350,7 +350,7 @@ SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres, double pulseDuration,
 	if (!SetRefractoryPeriod_ANSpikeGen_Simple(theRefractoryPeriod))
 		ok = FALSE;
 	return(ok);
-	  
+
 }
 
 /********************************* CheckPars **********************************/
@@ -367,7 +367,7 @@ CheckPars_ANSpikeGen_Simple(void)
 {
 	static const WChar *funcName = wxT("CheckPars_ANSpikeGen_Simple");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (simpleSGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
@@ -400,7 +400,7 @@ CheckPars_ANSpikeGen_Simple(void)
 		ok = FALSE;
 	}
 	return(ok);
-		
+
 }
 
 /****************************** PrintPars *************************************/
@@ -408,7 +408,7 @@ CheckPars_ANSpikeGen_Simple(void)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_ANSpikeGen_Simple(void)
 {
@@ -436,7 +436,7 @@ PrintPars_ANSpikeGen_Simple(void)
  * This program reads a specified number of parameters from a file.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 ReadPars_ANSpikeGen_Simple(WChar *fileName)
 {
@@ -480,7 +480,7 @@ ReadPars_ANSpikeGen_Simple(WChar *fileName)
 		return(FALSE);
 	}
 	return(TRUE);
-    
+
 }
 
 /****************************** SetParsPointer ********************************/
@@ -581,7 +581,7 @@ ResetProcess_ANSpikeGen_Simple(EarObjectPtr data)
 		ResetProcessThread_ANSpikeGen_Simple(data,
 		  timeGreaterThanRefractoryPeriod, data->threadIndex);
 	else  {
-		for (i = 0; i < data->numThreads; i++) {
+		for (i = 0; i < p->numThreads; i++) {
 			ResetProcessThread_ANSpikeGen_Simple(data,
 			  timeGreaterThanRefractoryPeriod, i);
 		}
@@ -601,7 +601,7 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 	  "InitProcessVariables_ANSpikeGen_Simple");
 	int		i;
 	SimpleSGPtr	p = simpleSGPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		p->arrayLength = _OutSig_EarObject(data)->numChannels * p->numFibres;
@@ -783,5 +783,5 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
-		
+
 } /* RunModel_ANSpikeGen_Simple */

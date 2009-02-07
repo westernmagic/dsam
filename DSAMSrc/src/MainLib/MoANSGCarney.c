@@ -907,7 +907,7 @@ ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
 		ResetProcessThread_ANSpikeGen_Carney(data,
 		  timeGreaterThanRefractoryPeriod, data->threadIndex);
 	else  {
-		for (i = 0; i < data->numThreads; i++) {
+		for (i = 0; i < p->numThreads; i++) {
 			ResetProcessThread_ANSpikeGen_Carney(data,
 			  timeGreaterThanRefractoryPeriod, i);
 		}
@@ -927,7 +927,7 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	  "InitProcessVariables_ANSpikeGen_Carney");
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		p->arrayLength = _OutSig_EarObject(data)->numChannels * p->numFibres;
@@ -1029,7 +1029,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	ChanLen	j;
 	SignalDataPtr	outSignal;
 	CarneySGPtr	p = carneySGPtr;
-	
+
 	if (!data->threadRunFlag) {
 		if (!CheckPars_ANSpikeGen_Carney())
 			return(FALSE);
@@ -1069,7 +1069,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			for (j = 0; j < outSignal->length; j++) {
 				if (*timerPtr > p->refractoryPeriod) {
 					excessTime = *timerPtr - p->refractoryPeriod;
-					threshold = p->maxThreshold * (p->dischargeCoeffC0 * 
+					threshold = p->maxThreshold * (p->dischargeCoeffC0 *
 					  exp(-excessTime / p->dischargeTConstS0) +
 					  p->dischargeCoeffC1 * exp(-excessTime /
 					  p->dischargeTConstS1));

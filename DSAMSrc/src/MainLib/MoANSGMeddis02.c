@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.4.0 (Oct 10 2002).
  * Author:		L. P. O'Mard from a matlab routine from R. Meddis
  * Created:		08 Nov 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -583,7 +583,7 @@ ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
 		ResetProcessThread_ANSpikeGen_Meddis02(data,
 		  timeGreaterThanRefractoryPeriod, data->threadIndex);
 	else  {
-		for (i = 0; i < data->numThreads; i++) {
+		for (i = 0; i < p->numThreads; i++) {
 			ResetProcessThread_ANSpikeGen_Meddis02(data,
 			  timeGreaterThanRefractoryPeriod, i);
 		}

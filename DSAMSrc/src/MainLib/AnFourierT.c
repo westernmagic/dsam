@@ -2,10 +2,10 @@
  *
  * File:		AnFourierT.c
  * Purpose:		This module runs a basic Fourier Analysis.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		18-01-94
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex
  *
  **********************/
@@ -476,7 +476,7 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 #		else
 		arrayLen = p->fTLength;
 #		endif
-		for (i = 0; i < data->numThreads; i++) {
+		for (i = 0; i < p->numThreads; i++) {
 			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(arrayLen * sizeof(
 			  Complx))) == NULL) {
 				NotifyError(wxT("%s: Couldn't allocate memory for complex ")
@@ -650,8 +650,8 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			break;
 		default:
 			;
-		}		
-		
+		}
+
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

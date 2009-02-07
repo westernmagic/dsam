@@ -179,6 +179,7 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 	}
 	DSAM_strcpy(sAImagePtr->diagnosticString, DEFAULT_FILE_NAME);
 	sAImagePtr->strobeInSignalIndex = -1;
+	sAImagePtr->numThreads = 0;
 	sAImagePtr->inputDecay = NULL;
 	sAImagePtr->fp = NULL;
 	sAImagePtr->decayCount = NULL;
@@ -195,7 +196,7 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_Analysis_SAI(void)
 {
@@ -946,7 +947,7 @@ ResetProcess_Analysis_SAI(EarObjectPtr data)
 	if (data->threadRunFlag)
 		p->inputCount[data->threadIndex] = 0;
 	else {
-		for (i = 0; i < data->numThreads; i++)
+		for (i = 0; i < p->numThreads; i++)
 			p->inputCount[i] = 0;
 	}
 	for (i = _OutSig_EarObject(data)->offset; i < _OutSig_EarObject(data)->
@@ -1026,6 +1027,7 @@ InitProcessVariables_Analysis_SAI(EarObjectPtr data)
 			  wxT("strobe data."), funcName);
 			return(FALSE);
 		}
+		p->numThreads = data->numThreads;
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
@@ -1130,7 +1132,7 @@ DecayImage_Analysis_SAI(EarObjectPtr data, int chan)
 {
 	register ChanData	*dataPtr, scale;
 	ChanLen		i;
-	
+
 	if (!sAImagePtr->decayCount[chan])
 		return;
 	scale = exp(-LN_2 / sAImagePtr->imageDecayHalfLife * sAImagePtr->decayCount[
