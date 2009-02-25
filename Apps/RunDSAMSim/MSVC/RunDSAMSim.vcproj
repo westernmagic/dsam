@@ -79,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_std_x86.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile_x86.lib portaudio_x86.lib libfftw.lib libmx.lib libmex.lib"
+				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_std_x86.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile_x86.lib portaudio.lib libfftw.lib libmx.lib libmex.lib"
 				OutputFile=".\Release/RunDSAMSim.mexw32"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

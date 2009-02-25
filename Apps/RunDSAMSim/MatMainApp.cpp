@@ -178,7 +178,7 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
 bool
 MatMainApp::AutoSetNumberOfRuns(double dt)
 {
-	static wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
+	static const wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
 	double	totalDuration;
 	EarObjectPtr	process;
 
@@ -258,7 +258,7 @@ MatMainApp::SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
 bool
 MatMainApp::InitInputEarObject(ChanLen segmentLength)
 {
-	static wxChar	*funcName = wxT("InitResultEarObject");
+	static const wxChar	*funcName = wxT("InitResultEarObject");
 
 	if (dt <= 0.0) {
 		NotifyError(wxT("%s: dt must be greater than zero."), funcName);
@@ -641,7 +641,7 @@ SetServerMode_MatMainApp(wxChar * theServerMode)
  */
 
 BOOLN
-SetServerHost_MatMainApp(wxChar *theServerHost)
+SetServerHost_MatMainApp(const wxChar *theServerHost)
 {
 	Snprintf_Utility_String(matMainAppPtr->serverHost, MAXLINE, wxT("%s"),
 	  theServerHost);

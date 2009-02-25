@@ -152,7 +152,7 @@ BOOLN	SetNumberOfRuns_MatMainApp(int theNumberOfRuns);
 
 BOOLN	SetSegmentDuration_MatMainApp(double theSegmentDuration);
 
-BOOLN	SetServerHost_MatMainApp(wxChar *theServerHost);
+BOOLN	SetServerHost_MatMainApp(const wxChar *theServerHost);
 
 BOOLN	SetServerMode_MatMainApp(wxChar *theServerMode);
 

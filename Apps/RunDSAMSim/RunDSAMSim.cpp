@@ -103,7 +103,7 @@ InitWxWidgets(void)
  */
 
 void
-MyDPrint(wxChar *format, va_list args)
+MyDPrint(const wxChar *format, va_list args)
 {
 	wxChar 	workStr[LONG_STRING];
 
