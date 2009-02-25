@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim, 1.1.5)
+AC_INIT(RunDSAMSim, 1.1.6)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 RUNDSAMSIM_MAJOR_VERSION=1
 RUNDSAMSIM_MINOR_VERSION=1
-RUNDSAMSIM_MICRO_VERSION=4
-RUNDSAMSIM_INTERFACE_AGE=4
-RUNDSAMSIM_BINARY_AGE=4
+RUNDSAMSIM_MICRO_VERSION=6
+RUNDSAMSIM_INTERFACE_AGE=6
+RUNDSAMSIM_BINARY_AGE=6
 RUNDSAMSIM_RPM_AGE=1
 
 dnl
@@ -225,7 +225,7 @@ dnl ----------------------------------------------------------------------------
 dnl Octave development environment.
 dnl ----------------------------------------------------------------------------
 
-OCTCOMPILE=mkoctfile
+OCTCOMPILE="mkoctfile"
 
 AC_MSG_CHECKING(Octave Development environment ($OCTCOMPILE))
 if eval "$OCTCOMPILE --version 2>> config.log > /dev/null"; then
@@ -247,12 +247,12 @@ else
 	if test x$matlabAvailable = xyes; then
 		DLLCOMPILE=$MATCOMPILE
 		DLLEXT=".mexglx"
-		dll_inc="-DMATLAB_COMPILE=1"
+		dll_inc=""
 		DLLDIRNAME=matlab/dsam
 	else
 		DLLCOMPILE=$OCTCOMPILE
-		DLLEXT=".oct"
-		dll_inc=""
+		DLLEXT=".mex"
+		dll_inc=`mkoctfile -p INCFLAGS`
 		DLLDIR=octave/dsam
 	fi
 	AC_SUBST(DLLCOMPILE)

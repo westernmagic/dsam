@@ -9,7 +9,7 @@
  *				It was revised from the previous DSAMMatrix code module.
  * Author:		L. P. O'Mard
  * Created:		07 Jan 2004
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  *********************/
@@ -24,10 +24,7 @@
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#if MATLAB_COMPILE
 #	include "mex.h"
-#endif
-
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -72,7 +69,7 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 	inputProcess = NULL;
 	SetParsFilePath_Common(NULL);
 	numChannels = theNumChannels;
-	if (theInterleaveLevel < 0) 
+	if (theInterleaveLevel < 0)
 		interleaveLevel = (numChannels == 2)? 2:
 		  SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
 	else
@@ -300,7 +297,7 @@ MatMainApp::RunSimulationLocal(void)
 	bool	ok = true;
 	int		i;
 	ChanLen	segmentLength = 0;
-	
+
 	GetPtr_AppInterface()->updateProcessVariablesFlag = TRUE;
 	if (!ResetSimulation()) {
 		NotifyError(wxT("%s: Could not set the simulation\n"), funcName);
@@ -709,20 +706,13 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 	default:
 		fp = stdout;
 	}
-#	if	MATLAB_COMPILE
-		if (fp == stdout) {
-			mexPrintf(wxConvUTF8.cWX2MB(message));
-			mexPrintf("\n");
-		} else {
-			fprintf(fp, wxConvUTF8.cWX2MB(message));
-			fprintf(fp, "\n");
-		}
-			
-#	else
+	if (fp == stdout) {
+		mexPrintf(wxConvUTF8.cWX2MB(message));
+		mexPrintf("\n");
+	} else {
 		fprintf(fp, wxConvUTF8.cWX2MB(message));
 		fprintf(fp, "\n");
-#	endif /* MATLAB_COMPILE */
-
+	}
 
 } /* NotifyMessage */
 
