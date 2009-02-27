@@ -709,7 +709,7 @@ void
 PrintTables_IonChanList(IonChanListPtr theICList)
 {
 	static const WChar *funcName = wxT("PrintTables_IonChanList");
-	WChar	*labelStr[MAXLINE];
+	WChar	labelStr[MAXLINE];
 	int	 i, j;
 	FILE *fp = NULL, *savedFp;
 	DynaListPtr node;
@@ -729,7 +729,7 @@ PrintTables_IonChanList(IonChanListPtr theICList)
 		DPrint(wxT("\t\t\t%7s"), wxT("   V   "));
 		for (i = 0; i < theIC->numGates; i++) {
 			Snprintf_Utility_String(labelStr, MAXLINE, wxT("   %c   "),
-			  toupper(gateLabel[i]));
+			  DSAM_toupper(gateLabel[i]));
 			DPrint(wxT("\t%s"), labelStr);
 			Snprintf_Utility_String(labelStr, MAXLINE, wxT(" tau_%c "),
 			  gateLabel[i]);
