@@ -270,7 +270,7 @@ GetUniParListPtr_Utility_SelectChannels(void)
 
 /*
  * This function allocates the memory for the pure tone arrays.
- * It will assume that nothing needs to be done if the 'numChannels' 
+ * It will assume that nothing needs to be done if the 'numChannels'
  * variable is the same as the current structure member value.
  * To make this work, the function needs to set the structure 'numChannels'
  * parameter too.
@@ -517,7 +517,7 @@ CheckPars_Utility_SelectChannels(void)
 		NotifyError(wxT("%s: selectionMode variable not set."), funcName);
 		ok = FALSE;
 	}
-	if ((selectChanPtr->selectionMode == 
+	if ((selectChanPtr->selectionMode ==
 	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) &&
 	  selectChanPtr->selectionArray == NULL) {
 		NotifyError(wxT("%s: selectionArray array not set."), funcName);
@@ -697,15 +697,6 @@ CheckData_Utility_SelectChannels(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	numInChans = _InSig_EarObject(data, 0)->numChannels / _InSig_EarObject(data,
-	  0)->interleaveLevel;
-	if (selectChanPtr->numChannels > numInChans) {
-		NotifyError(wxT("%s: The specified channel field (%d) is greater ")
-		  wxT("than\nas the input signal channels (%d, interleave level %d)."),
-		  funcName, selectChanPtr->numChannels, _InSig_EarObject(data, 0)->
-		  numChannels, _InSig_EarObject(data, 0)->interleaveLevel);
-			return(FALSE);
-	}
 	return(TRUE);
 
 }
