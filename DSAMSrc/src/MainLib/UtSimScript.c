@@ -23,7 +23,7 @@
  *				30-09-98 LPO: I have introduced the uniParLockFlag field which
  *				is set to disallow command line changes of the universal
  *				parameters when a uniParList file is being used.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				02-02-99 LPO: The 'SetUniParValue_' has been moved to the
  *				UtDatum module.
@@ -596,7 +596,7 @@ ReadSimParFileOld_Utility_SimScript(FILE *fp)
 	WChar	parName[MAXLINE], parValue[MAX_FILE_PATH], operationMode[MAXLINE];
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
-	
+
 	if (localSimScriptPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
@@ -651,7 +651,7 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	WChar	parName[MAXLINE], parValue[MAX_FILE_PATH];
 	DatumPtr	simulation;
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
-	
+
 	if (localSimScriptPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
@@ -777,7 +777,7 @@ GetFilePath_Utility_SimScript(WChar *filePath)
 	Snprintf_Utility_String(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"),
 	  simScriptPtr->parsFilePath, simScriptPtr->simFileName);
 	return(guiFilePath);
-	
+
 }
 
 /****************************** ReadSimScriptOld ******************************/
@@ -962,7 +962,7 @@ ReadPars_Utility_SimScript(WChar *fileName)
  * This routine returns a pointer to the module's simulation instruction list.
  * It returns NULL if it fails in any way.
  */
- 
+
 DatumPtr
 GetSimulation_Utility_SimScript(void)
 {
@@ -982,7 +982,7 @@ GetSimulation_Utility_SimScript(void)
  * This routine returns a pointer to the module's label binary list for use by
  * other modules.
  */
- 
+
 DynaBListPtr
 GetLabelBList_Utility_SimScript(void)
 {
@@ -1071,7 +1071,7 @@ NotifyError_Utility_SimScript(WChar *format, ...)
 #	if DSAM_USE_UNICODE
 	WChar	newFormat[LONG_STRING];
 #	endif
-	
+
 #	if DSAM_USE_UNICODE
 	ConvIOFormat_Utility_String(newFormat, format, LONG_STRING);
 	format = newFormat;
@@ -1134,16 +1134,11 @@ InitialiseEarObjects_Utility_SimScript(void)
 		NotifyError(wxT("%s: Could not initialise EarObjects."), funcName);
 		ok = FALSE;
 	}
-	SetDefaultConnections_Utility_Datum(*simScriptPtr->simPtr);
-	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(*simScriptPtr->simPtr,
-		  *simScriptPtr->labelBListPtr);
-
 	simScriptPtr = localSimScriptPtr;
 	return(ok);
 
 }
-	
+
 /****************************** GetSimScriptSimulation ************************/
 
 /*
@@ -1425,4 +1420,3 @@ Process_Utility_SimScript(EarObjectPtr data)
 	return(TRUE);
 
 }
-
