@@ -15,10 +15,10 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  4 2008).
  * Author:		Revised by L. P. O'Mard
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  4 2008).
- * Author:		
+ * Author:
  * Created:		04 Mar 2008
- * Updated:	
- * Copyright:	(c) 2008, 
+ * Updated:
+ * Copyright:	(c) 2008,
  *
  *********************/
 
@@ -98,7 +98,7 @@ InitOutputModeList_BasilarM_ZilanyBruce(void)
 			{ wxT("C1_VIHC"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C1_VIHC },
 			{ wxT("C2_VIHC"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C2_VIHC },
 			{ wxT("VIHC"),		BASILARM_ZILANYBRUCE_OUTPUTMODE_VIHC },
-			{ 0, 0 },
+			{ 0, BASILARM_ZILANYBRUCE_OUTPUTMODE_NULL },
 		};
 	bMZBPtr->outputModeList = modeList;
 	return(TRUE);
@@ -158,7 +158,7 @@ Init_BasilarM_ZilanyBruce(ParameterSpecifier parSpec)
 	bMZBPtr->cutOffIHCLP = 3800.0;
 	bMZBPtr->iHCLPOrder = 7;
 	if ((bMZBPtr->cFList = GenerateDefault_CFList(
-	 
+
 	  CFLIST_DEFAULT_MODE_NAME, CFLIST_DEFAULT_CHANNELS,
 	  CFLIST_DEFAULT_LOW_FREQ, CFLIST_DEFAULT_HIGH_FREQ,
 	  CFLIST_DEFAULT_BW_MODE_NAME, CFLIST_DEFAULT_BW_MODE_FUNC)) == NULL) {
@@ -902,7 +902,6 @@ GetCFListPtr_BasilarM_ZilanyBruce(void)
 BOOLN
 PrintPars_BasilarM_ZilanyBruce(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_BasilarM_ZilanyBruce");
 
 	DPrint(wxT("Zilany & Bruce (JASA 2006, 2007) BM Filter ")
 			wxT("Module Parameters:-\n"));
@@ -1082,7 +1081,7 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 			}
 			InitLowPass_Utility_Zhang(&p->ohcLowPass[i], dt, p->cutOffCP, 1.0,
 			  p->lPOrder);
-			InitLowPass_Utility_Zhang(&p->ihcLowPass[i], dt, p->cutOffIHCLP, 1.0, 
+			InitLowPass_Utility_Zhang(&p->ihcLowPass[i], dt, p->cutOffIHCLP, 1.0,
 			  p->iHCLPOrder);
 		}
 		SetLocalInfoFlag_SignalData(outSignal, TRUE);
@@ -1119,7 +1118,7 @@ BOOLN
 FreeProcessVariables_BasilarM_ZilanyBruce(void)
 {
 	int		i;
-	
+
 	for (i = 0; i < bMZBPtr->numChannels; i++) {
 		if (bMZBPtr->wbgt)
 			FreeZBWBGTCoeffs_Utility_ZilanyBruce(&bMZBPtr->wbgt[i]);
@@ -1163,7 +1162,7 @@ FreeProcessVariables_BasilarM_ZilanyBruce(void)
 #define C2_FILTER()		(ChirpFilt_Utility_ZilanyBruce(input, &p->c2Filter[chan], \
 						  1.0 / wbgt->ratiobm))
 #define C2_VIHC(FILT)	(-NLogarithm_Utility_ZilanyBruce((FILT) * fabs((FILT)) * \
-						  cF / 10.0 * cF / p->bIHC, 2.0 * p->aIHC0, 1.0))	
+						  cF / 10.0 * cF / p->bIHC, 2.0 * p->aIHC0, 1.0))
 
 BOOLN
 RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
@@ -1234,11 +1233,11 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 
 		    wb_gain = gain_groupdelay_Utility_ZilanyBruce(dt, wbgt->cF, cF, wbgt->tau,
 		    	  &wbgt->grdelay);
-			grd = wbgt->grdelay; 
+			grd = wbgt->grdelay;
 	        if ((grd + n) < outSignal->length)
 		         *(tmpgain + grd) = wb_gain;
 	        if (*tmpgain == 0)
-				*tmpgain = wbgt->lasttmpgain;	
+				*tmpgain = wbgt->lasttmpgain;
 			wbgt->gain = *tmpgain;
 			wbgt->lasttmpgain = wbgt->gain;
 
@@ -1264,7 +1263,7 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 				  C1_VIHC(c1filterouttmp) + C2_VIHC(c2filterouttmp));
 				break;
 			}
-		    
+
 		}
 		delaypoint = MAXIMUM(0,(int) ceil(delay_cat_Utility_ZilanyBruce(cF) / dt));
 		if (delaypoint) {

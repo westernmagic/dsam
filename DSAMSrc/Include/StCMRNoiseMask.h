@@ -1,9 +1,15 @@
 /**********************
  *
  * File:		StCMRNoiseMask.h
- * Purpose:		
+ * Purpose:		CMR stimulus - a signal with noise flankers.
  * Comments:	Written using ModuleProducer version 1.6.1 (Sep 24 2008).
- * Author:		
+ * 				Revised from the NeuroSound software code: Stim_CMN.
+ *				This stimulus module has had additional controls added in order
+ *				to reproduce the Pierzycki and Seeber BSA 2008 stimulus
+ * 				The ERB spacing and bandwidth mode has been added, in addition
+ * 				to the re-introduction of the modulation frequency, which was
+ * 				not previously being used and a signal gating mode.
+ * Author:		L. P. O'Mard
  * Created:		30 Sep 2008
  * Updated:	
  * Copyright:	(c) 2008, 
@@ -21,8 +27,9 @@
 /******************************************************************************/
 
 #define CMR_NOISEMASKER_MOD_NAME			wxT("STIM_CMR_NOISEMASKER")
-#define CMR_NOISEMASKER_NUM_PARS			22
+#define CMR_NOISEMASKER_NUM_PARS			25
 #define CMR_NOISEMASKER_MAXNTOTAL			9	/* aximun number of flanking bands */
+#define CMR_NOISEMASKER_SIG_MOD_OFFSET_CYCLES	3.0
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -31,7 +38,6 @@
 typedef enum {
 
 	CMR_NOISEMASKER_BINAURALMODE,
-	CMR_NOISEMASKER_SPACINGTYPE,
 	CMR_NOISEMASKER_CONDITION,
 	CMR_NOISEMASKER_ONFREQEAR,
 	CMR_NOISEMASKER_SIGEAR,
@@ -44,11 +50,15 @@ typedef enum {
 	CMR_NOISEMASKER_LOWFBLEVEL,
 	CMR_NOISEMASKER_UPPFBLEVEL,
 	CMR_NOISEMASKER_BATTEN,
+	CMR_NOISEMASKER_SPACINGTYPE,
 	CMR_NOISEMASKER_SPACING,
-	CMR_NOISEMASKER_MASKERMODFREQ,
+	CMR_NOISEMASKER_BANDWIDTHMODE,
 	CMR_NOISEMASKER_BANDWIDTH,
+	CMR_NOISEMASKER_MSKMODFREQ,
+	CMR_NOISEMASKER_MSKMODPHASE,
 	CMR_NOISEMASKER_SIGLEVEL,
 	CMR_NOISEMASKER_SIGFREQ,
+	CMR_NOISEMASKER_SIGGATEMODE,
 	CMR_NOISEMASKER_GATETIME,
 	CMR_NOISEMASKER_DURATION,
 	CMR_NOISEMASKER_SAMPLINGINTERVAL
@@ -57,11 +67,11 @@ typedef enum {
 
 typedef enum {
 
-	CMR_NOISEMASKER_SPACINGTYPE_LINEAR,
-	CMR_NOISEMASKER_SPACINGTYPE_OCTAVE,
-	CMR_NOISEMASKER_SPACINGTYPE_NULL
+	CMR_NOISEMASKER_BANDWIDTHMODE_HZ,
+	CMR_NOISEMASKER_BANDWIDTHMODE_ERB,
+	CMR_NOISEMASKER_BANDWIDTHMODE_NULL
 
-} CMRSpacingTypeSpecifier;
+} CMRBandwidthModeSpecifier;
 
 typedef enum {
 
@@ -72,7 +82,15 @@ typedef enum {
 	CMR_NOISEMASKER_CONDITION_SO,
 	CMR_NOISEMASKER_CONDITION_NULL
 
-} CMRConditionSpecifier;
+} CMRNoiseMConditionSpecifier;
+
+typedef enum {
+
+	CMR_NOISEMASKER_SIGGATEMODE_COS,
+	CMR_NOISEMASKER_SIGGATEMODE_GAUSSIAN,
+	CMR_NOISEMASKER_SIGGATEMODE_NULL
+
+} CMRSigGateModeSpecifier;
 
 typedef struct {
 
@@ -94,16 +112,17 @@ typedef struct {
 	double	uppFBLevel;
 	double	oFMLevel;
 	double	spacing;
-	double	maskerModFreq;
+	int		bandwidthMode;
 	double	bandwidth;
+	double	mskModFreq;
+	double	mskModPhase;
 	double	sigLevel;
 	double	sigFreq;
+	int		sigGateMode;
 	double	gateTime;
 	double	duration, dt;
 
 	/* Private members */
-	NameSpecifier	*spacingTypeList;
-	NameSpecifier	*conditionList;
 	UniParListPtr	parList;
 	FFTArrayPtr		fTInv;
 
@@ -125,7 +144,11 @@ extern	CMRNoiseMPtr	cMRNoiseMPtr;
 */
 __BEGIN_DECLS
 
+NameSpecifier *	BandwidthModeList_CMR_NoiseMasker(int index);
+
 BOOLN	CheckData_CMR_NoiseMasker(EarObjectPtr data);
+
+NameSpecifier *	ConditionList_CMR_NoiseMasker(int index);
 
 BOOLN	FreeProcessVariables_CMR_NoiseMasker(void);
 
@@ -135,13 +158,9 @@ BOOLN	GenerateSignal_CMR_NoiseMasker(EarObjectPtr data);
 
 UniParListPtr	GetUniParListPtr_CMR_NoiseMasker(void);
 
-BOOLN	InitConditionList_CMR_NoiseMasker(void);
-
 BOOLN	InitModule_CMR_NoiseMasker(ModulePtr theModule);
 
 BOOLN	InitProcessVariables_CMR_NoiseMasker(EarObjectPtr data);
-
-BOOLN	InitSpacingTypeList_CMR_NoiseMasker(void);
 
 BOOLN	Init_CMR_NoiseMasker(ParameterSpecifier parSpec);
 
@@ -149,11 +168,15 @@ BOOLN	PrintPars_CMR_NoiseMasker(void);
 
 BOOLN	SetOFMLevel_CMR_NoiseMasker(double theOFMLevel);
 
+BOOLN	SetBandwidthMode_CMR_NoiseMasker(WChar * theBandwidthMode);
+
 BOOLN	SetBinauralMode_CMR_NoiseMasker(WChar * theBinauralMode);
 
 BOOLN	SetCondition_CMR_NoiseMasker(WChar * theCondition);
 
 BOOLN	SetDuration_CMR_NoiseMasker(double theDuration);
+
+BOOLN	SetEnabledPars_CMR_NoiseMasker(void);
 
 BOOLN	SetFlankEar_CMR_NoiseMasker(WChar *theFlankEar);
 
@@ -163,7 +186,9 @@ BOOLN	SetBandwidth_CMR_NoiseMasker(double theBandwidth);
 
 BOOLN	SetLowFBLevel_CMR_NoiseMasker(double theLowFBLevel);
 
-BOOLN	SetMaskerModFreq_CMR_NoiseMasker(double theMaskerModFreq);
+BOOLN	SetMskModFreq_CMR_NoiseMasker(double theMskModFreq);
+
+BOOLN	SetMskModPhase_CMR_NoiseMasker(double theMskModPhase);
 
 BOOLN	SetNGapLow_CMR_NoiseMasker(int theNGapLow);
 
@@ -187,6 +212,8 @@ BOOLN	SetSigEar_CMR_NoiseMasker(WChar * theSigEar);
 
 BOOLN	SetSigFreq_CMR_NoiseMasker(double theSigFreq);
 
+BOOLN	SetSigGateMode_CMR_NoiseMasker(WChar * theSigGateMode);
+
 BOOLN	SetSpacingType_CMR_NoiseMasker(WChar * theSpacingType);
 
 BOOLN	SetSpacing_CMR_NoiseMasker(double theSpacing);
@@ -194,6 +221,8 @@ BOOLN	SetSpacing_CMR_NoiseMasker(double theSpacing);
 BOOLN	SetUniParList_CMR_NoiseMasker(void);
 
 BOOLN	SetUppFBLevel_CMR_NoiseMasker(double theUppFBLevel);
+
+NameSpecifier *	SigGateModeList_CMR_NoiseMasker(int index);
 
 __END_DECLS
 

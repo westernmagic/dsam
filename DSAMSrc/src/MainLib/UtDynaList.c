@@ -54,7 +54,7 @@ GetLastInst_Utility_DynaList(DynaListPtr head)
 
 /*
  * Add a new node to the end of the list.
- * The node must initially be set to NULL.  If NULL is poassed as the
+ * The node must initially be set to NULL.  If NULL is passed as the
  * 'nodePtr' value, then the node returned will be the head of the list.
  * A NULL is returned if it fails in any way, otherwise it returns a pointer
  * to the new node.

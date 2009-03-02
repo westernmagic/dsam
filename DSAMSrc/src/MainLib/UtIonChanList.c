@@ -411,7 +411,7 @@ SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC)
 		NotifyError(wxT("%s: Ion channel not initialised."), funcName);
 		return (FALSE);
 	}
-	for (i = ICLIST_IC_NUM_CONSTANT_PARS; i < ICLIST_IC_NUM_PARS; i++)
+	for (i = ICLIST_IC_NUM_GATES + 1; i < ICLIST_IC_NUM_PARS; i++)
 		theIC->parList->pars[i].enabled = FALSE;
 	switch (theIC->mode) {
 	case ICLIST_BOLTZMANN_MODE:
@@ -421,6 +421,7 @@ SetIonChannelUniParListMode_IonChanList(IonChannelPtr theIC)
 		theIC->parList->pars[ICLIST_IC_TAU].enabled = TRUE;
 		break;
 	case ICLIST_FILE_MODE:
+		theIC->parList->pars[ICLIST_IC_CONDUCTANCE_Q10].enabled = TRUE;
 		theIC->parList->pars[ICLIST_IC_FILE_NAME].enabled = TRUE;
 		break;
 	case ICLIST_HHUXLEY_MODE:
@@ -485,6 +486,9 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs,
 	  wxT("Activation exponent (real)."), UNIPAR_REAL,
 	  &theIC->activationExponent, NULL,
 	  (void *(*)) SetICActivationExponent_IonChanList);
+	SetPar_UniParMgr(&pars[ICLIST_IC_NUM_GATES], wxT("NUM_GATES"), wxT(
+	  "Number of channel gates (int)."), UNIPAR_INT, &theIC->numGates,
+	  NULL, (void *(*)) SetICNumGates_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_V_HALF], wxT("V_HALF"), wxT(
 	  "Voltage at half maximum values (V)"), UNIPAR_REAL_ARRAY,
 	  &theIC->boltzmann.halfMaxV.ptr, &theIC->numGates,
@@ -505,9 +509,6 @@ SetIonChannelUniParList_IonChanList(IonChanListPtr theICs,
 	  UNIPAR_NAME_SPEC, &theIC->activationMode,
 	  ActivationModeList_IonChanList(0),
 	  (void *(*)) SetICActivationMode_IonChanList);
-	SetPar_UniParMgr(&pars[ICLIST_IC_NUM_GATES], wxT("NUM_GATES"), wxT(
-	  "Number of channel gates (int)."), UNIPAR_INT, &theIC->numGates,
-	  NULL, (void *(*)) SetICNumGates_IonChanList);
 	SetPar_UniParMgr(&pars[ICLIST_IC_FUNC1_A], wxT("FUNC1_A"),
 	  wxT("'a' parameter values for first activation/inactivation function."),
 	  UNIPAR_REAL_ARRAY, &theIC->hHuxley.func1A.ptr,

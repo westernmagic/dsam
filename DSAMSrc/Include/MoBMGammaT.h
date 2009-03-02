@@ -19,7 +19,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define BM_GAMMT_NUM_PARS			2
+#define BM_GAMMAT_MOD_NAME			wxT("BM_GAMMAT")
+#define BM_GAMMAT_NUM_PARS			3
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -27,7 +28,8 @@
 
 typedef enum {
 
-	BM_GAMMT_CASCADE,
+	BASILARM_GAMMAT_INTERLEAVEMODE,
+	BM_GAMMAT_CASCADE,
 	BM_GAMMAT_THE_CFS
 
 } GammaTParSpecifier;
@@ -38,6 +40,7 @@ typedef struct {
 
 	BOOLN		cascadeFlag;
 	BOOLN		updateProcessVariablesFlag;
+	int			interleaveMode;
 	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
 	
@@ -64,19 +67,19 @@ extern	BMGammaTPtr	bMGammaTPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_BasilarM_GammaT(void);
+BOOLN	CheckData_BasilarM_GammaT(EarObjectPtr data);
 
 CFListPtr	GetCFListPtr_BasilarM_GammaT(void);
-
-BOOLN	Init_BasilarM_GammaT(ParameterSpecifier parSpec);
-
-BOOLN	InitProcessVariables_BasilarM_GammaT(EarObjectPtr data);
 
 BOOLN	Free_BasilarM_GammaT(void);
 
 void	FreeProcessVariables_BasilarM_GammaT(void);
 
 UniParListPtr	GetUniParListPtr_BasilarM_GammaT(void);
+
+BOOLN	Init_BasilarM_GammaT(ParameterSpecifier parSpec);
+
+BOOLN	InitProcessVariables_BasilarM_GammaT(EarObjectPtr data);
 
 BOOLN	PrintPars_BasilarM_GammaT(void);
 
@@ -92,6 +95,8 @@ BOOLN SetCFList_BasilarM_GammaT(CFListPtr theCFList);
 BOOLN	SetCascade_BasilarM_GammaT(int theCascade);
 
 BOOLN	InitModule_BasilarM_GammaT(ModulePtr theModule);
+
+BOOLN	SetInterleaveMode_BasilarM_GammaT(WChar * theInterleaveMode);
 
 BOOLN	SetParsPointer_BasilarM_GammaT(ModulePtr theModule);
 

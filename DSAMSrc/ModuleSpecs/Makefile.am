@@ -29,7 +29,8 @@ Pa_Modules	= PaMaster1.mod
 St_Modules	= StPTone.mod StFMTone.mod StHarmonic.mod StPulseTrain.mod \
 				StEGatedTone.mod StPTone2.mod StAMTone.mod StBPTone.mod \
 				StMPTone.mod StMPPTone.mod StStepFun.mod StWhiteNoise.mod \
-				StClick.mod StFSHarmonic.mod StCMRNoiseMake.mod
+				StClick.mod StFSHarmonic.mod StCMRNoiseMask.mod \
+				StCMRHarmMask.mod
 
 Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 				UtCBinauralITD.mod UtCompress.mod UtConvMonaural.mod \
@@ -38,7 +39,7 @@ Ut_Modules	= UtAccumulate.mod UtAmpMod.mod UtBinSignal.mod UtTranspose.mod \
 				UtSelectChans.mod UtShapePulse.mod UtSimScript.mod \
 				UtStddise.mod UtStrobe.mod UtPause.mod UtHalfWRectify.mod \
 				UtLocalChans.mod UtSwapLR.mod UtPadSignal.mod UtMathOp.mod \
-				UtCollateSignals.mod
+				UtCollateSignals.mod UtNoiseMod.mod
 
 Tr_Modules	= TrGate.mod TrSetDBSPL.mod TrCollectSignals.mod
 

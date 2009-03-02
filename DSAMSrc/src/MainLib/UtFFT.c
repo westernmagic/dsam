@@ -6,7 +6,7 @@
  * Comments:	This was renamed from the old AnFourierT module.
  * Author:		L. P. O'Mard
  * Created:		17-07-00
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex
  *
  **********************/
@@ -180,9 +180,9 @@ CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 	double	wr, wi, wpr, wpi, wtemp, theta;
 	register double		c2, c3, *fT1, *fT2;
 	register ChanData	*ptr;
-	
+
 	if (!CheckPars_SignalData(signal)) {
-		NotifyError(wxT("%s: Signal not correctly set."), funcName);		
+		NotifyError(wxT("%s: Signal not correctly set."), funcName);
 		return(FALSE);
 	}
 	n = Length_FFT(signal->length);
@@ -280,7 +280,7 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans)
 	FFTArrayPtr	p;
 
 	if (dataLen < 2) {
-		NotifyError(wxT("%s: The data length must be greater than 2 (%d)."), 
+		NotifyError(wxT("%s: The data length must be greater than 2 (%d)."),
 		  funcName, dataLen);
 		return(NULL);
 	}
@@ -335,3 +335,34 @@ FreeArray_FFT(FFTArrayPtr *p)
 
 #endif /* HAVE_FFTW3 */
 
+/****************************** CreateNoiseBand ********************************/
+
+/*
+ * Routine to create a band of noise given the half upper frequency band in
+ * k-space.
+ * It expects the FFTW plan to have been correctly set up for a reverse FFT.
+ * A value of kLow = 1 is required for no DC.
+ */
+
+void
+CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
+  int kLow, int kUpp)
+{
+	int		k;
+	ChanLen	j;
+	double	phase;
+	fftw_complex	*c1;
+
+	c1 = (fftw_complex *) fTInv->data;
+	for (k = 0; k < kLow; k++)
+		CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
+	for (k = kLow; k < (kUpp + 1); k++) {
+		phase = Ran01_Random(randPars) * PIx2;
+		CMPLX_RE(c1[k]) = cos(phase);
+		CMPLX_IM(c1[k]) = sin(phase);
+	}
+	for (j = kUpp + 1; j < fTInv->fftLen / 2 + 1; j++)
+		CMPLX_RE(c1[j]) = CMPLX_IM(c1[j]) = 0.0;
+	fftw_execute(fTInv->plan[plan]);
+
+}

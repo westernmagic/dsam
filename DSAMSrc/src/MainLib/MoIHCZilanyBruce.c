@@ -15,7 +15,7 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  4 2008).
  * Author:		Revised by L. P. O'Mard
  * Created:		04 Mar 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, L. P. O'Mard
  *
  *********************/
@@ -193,8 +193,8 @@ GetUniParListPtr_IHC_ZilanyBruce(void)
 		return(FALSE);
 	}
 	if (zBHCPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(zBHCPtr->parList);
@@ -478,7 +478,7 @@ InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
 		cf_factor = MINIMUM(cfsat,pow(10,cfslope*cf/1e3 + cfconst));
 	};                                       /*added by Tim Zeyl June 14 2006*/
 
-	kslope = (1+50.0)/(5+50.0)*cf_factor*20.0*p->PImax;           
+	kslope = (1+50.0)/(5+50.0)*cf_factor*20.0*p->PImax;
 
 	Asp    = p->spont;              /* Spontaneous Firing Rate  eq.10 */
 	PTS    = 1.0+9.0*50.0/(9.0+50.0);    /* Peak to Steady State Ratio, characteristic of PSTH */
@@ -499,7 +499,7 @@ InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
 	syn->VI  = (VI0+VI1)/2;
 	alpha  = gamma2/k1/k2;       /* eq.A23,eq.A24 or eq.7 */
 	beta   = -(k1+k2)*alpha;     /* eq.A23 or eq.7 */
-	theta1 = alpha*p->PImax/syn->VI; 
+	theta1 = alpha*p->PImax/syn->VI;
 	theta2 = syn->VI/p->PImax;
 	theta3 = gamma2-1/p->PImax;
 
@@ -510,7 +510,7 @@ InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
 	syn->CL  = syn->CI*(Prest+syn->PL)/syn->PL;				/* CL at rest, from eq.1 */
 
 	if (kslope>=0)
-		vsat = kslope+Prest;                
+		vsat = kslope+Prest;
 	tmpst  = log(2)*vsat/Prest;
 	if(tmpst<400)
 		syn->synstrength = log(exp(tmpst)-1);
@@ -520,7 +520,7 @@ InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
 	syn->slopeOverStrength = syn->synslope / syn->synstrength;
 	/*if (spont<0)
 		spont = 50; LPO:  what was this for ??*/
-	
+
 }
 
 /****************************** InitProcessVariables **************************/
@@ -602,7 +602,8 @@ RunModel_IHC_ZilanyBruce(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_IHC_ZilanyBruce");
 	register ChanData	 *inPtr, *outPtr, tmp, PPI, CIlast;
-	int		i, chan;
+	ChanLen	i;
+	int		chan;
 	SignalDataPtr	inSignal, outSignal;
 	ZBSynapsePtr	syn;
 	ZBHCPtr	p = zBHCPtr;
@@ -652,7 +653,7 @@ RunModel_IHC_ZilanyBruce(EarObjectPtr data)
 			};
 			*outPtr++ = syn->CI * PPI;
 		}
-		  
+
 	}
 
 	SetProcessContinuity_EarObject(data);

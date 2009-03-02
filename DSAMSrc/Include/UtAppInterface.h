@@ -9,7 +9,7 @@
  *				ExtMainApp.cpp.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1999, University of Essex.
  *
  *********************/
@@ -84,7 +84,7 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
+
 	BOOLN	simulationFileFlag, useParComsFlag, checkMainInit, listParsAndExit;
 	BOOLN	listCFListAndExit, readAppParFileFlag, printUsageFlag;
 	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
@@ -208,7 +208,7 @@ void	OnExit_AppInterface(void);
 
 void	ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
 		  WChar *subProcess);
-		  
+
 void	PrintPars_AppInterface(void);
 
 BOOLN	ProcessParComs_AppInterface(void);
@@ -289,7 +289,7 @@ void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
 
 BOOLN	SetThreadMode_AppInterface(WChar * theThreadMode);
 
-BOOLN	SetTitle_AppInterface(WChar *title);
+BOOLN	SetTitle_AppInterface(const WChar *title);
 
 BOOLN	SetUniParList_AppInterface(void);
 

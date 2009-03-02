@@ -65,6 +65,9 @@ void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
 BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
 
+void	CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
+		  int kLow, int kUpp);
+
 #if HAVE_FFTW3
 	FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans);
 

@@ -2,10 +2,10 @@
  *
  * File:		GrSDICanvas.cpp
  * Purpose: 	Canvas clase for Simulation Design Interface .
- * Comments:	
+ * Comments:
  * Author:		L.P.O'Mard
  * Created:		11 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -130,6 +130,7 @@ SDICanvas::OnLeftClick(double x, double y, int keys)
 	EditorToolPalette *palette = ((SDIFrame *) parent)->palette;
 	wxClassInfo *info = GetClassInfo(palette->currentlySelected);
 
+	wprintf(wxT("SDICanvas::OnLeftClick: Entered.\n"));
 	if (info) {
 		view->GetDocument()->GetCommandProcessor()->Submit(new SDICommand(
 		  (wxChar *) info->GetClassName(), SDIFRAME_ADD_SHAPE, (SDIDocument *)

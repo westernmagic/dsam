@@ -661,8 +661,6 @@ MainApp::CheckInitialisation(void)
 		  funcName);
 		return(false);
 	}
-	if (GetPtr_AppInterface()->updateProcessVariablesFlag)
-		ResetStepCount_Utility_Datum();
 #	if DSAM_DEBUG
 	for (int i = 0; i < argc; i++)
 		printf(wxT("%s: %2d: %s\n"), funcName, i, argv[i]);

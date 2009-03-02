@@ -1031,9 +1031,9 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 	if (!p->restingRun && (p->updateProcessVariablesFlag ||
 	  data->updateProcessFlag || p->iCList->updateFlag || (data->timeIndex ==
 	  PROCESS_START_TIME))) {
-		p->numChannels = _OutSig_EarObject(data)->numChannels;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Neuron_HHuxley();
+			p->numChannels = _OutSig_EarObject(data)->numChannels;
 			OpenDiagnostics_NSpecLists(&hHuxleyNCPtr->fp,
 			  hHuxleyNCPtr->diagnosticModeList, hHuxleyNCPtr->diagnosticMode);
 			if ((p->state = (HHuxleyState *) calloc(p->numChannels,
@@ -1184,14 +1184,14 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_Neuron_HHuxley");
 	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
-	int		i, k, inSignal;
+	int		chan, inSignal;
 	double	*yPtr, *zPtr, *xPtr, ionChanCurrentSum, currentSum;
 	double	activation, conductance;
 	ChanLen	j;
 	DynaListPtr		node;
 	HHuxleyStatePtr	s;
 	IonChannelPtr	iC;
-	ICTableEntryPtr	e;
+	ICTableEntryPtr	e = NULL;
 	SignalDataPtr	outSignal;
 	HHuxleyNCPtr	p = hHuxleyNCPtr;
 
@@ -1237,18 +1237,18 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 		DSAM_fprintf(p->fp, wxT("\n"));
 	}
 
-	for (i = 0; i < outSignal->numChannels; i++) {
-		s = &p->state[i];
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		s = &p->state[chan];
 		inSignal = 0;
 		injPtr = (p->injectionMode == HHUXLEYNC_INJECTION_OFF)?
-		  (ChanData *) NULL: _InSig_EarObject(data, inSignal++)->channel[i];
+		  (ChanData *) NULL: _InSig_EarObject(data, inSignal++)->channel[chan];
 		gExPtr = (inSignal < data->numInSignals)?
-		  _InSig_EarObject(data, inSignal++)->channel[i]: (ChanData *) NULL;
+		  _InSig_EarObject(data, inSignal++)->channel[chan]: (ChanData *) NULL;
 		gInPtr = (inSignal < data->numInSignals)?
-		  _InSig_EarObject(data, inSignal++)->channel[i]: (ChanData *) NULL;
+		  _InSig_EarObject(data, inSignal++)->channel[chan]: (ChanData *) NULL;
 		gSInPtr = (inSignal < data->numInSignals)?
-		  _InSig_EarObject(data, inSignal++)->channel[i]: (ChanData *) NULL;
-		outPtr = outSignal->channel[i];
+		  _InSig_EarObject(data, inSignal++)->channel[chan]: (ChanData *) NULL;
+		outPtr = outSignal->channel[chan];
 		switch (p->operationMode) {
 		case HHUXLEYNC_OPERATION_NORMAL_MODE:
 			for (j = 0; j < outSignal->length; j++, outPtr++) {

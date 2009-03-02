@@ -1,12 +1,21 @@
 /**********************
  *
  * File:		StCMRNoiseMask.c
- * Purpose:		
+ * Purpose:		CMR stimulus - a signal with noise flankers.
  * Comments:	Written using ModuleProducer version 1.6.1 (Sep 24 2008).
- * Author:		
+ * 				Revised from the NeuroSound software code: Stim_CMN.
+ *				This stimulus module has had additional controls added in order
+ *				to reproduce the Pierzycki and Seeber BSA 2008 stimulus
+ * 				The ERB spacing and bandwidth mode has been added, in addition
+ * 				to the re-introduction of the modulation frequency, which was
+ * 				not previously being used and a signal gating mode.
+ *				The comodulation condition is achieved by using the same noise
+ * 				carrier for the flanking bands.  For the codeviant condition
+ * 				new noise is created for each flanking band.
+ * Author:		L. P. O'Mard
  * Created:		30 Sep 2008
- * Updated:	
- * Copyright:	(c) 2008, 
+ * Updated:
+ * Copyright:	(c) 2008
  *
  *********************/
 
@@ -26,6 +35,7 @@
 #include "GeModuleMgr.h"
 #include "UtString.h"
 #include "UtFFT.h"
+#include "UtBandwidth.h"
 #include "UtRandom.h"
 #include "FiParFile.h"
 #include "StCMRNoiseMask.h"
@@ -66,34 +76,33 @@ Free_CMR_NoiseMasker(void)
 
 }
 
-/****************************** InitSpacingTypeList ***************************/
+/****************************** BandwidthModeList *****************************/
 
 /*
- * This function initialises the 'p->spacingType' list array
+ * This function initialises the 'bandwidthMode' list array
  */
 
-BOOLN
-InitSpacingTypeList_CMR_NoiseMasker(void)
+NameSpecifier *
+BandwidthModeList_CMR_NoiseMasker(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ wxT("LINEAR"),	CMR_NOISEMASKER_SPACINGTYPE_LINEAR },
-			{ wxT("OCTAVE"),	CMR_NOISEMASKER_SPACINGTYPE_OCTAVE },
-			{ 0, 0 },
+			{ wxT("HERTZ"),	CMR_NOISEMASKER_BANDWIDTHMODE_HZ },
+			{ wxT("ERB"),	CMR_NOISEMASKER_BANDWIDTHMODE_ERB },
+			{ 0,			CMR_NOISEMASKER_BANDWIDTHMODE_NULL },
 		};
-	cMRNoiseMPtr->spacingTypeList = modeList;
-	return(TRUE);
+	return(&modeList[index]);
 
 }
 
-/****************************** InitConditionList *****************************/
+/****************************** ConditionList *********************************/
 
 /*
  * This function initialises the 'p->condition' list array
  */
 
-BOOLN
-InitConditionList_CMR_NoiseMasker(void)
+NameSpecifier *
+ConditionList_CMR_NoiseMasker(int index)
 {
 	static NameSpecifier	modeList[] = {
 
@@ -102,10 +111,28 @@ InitConditionList_CMR_NoiseMasker(void)
 			{ wxT("DV"),	CMR_NOISEMASKER_CONDITION_DV },
 			{ wxT("RF"),	CMR_NOISEMASKER_CONDITION_RF },
 			{ wxT("SO"),	CMR_NOISEMASKER_CONDITION_SO },
-			{ 0, 0 },
+			{ 0,			CMR_NOISEMASKER_CONDITION_NULL },
 		};
-	cMRNoiseMPtr->conditionList = modeList;
-	return(TRUE);
+	return(&modeList[index]);
+
+}
+
+/****************************** SigGateModeList ********************************/
+
+/*
+ * This function initialises the 'sigGateMode' list array
+ */
+
+NameSpecifier *
+SigGateModeList_CMR_NoiseMasker(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("COS"),		CMR_NOISEMASKER_SIGGATEMODE_COS },
+			{ wxT("GAUSSIAN"),	CMR_NOISEMASKER_SIGGATEMODE_GAUSSIAN },
+			{ 0,				CMR_NOISEMASKER_SIGGATEMODE_NULL },
+		};
+	return(&modeList[index]);
 
 }
 
@@ -142,7 +169,7 @@ Init_CMR_NoiseMasker(ParameterSpecifier parSpec)
 	cMRNoiseMPtr->parSpec = parSpec;
 	cMRNoiseMPtr->updateProcessVariablesFlag = TRUE;
 	cMRNoiseMPtr->binauralMode = GENERAL_BOOLEAN_OFF;
-	cMRNoiseMPtr->spacingType = CMR_NOISEMASKER_SPACINGTYPE_LINEAR;
+	cMRNoiseMPtr->spacingType = GENERAL_SPACINGMODE_LINEAR;
 	cMRNoiseMPtr->condition = CMR_NOISEMASKER_CONDITION_RF;
 	cMRNoiseMPtr->onFreqEar = GENERAL_EAR_LEFT;
 	cMRNoiseMPtr->sigEar = GENERAL_EAR_LEFT;
@@ -156,16 +183,17 @@ Init_CMR_NoiseMasker(ParameterSpecifier parSpec)
 	cMRNoiseMPtr->uppFBLevel = 0.0;
 	cMRNoiseMPtr->oFMLevel = 60.0;
 	cMRNoiseMPtr->spacing = 100.0;
-	cMRNoiseMPtr->maskerModFreq = 20.0;
+	cMRNoiseMPtr->bandwidthMode = CMR_NOISEMASKER_BANDWIDTHMODE_HZ;
 	cMRNoiseMPtr->bandwidth = 20.0;
+	cMRNoiseMPtr->mskModFreq = 0.0;
+	cMRNoiseMPtr->mskModPhase = -90.0;
 	cMRNoiseMPtr->sigLevel = 0.0;
 	cMRNoiseMPtr->sigFreq = 700.0;
+	cMRNoiseMPtr->sigGateMode = CMR_NOISEMASKER_SIGGATEMODE_COS;
 	cMRNoiseMPtr->gateTime = 10.0e-3;
 	cMRNoiseMPtr->duration = 0.5;
 	cMRNoiseMPtr->dt = DEFAULT_DT;
 
-	InitSpacingTypeList_CMR_NoiseMasker();
-	InitConditionList_CMR_NoiseMasker();
 	if (!SetUniParList_CMR_NoiseMasker()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_CMR_NoiseMasker();
@@ -201,15 +229,10 @@ SetUniParList_CMR_NoiseMasker(void)
 	  UNIPAR_BOOL,
 	  &cMRNoiseMPtr->binauralMode, NULL,
 	  (void * (*)) SetBinauralMode_CMR_NoiseMasker);
-	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SPACINGTYPE], wxT("SPACING_TYPE"),
-	  wxT("Spacing type ('linear' or 'octave')."),
-	  UNIPAR_NAME_SPEC,
-	  &cMRNoiseMPtr->spacingType, cMRNoiseMPtr->spacingTypeList,
-	  (void * (*)) SetSpacingType_CMR_NoiseMasker);
 	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_CONDITION], wxT("CONDITION"),
-	  wxT("Stimulus p->condition mode: ('cd', 'cm', 'dv', 'rf' or 'so'."),
+	  wxT("Stimulus condition mode: ('cd', 'cm', 'dv', 'rf' or 'so'."),
 	  UNIPAR_NAME_SPEC,
-	  &cMRNoiseMPtr->condition, cMRNoiseMPtr->conditionList,
+	  &cMRNoiseMPtr->condition, ConditionList_CMR_NoiseMasker(0),
 	  (void * (*)) SetCondition_CMR_NoiseMasker);
 	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_ONFREQEAR], wxT("ON_FREQ_EAR"),
 	  wxT("On-frequency ear ('left' or 'right')."),
@@ -266,21 +289,36 @@ SetUniParList_CMR_NoiseMasker(void)
 	  UNIPAR_REAL,
 	  &cMRNoiseMPtr->oFMLevel, NULL,
 	  (void * (*)) SetOFMLevel_CMR_NoiseMasker);
-	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SPACING], wxT("SPACING"),
-	  wxT("Spacing (Hz or octaves)."),
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SPACINGTYPE], wxT("SPACING_TYPE"),
+	  wxT("Spacing type ('linear', 'octave' or 'ERB')."),
+	  UNIPAR_NAME_SPEC,
+	  &cMRNoiseMPtr->spacingType, SpacingModeList_NSpecLists(0),
+	  (void * (*)) SetSpacingType_CMR_NoiseMasker);
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SPACING], wxT("SPACING_VAR"),
+	  wxT("Spacing variable (Hz, octaves or ERBs)."),
 	  UNIPAR_REAL,
 	  &cMRNoiseMPtr->spacing, NULL,
 	  (void * (*)) SetSpacing_CMR_NoiseMasker);
-	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_MASKERMODFREQ], wxT("MASKER_MOD_FREQ"),
-	  wxT("Masker modulation frequency (Hz)."),
-	  UNIPAR_REAL,
-	  &cMRNoiseMPtr->maskerModFreq, NULL,
-	  (void * (*)) SetMaskerModFreq_CMR_NoiseMasker);
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_BANDWIDTHMODE], wxT("BW_MODE"),
+	  wxT("Noise bandwidth mode ('Hz', or 'ERB')."),
+	  UNIPAR_NAME_SPEC,
+	  &cMRNoiseMPtr->bandwidthMode, BandwidthModeList_CMR_NoiseMasker(0),
+	  (void * (*)) SetBandwidthMode_CMR_NoiseMasker);
 	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_BANDWIDTH], wxT("BANDWIDTH"),
-	  wxT("Bandwidth (Hz)."),
+	  wxT("Bandwidth ('Hz' or 'ERB density')."),
 	  UNIPAR_REAL,
 	  &cMRNoiseMPtr->bandwidth, NULL,
 	  (void * (*)) SetBandwidth_CMR_NoiseMasker);
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_MSKMODFREQ], wxT("MASKER_MOD_FREQ"),
+	  wxT("Masker modulation frequency or 0 for none (Hz)"),
+	  UNIPAR_REAL,
+	  &cMRNoiseMPtr->mskModFreq, NULL,
+	  (void * (*)) SetMskModFreq_CMR_NoiseMasker);
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_MSKMODPHASE], wxT("MASKER_MOD_PHASE"),
+	  wxT("Masker modulation phase (degrees)."),
+	  UNIPAR_REAL,
+	  &cMRNoiseMPtr->mskModPhase, NULL,
+	  (void * (*)) SetMskModPhase_CMR_NoiseMasker);
 	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SIGLEVEL], wxT("SIGNAL_LEVEL"),
 	  wxT("Signal level (dB SPL)."),
 	  UNIPAR_REAL,
@@ -291,6 +329,11 @@ SetUniParList_CMR_NoiseMasker(void)
 	  UNIPAR_REAL,
 	  &cMRNoiseMPtr->sigFreq, NULL,
 	  (void * (*)) SetSigFreq_CMR_NoiseMasker);
+	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_SIGGATEMODE], wxT("SIGNAL_GATE_MODE"),
+	  wxT("Signal gate mode ('cos' or 'gaussian')"),
+	  UNIPAR_NAME_SPEC,
+	  &cMRNoiseMPtr->sigGateMode, SigGateModeList_CMR_NoiseMasker(0),
+	  (void * (*)) SetSigGateMode_CMR_NoiseMasker);
 	SetPar_UniParMgr(&pars[CMR_NOISEMASKER_GATETIME], wxT("SIGNAL_GATE_TIME"),
 	  wxT("Signal gate time (s)."),
 	  UNIPAR_REAL,
@@ -306,6 +349,53 @@ SetUniParList_CMR_NoiseMasker(void)
 	  UNIPAR_REAL,
 	  &cMRNoiseMPtr->dt, NULL,
 	  (void * (*)) SetSamplingInterval_CMR_NoiseMasker);
+
+	SetEnabledPars_CMR_NoiseMasker();
+	return(TRUE);
+
+}
+
+/********************************* SetDefaulEnabledPars ***********************/
+
+/*
+ * This routine sets the parameter list so that the correct parameters
+ * are enabled/disabled.
+ */
+
+BOOLN
+SetEnabledPars_CMR_NoiseMasker(void)
+{
+	static const WChar *funcName = wxT("SetEnabledPars_CMR_NoiseMasker");
+	CMRNoiseMPtr	p = cMRNoiseMPtr;
+
+	if (p == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	p->parList->pars[CMR_NOISEMASKER_FLANKEAR].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_NUPP].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_NLOW].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_NGAPLOW].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_NGAPUPP].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_LOWFBLEVEL].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_UPPFBLEVEL].enabled = TRUE;
+	p->parList->pars[CMR_NOISEMASKER_SPACING].enabled = TRUE;
+	switch (p->condition) {
+	case CMR_NOISEMASKER_CONDITION_RF:
+	case CMR_NOISEMASKER_CONDITION_SO:
+		p->parList->pars[CMR_NOISEMASKER_FLANKEAR].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_NUPP].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_NLOW].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_NGAPLOW].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_NGAPUPP].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_LOWFBLEVEL].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_UPPFBLEVEL].enabled = FALSE;
+		p->parList->pars[CMR_NOISEMASKER_SPACING].enabled = FALSE;
+		break;
+		break;
+	default:
+		;
+	}
 	return(TRUE);
 
 }
@@ -327,8 +417,8 @@ GetUniParListPtr_CMR_NoiseMasker(void)
 		return(FALSE);
 	}
 	if (cMRNoiseMPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(cMRNoiseMPtr->parList);
@@ -383,7 +473,7 @@ SetSpacingType_CMR_NoiseMasker(WChar * theSpacingType)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theSpacingType,
-		cMRNoiseMPtr->spacingTypeList)) == CMR_NOISEMASKER_SPACINGTYPE_NULL) {
+	  SpacingModeList_NSpecLists(0))) == CFLIST_NULL) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSpacingType);
 		return(FALSE);
 	}
@@ -412,12 +502,13 @@ SetCondition_CMR_NoiseMasker(WChar * theCondition)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theCondition,
-		cMRNoiseMPtr->conditionList)) == CMR_NOISEMASKER_CONDITION_NULL) {
+			ConditionList_CMR_NoiseMasker(0))) == CMR_NOISEMASKER_CONDITION_NULL) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theCondition);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
 	cMRNoiseMPtr->condition = specifier;
+	SetEnabledPars_CMR_NoiseMasker();
 	return(TRUE);
 
 }
@@ -476,6 +567,36 @@ SetSigEar_CMR_NoiseMasker(WChar * theSigEar)
 	}
 	/*** Put any other required checks here. ***/
 	cMRNoiseMPtr->sigEar = specifier;
+	return(TRUE);
+
+}
+
+/****************************** SetSigGateMode ********************************/
+
+/*
+ * This function sets the module's sigGateMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetSigGateMode_CMR_NoiseMasker(WChar * theSigGateMode)
+{
+	static const WChar	*funcName = wxT("SetSigGateMode_CMR_NoiseMasker");
+	int		specifier;
+
+	if (cMRNoiseMPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theSigGateMode,
+	  SigGateModeList_CMR_NoiseMasker(0))) == CMR_NOISEMASKER_SIGGATEMODE_NULL) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theSigGateMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	cMRNoiseMPtr->updateProcessVariablesFlag = TRUE;
+	cMRNoiseMPtr->sigGateMode = specifier;
 	return(TRUE);
 
 }
@@ -711,25 +832,32 @@ SetSpacing_CMR_NoiseMasker(double theSpacing)
 
 }
 
-/****************************** SetMaskerModFreq ******************************/
+/****************************** SetBandwidthMode ******************************/
 
 /*
- * This function sets the module's maskerModFreq parameter.
+ * This function sets the module's bandwidthMode parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetMaskerModFreq_CMR_NoiseMasker(double theMaskerModFreq)
+SetBandwidthMode_CMR_NoiseMasker(WChar * theBandwidthMode)
 {
-	static const WChar	*funcName = wxT("SetMaskerModFreq_CMR_NoiseMasker");
+	static const WChar	*funcName = wxT("SetBandwidthMode_CMR_NoiseMasker");
+	int		specifier;
 
 	if (cMRNoiseMPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
+	if ((specifier = Identify_NameSpecifier(theBandwidthMode,
+		BandwidthModeList_CMR_NoiseMasker(0))) == CMR_NOISEMASKER_BANDWIDTHMODE_NULL) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theBandwidthMode);
+		return(FALSE);
+	}
 	/*** Put any other required checks here. ***/
-	cMRNoiseMPtr->maskerModFreq = theMaskerModFreq;
+	cMRNoiseMPtr->updateProcessVariablesFlag = TRUE;
+	cMRNoiseMPtr->bandwidthMode = specifier;
 	return(TRUE);
 
 }
@@ -753,6 +881,54 @@ SetBandwidth_CMR_NoiseMasker(double theBandwidth)
 	}
 	/*** Put any other required checks here. ***/
 	cMRNoiseMPtr->bandwidth = theBandwidth;
+	return(TRUE);
+
+}
+
+/****************************** SetMskModFreq *********************************/
+
+/*
+ * This function sets the module's mskModFreq parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetMskModFreq_CMR_NoiseMasker(double theMskModFreq)
+{
+	static const WChar	*funcName = wxT("SetMskModFreq_CMR_NoiseMasker");
+
+	if (cMRNoiseMPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	cMRNoiseMPtr->updateProcessVariablesFlag = TRUE;
+	cMRNoiseMPtr->mskModFreq = theMskModFreq;
+	return(TRUE);
+
+}
+
+/****************************** SetMskModPhase ********************************/
+
+/*
+ * This function sets the module's mskModPhase parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetMskModPhase_CMR_NoiseMasker(double theMskModPhase)
+{
+	static const WChar	*funcName = wxT("SetMskModPhase_CMR_NoiseMasker");
+
+	if (cMRNoiseMPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	cMRNoiseMPtr->updateProcessVariablesFlag = TRUE;
+	cMRNoiseMPtr->mskModPhase = theMskModPhase;
 	return(TRUE);
 
 }
@@ -887,10 +1063,10 @@ PrintPars_CMR_NoiseMasker(void)
 	DPrint(wxT("?? CMR Module Parameters:-\n"));
 	DPrint(wxT("\tbinauralMode = %s\n"), BooleanList_NSpecLists(cMRNoiseMPtr->
 	  binauralMode)->name);
-	DPrint(wxT("\tpacingType = %s \n"), cMRNoiseMPtr->spacingTypeList[
-	  cMRNoiseMPtr->spacingType].name);
-	DPrint(wxT("\tcondition = %s \n"), cMRNoiseMPtr->conditionList[
-	  cMRNoiseMPtr->condition].name);
+	DPrint(wxT("\tpacingType = %s \n"), SpacingModeList_NSpecLists(
+	  cMRNoiseMPtr->spacingType)->name);
+	DPrint(wxT("\tcondition = %s \n"), ConditionList_CMR_NoiseMasker(
+	  cMRNoiseMPtr->condition)->name);
 	DPrint(wxT("\tonFreqEar = %s \n"), EarModeList_NSpecLists(
 	  cMRNoiseMPtr->onFreqEar)->name);
 	DPrint(wxT("\tsigEar = %s \n"), EarModeList_NSpecLists(cMRNoiseMPtr->
@@ -905,10 +1081,15 @@ PrintPars_CMR_NoiseMasker(void)
 	DPrint(wxT("\tuppFBLevel = %g ??\n"), cMRNoiseMPtr->uppFBLevel);
 	DPrint(wxT("\toFMLevel = %g ??\n"), cMRNoiseMPtr->oFMLevel);
 	DPrint(wxT("\tspacing = %g ??\n"), cMRNoiseMPtr->spacing);
-	DPrint(wxT("\tmaskerModFreq = %g ??\n"), cMRNoiseMPtr->maskerModFreq);
+	DPrint(wxT("\tbandwidthMode = %s \n"), BandwidthModeList_CMR_NoiseMasker(
+	  cMRNoiseMPtr->bandwidthMode)->name);
 	DPrint(wxT("\tbandwidth = %g ??\n"), cMRNoiseMPtr->bandwidth);
+	DPrint(wxT("\tmskModFreq = %g ??\n"), cMRNoiseMPtr->mskModFreq);
+	DPrint(wxT("\tmskModPhase = %g ??\n"), cMRNoiseMPtr->mskModPhase);
 	DPrint(wxT("\tsigLevel = %g ??\n"), cMRNoiseMPtr->sigLevel);
 	DPrint(wxT("\tsigFreq = %g ??\n"), cMRNoiseMPtr->sigFreq);
+	DPrint(wxT("\tsigGateMode = %s \n"), SigGateModeList_CMR_NoiseMasker(
+	  cMRNoiseMPtr->sigGateMode)->name);
 	DPrint(wxT("\tgateTime = %g ??\n"), cMRNoiseMPtr->gateTime);
 	DPrint(wxT("\tduration = %g ??\n"), cMRNoiseMPtr->duration);
 	DPrint(wxT("\tsamplingInterval = %g ??\n"), cMRNoiseMPtr->dt);
@@ -1058,27 +1239,30 @@ FreeProcessVariables_CMR_NoiseMasker(void)
  * is not used.
  * With repeated calls the Signal memory is only allocated once, then
  * re-used.
+ * The "batten / 20.0" division is required to maintain the amplitude
+ * equivalence with the NeuroSound code with the dB SPL conversion used.
  */
 
 BOOLN
 GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_CMR_NoiseMasker");
-	register ChanData	 *outPtr;
-	int		i, k, t, chan, sample;
-	double	phase, gatefactor, value, sigAtten, lowAtten, uppAtten;
-	CMRNoiseMPtr	p = cMRNoiseMPtr;
-	double	batten, sigLevel, srate = 1.0 / p->dt, onfreqmodphase = 0.75 * PIx2;
-	double	flankmodphase = 0.75 * PIx2, half_bandw = 0.5 * p->bandwidth;
-	fftw_complex	*c1;
+	register ChanData	 *outPtr, *upPtr, *downPtr;
+	int		i, k, chan, sample, nLow, nUpp, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
+	int		nTotal, nSignal, silence, gatesample, kLow, mskModPhaseSamples;
+	double	value, sigAtten, lowAtten, uppAtten, t, mskModPhase;
+	double	batten, srate, freqcomp = 0, gatefactor, minERBRate, modFactor;
+	double	flankModPhase = 0.75 * PIx2, normFactor[CMR_NOISEMASKER_MAXNTOTAL];
+	double	freqcomps[CMR_NOISEMASKER_MAXNTOTAL], sigPhase = 0.0;
 	SignalDataPtr	outSignal;
+	CMRNoiseMPtr	p = cMRNoiseMPtr;
 
 	if (!data->threadRunFlag) {
 		if (!CheckData_CMR_NoiseMasker(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SetProcessName_EarObject(data, wxT("CMR with noise maskers stimulus."));
+		SetProcessName_EarObject(data, wxT("CMR stimulus with noise maskers."));
 		if (!InitOutSignal_EarObject(data, (p->binauralMode)? 2: 1,
 		  (ChanLen) floor(p->duration / p->dt + 0.5), p->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
@@ -1096,185 +1280,201 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 	}
 
 	outSignal = _OutSig_EarObject(data);
-	batten = RMS_AMP(p->oFMLevel);
+	batten = (p->condition == CMR_NOISEMASKER_CONDITION_SO)? 0.0: RMS_AMP(p->oFMLevel); //SO -> signal only
 	sigAtten = RMS_AMP(p->sigLevel);
-	lowAtten = RMS_AMP(p->lowFBLevel + p->oFMLevel);
-	uppAtten = RMS_AMP(p->uppFBLevel + p->oFMLevel);
+	lowAtten = RMS_AMP(p->lowFBLevel) * batten / 20.0;
+	uppAtten = RMS_AMP(p->uppFBLevel) * batten / 20.0;
+
 	/* SET PARAMETERS FOR MASKER AND SIGNAL */
 	/* ------------------ other useful parameters -----------------------------
 	// ------------------ masker parameters from command window --------------
 	 */
-	
-	if (p->condition == CMR_NOISEMASKER_CONDITION_SO)	{	//SO -> signal only
-		batten = 0;
-	}
-
+	srate = 1.0 / p->dt;
+	mskModPhase = DEGREES_TO_RADS(p->mskModPhase);
 	if (p->condition == CMR_NOISEMASKER_CONDITION_CD)	{	//codeviant -> out of phase
-		flankmodphase = 0.25 * PIx2;
+		flankModPhase = mskModPhase + 0.25 * PIx2;
 	}
 	// ------------------ signal parameters -----------------------------------
-	double sigphase = 0;
-	int  gatesample = (int) (srate * p->gateTime); 
-	int silence = (int) (outSignal->length / 4) ;
+	if (p->sigGateMode != CMR_NOISEMASKER_SIGGATEMODE_COS) {
+		NotifyError(wxT("%s: gate mode not yet implemented."), funcName);
+		return(FALSE);
+	}
+	gatesample = (int) (srate * p->gateTime);
+	if (p->mskModFreq > 0) {
+		mskModPhaseSamples = (int) ((mskModPhase / PIx2 + 0.25) / p->mskModFreq *
+		  srate);
+		silence = (int) (CMR_NOISEMASKER_SIG_MOD_OFFSET_CYCLES / p->mskModFreq *
+		  srate);
+	} else {
+		mskModPhaseSamples = 0;
+		silence = outSignal->length / 4;
+	}
 
 	// -------- precalculations for the masker ---------------------------------
 	if (p->condition == CMR_NOISEMASKER_CONDITION_RF)	{ // no flanking bands for ref -> overwrite p->nlow,p->nupp
-	p->nlow = 0;
-	p->nupp = 0;
+		nLow = 0;
+		nUpp = 0;
+	} else {
+		nLow = p->nlow;
+		nUpp = p->nupp;
 	}
 	// now calculate center freq of flanking components
-	const ntotal = p->nupp + p->nlow;
+	nTotal = p->nupp + nLow;
+	nSignal = nTotal;	/* put at the end of flanker components for convenience. */
 	//special case. Only one R,L,or D given -> set all flanking band s to that ear
-	if (DSAM_strlen(p->flankEar) == 1)	{		
+	if (DSAM_strlen(p->flankEar) == 1)	{
 			for (k=1; k < CMR_NOISEMASKER_MAXNTOTAL; k++)	{
 				p->flankEar[k] = p->flankEar[0];
 			}
+			p->flankEar[k] = '\0';
 	}
-	if (DSAM_strlen(p->flankEar) < ntotal){
+	if (DSAM_strlen(p->flankEar) < nTotal){
 		NotifyError(wxT("%s: Not all flanking band know which ear they have to go too!"), funcName);
 		return (FALSE);
 	}
-	
-	double freqcomp = 0; 
-	double freqcomps[CMR_NOISEMASKER_MAXNTOTAL] = {0};
-	if (p->spacingType != CMR_NOISEMASKER_SPACINGTYPE_LINEAR)	{  //for log
-		for (i=0;i<=(p->nlow-1);i++)	{ // lower components
-			freqcomp = p->sigFreq/(double)pow(2.0,(p->nlow - i +p->nGapLow)*(double)p->spacing);
-			freqcomps[i] = freqcomp;
-		}
-		for (i=1;i<=p->nupp;i++)	{	  // upper components
-			freqcomp=p->sigFreq*(double)pow(2.0,(i+p->nGapUpp)*(double)p->spacing);
-			freqcomps[i + p->nlow -1] = freqcomp;
-		}
-	}
-	else	{				// for lin
-		for (i=0;i<=(p->nlow-1);i++)	{ // lower components
-				freqcomp = p->sigFreq-p->spacing*(p->nlow - i +p->nGapLow);
+
+	switch (p->spacingType) {
+	case GENERAL_SPACINGMODE_LINEAR:
+		for (i=0;i<=(nLow-1);i++)	{ // lower components
+				freqcomp = p->sigFreq-p->spacing*(nLow - i +p->nGapLow);
 				freqcomps[i] = freqcomp;
 			}
 		for (i=1;i<=p->nupp;i++)	{     // upper components
 				freqcomp = p->sigFreq+p->spacing*(i+p->nGapUpp);
-				freqcomps[i + p->nlow -1] = freqcomp;
+				freqcomps[i + nLow -1] = freqcomp;
 			}
+		break;
+	case GENERAL_SPACINGMODE_OCTAVE:
+		for (i = 0 ; i <= (nLow - 1); i++)	{ // lower components
+			freqcomp = p->sigFreq / pow(2.0,(nLow - i + p->nGapLow) * p->spacing);
+			freqcomps[i] = freqcomp;
+		}
+		for (i = 1; i <= p->nupp; i++)	{	  // upper components
+			freqcomp=p->sigFreq * pow(2.0, (i + p->nGapUpp) * p->spacing);
+			freqcomps[i + nLow -1] = freqcomp;
+		}
+		break;
+	case GENERAL_SPACINGMODE_ERB:	/* 'spacing' is the ERB density in this mode. */
+		minERBRate = ERBRateFromF_Bandwidth(p->sigFreq) - (nLow) / p->spacing;
+		for (i = 0 ; i <= (nLow - 1); i++)	{ // lower components
+			freqcomp = FFromERBRate_Bandwidth(minERBRate + (i - p->nGapLow) /
+			  p->spacing);
+			freqcomps[i] = freqcomp;
+		}
+		for (i = 1; i <= p->nupp; i++)	{	  // upper components
+			freqcomp = FFromERBRate_Bandwidth(minERBRate + (i + nLow +
+			  p->nGapUpp) / p->spacing);
+			freqcomps[i + nLow -1] = freqcomp;
+		}
+		break;
+	default:
+		NotifyError(wxT("%s: The '%s' spacing mode has not yet been implemented."),
+		  funcName, SpacingModeList_NSpecLists(p->spacingType)->name);
+		return(FALSE);
+	}
+	freqcomps[nSignal] = p->sigFreq;
+	for (i = 0; i < nTotal + 1; i++) {
+		kUpp[i] = 0.5 * ((p->bandwidthMode == CMR_NOISEMASKER_BANDWIDTHMODE_HZ)?
+		  p->bandwidth: ERBFromF_Bandwidth(freqcomps[i])) / srate * outSignal->length;
+		normFactor[i] = 1.0 / sqrt((double) kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
 	}
 	/* needs some error checks (at the moment still missing!)
 	 specials for the multiplied noise */
-	int klow = 1; //we dont want a DC 
-	int kupp = (half_bandw / srate) * outSignal->length; // hbw -> samples 
-	int N = outSignal->length;
-	double normfactor = 1.0 / sqrt((double) kupp); // after amultiplying with normfactor each noiseband has 0dB output level 
+	kLow = 1; //we dont want a DC
 
 	/*////////////////////////////////////////////////////////////////////////
 	// now calculate the low-pass noise for the on-frequency band on one
-	// side (it depends on the p->condition if we use the same or a different 
-	// one in the other ear 
+	// side (it depends on the p->condition if we use the same or a different
+	// one in the other ear
 	////////////////////////////////////////////////////////////////////////
 	 */
+	CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[nSignal]);
 
-	c1 = (fftw_complex *) p->fTInv->data;
-	for (k = 0; k < klow; k++)
-		CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
-	for (k = klow; k < (kupp + 1); k++) {
-		phase = Ran01_Random(data->randPars) * PIx2;
-		CMPLX_RE(c1[k]) = cos(phase);
-		CMPLX_IM(c1[k]) = sin(phase);
-	}
-	for (k = (kupp + 1); k < p->fTInv->fftLen / 2 + 1; k++)
-		CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
-	
-	// 2.) do inverse fourier trafo 
-	fftw_execute(p->fTInv->plan[0]);
-
-	outSignal = _OutSig_EarObject(data);
 	for (chan = 0; chan < outSignal->numChannels; chan++) {
 		outPtr = outSignal->channel[chan];
-		/* STIMULUS GENERATION
-		// --------------- generate stimulus LEFT ear ----------------------------- */
+		/* STIMULUS GENERATION */
 		if (((chan == 0) && (p->sigEar != GENERAL_EAR_RIGHT )) ||
-		  (chan == 1) && (p->sigEar != GENERAL_EAR_LEFT)) {		// signal L(eft) or D(iotic)
+		  ((chan == 1) && (p->sigEar != GENERAL_EAR_LEFT))) {		// signal L(eft) or D(iotic)
 			for (sample=0; sample<outSignal->length; sample++)
-				outPtr[sample] = sin(sigphase + (sample / srate) * p->sigFreq * PIx2) *
+				outPtr[sample] = sin(sigPhase + (sample / srate) * p->sigFreq * PIx2) *
 				 sigAtten * SQRT_2;
-			for (sample=0; sample<silence; sample++) { // silence before and after signal
-				outPtr[sample] = 0;
-				outPtr[outSignal->length-1-sample]= 0;
-			}
-			for (sample=silence; sample<(silence+gatesample); sample++) {// apply gate windows
-					double gatefactor = (1.0 - cos(((sample-silence) / (double) gatesample) * PI))/2.0;
-					outPtr[sample] *= gatefactor;
-					outPtr[outSignal->length-sample-1] *= gatefactor;
+			for (sample=0; sample < silence - mskModPhaseSamples; sample++) // silence before
+				outPtr[sample] = 0.0;
+			for (sample=0; sample < (silence + mskModPhaseSamples); sample++)  // silence after signal
+				outPtr[outSignal->length - sample - 1] = 0.0;
+			upPtr = outPtr + silence - mskModPhaseSamples;
+			downPtr = outPtr + outSignal->length - silence - mskModPhaseSamples - 1;
+			for (sample = 0; sample < gatesample; sample++) {// apply gate windows
+				switch (p->sigGateMode) {
+				case CMR_NOISEMASKER_SIGGATEMODE_COS:
+					gatefactor = (1.0 - cos((sample / (double) gatesample) * PI)) / 2.0;
+					break;
+				default:
+					NotifyError(wxT("%s: Gating mode '%d' not implmented"), funcName,
+					  p->sigGateMode);
+					return(FALSE);
+				}
+				*upPtr++ *= gatefactor;
+				*downPtr-- *= gatefactor;
 			}
 		}
 		for (sample=0; sample<outSignal->length; sample++) {
+			t = sample / srate;
+			modFactor = (p->mskModFreq > 0)? (1.0 + sin(mskModPhase + t *
+			  p->mskModFreq * PIx2)): 1.0;
 			if (((chan == 0) && (p->onFreqEar != GENERAL_EAR_RIGHT)) ||
-			  ((chan == 1) && (p->onFreqEar != GENERAL_EAR_LEFT)))	{	// on frequency band  L(eft) or D(iotic) 
-				value = sin(sigphase + (sample/srate) * p->sigFreq * PIx2) * p->fTInv->data[sample] *
-				  normfactor * batten;
+			  ((chan == 1) && (p->onFreqEar != GENERAL_EAR_LEFT)))	{	// on frequency band  L(eft) or D(iotic)
+				value = sin(sigPhase + t * p->sigFreq * PIx2) * p->fTInv->data[sample] *
+				  normFactor[nSignal] * modFactor * batten;
 				outPtr[sample] = outPtr[sample] + value;
 			}
+			modFactor = (p->mskModFreq > 0)? (1.0 + sin(flankModPhase + t *
+			  p->mskModFreq * PIx2)): 1.0;
 			if (p->condition == CMR_NOISEMASKER_CONDITION_CM)	{
-				for (i=0;i<p->nlow;i++)	{//lower bands
+				for (i=0;i<nLow;i++)	{//lower bands
 					if (p->flankEar[i] != 'R')	{ //flankingband i L(eft) or D(iotic)
-						value = sin(sigphase + (sample/srate) * freqcomps[i] * PIx2) * p->fTInv->data[sample] *
-						  normfactor * lowAtten;
+						value = sin(sigPhase + t * freqcomps[i] * PIx2) * p->fTInv->data[sample] *
+						  normFactor[i] * modFactor * lowAtten;
 						outPtr[sample] = outPtr[sample] + value;
 					}
 				}
-				for (i=p->nlow;i<ntotal;i++)	{//upper bands
+				for (i=nLow;i<nTotal;i++)	{//upper bands
 					if (p->flankEar[i] != 'R')	{ //flankingband i L(eft) or D(iotic)
-						value = sin(sigphase + (sample/srate) * freqcomps[i] * PIx2) * p->fTInv->data[sample] *
-						  normfactor * uppAtten;
+						value = sin(sigPhase + t * freqcomps[i] * PIx2) * p->fTInv->data[sample] *
+						  normFactor[i] * modFactor * uppAtten;
 						outPtr[sample] = outPtr[sample] + value;
 					}
 				}
 			}
 		}
 		if (p->condition == CMR_NOISEMASKER_CONDITION_DV)	{
-			for (i=0;i<p->nlow;i++)	{//lower bands
+			for (i=0;i<nLow;i++)	{//lower bands
 				if (((chan == 0) && (p->flankEar[i] != 'R')) ||
 				  ((chan == 1) && (p->flankEar[i] != 'L'))	)	{ //flankingband i  L(eft) or D(iotic)
 					////////////////////////////////////////////////////////////
-					// deviant means for each band a new lp-noise 
+					// deviant means for each band a new lp-noise
 					////////////////////////////////////////////////////////////
-					// 1.) set fourier components to 0 outside the desired passband 
-					c1 = (fftw_complex *) p->fTInv->data;
-					for (k = 0; k < klow; k++)
-						CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
-					for (k = klow; k < (kupp + 1); k++) {
-						phase = Ran01_Random(data->randPars) * PIx2;
-						CMPLX_RE(c1[k]) = cos(phase);
-						CMPLX_IM(c1[k]) = sin(phase);
-					}
-					for (k = (kupp + 1); k < p->fTInv->fftLen / 2 + 1; k++)
-						CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
+					CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[i]);
 					for (sample=0; sample<outSignal->length; sample++) {
-						value = sin(sigphase + (sample/srate) * freqcomps[i] * PIx2) *
-						  p->fTInv->data[sample] * normfactor * lowAtten;
+						modFactor = (p->mskModFreq > 0)? (1.0 + sin(flankModPhase + t *
+						  p->mskModFreq * PIx2)): 1.0;
+						value = sin(sigPhase + t * freqcomps[i] * PIx2) *
+						  p->fTInv->data[sample] * normFactor[i] * modFactor * lowAtten;
 						outPtr[sample] = outPtr[sample] + value;
 					}
 				}
 			}
-			for (i=p->nlow;i<ntotal;i++)	{//upper bands
+			for (i=nLow;i<nTotal;i++)	{//upper bands
 				if (((chan == 0) && (p->flankEar[i] != 'R')) ||
 				  ((chan == 1) && (p->flankEar[i] != 'L')))	{ //flankingband i  L(eft) or D(iotic)
 					/* deviant means for each band a new lp-noise */
 					////////////////////////////////////////////////////////////
-					// 1.) set fourier components to 0 outside the desired passband 
-					c1 = (fftw_complex *) p->fTInv->data;
-					for (k = 0; k < klow; k++)
-						CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
-					for (k = klow; k < (kupp + 1); k++) {
-						phase = Ran01_Random(data->randPars) * PIx2;
-						CMPLX_RE(c1[k]) = cos(phase);
-						CMPLX_IM(c1[k]) = sin(phase);
-					}
-					for (k = (kupp + 1); k < p->fTInv->fftLen / 2 + 1; k++)
-						CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
-					// 2.) do inverse fourier trafo 
-					fftw_execute(p->fTInv->plan[0]);
+					CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[i]);
 					for (sample=0; sample<outSignal->length; sample++) {
-						value = sin(sigphase + (sample/srate) * freqcomps[i] * PIx2) *
-						p->fTInv->data[sample] * normfactor * uppAtten;
+						modFactor = (p->mskModFreq > 0)? (1.0 + sin(flankModPhase + t *
+						  p->mskModFreq * PIx2)): 1.0;
+						value = sin(sigPhase + t * freqcomps[i] * PIx2) *
+						  p->fTInv->data[sample] * normFactor[i] * modFactor * uppAtten;
 						outPtr[sample] = outPtr[sample] + value;
 					}
 				}

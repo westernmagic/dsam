@@ -227,7 +227,6 @@ SetPreWarpingFreq_Filter_ZBMiddleEar(double thePreWarpingFreq)
 BOOLN
 PrintPars_Filter_ZBMiddleEar(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Filter_ZBMiddleEar");
 
 	DPrint(wxT("Zilany & Bruce (JASA 2006, 2007) Middle-ear Filter ")
 			wxT("Module Parameters:-\n"));

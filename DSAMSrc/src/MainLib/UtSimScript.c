@@ -1134,6 +1134,11 @@ InitialiseEarObjects_Utility_SimScript(void)
 		NotifyError(wxT("%s: Could not initialise EarObjects."), funcName);
 		ok = FALSE;
 	}
+	SetDefaultConnections_Utility_Datum(*simScriptPtr->simPtr);
+	if (ok)
+		ok = ResolveInstLabels_Utility_Datum(*simScriptPtr->simPtr,
+		  *simScriptPtr->labelBListPtr);
+
 	simScriptPtr = localSimScriptPtr;
 	return(ok);
 

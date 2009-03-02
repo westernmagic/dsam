@@ -22,10 +22,13 @@ typedef struct {
 	double	uppFBLevel;
 	double	oFMLevel;		/* GetDoubleAs("OFM level","ratio") */
 	double	spacing;
-	double	maskerModFreq;
+	NameSpecifier	bandwidthMode;
 	double	bandwidth;
+	double	mskModFreq;
+	double	mskModPhase;
 	double	sigLevel;
 	double	sigFreq;
+	NameSpecifier	sigGateMode;
 	double	gateTime;
 	double	duration, dt;
 

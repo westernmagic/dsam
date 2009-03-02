@@ -9,12 +9,12 @@
  *				ExtMainApp.cpp.
  * Author:		L. P. O'Mard
  * Created:		15 Mar 2000
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1999, University of Essex.
  *
  *********************/
 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -901,7 +901,7 @@ GetFilePath_AppInterface(WChar *filePath)
 	Snprintf_Utility_String(guiFilePath, MAX_FILE_PATH, wxT("%s/%s"),
 	  appInterfacePtr->workingDirectory, appInterfacePtr->simulationFile);
 	return(guiFilePath);
-	
+
 }
 
 /************************ ParseParSpecifiers **********************************/
@@ -1089,7 +1089,7 @@ ReadPars_AppInterface(WChar *parFileName)
 			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
 				ok = FALSE;
 		}
-	
+
 	}
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
@@ -1195,7 +1195,7 @@ InitSimFromSimScript_AppInterface(void)
 			appInterfacePtr->checkMainInit = TRUE;
 			return(FALSE);
 		}
-		
+
 	}
 	return(TRUE);
 
@@ -1325,7 +1325,7 @@ SetAppName_AppInterface(const WChar *appName)
 	DSAM_strncpy(appInterfacePtr->appName, appName, MAX_FILE_PATH);
 	return(TRUE);
 
-} 
+}
 
 /****************************** SetAppVersion *********************************/
 
@@ -1347,7 +1347,7 @@ SetAppVersion_AppInterface(const WChar *appVersion)
 	DSAM_strcpy(appInterfacePtr->appVersion, appVersion);
 	return(TRUE);
 
-} 
+}
 
 /****************************** SetCompiledDSAMVersion ************************/
 
@@ -1370,7 +1370,7 @@ SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion)
 	DSAM_strcpy(appInterfacePtr->compiledDSAMVersion, compiledDSAMVersion);
 	return(TRUE);
 
-} 
+}
 
 /****************************** SetTitle **************************************/
 
@@ -1379,7 +1379,7 @@ SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion)
  */
 
 BOOLN
-SetTitle_AppInterface(WChar *title)
+SetTitle_AppInterface(const WChar *title)
 {
 	static const WChar *funcName = wxT("SetTitle_AppInterface");
 
@@ -1391,7 +1391,7 @@ SetTitle_AppInterface(WChar *title)
 	DSAM_strncpy(appInterfacePtr->title, title, MAX_FILE_PATH);
 	return(TRUE);
 
-} 
+}
 
 /****************************** AddAppHelpBook ********************************/
 
@@ -1468,7 +1468,7 @@ SetPars_AppInterface(WChar *diagMode, WChar *simulationFile, WChar *segmentMode)
 
 void
 ListParsAndExit_AppInterface(void)
-{	
+{
 	SetUsingGUIStatus(FALSE);
 	SetDPrintFunc(DPrintStandard);
 	SetParsFile_Common(wxT("screen"), OVERWRITE);
@@ -1488,7 +1488,7 @@ ListParameters_AppInterface(void)
 {
 	static const WChar *funcName = wxT("ListParameters_AppInterface");
 	WChar	suffix[MAXLINE];
-	
+
 	if (!appInterfacePtr) {
 		NotifyError(wxT("%s: Application interface not initialised."),
 		  funcName);
@@ -1518,7 +1518,7 @@ ListCFListAndExit_AppInterface(void)
 	static const WChar *funcName = wxT("ListCFListAndExit_AppInterface");
 	CFListPtr	theBMCFs;
 	DatumPtr	simulation, bMDatumPtr;
-	
+
 	if (!appInterfacePtr) {
 		NotifyError(wxT("%s: Application interface not initialised."),
 		  funcName);
@@ -1577,7 +1577,7 @@ void
 SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv)
 {
 	static const WChar *funcName = wxT("SetArgcAndArgV_AppInterface");
-	
+
 	if (!appInterfacePtr) {
 		NotifyError(wxT("%s: Application interface not initialised."),
 		  funcName);

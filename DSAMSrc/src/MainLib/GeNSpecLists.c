@@ -3,14 +3,14 @@
  * File:		GeNSpecLists.c
  * Purpose:		This module contains the common specifier lists used by various
  *				modules, and also the common associated actions.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		26 Nov 1997
  * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
- 
+
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
@@ -45,8 +45,8 @@ BooleanList_NSpecLists(int index)
 
 					{ wxT("OFF"),	GENERAL_BOOLEAN_OFF},
 					{ wxT("ON"),	GENERAL_BOOLEAN_ON},
-					{ NULL,			GENERAL_BOOLEAN_NULL},
-				
+					{ 0,			GENERAL_BOOLEAN_NULL},
+
 				};
 	return (&modeList[index]);
 
@@ -71,8 +71,8 @@ DiagModeList_NSpecLists(int index)
 					{ wxT("SCREEN"),		GENERAL_DIAGNOSTIC_SCREEN_MODE},
 					{ wxT("ERROR"),			GENERAL_DIAGNOSTIC_ERROR_MODE},
 					{ DEFAULT_FILE_NAME,	GENERAL_DIAGNOSTIC_FILE_MODE},
-					{ NULL,					GENERAL_DIAGNOSTIC_MODE_NULL},
-				
+					{ 0,					GENERAL_DIAGNOSTIC_MODE_NULL},
+
 				};
 	return (&modeList[index]);
 
@@ -96,8 +96,8 @@ FitFuncModeList_NSpecLists(int index)
 					{ wxT("LOG_FUNC1"),		GENERAL_FIT_FUNC_LOG1_MODE},
 					{ wxT("LOG_FUNC2"),		GENERAL_FIT_FUNC_LOG2_MODE},
 					{ wxT("POLY_FUNC1"),	GENERAL_FIT_FUNC_POLY1_MODE},
-					{ NULL,					GENERAL_FIT_FUNC_NULL},
-				
+					{ 0,					GENERAL_FIT_FUNC_NULL},
+
 				};
 	return (&modeList[index]);
 
@@ -123,7 +123,7 @@ PhaseModeList_NSpecLists(int index)
 					{ wxT("SCHROEDER"),			GENERAL_PHASE_SCHROEDER },
 					{ wxT("PLACK_AND_WHITE"),	GENERAL_PHASE_PLACK_AND_WHITE },
 					{ wxT("USER"),				GENERAL_PHASE_USER },
-					{ NULL,						GENERAL_PHASE_NULL },
+					{ 0,						GENERAL_PHASE_NULL },
 				};
 	return(&modeList[index]);
 
@@ -145,7 +145,29 @@ EarModeList_NSpecLists(int index)
 					{ wxT("LEFT"),	GENERAL_EAR_LEFT },
 					{ wxT("RIGHT"),	GENERAL_EAR_RIGHT },
 					{ wxT("BOTH"),	GENERAL_EAR_BOTH },
-					{ 0, 0 },
+					{ 0,			GENERAL_EAR_NULL },
+				};
+	return(&modeList[index]);
+
+}
+
+/****************************** SpacingModeList ********************************/
+
+/*
+ * This routine returns a name specifier for the spacing mode  list.
+ * This routine makes no checks on limits.  It is expected to be used in
+ * conjunction with the UtNameSpecifier routines.
+ */
+
+NameSpecifier *
+SpacingModeList_NSpecLists(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+					{ wxT("ERB"),		GENERAL_SPACINGMODE_ERB },
+					{ wxT("LINEAR"),	GENERAL_SPACINGMODE_LINEAR },
+					{ wxT("OCTAVE"),	GENERAL_SPACINGMODE_OCTAVE },
+					{ 0,				GENERAL_SPACINGMODE_NULL },
 				};
 	return(&modeList[index]);
 
@@ -198,7 +220,7 @@ SetPhaseArray_NSpecLists(double *phase, long *ranSeed, RandParsPtr randPars,
 	}
 
 }
-	
+
 /****************************** GetNumListEntries *****************************/
 
 /*
@@ -236,7 +258,7 @@ InitNameList_NSpecLists(NameSpecifierPtr prototypeList, WChar *textPtr)
 	static WChar *funcName = wxT("InitNameList_NSpecLists");
 	int		i, numEntries;
 	NameSpecifierPtr	list;
-	
+
 	if ((numEntries = GetNumListEntries_NSpecLists(prototypeList)) < 1) {
 		NotifyError(wxT("%s: Prototyp list not set up correctly."), funcName);
 		return(NULL);

@@ -1,5 +1,5 @@
 /* XPM */
-static char * io_tool_xpm[] = {
+static const char * io_tool_xpm[] = {
 "22 22 14 1",
 " 	c None",
 ".	c #030303",

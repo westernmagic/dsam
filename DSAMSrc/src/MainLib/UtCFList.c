@@ -68,13 +68,13 @@ static NameSpecifier	cFListDiagModeList[] = {
  * This function allocates memory for the centre frequency data structure.
  * The function returns a pointer to the prepared structure.
  */
- 
+
 CFListPtr
 Init_CFList(const WChar *callingFunctionName)
 {
 	static const WChar *funcName = wxT("Init_CFList");
 	CFListPtr theCFs;
-	
+
 	if ((theCFs = (CFListPtr) malloc(sizeof(CFList))) == NULL ) {
 		NotifyError(wxT("%s: Out of Memory (called by %s)."), funcName,
 		  callingFunctionName);
@@ -98,7 +98,7 @@ Init_CFList(const WChar *callingFunctionName)
 	theCFs->bParList = NULL;
 	theCFs->oldNumChannels = 0;
 	return(theCFs);
-	
+
 }
 
 /****************************** Free ******************************************/
@@ -106,7 +106,7 @@ Init_CFList(const WChar *callingFunctionName)
 /*
  * This function de-allocates memory for the centre frequency data structure.
  */
- 
+
 void
 Free_CFList(CFListPtr *theCFs)
 {
@@ -147,7 +147,7 @@ CFModeList_CFList(int index)
 			{ wxT("HUMAN"),			CFLIST_HUMAN_MODE },
 			{ wxT("MACAQUE"),		CFLIST_MACAQUEM_MODE },
 			{ wxT("IDENTICAL"),		CFLIST_IDENTICAL_MODE },
-			{ NULL,					CFLIST_NULL }
+			{ 0,					CFLIST_NULL }
 		};
 	return (&modeList[index]);
 
@@ -222,7 +222,7 @@ SetDiagnosticMode_CFList(CFListPtr theCFs, WChar *modeName)
 	static const WChar *funcName = wxT("SetDiagnosticMode_CFList");
 	int		mode;
 
-	if ((mode = Identify_NameSpecifier(modeName, cFListDiagModeList)) == 
+	if ((mode = Identify_NameSpecifier(modeName, cFListDiagModeList)) ==
 	  CFLIST_DIAG_NULL) {
 		NotifyError(wxT("%s: Unknown diagnostic mode (%s)."), funcName,
 		  modeName);
@@ -496,7 +496,7 @@ SetIndividualBandwidth_CFList(CFListPtr theCFs, int theIndex,
  * This routine enables and disables the respective parameters for each CF mode.
  * It assumes that the parameter list has been correctly initialised.
  */
- 
+
 BOOLN
 SetCFUniParListMode_CFList(CFListPtr theCFs)
 {
@@ -557,7 +557,7 @@ SetCFUniParListMode_CFList(CFListPtr theCFs)
  * This routine initialises and sets the CFList's universal parameter list.
  * This list provides universal access to the CFList's parameters.
  */
- 
+
 BOOLN
 SetCFUniParList_CFList(CFListPtr theCFs)
 {
@@ -724,11 +724,11 @@ SetBandwidthScaler_CFList(CFListPtr theCFs, double scaler)
 /********************************* SetBandwidthUniParListMode *****************/
 
 /*
- * This routine enables and disables the respective parameters for each 
+ * This routine enables and disables the respective parameters for each
  * bandwidth mode.
  * It assumes that the parameter list has been correctly initialised.
  */
- 
+
 BOOLN
 SetBandwidthUniParListMode_CFList(CFListPtr theCFs)
 {
@@ -774,12 +774,12 @@ SetBandwidthUniParListMode_CFList(CFListPtr theCFs)
  * This routine initialises and sets the CFlist's universal parameter list.
  * This list provides universal access to the CFList's parameters.
  */
- 
+
 BOOLN
 SetBandwidthUniParList_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("SetBandwidthUniParList_CFList");
-	
+
 	UniParPtr	pars;
 
 	if (!CheckInit_CFList(theCFs, funcName))
@@ -827,7 +827,7 @@ SetBandwidthUniParList_CFList(CFListPtr theCFs)
  * This routine checks whether or not a CFList.has been initialised.
  *
  */
- 
+
 BOOLN
 CheckInit_CFList(CFListPtr theCFs, const WChar *callingFunction)
 {
@@ -839,7 +839,7 @@ CheckInit_CFList(CFListPtr theCFs, const WChar *callingFunction)
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /**************************** CheckPars ***************************************/
@@ -856,7 +856,7 @@ CheckPars_CFList(CFListPtr theCFs)
 	static const WChar *funcName = wxT("CheckPars_CFList");
 	BOOLN	ok;
 	int	i;
-	
+
 	if (!CheckInit_CFList(theCFs, wxT("CheckPars_CFList")))
 		return(FALSE);
 	if (theCFs->numChannels <= 0) {
@@ -883,7 +883,7 @@ CheckPars_CFList(CFListPtr theCFs)
 			}
 	}
 	return(ok);
-	
+
 }
 
 /****************************** AllocateFrequencies ***************************/
@@ -923,7 +923,7 @@ AllocateFrequencies_CFList(CFListPtr theCFs)
  * If the number of channels is one, then it is assumed that 'single' or 'user'
  * mode is being used.
  */
- 
+
 CFListPtr
 GenerateDefault_CFList(WChar *modeName, int numberOfCFs, double minCF,
   double maxCF, WChar *bwModeName, double (* BWidthFunc)(struct BandwidthMode *,
@@ -986,7 +986,7 @@ GenerateERB_CFList(CFListPtr theCFs)
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
-	theCFs->numChannels = (int) ceil((ERBRateFromF_Bandwidth(theCFs->maxCF) - 
+	theCFs->numChannels = (int) ceil((ERBRateFromF_Bandwidth(theCFs->maxCF) -
 	  ERBRateFromF_Bandwidth(theCFs->minCF)) * theCFs->eRBDensity);
 	if (theCFs->numChannels < 1) {
 		NotifyError(wxT("%s: Illegal frequency range %g - %g, or ERB density, ")
@@ -1051,13 +1051,13 @@ GenerateERBn_CFList(CFListPtr theCFs)
  * This routine also sets default values for the CFList structure's 'minCF' and
  * 'maxCF' fields.
  */
- 
+
 BOOLN
 GenerateUser_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateUser_CFList");
 	int		i;
-	
+
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
 	if (theCFs->frequency == NULL) {
@@ -1541,7 +1541,7 @@ ReadPars_CFList(FILE *fp)
 	double	*frequencies = NULL, focalCFFrequency, lowestCFFrequency;
 	double	highestCFFrequency, eRBDensity;
 	CFListPtr	theCFs = NULL;
-	
+
 	if (!GetPars_ParFile(fp, wxT("%s"), diagModeName)) {
 		NotifyError(wxT("%s: Could not read diagnostic mode."), funcName);
 		return(NULL);
@@ -1642,7 +1642,7 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidthArray_CFList");
 	int		i;
-	
+
 	switch (theCFs->bandwidthMode.specifier) {
 	case BANDWIDTH_NULL:
 		break;
@@ -1691,12 +1691,12 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
  * It returns TRUE if the operation is successful.
  * If the 'modeName' is set to NULL, then the mode will not be reset.
  */
- 
+
 BOOLN
 SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, double *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidths_CFList");
-	
+
 	if (!CheckPars_CFList(theCFs)) {
 		NotifyError(wxT("%s: Centre frequency list  parameters not correctly ")
 		  wxT("set, cannot add bandwidths."), funcName);
@@ -1737,7 +1737,7 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
 	static const WChar *funcName = wxT("ReadBandwidths_CFList");
 	WChar	modeName[MAXLINE];
 	int		i;
-		
+
 	if (!CheckPars_CFList(theCFs)) {
 		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
 		  wxT("set, cannot add bandwidths."), funcName);
@@ -1946,7 +1946,7 @@ PrintList_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("PrintList_CFList(");
 	int		i;
-	
+
 	if (!CheckPars_CFList(theCFs)) {
 		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
 		  wxT("set."), funcName);
@@ -1983,7 +1983,7 @@ void
 PrintPars_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("PrintPars_CFList");
-	
+
 	if (!CheckPars_CFList(theCFs)) {
 		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
 		  wxT("set."), funcName);

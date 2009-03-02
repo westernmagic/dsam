@@ -44,7 +44,7 @@ Pa_Sources	= PaComUtils.c PaGeneral.c PaMaster1.c PaUtilities.c
 St_Sources	= StAMTone.c StBPTone.c StClick.c StFMTone.c StHarmonic.c \
 				StMPPTone.c StMPTone.c StPTone.c StPTone2.c StPulseTrain.c \
 				StStepFun.c StWhiteNoise.c StEGatedTone.c StFSHarmonic.c \
-				StCMRNoiseMask.c
+				StCMRNoiseMask.c StCMRHarmMask.c
 
 Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtBinSignal.c UtCFList.c UtCmplxM.c UtCompress.c \
@@ -58,7 +58,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtParArray.c UtGCFilters.c UtFIRFilters.c UtRemez.c \
 				UtDynaBList.c UtLocalChans.c UtSwapLR.c UtPadSignal.c \
 				UtMathOp.c UtZhang.c UtTranspose.c UtCollateSignals.c \
-				UtZilanyBruce.c
+				UtZilanyBruce.c UtNoiseMod.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectSignals.c
 
@@ -66,7 +66,8 @@ pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
 libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(IO_Sources) \
-					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources) \
+					$(BUILT_SOURCES)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c

@@ -14,7 +14,7 @@
  *				28-09-98 LPO: Introduced the MAX_FILE_PATH constant definition
  *				and used in in all modules which need to store file names.
  *				29-01-99 LPO: Under the GRAPHICS mode the 'NotifyError' routine
- *				will produce a dialog the first time (if the 
+ *				will produce a dialog the first time (if the
  *				dSAM.'dialogOutputFlag' flag is set to TRUE).  After the first
  *				dialog is created, then subsequent calls will send error
  *				messages to the console.
@@ -41,7 +41,7 @@
  * Created:		12 Jul 1993
  * Updated:		08 Jul 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #ifdef HAVE_CONFIG_H
@@ -53,6 +53,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "GeCommon.h"
 #include "UtString.h"
@@ -94,7 +95,7 @@ DSAM	dSAM = {
  * It is used in the same way as the vprintf statement.
  * This is the standard version for ANSI C.
  */
- 
+
 void
 DPrintStandard(const WChar *format, va_list args)
 {
@@ -102,7 +103,7 @@ DPrintStandard(const WChar *format, va_list args)
 	if (dSAM.diagnosticsPrefix)
 		DSAM_fprintf(dSAM.parsFile, STR_FMT, dSAM.diagnosticsPrefix);
 	DSAM_vfprintf(dSAM.parsFile, format, args);
-	
+
 }
 
 /*************************** DPrint *******************************************/
@@ -112,7 +113,7 @@ DPrintStandard(const WChar *format, va_list args)
  * It is used in the same way as the printf statement.
  * This is the standard version for ANSI C.
  */
- 
+
 void
 DPrint(const WChar *format, ...)
 {
@@ -134,7 +135,7 @@ DPrint(const WChar *format, ...)
 	else
 		(* dSAM.DPrint)(format, args);
 	va_end(args);
-	
+
 }
 
 /*************************** DPrintBuffer *************************************/
@@ -222,7 +223,7 @@ DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 		}
 	if (c > 0)
 		(* EmptyDiagBuffer)(buffer, &c);
-	
+
 }
 
 /*************************** DiagnosticTitle **********************************/
@@ -253,7 +254,7 @@ DiagnosticTitle(CommonDiagSpecifier type)
  * GUI mode.
  * It does not take any further action, as responses to errors differ: some
  * errors are recoverable while others are fatal.
- */ 
+ */
 
 void
 NotifyStandard(const WChar *message, CommonDiagSpecifier type)
@@ -313,13 +314,13 @@ NotifyError(const WChar *format, ...)
  * used in the same way as the printf statement.  It does not take any further
  * action.
  */
- 
+
 void
 NotifyWarning(const WChar *format, ...)
 {
 	WChar	message[LONG_STRING];
 	va_list	args;
-	
+
 	CheckInitWarningsFile_Common();
 	if (!dSAM.warningsFile)
 		return;
@@ -362,7 +363,7 @@ GetFilePtr(const WChar *outputSpecifier, FileAccessSpecifier mode)
 		  fileAccess)) == NULL) {
 			NotifyError(wxT("%s: Could not open file '%s' output sent to ")
 			  wxT("stderr."), funcName, outputSpecifier);
-			return(stderr); 
+			return(stderr);
 		}
 	}
 	return(fp);
@@ -642,7 +643,7 @@ GetParsFileFPath_Common(WChar *parFile)
 {
 	static const WChar *funcName = wxT("GetParsFileFPath_Common");
 	static WChar filePath[MAX_FILE_PATH];
-	
+
 	if (!dSAM.parsFilePath)
 		return(parFile);
 	if (DSAM_strlen(parFile) >= MAX_FILE_PATH) {
@@ -755,7 +756,7 @@ CheckInitWarningsFile_Common(void)
 
 /*
  * This frees the memory for a double array, after first checking that it is not
- * set to NULL. 
+ * set to NULL.
  */
 
 void
@@ -771,7 +772,7 @@ FreeDoubleArray_Common(double **p)
 /*************************** GetDSAMPtr ***************************************/
 
 /*
- * This return returns the global DSAMPtr structure pointer. 
+ * This return returns the global DSAMPtr structure pointer.
  */
 
 DSAMPtr
@@ -784,7 +785,7 @@ GetDSAMPtr_Common(void)
 /*************************** SwitchGUILocking *********************************/
 
 /*
- * This routine turns the GUI locking on and off to avoid conflicts. 
+ * This routine turns the GUI locking on and off to avoid conflicts.
  */
 
 void
@@ -827,4 +828,3 @@ ResizeDoubleArray_Common(double **array, int *oldLength, int length)
 	*oldLength = length;
 	return(TRUE);
 }
-

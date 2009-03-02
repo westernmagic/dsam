@@ -478,8 +478,8 @@ GetUniParListPtr_IHCRP_LopezPoveda(void)
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(lopezPovedaPtr->parList);
@@ -1903,7 +1903,6 @@ SetVMRest_IHCRP_LopezPoveda(double theVMRest)
 BOOLN
 PrintPars_IHCRP_LopezPoveda(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHCRP_LopezPoveda");
 	int		i;
 
 	DPrint(wxT("Lopez-Poveda IHCRP Module Parameters:-\n"));
@@ -2162,7 +2161,8 @@ RunModel_IHCRP_LopezPoveda(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_IHCRP_LopezPoveda");
 	register ChanData	 *inPtr, *outPtr;
-	int		i, j, chan;
+	int		j, chan;
+	ChanLen	i;
 	double	dt, Gu, GkVN, Vtm, u, V_1, T1, T2, M1, M2, A, B, C, currentSum, GkVTSum;
 	LPIonChannelPtr	iC;
 	SignalDataPtr	inSignal, outSignal;

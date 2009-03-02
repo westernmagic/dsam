@@ -1,5 +1,5 @@
 /* XPM */
-static char * analysis_tool_xpm[] = {
+static const char * analysis_tool_xpm[] = {
 "22 22 7 1",
 " 	c None",
 ".	c #000000",

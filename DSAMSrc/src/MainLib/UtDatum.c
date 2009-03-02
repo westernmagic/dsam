@@ -15,11 +15,11 @@
  *				19-11-98 LPO: Corrected the "General parameter list' bug, that
  *				meant that the 'array_index' general parameter was not being
  *				found for a particular process.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				27-01-99 LPO: The static 'stepCount' in the 'InstallInst_'
  *				routine was not being reset to zero when installing 'datum'
- *				nodes at the head of the list.  This occurred with the 
+ *				nodes at the head of the list.  This occurred with the
  *				GUI mode, where simulations needed to be recreated.
  *				02-02-99 LPO: The 'FindModuleUniPar_' routine now also returns
  *				the simulation 'DatumPtr' at which the universal parameter was
@@ -107,7 +107,7 @@ GetLastInst_Utility_Datum(DatumPtr head)
 /****************************** InitInst **************************************/
 
 /*
- * Initialises a datum instruction. The space is allocated and the basic 
+ * Initialises a datum instruction. The space is allocated and the basic
  * settings assigned.
  */
 
@@ -116,7 +116,7 @@ InitInst_Utility_Datum(int type)
 {
 	static const WChar *funcName = wxT("InitInst_Utility_Datum");
 	DatumPtr	datum;
-	
+
 	if ((datum = (DatumPtr) malloc(sizeof (Datum))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for Datum."), funcName);
 		return(NULL);
@@ -139,10 +139,7 @@ InitInst_Utility_Datum(int type)
 		break;
 	case REPEAT:
 		datum->u.loop.count = 1;
-		datum->u.loop.stopPC = NULL;
-		datum->classSpecifier = CONTROL_MODULE_CLASS;
-		break;
-	case STOP:
+		datum->u.loop.pc = NULL;
 		datum->classSpecifier = CONTROL_MODULE_CLASS;
 		break;
 	default:
@@ -170,7 +167,7 @@ InstallInst_Utility_Datum(DatumPtr *head, int type)
 {
 	static const WChar *funcName = wxT("InstallInst_Utility_Datum");
 	DatumPtr	datum, pc;
-	
+
 	if ((datum = InitInst_Utility_Datum(type)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise datum instruction."),
 		  funcName);
@@ -235,7 +232,7 @@ InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
  * Removes a connection label from a list.
  */
 
-void    
+void
 RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label)
 {
 	static const WChar	*funcName = wxT("RemoveConnection_Utility_Datum");
@@ -257,7 +254,7 @@ RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label)
 
 /*
  * Disconnect datum instructions in a list.
- * Bear in mind that when disconnecting to processes, there may be processes
+ * Bear in mind that when disconnecting two processes, there may be processes
  * in between, i.e. multiply connected processes.  They need to be between for
  * process run flow.
  */
@@ -350,7 +347,7 @@ FreeInstruction_Utility_Datum(DatumPtr *pc)
 /****************************** FreeInstFromSim *******************************/
 
 /*
- * This routine frees a single Datum instructions from the simulation.
+ * This routine frees a single Datum instruction from the simulation.
  * Note that all of the strings where initialised to 'NULL_STRING', but if
  * they were set, then the string was allocated space.
  */
@@ -358,15 +355,26 @@ FreeInstruction_Utility_Datum(DatumPtr *pc)
 void
 FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc)
 {
+	DatumPtr	nextPC;
 	if (!pc)
 		return;
 
+	if ((pc->type == REPEAT) && pc->u.loop.pc) {
+		nextPC = pc->u.loop.pc;
+		if (pc->next) {
+			pc->next->previous = GetLastInst_Utility_Datum(pc->u.loop.pc);
+			pc->next->previous->next = pc->next;
+		}
+	} else
+		nextPC = pc->next;
 	if (!pc->previous) {
-		*start = pc->next;
+		*start = nextPC;
 		if (*start)
 			(*start)->previous = NULL;
-	} else
-		pc->previous->next = pc->next;
+	} else {
+		pc->previous->next = nextPC;
+		nextPC->previous = pc->previous;
+	}
 	FreeInstruction_Utility_Datum(&pc);
 
 }
@@ -506,18 +514,16 @@ PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 				DPrint(wxT("\t< %s\n"),  pc->u.proc.parFile);
 			break;
 		case REPEAT:
-			PrintIndentAndLabel_Utility_Datum(pc, indentLevel++);
+			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
 			DPrint(wxT("%s %d {\n"), GetProcessName_Utility_Datum(pc), pc->u.
 			  loop.count);
+			PrintSimScript_Utility_Datum(pc->u.loop.pc, scriptName, indentLevel + 1,
+			  prefix,checkForSubSimScripts);
 			break;
 		case RESET:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
 			DPrint(wxT("%s\t%s\n"), GetProcessName_Utility_Datum(pc),
 			  pc->u.ref.string);
-			break;
-		case STOP:
-			PrintIndentAndLabel_Utility_Datum(pc, --indentLevel);
-			DPrint(wxT("}\n"));
 			break;
 		default:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
@@ -638,6 +644,8 @@ CmpLabel_Utility_Datum(void *a, void *b)
 /*
  * This function sets up the specified connections for a simulation.
  * It assumes that the list has been properly initialised.
+ * A ':' is used for the error message label because there seems to be an
+ * error in the GNU C vsnwprintf treatment of '%%'.
  */
 
 BOOLN
@@ -653,7 +661,7 @@ SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		label = (WChar *) p->data;
 		if ((foundPtr = FindElement_Utility_DynaBList(labelBList,
 		  CmpProcessLabel_Utility_Datum, label)) == NULL) {
-			NotifyError(wxT("%s: Could not find process '%s%% %s.%lu' input ")
+			NotifyError(wxT("%s: Could not find process '%s: %s.%lu' output ")
 			  wxT("labelled '%s' in the simulation script."), funcName, pc->
 			  label, pc->data->module->name, pc->data->handle, label);
 			return(FALSE);
@@ -662,7 +670,7 @@ SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 		if (!FindElement_Utility_DynaList(foundPC->u.proc.inputList,
 		  CmpLabel_Utility_Datum, pc->label)) {
 			NotifyError(wxT("%s: Could not find label '%s' in\nprocess ")
-			  wxT("'%s%% %s.%lu' inputs."), funcName, pc->label, foundPC->label,
+			  wxT("'%s: %s.%lu' inputs."), funcName, pc->label, foundPC->label,
 			  foundPC->data->module->name, foundPC->data->handle);
 			return(FALSE);
 		}
@@ -764,6 +772,9 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 				ok = FALSE;
 			}
 			break;
+		case REPEAT:
+			if (!ResolveInstLabels_Utility_Datum(pc->u.loop.pc, labelBList))
+				ok = FALSE;
 		default:
 			;
 		}
@@ -779,22 +790,32 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
  * It assumes that the list has been properly initialised.
  * It assumes that if the next process has its input specified, then no
  * connection should be made.
+ * It returns a pointer to the last datum (with a NULL next pointer).
  */
 
-BOOLN
+DatumPtr
 SetDefaultConnections_Utility_Datum(DatumPtr start)
 {
-	DatumPtr	pc1, pc2;
+	DatumPtr	pc1, pc2, lastPC;
 
-	for (pc1 = start; (pc1 != NULL); pc1 = pc1->next)
+	for (; (start != NULL); start = start->next) {
+		pc1 = start;
+		if (pc1->type == REPEAT)
+			pc1 = SetDefaultConnections_Utility_Datum(pc1->u.loop.pc);
 		if ((pc1->type == PROCESS) && !pc1->u.proc.outputList) {
-			for (pc2 = pc1->next; (pc2 != NULL) && (pc2->type != PROCESS);
-			  pc2 = pc2->next)
-				;
+			pc2 = start->next;
+			while ((pc2 != NULL) && (pc2->type != PROCESS))
+				if (pc2->type == REPEAT)
+					pc2 = pc2->u.loop.pc;
+				else
+					pc2 = pc2->next;
 			if ((pc2 != NULL) && !pc2->u.proc.inputList)
 				ConnectOutSignalToIn_EarObject( pc1->data, pc2->data );
 		}
-	return(TRUE);
+		if (!pc1->next)
+			lastPC = pc1;
+	}
+	return(lastPC);
 
 }
 
@@ -803,7 +824,7 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
 /*
  * This routine sets the default label for a process.
  * If a label has not been defined for a process, then by default it is set to
- * the process' step number, or the next unused process step number if the 
+ * the process' step number, or the next unused process step number if the
  * 'labelBList' argument is not NULL.
  * It returns FALSE if it fails in any way.
  */
@@ -833,7 +854,7 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 			labelNumber++;
 	}
 	GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-			  
+
 	if ((pc->label = InitString_Utility_String(label)) == NULL) {
 		NotifyError(wxT("%s: Out of memory for label '%s'."), funcName, label);
 		return(FALSE);
@@ -854,15 +875,19 @@ BOOLN
 SetDefaultLabels_Utility_Datum(DatumPtr start)
 {
 	static const WChar *funcName = wxT("SetDefaultLabels_Utility_Datum");
+	BOOLN	ok = TRUE;
 	DatumPtr	pc;
 
-	for (pc = start; (pc != NULL); pc = pc->next)
+	for (pc = start; (pc != NULL) && ok; pc = pc->next) {
 		if (!SetDefaultLabel_Utility_Datum(pc, NULL)) {
 			NotifyError(wxT("%s: Could not set default label '%s' for process ")
 			  wxT("'%s'."), funcName, pc->stepNumber, pc->u.proc.moduleName);
 			return(FALSE);
 		}
-	return(TRUE);
+		if (pc->type == REPEAT)
+			ok = SetDefaultLabels_Utility_Datum(pc->u.loop.pc);
+	}
+	return(ok);
 
 }
 
@@ -894,8 +919,7 @@ InitProcessInst_Utility_Datum(DatumPtr pc)
 /****************************** InitialiseEarObjects **************************/
 
 /*
- * This routine initialises and connects the EarObjects for the simulation
- * script.
+ * This routine initialises and EarObjects for the simulation script.
  */
 
 BOOLN
@@ -913,7 +937,7 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 		NotifyError(wxT("%s: Could not set default labels."), funcName);
 		return(FALSE);
 	}
-	for (pc = start; pc != NULL; pc = pc->next)
+	for (pc = start; ok && (pc != NULL); pc = pc->next)
 		if (pc->type == PROCESS) {
 			if (!InitProcessInst_Utility_Datum(pc)) {
 				NotifyError(wxT("%s: Could not initialise process with '%s'."),
@@ -926,15 +950,8 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 				  wxT("simulation."), funcName, pc->label);
 				ok = FALSE;
 			}
-		}
-	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(start, *labelBList);
-
-	if (ok && !SetDefaultConnections_Utility_Datum(start)) {
-		NotifyError(wxT("%s Could not set default foward connections."),
-		  funcName);
-		ok = FALSE;
-	}
+		} else if (pc->type == REPEAT)
+			ok = InitialiseEarObjects_Utility_Datum(pc->u.loop.pc, labelBList);
 	return (ok);
 
 }
@@ -950,10 +967,12 @@ FreeEarObjects_Utility_Datum(DatumPtr start)
 {
 	/* static const WChar	*funcName = wxT("FreeEarObjects_Utility_Datum"); */
 	DatumPtr	pc;
-	
+
 	for (pc = start; pc != NULL; pc = pc->next)
 		if (pc->type == PROCESS)
 			Free_EarObject(&pc->data);
+		else if (pc->type == REPEAT)
+			FreeEarObjects_Utility_Datum(pc->u.loop.pc);
 	return(TRUE);
 }
 
@@ -977,7 +996,7 @@ NameAndLabel_Utility_Datum(DatumPtr pc)
 		NotifyError(wxT("%s: Pointer not initialised."), funcName);
 		return(NULL);
 	}
-	Snprintf_Utility_String(string, MAXLINE, wxT("%s.%s"), 
+	Snprintf_Utility_String(string, MAXLINE, wxT("%s.%s"),
 	  GetProcessName_Utility_Datum(pc), pc->label);
 	return(string);
 
@@ -990,7 +1009,7 @@ NameAndLabel_Utility_Datum(DatumPtr pc)
  * If it encounters the 'DISPLAY_MODULE' module, then it will attempt to set the
  * window title.  It checks for a NULL 'UniParListPtr' which indicates that the
  * GUI library is not being used.
- * 
+ *
  * It assumes that all 'internal' sub-simulation scripts that have the
  * simulation already initialised only needs the other parameters to be
  * initialised.
@@ -1001,7 +1020,7 @@ InitialiseModules_Utility_Datum(DatumPtr start)
 {
 	BOOLN	ok;
 	DatumPtr	pc;
-	
+
 	for (pc = start, ok = TRUE; (pc != NULL) && ok; pc = pc->next)
 		if (pc->type == PROCESS ) {
 			if (GetDSAMPtr_Common()->usingGUIFlag && (pc->data->module->
@@ -1016,7 +1035,8 @@ InitialiseModules_Utility_Datum(DatumPtr start)
 				if (!ReadPars_ModuleMgr(pc->data, pc->u.proc.parFile))
 					ok = FALSE;
 			}
-		}
+		} else if (pc->type == REPEAT)
+			ok = InitialiseModules_Utility_Datum(pc->u.loop.pc);
 	return(ok);
 
 }
@@ -1032,11 +1052,13 @@ PrintParsModules_Utility_Datum(DatumPtr start)
 {
 	BOOLN	ok;
 	DatumPtr	pc;
-	
+
 	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
-		if (pc->type == PROCESS)
+		if (pc->type == PROCESS) {
 			if ((pc->data == NULL) || !PrintPars_ModuleMgr( pc->data ))
 				ok = FALSE;
+		} else if (pc->type == REPEAT)
+			ok = PrintParsModules_Utility_Datum(pc->u.loop.pc);
 	return(ok);
 
 }
@@ -1051,17 +1073,17 @@ PrintParsModules_Utility_Datum(DatumPtr start)
 BOOLN
 PrintParListModules_Utility_Datum(DatumPtr start, WChar *prefix)
 {
-	BOOLN	ok;
+	BOOLN	ok = TRUE;
 	WChar	suffix[MAXLINE], fmtParFileName[MAXLINE];
 	DatumPtr		pc;
 	UniParListPtr	parList;
-	
-	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
+
+	for (pc = start; ok && (pc != NULL); pc = pc->next)
 		if ((pc->type == PROCESS) && (pc->data->module->specifier !=
 		  NULL_MODULE)) {
 			if ((pc->data == NULL) || ((parList = GetUniParListPtr_ModuleMgr(
 			  pc->data )) == NULL))
-				ok = FALSE;
+				continue;
 			else if (pc->data->module->specifier == SIMSCRIPT_MODULE)
 				ok = PrintParListModules_Utility_Datum(GetSimulation_ModuleMgr(
 				  pc->data), prefix);
@@ -1076,7 +1098,8 @@ PrintParListModules_Utility_Datum(DatumPtr start, WChar *prefix)
 				  TRUE;
 				DPrint(wxT("\n"));
 			}
-		}
+		} else if (pc->type == REPEAT)
+			PrintParListModules_Utility_Datum(pc->u.loop.pc, prefix);
 	return(ok);
 
 }
@@ -1092,11 +1115,11 @@ PrintParListModules_Utility_Datum(DatumPtr start, WChar *prefix)
 BOOLN
 CheckParLists_Utility_Datum(DatumPtr start)
 {
-	BOOLN	ok;
+	BOOLN	ok = TRUE;
 	DatumPtr		pc;
 	UniParListPtr	parList;
-	
-	for (pc = start, ok = TRUE; pc != NULL; pc = pc->next)
+
+	for (pc = start; ok && (pc != NULL); pc = pc->next)
 		if ((pc->type == PROCESS) && (pc->data->module->specifier !=
 		  NULL_MODULE)) {
 			if (pc->data == NULL)
@@ -1106,7 +1129,8 @@ CheckParLists_Utility_Datum(DatumPtr start)
 				  NULL) && !CheckParList_UniParMgr(parList))
 					ok = FALSE;
 			}
-		}
+		} else if (pc->type == REPEAT)
+			ok = CheckParLists_Utility_Datum(pc->u.loop.pc);
 	return(ok);
 
 }
@@ -1121,12 +1145,14 @@ void
 ResetSimulation_Utility_Datum(DatumPtr start)
 {
 	DatumPtr		pc;
-	
+
 	for (pc = start; pc != NULL; pc = pc->next)
 		if ((pc->type == PROCESS) && (pc->data->module->specifier !=
-		  NULL_MODULE))
+		  NULL_MODULE)) {
 			if (pc->data != NULL)
 				ResetProcess_EarObject(pc->data);
+		} else if (pc->type == REPEAT)
+			ResetSimulation_Utility_Datum(pc->u.loop.pc);
 
 }
 
@@ -1134,8 +1160,8 @@ ResetSimulation_Utility_Datum(DatumPtr start)
 
 /*
  * This routine executes a set of simulation instructions.
- * It continues until it reachs a STOP instructions, or a NULL instuction.
- * It returns a pointer to the STOP instruction or NULL.
+ * It continues until it reachs  a NULL instuction.
+ * It returns a pointer to the last instruction run.
  */
 
 #define	GET_PROCESS(DATA)	((!threadIndex)? (DATA): &(DATA)->threadProcs[ \
@@ -1173,24 +1199,21 @@ ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
 				break;
 			ResetProcess_EarObject(process);
 			break;
-		case STOP:
-			return (pc);
 		case REPEAT:
 			if (!pc->u.loop.count) {
 				NotifyError(wxT("%s: Illegal zero 'repeat' count."), funcName);
-				return(NULL);
-			}
-			if (!pc->u.loop.stopPC) {
-				NotifyError(wxT("%s: Repeat has no end point."), funcName);
 				return(NULL);
 			}
 #			if DEBUG
 			clock_t startLoop = clock();
 #			endif
 			for (i = 0; i < pc->u.loop.count; i++)
-				lastInstruction = Execute_Utility_Datum(pc->next, passedEnd,
-				  threadIndex);
-			pc = lastInstruction;
+				if (!Execute_Utility_Datum(pc->u.loop.pc, passedEnd,
+				  threadIndex)) {
+					NotifyError(wxT("%s: Could not run loop '%s': Failed at step %d."),
+					  funcName, pc->label, i);
+					return(NULL);
+				}
 #			if DEBUG
 			clock_t EndLoop = clock();
 #			endif
@@ -1298,6 +1321,7 @@ FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledProcess_Utility_Datum");
 	DatumPtr	pc;
+	EarObjectPtr	data;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal label!"), funcName);
@@ -1307,6 +1331,10 @@ FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label)
 		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label,
 		  pc->label) == 0)))
 			return(pc->data);
+		else if ((pc->type == REPEAT) && ((data = FindLabelledProcess_Utility_Datum(
+		  pc->u.loop.pc, label)) != NULL))
+			return(data);
+
 	return(NULL);
 
 }
@@ -1326,7 +1354,7 @@ DatumPtr
 FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledProcessInst_Utility_Datum");
-	DatumPtr	pc;
+	DatumPtr	pc, pc2;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal NULL label!"), funcName);
@@ -1336,6 +1364,9 @@ FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label)
 		if ((pc->type == PROCESS) && ((label[0] == '*') || (DSAM_strcmp(label,
 		  pc->label) == 0)))
 			return(pc);
+		else if ((pc->type == REPEAT) && ((pc2 = FindLabelledProcessInst_Utility_Datum(
+		  pc->u.loop.pc, label)) != NULL))
+			return(pc2);
 	return(NULL);
 
 }
@@ -1356,7 +1387,7 @@ DatumPtr
 FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledInst_Utility_Datum");
-	DatumPtr	pc;
+	DatumPtr	pc, pc2;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal NULL label!"), funcName);
@@ -1366,6 +1397,9 @@ FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label)
 		if (((pc->type == PROCESS) || (pc->type == REPEAT)) && ((label[0] ==
 		  '*') || (DSAM_strcmp(label, pc->label) == 0)))
 			return(pc);
+		else if ((pc->type == REPEAT) && ((pc2 = FindLabelledInst_Utility_Datum(
+		  pc->u.loop.pc, label)) != NULL))
+			return(pc2);
 	return(NULL);
 
 }
@@ -1385,7 +1419,7 @@ FindModuleProcessInst_Utility_Datum(DatumPtr start, WChar *moduleName)
 {
 	static const WChar *funcName = wxT("FindModuleProcessInst_Utility_Datum");
 	WChar		upperName[MAXLINE];
-	DatumPtr	pc;
+	DatumPtr	pc, pc2;
 
 	if (moduleName == NULL) {
 		NotifyError(wxT("%s: Illegal module name!"), funcName);
@@ -1396,6 +1430,9 @@ FindModuleProcessInst_Utility_Datum(DatumPtr start, WChar *moduleName)
 		if ((pc->type == PROCESS) && (DSAM_strstr(pc->data->module->name,
 		  upperName) != NULL))
 			return(pc);
+		else if ((pc->type == REPEAT) && ((pc2 = FindModuleProcessInst_Utility_Datum(
+		  pc->u.loop.pc, moduleName)) != NULL))
+			return(pc2);
 	NotifyError(wxT("%s: Could not find module '%s' in the simulation script."),
 	  funcName, upperName);
 	return(NULL);
@@ -1477,6 +1514,13 @@ FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 					return(TRUE);
 				}
 			}
+		} else if ((*pc)->type == REPEAT) {
+			tempPc = (*pc)->u.loop.pc;
+			if (FindModuleUniPar_Utility_Datum(parList, index, &tempPc, parSpecifier,
+			  FALSE)) {
+				*pc = tempPc;
+				return(TRUE);
+			}
 		}
 	if (diagnosticsOn && pList) {
 		if (processLabel[0] == '\0')
@@ -1507,11 +1551,12 @@ FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier)
 	static const WChar *funcName = wxT("FindProcess_Utility_Datum");
 	WChar	*p, processName[MAXLINE], processStr[MAXLINE];
 	WChar	processLabel[MAXLINE];
+	EarObjectPtr	data;
 
 	if (processSpecifier == NULL) {
 		NotifyError(wxT("%s: Illegal parameter name '%s'!"), funcName,
 		  processSpecifier);
-		return(FALSE);
+		return(NULL);
 	}
 	DSAM_strncpy(processName, processSpecifier, MAXLINE);
 	if ((p = DSAM_strchr(processName, UNIPAR_NAME_SEPARATOR)) == NULL)
@@ -1532,7 +1577,10 @@ FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier)
 			  0] == '\0') || (StrNCmpNoCase_Utility_String(pc->label,
 			  processLabel) == 0)))
 				return(pc->data);
-		}
+		} if (pc->type == REPEAT)
+			if ((data = FindProcess_Utility_Datum(pc->u.loop.pc, processSpecifier)) !=
+			  NULL)
+				return(data);
 	if (processLabel[0] == '\0')
 		processStr[0] = '\0';
 	else
@@ -1556,7 +1604,7 @@ GetInstIntVal_Utility_Datum(DatumPtr start, WChar *label)
 {
 	static const WChar *funcName = wxT("GetInstIntVal_Utility_Datum");
 	DatumPtr	pc;
-	
+
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal NULL label!"), funcName);
 		exit(1);
@@ -1743,6 +1791,10 @@ WriteParFiles_Datum(WChar *filePath, DatumPtr start)
 		return(FALSE);
 	}
 	for (pc = start; pc; pc = pc->next) {
+		if (pc->type == REPEAT) {
+			WriteParFiles_Datum(filePath, pc->u.loop.pc);
+			continue;
+		}
 		if (pc->type != PROCESS)
 			continue;
 		if (pc->data->module->specifier == SIMSCRIPT_MODULE) {
@@ -1836,3 +1888,54 @@ EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status)
 
 }
 
+/************************** ConnectRepeatLoop *********************************/
+
+/*
+ * This routine connects a repeat loop.
+ * It expects the Datum pointers to be correctly initialised.
+ */
+
+BOOLN
+ConnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC)
+{
+	static const WChar *funcName = wxT("ConnectRepeatLoop_Utility_Datum");
+
+	if (repeatPC->type != REPEAT) {
+		NotifyError(wxT("%s: The 'repeatPC' process is not a 'repeat' process."),
+		  funcName);
+		return(FALSE);
+	}
+	repeatPC->u.loop.pc = repeatPC->next;
+	repeatPC->next = toPC->next;
+	if (repeatPC->next)
+		repeatPC->next->previous = repeatPC;
+	toPC->next = NULL;
+	return(TRUE);
+
+}
+
+/************************** DisconnectRepeatLoop ******************************/
+
+/*
+ * This routine disconnects a repeat loop.
+ * It expects the Datum pointers to be correctly initialised.
+ */
+
+BOOLN
+DisconnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC)
+{
+	static const WChar *funcName = wxT("DisconnectRepeatLoop_Utility_Datum");
+
+	if (repeatPC->type != REPEAT) {
+		NotifyError(wxT("%s: The 'repeatPC' process is not a 'repeat' process."),
+		  funcName);
+		return(FALSE);
+	}
+	toPC->next = repeatPC->next;
+	if (repeatPC->next)
+		repeatPC->next->previous = toPC->next;
+	repeatPC->next = repeatPC->u.loop.pc;
+	repeatPC->u.loop.pc = NULL;
+	return(TRUE);
+
+}

@@ -40,7 +40,7 @@ Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 St_Headers	= StAMTone.h StBPTone.h StClick.h StFMTone.h StHarmonic.h \
 				StMPPTone.h StMPTone.h StPTone.h StPTone2.h StPulseTrain.h \
 				StStepFun.h StWhiteNoise.h StEGatedTone.h StFSHarmonic.h \
-				StCMRNoiseMask.h
+				StCMRNoiseMask.h StCMRHarmMask.h 
 
 Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtIPCClient.h ExtSocket.h ExtSocketServer.h ExtProcThread.h \
@@ -61,7 +61,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtParArray.h UtGCFilters.h UtFIRFilters.h UtRemez.h \
 				UtDynaBList.h UtLocalChans.h UtSwapLR.h UtPadSignal.h \
 				UtMathOp.h UtZhang.h UtTranspose.h UtCollateSignals.h \
-				UtZilanyBruce.h
+				UtZilanyBruce.h UtNoiseMod.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 

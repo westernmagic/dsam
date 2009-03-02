@@ -80,6 +80,15 @@ typedef enum {
 
 } GeneralEarModeSpecifier;
 
+typedef enum {
+
+	GENERAL_SPACINGMODE_ERB,
+	GENERAL_SPACINGMODE_LINEAR,
+	GENERAL_SPACINGMODE_OCTAVE,
+	GENERAL_SPACINGMODE_NULL
+
+} GeneralSpacingModeSpecifier;
+
 /******************************************************************************/
 /****************************** External variables ****************************/
 /******************************************************************************/
@@ -118,6 +127,8 @@ NameSpecifier *	PhaseModeList_NSpecLists(int index);
 void	SetPhaseArray_NSpecLists(double *phase, long *ranSeed,
 		  RandParsPtr randPars, int phaseMode, double phaseVariable,
 		  int lowestHarmonic, int numHarmonics);
+
+NameSpecifier *	SpacingModeList_NSpecLists(int index);
 
 __END_DECLS
 
