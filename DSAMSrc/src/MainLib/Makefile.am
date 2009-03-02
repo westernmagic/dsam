@@ -66,8 +66,7 @@ pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
 libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(IO_Sources) \
-					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources) \
-					$(BUILT_SOURCES)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c
