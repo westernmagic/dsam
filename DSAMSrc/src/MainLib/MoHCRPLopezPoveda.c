@@ -12,7 +12,7 @@
  * 				turned-off to get the IHC output as produced in the the paper.
  * Author:		L. P. O'Mard
  * Created:		14 Jul 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, L. P. O'Mard.
  *
  *********************/
@@ -55,7 +55,7 @@ void
 FreeLabels_IHCRP_LopezPoveda(void)
 {
 	int		i;
-	
+
 	if (lopezPovedaPtr->label) {
 		for (i = 0; i < lopezPovedaPtr->numCurrents; i++)
 			free(lopezPovedaPtr->label[i]);
@@ -490,7 +490,7 @@ GetUniParListPtr_IHCRP_LopezPoveda(void)
 
 /*
  * This function allocates the memory for the module arrays.
- * It will assume that nothing needs to be done if the 'numCurrents' 
+ * It will assume that nothing needs to be done if the 'numCurrents'
  * variable is the same as the current structure member value.
  * To make this work, the function needs to set the structure 'numCurrents'
  * parameter too.
@@ -1922,38 +1922,38 @@ PrintPars_IHCRP_LopezPoveda(void)
 	DPrint(wxT("\tCa = %g ??\n"), lopezPovedaPtr->Ca);
 	DPrint(wxT("\tCb = %g ??\n"), lopezPovedaPtr->Cb);
 	DPrint(wxT("\tnumCurrents = %d ??\n"), lopezPovedaPtr->numCurrents);
-	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("Label"), wxT("Ek (V)"), 
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("Label"), wxT("Ek (V)"),
 	  wxT("G (S)"), wxT("V1 (V)"), wxT("VS1 (V)"));
-	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"), 
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"),
 	  wxT("----------"), wxT("----------"), wxT("----------"));
 	for (i = 0; i < lopezPovedaPtr->numCurrents; i++)
-		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],	
+		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],
 		  lopezPovedaPtr->Ek[i], lopezPovedaPtr->G[i], lopezPovedaPtr->V1[i]);
 	DPrint(wxT("\n"));
 	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("Label"), wxT("V2 (V)"),
 	  wxT("VS2 (s)"), wxT("tau1Max (s)"), wxT("A1 (s)"));
-	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"), 
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"),
 	  wxT("----------"), wxT("----------"), wxT("----------"));
 	for (i = 0; i < lopezPovedaPtr->numCurrents; i++)
-		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],	
+		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],
 		  lopezPovedaPtr->V2[i], lopezPovedaPtr->vS2[i], lopezPovedaPtr->
 		  tau1Max[i], lopezPovedaPtr->A1[i]);
 	DPrint(wxT("\n"));
 	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("Label"), wxT("B1 (s)"),
 	  wxT("tau1Min (s)"), wxT("tau2Max (s)"), wxT("A2 (s)"));
-	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"), 
+	DPrint(wxT("\t%10s\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"),
 	  wxT("----------"), wxT("----------"), wxT("----------"));
 	for (i = 0; i < lopezPovedaPtr->numCurrents; i++)
-		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],	
+		DPrint(wxT("\t%10s\t%10g\t%10g\t%10g\n"), lopezPovedaPtr->label[i],
 		  lopezPovedaPtr->B1[i], lopezPovedaPtr->tau1Min[i],
 		  lopezPovedaPtr->tau2Max[i], lopezPovedaPtr->A2[i]);
 	DPrint(wxT("\n"));
 	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("Label"), wxT("B2 (s)"),
 	  wxT("tau2Min (s)"));
-	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"), 
+	DPrint(wxT("\t%10s\t%10s\t%10s\n"), wxT("----------"), wxT("----------"),
 	  wxT("----------"));
 	for (i = 0; i < lopezPovedaPtr->numCurrents; i++)
-		DPrint(wxT("\t%10s\t%10g\t%10g\n"), lopezPovedaPtr->label[i],	
+		DPrint(wxT("\t%10s\t%10g\t%10g\n"), lopezPovedaPtr->label[i],
 		  lopezPovedaPtr->B2[i], lopezPovedaPtr->tau2Min[i]);
 	DPrint(wxT("\n"));
 	DPrint(wxT("\tVMRest = %g ??\n"), lopezPovedaPtr->VMRest);
@@ -2231,7 +2231,7 @@ RunModel_IHCRP_LopezPoveda(EarObjectPtr data)
 		      p->CTotalOverDt + GkVTSum);
 		    V_1 = *outPtr;
 		}
-		p->lastOutput[chan] = *outPtr;
+		p->lastOutput[chan] = V_1;
 		p->lastCiliaDisplacement_u[chan] = u;
 	}
 	SetProcessContinuity_EarObject(data);
