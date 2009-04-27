@@ -47,6 +47,8 @@ BOOLN	ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size);
 
 WChar *	MBSToWCS_Utility_String(const char *mb);
 
+WChar *	MBSToWCS2_Utility_String(const char *mb);
+
 WChar	MBToWC_Utility_String(const char *mb);
 
 char *	ConvUTF8_Utility_String(const WChar *src);

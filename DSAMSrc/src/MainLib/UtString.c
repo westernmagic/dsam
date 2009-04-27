@@ -164,7 +164,7 @@ QuotedString_Utility_String(WChar *string)
  * after a ".".
  * It returns the entire file name if no suffix is returned.
  */
- 
+
 WChar *
 GetSuffix_Utility_String(WChar *fileName)
 {
@@ -172,9 +172,9 @@ GetSuffix_Utility_String(WChar *fileName)
 
 	if ((p = DSAM_strrchr(fileName, '.')) != NULL)
 		return(p + 1);
-	else 
+	else
 		return(fileName);
-		
+
 }
 
 /**************************** GetFileNameFPath ********************************/
@@ -182,9 +182,9 @@ GetSuffix_Utility_String(WChar *fileName)
 /*
  * This routine returns the filename with the path removed.
  * It returns the entire file name if there is no file path.
- * 
+ *
  */
- 
+
 WChar *
 GetFileNameFPath_Utility_String(WChar *fileName)
 {
@@ -205,7 +205,7 @@ GetFileNameFPath_Utility_String(WChar *fileName)
  * This routine removes a specified character from a string.
  * It expects the string to be properly terminated with a null character.
  */
- 
+
 WChar *
 RemoveChar_Utility_String(WChar *string, WChar c)
 {
@@ -230,7 +230,7 @@ RemoveChar_Utility_String(WChar *string, WChar c)
  * It expects the 'string' variable to be large enough to hold the newly created
  * string.
  */
- 
+
 WChar *
 SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
 {
@@ -252,7 +252,7 @@ SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
  * format, then the original string is returned.
  * The returned string should be considered as temporary.
  */
- 
+
 char *
 ConvUTF8_Utility_String(const WChar *src)
 {
@@ -283,7 +283,7 @@ ConvUTF8_Utility_String(const WChar *src)
  * This function returns a wChar from a multi-byte character.
  * It returns NULL if it fails in any way.
  */
- 
+
 WChar
 MBToWC_Utility_String(const char *mb)
 {
@@ -312,7 +312,7 @@ MBToWC_Utility_String(const char *mb)
  * The function 'mbsrtowcs' is thread-safe while 'mbstwcs' is not.
  * It returns NULL if it fails in any way.
  */
- 
+
 WChar *
 MBSToWCS_Utility_String(const char *mb)
 {
@@ -336,6 +336,43 @@ MBSToWCS_Utility_String(const char *mb)
 	}
 	return(dest);
 #	endif
+
+}
+
+/**************************** MBSToWCS2 ****************************************/
+
+/*
+ * This function returns a WChar string from a multi-btye string.
+ * The converted string pointer is allocated memory which needs to be deallocated
+ * The function 'mbsrtowcs' is thread-safe while 'mbstwcs' is not.
+ * It returns NULL if it fails in any way.
+ */
+
+WChar *
+MBSToWCS2_Utility_String(const char *mb)
+{
+	static const WChar *funcName = wxT("MBSToWCS_Utility_String");
+	int		len;
+	WChar	*dest;
+	mbstate_t	state;
+
+	len = strlen(mb);
+	if ((dest = (WChar *) calloc(len + 1, sizeof (WChar *))) == NULL) {
+		NotifyError(wxT("%s: out of memory for string (%d)"), funcName, len + 1);
+		return(NULL);
+	}
+#	ifndef DSAM_USE_UNICODE
+	strcpy(dest, mb);
+#	else
+	memset(&state, 0, sizeof(mbstate_t));
+	if (mbsrtowcs(dest, &mb, len, &state) < 0 ) {
+		NotifyError(wxT("%s: Failed to convert wide character (%d)."),
+		  funcName, len);
+		free(dest);
+		return(NULL);
+	}
+#	endif
+	return(dest);
 
 }
 
@@ -373,7 +410,7 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, const wchar_t *src)
 #	endif /* _MSC_VER */
 
 }
- 
+
 /**************************** ConvIOFormat ************************************/
 
 /*
@@ -385,7 +422,7 @@ ConvWCSIOFormat_Utility_String(wchar_t *dest, const wchar_t *src)
  * No checks a made for NULL destination strings.
  * I returns 'FALSE' if it fails in any way.
  */
- 
+
 BOOLN
 ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
 {
@@ -416,7 +453,7 @@ ConvIOFormat_Utility_String(WChar *dest, const WChar *s, size_t size)
  * This function replaces the standard 'vsnprintf' routine which needs changes
  * to the string '%s' format in UNICODE mode.
  */
- 
+
 int
 Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list args)
 {
@@ -437,11 +474,11 @@ Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list 
 		free(p);
 	} else
 		result = -1;
-	
+
 #	else
 	result = vsnprintf(str, size, format, args);
 #	endif
-	
+
 	return(result);
 
 }
@@ -452,7 +489,7 @@ Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list 
  * This function replaces the standard 'snprintf' routine which needs changes
  * to the string '%s' format in UNICODE mode.
  */
- 
+
 int
 Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
 {
@@ -462,7 +499,7 @@ Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
 	va_start(args, format);
 	result = Vsnprintf_Utility_String(str, size, format, args);
 	va_end(args);
-	
+
 	return(result);
 
 }
@@ -473,7 +510,7 @@ Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
  * This function replaces the standard 'fprintf' routine which needs changes
  * to the string '%s' and '%c' formats in UNICODE mode.
  */
- 
+
 int
 fprintf_Utility_String(FILE *fp,  const WChar *format, ...)
 {
@@ -498,14 +535,14 @@ fprintf_Utility_String(FILE *fp,  const WChar *format, ...)
 		free(p);
 	} else
 		result = -1;
-	
+
 #	else
 	va_start(args, format);
 	result = vfprintf(fp, format, args);
 	va_end(args);
 #	endif
 
-	
+
 	return(result);
 
 }
