@@ -8099,6 +8099,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\UtNoiseMod.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\UtOptions.h"
 				>
 			</File>
