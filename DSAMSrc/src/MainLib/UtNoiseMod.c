@@ -188,8 +188,8 @@ GetUniParListPtr_Utility_AmpMod_Noise(void)
 		return(FALSE);
 	}
 	if (nAmpModPtr->parList == NULL) {
-		NotifyError(wxT("%s: UniParList data structure has not been initialised. "
-		  "NULL returned."), funcName);
+		NotifyError(wxT("%s: UniParList data structure has not been initialised. ")
+		  wxT("NULL returned."), funcName);
 		return(NULL);
 	}
 	return(nAmpModPtr->parList);

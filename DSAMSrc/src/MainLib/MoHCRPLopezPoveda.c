@@ -368,7 +368,7 @@ SetUniParList_IHCRP_LopezPoveda(void)
 	  &lopezPovedaPtr->Ca, NULL,
 	  (void * (*)) SetCa_IHCRP_LopezPoveda);
 	SetPar_UniParMgr(&pars[IHCRP_LOPEZPOVEDA_CB], wxT("C_B"),
-	  wxT("Apical capacitance, Cb (F)."),
+	  wxT("Basal capacitance, Cb (F)."),
 	  UNIPAR_REAL,
 	  &lopezPovedaPtr->Cb, NULL,
 	  (void * (*)) SetCb_IHCRP_LopezPoveda);

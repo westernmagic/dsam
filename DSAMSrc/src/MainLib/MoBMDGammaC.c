@@ -8,9 +8,9 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Jun 20 2007).
  *				This code module was revised from the implementation in the
  *				AIM2007a matlab code.
- * Author:		L. P. O'Mard 
+ * Author:		L. P. O'Mard
  * Created:		18 Jun 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, L. P. O'Mard
  *
  *********************/
@@ -329,7 +329,7 @@ SetUniParList_BasilarM_GammaChirp_Dyn(void)
 	}
 	SetGetPanelListFunc_UniParMgr(bMDGammaCPtr->parList,
 	  GetPanelList_BasilarM_GammaChirp_Dyn);
-	  
+
 	pars = bMDGammaCPtr->parList->pars;
 	SetPar_UniParMgr(&pars[BM_GC_DYN_DIAGNOSTICMODE], wxT("DIAGNOSTIC_MODE"),
 	  wxT("Diagnostic mode. Outputs internal states of running model in non-")
@@ -498,7 +498,7 @@ GetUniParListPtr_BasilarM_GammaChirp_Dyn(void)
 
 /*
  * This function allocates the memory for the module arrays.
- * It will assume that nothing needs to be done if the 'gC_arrayN' 
+ * It will assume that nothing needs to be done if the 'gC_arrayN'
  * variable is the same as the current structure member value.
  * To make this work, the function needs to set the structure 'gC_arrayN'
  * parameter too.
@@ -545,7 +545,7 @@ AllocGC_arrayN_BasilarM_GammaChirp_Dyn(int gC_arrayN)
 
 /*
  * This function allocates the memory for the module arrays.
- * It will assume that nothing needs to be done if the 'lvEst_arrayN' 
+ * It will assume that nothing needs to be done if the 'lvEst_arrayN'
  * variable is the same as the current structure member value.
  * To make this work, the function needs to set the structure 'lvEst_arrayN'
  * parameter too.
@@ -1586,7 +1586,7 @@ CheckData_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 		NotifyError(wxT("%s: Diagnostic mode can only be used when the 'output ")
 		  wxT("mode' is set to  'TOTAL'."));
 		return(FALSE);
-	} 
+	}
 	return(TRUE);
 
 }
@@ -1902,7 +1902,7 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 			  aCFCoeffSigPathStart; chan < outSignal->numChannels; chan++, cInfo++,
 			  aCFCoeffSigPath++) {
 				fratVal = cInfo->fratVal[0] + cInfo->fratVal[1] * cInfo->lvldB;
-				SetAsymCmpCoeffs2_GCFilters(*aCFCoeffSigPath, fratVal * cInfo->fp1);				
+				SetAsymCmpCoeffs2_GCFilters(*aCFCoeffSigPath, fratVal * cInfo->fp1);
 			}
 			ACFilterBank_GCFilters(p->aCFCoeffSigPath, data, outSignal->offset,
 			  outSignal->numChannels, i);
@@ -1917,7 +1917,7 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 					DSAM_fprintf(p->fp, wxT("\t%g\t%g"), cInfo->lvldB, *dataPtr);
 				DSAM_fprintf(p->fp, wxT("\n"));
 			}
-		
+
 		}
 		if (debug && p->fp)
 			CloseDiagnostics_NSpecLists(&p->fp);
