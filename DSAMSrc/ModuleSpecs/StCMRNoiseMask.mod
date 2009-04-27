@@ -21,6 +21,7 @@ typedef struct {
 	double	lowFBLevel;
 	double	uppFBLevel;
 	double	oFMLevel;		/* GetDoubleAs("OFM level","ratio") */
+	double	fBModPhase;
 	double	spacing;
 	NameSpecifier	bandwidthMode;
 	double	bandwidth;
