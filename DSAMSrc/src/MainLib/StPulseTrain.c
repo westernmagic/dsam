@@ -637,9 +637,9 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 			p->remainingPulseTime -= p->dt;
 		} else {
 			*outPtr = 0.0;
-			if (t >= p->nextPulseTime) {
+			if ((t + DBL_EPSILON) > p->nextPulseTime) {
 				p->remainingPulseTime = p->pulseDuration;
-				p->nextPulseTime += pulsePeriod;
+				p->nextPulseTime = t + pulsePeriod;
 			}
 		}
 	}
