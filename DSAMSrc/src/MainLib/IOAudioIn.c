@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.4.2 (Dec 19 2003).
  * Author:		L. P. O'Mard
  * Created:		08 Nov 2005
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex.
  *
  *********************/
@@ -563,7 +563,7 @@ NotifyError_IO_AudioIn(WChar *format, ...)
 {
 	WChar	msg[LONG_STRING];
 	va_list	args;
-	
+
 	va_start(args, format);
 	DSAM_vsnprintf(msg, LONG_STRING, format, args);
 	va_end(args);
@@ -615,7 +615,7 @@ RecordCallback_IO_AudioIn(void *inputBuffer, void *outputBuffer,
 
 	AudioInPtr p = (AudioInPtr) userData;
 	const AudioInSample	*inPtr = (const AudioInSample *) inputBuffer;
-	ChanData	*outPtr[2];
+	ChanData	*outPtr[2] = { NULL, NULL };
 	SignalDataPtr	bufSignal = p->buffer->outSignal;
     unsigned long framesLeft = bufSignal->length - p->frameIndex;
 
@@ -671,7 +671,7 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 	static const WChar	*funcName = wxT("InitProcessVariables_IO_AudioIn");
 	PaStreamParameters  inputParameters;
 	AudioInPtr p = audioInPtr;
-  
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_IO_AudioIn();
 		if ((p->buffer = Init_EarObject(wxT("NULL"))) == NULL) {
@@ -707,7 +707,7 @@ InitProcessVariables_IO_AudioIn(EarObjectPtr data)
 		inputParameters.device = (p->deviceID < 0)? Pa_GetDefaultInputDeviceID(
 		  ): p->deviceID;
 		inputParameters.suggestedLatency = 0.0;
-#		endif 
+#		endif
 		inputParameters.channelCount = p->numChannels;
 		inputParameters.sampleFormat = IO_AUDIOIN_SAMPLE_FORMAT;
 		inputParameters.hostApiSpecificStreamInfo = NULL;
