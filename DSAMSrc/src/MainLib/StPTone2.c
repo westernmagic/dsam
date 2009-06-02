@@ -3,7 +3,7 @@
  * File:		StPTone2.c
  * Purpose:		The module generates a pure-tone signal preceded and ended by
  *				periods of silence.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		12 Mar 1997
@@ -61,7 +61,7 @@ Init_PureTone_2(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (pureTone2Ptr == NULL) { 
+		if (pureTone2Ptr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
@@ -201,14 +201,14 @@ GetUniParListPtr_PureTone_2(void)
  * It checks that the Nyquist critical frequency is not exceeded.
  * It returns TRUE if there are no problems.
  */
- 
+
 BOOLN
 CheckPars_PureTone_2(void)
 {
 	static const WChar *funcName = wxT("CheckPars_PureTone_2");
 	BOOLN	ok;
 	double	criticalFrequency;
-	
+
 	ok = TRUE;
 	if (pureTone2Ptr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
@@ -249,10 +249,10 @@ CheckPars_PureTone_2(void)
 		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
 		  wxT("frequency."), funcName, MSEC(pureTone2Ptr->dt));
 		ok = FALSE;
-	} 
+	}
 	return(ok);
 
-}	
+}
 
 /********************************* SetFrequency *******************************/
 
@@ -403,7 +403,7 @@ SetSamplingInterval_PureTone_2(double theSamplingInterval)
  * This function sets all the module's parameters.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetPars_PureTone_2(double theFrequency, double theIntensity, double theDuration,
   double theSamplingInterval, double theBeginPeriodDuration,
@@ -411,7 +411,7 @@ SetPars_PureTone_2(double theFrequency, double theIntensity, double theDuration,
 {
 	static const WChar *funcName = wxT("SetPars_PureTone_2");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (!SetFrequency_PureTone_2(theFrequency))
 		ok = FALSE;
@@ -428,7 +428,7 @@ SetPars_PureTone_2(double theFrequency, double theIntensity, double theDuration,
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
-	
+
 }
 
 /****************************** PrintPars *************************************/
@@ -436,7 +436,7 @@ SetPars_PureTone_2(double theFrequency, double theIntensity, double theDuration,
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_PureTone_2(void)
 {
@@ -465,7 +465,7 @@ PrintPars_PureTone_2(void)
  * This program reads a specified number of parameters from a file.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 ReadPars_PureTone_2(WChar *fileName)
 {
@@ -475,7 +475,7 @@ ReadPars_PureTone_2(WChar *fileName)
 	double  frequency, intensity, beginPeriodDuration, endPeriodDuration;
 	double  duration, samplingInterval;
     FILE    *fp;
-    
+
 	filePath = GetParsFileFPath_Common(fileName);
     if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
@@ -510,7 +510,7 @@ ReadPars_PureTone_2(WChar *fileName)
 		return(FALSE);
 	}
 	return(TRUE);
-    
+
 }
 
 /****************************** SetParsPointer ********************************/
@@ -586,20 +586,20 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 	register	double	dt, time, endSignal, startSignal;
 	register	ChanData	*dataPtr;
 	ChanLen		i;
+	PureTone2Ptr	p = pureTone2Ptr;
 
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
+		}
 		if (!CheckPars_PureTone_2())
 			return(FALSE);
 		SetProcessName_EarObject(data, wxT("Silence pure-tone stimulus"));
-		totalDuration = pureTone2Ptr->beginPeriodDuration + pureTone2Ptr->
-		  duration + pureTone2Ptr->endPeriodDuration;
+		totalDuration = p->beginPeriodDuration + p->duration +
+		  p->endPeriodDuration;
 		if ( !InitOutSignal_EarObject(data, PURE_TONE_2_NUM_CHANNELS,
-		  (ChanLen) floor(totalDuration / pureTone2Ptr->dt + 0.5),
-		  pureTone2Ptr->dt) ) {
+		  (ChanLen) floor(totalDuration / p->dt + 0.5), p->dt) ) {
 			NotifyError(wxT("%s: Cannot initialise output signal"), funcName);
 			return(FALSE);
 		}
@@ -607,15 +607,15 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 			return(TRUE);
 	}
 	dt = _OutSig_EarObject(data)->dt;
-	startSignal = pureTone2Ptr->beginPeriodDuration;
-	endSignal = pureTone2Ptr->beginPeriodDuration + pureTone2Ptr->duration;
-	amplitude = RMS_AMP(pureTone2Ptr->intensity) * SQRT_2;
+	startSignal = p->beginPeriodDuration;
+	endSignal = p->beginPeriodDuration + p->duration;
+	amplitude = RMS_AMP(p->intensity) * SQRT_2;
 	dataPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, time = dt; i < _OutSig_EarObject(data)->length; i++, time += dt,
-	  dataPtr++) {
+	for (i = 0; i < _OutSig_EarObject(data)->length; i++, dataPtr++) {
+		time = (1 + i) * p->dt;
 		if ( (time > startSignal) && (time < endSignal) )
-			*dataPtr = amplitude * sin(PIx2 * pureTone2Ptr->frequency *
-			  (time - pureTone2Ptr->beginPeriodDuration));
+			*dataPtr = amplitude * sin(PIx2 * p->frequency *
+			  (time - p->beginPeriodDuration));
 		else
 			*dataPtr = 0.0;
 	}

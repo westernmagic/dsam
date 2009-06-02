@@ -630,8 +630,9 @@ GenerateSignal_PulseTrain(EarObjectPtr data)
 		p->remainingPulseTime = p->pulseDuration;
 	}
 	outPtr = _OutSig_EarObject(data)->channel[0];
-	for (i = 0, t = (data->timeIndex + 1) * p->dt; i < _OutSig_EarObject(data)->
-	  length; i++, t += p->dt, outPtr++) {
+	for (i = 0, t = data->timeIndex + 1; i < _OutSig_EarObject(data)->
+	  length; i++, outPtr++) {
+		t = (data->timeIndex + 1 + i) * p->dt;
 		if (p->remainingPulseTime > 0.0) {
 			*outPtr = p->amplitude;
 			p->remainingPulseTime -= p->dt;
