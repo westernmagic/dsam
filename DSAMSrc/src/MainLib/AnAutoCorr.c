@@ -685,7 +685,7 @@ CheckData_Analysis_ACF(EarObjectPtr data)
 		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
 		return(FALSE);
-	}		
+	}
 	if (autoCorrPtr->maxLag > signalDuration + DBL_EPSILON) {
 		NotifyError(wxT("%s: maximum auto-correlation lag is longer than ")
 		  wxT("signal duration."), funcName);
@@ -720,7 +720,7 @@ double
 TimeConstant_Analysis_ACF(double lag)
 {
 	double	 timeConstant = lag * autoCorrPtr->timeConstScale;
-	
+
 	return((timeConstant > autoCorrPtr->timeConstant)? timeConstant:
 	  autoCorrPtr->timeConstant);
 
@@ -780,7 +780,7 @@ InitProcessVariables_Analysis_ACF(EarObjectPtr data)
 			  expDtPtr++)
 				*expDtPtr = (i > minLagIndex)? exp(-1.0 / (i * p->
 				  timeConstScale)): minDecay;
-			
+
 		}
 		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		SetStaticTimeFlag_SignalData(_OutSig_EarObject(data), TRUE);
@@ -840,7 +840,7 @@ Calc_Analysis_ACF(EarObjectPtr data)
 	register    double  *expDtPtr = NULL;
 	register    ChanData    *inPtr, *outPtr;
 	int		chan;
-	double	wiegrebeTimeConst;
+	double	wiegrebeTimeConst = 0.0;
 	ChanLen i, deltaT;
 	SignalDataPtr	inSignal, outSignal;
 	AutoCorrPtr	p = autoCorrPtr;
