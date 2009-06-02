@@ -158,7 +158,7 @@ SetUniParList_Utility_AmpMod_Noise(void)
 	  &nAmpModPtr->bandwidthMode, BandwidthModeList_Utility_AmpMod_Noise(0),
 	  (void * (*)) SetBandwidthMode_Utility_AmpMod_Noise);
 	SetPar_UniParMgr(&pars[UTILITY_AMPMOD_NOISE_BANDWIDTH], wxT("BANDWIDTH"),
-	  wxT("Bandwidth ('Hz' or 'ERB density')."),
+	  wxT("Bandwidth ('Hz' or 'ERB scaler')."),
 	  UNIPAR_REAL,
 	  &nAmpModPtr->bandwidth, NULL,
 	  (void * (*)) SetBandwidth_Utility_AmpMod_Noise);
@@ -280,7 +280,7 @@ SetRanSeed_Utility_AmpMod_Noise(long theRanSeed)
 
 /*
  * This routine prints all the module's parameters to the file stream.
- * specified by the lUTEar.parsFile file pointer.
+ * specified by the dSAM.parsFile file pointer.
  */
 
 BOOLN
@@ -426,8 +426,8 @@ InitProcessVariables_Utility_AmpMod_Noise(EarObjectPtr data)
 			cFIndex = i / outSignal->interleaveLevel;
 			p->kUpp[i] = (int) floor(0.5 * ((p->bandwidthMode ==
 			  UTILITY_AMPMOD_NOISE_BANDWIDTHMODE_HZ)? p->bandwidth:
-			  ERBFromF_Bandwidth(outSignal->info.cFArray[cFIndex])) *
-			  outSignal->dt * outSignal->length + 0.5);
+			  ERBFromF_Bandwidth(outSignal->info.cFArray[cFIndex]) *
+			  p->bandwidth) * outSignal->dt * outSignal->length + 0.5);
 			p->normFactor[i] = 1.0 / sqrt((double) p->kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
 		}
 		p->updateProcessVariablesFlag = FALSE;
@@ -481,8 +481,8 @@ BOOLN
 Process_Utility_AmpMod_Noise(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Process_Utility_AmpMod_Noise");
-	register ChanData	 *inPtr, *outPtr, *fftPtr;
-	int		chan;
+	register ChanData	 *inPtr, *outPtr, *fftPtr, sineFactor;
+	int		chan, cFIndex;
 	ChanLen	i;
 	SignalDataPtr	inSignal, outSignal;
 	NAmpModPtr	p = nAmpModPtr;
@@ -514,8 +514,16 @@ Process_Utility_AmpMod_Noise(EarObjectPtr data)
 		outPtr = outSignal->channel[chan];
 		CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, 1, p->kUpp[chan]);
 		fftPtr = p->fTInv->data;
-		for (i = 0; i < data->outSignal->length; i++)
-			*outPtr++ = *inPtr++ * *fftPtr++ * p->normFactor[chan];
+		if (p->bandwidthMode == UTILITY_AMPMOD_NOISE_BANDWIDTHMODE_HZ)
+			for (i = 0; i < data->outSignal->length; i++)
+				*outPtr++ = *inPtr++ * *fftPtr++ * p->normFactor[chan];
+		else {
+			cFIndex = chan / outSignal->interleaveLevel;
+			sineFactor = outSignal->dt * outSignal->info.cFArray[cFIndex];
+			for (i = 0; i < data->outSignal->length; i++)
+				*outPtr++ = *inPtr++ * *fftPtr++ * sin(i * sineFactor * PIx2) *
+				  p->normFactor[chan];
+		}
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
