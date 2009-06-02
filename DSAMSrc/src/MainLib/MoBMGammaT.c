@@ -3,7 +3,7 @@
  * File:		MoBMGammaT.c
  * Purpose:		This is an implementation of a Gamma Tone filter using the
  *				UtFilters.c module.
- * Comments:	The Gamma Tone filter is used to model the response of the 
+ * Comments:	The Gamma Tone filter is used to model the response of the
  *				Basilar Membrane.
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
@@ -11,7 +11,7 @@
  * Copyright:	(c) 1997,  University of Essex
  *
  **********************/
- 
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,7 +95,7 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (bMGammaTPtr == NULL) { 
+		if (bMGammaTPtr == NULL) {
 			NotifyError(wxT("%s: 'local' pointer not set."), funcName);
 			return(FALSE);
 		}
@@ -130,7 +130,7 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_BasilarM_GammaT(void)
 {
@@ -237,7 +237,7 @@ SetCascade_BasilarM_GammaT(int theCascade)
 	bMGammaTPtr->cascade = theCascade;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /********************************* SetCFList **********************************/
@@ -246,7 +246,7 @@ SetCascade_BasilarM_GammaT(int theCascade)
  * This function sets the CFList data structure for the filter bank.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetCFList_BasilarM_GammaT(CFListPtr theCFList)
 {
@@ -294,7 +294,7 @@ SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, double *theBandwidths)
 	}
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /********************************* SetPars ************************************/
@@ -305,13 +305,13 @@ SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, double *theBandwidths)
  * assumed that they are set independently.
  * It returns TRUE if the operation is successful.
  */
-  
+
 BOOLN
 SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("SetPars_BasilarM_GammaT");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (!SetCascade_BasilarM_GammaT(theCascade))
 		ok = FALSE;
@@ -320,7 +320,7 @@ SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
-	
+
 }
 
 /****************************** GetCFListPtr **********************************/
@@ -353,12 +353,10 @@ GetCFListPtr_BasilarM_GammaT(void)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_BasilarM_GammaT(void)
 {
-	static const WChar *funcName = wxT("PrintPars_BasilarM_GammaT");
-	
 	DPrint(wxT("Gamma Tone Basilar Membrane Filter  Module Parameters:-\n"));
 	PrintPars_CFList(bMGammaTPtr->theCFs);
 	DPrint(wxT("\tInterleave mode = %s,\n"),
@@ -374,7 +372,7 @@ PrintPars_BasilarM_GammaT(void)
  * This program reads a specified number of parameters from a file.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 ReadPars_BasilarM_GammaT(WChar *fileName)
 {
@@ -384,7 +382,7 @@ ReadPars_BasilarM_GammaT(WChar *fileName)
 	int		filterCascade;
     FILE    *fp;
     CFListPtr	theCFs;
-    
+
 	filePath = GetParsFileFPath_Common(fileName);
     if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
         NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
@@ -407,7 +405,7 @@ ReadPars_BasilarM_GammaT(WChar *fileName)
 		return(FALSE);
 	}
 	return(ok);
-   
+
 }
 
 /****************************** SetParsPointer ********************************/
@@ -539,7 +537,7 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 	int		i, j, cFIndex, stateVectorLength;
 	double	sampleRate, *ptr;
 	BMGammaTPtr	p = bMGammaTPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag) {
 		FreeProcessVariables_BasilarM_GammaT();
@@ -570,14 +568,14 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 		p->updateProcessVariablesFlag = FALSE;
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
-		stateVectorLength = p->cascade * 
+		stateVectorLength = p->cascade *
 		  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 			ptr = p->coefficients[i]->stateVector;
 			for (j = 0; j < stateVectorLength; j++)
 				*ptr++ = 0.0;
 		}
-				
+
 	}
 	return(TRUE);
 
