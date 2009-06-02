@@ -1168,7 +1168,7 @@ BOOLN
 RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_BasilarM_ZilanyBruce");
-	register ChanData	 *inPtr, *outPtr, *tmpgain, input;
+	register ChanData	 *inPtr, *outPtr = NULL, *tmpgain, input;
 	uShort	totalChannels;
 	int		chan, grd;
 	double	cF, wbout1, wbout, ohcnonlinout, ohcout, tmptauc1, dt, tauc1, rsigma;
@@ -1208,11 +1208,11 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 		outPtr = outSignal->channel[chan];
 		tmpgain = _OutSig_EarObject(p->tmpgain)->channel[chan];
 		wbgt = p->wbgt[chan];
+		cF = p->cFList->frequency[chan];
 		for (n = 0; n < data->outSignal->length; n++, inPtr++, tmpgain++) {
 			input = (p->microPaInput)? *inPtr * 1e-6: *inPtr;
 			/* Control-path filter */
 			wbout1 = WbGammaTone_Utility_ZilanyBruce(input, wbgt, dt);
-			cF = p->cFList->frequency[chan];
 			wbout  = pow((wbgt->tau / wbgt->TauWBMax), wbgt->order) * wbout1 * 10e3 *
 			  MAXIMUM(1.0, cF / 5e3);
 			ohcnonlinout = Boltzman_Utility_ZilanyBruce(wbout, p->ohcasym, p->s0,

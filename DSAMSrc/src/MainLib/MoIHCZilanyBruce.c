@@ -463,7 +463,7 @@ void
 InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
 {
 	double cf_factor,kslope,Asp,PTS,Aon,AR,AST,Prest,gamma1,gamma2,k1,k2;
-	double VI0,VI1,alpha,beta,theta1,theta2,theta3,vsat;
+	double VI0,VI1,alpha,beta,theta1,theta2,theta3,vsat = 0.0;
     double cfsat,cfslope,cfconst, tmpst;
 	ZBHCPtr	p = zBHCPtr;
 

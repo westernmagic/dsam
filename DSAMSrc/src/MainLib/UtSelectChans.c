@@ -689,7 +689,6 @@ BOOLN
 CheckData_Utility_SelectChannels(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_SelectChannels");
-	int		numInChans;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
