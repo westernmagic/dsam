@@ -1186,7 +1186,7 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
 	int		chan, inSignal;
 	double	*yPtr, *zPtr, *xPtr, ionChanCurrentSum, currentSum;
-	double	activation, conductance;
+	double	activation = 0.0, conductance;
 	ChanLen	j;
 	DynaListPtr		node;
 	HHuxleyStatePtr	s;
