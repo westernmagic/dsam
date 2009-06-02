@@ -3,12 +3,12 @@
  * File:		FiSndFile.c
  * Purpose:		This Filing reads sound format files using the libsndfile
  * 				library.
- * Comments:	
+ * Comments:
  * Authors:		L. P. O'Mard
  * Created:		07 Nov 2006
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2006, Lowel P. O'Mard
- * 
+ *
  ******************/
 
 #include <stdlib.h>
@@ -54,7 +54,7 @@
  * Free and close the sound file.
  */
 
-void 
+void
 Free_SndFile(void)
 {
 	static const WChar *funcName = wxT("Free_SndFile");
@@ -90,7 +90,7 @@ GetWordSize_SndFile(int format)
 		return(4);
 	else if (subType & SF_FORMAT_DOUBLE)
 		return(8);
-	
+
 	NotifyError(wxT("Undefined format (%d)."), funcName, subType);
 	return(-1);
 
@@ -126,7 +126,7 @@ BOOLN
 InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
 {
 	static const WChar *funcName = wxT("InitMemory_SndFile");
-	
+
 	if (!(*p)) {
 		if (((*p) = (DFVirtualIOPtr) malloc(sizeof(DFVirtualIO))) == NULL) {
 			NotifyError(wxT("%s: Cannot allocate memoryfor virtual IO memory ")
@@ -294,7 +294,7 @@ DetermineFileSize_SndFile(SignalDataPtr signal)
 	}
 	sFInfo.channels = 1;
 	for (i = 0; i < 2; i++) {
-		if ((fp = sf_open_virtual(p->vIOFuncs, SFM_WRITE, &sFInfo, vIOPtr)) == 
+		if ((fp = sf_open_virtual(p->vIOFuncs, SFM_WRITE, &sFInfo, vIOPtr)) ==
 		  NULL) {
 			NotifyError(wxT("%s: Couldn't open virtual data file: error '%s'"),
 			  funcName, MBSToWCS_Utility_String(sf_strerror(NULL)));
@@ -320,7 +320,7 @@ DetermineFileSize_SndFile(SignalDataPtr signal)
  * opened.
  * Because the LibSndFile library format has the sample rate as an integer, the
  * dt == DF value used by FFT output produces a zero sample rate.  The sample rate is
- * therefore set to "1" and a string value is provided.  
+ * therefore set to "1" and a string value is provided.
  */
 
 BOOLN
@@ -415,7 +415,7 @@ OpenFile_SndFile(WChar *fileName, int mode, SignalDataPtr signal)
 /*
  * This routine reads the data frames using a buffer for speed.
  */
- 
+
 BOOLN
 ReadFrames_SndFile(SignalDataPtr outSignal, sf_count_t length)
 {
@@ -497,9 +497,11 @@ ParseTitleString_SndFile(const char *titleString, SignalDataPtr signal)
 				break;
 			case DATA_FILE_DSAMVERSION:
 				break;
-			case DATA_FILE_LARGEDT:
-				signal->dt = strtod(parValue, &p);
-				break;
+			case DATA_FILE_LARGEDT: {
+				double largeDt = strtod(parValue, &p);
+				if (largeDt > 0.0)
+					signal->dt = largeDt;
+				break; }
 			default:
 				;
 			}
@@ -515,7 +517,7 @@ ParseTitleString_SndFile(const char *titleString, SignalDataPtr signal)
  * The data is stored in the output signal of an EarObject which will have
  * one channel.
  * This is the default file, and is assumed if no suffix is given
- * If a dash, '-.suffix', is given as the file name, then the data will be 
+ * If a dash, '-.suffix', is given as the file name, then the data will be
  * read from the standard input.
  * I am not quite certain about the stereo format.  At present it will assume
  * that if there are two channels, then it is a stereo signal.
@@ -602,7 +604,7 @@ GetDuration_SndFile(WChar *fileName)
 /*
  * This routine writes the data frames using a buffer for speed.
  */
- 
+
 BOOLN
 WriteFrames_SndFile(SignalDataPtr inSignal)
 {
@@ -681,7 +683,7 @@ AddToString_SndFile(char *a, size_t *aLen, char *b, size_t maxLen)
 	size_t	bLen = strlen(b);
 
 	if ((bLen + *aLen) > maxLen) {
-		NotifyError(wxT("%s: String too long for string concatination (%u/%u)."),
+		NotifyError(wxT("%s: String too long for string concatenation (%u/%u)."),
 		  funcName, bLen + *aLen, maxLen);
 		return(FALSE);
 	}
@@ -697,7 +699,7 @@ AddToString_SndFile(char *a, size_t *aLen, char *b, size_t maxLen)
  * This function creates and returns the title string.
  * The memory for this string must be "freed" by the calling program.
  */
- 
+
 char *
 CreateTitleString_SndFile(SignalDataPtr signal)
 {
@@ -736,14 +738,13 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 			sprintf(workStr, ":%s", ConvUTF8_Utility_String(DSAM_VERSION));
 			break;
 		case DATA_FILE_LARGEDT:
-			if (signal->dt > 0.0)
-				sprintf(workStr, ":%.16g", signal->dt);
+			sprintf(workStr, ":%.17g", (signal->dt > 1.0)? signal->dt: 0.0);
 			break;
 		default:
-			NotifyError(wxT("%s: Unknown DSAM foramt specifier (%d)"),
+			NotifyError(wxT("%s: Unknown DSAM format specifier (%d)"),
 			  funcName);
 			return(NULL);
-		}
+		};
 		if (!AddToString_SndFile(mainParString, &mainStringLen, workStr,
 		  LONG_STRING))
 			return(NULL);
@@ -776,7 +777,7 @@ CreateTitleString_SndFile(SignalDataPtr signal)
 	return(s);
 
 }
-	
+
 /**************************** WriteFile ***************************************/
 
 /*
@@ -837,7 +838,7 @@ WriteFile_SndFile(WChar *fileName, EarObjectPtr data)
 	p->titleString = NULL;
 	Free_SndFile();
 	return(ok);
-	
+
 }
 
 #endif /* HAVE_SNDFILE */
