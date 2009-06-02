@@ -18,10 +18,10 @@
  * Created:		17 Feb 1993
  * Updated:		23 Sep 1998
  * Copyright:	(c) 1998, University of Essex
- * 
+ *
  ******************/
 
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -73,7 +73,7 @@ Init_SignalData(const WChar *callingFunctionName)
 {
 	static const WChar *funcName = wxT("Init_SignalData");
 	SignalData	*theData;
-	
+
 	if ((theData = (SignalData *) malloc(sizeof(SignalData))) == NULL ) {
 		NotifyError(wxT("%s: Out of Memory (called by %s)."), funcName,
 		  callingFunctionName);
@@ -97,7 +97,7 @@ Init_SignalData(const WChar *callingFunctionName)
 	InitInfo_SignalData(&theData->info);
 	theData->channel = NULL;
 	return(theData);
-	
+
 } /* Init_SignalData */
 
 /**************************** FreeChannels ************************************/
@@ -107,7 +107,7 @@ Init_SignalData(const WChar *callingFunctionName)
  * it also free's the memory for the channel labels info if set.
  * It also sets the respective pointers to NULL.
  */
- 
+
 void
 FreeChannels_SignalData(SignalDataPtr theData)
 {
@@ -129,7 +129,7 @@ FreeChannels_SignalData(SignalDataPtr theData)
 			theData->info.cFArray = NULL;
 		}
 	}
-	
+
 }
 
 /**************************** Free ********************************************/
@@ -139,7 +139,7 @@ FreeChannels_SignalData(SignalDataPtr theData)
  * It also sets the pointer to NULL, hence the address of the pointer is passed
  * to this function.
  */
- 
+
 void
 Free_SignalData(SignalDataPtr *theData)
 {
@@ -148,7 +148,7 @@ Free_SignalData(SignalDataPtr *theData)
 		free(*theData);
 		*theData = NULL;
 	}
-	
+
 } /* Free_SignalData */
 
 /**************************** ResetInfo ***************************************/
@@ -180,7 +180,7 @@ ResetInfo_SignalData(SignalDataPtr signal)
  * This routine checks whether or not a signal has been initialised.
  *
  */
- 
+
 BOOLN
 CheckInit_SignalData(SignalDataPtr theSignal, const WChar *callingFunction)
 {
@@ -192,7 +192,7 @@ CheckInit_SignalData(SignalDataPtr theSignal, const WChar *callingFunction)
 		  callingFunction);
 		return(FALSE);
 	}
-	
+
 }
 
 /**************************** InitChannels ************************************/
@@ -214,8 +214,8 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 {
 	static const WChar *funcName = wxT("InitChannels_SignalData");
 	int			i;
-	ChanData	**p, *pp, *p1;
-	
+	ChanData	**p, *pp = NULL, *p1;
+
 	if (!CheckInit_SignalData(theData, wxT("InitChannels_SignalData")))
 		return(FALSE);
 	if (theData->length < 1) {
@@ -233,9 +233,9 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 			NotifyError(wxT("%s: Out of memory for signal block."), funcName);
 			free(p);
 			return(FALSE);
-		}	
+		}
 		for (i = 0, p1 = pp; i < numChannels; i++, p1 += theData->length)
-			p[i] = p1; 
+			p[i] = p1;
 	}
 	theData->channel = p;
 	theData->block = pp;
@@ -291,7 +291,7 @@ CheckPars_SignalData(SignalDataPtr theSignal)
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /**************************** CheckRamp ***************************************/
@@ -314,7 +314,7 @@ CheckRamp_SignalData(SignalDataPtr theSignal)
 		NotifyWarning(wxT("%s: Signal is not ramped (see Trans_Gate)."),
 		  funcName);
 	return(TRUE);
-	
+
 }
 
 /**************************** SetChannelsFromSignal ***************************/
@@ -343,7 +343,7 @@ SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 		for (j = 0; j < theSignal->length; j++)
 			*(copyChannel++) = *(supplierChannel++);
 	}
-	
+
 }
 
 /**************************** SameType ****************************************/
@@ -408,14 +408,14 @@ Scale_SignalData(SignalDataPtr d, double multiplier)
 	int		i;
 	ChanLen	j;
 	ChanData	*dataPtr;
-	
+
 	if (!CheckInit_SignalData(d, wxT("Scale_SignalData (theSignal)")))
 		return(FALSE);
 	for (i = d->offset; i < d->numChannels; i++)
 		for (j = 0, dataPtr = d->channel[i]; j < d->length; j++)
 			*(dataPtr++) *= multiplier;
 	return(TRUE);
-	
+
 }
 
 /**************************** Add *********************************************/
@@ -431,7 +431,7 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 	int		i;
 	ChanLen	j;
 	ChanData	*aPtr, *bPtr;
-	
+
 	if (!CheckInit_SignalData(a, wxT("AddScaledData_SignalData (a)")) ||
 	  !CheckInit_SignalData(b, wxT("AddScaledData_SignalData (b)")))
 		return(FALSE);
@@ -444,7 +444,7 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 			*(aPtr++) += *(bPtr++);
 	}
 	return(TRUE);
-	
+
 }
 
 /**************************** SetSamplingInterval *****************************/
@@ -452,7 +452,7 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 /*
  * The sampling interval can be set any number of times.
  */
- 
+
 void
 SetSamplingInterval_SignalData(SignalDataPtr theData,
   double theSamplingInterval)
@@ -470,7 +470,7 @@ SetSamplingInterval_SignalData(SignalDataPtr theData,
  * This routine sets the time offset field for the SignalData structure.
  * By default it is set to zero, but it can be set to anything.
  */
- 
+
 void
 SetOutputTimeOffset_SignalData(SignalDataPtr theData,
   double theOutputTimeOffset)
@@ -488,7 +488,7 @@ SetOutputTimeOffset_SignalData(SignalDataPtr theData,
  * It can only be set in segmented mode at present, because the default
  * value of PROCESS_START_TIME must be maintained otherwise.
  */
- 
+
 void
 SetTimeIndex_SignalData(SignalDataPtr theData, ChanLen theTimeIndex)
 {
@@ -518,7 +518,7 @@ SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
 		theData->lengthFlag = TRUE;
 	} else
 		NotifyError(wxT("%s: Data set length cannot be changed."), funcName);
-		
+
 }
 
 /**************************** SetInterleaveLevel ******************************/
@@ -528,7 +528,7 @@ SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
  * A monaural signal has an interleave level of 1 (the default), and
  * a binaural signal has an interleave level of 2.
  */
- 
+
 void
 SetInterleaveLevel_SignalData(SignalDataPtr theData, uShort theInterleaveLevel)
 {
@@ -551,7 +551,7 @@ SetInterleaveLevel_SignalData(SignalDataPtr theData, uShort theInterleaveLevel)
  * This routine sets the number of window frames field for the SignalData
  * structure.
  */
- 
+
 void
 SetNumWindowFrames_SignalData(SignalDataPtr theData, uShort theNumWindowFrames)
 {
@@ -797,7 +797,7 @@ OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
 	int		j, k;
     ChanLen	i, t;
 	FILE	*fp;
-	
+
 	if (!CheckPars_SignalData(theData)) {
 		NotifyError(wxT("%s: Parameters not set for data-set."), funcName);
 		return(FALSE);
@@ -851,7 +851,7 @@ GetDuration_SignalData(SignalDataPtr theSignal)
 		return(0.0);
 	}
 	return((theSignal->length) * theSignal->dt);
-	
+
 }
 
 /**************************** GetOutputTime ***********************************/
@@ -893,7 +893,7 @@ GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
 	double	*scale;
 	ChanLen	j;
 	ChanData	*dataPtr;
-	
+
 	if (!CheckInit_SignalData(d, funcName))
 		return(FALSE);
 	if ((scale = (double *) calloc(d->numChannels, sizeof(double))) == NULL) {
@@ -907,7 +907,7 @@ GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
 			*(dataPtr++) *= scale[i];
 	free(scale);
 	return(TRUE);
-	
+
 }
 
 /**************************** GaindB ******************************************/
@@ -926,7 +926,7 @@ GaindB_SignalData(SignalDataPtr d, double gaindB)
 	double	scale;
 	ChanLen	j;
 	ChanData	*dataPtr;
-	
+
 	if (!CheckInit_SignalData(d, wxT("GaindBIndividual_SignalData ")
 	  wxT("(theSignal)")))
 		return(FALSE);
@@ -935,7 +935,7 @@ GaindB_SignalData(SignalDataPtr d, double gaindB)
 		for (j = 0, dataPtr = d->channel[i]; j < d->length; j++)
 			*(dataPtr++) *= scale;
 	return(TRUE);
-	
+
 }
 
 /**************************** Divide ******************************************/
@@ -951,7 +951,7 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 	int		i;
 	ChanLen	j;
 	ChanData	*aPtr, *bPtr;
-	
+
 	if (!CheckInit_SignalData(a, wxT("Divide_SignalData (a)")) ||
 	  !CheckInit_SignalData(b, wxT("Divide_SignalData (b)")))
 		return(FALSE);
@@ -964,7 +964,7 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 			*(aPtr++) /= *(bPtr++);
 	}
 	return(TRUE);
-	
+
 }
 
 /**************************** Delay *******************************************/
