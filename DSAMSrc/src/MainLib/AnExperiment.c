@@ -3,7 +3,7 @@
  * File:		AnExperiment.c
  * Purpose:		This module contains various analysis routines, which have
  *				been used in real experiments.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		19 Mar 1993
  * Updated:		10 Oct 1996
@@ -48,7 +48,7 @@
  * This routine now expects the intensity calculation to be done at the end of
  * the "RunModel" simulation routine.
  */
- 
+
 double
 FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
   BOOLN (* SetIntensity)(double), double targetThreshold,
@@ -61,7 +61,7 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	double	bestOutputIntensity = 0.0, bestInputIntensity = 0.0;
 	static double	lastInputIntensity, presentOutIntensity;
 	EarObjectPtr	modelResp;
-	
+
 	if (targetAccuracy <= 0.0) {
 		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis: Illegal target ")
 		  wxT("threshold accuracy (= %g)."), targetAccuracy);
@@ -131,7 +131,7 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
  * This routine now expects the intensity calculation to be done at the end of
  * the "RunModel" simulation routine.
  */
- 
+
 double
 FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
   BOOLN (* SetIntensity)(double), double targetThreshold,
@@ -142,7 +142,7 @@ FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
 	double	inputIntensity, deltaIntensity;
 	double	outIntensity;
 	EarObjectPtr	modelResp;
-	
+
 	if (targetAccuracy <= 0.0) {
 		NotifyWarning(wxT("FindThresholdIntensity_ExpAnalysis_Slow: Illegal ")
 		  wxT("target threshold accuracy (= %g)."), targetAccuracy);
@@ -173,7 +173,7 @@ FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
 }
 
 /****************************** CalcQValue ************************************/
-  
+
 /*
  * This function calculates the Q-value for a model.
  * It works only on a single channel.
@@ -253,7 +253,7 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 	  wxT("Hz (variation from CF = %g).  Returning Q = -1.0."), funcName,
 	  dBDownDiff, minTestFreq, maxTestFreq, variationFromCF);
 	return(-1.0);
-		
+
 }
 
 /****************************** Calc2CompAdapt ********************************/
@@ -286,7 +286,7 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	ChanLen	sT1Indx, sTPeriodIndx, i, rT1Indx, rTPeriodIndx;
 	ChanLen	aveTimeOffsetIndex, avePeriodIndex;
 	SignalDataPtr	inSignal, outSignal;
-	
+
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
@@ -294,7 +294,7 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 	SetProcessName_EarObject(data, wxT("Two component adaptation ")
 	  wxT("calculation."));
 	if (!CheckPars_SignalData(_InSig_EarObject(data, 0))) {
-		NotifyError(wxT("%s: Input signal not correctly set."), funcName);		
+		NotifyError(wxT("%s: Input signal not correctly set."), funcName);
 		return(FALSE);
 	}
 	inSignal = _InSig_EarObject(data, 0);
@@ -362,7 +362,7 @@ Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
 		Tr[chan] = -2.0 / gradient;
 	}
 	return(ok);
-	
+
 }
 
 #undef		STEADY_STATE_REGION_PERCENTAGE
