@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		13 Jun 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -1048,7 +1048,7 @@ CochleaF2x_BasilarM_Zhang(int species,double f)
  */
 
 /* ----------------------------------------------------------------------------
- ** Calculate the best frequency from the location on basilar membrane 
+ ** Calculate the best frequency from the location on basilar membrane
  */
 double
 CochleaX2f_BasilarM_Zhang(int species,double x)
@@ -1085,7 +1085,7 @@ double
 GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
   double* _taumin, double* _taurange)
 {
-  double taumin,taumax,taurange;
+  double taumin,taumax = 0.0,taurange;
   double ss0,cc0,ss1,cc1;
   double Q10,bw,gain,ratio;
   double xcf, x1000;
@@ -1110,7 +1110,7 @@ GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
       ss0 = 6.; cc0 = 1.1; ss1 = 2.2; cc1 = 1.1;
       taumin = ( cc0 * exp( -xcf / ss0) + cc1 * exp( -xcf /ss1) ) * 1e-3;
 	  /* above: in sec */
-      taurange = taumin * xcf/x1000; 
+      taurange = taumin * xcf/x1000;
       taumax = taumin+taurange;
       break;
     case 0:
@@ -1120,7 +1120,7 @@ GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
       taumax =  1.0 / (PIx2 * 1.019 * (1.0 / 1.2) * ERBFromF_Bandwidth(cf));
       break;
     case 9:
-      /* Universal species from data fitting : From Xuedong Zhang,Ian 
+      /* Universal species from data fitting : From Xuedong Zhang,Ian
 	   * (JASA 2001) */
       /* the Q10 determine the taumax(bandwidths at low level) Based on Cat*/
       Q10 = pow(10,0.4708*log10(cf/1e3)+0.4664);
@@ -1266,7 +1266,7 @@ SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,double _tdres,
 	res->c2LP = 1/(_tau*c+1);
 	res->gain = _gain;
 	res->Order = _order;
-	for( i = 0; i <= res->Order; i++) 
+	for( i = 0; i <= res->Order; i++)
 		res->gtf[i].re = res->gtfl[i].re = res->gtf[i].im = res->gtfl[i].im =
 		  0.0;
 	res->Run = RunGammaTone_BasilarM_Zhang;
@@ -1283,7 +1283,7 @@ SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,double _tdres,
  *
  * ##### Get Basilar Membrane ########
  * 1. Get a structure of BasilarMembrane
- * 2. Specify wide band filter in the BasilarMembrane Model 
+ * 2. Specify wide band filter in the BasilarMembrane Model
  *    //WB filter not used for all model versions, but it's computed here
  *	  anyway
  * 3. Specify the OHC model in the control path
@@ -1300,7 +1300,7 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
   int species, double tdres, double cf)
 {
 	static const WChar *funcName = wxT("initBasilarMembrane");
-	int		bmmodel;
+	int		bmmodel = 0;
 	double	taumax,taumin,taurange; /* general */
 	double	x, centerfreq,tauwb,tauwbmin,dtmp,wb_gain; /* for wb */
 	double	dc,R,minR; /* for afterohc */
@@ -1336,7 +1336,7 @@ InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
 
 	bm->TauMax = taumax;
 	bm->TauMin = taumin;
-	if(bm->bmmodel&Broad_ALL) 
+	if(bm->bmmodel&Broad_ALL)
 		bm->tau = taumin;
 	else
 		bm->tau = taumax;
@@ -1507,11 +1507,11 @@ Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
 			/*/ pass the control signal through OHC model */
 			ohcout = bm->ohc.Run(&(bm->ohc),wbout);
 			/*/ pass the control signal through nonliearity after OHC */
-			bm->tau = bm->afterohc.Run(&(bm->afterohc),ohcout);     
+			bm->tau = bm->afterohc.Run(&(bm->afterohc),ohcout);
 			/*/ set the tau of the tuning filter */
-			bm->bmfilter.SetTau(&(bm->bmfilter),bm->tau);     
+			bm->bmfilter.SetTau(&(bm->bmfilter),bm->tau);
 			/*  Gain Control of the tuning filter */
-			out1 = pow((bm->tau/bm->TauMax),bm->bmfilter.Order)*x1;  
+			out1 = pow((bm->tau/bm->TauMax),bm->bmfilter.Order)*x1;
 			break;
 		case FeedForward_NL:
 			/*/get the output of the wide-band pass as the control signal */
