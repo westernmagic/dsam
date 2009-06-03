@@ -10,7 +10,7 @@
  *				See Hewitt M. J. & Meddis R. (1993) "Regularity of cochlear
  *				nucleus stellate cells: A computational Modeling study",
  *				J. of the Acoust. Soc. Am, 93, pp 3390-3399.
- *				If the standard deviation results are only valid if the 
+ *				If the standard deviation results are only valid if the
  *				covariance measure is greater than 0.  This enables the case
  *				when there are less than two counts to be marked.
  *				10-1-97: LPO - added dead-time correction for
@@ -179,7 +179,7 @@ SetUniParList_Analysis_SpikeRegularity(void)
 	}
 	pars = spikeRegPtr->parList->pars;
 	SetPar_UniParMgr(&pars[ANALYSIS_SPIKEREGULARITY_OUTPUTMODE], wxT("OUTPUT_MODE"),
-	  wxT("Output mode: 'Coeff_Reg', 'Coeff_Var','Mean' or 'Standard_dev'."),
+	  wxT("Output mode: 'Regularity, 'Coeff_Var','Mean' or 'Standard_dev'."),
 	  UNIPAR_NAME_SPEC,
 	  &spikeRegPtr->outputMode, spikeRegPtr->outputModeList,
 	  (void * (*)) SetOutputMode_Analysis_SpikeRegularity);
@@ -700,6 +700,8 @@ ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data)
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 	SignalDataPtr	countEarObj = _OutSig_EarObject(p->countEarObj);
 
+	if (!data->updateProcessFlag)
+		return;
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		countPtr = countEarObj->channel[chan];
 		sumPtr = countEarObj->channel[chan + SPIKE_REG_SUM];
@@ -859,10 +861,10 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 			return(FALSE);
 		}
 		p->convertDt = p->dt / outSignal->dt;
-		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 	outSignal = _OutSig_EarObject(data);
 	countEarObj = _OutSig_EarObject(p->countEarObj);
 	/* Add additional sums. */
