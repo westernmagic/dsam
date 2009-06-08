@@ -158,7 +158,7 @@ InitListSpec_SpikeList(int numChannels)
 /*
  * This routine inserts a spike specification into the spike specification list
  * It will re-use the nodes in an existing list if one exists.
- * The list can be 'reset' by setting the 'current' pointer back to the 
+ * The list can be 'reset' by setting the 'current' pointer back to the
  * head of the list.
  * The spike specification is always placed at the first node, if the list is
  * not initialised, or at the next node after the current position.
@@ -204,6 +204,7 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 /*
  * This routine resets the lists in the list specification by setting the
  * current pointer back to the head of the list, it is not set to NULL.
+ * This is carried out at the start of the "GenerateList" routine.
  */
 
 BOOLN
@@ -280,4 +281,28 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 	}
 	return(TRUE);
 
+}
+
+/**************************** PrintList ************************************/
+
+/*
+ * This routine prints the spike list for testing purposes.
+ * It assumes that the spike list has been correctly initialised.
+ */
+
+void
+PrintList_SpikeList(SpikeListSpecPtr listSpec)
+{
+	int		chan;
+	SpikeSpecPtr	p;
+
+	for (chan = 0; chan < listSpec->numChannels; chan++) {
+		p = listSpec->head[chan];
+		while (p) {
+			DPrint(wxT("Channel[%2d], No. [%2d] = %lu\n"), chan, p->number,
+			  p->timeIndex);
+			p = p->next;
+		}
+	}
+	DPrint(wxT("\n"));
 }
