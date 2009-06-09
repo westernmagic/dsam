@@ -5,8 +5,8 @@
  * Comments:	Written using ModuleProducer version 1.6.1 (Nov 10 2008).
  * Author:		L. P. O'Mard
  * Created:		17 Nov 2008
- * Updated:	
- * Copyright:	(c) 2008, 
+ * Updated:
+ * Copyright:	(c) 2008,
  *
  *********************/
 
@@ -53,8 +53,8 @@ typedef struct {
 
 	/* Private members */
 	UniParListPtr	parList;
-	int		*kUpp;
-	double	*normFactor;	
+	int		*kLow, *kUpp;
+	double	*normFactor;
 	FFTArrayPtr		fTInv;
 
 } NAmpMod, *NAmpModPtr;
