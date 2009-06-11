@@ -83,6 +83,8 @@ FreeListSpec_SpikeList(SpikeListSpecPtr *p)
 		free((*p)->lastValue);
 	if ((*p)->timeIndex)
 		free((*p)->timeIndex);
+	if ((*p)->lastSpikeTimeIndex)
+		free((*p)->lastSpikeTimeIndex);
 	free(*p);
 	*p = NULL;
 
@@ -147,6 +149,12 @@ InitListSpec_SpikeList(int numChannels)
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
+	if ((p->lastSpikeTimeIndex = (ChanLen *) calloc(p->numChannels,
+	  sizeof(ChanLen))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for 'lastSpikeTimeIndex[%d]' array. "),
+		  funcName, p->numChannels);
+		ok = FALSE;
+	}
 	if (!ok)
 		FreeListSpec_SpikeList(&p);
 	return(p);
@@ -174,8 +182,8 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 	static const WChar *funcName = wxT("InsertSpikeSpec_SpikeSpec");
 	SpikeSpecPtr	p;
 
-	if ((listSpec->head[channel] == NULL) || (listSpec->current[channel] ==
-	  NULL)) {
+	if (!listSpec->head[channel] || (listSpec->current[channel] &&
+	  !listSpec->current[channel]->next)) {
 		if ((p = (SpikeSpecPtr) malloc(sizeof(SpikeSpec))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for spike specification."),
 			  funcName);
@@ -189,10 +197,11 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 			listSpec->tail[channel] = listSpec->tail[channel]->next = p;
 		}
 		p->next = NULL;
-		listSpec->current[channel] = NULL;
+		listSpec->current[channel] = p;
 	} else {
-		p = listSpec->current[channel];
-		listSpec->current[channel] = listSpec->current[channel]->next;
+		p = (listSpec->current[channel])? listSpec->current[channel]->next:
+		  listSpec->head[channel];
+		listSpec->current[channel] = p;
 	}
 	p->timeIndex = timeIndex;
 	return(TRUE);
@@ -224,6 +233,23 @@ ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 
 }
 
+/**************************** SetTimeContinuity ********************************/
+
+/*
+ * This routine sets the time continuity for the spike list generation.
+  * It assumes that the spike list has been correctly initialised.
+ */
+
+void
+SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
+{
+	int		chan;
+
+	for (chan = signal->offset; chan < signal->numChannels; chan++)
+		listSpec->timeIndex[chan] += signal->length;
+
+}
+
 /**************************** GenerateList ************************************/
 
 /*
@@ -249,7 +275,6 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 		return(FALSE);
 	}
 	for (chan = signal->offset; chan < signal->numChannels; chan++) {
-		listSpec->current[chan] = listSpec->head[chan];
 		inPtr = signal->channel[chan];
 		riseDetected = listSpec->riseDetected + chan;
 		lastValue = listSpec->lastValue + chan;
@@ -258,8 +283,13 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
 			startTime = 1;
 			listSpec->riseDetected[chan] = FALSE;
 			*lastValue = *(inPtr++);
-		} else
+			listSpec->lastSpikeTimeIndex[chan] = 0;
+		} else {
 			startTime = 0;
+			if (listSpec->current[chan])
+				listSpec->lastSpikeTimeIndex[chan] = listSpec->current[chan]->timeIndex;
+		}
+		listSpec->current[chan] = NULL;
 		for (i = startTime; i < signal->length; i++) {
 			if (!*riseDetected)
 				*riseDetected = (*inPtr > *lastValue);
@@ -297,8 +327,10 @@ PrintList_SpikeList(SpikeListSpecPtr listSpec)
 	SpikeSpecPtr	p;
 
 	for (chan = 0; chan < listSpec->numChannels; chan++) {
+		if (!listSpec->current[chan])
+			continue;
 		p = listSpec->head[chan];
-		while (p) {
+		while (p != listSpec->current[chan]->next) {
 			DPrint(wxT("Channel[%2d], No. [%2d] = %lu\n"), chan, p->number,
 			  p->timeIndex);
 			p = p->next;

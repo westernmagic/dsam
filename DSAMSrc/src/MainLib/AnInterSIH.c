@@ -12,7 +12,7 @@
  *				useful for repeated runs.
  * Author:		L. P. O'Mard
  * Created:		19 Mar 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -578,6 +578,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 	SignalDataPtr	inSignal, outSignal;
 	InterSIHPtr	p = interSIHPtr;
 
+	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
 		if (!CheckPars_Analysis_ISIH())
 			return(FALSE);
@@ -585,7 +586,6 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Inter-Spike Interval Histogram ")
 		  wxT("(ISIH) analysis"));
 		p->maxIntervalIndex = (p->maxInterval > 0.0)? (ChanLen) floor(p->
@@ -602,22 +602,22 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 		p->maxSpikes = (p->order > 0)? p->order: abs((int) inSignal->length);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 	outSignal = _OutSig_EarObject(data);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		outPtr = outSignal->channel[chan];
 		headSpikeList = p->spikeListSpec->head[chan];
 		currentSpikeSpec = p->spikeListSpec->current[chan];
-		for (p1 = headSpikeList; p1 != currentSpikeSpec; p1 = p1->next)
-			for (p2 = p1->next; (p2 != NULL) && (p2 != currentSpikeSpec) &&
+		for (p1 = headSpikeList; p1 != currentSpikeSpec->next; p1 = p1->next)
+			for (p2 = p1->next; (p2 != NULL) && (p2 != currentSpikeSpec->next) &&
 			  (p2->number - p1->number <= p->maxSpikes); p2 = p2->next)
 				if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
 				  p->maxIntervalIndex)
-					outPtr[spikeIntervalIndex]++;
+					outPtr[spikeIntervalIndex - 1]++;
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);

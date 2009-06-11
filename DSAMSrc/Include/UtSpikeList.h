@@ -35,7 +35,7 @@ typedef struct SpikeSpec {
 	int		number;
 	ChanLen	timeIndex;
 	struct SpikeSpec *next;
-	
+
 } SpikeSpec, *SpikeSpecPtr;
 
 typedef struct {
@@ -44,6 +44,7 @@ typedef struct {
 	uShort			numChannels;
 	double			*lastValue;
 	ChanLen			*timeIndex;
+	ChanLen			*lastSpikeTimeIndex;
 	SpikeSpecPtr	*head;
 	SpikeSpecPtr	*tail;
 	SpikeSpecPtr	*current;
@@ -77,6 +78,9 @@ BOOLN	InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 		  ChanLen timeIndex);
 
 BOOLN	ResetListSpec_SpikeList(SpikeListSpecPtr listSpec,
+		  SignalDataPtr signal);
+
+void	SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec,
 		  SignalDataPtr signal);
 
 __END_DECLS

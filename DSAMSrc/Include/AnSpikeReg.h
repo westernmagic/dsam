@@ -8,7 +8,7 @@
  *				See Hewitt M. J. & Meddis R. (1993) "Regularity of cochlear
  *				nucleus stellate cells: A computational Modeling study",
  *				J. of the Acoust. Soc. Am, 93, pp 3390-3399.
- *				If the standard deviation results are only valid if the 
+ *				If the standard deviation results are only valid if the
  *				covariance measure is greater than 0.  This enables the case
  *				when there are less than two counts to be marked.
  *				10-1-97: LPO - added dead-time correction for
@@ -66,9 +66,10 @@ typedef enum {
 
 typedef enum {
 
-	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COUNT,
 	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_COVARIANCE,
 	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_MEAN,
+	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY,
 	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_STANDARD_DEV,
 	ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_NULL
 
@@ -90,8 +91,8 @@ typedef struct {
 	/* Private members */
 	NameSpecifier	*outputModeList;
 	UniParListPtr	parList;
-	double	dt, convertDt;
-	ChanLen	*runningTimeOffsetIndex;
+	double	dt;
+	ChanLen	*spikeTimeHistIndex;
 	EarObjectPtr	countEarObj;
 	SpikeListSpecPtr	spikeListSpec;
 

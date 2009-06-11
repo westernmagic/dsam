@@ -10,7 +10,7 @@
  * 				This module does not run in threaded mode.
  * Author:		L. P. O'Mard
  * Created:		17 Jan 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, Lowel P. O'Mard
  *
  *********************/
@@ -609,11 +609,11 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		  funcName);
 			return(FALSE);
 		}
-		GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 		p->maxSpikes = (p->order > 0)? p->order: abs((int) inSignal->length);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 	outSignal = _OutSig_EarObject(data);
 	binScale = inSignal->dt / p->binWidth;
 	/*binScale = (double) p->maxIntervalIndex / inSignal->length;*/
@@ -624,7 +624,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ /= p->lastNormalisationFactor;
 	}
-	
+
 	outPtr = outSignal->channel[0];
 	for (chan = 0; chan < inSignal->numChannels; chan++) {
 		if (sL->tail[chan])
@@ -632,8 +632,8 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		for (sChan = 0; sChan < inSignal->numChannels; sChan++) {
 			if (sChan == chan)
 				continue;
-			for (p1 = sL->head[chan]; p1 != sL->current[chan]; p1 = p1->next) {
-				for (p2 = sL->head[sChan]; (p2 != NULL) && (p2 != sL->current[sChan]) &&
+			for (p1 = sL->head[chan]; p1 != sL->current[chan]->next; p1 = p1->next) {
+				for (p2 = sL->head[sChan]; (p2 != NULL) && (p2 != sL->current[sChan]->next) &&
 				  (p2->number - p1->number <= p->maxSpikes); p2 = p2->next) {
 					if (p2->timeIndex < p1->timeIndex)
 						continue;
@@ -645,7 +645,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		}
 	}
 	if (p->normalisation) {
-		normalisationFactor = binScale * (inSignal->length * inSignal->numChannels) / 
+		normalisationFactor = binScale * (inSignal->length * inSignal->numChannels) /
 		  ((inSignal->numChannels - 1) * SQR(spikeCount));
 		outPtr = outSignal->channel[0];
 		for (i = 0; i < outSignal->length; i++)
