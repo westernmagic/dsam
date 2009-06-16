@@ -6,7 +6,7 @@
  * Comments:	Originally created for use in the MoDRNL filter.
  * Author:		L. P. O'Mard
  * Created:		01 Sep 2000
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex.
  *
  *********************/
@@ -15,7 +15,7 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -47,8 +47,6 @@ Free_ParArray(ParArrayPtr *parArray)
 		return;
 	if ((*parArray)->params)
 		free((*parArray)->params);
-	if ((*parArray)->parList)
-		FreeList_UniParMgr(&(*parArray)->parList);
 	free(*parArray);
 	*parArray = NULL;
 
@@ -149,7 +147,7 @@ CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction)
  * This routine initialises and sets the ParArray's universal parameter list.
  * This list provides universal access to the ParArray's parameters.
  */
- 
+
 BOOLN
 SetUniParList_ParArray(ParArrayPtr parArray)
 {
@@ -262,18 +260,18 @@ ReadPars_ParArray(FILE *fp, ParArrayPtr parArray)
 	BOOLN	ok = TRUE;
 	WChar	modeName[MAXLINE];
 	int		i;
-	
+
 	if (!parArray) {
 		NotifyError(wxT("%s: The 'parArray' structure has not been ")
 		  wxT("initialised."), funcName);
 		return(FALSE);
-	} 
+	}
 	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
 		NotifyError(wxT("%s: Could not find '%s' mode for '%s'."), funcName,
 		  modeName, parArray->name);
 		return(FALSE);
 	}
-	
+
 	if (!SetMode_ParArray(parArray, modeName)) {
 		NotifyError(wxT("%s: Unknown '%s' mode (%s)."), funcName, parArray->
 		  name, modeName);
@@ -302,7 +300,7 @@ PrintPars_ParArray(ParArrayPtr parArray)
 {
 	static const WChar *funcName = wxT("PrintPars_ParArray");
 	int		i;
-	
+
 	if (!CheckInit_ParArray(parArray, funcName)) {
 		NotifyError(wxT("%s: Parameter Array not correctly set."),
 		  funcName);
