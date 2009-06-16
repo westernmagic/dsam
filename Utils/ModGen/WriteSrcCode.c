@@ -389,9 +389,9 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", ptrVar);
 				Print(fp, "\t  ", "->");
 				Print(fp, "\t  ", GetName((*list)->sym));
-				Print(fp, "\t  ", " = Init_ParArray(\"");
+				Print(fp, "\t  ", " = Init_ParArray(wxT(\"");
 				Print(fp, "\t  ", GetName((*list)->sym));
-				Print(fp, "\t  ", "\", FitFuncModeList_NSpecLists(0), ");
+				Print(fp, "\t  ", "\"), FitFuncModeList_NSpecLists(0), ");
 				Print(fp, "\t  ", CreateFuncName("GetFitFuncPars", module,
 				  qualifier));
 				Print(fp, "\t  ", ", NULL)) == NULL) {\n");
