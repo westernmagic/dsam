@@ -28,7 +28,7 @@
 }
 %token	<sym>	IDENTIFIER CONSTANT_EXPRESSION TYPEDEF_NAME
 %token	<sym>	TYPEDEF ENUM BOOLEAN_VAR BOOLSPECIFIER
-%token	<sym>	VOID CHAR SHORT INT LONG FLOAT DOUBLE SIGNED UNSIGNED
+%token	<sym>	VOID CHAR WCHAR SHORT INT LONG FLOAT DOUBLE SIGNED UNSIGNED
 %token	<sym>	CONST VOLATILE
 %token	<sym>	STRUCT UNION
 %token	<sym>	MOD_NAME QUALIFIER PROC_ROUTINE PROCESS_VARS
@@ -62,6 +62,7 @@ storage_class_specifier:
 type_specifier:
 		VOID				{ ; }
 	|	CHAR				{ ; }
+	|	WCHAR				{ ; }
 	|	SHORT				{ ; }
 	|	INT					{ ; }
 	|	LONG				{ ; }

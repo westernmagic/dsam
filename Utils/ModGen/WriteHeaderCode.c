@@ -55,7 +55,7 @@ void
 PrintHeaderIncludes(FILE *fp)
 {
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS], **list;
-	
+
 	/* Name specifier header */
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
@@ -78,7 +78,7 @@ PrintConstantDefinitions(FILE *fp)
 {
 	int		count;
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS], **list;
-	
+
 	/* Number of parameters - required by the Universal parameter handling. */
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next, count = 0; p = GetType_IdentifierList(&type,
@@ -104,7 +104,7 @@ PrintParSpecifierEnumDefinition(FILE *fp)
 	BOOLN	placeComma = FALSE;
 	char	*baseModuleName;
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS], **list;
-	
+
 	baseModuleName = CreateBaseModuleName(module, qualifier, TRUE);
 	fprintf(fp, "typedef enum {\n\n");
 	p = FindTokenType(STRUCT, pc);
@@ -121,7 +121,7 @@ PrintParSpecifierEnumDefinition(FILE *fp)
 			fprintf(fp, "\t%s_%s", baseModuleName, UpperCase(
 			  DT_TO_SAMPLING_INTERVAL(GetName((*list)->sym))));
 			placeComma = (*(list + 1) != 0);
-				
+
 		}
 		placeComma = TRUE;
 	}
@@ -144,7 +144,7 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 {
 	char	nameSpecBase[MAXLINE];
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS], **list;
-	
+
 	p = FindTokenType(STRUCT, pc);
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
@@ -223,7 +223,6 @@ PrintExpandedStructure(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
 			switch (type->sym->type) {
-			case NAMESPECIFIER:
 			case PARARRAY:
 				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n", GetName((*list)->
 				  sym), (type->sym->type == PARARRAY)? "Mode": "");
@@ -251,7 +250,7 @@ PrintExpandedStructure(FILE *fp)
 void
 PrintExternalVariables(FILE *fp)
 {
-	
+
 	fprintf(fp, "extern\t%s\t", ptrType);
 	fprintf(fp, "%s;\n\n", ptrVar);
 

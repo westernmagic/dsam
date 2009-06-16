@@ -75,7 +75,7 @@ Init_WriteCodeUtils(void)
 	sprintf(ptrType, "%sPtr", structure);
 	sprintf(ptrVar, "%s", ptrType);
 	ptrVar[0] = tolower(ptrType[0]);
-	
+
 	if ((tp = FindTokenType(PROCESS_VARS, pc)) == NULL)
 		processVarsFlag = FALSE;
 	else {
@@ -175,7 +175,7 @@ CreateProcessFuncName(Token *pc, char *moduleName, char *qualifier)
 	char	*function;
 
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS];
-	
+
 	if ((p = FindTokenType(PROC_ROUTINE, pc)) == NULL)
 		function = "Process";
 	else {
@@ -228,7 +228,7 @@ CreateFuncDeclaration(char *type, char *funcName, char *arguments)
 {
 	char	*p;
 	int		length;
-	
+
 	length = strlen(type) + strlen(funcName) + strlen(arguments);
 	p = (char *) emalloc(length + strlen("()") + 1);
 	sprintf(p, "%s%s(%s)", type, funcName, arguments);
@@ -291,6 +291,7 @@ GetOutputTypeFormatStr(Symbol *p)
 	switch (p->type) {
 	case BOOLEAN_VAR:	return("%s");
 	case CHAR:			return("%s");
+	case WCHAR:			return("%s");
 	case INT:			return("%d");
 	case INT_AL:		return("%d");
 	case LONG:			return("%ld");
@@ -318,6 +319,7 @@ GetInputTypeFormatStr(Symbol *p)
 	switch (p->type) {
 	case BOOLEAN_VAR:	return("%d");
 	case CHAR:			return("%s");
+	case WCHAR:			return("%s");
 	case INT:			return("%d");
 	case INT_AL:		return("%d");
 	case LONG:			return("%ld");
@@ -341,10 +343,12 @@ char *
 GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 {
 
-	if ((p->inst != POINTER) || (type->sym->type == CHAR))
+	if ((p->inst != POINTER) || (type->sym->type == CHAR) ||
+	  (type->sym->type == WCHAR))
 		switch (type->sym->type) {
 		case BOOLSPECIFIER:	return("UNIPAR_BOOL");
 		case CHAR:			return("UNIPAR_STRING");
+		case WCHAR:			return("UNIPAR_STRING");
 		case INT:			return("UNIPAR_INT");
 		case INT_AL:		return("UNIPAR_INT_AL");
 		case LONG:			return("UNIPAR_LONG");

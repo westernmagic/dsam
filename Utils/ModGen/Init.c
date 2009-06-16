@@ -2,10 +2,10 @@
  *
  * File:		Init.c
  * Purpose: 	Initialises the symbol table for the Module parser.
- * Comments:	
+ * Comments:
  * Author:		L.P.O'Mard
  * Created:		6 Nov 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1997, University of Essex
  *
  **********************/
@@ -50,6 +50,7 @@ static struct {
 
 	{"void",		DEFAULT_ALT_NAME_PTR,		VOID},
 	{"char",		DEFAULT_ALT_NAME_PTR,		CHAR},
+	{"WChar",		DEFAULT_ALT_NAME_PTR,		WCHAR},
 	{"short",		DEFAULT_ALT_NAME_PTR,		SHORT},
 	{"int",			DEFAULT_ALT_NAME_PTR,		INT},
 	{"long",		DEFAULT_ALT_NAME_PTR,		LONG},
@@ -93,7 +94,7 @@ void
 Init(void)
 {
 	int		i;
-	
+
 	/* for (i = 0; consts[i].name; i++)
 		install(consts[i].name, VAR, consts[i].cval); */
 	for (i = 0; keywords[i].name; i++)
