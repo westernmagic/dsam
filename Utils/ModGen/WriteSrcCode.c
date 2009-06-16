@@ -394,7 +394,7 @@ PrintInitRoutine(FILE *fp)
 				Print(fp, "\t  ", "\", FitFuncModeList_NSpecLists(0), ");
 				Print(fp, "\t  ", CreateFuncName("GetFitFuncPars", module,
 				  qualifier));
-				Print(fp, "\t  ", ")) == NULL) {\n");
+				Print(fp, "\t  ", ", NULL)) == NULL) {\n");
 				Print(fp, "", "");
 				fprintf(fp, "\t\tNotifyError(wxT(\"%%s: Could not initialise %s "
 				  "parArray structure\"),\n\t\t  funcName);\n", GetName((*list)->
