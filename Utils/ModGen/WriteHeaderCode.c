@@ -223,10 +223,6 @@ PrintExpandedStructure(FILE *fp)
 	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
 		for (list = identifierList; *list != 0; list++)
 			switch (type->sym->type) {
-			case PARARRAY:
-				fprintf(fp, "\tNameSpecifier\t*%s%sList;\n", GetName((*list)->
-				  sym), (type->sym->type == PARARRAY)? "Mode": "");
-				break;
 			case DATUMPTR:
 				fprintf(fp, "\tWChar\t%s%s[MAX_FILE_PATH];\n", GetName((*list)->
 				  sym), SIM_SCRIPT_NAME_SUFFIX);
