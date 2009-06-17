@@ -31,7 +31,7 @@
  *				this routine, first setting 'dataFilePtr' to a temporary local
  *				pointer which is free'd after use.
  *				The same has been done for 'ReadSignal_'.
- *				Set the 'normalisation' initialisation to -1.0 so that 
+ *				Set the 'normalisation' initialisation to -1.0 so that
  *				automatic normalisation is employed.
  *				27-04-99 LPO: Implemented 32 bit file support.
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
@@ -41,7 +41,7 @@
  * Created:		12 Jul 1993
  * Updated:		04 Aug 1999
  * Copyright:	(c) 1999, University of Essex
- * 
+ *
  ******************/
 
 #ifdef HAVE_CONFIG_H
@@ -327,7 +327,7 @@ ResetSFInfo_DataFile(SF_INFO *p)
 	p->channels = 0;
 	p->format = 0;
 	p->sections = 0;
-	p->seekable = 0;	
+	p->seekable = 0;
 
 }
 
@@ -386,7 +386,7 @@ Init_DataFile(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (dataFilePtr == NULL) { 
+		if (dataFilePtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
@@ -431,7 +431,6 @@ Init_DataFile(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	dataFilePtr->titleString = NULL;
-	dataFilePtr->outputTimeOffset = 0.0;
 	dataFilePtr->timeOffsetIndex = 0;
 	dataFilePtr->timeOffsetCount = 0;
 	dataFilePtr->maxSamples = 0;
@@ -481,7 +480,7 @@ Free_DataFile(void)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_DataFile(void)
 {
@@ -628,7 +627,7 @@ SetWordSize_DataFile(int wordSize)
 	dataFilePtr->wordSize = wordSize;
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetNormalisation ********************************/
@@ -648,7 +647,7 @@ SetNormalisation_DataFile(double normalisation)
 	}
 	dataFilePtr->normalisation = normalisation;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetNumChannels **********************************/
@@ -757,7 +756,7 @@ SetIOSectionLength_DataFile(EarObjectPtr data)
 /*
  * This routine opens a file for reading, if required.
  * If the file name is "-" then "stdin" is returned.
- * The "stdin" file pointer is also returned if "+" is specfied, for 
+ * The "stdin" file pointer is also returned if "+" is specfied, for
  * transfer to memory using a file pointer.
  * If working with "memory" files, the memory pointer is set to the beginning
  * of the initialised memory.
@@ -813,13 +812,13 @@ NumberOfColumns_DataFile(FILE *fp)
 			if (!number) {
 				numcols++;
 				number = TRUE;
-			} 
+			}
 		} else
 			number = FALSE;
 	}
 	/*SetPosition_UPortableIO(fp, 0L, SEEK_SET);*/
 	return(numcols);
-	
+
 } /* NumberOfColumns_DataFile */
 
 /********************************* SetDefaultSampleRate ***********************/
@@ -828,7 +827,7 @@ NumberOfColumns_DataFile(FILE *fp)
  * This function sets the module's DefaultSampleRate parameter.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetDefaultSampleRate_DataFile(double theDefaultSampleRate)
 {
@@ -850,7 +849,7 @@ SetDefaultSampleRate_DataFile(double theDefaultSampleRate)
  * This function sets the module's duration parameter.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetDuration_DataFile(double theDuration)
 {
@@ -872,7 +871,7 @@ SetDuration_DataFile(double theDuration)
  * This function sets the module's timeOffset parameter.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetTimeOffset_DataFile(double theTimeOffset)
 {
@@ -898,7 +897,7 @@ SetTimeOffset_DataFile(double theTimeOffset)
  * This function sets the module's gain parameter.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetGain_DataFile(double theGain)
 {
@@ -949,13 +948,13 @@ SetFileName_DataFile(WChar *fileName)
  * correctly initialised.
  * It returns TRUE if there are no problems.
  */
- 
+
 BOOLN
 CheckPars_DataFile(void)
 {
 	static const WChar *funcName = wxT("CheckPars_DataFile");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (dataFilePtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
@@ -970,8 +969,8 @@ CheckPars_DataFile(void)
 		ok = FALSE;
 	}
 	return(ok);
-	
-}	
+
+}
 
 /********************************* CheckParsRead ******************************/
 
@@ -979,16 +978,16 @@ CheckPars_DataFile(void)
  * This routine checks that the necessary parameters for the module have been
  * correctly initialised for the specific case of reading files.
  * It expects the main CheckPars routine to have already confirmed that the
- * module has been correctly set. 
+ * module has been correctly set.
  * It returns TRUE if there are no problems.
  */
- 
+
 BOOLN
 CheckParsRead_DataFile(void)
 {
 	static const WChar *funcName = wxT("CheckParsRead_DataFile");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (dataFilePtr->type == ASCII_DATA_FILE) {
 		if ((dataFilePtr->name[0] == STDIN_STDOUT_FILE_DIRN) &&
@@ -999,8 +998,8 @@ CheckParsRead_DataFile(void)
 		}
 	}
 	return(ok);
-	
-}	
+
+}
 
 /********************************* SetPars ************************************/
 
@@ -1008,7 +1007,7 @@ CheckParsRead_DataFile(void)
  * This function sets all the module's parameters.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetPars_DataFile(WChar *theFileName, int theWordSize, int theNumChannels,
   double theDefaultSampleRate, double theDuration, double theTimeOffset,
@@ -1016,7 +1015,7 @@ SetPars_DataFile(WChar *theFileName, int theWordSize, int theNumChannels,
 {
 	static const WChar *funcName = wxT("SetPars_DataFile");
 	BOOLN	ok;
-	
+
 	ok = TRUE;
 	if (!SetFileName_DataFile(theFileName))
 		ok = FALSE;
@@ -1035,7 +1034,7 @@ SetPars_DataFile(WChar *theFileName, int theWordSize, int theNumChannels,
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
 	return(ok);
-	
+
 }
 
 /****************************** PrintPars *************************************/
@@ -1043,7 +1042,7 @@ SetPars_DataFile(WChar *theFileName, int theWordSize, int theNumChannels,
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_DataFile(void)
 {
@@ -1080,7 +1079,7 @@ PrintPars_DataFile(void)
  * The "endian" parameter is no longer used.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 ReadPars_DataFile(WChar *parFileName)
 {
@@ -1090,7 +1089,7 @@ ReadPars_DataFile(WChar *parFileName)
 	int		wordSize, numChannels;
 	double  defaultSampleRate, duration, timeOffset, gain, normalisation;
 	FILE	*fp;
-	
+
     if (DSAM_strcmp(parFileName, NO_FILE) == 0)
     	return(TRUE);
 	parFilePath = GetParsFileFPath_Common(parFileName);
@@ -1133,7 +1132,7 @@ ReadPars_DataFile(WChar *parFileName)
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /****************************** SetParsPointer ********************************/
@@ -1214,7 +1213,7 @@ InitProcessVariables_DataFile(EarObjectPtr data, sf_count_t length,
   double sampleRate)
 {
 	static WChar *funcName = wxT("InitProcessVariables_DataFile");
-	
+
 	if (dataFilePtr->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_DataFile();
 		if ((dataFilePtr->timeOffsetIndex = (ChanLen) floor(
@@ -1267,7 +1266,7 @@ InitBuffer_DataFile(SignalDataPtr signal, const WChar *callingFunction)
 	return(TRUE);
 
 }
-	  
+
 /**************************** FreeProcessVariables ****************************/
 
 /*
@@ -1356,12 +1355,12 @@ ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 			GaindB_SignalData(outSignal, dataFilePtr->gain);
 		if (!outSignal->staticTimeFlag)
 			SetOutputTimeOffset_SignalData(outSignal, dataFilePtr->
-			  timeOffsetIndex * outSignal->dt + dataFilePtr->outputTimeOffset);
+			  timeOffsetIndex * outSignal->dt + outSignal->outputTimeOffset);
 		outSignal->rampFlag = TRUE;	/* Let user sort out ramps */
 		SetProcessContinuity_EarObject(data);
 	}
 	return(ok);
-	
+
 }
 
 /**************************** WriteOutSignal **********************************/
@@ -1403,7 +1402,7 @@ WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("WriteOutSignalMain_DataFile");
 	BOOLN	ok = FALSE;
-	
+
 	if (!data || !_OutSig_EarObject(data)) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);

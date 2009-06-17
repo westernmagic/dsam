@@ -31,7 +31,7 @@
  *				this routine, first setting 'dataFilePtr' to a temporary local
  *				pointer which is free'd after use.
  *				The same has been done for 'ReadSignal_'.
- *				Set the 'normalisation' initialisation to -1.0 so that 
+ *				Set the 'normalisation' initialisation to -1.0 so that
  *				automatic normalisation is employed.
  *				27-04-99 LPO: Implemented 32 bit file support.
  *				04-08-99 LPO: The 'InitProcessVariables_' routine now correctly
@@ -62,7 +62,7 @@
 #define DATAFILE_MOD_NAME_PREFIX	wxT("DataFile_")
 #define DATAFILE_IN_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("IN")
 #define DATAFILE_OUT_MOD_NAME	DATAFILE_MOD_NAME_PREFIX wxT("OUT")
-#define DATAFILE_BUFFER_FRAMES	1024	
+#define DATAFILE_BUFFER_FRAMES	1024
 #define DATAFILE_NEGLIGIBLE_SR_DIFF		1.0e-10
 #define DATAFILE_CHANNEL_LABEL_SPACE	9
 #define	STDIN_STDOUT_FILE_DIRN	'-'		/* For the direction of files. */
@@ -137,7 +137,7 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 
 	ParameterSpecifier parSpec;
-	
+
 	WChar	name[MAX_FILE_PATH];/* - used by Generate Signal, set by ReadPars.*/
 	int		subFormatType;
 	int		wordSize;			/* can be either 1 or 2 byte words. */
@@ -148,7 +148,7 @@ typedef struct {
 	double	timeOffset;			/* Set to miss date at start of signal. */
 	double	gain;				/* gain for normalised input signals. */
 	double	normalisation;		/* AIFF, Raw, MS Wave support, <0.0 for auto. */
-	
+
 	/* Call back routines. */
 	double (* GetDuration)(void);
 
@@ -158,7 +158,6 @@ typedef struct {
 	BOOLN	inputMode;
 	char	*titleString;
 	double	normalise;			/* Set for scaling: AIFF, Raw, MS Wave etc. */
-	double	outputTimeOffset;
 	sf_count_t	timeOffsetIndex;
 	sf_count_t	timeOffsetCount;
 	sf_count_t	maxSamples;		/* This can be set to restrict the data size. */
