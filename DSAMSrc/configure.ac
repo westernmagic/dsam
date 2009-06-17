@@ -329,7 +329,10 @@ dnl ============================================================================
 
 AC_C_CONST
 AC_STRUCT_TM
+AC_PROG_CXX
 AC_LANG_CPLUSPLUS
+dnl	AC_PROG_CXX must come before AC_LANG_CPLUSPLUS or autogen.sh fails under the
+dnl new automake
 
 dnl ============================================================================
 dnl Checks for library functions.
