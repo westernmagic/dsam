@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_BINOM_NUM_PARS			5
+#define ANSPIKEGEN_BINOM_NUM_PARS			6
 #define ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
@@ -43,7 +43,8 @@ typedef enum {
 	ANSPIKEGEN_BINOM_RANSEED,
 	ANSPIKEGEN_BINOM_PULSEDURATION,
 	ANSPIKEGEN_BINOM_PULSEMAGNITUDE,
-	ANSPIKEGEN_BINOM_REFRACTORYPERIOD
+	ANSPIKEGEN_BINOM_REFRACTORYPERIOD,
+	ANSPIKEGEN_BINOM_DISTRIBUTION
 
 } BinomialSGParSpecifier;
 
@@ -51,18 +52,18 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	numFibresFlag, ranSeedFlag, pulseDurationFlag, pulseMagnitudeFlag;
-	BOOLN	refractoryPeriodFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		numFibres;
 	long	ranSeed;
 	double	pulseDuration;
 	double	pulseMagnitude;
 	double	refractoryPeriod;
+	ParArrayPtr	distribution;
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels;
+	int		*numFibres2;
 	double	*lastOutput;
 	ChanLen	*remainingPulseIndex, pulseDurationIndex;
 	EarObjectPtr	refractAdjData;
@@ -87,8 +88,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_ANSpikeGen_Binomial(EarObjectPtr data);
 
-BOOLN	CheckPars_ANSpikeGen_Binomial(void);
-
 BOOLN	Free_ANSpikeGen_Binomial(void);
 
 void	FreeProcessVariables_ANSpikeGen_Binomial(void);
@@ -106,6 +105,8 @@ BOOLN	ReadPars_ANSpikeGen_Binomial(WChar *fileName);
 BOOLN	RunModel_ANSpikeGen_Binomial(EarObjectPtr data);
 
 BOOLN	InitModule_ANSpikeGen_Binomial(ModulePtr theModule);
+
+BOOLN	SetDistribution_ANSpikeGen_Binomial(ParArrayPtr theDistribution);
 
 BOOLN	SetNumFibres_ANSpikeGen_Binomial(int theNumFibres);
 

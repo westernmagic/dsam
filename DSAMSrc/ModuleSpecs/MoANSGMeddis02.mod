@@ -13,5 +13,6 @@ typedef struct {
 	double	pulseMagnitude;
 	double	refractoryPeriod;
 	double	recoveryTau;
+	ParArrayPtr		distribution;
 
 } Meddis02SG;

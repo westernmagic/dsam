@@ -60,7 +60,8 @@ Free_ParArray(ParArrayPtr *parArray)
  */
 
 ParArrayPtr
-Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
+Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int),
+  BOOLN (* CheckPars)(ParArrayPtr, SignalDataPtr))
 {
 	static const WChar *funcName = wxT("Init_ParArray");
 	BOOLN	lastListEntryFound = FALSE;
@@ -86,6 +87,7 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int))
 	p->params = NULL;
 	p->numParams = -1;
 	p->GetNumPars = GetNumPars;
+	p->CheckPars = CheckPars;
 	p->modeList = modeList;
 	p->parList = NULL;
 
@@ -315,3 +317,24 @@ PrintPars_ParArray(ParArrayPtr parArray)
 
 }
 
+/****************************** CheckPars *************************************/
+
+/*
+ * This routine checks the parameters associated with a ParArray data structure.
+ */
+
+BOOLN
+CheckPars_ParArray(ParArrayPtr parArray, SignalDataPtr signal)
+{
+	static const WChar *funcName = wxT("CheckPars_ParArray");
+
+	if (!parArray->CheckPars)
+		return(TRUE);
+
+	if (!(parArray->CheckPars)(parArray, signal)) {
+		NotifyError(wxT("%s: ParArray parameters not valid"), funcName);
+		return(FALSE);
+	}
+	return(TRUE);
+
+}

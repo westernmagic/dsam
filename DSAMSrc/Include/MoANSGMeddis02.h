@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.4.0 (Oct 10 2002).
  * Author:		L. P. O'Mard from a matlab routine from R. Meddis
  * Created:		08 Nov 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -18,7 +18,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_MEDDIS02_NUM_PARS			6
+#define ANSPIKEGEN_MEDDIS02_NUM_PARS			7
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -31,7 +31,9 @@ typedef enum {
 	ANSPIKEGEN_MEDDIS02_PULSEDURATION,
 	ANSPIKEGEN_MEDDIS02_PULSEMAGNITUDE,
 	ANSPIKEGEN_MEDDIS02_REFRACTORYPERIOD,
-	ANSPIKEGEN_MEDDIS02_RECOVERYTAU
+	ANSPIKEGEN_MEDDIS02_RECOVERYTAU,
+	ANSPIKEGEN_MEDDIS02_DISTRIBUTION
+
 
 } Meddis02SGParSpecifier;
 
@@ -39,8 +41,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	ranSeedFlag, numFibresFlag, pulseDurationFlag, pulseMagnitudeFlag;
-	BOOLN	refractoryPeriodFlag, recoveryTauFlag;
 	BOOLN	updateProcessVariablesFlag;
 	long	ranSeed;
 	int		numFibres;
@@ -48,10 +48,12 @@ typedef struct {
 	double	pulseMagnitude;
 	double	refractoryPeriod;
 	double	recoveryTau;
+	ParArrayPtr	distribution;
 
 	/* Private members */
 	UniParListPtr	parList;
-	int		numThreads, arrayLength;
+	int		numChannels;
+	int		*numFibres2;
 	double	dt, wPulseDuration;
 	double	**timer;
 	double	**remainingPulseTime;
@@ -76,8 +78,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_ANSpikeGen_Meddis02(EarObjectPtr data);
 
-BOOLN	CheckPars_ANSpikeGen_Meddis02(void);
-
 BOOLN	FreeProcessVariables_ANSpikeGen_Meddis02(void);
 
 BOOLN	Free_ANSpikeGen_Meddis02(void);
@@ -95,6 +95,8 @@ BOOLN	PrintPars_ANSpikeGen_Meddis02(void);
 void	ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Meddis02(EarObjectPtr data);
+
+BOOLN	SetDistribution_ANSpikeGen_Meddis02(ParArrayPtr theDistribution);
 
 BOOLN	SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres);
 

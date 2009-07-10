@@ -6,13 +6,15 @@
  * Comments:	Originally created for use in the MoDRNL filter.
  * Author:		L. P. O'Mard
  * Created:		01 Sep 2000
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex.
  *
  *********************/
 
 #ifndef UTPARARRAY_H
 #define	UTPARARRAY_H 1
+
+#include "UtNameSpecs.h"
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
@@ -36,7 +38,7 @@ typedef enum {
 
 } ParArrayParSpecifier;
 
-typedef struct {
+typedef struct _ParArray {
 
 	BOOLN	updateFlag;
 	WChar	name[MAXLINE];
@@ -46,6 +48,7 @@ typedef struct {
 	NameSpecifier	*modeList;
 
 	int (* GetNumPars)(int);
+	BOOLN	(* CheckPars)(struct _ParArray *p, SignalDataPtr);
 
 	UniParListPtr	parList;
 	WChar	desc[PARARRAY_NUM_PARS][MAXLINE];
@@ -73,10 +76,13 @@ __BEGIN_DECLS
 
 BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction);
 
+BOOLN	CheckPars_ParArray(ParArrayPtr parArray, SignalDataPtr signal);
+
 void	Free_ParArray(ParArrayPtr *parArray);
 
 ParArrayPtr	Init_ParArray(WChar *name, NameSpecifier *modeList,
-			  int (* GetNumPars)(int));
+			  int (* GetNumPars)(int), BOOLN (* CheckPars)(ParArrayPtr,
+			  SignalDataPtr));
 
 void	PrintPars_ParArray(ParArrayPtr parArray);
 

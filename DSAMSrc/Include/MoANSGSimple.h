@@ -8,17 +8,17 @@
  * Created:		12 Jul 1993
  * Updated:		24 Feb 1997
  * Copyright:	(c) 1998, University of Essex.
- * 
+ *
  ******************/
 
 #ifndef	_MOANSGSIMPLE_H
 #define _MOANSGSIMPLE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_SIMPLE_NUM_PARS	5
+#define ANSPIKEGEN_SIMPLE_NUM_PARS	6
 #define PS_REFRACTORY_PERIOD		1.0E-3		/* Default value in seconds. */
 
 /******************************************************************************/
@@ -31,27 +31,27 @@ typedef enum {
 	ANSPIKEGEN_SIMPLE_NUMFIBRES,
 	ANSPIKEGEN_SIMPLE_PULSEDURATION,
 	ANSPIKEGEN_SIMPLE_PULSEMAGNITUDE,
-	ANSPIKEGEN_SIMPLE_REFRACTORYPERIOD
+	ANSPIKEGEN_SIMPLE_REFRACTORYPERIOD,
+	ANSPIKEGEN_SIMPLE_DISTRIBUTION
 
 } SimpleSGParSpecifier;
 
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
- 	BOOLN	refractoryPeriodFlag, pulseDurationFlag, pulseMagnitudeFlag;
- 	BOOLN	ranSeedFlag, numFibresFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 	long	ranSeed;			/* seed for the random number generator. */
 	int		numFibres;
 	double	pulseDuration;		/* Duration applied to each pulse (s). */
 	double	pulseMagnitude;		/* Magnitude for each pulse (nA?). */
 	double	refractoryPeriod;	/* The time during which spikes cannot occur */
-	
+	ParArrayPtr	distribution;
 
 	/* Private members */
 	UniParListPtr	parList;
-	int		numThreads, arrayLength;
+	int		numChannels;
+	int		*numFibres2;
 	double	dt;
 	double	**timer;
 	double	**remainingPulseTime;
@@ -76,9 +76,9 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_ANSpikeGen_Simple(EarObjectPtr data);
 
-BOOLN	CheckPars_ANSpikeGen_Simple(void);
-
 BOOLN	Init_ANSpikeGen_Simple(ParameterSpecifier parSpec);
+
+BOOLN	InitModule_ANSpikeGen_Simple(ModulePtr theModule);
 
 BOOLN	Free_ANSpikeGen_Simple(void);
 
@@ -96,7 +96,7 @@ void	ResetProcess_ANSpikeGen_Simple(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Simple(EarObjectPtr data);
 
-BOOLN	InitModule_ANSpikeGen_Simple(ModulePtr theModule);
+BOOLN	SetDistribution_ANSpikeGen_Simple(ParArrayPtr theDistribution);
 
 BOOLN	SetNumFibres_ANSpikeGen_Simple(int theNumFibres);
 

@@ -26,6 +26,8 @@
 #include "GeModuleMgr.h"
 #include "FiParFile.h"
 #include "UtRandom.h"
+#include "UtParArray.h"
+#include "UtANSGDist.h"
 #include "MoANSGMeddis02.h"
 
 /******************************************************************************/
@@ -96,24 +98,29 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	}
 	meddis02SGPtr->parSpec = parSpec;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
-	meddis02SGPtr->ranSeedFlag = TRUE;
-	meddis02SGPtr->numFibresFlag = TRUE;
-	meddis02SGPtr->pulseDurationFlag = TRUE;
-	meddis02SGPtr->pulseMagnitudeFlag = TRUE;
-	meddis02SGPtr->refractoryPeriodFlag = TRUE;
-	meddis02SGPtr->recoveryTauFlag = TRUE;
 	meddis02SGPtr->ranSeed = 0;
 	meddis02SGPtr->numFibres = 1;
 	meddis02SGPtr->pulseDuration = -1.0;
 	meddis02SGPtr->pulseMagnitude = 1.0;
 	meddis02SGPtr->refractoryPeriod = 0.75e-3;
 	meddis02SGPtr->recoveryTau = 0.8e-3;
+	if ((meddis02SGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
+	  CheckFuncPars_ANSGDist)) == NULL) {
+		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),
+		  funcName);
+		Free_ANSpikeGen_Meddis02();
+		return(FALSE);
+	}
+	SetDefaultDistribution_ANSGDist(meddis02SGPtr->distribution);
 
 	if (!SetUniParList_ANSpikeGen_Meddis02()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Meddis02();
 		return(FALSE);
 	}
+	meddis02SGPtr->numChannels = 0;
+	meddis02SGPtr->numFibres2 = NULL;
 	meddis02SGPtr->timer = NULL;
 	meddis02SGPtr->remainingPulseTime = NULL;
 	return(TRUE);
@@ -174,6 +181,15 @@ SetUniParList_ANSpikeGen_Meddis02(void)
 	  UNIPAR_REAL,
 	  &meddis02SGPtr->recoveryTau, NULL,
 	  (void * (*)) SetRecoveryTau_ANSpikeGen_Meddis02);
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_DISTRIBUTION],
+	  wxT("DISTRIBUTION"),
+	  wxT("Channel fibre distribution mode ('standard', 'Gaussian' or ")
+	  wxT("'dbl_Guassian')."),
+	  UNIPAR_PARARRAY,
+	  &meddis02SGPtr->distribution, NULL,
+	  (void * (*)) SetDistribution_ANSpikeGen_Meddis02);
+
+	meddis02SGPtr->parList->pars[ANSPIKEGEN_MEDDIS02_NUMFIBRES].enabled = FALSE;
 	return(TRUE);
 
 }
@@ -221,7 +237,6 @@ SetRanSeed_ANSpikeGen_Meddis02(long theRanSeed)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->ranSeedFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->ranSeed = theRanSeed;
 	return(TRUE);
@@ -251,9 +266,9 @@ SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->numFibresFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->numFibres = theNumFibres;
+	SetStandardNumFibres_ANSGDist(meddis02SGPtr->distribution, theNumFibres);
 	return(TRUE);
 
 }
@@ -276,7 +291,6 @@ SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->pulseDurationFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->pulseDuration = thePulseDuration;
 	return(TRUE);
@@ -302,7 +316,6 @@ SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->pulseMagnitudeFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->pulseMagnitude = thePulseMagnitude;
 	return(TRUE);
@@ -333,7 +346,6 @@ SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->refractoryPeriodFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->refractoryPeriod = theRefractoryPeriod;
 	return(TRUE);
@@ -358,59 +370,36 @@ SetRecoveryTau_ANSpikeGen_Meddis02(double theRecoveryTau)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	meddis02SGPtr->recoveryTauFlag = TRUE;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
 	meddis02SGPtr->recoveryTau = theRecoveryTau;
 	return(TRUE);
 
 }
 
-/****************************** CheckPars *************************************/
+/****************************** SetDistribution *******************************/
 
 /*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
+ * This function sets the ParArray data structure for the module.
+ * It returns TRUE if the operation is successful.
  */
 
 BOOLN
-CheckPars_ANSpikeGen_Meddis02(void)
+SetDistribution_ANSpikeGen_Meddis02(ParArrayPtr theDistribution)
 {
-	static const WChar	*funcName = wxT("CheckPars_ANSpikeGen_Meddis02");
-	BOOLN	ok;
+	static const WChar	*funcName = wxT("SetDistribution_ANSpikeGen_Meddis02");
 
-	ok = TRUE;
 	if (meddis02SGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!meddis02SGPtr->ranSeedFlag) {
-		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
-		ok = FALSE;
+	/*** Put any other required checks here. ***/
+	if (!CheckInit_ParArray(theDistribution, funcName)) {
+		NotifyError(wxT("%s: ParArray structure not correctly set."),  funcName);
+		return(FALSE);
 	}
-	if (!meddis02SGPtr->numFibresFlag) {
-		NotifyError(wxT("%s: numFibres variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!meddis02SGPtr->pulseDurationFlag) {
-		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!meddis02SGPtr->pulseMagnitudeFlag) {
-		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!meddis02SGPtr->refractoryPeriodFlag) {
-		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!meddis02SGPtr->recoveryTauFlag) {
-		NotifyError(wxT("%s: recoveryTau variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
+	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
+	meddis02SGPtr->distribution = theDistribution;
+	return(TRUE);
 
 }
 
@@ -424,13 +413,6 @@ CheckPars_ANSpikeGen_Meddis02(void)
 BOOLN
 PrintPars_ANSpikeGen_Meddis02(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_ANSpikeGen_Meddis02");
-
-	if (!CheckPars_ANSpikeGen_Meddis02()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Meddis 2002 post-synaptic firing module Parameters:-\n"));
 	DPrint(wxT("\tRandom number seed = %ld,"), meddis02SGPtr->ranSeed);
 	DPrint(wxT("\tNumber of fibres = %d,\n"), meddis02SGPtr->numFibres);
@@ -445,6 +427,7 @@ PrintPars_ANSpikeGen_Meddis02(void)
 	  meddis02SGPtr->refractoryPeriod);
 	DPrint(wxT("\tRecovery time constant, tau = %g (s)\n"),
 	  meddis02SGPtr->recoveryTau);
+	PrintPars_ParArray(meddis02SGPtr->distribution);
 	return(TRUE);
 
 }
@@ -493,7 +476,6 @@ InitModule_ANSpikeGen_Meddis02(ModulePtr theModule)
 	}
 	theModule->parsPtr = meddis02SGPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_ANSpikeGen_Meddis02;
 	theModule->Free = Free_ANSpikeGen_Meddis02;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Meddis02;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Meddis02;
@@ -528,6 +510,13 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
+	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration >=
+	  meddis02SGPtr->refractoryPeriod)) {
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
+		  wxT("refractory period, %g ms (%g ms)."), funcName, MSEC(
+		  meddis02SGPtr->refractoryPeriod), MSEC(meddis02SGPtr->pulseDuration));
+		return(FALSE);
+	}
 	if ((meddis02SGPtr->pulseDuration > 0.0) && (meddis02SGPtr->pulseDuration <
 	  _InSig_EarObject(data, 0)->dt)) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
@@ -535,31 +524,12 @@ CheckData_ANSpikeGen_Meddis02(EarObjectPtr data)
 		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(meddis02SGPtr->pulseDuration));
 		return(FALSE);
 	}
+	if (!CheckPars_ParArray(meddis02SGPtr->distribution, _InSig_EarObject(data, 0))) {
+		NotifyError(wxT("%s: Distribution parameters invalid."), funcName);
+		return(FALSE);
+	}
 	/*** Put additional checks here. ***/
 	return(TRUE);
-
-}
-
-/**************************** ResetProcessThread ******************************/
-
-/*
- * This routine resets the process thread-related variables.
- */
-
-void
-ResetProcessThread_ANSpikeGen_Meddis02(EarObjectPtr data,
-  double timeGreaterThanRefractoryPeriod, int i)
-{
-	int		j;
-	double	*timerPtr, *remainingPulseTimePtr;
-	Meddis02SGPtr	p = meddis02SGPtr;
-
-	timerPtr = p->timer[i];
-	remainingPulseTimePtr = p->remainingPulseTime[i];
-	for (j = 0; j < p->arrayLength; j++) {
-		*timerPtr++ = timeGreaterThanRefractoryPeriod;
-		*remainingPulseTimePtr++ = 0.0;
-	}
 
 }
 
@@ -572,20 +542,19 @@ ResetProcessThread_ANSpikeGen_Meddis02(EarObjectPtr data,
 void
 ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
-	int		i;
-	double	timeGreaterThanRefractoryPeriod;
+	int		i, chan;
+	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
 	Meddis02SGPtr	p = meddis02SGPtr;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	ResetOutSignal_EarObject(data);
-	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
-	  outSignal->dt;
-	if (data->threadRunFlag)
-		ResetProcessThread_ANSpikeGen_Meddis02(data,
-		  timeGreaterThanRefractoryPeriod, data->threadIndex);
-	else  {
-		for (i = 0; i < p->numThreads; i++) {
-			ResetProcessThread_ANSpikeGen_Meddis02(data,
-			  timeGreaterThanRefractoryPeriod, i);
+	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + outSignal->dt;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		timerPtr = p->timer[chan];
+		remainingPulseTimePtr = p->remainingPulseTime[chan];
+		for (i = 0; i < p->numFibres2[chan]; i++) {
+			*timerPtr++ = timeGreaterThanRefractoryPeriod;
+			*remainingPulseTimePtr++ = 0.0;
 		}
 	}
 }
@@ -605,36 +574,44 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 	  wxT("InitProcessVariables_ANSpikeGen_Meddis02");
 	int		i;
 	Meddis02SGPtr	p = meddis02SGPtr;
+	SignalDataPtr	outSignal;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
-		p->arrayLength = _OutSig_EarObject(data)->numChannels * p->numFibres;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Meddis02();
+			outSignal = _OutSig_EarObject(data);
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
-			p->numThreads = data->numThreads;
-			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
-			  double*))) == NULL) {
+			p->numChannels = outSignal->numChannels;
+			if ((p->numFibres2 = (int *) calloc(p->numChannels, sizeof(int))) ==
+			  NULL) {
+			 	NotifyError(wxT("%s: Out of memory for numFibres2 array."),
+				  funcName);
+			 	return(FALSE);
+			}
+			if ((p->timer = (double **) calloc(p->numChannels, sizeof(
+			  double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
-			  sizeof(double*))) == NULL) {
+			if ((p->remainingPulseTime = (double **) calloc(p->numChannels,
+			  sizeof(double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
-			for (i = 0; i < p->numThreads; i++) {
-				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
+			SetFibres_ANSGDist(p->numFibres2, p->distribution, p->numChannels);
+			for (i = 0; i < p->numChannels; i++) {
+				if ((p->timer[i] = (double *) calloc(p->numFibres2[i], sizeof(
 				  double))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for timer array."),
 					  funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(p->
-				  arrayLength, sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (double *) calloc(p->numFibres2[i],
+				  sizeof(double))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 					  wxT("array."), funcName);
 			 		return(FALSE);
@@ -661,15 +638,19 @@ FreeProcessVariables_ANSpikeGen_Meddis02(void)
 	int		i;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
+	if (p->numFibres2) {
+		free(p->numFibres2);
+		p->numFibres2 = NULL;
+	}
 	if (p->timer) {
-		for (i = 0; i < p->numThreads; i++)
+		for (i = 0; i < p->numChannels; i++)
 			if (p->timer[i])
 				free(p->timer[i]);
 		free(p->timer);
 		p->timer = NULL;
 	}
 	if (p->remainingPulseTime) {
-		for (i = 0; i < p->numThreads; i++)
+		for (i = 0; i < p->numChannels; i++)
 			if (p->remainingPulseTime[i])
 				free(p->remainingPulseTime[i]);
 		free(p->remainingPulseTime);
@@ -708,8 +689,6 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 	Meddis02SGPtr	p = meddis02SGPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_ANSpikeGen_Meddis02())
-			return(FALSE);
 		if (!CheckData_ANSpikeGen_Meddis02(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -739,9 +718,10 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
-	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		timerPtr = p->timer[chan];
+		remainingPulseTimePtr = p->remainingPulseTime[chan];
+		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
 			for (j = 0; j < outSignal->length; j++) {
@@ -764,6 +744,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			timerPtr++;
 			remainingPulseTimePtr++;
 		}
+	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

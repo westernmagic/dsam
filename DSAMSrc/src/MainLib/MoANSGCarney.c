@@ -29,6 +29,8 @@
 #include "FiParFile.h"
 #include "UtString.h"
 #include "UtRandom.h"
+#include "UtParArray.h"
+#include "UtANSGDist.h"
 #include "MoANSGCarney.h"
 
 /******************************************************************************/
@@ -66,26 +68,6 @@ Free_ANSpikeGen_Carney(void)
 
 }
 
-/****************************** InitInputModeList *****************************/
-
-/*
- * This function initialises the 'inputMode' list array
- */
-
-BOOLN
-InitInputModeList_ANSpikeGen_Carney(void)
-{
-	static NameSpecifier	modeList[] = {
-
-			{ wxT("CORRECTED"),	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED },
-			{ wxT("ORIGINAL"),	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL },
-			{ wxT(""),			ANSPIKEGEN_CARNEY_INPUTMODE_NULL },
-		};
-	carneySGPtr->inputModeList = modeList;
-	return(TRUE);
-
-}
-
 /****************************** Init ******************************************/
 
 /*
@@ -119,17 +101,6 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	}
 	carneySGPtr->parSpec = parSpec;
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
-	carneySGPtr->inputModeFlag = TRUE;
-	carneySGPtr->ranSeedFlag = TRUE;
-	carneySGPtr->numFibresFlag = TRUE;
-	carneySGPtr->pulseDurationFlag = TRUE;
-	carneySGPtr->pulseMagnitudeFlag = TRUE;
-	carneySGPtr->refractoryPeriodFlag = TRUE;
-	carneySGPtr->maxThresholdFlag = TRUE;
-	carneySGPtr->dischargeCoeffC0Flag = TRUE;
-	carneySGPtr->dischargeCoeffC1Flag = TRUE;
-	carneySGPtr->dischargeTConstS0Flag = TRUE;
-	carneySGPtr->dischargeTConstS1Flag = TRUE;
 	carneySGPtr->inputMode = ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL;
 	carneySGPtr->ranSeed = -1;
 	carneySGPtr->numFibres = 1;
@@ -141,16 +112,44 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->dischargeCoeffC1 = 0.5;
 	carneySGPtr->dischargeTConstS0 = 1e-3;
 	carneySGPtr->dischargeTConstS1 = 12.5e-3;
+	if ((carneySGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
+	  CheckFuncPars_ANSGDist)) == NULL) {
+		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),
+		  funcName);
+		Free_ANSpikeGen_Carney();
+		return(FALSE);
+	}
+	SetDefaultDistribution_ANSGDist(carneySGPtr->distribution);
 
-	InitInputModeList_ANSpikeGen_Carney();
 	if (!SetUniParList_ANSpikeGen_Carney()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Carney();
 		return(FALSE);
 	}
+	carneySGPtr->numFibres2 = NULL;
 	carneySGPtr->timer = NULL;
 	carneySGPtr->remainingPulseTime = NULL;
 	return(TRUE);
+
+}
+
+/****************************** InputModeList *********************************/
+
+/*
+ * This function initialises the 'inputMode' list array
+ */
+
+NameSpecifier *
+InputModeList_ANSpikeGen_Carney(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("CORRECTED"),	ANSPIKEGEN_CARNEY_INPUTMODE_CORRECTED },
+			{ wxT("ORIGINAL"),	ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL },
+			{ wxT(""),			ANSPIKEGEN_CARNEY_INPUTMODE_NULL },
+		};
+	return(&modeList[index]);
 
 }
 
@@ -177,7 +176,7 @@ SetUniParList_ANSpikeGen_Carney(void)
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_INPUTMODE], wxT("INPUT_MODE"),
 	  wxT("Input mode, 'corrected' (2001), or 'original' (1993) setting."),
 	  UNIPAR_NAME_SPEC,
-	  &carneySGPtr->inputMode, carneySGPtr->inputModeList,
+	  &carneySGPtr->inputMode, InputModeList_ANSpikeGen_Carney(0),
 	  (void * (*)) SetInputMode_ANSpikeGen_Carney);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_RANSEED], wxT("RAN_SEED"),
 	  wxT("Random number seed (0 produces a different seed each run)."),
@@ -232,6 +231,14 @@ SetUniParList_ANSpikeGen_Carney(void)
 	  UNIPAR_REAL,
 	  &carneySGPtr->dischargeTConstS1, NULL,
 	  (void * (*)) SetDischargeTConstS1_ANSpikeGen_Carney);
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DISTRIBUTION], wxT("DISTRIBUTION"),
+	  wxT("Channel fibre distribution mode ('standard', 'Gaussian' or ")
+	  wxT("'dbl_Guassian')."),
+	  UNIPAR_PARARRAY,
+	  &carneySGPtr->distribution, NULL,
+	  (void * (*)) SetDistribution_ANSpikeGen_Carney);
+
+	carneySGPtr->parList->pars[ANSPIKEGEN_CARNEY_NUMFIBRES].enabled = FALSE;
 	return(TRUE);
 
 }
@@ -323,12 +330,11 @@ SetInputMode_ANSpikeGen_Carney(WChar * theInputMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theInputMode,
-		carneySGPtr->inputModeList)) == ANSPIKEGEN_CARNEY_INPUTMODE_NULL) {
+	  InputModeList_ANSpikeGen_Carney(0))) == ANSPIKEGEN_CARNEY_INPUTMODE_NULL) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theInputMode);
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->inputModeFlag = TRUE;
 	carneySGPtr->inputMode = specifier;
 	return(TRUE);
 
@@ -351,7 +357,6 @@ SetRanSeed_ANSpikeGen_Carney(long theRanSeed)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	carneySGPtr->ranSeedFlag = TRUE;
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
 	carneySGPtr->ranSeed = theRanSeed;
 	return(TRUE);
@@ -381,8 +386,8 @@ SetNumFibres_ANSpikeGen_Carney(int theNumFibres)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->numFibresFlag = TRUE;
 	carneySGPtr->numFibres = theNumFibres;
+	SetStandardNumFibres_ANSGDist(carneySGPtr->distribution, theNumFibres);
 	return(TRUE);
 
 }
@@ -404,7 +409,6 @@ SetPulseDuration_ANSpikeGen_Carney(double thePulseDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	carneySGPtr->pulseDurationFlag = TRUE;
 	carneySGPtr->pulseDuration = thePulseDuration;
 	return(TRUE);
 
@@ -428,7 +432,6 @@ SetPulseMagnitude_ANSpikeGen_Carney(double thePulseMagnitude)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->pulseMagnitudeFlag = TRUE;
 	carneySGPtr->pulseMagnitude = thePulseMagnitude;
 	return(TRUE);
 
@@ -457,7 +460,6 @@ SetRefractoryPeriod_ANSpikeGen_Carney(double theRefractoryPeriod)
 		  funcName);
 		return(FALSE);
 	}
-	carneySGPtr->refractoryPeriodFlag = TRUE;
 	carneySGPtr->refractoryPeriod = theRefractoryPeriod;
 	return(TRUE);
 
@@ -481,7 +483,6 @@ SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->maxThresholdFlag = TRUE;
 	carneySGPtr->maxThreshold = theMaxThreshold;
 	return(TRUE);
 
@@ -506,7 +507,6 @@ SetDischargeCoeffC0_ANSpikeGen_Carney(double theDischargeCoeffC0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->dischargeCoeffC0Flag = TRUE;
 	carneySGPtr->dischargeCoeffC0 = theDischargeCoeffC0;
 	return(TRUE);
 
@@ -531,7 +531,6 @@ SetDischargeCoeffC1_ANSpikeGen_Carney(double theDischargeCoeffC1)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->dischargeCoeffC1Flag = TRUE;
 	carneySGPtr->dischargeCoeffC1 = theDischargeCoeffC1;
 	return(TRUE);
 
@@ -556,7 +555,6 @@ SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->dischargeTConstS0Flag = TRUE;
 	carneySGPtr->dischargeTConstS0 = theDischargeTConstS0;
 	return(TRUE);
 
@@ -581,85 +579,35 @@ SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneySGPtr->dischargeTConstS1Flag = TRUE;
 	carneySGPtr->dischargeTConstS1 = theDischargeTConstS1;
 	return(TRUE);
 
 }
 
-/****************************** CheckPars *************************************/
+/****************************** SetDistribution *******************************/
 
 /*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
+ * This function sets the ParArray data structure for the module.
+ * It returns TRUE if the operation is successful.
  */
 
 BOOLN
-CheckPars_ANSpikeGen_Carney(void)
+SetDistribution_ANSpikeGen_Carney(ParArrayPtr theDistribution)
 {
-	static const WChar	*funcName = wxT("CheckPars_ANSpikeGen_Carney");
-	BOOLN	ok;
+	static const WChar	*funcName = wxT("SetDistribution_ANSpikeGen_Carney");
 
-	ok = TRUE;
 	if (carneySGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!carneySGPtr->inputModeFlag) {
-		NotifyError(wxT("%s: inputMode variable not set."), funcName);
-		ok = FALSE;
+	/*** Put any other required checks here. ***/
+	if (!CheckInit_ParArray(theDistribution, funcName)) {
+		NotifyError(wxT("%s: ParArray structure not correctly set."),  funcName);
+		return(FALSE);
 	}
-	if (!carneySGPtr->ranSeedFlag) {
-		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->numFibresFlag) {
-		NotifyError(wxT("%s: numFibres variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->pulseDurationFlag) {
-		NotifyError(wxT("%s: pulseDuration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->pulseMagnitudeFlag) {
-		NotifyError(wxT("%s: pulseMagnitude variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->refractoryPeriodFlag) {
-		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->maxThresholdFlag) {
-		NotifyError(wxT("%s: maxThreshold variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->dischargeCoeffC0Flag) {
-		NotifyError(wxT("%s: dischargeCoeffC0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->dischargeCoeffC1Flag) {
-		NotifyError(wxT("%s: dischargeCoeffC1 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->dischargeTConstS0Flag) {
-		NotifyError(wxT("%s: dischargeTConstS0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneySGPtr->dischargeTConstS1Flag) {
-		NotifyError(wxT("%s: dischargeTConstS1 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration >=
-	  carneySGPtr->refractoryPeriod)) {
-		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
-		  wxT("refractory period, %g ms (%g ms)."), funcName, MSEC(
-		  carneySGPtr->refractoryPeriod), MSEC(carneySGPtr->pulseDuration));
-		ok = FALSE;
-	}
-	return(ok);
+	carneySGPtr->updateProcessVariablesFlag = TRUE;
+	carneySGPtr->distribution = theDistribution;
+	return(TRUE);
 
 }
 
@@ -673,16 +621,9 @@ CheckPars_ANSpikeGen_Carney(void)
 BOOLN
 PrintPars_ANSpikeGen_Carney(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_ANSpikeGen_Carney");
-
-	if (!CheckPars_ANSpikeGen_Carney()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Carney Post-Synaptic Firing Module Parameters:-\n"));
-	DPrint(wxT("\tInput mode: %s,\n"), carneySGPtr->inputModeList[carneySGPtr->
-	  inputMode].name);
+	DPrint(wxT("\tInput mode: %s,\n"), InputModeList_ANSpikeGen_Carney(
+	  carneySGPtr->inputMode)->name);
 	DPrint(wxT("\tRandom number seed = %ld,"),
 	  carneySGPtr->ranSeed);
 	DPrint(wxT("\tNumber of fibres = %d,\n"), carneySGPtr->numFibres);
@@ -704,6 +645,7 @@ PrintPars_ANSpikeGen_Carney(void)
 	  carneySGPtr->dischargeTConstS0));
 	DPrint(wxT("\tDischarge time constant, S1 = %g ms.\n"), MSEC(
 	  carneySGPtr->dischargeTConstS1));
+	PrintPars_ParArray(carneySGPtr->distribution);
 	return(TRUE);
 
 }
@@ -816,7 +758,6 @@ InitModule_ANSpikeGen_Carney(ModulePtr theModule)
 	}
 	theModule->parsPtr = carneySGPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_ANSpikeGen_Carney;
 	theModule->Free = Free_ANSpikeGen_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Carney;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Carney;
@@ -852,6 +793,13 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
+	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration >=
+	  carneySGPtr->refractoryPeriod)) {
+		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
+		  wxT("refractory period, %g ms (%g ms)."), funcName, MSEC(
+		  carneySGPtr->refractoryPeriod), MSEC(carneySGPtr->pulseDuration));
+		return(FALSE);
+	}
 	if ((carneySGPtr->pulseDuration > 0.0) && (carneySGPtr->pulseDuration <
 	  _InSig_EarObject(data, 0)->dt)) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
@@ -859,31 +807,12 @@ CheckData_ANSpikeGen_Carney(EarObjectPtr data)
 		  MSEC(_InSig_EarObject(data, 0)->dt), MSEC(carneySGPtr->pulseDuration));
 		return(FALSE);
 	}
+	if (!CheckPars_ParArray(carneySGPtr->distribution, _InSig_EarObject(data, 0))) {
+		NotifyError(wxT("%s: Distribution parameters invalid."), funcName);
+		return(FALSE);
+	}
 	/*** Put additional checks here. ***/
 	return(TRUE);
-
-}
-
-/**************************** ResetProcessThread ******************************/
-
-/*
- * This routine resets the process thread-related variables.
- */
-
-void
-ResetProcessThread_ANSpikeGen_Carney(EarObjectPtr data,
-  double timeGreaterThanRefractoryPeriod, int i)
-{
-	int		j;
-	double	*timerPtr, *remainingPulseTimePtr;
-	CarneySGPtr	p = carneySGPtr;
-
-	timerPtr = p->timer[i];
-	remainingPulseTimePtr = p->remainingPulseTime[i];
-	for (j = 0; j < p->arrayLength; j++) {
-		*timerPtr++ = timeGreaterThanRefractoryPeriod;
-		*remainingPulseTimePtr++ = 0.0;
-	}
 
 }
 
@@ -896,22 +825,22 @@ ResetProcessThread_ANSpikeGen_Carney(EarObjectPtr data,
 void
 ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
 {
-	int		i;
-	double	timeGreaterThanRefractoryPeriod;
+	int		i, chan;
+	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
 	CarneySGPtr	p = carneySGPtr;
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	ResetOutSignal_EarObject(data);
-	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + data->
-	  outSignal->dt;
-	if (data->threadRunFlag)
-		ResetProcessThread_ANSpikeGen_Carney(data,
-		  timeGreaterThanRefractoryPeriod, data->threadIndex);
-	else  {
-		for (i = 0; i < p->numThreads; i++) {
-			ResetProcessThread_ANSpikeGen_Carney(data,
-			  timeGreaterThanRefractoryPeriod, i);
+	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + outSignal->dt;
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		timerPtr = p->timer[chan];
+		remainingPulseTimePtr = p->remainingPulseTime[chan];
+		for (i = 0; i < p->numFibres2[chan]; i++) {
+			*timerPtr++ = timeGreaterThanRefractoryPeriod;
+			*remainingPulseTimePtr++ = 0.0;
 		}
 	}
+
 }
 
 /**************************** InitProcessVariables ****************************/
@@ -927,36 +856,44 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	  "InitProcessVariables_ANSpikeGen_Carney");
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
+	SignalDataPtr	outSignal;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
-		p->arrayLength = _OutSig_EarObject(data)->numChannels * p->numFibres;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
+			outSignal = _OutSig_EarObject(data);
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
-			p->numThreads = data->numThreads;
-			if ((p->timer = (double **) calloc(p->numThreads, sizeof(
-			  double*))) == NULL) {
+			p->numChannels = outSignal->numChannels;
+			if ((p->numFibres2 = (int *) calloc(p->numChannels, sizeof(int))) ==
+			  NULL) {
+			 	NotifyError(wxT("%s: Out of memory for numFibres2 array."),
+				  funcName);
+			 	return(FALSE);
+			}
+			if ((p->timer = (double **) calloc(p->numChannels, sizeof(
+			  double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (double **) calloc(p->numThreads,
-			  sizeof(double*))) == NULL) {
+			if ((p->remainingPulseTime = (double **) calloc(p->numChannels,
+			  sizeof(double *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
-			for (i = 0; i < p->numThreads; i++) {
-				if ((p->timer[i] = (double *) calloc(p->arrayLength, sizeof(
+			SetFibres_ANSGDist(p->numFibres2, p->distribution, p->numChannels);
+			for (i = 0; i < p->numChannels; i++) {
+				if ((p->timer[i] = (double *) calloc(p->numFibres2[i], sizeof(
 				  double))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for timer array."),
 					  funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(p->
-				  arrayLength, sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (double *) calloc(p->numFibres2[i],
+				  sizeof(double))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 					  wxT("array."), funcName);
 			 		return(FALSE);
@@ -983,15 +920,19 @@ FreeProcessVariables_ANSpikeGen_Carney(void)
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
 
+	if (p->numFibres2) {
+		free(p->numFibres2);
+		p->numFibres2 = NULL;
+	}
 	if (p->timer) {
-		for (i = 0; i < p->numThreads; i++)
+		for (i = 0; i < p->numChannels; i++)
 			if (p->timer[i])
 				free(p->timer[i]);
 		free(p->timer);
 		p->timer = NULL;
 	}
 	if (p->remainingPulseTime) {
-		for (i = 0; i < p->numThreads; i++)
+		for (i = 0; i < p->numChannels; i++)
 			if (p->remainingPulseTime[i])
 				free(p->remainingPulseTime[i]);
 		free(p->remainingPulseTime);
@@ -1031,8 +972,6 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	CarneySGPtr	p = carneySGPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_ANSpikeGen_Carney())
-			return(FALSE);
 		if (!CheckData_ANSpikeGen_Carney(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -1061,9 +1000,10 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	for (i = 0, timerPtr = p->timer[data->threadIndex], remainingPulseTimePtr =
-	  p->remainingPulseTime[data->threadIndex]; i < p->numFibres; i++)
-		for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		timerPtr = p->timer[chan];
+		remainingPulseTimePtr = p->remainingPulseTime[chan];
+		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
 			for (j = 0; j < outSignal->length; j++) {
@@ -1092,6 +1032,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			timerPtr++;
 			remainingPulseTimePtr++;
 		}
+	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

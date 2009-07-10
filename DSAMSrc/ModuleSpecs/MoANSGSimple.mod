@@ -4,6 +4,7 @@
 mod_name		ANSpikeGen;
 qualifier		Simple;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	long	ranSeed;
@@ -11,5 +12,6 @@ typedef struct {
 	double	pulseDuration;
 	double	pulseMagnitude;
 	double	refractoryPeriod;
+	ParArrayPtr		distribution;
 
 } SimpleSG;

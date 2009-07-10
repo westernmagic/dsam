@@ -18,5 +18,6 @@ typedef struct {
 	double	dischargeCoeffC1;
 	double	dischargeTConstS0;
 	double	dischargeTConstS1;
+	ParArrayPtr		distribution;
 
 } CarneySG;

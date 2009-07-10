@@ -5,6 +5,7 @@
 mod_name		ANSpikeGen;
 qualifier		Binomial;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	int		numFibres;
@@ -12,5 +13,6 @@ typedef struct {
 	double	pulseDuration;
 	double	pulseMagnitude;
 	double	refractoryPeriod;
+	ParArrayPtr		distribution;
 
 } BinomialSG;
