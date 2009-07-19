@@ -630,7 +630,8 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		SetFibres_ANSGDist(p->numFibres2, p->distribution, p->numChannels);
+		SetFibres_ANSGDist(p->numFibres2, p->distribution,
+		  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {

@@ -884,7 +884,8 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
-			SetFibres_ANSGDist(p->numFibres2, p->distribution, p->numChannels);
+			SetFibres_ANSGDist(p->numFibres2, p->distribution, outSignal->info.cFArray,
+			  p->numChannels);
 			for (i = 0; i < p->numChannels; i++) {
 				if ((p->timer[i] = (double *) calloc(p->numFibres2[i], sizeof(
 				  double))) == NULL) {

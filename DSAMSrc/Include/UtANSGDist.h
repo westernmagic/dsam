@@ -73,7 +73,8 @@ NameSpecifier *	ModeList_ANSGDist(int index);
 
 void	SetDefaultDistribution_ANSGDist(ParArrayPtr distribution);
 
-BOOLN	SetFibres_ANSGDist(int *fibres, ParArrayPtr p, int numChannels);
+BOOLN	SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
+		  int numChannels);
 
 void	SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres);
 

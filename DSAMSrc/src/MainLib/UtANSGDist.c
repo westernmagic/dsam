@@ -130,21 +130,8 @@ CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal)
 		break;
 	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-		if (p->params[ANSGDIST_GAUSS_MEAN] > signal->numChannels) {
-			NotifyError(wxT("%s: The centre channel (%d) is greater then the ")
-			  wxT("number of channels (%d) - returning zero."), funcName,
-			  p->params[ANSGDIST_GAUSS_MEAN], signal->numChannels);
-			ok = FALSE;
-		}
-		if ((p->params[ANSGDIST_GAUSS_MEAN] > 0) &&
-		  (p->params[ANSGDIST_GAUSS_MEAN] > signal->numChannels)) {
-			NotifyError(wxT("%s: The centre channel (%d) is greater then the ")
-			  wxT("number of channels (%d) - returning zero."), funcName,
-			  p->params[ANSGDIST_GAUSS_MEAN], signal->numChannels);
-			ok = FALSE;
-		}
 		if (p->params[ANSGDIST_GAUSS_VAR1] == 0.0) {
-			NotifyError(wxT("%s: Variance1 (parameter %d) must be greater than ")
+			NotifyError(wxT("%s: Variance1 (parameter %g) must be greater than ")
 			  wxT("zero (%g)"), funcName, ANSGDIST_GAUSS_VAR1,
 			  p->params[ANSGDIST_GAUSS_VAR1]);
 			ok = FALSE;
@@ -202,19 +189,45 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
 
 }
 
+/****************************** GetMeanChan *****************************/
+
+/*
+ * This routine returns the required centre channel from the specified
+ * frequency and frequency list.
+ * It expects the frequencies array to be correctly initialised.
+ */
+
+int
+GetMeanChan_ANGSDist(double *frequencies, int numFreqs, double bF)
+{
+	int		i, bFIndex;
+	double	minDiff, diff;
+
+	if (bF < 0.0)
+		return(numFreqs / 2);
+	for (i = 0, minDiff = DBL_MAX; i < numFreqs; i++)
+		if ((diff = fabs(frequencies[i] - bF)) < minDiff) {
+			minDiff = diff;
+			bFIndex = i;
+		}
+	return(bFIndex);
+}
+
 /****************************** SetFibres *******************************/
 
 /*
  * This function returns the value for the respective distribution function mode.
  * Using it helps maintain the correspondence between the mode names.
+ * It expects the frequencies array to be correctly initialised.
  */
 
 BOOLN
-SetFibres_ANSGDist(int *fibres, ParArrayPtr p, int numChannels)
+SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
+  int numChannels)
 {
 	static const WChar	*funcName = wxT("SetFibres_ANSGDist");
 	BOOLN	ok = TRUE;
-	int		i, meanChan, maxFibres, fibreCount;
+	int		i, meanChan;
 
 	switch (p->mode) {
 	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
@@ -222,16 +235,16 @@ SetFibres_ANSGDist(int *fibres, ParArrayPtr p, int numChannels)
 			fibres[i] = (int) p->params[0];
 		break;
 	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		meanChan = (p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		  p->params[ANSGDIST_GAUSS_MEAN];
+		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
+		  p->params[ANSGDIST_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
 			fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
 			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i,
 			  meanChan) + 0.5);
 		break;
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-		meanChan = (p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		p->params[ANSGDIST_GAUSS_MEAN];
+		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
+		  p->params[ANSGDIST_GAUSS_MEAN]);
 		fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
 		  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
 		  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
@@ -242,8 +255,8 @@ SetFibres_ANSGDist(int *fibres, ParArrayPtr p, int numChannels)
 		  p->mode);
 		ok = FALSE;
 	}
-	for (i = 0; i < numChannels; i++)
-		wprintf(wxT("%S: Fibres[%2d] = %d\n"), funcName, i, fibres[i]);
+	/*for (i = 0; i < numChannels; i++)
+		wprintf(wxT("%S: Fibres[%2d] = %d\n"), funcName, i, fibres[i]);*/
 	return(ok);
 
 }
