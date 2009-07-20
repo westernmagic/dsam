@@ -228,29 +228,29 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	bMDRNLPtr->linLPCascadeFlag = TRUE;
 	bMDRNLPtr->nonLinGTCascade = 3;
 	bMDRNLPtr->nonLinLPCascade = 4;
-	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"), 
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"),
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise NonLinBwidth parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->nonLinScaleG = Init_ParArray(wxT("nonLinScaleG"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise nonLinScaleG parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->comprScaleA = Init_ParArray(wxT("ComprScaleA"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise ComprScaleA parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->comprScaleB = Init_ParArray(wxT("ComprScaleB"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise ComprScaleB parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
@@ -260,21 +260,21 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	bMDRNLPtr->linGTCascade = 3;
 	bMDRNLPtr->linLPCascade = 4;
 	if ((bMDRNLPtr->linCF = Init_ParArray(wxT("LinCF"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise LinCF parArray structure"),
 		  funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->linBwidth = Init_ParArray(wxT("LinBwidth"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise LinBwidth parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
 	if ((bMDRNLPtr->linScaleG = Init_ParArray(wxT("linScaleG"),
-	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL)) == NULL) {
+	  FitFuncModeList_NSpecLists(0), GetFitFuncPars_BasilarM_DRNL, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise linScaleG parArray ")
 		  wxT("structure"), funcName);
 		Free_BasilarM_DRNL();
@@ -538,7 +538,7 @@ SetNonLinBwidth_BasilarM_DRNL(ParArrayPtr theNonLinBwidth)
 	}
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
 	if (bMDRNLPtr->theCFs) {
-		bMDRNLPtr->theCFs->bandwidthMode.Func = 
+		bMDRNLPtr->theCFs->bandwidthMode.Func =
 		  GetNonLinBandwidth_BasilarM_DRNL;
 		if (!SetBandwidths_CFList(bMDRNLPtr->theCFs, wxT("internal_static"),
 		  NULL)) {
@@ -941,7 +941,7 @@ GetCFListPtr_BasilarM_DRNL(void)
 double
 GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr, double theCF)
 {
-	return(GetFitFuncValue_BasilarM_DRNL(bMDRNLPtr->nonLinBwidth, theCF));	
+	return(GetFitFuncValue_BasilarM_DRNL(bMDRNLPtr->nonLinBwidth, theCF));
 
 }
 
@@ -1254,7 +1254,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 		p->theCFs->updateFlag = FALSE;
 	} else if (data->timeIndex == PROCESS_START_TIME) {
 		for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
-			for (j = 0; j < p->nonLinGTCascade * 
+			for (j = 0; j < p->nonLinGTCascade *
 			  FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER; j++) {
 				p->nonLinearGT1[i]->stateVector[j] = 0.0;
 				p->nonLinearGT2[i]->stateVector[j] = 0.0;
@@ -1358,7 +1358,7 @@ ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal, ParArrayPtr p)
 		for (i = 0, dataPtr = signal->channel[chan]; i < signal->length; i++)
 			*(dataPtr++) *= scale;
 	}
-	
+
 }
 
 /****************************** RunModel **************************************/
@@ -1434,10 +1434,10 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	GammaTone_Filters(linearF->outSignal, p->linearGT);
 	if (p->linearLP)
 		IIR2Cont_Filters(linearF->outSignal, p->linearLP);
-	
+
 	ApplyScale_BasilarM_DRNL(data, linearF->outSignal, p->linScaleG);
 	Add_SignalData(outSignal, linearF->outSignal);
-	
+
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 
