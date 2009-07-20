@@ -486,7 +486,6 @@ PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 		scriptNameNoPath = p + 1;
 	else
 		scriptNameNoPath = scriptName;
-	DPrint(wxT("%sbegin %s {\n\n"), prefix, scriptNameNoPath);
 	for ( ; pc != NULL; pc = pc->next) {
 		DPrint(wxT("%s"), prefix);
 		switch (pc->type) {
@@ -519,6 +518,7 @@ PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 			  loop.count);
 			PrintSimScript_Utility_Datum(pc->u.loop.pc, scriptName, indentLevel + 1,
 			  prefix,checkForSubSimScripts);
+			DPrint(wxT("%s}\n"), prefix);
 			break;
 		case RESET:
 			PrintIndentAndLabel_Utility_Datum(pc, indentLevel);
@@ -534,7 +534,6 @@ PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 	}
 	for (i = 0; i < indentLevel; i++)
 		DPrint(wxT("\t"));
-	DPrint(wxT("\n%s}\n"), prefix);
 	return(subSimScripts);
 
 }
@@ -554,8 +553,10 @@ PrintInstructions_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 
 	if (pc == NULL)
 		return;
+	DPrint(wxT("%sbegin  {\n\n"), prefix);
 	subSimScripts = PrintSimScript_Utility_Datum(pc, scriptName, indentLevel,
 	  prefix, TRUE);
+	DPrint(wxT("\n%s}\n"), prefix);
 	if (!subSimScripts)
 		return;
 	DPrint(wxT("%s#Sub-simulation scripts\n"), prefix);
@@ -1246,6 +1247,8 @@ GetLastProcess_Utility_Datum(DatumPtr start)
     for (pc = start; pc != NULL; pc = pc->next)
     	if (pc->type == PROCESS)
     		lastProcess = pc->data;
+    	else if (pc->type == REPEAT)
+    		lastProcess = GetLastProcess_Utility_Datum(pc->u.loop.pc);
 	return(lastProcess);
 
 }
