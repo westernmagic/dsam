@@ -245,19 +245,42 @@ SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
 		  p->params[ANSGDIST_GAUSS_MEAN]);
-		fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
-		  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
-		  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
-		  2.0 + 0.5);
+		for (i = 0; i < numChannels; i++)
+			fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
+			  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
+			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
+			  2.0 + 0.5);
 		break;
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
 		  p->mode);
 		ok = FALSE;
 	}
-	/*for (i = 0; i < numChannels; i++)
-		wprintf(wxT("%S: Fibres[%2d] = %d\n"), funcName, i, fibres[i]);*/
 	return(ok);
+
+}
+
+/****************************** PrintFibres *******************************/
+
+/*
+ * This prints the fibre information if available.
+ * It expects the "fibres" array to be correctly initialised.
+ */
+
+void
+PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
+  double *frequencies, int numChannels)
+{
+	int		i;
+
+	if (!fibres || !frequencies)
+		return;
+	DSAM_fprintf(fp, wxT("%SChannel fibre distribution list:-\n"), prefix);
+	DSAM_fprintf(fp, wxT("%S\t%10S\t%10S\t%4S\n"), prefix, wxT("Chan. Index"),
+	  wxT("Freq. kHz"), wxT("No. Fibres"));
+	for (i = 0; i < numChannels; i++)
+		DSAM_fprintf(fp, wxT("%S\t%10d\t%10g\t%4d\n"), prefix, i, frequencies[i],
+		  fibres[i]);
 
 }
 

@@ -28,6 +28,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtString.h"
 #include "UtRandom.h"
@@ -60,6 +61,9 @@ Free_ANSpikeGen_Binomial(void)
 	if (binomialSGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Binomial();
+	Free_ParArray(&binomialSGPtr->distribution);
+	if (binomialSGPtr->diagnosticModeList)
+		free(binomialSGPtr->diagnosticModeList);
 	if (binomialSGPtr->parList)
 		FreeList_UniParMgr(&binomialSGPtr->parList);
 	if (binomialSGPtr->parSpec == GLOBAL) {
@@ -104,6 +108,7 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	}
 	binomialSGPtr->parSpec = parSpec;
 	binomialSGPtr->updateProcessVariablesFlag = TRUE;
+	binomialSGPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	binomialSGPtr->numFibres = 5000;
 	binomialSGPtr->ranSeed = -1;
 	binomialSGPtr->pulseDuration = 2e-05;
@@ -119,6 +124,9 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	}
 	SetDefaultDistribution_ANSGDist(binomialSGPtr->distribution);
 
+	if ((binomialSGPtr->diagnosticModeList = InitNameList_NSpecLists(
+	  DiagModeList_NSpecLists(0), binomialSGPtr->diagFileName)) == NULL)
+		return(FALSE);
 	if (!SetUniParList_ANSpikeGen_Binomial()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Binomial();
@@ -153,6 +161,11 @@ SetUniParList_ANSpikeGen_Binomial(void)
 		return(FALSE);
 	}
 	pars = binomialSGPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOMIAL_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
+	  UNIPAR_NAME_SPEC_WITH_FILE,
+	  &binomialSGPtr->diagnosticMode, binomialSGPtr->diagnosticModeList,
+	  (void * (*)) SetDiagnosticMode_ANSpikeGen_Binomial);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_BINOM_NUMFIBRES], wxT("NUM_FIBRES"),
 	  wxT("Number of fibres."),
 	  UNIPAR_INT,
@@ -245,6 +258,31 @@ SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
+
+}
+
+/****************************** SetDiagnosticMode *****************************/
+
+/*
+ * This function sets the module's diagnosticMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagnosticMode_ANSpikeGen_Binomial(WChar * theDiagnosticMode)
+{
+	static const WChar	*funcName = wxT(
+	  "SetDiagnosticMode_ANSpikeGen_Binomial");
+	int		specifier;
+
+	if (binomialSGPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	binomialSGPtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
+	  binomialSGPtr->diagnosticModeList);
+	return(TRUE);
 
 }
 
@@ -412,6 +450,8 @@ BOOLN
 PrintPars_ANSpikeGen_Binomial(void)
 {
 	DPrint(wxT("Binomial Post-synaptic Firing Module:-\n"));
+	DPrint(wxT("\tDiagnostic mode = %s\n"), binomialSGPtr->diagnosticModeList[
+	  binomialSGPtr->diagnosticMode].name);
 	DPrint(wxT("\tNo. fibres = %d,"), binomialSGPtr->numFibres);
 	DPrint(wxT("\tRandom no. seed = %ld\n"), binomialSGPtr->ranSeed);
 	DPrint(wxT("\tPulse duration = %g ms,"), MSEC(binomialSGPtr->
@@ -722,6 +762,12 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
+		}
+		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
+			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
+			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			CloseDiagnostics_NSpecLists(&p->fp);
 		}
 		TempInputConnection_EarObject(data, p->refractAdjData, 1);
 		p->pulseDurationIndex = (ChanLen) (p->pulseDuration / _InSig_EarObject(

@@ -24,6 +24,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtString.h"
 #include "UtRandom.h"
@@ -71,6 +72,7 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 		}
 	}
 	simpleSGPtr->parSpec = parSpec;
+	simpleSGPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
 	simpleSGPtr->ranSeed = -1;
 	simpleSGPtr->numFibres = 5;
@@ -87,6 +89,9 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 	}
 	SetDefaultDistribution_ANSGDist(simpleSGPtr->distribution);
 
+	if ((simpleSGPtr->diagnosticModeList = InitNameList_NSpecLists(
+	  DiagModeList_NSpecLists(0), simpleSGPtr->diagFileName)) == NULL)
+		return(FALSE);
 	if (!SetUniParList_ANSpikeGen_Simple()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Simple();
@@ -115,6 +120,8 @@ Free_ANSpikeGen_Simple(void)
 		return(TRUE);
 	FreeProcessVariables_ANSpikeGen_Simple();
 	Free_ParArray(&simpleSGPtr->distribution);
+	if (simpleSGPtr->diagnosticModeList)
+		free(simpleSGPtr->diagnosticModeList);
 	if (simpleSGPtr->parList)
 		FreeList_UniParMgr(&simpleSGPtr->parList);
 	if (simpleSGPtr->parSpec == GLOBAL) {
@@ -145,6 +152,11 @@ SetUniParList_ANSpikeGen_Simple(void)
 		return(FALSE);
 	}
 	pars = simpleSGPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
+	  UNIPAR_NAME_SPEC_WITH_FILE,
+	  &simpleSGPtr->diagnosticMode, simpleSGPtr->diagnosticModeList,
+	  (void * (*)) SetDiagnosticMode_ANSpikeGen_Simple);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_RANSEED], wxT("RAN_SEED"),
 	  wxT("Random number seed (0 produces a different seed each run."),
 	  UNIPAR_LONG,
@@ -206,6 +218,30 @@ GetUniParListPtr_ANSpikeGen_Simple(void)
 		return(NULL);
 	}
 	return(simpleSGPtr->parList);
+
+}
+
+/****************************** SetDiagnosticMode *****************************/
+
+/*
+ * This function sets the module's diagnosticMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagnosticMode_ANSpikeGen_Simple(WChar * theDiagnosticMode)
+{
+	static const WChar	*funcName = wxT("SetDiagnosticMode_ANSpikeGen_Simple");
+	int		specifier;
+
+	if (simpleSGPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	simpleSGPtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
+	  simpleSGPtr->diagnosticModeList);
+	return(TRUE);
 
 }
 
@@ -401,6 +437,8 @@ BOOLN
 PrintPars_ANSpikeGen_Simple(void)
 {
 	DPrint(wxT("Simple Post-Synaptic Firing Module Parameters:-\n"));
+	DPrint(wxT("\tDiagnostic mode = %s\n"), simpleSGPtr->diagnosticModeList[
+	  simpleSGPtr->diagnosticMode].name);
 	DPrint(wxT("\tRandom number seed = %ld,"), simpleSGPtr->ranSeed);
 	DPrint(wxT("\tNo. of fibres = %d,\n"), simpleSGPtr->numFibres);
 	DPrint(wxT("\tPulse duration = %g ms,"), MSEC(simpleSGPtr->pulseDuration));
@@ -727,6 +765,12 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
+		}
+		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
+			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
+			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			CloseDiagnostics_NSpecLists(&p->fp);
 		}
 		p->dt = _InSig_EarObject(data, 0)->dt;
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {

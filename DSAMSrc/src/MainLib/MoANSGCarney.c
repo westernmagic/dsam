@@ -26,6 +26,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtString.h"
 #include "UtRandom.h"
@@ -58,6 +59,8 @@ Free_ANSpikeGen_Carney(void)
 	if (carneySGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Carney();
+	if (carneySGPtr->diagnosticModeList)
+		free(carneySGPtr->diagnosticModeList);
 	if (carneySGPtr->parList)
 		FreeList_UniParMgr(&carneySGPtr->parList);
 	if (carneySGPtr->parSpec == GLOBAL) {
@@ -101,6 +104,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	}
 	carneySGPtr->parSpec = parSpec;
 	carneySGPtr->updateProcessVariablesFlag = TRUE;
+	carneySGPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	carneySGPtr->inputMode = ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL;
 	carneySGPtr->ranSeed = -1;
 	carneySGPtr->numFibres = 1;
@@ -122,6 +126,9 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	}
 	SetDefaultDistribution_ANSGDist(carneySGPtr->distribution);
 
+	if ((carneySGPtr->diagnosticModeList = InitNameList_NSpecLists(
+	  DiagModeList_NSpecLists(0), carneySGPtr->diagFileName)) == NULL)
+		return(FALSE);
 	if (!SetUniParList_ANSpikeGen_Carney()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Carney();
@@ -173,6 +180,11 @@ SetUniParList_ANSpikeGen_Carney(void)
 		return(FALSE);
 	}
 	pars = carneySGPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
+	  UNIPAR_NAME_SPEC_WITH_FILE,
+	  &carneySGPtr->diagnosticMode, carneySGPtr->diagnosticModeList,
+	  (void * (*)) SetDiagnosticMode_ANSpikeGen_Carney);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_CARNEY_INPUTMODE], wxT("INPUT_MODE"),
 	  wxT("Input mode, 'corrected' (2001), or 'original' (1993) setting."),
 	  UNIPAR_NAME_SPEC,
@@ -308,6 +320,30 @@ SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres, double pulseDuration,
 	if (!ok)
 		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
 	return(ok);
+
+}
+
+/****************************** SetDiagnosticMode *****************************/
+
+/*
+ * This function sets the module's diagnosticMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagnosticMode_ANSpikeGen_Carney(WChar * theDiagnosticMode)
+{
+	static const WChar	*funcName = wxT("SetDiagnosticMode_ANSpikeGen_Carney");
+	int		specifier;
+
+	if (carneySGPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	carneySGPtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
+	  carneySGPtr->diagnosticModeList);
+	return(TRUE);
 
 }
 
@@ -622,6 +658,8 @@ BOOLN
 PrintPars_ANSpikeGen_Carney(void)
 {
 	DPrint(wxT("Carney Post-Synaptic Firing Module Parameters:-\n"));
+	DPrint(wxT("\tDiagnostic mode = %s\n"), carneySGPtr->diagnosticModeList[
+	  carneySGPtr->diagnosticMode].name);
 	DPrint(wxT("\tInput mode: %s,\n"), InputModeList_ANSpikeGen_Carney(
 	  carneySGPtr->inputMode)->name);
 	DPrint(wxT("\tRandom number seed = %ld,"),
@@ -989,6 +1027,12 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
+		}
+		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
+			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
+			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			CloseDiagnostics_NSpecLists(&p->fp);
 		}
 		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;

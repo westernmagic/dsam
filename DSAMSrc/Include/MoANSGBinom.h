@@ -24,7 +24,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_BINOM_NUM_PARS			6
+#define ANSPIKEGEN_BINOM_NUM_PARS			7
 #define ANSPIKEGEN_BINOM_NUM_SUB_PROCESSES	1
 
 /******************************************************************************/
@@ -39,6 +39,7 @@ typedef enum {
 
 typedef enum {
 
+	ANSPIKEGEN_BINOMIAL_DIAGNOSTICMODE,
 	ANSPIKEGEN_BINOM_NUMFIBRES,
 	ANSPIKEGEN_BINOM_RANSEED,
 	ANSPIKEGEN_BINOM_PULSEDURATION,
@@ -53,6 +54,7 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
+	int		diagnosticMode;
 	int		numFibres;
 	long	ranSeed;
 	double	pulseDuration;
@@ -61,7 +63,10 @@ typedef struct {
 	ParArrayPtr	distribution;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
+	WChar			diagFileName[MAX_FILE_PATH];
+	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
 	double	*lastOutput;
@@ -96,6 +101,8 @@ UniParListPtr	GetUniParListPtr_ANSpikeGen_Binomial(void);
 
 BOOLN	Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec);
 
+BOOLN	InitModule_ANSpikeGen_Binomial(ModulePtr theModule);
+
 BOOLN	InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data);
 
 BOOLN	PrintPars_ANSpikeGen_Binomial(void);
@@ -104,7 +111,7 @@ BOOLN	ReadPars_ANSpikeGen_Binomial(WChar *fileName);
 
 BOOLN	RunModel_ANSpikeGen_Binomial(EarObjectPtr data);
 
-BOOLN	InitModule_ANSpikeGen_Binomial(ModulePtr theModule);
+BOOLN	SetDiagnosticMode_ANSpikeGen_Binomial(WChar * theDiagnosticMode);
 
 BOOLN	SetDistribution_ANSpikeGen_Binomial(ParArrayPtr theDistribution);
 

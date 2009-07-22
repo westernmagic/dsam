@@ -20,7 +20,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_CARNEY_NUM_PARS			12
+#define ANSPIKEGEN_CARNEY_NUM_PARS			13
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -28,6 +28,7 @@
 
 typedef enum {
 
+	ANSPIKEGEN_CARNEY_DIAGNOSTICMODE,
 	ANSPIKEGEN_CARNEY_INPUTMODE,
 	ANSPIKEGEN_CARNEY_RANSEED,
 	ANSPIKEGEN_CARNEY_NUMFIBRES,
@@ -56,6 +57,7 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
+	int		diagnosticMode;
 	int		inputMode;
 	long	ranSeed;
 	int		numFibres;
@@ -70,7 +72,10 @@ typedef struct {
 	ParArrayPtr	distribution;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
+	WChar			diagFileName[MAX_FILE_PATH];
+	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
 	double	dt, wPulseDuration;
@@ -114,6 +119,8 @@ BOOLN	ReadPars_ANSpikeGen_Carney(WChar *fileName);
 void	ResetProcess_ANSpikeGen_Carney(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Carney(EarObjectPtr data);
+
+BOOLN	SetDiagnosticMode_ANSpikeGen_Carney(WChar * theDiagnosticMode);
 
 BOOLN	SetDischargeCoeffC0_ANSpikeGen_Carney(double theDischargeCoeffC0);
 

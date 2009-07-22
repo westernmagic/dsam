@@ -7,6 +7,7 @@ proc_routine	RunModel;
 process_vars	true;
 typedef struct {
 
+	NameSpecifier	diagnosticMode;
 	long	ranSeed;
 	int		numFibres;
 	double	pulseDuration;

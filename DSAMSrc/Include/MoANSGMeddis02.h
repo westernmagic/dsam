@@ -18,7 +18,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_MEDDIS02_NUM_PARS			7
+#define ANSPIKEGEN_MEDDIS02_NUM_PARS			8
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -26,6 +26,7 @@
 
 typedef enum {
 
+	ANSPIKEGEN_MEDDIS02_DIAGNOSTICMODE,
 	ANSPIKEGEN_MEDDIS02_RANSEED,
 	ANSPIKEGEN_MEDDIS02_NUMFIBRES,
 	ANSPIKEGEN_MEDDIS02_PULSEDURATION,
@@ -42,6 +43,7 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
+	int		diagnosticMode;
 	long	ranSeed;
 	int		numFibres;
 	double	pulseDuration;
@@ -51,7 +53,10 @@ typedef struct {
 	ParArrayPtr	distribution;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
+	WChar			diagFileName[MAX_FILE_PATH];
+	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
 	double	dt, wPulseDuration;
@@ -95,6 +100,8 @@ BOOLN	PrintPars_ANSpikeGen_Meddis02(void);
 void	ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Meddis02(EarObjectPtr data);
+
+BOOLN	SetDiagnosticMode_ANSpikeGen_Meddis02(WChar * theDiagnosticMode);
 
 BOOLN	SetDistribution_ANSpikeGen_Meddis02(ParArrayPtr theDistribution);
 

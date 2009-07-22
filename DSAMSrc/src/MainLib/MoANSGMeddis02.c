@@ -24,6 +24,7 @@
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
 #include "GeModuleMgr.h"
+#include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtRandom.h"
 #include "UtParArray.h"
@@ -55,6 +56,9 @@ Free_ANSpikeGen_Meddis02(void)
 	if (meddis02SGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Meddis02();
+	Free_ParArray(&meddis02SGPtr->distribution);
+	if (meddis02SGPtr->diagnosticModeList)
+		free(meddis02SGPtr->diagnosticModeList);
 	if (meddis02SGPtr->parList)
 		FreeList_UniParMgr(&meddis02SGPtr->parList);
 	if (meddis02SGPtr->parSpec == GLOBAL) {
@@ -98,6 +102,7 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	}
 	meddis02SGPtr->parSpec = parSpec;
 	meddis02SGPtr->updateProcessVariablesFlag = TRUE;
+	meddis02SGPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	meddis02SGPtr->ranSeed = 0;
 	meddis02SGPtr->numFibres = 1;
 	meddis02SGPtr->pulseDuration = -1.0;
@@ -114,6 +119,9 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	}
 	SetDefaultDistribution_ANSGDist(meddis02SGPtr->distribution);
 
+	if ((meddis02SGPtr->diagnosticModeList = InitNameList_NSpecLists(
+	  DiagModeList_NSpecLists(0), meddis02SGPtr->diagFileName)) == NULL)
+		return(FALSE);
 	if (!SetUniParList_ANSpikeGen_Meddis02()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_ANSpikeGen_Meddis02();
@@ -147,6 +155,11 @@ SetUniParList_ANSpikeGen_Meddis02(void)
 		return(FALSE);
 	}
 	pars = meddis02SGPtr->parList->pars;
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_DIAGNOSTICMODE], wxT("DIAG_MODE"),
+	  wxT("Diagnostic mode ('off', 'screen' or <file name>)."),
+	  UNIPAR_NAME_SPEC_WITH_FILE,
+	  &meddis02SGPtr->diagnosticMode, meddis02SGPtr->diagnosticModeList,
+	  (void * (*)) SetDiagnosticMode_ANSpikeGen_Meddis02);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_MEDDIS02_RANSEED], wxT("RAN_SEED"),
 	  wxT("Random number seed (0 produces a different seed each run)."),
 	  UNIPAR_LONG,
@@ -216,6 +229,31 @@ GetUniParListPtr_ANSpikeGen_Meddis02(void)
 		return(NULL);
 	}
 	return(meddis02SGPtr->parList);
+
+}
+
+/****************************** SetDiagnosticMode *****************************/
+
+/*
+ * This function sets the module's diagnosticMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetDiagnosticMode_ANSpikeGen_Meddis02(WChar * theDiagnosticMode)
+{
+	static const WChar	*funcName = wxT(
+	  "SetDiagnosticMode_ANSpikeGen_Meddis02");
+	int		specifier;
+
+	if (meddis02SGPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	meddis02SGPtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
+	  meddis02SGPtr->diagnosticModeList);
+	return(TRUE);
 
 }
 
@@ -414,6 +452,8 @@ BOOLN
 PrintPars_ANSpikeGen_Meddis02(void)
 {
 	DPrint(wxT("Meddis 2002 post-synaptic firing module Parameters:-\n"));
+	DPrint(wxT("\tDiagnostic mode = %s\n"), meddis02SGPtr->diagnosticModeList[
+	  meddis02SGPtr->diagnosticMode].name);
 	DPrint(wxT("\tRandom number seed = %ld,"), meddis02SGPtr->ranSeed);
 	DPrint(wxT("\tNumber of fibres = %d,\n"), meddis02SGPtr->numFibres);
 	DPrint(wxT("\tPulse duration = "));
@@ -707,6 +747,12 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			NotifyError(wxT("%s: Could not initialise the process variables."),
 			  funcName);
 			return(FALSE);
+		}
+		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
+			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
+			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			CloseDiagnostics_NSpecLists(&p->fp);
 		}
 		p->dt = _InSig_EarObject(data, 0)->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;

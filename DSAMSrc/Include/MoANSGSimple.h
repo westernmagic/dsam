@@ -18,7 +18,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_SIMPLE_NUM_PARS	6
+#define ANSPIKEGEN_SIMPLE_NUM_PARS	7
 #define PS_REFRACTORY_PERIOD		1.0E-3		/* Default value in seconds. */
 
 /******************************************************************************/
@@ -27,6 +27,7 @@
 
 typedef enum {
 
+	ANSPIKEGEN_SIMPLE_DIAGNOSTICMODE,
 	ANSPIKEGEN_SIMPLE_RANSEED,
 	ANSPIKEGEN_SIMPLE_NUMFIBRES,
 	ANSPIKEGEN_SIMPLE_PULSEDURATION,
@@ -41,6 +42,7 @@ typedef struct {
 	ParameterSpecifier parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
+	int		diagnosticMode;
 	long	ranSeed;			/* seed for the random number generator. */
 	int		numFibres;
 	double	pulseDuration;		/* Duration applied to each pulse (s). */
@@ -49,7 +51,10 @@ typedef struct {
 	ParArrayPtr	distribution;
 
 	/* Private members */
+	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
+	WChar			diagFileName[MAX_FILE_PATH];
+	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
 	double	dt;
@@ -95,6 +100,8 @@ BOOLN	ReadPars_ANSpikeGen_Simple(WChar *fileName);
 void	ResetProcess_ANSpikeGen_Simple(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Simple(EarObjectPtr data);
+
+BOOLN	SetDiagnosticMode_ANSpikeGen_Simple(WChar * theDiagnosticMode);
 
 BOOLN	SetDistribution_ANSpikeGen_Simple(ParArrayPtr theDistribution);
 
