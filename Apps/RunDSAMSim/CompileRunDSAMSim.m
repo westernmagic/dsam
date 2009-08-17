@@ -1,9 +1,6 @@
-%File:		DSAM_SDK.nsi
-%Purpose:	Create the DSAM SDK required to compile DSAM programs
-%Comments:	This script is based on NSIS example2.nsi
-%		The "SetOutPath" is needed for the writing of the uninstaller and
-%		and also the DLL install - even though the full directory is given
-%		in the instruction line.
+%File:		CompileRunDSAMSim.m
+%Purpose:	Create the RunDSAMSim mex file
+%Comments:	
 %Author:	L. P. O'Mard
 %Created:	9 Mar 2009
 %Updated:

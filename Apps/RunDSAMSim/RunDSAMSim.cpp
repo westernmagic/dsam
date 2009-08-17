@@ -18,7 +18,6 @@
 #include <wx/app.h>
 #include <mex.h>
 
-
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
@@ -211,19 +210,18 @@ GetString(const mxArray *str)
 	wxChar	*s2;
 	int		bufferLength;
 
-	bufferLength = (int) STR_BUFFER_LEN(str);
-	s = (char *) mxCalloc(bufferLength, sizeof(mxChar));
+	bufferLength = (int) STR_BUFFER_LEN(str) ;
+	s = (char *) mxCalloc(bufferLength + 1, sizeof(mxChar));
 	if (mxGetString(str, s, bufferLength) != 0) {
 		NotifyError(wxT("%s: Not enough space for string. String is ")
 		  wxT("truncated."), funcName);
 		return(NULL);
 	}
-	if ((s2 = (wxChar *) calloc(bufferLength, sizeof(wxChar))) == NULL) {
+	if ((s2 = MBSToWCS2_Utility_String(s)) == NULL) {
 		NotifyError(wxT("%s: Not enough space for string."), funcName);
 		free(s);
 		return(NULL);
 	}
-	DSAM_strcpy(s2, MBSToWCS_Utility_String(s));
 	mxFree(s);
 	return(s2);
 
@@ -239,7 +237,7 @@ GetString(const mxArray *str)
 mxArray *
 GetOutputInfoStruct(SignalDataPtr signal)
 {
-	static const char *funcName = "GetOutputInfoStruct";
+	//static const char *funcName = "GetOutputInfoStruct";
 	const char	*fieldNames[] = {"dt", "staticTimeFlag", "length",
 					 "labels", "numChannels", "numWindowFrames",
 					 "outputTimeOffset", "interleaveLevel",

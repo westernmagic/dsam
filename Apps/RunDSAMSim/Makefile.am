@@ -10,7 +10,8 @@ RunDSAMSim@DLLEXT@_SOURCES	= RunDSAMSim.cpp MatMainApp.cpp
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= autogen.sh RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m RunDSAMSim.ise
+EXTRA_DIST		= autogen.sh RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m RunDSAMSim.ise \
+					CompileRunDSAMSim.m
 
 SUBDIRS			= CfgTools MSVC Examples
 
@@ -18,8 +19,7 @@ MatMainApp.$(OBJEXT): MatMainApp.cpp
 					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
 
 RunDSAMSim.$(OBJEXT): RunDSAMSim.cpp
-					XTRA_CXXFLAGS="-fPIC -DLIBRARY_COMPILE -w" $(DLLCOMPILE) -c $< \
-					 $(DSAMINC) -o $@
+					$(DLLCOMPILE) -DLIBRARY_COMPILE -c $< $(DSAMINC) -o $@
 
 RunDSAMSim@DLLEXT@: $(RunDSAMSim@DLLEXT@_OBJECTS)
 					$(DLLCOMPILE) -o $@ $(RunDSAMSim@DLLEXT@_OBJECTS) $(DSAMLDFLAGS)

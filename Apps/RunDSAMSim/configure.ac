@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim, 1.1.6)
+AC_INIT(RunDSAMSim, 1.1.8)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -21,9 +21,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 RUNDSAMSIM_MAJOR_VERSION=1
 RUNDSAMSIM_MINOR_VERSION=1
-RUNDSAMSIM_MICRO_VERSION=6
-RUNDSAMSIM_INTERFACE_AGE=6
-RUNDSAMSIM_BINARY_AGE=6
+RUNDSAMSIM_MICRO_VERSION=8
+RUNDSAMSIM_INTERFACE_AGE=8
+RUNDSAMSIM_BINARY_AGE=8
 RUNDSAMSIM_RPM_AGE=1
 
 dnl
@@ -218,7 +218,7 @@ if test x$dsamAvailable = xno; then
 	AC_MSG_ERROR(DSAM library must be installed)
 fi
 
-dsam_inc=`$DSAM_CONFIG --cflags | sed s/-pthread/-lpthread/`
+dsam_inc=`$DSAM_CONFIG --cflags | sed s/-pthread/-lpthread/ | sed s/-fPIC//`
 dsam_ldflags=`$DSAM_CONFIG --libs | sed s/-pthread/-lpthread/`
 
 dnl ----------------------------------------------------------------------------

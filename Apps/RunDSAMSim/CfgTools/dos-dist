@@ -36,7 +36,7 @@ make)
 	make dist > $TEMP_FILE
 	grep "^PACKAGE " Makefile | sed "s/ //g" > $TEMP_FILE
 	grep "^VERSION " Makefile | sed "s/ //g" >> $TEMP_FILE
-	. $TEMP_FILE
+	source ./$TEMP_FILE
 	archiveName=${PACKAGE}-${VERSION}
 	echo archiveName = $archiveName
 	rm -rf $archiveName
