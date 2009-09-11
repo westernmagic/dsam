@@ -45,17 +45,23 @@
  *
  *********************/
 
-#ifdef HAVE_CONFIG_H
-#	include "AMSSetup.h"
-#endif /* HAVE_CONFIG_H */
-
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
 #include <string.h>
 
-#include "DSAM.h"
+#include <DSAM.h>
+
+#undef 	PACKAGE_NAME
+#undef	PACKAGE_STRING
+#undef	PACKAGE_TARNAME
+#undef	PACKAGE_VERSION
+
+#ifdef HAVE_CONFIG_H
+#	include "AMSSetup.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "ams.h"
 
 /******************************************************************************/
@@ -201,7 +207,7 @@ BOOLN
 AutoSetNumberOfRuns(void)
 {
 	static const WChar *funcName = PROGRAM_NAME wxT(": AutoSetNumberOfRuns");
-	double	totalDuration, segmentDuration;
+	Float	totalDuration, segmentDuration;
 	EarObjectPtr	process;
 
 	if (!GetDSAMPtr_Common()->segmentedMode) {
@@ -439,5 +445,5 @@ int MainSimulation(MAIN_ARGS)
 	Free_AppInterface();
 	DPrint(wxT("Finished test.\n"));
 	return(0);
-	
+
 }

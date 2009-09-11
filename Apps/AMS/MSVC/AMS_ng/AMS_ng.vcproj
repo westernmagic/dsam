@@ -48,7 +48,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(DSAMDIR)&quot;;&quot;$(DSAMDIR)\include&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
-				PreprocessorDefinitions="_CONSOLE;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="_CONSOLE;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -73,11 +73,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28ud_net.lib wxbase28ud.lib wxbase28ud_xml.lib libsndfile_x86.lib G72x_x86.lib GSM610_x86.lib portaudio_x86.lib ws2_32.lib libfftw.lib"
+				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28u_net.lib wxbase28u_xml.lib wxbase28u.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
 				OutputFile=".\Debug/AMS_ng.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Debug&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
@@ -263,11 +263,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_std_x86.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
+				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_std_x86.lib wxbase28u_net.lib wxbase28u_xml.lib wxbase28u.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
 				OutputFile=".\Release/AMS_ng.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
+				IgnoreDefaultLibraryNames="libCMT"
 				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="1"

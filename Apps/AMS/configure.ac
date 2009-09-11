@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(ams.h)
+AC_INIT(AMS, 1.2.24)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -206,7 +206,7 @@ dnl ----------------------------------------------------------------------------
 dnl My optional features.
 dnl ----------------------------------------------------------------------------
 
-AC_MSG_CHECKING(for DSAM environment ($DSAM_CONFIG))
+AC_MSG_CHECKING([for DSAM environment ($DSAM_CONFIG)])
 if eval "$DSAM_CONFIG --version 2> config.log > /dev/null"; then
 	dsamAvailable=yes
 else

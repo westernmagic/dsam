@@ -34,8 +34,10 @@ make)
 	./autogen.sh > $TEMP_FILE
 	./configure > $TEMP_FILE
 	make dist > $TEMP_FILE
-	archiveName=`grep ".tar.gz" $TEMP_FILE | cut -d ">" -f 2 | cut -d "." \
-	  -f 0-3`
+	grep "^PACKAGE " Makefile | sed "s/ //g" > $TEMP_FILE
+	grep "^VERSION " Makefile | sed "s/ //g" >> $TEMP_FILE
+	source ./$TEMP_FILE
+	archiveName=${PACKAGE}-${VERSION}
 	echo archiveName = $archiveName
 	rm -rf $archiveName
 	tar zxf $archiveName.tar.gz

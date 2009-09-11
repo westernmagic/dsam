@@ -10,11 +10,11 @@
 #
 ##################
 
-%create_help AMS Help -h3
-%mv AMSHelp.zip ../HelpFiles
-%ps2pdf AMSHelp.prn ../HelpFiles/AMSHelp.pdf
+#create_help AMS Help -h3
+#mv AMSHelp.zip ../HelpFiles
+#ps2pdf AMSHelp.prn ../HelpFiles/AMSHelp.pdf
 
-%xmlto pdf AMSHelp.xml
+#xmlto pdf AMSHelp.xml
 
 docbook2pdf AMSHelp.xml
 cp AMSHelp.pdf ../HelpFiles
