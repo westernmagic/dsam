@@ -92,9 +92,9 @@ InitWxWidgets(void)
  */
 
 void
-MyDPrint(const wxChar *format, va_list args)
+MyDPrint(const WChar *format, va_list args)
 {
-	wxChar 	workStr[LONG_STRING];
+	WChar 	workStr[LONG_STRING];
 
 	DSAM_vsnprintf(workStr, LONG_STRING, format, args);
 	mexPrintf(ConvUTF8_Utility_String(workStr));
@@ -109,9 +109,10 @@ MyDPrint(const wxChar *format, va_list args)
  */
 
 void
-MyNotify(const wxChar *message, CommonDiagSpecifier type)
+MyNotify(const WChar *message, CommonDiagSpecifier type)
 {
-	wxChar	workStr[LONG_STRING], *heading;
+	const WChar	*heading;
+	WChar	workStr[LONG_STRING];
 
 	if (!GetDSAMPtr_Common()->notificationCount) {
 		SetDiagMode(COMMON_DIALOG_DIAG_MODE);
@@ -140,9 +141,9 @@ PrintHelp(void)
 /**************************** CheckDoubleField ********************************/
 
 bool
-CheckDoubleField (const mxArray *info, wxChar *field)
+CheckDoubleField (const mxArray *info, const WChar *field)
 {
-	static const wxChar *funcName = wxT("CheckDoubleField");
+	static const WChar *funcName = wxT("CheckDoubleField");
 	const mxArray	*entry;
 
 	if ((entry = mxGetField(info, 0, ConvUTF8_Utility_String(field))) == NULL) {
@@ -164,7 +165,7 @@ CheckDoubleField (const mxArray *info, wxChar *field)
 bool
 AnyBadArgument(int nrhs, const mxArray *prhs[])
 {
-	static const wxChar *funcName = wxT("AnyBadArgument");
+	static const WChar *funcName = wxT("AnyBadArgument");
 	if (nrhs < 1)
 		PrintHelp();
 
@@ -202,12 +203,12 @@ AnyBadArgument(int nrhs, const mxArray *prhs[])
  * Returns a C string from a MX string.
  */
 
-wxChar *
+WChar *
 GetString(const mxArray *str)
 {
-	static const wxChar *funcName = wxT("GetString");
+	static const WChar *funcName = wxT("GetString");
 	char	*s;
-	wxChar	*s2;
+	WChar	*s2;
 	int		bufferLength;
 
 	bufferLength = (int) STR_BUFFER_LEN(str) ;
@@ -285,7 +286,8 @@ GetOutputInfoStruct(SignalDataPtr signal)
 mxArray *
 GetOutputSignalMatrix(SignalDataPtr signal)
 {
-	register ChanData	*inPtr, *outPtr;
+	register double		*outPtr;
+	register ChanData	*inPtr;
 	int		chan;
 	ChanLen	i;
 	double	*mPtr;
@@ -314,7 +316,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 {
 	BOOLN	staticTimeFlag = FALSE;
-	wxChar	*simFile, *parameterOptions;
+	WChar	*simFile, *parameterOptions;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
 	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset= 0.0;
@@ -331,7 +333,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	simFile = GetString(prhs[SIM_FILE]);
 	parameterOptions = (nrhs > PARAMETER_OPTIONS)? GetString(prhs[
-	  PARAMETER_OPTIONS]): (wxChar *) wxT("");
+	  PARAMETER_OPTIONS]): (WChar *) wxT("");
 
 	if (nrhs > INFO_STRUCT) {
 		const mxArray *info = prhs[INFO_STRUCT];

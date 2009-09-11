@@ -9,7 +9,7 @@
  *				It was revised from the previous DSAMMatrix code module.
  * Author:		L. P. O'Mard
  * Created:		07 Jan 2004
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  *********************/
@@ -17,7 +17,7 @@
 #ifndef	_MATMAINAPP_H
 #define _MATMAINAPP_H	1
 
-#include "ExtMainApp.h"
+#include <ExtMainApp.h>
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -75,7 +75,8 @@ class MatMainApp: public MainApp {
 	bool	staticTimeFlag;
 	int		numChannels, interleaveLevel;
 	ChanLen	length;
-	double	*inputData, dt, outputTimeOffset;
+	double	*inputData;
+	Float	dt, outputTimeOffset;
 	UniParListPtr	parList;
 	EarObjectPtr	inputProcess;
 	wxInitializer initializer;
@@ -85,7 +86,7 @@ class MatMainApp: public MainApp {
 	int		numberOfRuns;
 	int		autoNumRunsMode;
 	int		serverMode;
-	double	segmentDuration;
+	Float	segmentDuration;
 
 	MatMainApp(wxChar *programName, const wxChar *simFile,
 	  const wxChar * parameterOptions, double *theInputData, int theNumChannels,
@@ -93,7 +94,7 @@ class MatMainApp: public MainApp {
 	  bool theStaticTimeFlag, double theOutputTimeOffset);
 	~MatMainApp(void);
 
-	bool	AutoSetNumberOfRuns(double dt);
+	bool	AutoSetNumberOfRuns(Float dt);
 	EarObjectPtr	GetSimProcess(void);
 	bool	InitInputEarObject(ChanLen segmentLength);
 	bool	InitRun(void);
@@ -143,14 +144,14 @@ BOOLN	SetArgStrings_MatMainApp(wxChar *programName, wxChar *simFile,
 		  wxChar *parameterOptions);
 
 void	SetInputProcessData_MatMainApp(EarObjectPtr process, ChanLen
-		  signalLength, double *data);
+		  signalLength, Float *data);
 
 int		SetParameterOptionArgs_MatMainApp(int indexStart,
 		  wxChar *parameterOptions, BOOLN countOnly);
 
 BOOLN	SetNumberOfRuns_MatMainApp(int theNumberOfRuns);
 
-BOOLN	SetSegmentDuration_MatMainApp(double theSegmentDuration);
+BOOLN	SetSegmentDuration_MatMainApp(Float theSegmentDuration);
 
 BOOLN	SetServerHost_MatMainApp(const wxChar *theServerHost);
 

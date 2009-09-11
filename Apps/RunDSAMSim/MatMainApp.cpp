@@ -20,6 +20,13 @@
 
 #include <DSAM.h>
 
+#undef 	PACKAGE
+#undef	VERSION
+#undef 	PACKAGE_NAME
+#undef	PACKAGE_STRING
+#undef	PACKAGE_TARNAME
+#undef	PACKAGE_VERSION
+
 #ifdef HAVE_CONFIG_H
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
@@ -173,10 +180,10 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
  */
 
 bool
-MatMainApp::AutoSetNumberOfRuns(double dt)
+MatMainApp::AutoSetNumberOfRuns(Float dt)
 {
 	static const wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
-	double	totalDuration;
+	Float	totalDuration;
 	EarObjectPtr	process;
 
 	if (!GetDSAMPtr_Common()->segmentedMode) {
@@ -227,7 +234,8 @@ void
 MatMainApp::SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
   double *data)
 {
-	register ChanData	*outPtr, *inPtr;
+	register double		*inPtr;
+	register ChanData	*outPtr;
 	int		chan;
 	ChanLen	i;
 	SignalDataPtr	outSignal = _OutSig_EarObject(process);
@@ -594,7 +602,7 @@ SetNumberOfRuns_MatMainApp(int theNumberOfRuns)
  */
 
 BOOLN
-SetSegmentDuration_MatMainApp(double theSegmentDuration)
+SetSegmentDuration_MatMainApp(Float theSegmentDuration)
 {
 
 	matMainAppPtr->segmentDuration = theSegmentDuration;

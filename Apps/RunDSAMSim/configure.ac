@@ -205,7 +205,7 @@ dnl ----------------------------------------------------------------------------
 dnl DSAM library
 dnl ----------------------------------------------------------------------------
 
-AC_MSG_CHECKING(for DSAM environment ($DSAM_CONFIG))
+AC_MSG_CHECKING([for DSAM environment ($DSAM_CONFIG)])
 if eval "$DSAM_CONFIG --version 2> config.log > /dev/null"; then
 	dsamAvailable=yes
 else
@@ -227,7 +227,7 @@ dnl ----------------------------------------------------------------------------
 
 OCTCOMPILE="mkoctfile"
 
-AC_MSG_CHECKING(Octave Development environment ($OCTCOMPILE))
+AC_MSG_CHECKING([Octave Development environment ($OCTCOMPILE)])
 if eval "$OCTCOMPILE --version 2>> config.log > /dev/null"; then
 	octaveAvailable=yes
 else
