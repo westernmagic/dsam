@@ -8,7 +8,7 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	double		broadeningCoeff;
+	Float		broadeningCoeff;
 	NameSpecifier outputMode;
 	CFListPtr	theCFs;
 

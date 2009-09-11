@@ -8,12 +8,12 @@
  * Created:		12 Jul 1996
  * Updated:		05 Sep 1996
  * Copyright:	(c) 1998, University of Essex
- * 
+ *
  ******************/
 
 #ifndef	_MOIHC86AMEDDIS_H
 #define _MOIHC86AMEDDIS_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -40,33 +40,30 @@ typedef enum {
 
 typedef struct {
 
-	double	cleftC;			/* Quantity of transmitter in the cleft */
-	double	reservoirQ;		/* Quantity of transmitter in the free pool */
-	double	reprocessedW;	/* Quantity of transm. in the reproc. store */
+	Float	cleftC;			/* Quantity of transmitter in the cleft */
+	Float	reservoirQ;		/* Quantity of transmitter in the free pool */
+	Float	reprocessedW;	/* Quantity of transm. in the reproc. store */
 
 } HairCellVars3, *HairCellVars3Ptr;
-	
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	replenishRateFlag, lossRateFlag, reprocessRateFlag;
-	BOOLN	recoveryRateFlag, maxFreePoolFlag, permeabilityPHFlag;
-	BOOLN	permeabilityPZFlag, firingRateFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 
-	double	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
-	double	replenishRate_y;	/* Replenishment rate (units per second). */
-	double	lossRate_l;			/* Loss rate (units per second). */
-	double	reprocessRate_x;	/* Reprocessing rate (units per second). */
-	double	recoveryRate_r;		/* Recovery rate (units per second). */
-	double	permeabilityPH_h;	/* Permeability constant. */
-	double	permeabilityPZ_z;	/* Permeability constant. */
-	double	firingRate_h2;		/* Permeability constant. */
+	Float	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
+	Float	replenishRate_y;	/* Replenishment rate (units per second). */
+	Float	lossRate_l;			/* Loss rate (units per second). */
+	Float	reprocessRate_x;	/* Reprocessing rate (units per second). */
+	Float	recoveryRate_r;		/* Recovery rate (units per second). */
+	Float	permeabilityPH_h;	/* Permeability constant. */
+	Float	permeabilityPZ_z;	/* Permeability constant. */
+	Float	firingRate_h2;		/* Permeability constant. */
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	ymdt, ydt, xdt, rdt, zdt, l_Plus_rdt, h2dt;
+	Float	ymdt, ydt, xdt, rdt, zdt, l_Plus_rdt, h2dt;
 	HairCellVars3	*hCChannels;
 
 } HairCell3, *HairCell3Ptr;
@@ -89,8 +86,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHC_Meddis86a(EarObjectPtr data);
 
-BOOLN	CheckPars_IHC_Meddis86a(void);
-
 BOOLN	Free_IHC_Meddis86a(void);
 
 void	FreeProcessVariables_IHC_Meddis86a(void);
@@ -103,32 +98,27 @@ BOOLN	InitProcessVariables_IHC_Meddis86a(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Meddis86a(void);
 
-BOOLN	ReadPars_IHC_Meddis86a(WChar *fileName);
-
 BOOLN	RunModel_IHC_Meddis86a(EarObjectPtr data);
 
-BOOLN	SetFiringRate_IHC_Meddis86a(double theSetFiringRate);
+BOOLN	SetFiringRate_IHC_Meddis86a(Float theSetFiringRate);
 
-BOOLN	SetLossRate_IHC_Meddis86a(double theLossRate);
+BOOLN	SetLossRate_IHC_Meddis86a(Float theLossRate);
 
-BOOLN	SetMaxFreePool_IHC_Meddis86a(double theMaxFreePool);
+BOOLN	SetMaxFreePool_IHC_Meddis86a(Float theMaxFreePool);
 
 BOOLN	InitModule_IHC_Meddis86a(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHC_Meddis86a(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Meddis86a(double y, double l, double x, double r, double M,
-		  double h, double z, double h2);
-		  
-BOOLN	SetPermeabilityPH_IHC_Meddis86a(double thePermeabilityPH);
+BOOLN	SetPermeabilityPH_IHC_Meddis86a(Float thePermeabilityPH);
 
-BOOLN	SetPermeabilityPZ_IHC_Meddis86a(double thePermeabilityPZ);
+BOOLN	SetPermeabilityPZ_IHC_Meddis86a(Float thePermeabilityPZ);
 
-BOOLN	SetReplenishRate_IHC_Meddis86a(double theReplenishRate);
+BOOLN	SetReplenishRate_IHC_Meddis86a(Float theReplenishRate);
 
-BOOLN	SetReprocessRate_IHC_Meddis86a(double theReprocessRate);
+BOOLN	SetReprocessRate_IHC_Meddis86a(Float theReprocessRate);
 
-BOOLN	SetRecoveryRate_IHC_Meddis86a(double theRecoveryRate);
+BOOLN	SetRecoveryRate_IHC_Meddis86a(Float theRecoveryRate);
 
 BOOLN	SetUniParList_IHC_Meddis86a(void);
 

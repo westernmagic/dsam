@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		13 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -35,8 +35,8 @@
 #define	DIAGRAM_LABEL_HEIGHT_MARGIN		5.0
 #define	DIAGRAM_ARROW_TEXT				wxT("Arrow head connection")
 #define DIAGRAM_ARROW_SIZE				10.0
-#define	DIAGRAM_REPEAT_ARROW_TEXT		wxT("Arrow head 'repeat' connection")
-#define DIAGRAM_REPEAT_ARROW_SIZE		10.0
+#define DIAGRAM_REPEAT_OVERSIZE_SCALE_Y	1.4
+#define DIAGRAM_REPEAT_OVERSIZE_SCALE_X	1.03
 #define DIAGRAM_ENABLED_BRUSH			wxCYAN_BRUSH
 #define DIAGRAM_DISENABLED_BRUSH		wxGREY_BRUSH
 
@@ -55,8 +55,11 @@
 /******************************************************************************/
 
 /******************************************************************************/
-/*************************** Pre reference definitions ************************/
+/*************************** Class pre-definitions ****************************/
 /******************************************************************************/
+
+class SDIShape;
+class SDICompositeShape;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -67,7 +70,7 @@
 /*
  * Override a few members for this application
  */
- 
+
 class SDIDiagram: public wxDiagram
 {
 	bool	ok, loadIDsFromFile;
@@ -78,7 +81,7 @@ class SDIDiagram: public wxDiagram
 
   public:
 	SDIDiagram(void);
-	
+
 	wxShape *	AddLineShape(wxShape *fromShape, wxShape *toShape,
 				  int lineType);
 	void	AddShape(wxShape *shape);
@@ -87,21 +90,26 @@ class SDIDiagram: public wxDiagram
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 				  const wxBrush *brush);
 	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
-	void	DrawSimConnections(void);
-	void	DrawSimShapes(void);
+	void	DrawSimConnections(DatumPtr pc);
+	void	DrawSimShapes(DatumPtr pc);
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
+	int		GetSimConnectionCount(DatumPtr pc);
 	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
 	double	GetXScale(void)		{ return xScale; }
 	double	GetYScale(void)		{ return yScale; }
+	void	ReadjustSimShapes(DatumPtr pc);
 	void	RedrawShapeLabel(wxShape *shape);
 	void	Rescale(double theXScale, double theYScale);
 	bool	SaveFile(const wxString& filename);
+	void	SetBasicShape(SDIShape *theShape, int type, const wxBrush *brush);
 	void	SetOk(bool status)		{ ok = status; }
 	void	SetLoadIDsFromFile(bool status)		{ loadIDsFromFile = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }
 	bool	VerifyDiagram(void);
 	void	UpdateAutoShapePos(wxShape *shape);
+	void	UpdateAutoYPos(void)	{ y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
+			  DIAGRAM_DEFAULT_Y_SEPARATION; }
 	bool	UnselectAllShapes(void);
 
 };

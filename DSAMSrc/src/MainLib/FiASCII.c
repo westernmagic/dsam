@@ -7,9 +7,9 @@
  *				FiDataFile module.
  * Authors:		L. P. O'Mard
  * Created:		17 Apr 1998
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
- * 
+ *
  ******************/
 
 #ifdef HAVE_CONFIG_H
@@ -43,7 +43,7 @@
  * This function reads a file in ASCII stream format.
  * The data is stored in the output signal of an EarObject.
  * This is the default file, and is assumed if no suffix is given
- * If a dash, '-.suffix', is given as the file name, then the data will be 
+ * If a dash, '-.suffix', is given as the file name, then the data will be
  * read from the standard input.
  * It returns TRUE if successful.
  * In segmented mode, this routine returns FALSE when it gets to the end of
@@ -58,13 +58,12 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
 	WChar	line[MAXLINE_LARGE];
 	uShort	numColumns;
 	int		chan;
-	double	dt;
+	Float	dt;
 	ChanLen	i, length, numSamples;
 	FILE	*fp;
 
-	if (!CheckPars_DataFile()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (dataFilePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	if ((fp = OpenFile_DataFile(fileName, FOR_ASCII_READING)) == NULL) {
@@ -127,7 +126,7 @@ ReadFile_ASCII(WChar *fileName, EarObjectPtr data)
  * file cannot be calculated without reading the file.
  */
 
-double
+Float
 GetDuration_ASCII(WChar *fileName)
 {
 	static const WChar *funcName = wxT("GetDuration_ASCII");
@@ -144,14 +143,14 @@ GetDuration_ASCII(WChar *fileName)
  * This routine sends the output signal of an EarObject to file.
  * It assumes that the GeEarObject.has been initialised.
  */
- 
+
 BOOLN
 WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("WriteFile_ASCII");
 
-	if (!CheckPars_SignalData(_OutSig_EarObject(data))) {
-		NotifyError(wxT("%s: Output signal not initialised."), funcName);
+	if (dataFilePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	SetTimeIndex_SignalData(_OutSig_EarObject(data), _WorldTime_EarObject(data));
@@ -167,7 +166,7 @@ WriteFile_ASCII(WChar *fileName, EarObjectPtr data)
 	} else {
 		return(TRUE);
 	}
-		
+
 }
 
 

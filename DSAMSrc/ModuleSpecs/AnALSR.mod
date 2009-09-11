@@ -12,8 +12,8 @@ proc_routine	Calc;
 process_vars	true;
 typedef struct {
 
-	double	lowerAveLimit;
-	double	upperAveLimit;
-	double	normalise;
+	Float	lowerAveLimit;
+	Float	upperAveLimit;
+	Float	normalise;
 
 } ALSR;

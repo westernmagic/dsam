@@ -9,7 +9,7 @@
  * Comments:	Written using ModuleProducer version 1.3.2 (Mar 27 2001).
  * Author:		C. J. Sumner
  * Created:		20 Aug 2001
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2001, CNBH, University of Essex.
  *
  *********************/
@@ -51,33 +51,27 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	endocochlearPot_EtFlag, reversalPot_EkFlag;
-	BOOLN	reversalPotCorrectionFlag, totalCapacitance_CFlag;
-	BOOLN	restingConductance_G0Flag, kConductance_GkFlag;
-	BOOLN	maxMConductance_GmaxFlag, ciliaTimeConst_tcFlag;
-	BOOLN	ciliaCouplingGain_CFlag, referencePotFlag, sensitivity_s0Flag;
-	BOOLN	sensitivity_s1Flag, offset_u0Flag, offset_u1Flag;
 	BOOLN	updateProcessVariablesFlag;
-	double	endocochlearPot_Et;
-	double	reversalPot_Ek;
-	double	reversalPotCorrection;
-	double	totalCapacitance_C;
-	double	restingConductance_G0;
-	double	kConductance_Gk;
-	double	maxMConductance_Gmax;
-	double	ciliaTimeConst_tc;
-	double	ciliaCouplingGain_C;
-	double	referencePot;
-	double	sensitivity_s0;
-	double	sensitivity_s1;
-	double	offset_u0;
-	double	offset_u1;
+	Float	endocochlearPot_Et;
+	Float	reversalPot_Ek;
+	Float	reversalPotCorrection;
+	Float	totalCapacitance_C;
+	Float	restingConductance_G0;
+	Float	kConductance_Gk;
+	Float	maxMConductance_Gmax;
+	Float	ciliaTimeConst_tc;
+	Float	ciliaCouplingGain_C;
+	Float	referencePot;
+	Float	sensitivity_s0;
+	Float	sensitivity_s1;
+	Float	offset_u0;
+	Float	offset_u1;
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*lastCiliaDisplacement_u;
-	double	*lastOutput;
-	double	dtOverC, gkEpk, dtOverTc, cGaindt, leakageConductance_Ga;
+	Float	*lastCiliaDisplacement_u;
+	Float	*lastOutput;
+	Float	dtOverC, gkEpk, dtOverTc, cGaindt, leakageConductance_Ga;
 
 } Sham3StVIn, *Sham3StVInPtr;
 
@@ -99,8 +93,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHCRP_Shamma3StateVelIn(EarObjectPtr data);
 
-BOOLN	CheckPars_IHCRP_Shamma3StateVelIn(void);
-
 BOOLN	FreeProcessVariables_IHCRP_Shamma3StateVelIn(void);
 
 BOOLN	Free_IHCRP_Shamma3StateVelIn(void);
@@ -115,54 +107,44 @@ BOOLN	Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_IHCRP_Shamma3StateVelIn(void);
 
-BOOLN	ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName);
-
 BOOLN	RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data);
 
 BOOLN	SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(
-		  double theCiliaCouplingGain_C);
+		  Float theCiliaCouplingGain_C);
 
 BOOLN	SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(
-		  double theCiliaTimeConst_tc);
+		  Float theCiliaTimeConst_tc);
 
 BOOLN	SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(
-		  double theEndocochlearPot_Et);
+		  Float theEndocochlearPot_Et);
 
-BOOLN	SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk);
+BOOLN	SetKConductance_Gk_IHCRP_Shamma3StateVelIn(Float theKConductance_Gk);
 
 BOOLN	SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(
-		  double theMaxMConductance_Gmax);
+		  Float theMaxMConductance_Gmax);
 
-BOOLN	SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0);
+BOOLN	SetOffset_u0_IHCRP_Shamma3StateVelIn(Float theOffset_u0);
 
-BOOLN	SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1);
+BOOLN	SetOffset_u1_IHCRP_Shamma3StateVelIn(Float theOffset_u1);
 
 BOOLN	SetParsPointer_IHCRP_Shamma3StateVelIn(ModulePtr theModule);
 
-BOOLN	SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
-		  double reversalPot_Ek, double reversalPotCorrection,
-		  double totalCapacitance_C, double restingConductance_G0,
-		  double kConductance_Gk, double maxMConductance_Gmax,
-		  double ciliaTimeConst_tc, double ciliaCouplingGain_C,
-		  double referencePot, double sensitivity_s0, double sensitivity_s1,
-		  double offset_u0, double offset_u1);
-
-BOOLN	SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot);
+BOOLN	SetReferencePot_IHCRP_Shamma3StateVelIn(Float theReferencePot);
 
 BOOLN	SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(
-		  double theRestingConductance_G0);
+		  Float theRestingConductance_G0);
 
 BOOLN	SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(
-		  double theReversalPotCorrection);
+		  Float theReversalPotCorrection);
 
-BOOLN	SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek);
+BOOLN	SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(Float theReversalPot_Ek);
 
-BOOLN	SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0);
+BOOLN	SetSensitivity_s0_IHCRP_Shamma3StateVelIn(Float theSensitivity_s0);
 
-BOOLN	SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1);
+BOOLN	SetSensitivity_s1_IHCRP_Shamma3StateVelIn(Float theSensitivity_s1);
 
 BOOLN	SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(
-		  double theTotalCapacitance_C);
+		  Float theTotalCapacitance_C);
 
 BOOLN	SetUniParList_IHCRP_Shamma3StateVelIn(void);
 

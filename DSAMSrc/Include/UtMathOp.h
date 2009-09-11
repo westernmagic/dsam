@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.4.0 (Mar 14 2002).
  * Author:		L.  P. O'Mard
  * Created:		08 Jul 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -48,9 +48,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	operatorModeFlag, operandFlag;
 	int		operatorMode;
-	double	operand;
+	Float	operand;
 
 	/* Private members */
 	NameSpecifier	*operatorModeList;
@@ -76,8 +75,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_MathOp(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_MathOp(void);
-
 BOOLN	Free_Utility_MathOp(void);
 
 UniParListPtr	GetUniParListPtr_Utility_MathOp(void);
@@ -92,7 +89,7 @@ BOOLN	PrintPars_Utility_MathOp(void);
 
 BOOLN	Process_Utility_MathOp(EarObjectPtr data);
 
-BOOLN	SetOperand_Utility_MathOp(double theOperand);
+BOOLN	SetOperand_Utility_MathOp(Float theOperand);
 
 BOOLN	SetOperatorMode_Utility_MathOp(WChar * theOperatorMode);
 

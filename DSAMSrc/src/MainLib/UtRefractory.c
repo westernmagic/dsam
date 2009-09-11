@@ -9,7 +9,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard, revised from code by M. J. Hewitt
  * Created:		26 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -101,7 +101,6 @@ Init_Utility_RefractoryAdjust(ParameterSpecifier parSpec)
 	}
 	refractAdjPtr->parSpec = parSpec;
 	refractAdjPtr->updateProcessVariablesFlag = TRUE;
-	refractAdjPtr->refractoryPeriodFlag = TRUE;
 	refractAdjPtr->refractoryPeriod = 0.0;
 
 	if (!SetUniParList_Utility_RefractoryAdjust()) {
@@ -172,28 +171,6 @@ GetUniParListPtr_Utility_RefractoryAdjust(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_RefractoryAdjust(double refractoryPeriod)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_RefractoryAdjust");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetRefractoryPeriod_Utility_RefractoryAdjust(refractoryPeriod))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetRefractoryPeriod ***************************/
 
 /*
@@ -203,7 +180,7 @@ SetPars_Utility_RefractoryAdjust(double refractoryPeriod)
  */
 
 BOOLN
-SetRefractoryPeriod_Utility_RefractoryAdjust(double theRefractoryPeriod)
+SetRefractoryPeriod_Utility_RefractoryAdjust(Float theRefractoryPeriod)
 {
 	static const WChar	*funcName =
 	  wxT("SetRefractoryPeriod_Utility_RefractoryAdjust");
@@ -217,39 +194,9 @@ SetRefractoryPeriod_Utility_RefractoryAdjust(double theRefractoryPeriod)
 		  funcName);
 		return(FALSE);
 	}
-	refractAdjPtr->refractoryPeriodFlag = TRUE;
 	refractAdjPtr->updateProcessVariablesFlag = TRUE;
 	refractAdjPtr->refractoryPeriod = theRefractoryPeriod;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_RefractoryAdjust(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_RefractoryAdjust");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (refractAdjPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!refractAdjPtr->refractoryPeriodFlag) {
-		NotifyError(wxT("%s: refractoryPeriod variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -265,55 +212,13 @@ PrintPars_Utility_RefractoryAdjust(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_RefractoryAdjust");
 
-	if (!CheckPars_Utility_RefractoryAdjust()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (refractAdjPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("AN Refractory Adjustment Utility Module Parameters:-\n"));
 	DPrint(wxT("\tRefractory period = %g ms\n"), MSEC(refractAdjPtr->
 	  refractoryPeriod));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_RefractoryAdjust(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_RefractoryAdjust");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	refractoryPeriod;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_RefractoryAdjust(refractoryPeriod)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -362,11 +267,9 @@ InitModule_Utility_RefractoryAdjust(ModulePtr theModule)
 	}
 	theModule->parsPtr = refractAdjPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_RefractoryAdjust;
 	theModule->Free = Free_Utility_RefractoryAdjust;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_RefractoryAdjust;
 	theModule->PrintPars = PrintPars_Utility_RefractoryAdjust;
-	theModule->ReadPars = ReadPars_Utility_RefractoryAdjust;
 	theModule->RunProcess = Process_Utility_RefractoryAdjust;
 	theModule->SetParsPointer = SetParsPointer_Utility_RefractoryAdjust;
 	return(TRUE);
@@ -431,15 +334,15 @@ InitProcessVariables_Utility_RefractoryAdjust(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_Utility_RefractoryAdjust();
 		  	p->numChannels = outSignal->numChannels;
-			if ((p->lastOutput = (double **) calloc(p->numChannels, sizeof(
-			  double *))) == NULL) {
+			if ((p->lastOutput = (Float **) calloc(p->numChannels, sizeof(
+			  Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastOutput pointers'."),
 			 	  funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numChannels; i++)
-				if ((p->lastOutput[i] = (double *) calloc(p->
-				  refractoryPeriodIndex, sizeof(double))) == NULL) {
+				if ((p->lastOutput[i] = (Float *) calloc(p->
+				  refractoryPeriodIndex, sizeof(Float))) == NULL) {
 					NotifyError(wxT("%s: Out of memory for 'lastOutput ")
 					  wxT("arrays'."), funcName);
 					for (j = 0; j < i - 1; j++)
@@ -466,7 +369,7 @@ void
 FreeProcessVariables_Utility_RefractoryAdjust(void)
 {
 	int		i;
-	
+
 	if (refractAdjPtr->lastOutput != NULL) {
 		for (i = 0; i < refractAdjPtr->numChannels; i++)
 			free(refractAdjPtr->lastOutput[i]);
@@ -497,16 +400,14 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_Utility_RefractoryAdjust");
 	register	ChanData	 *outPtr, *sumPtr;
-	register	double		sum;
+	register	Float		sum;
 	int		chan;
-	double	*lastOutputPtr;
+	Float	*lastOutputPtr;
 	ChanLen	i, j;
 	RefractAdjPtr	p = refractAdjPtr;
 	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_RefractoryAdjust())
-			return(FALSE);
 		if (!CheckData_Utility_RefractoryAdjust(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -549,7 +450,7 @@ Process_Utility_RefractoryAdjust(EarObjectPtr data)
 			while (sumPtr < outPtr)
 				sum += *sumPtr++;
 			*outPtr++ *= (1.0 - sum);
-		}		
+		}
 		lastOutputPtr = p->lastOutput[chan] + p->refractoryPeriodIndex;
 		for (i = 0; i < p->refractoryPeriodIndex; i++)
 			*--lastOutputPtr = *--outPtr;

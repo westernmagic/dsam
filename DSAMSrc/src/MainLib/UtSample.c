@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.10 (Oct 18 1996).
  * Author:		L. P. O'Mard
  * Created:		22 Oct 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -93,8 +93,6 @@ Init_Utility_Sample(ParameterSpecifier parSpec)
 		}
 	}
 	samplePtr->parSpec = parSpec;
-	samplePtr->timeOffsetFlag = TRUE;
-	samplePtr->dtFlag = TRUE;
 	samplePtr->timeOffset = 0.0;
 	samplePtr->dt = -1.0;
 
@@ -166,30 +164,6 @@ GetUniParListPtr_Utility_Sample(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_Sample(double timeOffset, double samplingInterval)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_Sample");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetTimeOffset_Utility_Sample(timeOffset))
-		ok = FALSE;
-	if (!SetSamplingInterval_Utility_Sample(samplingInterval))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetTimeOffset *********************************/
 
 /*
@@ -199,7 +173,7 @@ SetPars_Utility_Sample(double timeOffset, double samplingInterval)
  */
 
 BOOLN
-SetTimeOffset_Utility_Sample(double theTimeOffset)
+SetTimeOffset_Utility_Sample(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Utility_Sample");
 
@@ -208,7 +182,6 @@ SetTimeOffset_Utility_Sample(double theTimeOffset)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	samplePtr->timeOffsetFlag = TRUE;
 	samplePtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -223,7 +196,7 @@ SetTimeOffset_Utility_Sample(double theTimeOffset)
  */
 
 BOOLN
-SetSamplingInterval_Utility_Sample(double theSamplingInterval)
+SetSamplingInterval_Utility_Sample(Float theSamplingInterval)
 {
 	static const WChar	*funcName = wxT("SetSamplingInterval_Utility_Sample");
 
@@ -232,42 +205,8 @@ SetSamplingInterval_Utility_Sample(double theSamplingInterval)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	samplePtr->dtFlag = TRUE;
 	samplePtr->dt = theSamplingInterval;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_Sample(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_Sample");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (samplePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!samplePtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!samplePtr->dtFlag) {
-		NotifyError(wxT("%s: dt variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -283,9 +222,8 @@ PrintPars_Utility_Sample(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_Sample");
 
-	if (!CheckPars_Utility_Sample()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (samplePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Sample Utility Module Parameters:-\n"));
@@ -295,49 +233,6 @@ PrintPars_Utility_Sample(void)
 		DPrint(wxT("%g ms\n"), MILLI(samplePtr->dt));
 	else
 		DPrint(wxT("<prev. signal dt>.\n"));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_Sample(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_Sample");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	timeOffset, samplingInterval;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_Sample(timeOffset, samplingInterval)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -385,11 +280,9 @@ InitModule_Utility_Sample(ModulePtr theModule)
 	}
 	theModule->parsPtr = samplePtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_Sample;
 	theModule->Free = Free_Utility_Sample;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Sample;
 	theModule->PrintPars = PrintPars_Utility_Sample;
-	theModule->ReadPars = ReadPars_Utility_Sample;
 	theModule->RunProcess = Process_Utility_Sample;
 	theModule->SetParsPointer = SetParsPointer_Utility_Sample;
 	return(TRUE);
@@ -413,7 +306,7 @@ BOOLN
 CheckData_Utility_Sample(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_Sample");
-	double	signalDuration, dt;
+	Float	signalDuration, dt;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -460,14 +353,12 @@ Process_Utility_Sample(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_Sample");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
-	double	dt;
+	Float	dt;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 	SamplePtr	p = samplePtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_Sample())
-			return(FALSE);
 		if (!CheckData_Utility_Sample(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -477,7 +368,7 @@ Process_Utility_Sample(EarObjectPtr data)
 		p->dtIndex = (ChanLen) (dt / _InSig_EarObject(data, 0)->dt + 0.5);
 		p->timeOffsetIndex = (data->timeIndex != PROCESS_START_TIME)? 0:
 		  (ChanLen) (p->timeOffset / _InSig_EarObject(data, 0)->dt + 0.5);
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels, 
+		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
 		  (_InSig_EarObject(data, 0)->length - p->timeOffsetIndex) / p->dtIndex, dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);

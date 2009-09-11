@@ -39,17 +39,15 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	pulseRateFlag, pulseDurationFlag, amplitudeFlag, durationFlag;
-	BOOLN	dtFlag;
-	double	pulseRate;
-	double	pulseDuration;
-	double	amplitude;
-	double	duration;
-	double	dt;
-	
+	Float	pulseRate;
+	Float	pulseDuration;
+	Float	amplitude;
+	Float	duration;
+	Float	dt;
+
 	/* Private members */
 	UniParListPtr	parList;
-	double	nextPulseTime, remainingPulseTime;
+	Float	nextPulseTime, remainingPulseTime;
 
 } PulseTrain, *PulseTrainPtr;
 
@@ -71,8 +69,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_PulseTrain(EarObjectPtr data);
 
-BOOLN	CheckPars_PulseTrain(void);
-
 BOOLN	Free_PulseTrain(void);
 
 BOOLN	GenerateSignal_PulseTrain(EarObjectPtr data);
@@ -83,24 +79,19 @@ BOOLN	Init_PulseTrain(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PulseTrain(void);
 
-BOOLN	ReadPars_PulseTrain(WChar *fileName);
+BOOLN	SetAmplitude_PulseTrain(Float theAmplitude);
 
-BOOLN	SetAmplitude_PulseTrain(double theAmplitude);
-
-BOOLN	SetDuration_PulseTrain(double theDuration);
+BOOLN	SetDuration_PulseTrain(Float theDuration);
 
 BOOLN	InitModule_PulseTrain(ModulePtr theModule);
 
 BOOLN	SetParsPointer_PulseTrain(ModulePtr theModule);
 
-BOOLN	SetPars_PulseTrain(double pulseRate, double pulseDuration,
-		  double amplitude, double duration, double samplingInterval);
+BOOLN	SetPulseDuration_PulseTrain(Float thePulseDuration);
 
-BOOLN	SetPulseDuration_PulseTrain(double thePulseDuration);
+BOOLN	SetPulseRate_PulseTrain(Float thePulseRate);
 
-BOOLN	SetPulseRate_PulseTrain(double thePulseRate);
-
-BOOLN	SetSamplingInterval_PulseTrain(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PulseTrain(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PulseTrain(void);
 

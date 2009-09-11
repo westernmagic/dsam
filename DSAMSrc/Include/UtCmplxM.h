@@ -70,11 +70,11 @@
 			CMPLX_IM(Z) = CMPLX_RE(A) * CMPLX_IM(B) + CMPLX_IM(A) * CMPLX_RE(B); }
 #	define CMPLX_MODULUS(Z)	(sqrt(CMPLX_RE(Z) * CMPLX_RE(Z) + CMPLX_IM(Z) * \
 			CMPLX_IM(Z)))
-#	define CMPLX_MALLOC		fftw_malloc
-#	define CMPLX_FREE		fftw_free
+#	define CMPLX_MALLOC		DSAM_FFTW_NAME(malloc)
+#	define CMPLX_FREE		DSAM_FFTW_NAME(free)
 #else
 #	define CMPLX_PTR_RE(Z)	(Z)->re
-#	define CMPLX_PTR_IM(Z)	(Z)->im	
+#	define CMPLX_PTR_IM(Z)	(Z)->im
 #	define CMPLX_RE(Z)		(Z).re
 #	define CMPLX_IM(Z)		(Z).im
 #	define CMPLX_MULT		MULT_CMPLX
@@ -94,7 +94,7 @@
 
 typedef struct {
 
-	double	re, im;
+	Float	re, im;
 
 } Complex, *ComplexPtr;
 
@@ -117,17 +117,17 @@ void	Copy_CmplxM(ComplexPtr a,ComplexPtr b); /*move contents of a to b */
 
 BOOLN	Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c);
 
-double	Modulus_CmplxM(ComplexPtr z);
+Float	Modulus_CmplxM(ComplexPtr z);
 
 void	Mult_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c);
 
-double	Phase_CmplxM(ComplexPtr z);
+Float	Phase_CmplxM(ComplexPtr z);
 
-void	Power_CmplxM(ComplexPtr a, double n);
+void	Power_CmplxM(ComplexPtr a, Float n);
 
-void	RThetaSet_CmplxM(double r, double theta, ComplexPtr z);
+void	RThetaSet_CmplxM(Float r, Float theta, ComplexPtr z);
 
-void	ScalerMult_CmplxM(ComplexPtr z, double scaler);
+void	ScalerMult_CmplxM(ComplexPtr z, Float scaler);
 
 void	Subt_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c);
 

@@ -10,10 +10,10 @@ typedef struct {
 	NameSpecifier	diagnosticMode;
 	long	ranSeed;
 	int		numFibres;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
-	double	recoveryTau;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
+	Float	recoveryTau;
 	ParArrayPtr		distribution;
 
 } Meddis02SG;

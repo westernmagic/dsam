@@ -233,8 +233,6 @@ BOOLN
 SetDiagnosticMode_ANSpikeGen_Simple(WChar * theDiagnosticMode)
 {
 	static const WChar	*funcName = wxT("SetDiagnosticMode_ANSpikeGen_Simple");
-	int		specifier;
-
 	if (simpleSGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
@@ -305,7 +303,7 @@ SetNumFibres_ANSpikeGen_Simple(int theNumFibres)
  */
 
 BOOLN
-SetPulseDuration_ANSpikeGen_Simple(double thePulseDuration)
+SetPulseDuration_ANSpikeGen_Simple(Float thePulseDuration)
 {
 	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Simple");
 
@@ -333,7 +331,7 @@ SetPulseDuration_ANSpikeGen_Simple(double thePulseDuration)
  */
 
 BOOLN
-SetPulseMagnitude_ANSpikeGen_Simple(double thePulseMagnitude)
+SetPulseMagnitude_ANSpikeGen_Simple(Float thePulseMagnitude)
 {
 	static const WChar	*funcName = wxT("SetPulseMagnitude_ANSpikeGen_Simple");
 
@@ -355,7 +353,7 @@ SetPulseMagnitude_ANSpikeGen_Simple(double thePulseMagnitude)
  */
 
 BOOLN
-SetRefractoryPeriod_ANSpikeGen_Simple(double theRefractoryPeriod)
+SetRefractoryPeriod_ANSpikeGen_Simple(Float theRefractoryPeriod)
 {
 	static const WChar *funcName = wxT("SetRefractoryPeriod_ANSpikeGen_Simple");
 
@@ -371,33 +369,6 @@ SetRefractoryPeriod_ANSpikeGen_Simple(double theRefractoryPeriod)
 	simpleSGPtr->refractoryPeriod = theRefractoryPeriod;
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- */
-
-BOOLN
-SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres, double pulseDuration,
-  double pulseMagnitude, double theRefractoryPeriod)
-{
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetRanSeed_ANSpikeGen_Simple(theRanSeed))
-		ok = FALSE;
-	if (!SetNumFibres_ANSpikeGen_Simple(numFibres))
-		ok = FALSE;
-	if (!SetPulseDuration_ANSpikeGen_Simple(pulseDuration))
-		ok = FALSE;
-	if (!SetPulseMagnitude_ANSpikeGen_Simple(pulseMagnitude))
-		ok = FALSE;
-	if (!SetRefractoryPeriod_ANSpikeGen_Simple(theRefractoryPeriod))
-		ok = FALSE;
-	return(ok);
 
 }
 
@@ -450,59 +421,6 @@ PrintPars_ANSpikeGen_Simple(void)
 
 }
 
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
-
-BOOLN
-ReadPars_ANSpikeGen_Simple(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_ANSpikeGen_Simple");
-	BOOLN	ok;
-	WChar	*filePath;
-	long	ranSeed;
-	int		numFibres;
-	double	pulseDuration, pulseMagnitude, refractoryPeriod;
-    FILE    *fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
-		ok = FALSE;
- 	if (!GetPars_ParFile(fp, wxT("%d"), &numFibres))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
-		ok = FALSE;
-	fclose(fp);
-    Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_ANSpikeGen_Simple(ranSeed, numFibres, pulseDuration,
-	  pulseMagnitude, refractoryPeriod)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -549,7 +467,6 @@ InitModule_ANSpikeGen_Simple(ModulePtr theModule)
 	theModule->Free = Free_ANSpikeGen_Simple;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Simple;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Simple;
-	theModule->ReadPars = ReadPars_ANSpikeGen_Simple;
 	theModule->ResetProcess = ResetProcess_ANSpikeGen_Simple;
 	theModule->RunProcess = RunModel_ANSpikeGen_Simple;
 	theModule->SetParsPointer = SetParsPointer_ANSpikeGen_Simple;
@@ -567,7 +484,7 @@ void
 ResetProcess_ANSpikeGen_Simple(EarObjectPtr data)
 {
 	int		i, chan;
-	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
+	Float	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
 	SimpleSGPtr	p = simpleSGPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
@@ -613,14 +530,14 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->timer = (double **) calloc(p->numChannels, sizeof(
-			  double *))) == NULL) {
+			if ((p->timer = (Float **) calloc(p->numChannels, sizeof(
+			  Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (double **) calloc(p->numChannels,
-			  sizeof(double *))) == NULL) {
+			if ((p->remainingPulseTime = (Float **) calloc(p->numChannels,
+			  sizeof(Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
@@ -628,14 +545,14 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 			SetFibres_ANSGDist(p->numFibres2, p->distribution,
 			  outSignal->info.cFArray, p->numChannels);
 			for (i = 0; i < p->numChannels; i++) {
-				if ((p->timer[i] = (double *) calloc(p->numFibres2[i], sizeof(
-				  double))) == NULL) {
+				if ((p->timer[i] = (Float *) calloc(p->numFibres2[i], sizeof(
+				  Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for timer array."),
 					  funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(p->numFibres2[i],
-				  sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (Float *) calloc(p->numFibres2[i],
+				  sizeof(Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 					  wxT("array."), funcName);
 			 		return(FALSE);
@@ -741,7 +658,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_ANSpikeGen_Simple");
 	register	ChanData	*inPtr, *outPtr;
-	register	double		*timerPtr, *remainingPulseTimePtr;
+	register	Float		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
 	ChanLen	j;
 	SignalDataPtr	outSignal;

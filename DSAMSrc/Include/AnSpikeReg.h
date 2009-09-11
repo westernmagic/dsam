@@ -81,17 +81,17 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 
 	int		outputMode;
-	double	eventThreshold;
-	double	windowWidth;
-	double	timeOffset;
-	double	timeRange;
-	double	deadTime;
-	double	countThreshold;
+	Float	eventThreshold;
+	Float	windowWidth;
+	Float	timeOffset;
+	Float	timeRange;
+	Float	deadTime;
+	Float	countThreshold;
 
 	/* Private members */
 	NameSpecifier	*outputModeList;
 	UniParListPtr	parList;
-	double	dt;
+	Float	dt;
 	ChanLen	*spikeTimeHistIndex;
 	EarObjectPtr	countEarObj;
 	SpikeListSpecPtr	spikeListSpec;
@@ -118,8 +118,6 @@ BOOLN	Calc_Analysis_SpikeRegularity(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_SpikeRegularity(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_SpikeRegularity(void);
-
 BOOLN	Free_Analysis_SpikeRegularity(void);
 
 void	FreeProcessVariables_Analysis_SpikeRegularity(void);
@@ -134,19 +132,17 @@ BOOLN	InitProcessVariables_Analysis_SpikeRegularity(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_SpikeRegularity(void);
 
-BOOLN	ReadPars_Analysis_SpikeRegularity(WChar *fileName);
-
 void	ResetProcess_Analysis_SpikeRegularity(EarObjectPtr data);
 
 void	ResetStatistics_Analysis_SpikeRegularity(EarObjectPtr data);
 
-BOOLN	SetCountThreshold_Analysis_SpikeRegularity(double theCountThreshold);
+BOOLN	SetCountThreshold_Analysis_SpikeRegularity(Float theCountThreshold);
 
-BOOLN	SetDeadTime_Analysis_SpikeRegularity(double theDeadTime);
+BOOLN	SetDeadTime_Analysis_SpikeRegularity(Float theDeadTime);
 
-BOOLN	SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth);
+BOOLN	SetWindowWidth_Analysis_SpikeRegularity(Float theWindowWidth);
 
-BOOLN	SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold);
+BOOLN	SetEventThreshold_Analysis_SpikeRegularity(Float theEventThreshold);
 
 BOOLN	InitModule_Analysis_SpikeRegularity(ModulePtr theModule);
 
@@ -154,12 +150,9 @@ BOOLN	SetOutputMode_Analysis_SpikeRegularity(WChar * theOutputMode);
 
 BOOLN	SetParsPointer_Analysis_SpikeRegularity(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_SpikeRegularity(double eventThreshold,
-		  double windowWidth, double timeOffset, double timeRange);
+BOOLN	SetTimeOffset_Analysis_SpikeRegularity(Float theTimeOffset);
 
-BOOLN	SetTimeOffset_Analysis_SpikeRegularity(double theTimeOffset);
-
-BOOLN	SetTimeRange_Analysis_SpikeRegularity(double theTimeRange);
+BOOLN	SetTimeRange_Analysis_SpikeRegularity(Float theTimeRange);
 
 BOOLN	SetUniParList_Analysis_SpikeRegularity(void);
 

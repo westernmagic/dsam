@@ -155,9 +155,6 @@ Init_Utility_SelectChannels(ParameterSpecifier parSpec)
 	}
 	selectChanPtr->parSpec = parSpec;
 	selectChanPtr->updateProcessVariablesFlag = TRUE;
-	selectChanPtr->modeFlag = TRUE;
-	selectChanPtr->selectionModeFlag = TRUE;
-	selectChanPtr->numChannelsFlag = TRUE;
 	selectChanPtr->mode = SELECT_CHANS_REMOVE_MODE;
 	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_ALL;
 	selectChanPtr->selectionArray = NULL;
@@ -287,42 +284,14 @@ AllocNumChannels_Utility_SelectChannels(int numChannels)
 		return(TRUE);
 	if (selectChanPtr->selectionArray)
 		free(selectChanPtr->selectionArray);
-	if ((selectChanPtr->selectionArray = (double *) calloc(numChannels,
-	  sizeof(double))) == NULL) {
+	if ((selectChanPtr->selectionArray = (Float *) calloc(numChannels,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, numChannels);
 		return(FALSE);
 	}
 	selectChanPtr->numChannels = numChannels;
-	selectChanPtr->numChannelsFlag = TRUE;
 	return(TRUE);
-
-}
-
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_SelectChannels(WChar *mode, int numChannels,
-  double *selectionArray)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_SelectChannels");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_SelectChannels(mode))
-		ok = FALSE;
-	if (!SetNumChannels_Utility_SelectChannels(numChannels))
-		ok = FALSE;
-	if (!SetSelectionArray_Utility_SelectChannels(selectionArray))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
 
 }
 
@@ -350,7 +319,6 @@ SetMode_Utility_SelectChannels(WChar *theMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	selectChanPtr->modeFlag = TRUE;
 	selectChanPtr->mode = specifier;
 	return(TRUE);
 
@@ -382,7 +350,6 @@ SetSelectionMode_Utility_SelectChannels(WChar * theSelectionMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	selectChanPtr->selectionModeFlag = TRUE;
 	selectChanPtr->updateProcessVariablesFlag = TRUE;
 	selectChanPtr->selectionMode = specifier;
 	SetEnabledState_Utility_SelectChannels();
@@ -421,7 +388,6 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
         return(FALSE);
     }
     /*** Put any other required checks here. ***/
-    selectChanPtr->numChannelsFlag = TRUE;
     selectChanPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
@@ -436,7 +402,7 @@ SetNumChannels_Utility_SelectChannels(int theNumChannels)
  */
 
 BOOLN
-SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
+SetSelectionArray_Utility_SelectChannels(Float *theSelectionArray)
 {
 	static const WChar	*funcName = wxT(
 	 "SetSelectionArray_Utility_SelectChannels");
@@ -460,7 +426,7 @@ SetSelectionArray_Utility_SelectChannels(double *theSelectionArray)
  */
 
 BOOLN
-SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
+SetIndividualSelection_Utility_SelectChannels(int theIndex, Float theSelection)
 {
 	static const WChar *funcName =
 	  wxT("SetIndividualSelectionArray_Utility_SelectChannels");
@@ -492,45 +458,6 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, double theSelection)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_SelectChannels(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_SelectChannels");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (selectChanPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!selectChanPtr->selectionModeFlag) {
-		NotifyError(wxT("%s: selectionMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if ((selectChanPtr->selectionMode ==
-	  UTILITY_SELECTCHANNELS_SELECTIONMODE_USER) &&
-	  selectChanPtr->selectionArray == NULL) {
-		NotifyError(wxT("%s: selectionArray array not set."), funcName);
-		ok = FALSE;
-	}
-	if (!selectChanPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -544,9 +471,8 @@ PrintPars_Utility_SelectChannels(void)
 	static const WChar	*funcName = wxT("PrintPars_Utility_SelectChannels");
 	int		i;
 
-	if (!CheckPars_Utility_SelectChannels()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (selectChanPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Channel Selection Utility Module Parameters:-\n"));
@@ -561,59 +487,6 @@ PrintPars_Utility_SelectChannels(void)
 	  name);
 	DPrint(wxT("\tChannel selection mode = %s.\n"), selectChanPtr->
 	  selectionModeList[selectChanPtr->selectionMode].name);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_SelectChannels(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_SelectChannels");
-	BOOLN	ok;
-	WChar	*filePath, mode[MAXLINE];
-	int		i, numChannels;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
-		ok = FALSE;
-	if (!AllocNumChannels_Utility_SelectChannels(numChannels)) {
-		NotifyError(wxT("%s: Cannot allocate memory for the 'numChannels' ")
-		  wxT("arrays."), funcName);
-		return(FALSE);
-	}
-	for (i = 0; i < selectChanPtr->numChannels; i++)
-		if (!GetPars_ParFile(fp, wxT("%lf"), &selectChanPtr->selectionArray[i]))
-			ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	selectChanPtr->selectionMode = UTILITY_SELECTCHANNELS_SELECTIONMODE_USER;
-	if (!SetPars_Utility_SelectChannels(mode, numChannels,
-	  selectChanPtr->selectionArray)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -661,11 +534,9 @@ InitModule_Utility_SelectChannels(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = selectChanPtr;
-	theModule->CheckPars = CheckPars_Utility_SelectChannels;
 	theModule->Free = Free_Utility_SelectChannels;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_SelectChannels;
 	theModule->PrintPars = PrintPars_Utility_SelectChannels;
-	theModule->ReadPars = ReadPars_Utility_SelectChannels;
 	theModule->RunProcess = Process_Utility_SelectChannels;
 	theModule->SetParsPointer = SetParsPointer_Utility_SelectChannels;
 	return(TRUE);
@@ -781,8 +652,6 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 	SignalDataPtr	inSignal, outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_SelectChannels())
-			return(FALSE);
 		if (!CheckData_Utility_SelectChannels(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -794,35 +663,36 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
+		switch (p->mode) {
+		case SELECT_CHANS_ZERO_MODE:
+			numChannels = _InSig_EarObject(data, 0)->numChannels;
+			break;
+		case SELECT_CHANS_REMOVE_MODE:
+			for (i = 0, numChannels = 0; i < p->numChannels; i++)
+				if (p->selectionArray[i] > 0.0)
+					numChannels++;
+				numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
+				break;
+		case SELECT_CHANS_EXPAND_MODE:
+			for (i = 0, numChannels = 0; i < p->numChannels; i++)
+				if (p->selectionArray[i] > 0.0)
+					numChannels += (uShort) p->selectionArray[i];
+				numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
+			break;
+		} /* switch */
+		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data,
+		  0)->length, _InSig_EarObject(data, 0)->dt)) {
+			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
+			return(FALSE);
+		}
+		SetInterleaveLevel_SignalData(_OutSig_EarObject(data), _InSig_EarObject(data,
+		  0)->interleaveLevel);
+		SetLocalInfoFlag_SignalData(_OutSig_EarObject(data), TRUE);
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	inSignal = _InSig_EarObject(data, 0);
-	switch (p->mode) {
-	case SELECT_CHANS_ZERO_MODE:
-		numChannels = inSignal->numChannels;
-		break;
-	case SELECT_CHANS_REMOVE_MODE:
-		for (i = 0, numChannels = 0; i < p->numChannels; i++)
-			if (p->selectionArray[i] > 0.0)
-				numChannels++;
-			numChannels *= inSignal->interleaveLevel;
-			break;
-	case SELECT_CHANS_EXPAND_MODE:
-		for (i = 0, numChannels = 0; i < p->numChannels; i++)
-			if (p->selectionArray[i] > 0.0)
-				numChannels += (uShort) p->selectionArray[i];
-			numChannels *= inSignal->interleaveLevel;
-		break;
-	} /* switch */
-	if (!InitOutSignal_EarObject(data, numChannels, inSignal->length, inSignal->
-	  dt)) {
-		NotifyError(wxT("%s: Cannot initialise output channels."), funcName);
-		return(FALSE);
-	}
 	outSignal = _OutSig_EarObject(data);
-	SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
-	SetLocalInfoFlag_SignalData(outSignal, TRUE);
 	switch (p->mode) {
 	case SELECT_CHANS_ZERO_MODE:
 		for (i = 0; i < inSignal->numChannels; i++) {

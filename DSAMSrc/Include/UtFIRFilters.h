@@ -5,7 +5,7 @@
  * Comments:	This module is to be put into UtFilters.
  * Author:		L. P. O'Mard.
  * Created:		04 Dec 2000
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2000, CNBH University of Essex
  *
  *********************/
@@ -25,8 +25,8 @@ typedef struct {
 
 	int		numChannels;
 	int		m;
-	double	*c;
-	double	*state;
+	Float	*c;
+	Float	*state;
 
 } FIRCoeffs, *FIRCoeffsPtr;
 
@@ -49,7 +49,7 @@ void	FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p);
 void	FreeFIRCoeffs_FIRFilters(FIRCoeffsPtr *p);
 
 FIRCoeffsPtr	InitFIRCoeffs_FIRFilters(int numChannels, int numTaps,
-				  int numBands, double *bands, double *desired, double *weights,
+				  int numBands, Float *bands, Float *desired, Float *weights,
 				  int type);
 
 void	ProcessBuffer_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p);

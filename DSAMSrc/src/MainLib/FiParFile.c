@@ -29,7 +29,7 @@
 #include "GeCommon.h"
 #include "UtString.h"
 #include "FiParFile.h"
- 
+
 /******************************************************************************/
 /*************************** Global Variables *********************************/
 /******************************************************************************/
@@ -52,7 +52,7 @@ BOOLN
 Init_ParFile(void)
 {
 	static const WChar *funcName = wxT("Init_ParFile");
-	
+
 	if (parFile != NULL) {
 		NotifyError(wxT("%s: Module already initialised!"), funcName);
 		return(FALSE);
@@ -77,7 +77,7 @@ Init_ParFile(void)
  * the module to crash the system.
  * It returns FALSE if the gobal variable has not been initialised.
  */
- 
+
 BOOLN
 CheckInit_ParFile(void)
 {
@@ -89,7 +89,7 @@ CheckInit_ParFile(void)
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /********************************* Free ***************************************/
@@ -110,7 +110,7 @@ Free_ParFile(void)
 	free(parFile);
 	parFile = NULL;
 	return(TRUE);
-	
+
 }
 
 /****************************** GetLine ***************************************/
@@ -125,7 +125,7 @@ WChar *
 GetLine_ParFile(WChar *line, int maxChars, FILE *fp)
 {
 	int		i, c;
-	
+
 	for (i = 0; ((c = fgetc(fp)) != EOF) && (i < maxChars -1) && (c != '\n');
 	  i++)
 		line[i] = c;
@@ -137,7 +137,7 @@ GetLine_ParFile(WChar *line, int maxChars, FILE *fp)
 			;
 	return(line);
 
-}	
+}
 
 /****************************** CommentOrBlankLine ****************************/
 
@@ -152,7 +152,7 @@ BOOLN
 CommentOrBlankLine_ParFile(WChar *line)
 {
 	WChar	*p;
-	
+
 	for (p = line; (*p != '\0') && isspace(*p); p++)
 		;
 	if ((DSAM_strlen(p) == 0) || (*p == '#')) {
@@ -162,7 +162,7 @@ CommentOrBlankLine_ParFile(WChar *line)
 	return(FALSE);
 
 }
-			
+
 /****************************** IdentifyFormat ********************************/
 
 /*
@@ -249,9 +249,9 @@ ExtractQuotedString_ParFile(WChar *string, WChar *source)
  * format similar to the standard C printf statement.
  * If it fails then it returns FALSE.
  */
- 
+
 BOOLN
-GetPars_ParFile(FILE *fp, WChar *fmt, ...)
+GetPars_ParFile(FILE *fp, const WChar *fmt, ...)
 {
 	static const WChar *funcName = wxT("GetPars_ParFile");
 	static WChar	line[LONG_STRING], fmtScanLine[MAXLINE], extraFmt[MAXLINE];
@@ -261,7 +261,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 #	endif
 	int		formatType;
 	va_list	args;
-	
+
 	if (!CheckInit_ParFile())
 		exit(1);
 	do {
@@ -274,7 +274,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 		}
 	} while(CommentOrBlankLine_ParFile(line));
 	for (restOfLine = line; isspace(*restOfLine); restOfLine++)
-		; 
+		;
 	parFile->parLineCount++;
 	va_start(args, fmt);
 
@@ -341,7 +341,7 @@ GetPars_ParFile(FILE *fp, WChar *fmt, ...)
 /*
  * This function returns the current line count
  */
- 
+
 int
 GetLineCount_ParFile(void)
 {

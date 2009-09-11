@@ -42,7 +42,7 @@ typedef struct {
 
 	BOOLN			*riseDetected;
 	uShort			numChannels;
-	double			*lastValue;
+	Float			*lastValue;
 	ChanLen			*timeIndex;
 	ChanLen			*lastSpikeTimeIndex;
 	SpikeSpecPtr	*head;
@@ -69,7 +69,7 @@ void	Free_SpikeList(SpikeSpecPtr *head);
 
 void	FreeListSpec_SpikeList(SpikeListSpecPtr *p);
 
-BOOLN	GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
+BOOLN	GenerateList_SpikeList(SpikeListSpecPtr listSpec, Float eventThreshold,
 		  SignalDataPtr signal);
 
 SpikeListSpecPtr	InitListSpec_SpikeList(int numChannels);

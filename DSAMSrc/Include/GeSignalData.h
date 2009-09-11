@@ -18,7 +18,7 @@
  * Created:		17 Feb 1993
  * Updated:		23 Sep 1998
  * Copyright:	(c) 1998, University of Essex
- * 
+ *
  ******************/
 
 #ifndef	_GESIGNALDATA_H
@@ -57,8 +57,8 @@ typedef enum {
 
 typedef struct {
 
-	double	*chanLabel;					/* Contains channel labels, e.g. CF */
-	double	*cFArray;					/* Contains only CF information. */
+	Float	*chanLabel;					/* Contains channel labels, e.g. CF */
+	Float	*cFArray;					/* Contains only CF information. */
 	WChar	channelTitle[SIGNALDATA_MAX_TITLE];	/* Channel axis title */
 	WChar	chanDataTitle[SIGNALDATA_MAX_TITLE];/* Channel axis title */
 	WChar	sampleTitle[SIGNALDATA_MAX_TITLE];	/* Sample (e.g. dt) axis title*/
@@ -80,8 +80,8 @@ typedef struct {
 	uShort	numWindowFrames;/* For frame processing modues. */
 	ChanLen	length;			/* The length of the signal store in datapoint */
 	ChanLen	timeIndex;		/* Used for printing output. */
-	double	dt;				/* Sampling interval = 1/(Frame rate) */
-	double	outputTimeOffset;/* t = {sample no.} * dt  - timeOffset. */
+	Float	dt;				/* Sampling interval = 1/(Frame rate) */
+	Float	outputTimeOffset;/* t = {sample no.} * dt  - timeOffset. */
 	SignalInfo	info;		/* Contains channel lebels, titles etc. */
 	ChanData	**channel;	/* Signal data channels */
 	ChanData	*block;		/* The signal channels stored in contiguous block. */
@@ -100,7 +100,7 @@ __BEGIN_DECLS
 
 BOOLN	Add_SignalData(SignalDataPtr a, SignalDataPtr b);
 
-BOOLN	Delay_SignalData(SignalDataPtr signal, double delay);
+BOOLN	Delay_SignalData(SignalDataPtr signal, Float delay);
 
 BOOLN	Divide_SignalData(SignalDataPtr a, SignalDataPtr b);
 
@@ -114,33 +114,33 @@ BOOLN	CheckRamp_SignalData(SignalDataPtr theSignal);
 BOOLN	CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b);
 
 int		FindCFIndex_SignalData(SignalDataPtr signal, int minIndex, int maxIndex,
-		  double frequency);
+		  Float frequency);
 
 void	Free_SignalData(SignalDataPtr *theData);
 
 void	FreeChannels_SignalData(SignalDataPtr theData);
 
-BOOLN	GaindB_SignalData(SignalDataPtr d, double gaindB);
+BOOLN	GaindB_SignalData(SignalDataPtr d, Float gaindB);
 
-BOOLN	GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[]);
+BOOLN	GaindBIndividual_SignalData(SignalDataPtr d, Float gaindB[]);
 
 BOOLN	GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan,
-		  int *maxChan, double lowerLimit, double upperLimit,
+		  int *maxChan, Float lowerLimit, Float upperLimit,
 		  SignalDataLimitModeSpecifier mode);
 
-double	GetDuration_SignalData(SignalDataPtr theSignal);
+Float	GetDuration_SignalData(SignalDataPtr theSignal);
 
-double	GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample);
+Float	GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample);
 
 void	GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan,
-		  int *maxChan, double frequency, double lowerLimit, double upperLimit,
+		  int *maxChan, Float frequency, Float lowerLimit, Float upperLimit,
 		  SignalDataLimitModeSpecifier mode);
 
 SignalDataPtr	Init_SignalData(const WChar *callingFunctionName);
 
 BOOLN	InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 		  BOOLN externalDataFlag);
-	
+
 BOOLN	InitInfo_SignalData(SignalInfoPtr info);
 
 NameSpecifier *	LimitModeList_SignalData(int index);
@@ -149,23 +149,23 @@ BOOLN	OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData);
 
 BOOLN	ResetInfo_SignalData(SignalDataPtr signal);
 
-BOOLN	Scale_SignalData(SignalDataPtr d, double multiplier);
+BOOLN	Scale_SignalData(SignalDataPtr d, Float multiplier);
 
 BOOLN	SameType_SignalData_NoDiagnostics(SignalDataPtr a, SignalDataPtr b);
- 
+
 BOOLN	SameType_SignalData(SignalDataPtr a, SignalDataPtr b);
 
 void	SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 		  SignalDataPtr supplier);
 
-BOOLN	SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF);
+BOOLN	SetInfoCF_SignalData(SignalDataPtr theData, int index, Float cF);
 
-void	SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs);
+void	SetInfoCFArray_SignalData(SignalDataPtr theData, Float *cFs);
 
-void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels);
+void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, Float *labels);
 
 BOOLN	SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index,
-		  double label);
+		  Float label);
 
 void	SetInfoChanDataTitle_SignalData(SignalDataPtr theData, WChar *title);
 
@@ -184,11 +184,11 @@ void	SetNumWindowFrames_SignalData(SignalDataPtr theData,
 		  uShort theNumWindowFrames);
 
 void	SetOutputTimeOffset_SignalData(SignalDataPtr theData,
-		  double theOutputTimeOffset);
+		  Float theOutputTimeOffset);
 
 void	SetSamplingInterval_SignalData(SignalDataPtr theData,
-		  double theSamplingInterval);
-	
+		  Float theSamplingInterval);
+
 void	SetStaticTimeFlag_SignalData(SignalDataPtr signal, BOOLN flag);
 
 void	SetTimeIndex_SignalData(SignalDataPtr theData, ChanLen theTimeIndex);

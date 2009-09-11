@@ -97,13 +97,6 @@ Init_IO_AudioIn(ParameterSpecifier parSpec)
 	}
 	audioInPtr->parSpec = parSpec;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
-	audioInPtr->deviceIDFlag = TRUE;
-	audioInPtr->numChannelsFlag = TRUE;
-	audioInPtr->sampleRateFlag = TRUE;
-	audioInPtr->durationFlag = TRUE;
-	audioInPtr->segmentsPerBufferFlag = TRUE;
-	audioInPtr->sleepFlag = TRUE;
-	audioInPtr->gainFlag = TRUE;
 	audioInPtr->deviceID = -1;
 	audioInPtr->numChannels = 1;
 	audioInPtr->sampleRate = 44100.0;
@@ -229,7 +222,6 @@ SetDeviceID_IO_AudioIn(int theDeviceID)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->deviceIDFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->deviceID = theDeviceID;
 	return(TRUE);
@@ -258,7 +250,6 @@ SetNumChannels_IO_AudioIn(int theNumChannels)
 		  funcName);
 		return(FALSE);
 	}
-	audioInPtr->numChannelsFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->numChannels = theNumChannels;
 	return(TRUE);
@@ -274,7 +265,7 @@ SetNumChannels_IO_AudioIn(int theNumChannels)
  */
 
 BOOLN
-SetSampleRate_IO_AudioIn(double theSampleRate)
+SetSampleRate_IO_AudioIn(Float theSampleRate)
 {
 	static const WChar	*funcName = wxT("SetSampleRate_IO_AudioIn");
 
@@ -283,7 +274,6 @@ SetSampleRate_IO_AudioIn(double theSampleRate)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->sampleRateFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->sampleRate = theSampleRate;
 	return(TRUE);
@@ -299,7 +289,7 @@ SetSampleRate_IO_AudioIn(double theSampleRate)
  */
 
 BOOLN
-SetDuration_IO_AudioIn(double theDuration)
+SetDuration_IO_AudioIn(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_IO_AudioIn");
 
@@ -308,7 +298,6 @@ SetDuration_IO_AudioIn(double theDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->durationFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->duration = theDuration;
 	return(TRUE);
@@ -333,7 +322,6 @@ SetSegmentsPerBuffer_IO_AudioIn(int theSegmentsPerBuffer)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->segmentsPerBufferFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->segmentsPerBuffer = theSegmentsPerBuffer;
 	return(TRUE);
@@ -349,7 +337,7 @@ SetSegmentsPerBuffer_IO_AudioIn(int theSegmentsPerBuffer)
  */
 
 BOOLN
-SetSleep_IO_AudioIn(double theSleep)
+SetSleep_IO_AudioIn(Float theSleep)
 {
 	static const WChar	*funcName = wxT("SetSleep_IO_AudioIn");
 
@@ -358,7 +346,6 @@ SetSleep_IO_AudioIn(double theSleep)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->sleepFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->sleep = theSleep;
 	return(TRUE);
@@ -374,7 +361,7 @@ SetSleep_IO_AudioIn(double theSleep)
  */
 
 BOOLN
-SetGain_IO_AudioIn(double theGain)
+SetGain_IO_AudioIn(Float theGain)
 {
 	static const WChar	*funcName = wxT("SetGain_IO_AudioIn");
 
@@ -383,63 +370,9 @@ SetGain_IO_AudioIn(double theGain)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	audioInPtr->gainFlag = TRUE;
 	audioInPtr->updateProcessVariablesFlag = TRUE;
 	audioInPtr->gain = theGain;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IO_AudioIn(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IO_AudioIn");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (audioInPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!audioInPtr->deviceIDFlag) {
-		NotifyError(wxT("%s: deviceID variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->numChannelsFlag) {
-		NotifyError(wxT("%s: numChannels variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->sampleRateFlag) {
-		NotifyError(wxT("%s: sampleRate variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->durationFlag) {
-		NotifyError(wxT("%s: duration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->segmentsPerBufferFlag) {
-		NotifyError(wxT("%s: segmentsPerBuffer variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->sleepFlag) {
-		NotifyError(wxT("%s: sleep variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!audioInPtr->gainFlag) {
-		NotifyError(wxT("%s: gain variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -455,9 +388,8 @@ PrintPars_IO_AudioIn(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IO_AudioIn");
 
-	if (!CheckPars_IO_AudioIn()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (audioInPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Audio Module Parameters:-\n"));
@@ -515,7 +447,6 @@ InitModule_IO_AudioIn(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = audioInPtr;
-	theModule->CheckPars = CheckPars_IO_AudioIn;
 	theModule->Free = Free_IO_AudioIn;
 	theModule->GetUniParListPtr = GetUniParListPtr_IO_AudioIn;
 	theModule->PrintPars = PrintPars_IO_AudioIn;
@@ -792,8 +723,6 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IO_AudioIn())
-			return(FALSE);
 		if (!CheckData_IO_AudioIn(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -838,7 +767,7 @@ ReadSignal_IO_AudioIn(EarObjectPtr data)
 		NotifyError_IO_AudioIn(wxT("%s: Failed to record sound."), funcName);
 	if (p->pAError < 1)
 		ok = FALSE;
-	if (ok && (fabs(p->gain) > DBL_EPSILON))
+	if (ok && (fabs(p->gain) > DSAM_EPSILON))
 		GaindB_SignalData(outSignal, p->gain);
 	SetProcessContinuity_EarObject(data);
 	return(ok);

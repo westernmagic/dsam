@@ -169,13 +169,6 @@ Init_Analysis_Histogram(ParameterSpecifier parSpec)
 	}
 	histogramPtr->parSpec = parSpec;
 	histogramPtr->updateProcessVariablesFlag = TRUE;
-	histogramPtr->detectionModeFlag = TRUE;
-	histogramPtr->typeModeFlag = TRUE;
-	histogramPtr->eventThresholdFlag = TRUE;
-	histogramPtr->binWidthFlag = TRUE;
-	histogramPtr->periodFlag = TRUE;
-	histogramPtr->outputModeFlag = TRUE;
-	histogramPtr->timeOffsetFlag = TRUE;
 	histogramPtr->detectionMode = HISTOGRAM_DETECT_SPIKES;
 	histogramPtr->outputMode = HISTOGRAM_OUTPUT_BIN_COUNTS;
 	histogramPtr->typeMode = HISTOGRAM_PSTH;
@@ -286,39 +279,6 @@ GetUniParListPtr_Analysis_Histogram(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_Histogram(WChar *detectionMode, WChar *typeMode,
-  double eventThreshold, double binWidth, double period, double timeOffset)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_Histogram");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetDetectionMode_Analysis_Histogram(detectionMode))
-		ok = FALSE;
-	if (!SetTypeMode_Analysis_Histogram(typeMode))
-		ok = FALSE;
-	if (!SetEventThreshold_Analysis_Histogram(eventThreshold))
-		ok = FALSE;
-	if (!SetBinWidth_Analysis_Histogram(binWidth))
-		ok = FALSE;
-	if (!SetPeriod_Analysis_Histogram(period))
-		ok = FALSE;
-	if (!SetTimeOffset_Analysis_Histogram(timeOffset))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetDetectionMode ******************************/
 
 /*
@@ -343,7 +303,6 @@ SetDetectionMode_Analysis_Histogram(WChar *theDetectionMode)
 		  theDetectionMode);
 		return(FALSE);
 	}
-	histogramPtr->detectionModeFlag = TRUE;
 	histogramPtr->detectionMode = specifier;
 	return(TRUE);
 
@@ -373,7 +332,6 @@ SetOutputMode_Analysis_Histogram(WChar *theOutputMode)
 		  theOutputMode);
 		return(FALSE);
 	}
-	histogramPtr->outputModeFlag = TRUE;
 	histogramPtr->outputMode = specifier;
 	return(TRUE);
 
@@ -403,7 +361,6 @@ SetTypeMode_Analysis_Histogram(WChar *theTypeMode)
 		  theTypeMode);
 		return(FALSE);
 	}
-	histogramPtr->typeModeFlag = TRUE;
 	histogramPtr->updateProcessVariablesFlag = TRUE;
 	histogramPtr->typeMode = specifier;
 	return(TRUE);
@@ -419,7 +376,7 @@ SetTypeMode_Analysis_Histogram(WChar *theTypeMode)
  */
 
 BOOLN
-SetEventThreshold_Analysis_Histogram(double theEventThreshold)
+SetEventThreshold_Analysis_Histogram(Float theEventThreshold)
 {
 	static const WChar	*funcName = wxT("SetEventThreshold_Analysis_Histogram");
 
@@ -428,7 +385,6 @@ SetEventThreshold_Analysis_Histogram(double theEventThreshold)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	histogramPtr->eventThresholdFlag = TRUE;
 	histogramPtr->eventThreshold = theEventThreshold;
 	return(TRUE);
 
@@ -443,7 +399,7 @@ SetEventThreshold_Analysis_Histogram(double theEventThreshold)
  */
 
 BOOLN
-SetBinWidth_Analysis_Histogram(double theBinWidth)
+SetBinWidth_Analysis_Histogram(Float theBinWidth)
 {
 	static const WChar	*funcName = wxT("SetBinWidth_Analysis_Histogram");
 
@@ -452,7 +408,6 @@ SetBinWidth_Analysis_Histogram(double theBinWidth)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	histogramPtr->binWidthFlag = TRUE;
 	histogramPtr->binWidth = theBinWidth;
 	return(TRUE);
 
@@ -467,7 +422,7 @@ SetBinWidth_Analysis_Histogram(double theBinWidth)
  */
 
 BOOLN
-SetPeriod_Analysis_Histogram(double thePeriod)
+SetPeriod_Analysis_Histogram(Float thePeriod)
 {
 	static const WChar	*funcName = wxT("SetPeriod_Analysis_Histogram");
 
@@ -476,7 +431,6 @@ SetPeriod_Analysis_Histogram(double thePeriod)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	histogramPtr->periodFlag = TRUE;
 	histogramPtr->updateProcessVariablesFlag = TRUE;
 	histogramPtr->period = thePeriod;
 	return(TRUE);
@@ -492,7 +446,7 @@ SetPeriod_Analysis_Histogram(double thePeriod)
  */
 
 BOOLN
-SetTimeOffset_Analysis_Histogram(double theTimeOffset)
+SetTimeOffset_Analysis_Histogram(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_Histogram");
 
@@ -501,70 +455,8 @@ SetTimeOffset_Analysis_Histogram(double theTimeOffset)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	histogramPtr->timeOffsetFlag = TRUE;
 	histogramPtr->timeOffset = theTimeOffset;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_Histogram(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_Histogram");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (histogramPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!histogramPtr->detectionModeFlag) {
-		NotifyError(wxT("%s: detectionMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!histogramPtr->typeModeFlag) {
-		NotifyError(wxT("%s: typeMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if ((histogramPtr->detectionMode == HISTOGRAM_DETECT_SPIKES) &&
-	  !histogramPtr->eventThresholdFlag) {
-		NotifyError(wxT("%s: Event threshold variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!histogramPtr->binWidthFlag) {
-		NotifyError(wxT("%s: binWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (histogramPtr->typeMode == HISTOGRAM_PH) {
-		if ((histogramPtr->period > 0.0) && (histogramPtr->binWidth >
-		  histogramPtr->period)) {
-			NotifyError(wxT("%s: The bin width is too small for the period ")
-			  wxT("value (%g ms & %g ms respectively)."), funcName,
-			  MSEC(histogramPtr->binWidth), MSEC(histogramPtr->period));
-			ok = FALSE;
-		}
-	}
-	if (!histogramPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) && (histogramPtr->
-	  outputMode == HISTOGRAM_OUTPUT_SPIKE_RATE)) {
-		NotifyError(wxT("%s: The spike rate histogram modes cannot be used in ")
-		  wxT("continuous detection mode."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -582,11 +474,6 @@ PrintPars_Analysis_Histogram(void)
 
 	if (histogramPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!CheckPars_Analysis_Histogram()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Histogram analysis module parameters:-\n"));
@@ -616,59 +503,6 @@ PrintPars_Analysis_Histogram(void)
 		break;
 	default:
 		DPrint(wxT("\tTime offset = %g ms\n"), MSEC(histogramPtr->timeOffset));
-	}
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_Histogram(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_Histogram");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	detectionMode[MAXLINE], typeMode[MAXLINE];
-	double	eventThreshold, binWidth, period, timeOffset;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), &detectionMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), &typeMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &eventThreshold))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &binWidth))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &period))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_Histogram(detectionMode, typeMode, eventThreshold,
-	  binWidth, period, timeOffset)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
 	}
 	return(TRUE);
 
@@ -717,11 +551,9 @@ InitModule_Analysis_Histogram(ModulePtr theModule)
 	}
 	theModule->parsPtr = histogramPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_Histogram;
 	theModule->Free = Free_Analysis_Histogram;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Histogram;
 	theModule->PrintPars = PrintPars_Analysis_Histogram;
-	theModule->ReadPars = ReadPars_Analysis_Histogram;
 	theModule->ResetProcess = ResetProcess_Analysis_Histogram;
 	theModule->RunProcess = Calc_Analysis_Histogram;
 	theModule->SetParsPointer = SetParsPointer_Analysis_Histogram;
@@ -746,7 +578,7 @@ BOOLN
 CheckData_Analysis_Histogram(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_Histogram");
-	double	signalDuration;
+	Float	signalDuration;
 	SignalDataPtr	inSignal;
 
 	if (data == NULL) {
@@ -771,6 +603,21 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 			  histogramPtr->period), MILLI(inSignal->dt));
 			return(FALSE);
 		}
+	}
+	if (histogramPtr->typeMode == HISTOGRAM_PH) {
+		if ((histogramPtr->period > 0.0) && (histogramPtr->binWidth >
+		  histogramPtr->period)) {
+			NotifyError(wxT("%s: The bin width is too small for the period ")
+			  wxT("value (%g ms & %g ms respectively)."), funcName,
+			  MSEC(histogramPtr->binWidth), MSEC(histogramPtr->period));
+			return(FALSE);
+		}
+	}
+	if ((histogramPtr->detectionMode == HISTOGRAM_CONTINUOUS) && (histogramPtr->
+	  outputMode == HISTOGRAM_OUTPUT_SPIKE_RATE)) {
+		NotifyError(wxT("%s: The spike rate histogram modes cannot be used in ")
+		  wxT("continuous detection mode."), funcName);
+		return(FALSE);
 	}
 	return(TRUE);
 
@@ -976,16 +823,14 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Calc_Analysis_Histogram");
 	register	ChanData	*inPtr, *outPtr, *buffPtr, binSum;
 	int		chan;
-	double	nextCutOff, nextBinCutOff, time, totalBinDuration;
-	double	extraTimeInterval;
+	Float	nextCutOff, nextBinCutOff, time, totalBinDuration;
+	Float	extraTimeInterval;
 	ChanLen	i, bufferSamples, processLength, availableLength;
 	SignalDataPtr	inSignal, outSignal;
 	HistogramPtr	p = histogramPtr;
 	HistogramStatePtr	hState;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_Histogram())
-			return(FALSE);
 		if (!CheckData_Analysis_Histogram(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -1028,7 +873,7 @@ Calc_Analysis_Histogram(EarObjectPtr data)
 		  hState->extraSample + hState->bufferSamples + 1;
 		processLength = (p->typeMode == HISTOGRAM_PSTH)? availableLength:
 		  (ChanLen) floor(floor(availableLength * p->dt / p->wPeriod) *
-		  p->wPeriod / p->dt + DBL_EPSILON);
+		  p->wPeriod / p->dt + DSAM_EPSILON);
 	}
 	if (processLength) {
 		if ((p->detectionMode == HISTOGRAM_DETECT_SPIKES) && (p->outputMode ==

@@ -3,11 +3,11 @@
  * File:		AnAverages.h
  * Purpose:		This routine calculates the average value for each channel.
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
- *				This module assumes that a negative timeRange assumes a 
+ *				This module assumes that a negative timeRange assumes a
  *				period to the end of the signal.
  * Author:		L. P. O'Mard
  * Created:		21 May 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -48,11 +48,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, timeOffsetFlag, timeRangeFlag;
 	int		mode;
-	double	timeOffset;
-	double	timeRange;
-	
+	Float	timeOffset;
+	Float	timeRange;
+
 	/* Private members */
 	NameSpecifier *modeList;
 	UniParListPtr	parList;
@@ -80,8 +79,6 @@ BOOLN	Calc_Analysis_Averages(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_Averages(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_Averages(void);
-
 UniParListPtr	GetUniParListPtr_Analysis_Averages(void);
 
 BOOLN	Free_Analysis_Averages(void);
@@ -92,20 +89,15 @@ BOOLN	InitModeList_Analysis_Averages(void);
 
 BOOLN	PrintPars_Analysis_Averages(void);
 
-BOOLN	ReadPars_Analysis_Averages(WChar *fileName);
-
 BOOLN	SetMode_Analysis_Averages(WChar *theMode);
 
 BOOLN	InitModule_Analysis_Averages(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_Averages(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_Averages(WChar *mode, double timeOffset,
-		  double timeRange);
+BOOLN	SetTimeRange_Analysis_Averages(Float theTimeRange);
 
-BOOLN	SetTimeRange_Analysis_Averages(double theTimeRange);
-
-BOOLN	SetTimeOffset_Analysis_Averages(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_Averages(Float theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_Averages(void);
 

@@ -230,37 +230,6 @@ GetUniParListPtr_ANSpikeGen_Binomial(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
-  double pulseDuration, double pulseMagnitude, double refractoryPeriod)
-{
-	static const WChar	*funcName = wxT("SetPars_ANSpikeGen_Binomial");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetNumFibres_ANSpikeGen_Binomial(numFibres))
-		ok = FALSE;
-	if (!SetRanSeed_ANSpikeGen_Binomial(ranSeed))
-		ok = FALSE;
-	if (!SetPulseDuration_ANSpikeGen_Binomial(pulseDuration))
-		ok = FALSE;
-	if (!SetPulseMagnitude_ANSpikeGen_Binomial(pulseMagnitude))
-		ok = FALSE;
-	if (!SetRefractoryPeriod_ANSpikeGen_Binomial(refractoryPeriod))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetDiagnosticMode *****************************/
 
 /*
@@ -274,7 +243,6 @@ SetDiagnosticMode_ANSpikeGen_Binomial(WChar * theDiagnosticMode)
 {
 	static const WChar	*funcName = wxT(
 	  "SetDiagnosticMode_ANSpikeGen_Binomial");
-	int		specifier;
 
 	if (binomialSGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
@@ -341,7 +309,7 @@ SetRanSeed_ANSpikeGen_Binomial(long theRanSeed)
  */
 
 BOOLN
-SetPulseDuration_ANSpikeGen_Binomial(double thePulseDuration)
+SetPulseDuration_ANSpikeGen_Binomial(Float thePulseDuration)
 {
 	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Binomial");
 
@@ -369,7 +337,7 @@ SetPulseDuration_ANSpikeGen_Binomial(double thePulseDuration)
  */
 
 BOOLN
-SetPulseMagnitude_ANSpikeGen_Binomial(double thePulseMagnitude)
+SetPulseMagnitude_ANSpikeGen_Binomial(Float thePulseMagnitude)
 {
 	static const WChar	*funcName = wxT(
 	  "SetPulseMagnitude_ANSpikeGen_Binomial");
@@ -393,7 +361,7 @@ SetPulseMagnitude_ANSpikeGen_Binomial(double thePulseMagnitude)
  */
 
 BOOLN
-SetRefractoryPeriod_ANSpikeGen_Binomial(double theRefractoryPeriod)
+SetRefractoryPeriod_ANSpikeGen_Binomial(Float theRefractoryPeriod)
 {
 	static const WChar	*funcName =
 	  wxT("SetRefractoryPeriod_ANSpikeGen_Binomial");
@@ -465,58 +433,6 @@ PrintPars_ANSpikeGen_Binomial(void)
 
 }
 
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_ANSpikeGen_Binomial(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_ANSpikeGen_Binomial");
-	BOOLN	ok;
-	WChar	*filePath;
-	int		numFibres;
-	long	ranSeed;
-	double	pulseDuration, pulseMagnitude, refractoryPeriod;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numFibres))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseDuration))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &pulseMagnitude))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &refractoryPeriod))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_ANSpikeGen_Binomial(numFibres, ranSeed, pulseDuration,
-	  pulseMagnitude, refractoryPeriod)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** SetParsPointer ********************************/
 
 /*
@@ -563,7 +479,6 @@ InitModule_ANSpikeGen_Binomial(ModulePtr theModule)
 	theModule->Free = Free_ANSpikeGen_Binomial;
 	theModule->GetUniParListPtr = GetUniParListPtr_ANSpikeGen_Binomial;
 	theModule->PrintPars = PrintPars_ANSpikeGen_Binomial;
-	theModule->ReadPars = ReadPars_ANSpikeGen_Binomial;
 	theModule->RunProcess = RunModel_ANSpikeGen_Binomial;
 	theModule->SetParsPointer = SetParsPointer_ANSpikeGen_Binomial;
 	return(TRUE);
@@ -664,8 +579,8 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->lastOutput = (double *) calloc(p->numChannels, sizeof(
-		  double))) == NULL) {
+		if ((p->lastOutput = (Float *) calloc(p->numChannels, sizeof(
+		  Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for lastOutput array."),
 			  funcName);
 			return(FALSE);
@@ -735,9 +650,9 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_ANSpikeGen_Binomial");
 	register	ChanData	*inPtr, *outPtr, *pulsePtr;
-	register	double		output = 0.0;
+	register	Float		output = 0.0;
 	int		chan;
-	double	*lastOutputPtr;
+	Float	*lastOutputPtr;
 	ChanLen	i, pulseTimer = 0;
 	ChanLen	*remainingPulseIndexPtr;
 	ChanData	*pastEndOfData;

@@ -11,7 +11,7 @@
  *				It expects multi-channel input from a period histogram
  * Author:		L. P. O'Mard
  * Created:		22 Jan 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -101,9 +101,6 @@ Init_Analysis_ALSR(ParameterSpecifier parSpec)
 	}
 	aLSRPtr->parSpec = parSpec;
 	aLSRPtr->updateProcessVariablesFlag = TRUE;
-	aLSRPtr->lowerAveLimitFlag = TRUE;
-	aLSRPtr->upperAveLimitFlag = TRUE;
-	aLSRPtr->normaliseFlag = TRUE;
 	aLSRPtr->lowerAveLimit = -0.25;
 	aLSRPtr->upperAveLimit = 0.25;
 	aLSRPtr->normalise = 1.0;
@@ -191,7 +188,7 @@ GetUniParListPtr_Analysis_ALSR(void)
  */
 
 BOOLN
-SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit)
+SetLowerAveLimit_Analysis_ALSR(Float theLowerAveLimit)
 {
 	static const WChar	*funcName = wxT("SetLowerAveLimit_Analysis_ALSR");
 
@@ -200,7 +197,6 @@ SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	aLSRPtr->lowerAveLimitFlag = TRUE;
 	aLSRPtr->updateProcessVariablesFlag = TRUE;
 	aLSRPtr->lowerAveLimit = theLowerAveLimit;
 	return(TRUE);
@@ -216,7 +212,7 @@ SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit)
  */
 
 BOOLN
-SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit)
+SetUpperAveLimit_Analysis_ALSR(Float theUpperAveLimit)
 {
 	static const WChar	*funcName = wxT("SetUpperAveLimit_Analysis_ALSR");
 
@@ -225,7 +221,6 @@ SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	aLSRPtr->upperAveLimitFlag = TRUE;
 	aLSRPtr->updateProcessVariablesFlag = TRUE;
 	aLSRPtr->upperAveLimit = theUpperAveLimit;
 	return(TRUE);
@@ -241,7 +236,7 @@ SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit)
  */
 
 BOOLN
-SetNormalise_Analysis_ALSR(double theNormalise)
+SetNormalise_Analysis_ALSR(Float theNormalise)
 {
 	static const WChar	*funcName = wxT("SetNormalise_Analysis_ALSR");
 
@@ -250,47 +245,9 @@ SetNormalise_Analysis_ALSR(double theNormalise)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	aLSRPtr->normaliseFlag = TRUE;
 	aLSRPtr->updateProcessVariablesFlag = TRUE;
 	aLSRPtr->normalise = theNormalise;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_ALSR(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_ALSR");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (aLSRPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!aLSRPtr->lowerAveLimitFlag) {
-		NotifyError(wxT("%s: lowerAveLimit variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!aLSRPtr->upperAveLimitFlag) {
-		NotifyError(wxT("%s: upperAveLimit variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!aLSRPtr->normaliseFlag) {
-		NotifyError(wxT("%s: normalise variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -306,11 +263,6 @@ PrintPars_Analysis_ALSR(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_ALSR");
 
-	if (!CheckPars_Analysis_ALSR()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("ALSR Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tAveraging window limit below CF = %g,\n"), aLSRPtr->
 	  lowerAveLimit);
@@ -365,7 +317,6 @@ InitModule_Analysis_ALSR(ModulePtr theModule)
 	}
 	theModule->parsPtr = aLSRPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_ALSR;
 	theModule->Free = Free_Analysis_ALSR;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ALSR;
 	theModule->PrintPars = PrintPars_Analysis_ALSR;
@@ -499,14 +450,12 @@ Calc_Analysis_ALSR(EarObjectPtr data)
 	register ChanData	 *outPtr;
 	WChar	channelTitle[MAXLINE];
 	int		chan, minChan, maxChan, minWinChan, maxWinChan, numChannels;
-	double	dF, *cFs;
+	Float	dF, *cFs;
 	ChanLen	i, minIndex, maxIndex;
 	SignalDataPtr	inSignal, outSignal;
 	ALSRPtr	p = aLSRPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_ALSR())
-			return(FALSE);
 		if (!CheckData_Analysis_ALSR(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

@@ -148,13 +148,6 @@ Init_Analysis_SAI(ParameterSpecifier parSpec)
 	}
 	sAImagePtr->parSpec = parSpec;
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
-	sAImagePtr->diagnosticModeFlag = TRUE;
-	sAImagePtr->integrationModeFlag = TRUE;
-	sAImagePtr->strobeSpecificationFlag = FALSE;
-	sAImagePtr->positiveWidthFlag = TRUE;
-	sAImagePtr->negativeWidthFlag = TRUE;
-	sAImagePtr->inputDecayRateFlag = TRUE;
-	sAImagePtr->imageDecayHalfLifeFlag = TRUE;
 	sAImagePtr->diagnosticMode = GENERAL_BOOLEAN_OFF;
 	sAImagePtr->integrationMode = SAI_INTEGRATION_MODE_STI;
 	sAImagePtr->strobeSpecification[0] = '\0';
@@ -275,42 +268,6 @@ GetUniParListPtr_Analysis_SAI(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_SAI(WChar * diagnosticMode, WChar * integrationMode,
-  WChar *strobeSpecification, double negativeWidth, double positiveWidth,
-  double inputDecayRate, double imageDecayHalfLife)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_SAI");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetDiagnosticMode_Analysis_SAI(diagnosticMode))
-		ok = FALSE;
-	if (!SetIntegrationMode_Analysis_SAI(integrationMode))
-		ok = FALSE;
-	if (!SetStrobeSpecification_Analysis_SAI(strobeSpecification))
-		ok = FALSE;
-	if (!SetNegativeWidth_Analysis_SAI(negativeWidth))
-		ok = FALSE;
-	if (!SetPositiveWidth_Analysis_SAI(positiveWidth))
-		ok = FALSE;
-	if (!SetInputDecayRate_Analysis_SAI(inputDecayRate))
-		ok = FALSE;
-	if (!SetImageDecayHalfLife_Analysis_SAI(imageDecayHalfLife))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetDiagnosticMode ****************************/
 
 /*
@@ -328,7 +285,6 @@ SetDiagnosticMode_Analysis_SAI(WChar *theDiagnosticMode)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	sAImagePtr->diagnosticModeFlag = TRUE;
 	sAImagePtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
 	  sAImagePtr->diagnosticModeList);
 	return(TRUE);
@@ -360,7 +316,6 @@ SetIntegrationMode_Analysis_SAI(WChar * theIntegrationMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sAImagePtr->integrationModeFlag = TRUE;
 	sAImagePtr->integrationMode = specifier;
 	return(TRUE);
 
@@ -395,7 +350,6 @@ SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification)
 			return(FALSE);
 		}
 	}
-	sAImagePtr->strobeSpecificationFlag = TRUE;
 	DSAM_strncpy(sAImagePtr->strobeSpecification, theStrobeSpecification,
 	  MAX_FILE_PATH);
 	return(TRUE);
@@ -411,7 +365,7 @@ SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification)
  */
 
 BOOLN
-SetPositiveWidth_Analysis_SAI(double thePositiveWidth)
+SetPositiveWidth_Analysis_SAI(Float thePositiveWidth)
 {
 	static const WChar	*funcName = wxT("SetPositiveWidth_Analysis_SAI");
 
@@ -420,7 +374,6 @@ SetPositiveWidth_Analysis_SAI(double thePositiveWidth)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sAImagePtr->positiveWidthFlag = TRUE;
 	sAImagePtr->positiveWidth = thePositiveWidth;
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -436,7 +389,7 @@ SetPositiveWidth_Analysis_SAI(double thePositiveWidth)
  */
 
 BOOLN
-SetNegativeWidth_Analysis_SAI(double theNegativeWidth)
+SetNegativeWidth_Analysis_SAI(Float theNegativeWidth)
 {
 	static const WChar	*funcName = wxT("SetNegativeWidth_Analysis_SAI");
 
@@ -449,7 +402,6 @@ SetNegativeWidth_Analysis_SAI(double theNegativeWidth)
 		  MSEC(theNegativeWidth));
 		return(FALSE);
 	}
-	sAImagePtr->negativeWidthFlag = TRUE;
 	sAImagePtr->negativeWidth = theNegativeWidth;
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -465,7 +417,7 @@ SetNegativeWidth_Analysis_SAI(double theNegativeWidth)
  */
 
 BOOLN
-SetInputDecayRate_Analysis_SAI(double theInputDecayRate)
+SetInputDecayRate_Analysis_SAI(Float theInputDecayRate)
 {
 	static const WChar	*funcName = wxT("SetInputDecayRate_Analysis_SAI");
 
@@ -474,7 +426,6 @@ SetInputDecayRate_Analysis_SAI(double theInputDecayRate)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sAImagePtr->inputDecayRateFlag = TRUE;
 	sAImagePtr->inputDecayRate = theInputDecayRate;
 	sAImagePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -490,7 +441,7 @@ SetInputDecayRate_Analysis_SAI(double theInputDecayRate)
  */
 
 BOOLN
-SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
+SetImageDecayHalfLife_Analysis_SAI(Float theImageDecayHalfLife)
 {
 	static const WChar	*funcName = wxT("SetImageDecayHalfLife_Analysis_SAI");
 
@@ -504,7 +455,6 @@ SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sAImagePtr->imageDecayHalfLifeFlag = TRUE;
 	sAImagePtr->imageDecayHalfLife = theImageDecayHalfLife;
 	return(TRUE);
 
@@ -518,7 +468,7 @@ SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife)
  */
 
 BOOLN
-SetDelay_Analysis_SAI(double theDelay)
+SetDelay_Analysis_SAI(Float theDelay)
 {
 	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("strobe_lag"),
 	  theDelay));
@@ -533,7 +483,7 @@ SetDelay_Analysis_SAI(double theDelay)
  */
 
 BOOLN
-SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
+SetDelayTimeout_Analysis_SAI(Float theDelayTimeout)
 {
 	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("timeout"),
 	  theDelayTimeout));
@@ -548,7 +498,7 @@ SetDelayTimeout_Analysis_SAI(double theDelayTimeout)
  */
 
 BOOLN
-SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
+SetThresholdDecayRate_Analysis_SAI(Float theThresholdDecayRate)
 {
 	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("threshold_decay"),
 	  theThresholdDecayRate));
@@ -563,7 +513,7 @@ SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate)
  */
 
 BOOLN
-SetThreshold_Analysis_SAI(double theThreshold)
+SetThreshold_Analysis_SAI(Float theThreshold)
 {
 	return(SetRealPar_ModuleMgr(sAImagePtr->strobeData, wxT("threshold"),
 	  theThreshold));
@@ -585,59 +535,6 @@ SetTypeMode_Analysis_SAI(WChar *theTypeMode)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_SAI(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_SAI");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (sAImagePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!sAImagePtr->diagnosticModeFlag) {
-		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->integrationModeFlag) {
-		NotifyError(wxT("%s: integrationMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->strobeSpecificationFlag) {
-		NotifyError(wxT("%s: strobeSpecification variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->positiveWidthFlag) {
-		NotifyError(wxT("%s: positiveWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->negativeWidthFlag) {
-		NotifyError(wxT("%s: negativeWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->inputDecayRateFlag) {
-		NotifyError(wxT("%s: inputDecayRate variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sAImagePtr->imageDecayHalfLifeFlag) {
-		NotifyError(wxT("%s: imageDecayHalfLife variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -650,11 +547,6 @@ PrintPars_Analysis_SAI(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_SAI");
 
-	if (!CheckPars_Analysis_SAI()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Stabilised Auditory Image Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tStrobeSpecification (%s):\n"), sAImagePtr->
 	  strobeSpecification);
@@ -671,62 +563,6 @@ PrintPars_Analysis_SAI(void)
 	  MSEC(sAImagePtr->imageDecayHalfLife));
 	DPrint(wxT("\tDiagnostic mode: %s.\n"), sAImagePtr->diagnosticModeList[
 	  sAImagePtr->diagnosticMode].name);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_SAI(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_SAI");
-	BOOLN	ok;
-	WChar	*filePath, diagnosticMode[MAXLINE], strobeSpecification[MAXLINE];
-	WChar	integrationMode[MAXLINE];
-	double	positiveWidth, negativeWidth, inputDecayRate, imageDecayHalfLife;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), integrationMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), strobeSpecification))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &negativeWidth))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &positiveWidth))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &inputDecayRate))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &imageDecayHalfLife))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_SAI(diagnosticMode, integrationMode,
-	  strobeSpecification, negativeWidth, positiveWidth, inputDecayRate,
-	  imageDecayHalfLife)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -774,11 +610,9 @@ InitModule_Analysis_SAI(ModulePtr theModule)
 	}
 	theModule->parsPtr = sAImagePtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_SAI;
 	theModule->Free = Free_Analysis_SAI;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SAI;
 	theModule->PrintPars = PrintPars_Analysis_SAI;
-	theModule->ReadPars = ReadPars_Analysis_SAI;
 	theModule->ResetProcess = ResetProcess_Analysis_SAI;
 	theModule->RunProcess = Process_Analysis_SAI;
 	theModule->SetParsPointer = SetParsPointer_Analysis_SAI;
@@ -803,7 +637,7 @@ BOOLN
 CheckData_Analysis_SAI(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_SAI");
-	double	width, strobeDelay;
+	Float	width, strobeDelay;
 	int		strobeType;
 
 	if (data == NULL) {
@@ -902,11 +736,11 @@ BOOLN
 InitInputDecayArray_Analysis_SAI(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitInputDecayArray_Analysis_SAI");
-	double	decayPerSample, *decayPtr, totalDecay;
+	Float	decayPerSample, *decayPtr, totalDecay;
 	ChanLen	i;
 
-	if ((sAImagePtr->inputDecay = (double *) calloc(_OutSig_EarObject(data)->
-	  length, sizeof(double))) == NULL) {
+	if ((sAImagePtr->inputDecay = (Float *) calloc(_OutSig_EarObject(data)->
+	  length, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Could not initialise input decay array"),
 		  funcName);
 		return(FALSE);
@@ -1162,7 +996,7 @@ ProcessFrameSection_Analysis_SAI(EarObjectPtr data, ChanData **strobeStatePtrs,
 {
 	register ChanData	*inPtr, *outPtr, *strobeStatePtr, scaler;
 	int		chan;
-	double	*inputDecayPtr;
+	Float	*inputDecayPtr;
 	ChanLen	i, j, sectionEnd, inputCount;
 	SAImagePtr	p = sAImagePtr;
 
@@ -1231,15 +1065,13 @@ Process_Analysis_SAI(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Analysis_SAI");
 	BOOLN	endOfData;
 	int		chan;
-	double	dt;
+	Float	dt;
 	ChanLen	frameLength, positiveWidthIndex, negativeWidthIndex, *inputCountPtr;
 	SAImagePtr	p = sAImagePtr;
 	SignalDataPtr	inSignal, outSignal;
 	EarObjectPtr	strobeData;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_SAI())
-			return(FALSE);
 		if (!CheckData_Analysis_SAI(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

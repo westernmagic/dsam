@@ -53,7 +53,7 @@ int		yylex(void);
 	Datum	*inst;
 	DynaListPtr	node;
 }
-%token	<sym>	_UTSSPARSER_H REPEAT BEGIN STOP STRING QUOTED_STRING RESET
+%token	<sym>	_UTSSPARSER_H REPEAT BEGIN STRING QUOTED_STRING RESET
 %token	<num>	NUMBER PROCESS
 %type	<inst>	process_specifier process reset repeat
 %type	<inst>	simulation simulation_name labelled_process
@@ -99,7 +99,7 @@ simulation:
 			{ $$ = $2;
 			  if (!InitialiseEarObjects_Utility_SimScript()) {
 				NotifyError_Utility_SimScript(wxT("parser: error for ")
-				  wxT("simulation."));
+				  wxT("simulation '%s'."), $2->u.proc.parFile);
 				return 1;
 			  }
 			  if (!simScriptPtr->subSimList)
@@ -143,8 +143,8 @@ statement:
 			/* Ignore the QUOTED_STRING at present. */
 		|	repeat NUMBER statement
 			{	$1->u.loop.count = $2;
-				$1->u.loop.stopPC = InstallInst_Utility_Datum(simScriptPtr->
-				  simPtr, STOP);
+				simScriptPtr->simPtr = (DatumPtr *) Pull_Utility_DynaList(
+				  &simScriptPtr->subSimList);
 			}
 		|	reset STRING
 			{ $1->u.ref.string = InitString_Utility_String($2->name); }
@@ -197,10 +197,16 @@ process_specifier:
 repeat:	
 			REPEAT
 			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
+				Append_Utility_DynaList(&simScriptPtr->subSimList,
+				  simScriptPtr->simPtr);
+				simScriptPtr->simPtr = &$$->u.loop.pc;
 			}
 		|	STRING '%' REPEAT
 			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
 				$$->label = InitString_Utility_String($1->name);
+				Append_Utility_DynaList(&simScriptPtr->subSimList,
+				  simScriptPtr->simPtr);
+				simScriptPtr->simPtr = &$$->u.loop.pc;
 			}
 	;
 reset:	

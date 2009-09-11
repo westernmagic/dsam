@@ -7,7 +7,7 @@
  *				The input is expected to come from a period histogram (PH).
  * Author:		L. P. O'Mard
  * Created:		1 Mar 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1997, University of Essex.
  *
  *********************/
@@ -119,7 +119,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Calc_Analysis_SynchIndex");
 	register	ChanData	 *r;
 	int		chan;
-	double	theta, sineSum, cosineSum, rSum;
+	Float	theta, sineSum, cosineSum, rSum;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 
@@ -143,7 +143,7 @@ Calc_Analysis_SynchIndex(EarObjectPtr data)
 		sineSum = cosineSum = rSum = 0.0;
 		r = _InSig_EarObject(data, 0)->channel[chan];
 		for (i = 0; i < _InSig_EarObject(data, 0)->length; i++) {
-			theta = PIx2 * i / _InSig_EarObject(data, 0)->length; 
+			theta = PIx2 * i / _InSig_EarObject(data, 0)->length;
 			sineSum += *r * sin(theta);
 			cosineSum += *r * cos(theta);
 			rSum += fabs(*r++);

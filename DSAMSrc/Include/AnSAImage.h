@@ -85,17 +85,14 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	diagnosticModeFlag, integrationModeFlag, strobeSpecificationFlag;
-	BOOLN	negativeWidthFlag, positiveWidthFlag, inputDecayRateFlag;
-	BOOLN	imageDecayHalfLifeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
 	int		integrationMode;
 	WChar	strobeSpecification[MAX_FILE_PATH];
-	double	negativeWidth;
-	double	positiveWidth;
-	double	inputDecayRate;
-	double	imageDecayHalfLife;
+	Float	negativeWidth;
+	Float	positiveWidth;
+	Float	inputDecayRate;
+	Float	imageDecayHalfLife;
 
 	/* Private members */
 	NameSpecifier	*diagnosticModeList;
@@ -104,7 +101,7 @@ typedef struct {
 	WChar			diagnosticString[MAX_FILE_PATH];
 	int				strobeInSignalIndex;
 	int				numThreads;
-	double			*inputDecay;
+	Float			*inputDecay;
 	FILE			*fp;
 	ChanLen			*inputCount;
 	ChanLen			zeroIndex;
@@ -134,8 +131,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Analysis_SAI(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_SAI(void);
-
 BOOLN	Free_Analysis_SAI(void);
 
 BOOLN	FreeProcessVariables_Analysis_SAI(void);
@@ -162,39 +157,33 @@ void	ProcessFrameSection_Analysis_SAI(EarObjectPtr data,
 
 void	PushBufferData_Analysis_SAI(EarObjectPtr data, ChanLen frameLength);
 
-BOOLN	ReadPars_Analysis_SAI(WChar *fileName);
-
 void	ResetProcess_Analysis_SAI(EarObjectPtr data);
 
 BOOLN	SetDiagnosticMode_Analysis_SAI(WChar *theDiagnosticMode);
 
-BOOLN	SetImageDecayHalfLife_Analysis_SAI(double theImageDecayHalfLife);
+BOOLN	SetImageDecayHalfLife_Analysis_SAI(Float theImageDecayHalfLife);
 
-BOOLN	SetInputDecayRate_Analysis_SAI(double theInputDecayRate);
+BOOLN	SetInputDecayRate_Analysis_SAI(Float theInputDecayRate);
 
 BOOLN	SetIntegrationMode_Analysis_SAI(WChar * theIntegrationMode);
 
-BOOLN	SetDelay_Analysis_SAI(double theDelay);
+BOOLN	SetDelay_Analysis_SAI(Float theDelay);
 
-BOOLN	SetDelayTimeout_Analysis_SAI(double theDelayTimeout);
+BOOLN	SetDelayTimeout_Analysis_SAI(Float theDelayTimeout);
 
 BOOLN	InitModule_Analysis_SAI(ModulePtr theModule);
 
-BOOLN	SetNegativeWidth_Analysis_SAI(double theNegativeWidth);
+BOOLN	SetNegativeWidth_Analysis_SAI(Float theNegativeWidth);
 
 BOOLN	SetParsPointer_Analysis_SAI(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_SAI(WChar *diagnosticMode, WChar *integrationMode,
-		  WChar *strobeSpecification, double negativeWidth, double
-		  positiveWidth, double inputDecayRate, double imageDecayHalfLife);
-
-BOOLN	SetPositiveWidth_Analysis_SAI(double thePositiveWidth);
+BOOLN	SetPositiveWidth_Analysis_SAI(Float thePositiveWidth);
 
 BOOLN	SetStrobeSpecification_Analysis_SAI(WChar *theStrobeSpecification);
 
-BOOLN	SetThresholdDecayRate_Analysis_SAI(double theThresholdDecayRate);
+BOOLN	SetThresholdDecayRate_Analysis_SAI(Float theThresholdDecayRate);
 
-BOOLN	SetThreshold_Analysis_SAI(double theThreshold);
+BOOLN	SetThreshold_Analysis_SAI(Float theThreshold);
 
 BOOLN	SetTypeMode_Analysis_SAI(WChar *theTypeMode);
 

@@ -166,14 +166,14 @@ RegenerateList_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("RegenerateList_CFList");
 	int		i, numChannels;
-	double	*frequencies, *bandwidths;
+	Float	*frequencies, *bandwidths;
 
 	if (((theCFs->centreFreqMode == CFLIST_USER_MODE) ||
 	  (theCFs->centreFreqMode == CFLIST_SINGLE_MODE) ||
 	  (theCFs->centreFreqMode == CFLIST_IDENTICAL_MODE)) &&
 	  (theCFs->oldNumChannels != theCFs->numChannels)) {
-		if ((frequencies = (double *) calloc(theCFs->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((frequencies = (Float *) calloc(theCFs->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for frequency array (%d)."),
 			  funcName, theCFs->numChannels);
 			return(FALSE);
@@ -186,8 +186,8 @@ RegenerateList_CFList(CFListPtr theCFs)
 	}
 	if ((theCFs->bandwidthMode.specifier == BANDWIDTH_USER) &&
 	  (theCFs->oldNumChannels != theCFs->numChannels)) {
-		if ((bandwidths = (double *) calloc(theCFs->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((bandwidths = (Float *) calloc(theCFs->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for bandwidth array (%d)."),
 			  funcName, theCFs->numChannels);
 			return(FALSE);
@@ -289,7 +289,7 @@ SetCFMode_CFList(CFListPtr theCFs, WChar *modeName)
  */
 
 BOOLN
-SetMinCF_CFList(CFListPtr theCFs, double minCF)
+SetMinCF_CFList(CFListPtr theCFs, Float minCF)
 {
 	static const WChar *funcName = wxT("SetMinCF_CFList");
 
@@ -316,7 +316,7 @@ SetMinCF_CFList(CFListPtr theCFs, double minCF)
  */
 
 BOOLN
-SetMaxCF_CFList(CFListPtr theCFs, double maxCF)
+SetMaxCF_CFList(CFListPtr theCFs, Float maxCF)
 {
 	static const WChar *funcName = wxT("SetMaxCF_CFList");
 
@@ -343,7 +343,7 @@ SetMaxCF_CFList(CFListPtr theCFs, double maxCF)
  */
 
 BOOLN
-SetFocalCF_CFList(CFListPtr theCFs, double focalCF)
+SetFocalCF_CFList(CFListPtr theCFs, Float focalCF)
 {
 	static const WChar *funcName = wxT("SetFocalCF_CFList");
 
@@ -394,7 +394,7 @@ SetNumChannels_CFList(CFListPtr theCFs, int numChannels)
  */
 
 BOOLN
-SetERBDensity_CFList(CFListPtr theCFs, double eRBDensity)
+SetERBDensity_CFList(CFListPtr theCFs, Float eRBDensity)
 {
 	static const WChar *funcName = wxT("SetERBDensity_CFList");
 
@@ -420,7 +420,7 @@ SetERBDensity_CFList(CFListPtr theCFs, double eRBDensity)
  */
 
 BOOLN
-SetSingleFrequency_CFList(CFListPtr theCFs, double theFrequency)
+SetSingleFrequency_CFList(CFListPtr theCFs, Float theFrequency)
 {
 	static const WChar *funcName = wxT("SetSingleFrequency_CFList");
 
@@ -440,7 +440,7 @@ SetSingleFrequency_CFList(CFListPtr theCFs, double theFrequency)
  */
 
 BOOLN
-SetIndividualFreq_CFList(CFListPtr theCFs, int theIndex, double theFrequency)
+SetIndividualFreq_CFList(CFListPtr theCFs, int theIndex, Float theFrequency)
 {
 	static const WChar *funcName = wxT("SetIndividualFreq_CFList");
 
@@ -470,7 +470,7 @@ SetIndividualFreq_CFList(CFListPtr theCFs, int theIndex, double theFrequency)
 
 BOOLN
 SetIndividualBandwidth_CFList(CFListPtr theCFs, int theIndex,
-  double theBandwidth)
+  Float theBandwidth)
 {
 	static const WChar *funcName = wxT("SetIndividualBandwidth_CFList");
 
@@ -658,7 +658,7 @@ SetBandwidthSpecifier_CFList(CFListPtr theCFs, WChar *modeName)
  */
 
 BOOLN
-SetBandwidthMin_CFList(CFListPtr theCFs, double bwMin)
+SetBandwidthMin_CFList(CFListPtr theCFs, Float bwMin)
 {
 	static const WChar *funcName = wxT("SetBandwidthMin_CFList");
 
@@ -682,7 +682,7 @@ SetBandwidthMin_CFList(CFListPtr theCFs, double bwMin)
  */
 
 BOOLN
-SetBandwidthQuality_CFList(CFListPtr theCFs, double quality)
+SetBandwidthQuality_CFList(CFListPtr theCFs, Float quality)
 {
 	static const WChar *funcName = wxT("SetBandwidthQuality_CFList");
 
@@ -705,13 +705,13 @@ SetBandwidthQuality_CFList(CFListPtr theCFs, double quality)
  */
 
 BOOLN
-SetBandwidthScaler_CFList(CFListPtr theCFs, double scaler)
+SetBandwidthScaler_CFList(CFListPtr theCFs, Float scaler)
 {
 	static const WChar *funcName = wxT("SetBandwidthScalar_CFList");
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
-	if (fabs(scaler) < DBL_EPSILON) {
+	if (fabs(scaler) < DSAM_EPSILON) {
 		NotifyError(wxT("%s: Scaler value must be greater than zero (%g)."),
 		  funcName, scaler);
 		return(FALSE);
@@ -906,8 +906,8 @@ AllocateFrequencies_CFList(CFListPtr theCFs)
 		theCFs->frequency = NULL;
 	}
 	if (!theCFs->frequency) {
-		if ((theCFs->frequency = (double *) calloc(theCFs->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((theCFs->frequency = (Float *) calloc(theCFs->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for frequencies."), funcName);
 			return(FALSE);
 		}
@@ -925,12 +925,12 @@ AllocateFrequencies_CFList(CFListPtr theCFs)
  */
 
 CFListPtr
-GenerateDefault_CFList(WChar *modeName, int numberOfCFs, double minCF,
-  double maxCF, WChar *bwModeName, double (* BWidthFunc)(struct BandwidthMode *,
-  double))
+GenerateDefault_CFList(WChar *modeName, int numberOfCFs, Float minCF,
+  Float maxCF, WChar *bwModeName, Float (* BWidthFunc)(struct BandwidthMode *,
+  Float))
 {
 	static const WChar *funcName = wxT("GenerateDefault_CFList");
-	double	*frequencies;
+	Float	*frequencies;
 	CFListPtr theCFs;
 
 	if (numberOfCFs < 1) {
@@ -939,7 +939,7 @@ GenerateDefault_CFList(WChar *modeName, int numberOfCFs, double minCF,
 	}
 	if (Identify_NameSpecifier(modeName, CFModeList_CFList(0)) ==
 	  CFLIST_SINGLE_MODE) {
-		if ((frequencies = (double *) calloc(numberOfCFs, sizeof(double))) ==
+		if ((frequencies = (Float *) calloc(numberOfCFs, sizeof(Float))) ==
 		  NULL) {
 			NotifyError(wxT("%s: Out of memory for frequencies (%d)"), funcName,
 			  numberOfCFs);
@@ -982,7 +982,7 @@ GenerateERB_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateERB_CFList");
 	int		i;
-	double	theERBRate;
+	Float	theERBRate;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1021,7 +1021,7 @@ GenerateERBn_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateERBn_CFList");
 	int		i;
-	double	theERBRate;
+	Float	theERBRate;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1092,7 +1092,7 @@ GenerateLog_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateLog_CFList");
 	int		i;
-	double	theLogRate, logMinCF;
+	Float	theLogRate, logMinCF;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1124,7 +1124,7 @@ GenerateFocalLog_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateFocalLog_CFList");
 	int		i, focalIndex;
-	double	theLogRate, logMinCF, logMaxCF, logFocalCF;
+	Float	theLogRate, logMinCF, logMaxCF, logFocalCF;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1169,7 +1169,7 @@ GenerateLinear_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateLinear_CFList");
 	int		i;
-	double	scale, offset;
+	Float	scale, offset;
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1243,7 +1243,7 @@ GenerateGreenwood_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateGreenwood_CFList");
 	int		i;
-	double	xMin, xMax, scale;
+	Float	xMin, xMax, scale;
 	GreenwoodParsPtr	gPtr;
 
 	if (!CheckInit_CFList(theCFs, funcName))
@@ -1281,7 +1281,7 @@ GenerateIdentical_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("GenerateIdentical_CFList");
 	int		i;
-	double	singleCF = theCFs->frequency[0];
+	Float	singleCF = theCFs->frequency[0];
 
 	if (!CheckInit_CFList(theCFs, funcName))
 		return(FALSE);
@@ -1444,8 +1444,8 @@ SetGeneratedPars_CFList(CFListPtr theCFs)
 
 CFListPtr
 GenerateList_CFList(WChar *modeName, WChar *diagModeName, int numberOfCFs,
-  double minCF, double maxCF, double focalCF, double eRBDensity,
-  double *frequencies)
+  Float minCF, Float maxCF, Float focalCF, Float eRBDensity,
+  Float *frequencies)
 {
 	static const WChar *funcName = wxT("GenerateList_CFList");
 	BOOLN	ok = TRUE;
@@ -1538,8 +1538,8 @@ ReadPars_CFList(FILE *fp)
 	BOOLN	ok = TRUE;
 	WChar	modeName[MAXLINE], diagModeName[MAXLINE];
 	int		i, mode, numberOfCFs;
-	double	*frequencies = NULL, focalCFFrequency, lowestCFFrequency;
-	double	highestCFFrequency, eRBDensity;
+	Float	*frequencies = NULL, focalCFFrequency, lowestCFFrequency;
+	Float	highestCFFrequency, eRBDensity;
 	CFListPtr	theCFs = NULL;
 
 	if (!GetPars_ParFile(fp, wxT("%s"), diagModeName)) {
@@ -1564,8 +1564,8 @@ ReadPars_CFList(FILE *fp)
 			  numberOfCFs);
 			ok = FALSE;
 		} else {
-			if ((frequencies = (double *) calloc(numberOfCFs,
-			  sizeof(double))) == NULL) {
+			if ((frequencies = (Float *) calloc(numberOfCFs,
+			  sizeof(Float))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for frequencies (%d)"),
 				  funcName, numberOfCFs);
 				ok = FALSE;
@@ -1638,7 +1638,7 @@ ReadPars_CFList(FILE *fp)
  */
 
 BOOLN
-SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
+SetBandwidthArray_CFList(CFListPtr theCFs, Float *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidthArray_CFList");
 	int		i;
@@ -1669,8 +1669,8 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
 	default:
 		if (theCFs->bandwidth)
 			free(theCFs->bandwidth);
-		if ((theCFs->bandwidth = (double *) calloc(theCFs->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((theCFs->bandwidth = (Float *) calloc(theCFs->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for bandwidths (%d)."), funcName,
 			  theCFs->numChannels);
 			return(FALSE);
@@ -1693,7 +1693,7 @@ SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths)
  */
 
 BOOLN
-SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, double *theBandwidths)
+SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, Float *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidths_CFList");
 
@@ -1753,8 +1753,8 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
 	}
 	switch (theCFs->bandwidthMode.specifier) {
 	case BANDWIDTH_USER:
-		if ((theCFs->bandwidth = (double *) calloc(theCFs->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((theCFs->bandwidth = (Float *) calloc(theCFs->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for bandwidths."), funcName);
 			return(FALSE);
 		}
@@ -1799,7 +1799,7 @@ ReadBandwidths_CFList(FILE *fp, CFListPtr theCFs)
  *
  */
 
-double
+Float
 GetCF_CFList(CFListPtr theCFs, int channel)
 {
 	static const WChar *funcName = wxT("GetCF_CFList");
@@ -1829,7 +1829,7 @@ GetCF_CFList(CFListPtr theCFs, int channel)
  */
 
 BOOLN
-ResetCF_CFList(CFListPtr theCFs, int channel, double theFrequency)
+ResetCF_CFList(CFListPtr theCFs, int channel, Float theFrequency)
 {
 	static const WChar *funcName = wxT("ResetCF_CFList");
 
@@ -1873,7 +1873,7 @@ ResetCF_CFList(CFListPtr theCFs, int channel, double theFrequency)
  */
 
 BOOLN
-ResetBandwidth_CFList(CFListPtr theCFs, int channel, double theBandwidth)
+ResetBandwidth_CFList(CFListPtr theCFs, int channel, Float theBandwidth)
 {
 	static const WChar *funcName = wxT("ResetBandwidth_CFList");
 	if (theBandwidth < 0.0) {
@@ -1910,7 +1910,7 @@ ResetBandwidth_CFList(CFListPtr theCFs, int channel, double theBandwidth)
  *
  */
 
-double
+Float
 GetBandwidth_CFList(CFListPtr theCFs, int channel)
 {
 	static const WChar *funcName = wxT("GetBandwidth_CFList");
@@ -2055,8 +2055,8 @@ PrintPars_CFList(CFListPtr theCFs)
  * This function returns the CF Rate according to the frequency spacing used.
  */
 
-double
-CFRateFromF_CFList(CFListPtr theCFs, double frequency)
+Float
+CFRateFromF_CFList(CFListPtr theCFs, Float frequency)
 {
 	static const WChar *funcName = wxT("CFRateFromF_CFList");
 
@@ -2085,11 +2085,11 @@ CFRateFromF_CFList(CFListPtr theCFs, double frequency)
  * An undefined value of "1" is returned if there are less than two channels.
  */
 
-double
+Float
 CFSpace_CFList(CFListPtr theCFs)
 {
 	int		i;
-	double	sum;
+	Float	sum;
 
 	if (theCFs->numChannels < 2)
 		return(1.0);
@@ -2109,7 +2109,7 @@ CFSpace_CFList(CFListPtr theCFs)
  */
 
 int
-FindCF_CFList(CFListPtr theCFs, double theCF, double accuracy)
+FindCF_CFList(CFListPtr theCFs, Float theCF, Float accuracy)
 {
 	int		i;
 

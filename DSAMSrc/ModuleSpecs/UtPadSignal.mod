@@ -7,9 +7,9 @@ mod_name		Utility;
 qualifier		PadSignal;
 typedef struct {
 
-	double	beginDuration;
-	double	beginValue;
-	double	endDuration;
-	double	endValue;
+	Float	beginDuration;
+	Float	beginValue;
+	Float	endDuration;
+	Float	endValue;
 
 } PadSignal;

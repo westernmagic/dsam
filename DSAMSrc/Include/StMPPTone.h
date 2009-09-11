@@ -3,7 +3,7 @@
  * File:		StMPPTone.h
  * Purpose:		The module generates a signal which contains multiple puretone
  *				pulses at different frequencies.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		18 Feb 1993
  * Updated:		12 Mar 1997
@@ -13,7 +13,7 @@
 
 #ifndef	_STMPPTONE_H
 #define _STMPPTONE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -43,22 +43,19 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	intensityFlag, durationFlag, dtFlag;
-	BOOLN	beginPeriodDurationFlag, pulseDurationFlag;
-	BOOLN	repetitionPeriodFlag, numPulsesFlag;
 	int		numPulses;
-	double	intensity, duration, dt;
-	double	beginPeriodDuration, pulseDuration, repetitionPeriod;
-	double	*frequencies;
-	
+	Float	intensity, duration, dt;
+	Float	beginPeriodDuration, pulseDuration, repetitionPeriod;
+	Float	*frequencies;
+
 	/* Private members */
 	UniParListPtr	parList;
 	BOOLN	pulseOn;
 	int		pulseNumber;
 	ChanLen	pulseCount, beginIndex;
-	
+
 } PureTone4, *PureTone4Ptr;
-	
+
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -77,13 +74,13 @@ __BEGIN_DECLS
 
 BOOLN	AllocNumPulses_PureTone_MultiPulse(int numPulses);
 
-BOOLN	CheckPars_PureTone_MultiPulse(void);
+BOOLN	CheckData_PureTone_MultiPulse(EarObjectPtr data);
 
 BOOLN	Free_PureTone_MultiPulse(void);
 
 BOOLN	GenerateSignal_PureTone_MultiPulse(EarObjectPtr theObject);
 
-double	GetIndividualFreq_PureTone_MultiPulse(int index);
+Float	GetIndividualFreq_PureTone_MultiPulse(int index);
 
 UniParListPtr	GetUniParListPtr_PureTone_MultiPulse(void);
 
@@ -91,20 +88,18 @@ BOOLN	Init_PureTone_MultiPulse(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_MultiPulse(void);
 
-BOOLN	ReadPars_PureTone_MultiPulse(WChar *fileName);
-
 BOOLN	SetBeginPeriodDuration_PureTone_MultiPulse(
-		  double theBeginPeriodDuration);
+		  Float theBeginPeriodDuration);
 
 BOOLN	SetDefaultNumPulsesArrays_PureTone_MultiPulse(void);
 
-BOOLN	SetDuration_PureTone_MultiPulse(double theDuration);
+BOOLN	SetDuration_PureTone_MultiPulse(Float theDuration);
 
-BOOLN	SetIntensity_PureTone_MultiPulse(double theIntensity);
+BOOLN	SetIntensity_PureTone_MultiPulse(Float theIntensity);
 
-BOOLN	SetIndividualFreq_PureTone_MultiPulse(int theIndex, double theFreq);
-		  
-BOOLN	SetFrequencies_PureTone_MultiPulse(double *theFrequencies);
+BOOLN	SetIndividualFreq_PureTone_MultiPulse(int theIndex, Float theFreq);
+
+BOOLN	SetFrequencies_PureTone_MultiPulse(Float *theFrequencies);
 
 BOOLN	InitModule_PureTone_MultiPulse(ModulePtr theModule);
 
@@ -112,16 +107,11 @@ BOOLN	SetNumPulses_PureTone_MultiPulse(int theNumPulses);
 
 BOOLN	SetParsPointer_PureTone_MultiPulse(ModulePtr theModule);
 
-BOOLN	SetPars_PureTone_MultiPulse(int numPulses, double *frequencies,
-		  double intensity, double beginPeriodDuration, double pulseDuration,
-		  double repetitionPeriod, double duration, double samplingInterval);
+BOOLN	SetPulseDuration_PureTone_MultiPulse(Float thePulseDuration);
 
-		  
-BOOLN	SetPulseDuration_PureTone_MultiPulse(double thePulseDuration);
+BOOLN	SetRepetitionPeriod_PureTone_MultiPulse(Float theRepetitionPeriod);
 
-BOOLN	SetRepetitionPeriod_PureTone_MultiPulse(double theRepetitionPeriod);
-
-BOOLN	SetSamplingInterval_PureTone_MultiPulse(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PureTone_MultiPulse(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PureTone_MultiPulse(void);
 

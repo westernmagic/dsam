@@ -11,7 +11,7 @@
  * Copyright:	(c) 1998, University of Essex
  *
  **********************/
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -112,12 +112,12 @@ SetSeed_Random(RandParsPtr p, long ranSeed, long offset)
 #define EPS 1.2e-7
 #define RNMX (1.0 - EPS)
 
-double
+Float
 Ran01_Random(RandParsPtr p)
 {
 	int j;
 	long k;
-	double temp;
+	Float temp;
 
 	if (p->idum <= 0 || !p->iy) {
 		if (p->idum == 0)
@@ -157,7 +157,7 @@ Ran01_Random(RandParsPtr p)
 /************************** GeomDist ******************************************/
 
 /*
- * This routine calculates the number of times that an event occurs with 
+ * This routine calculates the number of times that an event occurs with
  * a set probability and number of trials.
  * It uses the gemotric distribution method, but the probability must be
  * small.
@@ -166,11 +166,11 @@ Ran01_Random(RandParsPtr p)
  */
 
 int
-GeomDist_Random(double probability, int numTrials, RandParsPtr p)
+GeomDist_Random(Float probability, int numTrials, RandParsPtr p)
 {
 	int		i;
-	double	sum, logNotProbable;
-	
+	Float	sum, logNotProbable;
+
 	#ifdef DEBUG
 	static const WChar *funcName = wxT("GeomDist_Random");
 		if (probability >= 1.0) {
@@ -179,7 +179,7 @@ GeomDist_Random(double probability, int numTrials, RandParsPtr p)
 			exit(1);
 		}
 	#endif
-	if ((numTrials <= 0) || (probability < DBL_EPSILON))
+	if ((numTrials <= 0) || (probability < DSAM_EPSILON))
 		return(0);
 	logNotProbable = log(1.0 - probability);
 	for (i = 0, sum = 0.0; ((sum += log(Ran01_Random(p)) / logNotProbable) <
@@ -188,7 +188,7 @@ GeomDist_Random(double probability, int numTrials, RandParsPtr p)
 	if (i > numTrials)
 		i = numTrials;
 	return (i);
-	
+
 }
 
 /************************** GaussRan01 ****************************************/
@@ -198,12 +198,12 @@ GeomDist_Random(double probability, int numTrials, RandParsPtr p)
  * It has been revised from the "Numerical Recipes 2nd ed." Ran1 (p.289).
  */
 
-double
+Float
 GaussRan01_Random(RandParsPtr p)
 {
 	static BOOLN	isSet = FALSE;
-	static double	gSet;
-	double	fac, rSquared, v1, v2;
+	static Float	gSet;
+	Float	fac, rSquared, v1, v2;
 
 	if (!isSet) {
 		do {
@@ -228,8 +228,8 @@ GaussRan01_Random(RandParsPtr p)
  * Set "seed" to any negative value to initialise or re-intialise the sequence.
  */
 
-double
-Ran_Random(RandParsPtr p, double minValue, double maxValue)
+Float
+Ran_Random(RandParsPtr p, Float minValue, Float maxValue)
 {
 	return(Ran01_Random(p) * (maxValue - minValue) + minValue);
 

@@ -92,14 +92,6 @@ Init_PureTone_FM(ParameterSpecifier parSpec)
 		}
 	}
 	fMTonePtr->parSpec = parSpec;
-	fMTonePtr->frequencyFlag = TRUE;
-	fMTonePtr->intensityFlag = TRUE;
-	fMTonePtr->durationFlag = TRUE;
-	fMTonePtr->dtFlag = TRUE;
-	fMTonePtr->phaseFlag = TRUE;
-	fMTonePtr->modulationDepthFlag = TRUE;
-	fMTonePtr->modulationFrequencyFlag = TRUE;
-	fMTonePtr->modulationPhaseFlag = TRUE;
 	fMTonePtr->frequency = 1000.0;
 	fMTonePtr->intensity = DEFAULT_INTENSITY;
 	fMTonePtr->duration = 0.1;
@@ -207,44 +199,6 @@ GetUniParListPtr_PureTone_FM(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_PureTone_FM(double frequency, double intensity,
-  double duration, double samplingInterval, double phase, double
-  modulationDepth, double modulationFrequency, double modulationPhase)
-{
-	static const WChar	*funcName = wxT("SetPars_PureTone_FM");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetFrequency_PureTone_FM(frequency))
-		ok = FALSE;
-	if (!SetIntensity_PureTone_FM(intensity))
-		ok = FALSE;
-	if (!SetDuration_PureTone_FM(duration))
-		ok = FALSE;
-	if (!SetSamplingInterval_PureTone_FM(samplingInterval))
-		ok = FALSE;
-	if (!SetPhase_PureTone_FM(phase))
-		ok = FALSE;
-	if (!SetModulationDepth_PureTone_FM(modulationDepth))
-		ok = FALSE;
-	if (!SetModulationFrequency_PureTone_FM(modulationFrequency))
-		ok = FALSE;
-	if (!SetModulationPhase_PureTone_FM(modulationPhase))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetFrequency **********************************/
 
 /*
@@ -254,7 +208,7 @@ SetPars_PureTone_FM(double frequency, double intensity,
  */
 
 BOOLN
-SetFrequency_PureTone_FM(double theFrequency)
+SetFrequency_PureTone_FM(Float theFrequency)
 {
 	static const WChar	*funcName = wxT("SetFrequency_PureTone_FM");
 
@@ -263,7 +217,6 @@ SetFrequency_PureTone_FM(double theFrequency)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->frequencyFlag = TRUE;
 	fMTonePtr->frequency = theFrequency;
 	return(TRUE);
 
@@ -278,7 +231,7 @@ SetFrequency_PureTone_FM(double theFrequency)
  */
 
 BOOLN
-SetIntensity_PureTone_FM(double theIntensity)
+SetIntensity_PureTone_FM(Float theIntensity)
 {
 	static const WChar	*funcName = wxT("SetIntensity_PureTone_FM");
 
@@ -287,7 +240,6 @@ SetIntensity_PureTone_FM(double theIntensity)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->intensityFlag = TRUE;
 	fMTonePtr->intensity = theIntensity;
 	return(TRUE);
 
@@ -302,7 +254,7 @@ SetIntensity_PureTone_FM(double theIntensity)
  */
 
 BOOLN
-SetDuration_PureTone_FM(double theDuration)
+SetDuration_PureTone_FM(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_PureTone_FM");
 
@@ -311,7 +263,6 @@ SetDuration_PureTone_FM(double theDuration)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->durationFlag = TRUE;
 	fMTonePtr->duration = theDuration;
 	return(TRUE);
 
@@ -326,7 +277,7 @@ SetDuration_PureTone_FM(double theDuration)
  */
 
 BOOLN
-SetSamplingInterval_PureTone_FM(double theSamplingInterval)
+SetSamplingInterval_PureTone_FM(Float theSamplingInterval)
 {
 	static const WChar	*funcName = wxT("SetSamplingInterval_PureTone_FM");
 
@@ -335,7 +286,6 @@ SetSamplingInterval_PureTone_FM(double theSamplingInterval)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->dtFlag = TRUE;
 	fMTonePtr->dt = theSamplingInterval;
 	return(TRUE);
 
@@ -350,7 +300,7 @@ SetSamplingInterval_PureTone_FM(double theSamplingInterval)
  */
 
 BOOLN
-SetPhase_PureTone_FM(double thePhase)
+SetPhase_PureTone_FM(Float thePhase)
 {
 	static const WChar	*funcName = wxT("SetPhase_PureTone_FM");
 
@@ -359,7 +309,6 @@ SetPhase_PureTone_FM(double thePhase)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->phaseFlag = TRUE;
 	fMTonePtr->phase = thePhase;
 	return(TRUE);
 
@@ -374,7 +323,7 @@ SetPhase_PureTone_FM(double thePhase)
  */
 
 BOOLN
-SetModulationDepth_PureTone_FM(double theModulationDepth)
+SetModulationDepth_PureTone_FM(Float theModulationDepth)
 {
 	static const WChar	*funcName = wxT("SetModulationDepth_PureTone_FM");
 
@@ -383,7 +332,6 @@ SetModulationDepth_PureTone_FM(double theModulationDepth)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->modulationDepthFlag = TRUE;
 	fMTonePtr->modulationDepth = theModulationDepth;
 	return(TRUE);
 
@@ -398,7 +346,7 @@ SetModulationDepth_PureTone_FM(double theModulationDepth)
  */
 
 BOOLN
-SetModulationFrequency_PureTone_FM(double theModulationFrequency)
+SetModulationFrequency_PureTone_FM(Float theModulationFrequency)
 {
 	static const WChar	*funcName = wxT("SetModulationFrequency_PureTone_FM");
 
@@ -407,7 +355,6 @@ SetModulationFrequency_PureTone_FM(double theModulationFrequency)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->modulationFrequencyFlag = TRUE;
 	fMTonePtr->modulationFrequency = theModulationFrequency;
 	return(TRUE);
 
@@ -422,7 +369,7 @@ SetModulationFrequency_PureTone_FM(double theModulationFrequency)
  */
 
 BOOLN
-SetModulationPhase_PureTone_FM(double theModulationPhase)
+SetModulationPhase_PureTone_FM(Float theModulationPhase)
 {
 	static const WChar	*funcName = wxT("SetModulationPhase_PureTone_FM");
 
@@ -431,66 +378,8 @@ SetModulationPhase_PureTone_FM(double theModulationPhase)
 		return(FALSE);
 	}
 	/*** Put any required checks here. ***/
-	fMTonePtr->modulationPhaseFlag = TRUE;
 	fMTonePtr->modulationPhase = theModulationPhase;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_PureTone_FM(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_PureTone_FM");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (fMTonePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!fMTonePtr->frequencyFlag) {
-		NotifyError(wxT("%s: frequency variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->intensityFlag) {
-		NotifyError(wxT("%s: intensity variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->durationFlag) {
-		NotifyError(wxT("%s: duration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->dtFlag) {
-		NotifyError(wxT("%s: dt variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->phaseFlag) {
-		NotifyError(wxT("%s: phase variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->modulationDepthFlag) {
-		NotifyError(wxT("%s: modulationDepth variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->modulationFrequencyFlag) {
-		NotifyError(wxT("%s: modulationFrequency variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!fMTonePtr->modulationPhaseFlag) {
-		NotifyError(wxT("%s: modulationPhase variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -506,11 +395,6 @@ PrintPars_PureTone_FM(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_PureTone_FM");
 
-	if (!CheckPars_PureTone_FM()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Frequeny Modulated PureTone Module Parameters:-\n"));
 	DPrint(wxT("\tFrequency = %g Hz,"), fMTonePtr->frequency);
 	DPrint(wxT("\tIntensity = %g dB SPL\n"), fMTonePtr->intensity);
@@ -523,63 +407,6 @@ PrintPars_PureTone_FM(void)
 	  fMTonePtr->modulationDepth);
 	DPrint(wxT("\tModulation frequency/phase = %g Hz / %g degrees\n"),
 	  fMTonePtr->modulationFrequency, fMTonePtr->modulationPhase);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_PureTone_FM(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_PureTone_FM");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	frequency, intensity, duration, samplingInterval, phase;
-	double	modulationDepth, modulationFrequency, modulationPhase;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &frequency))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &phase))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationDepth))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationFrequency))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &modulationPhase))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_PureTone_FM(frequency, intensity, duration, samplingInterval,
-	  phase, modulationDepth, modulationFrequency, modulationPhase)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -626,11 +453,9 @@ InitModule_PureTone_FM(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = fMTonePtr;
-	theModule->CheckPars = CheckPars_PureTone_FM;
 	theModule->Free = Free_PureTone_FM;
 	theModule->GetUniParListPtr = GetUniParListPtr_PureTone_FM;
 	theModule->PrintPars = PrintPars_PureTone_FM;
-	theModule->ReadPars = ReadPars_PureTone_FM;
 	theModule->RunProcess = GenerateSignal_PureTone_FM;
 	theModule->SetParsPointer = SetParsPointer_PureTone_FM;
 	return(TRUE);
@@ -684,12 +509,10 @@ GenerateSignal_PureTone_FM(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_PureTone_FM");
 	ChanLen		i, t;
-	register	double		amplitude, modulationIndex;
+	register	Float		amplitude, modulationIndex;
 	register	ChanData	 *dataPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_PureTone_FM())
-			return(FALSE);
 		if (!CheckData_PureTone_FM(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

@@ -8,12 +8,12 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	double		cutOffFrequency;	/* Fc */
-	double		hCOperatingPoint;	/* PDihc */
-	double		asymmetricalBias;	/* P0 */
-	double		maxHCVoltage;		/* Vmax */
-	double		waveDelayCoeff;		/* AD */
-	double		waveDelayLength;	/* AL */
-	double		referencePot;		/* Added for compatibility. */
+	Float		cutOffFrequency;	/* Fc */
+	Float		hCOperatingPoint;	/* PDihc */
+	Float		asymmetricalBias;	/* P0 */
+	Float		maxHCVoltage;		/* Vmax */
+	Float		waveDelayCoeff;		/* AD */
+	Float		waveDelayLength;	/* AL */
+	Float		referencePot;		/* Added for compatibility. */
 
 } CarneyRP;

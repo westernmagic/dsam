@@ -58,7 +58,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtParArray.c UtGCFilters.c UtFIRFilters.c UtRemez.c \
 				UtDynaBList.c UtLocalChans.c UtSwapLR.c UtPadSignal.c \
 				UtMathOp.c UtZhang.c UtTranspose.c UtCollateSignals.c \
-				UtZilanyBruce.c UtNoiseMod.c
+				UtZilanyBruce.c UtNoiseMod.c UtANSGDist.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectSignals.c
 

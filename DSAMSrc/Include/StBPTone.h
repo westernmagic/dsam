@@ -10,7 +10,7 @@
  *				there being a parameter which defined the lengths.
  * Author:		L. P. O'Mard
  * Created:		06 Nov 1998
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -45,15 +45,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	leftFrequencyFlag, rightFrequencyFlag, leftIntensityFlag;
-	BOOLN	rightIntensityFlag, phaseDifferenceFlag, durationFlag, dtFlag;
-	double	leftFrequency;
-	double	rightFrequency;
-	double	leftIntensity;
-	double	rightIntensity;
-	double	phaseDifference;
-	double	duration;
-	double	dt;
+	Float	leftFrequency;
+	Float	rightFrequency;
+	Float	leftIntensity;
+	Float	rightIntensity;
+	Float	phaseDifference;
+	Float	duration;
+	Float	dt;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -78,8 +76,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_PureTone_Binaural(EarObjectPtr data);
 
-BOOLN	CheckPars_PureTone_Binaural(void);
-
 BOOLN	Free_PureTone_Binaural(void);
 
 BOOLN	GenerateSignal_PureTone_Binaural(EarObjectPtr data);
@@ -90,29 +86,23 @@ BOOLN	Init_PureTone_Binaural(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_Binaural(void);
 
-BOOLN	ReadPars_PureTone_Binaural(WChar *fileName);
+BOOLN	SetDuration_PureTone_Binaural(Float theDuration);
 
-BOOLN	SetDuration_PureTone_Binaural(double theDuration);
+BOOLN	SetLeftFrequency_PureTone_Binaural(Float theLeftFrequency);
 
-BOOLN	SetLeftFrequency_PureTone_Binaural(double theLeftFrequency);
-
-BOOLN	SetLeftIntensity_PureTone_Binaural(double theLeftIntensity);
+BOOLN	SetLeftIntensity_PureTone_Binaural(Float theLeftIntensity);
 
 BOOLN	InitModule_PureTone_Binaural(ModulePtr theModule);
 
 BOOLN	SetParsPointer_PureTone_Binaural(ModulePtr theModule);
 
-BOOLN	SetPars_PureTone_Binaural(double leftFrequency, double rightFrequency,
-		  double leftIntensity, double rightIntensity, double phaseDifference,
-		  double duration, double samplingInterval);
+BOOLN	SetPhaseDifference_PureTone_Binaural(Float thePhaseDifference);
 
-BOOLN	SetPhaseDifference_PureTone_Binaural(double thePhaseDifference);
+BOOLN	SetRightFrequency_PureTone_Binaural(Float theRightFrequency);
 
-BOOLN	SetRightFrequency_PureTone_Binaural(double theRightFrequency);
+BOOLN	SetRightIntensity_PureTone_Binaural(Float theRightIntensity);
 
-BOOLN	SetRightIntensity_PureTone_Binaural(double theRightIntensity);
-
-BOOLN	SetSamplingInterval_PureTone_Binaural(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PureTone_Binaural(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PureTone_Binaural(void);
 

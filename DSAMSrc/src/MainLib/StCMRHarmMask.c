@@ -676,7 +676,7 @@ SetNGapUpp_CMR_HarmonicMasker(int theNGapUpp)
  */
 
 BOOLN
-SetLowFBLevel_CMR_HarmonicMasker(double theLowFBLevel)
+SetLowFBLevel_CMR_HarmonicMasker(Float theLowFBLevel)
 {
 	static const WChar	*funcName = wxT("SetLowFBLevel_CMR_HarmonicMasker");
 
@@ -699,7 +699,7 @@ SetLowFBLevel_CMR_HarmonicMasker(double theLowFBLevel)
  */
 
 BOOLN
-SetUppFBLevel_CMR_HarmonicMasker(double theUppFBLevel)
+SetUppFBLevel_CMR_HarmonicMasker(Float theUppFBLevel)
 {
 	static const WChar	*funcName = wxT("SetUppFBLevel_CMR_HarmonicMasker");
 
@@ -722,7 +722,7 @@ SetUppFBLevel_CMR_HarmonicMasker(double theUppFBLevel)
  */
 
 BOOLN
-SetOFMLevel_CMR_HarmonicMasker(double theOFMLevel)
+SetOFMLevel_CMR_HarmonicMasker(Float theOFMLevel)
 {
 	static const WChar	*funcName = wxT("SetOFMLevel_CMR_HarmonicMasker");
 
@@ -745,7 +745,7 @@ SetOFMLevel_CMR_HarmonicMasker(double theOFMLevel)
  */
 
 BOOLN
-SetSpacing_CMR_HarmonicMasker(double theSpacing)
+SetSpacing_CMR_HarmonicMasker(Float theSpacing)
 {
 	static const WChar	*funcName = wxT("SetSpacing_CMR_HarmonicMasker");
 
@@ -768,7 +768,7 @@ SetSpacing_CMR_HarmonicMasker(double theSpacing)
  */
 
 BOOLN
-SetMskmodfreq_CMR_HarmonicMasker(double theMskmodfreq)
+SetMskmodfreq_CMR_HarmonicMasker(Float theMskmodfreq)
 {
 	static const WChar	*funcName = wxT("SetMskmodfreq_CMR_HarmonicMasker");
 
@@ -791,7 +791,7 @@ SetMskmodfreq_CMR_HarmonicMasker(double theMskmodfreq)
  */
 
 BOOLN
-SetSigLevel_CMR_HarmonicMasker(double theSigLevel)
+SetSigLevel_CMR_HarmonicMasker(Float theSigLevel)
 {
 	static const WChar	*funcName = wxT("SetSigLevel_CMR_HarmonicMasker");
 
@@ -814,7 +814,7 @@ SetSigLevel_CMR_HarmonicMasker(double theSigLevel)
  */
 
 BOOLN
-SetSigFreq_CMR_HarmonicMasker(double theSigFreq)
+SetSigFreq_CMR_HarmonicMasker(Float theSigFreq)
 {
 	static const WChar	*funcName = wxT("SetSigFreq_CMR_HarmonicMasker");
 
@@ -837,7 +837,7 @@ SetSigFreq_CMR_HarmonicMasker(double theSigFreq)
  */
 
 BOOLN
-SetGateTime_CMR_HarmonicMasker(double theGateTime)
+SetGateTime_CMR_HarmonicMasker(Float theGateTime)
 {
 	static const WChar	*funcName = wxT("SetGateTime_CMR_HarmonicMasker");
 
@@ -860,7 +860,7 @@ SetGateTime_CMR_HarmonicMasker(double theGateTime)
  */
 
 BOOLN
-SetDuration_CMR_HarmonicMasker(double theDuration)
+SetDuration_CMR_HarmonicMasker(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_CMR_HarmonicMasker");
 
@@ -883,7 +883,7 @@ SetDuration_CMR_HarmonicMasker(double theDuration)
  */
 
 BOOLN
-SetSamplingInterval_CMR_HarmonicMasker(double theSamplingInterval)
+SetSamplingInterval_CMR_HarmonicMasker(Float theSamplingInterval)
 {
 	static const WChar	*funcName = wxT(
 	  "SetSamplingInterval_CMR_HarmonicMasker");
@@ -1044,9 +1044,9 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 	register ChanData	*outPtr;
 	int		i, k, n, chan, gatesample, silence, sample, nLow, nUpp, nTotal;
 	int		nmax, samplebeg;
-	double	batten, srate, onfreqmodphase, flankmodphase, sigphase, t;
-	double	flankmoddepth, sigAtten, lowAtten, uppAtten, gatefactor;
-	double	freqcomp, freqcomps[CMR_HARMONICMASKER_MAXNTOTAL], value;
+	Float	batten, srate, onfreqmodphase, flankmodphase, sigphase, t;
+	Float	flankmoddepth, sigAtten, lowAtten, uppAtten, gatefactor;
+	Float	freqcomp, freqcomps[CMR_HARMONICMASKER_MAXNTOTAL], value;
 	SignalDataPtr	outSignal;
 	CMRHarmMPtr	p = cMRHarmMPtr;
 
@@ -1107,24 +1107,24 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 	switch (p->spacingType) {
 	case GENERAL_SPACINGMODE_LINEAR:
 		for (i = 0; i <= (nLow - 1);i++)	{
-				freqcomp = p->sigFreq-p->spacing * (double)(nLow - i +
+				freqcomp = p->sigFreq-p->spacing * (Float)(nLow - i +
 				  p->nGapLow);
 				freqcomps[i] = freqcomp;
 			}
 			for (i = 1; i <= nUpp; i++)	{
-				freqcomp = p->sigFreq + p->spacing * (double)(i + p->nGapUpp);
+				freqcomp = p->sigFreq + p->spacing * (Float)(i + p->nGapUpp);
 				freqcomps[i + nLow -1] = freqcomp;
 			}
 		break;
 	case GENERAL_SPACINGMODE_OCTAVE:
 		for (i=0;i<=(nLow-1);i++)	{
-			freqcomp = p->sigFreq/(double)pow(2.0,((nLow - i + p->nGapLow) *
-			  (double)p->spacing));
+			freqcomp = p->sigFreq/(Float)pow(2.0,((nLow - i + p->nGapLow) *
+			  (Float)p->spacing));
 			freqcomps[i] = freqcomp;
 		}
 		for (i=1;i<=nUpp;i++)	{
-			freqcomp=p->sigFreq*(double)pow(2.0,(i+p->nGapUpp)*
-			  (double)p->spacing);
+			freqcomp=p->sigFreq*(Float)pow(2.0,(i+p->nGapUpp)*
+			  (Float)p->spacing);
 			freqcomps[i + nLow -1] = freqcomp;
 		}
 		break;
@@ -1155,7 +1155,7 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 				}
 				for (sample=silence; sample<(silence+gatesample); sample++) {
 					gatefactor = (1.0 - cos(((sample-silence) /
-					  (double) gatesample) * PI))/2.0;
+					  (Float) gatesample) * PI))/2.0;
 					outPtr[sample] *= gatefactor;
 					outPtr[outSignal->length-sample-1] *= gatefactor;
 				}
@@ -1170,21 +1170,21 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 				nmax = (int)((outSignal->length * p->mskmodfreq) / srate);
 				for (n=1; n<nmax ;n++)	{ // now we apply the gating windows
 					// it will not have an effect for the first 1/4 outSignal->length since values are already 0
-					samplebeg = (int) ((n - 0.5) * (double) mskmodsample);
+					samplebeg = (int) ((n - 0.5) * (Float) mskmodsample);
 					for (sample=0; sample<(int)(mskmodsample * 0.25); sample++) {
 						outPtr[sample+samplebeg] = 0;
-						gatefactor = (1.0 - cos(((sample) / (double) (mskmodsample*0.25)) * PI)); ///2.0;
+						gatefactor = (1.0 - cos(((sample) / (Float) (mskmodsample*0.25)) * PI)); ///2.0;
 						outPtr[sample+samplebeg+(int)(mskmodsample * 0.25)] *= gatefactor;  // thats the falling part
 						outPtr[(mskmodsample+samplebeg-1-sample-(int)(mskmodsample * 0.25))] *= gatefactor; //thats the falling part
 						outPtr[(mskmodsample+samplebeg-1-sample)]= 0; //fill the rest with zeros
 					}
 				}
 				n = nmax; //fill the rest with 0...
-				samplebeg = (int) ((n - 0.5) * (double) mskmodsample);
+				samplebeg = (int) ((n - 0.5) * (Float) mskmodsample);
 				if ((outSignal->length - samplebeg) > (mskmodsample-(int)(mskmodsample * 0.25)) ) { //...unless it is > 3/4 a period, then there is enough room for another tone pip
 					for (sample=0; sample<(int)(mskmodsample * 0.25); sample++) {
 						outPtr[sample+samplebeg] = 0;
-						gatefactor = (1.0 - cos(((sample) / (double) (mskmodsample*0.25)) * PI));///2.0;
+						gatefactor = (1.0 - cos(((sample) / (Float) (mskmodsample*0.25)) * PI));///2.0;
 						outPtr[(sample+samplebeg+(int)(mskmodsample * 0.25))] *= gatefactor;
 						outPtr[(mskmodsample+samplebeg-1-sample-(int)(mskmodsample * 0.25))] *= gatefactor;
 					}

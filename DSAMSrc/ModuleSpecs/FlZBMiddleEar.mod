@@ -14,8 +14,8 @@ proc_routine	RunModel;
 process_vars	true;
 typedef struct {
 
-	double	gainMax;			/* Middle ear maximum gain. */
-	double	preWarpingFreq;		/* prewarping frequency 1 kHz */
+	Float	gainMax;			/* Middle ear maximum gain. */
+	Float	preWarpingFreq;		/* prewarping frequency 1 kHz */
 
 } FLZBMEar;
 

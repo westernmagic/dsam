@@ -273,9 +273,9 @@ BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
 BOOLN	SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue,
 		  BOOLN readSPF);
 
-BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, double value);
+BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, Float value);
 
-BOOLN	SetRealSimPar_AppInterface(WChar *parName, double value);
+BOOLN	SetRealSimPar_AppInterface(WChar *parName, Float value);
 
 BOOLN	SetSegmentMode_AppInterface(WChar *theSegmentMode);
 

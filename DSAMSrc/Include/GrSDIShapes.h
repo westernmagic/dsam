@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		14 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -24,7 +24,8 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define SDI_STANDARD_SHAPE_WIDTH      100
+#define SDI_STANDARD_SHAPE_WIDTH	100
+#define SHAPE_DEBUG					1
 
 // Shape elements.
 #define SHAPE_XML_ANALYSIS_SHAPE_ELEMENT	wxT("analysis_shape")
@@ -53,6 +54,7 @@
 class SDIShape;
 class SDIEllipseShape;
 class SDIPolygonShape;
+class SDICompositeShape;
 class SDIRectangleShape;
 
 /******************************************************************************/
@@ -65,7 +67,7 @@ class SDIRectangleShape;
  * A few new shape classes so we have a 1:1 mapping
  * between palette symbol and unique class
  */
- 
+
 class SDIAnalysisShape: public SDIEllipseShape
 {
 	DECLARE_DYNAMIC_CLASS(SDIAnalysisShape)
@@ -78,11 +80,26 @@ class SDIAnalysisShape: public SDIEllipseShape
 
 };
 
+/*************************** SDIControlParentShape **********************************/
+
+class SDIControlParentShape: public SDIPolygonShape
+{
+	DECLARE_DYNAMIC_CLASS(SDIControlParentShape)
+
+  private:
+  public:
+	SDIControlParentShape(double width = 0.0, double height = 0.0);
+
+	void	AddXMLInfo(DSAMXMLNode *node);
+	bool	GetXMLInfo(wxXmlNode *myElement);
+
+};
+
 /*************************** SDIControlShape **********************************/
 
-class SDIControlShape: public SDIPolygonShape
+class SDIControlShape: public SDICompositeShape
 {
-	DECLARE_DYNAMIC_CLASS(SDIControlShape)
+	DECLARE_DYNAMIC_CLASS(SDICompositeShape)
 
   private:
   public:
@@ -90,6 +107,12 @@ class SDIControlShape: public SDIPolygonShape
 
 	void	AddXMLInfo(DSAMXMLNode *node);
 	bool	GetXMLInfo(wxXmlNode *myElement);
+
+	SDIShape *	GetParentShape(void)	{ return (SDIShape *)
+				  m_children.GetFirst()->GetData(); }
+#	if SHAPE_DEBUG
+	void	SetSize(double w, double h, bool recursive);
+#	endif // DEBUG
 
 };
 
@@ -99,7 +122,7 @@ class SDIControlShape: public SDIPolygonShape
  * A few new shape classes so we have a 1:1 mapping
  * between palette symbol and unique class
  */
- 
+
 class SDIDisplayShape: public SDIRectangleShape
 {
 	DECLARE_DYNAMIC_CLASS(SDIDisplayShape)
@@ -148,7 +171,7 @@ class SDILineShape: public wxLineShape
 	DECLARE_DYNAMIC_CLASS(SDILineShape)
 
   public:
- 
+
 	void	AddXMLArrowListInfo(DSAMXMLNode *node, wxNode *aNode);
 	void	AddXMLControlPointsInfo(DSAMXMLNode *node, wxNode *cPNode);
 	void	AddXMLInfo(DSAMXMLNode *node);

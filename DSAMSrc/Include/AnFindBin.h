@@ -49,11 +49,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, binWidthFlag, timeOffsetFlag, timeWidthFlag;
 	int		mode;
-	double	binWidth;
-	double	timeOffset;
-	double	timeWidth;
+	Float	binWidth;
+	Float	timeOffset;
+	Float	timeWidth;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -83,8 +82,6 @@ BOOLN	Calc_Analysis_FindBin(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_FindBin(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_FindBin(void);
-
 BOOLN	Free_Analysis_FindBin(void);
 
 UniParListPtr	GetUniParListPtr_Analysis_FindBin(void);
@@ -95,9 +92,7 @@ BOOLN	InitModeList_Analysis_FindBin(void);
 
 BOOLN	PrintPars_Analysis_FindBin(void);
 
-BOOLN	ReadPars_Analysis_FindBin(WChar *fileName);
-
-BOOLN	SetBinWidth_Analysis_FindBin(double theBinWidth);
+BOOLN	SetBinWidth_Analysis_FindBin(Float theBinWidth);
 
 BOOLN	SetMode_Analysis_FindBin(WChar *theMode);
 
@@ -105,12 +100,9 @@ BOOLN	InitModule_Analysis_FindBin(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_FindBin(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_FindBin(WChar *mode, double binWidth,
-			  double timeOffset, double timeWidth);
+BOOLN	SetTimeOffset_Analysis_FindBin(Float theTimeOffset);
 
-BOOLN	SetTimeOffset_Analysis_FindBin(double theTimeOffset);
-
-BOOLN	SetTimeWidth_Analysis_FindBin(double theTimeWidth);
+BOOLN	SetTimeWidth_Analysis_FindBin(Float theTimeWidth);
 
 BOOLN	SetUniParList_Analysis_FindBin(void);
 

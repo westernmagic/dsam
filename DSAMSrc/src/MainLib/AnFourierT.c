@@ -124,7 +124,6 @@ Init_Analysis_FourierT(ParameterSpecifier parSpec)
 	}
 	fourierTPtr->parSpec = parSpec;
 	fourierTPtr->updateProcessVariablesFlag = TRUE;
-	fourierTPtr->outputModeFlag = TRUE;
 	fourierTPtr->outputMode = ANALYSIS_FOURIERT_MODULUS_OUTPUTMODE;
 
 	InitOutputModeList_Analysis_FourierT();
@@ -198,28 +197,6 @@ GetUniParListPtr_Analysis_FourierT(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_FourierT(WChar * outputMode)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_FourierT");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetOutputMode_Analysis_FourierT(outputMode))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetOutputMode *********************************/
 
 /*
@@ -244,42 +221,12 @@ SetOutputMode_Analysis_FourierT(WChar * theOutputMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	fourierTPtr->outputModeFlag = TRUE;
 	fourierTPtr->outputMode = specifier;
 	return(TRUE);
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_FourierT(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_FourierT");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (fourierTPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!fourierTPtr->outputModeFlag) {
-		NotifyError(wxT("%s: outputMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
-/****************************** PrintPars *************************************/
+//****************************** PrintPars *************************************/
 
 /*
  * This routine prints all the module's parameters to the file stream.
@@ -291,55 +238,9 @@ PrintPars_Analysis_FourierT(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_FourierT");
 
-	if (!CheckPars_Analysis_FourierT()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Fourier Transform Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tOutput mode = %s \n"),
 	  fourierTPtr->outputModeList[fourierTPtr->outputMode].name);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_FourierT(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_FourierT");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	outputMode[MAXLINE];
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), outputMode))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_FourierT(outputMode)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -387,11 +288,9 @@ InitModule_Analysis_FourierT(ModulePtr theModule)
 	}
 	theModule->parsPtr = fourierTPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_FourierT;
 	theModule->Free = Free_Analysis_FourierT;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FourierT;
 	theModule->PrintPars = PrintPars_Analysis_FourierT;
-	theModule->ReadPars = ReadPars_Analysis_FourierT;
 	theModule->ResetProcess = ResetProcess_Analysis_FourierT;
 	theModule->RunProcess = Calc_Analysis_FourierT;
 	theModule->SetParsPointer = SetParsPointer_Analysis_FourierT;
@@ -485,8 +384,8 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 			}
 		}
 #		if HAVE_FFTW3
-			p->plan = fftw_plan_dft_r2c_1d(p->fTLength, (double *) p->fT[0], p->fT[0],
-			  FFTW_ESTIMATE);
+			p->plan = DSAM_FFTW_NAME(plan_dft_r2c_1d)(p->fTLength, (Float *) p->fT[0],
+			  p->fT[0], FFTW_ESTIMATE);
 #		endif
 		p->updateProcessVariablesFlag = FALSE;
 	}
@@ -508,7 +407,7 @@ FreeProcessVariables_Analysis_FourierT(void)
 
 #	if HAVE_FFTW3
 		if (fourierTPtr->plan) {
-			fftw_destroy_plan(fourierTPtr->plan);
+			DSAM_FFTW_NAME(destroy_plan)(fourierTPtr->plan);
 			fourierTPtr->plan = NULL;
 		}
 #	endif
@@ -547,15 +446,13 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Calc_Analysis_FourierT");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, outChan;
-	double	dF;
+	Float	dF;
 	ChanLen	i;
 	Complx	*fT;
 	SignalDataPtr	outSignal;
 	FourierTPtr	p = fourierTPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_FourierT())
-			return(FALSE);
 		if (!CheckData_Analysis_FourierT(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -601,7 +498,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 		inPtr = _InSig_EarObject(data, 0)->channel[outChan] + 1;
 #		if HAVE_FFTW3
 		{	/*     Braces required by MSVC Studio2005 */
-			double	*fTIn = (double *) fT++;
+			Float	*fTIn = (Float *) fT++;
 			for (i = 1; i < outSignal->length; i++)
 				*fTIn++ = *inPtr++;
 			for (; i < p->fTLength; i++)
@@ -621,7 +518,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 
 		fT = p->fT[data->threadIndex];
 #		if HAVE_FFTW3
-			fftw_execute_dft_r2c(p->plan, (double *) fT, fT);
+			DSAM_FFTW_NAME(execute_dft_r2c)(p->plan, (Float *) fT, fT);
 #		else
 			CalcComplex_FFT(fT, p->fTLength, FORWARD_FT);
 #		endif

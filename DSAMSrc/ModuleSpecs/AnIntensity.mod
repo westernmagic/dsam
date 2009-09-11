@@ -7,7 +7,7 @@ qualifier		Intensity;
 proc_routine	Calc;
 typedef struct {
 
-	double	timeOffset;
-	double	extent;
+	Float	timeOffset;
+	Float	extent;
 
 } Intensity;

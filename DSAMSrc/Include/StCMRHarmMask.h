@@ -6,8 +6,8 @@
  * 				Revised from the NeuroSound software code: Stim_CMR.
  * Author:		L. P. O'Mard
  * Created:		03 Nov 2008
- * Updated:	
- * Copyright:	(c) 2008, 
+ * Updated:
+ * Copyright:	(c) 2008,
  *
  *********************/
 
@@ -89,15 +89,15 @@ typedef struct {
 	int		nupp;
 	int		nGapLow;
 	int		nGapUpp;
-	double	lowFBLevel;
-	double	uppFBLevel;
-	double	oFMLevel;
-	double	spacing;
-	double	mskmodfreq;
-	double	sigLevel;
-	double	sigFreq;
-	double	gateTime;
-	double	duration, dt;
+	Float	lowFBLevel;
+	Float	uppFBLevel;
+	Float	oFMLevel;
+	Float	spacing;
+	Float	mskmodfreq;
+	Float	sigLevel;
+	Float	sigFreq;
+	Float	gateTime;
+	Float	duration, dt;
 
 	/* Private members */
 	NameSpecifier	*conditionList;
@@ -144,17 +144,17 @@ BOOLN	SetBinauralMode_CMR_HarmonicMasker(WChar * theBinauralMode);
 
 BOOLN	SetCondition_CMR_HarmonicMasker(WChar * theCondition);
 
-BOOLN	SetDuration_CMR_HarmonicMasker(double theDuration);
+BOOLN	SetDuration_CMR_HarmonicMasker(Float theDuration);
 
 BOOLN	SetEnabledPars_CMR_HarmonicMasker(void);
 
 BOOLN	SetFlankEar_CMR_HarmonicMasker(WChar *theFlankEar);
 
-BOOLN	SetGateTime_CMR_HarmonicMasker(double theGateTime);
+BOOLN	SetGateTime_CMR_HarmonicMasker(Float theGateTime);
 
-BOOLN	SetLowFBLevel_CMR_HarmonicMasker(double theLowFBLevel);
+BOOLN	SetLowFBLevel_CMR_HarmonicMasker(Float theLowFBLevel);
 
-BOOLN	SetMskmodfreq_CMR_HarmonicMasker(double theMskmodfreq);
+BOOLN	SetMskmodfreq_CMR_HarmonicMasker(Float theMskmodfreq);
 
 BOOLN	SetNGapLow_CMR_HarmonicMasker(int theNGapLow);
 
@@ -164,29 +164,29 @@ BOOLN	SetNlow_CMR_HarmonicMasker(int theNlow);
 
 BOOLN	SetNupp_CMR_HarmonicMasker(int theNupp);
 
-BOOLN	SetOFMLevel_CMR_HarmonicMasker(double theOFMLevel);
+BOOLN	SetOFMLevel_CMR_HarmonicMasker(Float theOFMLevel);
 
 BOOLN	SetOnFreqEar_CMR_HarmonicMasker(WChar * theOnFreqEar);
 
 BOOLN	SetParsPointer_CMR_HarmonicMasker(ModulePtr theModule);
 
-BOOLN	SetSamplingInterval_CMR_HarmonicMasker(double theSamplingInterval);
+BOOLN	SetSamplingInterval_CMR_HarmonicMasker(Float theSamplingInterval);
 
 BOOLN	SetSigEar_CMR_HarmonicMasker(WChar * theSigEar);
 
-BOOLN	SetSigFreq_CMR_HarmonicMasker(double theSigFreq);
+BOOLN	SetSigFreq_CMR_HarmonicMasker(Float theSigFreq);
 
-BOOLN	SetSigLevel_CMR_HarmonicMasker(double theSigLevel);
+BOOLN	SetSigLevel_CMR_HarmonicMasker(Float theSigLevel);
 
 BOOLN	SetSigMode_CMR_HarmonicMasker(WChar * theSigMode);
 
 BOOLN	SetSpacingType_CMR_HarmonicMasker(WChar * theSpacingType);
 
-BOOLN	SetSpacing_CMR_HarmonicMasker(double theSpacing);
+BOOLN	SetSpacing_CMR_HarmonicMasker(Float theSpacing);
 
 BOOLN	SetUniParList_CMR_HarmonicMasker(void);
 
-BOOLN	SetUppFBLevel_CMR_HarmonicMasker(double theUppFBLevel);
+BOOLN	SetUppFBLevel_CMR_HarmonicMasker(Float theUppFBLevel);
 
 __END_DECLS
 

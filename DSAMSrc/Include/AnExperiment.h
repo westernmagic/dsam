@@ -3,7 +3,7 @@
  * File:		AnExperiment.c
  * Purpose:		This module contains various analysis routines, which have
  *				been used in real experiments.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		19 Mar 1993
  * Updated:		10 Oct 1996
@@ -20,7 +20,7 @@
 
 #define ANALYSIS_MAX_INTENSITY_GUESS 50.0	/* Initial threshold intensity. */
 #define MAXIMUM_THRESHOLD_LOOP		20	/* - FindThresholdIntensity routine. */
-    
+
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
@@ -31,21 +31,21 @@
  */
 __BEGIN_DECLS
 
-BOOLN	Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
-		  double shortTermT1, double shortTermPeriod, double rapidAdaptPeriod);
+BOOLN	Calc2CompAdapt_ExpAnalysis(Float Tst[], Float Tr[], EarObjectPtr data,
+		  Float shortTermT1, Float shortTermPeriod, Float rapidAdaptPeriod);
 
-double	CalcQValue_ExpAnalysis( EarObjectPtr (* RunModel)(void),
-		  BOOLN (* SetStimulusFreq)(double), double centreFreq,
-		  double variationFromCF, double dBDownDiff,
-		  double initialFreqIncrement, double accuracy );
+Float	CalcQValue_ExpAnalysis( EarObjectPtr (* RunModel)(void),
+		  BOOLN (* SetStimulusFreq)(Float), Float centreFreq,
+		  Float variationFromCF, Float dBDownDiff,
+		  Float initialFreqIncrement, Float accuracy );
 
-double	FindThresholdIntensity_ExpAnalysis( EarObjectPtr (* RunModel)(void),
-		  BOOLN (* SetIntensity)(double), double targetThreshold,
-		  double targetAccuracy, BOOLN *firstPass );
+Float	FindThresholdIntensity_ExpAnalysis( EarObjectPtr (* RunModel)(void),
+		  BOOLN (* SetIntensity)(Float), Float targetThreshold,
+		  Float targetAccuracy, BOOLN *firstPass );
 
-double	FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
-		  BOOLN (* SetIntensity)(double), double targetThreshold,
-		  double targetAccuracy, double initialDeltaIntensity);
+Float	FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
+		  BOOLN (* SetIntensity)(Float), Float targetThreshold,
+		  Float targetAccuracy, Float initialDeltaIntensity);
 
 __END_DECLS
 

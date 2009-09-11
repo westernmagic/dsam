@@ -125,22 +125,6 @@ Init_BasilarM_Zhang(ParameterSpecifier parSpec)
 	}
 	bMZhangPtr->parSpec = parSpec;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
-	bMZhangPtr->modelFlag = TRUE;
-	bMZhangPtr->speciesFlag = TRUE;
-	bMZhangPtr->microPaInputFlag = TRUE;
-	bMZhangPtr->nbOrderFlag = TRUE;
-	bMZhangPtr->wbOrderFlag = TRUE;
-	bMZhangPtr->cornerCPFlag = TRUE;
-	bMZhangPtr->slopeCPFlag = TRUE;
-	bMZhangPtr->strenghCPFlag = TRUE;
-	bMZhangPtr->x0CPFlag = TRUE;
-	bMZhangPtr->s0CPFlag = TRUE;
-	bMZhangPtr->x1CPFlag = TRUE;
-	bMZhangPtr->s1CPFlag = TRUE;
-	bMZhangPtr->shiftCPFlag = TRUE;
-	bMZhangPtr->cutCPFlag = TRUE;
-	bMZhangPtr->kCPFlag = TRUE;
-	bMZhangPtr->r0Flag = TRUE;
 	bMZhangPtr->model = BASILARM_ZHANG_MODEL_FEED_FORWARD_NL;
 	bMZhangPtr->species = UT_ZHANG_SPECIES_HUMAN;
 	bMZhangPtr->microPaInput = GENERAL_BOOLEAN_ON;
@@ -336,7 +320,6 @@ SetModel_BasilarM_Zhang(WChar * theModel)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->modelFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->model = specifier;
 	return(TRUE);
@@ -368,7 +351,6 @@ SetSpecies_BasilarM_Zhang(WChar * theSpecies)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->speciesFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->species = specifier;
 	return(TRUE);
@@ -399,7 +381,6 @@ SetMicroPaInput_BasilarM_Zhang(WChar * theMicroPaInput)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->microPaInputFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->microPaInput = specifier;
 	return(TRUE);
@@ -424,7 +405,6 @@ SetNbOrder_BasilarM_Zhang(int theNbOrder)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->nbOrderFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->nbOrder = theNbOrder;
 	return(TRUE);
@@ -449,7 +429,6 @@ SetWbOrder_BasilarM_Zhang(int theWbOrder)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->wbOrderFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->wbOrder = theWbOrder;
 	return(TRUE);
@@ -465,7 +444,7 @@ SetWbOrder_BasilarM_Zhang(int theWbOrder)
  */
 
 BOOLN
-SetCornerCP_BasilarM_Zhang(double theCornerCP)
+SetCornerCP_BasilarM_Zhang(Float theCornerCP)
 {
 	static const WChar	*funcName = wxT("SetCornerCP_BasilarM_Zhang");
 
@@ -474,7 +453,6 @@ SetCornerCP_BasilarM_Zhang(double theCornerCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->cornerCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->cornerCP = theCornerCP;
 	return(TRUE);
@@ -490,7 +468,7 @@ SetCornerCP_BasilarM_Zhang(double theCornerCP)
  */
 
 BOOLN
-SetSlopeCP_BasilarM_Zhang(double theSlopeCP)
+SetSlopeCP_BasilarM_Zhang(Float theSlopeCP)
 {
 	static const WChar	*funcName = wxT("SetSlopeCP_BasilarM_Zhang");
 
@@ -499,7 +477,6 @@ SetSlopeCP_BasilarM_Zhang(double theSlopeCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->slopeCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->slopeCP = theSlopeCP;
 	return(TRUE);
@@ -515,7 +492,7 @@ SetSlopeCP_BasilarM_Zhang(double theSlopeCP)
  */
 
 BOOLN
-SetStrenghCP_BasilarM_Zhang(double theStrenghCP)
+SetStrenghCP_BasilarM_Zhang(Float theStrenghCP)
 {
 	static const WChar	*funcName = wxT("SetStrenghCP_BasilarM_Zhang");
 
@@ -524,7 +501,6 @@ SetStrenghCP_BasilarM_Zhang(double theStrenghCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->strenghCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->strenghCP = theStrenghCP;
 	return(TRUE);
@@ -540,7 +516,7 @@ SetStrenghCP_BasilarM_Zhang(double theStrenghCP)
  */
 
 BOOLN
-SetX0CP_BasilarM_Zhang(double theX0CP)
+SetX0CP_BasilarM_Zhang(Float theX0CP)
 {
 	static const WChar	*funcName = wxT("SetX0CP_BasilarM_Zhang");
 
@@ -549,7 +525,6 @@ SetX0CP_BasilarM_Zhang(double theX0CP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->x0CPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->x0CP = theX0CP;
 	return(TRUE);
@@ -565,7 +540,7 @@ SetX0CP_BasilarM_Zhang(double theX0CP)
  */
 
 BOOLN
-SetS0CP_BasilarM_Zhang(double theS0CP)
+SetS0CP_BasilarM_Zhang(Float theS0CP)
 {
 	static const WChar	*funcName = wxT("SetS0CP_BasilarM_Zhang");
 
@@ -574,7 +549,6 @@ SetS0CP_BasilarM_Zhang(double theS0CP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->s0CPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->s0CP = theS0CP;
 	return(TRUE);
@@ -590,7 +564,7 @@ SetS0CP_BasilarM_Zhang(double theS0CP)
  */
 
 BOOLN
-SetX1CP_BasilarM_Zhang(double theX1CP)
+SetX1CP_BasilarM_Zhang(Float theX1CP)
 {
 	static const WChar	*funcName = wxT("SetX1CP_BasilarM_Zhang");
 
@@ -599,7 +573,6 @@ SetX1CP_BasilarM_Zhang(double theX1CP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->x1CPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->x1CP = theX1CP;
 	return(TRUE);
@@ -615,7 +588,7 @@ SetX1CP_BasilarM_Zhang(double theX1CP)
  */
 
 BOOLN
-SetS1CP_BasilarM_Zhang(double theS1CP)
+SetS1CP_BasilarM_Zhang(Float theS1CP)
 {
 	static const WChar	*funcName = wxT("SetS1CP_BasilarM_Zhang");
 
@@ -624,7 +597,6 @@ SetS1CP_BasilarM_Zhang(double theS1CP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->s1CPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->s1CP = theS1CP;
 	return(TRUE);
@@ -640,7 +612,7 @@ SetS1CP_BasilarM_Zhang(double theS1CP)
  */
 
 BOOLN
-SetShiftCP_BasilarM_Zhang(double theShiftCP)
+SetShiftCP_BasilarM_Zhang(Float theShiftCP)
 {
 	static const WChar	*funcName = wxT("SetShiftCP_BasilarM_Zhang");
 
@@ -649,7 +621,6 @@ SetShiftCP_BasilarM_Zhang(double theShiftCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->shiftCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->shiftCP = theShiftCP;
 	return(TRUE);
@@ -665,7 +636,7 @@ SetShiftCP_BasilarM_Zhang(double theShiftCP)
  */
 
 BOOLN
-SetCutCP_BasilarM_Zhang(double theCutCP)
+SetCutCP_BasilarM_Zhang(Float theCutCP)
 {
 	static const WChar	*funcName = wxT("SetCutCP_BasilarM_Zhang");
 
@@ -674,7 +645,6 @@ SetCutCP_BasilarM_Zhang(double theCutCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->cutCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->cutCP = theCutCP;
 	return(TRUE);
@@ -699,7 +669,6 @@ SetKCP_BasilarM_Zhang(int theKCP)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->kCPFlag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->kCP = theKCP;
 	return(TRUE);
@@ -715,7 +684,7 @@ SetKCP_BasilarM_Zhang(int theKCP)
  */
 
 BOOLN
-SetR0_BasilarM_Zhang(double theR0)
+SetR0_BasilarM_Zhang(Float theR0)
 {
 	static const WChar	*funcName = wxT("SetR0_BasilarM_Zhang");
 
@@ -724,7 +693,6 @@ SetR0_BasilarM_Zhang(double theR0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMZhangPtr->r0Flag = TRUE;
 	bMZhangPtr->updateProcessVariablesFlag = TRUE;
 	bMZhangPtr->r0 = theR0;
 	return(TRUE);
@@ -766,100 +734,6 @@ SetCFList_BasilarM_Zhang(CFListPtr theCFList)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_BasilarM_Zhang(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_BasilarM_Zhang");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (bMZhangPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!bMZhangPtr->modelFlag) {
-		NotifyError(wxT("%s: model variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->speciesFlag) {
-		NotifyError(wxT("%s: species variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->microPaInputFlag) {
-		NotifyError(wxT("%s: microPaInput variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->nbOrderFlag) {
-		NotifyError(wxT("%s: nbOrder variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->wbOrderFlag) {
-		NotifyError(wxT("%s: wbOrder variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->cornerCPFlag) {
-		NotifyError(wxT("%s: cornerCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->slopeCPFlag) {
-		NotifyError(wxT("%s: slopeCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->strenghCPFlag) {
-		NotifyError(wxT("%s: strenghCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->x0CPFlag) {
-		NotifyError(wxT("%s: x0CP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->s0CPFlag) {
-		NotifyError(wxT("%s: s0CP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->x1CPFlag) {
-		NotifyError(wxT("%s: x1CP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->s1CPFlag) {
-		NotifyError(wxT("%s: s1CP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->shiftCPFlag) {
-		NotifyError(wxT("%s: shiftCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->cutCPFlag) {
-		NotifyError(wxT("%s: cutCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->kCPFlag) {
-		NotifyError(wxT("%s: kCP variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMZhangPtr->r0Flag) {
-		NotifyError(wxT("%s: r0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckPars_CFList(bMZhangPtr->cFList)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** GetCFListPtr **********************************/
 
 /*
@@ -896,11 +770,6 @@ PrintPars_BasilarM_Zhang(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_BasilarM_Zhang");
 
-	if (!CheckPars_BasilarM_Zhang()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Zhang et al. BM Module Parameters:-\n"));
 	DPrint(wxT("\tModel = %s,"), bMZhangPtr->modelList[bMZhangPtr->
 	  model].name);
@@ -974,7 +843,6 @@ InitModule_BasilarM_Zhang(ModulePtr theModule)
 	}
 	theModule->parsPtr = bMZhangPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_BasilarM_Zhang;
 	theModule->Free = Free_BasilarM_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_Zhang;
 	theModule->PrintPars = PrintPars_BasilarM_Zhang;
@@ -1023,10 +891,10 @@ CheckData_BasilarM_Zhang(EarObjectPtr data)
 /*/ ----------------------------------------------------------------------------
  ** Calculate the location on Basilar Membrane from best frequency
 */
-double
-CochleaF2x_BasilarM_Zhang(int species,double f)
+Float
+CochleaF2x_BasilarM_Zhang(int species,Float f)
 {
-  double x;
+  Float x;
   switch(species)
     {
     case 0: /*/human */
@@ -1050,10 +918,10 @@ CochleaF2x_BasilarM_Zhang(int species,double f)
 /* ----------------------------------------------------------------------------
  ** Calculate the best frequency from the location on basilar membrane
  */
-double
-CochleaX2f_BasilarM_Zhang(int species,double x)
+Float
+CochleaX2f_BasilarM_Zhang(int species,Float x)
 {
-  double f;
+  Float f;
   switch(species)
     {
     case 0: /*human */
@@ -1081,14 +949,14 @@ CochleaX2f_BasilarM_Zhang(int species,double x)
  * which is where the original code differed.  I do not know where it came from.
  */
 
-double
-GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
-  double* _taumin, double* _taurange)
+Float
+GetTau_BasilarM_Zhang(int species, Float cf,int order, Float* _taumax,
+  Float* _taumin, Float* _taurange)
 {
-  double taumin,taumax = 0.0,taurange;
-  double ss0,cc0,ss1,cc1;
-  double Q10,bw,gain,ratio;
-  double xcf, x1000;
+  Float taumin,taumax = 0.0,taurange;
+  Float ss0,cc0,ss1,cc1;
+  Float Q10,bw,gain,ratio;
+  Float xcf, x1000;
   gain = 20+42*log10(cf/1e3);     /*/ estimate compression gain of the filter */
   if(gain>70) gain = 70;
   if(gain<15) gain = 15;
@@ -1153,11 +1021,11 @@ GetTau_BasilarM_Zhang(int species, double cf,int order, double* _taumax,
    @author Xuedong Zhang
  */
 
-double
-RunGammaTone_BasilarM_Zhang(TGammaTone *p, double x)
+Float
+RunGammaTone_BasilarM_Zhang(TGammaTone *p, Float x)
 {
 	int		i,j;
-	double	out;
+	Float	out;
 	Complex	c1, c2, c_phase;
 
 	x *= p->gain;
@@ -1188,11 +1056,11 @@ RunGammaTone_BasilarM_Zhang(TGammaTone *p, double x)
  */
 
 void
-RunGammaTone2_BasilarM_Zhang(TGammaTone *p, const double *in, double *out,
+RunGammaTone2_BasilarM_Zhang(TGammaTone *p, const Float *in, Float *out,
   const int length)
 {
   int register loopSig,loopGT;
-  double	x;
+  Float	x;
   Complex	c1,c2,c_phase;
 
 	for(loopSig = 0; loopSig < length; loopSig++) {
@@ -1231,9 +1099,9 @@ RunGammaTone2_BasilarM_Zhang(TGammaTone *p, const double *in, double *out,
    it recalculate the c1 c2 used by the filtering function
  */
 void
-setGammaToneTau_BasilarM_Zhang(TGammaTone *p, double tau)
+setGammaToneTau_BasilarM_Zhang(TGammaTone *p, Float tau)
 {
-  double dtmp;
+  Float dtmp;
   p->tau = tau;
   dtmp = tau*2.0/p->tdres;
   p->c1LP = (dtmp-1)/(dtmp+1);
@@ -1249,10 +1117,10 @@ setGammaToneTau_BasilarM_Zhang(TGammaTone *p, double tau)
  */
 
 void
-SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,double _tdres,
-  double _Fshift,double _tau,double _gain,int _order)
+SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,Float _tdres,
+  Float _Fshift,Float _tau,Float _gain,int _order)
 {
-	double c;
+	Float c;
 	int	i;
 
 	res->tdres = _tdres;
@@ -1297,13 +1165,13 @@ SetZhangGTCoeffs_BasilarM_Zhang(TGammaTone* res,double _tdres,
 
 BOOLN
 InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm, int model,
-  int species, double tdres, double cf)
+  int species, Float tdres, Float cf)
 {
 	static const WChar *funcName = wxT("initBasilarMembrane");
 	int		bmmodel = 0;
-	double	taumax,taumin,taurange; /* general */
-	double	x, centerfreq,tauwb,tauwbmin,dtmp,wb_gain; /* for wb */
-	double	dc,R,minR; /* for afterohc */
+	Float	taumax,taumin,taurange; /* general */
+	Float	x, centerfreq,tauwb,tauwbmin,dtmp,wb_gain; /* for wb */
+	Float	dc,R,minR; /* for afterohc */
 	TNonLinear *p;
 
 	if (!bm) {
@@ -1485,13 +1353,13 @@ FreeProcessVariables_BasilarM_Zhang(void)
  */
 
 void
-Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const double *in,
-  double *out, const int length)
+Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm, const Float *in,
+  Float *out, const int length)
 {
 	register int i;
-	double wb_gain,dtmp,taunow;
-	double wbout,ohcout;
-	double x, x1,out1;
+	Float wb_gain,dtmp,taunow;
+	Float wbout,ohcout;
+	Float x, x1,out1;
 
 	for (i = 0; i < length; i++) {
 		x = in[i];
@@ -1575,8 +1443,6 @@ RunModel_BasilarM_Zhang(EarObjectPtr data)
 	BMZhangPtr	p = bMZhangPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_BasilarM_Zhang())
-			return(FALSE);
 		if (!CheckData_BasilarM_Zhang(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

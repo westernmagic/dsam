@@ -40,16 +40,14 @@ typedef enum {
 } BandPassFParSpecifier;
 
 typedef struct {
-	
+
 	ParameterSpecifier parSpec;
-	
-	BOOLN	cascadeFlag, upperCutOffFreqFlag, lowerCutOffFreqFlag;
-	BOOLN	preAttenuationFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 	int		cascade;
-	double	preAttenuation;			/* Pre-attenuation for filter. */
-	double	upperCutOffFreq, lowerCutOffFreq;
-	
+	Float	preAttenuation;			/* Pre-attenuation for filter. */
+	Float	upperCutOffFreq, lowerCutOffFreq;
+
 	/* Private Members */
 	UniParListPtr	parList;
 	int		numChannels;
@@ -73,8 +71,6 @@ extern	BandPassFPtr	bandPassFPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_Filter_BandPass(void);
-
 BOOLN	Init_Filter_BandPass(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_Filter_BandPass(EarObjectPtr data);
@@ -87,26 +83,21 @@ UniParListPtr	GetUniParListPtr_Filter_BandPass(void);
 
 BOOLN	PrintPars_Filter_BandPass(void);
 
-BOOLN	ReadPars_Filter_BandPass(WChar *fileName);
-
 void	ResetProcess_Filter_BandPass(EarObjectPtr data);
 
 BOOLN	RunModel_Filter_BandPass(EarObjectPtr data);
 
-BOOLN	SetLowerCutOffFreq_Filter_BandPass(double theLowerCutOffFreq);
+BOOLN	SetLowerCutOffFreq_Filter_BandPass(Float theLowerCutOffFreq);
 
 BOOLN	SetCascade_Filter_BandPass(int theCascade);
 
-BOOLN	SetPreAttenuation_Filter_BandPass(double thePreAttenuation);
-		  
+BOOLN	SetPreAttenuation_Filter_BandPass(Float thePreAttenuation);
+
 BOOLN	InitModule_Filter_BandPass(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Filter_BandPass(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_BandPass(int theCascade, double theLowerCutOffFreq,
-		  double theUpperCutOffFreq, double preAttenuation);
-
-BOOLN	SetUpperCutOffFreq_Filter_BandPass(double theUpperCutOffFreq);
+BOOLN	SetUpperCutOffFreq_Filter_BandPass(Float theUpperCutOffFreq);
 
 BOOLN	SetUniParList_Filter_BandPass(void);
 

@@ -102,9 +102,6 @@ Init_Analysis_ISIH(ParameterSpecifier parSpec)
 	}
 	interSIHPtr->parSpec = parSpec;
 	interSIHPtr->updateProcessVariablesFlag = TRUE;
-	interSIHPtr->orderFlag = TRUE;
-	interSIHPtr->eventThresholdFlag = TRUE;
-	interSIHPtr->maxIntervalFlag = TRUE;
 	interSIHPtr->order = -1;
 	interSIHPtr->eventThreshold = 0.0;
 	interSIHPtr->maxInterval = -1.0;
@@ -183,33 +180,6 @@ GetUniParListPtr_Analysis_ISIH(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_ISIH(int order, double eventThreshold,
-  double maxInterval)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_ISIH");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetOrder_Analysis_ISIH(order))
-		ok = FALSE;
-	if (!SetEventThreshold_Analysis_ISIH(eventThreshold))
-		ok = FALSE;
-	if (!SetMaxInterval_Analysis_ISIH(maxInterval))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetOrder **************************************/
 
 /*
@@ -228,7 +198,6 @@ SetOrder_Analysis_ISIH(int theOrder)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	interSIHPtr->orderFlag = TRUE;
 	interSIHPtr->order = theOrder;
 	return(TRUE);
 
@@ -243,7 +212,7 @@ SetOrder_Analysis_ISIH(int theOrder)
  */
 
 BOOLN
-SetEventThreshold_Analysis_ISIH(double theEventThreshold)
+SetEventThreshold_Analysis_ISIH(Float theEventThreshold)
 {
 	static const WChar	*funcName = wxT("SetEventThreshold_Analysis_ISIH");
 
@@ -252,7 +221,6 @@ SetEventThreshold_Analysis_ISIH(double theEventThreshold)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	interSIHPtr->eventThresholdFlag = TRUE;
 	interSIHPtr->eventThreshold = theEventThreshold;
 	return(TRUE);
 
@@ -267,7 +235,7 @@ SetEventThreshold_Analysis_ISIH(double theEventThreshold)
  */
 
 BOOLN
-SetMaxInterval_Analysis_ISIH(double theMaxInterval)
+SetMaxInterval_Analysis_ISIH(Float theMaxInterval)
 {
 	static const WChar	*funcName = wxT("SetMaxInterval_Analysis_ISIH");
 
@@ -276,46 +244,8 @@ SetMaxInterval_Analysis_ISIH(double theMaxInterval)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	interSIHPtr->maxIntervalFlag = TRUE;
 	interSIHPtr->maxInterval = theMaxInterval;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_ISIH(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_ISIH");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (interSIHPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!interSIHPtr->orderFlag) {
-		NotifyError(wxT("%s: order variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!interSIHPtr->eventThresholdFlag) {
-		NotifyError(wxT("%s: eventThreshold variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!interSIHPtr->maxIntervalFlag) {
-		NotifyError(wxT("%s: maxInterval variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -331,11 +261,6 @@ PrintPars_Analysis_ISIH(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_ISIH");
 
-	if (!CheckPars_Analysis_ISIH()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Inter-Spike Interval Histogram (ISIH) Module Parameters:-\n"));
 	DPrint(wxT("\tOrder = "));
 	if (interSIHPtr->order > 0)
@@ -349,52 +274,6 @@ PrintPars_Analysis_ISIH(void)
 		DPrint(wxT("%g ms.\n"), MSEC(interSIHPtr->maxInterval));
 	else
 		DPrint(wxT("end of signal.\n"));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_ISIH(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_ISIH");
-	BOOLN	ok;
-	WChar	*filePath;
-	int		order;
-	double	eventThreshold, maxInterval;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &order))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &eventThreshold))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxInterval))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_ISIH(order, eventThreshold, maxInterval)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -442,11 +321,9 @@ InitModule_Analysis_ISIH(ModulePtr theModule)
 	}
 	theModule->parsPtr = interSIHPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_ISIH;
 	theModule->Free = Free_Analysis_ISIH;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_ISIH;
 	theModule->PrintPars = PrintPars_Analysis_ISIH;
-	theModule->ReadPars = ReadPars_Analysis_ISIH;
 	theModule->ResetProcess = ResetProcess_Analysis_ISIH;
 	theModule->RunProcess = Calc_Analysis_ISIH;
 	theModule->SetParsPointer = SetParsPointer_Analysis_ISIH;
@@ -471,7 +348,7 @@ BOOLN
 CheckData_Analysis_ISIH(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_ISIH");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -580,8 +457,6 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 
 	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_ISIH())
-			return(FALSE);
 		if (!CheckData_Analysis_ISIH(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

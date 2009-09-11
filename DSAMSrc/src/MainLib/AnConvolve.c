@@ -106,7 +106,7 @@ CheckData_Analysis_Convolution(EarObjectPtr data)
 		return(FALSE);
 	}
 	if (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(data, 1)->dt) >
-	  DBL_EPSILON) {
+	  DSAM_EPSILON) {
 		NotifyError(wxT("%s: Input signals do not have the same sampling ")
 		  wxT("interval (%.10g/%.10g s)."), funcName, _InSig_EarObject(data,
 		  0)->dt, _InSig_EarObject(data, 1)->dt);		

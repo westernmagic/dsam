@@ -157,9 +157,6 @@ DSAMXMLDocument::AddSimObjects(DSAMXMLNode *parent, DatumPtr start)
 			AddShapeInfo(objectElement, pc->shapePtr);
 			parent->AddChild(objectElement);
 			break; }
-		case STOP:
-			return(pc);
-			break;
 		default:
 			NotifyError(wxT("%s: Not yet implemented (%d)"), funcName, pc->
 			  type);
@@ -219,7 +216,7 @@ DSAMXMLDocument::AddParGeneral(DSAMXMLNode *parent, UniParPtr p)
 		  iCNode->next) {
 			AddParList(iCElement, ((IonChannelPtr) iCNode->data)->parList);
 		}
-		parent->AddChild(iCElement);
+		iCListElement->AddChild(iCElement);
 		break; }
 	case UNIPAR_PARARRAY: {
 		DSAMXMLNode *parArrayElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
@@ -523,14 +520,16 @@ DSAMXMLDocument::GetICListInfo(wxXmlNode *iCListElement, UniParList *parList)
 		  wxT("parameters"), funcName);
 		return(false);
 	}
-	for (iCElement = parListElement->GetNext(); iCElement; iCElement =
-	  iCElement->GetNext()) {
-		if (iCElement->GetName() != DSAM_XML_ION_CHANNELS_ELEMENT) {
-			XMLNotifyError(iCElement, wxT("%s: Illegal element find."),
-			  funcName);
-			return(false);
-		}
-		if ((iCParListElement = iCElement->GetChildren()) == NULL) {
+	if ((iCElement = parListElement->GetNext()) && (iCElement->GetName() !=
+	  DSAM_XML_ION_CHANNELS_ELEMENT)) {
+		XMLNotifyError(iCListElement, wxT("%s: No ion_channel information ")
+		  wxT("found."), funcName);
+		return(false);
+	}
+		
+	for (iCParListElement = iCElement->GetChildren(); iCParListElement;
+	  iCParListElement = iCParListElement->GetNext()) {
+		if (iCParListElement->GetName() != DSAM_XML_PAR_LIST_ELEMENT) {
 			XMLNotifyError(iCElement, wxT("%s: Could not find an ion channel ")
 			  DSAM_XML_PAR_LIST_ELEMENT wxT(" element."), funcName);
 			return(false);
@@ -697,7 +696,7 @@ DSAMXMLDocument::GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p)
 /******************************************************************************/
 
 DatumPtr
-DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
+DSAMXMLDocument::InstallProcess(DatumPtr *simPtr, wxXmlNode *objectElement)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallProcess");
 	wxString	moduleName, enabledStatus;
@@ -709,7 +708,7 @@ DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
 		  funcName);
 		return(NULL);
 	}
-	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
+	if ((pc = InstallInst(simPtr, objectElement, PROCESS)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise ")
 		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
@@ -758,13 +757,13 @@ DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
 /******************************************************************************/
 
 DatumPtr
-DSAMXMLDocument::InstallInst(wxXmlNode *objectElement, int type)
+DSAMXMLDocument::InstallInst(DatumPtr *simPtr, wxXmlNode *objectElement, int type)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallInst");
 	wxString	label;
 	DatumPtr	pc;
 
-	if ((pc = InstallInst_Utility_Datum(simScriptPtr->simPtr, type)) == NULL) {
+	if ((pc = InstallInst_Utility_Datum(simPtr, type)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not install ")
 		  wxT("instruction"), funcName);
 		return(NULL);
@@ -780,10 +779,9 @@ DSAMXMLDocument::InstallInst(wxXmlNode *objectElement, int type)
 /******************************************************************************/
 
 bool
-DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
+DSAMXMLDocument::InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimElement)
 {
-	static const wxChar *funcName = wxT(
-	  "DSAMXMLDocument::InstallSimulationNodes");
+	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallSimulationNodes");
 	long	longVal;
 	wxString	label, objectType, propVal;
 	SymbolPtr	sp;
@@ -800,7 +798,7 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 		}
 		child = objectElement->GetChildren();
 		if (objectType.compare(DSAM_XML_PROCESS_ATTRIBUTE_VALUE) == 0) {
-			if ((pc = InstallProcess(objectElement)) == NULL) {
+			if ((pc = InstallProcess(simPtr, objectElement)) == NULL) {
 				XMLNotifyError(objectElement, wxT("%s: Could not install ")
 				  wxT("simulation object"), funcName);
 				return(false);
@@ -810,7 +808,7 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 		  ), (wxChar *) objectType.c_str())) != NULL) {
 			switch (sp->type) {
 			case REPEAT:
-				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(simPtr, objectElement, sp->type)) == NULL)
 					break;
 				if (!objectElement->GetPropVal(DSAM_XML_COUNT_ATTRIBUTE, &propVal)) {
 					XMLNotifyError(objectElement, wxT("%s: Could not find ")
@@ -822,13 +820,11 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 				GetShapeInfo(child, pc);
 				while (child->GetName() != DSAM_XML_OBJECT_ELEMENT)
 					child = child->GetNext();
-				if (!InstallSimulationNodes(child))
+				if (!InstallSimulationNodes(&pc->u.loop.pc, child))
 					return(false);
-				pc->u.loop.stopPC = InstallInst_Utility_Datum(simScriptPtr->
-				  simPtr, STOP);
 				break;
 			case RESET:
-				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(simPtr, objectElement, sp->type)) == NULL)
 					break;
 				if (!objectElement->GetPropVal(DSAM_XML_OBJLABEL_ATTRIBUTE, &label)) {
 					XMLNotifyError(objectElement, wxT("%s: reset process label ")
@@ -884,7 +880,7 @@ DSAMXMLDocument::GetSimulationInfo(wxXmlNode *simElement)
 		GetParListInfo(parListElement, GetUniParListPtr_ModuleMgr(
 		  mySimProcess));
 	startSimElement = parListElement->GetNext();
-	if (!InstallSimulationNodes(startSimElement)) {
+	if (!InstallSimulationNodes(simScriptPtr->simPtr, startSimElement)) {
 		XMLNotifyError(simElement, wxT("%s: Could not install simulation."),
 		  funcName);
 		ok = false;
@@ -893,11 +889,8 @@ DSAMXMLDocument::GetSimulationInfo(wxXmlNode *simElement)
 	if (ok)
 		ok = CXX_BOOL(ResolveInstLabels_Utility_Datum(simulation,
 		  simScriptPtr->labelBList));
-	if (ok && !SetDefaultConnections_Utility_Datum(simulation)) {
-		XMLNotifyError(simElement, wxT("%s Could not set default forward ")
-		  wxT("connections"), funcName);
-		ok = false;
-	}
+	if (ok)
+		SetDefaultConnections_Utility_Datum(simulation);
 	if (ok)
 		GetConnectionsInfo(simElement);
 	if (ok && !SetSimulation_Utility_SimScript(simulation)) {

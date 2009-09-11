@@ -170,9 +170,9 @@ SetDefaultGC_arrayNArrays_BasilarM_GammaChirp_Dyn(void)
 {
 	static const WChar	*funcName = wxT("SetDefaultGC_arrayNArrays_BasilarM_GammaChirp_Dyn");
 	int		i;
-	double	gC_frat[] = {0.466, 0.0, 0.0109, 0.0};
-	double	gC_b2[] = {2.17, 0.0, 0.0, 0.0};
-	double	gC_c2[] = {2.2, 0.0, 0.0, 0.0};
+	Float	gC_frat[] = {0.466, 0.0, 0.0109, 0.0};
+	Float	gC_b2[] = {2.17, 0.0, 0.0, 0.0};
+	Float	gC_c2[] = {2.2, 0.0, 0.0, 0.0};
 
 	if (!AllocGC_arrayN_BasilarM_GammaChirp_Dyn(BM_GC_DYN_NUM_GC_ARRAYS_N)) {
 		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
@@ -200,7 +200,7 @@ SetDefaultLvEst_arrayNArrays_BasilarM_GammaChirp_Dyn(void)
 {
 	static const WChar	*funcName = wxT("SetDefaultLvEst_arrayNArrays_BasilarM_GammaChirp_Dyn");
 	int		i;
-	double	lvEst_Pwr[] = {1.5, 0.5};
+	Float	lvEst_Pwr[] = {1.5, 0.5};
 
 	if (!AllocLvEst_arrayN_BasilarM_GammaChirp_Dyn(BM_GC_DYN_NUM_LVLEST_ARRAYS_N)) {
 		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
@@ -514,15 +514,15 @@ AllocGC_arrayN_BasilarM_GammaChirp_Dyn(int gC_arrayN)
 		return(TRUE);
 	if (bMDGammaCPtr->gC_frat)
 		free(bMDGammaCPtr->gC_frat);
-	if ((bMDGammaCPtr->gC_frat = (double *) calloc(gC_arrayN, sizeof(
-	  double))) == NULL) {
+	if ((bMDGammaCPtr->gC_frat = (Float *) calloc(gC_arrayN, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' gC_frat."),
 		  funcName, gC_arrayN);
 		return(FALSE);
 	}
 	if (bMDGammaCPtr->gC_b2)
 		free(bMDGammaCPtr->gC_b2);
-	if ((bMDGammaCPtr->gC_b2 = (double *) calloc(gC_arrayN, sizeof(double)))
+	if ((bMDGammaCPtr->gC_b2 = (Float *) calloc(gC_arrayN, sizeof(Float)))
 	  == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' gC_b2."),
 		  funcName, gC_arrayN);
@@ -530,7 +530,7 @@ AllocGC_arrayN_BasilarM_GammaChirp_Dyn(int gC_arrayN)
 	}
 	if (bMDGammaCPtr->gC_c2)
 		free(bMDGammaCPtr->gC_c2);
-	if ((bMDGammaCPtr->gC_c2 = (double *) calloc(gC_arrayN, sizeof(double)))
+	if ((bMDGammaCPtr->gC_c2 = (Float *) calloc(gC_arrayN, sizeof(Float)))
 	  == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' gC_c2."),
 		  funcName, gC_arrayN);
@@ -561,8 +561,8 @@ AllocLvEst_arrayN_BasilarM_GammaChirp_Dyn(int lvEst_arrayN)
 		return(TRUE);
 	if (bMDGammaCPtr->lvEst_Pwr)
 		free(bMDGammaCPtr->lvEst_Pwr);
-	if ((bMDGammaCPtr->lvEst_Pwr = (double *) calloc(lvEst_arrayN, sizeof(
-	  double))) == NULL) {
+	if ((bMDGammaCPtr->lvEst_Pwr = (Float *) calloc(lvEst_arrayN, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' lvEst_Pwr."),
 		  funcName, lvEst_arrayN);
 		return(FALSE);
@@ -753,7 +753,7 @@ SetGC_n_BasilarM_GammaChirp_Dyn(int theGC_n)
  */
 
 BOOLN
-SetGC_b1_BasilarM_GammaChirp_Dyn(double theGC_b1)
+SetGC_b1_BasilarM_GammaChirp_Dyn(Float theGC_b1)
 {
 	static const WChar	*funcName = wxT("SetGC_b1_BasilarM_GammaChirp_Dyn");
 
@@ -777,7 +777,7 @@ SetGC_b1_BasilarM_GammaChirp_Dyn(double theGC_b1)
  */
 
 BOOLN
-SetGC_c1_BasilarM_GammaChirp_Dyn(double theGC_c1)
+SetGC_c1_BasilarM_GammaChirp_Dyn(Float theGC_c1)
 {
 	static const WChar	*funcName = wxT("SetGC_c1_BasilarM_GammaChirp_Dyn");
 
@@ -837,7 +837,7 @@ SetGC_arrayN_BasilarM_GammaChirp_Dyn(int theGC_arrayN)
  */
 
 BOOLN
-SetGC_frat_BasilarM_GammaChirp_Dyn(double *theGC_frat)
+SetGC_frat_BasilarM_GammaChirp_Dyn(Float *theGC_frat)
 {
 	static const WChar	*funcName = wxT("SetGC_frat_BasilarM_GammaChirp_Dyn");
 
@@ -861,7 +861,7 @@ SetGC_frat_BasilarM_GammaChirp_Dyn(double *theGC_frat)
  */
 
 BOOLN
-SetIndividualGC_frat_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_frat)
+SetIndividualGC_frat_BasilarM_GammaChirp_Dyn(int theIndex, Float theGC_frat)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualGC_frat_BasilarM_GammaChirp_Dyn");
@@ -895,7 +895,7 @@ SetIndividualGC_frat_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_frat)
  */
 
 BOOLN
-SetGC_b2_BasilarM_GammaChirp_Dyn(double *theGC_b2)
+SetGC_b2_BasilarM_GammaChirp_Dyn(Float *theGC_b2)
 {
 	static const WChar	*funcName = wxT("SetGC_b2_BasilarM_GammaChirp_Dyn");
 
@@ -919,7 +919,7 @@ SetGC_b2_BasilarM_GammaChirp_Dyn(double *theGC_b2)
  */
 
 BOOLN
-SetIndividualGC_b2_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_b2)
+SetIndividualGC_b2_BasilarM_GammaChirp_Dyn(int theIndex, Float theGC_b2)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualGC_b2_BasilarM_GammaChirp_Dyn");
@@ -953,7 +953,7 @@ SetIndividualGC_b2_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_b2)
  */
 
 BOOLN
-SetGC_c2_BasilarM_GammaChirp_Dyn(double *theGC_c2)
+SetGC_c2_BasilarM_GammaChirp_Dyn(Float *theGC_c2)
 {
 	static const WChar	*funcName = wxT("SetGC_c2_BasilarM_GammaChirp_Dyn");
 
@@ -977,7 +977,7 @@ SetGC_c2_BasilarM_GammaChirp_Dyn(double *theGC_c2)
  */
 
 BOOLN
-SetIndividualGC_c2_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_c2)
+SetIndividualGC_c2_BasilarM_GammaChirp_Dyn(int theIndex, Float theGC_c2)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualGC_c2_BasilarM_GammaChirp_Dyn");
@@ -1011,7 +1011,7 @@ SetIndividualGC_c2_BasilarM_GammaChirp_Dyn(int theIndex, double theGC_c2)
  */
 
 BOOLN
-SetGC_phase_BasilarM_GammaChirp_Dyn(double theGC_phase)
+SetGC_phase_BasilarM_GammaChirp_Dyn(Float theGC_phase)
 {
 	static const WChar	*funcName = wxT("SetGC_phase_BasilarM_GammaChirp_Dyn");
 
@@ -1035,7 +1035,7 @@ SetGC_phase_BasilarM_GammaChirp_Dyn(double theGC_phase)
  */
 
 BOOLN
-SetGC_gainRefdB_BM_GC_DYN(double theGC_gainRefdB)
+SetGC_gainRefdB_BM_GC_DYN(Float theGC_gainRefdB)
 {
 	static const WChar	*funcName = wxT(
 	  "SetGC_gainRefdB_BM_GC_DYN");
@@ -1060,7 +1060,7 @@ SetGC_gainRefdB_BM_GC_DYN(double theGC_gainRefdB)
  */
 
 BOOLN
-SetGC_gainCmpnstdB_BasilarM_GammaChirp_Dyn(double theGC_gainCmpnstdB)
+SetGC_gainCmpnstdB_BasilarM_GammaChirp_Dyn(Float theGC_gainCmpnstdB)
 {
 	static const WChar	*funcName = wxT(
 	  "SetGC_gainCmpnstdB_BasilarM_GammaChirp_Dyn");
@@ -1085,7 +1085,7 @@ SetGC_gainCmpnstdB_BasilarM_GammaChirp_Dyn(double theGC_gainCmpnstdB)
  */
 
 BOOLN
-SetLvEst_LctERB_BasilarM_GammaChirp_Dyn(double theLvEst_LctERB)
+SetLvEst_LctERB_BasilarM_GammaChirp_Dyn(Float theLvEst_LctERB)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_LctERB_BasilarM_GammaChirp_Dyn");
@@ -1110,7 +1110,7 @@ SetLvEst_LctERB_BasilarM_GammaChirp_Dyn(double theLvEst_LctERB)
  */
 
 BOOLN
-SetLvEst_DecayHL_BasilarM_GammaChirp_Dyn(double theLvEst_DecayHL)
+SetLvEst_DecayHL_BasilarM_GammaChirp_Dyn(Float theLvEst_DecayHL)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_DecayHL_BasilarM_GammaChirp_Dyn");
@@ -1135,7 +1135,7 @@ SetLvEst_DecayHL_BasilarM_GammaChirp_Dyn(double theLvEst_DecayHL)
  */
 
 BOOLN
-SetLvEst_b2_BasilarM_GammaChirp_Dyn(double theLvEst_b2)
+SetLvEst_b2_BasilarM_GammaChirp_Dyn(Float theLvEst_b2)
 {
 	static const WChar	*funcName = wxT("SetLvEst_b2_BasilarM_GammaChirp_Dyn");
 
@@ -1159,7 +1159,7 @@ SetLvEst_b2_BasilarM_GammaChirp_Dyn(double theLvEst_b2)
  */
 
 BOOLN
-SetLvEst_c2_BasilarM_GammaChirp_Dyn(double theLvEst_c2)
+SetLvEst_c2_BasilarM_GammaChirp_Dyn(Float theLvEst_c2)
 {
 	static const WChar	*funcName = wxT("SetLvEst_c2_BasilarM_GammaChirp_Dyn");
 
@@ -1183,7 +1183,7 @@ SetLvEst_c2_BasilarM_GammaChirp_Dyn(double theLvEst_c2)
  */
 
 BOOLN
-SetLvEst_frat_BasilarM_GammaChirp_Dyn(double theLvEst_frat)
+SetLvEst_frat_BasilarM_GammaChirp_Dyn(Float theLvEst_frat)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_frat_BasilarM_GammaChirp_Dyn");
@@ -1208,7 +1208,7 @@ SetLvEst_frat_BasilarM_GammaChirp_Dyn(double theLvEst_frat)
  */
 
 BOOLN
-SetLvEst_RMStoSPLdB_BasilarM_GammaChirp_Dyn(double theLvEst_RMStoSPLdB)
+SetLvEst_RMStoSPLdB_BasilarM_GammaChirp_Dyn(Float theLvEst_RMStoSPLdB)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_RMStoSPLdB_BasilarM_GammaChirp_Dyn");
@@ -1233,7 +1233,7 @@ SetLvEst_RMStoSPLdB_BasilarM_GammaChirp_Dyn(double theLvEst_RMStoSPLdB)
  */
 
 BOOLN
-SetLvEst_Weight_BasilarM_GammaChirp_Dyn(double theLvEst_Weight)
+SetLvEst_Weight_BasilarM_GammaChirp_Dyn(Float theLvEst_Weight)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_Weight_BasilarM_GammaChirp_Dyn");
@@ -1258,7 +1258,7 @@ SetLvEst_Weight_BasilarM_GammaChirp_Dyn(double theLvEst_Weight)
  */
 
 BOOLN
-SetLvEst_RefdB_BasilarM_GammaChirp_Dyn(double theLvEst_RefdB)
+SetLvEst_RefdB_BasilarM_GammaChirp_Dyn(Float theLvEst_RefdB)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_RefdB_BasilarM_GammaChirp_Dyn");
@@ -1320,7 +1320,7 @@ SetLvEst_arrayN_BasilarM_GammaChirp_Dyn(int theLvEst_arrayN)
  */
 
 BOOLN
-SetLvEst_Pwr_BasilarM_GammaChirp_Dyn(double *theLvEst_Pwr)
+SetLvEst_Pwr_BasilarM_GammaChirp_Dyn(Float *theLvEst_Pwr)
 {
 	static const WChar	*funcName = wxT(
 	  "SetLvEst_Pwr_BasilarM_GammaChirp_Dyn");
@@ -1345,7 +1345,7 @@ SetLvEst_Pwr_BasilarM_GammaChirp_Dyn(double *theLvEst_Pwr)
  */
 
 BOOLN
-SetIndividualLvEst_Pwr_BasilarM_GammaChirp_Dyn(int theIndex, double theLvEst_Pwr)
+SetIndividualLvEst_Pwr_BasilarM_GammaChirp_Dyn(int theIndex, Float theLvEst_Pwr)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualLvEst_Pwr_BasilarM_GammaChirp_Dyn");
@@ -1410,7 +1410,7 @@ SetCFList_BasilarM_GammaChirp_Dyn(CFListPtr theCFList)
  */
 
 BOOLN
-SetBandWidths_BasilarM_GammaChirp_Dyn(WChar *theBandwidthMode, double *theBandwidths)
+SetBandWidths_BasilarM_GammaChirp_Dyn(WChar *theBandwidthMode, Float *theBandwidths)
 {
 	static const WChar	*funcName = wxT(
 	  "SetBandWidths_BasilarM_GammaChirp_Dyn");
@@ -1602,8 +1602,8 @@ void
 CmprsGCFreqResp_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 {
 	int		i, chan;
-	double	*p1, *p2, fs, fratRef, maxResp, valFp2, normFactFp2;
-	double	cGCFrsp[GCFILTERS_NUM_FRQ_RSL], asymFuncFrsp[GCFILTERS_NUM_FRQ_RSL];
+	Float	*p1, *p2, fs, fratRef, maxResp, valFp2, normFactFp2;
+	Float	cGCFrsp[GCFILTERS_NUM_FRQ_RSL], asymFuncFrsp[GCFILTERS_NUM_FRQ_RSL];
 	BMGCDGenChanInfo	*cInfo;
 	BMDGammaCPtr	p = bMDGammaCPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
@@ -1639,7 +1639,7 @@ InitProcessVariables_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_BasilarM_GammaChirp_Dyn");
 	int		i, j, cFIndex, nchShift, cfIndexLvlEst;
-	double	sR, fr2LvlEst, eRBrate1kHz, *pp;
+	Float	sR, fr2LvlEst, eRBrate1kHz, *pp;
 	BMGCDGenChanInfo	*cInfo;
 	SignalDataPtr	inSignal, outSignal;
 	BMDGammaCPtr	p = bMDGammaCPtr;
@@ -1812,7 +1812,7 @@ RunModel_BasilarM_GammaChirp_Dyn(EarObjectPtr data)
 	uShort	totalChannels;
 	BOOLN	debug;
 	int		chan;
-	double	lvlLinTtl, fratVal;
+	Float	lvlLinTtl, fratVal;
 	ChanLen	i;
 	ChanData	*dataStart;
 	BMGCDGenChanInfo	*cInfo, *cInfoStart;

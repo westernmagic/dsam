@@ -6,12 +6,12 @@ qualifier		Binaural;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	double	leftFrequency;
-	double	rightFrequency;
-	double	leftIntensity;
-	double	rightIntensity;
-	double	phaseDifference;
-	double	duration;
-	double	dt;
+	Float	leftFrequency;
+	Float	rightFrequency;
+	Float	leftIntensity;
+	Float	rightIntensity;
+	Float	phaseDifference;
+	Float	duration;
+	Float	dt;
 
 } BPureTone;

@@ -10,7 +10,7 @@
  *				Si = (X - mean) / sd.
  * Author:		L. P. O'Mard
  * Created:		27 May 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -121,7 +121,7 @@ Process_Utility_Standardise(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_Standardise");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan;
-	double	mean, sumXX, sumX, standardDev;
+	Float	mean, sumXX, sumX, standardDev;
 	ChanLen	i;
 	SignalDataPtr	inSignal, outSignal;
 
@@ -137,7 +137,7 @@ Process_Utility_Standardise(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
-		}	
+		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

@@ -16,7 +16,7 @@
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
- 
+
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/
@@ -44,13 +44,13 @@ void		Init_Debug(void);
 
 BOOLN	CheckInit_Debug(void);
 
-BOOLN	SetChannelValue_Debug(int channel, ChanLen sample, double value);
+BOOLN	SetChannelValue_Debug(int channel, ChanLen sample, Float value);
 
 BOOLN	SetPars_Debug(uShort numChannels, ChanLen length,
-			  double samplingInterval);
+			  Float samplingInterval);
 
 __END_DECLS
 
-void	WriteArray_Debug(WChar *fileName, double *p, ChanLen length, int increment);
+void	WriteArray_Debug(WChar *fileName, Float *p, ChanLen length, int increment);
 
 BOOLN	WriteOutSignal_Debug(WChar *fileName);

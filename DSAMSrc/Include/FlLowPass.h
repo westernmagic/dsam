@@ -44,21 +44,21 @@ typedef	enum {
 } LowPassFModeSpecifier;
 
 typedef struct {
-	
+
 	ParameterSpecifier parSpec;
-	
+
 	BOOLN	modeFlag, cutOffFrequencyFlag, signalMultiplierFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		mode;
-	double	cutOffFrequency;
-	double	signalMultiplier;	/* potential mV */
+	Float	cutOffFrequency;
+	Float	signalMultiplier;	/* potential mV */
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels;
 	ContButt1CoeffsPtr	*coefficients;
 	NameSpecifier *modeList;
-	
+
 } LowPassF, *LowPassFPtr;
 
 /******************************************************************************/
@@ -93,11 +93,9 @@ BOOLN	InitProcessVariables_Filter_LowPass(EarObjectPtr data);
 
 BOOLN	PrintPars_Filter_LowPass(void);
 
-BOOLN	ReadPars_Filter_LowPass(WChar *fileName);
-
 BOOLN	RunProcess_Filter_LowPass(EarObjectPtr data);
 
-BOOLN	SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency);
+BOOLN	SetCutOffFrequency_Filter_LowPass(Float theCutOffFrequency);
 
 BOOLN	SetMode_Filter_LowPass(WChar *theMode);
 
@@ -105,10 +103,7 @@ BOOLN	InitModule_Filter_LowPass(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Filter_LowPass(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_LowPass(WChar *mode, double theLowerCutOffFreq,
-		  double theSignalMultiplier);
- 
-BOOLN	SetSignalMultiplier_Filter_LowPass(double theUpperCutOffFreq);
+BOOLN	SetSignalMultiplier_Filter_LowPass(Float theUpperCutOffFreq);
 
 BOOLN	SetUniParList_Filter_LowPass(void);
 

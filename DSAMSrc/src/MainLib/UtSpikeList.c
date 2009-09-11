@@ -137,7 +137,7 @@ InitListSpec_SpikeList(int numChannels)
 		  funcName, p->numChannels);
 		ok = FALSE;
 	}
-	if ((p->lastValue = (double *) calloc(p->numChannels, sizeof(double))) ==
+	if ((p->lastValue = (Float *) calloc(p->numChannels, sizeof(Float))) ==
 	 NULL) {
 		NotifyError(wxT("%s: Out of memory for 'lastValue[%d]' array. "),
 		  funcName, p->numChannels);
@@ -260,7 +260,7 @@ SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
  */
 
 BOOLN
-GenerateList_SpikeList(SpikeListSpecPtr listSpec, double eventThreshold,
+GenerateList_SpikeList(SpikeListSpecPtr listSpec, Float eventThreshold,
   SignalDataPtr signal)
 {
 	static WChar	*funcName = wxT("GenerateList_SpikeList");

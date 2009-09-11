@@ -10,7 +10,7 @@
  *				< 0.
  * Author:		L. P. O'Mard
  * Created:		6 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University Of Essex.
  *
  *********************/
@@ -80,7 +80,7 @@ InitModeList_Analysis_FindNextIndex(void)
 					{ wxT("MINIMUM"),	FIND_INDEX_MINIMUM},
 					{ wxT("MAXIMUM"),	FIND_INDEX_MAXIMUM},
 					{ NULL, 			FIND_INDEX_NULL }
-				
+
 				};
 	findIndexPtr->modeList = modeList;
 	return(TRUE);
@@ -119,8 +119,6 @@ Init_Analysis_FindNextIndex(ParameterSpecifier parSpec)
 		}
 	}
 	findIndexPtr->parSpec = parSpec;
-	findIndexPtr->modeFlag = TRUE;
-	findIndexPtr->timeOffsetFlag = TRUE;
 	findIndexPtr->mode = FIND_INDEX_MAXIMUM;
 	findIndexPtr->timeOffset = 0.0;
 
@@ -194,30 +192,6 @@ GetUniParListPtr_Analysis_FindNextIndex(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_FindNextIndex(WChar *mode, double timeOffset)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_FindNextIndex");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Analysis_FindNextIndex(mode))
-		ok = FALSE;
-	if (!SetTimeOffset_Analysis_FindNextIndex(timeOffset))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -241,7 +215,6 @@ SetMode_Analysis_FindNextIndex(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	findIndexPtr->modeFlag = TRUE;
 	findIndexPtr->mode = specifier;
 	return(TRUE);
 
@@ -256,7 +229,7 @@ SetMode_Analysis_FindNextIndex(WChar *theMode)
  */
 
 BOOLN
-SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset)
+SetTimeOffset_Analysis_FindNextIndex(Float theTimeOffset)
 {
 	static const WChar	*funcName =
 	  wxT("SetTimeOffset_Analysis_FindNextIndex");
@@ -266,42 +239,8 @@ SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	findIndexPtr->timeOffsetFlag = TRUE;
 	findIndexPtr->timeOffset = theTimeOffset;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_FindNextIndex(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_FindNextIndex");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (findIndexPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!findIndexPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!findIndexPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -317,59 +256,10 @@ PrintPars_Analysis_FindNextIndex(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_FindNextIndex");
 
-	if (!CheckPars_Analysis_FindNextIndex()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Find Indexes Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tSearch mode = %s,"), findIndexPtr->modeList[findIndexPtr->
 	  mode].name);
 	DPrint(wxT("\tTime offset = %g ms\n"), MSEC(findIndexPtr->timeOffset));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_FindNextIndex(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_FindNextIndex");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	double	timeOffset;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_FindNextIndex(mode, timeOffset)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -418,11 +308,9 @@ InitModule_Analysis_FindNextIndex(ModulePtr theModule)
 	}
 	theModule->parsPtr = findIndexPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_FindNextIndex;
 	theModule->Free = Free_Analysis_FindNextIndex;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_FindNextIndex;
 	theModule->PrintPars = PrintPars_Analysis_FindNextIndex;
-	theModule->ReadPars = ReadPars_Analysis_FindNextIndex;
 	theModule->RunProcess = Calc_Analysis_FindNextIndex;
 	theModule->SetParsPointer = SetParsPointer_Analysis_FindNextIndex;
 	return(TRUE);
@@ -446,7 +334,7 @@ BOOLN
 CheckData_Analysis_FindNextIndex(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_FindNextIndex");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -493,8 +381,6 @@ Calc_Analysis_FindNextIndex(EarObjectPtr data)
 	FindIndexPtr	p = findIndexPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_FindNextIndex())
-			return(FALSE);
 		if (!CheckData_Analysis_FindNextIndex(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

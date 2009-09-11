@@ -99,8 +99,6 @@ Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
 	}
 	setDBSPLPtr->parSpec = parSpec;
 	setDBSPLPtr->updateProcessVariablesFlag = TRUE;
-	setDBSPLPtr->timeOffsetFlag = TRUE;
-	setDBSPLPtr->intensityFlag = TRUE;
 	setDBSPLPtr->timeOffset = 0.0;
 	setDBSPLPtr->intensity = 0.0;
 
@@ -120,7 +118,7 @@ Init_Transform_SetDBSPL(ParameterSpecifier parSpec)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_Transform_SetDBSPL(void)
 {
@@ -172,30 +170,6 @@ GetUniParListPtr_Transform_SetDBSPL(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Transform_SetDBSPL(double timeOffset, double intensity)
-{
-	static const WChar	*funcName = wxT("SetPars_Transform_SetDBSPL");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetTimeOffset_Transform_SetDBSPL(timeOffset))
-		ok = FALSE;
-	if (!SetIntensity_Transform_SetDBSPL(intensity))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetTimeOffset *********************************/
 
 /*
@@ -205,7 +179,7 @@ SetPars_Transform_SetDBSPL(double timeOffset, double intensity)
  */
 
 BOOLN
-SetTimeOffset_Transform_SetDBSPL(double theTimeOffset)
+SetTimeOffset_Transform_SetDBSPL(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Transform_SetDBSPL");
 
@@ -218,7 +192,6 @@ SetTimeOffset_Transform_SetDBSPL(double theTimeOffset)
 		  MSEC(theTimeOffset));
 		return(FALSE);
 	}
-	setDBSPLPtr->timeOffsetFlag = TRUE;
 	setDBSPLPtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -233,7 +206,7 @@ SetTimeOffset_Transform_SetDBSPL(double theTimeOffset)
  */
 
 BOOLN
-SetIntensity_Transform_SetDBSPL(double theIntensity)
+SetIntensity_Transform_SetDBSPL(Float theIntensity)
 {
 	static const WChar	*funcName = wxT("SetIntensity_Transform_SetDBSPL");
 
@@ -242,42 +215,8 @@ SetIntensity_Transform_SetDBSPL(double theIntensity)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	setDBSPLPtr->intensityFlag = TRUE;
 	setDBSPLPtr->intensity = theIntensity;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Transform_SetDBSPL(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Transform_SetDBSPL");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (setDBSPLPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!setDBSPLPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!setDBSPLPtr->intensityFlag) {
-		NotifyError(wxT("%s: intensity variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -293,57 +232,13 @@ PrintPars_Transform_SetDBSPL(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Transform_SetDBSPL");
 
-	if (!CheckPars_Transform_SetDBSPL()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (setDBSPLPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Set Intensity Transform Module Parameters:-\n"));
 	DPrint(wxT("\tTime offset = %g ms,"), MSEC(setDBSPLPtr->timeOffset));
 	DPrint(wxT("\tIntensity = %g dB SPL\n"), setDBSPLPtr->intensity);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Transform_SetDBSPL(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Transform_SetDBSPL");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	timeOffset, intensity;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Transform_SetDBSPL(timeOffset, intensity)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -390,11 +285,9 @@ InitModule_Transform_SetDBSPL(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = setDBSPLPtr;
-	theModule->CheckPars = CheckPars_Transform_SetDBSPL;
 	theModule->Free = Free_Transform_SetDBSPL;
 	theModule->GetUniParListPtr = GetUniParListPtr_Transform_SetDBSPL;
 	theModule->PrintPars = PrintPars_Transform_SetDBSPL;
-	theModule->ReadPars = ReadPars_Transform_SetDBSPL;
 	theModule->RunProcess = Process_Transform_SetDBSPL;
 	theModule->SetParsPointer = SetParsPointer_Transform_SetDBSPL;
 	return(TRUE);
@@ -451,7 +344,7 @@ InitProcessVariables_Transform_SetDBSPL(EarObjectPtr data)
 {
 	register ChanData	 *inPtr, sum;
 	int		chan;
-	double	gaindB;
+	Float	gaindB;
 	ChanLen	i, timeOffsetIndex;
 
 	if (setDBSPLPtr->updateProcessVariablesFlag || data->updateProcessFlag ||
@@ -514,8 +407,6 @@ Process_Transform_SetDBSPL(EarObjectPtr data)
 	ChanLen	i;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Transform_SetDBSPL())
-			return(FALSE);
 		if (!CheckData_Transform_SetDBSPL(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

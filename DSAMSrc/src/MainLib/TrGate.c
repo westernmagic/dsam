@@ -201,12 +201,6 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
 		}
 	}
 	gatePtr->parSpec = parSpec;
-	gatePtr->positionModeFlag = TRUE;
-	gatePtr->operationModeFlag = TRUE;
-	gatePtr->typeModeFlag = TRUE;
-	gatePtr->timeOffsetFlag = TRUE;
-	gatePtr->durationFlag = TRUE;
-	gatePtr->slopeParameterFlag = TRUE;
 	gatePtr->positionMode = GATE_RELATIVE_POSITION_MODE;
 	gatePtr->operationMode = GATE_RAMP_OPERATION_MODE;
 	gatePtr->typeMode = GATE_RAISED_COS_TYPE_MODE;
@@ -233,7 +227,7 @@ Init_Transform_Gate(ParameterSpecifier parSpec)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_Transform_Gate(void)
 {
@@ -266,7 +260,7 @@ SetUniParList_Transform_Gate(void)
 	  UNIPAR_REAL, &gatePtr->timeOffset, NULL,
 	  (void * (*)) SetTimeOffset_Transform_Gate);
 	SetPar_UniParMgr(&pars[GATE_DURATION], wxT("DURATION"),
-	  wxT("Ramp duration - negative assumes to the end of the signal (s)"), 
+	  wxT("Ramp duration - negative assumes to the end of the signal (s)"),
 	  UNIPAR_REAL,
 	  &gatePtr->duration, NULL,
 	  (void * (*)) SetDuration_Transform_Gate);
@@ -332,39 +326,6 @@ GetUniParListPtr_Transform_Gate(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Transform_Gate(WChar *positionMode, WChar *operationMode,
-  WChar *typeMode, double timeOffset, double duration, double slopeParameter)
-{
-	static const WChar	*funcName = wxT("SetPars_Transform_Gate");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetPositionMode_Transform_Gate(positionMode))
-		ok = FALSE;
-	if (!SetOperationMode_Transform_Gate(operationMode))
-		ok = FALSE;
-	if (!SetTypeMode_Transform_Gate(typeMode))
-		ok = FALSE;
-	if (!SetTimeOffset_Transform_Gate(timeOffset))
-		ok = FALSE;
-	if (!SetDuration_Transform_Gate(duration))
-		ok = FALSE;
-	if (!SetSlopeParameter_Transform_Gate(slopeParameter))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
-
-}
-
 /****************************** SetPositionMode *******************************/
 
 /*
@@ -390,7 +351,6 @@ SetPositionMode_Transform_Gate(WChar *thePositionMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	gatePtr->positionModeFlag = TRUE;
 	gatePtr->positionMode = specifier;
 	gatePtr->parList->pars[GATE_TIME_OFFSET].enabled = (gatePtr->positionMode !=
 	  GATE_RELATIVE_POSITION_MODE);
@@ -428,7 +388,6 @@ SetOperationMode_Transform_Gate(WChar *theOperationMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	gatePtr->operationModeFlag = TRUE;
 	gatePtr->operationMode = specifier;
 	return(TRUE);
 
@@ -458,7 +417,6 @@ SetTypeMode_Transform_Gate(WChar *theTypeMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	gatePtr->typeModeFlag = TRUE;
 	gatePtr->typeMode = specifier;
 	SetDefaulEnabledPars_Transform_Gate();
 	gatePtr->parList->updateFlag = TRUE;
@@ -475,7 +433,7 @@ SetTypeMode_Transform_Gate(WChar *theTypeMode)
  */
 
 BOOLN
-SetTimeOffset_Transform_Gate(double theTimeOffset)
+SetTimeOffset_Transform_Gate(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Transform_Gate");
 
@@ -489,7 +447,6 @@ SetTimeOffset_Transform_Gate(double theTimeOffset)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	gatePtr->timeOffsetFlag = TRUE;
 	gatePtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -504,7 +461,7 @@ SetTimeOffset_Transform_Gate(double theTimeOffset)
  */
 
 BOOLN
-SetDuration_Transform_Gate(double theDuration)
+SetDuration_Transform_Gate(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_Transform_Gate");
 
@@ -512,11 +469,10 @@ SetDuration_Transform_Gate(double theDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (fabs(theDuration) < DBL_EPSILON) {
+	if (fabs(theDuration) < DSAM_EPSILON) {
 		NotifyError(wxT("%s: Time interval must be non-zero."), funcName);
 		return(FALSE);
 	}
-	gatePtr->durationFlag = TRUE;
 	gatePtr->duration = theDuration;
 	return(TRUE);
 
@@ -531,7 +487,7 @@ SetDuration_Transform_Gate(double theDuration)
  */
 
 BOOLN
-SetSlopeParameter_Transform_Gate(double theSlopeParameter)
+SetSlopeParameter_Transform_Gate(Float theSlopeParameter)
 {
 	static const WChar	*funcName = wxT("SetSlopeParameter_Transform_Gate");
 
@@ -540,58 +496,8 @@ SetSlopeParameter_Transform_Gate(double theSlopeParameter)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	gatePtr->slopeParameterFlag = TRUE;
 	gatePtr->slopeParameter = theSlopeParameter;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Transform_Gate(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Transform_Gate");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (gatePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!gatePtr->positionModeFlag) {
-		NotifyError(wxT("%s: positionMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!gatePtr->operationModeFlag) {
-		NotifyError(wxT("%s: operationMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!gatePtr->typeModeFlag) {
-		NotifyError(wxT("%s: typeMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!gatePtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!gatePtr->durationFlag) {
-		NotifyError(wxT("%s: duration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!gatePtr->slopeParameterFlag) {
-		NotifyError(wxT("%s: slopeParameter variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -607,9 +513,8 @@ PrintPars_Transform_Gate(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Transform_Gate");
 
-	if (!CheckPars_Transform_Gate()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (gatePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Gate Transformation Module Parameters:-\n"));
@@ -634,60 +539,6 @@ PrintPars_Transform_Gate(void)
 		DPrint(wxT(" (half-life) = %g ms.\n"), MSEC(gatePtr->slopeParameter));
 	else
 		DPrint(wxT(": unused.\n"));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Transform_Gate(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Transform_Gate");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	positionMode[SMALL_STRING], operationMode[SMALL_STRING];
-	WChar	typeMode[SMALL_STRING];
-	double	timeOffset, duration, slopeParameter;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), positionMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), operationMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), typeMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &slopeParameter))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Transform_Gate(positionMode, operationMode, typeMode,
-	  timeOffset, duration, slopeParameter)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -735,11 +586,9 @@ InitModule_Transform_Gate(ModulePtr theModule)
 	}
 	theModule->parsPtr = gatePtr;
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
-	theModule->CheckPars = CheckPars_Transform_Gate;
 	theModule->Free = Free_Transform_Gate;
 	theModule->GetUniParListPtr = GetUniParListPtr_Transform_Gate;
 	theModule->PrintPars = PrintPars_Transform_Gate;
-	theModule->ReadPars = ReadPars_Transform_Gate;
 	theModule->RunProcess = Process_Transform_Gate;
 	theModule->SetParsPointer = SetParsPointer_Transform_Gate;
 	gatePtr->processMode = Identify_NameSpecifier(theModule->name, gatePtr->
@@ -777,7 +626,7 @@ BOOLN
 CheckData_Transform_Gate(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Transform_Gate");
-	double	signalDuration, duration;
+	Float	signalDuration, duration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -794,7 +643,7 @@ CheckData_Transform_Gate(EarObjectPtr data)
 		return(FALSE);
 	}
 	if ((gatePtr->positionMode == GATE_ABSOLUTE_POSITION_MODE) &&
-	  (gatePtr->timeOffset + duration - signalDuration) > DBL_EPSILON) {
+	  (gatePtr->timeOffset + duration - signalDuration) > DSAM_EPSILON) {
 		NotifyError(wxT("%s: Time offset (%g ms) plus gate interval (%g ms) ")
 		  wxT("is longer than signal (%g ms)."), funcName, MSEC(gatePtr->
 		  timeOffset), MSEC(duration), MSEC(signalDuration));
@@ -819,17 +668,17 @@ CheckData_Transform_Gate(EarObjectPtr data)
  * complains if it is not there.
  */
 
-double
+Float
 GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
-  double dt)
+  Float dt)
 {
 	switch(gatePtr->typeMode) {
 	case GATE_LINEAR_TYPE_MODE:
-		return((double) step / intervalIndex);
+		return((Float) step / intervalIndex);
 	case GATE_SINE_TYPE_MODE:
 		return(sin(step * PI / 2.0 / intervalIndex));
 	case GATE_RAISED_COS_TYPE_MODE:
-		return((cos(PI * ((double) step / intervalIndex + 1.0)) + 1.0) / 2.0);
+		return((cos(PI * ((Float) step / intervalIndex + 1.0)) + 1.0) / 2.0);
 	case GATE_EXP_DECAY_TYPE_MODE:
 		return(exp(-dt * step * LN_2 / gatePtr->slopeParameter));
 	default:
@@ -854,7 +703,7 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 	ChanLen	i;
 	ChanData	*dataPtr, *endPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
-	
+
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		dataPtr = outSignal->channel[chan];
 		endPtr = dataPtr + outSignal->length - 1;
@@ -862,7 +711,7 @@ Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 			dataPtr += offsetIndex;
 		else
 			for ( ; ((dataPtr + 1) < endPtr) && (fabs(*dataPtr -
-			  *(dataPtr + 1)) < DBL_EPSILON); dataPtr++)
+			  *(dataPtr + 1)) < DSAM_EPSILON); dataPtr++)
 				;
 		for (i = 0; (i < intervalIndex) && (dataPtr < endPtr); i++)
 			*dataPtr++ *= GateFunction_Transform_Gate(i, intervalIndex,
@@ -893,7 +742,7 @@ Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 			dataPtr -= offsetIndex;
 		else
 			for ( ; ((dataPtr - 1) > startPtr) && (fabs(*dataPtr - *(dataPtr -
-			  1)) < DBL_EPSILON); dataPtr--)
+			  1)) < DSAM_EPSILON); dataPtr--)
 				;
 		for (i = 0; (i < intervalIndex) && ( dataPtr > startPtr); i++)
 			*dataPtr-- *= GateFunction_Transform_Gate(i, intervalIndex,
@@ -929,8 +778,6 @@ Process_Transform_Gate(EarObjectPtr data)
 	GatePtr	p = gatePtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Transform_Gate())
-			return(FALSE);
 		if (!CheckData_Transform_Gate(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

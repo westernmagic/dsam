@@ -6,7 +6,7 @@
  *				This code was moved from the GrSDIShapes code module.
  * Author:		L.P.O'Mard
  * Created:		10 Apr 2005
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex
  *
  **********************/
@@ -142,7 +142,7 @@ public:
 	bool	GetPropVal(bool *val)	{ if (!PropValOk()) return(false);
 			  GetValue().ToLong(&lVal); *val = (lVal != 0); return(true);	}
 };
-	
+
 /*************************** SDIShape *****************************************/
 
 class SDIShape: public wxShape
@@ -168,6 +168,7 @@ class SDIShape: public wxShape
 	void	AddRegions(DSAMXMLNode *parent);
 	void	AddShapeInfo(DSAMXMLNode *parent);
 	bool	GetAttachmentsInfo(wxXmlNode *myElement);
+	bool	GetBoundingBoxPos(wxRealPoint &lBottom, wxRealPoint &rTop);
 	bool	GetBrushInfo(wxXmlNode *myElement);
 	wxFont *	GetFontInfo(wxXmlNode *myElement);
 	bool	GetPenInfo(wxXmlNode *myElement);
@@ -183,6 +184,7 @@ class SDIShape: public wxShape
 			  { prop->GetValue().ToLong(&lVal); *val = (int) lVal; }
 	void	GetPropVal(wxXmlProperty *prop, bool *val)
 			  { prop->GetValue().ToLong(&lVal); *val = (lVal != 0); }
+	void	ResetLabel(void);
 
 };
 
@@ -211,7 +213,7 @@ class SDIPolygonShape: public wxPolygonShape
  * A few new shape classes so we have a 1:1 mapping
  * between palette symbol and unique class
  */
- 
+
 class SDIEllipseShape: public wxEllipseShape
 {
 	DECLARE_DYNAMIC_CLASS(SDIEllipseShape)
@@ -236,6 +238,20 @@ class SDIRectangleShape: public wxRectangleShape
 
 	virtual	void AddXMLInfo(DSAMXMLNode *node);
 	virtual	bool GetXMLInfo(wxXmlNode *myElement);
+
+};
+
+/*************************** SDICompositeShape **********************************/
+
+class SDICompositeShape: public wxCompositeShape
+{
+	DECLARE_DYNAMIC_CLASS(SDICompositeShape)
+
+  public:
+    SDICompositeShape(double width = 0.0, double height = 0.0);
+
+	virtual	void AddXMLInfo(DSAMXMLNode *node);
+	virtual	bool GetXMLInfo(wxXmlNode *node);
 
 };
 

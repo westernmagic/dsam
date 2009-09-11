@@ -19,7 +19,7 @@
  *
  *	E-mail: L.P.OMard@uk.ac.lut
  *
- * COPYRIGHT ©
+ * COPYRIGHT ï¿½
  *
  *	Speech and Hearing Laboratory,
  *	Department of Human Sciences,
@@ -39,7 +39,7 @@
  ***********************/
 
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <math.h>
 
 #ifdef HAVE_CONFIG_H
@@ -58,9 +58,9 @@
  * that the ramp interval is not greater than the signal length.
  * It also sets the signalData rampFlag to TRUE.
  */
- 
+
 BOOLN
-CheckPars_Ramp(SignalData *theSignal, double timeInterval) 
+CheckPars_Ramp(SignalData *theSignal, Float timeInterval)
 {
 	static const WChar *funcName = wxT("CheckPars_Ramp");
 
@@ -76,12 +76,12 @@ CheckPars_Ramp(SignalData *theSignal, double timeInterval)
 /****************************** Sine ******************************************/
 
 /*
- * This is a standard ramp function, to be passed as an argument to the 
+ * This is a standard ramp function, to be passed as an argument to the
  * Ramp_UP and Ramp_Down routines.  It varies from 0 to 1 as the step ranges
  * from 0 to the interval index length.
  */
 
-double
+Float
 Sine_Ramp(ChanLen step, ChanLen intervalIndex)
 {
 	return(sin(step * PI / 2.0 / intervalIndex));
@@ -95,10 +95,10 @@ Sine_Ramp(ChanLen step, ChanLen intervalIndex)
  * from 0 to the interval index length.
  */
 
-double
+Float
 Linear_Ramp(ChanLen step, ChanLen intervalIndex)
 {
-	return((double) step / intervalIndex);
+	return((Float) step / intervalIndex);
 }
 
 /****************************** RampUpOutSignal *******************************/
@@ -114,18 +114,18 @@ Linear_Ramp(ChanLen step, ChanLen intervalIndex)
  */
 
 void
-RampUpOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
-  ChanLen), double timeInterval)
+RampUpOutSignal_Ramp(EarObjectPtr data, Float (* RampFunction)(ChanLen,
+  ChanLen), Float timeInterval)
 {
 	static const WChar *funcName = wxT("RampUpOutSignal_Ramp");
 	int		chan;
 	ChanLen	i, intervalIndex;
 	ChanData	*dataPtr, *endPtr;
-	
+
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
-	}	
+	}
 	if (!CheckPars_SignalData(_OutSig_EarObject(data))) {
 		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		exit(1);
@@ -163,19 +163,19 @@ RampUpOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
  */
 
 void
-RampDownOutSignal_Ramp(EarObjectPtr data, double (* RampFunction)(ChanLen,
-  ChanLen), double timeInterval)
+RampDownOutSignal_Ramp(EarObjectPtr data, Float (* RampFunction)(ChanLen,
+  ChanLen), Float timeInterval)
 {
 	static const WChar *funcName = wxT("RampDownOutSignal_Ramp");
 	int		chan;
 	ChanLen	i, intervalIndex;
 	ChanData	*dataPtr, *startPtr;
 	SignalDataPtr	outSignal;
-	
+
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		exit(1);
-	}	
+	}
 	if (!CheckPars_SignalData(_OutSig_EarObject(data))) {
 		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		exit(1);

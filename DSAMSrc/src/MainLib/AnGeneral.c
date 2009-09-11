@@ -2,14 +2,14 @@
  *
  * File:		AnGeneral.c
  * Purpose:		This module contains various general analysis routines.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  **********************/
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -33,11 +33,11 @@
  */
 
 BOOLN
-LinearRegression_GenAnalysis(double *y0, double *gradient, double *y,
-  double dx, ChanLen startIndex, ChanLen length)
+LinearRegression_GenAnalysis(Float *y0, Float *gradient, Float *y,
+  Float dx, ChanLen startIndex, ChanLen length)
 {
 	static const WChar *funcName = wxT("LinearRegression_GenAnalysis");
-	double  a, b, c, e, f, x;
+	Float  a, b, c, e, f, x;
 	ChanLen	i, endIndex;
 
 	if (length < 2) {
@@ -46,11 +46,11 @@ LinearRegression_GenAnalysis(double *y0, double *gradient, double *y,
 		return(FALSE);
 	}
 	b = c = e = f = 0.0;
-	a = (double) length;
+	a = (Float) length;
 	endIndex = length + startIndex;
 	y += startIndex;
 	for (i = startIndex; i < endIndex; i++) {
-		x = dx * i;	
+		x = dx * i;
 		b += x;
 		c += x * x;
 		e += *y;
@@ -73,14 +73,14 @@ LinearRegression_GenAnalysis(double *y0, double *gradient, double *y,
  * of both arrays.
  */
 
-double
-EuclideanDistance_GenAnalysis(double *arrayA, double *arrayB,
+Float
+EuclideanDistance_GenAnalysis(Float *arrayA, Float *arrayB,
   ChanLen startIndex, ChanLen endIndex)
 {
 	static const WChar *funcName = wxT("Euclidean_GenAnalysis");
-	double		sum, difference;
+	Float		sum, difference;
 	ChanLen		i;
-	double		*ptr1, *ptr2;
+	Float		*ptr1, *ptr2;
 
 	if (arrayA == NULL) {
 		NotifyError(wxT("%s: Array A not initialised."), funcName);

@@ -61,7 +61,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtParArray.h UtGCFilters.h UtFIRFilters.h UtRemez.h \
 				UtDynaBList.h UtLocalChans.h UtSwapLR.h UtPadSignal.h \
 				UtMathOp.h UtZhang.h UtTranspose.h UtCollateSignals.h \
-				UtZilanyBruce.h UtNoiseMod.h
+				UtZilanyBruce.h UtNoiseMod.h UtANSGDist.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 

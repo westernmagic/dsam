@@ -5,9 +5,9 @@ mod_name		Click;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	double	clickTime;
-	double	amplitude;
-	double	duration;
-	double	dt;
+	Float	clickTime;
+	Float	amplitude;
+	Float	duration;
+	Float	dt;
 
 } Click;

@@ -9,7 +9,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard, revised from code by M. J. Hewitt
  * Created:		26 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) Loughborough University
  *
  *********************/
@@ -37,14 +37,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	refractoryPeriodFlag;
 	BOOLN	updateProcessVariablesFlag;
-	double	refractoryPeriod;
+	Float	refractoryPeriod;
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels;
-	double	**lastOutput;
+	Float	**lastOutput;
 	ChanLen	refractoryPeriodIndex;
 
 } RefractAdj, *RefractAdjPtr;
@@ -67,8 +66,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_RefractoryAdjust(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_RefractoryAdjust(void);
-
 BOOLN	Free_Utility_RefractoryAdjust(void);
 
 void	FreeProcessVariables_Utility_RefractoryAdjust(void);
@@ -83,16 +80,12 @@ BOOLN	PrintPars_Utility_RefractoryAdjust(void);
 
 BOOLN	Process_Utility_RefractoryAdjust(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_RefractoryAdjust(WChar *fileName);
-
 BOOLN	InitModule_Utility_RefractoryAdjust(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_RefractoryAdjust(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_RefractoryAdjust(double refractoryPeriod);
-
 BOOLN	SetRefractoryPeriod_Utility_RefractoryAdjust(
-		  double theRefractoryPeriod);
+		  Float theRefractoryPeriod);
 
 BOOLN	SetUniParList_Utility_RefractoryAdjust(void);
 

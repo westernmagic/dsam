@@ -11,7 +11,7 @@
  * Copyright:	(c) 1998, University of Essex
  *
  **************/
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,9 +78,9 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName)
 {
 	static const WChar *funcName = wxT("SetMode_Bandwidth");
 	int		specifier;
-	double (* Func)(BandwidthModePtr, double);
+	Float (* Func)(BandwidthModePtr, Float);
 	BandwidthMode modeList[] = {
-			
+
 		{ BANDWIDTH_ERB, 		K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
 		{ BANDWIDTH_CAT, 		K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
 		{ BANDWIDTH_CUSTOM_ERB, K1_ERB, K2_ERB, BW_DEF_SCALER, BandwidthFromF_Bandwith},
@@ -92,7 +92,7 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName)
 		{ BANDWIDTH_INTERNAL_STATIC,	K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
 		{ BANDWIDTH_DISABLED,	K1_ERB, K2_ERB, BW_DEF_SCALER, NULL},
 		{ BANDWIDTH_NULL,		0.0, 0.0, 0.0, NULL}
-				
+
 	};
 
 	if (modePtr == NULL) {
@@ -123,8 +123,8 @@ SetMode_Bandwidth(BandwidthModePtr modePtr, WChar *modeName)
  * It assumes that the 'BandwidthMode' structure has been correctly initialised.
  */
 
-double
-BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
+Float
+BandwidthFromF_Bandwith(BandwidthModePtr p, Float theFrequency)
 {
 	static const WChar *funcName = wxT("BandwidthFromF_Bandwith");
 	if (p == NULL) {
@@ -147,7 +147,7 @@ BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 		return(NonLinearFromF_Bandwidth(theFrequency));
 	default:
 		NotifyError(wxT("%s: Bandwidth mode not implemented (%d)."), funcName,
-		  p->specifier);	
+		  p->specifier);
 	}
 	return(-1.0);
 }
@@ -155,7 +155,7 @@ BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 /******************************** NonLinearFromF ******************************/
 
 /*
- * Calculate the band width of a guinea-pig's filter at a characteristic 
+ * Calculate the band width of a guinea-pig's filter at a characteristic
  * frequency, f.
  * At present it uses a very rough model fit to CFs at 18 kHz, 8 kHz and 300 Hz.
  * It was written to be used with the DRNL filter.
@@ -165,14 +165,14 @@ BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency)
 
 #define	BANDWIDTH(F)	(-1709.0 + 279.14 * log((F)))
 
-double
-NonLinearFromF_Bandwidth(double f)
+Float
+NonLinearFromF_Bandwidth(Float f)
 {
-	double	bandwidth;
+	Float	bandwidth;
 
 	bandwidth = BANDWIDTH(f);
 	return((bandwidth > 0.0)? bandwidth: f / 10.0);
-	
+
 }
 
 #undef	BANDWIDTH
@@ -180,7 +180,7 @@ NonLinearFromF_Bandwidth(double f)
 /******************************** GuineaPigFromF ******************************/
 
 /*
- * Calculate the band width of a guinea-pig's filter at a characteristic 
+ * Calculate the band width of a guinea-pig's filter at a characteristic
  * frequency, f.
  * This function uses the equation ERB = 0.29 CF^0.56 from: Evens E. F. (2001)
  * "Latest comparisons between physiological and behavioural frequency
@@ -190,31 +190,31 @@ NonLinearFromF_Bandwidth(double f)
  * Maastrict: Shaker BV. pp 382-387.
  */
 
-double
-GuineaPigFromF_Bandwidth(double f)
+Float
+GuineaPigFromF_Bandwidth(Float f)
 {
 	return(290.0 * pow(f / 1000.0, 0.56));
-	
+
 }
 
 /******************************** CatFromF ************************************/
 
 /*
- * Calculate the band width of a cat's filter at a characteristic 
+ * Calculate the band width of a cat's filter at a characteristic
  * frequency, f.
  * At present Kiang's data (Pickles, 2ndEd, figure 4.5) is used.
  * N.B. The parameters have been divided by 2 to convert from 10 dB down
  * bandwidth to 3 dB down bandwidth, as used by the gamma tone filter algorithm.
  */
 
-double
-CatFromF_Bandwidth(double f)
+Float
+CatFromF_Bandwidth(Float f)
 {
-	double	ff;
-	
+	Float	ff;
+
 	ff = f * f;
 	return(112.8 + 0.0598 * f - 4.159e-7 * ff + 3.599e-11 * (ff * f));
-	
+
 }
 
 /******************************** ERBFromF ************************************/
@@ -223,8 +223,8 @@ CatFromF_Bandwidth(double f)
  * Calculate the erb at frequency f (new M&G formula).
  */
 
-double
-ERBFromF_Bandwidth( double theFrequency )
+Float
+ERBFromF_Bandwidth( Float theFrequency )
 {
 	return ( K1_ERB * ( K2_ERB * theFrequency + 1.0 ) );
 
@@ -240,8 +240,8 @@ ERBFromF_Bandwidth( double theFrequency )
  * This routine expects checks for quality = 0.0 to be made eslewhere.
  */
 
-double
-CustomERBFromF_Bandwidth( double theFrequency, double bwMin, double quality )
+Float
+CustomERBFromF_Bandwidth( Float theFrequency, Float bwMin, Float quality )
 {
 	return ( bwMin + 1.0 / quality * theFrequency );
 
@@ -253,8 +253,8 @@ CustomERBFromF_Bandwidth( double theFrequency, double bwMin, double quality )
  * Calculate the frequency at the associated ERB bandwidth (new M&G formula).
  */
 
-double
-FFromERB_Bandwidth( double theERB)
+Float
+FFromERB_Bandwidth( Float theERB)
 {
 	return ( (theERB / K1_ERB - 1.0) / K2_ERB );
 
@@ -268,8 +268,8 @@ FFromERB_Bandwidth( double theERB)
  * problems.
  */
 
-double
-ERBRateFromF_Bandwidth(double theFrequency)
+Float
+ERBRateFromF_Bandwidth(Float theFrequency)
 {
 	return( K3_ERB * log10(K2_ERB * theFrequency + 1.0) );
 
@@ -281,8 +281,8 @@ ERBRateFromF_Bandwidth(double theFrequency)
  * Calculate the frequency (ERBs per Hz) at the specified ERB rate.
  */
 
-double
-FFromERBRate_Bandwidth(double theERBRate)
+Float
+FFromERBRate_Bandwidth(Float theERBRate)
 {
 	return( (pow(10.0, theERBRate / K3_ERB) - 1.0) / K2_ERB);
 

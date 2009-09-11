@@ -27,10 +27,10 @@
 #define BASILARM_CARNEY_NUM_PARS			6
 
 /*
- * Use original fit for Tl (latency vs. CF in msec) from Carney & Yin '88 
+ * Use original fit for Tl (latency vs. CF in msec) from Carney & Yin '88
  *and then correct by .75 cyles to go from PEAK delay to ONSET delay
  */
- 
+
 #define	BM_CARNEY_SS0	6.0e-3		/* mm */
 #define	BM_CARNEY_CC0	1.1e-3		/* ms */
 #define	BM_CARNEY_SS1	2.2e-3		/* mm */
@@ -59,11 +59,11 @@ typedef enum {
 
 typedef struct {
 
-	double	x;
-	double	tau0;
+	Float	x;
+	Float	tau0;
 	Complex	*fLast;
-	double	oHCLast;
-	double	oHCTempLast;
+	Float	oHCLast;
+	Float	oHCTempLast;
 
 } CarneyGTCoeffs, *CarneyGTCoeffsPtr;
 
@@ -71,21 +71,19 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	cascadeFlag, cutOffFrequencyFlag, hCOperatingPointFlag;
-	BOOLN	asymmetricalBiasFlag, maxHCVoltageFlag;
 	BOOLN	updateProcessVariablesFlag;
 
 	int		cascade;
-	double	cutOffFrequency;
-	double	hCOperatingPoint;
-	double	asymmetricalBias;
-	double	maxHCVoltage;
+	Float	cutOffFrequency;
+	Float	hCOperatingPoint;
+	Float	asymmetricalBias;
+	Float	maxHCVoltage;
 	CFListPtr	cFList;
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels, numComplexCoeffs, numThreads;
-	double	c, aA, c1LP, c2LP, pix2xDt;
+	Float	c, aA, c1LP, c2LP, pix2xDt;
 	ComplexPtr *f;
 	CarneyGTCoeffsPtr	*coefficients;
 
@@ -109,8 +107,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_BasilarM_Carney(EarObjectPtr data);
 
-BOOLN	CheckPars_BasilarM_Carney(void);
-
 BOOLN	Free_BasilarM_Carney(void);
 
 void	FreeCarneyGTCoeffs_BasilarM_Carney(CarneyGTCoeffsPtr *p);
@@ -123,35 +119,29 @@ UniParListPtr	GetUniParListPtr_BasilarM_Carney(void);
 
 BOOLN	Init_BasilarM_Carney(ParameterSpecifier parSpec);
 
-CarneyGTCoeffsPtr	InitCarneyGTCoeffs_BasilarM_Carney(int cascade, double cF);
+CarneyGTCoeffsPtr	InitCarneyGTCoeffs_BasilarM_Carney(int cascade, Float cF);
 
 BOOLN	InitProcessVariables_BasilarM_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_BasilarM_Carney(void);
 
-BOOLN	ReadPars_BasilarM_Carney(WChar *fileName);
-
 BOOLN	RunModel_BasilarM_Carney(EarObjectPtr data);
 
-BOOLN	SetAsymmetricalBias_BasilarM_Carney(double theAsymmetricalBias);
+BOOLN	SetAsymmetricalBias_BasilarM_Carney(Float theAsymmetricalBias);
 
 BOOLN	SetCFList_BasilarM_Carney(CFListPtr theCFList);
 
-BOOLN	SetCutOffFrequency_BasilarM_Carney(double theCutOffFrequency);
+BOOLN	SetCutOffFrequency_BasilarM_Carney(Float theCutOffFrequency);
 
-BOOLN	SetMaxHCVoltage_BasilarM_Carney(double theMaxHCVoltage);
+BOOLN	SetMaxHCVoltage_BasilarM_Carney(Float theMaxHCVoltage);
 
-BOOLN	SetHCOperatingPoint_BasilarM_Carney(double theHCOperatingPoint);
+BOOLN	SetHCOperatingPoint_BasilarM_Carney(Float theHCOperatingPoint);
 
 BOOLN	SetCascade_BasilarM_Carney(int theCascade);
 
 BOOLN	InitModule_BasilarM_Carney(ModulePtr theModule);
 
 BOOLN	SetParsPointer_BasilarM_Carney(ModulePtr theModule);
-
-BOOLN	SetPars_BasilarM_Carney(int cascade, double cutOffFrequency,
-		  double hCOperatingPoint, double asymmetricalBias,
-		  double maxHCVoltage, CFListPtr cFList);
 
 BOOLN	SetUniParList_BasilarM_Carney(void);
 

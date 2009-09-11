@@ -7,11 +7,11 @@
  *				is used.
  * Author:		L. P. O'Mard
  * Created:		12 Dec 2003
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2003 CNBH, University of Essex
  *
  **********************/
- 
+
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
@@ -100,15 +100,15 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	if (initOk)
 		CheckOptions();
 #	if USE_FFTW3_THREADS
-		if (!fftw_init_threads()) {
+		if (!DSAM_FFTW_NAME(init_threads)()) {
 			NotifyError(wxT("%s: Could not initialise FFTW3 threading."), funcName);
 			return;
 		}
-		fftw_plan_with_nthreads((GetPtr_AppInterface()->numThreads < 1)? 1:
+		DSAM_FFTW_NAME(plan_with_nthreads)((GetPtr_AppInterface()->numThreads < 1)? 1:
 		  GetPtr_AppInterface()->numThreads);
 #	endif /* USE_FFTW3_THREADS */
 	runThreadedProc = new RunThreadedProc();
-	
+
 }
 
 /****************************** Destructor ************************************/
@@ -126,7 +126,7 @@ MainApp::~MainApp(void)
 	if (runThreadedProc)
 		delete runThreadedProc;
 #	if USE_FFTW3_THREADS
-		fftw_cleanup_threads();
+		DSAM_FFTW_NAME(cleanup_threads)();
 #	endif /* USE_FFTW3_THREADS */
 	FreeArgStrings();
 	FreeSymbols_Utility_SSSymbols(&symList);
@@ -501,7 +501,7 @@ MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
 	return(count);
 
 }
-	
+
 /****************************** RemoveCommands ********************************/
 
 /*
@@ -598,13 +598,13 @@ MainApp::InitMain(bool loadSimulationFlag)
 		runThreadedProc->SetThreadMode(GetPtr_AppInterface()->threadMode);
 	}
 	return(true);
-	
+
 }
 
 /****************************** InitXMLDocument *******************************/
 
 /*
- * This initialises the 
+ * This initialises the
  */
 
 void
@@ -714,6 +714,7 @@ MainApp::DeleteSimThread(void)
 		SetInterruptRequestStatus_Common(TRUE);
 		simThread->SuspendDiagnostics();
 		simThread->Delete();
+		delete simThread;
 	}
 
 }
@@ -832,7 +833,7 @@ int
 DSAMStart_MainApp(int argc, wxChar **argv)
 {
 	wxInitializer initializer;
-	
+
 	if (!initializer) {
 		NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
 		  wxT("aborting."));
@@ -843,7 +844,7 @@ DSAMStart_MainApp(int argc, wxChar **argv)
 
 }
 
-#if DSAM_USE_UNICODE && !defined(win32) 
+#if DSAM_USE_UNICODE && !defined(win32)
 
 static struct InitData
 {
@@ -925,7 +926,7 @@ DSAMStart_MainApp(int argc, char **argv)
 	return(myReturn);
 
 }
-#endif // DSAM_USE_UNICODE && !defined(WIN32) 
+#endif // DSAM_USE_UNICODE && !defined(WIN32)
 
 /****************************** ReadXMLSimFile ********************************/
 
@@ -988,7 +989,7 @@ PrintUsage_MainApp(void)
 /*
  * This routine prints out a diagnostic message to the system log.
  */
- 
+
 void
 DPrintSysLog_MainApp(const wxChar *format, va_list args)
 {
@@ -999,6 +1000,6 @@ DPrintSysLog_MainApp(const wxChar *format, va_list args)
 #	else
 	vsyslog(LOG_INFO, format, args);
 #	endif
-	
+
 }
 

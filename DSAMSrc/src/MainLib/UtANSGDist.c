@@ -170,13 +170,13 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
 	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
 		return((int) p->params[0]);
 	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		meanChan = (p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		  p->params[ANSGDIST_GAUSS_MEAN];
+		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
+		  p->params[ANSGDIST_GAUSS_MEAN]);
 		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] * ANSGDIST_GAUSSIAN(
 		  p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) + 0.5));
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-		meanChan = (p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		p->params[ANSGDIST_GAUSS_MEAN];
+		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
+		p->params[ANSGDIST_GAUSS_MEAN]);
 		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
 		  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) +
 		  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], chan, meanChan)) /
@@ -198,10 +198,10 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
  */
 
 int
-GetMeanChan_ANGSDist(double *frequencies, int numFreqs, double bF)
+GetMeanChan_ANGSDist(Float *frequencies, int numFreqs, Float bF)
 {
 	int		i, bFIndex;
-	double	minDiff, diff;
+	Float	minDiff, diff;
 
 	if (bF < 0.0)
 		return(numFreqs / 2);
@@ -222,7 +222,7 @@ GetMeanChan_ANGSDist(double *frequencies, int numFreqs, double bF)
  */
 
 BOOLN
-SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
+SetFibres_ANSGDist(int *fibres, ParArrayPtr p, Float *frequencies,
   int numChannels)
 {
 	static const WChar	*funcName = wxT("SetFibres_ANSGDist");
@@ -269,7 +269,7 @@ SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
 
 void
 PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
-  double *frequencies, int numChannels)
+  Float *frequencies, int numChannels)
 {
 	int		i;
 

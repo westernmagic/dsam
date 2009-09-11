@@ -39,14 +39,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	timeOffsetFlag, intensityFlag;
 	BOOLN	updateProcessVariablesFlag;
-	double	timeOffset;
-	double	intensity;
+	Float	timeOffset;
+	Float	intensity;
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	scale;
+	Float	scale;
 
 } SetDBSPL, *SetDBSPLPtr;
 
@@ -68,8 +67,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Transform_SetDBSPL(EarObjectPtr data);
 
-BOOLN	CheckPars_Transform_SetDBSPL(void);
-
 BOOLN	Free_Transform_SetDBSPL(void);
 
 BOOLN	FreeProcessVariables_Transform_SetDBSPL(void);
@@ -84,17 +81,13 @@ BOOLN	PrintPars_Transform_SetDBSPL(void);
 
 BOOLN	Process_Transform_SetDBSPL(EarObjectPtr data);
 
-BOOLN	ReadPars_Transform_SetDBSPL(WChar *fileName);
-
-BOOLN	SetIntensity_Transform_SetDBSPL(double theIntensity);
+BOOLN	SetIntensity_Transform_SetDBSPL(Float theIntensity);
 
 BOOLN	InitModule_Transform_SetDBSPL(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Transform_SetDBSPL(ModulePtr theModule);
 
-BOOLN	SetPars_Transform_SetDBSPL(double timeOffset, double intensity);
-
-BOOLN	SetTimeOffset_Transform_SetDBSPL(double theTimeOffset);
+BOOLN	SetTimeOffset_Transform_SetDBSPL(Float theTimeOffset);
 
 BOOLN	SetUniParList_Transform_SetDBSPL(void);
 

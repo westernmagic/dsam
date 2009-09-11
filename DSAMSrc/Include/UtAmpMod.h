@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.8.
  * Author:		L. P. O'Mard
  * Created:		21 Dec 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -36,9 +36,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	numFrequenciesFlag;
 	int		numFrequencies;
-	double	*modulationDepths, *frequencies, *phases;
+	Float	*modulationDepths, *frequencies, *phases;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -65,8 +64,6 @@ BOOLN	AllocNumFrequencies_Utility_AmpMod(int numFrequencies);
 
 BOOLN	CheckData_Utility_AmpMod(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_AmpMod(void);
-
 BOOLN	Free_Utility_AmpMod(void);
 
 BOOLN	Init_Utility_AmpMod(ParameterSpecifier parSpec);
@@ -77,19 +74,17 @@ BOOLN	PrintPars_Utility_AmpMod(void);
 
 BOOLN	Process_Utility_AmpMod(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_AmpMod(WChar *fileName);
-
 BOOLN	SetDefaultNumFrequenciesArrays_Utility_AmpMod(void);
 
-BOOLN	SetFrequencies_Utility_AmpMod(double *theFrequencies);
+BOOLN	SetFrequencies_Utility_AmpMod(Float *theFrequencies);
 
-BOOLN	SetIndividualFreq_Utility_AmpMod(int theIndex, double theFrequency);
+BOOLN	SetIndividualFreq_Utility_AmpMod(int theIndex, Float theFrequency);
 
-BOOLN	SetIndividualDepth_Utility_AmpMod(int theIndex, double theModDepth);
+BOOLN	SetIndividualDepth_Utility_AmpMod(int theIndex, Float theModDepth);
 
-BOOLN	SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase);
+BOOLN	SetIndividualPhase_Utility_AmpMod(int theIndex, Float thePhase);
 
-BOOLN	SetModulationDepths_Utility_AmpMod(double *theModulationDepths);
+BOOLN	SetModulationDepths_Utility_AmpMod(Float *theModulationDepths);
 
 BOOLN	InitModule_Utility_AmpMod(ModulePtr theModule);
 
@@ -97,10 +92,7 @@ BOOLN	SetNumFrequencies_Utility_AmpMod(int theNumFrequencies);
 
 BOOLN	SetParsPointer_Utility_AmpMod(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
-		  double *frequencies, double *phases);
-
-BOOLN	SetPhases_Utility_AmpMod(double *thePhases);
+BOOLN	SetPhases_Utility_AmpMod(Float *thePhases);
 
 BOOLN	SetUniParList_Utility_AmpMod(void);
 

@@ -8,7 +8,7 @@
  * Comments:	Written using ModuleProducer version 1.5.0 (May  2 2007).
  * Author:		L. P. O'Mard
  * Created:		02 May 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, L. P. O'Mard.
  *
  *********************/
@@ -306,7 +306,7 @@ SetLabelMode_Utility_CollateSignals(WChar * theLabelMode)
  */
 
 BOOLN
-SetLabels_Utility_CollateSignals(double *theLabels)
+SetLabels_Utility_CollateSignals(Float *theLabels)
 {
 	static const WChar	*funcName = wxT("SetLabels_Utility_CollateSignals");
 
@@ -329,7 +329,7 @@ SetLabels_Utility_CollateSignals(double *theLabels)
  */
 
 BOOLN
-SetIndividualLabel_Utility_CollateSignals(int theIndex, double theLabel)
+SetIndividualLabel_Utility_CollateSignals(int theIndex, Float theLabel)
 {
 	static const WChar *funcName =
 	  wxT("SetIndividualLabelArray_Utility_CollateSignals");
@@ -355,37 +355,6 @@ SetIndividualLabel_Utility_CollateSignals(int theIndex, double theLabel)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_CollateSignals(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_CollateSignals");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (collateSigsPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if ((collateSigsPtr->labelMode ==
-	  UTILITY_COLLATESIGNALS_LABELMODE_USER) && collateSigsPtr->labels ==
-	  NULL) {
-		NotifyError(wxT("%s: 'Labels' array not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -399,8 +368,8 @@ PrintPars_Utility_CollateSignals(void)
 	static const WChar	*funcName = wxT("PrintPars_Utility_CollateSignals");
 	int		i;
 
-	if (!CheckPars_Utility_CollateSignals()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
+	if (collateSigsPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Collate Utility Module Parameters:-\n"));
@@ -457,7 +426,6 @@ InitModule_Utility_CollateSignals(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = collateSigsPtr;
-	theModule->CheckPars = CheckPars_Utility_CollateSignals;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
 	theModule->Free = Free_Utility_CollateSignals;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_CollateSignals;
@@ -533,8 +501,6 @@ Process_Utility_CollateSignals(EarObjectPtr data)
 
 	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_CollateSignals())
-			return(FALSE);
 		if (!CheckData_Utility_CollateSignals(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

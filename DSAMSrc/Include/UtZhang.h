@@ -5,7 +5,7 @@
  * Comments:	This code was revised from the ARLO matlab code.
  * Author:		Edited by L. P. O'Mard
  * Created:		13 Jun 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -52,42 +52,42 @@ typedef enum {
 
 typedef struct TLowPass {
 	/*//input one signal to the filter and get the output */
-	double (*Run)(struct TLowPass *p, double x);
+	Float (*Run)(struct TLowPass *p, Float x);
 	/*//input multiple signal to the filter and get the multiple output */
-	void (*Run2)(struct TLowPass *p,const double *in, double *out,
+	void (*Run2)(struct TLowPass *p,const Float *in, Float *out,
 	  const int length);
 
 	/*/time-domain resolution,cut-off frequency,gain, filter order */
-	double tdres, Fc, gain;
+	Float tdres, Fc, gain;
 	int Order;
 	/*/ parameters used in calculation */
-	double c1LP,c2LP,hc[MAX_ORDER],hcl[MAX_ORDER];
+	Float c1LP,c2LP,hc[MAX_ORDER],hcl[MAX_ORDER];
 } TLowPass, *TLowPassPtr;
 
 typedef struct TNonLinear {
-	double	(* Run)(struct TNonLinear *p, double x);
-	void	(* Run2)(struct TNonLinear *p, const double *in, double *out,
+	Float	(* Run)(struct TNonLinear *p, Float x);
+	void	(* Run2)(struct TNonLinear *p, const Float *in, Float *out,
 			  const int length);
 	/*/For OHC Boltzman */
-	double	p_corner,p_slope,p_strength,x0,s0,x1,s1,shift;
-	double	Acp,Bcp,Ccp;
+	Float	p_corner,p_slope,p_strength,x0,s0,x1,s1,shift;
+	Float	Acp,Bcp,Ccp;
 	/*/For AfterOHCNL */
-	double	dc,minR,A,TauMax,TauMin; /*/s0 also used by AfterOHCNL */
+	Float	dc,minR,A,TauMax,TauMin; /*/s0 also used by AfterOHCNL */
 	/*/For IHC nonlinear function */
-	double	A0,B,C,D;
+	Float	A0,B,C,D;
 	/*/For IHCPPI nonlinear */
-	double	psl,pst,p1,p2;
+	Float	psl,pst,p1,p2;
 
 } TNonLinear, *TNonLinearPtr;
 
 typedef struct THairCell {
-	double	(* Run)(struct THairCell *p,double x);
-	void	(* Run2)(struct THairCell* p,const double *in, double *out,
+	Float	(* Run)(struct THairCell *p,Float x);
+	void	(* Run2)(struct THairCell* p,const Float *in, Float *out,
 			  const int length);
 	TLowPass hclp;
 	TNonLinear hcnl;
 	/*/Boltzman Like NonLinear */
-	/* void (*setOHC_NL)(THairCell*,double,double,double,double,double,double,double,double); */
+	/* void (*setOHC_NL)(THairCell*,Float,Float,Float,Float,Float,Float,Float,Float); */
 	/* void (*setIHC_NL)(); */
 } THairCell, *THairCellPtr;
 
@@ -105,28 +105,28 @@ typedef struct THairCell {
 */
 __BEGIN_DECLS
 
-BOOLN	init_boltzman(TNonLinear* p,double _corner, double _slope,
-		  double _strength, double _x0, double _s0, double _x1, double _s1,
-		  double _asym);
+BOOLN	init_boltzman(TNonLinear* p,Float _corner, Float _slope,
+		  Float _strength, Float _x0, Float _s0, Float _x1, Float _s1,
+		  Float _asym);
 
-void	InitLowPass_Utility_Zhang(TLowPass* res, double _tdres, double _Fc,
-		  double _gain,int _LPorder);
+void	InitLowPass_Utility_Zhang(TLowPass* res, Float _tdres, Float _Fc,
+		  Float _gain,int _LPorder);
 
 NameSpecifier *	SpeciesList_Utility_Zhang(int index);
 
-double	RunAfterOhcNL_Utility_Zhang(TNonLinear* p, double x);
+Float	RunAfterOhcNL_Utility_Zhang(TNonLinear* p, Float x);
 
-void	RunAfterOhcNL2_Utility_Zhang(TNonLinear* p, const double *in,
-		  double *out, const int length);
+void	RunAfterOhcNL2_Utility_Zhang(TNonLinear* p, const Float *in,
+		  Float *out, const int length);
 
-double	RunBoltzman(TNonLinear *p, double x);
+Float	RunBoltzman(TNonLinear *p, Float x);
 
-double	RunHairCell(THairCell *p, double x);
+Float	RunHairCell(THairCell *p, Float x);
 
-double	RunLowPass_Utility_Zhang(TLowPass *p, double x);
+Float	RunLowPass_Utility_Zhang(TLowPass *p, Float x);
 
-void	RunLowPass2_Utility_Zhang(TLowPass *p,const double *in,
-		  double *out, const int length);
+void	RunLowPass2_Utility_Zhang(TLowPass *p,const Float *in,
+		  Float *out, const int length);
 
 __END_DECLS
 

@@ -83,8 +83,8 @@ typedef struct {
 
 	BOOLN		gradient;
 	BOOLN		strobeAlreadyPlaced;
-	double		threshold;
-	double		deltaThreshold;
+	Float		threshold;
+	Float		deltaThreshold;
 	ChanLen		widthIndex;
 	ChanLen		delayCount;
 	ChanLen		delayTimeoutCount;
@@ -99,15 +99,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	typeModeFlag, diagnosticModeFlag, thresholdFlag;
-	BOOLN	thresholdDecayRateFlag, delayFlag, delayTimeoutFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		typeMode;
 	int		diagnosticMode;
-	double	threshold;
-	double	thresholdDecayRate;
-	double	delay;
-	double	delayTimeout;
+	Float	threshold;
+	Float	thresholdDecayRate;
+	Float	delay;
+	Float	delayTimeout;
 
 	/* Private members */
 	NameSpecifier	*diagnosticModeList;
@@ -115,7 +113,7 @@ typedef struct {
 	UniParListPtr	parList;
 	WChar			diagnosticString[MAX_FILE_PATH];
 	int				numChannels;
-	double			thresholdDecay;
+	Float			thresholdDecay;
 	FILE			*fp;
 	ChanLen			numLastSamples;
 	ChanLen			delayTimeoutSamples;
@@ -140,8 +138,6 @@ extern	StrobePtr	strobePtr;
 __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Strobe(EarObjectPtr data);
-
-BOOLN	CheckPars_Utility_Strobe(void);
 
 BOOLN	Free_Utility_Strobe(void);
 
@@ -170,13 +166,11 @@ void	ProcessPeakModes_Utility_Strobe(EarObjectPtr data);
 
 void	ProcessThesholdModes_Utility_Strobe(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Strobe(WChar *fileName);
-
 BOOLN	SetDiagnosticMode_Utility_Strobe(WChar *theDiagnosticMode);
 
-BOOLN	SetDelay_Utility_Strobe(double theDelay);
+BOOLN	SetDelay_Utility_Strobe(Float theDelay);
 
-BOOLN	SetDelayTimeout_Utility_Strobe(double theDelayTimeout);
+BOOLN	SetDelayTimeout_Utility_Strobe(Float theDelayTimeout);
 
 BOOLN	SetTypeMode_Utility_Strobe(WChar *theTypeMode);
 
@@ -184,14 +178,10 @@ BOOLN	InitModule_Utility_Strobe(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Strobe(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Strobe(WChar *typeMode, WChar *diagnosticMode,
-		  double threshold, double thresholdDecayRate, double delay,
-		  double delayTimeout);
-
 BOOLN	SetThresholdDecayRate_Utility_Strobe(
-		  double theThresholdDecayRate);
+		  Float theThresholdDecayRate);
 
-BOOLN	SetThreshold_Utility_Strobe(double theThreshold);
+BOOLN	SetThreshold_Utility_Strobe(Float theThreshold);
 
 BOOLN	SetUniParList_Utility_Strobe(void);
 

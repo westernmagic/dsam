@@ -8,7 +8,7 @@
  * Comments:	Written using ModuleProducer version 1.5.0 (May  2 2007).
  * Author:		L. P. O'Mard
  * Created:		02 May 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, L. P. O'Mard.
  *
  *********************/
@@ -60,7 +60,7 @@ typedef struct {
 
 	int		summationMode;
 	int		labelMode;
-	double	*labels;
+	Float	*labels;
 
 	/* Private members */
 	NameSpecifier	*summationModeList;
@@ -88,8 +88,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_CollateSignals(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_CollateSignals(void);
-
 BOOLN	Free_Utility_CollateSignals(void);
 
 UniParListPtr	GetUniParListPtr_Utility_CollateSignals(void);
@@ -108,11 +106,11 @@ BOOLN	Process_Utility_CollateSignals(EarObjectPtr data);
 
 void	SetEnabledState_Utility_CollateSignals(void);
 
-BOOLN	SetIndividualLabel_Utility_CollateSignals(int theIndex, double theLabel);
+BOOLN	SetIndividualLabel_Utility_CollateSignals(int theIndex, Float theLabel);
 
 BOOLN	SetLabelMode_Utility_CollateSignals(WChar * theLabelMode);
 
-BOOLN	SetLabels_Utility_CollateSignals(double *theLabels);
+BOOLN	SetLabels_Utility_CollateSignals(Float *theLabels);
 
 BOOLN	SetParsPointer_Utility_CollateSignals(ModulePtr theModule);
 

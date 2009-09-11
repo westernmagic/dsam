@@ -10,7 +10,7 @@
  *				Monaural signals always treat delays as positive values.
  * Author:		L. P. O'Mard
  * Created:		08 Apr 1997
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -118,9 +118,6 @@ Init_Utility_Delay(ParameterSpecifier parSpec)
 		}
 	}
 	delay2Ptr->parSpec = parSpec;
-	delay2Ptr->modeFlag = TRUE;
-	delay2Ptr->initialDelayFlag = TRUE;
-	delay2Ptr->finalDelayFlag = TRUE;
 	delay2Ptr->mode = DELAY_SINGLE_MODE;
 	delay2Ptr->initialDelay = 0.0;
 	delay2Ptr->finalDelay = 0.0;
@@ -186,7 +183,7 @@ SetEnabledPars_Utility_Delay(void)
 {
 	delay2Ptr->parList->pars[UTILITY_DELAY_FINALDELAY].enabled = (delay2Ptr->
 	  mode == DELAY_LINEAR_MODE);
-	
+
 }
 
 /****************************** GetUniParListPtr ******************************/
@@ -214,32 +211,6 @@ GetUniParListPtr_Utility_Delay(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_Delay(WChar *mode, double initialDelay, double finalDelay)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_Delay");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_Delay(mode))
-		ok = FALSE;
-	if (!SetInitialDelay_Utility_Delay(initialDelay))
-		ok = FALSE;
-	if (!SetFinalDelay_Utility_Delay(finalDelay))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -264,7 +235,6 @@ SetMode_Utility_Delay(WChar *theMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	delay2Ptr->modeFlag = TRUE;
 	delay2Ptr->mode = specifier;
 	SetEnabledPars_Utility_Delay();
 	return(TRUE);
@@ -280,7 +250,7 @@ SetMode_Utility_Delay(WChar *theMode)
  */
 
 BOOLN
-SetInitialDelay_Utility_Delay(double theInitialDelay)
+SetInitialDelay_Utility_Delay(Float theInitialDelay)
 {
 	static const WChar	*funcName = wxT("SetInitialDelay_Utility_Delay");
 
@@ -289,7 +259,6 @@ SetInitialDelay_Utility_Delay(double theInitialDelay)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	delay2Ptr->initialDelayFlag = TRUE;
 	delay2Ptr->initialDelay = theInitialDelay;
 	return(TRUE);
 
@@ -304,7 +273,7 @@ SetInitialDelay_Utility_Delay(double theInitialDelay)
  */
 
 BOOLN
-SetFinalDelay_Utility_Delay(double theFinalDelay)
+SetFinalDelay_Utility_Delay(Float theFinalDelay)
 {
 	static const WChar	*funcName = wxT("SetFinalDelay_Utility_Delay");
 
@@ -313,46 +282,8 @@ SetFinalDelay_Utility_Delay(double theFinalDelay)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	delay2Ptr->finalDelayFlag = TRUE;
 	delay2Ptr->finalDelay = theFinalDelay;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_Delay(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_Delay");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (delay2Ptr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!delay2Ptr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!delay2Ptr->initialDelayFlag) {
-		NotifyError(wxT("%s: initialDelay variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!delay2Ptr->finalDelayFlag) {
-		NotifyError(wxT("%s: finalDelay variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -368,9 +299,8 @@ PrintPars_Utility_Delay(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_Delay");
 
-	if (!CheckPars_Utility_Delay()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (delay2Ptr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Create binaural ITD Utility Module Parameters:-\n"));
@@ -379,52 +309,6 @@ PrintPars_Utility_Delay(void)
 	if (delay2Ptr->mode == DELAY_LINEAR_MODE)
 		DPrint(wxT(",\tfinalDelay = %g ms"), MSEC(delay2Ptr->finalDelay));
 	DPrint(wxT(".\n"));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_Delay(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_Delay");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	double	initialDelay, finalDelay;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &initialDelay))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &finalDelay))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_Delay(mode, initialDelay, finalDelay)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -472,11 +356,9 @@ InitModule_Utility_Delay(ModulePtr theModule)
 	}
 	theModule->parsPtr = delay2Ptr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_Delay;
 	theModule->Free = Free_Utility_Delay;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Delay;
 	theModule->PrintPars = PrintPars_Utility_Delay;
-	theModule->ReadPars = ReadPars_Utility_Delay;
 	theModule->RunProcess = Process_Utility_Delay;
 	theModule->SetParsPointer = SetParsPointer_Utility_Delay;
 	return(TRUE);
@@ -500,7 +382,7 @@ BOOLN
 CheckData_Utility_Delay(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_Delay");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -563,14 +445,12 @@ Process_Utility_Delay(EarObjectPtr data)
 	register	ChanData	*inPtr, *outPtr;
 	BOOLN	delayChannel;
 	int		chan;
-	double	delay = 0.0;
+	Float	delay = 0.0;
 	ChanLen	i, delayIndex;
 	SignalDataPtr	inSignal, outSignal;
 	Delay2Ptr	p = delay2Ptr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_Delay())
-			return(FALSE);
 		if (!CheckData_Utility_Delay(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -613,7 +493,7 @@ Process_Utility_Delay(EarObjectPtr data)
 			} else {
 				if ((chan % outSignal->interleaveLevel) == 0)
 					delayChannel = TRUE;
-			}	
+			}
 		}
 		inPtr = inSignal->channel[chan];
 		outPtr = _OutSig_EarObject(data)->channel[chan];

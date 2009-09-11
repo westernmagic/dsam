@@ -13,7 +13,7 @@
  * Copyright:	(c) 1998, University of Essex.
  *
  *******************/
- 
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,15 +91,13 @@ Init_BasilarM_Cooke(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (bM0CookePtr == NULL) { 
+		if (bM0CookePtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	bM0CookePtr->parSpec = parSpec;
 	bM0CookePtr->updateProcessVariablesFlag = TRUE;
-	bM0CookePtr->broadeningCoeffFlag = TRUE;
-	bM0CookePtr->outputModeFlag = TRUE;
 	bM0CookePtr->outputMode = BM_COOKE_OUTPUTMODE_BM_DETAIL;
 	bM0CookePtr->broadeningCoeff = 1.019;
 	if ((bM0CookePtr->theCFs = GenerateDefault_CFList(
@@ -215,43 +213,6 @@ GetUniParListPtr_BasilarM_Cooke(void)
 
 }
 
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It returns TRUE if there are no problems.
- */
- 
-BOOLN
-CheckPars_BasilarM_Cooke(void)
-{
-	static const WChar *funcName = wxT("CheckPars_BasilarM_Cooke");
-	BOOLN ok;
-	
-	ok = TRUE;
-	if (bM0CookePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!bM0CookePtr->outputModeFlag) {
-		NotifyError(wxT("%s: Filter output mode not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bM0CookePtr->broadeningCoeffFlag) {
-		NotifyError(wxT("%s: Filter width broadening coefficient not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!CheckPars_CFList(bM0CookePtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list  parameters not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** SetOutputMode *********************************/
 
 /*
@@ -276,7 +237,6 @@ SetOutputMode_BasilarM_Cooke(WChar * theOutputMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bM0CookePtr->outputModeFlag = TRUE;
 	bM0CookePtr->outputMode = specifier;
 	return(TRUE);
 
@@ -292,7 +252,7 @@ SetOutputMode_BasilarM_Cooke(WChar * theOutputMode)
  */
 
 BOOLN
-SetBroadeningCoeff_BasilarM_Cooke(double theBroadeningCoeff)
+SetBroadeningCoeff_BasilarM_Cooke(Float theBroadeningCoeff)
 {
 	static const WChar *funcName = wxT("SetBroadeningCoeff_BasilarM_Cooke");
 
@@ -300,11 +260,10 @@ SetBroadeningCoeff_BasilarM_Cooke(double theBroadeningCoeff)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	bM0CookePtr->broadeningCoeffFlag = TRUE;
 	bM0CookePtr->broadeningCoeff = theBroadeningCoeff;
 	bM0CookePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /********************************* SetCFList **********************************/
@@ -313,7 +272,7 @@ SetBroadeningCoeff_BasilarM_Cooke(double theBroadeningCoeff)
  * This function sets the CFList data structure for the filter bank.
  * It returns TRUE if the operation is successful.
  */
- 
+
 BOOLN
 SetCFList_BasilarM_Cooke(CFListPtr theCFList)
 {
@@ -347,7 +306,7 @@ SetCFList_BasilarM_Cooke(CFListPtr theCFList)
 
 BOOLN
 SetBandwidths_BasilarM_Cooke(WChar *theBandwidthMode,
-  double *theBandwidths)
+  Float *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidths_BasilarM_Cooke");
 
@@ -362,36 +321,7 @@ SetBandwidths_BasilarM_Cooke(WChar *theBandwidthMode,
 	}
 	bM0CookePtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
-}
 
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * The bandwidths for the CFList data structure must also be set, but it is
- * assumed that they are set independently.
- * It returns TRUE if the operation is successful.
- */
-  
-BOOLN
-SetPars_BasilarM_Cooke(WChar *outputMode, double theBroadeningCoeff,
-  CFListPtr theCFs)
-{
-	static const WChar *funcName = wxT("SetPars_BasilarM_Cooke");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetOutputMode_BasilarM_Cooke(outputMode))
-		ok = FALSE;
-	if (!SetBroadeningCoeff_BasilarM_Cooke(theBroadeningCoeff))
-		ok = FALSE;
-	if (!SetCFList_BasilarM_Cooke(theCFs))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
-	
 }
 
 /****************************** GetCFListPtr **********************************/
@@ -405,7 +335,7 @@ CFListPtr
 GetCFListPtr_BasilarM_Cooke(void)
 {
 	static const WChar *funcName = wxT("GetCFListPtr_BasilarM_Cooke");
-	
+
 	if (bM0CookePtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
@@ -424,17 +354,12 @@ GetCFListPtr_BasilarM_Cooke(void)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_BasilarM_Cooke(void)
 {
 	static const WChar *funcName = wxT("PrintPars_BasilarM_Cooke");
-	
-	if (!CheckPars_BasilarM_Cooke()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
+
 	DPrint(wxT("Cooke (0) Basilar Membrane Filter Module Parameters:-\n"));
 	PrintPars_CFList(bM0CookePtr->theCFs);
 	DPrint(wxT("\tOutput mode = %s.\n"), bM0CookePtr->outputModeList[
@@ -443,51 +368,6 @@ PrintPars_BasilarM_Cooke(void)
 	  broadeningCoeff);
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_BasilarM_Cooke(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_BasilarM_Cooke");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	outputMode[MAXLINE];
-	double	broadeningCoeff;
-    FILE    *fp;
-    CFListPtr	theCFs;
-    
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-	if ((theCFs = ReadPars_CFList(fp)) == NULL)
-		ok = FALSE;
-	if (!ReadBandwidths_CFList(fp, theCFs))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &broadeningCoeff))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), outputMode))
-		ok = FALSE;
-    fclose(fp);
-    Free_ParFile();
-	if (!SetPars_BasilarM_Cooke(outputMode, broadeningCoeff, theCFs)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(ok);
-   
 }
 
 /****************************** SetParsPointer ********************************/
@@ -533,11 +413,9 @@ InitModule_BasilarM_Cooke(ModulePtr theModule)
 	}
 	theModule->parsPtr = bM0CookePtr;
 	/*theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;*/
-	theModule->CheckPars = CheckPars_BasilarM_Cooke;
 	theModule->Free = Free_BasilarM_Cooke;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_Cooke;
 	theModule->PrintPars = PrintPars_BasilarM_Cooke;
-	theModule->ReadPars = ReadPars_BasilarM_Cooke;
 	theModule->RunProcess = RunModel_BasilarM_Cooke;
 	theModule->SetParsPointer = SetParsPointer_BasilarM_Cooke;
 	return(TRUE);
@@ -557,13 +435,13 @@ BOOLN
 InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_Cooke");
-	
+
 	int		i;
 	unsigned long	j;
-	double	twoPiDt, phi, bandwidth;
+	Float	twoPiDt, phi, bandwidth;
 	CookeCoeffsPtr	c;
 	BM0CookePtr	p = bM0CookePtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->
 	  updateFlag || (data->timeIndex == PROCESS_START_TIME)) {
 		twoPiDt = PIx2 * _OutSig_EarObject(data)->dt;
@@ -577,19 +455,19 @@ InitProcessVariables_BasilarM_Cooke(EarObjectPtr data)
 			}
 			p->intSampleRate = (unsigned long) ceil(1.0 / _OutSig_EarObject(
 			  data)->dt);
-			if ((p->sine = (double *) calloc(p->intSampleRate, sizeof(
-			  double))) == NULL) {
+			if ((p->sine = (Float *) calloc(p->intSampleRate, sizeof(
+			  Float))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for sine table."), funcName);
 				return(FALSE);
 			}
-			if ((p->cosine = (double *) calloc(p->intSampleRate, sizeof(
-			  double))) == NULL) {
+			if ((p->cosine = (Float *) calloc(p->intSampleRate, sizeof(
+			  Float))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for cosine table."),
 				  funcName);
 				return(FALSE);
 			}
 			for (j = 0; j < p->intSampleRate; j++) {
-				phi = (double) (j * twoPiDt);
+				phi = (Float) (j * twoPiDt);
 				p->sine[j] = sin(phi);
 				p->cosine[j] = cos(phi);
 			}
@@ -663,20 +541,18 @@ RunModel_BasilarM_Cooke(EarObjectPtr data)
 	int		chan, cFIndex;
 	unsigned long	tablePtr;
 	ChanLen	i;
-	double	zz, pow, cosPtr;
-	register double	*inPtr, *outPtr;
+	Float	zz, pow, cosPtr;
+	register Float	*inPtr, *outPtr;
 	CookeCoeffsPtr	c;
 	SignalDataPtr	outSignal;
 	BM0CookePtr	p = bM0CookePtr;
- 				
+
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
+		}
 		if (!CheckInSignal_EarObject(data, funcName))
-			return(FALSE);
-		if (!CheckPars_BasilarM_Cooke())
 			return(FALSE);
 
 		/* Initialise Variables and coefficients */

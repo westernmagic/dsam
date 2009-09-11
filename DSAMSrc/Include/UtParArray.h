@@ -44,7 +44,7 @@ typedef struct _ParArray {
 	WChar	name[MAXLINE];
 	int		mode;
 	int		numParams;
-	double	*params;
+	Float	*params;
 	NameSpecifier	*modeList;
 
 	int (* GetNumPars)(int);
@@ -86,10 +86,8 @@ ParArrayPtr	Init_ParArray(WChar *name, NameSpecifier *modeList,
 
 void	PrintPars_ParArray(ParArrayPtr parArray);
 
-BOOLN	ReadPars_ParArray(FILE *fp, ParArrayPtr parArray);
-
 BOOLN	SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex,
-		  double parValue);
+		  Float parValue);
 
 BOOLN	SetMode_ParArray(ParArrayPtr parArray, WChar *modeName);
 

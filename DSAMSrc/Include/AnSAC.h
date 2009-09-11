@@ -9,7 +9,7 @@
  * Comments:	Written using ModuleProducer version 1.5.0 (Jan 17 2007).
  * Author:		L. P. O'Mard
  * Created:		17 Jan 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, Lowel P. O'Mard
  *
  *********************/
@@ -44,19 +44,18 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	orderFlag, eventThresholdFlag, maxIntervalFlag, binWidthFlag;
 	BOOLN	updateProcessVariablesFlag;
 	BOOLN	normalisation;
 	int		order;
-	double	eventThreshold;
-	double	maxInterval;
-	double	binWidth;
+	Float	eventThreshold;
+	Float	maxInterval;
+	Float	binWidth;
 
 	/* Private members */
 	UniParListPtr	parList;
 	SpikeListSpecPtr	spikeListSpec;
 	int		maxSpikes;
-	double	lastNormalisationFactor;
+	Float	lastNormalisationFactor;
 	ChanLen	maxIntervalIndex;
 
 } SAC, *SACPtr;
@@ -81,8 +80,6 @@ BOOLN	Calc_Analysis_SAC(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_SAC(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_SAC(void);
-
 BOOLN	FreeProcessVariables_Analysis_SAC(void);
 
 BOOLN	Free_Analysis_SAC(void);
@@ -99,11 +96,11 @@ BOOLN	PrintPars_Analysis_SAC(void);
 
 void	ResetProcess_Analysis_SAC(EarObjectPtr data);
 
-BOOLN	SetBinWidth_Analysis_SAC(double theBinWidth);
+BOOLN	SetBinWidth_Analysis_SAC(Float theBinWidth);
 
-BOOLN	SetEventThreshold_Analysis_SAC(double theEventThreshold);
+BOOLN	SetEventThreshold_Analysis_SAC(Float theEventThreshold);
 
-BOOLN	SetMaxInterval_Analysis_SAC(double theMaxInterval);
+BOOLN	SetMaxInterval_Analysis_SAC(Float theMaxInterval);
 
 BOOLN	SetNormalisation_Analysis_SAC(WChar * theNormalisation);
 

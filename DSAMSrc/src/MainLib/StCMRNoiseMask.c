@@ -759,7 +759,7 @@ SetRanSeed_CMR_NoiseMasker(long theRanSeed)
  */
 
 BOOLN
-SetLowFBLevel_CMR_NoiseMasker(double theLowFBLevel)
+SetLowFBLevel_CMR_NoiseMasker(Float theLowFBLevel)
 {
 	static const WChar	*funcName = wxT("SetLowFBLevel_CMR_NoiseMasker");
 
@@ -782,7 +782,7 @@ SetLowFBLevel_CMR_NoiseMasker(double theLowFBLevel)
  */
 
 BOOLN
-SetUppFBLevel_CMR_NoiseMasker(double theUppFBLevel)
+SetUppFBLevel_CMR_NoiseMasker(Float theUppFBLevel)
 {
 	static const WChar	*funcName = wxT("SetUppFBLevel_CMR_NoiseMasker");
 
@@ -805,7 +805,7 @@ SetUppFBLevel_CMR_NoiseMasker(double theUppFBLevel)
  */
 
 BOOLN
-SetOFMLevel_CMR_NoiseMasker(double theOFMLevel)
+SetOFMLevel_CMR_NoiseMasker(Float theOFMLevel)
 {
 	static const WChar	*funcName = wxT("SetOFMLevel_CMR_NoiseMasker");
 
@@ -828,7 +828,7 @@ SetOFMLevel_CMR_NoiseMasker(double theOFMLevel)
  */
 
 BOOLN
-SetFBModPhase_CMR_NoiseMasker(double theFBModPhase)
+SetFBModPhase_CMR_NoiseMasker(Float theFBModPhase)
 {
 	static const WChar	*funcName = wxT("SetFBModPhase_CMR_NoiseMasker");
 
@@ -852,7 +852,7 @@ SetFBModPhase_CMR_NoiseMasker(double theFBModPhase)
  */
 
 BOOLN
-SetSpacing_CMR_NoiseMasker(double theSpacing)
+SetSpacing_CMR_NoiseMasker(Float theSpacing)
 {
 	static const WChar	*funcName = wxT("SetSpacing_CMR_NoiseMasker");
 
@@ -905,7 +905,7 @@ SetBandwidthMode_CMR_NoiseMasker(WChar * theBandwidthMode)
  */
 
 BOOLN
-SetBandwidth_CMR_NoiseMasker(double theBandwidth)
+SetBandwidth_CMR_NoiseMasker(Float theBandwidth)
 {
 	static const WChar	*funcName = wxT("SetBandwidth_CMR_NoiseMasker");
 
@@ -928,7 +928,7 @@ SetBandwidth_CMR_NoiseMasker(double theBandwidth)
  */
 
 BOOLN
-SetMskModFreq_CMR_NoiseMasker(double theMskModFreq)
+SetMskModFreq_CMR_NoiseMasker(Float theMskModFreq)
 {
 	static const WChar	*funcName = wxT("SetMskModFreq_CMR_NoiseMasker");
 
@@ -952,7 +952,7 @@ SetMskModFreq_CMR_NoiseMasker(double theMskModFreq)
  */
 
 BOOLN
-SetMskModPhase_CMR_NoiseMasker(double theMskModPhase)
+SetMskModPhase_CMR_NoiseMasker(Float theMskModPhase)
 {
 	static const WChar	*funcName = wxT("SetMskModPhase_CMR_NoiseMasker");
 
@@ -976,7 +976,7 @@ SetMskModPhase_CMR_NoiseMasker(double theMskModPhase)
  */
 
 BOOLN
-SetSigLevel_CMR_NoiseMasker(double theSigLevel)
+SetSigLevel_CMR_NoiseMasker(Float theSigLevel)
 {
 	static const WChar	*funcName = wxT("SetSigLevel_CMR_NoiseMasker");
 
@@ -999,7 +999,7 @@ SetSigLevel_CMR_NoiseMasker(double theSigLevel)
  */
 
 BOOLN
-SetSigFreq_CMR_NoiseMasker(double theSigFreq)
+SetSigFreq_CMR_NoiseMasker(Float theSigFreq)
 {
 	static const WChar	*funcName = wxT("SetSigFreq_CMR_NoiseMasker");
 
@@ -1022,7 +1022,7 @@ SetSigFreq_CMR_NoiseMasker(double theSigFreq)
  */
 
 BOOLN
-SetGateTime_CMR_NoiseMasker(double theGateTime)
+SetGateTime_CMR_NoiseMasker(Float theGateTime)
 {
 	static const WChar	*funcName = wxT("SetGateTime_CMR_NoiseMasker");
 
@@ -1045,7 +1045,7 @@ SetGateTime_CMR_NoiseMasker(double theGateTime)
  */
 
 BOOLN
-SetDuration_CMR_NoiseMasker(double theDuration)
+SetDuration_CMR_NoiseMasker(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_CMR_NoiseMasker");
 
@@ -1068,7 +1068,7 @@ SetDuration_CMR_NoiseMasker(double theDuration)
  */
 
 BOOLN
-SetSamplingInterval_CMR_NoiseMasker(double theSamplingInterval)
+SetSamplingInterval_CMR_NoiseMasker(Float theSamplingInterval)
 {
 	static const WChar	*funcName = wxT("SetSamplingInterval_CMR_NoiseMasker");
 
@@ -1233,8 +1233,8 @@ InitProcessVariables_CMR_NoiseMasker(EarObjectPtr data)
 			NotifyError(wxT("%s: Out of memory for fT fft structure."), funcName);
 			return(FALSE);
 		}
-		p->fTInv->plan[0] = fftw_plan_dft_c2r_1d(p->fTInv->fftLen, (fftw_complex *) p->fTInv->data,
-		  p->fTInv->data, FFTW_ESTIMATE);
+		p->fTInv->plan[0] = DSAM_FFTW_NAME(plan_dft_c2r_1d)(p->fTInv->fftLen,
+		  (Complx *) p->fTInv->data, p->fTInv->data, FFTW_ESTIMATE);
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
@@ -1283,12 +1283,13 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_CMR_NoiseMasker");
 	register ChanData	 *outPtr, *upPtr, *downPtr;
-	int		i, k, chan, sample, nLow, nUpp, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
+	int		i, k, chan, nLow, nUpp, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
 	int		nTotal, nSignal, silence, gatesample, kLow, mskModPhaseSamples;
-	double	value, sigAtten, lowAtten, uppAtten, t, mskModPhase;
-	double	batten, srate, freqcomp = 0, gatefactor, minERBRate, modFactor;
-	double	flankModPhase = 0.75 * PIx2, normFactor[CMR_NOISEMASKER_MAXNTOTAL];
-	double	freqcomps[CMR_NOISEMASKER_MAXNTOTAL], sigPhase = 0.0;
+	ChanLen	sample;
+	Float	value, sigAtten, lowAtten, uppAtten, t, mskModPhase;
+	Float	batten, srate, freqcomp = 0, gatefactor, minERBRate, modFactor;
+	Float	flankModPhase = 0.75 * PIx2, normFactor[CMR_NOISEMASKER_MAXNTOTAL];
+	Float	freqcomps[CMR_NOISEMASKER_MAXNTOTAL], sigPhase = 0.0;
 	SignalDataPtr	outSignal;
 	CMRNoiseMPtr	p = cMRNoiseMPtr;
 
@@ -1363,7 +1364,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 			}
 			p->flankEar[k] = '\0';
 	}
-	if (DSAM_strlen(p->flankEar) < nTotal){
+	if (DSAM_strlen(p->flankEar) < (size_t) nTotal){
 		NotifyError(wxT("%s: Not all flanking band know which ear they have to go too!"), funcName);
 		return (FALSE);
 	}
@@ -1409,9 +1410,9 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 	}
 	freqcomps[nSignal] = p->sigFreq;
 	for (i = 0; i < nTotal + 1; i++) {
-		kUpp[i] = 0.5 * ((p->bandwidthMode == CMR_NOISEMASKER_BANDWIDTHMODE_HZ)?
-		  p->bandwidth: ERBFromF_Bandwidth(freqcomps[i])) / srate * outSignal->length;
-		normFactor[i] = 1.0 / sqrt((double) kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
+		kUpp[i] = (int) (0.5 * ((p->bandwidthMode == CMR_NOISEMASKER_BANDWIDTHMODE_HZ)?
+		  p->bandwidth: ERBFromF_Bandwidth(freqcomps[i])) / srate * outSignal->length);
+		normFactor[i] = 1.0 / sqrt((Float) kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
 	}
 	/* needs some error checks (at the moment still missing!)
 	 specials for the multiplied noise */
@@ -1442,7 +1443,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 			for (sample = 0; sample < gatesample; sample++) {// apply gate windows
 				switch (p->sigGateMode) {
 				case CMR_NOISEMASKER_SIGGATEMODE_COS:
-					gatefactor = (1.0 - cos((sample / (double) gatesample) * PI)) / 2.0;
+					gatefactor = (1.0 - cos((sample / (Float) gatesample) * PI)) / 2.0;
 					break;
 				default:
 					NotifyError(wxT("%s: Gating mode '%d' not implmented"), funcName,

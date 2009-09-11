@@ -39,13 +39,13 @@
 
 /*  Coefficients for the Asymmetric Compensastion filter */
 
-double	Filters_AsymCmpCoef0[6] = {1.35, -0.19, 0.29, -0.004, 0.23, 0.0072};
+Float	Filters_AsymCmpCoef0[6] = {1.35, -0.19, 0.29, -0.004, 0.23, 0.0072};
 
 /**************************** InitAsymCmpFiltersCoeffs ************************/
 
 /*
  * The function allocates a pointer to the coefficients structure of Asymmetric
- * compensation filter. This routine consists with the fourth cascade of 
+ * compensation filter. This routine consists with the fourth cascade of
  * biquadratic filer.
  */
 
@@ -56,20 +56,20 @@ InitAsymCmpCoeffs_GCFilters(void)
 	int    stateVectorLength, cascadeAC, coeffsLength;
 	AsymCmpCoeffsPtr p;
 
-	cascadeAC = GCFILTERS_NUM_CASCADE_ACF_FILTER;	
+	cascadeAC = GCFILTERS_NUM_CASCADE_ACF_FILTER;
 	coeffsLength = cascadeAC * GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER + 1;
 
 	if ((p = (AsymCmpCoeffs *) malloc(sizeof(AsymCmpCoeffs))) == NULL) {
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
     }
-	if ((p->numCoeffs = (double *) calloc(coeffsLength, sizeof(double))) ==
+	if ((p->numCoeffs = (Float *) calloc(coeffsLength, sizeof(Float))) ==
 	  NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for numCoeffs."), funcName);
 		free(p);
 		exit(1);
 	}
-	if ((p->denomCoeffs = (double *) calloc(coeffsLength, sizeof(double))) ==
+	if ((p->denomCoeffs = (Float *) calloc(coeffsLength, sizeof(Float))) ==
 	  NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for denomCoeffs."),
 		  funcName);
@@ -78,15 +78,15 @@ InitAsymCmpCoeffs_GCFilters(void)
 	}
 
 	stateVectorLength = cascadeAC * GCFILTERS_NUM_ACF_STATE_VARS_PER_FILTER + 1;
-	if ((p->stateFVector = (double *) calloc(stateVectorLength, sizeof(
-	  double))) == NULL) {
+	if ((p->stateFVector = (Float *) calloc(stateVectorLength, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for state Forward-vector."),
 		  funcName);
 		free(p);
 		exit(1);
 	}
-	if ((p->stateBVector = (double *) calloc(stateVectorLength, sizeof(
-	  double))) == NULL) {
+	if ((p->stateBVector = (Float *) calloc(stateVectorLength, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for state Backward-vector."),
 		  funcName);
 		free(p);
@@ -102,23 +102,23 @@ InitAsymCmpCoeffs_GCFilters(void)
 
 /*
  * The function returns a pointer to the coefficients structure of Asymmetric
- * compensation filter. This routine consists with the fourth cascade of 
+ * compensation filter. This routine consists with the fourth cascade of
  * biquadratic filer.
  */
 
 void
-CalcAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr p, double centreFreq, 
-double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
+CalcAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr p, Float centreFreq,
+Float bWidth3dB, Float bCoeff, Float cCoeff, int cascade, Float sampleClk)
 {
 	static const WChar *funcName = wxT("CalcAsymCmpCoeffs_GCFilters");
 	int    kth, nth, coeffsLength;
-	double coef_r, coef_th, coef_fn, r, th, fn;
-	double k0num, k1num, k2num;				/* numerator coefficients */
-	double k0denom, k1denom, k2denom;		/* denominator coefficients */
-	double forward[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
-	double feedback[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
-	double numCoeffs[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
-	double denomCoeffs[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
+	Float coef_r, coef_th, coef_fn, r, th, fn;
+	Float k0num, k1num, k2num;				/* numerator coefficients */
+	Float k0denom, k1denom, k2denom;		/* denominator coefficients */
+	Float forward[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
+	Float feedback[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
+	Float numCoeffs[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
+	Float denomCoeffs[2*GCFILTERS_NUM_CASCADE_ACF_FILTER+1];
 	Complex cf_num, cf_denom, Tf, var1, var2, var3;
 
 	if (p == NULL) {
@@ -141,37 +141,37 @@ double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
 			denomCoeffs[nth] = 0.0;
 		}
 
-        coef_r   = (Filters_AsymCmpCoef0[0] + 
+        coef_r   = (Filters_AsymCmpCoef0[0] +
 						Filters_AsymCmpCoef0[1]*fabs(cCoeff));
-        coef_r  *= (double)(kth+1);
-        coef_th  = (Filters_AsymCmpCoef0[2] + 
+        coef_r  *= (Float)(kth+1);
+        coef_th  = (Filters_AsymCmpCoef0[2] +
 						Filters_AsymCmpCoef0[3]*fabs(cCoeff));
-        coef_th *= pow(2.0,(double)kth);
-		coef_fn  = (Filters_AsymCmpCoef0[4] + 
+        coef_th *= pow(2.0,(Float)kth);
+		coef_fn  = (Filters_AsymCmpCoef0[4] +
 						Filters_AsymCmpCoef0[5]*fabs(cCoeff));
-        coef_fn *= (double)(kth+1);
+        coef_fn *= (Float)(kth+1);
 
         r  = exp(-coef_r*TwoPi*bCoeff*bWidth3dB/sampleClk);
         th = coef_th*cCoeff*bCoeff*bWidth3dB/centreFreq;
         fn = centreFreq+coef_fn*cCoeff*bCoeff*bWidth3dB/cascade;
 
         k0num 	= 1.0;
-		k1num   = -2.0*r*cos(TwoPI*(1.0-th)*centreFreq/sampleClk); 
+		k1num   = -2.0*r*cos(TwoPI*(1.0-th)*centreFreq/sampleClk);
         k2num	= pow(r,2.0);
         k0denom	= 1.0;
-		k1denom = -2.0*r*cos(TwoPI*(1.0+th)*centreFreq/sampleClk); 
+		k1denom = -2.0*r*cos(TwoPI*(1.0+th)*centreFreq/sampleClk);
   		k2denom = pow(r,2.0);
 
-		/* normalise filter to unity gain at centre frequency 
+		/* normalise filter to unity gain at centre frequency
 													(needs Complex maths) */
-	
-		var2.re = k1num; var2.im = 0.0;	
+
+		var2.re = k1num; var2.im = 0.0;
 		var3.re =  cos(TwoPi*fn/sampleClk);
 		var3.im = -sin(TwoPi*fn/sampleClk);
 		Mult_CmplxM(&var2,&var3,&var2);		/* a1*exp(-sT) */
 		var1.re = k0num; var1.im = 0.0;
 		Add_CmplxM (&var1,&var2,&var1); 	/* a0+a1*exp(-sT) */
-		var2.re = k2num; var2.im = 0.0;	
+		var2.re = k2num; var2.im = 0.0;
 		var3.re =  cos(2.0*TwoPi*fn/sampleClk);
 		var3.im = -sin(2.0*TwoPi*fn/sampleClk);
 		Mult_CmplxM(&var2,&var3,&var2); 	/* a2*exp(-2sT) */
@@ -220,9 +220,9 @@ double bWidth3dB, double bCoeff, double cCoeff, int cascade, double sampleClk)
 /**************************** FreeAsymCmpCoeffs *****************************/
 
 /*
- * This routine releases the momory allocated for the Asymmetric compensation 
- * filter coefficients. A custom routine is required because memory is 
- * allocated dynamically for the state vector, according to the filter cascade. 
+ * This routine releases the momory allocated for the Asymmetric compensation
+ * filter coefficients. A custom routine is required because memory is
+ * allocated dynamically for the state vector, according to the filter cascade.
  */
 
 void
@@ -230,10 +230,10 @@ FreeAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr *p)
 {
 	if (*p == NULL)
 		return;
-	FreeDoubleArray_Common(&(*p)->numCoeffs);
-	FreeDoubleArray_Common(&(*p)->denomCoeffs);
-	FreeDoubleArray_Common(&(*p)->stateFVector);
-	FreeDoubleArray_Common(&(*p)->stateBVector);
+	FreeFloatArray_Common(&(*p)->numCoeffs);
+	FreeFloatArray_Common(&(*p)->denomCoeffs);
+	FreeFloatArray_Common(&(*p)->stateFVector);
+	FreeFloatArray_Common(&(*p)->stateBVector);
 	free(*p);
 	*p = NULL;
 
@@ -242,19 +242,19 @@ FreeAsymCmpCoeffs_GCFilters(AsymCmpCoeffsPtr *p)
 /******************** InitERBGammaToneCoeffs **********************************/
 
 ERBGammaToneCoeffsPtr
-InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB, 
-  double bCoeff, int cascade, double sampleClk)
+InitERBGammaToneCoeffs_GCFilters(Float centreFreq, Float bWidth3dB,
+  Float bCoeff, int cascade, Float sampleClk)
 {
 	static const WChar *funcName = wxT("InitERBGammaToneCoeffs_GCFilters");
 	int	   stateVectorLength, kth;
-	double bERBw, sin_theta, cos_theta, dt;
-/*	double k0num, k1num[GCFILTERS_NUM_CASCADE_ERBGT_FILTER], k2num;	*/
-	double k0num, k1num[4], k2num;	
+	Float bERBw, sin_theta, cos_theta, dt;
+/*	Float k0num, k1num[GCFILTERS_NUM_CASCADE_ERBGT_FILTER], k2num;	*/
+	Float k0num, k1num[4], k2num;
 											/* numerator coefficients */
-	double k0denom, k1denom, k2denom;		/* denominator coefficients */
+	Float k0denom, k1denom, k2denom;		/* denominator coefficients */
 	Complex cf_num, cf_denom, Tf, var1, var2, var3;
 	ERBGammaToneCoeffsPtr p;
-   
+
 	bERBw = (TwoPi * bCoeff * bWidth3dB);
 	cos_theta = cos(TwoPi * centreFreq/sampleClk);
 	sin_theta = sin(TwoPi * centreFreq/sampleClk);
@@ -269,37 +269,37 @@ InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB,
 	k1num[3]  = cos_theta + (1.0 - sqrt(2.0)) * sin_theta;
 	k1num[3] *= -dt * exp(-bERBw / sampleClk);
 	k0denom = 1.0;
-	k1denom = -2.0 * exp(-bERBw / sampleClk) * cos_theta; 
+	k1denom = -2.0 * exp(-bERBw / sampleClk) * cos_theta;
 	k2denom = exp(-2.0 * bERBw / sampleClk);;
 
 	if ((p = (ERBGammaToneCoeffs *) malloc(sizeof(GammaToneCoeffs))) == NULL) {
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
 	}
-	if ((p->a0 = (double *) calloc(cascade, sizeof(double))) == NULL) {
+	if ((p->a0 = (Float *) calloc(cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for a0."), funcName);
 		exit(1);
 	}
-	if ((p->a1 = (double *) calloc(cascade, sizeof(double))) == NULL) {
+	if ((p->a1 = (Float *) calloc(cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for a1."), funcName);
 		exit(1);
 	}
-	if ((p->a2 = (double *) calloc(cascade, sizeof(double))) == NULL) {
+	if ((p->a2 = (Float *) calloc(cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for a2."), funcName);
 		exit(1);
 	}
-	if ((p->b1 = (double *) calloc(cascade, sizeof(double))) == NULL) {
+	if ((p->b1 = (Float *) calloc(cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for b1."), funcName);
 		exit(1);
 	}
-	if ((p->b2 = (double *) calloc(cascade, sizeof(double))) == NULL) {
+	if ((p->b2 = (Float *) calloc(cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for b2."), funcName);
 		exit(1);
 	}
 	stateVectorLength = cascade * FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
-	if ((p->stateVector = (double *) calloc(stateVectorLength,
-			sizeof(double))) == NULL) {
-		NotifyError(wxT("%s: Cannot allocate space for state vector."), 
+	if ((p->stateVector = (Float *) calloc(stateVectorLength,
+			sizeof(Float))) == NULL) {
+		NotifyError(wxT("%s: Cannot allocate space for state vector."),
 						funcName);
 		free(p);
 		exit(1);
@@ -311,9 +311,9 @@ InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB,
 	for (kth = 0; kth <GCFILTERS_NUM_CASCADE_ERBGT_FILTER ; kth++) {
 
 		k0num   = dt;
-		k2num   = 0.0; 
+		k2num   = 0.0;
 		var2.re = k1num[kth]; var2.im = 0.0;
-		var3.re =  cos_theta; var3.im = -sin_theta; 
+		var3.re =  cos_theta; var3.im = -sin_theta;
 		Mult_CmplxM(&var2,&var3,&var2);			/* a1*exp(-sT) */
 		var1.re = k0num; var1.im = 0.0;
 		Add_CmplxM (&var1,&var2,&cf_num);		/* a0+a1*exp(-sT) */
@@ -328,7 +328,7 @@ InitERBGammaToneCoeffs_GCFilters(double centreFreq, double bWidth3dB,
 		Mult_CmplxM(&var2,&var3,&var2); 		/* b2*exp(-2sT) */
 		Add_CmplxM (&var1,&var2,&cf_denom); 	/* sigma(bi*exp(-sT) */
 
-		if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)) {/* invert to get normalised 
+		if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)) {/* invert to get normalised
 																	values */
 			NotifyError(wxT("%s: Filter failed to initialise."), funcName);
 			exit(1);
@@ -376,16 +376,16 @@ FreeERBGammaToneCoeffs_GCFilters(ERBGammaToneCoeffsPtr *p)
 
 /*
  * The function returns a pointer to the coefficients structure of Leaky
- * Integrator. This routine consists with the One-pole filter. 
+ * Integrator. This routine consists with the One-pole filter.
  */
 
-OnePoleCoeffsPtr 
-InitLeakyIntCoeffs_GCFilters(double Tcnst, double sampleClk)
+OnePoleCoeffsPtr
+InitLeakyIntCoeffs_GCFilters(Float Tcnst, Float sampleClk)
 {
 	static const WChar *funcName = wxT("InitLeakyIntCoeffs_GCFilters");
 	int		stateVectorLength;
-	double k0num;	/* numerator coefficients */
-	double k1denom;	/* denominator coefficients */
+	Float k0num;	/* numerator coefficients */
+	Float k1denom;	/* denominator coefficients */
         OnePoleCoeffsPtr p;
 
 	k1denom=-exp(-1.0/(sampleClk*Tcnst/1000.0));
@@ -396,14 +396,14 @@ InitLeakyIntCoeffs_GCFilters(double Tcnst, double sampleClk)
 		exit(1);
     }
 	stateVectorLength = GCFILTERS_NUM_LI_STATE_VARS_PER_FILTER;
-	if ((p->stateVector = (double *) calloc(stateVectorLength, sizeof(
-	  double))) == NULL) {
+	if ((p->stateVector = (Float *) calloc(stateVectorLength, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for state vector."),
 		  funcName);
 		free(p);
 		exit(1);
 	}
-	p->a0 = k0num; 
+	p->a0 = k0num;
 	p->b1 = k1denom;
 	p->cascade = 1;
 	return(p);
@@ -414,8 +414,8 @@ InitLeakyIntCoeffs_GCFilters(double Tcnst, double sampleClk)
 
 /*
  * This routine releases the momory allocated for the Leaky Integrator
- * coefficients. A custom routine is required because memory is allocated 
- * dynamically for the state vector, according to the filter cascade. 
+ * coefficients. A custom routine is required because memory is allocated
+ * dynamically for the state vector, according to the filter cascade.
  */
 
 void
@@ -436,25 +436,25 @@ FreeLeakyIntCoeffs_GCFilters(OnePoleCoeffsPtr *p)
  * window function.
  */
 
-double *
+Float *
 InitHammingWindow_GCFilters(int winLength)
 {
 	static const WChar *funcName = wxT("InitHammingWindow");
 	int	nsmpl;
-        double 	*win;
+        Float 	*win;
 
-	if ((win = (double *) calloc(winLength,sizeof(double))) == NULL) {
+	if ((win = (Float *) calloc(winLength,sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
 	}
 
-	if (winLength == 1) 
+	if (winLength == 1)
 		win[0] = 1.0;
 	else
-		for (nsmpl = 0; nsmpl < winLength; nsmpl++) 
-			win[nsmpl] = 0.54 - 0.46 * 
-						cos(TwoPI*(double)nsmpl / (double)(winLength -1));
- 
+		for (nsmpl = 0; nsmpl < winLength; nsmpl++)
+			win[nsmpl] = 0.54 - 0.46 *
+						cos(TwoPI*(Float)nsmpl / (Float)(winLength -1));
+
 	return(win);
 
 } /* InitHammingWindow */
@@ -464,24 +464,24 @@ InitHammingWindow_GCFilters(int winLength)
 /*
  * This function returns a pointer to the coefficients structure of the weight-
  * ing function. This routine consists with the Hamming window with the band-
- * width of 3-ERB. 
+ * width of 3-ERB.
  */
 
-double *
-InitERBWindow_GCFilters(double eRBDensity, int numChannels)
+Float *
+InitERBWindow_GCFilters(Float eRBDensity, int numChannels)
 {
 	static const WChar *funcName = wxT("InitERBWindow_GCFilters");
 	int	winLength, winMtrxLength, nch, mch, nwin, nee, strPos, endPos;
-	double 	*p, *win, sumWin, diffERB;
+	Float 	*p, *win, sumWin, diffERB;
 
 
 	if (numChannels > (int) winSizeERB) {
 		diffERB = 1.0 / eRBDensity;
-		nee = (int) ceil((double) winSizeERB / diffERB);
+		nee = (int) ceil((Float) winSizeERB / diffERB);
 		winLength = nee + 1 - (nee % 2);	/* Making odd number */
 		winMtrxLength = numChannels * numChannels;
 
-		if ((p = (double *) calloc(winMtrxLength,sizeof(double))) == NULL) {
+		if ((p = (Float *) calloc(winMtrxLength,sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory!"), funcName);
 			exit(1);
 		}
@@ -504,18 +504,18 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
 			}
 		}
 
-		FreeDoubleArray_Common(&win);
+		FreeFloatArray_Common(&win);
 	}
-	else {							/*	making an eye-matrix	*/	
+	else {							/*	making an eye-matrix	*/
 
-		if ((p = (double *) calloc(numChannels * numChannels,
-				sizeof(double))) == NULL) {
+		if ((p = (Float *) calloc(numChannels * numChannels,
+				sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory!"), funcName);
 			exit(1);
 		}
 
- 
-		for (mch = 0; mch < numChannels; mch++) 
+
+		for (mch = 0; mch < numChannels; mch++)
 			for (nch = 0; nch < numChannels; nch++)
 				if (mch == nch)
 					p[mch + numChannels * nch] = 1.0;
@@ -533,7 +533,7 @@ InitERBWindow_GCFilters(double eRBDensity, int numChannels)
  * This routine filters the signal, returning the result in the same signal
  * passed to the routine.
  * No checks are made here as to whether or not the asymmetric compensation
- * filter coefficitnts, paased as an argument array, have been initialised. 
+ * filter coefficitnts, paased as an argument array, have been initialised.
  * Each channel has its own filter (coefficients).
  * It is assumed that the 'theSignal' has been correctly initialised.
  */
@@ -543,7 +543,7 @@ AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, AsymCmpCoeffs *p[])
 {
 	/* static const WChar *funcName = wxT("AsymCmp_GCFilters"); */
 	int			kth, nch;
-	register	double		*ptr1, *ptr2, wn; /* Inner loop variables */
+	register	Float		*ptr1, *ptr2, wn; /* Inner loop variables */
 	register	ChanData	*data;
 
 	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) {
@@ -578,11 +578,11 @@ AsymCmp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, AsymCmpCoeffs *p[])
 
 void
 ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
-{ 
+{
 	static const WChar *funcName = wxT("ERBGammaTone_GCFilters");
 	int			nch, kth;
 	ChanLen		nsmpl;
-	register	double      *ptr1, *ptr2, wn;   /* Inner loop variables */
+	register	Float      *ptr1, *ptr2, wn;   /* Inner loop variables */
 	register	ChanData    *data;
 
 	if (!CheckPars_SignalData(theSignal)) {
@@ -592,7 +592,7 @@ ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
 
 	/* For the allocation of space to the state vector, the filter for all
 	 * channels are assumed to have the same cascade as the first. */
-    
+
 	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) {
 		data = theSignal->channel[nch];
 		for (nsmpl = 0; nsmpl < theSignal->length; nsmpl++, data++) {
@@ -620,7 +620,7 @@ ERBGammaTone_GCFilters(SignalDataPtr theSignal, ERBGammaToneCoeffs *p[])
  * This routine filters the signal, returning the result in the same signal
  * passed to the routine.
  * No checks are made here as to whether or not the Leaky Integrator
- * coefficitnts, paased as an argument array, have been initialised. 
+ * coefficitnts, paased as an argument array, have been initialised.
  * Each channel has its own filter (coefficients).
  */
 
@@ -629,13 +629,13 @@ LeakyInt_GCFilters(CntlGammaCPtr *p, OnePoleCoeffsPtr *q, int numChannels)
 {
 	static const WChar *funcName = wxT("LeakyInt_GCFilters");
 	int			nch;
-	register	double	*ptr1;    /* Inner loop variables */
+	register	Float	*ptr1;    /* Inner loop variables */
 
 	if (!CheckCntlInit_GCFilters(p)) {
 		NotifyError(wxT("%s: cntlGammaC not set in %s."), funcName);
 		exit(1);
-	}	
-	 
+	}
+
 	for (nch = 0; nch < numChannels; nch++) {
 		ptr1 = q[nch]->stateVector;
 		p[nch]->outSignalLI *= q[nch]->a0;
@@ -673,19 +673,19 @@ CheckCntlInit_GCFilters(CntlGammaCPtr *cntlGammaC)
 
 void
 SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
-  double *winPsEst, double coefPsEst)
+  Float *winPsEst, Float coefPsEst)
 {
 	/* static const WChar *funcName = wxT("SetpsEst_GCFilters"); */
 	int	mch, nch;
-	double	winOut, maxPsEst;
+	Float	winOut, maxPsEst;
 
 	maxPsEst = 0.0;
 	for (mch = 0; mch < numChannels; mch++) {
 		winOut = 0.0;
-      	for (nch = 0; nch < numChannels; nch++) 
+      	for (nch = 0; nch < numChannels; nch++)
 		winOut += winPsEst[mch + nch * numChannels] * cntlGammaC[
 		  nch]->outSignalLI;
-		winOut = MAX(winOut, pow(10.0, -10.0));	
+		winOut = MAX(winOut, pow(10.0, -10.0));
 					/* Limit minimum value for log10 */
 		cntlGammaC[mch]->psEst = MIN(20.0 * log10(coefPsEst * winOut), 120.0 );
 		if (maxPsEst < cntlGammaC[mch]->psEst)
@@ -694,7 +694,7 @@ SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
 /*	if (maxPsEst > 120) {
 		NotifyError(wxT("%s: Estimated Ps is too large."), funcName);
 		exit(1);
-	}	
+	}
 */
 }
 
@@ -706,25 +706,25 @@ SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
 
 void
 SetcEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
-  double cCoeff0, double cCoeff1, double cLowerLim, double cUpperLim)
+  Float cCoeff0, Float cCoeff1, Float cLowerLim, Float cUpperLim)
 {
 	/* static const WChar *funcName = wxT("SetcEst_GCFilters"); */
 	int	nch;
 
-	for (nch = 0; nch < numChannels; nch++) 
+	for (nch = 0; nch < numChannels; nch++)
 		cntlGammaC[nch]->cEst = cCoeff0+cCoeff1*cntlGammaC[nch]->psEst;
 
 	if (fabs(cUpperLim - cLowerLim) > 1.0) {
 		for (nch = 0; nch < numChannels; nch++) {
-			if (cntlGammaC[nch]->cEst < cLowerLim) 
+			if (cntlGammaC[nch]->cEst < cLowerLim)
 				cntlGammaC[nch]->cEst = cLowerLim;
-			if (cntlGammaC[nch]->cEst > cUpperLim) 
+			if (cntlGammaC[nch]->cEst > cUpperLim)
 				cntlGammaC[nch]->cEst = cUpperLim;
-		}	
+		}
 	}
 	else {
 		for (nch = 0; nch < numChannels; nch++)
-			cntlGammaC[nch]->cEst = cLowerLim + cUpperLim *  
+			cntlGammaC[nch]->cEst = cLowerLim + cUpperLim *
 								atan(-cntlGammaC[nch]->cEst + cLowerLim);
 	}
 
@@ -737,14 +737,14 @@ SetcEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
  */
 
 void
-SetaEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels, double cmprs)
+SetaEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels, Float cmprs)
 {
 	/* static const WChar *funcName = wxT("SetaEst_GCFilters"); */
 	int	nch;
 
 	if (cmprs == 1.0) {
 		for (nch = 0; nch < numChannels; nch++)
-			cntlGammaC[nch]->aEst = 1.0;	
+			cntlGammaC[nch]->aEst = 1.0;
 	}
 	else {
 		for (nch = 0; nch < numChannels; nch++)
@@ -760,31 +760,31 @@ SetaEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels, double cmprs)
 /*
  * Control block of gammachirp filterbank
  * This routine controls the parameters of the gammachirp filterbank
- * in order to estimate the power level and then deterime parameter c, related 
+ * in order to estimate the power level and then deterime parameter c, related
  * as the asymmetry of gammachirp.
  * No checks are made here as to whether or not the parameters of Control block,
- * paased as an argument array, have been initialised. 
+ * paased as an argument array, have been initialised.
  * Each channel has its own filter (coefficients).
  * It is assumed that the 'theSignal' has been correctly initialised.
  */
 
 void
-CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl, 
-  CntlGammaCPtr *cntlGammaC, double cCoeff0, double cCoeff1, double cLowerLim,
-  double cUpperLim, double *winPsEst, double coefPsEst, double cmprs, 
+CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
+  CntlGammaCPtr *cntlGammaC, Float cCoeff0, Float cCoeff1, Float cLowerLim,
+  Float cUpperLim, Float *winPsEst, Float coefPsEst, Float cmprs,
   OnePoleCoeffsPtr *coefficientsLI)
 {
 	/* static const WChar *funcName = wxT("CntlGammaChirp_GCFilters"); */
 	int nch;
 
-	
-	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++) 
+
+	for (nch = theSignal->offset; nch < theSignal->numChannels; nch++)
 		cntlGammaC[nch]->outSignalLI = (MAX(theSignal->channel[nch][nsmpl], 0.0)
 							+ MAX(-theSignal->channel[nch][nsmpl], 0.0)) / 2.0;
 
 	LeakyInt_GCFilters(cntlGammaC, coefficientsLI, theSignal->numChannels);
 
-	SetpsEst_GCFilters(cntlGammaC, theSignal->numChannels, winPsEst, 
+	SetpsEst_GCFilters(cntlGammaC, theSignal->numChannels, winPsEst,
 								coefPsEst);
 
 	SetcEst_GCFilters(cntlGammaC, theSignal->numChannels, cCoeff0,
@@ -801,7 +801,7 @@ CntlGammaChirp_GCFilters(SignalDataPtr theSignal, ChanLen nsmpl,
  * Chirp_GCFilters.
  */
 
-CntlGammaCPtr 
+CntlGammaCPtr
 InitCntlGammaChirp_GCFilters(void)
 {
 	static const WChar *funcName = wxT("InitCntlGammaChirp_GCFilters");
@@ -811,10 +811,10 @@ InitCntlGammaChirp_GCFilters(void)
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		exit(1);
     }
-	p->outSignalLI = 0.0; 
-	p->aEst = 0.0; 
-	p->cEst = 0.0; 
-	p->psEst = 0.0; 
+	p->outSignalLI = 0.0;
+	p->aEst = 0.0;
+	p->cEst = 0.0;
+	p->psEst = 0.0;
 	return(p);
 
 } /* InitCntlGammaChirp_GCFilters */
@@ -822,9 +822,9 @@ InitCntlGammaChirp_GCFilters(void)
 /************************* FreeCntlGammaChirp *********************************/
 
 /*
- * This routine releases the momory allocated for the Control block of the 
- * GammaChirp filter. A custom routine is required because memory is 
- * allocated dynamically for the state vector, according to the filter cascade. 
+ * This routine releases the momory allocated for the Control block of the
+ * GammaChirp filter. A custom routine is required because memory is
+ * allocated dynamically for the state vector, according to the filter cascade.
  */
 
 void
@@ -854,7 +854,7 @@ PGCCarrierList_GCFilters(int index)
 					{ wxT("ENVELOPE"),	GCFILTER_CARRIER_MODE_ENVELOPE},
 					{ wxT("SIN"),		GCFILTER_CARRIER_MODE_SIN},
 					{ NULL,				GCFILTER_CARRIER_MODE_NULL},
-				
+
 				};
 	return (&modeList[index]);
 
@@ -870,20 +870,20 @@ PGCCarrierList_GCFilters(int index)
 
 /*
  * This function returns the peak gain frequency index.
- * i.e. the 'freqz' calculation. 
+ * i.e. the 'freqz' calculation.
  * I need to sort out the case when no FFTW3 is available.
  * This use of fftw_plan is safe because this code is not run threaded.
  */
 
-double
-FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
+Float
+FindPeakGainFreq_GCFilters(Float *b, size_t len, Float sR, Float freqPeak)
 {
 	static const WChar	*funcName = wxT("FindPeakGainFreq_GCFilters");
 	register size_t	i, peakIndex;
-	register double	*p;
-	double	*peakFFT, peakFFTModulus;
+	register Float	*p;
+	Float	*peakFFT, peakFFTModulus;
 	FFTArrayPtr	fT;
-	fftw_plan	plan;
+	Fftw_plan	plan;
 
 	if ((fT = (FFTArrayPtr) InitArray_FFT(len * 2, TRUE, 1)) == NULL) {
 		NotifyError(wxT("%s: Couldn't allocate memory for FFT array structure."),
@@ -894,11 +894,11 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
 		*p++ = *b++;
 	for (; i < fT->fftLen; i++)
 		*p++ = 0.0;
-	
-	plan = fftw_plan_dft_r2c_1d(fT->dataLen, fT->data, (fftw_complex *) fT->data,
+
+	plan = DSAM_FFTW_NAME(plan_dft_r2c_1d)(fT->dataLen, fT->data, (Complx *) fT->data,
 	  FFTW_ESTIMATE);
-	fftw_execute(plan);
-	fftw_destroy_plan(plan);
+	DSAM_FFTW_NAME(execute)(plan);
+	DSAM_FFTW_NAME(destroy_plan)(plan);
 
 #	if DEBUG
 		WriteArray_Debug(wxT("testFFT_HB.dat"), fT->data, fT->dataLen, 2);
@@ -922,14 +922,14 @@ FindPeakGainFreq_GCFilters(double *b, size_t len, double sR, double freqPeak)
  */
 
 void
-GammaChirpAmpFreqResp_GCFilters(double *ampFrsp, double frs, double eRBw,
-  double sR, double orderG, double coefERBw, double coefC, double phase)
+GammaChirpAmpFreqResp_GCFilters(Float *ampFrsp, Float frs, Float eRBw,
+  Float sR, Float orderG, Float coefERBw, Float coefC, Float phase)
 {
 	int		i;
-	double	*p, fExpr, f;
-	double	bh = coefERBw * eRBw, cn = coefC / orderG, nOver2 = orderG / 2.0;
-	double	cnSqrPlus1 = 1.0 + SQR(cn), atan_cn = atan(cn);
-	double	deltaFreq = sR / GCFILTERS_NUM_FRQ_RSL / 2;
+	Float	*p, fExpr, f;
+	Float	bh = coefERBw * eRBw, cn = coefC / orderG, nOver2 = orderG / 2.0;
+	Float	cnSqrPlus1 = 1.0 + SQR(cn), atan_cn = atan(cn);
+	Float	deltaFreq = sR / GCFILTERS_NUM_FRQ_RSL / 2;
 
 	for (i = 0, p = ampFrsp, f = 0.0; i < GCFILTERS_NUM_FRQ_RSL; i++, f +=
 	  deltaFreq) {
@@ -950,12 +950,12 @@ GammaChirpAmpFreqResp_GCFilters(double *ampFrsp, double frs, double eRBw,
  */
 
 GammaChirpCoeffsPtr
-InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, double 
-  coefERBw, double coefC, double phase, int swCarr, int swNorm, SignalDataPtr inSignal)
+InitPGammaChirpCoeffs_GCFilters(Float cF, Float bw, Float sR, Float orderG, Float
+  coefERBw, Float coefC, Float phase, int swCarr, int swNorm, SignalDataPtr inSignal)
 {
 	static const WChar *funcName = wxT("InitPGammaChirpCoeffs_GCFilters");
-	register double *pp, t, gammaEnv, maxGammaEnv;
-	double	lenGC1kHz, peakGain;
+	register Float *pp, t, gammaEnv, maxGammaEnv;
+	Float	lenGC1kHz, peakGain;
 	ChanLen	i, lenGC;
 	GammaChirpCoeffsPtr	p;
 
@@ -975,17 +975,17 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 		FreePGammaChirpCoeffs_GCFilters(&p);
 		return(NULL);
 	}
-	p->pGC->plan[0] = fftw_plan_dft_r2c_1d(p->pGC->fftLen,
-	  p->pGC->data, (fftw_complex *) p->pGC->data, FFTW_ESTIMATE);
+	p->pGC->plan[0] = DSAM_FFTW_NAME(plan_dft_r2c_1d)(p->pGC->fftLen,
+	  p->pGC->data, (Complx *) p->pGC->data, FFTW_ESTIMATE);
 	if ((p->pGCOut = InitArray_FFT(p->pGC->dataLen, TRUE, 2)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise pGC work FFT array."), funcName);
 		FreePGammaChirpCoeffs_GCFilters(&p);
 	}
-	p->pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN] = fftw_plan_dft_r2c_1d(
-	  p->pGCOut->fftLen, p->pGCOut->data, (fftw_complex *) p->pGCOut->data,
+	p->pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN] = DSAM_FFTW_NAME(plan_dft_r2c_1d)(
+	  p->pGCOut->fftLen, p->pGCOut->data, (Complx *) p->pGCOut->data,
 	  FFTW_ESTIMATE);
-	p->pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN] = fftw_plan_dft_c2r_1d(
-	  p->pGCOut->fftLen, (fftw_complex *) p->pGCOut->data, p->pGCOut->data,
+	p->pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN] = DSAM_FFTW_NAME(plan_dft_c2r_1d)(
+	  p->pGCOut->fftLen, (Complx *) p->pGCOut->data, p->pGCOut->data,
 	  FFTW_ESTIMATE);
 	*p->pGC->data = 0.0;
 	for (i = 1, pp = p->pGC->data + 1, maxGammaEnv = 0.0; i < lenGC; i++, pp++) {
@@ -1022,7 +1022,7 @@ InitPGammaChirpCoeffs_GCFilters(double cF, double bw, double sR, double orderG, 
 		WriteArray_Debug(wxT("testFFT_b.dat"), p->pGC->data, p->pGC->dataLen, 1);
 #	endif
 	/* This next calculation was originally the first part of fftfilt.m */
-	fftw_execute(p->pGC->plan[0]);
+		DSAM_FFTW_NAME(execute)(p->pGC->plan[0]);
 #	if DEBUG
 		WriteArray_Debug(wxT("testFFT_B.dat"), p->pGC->data, p->pGC->fftLen, 2);
 #	endif
@@ -1045,7 +1045,7 @@ FreePGammaChirpCoeffs_GCFilters(GammaChirpCoeffsPtr *p)
 	*p = NULL;
 
 }
- 
+
 /*************************** PassiveGCFilter **********************************/
 
 /*
@@ -1057,11 +1057,11 @@ FreePGammaChirpCoeffs_GCFilters(GammaChirpCoeffsPtr *p)
 void
 PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 {
-	register double	*p1, *p2;
-	register fftw_complex	*c1, *c2;
+	register Float	*p1, *p2;
+	register Complx	*c1, *c2;
 	int		chan;
 	ChanLen		i;
-	fftw_complex	tempC;
+	Complx	tempC;
 	FFTArrayPtr	pGC, pGCOut;
 	SignalDataPtr	inSignal, outSignal;
 
@@ -1078,11 +1078,11 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 			*p1++ = *p2++;
 		for ( ; i < pGCOut->fftLen; i++)
 			*p1++ = 0.0;
-		fftw_execute(pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN]);
+		DSAM_FFTW_NAME(execute)(pGCOut->plan[GCFILTERS_PGC_FORWARD_PLAN]);
 #		if DEBUG
 			WriteArray_Debug(wxT("testFFT_X.dat"), pGCOut->data, pGCOut->fftLen, 2);
 #		endif
-		for (i = 0, c1 = (fftw_complex *) pGCOut->data, c2 = (fftw_complex *) pGC->data;
+		for (i = 0, c1 = (Complx *) pGCOut->data, c2 = (Complx *) pGC->data;
 		  i < pGCOut->fftLen; i += 2, c1++, c2++) {
 			CMPLX_MULT(tempC, *c1, *c2);
 			CMPLX_COPY(*c1, tempC);
@@ -1093,9 +1093,9 @@ PassiveGCFilter_GCFilters(EarObjectPtr data, GammaChirpCoeffsPtr *pGCoeffs)
 #		if DEBUG
 			WriteArray_Debug(wxT("testFFT_XB_total.dat"), pGCOut->data, pGCOut->arrayLen, 1);
 #		endif
-		c1 = (fftw_complex *) (pGCOut->data + pGCOut->fftLen);	/* The reverse transform has n / 2 + 1 elements, */
+		c1 = (Complx *) (pGCOut->data + pGCOut->fftLen);	/* The reverse transform has n / 2 + 1 elements, */
 		CMPLX_RE(*c1) = CMPLX_IM(*c1) = 0.0;					/* so this padding is necessary. */
-		fftw_execute(pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN]);
+		DSAM_FFTW_NAME(execute)(pGCOut->plan[GCFILTERS_PGC_BACKWARD_PLAN]);
 		for (i = 0, p1 = outSignal->channel[chan], p2 = pGCOut->data; i <
 		  outSignal->length; i++)
 			*p1++ = *p2++ / pGCOut->fftLen;
@@ -1135,7 +1135,7 @@ FreeAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr *p)
  */
 
 AsymCmpCoeffs2Ptr
-InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
+InitAsymCmpCoeffs2_GCFilters(int cascade, Float fs, Float b, Float c,
   BandwidthModePtr bMode)
 {
 	const static WChar	*funcName = wxT("InitAsymCmpCoeffs2_GCFilters");
@@ -1150,26 +1150,26 @@ InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
 	p->ap = p->bz = NULL;
 	p->sigInPrev = p->sigOutPrev = NULL;
 
-	if ((p->ap = (double *) calloc(totalCoeffs, sizeof(double))) == NULL) {
+	if ((p->ap = (Float *) calloc(totalCoeffs, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for 'ap' coeffients (%d."), funcName,
 		  totalCoeffs);
 		FreeAsymCmpCoeffs2_GCFilters(&p);
 		return(NULL);
 	}
-	if ((p->bz = (double *) calloc(totalCoeffs, sizeof(double))) == NULL) {
+	if ((p->bz = (Float *) calloc(totalCoeffs, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for 'bz' coeffients (%d."), funcName,
 		  totalCoeffs);
 		FreeAsymCmpCoeffs2_GCFilters(&p);
 		return(NULL);
 	}
-	if ((p->sigInPrev = (double *) calloc(GCFILTERS_ACF_LEN_STATE_VECTOR,
-	  sizeof(double))) == NULL) {
+	if ((p->sigInPrev = (Float *) calloc(GCFILTERS_ACF_LEN_STATE_VECTOR,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for sigInPrev state vector (%d."), funcName,
 		  GCFILTERS_ACF_LEN_STATE_VECTOR);
 		FreeAsymCmpCoeffs2_GCFilters(&p);
 		return(NULL);
 	}
-	if ((p->sigOutPrev = (double *) calloc(outputStateVectorLen, sizeof(double))) ==
+	if ((p->sigOutPrev = (Float *) calloc(outputStateVectorLen, sizeof(Float))) ==
 	  NULL) {
 		NotifyError(wxT("%s: Out of memory for sigOutPrev state vector (%d."), funcName,
 		  outputStateVectorLen);
@@ -1194,7 +1194,7 @@ InitAsymCmpCoeffs2_GCFilters(int cascade, double fs, double b, double c,
 /*************************** ResetAsymCmpCoeffs2State ***********************/
 
 /*
- * This routine resets the state variables for the Asymetric compensation 
+ * This routine resets the state variables for the Asymetric compensation
  * coefficient structure.
  * It expects the structure to have been correctly initialised.
  */
@@ -1221,12 +1221,12 @@ ResetAsymCmpCoeffs2State_GCFilters(AsymCmpCoeffs2Ptr p)
 #define	MAX_ANGLE(A)	(PIx2 * (((sumF = A) > 0)? sumF: 0) / p->fs)
 
 void
-SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs)
+SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, Float frs)
 {
 	const static WChar	*funcName = wxT("SetAsymCmpCoeffs2_GCFilters");
 	int		i, j;
-	double	*ap, *bz, r, eRBw, delFrs, phi, psy, sumF, nrm;
-	double	*apStart, *bzStart;
+	Float	*ap, *bz, r, eRBw, delFrs, phi, psy, sumF, nrm;
+	Float	*apStart, *bzStart;
 	Complex	vwrs[GCFILTERS_ACF_NUM_COEFFS], vwrApSum, vwrBzSum, workVar;
 
 	eRBw = BandwidthFromF_Bandwith(p->bMode, frs);
@@ -1280,7 +1280,7 @@ SetAsymCmpCoeffs2_GCFilters(AsymCmpCoeffs2Ptr p, double frs)
 				*pp = *(pp + 1); \
 			*pp = (DATA); \
 		}
-			
+
 void
 ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
   int chanOffset, int numChannels, ChanLen sample)
@@ -1322,12 +1322,12 @@ ACFilterBank_GCFilters(AsymCmpCoeffs2Ptr *aCFCoeffs, EarObjectPtr data,
  */
 
 void
-ASympCmpFreqResp_GCFilters(double *asymFunc, double frs, double fs, double b,
-  double c, BandwidthModePtr bMode)
+ASympCmpFreqResp_GCFilters(Float *asymFunc, Float frs, Float fs, Float b,
+  Float c, BandwidthModePtr bMode)
 {
 	int		i;
-	double	*p, f;
-	double	deltaFreq = fs / GCFILTERS_NUM_FRQ_RSL / 2.0, be;
+	Float	*p, f;
+	Float	deltaFreq = fs / GCFILTERS_NUM_FRQ_RSL / 2.0, be;
 
 	be = b * BandwidthFromF_Bandwith(bMode, frs);
 	for (i = 0, p = asymFunc, f = 0.0; i < GCFILTERS_NUM_FRQ_RSL; i++, f +=

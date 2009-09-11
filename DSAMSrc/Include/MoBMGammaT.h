@@ -3,11 +3,11 @@
  * File:		MoBMGammaT.h
  * Purpose:		This is an implementation of a Gamma Tone filter using the
  *				UtFilters.c module.
- * Comments:	The Gamma Tone filter is used to model the response of the 
+ * Comments:	The Gamma Tone filter is used to model the response of the
  *				Basilar Membrane.
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1997,  University of Essex
  *
  **********************/
@@ -38,12 +38,11 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN		cascadeFlag;
 	BOOLN		updateProcessVariablesFlag;
 	int			interleaveMode;
 	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
-	
+
 	/* Private members */
 	UniParListPtr	parList;
 	int			numChannels;
@@ -88,7 +87,7 @@ BOOLN	ReadPars_BasilarM_GammaT(WChar *fileName);
 BOOLN	RunModel_BasilarM_GammaT(EarObjectPtr data);
 
 BOOLN	SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode,
-		  double *theBandwidths);
+		  Float *theBandwidths);
 
 BOOLN SetCFList_BasilarM_GammaT(CFListPtr theCFList);
 

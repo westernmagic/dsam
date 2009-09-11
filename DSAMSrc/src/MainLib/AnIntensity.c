@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard
  * Created:		12 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -93,8 +93,6 @@ Init_Analysis_Intensity(ParameterSpecifier parSpec)
 		}
 	}
 	intensityPtr->parSpec = parSpec;
-	intensityPtr->timeOffsetFlag = TRUE;
-	intensityPtr->extentFlag = TRUE;
 	intensityPtr->timeOffset = 2.5e-3;
 	intensityPtr->extent = -1.0;
 
@@ -167,28 +165,6 @@ GetUniParListPtr_Analysis_Intensity(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_Intensity(double timeOffset)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_Intensity");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetTimeOffset_Analysis_Intensity(timeOffset))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetTimeOffset *********************************/
 
 /*
@@ -198,7 +174,7 @@ SetPars_Analysis_Intensity(double timeOffset)
  */
 
 BOOLN
-SetTimeOffset_Analysis_Intensity(double theTimeOffset)
+SetTimeOffset_Analysis_Intensity(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_Intensity");
 
@@ -211,7 +187,6 @@ SetTimeOffset_Analysis_Intensity(double theTimeOffset)
 		  theTimeOffset));
 		return(FALSE);
 	}
-	intensityPtr->timeOffsetFlag = TRUE;
 	intensityPtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -226,7 +201,7 @@ SetTimeOffset_Analysis_Intensity(double theTimeOffset)
  */
 
 BOOLN
-SetExtent_Analysis_Intensity(double theExtent)
+SetExtent_Analysis_Intensity(Float theExtent)
 {
 	static const WChar	*funcName = wxT("SetExtent_Analysis_Intensity");
 
@@ -235,42 +210,8 @@ SetExtent_Analysis_Intensity(double theExtent)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	intensityPtr->extentFlag = TRUE;
 	intensityPtr->extent = theExtent;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_Intensity(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_Intensity");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (intensityPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!intensityPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!intensityPtr->extentFlag) {
-		NotifyError(wxT("%s: extent variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -286,11 +227,6 @@ PrintPars_Analysis_Intensity(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_Intensity");
 
-	if (!CheckPars_Analysis_Intensity()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Intensity Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tTime offset = %g ms,"), MSEC(intensityPtr->timeOffset));
 	DPrint(wxT("\tTime extent = "));
@@ -299,47 +235,6 @@ PrintPars_Analysis_Intensity(void)
 	else
 		DPrint(wxT("%g ms\n"), MSEC(intensityPtr->extent));
 	DPrint(wxT(".\n"));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_Intensity(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_Intensity");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	timeOffset;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_Intensity(timeOffset)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -387,11 +282,9 @@ InitModule_Analysis_Intensity(ModulePtr theModule)
 	}
 	theModule->parsPtr = intensityPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_Intensity;
 	theModule->Free = Free_Analysis_Intensity;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Intensity;
 	theModule->PrintPars = PrintPars_Analysis_Intensity;
-	theModule->ReadPars = ReadPars_Analysis_Intensity;
 	theModule->RunProcess = Calc_Analysis_Intensity;
 	theModule->SetParsPointer = SetParsPointer_Analysis_Intensity;
 	return(TRUE);
@@ -415,7 +308,7 @@ BOOLN
 CheckData_Analysis_Intensity(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_Intensity");
-	double	duration;
+	Float	duration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -475,8 +368,6 @@ Calc_Analysis_Intensity(EarObjectPtr data)
 	IntensityPtr	p = intensityPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_Intensity())
-			return(FALSE);
 		if (!CheckData_Analysis_Intensity(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

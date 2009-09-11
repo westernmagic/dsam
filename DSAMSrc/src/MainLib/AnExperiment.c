@@ -49,17 +49,17 @@
  * the "RunModel" simulation routine.
  */
 
-double
+Float
 FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
-  BOOLN (* SetIntensity)(double), double targetThreshold,
-  double targetAccuracy, BOOLN *firstPass)
+  BOOLN (* SetIntensity)(Float), Float targetThreshold,
+  Float targetAccuracy, BOOLN *firstPass)
 {
 	static const WChar *funcName = wxT("FindThresholdIntensity_ExpAnalysis");
 	int		i;
-	double	intensityDiff, gradient, presentInputIntensity, lastOutIntensity;
-	double	absoluteIntensityDiff, bestIntensityDiff = 0.0;
-	double	bestOutputIntensity = 0.0, bestInputIntensity = 0.0;
-	static double	lastInputIntensity, presentOutIntensity;
+	Float	intensityDiff, gradient, presentInputIntensity, lastOutIntensity;
+	Float	absoluteIntensityDiff, bestIntensityDiff = 0.0;
+	Float	bestOutputIntensity = 0.0, bestInputIntensity = 0.0;
+	static Float	lastInputIntensity, presentOutIntensity;
 	EarObjectPtr	modelResp;
 
 	if (targetAccuracy <= 0.0) {
@@ -132,15 +132,15 @@ FindThresholdIntensity_ExpAnalysis(EarObjectPtr (* RunModel)(void),
  * the "RunModel" simulation routine.
  */
 
-double
+Float
 FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
-  BOOLN (* SetIntensity)(double), double targetThreshold,
-  double targetAccuracy, double initialDeltaIntensity)
+  BOOLN (* SetIntensity)(Float), Float targetThreshold,
+  Float targetAccuracy, Float initialDeltaIntensity)
 {
 	static const WChar *funcName = wxT(
 	  "FindThresholdIntensity_ExpAnalysis_Slow");
-	double	inputIntensity, deltaIntensity;
-	double	outIntensity;
+	Float	inputIntensity, deltaIntensity;
+	Float	outIntensity;
 	EarObjectPtr	modelResp;
 
 	if (targetAccuracy <= 0.0) {
@@ -181,17 +181,17 @@ FindThresholdIntensity_ExpAnalysis_Slow(EarObjectPtr (* RunModel)(void),
  * the "RunModel" simulation routine.
  */
 
-double
+Float
 CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
-  BOOLN (* SetStimulusFreq)(double), double centreFreq,
-  double variationFromCF, double dBDownDiff, double initialFreqIncrement,
-  double accuracy)
+  BOOLN (* SetStimulusFreq)(Float), Float centreFreq,
+  Float variationFromCF, Float dBDownDiff, Float initialFreqIncrement,
+  Float accuracy)
 {
 	static const WChar *funcName = wxT("CalcQValue_ExpAnalysis");
 	BOOLN	forewards;
-	double	intensity, maxIntensity, frequency;
-	double	minTestFreq, maxTestFreq, minFreq, intensityDiff, freqIncrement;
-	double	freqVariation;
+	Float	intensity, maxIntensity, frequency;
+	Float	minTestFreq, maxTestFreq, minFreq, intensityDiff, freqIncrement;
+	Float	freqVariation;
 	EarObjectPtr	modelResp;
 
 	if ( !(* SetStimulusFreq)(centreFreq) ) {
@@ -230,7 +230,7 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 		}
 		intensity = GetResult_EarObject(modelResp, ANALYSIS_CHANNEL);
 		if ( (intensityDiff = (maxIntensity - intensity)) >= dBDownDiff ) {
-			if (fabs(freqIncrement) < DBL_EPSILON) {
+			if (fabs(freqIncrement) < DSAM_EPSILON) {
 				NotifyError(wxT("%s: Couldn't get closer to %g dB down than\n")
 				  wxT("%g dB down."), funcName, dBDownDiff, intensityDiff);
 				return(centreFreq / (frequency - minFreq));
@@ -274,14 +274,14 @@ CalcQValue_ExpAnalysis(EarObjectPtr (* RunModel)(void),
 #define	STEADY_STATE_REGION_PERCENTAGE	0.8
 
 BOOLN
-Calc2CompAdapt_ExpAnalysis(double Tst[], double Tr[], EarObjectPtr data,
-  double shortTermT1, double shortTermPeriod, double rapidAdaptPeriod)
+Calc2CompAdapt_ExpAnalysis(Float Tst[], Float Tr[], EarObjectPtr data,
+  Float shortTermT1, Float shortTermPeriod, Float rapidAdaptPeriod)
 {
 	static const WChar *funcName = wxT("Calc2CompAdapt_ExpAnalysis");
 	BOOLN	ok = TRUE;
 	int		chan;
-	double	Ast, Ass, sum;
-	double	gradient, constant, maxValue, dt, deltaY;
+	Float	Ast, Ass, sum;
+	Float	gradient, constant, maxValue, dt, deltaY;
 	register	ChanData	*inPtr, *outPtr;
 	ChanLen	sT1Indx, sTPeriodIndx, i, rT1Indx, rTPeriodIndx;
 	ChanLen	aveTimeOffsetIndex, avePeriodIndex;

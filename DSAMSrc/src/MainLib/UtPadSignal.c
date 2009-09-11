@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
  * Author:		L. P. O'Mard
  * Created:		14 Mar 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -94,10 +94,6 @@ Init_Utility_PadSignal(ParameterSpecifier parSpec)
 		}
 	}
 	padSignalPtr->parSpec = parSpec;
-	padSignalPtr->beginDurationFlag = TRUE;
-	padSignalPtr->beginValueFlag = TRUE;
-	padSignalPtr->endDurationFlag = TRUE;
-	padSignalPtr->endValueFlag = TRUE;
 	padSignalPtr->beginDuration = 0.0;
 	padSignalPtr->beginValue = 0.0;
 	padSignalPtr->endDuration = 0.0;
@@ -191,7 +187,7 @@ GetUniParListPtr_Utility_PadSignal(void)
  */
 
 BOOLN
-SetBeginDuration_Utility_PadSignal(double theBeginDuration)
+SetBeginDuration_Utility_PadSignal(Float theBeginDuration)
 {
 	static const WChar	*funcName = wxT("SetBeginDuration_Utility_PadSignal");
 
@@ -205,7 +201,6 @@ SetBeginDuration_Utility_PadSignal(double theBeginDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	padSignalPtr->beginDurationFlag = TRUE;
 	padSignalPtr->beginDuration = theBeginDuration;
 	return(TRUE);
 
@@ -220,7 +215,7 @@ SetBeginDuration_Utility_PadSignal(double theBeginDuration)
  */
 
 BOOLN
-SetBeginValue_Utility_PadSignal(double theBeginValue)
+SetBeginValue_Utility_PadSignal(Float theBeginValue)
 {
 	static const WChar	*funcName = wxT("SetBeginValue_Utility_PadSignal");
 
@@ -229,7 +224,6 @@ SetBeginValue_Utility_PadSignal(double theBeginValue)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	padSignalPtr->beginValueFlag = TRUE;
 	padSignalPtr->beginValue = theBeginValue;
 	return(TRUE);
 
@@ -244,7 +238,7 @@ SetBeginValue_Utility_PadSignal(double theBeginValue)
  */
 
 BOOLN
-SetEndDuration_Utility_PadSignal(double theEndDuration)
+SetEndDuration_Utility_PadSignal(Float theEndDuration)
 {
 	static const WChar	*funcName = wxT("SetEndDuration_Utility_PadSignal");
 
@@ -258,7 +252,6 @@ SetEndDuration_Utility_PadSignal(double theEndDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	padSignalPtr->endDurationFlag = TRUE;
 	padSignalPtr->endDuration = theEndDuration;
 	return(TRUE);
 
@@ -273,7 +266,7 @@ SetEndDuration_Utility_PadSignal(double theEndDuration)
  */
 
 BOOLN
-SetEndValue_Utility_PadSignal(double theEndValue)
+SetEndValue_Utility_PadSignal(Float theEndValue)
 {
 	static const WChar	*funcName = wxT("SetEndValue_Utility_PadSignal");
 
@@ -282,31 +275,8 @@ SetEndValue_Utility_PadSignal(double theEndValue)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	padSignalPtr->endValueFlag = TRUE;
 	padSignalPtr->endValue = theEndValue;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_PadSignal(void)
-{
-	/*static const WChar	*funcName = wxT("CheckPars_Utility_PadSignal");*/
-	BOOLN	ok;
-
-	ok = TRUE;
-	/*** Put parameter consistency checks here. ***/
-	return(ok);
 
 }
 
@@ -322,9 +292,8 @@ PrintPars_Utility_PadSignal(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_PadSignal");
 
-	if (!CheckPars_Utility_PadSignal()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (padSignalPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Signal padding Utility Module Parameters:-\n"));
@@ -381,7 +350,6 @@ InitModule_Utility_PadSignal(ModulePtr theModule)
 	}
 	theModule->parsPtr = padSignalPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_PadSignal;
 	theModule->Free = Free_Utility_PadSignal;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_PadSignal;
 	theModule->PrintPars = PrintPars_Utility_PadSignal;
@@ -441,14 +409,12 @@ Process_Utility_PadSignal(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_PadSignal");
 	register ChanData	 *inPtr, *outPtr;
 	int		chan;
-	double	dt;
+	Float	dt;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 	PadSignalPtr	p = padSignalPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_PadSignal())
-			return(FALSE);
 		if (!CheckData_Utility_PadSignal(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

@@ -1,5 +1,5 @@
 /******************
- *		
+ *
  * File:		StdSignalDisp.c/GrSignalDisp.cpp
  * Purpose: 	This graphics module serves as the interface between DSAM
  *				and the WxWin GUI.
@@ -203,45 +203,13 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (signalDispPtr == NULL) { 
+		if (signalDispPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName,
 			  funcName);
 			return(FALSE);
 		}
 	}
-	
-	signalDispPtr->autoYScaleFlag = TRUE;
-	signalDispPtr->yAxisModeFlag = TRUE;
-	signalDispPtr->yNormalisationModeFlag = TRUE;
-	signalDispPtr->modeFlag = TRUE;
-	signalDispPtr->numGreyScalesFlag = TRUE;
-	signalDispPtr->magnificationFlag = TRUE;
-	signalDispPtr->summaryDisplayFlag = TRUE;
-	signalDispPtr->chanActivityDisplayFlag = TRUE;
-	signalDispPtr->xResolutionFlag = TRUE;
-	signalDispPtr->minYFlag = FALSE;
-	signalDispPtr->maxYFlag = FALSE;
-	signalDispPtr->autoXScaleFlag = TRUE;
-	signalDispPtr->xOffsetFlag = TRUE;
-	signalDispPtr->xExtentFlag = TRUE;
-	signalDispPtr->widthFlag = TRUE;
-	signalDispPtr->frameDelayFlag = TRUE;
-	signalDispPtr->frameHeightFlag = TRUE;
-	signalDispPtr->frameWidthFlag = TRUE;
-	signalDispPtr->frameXPosFlag = TRUE;
-	signalDispPtr->frameYPosFlag = TRUE;
-	signalDispPtr->titleFlag = FALSE;
-	signalDispPtr->topMarginFlag = TRUE;
-	signalDispPtr->channelStepFlag = TRUE;
-	signalDispPtr->xTicksFlag = FALSE;
-	signalDispPtr->xAxisTitleFlag = FALSE;
-	signalDispPtr->xNumberFormatFlag = FALSE;
-	signalDispPtr->yAxisTitleFlag = FALSE;
-	signalDispPtr->yNumberFormatFlag = FALSE;
-	signalDispPtr->xDecPlacesFlag = FALSE;
-	signalDispPtr->yDecPlacesFlag = FALSE;
-	signalDispPtr->yTicksFlag = FALSE;
-	signalDispPtr->yInsetScaleFlag = FALSE;
+
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	signalDispPtr->parSpec = parSpec;
 	signalDispPtr->autoYScale = GENERAL_BOOLEAN_ON;
@@ -278,7 +246,7 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->autoXScale = GENERAL_BOOLEAN_ON;
 	signalDispPtr->xExtent = -1.0;
 	signalDispPtr->xOffset = 0.0;
-	
+
 	InitModeList_SignalDisp();
 	InitYAxisModeList_SignalDisp();
 	InitYNormModeList_SignalDisp();
@@ -342,7 +310,7 @@ Free_SignalDisp(void)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_SignalDisp(void)
 {
@@ -551,11 +519,11 @@ SetDefaulEnabledPars_SignalDisp(void)
 	signalDispPtr->parList->pars[DISPLAY_Y_DEC_PLACES].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_WIDTH].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_AUTOMATIC_SCALING].enabled = FALSE;
-	
-	SetAutoYScale_SignalDisp(BooleanList_NSpecLists(signalDispPtr->autoYScale)->
-	  name);
-	SetAutoXScale_SignalDisp(BooleanList_NSpecLists(signalDispPtr->autoXScale)->
-	  name);
+
+	SetAutoYScale_SignalDisp((WChar *) BooleanList_NSpecLists(signalDispPtr->
+	  autoYScale)->name);
+	SetAutoXScale_SignalDisp((WChar *) BooleanList_NSpecLists(signalDispPtr->
+	  autoXScale)->name);
 	/* The following should not be set from the GUI */
 	/*signalDispPtr->parList->pars[DISPLAY_WINDOW_HEIGHT].enabled = FALSE;
 	signalDispPtr->parList->pars[DISPLAY_WINDOW_WIDTH].enabled = FALSE;
@@ -635,11 +603,10 @@ SetAutoYScale_SignalDisp(WChar *theAutoYScale)
 		return(FALSE);
 	}
 	signalDispPtr->autoYScale = specifier;
-	signalDispPtr->autoYScaleFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	SetAutoYScaleParsState_SignalDisp(!signalDispPtr->autoYScale);
 	return(TRUE);
-	
+
 }
 
 /**************************** SetFrameDelay ***********************************/
@@ -650,7 +617,7 @@ SetAutoYScale_SignalDisp(WChar *theAutoYScale)
  */
 
 BOOLN
-SetFrameDelay_SignalDisp(double frameDelay)
+SetFrameDelay_SignalDisp(Float frameDelay)
 {
 	static const WChar *funcName = wxT("SetFrameDelay_SignalDisp");
 
@@ -659,9 +626,8 @@ SetFrameDelay_SignalDisp(double frameDelay)
 		return(FALSE);
 	}
 	signalDispPtr->frameDelay = frameDelay;
-	signalDispPtr->frameDelayFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetChannelStep **********************************/
@@ -681,9 +647,8 @@ SetChannelStep_SignalDisp(int channelStep)
 		return(FALSE);
 	}
 	signalDispPtr->channelStep = channelStep;
-	signalDispPtr->channelStepFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetFrameHeight **********************************/
@@ -708,10 +673,9 @@ SetFrameHeight_SignalDisp(int frameHeight)
 		return(FALSE);
 	}
 	signalDispPtr->frameHeight = frameHeight;
-	signalDispPtr->frameHeightFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetFrameWidth ***********************************/
@@ -736,10 +700,9 @@ SetFrameWidth_SignalDisp(int frameWidth)
 		return(FALSE);
 	}
 	signalDispPtr->frameWidth = frameWidth;
-	signalDispPtr->frameWidthFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetFrameXPos ************************************/
@@ -759,7 +722,6 @@ SetFrameXPos_SignalDisp(int frameXPos)
 		return(FALSE);
 	}
 	signalDispPtr->frameXPos = frameXPos;
-	signalDispPtr->frameXPosFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
@@ -782,10 +744,9 @@ SetFrameYPos_SignalDisp(int frameYPos)
 		return(FALSE);
 	}
 	signalDispPtr->frameYPos = frameYPos;
-	signalDispPtr->frameYPosFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetYAxisTitle ***********************************/
@@ -803,7 +764,6 @@ SetYAxisTitle_SignalDisp(WChar *yAxisTitle)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	signalDispPtr->yAxisTitleFlag = TRUE;
 	DSAM_strncpy(signalDispPtr->yAxisTitle, yAxisTitle, MAXLINE);
 	return(TRUE);
 
@@ -847,12 +807,11 @@ SetYAxisMode_SignalDisp(WChar *theYAxisMode)
 		return(FALSE);
 	}
 	signalDispPtr->yAxisMode = specifier;
-	signalDispPtr->yAxisModeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	SetYAxisModeParsState_SignalDisp(signalDispPtr->yAxisMode ==
 	  GRAPH_Y_AXIS_MODE_CHANNEL);
 	return(TRUE);
-	
+
 }
 
 /**************************** SetYNormalisationMode ***************************/
@@ -880,10 +839,9 @@ SetYNormalisationMode_SignalDisp(WChar *theYNormalisationMode)
 		return(FALSE);
 	}
 	signalDispPtr->yNormalisationMode = specifier;
-	signalDispPtr->yNormalisationModeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetXResolution **********************************/
@@ -896,7 +854,7 @@ SetYNormalisationMode_SignalDisp(WChar *theYNormalisationMode)
  */
 
 BOOLN
-SetXResolution_SignalDisp(double xResolution)
+SetXResolution_SignalDisp(Float xResolution)
 {
 	static const WChar *funcName = wxT("SetXResolution_SignalDisp");
 
@@ -910,10 +868,9 @@ SetXResolution_SignalDisp(double xResolution)
 		return(FALSE);
 	}
 	signalDispPtr->xResolution = xResolution;
-	signalDispPtr->xResolutionFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetMagnification ********************************/
@@ -924,7 +881,7 @@ SetXResolution_SignalDisp(double xResolution)
  */
 
 BOOLN
-SetMagnification_SignalDisp(double magnification)
+SetMagnification_SignalDisp(Float magnification)
 {
 	static const WChar *funcName = wxT("SetMagnification_SignalDisp");
 
@@ -937,10 +894,9 @@ SetMagnification_SignalDisp(double magnification)
 		return(FALSE);
 	}
 	signalDispPtr->magnification = magnification;
-	signalDispPtr->magnificationFlag = TRUE;;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetMaxY *****************************************/
@@ -952,7 +908,7 @@ SetMagnification_SignalDisp(double magnification)
  */
 
 BOOLN
-SetMaxY_SignalDisp(double maxY)
+SetMaxY_SignalDisp(Float maxY)
 {
 	static const WChar *funcName = wxT("SetMaxY_SignalDisp");
 
@@ -961,10 +917,9 @@ SetMaxY_SignalDisp(double maxY)
 		return(FALSE);
 	}
 	signalDispPtr->maxY = maxY;
-	signalDispPtr->maxYFlag = TRUE;;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetMinY *****************************************/
@@ -976,7 +931,7 @@ SetMaxY_SignalDisp(double maxY)
  */
 
 BOOLN
-SetMinY_SignalDisp(double minY)
+SetMinY_SignalDisp(Float minY)
 {
 	static const WChar *funcName = wxT("SetMinY_SignalDisp");
 
@@ -985,10 +940,9 @@ SetMinY_SignalDisp(double minY)
 		return(FALSE);
 	}
 	signalDispPtr->minY = minY;
-	signalDispPtr->minYFlag = TRUE;;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetTopMargin ************************************/
@@ -999,7 +953,7 @@ SetMinY_SignalDisp(double minY)
  */
 
 BOOLN
-SetTopMargin_SignalDisp(double topMargin)
+SetTopMargin_SignalDisp(Float topMargin)
 {
 	static const WChar *funcName = wxT("SetTopMargin_SignalDisp");
 
@@ -1008,10 +962,9 @@ SetTopMargin_SignalDisp(double topMargin)
 		return(FALSE);
 	}
 	signalDispPtr->topMargin = topMargin;
-	signalDispPtr->topMarginFlag = TRUE;;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetWidth ****************************************/
@@ -1022,7 +975,7 @@ SetTopMargin_SignalDisp(double topMargin)
  */
 
 BOOLN
-SetWidth_SignalDisp(double width)
+SetWidth_SignalDisp(Float width)
 {
 	static const WChar *funcName = wxT("SetWidth_SignalDisp");
 
@@ -1031,10 +984,9 @@ SetWidth_SignalDisp(double width)
 		return(FALSE);
 	}
 	/* signalDispPtr->width = width; parameter to be removed. */
-	signalDispPtr->widthFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetMode *****************************************/
@@ -1066,10 +1018,9 @@ SetMode_SignalDisp(WChar *theMode)
 		return(FALSE);
 	}
 	signalDispPtr->mode = specifier;
-	signalDispPtr->modeFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetNumGreyScales ********************************/
@@ -1093,10 +1044,9 @@ SetNumGreyScales_SignalDisp(int theNumGreyScales)
 		return(FALSE);
 	}
 	signalDispPtr->numGreyScales = theNumGreyScales;
-	signalDispPtr->numGreyScalesFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetSummaryDisplay *******************************/
@@ -1123,12 +1073,11 @@ SetSummaryDisplay_SignalDisp(WChar *theSummaryDisplay)
 		  theSummaryDisplay);
 		return(FALSE);
 	}
-	signalDispPtr->summaryDisplayFlag = TRUE;
 	signalDispPtr->summaryDisplay = specifier;
 	signalDispPtr->redrawSubDisplaysFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetChanActivityDisplay **************************/
@@ -1155,12 +1104,11 @@ SetChanActivityDisplay_SignalDisp(WChar *theChanActivityDisplay)
 		  theChanActivityDisplay);
 		return(FALSE);
 	}
-	signalDispPtr->chanActivityDisplayFlag = TRUE;
 	signalDispPtr->chanActivityDisplay = specifier;
 	signalDispPtr->redrawSubDisplaysFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetTitle ****************************************/
@@ -1178,7 +1126,6 @@ SetTitle_SignalDisp(WChar *title)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	signalDispPtr->titleFlag = TRUE;
 	DSAM_strncpy(signalDispPtr->title, title, MAXLINE);
 	signalDispPtr->redrawGraphFlag = TRUE;
 	return(TRUE);
@@ -1207,10 +1154,9 @@ SetXTicks_SignalDisp(int xTicks)
 		return(FALSE);
 	}
 	signalDispPtr->xTicks = xTicks;
-	signalDispPtr->xTicksFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetXAxisTitle ***********************************/
@@ -1228,7 +1174,6 @@ SetXAxisTitle_SignalDisp(WChar *xAxisTitle)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	signalDispPtr->xAxisTitleFlag = TRUE;
 	DSAM_strncpy(signalDispPtr->xAxisTitle, xAxisTitle, MAXLINE);
 	return(TRUE);
 
@@ -1257,10 +1202,9 @@ SetXNumberFormat_SignalDisp(WChar *xNumberFormat)
 		return(FALSE);
 	}
 	DSAM_strncpy(signalDispPtr->xNumberFormat, xNumberFormat, MAXLINE);
-	signalDispPtr->xNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /****************************** SetAutoXScaleParsState ************************/
@@ -1305,7 +1249,6 @@ SetAutoXScale_SignalDisp(WChar *theAutoXScale)
 		return(FALSE);
 	}
 	signalDispPtr->autoXScale = specifier;
-	signalDispPtr->autoXScaleFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	SetAutoXScaleParsState_SignalDisp(!signalDispPtr->autoXScale);
 	return(TRUE);
@@ -1321,7 +1264,7 @@ SetAutoXScale_SignalDisp(WChar *theAutoXScale)
  */
 
 BOOLN
-SetXOffset_SignalDisp(double theXOffset)
+SetXOffset_SignalDisp(Float theXOffset)
 {
 	static const WChar	*funcName = wxT("SetXOffset_SignalDisp");
 
@@ -1335,7 +1278,6 @@ SetXOffset_SignalDisp(double theXOffset)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	signalDispPtr->xOffsetFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	signalDispPtr->xOffset = theXOffset;
 	return(TRUE);
@@ -1351,7 +1293,7 @@ SetXOffset_SignalDisp(double theXOffset)
  */
 
 BOOLN
-SetXExtent_SignalDisp(double theXExtent)
+SetXExtent_SignalDisp(Float theXExtent)
 {
 	static const WChar	*funcName = wxT("SetXExtent_SignalDisp");
 
@@ -1360,7 +1302,6 @@ SetXExtent_SignalDisp(double theXExtent)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	signalDispPtr->xExtentFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	signalDispPtr->xExtent = theXExtent;
 	return(TRUE);
@@ -1389,10 +1330,9 @@ SetYNumberFormat_SignalDisp(WChar *yNumberFormat)
 		return(FALSE);
 	}
 	DSAM_strncpy(signalDispPtr->yNumberFormat, yNumberFormat, MAXLINE);
-	signalDispPtr->yNumberFormatFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetYTicks ***************************************/
@@ -1417,10 +1357,9 @@ SetYTicks_SignalDisp(int yTicks)
 		return(FALSE);
 	}
 	signalDispPtr->yTicks = yTicks;
-	signalDispPtr->yTicksFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetYInsetScale **********************************/
@@ -1447,11 +1386,10 @@ SetYInsetScale_SignalDisp(WChar *theYInsetScale)
 		  theYInsetScale);
 		return(FALSE);
 	}
-	signalDispPtr->yInsetScaleFlag = TRUE;
 	signalDispPtr->yInsetScale = specifier;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetXDecPlaces ***********************************/
@@ -1477,10 +1415,9 @@ SetXDecPlaces_SignalDisp(int xDecPlaces)
 		return(FALSE);
 	}
 	signalDispPtr->xDecPlaces = xDecPlaces;
-	signalDispPtr->xDecPlacesFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
 
 /**************************** SetYDecPlaces ***********************************/
@@ -1506,66 +1443,24 @@ SetYDecPlaces_SignalDisp(int yDecPlaces)
 		return(FALSE);
 	}
 	signalDispPtr->yDecPlaces = yDecPlaces;
-	signalDispPtr->yDecPlacesFlag = TRUE;
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-	
+
 }
-
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_SignalDisp(void)
-{
-	static const WChar *funcName = wxT("CheckPars_SignalDisp");
-
-	if (signalDispPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (signalDispPtr->autoYScaleFlag && !signalDispPtr->autoYScale &&
-	  (!signalDispPtr->minYFlag || !signalDispPtr->maxYFlag)) {
-		NotifyError(wxT("%s: When the automatic y scale is off, the minimum ")
-		  wxT("and maximum Y value must also be set."), funcName);
-		return(FALSE);
-	}
-	if (!signalDispPtr->autoYScale && (signalDispPtr->minY >= signalDispPtr->
-	  maxY)) {
-		NotifyError(wxT("%s: the minimum y value (%g) should be less than ")
-		  wxT("than the maximum y value (%g)."), funcName, signalDispPtr->minY,
-		  signalDispPtr->maxY);
-		return(FALSE);
-	}
-	if (signalDispPtr->autoXScaleFlag && !signalDispPtr->autoXScale &&
-	  (!signalDispPtr->xOffsetFlag || !signalDispPtr->xExtentFlag)) {
-		NotifyError(wxT("%s: When automatic x-scale is off, the x offset and ")
-		  wxT("x extent values must both be set."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}	
 
 /****************************** PrintPars *************************************/
 
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_SignalDisp(void)
 {
 	static const WChar *funcName = wxT("PrintPars_SignalDisp");
 
-	if (!CheckPars_SignalDisp()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (signalDispPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("SignalDisp Module Parameters:-\n"));
@@ -1602,7 +1497,7 @@ PrintPars_SignalDisp(void)
 	  xNumberFormat);
 	if (!signalDispPtr->autoXScale) {
 		DPrint(wxT("\tOffset/extent X values: %g"), signalDispPtr->xOffset);
-		if (signalDispPtr->xExtent < DBL_EPSILON)
+		if (signalDispPtr->xExtent < DSAM_EPSILON)
 			DPrint(wxT("units / <end of signal>).\n"));
 		else
 			DPrint(wxT("/%g units.\n"), signalDispPtr->xExtent);
@@ -1620,9 +1515,9 @@ PrintPars_SignalDisp(void)
 /**************************** SetProcessMode **********************************/
 
 /*
- * This routine checks whether this module is being used in-line within an 
+ * This routine checks whether this module is being used in-line within an
  * EarObject pipline.
- * This is checked by ensuring that this is the first 
+ * This is checked by ensuring that this is the first
  * module to use the EarObject, or that it was previously used by this module,
  * i.e. the process name has not been set, or it is set to this module's name.
  * This routine assumes that 'data' has been correctly initialised.
@@ -1694,7 +1589,6 @@ InitModule_SignalDisp(ModulePtr theModule)
 	}
 	theModule->parsPtr = signalDispPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_TRANSFER;
-	theModule->CheckPars = CheckPars_SignalDisp;
 	theModule->Free = Free_SignalDisp;
 	theModule->GetUniParListPtr = GetUniParListPtr_SignalDisp;
 	theModule->PrintPars = PrintPars_SignalDisp;
@@ -1739,7 +1633,7 @@ BOOLN
 InitProcessVariables_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_SignalDisp");
-	double	definedDuration;
+	Float	definedDuration;
 	SignalDataPtr	signal = _OutSig_EarObject(data), buffer;
 	SignalDispPtr	p = signalDispPtr;
 
@@ -1748,7 +1642,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 		if (p->autoXScale)
 			definedDuration = -1.0;
 		else
-			definedDuration = (p->xExtent > DBL_EPSILON)? p->xOffset + p->
+			definedDuration = (p->xExtent > DSAM_EPSILON)? p->xOffset + p->
 			  xExtent: _GetDuration_SignalData(signal) - p->xOffset;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
@@ -1964,8 +1858,6 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
 	}
-	if (!CheckPars_SignalDisp())
-		return(FALSE);
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!SetProcessMode_SignalDisp(data)) {
@@ -1995,7 +1887,7 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 		if (signalDispPtr->buffer)
 			ProcessBuffer_SignalDisp(outSignal, signalDispPtr->buffer, i);
 #		if !defined(linux)
-  	  	if (signalDispPtr->frameDelay > DBL_EPSILON) {
+  	  	if (signalDispPtr->frameDelay > DSAM_EPSILON) {
   			while (difftime(time(NULL), startTime) < signalDispPtr->frameDelay)
   				;
   			startTime = time(NULL);

@@ -129,9 +129,9 @@ InitThreadModeList_AppInterface(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ wxT("PROCESS"),		APP_INT_THREAD_MODE_PROCESS },
-			{ wxT("CHANNEL_CHAIN"),	APP_INT_THREAD_MODE_CHANNEL_CHAIN },
-			{ NULL,					APP_INT_THREAD_MODE_NULL }
+			{ wxT("PROCESS"),			APP_INT_THREAD_MODE_PROCESS },
+			{ wxT("CHANNEL_CHAIN"),		APP_INT_THREAD_MODE_CHANNEL_CHAIN },
+			{ NULL,						APP_INT_THREAD_MODE_NULL }
 		};
 	appInterfacePtr->threadModeList = modeList;
 	return(TRUE);
@@ -1888,7 +1888,7 @@ SetSimPar_AppInterface(WChar *parName, WChar *value)
  */
 
 BOOLN
-SetRealSimPar_AppInterface(WChar *parName, double value)
+SetRealSimPar_AppInterface(WChar *parName, Float value)
 {
 	static const WChar *funcName = wxT("SetRealSimPar_AppInterface");
 
@@ -1910,7 +1910,7 @@ SetRealSimPar_AppInterface(WChar *parName, double value)
  */
 
 BOOLN
-SetRealArraySimPar_AppInterface(WChar *parName, int index, double value)
+SetRealArraySimPar_AppInterface(WChar *parName, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetRealArraySimPar_AppInterface");
 

@@ -8,9 +8,9 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	double	permConst_A;		/* For K+ probability: base Amplitude (uPa). */
-	double	permConst_B;		/* For K+ probability: amplitude scale (/uPa) */
-	double	releaseRate_g;		/* Release rate (units per second). */
-	double	mTimeConst_tm;		/* Membrane time constant, s. */
+	Float	permConst_A;		/* For K+ probability: base Amplitude (uPa). */
+	Float	permConst_B;		/* For K+ probability: amplitude scale (/uPa) */
+	Float	releaseRate_g;		/* Release rate (units per second). */
+	Float	mTimeConst_tm;		/* Membrane time constant, s. */
 
 } MeddisRP;

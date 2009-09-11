@@ -7,9 +7,9 @@
  *				FiDataFile module.
  * Authors:		L. P. O'Mard
  * Created:		17 Apr 1998
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
- * 
+ *
  ******************/
 
 #ifndef	_FIASCII_H
@@ -33,7 +33,7 @@
  */
 __BEGIN_DECLS
 
-double	GetDuration_ASCII(WChar *fileName);
+Float	GetDuration_ASCII(WChar *fileName);
 
 BOOLN	ReadFile_ASCII(WChar *fileName, EarObjectPtr data);
 

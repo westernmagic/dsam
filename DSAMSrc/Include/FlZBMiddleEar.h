@@ -18,7 +18,7 @@
  * 				It uses an EarObject to allocate the memory for the mey arrays.
  * Author:		Revised by L. P. O'Mard
  * Created:		03 Mar 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, CNBH, University of Cambridge.
  *
  *********************/
@@ -50,15 +50,15 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
-	double	gainMax;
-	double	preWarpingFreq;
+	Float	gainMax;
+	Float	preWarpingFreq;
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	m11, m12;
-	double	m21, m22, m23, m24, m25, m26;
-	double	m31, m32, m33, m34, m35, m36;
-	double	*lastInput;
+	Float	m11, m12;
+	Float	m21, m22, m23, m24, m25, m26;
+	Float	m31, m32, m33, m34, m35, m36;
+	Float	*lastInput;
 	EarObjectPtr	mey;
 
 } FLZBMEar, *FLZBMEarPtr;
@@ -97,11 +97,11 @@ BOOLN	PrintPars_Filter_ZBMiddleEar(void);
 
 BOOLN	RunModel_Filter_ZBMiddleEar(EarObjectPtr data);
 
-BOOLN	SetGainMax_Filter_ZBMiddleEar(double theGainMax);
+BOOLN	SetGainMax_Filter_ZBMiddleEar(Float theGainMax);
 
 BOOLN	SetParsPointer_Filter_ZBMiddleEar(ModulePtr theModule);
 
-BOOLN	SetPreWarpingFreq_Filter_ZBMiddleEar(double thePreWarpingFreq);
+BOOLN	SetPreWarpingFreq_Filter_ZBMiddleEar(Float thePreWarpingFreq);
 
 BOOLN	SetUniParList_Filter_ZBMiddleEar(void);
 

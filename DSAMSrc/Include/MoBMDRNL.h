@@ -62,8 +62,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	nonLinGTCascadeFlag, nonLinLPCascadeFlag, comprExponentFlag;
-	BOOLN	linGTCascadeFlag, linLPCascadeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		nonLinGTCascade;
 	int		nonLinLPCascade;
@@ -71,7 +69,7 @@ typedef struct {
 	ParArrayPtr	nonLinScaleG;
 	ParArrayPtr	comprScaleA;
 	ParArrayPtr	comprScaleB;
-	double	comprExponent;
+	Float	comprExponent;
 	int		linGTCascade;
 	int		linLPCascade;
 	ParArrayPtr	linCF;
@@ -83,13 +81,13 @@ typedef struct {
 	NameSpecifier	*fitFuncModeList;
 	UniParListPtr	parList;
 	int		numChannels;
-	double	*compressionA;
-	double	*compressionB;
+	Float	*compressionA;
+	Float	*compressionB;
 	GammaToneCoeffsPtr	*nonLinearGT1;
 	GammaToneCoeffsPtr	*nonLinearGT2;
 	GammaToneCoeffsPtr	*linearGT;
 	ContButtCoeffsPtr	*nonLinearLP;
-	ContButtCoeffsPtr	*linearLP;	
+	ContButtCoeffsPtr	*linearLP;
 	EarObjectPtr	linearF;			/* Extra signal for linear filter. */
 
 } BMDRNL, *BMDRNLPtr;
@@ -115,18 +113,16 @@ void	ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal,
 
 BOOLN	CheckData_BasilarM_DRNL(EarObjectPtr data);
 
-BOOLN	CheckPars_BasilarM_DRNL(void);
-
 BOOLN	Free_BasilarM_DRNL(void);
 
 BOOLN	FreeProcessVariables_BasilarM_DRNL(void);
 
 CFListPtr	GetCFListPtr_BasilarM_DRNL(void);
 
-double	GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF);
+Float	GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, Float linCF);
 
-double	GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr,
-		  double theCF);
+Float	GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr,
+		  Float theCF);
 
 int	GetNumFitFuncPars_BasilarM_DRNL(int mode);
 
@@ -138,13 +134,11 @@ BOOLN	Init_BasilarM_DRNL(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_BasilarM_DRNL(void);
 
-BOOLN	ReadPars_BasilarM_DRNL(WChar *fileName);
-
 BOOLN	RunModel_BasilarM_DRNL(EarObjectPtr data);
 
 BOOLN	SetCFList_BasilarM_DRNL(CFListPtr theCFList);
 
-BOOLN	SetComprExponent_BasilarM_DRNL(double theComprExponent);
+BOOLN	SetComprExponent_BasilarM_DRNL(Float theComprExponent);
 
 BOOLN	SetComprScaleA_BasilarM_DRNL(ParArrayPtr theComprScaleA);
 
@@ -171,12 +165,6 @@ BOOLN	SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade);
 BOOLN	SetNonLinScaleG_BasilarM_DRNL(ParArrayPtr theNonLinScaleG);
 
 BOOLN	SetParsPointer_BasilarM_DRNL(ModulePtr theModule);
-
-BOOLN	SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
-		  ParArrayPtr nonLinBwidth, ParArrayPtr comprScaleA,
-		  ParArrayPtr comprScaleB, double comprExponent, int linGTCascade,
-		  int linLPCascade, ParArrayPtr linCF, ParArrayPtr linBwidth,
-		  ParArrayPtr linScaleG, CFListPtr theCFs);
 
 BOOLN	SetUniParList_BasilarM_DRNL(void);
 

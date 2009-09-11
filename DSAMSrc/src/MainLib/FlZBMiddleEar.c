@@ -1,12 +1,12 @@
 /**********************
  *
  * File:		FlZBMiddleEar.c
- * Purpose:		
+ * Purpose:
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  3 2008).
- * Author:		
+ * Author:
  * Created:		03 Mar 2008
- * Updated:	
- * Copyright:	(c) 2008, 
+ * Updated:
+ * Copyright:	(c) 2008,
  *
  *********************/
 
@@ -177,7 +177,7 @@ GetUniParListPtr_Filter_ZBMiddleEar(void)
  */
 
 BOOLN
-SetGainMax_Filter_ZBMiddleEar(double theGainMax)
+SetGainMax_Filter_ZBMiddleEar(Float theGainMax)
 {
 	static const WChar	*funcName = wxT("SetGainMax_Filter_ZBMiddleEar");
 
@@ -201,7 +201,7 @@ SetGainMax_Filter_ZBMiddleEar(double theGainMax)
  */
 
 BOOLN
-SetPreWarpingFreq_Filter_ZBMiddleEar(double thePreWarpingFreq)
+SetPreWarpingFreq_Filter_ZBMiddleEar(Float thePreWarpingFreq)
 {
 	static const WChar	*funcName = wxT(
 	  "SetPreWarpingFreq_Filter_ZBMiddleEar");
@@ -330,15 +330,15 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_Filter_ZBMiddleEar");
 	int		chan;
-	double	c, cSqrd;
+	Float	c, cSqrd;
 	FLZBMEarPtr	p = fLZBMEarPtr;
 	SignalDataPtr	outSignal;
 
   	outSignal = _OutSig_EarObject(data);
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_ZBMiddleEar();
-		if ((p->lastInput = (double *) calloc(outSignal->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((p->lastInput = (Float *) calloc(outSignal->numChannels,
+		  sizeof(Float))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 			  funcName);
 		 	return(FALSE);
@@ -354,14 +354,14 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
 		cSqrd = c * c;
 		p->m11 = c / (c + 693.48);
 		p->m12 = (693.48 - c) / c;
-		
+
 		p->m21 = 1 / (cSqrd + 11053 * c + 1.163e8);
 		p->m22 = -2 * cSqrd + 2.326e8;
-		p->m23 = cSqrd - 11053 * c + 1.163e8; 
+		p->m23 = cSqrd - 11053 * c + 1.163e8;
 		p->m24 = cSqrd + 1356.3 * c + 7.4417e8;
 		p->m25 = -2 * cSqrd + 14.8834e8;
 		p->m26 = cSqrd - 1356.3 * c + 7.4417e8;
-		
+
 		p->m31 = 1 / (cSqrd + 4620 * c + 909059944);
 		p->m32 = -2 * cSqrd + 2 * 909059944;
 		p->m33 = cSqrd - 4620 * c + 909059944;

@@ -7,7 +7,7 @@ proc_routine	GenerateSignal;
 typedef struct {
 
 	int_al	numPTones;
-	double	*frequencies, *intensities, *phases;
-	double	duration, dt;
+	Float	*frequencies, *intensities, *phases;
+	Float	duration, dt;
 
 } MPureTone;

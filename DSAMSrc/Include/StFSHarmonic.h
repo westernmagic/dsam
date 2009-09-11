@@ -9,7 +9,7 @@
  * 				Exploration Geophysics, (1992) Vol 28,  No. 1, p.62-69.
  * Author:		L. P. O'Mard
  * Created:		12 Mar 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, L. P. O'Mard
  *
  *********************/
@@ -53,19 +53,19 @@ typedef struct {
 	int		lowestHarmonic;
 	int		highestHarmonic;
 	int		phaseMode;
-	double	phaseVariable;
-	double	initialFreq;
-	double	finalFreq;
-	double	intensity;
-	double	duration, dt;
+	Float	phaseVariable;
+	Float	initialFreq;
+	Float	finalFreq;
+	Float	intensity;
+	Float	duration, dt;
 
 	/* Private members */
 	NameSpecifier	*phaseModeList;
 	UniParListPtr	parList;
 	long	ranSeed;
-	double	*phase;
-	double	*harmonicFrequency;
-	double	*sweepRate;
+	Float	*phase;
+	Float	*harmonicFrequency;
+	Float	*sweepRate;
 
 } FSHarm, *FSHarmPtr;
 
@@ -103,15 +103,15 @@ BOOLN	Init_Harmonic_FreqSwept(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Harmonic_FreqSwept(void);
 
-BOOLN	SetDuration_Harmonic_FreqSwept(double theDuration);
+BOOLN	SetDuration_Harmonic_FreqSwept(Float theDuration);
 
-BOOLN	SetFinalFreq_Harmonic_FreqSwept(double theFinalFreq);
+BOOLN	SetFinalFreq_Harmonic_FreqSwept(Float theFinalFreq);
 
 BOOLN	SetHighestHarmonic_Harmonic_FreqSwept(int theHighestHarmonic);
 
-BOOLN	SetInitialFreq_Harmonic_FreqSwept(double theInitialFreq);
+BOOLN	SetInitialFreq_Harmonic_FreqSwept(Float theInitialFreq);
 
-BOOLN	SetIntensity_Harmonic_FreqSwept(double theIntensity);
+BOOLN	SetIntensity_Harmonic_FreqSwept(Float theIntensity);
 
 BOOLN	SetLowestHarmonic_Harmonic_FreqSwept(int theLowestHarmonic);
 
@@ -119,9 +119,9 @@ BOOLN	SetParsPointer_Harmonic_FreqSwept(ModulePtr theModule);
 
 BOOLN	SetPhaseMode_Harmonic_FreqSwept(WChar * thePhaseMode);
 
-BOOLN	SetPhaseVariable_Harmonic_FreqSwept(double thePhaseVariable);
+BOOLN	SetPhaseVariable_Harmonic_FreqSwept(Float thePhaseVariable);
 
-BOOLN	SetSamplingInterval_Harmonic_FreqSwept(double theSamplingInterval);
+BOOLN	SetSamplingInterval_Harmonic_FreqSwept(Float theSamplingInterval);
 
 BOOLN	SetUniParList_Harmonic_FreqSwept(void);
 

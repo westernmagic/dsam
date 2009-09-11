@@ -12,7 +12,7 @@
  *				runs.
  * Author:		L. P. O'Mard
  * Created:		21 Mar 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -49,15 +49,14 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, binWidthFlag;
 	int		mode;
-	double	binWidth;
+	Float	binWidth;
 
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
 	int		numBins;
-	double	wBinWidth, dt;
+	Float	wBinWidth, dt;
 
 } BinSignal, *BinSignalPtr;
 
@@ -79,8 +78,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_BinSignal(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_BinSignal(void);
-
 BOOLN	Free_Utility_BinSignal(void);
 
 BOOLN	InitModeList_Utility_BinSignal(void);
@@ -93,11 +90,9 @@ BOOLN	PrintPars_Utility_BinSignal(void);
 
 BOOLN	Process_Utility_BinSignal(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_BinSignal(WChar *fileName);
-
 void	ResetProcess_Utility_BinSignal(EarObjectPtr data);
 
-BOOLN	SetBinWidth_Utility_BinSignal(double theBinWidth);
+BOOLN	SetBinWidth_Utility_BinSignal(Float theBinWidth);
 
 BOOLN	SetMode_Utility_BinSignal(WChar * theMode);
 
@@ -105,7 +100,7 @@ BOOLN	InitModule_Utility_BinSignal(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_BinSignal(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_BinSignal(WChar * mode, double binWidth);
+BOOLN	SetPars_Utility_BinSignal(WChar * mode, Float binWidth);
 
 BOOLN	SetUniParList_Utility_BinSignal(void);
 

@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard revised from AIM code
  * Created:		28 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -75,7 +75,7 @@ InitModeList_Utility_Compression(void)
 					{ wxT("LOG"),			COMPRESS_LOG_MODE },
 					{ wxT("POWER"),			COMPRESS_POWER_MODE },
 					{ NULL,					COMPRESS_NULL }
-				
+
 				};
 	compressionPtr->modeList = modeList;
 	return(TRUE);
@@ -115,10 +115,6 @@ Init_Utility_Compression(ParameterSpecifier parSpec)
 		}
 	}
 	compressionPtr->parSpec = parSpec;
-	compressionPtr->modeFlag = TRUE;
-	compressionPtr->signalMultiplierFlag = TRUE;
-	compressionPtr->powerExponentFlag = TRUE;
-	compressionPtr->minResponseFlag = TRUE;
 	compressionPtr->mode = COMPRESS_LOG_MODE;
 	compressionPtr->signalMultiplier = 1.0;
 	compressionPtr->powerExponent = 1.0;
@@ -205,35 +201,6 @@ GetUniParListPtr_Utility_Compression(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_Compression(WChar *mode, double signalMultiplier,
-  double powerExponent, double minResponse)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_Compression");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_Compression(mode))
-		ok = FALSE;
-	if (!SetSignalMultiplier_Utility_Compression(signalMultiplier))
-		ok = FALSE;
-	if (!SetPowerExponent_Utility_Compression(powerExponent))
-		ok = FALSE;
-	if (!SetMinResponse_Utility_Compression(minResponse))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -257,7 +224,6 @@ SetMode_Utility_Compression(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	compressionPtr->modeFlag = TRUE;
 	compressionPtr->mode = specifier;
 	switch (compressionPtr->mode) {
 	case COMPRESS_LOG_MODE:
@@ -289,7 +255,7 @@ SetMode_Utility_Compression(WChar *theMode)
  */
 
 BOOLN
-SetSignalMultiplier_Utility_Compression(double theSignalMultiplier)
+SetSignalMultiplier_Utility_Compression(Float theSignalMultiplier)
 {
 	static const WChar	*funcName = wxT(
 	  "SetSignalMultiplier_Utility_Compression");
@@ -299,7 +265,6 @@ SetSignalMultiplier_Utility_Compression(double theSignalMultiplier)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	compressionPtr->signalMultiplierFlag = TRUE;
 	compressionPtr->signalMultiplier = theSignalMultiplier;
 	return(TRUE);
 
@@ -314,7 +279,7 @@ SetSignalMultiplier_Utility_Compression(double theSignalMultiplier)
  */
 
 BOOLN
-SetPowerExponent_Utility_Compression(double thePowerExponent)
+SetPowerExponent_Utility_Compression(Float thePowerExponent)
 {
 	static const WChar	*funcName = wxT("SetPowerExponent_Utility_Compression");
 
@@ -327,7 +292,6 @@ SetPowerExponent_Utility_Compression(double thePowerExponent)
 		  thePowerExponent);
 		return(FALSE);
 	}
-	compressionPtr->powerExponentFlag = TRUE;
 	compressionPtr->powerExponent = thePowerExponent;
 	return(TRUE);
 
@@ -342,7 +306,7 @@ SetPowerExponent_Utility_Compression(double thePowerExponent)
  */
 
 BOOLN
-SetMinResponse_Utility_Compression(double theMinResponse)
+SetMinResponse_Utility_Compression(Float theMinResponse)
 {
 	static const WChar	*funcName = wxT("SetMinResponse_Utility_Compression");
 
@@ -355,50 +319,8 @@ SetMinResponse_Utility_Compression(double theMinResponse)
 		  funcName, theMinResponse);
 		return(FALSE);
 	}
-	compressionPtr->minResponseFlag = TRUE;
 	compressionPtr->minResponse = theMinResponse;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_Compression(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_Compression");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (compressionPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!compressionPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!compressionPtr->signalMultiplierFlag) {
-		NotifyError(wxT("%s: signalMultiplier variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!compressionPtr->powerExponentFlag) {
-		NotifyError(wxT("%s: powerExponent variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!compressionPtr->minResponseFlag) {
-		NotifyError(wxT("%s: minResponse variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -414,9 +336,8 @@ PrintPars_Utility_Compression(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_Compression");
 
-	if (!CheckPars_Utility_Compression()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (compressionPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Compression Utility Module Parameters:-\n"));
@@ -427,55 +348,6 @@ PrintPars_Utility_Compression(void)
 	DPrint(wxT("\tPower exponent = %g,"), compressionPtr->powerExponent);
 	DPrint(wxT("\tMinimum response = %g (units).\n"), compressionPtr->
 	  minResponse);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_Compression(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_Compression");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	double	signalMultiplier, powerExponent, minResponse;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &powerExponent))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &minResponse))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_Compression(mode, signalMultiplier, powerExponent,
-	  minResponse)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -523,11 +395,9 @@ InitModule_Utility_Compression(ModulePtr theModule)
 	}
 	theModule->parsPtr = compressionPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_Compression;
 	theModule->Free = Free_Utility_Compression;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Compression;
 	theModule->PrintPars = PrintPars_Utility_Compression;
-	theModule->ReadPars = ReadPars_Utility_Compression;
 	theModule->RunProcess = Process_Utility_Compression;
 	theModule->SetParsPointer = SetParsPointer_Utility_Compression;
 	return(TRUE);
@@ -589,8 +459,6 @@ Process_Utility_Compression(EarObjectPtr data)
 	CompressionPtr p = compressionPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_Compression())
-			return(FALSE);
 		if (!CheckData_Utility_Compression(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -602,7 +470,7 @@ Process_Utility_Compression(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
-		}	
+		}
 		p->minInput = pow(10, p->minResponse);
 		p->scale = p->signalMultiplier / p->powerExponent;
 		if (data->initThreadRunFlag)

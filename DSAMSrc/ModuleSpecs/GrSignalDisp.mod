@@ -6,12 +6,12 @@ typedef struct {
 	/* Signal Controls */
 	BOOLN	automaticYScaling;
 	int		channelStep;
-	double	magnification;
-	double	maxY;
-	double	minY;
+	Float	magnification;
+	Float	maxY;
+	Float	minY;
 	int		numGreyScales;
-	double	width;
-	double	xResolution;
+	Float	width;
+	Float	xResolution;
 	int		yNormalisationMode;
 
 	/* Axis controls */
@@ -28,14 +28,14 @@ typedef struct {
 	int		xDecPlaces;
 	int		xTicks;
 	BOOLN	autoXScale;
-	double	xOffset;
-	double	xExtent;
+	Float	xOffset;
+	Float	xExtent;
 
 	/* General Controls */
 	char	*title;			/* [MAXLINE] */
 	int		mode;
-	double	frameDelay;
-	double	topMargin;
+	Float	frameDelay;
+	Float	topMargin;
 	int		frameHeight;
 	int		frameWidth;
 	int		frameXPos;

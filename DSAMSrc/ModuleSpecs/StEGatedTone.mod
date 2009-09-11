@@ -8,14 +8,14 @@ typedef struct {
 
 	int		typeMode;
 	int		floorMode;
-	double	carrierFrequency;
-	double	amplitude;
-	double	phase;
-	double	beginPeriodDuration;
-	double	repetitionRate;
-	double	halfLife;
-	double	floor;
-	double	duration;
-	double	dt;
+	Float	carrierFrequency;
+	Float	amplitude;
+	Float	phase;
+	Float	beginPeriodDuration;
+	Float	repetitionRate;
+	Float	halfLife;
+	Float	floor;
+	Float	duration;
+	Float	dt;
 
 } EGatedTone;

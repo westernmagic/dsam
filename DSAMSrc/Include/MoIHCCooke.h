@@ -2,17 +2,17 @@
  *
  * File:		MoIHCCooke.h
  * Purpose: 	Header file for the Cooke 1991 hair cell.
- * Comments:	
+ * Comments:
  * Authors:		M. Cooke, L.P.O'Mard.
  * Created:		21 May 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  ********/
 
 #ifndef	_MOHCCOOKE_H
 #define _MOHCCOOKE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -35,31 +35,29 @@ typedef enum {
 
 typedef struct {
 
-	double	vimm;
-	double	vrel;
-	double	crel;
-	double	vres;
-	double	cimm;
+	Float	vimm;
+	Float	vrel;
+	Float	crel;
+	Float	vres;
+	Float	cimm;
 
 } CookeHCVars, *CookeHCVarsPtr;
-	
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	crawfordConstFlag, releaseFractionFlag, refillFractionFlag;
-	BOOLN	spontRateFlag, maxSpikeRateFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 
-	double	crawfordConst;		/* Crawford and Fettiplace c Value */
-	double	releaseFraction;	/* Release fraction. */
-	double	refillFraction;		/* Replenishment fraction. */
-	double	spontRate;			/* desired spontaneous firing rate. */
-	double	maxSpikeRate;		/* maximum possible firing rate. */
+	Float	crawfordConst;		/* Crawford and Fettiplace c Value */
+	Float	releaseFraction;	/* Release fraction. */
+	Float	refillFraction;		/* Replenishment fraction. */
+	Float	spontRate;			/* desired spontaneous firing rate. */
+	Float	maxSpikeRate;		/* maximum possible firing rate. */
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	vmin, k, l, rateScale;
+	Float	vmin, k, l, rateScale;
 	CookeHCVars	*hCChannels;
 
 } CookeHC, *CookeHCPtr;
@@ -82,8 +80,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHC_Cooke91(EarObjectPtr data);
 
-BOOLN	CheckPars_IHC_Cooke91(void);
-
 BOOLN	Free_IHC_Cooke91(void);
 
 void	FreeProcessVariables_IHC_Cooke91(void);
@@ -96,26 +92,21 @@ BOOLN	InitProcessVariables_IHC_Cooke91(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Cooke91(void);
 
-BOOLN	ReadPars_IHC_Cooke91(WChar *fileName);
-
 BOOLN	RunModel_IHC_Cooke91(EarObjectPtr data);
 
-BOOLN	SetCrawfordConst_IHC_Cooke91(double theCrawfordConst);
+BOOLN	SetCrawfordConst_IHC_Cooke91(Float theCrawfordConst);
 
-BOOLN	SetMaxSpikeRate_IHC_Cooke91(double theMaxSpikeRate);
+BOOLN	SetMaxSpikeRate_IHC_Cooke91(Float theMaxSpikeRate);
 
 BOOLN	InitModule_IHC_Cooke91(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHC_Cooke91(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Cooke91(double crawfordConst, double releaseFraction,
-		  double refillFraction, double spontRate, double maxSpikeRate);
+BOOLN	SetRefillFraction_IHC_Cooke91(Float theRefillFraction);
 
-BOOLN	SetRefillFraction_IHC_Cooke91(double theRefillFraction);
+BOOLN	SetReleaseFraction_IHC_Cooke91(Float theReleaseFraction);
 
-BOOLN	SetReleaseFraction_IHC_Cooke91(double theReleaseFraction);
-
-BOOLN	SetSpontRate_IHC_Cooke91(double theRecoveryRate);
+BOOLN	SetSpontRate_IHC_Cooke91(Float theRecoveryRate);
 
 BOOLN	SetUniParList_IHC_Cooke91(void);
 

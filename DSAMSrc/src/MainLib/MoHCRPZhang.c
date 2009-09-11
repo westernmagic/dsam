@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		01 Aug 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -97,12 +97,6 @@ Init_IHCRP_Zhang(ParameterSpecifier parSpec)
 	}
 	iHCRPZhangPtr->parSpec = parSpec;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
-	iHCRPZhangPtr->a0Flag = TRUE;
-	iHCRPZhangPtr->bFlag = TRUE;
-	iHCRPZhangPtr->cFlag = TRUE;
-	iHCRPZhangPtr->dFlag = TRUE;
-	iHCRPZhangPtr->cutFlag = TRUE;
-	iHCRPZhangPtr->kFlag = TRUE;
 	iHCRPZhangPtr->a0 = 0.1;
 	iHCRPZhangPtr->b = 2000.0;
 	iHCRPZhangPtr->c = 1.74;
@@ -208,7 +202,7 @@ GetUniParListPtr_IHCRP_Zhang(void)
  */
 
 BOOLN
-SetA0_IHCRP_Zhang(double theA0)
+SetA0_IHCRP_Zhang(Float theA0)
 {
 	static const WChar	*funcName = wxT("SetA0_IHCRP_Zhang");
 
@@ -217,7 +211,6 @@ SetA0_IHCRP_Zhang(double theA0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->a0Flag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->a0 = theA0;
 	return(TRUE);
@@ -233,7 +226,7 @@ SetA0_IHCRP_Zhang(double theA0)
  */
 
 BOOLN
-SetB_IHCRP_Zhang(double theB)
+SetB_IHCRP_Zhang(Float theB)
 {
 	static const WChar	*funcName = wxT("SetB_IHCRP_Zhang");
 
@@ -242,7 +235,6 @@ SetB_IHCRP_Zhang(double theB)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->bFlag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->b = theB;
 	return(TRUE);
@@ -258,7 +250,7 @@ SetB_IHCRP_Zhang(double theB)
  */
 
 BOOLN
-SetC_IHCRP_Zhang(double theC)
+SetC_IHCRP_Zhang(Float theC)
 {
 	static const WChar	*funcName = wxT("SetC_IHCRP_Zhang");
 
@@ -267,7 +259,6 @@ SetC_IHCRP_Zhang(double theC)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->cFlag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->c = theC;
 	return(TRUE);
@@ -283,7 +274,7 @@ SetC_IHCRP_Zhang(double theC)
  */
 
 BOOLN
-SetD_IHCRP_Zhang(double theD)
+SetD_IHCRP_Zhang(Float theD)
 {
 	static const WChar	*funcName = wxT("SetD_IHCRP_Zhang");
 
@@ -292,7 +283,6 @@ SetD_IHCRP_Zhang(double theD)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->dFlag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->d = theD;
 	return(TRUE);
@@ -308,7 +298,7 @@ SetD_IHCRP_Zhang(double theD)
  */
 
 BOOLN
-SetCut_IHCRP_Zhang(double theCut)
+SetCut_IHCRP_Zhang(Float theCut)
 {
 	static const WChar	*funcName = wxT("SetCut_IHCRP_Zhang");
 
@@ -317,7 +307,6 @@ SetCut_IHCRP_Zhang(double theCut)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->cutFlag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->cut = theCut;
 	return(TRUE);
@@ -342,59 +331,9 @@ SetK_IHCRP_Zhang(int theK)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iHCRPZhangPtr->kFlag = TRUE;
 	iHCRPZhangPtr->updateProcessVariablesFlag = TRUE;
 	iHCRPZhangPtr->k = theK;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHCRP_Zhang(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHCRP_Zhang");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (iHCRPZhangPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!iHCRPZhangPtr->a0Flag) {
-		NotifyError(wxT("%s: a0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iHCRPZhangPtr->bFlag) {
-		NotifyError(wxT("%s: b variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iHCRPZhangPtr->cFlag) {
-		NotifyError(wxT("%s: c variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iHCRPZhangPtr->dFlag) {
-		NotifyError(wxT("%s: d variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iHCRPZhangPtr->cutFlag) {
-		NotifyError(wxT("%s: cut variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iHCRPZhangPtr->kFlag) {
-		NotifyError(wxT("%s: k variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -410,11 +349,6 @@ PrintPars_IHCRP_Zhang(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHCRP_Zhang");
 
-	if (!CheckPars_IHCRP_Zhang()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Zhang et al. IHCRP Module Parameters:-\n"));
 	DPrint(wxT("\ta0 = %g,"), iHCRPZhangPtr->a0);
 	DPrint(wxT("\tb = %g,"), iHCRPZhangPtr->b);
@@ -470,7 +404,6 @@ InitModule_IHCRP_Zhang(ModulePtr theModule)
 	}
 	theModule->parsPtr = iHCRPZhangPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHCRP_Zhang;
 	theModule->Free = Free_IHCRP_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Zhang;
 	theModule->PrintPars = PrintPars_IHCRP_Zhang;
@@ -517,11 +450,11 @@ CheckData_IHCRP_Zhang(EarObjectPtr data)
  */
 
 void
-RunIHCNL2_IHCRP_Zhang(TNonLinear* p, const double *in, double *out,
+RunIHCNL2_IHCRP_Zhang(TNonLinear* p, const Float *in, Float *out,
   const int length)
 {
   ChanLen	register i;
-  register double	temp,dtemp,tempA;
+  register Float	temp,dtemp,tempA;
 
 	for (i = 0; i < (ChanLen) length; i++) {
 		/*/begin Vsp -> Vihc */
@@ -624,8 +557,6 @@ RunModel_IHCRP_Zhang(EarObjectPtr data)
 	IHCRPZhangPtr	p = iHCRPZhangPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHCRP_Zhang())
-			return(FALSE);
 		if (!CheckData_IHCRP_Zhang(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

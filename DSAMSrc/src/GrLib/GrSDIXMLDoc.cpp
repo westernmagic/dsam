@@ -5,7 +5,7 @@
  * Comments:	Contains a revision of the wxExpr code for saving the SDI.
  * Author:		L.P.O'Mard
  * Created:		14 Feb 2005
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2005, University of Essex
  *
  **********************/
@@ -269,7 +269,7 @@ SDIXMLDocument::GetLineShapeInfo(wxXmlNode *myElement)
 				else if ((prop->GetName() == SHAPE_XML_TO_ATTRIBUTE) &&
 				  !prop->GetPropVal(&toId))
 						ok = false;
-	
+
 			wxLineShape *lineShape = (wxLineShape *) shape;
 			if ((fromId >= 0) && (toId >= 0)) {
 				wxShape *from = FindShape(fromId);

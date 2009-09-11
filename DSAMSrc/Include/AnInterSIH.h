@@ -15,7 +15,7 @@
  *				values.  It is not free'd until the module is free'd.
  * Author:		L. P. O'Mard
  * Created:		19 Mar 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -47,11 +47,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	orderFlag, eventThresholdFlag, maxIntervalFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		order;
-	double	eventThreshold;
-	double	maxInterval;
+	Float	eventThreshold;
+	Float	maxInterval;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -81,8 +80,6 @@ BOOLN	Calc_Analysis_ISIH(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_ISIH(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_ISIH(void);
-
 BOOLN	Free_Analysis_ISIH(void);
 
 void	FreeProcessVariables_Analysis_ISIH(void);
@@ -95,22 +92,17 @@ BOOLN	InitProcessVariables_Analysis_ISIH(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_ISIH(void);
 
-BOOLN	ReadPars_Analysis_ISIH(WChar *fileName);
-
 void	ResetProcess_Analysis_ISIH(EarObjectPtr data);
 
-BOOLN	SetEventThreshold_Analysis_ISIH(double theEventThreshold);
+BOOLN	SetEventThreshold_Analysis_ISIH(Float theEventThreshold);
 
-BOOLN	SetMaxInterval_Analysis_ISIH(double theMaxInterval);
+BOOLN	SetMaxInterval_Analysis_ISIH(Float theMaxInterval);
 
 BOOLN	InitModule_Analysis_ISIH(ModulePtr theModule);
 
 BOOLN	SetOrder_Analysis_ISIH(int theOrder);
 
 BOOLN	SetParsPointer_Analysis_ISIH(ModulePtr theModule);
-
-BOOLN	SetPars_Analysis_ISIH(int order, double eventThreshold,
-		  double maxInterval);
 
 BOOLN	SetUniParList_Analysis_ISIH(void);
 

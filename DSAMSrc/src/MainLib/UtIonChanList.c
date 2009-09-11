@@ -820,15 +820,15 @@ ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp)
 	static const WChar *funcName = wxT("ReadVoltageTable_IonChanList");
 	BOOLN ok = TRUE;
 	int i;
-	double v, dV;
+	Float v, dV;
 
 	for (i = 0; ok && (i < theIC->numTableEntries); i++) {
 		ok = GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf"), &v,
 		  &theIC->table[i].yY, &theIC->table[i].ty, &theIC->table[i].zZ,
 		  &theIC->table[i].tz);
 
-		if (ok && ((fabs(theIC->table[i].ty) < DBL_EPSILON) || (fabs(
-		  theIC->table[i].ty) < DBL_EPSILON))) {
+		if (ok && ((fabs(theIC->table[i].ty) < DSAM_EPSILON) || (fabs(
+		  theIC->table[i].ty) < DSAM_EPSILON))) {
 			NotifyError(wxT("%s: The tau values must be greater than zero ")
 			  wxT("(entry %d)."), funcName, i);
 			ok = FALSE;
@@ -836,7 +836,7 @@ ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp)
 		if (ok)
 			switch (i) {
 			case 0:
-				if (fabs(theIC->minVoltage - v) > DBL_EPSILON) {
+				if (fabs(theIC->minVoltage - v) > DSAM_EPSILON) {
 					NotifyError(wxT("%s: Incorrect minimum voltage for cell ")
 					  wxT("(%g mV)."), funcName, MILLI(v));
 					ok = FALSE;
@@ -844,14 +844,14 @@ ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp)
 				break;
 			case 1:
 				dV = v - theIC->minVoltage;
-				if (fabs(theIC->dV - dV) > DBL_EPSILON) {
+				if (fabs(theIC->dV - dV) > DSAM_EPSILON) {
 					NotifyError(wxT("%s: Incorrect voltage step for cell (%g ")
 					  wxT("mV)."), funcName, MILLI(dV));
 					ok = FALSE;
 				}
 				break;
 			default:
-				if (fabs(theIC->minVoltage + i * theIC->dV - v) > DBL_EPSILON) {
+				if (fabs(theIC->minVoltage + i * theIC->dV - v) > DSAM_EPSILON) {
 					NotifyError(wxT("%s: Table entry voltage out of sequence: ")
 					  wxT("entry %d = %g mV."), funcName, i, MILLI(v));
 					ok = FALSE;
@@ -876,18 +876,18 @@ ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp)
  * the equation, i.e. mV = -f or mV = -k.
  */
 
-double
-HHuxleyAlpha_IonChanList(double a, double b, double c,
-  double d, double e, double f, double g, double h,
-  double i, double j, double k, double mV, double mDV,
-  double temperature)
+Float
+HHuxleyAlpha_IonChanList(Float a, Float b, Float c,
+  Float d, Float e, Float f, Float g, Float h,
+  Float i, Float j, Float k, Float mV, Float mDV,
+  Float temperature)
 {
-	double previous, next;
+	Float previous, next;
 
 	if (HHUXLEY_ALL_ZERO_PARS(a, b, c, d, e, f, g, h, i, j, k))
 		return (1.0e-3);
-	if ((fabs(mV + f) > DBL_EPSILON) && (fabs(mV + k)
-	  > DBL_EPSILON))
+	if ((fabs(mV + f) > DSAM_EPSILON) && (fabs(mV + k)
+	  > DSAM_EPSILON))
 		return (a * HHUXLEY_TF(b, temperature) * (c * mV + d)
 		  / (1 + e * exp((mV + f) / g)) + h * HHUXLEY_TF(
 		  i, temperature) / (1 + j * exp(mV + k)));
@@ -910,17 +910,17 @@ HHuxleyAlpha_IonChanList(double a, double b, double c,
  * the equation, i.e. mV = -j.
  */
 
-double
-HHuxleyBeta_IonChanList(double a, double b, double c,
-  double d, double e, double f, double g, double h,
-  double i, double j, double k, double mV, double mDV,
-  double temperature)
+Float
+HHuxleyBeta_IonChanList(Float a, Float b, Float c,
+  Float d, Float e, Float f, Float g, Float h,
+  Float i, Float j, Float k, Float mV, Float mDV,
+  Float temperature)
 {
-	double previous, next;
+	Float previous, next;
 
 	if (HHUXLEY_ALL_ZERO_PARS(a, b, c, d, e, f, g, h, i, j, k))
 		return (0.0);
-	if (fabs(mV + j) > DBL_EPSILON)
+	if (fabs(mV + j) > DSAM_EPSILON)
 		return (a * HHUXLEY_TF(b, temperature) * exp((mV + c)
 		  / d) + e * HHUXLEY_TF(f, temperature) * (g * mV
 		  + h) / (1 + i * exp((mV + j) / k)));
@@ -988,7 +988,7 @@ GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp) {
 
 void
 SetTableEntry_IonChanList(ICTableEntryPtr p, int index,
-  double activation, double tau)
+  Float activation, Float tau)
 {
 	switch (index) {
 	case 0:
@@ -1024,7 +1024,7 @@ GenerateHHuxley_IonChanList(IonChannelPtr theIC)
 {
 	/* static const WChar	*funcName = wxT("GenerateHHuxley_IonChanList"); */
 	int j, k;
-	double mV, mDV, alpha, beta, activation, tau;
+	Float mV, mDV, alpha, beta, activation, tau;
 	ICHHuxleyParsPtr p;
 
 	p = &theIC->hHuxley;
@@ -1110,7 +1110,7 @@ GenerateBoltzmann_IonChanList(IonChannelPtr theIC)
 {
 	/* static const WChar	*funcName = wxT("GenerateBoltzmann_IonChanList"); */
 	int j, k;
-	double v, activation, tau, kelvinTemp;
+	Float v, activation, tau, kelvinTemp;
 	ICBoltzmannParsPtr p;
 
 	kelvinTemp = theIC->temperature - ABSOLUTE_ZERO_DEGREES;
@@ -1152,8 +1152,8 @@ ReadGeneralPars_IonChanList(FILE *fp,
 	BOOLN ok = TRUE;
 	WChar printTablesModeName[SMALL_STRING];
 	int numChannels;
-	double baseLeakageCond, leakagePot, temperature, leakageCondQ10;
-	double minV, maxV, dV;
+	Float baseLeakageCond, leakagePot, temperature, leakageCondQ10;
+	Float minV, maxV, dV;
 
 	if (!GetPars_ParFile(fp, wxT("%s"), printTablesModeName))
 		ok = FALSE;
@@ -1218,8 +1218,8 @@ ReadGeneralPars_IonChanList(FILE *fp,
 
 BOOLN
 ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode, WChar *fileName,
-  WChar *description, WChar *enabled, double *equilibriumPot,
-  double *baseMaxConductance, double *activationExponent)
+  WChar *description, WChar *enabled, Float *equilibriumPot,
+  Float *baseMaxConductance, Float *activationExponent)
 {
 	static const WChar	*funcName = wxT("ReadICGeneralPars_IonChanList");
 	BOOLN	ok = TRUE;
@@ -1285,8 +1285,8 @@ SetICGeneralParsFromICList_IonChanList(
 
 BOOLN
 SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
-  const WChar *description, WChar *enabled, double equilibriumPot,
-  double baseMaxConductance, double activationExponent)
+  const WChar *description, WChar *enabled, Float equilibriumPot,
+  Float baseMaxConductance, Float activationExponent)
 {
 	static const WChar	*funcName = wxT("SetICGeneralPars_IonChanList");
 	BOOLN	ok = TRUE;
@@ -1324,7 +1324,7 @@ ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
 	BOOLN	ok = TRUE;
 	WChar	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
 	WChar	enabled[SMALL_STRING], description[MAXLINE];
-	double	equilibriumPot, baseMaxConductance, activationExponent;
+	Float	equilibriumPot, baseMaxConductance, activationExponent;
 	ICModeSpecifier mode;
 
 	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
@@ -1397,7 +1397,7 @@ SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 	DynaListPtr		node;
 	IonChannelPtr	iC;
 
-	if (theICs->dV <= DBL_EPSILON) {
+	if (theICs->dV <= DSAM_EPSILON) {
 		NotifyError(wxT("%s: the voltage step must be greater than zero."),
 		  funcName);
 		return(FALSE);
@@ -1497,11 +1497,11 @@ GenerateDefault_IonChanList(void)
 	ICBoltzmannParsPtr	p;
 	struct iC {
 		WChar *	desc;
-		double	equilPot;
-		double	baseMax;
-		double	actExp;
-		double	condQ10;
-		double	currPars[2][3];
+		Float	equilPot;
+		Float	baseMax;
+		Float	actExp;
+		Float	condQ10;
+		Float	currPars[2][3];
 	} iCs[] = {
 		{ wxT("Na_Conner"), 0.055, 300e-9, 1.0, 2.5, {{-0.0191, 3.7, 0.10e-3},
 		  {-0.053, -3.6, 0.50e-3}}},
@@ -1579,7 +1579,7 @@ GenerateRothman_IonChanList(IonChannelPtr theIC)
 {
 	/* static const WChar	*funcName = wxT("GenerateRothman_IonChanList"); */
 	int j, k;
-	double mV, mDV, tau, activation, tauQ10;
+	Float mV, mDV, tau, activation, tauQ10;
 	ICHHuxleyParsPtr p;
 
 	p = &theIC->hHuxley;
@@ -1681,8 +1681,8 @@ PrepareIonChannels_IonChanList(IonChanListPtr theICs)
  * function, but it is not used.
  */
 
-double
-Pow1Func_IonChanList(double x, double dummy)
+Float
+Pow1Func_IonChanList(Float x, Float dummy)
 {
 	return (x);
 
@@ -1696,8 +1696,8 @@ Pow1Func_IonChanList(double x, double dummy)
  * function, but it is not used.
  */
 
-double
-Pow2Func_IonChanList(double x, double dummy)
+Float
+Pow2Func_IonChanList(Float x, Float dummy)
 {
 	return (x * x);
 
@@ -1711,8 +1711,8 @@ Pow2Func_IonChanList(double x, double dummy)
  * function, but it is not used.
  */
 
-double
-Pow3Func_IonChanList(double x, double dummy)
+Float
+Pow3Func_IonChanList(Float x, Float dummy)
 {
 	return (x * x * x);
 
@@ -1726,8 +1726,8 @@ Pow3Func_IonChanList(double x, double dummy)
  * function, but it is not used.
  */
 
-double
-Pow4Func_IonChanList(double x, double dummy)
+Float
+Pow4Func_IonChanList(Float x, Float dummy)
 {
 	return (x * x * x * x);
 
@@ -1780,7 +1780,7 @@ ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC)
 	static const WChar *funcName = wxT("ResetIonChannel_IonChanList");
 	BOOLN ok = TRUE;
 	WChar enabled[SMALL_STRING], description[MAXLINE];
-	double equilibriumPot, baseMaxConductance, activationExponent;
+	Float equilibriumPot, baseMaxConductance, activationExponent;
 	FILE *fp = NULL;
 
 	if (!CheckInitIC_IonChanList(theIC, funcName))
@@ -1880,7 +1880,7 @@ CheckInitIC_IonChanList(IonChannelPtr theIC, const WChar *callingFunction)
  */
 
 ICTableEntryPtr
-GetTableEntry_IonChanList(IonChannelPtr theIC, double voltage)
+GetTableEntry_IonChanList(IonChannelPtr theIC, Float voltage)
 {
 	static const WChar *funcName = wxT("GetTableEntry_IonChanList");
 	int index;
@@ -1930,7 +1930,7 @@ SetNumChannels_IonChanList(IonChanListPtr theICs, int numChannels)
  */
 
 BOOLN
-SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
+SetTemperature_IonChanList(IonChanListPtr theICs, Float theTemperature)
 {
 	static const WChar *funcName = wxT("SetTemperature_IonChanList");
 
@@ -1949,7 +1949,7 @@ SetTemperature_IonChanList(IonChanListPtr theICs, double theTemperature)
  */
 
 BOOLN
-SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, double theLeakageCondQ10)
+SetLeakageCondQ10_IonChanList(IonChanListPtr theICs, Float theLeakageCondQ10)
 {
 	static const WChar *funcName = wxT("SetLeakageCondQ10_IonChanList");
 
@@ -1986,7 +1986,7 @@ SetPrintTablesMode_IonChanList(IonChanListPtr theICs, WChar *modeName)
  */
 
 BOOLN
-SetBaseLeakageCond_IonChanList(IonChanListPtr theICs, double baseLeakageCond)
+SetBaseLeakageCond_IonChanList(IonChanListPtr theICs, Float baseLeakageCond)
 {
 	static const WChar *funcName = wxT("SetBaseLeakageCond_IonChanList");
 
@@ -2004,7 +2004,7 @@ SetBaseLeakageCond_IonChanList(IonChanListPtr theICs, double baseLeakageCond)
  */
 
 BOOLN
-SetLeakagePot_IonChanList(IonChanListPtr theICs, double leakagePot)
+SetLeakagePot_IonChanList(IonChanListPtr theICs, Float leakagePot)
 {
 	static const WChar *funcName = wxT("SetBaseLeakageCond_IonChanList");
 
@@ -2022,7 +2022,7 @@ SetLeakagePot_IonChanList(IonChanListPtr theICs, double leakagePot)
  */
 
 BOOLN
-SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage)
+SetMinVoltage_IonChanList(IonChanListPtr theICs, Float theMinVoltage)
 {
 	static const WChar *funcName = wxT("SetMinVoltage_IonChanList");
 
@@ -2041,7 +2041,7 @@ SetMinVoltage_IonChanList(IonChanListPtr theICs, double theMinVoltage)
  */
 
 BOOLN
-SetMaxVoltage_IonChanList(IonChanListPtr theICs, double theMaxVoltage)
+SetMaxVoltage_IonChanList(IonChanListPtr theICs, Float theMaxVoltage)
 {
 	static const WChar *funcName = wxT("SetMaxVoltage_IonChanList");
 
@@ -2060,7 +2060,7 @@ SetMaxVoltage_IonChanList(IonChanListPtr theICs, double theMaxVoltage)
  */
 
 BOOLN
-SetVoltageStep_IonChanList(IonChanListPtr theICs, double theVoltageStep)
+SetVoltageStep_IonChanList(IonChanListPtr theICs, Float theVoltageStep)
 {
 	static const WChar *funcName = wxT("SetVoltageStep_IonChanList");
 
@@ -2156,7 +2156,7 @@ SetICDescription_IonChanList(IonChannelPtr theIC, const WChar *theDescription)
  */
 
 BOOLN
-SetICEquilibriumPot_IonChanList(IonChannelPtr theIC, double theEquilibriumPot)
+SetICEquilibriumPot_IonChanList(IonChannelPtr theIC, Float theEquilibriumPot)
 {
 	static const WChar *funcName = wxT("SetICEquilibriumPot_IonChanList");
 
@@ -2177,7 +2177,7 @@ SetICEquilibriumPot_IonChanList(IonChannelPtr theIC, double theEquilibriumPot)
 
 BOOLN
 SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
-  double theBaseMaxConductance)
+  Float theBaseMaxConductance)
 {
 	static const WChar *funcName = wxT("SetICBaseMaxConductance_IonChanList");
 
@@ -2207,7 +2207,7 @@ SetICBaseMaxConductance_IonChanList(IonChannelPtr theIC,
 
 BOOLN
 SetICConductanceQ10_IonChanList(IonChannelPtr theIC,
-  double theConductanceQ10)
+  Float theConductanceQ10)
 {
 	static const WChar *funcName = wxT("SetICConductanceQ10_IonChanList");
 
@@ -2228,7 +2228,7 @@ SetICConductanceQ10_IonChanList(IonChannelPtr theIC,
 
 BOOLN
 SetICActivationExponent_IonChanList(IonChannelPtr theIC,
-  double theActivationExponent)
+  Float theActivationExponent)
 {
 	static const WChar *funcName = wxT("SetICActivationExponent_IonChanList");
 
@@ -2249,7 +2249,7 @@ SetICActivationExponent_IonChanList(IonChannelPtr theIC,
 
 BOOLN
 SetICBoltzmannHalfMaxV_IonChanList(IonChannelPtr theIC, int index,
-  double theHalfMaxV)
+  Float theHalfMaxV)
 {
 	static const WChar *funcName = wxT("SetICBoltzmannHalfMaxV_IonChanList");
 
@@ -2269,7 +2269,7 @@ SetICBoltzmannHalfMaxV_IonChanList(IonChannelPtr theIC, int index,
  */
 
 BOOLN
-SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index, double theZ)
+SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index, Float theZ)
 {
 	static const WChar *funcName = wxT("SetICBoltzmannZ_IonChanList");
 
@@ -2289,7 +2289,7 @@ SetICBoltzmannZ_IonChanList(IonChannelPtr theIC, int index, double theZ)
  */
 
 BOOLN
-SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index, double theTau)
+SetICBoltzmannTau_IonChanList(IonChannelPtr theIC, int index, Float theTau)
 {
 	static const WChar *funcName = wxT("SetICBoltzmannTau_IonChanList");
 
@@ -2362,7 +2362,7 @@ SetICNumGates_IonChanList(IonChannelPtr theIC, int theNumGates)
  */
 
 BOOLN
-SetICHHFunc1A_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1A_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1A_IonChanList");
 
@@ -2382,7 +2382,7 @@ SetICHHFunc1A_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1B_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1B_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1B_IonChanList");
 
@@ -2402,7 +2402,7 @@ SetICHHFunc1B_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1C_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1C_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1C_IonChanList");
 
@@ -2422,7 +2422,7 @@ SetICHHFunc1C_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1D_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1D_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1D_IonChanList");
 
@@ -2443,7 +2443,7 @@ SetICHHFunc1D_IonChanList(IonChannelPtr theIC, int index, double value)
 
 BOOLN
 SetICHHFunc1E_IonChanList(IonChannelPtr theIC, int index,
-		double value)
+		Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1E_IonChanList");
 
@@ -2463,7 +2463,7 @@ SetICHHFunc1E_IonChanList(IonChannelPtr theIC, int index,
  */
 
 BOOLN
-SetICHHFunc1F_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1F_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1F_IonChanList");
 
@@ -2483,7 +2483,7 @@ SetICHHFunc1F_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1G_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1G_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1G_IonChanList");
 
@@ -2503,7 +2503,7 @@ SetICHHFunc1G_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1H_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1H_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1H_IonChanList");
 
@@ -2523,7 +2523,7 @@ SetICHHFunc1H_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1I_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1I_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1I_IonChanList");
 
@@ -2543,7 +2543,7 @@ SetICHHFunc1I_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1J_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1J_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1J_IonChanList");
 
@@ -2563,7 +2563,7 @@ SetICHHFunc1J_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc1K_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc1K_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc1K_IonChanList");
 
@@ -2583,7 +2583,7 @@ SetICHHFunc1K_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2A_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2A_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2A_IonChanList");
 
@@ -2603,7 +2603,7 @@ SetICHHFunc2A_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2B_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2B_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2B_IonChanList");
 
@@ -2623,7 +2623,7 @@ SetICHHFunc2B_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2C_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2C_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2C_IonChanList");
 
@@ -2643,7 +2643,7 @@ SetICHHFunc2C_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2D_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2D_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2D_IonChanList");
 
@@ -2663,7 +2663,7 @@ SetICHHFunc2D_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2E_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2E_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2E_IonChanList");
 
@@ -2683,7 +2683,7 @@ SetICHHFunc2E_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2F_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2F_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2F_IonChanList");
 
@@ -2703,7 +2703,7 @@ SetICHHFunc2F_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2G_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2G_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2G_IonChanList");
 
@@ -2723,7 +2723,7 @@ SetICHHFunc2G_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2H_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2H_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2H_IonChanList");
 
@@ -2743,7 +2743,7 @@ SetICHHFunc2H_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2I_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2I_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2I_IonChanList");
 
@@ -2763,7 +2763,7 @@ SetICHHFunc2I_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2J_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2J_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2J_IonChanList");
 
@@ -2783,7 +2783,7 @@ SetICHHFunc2J_IonChanList(IonChannelPtr theIC, int index, double value)
  */
 
 BOOLN
-SetICHHFunc2K_IonChanList(IonChannelPtr theIC, int index, double value)
+SetICHHFunc2K_IonChanList(IonChannelPtr theIC, int index, Float value)
 {
 	static const WChar *funcName = wxT("SetICHHFunc2K_IonChanList");
 

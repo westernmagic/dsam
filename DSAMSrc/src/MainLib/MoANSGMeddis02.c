@@ -245,7 +245,6 @@ SetDiagnosticMode_ANSpikeGen_Meddis02(WChar * theDiagnosticMode)
 {
 	static const WChar	*funcName = wxT(
 	  "SetDiagnosticMode_ANSpikeGen_Meddis02");
-	int		specifier;
 
 	if (meddis02SGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
@@ -320,7 +319,7 @@ SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres)
  */
 
 BOOLN
-SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration)
+SetPulseDuration_ANSpikeGen_Meddis02(Float thePulseDuration)
 {
 	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Meddis02");
 
@@ -344,7 +343,7 @@ SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration)
  */
 
 BOOLN
-SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude)
+SetPulseMagnitude_ANSpikeGen_Meddis02(Float thePulseMagnitude)
 {
 	static const WChar	*funcName = wxT(
 	  "SetPulseMagnitude_ANSpikeGen_Meddis02");
@@ -369,7 +368,7 @@ SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude)
  */
 
 BOOLN
-SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod)
+SetRefractoryPeriod_ANSpikeGen_Meddis02(Float theRefractoryPeriod)
 {
 	static const WChar	*funcName = wxT(
 	  "SetRefractoryPeriod_ANSpikeGen_Meddis02");
@@ -399,7 +398,7 @@ SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod)
  */
 
 BOOLN
-SetRecoveryTau_ANSpikeGen_Meddis02(double theRecoveryTau)
+SetRecoveryTau_ANSpikeGen_Meddis02(Float theRecoveryTau)
 {
 	static const WChar	*funcName = wxT("SetRecoveryTau_ANSpikeGen_Meddis02");
 
@@ -583,7 +582,7 @@ void
 ResetProcess_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
 	int		i, chan;
-	double	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
+	Float	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
 	Meddis02SGPtr	p = meddis02SGPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
@@ -630,14 +629,14 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->timer = (double **) calloc(p->numChannels, sizeof(
-			  double *))) == NULL) {
+			if ((p->timer = (Float **) calloc(p->numChannels, sizeof(
+			  Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (double **) calloc(p->numChannels,
-			  sizeof(double *))) == NULL) {
+			if ((p->remainingPulseTime = (Float **) calloc(p->numChannels,
+			  sizeof(Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
@@ -645,14 +644,14 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 			SetFibres_ANSGDist(p->numFibres2, p->distribution,
 			  outSignal->info.cFArray, p->numChannels);
 			for (i = 0; i < p->numChannels; i++) {
-				if ((p->timer[i] = (double *) calloc(p->numFibres2[i], sizeof(
-				  double))) == NULL) {
+				if ((p->timer[i] = (Float *) calloc(p->numFibres2[i], sizeof(
+				  Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for timer array."),
 					  funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (double *) calloc(p->numFibres2[i],
-				  sizeof(double))) == NULL) {
+				if ((p->remainingPulseTime[i] = (Float *) calloc(p->numFibres2[i],
+				  sizeof(Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 					  wxT("array."), funcName);
 			 		return(FALSE);
@@ -722,9 +721,9 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_ANSpikeGen_Meddis02");
 	register ChanData	 *inPtr, *outPtr;
-	register	double		*timerPtr, *remainingPulseTimePtr;
+	register	Float		*timerPtr, *remainingPulseTimePtr;
 	int		i, chan;
-	double	spikeProb, excessTime;
+	Float	spikeProb, excessTime;
 	ChanLen	j;
 	SignalDataPtr	outSignal;
 	Meddis02SGPtr	p = meddis02SGPtr;

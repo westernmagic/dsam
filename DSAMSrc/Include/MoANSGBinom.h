@@ -57,9 +57,9 @@ typedef struct {
 	int		diagnosticMode;
 	int		numFibres;
 	long	ranSeed;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
 	ParArrayPtr	distribution;
 
 	/* Private members */
@@ -69,7 +69,7 @@ typedef struct {
 	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
-	double	*lastOutput;
+	Float	*lastOutput;
 	ChanLen	*remainingPulseIndex, pulseDurationIndex;
 	EarObjectPtr	refractAdjData;
 
@@ -107,8 +107,6 @@ BOOLN	InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data);
 
 BOOLN	PrintPars_ANSpikeGen_Binomial(void);
 
-BOOLN	ReadPars_ANSpikeGen_Binomial(WChar *fileName);
-
 BOOLN	RunModel_ANSpikeGen_Binomial(EarObjectPtr data);
 
 BOOLN	SetDiagnosticMode_ANSpikeGen_Binomial(WChar * theDiagnosticMode);
@@ -119,17 +117,13 @@ BOOLN	SetNumFibres_ANSpikeGen_Binomial(int theNumFibres);
 
 BOOLN	SetParsPointer_ANSpikeGen_Binomial(ModulePtr theModule);
 
-BOOLN	SetPars_ANSpikeGen_Binomial(int numFibres, long ranSeed,
-		  double pulseDuration, double pulseMagnitude,
-		  double refractoryPeriod);
+BOOLN	SetPulseDuration_ANSpikeGen_Binomial(Float thePulseDuration);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Binomial(double thePulseDuration);
-
-BOOLN	SetPulseMagnitude_ANSpikeGen_Binomial(double thePulseMagnitude);
+BOOLN	SetPulseMagnitude_ANSpikeGen_Binomial(Float thePulseMagnitude);
 
 BOOLN	SetRanSeed_ANSpikeGen_Binomial(long theRanSeed);
 
-BOOLN	SetRefractoryPeriod_ANSpikeGen_Binomial(double theRefractoryPeriod);
+BOOLN	SetRefractoryPeriod_ANSpikeGen_Binomial(Float theRefractoryPeriod);
 
 BOOLN	SetUniParList_ANSpikeGen_Binomial(void);
 

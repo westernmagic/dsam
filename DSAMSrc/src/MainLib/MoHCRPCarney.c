@@ -95,13 +95,6 @@ Init_IHCRP_Carney(ParameterSpecifier parSpec)
 	}
 	carneyRPPtr->parSpec = parSpec;
 	carneyRPPtr->updateProcessVariablesFlag = TRUE;
-	carneyRPPtr->cutOffFrequencyFlag = TRUE;
-	carneyRPPtr->hCOperatingPointFlag = TRUE;
-	carneyRPPtr->asymmetricalBiasFlag = TRUE;
-	carneyRPPtr->maxHCVoltageFlag = TRUE;
-	carneyRPPtr->referencePotFlag = TRUE;
-	carneyRPPtr->waveDelayCoeffFlag = TRUE;
-	carneyRPPtr->waveDelayLengthFlag = TRUE;
 	carneyRPPtr->cutOffFrequency = 1100.0;
 	carneyRPPtr->hCOperatingPoint = 1000.0;
 	carneyRPPtr->asymmetricalBias = 0.462;
@@ -205,42 +198,6 @@ GetUniParListPtr_IHCRP_Carney(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_IHCRP_Carney(double cutOffFrequency, double HCOperatingPoint,
-  double asymmetricalBias, double maxHCVoltage, double referencePot,
-  double waveDelayCoeff, double waveDelayLength)
-{
-	static const WChar	*funcName = wxT("SetPars_IHCRP_Carney");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetCutOffFrequency_IHCRP_Carney(cutOffFrequency))
-		ok = FALSE;
-	if (!SetHCOperatingPoint_IHCRP_Carney(HCOperatingPoint))
-		ok = FALSE;
-	if (!SetAsymmetricalBias_IHCRP_Carney(asymmetricalBias))
-		ok = FALSE;
-	if (!SetMaxHCVoltage_IHCRP_Carney(maxHCVoltage))
-		ok = FALSE;
-	if (!SetReferencePot_IHCRP_Carney(referencePot))
-		ok = FALSE;
-	if (!SetWaveDelayCoeff_IHCRP_Carney(waveDelayCoeff))
-		ok = FALSE;
-	if (!SetWaveDelayLength_IHCRP_Carney(waveDelayLength))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetCutOffFrequency ****************************/
 
 /*
@@ -250,7 +207,7 @@ SetPars_IHCRP_Carney(double cutOffFrequency, double HCOperatingPoint,
  */
 
 BOOLN
-SetCutOffFrequency_IHCRP_Carney(double theCutOffFrequency)
+SetCutOffFrequency_IHCRP_Carney(Float theCutOffFrequency)
 {
 	static const WChar	*funcName = wxT("SetCutOffFrequency_IHCRP_Carney");
 
@@ -259,7 +216,6 @@ SetCutOffFrequency_IHCRP_Carney(double theCutOffFrequency)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->cutOffFrequencyFlag = TRUE;
 	carneyRPPtr->cutOffFrequency = theCutOffFrequency;
 	return(TRUE);
 
@@ -274,7 +230,7 @@ SetCutOffFrequency_IHCRP_Carney(double theCutOffFrequency)
  */
 
 BOOLN
-SetHCOperatingPoint_IHCRP_Carney(double theHCOperatingPoint)
+SetHCOperatingPoint_IHCRP_Carney(Float theHCOperatingPoint)
 {
 	static const WChar	*funcName = wxT("SetHCOperatingPoint_IHCRP_Carney");
 
@@ -283,7 +239,6 @@ SetHCOperatingPoint_IHCRP_Carney(double theHCOperatingPoint)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->hCOperatingPointFlag = TRUE;
 	carneyRPPtr->hCOperatingPoint = theHCOperatingPoint;
 	return(TRUE);
 
@@ -298,7 +253,7 @@ SetHCOperatingPoint_IHCRP_Carney(double theHCOperatingPoint)
  */
 
 BOOLN
-SetAsymmetricalBias_IHCRP_Carney(double theAsymmetricalBias)
+SetAsymmetricalBias_IHCRP_Carney(Float theAsymmetricalBias)
 {
 	static const WChar	*funcName = wxT("SetAsymmetricalBias_IHCRP_Carney");
 
@@ -307,7 +262,6 @@ SetAsymmetricalBias_IHCRP_Carney(double theAsymmetricalBias)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->asymmetricalBiasFlag = TRUE;
 	carneyRPPtr->asymmetricalBias = theAsymmetricalBias;
 	return(TRUE);
 
@@ -322,7 +276,7 @@ SetAsymmetricalBias_IHCRP_Carney(double theAsymmetricalBias)
  */
 
 BOOLN
-SetMaxHCVoltage_IHCRP_Carney(double theMaxHCVoltage)
+SetMaxHCVoltage_IHCRP_Carney(Float theMaxHCVoltage)
 {
 	static const WChar	*funcName = wxT("SetMaxHCVoltage_IHCRP_Carney");
 
@@ -331,7 +285,6 @@ SetMaxHCVoltage_IHCRP_Carney(double theMaxHCVoltage)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->maxHCVoltageFlag = TRUE;
 	carneyRPPtr->maxHCVoltage = theMaxHCVoltage;
 	return(TRUE);
 
@@ -345,14 +298,13 @@ SetMaxHCVoltage_IHCRP_Carney(double theMaxHCVoltage)
  */
 
 BOOLN
-SetReferencePot_IHCRP_Carney(double theReferencePot)
+SetReferencePot_IHCRP_Carney(Float theReferencePot)
 {
 	static const WChar	 *funcName = wxT("SetCiliaTimeConstTc_IHCRP_Carney");
 	if (carneyRPPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	carneyRPPtr->referencePotFlag = TRUE;
 	carneyRPPtr->referencePot = theReferencePot;
 	carneyRPPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -368,7 +320,7 @@ SetReferencePot_IHCRP_Carney(double theReferencePot)
  */
 
 BOOLN
-SetWaveDelayCoeff_IHCRP_Carney(double theWaveDelayCoeff)
+SetWaveDelayCoeff_IHCRP_Carney(Float theWaveDelayCoeff)
 {
 	static const WChar	*funcName = wxT("SetWaveDelayCoeff_IHCRP_Carney");
 
@@ -377,7 +329,6 @@ SetWaveDelayCoeff_IHCRP_Carney(double theWaveDelayCoeff)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->waveDelayCoeffFlag = TRUE;
 	carneyRPPtr->waveDelayCoeff = theWaveDelayCoeff;
 	return(TRUE);
 
@@ -392,7 +343,7 @@ SetWaveDelayCoeff_IHCRP_Carney(double theWaveDelayCoeff)
  */
 
 BOOLN
-SetWaveDelayLength_IHCRP_Carney(double theWaveDelayLength)
+SetWaveDelayLength_IHCRP_Carney(Float theWaveDelayLength)
 {
 	static const WChar	*funcName = wxT("SetWaveDelayLength_IHCRP_Carney");
 
@@ -401,63 +352,8 @@ SetWaveDelayLength_IHCRP_Carney(double theWaveDelayLength)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyRPPtr->waveDelayLengthFlag = TRUE;
 	carneyRPPtr->waveDelayLength = theWaveDelayLength;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHCRP_Carney(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHCRP_Carney");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (carneyRPPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!carneyRPPtr->cutOffFrequencyFlag) {
-		NotifyError(wxT("%s: cutOffFrequency variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->hCOperatingPointFlag) {
-		NotifyError(wxT("%s: HCOperatingPoint variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->asymmetricalBiasFlag) {
-		NotifyError(wxT("%s: asymmetricalBias variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->maxHCVoltageFlag) {
-		NotifyError(wxT("%s: maxHCVoltage variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->referencePotFlag) {
-		NotifyError(wxT("CheckPars_IHCRP_Carney: Reference potential, Eref, ")
-		  wxT("not set."));
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->waveDelayCoeffFlag) {
-		NotifyError(wxT("%s: waveDelayCoeff variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyRPPtr->waveDelayLengthFlag) {
-		NotifyError(wxT("%s: waveDelayLength variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -473,11 +369,6 @@ PrintPars_IHCRP_Carney(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHCRP_Carney");
 
-	if (!CheckPars_IHCRP_Carney()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Carney IHC Receptor Rotential Module Parameters:-\n"));
 	DPrint(wxT("\tLow-pass cut-off frequency, Fc = %g (Hz),\n"),
 	  carneyRPPtr->cutOffFrequency);
@@ -491,62 +382,6 @@ PrintPars_IHCRP_Carney(void)
 	DPrint(wxT("\tWave delay length, A_L = %g (mm).\n"), carneyRPPtr->
 	  waveDelayLength * 1.0e3);
 	DPrint(wxT("\tReference potential = %g V\n"), carneyRPPtr->referencePot);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_IHCRP_Carney(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_IHCRP_Carney");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	cutOffFrequency, HCOperatingPoint, asymmetricalBias, maxHCVoltage;
-	double	waveDelayCoeff, waveDelayLength, referencePot;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &cutOffFrequency))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &HCOperatingPoint))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &asymmetricalBias))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxHCVoltage))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &waveDelayCoeff))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &waveDelayLength))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &referencePot))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_IHCRP_Carney(cutOffFrequency, HCOperatingPoint,
-	  asymmetricalBias, maxHCVoltage, referencePot, waveDelayCoeff,
-	  waveDelayLength)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -594,11 +429,9 @@ InitModule_IHCRP_Carney(ModulePtr theModule)
 	}
 	theModule->parsPtr = carneyRPPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHCRP_Carney;
 	theModule->Free = Free_IHCRP_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Carney;
 	theModule->PrintPars = PrintPars_IHCRP_Carney;
-	theModule->ReadPars = ReadPars_IHCRP_Carney;
 	theModule->RunProcess = RunModel_IHCRP_Carney;
 	theModule->SetParsPointer = SetParsPointer_IHCRP_Carney;
 	return(TRUE);
@@ -688,10 +521,10 @@ FreeCarneyRPCoeffs_IHCRP_Carney(CarneyRPCoeffsPtr *p)
  */
 
 CarneyRPCoeffsPtr
-InitCarneyRPCoeffs_IHCRP_Carney(double cF, double dt)
+InitCarneyRPCoeffs_IHCRP_Carney(Float cF, Float dt)
 {
 	static const WChar *funcName = wxT("InitCarneyRPCoeffs_IHCRP_Carney");
-	double	delay;
+	Float	delay;
 	CarneyRPCoeffsPtr p;
 
 	if ((p = (CarneyRPCoeffsPtr) malloc(sizeof(CarneyRPCoeffs))) == NULL) {
@@ -732,7 +565,7 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_IHCRP_Carney");
 	int		i, cFIndex;
-	double	*ptr1, *ptr2, dt = _OutSig_EarObject(data)->dt;
+	Float	*ptr1, *ptr2, dt = _OutSig_EarObject(data)->dt;
 	ChanLen	j;
 	CarneyRPPtr	p = carneyRPPtr;
 
@@ -774,7 +607,7 @@ InitProcessVariables_IHCRP_Carney(EarObjectPtr data)
 			p->coefficients[i]->iHCLast = 0.0;
 			p->coefficients[i]->iHCTempLast = 0.0;
 		}
-				
+
 	}
 	for (i = 0; i < carneyRPPtr->numChannels; i++)
 		if (carneyRPPtr->coefficients[i]->numLastSamples >=
@@ -813,15 +646,13 @@ RunModel_IHCRP_Carney(EarObjectPtr data)
 	register	ChanData	 *inPtr, *outPtr, waveNow, iHCTemp;
 	register	ChanData	 temp;
 	int		chan;
-	double	c;
+	Float	c;
 	ChanLen	i;
 	CarneyRPPtr	p = carneyRPPtr;
 	SignalDataPtr	outSignal;
 	CarneyRPCoeffsPtr	cC;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHCRP_Carney())
-			return(FALSE);
 		if (!CheckData_IHCRP_Carney(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

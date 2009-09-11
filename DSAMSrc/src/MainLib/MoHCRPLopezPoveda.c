@@ -160,20 +160,20 @@ SetDefaultNumCurrentsArrays_IHCRP_LopezPoveda(void)
 	static const WChar	*funcName = wxT("SetDefaultNumCurrentsArrays_IHCRP_LopezPoveda");
 	int		i;
 	WChar *label[] = {wxT("Fast"), wxT("Slow")};
-	double	Ek[] = {-78.0e-3, -75.0e-3};
-	double	G[] = {30.72e-9, 28.71e-9};
-	double	V1[] = {-43.20e-3, -52.22e-3};
-	double	vS1[] = {11.99e-3, 12.66e-3};
-	double	V2[] = {-64.20e-3, -85.22e-3};
-	double	vS2[] = {9.6e-3, 16.9e-3};
-	double	tau1Max[] = {0.33e-3, 9.9e-3};
-	double	A1[] = {31.25e-3, 15.27e-3};
-	double	B1[] = {5.42e-3, 7.27e-3};
-	double	tau1Min[] = {0.1e-3, 1.3e-3};
-	double	tau2Max[] = {0.1e-3, 4.27e-3};
-	double	A2[] = {1e-3, 48.2e-3};
-	double	B2[] = {1e-3, 8.72e-3};
-	double	tau2Min[] = {0.09e-3, 0.01e-3};
+	Float	Ek[] = {-78.0e-3, -75.0e-3};
+	Float	G[] = {30.72e-9, 28.71e-9};
+	Float	V1[] = {-43.20e-3, -52.22e-3};
+	Float	vS1[] = {11.99e-3, 12.66e-3};
+	Float	V2[] = {-64.20e-3, -85.22e-3};
+	Float	vS2[] = {9.6e-3, 16.9e-3};
+	Float	tau1Max[] = {0.33e-3, 9.9e-3};
+	Float	A1[] = {31.25e-3, 15.27e-3};
+	Float	B1[] = {5.42e-3, 7.27e-3};
+	Float	tau1Min[] = {0.1e-3, 1.3e-3};
+	Float	tau2Max[] = {0.1e-3, 4.27e-3};
+	Float	A2[] = {1e-3, 48.2e-3};
+	Float	B2[] = {1e-3, 8.72e-3};
+	Float	tau2Min[] = {0.09e-3, 0.01e-3};
 
 	if (!AllocNumCurrents_IHCRP_LopezPoveda(2)) {
 		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
@@ -514,15 +514,15 @@ AllocNumCurrents_IHCRP_LopezPoveda(int numCurrents)
 	}
 	if (lopezPovedaPtr->Ek)
 		free(lopezPovedaPtr->Ek);
-	if ((lopezPovedaPtr->Ek = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->Ek = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' Ek."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->G)
 		free(lopezPovedaPtr->G);
-	if ((lopezPovedaPtr->G = (double *) calloc(numCurrents, sizeof(double)))
+	if ((lopezPovedaPtr->G = (Float *) calloc(numCurrents, sizeof(Float)))
 	  == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' G."), funcName,
 		  numCurrents);
@@ -530,96 +530,96 @@ AllocNumCurrents_IHCRP_LopezPoveda(int numCurrents)
 	}
 	if (lopezPovedaPtr->V1)
 		free(lopezPovedaPtr->V1);
-	if ((lopezPovedaPtr->V1 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->V1 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' V1."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->vS1)
 		free(lopezPovedaPtr->vS1);
-	if ((lopezPovedaPtr->vS1 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->vS1 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' vS1."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->V2)
 		free(lopezPovedaPtr->V2);
-	if ((lopezPovedaPtr->V2 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->V2 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' V2."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->vS2)
 		free(lopezPovedaPtr->vS2);
-	if ((lopezPovedaPtr->vS2 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->vS2 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' vS2."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->tau1Max)
 		free(lopezPovedaPtr->tau1Max);
-	if ((lopezPovedaPtr->tau1Max = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->tau1Max = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' tau1Max."),
 		  funcName, numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->A1)
 		free(lopezPovedaPtr->A1);
-	if ((lopezPovedaPtr->A1 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->A1 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' A1."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->B1)
 		free(lopezPovedaPtr->B1);
-	if ((lopezPovedaPtr->B1 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->B1 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' B1."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->tau1Min)
 		free(lopezPovedaPtr->tau1Min);
-	if ((lopezPovedaPtr->tau1Min = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->tau1Min = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' tau1Min."),
 		  funcName, numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->tau2Max)
 		free(lopezPovedaPtr->tau2Max);
-	if ((lopezPovedaPtr->tau2Max = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->tau2Max = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' tau2Max."),
 		  funcName, numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->A2)
 		free(lopezPovedaPtr->A2);
-	if ((lopezPovedaPtr->A2 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->A2 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' A2."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->B2)
 		free(lopezPovedaPtr->B2);
-	if ((lopezPovedaPtr->B2 = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->B2 = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' B2."), funcName,
 		  numCurrents);
 		return(FALSE);
 	}
 	if (lopezPovedaPtr->tau2Min)
 		free(lopezPovedaPtr->tau2Min);
-	if ((lopezPovedaPtr->tau2Min = (double *) calloc(numCurrents, sizeof(
-	  double))) == NULL) {
+	if ((lopezPovedaPtr->tau2Min = (Float *) calloc(numCurrents, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' tau2Min."),
 		  funcName, numCurrents);
 		return(FALSE);
@@ -669,7 +669,7 @@ SetBMCiliaCouplingMode_IHCRP_LopezPoveda(WChar * theBMCiliaCouplingMode)
  */
 
 BOOLN
-SetCiliaTC_IHCRP_LopezPoveda(double theCiliaTC)
+SetCiliaTC_IHCRP_LopezPoveda(Float theCiliaTC)
 {
 	static const WChar	*funcName = wxT("SetCiliaTC_IHCRP_LopezPoveda");
 
@@ -693,7 +693,7 @@ SetCiliaTC_IHCRP_LopezPoveda(double theCiliaTC)
  */
 
 BOOLN
-SetCiliaCGain_IHCRP_LopezPoveda(double theCiliaCGain)
+SetCiliaCGain_IHCRP_LopezPoveda(Float theCiliaCGain)
 {
 	static const WChar	*funcName = wxT("SetCiliaCGain_IHCRP_LopezPoveda");
 
@@ -717,7 +717,7 @@ SetCiliaCGain_IHCRP_LopezPoveda(double theCiliaCGain)
  */
 
 BOOLN
-SetEt_IHCRP_LopezPoveda(double theEt)
+SetEt_IHCRP_LopezPoveda(Float theEt)
 {
 	static const WChar	*funcName = wxT("SetEt_IHCRP_LopezPoveda");
 
@@ -741,7 +741,7 @@ SetEt_IHCRP_LopezPoveda(double theEt)
  */
 
 BOOLN
-SetRp_IHCRP_LopezPoveda(double theRp)
+SetRp_IHCRP_LopezPoveda(Float theRp)
 {
 	static const WChar	*funcName = wxT("SetRp_IHCRP_LopezPoveda");
 
@@ -765,7 +765,7 @@ SetRp_IHCRP_LopezPoveda(double theRp)
  */
 
 BOOLN
-SetRt_IHCRP_LopezPoveda(double theRt)
+SetRt_IHCRP_LopezPoveda(Float theRt)
 {
 	static const WChar	*funcName = wxT("SetRt_IHCRP_LopezPoveda");
 
@@ -789,7 +789,7 @@ SetRt_IHCRP_LopezPoveda(double theRt)
  */
 
 BOOLN
-SetGL_IHCRP_LopezPoveda(double theGL)
+SetGL_IHCRP_LopezPoveda(Float theGL)
 {
 	static const WChar	*funcName = wxT("SetGL_IHCRP_LopezPoveda");
 
@@ -813,7 +813,7 @@ SetGL_IHCRP_LopezPoveda(double theGL)
  */
 
 BOOLN
-SetGm_IHCRP_LopezPoveda(double theGm)
+SetGm_IHCRP_LopezPoveda(Float theGm)
 {
 	static const WChar	*funcName = wxT("SetGm_IHCRP_LopezPoveda");
 
@@ -837,7 +837,7 @@ SetGm_IHCRP_LopezPoveda(double theGm)
  */
 
 BOOLN
-SetS0_IHCRP_LopezPoveda(double theS0)
+SetS0_IHCRP_LopezPoveda(Float theS0)
 {
 	static const WChar	*funcName = wxT("SetS0_IHCRP_LopezPoveda");
 
@@ -861,7 +861,7 @@ SetS0_IHCRP_LopezPoveda(double theS0)
  */
 
 BOOLN
-SetS1_IHCRP_LopezPoveda(double theS1)
+SetS1_IHCRP_LopezPoveda(Float theS1)
 {
 	static const WChar	*funcName = wxT("SetS1_IHCRP_LopezPoveda");
 
@@ -885,7 +885,7 @@ SetS1_IHCRP_LopezPoveda(double theS1)
  */
 
 BOOLN
-SetU0_IHCRP_LopezPoveda(double theU0)
+SetU0_IHCRP_LopezPoveda(Float theU0)
 {
 	static const WChar	*funcName = wxT("SetU0_IHCRP_LopezPoveda");
 
@@ -909,7 +909,7 @@ SetU0_IHCRP_LopezPoveda(double theU0)
  */
 
 BOOLN
-SetU1_IHCRP_LopezPoveda(double theU1)
+SetU1_IHCRP_LopezPoveda(Float theU1)
 {
 	static const WChar	*funcName = wxT("SetU1_IHCRP_LopezPoveda");
 
@@ -933,7 +933,7 @@ SetU1_IHCRP_LopezPoveda(double theU1)
  */
 
 BOOLN
-SetCa_IHCRP_LopezPoveda(double theCa)
+SetCa_IHCRP_LopezPoveda(Float theCa)
 {
 	static const WChar	*funcName = wxT("SetCa_IHCRP_LopezPoveda");
 
@@ -957,7 +957,7 @@ SetCa_IHCRP_LopezPoveda(double theCa)
  */
 
 BOOLN
-SetCb_IHCRP_LopezPoveda(double theCb)
+SetCb_IHCRP_LopezPoveda(Float theCb)
 {
 	static const WChar	*funcName = wxT("SetCb_IHCRP_LopezPoveda");
 
@@ -1076,7 +1076,7 @@ SetIndividualLabel_IHCRP_LopezPoveda(int theIndex, WChar *theLabel)
  */
 
 BOOLN
-SetEk_IHCRP_LopezPoveda(double *theEk)
+SetEk_IHCRP_LopezPoveda(Float *theEk)
 {
 	static const WChar	*funcName = wxT("SetEk_IHCRP_LopezPoveda");
 
@@ -1100,7 +1100,7 @@ SetEk_IHCRP_LopezPoveda(double *theEk)
  */
 
 BOOLN
-SetIndividualEk_IHCRP_LopezPoveda(int theIndex, double theEk)
+SetIndividualEk_IHCRP_LopezPoveda(int theIndex, Float theEk)
 {
 	static const WChar	*funcName = wxT("SetIndividualEk_IHCRP_LopezPoveda");
 
@@ -1133,7 +1133,7 @@ SetIndividualEk_IHCRP_LopezPoveda(int theIndex, double theEk)
  */
 
 BOOLN
-SetG_IHCRP_LopezPoveda(double *theG)
+SetG_IHCRP_LopezPoveda(Float *theG)
 {
 	static const WChar	*funcName = wxT("SetG_IHCRP_LopezPoveda");
 
@@ -1157,7 +1157,7 @@ SetG_IHCRP_LopezPoveda(double *theG)
  */
 
 BOOLN
-SetIndividualG_IHCRP_LopezPoveda(int theIndex, double theG)
+SetIndividualG_IHCRP_LopezPoveda(int theIndex, Float theG)
 {
 	static const WChar	*funcName = wxT("SetIndividualG_IHCRP_LopezPoveda");
 
@@ -1190,7 +1190,7 @@ SetIndividualG_IHCRP_LopezPoveda(int theIndex, double theG)
  */
 
 BOOLN
-SetV1_IHCRP_LopezPoveda(double *theV1)
+SetV1_IHCRP_LopezPoveda(Float *theV1)
 {
 	static const WChar	*funcName = wxT("SetV1_IHCRP_LopezPoveda");
 
@@ -1214,7 +1214,7 @@ SetV1_IHCRP_LopezPoveda(double *theV1)
  */
 
 BOOLN
-SetIndividualV1_IHCRP_LopezPoveda(int theIndex, double theV1)
+SetIndividualV1_IHCRP_LopezPoveda(int theIndex, Float theV1)
 {
 	static const WChar	*funcName = wxT("SetIndividualV1_IHCRP_LopezPoveda");
 
@@ -1247,7 +1247,7 @@ SetIndividualV1_IHCRP_LopezPoveda(int theIndex, double theV1)
  */
 
 BOOLN
-SetVS1_IHCRP_LopezPoveda(double *theVS1)
+SetVS1_IHCRP_LopezPoveda(Float *theVS1)
 {
 	static const WChar	*funcName = wxT("SetVS1_IHCRP_LopezPoveda");
 
@@ -1271,7 +1271,7 @@ SetVS1_IHCRP_LopezPoveda(double *theVS1)
  */
 
 BOOLN
-SetIndividualVS1_IHCRP_LopezPoveda(int theIndex, double theVS1)
+SetIndividualVS1_IHCRP_LopezPoveda(int theIndex, Float theVS1)
 {
 	static const WChar	*funcName = wxT("SetIndividualVS1_IHCRP_LopezPoveda");
 
@@ -1304,7 +1304,7 @@ SetIndividualVS1_IHCRP_LopezPoveda(int theIndex, double theVS1)
  */
 
 BOOLN
-SetV2_IHCRP_LopezPoveda(double *theV2)
+SetV2_IHCRP_LopezPoveda(Float *theV2)
 {
 	static const WChar	*funcName = wxT("SetV2_IHCRP_LopezPoveda");
 
@@ -1328,7 +1328,7 @@ SetV2_IHCRP_LopezPoveda(double *theV2)
  */
 
 BOOLN
-SetIndividualV2_IHCRP_LopezPoveda(int theIndex, double theV2)
+SetIndividualV2_IHCRP_LopezPoveda(int theIndex, Float theV2)
 {
 	static const WChar	*funcName = wxT("SetIndividualV2_IHCRP_LopezPoveda");
 
@@ -1361,7 +1361,7 @@ SetIndividualV2_IHCRP_LopezPoveda(int theIndex, double theV2)
  */
 
 BOOLN
-SetVS2_IHCRP_LopezPoveda(double *theVS2)
+SetVS2_IHCRP_LopezPoveda(Float *theVS2)
 {
 	static const WChar	*funcName = wxT("SetVS2_IHCRP_LopezPoveda");
 
@@ -1385,7 +1385,7 @@ SetVS2_IHCRP_LopezPoveda(double *theVS2)
  */
 
 BOOLN
-SetIndividualVS2_IHCRP_LopezPoveda(int theIndex, double theVS2)
+SetIndividualVS2_IHCRP_LopezPoveda(int theIndex, Float theVS2)
 {
 	static const WChar	*funcName = wxT("SetIndividualVS2_IHCRP_LopezPoveda");
 
@@ -1418,7 +1418,7 @@ SetIndividualVS2_IHCRP_LopezPoveda(int theIndex, double theVS2)
  */
 
 BOOLN
-SetTau1Max_IHCRP_LopezPoveda(double *theTau1Max)
+SetTau1Max_IHCRP_LopezPoveda(Float *theTau1Max)
 {
 	static const WChar	*funcName = wxT("SetTau1Max_IHCRP_LopezPoveda");
 
@@ -1442,7 +1442,7 @@ SetTau1Max_IHCRP_LopezPoveda(double *theTau1Max)
  */
 
 BOOLN
-SetIndividualTau1Max_IHCRP_LopezPoveda(int theIndex, double theTau1Max)
+SetIndividualTau1Max_IHCRP_LopezPoveda(int theIndex, Float theTau1Max)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualTau1Max_IHCRP_LopezPoveda");
@@ -1476,7 +1476,7 @@ SetIndividualTau1Max_IHCRP_LopezPoveda(int theIndex, double theTau1Max)
  */
 
 BOOLN
-SetA1_IHCRP_LopezPoveda(double *theA1)
+SetA1_IHCRP_LopezPoveda(Float *theA1)
 {
 	static const WChar	*funcName = wxT("SetA1_IHCRP_LopezPoveda");
 
@@ -1500,7 +1500,7 @@ SetA1_IHCRP_LopezPoveda(double *theA1)
  */
 
 BOOLN
-SetIndividualA1_IHCRP_LopezPoveda(int theIndex, double theA1)
+SetIndividualA1_IHCRP_LopezPoveda(int theIndex, Float theA1)
 {
 	static const WChar	*funcName = wxT("SetIndividualA1_IHCRP_LopezPoveda");
 
@@ -1533,7 +1533,7 @@ SetIndividualA1_IHCRP_LopezPoveda(int theIndex, double theA1)
  */
 
 BOOLN
-SetB1_IHCRP_LopezPoveda(double *theB1)
+SetB1_IHCRP_LopezPoveda(Float *theB1)
 {
 	static const WChar	*funcName = wxT("SetB1_IHCRP_LopezPoveda");
 
@@ -1557,7 +1557,7 @@ SetB1_IHCRP_LopezPoveda(double *theB1)
  */
 
 BOOLN
-SetIndividualB1_IHCRP_LopezPoveda(int theIndex, double theB1)
+SetIndividualB1_IHCRP_LopezPoveda(int theIndex, Float theB1)
 {
 	static const WChar	*funcName = wxT("SetIndividualB1_IHCRP_LopezPoveda");
 
@@ -1590,7 +1590,7 @@ SetIndividualB1_IHCRP_LopezPoveda(int theIndex, double theB1)
  */
 
 BOOLN
-SetTau1Min_IHCRP_LopezPoveda(double *theTau1Min)
+SetTau1Min_IHCRP_LopezPoveda(Float *theTau1Min)
 {
 	static const WChar	*funcName = wxT("SetTau1Min_IHCRP_LopezPoveda");
 
@@ -1614,7 +1614,7 @@ SetTau1Min_IHCRP_LopezPoveda(double *theTau1Min)
  */
 
 BOOLN
-SetIndividualTau1Min_IHCRP_LopezPoveda(int theIndex, double theTau1Min)
+SetIndividualTau1Min_IHCRP_LopezPoveda(int theIndex, Float theTau1Min)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualTau1Min_IHCRP_LopezPoveda");
@@ -1648,7 +1648,7 @@ SetIndividualTau1Min_IHCRP_LopezPoveda(int theIndex, double theTau1Min)
  */
 
 BOOLN
-SetTau2Max_IHCRP_LopezPoveda(double *theTau2Max)
+SetTau2Max_IHCRP_LopezPoveda(Float *theTau2Max)
 {
 	static const WChar	*funcName = wxT("SetTau2Max_IHCRP_LopezPoveda");
 
@@ -1672,7 +1672,7 @@ SetTau2Max_IHCRP_LopezPoveda(double *theTau2Max)
  */
 
 BOOLN
-SetIndividualTau2Max_IHCRP_LopezPoveda(int theIndex, double theTau2Max)
+SetIndividualTau2Max_IHCRP_LopezPoveda(int theIndex, Float theTau2Max)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualTau2Max_IHCRP_LopezPoveda");
@@ -1706,7 +1706,7 @@ SetIndividualTau2Max_IHCRP_LopezPoveda(int theIndex, double theTau2Max)
  */
 
 BOOLN
-SetA2_IHCRP_LopezPoveda(double *theA2)
+SetA2_IHCRP_LopezPoveda(Float *theA2)
 {
 	static const WChar	*funcName = wxT("SetA2_IHCRP_LopezPoveda");
 
@@ -1730,7 +1730,7 @@ SetA2_IHCRP_LopezPoveda(double *theA2)
  */
 
 BOOLN
-SetIndividualA2_IHCRP_LopezPoveda(int theIndex, double theA2)
+SetIndividualA2_IHCRP_LopezPoveda(int theIndex, Float theA2)
 {
 	static const WChar	*funcName = wxT("SetIndividualA2_IHCRP_LopezPoveda");
 
@@ -1763,7 +1763,7 @@ SetIndividualA2_IHCRP_LopezPoveda(int theIndex, double theA2)
  */
 
 BOOLN
-SetB2_IHCRP_LopezPoveda(double *theB2)
+SetB2_IHCRP_LopezPoveda(Float *theB2)
 {
 	static const WChar	*funcName = wxT("SetB2_IHCRP_LopezPoveda");
 
@@ -1787,7 +1787,7 @@ SetB2_IHCRP_LopezPoveda(double *theB2)
  */
 
 BOOLN
-SetIndividualB2_IHCRP_LopezPoveda(int theIndex, double theB2)
+SetIndividualB2_IHCRP_LopezPoveda(int theIndex, Float theB2)
 {
 	static const WChar	*funcName = wxT("SetIndividualB2_IHCRP_LopezPoveda");
 
@@ -1820,7 +1820,7 @@ SetIndividualB2_IHCRP_LopezPoveda(int theIndex, double theB2)
  */
 
 BOOLN
-SetTau2Min_IHCRP_LopezPoveda(double *theTau2Min)
+SetTau2Min_IHCRP_LopezPoveda(Float *theTau2Min)
 {
 	static const WChar	*funcName = wxT("SetTau2Min_IHCRP_LopezPoveda");
 
@@ -1844,7 +1844,7 @@ SetTau2Min_IHCRP_LopezPoveda(double *theTau2Min)
  */
 
 BOOLN
-SetIndividualTau2Min_IHCRP_LopezPoveda(int theIndex, double theTau2Min)
+SetIndividualTau2Min_IHCRP_LopezPoveda(int theIndex, Float theTau2Min)
 {
 	static const WChar	*funcName = wxT(
 	  "SetIndividualTau2Min_IHCRP_LopezPoveda");
@@ -1878,7 +1878,7 @@ SetIndividualTau2Min_IHCRP_LopezPoveda(int theIndex, double theTau2Min)
  */
 
 BOOLN
-SetVMRest_IHCRP_LopezPoveda(double theVMRest)
+SetVMRest_IHCRP_LopezPoveda(Float theVMRest)
 {
 	static const WChar	*funcName = wxT("SetVMRest_IHCRP_LopezPoveda");
 
@@ -2055,21 +2055,21 @@ InitProcessVariables_IHCRP_LopezPoveda(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_IHCRP_LopezPoveda");
 	int		i, j, k;
-	double	vm;
+	Float	vm;
 	LPIonChannelPtr	iC;
 	LopezPovedaPtr	p = lopezPovedaPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_IHCRP_LopezPoveda();
 		p->numChannels = _OutSig_EarObject(data)->numChannels;
-		if ((p->lastOutput = (double *) calloc(p->numChannels, sizeof(double))) ==
+		if ((p->lastOutput = (Float *) calloc(p->numChannels, sizeof(Float))) ==
 		  NULL) {
 			NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->lastCiliaDisplacement_u = (double *) calloc(p->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((p->lastCiliaDisplacement_u = (Float *) calloc(p->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for ")
 			  wxT("'lastCiliaDisplacement_u'."), funcName);
 			return(FALSE);
@@ -2163,7 +2163,7 @@ RunModel_IHCRP_LopezPoveda(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int		j, chan;
 	ChanLen	i;
-	double	dt, Gu, GkVN, Vtm, u, V_1, T1, T2, M1, M2, A, B, C, currentSum, GkVTSum;
+	Float	dt, Gu, GkVN, Vtm, u, V_1, T1, T2, M1, M2, A, B, C, currentSum, GkVTSum;
 	LPIonChannelPtr	iC;
 	SignalDataPtr	inSignal, outSignal;
 	LopezPovedaPtr	p = lopezPovedaPtr;

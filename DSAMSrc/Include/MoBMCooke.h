@@ -57,23 +57,22 @@ typedef enum {
 
 typedef struct {
 
-	double	z;
-	double	p0, p1, p2, p3, p4;
-	double	q0, q1, q2, q3, q4;
-	double	u0;
-	double	v0;
-	double	gain;
-	
+	Float	z;
+	Float	p0, p1, p2, p3, p4;
+	Float	q0, q1, q2, q3, q4;
+	Float	u0;
+	Float	v0;
+	Float	gain;
+
 } CookeCoeffs, *CookeCoeffsPtr;
 
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN		broadeningCoeffFlag, outputModeFlag;
+
 	BOOLN		updateProcessVariablesFlag;
 	int			outputMode;
-	double		broadeningCoeff;	/* Bandwidth correction for filter. */
+	Float		broadeningCoeff;	/* Bandwidth correction for filter. */
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
 
 	/* Private members */
@@ -81,9 +80,9 @@ typedef struct {
 	UniParListPtr	parList;
 	int				numChannels;
 	unsigned long	intSampleRate;
-	CookeCoeffsPtr	coefficients;	
-	double			*sine;
-	double			*cosine;
+	CookeCoeffsPtr	coefficients;
+	Float			*sine;
+	Float			*cosine;
 
 } BM0Cooke, *BM0CookePtr;
 
@@ -103,8 +102,6 @@ extern	BM0CookePtr	bM0CookePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_BasilarM_Cooke(void);
-
 CFListPtr	GetCFListPtr_BasilarM_Cooke(void);
 
 UniParListPtr	GetUniParListPtr_BasilarM_Cooke(void);
@@ -121,12 +118,7 @@ void	FreeProcessVariables_BasilarM_Cooke(void);
 
 BOOLN	PrintPars_BasilarM_Cooke(void);
 
-BOOLN	ReadPars_BasilarM_Cooke(WChar *fileName);
-
 BOOLN	RunModel_BasilarM_Cooke(EarObjectPtr data);
-
-BOOLN	SetBandwidths_BasilarM_Cooke(WChar *theBandwidthMode,
-		  double *theBandwidths);
 
 BOOLN	SetCFList_BasilarM_Cooke(CFListPtr theCFList);
 
@@ -136,10 +128,7 @@ BOOLN	SetOutputMode_BasilarM_Cooke(WChar *theOutputMode);
 
 BOOLN	SetParsPointer_BasilarM_Cooke(ModulePtr theModule);
 
-BOOLN	SetPars_BasilarM_Cooke(WChar *theOutputMode,
-		  double theBroadeningCoeff, CFListPtr theCFs);
-
-BOOLN	SetBroadeningCoeff_BasilarM_Cooke(double theBroadeningCoeff);
+BOOLN	SetBroadeningCoeff_BasilarM_Cooke(Float theBroadeningCoeff);
 
 BOOLN	SetUniParList_BasilarM_Cooke(void);
 

@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		19 Aug 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -41,14 +41,14 @@ typedef enum {
 
 typedef struct TSynapse {
 
-  double 	(*Run)(struct TSynapse *p,double x);
-  void		(*Run2)(struct TSynapse *p, const double *in, double *out,
+  Float 	(*Run)(struct TSynapse *p,Float x);
+  void		(*Run2)(struct TSynapse *p, const Float *in, Float *out,
   			  const int length);
-  double	cf,tdres;
-  double	spont;  
-  double	PTS, Ass, Ar_over_Ast, Pimax, tauR, tauST;
-  double	Prest,PPIlast,PL,PG,CIrest,CIlast,CLrest,CLlast,CG,VI,VL;
-  double	Vsat;
+  Float	cf,tdres;
+  Float	spont;
+  Float	PTS, Ass, Ar_over_Ast, Pimax, tauR, tauST;
+  Float	Prest,PPIlast,PL,PG,CIrest,CIlast,CLrest,CLlast,CG,VI,VL;
+  Float	Vsat;
 
 } TSynapse, *TSynapsePtr;
 
@@ -56,19 +56,17 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	spontFlag, aAssFlag, tauSTFlag, tauRFlag, aAROverASTFlag, pIMaxFlag;
-	BOOLN	ksFlag, vs1Flag, vs2Flag, vs3Flag;
 	BOOLN	updateProcessVariablesFlag;
-	double	spont;
-	double	aAss;
-	double	tauST;
-	double	tauR;
-	double	aAROverAST;
-	double	pIMax;
-	double	ks;
-	double	vs1;
-	double	vs2;
-	double	vs3;
+	Float	spont;
+	Float	aAss;
+	Float	tauST;
+	Float	tauR;
+	Float	aAROverAST;
+	Float	pIMax;
+	Float	ks;
+	Float	vs1;
+	Float	vs2;
+	Float	vs3;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -95,8 +93,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHC_Zhang(EarObjectPtr data);
 
-BOOLN	CheckPars_IHC_Zhang(void);
-
 BOOLN	FreeProcessVariables_IHC_Zhang(void);
 
 BOOLN	Free_IHC_Zhang(void);
@@ -115,32 +111,32 @@ BOOLN	PrintPars_IHC_Zhang(void);
 
 BOOLN	RunModel_IHC_Zhang(EarObjectPtr data);
 
-void	RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in,
-		  double *out, const int length);
+void	RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const Float *in,
+		  Float *out, const int length);
 
-BOOLN	SetAAROverAST_IHC_Zhang(double theAAROverAST);
+BOOLN	SetAAROverAST_IHC_Zhang(Float theAAROverAST);
 
-BOOLN	SetAAss_IHC_Zhang(double theAAss);
+BOOLN	SetAAss_IHC_Zhang(Float theAAss);
 
-BOOLN	SetKs_IHC_Zhang(double theKs);
+BOOLN	SetKs_IHC_Zhang(Float theKs);
 
-BOOLN	SetPIMax_IHC_Zhang(double thePIMax);
+BOOLN	SetPIMax_IHC_Zhang(Float thePIMax);
 
 BOOLN	SetParsPointer_IHC_Zhang(ModulePtr theModule);
 
-BOOLN	SetSpont_IHC_Zhang(double theSpont);
+BOOLN	SetSpont_IHC_Zhang(Float theSpont);
 
-BOOLN	SetTauR_IHC_Zhang(double theTauR);
+BOOLN	SetTauR_IHC_Zhang(Float theTauR);
 
-BOOLN	SetTauST_IHC_Zhang(double theTauST);
+BOOLN	SetTauST_IHC_Zhang(Float theTauST);
 
 BOOLN	SetUniParList_IHC_Zhang(void);
 
-BOOLN	SetVs1_IHC_Zhang(double theVs1);
+BOOLN	SetVs1_IHC_Zhang(Float theVs1);
 
-BOOLN	SetVs2_IHC_Zhang(double theVs2);
+BOOLN	SetVs2_IHC_Zhang(Float theVs2);
 
-BOOLN	SetVs3_IHC_Zhang(double theVs3);
+BOOLN	SetVs3_IHC_Zhang(Float theVs3);
 
 __END_DECLS
 

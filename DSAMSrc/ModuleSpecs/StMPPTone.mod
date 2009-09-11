@@ -7,11 +7,11 @@ proc_routine	GenerateSignal;
 typedef struct {
 
 	int_al	numPulses;
-	double	*frequencies;
-	double	intensity;
-	double	beginPeriodDuration;
-	double	pulseDuration;
-	double	repetitionPeriod;
-	double	duration, dt;
+	Float	*frequencies;
+	Float	intensity;
+	Float	beginPeriodDuration;
+	Float	pulseDuration;
+	Float	repetitionPeriod;
+	Float	duration, dt;
 
 } PureTone4;

@@ -159,8 +159,6 @@ Init_Utility_SimScript(ParameterSpecifier parSpec)
 		}
 	}
 	simScriptPtr->parSpec = parSpec;
-	simScriptPtr->operationModeFlag = TRUE;
-	simScriptPtr->parFilePathModeFlag = TRUE;
 	simScriptPtr->simulation = NULL;
 	simScriptPtr->operationMode = GENERAL_BOOLEAN_OFF;
 	simScriptPtr->parFilePathMode = UTILITY_SIMSCRIPT_PARFILEPATHMODE_RELATIVE;
@@ -251,33 +249,6 @@ GetUniParListPtr_Utility_SimScript(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_SimScript(DatumPtr simulation, WChar * operationMode,
-  WChar * parFilePathMode)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_SimScript");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetOperationMode_Utility_SimScript(operationMode))
-		ok = FALSE;
-	if (!SetParFilePathMode_Utility_SimScript(parFilePathMode))
-		ok = FALSE;
-	if (!SetSimulation_Utility_SimScript(simulation))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetSimulation *********************************/
 
 /*
@@ -293,10 +264,6 @@ SetSimulation_Utility_SimScript(DatumPtr theSimulation)
 
 	if (simScriptPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!simScriptPtr->parFilePathModeFlag) {
-		NotifyError(wxT("%s: parFilePathMode must be set first."), funcName);
 		return(FALSE);
 	}
 	if (!InitSimulation_Utility_SimScript(theSimulation)) {
@@ -334,7 +301,6 @@ SetOperationMode_Utility_SimScript(WChar *theOperationMode)
 		  theOperationMode);
 		return(FALSE);
 	}
-	simScriptPtr->operationModeFlag = TRUE;
 	simScriptPtr->operationMode = specifier;
 	return(TRUE);
 
@@ -369,7 +335,6 @@ SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode)
 	default:
 		;
 	}
-	simScriptPtr->parFilePathModeFlag = TRUE;
 	return(TRUE);
 
 }
@@ -581,62 +546,6 @@ PrintSimParFile_Utility_SimScript(void)
 
 }
 
-/************************ ReadSimParFileOld ***********************************/
-
-/*
- * Read a list of universal parameters from a simulation parameter file.
- * This function uses the old format.
- */
-
-BOOLN
-ReadSimParFileOld_Utility_SimScript(FILE *fp)
-{
-	static const WChar	*funcName = wxT("ReadSimParFileOld_Utility_SimScript");
-	BOOLN	ok = TRUE, foundDivider = FALSE;
-	WChar	parName[MAXLINE], parValue[MAX_FILE_PATH], operationMode[MAXLINE];
-	DatumPtr	simulation;
-	SimScriptPtr	localSimScriptPtr = simScriptPtr;
-
-	if (localSimScriptPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	FreeSimulation_Utility_SimScript();
-	Init_ParFile();
-	if (!GetPars_ParFile(fp, wxT("%s"), operationMode))
-		ok = FALSE;
-	if (ok && ((simulation = Read_Utility_SimScript(fp)) == NULL)) {
-		NotifyError(wxT("%s: Could not read simulation script."), funcName);
-		ok = FALSE;
-	}
-	if (ok && !SetPars_Utility_SimScript(simulation, operationMode,
-	  wxT("relative"))) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		ok = FALSE;
-	}
-	SetEmptyLineMessage_ParFile(FALSE);
-	while (ok && !foundDivider && GetPars_ParFile(fp, wxT("%s %s"), parName,
-	  parValue))
-		if (DSAM_strcmp(parName, SIMSCRIPT_SIMPARFILE_DIVIDER) == 0)
-			foundDivider = TRUE;
-		else if (!SetUniParValue_Utility_Datum(localSimScriptPtr->simulation,
-		  parName, parValue)) {
-			NotifyError(wxT("%s: Could not set '%s' parameter."), funcName,
-			  parName);
-			ok = FALSE;
-		}
-	SetEmptyLineMessage_ParFile(TRUE);
-	Free_ParFile();
-	simScriptPtr = localSimScriptPtr;
-	if (!ok) {
-		NotifyError(wxT("%s: Invalid parameters, in simulation parameter ")
-		  wxT("file."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /************************ ReadSimParFile **************************************/
 
 /*
@@ -646,7 +555,7 @@ ReadSimParFileOld_Utility_SimScript(FILE *fp)
 BOOLN
 ReadSimParFile_Utility_SimScript(FILE *fp)
 {
-	static const WChar	*funcName = wxT("ReadSimParFileOld_Utility_SimScript");
+	static const WChar	*funcName = wxT("ReadSimParFile_Utility_SimScript");
 	BOOLN	ok = TRUE, foundDivider = FALSE;
 	WChar	parName[MAXLINE], parValue[MAX_FILE_PATH];
 	DatumPtr	simulation;
@@ -680,54 +589,11 @@ ReadSimParFile_Utility_SimScript(FILE *fp)
 	Free_ParFile();
 	simScriptPtr = localSimScriptPtr;
 	if (!ok) {
-		/* The following code should be uncommented when ReadSimParFileOld is
-		 * removed
 		NotifyError(wxT("%s: Invalid parameters, in simulation parameter file ")
-		  wxT("'%s'."), funcName, filePath);
-		return(FALSE); */
-		NotifyWarning(wxT("%s: Using old SPF format."), funcName);
-		ResetGUIDialogs();
-		rewind(fp);
-		return(ReadSimParFileOld_Utility_SimScript(fp));
-	}
-	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_SimScript(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_SimScript");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (simScriptPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
+		  wxT("'%s'."), funcName, simScriptPtr->simFileName);
 		return(FALSE);
 	}
-	if (simScriptPtr->simulation == NULL) {
-		NotifyError(wxT("%s: simulation not set."), funcName);
-		ok = FALSE;
-	}
-	if (!simScriptPtr->operationModeFlag) {
-		NotifyError(wxT("%s: operationMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!simScriptPtr->parFilePathModeFlag) {
-		NotifyError(wxT("%s: parFilePathMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
+	return(TRUE);
 
 }
 
@@ -743,9 +609,8 @@ PrintPars_Utility_SimScript(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_SimScript");
 
-	if (!CheckPars_Utility_SimScript()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (simScriptPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Simulation Script Utility Module Parameters:-\n"));
@@ -780,57 +645,11 @@ GetFilePath_Utility_SimScript(WChar *filePath)
 
 }
 
-/****************************** ReadSimScriptOld ******************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * This is the old format version which is to be eventually removed.
- * It was the original "ReadPars_..." routine.
- * This routine is special in the way that it treats the file path.  For this
- * module, all file paths for modules needs to be stored.
- * It returns FALSE if it fails in any way.
- */
-
-BOOLN
-ReadSimScriptOld_Utility_SimScript(FILE *fp)
-{
-	static const WChar	*funcName = wxT("ReadSimScriptOld_Utility_SimScript");
-	BOOLN	ok;
-	WChar	operationMode[MAXLINE], parFilePathMode[MAX_FILE_PATH];
-	DatumPtr	simulation;
-
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), operationMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), parFilePathMode))
-		ok = FALSE;
-	simScriptPtr->lineNumber = GetLineCount_ParFile();
-	if ((simulation = Read_Utility_SimScript(fp)) == NULL)
-		ok = FALSE;
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("simulation script file."), funcName);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_SimScript(simulation, operationMode,
-	  parFilePathMode)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-
-}
-
 /****************************** ReadSimScript *********************************/
 
 /*
  * This program reads a simulation script from a file.
  * It uses the parser to read both the module parameters and the simulation.
- * If the simulation cannot be read completey using the parser, then the
- * 'ReadSimScriptOld_Utility_SimScript' is called.
- * It was the original "ReadPars_..." routine.
  * This routine is special in the way that it treats the file path.  For this
  * module, all file paths for modules needs to be stored.
  * It returns FALSE if it fails in any way.
@@ -845,11 +664,9 @@ ReadSimScript_Utility_SimScript(FILE *fp)
 	Init_ParFile();
 	simulation = Read_Utility_SimScript(fp);
 	Free_ParFile();
-	if (!simulation) {	/* To be removed when ReadSimScriptOld is removed. */
-		NotifyWarning(wxT("%s: Using old script format."), funcName);
-		ResetGUIDialogs();
-		rewind(fp);
-		return(ReadSimScriptOld_Utility_SimScript(fp));
+	if (!simulation) {
+		NotifyError(wxT("%s: Parser could not read simulation."), funcName);
+		return(FALSE);
 	}
 	if (!SetSimulation_Utility_SimScript(simulation)) {
 		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
@@ -1134,6 +951,10 @@ InitialiseEarObjects_Utility_SimScript(void)
 		NotifyError(wxT("%s: Could not initialise EarObjects."), funcName);
 		ok = FALSE;
 	}
+	SetDefaultConnections_Utility_Datum(*simScriptPtr->simPtr);
+	if (ok)
+		ok = ResolveInstLabels_Utility_Datum(*simScriptPtr->simPtr,
+		  *simScriptPtr->labelBListPtr);
 	simScriptPtr = localSimScriptPtr;
 	return(ok);
 
@@ -1260,11 +1081,9 @@ InitModule_Utility_SimScript(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = simScriptPtr;
-	theModule->CheckPars = CheckPars_Utility_SimScript;
 	theModule->Free = Free_Utility_SimScript;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_SimScript;
 	theModule->PrintPars = PrintPars_Utility_SimScript;
-	theModule->ReadPars = ReadPars_Utility_SimScript;
 	theModule->RunProcess = Process_Utility_SimScript;
 	theModule->SetParsPointer = SetParsPointer_Utility_SimScript;
 	return(TRUE);
@@ -1297,6 +1116,49 @@ CheckData_Utility_SimScript(EarObjectPtr data)
 
 }
 
+/**************************** InitModule ************************************/
+
+/*
+ * This routine initialises the simulation.
+ * It sets the parameters for any sub-simulation. These may be reset for the
+ * sub-simulation script if it is read from a file.
+ */
+
+BOOLN
+InitSimModule_Utility_SimScript(DatumPtr pc)
+{
+	SimScriptPtr	localSimScriptPtr;
+
+	if (pc->type == PROCESS) {
+		pc->data->module->onFlag = pc->onFlag;
+		switch (pc->data->module->specifier) {
+		case SIMSCRIPT_MODULE:
+			localSimScriptPtr = simScriptPtr;
+			SET_PARS_POINTER(pc->data);
+			SetOperationMode_Utility_SimScript(BooleanList_NSpecLists(
+			  localSimScriptPtr->operationMode)->name);
+			SetParFilePathMode_Utility_SimScript(localSimScriptPtr->
+			  parFilePathModeList[localSimScriptPtr->parFilePathMode].name);
+			SetParsFilePath_Utility_SimScript(localSimScriptPtr->
+			  parsFilePath);
+			SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
+			simScriptPtr->simFileType = localSimScriptPtr->simFileType;
+			SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
+			  labelBListPtr);
+			SetSimulation_Utility_SimScript(
+			  *GetSimScriptSimulation_Utility_SimScript(pc));
+			simScriptPtr = localSimScriptPtr;
+			break;
+		case ANA_SAI_MODULE:
+			SetPar_ModuleMgr(pc->data, wxT("STROBE_PAR_FILE"), NO_FILE);
+			break;
+		default:
+			;
+		}
+	}
+	return(TRUE);
+}
+
 /**************************** InitSimulation **********************************/
 
 /*
@@ -1311,49 +1173,24 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 	static const WChar *funcName = wxT("InitSimulation_Utility_SimScript");
 	WChar	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
 	DatumPtr	pc;
-	SimScriptPtr	localSimScriptPtr = simScriptPtr;
+	SimScriptPtr	localSimScriptPtr;
 
-	if (localSimScriptPtr->parFilePathMode ==
+	if (simScriptPtr->parFilePathMode ==
 	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {
-		DSAM_strncpy(localSimScriptPtr->parsFilePath, localSimScriptPtr->
+		DSAM_strncpy(simScriptPtr->parsFilePath, simScriptPtr->
 		  parFilePathModeList[UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name,
 		  MAX_FILE_PATH);
 	}
-	for (pc = localSimScriptPtr->simulation; pc != NULL; pc = pc->next)
-		if (pc->type == PROCESS) {
-			pc->data->module->onFlag = pc->onFlag;
-			switch (pc->data->module->specifier) {
-			case SIMSCRIPT_MODULE:
-				SET_PARS_POINTER(pc->data);
-				SetOperationMode_Utility_SimScript(BooleanList_NSpecLists(
-				  localSimScriptPtr->operationMode)->name);
-				SetParFilePathMode_Utility_SimScript(localSimScriptPtr->
-				  parFilePathModeList[localSimScriptPtr->parFilePathMode].name);
-				SetParsFilePath_Utility_SimScript(localSimScriptPtr->
-				  parsFilePath);
-				SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
-				simScriptPtr->simFileType = localSimScriptPtr->simFileType;
-				SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
-				  labelBListPtr);
-				SetSimulation_Utility_SimScript(
-				  *GetSimScriptSimulation_Utility_SimScript(pc));
-				break;
-			case ANA_SAI_MODULE:
-				SetPar_ModuleMgr(pc->data, wxT("STROBE_PAR_FILE"), NO_FILE);
-				break;
-			default:
-				;
-			}
-		}
-	if (localSimScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
-		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
-		if (!InitialiseModules_Utility_Datum(simulation)) {
+	TraverseSimulation_Utility_Datum(simulation, InitSimModule_Utility_SimScript);
+	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
+		SetParsFilePath_Common(simScriptPtr->parsFilePath);
+		if (!TraverseSimulation_Utility_Datum(simulation,
+		  InitialiseModule_Utility_Datum)) {
 			NotifyError(wxT("%s: Could not initialise modules."), funcName);
 			return(FALSE);
 		}
 		SetParsFilePath_Common(oldParsFilePath);
 	}
-	simScriptPtr = localSimScriptPtr;
 	return(TRUE);
 
 }
@@ -1385,8 +1222,6 @@ Process_Utility_SimScript(EarObjectPtr data)
 	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_SimScript())
-			return(FALSE);
 		if (!CheckData_Utility_SimScript(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

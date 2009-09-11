@@ -351,7 +351,7 @@ MBSToWCS_Utility_String(const char *mb)
 WChar *
 MBSToWCS2_Utility_String(const char *mb)
 {
-	static const WChar *funcName = wxT("MBSToWCS_Utility_String");
+	static const WChar *funcName = wxT("MBSToWCS2_Utility_String");
 	int		len;
 	WChar	*dest;
 	mbstate_t	state;

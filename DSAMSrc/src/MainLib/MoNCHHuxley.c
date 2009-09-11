@@ -166,16 +166,6 @@ Init_Neuron_HHuxley(ParameterSpecifier parSpec)
 	}
 	hHuxleyNCPtr->parSpec = parSpec;
 	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
-	hHuxleyNCPtr->diagnosticModeFlag = TRUE;
-	hHuxleyNCPtr->operationModeFlag = TRUE;
-	hHuxleyNCPtr->injectionModeFlag = TRUE;
-	hHuxleyNCPtr->excitatoryReversalPotFlag = TRUE;
-	hHuxleyNCPtr->inhibitoryReversalPotFlag = TRUE;
-	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = TRUE;
-	hHuxleyNCPtr->cellCapacitanceFlag = TRUE;
-	hHuxleyNCPtr->restingPotentialFlag = TRUE;
-	hHuxleyNCPtr->restingSignalDurationFlag = TRUE;
-	hHuxleyNCPtr->restingCriteriaFlag = TRUE;
 	hHuxleyNCPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	hHuxleyNCPtr->operationMode = HHUXLEYNC_OPERATION_NORMAL_MODE;
 	hHuxleyNCPtr->injectionMode = HHUXLEYNC_INJECTION_OFF;
@@ -318,52 +308,6 @@ GetUniParListPtr_Neuron_HHuxley(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Neuron_HHuxley(IonChanListPtr iCList, WChar *diagnosticMode,
-  WChar *operationMode, WChar *injectionMode, double excitatoryReversalPot,
-  double inhibitoryReversalPot, double shuntInhibitoryReversalPot,
-  double cellCapacitance, double restingPotential, double restingSignalDuration,
-  double restingCriteria)
-{
-	static const WChar	*funcName = wxT("SetPars_Neuron_HHuxley");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetICList_Neuron_HHuxley(iCList))
-		ok = FALSE;
-	if (!SetDiagnosticMode_Neuron_HHuxley(diagnosticMode))
-		ok = FALSE;
-	if (!SetOperationMode_Neuron_HHuxley(operationMode))
-		ok = FALSE;
-	if (!SetInjectionMode_Neuron_HHuxley(injectionMode))
-		ok = FALSE;
-	if (!SetExcitatoryReversalPot_Neuron_HHuxley(excitatoryReversalPot))
-		ok = FALSE;
-	if (!SetInhibitoryReversalPot_Neuron_HHuxley(inhibitoryReversalPot))
-		ok = FALSE;
-	if (!SetShuntInhibitoryReversalPot_Neuron_HHuxley(
-	  shuntInhibitoryReversalPot))
-		ok = FALSE;
-	if (!SetCellCapacitance_Neuron_HHuxley(cellCapacitance))
-		ok = FALSE;
-	if (!SetRestingPotential_Neuron_HHuxley(restingPotential))
-		ok = FALSE;
-	if (!SetRestingSignalDuration_Neuron_HHuxley(restingSignalDuration))
-		ok = FALSE;
-	if (!SetRestingCriteria_Neuron_HHuxley(restingCriteria))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
 /****************************** SetICList *************************************/
 
 /*
@@ -414,7 +358,6 @@ SetInjectionMode_Neuron_HHuxley(WChar *theInjectionMode)
 		return(FALSE);
 	}
 	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
-	hHuxleyNCPtr->injectionModeFlag = TRUE;
 	hHuxleyNCPtr->injectionMode = specifier;
 	return(TRUE);
 
@@ -437,7 +380,6 @@ SetDiagnosticMode_Neuron_HHuxley(WChar *theDiagnosticMode)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	hHuxleyNCPtr->diagnosticModeFlag = TRUE;
 	hHuxleyNCPtr->diagnosticMode = IdentifyDiag_NSpecLists(theDiagnosticMode,
 	  hHuxleyNCPtr->diagnosticModeList);
 	return(TRUE);
@@ -468,7 +410,6 @@ SetOperationMode_Neuron_HHuxley(WChar *theOperationMode)
 		  theOperationMode);
 		return(FALSE);
 	}
-	hHuxleyNCPtr->operationModeFlag = TRUE;
 	hHuxleyNCPtr->operationMode = specifier;
 	return(TRUE);
 
@@ -483,7 +424,7 @@ SetOperationMode_Neuron_HHuxley(WChar *theOperationMode)
  */
 
 BOOLN
-SetExcitatoryReversalPot_Neuron_HHuxley(double theExcitatoryReversalPot)
+SetExcitatoryReversalPot_Neuron_HHuxley(Float theExcitatoryReversalPot)
 {
 	static const WChar	*funcName = wxT(
 	  "SetExcitatoryReversalPot_Neuron_HHuxley");
@@ -493,7 +434,6 @@ SetExcitatoryReversalPot_Neuron_HHuxley(double theExcitatoryReversalPot)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->excitatoryReversalPotFlag = TRUE;
 	hHuxleyNCPtr->excitatoryReversalPot = theExcitatoryReversalPot;
 	return(TRUE);
 
@@ -508,7 +448,7 @@ SetExcitatoryReversalPot_Neuron_HHuxley(double theExcitatoryReversalPot)
  */
 
 BOOLN
-SetInhibitoryReversalPot_Neuron_HHuxley(double theInhibitoryReversalPot)
+SetInhibitoryReversalPot_Neuron_HHuxley(Float theInhibitoryReversalPot)
 {
 	static const WChar	*funcName = wxT(
 	  "SetInhibitoryReversalPot_Neuron_HHuxley");
@@ -518,7 +458,6 @@ SetInhibitoryReversalPot_Neuron_HHuxley(double theInhibitoryReversalPot)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->inhibitoryReversalPotFlag = TRUE;
 	hHuxleyNCPtr->inhibitoryReversalPot = theInhibitoryReversalPot;
 	return(TRUE);
 
@@ -533,7 +472,7 @@ SetInhibitoryReversalPot_Neuron_HHuxley(double theInhibitoryReversalPot)
  */
 
 BOOLN
-SetShuntInhibitoryReversalPot_Neuron_HHuxley(double
+SetShuntInhibitoryReversalPot_Neuron_HHuxley(Float
   theShuntInhibitoryReversalPot)
 {
 	static const WChar	*funcName =
@@ -544,7 +483,6 @@ SetShuntInhibitoryReversalPot_Neuron_HHuxley(double
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->shuntInhibitoryReversalPotFlag = TRUE;
 	hHuxleyNCPtr->shuntInhibitoryReversalPot = theShuntInhibitoryReversalPot;
 	return(TRUE);
 
@@ -559,7 +497,7 @@ SetShuntInhibitoryReversalPot_Neuron_HHuxley(double
  */
 
 BOOLN
-SetCellCapacitance_Neuron_HHuxley(double theCellCapacitance)
+SetCellCapacitance_Neuron_HHuxley(Float theCellCapacitance)
 {
 	static const WChar	*funcName = wxT("SetCellCapacitance_Neuron_HHuxley");
 
@@ -569,7 +507,6 @@ SetCellCapacitance_Neuron_HHuxley(double theCellCapacitance)
 	}
 	/*** Put any other required checks here. ***/
 	hHuxleyNCPtr->updateProcessVariablesFlag = TRUE;
-	hHuxleyNCPtr->cellCapacitanceFlag = TRUE;
 	hHuxleyNCPtr->cellCapacitance = theCellCapacitance;
 	return(TRUE);
 
@@ -584,7 +521,7 @@ SetCellCapacitance_Neuron_HHuxley(double theCellCapacitance)
  */
 
 BOOLN
-SetRestingPotential_Neuron_HHuxley(double theRestingPotential)
+SetRestingPotential_Neuron_HHuxley(Float theRestingPotential)
 {
 	static const WChar	*funcName = wxT("SetRestingPotential_Neuron_HHuxley");
 
@@ -593,7 +530,6 @@ SetRestingPotential_Neuron_HHuxley(double theRestingPotential)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->restingPotentialFlag = TRUE;
 	hHuxleyNCPtr->restingPotential = theRestingPotential;
 	return(TRUE);
 
@@ -608,7 +544,7 @@ SetRestingPotential_Neuron_HHuxley(double theRestingPotential)
  */
 
 BOOLN
-SetRestingSignalDuration_Neuron_HHuxley(double theRestingSignalDuration)
+SetRestingSignalDuration_Neuron_HHuxley(Float theRestingSignalDuration)
 {
 	static const WChar	*funcName = wxT(
 	  "SetRestingSignalDuration_Neuron_HHuxley");
@@ -618,7 +554,6 @@ SetRestingSignalDuration_Neuron_HHuxley(double theRestingSignalDuration)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->restingSignalDurationFlag = TRUE;
 	hHuxleyNCPtr->restingSignalDuration = theRestingSignalDuration;
 	return(TRUE);
 
@@ -633,7 +568,7 @@ SetRestingSignalDuration_Neuron_HHuxley(double theRestingSignalDuration)
  */
 
 BOOLN
-SetRestingCriteria_Neuron_HHuxley(double theRestingCriteria)
+SetRestingCriteria_Neuron_HHuxley(Float theRestingCriteria)
 {
 	static const WChar	*funcName = wxT("SetRestingCriteria_Neuron_HHuxley");
 
@@ -642,82 +577,8 @@ SetRestingCriteria_Neuron_HHuxley(double theRestingCriteria)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hHuxleyNCPtr->restingCriteriaFlag = TRUE;
 	hHuxleyNCPtr->restingCriteria = theRestingCriteria;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Neuron_HHuxley(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Neuron_HHuxley");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (hHuxleyNCPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!hHuxleyNCPtr->iCList) {
-		NotifyError(wxT("%s: iCList variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->diagnosticModeFlag) {
-		NotifyError(wxT("%s: diagnosticMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->operationModeFlag) {
-		NotifyError(wxT("%s: operationMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->injectionModeFlag) {
-		NotifyError(wxT("%s: injectionMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->excitatoryReversalPotFlag) {
-		NotifyError(wxT("%s: excitatoryReversalPot variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->inhibitoryReversalPotFlag) {
-		NotifyError(wxT("%s: inhibitoryReversalPot variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->shuntInhibitoryReversalPotFlag) {
-		NotifyError(wxT("%s: shuntInhibitoryReversalPot variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->cellCapacitanceFlag) {
-		NotifyError(wxT("%s: cellCapacitance variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->restingPotentialFlag) {
-		NotifyError(wxT("%s: restingPotential variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->restingSignalDurationFlag) {
-		NotifyError(wxT("%s: restingSignalDuration variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!hHuxleyNCPtr->restingCriteriaFlag) {
-		NotifyError(wxT("%s: restingCriteria variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -758,9 +619,8 @@ PrintPars_Neuron_HHuxley(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Neuron_HHuxley");
 
-	if (!CheckPars_Neuron_HHuxley()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (hHuxleyNCPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Hodgkin-Huxley Neural Cell Module Parameters:-\n"));
@@ -785,75 +645,6 @@ PrintPars_Neuron_HHuxley(void)
 	  MSEC(hHuxleyNCPtr->restingSignalDuration));
 	DPrint(wxT("\tResting criteria, dV = %g mV.\n"),
 	  MILLI(hHuxleyNCPtr->restingCriteria));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Neuron_HHuxley(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Neuron_HHuxley");
-	BOOLN	ok;
-	WChar	*filePath;
-	IonChanListPtr	iCList;
-	WChar	diagnosticMode[MAXLINE], operationMode[MAXLINE];
-	WChar	injectionMode[MAXLINE];
-	double	excitatoryReversalPot, inhibitoryReversalPot, cellCapacitance;
-	double	restingPotential, restingSignalDuration, restingCriteria;
-	double	shuntInhibitoryReversalPot;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), diagnosticMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), operationMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), injectionMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &excitatoryReversalPot))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &inhibitoryReversalPot))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &shuntInhibitoryReversalPot))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &cellCapacitance))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingPotential))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingSignalDuration))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingCriteria))
-		ok = FALSE;
-	if ((iCList = ReadPars_IonChanList(fp)) == NULL)
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Neuron_HHuxley(iCList, diagnosticMode, operationMode,
-	  injectionMode, excitatoryReversalPot, inhibitoryReversalPot,
-	  shuntInhibitoryReversalPot, cellCapacitance, restingPotential,
-	  restingSignalDuration, restingCriteria)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -900,12 +691,10 @@ InitModule_Neuron_HHuxley(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = hHuxleyNCPtr;
-	theModule->CheckPars = CheckPars_Neuron_HHuxley;
 	theModule->Free = Free_Neuron_HHuxley;
 	theModule->GetData = GetPotentialResponse_Neuron_HHuxley;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_HHuxley;
 	theModule->PrintPars = PrintPars_Neuron_HHuxley;
-	theModule->ReadPars = ReadPars_Neuron_HHuxley;
 	theModule->RunProcess = RunModel_Neuron_HHuxley;
 	theModule->SetParsPointer = SetParsPointer_Neuron_HHuxley;
 	return(TRUE);
@@ -957,13 +746,13 @@ CheckData_Neuron_HHuxley(EarObjectPtr data)
  * resting potential.
  */
 
-double
-FindRestingPotential_Neuron_HHuxley(double restingCriteria, double duration,
-  double dt)
+Float
+FindRestingPotential_Neuron_HHuxley(Float restingCriteria, Float duration,
+  Float dt)
 {
 	static const WChar	*funcName = wxT("FindRestingPotential_Neuron_HHuxley");
 	int		i, oldOperationMode, oldInjectionMode;
-	double	deltaV, newPotential;
+	Float	deltaV, newPotential;
 	EarObjectPtr	stimulus = NULL, findResting = NULL;
 
 	hHuxleyNCPtr->restingRun = TRUE;
@@ -1021,7 +810,7 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 	static const WChar *funcName = wxT("InitProcessVariables_Neuron_HHuxley");
 	BOOLN	ok = TRUE;
 	int		i, j;
-	double	*yPtr, *zPtr, *xPtr;
+	Float	*yPtr, *zPtr, *xPtr;
 	DynaListPtr		node;
 	HHuxleyNCPtr	p;
 	IonChannelPtr	iC;
@@ -1042,20 +831,20 @@ InitProcessVariables_Neuron_HHuxley(EarObjectPtr data)
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->numChannels; i++) {
-				if ((p->state[i].y = (double *) calloc(p->iCList->numChannels,
-				  sizeof(double))) == NULL) {
+				if ((p->state[i].y = (Float *) calloc(p->iCList->numChannels,
+				  sizeof(Float))) == NULL) {
 					NotifyError(wxT("%s: Out of memory for state->y array"),
 					  funcName);
 					ok = FALSE;
 				}
-				if ((p->state[i].z = (double *) calloc(p->iCList->numChannels,
-				  sizeof(double))) == NULL) {
+				if ((p->state[i].z = (Float *) calloc(p->iCList->numChannels,
+				  sizeof(Float))) == NULL) {
 					NotifyError(wxT("%s: Out of memory for state->z array"),
 					  funcName);
 					ok = FALSE;
 				}
-				if ((p->state[i].x = (double *) calloc(p->iCList->numChannels,
-				  sizeof(double))) == NULL) {
+				if ((p->state[i].x = (Float *) calloc(p->iCList->numChannels,
+				  sizeof(Float))) == NULL) {
 					NotifyError(wxT("%s: Out of memory for state->z array"),
 					  funcName);
 					ok = FALSE;
@@ -1149,14 +938,9 @@ void *
 GetPotentialResponse_Neuron_HHuxley(void *potentialPtr)
 {
 	static const WChar *funcName = wxT("GetPotentialResponse_Neuron_HHuxley");
-	double *potential;
+	Float *potential;
 
-	potential = (double *) potentialPtr;
-	if (!CheckPars_Neuron_HHuxley()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set, zero ")\
-		  wxT("returned."), funcName);
-		return(NULL);
-	}
+	potential = (Float *) potentialPtr;
 	return(potentialPtr);
 
 }
@@ -1185,8 +969,8 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	static const WChar	*funcName = wxT("RunModel_Neuron_HHuxley");
 	register	ChanData	*gExPtr, *gInPtr, *gSInPtr, *injPtr, *outPtr;
 	int		chan, inSignal;
-	double	*yPtr, *zPtr, *xPtr, ionChanCurrentSum, currentSum;
-	double	activation = 0.0, conductance;
+	Float	*yPtr, *zPtr, *xPtr, ionChanCurrentSum, currentSum;
+	Float	activation = 0.0, conductance;
 	ChanLen	j;
 	DynaListPtr		node;
 	HHuxleyStatePtr	s;
@@ -1196,8 +980,6 @@ RunModel_Neuron_HHuxley(EarObjectPtr data)
 	HHuxleyNCPtr	p = hHuxleyNCPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Neuron_HHuxley())
-			return(FALSE);
 		if (!CheckData_Neuron_HHuxley(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

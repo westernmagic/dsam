@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/view.cpp
  * Author:		L.P.O'Mard
  * Created:		04 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, University of Essex
  *
  **********************/
@@ -97,7 +97,7 @@ SDIView::ProcessListDialog(void)
 			  new SDICommand(wxT("Edit process name"), SDIFRAME_EDIT_PROCESS,
 			  (SDIDocument *) canvas->view->GetDocument(),
 			  dialog.GetStringSelection(), theShape));
-		
+
 		}
 	}
 
@@ -176,63 +176,63 @@ SDIView::OnCreate(wxDocument *doc, long flags)
 
 
 // Sneakily gets used for default print/preview
-// as well as drawing on the screen. 
+// as well as drawing on the screen.
 void
-SDIView::OnDraw(wxDC *dc) 
-{ 
+SDIView::OnDraw(wxDC *dc)
+{
 	printf("SDIView::OnDraw: Entered\n");
-	/* You might use THIS code if you were scaling 
-	* graphics of known size to fit on the page. 
-	*/ 
-	int w, h; 
+	/* You might use THIS code if you were scaling
+	* graphics of known size to fit on the page.
+	*/
+	int w, h;
 
-	// We need to adjust for the graphic size, a formula will be added 
-	float maxX = 900; 
-	float maxY = 700; 
-	// A better way of find the maxium values would be to search through 
-	// the linked list 
+	// We need to adjust for the graphic size, a formula will be added
+	float maxX = 900;
+	float maxY = 700;
+	// A better way of find the maxium values would be to search through
+	// the linked list
 
-	// Let's have at least 10 device units margin 
-	float marginX = 10; 
-	float marginY = 10; 
+	// Let's have at least 10 device units margin
+	float marginX = 10;
+	float marginY = 10;
 
-	// Add the margin to the graphic size 
-	maxX += (2 * marginX); 
-	maxY += (2 * marginY); 
+	// Add the margin to the graphic size
+	maxX += (2 * marginX);
+	maxY += (2 * marginY);
 
-	// Get the size of the DC in pixels 
-	dc->GetSize (&w, &h); 
+	// Get the size of the DC in pixels
+	dc->GetSize (&w, &h);
 
-	// Calculate a suitable scaling factor 
-	float scaleX = (float) (w / maxX); 
-	float scaleY = (float) (h / maxY); 
+	// Calculate a suitable scaling factor
+	float scaleX = (float) (w / maxX);
+	float scaleY = (float) (h / maxY);
 
-	// Use x or y scaling factor, whichever fits on the DC 
-	float actualScale = wxMin (scaleX, scaleY); 
+	// Use x or y scaling factor, whichever fits on the DC
+	float actualScale = wxMin (scaleX, scaleY);
 
-	float posX, posY; 
-	// Calculate the position on the DC for centring the graphic 
-	if (CENTER == TRUE) { // center the drawing 
-		posX = (float) ((w - (200 * actualScale)) / 2.0); 
-		posY = (float) ((h - (200 * actualScale)) / 2.0); 
-	} else {   // Use defined presets 
-		posX = 10; 
-		posY = 35; 
-	} 
+	float posX, posY;
+	// Calculate the position on the DC for centring the graphic
+	if (CENTER == TRUE) { // center the drawing
+		posX = (float) ((w - (200 * actualScale)) / 2.0);
+		posY = (float) ((h - (200 * actualScale)) / 2.0);
+	} else {   // Use defined presets
+		posX = 10;
+		posY = 35;
+	}
 
-	// Set the scale and origin 
-	dc->SetUserScale (actualScale, actualScale); 
-	dc->SetDeviceOrigin ((long) posX, (long) posY); 
+	// Set the scale and origin
+	dc->SetUserScale (actualScale, actualScale);
+	dc->SetDeviceOrigin ((long) posX, (long) posY);
 
-	// This part was added to preform the print preview and printing functions 
+	// This part was added to preform the print preview and printing functions
 
 	// Get the current diagram
 	wxDiagram *diagram_p=((SDIDocument*)GetDocument())->GetDiagram();
-	if (diagram_p->GetShapeList()) { 
+	if (diagram_p->GetShapeList()) {
 		/*wxCursor *old_cursor = NULL; */
 		wxNode *current = diagram_p->GetShapeList()->GetFirst();
 
-		while (current) {// Loop through the entire list of shapes 
+		while (current) {// Loop through the entire list of shapes
 			wxShape *object = (wxShape *)current->GetData();
 			if (!object->GetParent())
 				object->Draw(* dc); // Draw the shape onto our printing dc
@@ -297,7 +297,7 @@ SDIView::FindSelectedShape(void)
 	wxNode *node = doc->GetDiagram()->GetShapeList()->GetFirst();
 	while (node) {
 		wxShape *eachShape = (wxShape *)node->GetData();
-		if ((eachShape->GetParent() == NULL) && eachShape->Selected()) {
+		if (eachShape->Selected()) {
 			theShape = eachShape;
 			node = NULL;
 		} else
@@ -472,7 +472,7 @@ SDIView::OnZoomSel(wxCommandEvent& event)
 	SDIDocument *diagramDoc = (SDIDocument *)GetDocument();
 	((SDIDiagram *) diagramDoc->GetDiagram())->Rescale(scale, scale);
 	canvas->Refresh();
-	
+
 }
 
 #endif /* HAVE_WX_OGL_H */

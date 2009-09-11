@@ -121,8 +121,8 @@ GetFitFuncPars_BasilarM_DRNL(int mode)
  * Using it helps maintain the correspondence between the mode names.
  */
 
-double
-GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, double linCF)
+Float
+GetFitFuncValue_BasilarM_DRNL(ParArrayPtr p, Float linCF)
 {
 	static const WChar	*funcName = wxT("GetFitFuncValue_BasilarM_DRNL");
 
@@ -156,13 +156,13 @@ void
 SetDefaultParArrayPars_BasilarM_DRNL(void)
 {
 	int		i;
-	double	nonLinBwidth[] = {0.8, 58};
-	double	nonLinScaleG[] = {1.0, 0.0};
-	double	comprScaleA[] = {1.67, 0.45};
-	double	comprScaleB[] = {-5.85, 0.875};
-	double	linCF[] = {0.14, 0.95};
-	double	linBwidth[] = {1.3, 0.53};
-	double	linScaleG[] = {5.48, -0.97};
+	Float	nonLinBwidth[] = {0.8, 58};
+	Float	nonLinScaleG[] = {1.0, 0.0};
+	Float	comprScaleA[] = {1.67, 0.45};
+	Float	comprScaleB[] = {-5.85, 0.875};
+	Float	linCF[] = {0.14, 0.95};
+	Float	linBwidth[] = {1.3, 0.53};
+	Float	linScaleG[] = {5.48, -0.97};
 
 	SetMode_ParArray(bMDRNLPtr->nonLinBwidth, wxT("Log_func1"));
 	for (i = 0; i < bMDRNLPtr->nonLinBwidth->numParams; i++)
@@ -221,11 +221,6 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 	}
 	bMDRNLPtr->parSpec = parSpec;
 	bMDRNLPtr->updateProcessVariablesFlag = TRUE;
-	bMDRNLPtr->nonLinGTCascadeFlag = TRUE;
-	bMDRNLPtr->nonLinLPCascadeFlag = TRUE;
-	bMDRNLPtr->comprExponentFlag = TRUE;
-	bMDRNLPtr->linGTCascadeFlag = TRUE;
-	bMDRNLPtr->linLPCascadeFlag = TRUE;
 	bMDRNLPtr->nonLinGTCascade = 3;
 	bMDRNLPtr->nonLinLPCascade = 4;
 	if ((bMDRNLPtr->nonLinBwidth = Init_ParArray(wxT("NonLinBwidth"),
@@ -294,6 +289,7 @@ Init_BasilarM_DRNL(ParameterSpecifier parSpec)
 		Free_BasilarM_DRNL();
 		return(FALSE);
 	}
+	bMDRNLPtr->numChannels = 0;
 	bMDRNLPtr->compressionA = NULL;
 	bMDRNLPtr->compressionB = NULL;
 	bMDRNLPtr->nonLinearGT1 = NULL;
@@ -420,53 +416,6 @@ GetUniParListPtr_BasilarM_DRNL(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_BasilarM_DRNL(int nonLinGTCascade, int nonLinLPCascade,
-  ParArrayPtr nonLinBwidth, ParArrayPtr comprScaleA, ParArrayPtr comprScaleB,
-  double comprExponent, int linGTCascade, int linLPCascade, ParArrayPtr
-  linCF, ParArrayPtr linBwidth, ParArrayPtr linScaleG, CFListPtr theCFs)
-{
-	static const WChar	*funcName = wxT("SetPars_BasilarM_DRNL");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetNonLinGTCascade_BasilarM_DRNL(nonLinGTCascade))
-		ok = FALSE;
-	if (!SetNonLinLPCascade_BasilarM_DRNL(nonLinLPCascade))
-		ok = FALSE;
-	if (!SetNonLinBwidth_BasilarM_DRNL(nonLinBwidth))
-		ok = FALSE;
-	if (!SetComprScaleA_BasilarM_DRNL(comprScaleA))
-		ok = FALSE;
-	if (!SetComprScaleB_BasilarM_DRNL(comprScaleB))
-		ok = FALSE;
-	if (!SetComprExponent_BasilarM_DRNL(comprExponent))
-		ok = FALSE;
-	if (!SetLinGTCascade_BasilarM_DRNL(linGTCascade))
-		ok = FALSE;
-	if (!SetLinLPCascade_BasilarM_DRNL(linLPCascade))
-		ok = FALSE;
-	if (!SetLinCF_BasilarM_DRNL(linCF))
-		ok = FALSE;
-	if (!SetLinBwidth_BasilarM_DRNL(linBwidth))
-		ok = FALSE;
-	if (!SetLinScaleG_BasilarM_DRNL(linScaleG))
-		ok = FALSE;
-	if (!SetCFList_BasilarM_DRNL(theCFs))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetNonLinGTCascade ****************************/
 
 /*
@@ -485,7 +434,6 @@ SetNonLinGTCascade_BasilarM_DRNL(int theNonLinGTCascade)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMDRNLPtr->nonLinGTCascadeFlag = TRUE;
 	bMDRNLPtr->nonLinGTCascade = theNonLinGTCascade;
 	return(TRUE);
 
@@ -509,7 +457,6 @@ SetNonLinLPCascade_BasilarM_DRNL(int theNonLinLPCascade)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMDRNLPtr->nonLinLPCascadeFlag = TRUE;
 	bMDRNLPtr->nonLinLPCascade = theNonLinLPCascade;
 	return(TRUE);
 
@@ -641,7 +588,7 @@ SetComprScaleB_BasilarM_DRNL(ParArrayPtr theComprScaleB)
  */
 
 BOOLN
-SetComprExponent_BasilarM_DRNL(double theComprExponent)
+SetComprExponent_BasilarM_DRNL(Float theComprExponent)
 {
 	static const WChar	*funcName = wxT("SetComprExponent_BasilarM_DRNL");
 
@@ -650,7 +597,6 @@ SetComprExponent_BasilarM_DRNL(double theComprExponent)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMDRNLPtr->comprExponentFlag = TRUE;
 	bMDRNLPtr->comprExponent = theComprExponent;
 	return(TRUE);
 
@@ -674,7 +620,6 @@ SetLinGTCascade_BasilarM_DRNL(int theLinGTCascade)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMDRNLPtr->linGTCascadeFlag = TRUE;
 	bMDRNLPtr->linGTCascade = theLinGTCascade;
 	return(TRUE);
 
@@ -698,7 +643,6 @@ SetLinLPCascade_BasilarM_DRNL(int theLinLPCascade)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	bMDRNLPtr->linLPCascadeFlag = TRUE;
 	bMDRNLPtr->linLPCascade = theLinLPCascade;
 	return(TRUE);
 
@@ -823,91 +767,6 @@ SetCFList_BasilarM_DRNL(CFListPtr theCFList)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_BasilarM_DRNL(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_BasilarM_DRNL");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (bMDRNLPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!bMDRNLPtr->nonLinGTCascadeFlag) {
-		NotifyError(wxT("%s: nonLinGTCascade variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMDRNLPtr->nonLinLPCascadeFlag) {
-		NotifyError(wxT("%s: nonLinLPCascade variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->nonLinBwidth, funcName)) {
-		NotifyError(wxT("%s: Variable nonLinBwidth parameter array not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->nonLinScaleG, funcName)) {
-		NotifyError(wxT("%s: Variable nonLinScaleG parameter array not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleA, funcName)) {
-		NotifyError(wxT("%s: Variable comprScaleA parameter array not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->comprScaleB, funcName)) {
-		NotifyError(wxT("%s: Variable comprScaleB parameter array not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMDRNLPtr->comprExponentFlag) {
-		NotifyError(wxT("%s: comprExponent variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMDRNLPtr->linGTCascadeFlag) {
-		NotifyError(wxT("%s: linGTCascade variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!bMDRNLPtr->linLPCascadeFlag) {
-		NotifyError(wxT("%s: linLPCascade variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->linCF, funcName)) {
-		NotifyError(wxT("%s: Variable linCF parameter array not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->linBwidth, funcName)) {
-		NotifyError(wxT("%s: Variable linBwidth parameter array not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckInit_ParArray(bMDRNLPtr->linScaleG, funcName)) {
-		NotifyError(wxT("%s: Variable linScaleG parameter array not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	if (!CheckPars_CFList(bMDRNLPtr->theCFs)) {
-		NotifyError(wxT("%s: Centre frequency list parameters not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** GetCFListPtr **********************************/
 
 /*
@@ -938,8 +797,8 @@ GetCFListPtr_BasilarM_DRNL(void)
  * This routine returns a pointer to the module's CFList data pointer.
  */
 
-double
-GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr, double theCF)
+Float
+GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr, Float theCF)
 {
 	return(GetFitFuncValue_BasilarM_DRNL(bMDRNLPtr->nonLinBwidth, theCF));
 
@@ -957,11 +816,6 @@ PrintPars_BasilarM_DRNL(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_BasilarM_DRNL");
 
-	if (!CheckPars_BasilarM_DRNL()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("DRNL Basilar Membrane Filter Module Parameters:-\n"));
 	DPrint(wxT("\tNonlinear gammatone filter cascade  = %d,\n"),
 	  bMDRNLPtr->nonLinGTCascade);
@@ -980,73 +834,6 @@ PrintPars_BasilarM_DRNL(void)
 	PrintPars_ParArray(bMDRNLPtr->linBwidth);
 	PrintPars_ParArray(bMDRNLPtr->linScaleG);
 	PrintPars_CFList(bMDRNLPtr->theCFs);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_BasilarM_DRNL(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_BasilarM_DRNL");
-	BOOLN	ok = TRUE;
-	WChar	*filePath;
-	int		nonLinGTCascade, nonLinLPCascade, linGTCascade, linLPCascade;
-	double	comprExponent;
-	FILE	*fp;
-	CFListPtr	theCFs;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinGTCascade))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &nonLinLPCascade))
-		ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->nonLinBwidth))
-		 ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->comprScaleA))
-		 ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->comprScaleB))
-		 ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &comprExponent))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &linGTCascade))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &linLPCascade))
-		ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->linCF))
-		 ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->linBwidth))
-		 ok = FALSE;
-	if (!ReadPars_ParArray(fp, bMDRNLPtr->linScaleG))
-		 ok = FALSE;
-	if ((theCFs = ReadPars_CFList(fp)) == NULL)
-		 ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_BasilarM_DRNL(nonLinGTCascade, nonLinLPCascade,
-	  bMDRNLPtr->nonLinBwidth, bMDRNLPtr->comprScaleA, bMDRNLPtr->comprScaleB,
-	  comprExponent, linGTCascade, linLPCascade, bMDRNLPtr->linCF,
-	  bMDRNLPtr->linBwidth, bMDRNLPtr->linScaleG, theCFs)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -1094,11 +881,9 @@ InitModule_BasilarM_DRNL(ModulePtr theModule)
 	}
 	theModule->parsPtr = bMDRNLPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_BasilarM_DRNL;
 	theModule->Free = Free_BasilarM_DRNL;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_DRNL;
 	theModule->PrintPars = PrintPars_BasilarM_DRNL;
-	theModule->ReadPars = ReadPars_BasilarM_DRNL;
 	theModule->RunProcess = RunModel_BasilarM_DRNL;
 	theModule->SetParsPointer = SetParsPointer_BasilarM_DRNL;
 	return(TRUE);
@@ -1148,7 +933,7 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_DRNL");
 	int		i, j, cFIndex;
-	double	sampleRate, centreFreq, linearFCentreFreq;
+	Float	sampleRate, centreFreq, linearFCentreFreq;
 	BMDRNLPtr	p = bMDRNLPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
@@ -1162,13 +947,13 @@ InitProcessVariables_BasilarM_DRNL(EarObjectPtr data)
 			return(FALSE);
 		}
 		data->subProcessList[BM_DRNL_LINEARF] = p->linearF;
-		if ((p->compressionA = (double *) calloc(p->numChannels, sizeof(
-		  double))) == NULL) {
+		if ((p->compressionA = (Float *) calloc(p->numChannels, sizeof(
+		  Float))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory (compressionA)."), funcName);
 		 	return(FALSE);
 		}
-		if ((p->compressionB = (double *) calloc(p->numChannels, sizeof(
-		  double))) == NULL) {
+		if ((p->compressionB = (Float *) calloc(p->numChannels, sizeof(
+		  Float))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory (compressionB)."), funcName);
 		 	return(FALSE);
 		}
@@ -1344,7 +1129,7 @@ void
 ApplyScale_BasilarM_DRNL(EarObjectPtr data, SignalDataPtr signal, ParArrayPtr p)
 {
 	int		chan;
-	double	scale;
+	Float	scale;
 	ChanLen	i;
 	ChanData	*dataPtr;
 
@@ -1386,8 +1171,6 @@ RunModel_BasilarM_DRNL(EarObjectPtr data)
 	BMDRNLPtr	p = bMDRNLPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_BasilarM_DRNL())
-			return(FALSE);
 		if (!CheckData_BasilarM_DRNL(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

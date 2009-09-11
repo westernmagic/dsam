@@ -46,10 +46,10 @@ typedef struct {
 	int		diagnosticMode;
 	long	ranSeed;
 	int		numFibres;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
-	double	recoveryTau;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
+	Float	recoveryTau;
 	ParArrayPtr	distribution;
 
 	/* Private members */
@@ -59,9 +59,9 @@ typedef struct {
 	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
-	double	dt, wPulseDuration;
-	double	**timer;
-	double	**remainingPulseTime;
+	Float	dt, wPulseDuration;
+	Float	**timer;
+	Float	**remainingPulseTime;
 
 } Meddis02SG, *Meddis02SGPtr;
 
@@ -109,15 +109,15 @@ BOOLN	SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres);
 
 BOOLN	SetParsPointer_ANSpikeGen_Meddis02(ModulePtr theModule);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Meddis02(double thePulseDuration);
+BOOLN	SetPulseDuration_ANSpikeGen_Meddis02(Float thePulseDuration);
 
-BOOLN	SetPulseMagnitude_ANSpikeGen_Meddis02(double thePulseMagnitude);
+BOOLN	SetPulseMagnitude_ANSpikeGen_Meddis02(Float thePulseMagnitude);
 
 BOOLN	SetRanSeed_ANSpikeGen_Meddis02(long theRanSeed);
 
-BOOLN	SetRecoveryTau_ANSpikeGen_Meddis02(double theRecoveryTau);
+BOOLN	SetRecoveryTau_ANSpikeGen_Meddis02(Float theRecoveryTau);
 
-BOOLN	SetRefractoryPeriod_ANSpikeGen_Meddis02(double theRefractoryPeriod);
+BOOLN	SetRefractoryPeriod_ANSpikeGen_Meddis02(Float theRefractoryPeriod);
 
 BOOLN	SetUniParList_ANSpikeGen_Meddis02(void);
 

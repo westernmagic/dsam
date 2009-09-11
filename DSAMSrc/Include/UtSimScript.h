@@ -23,7 +23,7 @@
  *				30-09-98 LPO: I have introduced the uniParLockFlag field which
  *				is set to disallow command line changes of the universal
  *				parameters when a uniParList file is being used.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				02-02-99 LPO: The 'SetUniParValue_' has been moved to the
  *				UtDatum module.
@@ -95,12 +95,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	operationModeFlag;
-	BOOLN	parFilePathModeFlag;
 	int		operationMode;
 	int		parFilePathMode;
 	DatumPtr	simulation;
-	
+
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -134,8 +132,6 @@ extern SimScriptPtr	simScriptPtr;
 __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_SimScript(EarObjectPtr data);
-
-BOOLN	CheckPars_Utility_SimScript(void);
 
 BOOLN	Free_Utility_SimScript(void);
 
@@ -207,9 +203,6 @@ BOOLN	SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode);
 BOOLN	SetParsFilePath_Utility_SimScript(WChar * parsFilePath);
 
 BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_SimScript(DatumPtr simulation,
-		  WChar *operationMode, WChar *parFilePathMode);
 
 BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
 

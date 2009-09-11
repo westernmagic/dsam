@@ -18,7 +18,7 @@
 
 #ifndef	_MOHCRPSHAMMA_H
 #define _MOHCRPSHAMMA_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -50,32 +50,27 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	endocochlearPotEtFlag, reversalPotEkFlag;
-	BOOLN	reversalPotCorrectionFlag, totalCapacitanceCFlag;
-	BOOLN	restingConductanceG0Flag, kConductanceGkFlag;
-	BOOLN	maxMConductanceGmaxFlag, betaFlag, gammaFlag;
-	BOOLN	ciliaTimeConstTcFlag, ciliaCouplingGainFlag, referencePotFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 
-	double	endocochlearPot_Et;	/* Endocochlear potential, mV. */
-	double	reversalPot_Ek;		/* Reversal potential, mV. */
-	double	reversalPotCorrection;	/* Rp/(Rt+Rp), mV. */
-	double	totalCapacitance_C;	/* Total capacitance C = Ca + Cb, pF. */
-	double	restingConductance_G0;	/* Resting Conductance, G0. */
-	double	kConductance_Gk;	/* Potassium conductance, S (Seimens). */
-	double	maxMConductance_Gmax;	/* Maximum mechanical conductance, S. */
-	double	beta;				/* beta = exp(-G1/RT), dimensionless. */
-	double	gamma;				/* gamma = Z1/RT, u/m. */
-	double	ciliaTimeConst_tc;	/* BM/cilia displacement time constant, s. */
-	double	ciliaCouplingGain_C;/* Cilia coupling gain. */
-	double	referencePot;		/* Reference potential */
+	Float	endocochlearPot_Et;	/* Endocochlear potential, mV. */
+	Float	reversalPot_Ek;		/* Reversal potential, mV. */
+	Float	reversalPotCorrection;	/* Rp/(Rt+Rp), mV. */
+	Float	totalCapacitance_C;	/* Total capacitance C = Ca + Cb, pF. */
+	Float	restingConductance_G0;	/* Resting Conductance, G0. */
+	Float	kConductance_Gk;	/* Potassium conductance, S (Seimens). */
+	Float	maxMConductance_Gmax;	/* Maximum mechanical conductance, S. */
+	Float	beta;				/* beta = exp(-G1/RT), dimensionless. */
+	Float	gamma;				/* gamma = Z1/RT, u/m. */
+	Float	ciliaTimeConst_tc;	/* BM/cilia displacement time constant, s. */
+	Float	ciliaCouplingGain_C;/* Cilia coupling gain. */
+	Float	referencePot;		/* Reference potential */
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*lastCiliaDisplacement_u, *lastInput, *lastOutput;
-	double	leakageConductance_Ga, dtOverC, gkEpk, dtOverTc, cGain, max_u;
-	
+	Float	*lastCiliaDisplacement_u, *lastInput, *lastOutput;
+	Float	leakageConductance_Ga, dtOverC, gkEpk, dtOverTc, cGain, max_u;
+
 } Shamma, *ShammaPtr;
 
 /******************************************************************************/
@@ -94,8 +89,6 @@ extern	ShammaPtr	shammaPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_IHCRP_Shamma(void);
-
 BOOLN	Free_IHCRP_Shamma(void);
 
 void	FreeProcessVariables_IHCRP_Shamma(void);
@@ -108,43 +101,36 @@ BOOLN	InitProcessVariables_IHCRP_Shamma(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Shamma(void);
 
-BOOLN	ReadPars_IHCRP_Shamma(WChar *fileName);
-
 BOOLN	RunModel_IHCRP_Shamma(EarObjectPtr data);
 
-BOOLN	SetBeta_IHCRP_Shamma(double theBeta);
+BOOLN	SetBeta_IHCRP_Shamma(Float theBeta);
 
-BOOLN	SetCiliaCouplingGain_IHCRP_Shamma(double theCiliaCouplingGain);
+BOOLN	SetCiliaCouplingGain_IHCRP_Shamma(Float theCiliaCouplingGain);
 
-BOOLN	SetCiliaTimeConstTc_IHCRP_Shamma(double theCiliaTimeConstTc);
+BOOLN	SetCiliaTimeConstTc_IHCRP_Shamma(Float theCiliaTimeConstTc);
 
-BOOLN	SetEndocochlearPot_IHCRP_Shamma(double theEndocochlearPot);
+BOOLN	SetEndocochlearPot_IHCRP_Shamma(Float theEndocochlearPot);
 
-BOOLN	SetGamma_IHCRP_Shamma(double theGamma);
+BOOLN	SetGamma_IHCRP_Shamma(Float theGamma);
 
-BOOLN	SetKConductance_IHCRP_Shamma(double theKConductance);
+BOOLN	SetKConductance_IHCRP_Shamma(Float theKConductance);
 
-BOOLN	SetMaxMConductance_IHCRP_Shamma(double theMaxMConductance);
+BOOLN	SetMaxMConductance_IHCRP_Shamma(Float theMaxMConductance);
 
 BOOLN	InitModule_IHCRP_Shamma(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHCRP_Shamma(ModulePtr theModule);
 
-BOOLN	SetPars_IHCRP_Shamma(double Et, double Ek,
-		  double reversalPotCorrection, double C, double G0, double Gk,
-		  double Gmax, double beta, double gamma, double tc, double n, 
-		  double Eref);
+BOOLN	SetReferencePot_IHCRP_Shamma(Float theReferencePot);
 
-BOOLN	SetReferencePot_IHCRP_Shamma(double theReferencePot);
+BOOLN	SetRestingConductance_IHCRP_Shamma(Float theRestingConductance);
 
-BOOLN	SetRestingConductance_IHCRP_Shamma(double theRestingConductance);
+BOOLN	SetReversalPot_IHCRP_Shamma(Float theReversalPot);
 
-BOOLN	SetReversalPot_IHCRP_Shamma(double theReversalPot);
-
-BOOLN	SetReversalPotCorrection_IHCRP_Shamma(double
+BOOLN	SetReversalPotCorrection_IHCRP_Shamma(Float
 		  theReversalPotCorrection);
-		  
-BOOLN	SetTotalCapacitance_IHCRP_Shamma(double theTotalCapacitance);
+
+BOOLN	SetTotalCapacitance_IHCRP_Shamma(Float theTotalCapacitance);
 
 BOOLN	SetUniParList_IHCRP_Shamma(void);
 

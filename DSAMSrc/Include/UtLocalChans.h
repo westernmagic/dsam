@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
  * Author:		L. P. O'Mard
  * Created:		17 Jan 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -47,11 +47,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, limitModeFlag, lowerLimitFlag, upperLimitFlag;
 	int		mode;
 	int		limitMode;
-	double	lowerLimit;
-	double	upperLimit;
+	Float	lowerLimit;
+	Float	upperLimit;
 
 	/* Private members */
 	NameSpecifier	*modeList;
@@ -80,8 +79,6 @@ BOOLN	Calc_Utility_LocalChans(EarObjectPtr data);
 
 BOOLN	CheckData_Utility_LocalChans(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_LocalChans(void);
-
 BOOLN	Free_Utility_LocalChans(void);
 
 UniParListPtr	GetUniParListPtr_Utility_LocalChans(void);
@@ -97,11 +94,9 @@ BOOLN	Init_Utility_LocalChans(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Utility_LocalChans(void);
 
-BOOLN	ReadPars_Utility_LocalChans(WChar *fileName);
-
 void	ResetProcess_Utility_LocalChans(EarObjectPtr data);
 
-BOOLN	SetLowerLimit_Utility_LocalChans(double theLowerLimit);
+BOOLN	SetLowerLimit_Utility_LocalChans(Float theLowerLimit);
 
 BOOLN	SetLimitMode_Utility_LocalChans(WChar * theLimitMode);
 
@@ -109,12 +104,9 @@ BOOLN	SetMode_Utility_LocalChans(WChar * theMode);
 
 BOOLN	SetParsPointer_Utility_LocalChans(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_LocalChans(WChar * mode, WChar * limitMode,
-		  double lowerLimit, double upperLimit);
-
 BOOLN	SetUniParList_Utility_LocalChans(void);
 
-BOOLN	SetUpperLimit_Utility_LocalChans(double theUpperLimit);
+BOOLN	SetUpperLimit_Utility_LocalChans(Float theUpperLimit);
 
 __END_DECLS
 

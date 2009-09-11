@@ -98,9 +98,6 @@ Init_Utility_Pause(ParameterSpecifier parSpec)
 		}
 	}
 	pausePtr->parSpec = parSpec;
-	pausePtr->alertModeFlag = TRUE;
-	pausePtr->delayFlag = TRUE;
-	pausePtr->messageFlag = TRUE;
 	pausePtr->alertMode = GENERAL_BOOLEAN_ON;
 	pausePtr->delay = -1;
 	DSAM_snprintf(pausePtr->message, MAXLINE, wxT("Processing paused"));
@@ -178,32 +175,6 @@ GetUniParListPtr_Utility_Pause(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_Pause(WChar * alertMode, int delay, WChar *message)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_Pause");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetAlertMode_Utility_Pause(alertMode))
-		ok = FALSE;
-	if (!SetDelay_Utility_Pause(delay))
-		ok = FALSE;
-	if (!SetMessage_Utility_Pause(message))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetAlertMode **********************************/
 
 /*
@@ -228,7 +199,6 @@ SetAlertMode_Utility_Pause(WChar * theAlertMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	pausePtr->alertModeFlag = TRUE;
 	pausePtr->alertMode = specifier;
 	return(TRUE);
 
@@ -252,7 +222,6 @@ SetDelay_Utility_Pause(int theDelay)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	pausePtr->delayFlag = TRUE;
 	pausePtr->delay = theDelay;
 	return(TRUE);
 
@@ -276,46 +245,8 @@ SetMessage_Utility_Pause(WChar *theMessage)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	pausePtr->messageFlag = TRUE;
 	DSAM_strncpy(pausePtr->message, theMessage, LONG_STRING);
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_Pause(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_Pause");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (pausePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!pausePtr->alertModeFlag) {
-		NotifyError(wxT("%s: alertMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pausePtr->delayFlag) {
-		NotifyError(wxT("%s: delay variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pausePtr->messageFlag) {
-		NotifyError(wxT("%s: message array not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -331,9 +262,8 @@ PrintPars_Utility_Pause(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_Pause");
 
-	if (!CheckPars_Utility_Pause()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (pausePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Pause Utility Module Parameters:-\n"));
@@ -345,51 +275,6 @@ PrintPars_Utility_Pause(void)
 	else
 		DPrint(wxT("%d (s)\n"), pausePtr->delay);
 	DPrint(wxT("\tmessage: %s\n"), pausePtr->message);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_Pause(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_Pause");
-	BOOLN	ok;
-	WChar	*filePath, alertMode[MAXLINE], message[LONG_STRING];
-	int		delay;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), alertMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &delay))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), message))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_Pause(alertMode, delay, message)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -436,11 +321,9 @@ InitModule_Utility_Pause(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = pausePtr;
-	theModule->CheckPars = CheckPars_Utility_Pause;
 	theModule->Free = Free_Utility_Pause;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Pause;
 	theModule->PrintPars = PrintPars_Utility_Pause;
-	theModule->ReadPars = ReadPars_Utility_Pause;
 	theModule->RunProcess = Process_Utility_Pause;
 	theModule->SetParsPointer = SetParsPointer_Utility_Pause;
 	return(TRUE);
@@ -535,8 +418,6 @@ Process_Utility_Pause(EarObjectPtr data)
 	FILE	*oldParsFile;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_Pause())
-			return(FALSE);
 		if (!CheckData_Utility_Pause(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

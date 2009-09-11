@@ -85,16 +85,13 @@ Init_Filter_LowPass(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (lowPassFPtr == NULL) { 
+		if (lowPassFPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	lowPassFPtr->parSpec = parSpec;
 	lowPassFPtr->updateProcessVariablesFlag = TRUE;
-	lowPassFPtr->modeFlag = TRUE;
-	lowPassFPtr->cutOffFrequencyFlag = TRUE;
-	lowPassFPtr->signalMultiplierFlag = TRUE;
 	lowPassFPtr->mode = FILTER_LOW_PASS_MODE_NORMAL;
 	lowPassFPtr->cutOffFrequency = 5000.0;
 	lowPassFPtr->signalMultiplier = 1.0;
@@ -224,9 +221,8 @@ SetMode_Filter_LowPass(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	lowPassFPtr->modeFlag = TRUE;
 	lowPassFPtr->mode = specifier;
-	lowPassFPtr->parList->pars[FILTER_LOW_PASS_SIGNALMULTIPLIER].enabled = 
+	lowPassFPtr->parList->pars[FILTER_LOW_PASS_SIGNALMULTIPLIER].enabled =
 	  (specifier == FILTER_LOW_PASS_MODE_SCALED);
 	return(TRUE);
 
@@ -240,7 +236,7 @@ SetMode_Filter_LowPass(WChar *theMode)
  */
 
 BOOLN
-SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency)
+SetCutOffFrequency_Filter_LowPass(Float theCutOffFrequency)
 {
 	static const WChar	 *funcName = wxT("SetCutOffFrequency_Filter_LowPass");
 
@@ -248,7 +244,6 @@ SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	lowPassFPtr->cutOffFrequencyFlag = TRUE;
 	lowPassFPtr->cutOffFrequency = theCutOffFrequency;
 	lowPassFPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -263,7 +258,7 @@ SetCutOffFrequency_Filter_LowPass(double theCutOffFrequency)
  */
 
 BOOLN
-SetSignalMultiplier_Filter_LowPass(double theSignalMultiplier)
+SetSignalMultiplier_Filter_LowPass(Float theSignalMultiplier)
 {
 	static const WChar	 *funcName = wxT("SetSignalMultiplier_Filter_LowPass");
 
@@ -271,73 +266,9 @@ SetSignalMultiplier_Filter_LowPass(double theSignalMultiplier)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	lowPassFPtr->signalMultiplierFlag = TRUE;
 	lowPassFPtr->signalMultiplier = theSignalMultiplier;
 	return(TRUE);
 
-}
-
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It returns TRUE if there are no problems.
- */
- 
-BOOLN
-CheckPars_Filter_LowPass(void)
-{
-	static const WChar *funcName = wxT("CheckPars_Filter_LowPass");
-
-	BOOLN ok;
-	
-	ok = TRUE;
-	if (lowPassFPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!lowPassFPtr->modeFlag) {
-		NotifyError(wxT("%s: Mode not set."), funcName);
-		ok = FALSE;
-	}
-	if (!lowPassFPtr->cutOffFrequencyFlag) {
-		NotifyError(wxT("%s: Cut-off frequency not set."), funcName);
-		ok = FALSE;
-	}
-	if (!lowPassFPtr->signalMultiplierFlag) {
-		NotifyError(wxT("%s: Signal multiplying factor not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
- 
-BOOLN
-SetPars_Filter_LowPass(WChar *theMode, double theLowerCutOffFreq, 
-  double theSignalMultiplier)
-{
-	static const WChar *funcName = wxT("SetPars_Filter_LowPass");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetCutOffFrequency_Filter_LowPass(theLowerCutOffFreq))
-		ok = FALSE;
-	if (!SetMode_Filter_LowPass(theMode))
-		ok = FALSE;
-	if (!SetSignalMultiplier_Filter_LowPass(theSignalMultiplier))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
-	
 }
 
 /****************************** PrintPars *************************************/
@@ -345,17 +276,12 @@ SetPars_Filter_LowPass(WChar *theMode, double theLowerCutOffFreq,
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_Filter_LowPass(void)
 {
 	static const WChar *funcName = wxT("PrintPars_Filter_LowPass");
 
-	if (!CheckPars_Filter_LowPass()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Low-Pass Filter Module Parameters:-\n"));
 	DPrint(wxT("\tMode = %s,"),
 	  lowPassFPtr->modeList[lowPassFPtr->mode].name);
@@ -365,53 +291,6 @@ PrintPars_Filter_LowPass(void)
 		  lowPassFPtr->signalMultiplier);
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_Filter_LowPass(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_Filter_LowPass");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	double	cutOffFrequency, signalMultiplier;
-    FILE    *fp;
-    
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &cutOffFrequency))
-		ok = FALSE;;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
-		ok = FALSE;;
-   fclose(fp);
-    Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Filter_LowPass(mode, cutOffFrequency, signalMultiplier)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-    
 }
 
 /****************************** SetParsPointer ********************************/
@@ -457,11 +336,9 @@ InitModule_Filter_LowPass(ModulePtr theModule)
 	}
 	theModule->parsPtr = lowPassFPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Filter_LowPass;
 	theModule->Free = Free_Filter_LowPass;
 	theModule->GetUniParListPtr = GetUniParListPtr_Filter_LowPass;
 	theModule->PrintPars = PrintPars_Filter_LowPass;
-	theModule->ReadPars = ReadPars_Filter_LowPass;
 	theModule->RunProcess = RunProcess_Filter_LowPass;
 	theModule->SetParsPointer = SetParsPointer_Filter_LowPass;
 	return(TRUE);
@@ -479,7 +356,7 @@ InitProcessVariables_Filter_LowPass(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_Filter_LowPass");
 	int		i, j;
-	double	*statePtr;
+	Float	*statePtr;
 	LowPassFPtr	p = lowPassFPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -555,10 +432,8 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
+		}
 		SetProcessName_EarObject(data, wxT("Low-pass filter process"));
-		if (!CheckPars_Filter_LowPass())
-			return(FALSE);
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
@@ -594,11 +469,11 @@ RunProcess_Filter_LowPass(EarObjectPtr data)
 				*outPtr++ = *inPtr++ * lowPassFPtr->signalMultiplier;
 			break;
 		} /* switch */
-		
+
 	}
 
 	/* Filter signal */
-	
+
 	IIR1Cont_Filters(outSignal, lowPassFPtr->coefficients);
 
 	SetProcessContinuity_EarObject(data);

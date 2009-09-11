@@ -69,11 +69,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, selectionModeFlag, numChannelsFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		mode;
 	int		selectionMode;
-	double	*selectionArray;
+	Float	*selectionArray;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -103,8 +102,6 @@ BOOLN	AllocNumChannels_Utility_SelectChannels(int numChannels);
 
 BOOLN	CheckData_Utility_SelectChannels(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_SelectChannels(void);
-
 BOOLN	Free_Utility_SelectChannels(void);
 
 UniParListPtr	GetUniParListPtr_Utility_SelectChannels(void);
@@ -121,14 +118,12 @@ BOOLN	PrintPars_Utility_SelectChannels(void);
 
 BOOLN	Process_Utility_SelectChannels(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_SelectChannels(WChar *fileName);
-
 BOOLN	SetDefaulEnabledPars_Utility_SelectChannels(void);
 
 void	SetEnabledState_Utility_SelectChannels(void);
 
 BOOLN	SetIndividualSelection_Utility_SelectChannels(int theIndex,
-		  double theSelection);
+		  Float theSelection);
 
 BOOLN	SetMode_Utility_SelectChannels(WChar *theMode);
 
@@ -138,10 +133,7 @@ BOOLN	SetNumChannels_Utility_SelectChannels(int theNumChannels);
 
 BOOLN	SetParsPointer_Utility_SelectChannels(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_SelectChannels(WChar *mode, int numChannels,
-		  double *selectionArray);
-
-BOOLN	SetSelectionArray_Utility_SelectChannels(double *theSelectionArray);
+BOOLN	SetSelectionArray_Utility_SelectChannels(Float *theSelectionArray);
 
 BOOLN	SetSelectionMode_Utility_SelectChannels(WChar * theSelectionMode);
 

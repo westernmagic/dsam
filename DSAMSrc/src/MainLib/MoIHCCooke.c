@@ -2,10 +2,10 @@
  *
  * File:		MoIHCCooke.C
  * Purpose: 	Cooke 1991 hair cell.
- * Comments:	
+ * Comments:
  * Authors:		M. Cooke, L.P.O'Mard.
  * Created:		21 May 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  ********/
@@ -66,19 +66,14 @@ Init_IHC_Cooke91(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (cookeHCPtr == NULL) { 
+		if (cookeHCPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	cookeHCPtr->parSpec = parSpec;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
-	cookeHCPtr->crawfordConstFlag = TRUE;
-	cookeHCPtr->releaseFractionFlag = TRUE;
-	cookeHCPtr->refillFractionFlag = TRUE;
-	cookeHCPtr->spontRateFlag = TRUE;
-	cookeHCPtr->maxSpikeRateFlag = TRUE;
-					
+
 	cookeHCPtr->crawfordConst = 100;
 	cookeHCPtr->releaseFraction = 24.0;
 	cookeHCPtr->refillFraction = 6.0;
@@ -202,7 +197,7 @@ GetUniParListPtr_IHC_Cooke91(void)
  */
 
 BOOLN
-SetCrawfordConst_IHC_Cooke91(double theCrawfordConst)
+SetCrawfordConst_IHC_Cooke91(Float theCrawfordConst)
 {
 	static const WChar	*funcName = wxT("SetCrawfordConst_IHC_Cooke91");
 
@@ -210,7 +205,6 @@ SetCrawfordConst_IHC_Cooke91(double theCrawfordConst)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	cookeHCPtr->crawfordConstFlag = TRUE;
 	cookeHCPtr->crawfordConst = theCrawfordConst;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -225,7 +219,7 @@ SetCrawfordConst_IHC_Cooke91(double theCrawfordConst)
  */
 
 BOOLN
-SetReleaseFraction_IHC_Cooke91(double theReleaseFraction)
+SetReleaseFraction_IHC_Cooke91(Float theReleaseFraction)
 {
 	static const WChar	*funcName = wxT("SetReleaseFraction_IHC_Cooke91");
 
@@ -233,7 +227,6 @@ SetReleaseFraction_IHC_Cooke91(double theReleaseFraction)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	cookeHCPtr->releaseFractionFlag = TRUE;
 	cookeHCPtr->releaseFraction = theReleaseFraction;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -248,7 +241,7 @@ SetReleaseFraction_IHC_Cooke91(double theReleaseFraction)
  */
 
 BOOLN
-SetRefillFraction_IHC_Cooke91(double theRefillFraction)
+SetRefillFraction_IHC_Cooke91(Float theRefillFraction)
 {
 	static const WChar	*funcName = wxT("SetRefillFraction_IHC_Cooke91");
 
@@ -256,7 +249,6 @@ SetRefillFraction_IHC_Cooke91(double theRefillFraction)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	cookeHCPtr->refillFractionFlag = TRUE;
 	cookeHCPtr->refillFraction = theRefillFraction;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -271,7 +263,7 @@ SetRefillFraction_IHC_Cooke91(double theRefillFraction)
  */
 
 BOOLN
-SetSpontRate_IHC_Cooke91(double theSpontRate)
+SetSpontRate_IHC_Cooke91(Float theSpontRate)
 {
 	static const WChar	*funcName = wxT("SetSpontRate_IHC_Cooke91");
 
@@ -279,7 +271,6 @@ SetSpontRate_IHC_Cooke91(double theSpontRate)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	cookeHCPtr->spontRateFlag = TRUE;
 	cookeHCPtr->spontRate = theSpontRate;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -295,7 +286,7 @@ SetSpontRate_IHC_Cooke91(double theSpontRate)
  */
 
 BOOLN
-SetMaxSpikeRate_IHC_Cooke91(double theMaxSpikeRate)
+SetMaxSpikeRate_IHC_Cooke91(Float theMaxSpikeRate)
 {
 	static const WChar *funcName = wxT("SetMaxSpikeRate_IHC_Cooke91");
 
@@ -308,82 +299,10 @@ SetMaxSpikeRate_IHC_Cooke91(double theMaxSpikeRate)
 		  theMaxSpikeRate);
 		return(FALSE);
 	}
-	cookeHCPtr->maxSpikeRateFlag = TRUE;
 	cookeHCPtr->maxSpikeRate = theMaxSpikeRate;
 	cookeHCPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- */
-
-BOOLN
-SetPars_IHC_Cooke91(double crawfordConst, double releaseFraction,
-  double refillFraction, double spontRate, double maxSpikeRate)
-{
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetCrawfordConst_IHC_Cooke91(crawfordConst))
-		ok = FALSE;
-	if (!SetReleaseFraction_IHC_Cooke91(releaseFraction))
-		ok = FALSE;
-	if (!SetRefillFraction_IHC_Cooke91(refillFraction))
-		ok = FALSE;
-	if (!SetSpontRate_IHC_Cooke91(spontRate))
-		ok = FALSE;
-	if (!SetMaxSpikeRate_IHC_Cooke91(maxSpikeRate))
-		ok = FALSE;
-	return(ok);
-	  
-}
-
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that all of the parameters for the module are set.
- * Because this module is defined by its coeffients, default values are always
- * set if none of the parameters are set, otherwise all of them must be
- * individually set.
- */
-
-BOOLN
-CheckPars_IHC_Cooke91(void)
-{
-	static const WChar *funcName = wxT("CheckPars_IHC_Cooke91");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (cookeHCPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!cookeHCPtr->releaseFractionFlag) {
-		NotifyError(wxT("%s: Release fraction not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!cookeHCPtr->refillFractionFlag) {
-		NotifyError(wxT("%s: Release fraction not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!cookeHCPtr->refillFractionFlag) {
-		NotifyError(wxT("%s: refill fraction not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!cookeHCPtr->spontRateFlag) {
-		NotifyError(wxT("%s: Spontaneous rate not correctlyset."), funcName);
-		ok = FALSE;
-	}
-	if (!cookeHCPtr->maxSpikeRateFlag) {
-		NotifyError(wxT("%s: Maximum spike rate not correctly set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-		
 }
 
 /****************************** PrintPars *************************************/
@@ -391,17 +310,12 @@ CheckPars_IHC_Cooke91(void)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_IHC_Cooke91(void)
 {
 	static const WChar *funcName = wxT("PrintPars_IHC_Cooke91");
 
-	if (!CheckPars_IHC_Cooke91()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Cooke 91 Inner Hair Cell Module Parameters:-\n"));
 	DPrint(wxT("\tCrawford constant = %g\n"),
 	  cookeHCPtr->crawfordConst);
@@ -412,58 +326,6 @@ PrintPars_IHC_Cooke91(void)
 	  maxSpikeRate);
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_IHC_Cooke91(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_IHC_Cooke91");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	crawfordConst, releaseFraction, refillFraction, spontRate;
-	double	maxSpikeRate;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &crawfordConst))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &releaseFraction))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &refillFraction))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &spontRate))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxSpikeRate))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_IHC_Cooke91(crawfordConst, releaseFraction, refillFraction,
-	  spontRate, maxSpikeRate)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(ok);
-	
 }
 
 /****************************** SetParsPointer ********************************/
@@ -509,11 +371,9 @@ InitModule_IHC_Cooke91(ModulePtr theModule)
 	}
 	theModule->parsPtr = cookeHCPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHC_Cooke91;
 	theModule->Free = Free_IHC_Cooke91;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Cooke91;
 	theModule->PrintPars = PrintPars_IHC_Cooke91;
-	theModule->ReadPars = ReadPars_IHC_Cooke91;
 	theModule->RunProcess = RunModel_IHC_Cooke91;
 	theModule->SetParsPointer = SetParsPointer_IHC_Cooke91;
 	return(TRUE);
@@ -532,17 +392,17 @@ BOOLN
 CheckData_IHC_Cooke91(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("CheckData_IHC_Cooke91");
-	
+
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
 		return(FALSE);
-	}	
+	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
 	if (!CheckRamp_SignalData(_InSig_EarObject(data, 0)))
 		return(FALSE);
 	return(TRUE);
-	
+
 }
 
 /**************************** InitProcessVariables ****************************/
@@ -557,9 +417,9 @@ InitProcessVariables_IHC_Cooke91(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_IHC_Cooke91");
 	int		i;
-	double	dt, vmin, k, l;
+	Float	dt, vmin, k, l;
 	CookeHCPtr	p = cookeHCPtr;		/* Shorter variable for long formulae. */;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -618,16 +478,14 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_IHC_Cooke91");
 	int		i;
-	double	dt, rp, spmIn, rate, delta;
+	Float	dt, rp, spmIn, rate, delta;
 	ChanLen	j;
 	ChanData	*inPtr, *outPtr;
 	CookeHCPtr	p = cookeHCPtr; /* Shorter name for use with long equations. */
 	SignalDataPtr	outSignal;
 	CookeHCVarsPtr	c;
-	
+
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHC_Cooke91())		
-			return(FALSE);
 		if (!CheckData_IHC_Cooke91(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -654,7 +512,7 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-		
+
 	outSignal = _OutSig_EarObject(data);
 	for (i = outSignal->offset; i < outSignal->numChannels; i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
@@ -698,5 +556,5 @@ RunModel_IHC_Cooke91(EarObjectPtr data)
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
-		
+
 } /* RunModel_IHC_Cooke91 */

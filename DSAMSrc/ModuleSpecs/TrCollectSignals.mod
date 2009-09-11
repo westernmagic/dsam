@@ -6,6 +6,6 @@ qualifier		CollectSignals;
 typedef struct {
 
 	NameSpecifier	labelMode;
-	double			*labels;
+	Float			*labels;
 
 } CollectSigs;

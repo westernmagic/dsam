@@ -18,24 +18,24 @@
 
 #ifndef	_FIPARFILE_H
 #define _FIPARFILE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
 #define FORMAT_DELIMITERS		wxT(" ,\t")		/* Characters to separate
 											 * formatting commands. */
-											 
+
 /******************************************************************************/
 /*************************** Type Definitions *********************************/
 /******************************************************************************/
 
 typedef struct {
-	
+
 	BOOLN	diagnosticsFlag;	/* Set to TRUE to print diagnostics. */
 	BOOLN	emptyLineMessageFlag; /* Set to TRUE to GetPars_.. error message. */
 	int		parLineCount;	/*  A record of the parameter file lines read. */
-	
+
 } ParFile, *ParFilePtr;
 
 /******************************************************************************/
@@ -44,7 +44,7 @@ typedef struct {
 
 __BEGIN_DECLS
 
-extern ParFilePtr parFile; 
+extern ParFilePtr parFile;
 
 __END_DECLS
 
@@ -70,7 +70,7 @@ WChar	*GetLine_ParFile(WChar *line, int maxChars, FILE *fp);
 
 int		GetLineCount_ParFile(void);
 
-BOOLN	GetPars_ParFile(FILE *fp, WChar *fmt, ...);
+BOOLN	GetPars_ParFile(FILE *fp, const WChar *fmt, ...);
 
 int		IdentifyFormat_ParFile(WChar *fmt, WChar *extraFmt);
 

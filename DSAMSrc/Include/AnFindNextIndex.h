@@ -10,7 +10,7 @@
  *				< 0.
  * Author:		L. P. O'Mard
  * Created:		6 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University Of Essex.
  *
  *********************/
@@ -49,9 +49,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, timeOffsetFlag;
 	int		mode;
-	double	timeOffset;
+	Float	timeOffset;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -81,8 +80,6 @@ BOOLN	Calc_Analysis_FindNextIndex(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_FindNextIndex(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_FindNextIndex(void);
-
 BOOLN	Free_Analysis_FindNextIndex(void);
 
 UniParListPtr	GetUniParListPtr_Analysis_FindNextIndex(void);
@@ -93,17 +90,13 @@ BOOLN	InitModeList_Analysis_FindNextIndex(void);
 
 BOOLN	PrintPars_Analysis_FindNextIndex(void);
 
-BOOLN	ReadPars_Analysis_FindNextIndex(WChar *fileName);
-
 BOOLN	SetMode_Analysis_FindNextIndex(WChar *theMode);
 
 BOOLN	InitModule_Analysis_FindNextIndex(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_FindNextIndex(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_FindNextIndex(WChar *mode, double timeOffset);
-
-BOOLN	SetTimeOffset_Analysis_FindNextIndex(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_FindNextIndex(Float theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_FindNextIndex(void);
 

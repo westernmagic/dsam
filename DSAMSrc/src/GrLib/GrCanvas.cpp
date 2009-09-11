@@ -6,7 +6,7 @@
  *				summary display mode is on (default).
  *				26-05-98 LPO: Summary line's maximum and minimum Y limits were
  *				not being calculated.
- *				23-06-98 LPO: memDC should not be deleted, as it is not a 
+ *				23-06-98 LPO: memDC should not be deleted, as it is not a
  *				pointer to which memory is allocated, and xAxis and yAxis were
  *				being deleted twice!
  *				24-06-98 LPO: Corrected display resizing. The memory bitmap is
@@ -112,7 +112,7 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 
 	memBmp = NULL;
 	CreateBackingBitmap();
-	
+
 	labelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
 	superLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
 	insetLabelFont = new wxFont(14, wxROMAN, wxNORMAL, wxNORMAL);
@@ -127,7 +127,7 @@ MyCanvas::MyCanvas(wxFrame *frame, SignalDispPtr theSignalDispPtr):
 /****************************** Destructor ************************************/
 
 MyCanvas::~MyCanvas(void)
-{	
+{
 	if (xAxis)
 		delete xAxis;
 	if (yAxis)
@@ -157,8 +157,8 @@ MyCanvas::CreateBackingBitmap(void)
 	parent->GetClientSize(&bitmapWidth, &bitmapHeight);
 	memBmp = new wxBitmap(bitmapWidth, bitmapHeight);
 	memDC.SelectObject(*memBmp);
-	memDC.Clear();	
-	
+	memDC.Clear();
+
 }
 
 /****************************** SetGraphAreas *********************************/
@@ -171,7 +171,7 @@ void
 MyCanvas::SetGraphAreas(void)
 {
 	int		xAxisSpace, yAxisSpace, summarySpace, topMargin, chanActivitySpace;
-	
+
 	wxRect	graph(wxDefaultPosition, parent->GetClientSize());
 
 	graph.SetWidth((int) (graph.GetWidth() * (1.0 - GRAPH_RIGHT_MARGIN_SCALE)));
@@ -218,7 +218,7 @@ MyCanvas::SetGraphAreas(void)
 	summary.SetY(graph.GetBottom() - summary.GetHeight());
 	if (mySignalDispPtr->summaryDisplay)
 		graph.SetBottom(summary.GetTop() + 1);
-	
+
 	// Signal drawing dimensions
 	signal = graph;
 
@@ -226,7 +226,7 @@ MyCanvas::SetGraphAreas(void)
 
 /****************************** InitGraph *************************************/
 
-/* 
+/*
  * This routine initialises the graph, i.e. scaling etc.
  * The minYFlag and maxYFlag signalDisp parameters are set manually when the
  * 'minY' and 'maxy' variables.
@@ -246,9 +246,7 @@ MyCanvas::InitGraph(void)
 	if (mySignalDispPtr->autoYScale) {
 		signalLines.CalcMaxMinLimits();
 		mySignalDispPtr->minY = signalLines.GetMinY();
-		mySignalDispPtr->minYFlag = TRUE;
 		mySignalDispPtr->maxY = signalLines.GetMaxY();
-		mySignalDispPtr->maxYFlag = TRUE;
 		if (mySignalDispPtr->summaryDisplay)
 			summaryLine.CalcMaxMinLimits();
 	} else {
@@ -257,7 +255,7 @@ MyCanvas::InitGraph(void)
 			summaryLine.SetYLimits(mySignalDispPtr->minY, mySignalDispPtr->
 			  maxY);
 	}
-	
+
 	switch (mySignalDispPtr->mode) {
 	case GRAPH_MODE_LINE:
 		SetLines(signalLines);
@@ -292,11 +290,11 @@ MyCanvas::InitData(EarObjectPtr data)
 		chanLength = signal->length;
 	} else {
 		offset = (ChanLen) floor(mySignalDispPtr->xOffset / signal->dt + 0.5);
-		chanLength = (mySignalDispPtr->xExtent < DBL_EPSILON)? signal->length -
+		chanLength = (mySignalDispPtr->xExtent < DSAM_EPSILON)? signal->length -
 		  offset: (ChanLen) floor((mySignalDispPtr->xExtent) / signal->dt +
 		  0.5);
 	}
-		
+
 	timeIndex = _WorldTime_EarObject(data);
 	dt = signal->dt;
 	signalLines.Set(signal, offset, chanLength);
@@ -316,7 +314,7 @@ MyCanvas::InitData(EarObjectPtr data)
  * This method sets the lists of points from the output signal of an EarObject.
  * The routine uses the minYRecord array to ensure that channels that are
  * "underneath" do not show through the "upper" channels.
- * 
+ *
  */
 
 void
@@ -468,7 +466,7 @@ MyCanvas::GetMinimumIntLog(double value)
 {
 	double	absValue;
 
-	if ((absValue = fabs(value)) < DBL_EPSILON)
+	if ((absValue = fabs(value)) < DSAM_EPSILON)
 		return 0;
 	return((int) floor(log10(absValue)));
 
@@ -585,7 +583,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 		}
 		if (mySignalDispPtr->yInsetScale) {
 			wxRect	yInset = *yAxis;
-			yInset.SetHeight((int) floor(yAxis->GetHeight() * 
+			yInset.SetHeight((int) floor(yAxis->GetHeight() *
 			  GRAPH_Y_INSET_SCALE_HEIGHT_SCALE + 0.5));
 			yInset.SetY(yInset.GetY() + yAxis->GetHeight() - yInset.GetHeight(
 			  ));
@@ -640,7 +638,7 @@ MyCanvas::SetPointSize(wxFont **font, int pointSize)
 	delete *font;
 	*font = new wxFont(pointSize, family, style, weight);
 #	endif /* __WXMSW__ */
- 
+
 }
 
 /****************************** DrawGraph *************************************/

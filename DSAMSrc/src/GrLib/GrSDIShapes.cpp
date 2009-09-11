@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		14 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -113,29 +113,31 @@ SDIDisplayShape::GetXMLInfo(wxXmlNode *myElement)
 	return(true);
 
 }
+
 /******************************************************************************/
-/****************************** SDIControlShape Methods ***********************/
+/****************************** SDIControlParentShape Methods *****************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, SDIPolygonShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIControlParentShape, SDIPolygonShape)
 
 /****************************** Constructor ***********************************/
 
-SDIControlShape::SDIControlShape(double width, double height): SDIPolygonShape(
+SDIControlParentShape::SDIControlParentShape(double width, double height): SDIPolygonShape(
   width, height)
 {
 	wxList *thePoints = new wxList;
-	wxRealPoint *point = new wxRealPoint(0.0, (-h/2.0));
-	thePoints->Append((wxObject*) point);
+	double	s = 0.75;
 
-	point = new wxRealPoint((w/2.0), 0.0);
-	thePoints->Append((wxObject*) point);
-
-	point = new wxRealPoint(0.0, (h/2.0));
-	thePoints->Append((wxObject*) point);
-
-	point = new wxRealPoint((-w/2.0), 0.0);
-	thePoints->Append((wxObject*) point);
+	thePoints->Append((wxObject*) new wxRealPoint(0.0, -h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(s * w / 2.0, -h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(w / 2.0, s * -h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(w / 2.0, s * h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(s * w / 2.0, h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(0.0, h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(s * -w / 2.0, h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(-w / 2.0, s * h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(-w / 2.0, s * -h / 2.0));
+	thePoints->Append((wxObject*) new wxRealPoint(s * -w / 2.0, -h / 2.0));
 
 	Create(thePoints);
 
@@ -144,7 +146,7 @@ SDIControlShape::SDIControlShape(double width, double height): SDIPolygonShape(
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
+SDIControlParentShape::AddXMLInfo(DSAMXMLNode *node)
 {
 	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_CONTROL_SHAPE_ELEMENT);
@@ -156,12 +158,94 @@ SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
 /****************************** AddXMLInfo ************************************/
 
 bool
-SDIControlShape::GetXMLInfo(wxXmlNode *myElement)
+SDIControlParentShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
 }
+
+/******************************************************************************/
+/****************************** SDIControlShape Methods ***********************/
+/******************************************************************************/
+
+IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, SDICompositeShape)
+
+/****************************** Constructor ***********************************/
+
+SDIControlShape::SDIControlShape(double width, double height): SDICompositeShape()
+{
+	AddChild(new SDIControlParentShape(width, height));
+
+}
+
+/****************************** AddXMLInfo ************************************/
+
+void
+SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
+{
+
+}
+
+/****************************** AddXMLInfo ************************************/
+
+bool
+SDIControlShape::GetXMLInfo(wxXmlNode *myElement)
+{
+	return(true);
+
+}
+
+#if SHAPE_DEBUG
+
+/****************************** SetSize ***************************************/
+
+void
+SDIControlShape::SetSize(double w, double h, bool recursive)
+{
+  SetAttachmentSize(w, h);
+
+  double xScale = (double)(w/(wxMax(1.0, GetWidth())));
+  double yScale = (double)(h/(wxMax(1.0, GetHeight())));
+
+  m_width = w;
+  m_height = h;
+  wprintf(wxT("SDIControlShape::SetSize: w = %g, h = %g\n"), w, h);
+
+  if (!recursive) return;
+
+  wxNode *node = m_children.GetFirst();
+	if (m_children.GetFirst())
+		wprintf(wxT("SDIControlShape::SetSize: node correctly set."));
+
+  if (!GetCanvas())
+	  wprintf(wxT("SDIControlShape::SetSize: Debug: No Canvas\n"));
+  wxClientDC dc(GetCanvas());
+  GetCanvas()->PrepareDC(dc);
+
+  double xBound, yBound;
+  while (node)
+  {
+    wxShape *object = (wxShape *)node->GetData();
+
+    // Scale the position first
+    double newX = (double)(((object->GetX() - GetX())*xScale) + GetX());
+    double newY = (double)(((object->GetY() - GetY())*yScale) + GetY());
+    object->Show(false);
+    object->Move(dc, newX, newY);
+    object->Show(true);
+
+    // Now set the scaled size
+    object->GetBoundingBoxMin(&xBound, &yBound);
+    object->SetSize(object->GetFixedWidth() ? xBound : xScale*xBound,
+                    object->GetFixedHeight() ? yBound : yScale*yBound);
+
+    node = node->GetNext();
+  }
+  SetDefaultRegionSize();
+}
+
+#endif // DEBUG
 
 /******************************************************************************/
 /****************************** SDIFilterShape Methods ************************/
@@ -394,9 +478,9 @@ SDILineShape::GetXMLControlPointsInfo(wxXmlNode *myElement)
 		}
 		m_lineControlPoints->Append((wxObject*) point);
 	}
-		
+
 	return(ok);
-	
+
 }
 
 /****************************** GetXMLArrowListInfo ***************************/
@@ -500,10 +584,10 @@ SDILineShape::GetXMLInfo(wxXmlNode *myElement)
 		m_regions.Append((wxObject *)newRegion);
 	}
 	for (child = myElement->GetChildren(); ok && child; child = child->GetNext())
-		if ((child->GetName() == SHAPE_XML_CONTROL_POINTS_ELEMENT) && 
+		if ((child->GetName() == SHAPE_XML_CONTROL_POINTS_ELEMENT) &&
 		  !GetXMLControlPointsInfo(child))
 			ok = false;
-		else if ((child->GetName() == SHAPE_XML_ARROW_LIST_ELEMENT) && 
+		else if ((child->GetName() == SHAPE_XML_ARROW_LIST_ELEMENT) &&
 		  !GetXMLArrowListInfo(child))
 			ok = false;
 	if (!ok)

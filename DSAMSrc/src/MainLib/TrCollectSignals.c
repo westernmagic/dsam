@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.4.2 (Dec 19 2003).
  * Author:		L. P. O'Mard
  * Created:		22 Apr 2004
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  *********************/
@@ -120,7 +120,6 @@ Init_Transform_CollectSignals(ParameterSpecifier parSpec)
 		}
 	}
 	collectSigsPtr->parSpec = parSpec;
-	collectSigsPtr->labelModeFlag = TRUE;
 	collectSigsPtr->labelMode = TRANSFORM_COLLECTSIGNALS_LABELMODE_CHAN_INDEX;
 	collectSigsPtr->labels = NULL;
 
@@ -238,7 +237,6 @@ SetLabelMode_Transform_CollectSignals(WChar * theLabelMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	collectSigsPtr->labelModeFlag = TRUE;
 	collectSigsPtr->labelMode = specifier;
 	SetEnabledState_Transform_CollectSignals();
 	return(TRUE);
@@ -254,7 +252,7 @@ SetLabelMode_Transform_CollectSignals(WChar * theLabelMode)
  */
 
 BOOLN
-SetLabels_Transform_CollectSignals(double *theLabels)
+SetLabels_Transform_CollectSignals(Float *theLabels)
 {
 	static const WChar	*funcName = wxT("SetLabels_Transform_CollectSignals");
 
@@ -277,7 +275,7 @@ SetLabels_Transform_CollectSignals(double *theLabels)
  */
 
 BOOLN
-SetIndividualLabel_Transform_CollectSignals(int theIndex, double theLabel)
+SetIndividualLabel_Transform_CollectSignals(int theIndex, Float theLabel)
 {
 	static const WChar *funcName =
 	  wxT("SetIndividualLabelArray_Utility_CollectSignals");
@@ -303,41 +301,6 @@ SetIndividualLabel_Transform_CollectSignals(int theIndex, double theLabel)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Transform_CollectSignals(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Transform_CollectSignals");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (collectSigsPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!collectSigsPtr->labelModeFlag) {
-		NotifyError(wxT("%s: labelMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if ((collectSigsPtr->labelMode ==
-	  TRANSFORM_COLLECTSIGNALS_LABELMODE_USER) && collectSigsPtr->labels ==
-	  NULL) {
-		NotifyError(wxT("%s: 'Labels' array not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -351,11 +314,6 @@ PrintPars_Transform_CollectSignals(void)
 	static const WChar	*funcName = wxT("PrintPars_Transform_CollectSignals");
 	int		i;
 
-	if (!CheckPars_Transform_CollectSignals()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Collect Signal Transform Module Parameters:-\n"));
 	DPrint(wxT("\tLabel mode = %s.\n"), collectSigsPtr->labelModeList[
 	  collectSigsPtr->labelMode].name);
@@ -412,7 +370,6 @@ InitModule_Transform_CollectSignals(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = collectSigsPtr;
-	theModule->CheckPars = CheckPars_Transform_CollectSignals;
 	theModule->Free = Free_Transform_CollectSignals;
 	theModule->GetUniParListPtr = GetUniParListPtr_Transform_CollectSignals;
 	theModule->PrintPars = PrintPars_Transform_CollectSignals;
@@ -451,7 +408,7 @@ CheckData_Transform_CollectSignals(EarObjectPtr data)
 	for (i = 1; ok && (i < data->numInSignals); i++)
 		if ((_InSig_EarObject(data, 0)->length != _InSig_EarObject(data, i)->
 		  length) || (fabs(_InSig_EarObject(data, 0)->dt - _InSig_EarObject(
-		  data, i)->dt) > DBL_EPSILON) || (_InSig_EarObject(data, 0)->
+		  data, i)->dt) > DSAM_EPSILON) || (_InSig_EarObject(data, 0)->
 		  interleaveLevel != _InSig_EarObject(data, i)->
 		  interleaveLevel)) {
 			NotifyError(wxT("%s: Input signal [%d] does not have the same ")
@@ -486,12 +443,10 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Transform_CollectSignals");
 	register ChanData	 **outChannels;
 	uShort	i, chan, numChannels;
-	double	*chanLabels, *userLabels;
+	Float	*chanLabels, *userLabels;
 	CollectSigsPtr	p = collectSigsPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Transform_CollectSignals())
-			return(FALSE);
 		if (!CheckData_Transform_CollectSignals(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -534,7 +489,7 @@ Process_Transform_CollectSignals(EarObjectPtr data)
 				*chanLabels++ = *userLabels++;
 				break;
 			default:
-				*chanLabels++ = (double) (outChannels -
+				*chanLabels++ = (Float) (outChannels -
 				  _OutSig_EarObject(data)->channel - 1);
 			} /* switch */
 		}

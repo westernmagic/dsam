@@ -7,7 +7,7 @@
  * Comments:	Written using ModuleProducer version 1.2.9 (Aug 10 2000).
  * Author:		L. P. O'Mard.
  * Created:		04 Dec 2000
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2000, CNBH University of Essex
  *
  *********************/
@@ -52,13 +52,12 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	diagnosticModeFlag, typeFlag, numTapsFlag, numBandsFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
 	int		type;
 	int		numTaps;
 	int		numBands;
-	double	*bandFreqs, *desired, *weights;
+	Float	*bandFreqs, *desired, *weights;
 
 	/* Private members */
 	NameSpecifier	*typeList;
@@ -88,8 +87,6 @@ BOOLN	AllocNumBands_Filter_FIR(int numBands);
 
 BOOLN	CheckData_Filter_FIR(EarObjectPtr data);
 
-BOOLN	CheckPars_Filter_FIR(void);
-
 void	FreeProcessVariables_Filter_FIR(void);
 
 BOOLN	Free_Filter_FIR(void);
@@ -106,21 +103,19 @@ BOOLN	Init_Filter_FIR(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Filter_FIR(void);
 
-BOOLN	ReadPars_Filter_FIR(WChar *fileName);
-
 BOOLN	RunProcess_Filter_FIR(EarObjectPtr data);
 
-BOOLN	SetBandFreqs_Filter_FIR(double *theBandFreqs);
+BOOLN	SetBandFreqs_Filter_FIR(Float *theBandFreqs);
 
-BOOLN	SetDesired_Filter_FIR(double *theDesired);
+BOOLN	SetDesired_Filter_FIR(Float *theDesired);
 
 BOOLN	SetDiagnosticMode_Filter_FIR(WChar * theDiagnosticMode);
 
-BOOLN	SetIndividualBand_Filter_FIR(int theIndex, double theBand);
+BOOLN	SetIndividualBand_Filter_FIR(int theIndex, Float theBand);
 
-BOOLN	SetIndividualDesired_Filter_FIR(int theIndex, double theDesired);
+BOOLN	SetIndividualDesired_Filter_FIR(int theIndex, Float theDesired);
 
-BOOLN	SetIndividualWeight_Filter_FIR(int theIndex, double theWeight);
+BOOLN	SetIndividualWeight_Filter_FIR(int theIndex, Float theWeight);
 
 BOOLN	InitModule_Filter_FIR(ModulePtr theModule);
 
@@ -130,14 +125,11 @@ BOOLN	SetNumTaps_Filter_FIR(int theNumTaps);
 
 BOOLN	SetParsPointer_Filter_FIR(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_FIR(WChar * diagnosticMode, WChar * type, int numTaps,
-		  int numBands, double *bandFreqs, double *desired, double *weights);
-
 BOOLN	SetType_Filter_FIR(WChar * theType);
 
 BOOLN	SetUniParList_Filter_FIR(void);
 
-BOOLN	SetWeights_Filter_FIR(double *theWeights);
+BOOLN	SetWeights_Filter_FIR(Float *theWeights);
 
 __END_DECLS
 

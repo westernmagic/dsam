@@ -40,16 +40,14 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	frequencyFlag, intensityFlag, durationFlag, dtFlag, phaseFlag;
-	BOOLN	modulationDepthFlag, modulationFrequencyFlag, modulationPhaseFlag;
-	double	frequency;
-	double	intensity;
-	double	duration;
-	double	dt;
-	double	phase;
-	double	modulationDepth;
-	double	modulationFrequency;
-	double	modulationPhase;
+	Float	frequency;
+	Float	intensity;
+	Float	duration;
+	Float	dt;
+	Float	phase;
+	Float	modulationDepth;
+	Float	modulationFrequency;
+	Float	modulationPhase;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -74,8 +72,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_PureTone_FM(EarObjectPtr data);
 
-BOOLN	CheckPars_PureTone_FM(void);
-
 BOOLN	Free_PureTone_FM(void);
 
 BOOLN	GenerateSignal_PureTone_FM(EarObjectPtr data);
@@ -86,32 +82,25 @@ BOOLN	Init_PureTone_FM(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_FM(void);
 
-BOOLN	ReadPars_PureTone_FM(WChar *fileName);
+BOOLN	SetModulationDepth_PureTone_FM(Float theModulationDepth);
 
-BOOLN	SetModulationDepth_PureTone_FM(double theModulationDepth);
+BOOLN	SetDuration_PureTone_FM(Float theDuration);
 
-BOOLN	SetDuration_PureTone_FM(double theDuration);
+BOOLN	SetModulationFrequency_PureTone_FM(Float theModulationFrequency);
 
-BOOLN	SetModulationFrequency_PureTone_FM(double theModulationFrequency);
+BOOLN	SetFrequency_PureTone_FM(Float theFrequency);
 
-BOOLN	SetFrequency_PureTone_FM(double theFrequency);
-
-BOOLN	SetIntensity_PureTone_FM(double theIntensity);
+BOOLN	SetIntensity_PureTone_FM(Float theIntensity);
 
 BOOLN	InitModule_PureTone_FM(ModulePtr theModule);
 
 BOOLN	SetParsPointer_PureTone_FM(ModulePtr theModule);
 
-BOOLN	SetPars_PureTone_FM(double frequency, double intensity,
-		  double duration, double samplingInterval, double phase,
-		  double modulationDepth, double modulationFrequency,
-		  double modulationPhase);
+BOOLN	SetModulationPhase_PureTone_FM(Float thePhaseFM);
 
-BOOLN	SetModulationPhase_PureTone_FM(double thePhaseFM);
+BOOLN	SetPhase_PureTone_FM(Float thePhase);
 
-BOOLN	SetPhase_PureTone_FM(double thePhase);
-
-BOOLN	SetSamplingInterval_PureTone_FM(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PureTone_FM(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PureTone_FM(void);
 

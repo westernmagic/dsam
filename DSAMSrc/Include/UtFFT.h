@@ -6,7 +6,7 @@
  * Comments:	This was renamed from the old AnFourierT module.
  * Author:		L. P. O'Mard
  * Created:		17-07-00
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex
  *
  **********************/
@@ -28,17 +28,28 @@
 #define	BACKWARD_FT		-1			/* Backward FT */
 
 /******************************************************************************/
+/*************************** Macro Definitions ********************************/
+/******************************************************************************/
+
+#if DSAM_USE_FLOAT
+#	define DSAM_FFTW_NAME(NAME)	fftwf_ ## NAME
+#else
+#	define DSAM_FFTW_NAME(NAME)	fftw_ ## NAME
+#endif
+
+/******************************************************************************/
 /****************************** Type definitions ******************************/
 /******************************************************************************/
 
 #if HAVE_FFTW3
-	typedef fftw_complex	Complx, *ComplxPtr;
+	typedef DSAM_FFTW_NAME(complex)	Complx, *ComplxPtr;
+	typedef DSAM_FFTW_NAME(plan)	Fftw_plan;
 
 	typedef struct {		/* Used so that logical lengths for the arrays can be set */
 
 		int		numPlans;
-		fftw_plan	*plan;
-		double	*data;
+		Fftw_plan	*plan;
+		Float	*data;
 		unsigned long	arrayLen;
 		unsigned long	fftLen;
 		unsigned long	dataLen;
@@ -59,11 +70,11 @@
  */
 __BEGIN_DECLS
 
-void	Calc_FFT(double *data, unsigned long nn, int isign);
+void	Calc_FFT(Float *data, unsigned long nn, int isign);
 
 void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
 
-BOOLN	CalcReal_FFT(SignalDataPtr signal, double *fT, int direction);
+BOOLN	CalcReal_FFT(SignalDataPtr signal, Float *fT, int direction);
 
 void	CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
 		  int kLow, int kUpp);

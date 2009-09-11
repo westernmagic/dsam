@@ -67,12 +67,6 @@ Init_PureTone_2(ParameterSpecifier parSpec)
 		}
 	}
 	pureTone2Ptr->parSpec = parSpec;
-	pureTone2Ptr->frequencyFlag = TRUE;
-	pureTone2Ptr->durationFlag = TRUE;
-	pureTone2Ptr->dtFlag = TRUE;
-	pureTone2Ptr->intensityFlag = TRUE;
-	pureTone2Ptr->beginPeriodDurationFlag = TRUE;
-	pureTone2Ptr->endPeriodDurationFlag = TRUE;
 	pureTone2Ptr->frequency = 1000.0;
 	pureTone2Ptr->intensity = DEFAULT_INTENSITY;
 	pureTone2Ptr->duration = 0.08;
@@ -193,67 +187,6 @@ GetUniParListPtr_PureTone_2(void)
 
 }
 
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It checks that the Nyquist critical frequency is not exceeded.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_PureTone_2(void)
-{
-	static const WChar *funcName = wxT("CheckPars_PureTone_2");
-	BOOLN	ok;
-	double	criticalFrequency;
-
-	ok = TRUE;
-	if (pureTone2Ptr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!pureTone2Ptr->frequencyFlag) {
-		NotifyError(wxT("%s: Frequency variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pureTone2Ptr->intensityFlag) {
-		NotifyError(wxT("%s: intensity variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pureTone2Ptr->durationFlag) {
-		NotifyError(wxT("%s: duration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pureTone2Ptr->beginPeriodDurationFlag) {
-		NotifyError(wxT("%s: beginPeriodDuration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pureTone2Ptr->endPeriodDurationFlag) {
-		NotifyError(wxT("%s: endPeriodDuration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!pureTone2Ptr->dtFlag) {
-		NotifyError(wxT("%s: dt variable not set."), funcName);
-		ok = FALSE;
-	}
-	/* if ( (pureTone2Ptr->beginPeriodDuration > pureTone2Ptr->duration) ||
-	  (pureTone2Ptr->endPeriodDuration > pureTone2Ptr->duration) ) {
-	  	NotifyError(wxT("%s: A silence length parameters is longer than the ")
-	  	  wxT("signal duration."), funcName);
-	  	ok = FALSE;
-	} */
-	criticalFrequency = 1.0 / (2.0 * pureTone2Ptr->dt);
-	if (ok && (criticalFrequency <= pureTone2Ptr->frequency)) {
-		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
-		  wxT("frequency."), funcName, MSEC(pureTone2Ptr->dt));
-		ok = FALSE;
-	}
-	return(ok);
-
-}
-
 /********************************* SetFrequency *******************************/
 
 /*
@@ -263,7 +196,7 @@ CheckPars_PureTone_2(void)
  */
 
 BOOLN
-SetFrequency_PureTone_2(double theFrequency)
+SetFrequency_PureTone_2(Float theFrequency)
 {
 	static const WChar *funcName = wxT("SetFrequency_PureTone_2");
 
@@ -271,7 +204,6 @@ SetFrequency_PureTone_2(double theFrequency)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	pureTone2Ptr->frequencyFlag = TRUE;
 	pureTone2Ptr->frequency = theFrequency;
 	return(TRUE);
 
@@ -286,7 +218,7 @@ SetFrequency_PureTone_2(double theFrequency)
  */
 
 BOOLN
-SetIntensity_PureTone_2(double theIntensity)
+SetIntensity_PureTone_2(Float theIntensity)
 {
 	static const WChar *funcName = wxT("SetIntensity_PureTone_2");
 
@@ -294,7 +226,6 @@ SetIntensity_PureTone_2(double theIntensity)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	pureTone2Ptr->intensityFlag = TRUE;
 	pureTone2Ptr->intensity = theIntensity;
 	return(TRUE);
 
@@ -309,7 +240,7 @@ SetIntensity_PureTone_2(double theIntensity)
  */
 
 BOOLN
-SetDuration_PureTone_2(double theDuration)
+SetDuration_PureTone_2(Float theDuration)
 {
 	static const WChar *funcName = wxT("SetDuration_PureTone_2");
 
@@ -317,7 +248,6 @@ SetDuration_PureTone_2(double theDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	pureTone2Ptr->durationFlag = TRUE;
 	pureTone2Ptr->duration = theDuration;
 	return(TRUE);
 
@@ -332,7 +262,7 @@ SetDuration_PureTone_2(double theDuration)
  */
 
 BOOLN
-SetBeginPeriodDuration_PureTone_2(double theBeginPeriodDuration)
+SetBeginPeriodDuration_PureTone_2(Float theBeginPeriodDuration)
 {
 	static const WChar *funcName = wxT("SetBeginPeriodDuration_PureTone_2");
 
@@ -340,7 +270,6 @@ SetBeginPeriodDuration_PureTone_2(double theBeginPeriodDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	pureTone2Ptr->beginPeriodDurationFlag = TRUE;
 	pureTone2Ptr->beginPeriodDuration = theBeginPeriodDuration;
 	return(TRUE);
 
@@ -355,7 +284,7 @@ SetBeginPeriodDuration_PureTone_2(double theBeginPeriodDuration)
  */
 
 BOOLN
-SetEndPeriodDuration_PureTone_2(double theEndPeriodDuration)
+SetEndPeriodDuration_PureTone_2(Float theEndPeriodDuration)
 {
 	static const WChar *funcName = wxT("SetEndPeriodDuration_PureTone_2");
 
@@ -363,7 +292,6 @@ SetEndPeriodDuration_PureTone_2(double theEndPeriodDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	pureTone2Ptr->endPeriodDurationFlag = TRUE;
 	pureTone2Ptr->endPeriodDuration = theEndPeriodDuration;
 	return(TRUE);
 
@@ -378,7 +306,7 @@ SetEndPeriodDuration_PureTone_2(double theEndPeriodDuration)
  */
 
 BOOLN
-SetSamplingInterval_PureTone_2(double theSamplingInterval)
+SetSamplingInterval_PureTone_2(Float theSamplingInterval)
 {
 	static const WChar *funcName = wxT("SetSamplingInterval_PureTone_2");
 
@@ -391,43 +319,8 @@ SetSamplingInterval_PureTone_2(double theSamplingInterval)
 		  theSamplingInterval);
 		return(FALSE);
 	}
-	pureTone2Ptr->dtFlag = TRUE;
 	pureTone2Ptr->dt = theSamplingInterval;
 	return(TRUE);
-
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_PureTone_2(double theFrequency, double theIntensity, double theDuration,
-  double theSamplingInterval, double theBeginPeriodDuration,
-  double theEndPeriodDuration)
-{
-	static const WChar *funcName = wxT("SetPars_PureTone_2");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetFrequency_PureTone_2(theFrequency))
-		ok = FALSE;
-	if (!SetIntensity_PureTone_2(theIntensity))
-		ok = FALSE;
-	if (!SetDuration_PureTone_2(theDuration))
-		ok = FALSE;
-	if (!SetSamplingInterval_PureTone_2(theSamplingInterval))
-		ok = FALSE;
-	if (!SetBeginPeriodDuration_PureTone_2(theBeginPeriodDuration))
-		ok = FALSE;
-	if (!SetEndPeriodDuration_PureTone_2(theEndPeriodDuration))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
 
 }
 
@@ -442,11 +335,6 @@ PrintPars_PureTone_2(void)
 {
 	static const WChar *funcName = wxT("PrintPars_PureTone_2");
 
-	if (!CheckPars_PureTone_2()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Pure Tone 2 (surrounded by silence) Module Parameters:-\n"));
 	DPrint(wxT("\tFrequency = %g (Hz),\tIntensity = %g dB SPL,\n"),
 	  pureTone2Ptr->frequency, pureTone2Ptr->intensity);
@@ -455,60 +343,6 @@ PrintPars_PureTone_2(void)
 	DPrint(wxT("\tBegin silence = %g ms,\tEnd silence = %g ms\n"),
 	  MSEC(pureTone2Ptr->beginPeriodDuration),
 	  MSEC(pureTone2Ptr->endPeriodDuration));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
-
-BOOLN
-ReadPars_PureTone_2(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_PureTone_2");
-	BOOLN	ok;
-	WChar	*filePath;
-	double  frequency, intensity, beginPeriodDuration, endPeriodDuration;
-	double  duration, samplingInterval;
-    FILE    *fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &frequency))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &intensity))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &beginPeriodDuration))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &endPeriodDuration))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
-		ok = FALSE;
-    fclose(fp);
-    Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_PureTone_2(frequency, intensity, duration,
-	  samplingInterval, beginPeriodDuration, endPeriodDuration)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -555,13 +389,40 @@ InitModule_PureTone_2(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = pureTone2Ptr;
-	theModule->CheckPars = CheckPars_PureTone_2;
 	theModule->Free = Free_PureTone_2;
 	theModule->GetUniParListPtr = GetUniParListPtr_PureTone_2;
 	theModule->PrintPars = PrintPars_PureTone_2;
-	theModule->ReadPars = ReadPars_PureTone_2;
 	theModule->RunProcess = GenerateSignal_PureTone_2;
 	theModule->SetParsPointer = SetParsPointer_PureTone_2;
+	return(TRUE);
+
+}
+
+/********************************* CheckData **********************************/
+
+/*
+ * This routine checks that the necessary parameters for the module have been
+ * correctly initialised.
+ * It checks that the Nyquist critical frequency is not exceeded.
+ * It returns TRUE if there are no problems.
+ */
+
+BOOLN
+CheckData_PureTone_2(EarObjectPtr data)
+{
+	static const WChar *funcName = wxT("CheckData_PureTone_2");
+	Float	criticalFrequency;
+
+	if (data == NULL) {
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
+		return(FALSE);
+	}
+	criticalFrequency = 1.0 / (2.0 * pureTone2Ptr->dt);
+	if (criticalFrequency <= pureTone2Ptr->frequency) {
+		NotifyError(wxT("%s: Sampling rate (dt = %g ms) is too low for the ")
+		  wxT("frequency."), funcName, MSEC(pureTone2Ptr->dt));
+		return(FALSE);
+	}
 	return(TRUE);
 
 }
@@ -582,19 +443,13 @@ BOOLN
 GenerateSignal_PureTone_2(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("GenerateSignal_PureTone_2");
-	double		totalDuration, amplitude;
-	register	double	dt, time, endSignal, startSignal;
+	Float		totalDuration, amplitude;
+	register	Float	dt, time, endSignal, startSignal;
 	register	ChanData	*dataPtr;
 	ChanLen		i;
 	PureTone2Ptr	p = pureTone2Ptr;
 
 	if (!data->threadRunFlag) {
-		if (data == NULL) {
-			NotifyError(wxT("%s: EarObject not initialised."), funcName);
-			return(FALSE);
-		}
-		if (!CheckPars_PureTone_2())
-			return(FALSE);
 		SetProcessName_EarObject(data, wxT("Silence pure-tone stimulus"));
 		totalDuration = p->beginPeriodDuration + p->duration +
 		  p->endPeriodDuration;

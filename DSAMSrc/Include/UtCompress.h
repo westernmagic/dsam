@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard revised from AIM code
  * Created:		28 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) Loughborough University
  *
  *********************/
@@ -39,23 +39,22 @@ typedef enum {
 	COMPRESS_LOG_MODE,
 	COMPRESS_POWER_MODE,
 	COMPRESS_NULL
-	
+
 } CompressModeSpecifier;
 
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, signalMultiplierFlag, powerExponentFlag, minResponseFlag;
 	int		mode;
-	double	signalMultiplier;
-	double	powerExponent;
-	double	minResponse;
+	Float	signalMultiplier;
+	Float	powerExponent;
+	Float	minResponse;
 
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
-	double	scale, minInput;
+	Float	scale, minInput;
 
 } Compression, *CompressionPtr;
 
@@ -77,8 +76,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Compression(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_Compression(void);
-
 BOOLN	Free_Utility_Compression(void);
 
 UniParListPtr	GetUniParListPtr_Utility_Compression(void);
@@ -91,9 +88,7 @@ BOOLN	PrintPars_Utility_Compression(void);
 
 BOOLN	Process_Utility_Compression(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Compression(WChar *fileName);
-
-BOOLN	SetMinResponse_Utility_Compression(double theMinResponse);
+BOOLN	SetMinResponse_Utility_Compression(Float theMinResponse);
 
 BOOLN	SetMode_Utility_Compression(WChar *theMode);
 
@@ -101,12 +96,9 @@ BOOLN	InitModule_Utility_Compression(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Compression(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Compression(WChar *mode, double signalMultiplier,
-		  double powerExponent, double minResponse);
+BOOLN	SetPowerExponent_Utility_Compression(Float thePowerExponent);
 
-BOOLN	SetPowerExponent_Utility_Compression(double thePowerExponent);
-
-BOOLN	SetSignalMultiplier_Utility_Compression(double theSignalMultiplier);
+BOOLN	SetSignalMultiplier_Utility_Compression(Float theSignalMultiplier);
 
 BOOLN	SetUniParList_Utility_Compression(void);
 

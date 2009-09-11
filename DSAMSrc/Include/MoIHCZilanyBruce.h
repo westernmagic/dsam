@@ -16,7 +16,7 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Jul  9 2008).
  * Author:		Revised by L. P. O'Mard
  * Created:		11 Jul 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, L. P. O'Mard
  *
  *********************/
@@ -48,10 +48,10 @@ typedef enum {
 
 typedef struct {
 
-	double	synstrength;
-	double	synslope;
-	double	slopeOverStrength;
-	double	CI, CL, PG, CG, VL, PL, VI;
+	Float	synstrength;
+	Float	synslope;
+	Float	slopeOverStrength;
+	Float	CI, CL, PG, CG, VL, PL, VI;
 
 } ZBSynapse, *ZBSynapsePtr;
 
@@ -60,12 +60,12 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
-	double	spont;
-	double	Ass;
-	double	tauST;
-	double	tauR;
-	double	Ar_Ast;
-	double	PImax;
+	Float	spont;
+	Float	Ass;
+	Float	tauST;
+	Float	tauR;
+	Float	Ar_Ast;
+	Float	PImax;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -107,19 +107,19 @@ BOOLN	PrintPars_IHC_ZilanyBruce(void);
 
 BOOLN	RunModel_IHC_ZilanyBruce(EarObjectPtr data);
 
-BOOLN	SetAr_Ast_IHC_ZilanyBruce(double theAr_Ast);
+BOOLN	SetAr_Ast_IHC_ZilanyBruce(Float theAr_Ast);
 
-BOOLN	SetAss_IHC_ZilanyBruce(double theAss);
+BOOLN	SetAss_IHC_ZilanyBruce(Float theAss);
 
-BOOLN	SetPImax_IHC_ZilanyBruce(double thePImax);
+BOOLN	SetPImax_IHC_ZilanyBruce(Float thePImax);
 
 BOOLN	SetParsPointer_IHC_ZilanyBruce(ModulePtr theModule);
 
-BOOLN	SetSpont_IHC_ZilanyBruce(double theSpont);
+BOOLN	SetSpont_IHC_ZilanyBruce(Float theSpont);
 
-BOOLN	SetTauR_IHC_ZilanyBruce(double theTauR);
+BOOLN	SetTauR_IHC_ZilanyBruce(Float theTauR);
 
-BOOLN	SetTauST_IHC_ZilanyBruce(double theTauST);
+BOOLN	SetTauST_IHC_ZilanyBruce(Float theTauST);
 
 BOOLN	SetUniParList_IHC_ZilanyBruce(void);
 

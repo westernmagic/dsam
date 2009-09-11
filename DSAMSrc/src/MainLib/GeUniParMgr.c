@@ -182,12 +182,12 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 		par->valuePtr.l = (long *) ptr1;
 		break;
 	case UNIPAR_REAL:
-		par->valuePtr.r = (double *) ptr1;
+		par->valuePtr.r = (Float *) ptr1;
 		break;
 	case UNIPAR_REAL_ARRAY:
 	case UNIPAR_REAL_DYN_ARRAY:
 		par->valuePtr.array.index = 0;
-		par->valuePtr.array.pPtr.r = (double **) ptr1;
+		par->valuePtr.array.pPtr.r = (Float **) ptr1;
 		par->valuePtr.array.numElements = (int *) ptr2;
 		break;
 	case UNIPAR_STRING:
@@ -255,11 +255,11 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			par->FuncPtr.SetLong = (BOOLN (*)(long)) Func;
 			break;
 		case UNIPAR_REAL:
-			par->FuncPtr.SetReal = (BOOLN (*)(double)) Func;
+			par->FuncPtr.SetReal = (BOOLN (*)(Float)) Func;
 			break;
 		case UNIPAR_REAL_ARRAY:
 		case UNIPAR_REAL_DYN_ARRAY:
-			par->FuncPtr.SetRealArrayElement = (BOOLN (*)(int, double)) Func;
+			par->FuncPtr.SetRealArrayElement = (BOOLN (*)(int, Float)) Func;
 			break;
 		case UNIPAR_BOOL:
 		case UNIPAR_STRING:
@@ -304,11 +304,11 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			par->FuncPtr.SetCFListInt = (BOOLN (*)(CFListPtr, int)) Func;
 			break;
 		case UNIPAR_REAL:
-			par->FuncPtr.SetCFListReal = (BOOLN (*)(CFListPtr, double)) Func;
+			par->FuncPtr.SetCFListReal = (BOOLN (*)(CFListPtr, Float)) Func;
 			break;
 		case UNIPAR_REAL_ARRAY:
 			par->FuncPtr.SetCFListRealArrayElement = (BOOLN (*)(CFListPtr, int,
-			  double)) Func;
+			  Float)) Func;
 			break;
 		case UNIPAR_BOOL:
 		case UNIPAR_STRING:
@@ -330,7 +330,7 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			break;
 		case UNIPAR_REAL_ARRAY:
 			par->FuncPtr.SetParArrayRealArrayElement = (BOOLN (*)(ParArrayPtr,
-			  int, double)) Func;
+			  int, Float)) Func;
 			break;
 		case UNIPAR_BOOL:
 		case UNIPAR_STRING:
@@ -354,7 +354,7 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			break;
 		case UNIPAR_REAL:
 			par->FuncPtr.SetICListReal = (BOOLN (*)(IonChanListPtr,
-			  double)) Func;
+			  Float)) Func;
 			break;
 		case UNIPAR_BOOL:
 		case UNIPAR_STRING:
@@ -377,11 +377,11 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			par->FuncPtr.SetICInt = (BOOLN (*)(IonChannelPtr, int)) Func;
 			break;
 		case UNIPAR_REAL:
-			par->FuncPtr.SetICReal = (BOOLN (*)(IonChannelPtr, double)) Func;
+			par->FuncPtr.SetICReal = (BOOLN (*)(IonChannelPtr, Float)) Func;
 			break;
 		case UNIPAR_REAL_ARRAY:
 			par->FuncPtr.SetICRealArrayElement = (BOOLN (*)(IonChannelPtr, int,
-			  double)) Func;
+			  Float)) Func;
 			break;
 		case UNIPAR_BOOL:
 		case UNIPAR_STRING:
@@ -1332,7 +1332,7 @@ SetParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *parValue)
  */
 
 BOOLN
-SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index, double parValue)
+SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index, Float parValue)
 {
 	WChar	stringValue[MAXLINE];
 
@@ -1595,18 +1595,18 @@ PrintParList_UniParMgr(UniParListPtr parList)
  */
 
 BOOLN
-ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length)
+ResizeDoubleArray_UniParMgr(Float **array, int *oldLength, int length)
 {
 	static const WChar *funcName = wxT("ResizeDoubleArray_UniParMgr");
-	register double	*newArray, *oldArray;
+	register Float	*newArray, *oldArray;
 	int		i;
-	double	*savedArray = NULL;
+	Float	*savedArray = NULL;
 
 	if (length == *oldLength)
 		return(TRUE);
 	if (*array)
 		savedArray = *array;
-	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
+	if ((*array = (Float *) calloc(length, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, length);
 		return(FALSE);

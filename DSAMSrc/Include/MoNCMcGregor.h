@@ -47,35 +47,32 @@ typedef enum {
 typedef struct {
 
 	int		lastSpikeState;
-	double	potential_E;
-	double	kConductance_Gk;
-	double	threshold_Th;
+	Float	potential_E;
+	Float	kConductance_Gk;
+	Float	threshold_Th;
 
 } McGregorState, *McGregorStatePtr;
 
 typedef struct  {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	membraneTConstFlag, thresholdTConstFlag, accomConstFlag;
-	BOOLN	delayedRectKCondFlag, restingThresholdFlag, actionPotentialFlag;
-	BOOLN	kDecayTConstFlag, kEquilibriumPotFlag, cellRestingPotFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 
-	double	membraneTConst_Tm;	/* Membrane time constant (s). */	
-	double	kDecayTConst_TGk;	/* Potassium conductance decay constant (s). */
-	double	thresholdTConst_TTh;/* Threshold rise time constant (s). */
-	double	accomConst_c;		/* Accomdation constant (dimensionless). */
-	double	delayedRectKCond_b;	/* Delayed Rectifier K Cond. strength (ns). */
-	double	restingThreshold_Th0;/* Resting threshold of cell (mV). */
-	double	actionPotential;	/* Action potential of spike (mv). */
-	double	kEquilibriumPot_Ek;	/* Reversal pot. of the K conductance (mV). */
-	double	cellRestingPot_Er;	/* Resting potential for K conductance (mV). */
+	Float	membraneTConst_Tm;	/* Membrane time constant (s). */
+	Float	kDecayTConst_TGk;	/* Potassium conductance decay constant (s). */
+	Float	thresholdTConst_TTh;/* Threshold rise time constant (s). */
+	Float	accomConst_c;		/* Accomdation constant (dimensionless). */
+	Float	delayedRectKCond_b;	/* Delayed Rectifier K Cond. strength (ns). */
+	Float	restingThreshold_Th0;/* Resting threshold of cell (mV). */
+	Float	actionPotential;	/* Action potential of spike (mv). */
+	Float	kEquilibriumPot_Ek;	/* Reversal pot. of the K conductance (mV). */
+	Float	cellRestingPot_Er;	/* Resting potential for K conductance (mV). */
 
 	/* Private members */
 	UniParListPtr	parList;
 	McGregorState *state;
-	double	condDecay, threshDecay, bOverDt, dtOverTm;
+	Float	condDecay, threshDecay, bOverDt, dtOverTm;
 
 } McGregor, *McGregorPtr;
 
@@ -95,8 +92,6 @@ extern	McGregorPtr	mcGregorPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_Neuron_McGregor(void);
-
 BOOLN	Free_Neuron_McGregor(void);
 
 void	FreeProcessVariables_Neuron_McGregor(void);
@@ -111,34 +106,29 @@ BOOLN	InitProcessVariables_Neuron_McGregor(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_McGregor(void);
 
-BOOLN	ReadPars_Neuron_McGregor(WChar *fileName);
-
 BOOLN	RunModel_Neuron_McGregor(EarObjectPtr data);
 
-BOOLN	SetAccomConst_Neuron_McGregor(double theAccomConst);
+BOOLN	SetAccomConst_Neuron_McGregor(Float theAccomConst);
 
-BOOLN	SetActionPotential_Neuron_McGregor(double theActionPotential);
+BOOLN	SetActionPotential_Neuron_McGregor(Float theActionPotential);
 
-BOOLN	SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond);
+BOOLN	SetDelayedRectKCond_Neuron_McGregor(Float theDelayedRectKCond);
 
-BOOLN	SetKDecayTConst_Neuron_McGregor(double theKDecayTConst);
+BOOLN	SetKDecayTConst_Neuron_McGregor(Float theKDecayTConst);
 
-BOOLN	SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot);
+BOOLN	SetKEquilibriumPot_Neuron_McGregor(Float theKEquilibriumPot);
 
-BOOLN	SetCellRestingPot_Neuron_McGregor(double theCellRestingPot);
+BOOLN	SetCellRestingPot_Neuron_McGregor(Float theCellRestingPot);
 
-BOOLN	SetMembraneTConst_Neuron_McGregor(double theMembraneTConst);
+BOOLN	SetMembraneTConst_Neuron_McGregor(Float theMembraneTConst);
 
 BOOLN	InitModule_Neuron_McGregor(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Neuron_McGregor(ModulePtr theModule);
 
-BOOLN	SetPars_Neuron_McGregor(double tm, double tGk, double tTh, double c,
-		  double b, double tH0, double aP, double ek, double er);
+BOOLN	SetRestingThreshold_Neuron_McGregor(Float theRestingThreshold);
 
-BOOLN	SetRestingThreshold_Neuron_McGregor(double theRestingThreshold);
-
-BOOLN	SetThresholdTConst_Neuron_McGregor(double theThresholdTConst);
+BOOLN	SetThresholdTConst_Neuron_McGregor(Float theThresholdTConst);
 
 BOOLN	SetUniParList_Neuron_McGregor(void);
 

@@ -13,13 +13,13 @@ typedef struct {
 	NameSpecifier	diagnosticMode;
 	NameSpecifier	operationMode;
 	NameSpecifier	injectionMode;
-	double			excitatoryReversalPot;
-	double			inhibitoryReversalPot;
-	double			shuntInhibitoryReversalPot;
-	double			cellCapacitance;
-	double			restingPotential;
-	double			restingSignalDuration;
-	double			restingCriteria;
+	Float			excitatoryReversalPot;
+	Float			inhibitoryReversalPot;
+	Float			shuntInhibitoryReversalPot;
+	Float			cellCapacitance;
+	Float			restingPotential;
+	Float			restingSignalDuration;
+	Float			restingCriteria;
 	IonChanListPtr	iCList;
 	
 	/* Private members */

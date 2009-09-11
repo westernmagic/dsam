@@ -431,7 +431,7 @@ SetWborder_BasilarM_ZilanyBruce(int theWborder)
  */
 
 BOOLN
-SetS0_BasilarM_ZilanyBruce(double theS0)
+SetS0_BasilarM_ZilanyBruce(Float theS0)
 {
 	static const WChar	*funcName = wxT("SetS0_BasilarM_ZilanyBruce");
 
@@ -455,7 +455,7 @@ SetS0_BasilarM_ZilanyBruce(double theS0)
  */
 
 BOOLN
-SetX1_BasilarM_ZilanyBruce(double theX1)
+SetX1_BasilarM_ZilanyBruce(Float theX1)
 {
 	static const WChar	*funcName = wxT("SetX1_BasilarM_ZilanyBruce");
 
@@ -479,7 +479,7 @@ SetX1_BasilarM_ZilanyBruce(double theX1)
  */
 
 BOOLN
-SetS1_BasilarM_ZilanyBruce(double theS1)
+SetS1_BasilarM_ZilanyBruce(Float theS1)
 {
 	static const WChar	*funcName = wxT("SetS1_BasilarM_ZilanyBruce");
 
@@ -503,7 +503,7 @@ SetS1_BasilarM_ZilanyBruce(double theS1)
  */
 
 BOOLN
-SetShiftCP_BasilarM_ZilanyBruce(double theShiftCP)
+SetShiftCP_BasilarM_ZilanyBruce(Float theShiftCP)
 {
 	static const WChar	*funcName = wxT("SetShiftCP_BasilarM_ZilanyBruce");
 
@@ -527,7 +527,7 @@ SetShiftCP_BasilarM_ZilanyBruce(double theShiftCP)
  */
 
 BOOLN
-SetCutOffCP_BasilarM_ZilanyBruce(double theCutOffCP)
+SetCutOffCP_BasilarM_ZilanyBruce(Float theCutOffCP)
 {
 	static const WChar	*funcName = wxT("SetCutOffCP_BasilarM_ZilanyBruce");
 
@@ -579,7 +579,7 @@ SetLPOrder_BasilarM_ZilanyBruce(int theLPOrder)
  */
 
 BOOLN
-SetDc_BasilarM_ZilanyBruce(double theDc)
+SetDc_BasilarM_ZilanyBruce(Float theDc)
 {
 	static const WChar	*funcName = wxT("SetDc_BasilarM_ZilanyBruce");
 
@@ -603,7 +603,7 @@ SetDc_BasilarM_ZilanyBruce(double theDc)
  */
 
 BOOLN
-SetRC1_BasilarM_ZilanyBruce(double theRC1)
+SetRC1_BasilarM_ZilanyBruce(Float theRC1)
 {
 	static const WChar	*funcName = wxT("SetRC1_BasilarM_ZilanyBruce");
 
@@ -627,7 +627,7 @@ SetRC1_BasilarM_ZilanyBruce(double theRC1)
  */
 
 BOOLN
-SetCOHC_BasilarM_ZilanyBruce(double theCOHC)
+SetCOHC_BasilarM_ZilanyBruce(Float theCOHC)
 {
 	static const WChar	*funcName = wxT("SetCOHC_BasilarM_ZilanyBruce");
 
@@ -651,7 +651,7 @@ SetCOHC_BasilarM_ZilanyBruce(double theCOHC)
  */
 
 BOOLN
-SetOhcasym_BasilarM_ZilanyBruce(double theOhcasym)
+SetOhcasym_BasilarM_ZilanyBruce(Float theOhcasym)
 {
 	static const WChar	*funcName = wxT("SetOhcasym_BasilarM_ZilanyBruce");
 
@@ -675,7 +675,7 @@ SetOhcasym_BasilarM_ZilanyBruce(double theOhcasym)
  */
 
 BOOLN
-SetIhcasym_BasilarM_ZilanyBruce(double theIhcasym)
+SetIhcasym_BasilarM_ZilanyBruce(Float theIhcasym)
 {
 	static const WChar	*funcName = wxT("SetIhcasym_BasilarM_ZilanyBruce");
 
@@ -723,7 +723,7 @@ SetNBorder_BasilarM_ZilanyBruce(int theNBorder)
  */
 
 BOOLN
-SetAIHC0_BasilarM_ZilanyBruce(double theAIHC0)
+SetAIHC0_BasilarM_ZilanyBruce(Float theAIHC0)
 {
 	static const WChar	*funcName = wxT("SetAIHC0_BasilarM_ZilanyBruce");
 
@@ -747,7 +747,7 @@ SetAIHC0_BasilarM_ZilanyBruce(double theAIHC0)
  */
 
 BOOLN
-SetBIHC_BasilarM_ZilanyBruce(double theBIHC)
+SetBIHC_BasilarM_ZilanyBruce(Float theBIHC)
 {
 	static const WChar	*funcName = wxT("SetBIHC_BasilarM_ZilanyBruce");
 
@@ -771,7 +771,7 @@ SetBIHC_BasilarM_ZilanyBruce(double theBIHC)
  */
 
 BOOLN
-SetCIHC_BasilarM_ZilanyBruce(double theCIHC)
+SetCIHC_BasilarM_ZilanyBruce(Float theCIHC)
 {
 	static const WChar	*funcName = wxT("SetCIHC_BasilarM_ZilanyBruce");
 
@@ -795,7 +795,7 @@ SetCIHC_BasilarM_ZilanyBruce(double theCIHC)
  */
 
 BOOLN
-SetCutOffIHCLP_BasilarM_ZilanyBruce(double theCutOffIHCLP)
+SetCutOffIHCLP_BasilarM_ZilanyBruce(Float theCutOffIHCLP)
 {
 	static const WChar	*funcName = wxT("SetCutOffIHCLP_BasilarM_ZilanyBruce");
 
@@ -1028,7 +1028,7 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_BasilarM_ZilanyBruce");
 	int		i, cFIndex;
-	double	centreFreq, CAgain, dt;
+	Float	centreFreq, CAgain, dt;
 	BMZBPtr	p = bMZBPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
@@ -1171,8 +1171,8 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr = NULL, *tmpgain, input;
 	uShort	totalChannels;
 	int		chan, grd;
-	double	cF, wbout1, wbout, ohcnonlinout, ohcout, tmptauc1, dt, tauc1, rsigma;
-	double	wb_gain, c1filterouttmp, c2filterouttmp;
+	Float	cF, wbout1, wbout, ohcnonlinout, ohcout, tmptauc1, dt, tauc1, rsigma;
+	Float	wb_gain, c1filterouttmp, c2filterouttmp;
 	ChanLen	n, delaypoint;
 	SignalDataPtr	inSignal, outSignal;
 	BMZBPtr	p = bMZBPtr;

@@ -52,7 +52,7 @@ void
 CalcComplex_FFT(Complex data[], unsigned long nn, int isign)
 {
 	unsigned long	mmax,m,j,istep,i;
-	double		wtemp,wr,wpr,wpi,wi,theta, tempVal;
+	Float		wtemp,wr,wpr,wpi,wi,theta, tempVal;
 	Complex		temp;
 
 	j = 0;
@@ -108,11 +108,11 @@ CalcComplex_FFT(Complex data[], unsigned long nn, int isign)
 #define SWAP(a, b)	tempr = (a); (a) = (b); (b) = tempr
 
 void
-Calc_FFT(double *data, unsigned long nn, int isign)
+Calc_FFT(Float *data, unsigned long nn, int isign)
 {
 	unsigned long	n, mmax, m, j, istep, i;
-	double	wtemp, wr, wpr, wpi, wi, theta;
-	double	tempr, tempi, *dm, *di, *dj;
+	Float	wtemp, wr, wpr, wpi, wi, theta;
+	Float	tempr, tempi, *dm, *di, *dj;
 
 	n = nn << 1;
 	for (i = 0, j = 0; i < n; i += 2) {
@@ -171,14 +171,14 @@ Calc_FFT(double *data, unsigned long nn, int isign)
 #define	C1	0.5
 
 BOOLN
-CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
+CalcReal_FFT(SignalDataPtr signal, Float *fT, int direction)
 {
 	static const WChar *funcName = wxT("CalcReal_FFT");
 	BOOLN	localFTArray = FALSE;
 	ChanLen	i, k, n;
-	double	h1r, h1i, h2r, h2i;
-	double	wr, wi, wpr, wpi, wtemp, theta;
-	register double		c2, c3, *fT1, *fT2;
+	Float	h1r, h1i, h2r, h2i;
+	Float	wr, wi, wpr, wpi, wtemp, theta;
+	register Float		c2, c3, *fT1, *fT2;
 	register ChanData	*ptr;
 
 	if (!CheckPars_SignalData(signal)) {
@@ -188,14 +188,14 @@ CalcReal_FFT(SignalDataPtr signal, double *fT, int direction)
 	n = Length_FFT(signal->length);
 	if (!fT) {
 		localFTArray = TRUE;
-		if ((fT = (double *) calloc(n, sizeof(double))) == NULL) {
+		if ((fT = (Float *) calloc(n, sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Couldn't allocate memory for complex data ")
 			  wxT("array."), funcName);
 			return(FALSE);
 		}
 	}
 	SetSamplingInterval_SignalData(signal, 1.0 / (signal->dt * n * 2.0));
-	theta = M_PI / (double) (n >> 1);
+	theta = M_PI / (Float) (n >> 1);
 	for (k = 0; k < signal->numChannels; k++) {
 		fT[0] = 0.0;
 		ptr = signal->channel[k] + 1;
@@ -261,7 +261,7 @@ Length_FFT(unsigned long length)
 	unsigned long	ln;
 
 	ln = (unsigned long) ceil(log(length) / log(2.0));
-	return((unsigned long) pow(2.0, (double) ln));
+	return((unsigned long) pow(2.0, (Float) ln));
 
 }
 
@@ -291,7 +291,7 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans)
 	if (numPlans < 1)
 		p->plan = NULL;
 	else {
-		if ((p->plan = (fftw_plan *) calloc(numPlans, sizeof(fftw_plan))) == NULL) {
+		if ((p->plan = (Fftw_plan *) calloc(numPlans, sizeof(Fftw_plan))) == NULL) {
 			NotifyError(wxT("%s: output of memory for %d fftw plans."), funcName,
 			  numPlans);
 			free (p);
@@ -301,7 +301,7 @@ InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans)
 	}
 	p->fftLen = Length_FFT(dataLen);
 	p->arrayLen = (forInPlaceFFT)? (p->fftLen << 1) + 2: p->fftLen;
-	if ((p->data = (double *) fftw_malloc(p->arrayLen * sizeof(double))) == NULL) {
+	if ((p->data = (Float *) DSAM_FFTW_NAME(malloc)(p->arrayLen * sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: output of memory for physical array length: %lu."),
 		  funcName, p->arrayLen);
 		free (p);
@@ -322,10 +322,10 @@ FreeArray_FFT(FFTArrayPtr *p)
 	if (!*p)
 		return;
 	if ((*p)->data)
-		fftw_free((*p)->data);
+		DSAM_FFTW_NAME(free)((*p)->data);
 	if ((*p)->plan) {
 		for (i = 0; i < (*p)->numPlans; i++)
-			fftw_destroy_plan((*p)->plan[i]);
+			DSAM_FFTW_NAME(destroy_plan)((*p)->plan[i]);
 		free((*p)->plan);
 	}
 	free(*p);
@@ -350,10 +350,10 @@ CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
 {
 	int		k;
 	ChanLen	j;
-	double	phase;
-	fftw_complex	*c1;
+	Float	phase;
+	Complx	*c1;
 
-	c1 = (fftw_complex *) fTInv->data;
+	c1 = (Complx *) fTInv->data;
 	for (k = 0; k < kLow; k++)
 		CMPLX_RE(c1[k]) = CMPLX_IM(c1[k]) = 0.0;
 	for (k = kLow; k < (kUpp + 1); k++) {
@@ -363,6 +363,6 @@ CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
 	}
 	for (j = kUpp + 1; j < fTInv->fftLen / 2 + 1; j++)
 		CMPLX_RE(c1[j]) = CMPLX_IM(c1[j]) = 0.0;
-	fftw_execute(fTInv->plan[plan]);
+	DSAM_FFTW_NAME(execute)(fTInv->plan[plan]);
 
 }

@@ -21,7 +21,7 @@
  * Author:		L.P.O'Mard
  * Created:		21 Dec 1995
  * Updated:		02 Mar 1997
- * Copyright:	(c) 2005, CNBH, University of Essex. 
+ * Copyright:	(c) 2005, CNBH, University of Essex.
  *
 **********************/
 
@@ -59,7 +59,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, numChannelsFlag;
 	int		mode;
 	int		numChannels;
 
@@ -87,8 +86,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_ReduceChannels(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_ReduceChannels(void);
-
 BOOLN	Free_Utility_ReduceChannels(void);
 
 BOOLN	Init_Utility_ReduceChannels(ParameterSpecifier parSpec);
@@ -101,8 +98,6 @@ BOOLN	PrintPars_Utility_ReduceChannels(void);
 
 BOOLN	Process_Utility_ReduceChannels(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ReduceChannels(WChar *fileName);
-
 void	ResetProcess_Utility_ReduceChannels(EarObjectPtr data);
 
 BOOLN	SetMode_Utility_ReduceChannels(WChar *theMode);
@@ -112,8 +107,6 @@ BOOLN	InitModule_Utility_ReduceChannels(ModulePtr theModule);
 BOOLN	SetNumChannels_Utility_ReduceChannels(int theNumChannels);
 
 BOOLN	SetParsPointer_Utility_ReduceChannels(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_ReduceChannels(WChar *mode, int numChannels);
 
 BOOLN	SetUniParList_Utility_ReduceChannels(void);
 

@@ -49,7 +49,7 @@ GetNullSpec_NameSpecifier(NameSpecifierPtr list)
 	if (list->name != NULL) {
 		NotifyError(wxT("%s: Incorrectly set up list."), funcName);
 		exit(1);
-	}	
+	}
 	return(list->specifier);
 
 }
@@ -108,7 +108,7 @@ FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list)
 	*list = NULL;
 
 }
-	
+
 /************************** PrintList *****************************************/
 
 /*

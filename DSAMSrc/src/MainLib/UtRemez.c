@@ -21,7 +21,7 @@
  *				04 Dec 2000 LPO: Converted this code to allow the calculation of
  *				arbitrary frequency response functions.
  * Author:		Jake Janovetz, additions/revisions L. P. O'Mard
- * Created:		
+ * Created:
  * Updated:		04 Dec 2000
  * Copyright:	(c) 1995,1998  Jake Janovetz (janovetz@uiuc.edu)
  *
@@ -31,7 +31,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "UtRemez.h"
+#include <GeCommon.h>
+#include <UtRemez.h>
 
 /*******************
  * CreateDenseGridForArbResp
@@ -47,25 +48,25 @@
  * int      r        - 1/2 the number of filter coefficients
  * int      numtaps  - Number of taps in the resulting filter
  * int      numFreqs - Number of frequencies in user specification
- * double   bands[]  - User-specified band edges [2*numband]
- * double   des[]    - Desired response per band [numband]
- * double   weight[] - Weight per band [numband]
+ * Float   bands[]  - User-specified band edges [2*numband]
+ * Float   des[]    - Desired response per band [numband]
+ * Float   weight[] - Weight per band [numband]
  * int      symmetry - Symmetry of filter - used for grid check
  *
  * OUTPUT:
  * -------
  * int    gridsize   - Number of elements in the dense frequency grid
- * double Grid[]     - Frequencies (0 to 0.5) on the dense grid [gridsize]
- * double D[]        - Desired response on the dense grid [gridsize]
- * double W[]        - Weight function on the dense grid [gridsize]
+ * Float Grid[]     - Frequencies (0 to 0.5) on the dense grid [gridsize]
+ * Float D[]        - Desired response on the dense grid [gridsize]
+ * Float W[]        - Weight function on the dense grid [gridsize]
  *******************/
 
-void CreateDenseGridForArbResp(int r, int numtaps, int numFreqs, double bands[],
-  double des[], double weight[], int *gridsize, double Grid[], double D[],
-  double W[], int symmetry)
+void CreateDenseGridForArbResp(int r, int numtaps, int numFreqs, Float bands[],
+  Float des[], Float weight[], int *gridsize, Float Grid[], Float D[],
+  Float W[], int symmetry)
 {
    int i, j, index, lastIndex, interval;
-   double delf, gradF1, gradDes, gradW;
+   Float delf, gradF1, gradDes, gradW;
 
 /*
  * For differentiator, hilbert,
@@ -95,7 +96,7 @@ void CreateDenseGridForArbResp(int r, int numtaps, int numFreqs, double bands[],
 			}
 		}
 		lastIndex = index;
-	}	
+	}
 
 /*
  * Similar to above, if odd symmetry, last grid point can't be .5
@@ -120,26 +121,26 @@ void CreateDenseGridForArbResp(int r, int numtaps, int numFreqs, double bands[],
  * int      r        - 1/2 the number of filter coefficients
  * int      numtaps  - Number of taps in the resulting filter
  * int      numband  - Number of bands in user specification
- * double   bands[]  - User-specified frequencies [numband]
- * double   des[]    - Desired response per band [numband]
- * double   weight[] - Weight per band [numband]
+ * Float   bands[]  - User-specified frequencies [numband]
+ * Float   des[]    - Desired response per band [numband]
+ * Float   weight[] - Weight per band [numband]
  * int      symmetry - Symmetry of filter - used for grid check
  *
  * OUTPUT:
  * -------
  * int    gridsize   - Number of elements in the dense frequency grid
- * double Grid[]     - Frequencies (0 to 0.5) on the dense grid [gridsize]
- * double D[]        - Desired response on the dense grid [gridsize]
- * double W[]        - Weight function on the dense grid [gridsize]
+ * Float Grid[]     - Frequencies (0 to 0.5) on the dense grid [gridsize]
+ * Float D[]        - Desired response on the dense grid [gridsize]
+ * Float W[]        - Weight function on the dense grid [gridsize]
  *******************/
 
-void CreateDenseGrid(int r, int numtaps, int numband, double bands[],
-                     double des[], double weight[], int *gridsize,
-                     double Grid[], double D[], double W[],
+void CreateDenseGrid(int r, int numtaps, int numband, Float bands[],
+                     Float des[], Float weight[], int *gridsize,
+                     Float Grid[], Float D[], Float W[],
                      int symmetry)
 {
    int i, j, k, band;
-   double delf, lowf, highf;
+   Float delf, lowf, highf;
 
    delf = 0.5/(GRIDDENSITY*r);
 
@@ -168,7 +169,7 @@ void CreateDenseGrid(int r, int numtaps, int numband, double bands[],
          j++;
       }
       Grid[j-1] = highf;
-   }	
+   }
 
 /*
  * Similar to above, if odd symmetry, last grid point can't be .5
@@ -188,7 +189,7 @@ void CreateDenseGrid(int r, int numtaps, int numband, double bands[],
  * Places Extremal Frequencies evenly throughout the dense grid.
  *
  *
- * INPUT: 
+ * INPUT:
  * ------
  * int r        - 1/2 the number of filter coefficients
  * int gridsize - Number of elements in the dense frequency grid
@@ -216,22 +217,22 @@ void InitialGuess(int r, int Ext[], int gridsize)
  * ------
  * int    r      - 1/2 the number of filter coefficients
  * int    Ext[]  - Extremal indexes to dense frequency grid [r+1]
- * double Grid[] - Frequencies (0 to 0.5) on the dense grid [gridsize]
- * double D[]    - Desired response on the dense grid [gridsize]
- * double W[]    - Weight function on the dense grid [gridsize]
+ * Float Grid[] - Frequencies (0 to 0.5) on the dense grid [gridsize]
+ * Float D[]    - Desired response on the dense grid [gridsize]
+ * Float W[]    - Weight function on the dense grid [gridsize]
  *
  * OUTPUT:
  * -------
- * double ad[]   - 'b' in Oppenheim & Schafer [r+1]
- * double x[]    - [r+1]
- * double y[]    - 'C' in Oppenheim & Schafer [r+1]
+ * Float ad[]   - 'b' in Oppenheim & Schafer [r+1]
+ * Float x[]    - [r+1]
+ * Float y[]    - 'C' in Oppenheim & Schafer [r+1]
  ***********************/
 
-void CalcParms(int r, int Ext[], double Grid[], double D[], double W[],
-                double ad[], double x[], double y[])
+void CalcParms(int r, int Ext[], Float Grid[], Float D[], Float W[],
+                Float ad[], Float x[], Float y[])
 {
    int i, j, k, ld;
-   double sign, xi, delta, denom, numer;
+   Float sign, xi, delta, denom, numer;
 
 /*
  * Find x[]
@@ -293,21 +294,21 @@ void CalcParms(int r, int Ext[], double Grid[], double D[], double W[],
  *
  * INPUT:
  * ------
- * double freq - Frequency (0 to 0.5) at which to calculate A
+ * Float freq - Frequency (0 to 0.5) at which to calculate A
  * int    r    - 1/2 the number of filter coefficients
- * double ad[] - 'b' in Oppenheim & Schafer [r+1]
- * double x[]  - [r+1]
- * double y[]  - 'C' in Oppenheim & Schafer [r+1]
+ * Float ad[] - 'b' in Oppenheim & Schafer [r+1]
+ * Float x[]  - [r+1]
+ * Float y[]  - 'C' in Oppenheim & Schafer [r+1]
  *
  * OUTPUT:
  * -------
- * Returns double value of A[freq]
+ * Returns Float value of A[freq]
  *********************/
 
-double ComputeA(double freq, int r, double ad[], double x[], double y[])
+Float ComputeA(Float freq, int r, Float ad[], Float x[], Float y[])
 {
    int i;
-   double xc, c, denom, numer;
+   Float xc, c, denom, numer;
 
    denom = numer = 0;
    xc = cos(Pi2 * freq);
@@ -339,25 +340,25 @@ double ComputeA(double freq, int r, double ad[], double x[], double y[])
  * INPUT:
  * ------
  * int    r      - 1/2 the number of filter coefficients
- * double ad[]   - [r+1]
- * double x[]    - [r+1]
- * double y[]    - [r+1]
+ * Float ad[]   - [r+1]
+ * Float x[]    - [r+1]
+ * Float y[]    - [r+1]
  * int gridsize  - Number of elements in the dense frequency grid
- * double Grid[] - Frequencies on the dense grid [gridsize]
- * double D[]    - Desired response on the dense grid [gridsize]
- * double W[]    - Weight function on the desnse grid [gridsize]
+ * Float Grid[] - Frequencies on the dense grid [gridsize]
+ * Float D[]    - Desired response on the dense grid [gridsize]
+ * Float W[]    - Weight function on the desnse grid [gridsize]
  *
  * OUTPUT:
  * -------
- * double E[]    - Error function on dense grid [gridsize]
+ * Float E[]    - Error function on dense grid [gridsize]
  ************************/
 
-void CalcError(int r, double ad[], double x[], double y[],
-               int gridsize, double Grid[],
-               double D[], double W[], double E[])
+void CalcError(int r, Float ad[], Float x[], Float y[],
+               int gridsize, Float Grid[],
+               Float D[], Float W[], Float E[])
 {
    int i;
-   double A;
+   Float A;
 
    for (i=0; i<gridsize; i++)
    {
@@ -385,14 +386,14 @@ void CalcError(int r, double ad[], double x[], double y[],
  * int    r        - 1/2 the number of filter coefficients
  * int    Ext[]    - Indexes to Grid[] of extremal frequencies [r+1]
  * int    gridsize - Number of elements in the dense frequency grid
- * double E[]      - Array of error values.  [gridsize]
+ * Float E[]      - Array of error values.  [gridsize]
  * OUTPUT:
  * -------
  * int    Ext[]    - New indexes to extremal frequencies [r+1]
  ************************/
 
 void Search(int r, int Ext[],
-            int gridsize, double E[])
+            int gridsize, Float E[])
 {
    int i, j, k, l, extra;     /* Counters */
    int up, alt;
@@ -453,7 +454,7 @@ void Search(int r, int Ext[],
          else if ((!up) && (E[foundExt[j]] > 0.0))
             up = 1;             /* switch to a maxima */
          else
-	 { 
+	 {
             alt = 0;
             break;              /* Ooops, found two non-alternating */
          }                      /* extrema.  Delete smallest of them */
@@ -498,17 +499,17 @@ void Search(int r, int Ext[],
  * INPUT:
  * ------
  * int      N        - Number of filter coefficients
- * double   A[]      - Sample points of desired response [N/2]
+ * Float   A[]      - Sample points of desired response [N/2]
  * int      symmetry - Symmetry of desired filter
  *
  * OUTPUT:
  * -------
- * double h[] - Impulse Response of final filter [N]
+ * Float h[] - Impulse Response of final filter [N]
  *********************/
-void FreqSample(int N, double A[], double h[], int symm)
+void FreqSample(int N, Float A[], Float h[], int symm)
 {
    int n, k;
-   double x, val, M;
+   Float x, val, M;
 
    M = (N-1.0)/2.0;
    if (symm == POSITIVE)
@@ -573,7 +574,7 @@ void FreqSample(int N, double A[], double h[], int symm)
  * ------
  * int    r     - 1/2 the number of filter coeffiecients
  * int    Ext[] - Indexes to extremal frequencies [r+1]
- * double E[]   - Error function on the dense grid [gridsize]
+ * Float E[]   - Error function on the dense grid [gridsize]
  *
  * OUTPUT:
  * -------
@@ -581,10 +582,10 @@ void FreqSample(int N, double A[], double h[], int symm)
  * Returns 0 if the result has not converged
  ********************/
 
-short isDone(int r, int Ext[], double E[])
+short isDone(int r, int Ext[], Float E[])
 {
    int i;
-   double min, max, current;
+   Float min, max, current;
 
    min = max = fabs(E[Ext[0]]);
    for (i=1; i<=r; i++)
@@ -613,24 +614,24 @@ short isDone(int r, int Ext[], double E[])
  * int     numtaps     - Number of filter coefficients
  * int     numband     - Number of bands in filter specification
  *						 This value is negative if arbitrary response is used.
- * double  bands[]     - User-specified band edges [2 * numband]
- * double  des[]       - User-specified band responses [numband]
- * double  weight[]    - User-specified error weights [numband]
+ * Float  bands[]     - User-specified band edges [2 * numband]
+ * Float  des[]       - User-specified band responses [numband]
+ * Float  weight[]    - User-specified error weights [numband]
  * int     type        - Type of filter
  *
  * OUTPUT:
  * -------
- * double h[]      - Impulse response of final filter [numtaps]
+ * Float h[]      - Impulse response of final filter [numtaps]
  ********************/
 
-void remez(double h[], int numtaps,
-           int numband, double bands[], double des[], double weight[],
+void remez(Float h[], int numtaps,
+           int numband, Float bands[], Float des[], Float weight[],
            int type)
 {
-   double *Grid, *W, *D, *E;
+   Float *Grid, *W, *D, *E;
    int    i, iter, gridsize, r, *Ext, useArbitraryResp;
-   double *taps, c;
-   double *x, *y, *ad;
+   Float *taps, c;
+   Float *x, *y, *ad;
    int    symmetry;
 
    if (type == BANDPASS)
@@ -664,15 +665,15 @@ void remez(double h[], int numtaps,
 /*
  * Dynamically allocate memory for arrays with proper sizes
  */
-   Grid = (double *)malloc(gridsize * sizeof(double));
-   D = (double *)malloc(gridsize * sizeof(double));
-   W = (double *)malloc(gridsize * sizeof(double));
-   E = (double *)malloc(gridsize * sizeof(double));
+   Grid = (Float *)malloc(gridsize * sizeof(Float));
+   D = (Float *)malloc(gridsize * sizeof(Float));
+   W = (Float *)malloc(gridsize * sizeof(Float));
+   E = (Float *)malloc(gridsize * sizeof(Float));
    Ext = (int *)malloc((r+1) * sizeof(int));
-   taps = (double *)malloc((r+1) * sizeof(double));
-   x = (double *)malloc((r+1) * sizeof(double));
-   y = (double *)malloc((r+1) * sizeof(double));
-   ad = (double *)malloc((r+1) * sizeof(double));
+   taps = (Float *)malloc((r+1) * sizeof(Float));
+   x = (Float *)malloc((r+1) * sizeof(Float));
+   y = (Float *)malloc((r+1) * sizeof(Float));
+   ad = (Float *)malloc((r+1) * sizeof(Float));
 
 /*
  * Create dense frequency grid
@@ -710,7 +711,7 @@ void remez(double h[], int numtaps,
          {
             c = cos(Pi * Grid[i]);
             D[i] /= c;
-            W[i] *= c; 
+            W[i] *= c;
          }
       }
    }
@@ -767,16 +768,16 @@ void remez(double h[], int numtaps,
          if (numtaps%2)
             c = 1;
          else
-            c = cos(Pi * (double)i/numtaps);
+            c = cos(Pi * (Float)i/numtaps);
       }
       else
       {
          if (numtaps%2)
-            c = sin(Pi2 * (double)i/numtaps);
+            c = sin(Pi2 * (Float)i/numtaps);
          else
-            c = sin(Pi * (double)i/numtaps);
+            c = sin(Pi * (Float)i/numtaps);
       }
-      taps[i] = ComputeA((double)i/numtaps, r, ad, x, y)*c;
+      taps[i] = ComputeA((Float)i/numtaps, r, ad, x, y)*c;
    }
 
 /*

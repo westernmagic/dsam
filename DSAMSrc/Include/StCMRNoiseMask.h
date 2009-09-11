@@ -109,20 +109,20 @@ typedef struct {
 	int		nGapLow;
 	int		nGapUpp;
 	long	ranSeed;
-	double	lowFBLevel;
-	double	uppFBLevel;
-	double	oFMLevel;
-	double	fBModPhase;
-	double	spacing;
+	Float	lowFBLevel;
+	Float	uppFBLevel;
+	Float	oFMLevel;
+	Float	fBModPhase;
+	Float	spacing;
 	int		bandwidthMode;
-	double	bandwidth;
-	double	mskModFreq;
-	double	mskModPhase;
-	double	sigLevel;
-	double	sigFreq;
+	Float	bandwidth;
+	Float	mskModFreq;
+	Float	mskModPhase;
+	Float	sigLevel;
+	Float	sigFreq;
 	int		sigGateMode;
-	double	gateTime;
-	double	duration, dt;
+	Float	gateTime;
+	Float	duration, dt;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -168,7 +168,7 @@ BOOLN	Init_CMR_NoiseMasker(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_CMR_NoiseMasker(void);
 
-BOOLN	SetOFMLevel_CMR_NoiseMasker(double theOFMLevel);
+BOOLN	SetOFMLevel_CMR_NoiseMasker(Float theOFMLevel);
 
 BOOLN	SetBandwidthMode_CMR_NoiseMasker(WChar * theBandwidthMode);
 
@@ -176,23 +176,23 @@ BOOLN	SetBinauralMode_CMR_NoiseMasker(WChar * theBinauralMode);
 
 BOOLN	SetCondition_CMR_NoiseMasker(WChar * theCondition);
 
-BOOLN	SetDuration_CMR_NoiseMasker(double theDuration);
+BOOLN	SetDuration_CMR_NoiseMasker(Float theDuration);
 
 BOOLN	SetEnabledPars_CMR_NoiseMasker(void);
 
-BOOLN	SetFBModPhase_CMR_NoiseMasker(double theFBModPhase);
+BOOLN	SetFBModPhase_CMR_NoiseMasker(Float theFBModPhase);
 
 BOOLN	SetFlankEar_CMR_NoiseMasker(WChar *theFlankEar);
 
-BOOLN	SetGateTime_CMR_NoiseMasker(double theGateTime);
+BOOLN	SetGateTime_CMR_NoiseMasker(Float theGateTime);
 
-BOOLN	SetBandwidth_CMR_NoiseMasker(double theBandwidth);
+BOOLN	SetBandwidth_CMR_NoiseMasker(Float theBandwidth);
 
-BOOLN	SetLowFBLevel_CMR_NoiseMasker(double theLowFBLevel);
+BOOLN	SetLowFBLevel_CMR_NoiseMasker(Float theLowFBLevel);
 
-BOOLN	SetMskModFreq_CMR_NoiseMasker(double theMskModFreq);
+BOOLN	SetMskModFreq_CMR_NoiseMasker(Float theMskModFreq);
 
-BOOLN	SetMskModPhase_CMR_NoiseMasker(double theMskModPhase);
+BOOLN	SetMskModPhase_CMR_NoiseMasker(Float theMskModPhase);
 
 BOOLN	SetNGapLow_CMR_NoiseMasker(int theNGapLow);
 
@@ -208,23 +208,23 @@ BOOLN	SetParsPointer_CMR_NoiseMasker(ModulePtr theModule);
 
 BOOLN	SetRanSeed_CMR_NoiseMasker(long theRanSeed);
 
-BOOLN	SetSamplingInterval_CMR_NoiseMasker(double theSamplingInterval);
+BOOLN	SetSamplingInterval_CMR_NoiseMasker(Float theSamplingInterval);
 
-BOOLN	SetSigLevel_CMR_NoiseMasker(double theSigLevel);
+BOOLN	SetSigLevel_CMR_NoiseMasker(Float theSigLevel);
 
 BOOLN	SetSigEar_CMR_NoiseMasker(WChar * theSigEar);
 
-BOOLN	SetSigFreq_CMR_NoiseMasker(double theSigFreq);
+BOOLN	SetSigFreq_CMR_NoiseMasker(Float theSigFreq);
 
 BOOLN	SetSigGateMode_CMR_NoiseMasker(WChar * theSigGateMode);
 
 BOOLN	SetSpacingType_CMR_NoiseMasker(WChar * theSpacingType);
 
-BOOLN	SetSpacing_CMR_NoiseMasker(double theSpacing);
+BOOLN	SetSpacing_CMR_NoiseMasker(Float theSpacing);
 
 BOOLN	SetUniParList_CMR_NoiseMasker(void);
 
-BOOLN	SetUppFBLevel_CMR_NoiseMasker(double theUppFBLevel);
+BOOLN	SetUppFBLevel_CMR_NoiseMasker(Float theUppFBLevel);
 
 NameSpecifier *	SigGateModeList_CMR_NoiseMasker(int index);
 

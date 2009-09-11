@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
  * Author:		L. P. O'Mard
  * Created:		18th April 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -37,15 +37,14 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
-	BOOLN	eventThresholdFlag, pulseDurationFlag, pulseMagnitudeFlag;
-	double	eventThreshold;
-	double	pulseDuration;
-	double	pulseMagnitude;
+	Float	eventThreshold;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
 
 	/* Private members */
-	double	*remainingPulseTime;
+	Float	*remainingPulseTime;
 	UniParListPtr	parList;
-	
+
 } ShapePulse, *ShapePulsePtr;
 
 /******************************************************************************/
@@ -66,8 +65,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_ShapePulse(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_ShapePulse(void);
-
 BOOLN	Free_Utility_ShapePulse(void);
 
 void	FreeProcessVariables_Utility_ShapePulse(void);
@@ -82,22 +79,17 @@ BOOLN	PrintPars_Utility_ShapePulse(void);
 
 BOOLN	Process_Utility_ShapePulse(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ShapePulse(WChar *fileName);
-
 void	ResetProcess_Utility_ShapePulse(EarObjectPtr data);
 
-BOOLN	SetEventThreshold_Utility_ShapePulse(double theEventThreshold);
+BOOLN	SetEventThreshold_Utility_ShapePulse(Float theEventThreshold);
 
 BOOLN	InitModule_Utility_ShapePulse(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_ShapePulse(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_ShapePulse(double eventThreshold, double
-		  pulseDuration, double pulseMagnitude);
+BOOLN	SetPulseDuration_Utility_ShapePulse(Float thePulseDuration);
 
-BOOLN	SetPulseDuration_Utility_ShapePulse(double thePulseDuration);
-
-BOOLN	SetPulseMagnitude_Utility_ShapePulse(double thePulseMagnitude);
+BOOLN	SetPulseMagnitude_Utility_ShapePulse(Float thePulseMagnitude);
 
 BOOLN	SetUniParList_Utility_ShapePulse(void);
 

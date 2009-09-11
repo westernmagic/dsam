@@ -17,7 +17,7 @@
  *				is not meant to be used, but it is to access global variables
  *				of modules that wouldn't otherwise be linked.
  *				20-04-99 LPO: The "Free_ModuleMgr" routine was not setting the
- *				appropriate module parameters pointer using the 
+ *				appropriate module parameters pointer using the
  *				"SetParsPointer_" routine.
  *				27-04-99 LPO:  The universal parameter lists have allowed me
  *				to introduce the 'ReadPar_', 'PrintPar_' and 'RunProcess'
@@ -37,7 +37,7 @@
  * Created:		29 Mar 1993
  * Updated:		02 Jun 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #include <stdio.h>
@@ -117,7 +117,7 @@ NullFunction_ModuleMgr(void)
 void *
 TrueFunction_ModuleMgr(void)
 {
-	
+
 	return((void *) TRUE);
 
 }
@@ -132,10 +132,9 @@ void
 SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 {
 	module->CheckData = (BOOLN (*)(EarObjectPtr)) DefaultFunc;
-	module->CheckPars = (BOOLN (*)(void)) DefaultFunc;
 	module->Free = (BOOLN (*)(void)) TrueFunction_ModuleMgr;
 	module->GetData = (void * (*)(void *)) DefaultFunc;
-	module->GetPotentialResponse = (double (*)(double)) DefaultFunc;
+	module->GetPotentialResponse = (Float (*)(Float)) DefaultFunc;
 	module->GetUniParListPtr = (UniParListPtr (*)(void)) NullFunction_ModuleMgr;
 	module->PrintPars = (BOOLN (*)(void)) DefaultFunc;
 #	ifdef _PAMASTER1_H
@@ -143,7 +142,6 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
 		  CommandSpecifier, ScopeSpecifier)) DefaultFunc;
 		module->SendQueuedCommands = (BOOLN (*)(void)) DefaultFunc;
 #	endif
-	module->ReadPars = NULL;
 	module->ReadSignal = (BOOLN (*)(WChar *, EarObjectPtr)) DefaultFunc;
 	module->ResetProcess = (void (*)(EarObjectPtr)) DefaultFunc;
 	module->RunProcess = (BOOLN (*)(EarObjectPtr)) DefaultFunc;
@@ -175,7 +173,7 @@ Init_ModuleMgr(const WChar *theModuleName)
 	if ((modRegEntryPtr = GetRegEntry_ModuleReg(theModuleName)) == NULL) {
 		NotifyError(wxT("%s: Unknown module '%s'."), funcName, theModuleName);
 		return(NULL);
-	}		
+	}
 	if (modRegEntryPtr->specifier == NULL_MODULE) {
 		if (nullModule)
 			return(nullModule);
@@ -183,7 +181,7 @@ Init_ModuleMgr(const WChar *theModuleName)
 		if (!nullModule)
 			nullModule = Init_ModuleMgr(wxT("NULL"));
 	}
-		
+
 	if ((theModule = (ModulePtr) (malloc(sizeof (Module)))) == NULL) {
 		NotifyError(wxT("%s: Could not allocate memory."), funcName);
 		return(NULL);
@@ -212,13 +210,13 @@ Init_ModuleMgr(const WChar *theModuleName)
  * This function returns a pointer to a module node.
  * It returns NULL if it fails.
  */
- 
+
 ModuleRefPtr
 CreateModuleRef_ModuleMgr(ModulePtr theModule)
 {
 	static const WChar *funcName = wxT("CreateModuleRef_ModuleMgr");
 	ModuleRef	*newNode;
-	
+
 	if ((newNode = (ModuleRef *) malloc(sizeof (ModuleRef))) == NULL) {
 		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
@@ -354,7 +352,7 @@ RunModel_ModuleMgr_Null(EarObjectPtr data)
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
+		}
 		SetProcessName_EarObject(data, NULL_MODULE_PROCESS_NAME);
 		if (!data->inSignal || !CheckPars_SignalData(_InSig_EarObject(data, 0))) {
 			NotifyError(wxT("%s: Input signal not set correctly."), funcName);
@@ -417,9 +415,9 @@ CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction)
  * This routine sets the onFlag for an EarObject structure.
  * On re-enabling a process the _OutSig_EarObject(data) pointer must be set to NULL
  * because it will have been set manually by the 'RunModel_ModuleMgr_NulL'
- * routine. 
+ * routine.
  */
- 
+
 BOOLN
 Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 {
@@ -433,7 +431,7 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	
+
 	if (on) {
 		data->module->onFlag = TRUE;
 		_OutSig_EarObject(data) = NULL;
@@ -448,7 +446,7 @@ Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 /*************************** GetData ******************************************/
 
 /*
- * This function returns general data from a model, as defined by the module's 
+ * This function returns general data from a model, as defined by the module's
  * specification.
  */
 
@@ -650,7 +648,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 		return(FALSE);
 	SET_PARS_POINTER(data);
 	if (data->module->specifier == SIMSCRIPT_MODULE)
-		return((* data->module->ReadPars)(fileName));
+		return(ReadPars_Utility_SimScript(fileName));
 	parList = (* data->module->GetUniParListPtr)();
 	if ((DSAM_strcmp(fileName, NO_FILE) == 0) || !parList)
 		return(TRUE);
@@ -660,50 +658,23 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 		  fileName);
 		return(FALSE);
 	}
-	if (!data->module->ReadPars)
-		useOldReadPars = FALSE;
-	else {
-		useOldReadPars = TRUE;
-		SetErrorsFile_Common(wxT("off"), OVERWRITE);
-	}
 	Init_ParFile();
 	SetEmptyLineMessage_ParFile(FALSE);
 	while (GetPars_ParFile(fp, wxT("%s %s"), parName, parValue)) {
 		parCount++;
 		tempParList = parList;
-		par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR);
-		if (useOldReadPars) {
-			if (par) {
-				if (++newParCount == MODULE_NUM_PARS_FOR_VALID_NEW_FORMAT) {
-					useOldReadPars = FALSE;
-					GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-				}
-			} else {
+		if ((par = FindUniPar_UniParMgr(&tempParList, parName, UNIPAR_SEARCH_ABBR)) == NULL) {
+			NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
+			  funcName, parName, data->module->name);
+			ok = FALSE;
+		} else {
+			if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
 				ok = FALSE;
-				DSAM_strcpy(failedParName, parName);
-			}
-		}
-		if (par || !useOldReadPars) {
-			if (!par) {
-				NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
-				  funcName, parName, data->module->name);
-				ok = FALSE;
-			} else {
-				if (!SetParValue_UniParMgr(&tempParList, par->index, parValue))
-					ok = FALSE;
-			}
 		}
 	}
 	SetEmptyLineMessage_ParFile(TRUE);
 	fclose(fp);
 	Free_ParFile();
-	if ((parCount != newParCount) && useOldReadPars) {
-		GetDSAMPtr_Common()->errorsFile = savedErrorsFileFP;
-		/* Enable this following line after an adjustment period. */
-		/* NotifyWarning(wxT("%s: Using old parameter format for module '%s'."),
-		  funcName, data->module->name); */
-		return((* data->module->ReadPars)(fileName));
-	}
 	if (!ok) {
 		if (*failedParName)
 			NotifyError(wxT("%s: Unknown parameter '%s' for module '%s'."),
@@ -942,7 +913,7 @@ SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value)
  */
 
 BOOLN
-SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, double value)
+SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, Float value)
 {
 	WChar	stringValue[MAXLINE];
 
@@ -961,7 +932,7 @@ SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, double value)
 
 BOOLN
 SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
-  double value)
+  Float value)
 {
 	/* static const WChar *funcName = wxT("SetRealPar_ModuleMgr"); */
 	WChar	arrayElementString[MAXLINE];
@@ -1013,7 +984,7 @@ SetNull_ModuleMgr(ModulePtr theModule)
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
 	theModule->RunProcess = RunModel_ModuleMgr_Null;
 	return(TRUE);
-	
+
 }
 
 /************************** FreeNull ******************************************/
@@ -1028,19 +999,19 @@ void
 FreeNull_ModuleMgr(void)
 {
 	ModulePtr	tempPtr;
-	
+
 	if (!nullModule)
 		return;
 	tempPtr = nullModule;
 	nullModule = NULL;
 	Free_ModuleMgr(&tempPtr);
-	
+
 }
 
 /**************************** InLineProcess ***********************************/
 
 /*
- * This function checks whether this module is being used in-line within an 
+ * This function checks whether this module is being used in-line within an
  * EarObject pipline.
  * This is checked by ensuring that the calling module's "RunProcess" function.
  * is the same as the process module's "RunProcess" function.

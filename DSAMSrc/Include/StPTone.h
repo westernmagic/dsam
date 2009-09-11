@@ -3,7 +3,7 @@
  * File:		StPTone.h
  * Purpose:		This module contains the methods for the simple pure-tone
  *				signal generation paradigm.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
  * Updated:		12 Mar 1997
@@ -13,7 +13,7 @@
 
 #ifndef	_STPTONE_H
 #define _STPTONE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -38,16 +38,14 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	frequencyFlag, durationFlag, dtFlag;
-	BOOLN	intensityFlag;
-	double	frequency, intensity;
-	double	duration, dt;
+	Float	frequency, intensity;
+	Float	duration, dt;
 
 	/* Private members */
 	UniParListPtr	parList;
 
 } PureTone, *PureTonePtr;
-	
+
 /*********************** External Variables ***********************************/
 
 extern	PureTonePtr	pureTonePtr;
@@ -60,8 +58,6 @@ extern	PureTonePtr	pureTonePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_PureTone(void);
-
 BOOLN	Free_PureTone(void);
 
 BOOLN	GenerateSignal_PureTone(EarObjectPtr theObject);
@@ -72,22 +68,17 @@ BOOLN	Init_PureTone(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone(void);
 
-BOOLN	ReadPars_PureTone(WChar *fileName);
+BOOLN	SetDuration_PureTone(Float theDuration);
 
-BOOLN	SetDuration_PureTone(double theDuration);
+BOOLN	SetFrequency_PureTone(Float theFrequency);
 
-BOOLN	SetFrequency_PureTone(double theFrequency);
-
-BOOLN	SetIntensity_PureTone(double theIntensity);
+BOOLN	SetIntensity_PureTone(Float theIntensity);
 
 BOOLN	InitModule_PureTone(ModulePtr theModule);
 
 BOOLN	SetParsPointer_PureTone(ModulePtr theModule);
 
-BOOLN	SetPars_PureTone(double theFrequency, double theIntensity,
-		  double theDuration, double theSamplingInterval);
-		  
-BOOLN	SetSamplingInterval_PureTone(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PureTone(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PureTone(void);
 

@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
  * Author:		L. P. O'Mard
  * Created:		14 Mar 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -37,11 +37,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	beginDurationFlag, beginValueFlag, endDurationFlag, endValueFlag;
-	double	beginDuration;
-	double	beginValue;
-	double	endDuration;
-	double	endValue;
+	Float	beginDuration;
+	Float	beginValue;
+	Float	endDuration;
+	Float	endValue;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -67,8 +66,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_PadSignal(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_PadSignal(void);
-
 BOOLN	Free_Utility_PadSignal(void);
 
 UniParListPtr	GetUniParListPtr_Utility_PadSignal(void);
@@ -81,13 +78,13 @@ BOOLN	PrintPars_Utility_PadSignal(void);
 
 BOOLN	Process_Utility_PadSignal(EarObjectPtr data);
 
-BOOLN	SetBeginDuration_Utility_PadSignal(double theBeginDuration);
+BOOLN	SetBeginDuration_Utility_PadSignal(Float theBeginDuration);
 
-BOOLN	SetBeginValue_Utility_PadSignal(double theBeginValue);
+BOOLN	SetBeginValue_Utility_PadSignal(Float theBeginValue);
 
-BOOLN	SetEndDuration_Utility_PadSignal(double theEndDuration);
+BOOLN	SetEndDuration_Utility_PadSignal(Float theEndDuration);
 
-BOOLN	SetEndValue_Utility_PadSignal(double theEndValue);
+BOOLN	SetEndValue_Utility_PadSignal(Float theEndValue);
 
 BOOLN	SetParsPointer_Utility_PadSignal(ModulePtr theModule);
 

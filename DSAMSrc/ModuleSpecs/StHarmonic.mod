@@ -13,15 +13,15 @@ typedef struct {
 	int		mistunedHarmonic;
 	int		order;
 	NameSpecifier		phaseMode;
-	double	phaseVariable;
-	double	mistuningFactor;
-	double	frequency;
-	double	intensity;
-	double	duration, dt;
-	double	modulationFrequency;
-	double	modulationPhase;
-	double	modulationDepth;
-	double	lowerCutOffFreq;
-	double	upperCutOffFreq;
+	Float	phaseVariable;
+	Float	mistuningFactor;
+	Float	frequency;
+	Float	intensity;
+	Float	duration, dt;
+	Float	modulationFrequency;
+	Float	modulationPhase;
+	Float	modulationDepth;
+	Float	lowerCutOffFreq;
+	Float	upperCutOffFreq;
 
 } Harmonic;

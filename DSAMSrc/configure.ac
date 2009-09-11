@@ -6,6 +6,7 @@ AC_REVISION($Revision: 2.61)
 
 AC_INIT(DSAM, 2.9.0)
 AC_CONFIG_AUX_DIR(CfgTools)
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_CANONICAL_TARGET
 
@@ -46,7 +47,7 @@ AC_SUBST(DSAM_MICRO_VERSION)
 AC_SUBST(DSAM_INTERFACE_AGE)
 AC_SUBST(DSAM_BINARY_AGE)
 AC_SUBST(DSAM_RPM_AGE)
-AC_DEFINE_UNQUOTED(DSAM_VERSION, wxT("$PACKAGE_VERSION"), "DSAM version")
+AC_DEFINE_UNQUOTED(DSAM_VERSION, wxT("$DSAM_PACKAGE_VERSION"), "DSAM version")
 #AC_DEFINE_UNQUOTED(DSAM_VERSION_INT, [`expr \( $DSAM_MAJOR_VERSION \* 100000 \) +
 # \( $DSAM_MINOR_VERSION \* 1000 \) + $DSAM_MICRO_VERSION`], 
 #  "DSAM coded integer version - no quotes")
@@ -103,6 +104,12 @@ AC_ARG_ENABLE(portaudio,
    [  --disable-portaudio        Do not compile PortAudio support],
    [enable_portaudio="$enableval"],
    [enable_portaudio="yes"]
+)
+
+AC_ARG_ENABLE(use_float,
+   [  --enable-use-float       Compile using 'float' channel data instead of  'double'],
+   [use_float="$enableval"],
+   [use_float="no"]
 )
 
 AC_ARG_ENABLE(unicode,
@@ -375,7 +382,7 @@ dnl ----------------------------------------------------------------------------
 
 wxwinAvailable=no
 if test x$gui = xyes -o x$DSAM_EXT = xyes; then
-	AC_MSG_CHECKING(for WXWIN configuration shell script ($WX_CONFIG))
+	AC_MSG_CHECKING([for WXWIN configuration shell script ($WX_CONFIG)])
 	if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
 		wxwinAvailable=yes
 		wx_version=`$WX_CONFIG --version | cut -d. -f 1-2`
@@ -562,7 +569,13 @@ dnl ----------------------------------------------------------------------------
 dnl fftw3 library
 dnl ----------------------------------------------------------------------------
 
-PKG_CHECK_MODULES(FFTW3, fftw3 >= 3.0.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+if test x$use_float = xyes; then
+	FFTW3LIB=fftw3f
+else
+	FFTW3LIB=fftw3
+fi
+
+PKG_CHECK_MODULES(FFTW3, $FFTW3LIB >= 3.0.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
 AC_DEFINE_UNQUOTED([HAVE_FFTW3],${ac_cv_fftw3},
 	[Set to 1 if you have fftw3.])
 
@@ -656,7 +669,14 @@ if test x$using_portaudio = xyes; then
 	PORTAUDIO_LDFLAGS="-lportaudio"
 	AC_SUBST(PORTAUDIO_LDFLAGS)
 fi
-AM_CONDITIONAL(USE_PORTAUDI, test x$using_portaudio = xyes)
+AM_CONDITIONAL(USE_PORTAUDIO, test x$using_portaudio = xyes)
+
+if test x$use_float = xyes; then
+	AC_DEFINE(DSAM_USE_FLOAT, 1, [Use float channel data])
+	DSAMFLOATINC="-DDSAM_USE_FLOAT"
+	AC_SUBST(DSAMFLOATINC)
+fi
+AM_CONDITIONAL(DSAM_USE_FLOAT, test x$use_float = xyes)
 
 dnl ============================================================================
 dnl Checks for system services or capabilities.

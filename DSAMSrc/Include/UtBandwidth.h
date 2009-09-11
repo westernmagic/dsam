@@ -16,7 +16,7 @@
 #define _UTBANDWIDTH_H	1
 
 #include "UtNameSpecs.h"
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -58,7 +58,7 @@ typedef enum {
 	BANDWIDTH_INTERNAL_STATIC,
 	BANDWIDTH_DISABLED,
 	BANDWIDTH_NULL
-	
+
 } BandwidthModeSpecifier;
 
 typedef enum {
@@ -74,10 +74,10 @@ typedef enum {
 typedef struct BandwidthMode {
 
 	BandwidthModeSpecifier specifier;
-	double	bwMin;
-	double	quality;
-	double	scaler;
-	double	(* Func)(struct BandwidthMode *, double);
+	Float	bwMin;
+	Float	quality;
+	Float	scaler;
+	Float	(* Func)(struct BandwidthMode *, Float);
 
 } BandwidthMode, *BandwidthModePtr;
 
@@ -98,24 +98,24 @@ __BEGIN_DECLS
 /* formulae.c calls: ERB as a function of frequency etc, Glasberg and Moore 1990
  * versions only.
  */
- 
-double	BandwidthFromF_Bandwith(BandwidthModePtr p, double theFrequency);
 
-double	CatFromF_Bandwidth(double f);
+Float	BandwidthFromF_Bandwith(BandwidthModePtr p, Float theFrequency);
 
-double	CustomERBFromF_Bandwidth(double x, double bwMin, double quality);
+Float	CatFromF_Bandwidth(Float f);
 
-double	ERBFromF_Bandwidth(double x);
+Float	CustomERBFromF_Bandwidth(Float x, Float bwMin, Float quality);
 
-double	FFromERB_Bandwidth(double x);
+Float	ERBFromF_Bandwidth(Float x);
 
-double	ERBRateFromF_Bandwidth(double theFrequency);
+Float	FFromERB_Bandwidth(Float x);
 
-double	FFromERBRate_Bandwidth(double theERBRate);
+Float	ERBRateFromF_Bandwidth(Float theFrequency);
 
-double	GuineaPigFromF_Bandwidth(double f);
+Float	FFromERBRate_Bandwidth(Float theERBRate);
 
-double	NonLinearFromF_Bandwidth(double f);
+Float	GuineaPigFromF_Bandwidth(Float f);
+
+Float	NonLinearFromF_Bandwidth(Float f);
 
 NameSpecifier *	ModeList_Bandwidth(int index);
 

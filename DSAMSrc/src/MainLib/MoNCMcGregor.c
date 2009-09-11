@@ -62,22 +62,13 @@ Init_Neuron_McGregor(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (mcGregorPtr == NULL) { 
+		if (mcGregorPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	mcGregorPtr->parSpec = parSpec;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
-	mcGregorPtr->membraneTConstFlag = TRUE;
-	mcGregorPtr->thresholdTConstFlag = TRUE;
-	mcGregorPtr->accomConstFlag = TRUE;
-	mcGregorPtr->delayedRectKCondFlag = TRUE;
-	mcGregorPtr->restingThresholdFlag = TRUE;
-	mcGregorPtr->actionPotentialFlag = TRUE;
-	mcGregorPtr->kDecayTConstFlag = TRUE;
-	mcGregorPtr->kEquilibriumPotFlag = TRUE;
-	mcGregorPtr->cellRestingPotFlag = TRUE;
 	mcGregorPtr->membraneTConst_Tm = 2e-3;
 	mcGregorPtr->kDecayTConst_TGk = 0.9e-3;
 	mcGregorPtr->thresholdTConst_TTh = 20e-3;
@@ -225,7 +216,7 @@ GetUniParListPtr_Neuron_McGregor(void)
  */
 
 BOOLN
-SetMembraneTConst_Neuron_McGregor(double theMembraneTConst)
+SetMembraneTConst_Neuron_McGregor(Float theMembraneTConst)
 {
 	static const WChar *funcName = wxT("SetMembraneTConst_Neuron_McGregor");
 
@@ -237,8 +228,7 @@ SetMembraneTConst_Neuron_McGregor(double theMembraneTConst)
 		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
 		  theMembraneTConst);
 		return(FALSE);
-	} 
-	mcGregorPtr->membraneTConstFlag = TRUE;
+	}
 	mcGregorPtr->membraneTConst_Tm = theMembraneTConst;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -254,7 +244,7 @@ SetMembraneTConst_Neuron_McGregor(double theMembraneTConst)
  */
 
 BOOLN
-SetKDecayTConst_Neuron_McGregor(double theKDecayTConst)
+SetKDecayTConst_Neuron_McGregor(Float theKDecayTConst)
 {
 	static const WChar *funcName = wxT("SetKDecayTConst_Neuron_McGregor");
 
@@ -265,8 +255,7 @@ SetKDecayTConst_Neuron_McGregor(double theKDecayTConst)
 	if (theKDecayTConst == 0.0) {
 		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName, theKDecayTConst);
 		return(FALSE);
-	} 
-	mcGregorPtr->kDecayTConstFlag = TRUE;
+	}
 	mcGregorPtr->kDecayTConst_TGk = theKDecayTConst;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -281,7 +270,7 @@ SetKDecayTConst_Neuron_McGregor(double theKDecayTConst)
  */
 
 BOOLN
-SetThresholdTConst_Neuron_McGregor(double theThresholdTConst)
+SetThresholdTConst_Neuron_McGregor(Float theThresholdTConst)
 {
 	static const WChar *funcName = wxT("SetThresholdTConst_Neuron_McGregor");
 
@@ -293,8 +282,7 @@ SetThresholdTConst_Neuron_McGregor(double theThresholdTConst)
 		NotifyError(wxT("%s: Invalid value = %g mV\n"), funcName,
 		  theThresholdTConst);
 		return(FALSE);
-	} 
-	mcGregorPtr->thresholdTConstFlag = TRUE;
+	}
 	mcGregorPtr->thresholdTConst_TTh = theThresholdTConst;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -309,7 +297,7 @@ SetThresholdTConst_Neuron_McGregor(double theThresholdTConst)
  */
 
 BOOLN
-SetAccomConst_Neuron_McGregor(double theAccomConst)
+SetAccomConst_Neuron_McGregor(Float theAccomConst)
 {
 	static const WChar	*funcName = wxT("SetAccomConst_Neuron_McGregor");
 
@@ -317,7 +305,6 @@ SetAccomConst_Neuron_McGregor(double theAccomConst)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->accomConstFlag = TRUE;
 	mcGregorPtr->accomConst_c = theAccomConst;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -333,7 +320,7 @@ SetAccomConst_Neuron_McGregor(double theAccomConst)
  */
 
 BOOLN
-SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond)
+SetDelayedRectKCond_Neuron_McGregor(Float theDelayedRectKCond)
 {
 	static const WChar	*funcName = wxT("SetDelayedRectKCond_Neuron_McGregor");
 
@@ -341,7 +328,6 @@ SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->delayedRectKCondFlag = TRUE;
 	mcGregorPtr->delayedRectKCond_b = theDelayedRectKCond;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -356,7 +342,7 @@ SetDelayedRectKCond_Neuron_McGregor(double theDelayedRectKCond)
  */
 
 BOOLN
-SetRestingThreshold_Neuron_McGregor(double theRestingThreshold)
+SetRestingThreshold_Neuron_McGregor(Float theRestingThreshold)
 {
 	static const WChar	*funcName = wxT("SetRestingThreshold_Neuron_McGregor");
 
@@ -364,7 +350,6 @@ SetRestingThreshold_Neuron_McGregor(double theRestingThreshold)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->restingThresholdFlag = TRUE;
 	mcGregorPtr->restingThreshold_Th0 = theRestingThreshold;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -379,7 +364,7 @@ SetRestingThreshold_Neuron_McGregor(double theRestingThreshold)
  */
 
 BOOLN
-SetActionPotential_Neuron_McGregor(double theActionPotential)
+SetActionPotential_Neuron_McGregor(Float theActionPotential)
 {
 	static const WChar	*funcName = wxT("SetActionPotential_Neuron_McGregor");
 
@@ -387,7 +372,6 @@ SetActionPotential_Neuron_McGregor(double theActionPotential)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->actionPotentialFlag = TRUE;
 	mcGregorPtr->actionPotential = theActionPotential;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -403,7 +387,7 @@ SetActionPotential_Neuron_McGregor(double theActionPotential)
  */
 
 BOOLN
-SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot)
+SetKEquilibriumPot_Neuron_McGregor(Float theKEquilibriumPot)
 {
 	static const WChar	*funcName = wxT("SetKEquilibriumPot_Neuron_McGregor");
 
@@ -411,7 +395,6 @@ SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->kEquilibriumPotFlag = TRUE;
 	mcGregorPtr->kEquilibriumPot_Ek = theKEquilibriumPot;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -426,7 +409,7 @@ SetKEquilibriumPot_Neuron_McGregor(double theKEquilibriumPot)
  */
 
 BOOLN
-SetCellRestingPot_Neuron_McGregor(double theCellRestingPot)
+SetCellRestingPot_Neuron_McGregor(Float theCellRestingPot)
 {
 	static const WChar	*funcName = wxT("SetCellRestingPot_Neuron_McGregor");
 
@@ -434,115 +417,10 @@ SetCellRestingPot_Neuron_McGregor(double theCellRestingPot)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	mcGregorPtr->cellRestingPotFlag = TRUE;
 	mcGregorPtr->cellRestingPot_Er = theCellRestingPot;
 	mcGregorPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- */
-
-BOOLN
-SetPars_Neuron_McGregor(double tm, double tGk, double tTh, double c, double b,
-  double tH0, double aP, double ek, double er)
-{
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetMembraneTConst_Neuron_McGregor(tm))
-		ok = FALSE;
-	if (!SetKDecayTConst_Neuron_McGregor(tGk))
-		ok = FALSE;
-	if (!SetThresholdTConst_Neuron_McGregor(tTh))
-		ok = FALSE;
-	if (!SetAccomConst_Neuron_McGregor(c))
-	    ok = FALSE;
-	if (!SetDelayedRectKCond_Neuron_McGregor(b))
-		ok = FALSE;
-	if (!SetRestingThreshold_Neuron_McGregor(tH0))
-		ok = FALSE;
-	if (!SetActionPotential_Neuron_McGregor(aP))
-		ok = FALSE;
-	if (!SetKEquilibriumPot_Neuron_McGregor(ek))
-		ok = FALSE;
-	if (!SetCellRestingPot_Neuron_McGregor(er))
-		ok = FALSE;
-	return(ok);
-	  
-}
-
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that all of the parameters for the module are set.
- * Because this module is defined by its coeffients, default values are always
- * set if none of the parameters are set, otherwise all of them must be
- * individually set.
- */
-
-BOOLN
-CheckPars_Neuron_McGregor(void)
-{
-	static const WChar *funcName = wxT("CheckPars_Neuron_McGregor");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (mcGregorPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!mcGregorPtr->membraneTConstFlag) {
-		NotifyError(wxT("%s: Membrane time constant, Tm, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->kDecayTConstFlag) {
-		NotifyError(wxT("%s: Potassium decay time  constant, TGk, not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->thresholdTConstFlag) {
-		NotifyError(wxT("%s: Threshold time constant, TTh, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->accomConstFlag) {
-		NotifyError(wxT("%s: Accomodation constant, c, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->delayedRectKCondFlag) {
-		NotifyError(wxT("%s: Delayed rectifier potassium conductance, b, not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->restingThresholdFlag) {
-		NotifyError(wxT("%s: Resting threshold constant, Th0, not correctly ")
-		  wxT("set."), funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->actionPotentialFlag) {
-		NotifyError(wxT("%s: Action potential constant not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->kEquilibriumPotFlag) {
-		NotifyError(wxT("%s: Equilibrium potential of the potassium ")
-		  wxT("conductance, Ek, not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!mcGregorPtr->cellRestingPotFlag) {
-		NotifyError(wxT("%s: Cell resting potential, Er, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	return(ok);
-		
 }
 
 /****************************** GetPotentialResponse **************************/
@@ -557,14 +435,13 @@ void *
 GetPotentialResponse_Neuron_McGregor(void *potentialPtr)
 {
 	static const WChar *funcName = wxT("GetPotentialResponse_Neuron_McGregor");
-	double	*potential;
+	Float	*potential;
 
-	if (!CheckPars_Neuron_McGregor()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set, zero ")
-		  wxT("returned."), funcName);
-		return(NULL);
+	if (mcGregorPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
 	}
-	potential = (double *) potentialPtr;
+	potential = (Float *) potentialPtr;
 	if (*potential - mcGregorPtr->cellRestingPot_Er >
 	  mcGregorPtr->restingThreshold_Th0 + mcGregorPtr->accomConst_c)
 		*potential -= mcGregorPtr->actionPotential;
@@ -578,15 +455,14 @@ GetPotentialResponse_Neuron_McGregor(void *potentialPtr)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_Neuron_McGregor(void)
 {
 	static const WChar *funcName = wxT("PrintPars_Neuron_McGregor");
 
-	if (!CheckPars_Neuron_McGregor()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (mcGregorPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("McGregor Neural Cell Module Parameters:-\n"));
@@ -609,70 +485,6 @@ PrintPars_Neuron_McGregor(void)
 	  cellRestingPot_Er);
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_Neuron_McGregor(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_Neuron_McGregor");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	membraneTConst_Tm, kDecayTConst_TGk, thresholdTConst_TTh;
-	double	accomConst_c, delayedRectKCond_b, restingThreshold_Th0;
-	double	actionPotential, kEquilibriumPot_Ek, cellRestingPot_Er;
-	FILE    *fp;
-    
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-
-    Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &membraneTConst_Tm))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &kDecayTConst_TGk))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &thresholdTConst_TTh))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &accomConst_c))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &delayedRectKCond_b))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingThreshold_Th0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &actionPotential))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &kEquilibriumPot_Ek))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &cellRestingPot_Er))
-		ok = FALSE;
-    fclose(fp);
-    Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Neuron_McGregor(membraneTConst_Tm, kDecayTConst_TGk,
-	  thresholdTConst_TTh, accomConst_c, delayedRectKCond_b, 
-	  restingThreshold_Th0, actionPotential, kEquilibriumPot_Ek,
-	  cellRestingPot_Er)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-    
 }
 
 /****************************** SetParsPointer ********************************/
@@ -718,12 +530,10 @@ InitModule_Neuron_McGregor(ModulePtr theModule)
 	}
 	theModule->parsPtr = mcGregorPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Neuron_McGregor;
 	theModule->Free = Free_Neuron_McGregor;
 	theModule->GetData = GetPotentialResponse_Neuron_McGregor;
 	theModule->GetUniParListPtr = GetUniParListPtr_Neuron_McGregor;
 	theModule->PrintPars = PrintPars_Neuron_McGregor;
-	theModule->ReadPars = ReadPars_Neuron_McGregor;
 	theModule->RunProcess = RunModel_Neuron_McGregor;
 	theModule->SetParsPointer = SetParsPointer_Neuron_McGregor;
 	return(TRUE);
@@ -804,21 +614,19 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_Neuron_McGregor");
 	int			i, spikeState_s;
-	double		dt, totalConductance;
-	register double	potDecay;
+	Float		dt, totalConductance;
+	register Float	potDecay;
 	ChanLen		j;
 	ChanData	*inPtr, *outPtr;
 	McGregorPtr	c = mcGregorPtr;
 	SignalDataPtr	outSignal;
 	McGregorStatePtr	s;
-	
+
 	if (!data->threadRunFlag) {
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
-		if (!CheckPars_Neuron_McGregor())		
-			return(FALSE);
+		}
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0)))
@@ -872,5 +680,5 @@ RunModel_Neuron_McGregor(EarObjectPtr data)
 	}
 	SetProcessContinuity_EarObject(data);
  	return(TRUE);
-		
+
 } /* RunModel_Neuron_McGregor */

@@ -111,9 +111,6 @@ Init_Analysis_CCF(ParameterSpecifier parSpec)
 	}
 	crossCorrPtr->parSpec = parSpec;
 	crossCorrPtr->updateProcessVariablesFlag = TRUE;
-	crossCorrPtr->timeOffsetFlag = TRUE;
-	crossCorrPtr->timeConstantFlag = TRUE;
-	crossCorrPtr->periodFlag = TRUE;
 	crossCorrPtr->timeOffset = 0.0;
 	crossCorrPtr->timeConstant = 0.0025;
 	crossCorrPtr->period = 0.005;
@@ -192,33 +189,6 @@ GetUniParListPtr_Analysis_CCF(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_CCF(double timeOffset, double timeConstant,
-  double period)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_CCF");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetTimeOffset_Analysis_CCF(timeOffset))
-		ok = FALSE;
-	if (!SetTimeConstant_Analysis_CCF(timeConstant))
-		ok = FALSE;
-	if (!SetPeriod_Analysis_CCF(period))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetTimeOffset *********************************/
 
 /*
@@ -228,7 +198,7 @@ SetPars_Analysis_CCF(double timeOffset, double timeConstant,
  */
 
 BOOLN
-SetTimeOffset_Analysis_CCF(double theTimeOffset)
+SetTimeOffset_Analysis_CCF(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_CCF");
 
@@ -241,7 +211,6 @@ SetTimeOffset_Analysis_CCF(double theTimeOffset)
 		  theTimeOffset);
 		return(FALSE);
 	}
-	crossCorrPtr->timeOffsetFlag = TRUE;
 	crossCorrPtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -256,7 +225,7 @@ SetTimeOffset_Analysis_CCF(double theTimeOffset)
  */
 
 BOOLN
-SetTimeConstant_Analysis_CCF(double theTimeConstant)
+SetTimeConstant_Analysis_CCF(Float theTimeConstant)
 {
 	static const WChar	*funcName = wxT("SetTimeConstant_Analysis_CCF");
 
@@ -269,7 +238,6 @@ SetTimeConstant_Analysis_CCF(double theTimeConstant)
 		  theTimeConstant);
 		return(FALSE);
 	}
-	crossCorrPtr->timeConstantFlag = TRUE;
 	crossCorrPtr->timeConstant = theTimeConstant;
 	return(TRUE);
 
@@ -284,7 +252,7 @@ SetTimeConstant_Analysis_CCF(double theTimeConstant)
  */
 
 BOOLN
-SetPeriod_Analysis_CCF(double thePeriod)
+SetPeriod_Analysis_CCF(Float thePeriod)
 {
 	static const WChar	*funcName = wxT("SetPeriod_Analysis_CCF");
 
@@ -297,46 +265,8 @@ SetPeriod_Analysis_CCF(double thePeriod)
 		  thePeriod);
 		return(FALSE);
 	}
-	crossCorrPtr->periodFlag = TRUE;
 	crossCorrPtr->period = thePeriod;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_CCF(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_CCF");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (crossCorrPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!crossCorrPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!crossCorrPtr->timeConstantFlag) {
-		NotifyError(wxT("%s: timeConstant variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!crossCorrPtr->periodFlag) {
-		NotifyError(wxT("%s: period variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -352,11 +282,6 @@ PrintPars_Analysis_CCF(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_CCF");
 
-	if (!CheckPars_Analysis_CCF()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Cross-correlation Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tTime Offset = "));
 	if (crossCorrPtr->timeOffset < 0.0)
@@ -366,51 +291,6 @@ PrintPars_Analysis_CCF(void)
 	DPrint(wxT("\tTime constant = %g ms,\t"),
 	  MSEC(crossCorrPtr->timeConstant));
 	DPrint(wxT("\tPeriod = %g ms\n"), MSEC(crossCorrPtr->period));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_CCF(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_CCF");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	timeOffset, timeConstant, period;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeConstant))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &period))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_CCF(timeOffset, timeConstant, period)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -458,11 +338,9 @@ InitModule_Analysis_CCF(ModulePtr theModule)
 	}
 	theModule->parsPtr = crossCorrPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_CCF;
 	theModule->Free = Free_Analysis_CCF;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_CCF;
 	theModule->PrintPars = PrintPars_Analysis_CCF;
-	theModule->ReadPars = ReadPars_Analysis_CCF;
 	theModule->RunProcess = Calc_Analysis_CCF;
 	theModule->SetParsPointer = SetParsPointer_Analysis_CCF;
 	return(TRUE);
@@ -488,7 +366,7 @@ BOOLN
 CheckData_Analysis_CCF(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_CCF");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -501,13 +379,13 @@ CheckData_Analysis_CCF(EarObjectPtr data)
 		NotifyError(wxT("%s: Time offset is longer than signal duration."),
 		  funcName);
 		return(FALSE);
-	}		
+	}
 	if ((crossCorrPtr->timeOffset - crossCorrPtr->period * 2.0 < 0.0) ||
 	  (crossCorrPtr->timeOffset + crossCorrPtr->period > signalDuration)) {
 		NotifyError(wxT("%s: cross-correlation period extends outside the ")
 		  wxT("range of the signal."), funcName);
 		return(FALSE);
-	}		
+	}
 	if (_InSig_EarObject(data, 0)->numChannels % 2 != 0) {
 		NotifyError(wxT("%s: Number of channels must be a factor of 2."),
 		  funcName);
@@ -529,17 +407,17 @@ BOOLN
 InitProcessVariables_Analysis_CCF(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_Analysis_CCF");
-	
-	double	*expDtPtr, dt;
+
+	Float	*expDtPtr, dt;
 	ChanLen	i, maxPeriodIndex;
 	CrossCorrPtr	p = crossCorrPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Analysis_CCF();
 		dt = _InSig_EarObject(data, 0)->dt;
 		maxPeriodIndex = (ChanLen) floor(p->period / dt + 0.05);
-		if ((p->exponentDt = (double *) calloc(maxPeriodIndex, sizeof(
-		  double))) == NULL) {
+		if ((p->exponentDt = (Float *) calloc(maxPeriodIndex, sizeof(
+		  Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for exponent lookup table."),
 			  funcName);
 			return(FALSE);
@@ -590,18 +468,16 @@ BOOLN
 Calc_Analysis_CCF(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Calc_Analysis_CCF");
-	register	double	*expDtPtr;
+	register	Float	*expDtPtr;
 	register	ChanData	 *inPtrL, *inPtrR, *outPtr;
 	int		chan, inChan;
 	long	deltaT;
-	double	dt;
+	Float	dt;
 	ChanLen	i, totalPeriodIndex;
 	SignalDataPtr	outSignal;
 	CrossCorrPtr	p = crossCorrPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_CCF())
-			return(FALSE);
 		if (!CheckData_Analysis_CCF(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

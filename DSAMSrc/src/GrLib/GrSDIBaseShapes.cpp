@@ -6,7 +6,7 @@
  *				This code was moved from the GrSDIShapes code module.
  * Author:		L.P.O'Mard
  * Created:		10 Apr 2005
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex
  *
  **********************/
@@ -36,6 +36,8 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "GeUniParMgr.h"
+#include "GeModuleMgr.h"
+#include "GrSDIEvtHandler.h"
 #include "GrSDIBaseShapes.h"
 #include "GrSDIShapes.h"
 #include "UtSSSymbols.h"
@@ -84,10 +86,10 @@ SDIShape::AddPenInfo(DSAMXMLNode *parent)
 	DSAMXMLNode *penElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_PEN_ELEMENT);
 	if (myPen->GetWidth() != 1)
-		penElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, 
+		penElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE,
 		  myPen->GetWidth());
 	if ( myPen->GetStyle() != wxSOLID)
-		penElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE, 
+		penElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE,
 		  myPen->GetStyle());
 	wxString penColour = wxTheColourDatabase->FindName(myPen->GetColour());
 	if (penColour == wxEmptyString) {
@@ -262,7 +264,7 @@ SDIShape::AddRegions(DSAMXMLNode *parent)
 
 		// Formatted text:
 		// text1 = ((x y string) (x y string) ...)
-	
+
 		wxNode *textNode = region->m_formattedText.GetFirst();
 		while (textNode) {
 			DSAMXMLNode *textElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
@@ -312,19 +314,19 @@ SDIShape::AddShapeInfo(DSAMXMLNode *parent)
 		shapeElement->AddProperty(SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE,
 		  m_attachmentMode);
 	if (m_sensitivity != OP_ALL)
-		shapeElement->AddProperty(SHAPE_XML_SENSITIVITY_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_SENSITIVITY_ATTRIBUTE,
 		  m_sensitivity);
 	if (!m_spaceAttachments)
 		shapeElement->AddProperty(SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE,
 		  m_spaceAttachments);
 	if (m_fixedWidth)
-		shapeElement->AddProperty(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE,
 		  m_fixedWidth);
 	if (m_fixedHeight)
-		shapeElement->AddProperty(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE,
 		  m_fixedHeight);
 	if (m_shadowMode != SHADOW_NONE)
-		shapeElement->AddProperty(SHAPE_XML_SHADOW_MODE_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_SHADOW_MODE_ATTRIBUTE,
 		  m_shadowMode);
 	if (!m_centreResize)
 		shapeElement->AddProperty(SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, wxT("0"));
@@ -338,17 +340,17 @@ SDIShape::AddShapeInfo(DSAMXMLNode *parent)
 		shapeElement->AddProperty(SHAPE_XML_PARENT_ATTRIBUTE,
 		  m_parent->GetId());
 	if (m_rotation != 0.0)
-		shapeElement->AddProperty(SHAPE_XML_ROTATION_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_ROTATION_ATTRIBUTE,
 		  m_rotation);
 
 	if (!IsKindOf(CLASSINFO(wxLineShape))) {
-		shapeElement->AddProperty(SHAPE_XML_NECK_LENGTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_NECK_LENGTH_ATTRIBUTE,
 		  GetBranchNeckLength());
-		shapeElement->AddProperty(SHAPE_XML_STEM_LENGTH_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_STEM_LENGTH_ATTRIBUTE,
 		  GetBranchStemLength());
-		shapeElement->AddProperty(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE,
 		  GetBranchSpacing());
-		shapeElement->AddProperty(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE, 
+		shapeElement->AddProperty(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE,
 		  GetBranchStyle());
 	}
 
@@ -398,7 +400,7 @@ SDIShape::GetPenInfo(wxXmlNode *myElement)
 		else if (prop->GetName() == SHAPE_XML_COLOUR_ATTRIBUTE)
 			penColour = prop->GetValue();
 
-	
+
 	if (penColour == wxEmptyString)
 		penColour = wxT("BLACK");
 	if (penColour.GetChar(0) == '#') {
@@ -555,7 +557,7 @@ SDIShape::GetRegionInfo(wxXmlNode *myElement)
 	region->m_textColour = regionTextColour;
 
 	if (!penColour.empty())
-		region->SetPenColour(penColour);	
+		region->SetPenColour(penColour);
 	region->SetPenStyle(penStyle);
 
 	for (child = myElement->GetChildren(); child; child = child->GetNext())
@@ -706,7 +708,47 @@ SDIShape::GetShapeInfo(wxXmlNode *myElement)
 		  IsKindOf(CLASSINFO(SDIUtilityShape)))
 			((SDIUtilityShape *) this)->GetXMLInfo(child);
 	return(ok);
-	
+
+}
+
+/****************************** GetBoundingBoxPos ******************************/
+
+bool
+SDIShape::GetBoundingBoxPos(wxRealPoint &lBottom, wxRealPoint &rTop)
+{
+	double	w, h;
+
+	GetBoundingBoxMax(&w, &h);
+	lBottom.x = -w / 2.0 + GetX();
+	lBottom.y = h / 2.0 + GetY();
+	rTop.x = w / 2.0 + GetX();
+	rTop.y = -h / 2.0 + GetY();
+
+}
+
+/******************************************************************************/
+/****************************** ResetShapeLabel *******************************/
+/******************************************************************************/
+
+/*
+ */
+
+void
+SDIShape::ResetLabel(void)
+{
+	SDIEvtHandler *myHandler = (SDIEvtHandler *) GetEventHandler();
+	if (myHandler->pc) {
+		myHandler->ResetLabel();
+		wxClientDC dc(GetCanvas());
+		FormatText(dc, myHandler->label);
+		GetCanvas()->PrepareDC(dc);
+	}
+	if (myHandler->GetProcessType() == CONTROL_MODULE_CLASS) {
+		wxNode *node = GetChildren().GetFirst();
+		if (node)
+			((SDIShape *)node->GetData())->ResetLabel();
+	}
+
 }
 
 /******************************************************************************/
@@ -984,13 +1026,44 @@ GetPointInfo(wxXmlNode *myElement)
 	MyXmlProperty	*prop;
 
 	wxRealPoint *point = new wxRealPoint;
-	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop = 
+	for (prop = (MyXmlProperty *) myElement->GetProperties(); prop; prop =
 	  prop->GetNext())
 		if (prop->GetName() == SHAPE_XML_X_ATTRIBUTE)
 			prop->GetPropVal(&point->x);
 		else if (prop->GetName() == SHAPE_XML_Y_ATTRIBUTE)
 			prop->GetPropVal(&point->y);
 	return(point);
+
+}
+
+/******************************************************************************/
+/****************************** SDICompositeShape Methods *********************/
+/******************************************************************************/
+
+IMPLEMENT_DYNAMIC_CLASS(SDICompositeShape, wxCompositeShape)
+
+/****************************** Constructor ***********************************/
+
+SDICompositeShape::SDICompositeShape(double width, double height): wxCompositeShape()
+{
+}
+
+/****************************** AddXMLInfo ************************************/
+
+void
+SDICompositeShape::AddXMLInfo(DSAMXMLNode *parent)
+{
+}
+
+/****************************** GetXMLInfo ************************************/
+
+bool
+SDICompositeShape::GetXMLInfo(wxXmlNode *myElement)
+{
+	static const wxChar *funcName = wxT("SDICompositeShape::GetXMLInfo");
+	bool	ok = true;
+
+	return(ok);
 
 }
 

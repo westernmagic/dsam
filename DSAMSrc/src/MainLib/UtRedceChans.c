@@ -21,7 +21,7 @@
  * Author:		L.P.O'Mard
  * Created:		21 Dec 1995
  * Updated:		02 Mar 1997
- * Copyright:	(c) 2005, CNBH, University of Essex. 
+ * Copyright:	(c) 2005, CNBH, University of Essex.
  *
  *********************/
 
@@ -129,8 +129,6 @@ Init_Utility_ReduceChannels(ParameterSpecifier parSpec)
 		}
 	}
 	reduceChansPtr->parSpec = parSpec;
-	reduceChansPtr->modeFlag = TRUE;
-	reduceChansPtr->numChannelsFlag = TRUE;
 	reduceChansPtr->mode = REDUCE_CHANS_SUM_MODE;
 	reduceChansPtr->numChannels = 1;
 
@@ -205,30 +203,6 @@ GetUniParListPtr_Utility_ReduceChannels(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_ReduceChannels(WChar *mode, int numChannels)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_ReduceChannels");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_ReduceChannels(mode))
-		ok = FALSE;
-	if (!SetNumChannels_Utility_ReduceChannels(numChannels))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -252,7 +226,6 @@ SetMode_Utility_ReduceChannels(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	reduceChansPtr->modeFlag = TRUE;
 	reduceChansPtr->mode = specifier;
 	return(TRUE);
 
@@ -281,42 +254,8 @@ SetNumChannels_Utility_ReduceChannels(int theNumChannels)
 		  theNumChannels);
 		return(FALSE);
 	}
-	reduceChansPtr->numChannelsFlag = TRUE;
 	reduceChansPtr->numChannels = theNumChannels;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_ReduceChannels(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_ReduceChannels");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (reduceChansPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!reduceChansPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!reduceChansPtr->numChannelsFlag) {
-		NotifyError(wxT("%s: numChannels variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -332,59 +271,14 @@ PrintPars_Utility_ReduceChannels(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_ReduceChannels");
 
-	if (!CheckPars_Utility_ReduceChannels()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (reduceChansPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Reduce Channels Utility Module Parameters:-\n"));
 	DPrint(wxT("\tMode = %s,"), reduceChansPtr->modeList[reduceChansPtr->mode].
 	  name);
 	DPrint(wxT("\tNo. of channels = %d.\n"), reduceChansPtr->numChannels);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_ReduceChannels(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_ReduceChannels");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	int		numChannels;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_ReduceChannels(mode, numChannels)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -432,11 +326,9 @@ InitModule_Utility_ReduceChannels(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = reduceChansPtr;
-	theModule->CheckPars = CheckPars_Utility_ReduceChannels;
 	theModule->Free = Free_Utility_ReduceChannels;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ReduceChannels;
 	theModule->PrintPars = PrintPars_Utility_ReduceChannels;
-	theModule->ReadPars = ReadPars_Utility_ReduceChannels;
 	theModule->ResetProcess = ResetProcess_Utility_ReduceChannels;
 	theModule->RunProcess = Process_Utility_ReduceChannels;
 	theModule->SetParsPointer = SetParsPointer_Utility_ReduceChannels;
@@ -517,8 +409,6 @@ Process_Utility_ReduceChannels(EarObjectPtr data)
 	ReduceChansPtr	p = reduceChansPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_ReduceChannels())
-			return(FALSE);
 		if (!CheckData_Utility_ReduceChannels(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

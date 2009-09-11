@@ -70,25 +70,13 @@ Init_IHCRP_Shamma(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (shammaPtr == NULL) { 
+		if (shammaPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	shammaPtr->parSpec = parSpec;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
-	shammaPtr->endocochlearPotEtFlag = TRUE;
-	shammaPtr->reversalPotEkFlag = TRUE;
-	shammaPtr->reversalPotCorrectionFlag = TRUE;
-	shammaPtr->totalCapacitanceCFlag = TRUE;
-	shammaPtr->restingConductanceG0Flag = TRUE;
-	shammaPtr->kConductanceGkFlag = TRUE;
-	shammaPtr->maxMConductanceGmaxFlag = TRUE;
-	shammaPtr->ciliaCouplingGainFlag = TRUE;
-	shammaPtr->ciliaTimeConstTcFlag = TRUE;
-	shammaPtr->betaFlag = TRUE;
-	shammaPtr->gammaFlag = TRUE;
-	shammaPtr->referencePotFlag = TRUE;
 	shammaPtr->endocochlearPot_Et = 0.1;
 	shammaPtr->reversalPot_Ek = -0.084;
 	shammaPtr->reversalPotCorrection = 0.04;
@@ -257,7 +245,7 @@ GetUniParListPtr_IHCRP_Shamma(void)
  */
 
 BOOLN
-SetEndocochlearPot_IHCRP_Shamma(double theEndocochlearPot)
+SetEndocochlearPot_IHCRP_Shamma(Float theEndocochlearPot)
 {
 	static const WChar	*funcName = wxT("SetEndocochlearPot_IHCRP_Shamma");
 
@@ -265,7 +253,6 @@ SetEndocochlearPot_IHCRP_Shamma(double theEndocochlearPot)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->endocochlearPotEtFlag = TRUE;
 	shammaPtr->endocochlearPot_Et = theEndocochlearPot;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -280,7 +267,7 @@ SetEndocochlearPot_IHCRP_Shamma(double theEndocochlearPot)
  */
 
 BOOLN
-SetReversalPot_IHCRP_Shamma(double theReversalPot)
+SetReversalPot_IHCRP_Shamma(Float theReversalPot)
 {
 	static const WChar	*funcName = wxT("SetReversalPot_IHCRP_Shamma");
 
@@ -288,7 +275,6 @@ SetReversalPot_IHCRP_Shamma(double theReversalPot)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->reversalPotEkFlag = TRUE;
 	shammaPtr->reversalPot_Ek = theReversalPot;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -304,7 +290,7 @@ SetReversalPot_IHCRP_Shamma(double theReversalPot)
  */
 
 BOOLN
-SetReversalPotCorrection_IHCRP_Shamma(double theReversalPotCorrection)
+SetReversalPotCorrection_IHCRP_Shamma(Float theReversalPotCorrection)
 {
 	static const WChar	*funcName = wxT(
 	  "SetReversalPotCorrection_IHCRP_Shamma");
@@ -313,7 +299,6 @@ SetReversalPotCorrection_IHCRP_Shamma(double theReversalPotCorrection)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->reversalPotCorrectionFlag = TRUE;
 	shammaPtr->reversalPotCorrection = theReversalPotCorrection;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -328,7 +313,7 @@ SetReversalPotCorrection_IHCRP_Shamma(double theReversalPotCorrection)
  */
 
 BOOLN
-SetTotalCapacitance_IHCRP_Shamma(double theTotalCapacitance)
+SetTotalCapacitance_IHCRP_Shamma(Float theTotalCapacitance)
 {
 	static const WChar	*funcName = wxT("SetTotalCapacitance_IHCRP_Shamma");
 
@@ -336,7 +321,6 @@ SetTotalCapacitance_IHCRP_Shamma(double theTotalCapacitance)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->totalCapacitanceCFlag = TRUE;
 	shammaPtr->totalCapacitance_C = theTotalCapacitance;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -351,7 +335,7 @@ SetTotalCapacitance_IHCRP_Shamma(double theTotalCapacitance)
  */
 
 BOOLN
-SetRestingConductance_IHCRP_Shamma(double theRestingConductance)
+SetRestingConductance_IHCRP_Shamma(Float theRestingConductance)
 {
 	static const WChar	*funcName = wxT("SetRestingConductance_IHCRP_Shamma");
 
@@ -359,7 +343,6 @@ SetRestingConductance_IHCRP_Shamma(double theRestingConductance)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->restingConductanceG0Flag = TRUE;
 	shammaPtr->restingConductance_G0 = theRestingConductance;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -374,7 +357,7 @@ SetRestingConductance_IHCRP_Shamma(double theRestingConductance)
  */
 
 BOOLN
-SetKConductance_IHCRP_Shamma(double theKConductance)
+SetKConductance_IHCRP_Shamma(Float theKConductance)
 {
 	static const WChar	*funcName = wxT("SetKConductance_IHCRP_Shamma");
 
@@ -382,7 +365,6 @@ SetKConductance_IHCRP_Shamma(double theKConductance)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->kConductanceGkFlag = TRUE;
 	shammaPtr->kConductance_Gk = theKConductance;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -398,7 +380,7 @@ SetKConductance_IHCRP_Shamma(double theKConductance)
  */
 
 BOOLN
-SetMaxMConductance_IHCRP_Shamma(double theMaxMConductance)
+SetMaxMConductance_IHCRP_Shamma(Float theMaxMConductance)
 {
 	static const WChar	 *funcName = wxT("SetMaxMConductance_IHCRP_Shamma");
 
@@ -406,7 +388,6 @@ SetMaxMConductance_IHCRP_Shamma(double theMaxMConductance)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->maxMConductanceGmaxFlag = TRUE;
 	shammaPtr->maxMConductance_Gmax = theMaxMConductance;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -421,7 +402,7 @@ SetMaxMConductance_IHCRP_Shamma(double theMaxMConductance)
  */
 
 BOOLN
-SetBeta_IHCRP_Shamma(double theBeta)
+SetBeta_IHCRP_Shamma(Float theBeta)
 {
 	static const WChar	 *funcName = wxT("SetBeta_IHCRP_Shamma");
 
@@ -429,7 +410,6 @@ SetBeta_IHCRP_Shamma(double theBeta)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->betaFlag = TRUE;
 	shammaPtr->beta = theBeta;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -444,7 +424,7 @@ SetBeta_IHCRP_Shamma(double theBeta)
  */
 
 BOOLN
-SetGamma_IHCRP_Shamma(double theGamma)
+SetGamma_IHCRP_Shamma(Float theGamma)
 {
 	static const WChar	 *funcName = wxT("SetGamma_IHCRP_Shamma");
 
@@ -452,7 +432,6 @@ SetGamma_IHCRP_Shamma(double theGamma)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->gammaFlag = TRUE;
 	shammaPtr->gamma = theGamma;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -467,7 +446,7 @@ SetGamma_IHCRP_Shamma(double theGamma)
  */
 
 BOOLN
-SetCiliaCouplingGain_IHCRP_Shamma(double theCiliaCoupingGain)
+SetCiliaCouplingGain_IHCRP_Shamma(Float theCiliaCoupingGain)
 {
 	static const WChar	 *funcName = wxT("SetCiliaCouplingGain_IHCRP_Shamma");
 
@@ -475,7 +454,6 @@ SetCiliaCouplingGain_IHCRP_Shamma(double theCiliaCoupingGain)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->ciliaCouplingGainFlag = TRUE;
 	shammaPtr->ciliaCouplingGain_C = theCiliaCoupingGain;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -490,7 +468,7 @@ SetCiliaCouplingGain_IHCRP_Shamma(double theCiliaCoupingGain)
  */
 
 BOOLN
-SetCiliaTimeConstTc_IHCRP_Shamma(double theCiliaTimeConstTc)
+SetCiliaTimeConstTc_IHCRP_Shamma(Float theCiliaTimeConstTc)
 {
 	static const WChar	 *funcName = wxT("SetCiliaTimeConstTc_IHCRP_Shamma");
 
@@ -498,7 +476,6 @@ SetCiliaTimeConstTc_IHCRP_Shamma(double theCiliaTimeConstTc)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->ciliaTimeConstTcFlag = TRUE;
 	shammaPtr->ciliaTimeConst_tc = theCiliaTimeConstTc;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -513,142 +490,17 @@ SetCiliaTimeConstTc_IHCRP_Shamma(double theCiliaTimeConstTc)
  */
 
 BOOLN
-SetReferencePot_IHCRP_Shamma(double theReferencePot)
+SetReferencePot_IHCRP_Shamma(Float theReferencePot)
 {
 	static const WChar	 *funcName = wxT("SetCiliaTimeConstTc_IHCRP_Shamma");
 	if (shammaPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	shammaPtr->referencePotFlag = TRUE;
 	shammaPtr->referencePot = theReferencePot;
 	shammaPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- */
-
-BOOLN
-SetPars_IHCRP_Shamma(double Et, double Ek, double reversalPotCorrection,
-  double C, double G0, double Gk, double Gmax, double beta, double gamma,
-  double tc, double n, double Eref)
-{
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetBeta_IHCRP_Shamma(beta))
-		ok = FALSE;
-	if (!SetGamma_IHCRP_Shamma(gamma))
-		ok = FALSE;
-	if (!SetEndocochlearPot_IHCRP_Shamma(Et))
-		ok = FALSE;
-	if (!SetRestingConductance_IHCRP_Shamma(G0))
-		ok = FALSE;
-	if (!SetKConductance_IHCRP_Shamma(Gk))
-		ok = FALSE;
-	if (!SetMaxMConductance_IHCRP_Shamma(Gmax))
-		ok = FALSE;
-	if (!SetReversalPot_IHCRP_Shamma(Ek))
-		ok = FALSE;
-	if (!SetReversalPotCorrection_IHCRP_Shamma(reversalPotCorrection))
-		ok = FALSE;
-	if (!SetTotalCapacitance_IHCRP_Shamma(C))
-		ok = FALSE;
-	if (!SetCiliaTimeConstTc_IHCRP_Shamma(tc))
-		ok = FALSE;
-	if (!SetCiliaCouplingGain_IHCRP_Shamma(n))
-		ok = FALSE;
-	if (!SetReferencePot_IHCRP_Shamma(Eref))
-		ok = FALSE;
-	return(ok);
-	  
-}
-
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that all of the parameters for the module are set.
- * Because this module is defined by its coeffients, default values are always
- * set if none of the parameters are set, otherwise all of them must be
- * individually set.
- */
-
-BOOLN
-CheckPars_IHCRP_Shamma(void)
-{
-	static const WChar *funcName = wxT("CheckPars_IHCRP_Shamma");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (shammaPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!shammaPtr->endocochlearPotEtFlag) {
-		NotifyError(wxT("%s: Endocochlear potential, Et, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->reversalPotEkFlag) {
-		NotifyError(wxT("%s: Reversal potential, Ek, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->reversalPotCorrectionFlag) {
-		NotifyError(wxT("%s: Reversal potential correction, Rp/(Rt+Rp), not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->totalCapacitanceCFlag) {
-		NotifyError(wxT("%s: Total capacitance, C, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->restingConductanceG0Flag) {
-		NotifyError(wxT("%s: Resting conductanc, G0, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->kConductanceGkFlag) {
-		NotifyError(wxT("%s: Potassium conductanc, Gk, not correctly set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->maxMConductanceGmaxFlag) {
-		NotifyError(wxT("%s: Maximum mechinally sensitive, Gmax, not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->betaFlag) {
-		NotifyError(wxT("%s: Beta constant, not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->gammaFlag) {
-		NotifyError(wxT("%s: Gamma constant, not correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->ciliaTimeConstTcFlag) {
-		NotifyError(wxT("%s: BM/Cilia displacement time constant, tc, not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->ciliaCouplingGainFlag) {
-		NotifyError(wxT("%s: BM/Cilia coupling gain constant, n, not ")
-		  wxT("correctly set."), funcName);
-		ok = FALSE;
-	}
-	if (!shammaPtr->referencePotFlag) {
-		NotifyError(wxT("CheckPars_IHCRP_Shamma: Reference potential, Eref, ")
-		  wxT("not set."));
-		ok = FALSE;
-	}
-	return(ok);
-		
 }
 
 /****************************** PrintPars *************************************/
@@ -656,17 +508,12 @@ CheckPars_IHCRP_Shamma(void)
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_IHCRP_Shamma(void)
 {
 	static const WChar *funcName = wxT("PrintPars_IHCRP_Shamma(");
 
-	if (!CheckPars_IHCRP_Shamma()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Shamma et al. Receptor Potential Module Parameters:-\n"));
 	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"),
 	  shammaPtr->endocochlearPot_Et);
@@ -689,77 +536,6 @@ PrintPars_IHCRP_Shamma(void)
 	DPrint(wxT("\tReference potential = %g V\n"), shammaPtr->referencePot);
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_IHCRP_Shamma(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_IHCRP_Shamma");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	endocochlearPot_Et, reversalPot_Ek, reversalPotCorrection;
-	double	totalCapacitance_C, restingConductance_G0, kConductance_Gk;
-	double	maxMConductance_Gmax;
-	double	beta, gamma, ciliaTimeConst_tc, ciliaCouplingGain_C;
-	double	referencePot;
-	FILE    *fp;
-    
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &endocochlearPot_Et))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPot_Ek))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPotCorrection))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &totalCapacitance_C))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingConductance_G0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &kConductance_Gk))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxMConductance_Gmax))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &beta))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &gamma))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaTimeConst_tc))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaCouplingGain_C))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &referencePot))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_IHCRP_Shamma(endocochlearPot_Et, reversalPot_Ek,
-	  reversalPotCorrection, totalCapacitance_C, restingConductance_G0,
-	  kConductance_Gk, maxMConductance_Gmax, beta, gamma, ciliaTimeConst_tc,
-	  ciliaCouplingGain_C, referencePot)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-    
 }
 
 /****************************** SetParsPointer ********************************/
@@ -805,11 +581,9 @@ InitModule_IHCRP_Shamma(ModulePtr theModule)
 	}
 	theModule->parsPtr = shammaPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHCRP_Shamma;
 	theModule->Free = Free_IHCRP_Shamma;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma;
 	theModule->PrintPars = PrintPars_IHCRP_Shamma;
-	theModule->ReadPars = ReadPars_IHCRP_Shamma;
 	theModule->RunProcess = RunModel_IHCRP_Shamma;
 	theModule->SetParsPointer = SetParsPointer_IHCRP_Shamma;
 	return(TRUE);
@@ -830,27 +604,27 @@ InitProcessVariables_IHCRP_Shamma(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_IHCRP_Shamma");
 	int		i;
-	double	restingPotential_V0;
+	Float	restingPotential_V0;
 	ShammaPtr	p = shammaPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_IHCRP_Shamma();
-			if ((p->lastInput = (double *) calloc(_OutSig_EarObject(data)->
-			  numChannels, sizeof(double))) == NULL) {
+			if ((p->lastInput = (Float *) calloc(_OutSig_EarObject(data)->
+			  numChannels, sizeof(Float))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastInput'."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->
-			  numChannels, sizeof(double))) == NULL) {
+			if ((p->lastOutput = (Float *) calloc(_OutSig_EarObject(data)->
+			  numChannels, sizeof(Float))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->lastCiliaDisplacement_u = (double *) calloc(data->
-			  outSignal->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastCiliaDisplacement_u = (Float *) calloc(data->
+			  outSignal->numChannels, sizeof(Float))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for ")
 				  wxT("'lastCiliaDisplacement_u'."), funcName);
 			 	return(FALSE);
@@ -916,23 +690,18 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	static const WChar *funcName = wxT("RunModel_IHCRP_Shamma");
 	int		chan;
 	ChanLen	i;
-	double	conductance_G, potential_V;
-	double	ciliaDisplacement_u, lastInput, denom_val;
-	register	double		dt;
+	Float	conductance_G, potential_V;
+	Float	ciliaDisplacement_u, lastInput, denom_val;
+	register	Float		dt;
 	register	ChanData	*inPtr, *outPtr;
 	SignalDataPtr	outSignal;
 	ShammaPtr	p = shammaPtr;
-	
+
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHCRP_Shamma()) {
-			NotifyError(wxT("%s: Parameters have not been correctly set."),
-			  funcName);
-			return(FALSE);
-		}
 		if (data == NULL) {
 			NotifyError(wxT("%s: EarObject not initialised."), funcName);
 			return(FALSE);
-		}	
+		}
 		if (!CheckInSignal_EarObject(data, funcName))
 			return(FALSE);
 		if (!CheckRamp_SignalData(_InSig_EarObject(data, 0))) {
@@ -974,7 +743,7 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 		potential_V = p->lastOutput[chan];
 		lastInput = p->lastInput[chan];
 		for (i = 0; i < outSignal->length; i++, inPtr++, outPtr++) {
-			ciliaDisplacement_u += p->cGain * (*inPtr - lastInput) - 
+			ciliaDisplacement_u += p->cGain * (*inPtr - lastInput) -
 			  ciliaDisplacement_u *  p->dtOverTc;
 
 			denom_val = ((-p->gamma * ciliaDisplacement_u) >= p->max_u)?
@@ -983,7 +752,7 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 
 			conductance_G = p->maxMConductance_Gmax / denom_val +
 			  p->leakageConductance_Ga;
- 
+
 			*outPtr = (ChanData) (potential_V - p->dtOverC * (conductance_G *
 			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *
 			  potential_V - p->gkEpk));
@@ -999,5 +768,5 @@ RunModel_IHCRP_Shamma(EarObjectPtr data)
 	}
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
-		
+
 } /* RunModel_IHCRP_Shamma */

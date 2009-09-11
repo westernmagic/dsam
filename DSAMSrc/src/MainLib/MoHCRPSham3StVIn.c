@@ -9,7 +9,7 @@
  * Comments:	Written using ModuleProducer version 1.3.2 (Mar 27 2001).
  * Author:		C. J. Sumner
  * Created:		20 Aug 2001
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2001, CNBH, University of Essex.
  *
  *********************/
@@ -100,20 +100,6 @@ Init_IHCRP_Shamma3StateVelIn(ParameterSpecifier parSpec)
 	}
 	sham3StVInPtr->parSpec = parSpec;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
-	sham3StVInPtr->endocochlearPot_EtFlag = TRUE;
-	sham3StVInPtr->reversalPot_EkFlag = TRUE;
-	sham3StVInPtr->reversalPotCorrectionFlag = TRUE;
-	sham3StVInPtr->totalCapacitance_CFlag = TRUE;
-	sham3StVInPtr->restingConductance_G0Flag = TRUE;
-	sham3StVInPtr->kConductance_GkFlag = TRUE;
-	sham3StVInPtr->maxMConductance_GmaxFlag = TRUE;
-	sham3StVInPtr->ciliaTimeConst_tcFlag = TRUE;
-	sham3StVInPtr->ciliaCouplingGain_CFlag = TRUE;
-	sham3StVInPtr->referencePotFlag = TRUE;
-	sham3StVInPtr->sensitivity_s0Flag = TRUE;
-	sham3StVInPtr->sensitivity_s1Flag = TRUE;
-	sham3StVInPtr->offset_u0Flag = TRUE;
-	sham3StVInPtr->offset_u1Flag = TRUE;
 	sham3StVInPtr->endocochlearPot_Et = 0.1;
 	sham3StVInPtr->reversalPot_Ek = -0.07045;
 	sham3StVInPtr->reversalPotCorrection = 0.04;
@@ -268,62 +254,6 @@ GetUniParListPtr_IHCRP_Shamma3StateVelIn(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
-  double reversalPot_Ek, double reversalPotCorrection,
-  double totalCapacitance_C, double restingConductance_G0,
-  double kConductance_Gk, double maxMConductance_Gmax,
-  double ciliaTimeConst_tc, double ciliaCouplingGain_C, double referencePot,
-  double sensitivity_s0, double sensitivity_s1, double offset_u0,
-  double offset_u1)
-{
-	static const WChar	*funcName = wxT("SetPars_IHCRP_Shamma3StateVelIn");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(endocochlearPot_Et))
-		ok = FALSE;
-	if (!SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(reversalPot_Ek))
-		ok = FALSE;
-	if (!SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(
-	  reversalPotCorrection))
-		ok = FALSE;
-	if (!SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(totalCapacitance_C))
-		ok = FALSE;
-	if (!SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(
-	  restingConductance_G0))
-		ok = FALSE;
-	if (!SetKConductance_Gk_IHCRP_Shamma3StateVelIn(kConductance_Gk))
-		ok = FALSE;
-	if (!SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(maxMConductance_Gmax))
-		ok = FALSE;
-	if (!SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(ciliaTimeConst_tc))
-		ok = FALSE;
-	if (!SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(ciliaCouplingGain_C))
-		ok = FALSE;
-	if (!SetReferencePot_IHCRP_Shamma3StateVelIn(referencePot))
-		ok = FALSE;
-	if (!SetSensitivity_s0_IHCRP_Shamma3StateVelIn(sensitivity_s0))
-		ok = FALSE;
-	if (!SetSensitivity_s1_IHCRP_Shamma3StateVelIn(sensitivity_s1))
-		ok = FALSE;
-	if (!SetOffset_u0_IHCRP_Shamma3StateVelIn(offset_u0))
-		ok = FALSE;
-	if (!SetOffset_u1_IHCRP_Shamma3StateVelIn(offset_u1))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetEndocochlearPot_Et *************************/
 
 /*
@@ -333,7 +263,7 @@ SetPars_IHCRP_Shamma3StateVelIn(double endocochlearPot_Et,
  */
 
 BOOLN
-SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
+SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(Float theEndocochlearPot_Et)
 {
 	static const WChar	*funcName =
 	  wxT("SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn");
@@ -343,7 +273,6 @@ SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->endocochlearPot_EtFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->endocochlearPot_Et = theEndocochlearPot_Et;
 	return(TRUE);
@@ -359,7 +288,7 @@ SetEndocochlearPot_Et_IHCRP_Shamma3StateVelIn(double theEndocochlearPot_Et)
  */
 
 BOOLN
-SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
+SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(Float theReversalPot_Ek)
 {
 	static const WChar	*funcName =
 	  wxT("SetReversalPot_Ek_IHCRP_Shamma3StateVelIn");
@@ -369,7 +298,6 @@ SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->reversalPot_EkFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->reversalPot_Ek = theReversalPot_Ek;
 	return(TRUE);
@@ -385,7 +313,7 @@ SetReversalPot_Ek_IHCRP_Shamma3StateVelIn(double theReversalPot_Ek)
  */
 
 BOOLN
-SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
+SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(Float
   theReversalPotCorrection)
 {
 	static const WChar	*funcName =
@@ -396,7 +324,6 @@ SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->reversalPotCorrectionFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->reversalPotCorrection = theReversalPotCorrection;
 	return(TRUE);
@@ -412,7 +339,7 @@ SetReversalPotCorrection_IHCRP_Shamma3StateVelIn(double
  */
 
 BOOLN
-SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
+SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(Float theTotalCapacitance_C)
 {
 	static const WChar	*funcName =
 	  wxT("SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn");
@@ -422,7 +349,6 @@ SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->totalCapacitance_CFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->totalCapacitance_C = theTotalCapacitance_C;
 	return(TRUE);
@@ -438,7 +364,7 @@ SetTotalCapacitance_C_IHCRP_Shamma3StateVelIn(double theTotalCapacitance_C)
  */
 
 BOOLN
-SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
+SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(Float
   theRestingConductance_G0)
 {
 	static const WChar	*funcName =
@@ -449,7 +375,6 @@ SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->restingConductance_G0Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->restingConductance_G0 = theRestingConductance_G0;
 	return(TRUE);
@@ -465,7 +390,7 @@ SetRestingConductance_G0_IHCRP_Shamma3StateVelIn(double
  */
 
 BOOLN
-SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
+SetKConductance_Gk_IHCRP_Shamma3StateVelIn(Float theKConductance_Gk)
 {
 	static const WChar	*funcName =
 	  wxT("SetKConductance_Gk_IHCRP_Shamma3StateVelIn");
@@ -475,7 +400,6 @@ SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->kConductance_GkFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->kConductance_Gk = theKConductance_Gk;
 	return(TRUE);
@@ -491,7 +415,7 @@ SetKConductance_Gk_IHCRP_Shamma3StateVelIn(double theKConductance_Gk)
  */
 
 BOOLN
-SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
+SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(Float theMaxMConductance_Gmax)
 {
 	static const WChar	*funcName =
 	  wxT("SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn");
@@ -501,7 +425,6 @@ SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->maxMConductance_GmaxFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->maxMConductance_Gmax = theMaxMConductance_Gmax;
 	return(TRUE);
@@ -517,7 +440,7 @@ SetMaxMConductance_Gmax_IHCRP_Shamma3StateVelIn(double theMaxMConductance_Gmax)
  */
 
 BOOLN
-SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
+SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(Float theCiliaTimeConst_tc)
 {
 	static const WChar	*funcName =
 	  wxT("SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn");
@@ -527,7 +450,6 @@ SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->ciliaTimeConst_tcFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->ciliaTimeConst_tc = theCiliaTimeConst_tc;
 	return(TRUE);
@@ -543,7 +465,7 @@ SetCiliaTimeConst_tc_IHCRP_Shamma3StateVelIn(double theCiliaTimeConst_tc)
  */
 
 BOOLN
-SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
+SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(Float theCiliaCouplingGain_C)
 {
 	static const WChar	*funcName =
 	  wxT("SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn");
@@ -553,7 +475,6 @@ SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->ciliaCouplingGain_CFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->ciliaCouplingGain_C = theCiliaCouplingGain_C;
 	return(TRUE);
@@ -569,7 +490,7 @@ SetCiliaCouplingGain_C_IHCRP_Shamma3StateVelIn(double theCiliaCouplingGain_C)
  */
 
 BOOLN
-SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot)
+SetReferencePot_IHCRP_Shamma3StateVelIn(Float theReferencePot)
 {
 	static const WChar	*funcName = wxT(
 	  "SetReferencePot_IHCRP_Shamma3StateVelIn");
@@ -579,7 +500,6 @@ SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->referencePotFlag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->referencePot = theReferencePot;
 	return(TRUE);
@@ -595,7 +515,7 @@ SetReferencePot_IHCRP_Shamma3StateVelIn(double theReferencePot)
  */
 
 BOOLN
-SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0)
+SetSensitivity_s0_IHCRP_Shamma3StateVelIn(Float theSensitivity_s0)
 {
 	static const WChar	*funcName =
 	  wxT("SetSensitivity_s0_IHCRP_Shamma3StateVelIn");
@@ -605,7 +525,6 @@ SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->sensitivity_s0Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->sensitivity_s0 = theSensitivity_s0;
 	return(TRUE);
@@ -621,7 +540,7 @@ SetSensitivity_s0_IHCRP_Shamma3StateVelIn(double theSensitivity_s0)
  */
 
 BOOLN
-SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
+SetSensitivity_s1_IHCRP_Shamma3StateVelIn(Float theSensitivity_s1)
 {
 	static const WChar	*funcName =
 	  wxT("SetSensitivity_s1_IHCRP_Shamma3StateVelIn");
@@ -631,7 +550,6 @@ SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->sensitivity_s1Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->sensitivity_s1 = theSensitivity_s1;
 	return(TRUE);
@@ -647,7 +565,7 @@ SetSensitivity_s1_IHCRP_Shamma3StateVelIn(double theSensitivity_s1)
  */
 
 BOOLN
-SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
+SetOffset_u0_IHCRP_Shamma3StateVelIn(Float theOffset_u0)
 {
 	static const WChar	*funcName = wxT("SetOffset_u0_IHCRP_Shamma3StateVelIn");
 
@@ -656,7 +574,6 @@ SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->offset_u0Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->offset_u0 = theOffset_u0;
 	return(TRUE);
@@ -672,7 +589,7 @@ SetOffset_u0_IHCRP_Shamma3StateVelIn(double theOffset_u0)
  */
 
 BOOLN
-SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1)
+SetOffset_u1_IHCRP_Shamma3StateVelIn(Float theOffset_u1)
 {
 	static const WChar	*funcName = wxT("SetOffset_u1_IHCRP_Shamma3StateVelIn");
 
@@ -681,94 +598,9 @@ SetOffset_u1_IHCRP_Shamma3StateVelIn(double theOffset_u1)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sham3StVInPtr->offset_u1Flag = TRUE;
 	sham3StVInPtr->updateProcessVariablesFlag = TRUE;
 	sham3StVInPtr->offset_u1 = theOffset_u1;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHCRP_Shamma3StateVelIn(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHCRP_Shamma3StateVelIn");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (sham3StVInPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!sham3StVInPtr->endocochlearPot_EtFlag) {
-		NotifyError(wxT("%s: endocochlearPot_Et variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->reversalPot_EkFlag) {
-		NotifyError(wxT("%s: reversalPot_Ek variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->reversalPotCorrectionFlag) {
-		NotifyError(wxT("%s: reversalPotCorrection variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->totalCapacitance_CFlag) {
-		NotifyError(wxT("%s: totalCapacitance_C variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->restingConductance_G0Flag) {
-		NotifyError(wxT("%s: restingConductance_G0 variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->kConductance_GkFlag) {
-		NotifyError(wxT("%s: kConductance_Gk variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->maxMConductance_GmaxFlag) {
-		NotifyError(wxT("%s: maxMConductance_Gmax variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->ciliaTimeConst_tcFlag) {
-		NotifyError(wxT("%s: ciliaTimeConst_tc variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->ciliaCouplingGain_CFlag) {
-		NotifyError(wxT("%s: ciliaCouplingGain_C variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->referencePotFlag) {
-		NotifyError(wxT("%s: referencePot variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->sensitivity_s0Flag) {
-		NotifyError(wxT("%s: sensitivity_s0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->sensitivity_s1Flag) {
-		NotifyError(wxT("%s: sensitivity_s1 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->offset_u0Flag) {
-		NotifyError(wxT("%s: offset_u0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sham3StVInPtr->offset_u1Flag) {
-		NotifyError(wxT("%s: offset_u1 variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -784,11 +616,6 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHCRP_Shamma3StateVelIn");
 
-	if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Modified Shamma Receptor Potential Module  Module Parameters:-")
 	  wxT("\n"));
 	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"), sham3StVInPtr->
@@ -809,85 +636,12 @@ PrintPars_IHCRP_Shamma3StateVelIn(void)
 	  ciliaTimeConst_tc);
 	DPrint(wxT("\tGain = %g dB,\n"), sham3StVInPtr->ciliaCouplingGain_C);
 	DPrint(wxT("\tReference potential = %g V,\n"), sham3StVInPtr->referencePot);
-	DPrint(wxT("\tTransduction function 0:\n\t\tSensitivity, s0 = %g (/m), "), 
+	DPrint(wxT("\tTransduction function 0:\n\t\tSensitivity, s0 = %g (/m), "),
 	  sham3StVInPtr->sensitivity_s0);
 	DPrint(wxT("\tOffset, u0 = %g (m)\n"), sham3StVInPtr->offset_u0  );
 	DPrint(wxT("\tTransduction function 1:\n\t\tSensitivity, s1 = %g (/m),"),
 	  sham3StVInPtr->sensitivity_s1);
 	DPrint(wxT("\tOffset, u1 = %g (m)\n"), sham3StVInPtr->offset_u1 );
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_IHCRP_Shamma3StateVelIn(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_IHCRP_Shamma3StateVelIn");
-	BOOLN	ok = TRUE;
-	WChar	*filePath;
-	double	endocochlearPot_Et, reversalPot_Ek, reversalPotCorrection;
-	double	totalCapacitance_C, restingConductance_G0, kConductance_Gk;
-	double	maxMConductance_Gmax, ciliaTimeConst_tc, ciliaCouplingGain_C;
-	double	referencePot, sensitivity_s0, sensitivity_s1, offset_u0, offset_u1;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	if (!GetPars_ParFile(fp, wxT("%lf"), &endocochlearPot_Et))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPot_Ek))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &reversalPotCorrection))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &totalCapacitance_C))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingConductance_G0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &kConductance_Gk))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxMConductance_Gmax))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaTimeConst_tc))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &ciliaCouplingGain_C))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &referencePot))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &sensitivity_s0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &offset_u0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &sensitivity_s1))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &offset_u1))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_IHCRP_Shamma3StateVelIn(endocochlearPot_Et, reversalPot_Ek,
-	  reversalPotCorrection, totalCapacitance_C, restingConductance_G0,
-	  kConductance_Gk, maxMConductance_Gmax, ciliaTimeConst_tc,
-	  ciliaCouplingGain_C, referencePot, sensitivity_s0, sensitivity_s1,
-	  offset_u0, offset_u1)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -937,11 +691,9 @@ InitModule_IHCRP_Shamma3StateVelIn(ModulePtr theModule)
 	}
 	theModule->parsPtr = sham3StVInPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHCRP_Shamma3StateVelIn;
 	theModule->Free = Free_IHCRP_Shamma3StateVelIn;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHCRP_Shamma3StateVelIn;
 	theModule->PrintPars = PrintPars_IHCRP_Shamma3StateVelIn;
-	theModule->ReadPars = ReadPars_IHCRP_Shamma3StateVelIn;
 	theModule->RunProcess = RunModel_IHCRP_Shamma3StateVelIn;
 	theModule->SetParsPointer = SetParsPointer_IHCRP_Shamma3StateVelIn;
 	return(TRUE);
@@ -988,7 +740,7 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	static const WChar	*funcName =
 	  wxT("InitProcessVariables_IHCRP_Shamma3StateVelIn");
 	int		i;
-	double	restingPotential_V0;
+	Float	restingPotential_V0;
 	Sham3StVInPtr p = sham3StVInPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag ||
@@ -996,14 +748,14 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 
 			FreeProcessVariables_IHCRP_Shamma3StateVelIn();
-			if ((p->lastOutput = (double *) calloc(_OutSig_EarObject(data)->numChannels,
-			  sizeof(double))) == NULL) {
+			if ((p->lastOutput = (Float *) calloc(_OutSig_EarObject(data)->numChannels,
+			  sizeof(Float))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
 				  funcName);
 				return(FALSE);
 			}
-			if ((p->lastCiliaDisplacement_u = (double *)
-				calloc(_OutSig_EarObject(data)->numChannels, sizeof(double))) == NULL) {
+			if ((p->lastCiliaDisplacement_u = (Float *)
+				calloc(_OutSig_EarObject(data)->numChannels, sizeof(Float))) == NULL) {
 				NotifyError(wxT("%s: Out of memory for ")
 				  wxT("'lastCiliaDisplacement_u'."), funcName);
 				return(FALSE);
@@ -1020,7 +772,7 @@ InitProcessVariables_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 			for (i = 0; i < _OutSig_EarObject(data)->numChannels; i++) {
 				p->lastOutput[i] = restingPotential_V0;
 				p->lastCiliaDisplacement_u[i] = 0.0;
-			}	
+			}
 		}
 	}
 	return(TRUE);
@@ -1072,16 +824,12 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr;
 	int	chan;
 	ChanLen	i;
-	double	conductance_G, potential_V;
-	double	ciliaDisplacement_u, ciliaAct;
+	Float	conductance_G, potential_V;
+	Float	ciliaDisplacement_u, ciliaAct;
 	SignalDataPtr	outSignal;
 	Sham3StVInPtr p = sham3StVInPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHCRP_Shamma3StateVelIn()) {
-			NotifyError(wxT("%s: Parameters invalid."), funcName);
-			return(FALSE);
-			}
 		if (!CheckData_IHCRP_Shamma3StateVelIn(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -1129,13 +877,13 @@ RunModel_IHCRP_Shamma3StateVelIn(EarObjectPtr data)
 		ciliaDisplacement_u = p->lastCiliaDisplacement_u[chan];
 		potential_V = p->lastOutput[chan];
 		for (i = 0; i < outSignal->length; i++, inPtr++, outPtr++) {
-			ciliaDisplacement_u += p->cGaindt * (*inPtr ) - 
+			ciliaDisplacement_u += p->cGaindt * (*inPtr ) -
 			  ciliaDisplacement_u * p->dtOverTc;
 			ciliaAct = 1.0 / (1.0 + exp((p->offset_u0 - ciliaDisplacement_u) /
 			  p->sensitivity_s0) * (1.0 + exp((p->offset_u1 -
 			  ciliaDisplacement_u) / p->sensitivity_s1)));
 			conductance_G = p->maxMConductance_Gmax * ciliaAct +
-			  p->leakageConductance_Ga; 
+			  p->leakageConductance_Ga;
 			*outPtr = (ChanData) (potential_V - p->dtOverC * (conductance_G *
 			  (potential_V - p->endocochlearPot_Et) + p->kConductance_Gk *
 			  potential_V - p->gkEpk));

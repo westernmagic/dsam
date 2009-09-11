@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		13 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -45,7 +45,7 @@ class ModuleParDialog;
  * All shape event behaviour is routed through this handler, so we don't
  * have to derive from each shape class. We plug this in to each shape.
  */
- 
+
 class SDIEvtHandler: public wxShapeEvtHandler
 {
 
@@ -61,6 +61,7 @@ class SDIEvtHandler: public wxShapeEvtHandler
 
 	bool	EditInstruction(void);
 	void	FreeInstruction(void);
+	int		GetProcessType(void)	{ return processType; }
 	bool	InitInstruction(void);
 	void	ProcessProperties(double x, double y);
 	void	ResetLabel(void);

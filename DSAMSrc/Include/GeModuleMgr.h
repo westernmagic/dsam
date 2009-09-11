@@ -16,7 +16,7 @@
  *				is not meant to be used, but it is to access global variables
  *				of modules that wouldn't otherwise be linked.
  *				20-04-99 LPO: The "Free_ModuleMgr" routine was not setting the
- *				appropriate module parameters pointer using the 
+ *				appropriate module parameters pointer using the
  *				"SetParsPointer_" routine.
  *				27-04-99 LPO:  The universal parameter lists have allowed me
  *				to introduce the 'ReadPar_', 'PrintPar_' and 'RunProcess'
@@ -36,14 +36,14 @@
  * Created:		29 Mar 1993
  * Updated:		02 Jun 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #ifndef	_MODULEMGR_H
 #define _MODULEMGR_H	1
 
 #include "UtNameSpecs.h"
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -95,7 +95,7 @@ typedef enum {
 
 } ModuleSpecifier;
 
-/* 
+/*
  * ModuleClassSpecifier:
  * Note that the PALETTE_ARROW enum used in GrSDIPallete.h starts at 100
  * and is used with these specifiers.
@@ -127,13 +127,12 @@ typedef struct moduleStruct {
 	ModuleClassSpecifier	classSpecifier;
 	ThreadModeSpecifier		threadMode;
 	ModuleHandle	handle;				/* Reference handle for manager. */
-	
+
 	/* General, accessible functions. */
 	BOOLN	(* CheckData)(EarObjectPtr data);
-	BOOLN	(* CheckPars)(void);
 	BOOLN	(* Free)(void);
 	void *	(* GetData)(void *);
-	double	(* GetPotentialResponse)(double potential);
+	Float	(* GetPotentialResponse)(Float potential);
 	UniParListPtr	(* GetUniParListPtr)(void);
 	BOOLN	(* PrintPars)(void);
 #	ifdef _PAMASTER1_H
@@ -143,12 +142,11 @@ typedef struct moduleStruct {
 		BOOLN (* SendQueuedCommands)(void);
 #	endif
 	BOOLN	(* RunProcess)(EarObjectPtr theObject);
-	BOOLN	(* ReadPars)(WChar *fileName);
 	BOOLN	(* ReadSignal)(WChar *fileName, EarObjectPtr data);
 	void	(* ResetProcess)(EarObjectPtr data);
 	BOOLN	(* InitModule )(struct moduleStruct *);
 	BOOLN	(* SetParsPointer)(struct moduleStruct *);
-	
+
 	void	*parsPtr;
 
 } Module;
@@ -157,14 +155,14 @@ typedef struct moduleStruct {
 #	define MODULE_PTR
 
 	typedef struct moduleStruct  *ModulePtr;
-	
+
 #endif
 
 typedef struct moduleNode {
 
 	ModulePtr			module;
 	struct moduleNode	*next;
-	
+
 } ModuleRef, *ModuleRefPtr;
 
 /******************************************************************************/
@@ -256,9 +254,9 @@ BOOLN	SetNull_ModuleMgr(ModulePtr module);
 BOOLN	SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value);
 
 BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
-		  double value);
+		  Float value);
 
-BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, double value);
+BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, Float value);
 
 void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
 

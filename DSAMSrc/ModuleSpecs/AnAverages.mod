@@ -10,7 +10,7 @@ proc_routine	Calc;
 typedef struct {
 
 	NameSpecifier	mode;	/* full, -wave, +wave */
-	double	timeOffset;
-	double	timeRange;
+	Float	timeOffset;
+	Float	timeRange;
 
 } Averages;

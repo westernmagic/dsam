@@ -9,7 +9,7 @@
  *				number of input channels defines the channel processing.
  * Author:		L. P. O'Mard
  * Created:		13 Jul 2004
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex
  *
  *********************/
@@ -48,7 +48,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag;
 	int		mode;
 
 	/* Private members */
@@ -74,8 +73,6 @@ extern	TransposePtr	transposePtr;
 __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Transpose(EarObjectPtr data);
-
-BOOLN	CheckPars_Utility_Transpose(void);
 
 BOOLN	Free_Utility_Transpose(void);
 

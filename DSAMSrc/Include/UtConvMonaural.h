@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.10 (Jan  3 1997).
  * Author:		L. P. O'Mard
  * Convd:		5 Mar 1997
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1997, University of Essex.
  *
  *********************/
@@ -35,7 +35,7 @@ typedef enum {
 
 	UTILITY_CONVMONAURAL_MODE_ADD,
 	UTILITY_CONVMONAURAL_MODE_LEFT,
-	UTILITY_CONVMONAURAL_MODE_RIGHT,	
+	UTILITY_CONVMONAURAL_MODE_RIGHT,
 	UTILITY_CONVMONAURAL_MODE_NULL
 
 } UtilityConvMonauralModeSpecifier;
@@ -44,7 +44,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag;
 	int		mode;
 
 	/* Private members */
@@ -66,8 +65,6 @@ typedef struct {
  * in GeCommon.h.
  */
 __BEGIN_DECLS
-
-BOOLN	CheckPars_Utility_ConvMonaural(void);
 
 BOOLN	Free_Utility_ConvMonaural(void);
 

@@ -18,15 +18,15 @@ typedef struct {
 	int		nupp;		/* GetInt("Upper bands"); */
 	int		nGapLow;
 	int		nGapUpp;
-	double	lowFBLevel;
-	double	uppFBLevel;
-	double	oFMLevel;
-	double	spacing;
-	double	mskmodfreq;
-	double	sigLevel;
-	double	sigFreq;
-	double	gateTime;
-	double	duration, dt;
+	Float	lowFBLevel;
+	Float	uppFBLevel;
+	Float	oFMLevel;
+	Float	spacing;
+	Float	mskmodfreq;
+	Float	sigLevel;
+	Float	sigFreq;
+	Float	gateTime;
+	Float	duration, dt;
 
 } CMRHarmM;
 

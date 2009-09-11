@@ -6,7 +6,7 @@ mod_name		Utility;
 qualifier		Sample;
 typedef struct {
 
-	double	timeOffset;
-	double	dt;
+	Float	timeOffset;
+	Float	dt;
 
 } Sample;

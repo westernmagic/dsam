@@ -181,8 +181,12 @@ DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 			switch (*p) {
 			case 'f':
 			case 'g':
-				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
-				  double));
+				if (longVar)
+					Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
+					  double));
+				else
+					Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
+					  float));
 				break;
 			case 'd':
 				Snprintf_Utility_String(buffer, MAXLINE, subFormat, (longVar)?
@@ -752,7 +756,7 @@ CheckInitWarningsFile_Common(void)
 
 }
 
-/*************************** FreeDoubleArray **********************************/
+/*************************** FreeFloatArray **********************************/
 
 /*
  * This frees the memory for a double array, after first checking that it is not
@@ -760,7 +764,7 @@ CheckInitWarningsFile_Common(void)
  */
 
 void
-FreeDoubleArray_Common(double **p)
+FreeFloatArray_Common(Float **p)
 {
 	if (*p == NULL)
 		return;
@@ -795,25 +799,25 @@ SwitchGUILocking_Common(BOOLN on)
 
 }
 
-/****************************** ResizeDoubleArray *****************************/
+/****************************** ResizeFloatArray *****************************/
 
 /*
  * This routine resizes an array.
  */
 
 BOOLN
-ResizeDoubleArray_Common(double **array, int *oldLength, int length)
+ResizeFloatArray_Common(Float **array, int *oldLength, int length)
 {
-	static const WChar *funcName = wxT("ResizeDoubleArray_Common");
-	register double	*newArray, *oldArray;
+	static const WChar *funcName = wxT("ResizeFloatArray_Common");
+	register Float	*newArray, *oldArray;
 	int		i;
-	double	*savedArray = NULL;
+	Float	*savedArray = NULL;
 
 	if (length == *oldLength)
 		return(TRUE);
 	if (*array)
 		savedArray = *array;
-	if ((*array = (double *) calloc(length, sizeof(double))) == NULL) {
+	if ((*array = (Float *) calloc(length, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
 		  funcName, length);
 		return(FALSE);

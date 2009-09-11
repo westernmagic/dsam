@@ -18,14 +18,14 @@
  * Created:		18 Feb 1993
  * Updated:		27 Jan 1998
  * Copyright:	(c) 1999, University of Essex
- * 
+ *
  ******************/
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
- 
+
 #ifdef HAVE_CONFIG_H
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
@@ -61,7 +61,7 @@ BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
  * All initialised EarObjects are registered in the main list.
  * This new version initialises the input signals array to NULL, then input
  * signals are dynamically added when processes are connected.
- * 
+ *
  */
 
 EarObjectPtr
@@ -120,7 +120,7 @@ Init_EarObject(const WChar *moduleName)
 /*
  * This routine adds a new input signal to an EarObject.
  */
- 
+
 BOOLN
 AddInSignal_EarObject(EarObjectPtr data)
 {
@@ -153,7 +153,7 @@ AddInSignal_EarObject(EarObjectPtr data)
  * reference may have changed, i.e. all those below the deleted signal in the
  * array.
  */
- 
+
 BOOLN
 DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
 {
@@ -161,7 +161,7 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
 	BOOLN	found = FALSE;
 	int		i = 0, j;
 	SignalDataPtr	**signals;
-	EarObjRefPtr	p;	
+	EarObjRefPtr	p;
 
 	if (!data) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -208,7 +208,7 @@ DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal)
  * Only locally create signals will be free'd, i.e. each EarObject must release
  * the signals which it created.
  */
- 
+
 void
 FreeOutSignal_EarObject(EarObjectPtr data)
 {
@@ -216,7 +216,7 @@ FreeOutSignal_EarObject(EarObjectPtr data)
 		return;
 	if (data->localOutSignalFlag)
 		Free_SignalData(&data->outSignal);
-	else 
+	else
 		data->outSignal = NULL;
 
 }
@@ -231,7 +231,7 @@ FreeOutSignal_EarObject(EarObjectPtr data)
  * When releasing the memory for the 'threadProcs' remember that these
  * EarObjects are copies and have no personal allocated space.
  */
- 
+
 void
 Free_EarObject(EarObjectPtr *theObject)
 {
@@ -257,8 +257,8 @@ Free_EarObject(EarObjectPtr *theObject)
 	if ((*theObject)->randPars)
 		FreePars_Random(&(*theObject)->randPars);
 	free(*theObject);
-	*theObject = NULL;		
-	
+	*theObject = NULL;
+
 } /* Free_EarObject */
 
 /**************************** FreeAll *****************************************/
@@ -291,7 +291,7 @@ FreeAll_EarObject(void)
  * The name can only be set once: repeated calls will do nothing.
  * This routine uses the variable argument format - like 'printf' does.
  */
- 
+
 void
 SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
 {
@@ -301,7 +301,7 @@ SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
 	WChar	newFormat[LONG_STRING];
 #	endif
 	va_list	args;
-	
+
 	if (theObject->processName != NULL)
 		free(theObject->processName);
 #	if DSAM_USE_UNICODE
@@ -329,7 +329,7 @@ SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
  * element, i.e. if the dimensions of the SignalData object have changed.
  * It destroys the old output signal and re-creates it if necessary.
  * If the sampling interval is changed, then the "updateProcessFlag" is set.
- * I have introduced a check for processes that have been used by the 
+ * I have introduced a check for processes that have been used by the
  * NULL process, RunModel_ModuleMgr_Null.  In these processes the 'outSignal'
  * will not be NULL, but 'localOutSignalFlag' will be FALSE.
  * It returns FALSE if it fails in any way.
@@ -337,7 +337,7 @@ SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
 
 BOOLN
 SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
-  double samplingInterval)
+  Float samplingInterval)
 {
 	static const WChar *funcName = wxT("SetNewOutSignal_EarObject");
 	BOOLN	createNewSignal = TRUE, deletedOldOutSignal = FALSE;
@@ -357,7 +357,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		} else
 			createNewSignal = FALSE;
 	}
-	
+
 	if (createNewSignal) {
 		data->outSignal = Init_SignalData(funcName);
 		SetLength_SignalData(data->outSignal, length);
@@ -394,7 +394,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
  * N.B. pointers from the "oldOutSignal" are not valid, as their memory has
  * been released.
  */
- 
+
 void
 ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
 {
@@ -448,13 +448,13 @@ ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
  * 16-8-94 L.P.O'Mard: This version does not reset an existing output signal to
  * zero, unless the updateProcessFlag is set.
  */
- 
+
 BOOLN
 InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
-  double samplingInterval)
+  Float samplingInterval)
 {
 	static const WChar *funcName = wxT("InitOutSignal_EarObject");
-	
+
 	if (samplingInterval == 0.0) {
 		NotifyError(wxT("%s: Time step is zero for EarObject '%s'!"), funcName,
 		  POSSIBLY_NULL_STRING_PTR(data->processName));
@@ -466,7 +466,7 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /**************************** ResetOutSignal **********************************/
@@ -475,7 +475,7 @@ InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
  * This routine resets an output signal to zero.if the 'updateProcessFlag' is
  * set and the signal is not external.
  */
- 
+
 void
 ResetOutSignal_EarObject(EarObjectPtr data)
 {
@@ -509,7 +509,7 @@ ResetOutSignal_EarObject(EarObjectPtr data)
  * but we need to save the interleavel level which is set by the
  * "SetChannelsFromSignal_SignalData(...)" routine.
  */
- 
+
 BOOLN
 InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
@@ -539,7 +539,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 	else
 		SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
 	return(TRUE);
-	
+
 }
 
 /**************************** InitOutDataFromInSignal *************************/
@@ -554,7 +554,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
  * 'InitOutTypeFromInSignal_EarObject' routine to get the same functionality
  * of the 'InitOutFromInSignal_EarObject' routine.
  */
- 
+
 void
 InitOutDataFromInSignal_EarObject(EarObjectPtr data)
 {
@@ -579,7 +579,7 @@ InitOutDataFromInSignal_EarObject(EarObjectPtr data)
  * It does not call 'SetChannelsFromSignal_SignalData' routine because it is
  * used within the pre-thread initialisation section of a process.
  */
- 
+
 BOOLN
 InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
@@ -610,7 +610,7 @@ InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 	else
 		SetInterleaveLevel_SignalData(outSignal, inSignal->interleaveLevel);
 	return(TRUE);
-	
+
 }
 
 /**************************** PrintProcessName ********************************/
@@ -618,11 +618,11 @@ InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 /*
  * This routine outputs the process name to the standard output, provided that
  * it has been set, otherwise it will output "<no name set>".
- * The message string should be in the form "text....%s.....more text (if 
+ * The message string should be in the form "text....%s.....more text (if
  * required).".
  * It assumes that all EarObjects are initialised to NULL when declared.
  */
- 
+
 void
 PrintProcessName_EarObject(WChar *message, EarObjectPtr data)
 {
@@ -646,7 +646,7 @@ PrintProcessName_EarObject(WChar *message, EarObjectPtr data)
  * supplier list.
  * This routine tests for NULL EarObjects.
  */
- 
+
 BOOLN
 ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 {
@@ -676,7 +676,7 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 		return(FALSE);
 	customer->inSignal[customer->numInSignals - 1] = supplier->outSignalPtr;
 	return(TRUE);
-	
+
 }
 
 /**************************** DisconnectOutSignalFromIn ***********************/
@@ -687,13 +687,13 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
  * supplier's customer list, and the supplier from the customer's supplier list.
  * This routine tests for NULL EarObjects.
  */
- 
+
 BOOLN
 DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
   EarObjectPtr customer)
 {
 	static const WChar *funcName = wxT("DisconnectOutSignalFromIn_EarObject");
-	
+
 	if (supplier == NULL) {
 		NotifyError(wxT("%s: Supplier EarObject not initialised."), funcName);
 		return(FALSE);
@@ -715,7 +715,7 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
 	FreeEarObjRef_EarObject(&supplier->customerList, customer->handle);
 	FreeEarObjRef_EarObject(&customer->supplierList, supplier->handle);
 	return(TRUE);
-	
+
 }
 
 /**************************** CreateEarObjRef *********************************/
@@ -725,7 +725,7 @@ DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
  * It returns NULL if it fails.
  * The input signal is always the last signal created.
  */
- 
+
 EarObjRefPtr
 CreateEarObjRef_EarObject(EarObjectPtr theObject)
 {
@@ -764,7 +764,7 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
     		NotifyError(wxT("%s: Could not create new node."), funcName);
     		return(FALSE);
     	}
-    	
+
 		return(TRUE);
 	}
 	for (p = *theList, last = NULL; (p->next != NULL) && (p->earObject->handle <
@@ -783,7 +783,7 @@ AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theObject)
 	if (p->earObject->handle > theObject->handle) {
 		temp->next = p;
 		if (p == *theList)	/* Test for head of list. */
-			*theList = temp;	
+			*theList = temp;
 		else
 			last->next = temp;
 	} else
@@ -827,12 +827,12 @@ FreeEarObjRef_EarObject(EarObjRefPtr *theList, EarObjHandle theHandle)
 /*
  * This routine frees the space allocated for a EarObjRef linked list.
  */
- 
+
 void
 FreeEarObjRefList_EarObject(EarObjRefPtr *theList)
 {
 	EarObjRefPtr	temp;
-	
+
 	while (*theList != NULL) {
 		temp = *theList;			/* Point to top earObjRef node */
 		*theList = (*theList)->next;	/* Point earObjRefList to next node*/
@@ -854,14 +854,14 @@ void
 RemoveEarObjRefs_EarObject(EarObjectPtr theObject)
 {
 	EarObjRefPtr	p;
-	
+
 	for (p = theObject->supplierList; p != NULL; p = p->next) {
 		FreeEarObjRef_EarObject(&p->earObject->customerList, theObject->handle);
 	}
 	for (p = theObject->customerList; p != NULL; p = p->next) {
 		FreeEarObjRef_EarObject(&p->earObject->supplierList, theObject->handle);
 	}
-	
+
 }
 
 /**************************** SetTimeContinuity *******************************/
@@ -869,7 +869,7 @@ RemoveEarObjRefs_EarObject(EarObjectPtr theObject)
 /*
  * This routine sets the time continuity if the segmented mode is on.
  * The time is only updated after the first signal section has been processed.
- * It expects the EarObject to be correctly initialised. 
+ * It expects the EarObject to be correctly initialised.
  */
 
 void
@@ -906,7 +906,7 @@ SetProcessContinuity_EarObject(EarObjectPtr data)
 /**************************** SetUtilityProcessContinuity *********************/
 
 /*
- * This routine sets the various process continuity requirements for utility 
+ * This routine sets the various process continuity requirements for utility
  * modules, such as staticTimeFlag, outputTimeOffset etc.
  * It assumes that the EarObjectPtr has been initialised.
  * The 'data->outSignal->offset' comparison ensures that only the first thread
@@ -1021,8 +1021,8 @@ ResetProcessStandard_EarObject(EarObjectPtr theObject)
  * This routine returns a sample from an EarObject output signal channel.
  * It will produce a fatal error if an error occurs, i.e. the program will exit.
  */
- 
-double
+
+ChanData
 GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
 {
 	static const WChar	*funcName = wxT("GetSample_EarObject");
@@ -1055,8 +1055,8 @@ GetSample_EarObject(EarObjectPtr data, uShort channel, ChanLen sample)
  * analysis modules.
  * It will produce a fatal error if an error occurs, i.e. the program will exit.
  */
- 
-double
+
+ChanData
 GetResult_EarObject(EarObjectPtr data, uShort channel)
 {
 	static const WChar	*funcName = wxT("GetResult_EarObject");
@@ -1088,7 +1088,7 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
  * It assumes that the EarObject process is correctly initialised.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
 {
@@ -1117,7 +1117,7 @@ CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
  * It assumes that both EarObject processes are correctly initialised.
  * It returns FALSE if it fails in any way.
  */
- 
+
 BOOLN
 TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
   int numInSignals)
@@ -1139,7 +1139,7 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 		for (i = 0; i < numInSignals; i++)
 			AddInSignal_EarObject(supporting);
 	}
-		
+
 	for (i = 0; i < supporting->numInSignals; i++)
 		supporting->inSignal[i] = base->inSignal[i];
 	return(TRUE);
@@ -1158,7 +1158,7 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 BOOLN
 SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 {
-	
+
 	if (p->randPars) {
 		SetSeed_Random(p->randPars, ranSeed, (long) p->threadIndex);
 		return(TRUE);
@@ -1182,7 +1182,7 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
  * created in one go, so the first out signal is used to delete all of them.
  * The same applies to the process EarObjects.
  */
- 
+
 void
 FreeThreadSubProcs_EarObject(EarObjectPtr p)
 {
@@ -1262,7 +1262,7 @@ InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
  * created in one go, so the first out signal is used to delete all of them.
  * The same applies to the process EarObjects.
  */
- 
+
 void
 FreeThreadProcs_EarObject(EarObjectPtr p)
 {
@@ -1303,7 +1303,7 @@ InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 		return;
 	SetRandPars_EarObject(p, baseP->randPars->idum, funcName);
 	return;
-	
+
 }
 
 /**************************** InitThreadProcs *********************************/
@@ -1410,7 +1410,7 @@ FreeSubProcessList_EarObject(EarObjectPtr p)
 
 /*
  * Initialise a list of references to sub process Lists.
- * This list provides a way of initialising the sub processes for threaded 
+ * This list provides a way of initialising the sub processes for threaded
  * operation.
  * It assumes that the module has been correctly initialised.
  */

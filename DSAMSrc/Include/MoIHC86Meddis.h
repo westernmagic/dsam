@@ -13,7 +13,7 @@
 
 #ifndef	_MOIHC86MEDDIS_H
 #define _MOIHC86MEDDIS_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -43,39 +43,36 @@ typedef enum {
 
 typedef struct {
 
-		double	cleftC;			/* Quantity of transmitter in the cleft */
-		double	reservoirQ;		/* Quantity of transmitter in the free pool */
-		double	reprocessedW;	/* Quantity of transm. in the reproc. store */
+		Float	cleftC;			/* Quantity of transmitter in the cleft */
+		Float	reservoirQ;		/* Quantity of transmitter in the free pool */
+		Float	reprocessedW;	/* Quantity of transm. in the reproc. store */
 
 } HairCellVars, *HairCellVarsPtr;
-	
+
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	diagModeFlag, permConstAFlag, permConstBFlag, releaseRateFlag;
-	BOOLN	replenishRateFlag, lossRateFlag, reprocessRateFlag;
-	BOOLN	recoveryRateFlag, maxFreePoolFlag, firingRateFlag;
+
 	BOOLN	updateProcessVariablesFlag;
-	
+
 	int		diagMode;
-	double	permConst_A;		/* Permeability constant (?). */
-	double	permConst_B;		/* Units per second */
-	double	releaseRate_g;		/* Release rate (units per second). */
-	double	replenishRate_y;	/* Replenishment rate (units per second). */
-	double	lossRate_l;			/* Loss rate (units per second). */
-	double	reprocessRate_x;	/* Reprocessing rate (units per second). */
-	double	recoveryRate_r;		/* Recovery rate (units per second). */
-	double	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
-	double	firingRate_h;		/* Firing rate (spikes per second). */
-	
+	Float	permConst_A;		/* Permeability constant (?). */
+	Float	permConst_B;		/* Units per second */
+	Float	releaseRate_g;		/* Release rate (units per second). */
+	Float	replenishRate_y;	/* Replenishment rate (units per second). */
+	Float	lossRate_l;			/* Loss rate (units per second). */
+	Float	reprocessRate_x;	/* Reprocessing rate (units per second). */
+	Float	recoveryRate_r;		/* Recovery rate (units per second). */
+	Float	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
+	Float	firingRate_h;		/* Firing rate (spikes per second). */
+
 	/* Private members */
 	NameSpecifier	*diagModeList;
 	UniParListPtr	parList;
 	HairCellVars	*hCChannels;
 	WChar		diagFileName[MAX_FILE_PATH];
 	FILE		*fp;
-	double	dt, ymdt, xdt, ydt, l_Plus_rdt, rdt, gdt, hdt;
+	Float	dt, ymdt, xdt, ydt, l_Plus_rdt, rdt, gdt, hdt;
 
 } HairCell, *HairCellPtr;
 
@@ -97,8 +94,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHC_Meddis86(EarObjectPtr data);
 
-BOOLN	CheckPars_IHC_Meddis86(void);
-
 BOOLN	Init_IHC_Meddis86(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_IHC_Meddis86(EarObjectPtr data);
@@ -111,36 +106,31 @@ UniParListPtr	GetUniParListPtr_IHC_Meddis86(void);
 
 BOOLN	PrintPars_IHC_Meddis86(void);
 
-BOOLN	ReadPars_IHC_Meddis86(WChar *fileName);
-
 BOOLN	RunModel_IHC_Meddis86(EarObjectPtr data);
 
 BOOLN	SetDiagMode_IHC_Meddis86(WChar * theDiagMode);
 
-BOOLN	SetFiringRate_IHC_Meddis86(double theSetFiringRate);
+BOOLN	SetFiringRate_IHC_Meddis86(Float theSetFiringRate);
 
-BOOLN	SetLossRate_IHC_Meddis86(double theLossRate);
+BOOLN	SetLossRate_IHC_Meddis86(Float theLossRate);
 
-BOOLN	SetMaxFreePool_IHC_Meddis86(double theMaxFreePool);
+BOOLN	SetMaxFreePool_IHC_Meddis86(Float theMaxFreePool);
 
 BOOLN	InitModule_IHC_Meddis86(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHC_Meddis86(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Meddis86(double A, double B, double g, double y, double l,
-		  double x, double r, double M, double h);
-		  
-BOOLN	SetPermConstA_IHC_Meddis86(double thePermConstA);
+BOOLN	SetPermConstA_IHC_Meddis86(Float thePermConstA);
 
-BOOLN	SetPermConstB_IHC_Meddis86(double thePermConstB);
+BOOLN	SetPermConstB_IHC_Meddis86(Float thePermConstB);
 
-BOOLN	SetRecoveryRate_IHC_Meddis86(double theRecoveryRate);
+BOOLN	SetRecoveryRate_IHC_Meddis86(Float theRecoveryRate);
 
-BOOLN	SetReleaseRate_IHC_Meddis86(double theReleaseRate);
+BOOLN	SetReleaseRate_IHC_Meddis86(Float theReleaseRate);
 
-BOOLN	SetReplenishRate_IHC_Meddis86(double theReplenishRate);
+BOOLN	SetReplenishRate_IHC_Meddis86(Float theReplenishRate);
 
-BOOLN	SetReprocessRate_IHC_Meddis86(double theReprocessRate);
+BOOLN	SetReprocessRate_IHC_Meddis86(Float theReprocessRate);
 
 BOOLN	SetUniParList_IHC_Meddis86(void);
 

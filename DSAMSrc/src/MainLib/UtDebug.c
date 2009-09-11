@@ -40,7 +40,7 @@ EarObjectPtr	debug = NULL;	/* This is used for debugging modules. */
  * will cause the module to crash the system.
  * It returns FALSE if the gobal variable has not been initialised.
  */
- 
+
 BOOLN
 CheckInit_Debug(void)
 {
@@ -51,7 +51,7 @@ CheckInit_Debug(void)
 		return(FALSE);
 	}
 	return(TRUE);
-	
+
 }
 
 /*************************** Init *********************************************/
@@ -80,7 +80,7 @@ Free_Debug(void)
 {
 	if (debug != NULL)
 		Free_EarObject(&debug);
-		
+
 }
 
 /*************************** SetPars ******************************************/
@@ -88,9 +88,9 @@ Free_Debug(void)
 /*
  * This function sets the debug EarObjects parameters.
  */
- 
+
 BOOLN
-SetPars_Debug(uShort numChannels, ChanLen length, double samplingInterval)
+SetPars_Debug(uShort numChannels, ChanLen length, Float samplingInterval)
 {
 	static const WChar *funcName = wxT("SetPars_Debug");
 
@@ -115,7 +115,7 @@ SetPars_Debug(uShort numChannels, ChanLen length, double samplingInterval)
  */
 
 BOOLN
-SetChannelValue_Debug(int channel, ChanLen sample, double value)
+SetChannelValue_Debug(int channel, ChanLen sample, Float value)
 {
 	static const WChar *funcName = wxT("SetChannelValue_Debug");
 
@@ -135,7 +135,7 @@ SetChannelValue_Debug(int channel, ChanLen sample, double value)
 	}
 	_OutSig_EarObject(debug)->channel[channel][sample] = value;
 	return(TRUE);
-	
+
 }
 
 /*************************** WriteOutSignal_Debug *****************************/
@@ -150,7 +150,7 @@ WriteOutSignal_Debug(WChar *fileName)
 {
 
 	return(OutputToFile_SignalData(fileName, debug->outSignal));
-	
+
 }
 
 /*************************** WriteOutSignal_Debug *****************************/
@@ -162,12 +162,12 @@ WriteOutSignal_Debug(WChar *fileName)
  */
 
 void
-WriteArray_Debug(WChar *fileName, double *p, ChanLen length, int increment)
+WriteArray_Debug(WChar *fileName, Float *p, ChanLen length, int increment)
 {
 	static const char *funcName = "WriteArray_Debug";
 	ChanLen	i;
 	FILE	*fp;
-	
+
 	if ((fp = DSAM_fopen(fileName, "w")) == NULL) {
 		NotifyError(wxT("%s: Could not open file '%s' for writing."), funcName,
 		  fileName);

@@ -153,7 +153,7 @@ ParListInfo::SetParBoolean(UniParPtr par, int index)
 void
 ParListInfo::SetParNameList(UniParPtr par, int index)
 {
-	NameSpecifierPtr list; 
+	NameSpecifierPtr list;
 
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxSize(PARLISTINFO_CHOICE_ITEM_WIDTH,-1), 0, NULL,
@@ -190,7 +190,7 @@ ParListInfo::SetParNameList(UniParPtr par, int index)
 void
 ParListInfo::SetParNameListWithText(UniParPtr par, int index)
 {
-	NameSpecifierPtr list; 
+	NameSpecifierPtr list;
 
 	wxComboBox *cBox = new wxComboBox(parent, DL_ID_COMBO_BOX + index, wxT(""),
 	  wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY);
@@ -404,10 +404,10 @@ ParListInfo::SetParListStandard(void)
 void
 ParListInfo::SetParListIonChannel(void)
 {
-	const int	numHHCols = ICLIST_IC_ALPHA_K - ICLIST_IC_ALPHA_A + 1;
+	const int	numHHCols = ICLIST_IC_FUNC2_K - ICLIST_IC_FUNC1_A + 1;
 	int		i, index;
 	UniParPtr	par;
-	wxSlider	*slider;
+	wxSlider	*slider = NULL;
 	wxString	heading;
 	wxTextCtrl	*hHuxleyAlphaTC[numHHCols], *hHuxleyBetaTC[numHHCols];
 	wxStaticText *hHuxleyLabel[numHHCols];
@@ -418,13 +418,13 @@ ParListInfo::SetParListIonChannel(void)
 		maxHeight += GetParControl(i)->GetSize().GetHeight() +
 		  PARLISTINFO_DEFAULT_Y_MARGIN;
 	}
-	
+
 	for (i = 0; i < numHHCols; i++) {
 		heading.sprintf(wxT("    %c"), 'A' + i);
 		hHuxleyLabel[i] = new wxStaticText(parent, -1, heading,
 		  wxDefaultPosition, wxSize(PARLISTINFO_IC_TEXT_ITEM_WIDTH, -1));
 
-		index = i + ICLIST_IC_ALPHA_A;
+		index = i + ICLIST_IC_FUNC1_A;
 		par = &parList->pars[index];
 		if (i == 0)
 			slider = CreateSlider(index, *par->valuePtr.array.numElements);
@@ -438,7 +438,7 @@ ParListInfo::SetParListIonChannel(void)
 		controlList[index]->SetSlider(slider);
 	}
 	for (i = 0; i < numHHCols; i++) {
-		index = i + ICLIST_IC_BETA_A;
+		index = i + ICLIST_IC_FUNC2_A;
 		par = &parList->pars[index];
 		hHuxleyBetaTC[i] = new wxTextCtrl(parent, DL_ID_TEXT, (wxChar *)
 		  GetParString_UniParMgr(par), wxDefaultPosition, wxSize(
@@ -451,11 +451,11 @@ ParListInfo::SetParListIonChannel(void)
 
 	}
 	int  width, height;
-	GetParControl(ICLIST_IC_ALPHA_A)->GetSlider()->GetSize(&width, &height);
-	maxHeight += height + PARLISTINFO_DEFAULT_Y_MARGIN + 3 * 
-	  (GetParControl(ICLIST_IC_ALPHA_A)->GetSize().GetHeight() +
+	GetParControl(ICLIST_IC_FUNC1_A)->GetSlider()->GetSize(&width, &height);
+	maxHeight += height + PARLISTINFO_DEFAULT_Y_MARGIN + 3 *
+	  (GetParControl(ICLIST_IC_FUNC1_A)->GetSize().GetHeight() +
 	  PARLISTINFO_DEFAULT_Y_MARGIN);
-	maxWidth = numHHCols * (GetParControl(ICLIST_IC_ALPHA_A)->GetSize(
+	maxWidth = numHHCols * (GetParControl(ICLIST_IC_FUNC1_A)->GetSize(
 	  ).GetWidth() + PARLISTINFO_DEFAULT_X_MARGIN) + 2 *
 	  PARLISTINFO_DEFAULT_X_MARGIN;
 /* ?? 	for (i = 0; i < numHHCols; i++) {
@@ -487,7 +487,7 @@ ParListInfo::SetParListIonChannel(void)
 		hHuxleyBetaTC[i]->SetConstraints(c);
 	}
 */
-	
+
 }
 
 /****************************** CreateSlider **********************************/

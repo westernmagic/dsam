@@ -92,16 +92,14 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	detectionModeFlag, typeModeFlag, eventThresholdFlag, binWidthFlag;
-	BOOLN	periodFlag, timeOffsetFlag, outputModeFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		detectionMode;
 	int		outputMode;
 	int		typeMode;
-	double	eventThreshold;
-	double	binWidth;
-	double	period;
-	double	timeOffset;
+	Float	eventThreshold;
+	Float	binWidth;
+	Float	period;
+	Float	timeOffset;
 
 	/* Private members */
 	NameSpecifier	*detectionModeList;
@@ -109,7 +107,7 @@ typedef struct {
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
 	BOOLN			*riseDetected;
-	double			wBinWidth, wPeriod, dt;
+	Float			wBinWidth, wPeriod, dt;
 	int				numInitialisedThreads;
 	HistogramState	*hState;
 	EarObjectPtr	dataBuffer;
@@ -136,8 +134,6 @@ BOOLN	Calc_Analysis_Histogram(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_Histogram(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_Histogram(void);
-
 BOOLN	Free_Analysis_Histogram(void);
 
 BOOLN	FreeProcessVariables_Analysis_Histogram(void);
@@ -159,29 +155,23 @@ BOOLN	PrintPars_Analysis_Histogram(void);
 void	PushDataBuffer_Analysis_Histogram(EarObjectPtr data,
 		  ChanLen lastSamples);
 
-BOOLN	ReadPars_Analysis_Histogram(WChar *fileName);
-
 void	ResetProcess_Analysis_Histogram(EarObjectPtr data);
 
-BOOLN	SetBinWidth_Analysis_Histogram(double theBinWidth);
+BOOLN	SetBinWidth_Analysis_Histogram(Float theBinWidth);
 
 BOOLN	SetDetectionMode_Analysis_Histogram(WChar *theDetectionMode);
 
-BOOLN	SetEventThreshold_Analysis_Histogram(double theEventThreshold);
+BOOLN	SetEventThreshold_Analysis_Histogram(Float theEventThreshold);
 
 BOOLN	SetOutputMode_Analysis_Histogram(WChar *theOutputMode);
 
-BOOLN	SetTimeOffset_Analysis_Histogram(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_Histogram(Float theTimeOffset);
 
 BOOLN	InitModule_Analysis_Histogram(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_Histogram(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_Histogram(WChar *detectionMode, WChar *typeMode,
-		  double eventThreshold, double binWidth, double period,
-		  double timeOffset);
-
-BOOLN	SetPeriod_Analysis_Histogram(double thePeriod);
+BOOLN	SetPeriod_Analysis_Histogram(Float thePeriod);
 
 BOOLN	SetTypeMode_Analysis_Histogram(WChar *theTypeMode);
 

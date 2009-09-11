@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.12 (Oct 12 1997).
  * Author:		L. P. O'Mard
  * Created:		14 Dec 1997
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -49,31 +49,28 @@ typedef enum {
 	EGATED_TONE_MODE_NULL
 
 } TypeModeSpecifier;
-	
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	typeModeFlag, floorModeFlag, carrierFrequencyFlag, amplitudeFlag;
-	BOOLN	phaseFlag, beginPeriodDurationFlag, repetitionRateFlag;
-	BOOLN	halfLifeFlag, floorFlag, durationFlag, dtFlag;
 	int		typeMode;
 	int		floorMode;
-	double	carrierFrequency;
-	double	amplitude;
-	double	phase;
-	double	beginPeriodDuration;
-	double	repetitionRate;
-	double	halfLife;
-	double	floor;
-	double	duration;
-	double	dt;
+	Float	carrierFrequency;
+	Float	amplitude;
+	Float	phase;
+	Float	beginPeriodDuration;
+	Float	repetitionRate;
+	Float	halfLife;
+	Float	floor;
+	Float	duration;
+	Float	dt;
 
 	/* Private members */
 	NameSpecifier	*typeModeList;
 	UniParListPtr	parList;
-	double	cycleTimer;
-	double	nextCycle;
+	Float	cycleTimer;
+	Float	nextCycle;
 
 } EGatedTone, *EGatedTonePtr;
 
@@ -93,8 +90,6 @@ extern	EGatedTonePtr	eGatedTonePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_Stimulus_ExpGatedTone(void);
-
 BOOLN	Free_Stimulus_ExpGatedTone(void);
 
 BOOLN	GenerateSignal_Stimulus_ExpGatedTone(EarObjectPtr data);
@@ -107,37 +102,29 @@ BOOLN	InitTypeModeList_Stimulus_ExpGatedTone(void);
 
 BOOLN	PrintPars_Stimulus_ExpGatedTone(void);
 
-BOOLN	ReadPars_Stimulus_ExpGatedTone(WChar *fileName);
+BOOLN	SetAmplitude_Stimulus_ExpGatedTone(Float theAmplitude);
 
-BOOLN	SetAmplitude_Stimulus_ExpGatedTone(double theAmplitude);
-
-BOOLN	SetBeginPeriodDuration_Stimulus_ExpGatedTone(
-		  double theBeginPeriodDuration);
+BOOLN	SetBeginPeriodDuration_Stimulus_ExpGatedTone(Float theBeginPeriodDuration);
 
 BOOLN	SetFloorMode_Stimulus_ExpGatedTone(WChar *theFloorMode);
 
-BOOLN	SetDuration_Stimulus_ExpGatedTone(double theDuration);
+BOOLN	SetDuration_Stimulus_ExpGatedTone(Float theDuration);
 
-BOOLN	SetFloor_Stimulus_ExpGatedTone(double theFloor);
+BOOLN	SetFloor_Stimulus_ExpGatedTone(Float theFloor);
 
-BOOLN	SetCarrierFrequency_Stimulus_ExpGatedTone(double theCarrierFrequency);
+BOOLN	SetCarrierFrequency_Stimulus_ExpGatedTone(Float theCarrierFrequency);
 
-BOOLN	SetHalfLife_Stimulus_ExpGatedTone(double theHalfLife);
+BOOLN	SetHalfLife_Stimulus_ExpGatedTone(Float theHalfLife);
 
 BOOLN	InitModule_Stimulus_ExpGatedTone(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Stimulus_ExpGatedTone(ModulePtr theModule);
 
-BOOLN	SetPars_Stimulus_ExpGatedTone(WChar *typeMode, WChar *floorMode,
-		  double carrierFrequency, double amplitude, double phase,
-		  double beginPeriodDuration, double repetitionRate, double halfLife,
-		  double floor, double duration, double samplingInterval);
+BOOLN	SetPhase_Stimulus_ExpGatedTone(Float thePhase);
 
-BOOLN	SetPhase_Stimulus_ExpGatedTone(double thePhase);
+BOOLN	SetRepetitionRate_Stimulus_ExpGatedTone(Float theRepetitionRate);
 
-BOOLN	SetRepetitionRate_Stimulus_ExpGatedTone(double theRepetitionRate);
-
-BOOLN	SetSamplingInterval_Stimulus_ExpGatedTone(double theSamplingInterval);
+BOOLN	SetSamplingInterval_Stimulus_ExpGatedTone(Float theSamplingInterval);
 
 BOOLN	SetTypeMode_Stimulus_ExpGatedTone(WChar *theTypeMode);
 

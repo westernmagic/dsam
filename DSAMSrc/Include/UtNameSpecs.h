@@ -25,7 +25,7 @@
 
 typedef struct {
 
-	WChar	*name;
+	const WChar	*name;
 	int		specifier;
 
 } NameSpecifier, *NameSpecifierPtr;

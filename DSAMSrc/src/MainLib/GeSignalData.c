@@ -229,7 +229,7 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 	}
 	if (!externalDataFlag) {
 		if ((pp = (ChanData *) calloc(numChannels * theData->length,
-		  sizeof(double))) == NULL) {
+		  sizeof(ChanData))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for signal block."), funcName);
 			free(p);
 			return(FALSE);
@@ -242,21 +242,21 @@ InitChannels_SignalData(SignalDataPtr theData, uShort numChannels,
 	theData->numChannels = numChannels;
 	theData->origNumChannels = numChannels;
 	theData->externalDataFlag = externalDataFlag;
-	if ((theData->info.chanLabel = (double *) calloc(numChannels,
-	  sizeof(double))) == NULL) {
+	if ((theData->info.chanLabel = (Float *) calloc(numChannels,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for channel info labels."),
 		  funcName);
 		FreeChannels_SignalData(theData);
 		return(FALSE);
 	}
-	if ((theData->info.cFArray = (double *) calloc(numChannels,
-	  sizeof(double))) == NULL) {
+	if ((theData->info.cFArray = (Float *) calloc(numChannels,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for CF Array."), funcName);
 		FreeChannels_SignalData(theData);
 		return(FALSE);
 	}
 	for (i = 0; i < numChannels; i++)
-		theData->info.chanLabel[i] = theData->info.cFArray[i] = (double) i /
+		theData->info.chanLabel[i] = theData->info.cFArray[i] = (Float) i /
 		  theData->interleaveLevel;
 	return(TRUE);
 
@@ -389,7 +389,7 @@ SameType_SignalData_NoDiagnostics(SignalDataPtr a, SignalDataPtr b)
 	if (!a->lengthFlag || !b->lengthFlag)
 		return(FALSE);
 	if  ((a->length != b->length) || (a->numChannels != b->numChannels) ||
-	  (fabs(a->dt - b->dt) > DBL_EPSILON))
+	  (fabs(a->dt - b->dt) > DSAM_EPSILON))
 		return(FALSE);
     return(TRUE);
 
@@ -403,7 +403,7 @@ SameType_SignalData_NoDiagnostics(SignalDataPtr a, SignalDataPtr b)
  */
 
 BOOLN
-Scale_SignalData(SignalDataPtr d, double multiplier)
+Scale_SignalData(SignalDataPtr d, Float multiplier)
 {
 	int		i;
 	ChanLen	j;
@@ -455,7 +455,7 @@ Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 
 void
 SetSamplingInterval_SignalData(SignalDataPtr theData,
-  double theSamplingInterval)
+  Float theSamplingInterval)
 {
 	if (!CheckInit_SignalData(theData, wxT("SetSamplingInterval_SignalData")))
 		exit(1);
@@ -473,7 +473,7 @@ SetSamplingInterval_SignalData(SignalDataPtr theData,
 
 void
 SetOutputTimeOffset_SignalData(SignalDataPtr theData,
-  double theOutputTimeOffset)
+  Float theOutputTimeOffset)
 {
 	if (!CheckInit_SignalData(theData, wxT("SetOutputTimeOffset_SignalData")))
 		exit(1);
@@ -589,7 +589,7 @@ SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag)
  */
 
 void
-SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
+SetInfoChannelLabels_SignalData(SignalDataPtr signal, Float *labels)
 {
 	int		i;
 
@@ -602,7 +602,7 @@ SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
 			signal->info.chanLabel[i] = labels[i / signal->interleaveLevel];
 	else
 		for (i = 0; i < signal->numChannels; i++)
-			signal->info.chanLabel[i] = (double) (i / signal->interleaveLevel);
+			signal->info.chanLabel[i] = (Float) (i / signal->interleaveLevel);
 
 }
 
@@ -615,7 +615,7 @@ SetInfoChannelLabels_SignalData(SignalDataPtr signal, double *labels)
  */
 
 BOOLN
-SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
+SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, Float label)
 {
 	static const WChar *funcName = wxT("SetInfoChannelLabel_SignalData");
 
@@ -643,7 +643,7 @@ SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, double label)
  */
 
 void
-SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
+SetInfoCFArray_SignalData(SignalDataPtr theData, Float *cFs)
 {
 	int		i;
 
@@ -656,7 +656,7 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
 			theData->info.cFArray[i] = cFs[i / theData->interleaveLevel];
 	else
 		for (i = 0; i < theData->numChannels / theData->interleaveLevel; i++)
-			theData->info.cFArray[i] = (double) (i / theData->interleaveLevel);
+			theData->info.cFArray[i] = (Float) (i / theData->interleaveLevel);
 
 }
 
@@ -669,7 +669,7 @@ SetInfoCFArray_SignalData(SignalDataPtr theData, double *cFs)
  */
 
 BOOLN
-SetInfoCF_SignalData(SignalDataPtr theData, int index, double cF)
+SetInfoCF_SignalData(SignalDataPtr theData, int index, Float cF)
 {
 	static const WChar *funcName = wxT("SetInfoCF_SignalData");
 
@@ -758,7 +758,7 @@ BOOLN
 CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b)
 {
 	int			i, interleaveLevel;
-	double		*tempChanLabel, *tempCFArray;
+	Float		*tempChanLabel, *tempCFArray;
 
 	if (!CheckInit_SignalData(a, wxT("CopyInfo_SignalData: signal a")))
 		return(FALSE);
@@ -840,7 +840,7 @@ OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData)
  * This function returns the duration of a signal.
  */
 
-double
+Float
 GetDuration_SignalData(SignalDataPtr theSignal)
 {
 	static const WChar *funcName = wxT("GetDuration_SignalData");
@@ -861,7 +861,7 @@ GetDuration_SignalData(SignalDataPtr theSignal)
  * It uses the 'outputTimeOffset' field.
  */
 
-double
+Float
 GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample)
 {
 	static const WChar *funcName = wxT("GetDuration_SignalData");
@@ -886,17 +886,17 @@ GetOutputTime_SignalData(SignalDataPtr theSignal, ChanLen sample)
  */
 
 BOOLN
-GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
+GaindBIndividual_SignalData(SignalDataPtr d, Float gaindB[])
 {
 	static const WChar *funcName = wxT("GaindBIndividual_SignalData");
 	int		i;
-	double	*scale;
+	Float	*scale;
 	ChanLen	j;
 	ChanData	*dataPtr;
 
 	if (!CheckInit_SignalData(d, funcName))
 		return(FALSE);
-	if ((scale = (double *) calloc(d->numChannels, sizeof(double))) == NULL) {
+	if ((scale = (Float *) calloc(d->numChannels, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(FALSE);
 	}
@@ -920,10 +920,10 @@ GaindBIndividual_SignalData(SignalDataPtr d, double gaindB[])
  */
 
 BOOLN
-GaindB_SignalData(SignalDataPtr d, double gaindB)
+GaindB_SignalData(SignalDataPtr d, Float gaindB)
 {
 	int		i;
-	double	scale;
+	Float	scale;
 	ChanLen	j;
 	ChanData	*dataPtr;
 
@@ -978,7 +978,7 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
  */
 
 BOOLN
-Delay_SignalData(SignalDataPtr signal, double delay)
+Delay_SignalData(SignalDataPtr signal, Float delay)
 {
 	static const WChar *funcName = wxT("Delay_SignalData");
 	int			chan;
@@ -1060,7 +1060,7 @@ LimitModeList_SignalData(int index)
 
 BOOLN
 GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
-  double lowerLimit, double upperLimit, SignalDataLimitModeSpecifier mode)
+  Float lowerLimit, Float upperLimit, SignalDataLimitModeSpecifier mode)
 {
 	static const WChar	*funcName = wxT("GetChannelLimits_SignalData");
 
@@ -1103,12 +1103,12 @@ GetChannelLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
 
 void
 GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
-  double frequency, double lowerLimit, double upperLimit,
+  Float frequency, Float lowerLimit, Float upperLimit,
   SignalDataLimitModeSpecifier mode)
 {
 	/* static const WChar	*funcName = wxT("GetWindowLimits_SignalData"); */
 	int		chan;
-	double	requiredFreq;
+	Float	requiredFreq;
 
 	chan = FindCFIndex_SignalData(signal, 0, signal->numChannels - 1,
 	  frequency);
@@ -1150,7 +1150,7 @@ GetWindowLimits_SignalData(SignalDataPtr signal, int *minChan, int *maxChan,
 
 int
 FindCFIndex_SignalData(SignalDataPtr signal, int minIndex, int maxIndex,
-  double frequency)
+  Float frequency)
 {
 	int		midPoint;
 

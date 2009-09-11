@@ -11,7 +11,7 @@
  *				It expects multi-channel input from a period histogram
  * Author:		L. P. O'Mard
  * Created:		22 Jan 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -41,11 +41,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	lowerAveLimitFlag, upperAveLimitFlag, normaliseFlag;
 	BOOLN	updateProcessVariablesFlag;
-	double	lowerAveLimit;
-	double	upperAveLimit;
-	double	normalise;
+	Float	lowerAveLimit;
+	Float	upperAveLimit;
+	Float	normalise;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -73,8 +72,6 @@ BOOLN	Calc_Analysis_ALSR(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_ALSR(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_ALSR(void);
-
 BOOLN	FreeProcessVariables_Analysis_ALSR(void);
 
 BOOLN	Free_Analysis_ALSR(void);
@@ -89,19 +86,17 @@ BOOLN	Init_Analysis_ALSR(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Analysis_ALSR(void);
 
-BOOLN	ReadPars_Analysis_ALSR(WChar *fileName);
-
 void	ResetProcess_Analysis_ALSR(EarObjectPtr data);
 
-BOOLN	SetLowerAveLimit_Analysis_ALSR(double theLowerAveLimit);
+BOOLN	SetLowerAveLimit_Analysis_ALSR(Float theLowerAveLimit);
 
-BOOLN	SetNormalise_Analysis_ALSR(double theNormalise);
+BOOLN	SetNormalise_Analysis_ALSR(Float theNormalise);
 
 BOOLN	SetParsPointer_Analysis_ALSR(ModulePtr theModule);
 
 BOOLN	SetUniParList_Analysis_ALSR(void);
 
-BOOLN	SetUpperAveLimit_Analysis_ALSR(double theUpperAveLimit);
+BOOLN	SetUpperAveLimit_Analysis_ALSR(Float theUpperAveLimit);
 
 __END_DECLS
 

@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.4.0 (Mar 14 2002).
  * Author:		L.  P. O'Mard
  * Created:		08 Jul 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -116,8 +116,6 @@ Init_Utility_MathOp(ParameterSpecifier parSpec)
 		}
 	}
 	mathOpPtr->parSpec = parSpec;
-	mathOpPtr->operatorModeFlag = TRUE;
-	mathOpPtr->operandFlag = TRUE;
 	mathOpPtr->operatorMode = UTILITY_MATHOP_OPERATORMODE_OFFSET;
 	mathOpPtr->operand = 0.0;
 
@@ -215,7 +213,6 @@ SetOperatorMode_Utility_MathOp(WChar * theOperatorMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	mathOpPtr->operatorModeFlag = TRUE;
 	mathOpPtr->operatorMode = specifier;
 	mathOpPtr->parList->pars[UTILITY_MATHOP_OPERAND].enabled = ((mathOpPtr->
 	  operatorMode == UTILITY_MATHOP_OPERATORMODE_OFFSET) || (mathOpPtr->
@@ -234,7 +231,7 @@ SetOperatorMode_Utility_MathOp(WChar * theOperatorMode)
  */
 
 BOOLN
-SetOperand_Utility_MathOp(double theOperand)
+SetOperand_Utility_MathOp(Float theOperand)
 {
 	static const WChar	*funcName = wxT("SetOperand_Utility_MathOp");
 
@@ -243,42 +240,8 @@ SetOperand_Utility_MathOp(double theOperand)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	mathOpPtr->operandFlag = TRUE;
 	mathOpPtr->operand = theOperand;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'OPERATORMODEal' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_MathOp(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_MathOp");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (mathOpPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!mathOpPtr->operatorModeFlag) {
-		NotifyError(wxT("%s: operatorMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!mathOpPtr->operandFlag) {
-		NotifyError(wxT("%s: operand variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -294,9 +257,8 @@ PrintPars_Utility_MathOp(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_MathOp");
 
-	if (!CheckPars_Utility_MathOp()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (mathOpPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Mathematical Operation Utility Module Parameters:-\n"));
@@ -354,7 +316,6 @@ InitModule_Utility_MathOp(ModulePtr theModule)
 	}
 	theModule->parsPtr = mathOpPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_MathOp;
 	theModule->Free = Free_Utility_MathOp;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_MathOp;
 	theModule->PrintPars = PrintPars_Utility_MathOp;
@@ -410,7 +371,7 @@ CheckData_Utility_MathOp(EarObjectPtr data)
 		}
 		if (inSignal[0]->interleaveLevel != inSignal[1]->interleaveLevel) {
 			NotifyError(wxT("%s: Input signals do not have the same ")
-			  wxT("interleave level."), funcName);		
+			  wxT("interleave level."), funcName);
 			return(FALSE);
 		}
 	}
@@ -443,8 +404,6 @@ Process_Utility_MathOp(EarObjectPtr data)
 	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_MathOp())
-			return(FALSE);
 		if (!CheckData_Utility_MathOp(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

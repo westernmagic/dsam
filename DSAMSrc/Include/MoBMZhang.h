@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		13 Jun 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -62,38 +62,38 @@ typedef enum {
 
 typedef struct TGammaTone {
 	/*//input one signal to the filter and get the output */
-	double (*Run)(struct TGammaTone *p, double x);
+	Float (*Run)(struct TGammaTone *p, Float x);
 	/*//input multiple signal to the filter and get the multiple output */
-	void (*Run2)(struct TGammaTone *p,const double *in, double *out,
+	void (*Run2)(struct TGammaTone *p,const Float *in, Float *out,
 	  const int length);
 
-	double phase;
+	Float phase;
 	/* Cutoff Freq(tau), Shift Freq, ... */
-	double tdres,tau;
-	double F_shift,delta_phase;
-	double gain,c1LP,c2LP;
+	Float tdres,tau;
+	Float F_shift,delta_phase;
+	Float gain,c1LP,c2LP;
 	Complex gtf[MAX_ORDER],gtfl[MAX_ORDER];
 	int Order;
 
 	/*// Set the tau of the gammatone filter, this is useful for time-varying
 	 * filter */
-	void (*SetTau)(struct TGammaTone *p, double _tau);
+	void (*SetTau)(struct TGammaTone *p, Float _tau);
 
 } TGammaTone, *TGammaTonePtr;
 
 typedef struct { /* class of basilar membrane */
 
-  /* double (*run)(TBasilarMembrane *p, double x); */
-  /* void (*run2)(TBasilarMembrane *p, const double *in, double *out,
+  /* Float (*run)(TBasilarMembrane *p, Float x); */
+  /* void (*run2)(TBasilarMembrane *p, const Float *in, Float *out,
    * const int length); */
 
   int bmmodel; /* determine if the bm is broad_linear, sharp_linear or other */
-  double tdres;
+  Float tdres;
   int bmorder,wborder;
 
-  double tau,TauMax,TauMin;
-  double TauWB,TauWBMin;
-  double A,B; 
+  Float tau,TauMax,TauMin;
+  Float TauWB,TauWBMin;
+  Float A,B;
   /* --------Model -------------- */
   TGammaTone bmfilter; /*/NonLinear Filter */
   TGammaTone gfagain; /*/Linear Filter */
@@ -107,26 +107,23 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modelFlag, speciesFlag, microPaInputFlag, nbOrderFlag, wbOrderFlag;
-	BOOLN	cornerCPFlag, slopeCPFlag, strenghCPFlag, x0CPFlag, s0CPFlag;
-	BOOLN	x1CPFlag, s1CPFlag, shiftCPFlag, cutCPFlag, kCPFlag, r0Flag;
 	BOOLN	updateProcessVariablesFlag;
 	int		model;
 	int		species;
 	int		microPaInput;
 	int		nbOrder;
 	int		wbOrder;
-	double	cornerCP;
-	double	slopeCP;
-	double	strenghCP;
-	double	x0CP;
-	double	s0CP;
-	double	x1CP;
-	double	s1CP;
-	double	shiftCP;
-	double	cutCP;
+	Float	cornerCP;
+	Float	slopeCP;
+	Float	strenghCP;
+	Float	x0CP;
+	Float	s0CP;
+	Float	x1CP;
+	Float	s1CP;
+	Float	shiftCP;
+	Float	cutCP;
 	int		kCP;
-	double	r0;
+	Float	r0;
 	CFListPtr	cFList;
 
 	/* Private members */
@@ -155,8 +152,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_BasilarM_Zhang(EarObjectPtr data);
 
-BOOLN	CheckPars_BasilarM_Zhang(void);
-
 BOOLN	FreeProcessVariables_BasilarM_Zhang(void);
 
 BOOLN	Free_BasilarM_Zhang(void);
@@ -166,7 +161,7 @@ CFListPtr	GetCFListPtr_BasilarM_Zhang(void);
 UniParListPtr	GetUniParListPtr_BasilarM_Zhang(void);
 
 BOOLN	InitBasilarMembrane_BasilarM_Zhang(TBasilarMembranePtr bm,
-		  int model, int species, double tdres, double cf);
+		  int model, int species, Float tdres, Float cf);
 
 BOOLN	InitModelList_BasilarM_Zhang(void);
 
@@ -179,15 +174,15 @@ BOOLN	Init_BasilarM_Zhang(ParameterSpecifier parSpec);
 BOOLN	PrintPars_BasilarM_Zhang(void);
 
 void	Run2BasilarMembrane_BasilarM_Zhang(TBasilarMembrane *bm,
-		  const double *in, double *out, const int length);
+		  const Float *in, Float *out, const int length);
 
 BOOLN	RunModel_BasilarM_Zhang(EarObjectPtr data);
 
 BOOLN	SetCFList_BasilarM_Zhang(CFListPtr theCFList);
 
-BOOLN	SetCornerCP_BasilarM_Zhang(double theCornerCP);
+BOOLN	SetCornerCP_BasilarM_Zhang(Float theCornerCP);
 
-BOOLN	SetCutCP_BasilarM_Zhang(double theCutCP);
+BOOLN	SetCutCP_BasilarM_Zhang(Float theCutCP);
 
 BOOLN	SetKCP_BasilarM_Zhang(int theKCP);
 
@@ -199,27 +194,27 @@ BOOLN	SetNbOrder_BasilarM_Zhang(int theNbOrder);
 
 BOOLN	SetParsPointer_BasilarM_Zhang(ModulePtr theModule);
 
-BOOLN	SetR0_BasilarM_Zhang(double theR0);
+BOOLN	SetR0_BasilarM_Zhang(Float theR0);
 
-BOOLN	SetS0CP_BasilarM_Zhang(double theS0CP);
+BOOLN	SetS0CP_BasilarM_Zhang(Float theS0CP);
 
-BOOLN	SetS1CP_BasilarM_Zhang(double theS1CP);
+BOOLN	SetS1CP_BasilarM_Zhang(Float theS1CP);
 
-BOOLN	SetShiftCP_BasilarM_Zhang(double theShiftCP);
+BOOLN	SetShiftCP_BasilarM_Zhang(Float theShiftCP);
 
-BOOLN	SetSlopeCP_BasilarM_Zhang(double theSlopeCP);
+BOOLN	SetSlopeCP_BasilarM_Zhang(Float theSlopeCP);
 
 BOOLN	SetSpecies_BasilarM_Zhang(WChar * theSpecies);
 
-BOOLN	SetStrenghCP_BasilarM_Zhang(double theStrenghCP);
+BOOLN	SetStrenghCP_BasilarM_Zhang(Float theStrenghCP);
 
 BOOLN	SetUniParList_BasilarM_Zhang(void);
 
 BOOLN	SetWbOrder_BasilarM_Zhang(int theWbOrder);
 
-BOOLN	SetX0CP_BasilarM_Zhang(double theX0CP);
+BOOLN	SetX0CP_BasilarM_Zhang(Float theX0CP);
 
-BOOLN	SetX1CP_BasilarM_Zhang(double theX1CP);
+BOOLN	SetX1CP_BasilarM_Zhang(Float theX1CP);
 
 __END_DECLS
 

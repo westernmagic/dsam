@@ -18,7 +18,7 @@
 
 #ifndef	_STSTEPFUN_H
 #define _STSTEPFUN_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -44,18 +44,15 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	durationFlag, dtFlag;
-	BOOLN	amplitudeFlag, beginPeriodDurationFlag, endPeriodDurationFlag;
-	BOOLN	beginEndAmplitudeFlag;
-	double	amplitude;		/* Arbitary units. */
-	double	duration, dt;
-	double	beginPeriodDuration, endPeriodDuration, beginEndAmplitude;
-	
+	Float	amplitude;		/* Arbitary units. */
+	Float	duration, dt;
+	Float	beginPeriodDuration, endPeriodDuration, beginEndAmplitude;
+
 	/* Private members */
 	UniParListPtr	parList;
 
 } StepFun, *StepFunPtr;
-	
+
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -72,8 +69,6 @@ extern	StepFunPtr	stepFunPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_StepFunction(void);
-
 BOOLN	Free_StepFunction(void);
 
 BOOLN	GenerateSignal_StepFunction(EarObjectPtr theObject);
@@ -84,28 +79,22 @@ BOOLN	Init_StepFunction(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_StepFunction(void);
 
-BOOLN	ReadPars_StepFunction(WChar *fileName);
+BOOLN	SetBeginPeriodDuration_StepFunction(Float theBeginPeriodDuration);
 
-BOOLN	SetBeginPeriodDuration_StepFunction(double theBeginPeriodDuration);
+BOOLN	SetBeginEndAmplitude_StepFunction(Float theBeginEndAmplitude);
 
-BOOLN	SetBeginEndAmplitude_StepFunction(double theBeginEndAmplitude);
-
-BOOLN	SetEndPeriodDuration_StepFunction(double theEndPeriodDuration);
+BOOLN	SetEndPeriodDuration_StepFunction(Float theEndPeriodDuration);
 
 BOOLN	InitModule_StepFunction(ModulePtr theModule);
 
 BOOLN	SetParsPointer_StepFunction(ModulePtr theModule);
 
-BOOLN	SetPars_StepFunction(double theAmplitude, double theDuration,
-		  double theSamplingInterval, double theBeginPeriodDuration,
-		  double theEndPeriodDuration, double theBeginEndAmplitude);
+BOOLN	SetSamplingInterval_StepFunction(Float theSamplingInterval);
 
-BOOLN	SetSamplingInterval_StepFunction(double theSamplingInterval);
+BOOLN	SetAmplitude_StepFunction(Float theAmplitude);
 
-BOOLN	SetAmplitude_StepFunction(double theAmplitude);
+BOOLN	SetDuration_StepFunction(Float theDuration);
 
-BOOLN	SetDuration_StepFunction(double theDuration);
-		  
 BOOLN	SetUniParList_StepFunction(void);
 
 __END_DECLS

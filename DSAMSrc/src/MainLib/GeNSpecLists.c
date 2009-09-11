@@ -181,11 +181,11 @@ SpacingModeList_NSpecLists(int index)
  */
 
 void
-SetPhaseArray_NSpecLists(double *phase, long *ranSeed, RandParsPtr randPars,
-  int phaseMode, double phaseVariable, int lowestHarmonic, int numHarmonics)
+SetPhaseArray_NSpecLists(Float *phase, long *ranSeed, RandParsPtr randPars,
+  int phaseMode, Float phaseVariable, int lowestHarmonic, int numHarmonics)
 {
 	int		i, harmonicNumber;
-	double	piOver2 = PI / 2.0;
+	Float	piOver2 = PI / 2.0;
 
 	for (i = 0; i < numHarmonics; i++) {
 		harmonicNumber = lowestHarmonic + i;

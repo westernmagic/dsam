@@ -15,7 +15,7 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  4 2008).
  * Author:		Revised by L. P. O'Mard
  * Created:		04 Mar 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, L. P. O'Mard
  *
  *********************/
@@ -81,22 +81,22 @@ typedef struct {
 	int		outputMode;
 	int		microPaInput;
 	int		wborder;
-	double	s0;
-	double	x1;
-	double	s1;
-	double	shiftCP;
-	double	cutOffCP;
+	Float	s0;
+	Float	x1;
+	Float	s1;
+	Float	shiftCP;
+	Float	cutOffCP;
 	int		lPOrder;
-	double	dc;
-	double	rC1;
-	double	cOHC;
-	double	ohcasym;
-	double	ihcasym;
+	Float	dc;
+	Float	rC1;
+	Float	cOHC;
+	Float	ohcasym;
+	Float	ihcasym;
 	int		nBorder;
-	double	aIHC0;
-	double	bIHC;
-	double	cIHC;
-	double	cutOffIHCLP;
+	Float	aIHC0;
+	Float	bIHC;
+	Float	cIHC;
+	Float	cutOffIHCLP;
 	int		iHCLPOrder;
 	CFListPtr	cFList;
 
@@ -151,25 +151,25 @@ BOOLN	PrintPars_BasilarM_ZilanyBruce(void);
 
 BOOLN	RunModel_BasilarM_ZilanyBruce(EarObjectPtr data);
 
-BOOLN	SetAIHC0_BasilarM_ZilanyBruce(double theAIHC0);
+BOOLN	SetAIHC0_BasilarM_ZilanyBruce(Float theAIHC0);
 
-BOOLN	SetBIHC_BasilarM_ZilanyBruce(double theBIHC);
+BOOLN	SetBIHC_BasilarM_ZilanyBruce(Float theBIHC);
 
 BOOLN	SetCFList_BasilarM_ZilanyBruce(CFListPtr theCFList);
 
-BOOLN	SetCIHC_BasilarM_ZilanyBruce(double theCIHC);
+BOOLN	SetCIHC_BasilarM_ZilanyBruce(Float theCIHC);
 
-BOOLN	SetCOHC_BasilarM_ZilanyBruce(double theCOHC);
+BOOLN	SetCOHC_BasilarM_ZilanyBruce(Float theCOHC);
 
-BOOLN	SetCutOffCP_BasilarM_ZilanyBruce(double theCutOffCP);
+BOOLN	SetCutOffCP_BasilarM_ZilanyBruce(Float theCutOffCP);
 
-BOOLN	SetCutOffIHCLP_BasilarM_ZilanyBruce(double theCutOffIHCLP);
+BOOLN	SetCutOffIHCLP_BasilarM_ZilanyBruce(Float theCutOffIHCLP);
 
-BOOLN	SetDc_BasilarM_ZilanyBruce(double theDc);
+BOOLN	SetDc_BasilarM_ZilanyBruce(Float theDc);
 
 BOOLN	SetIHCLPOrder_BasilarM_ZilanyBruce(int theIHCLPOrder);
 
-BOOLN	SetIhcasym_BasilarM_ZilanyBruce(double theIhcasym);
+BOOLN	SetIhcasym_BasilarM_ZilanyBruce(Float theIhcasym);
 
 BOOLN	SetLPOrder_BasilarM_ZilanyBruce(int theLPOrder);
 
@@ -177,25 +177,25 @@ BOOLN	SetMicroPaInput_BasilarM_ZilanyBruce(WChar * theMicroPaInput);
 
 BOOLN	SetNBorder_BasilarM_ZilanyBruce(int theNBorder);
 
-BOOLN	SetOhcasym_BasilarM_ZilanyBruce(double theOhcasym);
+BOOLN	SetOhcasym_BasilarM_ZilanyBruce(Float theOhcasym);
 
 BOOLN	SetOutputMode_BasilarM_ZilanyBruce(WChar * theOutputMode);
 
 BOOLN	SetParsPointer_BasilarM_ZilanyBruce(ModulePtr theModule);
 
-BOOLN	SetRC1_BasilarM_ZilanyBruce(double theRC1);
+BOOLN	SetRC1_BasilarM_ZilanyBruce(Float theRC1);
 
-BOOLN	SetS0_BasilarM_ZilanyBruce(double theS0);
+BOOLN	SetS0_BasilarM_ZilanyBruce(Float theS0);
 
-BOOLN	SetS1_BasilarM_ZilanyBruce(double theS1);
+BOOLN	SetS1_BasilarM_ZilanyBruce(Float theS1);
 
-BOOLN	SetShiftCP_BasilarM_ZilanyBruce(double theShiftCP);
+BOOLN	SetShiftCP_BasilarM_ZilanyBruce(Float theShiftCP);
 
 BOOLN	SetUniParList_BasilarM_ZilanyBruce(void);
 
 BOOLN	SetWborder_BasilarM_ZilanyBruce(int theWborder);
 
-BOOLN	SetX1_BasilarM_ZilanyBruce(double theX1);
+BOOLN	SetX1_BasilarM_ZilanyBruce(Float theX1);
 
 __END_DECLS
 

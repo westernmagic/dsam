@@ -1,12 +1,12 @@
 /******************
- *		
+ *
  * File:		ExtRunThreadedProc.h
  * Purpose: 	This module runs a processes using threads of possible.
  * Comments:	It was deceided to create this module rather than creating
  *				a replacement ExecuteSimulation routine.
  * Author:		L. P. O'Mard
  * Created:		30 Sep 2004
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  ******************/
@@ -77,10 +77,14 @@ extern RunThreadedProc	*runThreadedProc;
  */
 __BEGIN_DECLS
 
-BOOLN	RunProcess_RunThreadedProc(EarObjectPtr data);
-
 DatumPtr	Execute_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
 			  int threadIndex);
+DatumPtr	ExecuteSubSims_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
+			  int threadIndex);
+
+BOOLN	RunProcess_RunThreadedProc(EarObjectPtr data);
+
+BOOLN	SetSubSimThreadFlag_RunThreadedProc(DatumPtr pc);
 
 __END_DECLS
 

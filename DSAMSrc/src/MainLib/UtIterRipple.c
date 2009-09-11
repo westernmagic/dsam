@@ -11,7 +11,7 @@
  * 				IRSS Iterated Rippled Signal ADD-SAME
  * Authors:		Almudena Eustaquio-Martin, L. P. O'Mard
  * Created:		04-JUN-1996.
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -120,10 +120,6 @@ Init_Utility_IteratedRipple(ParameterSpecifier parSpec)
 		}
 	}
 	iterRipplePtr->parSpec = parSpec;
-	iterRipplePtr->numIterationsFlag = TRUE;
-	iterRipplePtr->modeFlag = TRUE;
-	iterRipplePtr->delayFlag = TRUE;
-	iterRipplePtr->signalMultiplierFlag = TRUE;
 	iterRipplePtr->numIterations = 2;
 	iterRipplePtr->mode = ITERRIPPLE_IRSO_MODE;
 	iterRipplePtr->delay = 0.0;
@@ -210,35 +206,6 @@ GetUniParListPtr_Utility_IteratedRipple(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_IteratedRipple(int numIterations, WChar *mode, double delay,
-  double signalMultiplier)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_IteratedRipple");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetNumIterations_Utility_IteratedRipple(numIterations))
-		ok = FALSE;
-	if (!SetMode_Utility_IteratedRipple(mode))
-		ok = FALSE;
-	if (!SetDelay_Utility_IteratedRipple(delay))
-		ok = FALSE;
-	if (!SetSignalMultiplier_Utility_IteratedRipple(signalMultiplier))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetNumIterations ******************************/
 
 /*
@@ -262,8 +229,7 @@ SetNumIterations_Utility_IteratedRipple(int theNumIterations)
 		NotifyError(wxT("%s: The number of iterations must be bigger the 0 ")
 		  wxT("(%d)."), funcName, theNumIterations);
 		return(FALSE);
-	}	
-	iterRipplePtr->numIterationsFlag = TRUE;
+	}
 	iterRipplePtr->numIterations = theNumIterations;
 	return(TRUE);
 
@@ -292,7 +258,6 @@ SetMode_Utility_IteratedRipple(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	iterRipplePtr->modeFlag = TRUE;
 	iterRipplePtr->mode = specifier;
 	return(TRUE);
 
@@ -307,7 +272,7 @@ SetMode_Utility_IteratedRipple(WChar *theMode)
  */
 
 BOOLN
-SetDelay_Utility_IteratedRipple(double theDelay)
+SetDelay_Utility_IteratedRipple(Float theDelay)
 {
 	static const WChar	*funcName = wxT("SetDelay_Utility_IteratedRipple");
 
@@ -316,7 +281,6 @@ SetDelay_Utility_IteratedRipple(double theDelay)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	iterRipplePtr->delayFlag = TRUE;
 	iterRipplePtr->delay = theDelay;
 	return(TRUE);
 
@@ -331,7 +295,7 @@ SetDelay_Utility_IteratedRipple(double theDelay)
  */
 
 BOOLN
-SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier)
+SetSignalMultiplier_Utility_IteratedRipple(Float theSignalMultiplier)
 {
 	static const WChar *funcName = wxT(
 	  "SetSignalMultiplier_Utility_IteratedRipple");
@@ -345,50 +309,8 @@ SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier)
 		  theSignalMultiplier);
 		return(FALSE);
 	}
-	iterRipplePtr->signalMultiplierFlag = TRUE;
 	iterRipplePtr->signalMultiplier = theSignalMultiplier;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_IteratedRipple(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_IteratedRipple");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (iterRipplePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!iterRipplePtr->numIterationsFlag) {
-		NotifyError(wxT("%s: numIterations variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iterRipplePtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iterRipplePtr->delayFlag) {
-		NotifyError(wxT("%s: delay variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!iterRipplePtr->signalMultiplierFlag) {
-		NotifyError(wxT("%s: signalMultiplier variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -404,9 +326,8 @@ PrintPars_Utility_IteratedRipple(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_IteratedRipple");
 
-	if (!CheckPars_Utility_IteratedRipple()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (iterRipplePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Iterated Ripple Utility Module Parameters:-\n"));
@@ -417,56 +338,6 @@ PrintPars_Utility_IteratedRipple(void)
 	DPrint(wxT("\tDelay = %g (ms),\n"), MSEC(iterRipplePtr->delay));
 	DPrint(wxT("\tSignal multiplier = %g (units).\n"),
 	  iterRipplePtr->signalMultiplier);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_IteratedRipple(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_IteratedRipple");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	int		numIterations;
-	double	delay, signalMultiplier;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numIterations))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &delay))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &signalMultiplier))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_IteratedRipple(numIterations, mode, delay,
-	  signalMultiplier)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -515,11 +386,9 @@ InitModule_Utility_IteratedRipple(ModulePtr theModule)
 	}
 	theModule->parsPtr = iterRipplePtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_IteratedRipple;
 	theModule->Free = Free_Utility_IteratedRipple;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_IteratedRipple;
 	theModule->PrintPars = PrintPars_Utility_IteratedRipple;
-	theModule->ReadPars = ReadPars_Utility_IteratedRipple;
 	theModule->RunProcess = Process_Utility_IteratedRipple;
 	theModule->SetParsPointer = SetParsPointer_Utility_IteratedRipple;
 	return(TRUE);
@@ -543,7 +412,7 @@ BOOLN
 CheckData_Utility_IteratedRipple(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_IteratedRipple");
-	double signalDuration;
+	Float signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -590,8 +459,6 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_IteratedRipple())
-			return(FALSE);
 		if (!CheckData_Utility_IteratedRipple(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -620,9 +487,9 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 					*outPtr++ += *inPtr++;
 				}
 			}
-		}	
+		}
 		break;
-	case ITERRIPPLE_IRSS_MODE:	
+	case ITERRIPPLE_IRSS_MODE:
 		samplesDelay = (ChanLen) ( iterRipplePtr->delay / outSignal->dt);
 		for (j = 0; j < iterRipplePtr->numIterations; j++)	{
 			for (chan = outSignal->offset; chan < outSignal->numChannels;
@@ -633,7 +500,7 @@ Process_Utility_IteratedRipple(EarObjectPtr data)
 					*(outPtr + samplesDelay) += *outPtr *
 					  iterRipplePtr->signalMultiplier;
 			}
-		}	
+		}
 		break;
 	}
 	SetProcessContinuity_EarObject(data);

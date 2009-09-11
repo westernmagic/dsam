@@ -80,8 +80,8 @@ typedef enum {
 
 typedef struct {
 
-	double	*y, *z, *x;
-	double	potential_V;
+	Float	*y, *z, *x;
+	Float	potential_V;
 
 } HHuxleyState, *HHuxleyStatePtr;
 
@@ -89,23 +89,18 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	diagnosticModeFlag, operationModeFlag, injectionModeFlag;
-	BOOLN	excitatoryReversalPotFlag, inhibitoryReversalPotFlag;
-	BOOLN	shuntInhibitoryReversalPotFlag, cellCapacitanceFlag;
-	BOOLN	restingPotentialFlag, restingSignalDurationFlag;
-	BOOLN	restingCriteriaFlag, iCListFlag;
 	BOOLN	updateProcessVariablesFlag;
 
 	int		diagnosticMode;
 	int		operationMode;
 	int		injectionMode;
-	double	excitatoryReversalPot;
-	double	inhibitoryReversalPot;
-	double	shuntInhibitoryReversalPot;
-	double	cellCapacitance;
-	double	restingPotential;
-	double	restingSignalDuration;
-	double	restingCriteria;
+	Float	excitatoryReversalPot;
+	Float	inhibitoryReversalPot;
+	Float	shuntInhibitoryReversalPot;
+	Float	cellCapacitance;
+	Float	restingPotential;
+	Float	restingSignalDuration;
+	Float	restingCriteria;
 	IonChanListPtr	iCList;
 
 	/* Private Members */
@@ -117,7 +112,7 @@ typedef struct {
 	FILE			*fp;
 	BOOLN	restingRun, debug;
 	int		numChannels;
-	double	restingPot, dt, dtOverC;
+	Float	restingPot, dt, dtOverC;
 	HHuxleyState	*state;
 
 } HHuxleyNC, *HHuxleyNCPtr;
@@ -140,10 +135,8 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Neuron_HHuxley(EarObjectPtr data);
 
-BOOLN	CheckPars_Neuron_HHuxley(void);
-
-double	FindRestingPotential_Neuron_HHuxley(double restingCriteria,
-		  double duration, double dt);
+Float	FindRestingPotential_Neuron_HHuxley(Float restingCriteria,
+		  Float duration, Float dt);
 
 BOOLN	Free_Neuron_HHuxley(void);
 
@@ -161,22 +154,20 @@ BOOLN	InitProcessVariables_Neuron_HHuxley(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_HHuxley(void);
 
-BOOLN	ReadPars_Neuron_HHuxley(WChar *fileName);
-
 BOOLN	RunModel_Neuron_HHuxley(EarObjectPtr data);
 
-BOOLN	SetCellCapacitance_Neuron_HHuxley(double theCellCapacitance);
+BOOLN	SetCellCapacitance_Neuron_HHuxley(Float theCellCapacitance);
 
 BOOLN	SetDiagnosticMode_Neuron_HHuxley(WChar *theDiagnosticMode);
 
-BOOLN	SetExcitatoryReversalPot_Neuron_HHuxley(double
+BOOLN	SetExcitatoryReversalPot_Neuron_HHuxley(Float
 		  theExcitatoryReversalPot);
 
 void *	GetPotentialResponse_Neuron_HHuxley(void *potentialPtr);
 
 BOOLN	SetICList_Neuron_HHuxley(IonChanListPtr theICList);
 
-BOOLN	SetInhibitoryReversalPot_Neuron_HHuxley(double
+BOOLN	SetInhibitoryReversalPot_Neuron_HHuxley(Float
 			  theInhibitoryReversalPot);
 
 BOOLN	SetInjectionMode_Neuron_HHuxley(WChar *theInjectionMode);
@@ -187,22 +178,15 @@ BOOLN	SetOperationMode_Neuron_HHuxley(WChar *theOperationMode);
 
 BOOLN	SetParsPointer_Neuron_HHuxley(ModulePtr theModule);
 
-BOOLN	SetPars_Neuron_HHuxley(IonChanListPtr iCList, WChar *diagnosticMode,
-		  WChar *operationMode, WChar *injectionMode,
-		  double excitatoryReversalPot, double inhibitoryReversalPot,
-		  double shuntInhibitoryReversalPot, double cellCapacitance,
-		  double restingPotential, double restingSignalDuration,
-		  double restingCriteria);
+BOOLN	SetRestingCriteria_Neuron_HHuxley(Float theRestingCriteria);
 
-BOOLN	SetRestingCriteria_Neuron_HHuxley(double theRestingCriteria);
-
-BOOLN	SetRestingPotential_Neuron_HHuxley(double theRestingPotential);
+BOOLN	SetRestingPotential_Neuron_HHuxley(Float theRestingPotential);
 
 BOOLN	SetRestingSignalDuration_Neuron_HHuxley(
-		  double theRestingSignalDuration);
+		  Float theRestingSignalDuration);
 
 BOOLN	SetShuntInhibitoryReversalPot_Neuron_HHuxley(
-		  double theShuntInhibitoryReversalPot);
+		  Float theShuntInhibitoryReversalPot);
 
 BOOLN	SetUniParList_Neuron_HHuxley(void);
 

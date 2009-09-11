@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		01 Aug 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -39,13 +39,12 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	a0Flag, bFlag, cFlag, dFlag, cutFlag, kFlag;
 	BOOLN	updateProcessVariablesFlag;
-	double	a0;
-	double	b;
-	double	c;
-	double	d;
-	double	cut;
+	Float	a0;
+	Float	b;
+	Float	c;
+	Float	d;
+	Float	cut;
 	int		k;
 
 	/* Private members */
@@ -72,8 +71,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHCRP_Zhang(EarObjectPtr data);
 
-BOOLN	CheckPars_IHCRP_Zhang(void);
-
 BOOLN	FreeProcessVariables_IHCRP_Zhang(void);
 
 BOOLN	Free_IHCRP_Zhang(void);
@@ -90,15 +87,15 @@ BOOLN	PrintPars_IHCRP_Zhang(void);
 
 BOOLN	RunModel_IHCRP_Zhang(EarObjectPtr data);
 
-BOOLN	SetA0_IHCRP_Zhang(double theA0);
+BOOLN	SetA0_IHCRP_Zhang(Float theA0);
 
-BOOLN	SetB_IHCRP_Zhang(double theB);
+BOOLN	SetB_IHCRP_Zhang(Float theB);
 
-BOOLN	SetC_IHCRP_Zhang(double theC);
+BOOLN	SetC_IHCRP_Zhang(Float theC);
 
-BOOLN	SetCut_IHCRP_Zhang(double theCut);
+BOOLN	SetCut_IHCRP_Zhang(Float theCut);
 
-BOOLN	SetD_IHCRP_Zhang(double theD);
+BOOLN	SetD_IHCRP_Zhang(Float theD);
 
 BOOLN	SetK_IHCRP_Zhang(int theK);
 

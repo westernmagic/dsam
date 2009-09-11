@@ -47,6 +47,9 @@ Free_ParArray(ParArrayPtr *parArray)
 		return;
 	if ((*parArray)->params)
 		free((*parArray)->params);
+	if ((*parArray)->parList)
+		FreeList_UniParMgr(&(*parArray)->parList);
+
 	free(*parArray);
 	*parArray = NULL;
 
@@ -205,8 +208,8 @@ SetMode_ParArray(ParArrayPtr parArray, WChar *modeName)
 		parArray->numParams = newNumParams;
 		if (parArray->params)
 			free(parArray->params);
-		if ((parArray->params = (double *) calloc(newNumParams, sizeof(
-		  double))) == NULL) {
+		if ((parArray->params = (Float *) calloc(newNumParams, sizeof(
+		  Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for parameters (%d)"), funcName,
 			  newNumParams);
 			return(FALSE);
@@ -227,7 +230,7 @@ SetMode_ParArray(ParArrayPtr parArray, WChar *modeName)
  */
 
 BOOLN
-SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, double parValue)
+SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, Float parValue)
 {
 	static const WChar *funcName = wxT("SetIndividualPar_ParArray");
 
@@ -244,49 +247,6 @@ SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, double parValue)
 	}
 	parArray->params[theIndex] = parValue;
 	parArray->updateFlag = TRUE;
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This routine reads the ParArray parameters from a file stream.
- * It returns with the address of the ParArray, or NULL if it fails.
- */
-
-BOOLN
-ReadPars_ParArray(FILE *fp, ParArrayPtr parArray)
-{
-	static const WChar *funcName = wxT("ReadPars_ParArray");
-	BOOLN	ok = TRUE;
-	WChar	modeName[MAXLINE];
-	int		i;
-
-	if (!parArray) {
-		NotifyError(wxT("%s: The 'parArray' structure has not been ")
-		  wxT("initialised."), funcName);
-		return(FALSE);
-	}
-	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
-		NotifyError(wxT("%s: Could not find '%s' mode for '%s'."), funcName,
-		  modeName, parArray->name);
-		return(FALSE);
-	}
-
-	if (!SetMode_ParArray(parArray, modeName)) {
-		NotifyError(wxT("%s: Unknown '%s' mode (%s)."), funcName, parArray->
-		  name, modeName);
-		return(FALSE);
-	}
-	for (i = 0; (i < parArray->numParams) && ok; i++)
-		if (!GetPars_ParFile(fp, wxT("%lf"), &parArray->params[i]))
-			ok = FALSE;
-	if (!ok) {
-		NotifyError(wxT("%s: Failed to read '%s' parameters."), funcName,
-		  parArray->name);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }

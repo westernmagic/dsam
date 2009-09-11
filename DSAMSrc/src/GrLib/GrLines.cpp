@@ -217,7 +217,7 @@ GrLines::GetYRange(void)
 {
 	double yRange = maxY - minY;
 
-	if (yRange > DBL_EPSILON)
+	if (yRange > DSAM_EPSILON)
 		return(yRange);
 	return(HUGE_VAL);
 }

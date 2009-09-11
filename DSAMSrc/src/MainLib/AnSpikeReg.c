@@ -251,35 +251,6 @@ GetUniParListPtr_Analysis_SpikeRegularity(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_SpikeRegularity(double eventThreshold, double windowWidth,
-  double timeOffset, double timeRange)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_SpikeRegularity");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetEventThreshold_Analysis_SpikeRegularity(eventThreshold))
-		ok = FALSE;
-	if (!SetWindowWidth_Analysis_SpikeRegularity(windowWidth))
-		ok = FALSE;
-	if (!SetTimeOffset_Analysis_SpikeRegularity(timeOffset))
-		ok = FALSE;
-	if (!SetTimeRange_Analysis_SpikeRegularity(timeRange))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetOutputMode *********************************/
 
 /*
@@ -320,7 +291,7 @@ SetOutputMode_Analysis_SpikeRegularity(WChar * theOutputMode)
  */
 
 BOOLN
-SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold)
+SetEventThreshold_Analysis_SpikeRegularity(Float theEventThreshold)
 {
 	static const WChar	*funcName =
 	  wxT("SetEventThreshold_Analysis_SpikeRegularity");
@@ -344,7 +315,7 @@ SetEventThreshold_Analysis_SpikeRegularity(double theEventThreshold)
  */
 
 BOOLN
-SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth)
+SetWindowWidth_Analysis_SpikeRegularity(Float theWindowWidth)
 {
 	static const WChar	*funcName = wxT(
 	  "SetWindowWidth_Analysis_SpikeRegularity");
@@ -369,7 +340,7 @@ SetWindowWidth_Analysis_SpikeRegularity(double theWindowWidth)
  */
 
 BOOLN
-SetTimeOffset_Analysis_SpikeRegularity(double theTimeOffset)
+SetTimeOffset_Analysis_SpikeRegularity(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT(
 	  "SetTimeOffset_Analysis_SpikeRegularity");
@@ -398,7 +369,7 @@ SetTimeOffset_Analysis_SpikeRegularity(double theTimeOffset)
  */
 
 BOOLN
-SetTimeRange_Analysis_SpikeRegularity(double theTimeRange)
+SetTimeRange_Analysis_SpikeRegularity(Float theTimeRange)
 {
 	static const WChar	*funcName = wxT(
 	  "SetTimeRange_Analysis_SpikeRegularity");
@@ -423,7 +394,7 @@ SetTimeRange_Analysis_SpikeRegularity(double theTimeRange)
  */
 
 BOOLN
-SetDeadTime_Analysis_SpikeRegularity(double theDeadTime)
+SetDeadTime_Analysis_SpikeRegularity(Float theDeadTime)
 {
 	static const WChar	*funcName = wxT("SetDeadTime_Analysis_SpikeRegularity");
 
@@ -450,7 +421,7 @@ SetDeadTime_Analysis_SpikeRegularity(double theDeadTime)
  */
 
 BOOLN
-SetCountThreshold_Analysis_SpikeRegularity(double theCountThreshold)
+SetCountThreshold_Analysis_SpikeRegularity(Float theCountThreshold)
 {
 	static const WChar	*funcName = wxT(
 	  "SetCountThreshold_Analysis_SpikeRegularity");
@@ -469,31 +440,6 @@ SetCountThreshold_Analysis_SpikeRegularity(double theCountThreshold)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_SpikeRegularity(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_SpikeRegularity");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (spikeRegPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -506,11 +452,6 @@ PrintPars_Analysis_SpikeRegularity(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_SpikeRegularity");
 
-	if (!CheckPars_Analysis_SpikeRegularity()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Spike Regularity Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tOutput mode = %s,"), spikeRegPtr->outputModeList[
 	  spikeRegPtr->outputMode].name);
@@ -529,54 +470,6 @@ PrintPars_Analysis_SpikeRegularity(void)
 		DPrint(wxT("end of signal, "));
 	DPrint(wxT("\tDead time = %g ms\n"), MILLI(spikeRegPtr->deadTime));
 	DPrint(wxT("\tCount threshold = %g.\n"), spikeRegPtr->countThreshold);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_SpikeRegularity(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_SpikeRegularity");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	eventThreshold, windowWidth, timeOffset, timeRange;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &eventThreshold))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &windowWidth))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeRange))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_SpikeRegularity(eventThreshold, windowWidth,
-	  timeOffset, timeRange)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -624,11 +517,9 @@ InitModule_Analysis_SpikeRegularity(ModulePtr theModule)
 	}
 	theModule->parsPtr = spikeRegPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_SpikeRegularity;
 	theModule->Free = Free_Analysis_SpikeRegularity;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SpikeRegularity;
 	theModule->PrintPars = PrintPars_Analysis_SpikeRegularity;
-	theModule->ReadPars = ReadPars_Analysis_SpikeRegularity;
 	theModule->ResetProcess = ResetProcess_Analysis_SpikeRegularity;
 	theModule->RunProcess = Calc_Analysis_SpikeRegularity;
 	theModule->SetParsPointer = SetParsPointer_Analysis_SpikeRegularity;
@@ -653,7 +544,7 @@ BOOLN
 CheckData_Analysis_SpikeRegularity(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_SpikeRegularity");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -831,7 +722,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Calc_Analysis_SpikeRegularity");
 	register ChanData	*outPtr, *sumPtr, *sumSqrsPtr, *countPtr, diff, mean, std;
 	int		chan;
-	double	interval, spikeTime, windowWidth, timeRange;
+	Float	interval, spikeTime, windowWidth, timeRange;
 	ChanLen	i, *spikeTimeHistIndex, timeRangeIndex, lastSpikeTimeIndex;
 	ChanLen	timeOffsetIndex, runningTimeOffsetIndex;
 	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
@@ -840,8 +731,6 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 
 	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_SpikeRegularity())
-			return(FALSE);
 		if (!CheckData_Analysis_SpikeRegularity(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -932,7 +821,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 						break;
 					case ANALYSIS_SPIKEREGULARITY_OUTPUTMODE_REGULARITY:
 						*outPtr = 10.0 * log10((mean - p->deadTime)/ ((std >
-						  DBL_EPSILON)? std: DBL_EPSILON));
+						  DSAM_EPSILON)? std: DSAM_EPSILON));
 						break;
 					}
 				}

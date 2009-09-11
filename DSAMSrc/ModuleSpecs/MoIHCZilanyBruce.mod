@@ -9,13 +9,13 @@ process_vars	true;
 
 typedef struct {
 
-	double	spont;		/* Spontaneous rate of fiber (spikes/s). */
-	double	Ass;		/* Steady-state rate (spikes/s). */
-	double	tauST;		/* Short-term time constant (s). */
-	double	tauR;		/* Rapid time constant (s). */
-	double	Ar_Ast;		/* Rapid response amplitude to short-term response
+	Float	spont;		/* Spontaneous rate of fiber (spikes/s). */
+	Float	Ass;		/* Steady-state rate (spikes/s). */
+	Float	tauST;		/* Short-term time constant (s). */
+	Float	tauR;		/* Rapid time constant (s). */
+	Float	Ar_Ast;		/* Rapid response amplitude to short-term response
 						 * amplitude ratio. */
-	double	PImax;		/* Permeability at high sound level. */
+	Float	PImax;		/* Permeability at high sound level. */
 
 } ZBHC;
 

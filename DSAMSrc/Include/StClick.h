@@ -2,8 +2,8 @@
  *
  * File:		StClick.h
  * Purpose:		This module contains the methods for the Click stimulus
- *				generation paradigm. 
- * Comments:	
+ *				generation paradigm.
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		18 Feb 1993
  * Updated:		12 Mar 1997
@@ -13,7 +13,7 @@
 
 #ifndef	_STCLICK_H
 #define _STCLICK_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -36,10 +36,9 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	clickTimeFlag, amplitudeFlag, durationFlag, dtFlag;
-	double	clickTime, amplitude;
-	double	duration, dt;
+
+	Float	clickTime, amplitude;
+	Float	duration, dt;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -62,8 +61,6 @@ extern	ClickPtr	clickPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_Click(void);
-
 BOOLN	Free_Click(void);
 
 BOOLN	GenerateSignal_Click(EarObjectPtr data);
@@ -74,22 +71,17 @@ BOOLN	Init_Click(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Click(void);
 
-BOOLN	ReadPars_Click(WChar *fileName);
+BOOLN	SetClickTime_Click(Float theClickTime);
 
-BOOLN	SetClickTime_Click(double theClickTime);
+BOOLN	SetDuration_Click(Float theDuration);
 
-BOOLN	SetDuration_Click(double theDuration);
-
-BOOLN	SetAmplitude_Click(double theAmplitude);
+BOOLN	SetAmplitude_Click(Float theAmplitude);
 
 BOOLN	InitModule_Click(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Click(ModulePtr theModule);
 
-BOOLN	SetPars_Click(double theClickTime, double theAmplitude,
-		  double theDuration, double theSamplingInterval);
-		  
-BOOLN	SetSamplingInterval_Click(double theSamplingInterval);
+BOOLN	SetSamplingInterval_Click(Float theSamplingInterval);
 
 BOOLN	SetUniParList_Click(void);
 

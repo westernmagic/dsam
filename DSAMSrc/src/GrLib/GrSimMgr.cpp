@@ -447,7 +447,7 @@ MyApp::CreateProcessLists(void)
 		userList.Add((wxChar *) modReg->name);
 	InitKeyWords_Utility_SSSymbols(&symList);
 	for (p = symList; p; p = p->next) {
-		if ((p->type == STOP) || (p->type == BEGIN))
+		if (p->type == BEGIN)
 			continue;
 		ctrlList.Add((wxChar *) p->name);
 	}

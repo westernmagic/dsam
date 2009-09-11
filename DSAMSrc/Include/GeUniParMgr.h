@@ -11,7 +11,7 @@
  *				parameters have been set.
  *				06-11-98 LPO: Implemented the array handling for the likes of
  *				the StMPTone module.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				11-12-98 LPO: Introduced the second array index for the IC list.
  *				19-01-99 LPO: The 'arrayIndex[0]' always refers to the last
@@ -22,7 +22,7 @@
  *				27-01-99 LPO: Corrected problem in 'FindUniPar_' where it was
  *				returning before checking the rest of a parameter list after a
  *				sub module's parameter list.
- *				29-04-99 LPO: The 'FindUniPar_' routine can now find the 
+ *				29-04-99 LPO: The 'FindUniPar_' routine can now find the
  *				'CFLIST' abbreviation so that the 'CFListPtr' pointer can be
  *				accessed.
  *				19-05-99 LPO: I have changed the 'UNIPAR_FILE_NAME' code so that
@@ -43,7 +43,7 @@
  * Created:		24 Sep 1998
  * Updated:		03 Jun 1999
  * Copyright:	(c) 1999, University of Essex.
- * 
+ *
  ******************/
 
 #ifndef	_GEUNIPARMGR_H
@@ -143,10 +143,10 @@ typedef struct UniPar {
 	UniParModeSpecifier	mode;
 	UniParTypeSpecifier	type;
 	union {
-	
+
 		int	*		i;
 		long *		l;
-		double *	r;
+		Float *	r;
 		WChar *		s;
 		CFListPtr	*cFPtr;
 		IonChanListPtr	*iCPtr;
@@ -178,7 +178,7 @@ typedef struct UniPar {
 				WChar ***	s;
 				int	**		i;
 				long **		l;
-				double **	r;
+				Float **	r;
 				struct {
 					int	**			specifier;
 					NameSpecifier	*list;
@@ -191,8 +191,8 @@ typedef struct UniPar {
 		BOOLN	(* SetInt)(int);
 		BOOLN	(* SetIntArrayElement)(int, int);
 		BOOLN	(* SetLong)(long);
-		BOOLN	(* SetReal)(double);
-		BOOLN	(* SetRealArrayElement)(int, double);
+		BOOLN	(* SetReal)(Float);
+		BOOLN	(* SetRealArrayElement)(int, Float);
 		BOOLN	(* SetString)(const WChar *);
 		BOOLN	(* SetStringArrayElement)(int, WChar *);
 		BOOLN	(* SetCFList)(CFListPtr);
@@ -200,21 +200,21 @@ typedef struct UniPar {
 		BOOLN	(* SetDatumPtr)(DatumPtr);
 
 		BOOLN	(* SetCFListInt)(CFListPtr, int);
-		BOOLN	(* SetCFListReal)(CFListPtr, double);
-		BOOLN	(* SetCFListRealArrayElement)(CFListPtr, int, double);
+		BOOLN	(* SetCFListReal)(CFListPtr, Float);
+		BOOLN	(* SetCFListRealArrayElement)(CFListPtr, int, Float);
 		BOOLN	(* SetCFListString)(CFListPtr, const WChar *);
 
 		BOOLN	(* SetICListInt)(IonChanListPtr, int);
-		BOOLN	(* SetICListReal)(IonChanListPtr, double);
+		BOOLN	(* SetICListReal)(IonChanListPtr, Float);
 		BOOLN	(* SetICListString)(IonChanListPtr, const WChar *);
 
 		BOOLN	(* SetICInt)(IonChannelPtr, int);
-		BOOLN	(* SetICReal)(IonChannelPtr, double);
-		BOOLN	(* SetICRealArrayElement)(IonChannelPtr, int, double);
+		BOOLN	(* SetICReal)(IonChannelPtr, Float);
+		BOOLN	(* SetICRealArrayElement)(IonChannelPtr, int, Float);
 		BOOLN	(* SetICString)(IonChannelPtr, const WChar *);
 
 		BOOLN	(* SetParArrayInt)(ParArrayPtr, int);
-		BOOLN	(* SetParArrayRealArrayElement)(ParArrayPtr, int, double);
+		BOOLN	(* SetParArrayRealArrayElement)(ParArrayPtr, int, Float);
 		BOOLN	(* SetParArrayString)(ParArrayPtr, const WChar *);
 
 	} FuncPtr;
@@ -291,7 +291,7 @@ BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
 
-BOOLN	ResizeDoubleArray_UniParMgr(double **array, int *oldLength, int length);
+BOOLN	ResizeDoubleArray_UniParMgr(Float **array, int *oldLength, int length);
 
 void	SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr);
 
@@ -316,7 +316,7 @@ BOOLN	SetGetPanelListFunc_UniParMgr(UniParListPtr list,
 
 BOOLN	SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  const WChar *parValue);
-		  
+
 BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  const WChar *parValue);
 
@@ -324,7 +324,7 @@ void	SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *des
 		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
 
 BOOLN	SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  double parValue);
+		  Float parValue);
 
 BOOLN	WriteParFile_UniParMgr(WChar *fileName, UniParListPtr parList);
 

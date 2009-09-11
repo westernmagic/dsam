@@ -1,5 +1,5 @@
 /******************
- *		
+ *
  * File:		ExtRunThreadedProc.cpp
  * Purpose: 	This module runs a processes using threads of possible.
  * Comments:	It was decided to create this module rather than creating
@@ -8,7 +8,7 @@
  *				threaded.
  * Author:		L. P. O'Mard
  * Created:		30 Sep 2004
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  ******************/
@@ -118,7 +118,7 @@ RunThreadedProc::SetThreadMode(int mode)
 		return(false);
 	} /* switch */
 	return(true);
-		
+
 }
 
 /****************************** PreThreadProcessInit **************************/
@@ -145,12 +145,12 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 		FreeThreadProcs_EarObject(data);
 	data->numThreads = numThreads;
 #	if DEBUG
-	printf("%s: Debug: Main outsignal [1] = %lx.\n", funcName, (unsigned 
+	printf("%s: Debug: Main outsignal [1] = %lx.\n", funcName, (unsigned
 	  long) data->outSignal);
 #	endif
 	ok = CXX_BOOL(RunProcessStandard_ModuleMgr(data));
 #	if DEBUG
-	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned 
+	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned
 	  long) data->outSignal);
 #	endif
 	data->initThreadRunFlag = FALSE;
@@ -163,7 +163,7 @@ RunThreadedProc::PreThreadProcessInit(EarObjectPtr data)
 	printf("%s: Debug: Main outsignal [1] = %lx.\n", funcName, (unsigned
 	  long) data->outSignal);
 #	endif
-		
+
 #	if DEBUG
 	printf("%s: Debug: Main outsignal [2] = %lx.\n", funcName, (unsigned
 	  long) data->outSignal);
@@ -237,6 +237,10 @@ RunThreadedProc::SetThreadDistribution(int numChannels)
  * 'InitThreadProcs_EarObject'routine is called, so that each thread has this
  * flag set correctly.
  */
+
+/* ToDo: The PreThreadProcessInit routine should probably only be called
+ * when threads are being used, and then only once.  A present it seems
+ * to be called for, e.g. every loop run. */
 
 bool
 RunThreadedProc::RunProcess(EarObjectPtr data)
@@ -337,15 +341,12 @@ RunThreadedProc::InitialiseProcesses(DatumPtr start)
 			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
 			break;
 		case REPEAT:
-			if (!InitialiseProcesses(pc->next)) {
+			if (!InitialiseProcesses(pc->u.loop.pc)) {
 				NotifyError(wxT("%s: Could not do process initialisation."),
 				  funcName);
 				return(false);
 			}
-			pc = pc->u.loop.stopPC;
 			break;
-		case STOP:
-			return(true);
 		default:
 			;
 		} /* switch */
@@ -377,19 +378,17 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 			pc2 = pc;
 			break;
 		case REPEAT:
-			if (!DetermineChannelChains(pc->next, &linkBreak)) {
+			if (!DetermineChannelChains(pc->u.loop.pc, &linkBreak)) {
 				NotifyError(wxT("%s: Could not do pre-thread simulation ")
 				  wxT("initialisation."), funcName);
 				return(false);
 			}
 			pc->threadSafe = !linkBreak;
-			pc2 = GetFirstProcessInst_Utility_Datum(pc);
+			pc2 = pc;
 			break;
 		case RESET:
 			pc2 = pc->u.ref.pc;
 			break;
-		case STOP:
-			return(true);
 		default:
 			pc2 = pc;
 		} /* switch */
@@ -413,8 +412,6 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 				*brokenChain = true;
 			}
 		}
-		if (pc->type == REPEAT)
-			pc = pc->u.loop.stopPC;
 	}
 	return(true);
 
@@ -438,7 +435,7 @@ RunThreadedProc::PreThreadSimulationInit(DatumPtr start, bool *brokenChain)
 		NotifyError(wxT("%s: Could not initialise the simulation processes."),
 		  funcName);
 		return(false);
-	}	
+	}
 	if (!DetermineChannelChains(start, brokenChain)) {
 		NotifyError(wxT("%s: Could not determine the channel chains."),
 		  funcName);
@@ -653,13 +650,11 @@ RunThreadedProc::Execute(DatumPtr start)
 		case RESET:
 			ResetProcess_EarObject(pc->data);
 			break;
-		case STOP:
-			return (pc);
 		case REPEAT:
 			if (!pc->threadSafe)
-				lastInstruction = ExecuteStandardChain(pc);
+				lastInstruction = ExecuteStandardChain(pc->u.loop.pc);
 			else
-			  	ExecuteMultiThreadChain(pc);
+			  	ExecuteMultiThreadChain(pc->u.loop.pc);
 			break;
 		default:
 			break;
@@ -682,7 +677,7 @@ RunThreadedProc::Execute(DatumPtr start)
 
 /*
  */
- 
+
 BOOLN
 RunProcess_RunThreadedProc(EarObjectPtr data)
 {
@@ -694,15 +689,15 @@ RunProcess_RunThreadedProc(EarObjectPtr data)
 
 /*
  */
- 
+
 DatumPtr
 Execute_RunThreadedProc(DatumPtr start, DatumPtr passedEnd, int threadIndex)
 {
-	DatumPtr	pc; 
+	DatumPtr	pc;
 	passedEnd = NULL;		/* Stop compiler complaining. */
 	threadIndex = 0;
 	pc = runThreadedProc->Execute(start);
-	
+
 	return(pc);
 
 }

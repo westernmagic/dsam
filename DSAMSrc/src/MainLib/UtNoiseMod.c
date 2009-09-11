@@ -237,7 +237,7 @@ SetBandwidthMode_Utility_AmpMod_Noise(WChar * theBandwidthMode)
  */
 
 BOOLN
-SetBandwidth_Utility_AmpMod_Noise(double theBandwidth)
+SetBandwidth_Utility_AmpMod_Noise(Float theBandwidth)
 {
 	static const WChar	*funcName = wxT("SetBandwidth_Utility_AmpMod_Noise");
 
@@ -408,8 +408,8 @@ InitProcessVariables_Utility_AmpMod_Noise(EarObjectPtr data)
 			  outSignal->numChannels);
 			return(FALSE);
 		}
-		if ((p->normFactor = (double *) calloc(outSignal->numChannels,
-		  sizeof(double))) == NULL) {
+		if ((p->normFactor = (Float *) calloc(outSignal->numChannels,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for normFactor array (%d)"), funcName,
 			  outSignal->numChannels);
 			return(FALSE);
@@ -420,15 +420,15 @@ InitProcessVariables_Utility_AmpMod_Noise(EarObjectPtr data)
 			NotifyError(wxT("%s: Out of memory for fT fft structure."), funcName);
 			return(FALSE);
 		}
-		p->fTInv->plan[0] = fftw_plan_dft_c2r_1d(p->fTInv->fftLen, (fftw_complex *) p->fTInv->data,
-		  p->fTInv->data, FFTW_ESTIMATE);
+		p->fTInv->plan[0] = DSAM_FFTW_NAME(plan_dft_c2r_1d)(p->fTInv->fftLen,
+		  (Complx *) p->fTInv->data, p->fTInv->data, FFTW_ESTIMATE);
 		for (i = 0; i < outSignal->numChannels; i++) {
 			cFIndex = i / outSignal->interleaveLevel;
 			p->kUpp[i] = (int) floor(0.5 * ((p->bandwidthMode ==
 			  UTILITY_AMPMOD_NOISE_BANDWIDTHMODE_HZ)? p->bandwidth:
 			  ERBFromF_Bandwidth(outSignal->info.cFArray[cFIndex]) *
 			  p->bandwidth) * outSignal->dt * outSignal->length + 0.5);
-			p->normFactor[i] = 1.0 / sqrt((double) p->kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
+			p->normFactor[i] = 1.0 / sqrt((Float) p->kUpp[i]); // after amultiplying with normFactor each noiseband has 0dB output level
 		}
 		p->updateProcessVariablesFlag = FALSE;
 	}

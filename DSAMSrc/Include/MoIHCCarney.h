@@ -7,7 +7,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
  * Authors:		L. P. O'Mard modified from L. H. Carney's code
  * Created:		30 April 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -44,10 +44,10 @@ typedef enum {
 
 typedef struct {
 
-	double	vI;
-	double	vL;
-	double	cI;
-	double	cL;
+	Float	vI;
+	Float	vL;
+	Float	cI;
+	Float	cL;
 
 } CarneyHCVars, *CarneyHCVarsPtr;
 
@@ -55,26 +55,22 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	maxHCVoltageFlag, restingReleaseRateFlag, restingPermFlag;
-	BOOLN	maxGlobalPermFlag, maxLocalPermFlag, maxImmediatePermFlag;
-	BOOLN	maxLocalVolumeFlag, minLocalVolumeFlag, maxImmediateVolumeFlag;
-	BOOLN	minImmediateVolumeFlag;
 	BOOLN	updateProcessVariablesFlag;
 
-	double	maxHCVoltage;		/* Vmax */
-	double	restingReleaseRate;	/* R0 */
-	double	restingPerm;		/* Prest */
-	double	maxGlobalPerm;		/* PGmax */
-	double	maxLocalPerm;		/* PLmax */
-	double	maxImmediatePerm;	/* PImax */
-	double	maxLocalVolume;		/* VLmax */
-	double	minLocalVolume;		/* VLmin */
-	double	maxImmediateVolume;	/* VImax */
-	double	minImmediateVolume;	/* VImin */
+	Float	maxHCVoltage;		/* Vmax */
+	Float	restingReleaseRate;	/* R0 */
+	Float	restingPerm;		/* Prest */
+	Float	maxGlobalPerm;		/* PGmax */
+	Float	maxLocalPerm;		/* PLmax */
+	Float	maxImmediatePerm;	/* PImax */
+	Float	maxLocalVolume;		/* VLmax */
+	Float	minLocalVolume;		/* VLmin */
+	Float	maxImmediateVolume;	/* VImax */
+	Float	minImmediateVolume;	/* VImin */
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	dt, cG, pIMaxMinusPrest, pLMaxMinusPrest, pGMaxMinusPrest;
+	Float	dt, cG, pIMaxMinusPrest, pLMaxMinusPrest, pGMaxMinusPrest;
 	CarneyHCVars	*hCChannels;
 
 } CarneyHC, *CarneyHCPtr;
@@ -97,8 +93,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHC_Carney(EarObjectPtr data);
 
-BOOLN	CheckPars_IHC_Carney(void);
-
 BOOLN	Free_IHC_Carney(void);
 
 void	FreeProcessVariables_IHC_Carney(void);
@@ -111,39 +105,31 @@ BOOLN	InitProcessVariables_IHC_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_IHC_Carney(void);
 
-BOOLN	ReadPars_IHC_Carney(WChar *fileName);
-
 BOOLN	RunModel_IHC_Carney(EarObjectPtr data);
 
-BOOLN	SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm);
+BOOLN	SetMaxGlobalPerm_IHC_Carney(Float theMaxGlobalPerm);
 
-BOOLN	SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage);
+BOOLN	SetMaxHCVoltage_IHC_Carney(Float theMaxHCVoltage);
 
-BOOLN	SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm);
+BOOLN	SetMaxImmediatePerm_IHC_Carney(Float theMaxImmediatePerm);
 
-BOOLN	SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume);
+BOOLN	SetMaxImmediateVolume_IHC_Carney(Float theMaxImmediateVolume);
 
-BOOLN	SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm);
+BOOLN	SetMaxLocalPerm_IHC_Carney(Float theMaxLocalPerm);
 
-BOOLN	SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume);
+BOOLN	SetMaxLocalVolume_IHC_Carney(Float theMaxLocalVolume);
 
-BOOLN	SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume);
+BOOLN	SetMinImmediateVolume_IHC_Carney(Float theMinImmediateVolume);
 
-BOOLN	SetMinLocalVolume_IHC_Carney(double theMinLocalVolume);
+BOOLN	SetMinLocalVolume_IHC_Carney(Float theMinLocalVolume);
 
 BOOLN	InitModule_IHC_Carney(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHC_Carney(ModulePtr theModule);
 
-BOOLN	SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
-		  double restingPerm, double maxGlobalPerm, double maxLocalPerm,
-		  double maxImmediatePerm, double maxLocalVolume,
-		  double minLocalVolume, double maxImmediateVolume,
-		  double minImmediateVolume);
+BOOLN	SetRestingPerm_IHC_Carney(Float theRestingPerm);
 
-BOOLN	SetRestingPerm_IHC_Carney(double theRestingPerm);
-
-BOOLN	SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate);
+BOOLN	SetRestingReleaseRate_IHC_Carney(Float theRestingReleaseRate);
 
 BOOLN	SetUniParList_IHC_Carney(void);
 

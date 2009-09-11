@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.8.
  * Author:		L. P. O'Mard
  * Created:		21 Dec 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -85,9 +85,9 @@ SetDefaultNumFrequenciesArrays_Utility_AmpMod(void)
 	static const WChar *funcName =
 	  wxT("SetDefaultNumFrequenciesArrays_Utility_AmpMod");
 	int		i;
-	double	modulationDepths[] = {50.0};
-	double	frequencies[] = {100.0};
-	double	phases[] = {0.0};
+	Float	modulationDepths[] = {50.0};
+	Float	frequencies[] = {100.0};
+	Float	phases[] = {0.0};
 
 	if (!AllocNumFrequencies_Utility_AmpMod(1)) {
 		NotifyError(wxT("%s: Could not allocate default arrays."), funcName);
@@ -134,7 +134,6 @@ Init_Utility_AmpMod(ParameterSpecifier parSpec)
 		}
 	}
 	ampModPtr->parSpec = parSpec;
-	ampModPtr->numFrequenciesFlag = FALSE;
 	ampModPtr->numFrequencies = 0;
 	ampModPtr->modulationDepths = NULL;
 	ampModPtr->frequencies = NULL;
@@ -228,7 +227,7 @@ GetUniParListPtr_Utility_AmpMod(void)
 
 /*
  * This function allocates the memory for the pure tone arrays.
- * It will assume that nothing needs to be done if the 'numFrequencies' 
+ * It will assume that nothing needs to be done if the 'numFrequencies'
  * variable is the same as the current structure member value.
  * To make this work, the function needs to set the structure 'numFrequencies'
  * parameter too.
@@ -244,60 +243,30 @@ AllocNumFrequencies_Utility_AmpMod(int numFrequencies)
 		return(TRUE);
 	if (ampModPtr->modulationDepths)
 		free(ampModPtr->modulationDepths);
-	if ((ampModPtr->modulationDepths = (double *) calloc(numFrequencies,
-	  sizeof(double))) == NULL) {
+	if ((ampModPtr->modulationDepths = (Float *) calloc(numFrequencies,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' ")
 		  wxT("modulationDepths."), funcName, numFrequencies);
 		return(FALSE);
 	}
 	if (ampModPtr->frequencies)
 		free(ampModPtr->frequencies);
-	if ((ampModPtr->frequencies = (double *) calloc(numFrequencies, sizeof(
-	  double))) == NULL) {
+	if ((ampModPtr->frequencies = (Float *) calloc(numFrequencies, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' frequencies."),
 		  funcName, numFrequencies);
 		return(FALSE);
 	}
 	if (ampModPtr->phases)
 		free(ampModPtr->phases);
-	if ((ampModPtr->phases = (double *) calloc(numFrequencies, sizeof(
-	  double))) == NULL) {
+	if ((ampModPtr->phases = (Float *) calloc(numFrequencies, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' phases."),
 		  funcName, numFrequencies);
 		return(FALSE);
 	}
 	ampModPtr->numFrequencies = numFrequencies;
-	ampModPtr->numFrequenciesFlag = TRUE;
 	return(TRUE);
-
-}
-
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_AmpMod(int numFrequencies, double *modulationDepths,
-  double *frequencies, double *phases)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_AmpMod");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetNumFrequencies_Utility_AmpMod(numFrequencies))
-		ok = FALSE;
-	if (!SetModulationDepths_Utility_AmpMod(modulationDepths))
-		ok = FALSE;
-	if (!SetFrequencies_Utility_AmpMod(frequencies))
-		ok = FALSE;
-	if (!SetPhases_Utility_AmpMod(phases))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
 
 }
 
@@ -332,7 +301,6 @@ SetNumFrequencies_Utility_AmpMod(int theNumFrequencies)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	ampModPtr->numFrequenciesFlag = TRUE;
 	return(TRUE);
 
 }
@@ -346,7 +314,7 @@ SetNumFrequencies_Utility_AmpMod(int theNumFrequencies)
  */
 
 BOOLN
-SetModulationDepths_Utility_AmpMod(double *theModulationDepths)
+SetModulationDepths_Utility_AmpMod(Float *theModulationDepths)
 {
 	static const WChar	*funcName = wxT("SetModulationDepths_Utility_AmpMod");
 
@@ -369,7 +337,7 @@ SetModulationDepths_Utility_AmpMod(double *theModulationDepths)
  */
 
 BOOLN
-SetFrequencies_Utility_AmpMod(double *theFrequencies)
+SetFrequencies_Utility_AmpMod(Float *theFrequencies)
 {
 	static const WChar	*funcName = wxT("SetFrequencies_Utility_AmpMod");
 
@@ -392,7 +360,7 @@ SetFrequencies_Utility_AmpMod(double *theFrequencies)
  */
 
 BOOLN
-SetPhases_Utility_AmpMod(double *thePhases)
+SetPhases_Utility_AmpMod(Float *thePhases)
 {
 	static const WChar	*funcName = wxT("SetPhases_Utility_AmpMod");
 
@@ -414,7 +382,7 @@ SetPhases_Utility_AmpMod(double *thePhases)
  */
 
 BOOLN
-SetIndividualFreq_Utility_AmpMod(int theIndex, double theFrequency)
+SetIndividualFreq_Utility_AmpMod(int theIndex, Float theFrequency)
 {
 	static const WChar *funcName = wxT("SetIndividualFreq_Utility_AmpMod");
 
@@ -444,7 +412,7 @@ SetIndividualFreq_Utility_AmpMod(int theIndex, double theFrequency)
  */
 
 BOOLN
-SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase)
+SetIndividualPhase_Utility_AmpMod(int theIndex, Float thePhase)
 {
 	static const WChar *funcName = wxT("SetIndividualPhase_Utility_AmpMod");
 
@@ -474,7 +442,7 @@ SetIndividualPhase_Utility_AmpMod(int theIndex, double thePhase)
  */
 
 BOOLN
-SetIndividualDepth_Utility_AmpMod(int theIndex, double theModDepth)
+SetIndividualDepth_Utility_AmpMod(int theIndex, Float theModDepth)
 {
 	static const WChar *funcName = wxT("SetIndividualIndex_Utility_AmpMod");
 
@@ -496,55 +464,6 @@ SetIndividualDepth_Utility_AmpMod(int theIndex, double theModDepth)
 
 }
 
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_AmpMod(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_AmpMod");
-	BOOLN	ok;
-	int		i;
-
-	ok = TRUE;
-	if (ampModPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (ampModPtr->modulationDepths == NULL) {
-		NotifyError(wxT("%s: modulationDepths array not set."), funcName);
-		ok = FALSE;
-	}
-	if (ampModPtr->frequencies == NULL) {
-		NotifyError(wxT("%s: frequencies array not set."), funcName);
-		ok = FALSE;
-	}
-	if (ampModPtr->phases == NULL) {
-		NotifyError(wxT("%s: phases array not set."), funcName);
-		ok = FALSE;
-	}
-	if (!ampModPtr->numFrequenciesFlag) {
-		NotifyError(wxT("%s: numFrequencies variable not set."), funcName);
-		ok = FALSE;
-	}
-	for (i = 0; i < ampModPtr->numFrequencies; i++)
-		if (ampModPtr->modulationDepths[i] / 100.0 > (1.0 /
-		  ampModPtr->numFrequencies)) {
-			NotifyError(wxT("%s: Illegal modulation index, [%d] = %g)"),
-			  funcName, i, ampModPtr->modulationDepths[i]);
-			ok = FALSE;
-		}
-	return(ok);
-
-}
-
 /****************************** PrintPars *************************************/
 
 /*
@@ -558,9 +477,8 @@ PrintPars_Utility_AmpMod(void)
 	static const WChar	*funcName = wxT("PrintPars_Utility_AmpMod");
 	int		i;
 
-	if (!CheckPars_Utility_AmpMod()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (ampModPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Amplitude Modulation Module Parameters:-\n"));
@@ -574,59 +492,6 @@ PrintPars_Utility_AmpMod(void)
 		  ampModPtr->phases[i]);
 	DPrint(wxT("\tNo. of frequencies = %d\n"),
 	  ampModPtr->numFrequencies);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_AmpMod(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_AmpMod");
-	BOOLN	ok;
-	WChar	*filePath;
-	int		i, numFrequencies;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numFrequencies))
-		ok = FALSE;
-	if (!AllocNumFrequencies_Utility_AmpMod(numFrequencies)) {
-		NotifyError(
-		  wxT("%%s: Cannot allocate memory for the 'numFrequencies' arrays."),
-		  funcName);
-		return(FALSE);
-	}
-	for (i = 0; i < numFrequencies; i++)
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf"), &ampModPtr->
-		  modulationDepths[i], &ampModPtr->frequencies[i], &ampModPtr->phases[
-		  i]))
-			ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_AmpMod(numFrequencies, ampModPtr->modulationDepths,
-	  ampModPtr->frequencies, ampModPtr->phases)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -674,11 +539,9 @@ InitModule_Utility_AmpMod(ModulePtr theModule)
 	}
 	theModule->parsPtr = ampModPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_AmpMod;
 	theModule->Free = Free_Utility_AmpMod;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_AmpMod;
 	theModule->PrintPars = PrintPars_Utility_AmpMod;
-	theModule->ReadPars = ReadPars_Utility_AmpMod;
 	theModule->RunProcess = Process_Utility_AmpMod;
 	theModule->SetParsPointer = SetParsPointer_Utility_AmpMod;
 	return(TRUE);
@@ -702,6 +565,7 @@ BOOLN
 CheckData_Utility_AmpMod(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_AmpMod");
+	int		i;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -709,7 +573,13 @@ CheckData_Utility_AmpMod(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	/*** Put additional checks here. ***/
+	for (i = 0; i < ampModPtr->numFrequencies; i++)
+		if (ampModPtr->modulationDepths[i] / 100.0 > (1.0 /
+		  ampModPtr->numFrequencies)) {
+			NotifyError(wxT("%s: Illegal modulation index, [%d] = %g)"),
+			  funcName, i, ampModPtr->modulationDepths[i]);
+			return(FALSE);
+		}
 	return(TRUE);
 
 }
@@ -735,13 +605,11 @@ Process_Utility_AmpMod(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_AmpMod");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, j;
-	double	sum, time;
+	Float	sum, time;
 	ChanLen	i, t;
 	SignalDataPtr	outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_AmpMod())
-			return(FALSE);
 		if (!CheckData_Utility_AmpMod(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

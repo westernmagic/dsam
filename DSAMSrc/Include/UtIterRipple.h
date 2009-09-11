@@ -11,7 +11,7 @@
  * 				IRSS Iterated Rippled Signal ADD-SAME
  * Authors:		Almudena Eustaquio-Martin, L. P. O'Mard
  * Created:		04-JUN-1996.
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -52,12 +52,10 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	numIterationsFlag, modeFlag, delayFlag;
-	BOOLN	signalMultiplierFlag;
 	int		numIterations;
 	int		mode;
-	double	delay;
-	double	signalMultiplier;
+	Float	delay;
+	Float	signalMultiplier;
 
 	/* Private members */
 	NameSpecifier *modeList;
@@ -83,8 +81,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_IteratedRipple(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_IteratedRipple(void);
-
 BOOLN	Free_Utility_IteratedRipple(void);
 
 UniParListPtr	GetUniParListPtr_Utility_IteratedRipple(void);
@@ -97,11 +93,9 @@ BOOLN	PrintPars_Utility_IteratedRipple(void);
 
 BOOLN	Process_Utility_IteratedRipple(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_IteratedRipple(WChar *fileName);
+BOOLN	SetDelay_Utility_IteratedRipple(Float theDelay);
 
-BOOLN	SetDelay_Utility_IteratedRipple(double theDelay);
-
-BOOLN	SetSignalMultiplier_Utility_IteratedRipple(double theSignalMultiplier);
+BOOLN	SetSignalMultiplier_Utility_IteratedRipple(Float theSignalMultiplier);
 
 BOOLN	SetMode_Utility_IteratedRipple(WChar *theMode);
 
@@ -110,9 +104,6 @@ BOOLN	InitModule_Utility_IteratedRipple(ModulePtr theModule);
 BOOLN	SetNumIterations_Utility_IteratedRipple(int theNumIterations);
 
 BOOLN	SetParsPointer_Utility_IteratedRipple(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_IteratedRipple(int numIterations, WChar *mode,
-		  double delay, double signalMultiplier);
 
 BOOLN	SetUniParList_Utility_IteratedRipple(void);
 

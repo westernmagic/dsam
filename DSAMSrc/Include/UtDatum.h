@@ -15,11 +15,11 @@
  *				19-11-98 LPO: Corrected the "General parameter list' bug, that
  *				meant that the 'array_index' general parameter was not being
  *				found for a particular process.
- *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for 
+ *				10-12-98 LPO: Introduced handling of NULL parLists, i.e. for
  *				modules with no parameters.
  *				27-01-99 LPO: The static 'stepCount' in the 'InstallInst_'
  *				routine was not being reset to zero when installing 'datum'
- *				nodes at the head of the list.  This occurred with the 
+ *				nodes at the head of the list.  This occurred with the
  *				GUI mode, where simulations needed to be recreated.
  *				02-02-99 LPO: The 'FindModuleUniPar_' routine now also returns
  *				the simulation 'DatumPtr' at which the universal parameter was
@@ -77,7 +77,7 @@ typedef struct Datum {
 			DynaListPtr		outputList;
 		} proc;
 		struct {
-			struct Datum	*stopPC;
+			struct Datum	*pc;
 			int				count;
 		} loop;
 		struct {
@@ -134,8 +134,12 @@ int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
 BOOLN	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 
+BOOLN	ConnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC);
+
 void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
 		  DatumPtr to);
+
+BOOLN	DisconnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC);
 
 BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
 
@@ -187,7 +191,7 @@ UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 		  DynaBListPtr *labelBList);
 
-BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
+BOOLN	InitialiseModule_Utility_Datum(DatumPtr start);
 
 DatumPtr	InitInst_Utility_Datum(int type);
 
@@ -223,7 +227,7 @@ BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label,
 		  const WChar *value, BOOLN diagsOn);
 
-BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
+DatumPtr	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
 BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList);
 
@@ -238,6 +242,9 @@ BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 
 BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
 		  const WChar *parValue);
+
+BOOLN	TraverseSimulation_Utility_Datum(DatumPtr start,
+		  BOOLN (* ActionFunc)(DatumPtr));
 
 BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
 

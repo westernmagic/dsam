@@ -40,7 +40,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	alertModeFlag, delayFlag, messageFlag;
 	int		alertMode;
 	int		delay;
 	WChar	message[LONG_STRING];
@@ -68,8 +67,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Pause(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_Pause(void);
-
 BOOLN	Free_Utility_Pause(void);
 
 UniParListPtr	GetUniParListPtr_Utility_Pause(void);
@@ -82,8 +79,6 @@ BOOLN	PrintPars_Utility_Pause(void);
 
 BOOLN	Process_Utility_Pause(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Pause(WChar *fileName);
-
 BOOLN	SetAlertMode_Utility_Pause(WChar * theAlertMode);
 
 BOOLN	SetDelay_Utility_Pause(int theDelay);
@@ -93,8 +88,6 @@ BOOLN	SetMessage_Utility_Pause(WChar *theMessage);
 BOOLN	InitModule_Utility_Pause(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Pause(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_Pause(WChar * alertMode, int delay, WChar *message);
 
 BOOLN	SetUniParList_Utility_Pause(void);
 

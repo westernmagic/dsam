@@ -12,7 +12,7 @@
  * 				turned-off to get the IHC output as produced in the the paper.
  * Author:		L. P. O'Mard
  * Created:		14 Jul 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, L. P. O'Mard.
  *
  *********************/
@@ -79,10 +79,10 @@ typedef enum {
 
 typedef struct {
 
-	double	Ekp;
-	double	tau1Diff, tau2Diff;
-	double	GkVTN, GkVT;
-	double	stateVector[IHCRP_LOPEZPOVEDA_NUM_STATE_VARS];
+	Float	Ekp;
+	Float	tau1Diff, tau2Diff;
+	Float	GkVTN, GkVT;
+	Float	stateVector[IHCRP_LOPEZPOVEDA_NUM_STATE_VARS];
 
 } LPIonChannel, *LPIonChannelPtr;
 
@@ -92,44 +92,44 @@ typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
 	int		bMCiliaCouplingMode;
-	double	ciliaTC;	/* BM/cilia displacement time constant, s. */
-	double	ciliaCGain;	/* Cilia coupling gain. */
-	double	Et;			/* Endocochlear potential, Et (V). */
-	double	Rp;			/* Epithelium resistance, Rp (Ohm). */
-	double	Rt;			/* Epithelium resistance, Rt (Ohm). */
-	double	gL;			/* Apical leakage conductance, gL (S). */
-	double	Gm;			/* Maximum mechanical conductance, Gm (S). */
-	double	s0;			/* Displacement sensitivity, s0 (1/m). */
-	double	s1;			/* Displacement sensitivity, s1 (1/m). */
-	double	u0;			/* Displacement offset, u0 (m). */
-	double	u1;			/* Displacement offset, u1 (m). */
-	double	Ca;			/* Apical capacitance, Ca (F). */
-	double	Cb;			/* Apical capacitance, Cb (F). */
+	Float	ciliaTC;	/* BM/cilia displacement time constant, s. */
+	Float	ciliaCGain;	/* Cilia coupling gain. */
+	Float	Et;			/* Endocochlear potential, Et (V). */
+	Float	Rp;			/* Epithelium resistance, Rp (Ohm). */
+	Float	Rt;			/* Epithelium resistance, Rt (Ohm). */
+	Float	gL;			/* Apical leakage conductance, gL (S). */
+	Float	Gm;			/* Maximum mechanical conductance, Gm (S). */
+	Float	s0;			/* Displacement sensitivity, s0 (1/m). */
+	Float	s1;			/* Displacement sensitivity, s1 (1/m). */
+	Float	u0;			/* Displacement offset, u0 (m). */
+	Float	u1;			/* Displacement offset, u1 (m). */
+	Float	Ca;			/* Apical capacitance, Ca (F). */
+	Float	Cb;			/* Apical capacitance, Cb (F). */
 	int		numCurrents;	/* Number of currents - default is two: fast & slow.*/
 	WChar	**label;	/* Conductance label. */
-	double	*Ek;		/* Reversal potential, Ek (V). */
-	double	*G;			/* Maximum conductance, Gf (S). */
-	double	*V1;		/* Half-activation potential, V1 (V). */
-	double	*vS1;		/* Voltage sensitivity constant, S1 (V). */
-	double	*V2;		/* Half-activation potential, V2 (V). */
-	double	*vS2;		/* Voltage sensitivity constant, S2 (V). */
-	double	*tau1Max;	/* Voltage time constant, tau1 max. (s). */
-	double	*A1;		/* Voltage time constant, A1 (s). */
-	double	*B1;		/* Voltage time constant, B1 (s). */
-	double	*tau1Min;	/* Voltage time constant, tau1Min (s). */
-	double	*tau2Max;	/* Voltage time constant, tau2Max (s). */
-	double	*A2;		/* Voltage time constant, A2 (s). */
-	double	*B2;		/* Voltage time constant, B2 (s). */
-	double	*tau2Min;	/* Voltage time constant, tau2Min (s). */
-	double	VMRest;
+	Float	*Ek;		/* Reversal potential, Ek (V). */
+	Float	*G;			/* Maximum conductance, Gf (S). */
+	Float	*V1;		/* Half-activation potential, V1 (V). */
+	Float	*vS1;		/* Voltage sensitivity constant, S1 (V). */
+	Float	*V2;		/* Half-activation potential, V2 (V). */
+	Float	*vS2;		/* Voltage sensitivity constant, S2 (V). */
+	Float	*tau1Max;	/* Voltage time constant, tau1 max. (s). */
+	Float	*A1;		/* Voltage time constant, A1 (s). */
+	Float	*B1;		/* Voltage time constant, B1 (s). */
+	Float	*tau1Min;	/* Voltage time constant, tau1Min (s). */
+	Float	*tau2Max;	/* Voltage time constant, tau2Max (s). */
+	Float	*A2;		/* Voltage time constant, A2 (s). */
+	Float	*B2;		/* Voltage time constant, B2 (s). */
+	Float	*tau2Min;	/* Voltage time constant, tau2Min (s). */
+	Float	VMRest;
 
 	/* Private members */
 	UniParListPtr	parList;
 	LPIonChannelPtr	*lPICList;
 	int		numChannels;
-	double	*lastCiliaDisplacement_u;
-	double	*lastOutput;
-	double	CTotalOverDt, VOC, cGaindt, dtOverTc;
+	Float	*lastCiliaDisplacement_u;
+	Float	*lastOutput;
+	Float	CTotalOverDt, VOC, cGaindt, dtOverTc;
 
 } LopezPoveda, *LopezPovedaPtr;
 
@@ -169,70 +169,70 @@ BOOLN	PrintPars_IHCRP_LopezPoveda(void);
 
 BOOLN	RunModel_IHCRP_LopezPoveda(EarObjectPtr data);
 
-BOOLN	SetA1_IHCRP_LopezPoveda(double *theA1);
+BOOLN	SetA1_IHCRP_LopezPoveda(Float *theA1);
 
-BOOLN	SetA2_IHCRP_LopezPoveda(double *theA2);
+BOOLN	SetA2_IHCRP_LopezPoveda(Float *theA2);
 
-BOOLN	SetB1_IHCRP_LopezPoveda(double *theB1);
+BOOLN	SetB1_IHCRP_LopezPoveda(Float *theB1);
 
-BOOLN	SetB2_IHCRP_LopezPoveda(double *theB2);
+BOOLN	SetB2_IHCRP_LopezPoveda(Float *theB2);
 
 BOOLN	SetBMCiliaCouplingMode_IHCRP_LopezPoveda(
 		  WChar * theBMCiliaCouplingMode);
 
-BOOLN	SetCa_IHCRP_LopezPoveda(double theCa);
+BOOLN	SetCa_IHCRP_LopezPoveda(Float theCa);
 
-BOOLN	SetCb_IHCRP_LopezPoveda(double theCb);
+BOOLN	SetCb_IHCRP_LopezPoveda(Float theCb);
 
-BOOLN	SetCiliaCGain_IHCRP_LopezPoveda(double theCiliaCGain);
+BOOLN	SetCiliaCGain_IHCRP_LopezPoveda(Float theCiliaCGain);
 
-BOOLN	SetCiliaTC_IHCRP_LopezPoveda(double theCiliaTC);
+BOOLN	SetCiliaTC_IHCRP_LopezPoveda(Float theCiliaTC);
 
 BOOLN	SetDefaultNumCurrentsArrays_IHCRP_LopezPoveda(void);
 
-BOOLN	SetEk_IHCRP_LopezPoveda(double *theEk);
+BOOLN	SetEk_IHCRP_LopezPoveda(Float *theEk);
 
-BOOLN	SetEt_IHCRP_LopezPoveda(double theEt);
+BOOLN	SetEt_IHCRP_LopezPoveda(Float theEt);
 
-BOOLN	SetGL_IHCRP_LopezPoveda(double theGL);
+BOOLN	SetGL_IHCRP_LopezPoveda(Float theGL);
 
-BOOLN	SetG_IHCRP_LopezPoveda(double *theG);
+BOOLN	SetG_IHCRP_LopezPoveda(Float *theG);
 
-BOOLN	SetGm_IHCRP_LopezPoveda(double theGm);
+BOOLN	SetGm_IHCRP_LopezPoveda(Float theGm);
 
-BOOLN	SetIndividualA1_IHCRP_LopezPoveda(int theIndex, double theA1);
+BOOLN	SetIndividualA1_IHCRP_LopezPoveda(int theIndex, Float theA1);
 
-BOOLN	SetIndividualA2_IHCRP_LopezPoveda(int theIndex, double theA2);
+BOOLN	SetIndividualA2_IHCRP_LopezPoveda(int theIndex, Float theA2);
 
-BOOLN	SetIndividualB1_IHCRP_LopezPoveda(int theIndex, double theB1);
+BOOLN	SetIndividualB1_IHCRP_LopezPoveda(int theIndex, Float theB1);
 
-BOOLN	SetIndividualB2_IHCRP_LopezPoveda(int theIndex, double theB2);
+BOOLN	SetIndividualB2_IHCRP_LopezPoveda(int theIndex, Float theB2);
 
-BOOLN	SetIndividualEk_IHCRP_LopezPoveda(int theIndex, double theEk);
+BOOLN	SetIndividualEk_IHCRP_LopezPoveda(int theIndex, Float theEk);
 
-BOOLN	SetIndividualG_IHCRP_LopezPoveda(int theIndex, double theG);
+BOOLN	SetIndividualG_IHCRP_LopezPoveda(int theIndex, Float theG);
 
 BOOLN	SetIndividualLabel_IHCRP_LopezPoveda(int theIndex, WChar *theLabel);
 
-BOOLN	SetIndividualVS1_IHCRP_LopezPoveda(int theIndex, double theVS1);
+BOOLN	SetIndividualVS1_IHCRP_LopezPoveda(int theIndex, Float theVS1);
 
-BOOLN	SetIndividualVS2_IHCRP_LopezPoveda(int theIndex, double theVS2);
+BOOLN	SetIndividualVS2_IHCRP_LopezPoveda(int theIndex, Float theVS2);
 
 BOOLN	SetIndividualTau1Max_IHCRP_LopezPoveda(int theIndex,
-		  double theTau1Max);
+		  Float theTau1Max);
 
 BOOLN	SetIndividualTau1Min_IHCRP_LopezPoveda(int theIndex,
-		  double theTau1Min);
+		  Float theTau1Min);
 
 BOOLN	SetIndividualTau2Max_IHCRP_LopezPoveda(int theIndex,
-		  double theTau2Max);
+		  Float theTau2Max);
 
 BOOLN	SetIndividualTau2Min_IHCRP_LopezPoveda(int theIndex,
-		  double theTau2Min);
+		  Float theTau2Min);
 
-BOOLN	SetIndividualV1_IHCRP_LopezPoveda(int theIndex, double theV1);
+BOOLN	SetIndividualV1_IHCRP_LopezPoveda(int theIndex, Float theV1);
 
-BOOLN	SetIndividualV2_IHCRP_LopezPoveda(int theIndex, double theV2);
+BOOLN	SetIndividualV2_IHCRP_LopezPoveda(int theIndex, Float theV2);
 
 BOOLN	SetLabel_IHCRP_LopezPoveda(WChar **theLabel);
 
@@ -240,37 +240,37 @@ BOOLN	SetNumCurrents_IHCRP_LopezPoveda(int theNumCurrents);
 
 BOOLN	SetParsPointer_IHCRP_LopezPoveda(ModulePtr theModule);
 
-BOOLN	SetRp_IHCRP_LopezPoveda(double theRp);
+BOOLN	SetRp_IHCRP_LopezPoveda(Float theRp);
 
-BOOLN	SetRt_IHCRP_LopezPoveda(double theRt);
+BOOLN	SetRt_IHCRP_LopezPoveda(Float theRt);
 
-BOOLN	SetS0_IHCRP_LopezPoveda(double theS0);
+BOOLN	SetS0_IHCRP_LopezPoveda(Float theS0);
 
-BOOLN	SetS1_IHCRP_LopezPoveda(double theS1);
+BOOLN	SetS1_IHCRP_LopezPoveda(Float theS1);
 
-BOOLN	SetTau1Max_IHCRP_LopezPoveda(double *theTau1Max);
+BOOLN	SetTau1Max_IHCRP_LopezPoveda(Float *theTau1Max);
 
-BOOLN	SetTau1Min_IHCRP_LopezPoveda(double *theTau1Min);
+BOOLN	SetTau1Min_IHCRP_LopezPoveda(Float *theTau1Min);
 
-BOOLN	SetTau2Max_IHCRP_LopezPoveda(double *theTau2Max);
+BOOLN	SetTau2Max_IHCRP_LopezPoveda(Float *theTau2Max);
 
-BOOLN	SetTau2Min_IHCRP_LopezPoveda(double *theTau2Min);
+BOOLN	SetTau2Min_IHCRP_LopezPoveda(Float *theTau2Min);
 
-BOOLN	SetU0_IHCRP_LopezPoveda(double theU0);
+BOOLN	SetU0_IHCRP_LopezPoveda(Float theU0);
 
-BOOLN	SetU1_IHCRP_LopezPoveda(double theU1);
+BOOLN	SetU1_IHCRP_LopezPoveda(Float theU1);
 
 BOOLN	SetUniParList_IHCRP_LopezPoveda(void);
 
-BOOLN	SetV1_IHCRP_LopezPoveda(double *theV1);
+BOOLN	SetV1_IHCRP_LopezPoveda(Float *theV1);
 
-BOOLN	SetV2_IHCRP_LopezPoveda(double *theV2);
+BOOLN	SetV2_IHCRP_LopezPoveda(Float *theV2);
 
-BOOLN	SetVS1_IHCRP_LopezPoveda(double *theVS1);
+BOOLN	SetVS1_IHCRP_LopezPoveda(Float *theVS1);
 
-BOOLN	SetVS2_IHCRP_LopezPoveda(double *theVS2);
+BOOLN	SetVS2_IHCRP_LopezPoveda(Float *theVS2);
 
-BOOLN	SetVMRest_IHCRP_LopezPoveda(double theVMRest);
+BOOLN	SetVMRest_IHCRP_LopezPoveda(Float theVMRest);
 
 __END_DECLS
 

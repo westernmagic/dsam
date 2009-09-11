@@ -10,7 +10,7 @@
  * Comments:	Written using ModuleProducer version 1.2.5 (May  7 1999).
  * Authors:		L.P. O'Mard, revised Chris Sumner (7th May 2000).
  * Created:		16 Mar 2000
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2000, CNBH University of Essex.
  *
  *********************/
@@ -165,25 +165,6 @@ Init_IHC_Meddis2000(ParameterSpecifier parSpec)
 	}
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
 	hairCell2Ptr->parSpec = parSpec;
-	hairCell2Ptr->opModeFlag = TRUE;
-	hairCell2Ptr->diagModeFlag = TRUE;
-	hairCell2Ptr->caCondModeFlag = TRUE;
-	hairCell2Ptr->cleftReplenishModeFlag = TRUE;
-	hairCell2Ptr->ranSeedFlag = TRUE;
-	hairCell2Ptr->CaVrevFlag = TRUE;
-	hairCell2Ptr->betaCaFlag = TRUE;
-	hairCell2Ptr->gammaCaFlag = TRUE;
-	hairCell2Ptr->pCaFlag = TRUE;
-	hairCell2Ptr->GCaMaxFlag = TRUE;
-	hairCell2Ptr->perm_Ca0Flag = TRUE;
-	hairCell2Ptr->perm_zFlag = TRUE;
-	hairCell2Ptr->tauCaChanFlag = TRUE;
-	hairCell2Ptr->tauConcCaFlag = TRUE;
-	hairCell2Ptr->maxFreePool_MFlag = TRUE;
-	hairCell2Ptr->replenishRate_yFlag = TRUE;
-	hairCell2Ptr->lossRate_lFlag = TRUE;
-	hairCell2Ptr->reprocessRate_xFlag = TRUE;
-	hairCell2Ptr->recoveryRate_rFlag = TRUE;
 	hairCell2Ptr->opMode = IHC_MEDDIS2000_OPMODE_PROB;
 	hairCell2Ptr->diagMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	hairCell2Ptr->caCondMode = IHC_MEDDIS2000_CACONDMODE_ORIGINAL;
@@ -360,7 +341,7 @@ SetEnabledPars_IHC_Meddis2000(void)
 	hairCell2Ptr->parList->pars[IHC_MEDDIS2000_MAXFREEPOOL_M].enabled =
 	  (hairCell2Ptr->cleftReplenishMode ==
 	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL);
-	
+
 }
 
 /****************************** GetUniParListPtr ******************************/
@@ -385,64 +366,6 @@ GetUniParListPtr_IHC_Meddis2000(void)
 		return(NULL);
 	}
 	return(hairCell2Ptr->parList);
-
-}
-
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_IHC_Meddis2000(WChar * opMode, WChar * diagMode, long ranSeed,
-  double CaVrev, double betaCa, double gammaCa,
-  double pCa, double GCaMax, double perm_Ca0, double perm_z, double tauCaChan,
-  double tauConcCa, int maxFreePool_M, double replenishRate_y,
-  double lossRate_l, double reprocessRate_x, double recoveryRate_r)
-{
-	static const WChar	*funcName = wxT("SetPars_IHC_Meddis2000");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetOpMode_IHC_Meddis2000(opMode))
-		ok = FALSE;
-	if (!SetDiagMode_IHC_Meddis2000(diagMode))
-		ok = FALSE;
-	if (!SetRanSeed_IHC_Meddis2000(ranSeed))
-		ok = FALSE;
-	if (!SetCaVrev_IHC_Meddis2000(CaVrev))
-		ok = FALSE;
-	if (!SetBetaCa_IHC_Meddis2000(betaCa))
-		ok = FALSE;
-	if (!SetGammaCa_IHC_Meddis2000(gammaCa))
-		ok = FALSE;
-	if (!SetPCa_IHC_Meddis2000(pCa))
-		ok = FALSE;
-	if (!SetGCaMax_IHC_Meddis2000(GCaMax))
-		ok = FALSE;
-	if (!SetPerm_Ca0_IHC_Meddis2000(perm_Ca0))
-		ok = FALSE;
-	if (!SetPerm_z_IHC_Meddis2000(perm_z))
-		ok = FALSE;
-	if (!SetTauCaChan_IHC_Meddis2000(tauCaChan))
-		ok = FALSE;
-	if (!SetTauConcCa_IHC_Meddis2000(tauConcCa))
-		ok = FALSE;
-	if (!SetMaxFreePool_M_IHC_Meddis2000(maxFreePool_M))
-		ok = FALSE;
-	if (!SetReplenishRate_y_IHC_Meddis2000(replenishRate_y))
-		ok = FALSE;
-	if (!SetLossRate_l_IHC_Meddis2000(lossRate_l))
-		ok = FALSE;
-	if (!SetReprocessRate_x_IHC_Meddis2000(reprocessRate_x))
-		ok = FALSE;
-	if (!SetRecoveryRate_r_IHC_Meddis2000(recoveryRate_r))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
 
 }
 
@@ -471,7 +394,6 @@ SetOpMode_IHC_Meddis2000(WChar * theOpMode)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->opModeFlag = TRUE;
 	hairCell2Ptr->opMode = specifier;
 	return(TRUE);
 
@@ -497,7 +419,6 @@ SetDiagMode_IHC_Meddis2000(WChar * theDiagMode)
 
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->diagModeFlag = TRUE;
 	hairCell2Ptr->diagMode = IdentifyDiag_NSpecLists(theDiagMode,
 	  hairCell2Ptr->diagModeList);
 	return(TRUE);
@@ -529,7 +450,6 @@ SetCaCondMode_IHC_Meddis2000(WChar * theCaCondMode)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->caCondModeFlag = TRUE;
 	hairCell2Ptr->caCondMode = specifier;
 	SetEnabledPars_IHC_Meddis2000();
 	return(TRUE);
@@ -562,7 +482,6 @@ SetCleftReplenishMode_IHC_Meddis2000(WChar * theCleftReplenishMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	hairCell2Ptr->cleftReplenishModeFlag = TRUE;
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
 	hairCell2Ptr->cleftReplenishMode = specifier;
 	SetEnabledPars_IHC_Meddis2000();
@@ -589,7 +508,6 @@ SetRanSeed_IHC_Meddis2000(long theRanSeed)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->ranSeedFlag = TRUE;
 	hairCell2Ptr->ranSeed = theRanSeed;
 	return(TRUE);
 
@@ -604,7 +522,7 @@ SetRanSeed_IHC_Meddis2000(long theRanSeed)
  */
 
 BOOLN
-SetCaVrev_IHC_Meddis2000(double theCaVrev)
+SetCaVrev_IHC_Meddis2000(Float theCaVrev)
 {
 	static const WChar	*funcName = wxT("SetCaVrev_IHC_Meddis2000");
 
@@ -614,7 +532,6 @@ SetCaVrev_IHC_Meddis2000(double theCaVrev)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->CaVrevFlag = TRUE;
 	hairCell2Ptr->CaVrev = theCaVrev;
 	return(TRUE);
 
@@ -629,7 +546,7 @@ SetCaVrev_IHC_Meddis2000(double theCaVrev)
  */
 
 BOOLN
-SetBetaCa_IHC_Meddis2000(double theBetaCa)
+SetBetaCa_IHC_Meddis2000(Float theBetaCa)
 {
 	static const WChar	*funcName = wxT("SetBetaCa_IHC_Meddis2000");
 
@@ -639,7 +556,6 @@ SetBetaCa_IHC_Meddis2000(double theBetaCa)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->betaCaFlag = TRUE;
 	hairCell2Ptr->betaCa = theBetaCa;
 	return(TRUE);
 
@@ -654,7 +570,7 @@ SetBetaCa_IHC_Meddis2000(double theBetaCa)
  */
 
 BOOLN
-SetGammaCa_IHC_Meddis2000(double theGammaCa)
+SetGammaCa_IHC_Meddis2000(Float theGammaCa)
 {
 	static const WChar	*funcName = wxT("SetGammaCa_IHC_Meddis2000");
 
@@ -664,7 +580,6 @@ SetGammaCa_IHC_Meddis2000(double theGammaCa)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->gammaCaFlag = TRUE;
 	hairCell2Ptr->gammaCa = theGammaCa;
 	return(TRUE);
 
@@ -679,7 +594,7 @@ SetGammaCa_IHC_Meddis2000(double theGammaCa)
  */
 
 BOOLN
-SetPCa_IHC_Meddis2000(double thePCa)
+SetPCa_IHC_Meddis2000(Float thePCa)
 {
 	static const WChar	*funcName = wxT("SetPCa_IHC_Meddis2000");
 
@@ -689,7 +604,6 @@ SetPCa_IHC_Meddis2000(double thePCa)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->pCaFlag = TRUE;
 	hairCell2Ptr->pCa = thePCa;
 	return(TRUE);
 
@@ -704,7 +618,7 @@ SetPCa_IHC_Meddis2000(double thePCa)
  */
 
 BOOLN
-SetGCaMax_IHC_Meddis2000(double theGCaMax)
+SetGCaMax_IHC_Meddis2000(Float theGCaMax)
 {
 	static const WChar	*funcName = wxT("SetGCaMax_IHC_Meddis2000");
 
@@ -714,7 +628,6 @@ SetGCaMax_IHC_Meddis2000(double theGCaMax)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->GCaMaxFlag = TRUE;
 	hairCell2Ptr->GCaMax = theGCaMax;
 	return(TRUE);
 
@@ -729,7 +642,7 @@ SetGCaMax_IHC_Meddis2000(double theGCaMax)
  */
 
 BOOLN
-SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0)
+SetPerm_Ca0_IHC_Meddis2000(Float thePerm_Ca0)
 {
 	static const WChar	*funcName = wxT("SetPerm_Ca0_IHC_Meddis2000");
 
@@ -739,7 +652,6 @@ SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->perm_Ca0Flag = TRUE;
 	hairCell2Ptr->perm_Ca0 = thePerm_Ca0;
 	return(TRUE);
 
@@ -754,7 +666,7 @@ SetPerm_Ca0_IHC_Meddis2000(double thePerm_Ca0)
  */
 
 BOOLN
-SetPerm_z_IHC_Meddis2000(double thePerm_z)
+SetPerm_z_IHC_Meddis2000(Float thePerm_z)
 {
 	static const WChar	*funcName = wxT("SetPerm_z_IHC_Meddis2000");
 
@@ -764,7 +676,6 @@ SetPerm_z_IHC_Meddis2000(double thePerm_z)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->perm_zFlag = TRUE;
 	hairCell2Ptr->perm_z = thePerm_z;
 	return(TRUE);
 
@@ -779,7 +690,7 @@ SetPerm_z_IHC_Meddis2000(double thePerm_z)
  */
 
 BOOLN
-SetTauCaChan_IHC_Meddis2000(double theTauCaChan)
+SetTauCaChan_IHC_Meddis2000(Float theTauCaChan)
 {
 	static const WChar	*funcName = wxT("SetTauCaChan_IHC_Meddis2000");
 
@@ -789,7 +700,6 @@ SetTauCaChan_IHC_Meddis2000(double theTauCaChan)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->tauCaChanFlag = TRUE;
 	hairCell2Ptr->tauCaChan = theTauCaChan;
 	return(TRUE);
 
@@ -804,7 +714,7 @@ SetTauCaChan_IHC_Meddis2000(double theTauCaChan)
  */
 
 BOOLN
-SetTauConcCa_IHC_Meddis2000(double theTauConcCa)
+SetTauConcCa_IHC_Meddis2000(Float theTauConcCa)
 {
 	static const WChar	*funcName = wxT("SetTauConcCa_IHC_Meddis2000");
 
@@ -814,7 +724,6 @@ SetTauConcCa_IHC_Meddis2000(double theTauConcCa)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->tauConcCaFlag = TRUE;
 	hairCell2Ptr->tauConcCa = theTauConcCa;
 	return(TRUE);
 
@@ -839,7 +748,6 @@ SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->maxFreePool_MFlag = TRUE;
 	hairCell2Ptr->maxFreePool_M = theMaxFreePool_M;
 	return(TRUE);
 
@@ -854,7 +762,7 @@ SetMaxFreePool_M_IHC_Meddis2000(int theMaxFreePool_M)
  */
 
 BOOLN
-SetReplenishRate_y_IHC_Meddis2000(double theReplenishRate_y)
+SetReplenishRate_y_IHC_Meddis2000(Float theReplenishRate_y)
 {
 	static const WChar	*funcName = wxT("SetReplenishRate_y_IHC_Meddis2000");
 
@@ -864,7 +772,6 @@ SetReplenishRate_y_IHC_Meddis2000(double theReplenishRate_y)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->replenishRate_yFlag = TRUE;
 	hairCell2Ptr->replenishRate_y = theReplenishRate_y;
 	return(TRUE);
 
@@ -879,7 +786,7 @@ SetReplenishRate_y_IHC_Meddis2000(double theReplenishRate_y)
  */
 
 BOOLN
-SetLossRate_l_IHC_Meddis2000(double theLossRate_l)
+SetLossRate_l_IHC_Meddis2000(Float theLossRate_l)
 {
 	static const WChar	*funcName = wxT("SetLossRate_l_IHC_Meddis2000");
 
@@ -889,7 +796,6 @@ SetLossRate_l_IHC_Meddis2000(double theLossRate_l)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->lossRate_lFlag = TRUE;
 	hairCell2Ptr->lossRate_l = theLossRate_l;
 	return(TRUE);
 
@@ -904,7 +810,7 @@ SetLossRate_l_IHC_Meddis2000(double theLossRate_l)
  */
 
 BOOLN
-SetReprocessRate_x_IHC_Meddis2000(double theReprocessRate_x)
+SetReprocessRate_x_IHC_Meddis2000(Float theReprocessRate_x)
 {
 	static const WChar	*funcName = wxT("SetReprocessRate_x_IHC_Meddis2000");
 
@@ -914,7 +820,6 @@ SetReprocessRate_x_IHC_Meddis2000(double theReprocessRate_x)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->reprocessRate_xFlag = TRUE;
 	hairCell2Ptr->reprocessRate_x = theReprocessRate_x;
 	return(TRUE);
 
@@ -929,7 +834,7 @@ SetReprocessRate_x_IHC_Meddis2000(double theReprocessRate_x)
  */
 
 BOOLN
-SetRecoveryRate_r_IHC_Meddis2000(double theRecoveryRate_r)
+SetRecoveryRate_r_IHC_Meddis2000(Float theRecoveryRate_r)
 {
 	static const WChar	*funcName = wxT("SetRecoveryRate_r_IHC_Meddis2000");
 
@@ -939,110 +844,8 @@ SetRecoveryRate_r_IHC_Meddis2000(double theRecoveryRate_r)
 	}
 	/*** Put any other required checks here. ***/
 	hairCell2Ptr->updateProcessVariablesFlag = TRUE;
-	hairCell2Ptr->recoveryRate_rFlag = TRUE;
 	hairCell2Ptr->recoveryRate_r = theRecoveryRate_r;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHC_Meddis2000(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHC_Meddis2000");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (hairCell2Ptr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!hairCell2Ptr->opModeFlag) {
-		NotifyError(wxT("%s: opMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->diagModeFlag) {
-		NotifyError(wxT("%s: diagMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->caCondModeFlag) {
-		NotifyError(wxT("%s: caCondMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->cleftReplenishModeFlag) {
-		NotifyError(wxT("%s: cleftReplenishMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->ranSeedFlag) {
-		NotifyError(wxT("%s: ranSeed variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->CaVrevFlag) {
-		NotifyError(wxT("%s: CaVrev variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->betaCaFlag) {
-		NotifyError(wxT("%s: betaCa variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->gammaCaFlag) {
-		NotifyError(wxT("%s: gammaCa variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->pCaFlag) {
-		NotifyError(wxT("%s: pCa variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->GCaMaxFlag) {
-		NotifyError(wxT("%s: GCaMax variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->perm_Ca0Flag) {
-		NotifyError(wxT("%s: Perm_Ca0 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->perm_zFlag) {
-		NotifyError(wxT("%s: Perm_z variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->tauCaChanFlag) {
-		NotifyError(wxT("%s: tauCaChan variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->tauConcCaFlag) {
-		NotifyError(wxT("%s: tauConcCa variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->maxFreePool_MFlag) {
-		NotifyError(wxT("%s: maxFreePool_M variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->replenishRate_yFlag) {
-		NotifyError(wxT("%s: replenishRate_y variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->lossRate_lFlag) {
-		NotifyError(wxT("%s: lossRate_l variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->reprocessRate_xFlag) {
-		NotifyError(wxT("%s: reprocessRate_x variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!hairCell2Ptr->recoveryRate_rFlag) {
-		NotifyError(wxT("%s: recoveryRate_r variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -1058,11 +861,6 @@ PrintPars_IHC_Meddis2000(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHC_Meddis2000");
 
-	if (!CheckPars_IHC_Meddis2000()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Meddis 2000 IHC Module Parameters:-\n"));
 	DPrint(wxT("\tOperational mode = %s \n"),
 	  hairCell2Ptr->opModeList[hairCell2Ptr->opMode].name);
@@ -1094,88 +892,6 @@ PrintPars_IHC_Meddis2000(void)
 	DPrint(wxT("\tLoss rate, l = %g /s,\tReprocessing rate, x = %g /s\n"),
 	  hairCell2Ptr->lossRate_l, hairCell2Ptr->reprocessRate_x);
 	DPrint(wxT("\tRecovery rate, r = %g /s\n"), hairCell2Ptr->recoveryRate_r);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_IHC_Meddis2000(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_IHC_Meddis2000");
-	BOOLN	ok;
-	WChar	*filePath, opMode[MAXLINE], diagMode[MAXLINE];
-	int		maxFreePool_M;
-	long	ranSeed;
-	double	recPotOffset, CaVrev, betaCa, gammaCa, pCa, GCaMax;
-	double	perm_Ca0, perm_z, tauCaChan, tauConcCa;
-	double	replenishRate_y, lossRate_l, reprocessRate_x, recoveryRate_r;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), opMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), diagMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%ld"), &ranSeed))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &recPotOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &CaVrev))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &betaCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &gammaCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &pCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &GCaMax))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &perm_Ca0))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &perm_z))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &tauCaChan))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &tauConcCa))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &maxFreePool_M))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &replenishRate_y))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &lossRate_l))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &reprocessRate_x))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &recoveryRate_r))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_IHC_Meddis2000(opMode, diagMode, ranSeed,
-	  CaVrev, betaCa, gammaCa, pCa, GCaMax, perm_Ca0, perm_z, tauCaChan,
-	  tauConcCa, maxFreePool_M, replenishRate_y, lossRate_l, reprocessRate_x,
-	  recoveryRate_r)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -1223,11 +939,9 @@ InitModule_IHC_Meddis2000(ModulePtr theModule)
 	}
 	theModule->parsPtr = hairCell2Ptr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHC_Meddis2000;
 	theModule->Free = Free_IHC_Meddis2000;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Meddis2000;
 	theModule->PrintPars = PrintPars_IHC_Meddis2000;
-	theModule->ReadPars = ReadPars_IHC_Meddis2000;
 	theModule->ResetProcess = ResetProcess_IHC_Meddis2000;
 	theModule->RunProcess = RunModel_IHC_Meddis2000;
 	theModule->SetParsPointer = SetParsPointer_IHC_Meddis2000;
@@ -1252,7 +966,7 @@ BOOLN
 CheckData_IHC_Meddis2000(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_IHC_Meddis2000");
-	double	dt;
+	Float	dt;
 	BOOLN		ok;
 
 	if (data == NULL) {
@@ -1294,7 +1008,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 
 	/* Additional checks added for the new code */
 	if ( dt/hairCell2Ptr->tauCaChan  >= 1.0) {
-		NotifyError(wxT("%s: tauCaChan = %g /s is too high for the ") 
+		NotifyError(wxT("%s: tauCaChan = %g /s is too high for the ")
 		  wxT("sampling interval."), funcName, hairCell2Ptr->tauCaChan);
 		ok = FALSE;
 	}
@@ -1302,7 +1016,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		NotifyError(wxT("%s: tauConcCa = %g /s is too high for the ")
 		  wxT("sampling interval."), funcName, hairCell2Ptr->tauConcCa);
 		ok = FALSE;
-	}	
+	}
 
 	return(TRUE);
 
@@ -1323,30 +1037,30 @@ void
 ResetProcess_IHC_Meddis2000(EarObjectPtr data)
 {
 	int		i;
-	double	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
+	Float	spontPerm_k0, spontCleft_c0, spontFreePool_q0, spontReprocess_w0;
 	HairCell2Ptr	p = hairCell2Ptr; /* Shorter variable for long formulae. */
-	
-	double	  	ICa;		/* Calcium conductance not current! */
-	double	  	ssactCa;	/* steady state Calcium activation */
+
+	Float	  	ICa;		/* Calcium conductance not current! */
+	Float	  	ssactCa;	/* steady state Calcium activation */
 
 	ssactCa = 1.0 / ( 1.0 + (exp(- (p->gammaCa*(_InSig_EarObject(data, 0)->channel[
-	  0][0]))) / p->betaCa));		
+	  0][0]))) / p->betaCa));
 	ICa = p->GCaMax * pow(ssactCa, 3) * (_InSig_EarObject(data, 0)->channel[0][0] -
 	  p->CaVrev);
 	if (p->caCondMode == IHC_MEDDIS2000_CACONDMODE_REVISION1)
 		ICa *= p->tauConcCa;
 	spontPerm_k0 = ( -ICa > p->perm_Ca0 ) ? (p->perm_z * (pow(-ICa, p->pCa) -
-	  pow(p->perm_Ca0, p->pCa))) : 0; 
+	  pow(p->perm_Ca0, p->pCa))) : 0;
 	spontCleft_c0 = (p->cleftReplenishMode ==
 	  IHC_MEDDIS2000_CLEFTREPLENISHMODE_ORIGINAL)? p->maxFreePool_M *
 	  p->replenishRate_y * spontPerm_k0 / (p->replenishRate_y * (p->lossRate_l +
 	  p->recoveryRate_r) + spontPerm_k0 * p->lossRate_l): p->replenishRate_y /
 	  p->lossRate_l;
 	if (spontCleft_c0 > 0.0) {
-	   if (p->opMode == IHC_MEDDIS2000_OPMODE_PROB) 
+	   if (p->opMode == IHC_MEDDIS2000_OPMODE_PROB)
 		  spontFreePool_q0 = spontCleft_c0 * (p->lossRate_l +
 		    p->recoveryRate_r) / spontPerm_k0;
-		else 
+		else
 			spontFreePool_q0 = floor( (spontCleft_c0 * (p->lossRate_l +
 		      p->recoveryRate_r) / spontPerm_k0) + 0.5);
 	} else
@@ -1377,10 +1091,10 @@ ResetProcess_IHC_Meddis2000(EarObjectPtr data)
  * for all channels.
  */
 
-/* N.B. Pretty much lifted from the Meddis 95 synapse, but modifed for the new 
+/* N.B. Pretty much lifted from the Meddis 95 synapse, but modifed for the new
  * transmitter relese function (CJS 1-2-2000).
  */
- 
+
 BOOLN
 InitProcessVariables_IHC_Meddis2000(EarObjectPtr data)
 {
@@ -1451,17 +1165,15 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_IHC_Meddis2000");
 	register	ChanData	 *inPtr, *outPtr;
-	register double kdt, replenish, reprocessed, ejected;
+	register Float kdt, replenish, reprocessed, ejected;
 	BOOLN	debug;
 	int		i;
 	ChanLen	j;
-	double	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
+	Float	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
 	SignalDataPtr	outSignal;
 	HairCell2Ptr	p = hairCell2Ptr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHC_Meddis2000())
-			return(FALSE);
 		if (!CheckData_IHC_Meddis2000(data)) {
 	 		NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -1489,7 +1201,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 		p->rdt = p->recoveryRate_r * dt;
 		p->xdt = p->reprocessRate_x * dt;
 		p->zdt = p->perm_z * dt;
-		p->k0pow = pow( p->perm_Ca0, p->pCa );	
+		p->k0pow = pow( p->perm_Ca0, p->pCa );
 		p->l_Plus_rdt = (p->lossRate_l + p->recoveryRate_r) * dt;
 		p->dt_Over_tauConcCa = dt / p->tauConcCa;
 		p->dtOverTauCaChan = dt / p->tauCaChan;
@@ -1524,14 +1236,14 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 			Vin = *inPtr;
 
 			/* Ca current */
-			ssactCa = 	1/( 1 + exp(-p->gammaCa*Vin)/p->betaCa );		
-	
+			ssactCa = 	1/( 1 + exp(-p->gammaCa*Vin)/p->betaCa );
+
 			p->hCChannels[i].actCa += (ssactCa - p->hCChannels[i].actCa) *
-			  p->dtOverTauCaChan; 
+			  p->dtOverTauCaChan;
 			ICa = p->GCaMax * pow(p->hCChannels[i].actCa, 3) * (Vin -
 			  p->CaVrev);
-			
-			/* Calcium Ion accumulation and diffusion */			
+
+			/* Calcium Ion accumulation and diffusion */
 			p->hCChannels[i].concCa += (hairCell2Ptr->caCondMode ==
 			  IHC_MEDDIS2000_CACONDMODE_ORIGINAL)?
 			  (-ICa - p->hCChannels[i].concCa) * p->dt_Over_tauConcCa:
@@ -1539,10 +1251,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 
 			/* power law release function */
 			kdt = ( p->hCChannels[i].concCa > p->perm_Ca0 ) ? (p->zdt * (pow(
-			  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0; 
+			  p->hCChannels[i].concCa, p->pCa) - p->k0pow)): 0;
 
 			/* Increment input pointer */
-			inPtr++; 
+			inPtr++;
 
  			/* end of new transmitter release function */
 
@@ -1559,8 +1271,8 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 					  data->randPars): 0;
 
 					ejected = GeomDist_Random(kdt, (int) p->hCChannels[
-					  i].reservoirQ, data->randPars);	
-		
+					  i].reservoirQ, data->randPars);
+
 					reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
 					reUptake = p->rdt * p->hCChannels[i].cleftC;
 					reprocessed = (p->hCChannels[i].reprocessedW < 1.0)? 0:
@@ -1573,10 +1285,10 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 					  reUptakeAndLost;
 
 					if (ejected > 0)
-						*outPtr = ejected; 
+						*outPtr = ejected;
 					else
 						*outPtr = 0.0;
-			
+
 					p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 					break;
 
@@ -1586,24 +1298,24 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? p->ydt:
 					  (p->hCChannels[i].reservoirQ < p->maxFreePool_M)? p->ydt *
 					  (p->maxFreePool_M - p->hCChannels[i].reservoirQ): 0.0;
-		
+
 					ejected = kdt * p->hCChannels[i].reservoirQ;
-		
+
 					reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
 					reUptake = p->rdt * p->hCChannels[i].cleftC;
-		
-					reprocessed = p->xdt * p->hCChannels[i].reprocessedW;	
+
+					reprocessed = p->xdt * p->hCChannels[i].reprocessedW;
 					p->hCChannels[i].reservoirQ += replenish - ejected +
 					  reprocessed;
 					p->hCChannels[i].cleftC += ejected - reUptakeAndLost;
 
-					*outPtr = ejected; 
-			
+					*outPtr = ejected;
+
 					p->hCChannels[i].reprocessedW += reUptake - reprocessed;
 					break;
 
 				/* neither mode set. error and exit */
-				default: 
+				default:
 					NotifyError(wxT("%s: Illegal output mode."), funcName);
 					exit(0);
 				}
@@ -1616,7 +1328,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 				  kdt, p->hCChannels[i].reservoirQ, p->hCChannels[i].cleftC, p->
 				  hCChannels[i].reprocessedW, ejected);
 				DSAM_fprintf(hairCell2Ptr->fp, wxT("\n"));
-			}		 
+			}
 
 		}
 	}

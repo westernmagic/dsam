@@ -8,7 +8,7 @@
  *				read files from 'stdin'.
  *				20-04-98 LPO: In segmented mode the normalisation calculation
  *				operates on the first segment only.
- *				The DBL_EPSILON was replaced by AIFF_SMALL_VALUE, because of
+ *				The DSAM_EPSILON was replaced by AIFF_SMALL_VALUE, because of
  *				rounding errors under glibc-2.0.6.
  *				30-06-98 LPO: Introduced use of the SignalData structure's
  *				'numWindowFrames' field.  A corresponding field has also been
@@ -70,24 +70,22 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	normalisationModeFlag, timeConstModeFlag, timeOffsetFlag;
-	BOOLN	timeConstantFlag, timeConstScaleFlag, maxLagFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 	int		normalisationMode;
 	int		timeConstMode;
-	double	timeOffset;
-	double	timeConstant;
-	double	timeConstScale;
-	double	maxLag;
+	Float	timeOffset;
+	Float	timeConstant;
+	Float	timeConstScale;
+	Float	maxLag;
 
 	/* Private members */
 	NameSpecifier	*normalisationModeList;
 	NameSpecifier	*timeConstModeList;
 	UniParListPtr	parList;
 	ChanLen	timeOffsetIndex, sumLimitIndex, maxLagIndex;
-	double	*exponentDt, expDecay, dt;
-	
+	Float	*exponentDt, expDecay, dt;
+
 
 } AutoCorr, *AutoCorrPtr;
 
@@ -111,8 +109,6 @@ BOOLN	Calc_Analysis_ACF(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_ACF(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_ACF(void);
-
 BOOLN	Free_Analysis_ACF(void);
 
 void	FreeProcessVariables_Analysis_ACF(void);
@@ -127,9 +123,7 @@ BOOLN	InitProcessVariables_Analysis_ACF(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_ACF(void);
 
-BOOLN	ReadPars_Analysis_ACF(WChar *fileName);
-
-BOOLN	SetMaxLag_Analysis_ACF(double theMaxLag);
+BOOLN	SetMaxLag_Analysis_ACF(Float theMaxLag);
 
 BOOLN	InitModule_Analysis_ACF(ModulePtr theModule);
 
@@ -137,22 +131,19 @@ BOOLN	SetNormalisationMode_Analysis_ACF(WChar * theNormalisationMode);
 
 BOOLN	SetParsPointer_Analysis_ACF(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_ACF(WChar * normalisationMode, double timeOffset,
-		  double timeConstant, double maxLag);
-
 BOOLN	SetTimeConstMode_Analysis_ACF(WChar * theTimeConstMode);
 
-BOOLN	SetTimeConstScale_Analysis_ACF(double theTimeConstScale);
+BOOLN	SetTimeConstScale_Analysis_ACF(Float theTimeConstScale);
 
-BOOLN	SetTimeConstant_Analysis_ACF(double theTimeConstant);
+BOOLN	SetTimeConstant_Analysis_ACF(Float theTimeConstant);
 
-BOOLN	SetTimeOffset_Analysis_ACF(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_ACF(Float theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_ACF(void);
 
-ChanLen	SunLimitIndex_Analysis_ACF(EarObjectPtr data, double timeConstant);
+ChanLen	SunLimitIndex_Analysis_ACF(EarObjectPtr data, Float timeConstant);
 
-double	TimeConstant_Analysis_ACF(double lag);
+Float	TimeConstant_Analysis_ACF(Float lag);
 
 __END_DECLS
 

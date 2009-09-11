@@ -32,8 +32,8 @@
 void
 Mult_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
-	double SumRe,SumIm;
-	
+	Float SumRe,SumIm;
+
 	SumRe = (a->re * b->re) - (a->im * b->im);
 	SumIm = (a->re * b->im) + (a->im * b->re);
 	(*c).re = SumRe;
@@ -48,9 +48,9 @@ BOOLN
 Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
 	Complex Num;
-	double Denom;
+	Float Denom;
 	int div_succs;
-	
+
 	Denom  = (b->re * b->re) + (b->im * b->im);
 	Num.re = (a->re * b->re) + (a->im * b->im);
 	Num.im = (a->im * b->re) - (a->re * b->im);
@@ -74,8 +74,8 @@ Div_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 void
 Add_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
-	double SumRe,SumIm;
-	
+	Float SumRe,SumIm;
+
 	SumRe = (a->re + b->re);
 	SumIm = (a->im + b->im);
 	(*c).re = SumRe;
@@ -88,8 +88,8 @@ Add_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 
 void Subt_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 {
-	double SumRe,SumIm;
-	
+	Float SumRe,SumIm;
+
 	SumRe = (a->re - b->re);
 	SumIm = (a->im - b->im);
 	(*c).re = SumRe;
@@ -100,8 +100,8 @@ void Subt_CmplxM(ComplexPtr a, ComplexPtr b, ComplexPtr c)
 
 void Convert_CmplxM(ComplexPtr a,ComplexPtr b) /* Complex magnitude b = |a| */
 {
-	double SumRe, SumIm;
-	
+	Float SumRe, SumIm;
+
 	SumRe = (a->re * a->re) + (a->im * a->im);;
 	SumRe = sqrt(SumRe);
 	if(a->re != 0.0)
@@ -122,11 +122,11 @@ void Copy_CmplxM(ComplexPtr a,ComplexPtr b) /* copy contents of a to b */
 
 /*-------------------------------------------------*/
 
-void Power_CmplxM(ComplexPtr a, double n) /* calculate */
+void Power_CmplxM(ComplexPtr a, Float n) /* calculate */
 /*-------------------(*a) to power n, n fractional */
 {
-	double r, theta, real, imag;
-	
+	Float r, theta, real, imag;
+
 	real = a->re; imag = a->im;
 	r = sqrt( (real*real) + (imag*imag) );
 	if(r != 0.0)
@@ -135,16 +135,16 @@ void Power_CmplxM(ComplexPtr a, double n) /* calculate */
 		return;
 	if((real > 0.0) && (imag > 0.0))
 		 ; /* get quadrant correct */
-	else 
+	else
 		if((real > 0.0) && (imag < 0.0))
 			theta = TWOPI - theta;
 	else
 		if((real < 0.0) && (imag < 0.0))
 			theta += M_PI;
-	else 
+	else
 		if((real < 0.0) && (imag > 0.0))
 			theta = M_PI - theta;
-			
+
 	theta *= n;	r = pow(r,n); /* perform power on r*exp(i*theta) */
 	real = r*cos(theta); imag = r*sin(theta);
 	a->re = real; a->im = imag;
@@ -156,11 +156,11 @@ void Power_CmplxM(ComplexPtr a, double n) /* calculate */
  * This function returns with the modulus of a complex number.
  */
 
-double
+Float
 Modulus_CmplxM(ComplexPtr z)
 {
 	return (sqrt(z->re * z->re + z->im * z->im));
-	
+
 }
 
 /*************************** Phase ********************************************/
@@ -170,11 +170,11 @@ Modulus_CmplxM(ComplexPtr z)
  * This needs to be changed.
  */
 
-double
+Float
 Phase_CmplxM(ComplexPtr z)
 {
 	return(atan2(z->im, z->re));
-	
+
 }
 
 /*************************** RThetaSet ****************************************/
@@ -185,7 +185,7 @@ Phase_CmplxM(ComplexPtr z)
  */
 
 void
-RThetaSet_CmplxM(double r, double theta, ComplexPtr z)
+RThetaSet_CmplxM(Float r, Float theta, ComplexPtr z)
 {
 	z->re = r * cos(theta);
 	z->im = r * sin(theta);
@@ -199,7 +199,7 @@ RThetaSet_CmplxM(double r, double theta, ComplexPtr z)
  */
 
 void
-ScalerMult_CmplxM(ComplexPtr z, double scaler)
+ScalerMult_CmplxM(ComplexPtr z, Float scaler)
 {
 	z->re *= scaler;
 	z->im *= scaler;

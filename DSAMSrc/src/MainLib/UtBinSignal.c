@@ -121,8 +121,6 @@ Init_Utility_BinSignal(ParameterSpecifier parSpec)
 		}
 	}
 	binSignalPtr->parSpec = parSpec;
-	binSignalPtr->modeFlag = TRUE;
-	binSignalPtr->binWidthFlag = TRUE;
 	binSignalPtr->mode = UTILITY_BINSIGNAL_SUM_MODE;
 	binSignalPtr->binWidth = -1.0;
 
@@ -195,30 +193,6 @@ GetUniParListPtr_Utility_BinSignal(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_BinSignal(WChar * mode, double binWidth)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_BinSignal");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_BinSignal(mode))
-		ok = FALSE;
-	if (!SetBinWidth_Utility_BinSignal(binWidth))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -243,7 +217,6 @@ SetMode_Utility_BinSignal(WChar * theMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	binSignalPtr->modeFlag = TRUE;
 	binSignalPtr->mode = specifier;
 	return(TRUE);
 
@@ -258,7 +231,7 @@ SetMode_Utility_BinSignal(WChar * theMode)
  */
 
 BOOLN
-SetBinWidth_Utility_BinSignal(double theBinWidth)
+SetBinWidth_Utility_BinSignal(Float theBinWidth)
 {
 	static const WChar	*funcName = wxT("SetBinWidth_Utility_BinSignal");
 
@@ -266,42 +239,8 @@ SetBinWidth_Utility_BinSignal(double theBinWidth)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	binSignalPtr->binWidthFlag = TRUE;
 	binSignalPtr->binWidth = theBinWidth;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_BinSignal(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_BinSignal");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (binSignalPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!binSignalPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!binSignalPtr->binWidthFlag) {
-		NotifyError(wxT("%s: binWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -317,9 +256,8 @@ PrintPars_Utility_BinSignal(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_BinSignal");
 
-	if (!CheckPars_Utility_BinSignal()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (binSignalPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Bin Signal Utility Module Parameters:-\n"));
@@ -330,49 +268,6 @@ PrintPars_Utility_BinSignal(void)
 		DPrint(wxT("signal/segment duration.\n"));
 	else
 		DPrint(wxT("%g (ms).\n"), MSEC(binSignalPtr->binWidth));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_BinSignal(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_BinSignal");
-	BOOLN	ok;
-	WChar	*filePath, mode[MAXLINE];
-	double	binWidth;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &binWidth))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_BinSignal(mode, binWidth)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -420,11 +315,9 @@ InitModule_Utility_BinSignal(ModulePtr theModule)
 	}
 	theModule->parsPtr = binSignalPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_BinSignal;
 	theModule->Free = Free_Utility_BinSignal;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_BinSignal;
 	theModule->PrintPars = PrintPars_Utility_BinSignal;
-	theModule->ReadPars = ReadPars_Utility_BinSignal;
 	theModule->ResetProcess = ResetProcess_Utility_BinSignal;
 	theModule->RunProcess = Process_Utility_BinSignal;
 	theModule->SetParsPointer = SetParsPointer_Utility_BinSignal;
@@ -449,7 +342,7 @@ BOOLN
 CheckData_Utility_BinSignal(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Utility_BinSignal");
-	double	dt;
+	Float	dt;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -502,14 +395,12 @@ Process_Utility_BinSignal(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_BinSignal");
 	register	ChanData	 *inPtr, *outPtr, binSum, nextBinCutOff;
 	int		chan;
-	double duration;
+	Float duration;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 	BinSignalPtr	p = binSignalPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_BinSignal())
-			return(FALSE);
 		if (!CheckData_Utility_BinSignal(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

@@ -9,7 +9,7 @@
  * 				Exploration Geophysics, (1992) Vol 28,  No. 1, p.62-69.
  * Author:		L. P. O'Mard
  * Created:		12 Mar 2007
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2007, L. P. O'Mard
  *
  *********************/
@@ -312,7 +312,7 @@ SetPhaseMode_Harmonic_FreqSwept(WChar * thePhaseMode)
  */
 
 BOOLN
-SetPhaseVariable_Harmonic_FreqSwept(double thePhaseVariable)
+SetPhaseVariable_Harmonic_FreqSwept(Float thePhaseVariable)
 {
 	static const WChar	*funcName = wxT("SetPhaseVariable_Harmonic_FreqSwept");
 
@@ -336,7 +336,7 @@ SetPhaseVariable_Harmonic_FreqSwept(double thePhaseVariable)
  */
 
 BOOLN
-SetInitialFreq_Harmonic_FreqSwept(double theInitialFreq)
+SetInitialFreq_Harmonic_FreqSwept(Float theInitialFreq)
 {
 	static const WChar	*funcName = wxT("SetInitialFreq_Harmonic_FreqSwept");
 
@@ -360,7 +360,7 @@ SetInitialFreq_Harmonic_FreqSwept(double theInitialFreq)
  */
 
 BOOLN
-SetFinalFreq_Harmonic_FreqSwept(double theFinalFreq)
+SetFinalFreq_Harmonic_FreqSwept(Float theFinalFreq)
 {
 	static const WChar	*funcName = wxT("SetFinalFreq_Harmonic_FreqSwept");
 
@@ -384,7 +384,7 @@ SetFinalFreq_Harmonic_FreqSwept(double theFinalFreq)
  */
 
 BOOLN
-SetIntensity_Harmonic_FreqSwept(double theIntensity)
+SetIntensity_Harmonic_FreqSwept(Float theIntensity)
 {
 	static const WChar	*funcName = wxT("SetIntensity_Harmonic_FreqSwept");
 
@@ -408,7 +408,7 @@ SetIntensity_Harmonic_FreqSwept(double theIntensity)
  */
 
 BOOLN
-SetDuration_Harmonic_FreqSwept(double theDuration)
+SetDuration_Harmonic_FreqSwept(Float theDuration)
 {
 	static const WChar	*funcName = wxT("SetDuration_Harmonic_FreqSwept");
 
@@ -432,7 +432,7 @@ SetDuration_Harmonic_FreqSwept(double theDuration)
  */
 
 BOOLN
-SetSamplingInterval_Harmonic_FreqSwept(double theSamplingInterval)
+SetSamplingInterval_Harmonic_FreqSwept(Float theSamplingInterval)
 {
 	static const WChar	*funcName = wxT(
 	  "SetSamplingInterval_Harmonic_FreqSwept");
@@ -590,19 +590,19 @@ InitProcessVariables_Harmonic_FreqSwept(EarObjectPtr data)
 		FreeProcessVariables_Harmonic_FreqSwept();
 		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 			return(FALSE);
-		if ((p->phase = (double *) calloc(totalNumberOfHarmonics, sizeof(
-		  double))) == NULL) {
+		if ((p->phase = (Float *) calloc(totalNumberOfHarmonics, sizeof(
+		  Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for 'phase' array"), funcName);
 			return(FALSE);
 		}
-		if ((p->harmonicFrequency = (double *) calloc(totalNumberOfHarmonics,
-		  sizeof(double))) == NULL) {
+		if ((p->harmonicFrequency = (Float *) calloc(totalNumberOfHarmonics,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for 'harmonic frequencies' ")
 			  wxT("array"), funcName);
 			return(FALSE);
 		}
-		if ((p->sweepRate = (double *) calloc(totalNumberOfHarmonics,
-		  sizeof(double))) == NULL) {
+		if ((p->sweepRate = (Float *) calloc(totalNumberOfHarmonics,
+		  sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for 'sweep rate' ")
 			  wxT("array"), funcName);
 			return(FALSE);
@@ -663,7 +663,7 @@ GenerateSignal_Harmonic_FreqSwept(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_Harmonic_FreqSwept");
 	register ChanData	 *outPtr;
-	register 	double		amplitude, timexPix2, time;
+	register 	Float		amplitude, timexPix2, time;
 	int		j, totalNumberOfHarmonics, harmonicNumber;
 	ChanLen	i, t;
 	SignalDataPtr	outSignal;
@@ -676,7 +676,7 @@ GenerateSignal_Harmonic_FreqSwept(EarObjectPtr data)
 		}
 		SetProcessName_EarObject(data, wxT("Frequency Swept Harmonic Series ")
 		  wxT("Stimulus"));
-	
+
 		if (!InitOutSignal_EarObject(data, HARMONIC_FREQSWEPT_NUM_CHANNELS,
 		  (ChanLen) floor(p->duration / p->dt + 0.5), p->dt)) {
 			NotifyError(wxT("%s: Cannot initialise output channels."), funcName);

@@ -2,8 +2,8 @@
  *
  * File:		StClick.c
  * Purpose:		This module contains the methods for the Click stimulus
- *				generation paradigm. 
- * Comments:	
+ *				generation paradigm.
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		18 Feb 1993
  * Updated:		12 Mar 1997
@@ -63,16 +63,12 @@ Init_Click(ParameterSpecifier parSpec)
 			return(FALSE);
 		}
 	} else { /* LOCAL */
-		if (clickPtr == NULL) { 
+		if (clickPtr == NULL) {
 			NotifyError(wxT("%s:  'local' pointer not set."), funcName);
 			return(FALSE);
 		}
 	}
 	clickPtr->parSpec = parSpec;
-	clickPtr->clickTimeFlag = TRUE;
-	clickPtr->amplitudeFlag = TRUE;
-	clickPtr->durationFlag = TRUE;
-	clickPtr->dtFlag = TRUE;
 	clickPtr->clickTime = 0.01;
 	clickPtr->amplitude = 1.0;
 	clickPtr->duration = 0.1;
@@ -117,7 +113,7 @@ Free_Click(void)
  * This routine initialises and sets the module's universal parameter list.
  * This list provides universal access to the module's parameters.
  */
- 
+
 BOOLN
 SetUniParList_Click(void)
 {
@@ -178,58 +174,6 @@ GetUniParListPtr_Click(void)
 
 }
 
-/********************************* CheckPars **********************************/
-
-/*
- * This routine checks that the necessary parameters for the module have been
- * correctly initialised.
- * It returns TRUE if there are no problems.
- */
- 
-BOOLN
-CheckPars_Click(void)
-{
-	static const WChar *funcName = wxT("CheckPars_Click");
-	BOOLN	ok;
-	double	remainder;
-	
-	ok = TRUE;
-	if (clickPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!clickPtr->clickTimeFlag) {
-		NotifyError(wxT("%s: clickTime variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!clickPtr->amplitudeFlag) {
-		NotifyError(wxT("%s: amplitude variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!clickPtr->durationFlag) {
-		NotifyError(wxT("%s: duration variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!clickPtr->dtFlag) {
-		NotifyError(wxT("%s: dt (sampling interval) variable not set."),
-		  funcName);
-		ok = FALSE;
-	}
-	if (clickPtr->clickTime >= clickPtr->duration) {
-		NotifyError(wxT("%s: Click time must be less then the signal duration."),
-		  funcName);
-		ok = FALSE;
-	}
-	remainder = fmod(clickPtr->clickTime, clickPtr->dt);
-	if ((remainder > DBL_EPSILON) && (fabs(remainder - clickPtr->dt) >
-	  DBL_EPSILON)) {
-		NotifyError(wxT("%s: The click time should be a multiple of the ")
-		  wxT("sampling interval (%g ms)"), funcName, MILLI(clickPtr->dt));
-		ok = FALSE;
-	}
-	return(ok);
-}	
-
 /********************************* SetClickTime *******************************/
 
 /*
@@ -238,7 +182,7 @@ CheckPars_Click(void)
  */
 
 BOOLN
-SetClickTime_Click(double theClickTime)
+SetClickTime_Click(Float theClickTime)
 {
 	static const WChar *funcName = wxT("SetClickTime_Click");
 
@@ -246,7 +190,6 @@ SetClickTime_Click(double theClickTime)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	clickPtr->clickTimeFlag = TRUE;
 	clickPtr->clickTime = theClickTime;
 	return(TRUE);
 
@@ -260,7 +203,7 @@ SetClickTime_Click(double theClickTime)
  */
 
 BOOLN
-SetAmplitude_Click(double theAmplitude)
+SetAmplitude_Click(Float theAmplitude)
 {
 	static const WChar *funcName = wxT("SetAmplitude_Click");
 
@@ -268,7 +211,6 @@ SetAmplitude_Click(double theAmplitude)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	clickPtr->amplitudeFlag = TRUE;
 	clickPtr->amplitude = theAmplitude;
 	return(TRUE);
 
@@ -282,7 +224,7 @@ SetAmplitude_Click(double theAmplitude)
  */
 
 BOOLN
-SetDuration_Click(double theDuration)
+SetDuration_Click(Float theDuration)
 {
 	static const WChar *funcName = wxT("SetDuration_Click");
 
@@ -290,7 +232,6 @@ SetDuration_Click(double theDuration)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	clickPtr->durationFlag = TRUE;
 	clickPtr->duration = theDuration;
 	return(TRUE);
 
@@ -304,7 +245,7 @@ SetDuration_Click(double theDuration)
  */
 
 BOOLN
-SetSamplingInterval_Click(double theSamplingInterval)
+SetSamplingInterval_Click(Float theSamplingInterval)
 {
 	static const WChar *funcName = wxT("SetSamplingInterval_Click");
 
@@ -317,39 +258,9 @@ SetSamplingInterval_Click(double theSamplingInterval)
 		  theSamplingInterval);
 		return(FALSE);
 	}
-	clickPtr->dtFlag = TRUE;
 	clickPtr->dt = theSamplingInterval;
 	return(TRUE);
 
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
- 
-BOOLN
-SetPars_Click(double theClickTime, double theAmplitude, double theDuration,
-  double theSamplingInterval)
-{
-	static const WChar *funcName = wxT("SetPars_Click");
-	BOOLN	ok;
-	
-	ok = TRUE;
-	if (!SetClickTime_Click(theClickTime))
-		ok = FALSE;
-	if (!SetAmplitude_Click(theAmplitude))
-		ok = FALSE;
-	if (!SetDuration_Click(theDuration))
-		ok = FALSE;
-	if (!SetSamplingInterval_Click(theSamplingInterval))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
-	
 }
 
 /****************************** PrintPars *************************************/
@@ -357,17 +268,12 @@ SetPars_Click(double theClickTime, double theAmplitude, double theDuration,
 /*
  * This program prints the parameters of the module to the standard output.
  */
- 
+
 BOOLN
 PrintPars_Click(void)
 {
 	static const WChar *funcName = wxT("PrintPars_Click");
 
-	if (!CheckPars_Click()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Click Module Parameters:-\n"));
 	DPrint(wxT("\tClick time = %g ms,\tAmplitude = %g uPa,\n"),
 	  MSEC(clickPtr->clickTime), clickPtr->amplitude);
@@ -375,55 +281,6 @@ PrintPars_Click(void)
 	  MSEC(clickPtr->duration), MSEC(clickPtr->dt));
 	return(TRUE);
 
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
- 
-BOOLN
-ReadPars_Click(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_Click");
-	BOOLN	ok;
-	WChar	*filePath;
-	double  amplitude, duration, samplingInterval, clickTime;
-    FILE    *fp;
-    
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &clickTime))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &amplitude))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &duration))
-		ok = FALSE;
-    if (!GetPars_ParFile(fp, wxT("%lf"), &samplingInterval))
-		ok = FALSE;
-    fclose(fp);
-    Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s:  Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Click(clickTime, amplitude, duration,
-	  samplingInterval)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(TRUE);
-    
 }
 
 /****************************** SetParsPointer ********************************/
@@ -468,13 +325,41 @@ InitModule_Click(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = clickPtr;
-	theModule->CheckPars = CheckPars_Click;
 	theModule->Free = Free_Click;
 	theModule->GetUniParListPtr = GetUniParListPtr_Click;
 	theModule->PrintPars = PrintPars_Click;
-	theModule->ReadPars = ReadPars_Click;
 	theModule->RunProcess = GenerateSignal_Click;
 	theModule->SetParsPointer = SetParsPointer_Click;
+	return(TRUE);
+
+}
+
+/********************************* CheckPars **********************************/
+
+/*
+ * This routine checks that the necessary parameters for the module have been
+ * correctly initialised.
+ * It returns TRUE if there are no problems.
+ */
+
+BOOLN
+CheckData_Click(EarObjectPtr data)
+{
+	static const WChar *funcName = wxT("CheckData_Click");
+	Float	remainder;
+
+
+	if (data == NULL) {
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
+		return(FALSE);
+	}
+	remainder = fmod(clickPtr->clickTime, clickPtr->dt);
+	if ((remainder > DSAM_EPSILON) && (fabs(remainder - clickPtr->dt) >
+	  DSAM_EPSILON)) {
+		NotifyError(wxT("%s: The click time should be a multiple of the ")
+		  wxT("sampling interval (%g ms)"), funcName, MILLI(clickPtr->dt));
+		return(FALSE);
+	}
 	return(TRUE);
 
 }
@@ -499,11 +384,7 @@ GenerateSignal_Click(EarObjectPtr data)
 	ChanData	*dataPtr;
 
 	if (!data->threadRunFlag) {
-		if (data == NULL) {
-			NotifyError(wxT("%s: EarObject not initialised."), funcName);
-			return(FALSE);
-		}	
-		if (!CheckPars_Click())
+		if (!CheckData_Click(data))
 			return(FALSE);
 		SetProcessName_EarObject(data, wxT("Click (delta-function) stimulus"));
 		if (!InitOutSignal_EarObject(data, 1, (ChanLen) (clickPtr->duration /

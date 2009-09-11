@@ -72,11 +72,11 @@ int		GetNumDistributionPars_ANSGDist(int mode);
 NameSpecifier *	ModeList_ANSGDist(int index);
 
 void	PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
-		  double *frequencies, int numChannels);
+		  Float *frequencies, int numChannels);
 
 void	SetDefaultDistribution_ANSGDist(ParArrayPtr distribution);
 
-BOOLN	SetFibres_ANSGDist(int *fibres, ParArrayPtr p, double *frequencies,
+BOOLN	SetFibres_ANSGDist(int *fibres, ParArrayPtr p, Float *frequencies,
 		  int numChannels);
 
 void	SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres);

@@ -8,7 +8,7 @@
  *				number of input channels defines the channel processing.
  * Author:		L. P. O'Mard
  * Created:		13 Jul 2004
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex
  *
  *********************/
@@ -116,7 +116,6 @@ Init_Utility_Transpose(ParameterSpecifier parSpec)
 		}
 	}
 	transposePtr->parSpec = parSpec;
-	transposePtr->modeFlag = TRUE;
 	transposePtr->mode = UTILITY_TRANSPOSE_STANDARD_MODE;
 
 	InitModeList_Utility_Transpose();
@@ -207,38 +206,8 @@ SetMode_Utility_Transpose(WChar * theMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	transposePtr->modeFlag = TRUE;
 	transposePtr->mode = specifier;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_Transpose(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_Transpose");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (transposePtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!transposePtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -254,9 +223,8 @@ PrintPars_Utility_Transpose(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_Transpose");
 
-	if (!CheckPars_Utility_Transpose()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (transposePtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Transpose Utility Module Parameters:-\n"));
@@ -308,7 +276,6 @@ InitModule_Utility_Transpose(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = transposePtr;
-	theModule->CheckPars = CheckPars_Utility_Transpose;
 	theModule->Free = Free_Utility_Transpose;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_Transpose;
 	theModule->PrintPars = PrintPars_Utility_Transpose;
@@ -369,12 +336,10 @@ Process_Utility_Transpose(EarObjectPtr data)
 	register ChanData	 *inPtr;
 	BOOLN	regularLabels;
 	int		i, chan;
-	double	*chanLabel, delta1, newDt, timeOffset;
+	Float	*chanLabel, delta1, newDt, timeOffset;
 	SignalDataPtr	inSignal, outSignal;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_Transpose())
-			return(FALSE);
 		if (!CheckData_Utility_Transpose(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

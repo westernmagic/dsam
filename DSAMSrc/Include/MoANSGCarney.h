@@ -61,14 +61,14 @@ typedef struct {
 	int		inputMode;
 	long	ranSeed;
 	int		numFibres;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
-	double	maxThreshold;
-	double	dischargeCoeffC0;
-	double	dischargeCoeffC1;
-	double	dischargeTConstS0;
-	double	dischargeTConstS1;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
+	Float	maxThreshold;
+	Float	dischargeCoeffC0;
+	Float	dischargeCoeffC1;
+	Float	dischargeTConstS0;
+	Float	dischargeTConstS1;
 	ParArrayPtr	distribution;
 
 	/* Private members */
@@ -78,9 +78,9 @@ typedef struct {
 	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
-	double	dt, wPulseDuration;
-	double	**timer;
-	double	**remainingPulseTime;
+	Float	dt, wPulseDuration;
+	Float	**timer;
+	Float	**remainingPulseTime;
 
 } CarneySG, *CarneySGPtr;
 
@@ -114,27 +114,25 @@ BOOLN	Init_ANSpikeGen_Carney(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_ANSpikeGen_Carney(void);
 
-BOOLN	ReadPars_ANSpikeGen_Carney(WChar *fileName);
-
 void	ResetProcess_ANSpikeGen_Carney(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Carney(EarObjectPtr data);
 
 BOOLN	SetDiagnosticMode_ANSpikeGen_Carney(WChar * theDiagnosticMode);
 
-BOOLN	SetDischargeCoeffC0_ANSpikeGen_Carney(double theDischargeCoeffC0);
+BOOLN	SetDischargeCoeffC0_ANSpikeGen_Carney(Float theDischargeCoeffC0);
 
-BOOLN	SetDischargeCoeffC1_ANSpikeGen_Carney(double theDischargeCoeffC1);
+BOOLN	SetDischargeCoeffC1_ANSpikeGen_Carney(Float theDischargeCoeffC1);
 
-BOOLN	SetDischargeTConstS0_ANSpikeGen_Carney(double theDischargeTConstS0);
+BOOLN	SetDischargeTConstS0_ANSpikeGen_Carney(Float theDischargeTConstS0);
 
-BOOLN	SetDischargeTConstS1_ANSpikeGen_Carney(double theDischargeTConstS1);
+BOOLN	SetDischargeTConstS1_ANSpikeGen_Carney(Float theDischargeTConstS1);
 
 BOOLN	SetDistribution_ANSpikeGen_Carney(ParArrayPtr theDistribution);
 
 BOOLN	SetInputMode_ANSpikeGen_Carney(WChar * theInputMode);
 
-BOOLN	SetMaxThreshold_ANSpikeGen_Carney(double theMaxThreshold);
+BOOLN	SetMaxThreshold_ANSpikeGen_Carney(Float theMaxThreshold);
 
 BOOLN	InitModule_ANSpikeGen_Carney(ModulePtr theModule);
 
@@ -142,19 +140,13 @@ BOOLN	SetNumFibres_ANSpikeGen_Carney(int theNumFibres);
 
 BOOLN	SetParsPointer_ANSpikeGen_Carney(ModulePtr theModule);
 
-BOOLN	SetPars_ANSpikeGen_Carney(long ranSeed, int numFibres,
-		  double pulseDuration, double pulseMagnitude, double
-		  refractoryPeriod, double maxThreshold, double dischargeCoeffC0,
-		  double dischargeCoeffC1, double dischargeTConstS0,
-		  double dischargeTConstS1);
+BOOLN	SetPulseDuration_ANSpikeGen_Carney(Float thePulseDuration);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Carney(double thePulseDuration);
-
-BOOLN	SetPulseMagnitude_ANSpikeGen_Carney(double thePulseMagnitude);
+BOOLN	SetPulseMagnitude_ANSpikeGen_Carney(Float thePulseMagnitude);
 
 BOOLN	SetRanSeed_ANSpikeGen_Carney(long theRanSeed);
 
-BOOLN	SetRefractoryPeriod_ANSpikeGen_Carney(double theRefractoryPeriod);
+BOOLN	SetRefractoryPeriod_ANSpikeGen_Carney(Float theRefractoryPeriod);
 
 BOOLN	SetUniParList_ANSpikeGen_Carney(void);
 

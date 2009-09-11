@@ -46,18 +46,17 @@ typedef struct {
 	EarObjectPtr		data;
 
 } BPassPars, *BPassParsPtr;
-	
+
 typedef struct {
 
 	ParameterSpecifier	parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
-	BOOLN	numFiltersFlag;
 	int		numFilters;
 	int		*cascade;
-	double	*gain;
-	double	*upperCutOffFreq;
-	double	*lowerCutOffFreq;
+	Float	*gain;
+	Float	*upperCutOffFreq;
+	Float	*lowerCutOffFreq;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -86,8 +85,6 @@ BOOLN	AllocNumFilters_Filter_MultiBPass(int numFilters);
 
 BOOLN	CheckData_Filter_MultiBPass(EarObjectPtr data);
 
-BOOLN	CheckPars_Filter_MultiBPass(void);
-
 BOOLN	Free_Filter_MultiBPass(void);
 
 void	FreeProcessVariables_Filter_MultiBPass(void);
@@ -100,24 +97,22 @@ BOOLN	InitProcessVariables_Filter_MultiBPass(EarObjectPtr data);
 
 BOOLN	PrintPars_Filter_MultiBPass(void);
 
-BOOLN	ReadPars_Filter_MultiBPass(WChar *fileName);
-
 BOOLN	RunModel_Filter_MultiBPass(EarObjectPtr data);
 
 BOOLN	SetDefaultNumFiltersArrays_Filter_MultiBPass(void);
 
 BOOLN	SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
-		  double theLowerCutOffFreq);
+		  Float theLowerCutOffFreq);
 
 BOOLN	SetIndividualCascade_Filter_MultiBPass(int theIndex, int theCascade);
 
 BOOLN	SetIndividualGain_Filter_MultiBPass(int theIndex,
-		  double theGain);
+		  Float theGain);
 
 BOOLN	SetIndividualUpperCutOffFreq_Filter_MultiBPass(int theIndex,
-		  double theUpperCutOffFreq);
+		  Float theUpperCutOffFreq);
 
-BOOLN	SetLowerCutOffFreq_Filter_MultiBPass(double *theLowerCutOffFreq);
+BOOLN	SetLowerCutOffFreq_Filter_MultiBPass(Float *theLowerCutOffFreq);
 
 BOOLN	InitModule_Filter_MultiBPass(ModulePtr theModule);
 
@@ -127,14 +122,11 @@ BOOLN	SetCascade_Filter_MultiBPass(int *theCascade);
 
 BOOLN	SetParsPointer_Filter_MultiBPass(ModulePtr theModule);
 
-BOOLN	SetPars_Filter_MultiBPass(int numFilters, int *cascade, double *gain,
-		  double *upperCutOffFreq, double *lowerCutOffFreq);
-
-BOOLN	SetGain_Filter_MultiBPass(double *theGain);
+BOOLN	SetGain_Filter_MultiBPass(Float *theGain);
 
 BOOLN	SetUniParList_Filter_MultiBPass(void);
 
-BOOLN	SetUpperCutOffFreq_Filter_MultiBPass(double *theUpperCutOffFreq);
+BOOLN	SetUpperCutOffFreq_Filter_MultiBPass(Float *theUpperCutOffFreq);
 
 __END_DECLS
 

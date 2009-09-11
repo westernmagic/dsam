@@ -6,7 +6,7 @@
  *				This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		19 Aug 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -96,16 +96,6 @@ Init_IHC_Zhang(ParameterSpecifier parSpec)
 	}
 	zhangHCPtr->parSpec = parSpec;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
-	zhangHCPtr->spontFlag = TRUE;
-	zhangHCPtr->aAssFlag = TRUE;
-	zhangHCPtr->tauSTFlag = TRUE;
-	zhangHCPtr->tauRFlag = TRUE;
-	zhangHCPtr->aAROverASTFlag = TRUE;
-	zhangHCPtr->pIMaxFlag = TRUE;
-	zhangHCPtr->ksFlag = TRUE;
-	zhangHCPtr->vs1Flag = TRUE;
-	zhangHCPtr->vs2Flag = TRUE;
-	zhangHCPtr->vs3Flag = TRUE;
 	zhangHCPtr->spont = 50.0;
 	zhangHCPtr->aAss = 130.0;
 	zhangHCPtr->tauST = 60e-3;
@@ -236,7 +226,7 @@ GetUniParListPtr_IHC_Zhang(void)
  */
 
 BOOLN
-SetSpont_IHC_Zhang(double theSpont)
+SetSpont_IHC_Zhang(Float theSpont)
 {
 	static const WChar	*funcName = wxT("SetSpont_IHC_Zhang");
 
@@ -245,7 +235,6 @@ SetSpont_IHC_Zhang(double theSpont)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->spontFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->spont = theSpont;
 	return(TRUE);
@@ -261,7 +250,7 @@ SetSpont_IHC_Zhang(double theSpont)
  */
 
 BOOLN
-SetAAss_IHC_Zhang(double theAAss)
+SetAAss_IHC_Zhang(Float theAAss)
 {
 	static const WChar	*funcName = wxT("SetAAss_IHC_Zhang");
 
@@ -270,7 +259,6 @@ SetAAss_IHC_Zhang(double theAAss)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->aAssFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->aAss = theAAss;
 	return(TRUE);
@@ -286,7 +274,7 @@ SetAAss_IHC_Zhang(double theAAss)
  */
 
 BOOLN
-SetTauST_IHC_Zhang(double theTauST)
+SetTauST_IHC_Zhang(Float theTauST)
 {
 	static const WChar	*funcName = wxT("SetTauST_IHC_Zhang");
 
@@ -295,7 +283,6 @@ SetTauST_IHC_Zhang(double theTauST)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->tauSTFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->tauST = theTauST;
 	return(TRUE);
@@ -311,7 +298,7 @@ SetTauST_IHC_Zhang(double theTauST)
  */
 
 BOOLN
-SetTauR_IHC_Zhang(double theTauR)
+SetTauR_IHC_Zhang(Float theTauR)
 {
 	static const WChar	*funcName = wxT("SetTauR_IHC_Zhang");
 
@@ -320,7 +307,6 @@ SetTauR_IHC_Zhang(double theTauR)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->tauRFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->tauR = theTauR;
 	return(TRUE);
@@ -336,7 +322,7 @@ SetTauR_IHC_Zhang(double theTauR)
  */
 
 BOOLN
-SetAAROverAST_IHC_Zhang(double theAAROverAST)
+SetAAROverAST_IHC_Zhang(Float theAAROverAST)
 {
 	static const WChar	*funcName = wxT("SetAAROverAST_IHC_Zhang");
 
@@ -345,7 +331,6 @@ SetAAROverAST_IHC_Zhang(double theAAROverAST)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->aAROverASTFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->aAROverAST = theAAROverAST;
 	return(TRUE);
@@ -361,7 +346,7 @@ SetAAROverAST_IHC_Zhang(double theAAROverAST)
  */
 
 BOOLN
-SetPIMax_IHC_Zhang(double thePIMax)
+SetPIMax_IHC_Zhang(Float thePIMax)
 {
 	static const WChar	*funcName = wxT("SetPIMax_IHC_Zhang");
 
@@ -370,7 +355,6 @@ SetPIMax_IHC_Zhang(double thePIMax)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->pIMaxFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->pIMax = thePIMax;
 	return(TRUE);
@@ -386,7 +370,7 @@ SetPIMax_IHC_Zhang(double thePIMax)
  */
 
 BOOLN
-SetKs_IHC_Zhang(double theKs)
+SetKs_IHC_Zhang(Float theKs)
 {
 	static const WChar	*funcName = wxT("SetKs_IHC_Zhang");
 
@@ -395,7 +379,6 @@ SetKs_IHC_Zhang(double theKs)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->ksFlag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->ks = theKs;
 	return(TRUE);
@@ -411,7 +394,7 @@ SetKs_IHC_Zhang(double theKs)
  */
 
 BOOLN
-SetVs1_IHC_Zhang(double theVs1)
+SetVs1_IHC_Zhang(Float theVs1)
 {
 	static const WChar	*funcName = wxT("SetVs1_IHC_Zhang");
 
@@ -420,7 +403,6 @@ SetVs1_IHC_Zhang(double theVs1)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->vs1Flag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->vs1 = theVs1;
 	return(TRUE);
@@ -436,7 +418,7 @@ SetVs1_IHC_Zhang(double theVs1)
  */
 
 BOOLN
-SetVs2_IHC_Zhang(double theVs2)
+SetVs2_IHC_Zhang(Float theVs2)
 {
 	static const WChar	*funcName = wxT("SetVs2_IHC_Zhang");
 
@@ -445,7 +427,6 @@ SetVs2_IHC_Zhang(double theVs2)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->vs2Flag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->vs2 = theVs2;
 	return(TRUE);
@@ -461,7 +442,7 @@ SetVs2_IHC_Zhang(double theVs2)
  */
 
 BOOLN
-SetVs3_IHC_Zhang(double theVs3)
+SetVs3_IHC_Zhang(Float theVs3)
 {
 	static const WChar	*funcName = wxT("SetVs3_IHC_Zhang");
 
@@ -470,75 +451,9 @@ SetVs3_IHC_Zhang(double theVs3)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	zhangHCPtr->vs3Flag = TRUE;
 	zhangHCPtr->updateProcessVariablesFlag = TRUE;
 	zhangHCPtr->vs3 = theVs3;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHC_Zhang(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHC_Zhang");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (zhangHCPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!zhangHCPtr->spontFlag) {
-		NotifyError(wxT("%s: spont variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->aAssFlag) {
-		NotifyError(wxT("%s: aAss variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->tauSTFlag) {
-		NotifyError(wxT("%s: tauST variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->tauRFlag) {
-		NotifyError(wxT("%s: tauR variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->aAROverASTFlag) {
-		NotifyError(wxT("%s: aAROverAST variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->pIMaxFlag) {
-		NotifyError(wxT("%s: pIMax variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->ksFlag) {
-		NotifyError(wxT("%s: ks variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->vs1Flag) {
-		NotifyError(wxT("%s: vs1 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->vs2Flag) {
-		NotifyError(wxT("%s: vs2 variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!zhangHCPtr->vs3Flag) {
-		NotifyError(wxT("%s: vs3 variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -554,11 +469,6 @@ PrintPars_IHC_Zhang(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHC_Zhang");
 
-	if (!CheckPars_IHC_Zhang()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Zhang IHC Synapse Module Parameters:-\n"));
 	DPrint(wxT("\tSpontaneous rate of fiber, spont = %g (spikes/s),\n"),
 	 zhangHCPtr->spont);
@@ -627,7 +537,6 @@ InitModule_IHC_Zhang(ModulePtr theModule)
 	}
 	theModule->parsPtr = zhangHCPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHC_Zhang;
 	theModule->Free = Free_IHC_Zhang;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Zhang;
 	theModule->PrintPars = PrintPars_IHC_Zhang;
@@ -671,20 +580,20 @@ CheckData_IHC_Zhang(EarObjectPtr data)
 /*
  * Original name: runsyn_dynamic
  * Original file: synapse.c
- * !!!!!!!!!! The double *in and double *out could be the same pointer, 
+ * !!!!!!!!!! The Float *in and Float *out could be the same pointer,
  * SO be careful about this
  * The 'error' variable that awas in the original code was removed as it was,
  * not set anywhere in the routine.
  */
 
 void
-RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in, double *out,
+RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const Float *in, Float *out,
   const int length)
 {
 	int register i;
-	double PPIlast,PL,PG,CIlast,CLlast,CG,VI,VL;
-	double tdres;
-	double CInow,CLnow;
+	Float PPIlast,PL,PG,CIlast,CLlast,CG,VI,VL;
+	Float tdres;
+	Float CInow,CLnow;
 
 	tdres = pthis->tdres;
 	PL = pthis->PL;
@@ -725,14 +634,14 @@ RunSynapseDynamic_IHC_Zhang(TSynapse *pthis, const double *in, double *out,
 void
 InitSynapse_IHC_Zhang(TSynapse *pthis)
 {
-	double PTS,Ass,Aon,Ar_over_Ast,Ar,Ast;
-	double Pimax,spont;
-	double Prest;
-	double CG,gamma1,gamma2,tauR,tauST,kappa1,kappa2,VI0,VI1,VI;
-	double alpha,beta,theta1,theta2,theta3;
-	double PL,PG,VL,Cirest,CLrest;
+	Float PTS,Ass,Aon,Ar_over_Ast,Ar,Ast;
+	Float Pimax,spont;
+	Float Prest;
+	Float CG,gamma1,gamma2,tauR,tauST,kappa1,kappa2,VI0,VI1,VI;
+	Float alpha,beta,theta1,theta2,theta3;
+	Float PL,PG,VL,Cirest,CLrest;
 
-	double tdres;
+	Float tdres;
 
 	pthis->Run = NULL; /*run1syn_dynamic*/
 	pthis->Run2 = RunSynapseDynamic_IHC_Zhang;
@@ -782,7 +691,7 @@ InitSynapse_IHC_Zhang(TSynapse *pthis)
 
 	pthis->PPIlast = Prest;
 	pthis->CLlast = CLrest;
-	pthis->CIlast = Cirest;  
+	pthis->CIlast = Cirest;
 
 }
 
@@ -796,12 +705,12 @@ InitSynapse_IHC_Zhang(TSynapse *pthis)
  */
 
 void
-RunIHCPPI_IHC_Zhang(TNonLinear* p, const double *in, double *out,
+RunIHCPPI_IHC_Zhang(TNonLinear* p, const Float *in, Float *out,
   const int length)
 {
 	int register i;
-	double PPI;
-	double temp;
+	Float PPI;
+	Float temp;
 
 	for (i = 0; i < length; i++) {
 		temp = p->p2 * in[i];
@@ -828,7 +737,7 @@ InitProcessVariables_IHC_Zhang(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_IHC_Zhang");
 	int		i, cFIndex;
-	double	kKCF, temp, pst, psl, p2, p1;
+	Float	kKCF, temp, pst, psl, p2, p1;
 	TSynapsePtr	syn;
 	TNonLinearPtr	iHCPPI;
 	ZhangHCPtr	p = zhangHCPtr;
@@ -942,8 +851,6 @@ RunModel_IHC_Zhang(EarObjectPtr data)
 	ZhangHCPtr	p = zhangHCPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHC_Zhang())
-			return(FALSE);
 		if (!CheckData_IHC_Zhang(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);

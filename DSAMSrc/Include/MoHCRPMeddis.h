@@ -15,7 +15,7 @@
 
 #ifndef	_MOHCRPMEDDIS_H
 #define _MOHCRPMEDDIS_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -38,19 +38,18 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	permConstAFlag, permConstBFlag, releaseRateFlag, mTimeConstTmFlag;
+
 	BOOLN	updateProcessVariablesFlag;
-	
-	double	permConst_A;		/* For K+ probability: base Amplitude (uPa). */
-	double	permConst_B;		/* For K+ probability: amplitude scale (/uPa) */
-	double	releaseRate_g;		/* Release rate (units per second). */
-	double	mTimeConst_tm;		/* Membrane time constant, s. */
+
+	Float	permConst_A;		/* For K+ probability: base Amplitude (uPa). */
+	Float	permConst_B;		/* For K+ probability: amplitude scale (/uPa) */
+	Float	releaseRate_g;		/* Release rate (units per second). */
+	Float	mTimeConst_tm;		/* Membrane time constant, s. */
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	*lastOutput, dtOverTm;
-	
+	Float	*lastOutput, dtOverTm;
+
 } MeddisRP, *MeddisRPPtr;
 
 /******************************************************************************/
@@ -71,8 +70,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHCRP_Meddis(EarObjectPtr data);
 
-BOOLN	CheckPars_IHCRP_Meddis(void);
-
 BOOLN	Free_IHCRP_Meddis(void);
 
 void	FreeProcessVariables_IHCRP_Meddis(void);
@@ -85,23 +82,19 @@ BOOLN	InitProcessVariables_IHCRP_Meddis(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Meddis(void);
 
-BOOLN	ReadPars_IHCRP_Meddis(WChar *fileName);
-
 BOOLN	RunModel_IHCRP_Meddis(EarObjectPtr data);
 
-BOOLN	SetMTimeConstTm_IHCRP_Meddis(double theMTimeConstTm);
+BOOLN	SetMTimeConstTm_IHCRP_Meddis(Float theMTimeConstTm);
 
-BOOLN	SetPermConstA_IHCRP_Meddis(double thePermConstA);
+BOOLN	SetPermConstA_IHCRP_Meddis(Float thePermConstA);
 
-BOOLN	SetPermConstB_IHCRP_Meddis(double thePermConstB);
+BOOLN	SetPermConstB_IHCRP_Meddis(Float thePermConstB);
 
 BOOLN	InitModule_IHCRP_Meddis(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHCRP_Meddis(ModulePtr theModule);
 
-BOOLN	SetPars_IHCRP_Meddis(double aA, double bB, double g, double tm);
-		  
-BOOLN	SetReleaseRate_IHCRP_Meddis(double theReleaseRate);
+BOOLN	SetReleaseRate_IHCRP_Meddis(Float theReleaseRate);
 
 BOOLN	SetUniParList_IHCRP_Meddis(void);
 

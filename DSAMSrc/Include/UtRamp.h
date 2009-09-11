@@ -10,7 +10,7 @@
 
 #ifndef	_UTRAMP_H
 #define _UTRAMP_H	1
- 
+
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
@@ -26,16 +26,16 @@
 __BEGIN_DECLS
 
 void	RampUpOutSignal_Ramp(EarObjectPtr data,
-		  double (* RampFunction)(ChanLen, ChanLen), double timeInterval);
+		  Float (* RampFunction)(ChanLen, ChanLen), Float timeInterval);
 
 void	RampDownOutSignal_Ramp(EarObjectPtr data,
-		   double (* RampFunction)(ChanLen, ChanLen), double timeInterval);
+		   Float (* RampFunction)(ChanLen, ChanLen), Float timeInterval);
 
-BOOLN	CheckPars_Ramp(SignalData *theSignal, double timeInterval);
+BOOLN	CheckPars_Ramp(SignalData *theSignal, Float timeInterval);
 
-double	Sine_Ramp(ChanLen step, ChanLen intervalIndex);
+Float	Sine_Ramp(ChanLen step, ChanLen intervalIndex);
 
-double	Linear_Ramp(ChanLen step, ChanLen intervalIndex);
+Float	Linear_Ramp(ChanLen step, ChanLen intervalIndex);
 
 __END_DECLS
 

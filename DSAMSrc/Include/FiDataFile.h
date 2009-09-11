@@ -143,14 +143,14 @@ typedef struct {
 	int		wordSize;			/* can be either 1 or 2 byte words. */
 	int		endian;				/* can be either 0 or 1, little- or big-endian*/
 	int		numChannels;		/* used only by Raw binary support at present.*/
-	double	defaultSampleRate;	/* - for when this is not specified. */
-	double 	duration;			/* This can be set to restrict the data size. */
-	double	timeOffset;			/* Set to miss date at start of signal. */
-	double	gain;				/* gain for normalised input signals. */
-	double	normalisation;		/* AIFF, Raw, MS Wave support, <0.0 for auto. */
+	Float	defaultSampleRate;	/* - for when this is not specified. */
+	Float 	duration;			/* This can be set to restrict the data size. */
+	Float	timeOffset;			/* Set to miss date at start of signal. */
+	Float	gain;				/* gain for normalised input signals. */
+	Float	normalisation;		/* AIFF, Raw, MS Wave support, <0.0 for auto. */
 
 	/* Call back routines. */
-	double (* GetDuration)(void);
+	Float (* GetDuration)(void);
 
 	/* Private parameters */
 	NameSpecifier	*endianModeList;
@@ -191,8 +191,6 @@ extern	DataFilePtr	dataFilePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_DataFile(void);
-
 BOOLN	CheckParsRead_DataFile(void);
 
 NameSpecifier *	DSAMFormatList_DataFile(int index);
@@ -224,7 +222,7 @@ BOOLN	InitEndianModeList_DataFile(void);
 BOOLN	InitModule_DataFile(ModulePtr theModule);
 
 BOOLN	InitProcessVariables_DataFile(EarObjectPtr data, sf_count_t length,
-		  double sampleRate);
+		  Float sampleRate);
 
 int		NumberOfColumns_DataFile(FILE *fp);
 
@@ -234,8 +232,6 @@ BOOLN	PrintPars_DataFile(void);
 
 int32	ReadFileIdentifier_DataFile(FILE *fp, int32 target, WChar *filetype);
 
-BOOLN	ReadPars_DataFile(WChar *fileName);
-
 ChanData	ReadSample_DataFile(FILE *fp);
 
 BOOLN	ReadSignal_DataFile(WChar *fileName, EarObjectPtr data);
@@ -244,33 +240,29 @@ BOOLN	ReadSignal_DataFile_Named(EarObjectPtr data);
 
 BOOLN	ReadSignalMain_DataFile(WChar *fileName, EarObjectPtr data);
 
-BOOLN	SetDefaultSampleRate_DataFile(double theDefaultSampleRate);
+BOOLN	SetDefaultSampleRate_DataFile(Float theDefaultSampleRate);
 
-BOOLN	SetDuration_DataFile(double theDuration);
+BOOLN	SetDuration_DataFile(Float theDuration);
 
 BOOLN	SetEndian_DataFile(WChar *endian);
 
 BOOLN	SetFileName_DataFile(WChar *fileName);
 
-BOOLN	SetGain_DataFile(double theGain);
+BOOLN	SetGain_DataFile(Float theGain);
 
 sf_count_t	SetIOSectionLength_DataFile(EarObjectPtr data);
 
 BOOLN	SetNumChannels_DataFile(int numChannels);
 
-BOOLN	SetNormalisation_DataFile(double normalisation);
+BOOLN	SetNormalisation_DataFile(Float normalisation);
 
 BOOLN	SetParsPointer_DataFile(ModulePtr theModule);
-
-BOOLN	SetPars_DataFile(WChar *theFileName, int theWordSize,
-		  int theNumChannels, double theDefaultSampleRate,
-		  double theDuration, double theTimeOffset, double theGain);
 
 void	SetRWFormat_DataFile(int endian);
 
 BOOLN	SetSubFormatType_DataFile(WChar * theSubFormatType);
 
-BOOLN	SetTimeOffset_DataFile(double timeOffset);
+BOOLN	SetTimeOffset_DataFile(Float timeOffset);
 
 BOOLN	SetUniParList_DataFile(void);
 

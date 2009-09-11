@@ -11,9 +11,9 @@ typedef struct {
 	NameSpecifier	diagnosticMode;
 	int		numFibres;
 	long	ranSeed;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
 	ParArrayPtr		distribution;
 
 } BinomialSG;

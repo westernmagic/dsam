@@ -16,7 +16,7 @@
  * Comments:	This code was revised from the ARLO matlab code.
  * Author:		Revised by L. P. O'Mard
  * Created:		05 Mar 2008
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2008, CNBH, University of Essex.
  *
  *********************/
@@ -47,17 +47,17 @@ typedef struct {
 
 	int		order;
 	int		grdelay;
-	double	phase;
-	double	delta_phase;
-	double	cF;
-	double	tau;
-	double	gain;
-	double	bmTaumin;
-	double	bmTaumax;
-	double	TauWBMax;
-	double	TauWBMin;
-	double	ratiobm;
-	double	lasttmpgain;
+	Float	phase;
+	Float	delta_phase;
+	Float	cF;
+	Float	tau;
+	Float	gain;
+	Float	bmTaumin;
+	Float	bmTaumax;
+	Float	TauWBMax;
+	Float	TauWBMin;
+	Float	ratiobm;
+	Float	lasttmpgain;
 	Complex	*fl;
 	Complex	*f;
 
@@ -67,17 +67,17 @@ typedef struct {
 
 	ZBGCTypeSpecifier		type;
 	int		half_order_pole;
-	double	ipw;
-	double	pzero;
-	double	CF;
-	double	sigma0;
-	double	ipb;
-	double	rpa;
-	double	fs_bilinear;
-	double	gain_norm;
-	double	initphase;
-	double	input[12][4];
-	double	output[12][4];
+	Float	ipw;
+	Float	pzero;
+	Float	CF;
+	Float	sigma0;
+	Float	ipb;
+	Float	rpa;
+	Float	fs_bilinear;
+	Float	gain_norm;
+	Float	initphase;
+	Float	input[12][4];
+	Float	output[12][4];
 	Complex	p[11];
 
 } ZBGCCoeffs, *ZBGCCoeffsPtr;
@@ -96,34 +96,34 @@ typedef struct {
 */
 __BEGIN_DECLS
 
-double	Boltzman_Utility_ZilanyBruce(double x, double asym, double s0, double s1,
-		  double x1);
+Float	Boltzman_Utility_ZilanyBruce(Float x, Float asym, Float s0, Float s1,
+		  Float x1);
 
-double	ChirpFilt_Utility_ZilanyBruce(double x, ZBGCCoeffsPtr p, double rsigma_fcohc);
+Float	ChirpFilt_Utility_ZilanyBruce(Float x, ZBGCCoeffsPtr p, Float rsigma_fcohc);
 
-double	delay_cat_Utility_ZilanyBruce(double cf);
+Float	delay_cat_Utility_ZilanyBruce(Float cf);
 
 void	FreeZBWBGTCoeffs_Utility_ZilanyBruce(ZBWBGTCoeffsPtr *p);
 
-double	gain_groupdelay_Utility_ZilanyBruce(double binwidth,double centerfreq,
-		  double cf, double tau, int *grdelay);
+Float	gain_groupdelay_Utility_ZilanyBruce(Float binwidth,Float centerfreq,
+		  Float cf, Float tau, int *grdelay);
 
-ZBWBGTCoeffsPtr	InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, double dt,
-				  double cF, double CAgain, double cohc);
+ZBWBGTCoeffsPtr	InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, Float dt,
+				  Float cF, Float CAgain, Float cohc);
 
 void	ResetZBWBGTCoeffs_Utility_ZilanyBruce(ZBWBGTCoeffsPtr p);
 
-void	ResetZBGCCoeffs_Utility_ZilanyBruce(ZBGCCoeffsPtr p, double binwidth,
-		  double cf, double taumax, ZBGCTypeSpecifier type);
+void	ResetZBGCCoeffs_Utility_ZilanyBruce(ZBGCCoeffsPtr p, Float binwidth,
+		  Float cf, Float taumax, ZBGCTypeSpecifier type);
 
-void	Set_tau_Utility_ZilanyBruce(ZBWBGTCoeffsPtr p, double tau);
+void	Set_tau_Utility_ZilanyBruce(ZBWBGTCoeffsPtr p, Float tau);
 
-double	NLafterohc_Utility_ZilanyBruce(double x,double taumin, double taumax,
-		  double asym);
+Float	NLafterohc_Utility_ZilanyBruce(Float x,Float taumin, Float taumax,
+		  Float asym);
 
-double	NLogarithm_Utility_ZilanyBruce(double x, double slope, double asym);
+Float	NLogarithm_Utility_ZilanyBruce(Float x, Float slope, Float asym);
 
-double	WbGammaTone_Utility_ZilanyBruce(double x, ZBWBGTCoeffsPtr p, double dt);
+Float	WbGammaTone_Utility_ZilanyBruce(Float x, ZBWBGTCoeffsPtr p, Float dt);
 
 __END_DECLS
 

@@ -102,7 +102,6 @@ Init_BasilarM_GammaT(ParameterSpecifier parSpec)
 	}
 	bMGammaTPtr->parSpec = parSpec;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
-	bMGammaTPtr->cascadeFlag = TRUE;
 	bMGammaTPtr->interleaveMode = GENERAL_BOOLEAN_ON;
 	bMGammaTPtr->cascade = 4;
 	if ((bMGammaTPtr->theCFs = GenerateDefault_CFList(
@@ -233,7 +232,6 @@ SetCascade_BasilarM_GammaT(int theCascade)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	bMGammaTPtr->cascadeFlag = TRUE;
 	bMGammaTPtr->cascade = theCascade;
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
@@ -279,7 +277,7 @@ SetCFList_BasilarM_GammaT(CFListPtr theCFList)
  */
 
 BOOLN
-SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, double *theBandwidths)
+SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, Float *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidths_BasilarM_GammaT");
 
@@ -294,32 +292,6 @@ SetBandwidths_BasilarM_GammaT(WChar *theBandwidthMode, double *theBandwidths)
 	}
 	bMGammaTPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
-
-}
-
-/********************************* SetPars ************************************/
-
-/*
- * This function sets all the module's parameters.
- * The bandwidths for the CFList data structure must also be set, but it is
- * assumed that they are set independently.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_BasilarM_GammaT(int theCascade, CFListPtr theCFs)
-{
-	static const WChar *funcName = wxT("SetPars_BasilarM_GammaT");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetCascade_BasilarM_GammaT(theCascade))
-		ok = FALSE;
-	if (!SetCFList_BasilarM_GammaT(theCFs))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters."), funcName);
-	return(ok);
 
 }
 
@@ -363,48 +335,6 @@ PrintPars_BasilarM_GammaT(void)
 	  BooleanList_NSpecLists(bMGammaTPtr->interleaveMode)->name);
 	DPrint(wxT("\tFilter cascade = %d.\n"), bMGammaTPtr->cascade);
 	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.
- */
-
-BOOLN
-ReadPars_BasilarM_GammaT(WChar *fileName)
-{
-	static const WChar *funcName = wxT("ReadPars_BasilarM_GammaT");
-	BOOLN	ok;
-	WChar	*filePath;
-	int		filterCascade;
-    FILE    *fp;
-    CFListPtr	theCFs;
-
-	filePath = GetParsFileFPath_Common(fileName);
-    if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-        NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-    }
-    DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-    Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &filterCascade))
-		ok = FALSE;
-	if ((theCFs = ReadPars_CFList(fp)) == NULL)
-		ok = FALSE;
-	if (!ReadBandwidths_CFList(fp, theCFs))
-		ok = FALSE;
-    fclose(fp);
-    Free_ParFile();
-	if (!SetPars_BasilarM_GammaT(filterCascade, theCFs)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
-	return(ok);
 
 }
 
@@ -454,7 +384,6 @@ InitModule_BasilarM_GammaT(ModulePtr theModule)
 	theModule->Free = Free_BasilarM_GammaT;
 	theModule->GetUniParListPtr = GetUniParListPtr_BasilarM_GammaT;
 	theModule->PrintPars = PrintPars_BasilarM_GammaT;
-	theModule->ReadPars = ReadPars_BasilarM_GammaT;
 	theModule->RunProcess = RunModel_BasilarM_GammaT;
 	theModule->SetParsPointer = SetParsPointer_BasilarM_GammaT;
 	return(TRUE);
@@ -535,7 +464,7 @@ InitProcessVariables_BasilarM_GammaT(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_BasilarM_GammaT");
 	int		i, j, cFIndex, stateVectorLength;
-	double	sampleRate, *ptr;
+	Float	sampleRate, *ptr;
 	BMGammaTPtr	p = bMGammaTPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || p->theCFs->

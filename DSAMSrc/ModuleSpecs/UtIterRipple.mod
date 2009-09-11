@@ -7,7 +7,7 @@ typedef struct {
 
 	int		numIterations;
 	NameSpecifier	mode;
-	double	delay;
-	double	signalMultiplier;
+	Float	delay;
+	Float	signalMultiplier;
 
 } IterRipple;

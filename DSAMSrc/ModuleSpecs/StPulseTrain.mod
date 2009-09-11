@@ -5,10 +5,10 @@ mod_name		PulseTrain;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	double	pulseRate;
-	double	pulseDuration;
-	double	amplitude;
-	double	duration;
-	double	dt;
+	Float	pulseRate;
+	Float	pulseDuration;
+	Float	amplitude;
+	Float	duration;
+	Float	dt;
 
 } PulseTrain;

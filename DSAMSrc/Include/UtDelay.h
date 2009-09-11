@@ -10,7 +10,7 @@
  *				Monaural signals always treat delays as positive values.
  * Author:		L. P. O'Mard
  * Created:		08 Apr 1997
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  *********************/
@@ -50,15 +50,14 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	modeFlag, initialDelayFlag, finalDelayFlag;
 	int		mode;
-	double	initialDelay;
-	double	finalDelay;
+	Float	initialDelay;
+	Float	finalDelay;
 
 	/* Private members */
 	NameSpecifier	*modeList;
 	UniParListPtr	parList;
-	double	delayPerChannel;
+	Float	delayPerChannel;
 
 } Delay2, *Delay2Ptr;
 
@@ -80,8 +79,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Delay(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_Delay(void);
-
 BOOLN	Free_Utility_Delay(void);
 
 UniParListPtr	GetUniParListPtr_Utility_Delay(void);
@@ -94,22 +91,17 @@ BOOLN	PrintPars_Utility_Delay(void);
 
 BOOLN	Process_Utility_Delay(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Delay(WChar *fileName);
-
 void	SetEnabledPars_Utility_Delay(void);
 
-BOOLN	SetFinalDelay_Utility_Delay(double theFinalDelay);
+BOOLN	SetFinalDelay_Utility_Delay(Float theFinalDelay);
 
-BOOLN	SetInitialDelay_Utility_Delay(double theInitialDelay);
+BOOLN	SetInitialDelay_Utility_Delay(Float theInitialDelay);
 
 BOOLN	SetMode_Utility_Delay(WChar *theMode);
 
 BOOLN	InitModule_Utility_Delay(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Delay(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_Delay(WChar *mode, double initialDelay,
-		  double finalDelay);
 
 BOOLN	SetUniParList_Utility_Delay(void);
 

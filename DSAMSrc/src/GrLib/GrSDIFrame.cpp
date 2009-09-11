@@ -2,10 +2,10 @@
  *
  * File:		GrSDIFrame.cpp
  * Purpose: 	Frame clase for Simulation Design Interface .
- * Comments:	
+ * Comments:
  * Author:		L.P.O'Mard
  * Created:		11 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -116,11 +116,11 @@ SDIFrame::SDIFrame(wxDocManager *manager, wxFrame *frame, const wxString& title,
 	myToolBar = NULL;
 	dialogList = NULL;
 	myZoomComboBox = NULL;
-	
+
 #	ifdef MPI_SUPPORT
 	static const wxChar *funcName = wxT("SDIFrame::MyFrame");
 	int		argc = 1;
-	
+
 	if ((initStringPtrs = (wxChar **) calloc(argc, sizeof(wxChar *))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for %d initialisation strings."),
 		 funcName, argc);
@@ -150,15 +150,15 @@ SDIFrame::~SDIFrame(void)
 	int		i, myRank, numProcesses, ok = TRUE;
 
 	MPI_Comm_rank( MPI_COMM_WORLD, &myRank);
-	MPI_Group_size( MPI_COMM_WORLD, &numProcesses);	
+	MPI_Group_size( MPI_COMM_WORLD, &numProcesses);
 	for (i = 0; i < numProcesses; i++)
 		if (i != myRank)
 			MPI_Send(&ok, 1, MPI_INT, i, MASTER_EXIT_TAG, MPI_COMM_WORLD);
-	
+
 	free(initStringPtrs);
 	MPI_Finalize();
 #	endif
-	
+
 	DeleteMainParDialog();
 	wxGetApp().ExitMain();
 
@@ -212,7 +212,7 @@ SDIFrame::UpdateMainParDialog(void)
 {
 	if (!mainParDialog)
 		return;
-	
+
 
 }
 
@@ -246,7 +246,7 @@ void
 SDIFrame::AddToDialogList(ModuleParDialog *dialog)
 {
 	Append_Utility_DynaList(&dialogList, dialog);
-	
+
 }
 
 /****************************** DeleteFromDialogList **************************/
@@ -260,9 +260,9 @@ SDIFrame::DeleteFromDialogList(ModuleParDialog *dialog)
 {
 	DynaListPtr	p = FindElement_Utility_DynaList(dialogList,
 	  CmpDialogs_SDIFrame, dialog);
-	if (!p)	
+	if (!p)
 		wxLogError(wxT("SDIFrame::DeleteFromDialogList: Could not find ")
-		  wxT("dialog.\n"));	
+		  wxT("dialog.\n"));
 	Remove_Utility_DynaList(&dialogList, p);
 
 }
@@ -577,9 +577,9 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
 	default:
 		;
 	}
- 
+
 }
-  
+
 /*************************** OnEditProcess ************************************/
 
 void
@@ -607,6 +607,8 @@ SDIFrame::OnSize(wxSizeEvent& event)
 		event.Skip();
 		return;
 	}
+	canvasW = size.GetWidth();
+	canvasH = size.GetHeight();
 	if (palette) {
 		int paletteX = 0;
 		int paletteY = 0;
@@ -654,7 +656,7 @@ CmpDialogs_SDIFrame(void *diagNode1, void *diagNode2)
 	ModuleParDialog	*diag2 = (ModuleParDialog * ) diagNode2;
 
 	return (diag1->pc != diag2->pc);
-	
+
 }
 
 #endif /* HAVE_WX_OGL_H */

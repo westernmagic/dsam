@@ -3,7 +3,7 @@
  * File:		StWhiteNoise.h
  * Purpose:		This module contains the methods for the simple white-noise
  *				signal generation paradigm.
- * Comments:	
+ * Comments:
  * Author:		E. A. Lopez-Poveda
  * Created:		17 Jan 1995
  * Updated:		12 Mar 1997
@@ -13,7 +13,7 @@
 
 #ifndef	_STWHITENOISE_H
 #define _STWHITENOISE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -40,21 +40,19 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	numChannelsFlag, durationFlag, dtFlag, intensityFlag;
-	BOOLN	correlationDegreeFlag, randomizationIndexFlag, ranSeedFlag;
 	int		numChannels;
-	double	intensity;
-	double	duration;
-	double	dt;
+	Float	intensity;
+	Float	duration;
+	Float	dt;
 	int		correlationDegree;
 	int		randomizationIndex;
 	long	ranSeed;
-	
+
 	/* Private members */
 	UniParListPtr	parList;
 
 } WhiteNoise, *WhiteNoisePtr;
-	
+
 /********************************* External Variables *************************/
 
 extern	WhiteNoisePtr	whiteNoisePtr;
@@ -67,8 +65,6 @@ extern	WhiteNoisePtr	whiteNoisePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_WhiteNoise(void);
-
 BOOLN	Free_WhiteNoise(void);
 
 BOOLN	GenerateSignal_WhiteNoise(EarObjectPtr theObject);
@@ -79,23 +75,17 @@ UniParListPtr	GetUniParListPtr_WhiteNoise(void);
 
 BOOLN	PrintPars_WhiteNoise(void);
 
-BOOLN	ReadPars_WhiteNoise(WChar *fileName);
-
 BOOLN	InitModule_WhiteNoise(ModulePtr theModule);
 
 BOOLN	SetNumChannels_WhiteNoise(int theNumChannels);
 
-BOOLN	SetDuration_WhiteNoise(double theDuration);
+BOOLN	SetDuration_WhiteNoise(Float theDuration);
 
-BOOLN	SetIntensity_WhiteNoise(double theIntensity);
+BOOLN	SetIntensity_WhiteNoise(Float theIntensity);
 
 BOOLN	SetParsPointer_WhiteNoise(ModulePtr theModule);
 
-BOOLN	SetPars_WhiteNoise(int numChannels, double theIntensity,
-		  double theDuration, double theSamplingInterval, int theCorrelationDegree,
-		  int theRandomizationIndex, long theRanSeed);
-		  
-BOOLN	SetSamplingInterval_WhiteNoise(double theSamplingInterval);
+BOOLN	SetSamplingInterval_WhiteNoise(Float theSamplingInterval);
 
 BOOLN	SetCorrelationDegree_WhiteNoise(int theCorrelationDegree);
 

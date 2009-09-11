@@ -10,7 +10,7 @@
  *				signal is overwritten.
  * Author:		L. P. O'Mard
  * Created:		21 Dec 1995
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
 **********************/
@@ -98,7 +98,6 @@ Init_Utility_ReduceDt(ParameterSpecifier parSpec)
 		}
 	}
 	reduceDtPtr->parSpec = parSpec;
-	reduceDtPtr->denominatorFlag = TRUE;
 	reduceDtPtr->denominator = 1;
 
 	if (!SetUniParList_Utility_ReduceDt()) {
@@ -167,28 +166,6 @@ GetUniParListPtr_Utility_ReduceDt(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_ReduceDt(int denominator)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_ReduceDt");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetDenominator_Utility_ReduceDt(denominator))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetDenominator ********************************/
 
 /*
@@ -212,38 +189,8 @@ SetDenominator_Utility_ReduceDt(int theDenominator)
 		  wxT("greater than 0."), funcName, theDenominator);
 		return(FALSE);
 	}
-	reduceDtPtr->denominatorFlag = TRUE;
 	reduceDtPtr->denominator = theDenominator;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_ReduceDt(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_ReduceDt");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (reduceDtPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!reduceDtPtr->denominatorFlag) {
-		NotifyError(wxT("%s: denominator variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -259,55 +206,13 @@ PrintPars_Utility_ReduceDt(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_ReduceDt");
 
-	if (!CheckPars_Utility_ReduceDt()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (reduceDtPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Reduce Sampling Interval, dt, Utility Module parameters:-\n"));
 	DPrint(wxT("\tReduction denominator = %d.\n"),
 	  reduceDtPtr->denominator);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_ReduceDt(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_ReduceDt");
-	BOOLN	ok;
-	WChar	*filePath;
-	int		denominator;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &denominator))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_ReduceDt(denominator)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -355,11 +260,9 @@ InitModule_Utility_ReduceDt(ModulePtr theModule)
 	}
 	theModule->parsPtr = reduceDtPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_ReduceDt;
 	theModule->Free = Free_Utility_ReduceDt;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_ReduceDt;
 	theModule->PrintPars = PrintPars_Utility_ReduceDt;
-	theModule->ReadPars = ReadPars_Utility_ReduceDt;
 	theModule->ResetProcess = ResetProcess_Utility_ReduceDt;
 	theModule->RunProcess = Process_Utility_ReduceDt;
 	theModule->SetParsPointer = SetParsPointer_Utility_ReduceDt;
@@ -430,14 +333,12 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Process_Utility_ReduceDt");
 	register	ChanData	 *inPtr, *outPtr;
 	int		chan, j;
-	double	gradient;
+	Float	gradient;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 	ReduceDtPtr	p = reduceDtPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_ReduceDt())
-			return(FALSE);
 		if (!CheckData_Utility_ReduceDt(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -449,7 +350,7 @@ Process_Utility_ReduceDt(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise output channels."),
 			  funcName);
 			return(FALSE);
-		}	
+		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}

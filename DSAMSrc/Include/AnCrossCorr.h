@@ -51,14 +51,13 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	timeOffsetFlag, timeConstantFlag, periodFlag;
 	BOOLN	updateProcessVariablesFlag;
-	double	timeOffset;
-	double	timeConstant;
-	double	period;
+	Float	timeOffset;
+	Float	timeConstant;
+	Float	period;
 
 	/* Private members */
-	double	*exponentDt;
+	Float	*exponentDt;
 	UniParListPtr	parList;
 	ChanLen	periodIndex, timeOffsetIndex;
 
@@ -84,8 +83,6 @@ BOOLN	Calc_Analysis_CCF(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_CCF(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_CCF(void);
-
 BOOLN	Free_Analysis_CCF(void);
 
 void	FreeProcessVariables_Analysis_CCF(void);
@@ -98,20 +95,15 @@ BOOLN	InitProcessVariables_Analysis_CCF(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_CCF(void);
 
-BOOLN	ReadPars_Analysis_CCF(WChar *fileName);
-
 BOOLN	InitModule_Analysis_CCF(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Analysis_CCF(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_CCF(double timeOffset, double timeConstant,
-		  double period);
+BOOLN	SetPeriod_Analysis_CCF(Float thePeriod);
 
-BOOLN	SetPeriod_Analysis_CCF(double thePeriod);
+BOOLN	SetTimeConstant_Analysis_CCF(Float theTimeConstant);
 
-BOOLN	SetTimeConstant_Analysis_CCF(double theTimeConstant);
-
-BOOLN	SetTimeOffset_Analysis_CCF(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_CCF(Float theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_CCF(void);
 

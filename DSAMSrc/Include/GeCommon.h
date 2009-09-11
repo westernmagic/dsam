@@ -150,7 +150,7 @@
 #endif /* HAVE_INT32 */
 
 #ifndef DBL_MAX
-#	define	DBL_MAX		((double) 1.0e37)
+#	define	DBL_MAX		((Float) 1.0e37)
 #endif
 
 #ifndef FLT_MAX
@@ -170,6 +170,12 @@
 
 #define	LEFT_CHAN	0
 #define RIGHT_CHAN	1
+
+#if DSAM_USE_FLOAT
+#	define	DSAM_EPSILON	FLT_EPSILON
+#else
+#	define	DSAM_EPSILON	DBL_EPSILON
+#endif
 
 /*
  * This next code is for UNICODE compilation options.
@@ -307,13 +313,13 @@
 
 #define	MAXIMUM(A, B)			(((A) > (B))? (A): (B))
 
-#define DBL_GREATER(A, B) (((A) - (B)) > DBL_EPSILON)
+#define DBL_GREATER(A, B) (((A) - (B)) > DSAM_EPSILON)
 
 #define IS_ABSOLUTE_PATH(S)		(((S)[0] == '/') || ((S)[1] == ':'))
 
 #define	POSSIBLY_NULL_STRING_PTR(S)	(((S))? (S): UNSET_STRING)
 
-#define ELAPSED_TIME(START, FINISH) ((double) ((FINISH) - (START)) / \
+#define ELAPSED_TIME(START, FINISH) ((Float) ((FINISH) - (START)) / \
 		  CLOCKS_PER_SEC)
 
 /*
@@ -355,7 +361,12 @@
 #endif
 
 typedef	unsigned long	ChanLen;	/* For the channel indices. */
-typedef	double			ChanData;	/* Data type for channel data. */
+#if DSAM_USE_FLOAT
+	typedef	float	Float;
+#else
+	typedef	double	Float;
+#endif
+typedef	Float	ChanData;	/* Data type for channel data. */
 typedef	unsigned short	uShort;
 typedef	unsigned short	uInt;
 
@@ -462,7 +473,7 @@ void	DPrintStandard(const WChar *format, va_list args);
 
 void	FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name);
 
-void	FreeDoubleArray_Common(double **p);
+void	FreeFloatArray_Common(Float **p);
 
 DSAMPtr	GetDSAMPtr_Common(void);
 
@@ -479,6 +490,8 @@ void	NotifyWarning(const WChar *format, ...);
 void	ReadParsFromFile(WChar *fileName);		/* Used in test programs. */
 
 void	ResetGUIDialogs(void);
+
+BOOLN	ResizeFloatArray_Common(Float **array, int *oldLength, int length);
 
 void	SetDiagnosticsPrefix(WChar *prefix);
 

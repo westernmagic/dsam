@@ -10,9 +10,9 @@ typedef struct {
 	NameSpecifier	diagnosticMode;
 	long	ranSeed;
 	int		numFibres;
-	double	pulseDuration;
-	double	pulseMagnitude;
-	double	refractoryPeriod;
+	Float	pulseDuration;
+	Float	pulseMagnitude;
+	Float	refractoryPeriod;
 	ParArrayPtr		distribution;
 
 } SimpleSG;

@@ -10,7 +10,7 @@
  *				McGregor model.
  * Author:		Trevor Shackleton and M. J. Hewitt. (Revised L. P. O'Mard).
  * Created:		12 Jul 1993
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  **********************/
@@ -54,40 +54,36 @@ typedef enum {
 typedef struct {
 
 	int		lastSpikeState;
-	double	potential_V;
-	double	kConductance_Gk;
-	double	bConductance_Gb;
-	double	threshold_Th;
+	Float	potential_V;
+	Float	kConductance_Gk;
+	Float	bConductance_Gb;
+	Float	threshold_Th;
 
 } ArleKimState, *ArleKimStatePtr;
 
 typedef struct  {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	membraneTConstFlag, thresholdTConstFlag, accomConstFlag;
-	BOOLN	delayedRectKCondFlag, restingThresholdFlag, actionPotentialFlag;
-	BOOLN	kDecayTConstFlag, nonLinearVConstFlag, kReversalPotenFlag;
-	BOOLN	bReversalPotenFlag, kRestingCondFlag, bRestingCondFlag;
+
 	BOOLN	updateProcessVariablesFlag;
 
-	double	membraneTConst_Tm;	/* Membrane time constant (s). */	
-	double	kDecayTConst_TGk;	/* Potassium conductance decay constant (s). */
-	double	thresholdTConst_TTh;/* Threshold rise time constant (s). */
-	double	accomConst_c;		/* Accomdation constant (dimensionless). */
-	double	delayedRectKCond_b;	/* Delayed Rectifier K Cond. strength (ns). */
-	double	restingThreshold_Th0;/* Resting threshold of cell (mV). */
-	double	actionPotential;	/* Action potential of spike (mv). */
-	double	nonLinearVConst_Vnl;/* Non-linear voltage constant (mV). */
-	double	kReversalPoten_Ek;	/* Reversal pot. of the K conductance (mV). */
-	double	bReversalPoten_Eb;	/* Rev. pot. of all other conductances (mV) */
-	double	kRestingCond_gk;	/* Resting potassium conductance (nS). */
-	double	bRestingCond_gb;	/* Resting component for all other conds.(nS).*/
+	Float	membraneTConst_Tm;	/* Membrane time constant (s). */
+	Float	kDecayTConst_TGk;	/* Potassium conductance decay constant (s). */
+	Float	thresholdTConst_TTh;/* Threshold rise time constant (s). */
+	Float	accomConst_c;		/* Accomdation constant (dimensionless). */
+	Float	delayedRectKCond_b;	/* Delayed Rectifier K Cond. strength (ns). */
+	Float	restingThreshold_Th0;/* Resting threshold of cell (mV). */
+	Float	actionPotential;	/* Action potential of spike (mv). */
+	Float	nonLinearVConst_Vnl;/* Non-linear voltage constant (mV). */
+	Float	kReversalPoten_Ek;	/* Reversal pot. of the K conductance (mV). */
+	Float	bReversalPoten_Eb;	/* Rev. pot. of all other conductances (mV) */
+	Float	kRestingCond_gk;	/* Resting potassium conductance (nS). */
+	Float	bRestingCond_gb;	/* Resting component for all other conds.(nS).*/
 
 	/* Private members */
 	UniParListPtr	parList;
-	double	totalConductance_G, restingPotential_Er, bEquilibriumPot_Vb;
-	double	kEquilibriumPot_Vk, tmOverDt, tGkOverDt, tThOverDt, bOverDt;
+	Float	totalConductance_G, restingPotential_Er, bEquilibriumPot_Vb;
+	Float	kEquilibriumPot_Vk, tmOverDt, tGkOverDt, tThOverDt, bOverDt;
 	ArleKimState	*state;
 
 } ArleKim, *ArleKimPtr;
@@ -110,8 +106,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Neuron_ArleKim(EarObjectPtr data);
 
-BOOLN	CheckPars_Neuron_ArleKim(void);
-
 BOOLN	Free_Neuron_ArleKim(void);
 
 void	FreeProcessVariables_Neuron_ArleKim(void);
@@ -126,43 +120,37 @@ BOOLN	InitProcessVariables_Neuron_ArleKim(EarObjectPtr data);
 
 BOOLN	PrintPars_Neuron_ArleKim(void);
 
-BOOLN	ReadPars_Neuron_ArleKim(WChar *fileName);
-
 BOOLN	RunModel_Neuron_ArleKim(EarObjectPtr data);
 
-BOOLN	SetAccomConst_Neuron_ArleKim(double theAccomConst);
+BOOLN	SetAccomConst_Neuron_ArleKim(Float theAccomConst);
 
-BOOLN	SetActionPotential_Neuron_ArleKim(double theActionPotential);
+BOOLN	SetActionPotential_Neuron_ArleKim(Float theActionPotential);
 
-BOOLN	SetBRestingCond_Neuron_ArleKim(double theBRestingCond);
+BOOLN	SetBRestingCond_Neuron_ArleKim(Float theBRestingCond);
 
-BOOLN	SetBReversalPoten_Neuron_ArleKim(double theBReversalPoten);
+BOOLN	SetBReversalPoten_Neuron_ArleKim(Float theBReversalPoten);
 
-BOOLN	SetCellRestingPot_Neuron_ArleKim(double theCellRestingPot);
+BOOLN	SetCellRestingPot_Neuron_ArleKim(Float theCellRestingPot);
 
-BOOLN	SetDelayedRectKCond_Neuron_ArleKim(double theDelayedRectKCond);
+BOOLN	SetDelayedRectKCond_Neuron_ArleKim(Float theDelayedRectKCond);
 
-BOOLN	SetKDecayTConst_Neuron_ArleKim(double theKDecayTConst);
+BOOLN	SetKDecayTConst_Neuron_ArleKim(Float theKDecayTConst);
 
-BOOLN	SetKRestingCond_Neuron_ArleKim(double theKRestingCond);
+BOOLN	SetKRestingCond_Neuron_ArleKim(Float theKRestingCond);
 
-BOOLN	SetKReversalPoten_Neuron_ArleKim(double theKReversalPoten);
+BOOLN	SetKReversalPoten_Neuron_ArleKim(Float theKReversalPoten);
 
-BOOLN	SetMembraneTConst_Neuron_ArleKim(double theMembraneTConst);
+BOOLN	SetMembraneTConst_Neuron_ArleKim(Float theMembraneTConst);
 
 BOOLN	InitModule_Neuron_ArleKim(ModulePtr theModule);
 
-BOOLN	SetNonLinearVConst_Neuron_ArleKim(double theNonLinearVConst);
+BOOLN	SetNonLinearVConst_Neuron_ArleKim(Float theNonLinearVConst);
 
 BOOLN	SetParsPointer_Neuron_ArleKim(ModulePtr theModule);
 
-BOOLN	SetPars_Neuron_ArleKim(double tm, double tGk, double tTh,
-		  double c, double b, double tH0, double aP, double vnl,
-		  double ek, double eb, double gk, double gb);
+BOOLN	SetRestingThreshold_Neuron_ArleKim(Float theRestingThreshold);
 
-BOOLN	SetRestingThreshold_Neuron_ArleKim(double theRestingThreshold);
-
-BOOLN	SetThresholdTConst_Neuron_ArleKim(double theThresholdTConst);
+BOOLN	SetThresholdTConst_Neuron_ArleKim(Float theThresholdTConst);
 
 BOOLN	SetUniParList_Neuron_ArleKim(void);
 

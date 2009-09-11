@@ -40,12 +40,12 @@ typedef enum {
 
 typedef struct {
 
-	double	x;
+	Float	x;
 	ChanLen	numLastSamples;
-	double	waveLast;
-	double	waveTempLast;
-	double	iHCLast;
-	double	iHCTempLast;
+	Float	waveLast;
+	Float	waveTempLast;
+	Float	iHCLast;
+	Float	iHCTempLast;
 	ChanData	*lastOutputSection, *lastOutputStore;
 
 } CarneyRPCoeffs, *CarneyRPCoeffsPtr;
@@ -54,23 +54,20 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	cutOffFrequencyFlag, hCOperatingPointFlag, asymmetricalBiasFlag;
-	BOOLN	maxHCVoltageFlag, waveDelayCoeffFlag, waveDelayLengthFlag;
-	BOOLN	referencePotFlag;
 	BOOLN	updateProcessVariablesFlag;
 
-	double	cutOffFrequency;
-	double	hCOperatingPoint;
-	double	asymmetricalBias;
-	double	maxHCVoltage;
-	double	waveDelayCoeff;
-	double	waveDelayLength;
-	double	referencePot;		/* Reference potential */
+	Float	cutOffFrequency;
+	Float	hCOperatingPoint;
+	Float	asymmetricalBias;
+	Float	maxHCVoltage;
+	Float	waveDelayCoeff;
+	Float	waveDelayLength;
+	Float	referencePot;		/* Reference potential */
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		numChannels;
-	double	aA,c1LP, c2LP;
+	Float	aA,c1LP, c2LP;
 	CarneyRPCoeffsPtr	*coefficients;
 
 } CarneyRP, *CarneyRPPtr;
@@ -93,8 +90,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_IHCRP_Carney(EarObjectPtr data);
 
-BOOLN	CheckPars_IHCRP_Carney(void);
-
 BOOLN	Free_IHCRP_Carney(void);
 
 void	FreeCarneyRPCoeffs_IHCRP_Carney(CarneyRPCoeffsPtr *p);
@@ -105,39 +100,33 @@ UniParListPtr	GetUniParListPtr_IHCRP_Carney(void);
 
 BOOLN	Init_IHCRP_Carney(ParameterSpecifier parSpec);
 
-CarneyRPCoeffsPtr	InitCarneyRPCoeffs_IHCRP_Carney(double cF, double dt);
+CarneyRPCoeffsPtr	InitCarneyRPCoeffs_IHCRP_Carney(Float cF, Float dt);
 
 BOOLN	InitProcessVariables_IHCRP_Carney(EarObjectPtr data);
 
 BOOLN	PrintPars_IHCRP_Carney(void);
 
-BOOLN	ReadPars_IHCRP_Carney(WChar *fileName);
-
 BOOLN	RunModel_IHCRP_Carney(EarObjectPtr data);
 
-BOOLN	SetAsymmetricalBias_IHCRP_Carney(double theAsymmetricalBias);
+BOOLN	SetAsymmetricalBias_IHCRP_Carney(Float theAsymmetricalBias);
 
-BOOLN	SetCutOffFrequency_IHCRP_Carney(double theCutOffFrequency);
+BOOLN	SetCutOffFrequency_IHCRP_Carney(Float theCutOffFrequency);
 
-BOOLN	SetHCOperatingPoint_IHCRP_Carney(double theHCOperatingPoint);
+BOOLN	SetHCOperatingPoint_IHCRP_Carney(Float theHCOperatingPoint);
 
-BOOLN	SetMaxHCVoltage_IHCRP_Carney(double theMaxHCVoltage);
+BOOLN	SetMaxHCVoltage_IHCRP_Carney(Float theMaxHCVoltage);
 
 BOOLN	InitModule_IHCRP_Carney(ModulePtr theModule);
 
 BOOLN	SetParsPointer_IHCRP_Carney(ModulePtr theModule);
 
-BOOLN	SetPars_IHCRP_Carney(double cutOffFrequency, double HCOperatingPoint,
-		  double asymmetricalBias, double maxHCVoltage, double referencePot,
-		  double waveDelayCoeff, double waveDelayLength);
-
-BOOLN	SetReferencePot_IHCRP_Carney(double theReferencePot);
+BOOLN	SetReferencePot_IHCRP_Carney(Float theReferencePot);
 
 BOOLN	SetUniParList_IHCRP_Carney(void);
 
-BOOLN	SetWaveDelayCoeff_IHCRP_Carney(double theWaveDelayCoeff);
+BOOLN	SetWaveDelayCoeff_IHCRP_Carney(Float theWaveDelayCoeff);
 
-BOOLN	SetWaveDelayLength_IHCRP_Carney(double theWaveDelayLength);
+BOOLN	SetWaveDelayLength_IHCRP_Carney(Float theWaveDelayLength);
 
 __END_DECLS
 

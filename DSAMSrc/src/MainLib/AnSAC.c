@@ -101,11 +101,6 @@ Init_Analysis_SAC(ParameterSpecifier parSpec)
 	}
 	sACPtr->parSpec = parSpec;
 	sACPtr->updateProcessVariablesFlag = TRUE;
-	sACPtr->orderFlag = TRUE;
-	sACPtr->eventThresholdFlag = TRUE;
-	sACPtr->maxIntervalFlag = TRUE;
-	sACPtr->binWidthFlag = TRUE;
-	sACPtr->normalisation = TRUE;
 	sACPtr->order = -1;
 	sACPtr->eventThreshold = 0.5;
 	sACPtr->maxInterval = -1.0;
@@ -246,7 +241,6 @@ SetOrder_Analysis_SAC(int theOrder)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sACPtr->orderFlag = TRUE;
 	sACPtr->updateProcessVariablesFlag = TRUE;
 	sACPtr->order = theOrder;
 	return(TRUE);
@@ -262,7 +256,7 @@ SetOrder_Analysis_SAC(int theOrder)
  */
 
 BOOLN
-SetEventThreshold_Analysis_SAC(double theEventThreshold)
+SetEventThreshold_Analysis_SAC(Float theEventThreshold)
 {
 	static const WChar	*funcName = wxT("SetEventThreshold_Analysis_SAC");
 
@@ -271,7 +265,6 @@ SetEventThreshold_Analysis_SAC(double theEventThreshold)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sACPtr->eventThresholdFlag = TRUE;
 	sACPtr->updateProcessVariablesFlag = TRUE;
 	sACPtr->eventThreshold = theEventThreshold;
 	return(TRUE);
@@ -287,7 +280,7 @@ SetEventThreshold_Analysis_SAC(double theEventThreshold)
  */
 
 BOOLN
-SetMaxInterval_Analysis_SAC(double theMaxInterval)
+SetMaxInterval_Analysis_SAC(Float theMaxInterval)
 {
 	static const WChar	*funcName = wxT("SetMaxInterval_Analysis_SAC");
 
@@ -296,7 +289,6 @@ SetMaxInterval_Analysis_SAC(double theMaxInterval)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sACPtr->maxIntervalFlag = TRUE;
 	sACPtr->updateProcessVariablesFlag = TRUE;
 	sACPtr->maxInterval = theMaxInterval;
 	return(TRUE);
@@ -312,7 +304,7 @@ SetMaxInterval_Analysis_SAC(double theMaxInterval)
  */
 
 BOOLN
-SetBinWidth_Analysis_SAC(double theBinWidth)
+SetBinWidth_Analysis_SAC(Float theBinWidth)
 {
 	static const WChar	*funcName = wxT("SetBinWidth_Analysis_SAC");
 
@@ -321,51 +313,9 @@ SetBinWidth_Analysis_SAC(double theBinWidth)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	sACPtr->binWidthFlag = TRUE;
 	sACPtr->updateProcessVariablesFlag = TRUE;
 	sACPtr->binWidth = theBinWidth;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_SAC(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_SAC");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (sACPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!sACPtr->orderFlag) {
-		NotifyError(wxT("%s: order variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sACPtr->eventThresholdFlag) {
-		NotifyError(wxT("%s: eventThreshold variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sACPtr->maxIntervalFlag) {
-		NotifyError(wxT("%s: maxInterval variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!sACPtr->binWidthFlag) {
-		NotifyError(wxT("%s: binWidth variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -381,10 +331,6 @@ PrintPars_Analysis_SAC(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_SAC");
 
-	if (!CheckPars_Analysis_SAC()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."), funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Shuffled Autocorrelogram Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tNormalisation switch = %s,"), BooleanList_NSpecLists(sACPtr->
 	  normalisation)->name);
@@ -446,7 +392,6 @@ InitModule_Analysis_SAC(ModulePtr theModule)
 		return(FALSE);
 	}
 	theModule->parsPtr = sACPtr;
-	theModule->CheckPars = CheckPars_Analysis_SAC;
 	theModule->Free = Free_Analysis_SAC;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_SAC;
 	theModule->PrintPars = PrintPars_Analysis_SAC;
@@ -474,7 +419,7 @@ BOOLN
 CheckData_Analysis_SAC(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_SAC");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -575,9 +520,9 @@ Calc_Analysis_SAC(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Calc_Analysis_SAC");
 	register	ChanData	 *outPtr;
-	register	double binScale, normalisationFactor, spikeCount;
+	register	Float binScale, normalisationFactor, spikeCount;
 	int		chan, sChan;
-	double	maxInterval;
+	Float	maxInterval;
 	ChanLen	i, spikeIntervalIndex;
 	SpikeSpecPtr	p1, p2;
 	SpikeListSpecPtr	sL;
@@ -586,8 +531,6 @@ Calc_Analysis_SAC(EarObjectPtr data)
 
 	inSignal = _InSig_EarObject(data, 0);
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_SAC())
-			return(FALSE);
 		if (!CheckData_Analysis_SAC(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -616,7 +559,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
 	outSignal = _OutSig_EarObject(data);
 	binScale = inSignal->dt / p->binWidth;
-	/*binScale = (double) p->maxIntervalIndex / inSignal->length;*/
+	/*binScale = (Float) p->maxIntervalIndex / inSignal->length;*/
 	sL = p->spikeListSpec;
 	spikeCount = 0;
 	if (p->normalisation) {
@@ -632,14 +575,14 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		for (sChan = 0; sChan < inSignal->numChannels; sChan++) {
 			if (sChan == chan)
 				continue;
-			for (p1 = sL->head[chan]; p1 != sL->current[chan]->next; p1 = p1->next) {
-				for (p2 = sL->head[sChan]; (p2 != NULL) && (p2 != sL->current[sChan]->next) &&
+			for (p1 = sL->head[chan]; p1 && (p1 != sL->current[chan]->next); p1 = p1->next) {
+				for (p2 = sL->head[sChan]; p2 && (p2 != sL->current[sChan]->next) &&
 				  (p2->number - p1->number <= p->maxSpikes); p2 = p2->next) {
 					if (p2->timeIndex < p1->timeIndex)
 						continue;
 					if ((spikeIntervalIndex = p2->timeIndex - p1->timeIndex) <
 					  p->maxIntervalIndex)
-						outPtr[(ChanLen) floor(spikeIntervalIndex * binScale + 0.5)]++;
+						outPtr[(ChanLen) floor(spikeIntervalIndex * binScale)]++;
 				}
 			}
 		}

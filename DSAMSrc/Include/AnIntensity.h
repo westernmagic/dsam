@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (May 27 1996).
  * Author:		L. P. O'Mard
  * Created:		12 Jun 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -35,9 +35,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	timeOffsetFlag, extentFlag;
-	double	timeOffset;
-	double	extent;
+	Float	timeOffset;
+	Float	extent;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -65,8 +64,6 @@ BOOLN	Calc_Analysis_Intensity(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_Intensity(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_Intensity(void);
-
 BOOLN	Free_Analysis_Intensity(void);
 
 UniParListPtr	GetUniParListPtr_Analysis_Intensity(void);
@@ -75,17 +72,13 @@ BOOLN	Init_Analysis_Intensity(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_Analysis_Intensity(void);
 
-BOOLN	ReadPars_Analysis_Intensity(WChar *fileName);
-
 BOOLN	InitModule_Analysis_Intensity(ModulePtr theModule);
 
-BOOLN	SetExtent_Analysis_Intensity(double theExtent);
+BOOLN	SetExtent_Analysis_Intensity(Float theExtent);
 
 BOOLN	SetParsPointer_Analysis_Intensity(ModulePtr theModule);
 
-BOOLN	SetPars_Analysis_Intensity(double timeOffset);
-
-BOOLN	SetTimeOffset_Analysis_Intensity(double theTimeOffset);
+BOOLN	SetTimeOffset_Analysis_Intensity(Float theTimeOffset);
 
 BOOLN	SetUniParList_Analysis_Intensity(void);
 

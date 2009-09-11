@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.4.2 (Dec 19 2003).
  * Author:		L. P. O'Mard
  * Created:		22 Apr 2004
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2004, CNBH, University of Essex
  *
  *********************/
@@ -46,9 +46,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	labelModeFlag;
 	int		labelMode;
-	double	*labels;
+	Float	*labels;
 
 	/* Private members */
 	NameSpecifier	*labelModeList;
@@ -75,8 +74,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Transform_CollectSignals(EarObjectPtr data);
 
-BOOLN	CheckPars_Transform_CollectSignals(void);
-
 BOOLN	Free_Transform_CollectSignals(void);
 
 UniParListPtr	GetUniParListPtr_Transform_CollectSignals(void);
@@ -93,12 +90,12 @@ BOOLN	Process_Transform_CollectSignals(EarObjectPtr data);
 
 void	SetEnabledState_Transform_CollectSignals(void);
 
-BOOLN	SetIndividualLabel_Transform_CollectSignals(int theIndex, double
+BOOLN	SetIndividualLabel_Transform_CollectSignals(int theIndex, Float
 		  theLabel);
 
 BOOLN	SetLabelMode_Transform_CollectSignals(WChar * theLabelMode);
 
-BOOLN	SetLabels_Transform_CollectSignals(double *theLabels);
+BOOLN	SetLabels_Transform_CollectSignals(Float *theLabels);
 
 BOOLN	SetParsPointer_Transform_CollectSignals(ModulePtr theModule);
 

@@ -7,7 +7,7 @@
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
  * Authors:		L. P. O'Mard modified from L. H. Carney's code
  * Created:		30 April 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -98,16 +98,6 @@ Init_IHC_Carney(ParameterSpecifier parSpec)
 	}
 	carneyHCPtr->parSpec = parSpec;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
-	carneyHCPtr->maxHCVoltageFlag = TRUE;
-	carneyHCPtr->restingReleaseRateFlag = TRUE;
-	carneyHCPtr->restingPermFlag = TRUE;
-	carneyHCPtr->maxGlobalPermFlag = TRUE;
-	carneyHCPtr->maxLocalPermFlag = TRUE;
-	carneyHCPtr->maxImmediatePermFlag = TRUE;
-	carneyHCPtr->maxLocalVolumeFlag = TRUE;
-	carneyHCPtr->minLocalVolumeFlag = TRUE;
-	carneyHCPtr->maxImmediateVolumeFlag = TRUE;
-	carneyHCPtr->minImmediateVolumeFlag = TRUE;
 	carneyHCPtr->maxHCVoltage = 10.0;
 	carneyHCPtr->restingReleaseRate = 70.0;
 	carneyHCPtr->restingPerm = 0.015;
@@ -228,49 +218,6 @@ GetUniParListPtr_IHC_Carney(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
-  double restingPerm, double maxGlobalPerm, double maxLocalPerm,
-  double maxImmediatePerm, double maxLocalVolume, double minLocalVolume,
-  double maxImmediateVolume, double minImmediateVolume)
-{
-	static const WChar	*funcName = wxT("SetPars_IHC_Carney");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMaxHCVoltage_IHC_Carney(maxHCVoltage))
-		ok = FALSE;
-	if (!SetRestingReleaseRate_IHC_Carney(restingReleaseRate))
-		ok = FALSE;
-	if (!SetRestingPerm_IHC_Carney(restingPerm))
-		ok = FALSE;
-	if (!SetMaxGlobalPerm_IHC_Carney(maxGlobalPerm))
-		ok = FALSE;
-	if (!SetMaxLocalPerm_IHC_Carney(maxLocalPerm))
-		ok = FALSE;
-	if (!SetMaxImmediatePerm_IHC_Carney(maxImmediatePerm))
-		ok = FALSE;
-	if (!SetMaxLocalVolume_IHC_Carney(maxLocalVolume))
-		ok = FALSE;
-	if (!SetMinLocalVolume_IHC_Carney(minLocalVolume))
-		ok = FALSE;
-	if (!SetMaxImmediateVolume_IHC_Carney(maxImmediateVolume))
-		ok = FALSE;
-	if (!SetMinImmediateVolume_IHC_Carney(minImmediateVolume))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMaxHCVoltage *******************************/
 
 /*
@@ -280,7 +227,7 @@ SetPars_IHC_Carney(double maxHCVoltage, double restingReleaseRate,
  */
 
 BOOLN
-SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage)
+SetMaxHCVoltage_IHC_Carney(Float theMaxHCVoltage)
 {
 	static const WChar	*funcName = wxT("SetMaxHCVoltage_IHC_Carney");
 
@@ -288,11 +235,10 @@ SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (fabs(theMaxHCVoltage) < DBL_EPSILON) {
+	if (fabs(theMaxHCVoltage) < DSAM_EPSILON) {
 		NotifyError(wxT("%s: Illegal value (%g V)."), theMaxHCVoltage);
 		return(FALSE);
 	}
-	carneyHCPtr->maxHCVoltageFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxHCVoltage = theMaxHCVoltage;
 	return(TRUE);
@@ -308,7 +254,7 @@ SetMaxHCVoltage_IHC_Carney(double theMaxHCVoltage)
  */
 
 BOOLN
-SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate)
+SetRestingReleaseRate_IHC_Carney(Float theRestingReleaseRate)
 {
 	static const WChar	*funcName = wxT("SetRestingReleaseRate_IHC_Carney");
 
@@ -317,7 +263,6 @@ SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->restingReleaseRateFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->restingReleaseRate = theRestingReleaseRate;
 	return(TRUE);
@@ -333,7 +278,7 @@ SetRestingReleaseRate_IHC_Carney(double theRestingReleaseRate)
  */
 
 BOOLN
-SetRestingPerm_IHC_Carney(double theRestingPerm)
+SetRestingPerm_IHC_Carney(Float theRestingPerm)
 {
 	static const WChar	*funcName = wxT("SetRestingPerm_IHC_Carney");
 
@@ -342,7 +287,6 @@ SetRestingPerm_IHC_Carney(double theRestingPerm)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->restingPermFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->restingPerm = theRestingPerm;
 	return(TRUE);
@@ -358,7 +302,7 @@ SetRestingPerm_IHC_Carney(double theRestingPerm)
  */
 
 BOOLN
-SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm)
+SetMaxGlobalPerm_IHC_Carney(Float theMaxGlobalPerm)
 {
 	static const WChar	*funcName = wxT("SetMaxGlobalPerm_IHC_Carney");
 
@@ -367,7 +311,6 @@ SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->maxGlobalPermFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxGlobalPerm = theMaxGlobalPerm;
 	return(TRUE);
@@ -383,7 +326,7 @@ SetMaxGlobalPerm_IHC_Carney(double theMaxGlobalPerm)
  */
 
 BOOLN
-SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm)
+SetMaxLocalPerm_IHC_Carney(Float theMaxLocalPerm)
 {
 	static const WChar	*funcName = wxT("SetMaxLocalPerm_IHC_Carney");
 
@@ -392,7 +335,6 @@ SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->maxLocalPermFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxLocalPerm = theMaxLocalPerm;
 	return(TRUE);
@@ -408,7 +350,7 @@ SetMaxLocalPerm_IHC_Carney(double theMaxLocalPerm)
  */
 
 BOOLN
-SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm)
+SetMaxImmediatePerm_IHC_Carney(Float theMaxImmediatePerm)
 {
 	static const WChar	*funcName = wxT("SetMaxImmediatePerm_IHC_Carney");
 
@@ -417,7 +359,6 @@ SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->maxImmediatePermFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxImmediatePerm = theMaxImmediatePerm;
 	return(TRUE);
@@ -433,7 +374,7 @@ SetMaxImmediatePerm_IHC_Carney(double theMaxImmediatePerm)
  */
 
 BOOLN
-SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume)
+SetMaxLocalVolume_IHC_Carney(Float theMaxLocalVolume)
 {
 	static const WChar	*funcName = wxT("SetMaxLocalVolume_IHC_Carney");
 
@@ -442,7 +383,6 @@ SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->maxLocalVolumeFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxLocalVolume = theMaxLocalVolume;
 	return(TRUE);
@@ -458,7 +398,7 @@ SetMaxLocalVolume_IHC_Carney(double theMaxLocalVolume)
  */
 
 BOOLN
-SetMinLocalVolume_IHC_Carney(double theMinLocalVolume)
+SetMinLocalVolume_IHC_Carney(Float theMinLocalVolume)
 {
 	static const WChar	*funcName = wxT("SetMinLocalVolume_IHC_Carney");
 
@@ -467,7 +407,6 @@ SetMinLocalVolume_IHC_Carney(double theMinLocalVolume)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->minLocalVolumeFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->minLocalVolume = theMinLocalVolume;
 	return(TRUE);
@@ -483,7 +422,7 @@ SetMinLocalVolume_IHC_Carney(double theMinLocalVolume)
  */
 
 BOOLN
-SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume)
+SetMaxImmediateVolume_IHC_Carney(Float theMaxImmediateVolume)
 {
 	static const WChar	*funcName = wxT("SetMaxImmediateVolume_IHC_Carney");
 
@@ -492,7 +431,6 @@ SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->maxImmediateVolumeFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->maxImmediateVolume = theMaxImmediateVolume;
 	return(TRUE);
@@ -508,7 +446,7 @@ SetMaxImmediateVolume_IHC_Carney(double theMaxImmediateVolume)
  */
 
 BOOLN
-SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume)
+SetMinImmediateVolume_IHC_Carney(Float theMinImmediateVolume)
 {
 	static const WChar	*funcName = wxT("SetMinImmediateVolume_IHC_Carney");
 
@@ -517,75 +455,9 @@ SetMinImmediateVolume_IHC_Carney(double theMinImmediateVolume)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	carneyHCPtr->minImmediateVolumeFlag = TRUE;
 	carneyHCPtr->updateProcessVariablesFlag = TRUE;
 	carneyHCPtr->minImmediateVolume = theMinImmediateVolume;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_IHC_Carney(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_IHC_Carney");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (carneyHCPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!carneyHCPtr->maxHCVoltageFlag) {
-		NotifyError(wxT("%s: maxHCVoltage variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->restingReleaseRateFlag) {
-		NotifyError(wxT("%s: restingReleaseRate variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->restingPermFlag) {
-		NotifyError(wxT("%s: restingPerm variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->maxGlobalPermFlag) {
-		NotifyError(wxT("%s: maxGlobalPerm variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->maxLocalPermFlag) {
-		NotifyError(wxT("%s: maxLocalPerm variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->maxImmediatePermFlag) {
-		NotifyError(wxT("%s: maxImmediatePerm variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->maxLocalVolumeFlag) {
-		NotifyError(wxT("%s: maxLocalVolume variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->minLocalVolumeFlag) {
-		NotifyError(wxT("%s: minLocalVolume variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->maxImmediateVolumeFlag) {
-		NotifyError(wxT("%s: maxImmediateVolume variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!carneyHCPtr->minImmediateVolumeFlag) {
-		NotifyError(wxT("%s: minImmediateVolume variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -601,11 +473,6 @@ PrintPars_IHC_Carney(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_IHC_Carney");
 
-	if (!CheckPars_IHC_Carney()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Carney IHC Synapse Module Parameters:-\n"));
 	DPrint(wxT("\tMax. depolarizing HC voltage, Vmax = %g (V)\n"),
 	  carneyHCPtr->maxHCVoltage);
@@ -613,7 +480,7 @@ PrintPars_IHC_Carney(void)
 	  carneyHCPtr->restingReleaseRate);
 	DPrint(wxT("\tResting permeability, Prest = %g ('volume'/s)\n"),
 	  carneyHCPtr->restingPerm);
-	DPrint(wxT("\tMax. global permeability, PGmax = %g ('volume'/s)\n"), 
+	DPrint(wxT("\tMax. global permeability, PGmax = %g ('volume'/s)\n"),
 	  carneyHCPtr->maxGlobalPerm);
 	DPrint(wxT("\tMax. local , PLmax = %g ('volume'/s)\n"),
 	  carneyHCPtr->maxLocalPerm);
@@ -627,69 +494,6 @@ PrintPars_IHC_Carney(void)
 	  carneyHCPtr->maxImmediateVolume);
 	DPrint(wxT("\tMin. immediate volume, VLmax = %g ('volume')\n"),
 	  carneyHCPtr->minImmediateVolume);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_IHC_Carney(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_IHC_Carney");
-	BOOLN	ok;
-	WChar	*filePath;
-	double	maxHCVoltage, restingReleaseRate, restingPerm, maxGlobalPerm;
-	double	maxLocalPerm, maxImmediatePerm, maxLocalVolume, minLocalVolume;
-	double	maxImmediateVolume, minImmediateVolume;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxHCVoltage))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingReleaseRate))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &restingPerm))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxGlobalPerm))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxLocalPerm))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxImmediatePerm))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxLocalVolume))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &minLocalVolume))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxImmediateVolume))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &minImmediateVolume))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_IHC_Carney(maxHCVoltage, restingReleaseRate, restingPerm,
-	  maxGlobalPerm, maxLocalPerm, maxImmediatePerm, maxLocalVolume,
-	  minLocalVolume, maxImmediateVolume, minImmediateVolume)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -736,11 +540,9 @@ InitModule_IHC_Carney(ModulePtr theModule)
 	}
 	theModule->parsPtr = carneyHCPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_IHC_Carney;
 	theModule->Free = Free_IHC_Carney;
 	theModule->GetUniParListPtr = GetUniParListPtr_IHC_Carney;
 	theModule->PrintPars = PrintPars_IHC_Carney;
-	theModule->ReadPars = ReadPars_IHC_Carney;
 	theModule->RunProcess = RunModel_IHC_Carney;
 	theModule->SetParsPointer = SetParsPointer_IHC_Carney;
 	return(TRUE);
@@ -790,9 +592,9 @@ InitProcessVariables_IHC_Carney(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_IHC_Carney");
 	int		i;
-	double	restingImmediateConc_CI0, restingLocalConc_CL0;
+	Float	restingImmediateConc_CI0, restingLocalConc_CL0;
 	CarneyHCPtr	p = carneyHCPtr;
-	
+
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (carneyHCPtr->updateProcessVariablesFlag || data->
@@ -859,15 +661,13 @@ RunModel_IHC_Carney(EarObjectPtr data)
 	static const WChar	*funcName = wxT("RunModel_IHC_Carney");
 	register	ChanData	 *inPtr, *outPtr;
 	int			chan;
-	double		releaseProb, pI, pL, pG;
+	Float		releaseProb, pI, pL, pG;
 	ChanLen		i;
 	CarneyHCPtr	p = carneyHCPtr;
 	SignalDataPtr	outSignal;
 	CarneyHCVarsPtr	vPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_IHC_Carney())
-			return(FALSE);
 		if (!CheckData_IHC_Carney(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -916,7 +716,7 @@ RunModel_IHC_Carney(EarObjectPtr data)
 			  vPtr->cI));
 			vPtr->cL += p->dt / vPtr->vL * (-pL * (vPtr->cL - vPtr->cI) + pG *
 			  (p->cG - vPtr->cL));
-			
+
 			/* Spike prob. */
 			*outPtr++ = (ChanData) (vPtr->cI * pI * p->dt);
 		}

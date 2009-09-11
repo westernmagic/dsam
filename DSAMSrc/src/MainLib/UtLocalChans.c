@@ -6,7 +6,7 @@
  * Comments:	Written using ModuleProducer version 1.3.3 (Oct  1 2001).
  * Author:		L. P. O'Mard
  * Created:		17 Jan 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  *********************/
@@ -115,10 +115,6 @@ Init_Utility_LocalChans(ParameterSpecifier parSpec)
 		}
 	}
 	localChansPtr->parSpec = parSpec;
-	localChansPtr->modeFlag = TRUE;
-	localChansPtr->limitModeFlag = TRUE;
-	localChansPtr->lowerLimitFlag = TRUE;
-	localChansPtr->upperLimitFlag = TRUE;
 	localChansPtr->mode = UTILITY_LOCALCHANS_MODE_SUM;
 	localChansPtr->limitMode = SIGNALDATA_LIMIT_MODE_OCTAVE;
 	localChansPtr->lowerLimit = -1.0;
@@ -205,35 +201,6 @@ GetUniParListPtr_Utility_LocalChans(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Utility_LocalChans(WChar * mode, WChar * limitMode, double lowerLimit,
-  double upperLimit)
-{
-	static const WChar	*funcName = wxT("SetPars_Utility_LocalChans");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Utility_LocalChans(mode))
-		ok = FALSE;
-	if (!SetLimitMode_Utility_LocalChans(limitMode))
-		ok = FALSE;
-	if (!SetLowerLimit_Utility_LocalChans(lowerLimit))
-		ok = FALSE;
-	if (!SetUpperLimit_Utility_LocalChans(upperLimit))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -258,7 +225,6 @@ SetMode_Utility_LocalChans(WChar * theMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	localChansPtr->modeFlag = TRUE;
 	localChansPtr->mode = specifier;
 	return(TRUE);
 
@@ -288,7 +254,6 @@ SetLimitMode_Utility_LocalChans(WChar * theLimitMode)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	localChansPtr->limitModeFlag = TRUE;
 	localChansPtr->limitMode = specifier;
 	return(TRUE);
 
@@ -303,7 +268,7 @@ SetLimitMode_Utility_LocalChans(WChar * theLimitMode)
  */
 
 BOOLN
-SetLowerLimit_Utility_LocalChans(double theLowerLimit)
+SetLowerLimit_Utility_LocalChans(Float theLowerLimit)
 {
 	static const WChar	*funcName = wxT("SetLowerLimit_Utility_LocalChans");
 
@@ -312,7 +277,6 @@ SetLowerLimit_Utility_LocalChans(double theLowerLimit)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	localChansPtr->lowerLimitFlag = TRUE;
 	localChansPtr->lowerLimit = theLowerLimit;
 	return(TRUE);
 
@@ -327,7 +291,7 @@ SetLowerLimit_Utility_LocalChans(double theLowerLimit)
  */
 
 BOOLN
-SetUpperLimit_Utility_LocalChans(double theUpperLimit)
+SetUpperLimit_Utility_LocalChans(Float theUpperLimit)
 {
 	static const WChar	*funcName = wxT("SetUpperLimit_Utility_LocalChans");
 
@@ -336,50 +300,8 @@ SetUpperLimit_Utility_LocalChans(double theUpperLimit)
 		return(FALSE);
 	}
 	/*** Put any other required checks here. ***/
-	localChansPtr->upperLimitFlag = TRUE;
 	localChansPtr->upperLimit = theUpperLimit;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Utility_LocalChans(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Utility_LocalChans");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!localChansPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (localChansPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!localChansPtr->limitModeFlag) {
-		NotifyError(wxT("%s: limitMode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!localChansPtr->lowerLimitFlag) {
-		NotifyError(wxT("%s: lowerLimit variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!localChansPtr->upperLimitFlag) {
-		NotifyError(wxT("%s: upperLimit variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -395,9 +317,8 @@ PrintPars_Utility_LocalChans(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Utility_LocalChans");
 
-	if (!CheckPars_Utility_LocalChans()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
+	if (localChansPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
 	DPrint(wxT("Channel localisation Utility Module Parameters:-\n"));
@@ -411,52 +332,6 @@ PrintPars_Utility_LocalChans(void)
 	DPrint(wxT("\tUpper window limit above channel = %g (%s).\n"),
 	  localChansPtr->upperLimit, LimitModeList_SignalData(localChansPtr->
 	  limitMode)->name);
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Utility_LocalChans(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Utility_LocalChans");
-	BOOLN	ok = TRUE;
-	WChar	*filePath, mode[MAX_FILE_PATH], limitMode[MAX_FILE_PATH];
-	double	lowerLimit, upperLimit;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  fileName);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, fileName);
-	Init_ParFile();
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%s"), limitMode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &lowerLimit))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &upperLimit))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, fileName);
-		return(FALSE);
-	}
-	if (!SetPars_Utility_LocalChans(mode, limitMode, lowerLimit, upperLimit)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -505,11 +380,9 @@ InitModule_Utility_LocalChans(ModulePtr theModule)
 	}
 	theModule->parsPtr = localChansPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Utility_LocalChans;
 	theModule->Free = Free_Utility_LocalChans;
 	theModule->GetUniParListPtr = GetUniParListPtr_Utility_LocalChans;
 	theModule->PrintPars = PrintPars_Utility_LocalChans;
-	theModule->ReadPars = ReadPars_Utility_LocalChans;
 	theModule->ResetProcess = ResetProcess_Utility_LocalChans;
 	theModule->RunProcess = Calc_Utility_LocalChans;
 	theModule->SetParsPointer = SetParsPointer_Utility_LocalChans;
@@ -592,8 +465,6 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 	LocalChansPtr	p = localChansPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Utility_LocalChans())
-			return(FALSE);
 		if (!CheckData_Utility_LocalChans(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -647,7 +518,7 @@ Calc_Utility_LocalChans(EarObjectPtr data)
 			for (i = 0; i < outSignal->length; i++)
 				*outPtr++ /= numChannels;
 		}
-			
+
 	}
 
 	SetProcessContinuity_EarObject(data);

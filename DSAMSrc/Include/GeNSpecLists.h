@@ -3,7 +3,7 @@
  * File:		GeNSpecLists.h
  * Purpose:		This module contains the common specifier lists used by various
  *				modules.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		26 Nov 1997
  * Updated:
@@ -124,8 +124,8 @@ BOOLN	OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode);
 
 NameSpecifier *	PhaseModeList_NSpecLists(int index);
 
-void	SetPhaseArray_NSpecLists(double *phase, long *ranSeed,
-		  RandParsPtr randPars, int phaseMode, double phaseVariable,
+void	SetPhaseArray_NSpecLists(Float *phase, long *ranSeed,
+		  RandParsPtr randPars, int phaseMode, Float phaseVariable,
 		  int lowestHarmonic, int numHarmonics);
 
 NameSpecifier *	SpacingModeList_NSpecLists(int index);

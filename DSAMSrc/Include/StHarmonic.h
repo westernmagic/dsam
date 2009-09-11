@@ -14,7 +14,7 @@
 
 #ifndef	_STHARMONIC_H
 #define _STHARMONIC_H	1
- 
+
 #include "UtNameSpecs.h"
 
 /******************************************************************************/
@@ -60,34 +60,29 @@ typedef struct {
 
 	ParameterSpecifier parSpec;
 
-	BOOLN	lowestHarmonicFlag, highestHarmonicFlag, mistunedHarmonicFlag;
-	BOOLN	phaseVariableFlag, frequencyFlag, intensityFlag, durationFlag;
-	BOOLN	mistuningFactorFlag, modulationFrequencyFlag, modulationPhaseFlag;
-	BOOLN	modulationDepthFlag, orderFlag, lowerCutOffFreqFlag, phaseModeFlag;
-	BOOLN	upperCutOffFreqFlag, dtFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		lowestHarmonic;
 	int		highestHarmonic;
 	int		mistunedHarmonic;
 	int		order;
 	int		phaseMode;
-	double	phaseVariable;
-	double	mistuningFactor;
-	double	frequency;
-	double	intensity;
-	double	duration, dt;
-	double	modulationFrequency;
-	double	modulationPhase;
-	double	modulationDepth;
-	double	lowerCutOffFreq;
-	double	upperCutOffFreq;
-	
+	Float	phaseVariable;
+	Float	mistuningFactor;
+	Float	frequency;
+	Float	intensity;
+	Float	duration, dt;
+	Float	modulationFrequency;
+	Float	modulationPhase;
+	Float	modulationDepth;
+	Float	lowerCutOffFreq;
+	Float	upperCutOffFreq;
+
 	/* Private process variables */
 	UniParListPtr	parList;
 	long	ranSeed;
-	double	*phase;
-	double	*harmonicFrequency;
-	double	*modIndex;
+	Float	*phase;
+	Float	*harmonicFrequency;
+	Float	*modIndex;
 
 } Harmonic, *HarmonicPtr;
 
@@ -103,7 +98,7 @@ extern	HarmonicPtr	harmonicPtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_Harmonic(void);
+BOOLN	CheckData_Harmonic(EarObjectPtr data);
 
 BOOLN	Free_Harmonic(void);
 
@@ -123,25 +118,23 @@ BOOLN	SetLowestHarmonic_Harmonic(int theLowestHarmonic);
 
 BOOLN	SetMistunedHarmonic_Harmonic(int theMistunedHarmonic);
 
-BOOLN	SetMistuningFactor_Harmonic(double theMistuningFactor);
+BOOLN	SetMistuningFactor_Harmonic(Float theMistuningFactor);
 
 BOOLN	PrintPars_Harmonic(void);
 
-BOOLN	ReadPars_Harmonic(WChar *fileName);
+BOOLN	SetDuration_Harmonic(Float theDuration);
 
-BOOLN	SetDuration_Harmonic(double theDuration);
+BOOLN	SetFrequency_Harmonic(Float theFrequency);
 
-BOOLN	SetFrequency_Harmonic(double theFrequency);
+BOOLN	SetIntensity_Harmonic(Float theIntensity);
 
-BOOLN	SetIntensity_Harmonic(double theIntensity);
+BOOLN	SetLowerCutOffFreq_Harmonic(Float theLowerCutOffFreq);
 
-BOOLN	SetLowerCutOffFreq_Harmonic(double theLowerCutOffFreq);
+BOOLN	SetModulationDepth_Harmonic(Float theModulationDepth);
 
-BOOLN	SetModulationDepth_Harmonic(double theModulationDepth);
+BOOLN	SetModulationFrequency_Harmonic(Float theModulationFrequency);
 
-BOOLN	SetModulationFrequency_Harmonic(double theModulationFrequency);
-
-BOOLN	SetModulationPhase_Harmonic(double theModulationPhase);
+BOOLN	SetModulationPhase_Harmonic(Float theModulationPhase);
 
 BOOLN	InitModule_Harmonic(ModulePtr theModule);
 
@@ -149,23 +142,15 @@ BOOLN	SetOrder_Harmonic(int theOrder);
 
 BOOLN	SetParsPointer_Harmonic(ModulePtr theModule);
 
-BOOLN	SetPars_Harmonic(WChar *thePhaseMode, int theLowestHarmonic,
-		  int theHighestHarmonic, int theMistunedHarmonic,
-		  double theMistuningFactor, double thePhaseVariable,
-		  double theFrequency, double theIntensity, double theDuration,
-		  double theSamplingInterval,  double theModulationFrequency,
-		  double theModulationPhase, double theModulationDepth, int theOrder,
-		  double theLowerCutFreq, double theUpperCutFreq);
-
 BOOLN	SetPhaseMode_Harmonic(WChar *thePhaseMode);
 
-BOOLN	SetPhaseVariable_Harmonic(double thePhaseVariable);
+BOOLN	SetPhaseVariable_Harmonic(Float thePhaseVariable);
 
-BOOLN	SetSamplingInterval_Harmonic(double theSamplingInterval);
+BOOLN	SetSamplingInterval_Harmonic(Float theSamplingInterval);
 
 BOOLN	SetUniParList_Harmonic(void);
 
-BOOLN	SetUpperCutOffFreq_Harmonic(double theUpperCutOffFreq);
+BOOLN	SetUpperCutOffFreq_Harmonic(Float theUpperCutOffFreq);
 
 __END_DECLS
 

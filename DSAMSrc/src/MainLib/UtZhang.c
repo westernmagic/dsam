@@ -5,7 +5,7 @@
  * Comments:	This code was revised from the ARLO matlab code.
  * Author:		Edited by L. P. O'Mard
  * Created:		13 Jun 2002
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex.
  *
  *********************/
@@ -59,8 +59,8 @@ SpeciesList_Utility_Zhang(int index)
  */
 
 BOOLN
-init_boltzman(TNonLinear* p,double _corner, double _slope, double _strength,
-  double _x0, double _s0, double _x1, double _s1, double _asym)
+init_boltzman(TNonLinear* p,Float _corner, Float _slope, Float _strength,
+  Float _x0, Float _s0, Float _x1, Float _s1, Float _asym)
 {
 
 	p->p_corner = _corner;
@@ -91,11 +91,11 @@ init_boltzman(TNonLinear* p,double _corner, double _slope, double _strength,
  * Extracted from the hc.c code (LPO).
  */
 
-double
-RunBoltzman(TNonLinear *p, double x)
+Float
+RunBoltzman(TNonLinear *p, Float x)
 {
 	/*// get the output of the first nonlinear function */
-	double xx,out;
+	Float xx,out;
 	xx = fabs(x);
 	if (x>0)
 		xx = p->Bcp*log(1+p->Acp*pow(xx,p->Ccp));
@@ -118,10 +118,10 @@ RunBoltzman(TNonLinear *p, double x)
  * Extracted from the hc.c code (LPO).
  */
 
-double
-RunHairCell(THairCell *p, double x)
+Float
+RunHairCell(THairCell *p, Float x)
 {
-	double y;
+	Float y;
 
 	y = p->hcnl.Run(&(p->hcnl), x);
 	return(p->hclp.Run(&(p->hclp), y));
@@ -138,15 +138,15 @@ RunHairCell(THairCell *p, double x)
  * if the input is zero, the output is TauMax,\\
  * if the input is dc, the output is TauMin,\\
  * if the input is too large, the output is pushed to TauMax*minR
- * if the input is negative, the output is the 2*TauMax-out (keep 
+ * if the input is negative, the output is the 2*TauMax-out (keep
  * the control signal continuous)
  */
 
-double
-RunAfterOhcNL_Utility_Zhang(TNonLinear* p, double x)
+Float
+RunAfterOhcNL_Utility_Zhang(TNonLinear* p, Float x)
 {
-	double out;
-	double x1 = fabs(x);
+	Float out;
+	Float x1 = fabs(x);
 
 	out = p->TauMax * (p->minR + (1.0 - p->minR) * exp(-x1 / p->s0));
 	return(out);
@@ -161,11 +161,11 @@ RunAfterOhcNL_Utility_Zhang(TNonLinear* p, double x)
  */
 
 void
-RunAfterOhcNL2_Utility_Zhang(TNonLinear* p, const double *in, double *out,
+RunAfterOhcNL2_Utility_Zhang(TNonLinear* p, const Float *in, Float *out,
   const int length)
 {
     int register i;
-    double x1;
+    Float x1;
 
     for (i=0;i<length;i++){
 	x1 = fabs(in[i]);
@@ -182,10 +182,10 @@ RunAfterOhcNL2_Utility_Zhang(TNonLinear* p, const double *in, double *out,
  */
 
 void
-InitLowPass_Utility_Zhang(TLowPass* res, double _tdres, double _Fc,
-  double _gain,int _LPorder)
+InitLowPass_Utility_Zhang(TLowPass* res, Float _tdres, Float _Fc,
+  Float _gain,int _LPorder)
 {
-	double c;
+	Float c;
 	int i;
 	res->tdres = _tdres;
 	c = 2.0/_tdres;
@@ -212,8 +212,8 @@ InitLowPass_Utility_Zhang(TLowPass* res, double _tdres, double _Fc,
   This function runs the low-pass filter
    @author Xuedong Zhang
  */
-double
-RunLowPass_Utility_Zhang(TLowPass *p, double x)
+Float
+RunLowPass_Utility_Zhang(TLowPass *p, Float x)
 {
 	register int i;
 	register int pOrder = p->Order;
@@ -243,13 +243,13 @@ RunLowPass_Utility_Zhang(TLowPass *p, double x)
  */
 
 void
-RunLowPass2_Utility_Zhang(TLowPass *p,const double *in, double *out,
+RunLowPass2_Utility_Zhang(TLowPass *p,const Float *in, Float *out,
   const int length)
 {
 	register int loopSig,loopLP;
 	int pOrder = p->Order;
-	double *hc,*hcl,c1LP,c2LP;
-	double gain;
+	Float *hc,*hcl,c1LP,c2LP;
+	Float gain;
 	gain = p->gain;
 	c1LP = p->c1LP;
 	c2LP = p->c2LP;

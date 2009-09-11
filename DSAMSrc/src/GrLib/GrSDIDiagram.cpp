@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		13 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, CNBH, University of Essex
  *
  **********************/
@@ -91,11 +91,10 @@ SDIDiagram::AddShape(wxShape *shape)
 {
 	wxDiagram::AddShape(shape);
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
-	if (myHandler->pc) {
-		myHandler->ResetLabel();
-		wxClientDC dc(shape->GetCanvas());
-		shape->FormatText(dc, myHandler->label);
-		shape->GetCanvas()->PrepareDC(dc);
+	if (myHandler->GetProcessType() == CONTROL_MODULE_CLASS) {
+		wxNode *node = shape->GetChildren().GetFirst();
+		if (node)
+			AddShape((wxShape *)node->GetData());
 	}
 
 }
@@ -116,6 +115,7 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 	wxShape *shape = CreateBasicShape(shapeInfo, (lineShape)? -1:
 	  pc->classSpecifier, brush);
 
+	AddShape(shape);
 	if (!lineShape) {
 		SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 		myHandler->pc = pc;
@@ -124,9 +124,8 @@ SDIDiagram::CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 		pc->shapePtr = shape;
 		if (pc->type == PROCESS)
 			pc->data->shapePtr = shape;
+		((SDIShape *) shape)->ResetLabel();
 	}
-
-	AddShape(shape);
 	wxClientDC dc(shape->GetCanvas());
 	shape->GetCanvas()->PrepareDC(dc);
 	shape->Move(dc, x, y);
@@ -155,8 +154,7 @@ SDIDiagram::UpdateAutoShapePos(wxShape *shape)
 	  GetClientSize().GetWidth()) || ((direction < 0) && (x - totalWidth) <
 	  0)) {
 		direction = - direction;
-		y += DIAGRAM_DEFAULT_SHAPE_HEIGHT +
-		DIAGRAM_DEFAULT_Y_SEPARATION;
+		UpdateAutoYPos();
 	}
 
 }
@@ -166,15 +164,12 @@ SDIDiagram::UpdateAutoShapePos(wxShape *shape)
 /******************************************************************************/
 
 void
-SDIDiagram::DrawSimShapes()
+SDIDiagram::DrawSimShapes(DatumPtr pc)
 {
-	DatumPtr	pc;
 	ModulePtr	module;
 	wxShape		*shape;
 	SDICanvas	*canvas = (SDICanvas *) GetCanvas();
 
-	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
-		return;
 	while (pc) {
 		shape = NULL;
 		switch (pc->type) {
@@ -186,22 +181,58 @@ SDIDiagram::DrawSimShapes()
 			UpdateAutoShapePos(shape);
 			break; }
 		case REPEAT:
+			UpdateAutoYPos();
+			DrawSimShapes(pc->u.loop.pc);
+			shape = CreateLoadShape(pc, canvas->GetClassInfo(
+			  CONTROL_MODULE_CLASS), DIAGRAM_ENABLED_BRUSH);
+			UpdateAutoYPos();
+			break;
 		case RESET:
 			shape = CreateLoadShape(pc, canvas->GetClassInfo(
 			  CONTROL_MODULE_CLASS), DIAGRAM_ENABLED_BRUSH);
 			UpdateAutoShapePos(shape);
 			break;
-		case STOP: {
-			DatumPtr	ppc = pc;
-			while (ppc && (ppc->type != PROCESS))
-				ppc = ppc->previous;
-			shape = (wxShape *) ppc->shapePtr;
-			pc->shapePtr = shape;
-			break; }
 		default:
 			wxLogError(wxT("SDIDiagram::DrawSimShapes: datum type %d not ")
 			  wxT("implemented.\n"), pc->type);
 		} /* switch */
+		pc = pc->next;
+	}
+}
+
+/******************************************************************************/
+/****************************** ReadjustSimShapes *****************************/
+/******************************************************************************/
+
+void
+SDIDiagram::ReadjustSimShapes(DatumPtr pc)
+{
+	SDIShape	*shape;
+
+	while (pc) {
+		if ((pc->type == REPEAT) && (pc->u.loop.pc)) {
+			wxRealPoint	lBottom, tRight, lBottomTotal, tRightTotal;
+			DatumPtr pc1 = pc->u.loop.pc;
+			((SDIShape *) pc1->shapePtr)->GetBoundingBoxPos(lBottomTotal,
+			  tRightTotal);
+			for (pc1 = pc1->next; pc1; pc1 = pc1->next) {
+				((SDIShape *) pc1->shapePtr)->GetBoundingBoxPos(lBottom, tRight);
+				if (lBottom.x < lBottomTotal.x)
+					lBottomTotal.x = lBottom.x;
+				if (lBottom.y > lBottomTotal.y)
+					lBottomTotal.y = lBottom.y;
+				if (tRight.x > tRightTotal.x)
+					tRightTotal.x = tRight.x;
+				if (tRight.y < tRightTotal.y)
+					tRightTotal.y = tRight.y;
+			}
+			shape = (SDIShape *) pc->shapePtr;
+			shape->SetX((lBottomTotal.x + tRightTotal.x) / 2.0);
+			shape->SetY((lBottomTotal.y + tRightTotal.y) / 2.0);
+			shape->SetSize((tRightTotal.x - lBottomTotal.x) *
+			  DIAGRAM_REPEAT_OVERSIZE_SCALE_X, (lBottomTotal.y -
+			  tRightTotal.y) * DIAGRAM_REPEAT_OVERSIZE_SCALE_Y);
+		}
 		pc = pc->next;
 	}
 }
@@ -216,17 +247,9 @@ SDIDiagram::AddLineShape(wxShape *fromShape, wxShape *toShape, int lineType)
 	wxShape *shape = CreateBasicShape(CLASSINFO(SDILineShape), lineType,
 	  wxRED_BRUSH);
 	SDILineShape *lineShape = (SDILineShape *) shape;
-	switch (lineType) {
-	case REPEAT:
-		lineShape->MakeLineControlPoints(4);
-		lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_MIDDLE,
-		  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
-		break;
-	default:
-		lineShape->MakeLineControlPoints(2);
-		lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
-		  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
-	} /* switch */
+	lineShape->MakeLineControlPoints(2);
+	lineShape->AddArrow(ARROW_ARROW, ARROW_POSITION_END,
+	  DIAGRAM_ARROW_SIZE, 0.0, DIAGRAM_ARROW_TEXT);
 	AddShape(shape);
 	fromShape->AddLine(lineShape, toShape);
 	shape->Show(TRUE);
@@ -254,8 +277,7 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
 {
 	DatumPtr 	toPc;
 
-	for (toPc = pc->next; toPc && (toPc->type == STOP); toPc = toPc->
-	  next)
+	for (toPc = pc->next; toPc ; toPc = toPc->next)
 		;
 	if (toPc)
 		AddLineShape(shape, (wxShape *) toPc->shapePtr, -1);
@@ -275,37 +297,33 @@ SDIDiagram::DrawDefaultConnection(DatumPtr pc, wxShape *shape)
  */
 
 void
-SDIDiagram::DrawSimConnections(void)
+SDIDiagram::DrawSimConnections(DatumPtr pc)
 {
-	DatumPtr	pc, toPc;
+	DatumPtr	toPc;
 	DynaBListPtr labelBList;
 
-	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
-		return;
 	labelBList = ((SimScriptPtr) simProcess->module->parsPtr)->labelBList;
 	for (; pc != NULL; pc = pc->next) {
-		if (pc->type == STOP)
-			continue;
 		wxShape *fromShape = (wxShape *) (pc->shapePtr);
 		switch (pc->type) {
-		case PROCESS: 
+		case PROCESS:
 			if (pc->u.proc.outputList) {
 				for (DynaListPtr p = pc->u.proc.outputList; p != NULL; p = p->
 				  next) {
 					toPc = (DatumPtr) FindElement_Utility_DynaBList(labelBList,
-					  CmpProcessLabel_Utility_Datum, (char *) p->data)->data;
+					  CmpProcessLabel_Utility_Datum, (WChar *) p->data)->data;
 					AddLineShape(fromShape, (wxShape *) toPc->shapePtr, -1);
 				}
 			} else {
-				for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
-				  toPc->next)
-					;
-				if (!toPc)
+				toPc = pc->next;
+				if ((toPc = pc->next) == NULL)
 					continue;
 				switch (toPc->type) {
 				case RESET:
-				case REPEAT:
 					AddLineShape(fromShape, (wxShape *) toPc->shapePtr, -1);
+					break;
+				case REPEAT:
+					AddLineShape(fromShape, (wxShape *) toPc->u.loop.pc->shapePtr, -1);
 					break;
 				default:
 					EarObjRefPtr	p;
@@ -315,23 +333,9 @@ SDIDiagram::DrawSimConnections(void)
 				} /* switch */
 			}
 			break;
-		case REPEAT: {
-			int	level = 0;
-			for (toPc = pc->next; (toPc->type != STOP) || level; toPc = toPc->
-			  next)
-				switch (toPc->type) {
-				case REPEAT:
-					level++;
-					break;
-				case STOP:
-					level--;
-					break;
-				default:
-					;
-				} /* switch */
-			AddLineShape(fromShape, (wxShape *) toPc->shapePtr, REPEAT);
-			DrawDefaultConnection(pc, fromShape);
-			break; }
+		case REPEAT:
+			DrawSimConnections(pc->u.loop.pc);
+			break;
 		case RESET:
 			DrawDefaultConnection(pc, fromShape);
 			break;
@@ -349,23 +353,24 @@ SDIDiagram::DrawSimConnections(void)
 void
 SDIDiagram::DrawSimulation(void)
 {
-	if (ok)
+	DatumPtr	pc = GetSimulation_ModuleMgr(simProcess);
+
+	if (ok || !pc)
 		return;
-	DrawSimShapes();
-	DrawSimConnections();
+	DrawSimShapes(pc);
+//	ReadjustSimShapes(pc);
+	DrawSimConnections(pc);
 	ok = true;
 
 }
 
 /******************************************************************************/
-/****************************** CreateBasicShape ******************************/
+/****************************** SetBasicShape *********************************/
 /******************************************************************************/
 
-wxShape *
-SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type,
-							 const wxBrush *brush)
+void
+SDIDiagram::SetBasicShape(SDIShape *theShape, int type, const wxBrush *brush)
 {
-	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
 	if (!loadIDsFromFile)
 		theShape->AssignNewIds();
 	theShape->SetEventHandler(new SDIEvtHandler(theShape, theShape, wxT(""),
@@ -375,7 +380,65 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type,
 	theShape->SetBrush((wxBrush *) brush);
 	theShape->GetFont()->SetPointSize((int) (SHAPE_DEFAULT_FONT_POINTSIZE *
 	  xScale));
+
+}
+
+/******************************************************************************/
+/****************************** CreateBasicShape ******************************/
+/******************************************************************************/
+
+/*
+ * Note that the shape must be added to the diagram before the shape's
+ * canvas is set.
+ */
+
+wxShape *
+SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type,
+							 const wxBrush *brush)
+{
+	SDIShape *theShape = (SDIShape *) shapeInfo->CreateObject();
+	SetBasicShape(theShape, type, brush);
+	if (type == CONTROL_MODULE_CLASS)
+		SetBasicShape(((SDIControlShape *) theShape)->GetParentShape(), type,
+		  brush);
 	return(theShape);
+
+}
+
+/******************************************************************************/
+/****************************** GetSimConnectionCount *************************/
+/******************************************************************************/
+
+/*
+ * This function calculates the number of connections in a simulation.
+ */
+
+int
+SDIDiagram::GetSimConnectionCount(DatumPtr pc)
+{
+	static const wxChar *funcName = wxT("SDIDiagram::GetSimConnectionCount");
+	int		numConnections = 0;
+
+	while (pc) {
+		switch (pc->type) {
+		case PROCESS:
+			if (!pc->shapePtr && pc->data) {
+				NotifyError(wxT("%s: Process has no description (step %d, ")
+				  wxT("label %s'."), funcName, pc->stepNumber, pc->label);
+				return (-1);
+			}
+			numConnections += pc->data->numInSignals;
+			break;
+		case REPEAT:
+			numConnections += GetSimConnectionCount(pc->u.loop.pc);
+			break;
+		default:
+			if (pc->next)
+				numConnections++;
+		}
+		pc = pc->next;
+	}
+	return(numConnections);
 
 }
 
@@ -386,7 +449,7 @@ SDIDiagram::CreateBasicShape(wxClassInfo *shapeInfo, int type,
 /*
  * This function checks that the loaded diagram corresponds with the simulation.
  * It returns 'false' if it finds any discrepancies.
- * Nothing should be selected at this point, so there will be no need to 
+ * Nothing should be selected at this point, so there will be no need to
  * run the 'UnselectAllShapes' routine, so that 'control' shapes are not in
  * the shape list.
  */
@@ -433,25 +496,8 @@ SDIDiagram::VerifyDiagram(void)
 		node = node->GetNext();
 	}
 	// Check if there are any undrawn connections or shapes
-	if ((pc = GetSimulation_ModuleMgr(simProcess)) == NULL)
-		return(false);
-	while (pc) {
-		if (pc->type == PROCESS) {
-			if (!pc->shapePtr && pc->data) {
-				NotifyError(wxT("%s: Process has no description (step %d, ")
-				  wxT("label %s'."), funcName, pc->stepNumber, pc->label);
-				return (false);
-			}
-				numSimConnections += pc->data->numInSignals;
-		} else {
-			for (toPc = pc->next; toPc && (toPc->type == STOP); toPc =
-			  toPc->next)
-				;
-			if (toPc)
-				numSimConnections++;
-		}
-		pc = pc->next;
-	}
+	numSimConnections = GetSimConnectionCount(GetSimulation_ModuleMgr(
+	  simProcess));
 	if (numDiagConnections != numSimConnections) {
 		NotifyError(wxT("%s: The number of diagram lines (%d) does not ")
 		  wxT("correspond\nto the number of simulation connections (%d)."),
@@ -547,7 +593,7 @@ SDIDiagram::Rescale(double theXScale, double theYScale)
 		shape->Move(dc, shape->GetX(), shape->GetY());
 		node = node->GetNext();
 	}
-	
+
 }
 
 #endif /* USE_WX_OGL */

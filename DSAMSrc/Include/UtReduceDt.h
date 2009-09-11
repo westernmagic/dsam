@@ -8,10 +8,10 @@
  *				The length of the signal will be increased accordingly.
  *				A new output signal is created, if required, or the old output
  *				signal is overwritten.
- * Author:		
+ * Author:
  * Created:		Dec 21 1995
- * Updated:	
- * Copyright:	(c) 
+ * Updated:
+ * Copyright:	(c)
  *
 **********************/
 
@@ -38,7 +38,6 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	denominatorFlag;
 	int		denominator;
 
 	/* Private members */
@@ -64,8 +63,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_ReduceDt(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_ReduceDt(void);
-
 BOOLN	Free_Utility_ReduceDt(void);
 
 UniParListPtr	GetUniParListPtr_Utility_ReduceDt(void);
@@ -76,8 +73,6 @@ BOOLN	PrintPars_Utility_ReduceDt(void);
 
 BOOLN	Process_Utility_ReduceDt(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_ReduceDt(WChar *fileName);
-
 void	ResetProcess_Utility_ReduceDt(EarObjectPtr data);
 
 BOOLN	SetDenominator_Utility_ReduceDt(int theDenominator);
@@ -85,8 +80,6 @@ BOOLN	SetDenominator_Utility_ReduceDt(int theDenominator);
 BOOLN	InitModule_Utility_ReduceDt(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_ReduceDt(ModulePtr theModule);
-
-BOOLN	SetPars_Utility_ReduceDt(int denominator);
 
 BOOLN	SetUniParList_Utility_ReduceDt(void);
 

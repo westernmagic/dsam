@@ -124,7 +124,7 @@ InitInst_Utility_Datum(int type)
 	datum->onFlag = TRUE;
 	datum->threadSafe = TRUE;
 	datum->type = type;
-	datum->label = NULL_STRING;
+	datum->label = NULL;
 	datum->classSpecifier = -1;
 	switch (type) {
 	case PROCESS:
@@ -316,7 +316,7 @@ FreeInstruction_Utility_Datum(DatumPtr *pc)
 	if (!*pc)
 		return;
 
-	if (*(*pc)->label != '\0')
+	if ((*pc)->label)
 		free((*pc)->label);
 	switch ((*pc)->type) {
 	case PROCESS:
@@ -574,8 +574,8 @@ PrintInstructions_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
 /****************************** CmpProcessLabels ******************************/
 
 /*
- * This function cmpares the labels of two process nodes.
- * It returns a negative, zero, or postive integer values according to whether
+ * This function compares the labels of two process nodes.
+ * It returns a negative, zero, or positive integer values according to whether
  * the labels are less than, equal or greater than respectively.
  */
 
@@ -584,15 +584,21 @@ CmpProcessLabels_Utility_Datum(void *a, void *b)
 {
 	DatumPtr	aPtr = (DatumPtr) a, bPtr = (DatumPtr) b;
 
-	return (StrCmpNoCase_Utility_String(aPtr->label, bPtr->label));
+	if (aPtr->label && bPtr->label)
+		return(StrCmpNoCase_Utility_String(aPtr->label, bPtr->label));
+	if (!aPtr->label && !bPtr->label)
+		return(0);
+	if (!aPtr->label && bPtr->label)
+		return(-1);
+	return(1);
 
 }
 
 /****************************** CmpProcessLabel *******************************/
 
 /*
- * This function cmpares the labels of two process nodes.
- * It returns a negative, zero, or postive integer values according to whether
+ * This function compares the labels of two process nodes.
+ * It returns a negative, zero, or positive integer values according to whether
  * the labels are less than, equal or greater than respectively.
  */
 
@@ -602,7 +608,9 @@ CmpProcessLabel_Utility_Datum(void *labelPtr, void *processNode)
 	WChar	*label = (WChar *) labelPtr;
 	DatumPtr	ptr = (DatumPtr) processNode;
 
-	return (StrCmpNoCase_Utility_String(label, ptr->label));
+	if (ptr->label)
+		return(StrCmpNoCase_Utility_String(label, ptr->label));
+	return(1);
 
 }
 
@@ -618,7 +626,8 @@ PrintLabel_Utility_Datum(void *p)
 {
 	DatumPtr	ptr = (DatumPtr) p;
 
-	DSAM_printf(wxT(" %s\n"), ptr->label);
+	if (ptr->label)
+		DSAM_printf(wxT(" %s\n"), ptr->label);
 
 }
 
@@ -636,7 +645,13 @@ CmpLabel_Utility_Datum(void *a, void *b)
 	WChar	*aLabel = (WChar *) a;
 	WChar	*bLabel = (WChar *) b;
 
-	return (StrCmpNoCase_Utility_String(aLabel, bLabel));
+	if (aLabel && bLabel)
+		return(StrCmpNoCase_Utility_String(aLabel, bLabel));
+	if (!aLabel && !bLabel)
+		return(0);
+	if (!aLabel && bLabel)
+		return(-1);
+	return(1);
 
 }
 
@@ -840,7 +855,7 @@ SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 	FILE	*savedErrorsFileFP;
 
 	if (((pc->type != PROCESS) && (pc->type != REPEAT) && (pc->type !=
-	  RESET)) || (pc->label[0] != '\0'))
+	  RESET)) || pc->label)
 		return(TRUE);
 	labelNumber = pc->stepNumber;
 	savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
@@ -945,7 +960,7 @@ InitialiseEarObjects_Utility_Datum(DatumPtr start, DynaBListPtr *labelBList)
 				  funcName, pc->u.proc.moduleName);
 				ok = FALSE;
 			}
-			if ((pc->label[0] != '\0') && !Insert_Utility_DynaBList(labelBList,
+			if (pc->label && !Insert_Utility_DynaBList(labelBList,
 			  CmpProcessLabels_Utility_Datum, pc)) {
 				NotifyError(wxT("%s: Cannot insert process labelled '%s' into ")
 				  wxT("simulation."), funcName, pc->label);
@@ -1003,10 +1018,10 @@ NameAndLabel_Utility_Datum(DatumPtr pc)
 
 }
 
-/****************************** InitialiseModules *****************************/
+/****************************** InitialiseModule *****************************/
 
 /*
- * This routine initialises all the necessary modules.
+ * This routine initialises a module.
  * If it encounters the 'DISPLAY_MODULE' module, then it will attempt to set the
  * window title.  It checks for a NULL 'UniParListPtr' which indicates that the
  * GUI library is not being used.
@@ -1017,27 +1032,47 @@ NameAndLabel_Utility_Datum(DatumPtr pc)
  */
 
 BOOLN
-InitialiseModules_Utility_Datum(DatumPtr start)
+InitialiseModule_Utility_Datum(DatumPtr pc)
+{
+	BOOLN	ok = TRUE;
+
+	if (pc->type != PROCESS)
+		return(ok);
+	if (GetDSAMPtr_Common()->usingGUIFlag && (pc->data->module->
+	  specifier == DISPLAY_MODULE) && (GetUniParPtr_ModuleMgr(pc->data,
+	  wxT("win_title"))->valuePtr.s[0] == '\0')) {
+		SetPar_ModuleMgr(pc->data, wxT("win_title"),
+		  NameAndLabel_Utility_Datum(pc));
+	}
+	if ((DSAM_strcmp(pc->u.proc.parFile, NO_FILE) != 0) &&
+	  ((pc->data->module->specifier != SIMSCRIPT_MODULE) ||
+	  !GetSimulation_ModuleMgr(pc->data))) {
+		if (!ReadPars_ModuleMgr(pc->data, pc->u.proc.parFile))
+			ok = FALSE;
+	}
+	return(ok);
+
+}
+
+
+/****************************** TraverseSimulation *****************************/
+
+/*
+ * This routine traverses the simulation running a specified function upon
+ * every node.
+ */
+
+BOOLN
+TraverseSimulation_Utility_Datum(DatumPtr start, BOOLN (* ActionFunc)(DatumPtr))
 {
 	BOOLN	ok;
 	DatumPtr	pc;
 
-	for (pc = start, ok = TRUE; (pc != NULL) && ok; pc = pc->next)
-		if (pc->type == PROCESS ) {
-			if (GetDSAMPtr_Common()->usingGUIFlag && (pc->data->module->
-			  specifier == DISPLAY_MODULE) && (GetUniParPtr_ModuleMgr(pc->data,
-			  wxT("win_title"))->valuePtr.s[0] == '\0')) {
-				SetPar_ModuleMgr(pc->data, wxT("win_title"),
-				  NameAndLabel_Utility_Datum(pc));
-			}
-			if ((DSAM_strcmp(pc->u.proc.parFile, NO_FILE) != 0) &&
-			  ((pc->data->module->specifier != SIMSCRIPT_MODULE) ||
-			  !GetSimulation_ModuleMgr(pc->data))) {
-				if (!ReadPars_ModuleMgr(pc->data, pc->u.proc.parFile))
-					ok = FALSE;
-			}
-		} else if (pc->type == REPEAT)
-			ok = InitialiseModules_Utility_Datum(pc->u.loop.pc);
+	for (pc = start, ok = TRUE; (pc != NULL) && ok; pc = pc->next) {
+		ok = ActionFunc(pc);
+		if (ok && (pc->type == REPEAT))
+			ok = TraverseSimulation_Utility_Datum(pc->u.loop.pc, ActionFunc);
+	}
 	return(ok);
 
 }

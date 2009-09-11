@@ -45,9 +45,9 @@ typedef struct {
 	int		diagnosticMode;
 	long	ranSeed;			/* seed for the random number generator. */
 	int		numFibres;
-	double	pulseDuration;		/* Duration applied to each pulse (s). */
-	double	pulseMagnitude;		/* Magnitude for each pulse (nA?). */
-	double	refractoryPeriod;	/* The time during which spikes cannot occur */
+	Float	pulseDuration;		/* Duration applied to each pulse (s). */
+	Float	pulseMagnitude;		/* Magnitude for each pulse (nA?). */
+	Float	refractoryPeriod;	/* The time during which spikes cannot occur */
 	ParArrayPtr	distribution;
 
 	/* Private members */
@@ -57,9 +57,9 @@ typedef struct {
 	FILE	*fp;
 	int		numChannels;
 	int		*numFibres2;
-	double	dt;
-	double	**timer;
-	double	**remainingPulseTime;
+	Float	dt;
+	Float	**timer;
+	Float	**remainingPulseTime;
 
 } SimpleSG, *SimpleSGPtr;
 
@@ -95,8 +95,6 @@ BOOLN	InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data);
 
 BOOLN	PrintPars_ANSpikeGen_Simple(void);
 
-BOOLN	ReadPars_ANSpikeGen_Simple(WChar *fileName);
-
 void	ResetProcess_ANSpikeGen_Simple(EarObjectPtr data);
 
 BOOLN	RunModel_ANSpikeGen_Simple(EarObjectPtr data);
@@ -109,17 +107,13 @@ BOOLN	SetNumFibres_ANSpikeGen_Simple(int theNumFibres);
 
 BOOLN	SetParsPointer_ANSpikeGen_Simple(ModulePtr theModule);
 
-BOOLN	SetPars_ANSpikeGen_Simple(long theRanSeed, int numFibres,
-		  double pulseDuration, double pulseMagnitude,
-		  double theRefractoryPeriod);
+BOOLN	SetPulseDuration_ANSpikeGen_Simple(Float thePulseDuration);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Simple(double thePulseDuration);
-
-BOOLN	SetPulseMagnitude_ANSpikeGen_Simple(double thePulseMagnitude);
+BOOLN	SetPulseMagnitude_ANSpikeGen_Simple(Float thePulseMagnitude);
 
 BOOLN	SetRanSeed_ANSpikeGen_Simple(long theRanSeed);
 
-BOOLN	SetRefractoryPeriod_ANSpikeGen_Simple(double theRefractoryPeriod);
+BOOLN	SetRefractoryPeriod_ANSpikeGen_Simple(Float theRefractoryPeriod);
 
 BOOLN	SetUniParList_ANSpikeGen_Simple(void);
 

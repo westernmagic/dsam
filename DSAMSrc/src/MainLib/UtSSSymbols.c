@@ -55,11 +55,10 @@ InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
 
 	} keywords[] = {
 
-		{ wxT("begin"),	BEGIN },
+		{ wxT("begin"),		BEGIN },
 		{ wxT("repeat"),	REPEAT },
-		{ wxT("reset"),	RESET },
-		{ wxT("stop"),	STOP },
-		{ 0,		0 }
+		{ wxT("reset"),		RESET },
+		{ 0, 0 }
 
 	};
 

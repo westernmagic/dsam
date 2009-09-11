@@ -41,12 +41,12 @@
 /******************************************************************************/
 
 /* Bessel coefficents plus scale factor for gain loss. */
-												 		 
-double	Filters_bess2Poly[4] = {3.0, 3.0, 1.0, 1.2589};
+
+Float	Filters_bess2Poly[4] = {3.0, 3.0, 1.0, 1.2589};
 
 /* Butterworth coefficients plus scale factor for gain loss. */
 
-double	Filters_butt2Poly[4] = {1.0, 1.414213562, 1.0, 1.4142};
+Float	Filters_butt2Poly[4] = {1.0, 1.414213562, 1.0, 1.4142};
 
 /**************************** ZeroArray ***************************************/
 
@@ -55,10 +55,10 @@ double	Filters_butt2Poly[4] = {1.0, 1.414213562, 1.0, 1.4142};
  */
 
 void
-ZeroArray_Filters(double *p, int length)
+ZeroArray_Filters(Float *p, int length)
 {
 	int		i;
-	
+
 	for (i = 0; i < length; i++)
 		*(p++) = 0.0;
 }
@@ -72,17 +72,17 @@ ZeroArray_Filters(double *p, int length)
  */
 
 GammaToneCoeffsPtr
-InitGammaToneCoeffs_Filters(double centreFreq, double bWidth3dB, int cascade,
-  double sampleClk)
+InitGammaToneCoeffs_Filters(Float centreFreq, Float bWidth3dB, int cascade,
+  Float sampleClk)
 {
 	static const WChar *funcName = wxT("InitGammaToneCoeffs_Filters");
 	int		stateVectorLength;
-	double bWidth3dBdt, sin_theta, cos_theta;
-	double k0num, k1num;	/* numerator coefficients */
-	double k1denom, k2denom;	/* denominator coefficients */
+	Float bWidth3dBdt, sin_theta, cos_theta;
+	Float k0num, k1num;	/* numerator coefficients */
+	Float k1denom, k2denom;	/* denominator coefficients */
 	Complex cf_num, cf_denom, Tf, var1, var2, var3;
     GammaToneCoeffsPtr p;
-	
+
 	bWidth3dBdt = (TwoPi * bWidth3dB) / sampleClk;
 	cos_theta = cos(TwoPi * centreFreq/sampleClk);
 	sin_theta = sin(TwoPi * centreFreq/sampleClk);
@@ -93,7 +93,7 @@ InitGammaToneCoeffs_Filters(double centreFreq, double bWidth3dB, int cascade,
 
 	/* normalise filter to unity gain at centre frequency (needs Complex maths)
 	 */
-	
+
 	var2.re = k1num; var2.im = 0.0;	var3.re = cos_theta; var3.im = -sin_theta;
 	Mult_CmplxM(&var2,&var3,&var2); /* a1*exp(-sT) */
 	var1.re = k0num; var1.im = 0.0;
@@ -118,8 +118,8 @@ InitGammaToneCoeffs_Filters(double centreFreq, double bWidth3dB, int cascade,
 		return(NULL);
     }
 	stateVectorLength = cascade * FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER;
-	if ((p->stateVector = (double *) calloc(stateVectorLength,
-	  sizeof(double))) == NULL) {
+	if ((p->stateVector = (Float *) calloc(stateVectorLength,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate space for state vector."),
 		  funcName);
 		free(p);
@@ -153,7 +153,7 @@ FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p)
 /**************************** InitIIR2Coeffs **********************************/
 
 /* f3dB is the corner frequency, fs sampling freq, coeffs points to an array of
-	 5*double for output, splane contains ascending cfts of the denom
+	 5*Float for output, splane contains ascending cfts of the denom
 	 polynom. */
  /*
   * Low pass filter, which can be either the ButterWorth or Bessel two pole
@@ -164,13 +164,13 @@ FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p)
   */
 
 TwoPoleCoeffs *
-InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs, 
+InitIIR2Coeffs_Filters(Float *splane, int cascade, Float f3dB, Float fs,
   int low_or_high)
 {
 	static const WChar *funcName = wxT("InitIIR2Coeffs_Filters");
-	double A,A0,A1,A2,B0,B1,B2,C;
-	double a0,a1,a2,b1,b2;
-	double ai_tot, bi_tot, Tf;
+	Float A,A0,A1,A2,B0,B1,B2,C;
+	Float a0,a1,a2,b1,b2;
+	Float ai_tot, bi_tot, Tf;
     TwoPoleCoeffs	*p;
 
 	if (cascade < 1) {
@@ -191,9 +191,9 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 		return(NULL);
 	}
 	C = 1.0 / tan(Pi * f3dB / fs); /* true bilinear transform eq 7-8, p172 */
-	
+
 	/* first biquadratic section */
-	
+
 	 /* DSP, William D.Stanley, Reston press, pp 174-175 */
 	A  = (B0 + B1*C + (B2*C*C));
 	a0 = (A0 + A1*C + A2*C*C)/A;
@@ -225,8 +225,8 @@ InitIIR2Coeffs_Filters(double *splane, int cascade, double f3dB, double fs,
 	p->b1 = b1; p->b2 = b2;
 	p->a0 = a0; p->a1 = a1; p->a2 = a2;
 	p->gainLossFactor = *(splane+3);
-	if ((p->state = (double *) calloc(cascade * FILTERS_NUM_IIR2_STATE_VARS,
-	  sizeof(double))) == NULL) {
+	if ((p->state = (Float *) calloc(cascade * FILTERS_NUM_IIR2_STATE_VARS,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		return(NULL);
 	}
@@ -286,9 +286,9 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
 	static const WChar *funcName = wxT("IIR2_Filters");
 	int		i, chan;
 	ChanLen	j;
-	register	double 		temp0, temp1, *state, *state1;
+	register	Float 		temp0, temp1, *state, *state1;
 	register	ChanData	*data;
-	
+
 	if (!theSignal->lengthFlag) {
 		NotifyError(wxT("%s: Signal data length is not set!"), funcName);
 		return(FALSE);
@@ -325,9 +325,9 @@ IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffs *p[])
  * This routine filters the signal, returning the result in the same signal
  * passed to the routine.
  */
- 
+
 BOOLN
-Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
+Compression_Filters(SignalDataPtr theSignal, Float nrwthr, Float nrwcr)
 {
 	static const WChar *funcName = wxT("Compression_Filters");
 	int		chan;
@@ -343,7 +343,7 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
 		  funcName);
 		return(FALSE);
 	}
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
 			if(*data >= 0.0) { 			/* positive signal */
@@ -366,16 +366,16 @@ Compression_Filters(SignalDataPtr theSignal, double nrwthr, double nrwcr)
  * It uses Inverse Power compresion: y = sign(x) / (1 + shift * |x|^(-slope)).
  * It expects the signal to be correctly initialised.
  */
- 
+
 BOOLN
-InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
-  double slope)
+InversePowerCompression_Filters(SignalDataPtr theSignal, Float shift,
+  Float slope)
 {
 	int		chan;
 	ChanLen	i;
 	register	ChanData	*data;
 
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)
 		for (i = 0, data = theSignal->channel[chan]; i < theSignal->length; i++,
 		  data++)
 			*data = (*data < 0.0)? -1.0 / (1.0 + shift * pow(-*data, -slope)):
@@ -393,17 +393,17 @@ InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
  * y = sign(x) * b|x|^c.
  * It expects the signal to be correctly initialised.
  */
- 
+
 BOOLN
-BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
-  double bB, double cC)
+BrokenStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
+  Float bB, Float cC)
 {
 	register ChanData	*data;
-	register double		aTerm, bCTerm;
+	register Float		aTerm, bCTerm;
 	int		chan;
 	ChanLen	i;
 
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)
 		for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 		  data++) {
 			if (*data < 0.0) {
@@ -430,17 +430,17 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
  * This version uses arrays for the A and B parameters.
  * It expects the signal to be correctly initialised.
  */
- 
+
 BOOLN
-BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
-  double *bB, double cC)
+BrokenStick1Compression2_Filters(SignalDataPtr theSignal, Float *aA,
+  Float *bB, Float cC)
 {
 	register ChanData	*data, a, b, c;
-	register double		aTerm, bCTerm;
+	register Float		aTerm, bCTerm;
 	int		chan;
 	ChanLen	i;
 
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++) {	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++) {
 		a = aA[chan];
 		b = bB[chan];
 		c = cC;
@@ -474,14 +474,14 @@ BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
 #define	FUNC(X)		(aA * pow((X), bB) + cC * pow((X), dD))
 
 BOOLN
-UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
-  double bB, double cC, double dD)
+UptonBStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
+  Float bB, Float cC, Float dD)
 {
 	register ChanData	*data;
 	int		chan;
 	ChanLen	i;
 
-	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)	
+	for (chan = theSignal->offset; chan <theSignal->numChannels; chan++)
 		for (i = theSignal->length, data = theSignal->channel[chan]; i--;
 		  data++) {
 			*data = (*data < 0.0)? -FUNC(-*data): ((*data == 0.0)? 0.0:
@@ -510,7 +510,7 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 	int		j, chan;
 	ChanLen	i;
 	GammaToneCoeffs *gC;
-	register	double		*y_1, wn, *ptr1;	/* Inner loop variables */
+	register	Float		*y_1, wn, *ptr1;	/* Inner loop variables */
 	register	ChanData	*data;
 
 	/* For the allocation of space to the state vector, the filter for all
@@ -546,15 +546,15 @@ GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
  * Therefore, once de is fixed, the maximum value of frequencyDiff is
  * fixed, or viceversa.
  */
- 
+
 BandPassCoeffsPtr
-InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
-  double upperCutOffFreq, double dt)
+InitBandPassCoeffs_Filters(int cascade, Float lowerCutOffFreq,
+  Float upperCutOffFreq, Float dt)
 {
 	static const WChar *funcName = wxT("InitBandPassCoeffs_Filters");
-	double	theta, tanTheta, frequencyDiff;
+	Float	theta, tanTheta, frequencyDiff;
 	BandPassCoeffsPtr	p;
-	
+
 	if (cascade < 1) {
 		NotifyError(wxT("%s: Illegal cascade (%d)."), funcName, cascade);
 		return(NULL);
@@ -585,8 +585,8 @@ InitBandPassCoeffs_Filters(int cascade, double lowerCutOffFreq,
 	  tanTheta) * cos(theta));
 	p->l = (tanTheta - 1.0) / (tanTheta + 1.0);
 	p->gainLossFactor = 1.0 / p->j;
-	if ((p->state = (double *) calloc(cascade * FILTERS_NUM_BP_STATE_VARS,
-	  sizeof(double))) == NULL) {
+	if ((p->state = (Float *) calloc(cascade * FILTERS_NUM_BP_STATE_VARS,
+	  sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory!"), funcName);
 		free(p);
 		return(NULL);
@@ -637,11 +637,11 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
 	int		i, chan;
 	ChanLen	j;
 	register ChanData	*yi, xi, *xState, *yState, *state;
-	
+
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
-	}	
+	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		for (i = 0, state = p[chan]->state; i < p[chan]->cascade; i++, state +=
 		 FILTERS_NUM_BP_STATE_VARS ) {
@@ -676,12 +676,12 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
  */
 
 ContButtCoeffsPtr
-InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
-  double samplingInterval, int highOrLowPass)
+InitIIR2ContCoeffs_Filters(int cascade, Float cutOffFrequency,
+  Float samplingInterval, int highOrLowPass)
 {
 	static const WChar *funcName = wxT("InitIIR2ContCoeffs_Filters");
 	int		i;
-	double	sqrt2, theta, cotOrTan, cotOrTanSquared, cC, dD, eE;
+	Float	sqrt2, theta, cotOrTan, cotOrTanSquared, cC, dD, eE;
 	ContButtCoeffsPtr	p;
 
 	if (cascade < 1) {
@@ -697,17 +697,17 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 	theta = Pi * cutOffFrequency * samplingInterval;
 	cotOrTan = (highOrLowPass == HIGHPASS)? tan(theta): 1.0 / tan(theta);
 	cotOrTanSquared = cotOrTan * cotOrTan;
-	
+
 	cC = 1.0 / (1.0 + sqrt2 * cotOrTan + cotOrTanSquared);
 	dD = cC * 2.0 * (1.0 - cotOrTanSquared);
 	eE = cC * (1.0 - sqrt2 * cotOrTan + cotOrTanSquared);
-	
+
 	if ((p = (ContButtCoeffsPtr) malloc(sizeof(ContButtCoeffs))) == NULL) {
 		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
 	}
-	if ((p->state = (double *) calloc(FILTERS_NUM_CONTBUTT2_STATE_VARS *
-	  cascade, sizeof(double))) == NULL) {
+	if ((p->state = (Float *) calloc(FILTERS_NUM_CONTBUTT2_STATE_VARS *
+	  cascade, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Could not allocate the state vector (%d)."),
 		  funcName, FILTERS_NUM_CONTBUTT2_STATE_VARS * cascade);
 		return(NULL);
@@ -725,7 +725,7 @@ InitIIR2ContCoeffs_Filters(int cascade, double cutOffFrequency,
 	for (i = 0; i < cascade * FILTERS_NUM_CONTBUTT2_STATE_VARS; i++)
 		p->state[i] = 0.0;
 	return(p);
-	
+
 }
 
 /*************************** IIR2Cont *****************************************/
@@ -747,7 +747,7 @@ BOOLN
 IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 {
 	static const WChar *funcName = wxT("IIR2Cont_Filters");
-	register double		*xState, *yState;	
+	register Float		*xState, *yState;
 	register ChanData	*yi, xi;				/* Inner loop variables */
 	int		j, chan;
 	ChanLen		i;
@@ -789,12 +789,12 @@ IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
  */
 
 ContButt1CoeffsPtr
-InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
+InitIIR1ContCoeffs_Filters(Float cutOffFrequency, Float samplingInterval,
  int highOrLowPass)
 {
 	static const WChar *funcName = wxT("InitIIR1ContCoeffs_Filters");
 	int		i;
-	double	theta, cotOrTan;
+	Float	theta, cotOrTan;
 	ContButt1CoeffsPtr	p;
 
 	if (DBL_GREATER(cutOffFrequency * samplingInterval, 0.5)) {
@@ -804,7 +804,7 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 	}
 	theta = Pi * cutOffFrequency * samplingInterval;
 	cotOrTan = (highOrLowPass == HIGHPASS)? tan(theta): 1.0 / tan(theta);
-	
+
 	if ((p = (ContButt1CoeffsPtr) malloc(sizeof(ContButtCoeffs))) == NULL) {
 		NotifyError(wxT("%s: Out of memory."), funcName);
 		return(NULL);
@@ -816,7 +816,7 @@ InitIIR1ContCoeffs_Filters(double cutOffFrequency, double samplingInterval,
 	for (i = 0; i < FILTERS_NUM_CONTBUTT1_STATE_VARS; i++)
 		p->state[i] = 0.0;
 	return(p);
-	
+
 }
 
 /*************************** IIR1ContSingle ***********************************/
@@ -838,13 +838,13 @@ IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p)
 	static const WChar *funcName = wxT("IIR1ContSingle_Filters");
 	int		chan;
 	ChanLen	i;
-	register double		*xi_1, *yi_1;	/* Inner loop variables */
+	register Float		*xi_1, *yi_1;	/* Inner loop variables */
 	register ChanData	*yi, xi;	/*  wxT("		"	")		*/
-	
+
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
-	}	
+	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		xi_1 = p->state;
 		yi_1 = p->state + 1;
@@ -881,13 +881,13 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 	int		chan;
 	ChanLen	i;
 	ContButt1CoeffsPtr	ptr;
-	register double		*xi_1, *yi_1;	/* Inner loop variables */
+	register Float		*xi_1, *yi_1;	/* Inner loop variables */
 	register ChanData	*yi, xi;	/*  wxT("		"	")		*/
-	
+
 	if (!CheckPars_SignalData(theSignal)) {
 		NotifyError(wxT("%s: Signal not correctly initialised."), funcName);
 		return(FALSE);
-	}	
+	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
 		ptr = p[chan];
 		xi_1 = ptr->state;
@@ -911,20 +911,20 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
  * This is a frequency domain butterworth filter.
  */
 
-double
-BandPassFD_Filters(double freq, double lowerCutOffFreq, double upperCutOffFreq,
+Float
+BandPassFD_Filters(Float freq, Float lowerCutOffFreq, Float upperCutOffFreq,
   int order)
 {
-	double	centralFreq, filterAmp;
-	
+	Float	centralFreq, filterAmp;
+
 	centralFreq = (upperCutOffFreq + lowerCutOffFreq) / 2.0;
 	if (order <= 0)
 		filterAmp = 1.0;
 	else {
 		filterAmp = sqrt ( 1 / (1 + pow((freq - centralFreq)/
 		(upperCutOffFreq - centralFreq), 2.0 * order)));
-	}  
+	}
 	return (filterAmp);
 
-}  
+}
 

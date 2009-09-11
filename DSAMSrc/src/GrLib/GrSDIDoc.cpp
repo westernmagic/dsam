@@ -5,7 +5,7 @@
  * Comments:	Revised from Julian Smart's Ogledit/doc.h
  * Author:		L.P.O'Mard
  * Created:		04 Nov 2002
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2002, University of Essex
  *
  **********************/
@@ -236,6 +236,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 	wxFileName	fileName = GetFilename();
 
 	diagram.DeleteAllShapes();
+	ResetStepCount_Utility_Datum();
 	if ((isXMLFile = (GetSimFileType_Utility_SimScript((wxChar *) fileName.
 	  GetExt().c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) == true) {
 		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
@@ -260,7 +261,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 	diagram.SetSimProcess(GetSimProcess_AppInterface());
 	if (!isXMLFile)
 		diagram.DrawSimulation();
-		
+
 //	if (!isXMLFile) {
 //		wxRemoveFile(tempFileName.GetFullName());
 //		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);

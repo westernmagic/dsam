@@ -210,7 +210,7 @@ GetUniParListPtr_IHC_ZilanyBruce(void)
  */
 
 BOOLN
-SetSpont_IHC_ZilanyBruce(double theSpont)
+SetSpont_IHC_ZilanyBruce(Float theSpont)
 {
 	static const WChar	*funcName = wxT("SetSpont_IHC_ZilanyBruce");
 
@@ -234,7 +234,7 @@ SetSpont_IHC_ZilanyBruce(double theSpont)
  */
 
 BOOLN
-SetAss_IHC_ZilanyBruce(double theAss)
+SetAss_IHC_ZilanyBruce(Float theAss)
 {
 	static const WChar	*funcName = wxT("SetAss_IHC_ZilanyBruce");
 
@@ -258,7 +258,7 @@ SetAss_IHC_ZilanyBruce(double theAss)
  */
 
 BOOLN
-SetTauST_IHC_ZilanyBruce(double theTauST)
+SetTauST_IHC_ZilanyBruce(Float theTauST)
 {
 	static const WChar	*funcName = wxT("SetTauST_IHC_ZilanyBruce");
 
@@ -282,7 +282,7 @@ SetTauST_IHC_ZilanyBruce(double theTauST)
  */
 
 BOOLN
-SetTauR_IHC_ZilanyBruce(double theTauR)
+SetTauR_IHC_ZilanyBruce(Float theTauR)
 {
 	static const WChar	*funcName = wxT("SetTauR_IHC_ZilanyBruce");
 
@@ -306,7 +306,7 @@ SetTauR_IHC_ZilanyBruce(double theTauR)
  */
 
 BOOLN
-SetAr_Ast_IHC_ZilanyBruce(double theAr_Ast)
+SetAr_Ast_IHC_ZilanyBruce(Float theAr_Ast)
 {
 	static const WChar	*funcName = wxT("SetAr_Ast_IHC_ZilanyBruce");
 
@@ -330,7 +330,7 @@ SetAr_Ast_IHC_ZilanyBruce(double theAr_Ast)
  */
 
 BOOLN
-SetPImax_IHC_ZilanyBruce(double thePImax)
+SetPImax_IHC_ZilanyBruce(Float thePImax)
 {
 	static const WChar	*funcName = wxT("SetPImax_IHC_ZilanyBruce");
 
@@ -460,11 +460,11 @@ CheckData_IHC_ZilanyBruce(EarObjectPtr data)
  */
 
 void
-InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, double cf)
+InitSynapse_IHC_ZilanyBruce(ZBSynapsePtr syn, Float cf)
 {
-	double cf_factor,kslope,Asp,PTS,Aon,AR,AST,Prest,gamma1,gamma2,k1,k2;
-	double VI0,VI1,alpha,beta,theta1,theta2,theta3,vsat = 0.0;
-    double cfsat,cfslope,cfconst, tmpst;
+	Float cf_factor,kslope,Asp,PTS,Aon,AR,AST,Prest,gamma1,gamma2,k1,k2;
+	Float VI0,VI1,alpha,beta,theta1,theta2,theta3,vsat = 0.0;
+    Float cfsat,cfslope,cfconst, tmpst;
 	ZBHCPtr	p = zBHCPtr;
 
     /*        cf_factor = __min(1e3,pow(10,0.29*cf/1e3 + 0.4));

@@ -2,10 +2,10 @@
  *
  * File:		AnGeneral.h
  * Purpose:		This module contains various general analysis routines.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jul 1993
- * Updated:		
+ * Updated:
  * Copyright:	(c) 1998, University of Essex
  *
  **********************/
@@ -19,7 +19,7 @@
 
 #define	ANALYSIS_SINGLE_CHANNEL	1		/* For single channel routines. */
 #define	ANALYSIS_CHANNEL		0		/* For single channel routines. */
-    
+
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
@@ -30,11 +30,11 @@
  */
 __BEGIN_DECLS
 
-double	EuclideanDistance_GenAnalysis(double *arrayA, double *arrayB,
+Float	EuclideanDistance_GenAnalysis(Float *arrayA, Float *arrayB,
 		  ChanLen startIndex, ChanLen endIndex);
 
-BOOLN	LinearRegression_GenAnalysis(double *y0, double *gradient, double *y,
-		  double dx, ChanLen startIndex, ChanLen length);
+BOOLN	LinearRegression_GenAnalysis(Float *y0, Float *gradient, Float *y,
+		  Float dx, ChanLen startIndex, ChanLen length);
 
 __END_DECLS
 

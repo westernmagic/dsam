@@ -2,10 +2,10 @@
  *
  * File:		AnFourierT.h
  * Purpose:		This module runs a basic Fourier Analysis.
- * Comments:	
+ * Comments:
  * Author:		L. P. O'Mard
  * Created:		18-01-94
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2000, University of Essex
  *
  **********************/
@@ -51,7 +51,6 @@ typedef struct {
 	ParameterSpecifier	parSpec;
 	BOOLN	updateProcessVariablesFlag;
 
-	BOOLN	outputModeFlag;
 	int		outputMode;
 
 	/* Private members */
@@ -59,11 +58,11 @@ typedef struct {
 	UniParListPtr	parList;
 	int		numThreads;
 	int		numOutChans;
-	double	dBSPLFactor;
+	Float	dBSPLFactor;
 	ChanLen	fTLength;
 	ComplxPtr	*fT;
 #	if HAVE_FFTW3
-	fftw_plan	plan;
+	DSAM_FFTW_NAME(plan)	plan;
 #	endif
 
 } FourierT, *FourierTPtr;
@@ -88,8 +87,6 @@ BOOLN	Calc_Analysis_FourierT(EarObjectPtr data);
 
 BOOLN	CheckData_Analysis_FourierT(EarObjectPtr data);
 
-BOOLN	CheckPars_Analysis_FourierT(void);
-
 BOOLN	Free_Analysis_FourierT(void);
 
 void	FreeProcessVariables_Analysis_FourierT(void);
@@ -104,8 +101,6 @@ BOOLN	InitProcessVariables_Analysis_FourierT(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_FourierT(void);
 
-BOOLN	ReadPars_Analysis_FourierT(WChar *fileName);
-
 void	ResetProcess_Analysis_FourierT(EarObjectPtr data);
 
 BOOLN	InitModule_Analysis_FourierT(ModulePtr theModule);
@@ -113,8 +108,6 @@ BOOLN	InitModule_Analysis_FourierT(ModulePtr theModule);
 BOOLN	SetOutputMode_Analysis_FourierT(WChar * theOutputMode);
 
 BOOLN	SetParsPointer_Analysis_FourierT(ModulePtr theModule);
-
-BOOLN	SetPars_Analysis_FourierT(WChar * outputMode);
 
 BOOLN	SetUniParList_Analysis_FourierT(void);
 

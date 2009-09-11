@@ -3,11 +3,11 @@
  * File:		AnAverages.c
  * Purpose:		This routine calculates the average value for each channel.
  * Comments:	Written using ModuleProducer version 1.9 (Feb 29 1996).
- *				This module assumes that a negative timeRange assumes a 
+ *				This module assumes that a negative timeRange assumes a
  *				period to the end of the signal.
  * Author:		L. P. O'Mard
  * Created:		21 May 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) 1998, University of Essex.
  *
  *********************/
@@ -117,9 +117,6 @@ Init_Analysis_Averages(ParameterSpecifier parSpec)
 		}
 	}
 	averagesPtr->parSpec = parSpec;
-	averagesPtr->modeFlag = TRUE;
-	averagesPtr->timeOffsetFlag = TRUE;
-	averagesPtr->timeRangeFlag = TRUE;
 	averagesPtr->mode = AVERAGES_FULL;
 	averagesPtr->timeOffset = 0.0;
 	averagesPtr->timeRange = -1.0;
@@ -198,32 +195,6 @@ GetUniParListPtr_Analysis_Averages(void)
 
 }
 
-/****************************** SetPars ***************************************/
-
-/*
- * This function sets all the module's parameters.
- * It returns TRUE if the operation is successful.
- */
-
-BOOLN
-SetPars_Analysis_Averages(WChar *mode, double timeOffset, double timeRange)
-{
-	static const WChar	*funcName = wxT("SetPars_Analysis_Averages");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!SetMode_Analysis_Averages(mode))
-		ok = FALSE;
-	if (!SetTimeOffset_Analysis_Averages(timeOffset))
-		ok = FALSE;
-	if (!SetTimeRange_Analysis_Averages(timeRange))
-		ok = FALSE;
-	if (!ok)
-		NotifyError(wxT("%s: Failed to set all module parameters.") ,funcName);
-	return(ok);
-
-}
-
 /****************************** SetMode ***************************************/
 
 /*
@@ -247,7 +218,6 @@ SetMode_Analysis_Averages(WChar *theMode)
 		NotifyError(wxT("%s: Illegal mode name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
-	averagesPtr->modeFlag = TRUE;
 	averagesPtr->mode = specifier;
 	return(TRUE);
 
@@ -262,7 +232,7 @@ SetMode_Analysis_Averages(WChar *theMode)
  */
 
 BOOLN
-SetTimeOffset_Analysis_Averages(double theTimeOffset)
+SetTimeOffset_Analysis_Averages(Float theTimeOffset)
 {
 	static const WChar	*funcName = wxT("SetTimeOffset_Analysis_Averages");
 
@@ -275,7 +245,6 @@ SetTimeOffset_Analysis_Averages(double theTimeOffset)
 		  MSEC(theTimeOffset));
 		return(FALSE);
 	}
-	averagesPtr->timeOffsetFlag = TRUE;
 	averagesPtr->timeOffset = theTimeOffset;
 	return(TRUE);
 
@@ -290,7 +259,7 @@ SetTimeOffset_Analysis_Averages(double theTimeOffset)
  */
 
 BOOLN
-SetTimeRange_Analysis_Averages(double theTimeRange)
+SetTimeRange_Analysis_Averages(Float theTimeRange)
 {
 	static const WChar	*funcName = wxT("SetTimeRange_Analysis_Averages");
 
@@ -298,46 +267,8 @@ SetTimeRange_Analysis_Averages(double theTimeRange)
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	averagesPtr->timeRangeFlag = TRUE;
 	averagesPtr->timeRange = theTimeRange;
 	return(TRUE);
-
-}
-
-/****************************** CheckPars *************************************/
-
-/*
- * This routine checks that the necessary parameters for the module
- * have been correctly initialised.
- * Other 'operational' tests which can only be done when all
- * parameters are present, should also be carried out here.
- * It returns TRUE if there are no problems.
- */
-
-BOOLN
-CheckPars_Analysis_Averages(void)
-{
-	static const WChar	*funcName = wxT("CheckPars_Analysis_Averages");
-	BOOLN	ok;
-
-	ok = TRUE;
-	if (!averagesPtr->modeFlag) {
-		NotifyError(wxT("%s: mode variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (averagesPtr == NULL) {
-		NotifyError(wxT("%s: Module not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!averagesPtr->timeOffsetFlag) {
-		NotifyError(wxT("%s: timeOffset variable not set."), funcName);
-		ok = FALSE;
-	}
-	if (!averagesPtr->timeRangeFlag) {
-		NotifyError(wxT("%s: timeRange variable not set."), funcName);
-		ok = FALSE;
-	}
-	return(ok);
 
 }
 
@@ -353,11 +284,6 @@ PrintPars_Analysis_Averages(void)
 {
 	static const WChar	*funcName = wxT("PrintPars_Analysis_Averages");
 
-	if (!CheckPars_Analysis_Averages()) {
-		NotifyError(wxT("%s: Parameters have not been correctly set."),
-		  funcName);
-		return(FALSE);
-	}
 	DPrint(wxT("Averages Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tMode = %s,"),
 	  averagesPtr->modeList[averagesPtr->mode].name);
@@ -368,52 +294,6 @@ PrintPars_Analysis_Averages(void)
 		DPrint(wxT("<end of signal>\n"));
 	else
 		DPrint(wxT("%g ms\n"), MSEC(averagesPtr->timeRange));
-	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This program reads a specified number of parameters from a file.
- * It returns FALSE if it fails in any way.n */
-
-BOOLN
-ReadPars_Analysis_Averages(WChar *fileName)
-{
-	static const WChar	*funcName = wxT("ReadPars_Analysis_Averages");
-	BOOLN	ok;
-	WChar	*filePath;
-	WChar	mode[MAXLINE];
-	double	timeOffset, timeRange;
-	FILE	*fp;
-
-	filePath = GetParsFileFPath_Common(fileName);
-	if ((fp = DSAM_fopen(filePath, "r")) == NULL) {
-		NotifyError(wxT("%s: Cannot open data file '%s'.\n"), funcName,
-		  filePath);
-		return(FALSE);
-	}
-	DPrint(wxT("%s: Reading from '%s':\n"), funcName, filePath);
-	Init_ParFile();
-	ok = TRUE;
-	if (!GetPars_ParFile(fp, wxT("%s"), mode))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeOffset))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &timeRange))
-		ok = FALSE;
-	fclose(fp);
-	Free_ParFile();
-	if (!ok) {
-		NotifyError(wxT("%s: Not enough lines, or invalid parameters, in ")
-		  wxT("module parameter file '%s'."), funcName, filePath);
-		return(FALSE);
-	}
-	if (!SetPars_Analysis_Averages(mode, timeOffset, timeRange)) {
-		NotifyError(wxT("%s: Could not set parameters."), funcName);
-		return(FALSE);
-	}
 	return(TRUE);
 
 }
@@ -461,11 +341,9 @@ InitModule_Analysis_Averages(ModulePtr theModule)
 	}
 	theModule->parsPtr = averagesPtr;
 	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
-	theModule->CheckPars = CheckPars_Analysis_Averages;
 	theModule->Free = Free_Analysis_Averages;
 	theModule->GetUniParListPtr = GetUniParListPtr_Analysis_Averages;
 	theModule->PrintPars = PrintPars_Analysis_Averages;
-	theModule->ReadPars = ReadPars_Analysis_Averages;
 	theModule->RunProcess = Calc_Analysis_Averages;
 	theModule->SetParsPointer = SetParsPointer_Analysis_Averages;
 	return(TRUE);
@@ -489,7 +367,7 @@ BOOLN
 CheckData_Analysis_Averages(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_Averages");
-	double	signalDuration;
+	Float	signalDuration;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -537,14 +415,12 @@ Calc_Analysis_Averages(EarObjectPtr data)
 	static const WChar	*funcName = wxT("Calc_Analysis_Averages");
 	register	ChanData	 *inPtr, sum;
 	int		chan;
-	double	dt;
+	Float	dt;
 	ChanLen	i;
 	SignalDataPtr	outSignal;
 	AveragesPtr	p = averagesPtr;
 
 	if (!data->threadRunFlag) {
-		if (!CheckPars_Analysis_Averages())
-			return(FALSE);
 		if (!CheckData_Analysis_Averages(data)) {
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
@@ -580,7 +456,7 @@ Calc_Analysis_Averages(EarObjectPtr data)
 					sum += *inPtr;
 				break;
 			} /* switch */
-				
+
 		outSignal->channel[chan][0] = (ChanData) (sum /
 		  p->timeRangeIndex);
 	}

@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.10 (Oct 18 1996).
  * Author:		L. P. O'Mard
  * Created:		22 Oct 1996
- * Updated:	
+ * Updated:
  * Copyright:	(c) University of Essex
  *
  *********************/
@@ -34,9 +34,8 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	timeOffsetFlag, dtFlag;
-	double	timeOffset;
-	double	dt;
+	Float	timeOffset;
+	Float	dt;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -62,8 +61,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Utility_Sample(EarObjectPtr data);
 
-BOOLN	CheckPars_Utility_Sample(void);
-
 BOOLN	Free_Utility_Sample(void);
 
 UniParListPtr	GetUniParListPtr_Utility_Sample(void);
@@ -74,18 +71,13 @@ BOOLN	PrintPars_Utility_Sample(void);
 
 BOOLN	Process_Utility_Sample(EarObjectPtr data);
 
-BOOLN	ReadPars_Utility_Sample(WChar *fileName);
-
 BOOLN	InitModule_Utility_Sample(ModulePtr theModule);
 
 BOOLN	SetParsPointer_Utility_Sample(ModulePtr theModule);
 
-BOOLN	SetPars_Utility_Sample(double timeOffset,
-			  double samplingInterval);
+BOOLN	SetSamplingInterval_Utility_Sample(Float theSamplingInterval);
 
-BOOLN	SetSamplingInterval_Utility_Sample(double theSamplingInterval);
-
-BOOLN	SetTimeOffset_Utility_Sample(double theTimeOffset);
+BOOLN	SetTimeOffset_Utility_Sample(Float theTimeOffset);
 
 BOOLN	SetUniParList_Utility_Sample(void);
 

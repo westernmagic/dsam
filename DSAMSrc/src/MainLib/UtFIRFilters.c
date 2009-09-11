@@ -5,7 +5,7 @@
  * Comments:	This module is to be put into UtFilters.
  * Author:		L. P. O'Mard.
  * Created:		04 Dec 2000
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2000, CNBH University of Essex
  *
  *********************/
@@ -44,16 +44,16 @@
  * as a negative number, to instruct 'remez' to use the arbitrary response
  * algorithm revisions.
  */
- 
+
 FIRCoeffsPtr
 InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
-  double *bands, double *desired, double *weights, int type)
+  Float *bands, Float *desired, Float *weights, int type)
 {
 	static const WChar *funcName = wxT("InitFIRCoeffs_FIRFilters");
 	int		i;
-	double	*scaledFreq, nyquestFreq;
+	Float	*scaledFreq, nyquestFreq;
 	FIRCoeffsPtr	p;
-	
+
 	if (numTaps < 1) {
 		NotifyError(wxT("%s: Illegal number of coefficients (%d)."), funcName,
 		  numTaps);
@@ -75,13 +75,13 @@ InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
 		return(NULL);
 	}
 	p->numChannels = numChannels;
-	if ((p->c = (double *) calloc(numTaps, sizeof(double))) == NULL) {
+	if ((p->c = (Float *) calloc(numTaps, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for coefficients!"), funcName);
 		FreeFIRCoeffs_FIRFilters(&p);
 		return(NULL);
 	}
-	if ((p->state = (double *) calloc(numTaps * numChannels, sizeof(
-	  double))) == NULL) {
+	if ((p->state = (Float *) calloc(numTaps * numChannels, sizeof(
+	  Float))) == NULL) {
 		NotifyError(wxT("%s: Out of memory state variables!"), funcName);
 		FreeFIRCoeffs_FIRFilters(&p);
 		return(NULL);
@@ -91,7 +91,7 @@ InitFIRCoeffs_FIRFilters(int numChannels, int numTaps, int numBands,
 			p->c[i] = desired[i];
 		p->m = numTaps;
 	} else {
-		if ((scaledFreq = (double *) calloc(numTaps, sizeof(double))) == NULL) {
+		if ((scaledFreq = (Float *) calloc(numTaps, sizeof(Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for frequency scale."),
 			  funcName);
 			FreeFIRCoeffs_FIRFilters(&p);
@@ -198,7 +198,7 @@ FIR_FIRFilters(EarObjectPtr data, FIRCoeffsPtr p)
 	int		chan;
 	ChanLen	i, j;
 	register ChanData	*yi, *xi, *xi2, *state, *c, *xStart, summ;
-	
+
 	for (chan = _OutSig_EarObject(data)->offset; chan < _OutSig_EarObject(data)->numChannels;
 	  chan++) {
 		xi = xStart = _InSig_EarObject(data, 0)->channel[chan];

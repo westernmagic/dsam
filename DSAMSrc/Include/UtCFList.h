@@ -96,9 +96,9 @@ typedef enum {
 typedef struct {
 
 	int		species;
-	double	aA;
-	double	k;
-	double	a;
+	Float	aA;
+	Float	k;
+	Float	a;
 
 } GreenwoodPars, *GreenwoodParsPtr;
 
@@ -109,11 +109,11 @@ typedef struct {
 	CFListSpecifier			centreFreqMode;
 	CFListDiagModeSpecifier	diagnosticMode;
 	int		numChannels;
-	double	minCF;
-	double	maxCF;
-	double	focalCF;
-	double	eRBDensity;
-	double	*frequency, *bandwidth;
+	Float	minCF;
+	Float	maxCF;
+	Float	focalCF;
+	Float	eRBDensity;
+	Float	*frequency, *bandwidth;
 	BandwidthMode	bandwidthMode;
 
 	/* Private members */
@@ -141,21 +141,21 @@ BOOLN		AllocateFrequencies_CFList(CFListPtr theCFs);
 
 NameSpecifier *	CFModeList_CFList(int index);
 
-double		CFRateFromF_CFList(CFListPtr theCFs, double frequency);
+Float		CFRateFromF_CFList(CFListPtr theCFs, Float frequency);
 
-double		CFSpace_CFList(CFListPtr theCFs);
+Float		CFSpace_CFList(CFListPtr theCFs);
 
 BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
 BOOLN		CheckPars_CFList(CFListPtr theCFs);
 
-int			FindCF_CFList(CFListPtr theCFs, double theCF, double accuracy);
+int			FindCF_CFList(CFListPtr theCFs, Float theCF, Float accuracy);
 
 void		Free_CFList(CFListPtr *theCFs);
 
 CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,
-			  double minCF, double maxCF, WChar *bwModeName,
-			  double (* BWidthFunc)(struct BandwidthMode *, double));
+			  Float minCF, Float maxCF, WChar *bwModeName,
+			  Float (* BWidthFunc)(struct BandwidthMode *, Float));
 
 BOOLN		GenerateERB_CFList(CFListPtr theCFs);
 
@@ -170,16 +170,16 @@ BOOLN		GenerateIdentical_CFList(CFListPtr theCFs);
 BOOLN		GenerateLinear_CFList(CFListPtr theCFs);
 
 CFListPtr	GenerateList_CFList(WChar *modeName, WChar *diagModeName,
-			  int numberOfCFs, double minCF, double maxCF, double focalCF,
-			  double eRBDensity, double *frequencies);
+			  int numberOfCFs, Float minCF, Float maxCF, Float focalCF,
+			  Float eRBDensity, Float *frequencies);
 
 BOOLN		GenerateLog_CFList(CFListPtr theCFs);
 
 BOOLN		GenerateUser_CFList(CFListPtr theCFs);
 
-double		GetBandwidth_CFList(CFListPtr theCFs, int channel);
+Float		GetBandwidth_CFList(CFListPtr theCFs, int channel);
 
-double		GetCF_CFList(CFListPtr theCFs, int channel);
+Float		GetCF_CFList(CFListPtr theCFs, int channel);
 
 GreenwoodParsPtr	GetGreenwoodPars_CFList(int	species);
 
@@ -198,24 +198,24 @@ CFListPtr	ReadPars_CFList(FILE *fp);
 BOOLN		RegenerateList_CFList(CFListPtr theCFs);
 
 BOOLN		ResetBandwidth_CFList(CFListPtr theCFs, int channel,
-			  double theBandwidth);
+			  Float theBandwidth);
 
-BOOLN		ResetCF_CFList(CFListPtr theCFs, int channel, double theFrequency);
+BOOLN		ResetCF_CFList(CFListPtr theCFs, int channel, Float theFrequency);
 
-BOOLN		SetBandwidthArray_CFList(CFListPtr theCFs, double *theBandwidths);
+BOOLN		SetBandwidthArray_CFList(CFListPtr theCFs, Float *theBandwidths);
 
-BOOLN		SetBandwidthMin_CFList(CFListPtr theCFs, double bwMin);
+BOOLN		SetBandwidthMin_CFList(CFListPtr theCFs, Float bwMin);
 
-BOOLN		SetBandwidthQuality_CFList(CFListPtr theCFs, double quality);
+BOOLN		SetBandwidthQuality_CFList(CFListPtr theCFs, Float quality);
 
 BOOLN		SetBandwidthSpecifier_CFList(CFListPtr theCFs,
 			  WChar *specifierName);
 
 BOOLN		SetBandwidthsWithFunc_CFList(CFListPtr theCFs, WChar *modeName,
-			  double (* Func)(BandwidthModePtr, double));
+			  Float (* Func)(BandwidthModePtr, Float));
 
 BOOLN		SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName,
-			  double *theBandwidths);
+			  Float *theBandwidths);
 
 BOOLN		SetBandwidthUniParList_CFList(CFListPtr theCFs);
 
@@ -229,25 +229,25 @@ BOOLN		SetCFMode_CFList(CFListPtr theCFs, WChar *modeName);
 
 BOOLN		SetDiagnosticMode_CFList(CFListPtr theCFs, WChar *modeName);
 
-BOOLN		SetERBDensity_CFList(CFListPtr theCFs, double eRBDensity);
+BOOLN		SetERBDensity_CFList(CFListPtr theCFs, Float eRBDensity);
 
-BOOLN		SetFocalCF_CFList(CFListPtr theCFs, double focalCF);
+BOOLN		SetFocalCF_CFList(CFListPtr theCFs, Float focalCF);
 
 BOOLN		SetGeneratedPars_CFList(CFListPtr theCFs);
 
 BOOLN		SetIndividualBandwidth_CFList(CFListPtr theCFs, int theIndex,
-			  double theBandwidth);
+			  Float theBandwidth);
 
 BOOLN		SetIndividualFreq_CFList(CFListPtr theCFs, int theIndex,
-			  double theFrequency);
+			  Float theFrequency);
 
-BOOLN		SetMaxCF_CFList(CFListPtr theCFs, double maxCF);
+BOOLN		SetMaxCF_CFList(CFListPtr theCFs, Float maxCF);
 
-BOOLN		SetMinCF_CFList(CFListPtr theCFs, double minCF);
+BOOLN		SetMinCF_CFList(CFListPtr theCFs, Float minCF);
 
 BOOLN		SetNumChannels_CFList(CFListPtr theCFs, int numChannels);
 
-BOOLN		SetSingleFrequency_CFList(CFListPtr theCFs, double theFrequency);
+BOOLN		SetSingleFrequency_CFList(CFListPtr theCFs, Float theFrequency);
 
 __END_DECLS
 

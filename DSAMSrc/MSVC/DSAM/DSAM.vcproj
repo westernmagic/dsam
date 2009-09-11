@@ -4862,6 +4862,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\src\MainLib\UtANSGDist.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\MainLib\UtAppInterface.c"
 				>
 				<FileConfiguration
@@ -7999,6 +8003,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\UtANSGDist.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\UtAppInterface.h"
 				>
 			</File>
@@ -8096,10 +8104,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\UtNameSpecs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\UtNoiseMod.h"
 				>
 			</File>
 			<File

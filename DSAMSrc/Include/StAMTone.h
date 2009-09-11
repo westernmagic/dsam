@@ -14,7 +14,7 @@
 
 #ifndef	_STAMTONE_H
 #define _STAMTONE_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -41,19 +41,16 @@ typedef enum {
 typedef struct {
 
 	ParameterSpecifier parSpec;
-	
-	BOOLN	frequencyFlag, modulationFrequencyFlag;
-	BOOLN	modulationDepthFlag, durationFlag, dtFlag;
-	BOOLN	intensityFlag;
-	double	frequency, modulationFrequency;
-	double  modulationDepth, intensity;
-	double	duration, dt;
+
+	Float	frequency, modulationFrequency;
+	Float  modulationDepth, intensity;
+	Float	duration, dt;
 
 	/* Private members */
 	UniParListPtr	parList;
 
 } AMTone, *AMTonePtr;
-	
+
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
@@ -70,8 +67,6 @@ extern	AMTonePtr	aMTonePtr;
  */
 __BEGIN_DECLS
 
-BOOLN	CheckPars_PureTone_AM(void);
-
 BOOLN	Free_PureTone_AM(void);
 
 BOOLN	GenerateSignal_PureTone_AM(EarObjectPtr theObject);
@@ -82,27 +77,21 @@ BOOLN	Init_PureTone_AM(ParameterSpecifier parSpec);
 
 BOOLN	PrintPars_PureTone_AM(void);
 
-BOOLN	ReadPars_PureTone_AM(WChar *fileName);
+BOOLN	SetFrequency_PureTone_AM(Float theFrequency);
 
-BOOLN	SetFrequency_PureTone_AM(double theFrequency);
+BOOLN	SetDuration_PureTone_AM(Float theDuration);
 
-BOOLN	SetDuration_PureTone_AM(double theDuration);
+BOOLN	SetIntensity_PureTone_AM(Float theIntensity);
 
-BOOLN	SetIntensity_PureTone_AM(double theIntensity);
-
-BOOLN	SetModulationFrequency_PureTone_AM(double theModulationFrequency);
+BOOLN	SetModulationFrequency_PureTone_AM(Float theModulationFrequency);
 
 BOOLN	InitModule_PureTone_AM(ModulePtr theModule);
 
 BOOLN	SetParsPointer_PureTone_AM(ModulePtr theModule);
 
-BOOLN	SetPars_PureTone_AM(double theFrequency, double theModulationFrequency,
-		  double theModulationDepth, double theIntensity, double theDuration,
-		  double theSamplingInterval);
+BOOLN	SetModulationDepth_PureTone_AM(Float theModulationDepth);
 
-BOOLN	SetModulationDepth_PureTone_AM(double theModulationDepth);
-
-BOOLN	SetSamplingInterval_PureTone_AM(double theSamplingInterval);
+BOOLN	SetSamplingInterval_PureTone_AM(Float theSamplingInterval);
 
 BOOLN	SetUniParList_PureTone_AM(void);
 

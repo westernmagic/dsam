@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

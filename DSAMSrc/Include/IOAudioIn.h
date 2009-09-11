@@ -5,7 +5,7 @@
  * Comments:	Written using ModuleProducer version 1.4.2 (Dec 19 2003).
  * Author:		L. P. O'Mard
  * Created:		08 Nov 2005
- * Updated:	
+ * Updated:
  * Copyright:	(c) 2005, CNBH, University of Essex.
  *
  *********************/
@@ -40,7 +40,7 @@
 
 #ifndef IO_AUDIOIN_PORTAUDIO_V_19
 
-typedef double PaTime;
+typedef Float PaTime;
 typedef int PaDeviceIndex;
 typedef unsigned long PaSampleFormat;
 typedef struct PaStreamParameters {
@@ -52,7 +52,7 @@ typedef struct PaStreamParameters {
 	void	*hostApiSpecificStreamInfo;
 
 } PaStreamParameters;
-#endif 
+#endif
 
 typedef	float AudioInSample;
 
@@ -72,16 +72,14 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	deviceIDFlag, numChannelsFlag, sampleRateFlag, durationFlag;
-	BOOLN	segmentsPerBufferFlag, sleepFlag, gainFlag;
 	BOOLN	updateProcessVariablesFlag;
 	int		deviceID;
 	int		numChannels;
 	int		segmentsPerBuffer;
-	double	sampleRate;
-	double	duration;
-	double	sleep;
-	double	gain;
+	Float	sampleRate;
+	Float	duration;
+	Float	sleep;
+	Float	gain;
 
 	/* Private members */
 	UniParListPtr	parList;
@@ -114,8 +112,6 @@ extern	AudioInPtr	audioInPtr;
 __BEGIN_DECLS
 
 BOOLN	CheckData_IO_AudioIn(EarObjectPtr data);
-
-BOOLN	CheckPars_IO_AudioIn(void);
 
 BOOLN	FreeProcessVariables_IO_AudioIn(void);
 
@@ -150,19 +146,19 @@ void	ResetBuffer_IO_AudioIn(void);
 
 BOOLN	SetDeviceID_IO_AudioIn(int theDeviceID);
 
-BOOLN	SetDuration_IO_AudioIn(double theDuration);
+BOOLN	SetDuration_IO_AudioIn(Float theDuration);
 
-BOOLN	SetGain_IO_AudioIn(double theGain);
+BOOLN	SetGain_IO_AudioIn(Float theGain);
 
 BOOLN	SetNumChannels_IO_AudioIn(int theNumChannels);
 
 BOOLN	SetParsPointer_IO_AudioIn(ModulePtr theModule);
 
-BOOLN	SetSampleRate_IO_AudioIn(double theSampleRate);
+BOOLN	SetSampleRate_IO_AudioIn(Float theSampleRate);
 
 BOOLN	SetSegmentsPerBuffer_IO_AudioIn(int theSegmentsPerBuffer);
 
-BOOLN	SetSleep_IO_AudioIn(double theSleep);
+BOOLN	SetSleep_IO_AudioIn(Float theSleep);
 
 BOOLN	SetUniParList_IO_AudioIn(void);
 

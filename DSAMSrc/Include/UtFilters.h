@@ -24,7 +24,7 @@
 
 #ifndef	_UTFILTERS_H
 #define _UTFILTERS_H	1
- 
+
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
@@ -39,7 +39,7 @@
 #define TwoPi (2.* Pi)
 #define LOWPASS 1
 #define HIGHPASS 0
-#define DELAY_SF		(double) (NGAMMA - 1)	/* Delay scale factor to
+#define DELAY_SF		(Float) (NGAMMA - 1)	/* Delay scale factor to
 												 * time align FB output */
 #define FILTERS_NUM_GAMMAT_STATE_VARS_PER_FILTER	2 /* - per cascaded filter*/
 #define FILTERS_NUM_IIR2_STATE_VARS			2
@@ -54,31 +54,31 @@
 typedef struct {
 
 	int		cascade;				/* The cascade of the filter */
-	double	a0, a1;
-	double	b1, b2;
-	double	*stateVector;
+	Float	a0, a1;
+	Float	b1, b2;
+	Float	*stateVector;
 
 } GammaToneCoeffs, *GammaToneCoeffsPtr;
 
 typedef struct {
 
 	int		cascade;
-	double	b1, b2;
-	double	a0, a1, a2;
-	double	gainLossFactor;
-	double	*state;
+	Float	b1, b2;
+	Float	a0, a1, a2;
+	Float	gainLossFactor;
+	Float	*state;
 
 } TwoPoleCoeffs, *TwoPoleCoeffsPtr;
 
 typedef struct {
 
 	int		cascade;
-	double	j;
-	double	k;
-	double	l;
-	double	gainLossFactor;
-	double	*state;
-	
+	Float	j;
+	Float	k;
+	Float	l;
+	Float	gainLossFactor;
+	Float	*state;
+
 } BandPassCoeffs, *BandPassCoeffsPtr;
 
 /*
@@ -89,12 +89,12 @@ typedef struct {
 typedef struct {
 
 	int		cascade;
-	double	cC;
-	double	twoC;
-	double	dD;
-	double	eE;
-	double	gainLossFactor;
-	double	*state;
+	Float	cC;
+	Float	twoC;
+	Float	dD;
+	Float	eE;
+	Float	gainLossFactor;
+	Float	*state;
 
 } ContButtCoeffs, *ContButtCoeffsPtr;
 
@@ -105,22 +105,22 @@ typedef struct {
 
 typedef struct {
 
-	double	gG;
-	double	gGG;
-	double	hH;
-	double	gainLossFactor;
-	double	state[FILTERS_NUM_CONTBUTT1_STATE_VARS];
+	Float	gG;
+	Float	gGG;
+	Float	hH;
+	Float	gainLossFactor;
+	Float	state[FILTERS_NUM_CONTBUTT1_STATE_VARS];
 
 } ContButt1Coeffs, *ContButt1CoeffsPtr;
 
-	
+
 /******************************************************************************/
 /*************************** External Variables *******************************/
 /******************************************************************************/
 
-extern	double	Filters_bess2Poly[];         	/* Bessel coefficents */
+extern	Float	Filters_bess2Poly[];         	/* Bessel coefficents */
 
-extern	double	Filters_butt2Poly[];			/* Butterworth */
+extern	Float	Filters_butt2Poly[];			/* Butterworth */
 
 /******************************************************************************/
 /*************************** Function Prototypes ******************************/
@@ -134,17 +134,17 @@ __BEGIN_DECLS
 
 BOOLN	BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[]);
 
-double	BandPassFD_Filters(double freq, double lowerCutOffFreq,
-		  double upperCutOffFreq, int order);
+Float	BandPassFD_Filters(Float freq, Float lowerCutOffFreq,
+		  Float upperCutOffFreq, int order);
 
-BOOLN	BrokenStick1Compression_Filters(SignalDataPtr theSignal, double aA,
-		  double bB, double cC);
+BOOLN	BrokenStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
+		  Float bB, Float cC);
 
-BOOLN	BrokenStick1Compression2_Filters(SignalDataPtr theSignal, double *aA,
-		  double *bB, double cC);
+BOOLN	BrokenStick1Compression2_Filters(SignalDataPtr theSignal, Float *aA,
+		  Float *bB, Float cC);
 
-BOOLN	Compression_Filters(SignalDataPtr theSignal, double nrwthr,
-		  double nrwcr);
+BOOLN	Compression_Filters(SignalDataPtr theSignal, Float nrwthr,
+		  Float nrwcr);
 
 void	FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p);
 
@@ -166,34 +166,34 @@ BOOLN	IIR2Cont_Filters(SignalDataPtr theSignal,
 BOOLN	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
 
 BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int cascade,
-					  double lowerCutOffFreq, double upperCutOffFreq,
-					  double dt);
+					  Float lowerCutOffFreq, Float upperCutOffFreq,
+					  Float dt);
 
 ContButtCoeffsPtr	InitIIR2ContCoeffs_Filters(int cascade,
-					  double cutOffFrequency, double samplingInterval,
+					  Float cutOffFrequency, Float samplingInterval,
 					  int highOrLowPass);
 
-ContButt1CoeffsPtr	InitIIR1ContCoeffs_Filters(double cutOffFrequency,
-					  double samplingInterval, int highOrLowPass);
+ContButt1CoeffsPtr	InitIIR1ContCoeffs_Filters(Float cutOffFrequency,
+					  Float samplingInterval, int highOrLowPass);
 
-GammaToneCoeffsPtr	InitGammaToneCoeffs_Filters(double centreFreq,
-					  double bWidth3dB, int cascade, double sampleClk);
+GammaToneCoeffsPtr	InitGammaToneCoeffs_Filters(Float centreFreq,
+					  Float bWidth3dB, int cascade, Float sampleClk);
 
-TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(double *splane, int cascade, 
-					  double f3dB, double fs, int low_or_high);
-					   
+TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(Float *splane, int cascade,
+					  Float f3dB, Float fs, int low_or_high);
+
 		/* latter generates z plane coefficients from 2 pole blocks, f3dB is
 		 * the corner frequency, fs sampling freq, coeffs points to an array
 		 * the corner the corner splane contains the coefficients of the
 		 * denominator polynomial. */
 
-BOOLN	InversePowerCompression_Filters(SignalDataPtr theSignal, double shift,
-		  double slope);
+BOOLN	InversePowerCompression_Filters(SignalDataPtr theSignal, Float shift,
+		  Float slope);
 
-BOOLN	UptonBStick1Compression_Filters(SignalDataPtr theSignal, double aA,
-			double bB, double cC, double dD);
+BOOLN	UptonBStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
+			Float bB, Float cC, Float dD);
 
-void	ZeroArray_Filters(double *p, int length);
+void	ZeroArray_Filters(Float *p, int length);
 
 __END_DECLS
 

@@ -420,7 +420,8 @@ BOOLN
 ReadFrames_SndFile(SignalDataPtr outSignal, sf_count_t length)
 {
 	static const WChar *funcName = wxT("ReadFrames_SndFile");
-	register ChanData	*inPtr, *outPtr;
+	register ChanData	*outPtr;
+	register double		*inPtr;
 	int		chan;
 	sf_count_t	count = 0, frames, i, bufferFrames;
 	DataFilePtr	p = dataFilePtr;
@@ -609,7 +610,8 @@ BOOLN
 WriteFrames_SndFile(SignalDataPtr inSignal)
 {
 	static const WChar *funcName = wxT("WriteFrames_SndFile");
-	register ChanData	*inPtr, *outPtr;
+	register double *outPtr;
+	register ChanData	*inPtr;
 	int		chan;
 	sf_count_t	count = 0, frames, i, bufferFrames;
 	DataFilePtr	p = dataFilePtr;
@@ -663,7 +665,7 @@ CalculateNormalisation_SndFile(SignalDataPtr signal)
 			if (fabs(*dataPtr) > maxValue)
 				maxValue = fabs(*dataPtr);
 	}
-	if (maxValue < DBL_EPSILON)
+	if (maxValue < DSAM_EPSILON)
 		return(1.0);
 	return(maxValue);
 

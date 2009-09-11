@@ -14,7 +14,7 @@
 
 #ifndef	_UTRANDOM_H
 #define _UTRANDOM_H	1
- 
+
 /******************************************************************************/
 /************************** Constant definitions ******************************/
 /******************************************************************************/
@@ -52,15 +52,15 @@ __BEGIN_DECLS
 
 void	FreePars_Random(RandParsPtr *p);
 
-int		GeomDist_Random(double probability, int numTrials, RandParsPtr p);
+int		GeomDist_Random(Float probability, int numTrials, RandParsPtr p);
 
-double	GaussRan01_Random(RandParsPtr p);
+Float	GaussRan01_Random(RandParsPtr p);
 
 RandParsPtr	InitPars_Random(long idum, long offset);
 
-double	Ran_Random(RandParsPtr p, double minValue, double maxValue);
+Float	Ran_Random(RandParsPtr p, Float minValue, Float maxValue);
 
-double	Ran01_Random(RandParsPtr p);
+Float	Ran01_Random(RandParsPtr p);
 
 BOOLN	SetSeed_Random(RandParsPtr p, long ranSeed, long offset);
 

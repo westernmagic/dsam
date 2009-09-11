@@ -94,14 +94,12 @@ typedef struct {
 
 	ParameterSpecifier	parSpec;
 
-	BOOLN	positionModeFlag, operationModeFlag, typeModeFlag, timeOffsetFlag;
-	BOOLN	durationFlag, slopeParameterFlag;
 	int		positionMode;
 	int		operationMode;
 	int		typeMode;
-	double	timeOffset;
-	double	duration;
-	double	slopeParameter;
+	Float	timeOffset;
+	Float	duration;
+	Float	slopeParameter;
 
 	/* Private members */
 	GateProcessModeSpecifier	processMode;
@@ -132,8 +130,6 @@ __BEGIN_DECLS
 
 BOOLN	CheckData_Transform_Gate(EarObjectPtr data);
 
-BOOLN	CheckPars_Transform_Gate(void);
-
 void	Damp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 		  ChanLen intervalIndex);
 
@@ -158,10 +154,8 @@ BOOLN	Process_Transform_Gate(EarObjectPtr data);
 void	Ramp_Transform_Gate(EarObjectPtr data, ChanLen offsetIndex,
 		  ChanLen intervalIndex);
 
-double	GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
-		  double dt);
-
-BOOLN	ReadPars_Transform_Gate(WChar *fileName);
+Float	GateFunction_Transform_Gate(ChanLen step, ChanLen intervalIndex,
+		  Float dt);
 
 BOOLN	InitModule_Transform_Gate(ModulePtr theModule);
 
@@ -171,17 +165,13 @@ BOOLN	SetOperationMode_Transform_Gate(WChar *theOperationMode);
 
 BOOLN	SetParsPointer_Transform_Gate(ModulePtr theModule);
 
-BOOLN	SetPars_Transform_Gate(WChar *positionMode, WChar *operationMode,
-		  WChar *typeMode, double timeOffset, double duration,
-		  double slopeParameter);
-
 BOOLN	SetPositionMode_Transform_Gate(WChar *thePositionMode);
 
-BOOLN	SetSlopeParameter_Transform_Gate(double theSlopeParameter);
+BOOLN	SetSlopeParameter_Transform_Gate(Float theSlopeParameter);
 
-BOOLN	SetDuration_Transform_Gate(double theDuration);
+BOOLN	SetDuration_Transform_Gate(Float theDuration);
 
-BOOLN	SetTimeOffset_Transform_Gate(double theTimeOffset);
+BOOLN	SetTimeOffset_Transform_Gate(Float theTimeOffset);
 
 BOOLN	SetTypeMode_Transform_Gate(WChar *theTypeMode);
 

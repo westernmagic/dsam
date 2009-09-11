@@ -48,13 +48,13 @@ typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
 	int		bandwidthMode;
-	double	bandwidth;
+	Float	bandwidth;
 	long	ranSeed;
 
 	/* Private members */
 	UniParListPtr	parList;
 	int		*kLow, *kUpp;
-	double	*normFactor;
+	Float	*normFactor;
 	FFTArrayPtr		fTInv;
 
 } NAmpMod, *NAmpModPtr;
@@ -95,7 +95,7 @@ BOOLN	Process_Utility_AmpMod_Noise(EarObjectPtr data);
 
 BOOLN	SetBandwidthMode_Utility_AmpMod_Noise(WChar * theBandwidthMode);
 
-BOOLN	SetBandwidth_Utility_AmpMod_Noise(double theBandwidth);
+BOOLN	SetBandwidth_Utility_AmpMod_Noise(Float theBandwidth);
 
 BOOLN	SetMode_Utility_AmpMod_Noise(WChar * theMode);
 

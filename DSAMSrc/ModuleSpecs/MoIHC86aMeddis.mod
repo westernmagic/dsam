@@ -8,13 +8,13 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	double	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
-	double	replenishRate_y;	/* Replenishment rate (units per second). */
-	double	lossRate_l;			/* Loss rate (units per second). */
-	double	reprocessRate_x;	/* Reprocessing rate (units per second). */
-	double	recoveryRate_r;		/* Recovery rate (units per second). */
-	double	permeabilityPH_h;	/* Permeability constant. */
-	double	permeabilityPZ_z;	/* Permeability constant. */
-	double	firingRate_h2;		/* Permeability constant. */
+	Float	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
+	Float	replenishRate_y;	/* Replenishment rate (units per second). */
+	Float	lossRate_l;			/* Loss rate (units per second). */
+	Float	reprocessRate_x;	/* Reprocessing rate (units per second). */
+	Float	recoveryRate_r;		/* Recovery rate (units per second). */
+	Float	permeabilityPH_h;	/* Permeability constant. */
+	Float	permeabilityPZ_z;	/* Permeability constant. */
+	Float	firingRate_h2;		/* Permeability constant. */
 
 } HairCell3;
