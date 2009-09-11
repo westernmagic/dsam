@@ -106,6 +106,7 @@ Init_EarObject(const WChar *moduleName)
 	}
 #	endif
 	data->shapePtr = NULL;
+	data->numChannels = 0;
 	data->numThreads = 1;
 	data->threadIndex = 0;
 	data->numSubProcesses = 0;
@@ -221,6 +222,28 @@ FreeOutSignal_EarObject(EarObjectPtr data)
 
 }
 
+/**************************** FreeRandPars ************************************/
+
+/*
+ * This routine frees the random parameter structure list associated with an
+ * EarObject.
+ */
+
+void
+FreeRandPars_EarObject(EarObjectPtr p)
+{
+	int		i;
+
+	if (!p->randPars)
+		return;
+	for (i = 0; i < p->numChannels; i++)
+		if (p->randPars[i])
+			FreePars_Random(&p->randPars[i]);
+	free(p->randPars);
+	p->randPars = NULL;
+
+}
+
 /**************************** Free ********************************************/
 
 /*
@@ -254,8 +277,7 @@ Free_EarObject(EarObjectPtr *theObject)
 #	endif
 	FreeEarObjRefList_EarObject(&(*theObject)->customerList);
 	FreeEarObjRefList_EarObject(&(*theObject)->supplierList);
-	if ((*theObject)->randPars)
-		FreePars_Random(&(*theObject)->randPars);
+	FreeRandPars_EarObject((*theObject));
 	free(*theObject);
 	*theObject = NULL;
 
@@ -382,6 +404,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		  &oldOutSignal);
 	} else
 		ResetSignalContinuity_EarObject(data, NULL);
+	data->numChannels = numChannels;
 	return(TRUE);
 
 }
@@ -1149,26 +1172,35 @@ TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
 /**************************** SetRandPars *************************************/
 
 /*
- * This function initialises the random parameters structure.
- * It sets the random seed if the structure already exists, otherwise it
+ * This function initialises the random parameters structure list.
+ * It sets the random seeds if the structures already exists, otherwise it
  * initialises it.
+ * It expects the output signal to have been initialised.
  * It returns FALSE if it fails in any way.
  */
 
 BOOLN
 SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 {
+	int		i;
 
 	if (p->randPars) {
-		SetSeed_Random(p->randPars, ranSeed, (long) p->threadIndex);
+		for (i = 0; i < p->numChannels; i++)
+			SetSeed_Random(p->randPars[i], ranSeed, (long) i);
 		return(TRUE);
 	}
-	if ((p->randPars = InitPars_Random(ranSeed, (long) p->threadIndex)) ==
-	  NULL) {
-		NotifyError(wxT("%s: Out of memory for 'random' parameters."),
-		  callingFunc);
+	if ((p->randPars = (RandParsPtr *) calloc(p->numChannels,
+	  sizeof(RandParsPtr))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for RandParsPtr array (%d)"),
+		  callingFunc, p->numChannels);
 		return(FALSE);
 	}
+	for (i = 0; i < p->numChannels; i++)
+		if ((p->randPars[i] = InitPars_Random(ranSeed, (long) i)) == NULL) {
+			NotifyError(wxT("%s: Out of memory for [%d] 'random' parameters."),
+			  callingFunc, p->numChannels);
+			return(FALSE);
+		}
 	return(TRUE);
 
 }
@@ -1177,8 +1209,8 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 
 /*
  * This routine frees the memory for the EarObject Copies for the sub-processes.
- * The out signal created as only a copy for the output signal, so it can
- * be simply free'd.  In addition, the space for the all the out signals was
+ * The out signal created is only a copy for the output signal, so it can
+ * be simply free'd.  In addition, the space for all the out signals was
  * created in one go, so the first out signal is used to delete all of them.
  * The same applies to the process EarObjects.
  */
@@ -1192,8 +1224,7 @@ FreeThreadSubProcs_EarObject(EarObjectPtr p)
 	if (!p->subProcessList)
 		return;
 	for (i = 0, sP = p->subProcessList; i < p->numSubProcesses; i++, sP++)
-		if ((*sP)->randPars)
-			FreePars_Random(&(*sP)->randPars);
+		FreeRandPars_EarObject(*sP);
  	if (p->subProcessList[0]->outSignal)
 		free(p->subProcessList[0]->outSignal);
 	free(p->subProcessList[0]);
@@ -1276,8 +1307,7 @@ FreeThreadProcs_EarObject(EarObjectPtr p)
 	  p->processName, p->numThreads - 1);
 #	endif
 	for (i = 0, pI = p->threadProcs; i < p->numThreads - 1; i++, pI++) {
-		if (pI->randPars)
-			FreePars_Random(&pI->randPars);
+		FreeRandPars_EarObject(pI);
 		if (pI->subProcessList)
 			FreeThreadSubProcs_EarObject(pI);
 	}
@@ -1301,7 +1331,7 @@ InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 
 	if (!baseP->randPars)
 		return;
-	SetRandPars_EarObject(p, baseP->randPars->idum, funcName);
+	SetRandPars_EarObject(p, baseP->randPars[0]->idum, funcName);
 	return;
 
 }

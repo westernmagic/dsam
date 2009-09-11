@@ -1170,6 +1170,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	int		i;
 	ChanLen	j;
 	Float	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
+	RandParsPtr		randParsPtr;
 	SignalDataPtr	outSignal;
 	HairCell2Ptr	p = hairCell2Ptr;
 
@@ -1229,6 +1230,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	for (i = outSignal->offset, timer = DBL_MAX; i < outSignal->numChannels;
 	  i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
+		randParsPtr = data->randPars[i];
 		for (j = 0, outPtr = outSignal->channel[i]; j < outSignal->length; j++,
 		  outPtr++) {
 
@@ -1265,19 +1267,19 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 				case IHC_MEDDIS2000_OPMODE_SPIKE:
 					replenish = (p->cleftReplenishMode ==
 					  IHC_MEDDIS2000_CLEFTREPLENISHMODE_UNITY)? GeomDist_Random(
-					  p->ydt, 1,data->randPars): (p->hCChannels[i].reservoirQ <
+					  p->ydt, 1,randParsPtr): (p->hCChannels[i].reservoirQ <
 					  p->maxFreePool_M)? GeomDist_Random(p->ydt, (int) (
 					  p->maxFreePool_M - p->hCChannels[i].reservoirQ),
-					  data->randPars): 0;
+					  randParsPtr): 0;
 
 					ejected = GeomDist_Random(kdt, (int) p->hCChannels[
-					  i].reservoirQ, data->randPars);
+					  i].reservoirQ, randParsPtr);
 
 					reUptakeAndLost = p->l_Plus_rdt * p->hCChannels[i].cleftC;
 					reUptake = p->rdt * p->hCChannels[i].cleftC;
 					reprocessed = (p->hCChannels[i].reprocessedW < 1.0)? 0:
 					GeomDist_Random(p->xdt, (int) floor(p->hCChannels[
-					  i].reprocessedW), data->randPars);
+					  i].reprocessedW), randParsPtr);
 
 					p->hCChannels[i].reservoirQ += replenish - ejected +
 					  reprocessed;

@@ -898,6 +898,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	int		i, chan;
 	Float	threshold, excessTime;
 	ChanLen	j;
+	RandParsPtr		randParsPtr;
 	SignalDataPtr	outSignal;
 	CarneySGPtr	p = carneySGPtr;
 
@@ -942,6 +943,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
+			randParsPtr = data->randPars[chan];
 			for (j = 0; j < outSignal->length; j++) {
 				if (*timerPtr > p->refractoryPeriod) {
 					excessTime = *timerPtr - p->refractoryPeriod;
@@ -951,8 +953,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 					  p->dischargeTConstS1));
 					if (((((p->inputMode ==
 					  ANSPIKEGEN_CARNEY_INPUTMODE_ORIGINAL)? *inPtr / p->dt:
-					  *inPtr) - threshold) * p->dt) > Ran01_Random(data->
-					  randPars)) {
+					  *inPtr) - threshold) * p->dt) > Ran01_Random(randParsPtr)) {
 						*remainingPulseTimePtr = p->wPulseDuration;
 						*timerPtr = 0.0;
 					}

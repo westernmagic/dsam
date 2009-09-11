@@ -725,6 +725,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 	int		i, chan;
 	Float	spikeProb, excessTime;
 	ChanLen	j;
+	RandParsPtr		randParsPtr;
 	SignalDataPtr	outSignal;
 	Meddis02SGPtr	p = meddis02SGPtr;
 
@@ -770,11 +771,12 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
+			randParsPtr = data->randPars[chan];
 			for (j = 0; j < outSignal->length; j++) {
 				if ((*inPtr > 0.0) && (*timerPtr > p->refractoryPeriod)) {
 					excessTime = *timerPtr - p->refractoryPeriod;
 					spikeProb = 1.0 - exp(-excessTime / p->recoveryTau);
-					if (spikeProb > Ran01_Random(data->randPars)) {
+					if (spikeProb > Ran01_Random(randParsPtr)) {
 						*remainingPulseTimePtr = p->wPulseDuration;
 						*timerPtr = 0.0;
 					}

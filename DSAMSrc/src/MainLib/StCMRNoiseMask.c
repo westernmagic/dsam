@@ -1424,7 +1424,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 	// one in the other ear
 	////////////////////////////////////////////////////////////////////////
 	 */
-	CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[nSignal]);
+	CreateNoiseBand_FFT(p->fTInv, 0, *data->randPars, kLow, kUpp[nSignal]);
 
 	for (chan = 0; chan < outSignal->numChannels; chan++) {
 		outPtr = outSignal->channel[chan];
@@ -1491,7 +1491,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 					////////////////////////////////////////////////////////////
 					// deviant means for each band a new lp-noise
 					////////////////////////////////////////////////////////////
-					CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[i]);
+					CreateNoiseBand_FFT(p->fTInv, 0, *data->randPars, kLow, kUpp[i]);
 					for (sample=0; sample<outSignal->length; sample++) {
 						t = sample / srate;
 						modFactor = (p->mskModFreq > 0)? (1.0 + sin(flankModPhase + t *
@@ -1507,7 +1507,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 				  ((chan == 1) && (p->flankEar[i] != 'L')))	{ //flankingband i  L(eft) or D(iotic)
 					/* deviant means for each band a new lp-noise */
 					////////////////////////////////////////////////////////////
-					CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, kLow, kUpp[i]);
+					CreateNoiseBand_FFT(p->fTInv, 0, *data->randPars, kLow, kUpp[i]);
 					for (sample=0; sample<outSignal->length; sample++) {
 						t = sample / srate;
 						modFactor = (p->mskModFreq > 0)? (1.0 + sin(flankModPhase + t *

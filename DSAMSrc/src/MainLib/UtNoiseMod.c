@@ -484,6 +484,7 @@ Process_Utility_AmpMod_Noise(EarObjectPtr data)
 	register ChanData	 *inPtr, *outPtr, *fftPtr, sineFactor;
 	int		chan, cFIndex;
 	ChanLen	i;
+	RandParsPtr		randParsPtr;
 	SignalDataPtr	inSignal, outSignal;
 	NAmpModPtr	p = nAmpModPtr;
 
@@ -512,7 +513,8 @@ Process_Utility_AmpMod_Noise(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = inSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
-		CreateNoiseBand_FFT(p->fTInv, 0, data->randPars, 1, p->kUpp[chan]);
+		randParsPtr = data->randPars[chan];
+		CreateNoiseBand_FFT(p->fTInv, 0, randParsPtr, 1, p->kUpp[chan]);
 		fftPtr = p->fTInv->data;
 		if (p->bandwidthMode == UTILITY_AMPMOD_NOISE_BANDWIDTHMODE_HZ)
 			for (i = 0; i < data->outSignal->length; i++)

@@ -84,12 +84,13 @@ typedef struct _EarObject {
 	BOOLN			firstSectionFlag;/* Set for first signal section. */
 	EarObjHandle	handle;			/* Reference handle for manager. */
 	WChar			*processName;	/* The origins of the output stimulus */
+	int				numChannels;	/* No. of process channels being worked on. */
 	int				numInSignals;	/* Count of input signals. */
 	int				numThreads;		/* No. of thread process using EarObject */
 	int				threadIndex;	/* Identifies the thread process. */
 	int				numSubProcesses;/* No. of associated. sub-processes. */
 	ChanLen			timeIndex;		/* used in segmented mode processing */
-	RandParsPtr		randPars;		/* Used to store random number pars. */
+	RandParsPtr		*randPars;		/* Used to store random number pars. */
 	SignalDataPtr * *inSignal;		/* The original signals */
 	SignalDataPtr	outSignal;		/* The signal set by the process stages */
 	SignalDataPtr	*outSignalPtr;	/* Pointer to the output signal */

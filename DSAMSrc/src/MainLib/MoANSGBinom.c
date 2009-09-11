@@ -657,6 +657,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	ChanLen	*remainingPulseIndexPtr;
 	ChanData	*pastEndOfData;
 	EarObjectPtr	refractAdjData;
+	RandParsPtr		randParsPtr;
 	SignalDataPtr	outSignal;
 	BinomialSGPtr	p = binomialSGPtr;
 
@@ -698,6 +699,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = refractAdjData->outSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
+		randParsPtr = data->randPars[chan];
 		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ = 0.0;
 		if (p->numFibres < 1)
@@ -706,7 +708,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		pastEndOfData = outSignal->channel[chan] + outSignal->length;
 		for (i = 0; i < outSignal->length; i++, outPtr++) {
 			output = p->pulseMagnitude * GeomDist_Random(*inPtr++,
-			  p->numFibres2[chan], data->randPars);
+			  p->numFibres2[chan], randParsPtr);
 			if (output > 0.0) {
 				for (pulseTimer = p->pulseDurationIndex, pulsePtr = outPtr;
 				  pulseTimer && (pulsePtr < pastEndOfData); pulsePtr++,
