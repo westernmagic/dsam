@@ -296,7 +296,7 @@ IdentifyDiag_NSpecLists(WChar *mode, NameSpecifierPtr list)
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
 	case GENERAL_DIAGNOSTIC_MODE_NULL:
 		specifier = GENERAL_DIAGNOSTIC_FILE_MODE;
-		DSAM_strncpy(list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, mode,
+		DSAM_strncpy((WChar *) list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name, mode,
 		  MAX_FILE_PATH);
 		break;
 	default:
@@ -323,7 +323,7 @@ OpenDiagnostics_NSpecLists(FILE **fp, NameSpecifierPtr list, int mode)
 	case GENERAL_DIAGNOSTIC_OFF_MODE:
 		return(TRUE);
 	case GENERAL_DIAGNOSTIC_FILE_MODE:
-		fileName = list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
+		fileName = (WChar *) list[(int) GENERAL_DIAGNOSTIC_FILE_MODE].name;
 		filePath = (IS_ABSOLUTE_PATH(fileName))? fileName:
 		  GetParsFileFPath_Common(fileName);
 		if ((*fp = DSAM_fopen(filePath, "w")) == NULL) {
