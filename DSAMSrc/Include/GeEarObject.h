@@ -84,7 +84,6 @@ typedef struct _EarObject {
 	BOOLN			firstSectionFlag;/* Set for first signal section. */
 	EarObjHandle	handle;			/* Reference handle for manager. */
 	WChar			*processName;	/* The origins of the output stimulus */
-	int				numChannels;	/* No. of process channels being worked on. */
 	int				numInSignals;	/* Count of input signals. */
 	int				numThreads;		/* No. of thread process using EarObject */
 	int				threadIndex;	/* Identifies the thread process. */

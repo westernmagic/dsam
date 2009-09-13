@@ -106,7 +106,6 @@ Init_EarObject(const WChar *moduleName)
 	}
 #	endif
 	data->shapePtr = NULL;
-	data->numChannels = 0;
 	data->numThreads = 1;
 	data->threadIndex = 0;
 	data->numSubProcesses = 0;
@@ -236,7 +235,7 @@ FreeRandPars_EarObject(EarObjectPtr p)
 
 	if (!p->randPars)
 		return;
-	for (i = 0; i < p->numChannels; i++)
+	for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
 		if (p->randPars[i])
 			FreePars_Random(&p->randPars[i]);
 	free(p->randPars);
@@ -265,6 +264,7 @@ Free_EarObject(EarObjectPtr *theObject)
 	if ((*theObject)->threadProcs)
 		FreeThreadProcs_EarObject(*theObject);
 	FreeSubProcessList_EarObject(*theObject);
+	FreeRandPars_EarObject((*theObject));
 	FreeOutSignal_EarObject(*theObject);
 	/* This next line unregisters the object from the main list. */
 	FreeEarObjRef_EarObject(&mainEarObjectList, (*theObject)->handle);
@@ -277,7 +277,6 @@ Free_EarObject(EarObjectPtr *theObject)
 #	endif
 	FreeEarObjRefList_EarObject(&(*theObject)->customerList);
 	FreeEarObjRefList_EarObject(&(*theObject)->supplierList);
-	FreeRandPars_EarObject((*theObject));
 	free(*theObject);
 	*theObject = NULL;
 
@@ -381,6 +380,7 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 	}
 
 	if (createNewSignal) {
+		FreeRandPars_EarObject(data);
 		data->outSignal = Init_SignalData(funcName);
 		SetLength_SignalData(data->outSignal, length);
 		SetSamplingInterval_SignalData(data->outSignal, samplingInterval);
@@ -404,7 +404,6 @@ SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
 		  &oldOutSignal);
 	} else
 		ResetSignalContinuity_EarObject(data, NULL);
-	data->numChannels = numChannels;
 	return(TRUE);
 
 }
@@ -1185,20 +1184,20 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 	int		i;
 
 	if (p->randPars) {
-		for (i = 0; i < p->numChannels; i++)
+		for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
 			SetSeed_Random(p->randPars[i], ranSeed, (long) i);
 		return(TRUE);
 	}
-	if ((p->randPars = (RandParsPtr *) calloc(p->numChannels,
+	if ((p->randPars = (RandParsPtr *) calloc(_OutSig_EarObject(p)->numChannels,
 	  sizeof(RandParsPtr))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for RandParsPtr array (%d)"),
-		  callingFunc, p->numChannels);
+		  callingFunc, _OutSig_EarObject(p)->numChannels);
 		return(FALSE);
 	}
-	for (i = 0; i < p->numChannels; i++)
+	for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
 		if ((p->randPars[i] = InitPars_Random(ranSeed, (long) i)) == NULL) {
 			NotifyError(wxT("%s: Out of memory for [%d] 'random' parameters."),
-			  callingFunc, p->numChannels);
+			  callingFunc, _OutSig_EarObject(p)->numChannels);
 			return(FALSE);
 		}
 	return(TRUE);
