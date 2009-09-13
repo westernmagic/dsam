@@ -492,7 +492,7 @@ GenerateSignal_WhiteNoise(EarObjectPtr data)
 	dataPtr = _OutSig_EarObject(data)->channel[0];
 	for (i = 0; i < _OutSig_EarObject(data)->length; i++) {
 		for (j = 0, sum = 0.0; j < p->randomizationIndex; j++)
-			sum += Ran01_Random(data->randPars[0]);
+			sum += Ran01_Random(&data->randPars);
 		sum = sum - p->randomizationIndex / 2;
 		*(dataPtr++) = amplitude * (sum / sqrt(p->randomizationIndex / 12));
 	}

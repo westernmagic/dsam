@@ -1230,7 +1230,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	for (i = outSignal->offset, timer = DBL_MAX; i < outSignal->numChannels;
 	  i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
-		randParsPtr = data->randPars[i];
+		randParsPtr = &data->randPars[i];
 		for (j = 0, outPtr = outSignal->channel[i]; j < outSignal->length; j++,
 		  outPtr++) {
 

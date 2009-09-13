@@ -771,7 +771,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
-			randParsPtr = data->randPars[chan];
+			randParsPtr = &data->randPars[chan];
 			for (j = 0; j < outSignal->length; j++) {
 				if ((*inPtr > 0.0) && (*timerPtr > p->refractoryPeriod)) {
 					excessTime = *timerPtr - p->refractoryPeriod;

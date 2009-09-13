@@ -693,7 +693,7 @@ GenerateSignal_Harmonic_FreqSwept(EarObjectPtr data)
 	}
 	outSignal = _OutSig_EarObject(data);
 	totalNumberOfHarmonics = p->highestHarmonic - p->lowestHarmonic + 1;
-	SetPhaseArray_NSpecLists(p->phase, &p->ranSeed, *data->randPars, p->phaseMode,
+	SetPhaseArray_NSpecLists(p->phase, &p->ranSeed, &data->randPars, p->phaseMode,
 	  p->phaseVariable, p->lowestHarmonic, totalNumberOfHarmonics);
 	for (j = 0; j < totalNumberOfHarmonics; j++) {
 		harmonicNumber = p->lowestHarmonic + j;

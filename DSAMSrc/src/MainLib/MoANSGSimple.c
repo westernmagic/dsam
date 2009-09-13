@@ -706,7 +706,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		for (i = 0; i < p->numFibres2[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
-			randParsPtr = data->randPars[chan];
+			randParsPtr = &data->randPars[chan];
 			for (j = 0; j < outSignal->length; j++) {
 				if ((*timerPtr > p->refractoryPeriod) && (*inPtr > Ran01_Random(
 				  randParsPtr))) {

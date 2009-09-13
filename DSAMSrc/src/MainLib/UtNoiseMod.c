@@ -513,7 +513,7 @@ Process_Utility_AmpMod_Noise(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = inSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
-		randParsPtr = data->randPars[chan];
+		randParsPtr = &data->randPars[chan];
 		CreateNoiseBand_FFT(p->fTInv, 0, randParsPtr, 1, p->kUpp[chan]);
 		fftPtr = p->fTInv->data;
 		if (p->bandwidthMode == UTILITY_AMPMOD_NOISE_BANDWIDTHMODE_HZ)

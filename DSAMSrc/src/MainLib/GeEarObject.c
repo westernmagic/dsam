@@ -231,13 +231,8 @@ FreeOutSignal_EarObject(EarObjectPtr data)
 void
 FreeRandPars_EarObject(EarObjectPtr p)
 {
-	int		i;
-
 	if (!p->randPars)
 		return;
-	for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
-		if (p->randPars[i])
-			FreePars_Random(&p->randPars[i]);
 	free(p->randPars);
 	p->randPars = NULL;
 
@@ -1183,23 +1178,17 @@ SetRandPars_EarObject(EarObjectPtr p, long ranSeed, const WChar *callingFunc)
 {
 	int		i;
 
-	if (p->randPars) {
-		for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
-			SetSeed_Random(p->randPars[i], ranSeed, (long) i);
-		return(TRUE);
-	}
-	if ((p->randPars = (RandParsPtr *) calloc(_OutSig_EarObject(p)->numChannels,
-	  sizeof(RandParsPtr))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for RandParsPtr array (%d)"),
+	if (!p->randPars && (p->randPars = (RandPars *) calloc(_OutSig_EarObject(p)->numChannels,
+	  sizeof(RandPars))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for RandPars array (%d)"),
 		  callingFunc, _OutSig_EarObject(p)->numChannels);
 		return(FALSE);
 	}
-	for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
-		if ((p->randPars[i] = InitPars_Random(ranSeed, (long) i)) == NULL) {
-			NotifyError(wxT("%s: Out of memory for [%d] 'random' parameters."),
-			  callingFunc, _OutSig_EarObject(p)->numChannels);
-			return(FALSE);
-		}
+	if (p->randPars) {
+		for (i = 0; i < _OutSig_EarObject(p)->numChannels; i++)
+			SetSeed_Random(&p->randPars[i], ranSeed, (long) i);
+		return(TRUE);
+	}
 	return(TRUE);
 
 }
@@ -1330,7 +1319,7 @@ InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
 
 	if (!baseP->randPars)
 		return;
-	SetRandPars_EarObject(p, baseP->randPars[0]->idum, funcName);
+	SetRandPars_EarObject(p, baseP->randPars[0].idum, funcName);
 	return;
 
 }
