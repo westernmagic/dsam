@@ -189,7 +189,7 @@ SetUniParList_ParArray(ParArrayPtr parArray)
  */
 
 BOOLN
-SetMode_ParArray(ParArrayPtr parArray, WChar *modeName)
+SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName)
 {
 	static const WChar *funcName = wxT("SetMode_ParArray");
 	int		mode, newNumParams;

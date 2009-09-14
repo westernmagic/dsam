@@ -181,12 +181,8 @@ DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
 			switch (*p) {
 			case 'f':
 			case 'g':
-				if (longVar)
-					Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
-					  double));
-				else
-					Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
-					  float));
+				Snprintf_Utility_String(buffer, MAXLINE, subFormat, va_arg(args,
+				  Float));
 				break;
 			case 'd':
 				Snprintf_Utility_String(buffer, MAXLINE, subFormat, (longVar)?
@@ -236,7 +232,7 @@ DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
  * This is a simple routine to return the pointer to a diagnostic title.
  */
 
-WChar *
+const WChar *
 DiagnosticTitle(CommonDiagSpecifier type)
 {
 	static NameSpecifier	list[] = {

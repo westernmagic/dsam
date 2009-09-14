@@ -148,7 +148,7 @@ InitString_Utility_String(WChar *string)
  */
 
 WChar *
-QuotedString_Utility_String(WChar *string)
+QuotedString_Utility_String(const WChar *string)
 {
 	static WChar		newString[LONG_STRING];
 

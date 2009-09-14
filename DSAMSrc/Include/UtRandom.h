@@ -20,7 +20,59 @@
 /******************************************************************************/
 
 #define RANDOM_INITIAL_SEED		3141L
+
+#define RANDOM_IA 16807
+#define RANDOM_IM 2147483647L
+#define RANDOM_AM (1.0 / RANDOM_IM)
+#define RANDOM_IQ 127773L
+#define RANDOM_IR 2836
+#define RANDOM_NDIV (1 + (RANDOM_IM - 1) / RANDOM_NTAB)
+#define RANDOM_EPS 1.2e-7
+#define RANDOM_RNMX (1.0 - RANDOM_EPS)
 #define RANDOM_NTAB				32
+
+/******************************************************************************/
+/************************** Macro definitions *********************************/
+/******************************************************************************/
+
+/************************** _Ran01 *********************************************/
+
+/*
+ * This routine is a uniformally distributed random number generator.
+ * It has been revised from the "Numerical Recipes 2nd ed." Ran1 (p.280).
+ * Set "seed" to any negative value to initialise or re-intialise the sequence.
+ */
+
+#define	_Ran01_Random(P, RES) \
+	{ \
+		int		j; \
+		long	k;	\
+		Float	temp; \
+		if ((P)->idum <= 0 || !(P)->iy) { \
+			if ((P)->idum == 0) \
+				(P)->idum = (long) clock(); \
+			else \
+				(P)->idum = (-((P)->idum) < 1)? 1: -((P)->idum); \
+			(P)->idum += (P)->offset; \
+			for (j = RANDOM_NTAB + 7; j >= 0; j--) { \
+				k = ((P)->idum) / RANDOM_IQ; \
+				(P)->idum = RANDOM_IA * ((P)->idum - k * RANDOM_IQ) - RANDOM_IR * k; \
+				if ((P)->idum < 0) \
+					(P)->idum += RANDOM_IM; \
+				if (j < RANDOM_NTAB)  \
+					(P)->iv[j] = (P)->idum; \
+			} \
+			(P)->iy = (P)->iv[0]; \
+		} \
+		k = ((P)->idum) / RANDOM_IQ; \
+		(P)->idum = RANDOM_IA * ((P)->idum - k * RANDOM_IQ) - RANDOM_IR * k; \
+		if ((P)->idum < 0) \
+			(P)->idum += RANDOM_IM; \
+		j = (P)->iy / RANDOM_NDIV; \
+		(P)->iy = (P)->iv[j]; \
+		(P)->iv[j] = (P)->idum; \
+		(RES) = ((temp = RANDOM_AM * (P)->iy) > RANDOM_RNMX)? RANDOM_RNMX: temp; \
+	}
 
 /******************************************************************************/
 /*************************** Type definitions *********************************/

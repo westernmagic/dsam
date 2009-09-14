@@ -1135,9 +1135,9 @@ InitSimModule_Utility_SimScript(DatumPtr pc)
 		case SIMSCRIPT_MODULE:
 			localSimScriptPtr = simScriptPtr;
 			SET_PARS_POINTER(pc->data);
-			SetOperationMode_Utility_SimScript(BooleanList_NSpecLists(
+			SetOperationMode_Utility_SimScript((WChar *) BooleanList_NSpecLists(
 			  localSimScriptPtr->operationMode)->name);
-			SetParFilePathMode_Utility_SimScript(localSimScriptPtr->
+			SetParFilePathMode_Utility_SimScript((WChar *) localSimScriptPtr->
 			  parFilePathModeList[localSimScriptPtr->parFilePathMode].name);
 			SetParsFilePath_Utility_SimScript(localSimScriptPtr->
 			  parsFilePath);

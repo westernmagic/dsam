@@ -173,8 +173,10 @@
 
 #if DSAM_USE_FLOAT
 #	define	DSAM_EPSILON	FLT_EPSILON
+#	define	DSAM_POW		powf
 #else
 #	define	DSAM_EPSILON	DBL_EPSILON
+#	define	DSAM_POW		pow
 #endif
 
 /*
@@ -182,7 +184,11 @@
  */
 
 #if DSAM_USE_UNICODE
-#	define DSAM_atof(X)		wcstod((X), NULL)
+#	if DSAM_USE_FLOAT
+#		define DSAM_atof(X)		wcstof((X), NULL)
+#	else
+#		define DSAM_atof(X)		wcstod((X), NULL)
+#	endif
 #	define DSAM_atoi(X)		(int) wcstol((X), NULL, 0)
 #	define DSAM_atol(X)		wcstol((X), NULL, 0)
 #	define DSAM_fgetc		fgetwc
@@ -462,7 +468,7 @@ void	CloseFile(FILE *fp);
 
 void	CloseFiles(void);
 
-WChar *	DiagnosticTitle(CommonDiagSpecifier type);
+const WChar *	DiagnosticTitle(CommonDiagSpecifier type);
 
 void	DPrint(const WChar *format, ...);
 

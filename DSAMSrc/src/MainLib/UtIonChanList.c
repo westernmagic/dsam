@@ -296,7 +296,7 @@ InitIonChannel_IonChanList(const WChar *callingFunctionName,
 	InitICBoltzmannPars_IonChanList(&theIC->boltzmann);
 	InitICHHuxleyPars_IonChanList(&theIC->hHuxley);
 	DSAM_strcpy(theIC->fileName, DEFAULT_FILE_NAME);
-	theIC->PowFunc = pow;
+	theIC->PowFunc = DSAM_POW;
 	theIC->parList = NULL;
 	if ((theIC->table = (ICTableEntry *) calloc(theIC->numTableEntries,
 	  sizeof(ICTableEntry))) == NULL) {
@@ -1748,7 +1748,7 @@ SetICPowFunc_IonChanList(IonChannelPtr theIC)
 
 	if (fabs(theIC->activationExponent) != (intActivation = (int) floor(fabs(
 	  theIC->activationExponent) + 0.5))) {
-		theIC->PowFunc = pow;
+		theIC->PowFunc = DSAM_POW;
 		return;
 	}
 	switch (intActivation) {
@@ -1762,7 +1762,7 @@ SetICPowFunc_IonChanList(IonChannelPtr theIC)
 		theIC->PowFunc = Pow1Func_IonChanList;
 		break;
 	default:
-		theIC->PowFunc = pow;
+		theIC->PowFunc = DSAM_POW;
 	}
 
 }

@@ -103,15 +103,6 @@ SetSeed_Random(RandParsPtr p, long ranSeed, long offset)
  * Set "seed" to any negative value to initialise or re-intialise the sequence.
  */
 
-#define IA 16807
-#define IM 2147483647L
-#define AM (1.0 / IM)
-#define IQ 127773L
-#define IR 2836
-#define NDIV (1 + (IM - 1) / RANDOM_NTAB)
-#define EPS 1.2e-7
-#define RNMX (1.0 - EPS)
-
 Float
 Ran01_Random(RandParsPtr p)
 {
@@ -126,33 +117,25 @@ Ran01_Random(RandParsPtr p)
 			p->idum = (-(p->idum) < 1)? 1: -(p->idum);
 		p->idum += p->offset;
 		for (j = RANDOM_NTAB + 7; j >= 0; j--) {
-			k = (p->idum) / IQ;
-			p->idum = IA * (p->idum - k * IQ) - IR * k;
+			k = (p->idum) / RANDOM_IQ;
+			p->idum = RANDOM_IA * (p->idum - k * RANDOM_IQ) - RANDOM_IR * k;
 			if (p->idum < 0)
-				p->idum += IM;
+				p->idum += RANDOM_IM;
 			if (j < RANDOM_NTAB)
 				p->iv[j] = p->idum;
 		}
 		p->iy = p->iv[0];
 	}
-	k = (p->idum) / IQ;
-	p->idum = IA * (p->idum - k * IQ) - IR * k;
+	k = (p->idum) / RANDOM_IQ;
+	p->idum = RANDOM_IA * (p->idum - k * RANDOM_IQ) - RANDOM_IR * k;
 	if (p->idum < 0)
-		p->idum += IM;
-	j = p->iy / NDIV;
+		p->idum += RANDOM_IM;
+	j = p->iy / RANDOM_NDIV;
 	p->iy = p->iv[j];
 	p->iv[j] = p->idum;
-	return( ((temp = AM * p->iy) > RNMX)? RNMX: temp);
+	return( ((temp = RANDOM_AM * p->iy) > RANDOM_RNMX)? RANDOM_RNMX: temp);
 
 }
-#undef IA
-#undef IM
-#undef AM
-#undef IQ
-#undef IR
-#undef NDIV
-#undef EPS
-#undef RNMX
 
 /************************** GeomDist ******************************************/
 

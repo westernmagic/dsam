@@ -61,7 +61,7 @@ WChar *	GetSuffix_Utility_String(WChar *fileName);
 
 WChar *	InitString_Utility_String(WChar *string);
 
-WChar *	QuotedString_Utility_String(WChar *string);
+WChar *	QuotedString_Utility_String(const WChar *string);
 
 void	ToUpper_Utility_String(WChar *upperCaseString, const WChar *string);
 

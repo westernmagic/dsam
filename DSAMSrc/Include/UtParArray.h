@@ -89,7 +89,7 @@ void	PrintPars_ParArray(ParArrayPtr parArray);
 BOOLN	SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex,
 		  Float parValue);
 
-BOOLN	SetMode_ParArray(ParArrayPtr parArray, WChar *modeName);
+BOOLN	SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName);
 
 BOOLN	SetUniParList_ParArray(ParArrayPtr parArray);
 
