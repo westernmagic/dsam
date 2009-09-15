@@ -84,8 +84,6 @@ Init_SignalData(const WChar *callingFunctionName)
 	theData->offset = 0;
 	theData->interleaveLevel = SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
 	theData->numWindowFrames = SIGNALDATA_DEFAULT_NUM_WINDOW_FRAMES;
-	theData->fibreInterleaveLevel = 0;
-	theData->numFibres = NULL;
 	theData->length = 0;
 	theData->timeIndex = PROCESS_START_TIME;
 	theData->dt = 0.0;
