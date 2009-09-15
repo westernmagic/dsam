@@ -110,7 +110,7 @@ Init_ANSpikeGen_Meddis02(ParameterSpecifier parSpec)
 	meddis02SGPtr->pulseMagnitude = 1.0;
 	meddis02SGPtr->refractoryPeriod = 0.75e-3;
 	meddis02SGPtr->recoveryTau = 0.8e-3;
-	if ((meddis02SGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	if ((meddis02SGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
 	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
 	  CheckFuncPars_ANSGDist)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),

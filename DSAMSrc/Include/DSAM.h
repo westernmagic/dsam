@@ -224,7 +224,7 @@
 #		include <GrParListInfo.h>
 #		include <GrParListInfoList.h>
 #		include <GrModParDialog.h>
-#		include	>GrIPCServer.h>
+#		include <GrIPCServer.h>
 #		include <GrSimMgr.h>
 #		include <GrLines.h>
 #		include <GrAxisScale.h>

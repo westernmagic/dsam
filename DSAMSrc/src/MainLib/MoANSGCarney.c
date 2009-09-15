@@ -118,7 +118,7 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 	carneySGPtr->dischargeCoeffC1 = 0.5;
 	carneySGPtr->dischargeTConstS0 = 1e-3;
 	carneySGPtr->dischargeTConstS1 = 12.5e-3;
-	if ((carneySGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	if ((carneySGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
 	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
 	  CheckFuncPars_ANSGDist)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),

@@ -115,7 +115,7 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	binomialSGPtr->pulseDuration = 2e-05;
 	binomialSGPtr->pulseMagnitude = 1.0;
 	binomialSGPtr->refractoryPeriod = 1e-3;
-	if ((binomialSGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	if ((binomialSGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
 	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
 	  CheckFuncPars_ANSGDist)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),

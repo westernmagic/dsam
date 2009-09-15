@@ -79,7 +79,7 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 	simpleSGPtr->pulseDuration = 0.1e-3;
 	simpleSGPtr->pulseMagnitude = 4.3;
 	simpleSGPtr->refractoryPeriod = PS_REFRACTORY_PERIOD;
-	if ((simpleSGPtr->distribution = Init_ParArray(wxT("Distribution"),
+	if ((simpleSGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
 	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
 	  CheckFuncPars_ANSGDist)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),
