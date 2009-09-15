@@ -83,6 +83,58 @@ GetNumDistributionPars_ANSGDist(int mode)
 	}
 }
 
+/****************************** FreeFibres *******************************/
+
+/*
+ * This routine deallocates the memory for the ANSGDist structure.
+ */
+
+void
+Free_ANSGDist(ANSGDistPtr *p)
+{
+	if (!(*p))
+		return;
+	if ((*p)->numFibres)
+		free((*p)->numFibres);
+	free(*p);
+	*p = NULL;
+
+}
+
+/****************************** Init ************************************/
+
+/*
+ * This function initialises the AN distribution structure.
+ * It expects an uninitialised pointer to be set to NULL;
+ * It returns FALSE if it fails in any way.
+ */
+
+BOOLN
+Init_ANSGDist(ANSGDistPtr *p, int numChannels)
+{
+	static const WChar	*funcName = wxT("Init_ANSGDist");
+
+	if (!*p) {
+		if (((*p) = (ANSGDistPtr) malloc(sizeof(ANSGDist))) == NULL) {
+			NotifyError(wxT("%s: Could not allocate AN distribution."), funcName);
+			return(FALSE);
+		}
+		(*p)->numFibres = NULL;
+	}
+	if ((*p)->numFibres && ((*p)->numChannels != numChannels)) {
+		free((*p)->numFibres);
+		(*p)->numFibres = NULL;
+	}
+	if (!(*p)->numFibres && ((*p)->numFibres = (int *) calloc(numChannels,
+	  sizeof(int))) == NULL) {
+		NotifyError(wxT("%s: Could not allocate memory for (%d) fibre array"),
+		  funcName, numChannels);
+		return(FALSE);
+	}
+	(*p)->numChannels = numChannels;
+	return(TRUE);
+}
+
 /****************************** SetDistribution ************************/
 
 /*
@@ -219,26 +271,31 @@ GetMeanChan_ANGSDist(Float *frequencies, int numFreqs, Float bF)
  * This function returns the value for the respective distribution function mode.
  * Using it helps maintain the correspondence between the mode names.
  * It expects the frequencies array to be correctly initialised.
+ * It expects the "fibreDist" fibre distribution structure to be correctly initialised.
  */
 
 BOOLN
-SetFibres_ANSGDist(int *fibres, ParArrayPtr p, Float *frequencies,
+SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
   int numChannels)
 {
 	static const WChar	*funcName = wxT("SetFibres_ANSGDist");
 	BOOLN	ok = TRUE;
 	int		i, meanChan;
 
+	if (!Init_ANSGDist(aNDist, numChannels)) {
+		NotifyError(wxT("%s: Could not allocate AN distribution."), funcName);
+		return(FALSE);
+	}
 	switch (p->mode) {
 	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
 		for (i = 0; i < numChannels; i++)
-			fibres[i] = (int) p->params[0];
+			(*aNDist)->numFibres[i] = (int) p->params[0];
 		break;
 	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
 		  p->params[ANSGDIST_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
-			fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
+			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
 			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i,
 			  meanChan) + 0.5);
 		break;
@@ -246,7 +303,7 @@ SetFibres_ANSGDist(int *fibres, ParArrayPtr p, Float *frequencies,
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
 		  p->params[ANSGDIST_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
-			fibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
+			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
 			  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
 			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
 			  2.0 + 0.5);

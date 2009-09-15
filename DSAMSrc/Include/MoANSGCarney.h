@@ -76,11 +76,10 @@ typedef struct {
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
 	FILE	*fp;
-	int		numChannels;
-	int		*numFibres2;
 	Float	dt, wPulseDuration;
 	Float	**timer;
 	Float	**remainingPulseTime;
+	ANSGDistPtr	aNDist;
 
 } CarneySG, *CarneySGPtr;
 

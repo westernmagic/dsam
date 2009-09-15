@@ -24,7 +24,7 @@
 #ifndef	_GESIGNALDATA_H
 #define _GESIGNALDATA_H	1
 
-#include "UtNameSpecs.h"
+#include <UtNameSpecs.h>
 
 /******************************************************************************/
 /*************************** Constant definitions *****************************/
@@ -78,6 +78,8 @@ typedef struct {
 	uShort	offset;			/* Channel offset for threaded processing. */
 	uShort	interleaveLevel;/* For post BM binaural processing.*/
 	uShort	numWindowFrames;/* For frame processing modues. */
+	uShort	fibreInterleaveLevel;	/* The no. of CF channels for each fibre. */
+	int	*	numFibres;		/* No. of fibres for each channels. */
 	ChanLen	length;			/* The length of the signal store in datapoint */
 	ChanLen	timeIndex;		/* Used for printing output. */
 	Float	dt;				/* Sampling interval = 1/(Frame rate) */

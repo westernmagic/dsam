@@ -59,6 +59,7 @@ Free_ANSpikeGen_Carney(void)
 	if (carneySGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Carney();
+	Free_ANSGDist(&carneySGPtr->aNDist);
 	Free_ParArray(&carneySGPtr->distribution);
 	if (carneySGPtr->diagnosticModeList)
 		free(carneySGPtr->diagnosticModeList);
@@ -135,9 +136,9 @@ Init_ANSpikeGen_Carney(ParameterSpecifier parSpec)
 		Free_ANSpikeGen_Carney();
 		return(FALSE);
 	}
-	carneySGPtr->numFibres2 = NULL;
 	carneySGPtr->timer = NULL;
 	carneySGPtr->remainingPulseTime = NULL;
+	carneySGPtr->aNDist = NULL;
 	return(TRUE);
 
 }
@@ -764,7 +765,7 @@ ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		timerPtr = p->timer[chan];
 		remainingPulseTimePtr = p->remainingPulseTime[chan];
-		for (i = 0; i < p->numFibres2[chan]; i++) {
+		for (i = 0; i < p->aNDist->numFibres[chan]; i++) {
 			*timerPtr++ = timeGreaterThanRefractoryPeriod;
 			*remainingPulseTimePtr++ = 0.0;
 		}
@@ -785,44 +786,33 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	  "InitProcessVariables_ANSpikeGen_Carney");
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
-	SignalDataPtr	outSignal;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
-			outSignal = _OutSig_EarObject(data);
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
-			p->numChannels = outSignal->numChannels;
-			if ((p->numFibres2 = (int *) calloc(p->numChannels, sizeof(int))) ==
-			  NULL) {
-			 	NotifyError(wxT("%s: Out of memory for numFibres2 array."),
-				  funcName);
-			 	return(FALSE);
-			}
-			if ((p->timer = (Float **) calloc(p->numChannels, sizeof(
+			if ((p->timer = (Float **) calloc(p->aNDist->numChannels, sizeof(
 			  Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
 				  funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (Float **) calloc(p->numChannels,
+			if ((p->remainingPulseTime = (Float **) calloc(p->aNDist->numChannels,
 			  sizeof(Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
-			SetFibres_ANSGDist(p->numFibres2, p->distribution, outSignal->info.cFArray,
-			  p->numChannels);
-			for (i = 0; i < p->numChannels; i++) {
-				if ((p->timer[i] = (Float *) calloc(p->numFibres2[i], sizeof(
+			for (i = 0; i < p->aNDist->numChannels; i++) {
+				if ((p->timer[i] = (Float *) calloc(p->aNDist->numFibres[i], sizeof(
 				  Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for timer array."),
 					  funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (Float *) calloc(p->numFibres2[i],
+				if ((p->remainingPulseTime[i] = (Float *) calloc(p->aNDist->numFibres[i],
 				  sizeof(Float))) == NULL) {
 			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
 					  wxT("array."), funcName);
@@ -850,19 +840,15 @@ FreeProcessVariables_ANSpikeGen_Carney(void)
 	int		i;
 	CarneySGPtr	p = carneySGPtr;
 
-	if (p->numFibres2) {
-		free(p->numFibres2);
-		p->numFibres2 = NULL;
-	}
 	if (p->timer) {
-		for (i = 0; i < p->numChannels; i++)
+		for (i = 0; i < p->aNDist->numChannels; i++)
 			if (p->timer[i])
 				free(p->timer[i]);
 		free(p->timer);
 		p->timer = NULL;
 	}
 	if (p->remainingPulseTime) {
-		for (i = 0; i < p->numChannels; i++)
+		for (i = 0; i < p->aNDist->numChannels; i++)
 			if (p->remainingPulseTime[i])
 				free(p->remainingPulseTime[i]);
 		free(p->remainingPulseTime);
@@ -907,10 +893,16 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
+		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Carney Post-Synaptic Spike ")
 		  wxT("Firing"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->numChannels,
-		  _InSig_EarObject(data, 0)->length, _InSig_EarObject(data, 0)->dt)) {
+		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, inSignal->info.cFArray,
+		  inSignal->numChannels)) {
+			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, inSignal->numChannels,
+		  inSignal->length, inSignal->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -922,11 +914,11 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 		}
 		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
 			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
-			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
-			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->aNDist->numFibres,
+			  _OutSig_EarObject(data)->info.cFArray, p->aNDist->numChannels);
 			CloseDiagnostics_NSpecLists(&p->fp);
 		}
-		p->dt = _InSig_EarObject(data, 0)->dt;
+		p->dt = inSignal->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;
 		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
 			outPtr = _OutSig_EarObject(data)->channel[chan];
@@ -940,7 +932,7 @@ RunModel_ANSpikeGen_Carney(EarObjectPtr data)
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		timerPtr = p->timer[chan];
 		remainingPulseTimePtr = p->remainingPulseTime[chan];
-		for (i = 0; i < p->numFibres2[chan]; i++) {
+		for (i = 0; i < p->aNDist->numFibres[chan]; i++) {
 			inPtr = _InSig_EarObject(data, 0)->channel[chan];
 			outPtr = outSignal->channel[chan];
 			randParsPtr = &data->randPars[chan];

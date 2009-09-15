@@ -61,6 +61,7 @@ Free_ANSpikeGen_Binomial(void)
 	if (binomialSGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Binomial();
+	Free_ANSGDist(&binomialSGPtr->aNDist);
 	Free_ParArray(&binomialSGPtr->distribution);
 	if (binomialSGPtr->diagnosticModeList)
 		free(binomialSGPtr->diagnosticModeList);
@@ -132,11 +133,10 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 		Free_ANSpikeGen_Binomial();
 		return(FALSE);
 	}
-	binomialSGPtr->numChannels = 0;
-	binomialSGPtr->numFibres2 = NULL;
 	binomialSGPtr->lastOutput = NULL;
 	binomialSGPtr->remainingPulseIndex = NULL;
 	binomialSGPtr->refractAdjData = NULL;
+	binomialSGPtr->aNDist = NULL;
 	return(TRUE);
 
 }
@@ -566,31 +566,22 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		data->subProcessList[ANSPIKEGEN_REFRACTADJDATA] = p->refractAdjData;
 		SetRealPar_ModuleMgr(p->refractAdjData, wxT("period"), p->
 		  refractoryPeriod);
-		p->numChannels = _OutSig_EarObject(data)->numChannels;
-		if ((p->numFibres2 = (int *) calloc(p->numChannels, sizeof(int))) ==
-		  NULL) {
-		 	NotifyError(wxT("%s: Out of memory for numFibres2 array."),
-			  funcName);
-		 	return(FALSE);
-		}
-		if ((p->remainingPulseIndex = (ChanLen *) calloc(p->numChannels, sizeof(
+		if ((p->remainingPulseIndex = (ChanLen *) calloc(p->aNDist->numChannels, sizeof(
 		  ChanLen))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for remainingPulseIndex array."),
 			  funcName);
 			return(FALSE);
 		}
-		if ((p->lastOutput = (Float *) calloc(p->numChannels, sizeof(
+		if ((p->lastOutput = (Float *) calloc(p->aNDist->numChannels, sizeof(
 		  Float))) == NULL) {
 			NotifyError(wxT("%s: Out of memory for lastOutput array."),
 			  funcName);
 			return(FALSE);
 		}
-		SetFibres_ANSGDist(p->numFibres2, p->distribution,
-		  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
 		p->updateProcessVariablesFlag = FALSE;
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
-		for (i = 0; i < p->numChannels; i++) {
+		for (i = 0; i < p->aNDist->numChannels; i++) {
 			p->remainingPulseIndex[i] = 0;
 			p->lastOutput[i] = 0.0;
 		}
@@ -620,10 +611,6 @@ FreeProcessVariables_ANSpikeGen_Binomial(void)
 	if (p->lastOutput != NULL) {
 		free(p->lastOutput);
 		p->lastOutput = NULL;
-	}
-	if (p->numFibres2) {
-		free(p->numFibres2);
-		p->numFibres2 = NULL;
 	}
 	p->updateProcessVariablesFlag = TRUE;
 
@@ -666,10 +653,15 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
+		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Binomial Post-synaptic Firing"));
-		if (!InitOutSignal_EarObject(data, _InSig_EarObject(data, 0)->
-		  numChannels, _InSig_EarObject(data, 0)->length, _InSig_EarObject(data,
-		  0)->dt)) {
+		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, inSignal->info.cFArray,
+		  inSignal->numChannels)) {
+			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
+			return(FALSE);
+		}
+		if (!InitOutSignal_EarObject(data, inSignal->numChannels,
+		  inSignal->length, inSignal->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
 			  funcName);
 			return(FALSE);
@@ -681,8 +673,8 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		}
 		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
 			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
-			PrintFibres_ANSGDist(p->fp, wxT(""), p->numFibres2,
-			  _OutSig_EarObject(data)->info.cFArray, p->numChannels);
+			PrintFibres_ANSGDist(p->fp, wxT(""), p->aNDist->numFibres,
+			  _OutSig_EarObject(data)->info.cFArray, p->aNDist->numChannels);
 			CloseDiagnostics_NSpecLists(&p->fp);
 		}
 		TempInputConnection_EarObject(data, p->refractAdjData, 1);
@@ -708,7 +700,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		pastEndOfData = outSignal->channel[chan] + outSignal->length;
 		for (i = 0; i < outSignal->length; i++, outPtr++) {
 			output = p->pulseMagnitude * GeomDist_Random(*inPtr++,
-			  p->numFibres2[chan], randParsPtr);
+			  p->aNDist->numFibres[chan], randParsPtr);
 			if (output > 0.0) {
 				for (pulseTimer = p->pulseDurationIndex, pulsePtr = outPtr;
 				  pulseTimer && (pulsePtr < pastEndOfData); pulsePtr++,

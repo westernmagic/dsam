@@ -67,11 +67,10 @@ typedef struct {
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
 	FILE	*fp;
-	int		numChannels;
-	int		*numFibres2;
 	Float	*lastOutput;
 	ChanLen	*remainingPulseIndex, pulseDurationIndex;
 	EarObjectPtr	refractAdjData;
+	ANSGDistPtr	aNDist;
 
 } BinomialSG, *BinomialSGPtr;
 

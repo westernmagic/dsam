@@ -49,6 +49,13 @@ typedef enum {
 
 } ANSGDistGaussianSpecifier;
 
+typedef struct {
+
+	int		numChannels;
+	int		*numFibres;
+
+} ANSGDist, *ANSGDistPtr;
+
 /******************************************************************************/
 /****************************** External variables ****************************/
 /******************************************************************************/
@@ -65,6 +72,10 @@ __BEGIN_DECLS
 
 BOOLN	CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal);
 
+BOOLN	Init_ANSGDist(ANSGDistPtr *p, int numChannels);
+
+void	Free_ANSGDist(ANSGDistPtr *p);
+
 int		GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan);
 
 int		GetNumDistributionPars_ANSGDist(int mode);
@@ -76,7 +87,7 @@ void	PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
 
 void	SetDefaultDistribution_ANSGDist(ParArrayPtr distribution);
 
-BOOLN	SetFibres_ANSGDist(int *fibres, ParArrayPtr p, Float *frequencies,
+BOOLN	SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
 		  int numChannels);
 
 void	SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres);

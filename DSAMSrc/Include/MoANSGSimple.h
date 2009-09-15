@@ -55,11 +55,10 @@ typedef struct {
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
 	FILE	*fp;
-	int		numChannels;
-	int		*numFibres2;
 	Float	dt;
 	Float	**timer;
 	Float	**remainingPulseTime;
+	ANSGDistPtr	aNDist;
 
 } SimpleSG, *SimpleSGPtr;
 
