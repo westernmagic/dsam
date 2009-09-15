@@ -746,16 +746,14 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 		}
 		p->dt = inSignal->dt;
 		p->wPulseDuration = (p->pulseDuration > 0.0)? p->pulseDuration: p->dt;
-		for (chan = 0; chan < _OutSig_EarObject(data)->numChannels; chan++) {
-			outPtr = _OutSig_EarObject(data)->channel[chan];
-			for (j = 0; j < _OutSig_EarObject(data)->length; j++)
-				*outPtr++ = 0.0;
-		}
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+		outPtr = _OutSig_EarObject(data)->channel[chan];
+		for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+			*outPtr++ = 0.0;
 		timerPtr = p->timer[chan];
 		remainingPulseTimePtr = p->remainingPulseTime[chan];
 		for (i = 0; i < p->aNDist->numFibres[chan]; i++) {

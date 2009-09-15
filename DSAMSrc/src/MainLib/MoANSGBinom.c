@@ -689,11 +689,11 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	remainingPulseIndexPtr = p->remainingPulseIndex + outSignal->offset;
 	lastOutputPtr = p->lastOutput + outSignal->offset;
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
-		inPtr = refractAdjData->outSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
-		randParsPtr = &data->randPars[chan];
 		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ = 0.0;
+		inPtr = refractAdjData->outSignal->channel[chan];
+		randParsPtr = &data->randPars[chan];
 		if (p->numFibres < 1)
 			continue;
 		outPtr = outSignal->channel[chan];
