@@ -86,7 +86,7 @@ Init_CFList(const WChar *callingFunctionName)
 	theCFs->numChannels = 0;
 	theCFs->minCF = 0.0;
 	theCFs->maxCF = 0.0;
-	theCFs->focalCF = 0.0;
+	theCFs->focalCF = -1.0;
 	theCFs->eRBDensity = 0.0;
 	theCFs->frequency = NULL;
 	theCFs->bandwidth = NULL;
@@ -949,7 +949,7 @@ GenerateDefault_CFList(WChar *modeName, int numberOfCFs, Float minCF,
 	} else
 		frequencies = NULL;
 	if ((theCFs = GenerateList_CFList(modeName, wxT("parameters"), numberOfCFs,
-	  minCF, maxCF, 0.0, 0.0, frequencies)) == NULL) {
+	  minCF, maxCF, -1.0, 0.0, frequencies)) == NULL) {
 		NotifyError(wxT("%s: Could not generate default CF list."), funcName);
 		Free_CFList(&theCFs);
 		return(NULL);
@@ -1318,9 +1318,9 @@ RatifyPars_CFList(CFListPtr theCFs)
 	  (theCFs->centreFreqMode != CFLIST_ERBN_MODE))
 		theCFs->eRBDensity = theCFs->numChannels / (ERBRateFromF_Bandwidth(
 		  theCFs->maxCF) - ERBRateFromF_Bandwidth(theCFs->minCF));
-	if (theCFs->centreFreqMode != CFLIST_CF_FOCAL_FREQ)
-		theCFs->focalCF = (theCFs->frequency[0] + theCFs->frequency[
-		  theCFs->numChannels - 1]) / 2.0;
+//	if (theCFs->centreFreqMode != CFLIST_CF_FOCAL_FREQ)
+//		theCFs->focalCF = (theCFs->frequency[0] + theCFs->frequency[
+//		  theCFs->numChannels - 1]) / 2.0;
 	return(TRUE);
 
 }
