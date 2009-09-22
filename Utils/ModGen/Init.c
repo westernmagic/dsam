@@ -55,6 +55,7 @@ static struct {
 	{"int",			DEFAULT_ALT_NAME_PTR,		INT},
 	{"long",		DEFAULT_ALT_NAME_PTR,		LONG},
 	{"float",		DEFAULT_ALT_NAME_PTR,		FLOAT},
+	{"Float",		DEFAULT_ALT_NAME_PTR,		DFLOAT},
 	{"double",		DEFAULT_ALT_NAME_PTR,		DOUBLE},
 	{"signed",		DEFAULT_ALT_NAME_PTR,		SIGNED},
 	{"unsigned",	DEFAULT_ALT_NAME_PTR,		UNSIGNED},
