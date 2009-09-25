@@ -2,7 +2,7 @@
 
 # Note that this is NOT a relocatable package
 %define prefix	/usr
-%define ver		@AMS_VERSION@
+%define ver		@PACKAGE_VERSION@
 %define RELEASE @RPM_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
 %define	desktop_vendor	 cnbh
