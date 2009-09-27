@@ -522,6 +522,11 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 			FreeProcessVariables_ANSpikeGen_Simple();
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
+			if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, _OutSig_EarObject(
+			  data)->info.cFArray, _OutSig_EarObject(data)->numChannels)) {
+				NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
+				return(FALSE);
+			}
 			if ((p->timer = (Float **) calloc(p->aNDist->numChannels, sizeof(
 			  Float *))) == NULL) {
 			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
@@ -659,11 +664,6 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike ")
 		  wxT("Firing"));
-		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, inSignal->info.cFArray,
-		  inSignal->numChannels)) {
-			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
-			return(FALSE);
-		}
 		if (!InitOutSignal_EarObject(data, inSignal->numChannels, inSignal->length,
 		  inSignal->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),

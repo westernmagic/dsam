@@ -551,6 +551,11 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		FreeProcessVariables_ANSpikeGen_Binomial();
 		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 			return(FALSE);
+		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, _OutSig_EarObject(
+		  data)->info.cFArray, _OutSig_EarObject(data)->numChannels)) {
+			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
+			return(FALSE);
+		}
 		if ((p->refractAdjData = Init_EarObject(wxT("Util_Refractory"))) ==
 		  NULL) {
 			NotifyError(wxT("%s: Out of memory for refractAdjData EarObject."),
@@ -655,11 +660,6 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		}
 		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Binomial Post-synaptic Firing"));
-		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, inSignal->info.cFArray,
-		  inSignal->numChannels)) {
-			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
-			return(FALSE);
-		}
 		if (!InitOutSignal_EarObject(data, inSignal->numChannels,
 		  inSignal->length, inSignal->dt)) {
 			NotifyError(wxT("%s: Could not initialise output signal."),
