@@ -344,7 +344,7 @@ SetIndividualLabel_Utility_CollateSignals(int theIndex, Float theLabel)
 		return(FALSE);
 	}
 	if ((theIndex > collateSigsPtr->length - 1) &&
-	  !ResizeDoubleArray_UniParMgr(&collateSigsPtr->labels,
+	  !ResizeFloatArray_UniParMgr(&collateSigsPtr->labels,
 	    &collateSigsPtr->length, theIndex + 1)) {
 		NotifyError(wxT("%s: Could not resize the 'labels' array."), funcName);
 		return(FALSE);

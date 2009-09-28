@@ -4,6 +4,9 @@
  * Purpose:		This Module contains the parameter array structure, where the
  *				length of the array is defined by the mode.
  * Comments:	Originally created for use in the MoDRNL filter.
+ * 				Any parameter with a zero number of parameter values will be assumed
+ * 				to consist of a variable list of floats.  The size of the array is
+ * 				defined dynamically according to the highest index.
  * Author:		L. P. O'Mard
  * Created:		01 Sep 2000
  * Updated:
@@ -89,6 +92,7 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int),
 	p->mode = PARARRAY_NULL;
 	p->params = NULL;
 	p->numParams = -1;
+	p->varNumParams = -1;
 	p->GetNumPars = GetNumPars;
 	p->CheckPars = CheckPars;
 	p->modeList = modeList;
@@ -151,6 +155,8 @@ CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction)
 /*
  * This routine initialises and sets the ParArray's universal parameter list.
  * This list provides universal access to the ParArray's parameters.
+ * This routine sets the params as a dynamic array if the "numParams" field
+ * is zero, in which case the "numVarParams" is used.
  */
 
 BOOLN
@@ -172,12 +178,20 @@ SetUniParList_ParArray(ParArrayPtr parArray)
 	  UNIPAR_NAME_SPEC,
 	  &parArray->mode, parArray->modeList,
 	  (void * (*)) SetMode_ParArray);
-	SetPar_UniParMgr(&pars[PARARRAY_PARAMETER], parArray->abbr[
-	  PARARRAY_PARAMETER],
-	  parArray->desc[PARARRAY_PARAMETER],
-	  UNIPAR_REAL_ARRAY,
-	  &parArray->params, &parArray->numParams,
-	  (void * (*)) SetIndividualPar_ParArray);
+	if (parArray->numParams)
+		SetPar_UniParMgr(&pars[PARARRAY_PARAMETER], parArray->abbr[
+		  PARARRAY_PARAMETER],
+		  parArray->desc[PARARRAY_PARAMETER],
+		  UNIPAR_REAL_ARRAY,
+		  &parArray->params, &parArray->numParams,
+		  (void * (*)) SetIndividualPar_ParArray);
+	else
+		SetPar_UniParMgr(&pars[PARARRAY_PARAMETER], parArray->abbr[
+		  PARARRAY_PARAMETER],
+		  parArray->desc[PARARRAY_PARAMETER],
+		  UNIPAR_REAL_DYN_ARRAY,
+		  &parArray->params, &parArray->varNumParams,
+		  (void * (*)) SetIndividualPar_ParArray);
 	return(TRUE);
 
 }
@@ -204,17 +218,15 @@ SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName)
 	}
 	parArray->mode = mode;
 	newNumParams = (parArray->GetNumPars)(mode);
-	if (parArray->numParams != newNumParams) {
-		parArray->numParams = newNumParams;
-		if (parArray->params)
-			free(parArray->params);
-		if ((parArray->params = (Float *) calloc(newNumParams, sizeof(
-		  Float))) == NULL) {
-			NotifyError(wxT("%s: Out of memory for parameters (%d)"), funcName,
+	if (newNumParams) {
+		if (!ResizeFloatArray_UniParMgr(&parArray->params, &parArray->numParams,
+		  newNumParams)) {
+			NotifyError(wxT("%s: Could not allocate %d parameter array."), funcName,
 			  newNumParams);
 			return(FALSE);
 		}
-	}
+	} else
+		parArray->numParams = 0;
 	SetUniParList_ParArray(parArray);
 	parArray->parList->updateFlag = TRUE;
 	parArray->updateFlag = TRUE;
@@ -236,11 +248,18 @@ SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, Float parValue)
 
 	if (!CheckInit_ParArray(parArray, funcName))
 		return(FALSE);
+	if (!parArray->numParams && ((theIndex + 1) > parArray->varNumParams) &&
+	  !ResizeFloatArray_UniParMgr(&parArray->params, &parArray->varNumParams,
+	  theIndex + 1)) {
+		NotifyError(wxT("%s: could not re-size parameter array to %d elements."),
+		  funcName, theIndex);
+		return(FALSE);
+	}
 	if (parArray->params == NULL) {
 		NotifyError(wxT("%s: parameters not set."), funcName);
 		return(FALSE);
 	}
-	if (theIndex > parArray->numParams - 1) {
+	if (parArray->numParams && (theIndex > parArray->numParams - 1)) {
 		NotifyError(wxT("%s: Index value must be in the\nrange 0 - %d (%d).\n"),
 		  funcName, parArray->numParams - 1, theIndex);
 		return(FALSE);
@@ -261,7 +280,7 @@ void
 PrintPars_ParArray(ParArrayPtr parArray)
 {
 	static const WChar *funcName = wxT("PrintPars_ParArray");
-	int		i;
+	int		i, numParams;
 
 	if (!CheckInit_ParArray(parArray, funcName)) {
 		NotifyError(wxT("%s: Parameter Array not correctly set."),
@@ -271,7 +290,8 @@ PrintPars_ParArray(ParArrayPtr parArray)
 	DPrint(wxT("\tVariable '%s' parameters:-\n"), parArray->name);
 	DPrint(wxT("\t\tmode: %s:\n"), parArray->modeList[parArray->mode].name);
 	DPrint(wxT("\t\t%10s\t%10s\n"), wxT("Param No."), wxT("Parameter"));
-	for (i = 0; i < parArray->numParams; i++) {
+	numParams = (parArray->numParams)? parArray->numParams: parArray->varNumParams;
+	for (i = 0; i < numParams; i++) {
 		DPrint(wxT("\t\t%10d\t%10g\n"), i, parArray->params[i]);
 	}
 

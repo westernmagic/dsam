@@ -4,6 +4,9 @@
  * Purpose:		This Module contains the parameter array structure, where the
  *				length of the array is defined by the mode.
  * Comments:	Originally created for use in the MoDRNL filter.
+ * 				Any parameter with a zero number of parameter values will be assumed
+ * 				to consist of a variable list of floats.  The size of the array is
+ * 				defined dynamically according to the highest index.
  * Author:		L. P. O'Mard
  * Created:		01 Sep 2000
  * Updated:
@@ -44,6 +47,7 @@ typedef struct _ParArray {
 	WChar	name[MAXLINE];
 	int		mode;
 	int		numParams;
+	int		varNumParams;
 	Float	*params;
 	NameSpecifier	*modeList;
 

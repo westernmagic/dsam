@@ -329,6 +329,7 @@ SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *descript
 			par->FuncPtr.SetParArrayInt = (BOOLN (*)(ParArrayPtr, int)) Func;
 			break;
 		case UNIPAR_REAL_ARRAY:
+		case UNIPAR_REAL_DYN_ARRAY:
 			par->FuncPtr.SetParArrayRealArrayElement = (BOOLN (*)(ParArrayPtr,
 			  int, Float)) Func;
 			break;
@@ -1117,6 +1118,7 @@ SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  DSAM_atoi(parValue));
 		break;
 	case UNIPAR_REAL_ARRAY:
+	case UNIPAR_REAL_DYN_ARRAY:
 		if (!ParseArrayValue_UniParMgr(p, parValue, &arrayValue, arrayIndex)) {
 			NotifyError(wxT("%s: Could not set array value."), funcName);
 			return(FALSE);
@@ -1595,9 +1597,9 @@ PrintParList_UniParMgr(UniParListPtr parList)
  */
 
 BOOLN
-ResizeDoubleArray_UniParMgr(Float **array, int *oldLength, int length)
+ResizeFloatArray_UniParMgr(Float **array, int *oldLength, int length)
 {
-	static const WChar *funcName = wxT("ResizeDoubleArray_UniParMgr");
+	static const WChar *funcName = wxT("ResizeFloatArray_UniParMgr");
 	register Float	*newArray, *oldArray;
 	int		i;
 	Float	*savedArray = NULL;

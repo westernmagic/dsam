@@ -291,7 +291,7 @@ BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
 
-BOOLN	ResizeDoubleArray_UniParMgr(Float **array, int *oldLength, int length);
+BOOLN	ResizeFloatArray_UniParMgr(Float **array, int *oldLength, int length);
 
 void	SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr);
 

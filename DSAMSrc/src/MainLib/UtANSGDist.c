@@ -46,9 +46,10 @@ ModeList_ANSGDist(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ wxT("STANDARD"),		ANSGDIST_DISTRIBUTION_STANDARD_MODE},
-					{ wxT("GAUSSIAN"),		ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE},
 					{ wxT("DBL_GAUSSIAN"),	ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE},
+					{ wxT("GAUSSIAN"),		ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE},
+					{ wxT("STANDARD"),		ANSGDIST_DISTRIBUTION_STANDARD_MODE},
+					{ wxT("USER"),			ANSGDIST_DISTRIBUTION_USER_MODE},
 					{ 0,					ANSGDIST_DISTRIBUTION_NULL},
 
 				};
@@ -70,12 +71,14 @@ GetNumDistributionPars_ANSGDist(int mode)
 	static const WChar	*funcName = wxT("GetNumDistributionPars_ANSGDist");
 
 	switch (mode) {
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
-		return(1);
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		return(3);
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
 		return(4);
+	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
+		return(3);
+	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+		return(1);
+	case ANSGDIST_DISTRIBUTION_USER_MODE:
+		return(0);
 	default:
 		NotifyError(wxT("%s: Mode not listed (%d), returning zero."), funcName,
 		  mode);
@@ -180,8 +183,8 @@ CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal)
 	switch (p->mode) {
 	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
 		break;
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
 		if (p->params[ANSGDIST_GAUSS_VAR1] == 0.0) {
 			NotifyError(wxT("%s: Variance1 (parameter %g) must be greater than ")
 			  wxT("zero (%g)"), funcName, ANSGDIST_GAUSS_VAR1,
@@ -195,6 +198,8 @@ CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal)
 			  p->params[ANSGDIST_GAUSS_VAR2]);
 			ok = FALSE;
 		}
+		break;
+	case ANSGDIST_DISTRIBUTION_USER_MODE:
 		break;
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
@@ -219,13 +224,6 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
 	int		meanChan;
 
 	switch (p->mode) {
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
-		return((int) p->params[0]);
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		  p->params[ANSGDIST_GAUSS_MEAN]);
-		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] * ANSGDIST_GAUSSIAN(
-		  p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) + 0.5));
 	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
 		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
 		p->params[ANSGDIST_GAUSS_MEAN]);
@@ -233,6 +231,13 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
 		  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) +
 		  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], chan, meanChan)) /
 		  2.0 + 0.5));
+	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
+		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
+		  p->params[ANSGDIST_GAUSS_MEAN]);
+		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] * ANSGDIST_GAUSSIAN(
+		  p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) + 0.5));
+	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+		return((int) p->params[0]);
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
 		  p->mode);
@@ -287,9 +292,14 @@ SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
 		return(FALSE);
 	}
 	switch (p->mode) {
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
+		  p->params[ANSGDIST_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
-			(*aNDist)->numFibres[i] = (int) p->params[0];
+			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
+			  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
+			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
+			  2.0 + 0.5);
 		break;
 	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
@@ -299,14 +309,18 @@ SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
 			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i,
 			  meanChan) + 0.5);
 		break;
-	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
-		  p->params[ANSGDIST_GAUSS_MEAN]);
+	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
 		for (i = 0; i < numChannels; i++)
-			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
-			  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
-			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
-			  2.0 + 0.5);
+			(*aNDist)->numFibres[i] = (int) p->params[0];
+		break;
+	case ANSGDIST_DISTRIBUTION_USER_MODE:
+		if (p->varNumParams < numChannels) {
+			NotifyError(wxT("%s: The are %d channels, but only %d have settings."),
+			  funcName, numChannels, p->varNumParams);
+			return(FALSE);
+		}
+		for (i = 0; i < numChannels; i++)
+			(*aNDist)->numFibres[i] = (int) p->params[i];
 		break;
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,

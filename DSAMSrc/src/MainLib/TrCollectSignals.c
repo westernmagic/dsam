@@ -290,7 +290,7 @@ SetIndividualLabel_Transform_CollectSignals(int theIndex, Float theLabel)
 		return(FALSE);
 	}
 	if ((theIndex > collectSigsPtr->numChannels - 1) &&
-	  !ResizeDoubleArray_UniParMgr(&collectSigsPtr->labels,
+	  !ResizeFloatArray_UniParMgr(&collectSigsPtr->labels,
 	    &collectSigsPtr->numChannels, theIndex + 1)) {
 		NotifyError(wxT("%s: Could not resize the 'labels' array."), funcName);
 		return(FALSE);

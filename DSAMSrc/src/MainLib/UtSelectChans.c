@@ -447,7 +447,7 @@ SetIndividualSelection_Utility_SelectChannels(int theIndex, Float theSelection)
 		return(FALSE);
 	}
 	if ((theIndex > selectChanPtr->numChannels - 1) &&
-	  !ResizeDoubleArray_UniParMgr(&selectChanPtr->selectionArray,
+	  !ResizeFloatArray_UniParMgr(&selectChanPtr->selectionArray,
 	    &selectChanPtr->numChannels, theIndex + 1)) {
 		NotifyError(wxT("%s: Could not resize the selection array."), funcName);
 		return(FALSE);
@@ -591,7 +591,7 @@ InitProcessVariables_Utility_SelectChannels(EarObjectPtr data)
 		/*** Additional update flags can be added to above line ***/
 		numInChans = _InSig_EarObject(data, 0)->numChannels / _InSig_EarObject(
 		  data, 0)->interleaveLevel;
-		if ((p->numChannels < numInChans) && !ResizeDoubleArray_UniParMgr(
+		if ((p->numChannels < numInChans) && !ResizeFloatArray_UniParMgr(
 		  &p->selectionArray, &p->numChannels, numInChans)) {
 			NotifyError(wxT("%s: Could not set selection array."), funcName);
 			return(FALSE);
