@@ -142,7 +142,7 @@ Ran01_Random(RandParsPtr p)
 /*
  * This routine calculates the number of times that an event occurs with
  * a set probability and number of trials.
- * It uses the gemotric distribution method, but the probability must be
+ * It uses the geometric distribution method, but the probability must be
  * small.
  * The zero numTrials check speeds up processing when many such conditions
  * are processed.
