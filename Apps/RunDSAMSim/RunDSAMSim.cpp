@@ -346,7 +346,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
 		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
 	}
-	MatMainApp	mainApp(PROGRAM_NAME, simFile, parameterOptions,
+	MatMainApp	mainApp((WChar *) PROGRAM_NAME, simFile, parameterOptions,
 	  inputMatrixPtr, numChannels, interleaveLevel, length, dt, CXX_BOOL(
 	  staticTimeFlag), outputTimeOffset);
 	if (!mainApp) {
