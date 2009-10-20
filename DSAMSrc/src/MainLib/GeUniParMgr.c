@@ -1597,30 +1597,31 @@ PrintParList_UniParMgr(UniParListPtr parList)
  */
 
 BOOLN
-ResizeFloatArray_UniParMgr(Float **array, int *oldLength, int length)
+ResizeFloatArray_UniParMgr(Float **array, int *oldLength, int newLength)
 {
 	static const WChar *funcName = wxT("ResizeFloatArray_UniParMgr");
 	register Float	*newArray, *oldArray;
-	int		i;
+	int		i, length;
 	Float	*savedArray = NULL;
 
-	if (length == *oldLength)
+	if (newLength == *oldLength)
 		return(TRUE);
 	if (*array)
 		savedArray = *array;
-	if ((*array = (Float *) calloc(length, sizeof(Float))) == NULL) {
+	if ((*array = (Float *) calloc(newLength, sizeof(Float))) == NULL) {
 		NotifyError(wxT("%s: Cannot allocate memory for '%d' selectionArray."),
-		  funcName, length);
+		  funcName, newLength);
 		return(FALSE);
 	}
 	if (savedArray) {
 		newArray = *array;
 		oldArray = savedArray;
-		for (i = 0; i < *oldLength; i++)
+		length = MINIMUM(*oldLength, newLength);
+		for (i = 0; i < length; i++)
 			*newArray++ = *oldArray++;
 		free(savedArray);
 	}
-	*oldLength = length;
+	*oldLength = newLength;
 	return(TRUE);
 }
 
