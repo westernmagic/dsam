@@ -9,9 +9,9 @@ typedef struct {
 	NameSpecifier	diagnosticMode;
 	NameSpecifier	integrationMode;
 	char		*strobeSpecification;
-	Float		negativeWidth;
-	Float		positiveWidth;
-	Float		inputDecayRate;
-	Float		imageDecayHalfLife;
+	double		negativeWidth;
+	double		positiveWidth;
+	double		inputDecayRate;
+	double		imageDecayHalfLife;
 
 } SAImage;

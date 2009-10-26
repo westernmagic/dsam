@@ -10,8 +10,8 @@ typedef struct {
 
 	int_al	numFilters;
 	int		*cascade;
-	Float	*gain;
-	Float	*lowerCutOffFreq;
-	Float	*upperCutOffFreq;
+	double	*gain;
+	double	*lowerCutOffFreq;
+	double	*upperCutOffFreq;
 
 } MultiBPassF;

@@ -14,23 +14,23 @@ typedef struct {
 	NameSpecifier	cleftReplenishMode;	/* Cleft replenishment mode */
 	long	ranSeed;		/* seed for random number generator */
 
-	Float CaVrev;			/* Calcium reversal potential */
-	Float betaCa; 			/* Boltzman function parameters */
-	Float gammaCa;			/* Boltzman function parameters */ 
+	double CaVrev;			/* Calcium reversal potential */
+	double betaCa; 			/* Boltzman function parameters */
+	double gammaCa;			/* Boltzman function parameters */ 
 
-	Float pCa;  			/* Calcium current exponent */ 
-	Float GCaMax;			/* Maximum calcium conductance */  
-	Float perm_Ca0;  		/* Permeabilituy with zero Calcium concentration */
-  	Float perm_z;			/* Permeability constant. */
+	double pCa;  			/* Calcium current exponent */ 
+	double GCaMax;			/* Maximum calcium conductance */  
+	double perm_Ca0;  		/* Permeabilituy with zero Calcium concentration */
+  	double perm_z;			/* Permeability constant. */
         
-	Float tauCaChan;		/* Time constant for the calcium channel*/        
-	Float tauConcCa;		/* Time constant for the calcium concentration */
+	double tauCaChan;		/* Time constant for the calcium channel*/        
+	double tauConcCa;		/* Time constant for the calcium concentration */
 
 	int	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
-	Float	replenishRate_y;	/* Replenishment rate (units per second). */
-	Float	lossRate_l;		/* Loss rate (units per second). */
-	Float	reprocessRate_x;	/* Reprocessing rate (units per second). */
-	Float	recoveryRate_r;		/* Recovery rate (units per second). */
+	double	replenishRate_y;	/* Replenishment rate (units per second). */
+	double	lossRate_l;		/* Loss rate (units per second). */
+	double	reprocessRate_x;	/* Reprocessing rate (units per second). */
+	double	recoveryRate_r;		/* Recovery rate (units per second). */
 
 
 } HairCell2;

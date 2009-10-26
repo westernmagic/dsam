@@ -7,18 +7,17 @@ proc_routine	RunModel;
 process_vars	true;
 typedef struct {
 
-	NameSpecifier	diagnosticMode;
 	NameSpecifier	inputMode; /* Use 'original' or 'DSAM' input mode. */
 	long	ranSeed;
 	int		numFibres;
-	Float	pulseDuration;
-	Float	pulseMagnitude;
-	Float	refractoryPeriod;
-	Float	maxThreshold;
-	Float	dischargeCoeffC0;
-	Float	dischargeCoeffC1;
-	Float	dischargeTConstS0;
-	Float	dischargeTConstS1;
+	double	pulseDuration;
+	double	pulseMagnitude;
+	double	refractoryPeriod;
+	double	maxThreshold;
+	double	dischargeCoeffC0;
+	double	dischargeCoeffC1;
+	double	dischargeTConstS0;
+	double	dischargeTConstS1;
 	ParArrayPtr		distribution;
 
 } CarneySG;

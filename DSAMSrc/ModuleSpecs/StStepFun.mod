@@ -5,10 +5,10 @@ mod_name		StepFunction;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	Float	amplitude;
-	Float	beginEndAmplitude;
-	Float	beginPeriodDuration;
-	Float	endPeriodDuration;
-	Float	duration, dt;
+	double	amplitude;
+	double	beginEndAmplitude;
+	double	beginPeriodDuration;
+	double	endPeriodDuration;
+	double	duration, dt;
 
 } StepFun;

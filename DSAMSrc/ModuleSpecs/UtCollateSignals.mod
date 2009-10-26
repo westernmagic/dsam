@@ -7,6 +7,6 @@ typedef struct {
 
 	NameSpecifier	summationMode;
 	NameSpecifier	labelMode;
-	Float			*labels;
+	double			*labels;
 
 } CollateSigs;

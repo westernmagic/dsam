@@ -6,7 +6,7 @@ qualifier		Delay;
 typedef struct {
 
 	NameSpecifier	mode;
-	Float	initialDelay;
-	Float	finalDelay;
+	double	initialDelay;
+	double	finalDelay;
 
 } Delay2;

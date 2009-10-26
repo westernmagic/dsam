@@ -9,7 +9,7 @@ typedef struct {
 	int		correlationDegree;
 	int		randomizationIndex;
 	long	ranSeed;
-	Float	intensity;
-	Float	duration, dt;
+	double	intensity;
+	double	duration, dt;
 
 } WhiteNoise;

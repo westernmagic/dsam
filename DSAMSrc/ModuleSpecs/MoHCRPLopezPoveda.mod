@@ -16,36 +16,36 @@ process_vars true;
 typedef struct {
 
 	BoolSpecifier	bMCiliaCouplingMode;
-	Float	ciliaTC;	/* BM/cilia displacement time constant, s. */
-	Float	ciliaCGain;	/* Cilia coupling gain. */
-	Float	Et;			/* Endocochlear potential, Et (V). */
-	Float	Rp;			/* Epithelium resistance, Rp (Ohm). */
-	Float	Rt;			/* Epithelium resistance, Rt (Ohm). */
-	Float	gL;			/* Apical leakage conductance, gL (S). */
-	Float	Gm;			/* Maximum mechanical conductance, Gm (S). */
-	Float	s0;			/* Displacement sensitivity, s0 (1/m). */
-	Float	s1;			/* Displacement sensitivity, s1 (1/m). */
-	Float	u0;			/* Displacement offset, u0 (m). */
-	Float	u1;			/* Displacement offset, u1 (m). */
-	Float	Ca;			/* Apical capacitance, Ca (F). */
-	Float	Cb;			/* Apical capacitance, Cb (F). */
+	double	ciliaTC;	/* BM/cilia displacement time constant, s. */
+	double	ciliaCGain;	/* Cilia coupling gain. */
+	double	Et;			/* Endocochlear potential, Et (V). */
+	double	Rp;			/* Epithelium resistance, Rp (Ohm). */
+	double	Rt;			/* Epithelium resistance, Rt (Ohm). */
+	double	gL;			/* Apical leakage conductance, gL (S). */
+	double	Gm;			/* Maximum mechanical conductance, Gm (S). */
+	double	s0;			/* Displacement sensitivity, s0 (1/m). */
+	double	s1;			/* Displacement sensitivity, s1 (1/m). */
+	double	u0;			/* Displacement offset, u0 (m). */
+	double	u1;			/* Displacement offset, u1 (m). */
+	double	Ca;			/* Apical capacitance, Ca (F). */
+	double	Cb;			/* Apical capacitance, Cb (F). */
 	int_al	numCurrents;	/* The number of currents. */
 	WChar	**label;	/* Current label */
-	Float	*Ek;		/* Conductance reversal potential, Ek (V). */
-	Float	*G;			/* Maximum conductance, G (S). */
-	Float	*V1;		/* Conductance half-activation potential, V1 (V). */
-	Float	*VS1;		/* Conductance voltage sensitivity constant, S1 (V). */
-	Float	*V2;		/* Conductance half-activation potential, V2 (V). */
-	Float	*VS2;		/* Conductance voltage sensitivity constant, S2 (V). */
-	Float	*tau1Max;	/* Conductance voltage time constant, tau1 max (s). */
-	Float	*A1;		/* Conductance voltage time constant, A1 (s). */
-	Float	*B1;		/* Conductance voltage time constant, B1 (s). */
-	Float	*tau1Min;	/* Conductance voltage time constant, tau1Min (s). */
-	Float	*tau2Max;	/* Conductance voltage time constant, tau2Max (s). */
-	Float	*A2;		/* Conductance voltage time constant, A2 (s). */
-	Float	*B2;		/* Conductance voltage time constant, B2 (s). */
-	Float	*tau2Min;	/* Conductance voltage time constant, tau2Min (s). */
-	Float	VMRest;		/* Resting membrane potential (V). */
+	double	*Ek;		/* Conductance reversal potential, Ek (V). */
+	double	*G;			/* Maximum conductance, G (S). */
+	double	*V1;		/* Conductance half-activation potential, V1 (V). */
+	double	*VS1;		/* Conductance voltage sensitivity constant, S1 (V). */
+	double	*V2;		/* Conductance half-activation potential, V2 (V). */
+	double	*VS2;		/* Conductance voltage sensitivity constant, S2 (V). */
+	double	*tau1Max;	/* Conductance voltage time constant, tau1 max (s). */
+	double	*A1;		/* Conductance voltage time constant, A1 (s). */
+	double	*B1;		/* Conductance voltage time constant, B1 (s). */
+	double	*tau1Min;	/* Conductance voltage time constant, tau1Min (s). */
+	double	*tau2Max;	/* Conductance voltage time constant, tau2Max (s). */
+	double	*A2;		/* Conductance voltage time constant, A2 (s). */
+	double	*B2;		/* Conductance voltage time constant, B2 (s). */
+	double	*tau2Min;	/* Conductance voltage time constant, tau2Min (s). */
+	double	VMRest;		/* Resting membrane potential (V). */
 
 } LopezPoveda;
 

@@ -6,6 +6,6 @@ mod_name		Utility;
 qualifier		CreateBinauralITD;
 typedef struct {
 
-	Float	delay;
+	double	delay;
 
 } CreateBinITD;

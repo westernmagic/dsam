@@ -9,10 +9,10 @@ proc_routine	RunModel;
 typedef struct {
 
 	int			cascade;	/* Defines the Q value of the gamma tone filters.*/
-	Float		cutOffFrequency;	/* Fc */
-	Float		hCOperatingPoint;	/* PDfb */
-	Float		asymmetricalBias;	/* P0 */
-	Float		maxHCVoltage;		/* Vmax */
+	double		cutOffFrequency;	/* Fc */
+	double		hCOperatingPoint;	/* PDfb */
+	double		asymmetricalBias;	/* P0 */
+	double		maxHCVoltage;		/* Vmax */
 	CFListPtr	cFList;			/* Pointer to centre frequency structure. */
 
 } BMCarney;

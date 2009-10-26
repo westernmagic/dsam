@@ -7,8 +7,8 @@ mod_name		Utility;
 qualifier		ShapePulse;
 typedef struct {
 
-	Float	eventThreshold;
-	Float	pulseDuration;
-	Float	pulseMagnitude;
+	double	eventThreshold;
+	double	pulseDuration;
+	double	pulseMagnitude;
 
 } ShapePulse;

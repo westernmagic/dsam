@@ -18,19 +18,18 @@ typedef struct {
 	int		nGapLow;
 	int		nGapUpp;
 	long	ranSeed;
-	Float	lowFBLevel;
-	Float	uppFBLevel;
-	Float	oFMLevel;		/* GetDoubleAs("OFM level","ratio") */
-	Float	fBModPhase;
-	Float	spacing;
+	double	lowFBLevel;
+	double	uppFBLevel;
+	double	oFMLevel;		/* GetDoubleAs("OFM level","ratio") */
+	double	spacing;
 	NameSpecifier	bandwidthMode;
-	Float	bandwidth;
-	Float	mskModFreq;
-	Float	mskModPhase;
-	Float	sigLevel;
-	Float	sigFreq;
+	double	bandwidth;
+	double	mskModFreq;
+	double	mskModPhase;
+	double	sigLevel;
+	double	sigFreq;
 	NameSpecifier	sigGateMode;
-	Float	gateTime;
-	Float	duration, dt;
+	double	gateTime;
+	double	duration, dt;
 
 } CMRNoiseM;

@@ -8,10 +8,10 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	Float	crawfordConst;		/* Crawford and Fettiplace c Value */
-	Float	releaseFraction;	/* Release fraction. */
-	Float	refillFraction;		/* Replenishment fraction. */
-	Float	spontRate;			/* desired spontaneous firing rate. */
-	Float	maxSpikeRate;		/* maximum possible firing rate. */
+	double	crawfordConst;		/* Crawford and Fettiplace c Value */
+	double	releaseFraction;	/* Release fraction. */
+	double	refillFraction;		/* Replenishment fraction. */
+	double	spontRate;			/* desired spontaneous firing rate. */
+	double	maxSpikeRate;		/* maximum possible firing rate. */
 
 } CookeHC;

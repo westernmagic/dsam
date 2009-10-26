@@ -16,7 +16,7 @@ typedef struct {
 
 	ParArrayPtr		comprScaleA;
 	ParArrayPtr		comprScaleB;
-	Float			comprExponent;
+	double			comprExponent;
 	
 	int				linGTCascade;
 	int				linLPCascade;

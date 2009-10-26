@@ -6,6 +6,6 @@ qualifier		BinSignal;
 typedef struct {
 
 	NameSpecifier	mode;
-	Float	binWidth;
+	double	binWidth;
 
 } BinSignal;

@@ -6,11 +6,11 @@ qualifier		AM;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	Float	frequency;
-	Float	modulationFrequency;
-	Float	modulationDepth;
-	Float	intensity;
-	Float	duration;
-	Float	dt;
+	double	frequency;
+	double	modulationFrequency;
+	double	modulationDepth;
+	double	intensity;
+	double	duration;
+	double	dt;
 
 } AMTone;

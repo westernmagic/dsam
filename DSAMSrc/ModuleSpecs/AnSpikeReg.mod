@@ -7,11 +7,11 @@ proc_routine	Calc;
 typedef struct {
 
 	NameSpecifier	outputMode;
-	Float	eventThreshold;
-	Float	windowWidth;
-	Float	timeOffset;
-	Float	timeRange;
-	Float	deadTime;
-	Float	countThreshold;
+	double	eventThreshold;
+	double	windowWidth;
+	double	timeOffset;
+	double	timeRange;
+	double	deadTime;
+	double	countThreshold;
 
 } SpikeReg;

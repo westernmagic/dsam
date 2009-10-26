@@ -8,6 +8,6 @@ proc_routine	Calc;
 typedef struct {
 
 	NameSpecifier	mode;
-	Float	timeOffset;
+	double	timeOffset;
 
 } FindIndex;

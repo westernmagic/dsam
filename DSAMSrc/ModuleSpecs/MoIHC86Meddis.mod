@@ -9,14 +9,14 @@ proc_routine	RunModel;
 typedef struct {
 
 	NameSpecifier   diagMode;	/* output variables during run (no/filename) */
-	Float	permConst_A;		/* Permeability constant (?). */
-	Float	permConst_B;		/* Units per second */
-	Float	releaseRate_g;		/* Release rate (units per second). */
-	Float	replenishRate_y;	/* Replenishment rate (units per second). */
-	Float	lossRate_l;			/* Loss rate (units per second). */
-	Float	reprocessRate_x;	/* Reprocessing rate (units per second). */
-	Float	recoveryRate_r;		/* Recovery rate (units per second). */
-	Float	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
-	Float	firingRate_h;		/* Firing rate (spikes per second). */
+	double	permConst_A;		/* Permeability constant (?). */
+	double	permConst_B;		/* Units per second */
+	double	releaseRate_g;		/* Release rate (units per second). */
+	double	replenishRate_y;	/* Replenishment rate (units per second). */
+	double	lossRate_l;			/* Loss rate (units per second). */
+	double	reprocessRate_x;	/* Reprocessing rate (units per second). */
+	double	recoveryRate_r;		/* Recovery rate (units per second). */
+	double	maxFreePool_M;		/* Max. no. of transm. packets in free pool */
+	double	firingRate_h;		/* Firing rate (spikes per second). */
 
 } HairCell;

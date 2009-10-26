@@ -9,6 +9,6 @@ qualifier		MathOp;
 typedef struct {
 
 	NameSpecifier	operatorMode;
-	Float		operand;
+	double		operand;
 
 } MathOp;

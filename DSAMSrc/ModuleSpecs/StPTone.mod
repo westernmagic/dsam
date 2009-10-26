@@ -3,9 +3,9 @@ mod_name		PureTone;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	Float	frequency;
-	Float	intensity;
-	Float	duration, dt;
+	double	frequency;
+	double	intensity;
+	double	duration, dt;
 
 } PureTone;
 	

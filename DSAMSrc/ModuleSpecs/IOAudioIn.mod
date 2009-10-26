@@ -10,9 +10,9 @@ typedef struct {
 	int		deviceID;
 	int		numChannels;
 	int		segmentsPerBuffer;
-	Float	sampleRate;
-	Float	duration;
-	Float	sleep;
-	Float	gain;
+	double	sampleRate;
+	double	duration;
+	double	sleep;
+	double	gain;
 
 } AudioIn;

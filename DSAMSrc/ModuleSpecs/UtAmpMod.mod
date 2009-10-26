@@ -6,7 +6,7 @@ qualifier		AmpMod;
 typedef struct {
 
 	int_al	numFrequencies;
-	Float	*modulationDepths, *frequencies, *phases;
+	double	*modulationDepths, *frequencies, *phases;
 
 } AmpMod;
 	

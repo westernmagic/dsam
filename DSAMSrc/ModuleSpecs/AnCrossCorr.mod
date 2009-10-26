@@ -6,8 +6,8 @@ qualifier		CCF;
 proc_routine	Calc;
 typedef struct {
 
-	Float	timeOffset;
-	Float	timeConstant;
-	Float	period;
+	double	timeOffset;
+	double	timeConstant;
+	double	period;
 
 } CrossCorr;

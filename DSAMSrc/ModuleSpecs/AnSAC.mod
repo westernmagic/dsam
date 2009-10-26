@@ -11,8 +11,8 @@ typedef struct {
 
 	BOOLN	normalisation;	/* Turn normalisation on and off */
 	int		order;			/* How many spikes away, or -1 for all spikes */
-	Float	eventThreshold;
-	Float	maxInterval;	/* Max. interval or -1 for end of signal. */
-	Float	binWidth;
+	double	eventThreshold;
+	double	maxInterval;	/* Max. interval or -1 for end of signal. */
+	double	binWidth;
 
 } SAC;

@@ -5,7 +5,7 @@ mod_name		Transform;
 qualifier		SetDBSPL;
 typedef struct {
 
-	Float	timeOffset;
-	Float	intensity;
+	double	timeOffset;
+	double	intensity;
 
 } SetDBSPL;

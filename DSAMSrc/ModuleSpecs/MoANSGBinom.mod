@@ -8,12 +8,11 @@ proc_routine	RunModel;
 process_vars	true;
 typedef struct {
 
-	NameSpecifier	diagnosticMode;
 	int		numFibres;
 	long	ranSeed;
-	Float	pulseDuration;
-	Float	pulseMagnitude;
-	Float	refractoryPeriod;
+	double	pulseDuration;
+	double	pulseMagnitude;
+	double	refractoryPeriod;
 	ParArrayPtr		distribution;
 
 } BinomialSG;

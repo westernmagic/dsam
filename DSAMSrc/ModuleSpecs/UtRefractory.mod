@@ -6,6 +6,6 @@ mod_name		Utility;
 qualifier		RefractoryAdjust;
 typedef struct {
 
-	Float	refractoryPeriod;
+	double	refractoryPeriod;
 
 } RefractAdj;

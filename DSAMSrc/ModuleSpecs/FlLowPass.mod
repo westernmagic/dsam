@@ -8,7 +8,7 @@ proc_routine	RunModel;
 typedef struct {
 
 	int		mode;
-	Float	cutOffFrequency;
-	Float	signalMultiplier;	/* potential mV */
+	double	cutOffFrequency;
+	double	signalMultiplier;	/* potential mV */
 
 } LowPassF;

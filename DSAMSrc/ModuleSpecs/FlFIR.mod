@@ -11,6 +11,6 @@ typedef struct {
 	NameSpecifier	type;
 	int		numTaps;
 	int_al	numBands;
-	Float	*bandFreqs, *desired, *weights;
+	double	*bandFreqs, *desired, *weights;
 
 }  FIR;

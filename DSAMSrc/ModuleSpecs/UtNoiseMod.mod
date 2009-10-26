@@ -7,7 +7,7 @@ process_vars	true;
 typedef struct {
 
 	NameSpecifier	bandwidthMode;
-	Float	bandwidth;
+	double	bandwidth;
 	long	ranSeed;
 
 } NAmpMod;

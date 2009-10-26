@@ -7,7 +7,7 @@ proc_routine	RunModel;
 typedef struct {
 
 	int		cascade;
-	Float	preAttenuation;			/* Pre-attenuation for filter. */
-	Float	upperCutOffFreq, lowerCutOffFreq;
+	double	preAttenuation;			/* Pre-attenuation for filter. */
+	double	upperCutOffFreq, lowerCutOffFreq;
 
 }  BandPassF;

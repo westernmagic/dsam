@@ -6,13 +6,13 @@ qualifier		FM;
 proc_routine	GenerateSignal;
 typedef struct {
 
-	Float	frequency;
-	Float	intensity;
-	Float	duration;
-	Float	dt;
-	Float	phase;
-	Float	modulationDepth;
-	Float	modulationFrequency;
-	Float	modulationPhase;
+	double	frequency;
+	double	intensity;
+	double	duration;
+	double	dt;
+	double	phase;
+	double	modulationDepth;
+	double	modulationFrequency;
+	double	modulationPhase;
 
 } FMTone;

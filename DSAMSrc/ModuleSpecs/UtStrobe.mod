@@ -8,10 +8,10 @@ typedef struct {
 
 	int		typeMode;
 	int		diagnosticMode;
-	Float	threshold;
-	Float	thresholdDecayRate;
-	Float	delay;
-	Float	delayTimeout;
+	double	threshold;
+	double	thresholdDecayRate;
+	double	delay;
+	double	delayTimeout;
 
 } Strobe;
 
