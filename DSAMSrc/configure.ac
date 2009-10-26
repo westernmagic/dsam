@@ -10,6 +10,9 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CANONICAL_TARGET
 
+dnl The following is used to set up the optional DSAM definitions.
+DSAM_DEFS=
+
 dnl we need to AC_DIVERT_PUSH/AC_DIVERT_POP these variable definitions so they
 dnl are available for $ac_help expansion (don't we all *love* autoconf?)
 dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
@@ -47,7 +50,7 @@ AC_SUBST(DSAM_MICRO_VERSION)
 AC_SUBST(DSAM_INTERFACE_AGE)
 AC_SUBST(DSAM_BINARY_AGE)
 AC_SUBST(DSAM_RPM_AGE)
-AC_DEFINE_UNQUOTED(DSAM_VERSION, wxT("$DSAM_PACKAGE_VERSION"), "DSAM version")
+AC_DEFINE_UNQUOTED(DSAM_VERSION, wxT("$PACKAGE_VERSION"), "DSAM version")
 #AC_DEFINE_UNQUOTED(DSAM_VERSION_INT, [`expr \( $DSAM_MAJOR_VERSION \* 100000 \) +
 # \( $DSAM_MINOR_VERSION \* 1000 \) + $DSAM_MICRO_VERSION`], 
 #  "DSAM coded integer version - no quotes")
@@ -56,6 +59,7 @@ DSAM_VERSION_INT=`expr \( $DSAM_MAJOR_VERSION \* 1000000 \) + \
   \( $DSAM_MINOR_VERSION \* 1000 \) + $DSAM_MICRO_VERSION`
 AC_DEFINE_UNQUOTED(DSAM_VERSION_INT, $DSAM_VERSION_INT,
   "DSAM coded integer version - no quotes")
+DSAM_DEFS="$DSAM_DEFS -DDSAM_VERSION_INT=$DSAM_VERSION_INT"
 
 # libtool versioning
 LT_RELEASE=$DSAM_MAJOR_VERSION.$DSAM_MINOR_VERSION
@@ -586,14 +590,13 @@ dnl ----------------------------------------------------------------------------
 dnl Parallel library option
 dnl ----------------------------------------------------------------------------
 
-DSAM_MPI=
 no_MPI_Environment="Cannot enable MPI support - CHIMPHOME and CHIMP_LIB\
  environment variables must be set!"
 AC_ARG_ENABLE(parallel,
 	[  --enable-parallel=ARG   Enable DSAM parallel support [ARG=no]],
 	[parallel=${enableval}
 	if test x$mpiAvailable = xyes; then
-		DSAM_MPI="-DMPI_SUPPORT"
+		DSAM_DEFS="$DSAM_DEFS -DMPI_SUPPORT=1"
 		mpi=true
 		LIBDSAMM=libdsam_m.la
 		PAWORKER1M=PaWorker1m.exe
@@ -608,15 +611,9 @@ dnl ----------------------------------------------------------------------------
 
 if test x$enable_unicode = xyes; then
 	AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
-	DSAM_UNICODE="-DDSAM_USE_UNICODE"
+	DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_UNICODE=1"
 fi
 AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
-
-DSAM_DEFS="-DDSAM_VERSION_INT=$DSAM_VERSION_INT $DSAM_MPI -fPIC"
-AC_SUBST(DSAM_GRAPHICS)
-AC_SUBST(DSAM_MPI)
-AC_SUBST(DSAM_UNICODE)
-AC_SUBST(DSAM_DEFS)
 
 dnl ----------------------------------------------------------------------------
 dnl General option settings.
@@ -629,8 +626,7 @@ fi
 
 if test x$wx_base_available = xyes; then
 	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Use Extensions Support")
-	DSAMEXTINC="-DEXTENSIONS_SUPPORT"
-	AC_SUBST(DSAMEXTINC)
+	DSAM_DEFS="$DSAM_DEFS -DEXTENSIONS_SUPPORT=1"
 	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
 	AC_SUBST(DSAMEXTLIB)
 	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
@@ -673,10 +669,18 @@ AM_CONDITIONAL(USE_PORTAUDIO, test x$using_portaudio = xyes)
 
 if test x$use_float = xyes; then
 	AC_DEFINE(DSAM_USE_FLOAT, 1, [Use float channel data])
-	DSAMFLOATINC="-DDSAM_USE_FLOAT"
-	AC_SUBST(DSAMFLOATINC)
+	DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_FLOAT=1"
 fi
 AM_CONDITIONAL(DSAM_USE_FLOAT, test x$use_float = xyes)
+
+dnl ----------------------------------------------------------------------------
+dnl DSAM Definitions.
+dnl ----------------------------------------------------------------------------
+
+DSAM_DEFS="$DSAM_DEFS -fPIC"
+AC_SUBST(DSAM_GRAPHICS)
+AC_SUBST(DSAM_MPI)
+AC_SUBST(DSAM_DEFS)
 
 dnl ============================================================================
 dnl Checks for system services or capabilities.

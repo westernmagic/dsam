@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
 		echo_exec_prefix=yes
 		;;
 	--version)
-		echo @DSAM_VERSION@
+		echo @PACKAGE_VERSION@
 		exit 0
 		;;
 	--cflags)
@@ -88,14 +88,14 @@ if [ "$echo_exec_prefix" = "yes" ]; then
 	echo $exec_prefix
 fi
 if test "$echo_cflags" = "yes"; then
-	cflags="@DEFS@ @DSAM_DEFS@ @DSAM_UNICODE@ @DSAMFLOATINC@ -I@includedir@/@PACKAGE@ @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@"
+	cflags="@DEFS@ @DSAM_DEFS@ -I@includedir@/@PACKAGE@ @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@"
 	if [ "$use_debug" = "yes" ]; then
 		cflags="$cflags -ggdb3 -DDMALLOC"
 	fi
 	if [ "$use_gui" = "yes" ]; then
 		cflags="$cflags -DUSE_GUI @WXINC@"
 	else
-		cflags="$cflags @DSAMEXTINC@ @WX_BASE_CXXFLAGS@"
+		cflags="$cflags @WX_BASE_CXXFLAGS@"
 	fi
 	if [ "@MINGW32@" = "yes" -a "$use_debug" != "yes" ]; then
 		cflags="$cflags -mwindows"
