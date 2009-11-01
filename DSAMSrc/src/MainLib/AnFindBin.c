@@ -315,7 +315,6 @@ SetTimeWidth_Analysis_FindBin(Float theTimeWidth)
 BOOLN
 PrintPars_Analysis_FindBin(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_FindBin");
 
 	DPrint(wxT("Find Max. bin Values Module Parameters:-\n"));
 	DPrint(wxT("\tSearch mode = %s,"),

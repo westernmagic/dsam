@@ -314,8 +314,6 @@ SetMaxSpikeRate_IHC_Cooke91(Float theMaxSpikeRate)
 BOOLN
 PrintPars_IHC_Cooke91(void)
 {
-	static const WChar *funcName = wxT("PrintPars_IHC_Cooke91");
-
 	DPrint(wxT("Cooke 91 Inner Hair Cell Module Parameters:-\n"));
 	DPrint(wxT("\tCrawford constant = %g\n"),
 	  cookeHCPtr->crawfordConst);

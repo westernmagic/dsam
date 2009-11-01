@@ -456,8 +456,6 @@ SetFiringRate_IHC_Meddis86(Float theFiringRate)
 BOOLN
 PrintPars_IHC_Meddis86(void)
 {
-	static const WChar *funcName = wxT("PrintPars_IHC_Meddis86");
-
 	DPrint(wxT("Meddis 86 IHC Synapse Module Parameters:-\n"));
 	DPrint(wxT("\tPermeability constant, A = %g,\tand B = %g\n"),
 	  hairCellPtr->permConst_A, hairCellPtr->permConst_B);

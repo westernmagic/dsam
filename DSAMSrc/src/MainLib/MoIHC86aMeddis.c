@@ -402,8 +402,6 @@ SetFiringRate_IHC_Meddis86a(Float theFiringRate)
 BOOLN
 PrintPars_IHC_Meddis86a(void)
 {
-	static const WChar *funcName = wxT("PrintPars_IHC_Meddis86a");
-
 	DPrint(wxT("Meddis 86a Inner Hair Cell Module Parameters:-\n"));
 	DPrint(wxT("\tPermeability constants: z = %g,\th = %g \n"),
 	  hairCell3Ptr->permeabilityPZ_z, hairCell3Ptr->permeabilityPH_h);

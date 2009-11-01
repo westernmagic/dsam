@@ -450,8 +450,6 @@ SetCountThreshold_Analysis_SpikeRegularity(Float theCountThreshold)
 BOOLN
 PrintPars_Analysis_SpikeRegularity(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_SpikeRegularity");
-
 	DPrint(wxT("Spike Regularity Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tOutput mode = %s,"), spikeRegPtr->outputModeList[
 	  spikeRegPtr->outputMode].name);
@@ -723,7 +721,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 	register ChanData	*outPtr, *sumPtr, *sumSqrsPtr, *countPtr, diff, mean, std;
 	int		chan;
 	Float	interval, spikeTime, windowWidth, timeRange;
-	ChanLen	i, *spikeTimeHistIndex, timeRangeIndex, lastSpikeTimeIndex;
+	ChanLen	i, *spikeTimeHistIndex, timeRangeIndex;
 	ChanLen	timeOffsetIndex, runningTimeOffsetIndex;
 	SpikeSpecPtr	s, headSpikeList, currentSpikeSpec;
 	SignalDataPtr	outSignal, inSignal, countEarObj;

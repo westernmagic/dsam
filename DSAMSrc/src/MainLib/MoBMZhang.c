@@ -768,8 +768,6 @@ GetCFListPtr_BasilarM_Zhang(void)
 BOOLN
 PrintPars_BasilarM_Zhang(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_BasilarM_Zhang");
-
 	DPrint(wxT("Zhang et al. BM Module Parameters:-\n"));
 	DPrint(wxT("\tModel = %s,"), bMZhangPtr->modelList[bMZhangPtr->
 	  model].name);

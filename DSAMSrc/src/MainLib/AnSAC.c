@@ -329,8 +329,6 @@ SetBinWidth_Analysis_SAC(Float theBinWidth)
 BOOLN
 PrintPars_Analysis_SAC(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_SAC");
-
 	DPrint(wxT("Shuffled Autocorrelogram Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tNormalisation switch = %s,"), BooleanList_NSpecLists(sACPtr->
 	  normalisation)->name);

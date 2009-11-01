@@ -426,7 +426,6 @@ SetMaxLag_Analysis_ACF(Float theMaxLag)
 BOOLN
 PrintPars_Analysis_ACF(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_ACF");
 
 	DPrint(wxT("Auto-correlation analysis module parameters:-\n"));
 	DPrint(wxT("\tNormalisation mode = %s,"),

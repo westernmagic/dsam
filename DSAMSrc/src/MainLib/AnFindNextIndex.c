@@ -254,8 +254,6 @@ SetTimeOffset_Analysis_FindNextIndex(Float theTimeOffset)
 BOOLN
 PrintPars_Analysis_FindNextIndex(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_FindNextIndex");
-
 	DPrint(wxT("Find Indexes Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tSearch mode = %s,"), findIndexPtr->modeList[findIndexPtr->
 	  mode].name);

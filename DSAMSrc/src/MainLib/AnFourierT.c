@@ -236,8 +236,6 @@ SetOutputMode_Analysis_FourierT(WChar * theOutputMode)
 BOOLN
 PrintPars_Analysis_FourierT(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_FourierT");
-
 	DPrint(wxT("Fourier Transform Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tOutput mode = %s \n"),
 	  fourierTPtr->outputModeList[fourierTPtr->outputMode].name);

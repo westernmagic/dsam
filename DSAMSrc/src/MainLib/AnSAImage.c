@@ -545,8 +545,6 @@ SetTypeMode_Analysis_SAI(WChar *theTypeMode)
 BOOLN
 PrintPars_Analysis_SAI(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_SAI");
-
 	DPrint(wxT("Stabilised Auditory Image Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tStrobeSpecification (%s):\n"), sAImagePtr->
 	  strobeSpecification);

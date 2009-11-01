@@ -937,7 +937,6 @@ FreeProcessVariables_Neuron_HHuxley(void)
 void *
 GetPotentialResponse_Neuron_HHuxley(void *potentialPtr)
 {
-	static const WChar *funcName = wxT("GetPotentialResponse_Neuron_HHuxley");
 	Float *potential;
 
 	potential = (Float *) potentialPtr;

@@ -614,8 +614,6 @@ SetOffset_u1_IHCRP_Shamma3StateVelIn(Float theOffset_u1)
 BOOLN
 PrintPars_IHCRP_Shamma3StateVelIn(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHCRP_Shamma3StateVelIn");
-
 	DPrint(wxT("Modified Shamma Receptor Potential Module  Module Parameters:-")
 	  wxT("\n"));
 	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"), sham3StVInPtr->

@@ -259,8 +259,6 @@ SetMaxInterval_Analysis_ISIH(Float theMaxInterval)
 BOOLN
 PrintPars_Analysis_ISIH(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_ISIH");
-
 	DPrint(wxT("Inter-Spike Interval Histogram (ISIH) Module Parameters:-\n"));
 	DPrint(wxT("\tOrder = "));
 	if (interSIHPtr->order > 0)

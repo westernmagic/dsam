@@ -380,8 +380,6 @@ SetSamplingInterval_PureTone_Binaural(Float theSamplingInterval)
 BOOLN
 PrintPars_PureTone_Binaural(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_PureTone_Binaural");
-
 	DPrint(wxT("Binaural Pure Tone Module Parameters:-\n"));
 	DPrint(wxT("\tFrequency: left / right = %g / %g (Hz)\n"),
 	  bPureTonePtr->leftFrequency, bPureTonePtr->rightFrequency);

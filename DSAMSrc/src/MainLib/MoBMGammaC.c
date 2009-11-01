@@ -537,8 +537,6 @@ GetCFListPtr_BasilarM_GammaChirp(void)
 BOOLN
 PrintPars_BasilarM_GammaChirp(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_BasilarM_GammaChirp");
-
 	DPrint(wxT("GammaChirp BM Filter Module Parameters:-\n"));
 	DPrint(wxT("\tDiagnostic mode: %s,"), bMGammaCPtr->diagnosticModeList[
 	  bMGammaCPtr->diagnosticMode].name);

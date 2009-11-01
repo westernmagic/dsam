@@ -326,8 +326,6 @@ SetSamplingInterval_PureTone_AM(Float theSamplingInterval)
 BOOLN
 PrintPars_PureTone_AM(void)
 {
-	static const WChar *funcName = wxT("PrintPars_PureTone_AM");
-
 	DPrint(wxT("Amplitude Modulated Tone Module Parameters:-\n"));
 	DPrint(wxT("\tCarrier frequency = %g Hz,\tModulation frequency = %g\n"),
 	  aMTonePtr->frequency, aMTonePtr->modulationFrequency);

@@ -580,7 +580,6 @@ SetIndividualWeight_Filter_FIR(int theIndex, Float theWeight)
 BOOLN
 PrintPars_Filter_FIR(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Filter_FIR");
 	int		i;
 
 	DPrint(wxT("FIR Filter Module Parameters:-\n"));

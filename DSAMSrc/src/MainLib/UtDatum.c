@@ -992,8 +992,6 @@ FreeEarObjects_Utility_Datum(DatumPtr start)
 	return(TRUE);
 }
 
-
-
 /****************************** NameAndLabel **********************************/
 
 /*
@@ -1053,7 +1051,6 @@ InitialiseModule_Utility_Datum(DatumPtr pc)
 	return(ok);
 
 }
-
 
 /****************************** TraverseSimulation *****************************/
 

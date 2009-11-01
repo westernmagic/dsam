@@ -257,7 +257,7 @@ GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
 int
 GetMeanChan_ANGSDist(Float *frequencies, int numFreqs, Float bF)
 {
-	int		i, bFIndex;
+	int		i, bFIndex = -1;
 	Float	minDiff, diff;
 
 	if (bF < 0.0)

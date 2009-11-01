@@ -261,8 +261,6 @@ SetNormalise_Analysis_ALSR(Float theNormalise)
 BOOLN
 PrintPars_Analysis_ALSR(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_ALSR");
-
 	DPrint(wxT("ALSR Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tAveraging window limit below CF = %g,\n"), aLSRPtr->
 	  lowerAveLimit);

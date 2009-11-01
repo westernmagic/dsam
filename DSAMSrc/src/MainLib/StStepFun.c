@@ -337,8 +337,6 @@ SetSamplingInterval_StepFunction(Float theSamplingInterval)
 BOOLN
 PrintPars_StepFunction(void)
 {
-	static const WChar *funcName = wxT("PrintPars_StepFunction");
-
 	DPrint(wxT("Step Function Module Parameters:-\n"));
 	DPrint(wxT("\tStep amplitude = %g,\t\tStep duration = ")
 	  wxT("%g ms,\n"), stepFunPtr->amplitude, MSEC(stepFunPtr->duration));

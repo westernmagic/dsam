@@ -280,7 +280,6 @@ SetPeriod_Analysis_CCF(Float thePeriod)
 BOOLN
 PrintPars_Analysis_CCF(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_CCF");
 
 	DPrint(wxT("Cross-correlation Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tTime Offset = "));

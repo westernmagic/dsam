@@ -280,8 +280,6 @@ SetSignalMultiplier_Filter_LowPass(Float theSignalMultiplier)
 BOOLN
 PrintPars_Filter_LowPass(void)
 {
-	static const WChar *funcName = wxT("PrintPars_Filter_LowPass");
-
 	DPrint(wxT("Low-Pass Filter Module Parameters:-\n"));
 	DPrint(wxT("\tMode = %s,"),
 	  lowPassFPtr->modeList[lowPassFPtr->mode].name);

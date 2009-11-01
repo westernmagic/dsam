@@ -859,8 +859,6 @@ SetRecoveryRate_r_IHC_Meddis2000(Float theRecoveryRate_r)
 BOOLN
 PrintPars_IHC_Meddis2000(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHC_Meddis2000");
-
 	DPrint(wxT("Meddis 2000 IHC Module Parameters:-\n"));
 	DPrint(wxT("\tOperational mode = %s \n"),
 	  hairCell2Ptr->opModeList[hairCell2Ptr->opMode].name);

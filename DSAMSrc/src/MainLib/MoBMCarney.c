@@ -397,8 +397,6 @@ GetCFListPtr_BasilarM_Carney(void)
 BOOLN
 PrintPars_BasilarM_Carney(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_BasilarM_Carney");
-
 	DPrint(wxT("Carney Non-Linear Basilar Membrane Module Parameters:-\n"));
 	PrintPars_CFList(bMCarneyPtr->cFList);
 	DPrint(wxT("\tFilter cascade = %d,\n"), bMCarneyPtr->cascade);

@@ -814,8 +814,6 @@ GetNonLinBandwidth_BasilarM_DRNL(BandwidthModePtr modePtr, Float theCF)
 BOOLN
 PrintPars_BasilarM_DRNL(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_BasilarM_DRNL");
-
 	DPrint(wxT("DRNL Basilar Membrane Filter Module Parameters:-\n"));
 	DPrint(wxT("\tNonlinear gammatone filter cascade  = %d,\n"),
 	  bMDRNLPtr->nonLinGTCascade);

@@ -378,8 +378,6 @@ SetRanSeed_WhiteNoise(long theRanSeed)
 BOOLN
 PrintPars_WhiteNoise(void)
 {
-	static const WChar *funcName = wxT("PrintPars_WhiteNoise");
-
 	DPrint(wxT("White Noise Module Parameters:-\n"));
 	DPrint(wxT("\tNumber of Sound Channels = %d,\tCorrelation ")
 	  wxT("Degree = %d,\n"), whiteNoisePtr->numChannels,

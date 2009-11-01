@@ -311,7 +311,6 @@ SetIndividualLabel_Transform_CollectSignals(int theIndex, Float theLabel)
 BOOLN
 PrintPars_Transform_CollectSignals(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Transform_CollectSignals");
 	int		i;
 
 	DPrint(wxT("Collect Signal Transform Module Parameters:-\n"));

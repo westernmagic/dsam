@@ -467,8 +467,6 @@ SetVs3_IHC_Zhang(Float theVs3)
 BOOLN
 PrintPars_IHC_Zhang(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHC_Zhang");
-
 	DPrint(wxT("Zhang IHC Synapse Module Parameters:-\n"));
 	DPrint(wxT("\tSpontaneous rate of fiber, spont = %g (spikes/s),\n"),
 	 zhangHCPtr->spont);

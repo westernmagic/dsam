@@ -367,8 +367,6 @@ SetWaveDelayLength_IHCRP_Carney(Float theWaveDelayLength)
 BOOLN
 PrintPars_IHCRP_Carney(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHCRP_Carney");
-
 	DPrint(wxT("Carney IHC Receptor Rotential Module Parameters:-\n"));
 	DPrint(wxT("\tLow-pass cut-off frequency, Fc = %g (Hz),\n"),
 	  carneyRPPtr->cutOffFrequency);

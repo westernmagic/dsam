@@ -791,7 +791,6 @@ InitProcessVariables_ANSpikeGen_Carney(EarObjectPtr data)
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Carney();
-			SignalDataPtr	outSignal = _OutSig_EarObject(data);
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
 			if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, _OutSig_EarObject(

@@ -587,7 +587,6 @@ SetIndividualLowerCutOffFreq_Filter_MultiBPass(int theIndex,
 BOOLN
 PrintPars_Filter_MultiBPass(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Filter_MultiBPass");
 	int		i;
 
 	DPrint(wxT("Multiple Bandpass Filter Module Parameters:-\n"));

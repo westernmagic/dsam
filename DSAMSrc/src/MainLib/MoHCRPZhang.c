@@ -347,8 +347,6 @@ SetK_IHCRP_Zhang(int theK)
 BOOLN
 PrintPars_IHCRP_Zhang(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHCRP_Zhang");
-
 	DPrint(wxT("Zhang et al. IHCRP Module Parameters:-\n"));
 	DPrint(wxT("\ta0 = %g,"), iHCRPZhangPtr->a0);
 	DPrint(wxT("\tb = %g,"), iHCRPZhangPtr->b);

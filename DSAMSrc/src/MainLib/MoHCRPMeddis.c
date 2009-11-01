@@ -278,8 +278,6 @@ SetMTimeConstTm_IHCRP_Meddis(Float theMTimeConstTm)
 BOOLN
 PrintPars_IHCRP_Meddis(void)
 {
-	static const WChar *funcName = wxT("PrintPars_IHCRP_Meddis");
-
 	DPrint(wxT("Receptor Potential Module Parameters:-\n"));
 	DPrint(wxT("\tPermeability constant, A = %g,\t"), meddisRPPtr->permConst_A);
 	DPrint(wxT("\tPermeability constant, B = %g,\n"), meddisRPPtr->permConst_B);

@@ -320,8 +320,6 @@ SetSamplingInterval_PulseTrain(Float theSamplingInterval)
 BOOLN
 PrintPars_PulseTrain(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_PulseTrain");
-
 	DPrint(wxT("Pulse-Train Module Parameters:-\n"));
 	DPrint(wxT("\tPulse rate = %g /s,\t"),
 	  pulseTrainPtr->pulseRate);

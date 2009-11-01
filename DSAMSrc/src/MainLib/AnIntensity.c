@@ -225,8 +225,6 @@ SetExtent_Analysis_Intensity(Float theExtent)
 BOOLN
 PrintPars_Analysis_Intensity(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_Intensity");
-
 	DPrint(wxT("Intensity Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tTime offset = %g ms,"), MSEC(intensityPtr->timeOffset));
 	DPrint(wxT("\tTime extent = "));

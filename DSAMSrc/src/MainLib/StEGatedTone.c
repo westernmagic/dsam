@@ -522,8 +522,6 @@ SetSamplingInterval_Stimulus_ExpGatedTone(Float theSamplingInterval)
 BOOLN
 PrintPars_Stimulus_ExpGatedTone(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Stimulus_ExpGatedTone");
-
 	DPrint(wxT("Exponentially Gated Pure Tone Module Parameters:-\n"));
 	DPrint(wxT("\tType mode = %s"), eGatedTonePtr->typeModeList[
 	  eGatedTonePtr->typeMode].name);

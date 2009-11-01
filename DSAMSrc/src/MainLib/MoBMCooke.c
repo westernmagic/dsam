@@ -358,8 +358,6 @@ GetCFListPtr_BasilarM_Cooke(void)
 BOOLN
 PrintPars_BasilarM_Cooke(void)
 {
-	static const WChar *funcName = wxT("PrintPars_BasilarM_Cooke");
-
 	DPrint(wxT("Cooke (0) Basilar Membrane Filter Module Parameters:-\n"));
 	PrintPars_CFList(bM0CookePtr->theCFs);
 	DPrint(wxT("\tOutput mode = %s.\n"), bM0CookePtr->outputModeList[

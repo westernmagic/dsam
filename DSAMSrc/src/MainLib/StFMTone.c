@@ -393,8 +393,6 @@ SetModulationPhase_PureTone_FM(Float theModulationPhase)
 BOOLN
 PrintPars_PureTone_FM(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_PureTone_FM");
-
 	DPrint(wxT("Frequeny Modulated PureTone Module Parameters:-\n"));
 	DPrint(wxT("\tFrequency = %g Hz,"), fMTonePtr->frequency);
 	DPrint(wxT("\tIntensity = %g dB SPL\n"), fMTonePtr->intensity);

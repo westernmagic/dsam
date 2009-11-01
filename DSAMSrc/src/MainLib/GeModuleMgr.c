@@ -636,11 +636,11 @@ BOOLN
 ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 {
 	static const WChar *funcName = wxT("ReadPars_ModuleMgr");
-	BOOLN	ok = TRUE, useOldReadPars;
+	BOOLN	ok = TRUE;
 	WChar	*filePath, parName[MAXLINE], parValue[MAX_FILE_PATH];
 	WChar	failedParName[MAXLINE] = wxT("");
-	int		newParCount = 0, parCount = 0;
-	FILE	*fp, *savedErrorsFileFP = GetDSAMPtr_Common()->errorsFile;
+	int		parCount = 0;
+	FILE	*fp;
 	UniParPtr	par;
 	UniParListPtr	parList, tempParList;
 

@@ -282,7 +282,6 @@ SetTimeRange_Analysis_Averages(Float theTimeRange)
 BOOLN
 PrintPars_Analysis_Averages(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_Analysis_Averages");
 
 	DPrint(wxT("Averages Analysis Module Parameters:-\n"));
 	DPrint(wxT("\tMode = %s,"),

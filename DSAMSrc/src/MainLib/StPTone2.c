@@ -333,8 +333,6 @@ SetSamplingInterval_PureTone_2(Float theSamplingInterval)
 BOOLN
 PrintPars_PureTone_2(void)
 {
-	static const WChar *funcName = wxT("PrintPars_PureTone_2");
-
 	DPrint(wxT("Pure Tone 2 (surrounded by silence) Module Parameters:-\n"));
 	DPrint(wxT("\tFrequency = %g (Hz),\tIntensity = %g dB SPL,\n"),
 	  pureTone2Ptr->frequency, pureTone2Ptr->intensity);

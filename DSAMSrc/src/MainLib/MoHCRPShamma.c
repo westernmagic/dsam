@@ -512,8 +512,6 @@ SetReferencePot_IHCRP_Shamma(Float theReferencePot)
 BOOLN
 PrintPars_IHCRP_Shamma(void)
 {
-	static const WChar *funcName = wxT("PrintPars_IHCRP_Shamma(");
-
 	DPrint(wxT("Shamma et al. Receptor Potential Module Parameters:-\n"));
 	DPrint(wxT("\tEndocochlear potential, Et = %g V,\n"),
 	  shammaPtr->endocochlearPot_Et);

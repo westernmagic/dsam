@@ -272,8 +272,6 @@ SetSamplingInterval_Click(Float theSamplingInterval)
 BOOLN
 PrintPars_Click(void)
 {
-	static const WChar *funcName = wxT("PrintPars_Click");
-
 	DPrint(wxT("Click Module Parameters:-\n"));
 	DPrint(wxT("\tClick time = %g ms,\tAmplitude = %g uPa,\n"),
 	  MSEC(clickPtr->clickTime), clickPtr->amplitude);

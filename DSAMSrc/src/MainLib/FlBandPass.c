@@ -292,8 +292,6 @@ SetPreAttenuation_Filter_BandPass(Float thePreAttenuation)
 BOOLN
 PrintPars_Filter_BandPass(void)
 {
-	static const WChar *funcName = wxT("PrintPars_Filter_BandPass");
-
 	DPrint(wxT("Band Pass Filter Module Parameters:-\n"));
 	DPrint(wxT("\tFilter cascade = %d,\tPre-attenuation = %g dB\n"),
 	  bandPassFPtr->cascade, bandPassFPtr->preAttenuation);

@@ -471,8 +471,6 @@ SetMinImmediateVolume_IHC_Carney(Float theMinImmediateVolume)
 BOOLN
 PrintPars_IHC_Carney(void)
 {
-	static const WChar	*funcName = wxT("PrintPars_IHC_Carney");
-
 	DPrint(wxT("Carney IHC Synapse Module Parameters:-\n"));
 	DPrint(wxT("\tMax. depolarizing HC voltage, Vmax = %g (V)\n"),
 	  carneyHCPtr->maxHCVoltage);
