@@ -101,6 +101,7 @@ Init_Analysis_SAC(ParameterSpecifier parSpec)
 	}
 	sACPtr->parSpec = parSpec;
 	sACPtr->updateProcessVariablesFlag = TRUE;
+	sACPtr->normalisation = GENERAL_BOOLEAN_ON;
 	sACPtr->order = -1;
 	sACPtr->eventThreshold = 0.5;
 	sACPtr->maxInterval = -1.0;
