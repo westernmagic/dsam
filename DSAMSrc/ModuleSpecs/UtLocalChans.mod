@@ -11,7 +11,7 @@ typedef struct {
 
 	NameSpecifier	mode;
 	NameSpecifier	limitMode;
-	double	lowerLimit;
-	double	upperLimit;
+	Float	lowerLimit;
+	Float	upperLimit;
 
 } LocalChans;

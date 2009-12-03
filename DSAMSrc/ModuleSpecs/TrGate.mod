@@ -22,8 +22,8 @@ typedef struct {
 	NameSpecifier	positionMode;
 	NameSpecifier	operationMode;
 	NameSpecifier	typeMode;
-	double	timeOffset;
-	double	timeInterval;
-	double	slopeParameter;
+	Float	timeOffset;
+	Float	timeInterval;
+	Float	slopeParameter;
 
 } Gate;

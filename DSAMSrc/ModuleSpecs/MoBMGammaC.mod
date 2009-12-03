@@ -12,11 +12,11 @@ typedef struct {
 	NameSpecifier	diagnosticMode;	/* Mode for debug/diagnostics output */
 	NameSpecifier	opMode; 			/* SwCntl */
 	int	cascade;		/* n */
-	double	bCoeff;		/* b */
-	double	cCoeff0;	/* cCoef(0) */
-	double	cCoeff1;	/* cCoef(1) */
-	double	cLowerLim;	/* cLim(0) */
-	double	cUpperLim;	/* cLim(1) */
+	Float	bCoeff;		/* b */
+	Float	cCoeff0;	/* cCoef(0) */
+	Float	cCoeff1;	/* cCoef(1) */
+	Float	cLowerLim;	/* cLim(0) */
+	Float	cUpperLim;	/* cLim(1) */
 
 	CFListPtr	theCFs;	/* Pointer to centre frequency structure. */
 

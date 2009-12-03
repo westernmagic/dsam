@@ -8,11 +8,11 @@ proc_routine	RunModel;
 process_vars	true;
 typedef struct {
 
-	double	a0;		/* Scaler in IHC nonlinear function. */
-	double	b;		/* Parameter in IHC nonlinear function. */
-	double	c;		/* Parameter in IHC nonlinear function. */
-	double	d;		/* Parameter in IHC nonlinear function. */
-	double	cut;	/* Cutoff frequency of IHC low-pass filter (Hz). */
+	Float	a0;		/* Scaler in IHC nonlinear function. */
+	Float	b;		/* Parameter in IHC nonlinear function. */
+	Float	c;		/* Parameter in IHC nonlinear function. */
+	Float	d;		/* Parameter in IHC nonlinear function. */
+	Float	cut;	/* Cutoff frequency of IHC low-pass filter (Hz). */
 	int		k;		/* Order of IHC lowe-pass filter. */
 
 } IHCRPZhang;

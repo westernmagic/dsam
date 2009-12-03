@@ -9,8 +9,8 @@ proc_routine	Process;
 typedef struct {
 
 	NameSpecifier	mode;
-	double	signalMultiplier;
-	double	powerExponent;
-	double	minResponse;
+	Float	signalMultiplier;
+	Float	powerExponent;
+	Float	minResponse;
 
 } Compression;

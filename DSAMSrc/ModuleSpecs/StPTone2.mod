@@ -4,11 +4,11 @@ qualifier		2;		/* A signal digit produces an error for */
 proc_routine	GenerateSignal;
 typedef struct {
 
-	double	frequency;
-	double	intensity;
-	double	duration, dt;
-	double	beginPeriodDuration;
-	double	endPeriodDuration;
+	Float	frequency;
+	Float	intensity;
+	Float	duration, dt;
+	Float	beginPeriodDuration;
+	Float	endPeriodDuration;
 
 } PureTone2;
 	

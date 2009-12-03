@@ -17,9 +17,9 @@ typedef struct {
 
 	NameSpecifier	detectionMode;
 	NameSpecifier	typeMode;
-	double	eventThreshold;
-	double	binWidth;
-	double	period;
-	double	timeOffset;
+	Float	eventThreshold;
+	Float	binWidth;
+	Float	period;
+	Float	timeOffset;
 
 } Histogram;

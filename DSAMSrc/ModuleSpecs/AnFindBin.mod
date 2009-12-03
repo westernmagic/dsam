@@ -8,8 +8,8 @@ proc_routine	Calc;
 typedef struct {
 
 	NameSpecifier	mode;
-	double	binWidth;
-	double	timeOffset;
-	double	timeWidth;
+	Float	binWidth;
+	Float	timeOffset;
+	Float	timeWidth;
 
 } FindBin;

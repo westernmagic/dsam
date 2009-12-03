@@ -8,11 +8,11 @@ typedef struct {
 	int		wordSize;
 	int		endian;
 	int		numChannels;
-	double	defaultSampleRate;
-	double 	duration;
-	double	timeOffset;
-	double	gain;
-	double	normalisation;
+	Float	defaultSampleRate;
+	Float 	duration;
+	Float	timeOffset;
+	Float	gain;
+	Float	normalisation;
 
 } DataFile;
 	

@@ -12,10 +12,10 @@ typedef struct {
 	int		lowestHarmonic;
 	int		highestHarmonic;
 	NameSpecifier		phaseMode;
-	double	phaseVariable;
-	double	initialFreq;
-	double	finalFreq;
-	double	intensity;
-	double	duration, dt;
+	Float	phaseVariable;
+	Float	initialFreq;
+	Float	finalFreq;
+	Float	intensity;
+	Float	duration, dt;
 
 } FSHarm;

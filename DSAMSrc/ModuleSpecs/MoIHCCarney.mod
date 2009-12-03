@@ -8,16 +8,16 @@ proc_routine	RunModel;
 
 typedef struct {
 
-	double	maxHCVoltage;		/* Vmax */
-	double	restingReleaseRate;	/* R0 */
-	double	restingPerm;		/* Prest */
-	double	maxGlobalPerm;		/* PGmax */
-	double	maxLocalPerm;		/* PLmax */
-	double	maxImmediatePerm;	/* PImax */
-	double	maxLocalVolume;		/* VLmax */
-	double	minLocalVolume;		/* VLmin */
-	double	maxImmediateVolume;	/* VImax */
-	double	minImmediateVolume;	/* VImin */
+	Float	maxHCVoltage;		/* Vmax */
+	Float	restingReleaseRate;	/* R0 */
+	Float	restingPerm;		/* Prest */
+	Float	maxGlobalPerm;		/* PGmax */
+	Float	maxLocalPerm;		/* PLmax */
+	Float	maxImmediatePerm;	/* PImax */
+	Float	maxLocalVolume;		/* VLmax */
+	Float	minLocalVolume;		/* VLmin */
+	Float	maxImmediateVolume;	/* VImax */
+	Float	minImmediateVolume;	/* VImin */
 
 
 } CarneyHC;

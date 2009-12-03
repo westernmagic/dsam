@@ -12,7 +12,8 @@ An_Modules	= AnAutoCorr.mod AnAverages.mod AnConvolve.mod AnCrossCorr.mod \
 
 IO_Modules	= FiDataFile.mod IOAudioIn.mod
 
-Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod FlZBMiddleEar.mod
+Fl_Modules	= FlBandPass.mod FlMultiBPass.mod FlFIR.mod FlZBMiddleEar.mod \
+				FlDistLowPass.mod
 
 Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoBMCarney.mod MoBMCooke.mod MoBMGammaT.mod MoBMDRNL.mod \

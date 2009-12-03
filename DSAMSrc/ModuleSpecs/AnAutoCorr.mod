@@ -9,9 +9,9 @@ typedef struct {
 
 	NameSpecifier	normalisationMode;
 	NameSpecifier	timeConstMode;
-	double	timeOffset;
-	double	timeConstant;
-	double	timeConstScale;
-	double	maxLag;
+	Float	timeOffset;
+	Float	timeConstant;
+	Float	timeConstScale;
+	Float	maxLag;
 
 } AutoCorr;
