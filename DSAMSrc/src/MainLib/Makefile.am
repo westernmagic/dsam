@@ -25,13 +25,14 @@ An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
   
 IO_Sources	= FiDataFile.c FiASCII.c FiSndFile.c FiParFile.c IOAudioIn.c
 
-Fl_Sources	= FlBandPass.c FlMultiBPass.c FlFIR.c FlZBMiddleEar.c
+Fl_Sources	= FlBandPass.c  FlDistLowPass.c FlMultiBPass.c FlFIR.c FlZBMiddleEar.c \
+				FlLowPass.c
 
 Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 				GeNSpecLists.c GeUniParMgr.c GeModuleReg.c
 
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c \
-				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c FlLowPass.c \
+				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c \
 				MoHCRPCarney.c MoHCRPMeddis.c MoHCRPShamma.c MoIHC86Meddis.c \
 				MoIHC86aMeddis.c MoIHCMeddis2000.c MoIHCCarney.c MoIHCCooke.c \
 				MoNCArleKim.c MoNCHHuxley.c MoNCMcGregor.c MoBMGammaC.c \
@@ -58,7 +59,7 @@ Ut_Sources	= UtSSParser.y UtAccumulate.c UtAmpMod.c UtBandwidth.c \
 				UtParArray.c UtGCFilters.c UtFIRFilters.c UtRemez.c \
 				UtDynaBList.c UtLocalChans.c UtSwapLR.c UtPadSignal.c \
 				UtMathOp.c UtZhang.c UtTranspose.c UtCollateSignals.c \
-				UtZilanyBruce.c UtNoiseMod.c UtANSGDist.c
+				UtZilanyBruce.c UtNoiseMod.c UtANSGUtils.c
 
 Tr_Sources	= TrGate.c TrSetDBSPL.c TrCollectSignals.c
 

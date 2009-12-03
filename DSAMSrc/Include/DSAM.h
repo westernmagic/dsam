@@ -90,7 +90,7 @@
 #include <UtZilanyBruce.h>
 #include <UtTranspose.h>
 #include <UtCollateSignals.h>
-#include <UtANSGDist.h>
+#include <UtANSGUtils.h>
 
 #include <AnALSR.h>
 #include <AnAutoCorr.h>
@@ -114,6 +114,7 @@
 #include <FiDataFile.h>
 #include <FiASCII.h>
 #include <FlBandPass.h>
+#include <FlDistLowPass.h>
 #include <FlFIR.h>
 #include <FlLowPass.h>
 #include <FlMultiBPass.h>

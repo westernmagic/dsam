@@ -8,9 +8,9 @@
  *				NULL_MODULE
  * Authors:		L. P. O'Mard
  * Created:		29 Mar 1993
- * Updated:		
+ * Updated:
  * Copyright:	(c) 2001, University of Essex.
- * 
+ *
  ******************/
 
 #include <stdio.h>
@@ -137,10 +137,13 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("FILT_BANDPASS"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_BandPass },
+	{ FILTER_DIST_LOW_PASS_MOD_NAME,
+		FILTER_MODULE_CLASS, PROCESS_MODULE,
+		InitModule_Filter_DLowPass },
 	{ wxT("FILT_FIR"),
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_FIR },
-	{ wxT("FILT_LOWPASS"),
+	{ FILTER_LOW_PASS_MOD_NAME,
 		FILTER_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Filter_LowPass },
 	{ wxT("FILT_MULTIBPASS"),
@@ -426,7 +429,7 @@ GetRegEntry_ModuleReg(const WChar *name)
 	if ((regEntryPtr = Identify_ModuleReg(LibraryList_ModuleReg(0), name)) !=
 	  NULL)
 		return(regEntryPtr);
-	
+
 	return(Identify_ModuleReg(userModuleList, name));
 
 }

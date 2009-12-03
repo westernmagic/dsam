@@ -12,7 +12,8 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
   
 IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
 
-Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h FlZBMiddleEar.h
+Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h FlZBMiddleEar.h \
+				FlDistLowPass.h
 
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
@@ -61,7 +62,7 @@ Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtParArray.h UtGCFilters.h UtFIRFilters.h UtRemez.h \
 				UtDynaBList.h UtLocalChans.h UtSwapLR.h UtPadSignal.h \
 				UtMathOp.h UtZhang.h UtTranspose.h UtCollateSignals.h \
-				UtZilanyBruce.h UtNoiseMod.h UtANSGDist.h
+				UtZilanyBruce.h UtNoiseMod.h UtANSGUtils.h
 
 Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 

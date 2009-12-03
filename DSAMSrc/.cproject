@@ -22,17 +22,17 @@
 <folderInfo id="org.eclipse.linuxtools.cdt.autotools.configuration.build.470582791." name="/" resourcePath="">
 <toolChain id="org.eclipse.linuxtools.cdt.autotools.toolChain.677546031" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.toolChain">
 <targetPlatform id="org.eclipse.linuxtools.cdt.autotools.toolchain.targetPlatform.62950713" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.targetPlatform"/>
-<builder buildPath="${workspace_loc:/DSAMSrc/build}" enableAutoBuild="true" enableCleanBuild="true" id="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.1291661291" keepEnvironmentInBuildfile="false" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.builder"/>
+<builder buildPath="${workspace_loc:/DSAMSrc/build}" enableAutoBuild="true" enableCleanBuild="true" id="org.eclipse.linuxtools.cdt.autotools.toolchain.builder.1291661291" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.builder"/>
 <tool id="org.eclipse.linuxtools.cdt.autotools.gnu.toolchain.tool.configure.980779815" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.gnu.toolchain.tool.configure">
-<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.user.1897595620" name="User-specified configuration options" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.user" value="--enable-use-float" valueType="string"/>
-<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.symbols.1067190912" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.symbols" valueType="definedSymbols">
+<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.user.1897595620" name="User-specified configuration options" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.user" value="" valueType="string"/>
+<option id="org.eclipse.linuxtools.cdt.autotools.option.configure.symbols.1067190912" name="symbols" superClass="org.eclipse.linuxtools.cdt.autotools.option.configure.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="DSAM_USE_FLOAT=1"/>
 </option>
 </tool>
 <tool id="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.autogen.2121592566" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.autogen"/>
 <tool id="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.gcc.144988786" name="GCC C Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.gcc">
-<option id="gnu.c.compiler.option.preprocessor.def.symbols.1647911566" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
-<listOptionValue builtIn="false" value="DSAM_USE_FLOAT=1"/>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.1647911566" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="DSAM_USE_FLOAT=0"/>
 <listOptionValue builtIn="false" value="DSAM_USE_UNICODE=1"/>
 <listOptionValue builtIn="false" value="&quot;HAVE_FFTW3 =1&quot;"/>
 <listOptionValue builtIn="false" value="HAVE_SNDFILE=1"/>
@@ -41,7 +41,7 @@
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1177444186" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 <tool id="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.gpp.2050350014" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.toolchain.tool.gpp">
-<option id="gnu.cpp.compiler.option.preprocessor.def.2035766842" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<option id="gnu.cpp.compiler.option.preprocessor.def.2035766842" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="DSAM_USE_FLOAT=1"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1355089924" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
