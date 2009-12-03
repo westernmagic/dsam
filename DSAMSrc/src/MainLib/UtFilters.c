@@ -889,11 +889,12 @@ IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[])
 		return(FALSE);
 	}
 	for (chan = theSignal->offset; chan < theSignal->numChannels; chan++) {
-		ptr = p[chan];
+		if ((ptr = p[chan]) == NULL)
+			continue;
 		xi_1 = ptr->state;
 		yi_1 = ptr->state + 1;
 		yi = theSignal->channel[chan];
-		for (i = 0; i < theSignal->length; i++) {
+		for (i = theSignal->length; i; i--) {
 			xi = *yi;
 			/* Start of formula evaluation */
 			*yi = ptr->gG * xi + ptr->gGG * *xi_1 - ptr->hH * *yi_1;
