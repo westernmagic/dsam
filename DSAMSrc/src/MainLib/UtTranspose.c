@@ -71,17 +71,16 @@ Free_Utility_Transpose(void)
  * This function initialises the 'mode' list array
  */
 
-BOOLN
-InitModeList_Utility_Transpose(void)
+NameSpecifier *
+ModeList_Utility_Transpose(int index)
 {
 	static NameSpecifier	modeList[] = {
 
 			{ wxT("STANDARD"),		UTILITY_TRANSPOSE_STANDARD_MODE },
 			{ wxT("FIRST_CHANNEL"),	UTILITY_TRANSPOSE_FIRST_CHANNEL_MODE },
-			{ NULL,					UTILITY_TRANSPOSE_MODE_NULL },
+			{ 0,					UTILITY_TRANSPOSE_MODE_NULL },
 		};
-	transposePtr->modeList = modeList;
-	return(TRUE);
+	return(&modeList[index]);
 
 }
 
@@ -118,7 +117,6 @@ Init_Utility_Transpose(ParameterSpecifier parSpec)
 	transposePtr->parSpec = parSpec;
 	transposePtr->mode = UTILITY_TRANSPOSE_STANDARD_MODE;
 
-	InitModeList_Utility_Transpose();
 	if (!SetUniParList_Utility_Transpose()) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
 		Free_Utility_Transpose();
@@ -151,7 +149,7 @@ SetUniParList_Utility_Transpose(void)
 	SetPar_UniParMgr(&pars[UTILITY_TRANSPOSE_MODE], wxT("MODE"),
 	  wxT("Sample labelling mode ('standard' or 'first channel'."),
 	  UNIPAR_NAME_SPEC,
-	  &transposePtr->mode, transposePtr->modeList,
+	  &transposePtr->mode, ModeList_Utility_Transpose(0),
 	  (void * (*)) SetMode_Utility_Transpose);
 	return(TRUE);
 
@@ -201,7 +199,7 @@ SetMode_Utility_Transpose(WChar * theMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theMode,
-		transposePtr->modeList)) == UTILITY_TRANSPOSE_MODE_NULL) {
+			ModeList_Utility_Transpose(0))) == UTILITY_TRANSPOSE_MODE_NULL) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theMode);
 		return(FALSE);
 	}
@@ -228,8 +226,8 @@ PrintPars_Utility_Transpose(void)
 		return(FALSE);
 	}
 	DPrint(wxT("Transpose Utility Module Parameters:-\n"));
-	DPrint(wxT("\tSample labelling mode = %s\n"), transposePtr->modeList[
-	  transposePtr->mode].name);
+	DPrint(wxT("\tSample labelling mode = %s\n"), ModeList_Utility_Transpose(
+	  transposePtr->mode)->name);
 	return(TRUE);
 
 }

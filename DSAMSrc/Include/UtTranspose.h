@@ -51,7 +51,6 @@ typedef struct {
 	int		mode;
 
 	/* Private members */
-	NameSpecifier	*modeList;
 	UniParListPtr	parList;
 
 } Transpose, *TransposePtr;
@@ -78,7 +77,7 @@ BOOLN	Free_Utility_Transpose(void);
 
 UniParListPtr	GetUniParListPtr_Utility_Transpose(void);
 
-BOOLN	InitModeList_Utility_Transpose(void);
+NameSpecifier *	ModeList_Utility_Transpose(int index);
 
 BOOLN	InitModule_Utility_Transpose(ModulePtr theModule);
 
