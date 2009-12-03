@@ -33,7 +33,7 @@
 #include "UtString.h"
 #include "UtRandom.h"
 #include "UtParArray.h"
-#include "UtANSGDist.h"
+#include "UtANSGUtils.h"
 #include "MoANSGBinom.h"
 
 /******************************************************************************/
@@ -61,7 +61,7 @@ Free_ANSpikeGen_Binomial(void)
 	if (binomialSGPtr == NULL)
 		return(FALSE);
 	FreeProcessVariables_ANSpikeGen_Binomial();
-	Free_ANSGDist(&binomialSGPtr->aNDist);
+	Free_ANSGUtils(&binomialSGPtr->aNDist);
 	Free_ParArray(&binomialSGPtr->distribution);
 	if (binomialSGPtr->diagnosticModeList)
 		free(binomialSGPtr->diagnosticModeList);
@@ -116,14 +116,14 @@ Init_ANSpikeGen_Binomial(ParameterSpecifier parSpec)
 	binomialSGPtr->pulseMagnitude = 1.0;
 	binomialSGPtr->refractoryPeriod = 1e-3;
 	if ((binomialSGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
-	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
-	  CheckFuncPars_ANSGDist)) == NULL) {
+	  ModeList_ANSGUtils(0), GetNumDistributionPars_ANSGUtils,
+	  CheckFuncPars_ANSGUtils)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),
 		  funcName);
 		Free_ANSpikeGen_Binomial();
 		return(FALSE);
 	}
-	SetDefaultDistribution_ANSGDist(binomialSGPtr->distribution);
+	SetDefaultDistribution_ANSGUtils(binomialSGPtr->distribution);
 
 	if ((binomialSGPtr->diagnosticModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), binomialSGPtr->diagFileName)) == NULL)
@@ -272,7 +272,7 @@ SetNumFibres_ANSpikeGen_Binomial(int theNumFibres)
 		return(FALSE);
 	}
 	binomialSGPtr->numFibres = theNumFibres;
-	SetStandardNumFibres_ANSGDist(binomialSGPtr->distribution, theNumFibres);
+	SetStandardNumFibres_ANSGUtils(binomialSGPtr->distribution, theNumFibres);
 	return(TRUE);
 
 }
@@ -551,7 +551,7 @@ InitProcessVariables_ANSpikeGen_Binomial(EarObjectPtr data)
 		FreeProcessVariables_ANSpikeGen_Binomial();
 		if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 			return(FALSE);
-		if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, _OutSig_EarObject(
+		if (!SetFibres_ANSGUtils(&p->aNDist, p->distribution, _OutSig_EarObject(
 		  data)->info.cFArray, _OutSig_EarObject(data)->numChannels)) {
 			NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
 			return(FALSE);
@@ -673,7 +673,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 		}
 		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
 			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
-			PrintFibres_ANSGDist(p->fp, wxT(""), p->aNDist->numFibres,
+			PrintFibres_ANSGUtils(p->fp, wxT(""), p->aNDist->numFibres,
 			  _OutSig_EarObject(data)->info.cFArray, p->aNDist->numChannels);
 			CloseDiagnostics_NSpecLists(&p->fp);
 		}
