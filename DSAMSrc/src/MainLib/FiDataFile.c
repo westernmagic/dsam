@@ -1109,6 +1109,22 @@ InitProcessVariables_DataFile(EarObjectPtr data, sf_count_t length,
 
 }
 
+/**************************** FreeBuffer ***************************************/
+
+/*
+ * Free the data buffer.
+ * This routine expects the uninitialised buffer to be set to NULL.
+ */
+
+void
+FreeBuffer_DataFile(void)
+{
+	if (!dataFilePtr->buffer)
+		return;
+	free(dataFilePtr->buffer);
+	dataFilePtr->buffer = NULL;
+
+}
 /**************************** InitBuffer **************************************/
 
 /*
@@ -1144,10 +1160,7 @@ InitBuffer_DataFile(SignalDataPtr signal, const WChar *callingFunction)
 void
 FreeProcessVariables_DataFile(void)
 {
-	if (dataFilePtr->buffer) {
-		free(dataFilePtr->buffer);
-		dataFilePtr->buffer = NULL;
-	}
+	FreeBuffer_DataFile();
 	dataFilePtr->updateProcessVariablesFlag = TRUE;
 
 }
@@ -1280,6 +1293,10 @@ WriteOutSignalMain_DataFile(WChar *fileName, EarObjectPtr data)
 			return(FALSE);
 		}
 		dataFilePtr->inputMode = FALSE;
+	}
+	if (dataFilePtr->numChannels != _OutSig_EarObject(data)->numChannels) {
+		FreeBuffer_DataFile();
+		dataFilePtr->numChannels = _OutSig_EarObject(data)->numChannels;
 	}
 	switch (Format_DataFile(GetSuffix_Utility_String(fileName))) {
 	case	ASCII_DATA_FILE:

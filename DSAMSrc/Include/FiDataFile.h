@@ -201,6 +201,8 @@ FileFormatSpecifier		Format_DataFile(WChar *formatExtension);
 
 BOOLN	Free_DataFile(void);
 
+void	FreeBuffer_DataFile(void);
+
 void	FreeProcessVariables_DataFile(void);
 
 void	FreeSoundFormatLists_DataFile(void);
