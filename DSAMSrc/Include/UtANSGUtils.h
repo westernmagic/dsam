@@ -1,8 +1,8 @@
 /**********************
  *
- * File:		UtANSGDist.h
+ * File:		UtANSGUtils.h
  * Purpose:		This file contains the auditory nerve spike distribution
- * 				management routines.
+ * 				management and other utility routines.
  * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jun 2009
@@ -11,8 +11,8 @@
  *
  *********************/
 
-#ifndef UTANSGDIST_H_
-#define UTANSGDIST_H_
+#ifndef UTANSGUTILS_H_
+#define UTANSGUTILS_H_ 1
 
 #include "UtNameSpecs.h"
 
@@ -20,11 +20,13 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
+#define	ANSGUTILS_DISTRIBUTION_ALPHA_WAVE_LIMIT_COEFF	8.25
+
 /******************************************************************************/
 /****************************** Macro definitions *****************************/
 /******************************************************************************/
 
-#define ANSGDIST_GAUSSIAN(V, X, M)	(exp(-SQR((X) - (M)) / (2.0 * (V))) / \
+#define ANSGUTILS_GAUSSIAN(V, X, M)	(exp(-SQR((X) - (M)) / (2.0 * (V))) / \
 		  sqrt((V) * PIx2))
 
 /******************************************************************************/
@@ -33,20 +35,28 @@
 
 typedef enum {
 
-	ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE,
-	ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE,
-	ANSGDIST_DISTRIBUTION_STANDARD_MODE,
-	ANSGDIST_DISTRIBUTION_USER_MODE,
-	ANSGDIST_DISTRIBUTION_NULL
+	ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE,
+	ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE,
+	ANSGUTILS_DISTRIBUTION_STANDARD_MODE,
+	ANSGUTILS_DISTRIBUTION_USER_MODE,
+	ANSGUTILS_DISTRIBUTION_NULL
 
 } ANSGDistSpecifier;
 
 typedef enum {
 
-	ANSGDIST_GAUSS_NUM_FIBRES,
-	ANSGDIST_GAUSS_MEAN,
-	ANSGDIST_GAUSS_VAR1,
-	ANSGDIST_GAUSS_VAR2
+	ANSGUTILS_DISTRIBUTION_OUTPUTMODE_SQUARE_PULSE,
+	ANSGUTILS_DISTRIBUTION_OUTPUTMODE_ALPHA_WAVE,
+	ANSGUTILS_DISTRIBUTION_OUTPUTMODE_NULL
+
+} ANSGDistOutputModeSpecifier;
+
+typedef enum {
+
+	ANSGUTILS_GAUSS_NUM_FIBRES,
+	ANSGUTILS_GAUSS_MEAN,
+	ANSGUTILS_GAUSS_VAR1,
+	ANSGUTILS_GAUSS_VAR2
 
 } ANSGDistGaussianSpecifier;
 
@@ -71,28 +81,41 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-BOOLN	CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal);
+void	AddRemainingPulse_ANSGUtils(ChanData *outPtr, Float *pulse,
+		  ChanLen *pulseIndexPtr, ChanLen pulseDurationIndex);
 
-BOOLN	Init_ANSGDist(ANSGDistPtr *p, int numChannels);
+Float	CalcPulseDuration_ANSGUtils(int outputMode, Float durationCoeff);
 
-void	Free_ANSGDist(ANSGDistPtr *p);
+ChanLen	CalcPulseDurationIndex_ANSGUtils(int outputMode, Float duration,
+		  Float dt);
 
-int		GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan);
+BOOLN	CheckFuncPars_ANSGUtils(ParArrayPtr p, SignalDataPtr signal);
 
-int		GetNumDistributionPars_ANSGDist(int mode);
+BOOLN	Init_ANSGUtils(ANSGDistPtr *p, int numChannels);
 
-NameSpecifier *	ModeList_ANSGDist(int index);
+void	Free_ANSGUtils(ANSGDistPtr *p);
 
-void	PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
+Float *	GeneratePulse_ANSGUtils(int outputMode, int durationIndex,
+		  Float timeToPeak, Float magnitude, Float dt);
+
+int		GetDistFuncValue_ANSGUtils(ParArrayPtr p, int numChannels, int chan);
+
+int		GetNumDistributionPars_ANSGUtils(int mode);
+
+NameSpecifier *	ModeList_ANSGUtils(int index);
+
+NameSpecifier *	OutputModeList_ANSGUtils(int index);
+
+void	PrintFibres_ANSGUtils(FILE *fp, const WChar *prefix, int *fibres,
 		  Float *frequencies, int numChannels);
 
-void	SetDefaultDistribution_ANSGDist(ParArrayPtr distribution);
+void	SetDefaultDistribution_ANSGUtils(ParArrayPtr distribution);
 
-BOOLN	SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
+BOOLN	SetFibres_ANSGUtils(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
 		  int numChannels);
 
-void	SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres);
+void	SetStandardNumFibres_ANSGUtils(ParArrayPtr distribution, int numFibres);
 
 __END_DECLS
 
-#endif /* UTANSGDIST_H_ */
+#endif /* UTANSGUTILS_H_ */

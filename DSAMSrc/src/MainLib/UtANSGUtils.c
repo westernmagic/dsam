@@ -1,8 +1,8 @@
 /**********************
  *
- * File:		UtANSGDist.h
+ * File:		UtANSGUtils.h
  * Purpose:		This file contains the auditory nerve spike distribution
- * 				management routines.
+ * 				management and other utility routines.
  * Comments:
  * Author:		L. P. O'Mard
  * Created:		12 Jun 2009
@@ -23,7 +23,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtParArray.h"
-#include "UtANSGDist.h"
+#include "UtANSGUtils.h"
 
 /******************************************************************************/
 /****************************** Global Variables ******************************/
@@ -32,6 +32,25 @@
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
 /******************************************************************************/
+
+/****************************** OutputModeList ********************************/
+
+/*
+ * This function defines the 'outputMode' list array
+ */
+
+NameSpecifier *
+OutputModeList_ANSGUtils(int index)
+{
+	static NameSpecifier	modeList[] = {
+
+			{ wxT("SQUARE_PULSE"),	ANSGUTILS_DISTRIBUTION_OUTPUTMODE_SQUARE_PULSE },
+			{ wxT("ALPHA_WAVE"),	ANSGUTILS_DISTRIBUTION_OUTPUTMODE_ALPHA_WAVE },
+			{ 0,					ANSGUTILS_DISTRIBUTION_OUTPUTMODE_NULL }
+		};
+	return(&modeList[index]);
+
+}
 
 /****************************** ModeList **************************************/
 
@@ -42,15 +61,15 @@
  */
 
 NameSpecifier *
-ModeList_ANSGDist(int index)
+ModeList_ANSGUtils(int index)
 {
 	static NameSpecifier	modeList[] = {
 
-					{ wxT("DBL_GAUSSIAN"),	ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE},
-					{ wxT("GAUSSIAN"),		ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE},
-					{ wxT("STANDARD"),		ANSGDIST_DISTRIBUTION_STANDARD_MODE},
-					{ wxT("USER"),			ANSGDIST_DISTRIBUTION_USER_MODE},
-					{ 0,					ANSGDIST_DISTRIBUTION_NULL},
+					{ wxT("DBL_GAUSSIAN"),	ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE},
+					{ wxT("GAUSSIAN"),		ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE},
+					{ wxT("STANDARD"),		ANSGUTILS_DISTRIBUTION_STANDARD_MODE},
+					{ wxT("USER"),			ANSGUTILS_DISTRIBUTION_USER_MODE},
+					{ 0,					ANSGUTILS_DISTRIBUTION_NULL},
 
 				};
 	return (&modeList[index]);
@@ -66,18 +85,18 @@ ModeList_ANSGDist(int index)
  */
 
 int
-GetNumDistributionPars_ANSGDist(int mode)
+GetNumDistributionPars_ANSGUtils(int mode)
 {
-	static const WChar	*funcName = wxT("GetNumDistributionPars_ANSGDist");
+	static const WChar	*funcName = wxT("GetNumDistributionPars_ANSGUtils");
 
 	switch (mode) {
-	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+	case ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE:
 		return(4);
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
+	case ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE:
 		return(3);
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+	case ANSGUTILS_DISTRIBUTION_STANDARD_MODE:
 		return(1);
-	case ANSGDIST_DISTRIBUTION_USER_MODE:
+	case ANSGUTILS_DISTRIBUTION_USER_MODE:
 		return(0);
 	default:
 		NotifyError(wxT("%s: Mode not listed (%d), returning zero."), funcName,
@@ -93,7 +112,7 @@ GetNumDistributionPars_ANSGDist(int mode)
  */
 
 void
-Free_ANSGDist(ANSGDistPtr *p)
+Free_ANSGUtils(ANSGDistPtr *p)
 {
 	if (!(*p))
 		return;
@@ -113,9 +132,9 @@ Free_ANSGDist(ANSGDistPtr *p)
  */
 
 BOOLN
-Init_ANSGDist(ANSGDistPtr *p, int numChannels)
+Init_ANSGUtils(ANSGDistPtr *p, int numChannels)
 {
-	static const WChar	*funcName = wxT("Init_ANSGDist");
+	static const WChar	*funcName = wxT("Init_ANSGUtils");
 
 	if (!*p) {
 		if (((*p) = (ANSGDistPtr) malloc(sizeof(ANSGDist))) == NULL) {
@@ -145,7 +164,7 @@ Init_ANSGDist(ANSGDistPtr *p, int numChannels)
  */
 
 void
-SetDefaultDistribution_ANSGDist(ParArrayPtr distribution)
+SetDefaultDistribution_ANSGUtils(ParArrayPtr distribution)
 {
 	SetMode_ParArray(distribution, wxT("standard"));
 	distribution->params[0] = 5;
@@ -160,7 +179,7 @@ SetDefaultDistribution_ANSGDist(ParArrayPtr distribution)
  */
 
 void
-SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres)
+SetStandardNumFibres_ANSGUtils(ParArrayPtr distribution, int numFibres)
 {
 	SetMode_ParArray(distribution, wxT("standard"));
 	distribution->params[0] = numFibres;
@@ -175,31 +194,31 @@ SetStandardNumFibres_ANSGDist(ParArrayPtr distribution, int numFibres)
  */
 
 BOOLN
-CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal)
+CheckFuncPars_ANSGUtils(ParArrayPtr p, SignalDataPtr signal)
 {
-	static const WChar	*funcName = wxT("CheckFuncPars_ANSGDist");
+	static const WChar	*funcName = wxT("CheckFuncPars_ANSGUtils");
 	BOOLN	ok = TRUE;
 
 	switch (p->mode) {
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+	case ANSGUTILS_DISTRIBUTION_STANDARD_MODE:
 		break;
-	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		if (p->params[ANSGDIST_GAUSS_VAR1] == 0.0) {
+	case ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+	case ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE:
+		if (p->params[ANSGUTILS_GAUSS_VAR1] == 0.0) {
 			NotifyError(wxT("%s: Variance1 (parameter %g) must be greater than ")
-			  wxT("zero (%g)"), funcName, ANSGDIST_GAUSS_VAR1,
-			  p->params[ANSGDIST_GAUSS_VAR1]);
+			  wxT("zero (%g)"), funcName, ANSGUTILS_GAUSS_VAR1,
+			  p->params[ANSGUTILS_GAUSS_VAR1]);
 			ok = FALSE;
 		}
-		if ((p->mode == ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE) &&
-		  (p->params[ANSGDIST_GAUSS_VAR2] == 0.0)) {
+		if ((p->mode == ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE) &&
+		  (p->params[ANSGUTILS_GAUSS_VAR2] == 0.0)) {
 			NotifyError(wxT("%s: Variance2 (parameter %d) must be greater than ")
-			  wxT("zero (%g)"), funcName, ANSGDIST_GAUSS_VAR2,
-			  p->params[ANSGDIST_GAUSS_VAR2]);
+			  wxT("zero (%g)"), funcName, ANSGUTILS_GAUSS_VAR2,
+			  p->params[ANSGUTILS_GAUSS_VAR2]);
 			ok = FALSE;
 		}
 		break;
-	case ANSGDIST_DISTRIBUTION_USER_MODE:
+	case ANSGUTILS_DISTRIBUTION_USER_MODE:
 		break;
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
@@ -218,25 +237,25 @@ CheckFuncPars_ANSGDist(ParArrayPtr p, SignalDataPtr signal)
  */
 
 int
-GetDistFuncValue_ANSGDist(ParArrayPtr p, int numChannels, int chan)
+GetDistFuncValue_ANSGUtils(ParArrayPtr p, int numChannels, int chan)
 {
-	static const WChar	*funcName = wxT("GetDistFuncValue_ANSGDist");
+	static const WChar	*funcName = wxT("GetDistFuncValue_ANSGUtils");
 	int		meanChan;
 
 	switch (p->mode) {
-	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
-		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		p->params[ANSGDIST_GAUSS_MEAN]);
-		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
-		  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) +
-		  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], chan, meanChan)) /
+	case ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+		meanChan = (int) ((p->params[ANSGUTILS_GAUSS_MEAN] < 0)? numChannels / 2:
+		p->params[ANSGUTILS_GAUSS_MEAN]);
+		return((int) floor(p->params[ANSGUTILS_GAUSS_NUM_FIBRES] *
+		  (ANSGUTILS_GAUSSIAN(p->params[ANSGUTILS_GAUSS_VAR1], chan, meanChan) +
+		  ANSGUTILS_GAUSSIAN(p->params[ANSGUTILS_GAUSS_VAR2], chan, meanChan)) /
 		  2.0 + 0.5));
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
-		meanChan = (int) ((p->params[ANSGDIST_GAUSS_MEAN] < 0)? numChannels / 2:
-		  p->params[ANSGDIST_GAUSS_MEAN]);
-		return((int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] * ANSGDIST_GAUSSIAN(
-		  p->params[ANSGDIST_GAUSS_VAR1], chan, meanChan) + 0.5));
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+	case ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE:
+		meanChan = (int) ((p->params[ANSGUTILS_GAUSS_MEAN] < 0)? numChannels / 2:
+		  p->params[ANSGUTILS_GAUSS_MEAN]);
+		return((int) floor(p->params[ANSGUTILS_GAUSS_NUM_FIBRES] * ANSGUTILS_GAUSSIAN(
+		  p->params[ANSGUTILS_GAUSS_VAR1], chan, meanChan) + 0.5));
+	case ANSGUTILS_DISTRIBUTION_STANDARD_MODE:
 		return((int) p->params[0]);
 	default:
 		NotifyError(wxT("%s: Mode (%d) not listed, returning zero."), funcName,
@@ -280,40 +299,40 @@ GetMeanChan_ANGSDist(Float *frequencies, int numFreqs, Float bF)
  */
 
 BOOLN
-SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
+SetFibres_ANSGUtils(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
   int numChannels)
 {
-	static const WChar	*funcName = wxT("SetFibres_ANSGDist");
+	static const WChar	*funcName = wxT("SetFibres_ANSGUtils");
 	BOOLN	ok = TRUE;
 	int		i, meanChan;
 
-	if (!Init_ANSGDist(aNDist, numChannels)) {
+	if (!Init_ANSGUtils(aNDist, numChannels)) {
 		NotifyError(wxT("%s: Could not allocate AN distribution."), funcName);
 		return(FALSE);
 	}
 	switch (p->mode) {
-	case ANSGDIST_DISTRIBUTION_DBL_GAUSSIAN_MODE:
+	case ANSGUTILS_DISTRIBUTION_DBL_GAUSSIAN_MODE:
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
-		  p->params[ANSGDIST_GAUSS_MEAN]);
+		  p->params[ANSGUTILS_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
-			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
-			  (ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i, meanChan) +
-			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR2], i, meanChan)) /
+			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGUTILS_GAUSS_NUM_FIBRES] *
+			  (ANSGUTILS_GAUSSIAN(p->params[ANSGUTILS_GAUSS_VAR1], i, meanChan) +
+			  ANSGUTILS_GAUSSIAN(p->params[ANSGUTILS_GAUSS_VAR2], i, meanChan)) /
 			  2.0 + 0.5);
 		break;
-	case ANSGDIST_DISTRIBUTION_GAUSSIAN_MODE:
+	case ANSGUTILS_DISTRIBUTION_GAUSSIAN_MODE:
 		meanChan = GetMeanChan_ANGSDist(frequencies, numChannels,
-		  p->params[ANSGDIST_GAUSS_MEAN]);
+		  p->params[ANSGUTILS_GAUSS_MEAN]);
 		for (i = 0; i < numChannels; i++)
-			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGDIST_GAUSS_NUM_FIBRES] *
-			  ANSGDIST_GAUSSIAN(p->params[ANSGDIST_GAUSS_VAR1], i,
+			(*aNDist)->numFibres[i] = (int) floor(p->params[ANSGUTILS_GAUSS_NUM_FIBRES] *
+			  ANSGUTILS_GAUSSIAN(p->params[ANSGUTILS_GAUSS_VAR1], i,
 			  meanChan) + 0.5);
 		break;
-	case ANSGDIST_DISTRIBUTION_STANDARD_MODE:
+	case ANSGUTILS_DISTRIBUTION_STANDARD_MODE:
 		for (i = 0; i < numChannels; i++)
 			(*aNDist)->numFibres[i] = (int) p->params[0];
 		break;
-	case ANSGDIST_DISTRIBUTION_USER_MODE:
+	case ANSGUTILS_DISTRIBUTION_USER_MODE:
 		if (p->varNumParams < numChannels) {
 			NotifyError(wxT("%s: The are %d channels, but only %d have settings."),
 			  funcName, numChannels, p->varNumParams);
@@ -339,7 +358,7 @@ SetFibres_ANSGDist(ANSGDistPtr *aNDist, ParArrayPtr p, Float *frequencies,
  */
 
 void
-PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
+PrintFibres_ANSGUtils(FILE *fp, const WChar *prefix, int *fibres,
   Float *frequencies, int numChannels)
 {
 	int		i;
@@ -355,3 +374,84 @@ PrintFibres_ANSGDist(FILE *fp, const WChar *prefix, int *fibres,
 
 }
 
+/****************************** CalcPulseDuration ************************/
+
+/*
+ * This function generates the AN pulse duration.
+ */
+
+Float
+CalcPulseDuration_ANSGUtils(int outputMode, Float durationCoeff)
+{
+	return(((outputMode == ANSGUTILS_DISTRIBUTION_OUTPUTMODE_ALPHA_WAVE)?
+	  ANSGUTILS_DISTRIBUTION_ALPHA_WAVE_LIMIT_COEFF * durationCoeff:
+	  durationCoeff));
+
+}
+
+/****************************** CalcPulseDurationIndex ********************/
+
+/*
+ * This function generates the AN pulse.
+ */
+
+ChanLen
+CalcPulseDurationIndex_ANSGUtils(int outputMode, Float durationCoeff, Float dt)
+{
+
+	return((ChanLen) floor(CalcPulseDuration_ANSGUtils(outputMode,
+	  durationCoeff) / dt + 0.5));
+
+}
+
+/****************************** GeneratePulse *******************************/
+
+/*
+ * This function generates the AN pulse.
+ */
+
+ChanData *
+GeneratePulse_ANSGUtils(int outputMode, int durationIndex, Float timeToPeak,
+  Float magnitude, Float dt)
+{
+	static const WChar *funcName = wxT("GeneratePulse_ANSGUtils");
+	int		i;
+	ChanData	*pulse, *pPtr;
+
+	if ((pulse = (ChanData *) calloc(durationIndex, sizeof(ChanData))) == NULL) {
+		NotifyError(wxT("%s: Out of memory for alphaWave array."),
+		  funcName);
+		return(NULL);
+	}
+	pPtr = pulse;
+	if (outputMode == ANSGUTILS_DISTRIBUTION_OUTPUTMODE_ALPHA_WAVE)
+		for (i = 0; i < durationIndex; i++)
+			*pPtr++ = magnitude * i * dt / timeToPeak * exp(1.0 - i * dt /
+			  timeToPeak);
+	else
+		for (i = 0; i < durationIndex; i++)
+			*pPtr++ = magnitude;
+
+	return(pulse);
+
+}
+
+/****************************** AddRemainingPulse *******************************/
+
+/*
+ * This routine adds any remaining pulse required.
+ */
+
+void
+AddRemainingPulse_ANSGUtils(ChanData *outPtr, Float *pulse, ChanLen *pulseIndexPtr,
+  ChanLen pulseDurationIndex)
+{
+	ChanData	*pulsePtr;
+	ChanLen		i;
+
+	pulsePtr = pulse + *pulseIndexPtr;
+	for (i = *pulseIndexPtr; i < pulseDurationIndex; i++)
+		*outPtr++ += *pulsePtr++;
+	*pulseIndexPtr = 0;
+
+}

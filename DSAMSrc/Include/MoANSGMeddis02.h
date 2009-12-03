@@ -18,7 +18,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_MEDDIS02_NUM_PARS			8
+#define ANSPIKEGEN_MEDDIS02_NUM_PARS			9
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -27,9 +27,10 @@
 typedef enum {
 
 	ANSPIKEGEN_MEDDIS02_DIAGNOSTICMODE,
+	ANSPIKEGEN_MEDDIS02_OUTPUTMODE,
 	ANSPIKEGEN_MEDDIS02_RANSEED,
 	ANSPIKEGEN_MEDDIS02_NUMFIBRES,
-	ANSPIKEGEN_MEDDIS02_PULSEDURATION,
+	ANSPIKEGEN_MEDDIS02_PULSEDURATION_COEFF,
 	ANSPIKEGEN_MEDDIS02_PULSEMAGNITUDE,
 	ANSPIKEGEN_MEDDIS02_REFRACTORYPERIOD,
 	ANSPIKEGEN_MEDDIS02_RECOVERYTAU,
@@ -44,9 +45,10 @@ typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
+	int		outputMode;
 	long	ranSeed;
 	int		numFibres;
-	Float	pulseDuration;
+	Float	pulseDurationCoeff;
 	Float	pulseMagnitude;
 	Float	refractoryPeriod;
 	Float	recoveryTau;
@@ -56,10 +58,13 @@ typedef struct {
 	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
+	ChanLen	pulseDurationIndex;
+	ChanLen	refractoryPeriodIndex;
 	FILE	*fp;
-	Float	dt, wPulseDuration;
-	Float	**timer;
-	Float	**remainingPulseTime;
+	Float	dt;
+	ChanData	*pulse;
+	ChanLen	**pulseIndex;
+	ChanLen	**timerIndex;
 	ANSGDistPtr	aNDist;
 
 } Meddis02SG, *Meddis02SGPtr;
@@ -106,9 +111,11 @@ BOOLN	SetDistribution_ANSpikeGen_Meddis02(ParArrayPtr theDistribution);
 
 BOOLN	SetNumFibres_ANSpikeGen_Meddis02(int theNumFibres);
 
+BOOLN	SetOutputMode_ANSpikeGen_Meddis02(WChar * theOutputMode);
+
 BOOLN	SetParsPointer_ANSpikeGen_Meddis02(ModulePtr theModule);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Meddis02(Float thePulseDuration);
+BOOLN	SetPulseDurationCoeff_ANSpikeGen_Meddis02(Float thePulseDurationCoeff);
 
 BOOLN	SetPulseMagnitude_ANSpikeGen_Meddis02(Float thePulseMagnitude);
 

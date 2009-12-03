@@ -1,6 +1,6 @@
 /******************
  *
- * File:		MaANSGSimple.c
+ * File:		MoANSGSimple.c
  * Purpose:		This module contains the model for the hair cell post-synaptic
  *				firing
  * Comments:	24-02-97 LPO: Amended to allow multiple fibres.
@@ -29,7 +29,7 @@
 #include "UtString.h"
 #include "UtRandom.h"
 #include "UtParArray.h"
-#include "UtANSGDist.h"
+#include "UtANSGUtils.h"
 #include "MoANSGSimple.h"
 
 /******************************************************************************/
@@ -74,20 +74,21 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 	simpleSGPtr->parSpec = parSpec;
 	simpleSGPtr->diagnosticMode = GENERAL_DIAGNOSTIC_OFF_MODE;
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
+	simpleSGPtr->outputMode = ANSGUTILS_DISTRIBUTION_OUTPUTMODE_SQUARE_PULSE;
 	simpleSGPtr->ranSeed = -1;
 	simpleSGPtr->numFibres = 5;
-	simpleSGPtr->pulseDuration = 0.1e-3;
+	simpleSGPtr->pulseDurationCoeff = 0.1e-3;
 	simpleSGPtr->pulseMagnitude = 4.3;
 	simpleSGPtr->refractoryPeriod = PS_REFRACTORY_PERIOD;
 	if ((simpleSGPtr->distribution = Init_ParArray((WChar *) wxT("Distribution"),
-	  ModeList_ANSGDist(0), GetNumDistributionPars_ANSGDist,
-	  CheckFuncPars_ANSGDist)) == NULL) {
+	  ModeList_ANSGUtils(0), GetNumDistributionPars_ANSGUtils,
+	  CheckFuncPars_ANSGUtils)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise distribution parArray structure"),
 		  funcName);
 		Free_ANSpikeGen_Simple();
 		return(FALSE);
 	}
-	SetDefaultDistribution_ANSGDist(simpleSGPtr->distribution);
+	SetDefaultDistribution_ANSGUtils(simpleSGPtr->distribution);
 
 	if ((simpleSGPtr->diagnosticModeList = InitNameList_NSpecLists(
 	  DiagModeList_NSpecLists(0), simpleSGPtr->diagFileName)) == NULL)
@@ -97,8 +98,9 @@ Init_ANSpikeGen_Simple(ParameterSpecifier parSpec)
 		Free_ANSpikeGen_Simple();
 		return(FALSE);
 	}
-	simpleSGPtr->timer = NULL;
-	simpleSGPtr->remainingPulseTime = NULL;
+	simpleSGPtr->pulse = NULL;
+	simpleSGPtr->pulseIndex = NULL;
+	simpleSGPtr->timerIndex = NULL;
 	simpleSGPtr->aNDist = NULL;
 	return(TRUE);
 
@@ -119,7 +121,7 @@ Free_ANSpikeGen_Simple(void)
 	if (simpleSGPtr == NULL)
 		return(TRUE);
 	FreeProcessVariables_ANSpikeGen_Simple();
-	Free_ANSGDist(&simpleSGPtr->aNDist);
+	Free_ANSGUtils(&simpleSGPtr->aNDist);
 	Free_ParArray(&simpleSGPtr->distribution);
 	if (simpleSGPtr->diagnosticModeList)
 		free(simpleSGPtr->diagnosticModeList);
@@ -158,6 +160,11 @@ SetUniParList_ANSpikeGen_Simple(void)
 	  UNIPAR_NAME_SPEC_WITH_FILE,
 	  &simpleSGPtr->diagnosticMode, simpleSGPtr->diagnosticModeList,
 	  (void * (*)) SetDiagnosticMode_ANSpikeGen_Simple);
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_OUTPUTMODE], wxT("OUTPUT_MODE"),
+	  wxT("Output mode, 'square_pulse' or 'alpha_wave'."),
+	  UNIPAR_NAME_SPEC,
+	  &simpleSGPtr->outputMode, OutputModeList_ANSGUtils(0),
+	  (void * (*)) SetOutputMode_ANSpikeGen_Simple);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_RANSEED], wxT("RAN_SEED"),
 	  wxT("Random number seed (0 produces a different seed each run."),
 	  UNIPAR_LONG,
@@ -168,12 +175,13 @@ SetUniParList_ANSpikeGen_Simple(void)
 	  UNIPAR_INT,
 	  &simpleSGPtr->numFibres, NULL,
 	  (void * (*)) SetNumFibres_ANSpikeGen_Simple);
-	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEDURATION], wxT(
-	  "PULSE_DURATION"),
-	  wxT("Pulse duration (s)."),
+	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEDURATIONCOEFF], wxT(
+	  "PULSE_DURATION_COEFF"),
+	  wxT("Pulse duration coefficient - square Pulse: duration or ")
+	    wxT("alpha-wave: time to peak, Tau_E (s)."),
 	  UNIPAR_REAL,
-	  &simpleSGPtr->pulseDuration, NULL,
-	  (void * (*)) SetPulseDuration_ANSpikeGen_Simple);
+	  &simpleSGPtr->pulseDurationCoeff, NULL,
+	  (void * (*)) SetPulseDurationCoeff_ANSpikeGen_Simple);
 	SetPar_UniParMgr(&pars[ANSPIKEGEN_SIMPLE_PULSEMAGNITUDE], wxT("MAGNITUDE"),
 	  wxT("Pulse magnitude (arbitrary units)."),
 	  UNIPAR_REAL,
@@ -244,6 +252,36 @@ SetDiagnosticMode_ANSpikeGen_Simple(WChar * theDiagnosticMode)
 
 }
 
+/****************************** SetOutputMode *********************************/
+
+/*
+ * This function sets the module's outputMode parameter.
+ * It returns TRUE if the operation is successful.
+ * Additional checks should be added as required.
+ */
+
+BOOLN
+SetOutputMode_ANSpikeGen_Simple(WChar * theOutputMode)
+{
+	static const WChar	*funcName = wxT("SetOutputMode_ANSpikeGen_Simple");
+	int		specifier;
+
+	if (simpleSGPtr == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	if ((specifier = Identify_NameSpecifier(theOutputMode,
+	  OutputModeList_ANSGUtils(0))) == ANSGUTILS_DISTRIBUTION_OUTPUTMODE_NULL) {
+		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOutputMode);
+		return(FALSE);
+	}
+	/*** Put any other required checks here. ***/
+	simpleSGPtr->updateProcessVariablesFlag = TRUE;
+	simpleSGPtr->outputMode = specifier;
+	return(TRUE);
+
+}
+
 /********************************* SetRanSeed *********************************/
 
 /*
@@ -290,34 +328,34 @@ SetNumFibres_ANSpikeGen_Simple(int theNumFibres)
 	}
 	/*** Put any other required checks here. ***/
 	simpleSGPtr->numFibres = theNumFibres;
-	SetStandardNumFibres_ANSGDist(simpleSGPtr->distribution, theNumFibres);
+	SetStandardNumFibres_ANSGUtils(simpleSGPtr->distribution, theNumFibres);
 	return(TRUE);
 
 }
 
-/****************************** SetPulseDuration ******************************/
+/****************************** SetPulseDurationCoeff *************************/
 
 /*
- * This function sets the module's pulseDuration parameter.
+ * This function sets the module's pulseDurationCoeff parameter.
  * It returns TRUE if the operation is successful.
  * Additional checks should be added as required.
  */
 
 BOOLN
-SetPulseDuration_ANSpikeGen_Simple(Float thePulseDuration)
+SetPulseDurationCoeff_ANSpikeGen_Simple(Float thePulseDurationCoeff)
 {
-	static const WChar	*funcName = wxT("SetPulseDuration_ANSpikeGen_Simple");
+	static const WChar	*funcName = wxT("SetPulseDurationCoeff_ANSpikeGen_Simple");
 
 	if (simpleSGPtr == NULL) {
 		NotifyError(wxT("%s: Module not initialised."), funcName);
 		return(FALSE);
 	}
-	if (thePulseDuration < 0.0) {
+	if (thePulseDurationCoeff < 0.0) {
 		NotifyError(wxT("%s: Pulse duration must be greater than zero.\n"),
 		  funcName);
 		return(FALSE);
 	}
-	simpleSGPtr->pulseDuration = thePulseDuration;
+	simpleSGPtr->pulseDurationCoeff = thePulseDurationCoeff;
 	simpleSGPtr->updateProcessVariablesFlag = TRUE;
 	return(TRUE);
 
@@ -411,9 +449,12 @@ PrintPars_ANSpikeGen_Simple(void)
 	DPrint(wxT("Simple Post-Synaptic Firing Module Parameters:-\n"));
 	DPrint(wxT("\tDiagnostic mode = %s\n"), simpleSGPtr->diagnosticModeList[
 	  simpleSGPtr->diagnosticMode].name);
+	DPrint(wxT("\tOutput mode = %s\n"), OutputModeList_ANSGUtils(
+	  simpleSGPtr->outputMode)->name);
 	DPrint(wxT("\tRandom number seed = %ld,"), simpleSGPtr->ranSeed);
 	DPrint(wxT("\tNo. of fibres = %d,\n"), simpleSGPtr->numFibres);
-	DPrint(wxT("\tPulse duration = %g ms,"), MSEC(simpleSGPtr->pulseDuration));
+	DPrint(wxT("\tPulse duration coefficient = %g ms,"), MSEC(simpleSGPtr->
+	  pulseDurationCoeff));
 	DPrint(wxT("\tPulse magnitude = %g (nA?),\n"), simpleSGPtr->pulseMagnitude);
 	DPrint(wxT("\tRefractory Period = %g ms\n"), MSEC(simpleSGPtr->
 	  refractoryPeriod));
@@ -484,19 +525,18 @@ InitModule_ANSpikeGen_Simple(ModulePtr theModule)
 void
 ResetProcess_ANSpikeGen_Simple(EarObjectPtr data)
 {
-	int		i, chan;
-	Float	timeGreaterThanRefractoryPeriod, *timerPtr, *remainingPulseTimePtr;
+	int		chan;
+	ChanLen	i, *pulseIndexPtr, *timerIndexPtr;
 	SimpleSGPtr	p = simpleSGPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
 
 	ResetOutSignal_EarObject(data);
-	timeGreaterThanRefractoryPeriod = p->refractoryPeriod + outSignal->dt;
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
-		timerPtr = p->timer[chan];
-		remainingPulseTimePtr = p->remainingPulseTime[chan];
-		for (i = 0; i < p->aNDist->numFibres[chan]; i++) {
-			*timerPtr++ = timeGreaterThanRefractoryPeriod;
-			*remainingPulseTimePtr++ = 0.0;
+		pulseIndexPtr = p->pulseIndex[chan];
+		timerIndexPtr = p->timerIndex[chan];
+		for (i = 0; i < (ChanLen) p->aNDist->numFibres[chan]; i++) {
+			*pulseIndexPtr++ = 0;
+			*timerIndexPtr++ = 0;
 		}
 	}
 
@@ -514,45 +554,57 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 	static const WChar *funcName = wxT(
 	  "InitProcessVariables_ANSpikeGen_Simple");
 	int		i;
+	Float	*pPtr;
+	SignalDataPtr	outSignal;
 	SimpleSGPtr	p = simpleSGPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag || (data->
 	  timeIndex == PROCESS_START_TIME)) {
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Simple();
+			outSignal = _OutSig_EarObject(data);
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
-			if (!SetFibres_ANSGDist(&p->aNDist, p->distribution, _OutSig_EarObject(
-			  data)->info.cFArray, _OutSig_EarObject(data)->numChannels)) {
+			if (!SetFibres_ANSGUtils(&p->aNDist, p->distribution,
+			  outSignal->info.cFArray, outSignal->numChannels)) {
 				NotifyError(wxT("%s: Could not initialise AN distribution."), funcName);
 				return(FALSE);
 			}
-			if ((p->timer = (Float **) calloc(p->aNDist->numChannels, sizeof(
-			  Float *))) == NULL) {
-			 	NotifyError(wxT("%s: Out of memory for timer pointer array."),
-				  funcName);
+			if ((p->pulseIndex = (ChanLen **) calloc(p->aNDist->numChannels,
+			  sizeof(ChanLen *))) == NULL) {
+			 	NotifyError(wxT("%s: Out of memory for pulseIndex ")
+				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
-			if ((p->remainingPulseTime = (Float **) calloc(p->aNDist->numChannels,
-			  sizeof(Float *))) == NULL) {
-			 	NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
+			if ((p->timerIndex = (ChanLen **) calloc(p->aNDist->numChannels,
+			  sizeof(ChanLen *))) == NULL) {
+			 	NotifyError(wxT("%s: Out of memory for timerIndex ")
 				  wxT("pointer array."), funcName);
 			 	return(FALSE);
 			}
 			for (i = 0; i < p->aNDist->numChannels; i++) {
-				if ((p->timer[i] = (Float *) calloc(p->aNDist->numFibres[i], sizeof(
-				  Float))) == NULL) {
-			 		NotifyError(wxT("%s: Out of memory for timer array."),
-					  funcName);
+				if ((p->pulseIndex[i] = (ChanLen *) calloc(p->aNDist->numFibres[i],
+				  sizeof(ChanLen))) == NULL) {
+			 		NotifyError(wxT("%s: Out of memory for pulseIndex array."), funcName);
 			 		return(FALSE);
 				}
-				if ((p->remainingPulseTime[i] = (Float *) calloc(p->aNDist->numFibres[i],
-				  sizeof(Float))) == NULL) {
-			 		NotifyError(wxT("%s: Out of memory for remainingPulseTime ")
-					  wxT("array."), funcName);
+				if ((p->timerIndex[i] = (ChanLen *) calloc(p->aNDist->numFibres[i],
+				  sizeof(ChanLen))) == NULL) {
+			 		NotifyError(wxT("%s: Out of memory for timerIndex array."), funcName);
 			 		return(FALSE);
 				}
 			}
+			p->pulseDurationIndex = CalcPulseDurationIndex_ANSGUtils(p->outputMode,
+			  p->pulseDurationCoeff, outSignal->dt);
+			if ((p->pulse = (GeneratePulse_ANSGUtils(p->outputMode,
+			  p->pulseDurationIndex, p->pulseDurationCoeff, p->pulseMagnitude,
+			  outSignal->dt))) == NULL) {
+				NotifyError(wxT("%s: Out of memory for pulse array."),
+				  funcName);
+				return(FALSE);
+			}
+			p->refractoryPeriodIndex = (ChanLen) floor(p->refractoryPeriod /
+			  outSignal->dt + 0.5);
 			p->updateProcessVariablesFlag = FALSE;
 		}
 		ResetProcess_ANSpikeGen_Simple(data);
@@ -574,19 +626,23 @@ FreeProcessVariables_ANSpikeGen_Simple(void)
 	int		i;
 	SimpleSGPtr	p = simpleSGPtr;
 
-	if (p->timer) {
-		for (i = 0; i < p->aNDist->numChannels; i++)
-			if (p->timer[i])
-				free(p->timer[i]);
-		free(p->timer);
-		p->timer = NULL;
+	if (p->pulse) {
+		free(p->pulse);
+		p->pulse = NULL;
 	}
-	if (p->remainingPulseTime) {
+	if (p->pulseIndex) {
 		for (i = 0; i < p->aNDist->numChannels; i++)
-			if (p->remainingPulseTime[i])
-				free(p->remainingPulseTime[i]);
-		free(p->remainingPulseTime);
-		p->remainingPulseTime = NULL;
+			if (p->pulseIndex[i])
+				free(p->pulseIndex[i]);
+		free(p->pulseIndex);
+		p->pulseIndex = NULL;
+	}
+	if (p->timerIndex) {
+		for (i = 0; i < p->aNDist->numChannels; i++)
+			if (p->timerIndex[i])
+				free(p->timerIndex[i]);
+		free(p->timerIndex);
+		p->timerIndex = NULL;
 	}
 	p->updateProcessVariablesFlag = TRUE;
 
@@ -609,6 +665,8 @@ BOOLN
 CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_ANSpikeGen_Simple");
+	Float	pulseDuration;
+	SimpleSGPtr	p = simpleSGPtr;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -616,19 +674,20 @@ CheckData_ANSpikeGen_Simple(EarObjectPtr data)
 	}
 	if (!CheckInSignal_EarObject(data, funcName))
 		return(FALSE);
-	if (simpleSGPtr->pulseDuration >= simpleSGPtr->refractoryPeriod) {
+	pulseDuration = CalcPulseDuration_ANSGUtils(p->outputMode, p->pulseDurationCoeff);
+	if (pulseDuration >= p->refractoryPeriod) {
 		NotifyError(wxT("%s: Pulse duration must be smaller than the\n")
 		  wxT("refractory period, %g ms (%g ms)."), funcName, MSEC(
-		  simpleSGPtr->refractoryPeriod), MSEC(simpleSGPtr->pulseDuration));
+		  p->refractoryPeriod), MSEC(pulseDuration));
 		return(FALSE);
 	}
-	if (simpleSGPtr->pulseDuration < _InSig_EarObject(data, 0)->dt) {
+	if (pulseDuration < _InSig_EarObject(data, 0)->dt) {
 		NotifyError(wxT("%s: Pulse duration is too small for sampling\n")
 		  wxT("interval, %g ms (%g ms)\n"), funcName, MSEC(_InSig_EarObject(
-		  data, 0)->dt), MSEC(simpleSGPtr->pulseDuration));
+		  data, 0)->dt), MSEC(pulseDuration));
 		return(FALSE);
 	}
-	if (!CheckPars_ParArray(simpleSGPtr->distribution, _InSig_EarObject(data, 0))) {
+	if (!CheckPars_ParArray(p->distribution, _InSig_EarObject(data, 0))) {
 		NotifyError(wxT("%s: Distribution parameters invalid."), funcName);
 		return(FALSE);
 	}
@@ -648,11 +707,12 @@ BOOLN
 RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_ANSpikeGen_Simple");
-	register	ChanData	*inPtr, *outPtr;
-	register	Float		*timerPtr, *remainingPulseTimePtr;
+	register	ChanData	*inPtr, *outPtr, *pulsePtr, *endPtr;
+	register	ChanLen		*pulseIndexPtr;
 	int		i, chan;
-	ChanLen	j;
-	SignalDataPtr	outSignal;
+	Float	timer;
+	ChanLen	j, pulseDurationIndex, *timerIndexPtr;
+	SignalDataPtr	outSignal, inSignal;
 	RandParsPtr		randParsPtr;
 	SimpleSGPtr	p = simpleSGPtr;
 
@@ -661,7 +721,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
+		inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Simple Post-Synaptic Spike ")
 		  wxT("Firing"));
 		if (!InitOutSignal_EarObject(data, inSignal->numChannels, inSignal->length,
@@ -677,7 +737,7 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		}
 		if (p->diagnosticMode != GENERAL_DIAGNOSTIC_OFF_MODE) {
 			OpenDiagnostics_NSpecLists(&p->fp, p->diagnosticModeList, p->diagnosticMode);
-			PrintFibres_ANSGDist(p->fp, wxT(""), p->aNDist->numFibres,
+			PrintFibres_ANSGUtils(p->fp, wxT(""), p->aNDist->numFibres,
 			  _OutSig_EarObject(data)->info.cFArray, _OutSig_EarObject(data)->numChannels);
 			CloseDiagnostics_NSpecLists(&p->fp);
 		}
@@ -685,33 +745,45 @@ RunModel_ANSpikeGen_Simple(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
+	inSignal = _InSig_EarObject(data, 0);
 	outSignal = _OutSig_EarObject(data);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
-		outPtr = _OutSig_EarObject(data)->channel[chan];
-		for (j = 0; j < _OutSig_EarObject(data)->length; j++)
+		outPtr = outSignal->channel[chan];
+		for (j = outSignal->length; j; j--)
 			*outPtr++ = 0.0;
-		timerPtr = p->timer[chan];
-		remainingPulseTimePtr = p->remainingPulseTime[chan];
+		pulseIndexPtr = p->pulseIndex[chan];
+		timerIndexPtr = p->timerIndex[chan];
 		for (i = 0; i < p->aNDist->numFibres[chan]; i++) {
-			inPtr = _InSig_EarObject(data, 0)->channel[chan];
-			outPtr = outSignal->channel[chan];
+			if (*pulseIndexPtr)
+				AddRemainingPulse_ANSGUtils(outSignal->channel[chan], p->pulse,
+				  pulseIndexPtr, p->pulseDurationIndex);
+			timer = p->refractoryPeriod + p->dt;
+			inPtr = inSignal->channel[chan] + *timerIndexPtr;
+			endPtr = inSignal->channel[chan] + inSignal->length;
 			randParsPtr = &data->randPars[chan];
-			for (j = 0; j < outSignal->length; j++) {
-				if ((*timerPtr > p->refractoryPeriod) && (*inPtr > Ran01_Random(
+			pulseDurationIndex = p->pulseDurationIndex;
+			while (inPtr < endPtr) {
+				if ((timer > p->refractoryPeriod) && (*inPtr > Ran01_Random(
 				  randParsPtr))) {
-					*remainingPulseTimePtr = p->pulseDuration;
-					*timerPtr = 0.0;
+					outPtr = outSignal->channel[chan] + (inPtr - inSignal->channel[chan]);
+					pulsePtr = p->pulse;
+					if ((inPtr + pulseDurationIndex) > endPtr) {
+						pulseDurationIndex = endPtr - inPtr;
+						*pulseIndexPtr = pulseDurationIndex;
+					}
+					for (j = pulseDurationIndex; j; j--)
+						*outPtr++ += *pulsePtr++;
+					timer = p->refractoryPeriod + p->dt;
+					inPtr += p->refractoryPeriodIndex;
+					continue;
 				}
-				if (*remainingPulseTimePtr >= p->dt) {
-					*outPtr += p->pulseMagnitude;
-					*remainingPulseTimePtr -= p->dt;
-				};
-				*timerPtr += p->dt;
+				timer += p->dt;
 				inPtr++;
-				outPtr++;
 			}
-			timerPtr++;
-			remainingPulseTimePtr++;
+			pulseIndexPtr++;
+			*timerIndexPtr++ = (outPtr > outSignal->channel[chan])? p->refractoryPeriodIndex -
+			  (ChanLen) (outSignal->channel[chan] + outSignal->length - (outPtr -
+			  pulseDurationIndex)): 0;
 		}
 	}
 	SetProcessContinuity_EarObject(data);

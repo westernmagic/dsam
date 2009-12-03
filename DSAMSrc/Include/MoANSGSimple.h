@@ -18,7 +18,7 @@
 /*************************** Constant Definitions *****************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_SIMPLE_NUM_PARS	7
+#define ANSPIKEGEN_SIMPLE_NUM_PARS	8
 #define PS_REFRACTORY_PERIOD		1.0E-3		/* Default value in seconds. */
 
 /******************************************************************************/
@@ -28,9 +28,10 @@
 typedef enum {
 
 	ANSPIKEGEN_SIMPLE_DIAGNOSTICMODE,
+	ANSPIKEGEN_SIMPLE_OUTPUTMODE,
 	ANSPIKEGEN_SIMPLE_RANSEED,
 	ANSPIKEGEN_SIMPLE_NUMFIBRES,
-	ANSPIKEGEN_SIMPLE_PULSEDURATION,
+	ANSPIKEGEN_SIMPLE_PULSEDURATIONCOEFF,
 	ANSPIKEGEN_SIMPLE_PULSEMAGNITUDE,
 	ANSPIKEGEN_SIMPLE_REFRACTORYPERIOD,
 	ANSPIKEGEN_SIMPLE_DISTRIBUTION
@@ -43,9 +44,10 @@ typedef struct {
 
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
+	int		outputMode;
 	long	ranSeed;			/* seed for the random number generator. */
 	int		numFibres;
-	Float	pulseDuration;		/* Duration applied to each pulse (s). */
+	Float	pulseDurationCoeff;	/* Defines duration applied to each pulse (s). */
 	Float	pulseMagnitude;		/* Magnitude for each pulse (nA?). */
 	Float	refractoryPeriod;	/* The time during which spikes cannot occur */
 	ParArrayPtr	distribution;
@@ -54,10 +56,13 @@ typedef struct {
 	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
+	ChanLen	pulseDurationIndex;
+	ChanLen	refractoryPeriodIndex;
 	FILE	*fp;
 	Float	dt;
-	Float	**timer;
-	Float	**remainingPulseTime;
+	ChanData	*pulse;
+	ChanLen	**pulseIndex;
+	ChanLen	**timerIndex;
 	ANSGDistPtr	aNDist;
 
 } SimpleSG, *SimpleSGPtr;
@@ -104,9 +109,11 @@ BOOLN	SetDistribution_ANSpikeGen_Simple(ParArrayPtr theDistribution);
 
 BOOLN	SetNumFibres_ANSpikeGen_Simple(int theNumFibres);
 
+BOOLN	SetOutputMode_ANSpikeGen_Simple(WChar * theOutputMode);
+
 BOOLN	SetParsPointer_ANSpikeGen_Simple(ModulePtr theModule);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Simple(Float thePulseDuration);
+BOOLN	SetPulseDurationCoeff_ANSpikeGen_Simple(Float thePulseDurationCoeff);
 
 BOOLN	SetPulseMagnitude_ANSpikeGen_Simple(Float thePulseMagnitude);
 

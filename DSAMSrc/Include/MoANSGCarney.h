@@ -20,7 +20,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define ANSPIKEGEN_CARNEY_NUM_PARS			13
+#define ANSPIKEGEN_CARNEY_NUM_PARS					14
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -30,9 +30,10 @@ typedef enum {
 
 	ANSPIKEGEN_CARNEY_DIAGNOSTICMODE,
 	ANSPIKEGEN_CARNEY_INPUTMODE,
+	ANSPIKEGEN_CARNEY_OUTPUTMODE,
 	ANSPIKEGEN_CARNEY_RANSEED,
 	ANSPIKEGEN_CARNEY_NUMFIBRES,
-	ANSPIKEGEN_CARNEY_PULSEDURATION,
+	ANSPIKEGEN_CARNEY_PULSEDURATIONCOEFF,
 	ANSPIKEGEN_CARNEY_PULSEMAGNITUDE,
 	ANSPIKEGEN_CARNEY_REFRACTORYPERIOD,
 	ANSPIKEGEN_CARNEY_MAXTHRESHOLD,
@@ -59,9 +60,10 @@ typedef struct {
 	BOOLN	updateProcessVariablesFlag;
 	int		diagnosticMode;
 	int		inputMode;
+	int		outputMode;
 	long	ranSeed;
 	int		numFibres;
-	Float	pulseDuration;
+	Float	pulseDurationCoeff;
 	Float	pulseMagnitude;
 	Float	refractoryPeriod;
 	Float	maxThreshold;
@@ -75,10 +77,13 @@ typedef struct {
 	NameSpecifier	*diagnosticModeList;
 	UniParListPtr	parList;
 	WChar			diagFileName[MAX_FILE_PATH];
+	ChanLen	pulseDurationIndex;
+	ChanLen	refractoryPeriodIndex;
 	FILE	*fp;
-	Float	dt, wPulseDuration;
-	Float	**timer;
-	Float	**remainingPulseTime;
+	Float	dt;
+	ChanData	*pulse;
+	ChanLen	**pulseIndex;
+	ChanLen	**timerIndex;
 	ANSGDistPtr	aNDist;
 
 } CarneySG, *CarneySGPtr;
@@ -137,15 +142,19 @@ BOOLN	InitModule_ANSpikeGen_Carney(ModulePtr theModule);
 
 BOOLN	SetNumFibres_ANSpikeGen_Carney(int theNumFibres);
 
+BOOLN	SetOutputMode_ANSpikeGen_Carney(WChar * theOutputMode);
+
 BOOLN	SetParsPointer_ANSpikeGen_Carney(ModulePtr theModule);
 
-BOOLN	SetPulseDuration_ANSpikeGen_Carney(Float thePulseDuration);
+BOOLN	SetPulseDurationCoeff_ANSpikeGen_Carney(Float thePulseDurationCoeff);
 
 BOOLN	SetPulseMagnitude_ANSpikeGen_Carney(Float thePulseMagnitude);
 
 BOOLN	SetRanSeed_ANSpikeGen_Carney(long theRanSeed);
 
 BOOLN	SetRefractoryPeriod_ANSpikeGen_Carney(Float theRefractoryPeriod);
+
+BOOLN	SetTimeToPeak_ANSpikeGen_Carney(Float theTimeToPeak);
 
 BOOLN	SetUniParList_ANSpikeGen_Carney(void);
 
