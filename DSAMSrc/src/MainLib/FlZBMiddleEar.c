@@ -337,6 +337,11 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
   	outSignal = _OutSig_EarObject(data);
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_ZBMiddleEar();
+		if (!InitSubProcessList_EarObject(data, ZB_ME_NUM_SUB_PROCESSES)) {
+			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
+			  wxT("process."), funcName, ZB_ME_NUM_SUB_PROCESSES);
+			return(FALSE);
+		}
 		if ((p->lastInput = (Float *) calloc(outSignal->numChannels,
 		  sizeof(Float))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
@@ -344,6 +349,7 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
 		 	return(FALSE);
 		}
 		p->mey = Init_EarObject(wxT("NULL"));
+		data->subProcessList[ZB_ME_Y] = p->mey;
 		if (!InitOutSignal_EarObject(p->mey, outSignal->numChannels *
 		  ZB_ME_NUM_STATE_VECTORS, outSignal->length, outSignal->dt)) {
 			NotifyError(wxT("%s: Cannot initialise 'y' memory."), funcName);
@@ -447,13 +453,14 @@ RunModel_Filter_ZBMiddleEar(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	mey = _OutSig_EarObject(p->mey);
+	mey = _OutSig_EarObject(data->subProcessList[ZB_ME_Y]);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = inSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
 		mey1 = mey->channel[chan * ZB_ME_NUM_STATE_VECTORS];
 		mey2 = mey->channel[chan * ZB_ME_NUM_STATE_VECTORS + 1];
 		mey3 = mey->channel[chan * ZB_ME_NUM_STATE_VECTORS + 2];
+
 		for (n = 0; n < outSignal->length; n++, inPtr++, mey1++, mey2++, mey3++) {
 			if (n == 0) {
 				n_1 = outSignal->length - 1;
@@ -461,7 +468,7 @@ RunModel_Filter_ZBMiddleEar(EarObjectPtr data)
 				*mey1 = p->m11 * (-p->m12 * *(mey1 + n_1) + *inPtr - p->lastInput[chan]);
 			} else {
 				n_1 = -1;
-				n_2 = (n == 1)? outSignal->length - 1: -2;
+				n_2 = (n == 1)? outSignal->length - 2: -2;
 				*mey1 = p->m11 * (-p->m12 * *(mey1 + n_1) + *inPtr - *(inPtr - 1));
 			}
 			*mey2 = p->m21 * (-p->m22 * *(mey2 + n_1) - p->m23 * *(mey2 + n_2) + p->m24 *
