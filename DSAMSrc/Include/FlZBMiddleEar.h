@@ -32,7 +32,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define FILTER_ZBMIDDLEEAR_MOD_NAME		wxT("Filt_ZILANYBRUCEME")
+#define FILTER_ZBMIDDLEEAR_MOD_NAME		wxT("FILT_ZILANYBRUCEME")
 #define FILTER_ZBMIDDLEEAR_NUM_PARS				2
 #define ZB_ME_NUM_STATE_VECTORS					3
 
