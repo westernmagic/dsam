@@ -15,11 +15,13 @@
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  3 2008).
  *				This first revision follows the existing code with as little
  *				change as possible.
- * 				It uses an EarObject to allocate the memory for the mey arrays.
+ * 				It uses an EarObject to allocate the memory for the mey arrays,
+ *				but note that the mey array should not be set up as a sub-process
+ *				for threaded operation.
  * Author:		Revised by L. P. O'Mard
  * Created:		03 Mar 2008
  * Updated:
- * Copyright:	(c) 2008, CNBH, University of Cambridge.
+ * Copyright:	(c) 2008, L. P. O'Mard.
  *
  *********************/
 

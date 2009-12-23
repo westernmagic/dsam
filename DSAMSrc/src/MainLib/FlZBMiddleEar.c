@@ -1,12 +1,27 @@
 /**********************
  *
  * File:		FlZBMiddleEar.c
- * Purpose:
+ * Purpose:		This is the Zilany and Bruce middle-ear filter module.
+ *				It was revised from code provided by I. C. Bruce
+ * 				(zbcatmodel2007v2.tar.gz).
+ *				Zilany, M. S. A. and Bruce, I. C. (2006). "Modeling auditory-
+ * 				nerve responses for high sound pressure levels in the normal
+ * 				and impaired auditory periphery," Journal of the Acoustical
+ * 				Society of America 120(3):1446-1466.
+ * 				Zilany, M. S. A. and Bruce, I. C. (2007). "Representation of
+ * 				the vowel /eh/ in normal and impaired auditory nerve fibers:
+ * 				Model predictions of responses in cats," Journal of the
+ * 				Acoustical Society of America 122(1):402-417.
  * Comments:	Written using ModuleProducer version 1.6.0 (Mar  3 2008).
- * Author:
+ *				This first revision follows the existing code with as little
+ *				change as possible.
+ * 				It uses an EarObject to allocate the memory for the mey arrays,
+ *				but note that the mey array should not be set up as a sub-process
+ *				for threaded operation.
+ * Author:		Revised by L. P. O'Mard
  * Created:		03 Mar 2008
  * Updated:
- * Copyright:	(c) 2008,
+ * Copyright:	(c) 2008, L. P. O'Mard.
  *
  *********************/
 
@@ -337,11 +352,6 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
   	outSignal = _OutSig_EarObject(data);
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 		FreeProcessVariables_Filter_ZBMiddleEar();
-		if (!InitSubProcessList_EarObject(data, ZB_ME_NUM_SUB_PROCESSES)) {
-			NotifyError(wxT("%s: Could not initialise %d sub-process list for ")
-			  wxT("process."), funcName, ZB_ME_NUM_SUB_PROCESSES);
-			return(FALSE);
-		}
 		if ((p->lastInput = (Float *) calloc(outSignal->numChannels,
 		  sizeof(Float))) == NULL) {
 		 	NotifyError(wxT("%s: Out of memory for 'lastOutput'."),
@@ -349,7 +359,6 @@ InitProcessVariables_Filter_ZBMiddleEar(EarObjectPtr data)
 		 	return(FALSE);
 		}
 		p->mey = Init_EarObject(wxT("NULL"));
-		data->subProcessList[ZB_ME_Y] = p->mey;
 		if (!InitOutSignal_EarObject(p->mey, outSignal->numChannels *
 		  ZB_ME_NUM_STATE_VECTORS, outSignal->length, outSignal->dt)) {
 			NotifyError(wxT("%s: Cannot initialise 'y' memory."), funcName);
@@ -453,7 +462,7 @@ RunModel_Filter_ZBMiddleEar(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	mey = _OutSig_EarObject(data->subProcessList[ZB_ME_Y]);
+	mey = _OutSig_EarObject(p->mey);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		inPtr = inSignal->channel[chan];
 		outPtr = outSignal->channel[chan];
