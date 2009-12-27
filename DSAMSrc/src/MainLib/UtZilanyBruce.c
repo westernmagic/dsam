@@ -145,6 +145,7 @@ FreeZBWBGTCoeffs_Utility_ZilanyBruce(ZBWBGTCoeffsPtr *p)
 		free((*p)->fl);
 	if ((*p)->f)
 		free((*p)->f);
+	free(*p);
 	*p = NULL;
 
 }
@@ -193,14 +194,14 @@ InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, Float dt, Float cF,
 	p->f = NULL;
 	numComplex = order + 1;
 	if ((p->fl = (Complex *) calloc(numComplex, sizeof(Complex))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for fl array (%d elements)"),
-				funcName, order);
+		NotifyError(wxT("%s: Out of memory for fl array (%d elements)"), funcName,
+		  numComplex);
 		FreeZBWBGTCoeffs_Utility_ZilanyBruce(&p);
 		return(NULL);
 	}
 	if ((p->f = (Complex *) calloc(numComplex, sizeof(Complex))) == NULL) {
-		NotifyError(wxT("%s: Out of memory for f array (%d elements)"),
-				funcName, order);
+		NotifyError(wxT("%s: Out of memory for f array (%d elements)"), funcName,
+		  numComplex);
 		FreeZBWBGTCoeffs_Utility_ZilanyBruce(&p);
 		return(NULL);
 	}
@@ -209,7 +210,7 @@ InitZBWBGTCoeffs_Utility_ZilanyBruce(int order, Float dt, Float cF,
 	/** Calculate the location on basilar membrane from CF */
 	bmplace = 11.9 * log10(0.80 + cF / 456.0);
 
-	/** Calculate the center frequency for the control-path wideband filter
+	/** Calculate the centre frequency for the control-path wideband filter
 	    from the location on basilar membrane */
 	p->cF = 456.0 * (pow(10.0, (bmplace + 1.2) / 11.9) - 0.80); /* shift the center freq */
 
