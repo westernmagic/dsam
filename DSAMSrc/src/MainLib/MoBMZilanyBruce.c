@@ -93,12 +93,13 @@ InitOutputModeList_BasilarM_ZilanyBruce(void)
 {
 	static NameSpecifier	modeList[] = {
 
-			{ wxT("C1_FILTER"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C1_FILTER },
-			{ wxT("C2_FILTER"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C2_FILTER },
-			{ wxT("C1_VIHC"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C1_VIHC },
-			{ wxT("C2_VIHC"),	BASILARM_ZILANYBRUCE_OUTPUTMODE_C2_VIHC },
-			{ wxT("VIHC"),		BASILARM_ZILANYBRUCE_OUTPUTMODE_VIHC },
-			{ 0, BASILARM_ZILANYBRUCE_OUTPUTMODE_NULL },
+			{ wxT("C1_FILTER"),	BM_ZILANYBRUCE_OUTPUTMODE_C1_FILTER },
+			{ wxT("C2_FILTER"),	BM_ZILANYBRUCE_OUTPUTMODE_C2_FILTER },
+			{ wxT("FILTER"),	BM_ZILANYBRUCE_OUTPUTMODE_FILTER },
+			{ wxT("C1_VIHC"),	BM_ZILANYBRUCE_OUTPUTMODE_C1_VIHC },
+			{ wxT("C2_VIHC"),	BM_ZILANYBRUCE_OUTPUTMODE_C2_VIHC },
+			{ wxT("VIHC"),		BM_ZILANYBRUCE_OUTPUTMODE_VIHC },
+			{ 0, BM_ZILANYBRUCE_OUTPUTMODE_NULL },
 		};
 	bMZBPtr->outputModeList = modeList;
 	return(TRUE);
@@ -137,7 +138,7 @@ Init_BasilarM_ZilanyBruce(ParameterSpecifier parSpec)
 	}
 	bMZBPtr->parSpec = parSpec;
 	bMZBPtr->updateProcessVariablesFlag = TRUE;
-	bMZBPtr->outputMode = BASILARM_ZILANYBRUCE_OUTPUTMODE_VIHC;
+	bMZBPtr->outputMode = BM_ZILANYBRUCE_OUTPUTMODE_VIHC;
 	bMZBPtr->microPaInput = GENERAL_BOOLEAN_ON;
 	bMZBPtr->wborder = 3;
 	bMZBPtr->s0 = 12.0;
@@ -173,12 +174,14 @@ Init_BasilarM_ZilanyBruce(ParameterSpecifier parSpec)
 		return(FALSE);
 	}
 	bMZBPtr->numChannels = 0;
+	bMZBPtr->tempSamples = NULL;
 	bMZBPtr->wbgt = NULL;
 	bMZBPtr->c1Filter = NULL;
 	bMZBPtr->c2Filter = NULL;
 	bMZBPtr->ohcLowPass = NULL;
 	bMZBPtr->ihcLowPass = NULL;
 	bMZBPtr->tmpgain = NULL;
+	bMZBPtr->delayedSamples = NULL;
 	return(TRUE);
 
 }
@@ -198,113 +201,114 @@ SetUniParList_BasilarM_ZilanyBruce(void)
 	UniParPtr	pars;
 
 	if ((bMZBPtr->parList = InitList_UniParMgr(UNIPAR_SET_GENERAL,
-	  BASILARM_ZILANYBRUCE_NUM_PARS, NULL)) == NULL) {
+	  BM_ZILANYBRUCE_NUM_PARS, NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = bMZBPtr->parList->pars;
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_OUTPUTMODE], wxT("OUTPUT_MODE"),
-	  wxT("Output mode ('c1_filter', 'c2_filter', 'c1_vihc', 'c2_vihc' or 'vihc'."),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_OUTPUTMODE], wxT("OUTPUT_MODE"),
+	  wxT("Output mode ('c1_filter', 'c2_filter', 'filter', 'c1_vihc', ")
+	    wxT("'c2_vihc' or 'vihc'."),
 	  UNIPAR_NAME_SPEC,
 	  &bMZBPtr->outputMode, bMZBPtr->outputModeList,
 	  (void * (*)) SetOutputMode_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_MICROPAINPUT], wxT("MICRO_PASCALS"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_MICROPAINPUT], wxT("MICRO_PASCALS"),
 	  wxT("Input expected in micro pascals instead of pascals ('on' or 'off'")
 	    wxT(")."),
 	  UNIPAR_BOOL,
 	  &bMZBPtr->microPaInput, NULL,
 	  (void * (*)) SetMicroPaInput_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_WBORDER], wxT("WB_ORDER"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_WBORDER], wxT("WB_ORDER"),
 	  wxT("Order of the wide-band Gammatone filter."),
 	  UNIPAR_INT,
 	  &bMZBPtr->wborder, NULL,
 	  (void * (*)) SetWborder_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_S0], wxT("S0"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_S0], wxT("S0"),
 	  wxT("S0 Parameter in Boltzmann function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->s0, NULL,
 	  (void * (*)) SetS0_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_X1], wxT("X1"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_X1], wxT("X1"),
 	  wxT("X1 Parameter in Boltzmann function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->x1, NULL,
 	  (void * (*)) SetX1_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_S1], wxT("S1"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_S1], wxT("S1"),
 	  wxT("S1 Parameter in Boltzmann function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->s1, NULL,
 	  (void * (*)) SetS1_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_SHIFTCP], wxT("SHIFT_CP"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_SHIFTCP], wxT("SHIFT_CP"),
 	  wxT("Shift parameter in Boltzmann function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->shiftCP, NULL,
 	  (void * (*)) SetShiftCP_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_CUTOFFCP], wxT("CUTOFF_CP"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_CUTOFFCP], wxT("CUTOFF_CP"),
 	  wxT("Cut-off frequency of control path low-pass filter (Hz)."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->cutOffCP, NULL,
 	  (void * (*)) SetCutOffCP_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_LPORDER], wxT("LP_ORDER"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_LPORDER], wxT("LP_ORDER"),
 	  wxT("Oder of the control path low-pass filter."),
 	  UNIPAR_INT,
 	  &bMZBPtr->lPOrder, NULL,
 	  (void * (*)) SetLPOrder_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_DC], wxT("DC"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_DC], wxT("DC"),
 	  wxT("Estimated dc shift of low-pass filter output at high-level."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->dc, NULL,
 	  (void * (*)) SetDc_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_RC1], wxT("R_C1"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_RC1], wxT("R_C1"),
 	  wxT("Ratio of lower bound ot tau_C1 to tau_C1max."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->rC1, NULL,
 	  (void * (*)) SetRC1_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_COHC], wxT("C_OHC"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_COHC], wxT("C_OHC"),
 	  wxT("Scaling constant for impairment in the OHC."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->cOHC, NULL,
 	  (void * (*)) SetCOHC_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_OHCASYM], wxT("OHC_ASYM"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_OHCASYM], wxT("OHC_ASYM"),
 	  wxT("Nonlinear asymmetry of OHC function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->ohcasym, NULL,
 	  (void * (*)) SetOhcasym_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_IHCASYM], wxT("IHC_ASYM"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_IHCASYM], wxT("IHC_ASYM"),
 	  wxT("Nonlinear asymmetry of IHC C1 transduction function"),
 	  UNIPAR_REAL,
 	  &bMZBPtr->ihcasym, NULL,
 	  (void * (*)) SetIhcasym_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_NBORDER], wxT("NB_ORDER_C1"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_NBORDER], wxT("NB_ORDER_C1"),
 	  wxT("Order of the narrow-band C1 filter (chirp)."),
 	  UNIPAR_INT,
 	  &bMZBPtr->nBorder, NULL,
 	  (void * (*)) SetNBorder_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_AIHC0], wxT("A_IHC0"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_AIHC0], wxT("A_IHC0"),
 	  wxT("Constant in C1/C2 transduction function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->aIHC0, NULL,
 	  (void * (*)) SetAIHC0_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_BIHC], wxT("B_IHC"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_BIHC], wxT("B_IHC"),
 	  wxT("Constant in C1/C2 transduction function."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->bIHC, NULL,
 	  (void * (*)) SetBIHC_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_CIHC], wxT("C_IHC"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_CIHC], wxT("C_IHC"),
 	  wxT("Scaling constant for impairment in the IHC (not C_ihc in paper)."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->cIHC, NULL,
 	  (void * (*)) SetCIHC_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_CUTOFFIHCLP], wxT("CUTOFF_IHCLP"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_CUTOFFIHCLP], wxT("CUTOFF_IHCLP"),
 	  wxT("Low-pass filter cut off in the IHC (Hz)."),
 	  UNIPAR_REAL,
 	  &bMZBPtr->cutOffIHCLP, NULL,
 	  (void * (*)) SetCutOffIHCLP_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_IHCLPORDER], wxT("LP_ORDER_IHC"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_IHCLPORDER], wxT("LP_ORDER_IHC"),
 	  wxT("Low-pass filter order in the IHC."),
 	  UNIPAR_INT,
 	  &bMZBPtr->iHCLPOrder, NULL,
 	  (void * (*)) SetIHCLPOrder_BasilarM_ZilanyBruce);
-	SetPar_UniParMgr(&pars[BASILARM_ZILANYBRUCE_CFLIST], wxT("CFLIST"),
+	SetPar_UniParMgr(&pars[BM_ZILANYBRUCE_CFLIST], wxT("CFLIST"),
 	  wxT("Centre frequency list."),
 	  UNIPAR_CFLIST,
 	  &bMZBPtr->cFList, NULL,
@@ -357,7 +361,7 @@ SetOutputMode_BasilarM_ZilanyBruce(WChar * theOutputMode)
 		return(FALSE);
 	}
 	if ((specifier = Identify_NameSpecifier(theOutputMode,
-		bMZBPtr->outputModeList)) == BASILARM_ZILANYBRUCE_OUTPUTMODE_NULL) {
+		bMZBPtr->outputModeList)) == BM_ZILANYBRUCE_OUTPUTMODE_NULL) {
 		NotifyError(wxT("%s: Illegal name (%s)."), funcName, theOutputMode);
 		return(FALSE);
 	}
@@ -1028,6 +1032,7 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("InitProcessVariables_BasilarM_ZilanyBruce");
 	int		i, cFIndex;
+	ChanLen	maxDelayedSamples;
 	Float	centreFreq, CAgain, dt;
 	BMZBPtr	p = bMZBPtr;
 	SignalDataPtr	outSignal = _OutSig_EarObject(data);
@@ -1067,7 +1072,21 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 			NotifyError(wxT("%s: Cannot initialise 'y' memory."), funcName);
 			return(FALSE);
 		}
-		for (i = 0; i < outSignal->numChannels; i++) {
+		maxDelayedSamples = (ChanLen) ceil(delay_cat_Utility_ZilanyBruce(
+		  p->cFList->frequency[0]) / outSignal->dt);
+		if ((p->tempSamples = (ChanData *) calloc(maxDelayedSamples, sizeof(ChanData))) ==
+		  NULL) {
+			NotifyError(wxT("%s: Out of memory for temporary samples (%d)"), funcName,
+			  maxDelayedSamples);
+			return(FALSE);
+		}
+		p->delayedSamples = Init_EarObject(wxT("NULL"));
+		if (!InitOutSignal_EarObject(p->delayedSamples, outSignal->numChannels,
+		  maxDelayedSamples, outSignal->dt)) {
+			NotifyError(wxT("%s: Cannot initialise delayed samples memory."), funcName);
+			return(FALSE);
+		}
+		for (i = 0; i < p->numChannels; i++) {
 			cFIndex = i / _InSig_EarObject(data, 0)->interleaveLevel;
 			centreFreq = p->cFList->frequency[cFIndex];
 		    CAgain = 52.0 / 2.0 * (tanh(2.2 * log10(centreFreq / p->cutOffCP) +
@@ -1093,6 +1112,7 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 	}
 	if (data->timeIndex == PROCESS_START_TIME) {
 		ResetOutSignal_EarObject(p->tmpgain);
+		ResetOutSignal_EarObject(p->delayedSamples);
 		for (i = 0; i < p->numChannels; i++) {
 			ResetZBWBGTCoeffs_Utility_ZilanyBruce(p->wbgt[i]);
 			cFIndex = i / _InSig_EarObject(data, 0)->interleaveLevel;
@@ -1119,11 +1139,23 @@ FreeProcessVariables_BasilarM_ZilanyBruce(void)
 {
 	int		i;
 
-	for (i = 0; i < bMZBPtr->numChannels; i++) {
-		if (bMZBPtr->wbgt)
+	if (bMZBPtr->wbgt) {
+		for (i = 0; i < bMZBPtr->numChannels; i++)
 			FreeZBWBGTCoeffs_Utility_ZilanyBruce(&bMZBPtr->wbgt[i]);
 		free(bMZBPtr->wbgt);
 		bMZBPtr->wbgt = NULL;
+	}
+	if (bMZBPtr->c1Filter) {
+		free(bMZBPtr->c1Filter);
+		bMZBPtr->c1Filter = NULL;
+	}
+	if (bMZBPtr->c2Filter) {
+		free(bMZBPtr->c2Filter);
+		bMZBPtr->c2Filter = NULL;
+	}
+	if (bMZBPtr->tempSamples) {
+		free(bMZBPtr->tempSamples);
+		bMZBPtr->tempSamples = NULL;
 	}
 	if (bMZBPtr->ohcLowPass) {
 		free(bMZBPtr->ohcLowPass);
@@ -1134,6 +1166,7 @@ FreeProcessVariables_BasilarM_ZilanyBruce(void)
 		bMZBPtr->ihcLowPass = NULL;
 	}
 	Free_EarObject(&bMZBPtr->tmpgain);
+	Free_EarObject(&bMZBPtr->delayedSamples);
 	return(TRUE);
 
 }
@@ -1168,7 +1201,7 @@ BOOLN
 RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("RunModel_BasilarM_ZilanyBruce");
-	register ChanData	 *inPtr, *outPtr = NULL, *tmpgain, input;
+	register ChanData	 *inPtr, *outPtr = NULL, *tmpgain, *dSamples, *tSamples, input;
 	uShort	totalChannels;
 	int		chan, grd;
 	Float	cF, wbout1, wbout, ohcnonlinout, ohcout, tmptauc1, dt, tauc1, rsigma;
@@ -1242,21 +1275,24 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 			wbgt->lasttmpgain = wbgt->gain;
 
 			switch (p->outputMode) {
-			case BASILARM_ZILANYBRUCE_OUTPUTMODE_C1_FILTER:
+			case BM_ZILANYBRUCE_OUTPUTMODE_C1_FILTER:
 				*outPtr++ = C1_FILTER();
 				break;
-			case BASILARM_ZILANYBRUCE_OUTPUTMODE_C2_FILTER:
+			case BM_ZILANYBRUCE_OUTPUTMODE_C2_FILTER:
 				*outPtr++ = C2_FILTER();
 				break;
-			case BASILARM_ZILANYBRUCE_OUTPUTMODE_C1_VIHC:
+			case BM_ZILANYBRUCE_OUTPUTMODE_FILTER:
+				*outPtr++ = C1_FILTER() + C2_FILTER();
+				break;
+			case BM_ZILANYBRUCE_OUTPUTMODE_C1_VIHC:
 				c1filterouttmp = C1_FILTER();
 				*outPtr++ = C1_VIHC(c1filterouttmp);
 				break;
-			case BASILARM_ZILANYBRUCE_OUTPUTMODE_C2_VIHC:
+			case BM_ZILANYBRUCE_OUTPUTMODE_C2_VIHC:
 				c2filterouttmp = C2_FILTER();
 				*outPtr++ = C2_VIHC(c2filterouttmp);
 				break;
-			case BASILARM_ZILANYBRUCE_OUTPUTMODE_VIHC:
+			case BM_ZILANYBRUCE_OUTPUTMODE_VIHC:
 				c1filterouttmp = C1_FILTER();
 				c2filterouttmp = C2_FILTER();
 				*outPtr++ = p->ihcLowPass[chan].Run(&(p->ihcLowPass[chan]),
@@ -1265,13 +1301,21 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 			}
 
 		}
-		delaypoint = MAXIMUM(0,(int) ceil(delay_cat_Utility_ZilanyBruce(cF) / dt));
+		delaypoint = MAXIMUM(0,(ChanLen) ceil(delay_cat_Utility_ZilanyBruce(cF) / dt));
 		if (delaypoint) {
+			outPtr = outSignal->channel[chan] + outSignal->length - 1;
+			tSamples = p->tempSamples + delaypoint - 1;
+			for (n = delaypoint; n; n--)
+				*tSamples-- = *outPtr--;
 			outPtr = outSignal->channel[chan] + outSignal->length - 1;
 			for (n = data->outSignal->length - delaypoint; n; n--)
 				*outPtr-- = *(outPtr - delaypoint);
-			for (n = delaypoint; n ; n--)
-				*outPtr-- = 0.0;
+			dSamples = _OutSig_EarObject(p->delayedSamples)->channel[chan] + delaypoint - 1;
+			tSamples = p->tempSamples + delaypoint - 1;
+			for (n = delaypoint; n ; n--) {
+				*outPtr-- = *dSamples;
+				*dSamples-- = *tSamples--;
+			}
 		}
 	}
 
