@@ -261,8 +261,12 @@ RunThreadedProc::RunProcess(EarObjectPtr data)
 	if (!PreThreadProcessInit(data))
 		return(false);
 
-	if (!data->useThreadsFlag)
-		return(CXX_BOOL(RunProcessStandard_ModuleMgr(data)));
+	if (!data->useThreadsFlag) {
+		SetThreadRunFlag_EarObject(data, TRUE);	// Prevents process re-initialisation.
+		bool ok = CXX_BOOL(RunProcessStandard_ModuleMgr(data));
+		SetThreadRunFlag_EarObject(data, FALSE);
+		return(ok);
+	}
 	mutex.Lock();
 	SetThreadDistribution(_OutSig_EarObject(data)->numChannels);
 
