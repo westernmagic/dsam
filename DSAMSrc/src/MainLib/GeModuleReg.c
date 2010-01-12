@@ -122,7 +122,7 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("BM_ZHANG"),
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_Zhang },
-	{ BASILARM_ZILANYBRUCE_MOD_NAME,
+	{ BM_ZILANYBRUCE_MOD_NAME,
 		MODEL_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_BasilarM_ZilanyBruce },
 	{ DATAFILE_IN_MOD_NAME,
