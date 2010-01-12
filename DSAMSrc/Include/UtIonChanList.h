@@ -254,10 +254,6 @@ void	FreeIonChannels_IonChanList(IonChanListPtr theICList);
 
 IonChanListPtr	GenerateDefault_IonChanList(void);
 
-BOOLN	GetParsBoltzmann_IonChanList(IonChannelPtr theIC, FILE *fp);
-
-BOOLN	GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp);
-
 ICTableEntryPtr	GetTableEntry_IonChanList(IonChannelPtr theIC, Float voltage);
 
 void	GenerateBoltzmann_IonChanList(IonChannelPtr theIC);
@@ -275,8 +271,6 @@ BOOLN	PrintPars_IonChanList(IonChanListPtr theICList);
 
 void	PrintTables_IonChanList(IonChanListPtr theICList);
 
-BOOLN	ReadGeneralPars_IonChanList(FILE *fp, IonChanListPtr theICs);
-
 BOOLN	ReadVoltageTable_IonChanList(IonChannelPtr theIC, FILE *fp);
 
 IonChanListPtr	ReadPars_IonChanList(FILE *fp);
@@ -285,9 +279,6 @@ BOOLN	ReadICGeneralPars_IonChanList(FILE **fp, ICModeSpecifier mode,
 		  WChar *fileName, WChar *description, WChar *enabled,
 		  Float *equilibriumPot, Float *baseMaxConductance,
 		  Float *activationExponent);
-
-BOOLN	ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC,
-		  FILE *fp);
 
 BOOLN	ResetIonChannel_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC);
 
