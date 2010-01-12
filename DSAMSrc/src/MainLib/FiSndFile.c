@@ -655,9 +655,8 @@ double
 CalculateNormalisation_SndFile(SignalDataPtr signal)
 {
 	int		chan;
-	double 	maxValue;
 	ChanLen	i;
-	ChanData	*dataPtr;
+	ChanData	*dataPtr, maxValue;
 
 	for (chan = signal->numChannels, maxValue = -DBL_MAX; chan-- ;) {
 		dataPtr = signal->channel[chan];
