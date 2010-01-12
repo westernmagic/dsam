@@ -933,48 +933,6 @@ HHuxleyBeta_IonChanList(Float a, Float b, Float c,
 	}
 }
 
-/****************************** GetParsHHuxley ********************************/
-
-/*
- * This function reads the parameters for the Boltzmann ion channels.
- * It expects the data structure to be passed to the routine as an argument.
- * The function returns TRUE if it succeeds, otherwise it returns FALSE.
- */
-
-BOOLN
-GetParsHHuxley_IonChanList(IonChannelPtr theIC, FILE *fp) {
-	static const WChar *funcName = wxT("GetParsHHuxley_IonChanList");
-	BOOLN ok = TRUE;
-	int j;
-	ICHHuxleyParsPtr p;
-
-	if (!GetPars_ParFile(fp, wxT("%lf"), &theIC->conductanceQ10))
-		ok = FALSE;
-	p = &theIC->hHuxley;
-	for (j = 0; j < ICLIST_NUM_GATES; j++) {
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf ")
-		  wxT("%lf"), &p->func1A.array[j], &p->func1B.array[j], &p->func1C.array[j],
-		  &p->func1D.array[j], &p->func1E.array[j], &p->func1F.array[j],
-		  &p->func1G.array[j], &p->func1H.array[j], &p->func1I.array[j],
-		  &p->func1J.array[j], &p->func1K.array[j]))
-		ok = FALSE;
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf ")
-		  wxT("%lf"), &p->func2A.array[j], &p->func2B.array[j], &p->func2C.array[j],
-		  &p->func2D.array[j], &p->func2E.array[j], &p->func2F.array[j],
-		  &p->func2G.array[j], &p->func2H.array[j], &p->func2I.array[j],
-		  &p->func2J.array[j], &p->func2K.array[j]))
-		ok = FALSE;
-	}
-
-	if (!ok) {
-		NotifyError(wxT("%s: Could not read parameters for channel '%s'."),
-		  funcName, theIC->description);
-		return (FALSE);
-	}
-	return (TRUE);
-
-}
-
 /****************************** SetTableEntry *********************************/
 
 /*
@@ -1055,41 +1013,6 @@ GenerateHHuxley_IonChanList(IonChannelPtr theIC)
 
 }
 
-/****************************** GetParsBoltzmann ******************************/
-
-/*
- * This function reads the parameters for the Boltzmann ion channels.
- * It expects the data structure to be passed to the routine as an argument.
- * This ion-channel mode does not use the baseMaxConductance field for the
- * ion-channel structure.
- * The function returns TRUE if it succeeds, otherwise it returns FALSE.
- */
-
-BOOLN
-GetParsBoltzmann_IonChanList(IonChannelPtr theIC, FILE *fp)
-{
-	static const WChar *funcName = wxT("GetParsBoltzmann_IonChanList");
-	BOOLN ok = TRUE;
-	int j;
-	ICBoltzmannParsPtr p;
-
-	p = &theIC->boltzmann;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &theIC->conductanceQ10))
-		ok = FALSE;
-	for (j = 0; j < ICLIST_NUM_GATES; j++)
-		if (!GetPars_ParFile(fp, wxT("%lf %lf %lf"),
-		  &p->halfMaxV.array[j], &p->zZ.array[j],
-		  &p->tau.array[j]))
-			ok = FALSE;
-	if (!ok) {
-		NotifyError(wxT("%s: Could not read parameters for channel '%s'."),
-		  funcName, theIC->description);
-		return (FALSE);
-	}
-	return (TRUE);
-
-}
-
 /****************************** GenerateBoltzmann *****************************/
 
 /*
@@ -1130,78 +1053,6 @@ GenerateBoltzmann_IonChanList(IonChannelPtr theIC)
 			SetTableEntry_IonChanList(&theIC->table[j], k, activation, tau);
 		}
 	theIC->updateFlag = FALSE;
-
-}
-
-/****************************** ReadGeneralPars *******************************/
-
-/*
- * This routine reads the general ion channel list parameters from a file
- * stream.
- * It returns with the address of the IonChanList, or NULL if it fails.
- * The base leakage conductance and the leakage conductance are always
- * initialised to the same value.
- */
-
-BOOLN
-ReadGeneralPars_IonChanList(FILE *fp,
-		IonChanListPtr theICs)
-{
-	static const WChar *funcName = wxT(
-			"ReadGeneralPars_IonChanList");
-	BOOLN ok = TRUE;
-	WChar printTablesModeName[SMALL_STRING];
-	int numChannels;
-	Float baseLeakageCond, leakagePot, temperature, leakageCondQ10;
-	Float minV, maxV, dV;
-
-	if (!GetPars_ParFile(fp, wxT("%s"), printTablesModeName))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &baseLeakageCond))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &leakagePot))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%d"), &numChannels))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &temperature))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &leakageCondQ10))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &minV))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &maxV))
-		ok = FALSE;
-	if (!GetPars_ParFile(fp, wxT("%lf"), &dV))
-		ok = FALSE;
-	if (!ok) {
-		NotifyError(wxT("%s: Could not read general list parameters."),
-		  funcName);
-		return (FALSE);
-	}
-	if (!SetNumChannels_IonChanList(theICs, numChannels))
-		ok = FALSE;
-	if (!SetPrintTablesMode_IonChanList(theICs, printTablesModeName))
-		ok = FALSE;
-	if (!SetBaseLeakageCond_IonChanList(theICs, baseLeakageCond))
-		ok = FALSE;
-	if (!SetLeakagePot_IonChanList(theICs, leakagePot))
-		ok = FALSE;
-	if (!SetTemperature_IonChanList(theICs, temperature))
-		ok = FALSE;
-	if (!SetLeakageCondQ10_IonChanList(theICs, leakageCondQ10))
-		ok = FALSE;
-	if (!SetMinVoltage_IonChanList(theICs, minV))
-		ok = FALSE;
-	if (!SetMaxVoltage_IonChanList(theICs, maxV))
-		ok = FALSE;
-	if (!SetVoltageStep_IonChanList(theICs, dV))
-		ok = FALSE;
-	if (!ok) {
-		NotifyError(wxT("%s: Failed to set general parameters."),
-		  funcName);
-		return (FALSE);
-	}
-	return (TRUE);
 
 }
 
@@ -1310,79 +1161,6 @@ SetICGeneralPars_IonChanList(IonChannelPtr theIC, ICModeSpecifier mode,
 
 }
 
-/****************************** ReadICPars ************************************/
-
-/*
- * This routine reads the ion channel parameters and returns a pointer to an IC
- * structure.
- */
-
-BOOLN
-ReadICPars_IonChanList(IonChanListPtr theICs, IonChannelPtr theIC, FILE *fp)
-{
-	static const WChar	*funcName = wxT("ReadICPars_IonChanList");
-	BOOLN	ok = TRUE;
-	WChar	fileName[MAX_FILE_PATH], modeName[SMALL_STRING];
-	WChar	enabled[SMALL_STRING], description[MAXLINE];
-	Float	equilibriumPot, baseMaxConductance, activationExponent;
-	ICModeSpecifier mode;
-
-	if (!GetPars_ParFile(fp, wxT("%s"), modeName)) {
-		NotifyError(wxT("%s: Could not read filename."), funcName);
-		return(FALSE);
-	}
-	if ((mode = (ICModeSpecifier) Identify_NameSpecifier(modeName,
-	  iCListModeList)) == ICLIST_NULL) {
-		NotifyError(wxT("%s: Unknown ion channel mode (%s)."), funcName,
-		  modeName);
-		return(FALSE);
-	}
-	if (!ReadICGeneralPars_IonChanList(&fp, mode, fileName, description,
-	  enabled, &equilibriumPot, &baseMaxConductance, &activationExponent)) {
-		NotifyError(wxT("%s: Could not read general parameters."), funcName);
-		return(FALSE);
-	}
-	if (!SetICGeneralPars_IonChanList(theIC, mode, description, enabled,
-	  equilibriumPot, baseMaxConductance, activationExponent)) {
-		NotifyError(wxT("%s: Could not set general parameters."), funcName);
-		return(FALSE);
-	}
-	SetICGeneralParsFromICList_IonChanList(theIC, theICs);
-	switch (mode) {
-	case ICLIST_BOLTZMANN_MODE:
-		if (!GetParsBoltzmann_IonChanList(theIC, fp))
-			ok = FALSE;
-		else
-			GenerateBoltzmann_IonChanList(theIC);
-		break;
-	case ICLIST_HHUXLEY_MODE:
-		if (!GetParsHHuxley_IonChanList(theIC, fp))
-			ok = FALSE;
-		else
-			GenerateHHuxley_IonChanList(theIC);
-		break;
-	case ICLIST_FILE_MODE:
-		DSAM_strncpy(theIC->fileName, fileName, MAX_FILE_PATH);
-		if (!ReadVoltageTable_IonChanList(theIC, fp)) {
-			NotifyError(wxT("%s: Failed to read ion channel from file '%s'."),
-			  funcName, fileName);
-			ok = FALSE;
-		}
-		break;
-	default	:
-		NotifyError(wxT("%s: Unknown ion channel mode."), funcName);
-		ok = FALSE;
-		break;
-	} /* Switch */
-	if (ok && !SetIonChannelUniParListMode_IonChanList(theIC)) {
-		NotifyError(wxT("%s: Could not set parameter list mode."), funcName);
-		ok = FALSE;
-	}
-	SetICPowFunc_IonChanList(theIC);
-	return(ok);
-
-}
-
 /****************************** SetGeneratedPars ******************************/
 
 /*
@@ -1420,62 +1198,6 @@ SetGeneratedPars_IonChanList(IonChanListPtr theICs)
 	}
 
 	return(TRUE);
-
-}
-
-/****************************** ReadPars **************************************/
-
-/*
- * This routine reads the ion channel parameters from a file stream.
- * It returns with the address of the IonChanList, or NULL if it fails.
- * The base leakage conductance and the leakage conductance are always
- * initialised to the same value.
- */
-
-IonChanListPtr
-ReadPars_IonChanList(FILE *fp)
-{
-	static const WChar	*funcName = wxT("ReadPars_IonChanList");
-	IonChanListPtr	theICs = NULL;
-	IonChannelPtr	theIC;
-	DynaListPtr		node;
-
-	if ((theICs = Init_IonChanList((WChar *) funcName)) == NULL) {
-		NotifyError(wxT("%s: Out of memory for ion channel list structure."),
-		  funcName);
-		return(NULL);
-	}
-	if (!ReadGeneralPars_IonChanList(fp, theICs)) {
-		NotifyError(wxT("%s: Failed to read general parameters."), funcName);
-		Free_IonChanList(&theICs);
-		return(NULL);
-	}
-	if (!SetGeneratedPars_IonChanList(theICs)) {
-		NotifyError(wxT("%s: Failed to set the generated parameters."),
-		  funcName);
-		Free_IonChanList(&theICs);
-		return(NULL);
-	}
-	if (!PrepareIonChannels_IonChanList(theICs)) {
-		NotifyError(wxT("%s: Failed to prepare the ion channels."), funcName);
-		Free_IonChanList(&theICs);
-		return(NULL);
-	}
-	for (node = theICs->ionChannels; node; node = node->next) {
-		theIC = (IonChannelPtr) node->data;
-		if (!ReadICPars_IonChanList(theICs, theIC, fp)) {
-			NotifyError(wxT("%s: Could not read ion channel '%s'."), funcName,
-			  theIC->description);
-			Free_IonChanList(&theICs);
-			return(NULL);
-		}
-	}
-	if (!SetGeneralUniParList_IonChanList(theICs)) {
-		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
-		Free_IonChanList(&theICs);
-		return(NULL);
-	}
-	return(theICs);
 
 }
 
