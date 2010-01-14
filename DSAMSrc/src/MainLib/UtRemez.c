@@ -2,28 +2,28 @@
  *
  * File:		UtRemez.c
  * Purpose:		Parks-McClellan algorithm for FIR filter design (C version)
- * Comments:	This library is free software; you can redistribute it and/or
- *				modify it under the terms of the GNU Library General Public
- *				License as published by the Free Software Foundation; either
- *				version 2 of the License, or (at your option) any later version.
- *
- *				This library is distributed in the hope that it will be useful,
- * 				but WITHOUT ANY WARRANTY; without even the implied warranty of
- *				MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *				GNU Library General Public License for more details.
- *
- *				You should have received a copy of the GNU Library General
- *				Public	License along with this library; if not, write to the
- *				Free Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *				02111-1307  USA
- *
- *				LPO: See bottom of header file for above licenses.
- *				04 Dec 2000 LPO: Converted this code to allow the calculation of
- *				arbitrary frequency response functions.
+ * Comments:
  * Author:		Jake Janovetz, additions/revisions L. P. O'Mard
  * Created:
  * Updated:		04 Dec 2000
- * Copyright:	(c) 1995,1998  Jake Janovetz (janovetz@uiuc.edu)
+ * Copyright:	(c) 1998, 2010 Lowel P. O'Mard
+ *
+ *********************
+ *
+ *  This file is part of DSAM.
+ *
+ *  DSAM is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  DSAM is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with DSAM.  If not, see <http://www.gnu.org/licenses/>.
  *
  *********************/
 

@@ -7,9 +7,26 @@
  * Author:		E. A. Lopez-Poveda
  * Created:		17 Jan 1995
  * Updated:		12 Mar 1997
- * Copyright:	(c) 1998, University of Essex
+ * Copyright:	(c) 1998, 2010 Lowel P. O'Mard
  *
- **********************/
+ *********************
+ *
+ *  This file is part of DSAM.
+ *
+ *  DSAM is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  DSAM is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with DSAM.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *********************/
 
 #ifndef	_STWHITENOISE_H
 #define _STWHITENOISE_H	1

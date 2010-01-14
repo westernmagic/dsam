@@ -1,14 +1,33 @@
+;;;;;;;;;;;;;;;;;;;;;;;
 ;File:		DSAM_SDK.nsi
 ;Purpose:	Create the DSAM SDK required to compile DSAM programs
 ;Comments:	This script is based on NSIS example2.nsi
-;		The "SetOutPath" is needed for the writing of the uninstaller and
-;		and also the DLL install - even though the full directory is given
-;		in the instruction line.
+;			The "SetOutPath" is needed for the writing of the uninstaller and
+;			and also the DLL install - even though the full directory is given
+;			in the instruction line.
 ;Author:	L. P. O'Mard
 ;Created:	9 Mar 2009
 ;Updated:
-;Copyright:	(C) 2009
+;Copyright:	(c) 2010 Lowel P. O'Mard
 ;
+;;;;;;;;;;;;;;;;;;;;;;;
+;
+;  This file is part of DSAM.
+;
+;  DSAM is free software: you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation, either version 3 of the License, or
+;  (at your option) any later version.
+;
+;  DSAM is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with DSAM.  If not, see <http://www.gnu.org/licenses/>.
+;
+;;;;;;;;;;;;;;;;;;;;;;;
 
 !addincludedir c:\Users\lowel\documents\Work\dsam\SupportLibs\NSIS\include
 

@@ -1,6 +1,32 @@
-dnl Process this file with autoconf to produce a configure script.
-dnl CVS ID $Id$
-dnl Put in a check for 'bool' for CC and CXX.
+#######################
+##
+## File:		configure.ac
+## Purpose:		
+## Comments:	CVS ID $Id$
+##				Process this file with autoconf to produce a configure script.
+## Author:		L. P. O'Mard
+## Created:		19 Nov 2006
+## Updated:
+## Copyright:	(c) 2006, 2010 Lowel P. O'Mard
+##
+#######################
+##
+##  This file is part of DSAM.
+##
+##  DSAM is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  DSAM is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with DSAM.  If not, see <http://www.gnu.org/licenses/>.
+##
+#######################
 
 AC_REVISION($Revision: 2.61)
 
