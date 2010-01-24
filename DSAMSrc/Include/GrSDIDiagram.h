@@ -52,8 +52,8 @@
 #define	DIAGRAM_LABEL_HEIGHT_MARGIN		5.0
 #define	DIAGRAM_ARROW_TEXT				wxT("Arrow head connection")
 #define DIAGRAM_ARROW_SIZE				10.0
-#define DIAGRAM_REPEAT_OVERSIZE_SCALE_Y	1.4
-#define DIAGRAM_REPEAT_OVERSIZE_SCALE_X	1.03
+#define	DIAGRAM_REPEAT_ARROW_TEXT		wxT("Arrow head 'repeat' connection")
+#define DIAGRAM_REPEAT_ARROW_SIZE		10.0
 #define DIAGRAM_ENABLED_BRUSH			wxCYAN_BRUSH
 #define DIAGRAM_DISENABLED_BRUSH		wxGREY_BRUSH
 
@@ -72,11 +72,8 @@
 /******************************************************************************/
 
 /******************************************************************************/
-/*************************** Class pre-definitions ****************************/
+/*************************** Pre reference definitions ************************/
 /******************************************************************************/
-
-class SDIShape;
-class SDICompositeShape;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/
@@ -107,11 +104,10 @@ class SDIDiagram: public wxDiagram
 	wxShape *	CreateLoadShape(DatumPtr pc, wxClassInfo *shapeInfo,
 				  const wxBrush *brush);
 	void	DrawDefaultConnection(DatumPtr pc, wxShape *shape);
-	void	DrawSimConnections(DatumPtr pc);
-	void	DrawSimShapes(DatumPtr pc);
+	void	DrawSimConnections(void);
+	void	DrawSimShapes(void);
 	void	DrawSimulation(void);
 	DatumPtr	FindShapeDatum(uInt id);
-	int		GetSimConnectionCount(DatumPtr pc);
 	EarObjectPtr	GetSimProcess(void)	{ return simProcess; }
 	double	GetXScale(void)		{ return xScale; }
 	double	GetYScale(void)		{ return yScale; }
@@ -119,7 +115,6 @@ class SDIDiagram: public wxDiagram
 	void	RedrawShapeLabel(wxShape *shape);
 	void	Rescale(double theXScale, double theYScale);
 	bool	SaveFile(const wxString& filename);
-	void	SetBasicShape(SDIShape *theShape, int type, const wxBrush *brush);
 	void	SetOk(bool status)		{ ok = status; }
 	void	SetLoadIDsFromFile(bool status)		{ loadIDsFromFile = status; }
 	void	SetSimProcess(EarObjectPtr process)	{ simProcess = process; }

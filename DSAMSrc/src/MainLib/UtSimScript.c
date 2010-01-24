@@ -968,15 +968,11 @@ InitialiseEarObjects_Utility_SimScript(void)
 		NotifyError(wxT("%s: Could not initialise EarObjects."), funcName);
 		ok = FALSE;
 	}
-	SetDefaultConnections_Utility_Datum(*simScriptPtr->simPtr);
-	if (ok)
-		ok = ResolveInstLabels_Utility_Datum(*simScriptPtr->simPtr,
-		  *simScriptPtr->labelBListPtr);
 	simScriptPtr = localSimScriptPtr;
 	return(ok);
 
 }
-
+	
 /****************************** GetSimScriptSimulation ************************/
 
 /*
@@ -1133,49 +1129,6 @@ CheckData_Utility_SimScript(EarObjectPtr data)
 
 }
 
-/**************************** InitModule ************************************/
-
-/*
- * This routine initialises the simulation.
- * It sets the parameters for any sub-simulation. These may be reset for the
- * sub-simulation script if it is read from a file.
- */
-
-BOOLN
-InitSimModule_Utility_SimScript(DatumPtr pc)
-{
-	SimScriptPtr	localSimScriptPtr;
-
-	if (pc->type == PROCESS) {
-		pc->data->module->onFlag = pc->onFlag;
-		switch (pc->data->module->specifier) {
-		case SIMSCRIPT_MODULE:
-			localSimScriptPtr = simScriptPtr;
-			SET_PARS_POINTER(pc->data);
-			SetOperationMode_Utility_SimScript((WChar *) BooleanList_NSpecLists(
-			  localSimScriptPtr->operationMode)->name);
-			SetParFilePathMode_Utility_SimScript((WChar *) localSimScriptPtr->
-			  parFilePathModeList[localSimScriptPtr->parFilePathMode].name);
-			SetParsFilePath_Utility_SimScript(localSimScriptPtr->
-			  parsFilePath);
-			SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
-			simScriptPtr->simFileType = localSimScriptPtr->simFileType;
-			SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
-			  labelBListPtr);
-			SetSimulation_Utility_SimScript(
-			  *GetSimScriptSimulation_Utility_SimScript(pc));
-			simScriptPtr = localSimScriptPtr;
-			break;
-		case ANA_SAI_MODULE:
-			SetPar_ModuleMgr(pc->data, wxT("STROBE_PAR_FILE"), NO_FILE);
-			break;
-		default:
-			;
-		}
-	}
-	return(TRUE);
-}
-
 /**************************** InitSimulation **********************************/
 
 /*
@@ -1190,24 +1143,49 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 	static const WChar *funcName = wxT("InitSimulation_Utility_SimScript");
 	WChar	*oldParsFilePath = GetDSAMPtr_Common()->parsFilePath;
 	DatumPtr	pc;
-	SimScriptPtr	localSimScriptPtr;
+	SimScriptPtr	localSimScriptPtr = simScriptPtr;
 
-	if (simScriptPtr->parFilePathMode ==
+	if (localSimScriptPtr->parFilePathMode ==
 	  UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL) {
-		DSAM_strncpy(simScriptPtr->parsFilePath, simScriptPtr->
+		DSAM_strncpy(localSimScriptPtr->parsFilePath, localSimScriptPtr->
 		  parFilePathModeList[UTILITY_SIMSCRIPT_PARFILEPATHMODE_NULL].name,
 		  MAX_FILE_PATH);
 	}
-	TraverseSimulation_Utility_Datum(simulation, InitSimModule_Utility_SimScript);
-	if (simScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
-		SetParsFilePath_Common(simScriptPtr->parsFilePath);
-		if (!TraverseSimulation_Utility_Datum(simulation,
-		  InitialiseModule_Utility_Datum)) {
+	for (pc = localSimScriptPtr->simulation; pc != NULL; pc = pc->next)
+		if (pc->type == PROCESS) {
+			pc->data->module->onFlag = pc->onFlag;
+			switch (pc->data->module->specifier) {
+			case SIMSCRIPT_MODULE:
+				SET_PARS_POINTER(pc->data);
+				SetOperationMode_Utility_SimScript(BooleanList_NSpecLists(
+				  localSimScriptPtr->operationMode)->name);
+				SetParFilePathMode_Utility_SimScript(localSimScriptPtr->
+				  parFilePathModeList[localSimScriptPtr->parFilePathMode].name);
+				SetParsFilePath_Utility_SimScript(localSimScriptPtr->
+				  parsFilePath);
+				SetSimFileName_Utility_SimScript(pc->u.proc.parFile);
+				simScriptPtr->simFileType = localSimScriptPtr->simFileType;
+				SetLabelBListPtr_Utility_SimScript(localSimScriptPtr->
+				  labelBListPtr);
+				SetSimulation_Utility_SimScript(
+				  *GetSimScriptSimulation_Utility_SimScript(pc));
+				break;
+			case ANA_SAI_MODULE:
+				SetPar_ModuleMgr(pc->data, wxT("STROBE_PAR_FILE"), NO_FILE);
+				break;
+			default:
+				;
+			}
+		}
+	if (localSimScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
+		SetParsFilePath_Common(localSimScriptPtr->parsFilePath);
+		if (!InitialiseModules_Utility_Datum(simulation)) {
 			NotifyError(wxT("%s: Could not initialise modules."), funcName);
 			return(FALSE);
 		}
 		SetParsFilePath_Common(oldParsFilePath);
 	}
+	simScriptPtr = localSimScriptPtr;
 	return(TRUE);
 
 }

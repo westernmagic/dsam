@@ -362,12 +362,15 @@ RunThreadedProc::InitialiseProcesses(DatumPtr start)
 			SetUpdateProcessFlag_EarObject(pc->data, FALSE);
 			break;
 		case REPEAT:
-			if (!InitialiseProcesses(pc->u.loop.pc)) {
+			if (!InitialiseProcesses(pc->next)) {
 				NotifyError(wxT("%s: Could not do process initialisation."),
 				  funcName);
 				return(false);
 			}
+			pc = pc->u.loop.stopPC;
 			break;
+		case STOP:
+			return(true);
 		default:
 			;
 		} /* switch */
@@ -399,17 +402,19 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 			pc2 = pc;
 			break;
 		case REPEAT:
-			if (!DetermineChannelChains(pc->u.loop.pc, &linkBreak)) {
+			if (!DetermineChannelChains(pc->next, &linkBreak)) {
 				NotifyError(wxT("%s: Could not do pre-thread simulation ")
 				  wxT("initialisation."), funcName);
 				return(false);
 			}
 			pc->threadSafe = !linkBreak;
-			pc2 = pc;
+			pc2 = GetFirstProcessInst_Utility_Datum(pc);
 			break;
 		case RESET:
 			pc2 = pc->u.ref.pc;
 			break;
+		case STOP:
+			return(true);
 		default:
 			pc2 = pc;
 		} /* switch */
@@ -433,6 +438,8 @@ RunThreadedProc::DetermineChannelChains(DatumPtr start, bool *brokenChain)
 				*brokenChain = true;
 			}
 		}
+		if (pc->type == REPEAT)
+			pc = pc->u.loop.stopPC;
 	}
 	return(true);
 
@@ -671,11 +678,13 @@ RunThreadedProc::Execute(DatumPtr start)
 		case RESET:
 			ResetProcess_EarObject(pc->data);
 			break;
+		case STOP:
+			return (pc);
 		case REPEAT:
 			if (!pc->threadSafe)
-				lastInstruction = ExecuteStandardChain(pc->u.loop.pc);
+				lastInstruction = ExecuteStandardChain(pc);
 			else
-			  	ExecuteMultiThreadChain(pc->u.loop.pc);
+			  	ExecuteMultiThreadChain(pc);
 			break;
 		default:
 			break;

@@ -174,6 +174,9 @@ DSAMXMLDocument::AddSimObjects(DSAMXMLNode *parent, DatumPtr start)
 			AddShapeInfo(objectElement, pc->shapePtr);
 			parent->AddChild(objectElement);
 			break; }
+		case STOP:
+			return(pc);
+			break;
 		default:
 			NotifyError(wxT("%s: Not yet implemented (%d)"), funcName, pc->
 			  type);
@@ -713,7 +716,7 @@ DSAMXMLDocument::GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p)
 /******************************************************************************/
 
 DatumPtr
-DSAMXMLDocument::InstallProcess(DatumPtr *simPtr, wxXmlNode *objectElement)
+DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallProcess");
 	wxString	moduleName, enabledStatus;
@@ -725,7 +728,7 @@ DSAMXMLDocument::InstallProcess(DatumPtr *simPtr, wxXmlNode *objectElement)
 		  funcName);
 		return(NULL);
 	}
-	if ((pc = InstallInst(simPtr, objectElement, PROCESS)) == NULL) {
+	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise ")
 		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.c_str());
 		return(NULL);
@@ -774,13 +777,13 @@ DSAMXMLDocument::InstallProcess(DatumPtr *simPtr, wxXmlNode *objectElement)
 /******************************************************************************/
 
 DatumPtr
-DSAMXMLDocument::InstallInst(DatumPtr *simPtr, wxXmlNode *objectElement, int type)
+DSAMXMLDocument::InstallInst(wxXmlNode *objectElement, int type)
 {
 	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallInst");
 	wxString	label;
 	DatumPtr	pc;
 
-	if ((pc = InstallInst_Utility_Datum(simPtr, type)) == NULL) {
+	if ((pc = InstallInst_Utility_Datum(simScriptPtr->simPtr, type)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not install ")
 		  wxT("instruction"), funcName);
 		return(NULL);
@@ -796,9 +799,10 @@ DSAMXMLDocument::InstallInst(DatumPtr *simPtr, wxXmlNode *objectElement, int typ
 /******************************************************************************/
 
 bool
-DSAMXMLDocument::InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimElement)
+DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 {
-	static const wxChar *funcName = wxT("DSAMXMLDocument::InstallSimulationNodes");
+	static const wxChar *funcName = wxT(
+	  "DSAMXMLDocument::InstallSimulationNodes");
 	long	longVal;
 	wxString	label, objectType, propVal;
 	SymbolPtr	sp;
@@ -815,7 +819,7 @@ DSAMXMLDocument::InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimEle
 		}
 		child = objectElement->GetChildren();
 		if (objectType.compare(DSAM_XML_PROCESS_ATTRIBUTE_VALUE) == 0) {
-			if ((pc = InstallProcess(simPtr, objectElement)) == NULL) {
+			if ((pc = InstallProcess(objectElement)) == NULL) {
 				XMLNotifyError(objectElement, wxT("%s: Could not install ")
 				  wxT("simulation object"), funcName);
 				return(false);
@@ -825,7 +829,7 @@ DSAMXMLDocument::InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimEle
 		  ), (wxChar *) objectType.c_str())) != NULL) {
 			switch (sp->type) {
 			case REPEAT:
-				if ((pc = InstallInst(simPtr, objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
 				if (!objectElement->GetPropVal(DSAM_XML_COUNT_ATTRIBUTE, &propVal)) {
 					XMLNotifyError(objectElement, wxT("%s: Could not find ")
@@ -837,11 +841,13 @@ DSAMXMLDocument::InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimEle
 				GetShapeInfo(child, pc);
 				while (child->GetName() != DSAM_XML_OBJECT_ELEMENT)
 					child = child->GetNext();
-				if (!InstallSimulationNodes(&pc->u.loop.pc, child))
+				if (!InstallSimulationNodes(child))
 					return(false);
+				pc->u.loop.stopPC = InstallInst_Utility_Datum(simScriptPtr->
+				  simPtr, STOP);
 				break;
 			case RESET:
-				if ((pc = InstallInst(simPtr, objectElement, sp->type)) == NULL)
+				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
 				if (!objectElement->GetPropVal(DSAM_XML_OBJLABEL_ATTRIBUTE, &label)) {
 					XMLNotifyError(objectElement, wxT("%s: reset process label ")
@@ -897,7 +903,7 @@ DSAMXMLDocument::GetSimulationInfo(wxXmlNode *simElement)
 		GetParListInfo(parListElement, GetUniParListPtr_ModuleMgr(
 		  mySimProcess));
 	startSimElement = parListElement->GetNext();
-	if (!InstallSimulationNodes(simScriptPtr->simPtr, startSimElement)) {
+	if (!InstallSimulationNodes(startSimElement)) {
 		XMLNotifyError(simElement, wxT("%s: Could not install simulation."),
 		  funcName);
 		ok = false;

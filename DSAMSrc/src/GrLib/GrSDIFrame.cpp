@@ -624,8 +624,6 @@ SDIFrame::OnSize(wxSizeEvent& event)
 		event.Skip();
 		return;
 	}
-	canvasW = size.GetWidth();
-	canvasH = size.GetHeight();
 	if (palette) {
 		int paletteX = 0;
 		int paletteY = 0;

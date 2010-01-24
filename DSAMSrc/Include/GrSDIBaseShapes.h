@@ -258,20 +258,6 @@ class SDIRectangleShape: public wxRectangleShape
 
 };
 
-/*************************** SDICompositeShape **********************************/
-
-class SDICompositeShape: public wxCompositeShape
-{
-	DECLARE_DYNAMIC_CLASS(SDICompositeShape)
-
-  public:
-    SDICompositeShape(double width = 0.0, double height = 0.0);
-
-	virtual	void AddXMLInfo(DSAMXMLNode *node);
-	virtual	bool GetXMLInfo(wxXmlNode *node);
-
-};
-
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
 /******************************************************************************/

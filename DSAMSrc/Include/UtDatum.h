@@ -94,7 +94,7 @@ typedef struct Datum {
 			DynaListPtr		outputList;
 		} proc;
 		struct {
-			struct Datum	*pc;
+			struct Datum	*stopPC;
 			int				count;
 		} loop;
 		struct {
@@ -151,12 +151,8 @@ int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
 BOOLN	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
 
-BOOLN	ConnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC);
-
 void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
 		  DatumPtr to);
-
-BOOLN	DisconnectRepeatLoop_Utility_Datum(DatumPtr repeatPC, DatumPtr toPC);
 
 BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
 
@@ -244,7 +240,7 @@ BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
 BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label,
 		  const WChar *value, BOOLN diagsOn);
 
-DatumPtr	SetDefaultConnections_Utility_Datum(DatumPtr start);
+BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
 BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList);
 
@@ -259,9 +255,6 @@ BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 
 BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
 		  const WChar *parValue);
-
-BOOLN	TraverseSimulation_Utility_Datum(DatumPtr start,
-		  BOOLN (* ActionFunc)(DatumPtr));
 
 BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
 

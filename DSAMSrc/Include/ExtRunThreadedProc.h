@@ -94,14 +94,10 @@ extern RunThreadedProc	*runThreadedProc;
  */
 __BEGIN_DECLS
 
-DatumPtr	Execute_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
-			  int threadIndex);
-DatumPtr	ExecuteSubSims_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
-			  int threadIndex);
-
 BOOLN	RunProcess_RunThreadedProc(EarObjectPtr data);
 
-BOOLN	SetSubSimThreadFlag_RunThreadedProc(DatumPtr pc);
+DatumPtr	Execute_RunThreadedProc(DatumPtr start, DatumPtr passedEnd,
+			  int threadIndex);
 
 __END_DECLS
 

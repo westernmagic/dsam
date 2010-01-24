@@ -70,7 +70,7 @@ int		yylex(void);
 	Datum	*inst;
 	DynaListPtr	node;
 }
-%token	<sym>	_UTSSPARSER_H REPEAT BEGIN STRING QUOTED_STRING RESET
+%token	<sym>	_UTSSPARSER_H REPEAT BEGIN STOP STRING QUOTED_STRING RESET
 %token	<num>	NUMBER PROCESS
 %type	<inst>	process_specifier process reset repeat
 %type	<inst>	simulation simulation_name labelled_process
@@ -160,8 +160,8 @@ statement:
 			/* Ignore the QUOTED_STRING at present. */
 		|	repeat NUMBER statement
 			{	$1->u.loop.count = $2;
-				simScriptPtr->simPtr = (DatumPtr *) Pull_Utility_DynaList(
-				  &simScriptPtr->subSimList);
+				$1->u.loop.stopPC = InstallInst_Utility_Datum(simScriptPtr->
+				  simPtr, STOP);
 			}
 		|	reset STRING
 			{ $1->u.ref.string = InitString_Utility_String($2->name); }
@@ -214,16 +214,10 @@ process_specifier:
 repeat:	
 			REPEAT
 			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
-				Append_Utility_DynaList(&simScriptPtr->subSimList,
-				  simScriptPtr->simPtr);
-				simScriptPtr->simPtr = &$$->u.loop.pc;
 			}
 		|	STRING '%' REPEAT
 			{	$$ = InstallInst_Utility_Datum(simScriptPtr->simPtr, REPEAT);
 				$$->label = InitString_Utility_String($1->name);
-				Append_Utility_DynaList(&simScriptPtr->subSimList,
-				  simScriptPtr->simPtr);
-				simScriptPtr->simPtr = &$$->u.loop.pc;
 			}
 	;
 reset:	

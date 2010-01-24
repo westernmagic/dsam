@@ -1053,35 +1053,4 @@ GetPointInfo(wxXmlNode *myElement)
 
 }
 
-/******************************************************************************/
-/****************************** SDICompositeShape Methods *********************/
-/******************************************************************************/
-
-IMPLEMENT_DYNAMIC_CLASS(SDICompositeShape, wxCompositeShape)
-
-/****************************** Constructor ***********************************/
-
-SDICompositeShape::SDICompositeShape(double width, double height): wxCompositeShape()
-{
-}
-
-/****************************** AddXMLInfo ************************************/
-
-void
-SDICompositeShape::AddXMLInfo(DSAMXMLNode *parent)
-{
-}
-
-/****************************** GetXMLInfo ************************************/
-
-bool
-SDICompositeShape::GetXMLInfo(wxXmlNode *myElement)
-{
-	static const wxChar *funcName = wxT("SDICompositeShape::GetXMLInfo");
-	bool	ok = true;
-
-	return(ok);
-
-}
-
 #endif /* USE_WX_OGL */

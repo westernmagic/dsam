@@ -116,23 +116,22 @@ void
 SDIEvtHandler::ResetLabel(void)
 {
 	label.Empty();
-	label.Printf(wxT("{ %s }"), pc->label);
+	label.Printf(wxT("{ %s }\n"), pc->label);
 	label.MakeLower();
 	switch (pc->type) {
 	case REPEAT: {
 		wxString strCount;
-		strCount.Printf(wxT(" %s [ %d ]"), GetProcessName_Utility_Datum(pc),
+		strCount.Printf(wxT("%s\n[ %d ]"), GetProcessName_Utility_Datum(pc),
 		  pc->u.loop.count);
 		label += strCount;
 		break; }
 	case RESET: {
 		wxString str;
-		str.Printf(wxT("\n%s\n[ %s ]"), GetProcessName_Utility_Datum(pc),
-		  pc->u.ref.string);
+		str.Printf(wxT("%s\n[ %s ]"), GetProcessName_Utility_Datum(pc), pc->u.
+		  ref.string);
 		label += str;
 		break; }
 	case PROCESS: {
-		label += wxT("\n");
 		if (pc->data->module->specifier != DISPLAY_MODULE) {
 			label += (wxChar *) GetProcessName_Utility_Datum(pc);
 			break;
@@ -396,30 +395,20 @@ SDIEvtHandler::ProcessProperties(double x, double y)
 /*
  * SDIEvtHandler: an event handler class for all shapes
  */
-
+ 
 void
 SDIEvtHandler::OnLeftClick(double x, double y, int keys, int attachment)
 {
 	wxClientDC dc(GetShape()->GetCanvas());
 	GetShape()->GetCanvas()->PrepareDC(dc);
 
-	wprintf(wxT("SDIEvtHandler::OnLeftClick: Entered.\n"));
 	if (keys == 0) {
 		if (SetSelectedShape(dc)) {
-			if (pc->type == REPEAT) {
-				SDIControlShape *shape = (SDIControlShape *) GetShape();
-				wprintf(wxT("SDIEvtHandler::OnLeftClick: Shape control shape.\n"));
-				SDICanvas *canvas = (SDICanvas *) shape->GetCanvas();
-				canvas->OnLeftClick(shape->GetX(), shape->GetY(), keys);
-				wxNode *node = canvas->view->GetDocument()->
-				  GetCommandProcessor()->GetCommands().GetLast();
-				shape->AddChild((wxShape *) node->GetData());
-			}
 			GetShape()->Select(false, &dc);
 			// Redraw because bits of objects will be are missing
 			GetShape()->GetCanvas()->Redraw(dc);
 		}
-	} else
+	} else 
 		if (keys & KEY_CTRL) {
 			printf("SDIEvtHandler::OnLeftClick: Debug: ctrl left click.\n");
 		} else {
@@ -571,13 +560,12 @@ SDIEvtHandler::OnEndDragRight(double x, double y, int keys, int attachment)
 	if (!otherShape || otherShape->IsKindOf(CLASSINFO(wxLineShape)))
 		return;
 
-	DatumPtr	tempPC = SHAPE_PC(otherShape);
-	wprintf(wxT("SDIEvtHandler::OnEndDragRight:Debug: from = '%S', to = %S\n"),
-	  pc->label, tempPC->label);
 	DatumPtr	pc = SHAPE_PC(GetShape());
 	if (pc && pc->next) {
 		switch (pc->type) {
 		case REPEAT:
+			if (pc->u.loop.stopPC)	/* Existing repeat connection */
+				break;
 			canvas->view->GetDocument()->GetCommandProcessor()->Submit(
 			  new SDICommand(wxT("'repeat' connection"),
 			  SDIFRAME_ADD_REPEAT_LINE, (SDIDocument *) canvas->view->

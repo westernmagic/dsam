@@ -136,9 +136,9 @@ class DSAMXMLDocument: public wxXmlDocument
 	bool	GetParInfo(wxXmlNode *parElement, UniParList *parList);
 	EarObjectPtr	GetSimProcess(void)		{ return mySimProcess; }
 	bool	GetSimulationInfo(wxXmlNode *simElement);
-	DatumPtr	InstallInst(DatumPtr *simPtr, wxXmlNode *objectElement, int type);
-	DatumPtr	InstallProcess(DatumPtr *simPtr, wxXmlNode *objectElement);
-	bool	InstallSimulationNodes(DatumPtr *simPtr, wxXmlNode *startSimElement);
+	DatumPtr	InstallInst(wxXmlNode *objectElement, int type);
+	DatumPtr	InstallProcess(wxXmlNode *objectElement);
+	bool	InstallSimulationNodes(wxXmlNode *startSimElement);
 	void	SetSimScriptPtr(SimScriptPtr ptr)	{ simScriptPtr = ptr; }
 	bool	Translate(void);
 	bool	ValidVersion(const wxString &s1, const wxString &s2);

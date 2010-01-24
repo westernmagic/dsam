@@ -130,31 +130,29 @@ SDIDisplayShape::GetXMLInfo(wxXmlNode *myElement)
 	return(true);
 
 }
-
 /******************************************************************************/
-/****************************** SDIControlParentShape Methods *****************/
+/****************************** SDIControlShape Methods ***********************/
 /******************************************************************************/
 
-IMPLEMENT_DYNAMIC_CLASS(SDIControlParentShape, SDIPolygonShape)
+IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, SDIPolygonShape)
 
 /****************************** Constructor ***********************************/
 
-SDIControlParentShape::SDIControlParentShape(double width, double height): SDIPolygonShape(
+SDIControlShape::SDIControlShape(double width, double height): SDIPolygonShape(
   width, height)
 {
 	wxList *thePoints = new wxList;
-	double	s = 0.75;
+	wxRealPoint *point = new wxRealPoint(0.0, (-h/2.0));
+	thePoints->Append((wxObject*) point);
 
-	thePoints->Append((wxObject*) new wxRealPoint(0.0, -h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(s * w / 2.0, -h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(w / 2.0, s * -h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(w / 2.0, s * h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(s * w / 2.0, h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(0.0, h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(s * -w / 2.0, h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(-w / 2.0, s * h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(-w / 2.0, s * -h / 2.0));
-	thePoints->Append((wxObject*) new wxRealPoint(s * -w / 2.0, -h / 2.0));
+	point = new wxRealPoint((w/2.0), 0.0);
+	thePoints->Append((wxObject*) point);
+
+	point = new wxRealPoint(0.0, (h/2.0));
+	thePoints->Append((wxObject*) point);
+
+	point = new wxRealPoint((-w/2.0), 0.0);
+	thePoints->Append((wxObject*) point);
 
 	Create(thePoints);
 
@@ -163,7 +161,7 @@ SDIControlParentShape::SDIControlParentShape(double width, double height): SDIPo
 /****************************** AddXMLInfo ************************************/
 
 void
-SDIControlParentShape::AddXMLInfo(DSAMXMLNode *node)
+SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
 {
 	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_CONTROL_SHAPE_ELEMENT);
@@ -175,94 +173,12 @@ SDIControlParentShape::AddXMLInfo(DSAMXMLNode *node)
 /****************************** AddXMLInfo ************************************/
 
 bool
-SDIControlParentShape::GetXMLInfo(wxXmlNode *myElement)
+SDIControlShape::GetXMLInfo(wxXmlNode *myElement)
 {
 	SDIPolygonShape::GetXMLInfo(myElement);
 	return(true);
 
 }
-
-/******************************************************************************/
-/****************************** SDIControlShape Methods ***********************/
-/******************************************************************************/
-
-IMPLEMENT_DYNAMIC_CLASS(SDIControlShape, SDICompositeShape)
-
-/****************************** Constructor ***********************************/
-
-SDIControlShape::SDIControlShape(double width, double height): SDICompositeShape()
-{
-	AddChild(new SDIControlParentShape(width, height));
-
-}
-
-/****************************** AddXMLInfo ************************************/
-
-void
-SDIControlShape::AddXMLInfo(DSAMXMLNode *node)
-{
-
-}
-
-/****************************** AddXMLInfo ************************************/
-
-bool
-SDIControlShape::GetXMLInfo(wxXmlNode *myElement)
-{
-	return(true);
-
-}
-
-#if SHAPE_DEBUG
-
-/****************************** SetSize ***************************************/
-
-void
-SDIControlShape::SetSize(double w, double h, bool recursive)
-{
-  SetAttachmentSize(w, h);
-
-  double xScale = (double)(w/(wxMax(1.0, GetWidth())));
-  double yScale = (double)(h/(wxMax(1.0, GetHeight())));
-
-  m_width = w;
-  m_height = h;
-  wprintf(wxT("SDIControlShape::SetSize: w = %g, h = %g\n"), w, h);
-
-  if (!recursive) return;
-
-  wxNode *node = m_children.GetFirst();
-	if (m_children.GetFirst())
-		wprintf(wxT("SDIControlShape::SetSize: node correctly set."));
-
-  if (!GetCanvas())
-	  wprintf(wxT("SDIControlShape::SetSize: Debug: No Canvas\n"));
-  wxClientDC dc(GetCanvas());
-  GetCanvas()->PrepareDC(dc);
-
-  double xBound, yBound;
-  while (node)
-  {
-    wxShape *object = (wxShape *)node->GetData();
-
-    // Scale the position first
-    double newX = (double)(((object->GetX() - GetX())*xScale) + GetX());
-    double newY = (double)(((object->GetY() - GetY())*yScale) + GetY());
-    object->Show(false);
-    object->Move(dc, newX, newY);
-    object->Show(true);
-
-    // Now set the scaled size
-    object->GetBoundingBoxMin(&xBound, &yBound);
-    object->SetSize(object->GetFixedWidth() ? xBound : xScale*xBound,
-                    object->GetFixedHeight() ? yBound : yScale*yBound);
-
-    node = node->GetNext();
-  }
-  SetDefaultRegionSize();
-}
-
-#endif // DEBUG
 
 /******************************************************************************/
 /****************************** SDIFilterShape Methods ************************/

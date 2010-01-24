@@ -71,7 +71,6 @@
 class SDIShape;
 class SDIEllipseShape;
 class SDIPolygonShape;
-class SDICompositeShape;
 class SDIRectangleShape;
 
 /******************************************************************************/
@@ -97,26 +96,11 @@ class SDIAnalysisShape: public SDIEllipseShape
 
 };
 
-/*************************** SDIControlParentShape **********************************/
-
-class SDIControlParentShape: public SDIPolygonShape
-{
-	DECLARE_DYNAMIC_CLASS(SDIControlParentShape)
-
-  private:
-  public:
-	SDIControlParentShape(double width = 0.0, double height = 0.0);
-
-	void	AddXMLInfo(DSAMXMLNode *node);
-	bool	GetXMLInfo(wxXmlNode *myElement);
-
-};
-
 /*************************** SDIControlShape **********************************/
 
-class SDIControlShape: public SDICompositeShape
+class SDIControlShape: public SDIPolygonShape
 {
-	DECLARE_DYNAMIC_CLASS(SDICompositeShape)
+	DECLARE_DYNAMIC_CLASS(SDIControlShape)
 
   private:
   public:
@@ -124,12 +108,6 @@ class SDIControlShape: public SDICompositeShape
 
 	void	AddXMLInfo(DSAMXMLNode *node);
 	bool	GetXMLInfo(wxXmlNode *myElement);
-
-	SDIShape *	GetParentShape(void)	{ return (SDIShape *)
-				  m_children.GetFirst()->GetData(); }
-#	if SHAPE_DEBUG
-	void	SetSize(double w, double h, bool recursive);
-#	endif // DEBUG
 
 };
 

@@ -125,12 +125,7 @@ SDICommand::SDICommand(const wxString& name, int command, SDIDocument *ddoc,
 	x = xx;
 	y = yy;
 	selected = sel;
-	if (fs && ts) {
-		DatumPtr	tempPC = SHAPE_PC(fs);
-		DatumPtr	pc = SHAPE_PC(ts);
-		wprintf(wxT("SDICommand::SDICommand:Debug: from = '%S', to = %S\n"),
-		  pc->label, tempPC->label);
-	}
+
 }
 
 /******************************************************************************/
@@ -209,11 +204,8 @@ SDICommand::ConnectInstructions(wxShape *fromShape, wxShape *toShape)
 	static const wxChar *funcName = wxT("SDICommand::ConnectInstructions");
 	bool	ok = true;
 
-	if (!toShape || !fromShape)
-		wprintf(wxT("SDICommand::ConnectInstructions: Debug: both shapes not defined.\n"));
 	DatumPtr	toPc = SHAPE_PC(toShape);
 	DatumPtr	fromPc = SHAPE_PC(fromShape);
-	wprintf(wxT("SDICommand::ConnectInstructions: Debug: from %S to %S.\n"), fromPc->label, toPc->label);
 
 	if (!fromPc || !toPc) {
 		wxLogError(wxT("%s: Both processes must be set before a connection\n")
@@ -251,7 +243,7 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 		DisconnectOutSignalFromIn_EarObject(tempFromPc->data, tempToPc->data);
 	DisconnectInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(fromShape),
 	  SHAPE_PC(toShape));
-
+		
 }
 
 /******************************************************************************/
@@ -261,6 +253,7 @@ SDICommand::DisconnectProcessInsts(wxShape *fromShape, wxShape *toShape)
 void
 SDICommand::RedrawShapeLabel(wxShape *shape)
 {
+//*** you are here
 //*** put some of this this into GrBasicShape?
 
 	wxClientDC dc(shape->GetCanvas());
@@ -291,18 +284,10 @@ SDICommand::AddLineShape(int lineType)
 	else {
 		switch (lineType) {
 		case REPEAT:
-			if (SHAPE_PC(fromShape)->u.loop.pc) {
-				wxNode *node = fromShape->GetLines().GetFirst();
-				while (node) {
-					wxLineShape *line = (wxLineShape *)node->GetData();
-					if (((SDIEvtHandler *) line->GetEventHandler())->processType ==
-					  REPEAT)
-						doc->GetCommandProcessor()->Submit(new SDICommand(wxT("Cut"),
-						  SDIFRAME_CUT, doc, NULL, -1, 0.0, 0.0, line->Selected(), line));
-					node = shape->GetLines().GetFirst();
-				}
-			}
-			ConnectRepeatLoop_Utility_Datum(SHAPE_PC(fromShape), SHAPE_PC(toShape));
+			if (!InsertInst_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			  toShape), SHAPE_PC(fromShape)->u.loop.stopPC))
+				return(false);
+			SHAPE_PC(fromShape)->u.loop.stopPC = InitInst_Utility_Datum(STOP);
 			break;
 		default:
 			if (!ConnectInstructions(fromShape, toShape)) {
@@ -350,8 +335,8 @@ SDICommand::Do(void)
 				fromShape = lineShape->GetFrom();
 				toShape = lineShape->GetTo();
 				if (myHandler->processType == REPEAT)
-					DisconnectRepeatLoop_Utility_Datum(SHAPE_PC(fromShape),
-					  SHAPE_PC(toShape));
+					FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(),
+					  SHAPE_PC(fromShape)->u.loop.stopPC);
 				else
 					DisconnectProcessInsts(fromShape, toShape);
 			} else {
@@ -369,13 +354,13 @@ SDICommand::Do(void)
 		wxShape *theShape = NULL;
 		if (shape)
 			theShape = shape; // Saved from undoing the shape
-		else
-			theShape = diagram->CreateBasicShape(
+		else {
+			theShape = ((SDIDiagram *) doc->GetDiagram())->CreateBasicShape(
 			  shapeInfo, processType, wxCYAN_BRUSH);
-		diagram->AddShape(theShape);
-		if (!theShape)
 			theShape->SetSize(DIAGRAM_DEFAULT_SHAPE_WIDTH * diagram->GetXScale(
 			  ), DIAGRAM_DEFAULT_SHAPE_HEIGHT * diagram->GetYScale());
+		}
+		doc->GetDiagram()->AddShape(theShape);
 		theShape->Show(TRUE);
 
 		wxClientDC dc(theShape->GetCanvas());
@@ -502,8 +487,8 @@ SDICommand::Undo(void)
 		if (shape) {
 			wxClientDC dc(shape->GetCanvas());
 			shape->GetCanvas()->PrepareDC(dc);
-//			FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
-//			  fromShape)->u.loop.stopPC);
+			FreeInstFromSim_Utility_Datum(GetSimPtr_AppInterface(), SHAPE_PC(
+			  fromShape)->u.loop.stopPC);
 			shape->Select(FALSE, &dc);
 			doc->GetDiagram()->RemoveShape(shape);
 			shape->Unlink();
