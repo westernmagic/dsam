@@ -314,8 +314,7 @@ SDIEvtHandler::SetSelectedShape(wxClientDC &dc)
 		  UnselectAllShapes();
 		GetShape()->Select(true, &dc);
 		if (redraw) {
-			wprintf(wxT("SDIEvtHandler::SetSelectedShape: Redraw shape\n"));
-			if (pc->type == REPEAT) {
+			if (pc && (pc->type == REPEAT)) {
 				wprintf(wxT("SDIEvtHandler::SetSelectedShape: Redraw repeat shape\n"));
 				wxNode *node = GetShape()->GetChildren().GetFirst();
 				((SDIShape *) node->GetData())->ResetLabel();
