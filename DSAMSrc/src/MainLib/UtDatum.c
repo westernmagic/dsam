@@ -1331,7 +1331,6 @@ FindLabelledProcess_Utility_Datum(DatumPtr start, WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledProcess_Utility_Datum");
 	DatumPtr	pc;
-	EarObjectPtr	data;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal label!"), funcName);
@@ -1360,7 +1359,7 @@ DatumPtr
 FindLabelledProcessInst_Utility_Datum(DatumPtr start, WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledProcessInst_Utility_Datum");
-	DatumPtr	pc, pc2;
+	DatumPtr	pc;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal NULL label!"), funcName);
@@ -1390,7 +1389,7 @@ DatumPtr
 FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label)
 {
 	static const WChar *funcName = wxT("FindLabelledInst_Utility_Datum");
-	DatumPtr	pc, pc2;
+	DatumPtr	pc;
 
 	if (label == NULL) {
 		NotifyError(wxT("%s: Illegal NULL label!"), funcName);
@@ -1419,7 +1418,7 @@ FindModuleProcessInst_Utility_Datum(DatumPtr start, WChar *moduleName)
 {
 	static const WChar *funcName = wxT("FindModuleProcessInst_Utility_Datum");
 	WChar		upperName[MAXLINE];
-	DatumPtr	pc, pc2;
+	DatumPtr	pc;
 
 	if (moduleName == NULL) {
 		NotifyError(wxT("%s: Illegal module name!"), funcName);
@@ -1541,7 +1540,6 @@ FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier)
 	static const WChar *funcName = wxT("FindProcess_Utility_Datum");
 	WChar	*p, processName[MAXLINE], processStr[MAXLINE];
 	WChar	processLabel[MAXLINE];
-	EarObjectPtr	data;
 
 	if (processSpecifier == NULL) {
 		NotifyError(wxT("%s: Illegal parameter name '%s'!"), funcName,

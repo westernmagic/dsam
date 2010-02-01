@@ -204,7 +204,7 @@ UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 		  DynaBListPtr *labelBList);
 
-BOOLN	InitialiseModule_Utility_Datum(DatumPtr start);
+BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
 DatumPtr	InitInst_Utility_Datum(int type);
 

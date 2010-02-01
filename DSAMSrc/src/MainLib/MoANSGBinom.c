@@ -667,7 +667,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 	ChanData	*pastEndOfData;
 	EarObjectPtr	refractAdjData;
 	RandParsPtr		randParsPtr;
-	SignalDataPtr	outSignal;
+	SignalDataPtr	outSignal, inSignal;
 	BinomialSGPtr	p = binomialSGPtr;
 
 	if (!data->threadRunFlag) {
@@ -675,7 +675,7 @@ RunModel_ANSpikeGen_Binomial(EarObjectPtr data)
 			NotifyError(wxT("%s: Process data invalid."), funcName);
 			return(FALSE);
 		}
-		SignalDataPtr	inSignal = _InSig_EarObject(data, 0);
+		inSignal = _InSig_EarObject(data, 0);
 		SetProcessName_EarObject(data, wxT("Binomial Post-synaptic Firing"));
 		if (!InitOutSignal_EarObject(data, inSignal->numChannels,
 		  inSignal->length, inSignal->dt)) {

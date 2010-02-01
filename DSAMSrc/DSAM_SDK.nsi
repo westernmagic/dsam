@@ -38,7 +38,7 @@
 !define	ALL_USERS		; For WriteEnvStr.nsh 
 !include "WriteEnvStr.nsh"
 
-!define VERSION		"2.8.13"
+!define VERSION		"2.8.28"
 !define INST_VERSION	"1"
 !define DSAMDIR_ENV	"DSAMDIR"
 !define WX_VERSION	"2.8.3"
@@ -85,7 +85,7 @@ RequestExecutionLevel admin
 
 ; Pages
 
-  !insertmacro MUI_PAGE_LICENSE "LICENSE"
+  !insertmacro MUI_PAGE_LICENSE "COPYING"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES

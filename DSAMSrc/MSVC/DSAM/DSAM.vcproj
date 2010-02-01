@@ -348,7 +348,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)\include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="HAVE_CONFIG_H=1;DSAM_USE_UNICODE=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -1646,6 +1646,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\MainLib\FlDistLowPass.c"
+				>
 			</File>
 			<File
 				RelativePath="..\..\src\MainLib\FlFIR.c"
@@ -4862,7 +4866,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\MainLib\UtANSGDist.c"
+				RelativePath="..\..\src\MainLib\UtANSGUtils.c"
 				>
 			</File>
 			<File
@@ -7755,6 +7759,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Include\FlDistLowPass.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Include\FlFIR.h"
 				>
 			</File>
@@ -8004,6 +8012,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\UtANSGDist.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\UtANSGUtils.h"
 				>
 			</File>
 			<File

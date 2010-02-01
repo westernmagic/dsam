@@ -740,6 +740,7 @@ SDIShape::GetBoundingBoxPos(wxRealPoint &lBottom, wxRealPoint &rTop)
 	lBottom.y = h / 2.0 + GetY();
 	rTop.x = w / 2.0 + GetX();
 	rTop.y = -h / 2.0 + GetY();
+	return(true);
 
 }
 
