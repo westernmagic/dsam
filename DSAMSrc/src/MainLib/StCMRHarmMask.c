@@ -1116,7 +1116,7 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 			}
 			p->flankEar[k] = '\0';
 	}
-	if (DSAM_strlen(p->flankEar) < nTotal){
+	if (DSAM_strlen(p->flankEar) < (size_t) nTotal){
 		NotifyError(wxT("%s: Not all flanking band know which ear they have to go too!"), funcName);
 		return (FALSE);
 	}
@@ -1177,7 +1177,7 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 					outPtr[outSignal->length-sample-1] *= gatefactor;
 				}
 			} else {
-				int mskmodsample = (int) (srate / p->mskmodfreq);
+				ChanLen mskmodsample = (int) (srate / p->mskmodfreq);
 				// set all mskperiod to zero for the first 1/4 of stimulus (=first dips without signal)
 				silence = (int) (((int) (outSignal->length * 0.25 / mskmodsample) + 0.5) * mskmodsample);
 				for (sample=0; sample<silence; sample++) {
@@ -1188,7 +1188,7 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 				for (n=1; n<nmax ;n++)	{ // now we apply the gating windows
 					// it will not have an effect for the first 1/4 outSignal->length since values are already 0
 					samplebeg = (int) ((n - 0.5) * (Float) mskmodsample);
-					for (sample=0; sample<(int)(mskmodsample * 0.25); sample++) {
+					for (sample=0; sample< (mskmodsample * 0.25); sample++) {
 						outPtr[sample+samplebeg] = 0;
 						gatefactor = (1.0 - cos(((sample) / (Float) (mskmodsample*0.25)) * PI)); ///2.0;
 						outPtr[sample+samplebeg+(int)(mskmodsample * 0.25)] *= gatefactor;  // thats the falling part
@@ -1199,7 +1199,7 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 				n = nmax; //fill the rest with 0...
 				samplebeg = (int) ((n - 0.5) * (Float) mskmodsample);
 				if ((outSignal->length - samplebeg) > (mskmodsample-(int)(mskmodsample * 0.25)) ) { //...unless it is > 3/4 a period, then there is enough room for another tone pip
-					for (sample=0; sample<(int)(mskmodsample * 0.25); sample++) {
+					for (sample=0; sample< (mskmodsample * 0.25); sample++) {
 						outPtr[sample+samplebeg] = 0;
 						gatefactor = (1.0 - cos(((sample) / (Float) (mskmodsample*0.25)) * PI));///2.0;
 						outPtr[(sample+samplebeg+(int)(mskmodsample * 0.25))] *= gatefactor;

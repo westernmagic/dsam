@@ -45,7 +45,7 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define IHC_ZILANYBRUCE_MOD_NAME			wxT("IHC_ZilanyBruce")
+#define IHC_ZILANYBRUCE_MOD_NAME			wxT("IHC_ZILANYBRUCE")
 #define IHC_ZILANYBRUCE_NUM_PARS			6
 
 /******************************************************************************/

@@ -303,7 +303,7 @@ SetSimulation_Utility_SimScript(DatumPtr theSimulation)
  */
 
 BOOLN
-SetOperationMode_Utility_SimScript(WChar *theOperationMode)
+SetOperationMode_Utility_SimScript(const WChar *theOperationMode)
 {
 	static const WChar	*funcName = wxT("SetOperationMode_Utility_SimScript");
 	int		specifier;
@@ -332,7 +332,7 @@ SetOperationMode_Utility_SimScript(WChar *theOperationMode)
  */
 
 BOOLN
-SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode)
+SetParFilePathMode_Utility_SimScript(const WChar *theParFilePathMode)
 {
 	static const WChar	*funcName = wxT("SetParFilePathMode_Utility_SimScript");
 

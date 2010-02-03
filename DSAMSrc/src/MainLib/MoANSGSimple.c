@@ -571,7 +571,6 @@ InitProcessVariables_ANSpikeGen_Simple(EarObjectPtr data)
 	static const WChar *funcName = wxT(
 	  "InitProcessVariables_ANSpikeGen_Simple");
 	int		i;
-	Float	*pPtr;
 	SignalDataPtr	outSignal;
 	SimpleSGPtr	p = simpleSGPtr;
 

@@ -1301,8 +1301,8 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 	static const WChar	*funcName = wxT("GenerateSignal_CMR_NoiseMasker");
 	register ChanData	 *outPtr, *upPtr, *downPtr;
 	int		i, k, chan, nLow, nUpp, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
-	int		nTotal, nSignal, silence, gatesample, kLow, mskModPhaseSamples;
-	ChanLen	sample;
+	int		nTotal, nSignal, kLow;
+	ChanLen	sample, silence, gatesample, mskModPhaseSamples;
 	Float	value, sigAtten, lowAtten, uppAtten, t, mskModPhase;
 	Float	batten, srate, freqcomp = 0, gatefactor, minERBRate, modFactor;
 	Float	flankModPhase = 0.75 * PIx2, normFactor[CMR_NOISEMASKER_MAXNTOTAL];
@@ -1352,11 +1352,11 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 		NotifyError(wxT("%s: gate mode not yet implemented."), funcName);
 		return(FALSE);
 	}
-	gatesample = (int) (srate * p->gateTime);
+	gatesample = (ChanLen) (srate * p->gateTime);
 	if (p->mskModFreq > 0) {
 		mskModPhaseSamples = (int) ((mskModPhase / PIx2 + 0.25) / p->mskModFreq *
 		  srate);
-		silence = (int) (CMR_NOISEMASKER_SIG_MOD_OFFSET_CYCLES / p->mskModFreq *
+		silence = (ChanLen) (CMR_NOISEMASKER_SIG_MOD_OFFSET_CYCLES / p->mskModFreq *
 		  srate);
 	} else {
 		mskModPhaseSamples = 0;

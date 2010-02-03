@@ -823,7 +823,7 @@ ResetProcess_ANSpikeGen_Carney(EarObjectPtr data)
 		pulseIndexPtr = p->pulseIndex[chan];
 		timerIndexPtr = p->timerIndex[chan];
 		for (i = 0; i < (ChanLen) p->aNDist->numFibres[chan]; i++) {
-			*pulseIndexPtr++ = 0.0;
+			*pulseIndexPtr++ = 0;
 			*timerIndexPtr++ = 0;
 		}
 	}

@@ -213,9 +213,9 @@ BOOLN	SetControlParValue_Utility_SimScript(const WChar *label, const WChar *valu
 
 BOOLN	SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr);
 
-BOOLN	SetOperationMode_Utility_SimScript(WChar *theOperationMode);
+BOOLN	SetOperationMode_Utility_SimScript(const WChar *theOperationMode);
 
-BOOLN	SetParFilePathMode_Utility_SimScript(WChar *theParFilePathMode);
+BOOLN	SetParFilePathMode_Utility_SimScript(const WChar *theParFilePathMode);
 
 BOOLN	SetParsFilePath_Utility_SimScript(WChar * parsFilePath);
 
