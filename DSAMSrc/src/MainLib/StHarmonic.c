@@ -248,6 +248,55 @@ SetUniParList_Harmonic(void)
 	  UNIPAR_REAL,
 	  &harmonicPtr->upperCutOffFreq, NULL,
 	  (void * (*)) SetUpperCutOffFreq_Harmonic);
+
+	SetEnabledPars_Harmonic();
+	return(TRUE);
+
+}
+
+/********************************* SetDefaulEnabledPars ***********************/
+
+/*
+ * This routine sets the parameter list so that the correct parameters
+ * are enabled/disabled.
+ */
+
+BOOLN
+SetEnabledPars_Harmonic(void)
+{
+	static const WChar *funcName = wxT("SetEnabledPars_Harmonic");
+	HarmonicPtr	p = harmonicPtr;
+
+	if (p == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	switch (p->phaseMode) {
+	case GENERAL_PHASE_RANDOM:
+	case GENERAL_PHASE_SCHROEDER:
+		p->parList->pars[HARMONIC_PHASE_PAR].enabled = TRUE;
+		break;
+	default:
+		p->parList->pars[HARMONIC_PHASE_PAR].enabled = FALSE;
+	}
+	if (p->mistunedHarmonic > 0)
+		p->parList->pars[HARMONIC_MISTUNINGFACTOR].enabled = TRUE;
+	else
+		p->parList->pars[HARMONIC_MISTUNINGFACTOR].enabled = FALSE;
+	if (p->modulationDepth > DBL_EPSILON) {
+		p->parList->pars[HARMONIC_MODULATIONFREQUENCY].enabled = TRUE;
+		p->parList->pars[HARMONIC_MODULATIONPHASE].enabled = TRUE;
+	} else {
+		p->parList->pars[HARMONIC_MODULATIONFREQUENCY].enabled = FALSE;
+		p->parList->pars[HARMONIC_MODULATIONPHASE].enabled = FALSE;
+	}
+	if (p->order > 0) {
+		p->parList->pars[HARMONIC_LOWERCUTOFFFREQ].enabled = TRUE;
+		p->parList->pars[HARMONIC_UPPERCUTOFFFREQ].enabled = TRUE;
+	} else {
+		p->parList->pars[HARMONIC_LOWERCUTOFFFREQ].enabled = FALSE;
+		p->parList->pars[HARMONIC_UPPERCUTOFFFREQ].enabled = FALSE;
+	}
 	return(TRUE);
 
 }
@@ -359,6 +408,7 @@ SetPhaseMode_Harmonic(WChar *thePhaseMode)
 		return(FALSE);
 	}
 	harmonicPtr->phaseMode = specifier;
+	SetEnabledPars_Harmonic();
 	return(TRUE);
 
 }
