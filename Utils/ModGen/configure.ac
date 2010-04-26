@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_REVISION($Revision: 2.13)
-AC_INIT(MODGEN, 1.7.4)
+AC_INIT(MODGEN, 1.7.5)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_SYSTEM

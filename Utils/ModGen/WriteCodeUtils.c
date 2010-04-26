@@ -353,6 +353,7 @@ GetOutputUniParTypeFormatStr(TokenPtr p, TokenPtr type)
 		case INT_AL:		return("UNIPAR_INT_AL");
 		case LONG:			return("UNIPAR_LONG");
 		case DOUBLE:		return("UNIPAR_REAL");
+		case FLOAT:			return("UNIPAR_REAL");
 		case NAMESPECIFIER:	return("UNIPAR_NAME_SPEC");
 		case FILENAME:		return("UNIPAR_FILE_NAME");
 		case CFLISTPTR:		return("UNIPAR_CFLIST");
