@@ -596,7 +596,7 @@ SetCFUniParList_CFList(CFListPtr theCFs)
 	  (void * (*)) SetDiagnosticMode_CFList);
 	SetPar_UniParMgr(&pars[CFLIST_CF_MODE], wxT("CF_MODE"),
 	 wxT("Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', ")
-	 wxT("'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig',  ")
+	 wxT("'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea_pig',  ")
 	 wxT("'macaque' or 'identical')."),
 	  UNIPAR_NAME_SPEC,
 	  &theCFs->centreFreqMode, CFModeList_CFList(0),
