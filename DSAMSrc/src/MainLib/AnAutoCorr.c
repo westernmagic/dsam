@@ -238,6 +238,31 @@ SetUniParList_Analysis_ACF(void)
 	  UNIPAR_REAL,
 	  &autoCorrPtr->maxLag, NULL,
 	  (void * (*)) SetMaxLag_Analysis_ACF);
+
+	SetEnabledPars_Analysis_ACF();
+	return(TRUE);
+
+}
+
+/********************************* SetDefaulEnabledPars ***********************/
+
+/*
+ * This routine sets the parameter list so that the correct parameters
+ * are enabled/disabled.
+ */
+
+BOOLN
+SetEnabledPars_Analysis_ACF(void)
+{
+	static const WChar *funcName = wxT("SetEnabledPars_Analysis_ACF");
+	AutoCorrPtr	p = autoCorrPtr;
+
+	if (p == NULL) {
+		NotifyError(wxT("%s: Module not initialised."), funcName);
+		return(FALSE);
+	}
+	p->parList->pars[ANALYSIS_ACF_TIMECONSTSCALE].enabled =
+	  (p->timeConstMode == ANALYSIS_ACF_TIMECONSTMODE_WIEGREBE);
 	return(TRUE);
 
 }
@@ -324,6 +349,7 @@ SetTimeConstMode_Analysis_ACF(WChar * theTimeConstMode)
 	/*** Put any other required checks here. ***/
 	autoCorrPtr->updateProcessVariablesFlag = TRUE;
 	autoCorrPtr->timeConstMode = specifier;
+	SetEnabledPars_Analysis_ACF();
 	return(TRUE);
 
 }
