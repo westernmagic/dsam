@@ -31,7 +31,6 @@
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#	include "mex.h"
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -715,8 +714,8 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 		fp = stdout;
 	}
 	if (fp == stdout) {
-		mexPrintf(wxConvUTF8.cWX2MB(message));
-		mexPrintf("\n");
+		printf(wxConvUTF8.cWX2MB(message));
+		printf("\n");
 	} else {
 		fprintf(fp, wxConvUTF8.cWX2MB(message));
 		fprintf(fp, "\n");
