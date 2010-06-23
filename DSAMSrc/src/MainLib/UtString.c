@@ -157,7 +157,7 @@ InitString_Utility_String(WChar *string)
 
 }
 
-/****************************** QoutedString **********************************/
+/****************************** QuotedString **********************************/
 
 /*
  * This routine returns a pointer to a temporary quoted string.  A copy should
