@@ -4,16 +4,19 @@ AUTOMAKE_OPTIONS = foreign
 
 libexec_PROGRAMS	= RunDSAMSim@DLLEXT@
 
-noinst_HEADERS	= MatMainApp.h
+noinst_HEADERS	= MatMainApp.h MatInSignal.h
 
-RunDSAMSim@DLLEXT@_SOURCES	= RunDSAMSim.cpp MatMainApp.cpp
+RunDSAMSim@DLLEXT@_SOURCES	= RunDSAMSim.cpp MatMainApp.cpp MatInSignal.cpp
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
 EXTRA_DIST		= autogen.sh RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m RunDSAMSim.ise \
 					CompileRunDSAMSim.m
 
-SUBDIRS			= CfgTools MSVC Examples
+SUBDIRS			= CfgTools LibRunDSAMSim MSVC Examples
+
+MatInSignal.$(OBJEXT): MatInSignal.cpp
+					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
 
 MatMainApp.$(OBJEXT): MatMainApp.cpp
 					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<

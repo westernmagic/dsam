@@ -18,16 +18,18 @@
 #include <wx/app.h>
 #include <mex.h>
 
-#include "GeCommon.h"
-#include "GeSignalData.h"
-#include "GeEarObject.h"
-#include "GeUniParMgr.h"
-#include "UtString.h"
-#include "ExtIPCUtils.h"
-#include "ExtMainApp.h"
-#include "ExtIPCClient.h"
-#include "UtDatum.h"
-#include "UtAppInterface.h"
+#include <GeCommon.h>
+#include <GeSignalData.h>
+#include <GeEarObject.h>
+#include <GeUniParMgr.h>
+#include <UtString.h>
+#include <ExtIPCUtils.h>
+#include <ExtMainApp.h>
+#include <ExtIPCClient.h>
+#include <UtDatum.h>
+#include <UtAppInterface.h>
+
+#include "MatInSignal.h"
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -319,12 +321,13 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	WChar	*simFile, *parameterOptions;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
-	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset= 0.0;
+	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset = 0.0;
 	EarObjectPtr	audModel;
 	SignalDataPtr	outSignal;
+	MatInSignal		*inputSignal = NULL;
 
-	if (!InitWxWidgets())
-		return;
+//	if (!InitWxWidgets())
+//		return;
 	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
 	SetDPrintFunc(MyDPrint);
 	SetNotifyFunc(MyNotify);
@@ -346,9 +349,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
 		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
 	}
+	if (inputMatrixPtr) {
+		if ((inputSignal = new MatInSignal((Float *) inputMatrixPtr, numChannels,
+		  interleaveLevel, length, dt, staticTimeFlag, outputTimeOffset)) == NULL) {
+			NotifyError(wxT("%s: Failed to initialise input signal."), PROGRAM_NAME);
+			return;
+		}
+	}
 	MatMainApp	mainApp((WChar *) PROGRAM_NAME, simFile, parameterOptions,
-	  inputMatrixPtr, numChannels, interleaveLevel, length, dt, CXX_BOOL(
-	  staticTimeFlag), outputTimeOffset);
+	  inputSignal);
 	if (!mainApp) {
 		NotifyError(wxT("%s: Could not initialise the MatMainApp module."),
 		  PROGRAM_NAME);
@@ -365,9 +374,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		free(parameterOptions);
 
 	if (audModel && ((outSignal = _OutSig_EarObject(audModel)) != NULL)) {
-		outSignal = _OutSig_EarObject(audModel);
 		plhs[0] = GetOutputSignalMatrix(audModel->outSignal);
 		plhs[1] = GetOutputInfoStruct(audModel->outSignal);
 	}
-
+	if (inputSignal)
+		delete inputSignal;
 }

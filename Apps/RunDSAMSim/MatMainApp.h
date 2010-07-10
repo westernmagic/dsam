@@ -10,7 +10,7 @@
  * Author:		L. P. O'Mard
  * Created:		07 Jan 2004
  * Updated:
- * Copyright:	(c) 2004, CNBH, University of Essex
+ * Copyright:	(c) 2004, L. P. O'Mard
  *
  *********************/
 
@@ -72,14 +72,9 @@ class MainApp;
 
 class MatMainApp: public MainApp {
 
-	bool	staticTimeFlag;
-	int		numChannels, interleaveLevel;
-	ChanLen	length;
-	double	*inputData;
-	Float	dt, outputTimeOffset;
 	UniParListPtr	parList;
-	EarObjectPtr	inputProcess;
 	wxInitializer initializer;
+	MatInSignal	*inputSignal;
 
   public:
 	bool	updateProcessVariablesFlag;
@@ -89,22 +84,18 @@ class MatMainApp: public MainApp {
 	Float	segmentDuration;
 
 	MatMainApp(wxChar *programName, const wxChar *simFile,
-	  const wxChar * parameterOptions, double *theInputData, int theNumChannels,
-	  int theInterleaveLevel, ChanLen theLength, double theDt,
-	  bool theStaticTimeFlag, double theOutputTimeOffset);
+	  const wxChar * parameterOptions, MatInSignal *inputSignal,
+	  bool setLocalNotifyFlag = true);
 	~MatMainApp(void);
 
-	bool	AutoSetNumberOfRuns(Float dt);
+	bool	AutoSetNumberOfRuns(void);
 	EarObjectPtr	GetSimProcess(void);
-	bool	InitInputEarObject(ChanLen segmentLength);
 	bool	InitRun(void);
 	int		Main(void);
 	bool	RunSimulationLocal(void);
 	bool	RunSimulationRemote(void);
 	bool	SetArgStrings(wxChar *programName, const wxChar *simFile,
 			  const wxChar *parameterOptions);
-	void	SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
-			  double *data);
 
 };
 

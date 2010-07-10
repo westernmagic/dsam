@@ -31,6 +31,7 @@
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "MatInSignal.h"
 #include "MatMainApp.h"
 
 /******************************************************************************/
@@ -53,9 +54,9 @@ MatMainApp	*matMainAppPtr = NULL;
  */
 
 MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
-  const wxChar *parameterOptions, double *theInputData, int theNumChannels,
-  int theInterleaveLevel, ChanLen theLength, double theDt,
-  bool theStaticTimeFlag, double theOutputTimeOffset): MainApp(0, NULL)
+  const wxChar *parameterOptions, MatInSignal *inputSignal,
+  bool setLocalNotifyFlag):
+  MainApp(0, NULL)
 {
 	static const wxChar *funcName = wxT("MatMainApp::MatMainApp");
 
@@ -64,7 +65,8 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 	serverMode = GENERAL_BOOLEAN_OFF;
 	segmentDuration = -1.0;
 	updateProcessVariablesFlag = false;
-	SetNotifyFunc(Notify_MatMainApp);
+	if (setLocalNotifyFlag)
+		SetNotifyFunc(Notify_MatMainApp);
 
 	if (!SetUniParList_MatMainApp(&parList)) {
 		NotifyError(wxT("%s: Could not initialise parameter list."), funcName);
@@ -72,19 +74,8 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 		return;
 	}
 	numberOfRuns = 1;
-	inputProcess = NULL;
 	SetParsFilePath_Common(NULL);
-	numChannels = theNumChannels;
-	if (theInterleaveLevel < 0)
-		interleaveLevel = (numChannels == 2)? 2:
-		  SIGNALDATA_DEFAULT_INTERLEAVE_LEVEL;
-	else
-		interleaveLevel = theInterleaveLevel;
-	dt = theDt;
-	staticTimeFlag = theStaticTimeFlag;
-	outputTimeOffset = theOutputTimeOffset;
-	length = theLength;
-	inputData = theInputData;
+	this->inputSignal = inputSignal;
 	if (!SetArgStrings(programName, simFile, parameterOptions)) {
 		NotifyError(wxT("%s: Could not set argument strings."), funcName);
 		SetInitStatus(false);
@@ -109,12 +100,6 @@ MatMainApp::MatMainApp(wxChar *programName, const wxChar *simFile,
 
 MatMainApp::~MatMainApp(void)
 {
-	if (inputProcess) {
-		if (!serverMode)
-			DisconnectOutSignalFromIn_EarObject(inputProcess,
-			  GetSimProcess_AppInterface());
-		Free_EarObject(&inputProcess);
-	}
 	if (parList)
 		FreeList_UniParMgr(&parList);
 	matMainAppPtr = NULL;
@@ -179,7 +164,7 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
  */
 
 bool
-MatMainApp::AutoSetNumberOfRuns(Float dt)
+MatMainApp::AutoSetNumberOfRuns(void)
 {
 	static const wxChar *funcName = wxT("MatMainApp::AutoSetNumberOfRuns");
 	Float	totalDuration;
@@ -190,8 +175,8 @@ MatMainApp::AutoSetNumberOfRuns(Float dt)
 		return(TRUE);
 	}
 
-	if (length)
-		totalDuration = length * dt;
+	if (inputSignal && inputSignal->GetLength())
+		totalDuration = inputSignal->GetLength() * inputSignal->GetDt();
 	else {
 		if ((process = GetDataFileInProcess_AppInterface()) == NULL)
 			return(TRUE);
@@ -205,7 +190,7 @@ MatMainApp::AutoSetNumberOfRuns(Float dt)
 			return(FALSE);
 		}
 	}
-	if (inputData && (segmentDuration < 0.0)) {
+	if (inputSignal && (segmentDuration < 0.0)) {
 		NotifyError(wxT("%s: Segment duration must be set when using auto ")
 		  wxT("'number of runs' mode with an external signal."), funcName);
 		return(FALSE);
@@ -218,75 +203,6 @@ MatMainApp::AutoSetNumberOfRuns(Float dt)
 	}
 	numberOfRuns = (int) floor(totalDuration / segmentDuration);
 	return(TRUE);
-
-}
-
-/****************************** SetInputProcessData ***************************/
-
-/*
- * This routine updates the process time and resets the output signal
- * channel pointers accordingly using the input data.
- * The outSignal->length is actually the segment length in segment mode.
- */
-
-void
-MatMainApp::SetInputProcessData(EarObjectPtr process, ChanLen signalLength,
-  double *data)
-{
-	register double		*inPtr;
-	register ChanData	*outPtr;
-	int		chan;
-	ChanLen	i;
-	SignalDataPtr	outSignal = _OutSig_EarObject(process);
-
-	for (chan = 0; chan < outSignal->numChannels; chan++) {
-		outPtr = outSignal->channel[chan];
-		inPtr = data + process->timeIndex - PROCESS_START_TIME + chan;
-		for (i = 0; i < signalLength; i++, inPtr += outSignal->numChannels)
-			*outPtr++ = *inPtr;
-	}
-	SetTimeContinuity_EarObject(process);
-
-}
-
-/****************************** InitInputEarObject ****************************/
-
-/*
- * This function returns a pointer to an Earobject for providing input to a
- * simulation.
- * It uses the low level DSAM functions to create the EarObject, so that
- * unnecessary copies of the data need not be made.
- * This means that it cannot be free'd in the same way as a normal EarObject.
- */
-
-bool
-MatMainApp::InitInputEarObject(ChanLen segmentLength)
-{
-	static const wxChar	*funcName = wxT("InitResultEarObject");
-
-	if (dt <= 0.0) {
-		NotifyError(wxT("%s: dt must be greater than zero."), funcName);
-		return(false);
-	}
-	if (inputProcess)
-		Free_EarObject(&inputProcess); 	/* Just in case */
-	if ((inputProcess = Init_EarObject(wxT("NULL"))) == NULL) {
-		NotifyError(wxT("%s: Could not initialise data results earObject."),
-		  funcName);
-		return(false);
-	}
-	if (!InitOutSignal_EarObject(inputProcess, numChannels, segmentLength,
-	  dt)) {
-		NotifyError(wxT("%s: Cannot initialise input process"), funcName);
-		return(false);
-	}
-	SignalDataPtr	outSignal = _OutSig_EarObject(inputProcess);
-	SetStaticTimeFlag_SignalData(outSignal, staticTimeFlag);
-	SetLocalInfoFlag_SignalData(outSignal, TRUE);
-	SetInterleaveLevel_SignalData(outSignal, interleaveLevel);
-	outSignal->rampFlag = TRUE;
-	SetInputProcessData(inputProcess, segmentLength, inputData);
-	return(true);
 
 }
 
@@ -311,34 +227,38 @@ MatMainApp::RunSimulationLocal(void)
 		return(false);
 	}
 	if (autoNumRunsMode) {
-		if (!AutoSetNumberOfRuns(dt))
+		if (!AutoSetNumberOfRuns())
 			ok = FALSE;
 		else
-			segmentLength = (ChanLen) floor(segmentDuration  / dt + 0.5);
+			segmentLength = (ChanLen) floor(segmentDuration  /
+			  inputSignal->GetDt() + 0.5);
 	} else
-		segmentLength = length;
+		segmentLength = (inputSignal)? inputSignal->GetLength(): 0;
 	EarObjectPtr	audModel = GetSimProcess_AppInterface();
-	if (ok && inputData) {
-		if (!InitInputEarObject(segmentLength)) {
+	if (ok && inputSignal) {
+		if (!inputSignal->InitInputEarObject(segmentLength)) {
 			NotifyError(wxT("Could not initialise input process."));
 			return(false);
 		}
-		ConnectOutSignalToIn_EarObject(inputProcess, audModel);
+		ConnectOutSignalToIn_EarObject(inputSignal->GetInputProcess(), audModel);
 	}
 	if (ok) {
 		PrintPars_ModuleMgr(audModel);
 		ResetSim_AppInterface();
-		if (inputProcess)
-			ResetProcess_EarObject(inputProcess);
+		if (inputSignal)
+			ResetProcess_EarObject(inputSignal->GetInputProcess());
 		for (i = 0; i < numberOfRuns; i++) {
-			if (inputProcess)
-				SetInputProcessData(inputProcess, segmentLength, inputData);
+			if (inputSignal)
+				inputSignal->SetInputProcessData(segmentLength);
 			if (!RunSim_AppInterface()) {
 				ok = false;
 				break;
 			}
 		}
 	}
+	if (inputSignal)
+		DisconnectOutSignalFromIn_EarObject(inputSignal->GetInputProcess(),
+		  GetSimProcess_AppInterface());
 	return(ok);
 
 }
@@ -372,8 +292,8 @@ MatMainApp::RunSimulationRemote(void)
 	for (int i = 0; i < GetArgc(); i++)
 		printf("%s: %2d: %s\n", funcName, i, GetArgv()[i]);
 #	endif /* DSAM_DEBUG */
-	if (inputData) {
-		if (!InitInputEarObject(length)) {
+	if (inputSignal) {
+		if (!inputSignal->InitInputEarObject(inputSignal->GetLength())) {
 			NotifyError(wxT("%s: Could not initialise input process."),
 			  funcName);
 			return(false);
@@ -383,7 +303,7 @@ MatMainApp::RunSimulationRemote(void)
 			  wxT("data."), funcName);
 			return(false);
 		}
-		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputProcess);
+		GetClient()->GetIPCUtils()->ConnectToOutProcess(inputSignal->GetInputProcess());
 		if (!GetClient()->SendInputProcess()) {
 			NotifyError(wxT("%s: Could not send the input data."), funcName);
 			return(false);

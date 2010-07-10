@@ -133,6 +133,14 @@ dnl ============================================================================
 AM_MAINTAINER_MODE
 
 dnl ============================================================================
+dnl Libtool
+dnl ============================================================================
+
+AC_DISABLE_SHARED
+AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+dnl ============================================================================
 dnl Checks for programs.
 dnl ============================================================================
 
@@ -193,6 +201,12 @@ dnl ============================================================================
 dnl ----------------------------------------------------------------------------
 dnl My optional features.
 dnl ----------------------------------------------------------------------------
+
+AC_ARG_ENABLE(libRunDSAMSim,
+   [  --enable-libRunDSAMSim  Produce libRunDSAMSim load library],
+   [libRunDSAMSim="$enableval"],
+   [libRunDSAMSim="no"]
+)
 
 dnl ----------------------------------------------------------------------------
 dnl DSAM library
@@ -257,6 +271,17 @@ AC_SUBST(DSAMINC)
 DSAMLDFLAGS=$dsam_ldflags
 AC_SUBST(DSAMLDFLAGS)
 
+AM_CONDITIONAL(LIBRUNDSAMSIM, test x$libRunDSAMSim = xyes)
+case $host_os in
+linux*)
+	JAVA_HOST=linux;;
+esac
+
+if test x$libRunDSAMSim = xyes; then
+	JAVA_INC="-I$JAVA_HOME/include -I$JAVA_HOME/include/$JAVA_HOST"
+	AC_SUBST(JAVA_INC)
+fi
+
 dnl ============================================================================
 dnl Final configure outputs.
 dnl ============================================================================
@@ -267,6 +292,7 @@ AC_CONFIG_FILES(
 	CfgTools/Makefile
 	MSVC/Makefile
 	Examples/Makefile
+	LibRunDSAMSim/Makefile
 )
 AC_OUTPUT
 
