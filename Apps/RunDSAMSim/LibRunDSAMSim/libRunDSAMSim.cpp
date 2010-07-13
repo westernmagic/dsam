@@ -109,6 +109,13 @@ class LibRunDSAMSim {
 /******************************************************************************/
 
 /******************************************************************************/
+/*************************** Function Prototypes ******************************/
+/******************************************************************************/
+
+void	DPrint_LibRunDSAMSim(const WChar *format, va_list args);
+void	Notify_LibRunDSAMSim(const wxChar *message, CommonDiagSpecifier type);
+
+/******************************************************************************/
 /*************************** Class Methods ************************************/
 /******************************************************************************/
 
@@ -172,14 +179,10 @@ LibRunDSAMSim::InitInputSignal(jobjectArray inChannels)
 {
 	static const WChar *funcName = wxT("LibRunDSAMSim::InitSimulation");
 
-	wcout << "LibRunDSAMSim::InitInputSignal: Debug: Entered..." << endl;
 	if (inChannels == NULL)
 		return(true);
-	wcout << "LibRunDSAMSim::InitInputSignal: Debug: Got input signal" << endl;
 	numChannels = env->GetArrayLength(inChannels);
-	wcout << "There are " << numChannels << " channels" << endl;
 	length = env->GetArrayLength((jarray)env->GetObjectArrayElement(inChannels, 0));
-	wcout << "Length = " << length << endl;
 	this->inChannels = new Float *[numChannels];
 	for (int i = 0; i < numChannels; i++) {
 		this->inChannels[i] = new Float [length];
@@ -591,9 +594,12 @@ LibRunDSAMSim::GetInfoFields(void)
 void
 LibRunDSAMSim::PrintInfoFields(void)
 {
-	wcout << wxT("C++ info parameter values:\n");
 	wcout << wxT("dt = ") << dt << endl;
+	wcout << wxT("staticTimeFlag = ") << staticTimeFlag << endl;
 	wcout << wxT("numChannels = ") << numChannels << endl;
+	wcout << wxT("numWindowFrames = ") << numWindowFrames << endl;
+	wcout << wxT("outputTimeOffset = ") << outputTimeOffset << endl;
+	wcout << wxT("interleaveLevel = ") << interleaveLevel << endl;
 	wcout << wxT("length = ") << length << endl;
 }
 
@@ -601,26 +607,86 @@ LibRunDSAMSim::PrintInfoFields(void)
 /*************************** Subroutines and functions ************************/
 /******************************************************************************/
 
+/*************************** DPrintStandard ***********************************/
+
+/*
+ * This routine prints out a diagnostic message, preceded by a bell sound.
+ * It is used in the same way as the vprintf statement.
+ * This is the standard version for ANSI C.
+ */
+
+void
+DPrint_LibRunDSAMSim(const WChar *format, va_list args)
+{
+	CheckInitParsFile_Common();
+	if (dSAM.parsFile == stdout) {
+		wxString str, fmt;
+		fmt = format;
+		fmt.Replace(wxT("S"), wxT("s"));	/* This is very simplistic - requires revision */
+		str.PrintfV(fmt, args);
+
+		if (dSAM.diagnosticsPrefix)
+			str = dSAM.diagnosticsPrefix + str;
+		cout << str.utf8_str();
+	} else {
+		if (dSAM.diagnosticsPrefix)
+			DSAM_fprintf(dSAM.parsFile, STR_FMT, dSAM.diagnosticsPrefix);
+		DSAM_vfprintf(dSAM.parsFile, format, args);
+	}
+
+}
+
+/***************************** Notify *****************************************/
+
+/*
+ * All notification messages are stored in the notification list.
+ * This list is reset when the noficiationCount is zero.
+ */
+
+void
+Notify_LibRunDSAMSim(const wxChar *message, CommonDiagSpecifier type)
+{
+	FILE	*fp;
+
+	switch (type) {
+	case COMMON_ERROR_DIAGNOSTIC:
+		fp = GetDSAMPtr_Common()->errorsFile;
+		break;
+	case COMMON_WARNING_DIAGNOSTIC:
+		fp = GetDSAMPtr_Common()->warningsFile;
+		break;
+	default:
+		fp = stdout;
+	}
+	if (fp == stdout) {
+		cout << wxConvUTF8.cWX2MB(message) << endl;
+	} else {
+		fprintf(fp, wxConvUTF8.cWX2MB(message));
+		fprintf(fp, "\n");
+	}
+
+} /* Notify_LibRunDSAMSim */
+
 /***************************** Java_RunDSAMSimJ_RunSimScript ***********************/
 
 JNIEXPORT jobjectArray JNICALL
-Java_RunDSAMSimJ_RunSimScript(JNIEnv *env, jclass cls, jstring jSimFile,
+Java_RunDSAMSimJ_RunSimScriptCPP(JNIEnv *env, jclass cls, jstring jSimFile,
   jstring jParOptions, jobjectArray inChannels)
 {
 	LibRunDSAMSim	libRunDSAMSim(env, cls);
 
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
-	wcout << wxT("Hello C++ world\n");
+	SetNotifyFunc(Notify_LibRunDSAMSim);
+	SetDPrintFunc(DPrint_LibRunDSAMSim);
 	libRunDSAMSim.SetSimFileFromJUTF(jSimFile);
 	libRunDSAMSim.SetParOptionsFromJUTF(jParOptions);
-	wcout << wxT("simFile = ") << libRunDSAMSim.GetSimFile().c_str() << endl;
-	wcout << wxT("parOptions =") << libRunDSAMSim.GetParOptions().c_str() << endl;
 
 	if (!libRunDSAMSim.GetInfoFields()) {
 		NotifyError(wxT("%s: Could not get input info fields."), PROGRAM_NAME);
 		return(NULL);
 	}
-	libRunDSAMSim.PrintInfoFields();
+	//libRunDSAMSim.PrintInfoFields();
 	libRunDSAMSim.InitInputSignal(inChannels);
 	if (!libRunDSAMSim.InitSimulation()) {
 		NotifyError(wxT("%s: Main application not initialised."), PROGRAM_NAME);
