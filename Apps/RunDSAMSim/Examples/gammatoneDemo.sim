@@ -18,6 +18,7 @@ gammaT% 		BM_gammaT		< BM_gammatone.par
 
 
 # Result will be garnered by MATLAB calling program
-	}	
+
+}	
 		
 

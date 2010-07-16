@@ -1,0 +1,1114 @@
+################################################################################
+## Simulation parameter file (SPF) written using DSAM version 2.8.28.
+################################################################################
+
+##--------------- Simulation script ----------------------##
+DIAG_MODE	               on	OFF       	Diagnostics operation mode ('ON' or 'OFF').
+PAR_FILE_PATH_MODE	      	"RELATIVE"	Parameter file path mode ('relative', 'none' or <file path>).
+
+begin  {
+
+rmp1%	TRANS_RAMP      
+dmp1%	TRANS_DAMP      
+pe1%	Filt_MultiBPass 
+bm%	BM_DRNL         
+bmd%	DISPLAY_SIGNAL  
+hcrp%	IHCRP_LopezPoveda(->ihc_hsr, ihc_msr, ihc_lsr, hcrpd)
+hcrpd%	DISPLAY_SIGNAL  (hcrp->)
+ihc_hsr%	IHC_MEDDIS2000  (hcrp->an_hsr_oc)
+ihc_msr%	IHC_MEDDIS2000  (hcrp->an_msr_oc)
+ihc_lsr%	IHC_MEDDIS2000  (hcrp->an_lsr_oc)
+mr%	repeat 100 {
+	an_hsr_oc%	AN_SG_Carney    (ihc_hsr->di_hsr_oc)
+	di_hsr_oc%	DISPLAY_SIGNAL  (an_hsr_oc->san_oc)
+	an_msr_oc%	AN_SG_Carney    (ihc_msr->di_msr_oc)
+	di_msr_oc%	DISPLAY_SIGNAL  (an_msr_oc->san_oc)
+	an_lsr_oc%	AN_SG_Carney    (ihc_lsr->di_lsr_oc)
+	di_lsr_oc%	DISPLAY_SIGNAL  (an_lsr_oc->san_oc)
+		reset	san_oc
+	san_oc%	Util_Accumulate (di_hsr_oc, di_msr_oc, di_lsr_oc->di_san_oc)
+	di_san_oc%	DISPLAY_SIGNAL  (san_oc->oclp)
+	oclp%	FILT_DISTLOWPASS(di_san_oc->on)
+	on%	UTIL_REDUCECHANNELS(oclp->oc_h)
+	oc_h%	NEUR_HHUXLEY    (on->od)
+	od%	DISPLAY_SIGNAL  (oc_h->)
+	psth_oc% @Ana_Histogram
+	}
+OCout%	@ DATAFILE_OUT 
+
+}
+
+##----- TRANS_RAMP.rmp1                 (not_set) -----##
+POS_MODE.TRANS_RAMP.rmp1 	"RELATIVE"	Position mode ('absolute' or 'relative')
+OP_MODE.TRANS_RAMP.rmp1  	"RAMP"    	Operation mode ('ramp' or 'damp')
+TYPE_MODE.TRANS_RAMP.rmp1	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+OFFSET.TRANS_RAMP.rmp1   	0         	Time offset (s)
+DURATION.TRANS_RAMP.rmp1 	0.0025    	Ramp duration - negative assumes to the end of the signal (s)
+SLOPE.TRANS_RAMP.rmp1    	0.016     	Slope parameter or half-life (in 'decay_par' mode only)
+
+##----- TRANS_DAMP.dmp1                 (not_set) -----##
+POS_MODE.TRANS_DAMP.dmp1 	"RELATIVE"	Position mode ('absolute' or 'relative')
+OP_MODE.TRANS_DAMP.dmp1  	"DAMP"    	Operation mode ('ramp' or 'damp')
+TYPE_MODE.TRANS_DAMP.dmp1	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+OFFSET.TRANS_DAMP.dmp1   	0         	Time offset (s)
+DURATION.TRANS_DAMP.dmp1 	0.0025    	Ramp duration - negative assumes to the end of the signal (s)
+SLOPE.TRANS_DAMP.dmp1    	0.016     	Slope parameter or half-life (in 'decay_par' mode only)
+
+##----- Filt_MultiBPass.pe1             (not_set) -----##
+NUM_FILTERS.Filt_MultiBPass.pe1	3         	No. of parallel band pass filters.
+# Filter cascades.:
+	CASCADE.Filt_MultiBPass.pe1	  0:2         
+	CASCADE.Filt_MultiBPass.pe1	  1:2         
+	CASCADE.Filt_MultiBPass.pe1	  2:2         
+# Filter pre-attentuation (dB SPL).:
+	GAIN.Filt_MultiBPass.pe1	  0:-197.08   
+	GAIN.Filt_MultiBPass.pe1	  1:-197.08   
+	GAIN.Filt_MultiBPass.pe1	  2:-197.08   
+# Filter lower cut-off frequencies (Hz).:
+	LOWER_FREQ.Filt_MultiBPass.pe1	  0:1100      
+	LOWER_FREQ.Filt_MultiBPass.pe1	  1:2700      
+	LOWER_FREQ.Filt_MultiBPass.pe1	  2:6200      
+# Filter upper cut-off frequencies (Hz).:
+	UPPER_FREQ.Filt_MultiBPass.pe1	  0:20000     
+	UPPER_FREQ.Filt_MultiBPass.pe1	  1:14000     
+	UPPER_FREQ.Filt_MultiBPass.pe1	  2:16000     
+
+##----- BM_DRNL.bm                      (not_set) -----##
+NL_GT_CASCADE.BM_DRNL.bm 	3         	Nonlinear gammatone filter cascade.
+NL_LP_CASCADE.BM_DRNL.bm 	4         	Nonlinear low-pass filter cascade.
+# NonLinBwidth parameters:
+  NONLINBWIDTH_MODE.BM_DRNL.bm	"LOG_FUNC1"	Variable 'NonLinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+# C2' or 'POLY_FUNC1').:
+	NONLINBWIDTH_PARAMETER.BM_DRNL.bm	  0:0.8128    
+	NONLINBWIDTH_PARAMETER.BM_DRNL.bm	  1:0.5528    
+# nonLinScaleG parameters:
+  NONLINSCALEG_MODE.BM_DRNL.bm	"LINEAR_FUNC1"	Variable 'nonLinScaleG' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+# C2' or 'POLY_FUNC1').:
+	NONLINSCALEG_PARAMETER.BM_DRNL.bm	  0:1         
+	NONLINSCALEG_PARAMETER.BM_DRNL.bm	  1:0         
+# ComprScaleA parameters:
+  COMPRSCALEA_MODE.BM_DRNL.bm	"LOG_FUNC1"	Variable 'ComprScaleA' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+# 2' or 'POLY_FUNC1').:
+	COMPRSCALEA_PARAMETER.BM_DRNL.bm	  0:-2.3761   
+	COMPRSCALEA_PARAMETER.BM_DRNL.bm	  1:1.5072    
+# ComprScaleB parameters:
+  COMPRSCALEB_MODE.BM_DRNL.bm	"LOG_FUNC1"	Variable 'ComprScaleB' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+# 2' or 'POLY_FUNC1').:
+	COMPRSCALEB_PARAMETER.BM_DRNL.bm	  0:-7.6662   
+	COMPRSCALEB_PARAMETER.BM_DRNL.bm	  1:1.5529    
+COMP_N_EXPON.BM_DRNL.bm  	0.2       	Compression exponent, n (units).
+L_GT_CASCADE.BM_DRNL.bm  	3         	Linear gammatone filter cascade.
+L_LP_CASCADE.BM_DRNL.bm  	4         	Linear low-pass filter cascade.
+# LinCF parameters:
+  LINCF_MODE.BM_DRNL.bm    	"LOG_FUNC1"	Variable 'LinCF' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+# 'POLY_FUNC1').:
+	LINCF_PARAMETER.BM_DRNL.bm	  0:0.2081    
+	LINCF_PARAMETER.BM_DRNL.bm	  1:0.9413    
+# LinBwidth parameters:
+  LINBWIDTH_MODE.BM_DRNL.bm	"LOG_FUNC1"	Variable 'LinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+#  or 'POLY_FUNC1').:
+	LINBWIDTH_PARAMETER.BM_DRNL.bm	  0:0.7194    
+	LINBWIDTH_PARAMETER.BM_DRNL.bm	  1:0.6332    
+# linScaleG parameters:
+  LINSCALEG_MODE.BM_DRNL.bm	"LOG_FUNC1"	Variable 'linScaleG' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+#  or 'POLY_FUNC1').:
+	LINSCALEG_PARAMETER.BM_DRNL.bm	  0:1.9011    
+	LINSCALEG_PARAMETER.BM_DRNL.bm	  1:-0.1002   
+# CFList parameters:
+  DIAG_MODE.BM_DRNL.bm     	"PARAMETERS"	Diagnostic mode ('list' or 'parameters').
+  CF_MODE.BM_DRNL.bm       	"USER"    	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig',  'macaque' or 'identical').
+  SINGLE_CF.BM_DRNL.bm     	1591      	Centre frequency (Hz).
+  FOCAL_CF.BM_DRNL.bm      	-1        	Focal centre frequency (Hz).
+  MIN_CF.BM_DRNL.bm        	1591      	Minimum centre frequency (Hz).
+  MAX_CF.BM_DRNL.bm        	14000     	Maximum centre frequency (Hz).
+  CHANNELS.BM_DRNL.bm      	10        	No. of centre frequencies.
+  ERB_DENSITY.BM_DRNL.bm   	0.5232    	ERB density (filters/critical band).
+# Centre frequencies (Hz).:
+	CENTRE_FREQ.BM_DRNL.bm	  0:1591      
+	CENTRE_FREQ.BM_DRNL.bm	  1:2004      
+	CENTRE_FREQ.BM_DRNL.bm	  2:2526      
+	CENTRE_FREQ.BM_DRNL.bm	  3:3182      
+	CENTRE_FREQ.BM_DRNL.bm	  4:4010      
+	CENTRE_FREQ.BM_DRNL.bm	  5:7000      
+	CENTRE_FREQ.BM_DRNL.bm	  6:8018      
+	CENTRE_FREQ.BM_DRNL.bm	  7:9100      
+	CENTRE_FREQ.BM_DRNL.bm	  8:13000     
+	CENTRE_FREQ.BM_DRNL.bm	  9:14000     
+  B_MODE.BM_DRNL.bm        	"INTERNAL_STATIC"	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+  BW_MIN.BM_DRNL.bm        	24.7      	Minimum filter bandwidth (Hz).
+  QUALITY.BM_DRNL.bm       	0.00437   	Ultimate quality factor of filters.
+  SCALER.BM_DRNL.bm        	1         	Scaler multiplier for all bandwidths.
+# Filter bandwidths (Hz).:
+	BANDWIDTH.BM_DRNL.bm	  0:382.546   
+	BANDWIDTH.BM_DRNL.bm	  1:434.599   
+	BANDWIDTH.BM_DRNL.bm	  2:493.93    
+	BANDWIDTH.BM_DRNL.bm	  3:561.168   
+	BANDWIDTH.BM_DRNL.bm	  4:637.703   
+	BANDWIDTH.BM_DRNL.bm	  5:867.701   
+	BANDWIDTH.BM_DRNL.bm	  6:935.336   
+	BANDWIDTH.BM_DRNL.bm	  7:1003.13   
+	BANDWIDTH.BM_DRNL.bm	  8:1221.77   
+	BANDWIDTH.BM_DRNL.bm	  9:1272.86   
+
+##----- DISPLAY_SIGNAL.bmd              (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.bmd	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.bmd	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.bmd	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.bmd	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.bmd	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.bmd 	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.bmd	"BM Velocity (m/s)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.bmd	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.bmd	ON        	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.bmd	ON        	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.bmd  	0         	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.bmd  	0         	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.bmd	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.bmd	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.bmd	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.bmd	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.bmd	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.bmd	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.bmd	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.bmd	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.bmd	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.bmd	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.bmd	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.bmd	"BM_response"	Display window title.
+MODE.DISPLAY_SIGNAL.bmd  	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.bmd	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.bmd	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.bmd	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.bmd	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.bmd	389       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.bmd	338       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.bmd	357       	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.bmd	25        	Display frame Y position (pixel units).
+
+##----- IHCRP_LopezPoveda.hcrp            (not_set) -----##
+BM_CILIA_COUPLING_MODE.IHCRP_LopezPoveda.hcrp	ON        	BM-cilia coupling mode ('on' or 'off').
+T_C.IHCRP_LopezPoveda.hcrp	0.00188679	BM/cilia displacement time constant, s.
+GAIN_C.IHCRP_LopezPoveda.hcrp	20        	Cilia coupling gain.
+E_T.IHCRP_LopezPoveda.hcrp	0.1       	Endocochlear potential, Et (V).
+R_P.IHCRP_LopezPoveda.hcrp	0.01      	Epithelium resistance, Rp (Ohm)
+R_T.IHCRP_LopezPoveda.hcrp	0.24      	Epithelium resistance, Rt (Ohm).
+G_L.IHCRP_LopezPoveda.hcrp	3.3e-10   	Apical leakage conductance, gL (S).
+G_M.IHCRP_LopezPoveda.hcrp	9.45e-09  	Maximum mechanical conductance, Gm (S).
+S_0.IHCRP_LopezPoveda.hcrp	6.31e-08  	Displacement sensitivity, s0 (1/m).
+S_1.IHCRP_LopezPoveda.hcrp	1.27e-08  	Displacement sensitivity, s1 (1/m).
+U_0.IHCRP_LopezPoveda.hcrp	5.27e-08  	Displacement offset, u0 (m).
+U_1.IHCRP_LopezPoveda.hcrp	2.94e-08  	Displacement offset, u1 (m).
+C_A.IHCRP_LopezPoveda.hcrp	8.9e-13   	Apical capacitance, Ca (F).
+C_B.IHCRP_LopezPoveda.hcrp	8e-12     	Basal capacitance, Cb (F).
+NUM_CURRENTS.IHCRP_LopezPoveda.hcrp	2         	The number of currents.
+# Conductance label.:
+	LABEL.IHCRP_LopezPoveda.hcrp	  0:"Fast"    
+	LABEL.IHCRP_LopezPoveda.hcrp	  1:"Slow"    
+# Conductance reversal potential, Ek (V).:
+	E_K.IHCRP_LopezPoveda.hcrp	  0:-0.078    
+	E_K.IHCRP_LopezPoveda.hcrp	  1:-0.075    
+# Maximum conductance, G (S).:
+	G1.IHCRP_LopezPoveda.hcrp	  0:3.072e-08 
+	G1.IHCRP_LopezPoveda.hcrp	  1:2.871e-08 
+# Conductance half-activation potential, V1 (V).:
+	V_1.IHCRP_LopezPoveda.hcrp	  0:-0.0432   
+	V_1.IHCRP_LopezPoveda.hcrp	  1:-0.05222  
+# Conductance voltage sensitivity constant, S1 (V).:
+	VS_1.IHCRP_LopezPoveda.hcrp	  0:0.01199   
+	VS_1.IHCRP_LopezPoveda.hcrp	  1:0.01266   
+# Conductance half-activation potential, V2 (V).:
+	V_2.IHCRP_LopezPoveda.hcrp	  0:-0.0642   
+	V_2.IHCRP_LopezPoveda.hcrp	  1:-0.08522  
+# Conductance voltage sensitivity constant, S2 (V).:
+	VS_2.IHCRP_LopezPoveda.hcrp	  0:0.0096    
+	VS_2.IHCRP_LopezPoveda.hcrp	  1:0.0169    
+# Conductance voltage time constant, tau1 max (s).:
+	TAU_1MAX.IHCRP_LopezPoveda.hcrp	  0:0.00033   
+	TAU_1MAX.IHCRP_LopezPoveda.hcrp	  1:0.0099    
+# Conductance voltage time constant, A1 (s).:
+	A_1.IHCRP_LopezPoveda.hcrp	  0:0.03125   
+	A_1.IHCRP_LopezPoveda.hcrp	  1:0.01527   
+# Conductance voltage time constant, B1 (s).:
+	B_1.IHCRP_LopezPoveda.hcrp	  0:0.00542   
+	B_1.IHCRP_LopezPoveda.hcrp	  1:0.00727   
+# Conductance voltage time constant, tau1Min (s).:
+	TAU_1MIN.IHCRP_LopezPoveda.hcrp	  0:0.0001    
+	TAU_1MIN.IHCRP_LopezPoveda.hcrp	  1:0.0013    
+# Conductance voltage time constant, tau2Max (s).:
+	TAU_2MAX.IHCRP_LopezPoveda.hcrp	  0:0.0001    
+	TAU_2MAX.IHCRP_LopezPoveda.hcrp	  1:0.00427   
+# Conductance voltage time constant, A2 (s).:
+	A_2.IHCRP_LopezPoveda.hcrp	  0:0.001     
+	A_2.IHCRP_LopezPoveda.hcrp	  1:0.0482    
+# Conductance voltage time constant, B2 (s).:
+	B_2.IHCRP_LopezPoveda.hcrp	  0:0.001     
+	B_2.IHCRP_LopezPoveda.hcrp	  1:0.00872   
+# Conductance voltage time constant, tau2Min (s).:
+	TAU_2MIN.IHCRP_LopezPoveda.hcrp	  0:9e-05     
+	TAU_2MIN.IHCRP_LopezPoveda.hcrp	  1:1e-05     
+V_MREST.IHCRP_LopezPoveda.hcrp	-0.06     	Resting membrane potential, Vmrest (V).
+
+##----- DISPLAY_SIGNAL.hcrpd            (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.hcrpd	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.hcrpd	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.hcrpd	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.hcrpd	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.hcrpd	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.hcrpd	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.hcrpd	"Receptor Potential (V)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.hcrpd	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.hcrpd	OFF       	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.hcrpd	OFF       	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.hcrpd	-0.02     	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.hcrpd	-0.08     	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.hcrpd	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.hcrpd	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.hcrpd	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.hcrpd	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.hcrpd	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.hcrpd	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.hcrpd	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.hcrpd	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.hcrpd	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.hcrpd	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.hcrpd	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.hcrpd	"IHC_RP"  	Display window title.
+MODE.DISPLAY_SIGNAL.hcrpd	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.hcrpd	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.hcrpd	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.hcrpd	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.hcrpd	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.hcrpd	390       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.hcrpd	401       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.hcrpd	715       	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.hcrpd	27        	Display frame Y position (pixel units).
+
+##----- IHC_MEDDIS2000.ihc_hsr            (not_set) -----##
+OP_MODE.IHC_MEDDIS2000.ihc_hsr	"PROB"    	Output mode: stochastic ('spike') or probability ('prob').
+DIAG_MODE.IHC_MEDDIS2000.ihc_hsr	"OFF"     	Diagnostic mode. Outputs internal states of running model in non-threaded mode('off', 'screen' or <file name>).
+CA_COND_MODE.IHC_MEDDIS2000.ihc_hsr	"ORIGINAL"	Calcium conductance mode ('original' or 'revision_1').
+CLEFT_REPLENISH_MODE.IHC_MEDDIS2000.ihc_hsr	"ORIGINAL"	Cleft replenishment mode ('original' or 'unity').
+RAN_SEED.IHC_MEDDIS2000.ihc_hsr	0         	Random number seed (0 for different seed for each run).
+REV_POT_ECA.IHC_MEDDIS2000.ihc_hsr	0.066     	Calcium reversal potential, E_Ca (Volts).
+BETA_CA.IHC_MEDDIS2000.ihc_hsr	400       	Calcium channel Boltzmann function parameter, beta.
+GAMMA_CA.IHC_MEDDIS2000.ihc_hsr	108       	Calcium channel Boltzmann function parameter, gamma.
+POWER_CA.IHC_MEDDIS2000.ihc_hsr	3         	Calcium channel transmitter release exponent (power).
+GMAX_CA.IHC_MEDDIS2000.ihc_hsr	8e-09     	Maximum calcium conductance (Siemens).
+CONC_THRESH_CA.IHC_MEDDIS2000.ihc_hsr	5.2e-11   	Calcium threshold Concentration.
+PERM_Z.IHC_MEDDIS2000.ihc_hsr	2e+32     	Transmitter release permeability, Z (unitless gain)
+TAU_M.IHC_MEDDIS2000.ihc_hsr	0.0001    	Calcium current time constant (s).
+TAU_CA.IHC_MEDDIS2000.ihc_hsr	0.0001    	Calcium ion diffusion (accumulation) time constant (s).
+MAX_FREE_POOL_M.IHC_MEDDIS2000.ihc_hsr	9         	Max. no. of transmitter packets in free pool (integer).
+REPLENISH_Y.IHC_MEDDIS2000.ihc_hsr	10        	Replenishment rate (units per second).
+LOSS_L.IHC_MEDDIS2000.ihc_hsr	2580      	Loss rate (units per second).
+REPROCESS_X.IHC_MEDDIS2000.ihc_hsr	66.3      	Reprocessing rate (units per second).
+RECOVERY_R.IHC_MEDDIS2000.ihc_hsr	6580      	Recovery rate (units per second).
+
+##----- IHC_MEDDIS2000.ihc_msr            (not_set) -----##
+OP_MODE.IHC_MEDDIS2000.ihc_msr	"PROB"    	Output mode: stochastic ('spike') or probability ('prob').
+DIAG_MODE.IHC_MEDDIS2000.ihc_msr	"OFF"     	Diagnostic mode. Outputs internal states of running model in non-threaded mode('off', 'screen' or <file name>).
+CA_COND_MODE.IHC_MEDDIS2000.ihc_msr	"ORIGINAL"	Calcium conductance mode ('original' or 'revision_1').
+CLEFT_REPLENISH_MODE.IHC_MEDDIS2000.ihc_msr	"ORIGINAL"	Cleft replenishment mode ('original' or 'unity').
+RAN_SEED.IHC_MEDDIS2000.ihc_msr	0         	Random number seed (0 for different seed for each run).
+REV_POT_ECA.IHC_MEDDIS2000.ihc_msr	0.066     	Calcium reversal potential, E_Ca (Volts).
+BETA_CA.IHC_MEDDIS2000.ihc_msr	400       	Calcium channel Boltzmann function parameter, beta.
+GAMMA_CA.IHC_MEDDIS2000.ihc_msr	108       	Calcium channel Boltzmann function parameter, gamma.
+POWER_CA.IHC_MEDDIS2000.ihc_msr	3         	Calcium channel transmitter release exponent (power).
+GMAX_CA.IHC_MEDDIS2000.ihc_msr	2.8e-09   	Maximum calcium conductance (Siemens).
+CONC_THRESH_CA.IHC_MEDDIS2000.ihc_msr	1.8e-11   	Calcium threshold Concentration.
+PERM_Z.IHC_MEDDIS2000.ihc_msr	2e+32     	Transmitter release permeability, Z (unitless gain)
+TAU_M.IHC_MEDDIS2000.ihc_msr	0.0001    	Calcium current time constant (s).
+TAU_CA.IHC_MEDDIS2000.ihc_msr	0.0001    	Calcium ion diffusion (accumulation) time constant (s).
+MAX_FREE_POOL_M.IHC_MEDDIS2000.ihc_msr	10        	Max. no. of transmitter packets in free pool (integer).
+REPLENISH_Y.IHC_MEDDIS2000.ihc_msr	10        	Replenishment rate (units per second).
+LOSS_L.IHC_MEDDIS2000.ihc_msr	2580      	Loss rate (units per second).
+REPROCESS_X.IHC_MEDDIS2000.ihc_msr	66.3      	Reprocessing rate (units per second).
+RECOVERY_R.IHC_MEDDIS2000.ihc_msr	6580      	Recovery rate (units per second).
+
+##----- IHC_MEDDIS2000.ihc_lsr            (not_set) -----##
+OP_MODE.IHC_MEDDIS2000.ihc_lsr	"PROB"    	Output mode: stochastic ('spike') or probability ('prob').
+DIAG_MODE.IHC_MEDDIS2000.ihc_lsr	"OFF"     	Diagnostic mode. Outputs internal states of running model in non-threaded mode('off', 'screen' or <file name>).
+CA_COND_MODE.IHC_MEDDIS2000.ihc_lsr	"ORIGINAL"	Calcium conductance mode ('original' or 'revision_1').
+CLEFT_REPLENISH_MODE.IHC_MEDDIS2000.ihc_lsr	"ORIGINAL"	Cleft replenishment mode ('original' or 'unity').
+RAN_SEED.IHC_MEDDIS2000.ihc_lsr	0         	Random number seed (0 for different seed for each run).
+REV_POT_ECA.IHC_MEDDIS2000.ihc_lsr	0.066     	Calcium reversal potential, E_Ca (Volts).
+BETA_CA.IHC_MEDDIS2000.ihc_lsr	400       	Calcium channel Boltzmann function parameter, beta.
+GAMMA_CA.IHC_MEDDIS2000.ihc_lsr	108       	Calcium channel Boltzmann function parameter, gamma.
+POWER_CA.IHC_MEDDIS2000.ihc_lsr	3         	Calcium channel transmitter release exponent (power).
+GMAX_CA.IHC_MEDDIS2000.ihc_lsr	1e-09     	Maximum calcium conductance (Siemens).
+CONC_THRESH_CA.IHC_MEDDIS2000.ihc_lsr	1.2e-11   	Calcium threshold Concentration.
+PERM_Z.IHC_MEDDIS2000.ihc_lsr	2e+32     	Transmitter release permeability, Z (unitless gain)
+TAU_M.IHC_MEDDIS2000.ihc_lsr	0.0001    	Calcium current time constant (s).
+TAU_CA.IHC_MEDDIS2000.ihc_lsr	0.0001    	Calcium ion diffusion (accumulation) time constant (s).
+MAX_FREE_POOL_M.IHC_MEDDIS2000.ihc_lsr	24        	Max. no. of transmitter packets in free pool (integer).
+REPLENISH_Y.IHC_MEDDIS2000.ihc_lsr	10        	Replenishment rate (units per second).
+LOSS_L.IHC_MEDDIS2000.ihc_lsr	2580      	Loss rate (units per second).
+REPROCESS_X.IHC_MEDDIS2000.ihc_lsr	66.3      	Reprocessing rate (units per second).
+RECOVERY_R.IHC_MEDDIS2000.ihc_lsr	6580      	Recovery rate (units per second).
+
+##----- AN_SG_Carney.an_hsr_oc            (not_set) -----##
+DIAG_MODE.AN_SG_Carney.an_hsr_oc	"OFF"     	Diagnostic mode ('off', 'screen' or <file name>).
+INPUT_MODE.AN_SG_Carney.an_hsr_oc	"ORIGINAL"	Input mode, 'corrected' (2001), or 'original' (1993) setting.
+OUTPUT_MODE.AN_SG_Carney.an_hsr_oc	"ALPHA_WAVE"	Output mode, 'square_pulse' or 'alpha_wave'.
+RAN_SEED.AN_SG_Carney.an_hsr_oc	0         	Random number seed (0 produces a different seed each run).
+NUM_FIBRES.AN_SG_Carney.an_hsr_oc	1         	Number of fibres.
+PULSE_DURATION_COEFF.AN_SG_Carney.an_hsr_oc	7e-05     	Excitary post-synaptic pulse duration (s).
+MAGNITUDE.AN_SG_Carney.an_hsr_oc	5.5e-09   	Pulse magnitude (arbitrary units).
+REFRAC_PERIOD.AN_SG_Carney.an_hsr_oc	0.00075   	Refractory period (s).
+THRESHOLD_INC.AN_SG_Carney.an_hsr_oc	1         	Maximum threshold increase following discharge, Hmax (spikes/s).
+C0.AN_SG_Carney.an_hsr_oc	0.55      	Coefficient for discharge history effect, c0 (s).
+C1.AN_SG_Carney.an_hsr_oc	0         	Coefficient for discharge history effect, c1 (s).
+S0.AN_SG_Carney.an_hsr_oc	0.0008    	Time constant for discharge history effect, s0 (s).
+S1.AN_SG_Carney.an_hsr_oc	0.025     	Time constant for discharge history effect, s1 (s).
+# Distribution parameters:
+  DISTRIBUTION_MODE.AN_SG_Carney.an_hsr_oc	"USER"    	Variable 'Distribution' mode ('DBL_GAUSSIAN', 'GAUSSIAN', 'STANDARD' or 'USER').
+# :
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  0:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  1:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  2:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  3:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  4:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  5:1         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  6:1         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  7:1         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  8:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_hsr_oc	  9:0         
+
+##----- DISPLAY_SIGNAL.di_hsr_oc            (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.di_hsr_oc	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.di_hsr_oc	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.di_hsr_oc	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.di_hsr_oc	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.di_hsr_oc	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.di_hsr_oc	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.di_hsr_oc	"Action potentials (/epoch)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.di_hsr_oc	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.di_hsr_oc	ON        	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.di_hsr_oc	ON        	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.di_hsr_oc	0         	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.di_hsr_oc	0         	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.di_hsr_oc	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.di_hsr_oc	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.di_hsr_oc	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.di_hsr_oc	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.di_hsr_oc	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.di_hsr_oc	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.di_hsr_oc	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.di_hsr_oc	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.di_hsr_oc	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.di_hsr_oc	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.di_hsr_oc	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.di_hsr_oc	"Auditory_Nerve"	Display window title.
+MODE.DISPLAY_SIGNAL.di_hsr_oc	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.di_hsr_oc	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.di_hsr_oc	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.di_hsr_oc	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.di_hsr_oc	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.di_hsr_oc	417       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.di_hsr_oc	356       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.di_hsr_oc	0         	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.di_hsr_oc	447       	Display frame Y position (pixel units).
+
+##----- AN_SG_Carney.an_msr_oc            (not_set) -----##
+DIAG_MODE.AN_SG_Carney.an_msr_oc	"OFF"     	Diagnostic mode ('off', 'screen' or <file name>).
+INPUT_MODE.AN_SG_Carney.an_msr_oc	"ORIGINAL"	Input mode, 'corrected' (2001), or 'original' (1993) setting.
+OUTPUT_MODE.AN_SG_Carney.an_msr_oc	"ALPHA_WAVE"	Output mode, 'square_pulse' or 'alpha_wave'.
+RAN_SEED.AN_SG_Carney.an_msr_oc	0         	Random number seed (0 produces a different seed each run).
+NUM_FIBRES.AN_SG_Carney.an_msr_oc	1         	Number of fibres.
+PULSE_DURATION_COEFF.AN_SG_Carney.an_msr_oc	7e-05     	Excitary post-synaptic pulse duration (s).
+MAGNITUDE.AN_SG_Carney.an_msr_oc	5.5e-09   	Pulse magnitude (arbitrary units).
+REFRAC_PERIOD.AN_SG_Carney.an_msr_oc	0.00075   	Refractory period (s).
+THRESHOLD_INC.AN_SG_Carney.an_msr_oc	1         	Maximum threshold increase following discharge, Hmax (spikes/s).
+C0.AN_SG_Carney.an_msr_oc	0.55      	Coefficient for discharge history effect, c0 (s).
+C1.AN_SG_Carney.an_msr_oc	0         	Coefficient for discharge history effect, c1 (s).
+S0.AN_SG_Carney.an_msr_oc	0.0008    	Time constant for discharge history effect, s0 (s).
+S1.AN_SG_Carney.an_msr_oc	0.025     	Time constant for discharge history effect, s1 (s).
+# Distribution parameters:
+  DISTRIBUTION_MODE.AN_SG_Carney.an_msr_oc	"USER"    	Variable 'Distribution' mode ('DBL_GAUSSIAN', 'GAUSSIAN', 'STANDARD' or 'USER').
+# :
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  0:1         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  1:4         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  2:4         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  3:2         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  4:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  5:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  6:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  7:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  8:2         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_msr_oc	  9:2         
+
+##----- DISPLAY_SIGNAL.di_msr_oc            (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.di_msr_oc	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.di_msr_oc	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.di_msr_oc	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.di_msr_oc	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.di_msr_oc	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.di_msr_oc	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.di_msr_oc	"Action potentials (/epoch)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.di_msr_oc	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.di_msr_oc	ON        	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.di_msr_oc	ON        	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.di_msr_oc	0         	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.di_msr_oc	0         	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.di_msr_oc	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.di_msr_oc	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.di_msr_oc	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.di_msr_oc	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.di_msr_oc	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.di_msr_oc	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.di_msr_oc	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.di_msr_oc	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.di_msr_oc	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.di_msr_oc	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.di_msr_oc	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.di_msr_oc	"Auditory_Nerve"	Display window title.
+MODE.DISPLAY_SIGNAL.di_msr_oc	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.di_msr_oc	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.di_msr_oc	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.di_msr_oc	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.di_msr_oc	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.di_msr_oc	417       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.di_msr_oc	356       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.di_msr_oc	0         	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.di_msr_oc	447       	Display frame Y position (pixel units).
+
+##----- AN_SG_Carney.an_lsr_oc            (not_set) -----##
+DIAG_MODE.AN_SG_Carney.an_lsr_oc	"OFF"     	Diagnostic mode ('off', 'screen' or <file name>).
+INPUT_MODE.AN_SG_Carney.an_lsr_oc	"ORIGINAL"	Input mode, 'corrected' (2001), or 'original' (1993) setting.
+OUTPUT_MODE.AN_SG_Carney.an_lsr_oc	"ALPHA_WAVE"	Output mode, 'square_pulse' or 'alpha_wave'.
+RAN_SEED.AN_SG_Carney.an_lsr_oc	0         	Random number seed (0 produces a different seed each run).
+NUM_FIBRES.AN_SG_Carney.an_lsr_oc	1         	Number of fibres.
+PULSE_DURATION_COEFF.AN_SG_Carney.an_lsr_oc	7e-05     	Excitary post-synaptic pulse duration (s).
+MAGNITUDE.AN_SG_Carney.an_lsr_oc	5.5e-09   	Pulse magnitude (arbitrary units).
+REFRAC_PERIOD.AN_SG_Carney.an_lsr_oc	0.00075   	Refractory period (s).
+THRESHOLD_INC.AN_SG_Carney.an_lsr_oc	1         	Maximum threshold increase following discharge, Hmax (spikes/s).
+C0.AN_SG_Carney.an_lsr_oc	0.55      	Coefficient for discharge history effect, c0 (s).
+C1.AN_SG_Carney.an_lsr_oc	0         	Coefficient for discharge history effect, c1 (s).
+S0.AN_SG_Carney.an_lsr_oc	0.0008    	Time constant for discharge history effect, s0 (s).
+S1.AN_SG_Carney.an_lsr_oc	0.025     	Time constant for discharge history effect, s1 (s).
+# Distribution parameters:
+  DISTRIBUTION_MODE.AN_SG_Carney.an_lsr_oc	"USER"    	Variable 'Distribution' mode ('DBL_GAUSSIAN', 'GAUSSIAN', 'STANDARD' or 'USER').
+# :
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  0:1         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  1:4         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  2:4         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  3:2         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  4:0         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  5:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  6:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  7:5         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  8:2         
+	DISTRIBUTION_PARAMETER.AN_SG_Carney.an_lsr_oc	  9:2         
+
+##----- DISPLAY_SIGNAL.di_lsr_oc            (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.di_lsr_oc	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.di_lsr_oc	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.di_lsr_oc	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.di_lsr_oc	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.di_lsr_oc	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.di_lsr_oc	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.di_lsr_oc	"Action potentials (/epoch)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.di_lsr_oc	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.di_lsr_oc	ON        	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.di_lsr_oc	ON        	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.di_lsr_oc	0         	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.di_lsr_oc	0         	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.di_lsr_oc	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.di_lsr_oc	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.di_lsr_oc	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.di_lsr_oc	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.di_lsr_oc	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.di_lsr_oc	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.di_lsr_oc	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.di_lsr_oc	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.di_lsr_oc	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.di_lsr_oc	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.di_lsr_oc	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.di_lsr_oc	"Auditory_Nerve"	Display window title.
+MODE.DISPLAY_SIGNAL.di_lsr_oc	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.di_lsr_oc	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.di_lsr_oc	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.di_lsr_oc	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.di_lsr_oc	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.di_lsr_oc	417       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.di_lsr_oc	356       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.di_lsr_oc	0         	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.di_lsr_oc	447       	Display frame Y position (pixel units).
+
+##----- DISPLAY_SIGNAL.di_san_oc            (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.di_san_oc	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.di_san_oc	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.di_san_oc	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.di_san_oc	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.di_san_oc	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.di_san_oc	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.di_san_oc	""        	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.di_san_oc	"AUTO"    	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.di_san_oc	ON        	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.di_san_oc	ON        	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.di_san_oc	0         	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.di_san_oc	0         	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.di_san_oc	"y"       	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.di_san_oc	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.di_san_oc	15        	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.di_san_oc	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.di_san_oc	""        	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.di_san_oc	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.di_san_oc	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.di_san_oc	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.di_san_oc	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.di_san_oc	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.di_san_oc	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.di_san_oc	""        	Display window title.
+MODE.DISPLAY_SIGNAL.di_san_oc	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.di_san_oc	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.di_san_oc	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.di_san_oc	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.di_san_oc	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.di_san_oc	500       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.di_san_oc	440       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.di_san_oc	0         	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.di_san_oc	0         	Display frame Y position (pixel units).
+
+##----- FILT_DISTLOWPASS.oclp            (not_set) -----##
+MODE.FILT_DISTLOWPASS.oclp	"NORMAL"  	Output mode for model ('normal' or 'scaled').
+SCALE.FILT_DISTLOWPASS.oclp	1         	Signal multiplier scale ('scaled' mode only).
+# freq_Distr parameters:
+  FREQ_DISTR_MODE.FILT_DISTLOWPASS.oclp	"USER"    	Variable 'freq_Distr' mode ('STANDARD' or 'USER').
+# Parameters for 'freq_Distr' function:
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  0:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  1:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  2:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  3:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  4:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  5:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  6:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  7:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  8:300       
+	FREQ_DISTR_PARAMETER.FILT_DISTLOWPASS.oclp	  9:300       
+
+##----- UTIL_REDUCECHANNELS.on            (not_set) -----##
+MODE.UTIL_REDUCECHANNELS.on	"SUM"     	Mode - 'average' or simple 'sum'.
+NUM_CHANNELS.UTIL_REDUCECHANNELS.on	1         	Number of channels signal is to be averaged to.
+
+##----- NEUR_HHUXLEY.oc_h               (not_set) -----##
+DIAG_MODE.NEUR_HHUXLEY.oc_h	"OFF"     	Diagnostic mode ('off', 'screen' or <file name>).
+OP_MODE.NEUR_HHUXLEY.oc_h	"NORMAL"  	Operation mode ('normal' or 'voltage clamp').
+INJECT_MODE.NEUR_HHUXLEY.oc_h	OFF       	Injection mode ('on' or 'off').
+EXCIT_REV_POT.NEUR_HHUXLEY.oc_h	0         	Excitatory reversal potential (V).
+INHIB_REV_POT.NEUR_HHUXLEY.oc_h	0         	Inhibitory reversal potential (V).
+SHUNT_INHIB_REV_POT.NEUR_HHUXLEY.oc_h	0         	Shunt inhibitory reversal potential (V).
+CAPACITANCE.NEUR_HHUXLEY.oc_h	1.2e-11   	Cell capacitance (Farads).
+RESTING_POT.NEUR_HHUXLEY.oc_h	-0.06408  	Resting potential (>=0 for calibration run).
+RESTING_DUR.NEUR_HHUXLEY.oc_h	0.1       	Resting signal duration - used when finding V0 (s).
+RESTING_DV.NEUR_HHUXLEY.oc_h	1e-08     	Resting criteria, dV (V).
+# IonChanList parameters:
+  TABLES_MODE.NEUR_HHUXLEY.oc_h	"OFF"     	Print ion channel tables mode ('off', 'screen' or filename).
+  LEAKAGE_COND.NEUR_HHUXLEY.oc_h	2e-09     	Base leakage conductance (S).
+  LEAKAGE_C_Q10.NEUR_HHUXLEY.oc_h	2         	Leakage conductance Q10.
+  LEAKAGE_POT.NEUR_HHUXLEY.oc_h	-0.065    	Leakage equilibrium potential (V).
+  NUM_CHANNELS.NEUR_HHUXLEY.oc_h	5         	Number of ion channels.
+  MIN_VOLT.NEUR_HHUXLEY.oc_h	-0.12     	Minimum voltage for tables (V).
+  MAX_VOLT.NEUR_HHUXLEY.oc_h	0.055     	Maximum voltage for tables (V).
+  DV.NEUR_HHUXLEY.oc_h     	0.001     	Voltage step for tables (V).
+  TEMPERATURE.NEUR_HHUXLEY.oc_h	38        	Operating temperature (degrees C).
+# <---- Ion channel Na_Rothman ---->
+  DESCRIPTION.NEUR_HHUXLEY.oc_h	"Na_Rothman"	Description.
+  MODE.NEUR_HHUXLEY.oc_h   	"ROTHMAN" 	Mode option ('file', 'hHuxley' or 'boltzmann').
+  ENABLED.NEUR_HHUXLEY.oc_h	ON        	Ion channel enabled status ('on' or 'off).
+  EQUIL_POT.NEUR_HHUXLEY.oc_h	0.055     	Equilibrium potential (V).
+  BASE_MAX_COND.NEUR_HHUXLEY.oc_h	1e-06     	Base maximum conductance (S).
+  COND_Q10.NEUR_HHUXLEY.oc_h	2         	Conductance Q10.
+  ACTIVATION.NEUR_HHUXLEY.oc_h	3         	Activation exponent (real).
+  NUM_GATES.NEUR_HHUXLEY.oc_h	2         	Number of channel gates (int).
+# Voltage at half maximum values (V):
+	V_HALF.NEUR_HHUXLEY.oc_h	  0:-0.0191   
+	V_HALF.NEUR_HHUXLEY.oc_h	  1:-0.053    
+# 'Z' Constant values (unit).:
+	Z.NEUR_HHUXLEY.oc_h	  0:3.7       
+	Z.NEUR_HHUXLEY.oc_h	  1:-3.6      
+# Time constants, tau (s):
+	TAU.NEUR_HHUXLEY.oc_h	  0:0.0001    
+	TAU.NEUR_HHUXLEY.oc_h	  1:0.0005    
+  FILENAME.NEUR_HHUXLEY.oc_h	"<file name>"	Ion channel file name.
+  ACTIVATION_MODE.NEUR_HHUXLEY.oc_h	"STANDARD"	Sets the ion channel activation function ('standard' or 'rothman_kht').
+# 'a' parameter values for first activation/inactivation function.:
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  1:1         
+# 'b' parameter values for first activation/inactivation function.:
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  1:0         
+# 'c' parameter values for first activation/inactivation function.:
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  1:1         
+# 'd' parameter values for first activation/inactivation function.:
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  0:38        
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  1:65        
+# 'e' parameter values for first activation/inactivation function.:
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  0:-7        
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  1:6         
+# 'f' parameter values for first activation/inactivation function.:
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  1:1         
+# 'g' parameter values for first activation/inactivation function.:
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  1:0         
+# 'h' parameter values for first activation/inactivation function.:
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  1:0         
+# 'i' parameter values for first activation/inactivation function.:
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for first activation/inactivation function.:
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for first activation/inactivation function.:
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  1:0         
+# 'a' parameter values for second activation/inactivation function.:
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  0:10        
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  1:100       
+# 'b' parameter values for second activation/inactivation function.:
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  0:5         
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  1:7         
+# 'c' parameter values for second activation/inactivation function.:
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  1:60        
+# 'd' parameter values for second activation/inactivation function.:
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  0:18        
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  1:11        
+# 'e' parameter values for second activation/inactivation function.:
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  0:36        
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  1:10        
+# 'f' parameter values for second activation/inactivation function.:
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  1:60        
+# 'g' parameter values for second activation/inactivation function.:
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  0:25        
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  1:25        
+# 'h' parameter values for second activation/inactivation function.:
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  0:0.04      
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  1:0.6       
+# 'i' parameter values for second activation/inactivation function.:
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for second activation/inactivation function.:
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for second activation/inactivation function.:
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  1:0         
+# <---- Ion channel K_HT_Rothman ---->
+  DESCRIPTION.NEUR_HHUXLEY.oc_h	"K_HT_Rothman"	Description.
+  MODE.NEUR_HHUXLEY.oc_h   	"ROTHMAN" 	Mode option ('file', 'hHuxley' or 'boltzmann').
+  ENABLED.NEUR_HHUXLEY.oc_h	ON        	Ion channel enabled status ('on' or 'off).
+  EQUIL_POT.NEUR_HHUXLEY.oc_h	-0.07     	Equilibrium potential (V).
+  BASE_MAX_COND.NEUR_HHUXLEY.oc_h	1.5e-07   	Base maximum conductance (S).
+  COND_Q10.NEUR_HHUXLEY.oc_h	2         	Conductance Q10.
+  ACTIVATION.NEUR_HHUXLEY.oc_h	2         	Activation exponent (real).
+  NUM_GATES.NEUR_HHUXLEY.oc_h	2         	Number of channel gates (int).
+# Voltage at half maximum values (V):
+	V_HALF.NEUR_HHUXLEY.oc_h	  0:-0.015    
+	V_HALF.NEUR_HHUXLEY.oc_h	  1:0         
+# 'Z' Constant values (unit).:
+	Z.NEUR_HHUXLEY.oc_h	  0:4         
+	Z.NEUR_HHUXLEY.oc_h	  1:0         
+# Time constants, tau (s):
+	TAU.NEUR_HHUXLEY.oc_h	  0:0.00161   
+	TAU.NEUR_HHUXLEY.oc_h	  1:0         
+  FILENAME.NEUR_HHUXLEY.oc_h	"<file name>"	Ion channel file name.
+  ACTIVATION_MODE.NEUR_HHUXLEY.oc_h	"ROTHMAN_KHT"	Sets the ion channel activation function ('standard' or 'rothman_kht').
+# 'a' parameter values for first activation/inactivation function.:
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  1:1         
+# 'b' parameter values for first activation/inactivation function.:
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  1:0         
+# 'c' parameter values for first activation/inactivation function.:
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  1:1         
+# 'd' parameter values for first activation/inactivation function.:
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  0:15        
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  1:23        
+# 'e' parameter values for first activation/inactivation function.:
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  0:-5        
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  1:-6        
+# 'f' parameter values for first activation/inactivation function.:
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  0:2         
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  1:1         
+# 'g' parameter values for first activation/inactivation function.:
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  1:0         
+# 'h' parameter values for first activation/inactivation function.:
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  1:0         
+# 'i' parameter values for first activation/inactivation function.:
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for first activation/inactivation function.:
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for first activation/inactivation function.:
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  1:0         
+# 'a' parameter values for second activation/inactivation function.:
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  0:100       
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  1:100       
+# 'b' parameter values for second activation/inactivation function.:
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  0:11        
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  1:4         
+# 'c' parameter values for second activation/inactivation function.:
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  1:60        
+# 'd' parameter values for second activation/inactivation function.:
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  0:24        
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  1:32        
+# 'e' parameter values for second activation/inactivation function.:
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  0:21        
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  1:5         
+# 'f' parameter values for second activation/inactivation function.:
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  1:60        
+# 'g' parameter values for second activation/inactivation function.:
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  0:23        
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  1:22        
+# 'h' parameter values for second activation/inactivation function.:
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  0:0.7       
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  1:5         
+# 'i' parameter values for second activation/inactivation function.:
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for second activation/inactivation function.:
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for second activation/inactivation function.:
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  1:0         
+# <---- Ion channel K_LT_Rothman ---->
+  DESCRIPTION.NEUR_HHUXLEY.oc_h	"K_LT_Rothman"	Description.
+  MODE.NEUR_HHUXLEY.oc_h   	"ROTHMAN" 	Mode option ('file', 'hHuxley' or 'boltzmann').
+  ENABLED.NEUR_HHUXLEY.oc_h	ON        	Ion channel enabled status ('on' or 'off).
+  EQUIL_POT.NEUR_HHUXLEY.oc_h	-0.07     	Equilibrium potential (V).
+  BASE_MAX_COND.NEUR_HHUXLEY.oc_h	2e-08     	Base maximum conductance (S).
+  COND_Q10.NEUR_HHUXLEY.oc_h	2         	Conductance Q10.
+  ACTIVATION.NEUR_HHUXLEY.oc_h	4         	Activation exponent (real).
+  NUM_GATES.NEUR_HHUXLEY.oc_h	2         	Number of channel gates (int).
+# Voltage at half maximum values (V):
+	V_HALF.NEUR_HHUXLEY.oc_h	  0:-0.028    
+	V_HALF.NEUR_HHUXLEY.oc_h	  1:0         
+# 'Z' Constant values (unit).:
+	Z.NEUR_HHUXLEY.oc_h	  0:4.6       
+	Z.NEUR_HHUXLEY.oc_h	  1:0         
+# Time constants, tau (s):
+	TAU.NEUR_HHUXLEY.oc_h	  0:0.01      
+	TAU.NEUR_HHUXLEY.oc_h	  1:0         
+  FILENAME.NEUR_HHUXLEY.oc_h	"<file name>"	Ion channel file name.
+  ACTIVATION_MODE.NEUR_HHUXLEY.oc_h	"STANDARD"	Sets the ion channel activation function ('standard' or 'rothman_kht').
+# 'a' parameter values for first activation/inactivation function.:
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  1:1         
+# 'b' parameter values for first activation/inactivation function.:
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  1:0.5       
+# 'c' parameter values for first activation/inactivation function.:
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  1:1         
+# 'd' parameter values for first activation/inactivation function.:
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  0:48        
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  1:71        
+# 'e' parameter values for first activation/inactivation function.:
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  0:-6        
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  1:10        
+# 'f' parameter values for first activation/inactivation function.:
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  0:4         
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  1:1         
+# 'g' parameter values for first activation/inactivation function.:
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  1:0.5       
+# 'h' parameter values for first activation/inactivation function.:
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  1:0         
+# 'i' parameter values for first activation/inactivation function.:
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for first activation/inactivation function.:
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for first activation/inactivation function.:
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  1:0         
+# 'a' parameter values for second activation/inactivation function.:
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  0:100       
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  1:1000      
+# 'b' parameter values for second activation/inactivation function.:
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  0:6         
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  1:1         
+# 'c' parameter values for second activation/inactivation function.:
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  1:60        
+# 'd' parameter values for second activation/inactivation function.:
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  0:6         
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  1:20        
+# 'e' parameter values for second activation/inactivation function.:
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  0:16        
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  1:1         
+# 'f' parameter values for second activation/inactivation function.:
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  1:60        
+# 'g' parameter values for second activation/inactivation function.:
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  0:45        
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  1:8         
+# 'h' parameter values for second activation/inactivation function.:
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  0:1.5       
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  1:50        
+# 'i' parameter values for second activation/inactivation function.:
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  1:0         
+# 'j' parameter values for second activation/inactivation function.:
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  1:0         
+# 'k' parameter values for second activation/inactivation function.:
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  1:0         
+# <---- Ion channel A_Rothman ---->
+  DESCRIPTION.NEUR_HHUXLEY.oc_h	"A_Rothman"	Description.
+  MODE.NEUR_HHUXLEY.oc_h   	"ROTHMAN" 	Mode option ('file', 'hHuxley' or 'boltzmann').
+  ENABLED.NEUR_HHUXLEY.oc_h	OFF       	Ion channel enabled status ('on' or 'off).
+  EQUIL_POT.NEUR_HHUXLEY.oc_h	-0.07     	Equilibrium potential (V).
+  BASE_MAX_COND.NEUR_HHUXLEY.oc_h	6.5e-08   	Base maximum conductance (S).
+  COND_Q10.NEUR_HHUXLEY.oc_h	2         	Conductance Q10.
+  ACTIVATION.NEUR_HHUXLEY.oc_h	4         	Activation exponent (real).
+  NUM_GATES.NEUR_HHUXLEY.oc_h	3         	Number of channel gates (int).
+# Voltage at half maximum values (V):
+	V_HALF.NEUR_HHUXLEY.oc_h	  0:-0.0302   
+	V_HALF.NEUR_HHUXLEY.oc_h	  1:-0.0612   
+	V_HALF.NEUR_HHUXLEY.oc_h	  2:0         
+# 'Z' Constant values (unit).:
+	Z.NEUR_HHUXLEY.oc_h	  0:0.6       
+	Z.NEUR_HHUXLEY.oc_h	  1:-4.9      
+	Z.NEUR_HHUXLEY.oc_h	  2:0         
+# Time constants, tau (s):
+	TAU.NEUR_HHUXLEY.oc_h	  0:0.001     
+	TAU.NEUR_HHUXLEY.oc_h	  1:0.003     
+	TAU.NEUR_HHUXLEY.oc_h	  2:0         
+  FILENAME.NEUR_HHUXLEY.oc_h	"<file name>"	Ion channel file name.
+  ACTIVATION_MODE.NEUR_HHUXLEY.oc_h	"THREE_GATE"	Sets the ion channel activation function ('standard' or 'rothman_kht').
+# 'a' parameter values for first activation/inactivation function.:
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  1:1         
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  2:1         
+# 'b' parameter values for first activation/inactivation function.:
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  2:0         
+# 'c' parameter values for first activation/inactivation function.:
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  0:1         
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  1:1         
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  2:1         
+# 'd' parameter values for first activation/inactivation function.:
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  0:31        
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  1:66        
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  2:66        
+# 'e' parameter values for first activation/inactivation function.:
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  0:-6        
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  1:7         
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  2:7         
+# 'f' parameter values for first activation/inactivation function.:
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  0:4         
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  1:2         
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  2:2         
+# 'g' parameter values for first activation/inactivation function.:
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  2:0         
+# 'h' parameter values for first activation/inactivation function.:
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  2:0         
+# 'i' parameter values for first activation/inactivation function.:
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  2:0         
+# 'j' parameter values for first activation/inactivation function.:
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  2:0         
+# 'k' parameter values for first activation/inactivation function.:
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  2:0         
+# 'a' parameter values for second activation/inactivation function.:
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  0:100       
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  1:1000      
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  2:90        
+# 'b' parameter values for second activation/inactivation function.:
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  0:7         
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  1:14        
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  2:1         
+# 'c' parameter values for second activation/inactivation function.:
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  1:60        
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  2:0         
+# 'd' parameter values for second activation/inactivation function.:
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  0:14        
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  1:27        
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  2:1e+37     
+# 'e' parameter values for second activation/inactivation function.:
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  0:29        
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  1:29        
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  2:1         
+# 'f' parameter values for second activation/inactivation function.:
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  0:60        
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  1:60        
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  2:66        
+# 'g' parameter values for second activation/inactivation function.:
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  0:24        
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  1:24        
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  2:17        
+# 'h' parameter values for second activation/inactivation function.:
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  0:0.1       
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  1:1         
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  2:10        
+# 'i' parameter values for second activation/inactivation function.:
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  2:0         
+# 'j' parameter values for second activation/inactivation function.:
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  2:0         
+# 'k' parameter values for second activation/inactivation function.:
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  0:0         
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  1:0         
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  2:0         
+# <---- Ion channel Cation_Rothman ---->
+  DESCRIPTION.NEUR_HHUXLEY.oc_h	"Cation_Rothman"	Description.
+  MODE.NEUR_HHUXLEY.oc_h   	"ROTHMAN" 	Mode option ('file', 'hHuxley' or 'boltzmann').
+  ENABLED.NEUR_HHUXLEY.oc_h	ON        	Ion channel enabled status ('on' or 'off).
+  EQUIL_POT.NEUR_HHUXLEY.oc_h	-0.043    	Equilibrium potential (V).
+  BASE_MAX_COND.NEUR_HHUXLEY.oc_h	2e-09     	Base maximum conductance (S).
+  COND_Q10.NEUR_HHUXLEY.oc_h	2         	Conductance Q10.
+  ACTIVATION.NEUR_HHUXLEY.oc_h	1         	Activation exponent (real).
+  NUM_GATES.NEUR_HHUXLEY.oc_h	1         	Number of channel gates (int).
+# Voltage at half maximum values (V):
+	V_HALF.NEUR_HHUXLEY.oc_h	  0:0         
+# 'Z' Constant values (unit).:
+	Z.NEUR_HHUXLEY.oc_h	  0:0         
+# Time constants, tau (s):
+	TAU.NEUR_HHUXLEY.oc_h	  0:0         
+  FILENAME.NEUR_HHUXLEY.oc_h	"<file name>"	Ion channel file name.
+  ACTIVATION_MODE.NEUR_HHUXLEY.oc_h	"ONE_GATE"	Sets the ion channel activation function ('standard' or 'rothman_kht').
+# 'a' parameter values for first activation/inactivation function.:
+	FUNC1_A.NEUR_HHUXLEY.oc_h	  0:1         
+# 'b' parameter values for first activation/inactivation function.:
+	FUNC1_B.NEUR_HHUXLEY.oc_h	  0:0         
+# 'c' parameter values for first activation/inactivation function.:
+	FUNC1_C.NEUR_HHUXLEY.oc_h	  0:1         
+# 'd' parameter values for first activation/inactivation function.:
+	FUNC1_D.NEUR_HHUXLEY.oc_h	  0:76        
+# 'e' parameter values for first activation/inactivation function.:
+	FUNC1_E.NEUR_HHUXLEY.oc_h	  0:7         
+# 'f' parameter values for first activation/inactivation function.:
+	FUNC1_F.NEUR_HHUXLEY.oc_h	  0:1         
+# 'g' parameter values for first activation/inactivation function.:
+	FUNC1_G.NEUR_HHUXLEY.oc_h	  0:0         
+# 'h' parameter values for first activation/inactivation function.:
+	FUNC1_H.NEUR_HHUXLEY.oc_h	  0:0         
+# 'i' parameter values for first activation/inactivation function.:
+	FUNC1_I.NEUR_HHUXLEY.oc_h	  0:0         
+# 'j' parameter values for first activation/inactivation function.:
+	FUNC1_J.NEUR_HHUXLEY.oc_h	  0:0         
+# 'k' parameter values for first activation/inactivation function.:
+	FUNC1_K.NEUR_HHUXLEY.oc_h	  0:0         
+# 'a' parameter values for second activation/inactivation function.:
+	FUNC2_A.NEUR_HHUXLEY.oc_h	  0:100000    
+# 'b' parameter values for second activation/inactivation function.:
+	FUNC2_B.NEUR_HHUXLEY.oc_h	  0:237       
+# 'c' parameter values for second activation/inactivation function.:
+	FUNC2_C.NEUR_HHUXLEY.oc_h	  0:60        
+# 'd' parameter values for second activation/inactivation function.:
+	FUNC2_D.NEUR_HHUXLEY.oc_h	  0:12        
+# 'e' parameter values for second activation/inactivation function.:
+	FUNC2_E.NEUR_HHUXLEY.oc_h	  0:17        
+# 'f' parameter values for second activation/inactivation function.:
+	FUNC2_F.NEUR_HHUXLEY.oc_h	  0:60        
+# 'g' parameter values for second activation/inactivation function.:
+	FUNC2_G.NEUR_HHUXLEY.oc_h	  0:14        
+# 'h' parameter values for second activation/inactivation function.:
+	FUNC2_H.NEUR_HHUXLEY.oc_h	  0:25        
+# 'i' parameter values for second activation/inactivation function.:
+	FUNC2_I.NEUR_HHUXLEY.oc_h	  0:0         
+# 'j' parameter values for second activation/inactivation function.:
+	FUNC2_J.NEUR_HHUXLEY.oc_h	  0:0         
+# 'k' parameter values for second activation/inactivation function.:
+	FUNC2_K.NEUR_HHUXLEY.oc_h	  0:0         
+
+##----- DISPLAY_SIGNAL.od               (not_set) -----##
+MAGNIFICATION.DISPLAY_SIGNAL.od	1         	Signal magnification.
+NORMALISATION.DISPLAY_SIGNAL.od	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP.DISPLAY_SIGNAL.od	1         	Channel stepping mode.
+NUMGREYSCALES.DISPLAY_SIGNAL.od	10        	Number of grey scales.
+X_RESOLUTION.DISPLAY_SIGNAL.od	0.01      	Resolution of X scale (1 - low, fractions are higher).
+WIDTH.DISPLAY_SIGNAL.od  	-1        	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE.DISPLAY_SIGNAL.od	"Membrane potential (V)"	Y-axis title.
+Y_AXIS_MODE.DISPLAY_SIGNAL.od	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING.DISPLAY_SIGNAL.od	OFF       	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE.DISPLAY_SIGNAL.od	OFF       	Automatic y-axis scale ('on' or 'off').
+MAXY.DISPLAY_SIGNAL.od   	0.0300593 	Maximum Y value (for manual scaling).
+MINY.DISPLAY_SIGNAL.od   	-0.0742532	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT.DISPLAY_SIGNAL.od	"ye-3"    	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES.DISPLAY_SIGNAL.od	0         	Y axis scale decimal places.
+Y_TICKS.DISPLAY_SIGNAL.od	5         	Y axis tick marks.
+Y_INSET_SCALE.DISPLAY_SIGNAL.od	ON        	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE.DISPLAY_SIGNAL.od	"Time (s)"	X axis title.
+AUTO_X_SCALE.DISPLAY_SIGNAL.od	ON        	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT.DISPLAY_SIGNAL.od	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES.DISPLAY_SIGNAL.od	0         	X axis scale decimal places.
+X_TICKS.DISPLAY_SIGNAL.od	6         	X axis tick marks.
+X_OFFSET.DISPLAY_SIGNAL.od	0         	X offset for display in zoom mode (x units).
+X_EXTENT.DISPLAY_SIGNAL.od	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+WIN_TITLE.DISPLAY_SIGNAL.od	"OC_(onset_chopper)"	Display window title.
+MODE.DISPLAY_SIGNAL.od   	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY.DISPLAY_SIGNAL.od	OFF       	Summary display mode ('on' or 'off').
+CHAN_ACTIVITY_DISPLAY.DISPLAY_SIGNAL.od	OFF       	Channel activity display mode ('on' or 'off').
+FRAMEDELAY.DISPLAY_SIGNAL.od	0         	Delay between display frames (s)
+TOPMARGIN.DISPLAY_SIGNAL.od	5         	Top margin for display (percent of display height).
+WIN_HEIGHT.DISPLAY_SIGNAL.od	416       	Display frame height (pixel units).
+WIN_WIDTH.DISPLAY_SIGNAL.od	350       	Display frame width (pixel units).
+WIN_X_POS.DISPLAY_SIGNAL.od	360       	Display frame X position (pixel units).
+WIN_Y_POS.DISPLAY_SIGNAL.od	443       	Display frame Y position (pixel units).
+
+##----- ANA_HISTOGRAM.psth_oc                       () -----##
+DETECT_MODE.ANA_HISTOGRAM.psth_oc	"SPIKE"   	Detection mode: 'spike' (detection) or 'continuous' (signal).
+OUTPUT_MODE.ANA_HISTOGRAM.psth_oc	"BIN_COUNTS"	Output mode: 'bin_counts'  or 'spike_rate'.
+TYPE_MODE.ANA_HISTOGRAM.psth_oc	"PSTH"    	Histogram type: 'PSTH', or 'PH'.
+THRESHOLD.ANA_HISTOGRAM.psth_oc	-0.02     	Event threshold for bin counts (units as appropriate).
+BIN_WIDTH.ANA_HISTOGRAM.psth_oc 0.1e-3     	Histogram Bin width (-ve: previous signal dt, zero: one bin = input  signal length) (s).
+PERIOD.ANA_HISTOGRAM.psth_oc  	-1        	Period for period histogram: used in 'PH' mode only (s).
+OFFSET.ANA_HISTOGRAM.psth_oc  	0         	Time offset for histogram (s).
+
+##----- DATAFILE_OUT.OCout              (not_set) -----##
+FILENAME.DATAFILE_OUT.OCout	"outputOC.dat"	Stimulus file name.
+SUB_FORMAT_TYPE.DATAFILE_OUT.OCout	"ASCII"   	Sound file format sub-type.
+WORDSIZE.DATAFILE_OUT.OCout	2         	Default word size for sound data (1,2 or 4 bytes)
+ENDIAN_MODE.DATAFILE_OUT.OCout	"DEFAULT" 	Default (for format), 'little' or 'big'-endian.
+CHANNELS.DATAFILE_OUT.OCout	1         	No. of Channels: for raw binary and ASCII files.)
+NORM_MODE.DATAFILE_OUT.OCout	0         	Normalisation factor for writing (either 0 or -ve: automatic).
+SAMPLERATE.DATAFILE_OUT.OCout	8000      	Default sample rate: for raw binary and ASCII files (Hz).
+DURATION.DATAFILE_OUT.OCout	-1        	Duration of read signal: -ve = unlimited (s)
+STARTTIME.DATAFILE_OUT.OCout	0         	Start time (offset) for signal (s).
+GAIN.DATAFILE_OUT.OCout  	0         	Relative signal gain (dB).
+
+################################################################################
+<<>> Simulation parameter file divider.
+################################################################################
+
+DIAG_MODE.ams.0          	"SCREEN"  	Diagnostics mode specifier ('off', 'screen' or <filename>).
+SIM_FILE.ams.0           	"Simulations/test.spf"	Simulation file.
+SEGMENT_MODE.ams.0       	OFF       	Segmented or frame-base processing mode ('on' or 'off').
+THREAD_MODE.ams.0        	"PROCESS" 	Thread mode ('process' or 'equi_channel').
+NUM_THREADS.ams.0        	10        	No. of processing threads for simulation (-ve defaults to no. CPU's).
+# Sub-parameter list: App. Specific Pars.: 
+  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
+  AUTO_NUM_RUNS_MODE.ams.0 	OFF       	Auto-setting of the number of runs (data files only) ('on' or 'off').
+  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

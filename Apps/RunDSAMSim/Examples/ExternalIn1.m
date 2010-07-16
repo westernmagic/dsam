@@ -6,7 +6,7 @@ dt = 1.0 / sampleRate;
 time = dt:dt:0.1;
 freq = 1000;
 leveldB = 30;
-amp = 20 * sqrt(2.0) * 10^(leveldB / 20.0);
+amp = DBSPL2MicroPascals(leveldB);
 signal = amp * sin(2.0 * pi * freq * time);
 
 figure(1);
