@@ -38,20 +38,16 @@
 !define	ALL_USERS		; For WriteEnvStr.nsh 
 !include "WriteEnvStr.nsh"
 
-!define VERSION		"2.8.28"
+!define VERSION		"2.8.29"
 !define INST_VERSION	"1"
-!define DSAMDIR_ENV	"DSAMDIR"
-!define WX_VERSION	"2.8.3"
-!define WXWIN_ENV	"WXWIN"
+!define DSAMDIR_ENV	"DSAMSDKDIR"
+!define WX_VERSION	"2.8.10"
 !define WXWINDIR	"..\SupportLibs\wxWidgets-${WX_VERSION}"
 !define LSF_VERSION	"1.0.17"
-!define LIBSNDFILE_ENV	"LIBSNDFILE"
 !define LIBSNDFILEDIR	"..\SupportLibs\libsndfile-${LSF_VERSION}"
 !define PA_VERSION	"19"
-!define PORTAUDIO_ENV	"PORTAUDIO"
 !define PORTAUDIODIR	"..\SupportLibs\portaudio_v${PA_VERSION}"
 !define FFTW_VERSION	"3.1.2"
-!define FFTW_ENV	"FFTWDIR"
 !define FFTWDIR		"..\SupportLibs\fftw-${FFTW_VERSION}"
 !define DLLDIR		"$COMMONFILES\dsam"
 
@@ -180,11 +176,6 @@ Section "WXWIN Library ${WX_VERSION} x86"
    ${WXWINDIR}\lib\vc_dll\wxmsw28u_html_vc_custom.dll ${DLLDIR}\wxmsw28u_html_vc_custom.dll ${DLLDIR}
   !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
    ${WXWINDIR}\lib\vc_dll\wxmsw28u_ogl_vc_custom.dll ${DLLDIR}\wxmsw28u_ogl_vc_custom.dll ${DLLDIR}
-
-  ; Set Environment variable
-  Push "${WXWIN_ENV}"
-  Push "$INSTDIR"
-  Call WriteEnvStr
   
 SectionEnd
 
@@ -211,11 +202,6 @@ Section "LIBSNDFILE Library ${LSF_VERSION} x86"
 
   !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
    ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.dll ${DLLDIR}\libsndfile_x86.dll ${DLLDIR}
-
-  ; Set Environment variable
-  Push "${LIBSNDFILE_ENV}"
-  Push "$INSTDIR"
-  Call WriteEnvStr
   
 SectionEnd
 
@@ -243,11 +229,6 @@ Section "PORTAUDIO Library ${PA_VERSION} x86"
   !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
    ${PORTAUDIODIR}\build\msvc\Win32\Release\portaudio.dll ${DLLDIR}\portaudio.dll ${DLLDIR}
 
-  ; Set Environment variable
-  Push "${PORTAUDIO_ENV}"
-  Push "$INSTDIR"
-  Call WriteEnvStr
-  
 SectionEnd
 
 Section "FFTW Library ${FFTW_VERSION} x86"
@@ -262,11 +243,6 @@ Section "FFTW Library ${FFTW_VERSION} x86"
   SetOutPath $INSTDIR\lib\x86
   File ${FFTWDIR}\libfftw.lib
 
-  ; Set Environment variable
-  Push "${FFTW_ENV}"
-  Push "$INSTDIR"
-  Call WriteEnvStr
-  
 SectionEnd
 
 ;--------------------------------
