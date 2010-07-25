@@ -53,7 +53,7 @@
 #	define	MAIN_ARGS	void
 #	define ARGC		0
 #	define ARGV		NULL
-#	if (defined(USE_GUI) && defined(__WXMSW__)) || defined(MATLAB_MEX_FILE)
+#	if (defined(USE_GUI) && defined(__WXMSW__)) || defined(INTERFACE_DLL)
 #		define	MainSimulation	main
 #	endif
 #else
