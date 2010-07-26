@@ -9,6 +9,8 @@ lib_LTLIBRARIES = libRunDSAMSim.la
 
 INCLUDES		= -DLIBRARY_COMPILE $(DSAMINC) $(JAVA_INC)
 
+EXTRA_DIST		= libRunDSAMSim.def
+
 libRunDSAMSim_la_SOURCES= libRunDSAMSim.h libRunDSAMSim.cpp ../MatMainApp.cpp ../MatInSignal.cpp
 
 #libRunDSAMSim_la_LDFLAGS= $(DSAMLDFLAGS) -rpath $(libdir) $(LaVersionInfo) -export-dynamic

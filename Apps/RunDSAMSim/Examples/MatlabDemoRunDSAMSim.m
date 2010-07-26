@@ -23,11 +23,6 @@ mainPars = [ ...
 bF = 8018.0;
 
 
-if (strcmp(mode, 'java') == 1)
-	MyJavaAddClassPaths({'/home/lowel/Work/ExpData/Matlab/browser2/java', ...
-	  '/home/lowel/Work/workspace/RunDSAMSimJ/bin'});
-end
-
 tic();
 for fig = figRange
 	figure(fig)

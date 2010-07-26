@@ -10,6 +10,8 @@
     #error "This sample can't be compiled in GUI mode."
 #endif // wxUSE_GUI
 
+//#include "stdafx.h"
+
 #include <jni.h>
 #include <stdio.h>
 #include <iostream>
@@ -437,7 +439,6 @@ bool
 LibRunDSAMSim::SetInfoFields(SignalDataPtr s)
 {
 	static const WChar *funcName = wxT("LibRunDSAMSim::SetInfoFields");
-	jfieldID	fid;
 
 	if (!SetField(wxT("dt"), s->dt))
 		return(false);
@@ -493,7 +494,7 @@ LibRunDSAMSim::GetBooleanField(const wxString &name)
 	jfieldID	fid;
 
 	fid = env->GetStaticFieldID(cls, name.utf8_str(), "Z");
-	return(env->GetStaticBooleanField(cls, fid));
+	return((bool) env->GetStaticBooleanField(cls, fid));
 }
 
 /*************************** GetIntField *******************************/
@@ -619,19 +620,19 @@ void
 DPrint_LibRunDSAMSim(const WChar *format, va_list args)
 {
 	CheckInitParsFile_Common();
-	if (dSAM.parsFile == stdout) {
+	if (GetDSAMPtr_Common()->parsFile == stdout) {
 		wxString str, fmt;
 		fmt = format;
 		fmt.Replace(wxT("S"), wxT("s"));	/* This is very simplistic - requires revision */
 		str.PrintfV(fmt, args);
 
-		if (dSAM.diagnosticsPrefix)
-			str = dSAM.diagnosticsPrefix + str;
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			str = GetDSAMPtr_Common()->diagnosticsPrefix + str;
 		cout << str.utf8_str();
 	} else {
-		if (dSAM.diagnosticsPrefix)
-			DSAM_fprintf(dSAM.parsFile, STR_FMT, dSAM.diagnosticsPrefix);
-		DSAM_vfprintf(dSAM.parsFile, format, args);
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			DSAM_fprintf(GetDSAMPtr_Common()->parsFile, STR_FMT, GetDSAMPtr_Common()->diagnosticsPrefix);
+		DSAM_vfprintf(GetDSAMPtr_Common()->parsFile, format, args);
 	}
 
 }

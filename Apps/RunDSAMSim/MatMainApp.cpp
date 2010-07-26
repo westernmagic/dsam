@@ -147,9 +147,9 @@ MatMainApp::SetArgStrings(wxChar *programName, const wxChar *simFile,
 		NotifyError(wxT("%s: could not initialise arg strings."), funcName);
 		return(false);
 	}
-	SetArgvString(0, programName, DSAM_strlen(programName));
+	SetArgvString(0, programName, (int) DSAM_strlen(programName));
 	SetArgvString(1, wxT("-s"), 2);
-	SetArgvString(2, simFile, DSAM_strlen(simFile));
+	SetArgvString(2, simFile, (int) DSAM_strlen(simFile));
 	SetParameterOptionArgs(MAINAPP_NUM_BASE_ARGUMENTS, parameterOptions, false);
 	return(true);
 

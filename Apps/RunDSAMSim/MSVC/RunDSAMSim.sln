@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunDSAMSim", "RunDSAMSim.vcproj", "{B3E9CF7F-3465-4D94-A038-8C726065BD4E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibRunDSAMSim", "LibRunDSAMSim.vcproj", "{3E89790A-5DC4-4DC1-86C8-2777E86F2481}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,12 @@ Global
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|Win32.Build.0 = Release|Win32
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|x64.ActiveCfg = Release|x64
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|x64.Build.0 = Release|x64
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|Win32.Build.0 = Debug|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|x64.ActiveCfg = Debug|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|Win32.ActiveCfg = Release|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|Win32.Build.0 = Release|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
