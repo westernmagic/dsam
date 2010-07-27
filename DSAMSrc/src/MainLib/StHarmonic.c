@@ -254,7 +254,7 @@ SetUniParList_Harmonic(void)
 
 }
 
-/********************************* SetDefaulEnabledPars ***********************/
+/********************************* SetEnabledPars ***********************/
 
 /*
  * This routine sets the parameter list so that the correct parameters

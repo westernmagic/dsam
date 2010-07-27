@@ -848,7 +848,7 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 						outPtr = outSignal->channel[chan] + (inPtr - inSignal->channel[chan]);
 						pulsePtr = p->pulse;
 						if ((inPtr + pulseDurationIndex) >= endPtr) {
-							pulseDurationIndex = endPtr - inPtr;
+							pulseDurationIndex = (ChanLen) (endPtr - inPtr);
 							*pulseIndexPtr = pulseDurationIndex;
 						}
 						for (j = pulseDurationIndex; j; j--)

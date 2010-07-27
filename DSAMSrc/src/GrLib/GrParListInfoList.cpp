@@ -222,7 +222,7 @@ ParListInfoList::UsingNotebook(UniParListPtr parList, const wxString& title)
 		panel->SetSizer(new wxBoxSizer(wxVERTICAL));
 		panel->SetAutoLayout(true);
 		if (parList->mode == UNIPAR_SET_CFLIST)
-			notebookPanel = notebook->GetPageCount() - 1;
+			notebookPanel = (int) notebook->GetPageCount() - 1;
 		notebook->AddPage(panel, title);
 	}
 	return(panel);
@@ -254,7 +254,7 @@ ParListInfoList::SetPanelledModuleInfo(wxPanel *panel, DatumPtr pc,
 	  (newPanel = UsingNotebook(parList, (wxChar *) panelSpec1->name)) != NULL)
 		panel = newPanel;
 	numPars = panelSpec2->specifier - panelSpec1->specifier;
-	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
+	infoPtr = new ParListInfo(panel, pc, parList, (int) list.Count(), offset,
 	  numPars);
 	list.Add(infoPtr);
 	panel->GetSizer()->Add(infoPtr->GetSizer(), 0, wxALIGN_CENTER_VERTICAL);
@@ -374,7 +374,7 @@ ParListInfoList::SetStandardInfo(wxPanel *panel, DatumPtr pc,
 
 	if ((newPanel = UsingNotebook(parList, title)) != NULL)
 		panel = newPanel;
-	infoPtr = new ParListInfo(panel, pc, parList, list.Count(), offset,
+	infoPtr = new ParListInfo(panel, pc, parList, (int) list.Count(), offset,
 	  numPars);
 	list.Add(infoPtr);
 	panel->GetSizer()->Add(infoPtr->GetSizer(), 0, wxALIGN_CENTER_VERTICAL);

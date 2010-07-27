@@ -85,7 +85,7 @@ int
 Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list)
 {
 	static WChar *funcName = wxT("Identify_NameSpecifier");
-	int		length;
+	size_t	length;
 
 	if (list == NULL) {
 		NotifyError(wxT("%s: List not correctly initialised."), funcName);

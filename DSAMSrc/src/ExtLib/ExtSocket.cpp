@@ -98,7 +98,7 @@ SSSocket::Write(const void* buffer, wxUint32 nBytes)
 	// Mask write events
 	writing = TRUE;
 
-	lastCount = outFile->Write(buffer, nBytes);
+	lastCount = (wxUint32) outFile->Write(buffer, nBytes);
 
 	// If in wxSOCKET_WAITALL mode, all bytes should have been written.
 	if (flags & wxSOCKET_WAITALL)

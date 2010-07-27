@@ -121,7 +121,7 @@ StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString)
 	string[0] = (WChar *) fullString;
 	string[1] = (WChar *) abbrevString;
 	for (i = 0; i < 2; i++) {
-		if ((len[i] = DSAM_strlen(string[i])) > LONG_STRING) {
+		if ((len[i] = (int) DSAM_strlen(string[i])) > LONG_STRING) {
 			NotifyError(wxT("%s: String '%s' exceeds current available length ")
 			  wxT("(%d)."), funcName, string[i], LONG_STRING);
 			return (-1);
@@ -252,7 +252,7 @@ WChar *
 SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
 {
 	WChar	*s;
-	int		subSLen = DSAM_strlen(subString), repSLen = DSAM_strlen(repString);
+	size_t	subSLen = DSAM_strlen(subString), repSLen = (int) DSAM_strlen(repString);
 
 	if ((s = DSAM_strstr(string, subString)) == NULL)
 		return(NULL);
@@ -369,7 +369,7 @@ WChar *
 MBSToWCS2_Utility_String(const char *mb)
 {
 	static const WChar *funcName = wxT("MBSToWCS2_Utility_String");
-	int		len;
+	size_t	len;
 	WChar	*dest;
 	mbstate_t	state;
 

@@ -58,7 +58,7 @@ Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h \
 				MoNCArleKim.h MoNCHHuxley.h MoNCMcGregor.h FlMultiBPass.h \
 				MoBMGammaC.h MoHCRPSham3StVIn.h MoBMZhang.h MoHCRPZhang.h \
 				MoIHCZhang.h MoANSGMeddis02.h MoBMDGammaC.h MoHCRPLopezPoveda.h \
-				MoIHCZilanyBruce.h
+				MoIHCZilanyBruce.h MoBMSRNL.h
 
 Pa_Headers	= PaComUtils.h PaGeneral.h PaMaster1.h PaUtilities.h PaWorker1.h
 

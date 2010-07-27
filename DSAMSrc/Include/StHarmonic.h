@@ -131,6 +131,8 @@ BOOLN	Init_Harmonic(ParameterSpecifier parSpec);
 
 BOOLN	InitProcessVariables_Harmonic(EarObjectPtr data);
 
+BOOLN	SetEnabledPars_Harmonic(void);
+
 BOOLN	SetLowestHarmonic_Harmonic(int theLowestHarmonic);
 
 BOOLN	SetMistunedHarmonic_Harmonic(int theMistunedHarmonic);

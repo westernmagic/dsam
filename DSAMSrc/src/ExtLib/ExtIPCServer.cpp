@@ -144,7 +144,7 @@ IPCServer::InitConnection(bool wait)
 	myServer->GetLocal(addr);
 	salutation.Printf(wxT("Host %s running %s, DSAM version %s.\n"), addr.
 	  Hostname().c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
-	sock->Write(salutation.mb_str(), salutation.length());
+	sock->Write(salutation.mb_str(), (wxUint32) salutation.length());
 	return(sock);
 
 
@@ -242,7 +242,7 @@ IPCServer::OnPutArgs(void)
 		while (!sock->Read(&c, 1).Error() && (c != '\0'))
 			s += c;
 		s += wxT('\0');
-		dSAMMainApp->SetArgvString(i, (wxChar *) s.c_str(), s.length());
+		dSAMMainApp->SetArgvString(i, (wxChar *) s.c_str(), (wxUint32) s.length());
 	}
 	ResetCommandArgFlags_AppInterface();
 
@@ -320,13 +320,13 @@ IPCServer::OnGetFiles(void)
 		return;
 	}
 	BuildFileList(list, GetSimulation_AppInterface());
-	numFiles = list.Count();
+	numFiles = (wxUint32) list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
 		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].c_str(
 		  ));
 		nameOnly = fileName.GetFullName();
-		sock->Write(nameOnly.mb_str(), nameOnly.length());
+		sock->Write(nameOnly.mb_str(), (wxUint32) nameOnly.length());
 		sock->Write(wxT("\n"), 1);
 		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
@@ -336,7 +336,7 @@ IPCServer::OnGetFiles(void)
 		}
 		wxDataInputStream	data(inStream);
 
-		length = inStream.GetSize();
+		length = (sf_count_t) inStream.GetSize();
 		sock->Write(&length, sizeof(length));
 		for (j = 0; j < length; j++) {
 			byte = data.Read8();
@@ -373,7 +373,7 @@ IPCServer::OnGetPar(void)
 		return;
 	}
 	value = GetParString_UniParMgr(par);
-	sock->Write(value.mb_str(), value.length());
+	sock->Write(value.mb_str(), (wxUint32) value.length());
 	sock->Write(wxT("\n"), 1);
 
 }
@@ -387,7 +387,7 @@ void
 IPCServer::OnSet(void)
 {
 	static const wxChar *funcName = wxT("IPCServer::SetParameters");
-	int		i, numTokens;
+	size_t	i, numTokens;
 	unsigned char c;
 	wxString	cmdStr, parameter, value;
 
@@ -556,15 +556,15 @@ IPCServer::OnErrMsgs(int index)
 		return;
 	}
 	if (index < 0) {
-		numNotifications = notificationList.GetCount();
+		numNotifications = (wxUint32) notificationList.GetCount();
 		sock->Write(&numNotifications, 1);
 		for (unsigned int i = 0; i < notificationList.GetCount(); i++)
-			sock->Write(notificationList[i].mb_str(), notificationList[i].
+			sock->Write(notificationList[i].mb_str(), (wxUint32) notificationList[i].
 			  length());
 	} else {
 		numNotifications = 1;
 		sock->Write(&numNotifications, 1);
-		sock->Write(notificationList[index].mb_str(), notificationList[index].
+		sock->Write(notificationList[index].mb_str(), (wxUint32) notificationList[index].
 		  length());
 	}
 		

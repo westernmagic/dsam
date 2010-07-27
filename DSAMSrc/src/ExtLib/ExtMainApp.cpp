@@ -415,7 +415,7 @@ MainApp::InitArgv(int theArgc)
 /****************************** SetArgvString *********************************/
 
 bool
-MainApp::SetArgvString(int index, const  wxChar *string, int size)
+MainApp::SetArgvString(int index, const  wxChar *string, size_t size)
 {
 	static const wxChar *funcName = wxT("MainApp::SetArgvString");
 

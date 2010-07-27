@@ -1059,8 +1059,9 @@ GenerateSignal_CMR_HarmonicMasker(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_CMR_HarmonicMasker");
 	register ChanData	*outPtr;
-	int		i, k, n, chan, gatesample, silence, sample, nLow, nUpp, nTotal;
+	int		i, k, n, chan, gatesample, nLow, nUpp, nTotal;
 	int		nmax, samplebeg;
+	ChanLen	sample, silence;
 	Float	batten, srate, onfreqmodphase, flankmodphase, sigphase, t;
 	Float	flankmoddepth, sigAtten, lowAtten, uppAtten, gatefactor;
 	Float	freqcomp, freqcomps[CMR_HARMONICMASKER_MAXNTOTAL], value;

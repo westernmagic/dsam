@@ -47,7 +47,7 @@ Mo_Modules	= MoANSGBinom.mod MoANSGCarney.mod MoANSGSimple.mod \
 				MoNCArleKim.mod MoNCHHuxley.mod MoNCMcGregor.mod \
 				MoBMGammaC.mod MoHCRPSham3StVIn.mod MoBMZhang.mod \
 				MoHCRPZhang.mod MoIHCZhang.mod MoANSGMeddis02.mod \
-				MoHCRPLopezPoveda.mod
+				MoHCRPLopezPoveda.mod MoBMSRNL.mod
 
 Pa_Modules	= PaMaster1.mod
 

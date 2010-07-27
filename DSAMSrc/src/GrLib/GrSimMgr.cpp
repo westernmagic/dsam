@@ -810,7 +810,7 @@ OnExecute_MyApp(void)
  */
 
 void
-EmptyDiagWinBuffer_MyApp(wxChar *s, int *c)
+EmptyDiagWinBuffer_MyApp(wxChar *s, size_t *c)
 {
 	*(s + *c) = '\0';
 	*(wxGetApp().GetDiagFrame()->diagnosticsText) << s;

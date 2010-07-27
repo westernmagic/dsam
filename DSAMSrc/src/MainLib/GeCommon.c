@@ -164,12 +164,12 @@ DPrint(const WChar *format, ...)
 
 void
 DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
-  WChar *, int *))
+  WChar *, size_t *))
 {
 	static	const WChar *funcName = wxT("DPrintBuffer_Common");
 	BOOLN	longVar;
 	WChar	*p, *s, buffer[LONG_STRING], *f = NULL, subFormat[SMALL_STRING];
-	int		i, c, tabPosition;
+	size_t	i, c, tabPosition;
 
 	if (dSAM.diagMode == COMMON_OFF_DIAG_MODE)
 		return;

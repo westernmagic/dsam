@@ -940,7 +940,7 @@ ParseArrayValue_UniParMgr(UniParPtr par, const WChar *parValue, WChar **parValue
 {
 	static const WChar *funcName = wxT("ParseArrayValue_UniParMgr");
 	WChar	*p, *s, string[MAXLINE];
-	int		i, pos;
+	size_t	i, pos;
 
 	if (!par) {
 		NotifyError(wxT("%s: Universal parameter not initalised.\n"), funcName);

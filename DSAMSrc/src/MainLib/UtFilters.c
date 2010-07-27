@@ -94,18 +94,19 @@ InitGammaToneCoeffs_Filters(Float centreFreq, Float bWidth3dB, int cascade,
 {
 	static const WChar *funcName = wxT("InitGammaToneCoeffs_Filters");
 	int		stateVectorLength;
-	Float bWidth3dBdt, sin_theta, cos_theta;
+	Float theta, bWidth3dBdt, sin_theta, cos_theta;
 	Float k0num, k1num;	/* numerator coefficients */
 	Float k1denom, k2denom;	/* denominator coefficients */
 	Complex cf_num, cf_denom, Tf, var1, var2, var3;
     GammaToneCoeffsPtr p;
 
 	bWidth3dBdt = (TwoPi * bWidth3dB) / sampleClk;
-	cos_theta = cos(TwoPi * centreFreq/sampleClk);
-	sin_theta = sin(TwoPi * centreFreq/sampleClk);
+	theta = TwoPi * centreFreq/sampleClk;
+	cos_theta = cos(theta);
+	sin_theta = sin(theta);
 
 	k1num   = exp( -bWidth3dBdt) * cos_theta; k0num = 1.;
-	k1denom = -2. * k1num; k2denom =  exp(-2.* bWidth3dBdt);
+	k1denom = -2. * k1num; k2denom =  exp(-2.0 * bWidth3dBdt);
 	k1num   = -k1num;
 
 	/* normalise filter to unity gain at centre frequency (needs Complex maths)
@@ -118,8 +119,8 @@ InitGammaToneCoeffs_Filters(Float centreFreq, Float bWidth3dB, int cascade,
 	var2.re = k1denom; var2.im = 0.0;
 	Mult_CmplxM(&var2,&var3,&var2); /* b1*exp(-sT) */
 	var2.re += 1.0; /* 1+b1*exp(-sT) */
-	var3.re =  cos(2.*TwoPi*centreFreq/sampleClk);
-	var3.im = -sin(2.*TwoPi*centreFreq/sampleClk);
+	var3.re =  cos(2.0 * theta);
+	var3.im = -sin(2.0 * theta);
 	var1.re = k2denom; var1.im = 0.0;
 	Mult_CmplxM(&var3,&var1,&var1); /* b2*exp(-2sT) */
 	Add_CmplxM (&var1,&var2,&cf_denom); /* sigma(bi*exp(-isT) */
@@ -147,6 +148,60 @@ InitGammaToneCoeffs_Filters(Float centreFreq, Float bWidth3dB, int cascade,
 	return(p);
 
 } /* InitGammaToneCoeffs_Filters */
+
+/**************************** RecalculateGammaToneCoeffs *****************************/
+
+/*-----------------------------------------------------------------*/
+/*---- biquadratic filter table                                    */
+/*
+ * The function recalculates the coefficients for a GammaToneCoeffs structure.
+ */
+
+BOOLN
+RecalculateGammaToneCoeffs_Filters(GammaToneCoeffsPtr p, Float centreFreq,
+  Float bWidth3dB, Float sampleClk)
+{
+	static const WChar *funcName = wxT("InitGammaToneCoeffs_Filters");
+	int		stateVectorLength;
+	Float theta, bWidth3dBdt, sin_theta, cos_theta;
+	Float k0num, k1num;	/* numerator coefficients */
+	Float k1denom;	/* denominator coefficients */
+	Complex cf_num, cf_denom, Tf, var1, var2, var3;
+
+	bWidth3dBdt = (TwoPi * bWidth3dB) / sampleClk;
+	theta = TwoPi * centreFreq/sampleClk;
+	cos_theta = cos(theta);
+	sin_theta = sin(theta);
+
+	k1num   = exp( -bWidth3dBdt) * cos_theta; k0num = 1.;
+	k1denom = -2. * k1num;
+	k1num   = -k1num;
+
+	/* normalise filter to unity gain at centre frequency (needs Complex maths)
+	 */
+
+	var2.re = k1num; var2.im = 0.0;	var3.re = cos_theta; var3.im = -sin_theta;
+	Mult_CmplxM(&var2,&var3,&var2); /* a1*exp(-sT) */
+	var1.re = k0num; var1.im = 0.0;
+	Add_CmplxM (&var1,&var2,&cf_num); /* a0+a1*exp(-sT) */
+	var2.re = k1denom; var2.im = 0.0;
+	Mult_CmplxM(&var2,&var3,&var2); /* b1*exp(-sT) */
+	var2.re += 1.0; /* 1+b1*exp(-sT) */
+	var3.re =  cos(2.0 * theta);
+	var3.im = -sin(2.0 * theta);
+	var1.re = p->b2; var1.im = 0.0;
+	Mult_CmplxM(&var3,&var1,&var1); /* b2*exp(-2sT) */
+	Add_CmplxM (&var1,&var2,&cf_denom); /* sigma(bi*exp(-isT) */
+
+	if(!Div_CmplxM(&cf_denom,&cf_num,&Tf)){/* invert to get normalised values */
+		NotifyError(wxT("%s: Filter failed to initialise."), funcName);
+		return(FALSE);
+	}
+	Convert_CmplxM(&Tf,&Tf); k1num *= Tf.re; k0num *= Tf.re;
+	p->a0 = k0num; p->a1 = k1num; p->b1 = k1denom;;
+	return(TRUE);
+
+} /* RecalculateGammaToneCoeffs_Filters */
 
 /**************************** FreeGammaToneCoeffs *****************************/
 

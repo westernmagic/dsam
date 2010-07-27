@@ -893,7 +893,7 @@ PGCCarrierList_GCFilters(int index)
  */
 
 Float
-FindPeakGainFreq_GCFilters(Float *b, size_t len, Float sR, Float freqPeak)
+FindPeakGainFreq_GCFilters(Float *b, unsigned long len, Float sR, Float freqPeak)
 {
 	static const WChar	*funcName = wxT("FindPeakGainFreq_GCFilters");
 	register size_t	i, peakIndex;

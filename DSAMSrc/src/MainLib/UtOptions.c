@@ -109,7 +109,7 @@ void
 MarkIgnore_Options(int argc, register WChar **argv, const WChar *optionString,
   OptionsArgSpecifier state)
 {
-	int		i, length;
+	size_t	i, length;
 
 	length = DSAM_strlen(optionString);
 	for (i = 1; (DSAM_strncmp(argv[i], optionString, length) != 0) && (i <

@@ -145,14 +145,14 @@ AxisScale::ParseNumberFormat(const wxString &format)
 		return(TRUE);
 	sigDigits = 0;
 	decPlaces = 0;
-	p1 = format.find('.');
-	p2 = format.find('e', true);
+	p1 = (int) format.find('.');
+	p2 = (int) format.find('e', true);
 	if (p1 > 0)
 		sigDigits = p1;
 	else if (p2 > 0)
 		sigDigits = p2;
 	else
-		sigDigits = format.length();
+		sigDigits = (int) format.length();
 	if ((p1 > 0) && (p2 > 0))
 		decPlaces = p2 - p1 - 1;
 	if (p2 > 0) {

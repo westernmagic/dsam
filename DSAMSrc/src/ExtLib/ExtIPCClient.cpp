@@ -132,7 +132,7 @@ IPCClient::SendCommand(IPCCommandSpecifier command)
 	wxString	s;
 
 	s.Printf(wxT("%s\n"), iPCUtils.CommandList(command)->name);
-	Write(s.mb_str(), s.length());
+	Write(s.mb_str(), (wxUint32) s.length());
 	return(true);
 
 }
@@ -197,7 +197,7 @@ IPCClient::InitSimulation(const wxString &simulation)
 
 	WaitForReady();
 	SendCommand(IPC_COMMAND_INIT);
-	Write(simulation.mb_str(), simulation.length());
+	Write(simulation.mb_str(), (wxUint32) simulation.length());
 	Write(&eof, 1);
 	if (Errors()) {
 		NotifyError(wxT("%s: Could not initialise simulation."), funcName);
@@ -284,7 +284,7 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 	}
 	wxDataInputStream	data(inStream);
 
-	length = inStream.GetSize();
+	length = (sf_count_t) inStream.GetSize();
 	SendCommand(IPC_COMMAND_INIT);
 	for (i = 0; i < length; i++) {
 		byte = data.Read8();
@@ -317,7 +317,7 @@ IPCClient::GetParValue(const wxString &parName)
 {
 	buffer.Clear();
 	SendCommand(IPC_COMMAND_GETPAR);
-	Write(parName.mb_str(), parName.length());
+	Write(parName.mb_str(), (wxUint32) parName.length());
 	ReadString(buffer);
 	return(!buffer.empty());
 
@@ -458,7 +458,7 @@ IPCClient::SendArguments(int argc, wxChar **argv)
 	Write(&numArgs, sizeof(numArgs));
 	for (i = 0; i < argc; i++)
 		if (*argv[i])
-			Write(wxConvUTF8.cWX2MB(argv[i]), DSAM_strlen(argv[i]) + 1);
+			Write(wxConvUTF8.cWX2MB(argv[i]), (wxUint32) DSAM_strlen(argv[i]) + 1);
 	return(true);
 
 }

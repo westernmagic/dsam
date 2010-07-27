@@ -490,7 +490,7 @@ const WChar *	DiagnosticTitle(CommonDiagSpecifier type);
 void	DPrint(const WChar *format, ...);
 
 void	DPrintBuffer_Common(const WChar *format, va_list args,
-		  void (* EmptyDiagBuffer)(WChar *, int *));
+		  void (* EmptyDiagBuffer)(WChar *, size_t *));
 
 void	DPrintStandard(const WChar *format, va_list args);
 

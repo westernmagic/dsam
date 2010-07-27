@@ -125,7 +125,7 @@ class MainApp {
 	int		RunClient(void);
 	void	SetArgc(int theArgc)	{ argc = theArgc; }
 	void	SetArgv(wxChar **theArgv)	{ argv = theArgv; }
-	bool	SetArgvString(int index, const wxChar *string, int size);
+	bool	SetArgvString(int index, const wxChar *string, size_t size);
 	void	SetInitStatus(bool status)	{ initOk = status; }
 	int		SetParameterOptionArgs(int indexStart,
 			  const wxChar *parameterOptions, bool countOnly);

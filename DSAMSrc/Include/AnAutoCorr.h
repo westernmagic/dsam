@@ -130,9 +130,11 @@ BOOLN	Free_Analysis_ACF(void);
 
 void	FreeProcessVariables_Analysis_ACF(void);
 
+UniParListPtr	GetUniParListPtr_Analysis_ACF(void);
+
 BOOLN	Init_Analysis_ACF(ParameterSpecifier parSpec);
 
-UniParListPtr	GetUniParListPtr_Analysis_ACF(void);
+BOOLN	InitModule_Analysis_ACF(ModulePtr theModule);
 
 BOOLN	InitNormalisationModeList_Analysis_ACF(void);
 
@@ -140,9 +142,9 @@ BOOLN	InitProcessVariables_Analysis_ACF(EarObjectPtr data);
 
 BOOLN	PrintPars_Analysis_ACF(void);
 
-BOOLN	SetMaxLag_Analysis_ACF(Float theMaxLag);
+BOOLN	SetEnabledPars_Analysis_ACF(void);
 
-BOOLN	InitModule_Analysis_ACF(ModulePtr theModule);
+BOOLN	SetMaxLag_Analysis_ACF(Float theMaxLag);
 
 BOOLN	SetNormalisationMode_Analysis_ACF(WChar * theNormalisationMode);
 
