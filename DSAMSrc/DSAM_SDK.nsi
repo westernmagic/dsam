@@ -29,28 +29,18 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir c:\Users\lowel\documents\Work\dsam\SupportLibs\NSIS\include
-
+!addincludedir "NSIS"
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
 
 !include "MUI2.nsh"		; Use Modern UI
 !define	ALL_USERS		; For WriteEnvStr.nsh 
 !include "WriteEnvStr.nsh"
+!include "DSAMGenUtils.nsh"
 
 !define VERSION		"2.8.29"
 !define INST_VERSION	"1"
 !define DSAMDIR_ENV	"DSAMSDKDIR"
-!define WX_VERSION	"2.8.10"
-!define WXWINDIR	"..\SupportLibs\wxWidgets-${WX_VERSION}"
-!define LSF_VERSION	"1.0.17"
-!define LIBSNDFILEDIR	"..\SupportLibs\libsndfile-${LSF_VERSION}"
-!define PA_VERSION	"19"
-!define PORTAUDIODIR	"..\SupportLibs\portaudio_v${PA_VERSION}"
-!define FFTW_VERSION	"3.1.2"
-!define FFTWDIR		"..\SupportLibs\fftw-${FFTW_VERSION}"
-!define DLLDIR		"$COMMONFILES\dsam"
-
 
 ;--------------------------------
 
@@ -67,7 +57,7 @@ InstallDir C:\DSAM\SDKs
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\DSAM\SDK" "Install_Dir"
+InstallDirRegKey HKLM ${DSAM_SDK_RKEY} ${INSTALL_DIR}
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
@@ -95,20 +85,18 @@ RequestExecutionLevel admin
   !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
-;Global Variables
-
-Var ALREADY_INSTALLED
-
-;--------------------------------
 ;Installer Sections
 
 ; The stuff to install
 Section "DSAM SDK ${VERSION}"
 
   SectionIn RO
-  
+
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DSAM\SDK "Install_Dir" "$INSTDIR"
+
+  ; Check for installed applications
+  
   
   ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK" "DisplayName" "DSAM SDK ${VERSION}"
@@ -123,6 +111,7 @@ SectionEnd
 
 Section "DSAM Library ${VERSION} x86"
 
+  SectionIn RO
   
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\dsam
@@ -144,6 +133,8 @@ SectionEnd
 
 Section "WXWIN Library ${WX_VERSION} x86"
   
+  SectionIn RO
+
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\wxwin
 
@@ -154,33 +145,15 @@ Section "WXWIN Library ${WX_VERSION} x86"
   ; Set output path to the lib directory.
   SetOutPath $INSTDIR\lib\x86
   File ${WXWINDIR}\lib\vc_dll\*.lib
-
-  ; Insert DLL's
-  SetOutPath ${DLLDIR}
-  ${If} ${FileExists} "${DLLDIR}\wxbase28u_core_vc_custom.dll"
-    StrCpy $ALREADY_INSTALLED 1
-  ${Else}
-    StrCpy $ALREADY_INSTALLED 0
-  ${EndIf}	
-  DetailPrint "DLLs installed flag: $ALREADY_INSTALLED"
-
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_vc_custom.dll ${DLLDIR}\wxbase28u_vc_custom.dll ${DLLDIR}
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_net_vc_custom.dll ${DLLDIR}\wxbase28u_net_vc_custom.dll ${DLLDIR}
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_xml_vc_custom.dll ${DLLDIR}\wxbase28u_xml_vc_custom.dll ${DLLDIR}
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_core_vc_custom.dll ${DLLDIR}\wxmsw28u_core_vc_custom.dll ${DLLDIR}
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_html_vc_custom.dll ${DLLDIR}\wxmsw28u_html_vc_custom.dll ${DLLDIR}
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_ogl_vc_custom.dll ${DLLDIR}\wxmsw28u_ogl_vc_custom.dll ${DLLDIR}
   
+  Call InstallWxWinDLLs
+
 SectionEnd
 
 Section "LIBSNDFILE Library ${LSF_VERSION} x86"
   
+  SectionIn RO
+
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\libsndfile
 
@@ -191,22 +164,14 @@ Section "LIBSNDFILE Library ${LSF_VERSION} x86"
   SetOutPath $INSTDIR\lib\x86
   File ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.lib
 
-  SetOutPath ${DLLDIR}
-  ; Insert DLL's
-  ${If} ${FileExists} "${DLLDIR}\libsndfile_x86.dll"
-    StrCpy $ALREADY_INSTALLED 1
-  ${Else}
-    StrCpy $ALREADY_INSTALLED 0
-  ${EndIf}	
-  DetailPrint "DLLs installed flag: $ALREADY_INSTALLED"
-
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.dll ${DLLDIR}\libsndfile_x86.dll ${DLLDIR}
+  Call InstallLibSndFileDLL
   
 SectionEnd
 
 Section "PORTAUDIO Library ${PA_VERSION} x86"
   
+  SectionIn RO
+
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\portaudio
 
@@ -217,22 +182,14 @@ Section "PORTAUDIO Library ${PA_VERSION} x86"
   SetOutPath $INSTDIR\lib\x86
   File ${PORTAUDIODIR}\build\msvc\Win32\Release\*.lib
 
-  SetOutPath ${DLLDIR}
-  ; Insert DLL's
-  ${If} ${FileExists} "${DLLDIR}\portaudio.dll"
-    StrCpy $ALREADY_INSTALLED 1
-  ${Else}
-    StrCpy $ALREADY_INSTALLED 0
-  ${EndIf}	
-  DetailPrint "DLLs installed flag: $ALREADY_INSTALLED"
-
-  !insertmacro InstallLib DLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED \
-   ${PORTAUDIODIR}\build\msvc\Win32\Release\portaudio.dll ${DLLDIR}\portaudio.dll ${DLLDIR}
+  Call InstallPortAudioDLL
 
 SectionEnd
 
 Section "FFTW Library ${FFTW_VERSION} x86"
   
+  SectionIn RO
+
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\fftw
 
@@ -253,7 +210,7 @@ Section "Uninstall"
   
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK"
-  DeleteRegKey HKLM SOFTWARE\DSAM\SDK
+  DeleteRegKey HKLM ${DSAM_SDK_RKEY}
 
   ; Remove environment variables
   # remove the variable
@@ -266,14 +223,7 @@ Section "Uninstall"
   Delete $INSTDIR\uninstall.exe
 
   ; Remove DLLs
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxbase28u_net_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxbase28u_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxbase28u_xml_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxmsw28u_core_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxmsw28u_html_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\wxmsw28u_ogl_vc_custom.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\libsndfile_x86.dll
-  !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLLDIR}\portaudio.dll
+  Call un.SetDLLUnInstall
 
   ; Remove directories used
   RMDir /r /REBOOTOK "$INSTDIR"
@@ -281,6 +231,7 @@ Section "Uninstall"
 SectionEnd
 
 ;--------------------------------
+
 ;Descriptions
 
   ;Language strings
