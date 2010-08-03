@@ -42,7 +42,7 @@ lib_LTLIBRARIES = libdsam.la
 EXTRA_DIST		= makefile.b32
 
 YFLAGS			= -dl
-INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
+libdsam_la_CPPFLAGS= -DLIBRARY_COMPILE $(MAIN_INC)
 
 An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \

@@ -34,7 +34,7 @@ include $(top_srcdir)/src/makeunix.env
 lib_LTLIBRARIES = libdsam_std.la
 EXTRA_DIST		= makefile.b32
 
-INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC)
+libdsam_std_la_CPPFLAGS	= -DLIBRARY_COMPILE $(MAIN_INC)
 
 libdsam_std_la_SOURCES= StdSignalDisp.c
 

@@ -37,7 +37,7 @@ include $(top_srcdir)/src/makeunix.env
 lib_LTLIBRARIES = libdsam_g.la
 EXTRA_DIST		= makefile.b32
 
-INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
+libdsam_g_la_CPPFLAGS	= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 					-I$(top_srcdir)/src/MainLib -I../MainLib
 
 libdsam_g_la_SOURCES= GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \

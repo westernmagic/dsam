@@ -35,7 +35,7 @@ include $(top_srcdir)/src/makeunix.env
 
 lib_LTLIBRARIES = libdsam_ext.la
 
-INCLUDES		= -DLIBRARY_COMPILE $(MAIN_INC) $(WX_BASE_CXXFLAGS) \
+libdsam_ext_la_CPPFLAGS	= -DLIBRARY_COMPILE $(MAIN_INC) $(WX_BASE_CXXFLAGS) \
 					-I$(top_srcdir)/src/MainLib -I../MainLib
 
 DSAM_Ext_Sources	= ExtMainApp.cpp ExtIPCServer.cpp ExtSimThread.cpp \

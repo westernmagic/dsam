@@ -30,7 +30,7 @@
 
 AC_REVISION($Revision: 2.61)
 
-AC_INIT(DSAM, 2.8.29)
+AC_INIT(DSAM, 2.8.30)
 AC_CONFIG_AUX_DIR(CfgTools)
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -62,9 +62,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=8
-DSAM_MICRO_VERSION=29
-DSAM_INTERFACE_AGE=29
-DSAM_BINARY_AGE=29
+DSAM_MICRO_VERSION=30
+DSAM_INTERFACE_AGE=30
+DSAM_BINARY_AGE=30
 DSAM_RPM_AGE=1
 
 dnl
@@ -105,7 +105,7 @@ DSAM_PACKAGE=dsam
 AC_DEFINE_UNQUOTED(DSAM_PACKAGE,wxT("$DSAM_PACKAGE"), "DSAM Package name")
 AC_SUBST(DSAM_PACKAGE)
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall -Werror])
 AM_CONFIG_HEADER(DSAMSetup.h:DSAMSetup.hin )
 
 dnl ============================================================================
@@ -512,7 +512,7 @@ if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	LDFLAGS_save=$LDFLAGS
-	LDFLAGS=`$WX_CONFIG --libs ogl`
+	LDFLAGS=`$WX_CONFIG --libs std,ogl`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(
@@ -746,6 +746,7 @@ AC_CONFIG_FILES([
 	MSVC/DSAM_ext/Makefile
 	MSVC/DSAM_std/Makefile
 	MSVC/DSAM_g/Makefile
+	NSIS/Makefile
 ], [chmod +x dsam-config])
 
 AC_OUTPUT

@@ -30,6 +30,7 @@
 #######################
 
 AUTOMAKE_OPTIONS = foreign
+ACLOCAL_AMFLAGS = -I m4
 
 pkginclude_HEADERS	= DSAMSetup.h
 
