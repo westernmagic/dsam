@@ -1,0 +1,17 @@
+## Process this file with automake to produce Makefile.in
+
+AUTOMAKE_OPTIONS = foreign
+
+libexec_PROGRAMS	= RunDSAMSim
+
+AM_CPPFLAGS			= -DLIBRARY_COMPILE $(DSAMINC) $(MAT_INC) -I$(MATLIB_DIR)
+
+RunDSAMSim_SOURCES	= RunDSAMSim.cpp
+
+RunDSAMSim_DEPENDENCIES = $(MATLIB_DIR)/libdsam_matlib.a
+
+CXXLINK = $(DLLCOMPILE) -o RunDSAMSim$(EXEEXT)
+
+LDADD	= $(MATLIB_DIR)/libdsam_matlib.a $(DSAMLDFLAGS)
+
+EXTRA_DIST			= RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m
