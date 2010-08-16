@@ -6,8 +6,10 @@ AC_REVISION($Revision: 2.13)
 
 AC_INIT(RunDSAMSim, 1.1.10)
 AC_CONFIG_AUX_DIR(CfgTools)
+AC_CONFIG_MACRO_DIR(m4)
 
 AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 
 dnl we need to AC_DIVERT_PUSH/AC_DIVERT_POP these variable definitions so they
 dnl are available for $ac_help expansion (don't we all *love* autoconf?)
@@ -39,7 +41,7 @@ AC_DEFINE_UNQUOTED(RUNDSAMSIM_PACKAGE,"$RUNDSAMSIM_PACKAGE", "RUNDSAMSIM_PACKAGE
 AC_SUBST(RUNDSAMSIM_PACKAGE)
 AM_CONFIG_HEADER(RunDSAMSimSetup.h:RunDSAMSimSetup.hin )
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall -Werror])
 
 dnl ============================================================================
 dnl 'Global' variable declaration
@@ -152,6 +154,9 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AM_PROG_CC_STDC
 AC_PROG_AWK
+AM_PROG_GCJ
+AC_PROG_JAR
+AC_PROG_JAVAH
  
 dnl ============================================================================
 dnl Checks for system services or capabilities.
@@ -202,10 +207,10 @@ dnl ----------------------------------------------------------------------------
 dnl My optional features.
 dnl ----------------------------------------------------------------------------
 
-AC_ARG_ENABLE(libRunDSAMSim,
-   [  --enable-libRunDSAMSim  Produce libRunDSAMSim load library],
-   [libRunDSAMSim="$enableval"],
-   [libRunDSAMSim="no"]
+AC_ARG_ENABLE(java_support,
+   [  --enable-java-support  Produce RunDSAMSimJ java interface],
+   [javaSupport="$enableval"],
+   [javaSupport="no"]
 )
 
 dnl ----------------------------------------------------------------------------
@@ -248,39 +253,55 @@ dnl ============================================================================
 dnl Final setups.
 dnl ============================================================================
 
-if test x$octaveAvailable = xno -a x$matlabAvailable = xno; then
+libRunDSAMSim=
+use_rundsamsim=
+
+if test x$octaveAvailable = xno -a x$matlabAvailable = xno ; then
 	AC_MSG_ERROR(Octave or Matlab must be installed)
 else
+	use_rundsamsim=yes
 	if test x$matlabAvailable = xyes; then
-		DLLCOMPILE=$MATCOMPILE
-		DLLEXT=".mexglx"
-		dll_inc=""
+		EXEEXT=".mexglx"
+		DLLCOMPILE="??"
+		MAT_INC=""
 		DLLDIRNAME=matlab/dsam
 	else
-		DLLCOMPILE=$OCTCOMPILE
-		DLLEXT=".mex"
-		dll_inc=`mkoctfile -p INCFLAGS`
+		EXEEXT=".mex"
+		DLLCOMPILE="mkoctfile"
+		MAT_INC="`mkoctfile -p CPPFLAGS` `mkoctfile -p CXXPICFLAG` `mkoctfile -p ALL_CXXFLAGS`"
+		MAT_LDFLAGS="`mkoctfile -p LFLAGS` `mkoctfile -p OCTAVE_LIBS`"
+		MAT_LDFLAGS=" $MAT_LDFLAGS `mkoctfile -p LDFLAGS` `mkoctfile -p BLAS_LIBS`"
+		MAT_LDFLAGS=" $MAT_LDFLAGS `mkoctfile -p FFTW_LIBS` `mkoctfile -p LIBS`"
+		MAT_LDFLAGS=" $MAT_LDFLAGS `mkoctfile -p FLIBS ` `mkoctfile -p DL_LDFLAGS`"
 		DLLDIR=octave/dsam
 	fi
 	AC_SUBST(DLLCOMPILE)
-	AC_SUBST(DLLEXT)
+	AC_SUBST(MAT_INC)
+	AC_SUBST(MAT_LDFLAGS)
+	AC_SUBST(EXEEXT)
 	AC_SUBST(DLLDIR)
 fi
-DSAMINC="$dsam_inc $dll_inc"
+AM_CONDITIONAL([USE_RUNDSAMSIM], [test "x$use_rundsamsim" = xyes])
+
+DSAMINC="$dsam_inc"
 AC_SUBST(DSAMINC)
 DSAMLDFLAGS=$dsam_ldflags
 AC_SUBST(DSAMLDFLAGS)
+MATLIB_DIR="../MatLib"
+AC_SUBST(MATLIB_DIR)
 
-AM_CONDITIONAL(LIBRUNDSAMSIM, test x$libRunDSAMSim = xyes)
-case $host_os in
-linux*)
-	JAVA_HOST=linux;;
-esac
-
-if test x$libRunDSAMSim = xyes; then
+if test x$javaSupport = xyes ; then
+	libRunDSAMSim=yes
+	dnl case $host_os in
+	dnl linux*)
+	dnl	JAVA_HOST=linux;;
+	dnl esac
+	JAVA_HOST=`echo $host_os | $AWK -F- '{ split($0, s); print s[[1]] }'`
 	JAVA_INC="-I$JAVA_HOME/include -I$JAVA_HOME/include/$JAVA_HOST"
 	AC_SUBST(JAVA_INC)
 fi
+AM_CONDITIONAL(USE_JAVA_SUPPORT, test x$javaSupport = xyes)
+AM_CONDITIONAL(LIBRUNDSAMSIM, test x$libRunDSAMSim = xyes)
 
 dnl ============================================================================
 dnl Final configure outputs.
@@ -292,7 +313,10 @@ AC_CONFIG_FILES(
 	CfgTools/Makefile
 	MSVC/Makefile
 	Examples/Makefile
-	LibRunDSAMSim/Makefile
+	src/MatLib/Makefile
+	src/cpp/Makefile
+	src/java/Makefile
+	src/LibRunDSAMSim/Makefile
 )
 AC_OUTPUT
 

@@ -2,30 +2,25 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-libexec_PROGRAMS	= RunDSAMSim@DLLEXT@
-
-noinst_HEADERS	= MatMainApp.h MatInSignal.h
-
-RunDSAMSim@DLLEXT@_SOURCES	= RunDSAMSim.cpp MatMainApp.cpp MatInSignal.cpp
+ACLOCAL_AMFLAGS = -I m4
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= autogen.sh RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m RunDSAMSim.ise \
-					CompileRunDSAMSim.m
+EXTRA_DIST		= autogen.sh RunDSAMSim.ise
 
-SUBDIRS			= CfgTools LibRunDSAMSim MSVC Examples
+SUBDIRS			= CfgTools MSVC Examples src/MatLib
 
-MatInSignal.$(OBJEXT): MatInSignal.cpp
-					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
+if USE_JAVA_SUPPORT
+  SUBDIRS += src/java
+endif
 
-MatMainApp.$(OBJEXT): MatMainApp.cpp
-					$(CXXCOMPILE) -fPIC -DLIBRARY_COMPILE $(DSAMINC) -c $<
+if LIBRUNDSAMSIM
+  SUBDIRS += src/LibRunDSAMSim
+endif
 
-RunDSAMSim.$(OBJEXT): RunDSAMSim.cpp
-					$(DLLCOMPILE) -DLIBRARY_COMPILE -c $< $(DSAMINC) -o $@
-
-RunDSAMSim@DLLEXT@: $(RunDSAMSim@DLLEXT@_OBJECTS)
-					$(DLLCOMPILE) -o $@ $(RunDSAMSim@DLLEXT@_OBJECTS) $(DSAMLDFLAGS)
+if USE_RUNDSAMSIM
+  SUBDIRS += src/cpp
+endif
 
 RunDSAMSim.spec: RunDSAMSim.spec.in
 
