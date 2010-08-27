@@ -8,7 +8,7 @@
  * Author:		L. P. O'Mard
  * Created:		12 Dec 2003
  * Updated:
- * Copyright:	(c) 2--3, 2010 Lowel P. O'Mard
+ * Copyright:	(c) 2003, 2010 Lowel P. O'Mard
  *
  *********************
  *
@@ -861,7 +861,7 @@ DSAMStart_MainApp(int argc, wxChar **argv)
 
 }
 
-#if DSAM_USE_UNICODE && !defined(win32)
+#if DSAM_USE_UNICODE && !defined(WIN32)
 
 static struct InitData
 {

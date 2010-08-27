@@ -1840,6 +1840,10 @@ RunSim_AppInterface(void)
 		  funcName);
 		return(FALSE);
 	}
+	if (!appInterfacePtr->audModel) {
+		NotifyError(wxT("%s: No simulation set."), funcName);
+		return(FALSE);
+	}
 	if (!RunProcess_ModuleMgr(appInterfacePtr->audModel)) {
 		NotifyError(wxT("%s: Could not run main auditory model simulation ")
 		  wxT("'%s'."), funcName, appInterfacePtr->simulationFile);

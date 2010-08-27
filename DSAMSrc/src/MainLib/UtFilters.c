@@ -162,7 +162,6 @@ RecalculateGammaToneCoeffs_Filters(GammaToneCoeffsPtr p, Float centreFreq,
   Float bWidth3dB, Float sampleClk)
 {
 	static const WChar *funcName = wxT("InitGammaToneCoeffs_Filters");
-	int		stateVectorLength;
 	Float theta, bWidth3dBdt, sin_theta, cos_theta;
 	Float k0num, k1num;	/* numerator coefficients */
 	Float k1denom;	/* denominator coefficients */

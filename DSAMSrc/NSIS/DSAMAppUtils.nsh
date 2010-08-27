@@ -26,6 +26,10 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+!define COMPANY_DIR	"DSAM Applications"
+!define START_MENU_GROUP	"StartMenuGroup"
+!define MSVC_REDIST_DIR	"C:\Program Files\Microsoft Visual Studio 8\VC\redist"
+
 ###################################################################################
 #
 # Check Application registration
@@ -56,6 +60,86 @@ Function CheckAppRegistration
   ${EndIf}
 
   Pop $1
+  Pop $0
+
+FunctionEnd
+
+###################################################################################
+#
+# Install Microsoft Visual Studio Redistributable support.
+# 
+#
+# Example:
+#
+# Call InstallMSVCRedist
+
+Function InstallMSVCRedist
+
+  Push $0
+
+  ${if} $platformArch = 32
+    DetailPrint "Installing 32-bit MSVCRT Support"
+    SetOutPath ${DLL32DIR}
+    Push "msvcr80.dll"
+    Call CheckDLLStatus
+    Pop $0
+     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest" \
+      ${DLL32DIR}\Microsoft.VC80.CRT.manifest ${DLL32DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\msvcp80.dll" ${DLL32DIR}\msvcp80.dll ${DLL32DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\msvcr80.dll" ${DLL32DIR}\msvcr80.dll ${DLL32DIR}  
+  ${Else}
+    DetailPrint "Installing 64-bit MSVCRT Support"
+    SetOutPath ${DLL64DIR}
+    Push "msvcr80.dll"
+    Call CheckDLLStatus
+    Pop $0
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest" \
+      ${DLL64DIR}\Microsoft.VC80.CRT.manifest ${DLL64DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\msvcp80.dll" ${DLL64DIR}\msvcp80.dll ${DLL64DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\msvcr80.dll" ${DLL64DIR}\msvcr80.dll ${DLL64DIR}  
+  ${EndIf}
+
+  Pop $0
+
+FunctionEnd
+
+###################################################################################
+#
+# Uninstall Microsoft Visual Studio Redistributable support.
+#
+# Example:
+#
+# Call un.SetInstallMSVCRedist
+#
+
+Function un.SetInstallMSVCRedist
+
+  Push $0
+  Push $R0
+
+  ReadRegDWORD $0 HKLM ${DSAMRKEY} ${DSAM_APP_COUNT}
+  ${If} $0 < 1
+    ; Remove DLLs
+    GetVersion::WindowsPlatformArchitecture
+    Pop $R0
+    ${If} $R0 = 32
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\Microsoft.VC80.CRT.manifest
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcp80.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcr80.dll
+    ${Else}
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\Microsoft.VC80.CRT.manifest
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcp80.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcr80.dll
+    ${EndIf}
+  ${EndIf}
+
+  Pop $R0
   Pop $0
 
 FunctionEnd

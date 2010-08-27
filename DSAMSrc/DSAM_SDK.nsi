@@ -140,6 +140,7 @@ Section "WXWIN Library ${WX_VERSION} x86"
 
   ; Put file there
   File /r ${WXWINDIR}\Include\*.h
+  File /r ${WXWINDIR}\contrib\Include\*.h
   File /r ${WXWINDIR}\lib\vc_dll\mswu\*.h
 
   ; Set output path to the lib directory.
@@ -226,7 +227,7 @@ Section "Uninstall"
   Call un.SetDLLUnInstall
 
   ; Remove directories used
-  RMDir /r /REBOOTOK "$INSTDIR"
+  RMDir /REBOOTOK "$INSTDIR" ; - remove if empty.
 
 SectionEnd
 
