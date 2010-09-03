@@ -38,22 +38,23 @@
 !include "WriteEnvStr.nsh"
 !include "DSAMGenUtils.nsh"
 
-!define VERSION		"2.8.29"
+!define PACKAGE_NAME	"SDK"
+!define VERSION		"2.8.30"
 !define INST_VERSION	"1"
 !define DSAMDIR_ENV	"DSAMSDKDIR"
 
 ;--------------------------------
 
 ; The name of the installer
-Name "DSAM SDK ${VERSION}"
+Name "DSAM ${PACKAGE_NAME} ${VERSION}"
 
 ; The file to write
-OutFile "DSAM_SDK_${VERSION}_${INST_VERSION}.exe"
+OutFile "DSAM_${PACKAGE_NAME}_${VERSION}_${INST_VERSION}.exe"
 
 ; The default installation directory
 ; Currently the SDK has to be installed to the c drive to avoid
 ; file names with spaces for the "mex" compile command.
-InstallDir C:\DSAM\SDKs
+InstallDir "C:\DSAM\SDK"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -71,13 +72,18 @@ RequestExecutionLevel admin
 
 ; Pages
 
-  !insertmacro MUI_PAGE_LICENSE "COPYING"
-  !insertmacro MUI_PAGE_COMPONENTS
-  !insertmacro MUI_PAGE_DIRECTORY
-  !insertmacro MUI_PAGE_INSTFILES
+; License page - replaces: Page license
+PageEx license
+	LicenseText "DSAM ${PACKAGE_NAME} License"
+	LicenseData LICENSE
+PageExEnd
 
-  !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_INSTFILES
+Page components
+Page directory
+Page instfiles
+
+UninstPage uninstConfirm
+UninstPage instfiles
 
 ;--------------------------------
 ;Languages
@@ -88,50 +94,63 @@ RequestExecutionLevel admin
 ;Installer Sections
 
 ; The stuff to install
-Section "DSAM SDK ${VERSION}"
+Section "DSAM ${PACKAGE_NAME} ${VERSION}"
 
   SectionIn RO
 
-  ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\DSAM\SDK "Install_Dir" "$INSTDIR"
+  DetailPrint "Platform architecture is $platformArch-bit"
+  ; Sets the registry view for x64 systems.
+  ${iF} $platformArch = 64
+  	SetRegView 64
+  ${EndIf}
 
-  ; Check for installed applications
-  
-  
+  ; Write the installation path into the registry
+  WriteRegStr HKLM "{DSAM_SDK_RKEY}" "Install_Dir" "$INSTDIR"
+
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK" "DisplayName" "DSAM SDK ${VERSION}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_${PACKAGE_NAME}" "DisplayName" "DSAM ${PACKAGE_NAME} ${VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_${PACKAGE_NAME}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_${PACKAGE_NAME}" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_${PACKAGE_NAME}" "NoRepair" 1
   ; Set output path to the install directory.
   SetOutPath $INSTDIR
   WriteUninstaller "uninstall.exe"
 
+  ; Set Environment variable
+  Push "${DSAMDIR_ENV}"
+  Push "$INSTDIR"
+  Call WriteEnvStr
+
 SectionEnd
 
-Section "DSAM Library ${VERSION} x86"
+Section "DSAM Library ${VERSION}"
 
   SectionIn RO
   
   ; Set output path to the include directory.
   SetOutPath $INSTDIR\include\dsam
 
-  ; Put file there
   File Include\*.h
+  File Include\*.rc
   File DSAMSetup.h
 
-  ; Set output path to the lib directory.
-  SetOutPath $INSTDIR\lib\x86
-  File lib\*x86.lib
+  ; Set output path to the include dsam bitmap directory.
+  SetOutPath $INSTDIR\include\dsam\Bitmaps
 
-  ; Set Environment variable
-  Push "${DSAMDIR_ENV}"
-  Push "$INSTDIR"
-  Call WriteEnvStr
+  File  /x *.am /x *.in "src\GrLib\Bitmaps\*.*"
+
+  ; Set output path to the lib directory and place respective files.
+  ${If} $platformArch = 32
+    SetOutPath $INSTDIR\lib\x86
+    File lib\*x86.lib
+  ${Else}
+    SetOutPath $INSTDIR\lib\x64
+    File lib\*x64.lib
+  ${EndIf}
   
 SectionEnd
 
-Section "WXWIN Library ${WX_VERSION} x86"
+Section "WXWIN Library ${WX_VERSION}"
   
   SectionIn RO
 
@@ -139,19 +158,24 @@ Section "WXWIN Library ${WX_VERSION} x86"
   SetOutPath $INSTDIR\include\wxwin
 
   ; Put file there
-  File /r ${WXWINDIR}\Include\*.h
+  File /r ${WXWINDIR}\Include\*.*
   File /r ${WXWINDIR}\contrib\Include\*.h
   File /r ${WXWINDIR}\lib\vc_dll\mswu\*.h
 
-  ; Set output path to the lib directory.
-  SetOutPath $INSTDIR\lib\x86
-  File ${WXWINDIR}\lib\vc_dll\*.lib
+  ; Set output path to the lib directory and place respective files.
+  ${If} $platformArch = 32
+    SetOutPath $INSTDIR\lib\x86
+    File ${WXWINDIR}\lib\vc_dll\*.lib
+  ${Else}
+    SetOutPath $INSTDIR\lib\x64
+    File ${WXWINDIR}\lib64\vc_dll\*.lib
+  ${EndIf}
   
   Call InstallWxWinDLLs
 
 SectionEnd
 
-Section "LIBSNDFILE Library ${LSF_VERSION} x86"
+Section "LIBSNDFILE Library ${LSF_VERSION}"
   
   SectionIn RO
 
@@ -161,15 +185,20 @@ Section "LIBSNDFILE Library ${LSF_VERSION} x86"
   ; Put file there
   File /r ${LIBSNDFILEDIR}\src\*.h
 
-  ; Set output path to the lib directory.
-  SetOutPath $INSTDIR\lib\x86
-  File ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.lib
+  ; Set output path to the lib directory and place respective files.
+  ${If} $platformArch = 32
+    SetOutPath $INSTDIR\lib\x86
+    File ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.lib
+  ${Else}
+    SetOutPath $INSTDIR\lib\x64
+    File ${LIBSNDFILEDIR}\MSVC\libsndfile\x64\Release\libsndfile_x64.lib
+  ${EndIf}
 
   Call InstallLibSndFileDLL
   
 SectionEnd
 
-Section "PORTAUDIO Library ${PA_VERSION} x86"
+Section "PORTAUDIO Library ${PA_VERSION}"
   
   SectionIn RO
 
@@ -179,15 +208,20 @@ Section "PORTAUDIO Library ${PA_VERSION} x86"
   ; Put file there
   File /r ${PORTAUDIODIR}\include\*.h
 
-  ; Set output path to the lib directory.
-  SetOutPath $INSTDIR\lib\x86
-  File ${PORTAUDIODIR}\build\msvc\Win32\Release\*.lib
+  ; Set output path to the lib directory and place respective files.
+  ${If} $platformArch = 32
+    SetOutPath $INSTDIR\lib\x86
+    File ${PORTAUDIODIR}\build\msvc\Win32\Release\*.lib
+  ${Else}
+    SetOutPath $INSTDIR\lib\x64
+    File ${PORTAUDIODIR}\build\msvc\x64\Release\*.lib
+  ${EndIf}
 
   Call InstallPortAudioDLL
 
 SectionEnd
 
-Section "FFTW Library ${FFTW_VERSION} x86"
+Section "FFTW Library ${FFTW_VERSION}"
   
   SectionIn RO
 
@@ -197,9 +231,14 @@ Section "FFTW Library ${FFTW_VERSION} x86"
   ; Put file there
   File /r ${FFTWDIR}\api\*.h
 
-  ; Set output path to the lib directory.
-  SetOutPath $INSTDIR\lib\x86
-  File ${FFTWDIR}\libfftw.lib
+  ; Set output path to the lib directory and place respective files.
+  ${If} $platformArch = 32
+    SetOutPath $INSTDIR\lib\x86
+    File ${FFTWDIR}\libfftw.lib
+  ${Else}
+    SetOutPath $INSTDIR\lib\x64
+    File ${FFTWDIR}\libfftw_x64.lib
+  ${EndIf}
 
 SectionEnd
 
@@ -209,8 +248,15 @@ SectionEnd
 
 Section "Uninstall"
   
+  GetVersion::WindowsPlatformArchitecture
+  Pop $platformArch 
+  ; Sets the registry view for x64 systems.
+  ${If} $platformArch = 64
+  	SetRegView 64
+  ${EndIf}
+
   ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_SDK"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DSAM_${PACKAGE_NAME}"
   DeleteRegKey HKLM ${DSAM_SDK_RKEY}
 
   ; Remove environment variables
@@ -221,12 +267,14 @@ Section "Uninstall"
   ; Remove files and uninstaller
   RMDIR /r /REBOOTOK $INSTDIR\include
   RMDIR /r /REBOOTOK $INSTDIR\lib\x86
+  RMDIR /r /REBOOTOK $INSTDIR\lib\x64
   Delete $INSTDIR\uninstall.exe
 
   ; Remove DLLs
   Call un.SetDLLUnInstall
 
   ; Remove directories used
+  RMDir /REBOOTOK "$INSTDIR\LIB" ; - remove if empty.
   RMDir /REBOOTOK "$INSTDIR" ; - remove if empty.
 
 SectionEnd
@@ -236,11 +284,11 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecDummy ${LANG_ENGLISH} "A test section."
+#  LangString DESC_SecDummy ${LANG_ENGLISH} "A test section."
 
   ;Assign language strings to sections
-  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecDummy} $(DESC_SecDummy)
-  !insertmacro MUI_FUNCTION_DESCRIPTION_END
+#  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+#    !insertmacro MUI_DESCRIPTION_TEXT ${SecDummy} $(DESC_SecDummy)
+#  !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 

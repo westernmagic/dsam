@@ -188,3 +188,51 @@ Function un.UpdateDSAMAppCount
   Pop $0
 
 FunctionEnd
+
+###################################################################################
+#
+# Set the PATH environment variable
+#
+# Example:
+#
+# Call SetEnvPathVar
+#
+
+Function SetEnvPathVar
+
+  GetVersion::WindowsPlatformArchitecture
+  Pop $platformArch 
+  ${iF} $platformArch = 32
+  	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "${DLL32DIR}" ; Append  
+  ${Else}
+  	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "${DLL64DIR}" ; Append  
+  ${EndIf}
+ 
+FunctionEnd
+
+###################################################################################
+#
+# Unset the PATH environment variable
+#
+# Example:
+#
+# Call un.SetEnvPathVar
+#
+
+Function un.SetEnvPathVar
+
+  Push $0
+  ReadRegDWORD $0 HKLM ${DSAMRKEY} ${DSAM_APP_COUNT}
+  ${If} $0 < 1
+    ; Remove DLLs
+    GetVersion::WindowsPlatformArchitecture
+    Pop $platformArch 
+    ${iF} $platformArch = 32
+      ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "${DLL32DIR}"
+    ${Else}
+      ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "${DLL64DIR}"  
+    ${EndIf}
+  ${EndIf}
+  Pop $0
+
+FunctionEnd

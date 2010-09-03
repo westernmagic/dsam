@@ -45,21 +45,17 @@
 
 ;--------------------------------
 ; Set PlatformArchitecture
-; Makes available: platformArch, platformArchStr
+; Makes available: platformArch
 
 Section ; Hidden ensure that this function is called for installer
 
 	Var /GLOBAL platformArch
-	Var /GLOBAL platformArchStr
+
 	GetVersion::WindowsPlatformArchitecture
 	Pop $platformArch
-	${if} $platformArch = 32
-		StrCpy $platformArchStr ""
-	${Else}
-		StrCpy $platformArchStr = $platformArch
-	${EndIf}
-	${iF} $platformArch = 64
+	${If} $platformArch = 64
 		SetRegView 64
+		!define LIBRARY_X64		; For InstallLib - can this be conditional?
 	${EndIf}
 	DetailPrint "Architecture is $platformArch-bit"
 
@@ -82,7 +78,12 @@ Function CheckDLLStatus
   Exch $0
   Push $1
   DetailPrint "Checking for '$0'"
-  ${If} ${FileExists} "${DLL32DIR}\$0"
+  ${If} $platformArch = 32
+    StrCpy $1 = "${DLL32DIR}"
+  ${Else}
+    StrCpy $1 = "${DLL64DIR}"
+  ${EndIf}
+  ${If} ${FileExists} "$1\$0"
     StrCpy $1 1
   ${Else}
     StrCpy $1 0
@@ -91,6 +92,26 @@ Function CheckDLLStatus
   Exch
   Pop $0
   Exch $1
+
+FunctionEnd
+
+###################################################################################
+#
+# Set the DLL output path.
+#
+# Example:
+#
+# Call SetDLLOutPath
+#
+
+Function SetDLLOutPath
+
+  ; Insert DLL's
+  ${If} $platformArch = 32
+    SetOutPath ${DLL32DIR}
+  ${Else}
+    SetOutPath ${DLL64DIR}
+  ${EndIf}
 
 FunctionEnd
 
@@ -106,23 +127,38 @@ FunctionEnd
 Function InstallWxWinDLLs
 
   ; Insert DLL's
-  SetOutPath ${DLL32DIR}
+  Call SetDLLOutPath
   Push "wxbase28u_vc_custom.dll"
   Call CheckDLLStatus
   Pop $0
 
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_vc_custom.dll ${DLL32DIR}\wxbase28u_vc_custom.dll ${DLL32DIR}
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_net_vc_custom.dll ${DLL32DIR}\wxbase28u_net_vc_custom.dll ${DLL32DIR}
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxbase28u_xml_vc_custom.dll ${DLL32DIR}\wxbase28u_xml_vc_custom.dll ${DLL32DIR}
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_core_vc_custom.dll ${DLL32DIR}\wxmsw28u_core_vc_custom.dll ${DLL32DIR}
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_html_vc_custom.dll ${DLL32DIR}\wxmsw28u_html_vc_custom.dll ${DLL32DIR}
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${WXWINDIR}\lib\vc_dll\wxmsw28u_ogl_vc_custom.dll ${DLL32DIR}\wxmsw28u_ogl_vc_custom.dll ${DLL32DIR}
+  ${If} $platformArch = 32
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxbase28u_vc_custom.dll ${DLL32DIR}\wxbase28u_vc_custom.dll ${DLL32DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxbase28u_net_vc_custom.dll ${DLL32DIR}\wxbase28u_net_vc_custom.dll ${DLL32DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxbase28u_xml_vc_custom.dll ${DLL32DIR}\wxbase28u_xml_vc_custom.dll ${DLL32DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxmsw28u_core_vc_custom.dll ${DLL32DIR}\wxmsw28u_core_vc_custom.dll ${DLL32DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxmsw28u_html_vc_custom.dll ${DLL32DIR}\wxmsw28u_html_vc_custom.dll ${DLL32DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib\vc_dll\wxmsw28u_ogl_vc_custom.dll ${DLL32DIR}\wxmsw28u_ogl_vc_custom.dll ${DLL32DIR}
+  ${Else}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxbase28u_vc_custom.dll ${DLL64DIR}\wxbase28u_vc_custom.dll ${DLL64DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxbase28u_net_vc_custom.dll ${DLL64DIR}\wxbase28u_net_vc_custom.dll ${DLL64DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxbase28u_xml_vc_custom.dll ${DLL64DIR}\wxbase28u_xml_vc_custom.dll ${DLL64DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxmsw28u_core_vc_custom.dll ${DLL64DIR}\wxmsw28u_core_vc_custom.dll ${DLL64DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxmsw28u_html_vc_custom.dll ${DLL64DIR}\wxmsw28u_html_vc_custom.dll ${DLL64DIR}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${WXWINDIR}\lib64\vc_dll\wxmsw28u_ogl_vc_custom.dll ${DLL64DIR}\wxmsw28u_ogl_vc_custom.dll ${DLL64DIR}
+  ${EndIf}
 
 FunctionEnd
 
@@ -137,14 +173,23 @@ FunctionEnd
 
 Function InstallLibSndFileDLL
 
-  SetOutPath ${DLL32DIR}
   ; Insert DLL's
-  Push "libsndfile_x86.dll"
+  Call SetDLLOutPath
+  ${If} $platformArch = 32
+     Push "libsndfile_x86.dll"
+  ${Else}
+     Push "libsndfile_x64.dll"
+  ${EndIf}
   Call CheckDLLStatus
   Pop $0
 
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.dll ${DLL32DIR}\libsndfile_x86.dll ${DLL32DIR}
+  ${If} $platformArch = 32
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.dll ${DLL32DIR}\libsndfile_x86.dll ${DLL32DIR}
+  ${Else}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${LIBSNDFILEDIR}\MSVC\libsndfile\x64\Release\libsndfile_x64.dll ${DLL64DIR}\libsndfile_x64.dll ${DLL64DIR}
+  ${EndIf}
 
 FunctionEnd
 
@@ -160,14 +205,20 @@ FunctionEnd
 Function InstallPortAudioDLL
 
   Push $0
-  SetOutPath ${DLL32DIR}
   ; Insert DLL's
+  Call SetDLLOutPath
   Push "portaudio.dll"
   Call CheckDLLStatus
   Pop $0
 
-  !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-   ${PORTAUDIODIR}\build\msvc\Win32\Release\portaudio.dll ${DLL32DIR}\portaudio.dll ${DLL32DIR}
+  ${If} $platformArch = 32
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${PORTAUDIODIR}\build\msvc\Win32\Release\portaudio.dll ${DLL32DIR}\portaudio.dll ${DLL32DIR}
+  ${Else}
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+     ${PORTAUDIODIR}\build\msvc\x64\Release\portaudio.dll ${DLL64DIR}\portaudio.dll ${DLL64DIR}
+  ${EndIf}
+
   Pop $0
 
 FunctionEnd
@@ -183,14 +234,13 @@ FunctionEnd
 
 Function un.SetDLLUnInstall
 
-  Push $R0
-  GetVersion::WindowsPlatformArchitecture
-  Pop $R0
   Push $0
   ReadRegDWORD $0 HKLM ${DSAMRKEY} ${DSAM_APP_COUNT}
   ${If} $0 < 1
     ; Remove DLLs
-    ${If} $R0 == 32
+    GetVersion::WindowsPlatformArchitecture
+    Pop $platformArch 
+    ${If} $platformArch  == 32
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\wxbase28u_net_vc_custom.dll
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\wxbase28u_vc_custom.dll
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\wxbase28u_xml_vc_custom.dll
@@ -213,6 +263,5 @@ Function un.SetDLLUnInstall
     ${EndIf}
   ${EndIf}
   Pop $0
-  Pop $R0
 
 FunctionEnd

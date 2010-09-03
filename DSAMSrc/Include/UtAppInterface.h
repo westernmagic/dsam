@@ -49,12 +49,12 @@
 #define	APP_MAX_HELP_BOOKS			4
 #define APP_PARLIST_NAME			wxT("app_specific")
 
-#if defined(USE_GUI) || defined(EXTENSIONS_SUPPORT)
+#if defined(USE_GUI) || defined(LIBRARY_COMPILE) || defined(EXTENSIONS_SUPPORT)
 #	define	MAIN_ARGS	void
 #	define ARGC		0
 #	define ARGV		NULL
 #	if defined(INTERFACE_DLL)
-#		define	MainSimulation	main
+		int MainSimulation(void)	{ return 0; } // Dummy function for DLL projects
 #	endif
 #else
 #	define MainSimulation	main

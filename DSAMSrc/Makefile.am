@@ -35,8 +35,8 @@ pkginclude_HEADERS	= DSAMSetup.h
 
 bin_SCRIPTS		= dsam-config
 BUILT_SOURCES	= dsam.spec dsam-config
-EXTRA_DIST		= autogen.sh COPYING DSAM_SDK.nsi
-SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC
+EXTRA_DIST		= autogen.sh LICENSE DSAM_SDK.nsi
+SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC NSIS
 
 dsam.spec: dsam.spec.in
 

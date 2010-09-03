@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -123,7 +123,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -200,7 +200,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -276,7 +276,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -351,7 +351,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -427,7 +427,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;$(solutiondir)\..\include&quot;;&quot;$(solutiondir)\..&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
-				PreprocessorDefinitions="HAVE_CONFIG_H=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;NOPCH"
+				PreprocessorDefinitions="HAVE_CONFIG_H=1;USE_GUI=1;WIN32;__WXMSW__;WXUSINGDLL;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -2220,103 +2220,103 @@
 					/>
 				</FileConfiguration>
 			</File>
-		</Filter>
-		<Filter
-			Name="Resources"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-			>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\blank.cur"
+			<Filter
+				Name="Resources"
+				Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\bullseye.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\error.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\hand.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\info.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\magnif1.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\noentry.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\pbrush.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\pencil.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\pntleft.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\pntright.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\query.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\question.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\roller.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\size.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\tip.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\warning.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\msw\watch1.cur"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\html\msw\wbook.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\html\msw\wfolder.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\html\msw\whelp.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\html\msw\whlproot.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\GrLib\wx\html\msw\wpage.ico"
-				>
-			</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\blank.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\bullseye.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\error.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\hand.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\info.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\magnif1.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\noentry.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\pbrush.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\pencil.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\pntleft.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\pntright.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\query.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\question.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\roller.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\size.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\tip.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\warning.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\msw\watch1.cur"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\html\msw\wbook.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\html\msw\wfolder.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\html\msw\whelp.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\html\msw\whlproot.ico"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GrLib\wx\html\msw\wpage.ico"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
