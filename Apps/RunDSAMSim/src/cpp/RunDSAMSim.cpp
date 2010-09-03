@@ -317,7 +317,7 @@ void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 {
-	BOOLN	staticTimeFlag = FALSE;
+	bool	staticTimeFlag = false;
 	WChar	*simFile, *parameterOptions;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
@@ -344,7 +344,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  		numChannels = (int) mxGetM(prhs[INPUT_SIGNAL]);
 		length = (ChanLen) mxGetN(prhs[INPUT_SIGNAL]);
 		dt =  *mxGetPr(mxGetField(info, 0, "dt"));
-		staticTimeFlag = (BOOLN) GET_INFO_PAR("staticTimeFlag", FALSE);
+		staticTimeFlag = (bool) GET_INFO_PAR("staticTimeFlag", false);
 		outputTimeOffset = GET_INFO_PAR("outputTimeOffset", 0.0);
 		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
 		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);

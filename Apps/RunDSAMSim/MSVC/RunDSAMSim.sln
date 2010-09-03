@@ -2,13 +2,23 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunDSAMSim", "RunDSAMSim.vcproj", "{B3E9CF7F-3465-4D94-A038-8C726065BD4E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A04D5F0D-95BC-40F5-A821-209E97462218} = {A04D5F0D-95BC-40F5-A821-209E97462218}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibRunDSAMSim", "LibRunDSAMSim.vcproj", "{3E89790A-5DC4-4DC1-86C8-2777E86F2481}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A04D5F0D-95BC-40F5-A821-209E97462218} = {A04D5F0D-95BC-40F5-A821-209E97462218}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatLib", "C:\Users\lowel\Documents\Work\dsam\rundsamsim1110\MSVC\MatLib.vcproj", "{A04D5F0D-95BC-40F5-A821-209E97462218}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Release (SDK)|Win32 = Release (SDK)|Win32
+		Release (SDK)|x64 = Release (SDK)|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -17,16 +27,35 @@ Global
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Debug|Win32.Build.0 = Debug|Win32
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Debug|x64.ActiveCfg = Debug|x64
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Debug|x64.Build.0 = Debug|x64
+		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release (SDK)|Win32.ActiveCfg = Release (SDK)|Win32
+		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release (SDK)|Win32.Build.0 = Release (SDK)|Win32
+		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release (SDK)|x64.ActiveCfg = Release (SDK)|x64
+		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release (SDK)|x64.Build.0 = Release (SDK)|x64
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|Win32.ActiveCfg = Release|Win32
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|Win32.Build.0 = Release|Win32
 		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|x64.ActiveCfg = Release|x64
-		{B3E9CF7F-3465-4D94-A038-8C726065BD4E}.Release|x64.Build.0 = Release|x64
 		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|Win32.ActiveCfg = Debug|Win32
 		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|Win32.Build.0 = Debug|Win32
 		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Debug|x64.ActiveCfg = Debug|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release (SDK)|Win32.ActiveCfg = Release (SDK)|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release (SDK)|Win32.Build.0 = Release (SDK)|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release (SDK)|x64.ActiveCfg = Release (SDK)|x64
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release (SDK)|x64.Build.0 = Release (SDK)|x64
 		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|Win32.ActiveCfg = Release|Win32
 		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|Win32.Build.0 = Release|Win32
-		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|x64.ActiveCfg = Release|Win32
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|x64.ActiveCfg = Release|x64
+		{3E89790A-5DC4-4DC1-86C8-2777E86F2481}.Release|x64.Build.0 = Release|x64
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Debug|Win32.Build.0 = Debug|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Debug|x64.ActiveCfg = Debug|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release (SDK)|Win32.ActiveCfg = Release (SDK)|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release (SDK)|Win32.Build.0 = Release (SDK)|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release (SDK)|x64.ActiveCfg = Release (SDK)|x64
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release (SDK)|x64.Build.0 = Release (SDK)|x64
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release|Win32.ActiveCfg = Release|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release|Win32.Build.0 = Release|Win32
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release|x64.ActiveCfg = Release|x64
+		{A04D5F0D-95BC-40F5-A821-209E97462218}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -119,6 +119,8 @@
 </profile>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
 <target name="all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -269,14 +271,6 @@
 <buildCommand>make</buildCommand>
 <buildArguments/>
 <buildTarget>distclean</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-<runAllBuilders>false</runAllBuilders>
-</target>
-<target name="distclean-compile" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-<buildCommand>make</buildCommand>
-<buildArguments/>
-<buildTarget>distclean-compile</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>false</runAllBuilders>
@@ -473,14 +467,6 @@
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>false</runAllBuilders>
 </target>
-<target name="mostlyclean-compile" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-<buildCommand>make</buildCommand>
-<buildArguments/>
-<buildTarget>mostlyclean-compile</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-<runAllBuilders>false</runAllBuilders>
-</target>
 <target name="mostlyclean-libtool" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
 <buildArguments/>
@@ -501,14 +487,6 @@
 <buildCommand>make</buildCommand>
 <buildArguments/>
 <buildTarget>ps</buildTarget>
-<stopOnError>true</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-<runAllBuilders>false</runAllBuilders>
-</target>
-<target name="RunDSAMSim.mex" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-<buildCommand>make</buildCommand>
-<buildArguments/>
-<buildTarget>RunDSAMSim.mex</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>false</runAllBuilders>

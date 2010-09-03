@@ -1,3 +1,19 @@
+====================
+Windows Installation
+====================
+
+There is a self-installing package for Windows systems.  Just double-click to
+install.  All that remains is to ensure that Matlab knows where to find
+the required files, as shown below inthe "Matlab Configuration" section
+in the "ReadMe" file.
+
+=======================
+Linux/Unix Installation
+=======================
+
+Once installed matlab should be configured as shown above in the "Matlab
+configuration" section above.
+
 Simple install procedure
 ========================
 

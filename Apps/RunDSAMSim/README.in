@@ -12,7 +12,7 @@
 	<surname>O'Mard</surname>
 	<othername role='mi'>P</othername>
 	<affiliation>
-	<address><email>lpo21@cam.ac.uk</email></address>
+	<address><email>lowel.omard@gmail.com</email></address>
 	</affiliation>
 </author>
 </authorgroup>
@@ -21,14 +21,22 @@
 <sect1><title>General Information</title>
 <para>
 This is @PACKAGE@ version @VERSION@.  @PACKAGE@ allows users to
-run and evaluate auditory models writing using simulation scripts.
-It is in the form of a dynamic-linked library which is called directly
-from Matlab/octave.
+run and evaluate auditory models writing using development system for
+auditory modelling (DSAM) simulation scripts. It provides access to
+an extensive collection of published and new models.
 </para>
 
 <para>
-It is supported by the extensive collection of published and new models
-supplied by the development system for auditory modelling (DSAM).
+The @PACKAGE@ currently has two interfaces which provide direct access to
+DSAM simulations: (1) "RunDSAMSimJ" - java interface and (2) The "RunDSAMSim.mex"
+mex file.
+</para>
+<para>
+The "RunDSAMSimJ" java interface has been tested with Matlab 2007b, 2009a and
+should work with any version of matlab.  It uses a java application which is
+supported by a dynamic link library.  The RunDSAMSim.mex is the original
+matlab/octave interface and can be used with octave which currently has no
+java support.
 </para>
 
 <para>
@@ -38,7 +46,7 @@ To use this application on UNIX the DSAM library must be installed.
 <para>
 The official web site is:
 
-	http://www.dsam.org
+	http://dsam.org.uk
 </para>
 
 <para>
@@ -54,7 +62,90 @@ To subscribe: visit the web site at:
 <sect1><title>Installation</title>
 
 <para>
-See the file 'INSTALL'
+The windows installation requires no compilation.  Under Linux/Unix systems
+the autoconf auto-configuration system is used if no ready-compiled
+installation is available.  See the file 'INSTALL' for details.
+</para>
+
+</sect1>
+
+<sect1><title>Matlab Configuration</title>
+
+<para>
+Two matlab configuration files need to be edited: "classpath.txt" and
+"librarypath.txt".   Usually the path is "&lt;matlab installation
+directory&gt;\toolbox\local", or the path to these files can be found by starting
+matlab and issuing the commands "edit classpath.txt" and "edit librarypath.txt".
+On most installations this will open the files and the file path will be shown in the
+editor window title.
+</para>
+
+<para>
+Usually these files will require special privileges in order to
+make changes to them. On Windows Vista, open the notepad text editor with
+administrator privileges, i.e. "start menu"->"Accessories", right-click on
+the "Notepad" application to open a dialog, choose "Run as administrator".
+</para>
+
+<para>
+On Linux/Unix systems super user access will be required, i.e. using "sudo" or
+"su".  Your may need to get you system administrator to do this configuration
+if you do not have sufficient privileges on your system.
+</para>
+
+<sect2><title>Changes to classpath.txt</title>
+
+<para>
+Append the full path to the jar file.  For the default installation
+the added line should look as follows for Windows Vista:
+</para>
+
+<para>
+c:\Program Files\Common Files\dsam\RunDSAMSimjni-@VERSION@.jar
+</para>
+
+</sect2>
+
+<sect2><title>Changes to librarypath.txt</title>
+
+<para>
+Append the full path to the support files for the package.  If the default
+installation the added line should like as follows for Windows Vista:
+</para>
+
+<para>
+C:\Program Files\Common Files\dsam
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1><title>Installation Testing</title>
+
+<para>
+Start Matlab and change the current directory to the <emphasis>Examples</emphasis>
+directory.  On default Windows installations this directory will be found in the
+directory <emphasis>C:\Program Files\DSAM Applications\RunDSAMSim"</emphasis>.
+</para>
+
+<para>
+Run the <emphasis>MatlabDemoRunDSAMSim.m</emphasis> script using the command:
+</para>
+
+<para>
+>> MatlabDemoRunDSAMSim([1 2], 'java');
+</para>
+
+<para>
+On an Intel(R) Core (TM) Duo 2.33 GHz system this takes approximately 3 minutes to run.
+The demonstration calculates the post-stimulus time histogram and rate-intensity
+curves for a model VCN Onset-C cell. 
+</para>
+
+<para>
+You can make a copy of the <emphasis>Examples</emphasis> directory to use as the
+basis of your own analysis scripts.
 </para>
 
 </sect1>
@@ -97,7 +188,7 @@ above.  In the mail include:
 
 <listitem>
 	<para>If the bug was a crash, the exact text that was printed out when
-  the crash occured.
+  the crash occurred.
 	</para>
 </listitem>
 <listitem>

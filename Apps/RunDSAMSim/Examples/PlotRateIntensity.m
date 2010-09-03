@@ -44,7 +44,8 @@ for leveldB = level
 	rate(count) = mean(data(1, offsetSamples:info.length)) / calcDuration;
 end
 plot(level, rate);
-
+xlabel('Level dB SPL');
+ylabel('Spike rate (sp/s)');
 end % function
 
 

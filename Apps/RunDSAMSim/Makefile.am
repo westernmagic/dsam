@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= autogen.sh RunDSAMSim.ise
+EXTRA_DIST		= autogen.sh RunDSAMSim.nsi LICENSE
 
 SUBDIRS			= CfgTools MSVC Examples src/MatLib
 

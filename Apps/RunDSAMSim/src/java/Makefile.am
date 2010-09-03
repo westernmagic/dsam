@@ -25,4 +25,6 @@ all-local: java-headers.stamp
 
 CLEANFILES = $(jarfile) *.class java-headers.stamp $(jhdrout)/*.h
 
+EXTRA_DIST			= RunDSAMSimJ.h
+
 dist_noinst_JAVA	= RunDSAMSimJ.java

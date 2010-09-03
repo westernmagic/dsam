@@ -31,7 +31,8 @@ otherwise
 	t = DataXAxis2(info.outputTimeOffset, info.dt, info.length);
 end % switch
 
-plot(t, data(1,:))
-
+plot(t, data(1,:));
+xlabel('Time (s)');
+ylabel('Spikes per bin');
 end
 
