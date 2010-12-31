@@ -1,5 +1,4 @@
 	##--------------- Simulation script ----------------------##
-	ON	Diagnostics mode ('off' or 'on').
 
 	begin  {
 		DataFile_In	<	waveDflt.par

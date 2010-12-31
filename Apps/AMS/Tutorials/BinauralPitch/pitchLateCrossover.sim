@@ -4,9 +4,6 @@
 #  computes an acf for each ear independently 
 #  and then averages the two acfs.
   
-off		Diagnostics mode ("off" or "on").
-relative	Parameter file path mode - \relative\ or \absolute\
- 
 begin {
 
 #  Stimulus generation

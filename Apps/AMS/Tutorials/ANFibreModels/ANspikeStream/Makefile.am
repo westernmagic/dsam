@@ -1,10 +1,10 @@
-## Tutorials/AnfiberModels/ANspikeStream directory makefile.
+## Tutorials/ANFibreModels/ANspikeStream directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/AnfiberModels/ANspikeStream
+DIRECTORY	= Tutorials/ANFibreModels/ANspikeStream
 
 SimScripts	= spikeStream.sim
 

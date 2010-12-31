@@ -1,8 +1,5 @@
 #AIMghsa.sim    gammatone, HWR C LPF, sti version of AC
  
-on			Diagnostics mode ("off" or "on").
-relative	Parameter file path mode ('relative', 'none' or <file path>).
-
 # Module Specifications
 
 begin {

@@ -3,9 +3,6 @@
 # and displays a period histogram
 # A synchronisation index is computed and lodged in OutputSynch.dat
   
-off		Diagnostics mode ("off" or "on").
-relative	Parameter file path mode.
- 
 begin 	{
 
 # or stimulus generation

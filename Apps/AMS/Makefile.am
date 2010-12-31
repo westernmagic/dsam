@@ -14,11 +14,13 @@ ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env AMS.ise LICENSE
+EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env AMS.nsi LICENSE
 
-INCLUDES		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
+AM_CPPFLAGS		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 
 SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
+
+CC = $(CXX)		# Ensure use of C++ compiler for the link stage.
 
 ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
 					$(CXXCOMPILE) $(DSAMGUIINC) -c $(srcdir)/ams.cpp -o $@ $(AMSRESOBJ)

@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(AMS, 1.2.24)
+AC_INIT(AMS, 1.3.0)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -19,9 +19,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 # if the MICRO_VERSION has changed, then:
 # set AMS_BINARY_AGE to zero.
 #
-AMS_INTERFACE_AGE=24
-AMS_BINARY_AGE=24
-AMS_RPM_AGE=24
+AMS_INTERFACE_AGE=0
+AMS_BINARY_AGE=0
+AMS_RPM_AGE=0
 dnl
 dnl AC_DIVERT_POP()dnl
 
@@ -38,7 +38,7 @@ AC_DEFINE_UNQUOTED(AMS_PACKAGE,"$AMS_PACKAGE", "AMS_PACKAGE")
 AC_SUBST(AMS_PACKAGE)
 AM_CONFIG_HEADER(AMSSetup.h:AMSSetup.hin )
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall -Werror])
 
 dnl ============================================================================
 dnl 'Global' variable declaration
@@ -271,7 +271,7 @@ int main(void)
 }
 _DSAM_EOF
 
-$CC get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
+$CXX get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
 SERVER_PORT=`./a.out`
 AC_MSG_RESULT($SERVER_PORT)
 rm -f get_port.$ac_ext

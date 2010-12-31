@@ -150,7 +150,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -544,7 +544,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -594,6 +594,204 @@
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
 				OutputFile=".\Debug/AMS.bsc"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release (SDK)|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			ManagedExtensions="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/AMS.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="&quot;$(DSAMSDKDIR)\include\dsam&quot;;&quot;$(DSAMSDKDIR)\include\wxwin&quot;;&quot;$(DSAMSDKDIR)\include\portaudio&quot;;&quot;$(DSAMSDKDIR)\include\libsndfile&quot;;&quot;$(DSAMSDKDIR)\include\fftw&quot;"
+				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				PrecompiledHeaderFile=".\Release/AMS.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="4"
+				SuppressStartupBanner="true"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"
+				AdditionalIncludeDirectories="$(DSAMDIR)\src\GrLib;$(DSAMDIR)/include;$(WXWIN)/include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_g_x86.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="&quot;$(DSAMSDKDIR)\lib\x86&quot;"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="libCMT"
+				ProgramDatabaseFile=".\Release/AMS.pdb"
+				SubSystem="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Release/AMS.bsc"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release (SDK)|x64"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			ManagedExtensions="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\Release/AMS.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="&quot;$(DSAMDIR)/include&quot;;&quot;$(DSAMDIR)&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/lib64/vc_dll/mswu&quot;;&quot;$(WXWIN)/contrib/include&quot;;&quot;$(PORTAUDIO)\include&quot;;&quot;$(LIBSNDFILE)\src&quot;;&quot;$(FFTW3DIR)\api&quot;"
+				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				PrecompiledHeaderFile=".\Release/AMS.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="4"
+				SuppressStartupBanner="true"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"
+				AdditionalIncludeDirectories="$(DSAMDIR)\src\GrLib;$(DSAMDIR)/include;$(WXWIN)/include"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="dsam_x64.lib dsam_ext_x64.lib dsam_g_x64.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x64.lib portaudio.lib libfftw_x64.lib"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(FFTW3DIR)&quot;"
+				IgnoreDefaultLibraryNames="LIBCMT.lib"
+				ProgramDatabaseFile=".\Release/AMS.pdb"
+				SubSystem="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Release/AMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -673,6 +871,24 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release (SDK)|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release (SDK)|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -738,6 +954,24 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug with DLLs|x64"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release (SDK)|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release (SDK)|x64"
 					>
 					<Tool
 						Name="VCResourceCompilerTool"

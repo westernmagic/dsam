@@ -4,9 +4,6 @@
 #  combines the AN spike probability input from both ears
 #  performs an acf on the combined input.
   
-off		Diagnostics mode ("off" or "on").
-relative	Parameter file path mode - \relative\ or \absolute\
- 
 begin {
 
 #  Stimulus generation

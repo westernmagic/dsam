@@ -3,9 +3,6 @@
 # that are analysed to produce a post stimulus time histogram
 # The histogram is written to file.
   
-off		Diagnostics mode ("off" or "on").
-relative	Parameter file path mode.
- 
 begin 	{
 
 # or stimulus generation

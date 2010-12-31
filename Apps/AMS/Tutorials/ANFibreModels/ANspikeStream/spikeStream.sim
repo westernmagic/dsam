@@ -3,9 +3,6 @@
 # and outputs this to a file 'outputSpikes.dat'
 # The output file is two-columns, 'time, 0/1'
   
-off		Diagnostics mode ("off" or "on").
-relative	Parameter file path mode.
- 
 begin 	{
 
 # or stimulus generation

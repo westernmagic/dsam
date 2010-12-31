@@ -1,6 +1,4 @@
 	##--------------- Simulation script ----------------------##
-	ON	Diagnostics mode ('off' or 'on').
-
 	begin  {
 		DataFile_In	<	LevelDFIn.par
 		Display_Signal	<	LevelDisp1.par

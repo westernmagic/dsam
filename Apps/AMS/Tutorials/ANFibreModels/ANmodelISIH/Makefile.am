@@ -1,10 +1,10 @@
-## Tutorials/AnfiberModels/ANmodelISIH directory makefile.
+## Tutorials/ANFibreModels/ANmodelISIH directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/AnfiberModels/ANmodelISIH
+DIRECTORY	= Tutorials/ANFibreModels/ANmodelISIH
 
 SimScripts	= SpikeTimesISIH.sim test.sim
 

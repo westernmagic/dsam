@@ -1,10 +1,10 @@
-## Tutorials/AnfiberModels/ANmodelPSTH directory makefile.
+## Tutorials/ANFibreModels/ANmodelPSTH directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/AnfiberModels/ANmodelPSTH
+DIRECTORY	= Tutorials/ANFibreModels/ANmodelPSTH
 
 SimScripts	= SpikeTimesPSTH.sim
 

@@ -1,10 +1,10 @@
-## Tutorials/AnfiberModels/ANmodelPeriodH directory makefile.
+## Tutorials/ANFibreModels/ANmodelPeriodH directory makefile.
 
 ##	Don't forget to find ways to implement Graphics and Parallel
 
 AUTOMAKE_OPTIONS = foreign
 
-DIRECTORY	= Tutorials/AnfiberModels/ANmodelPeriodH
+DIRECTORY	= Tutorials/ANFibreModels/ANmodelPeriodH
 
 SimScripts	= SpikeTimesPeriodH.sim
 
