@@ -148,7 +148,7 @@ if [ "$echo_libs" = "yes" ]; then
 	else
 		libs="$libs -l@PACKAGE@_std -lm"
 		if [ -z "@DSAM_EXTENSIONS_TRUE@" ]; then
-			libs="$libs @WX_BASE_LDFLAGS@"
+			libs="$libs @WX_BASE_LIBS@"
 		fi
 	fi
 	echo $libs

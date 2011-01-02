@@ -176,7 +176,7 @@ AC_ARG_WITH(wx_ogl-headers,
 
 AC_ARG_WITH(wx_ogl-lib,
    [  --with-wx_ogl-lib=DIR      wx OGL Library location],
-   [WX_OGL_LDFLAGS="-L$withval"] 
+   [WX_OLIBSAGS="-L$withval"] 
 )
 
 dnl ============================================================================
@@ -427,8 +427,8 @@ dnl ----------------------------------------------------------------------------
 if test x$DSAM_EXT = xyes -a x$wxwinAvailable = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags base`
-	LDFLAGS_save=$LDFLAGS
-	LDFLAGS=`$WX_CONFIG --libs base`
+	LIBS_save=$LIBS
+	LIBS=`$WX_CONFIG --libs base`
 	AC_MSG_CHECKING([for wxWidgets base support for threaded extensions])
 	AC_LINK_IFELSE(
 		[
@@ -457,7 +457,7 @@ if test x$DSAM_EXT = xyes -a x$wxwinAvailable = xyes; then
 	)
 	AC_MSG_RESULT($wx_base_available);
 	CXXFLAGS=$CXXFLAGS_save
-	LDFLAGS=$LDFLAGS_save
+	LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -468,8 +468,8 @@ if test x$gui = xyes -a x$wxwinAvailable = xyes; then
 	AC_MSG_CHECKING([for wxWidgets GUI support])
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
-	LDFLAGS_save=$LDFLAGS
-	LDFLAGS=`$WX_CONFIG --libs`
+	LIBS_save=$LIBS
+	LIBS=`$WX_CONFIG --libs`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(
@@ -499,7 +499,7 @@ if test x$gui = xyes -a x$wxwinAvailable = xyes; then
 	)
 	AC_MSG_RESULT($using_wxWidgets_gui);
 	CXXFLAGS=$CXXFLAGS_save
-	LDFLAGS=$LDFLAGS_save
+	LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -510,8 +510,8 @@ if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
 	AC_MSG_CHECKING([for wxWidgets OGL support])
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
-	LDFLAGS_save=$LDFLAGS
-	LDFLAGS=`$WX_CONFIG --libs std,ogl`
+	LIBS_save=$LIBS
+	LIBS=`$WX_CONFIG --libs std,ogl`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(
@@ -543,7 +543,7 @@ if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
 	)
 	AC_MSG_RESULT($using_wxWidgets_ogl);
 	CXXFLAGS=$CXXFLAGS_save
-	LDFLAGS=$LDFLAGS_save
+	LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -557,8 +557,8 @@ if test x$enable_portaudio = xyes; then
 	AC_MSG_CHECKING([for PortAudio support for audio i/o])
 	CFLAGS_save=$CFLAGS
 	CFLAGS=$PORTAUDIO_INCLUDE
-	LDFLAGS_save=$LDFLAGS
-	LDFLAGS="$PORTAUDIO_LDFLAGS -lportaudio -lpthread"
+	LIBS_save=$LIBS
+	LIBS="$PORTAUDIO_LIBS -lportaudio -lpthread"
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_PROGRAM(
@@ -580,7 +580,7 @@ if test x$enable_portaudio = xyes; then
 	)
 	AC_MSG_RESULT($using_portaudio);
 	CFLAGS=$CFLAGS_save
-	LDFLAGS=$LDFLAGS_save
+	LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -656,8 +656,8 @@ if test x$wx_base_available = xyes; then
 	AC_SUBST(DSAMEXTLIB)
 	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
 	AC_SUBST(WX_BASE_CXXFLAGS)
-	WX_BASE_LDFLAGS="`$WX_CONFIG --libs base net xml`"
-	AC_SUBST(WX_BASE_LDFLAGS)
+	WX_BASE_LIBS="`$WX_CONFIG --libs base net xml`"
+	AC_SUBST(WX_BASE_LIBS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
@@ -687,8 +687,8 @@ fi
 
 if test x$using_portaudio = xyes; then
 	AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
-	PORTAUDIO_LDFLAGS="-lportaudio"
-	AC_SUBST(PORTAUDIO_LDFLAGS)
+	PORTAUDIO_LIBS="-lportaudio"
+	AC_SUBST(PORTAUDIO_LIBS)
 fi
 AM_CONDITIONAL(USE_PORTAUDIO, test x$using_portaudio = xyes)
 
