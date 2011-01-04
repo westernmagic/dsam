@@ -1,5 +1,4 @@
-standard       Normalisation mode standard or unity (0, or 1).
-1     Time offset, t0 (if -ve the end of the signal is assumed) (s).
-15e-3    Time constant, tw (s).
-35.0e-3  Maximum autocorrelation period (lag), t (s).
-
+MODE	standard	Normalisation mode ('none', 'standard' or 'unity').
+OFFSET	1	Time offset, t0 (if -ve the end of the signal is assumed) (s).
+TIME_CONST	15e-3 	Time constant, tw (s).
+MAX_LAG	35.0e-3	Maximum autocorrelation lag, tau (s).

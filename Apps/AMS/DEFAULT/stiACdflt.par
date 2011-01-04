@@ -1,11 +1,14 @@
-#stiACdflt.par
-
-off			Diagnostic mode ("off" or "on").
-#
-AC				Integration mode.
-strobeACdflt.par	Strobe module specification file name.
--5e-3			Negative frame width (s).
-35e-3			Positive frame width (s).
--2.5e+3			Input decay rate (%/s).
-30e-3			Image decay half-life (s).
+DIAGNOSTICS   	"OFF"     	Diagnostic mode ('off', 'screen', 'error' or <file name>).
+INT_MODE      	"AC"     	Integration mode: 'STI' - stabilised temporal integration, 'AC' - autocorrelation.
+# Module parameter file: not_set
+  CRITERION     	"threshold"	Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), 'peak_shadow-' (3), or 'peak_shadow+' (4/5).
+  STROBE_DIAGNOSTICS	"OFF"     	Diagnostic mode ('off', 'screen', 'error' or <file name>).
+  THRESHOLD     	0         	Threshold for strobing: 'user', 'threshold' and 'peak' modes only.
+  THRESHOLD_DECAY	5000      	Threshold decay rate (%/s).
+  STROBE_LAG    	0.005     	Strobe lag (delay) time (s).
+  TIMEOUT       	0.01      	Strobe lag (delay) timeout (s).
+NWIDTH        	-5e-3    	Negative width of auditory image (s).
+PWIDTH        	35e-3     	Positive width of auditory image (s).
+NAP_DECAY     	-2.5e+3      	Neural activity pattern (input) decay rate (%/s)
+IMAGE_DECAY   	0.03      	Auditory image decay half-life (s).
 

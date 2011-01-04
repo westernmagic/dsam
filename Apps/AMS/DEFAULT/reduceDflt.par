@@ -1,2 +1,3 @@
-average 	Mode - "average" or simple "sum".
-1	Number of channels signal is to be averaged to.
+MODE	"SUM"     	Mode - 'average' or simple 'sum'.
+NUM_CHANNELS	1         	Number of channels signal is to be averaged to.
+

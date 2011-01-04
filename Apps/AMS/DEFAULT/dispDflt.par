@@ -1,0 +1,6 @@
+Auto_Scaling        on      Automatic scaling ('on' or 'off').
+X_Resolution 		0.01		X axis resolution (fraction).
+Magnification		1		Signal Y scale.
+win_height			250
+win_width			350
+y_axis_mode			linear
