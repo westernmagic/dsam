@@ -30,7 +30,7 @@
 
 AC_REVISION($Revision: 2.61)
 
-AC_INIT(DSAM, 2.8.31)
+AC_INIT(DSAM, 2.8.32)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_TARGET
@@ -165,7 +165,7 @@ AC_ARG_WITH(portaudio-headers,
 
 AC_ARG_WITH(portaudio-lib,
    [  --with-portaudio-lib=DIR      PortAudio Library location],
-   [PORTAUDIO_LDFLAGS="-L$withval"] 
+   [PORTAUDIO_LIBS="-L$withval"] 
 )
 
 AC_ARG_WITH(wx_ogl-headers,
@@ -550,37 +550,14 @@ dnl ----------------------------------------------------------------------------
 dnl PortAudio library
 dnl ----------------------------------------------------------------------------
 
-PORTAUDIO_INCLUDE="-pipe -fPIC -DPA_LITTLE_ENDIAN -Ipa_common  -DSIZEOF_SHORT=2 \
-	  -DSIZEOF_INT=4 -DSIZEOF_LONG=8 -DHAVE_LIBPTHREAD=1 -DPA_USE_ALSA=1 -DPA_USE_OSS=1"
 
 if test x$enable_portaudio = xyes; then
-	AC_MSG_CHECKING([for PortAudio support for audio i/o])
-	CFLAGS_save=$CFLAGS
-	CFLAGS=$PORTAUDIO_INCLUDE
-	LIBS_save=$LIBS
-	LIBS="$PORTAUDIO_LIBS -lportaudio -lpthread"
-	AC_LINK_IFELSE(
-		[
-			AC_LANG_PROGRAM(
-				[
-					#include <math.h>
-					#include <portaudio.h>
-				],
-				[
-					PaError err = Pa_Initialize();
-				]
-			)
-		],
-		[
-			using_portaudio=yes
-		],
-		[
-			using_portaudio=no
-		]
-	)
-	AC_MSG_RESULT($using_portaudio);
-	CFLAGS=$CFLAGS_save
-	LIBS=$LIBS_save
+	PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0 >= 19, ac_cv_portaudio=1, ac_cv_portaudio=0)
+	AC_DEFINE_UNQUOTED([HAVE_PORTAUDIO],${ac_cv_portaudio},
+		[Set to 1 if you have portaudio development environment.])
+	
+	AC_SUBST(PORTAUDIO_CFLAGS)
+	AC_SUBST(PORTAUDIO_LIBS)
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -687,7 +664,8 @@ fi
 
 if test x$using_portaudio = xyes; then
 	AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
-	PORTAUDIO_LIBS="-lportaudio"
+	DSAM_DEFS="$DSAM_DEFS $PORTAUDIO_CFLAGS"
+	AC_SUBST(PORTAUDIO_CFLAGS)
 	AC_SUBST(PORTAUDIO_LIBS)
 fi
 AM_CONDITIONAL(USE_PORTAUDIO, test x$using_portaudio = xyes)
