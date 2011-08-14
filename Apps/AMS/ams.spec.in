@@ -23,7 +23,7 @@ Obsoletes: ams
 
 %description
 The Auditory Model Simulator (AMS) allows users to design, run and evaluate
-auditory models.  It is backed up by the extensive collection of published and
+auditory models.  It is supported by the extensive collection of published and
 new models supplied by the Development System for Auditory Modelling (DSAM).
 
 %changelog
