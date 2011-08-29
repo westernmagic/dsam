@@ -1674,8 +1674,8 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 			}
 			p->readAppParFileFlag = FALSE;
 		}
-		if ((p->canLoadSimulationFlag || p->listParsAndExit) && p->
-		  simulationFileFlag) {
+		if ((p->canLoadSimulationFlag || p->listParsAndExit ||
+		  p->listCFListAndExit) && p->simulationFileFlag) {
 			if (!InitSimulation_AppInterface()) {
 				NotifyError(wxT("%s: Could not Initialise simulation."),
 				  funcName);
