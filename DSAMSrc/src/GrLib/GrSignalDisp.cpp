@@ -1631,6 +1631,14 @@ InitModule_SignalDisp(ModulePtr theModule)
 BOOLN
 CheckData_SignalDisp(EarObjectPtr data)
 {
+	static const WChar *funcName = wxT("CheckData_SignalDisp");
+
+	if (data == NULL) {
+		NotifyError(wxT("%s: EarObject not initialised."), funcName);
+		return(FALSE);
+	}
+	if (!CheckInSignal_EarObject(data, funcName))
+		return(FALSE);
 	/*** Put additional checks here. ***/
 	return(TRUE);
 
@@ -1871,32 +1879,27 @@ ShowSignal_SignalDisp(EarObjectPtr data)
 	int		i, numWindowFrames;
 	SignalDataPtr	outSignal;
 
-	if (data == NULL) {
-		NotifyError(wxT("%s: EarObject not initialised."), funcName);
-		return(FALSE);
-	}
-	if (!CheckInSignal_EarObject(data, funcName))
-		return(FALSE);
-	if (!SetProcessMode_SignalDisp(data)) {
-		NotifyError(wxT("%s: Could not set process mode."), funcName);
-		return(FALSE);
-	}
-	if (signalDispPtr->mode == GRAPH_MODE_OFF) {
-		if (signalDispPtr->inLineProcess)
-			SetProcessContinuity_EarObject(data);
-		return(TRUE);
-	}
-	if (!CheckData_SignalDisp(data)) {
-		NotifyError(wxT("%s: Process data invalid."), funcName);
-		return(FALSE);
-	}
-	if (!InitProcessVariables_SignalDisp(data)) {
-		NotifyError(wxT("%s: Could not initialise the process variables."),
-		  funcName);
-		return(FALSE);
+	if (!data->threadRunFlag) {
+		if (!CheckData_SignalDisp(data)) {
+			NotifyError(wxT("%s: Process data invalid."), funcName);
+			return(FALSE);
+		}
+		if (!SetProcessMode_SignalDisp(data)) {
+			NotifyError(wxT("%s: Could not set process mode."), funcName);
+			return(FALSE);
+		}
+		if (!InitProcessVariables_SignalDisp(data)) {
+			NotifyError(wxT("%s: Could not initialise the process variables."),
+			  funcName);
+			return(FALSE);
+		}
+		if (data->initThreadRunFlag)
+			return(TRUE);
 	}
 	if (signalDispPtr->inLineProcess)
 		SetProcessContinuity_EarObject(data);
+	if (signalDispPtr->mode == GRAPH_MODE_OFF)
+		return(TRUE);
 	outSignal = _OutSig_EarObject(data);
 	numWindowFrames = (GetDSAMPtr_Common()->segmentedMode)? 1: outSignal->
 	  numWindowFrames;
