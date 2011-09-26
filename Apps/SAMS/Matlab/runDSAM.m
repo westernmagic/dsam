@@ -1,9 +1,9 @@
 function outputname = runDSAM(inputfile, outputpath, simfile, pars, opformat, exe_path, exe_name)
-% runDSAM    run a DSAM application (default is AMS_NG) 
+% runDSAM    run a DSAM application (default is SAMS_NG) 
 %
 % SYNOPSIS:
 % Function to run a DSAM application from MATLAB. The default is
-% AMS_NG. It runs  any specified 'sim' file. 
+% SAMS_NG. It runs  any specified 'sim' file. 
 %
 % USE:
 % runDSAM(inputfile, outputpath, simfile [, pars, opformat ,
@@ -22,7 +22,7 @@ function outputname = runDSAM(inputfile, outputpath, simfile, pars, opformat, ex
 %               (optional)
 %   exe_path:   path to override the default DSAM executable being run.
 %               (optional)
-%               N.B. the default is AMS_NG.
+%               N.B. the default is SAMS_NG.
 %
 % PARAMETERS (pars):
 %   Parameters are specified in a string, separated by spaces.
@@ -37,8 +37,8 @@ function outputname = runDSAM(inputfile, outputpath, simfile, pars, opformat, ex
 % The default output format is currently 'aiff' i.e. DSAM AIFF format.
 % This includes automatic normalisation and so is recommended.
 %
-% In order to run AMS, the path for it must be set properly. You can do 
-% using setAMSPath. Under Windows/NT etc., AMS must be installed in a 
+% In order to run SAMS, the path for it must be set properly. You can do 
+% using setSAMSPath. Under Windows/NT etc., SAMS must be installed in a 
 % path without any white space.
 %
 % Applications are run with segment mode turned off.
@@ -46,11 +46,11 @@ function outputname = runDSAM(inputfile, outputpath, simfile, pars, opformat, ex
 % ------ Path for the aim routine -------
 if nargin<7
    load aimMatPaths;
-   amsdsam_path  = ams_path;
-   amsdsam_exe = ams_exe;
+   samsdsam_path  = sams_path;
+   samsdsam_exe = sams_exe;
 else
-   amsdsam_path = exe_path;
-   amsdsam_exe = exe_name;
+   samsdsam_path = exe_path;
+   samsdsam_exe = exe_name;
 end;
    
 % ------ parameter names for input and output -----
@@ -133,11 +133,11 @@ end;
 outputpar = [opfilepar ' ' outputfile];
 allpars = [pars ' ' inputpar ' ' outputpar];
 
-% -------- Run the DSAM program (usually AMS) -------------------
+% -------- Run the DSAM program (usually SAMS) -------------------
 %fprintf('\n----------------------------------------------------------\n');
 %fprintf('genSim:\t\t1. Running simu....\n\n');
-%eval(slash4OS(['!' amsdsam_path amsdsam_exe ' ' simfile ' ' allpars]));
-cmd = ['!' amsdsam_path amsdsam_exe parameterlistcmd ' -s ' simfile ' -d off SEGMENT_MODE OFF ' allpars ];
+%eval(slash4OS(['!' samsdsam_path samsdsam_exe ' ' simfile ' ' allpars]));
+cmd = ['!' samsdsam_path samsdsam_exe parameterlistcmd ' -s ' simfile ' -d off SEGMENT_MODE OFF ' allpars ];
 eval(slash4OS(cmd));
 %fprintf('----------------------------------------------------------\n');
 

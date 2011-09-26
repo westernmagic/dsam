@@ -10,6 +10,6 @@ SUBDIRS		= AuditoryPeriphery Autocorrelation BinauralPitch DRNLinputOutput \
 				Pre-emphasisFilter Precedence ANFibreModels \
 				AuditoryNerve
 
-EXTRA_DIST	= AMSTutorials.doc
+EXTRA_DIST	= SAMSTutorials.doc
 
 include $(top_srcdir)/mkunxinst.env

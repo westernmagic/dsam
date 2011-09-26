@@ -2,52 +2,52 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-bin_PROGRAMS	= ams_ng @AMS@
+bin_PROGRAMS	= sams_ng @SAMS@
 
-EXTRA_PROGRAMS	= ams
+EXTRA_PROGRAMS	= sams
 
-ams_SOURCES		= ams.h ams.cpp
-ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
+sams_SOURCES		= sams.h sams.cpp
+sams_LDADD		= $(SAMSRESOBJ) $(DSAMGUILDFLAGS)
 
-ams_ng_SOURCES	= ams.h
-ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
+sams_ng_SOURCES	= sams.h
+sams_ng_LDADD	= sams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
-BUILT_SOURCES	= ams.spec
+BUILT_SOURCES	= sams.spec
 
 desktopdir		= $(datadir)/applications
-desktop_DATA	= ams.desktop
+desktop_DATA	= sams.desktop
 
 pixmapdir		= $(datadir)/pixmaps
-pixmap_DATA		= ams.xpm
+pixmap_DATA		= sams.xpm
 
-man1_MANS		= ams.1
+man1_MANS		= sams.1
 
-EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env \
-					ams.xpm ams.desktop AMS.nsi COPYING
+EXTRA_DIST		= autogen.sh sams.par sams.rc samsicon.ico mkunxinst.env \
+					sams.xpm sams.desktop SAMS.nsi COPYING
 
-AM_CPPFLAGS		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
+AM_CPPFLAGS		= -DSAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 
 SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
 
 CC = $(CXX)		# Ensure use of C++ compiler for the link stage.
 
-ams.$(OBJEXT):		ams.cpp $(AMSRESOBJ)
-					$(CXXCOMPILE) $(DSAMGUIINC) -c $(srcdir)/ams.cpp -o $@ $(AMSRESOBJ)
+sams.$(OBJEXT):		sams.cpp $(SAMSRESOBJ)
+					$(CXXCOMPILE) $(DSAMGUIINC) -c $(srcdir)/sams.cpp -o $@ $(SAMSRESOBJ)
 
-ams_ng.$(OBJEXT):	ams.cpp
-					$(CXXCOMPILE) $(DSAMINC) -c $(srcdir)/ams.cpp -o $@
+sams_ng.$(OBJEXT):	sams.cpp
+					$(CXXCOMPILE) $(DSAMINC) -c $(srcdir)/sams.cpp -o $@
 
-$(AMSRESOBJ):	Makefile ams.rc
+$(SAMSRESOBJ):	Makefile sams.rc
 	@if test x$(MINGW32) = xyes; then \
-		$(RESCOMP) $(RESFLAGS) $(srcdir)/ams.rc -o $@ ; \
+		$(RESCOMP) $(RESFLAGS) $(srcdir)/sams.rc -o $@ ; \
 	fi
 
-ams.1: manpage.xml
+sams.1: manpage.xml
 		xmlto man manpage.xml
 
-ams.spec: ams.spec.in
+sams.spec: sams.spec.in
 
-dist-hook: ams.spec
+dist-hook: sams.spec
 	if test -e $(srcdir)/INSTALL.in && test -e $(srcdir)/README.in ; then \
 	     CONFIG_FILES="INSTALL:$(srcdir)/INSTALL.in README.xml:$(srcdir)/README.in"\
 	     CONFIG_HEADERS= \
@@ -62,6 +62,6 @@ dist-hook: ams.spec
 				cp README.rtf $(distdir); \
 			fi \
 	fi \
-	&& cp ams.spec $(distdir) \
-	&& cp AMSSetup.h $(distdir)
+	&& cp sams.spec $(distdir) \
+	&& cp SAMSSetup.h $(distdir)
 	

@@ -255,8 +255,8 @@
 
 <<>> Simulation parameter file divider.
 
-	DIAG_MODE.AMS.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
-	SIM_FILE.AMS.0    			"AIMghs.spf" 	Simulation script file.
-	SEGMENT_MODE.AMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
-	FILELOCKING_MODE.AMS.0   	OFF       	File locking mode ('on' or 'off').
-	NUM_RUNS.AMS.0           	1         	Number of repeat runs, or segments/frames.
+	DIAG_MODE.SAMS.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.SAMS.0    			"AIMghs.spf" 	Simulation script file.
+	SEGMENT_MODE.SAMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	FILELOCKING_MODE.SAMS.0   	OFF       	File locking mode ('on' or 'off').
+	NUM_RUNS.SAMS.0           	1         	Number of repeat runs, or segments/frames.

@@ -20,8 +20,8 @@ resultsSummary=[];
 for firstHarmonic=3:3:25
    % first reference stimulus
    signalfile ='dichoticHarms.wav';
-   AMSgain=dichoticHarmonicStimulus(signalfile, baseF0,numHarmonics, firstHarmonic, duration, dt);
-   responseToReferenceStimulus=computeAMS(simFile,signalfile, maxLag,AMSgain);
+   SAMSgain=dichoticHarmonicStimulus(signalfile, baseF0,numHarmonics, firstHarmonic, duration, dt);
+   responseToReferenceStimulus=computeSAMS(simFile,signalfile, maxLag,SAMSgain);
    t=responseToReferenceStimulus(1,:)';
    responseToReferenceStimulus=responseToReferenceStimulus(2,:)';
    
@@ -29,8 +29,8 @@ for firstHarmonic=3:3:25
    F0=baseF0;
    while EuclidDistance<threshold
       F0=F0+.25;
-      AMSgain=dichoticHarmonicStimulus(signalfile, F0,numHarmonics, firstHarmonic, duration, dt);
-      responseToTargetStimulus=computeAMS(simFile,signalfile, maxLag,AMSgain);
+      SAMSgain=dichoticHarmonicStimulus(signalfile, F0,numHarmonics, firstHarmonic, duration, dt);
+      responseToTargetStimulus=computeSAMS(simFile,signalfile, maxLag,SAMSgain);
       responseToTargetStimulus=responseToTargetStimulus(2,:)';
       
       figure(1), clf

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="AMS"
+	Name="SAMS"
 	ProjectGUID="{3F4C82BD-85DD-4967-BA0B-0AB8ED930B23}"
-	RootNamespace="AMS"
+	RootNamespace="SAMS"
 	>
 	<Platforms>
 		<Platform
@@ -45,7 +45,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/AMS.tlb"
+				TypeLibraryName=".\Debug/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -56,7 +56,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -79,13 +79,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_g_d.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
-				OutputFile=".\Debug/AMS.exe"
+				OutputFile=".\Debug/SAMS.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="libCMT"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -101,7 +101,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS.bsc"
+				OutputFile=".\Debug/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -144,7 +144,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/AMS.tlb"
+				TypeLibraryName=".\Debug/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -155,7 +155,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -178,12 +178,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_g_d.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile-1.lib portaudio_x86.lib"
-				OutputFile=".\Debug/AMS.exe"
+				OutputFile=".\Debug/SAMS.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Debug&quot;;&quot;$(LIBSNDFILE)&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -199,7 +199,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS.bsc"
+				OutputFile=".\Debug/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -243,7 +243,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/AMS.tlb"
+				TypeLibraryName=".\Release/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -255,7 +255,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS.pch"
+				PrecompiledHeaderFile=".\Release/SAMS.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -277,13 +277,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_g_x86.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
-				OutputFile=".\Release/AMS.exe"
+				OutputFile=".\Release/SAMS.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="libCMT"
-				ProgramDatabaseFile=".\Release/AMS.pdb"
+				ProgramDatabaseFile=".\Release/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -299,7 +299,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS.bsc"
+				OutputFile=".\Release/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -343,7 +343,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/AMS.tlb"
+				TypeLibraryName=".\Release/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -355,7 +355,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS.pch"
+				PrecompiledHeaderFile=".\Release/SAMS.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -381,7 +381,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
-				ProgramDatabaseFile=".\Release/AMS.pdb"
+				ProgramDatabaseFile=".\Release/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -397,7 +397,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS.bsc"
+				OutputFile=".\Release/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -440,7 +440,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/AMS.tlb"
+				TypeLibraryName=".\Debug/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -451,7 +451,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -474,12 +474,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_g_d.lib wxmsw28ud_core.lib wxmsw28ud_html.lib wxbase28ud.lib wxbase28ud_net.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxregexud.lib wxexpatd.lib wxmsw28ud_ogl.lib libsndfile_x86.lib G72x_x86.lib GSM610_x86.lib portaudio_x86.lib ws2_32.lib comctl32.lib Rpcrt4.lib"
-				OutputFile=".\Debug with DLLs/AMS.exe"
+				OutputFile=".\Debug with DLLs/SAMS.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Debug DLL&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -495,7 +495,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS.bsc"
+				OutputFile=".\Debug/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -538,7 +538,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/AMS.tlb"
+				TypeLibraryName=".\Debug/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -549,7 +549,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -572,12 +572,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_g_d.lib wxmsw28u_core.lib wxmsw28u_html.lib wxbase28u.lib wxbase28u_net.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregexu.lib wxexpat.lib wxmsw28u_ogl.lib libsndfile-1.lib portaudio_x86.lib"
-				OutputFile=".\Debug/AMS.exe"
+				OutputFile=".\Debug/SAMS.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Debug&quot;;&quot;$(LIBSNDFILE)&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -593,7 +593,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS.bsc"
+				OutputFile=".\Debug/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -637,19 +637,19 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/AMS.tlb"
+				TypeLibraryName=".\Release/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;$(DSAMSDKDIR)\include\dsam&quot;;&quot;$(DSAMSDKDIR)\include\wxwin&quot;;&quot;$(DSAMSDKDIR)\include\portaudio&quot;;&quot;$(DSAMSDKDIR)\include\libsndfile&quot;;&quot;$(DSAMSDKDIR)\include\fftw&quot;"
+				AdditionalIncludeDirectories="&quot;$(DSSAMSDKDIR)\include\dsam&quot;;&quot;$(DSSAMSDKDIR)\include\wxwin&quot;;&quot;$(DSSAMSDKDIR)\include\portaudio&quot;;&quot;$(DSSAMSDKDIR)\include\libsndfile&quot;;&quot;$(DSSAMSDKDIR)\include\fftw&quot;"
 				PreprocessorDefinitions="GRAPHICS_SUPPORT;DSAM_USE_UNICODE;USE_PORTAUDIO=1;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;USE_GUI;WXUSINGDLL=1;WIN32;HAVE_CONFIG_H=1;EXTENSIONS_SUPPORT=1;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS.pch"
+				PrecompiledHeaderFile=".\Release/SAMS.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -674,10 +674,10 @@
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(DSAMSDKDIR)\lib\x86&quot;"
+				AdditionalLibraryDirectories="&quot;$(DSSAMSDKDIR)\lib\x86&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="libCMT"
-				ProgramDatabaseFile=".\Release/AMS.pdb"
+				ProgramDatabaseFile=".\Release/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -693,7 +693,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS.bsc"
+				OutputFile=".\Release/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -737,7 +737,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/AMS.tlb"
+				TypeLibraryName=".\Release/SAMS.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -749,7 +749,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS.pch"
+				PrecompiledHeaderFile=".\Release/SAMS.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -775,7 +775,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(DSAMDIR)\lib&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
-				ProgramDatabaseFile=".\Release/AMS.pdb"
+				ProgramDatabaseFile=".\Release/SAMS.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -791,7 +791,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS.bsc"
+				OutputFile=".\Release/SAMS.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -815,7 +815,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="..\..\ams.cpp"
+				RelativePath="..\..\sams.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -896,7 +896,7 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="..\..\ams.h"
+				RelativePath="..\..\sams.h"
 				>
 			</File>
 		</Filter>
@@ -905,7 +905,7 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="..\..\ams.rc"
+				RelativePath="..\..\sams.rc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -913,7 +913,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -922,7 +922,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -931,7 +931,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -940,7 +940,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -949,7 +949,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -958,7 +958,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -967,7 +967,7 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -976,12 +976,12 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Work\dsam\Apps\ams120"
+						AdditionalIncludeDirectories="\Work\dsam\Apps\sams120"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\amsicon.ico"
+				RelativePath="..\..\samsicon.ico"
 				>
 			</File>
 			<File

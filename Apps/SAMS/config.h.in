@@ -22,8 +22,8 @@
 #undef X_DISPLAY_MISSING
 
 #define PROTOTYPES ""
-#define AMS_VERSION ""
-#define AMS_PACKAGE ""
+#define SAMS_VERSION ""
+#define SAMS_PACKAGE ""
 #define WXDIR  ""
 
 /* Define if you have the strstr function.  */

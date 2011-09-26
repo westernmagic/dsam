@@ -41,9 +41,9 @@
 
 <<>> Simulation parameter file divider.
 
-	DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
-	SIM_FILE.AMS.0    			"InputLevel.spf" 	Simulation script file.
-	SEGMENT_MODE.ams.0       	OFF        	Segmented or frame-base processing mode ('on' or 'off').
+	DIAG_MODE.sams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.SAMS.0    			"InputLevel.spf" 	Simulation script file.
+	SEGMENT_MODE.sams.0       	OFF        	Segmented or frame-base processing mode ('on' or 'off').
 	# Sub-parameter list: 
-	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
-	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.
+	  FILELOCKING_MODE.sams.0   	OFF       	File locking mode ('on' or 'off').
+	  NUM_RUNS.sams.0           	1         	Number of repeat runs, or segments/frames.

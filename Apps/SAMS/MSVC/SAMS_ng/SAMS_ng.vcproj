@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="AMS_ng"
+	Name="SAMS_ng"
 	ProjectGUID="{1BEA04C5-7AAB-4B77-B796-2B56637C96F0}"
-	RootNamespace="AMS_ng"
+	RootNamespace="SAMS_ng"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +41,7 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/AMS_ng.tlb"
+				TypeLibraryName=".\Debug/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -52,7 +52,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS_ng.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -74,14 +74,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28u_net.lib wxbase28u_xml.lib wxbase28u.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
-				OutputFile=".\Debug/AMS_ng.exe"
+				OutputFile=".\Debug/SAMS_ng.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS_ng.bsc"
+				OutputFile=".\Debug/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -137,7 +137,7 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/AMS_ng.tlb"
+				TypeLibraryName=".\Debug/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -148,7 +148,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS_ng.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -170,12 +170,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile-1.lib portaudio_x86.lib"
-				OutputFile=".\Debug/AMS_ng.exe"
+				OutputFile=".\Debug/SAMS_ng.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Debug&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 			/>
@@ -191,7 +191,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS_ng.bsc"
+				OutputFile=".\Debug/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -230,7 +230,7 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/AMS_ng.tlb"
+				TypeLibraryName=".\Release/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -242,7 +242,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Release/SAMS_ng.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -264,12 +264,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_x86.lib dsam_ext_x86.lib dsam_std_x86.lib wxbase28u_net.lib wxbase28u_xml.lib wxbase28u.lib libsndfile_x86.lib portaudio.lib libfftw.lib"
-				OutputFile=".\Release/AMS_ng.exe"
+				OutputFile=".\Release/SAMS_ng.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="libCMT"
-				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Release/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -285,7 +285,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS_ng.bsc"
+				OutputFile=".\Release/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -325,7 +325,7 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/AMS_ng.tlb"
+				TypeLibraryName=".\Release/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -337,7 +337,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Release/SAMS_ng.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -363,7 +363,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
-				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Release/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 			/>
@@ -379,7 +379,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS_ng.bsc"
+				OutputFile=".\Release/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -418,7 +418,7 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/AMS_ng.tlb"
+				TypeLibraryName=".\Debug/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -429,7 +429,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS_ng.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -451,12 +451,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28ud_net.lib wxbase28ud.lib wxbase28ud_xml.lib libsndfile_x86.lib G72x_x86.lib GSM610_x86.lib portaudio_x86.lib ws2_32.lib"
-				OutputFile=".\Debug with DLLs/AMS_ng.exe"
+				OutputFile=".\Debug with DLLs/SAMS_ng.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\Debug DLL&quot;;&quot;$(WXWIN)\lib\vc_lib&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -472,7 +472,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS_ng.bsc"
+				OutputFile=".\Debug/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -512,7 +512,7 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/AMS_ng.tlb"
+				TypeLibraryName=".\Debug/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -523,7 +523,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Debug/SAMS_ng.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -545,12 +545,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dsam_d.lib dsam_ext_d.lib dsam_std_d.lib wxbase28u_net.lib wxbase28u.lib wxbase28u_xml.lib libsndfile-1.lib portaudio_x86.lib"
-				OutputFile=".\Debug/AMS_ng.exe"
+				OutputFile=".\Debug/SAMS_ng.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Debug&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Debug/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 			/>
@@ -566,7 +566,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/AMS_ng.bsc"
+				OutputFile=".\Debug/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -605,7 +605,7 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/AMS_ng.tlb"
+				TypeLibraryName=".\Release/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -617,7 +617,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Release/SAMS_ng.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -644,7 +644,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\msvc\libsndfile\release&quot;;&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\Win32\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="libCMT"
-				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Release/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -660,7 +660,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS_ng.bsc"
+				OutputFile=".\Release/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -700,7 +700,7 @@
 			<Tool
 				Name="VCMIDLTool"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/AMS_ng.tlb"
+				TypeLibraryName=".\Release/SAMS_ng.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -712,7 +712,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AMS_ng.pch"
+				PrecompiledHeaderFile=".\Release/SAMS_ng.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -738,7 +738,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(DSAMDIR)\lib&quot;;&quot;$(LIBSNDFILE)\MSVC\libsndfile\x64\release&quot;;&quot;$(WXWIN)\lib64\vc_dll&quot;;&quot;$(PORTAUDIO)\build\msvc\x64\Release&quot;;&quot;$(FFTW3DIR)&quot;"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
-				ProgramDatabaseFile=".\Release/AMS_ng.pdb"
+				ProgramDatabaseFile=".\Release/SAMS_ng.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 			/>
@@ -754,7 +754,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/AMS_ng.bsc"
+				OutputFile=".\Release/SAMS_ng.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -778,7 +778,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="..\..\ams.cpp"
+				RelativePath="..\..\sams.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -859,7 +859,7 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="..\..\ams.h"
+				RelativePath="..\..\sams.h"
 				>
 			</File>
 		</Filter>

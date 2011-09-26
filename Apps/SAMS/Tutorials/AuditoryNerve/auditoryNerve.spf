@@ -386,12 +386,12 @@ GAIN.DataFile_out.p14    	0         	Relative signal gain (dB).
 <<>> Simulation parameter file divider.
 ################################################################################
 
-DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
-SIM_FILE.ams.0           	"/home/lowel/Work/workspace/AMS/Tutorials/AuditoryNerve/auditoryNerve.spf"	Simulation file.
-SEGMENT_MODE.ams.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
-THREAD_MODE.ams.0        	"PROCESS" 	Thread mode ('process' or 'equi_channel').
-NUM_THREADS.ams.0        	-1        	No. of processing threads for simulation (-ve defaults to no. CPU's).
+DIAG_MODE.sams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+SIM_FILE.sams.0           	"/home/lowel/Work/workspace/SAMS/Tutorials/AuditoryNerve/auditoryNerve.spf"	Simulation file.
+SEGMENT_MODE.sams.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+THREAD_MODE.sams.0        	"PROCESS" 	Thread mode ('process' or 'equi_channel').
+NUM_THREADS.sams.0        	-1        	No. of processing threads for simulation (-ve defaults to no. CPU's).
 # Sub-parameter list: App. Specific Pars.: 
-  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
-  AUTO_NUM_RUNS_MODE.ams.0 	OFF       	Auto-setting of the number of runs (data files only) ('on' or 'off').
-  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.
+  FILELOCKING_MODE.sams.0   	OFF       	File locking mode ('on' or 'off').
+  AUTO_NUM_RUNS_MODE.sams.0 	OFF       	Auto-setting of the number of runs (data files only) ('on' or 'off').
+  NUM_RUNS.sams.0           	1         	Number of repeat runs, or segments/frames.

@@ -1,6 +1,6 @@
 
 function MatlabAcfDemo (simFilePath, simFileName, outputFileName)
-% matlabDemo is a skeleton script for running a modle using AMS_ng
+% matlabDemo is a skeleton script for running a modle using SAMS_ng
 
 % Set the directory to the location of the .sim file
 if ~isempty(simFilePath)
@@ -29,10 +29,10 @@ for lowestHarmonic=3:3:9
         ];
     
     
-    % Now run AMS
-    runAMS_RM (simFileName,pars);
+    % Now run SAMS
+    runSAMS_RM (simFileName,pars);
     
-    % When the program reaches here, AMS should have created a results file
+    % When the program reaches here, SAMS should have created a results file
     [results, column1Values, columnHeadingsValues, errorMsg]=...
         readDatFile(outputFileName);    
     if errorMsg==1
@@ -59,7 +59,7 @@ xlabel ('autocorrelation lag (s)')
     %--------------------------------------------------------------------------
     % --------------------------------------------------------read data file
     function [results, column1Values, columnHeadingsValues, errorMsg]=readDatFile(datFileName)
-    % readDatFile get results from file created by AMS
+    % readDatFile get results from file created by SAMS
     % It is assumed that the .dat file consists of
     % a first row with short text followed by heading values
     % later rows are row heading followed by results
@@ -116,20 +116,20 @@ xlabel ('autocorrelation lag (s)')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    % --------------------------------------------- runAMS
-    function runAMS_RM(simFile, pars)
-    % runAMS*    run AMS application using AMS_ng.exe 
+    % --------------------------------------------- runSAMS
+    function runSAMS_RM(simFile, pars)
+    % runSAMS*    run SAMS application using SAMS_ng.exe 
     % This is a simplified copy of runDSAM from Chris Sumner's dsam_mat folder
     %
     % SYNOPSIS:
-    % Function: to run the AMS application from MATLAB. 
+    % Function: to run the SAMS application from MATLAB. 
     % It runs  any specified 'sim' file. 
     % This is a simplified version that assumes 
-    % 1. You are using ams_ng as the executable.
-    % 2. The executable is to be found in 'c:\Progra~1\DSAM\AMS\'
+    % 1. You are using sams_ng as the executable.
+    % 2. The executable is to be found in 'c:\Progra~1\DSAM\SAMS\'
     %
     % USE:
-    % runAMS(simFile, pars)
+    % runSAMS(simFile, pars)
     %   simFile:    simulation file defining the process modules
     %   pars:       stimuli for the simulation modules, overriding 
     %               par file settings (optional).
@@ -139,20 +139,20 @@ xlabel ('autocorrelation lag (s)')
     %   the format for each is:
     %        [ <variable name><space><variable value><space> ..]
     %
-    %This function calls AMS_ng.exe, which must be located on thepath:
-    %  C:\Program Files\DSAM\AMS
+    %This function calls SAMS_ng.exe, which must be located on thepath:
+    %  C:\Program Files\DSAM\SAMS
     %If you have located this executable somewhere else, you must change
     % the path name appropriately below.
     %
     % SEGMENT MODE is set to OFF
     
     % ------ Path for the aim routine -------
-    amsdsam_path  = 'c:\Progra~1\DSAM\AMS\';
-    amsdsam_exe = 'ams_ng';
+    samsdsam_path  = 'c:\Progra~1\DSAM\SAMS\';
+    samsdsam_exe = 'sams_ng';
     
     % ------ Check sim file is specified ------
     if nargin < 1
-        error('runAMS: No sim file specified.');
+        error('runSAMS: No sim file specified.');
     end;
     
     % ------ Check for stimulus options -------
@@ -175,8 +175,8 @@ xlabel ('autocorrelation lag (s)')
                 pars( stimuli_inds(1)+10:length(pars) )]
     end;
     
-    % -------- Run the DSAM program (usually AMS) -------------------
-    cmd = ['!' amsdsam_path amsdsam_exe stimuluslistcmd ' -s ' simFile ' -d off SEGMENT_MODE OFF ' pars ];
+    % -------- Run the DSAM program (usually SAMS) -------------------
+    cmd = ['!' samsdsam_path samsdsam_exe stimuluslistcmd ' -s ' simFile ' -d off SEGMENT_MODE OFF ' pars ];
     eval(slash4OS(cmd));
     
     %-----------------------------------------------------------------------------------

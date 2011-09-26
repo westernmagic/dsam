@@ -1,5 +1,5 @@
 #
-# AMS main parameter file.
+# SAMS main parameter file.
 #
 DIAG_MODE		"OFF"				Diagnostics mode specifier ('off', 'screen' or <filename>).
 SIM_FILE		"DEFAULT/AIM.sim"	Simulation file.

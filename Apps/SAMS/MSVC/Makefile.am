@@ -3,8 +3,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= AMS.sln
+EXTRA_DIST	= SAMS.sln
 
-SUBDIRS		= AMS AMS_ng
+SUBDIRS		= SAMS SAMS_ng
 
 

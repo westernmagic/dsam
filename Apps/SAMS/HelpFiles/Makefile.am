@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= HelpFiles
 
-#EXTRA_DIST	= AMSHelp.zip AMSHelp.pdf AMSTutorials.zip
-EXTRA_DIST	= AMSHelp.pdf
+#EXTRA_DIST	= SAMSHelp.zip SAMSHelp.pdf SAMSTutorials.zip
+EXTRA_DIST	= SAMSHelp.pdf
 	
 include $(top_srcdir)/mkunxinst.env

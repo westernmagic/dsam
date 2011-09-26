@@ -20,7 +20,7 @@ ParFiles	= acf.par BM_DRNLHuman.par dataFileAif.par dataFileIn.par \
 				pitchEarlyCrossover.par rampDown.par rampUp.par \
 				stimHarmonic.par UtRedChans.par
 
-MatlabFiles	= Bern.m computeAMS.m dichoticHarmonicStimulus.m \
+MatlabFiles	= Bern.m computeSAMS.m dichoticHarmonicStimulus.m \
 				dioticHarmonicStimulus.m oddHarmonics.m \
 				dichoticHarmonicStimulus.asv dioticHarmonicStimulus.asv
 

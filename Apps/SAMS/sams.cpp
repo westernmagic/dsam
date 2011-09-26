@@ -1,6 +1,6 @@
 /**********************
  *
- * File:		ams.cpp
+ * File:		sams.cpp
  * Purpose:		This program generates a simulation response using the
  *				simulation script utility.
  * Comments:	22-04-98 LPO:  Amended to allow users to override the stimulus
@@ -59,17 +59,17 @@
 #undef	PACKAGE_VERSION
 
 #ifdef HAVE_CONFIG_H
-#	include "AMSSetup.h"
+#	include "SAMSSetup.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "ams.h"
+#include "sams.h"
 
 /******************************************************************************/
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
 
 #if defined(USE_GUI) && !defined(__WXMSW__)
-#	include "ams.xpm"
+#	include "sams.xpm"
 #endif
 
 /******************************************************************************/
@@ -101,24 +101,24 @@ SetUniParList(UniParListPtr *parList)
 	static const WChar *funcName = wxT("SetUniParList");
 	UniParPtr	pars;
 
-	if ((*parList = InitList_UniParMgr(UNIPAR_SET_GENERAL, AMS_NUM_PARS,
+	if ((*parList = InitList_UniParMgr(UNIPAR_SET_GENERAL, SAMS_NUM_PARS,
 	  NULL)) == NULL) {
 		NotifyError(wxT("%s: Could not initialise parList."), funcName);
 		return(FALSE);
 	}
 	pars = (*parList)->pars;
-	SetPar_UniParMgr(&pars[AMS_FILELOCKINGMODE], wxT("FILELOCKING_MODE"),
+	SetPar_UniParMgr(&pars[SAMS_FILELOCKINGMODE], wxT("FILELOCKING_MODE"),
 	  wxT("File locking mode ('on' or 'off')."),
 	  UNIPAR_BOOL,
 	  &fileLockingModeSpecifier, NULL,
 	  (void * (*)) SetFileLockingMode);
-	SetPar_UniParMgr(&pars[AMS_AUTONUMRUNSMODE], wxT("AUTO_NUM_RUNS_MODE"),
+	SetPar_UniParMgr(&pars[SAMS_AUTONUMRUNSMODE], wxT("AUTO_NUM_RUNS_MODE"),
 	  wxT("Auto-setting of the number of runs (data files only) ('on' or ")
 	    wxT("'off')."),
 	  UNIPAR_BOOL,
 	  &autoNumRunsModeSpecifier, NULL,
 	  (void * (*)) SetAutoNumRunsMode);
-	SetPar_UniParMgr(&pars[AMS_NUMBEROFRUNS], wxT("NUM_RUNS"),
+	SetPar_UniParMgr(&pars[SAMS_NUMBEROFRUNS], wxT("NUM_RUNS"),
 	  wxT("Number of repeat runs, or segments/frames."),
 	  UNIPAR_INT,
 	  &numberOfRuns, NULL,
@@ -308,7 +308,7 @@ ProcessOptions(int argc, WChar **argv, int *optInd)
 			break;
 		case 'v':
 			fprintf_Utility_String(stderr, wxT("Version %s, compile date %s, ")
-			  wxT("DSAM %s (dynamic), %s (compiled).\n"), AMS_VERSION,
+			  wxT("DSAM %s (dynamic), %s (compiled).\n"), SAMS_VERSION,
 			  __TDATE__, GetDSAMPtr_Common()->version, DSAM_VERSION);
 			exit(0);
 			break;
@@ -387,14 +387,14 @@ Init(void)
 	/* static WChar *funcName = PROGRAM_NAMEwxT(": Init"); */
 
 	SetAppName_AppInterface(PROGRAM_NAME);
-	SetAppVersion_AppInterface(AMS_VERSION);
+	SetAppVersion_AppInterface(SAMS_VERSION);
 	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
-	SetInstallDir_AppInterface(AMS_DATA_INSTALL_DIR);
-	AddAppHelpBook_AppInterface(AMS_HELP);
-	AddAppHelpBook_AppInterface(AMS_TUTORIAL_HELP);
+	SetInstallDir_AppInterface(SAMS_DATA_INSTALL_DIR);
+	AddAppHelpBook_AppInterface(SAMS_HELP);
+	AddAppHelpBook_AppInterface(SAMS_TUTORIAL_HELP);
 
 #	ifdef USE_GUI
-	wxGetApp().SetIcon(new wxICON(ams));
+	wxGetApp().SetIcon(new wxICON(sams));
 #	endif
 
 	SetAppSetUniParList_AppInterface(SetUniParList);

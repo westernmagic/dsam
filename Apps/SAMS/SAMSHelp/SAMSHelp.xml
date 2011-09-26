@@ -7,13 +7,13 @@
 	<!ENTITY Bibliography.xml SYSTEM "Bibliography.xml">
 
 	<!-- Common text -->
-	<!ENTITY APP "AMS">
-	<!ENTITY app "ams">
+	<!ENTITY APP "SAMS">
+	<!ENTITY app "sams">
 ]>
 
 <book id="book">
 <bookinfo>
-<title>AMS</title>
+<title>SAMS</title>
 
 <subtitle>Auditory Modelling System</subtitle>
 

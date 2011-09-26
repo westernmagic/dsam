@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
-;File:		AMS.nsi
-;Purpose:	Installer for the AMS application
+;File:		SAMS.nsi
+;Purpose:	Installer for the SAMS application
 ;Comments:	This uses the GetVersion plugin to determine the windows platform (32/64 bit?)
 ;Author:	L. P. O'Mard
 ;Created:	30 Jul 2010
@@ -38,7 +38,7 @@
 !include "DSAMGenUtils.nsh"
 !include "DSAMAppUtils.nsh"
 
-!define APP_NAME		"AMS"
+!define APP_NAME		"SAMS"
 !define VERSION			"1.3.0"
 !define INST_VERSION		"1"
 !define MY_APP			"${APP_NAME}.exe"
@@ -155,14 +155,14 @@ Section "Executable Files"
   ; Put file there
   ${if} $platformArch = 32
     DetailPrint "Installing 32-bit Executable"
-    File "MSVC\AMS\${REL32DIR}\${MY_APP}"	
-    File "MSVC\AMS_ng\${REL32DIR}\${MY_APP2}"	
+    File "MSVC\SAMS\${REL32DIR}\${MY_APP}"	
+    File "MSVC\SAMS_ng\${REL32DIR}\${MY_APP2}"	
     CreateShortCut "$INSTDIR\${APP_SHORTCUT}" "${DLL32DIR}\${MY_APP}"
     CreateShortCut "$INSTDIR\${APP_SHORTCUT2}" "${DLL32DIR}\${MY_APP2}"
   ${else}
     DetailPrint "Installing 64-bit Executable"
-    File MSVC\AMS\${REL64DIR}\${APP_NAME}.exe	
-    File MSVC\AMS_ng\${REL64DIR}\${APP_NAME}_ng.exe	
+    File MSVC\SAMS\${REL64DIR}\${APP_NAME}.exe	
+    File MSVC\SAMS_ng\${REL64DIR}\${APP_NAME}_ng.exe	
     CreateShortCut "$INSTDIR\${APP_SHORTCUT}" "${DLL64DIR}\${MY_APP}"
     CreateShortCut "$INSTDIR\${APP_SHORTCUT2}" "${DLL64DIR}\${MY_APP2}"
   ${EndIf}

@@ -16,11 +16,11 @@ for intensity= 0:10:100
          '	FREQUENCY.Stim_PureTone.0 '	num2str(frequency)...
       ];
    
-   AMSresultsFile= runDSAM ('', 'results', simFile, pars,'dat');
+   SAMSresultsFile= runDSAM ('', 'results', simFile, pars,'dat');
    
 
-   fid = fopen(AMSresultsFile);
-   if fid == -1, error('AMS did not produce a file'),   end  
+   fid = fopen(SAMSresultsFile);
+   if fid == -1, error('SAMS did not produce a file'),   end  
    
    ignorFirstLine = fgetl(fid); 	%column headings (ignore)
    

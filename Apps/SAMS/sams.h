@@ -1,6 +1,6 @@
 /**********************
  *
- * File:		ams.h
+ * File:		sams.h
  * Purpose:		This program generates a simulation response using the
  *				simulation specification utility.
  * Comments:	22-04-98 LPO:  Amended to allow users to override the stimulus
@@ -55,18 +55,18 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PROGRAM_NAME				wxT("ams")
-#ifndef AMS_VERSION
-#	define	AMS_VERSION					wxT("?.?.?")
+#define	PROGRAM_NAME				wxT("sams")
+#ifndef SAMS_VERSION
+#	define	SAMS_VERSION					wxT("?.?.?")
 #endif
 
-#define	AMS_NUM_PARS				3		/* No. of application parameters. */
+#define	SAMS_NUM_PARS				3		/* No. of application parameters. */
 #define	LOCK_FILE					wxT(".") PROGRAM_NAME wxT("_LCK")
-#define AMS_HELP					wxT("AMSHelp")
-#define AMS_TUTORIAL_HELP			wxT("AMSTutorials")
+#define SAMS_HELP					wxT("SAMSHelp")
+#define SAMS_TUTORIAL_HELP			wxT("SAMSTutorials")
 
-#ifndef AMS_DATA_INSTALL_DIR
-#	define	AMS_DATA_INSTALL_DIR	wxT(".") /* To find the DSAM help files...*/
+#ifndef SAMS_DATA_INSTALL_DIR
+#	define	SAMS_DATA_INSTALL_DIR	wxT(".") /* To find the DSAM help files...*/
 #endif
 
 /******************************************************************************/
@@ -75,11 +75,11 @@
 
 typedef enum {
 
-	AMS_FILELOCKINGMODE,
-	AMS_AUTONUMRUNSMODE,
-	AMS_NUMBEROFRUNS
+	SAMS_FILELOCKINGMODE,
+	SAMS_AUTONUMRUNSMODE,
+	SAMS_NUMBEROFRUNS
 
-} AMSParSpecifier;
+} SAMSParSpecifier;
 
 /******************************************************************************/
 /*************************** Class definitions ********************************/

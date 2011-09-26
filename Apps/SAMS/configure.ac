@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(AMS, 1.3.2)
+AC_INIT(SAMS, 1.3.2)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -14,29 +14,29 @@ dnl are available for $ac_help expansion (don't we all *love* autoconf?)
 dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 ##
 # Making releases: (Adopted from gnu glib.)
-#   AMS_MICRO_VERSION += 1;
-#   AMS_BINARY_AGE += 1;
+#   SAMS_MICRO_VERSION += 1;
+#   SAMS_BINARY_AGE += 1;
 # if the MICRO_VERSION has changed, then:
-# set AMS_BINARY_AGE to zero.
+# set SAMS_BINARY_AGE to zero.
 #
-AMS_INTERFACE_AGE=0
-AMS_BINARY_AGE=0
-AMS_RPM_AGE=0
+SAMS_INTERFACE_AGE=0
+SAMS_BINARY_AGE=0
+SAMS_RPM_AGE=0
 dnl
 dnl AC_DIVERT_POP()dnl
 
-AC_DEFINE_UNQUOTED(AMS_VERSION,wxT("$PACKAGE_VERSION"), "AMS version")
+AC_DEFINE_UNQUOTED(SAMS_VERSION,wxT("$PACKAGE_VERSION"), "SAMS version")
 
 # RPM versioning
-RPM_RELEASE=$AMS_MAJOR_VERSION.$AMS_MINOR_VERSION
-RPM_AGE=$AMS_RPM_AGE
+RPM_RELEASE=$SAMS_MAJOR_VERSION.$SAMS_MINOR_VERSION
+RPM_AGE=$SAMS_RPM_AGE
 AC_SUBST(RPM_RELEASE)
 AC_SUBST(RPM_AGE)
 
-AMS_PACKAGE=ams
-AC_DEFINE_UNQUOTED(AMS_PACKAGE,"$AMS_PACKAGE", "AMS_PACKAGE")
-AC_SUBST(AMS_PACKAGE)
-AM_CONFIG_HEADER(AMSSetup.h:AMSSetup.hin )
+SAMS_PACKAGE=sams
+AC_DEFINE_UNQUOTED(SAMS_PACKAGE,"$SAMS_PACKAGE", "SAMS_PACKAGE")
+AC_SUBST(SAMS_PACKAGE)
+AM_CONFIG_HEADER(SAMSSetup.h:SAMSSetup.hin )
 
 AM_INIT_AUTOMAKE([-Wall -Werror])
 
@@ -74,10 +74,10 @@ dnl ============================================================================
 dnl ---------------------------------------------------------------------------
 dnl WX_CPP_BOOL checks whether the C++ compiler has a built in bool type
 dnl
-dnl call AMS_CPP_BOOL - will define HAVE_BOOL if the compiler supports bool
+dnl call SAMS_CPP_BOOL - will define HAVE_BOOL if the compiler supports bool
 dnl ---------------------------------------------------------------------------
 
-AC_DEFUN([AMS_CPP_BOOL],
+AC_DEFUN([SAMS_CPP_BOOL],
 [
   AC_CACHE_CHECK([if C++ compiler supports bool], wx_cv_cpp_bool,
   [
@@ -218,8 +218,8 @@ if eval "$DSAM_CONFIG --gui 2> config.log > /dev/null"; then
 	graphics=yes
 	dsam_gui_inc=`$DSAM_CONFIG --gui --cflags`
 	dsam_gui_ldflags=`$DSAM_CONFIG --gui --libs`
-	AMS=ams
-	AC_SUBST(AMS)
+	SAMS=sams
+	AC_SUBST(SAMS)
 else
 	graphics=no
 fi
@@ -239,8 +239,8 @@ DSAMGUILDFLAGS=$dsam_gui_ldflags
 AC_SUBST(DSAMGUILDFLAGS)
 
 if test x$MINGW32 = xyes; then
-	AMSRESOBJ=ams_res.$OBJEXT
-	AC_SUBST(AMSRESOBJ)
+	SAMSRESOBJ=sams_res.$OBJEXT
+	AC_SUBST(SAMSRESOBJ)
 fi
 
 AC_SUBST(MINGW32)
@@ -283,16 +283,16 @@ dnl ============================================================================
 
 AC_OUTPUT(
 	Makefile
-	ams.spec
-	ams.desktop
+	sams.spec
+	sams.desktop
 	manpage.xml
 	CfgTools/Makefile
 	DEFAULT/Makefile
 	HelpFiles/Makefile
 	Matlab/Makefile
 	MSVC/Makefile
-	MSVC/AMS/Makefile
-	MSVC/AMS_ng/Makefile
+	MSVC/SAMS/Makefile
+	MSVC/SAMS_ng/Makefile
 	Octave/Makefile
 	Tutorials/Makefile
 	Tutorials/ANFibreModels/Makefile

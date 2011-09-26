@@ -33,7 +33,7 @@ for aParamNum=1:length(aParams)
 	clf,	axis([0 100 1e-6 1e-2])
 
 	
-	%AMS section
+	%SAMS section
 	OutputLevels=zeros(nLevels ,nFreqs);
 	
 	for frequencyNum=1:nFreqs
@@ -50,8 +50,8 @@ for aParamNum=1:length(aParams)
 					' CENTRE_FREQ.BM_DRNL.7	  0:' num2str(CF)...      
 				];
 			
-			AMSresultsFile= runDSAM ('', 'results', simFile, pars,'dat');
-			outRMS=getRmsFromFile(AMSresultsFile);
+			SAMSresultsFile= runDSAM ('', 'results', simFile, pars,'dat');
+			outRMS=getRmsFromFile(SAMSresultsFile);
 			outputVelocity=20*10^(outRMS/20);%??
 			
 			outputLevel=[outputLevel; outRMS];

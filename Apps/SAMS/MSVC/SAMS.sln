@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AMS", "AMS\AMS.vcproj", "{3F4C82BD-85DD-4967-BA0B-0AB8ED930B23}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SAMS", "SAMS\SAMS.vcproj", "{3F4C82BD-85DD-4967-BA0B-0AB8ED930B23}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AMS_ng", "AMS_ng\AMS_ng.vcproj", "{1BEA04C5-7AAB-4B77-B796-2B56637C96F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SAMS_ng", "SAMS_ng\SAMS_ng.vcproj", "{1BEA04C5-7AAB-4B77-B796-2B56637C96F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

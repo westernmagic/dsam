@@ -1,4 +1,4 @@
-function AMSgain=dichoticHarmonicStimulus(signalFile,F0,numHarmonics, firstHarmonic, duration, dt)
+function SAMSgain=dichoticHarmonicStimulus(signalFile,F0,numHarmonics, firstHarmonic, duration, dt)
 % cd C:\allProgs\collaborators\Oxenham\binauralPitch
 
 % 0dB SPL is signal level per component in micropascals
@@ -24,7 +24,7 @@ wavwrite(signal,1/dt,16,signalFile)
 
 %plot(t,signal);
 
-AMSgain=20*log10(normFactor);
+SAMSgain=20*log10(normFactor);
 figure(1)
 plot(signal(:,1))
 figure(2)

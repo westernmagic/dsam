@@ -15,7 +15,7 @@
 #  that has a spontaneous rate of about 0 spikes/sec and a 
 #  ceiling rate of 350 spikes/sec. It has a threshold of 20 dB SPL, 
 #  a CF of 13440 Hz and a dynamic range of 40 dB.
-#  AMS uses the first parameter on a line.
+#  SAMS uses the first parameter on a line.
 
 # Modes/options
 prob 		output mode ('spike' or 'prob')

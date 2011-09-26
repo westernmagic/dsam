@@ -65,9 +65,9 @@
 
 <<>> Simulation parameter file divider.
 
-	DIAG_MODE.AMS.0          	SCREEN    	Diagnostics mode specifier ('off', 'screen' or <filename>).
-	SIM_SCRIPT_FILE.AMS.0    	"/home/lowel/projects/dsam/Applications/AMS/SimScripts/BSA99/Cooke5v2.sim"	Simulation script file.
-	SIM_PAR_FILE.AMS.0       	"off       "	Simulation parameter file mode ('off' or <file name>).
-	SEGMENT_MODE.AMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
-	FILELOCKING_MODE.AMS.0   	OFF       	File locking mode ('on' or 'off').
-	NUM_RUNS.AMS.0           	1         	Number of repeat runs, or segments/frames.
+	DIAG_MODE.SAMS.0          	SCREEN    	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_SCRIPT_FILE.SAMS.0    	"/home/lowel/projects/dsam/Applications/SAMS/SimScripts/BSA99/Cooke5v2.sim"	Simulation script file.
+	SIM_PAR_FILE.SAMS.0       	"off       "	Simulation parameter file mode ('off' or <file name>).
+	SEGMENT_MODE.SAMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	FILELOCKING_MODE.SAMS.0   	OFF       	File locking mode ('on' or 'off').
+	NUM_RUNS.SAMS.0           	1         	Number of repeat runs, or segments/frames.

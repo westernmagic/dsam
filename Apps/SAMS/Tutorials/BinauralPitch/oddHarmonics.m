@@ -1,4 +1,4 @@
-function AMSgain=oddHarmonics(F0,numHarmonics, firstHarmonic, duration, dt)
+function SAMSgain=oddHarmonics(F0,numHarmonics, firstHarmonic, duration, dt)
 cd C:\allProgs\collaborators\Oxenham\binauralPitch
 
 % 0dB SPL is signal level per component in micropascals
@@ -30,4 +30,4 @@ normFactor=max(max(abs(signal)));
 signal=signal/(1.01*normFactor);
 wavwrite(signal,1/dt,16,'dioticHarms')
 
-AMSgain=20*log10(normFactor);
+SAMSgain=20*log10(normFactor);
