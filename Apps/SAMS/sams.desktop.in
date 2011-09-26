@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=AMS
-Comment=Auditory Model Simulator
+Name=SAMS
+Comment=Simple Auditory Model Simulator
 Icon=@PACKAGE@
 Exec=@PACKAGE@
 Terminal=false
