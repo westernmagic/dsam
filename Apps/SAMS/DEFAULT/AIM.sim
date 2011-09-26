@@ -1,0 +1,22 @@
+#AIM.sim
+# Module Specifications
+
+begin {
+	
+	DataFile_In			< waveDflt.par
+	Trans_Gate			< gateDflt.par
+	Display_Signal		< dispDflt.par
+	Filt_BandPass		< midearDflt.par
+	Display_Signal		< dispDflt.par
+	BM_GammaT	        < gtfDflt.par
+	Display_Signal		< BMMdflt.par
+	IHC_Meddis86		< medDflt.par
+	Display_Signal		< NAPdflt.par
+	Ana_SAI				< stiDflt.par
+	Display_Signal		< SAIdflt.par
+    Util_ReduceChannels < reduceDflt.par
+    Display_Signal		< sumSAIdflt.par
+	DataFile_Out		< outputDflt.par
+
+}
+

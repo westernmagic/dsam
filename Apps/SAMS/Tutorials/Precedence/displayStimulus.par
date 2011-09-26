@@ -1,0 +1,17 @@
+#		Display_Signal		< displayStimulus.par
+
+WIN_TITLE	stimulus
+
+WIN_HEIGHT	300	
+WIN_WIDTH	300	
+WIN_X_POS	0	
+WIN_Y_POS	0	
+
+Y_AXIS_TITLE	µPa	
+Y_AXIS_MODE		LINEAR_SCALE
+AUTO_Y_SCALE	ON	
+
+X_AXIS_TITLE	Time	
+
+MAGNIFICATION	0.5
+

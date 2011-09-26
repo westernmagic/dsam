@@ -1,0 +1,129 @@
+	##--------------- Simulation script ----------------------##
+	DIAG_MODE	               	OFF       	Diagnostics operation mode ('ON' or 'OFF').
+	PAR_FILE_PATH_MODE	      	"RELATIVE"	Parameter file path mode ('relative', 'none' or <file path>).
+
+	begin  {
+		Stim_Click	<	stimulusClick.par
+		Display_Signal	<	displayClick.par
+		@ Filt_MultiBPass	<	filtIIRMoore.par
+		@ ANA_FourierT	<	Fourier.par
+		@ Display_Signal	<	displayClick.par
+		@ DataFile_out	<	dataFileOut.par
+	}
+
+	##----- Stim_Click.0          (stimulusClick.par) -----##
+	TIME.Stim_Click.0        	0.001     	Time for the delta-function click (s).
+	AMPLITUDE.Stim_Click.0   	40        	Amplitude (uPa).
+	DURATION.Stim_Click.0    	0.01      	Duration (s).
+	DT.Stim_Click.0          	1e-005    	Sampling interval, dt (s).
+
+	##----- Display_Signal.1       (displayClick.par) -----##
+	MAGNIFICATION.Display_Signal.1	1         	Signal magnification.
+	NORMALISATION.Display_Signal.1	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.1	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.1	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.1	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.1   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.1	"mPa"     	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.1	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.1	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.1	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.1    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.1    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.1	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.1	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.1 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.1	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.1	"Frequency"	X axis title.
+	AUTO_X_SCALE.Display_Signal.1	OFF       	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.1	"x.e3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.1	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.1 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.1	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.1	50000     	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.1	"stimulus_with_ramps"	Display window title.
+	MODE.Display_Signal.1    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.1	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.1	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.1	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.1	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.1	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.1	0         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.1	0         	Display frame Y position (pixel units).
+
+	##----- Filt_MultiBPass.2      (filtIIRMoore.par) -----##
+	NUM_FILTERS.Filt_MultiBPass.2	3         	No. of parallel band pass filters.
+	# Filter cascades.:
+		CASCADE.Filt_MultiBPass.2	  0:2         
+		CASCADE.Filt_MultiBPass.2	  1:2         
+		CASCADE.Filt_MultiBPass.2	  2:2         
+	# Filter pre-attentuation (dB SPL).:
+		ATTENUATION.Filt_MultiBPass.2	  0:1.5       
+		ATTENUATION.Filt_MultiBPass.2	  1:6         
+		ATTENUATION.Filt_MultiBPass.2	  2:-11       
+	# Filter lower cut-off frequencies (Hz).:
+		LOWER_FREQ.Filt_MultiBPass.2	  0:330       
+		LOWER_FREQ.Filt_MultiBPass.2	  1:1900      
+		LOWER_FREQ.Filt_MultiBPass.2	  2:7500      
+	# Filter upper cut-off frequencies (Hz).:
+		UPPER_FREQ.Filt_MultiBPass.2	  0:5500      
+		UPPER_FREQ.Filt_MultiBPass.2	  1:5000      
+		UPPER_FREQ.Filt_MultiBPass.2	  2:14000     
+
+	##----- ANA_FourierT.3              (Fourier.par) -----##
+	OUTPUT_MODE.ANA_FourierT.3	"MODULUS" 	Output mode: 'modulus', 'phase', 'complex' or 'dB_SPL' (approximation).
+
+	##----- Display_Signal.4       (displayClick.par) -----##
+	MAGNIFICATION.Display_Signal.4	1         	Signal magnification.
+	NORMALISATION.Display_Signal.4	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.4	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.4	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.4	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.4   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.4	"mPa"     	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.4	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.4	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.4	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.4    	200       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.4    	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.4	"xe0"     	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.4	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.4 	5         	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.4	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.4	"Frequency"	X axis title.
+	AUTO_X_SCALE.Display_Signal.4	OFF       	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.4	"x.e3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.4	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.4 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.4	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.4	50000     	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.4	"stimulus_with_ramps"	Display window title.
+	MODE.Display_Signal.4    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.4	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.4	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.4	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.4	300       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.4	300       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.4	0         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.4	0         	Display frame Y position (pixel units).
+
+	##----- DataFile_out.5          (dataFileOut.par) -----##
+	FILENAME.DataFile_out.5  	"output.dat"	Stimulus file name.
+	WORDSIZE.DataFile_out.5  	2         	Default word size for sound data (1,2 or 4 bytes)
+	ENDIAN_MODE.DataFile_out.5	"LITTLE"  	Default (for format), 'little' or 'big'-endian.
+	CHANNELS.DataFile_out.5  	1         	No. of Channels: for raw binary and ASCII files.)
+	NORM_MODE.DataFile_out.5 	0         	Normalisation factor for writing (0 or -ve: automatic).
+	SAMPLERATE.DataFile_out.5	50000     	Default sample rate: for raw binary and ASCII files (Hz).
+	DURATION.DataFile_out.5  	-1        	Duration of read signal: -ve = unlimited (s)
+	STARTTIME.DataFile_out.5 	0         	Start time (offset) for signal (s).
+	GAIN.DataFile_out.5      	0         	Relative signal gain (dB).
+
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.ams.0          	"OFF"     	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.ams.0           	"C:\Program Files\DSAM\AMS\AMS_resourceArchive_dvlpt\tutorials\pre-emphaisisFilter\temp.sim"	Simulation file.
+	SEGMENT_MODE.ams.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	# Sub-parameter list: 
+	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
+	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

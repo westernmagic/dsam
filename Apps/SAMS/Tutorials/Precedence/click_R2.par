@@ -1,0 +1,6 @@
+# stim_click  <click_R2.par
+
+time        24e-3
+amplitude   1e6
+duration    50e-3
+dt          1e-5

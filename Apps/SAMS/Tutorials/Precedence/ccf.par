@@ -1,0 +1,5 @@
+#		Ana_ccf		< ccf.par
+
+OFFSET   	48e-3
+TIME_CONST	1e30		# essentially an infinite time constant.
+MAX_LAG   	1.5e-3

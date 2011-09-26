@@ -1,0 +1,17 @@
+#		Display_Signal	< displayHSR.par
+
+WIN_TITLE		"HSR_fibers"
+
+WIN_HEIGHT		300	
+WIN_WIDTH		300	
+WIN_X_POS		300
+WIN_Y_POS		300
+
+Y_AXIS_TITLE	"channel BF"
+Y_AXIS_MODE		CHANNEL
+AUTO_Y_SCALE	OFF
+MAXY			10
+MINY			0
+
+X_AXIS_TITLE	Time_(s)
+

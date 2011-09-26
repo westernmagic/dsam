@@ -1,0 +1,6 @@
+#		Ana_histogram	< histogram1.par 
+
+DETECT_MODE	SPIKE
+BIN_WIDTH		1E-3
+THRESHOLD		0.5
+

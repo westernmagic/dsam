@@ -1,0 +1,12 @@
+#		Stim_Click					<stimulusClick.par
+
+#Generate a single delta function - a click with width=dt
+#All values of the signal are zero except fo the click.
+
+1.0e-3		time of click (s)
+
+40			click intensity (dB SPL)
+
+20.0e-3	duration of total signal
+
+2e-5		dt  (sec)  = 1/sample rate

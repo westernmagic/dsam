@@ -1,0 +1,11 @@
+#AIM.sim
+
+# Module Specifications
+
+begin {
+	
+	DataFile_In			< LevelDFIn.par
+    Display_Signal		< LevelDisp1.par
+
+}
+

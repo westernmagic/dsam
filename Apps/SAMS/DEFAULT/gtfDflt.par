@@ -1,0 +1,14 @@
+CASCADE     	4         	Filter cascade.
+# CFList parameters:
+  DIAG_MODE   	"PARAMETERS"	Diagnostic mode ('list' or 'parameters').
+  CF_MODE     	"ERB"     	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
+  SINGLE_CF   	100       	Centre frequency (Hz).
+  FOCAL_CF    	2939.08   	Focal centre frequency (Hz).
+  MIN_CF      	100       	Minimum centre frequency (Hz).
+  MAX_CF      	6000      	Maximum centre frequency (Hz).
+  CHANNELS    	55        	No. of centre frequencies.
+  ERB_DENSITY 	2         	ERB density (filters/critical band).
+  B_MODE      	"CUSTOM_ERB"	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+  BW_MIN      	24.7      	Minimum filter bandwidth (Hz).
+  QUALITY     	9.259     	Ultimate quality factor of filters.
+

@@ -1,0 +1,42 @@
+# ANpsth.sim
+
+begin {
+
+# generate stimulus	
+	 	stim_pureTone_2 	< stimTone.par
+	
+# Ramps
+		Trans_Gate		< rampUp.par	
+		Trans_Gate		< rampDown.par
+		Display_Signal	< displaySignal.par
+
+# Outer-/middler-ear filter model.
+		Filt_MultiBPass	< filtMultiBandpassGP.par
+	
+#convert to stapes velocity
+		Util_mathOp		< mathOpStapes.par
+
+# Basilar membrane filter model.
+		BM_DRNL		< BM_drnlGP1.par		
+	      Display_Signal 	< displayBM.par	 
+		
+# IHC receptor potential
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par	
+		Display_Signal	< displayRP.par	
+
+repeat 200 	{
+
+#IHC synaptic response
+        	IHC_Meddis2000	< IHChsr2000spike.par	
+
+# apply a refractory period
+		AN_SG_Meddis02 	< ANrefractory.par
+        	Display_Signal	< displayFiberResponse.par 
+	
+		Ana_histogram	< histogramPSTH.par 
+        	Display_Signal	< displayPSTH.par	
+
+		}
+		DataFile_Out	
+
+}

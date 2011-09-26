@@ -1,0 +1,61 @@
+#		Display_Signal		< displayACF.par
+
+
+#			Any or all of these parameters may be omitted.
+#			Comment out any unwanted parameters.
+
+#			There are more parameters for the advanced user
+
+#			The whole parameter file can be omitted and 
+#			 defaults will be supplied
+
+#	window parameters
+win_title			Autocorrelation		 (no spaces allowed)
+win_height			300			 size of the frame
+win_width			300		 	 size of the frame
+
+win_x_pos			300			 x=0 is left margin
+win_y_pos			460			 y=0 is top margin
+
+
+#	y-axis parameters
+y_axis_title		channel_CF			 no spaces allowed
+y_axis_mode		channel	
+								#\channel\      channel CFs indicted
+								#\linear_scale\ within-channel scale indicated
+								#\log_scale\    within channel log scale (signals must be >0)
+channel_step		1			 use this to skip channels (for clearer displays)
+
+auto_scaling 		on			 \on\	system decides on appropriate scaling
+								#\off\ reads y-scale from 'miny', 'maxy' below
+magnification		1			 y axis magnification - works with autoscaling
+miny 				0			 ignored when autoscale is 'on'
+maxy 				20			 ignored when autoscale is 'on'
+y_ticks			5			 odd number recommended is scaled starts at 0
+y_number_format	xe0			 x.e-9 gives nano... with one decimal places
+
+#	x-axis parameters
+x_axis_title		Lag_(s)	 no spaces allowed
+x_number_format	x.e-3		 x.xxxe-3 give milli... to two decimal places
+x_ticks			6			 even number recommended
+width				-1			 -1 width=signal duration
+								#or extends display beyond the end of the signal ?why
+								#must be greater than signal duration
+
+summarydisplay	On  		 \off\ \on\
+								#when on, accumulates across channels and
+								#displays summary at base of display
+
+#Notes on the display process:
+
+#1. The display can be resized by dragging on the diaplay window.  
+#However, the program needs to be run again before the display will
+#appropriately displayed.
+
+#2. The display can be altered directly by right-clicking on the 
+#display and selecting 'preferences'.  Again the program needs to 
+#be run again before the changes will appear. The program cannot be
+#run again until the display parameter window has been closed.
+
+#3. The display can be sent to the printer by right-clicking the 
+#display and selecting 'print'.

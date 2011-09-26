@@ -1,0 +1,45 @@
+#SpikeTimesPeriodH.sim
+# creates a number  (see 'repeats') of spike trains
+# and displays a period histogram
+# A synchronisation index is computed and lodged in OutputSynch.dat
+  
+begin 	{
+
+# or stimulus generation
+	Stim_PureTone_2		< stimulusTonePeriodH.par
+
+	Trans_Gate				< rampUp.par
+	Trans_Gate				< rampDown.par
+	Display_Signal		< displayStimulus.par
+	
+# Outer-/middler-ear filter model.
+	Filt_MultiBPass		< filtMultiBandpassGP.par
+
+# Basilar membrane filter model.
+	BM_DRNL				< BM_DRNL_GP4.par
+	Display_Signal		< displayDRNL.par
+
+# IHC receptor potential
+	IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par	
+	Display_Signal		< displayIHCRP.par
+
+repeat 250{ 		#repeat loop terminated below
+
+#IHC synaptic response
+	IHC_Meddis2000		< IHChsr2000spike.par
+
+#Refractory effect
+	AN_SG_Carney			< ANrefracCarneySpike.par
+
+#Period histogram 
+	ANA_histogram			< histPeriodH.par
+
+
+#Final display or PSTH or ISIH
+	Display_Signal		< displayPeriodH.par
+			}		#end repeat
+
+#compute synchronisation index
+	ANA_SynchIndex
+	DataFile_out			< outputPeriodH.par
+		}

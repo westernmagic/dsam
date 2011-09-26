@@ -1,0 +1,10 @@
+#		Ana_histogram	< histogramPSTH.par 
+
+BIN_WIDTH		1E-3
+
+DETECT_MODE	SPIKE
+THRESHOLD		0.5
+
+TYPE_MODE		PSTH
+
+

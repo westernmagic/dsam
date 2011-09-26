@@ -1,0 +1,8 @@
+# intensity.sim
+
+begin  {
+	DataFile_In		< fileIn.par
+	display_Signal
+	Ana_Intensity
+	DataFile_Out
+	}

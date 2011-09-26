@@ -1,0 +1,5 @@
+#		Util_PadSignal		< padSignal.par
+
+BEGIN_DURATION	0.02	initial silence to be added
+END_DURATION	0.02	final silence to be added
+

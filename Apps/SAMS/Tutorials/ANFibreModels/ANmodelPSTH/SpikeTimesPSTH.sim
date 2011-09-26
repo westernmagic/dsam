@@ -1,0 +1,43 @@
+#SpikeTimesPSTH.sim
+# creates a number  (see 'repeats') of spike trains
+# that are analysed to produce a post stimulus time histogram
+# The histogram is written to file.
+  
+begin 	{
+
+# or stimulus generation
+	Stim_PureTone_2		< stimulusTonePSTH.par
+
+	Trans_Gate				< rampUp.par
+	Trans_Gate				< rampDown.par
+	Display_Signal		< displayStimulus.par
+	
+# Outer-/middler-ear filter model.
+	Filt_MultiBPass		< filtMultiBandpassGP.par
+
+# Basilar membrane filter model.
+	BM_DRNL				< BM_DRNL_GP4.par
+	Display_Signal		< displayDRNL.par
+
+# IHC receptor potential
+	IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par	
+	Display_Signal		< displayIHCRP.par
+
+repeat 250{ 		#repeat loop terminated below
+
+#IHC synaptic response
+	IHC_Meddis2000		< IHChsr2000spike.par
+
+#Refractory effect
+	AN_SG_Carney			< ANrefracCarneySpike.par
+
+#PSTH 
+	ANA_histogram			< histPSTH.par
+
+
+#Final display or PSTH or ISIH
+	Display_Signal		< displayPSTH.par
+			}		#end repeat
+
+	DataFile_out			< datafileOutPSTH.par
+		}

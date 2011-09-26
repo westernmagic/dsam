@@ -1,0 +1,10 @@
+# ANA_intensity		< intensity.par
+
+# Computes rms (root mean square) intensity of the signal after 
+#  an offset
+
+# Input is assumed to be in microPascals.
+
+# The output is expressed as dB SPL (re 20 microPascals)
+
+0.0		start time (s)

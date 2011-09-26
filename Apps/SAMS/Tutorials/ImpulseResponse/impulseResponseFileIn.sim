@@ -1,0 +1,23 @@
+#			impulseResponseFileIn.sim
+
+begin {
+
+		dataFile_In				< dataFileInClick.par
+	}
+		Display_Signal			< displayStimulus.par
+		}
+
+#Middle ear simulation
+		Filt_MultiBPass			< filtMultiBandpass.par
+		Display_Signal			< displayMiddleEar.par
+
+#convert to stapes velocity
+		filt_LowPass			< filtScaleToStapes.par
+
+#inner ear DRNL filter
+ 		BM_DRNL				< BM_DRNLHumanALN.par
+# 		BM_DRNL_Test         		< DRNL_TestALN.par
+		Display_Signal			< displayDRNL.par
+
+		DataFile_out			< dataFileOut.par
+		}

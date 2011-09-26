@@ -1,0 +1,3 @@
+ORDER	1	Order of spike interactions (1 = 1st, 2 = 2nd, -1 = all order).
+THRESHOLD	0.5	Event threshold (arbitrary units).
+MAX_INTERVAL	0.02	Max. interval for histogram: -ve assumes end of signal (s).

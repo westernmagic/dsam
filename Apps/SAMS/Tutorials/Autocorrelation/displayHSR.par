@@ -1,0 +1,32 @@
+MAGNIFICATION	1	Signal magnification.
+NORMALISATION	MIDDLE	Y normalisation mode ('bottom' or 'middle').
+CHANNEL_STEP	1	Channel stepping mode.
+NUMGREYSCALES	10	Number of grey scales.
+X_RESOLUTION	0.01	Resolution of X scale (1 - low, fractions are higher).
+WIDTH	-1	Displayed signal width (seconds or x units).
+Y_AXIS_TITLE	channel CF	Y-axis title.
+Y_AXIS_MODE	CHANNEL	Y-axis mode ('channel' (No.) or 'scale').
+AUTO_SCALING	ON	Automatic scaling ('on' or 'off').
+AUTO_Y_SCALE	ON	Automatic y-axis scale ('on' or 'off').
+MAXY	10	Maximum Y value (for manual scaling).
+MINY	0	Minimum Y Value (for manual scaling).
+Y_NUMBER_FORMAT	xe0	Y axis scale number format, (e.g. y.yye-3).
+Y_DEC_PLACES	0	Y axis scale decimal places.
+Y_TICKS	5	Y axis tick marks.
+Y_INSET_SCALE	ON	Y inset scale mode ('on' or 'off').
+X_AXIS_TITLE	time (s)	X axis title.
+AUTO_X_SCALE	ON	Autoscale option for x-axis ('on' or 'off')
+X_NUMBER_FORMAT	x.e-3	X axis scale number format, (e.g. x.xxe-3).
+X_DEC_PLACES	0	X axis scale decimal places.
+X_TICKS	6	X axis tick marks.
+X_OFFSET	0	X offset for display in zoom mode (x units).
+X_EXTENT	0	X extent for display in zoom mode (x units).
+WIN_TITLE	HSR fibers	Display window title.
+MODE	LINE	Display mode ('off', 'line' or 'gray_scale').
+SUMMARYDISPLAY	OFF	Summary display mode ('on' or 'off').
+FRAMEDELAY	0	Delay between display frames (s)
+TOPMARGIN	5	Top margin for display (percent of display height).
+WIN_HEIGHT	300	Display frame height (pixel units).
+WIN_WIDTH	300	Display frame width (pixel units).
+WIN_X_POS	300	Display frame X position (pixel units).
+WIN_Y_POS	300	Display frame Y position (pixel units).

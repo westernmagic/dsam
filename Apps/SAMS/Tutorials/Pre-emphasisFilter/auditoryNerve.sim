@@ -1,0 +1,38 @@
+#auditoryNerve.sim
+  
+begin {
+
+#  Stimulus generation (comment out DataFile_In and Util_ReduceDt)
+			Stim_Harmonic				< stimHarmonic.par
+
+# Read in from file (comment out Stim_Harmonic)
+#			DataFile_In 				< dataFileIn.par	
+#			Util_ReduceDt       < reduceDt.par
+
+#apply ramps to signal
+			Trans_Gate					< rampUp.par
+			Trans_Gate					< rampDown.par
+			Display_Signal			< displayStimulus.par
+
+#outer/middle ear simulation
+			Filt_MultiBPass			< filtMultiBandpass.par
+
+#convert to stapes velocity
+			filt_LowPass				< filtScaleToStapes.par
+
+#nonlinear DRNL filterbank for guinea pig
+	      BM_DRNL				    < BM_DRNL_GP4.par		
+	      Display_Signal    < displayBM.par
+
+#receptor potential 
+      IHCRP_Shamma3StateVelIn	< IHCRP_ShammaVelIn.par
+			Display_Signal			< displayReceptorPotential.par
+  
+# HSR auditory nerve fiber response
+			IHC_Meddis2000			< IHC_Meddis2000HSR.par
+			An_SG_Binomial 			< binomial.par
+			Display_Signal			< displayAN.par
+
+#write results to a data file	
+			DataFile_out				< dataFileOut.par
+		}

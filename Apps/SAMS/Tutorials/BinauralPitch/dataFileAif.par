@@ -1,0 +1,20 @@
+#			DataFile_Out 				<  dataFileAif.par	
+
+# 			 writes results/signal to file
+
+harm.aif	 file name - acceptable file types are:
+			#	.aiff, .aif; gain is set by the aiff file 
+			#	.wav;        gain should be set by the user (see below)
+			#	.dat; ascii multi-column 
+			#	.raw (binary)
+2			 default word size for sound data (1 or 2).
+little		 default (for format), big- or little-endian: 0, 1 or 2.
+1			 number of Channels (only used for raw binary files.)
+0.0			 normalisation factor for writing (0 or -ve: automatic).
+50000		 default sample rate (Hz) - only used for byte files.
+-1			 maximum duration (in sec.) read (-1 = unlimited).
+0.0		 	 time offset (s). Ignore first part of signal
+
+0			 signal gain (dB). Set to zero when writing files.
+
+

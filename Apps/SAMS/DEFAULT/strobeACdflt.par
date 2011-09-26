@@ -1,0 +1,12 @@
+# strobeACdflt.par
+
+# Possible strobe modes: "user", "1-threshold", "2-peak", "3-peak_shadow-",
+# "4-peak_shadow+", "6-delta_gamma".
+
+  CRITERION     	"threshold"	Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), 'peak_shadow-' (3), or 'peak_shadow+' (4/5).
+  STROBE_DIAGNOSTICS	"OFF"     	Diagnostic mode ('off', 'screen', 'error' or <file name>).
+  THRESHOLD     	0         	Threshold for strobing: 'user', 'threshold' and 'peak' modes only.
+  THRESHOLD_DECAY	5000      	Threshold decay rate (%/s).
+  STROBE_LAG    	0.005     	Strobe lag (delay) time (s).
+  TIMEOUT       	0.01      	Strobe lag (delay) timeout (s).
+

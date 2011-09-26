@@ -1,0 +1,14 @@
+DIAGNOSTICS   	"OFF"     	Diagnostic mode ('off', 'screen', 'error' or <file name>).
+INT_MODE      	"STI"     	Integration mode: 'STI' - stabilised temporal integration, 'AC' - autocorrelation.
+# Module parameter file: not_set
+  CRITERION     	"PEAK_SHADOW+"	Strobe criterion (mode): 'user ', 'threshold' (0), 'peak' (1), 'peak_shadow-' (3), or 'peak_shadow+' (4/5).
+  STROBE_DIAGNOSTICS	"OFF"     	Diagnostic mode ('off', 'screen', 'error' or <file name>).
+  THRESHOLD     	0         	Threshold for strobing: 'user', 'threshold' and 'peak' modes only.
+  THRESHOLD_DECAY	5000      	Threshold decay rate (%/s).
+  STROBE_LAG    	0.005     	Strobe lag (delay) time (s).
+  TIMEOUT       	0.01      	Strobe lag (delay) timeout (s).
+NWIDTH        	-0.035    	Negative width of auditory image (s).
+PWIDTH        	0.005     	Positive width of auditory image (s).
+NAP_DECAY     	2500      	Neural activity pattern (input) decay rate (%/s)
+IMAGE_DECAY   	0.03      	Auditory image decay half-life (s).
+

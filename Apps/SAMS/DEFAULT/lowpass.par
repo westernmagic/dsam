@@ -1,0 +1,3 @@
+normal	output mode for model ("normal" or "scaled").
+1000.0	Cut-off frequency (3 dB down point - Hz).
+1.0	Signal multiplier scale (scaled mode only).

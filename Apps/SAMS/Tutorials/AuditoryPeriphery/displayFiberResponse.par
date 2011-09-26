@@ -1,0 +1,13 @@
+#        	Display_Signal	< displayFiberResponse.par		
+
+WIN_TITLE	"auditory nerve fiber"
+ 
+WIN_HEIGHT	300
+WIN_WIDTH	300
+WIN_X_POS	0
+WIN_Y_POS	300
+
+Y_AXIS_MODE	linear
+Y_AXIS_TITLE	"spike event"
+AUTO_Y_SCALE	on
+

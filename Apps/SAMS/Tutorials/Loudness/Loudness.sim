@@ -1,0 +1,55 @@
+#loudness.sim
+  
+diag_mode on		Diagnostics mode ("off" or "on").
+ 
+begin {
+
+# stimulus generation
+		Stim_Harmonic		< stimHarmonic.par
+
+# apply ramps to signal
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Util_PadSignal		< padSignal.par
+		Display_Signal		< displayStimulus.par
+
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
+
+# convert to stapes velocity
+		Util_mathOp			< mathOpStapes.par
+
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
+
+# receptor potential 
+z%		IHCRP_Shamma3StateVelIn	(->a,b,d)	< IHCRP_VelIn_GP.par
+a%		Display_Signal	(z->)	< displayRP.par
+  
+
+# IHC synaptic response and spike generation in three fiber types
+# LSR
+b%		IHC_Meddis2000	(z->)	< IHC_Meddis2000LSR.par
+		An_SG_Binomial 		< binomialLSR.par
+b1%		Display_Signal	(->x)	< displayLSR.par
+
+
+# HSR
+d%		IHC_Meddis2000	(z->)	< IHC_Meddis2000HSR.par
+		An_SG_Binomial 		< binomialHSR.par
+d1%		Display_Signal	(->x)	< displayHSR.par
+
+# combine LSR, MSR and HSR fiber outputs
+x%		Util_Accumulate (b1, d1->)
+
+# add across channels
+		Util_ReduceChannels 	< reduceChannels.par
+
+# apply temporal window
+		Filt_MultiBPass		< filtMBtemporalWindow.par
+		Display_Signal		< displaySumAN.par
+
+# write results to a data file	
+		DataFile_out		< dataFileOut.par
+		}

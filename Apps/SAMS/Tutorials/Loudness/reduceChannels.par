@@ -1,0 +1,5 @@
+#	Util_ReduceChannels 		< reduceChannels.par
+
+MODE			AVERAGE	Mode - 'average' or 'sum'.
+NUM_CHANNELS	1		(resulting number of channels)
+

@@ -1,0 +1,53 @@
+#pitchEarlyCrossover.sim
+
+# Simulation accepts a binaural input
+#  combines the AN spike probability input from both ears
+#  performs an acf on the combined input.
+  
+begin {
+
+#  Stimulus generation
+		DataFile_In 		< dataFileIn.par	
+
+#apply ramps to signal
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Display_Signal		< displayStimulus.par
+
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
+
+# convert to stapes velocity
+		Util_mathOp			< mathOpStapes.par
+
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
+
+# receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayReceptorPotential.par
+
+# HSR auditory nerve synapse 
+ihcrp%  IHC_Meddis2000	(->swap, acc, dispHR)	< IHC_Meddis2000HSR.par
+dispHR%	Display_Signal	(ihcrp->)		< displayHSR.par
+
+#create left right mirror image
+swap%		Util_swapLR		(ihcrp->acc)
+
+#average left/right ihc probabilities together
+acc%		Util_Accumulate	(ihcrp, swap-> )
+
+#autocorrelate
+		Ana_Acf			< acf.par
+		Display_Signal		< displayACFearly.par
+
+#create summary acf by collapsing across channels 
+a%	 	Util_ReduceChannels	< UtRedChans.par
+		Display_Signal		< displaySACF.par 
+
+#write results to a data file	
+		DataFile_out		< dataFileOut.par
+		}
+
+

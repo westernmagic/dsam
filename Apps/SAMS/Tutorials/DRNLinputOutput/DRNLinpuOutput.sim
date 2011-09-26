@@ -1,0 +1,28 @@
+#			DRNLinpuOutput.sim
+
+begin 	{
+
+
+		Stim_PureTone_2			<stimulusTone.par
+		#apply ramps to signal
+		Trans_Gate					< rampUp.par
+		Trans_Gate					< rampDown.par
+		Display_Signal			< displayStimulus.par
+
+		#Middle ear simulation
+		Filt_MultiBPass			< filtMultiBandpass.par
+		Display_Signal			< displayMiddleEar.par
+
+		#convert to stapes velocity
+		filt_LowPass				< filtScaleToStapes.par
+
+		#inner ear DRNL filter
+		BM_DRNL					< BM_DRNLHuman.par
+		Display_Signal			< displayDRNL.par
+
+		#measure intensity (rms)
+		ANA_intensity				<intensity.par
+
+		DataFile_out				< dataFileOut.par
+
+		}

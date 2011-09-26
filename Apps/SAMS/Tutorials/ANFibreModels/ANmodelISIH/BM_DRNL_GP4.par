@@ -1,0 +1,29 @@
+NL_GT_CASCADE	3	Nonlinear gammatone filter cascade.
+NL_LP_CASCADE	4	Nonlinear low-pass filter cascade.
+NONLINBWIDTH_MODE	LOG_FUNC1	Variable 'NonLinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+NONLINBWIDTH_PARAMETER	0:0.8
+NONLINBWIDTH_PARAMETER	1:0.58
+COMPRSCALEA_MODE	LOG_FUNC1	Variable 'ComprScaleA' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+COMPRSCALEA_PARAMETER	0:1.67
+COMPRSCALEA_PARAMETER	1:0.45
+COMPRSCALEB_MODE	LOG_FUNC1	Variable 'ComprScaleB' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+COMPRSCALEB_PARAMETER	0:-5.85
+COMPRSCALEB_PARAMETER	1:0.875
+COMP_N_EXPON	0.1	Compression exponent, n (units).
+L_GT_CASCADE	3	Linear gammatone filter cascade.
+L_LP_CASCADE	4	Linear low-pass filter cascade.
+LINCF_MODE	LOG_FUNC1	Variable 'LinCF' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+LINCF_PARAMETER	0:0.14
+LINCF_PARAMETER	1:0.95
+LINBWIDTH_MODE	LOG_FUNC1	Variable 'LinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+LINBWIDTH_PARAMETER	0:1.3
+LINBWIDTH_PARAMETER	1:0.53
+LINSCALEG_MODE	LOG_FUNC1	Variable 'linScaleG' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+LINSCALEG_PARAMETER	0:5.48
+LINSCALEG_PARAMETER	1:-0.97
+
+#CF List Parameters:-
+DIAG_MODE	PARAMETERS	Diagnostic mode ('list' or 'parameters').
+CF_MODE	SINGLE	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
+SINGLE_CF	5000	Centre frequency (Hz).
+

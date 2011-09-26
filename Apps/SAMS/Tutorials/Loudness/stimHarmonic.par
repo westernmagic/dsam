@@ -1,0 +1,12 @@
+#		Stim_Harmonic		< stimHarmonic.par
+
+FUND_FREQ		64	Fundamental frequency (Hz).
+INTENSITY		60	Intensity (dB SPL).
+DURATION		0.2	Duration (s).
+DT			2e-05	Sampling interval, dt (s).
+
+LOW_HARMONIC	1	Lowest harmonic number.
+HIGH_HARMONIC	20	Highest harmonic number.
+
+PHASE_MODE		COSINE (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING)
+

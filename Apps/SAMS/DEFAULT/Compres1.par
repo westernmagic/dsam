@@ -1,0 +1,5 @@
+	MODE  	"POWER"   	Compression mode ('log' or 'power').
+	MULTIPLIER	1         	Signal multiplier (arbitrary units).
+	EXPONENT	0.5       	Power exponent ('power' mode only).
+	MIN_RESPONSE	0         	Minimum response from module (arbitrary units).
+

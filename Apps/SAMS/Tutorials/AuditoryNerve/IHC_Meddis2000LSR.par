@@ -1,0 +1,44 @@
+# 		IHC_Meddis2000	< IHC_Meddis2000LSR.par
+
+# Input is receptor potential and output is synaptic response 
+
+# parameters taken from Sumner, C. et al. 'A revised 
+#  model of the inner-hair ccell and auditory nerve complex',
+#  accepted for publication in JASA.
+# parameters are based on the MSR entries in Table II with 
+#  a reduced max Ca conductance
+
+# Where two parameters are given side by side, the right-hand
+#  value is taken from Sumner et al.. The left-hand value is
+#  a parameter chosen to give a useful fit to some observations 
+#  by Ian Winter and Don Robertson (specifically unit anf1_001)
+#  that has a spontaneous rate of about 0 spikes/sec and a 
+#  ceiling rate of 350 spikes/sec. It has a threshold of 20 dB SPL, 
+#  a CF of 13440 Hz and a dynamic range of 40 dB.
+#  AMS uses the first parameter on a line.
+
+# Modes/options
+prob 		output mode ('spike' or 'prob')
+off 		diagnostic mode ('off', 'screen', or a file name).
+0			Random seed for spike mode (0 means different every time).
+0 			Receptor potential offset
+
+# transmitter release function
+0.066 	Calcium reversal potential
+400     	Calcium current fn: Boltzman parameter beta
+130   	Calcium current fn: Boltzman prameter gamma
+3			power for transmitter release function.
+5e-9	3e-9		Maximum Calcium conductance (approximate physical value - no need to
+			 #change, taken from Kidd and Weiss)
+3e-11	4.48e-11 value of k when the is no Calcium current 
+20e31   	Permeability constant, z - linear transmitter release gain 
+
+7.5e-5 		Calcium current time constant. 
+7.5e-5   	Calcium Ion diffusion time constant. 
+
+# Synapse 
+6 		Max. no. of transmitter packets in free pool 
+10	 	Replenishment rate (units per second).
+1400	Loss rate (units per second).
+66		Reprocessing rate (units per second).
+6580	Recovery rate (units per second).

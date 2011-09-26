@@ -1,0 +1,452 @@
+	##--------------- Simulation script ----------------------##
+	DIAG_MODE	               	ON        	Diagnostics operation mode ('ON' or 'OFF').
+	PAR_FILE_PATH_MODE	      	"RELATIVE"	Parameter file path mode ('relative', 'none' or <file path>).
+
+	begin  {
+		Stim_Harmonic	<	stimHarmonic.par
+		Trans_Gate	<	rampUp.par
+		Trans_Gate	<	rampDown.par
+		Util_PadSignal	<	padSignal.par
+		Display_Signal	<	displayStimulus.par
+		Filt_MultiBPass	<	filtIIRMoore.par
+		Util_mathOp	<	mathOpStapes.par
+		BM_DRNL	<	BM_DRNLHuman.par
+		Display_Signal	<	displayBM.par
+	z%	IHCRP_Shamma3StateVelIn (->a, b, d)	<	IHCRP_VelIn_GP.par
+	a%	Display_Signal (z->)	<	displayRP.par
+	b%	IHC_Meddis2000 (z->)	<	IHC_Meddis2000LSR.par
+		An_SG_Binomial	<	binomialLSR.par
+	b1%	Display_Signal (->x)	<	displayLSR.par
+	d%	IHC_Meddis2000 (z->)	<	IHC_Meddis2000HSR.par
+		An_SG_Binomial	<	binomialLSR.par
+	d1%	Display_Signal (->x)	<	displayHSR.par
+	x%	Util_Accumulate (b1, d1->)
+		Util_ReduceChannels	<	reduceChannels.par
+		Filt_MultiBPass	<	filtMBtemporalWindow.par
+		Display_Signal	<	displaySumAN.par
+		DataFile_out	<	dataFileOut.par
+	}
+
+	##----- Stim_Harmonic.0        (stimHarmonic.par) -----##
+	LOW_HARMONIC.Stim_Harmonic.0	1         	Lowest harmonic number.
+	HIGH_HARMONIC.Stim_Harmonic.0	1         	Highest harmonic number.
+	PHASE_MODE.Stim_Harmonic.0	"COSINE"  	Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).
+	PHASE_PAR.Stim_Harmonic.0	1         	Phase parameter (Shroeder phase: C value, Random: random number seed).
+	MISTUNED_HARM.Stim_Harmonic.0	-1        	Mistuned harmonic number (0 = F0, -ve implies none mistuned).
+	MT_FACTOR.Stim_Harmonic.0	0         	Mistuning factor (%).
+	FUND_FREQ.Stim_Harmonic.0	1000      	Fundamental frequency (Hz).
+	INTENSITY.Stim_Harmonic.0	100       	Intensity (dB SPL).
+	DURATION.Stim_Harmonic.0 	0.2       	Duration (s).
+	DT.Stim_Harmonic.0       	2e-005    	Sampling interval, dt (s).
+	MOD_FREQ.Stim_Harmonic.0 	1         	Modulation Frequency (Hz).
+	MOD_PHASE.Stim_Harmonic.0	0         	Modulation Phase (degrees).
+	MOD_DEPTH.Stim_Harmonic.0	0         	Modulation depth (%).
+	ORDER.Stim_Harmonic.0    	0         	Filter order.
+	LOW_CUTOFF.Stim_Harmonic.0	200       	Lower cut off frequency 3 dB down (Hz).
+	UPPER_CUTOFF.Stim_Harmonic.0	600       	Upper cut off frequency 3 dB down (Hz).
+
+	##----- Trans_Gate.1                 (rampUp.par) -----##
+	POS_MODE.Trans_Gate.1    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.1     	"RAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.1   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.1      	0         	Time offset (s)
+	DURATION.Trans_Gate.1    	0.0025    	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.1       	0.016     	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Trans_Gate.2               (rampDown.par) -----##
+	POS_MODE.Trans_Gate.2    	"RELATIVE"	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.2     	"DAMP"    	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.2   	"RAISED_COS"	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.2      	0         	Time offset (s)
+	DURATION.Trans_Gate.2    	0.0025    	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.2       	0.016     	Slope parameter or half-life (in 'decay_par' mode only)
+
+	##----- Util_PadSignal.3          (padSignal.par) -----##
+	BEGIN_DURATION.Util_PadSignal.3	0.02      	The pad duration for the beginning of the signal (s).
+	BEGIN_VALUE.Util_PadSignal.3	0         	The pad value for the beginning of the signal (units).
+	END_DURATION.Util_PadSignal.3	0.02      	The pad duration for the end of the signal (s).
+	END_VALUE.Util_PadSignal.3	0         	The pad value for the end of the signal (units).
+
+	##----- Display_Signal.4     (displayStimulus.par) -----##
+	MAGNIFICATION.Display_Signal.4	1         	Signal magnification.
+	NORMALISATION.Display_Signal.4	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.4	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.4	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.4	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.4   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.4	"?Pa"     	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.4	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.4	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.4	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.4    	2.82843e+006	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.4    	-2.82843e+006	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.4	"y"       	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.4	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.4 	15        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.4	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.4	"Time"    	X axis title.
+	AUTO_X_SCALE.Display_Signal.4	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.4	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.4	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.4 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.4	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.4	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.4	"stimulus"	Display window title.
+	MODE.Display_Signal.4    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.4	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.4	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.4	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.4	246       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.4	284       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.4	8         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.4	46        	Display frame Y position (pixel units).
+
+	##----- Filt_MultiBPass.5      (filtIIRMoore.par) -----##
+	NUM_FILTERS.Filt_MultiBPass.5	3         	No. of parallel band pass filters.
+	# Filter cascades.:
+		CASCADE.Filt_MultiBPass.5	  0:2         
+		CASCADE.Filt_MultiBPass.5	  1:2         
+		CASCADE.Filt_MultiBPass.5	  2:2         
+	# Filter pre-attentuation (dB SPL).:
+		ATTENUATION.Filt_MultiBPass.5	  0:1.5       
+		ATTENUATION.Filt_MultiBPass.5	  1:6         
+		ATTENUATION.Filt_MultiBPass.5	  2:-11       
+	# Filter lower cut-off frequencies (Hz).:
+		LOWER_FREQ.Filt_MultiBPass.5	  0:330       
+		LOWER_FREQ.Filt_MultiBPass.5	  1:1900      
+		LOWER_FREQ.Filt_MultiBPass.5	  2:7500      
+	# Filter upper cut-off frequencies (Hz).:
+		UPPER_FREQ.Filt_MultiBPass.5	  0:5500      
+		UPPER_FREQ.Filt_MultiBPass.5	  1:14000     
+		UPPER_FREQ.Filt_MultiBPass.5	  2:14000     
+
+	##----- Util_mathOp.6          (mathOpStapes.par) -----##
+	OPERATOR.Util_mathOp.6   	"SCALE"   	Mathematical operator ('add', 'modulus', 'scale', 'sqr' or 'subtract').
+	OPERAND.Util_mathOp.6    	3e-010    	Operand (only used in scale mode at present).
+
+	##----- BM_DRNL.7              (BM_DRNLHuman.par) -----##
+	NL_GT_CASCADE.BM_DRNL.7  	3         	Nonlinear gammatone filter cascade.
+	NL_LP_CASCADE.BM_DRNL.7  	3         	Nonlinear low-pass filter cascade.
+	# NonLinBwidth parameters:
+	  NONLINBWIDTH_MODE.BM_DRNL.7	"LOG_FUNC1"	Variable 'NonLinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	# C2' or 'POLY_FUNC1').:
+		NONLINBWIDTH_PARAMETER.BM_DRNL.7	  0:-0.032    
+		NONLINBWIDTH_PARAMETER.BM_DRNL.7	  1:0.774     
+	# ComprScaleA parameters:
+	  COMPRSCALEA_MODE.BM_DRNL.7	"LOG_FUNC1"	Variable 'ComprScaleA' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	# 2' or 'POLY_FUNC1').:
+		COMPRSCALEA_PARAMETER.BM_DRNL.7	  0:1.4       
+		COMPRSCALEA_PARAMETER.BM_DRNL.7	  1:0.82      
+	# ComprScaleB parameters:
+	  COMPRSCALEB_MODE.BM_DRNL.7	"LOG_FUNC1"	Variable 'ComprScaleB' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	# 2' or 'POLY_FUNC1').:
+		COMPRSCALEB_PARAMETER.BM_DRNL.7	  0:1.62      
+		COMPRSCALEB_PARAMETER.BM_DRNL.7	  1:-0.82     
+	COMP_N_EXPON.BM_DRNL.7   	0.25      	Compression exponent, n (units).
+	L_GT_CASCADE.BM_DRNL.7   	3         	Linear gammatone filter cascade.
+	L_LP_CASCADE.BM_DRNL.7   	4         	Linear low-pass filter cascade.
+	# LinCF parameters:
+	  LINCF_MODE.BM_DRNL.7     	"LOG_FUNC1"	Variable 'LinCF' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	# 'POLY_FUNC1').:
+		LINCF_PARAMETER.BM_DRNL.7	  0:-0.068    
+		LINCF_PARAMETER.BM_DRNL.7	  1:1.02      
+	# LinBwidth parameters:
+	  LINBWIDTH_MODE.BM_DRNL.7 	"LOG_FUNC1"	Variable 'LinBwidth' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	#  or 'POLY_FUNC1').:
+		LINBWIDTH_PARAMETER.BM_DRNL.7	  0:0.037     
+		LINBWIDTH_PARAMETER.BM_DRNL.7	  1:0.79      
+	# linScaleG parameters:
+	  LINSCALEG_MODE.BM_DRNL.7 	"LOG_FUNC1"	Variable 'linScaleG' mode ('EXP_FUNC1', 'LINEAR_FUNC1', 'LOG_FUNC1', 'LOG_FUNC2' or 'POLY_FUNC1').
+	#  or 'POLY_FUNC1').:
+		LINSCALEG_PARAMETER.BM_DRNL.7	  0:4.2       
+		LINSCALEG_PARAMETER.BM_DRNL.7	  1:-0.48     
+	# CFList parameters:
+	  DIAG_MODE.BM_DRNL.7      	"PARAMETERS"	Diagnostic mode ('list' or 'parameters').
+	  CF_MODE.BM_DRNL.7        	"SINGLE"  	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
+	  SINGLE_CF.BM_DRNL.7      	1000      	Centre frequency (Hz).
+	  FOCAL_CF.BM_DRNL.7       	1000      	Focal centre frequency (Hz).
+	  MIN_CF.BM_DRNL.7         	1000      	Minimum centre frequency (Hz).
+	  MAX_CF.BM_DRNL.7         	10000     	Maximum centre frequency (Hz).
+	  CHANNELS.BM_DRNL.7       	1         	No. of centre frequencies.
+	  ERB_DENSITY.BM_DRNL.7    	0.050774  	ERB density (filters/critical band).
+	# Centre frequencies (Hz).:
+		CENTRE_FREQ.BM_DRNL.7	  0:1000      
+	  B_MODE.BM_DRNL.7         	"INTERNAL_STATIC"	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+	  BW_MIN.BM_DRNL.7         	24.7      	Minimum filter bandwidth (Hz).
+	  QUALITY.BM_DRNL.7        	0.00437   	Ultimate quality factor of filters.
+	# Filter bandwidths (Hz).:
+		BANDWIDTH.BM_DRNL.7	  0:194.984   
+
+	##----- Display_Signal.8          (displayBM.par) -----##
+	MAGNIFICATION.Display_Signal.8	1         	Signal magnification.
+	NORMALISATION.Display_Signal.8	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.8	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.8	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.8	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.8   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.8	"channel BF (Hz)"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.8	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.8	ON        	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.8	ON        	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.8    	0.124588  	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.8    	-0.124588 	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.8	"y"       	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.8	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.8 	15        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.8	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.8	"Time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.8	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.8	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.8	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.8 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.8	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.8	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.8	"basilar membrane"	Display window title.
+	MODE.Display_Signal.8    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.8	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.8	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.8	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.8	721       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.8	1024      	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.8	308       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.8	46        	Display frame Y position (pixel units).
+
+	##----- IHCRP_Shamma3StateVelIn.z (IHCRP_VelIn_GP.par) -----##
+	E_T.IHCRP_Shamma3StateVelIn.z	0.1       	Endocochlear potential, Et (V).
+	E_K.IHCRP_Shamma3StateVelIn.z	-0.07045  	Reversal potential, Ek (V).
+	RP_CORRECTION.IHCRP_Shamma3StateVelIn.z	0.04      	Reversal potential correction, Rp/(Rt+Rp).
+	C_TOTAL.IHCRP_Shamma3StateVelIn.z	6e-012    	Total capacitance, C = Ca + Cb (F).
+	G0.IHCRP_Shamma3StateVelIn.z	1.97e-009 	Resting conductance, G0 (S).
+	G_K.IHCRP_Shamma3StateVelIn.z	1.8e-008  	Potassium conductance, Gk (S = Siemens).
+	G_MAXC.IHCRP_Shamma3StateVelIn.z	8e-009    	Maximum mechanical conductance, Gmax (S).
+	T_C.IHCRP_Shamma3StateVelIn.z	0.00213   	Cilia/BM time constant (s).
+	GAIN_C.IHCRP_Shamma3StateVelIn.z	16        	Cilia/BM coupling gain, C (dB).
+	REF_POT.IHCRP_Shamma3StateVelIn.z	0         	Reference potential (V).
+	S0.IHCRP_Shamma3StateVelIn.z	8.5e-008  	Sensitivity constant, S0 (/m).
+	S1.IHCRP_Shamma3StateVelIn.z	5e-007    	Sensitivity constant, S1 (/m).
+	U0.IHCRP_Shamma3StateVelIn.z	7e-009    	Offset constant, U0 (m).
+	U1.IHCRP_Shamma3StateVelIn.z	7e-009    	Offset constant, U1 (m).
+
+	##----- Display_Signal.a          (displayRP.par) -----##
+	MAGNIFICATION.Display_Signal.a	1         	Signal magnification.
+	NORMALISATION.Display_Signal.a	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.a	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.a	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.a	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.a   	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.a	"channel BF (Hz)"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.a	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.a	OFF       	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.a	OFF       	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.a    	-0.02     	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.a    	-0.06     	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.a	"y"       	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.a	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.a 	15        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.a	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.a	"Time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.a	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.a	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.a	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.a 	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.a	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.a	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.a	"IHC receptor potential"	Display window title.
+	MODE.Display_Signal.a    	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.a	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.a	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.a	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.a	246       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.a	284       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.a	608       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.a	46        	Display frame Y position (pixel units).
+
+	##----- IHC_Meddis2000.b     (IHC_Meddis2000LSR.par) -----##
+	OP_MODE.IHC_Meddis2000.b 	"PROB"    	Output mode: stochastic ('spike') or probability ('prob').
+	DIAG_MODE.IHC_Meddis2000.b	"OFF"     	Diagnostic mode. Outputs internal states of running model ('off', 'screen' or <file name>).
+	RAN_SEED.IHC_Meddis2000.b	0         	Random number seed (0 for different seed for each run).
+	REV_POT_ECA.IHC_Meddis2000.b	0.066     	Calcium reversal potential, E_Ca (Volts).
+	BETA_CA.IHC_Meddis2000.b 	400       	Calcium channel Boltzmann function parameter, beta.
+	GAMMA_CA.IHC_Meddis2000.b	130       	Calcium channel Boltzmann function parameter, gamma.
+	POWER_CA.IHC_Meddis2000.b	3         	Calcium channel transmitter release exponent (power).
+	GMAX_CA.IHC_Meddis2000.b 	2.75e-009 	Maximum calcium conductance (Siemens).
+	CONC_THRESH_CA.IHC_Meddis2000.b	4e-011    	Calcium threshold Concentration.
+	PERM_Z.IHC_Meddis2000.b  	2e+032    	Transmitter release permeability, Z (unitless gain)
+	TAU_M.IHC_Meddis2000.b   	0.0001    	Calcium current time constant (s).
+	TAU_CA.IHC_Meddis2000.b  	0.0001    	Calcium ion diffusion (accumulation) time constant (s).
+	MAX_FREE_POOL_M.IHC_Meddis2000.b	8         	Max. no. of transmitter packets in free pool (integer).
+	REPLENISH_Y.IHC_Meddis2000.b	10        	Replenishment rate (units per second).
+	LOSS_L.IHC_Meddis2000.b  	2580      	Loss rate (units per second).
+	REPROCESS_X.IHC_Meddis2000.b	66.3      	Reprocessing rate (units per second).
+	RECOVERY_R.IHC_Meddis2000.b	6580      	Recovery rate (units per second).
+
+	##----- An_SG_Binomial.12       (binomialLSR.par) -----##
+	NUM_FIBRES.An_SG_Binomial.12	36        	Number of fibres.
+	RAN_SEED.An_SG_Binomial.12	0         	Random number seed (0 for different seed for each run).
+	PULSE_DURATION.An_SG_Binomial.12	2e-005    	Pulse duration (s).
+	MAGNITUDE.An_SG_Binomial.12	1         	Pulse magnitude (arbitrary units).
+	REFRAC_PERIOD.An_SG_Binomial.12	0.00075   	Refractory period (s).
+
+	##----- Display_Signal.b1        (displayLSR.par) -----##
+	MAGNIFICATION.Display_Signal.b1	1         	Signal magnification.
+	NORMALISATION.Display_Signal.b1	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.b1	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.b1	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.b1	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.b1  	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.b1	"channel BF"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.b1	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.b1	OFF       	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.b1	OFF       	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.b1   	10        	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.b1   	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.b1	"y"       	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.b1	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.b1	15        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.b1	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.b1	"Time_(s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.b1	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.b1	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.b1	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.b1	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.b1	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.b1	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.b1	"LSR_fibers"	Display window title.
+	MODE.Display_Signal.b1   	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.b1	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.b1	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.b1	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.b1	246       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.b1	284       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.b1	8         	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.b1	346       	Display frame Y position (pixel units).
+
+	##----- IHC_Meddis2000.d     (IHC_Meddis2000HSR.par) -----##
+	OP_MODE.IHC_Meddis2000.d 	"PROB"    	Output mode: stochastic ('spike') or probability ('prob').
+	DIAG_MODE.IHC_Meddis2000.d	"OFF"     	Diagnostic mode. Outputs internal states of running model ('off', 'screen' or <file name>).
+	RAN_SEED.IHC_Meddis2000.d	0         	Random number seed (0 for different seed for each run).
+	REV_POT_ECA.IHC_Meddis2000.d	0.066     	Calcium reversal potential, E_Ca (Volts).
+	BETA_CA.IHC_Meddis2000.d 	400       	Calcium channel Boltzmann function parameter, beta.
+	GAMMA_CA.IHC_Meddis2000.d	130       	Calcium channel Boltzmann function parameter, gamma.
+	POWER_CA.IHC_Meddis2000.d	3         	Calcium channel transmitter release exponent (power).
+	GMAX_CA.IHC_Meddis2000.d 	8e-009    	Maximum calcium conductance (Siemens).
+	CONC_THRESH_CA.IHC_Meddis2000.d	4.48e-011 	Calcium threshold Concentration.
+	PERM_Z.IHC_Meddis2000.d  	2e+032    	Transmitter release permeability, Z (unitless gain)
+	TAU_M.IHC_Meddis2000.d   	0.0001    	Calcium current time constant (s).
+	TAU_CA.IHC_Meddis2000.d  	0.0001    	Calcium ion diffusion (accumulation) time constant (s).
+	MAX_FREE_POOL_M.IHC_Meddis2000.d	10        	Max. no. of transmitter packets in free pool (integer).
+	REPLENISH_Y.IHC_Meddis2000.d	10        	Replenishment rate (units per second).
+	LOSS_L.IHC_Meddis2000.d  	2580      	Loss rate (units per second).
+	REPROCESS_X.IHC_Meddis2000.d	66.3      	Reprocessing rate (units per second).
+	RECOVERY_R.IHC_Meddis2000.d	6580      	Recovery rate (units per second).
+
+	##----- An_SG_Binomial.15       (binomialLSR.par) -----##
+	NUM_FIBRES.An_SG_Binomial.15	36        	Number of fibres.
+	RAN_SEED.An_SG_Binomial.15	0         	Random number seed (0 for different seed for each run).
+	PULSE_DURATION.An_SG_Binomial.15	2e-005    	Pulse duration (s).
+	MAGNITUDE.An_SG_Binomial.15	1         	Pulse magnitude (arbitrary units).
+	REFRAC_PERIOD.An_SG_Binomial.15	0.00075   	Refractory period (s).
+
+	##----- Display_Signal.d1        (displayHSR.par) -----##
+	MAGNIFICATION.Display_Signal.d1	1         	Signal magnification.
+	NORMALISATION.Display_Signal.d1	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.d1	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.d1	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.d1	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.d1  	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.d1	"channel BF"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.d1	"CHANNEL" 	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.d1	OFF       	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.d1	OFF       	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.d1   	10        	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.d1   	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.d1	"y"       	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.d1	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.d1	15        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.d1	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.d1	"Time_(s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.d1	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.d1	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.d1	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.d1	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.d1	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.d1	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.d1	"HSR_fibers"	Display window title.
+	MODE.Display_Signal.d1   	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.d1	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.d1	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.d1	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.d1	246       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.d1	284       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.d1	308       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.d1	346       	Display frame Y position (pixel units).
+
+	##----- Util_ReduceChannels.18 (reduceChannels.par) -----##
+	MODE.Util_ReduceChannels.18	"AVERAGE" 	Mode - 'average' or simple 'sum'.
+	NUM_CHANNELS.Util_ReduceChannels.18	1         	Number of channels signal is to be averaged to.
+
+	##----- Filt_MultiBPass.19   (filtMBtemporalWindow.par) -----##
+	NUM_FILTERS.Filt_MultiBPass.19	1         	No. of parallel band pass filters.
+	# Filter cascades.:
+		CASCADE.Filt_MultiBPass.19	  0:3         
+	# Filter pre-attentuation (dB SPL).:
+		ATTENUATION.Filt_MultiBPass.19	  0:0         
+	# Filter lower cut-off frequencies (Hz).:
+		LOWER_FREQ.Filt_MultiBPass.19	  0:0         
+	# Filter upper cut-off frequencies (Hz).:
+		UPPER_FREQ.Filt_MultiBPass.19	  0:40        
+
+	##----- Display_Signal.20      (displaySumAN.par) -----##
+	MAGNIFICATION.Display_Signal.20	1         	Signal magnification.
+	NORMALISATION.Display_Signal.20	"MIDDLE"  	Y normalisation mode ('bottom' or 'middle').
+	CHANNEL_STEP.Display_Signal.20	1         	Channel stepping mode.
+	NUMGREYSCALES.Display_Signal.20	10        	Number of grey scales.
+	X_RESOLUTION.Display_Signal.20	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	WIDTH.Display_Signal.20  	-1        	Displayed signal width (seconds or x units).
+	Y_AXIS_TITLE.Display_Signal.20	"smoothed summed AN activity"	Y-axis title.
+	Y_AXIS_MODE.Display_Signal.20	"LINEAR_SCALE"	Y-axis mode ('channel' (No.) or 'scale').
+	AUTO_SCALING.Display_Signal.20	OFF       	Automatic scaling ('on' or 'off').
+	AUTO_Y_SCALE.Display_Signal.20	OFF       	Automatic y-axis scale ('on' or 'off').
+	MAXY.Display_Signal.20   	0.5       	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.20   	0         	Minimum Y Value (for manual scaling).
+	Y_NUMBER_FORMAT.Display_Signal.20	"ye-2"    	Y axis scale number format, (e.g. y.yye-3).
+	Y_DEC_PLACES.Display_Signal.20	0         	Y axis scale decimal places.
+	Y_TICKS.Display_Signal.20	13        	Y axis tick marks.
+	Y_INSET_SCALE.Display_Signal.20	ON        	Y inset scale mode ('on' or 'off').
+	X_AXIS_TITLE.Display_Signal.20	"time (s)"	X axis title.
+	AUTO_X_SCALE.Display_Signal.20	ON        	Autoscale option for x-axis ('on' or 'off')
+	X_NUMBER_FORMAT.Display_Signal.20	"xe-3"    	X axis scale number format, (e.g. x.xxe-3).
+	X_DEC_PLACES.Display_Signal.20	0         	X axis scale decimal places.
+	X_TICKS.Display_Signal.20	6         	X axis tick marks.
+	X_OFFSET.Display_Signal.20	0         	X offset for display in zoom mode (x units).
+	X_EXTENT.Display_Signal.20	-1        	X extent for display in zoom mode (x units or -1 for end of signal).
+	WIN_TITLE.Display_Signal.20	"sum AN activity"	Display window title.
+	MODE.Display_Signal.20   	"LINE"    	Display mode ('off', 'line' or 'gray_scale').
+	SUMMARYDISPLAY.Display_Signal.20	OFF       	Summary display mode ('on' or 'off').
+	FRAMEDELAY.Display_Signal.20	0         	Delay between display frames (s)
+	TOPMARGIN.Display_Signal.20	5         	Top margin for display (percent of display height).
+	WIN_HEIGHT.Display_Signal.20	246       	Display frame height (pixel units).
+	WIN_WIDTH.Display_Signal.20	284       	Display frame width (pixel units).
+	WIN_X_POS.Display_Signal.20	608       	Display frame X position (pixel units).
+	WIN_Y_POS.Display_Signal.20	346       	Display frame Y position (pixel units).
+
+	##----- DataFile_out.21         (dataFileOut.par) -----##
+	FILENAME.DataFile_out.21 	"output.dat"	Stimulus file name.
+	WORDSIZE.DataFile_out.21 	2         	Default word size for sound data (1,2 or 4 bytes)
+	ENDIAN_MODE.DataFile_out.21	"DEFAULT" 	Default (for format), 'little' or 'big'-endian.
+	CHANNELS.DataFile_out.21 	1         	No. of Channels: for raw binary and ASCII files.)
+	NORM_MODE.DataFile_out.21	-1        	Normalisation factor for writing (0 or -ve: automatic).
+	SAMPLERATE.DataFile_out.21	8000      	Default sample rate: for raw binary and ASCII files (Hz).
+	DURATION.DataFile_out.21 	-1        	Duration of read signal: -ve = unlimited (s)
+	STARTTIME.DataFile_out.21	0         	Start time (offset) for signal (s).
+	GAIN.DataFile_out.21     	0         	Relative signal gain (dB).
+
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.ams.0          	"SCREEN"  	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_FILE.ams.0           	"C:\Program Files\DSAM\AMS\resDvlpt\tutorials\loudness\filer1K.spf"	Simulation file.
+	SEGMENT_MODE.ams.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	# Sub-parameter list: 
+	  FILELOCKING_MODE.ams.0   	OFF       	File locking mode ('on' or 'off').
+	  NUM_RUNS.ams.0           	1         	Number of repeat runs, or segments/frames.

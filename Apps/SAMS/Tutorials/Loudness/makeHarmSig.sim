@@ -1,0 +1,16 @@
+#makeHarmSig.sim
+  
+begin {
+
+#  			Stimulus generation
+			Stim_Harmonic				< stimHarmonic.par
+
+#			apply ramps to signal
+			Trans_Gate					< rampUp.par
+			Trans_Gate					< rampDown.par
+			Display_Signal			< displayStimulus.par
+
+
+#			write results to a data file	
+			DataFile_out				< dataFileOutSignal.par
+		}

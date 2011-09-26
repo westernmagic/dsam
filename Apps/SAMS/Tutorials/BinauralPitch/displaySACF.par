@@ -1,0 +1,9 @@
+Y_AXIS_TITLE	acf	Y-axis title.
+X_AXIS_TITLE	Lag_(s)	X axis title.
+WIN_TITLE	SACF	Display window title.
+
+WIN_HEIGHT	300	Display frame height (pixel units).
+WIN_WIDTH	300	Display frame width (pixel units).
+WIN_X_POS	600	Display frame X position (pixel units).
+WIN_Y_POS	300	Display frame Y position (pixel units).
+

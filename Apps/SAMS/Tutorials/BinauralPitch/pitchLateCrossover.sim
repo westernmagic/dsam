@@ -1,0 +1,52 @@
+# pitchLateCrossover.sim
+
+#  simulation accepts a binaural input
+#  computes an acf for each ear independently 
+#  and then averages the two acfs.
+  
+begin {
+
+#  Stimulus generation
+		DataFile_In 		< dataFileIn.par	
+
+# apply ramps to signal
+		Trans_Gate			< rampUp.par
+		Trans_Gate			< rampDown.par
+		Display_Signal		< displayStimulus.par
+
+# outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
+
+# convert to stapes velocity
+		Util_mathOp			< mathOpStapes.par
+
+# nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
+
+# receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayReceptorPotential.par 
+
+# HSR
+		IHC_Meddis2000		< IHC_Meddis2000HSR.par
+		Display_Signal		< displayHSR.par 
+
+# autocorrelate
+		Ana_Acf		< acf.par
+		Display_Signal		< displayACFlate.par
+
+# create summary acf
+redch%	Util_ReduceChannels	(->swap, acc)	< UtRedChans.par
+
+# create left right mirror image
+swap%		util_swapLR			(redch->acc)
+		
+# add left/right acfs together
+acc%		Util_Accumulate		(redch, swap-> )
+		Display_Signal		< displaySACF.par 
+
+# write results to a data file	
+		DataFile_out		< dataFileOut.par
+		}	
+

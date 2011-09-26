@@ -1,0 +1,32 @@
+#			Stim_Harmonic				< stimHarmonic.par
+
+#  Generates a harmonic stimulus.
+
+200			Stimulus fundamental frequency (Hz).
+1			Lowest harmonic number.
+12			Highest harmonic number.
+
+#  Mistuning one harmonic
+-1			Mistuned harmonic number (0= F0, -1 implies none mistuned).
+0			Mistuning factor (%).
+
+#  Phase relationships among harmonics
+sine		Phase mode (SINE, COSINE, RANDOM, SCHROEDER, ALTERNATING).
+0			Random number seed - used only with RANDOM phase option
+		  #(\0\ same every time, \-1\ different every time)
+
+#  Frequency modulation
+2.5			modulation Frequency (Hz).
+0			modulation Phase (degrees).
+0			modulation Depth (%) - 0 means no modulation applied
+
+#  Bandpass filter
+0			Order (0=no filter applied)
+200			LowCutFreq  3 dB down
+600			HighCutFreq 3 dB down
+
+#  Intensity, duration, dt
+45			Stimulus signal intensity (dB SPL).
+100e-3		Stimulus signal duration (s).
+2e-5		Stimulus sampling interval, dt (seconds).
+

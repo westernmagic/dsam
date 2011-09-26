@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = "utf-8"?>
+
+<!--=============================================================================================-->
+
+<bibliography><title>Bibliography</title>
+
+<bibliomixed id = "Meddis86">
+  <bibliomset relation = "article">
+	<surname>Meddis</surname> <firstname>R.</firstname>,
+	(<pubdate><emphasis role = "bold">1988</emphasis></pubdate>)
+	<title role = "article">Simulation of mechanical to neural transduction in the auditory
+	receptor</title>
+  </bibliomset>
+  <bibliomset relation="journal">
+    <title>J. Acoust. Soc. Am.</title>
+	[<volumenum>79</volumenum>],
+	<pagenums>702-710</pagenums>.
+  </bibliomset>
+</bibliomixed>
+
+</bibliography>

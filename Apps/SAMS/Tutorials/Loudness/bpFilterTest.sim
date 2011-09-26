@@ -1,0 +1,19 @@
+#bpFilterTest.sim
+  
+begin {
+
+#  		Stimulus generation
+		Stim_Click					< click.par
+
+#		apply ramps to signal
+#		Trans_Gate					< rampUp.par
+#		Trans_Gate					< rampDown.par
+		Display_Signal			< displayStimulus.par
+
+#		apply temporal window
+		Filt_MultiBPass			< filtMBtemporalWindow.par
+		Display_Signal			< displayFiltResponse.par
+
+#		write results to a data file	
+		DataFile_out				< dataFileOut.par
+		}

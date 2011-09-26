@@ -1,0 +1,5 @@
+#		Ana_Acf			< acf.par
+
+TIME_CONST	0.0025	Time constant, tw (s).
+MAX_LAG	0.012		Maximum autocorrelation lag, tau (s).
+

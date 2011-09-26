@@ -1,0 +1,5 @@
+#		DataFile_In 		< dataFileIn.par	
+
+FILENAME	dioticF0100H3_12.wav	Stimulus file name.
+GAIN		100			Relative signal gain (dB).
+

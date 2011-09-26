@@ -1,0 +1,6 @@
+/* Main ams resources */
+
+ams		ICON "amsicon.ico"
+
+/* - this is the correct line. */
+#include "dsam.rc"

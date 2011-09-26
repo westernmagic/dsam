@@ -1,0 +1,56 @@
+#precedence.sim
+
+begin {
+
+#  Stimulus generation
+# left clicks
+L1%		stim_click		(->Lacc)	<click_L1.par
+L2%		stim_click 		(->Lacc)	<click_L2.par
+Lacc%		Util_accumulate  	(L1, L2->bin)
+
+# right clicks
+R1%		stim_click		(->Racc)	<click_R1.par
+R2%		stim_click		(->Racc) 	<click_R2.par
+Racc%		Util_accumulate	(R1, R2->bin)
+
+#combine left and right clicks into binaural stimulus
+bin%		Util_createBinaural	(Lacc, Racc->)
+
+# allow screen control of level
+		Util_mathOp			< mathOpClickLevel.par
+		Display_Signal		< displayStimulus.par
+
+#outer/middle ear simulation
+		Filt_MultiBPass		< filtIIRMoore.par
+
+#convert to stapes velocity
+		Util_mathOp			< mathOpstapes.par
+
+
+#nonlinear DRNL filterbank
+		BM_DRNL			< BM_DRNLHuman.par
+		Display_Signal		< displayBM.par
+
+#receptor potential 
+		IHCRP_Shamma3StateVelIn	< IHCRP_VelIn_GP.par
+		Display_Signal		< displayReceptorPotential.par
+  
+# HSR spike probability
+		IHC_Meddis2000		< IHC_Meddis2000HSR.par
+		Display_Signal		< displaySpikeProb.par
+
+
+# cross correlate
+		Ana_ccf			< ccf.par
+		Display_Signal		< displayCCF.par
+
+#create summary acf
+		Util_ReduceChannels	< UtRedChans.par
+		Display_Signal		< displayCCFsummary.par
+
+		
+#write results to a data file	
+		DataFile_out		
+		}
+
+

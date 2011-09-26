@@ -1,0 +1,7 @@
+#			impulseResponseFileIn.sim
+
+begin {
+
+		dataFile_In				< dataFileInClick.par
+	}
+

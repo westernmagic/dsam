@@ -1,0 +1,25 @@
+# 		BM_DRNL_Test             < DRNL_TestALN.par
+
+LP_FILTER	BUTTERWORTH	Low-pass filter mode ('butterworth' or 'Beauchamp').
+COMP_MODE	BROKEN_STICK1	Compression mode ('original', 'inv_power', 'broken_stick1' or 'upton_bstick').
+
+NL_GT_CASCADE	2	Nonlinear gammatone filter cascade ('order').
+NL_LP_CASCADE	1	Nonlinear low-pass filter cascade ('order').
+COMP_PAR	0:853
+COMP_PAR	1:0.004
+COMP_PAR	2:0.25
+
+L_GT_CASCADE	2	Linear gammatone filter cascade ('order').
+L_LP_CASCADE	1	Linear low-pass filter cascade ('order').
+L_CF	1010	Linear filter Centre Frequency (Hz).
+L_BWIDTH	450	Linear filter band width (Hz).
+L_SCALER	1.242	Linear filter scale (units).
+
+#CF List Parameters:-
+DIAG_MODE	LIST	Diagnostic mode ('list' or 'parameters').
+CF_MODE	SINGLE	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log', 'user', 'human', 'cat', 'chinchilla', 'guinea-pig' or 'macaque').
+SINGLE_CF	1000	Centre frequency (Hz).
+
+B_MODE	USER	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+BANDWIDTH	0:709
+

@@ -1,0 +1,97 @@
+	##--------------- Simulation script ----------------------##
+	ON	Diagnostics mode ('off' or 'on').
+
+	begin  {
+		Stim_Puretone_2	<	P2Tone1.par
+		Trans_Gate	<	Ramp1.par
+		BM_Carney	<	CarneyLog1.par
+		IHCRP_Carney	<	CarneyRP1.par
+		IHC_Carney	<	CarneyIHC1.par
+		AN_SG_Binomial	<	BinomSG1.par
+		Ana_Histogram	<	PSTH3.par
+		Display_Signal
+	}
+
+	##--------------- Stim_Puretone_2      [0] ---------------##
+	FREQUENCY.Stim_Puretone_2.0	1000      	Frequency (Hz).
+	INTENSITY.Stim_Puretone_2.0	80        	Intensity (dB SPL).
+	DURATION.Stim_Puretone_2.0	0.2       	Duration (s).
+	DT.Stim_Puretone_2.0     	5e-05     	Sampling interval, dt (s).
+	BEGIN_SILENCE.Stim_Puretone_2.0	0.02      	Silence period before the signal begins (s).
+	END_SILENCE.Stim_Puretone_2.0	0.05      	Silence period after the signal ends (s).
+	##--------------- Trans_Gate           [1] ---------------##
+	POS_MODE.Trans_Gate.1    	RELATIVE  	Position mode ('absolute' or 'relative')
+	OP_MODE.Trans_Gate.1     	RAMP      	Operation mode ('ramp' or 'damp')
+	TYPE_MODE.Trans_Gate.1   	SINE      	Type mode ('linear', 'sine', 'raised_cos' or 'exp_decay')
+	OFFSET.Trans_Gate.1      	0         	Time offset (s)
+	DURATION.Trans_Gate.1    	0.0025    	Ramp duration - negative assumes the end of the signal (s)
+	SLOPE.Trans_Gate.1       	0.004     	Slope parameter or half-life (in 'decay_par' mode only)
+	##--------------- BM_Carney            [2] ---------------##
+	ORDER.BM_Carney.2        	4         	Filter order.
+	FC.BM_Carney.2           	1100      	Cut-off frequency for OHC low-pass filter, Fc (Hz).
+	P_DFB.BM_Carney.2        	5000      	Operating point of OHC (feedback) non-linearity, P_Dfb (Pa).
+	P0.BM_Carney.2           	0.462     	Asymmetrical bias for OHC non-linearity, P0 (rad).
+	V_MAX.BM_Carney.2        	10        	Maximum depolarising hair cell voltage, Vmax (V).
+	# CFList parameters:
+	  DIAG_MODE.BM_Carney.2    	LIST      	Diagnostic mode ('list' or 'parameters').
+	  CF_MODE.BM_Carney.2      	LOG       	Centre frequency mode ('single', 'ERB', 'ERB_n', 'log', 'linear', 'focal_log' or 'user'.
+	  MIN_CF.BM_Carney.2       	100       	Minimum centre frequency (Hz).
+	  MAX_CF.BM_Carney.2       	6000      	Maximum centre frequency (Hz).
+	  CHANNELS.BM_Carney.2     	10        	No. of centre frequencies.
+	  B_MODE.BM_Carney.2       	INTERNAL  	Bandwidth mode ('ERB', 'Custom_ERB', 'Guinea_Pig', 'user' or 'Nonlinear').
+	##--------------- IHCRP_Carney         [3] ---------------##
+	FC.IHCRP_Carney.3        	1100      	Cut-off frequency for OHC low-pass filter, Fc (Hz).
+	P_D_IHC.IHCRP_Carney.3   	1000      	Operating point of OHC (feedback) non-linearity, P_Dihc (uPa).
+	P0.IHCRP_Carney.3        	0.462     	Asymmetrical bias for OHC non-linearity, P0 (rad)
+	V_MAX.IHCRP_Carney.3     	10        	Maximum depolarising hair cell voltage, Vmax (V).
+	A_D.IHCRP_Carney.3       	0.00813   	Travelling wave delay coefficient, A_D (s).
+	A_L.IHCRP_Carney.3       	0.00649   	Travelling wave delay length constant, A_L (m).
+	V_REF.IHCRP_Carney.3     	0         	Reference potential (V).
+	##--------------- IHC_Carney           [4] ---------------##
+	V_MAX.IHC_Carney.4       	10        	Maximum depolarising hair cell voltage, Vmax (V).
+	R0.IHC_Carney.4          	70        	Resting release from synapse, R0 (spikes/s).
+	P_REST.IHC_Carney.4      	0.015     	Resting permeability, Prest ('volume'/s).
+	PG_MAX.IHC_Carney.4      	0.08      	Maximum global permeability, PGmax ('volume'/s).
+	PL_MAX.IHC_Carney.4      	0.1       	Maximum local permeability, PLmax ('volume'/s).
+	PI_MAX.IHC_Carney.4      	1.5       	Maximum immediate permeability, PImax ('volume'/s).
+	VL_MAX.IHC_Carney.4      	0.003     	Maximum local volume, VLmax ('volume').
+	VL_MIN.IHC_Carney.4      	0.001     	Minimum local volume, VLmin ('volume').
+	VI_MAX.IHC_Carney.4      	0.0003    	Maximum immediate volume, VImax ('volume').
+	VI_MIN.IHC_Carney.4      	0.0001    	Minimum immediate volume, VImin ('volume').
+	##--------------- AN_SG_Binomial       [5] ---------------##
+	NUM_FIBRES.AN_SG_Binomial.5	500       	Number of fibres.
+	RAN_SEED.AN_SG_Binomial.5	1         	Random number seed (0 for different seed for each run).
+	PULSE_DURATION.AN_SG_Binomial.5	5e-05     	Pulse duration (s).
+	MAGNITUDE.AN_SG_Binomial.5	1         	Pulse magnitude (arbitrary units).
+	REFRAC_PERIOD.AN_SG_Binomial.5	0.001     	Refractory period (s).
+	##--------------- Ana_Histogram        [6] ---------------##
+	DETECT_MODE.Ana_Histogram.6	CONTINUOUS	Detection mode: 'spike' (detection) or 'continuous' (signal).
+	TYPE_MODE.Ana_Histogram.6	PSTH      	Histogram type: 'PSTH' or 'PH'.
+	THRESHOLD.Ana_Histogram.6	0.5       	Event threshold for bin counts (units as appropriate).
+	BIN_WIDTH.Ana_Histogram.6	0.001     	Bin width for the histogram: -ve assumes dt for previous signal (s).
+	PERIOD.Ana_Histogram.6   	0.27      	Period for period histogram: used in 'PH' mode only (s).
+	OFFSET.Ana_Histogram.6   	0         	Time offset for histogram (s).
+	##--------------- Display_Signal       [7] ---------------##
+	AUTO_SCALING.Display_Signal.7	ON        	Automatic scaling ('on' or 'off').
+	FRAMEDELAY.Display_Signal.7	0         	Delay between display frames (s)
+	MAGNIFICATION.Display_Signal.7	1         	Signal magnification.
+	MAXY.Display_Signal.7    	0         	Maximum Y value (for manual scaling).
+	MINY.Display_Signal.7    	0         	Minimum Y Value (for manual scaling).
+	MODE.Display_Signal.7    	LINE      	Display mode ('off', 'line' or 'raster').
+	NUMGREYSCALES.Display_Signal.7	10        	Number of grey scales (raster mode).
+	SUMMARYDISPLAY.Display_Signal.7	OFF       	Summary display mode ('on' or 'off').
+	WIDTH.Display_Signal.7   	-1        	Displayed signal width (seconds or x units).
+	WIN_HEIGHT.Display_Signal.7	500       	Display frame height (pixel units).
+	WIN_TITLE.Display_Signal.7	"          "	Display window title.
+	WIN_WIDTH.Display_Signal.7	440       	Display frame width (pixel units).
+	XRESOLUTION.Display_Signal.7	0.01      	Resolution of X scale (1 - low, fractions are higher).
+	NORMALISATION.Display_Signal.7	MIDDLE    	Y' normalisation mode ('bottom' or 'middle').
+
+<<>> Simulation parameter file divider.
+
+	DIAG_MODE.AMS.0          	SCREEN    	Diagnostics mode specifier ('off', 'screen' or <filename>).
+	SIM_SCRIPT_FILE.AMS.0    	"/home/lowel/projects/dsam/Applications/AMS/SimScripts/BSA99/Carney5v2.sim"	Simulation script file.
+	SIM_PAR_FILE.AMS.0       	"off       "	Simulation parameter file mode ('off' or <file name>).
+	SEGMENT_MODE.AMS.0       	ON        	Segmented or frame-base processing mode ('on' or 'off').
+	FILELOCKING_MODE.AMS.0   	OFF       	File locking mode ('on' or 'off').
+	NUM_RUNS.AMS.0           	1         	Number of repeat runs, or segments/frames.
