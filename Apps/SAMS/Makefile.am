@@ -6,15 +6,24 @@ bin_PROGRAMS	= ams_ng @AMS@
 
 EXTRA_PROGRAMS	= ams
 
-ams_SOURCES		= ams.h ams.cpp ams.xpm
+ams_SOURCES		= ams.h ams.cpp
 ams_LDADD		= $(AMSRESOBJ) $(DSAMGUILDFLAGS)
 
-ams_ng_SOURCES	= ams.h ams.xpm
+ams_ng_SOURCES	= ams.h
 ams_ng_LDADD	= ams_ng.$(OBJEXT) $(DSAMLDFLAGS)
 
 BUILT_SOURCES	= ams.spec
 
-EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env AMS.nsi LICENSE
+desktopdir		= $(datadir)/applications
+desktop_DATA	= ams.desktop
+
+pixmapdir		= $(datadir)/pixmaps
+pixmap_DATA		= ams.xpm
+
+man1_MANS		= ams.1
+
+EXTRA_DIST		= autogen.sh ams.par ams.rc amsicon.ico mkunxinst.env \
+					ams.xpm ams.desktop AMS.nsi COPYING
 
 AM_CPPFLAGS		= -DAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 
@@ -32,6 +41,9 @@ $(AMSRESOBJ):	Makefile ams.rc
 	@if test x$(MINGW32) = xyes; then \
 		$(RESCOMP) $(RESFLAGS) $(srcdir)/ams.rc -o $@ ; \
 	fi
+
+ams.1: manpage.xml
+		xmlto man manpage.xml
 
 ams.spec: ams.spec.in
 

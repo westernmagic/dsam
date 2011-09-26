@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(AMS, 1.3.1)
+AC_INIT(AMS, 1.3.2)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -284,6 +284,8 @@ dnl ============================================================================
 AC_OUTPUT(
 	Makefile
 	ams.spec
+	ams.desktop
+	manpage.xml
 	CfgTools/Makefile
 	DEFAULT/Makefile
 	HelpFiles/Makefile

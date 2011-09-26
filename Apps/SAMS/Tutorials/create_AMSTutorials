@@ -1,7 +1,7 @@
 #!/bin/sh
 ##################
 #
-# File:		create_AMSTutorials
+# File:		create_SAMSTutorials
 # Purpose:	This script creates the help document using the helper scripts
 # Author:	L.P.O'Mard
 # Created:	29 Jan 2003
@@ -10,6 +10,6 @@
 #
 ##################
 
-create_help AMS Tutorials -h1
-mv AMSTutorials.zip ../HelpFiles
-ps2pdf AMSTutorials.prn ../HelpFiles/AMSTutorials.pdf
+create_help SAMS Tutorials -h1
+mv SAMSTutorials.zip ../HelpFiles
+ps2pdf SAMSTutorials.prn ../HelpFiles/SAMSTutorials.pdf

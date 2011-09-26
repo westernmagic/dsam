@@ -5,8 +5,8 @@
 AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Matlab
-M_files		= DataXAxis.m Read16Bits.m Read32Bits.m ReadAIFF.m ReadBytes.m \
-				ReadIEEE.m ReadSNDChunk.m ReadWinFrame.m
+M_files		= DataXAxis.m aimMatPaths.mat isAFile.m runDSAM.m str2FileName.m \
+				runSpeechDemoAMS.m genFileName.m rmParInStr.m slash4OS.m
 
 EXTRA_DIST	= $(M_files)
 
