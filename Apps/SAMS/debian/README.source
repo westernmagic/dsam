@@ -1,0 +1,10 @@
+sams for Debian
+--------------
+
+No changes from the upstream package have been made.
+At the moment the automatic installion as a xinetd daemon has not been implemented
+for this installation.
+
+
+
+

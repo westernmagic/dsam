@@ -21,8 +21,7 @@ ParFiles	= acf.par BM_DRNLHuman.par dataFileAif.par dataFileIn.par \
 				stimHarmonic.par UtRedChans.par
 
 MatlabFiles	= Bern.m computeSAMS.m dichoticHarmonicStimulus.m \
-				dioticHarmonicStimulus.m oddHarmonics.m \
-				dichoticHarmonicStimulus.asv dioticHarmonicStimulus.asv
+				dioticHarmonicStimulus.m oddHarmonics.m
 
 DataFiles	= dichoticF0100H13_22.wav dichoticF0100H3_12.wav \
 				dichoticHarmReference.wav dichoticHarms.wav \

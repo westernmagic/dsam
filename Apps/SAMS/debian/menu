@@ -1,0 +1,2 @@
+?package(sams):needs="X11|text|vc|wm" section="Applications/Science"\
+  title="sams" command="/usr/bin/sams"

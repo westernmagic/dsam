@@ -9,13 +9,18 @@
 	<!-- Common text -->
 	<!ENTITY APP "SAMS">
 	<!ENTITY app "sams">
+	<!ENTITY dsam_url '<ulink url = "http://dsam.org.uk">http://dsam.org.uk</ulink>'>
+	<!ENTITY dsam_manual_plug "
+		Greater detail and advanced information is provided in the DSAM Help Manual,
+		available from &dsam_url;.
+	">
 ]>
 
 <book id="book">
 <bookinfo>
-<title>SAMS</title>
+<title>&APP;</title>
 
-<subtitle>Auditory Modelling System</subtitle>
+<subtitle>Simple Auditory Model Simulator</subtitle>
 
 <releaseinfo role="CVS">$Id: </releaseinfo>
 <authorgroup>
@@ -25,7 +30,7 @@
 	<surname>O'Mard</surname>
 	<othername role='mi'>P</othername>
 	<affiliation>
-	<address><email>lpo21@cam.ac.uk</email></address>
+	<address><email>lowel.omard@gmail.com</email></address>
 	</affiliation>
 </author>
 </authorgroup>
@@ -38,11 +43,17 @@ or suggested revisions.
 </para>
 </legalnotice>
 <copyright>
-	<year>1993-2007</year>
+	<year>1993-2011</year>
 	<holder>Dr. Lowel P. O'Mard</holder>
 </copyright>
-<pubdate>8th January 2007</pubdate>
+<pubdate>23rd September 2011</pubdate>
 <revhistory>
+	<revision>
+	<revnumber>1.2-2</revnumber>
+	<date>23rd Sep 2011</date>
+	<authorinitials>LPO</authorinitials>
+	<revremark>Revised.</revremark>
+	</revision>
 	<revision>
 	<revnumber>1.2-1</revnumber>
 	<date>8th Jan 2007</date>
@@ -62,8 +73,8 @@ Anesu and Shamiso who provide us with such joy.
 <dedication id="acknowledgements"><title>Acknowledgements</title>
 <para>
 I would first like to acknowledge God as the creator of all things and without whose support none of
-this would be possible.  I would also like to thank all those who have contributed to the making of
-this document.
+this work would have been possible.  I would also like to thank all those who have contributed to the
+making of this document.
 </para>
 </dedication>
 
@@ -72,7 +83,7 @@ this document.
 <para>
 The &APP; application was produced using the Development System for Auditory Modelling (DSAM).
 It's facilities and interface has many features in common with other applications produced using
-DSAM.
+DSAM. &dsam_manual_plug;
 </para>
 
 </preface>
@@ -84,8 +95,8 @@ DSAM.
 <sect1 id = "sx_Introduction">
 <title>Introduction</title>
 <para>
-The auditory model simulator (&APP;) allows users to design, run and evaluate auditory models. It
-is backed up by the extensive collection of published and new models supplied by the development
+The simple auditory model simulator (&APP;) allows users to design, run and evaluate auditory models. It
+is supported by the extensive collection of published and new models supplied by the development
 system for auditory modelling (DSAM), formerly known as LUTEar.
 </para>
 </sect1>
@@ -93,12 +104,18 @@ system for auditory modelling (DSAM), formerly known as LUTEar.
 <sect1 id = "sx_Installation">
 <title>Installation</title>
 <para>
-The &APP; is available in executable form for PC (Windows(tm) 95/98 NT) and RPM Linux platforms (at the time of writing). These packages will allow you to install &APP; and start using it straight away.  The source code for DSAM and &APP; is also available and can be used for compiling &APP;
-on other systems, including Mac OS X.  The executable installations and source code are available from the the web site: www.dsam.org.uk.
+The &APP; is available in executable form for PC (Windows(tm) 98/NT/Vista/7)) and Debian (Ubuntu)
+and RPM Linux platforms (at the time of writing). These packages will allow you to install &APP;
+and start using it straight away.  The source code for DSAM and &APP; is also available and can be
+used for compiling &APP; on other systems, including Mac OS X.  The executable installations and
+source code are available from the the web site: &dsam_url;.
 </para>
 
 <para>
-The Linux binary RPM is dependent upon other pacakges being installed in addition to the DSAM RPM which is also available from the web site.  These libraries are available as a standard part of most linux distributions, and are also readily available as source code packages.
+The Linux binary is dependent upon other packages being installed in addition to DSAM.  
+These libraries are available as a standard part of most linux distributions, and should already
+be installed or available for downloading from the respective repositories.  The source code is
+also readily available for the the additional packages.
 
 <informaltable colsep = "1" frame="all">
 <tgroup cols="3" align="left" colsep="1" rowsep="1">
@@ -113,13 +130,14 @@ The Linux binary RPM is dependent upon other pacakges being installed in additio
 </row>
 <row>
 <entry>DSAM</entry>
-<entry>www.dsam.org.uk</entry>
+<entry>&dsam_url;</entry>
 <entry>Development System for Auditory Modelling library.</entry>
 </row>
 <row>
 <entry>wxWidgets</entry>
 <entry>www.wxwidgets.org</entry>
-<entry>wxWidgets lets developers create applications for Win32, Mac OS X, GTK+, X11, Motif, WinCE, and more  using one codebase.</entry>
+<entry>wxWidgets lets developers create applications for Win32, Mac OS X, GTK+, X11, WinCE, and
+ more using one codebase.</entry>
 </row>
 <row>
 <entry>Libsndfile</entry>
@@ -145,10 +163,15 @@ sampled sound.</entry>
 <title>Quick start example simulation</title>
 
 <sect2 id = "sx_Example1_Introduction">
-<title>Introduction</title>
+<title>Overview</title>
 
 <para>
-This is a good starting point for those users who wish to get a quick feel for &APP; and how useful it will be.  This example takes the user through loading an auditory nerve simulation then running it to produce output, providing displays of the simulation process at different stages.  The user is then shown how to change parameters in the simulation which will be reflected by a change in the output.  It also serves as a introduction to the &APP; interface which is described in more detail later in this document.
+This is a good starting point for those users who wish to get a quick feel for &APP; and how useful
+it will be.  This example takes the user through loading an auditory nerve simulation then running
+it to produce output, providing displays of the simulation process at different stages.  The user
+is then shown how to change parameters in the simulation which will be reflected by a change in the
+output.  It also serves as a introduction to the &APP; interface which is described in more detail
+later in this document. &dsam_manual_plug;
 </para>
 
 </sect2>
@@ -157,7 +180,11 @@ This is a good starting point for those users who wish to get a quick feel for &
 <title>Starting &APP;</title>
 
 <para>
-Starting the &APP; application will be different on different platforms.  On Windows installations, the application can be found by navigating from <emphasis>start</emphasis> on the task bar: <emphasis>start->All Programs->DSAM Applications</emphasis>.   On unix-like systems, &APP; can be started from the command line using the command <emphasis>&app;</emphasis>. Once started the main &APP; window will appear as show in <xref linkend = "fg_ExampleMainWindow"/>.
+Starting the &APP; application will be different on different platforms.  On Windows installations,
+the application can be found by navigating from <emphasis>start</emphasis> on the task bar:
+<emphasis>start->All Programs->DSAM Applications</emphasis>.   On unix-like systems, &APP; can be
+started from the command line using the command <emphasis>&app;</emphasis>. Once started the main
+&APP; window will appear as show in <xref linkend = "fg_ExampleMainWindow"/>.
 </para>
 
 <figure id = "fg_ExampleMainWindow">
@@ -175,7 +202,12 @@ Starting the &APP; application will be different on different platforms.  On Win
 <title>Loading an example simulation into &APP;</title>
 
 <para>
-The first step is to load the example auditory nerve simulation from the file "auditoryNerve.spf" found in the "Tutorials/AuditoryNerve" directory.  From the <emphasis>File</emphasis> menu on the menu bar select the <emphasis>Open</emphasis> option.  This will open the <emphasis>Select a file</emphasis> dialog window as shown in <xref linkend = "fg_SelectFileDialog"/>.  Ensure that the "Simulation Parameter File (*.spf)" option is selected for the "Files of type", then open the "auditoryNerve" file (the ".spf" extension is not normally shown in Windows installations).
+The first step is to load the example auditory nerve simulation from the file "auditoryNerve.spf"
+found in the "Tutorials/AuditoryNerve" directory.  From the <emphasis>File</emphasis> menu on the
+menu bar select the <emphasis>Open</emphasis> option.  This will open the <emphasis>Select a
+file</emphasis> dialog window as shown in <xref linkend = "fg_SelectFileDialog"/>.  Ensure that
+the "Simulation Parameter File (*.spf)" option is selected for the "Files of type", then open the
+"auditoryNerve" file (the ".spf" extension is not normally shown in Windows installations).
 </para>
 
 <figure id = "fg_SelectFileDialog"><title>Select a file dialog window.</title>
@@ -187,7 +219,12 @@ The first step is to load the example auditory nerve simulation from the file "a
 </figure>
 
 <para>
-Once loaded the &APP; main window will look as show in <xref linkend = "fg_ExampleAuditoryNerveSim"/>.  Each shape in the simulation design represents a process and the execution/data direction is shown by the connection arrows.  The shape denotes the class of process and the central label gives the process' specific name.  For example, the first process is the "Stim_Harmonic" stimulus generation module which is in the  I/O class.  The process also has an additional label ("p0") which will be explained more fully later in this document.
+Once loaded the &APP; main window will look as show in <xref linkend =
+"fg_ExampleAuditoryNerveSim"/>.  Each shape in the simulation design represents a process and the
+execution/data direction is shown by the connection arrows.  The shape denotes the class of
+process and the central label gives the process' specific name.  For example, the first process
+is the "Stim_Harmonic" stimulus generation module which is in the  I/O class.  The process also
+has an additional label ("p0") which will be explained more fully later in this document.
 </para>
 
 <figure id = "fg_ExampleAuditoryNerveSim"><title>Example auditory nerve simulation.</title>
@@ -205,7 +242,10 @@ Once loaded the &APP; main window will look as show in <xref linkend = "fg_Examp
 <title>Running the example simulation</title>
 
 <para>
-Run the simulation by processing the media-player style "play" button as indicated in <xref linkend = "fg_RunButton"/>.  When run four displays will be produced as shown in <xref linkend = "fg_ExampleDisplays"/>. These displays correspond to the display processes in the simulation, labelled, "p3", "p7", "p9" and "p13".  The process shapes also show the display window labels.
+Run the simulation by processing the media-player style "play" button as indicated in <xref
+linkend = "fg_RunButton"/>.  When run four displays will be produced as shown in <xref linkend =
+"fg_ExampleDisplays"/>. These displays correspond to the display processes in the simulation,
+labelled, "p3", "p7", "p9" and "p13".  The process shapes also show the display window labels.
 </para>
 
 <figure id = "fg_RunButton"><title>Play button to run the simulation</title>
@@ -231,8 +271,19 @@ Run the simulation by processing the media-player style "play" button as indicat
 <title>What the example simulation does</title>
 
 <para>
-The example simulation describes a non-linear auditory nerve model.  The first four processes create, gate then display the stimulus.  The stimulus display is the top left display in <xref linkend = "fg_ExampleDisplays"/>.  The next two processes are filter-class processes which are used to model the outer-/middle-ear.  The following "BM_DRNL" process is a non-linear model of basilar membrane processing.  This models the frequency selectivity of the basilar membrane, and as shown in <xref linkend = "fg_ExampleDisplays"/> separates processing into multiple channels.  Each channel represents the response at a particular characteristic frequency.  The next two stages in the simulation model the response of the inner hair-cell, which is the point at which mechanical to neural transduction takes place.  The output from this process is shown in the bottom left display of  <xref linkend = "fg_ExampleDisplays"/>.  The bottom right display shows spike output of the auditory-nerve process which takes as its input the spike probabilities from the previous process.
-The final process outputs the auditory-nerve spike information to a file.
+The example simulation describes a non-linear auditory nerve model.  The first four processes
+create, gate then display the stimulus.  The stimulus display is the top left display in
+<xref linkend = "fg_ExampleDisplays"/>.  The next two processes are filter-class processes
+which are used to model the outer-/middle-ear.  The following "BM_DRNL" process is a non-linear
+model of basilar membrane processing.  This models the frequency selectivity of the basilar
+membrane, and as shown in <xref linkend = "fg_ExampleDisplays"/> separates processing into
+multiple channels.  Each channel represents the response at a particular characteristic frequency.
+The next two stages in the simulation model the response of the inner hair-cell, which is the
+point at which mechanical to neural transduction takes place.  The output from this process is
+shown in the bottom left display of  <xref linkend = "fg_ExampleDisplays"/>.  The bottom right
+display shows spike output of the auditory-nerve process which takes as its input the spike
+probabilities from the previous process. The final process outputs the auditory-nerve spike
+information to a file.
 </para>
 
 </sect2>
@@ -243,7 +294,13 @@ The final process outputs the auditory-nerve spike information to a file.
 
 <para>
 It is possible to examine and change the parameters of processes shown in the <emphasis>Simulation
-Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This will open the process' properties dialog as show in <xref linkend = "fg_Examples_BM_Properties"/>.  Hover over a particular parameter to produce an additional description for the parameter.  Parameters that cannot be changed for a particular mode choice will be greyed-out.  Change the "channels" parameter value from 20 to 10 channels then run the simulation.  There is no need to close the properties dialog before running the simulation again.  The displays will change reflecting the reduction in the properties dialog "channels" parameter.
+Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This will open the
+process' properties dialog as show in <xref linkend = "fg_Examples_BM_Properties"/>.  Hover over
+a particular parameter to produce an additional description for the parameter.  Parameters that
+cannot be changed for a particular mode choice will be greyed-out.  Change the "channels"
+parameter value from 20 to 10 channels then run the simulation.  There is no need to close
+the properties dialog before running the simulation again.  The displays will change reflecting
+the reduction in the properties dialog "channels" parameter.
 </para>
 
 <figure id = "fg_Examples_BM_Properties"><title>BM_DRNL process properties dialog</title>
@@ -254,7 +311,8 @@ Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This wi
 </mediaobject>
 </figure>
 
-<figure id = "fg_ExampleDisplays2"><title>Example simulation displays after reducing the number of channels</title>
+<figure id = "fg_ExampleDisplays2"><title>Example simulation displays after reducing the number
+of channels</title>
 <mediaobject>
 <imageobject>
 <imagedata fileref = "Figures/ExampleDisplays2.png" format = "PNG"/>
@@ -264,15 +322,103 @@ Design Window</emphasis>.  Double-click on the "BM_DRNL" process shape.  This wi
 
 </sect2>
 
+<sect2 id = "sx_Example1_DisablingEnabling_Modules">
+<title>Turning modules on and off</title>
+
+<para>
+You can turn of process modules from the <emphasis>Simulation Design Window</emphasis> as
+shown in <xref linkend = "fg_ExampleAuditoryNerveSimDisabled"/> which shows the AN_SG_Binomial
+process disabled (greyed out).  Modules can be disabled using the <emphasis>Edit Process
+Menu</emphasis> as shown in <xref linkend = "fg_ExampleEditProcessMenu"/> which is opened by
+right clicking over the process module.  Turning off a process module means that the simulation
+will run without executing that process.  This is useful when designing simulations, or for
+including many model-options in a single simulation script or just to see what happens.  In
+<xref linkend = "fg_ExampleANFibresComparison"/> we can see that as spike probability output from
+the IHC_Meddis2000 process, as the AN_SG_Binomial process has been disabled. When a simulation is
+saved as a simulation parameter file (as described below) the state of the process modules:
+whether they are enabled or disabled, will also be saved.
+</para>
+
+<figure id = "fg_ExampleAuditoryNerveSimDisabled"><title>Auditory nerve simulation with the
+AN_SG_Binomial module disabled.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleAuditoryNerveSimDisabled.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<figure id = "fg_ExampleEditProcessMenu"><title>Edit process menu.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleEditProcessMenu.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<figure id = "fg_ExampleANFibresComparison"><title>Comparison of AN Fibres display with the
+AN_SG_Binomial process enabled (left panel) and disabled (right panel).</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleANFibresComparison.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+</sect2>
+
+<sect2 id = "sx_Example1_Segment_Processing">
+<title>Segment Processing (Animated Displays)</title>
+
+<para>
+It is possible to see animated sequence of the process stages displayed in an &APP; simulation.
+Processing a simulation in segmented sections of the stimulus makes this possible.  The default 
+auditory nerve model simulation with which &APP; is installed is initially configured to process
+one 100ms segment only of the stimulus (see <xref linkend = "fg_ExampleAuditoryNerveSim"/>.  You
+can change the number of segments processed by changing the number of simulation runs, "NUM_RUNS"
+from the <emphasis>Edit->Main Parameters window->App. Specific Pars.</emphasis> tab (see
+<xref linkend = "fg_Example1EditMainParsAPP"/>) to a value higher than one. For each segment
+processed the displays will give a graphical display of the process data.  The size of each
+segment is defined by the stimulus.  In the case of the default AIM model, this is defined by
+the duration of the segment read from the data file.  The speed at which this is done will of
+course vary according to how much processing is done (e.g. how many signal channels) and of
+course the power of your computer.
+</para>
+
+<figure id = "fg_Example1EditMainParsAPP"><title>Main Parameters Window, Application Specific
+ Parameters Tab.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example1EditMainParsAPP.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+A special case occurs when reading stimuli from sound data files in segment processing mode.
+The number of segments to read from the stimulus is automatically calculated.  This calculation
+takes place when the "NUM_RUNS" parameter (from the Edit->Main Parameters window, see
+<xref linkend = "fg_Example1EditMainParsAPP"/>) is set to, "-1" (a negative value).  In this case
+the "NUM_RUNS" parameter will be set to the number of segments as determined by dividing the total
+duration of the signal by the segment duration.  The segment duration is defined as the "DURATION"
+parameter for the DataFile_In.
+</para>
+
+</sect2>
+
 </sect1>
 
 <sect1 id = "sx_An_Example2">
 <title>Quick start simulation creation example</title>
 
 <sect2 id = "sx_Example2_Introduction">
-<title>Introduction</title>
+<title>Overview</title>
 <para>
-In this example the user is carried through the process of creating a simulation from scratch using the Simulation Design Interface (SDI).  Building a simulation from scratch requires an understanding of the auditory system, to provide the user with a clear idea of what they trying to achieve.  A good method is to start with an established model and develop the simulation using that model as the basis.  This is the approach that will be used in this example, where we will build a simulation using the Meddis auditory-nerve model (<xref linkend = "Meddis86"/>.
+In this example the user is carried through the process of creating a simulation from scratch
+using the Simulation Design Interface (SDI).  Building a simulation from scratch requires an
+understanding of the auditory system, to provide the user with a clear idea of what they trying
+to achieve.  A good method is to start with an established model and develop the simulation
+using that model as the basis.  This is the approach that will be used in this example, where
+we will build a simulation using the Meddis auditory-nerve model (<xref linkend = "Meddis86"/>.
 </para>
 
 </sect2>
@@ -284,47 +430,233 @@ In this example the user is carried through the process of creating a simulation
 <chapter id = "ch_Main_Application_Window">
 <title>Main Application Window</title>
 
+<sect1 id = "sx_Application_Overview">
+<title>Overview</title>
+<para>
+This section of the help document describes the options available from the &APP; simulation manager
+window.  This is the window that appears when the program is first started (see <xref linkend =
+"fg_ExampleMainWindow"/>.)  If any of the menu options appear shaded, this means that that
+particular option has been disabled, e.g. if a valid simulation script has not yet been loaded.
+</para>
+
+</sect1>
+
 <sect1 id = "sx_Application_Menus">
 <title>Application Menus</title>
 
 <sect2 id = "sx_File_Menu">
 <title>File Menu</title>
+
 <para>
+This menu allows the loading or saving of simulations.  There are currently three main formats:
 </para>
+
+<informaltable>
+<tgroup cols="3" colsep="" rowsep="">
+<colspec colwidth="100pt" colname="c1"/>
+<colspec colwidth="50pt" colname="c2"/>
+<colspec colwidth="300pt" colname="c3"/>
+<tbody>
+<row>
+	<entry align = "left">Name</entry>
+	<entry>Extension</entry>
+	<entry>Description</entry>
+</row>
+<row>
+	<entry>Simulation Script (SS)</entry>
+	<entry>.sim</entry>
+	<entry>This format saves the simulation script to a file (with .sim extension) and each
+	module's parameter settings are saved to individual files (with .par extensions).</entry>
+</row>
+<row>
+	<entry align = "left">Simulation Parameter File (SPF)</entry>
+	<entry>.spf</entry>
+	<entry>This format saves both the simulation script and each module's parameter settings
+	into a single text file.  This format is useful when wishing to save the state of a simulation
+	and sending the file as an e-mail or including it as an appendix to a report.</entry>
+</row>
+<row>
+	<entry align = "left">Extensible Markup Language (XML)</entry>
+	<entry>.xml</entry>
+	<entry>This format is similar to the SPF in that simulation is saved to a single file.
+	This format is not as easy for reading, but is more efficient for saving and loading
+	simulations.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
 
 </sect2>
 
 <sect2 id = "sx_Edit_Menu">
 <title>Edit Menu</title>
+
+<sect3 id = "sx_Edit_Menu_MainParameters">
+<title>Edit->Main parameters</title>
+
+<figure id = "fg_EditMainParameters"><title>Main Parameters Window</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/EditMainParameters.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
 <para>
+The parameters option allows you to change the main &APP; program parameters.  This window may be
+used to set the main diagnostics mode, set the segmented processing mode, set the file-locking mode
+or set the number of repeat runs (segment frames).  Selecting the "App. Specific Pars" tab accesses
+the latter two parameters from the window (see table below).
 </para>
+
+
+<informaltable>
+<tgroup cols="2" colsep="" rowsep="">
+<colspec colwidth="100pt" colname="c1"/>
+<colspec colwidth="350pt" colname="c2"/>
+<tbody>
+<row>
+	<entry align = "left">Diagnostics mode</entry>
+	<entry>This parameter allows the user to decide whether or not to output diagnostics.
+		<para>
+		SCREEN: this value will send diagnostics to the simulation manager window's diagnostic
+		panel.  This can be scrolled up or down.
+		</para>
+		<para>
+ 		OFF: in this case no diagnostics will be output.
+ 		</para>
+ 		<para>
+ 		The last option in this control, set to "no_file" by default, allows a file to be selected
+ 		to which the diagnostic information will be sent.  The file name is specified by pressing
+ 		the Browse button along side the control.
+ 		</para>
+ 	</entry>
+</row>
+<row>
+	<entry align = "left">Simulation file</entry>
+	<entry>
+	Using this parameter, different simulations ('*.sim', '*.spf' or '*.xml') files can be selected.
+	This option is disabled in the GUI version as this function is controlled using the
+	<emphasis>File</emphasis> menu (see <xref linkend = "sx_File_Menu"/>).
+		<para>
+		NB. The default parameter files for a simulation will be read from the same file path as
+		for the simulation script file.
+		</para>
+	</entry>
+</row>
+<row>
+	<entry align = "left">Segmented (frame) processing mode</entry>
+	<entry>
+	This parameter can be either ON or OFF.  Segmented processing allows a simulation to be
+	executed using signal segments that are smaller than the length of the signal.  The simulation
+	process is applied separately to each successive segment of the input signal, maintaining the
+	continuity of the process state between each segment.  A useful use of segmented processing is
+	to observe the progressive changing of simulation processes as animated displays.
+	</entry>
+</row>
+<row>
+	<entry align = "left">File locking Mode</entry>
+	<entry>
+	This parameter can be either ON or OFF.  When this parameter is enabled a lock file, ".&app;_LCK"
+	is created while the simulation is being process.  It is deleted once the simulation run comes
+	to an end.  This is intended to be used when &APP; is being run by another program, thus allowing
+	the external program to know when &APP; has finished processing its data.
+	</entry>
+</row>
+<row>
+	<entry align = "left">Repeat runs/No. Segments</entry>
+	<entry>
+	This is an integer value that defines the number of times a simulation script is run.  In
+	segmented processing mode it defines the number of segments processed.  For example if the
+	simulation script is set up to read data from a file in 32 ms segments, then setting this value
+	to 4 will make the &APP; program process 4 x 32 ms = 128 ms of the input signal.
+	</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+</sect3>
 
 </sect2>
 
 <sect2 id = "sx_View_Menu">
 <title>View Menu</title>
+
+<sect3 id = "sx_View_Menu_SimulationParameters">
+<title>View->Simulation parameters</title>
+
 <para>
+This option prints the current simulation parameters in the diagnostics panel of the simulation
+manager window.
 </para>
+
+</sect3>
 
 </sect2>
 
 <sect2 id = "sx_Program_Menu">
-<title>Pogram Menu</title>
+<title>Program Menu</title>
+
+<sect3 id = "sx_Program_Menu_Execute">
+<title>Program->Execute</title>
 <para>
+This menu option runs the simulation script.  It has the same effect as pressing the 
+<emphasis>Play Simulation</emphasis> button (see <xref linkend = "fg_RunButton"/>).
 </para>
+
+</sect3>
+
+<sect3 id = "sx_Program_Menu_StopSimulation">
+<title>Program->Execute</title>
+<para>
+This menu option stops a currently running simulation.  Simulations cannot be stopped mid-process,
+so there may be a delay before a simulation actually terminates.  It has the same effect as pressing
+the <emphasis>Stop Simulation</emphasis> button in the toolbar as shown in <xref linkend =
+"fg_StopButton"/>.
+</para>
+
+<figure id = "fg_StopButton"><title>Stop button to terminate the simulation</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/StopButton.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect3>
 
 </sect2>
 
 <sect2 id = "sx_Windows_Menu">
 <title>Windows Menu</title>
+
+
+<sect3 id = "sx_Windows_Menu_DiagnosticWindow">
+<title>Windows->Diagnostic Window</title>
 <para>
+This option opens a diagnostic window which can be kept open as simulations run.  When screen
+diagnostics are enabled they are listed in this window.  This is a useful tool for debugging
+simulations.
 </para>
+
+<figure id = "fg_DiagnosticWindow"><title>Diagnostic window</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/DiagnosticWindow.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect3>
 
 </sect2>
 
 <sect2 id = "sx_Help_Menu">
 <title>Help Menu</title>
 <para>
+To be completed ... (??)
 </para>
 
 </sect2>
@@ -334,6 +666,7 @@ In this example the user is carried through the process of creating a simulation
 <sect1 id = "sx_Tool_Bar">
 <title>Tool Bar</title>
 <para>
+To be completed ... (??)
 </para>
 
 </sect1>
@@ -341,13 +674,411 @@ In this example the user is carried through the process of creating a simulation
 <sect1 id = "sx_Simulation_Design_Window">
 <title>Simulation Design Window</title>
 <para>
+To be completed ... (??)
 </para>
 
 <sect2 id = "sx_Process_Palette">
 <title>Process Palette</title>
 <para>
+To be completed ... (??)
 </para>
 </sect2>
+
+</sect1>
+
+</chapter>
+
+<chapter id = "ch_Advanced_use">
+<title>Advanced use of &APP;</title>
+
+<sect1 id = "sx_Advanced_use_Parameter_precedence">
+<title>Parameter setting precedence on initialisation</title>
+<para>
+When you run a simulation using &APP;, the parameters used by the program and the simulation
+parameters will already have been set by variety of methods.  These methods are summarised in the
+following diagram:
+</para>
+
+<figure id = "fg_Parameter_setting_precedence"><title>Parameter setting precedence.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ParameterPrecedence.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Once the Simulation Manager window has appeared, &APP; will have read a default set of main
+parameters, unless a simulation parameter file (SPF) or XML format file was specified on the
+command line.  The name of the file used to initialise the program can be changed from the
+command line (see <xref linkend = "sx_command_line_parameters_and_options"/>).
+</para>
+
+<para>
+Once the simulation script has been initialised, its parameters will then be set using the
+simulation file if one has been specified.  This is a text file containing simulation and
+program parameter values that can be saved from the &APP; program (simulation manager window
+menus) or created manually using a text editor (see the DSAM Help Manual for further descriptions
+of SPF and other simulation file formats).  The settings from the simulation file will override
+the default parameters with which the simulation is initialised.
+</para>
+
+<para>
+If the &APP; program is started from the command line, then the command-line settings will override
+any previously set parameters.
+</para>
+
+<para>
+After the &APP; program initialises, the user can then change the main parameters and the
+simulation parameters using the respective dialog windows.
+</para>
+
+</sect1>
+
+<sect1 id = "sx_command_line_parameters_and_options">
+<title>Command-line parameters and options</title>
+
+<sect2 id = "sx_command_line_parameters_and_options_overview">
+<title>Overview</title>
+
+<para>
+When used on a UNIX(tm) or PC system, the &APP; program can be run from the command line.  This is
+also possible using Macintosh system, i.e. when calling &APP; from another program.  There are
+various reasons why you might want to do this.  For instance, you may need to call &APP; from
+within another program, such as Matlab(tm) or from a shell script.  Server mode is particularly
+useful for this purpose, and is described below in section: Server mode.  The &APP; program allows
+you to change the operating parameters from the command line.  You can change the main parameters
+for the program, and you can also change the simulation process parameters.
+</para>
+
+<para>
+The &APP; program is called using the following syntax: <emphasis>"&app; [options] [parameter1
+value1 parameter2 value 2 ….]"</emphasis>.
+</para>
+
+<para>
+The available options are described below.  The optional <emphasis>parameter/value</emphasis> pairs
+are simulation process parameter names, followed by the required values.  The syntax for these
+setting pairs is described below.
+</para>
+
+</sect2>
+
+<sect2 id = "sx_command_line_options">
+<title>Command-line options</title>
+
+<para>
+The available options for the &APP; program can be listed by issuing the command: "&app; -h"
+</para>
+
+<informaltable>
+<tgroup cols="3" colsep="" rowsep="">
+<colspec colwidth="40pt" colname="c1"/>
+<colspec colwidth="60pt" colname="c2"/>
+<colspec colwidth="350pt" colname="c3"/>
+<tbody>
+<row>
+	<entry align = "center">Option</entry>
+	<entry>Arguments</entry>
+	<entry>Description</entry>
+</row>
+<row>
+	<entry align = "center">-h</entry>
+	<entry>none</entry>
+	<entry>This prints the available options and the command-line syntax for the AMS program.</entry>
+</row>
+<row>
+	<entry align = "center">-l</entry>
+	<entry>list</entry>
+	<entry>
+	This option allows you to produce lists from the simulation script.  The list options are:
+
+		<para>
+		<emphasis>parameters:</emphasis> will produce a list of all of the parameters
+		for a simulation script, followed by the main parameter values.  The list is produced in the
+		general format <emphasis>parameter.module.step</emphasis> value description.  This information
+		can then be used to set the simulation process parameters from the command line.  This output
+		can be used as a simulation parameter file (SPF), once the heading lines removed.
+		</para>
+		<para>
+		<emphasis>cfinfo:</emphasis> will produce a list of the centre frequency
+		information for the first basilar membrane process module found in the simulation script.
+		</para>
+ 	</entry>
+</row>
+<row>
+	<entry align = "center">-P</entry>
+	<entry>&lt;file name&gt;</entry>
+	<entry>The main parameters for the &APP; program will be read from &lt;file name&gt; file.
+	</entry>
+</row>
+<row>
+	<entry align = "center">-r</entry>
+	<entry>&lt;x&gt;</entry>
+	<entry>
+	Repeat simulation runs (segment frames) &lt;x&gt;.  This main program parameter is
+	described in <xref linkend = "sx_Edit_Menu_MainParameters"/>.
+	</entry>
+</row>
+<row>
+	<entry align = "center">-s</entry>
+	<entry>none</entry>
+	<entry>
+	Set the simulation file to &lt;file name&gt;.  This main program parameter is described in
+	<xref linkend = "sx_Edit_Menu_MainParameters"/>.
+	</entry>
+</row>
+<row>
+	<entry align = "center">-v</entry>
+	<entry>none</entry>
+	<entry>This option prints the current &APP; program version.</entry>
+</row>
+<row>
+	<entry align = "center">-S</entry>
+	<entry>none</entry>
+	<entry>This option instructs the &APP; program to run in server mode.  
+	The server mode is described in the DSAM Help manual</entry>
+</row>
+<row>
+	<entry align = "center">-I</entry>
+	<entry>&lt;x&gt;</entry>
+	<entry>
+	When using the server mode option the server ID is set to the integer &lt;x&gt;.  The server
+	mode is described in the DSAM Help manual.
+	</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<sect3 id = "sx_command_line_options_example">
+<title>Example</title>
+
+<para>
+A small section of the output produced by the command "&app; -l parameters -s auditorynerve.spf", is
+shown below using the example auditory nerve simulation from the file "auditoryNerve.spf"
+found in the "Tutorials/AuditoryNerve" directory:
+</para>
+
+<literallayout>
+##----- Stim_Harmonic.p0       (stimHarmonic.par) -----##
+LOW_HARMONIC.Stim_Harmonic.p0   1               Lowest harmonic number.
+HIGH_HARMONIC.Stim_Harmonic.p0  80              Highest harmonic number.
+PHASE_MODE.Stim_Harmonic.p0     "COSINE"        Phase mode (ALTERNATING, COSINE, ...).
+PHASE_PAR.Stim_Harmonic.p0      0               Phase parameter (Shroeder phase: C value, ...).
+MISTUNED_HARM.Stim_Harmonic.p0  -1              Mistuned harmonic number (0 = F0, ...).
+MT_FACTOR.Stim_Harmonic.p0      0               Mistuning factor (%).
+FUND_FREQ.Stim_Harmonic.p0      100             Fundamental frequency (Hz).
+INTENSITY.Stim_Harmonic.p0      60              Intensity per harmonic (dB SPL).
+DURATION.Stim_Harmonic.p0       0.1             Duration (s).
+DT.Stim_Harmonic.p0             1e-05           Sampling interval, dt (s).
+MOD_FREQ.Stim_Harmonic.p0       2.5             Modulation Frequency (Hz).
+MOD_PHASE.Stim_Harmonic.p0      0               Modulation Phase (degrees).
+MOD_DEPTH.Stim_Harmonic.p0      0               Modulation depth (%).
+
+##----- Trans_Gate.p1                (rampUp.par) -----##
+POS_MODE.Trans_Gate.p1          "RELATIVE"      Position mode ('absolute' or 'relative')
+OP_MODE.Trans_Gate.p1           "RAMP"          Operation mode ('ramp' or 'damp')
+TYPE_MODE.Trans_Gate.p1         "RAISED_COS"    Type mode ('linear', ...)
+OFFSET.Trans_Gate.p1            0               Time offset (s)
+DURATION.Trans_Gate.p1          0.005           Ramp duration ... (s))
+SLOPE.Trans_Gate.p1             0.01            Slope parameter or half-life (in 'decay_par' mode only)
+
+##----- Trans_Gate.p2              (rampDown.par) -----##
+POS_MODE.Trans_Gate.p2          "RELATIVE"      Position mode ('absolute' or 'relative')
+OP_MODE.Trans_Gate.p2           "DAMP"          Operation mode ('ramp' or 'damp')
+TYPE_MODE.Trans_Gate.p2         "RAISED_COS"    Type mode ('linear', ...)
+OFFSET.Trans_Gate.p2            0               Time offset (s)
+DURATION.Trans_Gate.p2          0.005           Ramp duration ... (s)
+SLOPE.Trans_Gate.p2             0.005           Slope parameter or half-life (in 'decay_par' mode only)
+
+... The rest of the listing has been truncated...
+
+</literallayout>
+
+<para>
+Note that some of the descriptions have been shortened so that they fit on this page.
+</para>
+
+<para>
+The listing shows only the parameters for the first three process modules in the simulation script.
+Note that the parameters list for each process module starts with a comment line.  The comment line
+contains the name of the process module, and the step number in the simulation script.
+Each of the lines has the order <emphasis>parameter name</emphasis>, <emphasis>value</emphasis>,
+<emphasis>description</emphasis>.  This file can be used to find the parameter names to use when
+setting parameters from the command line.
+</para>
+
+</sect3>
+
+</sect2>
+
+<sect2 id = "sx_command_line_parameter_value_pairs">
+<title>Command-line Parameter/Value pairs</title>
+
+<para>
+It is possible to run and set the parameters of a simulation from the command line.  This is done
+using the syntax shown at the start of this section ( see <xref linkend = "sx_command_line_options"/>).
+</para>
+
+<para>
+The parameter name syntax is:
+</para>
+
+<para>
+&lt;parameter name&gt;.&lt;process name&gt;.&lt;label&gt;
+</para>
+
+<para>
+This is the same format that is produce by the "&app; -l parameters" command or as stored in
+simulation parameter files.  The process name and the label can also be found from the diagnostic
+output (see <xref linkend = "fg_DiagnosticWindow" />).
+</para>
+
+<para>
+An example of setting a parameter from the command line is "&app; -s auditoryNerv.spf
+duration.stim_harmonic.0 0.05".  When the simulation is then run the following figures will be,
+produced which you can compare with <xref linkend = "fg_ExampleDisplays"/>.
+</para>
+
+<figure id = "fg_ExampleDisplays50ms"><title>Auditory nerve example simulation displays with 50 ms
+stimulus.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/ExampleDisplays50ms.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Abbreviations can be used when setting parameters from the command line, e.g. the previous example
+could be repeated using the command "&app; -s auditoryNerv.spf dur.Data.0 0.011".  Only the process
+label can not be abbreviated.
+</para>
+
+<para>
+You may also reduce the number of fields included in the parameter specification: "&app; -s
+auditoryNerv.spf dur.Data 0.011"  and "&app; -s auditoryNerv.spf dur 0.011" will both work.
+Note that in the latter case, the value of the first parameter in the simulation starting with
+"dur" will be changed.  The best practise is that you increase the number of fields used to
+identify a parameter as the opportunity for ambiguities increases.  For example, in the example
+auditory nerve simulation script, there are three uses of the "Display_Signal"  process module,
+so the full number of fields must be employed to ensure that the correct display parameter is set.
+In this case you may still abbreviate both the parameter name and the module name.
+</para>
+
+<para>
+Note that any parameters set on the command line will override settings in a simulation parameter
+file.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id = "sx_Input_Signal_Level">
+<title>Input Signal Level</title>
+
+<sect2 id = "sx_Input_Signal_Level_Intro">
+<title>Introducing Potential Level Problems</title>
+
+<para>
+When using &APP;, it is sometimes necessary to ensure that the input stimulus to a simulation is of
+the correct level.  This issue is of particular concern to those using binary sound format files
+as input to &APP;, and is especially important when level-depend process modules such as the
+<emphasis>IHC_Meddis86</emphasis> hair cell model are used.  The hair cell model only responds at
+the spontaneous rate unless the input it receives is above the threshold intensity.
+(See the rate-intensity curves for the <emphasis>IHC_Meddis86</emphasis> process module in the
+DSAM manual document).
+</para>
+
+<para>
+Raw binary files will usually have been normalised to allow the maximum dynamic range to be stored
+using the specified word size.  Such a file read into &APP; using the
+<emphasis>DataFile_In</emphasis> process module and used without being scaled will be interpreted
+as a very low dB SPL intensity.  Unless the normalisation value that was used is known then the
+signal read from the data file will need to be appropriately scaled before it can produce a
+response from for example the Meddis 86 hair cell model.  The signal can be scaled using the
+"gain" parameter of the <emphasis>DataFile_In</emphasis> process module.
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Input_Signal_Level_Simple_Method">
+<title>A Simple Method to Set a Usable Gain</title>
+
+<para>
+For some uses, the exact setting of the input level is not required: the important thing is to
+produce a usable response from the respective simulation.  To this end a simple simulation has
+been included with this installation, it can be loaded into &APP; using the "InputLevel.spf" SP
+file, which can be found in the installation's "DEFAULT" directory.
+</para>
+
+<para>
+The "InputLevel.spf" simulation reads in a specified data file and displays the signal.  A
+57 dB SPL pure tone used as input will fill the display window, with peaks at 20024 &micro;Pa and
+troughs at -20024 &micro;Pa.  The user can set the file read by this simulation, and the gain
+changed until the signal displayed fills the screen in a similar way.  The intensity may not be
+exactly 57 dB SPL because the intensity calculation is only accurate for pure tones.
+</para>
+
+<para>
+The name of the file read by the simulation can be set by selecting
+<emphasis>DataFile_In</emphasis> process module parameter window, as shown in <xref linkend =
+"fg_LevelSettingDataFileDialogue"/>.
+</para>
+
+<figure id = "fg_LevelSettingDataFileDialogue"><title>Using the <emphasis>DataFile_In</emphasis>
+parameter window to set the signal level.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/LevelSettingDataFileDialogue.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The required file name can then be typed in or selected by pressing the "Browse" button.
+</para>
+
+<para>
+Leaving the <emphasis>DataFile_In</emphasis> parameter window open, run the simulation
+(press the "play" button).  The signal will be displayed as shown in <xref linkend =
+"fg_LevelSettingDisplay"/> for a pure tone.
+</para>
+
+<figure id = "fg_LevelSettingDisplay"><title>Level Display Window.</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/LevelSettingDisplay.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Now change the "Gain" parameter in the <emphasis>DataFile_In</emphasis> parameter window and
+re-run the simulation.  Continue to do this until the signal fills the display in a similar way to
+the pure tone.  As a guide, a two-word (16 bit) binary file will require a gain of around 120 dB.
+</para>
+
+<para>
+Please note that AIFF files written using &APP; or other DSAM applications do not require scaling
+in this way, as the normalisation information is stored with the file, i.e. if the
+"PTone57dBSPL.aif" is selected, it will be displayed as shown in <xref linkend =
+"fg_LevelSettingDisplay"/> with zero gain being applied.  This file can also be found in the
+installation's "DEFAULT" directory.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id = "sx_Advanced_Usage">
+<title>Advanced Usage</title>
+
+<para>
+&dsam_manual_plug;
+</para>
 
 </sect1>
 

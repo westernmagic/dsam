@@ -14,7 +14,8 @@
 #mv SAMSHelp.zip ../HelpFiles
 #ps2pdf SAMSHelp.prn ../HelpFiles/SAMSHelp.pdf
 
-#xmlto pdf SAMSHelp.xml
+xmlto pdf SAMSHelp.xml
 
-docbook2pdf SAMSHelp.xml
+#docbook2pdf SAMSHelp.xml
+
 cp SAMSHelp.pdf ../HelpFiles

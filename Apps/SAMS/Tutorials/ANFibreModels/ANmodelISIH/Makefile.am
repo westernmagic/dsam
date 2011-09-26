@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = foreign
 
 DIRECTORY	= Tutorials/ANFibreModels/ANmodelISIH
 
-SimScripts	= SpikeTimesISIH.sim test.sim
+SimScripts	= SpikeTimesISIH.sim
 
 SPFFiles	= SpikeTimesISIH.spf
 

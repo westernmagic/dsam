@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AMS
+Comment=Auditory Model Simulator
+Icon=@PACKAGE@
+Exec=@PACKAGE@
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Education;GTK;Science;

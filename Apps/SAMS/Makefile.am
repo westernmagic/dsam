@@ -27,7 +27,7 @@ EXTRA_DIST		= autogen.sh sams.par sams.rc samsicon.ico mkunxinst.env \
 
 AM_CPPFLAGS		= -DSAMS_DATA_INSTALL_DIR="wxT(\"$(pkgdatadir)\")"
 
-SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC HelpFiles Tutorials
+SUBDIRS			= CfgTools DEFAULT Matlab Octave MSVC debian HelpFiles Tutorials
 
 CC = $(CXX)		# Ensure use of C++ compiler for the link stage.
 

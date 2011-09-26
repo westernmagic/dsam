@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(SAMS, 1.3.2)
+AC_INIT(SAMS, 1.3.3)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_HOST
@@ -293,6 +293,7 @@ AC_OUTPUT(
 	MSVC/Makefile
 	MSVC/SAMS/Makefile
 	MSVC/SAMS_ng/Makefile
+	debian/Makefile
 	Octave/Makefile
 	Tutorials/Makefile
 	Tutorials/ANFibreModels/Makefile
