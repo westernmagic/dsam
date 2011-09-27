@@ -274,7 +274,7 @@ _DSAM_EOF
 $CXX get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
 SERVER_PORT=`./a.out`
 AC_MSG_RESULT($SERVER_PORT)
-rm -f get_port.$ac_ext
+rm -f get_port.$ac_ext a.out
 AC_SUBST(SERVER_PORT)
 
 dnl ============================================================================
