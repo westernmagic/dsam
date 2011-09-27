@@ -4,6 +4,21 @@
 
 <bibliography><title>Bibliography</title>
 
+<bibliomixed id = "Hewitt93">
+  <bibliomset relation = "article">
+	<surname>Hewitt</surname> <firstname>M.</firstname> <othername role = "middle">J.</othername>,
+	<surname>Meddis</surname> <firstname>R.</firstname>,
+	(<pubdate><emphasis role = "bold">1993</emphasis></pubdate>)
+	<title role = "article">Regularity of cochlear nucleus stellate cells: A computational modeling
+	study</title>
+  </bibliomset>
+  <bibliomset relation="journal">
+    <title>J. Acoust. Soc. Am.</title>
+	[<volumenum>93</volumenum>],
+	<pagenums>3390-3398</pagenums>.
+  </bibliomset>
+</bibliomixed>
+
 <bibliomixed id = "Meddis86">
   <bibliomset relation = "article">
 	<surname>Meddis</surname> <firstname>R.</firstname>,

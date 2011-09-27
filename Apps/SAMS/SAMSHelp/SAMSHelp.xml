@@ -414,13 +414,189 @@ parameter for the DataFile_In.
 <title>Overview</title>
 <para>
 In this example the user is carried through the process of creating a simulation from scratch
-using the Simulation Design Interface (SDI).  Building a simulation from scratch requires an
-understanding of the auditory system, to provide the user with a clear idea of what they trying
-to achieve.  A good method is to start with an established model and develop the simulation
-using that model as the basis.  This is the approach that will be used in this example, where
-we will build a simulation using the Meddis auditory-nerve model (<xref linkend = "Meddis86"/>.
+using the Simulation Design Interface (SDI).  Simulations may also be designed directly as
+simulation scripts (see the DSAM Manual for further information on how to do this). Building a
+simulation from scratch (rather than amending an existing simulation such as one of the Example or
+Tutorial simulations) requires an understanding of the auditory system, to provide the
+user with a clear idea of what they are trying to achieve.  A good method is to start with an
+established model and develop the simulation using that model as the basis.  This is the approach
+that will be used in this example where we will build a simulation using the Meddis '86
+auditory-nerve (AN) model (<xref linkend = "Meddis86"/>, <xref linkend = "Hewitt93"/>).
 </para>
 
+<para>
+The Meddis '86 model consists of four main stages:
+<itemizedlist>
+  <listitem>
+    <para>
+    Pre-emphasis filtering - modelling the effects of the outer- and middle-ear using a bandpass
+    filter.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+    Basilar membrane Filtering - simulates the frequency selective filtering effect of the
+    basilar membrane (BM) using a linear gamma-tone filterbank.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+    Mechanical to neural transduction - This models the process of the inner hair cell synapse
+    and produces output as the probability of the occurrence of a spike.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+    Auditory nerve spike generation and refractory effects - individual AN spikes
+    are generated from the hair cell firing firing probability using random number techniques.
+    </para>
+  </listitem>
+</itemizedlist>
+</para>
+
+<para>
+The model is implemented in &APP; by selecting modules from the main &APP; window
+<emphasis>tool palette</emphasis> as shown in <xref linkend = "sx_Example2_Selecting_Modules"/>.
+In this example the modules are all placed and set first.  They are then connected together to
+produce the final simulation.  This method was used for convenience.  Modules
+can also be connected progressively as they chosen and set.
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Example2_Selecting_Modules">
+<title>Selecting the Modules</title>
+<para>
+The Meddis '86 AN model will require four modules for each of its processing stages.  Modules
+are selected from the <emphasis>tool palette</emphasis> by clicking on the appropriate tool.
+Hovering over a particular tool will produce the tool's descriptive name as shown in
+<xref linkend = "fg_Example2Palletetooltip"/>.  
+</para>
+
+<figure id = "fg_Example2Palletetooltip"><title>The Tool Palette</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2Palletetooltip.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+Once a module type is selected, clicking in the design window will place it.
+The specific process for the module is then chosen by double-clicking on the newly place module
+shape.  This will open the <emphasis>module selection dialogue window</emphasis> as shown
+in <xref linkend = "fg_Example2SettingModules"/>.
+</para>
+
+<figure id = "fg_Example2SettingModules"><title>Setting the Module Process</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2SettingModules.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+All the modules to be use in the Meddis '86 AN simulation are shown in <xref linkend =
+"fg_Example2SelectedSimModules"/>.  Note that stimulus and file output modules have been
+added, in addition to several displays.
+</para>
+
+<figure id = "fg_Example2SelectedSimModules"><title>Meddis '86 AN Modules</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2SelectedSimModules.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The next step in this example is to connect the modules to produce the final simulation (see
+<xref linkend = "sx_Example2_Connecting_the_Modules"/>).
+</para>
+
+</sect2>
+
+<sect2 id = "sx_Example2_Connecting_the_Modules">
+<title>Connecting the Modules</title>
+
+<para>
+To make the connection between two modules, right click on the first module, then drag to
+the second, terminating module.  An arrow will then be shown connecting the two modules, and
+indicates the process flow.  The fully connected Meddis '86 AN simulation is shown in
+<xref linkend = "fg_Example2ConnectedSimulation"/>.
+</para>
+
+<figure id = "fg_Example2ConnectedSimulation"><title>The Connected Meddis '86 AN Simulation</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2ConnectedSimulation.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+</sect2>
+
+<sect2 id = "sx_Example2_Simulation_Run">
+<title>Running the Simulation</title>
+
+<para>
+The simulation is now ready to run, but a few changes will first be made.  The modules
+are always initialised to default values.  It is always important to ensure that the values suit
+the user's requirements.  For the purpose of this example the frequency of the stimulus generation
+process is changed to 1292Hz from 1000 Hz. This is done by double-clicking on the
+<emphasis>Stim_Puretone</emphasis> process in the simulation, producing its parameter dialogue
+window as shown in <xref linkend = "fg_Example2EditingStimPars"/>.  The default number of BM model
+centre frequencies is also changed, by double-clicking on the <emphasis>BM_GammaT</emphasis>
+process and choosing the "CF List" tab as shown in <xref linkend = "fg_Example2EditingBMPars"/>.
+</para>
+
+<figure id = "fg_Example2EditingStimPars"><title>Editing the Stimulus Parameters</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2EditingStimPars.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<figure id = "fg_Example2EditingBMPars"><title>Editing the NM model Parameters</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2EditingBMPars.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The <emphasis>channels</emphasis> parameter which sets the number of BM channels was changed
+from 30 to 10. The output module was disabled by right clicking on the
+<emphasis>DataFile_Out</emphasis> module as shown in <xref linkend =
+"fg_Example2DisableFileOutput"/>.  When disabled module shapes are shaded grey.  Finally the
+display modules were edited to give the displays descriptive labels.
+</para>
+
+<figure id = "fg_Example2DisableFileOutput"><title>Disabling the File Output Process</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2DisableFileOutput.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
+
+<para>
+The displays produced by a run of the simulation is shown in <xref linkend =
+"fg_Example2SimulationDisplays"/>. They have been moved and resized to optimise the figure. 
+Note that the stimulus frequency was chosen to produce activity in one of the central BM channels.  The
+The AN output channels show spontaneous activity with greater activity on the 1292Hz channel.
+</para>
+
+<figure id = "fg_Example2SimulationDisplays"><title>Meddis 86 AN Simulation Displays</title>
+<mediaobject>
+<imageobject>
+<imagedata fileref = "Figures/Example2SimulationDisplays.png" format = "PNG"/>
+</imageobject>
+</mediaobject>
+</figure>
 </sect2>
 
 </sect1>
@@ -690,6 +866,10 @@ To be completed ... (??)
 
 <chapter id = "ch_Advanced_use">
 <title>Advanced use of &APP;</title>
+
+<para>
+&dsam_manual_plug;
+</para>
 
 <sect1 id = "sx_Advanced_use_Parameter_precedence">
 <title>Parameter setting precedence on initialisation</title>
@@ -1070,15 +1250,6 @@ installation's "DEFAULT" directory.
 </para>
 
 </sect2>
-
-</sect1>
-
-<sect1 id = "sx_Advanced_Usage">
-<title>Advanced Usage</title>
-
-<para>
-&dsam_manual_plug;
-</para>
 
 </sect1>
 
