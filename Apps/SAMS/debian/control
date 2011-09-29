@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, cdbs,
  libdsam2.8-dev (>= 2.8.0),
  xmlto
 Standards-Version: 3.9.1
-Homepage: <insert the upstream URL, if relevant>
+Homepage: http://dsam.org.uk
 #Vcs-Git: git://git.debian.org/collab-maint/sams.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/sams.git;a=summary
 
@@ -14,8 +14,9 @@ Package: sams
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
   libdsam2.8 (>= 2.8.0)
-Description: The Simple Auditory Model Simulator (SAMS) allows users to design, run and
- evaluate auditory models.  It is supported by the extensive collection of
- published and new models supplied by the Development System for Auditory Modelling (DSAM).<insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: SAMS: Simple Auditory Model Simulator
+ This application allows users to design, run and evaluate auditory models.
+ It is supported by the extensive collection of published and new models
+ supplied by the Development System for Auditory Modelling (DSAM).
+
 
