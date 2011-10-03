@@ -100,9 +100,10 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS COPYING README NEWS ChangeLog
+%doc AUTHORS LICENSE README NEWS ChangeLog
 %doc Examples
 %{_libdir}/lib*-%{libVer}.so*
+%{_mandir}/*
 
 %files devel
 %defattr(-, root, root)

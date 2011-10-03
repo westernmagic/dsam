@@ -35,12 +35,16 @@ pkginclude_HEADERS	= DSAMSetup.h
 
 bin_SCRIPTS		= dsam-config
 BUILT_SOURCES	= dsam.spec dsam-config
+man7_MANS		= dsam.7
 EXTRA_DIST		= autogen.sh LICENSE DSAM_SDK.nsi
-SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC NSIS
+SUBDIRS			= CfgTools Include src ModuleSpecs Examples MSVC NSIS debian
 
 dsam.spec: dsam.spec.in
 
 dsam-config:	dsam-config.in
+
+dsam.7: manpage.xml
+		xmlto man manpage.xml
 
 dist-hook: dsam.spec
 	if test -e $(srcdir)/INSTALL.in && test -e $(srcdir)/README.in ; then \
