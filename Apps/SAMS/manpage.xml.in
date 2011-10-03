@@ -319,7 +319,12 @@ man(1), man(7), http://www.tldp.org/HOWTO/Man-Page/
     <title>BUGS</title>
     <para>To report a bug please e-mail the author.  Be sure to include error diagnostic listings,
      a copy of the simulation script (in SPF form if possible) and a description of the platform, e.g.
-     Windows Vista, Ubuntu 11.04, etc. .</para>
+     Windows Vista, Ubuntu 11.04, etc..
+     </para>
+     <para>
+     The online help has not been implemented at present.  A PDF help document is included with the
+     installation and described above.
+     </para>
   </refsect1>
   <refsect1 id="see_also">
     <title>SEE ALSO</title>

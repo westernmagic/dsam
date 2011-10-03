@@ -6,7 +6,7 @@
 %define RELEASE @RPM_AGE@
 %define rel		%{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
 %define	desktop_vendor	 cnbh
-%define desktop_utils    %(if which desktop-file-install 2>1 >/dev/null ; then echo "yes" ; fi)
+%define desktop_utils    %(if which desktop-file-install >/dev/null 2>&1; then echo "yes" ; fi)
 
 Name: sams
 Summary: Auditory Model Simulator 
@@ -118,6 +118,8 @@ EOF
 %{_datadir}/%{name}/Matlab/*
 %{_datadir}/%{name}/Octave/*
 %{_bindir}/*
+%{_mandir}/*
+%{_datadir}/pixmaps/*
 /etc/xinetd.d/*
 %if "%{desktop_utils}" == "yes"
 %{_datadir}/applications/*%{name}.desktop

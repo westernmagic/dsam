@@ -1,9 +1,10 @@
-sams (1.3.5-0ubuntu2) natty; urgency=low
+sams (1.3.7-0ubuntu1) natty; urgency=low
 
   * I have changed the description in the control file so that it is less
   * than 60 characters. 
+  * Updated the icon to reflect the new name. 
 
- -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Tue, 27 Sep 2011 20:24:21 +0100
+ -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Fri, 30 Sep 2011 10:26:52 +0100
 
 sams (1.3.5-0ubuntu1) natty; urgency=low
 
