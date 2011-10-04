@@ -6,7 +6,8 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, cdbs,
  libwxgtk2.8-dev (>= 2.8.0),
  libsndfile1-dev (>= 1.0.12),
  libfftw3-dev (>= 3.0.0),
- portaudio19-dev (>= 19+svn20090620)
+ portaudio19-dev (>= 19+svn20090620),
+ xmlto
 Standards-Version: 3.9.1
 Section: libs
 Homepage: http://dsam.org.uk
