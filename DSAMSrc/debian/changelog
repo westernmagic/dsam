@@ -1,3 +1,10 @@
+dsam (2.8.35-0ubuntu1) natty; urgency=low
+
+  * Added xmlto to the dependencies in the debian/control file. It is required
+  * for producing the man page.
+
+ -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Tue, 04 Oct 2011 10:31:35 +0100
+
 dsam (2.8.34-0ubuntu1) natty; urgency=low
 
   * Added the debian files to the installation and also a simple man(7) page.
