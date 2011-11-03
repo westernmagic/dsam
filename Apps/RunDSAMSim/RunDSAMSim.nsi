@@ -39,7 +39,7 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"RunDSAMSim"
-!define VERSION			"1.1.10"
+!define VERSION			"2.0.0"
 !define INST_VERSION		"1"
 !define MY_APP			"${APP_NAME}.dll"
 !define MY_APP2			"${APP_NAME}jni-${VERSION}.jar"

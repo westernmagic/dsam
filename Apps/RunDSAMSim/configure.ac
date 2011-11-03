@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim, 1.1.10)
+AC_INIT(RunDSAMSim, 2.0.1)
 AC_CONFIG_AUX_DIR(CfgTools)
 AC_CONFIG_MACRO_DIR(m4)
 
@@ -213,6 +213,12 @@ AC_ARG_ENABLE(java_support,
    [javaSupport="no"]
 )
 
+AC_ARG_ENABLE(generic_support,
+   [  --enable-generic-support  Produce LibRunDSAMSimGen generic DLL interface],
+   [genericDLLSupport="$enableval"],
+   [genericDLLSupport="yes"]
+)
+
 dnl ----------------------------------------------------------------------------
 dnl DSAM library
 dnl ----------------------------------------------------------------------------
@@ -248,16 +254,35 @@ fi
 
 AC_MSG_RESULT($octaveAvailable)
 
+dnl ----------------------------------------------------------------------------
+dnl Matlab development environment.
+dnl ----------------------------------------------------------------------------
+
+MATCOMPILE="mex"
+
+AC_MSG_CHECKING([Matlab Development environment ($MATCOMPILE)])
+if eval "$MATCOMPILE -help 2>> config.log > /dev/null"; then
+	matlabAvailable=yes
+else
+	matlabAvailable=no
+fi
+
+AC_MSG_RESULT($matlabAvailable)
+
 
 dnl ============================================================================
 dnl Final setups.
 dnl ============================================================================
 
+dnl ----------------------------------------------------------------------------
+dnl Octave/Matlab Setup
+dnl ----------------------------------------------------------------------------
+
 libRunDSAMSim=
 use_rundsamsim=
 
 if test x$octaveAvailable = xno -a x$matlabAvailable = xno ; then
-	AC_MSG_ERROR(Octave or Matlab must be installed)
+	AC_MSG_WARN(Octave/Matlab interface will not be installed)
 else
 	use_rundsamsim=yes
 	if test x$matlabAvailable = xyes; then
@@ -290,8 +315,26 @@ AC_SUBST(DSAMLDFLAGS)
 MATLIB_DIR="../MatLib"
 AC_SUBST(MATLIB_DIR)
 
+dnl ----------------------------------------------------------------------------
+dnl Generic DLL library setup
+dnl ----------------------------------------------------------------------------
+
+use_rundsamsimGen=
+
+if test x$genericDLLSupport = xyes ; then
+	use_rundsamsimgen=yes
+	enable_shared=yes
+fi
+
+AM_CONDITIONAL([USE_RUNDSAMSIMGEN], [test "x$use_rundsamsimgen" = xyes])
+
+dnl ----------------------------------------------------------------------------
+dnl Java setup
+dnl ----------------------------------------------------------------------------
+
 if test x$javaSupport = xyes ; then
 	libRunDSAMSim=yes
+	enable_shared=yes
 	dnl case $host_os in
 	dnl linux*)
 	dnl	JAVA_HOST=linux;;
@@ -301,6 +344,11 @@ if test x$javaSupport = xyes ; then
 	AC_SUBST(JAVA_INC)
 fi
 AM_CONDITIONAL(USE_JAVA_SUPPORT, test x$javaSupport = xyes)
+
+dnl ----------------------------------------------------------------------------
+dnl Misc
+dnl ----------------------------------------------------------------------------
+
 AM_CONDITIONAL(LIBRUNDSAMSIM, test x$libRunDSAMSim = xyes)
 
 dnl ============================================================================
@@ -317,6 +365,7 @@ AC_CONFIG_FILES(
 	src/cpp/Makefile
 	src/java/Makefile
 	src/LibRunDSAMSim/Makefile
+	src/LibRunDSAMSimGen/Makefile
 )
 AC_OUTPUT
 

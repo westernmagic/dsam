@@ -10,7 +10,7 @@
 	<honorific>Dr</honorific>
 	<firstname>Lowel</firstname>
 	<surname>O'Mard</surname>
-	<othername role='mi'>P</othername>
+	<othername role='mi'>P.</othername>
 	<affiliation>
 	<address><email>lowel.omard@gmail.com</email></address>
 	</affiliation>
@@ -20,10 +20,11 @@
 
 <sect1><title>General Information</title>
 <para>
-This is @PACKAGE@ version @VERSION@.  @PACKAGE@ allows users to
-run and evaluate auditory models writing using development system for
-auditory modelling (DSAM) simulation scripts. It provides access to
-an extensive collection of published and new models.
+This is @PACKAGE@ version @VERSION@.  The @PACKAGE@ application provides an
+interface to Matlab(tm) (also Octave and java) which allows users to run and evaluate
+auditory models writing using development system for auditory modelling (DSAM)
+simulation scripts. DSAM provides access to an extensive collection of published
+and new models, as well as a wide variety of analysis and utility functions.
 </para>
 
 <para>
@@ -33,10 +34,13 @@ mex file.
 </para>
 <para>
 The "RunDSAMSimJ" java interface has been tested with Matlab 2007b, 2009a and
-should work with any version of matlab.  It uses a java application which is
-supported by a dynamic link library.  The RunDSAMSim.mex is the original
-matlab/octave interface and can be used with octave which currently has no
-java support.
+should work with any version of Matlab.  It uses a java application which is
+supported by a dynamic link library.  Octave users should use the original
+RunDSAMSim.mex interface as octave currently has no java support.
+</para>
+
+<para>
+A python interface is also under consideration.
 </para>
 
 <para>
@@ -62,9 +66,13 @@ To subscribe: visit the web site at:
 <sect1><title>Installation</title>
 
 <para>
-The windows installation requires no compilation.  Under Linux/Unix systems
-the autoconf auto-configuration system is used if no ready-compiled
-installation is available.  See the file 'INSTALL' for details.
+Windows self-extracting installations require no additional configuration.
+</para>
+
+<para>
+Under Linux/Unix systems the autoconf auto-configuration system is used if 
+no ready-compiled installation is available.  Linux/Unix users needing to compile
+@PACKAGE@ should refer to the file 'INSTALL' for further information.
 </para>
 
 </sect1>
@@ -74,30 +82,30 @@ installation is available.  See the file 'INSTALL' for details.
 <para>
 Two matlab configuration files need to be edited: "classpath.txt" and
 "librarypath.txt".   Usually the path is "&lt;matlab installation
-directory&gt;\toolbox\local", or the path to these files can be found by starting
-matlab and issuing the commands "edit classpath.txt" and "edit librarypath.txt".
-On most installations this will open the files and the file path will be shown in the
-editor window title.
+directory&gt;\toolbox\local", alternatively the path to these files can be found
+by starting matlab and issuing the commands "edit classpath.txt" and "edit
+librarypath.txt". On most installations this will open the files and the file
+path will be shown in the editor window title.
 </para>
 
 <para>
 Usually these files will require special privileges in order to
-make changes to them. On Windows Vista, open the notepad text editor with
+make changes to them. On Windows Vista, open the Notepad text editor with
 administrator privileges, i.e. "start menu"->"Accessories", right-click on
-the "Notepad" application to open a dialog, choose "Run as administrator".
+the "Notepad" application to open the dialog window and choose "Run as administrator".
 </para>
 
 <para>
 On Linux/Unix systems super user access will be required, i.e. using "sudo" or
-"su".  Your may need to get you system administrator to do this configuration
+"su".  Your may need to get your system administrator to do this configuration
 if you do not have sufficient privileges on your system.
 </para>
 
 <sect2><title>Changes to classpath.txt</title>
 
 <para>
-Append the full path to the jar file.  For the default installation
-the added line should look as follows for Windows Vista:
+Append the full path to the <emphasis>jar</emphasis> file.  For default
+installations the added line should look as follows for Windows Vista:
 </para>
 
 <para>
@@ -109,8 +117,8 @@ c:\Program Files\Common Files\dsam\RunDSAMSimjni-@VERSION@.jar
 <sect2><title>Changes to librarypath.txt</title>
 
 <para>
-Append the full path to the support files for the package.  If the default
-installation the added line should like as follows for Windows Vista:
+Append the full path to the support files for the package.  For default
+installations the added line should read as follows for Windows Vista:
 </para>
 
 <para>
@@ -121,7 +129,7 @@ C:\Program Files\Common Files\dsam
 
 </sect1>
 
-<sect1><title>Installation Testing</title>
+<sect1><title>Testing/Examples</title>
 
 <para>
 Start Matlab and change the current directory to the <emphasis>Examples</emphasis>
@@ -145,7 +153,47 @@ curves for a model VCN Onset-C cell.
 
 <para>
 You can make a copy of the <emphasis>Examples</emphasis> directory to use as the
-basis of your own analysis scripts.
+basis of your own code.
+</para>
+
+</sect1>
+
+<sect1><title>DSAM Library Documentation &amp; Supporting DSAM</title>
+
+<para>
+If you find @PACKAGE@ useful you can help provide support for the project by
+purchasing the DSAM Library Documentation.  DSAM Library Documentation is the
+definitive guide to using the development system for auditory modelling (DSAM).
+It provides the missing documentation to realize the full potential of running
+simulations using DSAM, including example scripts and parameter settings showing
+how to use each module.
+</para>
+
+<para>
+Links to the DSAM Library Documentation can be found from the DSAM website: Follow
+the "Documentation links."
+</para>
+
+</sect1>
+
+<sect1><title>Version Numbering</title>
+
+<para>
+The primary @PACKAGE@ version information (i.e. "@VERSION@") consists of three numbers
+separated by a period (full stop):
+</para>
+
+<para>
+&lt;major number&gt;.&lt;minor number&gt;.&lt;revision&gt;
+</para>
+
+<para>
+The major number is increased when there are significant jumps in functionality,
+the minor number is incremented when only minor features or significant fixes have been
+added, and the revision number is incremented when minor bugs are fixed.
+Self-extracting installations such as for windows or Linux RPM or Debian packages will have an
+additional version number, which describes changes in the installation configuration
+rather than the application itself.
 </para>
 
 </sect1>

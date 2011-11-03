@@ -22,6 +22,10 @@ if USE_RUNDSAMSIM
   SUBDIRS += src/cpp
 endif
 
+if USE_RUNDSAMSIMGEN
+  SUBDIRS += src/LibRunDSAMSimGen
+endif
+
 RunDSAMSim.spec: RunDSAMSim.spec.in
 
 dist-hook: RunDSAMSim.spec

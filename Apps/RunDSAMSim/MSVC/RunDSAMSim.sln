@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibRunDSAMSim", "LibRunDSAM
 		{A04D5F0D-95BC-40F5-A821-209E97462218} = {A04D5F0D-95BC-40F5-A821-209E97462218}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatLib", "C:\Users\lowel\Documents\Work\dsam\rundsamsim1110\MSVC\MatLib.vcproj", "{A04D5F0D-95BC-40F5-A821-209E97462218}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatLib", "MatLib.vcproj", "{A04D5F0D-95BC-40F5-A821-209E97462218}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

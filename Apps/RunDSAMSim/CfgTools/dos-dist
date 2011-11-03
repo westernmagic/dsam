@@ -2,17 +2,19 @@
 ##################
 #
 # File:		dos-dist
-# Purpose:	This script runs all of the commands necessary for configuring AMS
+# Purpose:	This script runs all of the commands necessary for configuring RunDSAMSim
 #			for dos compilation
 # Author:	L.P.O'Mard
 # Created:	26 Sep 2001
 # Updated:	
-# Copyright:(c) 2001, University of Essex
+# Copyright:(c) 2001, L. P. O'Mard
 #
 ##################
 
 CFGTOOLS=CfgTools
 TEMP_FILE=file.tmp
+SRCDIR=src
+JAVALIB=$SRCDIR/java
 
 usage()
 {
@@ -24,15 +26,29 @@ EOF
 	exit $1
 }
 
+############################### CVSConfigure ###################################
+
+CVSConfigure()
+{
+	sh autogen.sh
+	./configure --enable-java-support
+	(cd $JAVALIB; make; rm *.stamp *.class)
+}
+
+############################### Main Script ####################################
+
 if [ $# -eq 0 ]; then
 	usage 1 1>&2
 fi
 
 case  $1 in
+autogen)
+	CVSConfigure
+	rm -f config.status config.cache
+	;;
 make)
 	echo Creating unix distribution directory ...
-	sh autogen.sh > $TEMP_FILE
-	./configure > $TEMP_FILE
+	CVSConfigure > $TEMP_FILE
 	make dist > $TEMP_FILE
 	grep "^PACKAGE " Makefile | sed "s/ //g" > $TEMP_FILE
 	grep "^VERSION " Makefile | sed "s/ //g" >> $TEMP_FILE
@@ -43,6 +59,9 @@ make)
 	tar zxf $archiveName.tar.gz
 	rm $archiveName.tar.gz
 
+	echo Copying extra files to archive  ...
+	mv $JAVALIB/*.jar $archiveName/$JAVALIB
+	
 	echo Creating zip archive ...
 	newArchiveName=`echo $archiveName | tr -d ".-"`
 	rm -rf $newArchiveName
