@@ -385,7 +385,7 @@ CheckData_Analysis_ALSR(EarObjectPtr data)
 void
 ResetProcess_Analysis_ALSR(EarObjectPtr data)
 {
-	data->timeIndex = data->timeIndex;	/* So the compiler doesn't complain. */
+	data->timeIndex = data->timeIndex + 0;	/* So the compiler doesn't complain. */
 	ResetProcess_EarObject(aLSRPtr->modulusFT);
 
 }
