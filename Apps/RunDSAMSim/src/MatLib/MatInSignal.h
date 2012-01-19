@@ -43,6 +43,7 @@ class MatInSignal {
 
 	bool	vectorModeFlag;
 	bool	staticTimeFlag;
+	bool	externalInSignalFlag;
 	int		numChannels;
 	int		interleaveLevel;
 	ChanLen	length;
@@ -50,6 +51,7 @@ class MatInSignal {
 	Float	outputTimeOffset;
 	Float	*inVector;
 	Float	**inPtrs;
+	SignalDataPtr	inSignal;
 	EarObjectPtr	inputProcess;
 
 public:
@@ -57,15 +59,18 @@ public:
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset);
 	MatInSignal(Float **inPtrs, int numChannels, int interleaveLevel,
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset);
+	MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag = false);
 	~MatInSignal(void);
 
 	Float	GetDt(void)	{ return dt; }
 	EarObjectPtr	GetInputProcess(void)	{ return inputProcess; }
 	ChanLen	GetLength(void)	{ return length; }
+	void	Init(void)	{ inSignal = NULL; inputProcess = NULL; vectorModeFlag = false;
+			  externalInSignalFlag = false; }
 	bool	InitInputEarObject(ChanLen segmentLength);
 	void	SetInputProcessData(ChanLen segmentLength);
 	void	SetSignalPars(int numChannels, int interleaveLevel, ChanLen length,
-			Float dt, bool staticTimeFlag, Float outputTimeOffset);
+			  Float dt, bool staticTimeFlag, Float outputTimeOffset);
 };
 
 

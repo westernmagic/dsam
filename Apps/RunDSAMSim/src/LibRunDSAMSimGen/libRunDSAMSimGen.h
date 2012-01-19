@@ -14,13 +14,28 @@
 #define _LIBRUNDSAMSIMGEN_H
 
 
+/******************************************************************************/
+/****************************** Type definitions ******************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/****************************** External variables ****************************/
+/******************************************************************************/
+
+extern SignalDataPtr	outSignal;
+
+/******************************************************************************/
+/****************************** Function Prototypes ***************************/
+/******************************************************************************/
+
 /* C Declarations.  Note the use of the '__BEGIN_DECLS' and '__BEGIN_DECLS'
  * macros, to allow the safe use of C libraries with C++ libraries - defined
  * in GeCommon.h.
  */
 __BEGIN_DECLS
 
-SignalDataPtr	RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal);
+SignalDataPtr	RunDSAMSim(WChar *simFile, WChar *parameterOptions,
+				  SignalDataPtr inSignal);
 
 __END_DECLS
 

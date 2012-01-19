@@ -14,6 +14,11 @@
     #error "This sample can't be compiled in GUI mode."
 #endif // wxUSE_GUI
 
+#include <stdio.h>
+#include <wchar.h>
+#include <iostream>
+using namespace std;
+
 #include <wx/socket.h>
 #include <wx/app.h>
 
@@ -53,35 +58,74 @@
 /*************************** Global Variables *********************************/
 /******************************************************************************/
 
-static wxInitializer	*initializer = NULL;
+SignalDataPtr	outSignal = NULL;
+EarObjectPtr	outProcess = NULL;
 
 /******************************************************************************/
 /*************************** Subroutines and functions ************************/
 /******************************************************************************/
 
-/**************************** InitWxWidgets ***********************************/
+/*************************** DPrintStandard ***********************************/
 
 /*
- * This routine initialises wxWidgets, but ensures that it is only done once
- * If it is done more than once, then an error will occur - contrary to the
- * wxWidgets documentation.
+ * This routine prints out a diagnostic message, preceded by a bell sound.
+ * It is used in the same way as the vprintf statement.
+ * This is the standard version for ANSI C.
  */
 
-bool
-InitWxWidgets(void)
+void
+DPrint_LibRunDSAMSimGen(const WChar *format, va_list args)
 {
-	if (initializer)
-		return(true);
-	initializer = new wxInitializer;
+	CheckInitParsFile_Common();
+	if (GetDSAMPtr_Common()->parsFile == stdout) {
+		wxString str, fmt;
+		fmt = format;
+		fmt.Replace(wxT("%S"), wxT("%s"));	/* This is very simplistic - requires revision */
+		str.PrintfV(fmt, args);
 
-	if (!*initializer) {
-		NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
-		  wxT("aborting."));
-		return(false);
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			str = GetDSAMPtr_Common()->diagnosticsPrefix + str;
+		std::cout << str.utf8_str();
+	} else {
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			DSAM_fprintf(GetDSAMPtr_Common()->parsFile, STR_FMT,
+			  GetDSAMPtr_Common()->diagnosticsPrefix);
+		DSAM_vfprintf(GetDSAMPtr_Common()->parsFile, format, args);
 	}
-	return(true);
 
 }
+
+/***************************** Notify *****************************************/
+
+/*
+ * All notification messages are stored in the notification list.
+ * This list is reset when the noficiationCount is zero.
+ */
+
+void
+Notify_LibRunDSAMSimGen(const wxChar *message, CommonDiagSpecifier type)
+{
+	FILE	*fp;
+
+	switch (type) {
+	case COMMON_ERROR_DIAGNOSTIC:
+		fp = GetDSAMPtr_Common()->errorsFile;
+		break;
+	case COMMON_WARNING_DIAGNOSTIC:
+		fp = GetDSAMPtr_Common()->warningsFile;
+		break;
+	default:
+		fp = stdout;
+		break;
+	}
+	if (fp == stdout) {
+		cout << wxConvUTF8.cWX2MB(message) << endl;
+	} else {
+		fprintf(fp, wxConvUTF8.cWX2MB(message));
+		fprintf(fp, "\n");
+	}
+
+} /* Notify_LibRunDSAMSimGen */
 
 /******************************************************************************/
 /*************************** Main routine *************************************/
@@ -93,20 +137,15 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 	bool	staticTimeFlag = false;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
-	double	*inputMatrixPtr = NULL, dt = 0.0, outputTimeOffset = 0.0;
-	EarObjectPtr	audModel;
-	SignalDataPtr	outSignal;
+	EarObjectPtr	audModel, outProcess;
 	MatInSignal		*inputSignal = NULL;
 
-//	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
-//	SetDPrintFunc(MyDPrint);
-//	SetNotifyFunc(MyNotify);
+	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
+	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
+	SetDPrintFunc(DPrint_LibRunDSAMSimGen);
+	SetNotifyFunc(Notify_LibRunDSAMSimGen);
 //	if (AnyBadArgument(nrhs, prhs))
 //		return;
-//
-//	simFile = GetString(prhs[SIM_FILE]);
-//	parameterOptions = (nrhs > PARAMETER_OPTIONS)? GetString(prhs[
-//	  PARAMETER_OPTIONS]): (WChar *) wxT("");
 //
 //	if (nrhs > INFO_STRUCT) {
 //		const mxArray *info = prhs[INFO_STRUCT];
@@ -119,13 +158,11 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 //		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
 //		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
 //	}
-//	if (inputMatrixPtr) {
-//		if ((inputSignal = new MatInSignal((Float *) inputMatrixPtr, numChannels,
-//		  interleaveLevel, length, dt, staticTimeFlag, outputTimeOffset)) == NULL) {
-//			NotifyError(wxT("%s: Failed to initialise input signal."), PROGRAM_NAME);
-//			return;
-//		}
-//	}
+	if (inSignal && ((inputSignal = new MatInSignal(inSignal, (outSignal &&
+	  (outSignal == inSignal)))) == NULL)) {
+		NotifyError(wxT("%s: Failed to initialise input signal."), PROGRAM_NAME);
+		return(NULL);
+	}
 	MatMainApp	mainApp((WChar *) PROGRAM_NAME, simFile, parameterOptions,
 	  inputSignal);
 	if (!mainApp) {
@@ -149,6 +186,22 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 //	}
 //	if (inputSignal)
 //		delete inputSignal;
-	return(_OutSig_EarObject(audModel));
+	if (audModel) {
+		if ((outProcess == NULL) && ((outProcess = Init_EarObject(wxT("NULL"))) ==
+		  NULL)) {
+			NotifyError(wxT("%s: Could not initialise output process."), PROGRAM_NAME);
+			return(NULL);
+		}
+		ConnectOutSignalToIn_EarObject(audModel, outProcess);
+		if (!InitOutTypeFromInSignal_EarObject(outProcess, 0)) {
+			NotifyError(wxT("%s: Cannot initialise output channel."), PROGRAM_NAME);
+			return(NULL);
+		}
+		InitOutDataFromInSignal_EarObject(outProcess);
+		DisconnectOutSignalFromIn_EarObject(audModel, outProcess);
+	}
+	outProcess->localOutSignalFlag = FALSE;
+	outSignal = _OutSig_EarObject(outProcess);
+	return(outSignal);
 
 }

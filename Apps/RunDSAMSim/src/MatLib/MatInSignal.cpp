@@ -38,6 +38,7 @@ MatInSignal::MatInSignal(Float *inVector, int numChannels, int interleaveLevel,
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset)
 {
 
+	Init();
 	vectorModeFlag = true;
 	SetSignalPars(numChannels, interleaveLevel, length, dt, staticTimeFlag,
 	  outputTimeOffset);
@@ -55,11 +56,34 @@ MatInSignal::MatInSignal(Float **inPtrs, int numChannels, int interleaveLevel,
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset)
 {
 
-	vectorModeFlag = false;
+	Init();
 	SetSignalPars(numChannels, interleaveLevel, length, dt, staticTimeFlag,
 	  outputTimeOffset);
 	this->inPtrs = inPtrs;
 
+}
+
+/****************************** Constructor - ExternalSignal *******************/
+
+/*
+ *  External Signal mode constructor.
+ */
+
+MatInSignal::MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag)
+{
+
+	Init();
+	externalInSignalFlag = true;
+	SetSignalPars(inSignal->numChannels, inSignal->interleaveLevel,
+	  inSignal->length, inSignal->dt, inSignal->staticTimeFlag,
+	  inSignal->outputTimeOffset);
+	if (copyInSignalFlag)
+		inPtrs = inSignal->channel;
+	else {
+		this->inSignal = inSignal;
+		inVector = inSignal->block;
+		vectorModeFlag = true;
+	}
 }
 
 /****************************** Destructor ************************************/
@@ -81,7 +105,6 @@ void
 MatInSignal::SetSignalPars(int numChannels, int interleaveLevel, ChanLen length,
   Float dt, bool staticTimeFlag, Float outputTimeOffset)
 {
-	inputProcess = NULL;
 	this->numChannels = numChannels;
 	if (interleaveLevel < 0)
 		this->interleaveLevel = (this->numChannels == 2)? 2:
@@ -114,8 +137,6 @@ MatInSignal::InitInputEarObject(ChanLen segmentLength)
 		NotifyError(wxT("%s: dt must be greater than zero."), funcName);
 		return(false);
 	}
-	if (inputProcess)
-		Free_EarObject(&inputProcess); 	/* Just in case */
 	if ((inputProcess = Init_EarObject(wxT("NULL"))) == NULL) {
 		NotifyError(wxT("%s: Could not initialise data results earObject."),
 		  funcName);
@@ -125,6 +146,10 @@ MatInSignal::InitInputEarObject(ChanLen segmentLength)
 	  dt)) {
 		NotifyError(wxT("%s: Cannot initialise input process"), funcName);
 		return(false);
+	}
+	if (inSignal) { // Use existing signal.
+		inputProcess->outSignal = inSignal;
+		return(true);
 	}
 	SignalDataPtr	outSignal = _OutSig_EarObject(inputProcess);
 	SetStaticTimeFlag_SignalData(outSignal, staticTimeFlag);

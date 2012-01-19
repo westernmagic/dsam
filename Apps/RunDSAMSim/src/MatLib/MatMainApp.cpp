@@ -380,7 +380,6 @@ InitApp_MatMainApp(void)
 	SetAppName_AppInterface(PROGRAM_NAME);
 	SetAppVersion_AppInterface(RUNDSAMSIM_VERSION);
 	SetCompiledDSAMVersion_AppInterface(DSAM_VERSION);
-
 	SetAppSetUniParList_AppInterface(SetUniParList_MatMainApp);
 
 	//SetAppPrintUsage_AppInterface(PrintUsage);
@@ -619,6 +618,7 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 		break;
 	default:
 		fp = stdout;
+		break;
 	}
 	if (fp == stdout) {
 		printf(wxConvUTF8.cWX2MB(message));

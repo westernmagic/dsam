@@ -31,7 +31,7 @@
 <option id="program-transform-name" value=""/>
 <option id="enable-maintainer-mode" value="false"/>
 <option id="user" value="--enable-libRunDSAMSim --enable-shared"/>
-<option id="autogen" value="autogen.sh"/>
+<option id="autogen" value="sh autogen.sh"/>
 <option id="autogenOpts" value=""/>
 </configuration>
 </configurations>
