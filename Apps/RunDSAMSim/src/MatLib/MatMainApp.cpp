@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 #include <DSAM.h>
 
@@ -597,6 +598,62 @@ RegisterUserModules_MatMainApp(void)
 
 }
 
+/*************************** ChangeStringFormats *********************************/
+
+/*
+ * This routine prints out a diagnostic message, preceded by a bell sound.
+ * It is used in the same way as the vprintf statement.
+ * This is the standard version for ANSI C.
+ */
+
+
+void
+ChangeStringFormats_MatMainApp(wxString &str)
+{
+    size_t idx = 0, len;
+    char    ch;
+    
+    len = str.length();
+    while ((idx = str.find('%',  idx)) < len) {
+        do {
+            ch = str.at(++idx);
+        } while (isdigit(ch) || (ch == '+') || (ch == '-') || (ch == '.'));
+        if (ch == 'S')
+            str.at(idx) = 's';
+        idx++;
+    }
+}
+
+/*************************** DPrint *******************************************/
+
+/*
+ * This routine prints out a diagnostic message, preceded by a bell sound.
+ * It is used in the same way as the vprintf statement.
+ * This is the standard version for ANSI C.
+ */
+
+void
+DPrint_MatMainApp(const WChar *format, va_list args)
+{
+	CheckInitParsFile_Common();
+	if (GetDSAMPtr_Common()->parsFile == stdout) {
+		wxString str, fmt;
+		fmt = format;
+		ChangeStringFormats_MatMainApp(fmt);
+		str.PrintfV(fmt, args);
+
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			str = GetDSAMPtr_Common()->diagnosticsPrefix + str;
+		std::cout << str.utf8_str();
+	} else {
+		if (GetDSAMPtr_Common()->diagnosticsPrefix)
+			DSAM_fprintf(GetDSAMPtr_Common()->parsFile, STR_FMT,
+			  GetDSAMPtr_Common()->diagnosticsPrefix);
+		DSAM_vfprintf(GetDSAMPtr_Common()->parsFile, format, args);
+	}
+
+}
+
 /***************************** Notify *****************************************/
 
 /*
@@ -621,8 +678,7 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 		break;
 	}
 	if (fp == stdout) {
-		printf(wxConvUTF8.cWX2MB(message));
-		printf("\n");
+		std::cout << wxConvUTF8.cWX2MB(message) << std::endl;
 	} else {
 		fprintf(fp, wxConvUTF8.cWX2MB(message));
 		fprintf(fp, "\n");

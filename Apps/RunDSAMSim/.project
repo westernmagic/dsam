@@ -3,6 +3,7 @@
 	<name>RunDSAMSim</name>
 	<comment></comment>
 	<projects>
+		<project>DSAMSrc</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

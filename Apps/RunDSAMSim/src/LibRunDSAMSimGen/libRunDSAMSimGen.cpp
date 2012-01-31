@@ -65,68 +65,6 @@ EarObjectPtr	outProcess = NULL;
 /*************************** Subroutines and functions ************************/
 /******************************************************************************/
 
-/*************************** DPrintStandard ***********************************/
-
-/*
- * This routine prints out a diagnostic message, preceded by a bell sound.
- * It is used in the same way as the vprintf statement.
- * This is the standard version for ANSI C.
- */
-
-void
-DPrint_LibRunDSAMSimGen(const WChar *format, va_list args)
-{
-	CheckInitParsFile_Common();
-	if (GetDSAMPtr_Common()->parsFile == stdout) {
-		wxString str, fmt;
-		fmt = format;
-		fmt.Replace(wxT("%S"), wxT("%s"));	/* This is very simplistic - requires revision */
-		str.PrintfV(fmt, args);
-
-		if (GetDSAMPtr_Common()->diagnosticsPrefix)
-			str = GetDSAMPtr_Common()->diagnosticsPrefix + str;
-		std::cout << str.utf8_str();
-	} else {
-		if (GetDSAMPtr_Common()->diagnosticsPrefix)
-			DSAM_fprintf(GetDSAMPtr_Common()->parsFile, STR_FMT,
-			  GetDSAMPtr_Common()->diagnosticsPrefix);
-		DSAM_vfprintf(GetDSAMPtr_Common()->parsFile, format, args);
-	}
-
-}
-
-/***************************** Notify *****************************************/
-
-/*
- * All notification messages are stored in the notification list.
- * This list is reset when the noficiationCount is zero.
- */
-
-void
-Notify_LibRunDSAMSimGen(const wxChar *message, CommonDiagSpecifier type)
-{
-	FILE	*fp;
-
-	switch (type) {
-	case COMMON_ERROR_DIAGNOSTIC:
-		fp = GetDSAMPtr_Common()->errorsFile;
-		break;
-	case COMMON_WARNING_DIAGNOSTIC:
-		fp = GetDSAMPtr_Common()->warningsFile;
-		break;
-	default:
-		fp = stdout;
-		break;
-	}
-	if (fp == stdout) {
-		cout << wxConvUTF8.cWX2MB(message) << endl;
-	} else {
-		fprintf(fp, wxConvUTF8.cWX2MB(message));
-		fprintf(fp, "\n");
-	}
-
-} /* Notify_LibRunDSAMSimGen */
-
 /******************************************************************************/
 /*************************** Main routine *************************************/
 /******************************************************************************/
@@ -142,22 +80,8 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
-	SetDPrintFunc(DPrint_LibRunDSAMSimGen);
-	SetNotifyFunc(Notify_LibRunDSAMSimGen);
-//	if (AnyBadArgument(nrhs, prhs))
-//		return;
-//
-//	if (nrhs > INFO_STRUCT) {
-//		const mxArray *info = prhs[INFO_STRUCT];
-//		inputMatrixPtr = mxGetPr(prhs[INPUT_SIGNAL]);
-// 		numChannels = (int) mxGetM(prhs[INPUT_SIGNAL]);
-//		length = (ChanLen) mxGetN(prhs[INPUT_SIGNAL]);
-//		dt =  *mxGetPr(mxGetField(info, 0, "dt"));
-//		staticTimeFlag = (bool) GET_INFO_PAR("staticTimeFlag", false);
-//		outputTimeOffset = GET_INFO_PAR("outputTimeOffset", 0.0);
-//		interleaveLevel = (int) GET_INFO_PAR("interleaveLevel",
-//		  DSAMMAT_AUTO_INTERLEAVE_LEVEL);
-//	}
+	SetDPrintFunc(DPrint_MatMainApp);
+	SetNotifyFunc(Notify_MatMainApp);
 	if (inSignal && ((inputSignal = new MatInSignal(inSignal, (outSignal &&
 	  (outSignal == inSignal)))) == NULL)) {
 		NotifyError(wxT("%s: Failed to initialise input signal."), PROGRAM_NAME);
@@ -176,16 +100,6 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 	}
 	audModel = mainApp.GetSimProcess();
 
-//	free(simFile);
-//	if (nrhs > PARAMETER_OPTIONS)
-//		free(parameterOptions);
-//
-//	if (audModel && ((outSignal = _OutSig_EarObject(audModel)) != NULL)) {
-//		plhs[0] = GetOutputSignalMatrix(audModel->outSignal);
-//		plhs[1] = GetOutputInfoStruct(audModel->outSignal);
-//	}
-//	if (inputSignal)
-//		delete inputSignal;
 	if (audModel) {
 		if ((outProcess == NULL) && ((outProcess = Init_EarObject(wxT("NULL"))) ==
 		  NULL)) {

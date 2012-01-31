@@ -117,6 +117,8 @@ class MatMainApp: public MainApp {
  */
 __BEGIN_DECLS
 
+void	DPrint_MatMainApp(const WChar *format, va_list args);
+
 BOOLN	InitApp_MatMainApp(void);
 
 void	Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type);

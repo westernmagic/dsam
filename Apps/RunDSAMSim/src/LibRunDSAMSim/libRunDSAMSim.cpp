@@ -114,9 +114,6 @@ class LibRunDSAMSim {
 /*************************** Function Prototypes ******************************/
 /******************************************************************************/
 
-void	DPrint_LibRunDSAMSim(const WChar *format, va_list args);
-void	Notify_LibRunDSAMSim(const wxChar *message, CommonDiagSpecifier type);
-
 /******************************************************************************/
 /*************************** Class Methods ************************************/
 /******************************************************************************/
@@ -608,66 +605,6 @@ LibRunDSAMSim::PrintInfoFields(void)
 /*************************** Subroutines and functions ************************/
 /******************************************************************************/
 
-/*************************** DPrintStandard ***********************************/
-
-/*
- * This routine prints out a diagnostic message, preceded by a bell sound.
- * It is used in the same way as the vprintf statement.
- * This is the standard version for ANSI C.
- */
-
-void
-DPrint_LibRunDSAMSim(const WChar *format, va_list args)
-{
-	CheckInitParsFile_Common();
-	if (GetDSAMPtr_Common()->parsFile == stdout) {
-		wxString str, fmt;
-		fmt = format;
-		fmt.Replace(wxT("S"), wxT("s"));	/* This is very simplistic - requires revision */
-		str.PrintfV(fmt, args);
-
-		if (GetDSAMPtr_Common()->diagnosticsPrefix)
-			str = GetDSAMPtr_Common()->diagnosticsPrefix + str;
-		cout << str.utf8_str();
-	} else {
-		if (GetDSAMPtr_Common()->diagnosticsPrefix)
-			DSAM_fprintf(GetDSAMPtr_Common()->parsFile, STR_FMT, GetDSAMPtr_Common()->diagnosticsPrefix);
-		DSAM_vfprintf(GetDSAMPtr_Common()->parsFile, format, args);
-	}
-
-}
-
-/***************************** Notify *****************************************/
-
-/*
- * All notification messages are stored in the notification list.
- * This list is reset when the noficiationCount is zero.
- */
-
-void
-Notify_LibRunDSAMSim(const wxChar *message, CommonDiagSpecifier type)
-{
-	FILE	*fp;
-
-	switch (type) {
-	case COMMON_ERROR_DIAGNOSTIC:
-		fp = GetDSAMPtr_Common()->errorsFile;
-		break;
-	case COMMON_WARNING_DIAGNOSTIC:
-		fp = GetDSAMPtr_Common()->warningsFile;
-		break;
-	default:
-		fp = stdout;
-	}
-	if (fp == stdout) {
-		cout << wxConvUTF8.cWX2MB(message) << endl;
-	} else {
-		fprintf(fp, wxConvUTF8.cWX2MB(message));
-		fprintf(fp, "\n");
-	}
-
-} /* Notify_LibRunDSAMSim */
-
 /***************************** Java_RunDSAMSimJ_RunSimScript ***********************/
 
 JNIEXPORT jobjectArray JNICALL
@@ -678,8 +615,8 @@ Java_RunDSAMSimJ_RunSimScriptCPP(JNIEnv *env, jclass cls, jstring jSimFile,
 
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
-	SetNotifyFunc(Notify_LibRunDSAMSim);
-	SetDPrintFunc(DPrint_LibRunDSAMSim);
+	SetDPrintFunc(DPrint_MatMainApp);
+	SetNotifyFunc(Notify_MatMainApp);
 	libRunDSAMSim.SetSimFileFromJUTF(jSimFile);
 	libRunDSAMSim.SetParOptionsFromJUTF(jParOptions);
 

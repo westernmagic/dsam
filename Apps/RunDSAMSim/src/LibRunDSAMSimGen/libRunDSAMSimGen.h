@@ -34,8 +34,8 @@ extern SignalDataPtr	outSignal;
  */
 __BEGIN_DECLS
 
-SignalDataPtr	RunDSAMSim(WChar *simFile, WChar *parameterOptions,
-				  SignalDataPtr inSignal);
+SignalDataPtr	RunDSAMSim(WChar *simFile, WChar *parameterOptions = wxT(""),
+				  SignalDataPtr inSignal = NULL);
 
 __END_DECLS
 
