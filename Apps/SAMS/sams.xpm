@@ -1,5 +1,5 @@
 /* XPM */
-static char * sams_xpm[] = {
+static const char * sams_xpm[] = {
 "64 64 620 2",
 "  	c None",
 ". 	c #FFFFFF",
