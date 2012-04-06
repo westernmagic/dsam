@@ -17,7 +17,6 @@
 
 #######################
 #######################
-#######################
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -38,7 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = MSVC/DSAM_std
+subdir = MSVC/DSAM
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -221,7 +220,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = DSAM_std.vcxproj DSAM_std.vcxproj.filters
+EXTRA_DIST = DSAM.vcxproj DSAM.vcxproj.filterss
 all: all-am
 
 .SUFFIXES:
@@ -234,9 +233,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign MSVC/DSAM_std/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign MSVC/DSAM/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign MSVC/DSAM_std/Makefile
+	  $(AUTOMAKE) --foreign MSVC/DSAM/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

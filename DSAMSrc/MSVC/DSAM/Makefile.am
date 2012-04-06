@@ -29,4 +29,4 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= DSAM.vcproj
+EXTRA_DIST	= DSAM.vcxproj DSAM.vcxproj.filterss
