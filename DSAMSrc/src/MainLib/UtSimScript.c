@@ -350,7 +350,7 @@ SetParFilePathMode_Utility_SimScript(const WChar *theParFilePathMode)
 		  MAX_FILE_PATH);
 		break;
 	default:
-		;
+		break;
 	}
 	return(TRUE);
 
@@ -783,6 +783,7 @@ ReadPars_Utility_SimScript(WChar *fileName)
 		NotifyError(wxT("%s: Unknown simulation file type '%s'."), funcName,
 		  GetFilePath_Utility_SimScript(filePath));
 		ok = FALSE;
+		break;
 	}
 	if (fp)
 		fclose(fp);
@@ -862,7 +863,7 @@ FreeSimulation_Utility_SimScript(void)
 
 /*
  * This routine reads the simulation script from a file.
- * It returns a point to a list of instructions, which must be free'd by the
+ * It returns a pointer to a list of instructions, which must be free'd by the
  * calling program.
  */
 
@@ -881,7 +882,7 @@ Read_Utility_SimScript(FILE *fp)
 	FreeSimulation_Utility_SimScript();
 	localSimScriptPtr->fp = fp;
 	localSimScriptPtr->simPtr = &localSimScriptPtr->simulation;
-	if (!localSimScriptPtr->symList);
+	if (!localSimScriptPtr->symList)
 		InitKeyWords_Utility_SSSymbols(&simScriptPtr->symList);
 	if (yyparse() != 0)
 		FreeSimulation_Utility_SimScript();
@@ -1174,7 +1175,7 @@ InitSimulation_Utility_SimScript(DatumPtr simulation)
 				SetPar_ModuleMgr(pc->data, wxT("STROBE_PAR_FILE"), NO_FILE);
 				break;
 			default:
-				;
+				break;
 			}
 		}
 	if (localSimScriptPtr->simFileType == UTILITY_SIMSCRIPT_SIM_FILE) {
