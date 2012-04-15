@@ -2,7 +2,7 @@
  *		
  * File:		GrDisplayS.h
  * Purpose: 	Display class module.
- * Comments:	It was created by extraction from the original GrSignalDisp
+ * Comments:	It was created by extraction from the original DiSignalDisp
  *				module.
  *				23-06-98 LPO: Introduced display window resizing:
  *				DisplayS::OnSize
@@ -74,9 +74,7 @@ class DisplayS: public wxFrame
 
 	void	DeleteDisplay(void);
 	SignalDispPtr	GetSignalDispPtr(void) { return(mySignalDispPtr); }
-
 	void	SetDisplayTitle(void);
-
 	void	OnMove(wxMoveEvent& event);
 
 	DECLARE_EVENT_TABLE()
@@ -86,5 +84,19 @@ class DisplayS: public wxFrame
 /******************************************************************************/
 /*************************** External variables *******************************/
 /******************************************************************************/
+
+/******************************************************************************/
+/*************************** Subroutine declarations **************************/
+/******************************************************************************/
+
+void	InitCriticalSection_DisplayS(void);
+
+void	FreeCriticalSection_DisplayS(void);
+
+void	FreeDisplay_DisplayS(void *display);
+
+void	GetWindowPosition_DisplayS(int *x, int *y);
+
+BOOLN	ShowSignal_DisplayS(EarObjectPtr data);
 
 #endif

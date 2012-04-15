@@ -201,15 +201,15 @@ extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
 
 void	CreateApp(void);
 
-BOOLN	OnExecute_MyApp(void);
-
-void	OnExit_MyApp(void);
-
 void	DPrint_MyApp(const wxChar *format, va_list args);
 
 void	EmptyDiagWinBuffer_MyApp(wxChar *s, int *c);
 
 void	Notify_MyApp(const wxChar *message, CommonDiagSpecifier type);
+
+BOOLN	OnExecute_MyApp(void);
+
+void	OnExit_MyApp(void);
 
 /******************************************************************************/
 /*************************** Call back prototypes *****************************/

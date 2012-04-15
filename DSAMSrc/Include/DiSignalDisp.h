@@ -1,11 +1,9 @@
 /******************
  *
- * File:		GrSignalDisp.h
+ * File:		DiSignalDisp.h
  * Purpose: 	This graphics module serves as the interface between DSAM
  *				and the WxWin GUI.
- * Comments:	This module uses local parameters for the AveChannels utility
- *				module.
- *				The "ReadPars" routine for this module is different from the
+ * Comments:	The "ReadPars" routine for this module is different from the
  *				standard used by most of the other modules.
  *				21-10-97 LPO: Added absolute scaling mode.
  *				27-10-97 LPO: Added parameter flags so that only those
@@ -51,15 +49,11 @@
  *
  *********************/
 
-#ifndef	_GRSIGNALDISP_H
-#define _GRSIGNALDISP_H	1
+#ifndef	_DiSignalDisp_H
+#define _DiSignalDisp_H	1
 
 #include "UtRedceChans.h"
 #include "UtNameSpecs.h"
-
-#if !defined(GRAPHICS_SUPPORT) || !defined(__cplusplus)
-#	define	STANDARD_C_SIGNALDISP_COMPILE	1
-#endif /* GRAPHICS_SUPPORT */
 
 /******************************************************************************/
 /*************************** Constant Definitions *****************************/
@@ -90,25 +84,19 @@
 /*************************** Pre-reference definitions ************************/
 /******************************************************************************/
 
-#if defined(__cplusplus)
-#	if defined(GRAPHICS_SUPPORT)
-		class DisplayS;
-		class wxDialog;
-#else
-		typedef	void *	DisplayS;
-		typedef	void *	wxDialog;
-#	endif
-	class wxCriticalSection;
-#else
-	typedef	void *	DisplayS;
-	typedef	void *	wxDialog;
-	typedef	void *	wxCriticalSection;
-	typedef	void *	wxIcon;
-#endif /* GRAPHICS_SUPPORT */
-
 /******************************************************************************/
 /*************************** Type definitions *********************************/
 /******************************************************************************/
+
+typedef struct {
+
+	void	(* FreeCriticalSection)(void);
+	void 	(* FreeDisplay)(void *);
+	void 	(* GetWindowPosition)(int *, int *);
+	void	(* InitCriticalSection)(void);
+	BOOLN	(* ShowSignal)(EarObjectPtr);
+
+} SignalDispDefFuncs;
 
 typedef	enum {
 
@@ -184,6 +172,7 @@ typedef struct {
 	ParameterSpecifier parSpec;
 
 	BOOLN	updateProcessVariablesFlag;
+	BOOLN	guiFlag;
 	BOOLN	autoYScale;
 	int		channelStep;
 	Float	magnification;
@@ -232,9 +221,8 @@ typedef struct {
 	EarObjectPtr	data;
 	EarObjectPtr	summary;
 	EarObjectPtr	chanActivity;
-	DisplayS		*display;
-	wxDialog		*dialog;
-	wxCriticalSection	*critSect;
+	void			*display;
+	void			*critSect;
 
 } SignalDisp, *SignalDispPtr;
 
@@ -242,7 +230,11 @@ typedef struct {
 /*************************** External variables *******************************/
 /******************************************************************************/
 
+__BEGIN_DECLS
+
 extern SignalDisp	signalDisp, *signalDispPtr;
+
+__END_DECLS
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
@@ -260,19 +252,29 @@ void	CheckForDisplay_SignalDisp(long handle);
 
 BOOLN	Free_SignalDisp(void);
 
+void	FreeCriticalSection_SignalDisp(void);
+
+void	FreeDisplay_SignalDisp(void *display);
+
 BOOLN	FreeProcessVariables_SignalDisp(void);
 
 NameSpecifier *	GetPanelList_SignalDisp(int index);
 
 UniParListPtr	GetUniParListPtr_SignalDisp(void);
 
+void	GetWindowPosition_SignalDisp(int *x, int *y);
+
 BOOLN	Init_SignalDisp(ParameterSpecifier parSpec);
 
 BOOLN	InitBOOLNeanList_SignalDisp(void);
 
+void	InitCriticalSection_SignalDisp(void);
+
 BOOLN	InitYNormModeList_SignalDisp(void);
 
 BOOLN	InitModeList_SignalDisp(void);
+
+BOOLN	InitModule_SignalDisp(ModulePtr theModule);
 
 BOOLN	InitParNameList_SignalDisp(void);
 
@@ -309,6 +311,16 @@ BOOLN	SetFrameYPos_SignalDisp(int theFrameYPos);
 
 BOOLN	SetFrameWidth_SignalDisp(int theFrameWidth);
 
+void	SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void));
+
+void	SetFuncFreeDisplay_SignalDisp(void (* Func)(void *));
+
+void	SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *));
+
+void	SetFuncInitCriticalSection_SignalDisp(void (* Func)(void));
+
+void	SetFuncShowSignal_SignalDisp(BOOLN (* Func)(EarObjectPtr));
+
 BOOLN	SetMaxY_SignalDisp(Float maxY);
 
 BOOLN	SetMinY_SignalDisp(Float minY);
@@ -316,8 +328,6 @@ BOOLN	SetMinY_SignalDisp(Float minY);
 BOOLN	SetMode_SignalDisp(WChar *theMode);
 
 void	SetSubDisplays_SignalDisp(void);
-
-BOOLN	InitModule_SignalDisp(ModulePtr theModule);
 
 BOOLN	SetNumGreyScales_SignalDisp(int theNumGreyScales);
 

@@ -146,7 +146,7 @@ if [ "$echo_libs" = "yes" ]; then
 	if [ "$use_gui" = "yes" ]; then
 		libs="-l@PACKAGE@_g $libs @WXLDLIBS@ @WXOGLLIBS@"
 	else
-		libs="$libs -l@PACKAGE@_std -lm"
+		libs="$libs -lm"
 		if [ -z "@DSAM_EXTENSIONS_TRUE@" ]; then
 			libs="$libs @WX_BASE_LIBS@"
 		fi

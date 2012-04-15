@@ -48,14 +48,17 @@ An_Sources	= AnAutoCorr.c AnAverages.c AnConvolve.c AnCrossCorr.c \
 				AnExperiment.c AnFindBin.c AnFindNextIndex.c AnFourierT.c \
 				AnGeneral.c AnHistogram.c AnIntensity.c AnInterSIH.c \
 				AnSpikeReg.c AnSynchIndex.c AnSAImage.c AnALSR.c AnSAC.c
-  
-IO_Sources	= FiDataFile.c FiASCII.c FiSndFile.c FiParFile.c IOAudioIn.c
 
+Di_Sources	= DiSignalDisp.c
+
+  
 Fl_Sources	= FlBandPass.c  FlDistLowPass.c FlMultiBPass.c FlFIR.c FlZBMiddleEar.c \
 				FlLowPass.c
 
 Ge_Sources	= GeEarObject.c GeCommon.c GeModuleMgr.c GeSignalData.c \
 				GeNSpecLists.c GeUniParMgr.c GeModuleReg.c
+
+IO_Sources	= FiDataFile.c FiASCII.c FiSndFile.c FiParFile.c IOAudioIn.c
 
 Mo_Sources	= MoANSGBinom.c MoANSGCarney.c MoANSGSimple.c \
 				MoBMCarney.c MoBMCooke.c MoBMDRNL.c MoBMGammaT.c \
@@ -93,7 +96,8 @@ pkginclude_HEADERS	= UtSSParser.h
 BUILT_SOURCES		= UtSSParser.c
 
 libdsam_la_SOURCES= $(Ut_Sources) $(Ge_Sources) $(An_Sources) $(IO_Sources) \
-					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources)
+					$(Mo_Sources) $(Fl_Sources) $(St_Sources) $(Tr_Sources) \
+					$(Di_Sources)
 libdsam_la_LDFLAGS=  $(GenLaLDFLAGS)
 
 PaWorker1m_exe_SOURCES	= PaWorker1.c

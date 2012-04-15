@@ -61,7 +61,7 @@
 #include "GrIPCServer.h"
 #include "GrSimMgr.h"
 #include "GrMainApp.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 #include "GrSDIBaseShapes.h"
 #include "GrSDIShapes.h"
 #include "GrSDIEvtHandler.h"

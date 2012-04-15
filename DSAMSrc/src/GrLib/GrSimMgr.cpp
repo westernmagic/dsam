@@ -101,7 +101,7 @@
 #include "ExtSocket.h"
 #include "ExtSocketServer.h"
 #include "GrIPCServer.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 #include "GrCanvas.h"
 #include "GrPrintDisp.h"
 #include "GrFonts.h"

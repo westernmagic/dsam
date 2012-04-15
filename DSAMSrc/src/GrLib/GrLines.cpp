@@ -70,7 +70,7 @@
 #include "GrUtils.h"
 #include "GrLines.h"
 #include "GrBrushes.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/

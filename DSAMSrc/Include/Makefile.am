@@ -34,7 +34,7 @@ An_Headers	= AnAutoCorr.h AnAverages.h AnConvolve.h AnCrossCorr.h \
 				AnGeneral.h AnHistogram.h AnIntensity.h AnInterSIH.h \
 				AnSpikeReg.h AnSynchIndex.h AnSAImage.h AnALSR.h AnSAC.h
   
-IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
+Di_Headers	= DiSignalDisp.h
 
 Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h FlZBMiddleEar.h \
 				FlDistLowPass.h
@@ -42,7 +42,7 @@ Fl_Headers	=  FlBandPass.h FlLowPass.h FlFIR.h FlZBMiddleEar.h \
 Ge_Headers	= GeEarObject.h GeCommon.h GeModuleMgr.h GeSignalData.h \
 				GeNSpecLists.h GeUniParMgr.h GeModuleReg.h
 
-Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
+Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrDisplayS.h \
 				GrSimMgr.h GrUtils.h GrModParDialog.h GrParListInfo.h \
 				GrFonts.h GrDialogInfo.h GrParListInfoList.h GrPrintDisp.h \
 				GrParControl.h ExtCommon.h GrAxisScale.h dsam.rc \
@@ -50,6 +50,8 @@ Gr_Headers	= GrBrushes.h GrCanvas.h GrLines.h GrSignalDisp.h GrDisplayS.h \
 				GrSDICanvas.h GrSDIDiagram.h GrSDIEvtHandler.h GrSDICommand.h \
 				GrSDIShapes.h GrDiagFrame.h GrSDIDoc.h GrIPCServer.h \
 				GrSDIDocManager.h GrSDIXMLDoc.h GrSDIBaseShapes.h
+
+IO_Headers	= FiDataFile.h FiASCII.h FiSndFile.h FiParFile.h IOAudioIn.h
 
 Mo_Headers	= MoANSGBinom.h MoANSGCarney.h MoANSGSimple.h \
 				MoBMCarney.h MoBMCooke.h MoBMDRNL.h MoBMGammaT.h MoBMZilanyBruce.h \
@@ -72,8 +74,6 @@ Ext_Headers	= ExtMainApp.h ExtIPCServer.h ExtSimThread.h ExtIPCUtils.h \
 				ExtRunThreadedProc.h ExtXMLDocument.h ExtSingleProcThread.h \
 				ExtProcChainThread.h ExtXMLNode.h
 
-Std_Headers	= 
-
 Ut_Headers	= UtAccumulate.h UtAmpMod.h UtBandwidth.h UtBinSignal.h \
 				UtCFList.h UtCmplxM.h UtCompress.h \
 				UtConvMonaural.h UtCreateBinaural.h UtDatum.h UtDebug.h \
@@ -93,9 +93,9 @@ Tr_Headers	= TrGate.h TrSetDBSPL.h TrCollectSignals.h
 pkginclude_HEADERS	= DSAM.h $(St_Headers) $(Mo_Headers) $(Fl_Headers) \
 					$(IO_Headers) $(An_Headers) $(Ge_Headers) $(Ut_Headers) \
 					$(Tr_Headers) $(Pa_Headers) $(Gr_Headers) $(Std_Headers) \
-					$(Ext_Headers)
+					$(Ext_Headers) $(Di_Headers)
 
 DSAM.h:	$(St_Headers) $(Mo_Headers) $(Fl_Headers) $(IO_Headers) $(An_Headers) \
 					$(Ge_Headers) $(Ut_Headers) $(Tr_Headers) $(Pa_Headers) \
-					$(Gr_Headers) $(Std_Headers) $(Ext_Headers)
+					$(Gr_Headers) $(Std_Headers) $(Ext_Headers) $(Di_Headers)
 		touch $(top_srcdir)/Include/DSAM.h

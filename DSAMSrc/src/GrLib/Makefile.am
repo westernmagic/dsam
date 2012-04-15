@@ -41,7 +41,7 @@ libdsam_g_la_CPPFLAGS	= -DLIBRARY_COMPILE $(MAIN_INC) $(WXINC) \
 					-I$(top_srcdir)/src/MainLib -I../MainLib
 
 libdsam_g_la_SOURCES= GrBrushes.cpp GrFonts.cpp GrAxisScale.cpp \
-				GrLines.cpp GrCanvas.cpp GrDisplayS.cpp GrSignalDisp.cpp \
+				GrLines.cpp GrCanvas.cpp GrDisplayS.cpp \
 				GrSimMgr.cpp GrUtils.cpp GrPrintDisp.cpp GrModParDialog.cpp \
 				GrParListInfo.cpp GrDialogInfo.cpp GrParListInfoList.cpp \
 				GrParControl.cpp GrSDIDoc.cpp GrIPCServer.cpp GrMainApp.cpp \

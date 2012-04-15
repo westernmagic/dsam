@@ -187,7 +187,7 @@
 #include <TrGate.h>
 #include <TrSetDBSPL.h>
 
-#include <GrSignalDisp.h>
+#include <DiSignalDisp.h>
 
 #if defined(__cplusplus)
 #/* --cplusplus ensures only included with c++ compile */

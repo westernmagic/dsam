@@ -30,7 +30,7 @@
 
 AC_REVISION($Revision: 2.61)
 
-AC_INIT(DSAM, 2.8.35)
+AC_INIT(DSAM, 2.8.36)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_TARGET
@@ -61,9 +61,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=8
-DSAM_MICRO_VERSION=35
-DSAM_INTERFACE_AGE=35
-DSAM_BINARY_AGE=35
+DSAM_MICRO_VERSION=36
+DSAM_INTERFACE_AGE=36
+DSAM_BINARY_AGE=36
 DSAM_RPM_AGE=1
 
 dnl
@@ -712,7 +712,6 @@ AC_CONFIG_FILES([
 	Include/Makefile
 	src/Makefile
 	src/MainLib/Makefile
-	src/StdLib/Makefile
 	src/ExtLib/Makefile
 	src/GrLib/Makefile
 	src/GrLib/Bitmaps/Makefile
@@ -722,7 +721,6 @@ AC_CONFIG_FILES([
 	MSVC/Makefile
 	MSVC/DSAM/Makefile
 	MSVC/DSAM_ext/Makefile
-	MSVC/DSAM_std/Makefile
 	MSVC/DSAM_g/Makefile
 	NSIS/Makefile
 	debian/Makefile

@@ -1,11 +1,9 @@
 /******************
  *
- * File:		StdSignalDisp.c/GrSignalDisp.cpp
+ * File:		DiSignalDisp.c
  * Purpose: 	This graphics module serves as the interface between DSAM
  *				and the WxWin GUI.
- * Comments:	This module uses local parameters for the AveChannels utility
- *				module.
- *				The "ReadPars" routine for this module is different from the
+ * Comments:	The "ReadPars" routine for this module is different from the
  *				standard used by most of the other modules.
  *				21-10-97 LPO: Added absolute scaling mode.
  *				27-10-97 LPO: Added parameter flags so that only those
@@ -65,10 +63,6 @@
 #include <float.h>
 #include <time.h>
 
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-#include "ExtCommon.h"
-#endif
-
 #include "GeCommon.h"
 #include "GeSignalData.h"
 #include "GeEarObject.h"
@@ -77,19 +71,7 @@
 #include "GeNSpecLists.h"
 #include "FiParFile.h"
 #include "UtString.h"
-
-#if defined(GRAPHICS_SUPPORT) && defined(__cplusplus)
-#	include "GrUtils.h"
-#	include "GrSimMgr.h"
-#	include "GrLines.h"
-#	include "GrSignalDisp.h"
-#	include "GrCanvas.h"
-#	include "GrDisplayS.h"
-#	include "GrSDICanvas.h"
-#	include "GrSDIFrame.h"
-#else
-#	include "GrSignalDisp.h"
-#endif
+#include "DiSignalDisp.h"
 
 #ifndef DEBUG
 #	define	DEBUG
@@ -100,8 +82,13 @@
 /******************************************************************************/
 
 SignalDispPtr	signalDispPtr = NULL;
-
-wxIcon		*sigDispIcon = NULL;
+SignalDispDefFuncs	signalDispDefFuncs = {
+						FreeCriticalSection_SignalDisp,
+						FreeDisplay_SignalDisp,
+						GetWindowPosition_SignalDisp,
+						InitCriticalSection_SignalDisp,
+						RunModel_ModuleMgr_Null
+					};
 
 /******************************************************************************/
 /*************************** NonGlobal declarations ***************************/
@@ -110,6 +97,66 @@ wxIcon		*sigDispIcon = NULL;
 /******************************************************************************/
 /****************************** Subroutines & functions ***********************/
 /******************************************************************************/
+
+/****************************** SetFuncGetWindowPosition **********************/
+
+/*
+ * This routine sets the GetWindowPosition function.
+ */
+
+void
+SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *))
+{
+	signalDispDefFuncs.GetWindowPosition = Func;
+}
+
+/****************************** SetFuncInitCriticalSection ********************/
+
+/*
+ * This routine sets the InitCriticalSection function.
+ */
+
+void
+SetFuncInitCriticalSection_SignalDisp(void (* Func)(void))
+{
+	signalDispDefFuncs.InitCriticalSection = Func;
+}
+
+/****************************** SetFuncFreeCriticalSection ********************/
+
+/*
+ * This routine sets the FreeCriticalSection function.
+ */
+
+void
+SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void))
+{
+	signalDispDefFuncs.FreeCriticalSection = Func;
+}
+
+/****************************** SetFuncFreeDisplay ****************************/
+
+/*
+ * This routine sets the FreeDisplay function.
+ */
+
+void
+SetFuncFreeDisplay_SignalDisp(void (* Func)(void *))
+{
+	signalDispDefFuncs.FreeDisplay = Func;
+}
+
+/****************************** SetFuncShowSignal *****************************/
+
+/*
+ * This routine sets the ShowSignal function.
+ */
+
+void
+SetFuncShowSignal_SignalDisp(BOOLN (* Func)(EarObjectPtr))
+{
+	signalDispDefFuncs.ShowSignal = Func;
+}
 
 /****************************** PanelList *************************************/
 
@@ -233,10 +280,8 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->frameDelay = DISPLAY_DEFAULT_FRAME_DELAY;
 	signalDispPtr->frameHeight = DISPLAY_DEFAULT_FRAME_HEIGHT;
 	signalDispPtr->frameWidth = DISPLAY_DEFAULT_FRAME_WIDTH;
-#	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	wxGetApp().GetDefaultDisplayPos(&signalDispPtr->frameXPos, &signalDispPtr->
-	  frameYPos);
-#	endif
+	(signalDispDefFuncs.GetWindowPosition)(&signalDispPtr->frameXPos,
+	  &signalDispPtr->frameYPos);
 	signalDispPtr->yAxisMode = GRAPH_Y_AXIS_MODE_AUTO;
 	signalDispPtr->yNormalisationMode = GRAPH_LINE_YNORM_MIDDLE_MODE;
 	signalDispPtr->mode = GRAPH_MODE_LINE;
@@ -283,10 +328,62 @@ Init_SignalDisp(ParameterSpecifier parSpec)
 	signalDispPtr->drawCompletedFlag = TRUE;
 	signalDispPtr->initialisationFlag = FALSE;
 	signalDispPtr->display = NULL;
-	signalDispPtr->dialog = NULL;
 	signalDispPtr->critSect = NULL;
 
 	return(TRUE);
+
+}
+
+/****************************** GetWindowPosition ****************************/
+
+/*
+ * This is the default routine for setting the window position.
+ * This is for the non-gui version and does nothing important.
+ */
+
+void
+GetWindowPosition_SignalDisp(int *x, int *y)
+{
+	x = y;
+
+}
+
+/********************************* InitCriticalSection ***********************/
+
+/*
+ * This is the default routine for initialising the critical section mutex.
+ * This is for the non-gui version and does nothing important.
+ */
+
+void
+InitCriticalSection_SignalDisp(void)
+{
+
+}
+
+/********************************* FreeCriticalSection ***********************/
+
+/*
+ * This is the default routine for deleting the critical section mutex.
+ * This is for the non-gui version and does nothing important.
+ */
+
+void
+FreeCriticalSection_SignalDisp(void)
+{
+
+}
+
+/********************************* FreeDisplay *******************************/
+
+/*
+ * This is the default routine for setting the window position.
+ * This is for the non-gui version and does nothing important.
+ */
+
+void
+FreeDisplay_SignalDisp(void *display)
+{
 
 }
 
@@ -307,10 +404,7 @@ Free_SignalDisp(void)
 	if (signalDispPtr == NULL)
 		return(TRUE);
 	FreeProcessVariables_SignalDisp();
-#	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	if (signalDispPtr->display)
-		delete signalDispPtr->display;
-#	endif
+	(signalDispDefFuncs.FreeDisplay)(signalDispPtr->display);
 	if (signalDispPtr->parList)
 		FreeList_UniParMgr(&signalDispPtr->parList);
 	if (signalDispPtr->parSpec == GLOBAL) {
@@ -1671,9 +1765,7 @@ InitProcessVariables_SignalDisp(EarObjectPtr data)
 			  xExtent: _GetDuration_SignalData(signal) - p->xOffset;
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_SignalDisp();
-#			ifndef STANDARD_C_SIGNALDISP_COMPILE
-			p->critSect = new wxCriticalSection();
-#			endif
+			(signalDispDefFuncs.InitCriticalSection)();
 			if ((p->summary = Init_EarObject(wxT("Util_ReduceChannels"))) ==
 			  NULL) {
 				NotifyError(wxT("%s: Out of memory for summary EarObject."),
@@ -1752,11 +1844,7 @@ FreeProcessVariables_SignalDisp(void)
 	Free_EarObject(&signalDispPtr->buffer);
 	Free_EarObject(&signalDispPtr->summary);
 	Free_EarObject(&signalDispPtr->chanActivity);
-
-#	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	if (signalDispPtr->critSect)
-		delete signalDispPtr->critSect;
-#	endif
+	(signalDispDefFuncs.FreeCriticalSection)();
 
 	signalDispPtr->updateProcessVariablesFlag = TRUE;
  	return(TRUE);
@@ -1833,107 +1921,16 @@ SetSubDisplays_SignalDisp(void)
 
 }
 
-/****************************** PostDisplayEvent ******************************/
-
-/*
- * This routine is used by a thread to post a display event in a thread-safe
- * way.
- */
-
-void
-PostDisplayEvent_SignalDisp(void)
-{
-#	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,
-	  SDIFRAME_SIM_THREAD_DISPLAY_EVENT);
-	event.SetInt(MYAPP_THREAD_DRAW_GRAPH);
-	event.SetClientData(signalDispPtr);
-	wxPostEvent(wxGetApp().GetFrame(), event);
-#	endif
-
-}
-
 /**************************** ShowSignal **************************************/
 
 /*
- * This this routine creates a canvas for a signal display chart.
- * At present it MUST BE USED IN LINE.
- * After initialisation the canvas' earObject is unregistered from the main
- * list.  This means that the canvas is responsible for deleting the memory
- * when it is finished with it.
- * If this module is in-line, then the output signal is set to the input
- * input signal.
- * The call to SetProcessContinuity must be done before the setting of the
- * display parameters, otherwise the correct time is not set for the display
- * in segmented mode.
+ * This this routine is for the non-gui mode.
  */
 
 BOOLN
 ShowSignal_SignalDisp(EarObjectPtr data)
 {
 
-#	ifndef STANDARD_C_SIGNALDISP_COMPILE
-	static const WChar *funcName = wxT("ShowSignal_SignalDisp");
-	time_t	startTime;
-	BOOLN	notReady;
-	int		i, numWindowFrames;
-	SignalDataPtr	outSignal;
-
-	if (!data->threadRunFlag) {
-		if (!CheckData_SignalDisp(data)) {
-			NotifyError(wxT("%s: Process data invalid."), funcName);
-			return(FALSE);
-		}
-		if (!SetProcessMode_SignalDisp(data)) {
-			NotifyError(wxT("%s: Could not set process mode."), funcName);
-			return(FALSE);
-		}
-		if (!InitProcessVariables_SignalDisp(data)) {
-			NotifyError(wxT("%s: Could not initialise the process variables."),
-			  funcName);
-			return(FALSE);
-		}
-		if (data->initThreadRunFlag)
-			return(TRUE);
-	}
-	if (signalDispPtr->inLineProcess)
-		SetProcessContinuity_EarObject(data);
-	if (signalDispPtr->mode == GRAPH_MODE_OFF)
-		return(TRUE);
-	outSignal = _OutSig_EarObject(data);
-	numWindowFrames = (GetDSAMPtr_Common()->segmentedMode)? 1: outSignal->
-	  numWindowFrames;
-	for (i = 0, startTime = time(NULL); i < numWindowFrames; i++) {
-		if (signalDispPtr->buffer)
-			ProcessBuffer_SignalDisp(outSignal, signalDispPtr->buffer, i);
-#		if !defined(linux)
-  	  	if (signalDispPtr->frameDelay > DSAM_EPSILON) {
-  			while (difftime(time(NULL), startTime) < signalDispPtr->frameDelay)
-  				;
-  			startTime = time(NULL);
-  		}
-#		endif
-		notReady = TRUE;
-		while (notReady) {
-			signalDispPtr->critSect->Enter();
-			notReady = !signalDispPtr->drawCompletedFlag;
-			signalDispPtr->critSect->Leave();
-		}
-		signalDispPtr->drawCompletedFlag = FALSE;
-		signalDispPtr->critSect->Enter();
-		SetSubDisplays_SignalDisp();
-		signalDispPtr->data = (signalDispPtr->buffer)? signalDispPtr->buffer:
-		  data;
-		signalDispPtr->redrawGraphFlag = TRUE;
-		signalDispPtr->critSect->Leave();
-		PostDisplayEvent_SignalDisp();
-	}
-#	else
-	BOOLN	RunModel_ModuleMgr_Null(EarObjectPtr data);
-
-	return(RunModel_ModuleMgr_Null(data));
-
-#	endif /* ! STANDARD_C_SIGNALDISP_COMPILE */
-	return(TRUE);
+	return((signalDispDefFuncs.ShowSignal)(data));
 
 }

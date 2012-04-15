@@ -78,7 +78,7 @@
 #include "GeUniParMgr.h"
 #include "GrUtils.h"
 #include "GrBrushes.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 #include "GrAxisScale.h"
 #include "GrCanvas.h"
 #include "GrDisplayS.h"
@@ -732,10 +732,10 @@ MyCanvas::OnSize(wxSizeEvent& WXUNUSED(event))
 	RescaleGraph();
 	mySignalDispPtr->redrawGraphFlag = TRUE;
 	if (!mySignalDispPtr->initialisationFlag)
-		mySignalDispPtr->critSect->Enter();
+		((wxCriticalSection *) mySignalDispPtr->critSect)->Enter();
 	RedrawGraph();
 	if (!mySignalDispPtr->initialisationFlag)
-		mySignalDispPtr->critSect->Leave();
+		((wxCriticalSection *) mySignalDispPtr->critSect)->Leave();
 
 }
 
@@ -815,10 +815,6 @@ MyCanvas::OnPrint(wxCommandEvent& WXUNUSED(event))
 void
 MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 {
-	if (mySignalDispPtr->dialog) {
-		mySignalDispPtr->dialog->Raise();
-		return;
-	}
 	ModuleParDialog dialog(this, mySignalDispPtr->title, NULL, mySignalDispPtr->
 	  parList, NULL, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE |
 	  wxDIALOG_MODAL);

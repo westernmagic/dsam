@@ -50,6 +50,8 @@
 #include "ExtXMLDocument.h"
 #include "GrSDIXMLDoc.h"
 #include "GrMainApp.h"
+#include "DiSignalDisp.h"
+#include "GrDisplayS.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -78,6 +80,11 @@ GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
 		wxGetApp().SetConfiguration(GetPtr_AppInterface()->parList);
 	SetOnExecute_AppInterface(OnExecute_MyApp);
 	SetOnExit_AppInterface(OnExit_MyApp);
+	SetFuncGetWindowPosition_SignalDisp(GetWindowPosition_DisplayS);
+	SetFuncInitCriticalSection_SignalDisp(InitCriticalSection_DisplayS);
+	SetFuncFreeCriticalSection_SignalDisp(FreeCriticalSection_DisplayS);
+	SetFuncFreeDisplay_SignalDisp(FreeDisplay_DisplayS);
+	SetFuncShowSignal_SignalDisp(ShowSignal_DisplayS);
 	GetPtr_AppInterface()->parList->pars[APP_INT_SIMULATIONFILE].enabled =
 	  FALSE;
 	ResetGUIDialogs();
@@ -129,3 +136,4 @@ GrMainApp::SetRunIndicators(bool on)
 /******************************************************************************/
 /****************************** Functions *************************************/
 /******************************************************************************/
+

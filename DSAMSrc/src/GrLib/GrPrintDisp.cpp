@@ -66,7 +66,7 @@
 #include "GeEarObject.h"
 #include "GrUtils.h"
 #include "GrBrushes.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 #include "GrDisplayS.h"
 #include "GrCanvas.h"
 #include "GrPrintDisp.h"

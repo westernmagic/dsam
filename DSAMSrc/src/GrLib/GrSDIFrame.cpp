@@ -68,7 +68,7 @@
 #include "GrSDIPalette.h"
 #include "GrSDICanvas.h"
 #include "GrModParDialog.h"
-#include "GrSignalDisp.h"
+#include "DiSignalDisp.h"
 #include "GrDiagFrame.h"
 #include "GrDisplayS.h"
 #include "GrCanvas.h"
@@ -576,20 +576,22 @@ SDIFrame::OnSimThreadEvent(wxCommandEvent& event)
  	switch (event.GetInt()) {
 	case MYAPP_THREAD_DRAW_GRAPH: {
 		SignalDispPtr	signalDispPtr = (SignalDispPtr) event.GetClientData();
+		DisplayS 	*display;
 
-		signalDispPtr->critSect->Enter();
 		if (!signalDispPtr->display) {
 			signalDispPtr->initialisationFlag = TRUE;
-			signalDispPtr->display = new DisplayS(this, signalDispPtr);
-			signalDispPtr->display->canvas->InitGraph();
-			signalDispPtr->display->Show(TRUE);
+			display = new DisplayS(this, signalDispPtr);
+			display->canvas->InitGraph();
+			display->Show(TRUE);
 			signalDispPtr->initialisationFlag = FALSE;
 		} else {
-			signalDispPtr->display->canvas->InitGraph();
-			signalDispPtr->display->canvas->RedrawGraph();
+			display = (DisplayS *) signalDispPtr->display;
+			((wxCriticalSection *) signalDispPtr->critSect)->Enter();
+			display->canvas->InitGraph();
+			display->canvas->RedrawGraph();
+			((wxCriticalSection *) signalDispPtr->critSect)->Leave();
 		}
 		signalDispPtr->drawCompletedFlag = TRUE;
-		signalDispPtr->critSect->Leave();
 		break; }
 	default:
 		;
