@@ -419,6 +419,9 @@
     <ClCompile Include="..\..\src\MainLib\UtZilanyBruce.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\MainLib\IOSignalDisp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\MainLib\UtSSParser.h">
@@ -836,6 +839,9 @@
       <Filter>Include Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DSAMSetup.h">
+      <Filter>Include Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IOSignalDisp.h">
       <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>
