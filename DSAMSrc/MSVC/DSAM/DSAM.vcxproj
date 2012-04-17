@@ -285,6 +285,7 @@
     <ClCompile Include="..\..\src\MainLib\AnSAImage.c" />
     <ClCompile Include="..\..\src\MainLib\AnSpikeReg.c" />
     <ClCompile Include="..\..\src\MainLib\AnSynchIndex.c" />
+    <ClCompile Include="..\..\src\MainLib\DiSignalDisp.c" />
     <ClCompile Include="..\..\src\MainLib\FiASCII.c" />
     <ClCompile Include="..\..\src\MainLib\FiDataFile.c" />
     <ClCompile Include="..\..\src\MainLib\FiParFile.c" />
@@ -303,7 +304,6 @@
     <ClCompile Include="..\..\src\MainLib\GeSignalData.c" />
     <ClCompile Include="..\..\src\MainLib\GeUniParMgr.c" />
     <ClCompile Include="..\..\src\MainLib\IOAudioIn.c" />
-    <ClCompile Include="..\..\src\MainLib\IOSignalDisp.c" />
     <ClCompile Include="..\..\src\MainLib\MoANSGBinom.c" />
     <ClCompile Include="..\..\src\MainLib\MoANSGCarney.c" />
     <ClCompile Include="..\..\src\MainLib\MoANSGMeddis02.c" />
@@ -424,6 +424,7 @@
     <ClInclude Include="..\..\Include\AnSAImage.h" />
     <ClInclude Include="..\..\Include\AnSpikeReg.h" />
     <ClInclude Include="..\..\Include\AnSynchIndex.h" />
+    <ClInclude Include="..\..\Include\DiSignalDisp.h" />
     <ClInclude Include="..\..\Include\DSAM.h" />
     <ClInclude Include="..\..\Include\FiASCII.h" />
     <ClInclude Include="..\..\Include\FiDataFile.h" />
@@ -443,7 +444,6 @@
     <ClInclude Include="..\..\Include\GeSignalData.h" />
     <ClInclude Include="..\..\Include\GeUniParMgr.h" />
     <ClInclude Include="..\..\Include\IOAudioIn.h" />
-    <ClInclude Include="..\..\Include\IOSignalDisp.h" />
     <ClInclude Include="..\..\Include\MoANSGBinom.h" />
     <ClInclude Include="..\..\Include\MoANSGCarney.h" />
     <ClInclude Include="..\..\Include\MoANSGMeddis02.h" />

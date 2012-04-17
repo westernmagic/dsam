@@ -14,7 +14,6 @@
 INCDIR=Include
 SRCDIR=src
 MAINLIB=$SRCDIR/MainLib
-STDLIB=$SRCDIR/StdLib
 CFGTOOLS=CfgTools
 TEMP_FILE=file.tmp
 BULDROOT=build
@@ -47,7 +46,6 @@ CVSConfigure()
 	  DSAMSetup.h > temp
 	mv temp DSAMSetup.h
 	cp $MAINLIB/UtSSParser.h $INCDIR
-	(cd $STDLIB; make StdSignalDisp.c)
 }
 
 ############################### Main Script ####################################

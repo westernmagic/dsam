@@ -277,14 +277,14 @@
 	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
 #if defined(__VISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
 #  ifdef DSAM_MAKING_DLL
-#    define DSAM_API __declspec( dllexport )
+#    define DSAMDLLEXP __declspec( dllexport )
 #  elif defined(DSAM_USING_DLL)
-#    define DSAM_API __declspec( dllimport )
+#    define DSAMDLLEXP __declspec( dllimport )
 #  else
-#    define DSAM_API
+#    define DSAMDLLEXP
 #  endif
 #else
-#    define DSAM_API
+#    define DSAMDLLEXP
 #endif
 
 #elif defined(__PM__)
@@ -292,22 +292,22 @@
 #  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
 
 #    ifdef DSAM_MAKING_DLL
-#      define DSAM_API _Export
+#      define DSAMDLLEXP _Export
 #    elif defined(DSAM_USING_DLL)
-#      define DSAM_API _Export
+#      define DSAMDLLEXP _Export
 #    else
-#      define DSAM_API
+#      define DSAMDLLEXP
 #    endif
 
 #  else
 
-#    define DSAM_API
+#    define DSAMDLLEXP
 
 #  endif
 
 #else  /* !(MSW or OS2) */
 
-#  define DSAM_API
+#  define DSAMDLLEXP
 
 #endif /* __WINDOWS */
 

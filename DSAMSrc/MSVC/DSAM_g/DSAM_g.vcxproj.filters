@@ -95,9 +95,6 @@
     <ClInclude Include="..\..\Include\GrSDIXMLDoc.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GrSignalDisp.h">
-      <Filter>Include Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GrSimMgr.h">
       <Filter>Include Files</Filter>
     </ClInclude>
@@ -190,9 +187,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GrLib\GrSDIXMLDoc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GrLib\GrSignalDisp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GrLib\GrSimMgr.cpp">

@@ -46,7 +46,6 @@
     <ClInclude Include="..\..\Include\GrSDIShapes.h" />
     <ClInclude Include="..\..\Include\GrSDIView.h" />
     <ClInclude Include="..\..\Include\GrSDIXMLDoc.h" />
-    <ClInclude Include="..\..\Include\GrSignalDisp.h" />
     <ClInclude Include="..\..\Include\GrSimMgr.h" />
     <ClInclude Include="..\..\Include\GrUtils.h" />
   </ItemGroup>
@@ -81,7 +80,6 @@
     <ClCompile Include="..\..\src\GrLib\GrSDIShapes.cpp" />
     <ClCompile Include="..\..\src\GrLib\GrSDIView.cpp" />
     <ClCompile Include="..\..\src\GrLib\GrSDIXMLDoc.cpp" />
-    <ClCompile Include="..\..\src\GrLib\GrSignalDisp.cpp" />
     <ClCompile Include="..\..\src\GrLib\GrSimMgr.cpp" />
     <ClCompile Include="..\..\src\GrLib\GrUtils.cpp" />
   </ItemGroup>
