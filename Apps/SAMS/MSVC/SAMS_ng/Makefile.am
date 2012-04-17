@@ -3,5 +3,5 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= SAMS_ng.vcproj
+EXTRA_DIST	= SAMS_ng.vcxproj SAMS_ng.vcxproj.filters
 
