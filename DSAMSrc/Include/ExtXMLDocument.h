@@ -98,7 +98,7 @@ class istream;
 
 /*************************** SDIDocument **************************************/
 
-class DSAMXMLDocument: public wxXmlDocument
+class DSAMEXT_API DSAMXMLDocument: public wxXmlDocument
 {
 
   private:

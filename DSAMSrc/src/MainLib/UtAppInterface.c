@@ -86,7 +86,7 @@ AppInterfacePtr	appInterfacePtr = NULL;
  * This routine also calls the routine to free the nullModule global variable.
  */
 
-BOOLN
+DSAM_API BOOLN
 Free_AppInterface(void)
 {
 	if (!appInterfacePtr)
@@ -313,7 +313,7 @@ SetUniParList_AppInterface(void)
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetDiagMode_AppInterface(WChar *theDiagMode)
 {
 	static const WChar	*funcName = wxT("SetDiagMode_AppInterface");
@@ -338,7 +338,7 @@ SetDiagMode_AppInterface(WChar *theDiagMode)
  * file needs to be loaded.
  */
 
-void
+DSAM_API void
 SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
 {
 	appInterfacePtr->simulationFileFlag = theSimulationFileFlag;
@@ -352,7 +352,7 @@ SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetSimulationFile_AppInterface(WChar *theSimulationFile)
 {
 	static const WChar	*funcName = wxT("SetSimulationFile_AppInterface");
@@ -487,7 +487,7 @@ SetMaxUserModules_AppInterface(int maxUserModules)
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetInstallDir_AppInterface(const WChar *theInstallDir)
 {
 	static const WChar	*funcName = wxT("SetInstallDir_AppInterface");
@@ -536,7 +536,7 @@ SetAppParFile_AppInterface(WChar *fileName)
  * to set the applications parameters.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
   *parList))
 {
@@ -581,7 +581,7 @@ SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void))
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppPrintUsage_AppInterface(void (* PrintUsage)(void))
 {
 	static const WChar	*funcName = wxT("SetAppPrintUsage_AppInterface");
@@ -603,7 +603,7 @@ SetAppPrintUsage_AppInterface(void (* PrintUsage)(void))
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **, int *))
 {
 	static const WChar	*funcName = wxT("SetAppProcessOptions_AppInterface");
@@ -627,7 +627,7 @@ SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **, int *))
  * It returns false if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void))
 {
 	static const WChar	*funcName = wxT("SetAppPostInitFunc_AppInterface");
@@ -651,7 +651,7 @@ SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void))
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
 {
 	static const WChar	*funcName = wxT(
@@ -675,7 +675,7 @@ SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(void))
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
 {
 	static const WChar	*funcName = wxT("SetOnExecute_AppInterface");
@@ -698,7 +698,7 @@ SetOnExecute_AppInterface(BOOLN (* OnExecute)(void))
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetOnExit_AppInterface(void (* OnExit)(void))
 {
 	static const WChar	*funcName = wxT("SetOnExit_AppInterface");
@@ -954,7 +954,7 @@ ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
  * changed by the 'FindUniPar_UniParMgr' routine.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue, BOOLN readSPF)
 {
 	static const WChar *funcName = wxT("SetProgramParValue_AppInterface");
@@ -1002,7 +1002,7 @@ SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue, BOOLN rea
  * simulation.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 GetSimulation_AppInterface(void)
 {
 	static const WChar *funcName = wxT("GetSimulation_AppInterface");
@@ -1033,7 +1033,7 @@ GetSimulation_AppInterface(void)
  * simulation pointer.
  */
 
-DatumPtr *
+DSAM_API DatumPtr *
 GetSimPtr_AppInterface(void)
 {
 	static const WChar *funcName = wxT("GetSimPtr_AppInterface");
@@ -1224,7 +1224,7 @@ InitSimFromSimScript_AppInterface(void)
  * This routine resets the simulation.
  */
 
-void
+DSAM_API void
 FreeSim_AppInterface(void)
 {
 	Free_EarObject(&appInterfacePtr->audModel);
@@ -1239,7 +1239,7 @@ FreeSim_AppInterface(void)
  * This function sets the module's simParFileFlag field.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetSimFileType_AppInterface(int simFileType)
 {
 	static const WChar	*funcName = wxT("SetSimFileType_AppInterface");
@@ -1260,7 +1260,7 @@ SetSimFileType_AppInterface(int simFileType)
  * This function sets the module's workingDirectory field.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetWorkingDirectory_AppInterface(WChar * workingDirectory)
 {
 	static const WChar	*funcName = wxT("SetWorkingDirectory_AppInterface");
@@ -1328,7 +1328,7 @@ InitSimulation_AppInterface(void)
  * This routine sets the global appName variable.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppName_AppInterface(const WChar *appName)
 {
 	static const WChar *funcName = wxT("SetAppName_AppInterface");
@@ -1350,7 +1350,7 @@ SetAppName_AppInterface(const WChar *appName)
  * This routine sets the appVersion variable.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetAppVersion_AppInterface(const WChar *appVersion)
 {
 	static const WChar *funcName = wxT("SetAppVersion_AppInterface");
@@ -1373,7 +1373,7 @@ SetAppVersion_AppInterface(const WChar *appVersion)
  * with, as compared to the dynamic library that is being used.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion)
 {
 	static const WChar *funcName = wxT("SetCompiledDSAMVersion_AppInterface");
@@ -1417,7 +1417,7 @@ SetTitle_AppInterface(const WChar *title)
  * It returns FALSE if it fails in any way
  */
 
-BOOLN
+DSAM_API BOOLN
 AddAppHelpBook_AppInterface(const WChar *bookName)
 {
 	static const WChar *funcName = wxT("AddAppHelpBook_AppInterface");
@@ -1500,7 +1500,7 @@ ListParsAndExit_AppInterface(void)
  * This routine prints the simulation and main program parameters.
  */
 
-BOOLN
+DSAM_API BOOLN
 ListParameters_AppInterface(void)
 {
 	static const WChar *funcName = wxT("ListParameters_AppInterface");
@@ -1567,7 +1567,7 @@ ListCFListAndExit_AppInterface(void)
  * commands.
  */
 
-void
+DSAM_API void
 ResetCommandArgFlags_AppInterface(void)
 {
 	static const WChar *funcName = wxT("ResetCommandArgFlags_AppInterface");
@@ -1590,7 +1590,7 @@ ResetCommandArgFlags_AppInterface(void)
  * The global variables are also set.
  */
 
-void
+DSAM_API void
 SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv)
 {
 	static const WChar *funcName = wxT("SetArgcAndArgV_AppInterface");
@@ -1613,7 +1613,7 @@ SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv)
  * application interface too.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
   WChar **theArgv)
 {
@@ -1720,7 +1720,7 @@ InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
  * "Free_" to decide whether it does anything when called.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetCanFreePtrFlag_AppInterface(BOOLN status)
 {
 	if (!appInterfacePtr) {
@@ -1738,7 +1738,7 @@ SetCanFreePtrFlag_AppInterface(BOOLN status)
  * This routine is useful for the VC++ compile.
  */
 
-AppInterfacePtr
+DSAM_API AppInterfacePtr
 GetPtr_AppInterface(void)
 {
 	static const WChar *funcName = wxT("GetPtr_AppInterface");
@@ -1788,7 +1788,7 @@ GetUniParPtr_AppInterface(WChar *parName)
  * It returns NULL if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 PrintSimPars_AppInterface(void)
 {
 	static const WChar *funcName = wxT("PrintSimPars_AppInterface");
@@ -1808,7 +1808,7 @@ PrintSimPars_AppInterface(void)
  * This routine resets the processes in the main auditory model simulation.
  */
 
-BOOLN
+DSAM_API BOOLN
 ResetSim_AppInterface(void)
 {
 	static const WChar *funcName = wxT("ResetSim_AppInterface");
@@ -1830,7 +1830,7 @@ ResetSim_AppInterface(void)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 RunSim_AppInterface(void)
 {
 	static const WChar *funcName = wxT("RunSim_AppInterface");
@@ -1859,7 +1859,7 @@ RunSim_AppInterface(void)
  * This routine returns the main auditory model simulation process EarObject.
  */
 
-EarObjectPtr
+DSAM_API EarObjectPtr
 GetSimProcess_AppInterface(void)
 {
 	static const WChar *funcName = wxT("GetSimProcess_AppInterface");
@@ -1951,7 +1951,7 @@ SetRealArraySimPar_AppInterface(WChar *parName, int index, Float value)
  * This routine calls the application's exit routine, if on exists.
  */
 
-void
+DSAM_API void
 OnExit_AppInterface(void)
 {
 	if (appInterfacePtr->OnExit)
@@ -1966,7 +1966,7 @@ OnExit_AppInterface(void)
  * other things, i.e. under the GUI.
  */
 
-BOOLN
+DSAM_API BOOLN
 OnExecute_AppInterface(void)
 {
 	BOOLN	ok;
@@ -1986,7 +1986,7 @@ OnExecute_AppInterface(void)
  * beginning of a simulation.  If it is not there, then it returns NULL.
  */
 
-EarObjectPtr
+DSAM_API EarObjectPtr
 GetDataFileInProcess_AppInterface(void)
 {
 	FILE	*savedErrorsFilePtr = GetDSAMPtr_Common()->errorsFile;

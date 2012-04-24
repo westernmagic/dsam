@@ -74,7 +74,7 @@ class SocketServer;
 
 /*************************** IPCServer ****************************************/
 
-class IPCServer {
+class DSAMEXT_API IPCServer {
 
 	bool	ok, simulationInitialisedFlag, successfulRunFlag;
 	IPCUtils	iPCUtils;

@@ -111,7 +111,7 @@ StrCmpNoCase_Utility_String(WChar *s1, WChar *s2)
  * The length used is that of the second argument.
  */
 
-int
+DSAM_API int
 StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString)
 {
 	static WChar *funcName = wxT("StrNCmpNoCase_Utility_String");
@@ -140,7 +140,7 @@ StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString)
  * It exits terminally if it fails.
  */
 
-WChar *
+DSAM_API WChar *
 InitString_Utility_String(WChar *string)
 {
 	static const WChar	*funcName = wxT("InitString_Utility_String");
@@ -270,7 +270,7 @@ SubStrReplace_Utility_String(WChar *string, WChar *subString, WChar *repString)
  * The returned string should be considered as temporary.
  */
 
-char *
+DSAM_API char *
 ConvUTF8_Utility_String(const WChar *src)
 {
 #	ifndef DSAM_USE_UNICODE
@@ -528,7 +528,7 @@ Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
  * to the string '%s' and '%c' formats in UNICODE mode.
  */
 
-int
+DSAM_API int
 fprintf_Utility_String(FILE *fp,  const WChar *format, ...)
 {
 	static const WChar *funcName = wxT("fprintf_Utility_String");

@@ -131,7 +131,7 @@ Free_Utility_SimScript(void)
  * This function returns a pointer to a prototype name list.
  */
 
-NameSpecifierPtr
+DSAM_API NameSpecifierPtr
 ParFilePathModePrototypeList_Utility_SimScript(void)
 {
 	static NameSpecifier	modeList[] = {
@@ -273,7 +273,7 @@ GetUniParListPtr_Utility_SimScript(void)
  * Additional checks should be added as required.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetSimulation_Utility_SimScript(DatumPtr theSimulation)
 {
 	static const WChar	*funcName = wxT("SetSimulation_Utility_SimScript");
@@ -506,7 +506,7 @@ SetLabelBListPtr_Utility_SimScript(DynaBListPtr *labelBListPtr)
  * This function sets the module's parsFilePath field.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetParsFilePath_Utility_SimScript(WChar * parsFilePath)
 {
 	static const WChar	*funcName = wxT("SetParsFilePath_Utility_SimScript");
@@ -701,7 +701,7 @@ ReadSimScript_Utility_SimScript(FILE *fp)
  * It also sets the simScriptPtr->simFileType field.
  */
 
-SimFileTypeSpecifier
+DSAM_API SimFileTypeSpecifier
 GetSimFileType_Utility_SimScript(WChar *suffix)
 {
 	static NameSpecifier simFileTypeList[] = {
@@ -1005,7 +1005,7 @@ GetSimScriptSimulation_Utility_SimScript(DatumPtr pc)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetProcessSimPtr_Utility_SimScript(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("SetProcessSimPtr_Utility_SimScript");
@@ -1046,7 +1046,7 @@ GetPtr_Utility_SimScript(void)
  * This function sets the function for reading XML files.
  */
 
-void
+DSAM_API void
 SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(WChar *))
 {
 	ReadXMLSimFile_SimScript = Func;

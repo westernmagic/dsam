@@ -184,29 +184,29 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-BOOLN	AddAppHelpBook_AppInterface(const WChar *bookName);
+DSAM_API BOOLN	AddAppHelpBook_AppInterface(const WChar *bookName);
 
-BOOLN	Free_AppInterface(void);
+DSAM_API BOOLN	Free_AppInterface(void);
 
-void	FreeSim_AppInterface(void);
+DSAM_API void	FreeSim_AppInterface(void);
 
-EarObjectPtr	GetDataFileInProcess_AppInterface(void);
+DSAM_API EarObjectPtr	GetDataFileInProcess_AppInterface(void);
 
 WChar *	GetFilePath_AppInterface(WChar *filePath);
 
-AppInterfacePtr	GetPtr_AppInterface(void);
+DSAM_API AppInterfacePtr	GetPtr_AppInterface(void);
 
-DatumPtr *	GetSimPtr_AppInterface(void);
+DSAM_API DatumPtr *	GetSimPtr_AppInterface(void);
 
-EarObjectPtr	GetSimProcess_AppInterface(void);
+DSAM_API EarObjectPtr	GetSimProcess_AppInterface(void);
 
-DatumPtr	GetSimulation_AppInterface(void);
+DSAM_API DatumPtr	GetSimulation_AppInterface(void);
 
 UniParPtr	GetUniParPtr_AppInterface(WChar *parName);
 
 BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
-BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
+DSAM_API BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  WChar **theArgv);
 
 BOOLN	InitSimulation_AppInterface(void);
@@ -215,13 +215,13 @@ BOOLN	InitThreadModeList_AppInterface(void);
 
 void	ListCFListAndExit_AppInterface(void);
 
-BOOLN	ListParameters_AppInterface(void);
+DSAM_API BOOLN	ListParameters_AppInterface(void);
 
 void	ListParsAndExit_AppInterface(void);
 
-BOOLN	OnExecute_AppInterface(void);
+DSAM_API BOOLN	OnExecute_AppInterface(void);
 
-void	OnExit_AppInterface(void);
+DSAM_API void	OnExit_AppInterface(void);
 
 void	ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
 		  WChar *subProcess);
@@ -232,7 +232,7 @@ BOOLN	ProcessParComs_AppInterface(void);
 
 BOOLN	ProcessOptions_AppInterface(void);
 
-BOOLN	PrintSimPars_AppInterface(void);
+DSAM_API BOOLN	PrintSimPars_AppInterface(void);
 
 void	PrintUsage_AppInterface(void);
 
@@ -240,55 +240,55 @@ BOOLN	ReadPars_AppInterface(WChar *parFileName);
 
 BOOLN	ReadProgParFile_AppInterface(void);
 
-void	ResetCommandArgFlags_AppInterface(void);
+DSAM_API void	ResetCommandArgFlags_AppInterface(void);
 
-BOOLN	ResetSim_AppInterface(void);
+DSAM_API BOOLN	ResetSim_AppInterface(void);
 
-BOOLN	RunSim_AppInterface(void);
-
-BOOLN	SetAppParFile_AppInterface(WChar *fileName);
-
-BOOLN	SetAppName_AppInterface(const WChar *appName);
-
-BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
-
-BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **,
-		  int *));
-
-BOOLN	SetAppRegisterUserModules_AppInterface(BOOLN (* RegisterUserModules)(
-		  void));
-
-BOOLN	SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void));
-
-BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
-		  *parList));
-
-BOOLN	SetAppVersion_AppInterface(const WChar *appVersion);
-
-void	SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv);
-
-BOOLN	SetCanFreePtrFlag_AppInterface(BOOLN status);
-
-BOOLN	SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion);
-
-BOOLN	SetDiagMode_AppInterface(WChar *theDiagMode);
+DSAM_API BOOLN	RunSim_AppInterface(void);
 
 BOOLN	SetAppFreeProcessVars_AppInterface(BOOLN (* FreeAppProcessVars)(void));
 
-BOOLN	SetInstallDir_AppInterface(const WChar *theInstallDir);
+BOOLN	SetAppParFile_AppInterface(WChar *fileName);
+
+DSAM_API BOOLN	SetAppName_AppInterface(const WChar *appName);
+
+DSAM_API BOOLN	SetAppPrintUsage_AppInterface(void (* PrintUsage)(void));
+
+DSAM_API BOOLN	SetAppProcessOptions_AppInterface(int (* ProcessOptions)(int, WChar **,
+				  int *));
+
+DSAM_API BOOLN	SetAppRegisterUserModules_AppInterface(
+				  BOOLN	(* RegisterUserModules)(void));
+
+DSAM_API BOOLN	SetAppPostInitFunc_AppInterface(BOOLN (* PostInitFunc)(void));
+
+DSAM_API BOOLN	SetAppSetUniParList_AppInterface(BOOLN (* SetUniParList)(UniParListPtr
+				  *parList));
+
+DSAM_API BOOLN	SetAppVersion_AppInterface(const WChar *appVersion);
+
+DSAM_API void	SetArgcAndArgV_AppInterface(int theArgc, WChar **theArgv);
+
+DSAM_API BOOLN	SetCanFreePtrFlag_AppInterface(BOOLN status);
+
+DSAM_API BOOLN	SetCompiledDSAMVersion_AppInterface(const WChar *compiledDSAMVersion);
+
+DSAM_API BOOLN	SetDiagMode_AppInterface(WChar *theDiagMode);
+
+DSAM_API BOOLN	SetInstallDir_AppInterface(const WChar *theInstallDir);
 
 BOOLN	SetMaxUserModules_AppInterface(int maxUserModules);
 
 BOOLN	SetNumThreads_AppInterface(int theNumThreads);
 
-BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
+DSAM_API BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
-BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
+DSAM_API BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
-BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
+DSAM_API BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
 
-BOOLN	SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue,
-		  BOOLN readSPF);
+DSAM_API BOOLN	SetProgramParValue_AppInterface(const WChar *parName,
+				  WChar *parValue, BOOLN readSPF);
 
 BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, Float value);
 
@@ -296,13 +296,13 @@ BOOLN	SetRealSimPar_AppInterface(WChar *parName, Float value);
 
 BOOLN	SetSegmentMode_AppInterface(WChar *theSegmentMode);
 
-BOOLN	SetSimFileType_AppInterface(int simFileType);
+DSAM_API BOOLN	SetSimFileType_AppInterface(int simFileType);
 
 BOOLN	SetSimPar_AppInterface(WChar *parName, WChar *value);
 
-BOOLN	SetSimulationFile_AppInterface(WChar *theSimulationFile);
+DSAM_API BOOLN	SetSimulationFile_AppInterface(WChar *theSimulationFile);
 
-void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
+DSAM_API void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
 
 BOOLN	SetThreadMode_AppInterface(WChar * theThreadMode);
 

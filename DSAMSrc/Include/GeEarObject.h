@@ -138,7 +138,7 @@ extern EarObjRefPtr	mainEarObjectList;
 
 __BEGIN_DECLS
 
-extern BOOLN (* ResetProcess_EarObject)(EarObjectPtr);
+DSAM_API extern BOOLN (* ResetProcess_EarObject)(EarObjectPtr);
 
 __END_DECLS
 
@@ -154,9 +154,9 @@ __BEGIN_DECLS
 
 /*************************** External Functions *******************************/
 
-ModulePtr	Init_ModuleMgr(const WChar *name);
+DSAM_API ModulePtr	Init_ModuleMgr(const WChar *name);
 
-void		Free_ModuleMgr(ModulePtr *theModule);
+DSAM_API void		Free_ModuleMgr(ModulePtr *theModule);
 
 /*************************** Main Functions ***********************************/
 
@@ -167,17 +167,17 @@ BOOLN	AddInSignal_EarObject(EarObjectPtr data);
 BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const WChar
 		  *callingFuncName);
 
-BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
-		  EarObjectPtr customer);
+DSAM_API BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
+				  EarObjectPtr customer);
 
 EarObjRefPtr	CreateEarObjRef_EarObject(EarObjectPtr theObject);
 
 BOOLN	DelInSignal_EarObject(EarObjectPtr data, SignalDataPtr *signal);
 
-BOOLN	DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
-		  EarObjectPtr customer);
+DSAM_API BOOLN	DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
+				  EarObjectPtr customer);
 
-void	FreeAll_EarObject(void);
+DSAM_API void	FreeAll_EarObject(void);
 
 void	FreeEarObjRefList_EarObject(EarObjRefPtr *theList);
 
@@ -185,15 +185,15 @@ int		FreeEarObjRef_EarObject(EarObjRefPtr *theList, EarObjHandle theHandle);
 
 void	FreeSubProcessList_EarObject(EarObjectPtr p);
 
-void	FreeThreadProcs_EarObject(EarObjectPtr p);
+DSAM_API void	FreeThreadProcs_EarObject(EarObjectPtr p);
 
 void	FreeThreadSubProcs_EarObject(EarObjectPtr p);
 
 void	FreeOutSignal_EarObject(EarObjectPtr data);
 
-void	Free_EarObject(EarObjectPtr *theObject);
+DSAM_API void	Free_EarObject(EarObjectPtr *theObject);
 
-EarObjectPtr	Init_EarObject(const WChar *moduleName);
+DSAM_API EarObjectPtr	Init_EarObject(const WChar *moduleName);
 
 void	InitOutDataFromInSignal_EarObject(EarObjectPtr data);
 
@@ -209,7 +209,7 @@ void	InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP);
 
 BOOLN	InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses);
 
-BOOLN	InitThreadProcs_EarObject(EarObjectPtr p);
+DSAM_API BOOLN	InitThreadProcs_EarObject(EarObjectPtr p);
 
 BOOLN	InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP);
 
@@ -223,7 +223,7 @@ void	RemoveEarObjRefs_EarObject(EarObjectPtr theObject);
 
 void	ResetOutSignal_EarObject(EarObjectPtr data);
 
-BOOLN	ResetProcessStandard_EarObject(EarObjectPtr theObject);
+DSAM_API BOOLN	ResetProcessStandard_EarObject(EarObjectPtr theObject);
 
 void	ResetSignalContinuity_EarObject(EarObjectPtr data,
 		  SignalDataPtr oldOutSignal);
@@ -231,7 +231,7 @@ void	ResetSignalContinuity_EarObject(EarObjectPtr data,
 BOOLN	SetNewOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
 		  ChanLen length, Float samplingInterval);
 
-void	SetProcessContinuity_EarObject(EarObjectPtr data);
+DSAM_API void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
 void	SetProcessForReset_EarObject(EarObjectPtr theObject);
 
@@ -240,13 +240,15 @@ void	SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...);
 BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
 		  const WChar *callingFunc);
 
-void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
+DSAM_API void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
 
-void	SetThreadRunFlag_EarObject(EarObjectPtr theObject, BOOLN setting);
+DSAM_API void	SetThreadRunFlag_EarObject(EarObjectPtr theObject,
+				  BOOLN setting);
 
 void	SetTimeContinuity_EarObject(EarObjectPtr data);
 
-void	SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting);
+DSAM_API void	SetUpdateProcessFlag_EarObject(EarObjectPtr theObject,
+				  BOOLN setting);
 
 void	SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
 

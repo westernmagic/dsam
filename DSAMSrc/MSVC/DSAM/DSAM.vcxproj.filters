@@ -419,7 +419,7 @@
     <ClCompile Include="..\..\src\MainLib\UtZilanyBruce.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\MainLib\IOSignalDisp.c">
+    <ClCompile Include="..\..\src\MainLib\DiSignalDisp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -841,7 +841,7 @@
     <ClInclude Include="..\..\DSAMSetup.h">
       <Filter>Include Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\IOSignalDisp.h">
+    <ClInclude Include="..\..\Include\DiSignalDisp.h">
       <Filter>Include Files</Filter>
     </ClInclude>
   </ItemGroup>

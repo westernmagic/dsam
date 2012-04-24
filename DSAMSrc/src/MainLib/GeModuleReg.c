@@ -54,7 +54,7 @@ ModRegEntry	*userModuleList = NULL;
  * This routine returns an entry to the module library list.
  */
 
-ModRegEntryPtr
+DSAM_API ModRegEntryPtr
 LibraryList_ModuleReg(uShort index)
 {
 	static ModRegEntry	moduleList[] = {
@@ -389,7 +389,7 @@ LibraryList_ModuleReg(uShort index)
  * This routine returns an entry to the user module list.
  */
 
-ModRegEntryPtr
+DSAM_API ModRegEntryPtr
 UserList_ModuleReg(uShort index)
 {
 	if (!userModuleList)
@@ -508,7 +508,7 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(ModulePtr))
 {
 	static const WChar *funcName = wxT("RegEntry_ModuleReg");

@@ -77,7 +77,7 @@ GetLastInst_Utility_DynaList(DynaListPtr head)
  * to the new node.
  */
 
-DynaListPtr
+DSAM_API DynaListPtr
 Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 {
 	static const WChar *funcName = wxT("Append_Utility_DynaList");
@@ -117,7 +117,7 @@ Append_Utility_DynaList(DynaListPtr *nodePtr, void *data)
  * to the new node.
  */
 
-DynaListPtr
+DSAM_API DynaListPtr
 Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data)
 {
 	static const WChar *funcName = wxT("Insert_Utility_DynaList");
@@ -171,7 +171,7 @@ Pull_Utility_DynaList(DynaListPtr *nodePtr)
  * This routine removes a node from a list.
  */
 
-BOOLN
+DSAM_API BOOLN
 Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
 {
 	static const WChar *funcName = wxT("Remove_Utility_DynaList");
@@ -206,7 +206,7 @@ Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr)
  * It returns FALSE if it fails in any way.
  */
 
-void *
+DSAM_API void *
 GetMemberData_Utility_DynaList(DynaListPtr list, int index)
 {
 	static const WChar *funcName = wxT("GetMemberData_Utility_DynaList");
@@ -265,7 +265,7 @@ GetNumElements_Utility_DynaList(DynaListPtr list)
  * This routine returns with a specified element from the list
  */
 
-DynaListPtr
+DSAM_API DynaListPtr
 FindElement_Utility_DynaList(DynaListPtr start, int (* CmpFunc)(void *,
   void *), void *data)
 {

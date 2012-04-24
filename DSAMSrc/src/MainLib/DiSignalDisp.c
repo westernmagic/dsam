@@ -81,7 +81,7 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-SignalDispPtr	signalDispPtr = NULL;
+DSAM_API SignalDispPtr	signalDispPtr = NULL;
 SignalDispDefFuncs	signalDispDefFuncs = {
 						FreeCriticalSection_SignalDisp,
 						FreeDisplay_SignalDisp,
@@ -104,7 +104,7 @@ SignalDispDefFuncs	signalDispDefFuncs = {
  * This routine sets the GetWindowPosition function.
  */
 
-void
+DSAM_API void
 SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *))
 {
 	signalDispDefFuncs.GetWindowPosition = Func;
@@ -116,7 +116,7 @@ SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *))
  * This routine sets the InitCriticalSection function.
  */
 
-void
+DSAM_API void
 SetFuncInitCriticalSection_SignalDisp(void (* Func)(void))
 {
 	signalDispDefFuncs.InitCriticalSection = Func;
@@ -128,7 +128,7 @@ SetFuncInitCriticalSection_SignalDisp(void (* Func)(void))
  * This routine sets the FreeCriticalSection function.
  */
 
-void
+DSAM_API void
 SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void))
 {
 	signalDispDefFuncs.FreeCriticalSection = Func;
@@ -140,7 +140,7 @@ SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void))
  * This routine sets the FreeDisplay function.
  */
 
-void
+DSAM_API void
 SetFuncFreeDisplay_SignalDisp(void (* Func)(void *))
 {
 	signalDispDefFuncs.FreeDisplay = Func;
@@ -152,7 +152,7 @@ SetFuncFreeDisplay_SignalDisp(void (* Func)(void *))
  * This routine sets the ShowSignal function.
  */
 
-void
+DSAM_API void
 SetFuncShowSignal_SignalDisp(BOOLN (* Func)(EarObjectPtr))
 {
 	signalDispDefFuncs.ShowSignal = Func;
@@ -1634,7 +1634,7 @@ PrintPars_SignalDisp(void)
  * This routine assumes that 'data' has been correctly initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetProcessMode_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("SetProcessMode_SignalDisp");
@@ -1722,7 +1722,7 @@ InitModule_SignalDisp(ModulePtr theModule)
  * the process.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckData_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("CheckData_SignalDisp");
@@ -1748,7 +1748,7 @@ CheckData_SignalDisp(EarObjectPtr data)
  * It also assumes that the output signal has already been initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitProcessVariables_SignalDisp(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("InitProcessVariables_SignalDisp");
@@ -1858,7 +1858,7 @@ FreeProcessVariables_SignalDisp(void)
  * It reads in data into the buffer, shifting existing data along if necessary.
  */
 
-void
+DSAM_API void
 ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
   int windowFrame)
 {
@@ -1902,7 +1902,7 @@ ProcessBuffer_SignalDisp(SignalDataPtr signal, EarObjectPtr bufferEarObj,
  * summary and channel activity displays.
  */
 
-void
+DSAM_API void
 SetSubDisplays_SignalDisp(void)
 {
 	/* static const WChar *funcName = wxT("SetSubDisplays_SignalDisp"); */

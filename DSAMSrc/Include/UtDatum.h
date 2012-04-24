@@ -136,7 +136,8 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-BOOLN	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum);
+DSAM_API BOOLN	InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos,
+				  DatumPtr datum);
 
 BOOLN	CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
@@ -145,19 +146,20 @@ BOOLN	CheckParLists_Utility_Datum(DatumPtr start);
 
 int		CmpLabel_Utility_Datum(void *a, void *b);
 
-int		CmpProcessLabel_Utility_Datum(void *a, void *b);
+DSAM_API int		CmpProcessLabel_Utility_Datum(void *a, void *b);
 
-int		CmpProcessLabels_Utility_Datum(void *a, void *b);
+DSAM_API int		CmpProcessLabels_Utility_Datum(void *a, void *b);
 
-BOOLN	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to);
+DSAM_API BOOLN	ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
+				  DatumPtr to);
 
-void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
-		  DatumPtr to);
+DSAM_API void	DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from,
+				  DatumPtr to);
 
-BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
+DSAM_API BOOLN	EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status);
 
-DatumPtr	ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
-			  int threadIndex);
+DSAM_API DatumPtr	ExecuteStandard_Utility_Datum(DatumPtr start,
+					  DatumPtr passedEnd, int threadIndex);
 
 DatumPtr	FindLabelledInst_Utility_Datum(DatumPtr start, const WChar *label);
 
@@ -171,13 +173,14 @@ DatumPtr	FindModuleProcessInst_Utility_Datum(DatumPtr start,
 BOOLN	FindModuleUniPar_Utility_Datum(UniParListPtr *parList, uInt *index,
 		  DatumPtr *pc, const WChar *parSpecifier, BOOLN diagnosticsOn);
 
-BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc);
+DSAM_API BOOLN	FindNearestProcesses_Utility_Datum(DatumPtr *fromPc,
+				  DatumPtr *toPc);
 
 EarObjectPtr	FindProcess_Utility_Datum(DatumPtr pc, WChar *processSpecifier);
 
-void	FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc);
+DSAM_API void	FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc);
 
-void	FreeInstruction_Utility_Datum(DatumPtr *pc);
+DSAM_API void	FreeInstruction_Utility_Datum(DatumPtr *pc);
 
 void	FreeInstructions_Utility_Datum(DatumPtr *pc);
 
@@ -187,7 +190,7 @@ DatumPtr	GetChainStart_Utility_Datum(DatumPtr pc);
 
 EarObjectPtr	GetFirstProcess_Utility_Datum(DatumPtr start);
 
-DatumPtr	GetFirstProcessInst_Utility_Datum(DatumPtr start);
+DSAM_API DatumPtr	GetFirstProcessInst_Utility_Datum(DatumPtr start);
 
 int		GetInstIntVal_Utility_Datum(DatumPtr start, WChar *label);
 
@@ -195,22 +198,20 @@ DatumPtr	GetLastInst_Utility_Datum(DatumPtr head);
 
 EarObjectPtr	GetLastProcess_Utility_Datum(DatumPtr start);
 
-DatumPtr	GetPreviousProcessInst_Utility_Datum(DatumPtr start);
+DSAM_API DatumPtr	GetPreviousProcessInst_Utility_Datum(DatumPtr start);
 
-WChar *	GetProcessName_Utility_Datum(DatumPtr pc);
-
-UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
+DSAM_API WChar *	GetProcessName_Utility_Datum(DatumPtr pc);
 
 BOOLN	InitialiseEarObjects_Utility_Datum(DatumPtr start,
 		  DynaBListPtr *labelBList);
 
 BOOLN	InitialiseModules_Utility_Datum(DatumPtr start);
 
-DatumPtr	InitInst_Utility_Datum(int type);
+DSAM_API DatumPtr	InitInst_Utility_Datum(int type);
 
-BOOLN	InitProcessInst_Utility_Datum(DatumPtr pc);
+DSAM_API BOOLN	InitProcessInst_Utility_Datum(DatumPtr pc);
 
-DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
+DSAM_API DatumPtr	InstallInst_Utility_Datum(DatumPtr *head, int type);
 
 void	PrintConnections_Utility_Datum(DynaListPtr list);
 
@@ -226,39 +227,41 @@ BOOLN	PrintParsModules_Utility_Datum(DatumPtr start);
 BOOLN	PrintSimScript_Utility_Datum(DatumPtr pc, WChar *scriptName,
 		  int indentLevel, WChar *prefix, BOOLN checkForSubSimScripts);
 
-WChar *	NameAndLabel_Utility_Datum(DatumPtr pc);
+DSAM_API WChar *	NameAndLabel_Utility_Datum(DatumPtr pc);
 
 void	RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label);
 
 void	ResetSimulation_Utility_Datum(DatumPtr start);
 
-void	ResetStepCount_Utility_Datum(void);
+DSAM_API void	ResetStepCount_Utility_Datum(void);
 
-BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
-		  labelBList);
+DSAM_API BOOLN	ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr
+				  labelBList);
 
 BOOLN	SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label,
 		  const WChar *value, BOOLN diagsOn);
 
-BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
+DSAM_API BOOLN	SetDefaultConnections_Utility_Datum(DatumPtr start);
 
-BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList);
+DSAM_API BOOLN	SetDefaultLabel_Utility_Datum(DatumPtr pc,
+				  DynaBListPtr labelBList);
 
 BOOLN	SetDefaultLabels_Utility_Datum(DatumPtr start);
 
 void	SetDefaultProcessFileName_Utility_Datum(DatumPtr pc);
 
-void	SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int));
+DSAM_API void	SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr,
+				  DatumPtr, int));
 
 BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 		  labelBList);
 
-BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
-		  const WChar *parValue);
+DSAM_API BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
+				  const WChar *parValue);
 
-BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
+DSAM_API BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
 
-BOOLN	WriteSimScript_Datum(WChar *fileName, DatumPtr start);
+DSAM_API BOOLN	WriteSimScript_Datum(WChar *fileName, DatumPtr start);
 
 __END_DECLS
 

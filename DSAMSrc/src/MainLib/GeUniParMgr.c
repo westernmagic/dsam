@@ -100,7 +100,7 @@
  * This routine initialises a universal parameter list structure.
  */
 
-UniParListPtr
+DSAM_API UniParListPtr
 InitList_UniParMgr(UniParModeSpecifier mode, int numPars, void *handlePtr)
 {
 	static const WChar *funcName = wxT("IniList_UniParMgr");
@@ -470,7 +470,7 @@ SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr)
  * The string is static and is overwritten each time it is used.
  */
 
-WChar *
+DSAM_API WChar *
 FormatPar_UniParMgr(UniParPtr p, WChar *suffix)
 {
 	static WChar	string[MAXLINE];
@@ -486,7 +486,7 @@ FormatPar_UniParMgr(UniParPtr p, WChar *suffix)
  * Print the value in a universal parameter.
  */
 
-BOOLN
+DSAM_API BOOLN
 PrintValue_UniParMgr(UniParPtr p)
 {
 	static const WChar	*funcName = wxT("PrintValue_UniParMgr");
@@ -756,7 +756,7 @@ ResetCFList_UniParMgr(UniParListPtr parList)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckParList_UniParMgr(UniParListPtr list)
 {
 	static const WChar *funcName = wxT("CheckParList_UniParMgr");
@@ -847,7 +847,7 @@ CheckParList_UniParMgr(UniParListPtr list)
  * This function returns a pointer to string version of a universal parameter.
  */
 
-WChar *
+DSAM_API WChar *
 GetParString_UniParMgr(UniParPtr p)
 {
 	static const WChar *funcName = wxT("GetParString_UniParMgr");
@@ -1305,7 +1305,7 @@ SetICListParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *par
  * form.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetParValue_UniParMgr(UniParListPtr *parList, uInt index, const WChar *parValue)
 {
 	static const WChar *funcName = wxT("SetParValue_UniParMgr");
@@ -1402,7 +1402,7 @@ Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode)
  * the correct parList.
  */
 
-UniParPtr
+DSAM_API UniParPtr
 FindUniPar_UniParMgr(UniParListPtr *parList, const WChar *parName,
   UniParSearchSpecifier mode)
 {
@@ -1563,7 +1563,7 @@ PrintSubParList_UniParMgr(UniParListPtr parList)
  * format used for reading in parameters using simulation files.
  */
 
-BOOLN
+DSAM_API BOOLN
 PrintParList_UniParMgr(UniParListPtr parList)
 {
 	static WChar *funcName = wxT("PrintParList_UniParMgr");

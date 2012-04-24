@@ -61,7 +61,7 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-int		Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list);
+DSAM_API int		Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list);
 
 void	FreeNameAllocatedList_NameSpecifier(NameSpecifierPtr *list);
 

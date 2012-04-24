@@ -131,7 +131,7 @@ DPrintStandard(const WChar *format, va_list args)
  * This is the standard version for ANSI C.
  */
 
-void
+DSAM_API void
 DPrint(const WChar *format, ...)
 {
 	va_list	args;
@@ -162,7 +162,7 @@ DPrint(const WChar *format, ...)
  * "EmptyDiagBuffer" print routine - which is specific to the output form.
  */
 
-void
+DSAM_API void
 DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
   WChar *, size_t *))
 {
@@ -249,7 +249,7 @@ DPrintBuffer_Common(const WChar *format, va_list args,	void (* EmptyDiagBuffer)(
  * This is a simple routine to return the pointer to a diagnostic title.
  */
 
-const WChar *
+DSAM_API const WChar *
 DiagnosticTitle(CommonDiagSpecifier type)
 {
 	static NameSpecifier	list[] = {
@@ -304,7 +304,7 @@ NotifyStandard(const WChar *message, CommonDiagSpecifier type)
  * application.
  */
 
-void
+DSAM_API void
 NotifyError(const WChar *format, ...)
 {
 	WChar	message[LONG_STRING];
@@ -332,7 +332,7 @@ NotifyError(const WChar *format, ...)
  * action.
  */
 
-void
+DSAM_API void
 NotifyWarning(const WChar *format, ...)
 {
 	WChar	message[LONG_STRING];
@@ -412,7 +412,7 @@ SetWarningsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
  * The function returns TRUE if successful.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.parsFile = GetFilePtr(outputSpecifier, mode);
@@ -429,7 +429,7 @@ SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
  * The function returns TRUE if successful.
  */
 
-void
+DSAM_API void
 SetErrorsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode)
 {
 	dSAM.errorsFile = GetFilePtr(outputSpecifier, mode);
@@ -487,7 +487,7 @@ CloseFile(FILE *fp)
  * This routine closes any files opened by DSAM, i.e. diagnostic files.
  */
 
-void
+DSAM_API void
 CloseFiles(void)
 {
 	CloseFile(dSAM.warningsFile);
@@ -504,7 +504,7 @@ CloseFiles(void)
  * It also sets the dialog mode for GUI dialogs.
  */
 
-void
+DSAM_API void
 ResetGUIDialogs(void)
 {
 	dSAM.notificationCount = 0;
@@ -519,7 +519,7 @@ ResetGUIDialogs(void)
  * dialogs and not to the console.
  */
 
-void
+DSAM_API void
 SetDiagMode(DiagModeSpecifier mode)
 {
 	dSAM.diagMode = mode;
@@ -532,7 +532,7 @@ SetDiagMode(DiagModeSpecifier mode)
  * This routine sets the 'DPrintFunc', defining where diagnostic output is sent.
  */
 
-void
+DSAM_API void
 SetDPrintFunc(void (* Func)(const WChar *, va_list))
 {
 	dSAM.DPrint = Func;
@@ -545,7 +545,7 @@ SetDPrintFunc(void (* Func)(const WChar *, va_list))
  * This routine sets the 'DPrintFunc', defining where diagnostic output is sent.
  */
 
-void
+DSAM_API void
 SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier))
 {
 	dSAM.Notify = Func;
@@ -559,7 +559,7 @@ SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier))
  * dialogs and not to the console.
  */
 
-void
+DSAM_API void
 SetUsingGUIStatus(BOOLN status)
 {
 	dSAM.usingGUIFlag = status;
@@ -572,7 +572,7 @@ SetUsingGUIStatus(BOOLN status)
  * This routine sets the 'usingExtFlag'.
  */
 
-void
+DSAM_API void
 SetUsingExtStatus(BOOLN status)
 {
 	dSAM.usingExtFlag = status;
@@ -586,7 +586,7 @@ SetUsingExtStatus(BOOLN status)
  * an interrupt has been requested, and processing must be curtailed.
  */
 
-void
+DSAM_API void
 SetInterruptRequestStatus_Common(BOOLN status)
 {
 	dSAM.interruptRequestedFlag = status;
@@ -655,7 +655,7 @@ FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name)
  * ":\" when an absolute path is assumed.
  */
 
-WChar *
+DSAM_API WChar *
 GetParsFileFPath_Common(WChar *parFile)
 {
 	static const WChar *funcName = wxT("GetParsFileFPath_Common");
@@ -792,7 +792,7 @@ FreeFloatArray_Common(Float **p)
  * This return returns the global DSAMPtr structure pointer.
  */
 
-DSAMPtr
+DSAM_API DSAMPtr
 GetDSAMPtr_Common(void)
 {
 	return(&dSAM);
@@ -805,7 +805,7 @@ GetDSAMPtr_Common(void)
  * This routine turns the GUI locking on and off to avoid conflicts.
  */
 
-void
+DSAM_API void
 SwitchGUILocking_Common(BOOLN on)
 {
 	dSAM.lockGUIFlag = on;

@@ -192,7 +192,7 @@ typedef struct moduleNode {
  */
 __BEGIN_DECLS
 
-extern BOOLN (* RunProcess_ModuleMgr)(EarObjectPtr);
+DSAM_API extern BOOLN (* RunProcess_ModuleMgr)(EarObjectPtr);
 
 __END_DECLS
 
@@ -212,13 +212,13 @@ BOOLN	CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction);
 
 ModuleRefPtr	CreateModuleRef_ModuleMgr(ModulePtr theModule);
 
-BOOLN	Enable_ModuleMgr(EarObjectPtr data, BOOLN on);
+DSAM_API BOOLN	Enable_ModuleMgr(EarObjectPtr data, BOOLN on);
 
 void	Free_ModuleMgr(ModulePtr *theModule);
 
 void	FreeAll_ModuleMgr(void);
 
-void	FreeNull_ModuleMgr(void);
+DSAM_API void	FreeNull_ModuleMgr(void);
 
 void	FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle theHandle);
 
@@ -233,11 +233,13 @@ EarObjectPtr	GetProcess_ModuleMgr(EarObjectPtr data, WChar
 
 int		GetSimFileType_ModuleMgr(EarObjectPtr data);
 
-DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
+DSAM_API DatumPtr *	GetSimPtr_ModuleMgr(EarObjectPtr data);
 
-DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
+DSAM_API DatumPtr	GetSimulation_ModuleMgr(EarObjectPtr data);
 
-UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName);
+DSAM_API UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
+
+DSAM_API UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName);
 
 ModulePtr	Init_ModuleMgr(const WChar *name);
 
@@ -254,13 +256,13 @@ BOOLN	PrintPars_ModuleMgr(EarObjectPtr data);
 
 BOOLN	PrintSimFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
-BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
+DSAM_API BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
-BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName);
+DSAM_API BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName);
 
-BOOLN	ResetProcess_ModuleMgr(EarObjectPtr data);
+DSAM_API BOOLN	ResetProcess_ModuleMgr(EarObjectPtr data);
 
-BOOLN	RunProcessStandard_ModuleMgr(EarObjectPtr data);
+DSAM_API BOOLN	RunProcessStandard_ModuleMgr(EarObjectPtr data);
 
 BOOLN	RunModel_ModuleMgr_Null(EarObjectPtr data);
 
@@ -268,22 +270,23 @@ void	SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void));
 
 BOOLN	SetNull_ModuleMgr(ModulePtr module);
 
-BOOLN	SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value);
+DSAM_API BOOLN	SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName,
+				  const WChar *value);
 
 BOOLN	SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
 		  Float value);
 
 BOOLN	SetRealPar_ModuleMgr(EarObjectPtr data, const WChar *name, Float value);
 
-void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
+DSAM_API void	SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr));
 
-void	SetTestDestroy_ModuleMgr(BOOLN (* Func)(void));
+DSAM_API void	SetTestDestroy_ModuleMgr(BOOLN (* Func)(void));
 
 void *	TrueFunction_ModuleMgr(void);
 
 BOOLN	WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
-BOOLN	WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process);
+DSAM_API BOOLN	WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process);
 
 __END_DECLS
 

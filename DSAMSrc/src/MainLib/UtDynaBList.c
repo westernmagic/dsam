@@ -59,7 +59,7 @@
  * less than, equal and greater than respectively.
  */
 
-DynaBListPtr
+DSAM_API DynaBListPtr
 Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
@@ -102,7 +102,7 @@ Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
  * This routine removes a specified node from the binary list.
  */
 
-BOOLN
+DSAM_API BOOLN
 Remove_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *, void *),
   void *data)
 {
@@ -174,7 +174,7 @@ PrintList_Utility_DynaBList(DynaBListPtr nodePtr, void (* PrintFunc)(void *))
  * This routine returns with a specified element from the list
  */
 
-DynaBListPtr
+DSAM_API DynaBListPtr
 FindElement_Utility_DynaBList(DynaBListPtr nodePtr, int (* CmpFunc)(void *,
   void *), void *data)
 {

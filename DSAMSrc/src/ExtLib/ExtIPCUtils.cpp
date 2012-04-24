@@ -82,7 +82,8 @@ IPCUtils::~IPCUtils(void)
 {
 	ResetOutProcess();
 	ResetInProcess();
-
+	if (inVIOPtr)
+		FreeVirtualIOMemory_SndFile(&inVIOPtr);
 }
 
 /****************************** CommandList ***********************************/

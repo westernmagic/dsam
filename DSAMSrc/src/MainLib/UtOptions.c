@@ -60,7 +60,7 @@ int		optionsPleaseLink = 0;
  * leaves giving "optind" indexing the first remaining argument.
  */
 
-WChar
+DSAM_API WChar
 Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
   WChar **argument, const WChar *proto)
 {
@@ -105,7 +105,7 @@ Process_Options(int argc, register WChar **argv, int *optind, int *optsub,
  * It expects the option to exist in the argument list.
  */
 
-void
+DSAM_API void
 MarkIgnore_Options(int argc, register WChar **argv, const WChar *optionString,
   OptionsArgSpecifier state)
 {

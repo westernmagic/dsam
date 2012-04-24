@@ -66,7 +66,7 @@ class IPCClient;
 
 /*************************** MainApp ******************************************/
 
-class MainApp {
+class DSAMEXT_API MainApp {
 
 	bool	initOk, serverFlag, superServerFlag, diagsOn;
 	bool	threadedSimExecutionFlag;
@@ -140,14 +140,14 @@ class MainApp {
 /******************************************************************************/
 
 extern int	MainSimulation(void);
-extern MainApp	*dSAMMainApp;
+DSAMEXT_API extern MainApp	*dSAMMainApp;
 
 /******************************************************************************/
 /*************************** Early subroutine declarations ********************/
 /******************************************************************************/
 
-int		DSAMStart_MainApp(int argc, char **argv);
-int		DSAMStart_MainApp(int argc, wxChar **argv);
+DSAMEXT_API int		DSAMStart_MainApp(int argc, char **argv);
+DSAMEXT_API int		DSAMStart_MainApp(int argc, wxChar **argv);
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/

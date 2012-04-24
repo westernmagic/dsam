@@ -61,7 +61,7 @@ SymbolPtr	sSSymList = NULL;
  * This routine installs the keywords into the symbol table.
  */
 
-void
+DSAM_API void
 InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
 {
 	int		i;
@@ -91,7 +91,7 @@ InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
  * Find s in symbol table.
  */
 
-SymbolPtr
+DSAM_API SymbolPtr
 LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s)
 {
 	Symbol	*sp;
@@ -109,7 +109,7 @@ LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s)
  * Install tokens in symbol table.
  */
 
-SymbolPtr
+DSAM_API SymbolPtr
 InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s, int type)
 {
 	static const WChar	*funcName = wxT("InstallSymbol_Utility_SSSymbols");
@@ -133,7 +133,7 @@ InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s, int type)
  * This routine frees the contents of the Symbol table.
  */
 
-void
+DSAM_API void
 FreeSymbols_Utility_SSSymbols(SymbolPtr *list)
 {
 	SymbolPtr	sp, temp;

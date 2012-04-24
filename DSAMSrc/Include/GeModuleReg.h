@@ -86,12 +86,12 @@ void	FreeUserModuleList_ModuleReg(void);
 
 ModRegEntryPtr	GetRegEntry_ModuleReg(const WChar *name);
 
-ModRegEntryPtr	LibraryList_ModuleReg(uShort index);
+DSAM_API ModRegEntryPtr	LibraryList_ModuleReg(uShort index);
 
-BOOLN	RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(
-		  ModulePtr));
+DSAM_API BOOLN	RegEntry_ModuleReg(const WChar *name, BOOLN (* InitModuleFunc)(
+				  ModulePtr));
 
-ModRegEntryPtr	UserList_ModuleReg(uShort index);
+DSAM_API ModRegEntryPtr	UserList_ModuleReg(uShort index);
 
 __END_DECLS
 

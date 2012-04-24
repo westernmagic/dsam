@@ -80,11 +80,12 @@ __BEGIN_DECLS
 
 void	Free_SndFile(void);
 
-void	FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p);
+DSAM_API void	FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p);
 
 double	GetDuration_SndFile(WChar *fileName);
 
-BOOLN	InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength);
+DSAM_API BOOLN	InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p,
+				  sf_count_t maxLength);
 
 BOOLN	ReadFile_SndFile(WChar *fileName, EarObjectPtr data);
 

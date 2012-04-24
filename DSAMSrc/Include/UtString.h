@@ -68,15 +68,15 @@ WChar *	MBSToWCS2_Utility_String(const char *mb);
 
 WChar	MBToWC_Utility_String(const char *mb);
 
-char *	ConvUTF8_Utility_String(const WChar *src);
+DSAM_API char *	ConvUTF8_Utility_String(const WChar *src);
 
-int	fprintf_Utility_String(FILE *fp, const WChar *format, ...);
+DSAM_API int	fprintf_Utility_String(FILE *fp, const WChar *format, ...);
 
 WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
 
 WChar *	GetSuffix_Utility_String(WChar *fileName);
 
-WChar *	InitString_Utility_String(WChar *string);
+DSAM_API WChar *	InitString_Utility_String(WChar *string);
 
 WChar *	QuotedString_Utility_String(const WChar *string);
 
@@ -88,7 +88,8 @@ int		Snprintf_Utility_String(WChar *str, size_t size,  const WChar *format, ...)
 
 int		StrCmpNoCase_Utility_String(WChar *s1, WChar *s2);
 
-int		StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString);
+DSAM_API int	StrNCmpNoCase_Utility_String(const WChar *fullString,
+				  const WChar *abbrevString);
 
 WChar *	SubStrReplace_Utility_String(WChar *string, WChar *subString,
 		  WChar *repString);

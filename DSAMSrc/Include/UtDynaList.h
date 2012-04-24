@@ -60,24 +60,28 @@ typedef struct DynaList {
  */
 __BEGIN_DECLS
 
-DynaListPtr	Append_Utility_DynaList(DynaListPtr *nodePtr, void *data);
+DSAM_API DynaListPtr	Append_Utility_DynaList(DynaListPtr *nodePtr,
+						  void *data);
 
-DynaListPtr	FindElement_Utility_DynaList(DynaListPtr start, int (* CmpFunc)(
-			  void *, void *), void *data);
+DSAM_API DynaListPtr	FindElement_Utility_DynaList(DynaListPtr start,
+						  int (* CmpFunc)(void *, void *), void *data);
 
 void		FreeList_Utility_DynaList(DynaListPtr *nodePtr);
 
 DynaListPtr	GetLastInst_Utility_DynaList(DynaListPtr head);
 
-void *		GetMemberData_Utility_DynaList(DynaListPtr list, int index);
+DSAM_API void *		GetMemberData_Utility_DynaList(DynaListPtr list,
+					  int index);
 
 int			GetNumElements_Utility_DynaList(DynaListPtr list);
 
-DynaListPtr	Insert_Utility_DynaList(DynaListPtr *nodePtr, void *data);
+DSAM_API DynaListPtr	Insert_Utility_DynaList(DynaListPtr *nodePtr,
+						  void *data);
 
 void *		Pull_Utility_DynaList(DynaListPtr *nodePtr);
 
-BOOLN		Remove_Utility_DynaList(DynaListPtr *list, DynaListPtr ptr);
+DSAM_API BOOLN		Remove_Utility_DynaList(DynaListPtr *list,
+					  DynaListPtr ptr);
 
 __END_DECLS
 

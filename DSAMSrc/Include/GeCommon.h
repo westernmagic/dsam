@@ -272,19 +272,19 @@
  * ----------------------------------------------------------------------------
  */
 
-#if defined(__WINDOWS)
+#if defined(_WINDOWS)
 
 	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
-#if defined(__VISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#if defined(__MSVISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
 #  ifdef DSAM_MAKING_DLL
-#    define DSAMDLLEXP __declspec( dllexport )
+#    define DSAM_API __declspec( dllexport )
 #  elif defined(DSAM_USING_DLL)
-#    define DSAMDLLEXP __declspec( dllimport )
+#    define DSAM_API __declspec( dllimport )
 #  else
-#    define DSAMDLLEXP
+#    define DSAM_API
 #  endif
 #else
-#    define DSAMDLLEXP
+#    define DSAM_API
 #endif
 
 #elif defined(__PM__)
@@ -292,22 +292,110 @@
 #  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
 
 #    ifdef DSAM_MAKING_DLL
-#      define DSAMDLLEXP _Export
+#      define DSAM_API _Export
 #    elif defined(DSAM_USING_DLL)
-#      define DSAMDLLEXP _Export
+#      define DSAM_API _Export
 #    else
-#      define DSAMDLLEXP
+#      define DSAM_API
 #    endif
 
 #  else
 
-#    define DSAMDLLEXP
+#    define DSAM_API
 
 #  endif
 
 #else  /* !(MSW or OS2) */
 
-#  define DSAMDLLEXP
+#  define DSAM_API
+
+#endif /* __WINDOWS */
+
+/* ----------------------------------------------------------------------------
+ * Making or using DSAM_ext as a Windows DLL
+ * ----------------------------------------------------------------------------
+ */
+
+#if defined(_WINDOWS)
+
+	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
+#if defined(__MSVISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#  ifdef DSAM_MAKING_EXT_DLL
+#    define DSAMEXT_API __declspec( dllexport )
+#  elif defined(DSAM_USING_EXT_DLL)
+#    define DSAMEXT_API __declspec( dllimport )
+#  else
+#    define DSAMEXT_API
+#  endif
+#else
+#    define DSAMEXT_API
+#endif
+
+#elif defined(__PM__)
+
+#  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
+
+#    ifdef DSAM_MAKING_EXT_DLL
+#      define DSAMEXT_API _Export
+#    elif defined(DSAM_USING_EXT_DLL)
+#      define DSAMEXT_API _Export
+#    else
+#      define DSAMEXT_API
+#    endif
+
+#  else
+
+#    define DSAMEXT_API
+
+#  endif
+
+#else  /* !(MSW or OS2) */
+
+#  define DSAMEXT_API
+
+#endif /* __WINDOWS */
+
+/* ----------------------------------------------------------------------------
+ * Making or using DSAM_g as a Windows DLL
+ * ----------------------------------------------------------------------------
+ */
+
+#if defined(_WINDOWS)
+
+	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
+#if defined(__MSVISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#  ifdef DSAM_MAKING_G_DLL
+#    define DSAMG_API __declspec( dllexport )
+#  elif defined(DSAM_USING_G_DLL)
+#    define DSAMG_API __declspec( dllimport )
+#  else
+#    define DSAMG_API
+#  endif
+#else
+#    define DSAMG_API
+#endif
+
+#elif defined(__PM__)
+
+#  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
+
+#    ifdef DSAM_MAKING_G_DLL
+#      define DSAMG_API _Export
+#    elif defined(DSAM_USING_G_DLL)
+#      define DSAMG_API _Export
+#    else
+#      define DSAMG_API
+#    endif
+
+#  else
+
+#    define DSAMG_API
+
+#  endif
+
+#else  /* !(MSW or OS2) */
+
+#  define DSAMG_API
 
 #endif /* __WINDOWS */
 
@@ -483,14 +571,14 @@ void	CheckInitWarningsFile_Common(void);
 
 void	CloseFile(FILE *fp);
 
-void	CloseFiles(void);
+DSAM_API void	CloseFiles(void);
 
-const WChar *	DiagnosticTitle(CommonDiagSpecifier type);
+DSAM_API const WChar *	DiagnosticTitle(CommonDiagSpecifier type);
 
-void	DPrint(const WChar *format, ...);
+DSAM_API void	DPrint(const WChar *format, ...);
 
-void	DPrintBuffer_Common(const WChar *format, va_list args,
-		  void (* EmptyDiagBuffer)(WChar *, size_t *));
+DSAM_API void	DPrintBuffer_Common(const WChar *format, va_list args,
+				  void (* EmptyDiagBuffer)(WChar *, size_t *));
 
 void	DPrintStandard(const WChar *format, va_list args);
 
@@ -498,52 +586,52 @@ void	FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name);
 
 void	FreeFloatArray_Common(Float **p);
 
-DSAMPtr	GetDSAMPtr_Common(void);
+DSAM_API DSAMPtr	GetDSAMPtr_Common(void);
 
 FILE *	GetFilePtr(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
-WChar *	GetParsFileFPath_Common(WChar *parFile);
+DSAM_API WChar *	GetParsFileFPath_Common(WChar *parFile);
 
-void	NotifyError(const WChar *format, ...);
+DSAM_API void	NotifyError(const WChar *format, ...);
 
 void	NotifyStandard(const WChar *message, CommonDiagSpecifier type);
 
-void	NotifyWarning(const WChar *format, ...);
+DSAM_API void	NotifyWarning(const WChar *format, ...);
 
 void	ReadParsFromFile(WChar *fileName);		/* Used in test programs. */
 
-void	ResetGUIDialogs(void);
+DSAM_API void	ResetGUIDialogs(void);
 
 BOOLN	ResizeFloatArray_Common(Float **array, int *oldLength, int length);
 
 void	SetDiagnosticsPrefix(WChar *prefix);
 
-void	SetDiagMode(DiagModeSpecifier mode);
+DSAM_API void	SetDiagMode(DiagModeSpecifier mode);
 
-void	SetDPrintFunc(void (* Func)(const WChar *, va_list));
+DSAM_API void	SetDPrintFunc(void (* Func)(const WChar *, va_list));
 
-void	SetErrorsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
+DSAM_API void	SetErrorsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
-void	SetInterruptRequestStatus_Common(BOOLN status);
+DSAM_API void	SetInterruptRequestStatus_Common(BOOLN status);
 
-void	SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier));
+DSAM_API void	SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier));
 
-BOOLN	SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
+DSAM_API BOOLN	SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
-void	SetParsFilePath_Common(WChar *name);
+DSAM_API void	SetParsFilePath_Common(WChar *name);
 
 void	SetSegmentedMode(BOOLN setting);
 
-void	SetUsingExtStatus(BOOLN status);
+DSAM_API void	SetUsingExtStatus(BOOLN status);
 
-void	SetUsingGUIStatus(BOOLN status);
+DSAM_API void	SetUsingGUIStatus(BOOLN status);
 
 void	SetWarningsFile_Common(const WChar *outputSpecifier,
 		  FileAccessSpecifier mode);
 
 void	SwitchDiagnostics_Common(CommonDiagSpecifier specifier, BOOLN on);
 
-void	SwitchGUILocking_Common(BOOLN on);
+DSAM_API void	SwitchGUILocking_Common(BOOLN on);
 
 __END_DECLS
 

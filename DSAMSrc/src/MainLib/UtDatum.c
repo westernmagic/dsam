@@ -128,7 +128,7 @@ GetLastInst_Utility_Datum(DatumPtr head)
  * settings assigned.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 InitInst_Utility_Datum(int type)
 {
 	static const WChar *funcName = wxT("InitInst_Utility_Datum");
@@ -182,7 +182,7 @@ InitInst_Utility_Datum(int type)
  * Datum instructions are added to the end of the list.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 InstallInst_Utility_Datum(DatumPtr *head, int type)
 {
 	static const WChar *funcName = wxT("InstallInst_Utility_Datum");
@@ -229,7 +229,7 @@ GetChainStart_Utility_Datum(DatumPtr pc)
  * 'pos' datum will be placed before the 'datum' datum instead.
  */
 
-BOOLN
+DSAM_API BOOLN
 InsertInst_Utility_Datum(DatumPtr *head, DatumPtr pos, DatumPtr datum)
 {
 	if (!*head)	/* Start of simulation list */
@@ -279,7 +279,7 @@ RemoveConnection_Utility_Datum(DynaListPtr *list, WChar *label)
  * process run flow.
  */
 
-void
+DSAM_API void
 DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	if ((from->type == PROCESS) && (to->type == PROCESS)) {
@@ -303,7 +303,7 @@ DisconnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
  * Connect datum instructions in a list.
  */
 
-BOOLN
+DSAM_API BOOLN
 ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
 {
 	static const WChar *funcName = wxT("ConnectInst_Utility_Datum");
@@ -330,7 +330,7 @@ ConnectInst_Utility_Datum(DatumPtr *head, DatumPtr from, DatumPtr to)
  * they were set, then the string was allocated space.
  */
 
-void
+DSAM_API void
 FreeInstruction_Utility_Datum(DatumPtr *pc)
 {
 	if (!*pc)
@@ -372,7 +372,7 @@ FreeInstruction_Utility_Datum(DatumPtr *pc)
  * they were set, then the string was allocated space.
  */
 
-void
+DSAM_API void
 FreeInstFromSim_Utility_Datum(DatumPtr *start, DatumPtr pc)
 {
 	if (!pc)
@@ -448,7 +448,7 @@ PrintConnections_Utility_Datum(DynaListPtr list)
  * This routine returns the process name.
  */
 
-WChar *
+DSAM_API WChar *
 GetProcessName_Utility_Datum(DatumPtr pc)
 {
 	static const WChar *funcName = wxT("GetProcessName_Utility_Datum");
@@ -589,7 +589,7 @@ PrintInstructions_Utility_Datum(DatumPtr pc, WChar *scriptName, int indentLevel,
  * the labels are less than, equal or greater than respectively.
  */
 
-int
+DSAM_API int
 CmpProcessLabels_Utility_Datum(void *a, void *b)
 {
 	DatumPtr	aPtr = (DatumPtr) a, bPtr = (DatumPtr) b;
@@ -612,7 +612,7 @@ CmpProcessLabels_Utility_Datum(void *a, void *b)
  * the labels are less than, equal or greater than respectively.
  */
 
-int
+DSAM_API int
 CmpProcessLabel_Utility_Datum(void *labelPtr, void *processNode)
 {
 	WChar	*label = (WChar *) labelPtr;
@@ -763,7 +763,7 @@ CheckInputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
  * been turned off.
  */
 
-BOOLN
+DSAM_API BOOLN
 ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
 {
 	static const WChar *funcName = wxT("ResolveInstLabels_Utility_Datum");
@@ -815,7 +815,7 @@ ResolveInstLabels_Utility_Datum(DatumPtr start, DynaBListPtr labelBList)
  * connection should be made.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetDefaultConnections_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc1, pc2;
@@ -842,7 +842,7 @@ SetDefaultConnections_Utility_Datum(DatumPtr start)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetDefaultLabel_Utility_Datum(DatumPtr pc, DynaBListPtr labelBList)
 {
 	static const WChar *funcName = wxT("SetDefaultLabel_Utility_Datum");
@@ -908,7 +908,7 @@ SetDefaultLabels_Utility_Datum(DatumPtr start)
  * process.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitProcessInst_Utility_Datum(DatumPtr pc)
 {
 	static const WChar	*funcName = wxT("InitProcessInst_Utility_Datum");
@@ -1000,7 +1000,7 @@ FreeEarObjects_Utility_Datum(DatumPtr start)
  * A copy of this information should be used if a permanent string is required.
  */
 
-WChar *
+DSAM_API WChar *
 NameAndLabel_Utility_Datum(DatumPtr pc)
 {
 	static const WChar	*funcName = wxT("NameAndLabel_Utility_Datum");
@@ -1174,7 +1174,7 @@ ResetSimulation_Utility_Datum(DatumPtr start)
 #define	GET_PROCESS(DATA)	((!threadIndex)? (DATA): &(DATA)->threadProcs[ \
 							  threadIndex - 1])
 
-DatumPtr
+DSAM_API DatumPtr
 ExecuteStandard_Utility_Datum(DatumPtr start, DatumPtr passedEnd,
   int threadIndex)
 {
@@ -1286,7 +1286,7 @@ GetFirstProcess_Utility_Datum(DatumPtr start)
  * It returns NULL if it fails in any way.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 GetFirstProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
@@ -1305,7 +1305,7 @@ GetFirstProcessInst_Utility_Datum(DatumPtr start)
  * It returns NULL if it fails in any way.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 GetPreviousProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
@@ -1668,7 +1668,7 @@ SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label, const WChar
  * If the returned 'parList' is NULL, then no parameter is set.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName, const WChar *parValue)
 {
 	static const WChar	*funcName = wxT("SetUniParValue_Utility_Datum");
@@ -1698,7 +1698,7 @@ SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName, const WChar *
  * It is needed because MS VC++ complains.
  */
 
-void
+DSAM_API void
 ResetStepCount_Utility_Datum(void)
 {
 	datumStepCount = 0;
@@ -1714,7 +1714,7 @@ ResetStepCount_Utility_Datum(void)
  * It return's TRUE if a nearest process is found.
  */
 
-BOOLN
+DSAM_API BOOLN
 FindNearestProcesses_Utility_Datum(DatumPtr *fromPc, DatumPtr *toPc)
 {
 	if (((*fromPc)->type != PROCESS) && ((*toPc)->type != PROCESS))
@@ -1763,7 +1763,7 @@ SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 WriteParFiles_Datum(WChar *filePath, DatumPtr start)
 {
 	static const WChar *funcName = wxT("WriteParFiles_Datum");
@@ -1817,7 +1817,7 @@ WriteParFiles_Datum(WChar *filePath, DatumPtr start)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 WriteSimScript_Datum(WChar *fileName, DatumPtr start)
 {
 	static const WChar *funcName = wxT("WriteSimScript_Datum");
@@ -1841,7 +1841,7 @@ WriteSimScript_Datum(WChar *fileName, DatumPtr start)
  * This routine sets the global 'RunProcess' function pointer.
  */
 
-void
+DSAM_API void
 SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int))
 {
 	Execute_Utility_Datum = Func;
@@ -1850,7 +1850,7 @@ SetExecute_Utility_Datum(DatumPtr (* Func)(DatumPtr, DatumPtr, int))
 
 /************************** EnableProcess *************************************/
 
-BOOLN
+DSAM_API BOOLN
 EnableProcess_Utility_Datum(DatumPtr pc, BOOLN status)
 {
 	static const WChar *funcName = wxT("EnableProcess_Utility_Datum");

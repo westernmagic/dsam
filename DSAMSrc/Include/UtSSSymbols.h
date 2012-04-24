@@ -64,14 +64,14 @@ extern	SymbolPtr	sSSymList;
  */
 __BEGIN_DECLS
 
-void		FreeSymbols_Utility_SSSymbols(SymbolPtr *list);
+DSAM_API void		FreeSymbols_Utility_SSSymbols(SymbolPtr *list);
 
-void		InitKeyWords_Utility_SSSymbols(SymbolPtr *list);
+DSAM_API void		InitKeyWords_Utility_SSSymbols(SymbolPtr *list);
 
-SymbolPtr	InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s,
-			  int type);
+DSAM_API SymbolPtr	InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s,
+					  int type);
 
-SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s);
+DSAM_API SymbolPtr	LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s);
 
 void		PrintSymbols_Utility_SSSymbols(SymbolPtr list);
 

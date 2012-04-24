@@ -160,7 +160,8 @@ DynaBListPtr	GetLabelBList_Utility_SimScript(void);
 
 SimScriptPtr	GetPtr_Utility_SimScript(void);
 
-SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(WChar *suffix);
+DSAM_API SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(
+								  WChar *suffix);
 
 DatumPtr	GetSimulation_Utility_SimScript(void);
 
@@ -184,7 +185,7 @@ DatumPtr	InstallProcessInst_Utility_SimScripts(WChar *moduleName);
 
 void	NotifyError_Utility_SimScript(WChar *format, ...);
 
-NameSpecifierPtr	ParFilePathModePrototypeList_Utility_SimScript(void);
+DSAM_API NameSpecifierPtr	ParFilePathModePrototypeList_Utility_SimScript(void);
 
 BOOLN	PrintPars_Utility_SimScript(void);
 
@@ -217,19 +218,19 @@ BOOLN	SetOperationMode_Utility_SimScript(const WChar *theOperationMode);
 
 BOOLN	SetParFilePathMode_Utility_SimScript(const WChar *theParFilePathMode);
 
-BOOLN	SetParsFilePath_Utility_SimScript(WChar * parsFilePath);
+DSAM_API BOOLN	SetParsFilePath_Utility_SimScript(WChar * parsFilePath);
 
 BOOLN	SetParsPointer_Utility_SimScript(ModulePtr theModule);
 
-BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
+DSAM_API BOOLN	SetProcessSimPtr_Utility_SimScript(EarObjectPtr data);
 
-void	SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(WChar *));
+DSAM_API void	SetReadXMLSimFile_Utility_SimScript(BOOLN (* Func)(WChar *));
 
 BOOLN	SetSimFileName_Utility_SimScript(WChar * simFileName);
 
 BOOLN	SetSimFileType_Utility_SimScript(SimFileTypeSpecifier simFileType);
 
-BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
+DSAM_API BOOLN	SetSimulation_Utility_SimScript(DatumPtr theSimulation);
 
 BOOLN	SetSimUniParValue_Utility_SimScript(const WChar *parName, const WChar *parValue);
 

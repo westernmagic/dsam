@@ -61,19 +61,19 @@ typedef struct DynaBList {
  */
 __BEGIN_DECLS
 
-DynaBListPtr	FindElement_Utility_DynaBList(DynaBListPtr nodePtr,
-				  int (* CmpFunc)(void *, void *), void *data);
+DSAM_API DynaBListPtr	FindElement_Utility_DynaBList(DynaBListPtr nodePtr,
+						  int (* CmpFunc)(void *, void *), void *data);
 
 void	FreeList_Utility_DynaBList(DynaBListPtr *nodePtr);
 
-DynaBListPtr	Insert_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(
-				  void *, void *), void *data);
+DSAM_API DynaBListPtr	Insert_Utility_DynaBList(DynaBListPtr *nodePtr,
+						  int (* CmpFunc)(void *, void *), void *data);
 
 void	PrintList_Utility_DynaBList(DynaBListPtr nodePtr, void (* PrintFunc)(
 		  void *));
 
-BOOLN	Remove_Utility_DynaBList(DynaBListPtr *nodePtr, int (* CmpFunc)(void *,
-		  void *), void *data);
+DSAM_API BOOLN	Remove_Utility_DynaBList(DynaBListPtr *nodePtr,
+				  int (* CmpFunc)(void *, void *), void *data);
 
 __END_DECLS
 

@@ -232,7 +232,7 @@ typedef struct {
 
 __BEGIN_DECLS
 
-extern SignalDisp	signalDisp, *signalDispPtr;
+DSAM_API extern SignalDisp	signalDisp, *signalDispPtr;
 
 __END_DECLS
 
@@ -246,7 +246,7 @@ __END_DECLS
  */
 __BEGIN_DECLS
 
-BOOLN	CheckData_SignalDisp(EarObjectPtr data);
+DSAM_API BOOLN	CheckData_SignalDisp(EarObjectPtr data);
 
 void	CheckForDisplay_SignalDisp(long handle);
 
@@ -278,7 +278,7 @@ BOOLN	InitModule_SignalDisp(ModulePtr theModule);
 
 BOOLN	InitParNameList_SignalDisp(void);
 
-BOOLN	InitProcessVariables_SignalDisp(EarObjectPtr data);
+DSAM_API BOOLN	InitProcessVariables_SignalDisp(EarObjectPtr data);
 
 BOOLN	InitYAxisModeList_SignalDisp(void);
 
@@ -286,8 +286,8 @@ void	PostDisplayEvent_SignalDisp(void);
 
 BOOLN	PrintPars_SignalDisp(void);
 
-void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
-		  EarObjectPtr bufferEarObj, int windowFrame);
+DSAM_API void	ProcessBuffer_SignalDisp(SignalDataPtr signal,
+				  EarObjectPtr bufferEarObj, int windowFrame);
 
 void	SetAutoXScaleParsState_SignalDisp(BOOLN state);
 
@@ -311,15 +311,15 @@ BOOLN	SetFrameYPos_SignalDisp(int theFrameYPos);
 
 BOOLN	SetFrameWidth_SignalDisp(int theFrameWidth);
 
-void	SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void));
+DSAM_API void	SetFuncFreeCriticalSection_SignalDisp(void (* Func)(void));
 
-void	SetFuncFreeDisplay_SignalDisp(void (* Func)(void *));
+DSAM_API void	SetFuncFreeDisplay_SignalDisp(void (* Func)(void *));
 
-void	SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *));
+DSAM_API void	SetFuncGetWindowPosition_SignalDisp(void (* Func)(int *, int *));
 
-void	SetFuncInitCriticalSection_SignalDisp(void (* Func)(void));
+DSAM_API void	SetFuncInitCriticalSection_SignalDisp(void (* Func)(void));
 
-void	SetFuncShowSignal_SignalDisp(BOOLN (* Func)(EarObjectPtr));
+DSAM_API void	SetFuncShowSignal_SignalDisp(BOOLN (* Func)(EarObjectPtr));
 
 BOOLN	SetMaxY_SignalDisp(Float maxY);
 
@@ -327,13 +327,13 @@ BOOLN	SetMinY_SignalDisp(Float minY);
 
 BOOLN	SetMode_SignalDisp(WChar *theMode);
 
-void	SetSubDisplays_SignalDisp(void);
+DSAM_API void	SetSubDisplays_SignalDisp(void);
 
 BOOLN	SetNumGreyScales_SignalDisp(int theNumGreyScales);
 
 BOOLN	SetParsPointer_SignalDisp(ModulePtr theModule);
 
-BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
+DSAM_API BOOLN	SetProcessMode_SignalDisp(EarObjectPtr data);
 
 BOOLN	SetMagnification_SignalDisp(Float magnification);
 

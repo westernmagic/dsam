@@ -59,8 +59,8 @@
 
 EarObjHandle	earObjectCount = 0;
 EarObjRefPtr	mainEarObjectList = NULL;
-BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
-		  ResetProcessStandard_EarObject;
+DSAM_API BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
+				  ResetProcessStandard_EarObject;
 
 /******************************************************************************/
 /********************************* Subroutines and functions ******************/
@@ -81,7 +81,7 @@ BOOLN	(* ResetProcess_EarObject)(EarObjectPtr) =
  *
  */
 
-EarObjectPtr
+DSAM_API EarObjectPtr
 Init_EarObject(const WChar *moduleName)
 {
 	static const WChar *funcName = wxT("Init_EarObject");
@@ -266,7 +266,7 @@ FreeRandPars_EarObject(EarObjectPtr p)
  * EarObjects are copies and have no personal allocated space.
  */
 
-void
+DSAM_API void
 Free_EarObject(EarObjectPtr *theObject)
 {
 	if (*theObject == NULL)
@@ -302,7 +302,7 @@ Free_EarObject(EarObjectPtr *theObject)
  * It does not, however, set the pointer variables to NULL - watch this.
  */
 
-void
+DSAM_API void
 FreeAll_EarObject(void)
 {
 	EarObjectPtr	tempPtr;
@@ -681,7 +681,7 @@ PrintProcessName_EarObject(WChar *message, EarObjectPtr data)
  * This routine tests for NULL EarObjects.
  */
 
-BOOLN
+DSAM_API BOOLN
 ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
 {
 	static const WChar *funcName = wxT("ConnectOutSignalToIn_EarObject");
@@ -722,7 +722,7 @@ ConnectOutSignalToIn_EarObject(EarObjectPtr supplier, EarObjectPtr customer)
  * This routine tests for NULL EarObjects.
  */
 
-BOOLN
+DSAM_API BOOLN
 DisconnectOutSignalFromIn_EarObject(EarObjectPtr supplier,
   EarObjectPtr customer)
 {
@@ -927,7 +927,7 @@ SetTimeContinuity_EarObject(EarObjectPtr data)
  * of a multi-threaded run will set the process continuity information.
  */
 
-void
+DSAM_API void
 SetProcessContinuity_EarObject(EarObjectPtr data)
 {
 	if (data->outSignal->offset)
@@ -971,7 +971,7 @@ SetUtilityProcessContinuity_EarObject(EarObjectPtr data)
  * It assumes that the process has been correctly initialised.
  */
 
-void
+DSAM_API void
 SetUpdateProcessFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 {
 	int		i;
@@ -1016,7 +1016,7 @@ SetProcessForReset_EarObject(EarObjectPtr theObject)
  * This routine sets the global 'RunProcess' function pointer.
  */
 
-void
+DSAM_API void
 SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr))
 {
 	ResetProcess_EarObject = Func;
@@ -1030,7 +1030,7 @@ SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr))
  * This routine resets an EarObject's process and its thread subprocesses.
  */
 
-BOOLN
+DSAM_API BOOLN
 ResetProcessStandard_EarObject(EarObjectPtr theObject)
 {
 	static const WChar *funcName = wxT("ResetProcessStandard_EarObject");
@@ -1299,7 +1299,7 @@ InitThreadSubProcs_EarObject(EarObjectPtr p, EarObjectPtr baseP)
  * The same applies to the process EarObjects.
  */
 
-void
+DSAM_API void
 FreeThreadProcs_EarObject(EarObjectPtr p)
 {
 	int		i;
@@ -1349,7 +1349,7 @@ InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP)
  * The first thread uses the original process data, randPars, outSignal, etc.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitThreadProcs_EarObject(EarObjectPtr p)
 {
 	static const WChar *funcName = wxT("InitThreadProcs_EarObject");
@@ -1412,7 +1412,7 @@ InitThreadProcs_EarObject(EarObjectPtr p)
  * It assumes that the process has been correctly initialised.
  */
 
-void
+DSAM_API void
 SetThreadRunFlag_EarObject(EarObjectPtr theObject, BOOLN setting)
 {
 	int		i;

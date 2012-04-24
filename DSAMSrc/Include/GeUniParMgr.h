@@ -275,22 +275,22 @@ typedef struct UniParListNode {
  */
 __BEGIN_DECLS
 
-BOOLN	CheckParList_UniParMgr(UniParListPtr list);
+DSAM_API BOOLN	CheckParList_UniParMgr(UniParListPtr list);
 
 int		Cmp_UniParMgr(UniParPtr p, void *item, UniParSearchSpecifier mode);
 
-UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList, const WChar *parName,
-			  UniParSearchSpecifier mode);
+DSAM_API UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList,
+					  const WChar *parName, UniParSearchSpecifier mode);
 
 WChar *	FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix);
 
-WChar *	FormatPar_UniParMgr(UniParPtr p, WChar *suffix);
+DSAM_API WChar *	FormatPar_UniParMgr(UniParPtr p, WChar *suffix);
 
 void	FreeList_UniParMgr(UniParListPtr *list);
 
-WChar *	GetParString_UniParMgr(UniParPtr p);
+DSAM_API WChar *	GetParString_UniParMgr(UniParPtr p);
 
-UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
+DSAM_API UniParListPtr	InitList_UniParMgr(UniParModeSpecifier mode, int numPars,
 				  void *handlePtr);
 
 BOOLN	ParseArrayValue_UniParMgr(UniParPtr par, const WChar *parValue,
@@ -300,11 +300,11 @@ BOOLN	PrintPar_UniParMgr(UniParPtr p, WChar *prefix, WChar *suffix);
 
 BOOLN	PrintPars_UniParMgr(UniParListPtr list, WChar *prefix, WChar *suffix);
 
-BOOLN	PrintParList_UniParMgr(UniParListPtr parList);
+DSAM_API BOOLN	PrintParList_UniParMgr(UniParListPtr parList);
 
 void	PrintSubParList_UniParMgr(UniParListPtr parList);
 
-BOOLN	PrintValue_UniParMgr(UniParPtr p);
+DSAM_API BOOLN	PrintValue_UniParMgr(UniParPtr p);
 
 BOOLN	ResetCFList_UniParMgr(UniParListPtr parList);
 
@@ -334,11 +334,11 @@ BOOLN	SetGetPanelListFunc_UniParMgr(UniParListPtr list,
 BOOLN	SetParArrayParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  const WChar *parValue);
 
-BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
-		  const WChar *parValue);
+DSAM_API BOOLN	SetParValue_UniParMgr(UniParListPtr *parList, uInt index,
+				  const WChar *parValue);
 
-void	SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *description,
-		  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
+DSAM_API void	SetPar_UniParMgr(UniParPtr par, const WChar *abbreviation, const WChar *description,
+				  UniParTypeSpecifier type, void *ptr1, void *ptr2, void * (* Func));
 
 BOOLN	SetRealParValue_UniParMgr(UniParListPtr *parList, uInt index,
 		  Float parValue);

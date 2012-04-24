@@ -71,7 +71,7 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-MainApp	*dSAMMainApp = NULL;
+DSAMEXT_API MainApp	*dSAMMainApp = NULL;
 
 /******************************************************************************/
 /****************************** Methods (Subroutines) *************************/
@@ -846,7 +846,7 @@ MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
 
 /****************************** DSAMStart ************************************/
 
-int
+DSAMEXT_API int
 DSAMStart_MainApp(int argc, wxChar **argv)
 {
 	wxInitializer initializer;
@@ -932,7 +932,7 @@ static void FreeConvertedArgs()
     }
 }
 
-int
+DSAMEXT_API int
 DSAMStart_MainApp(int argc, char **argv)
 {
 	int 	myReturn;

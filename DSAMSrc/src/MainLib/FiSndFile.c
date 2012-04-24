@@ -119,7 +119,7 @@ GetWordSize_SndFile(int format)
  * This routine frees the memory allocated for memory reading.
  */
 
-void
+DSAM_API void
 FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p)
 {
 	if (*p == NULL)
@@ -139,7 +139,7 @@ FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p)
  * returns NULL.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
 {
 	static const WChar *funcName = wxT("InitMemory_SndFile");

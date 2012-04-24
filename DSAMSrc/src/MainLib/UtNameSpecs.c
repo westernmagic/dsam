@@ -81,7 +81,7 @@ GetNullSpec_NameSpecifier(NameSpecifierPtr list)
  * It ends terminally (exit(1)) if the list is not initialised.
  */
 
-int
+DSAM_API int
 Identify_NameSpecifier(const WChar *name, NameSpecifierPtr list)
 {
 	static WChar *funcName = wxT("Identify_NameSpecifier");

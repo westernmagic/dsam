@@ -120,7 +120,7 @@ typedef enum {
  */
 __BEGIN_DECLS
 
-NameSpecifier *	BooleanList_NSpecLists(int index);
+DSAM_API NameSpecifier *	BooleanList_NSpecLists(int index);
 
 void			CloseDiagnostics_NSpecLists(FILE **fp);
 

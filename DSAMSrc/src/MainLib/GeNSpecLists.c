@@ -55,7 +55,7 @@
  * conjunction with the UtNameSpecifier routines.
  */
 
-NameSpecifier *
+DSAM_API NameSpecifier *
 BooleanList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {

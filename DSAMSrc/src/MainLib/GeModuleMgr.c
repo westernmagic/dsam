@@ -86,7 +86,7 @@
 ModuleRefPtr	moduleList = NULL;
 ModulePtr	nullModule = NULL;
 BOOLN	(* TestDestroy_ModuleMgr)(void) = NULL;
-BOOLN	(* RunProcess_ModuleMgr)(EarObjectPtr) = RunProcessStandard_ModuleMgr;
+DSAM_API BOOLN	(* RunProcess_ModuleMgr)(EarObjectPtr) = RunProcessStandard_ModuleMgr;
 
 /******************************************************************************/
 /************************** Subroutines and functions *************************/
@@ -435,7 +435,7 @@ CheckData_ModuleMgr(EarObjectPtr data, const WChar *callingFunction)
  * routine.
  */
 
-BOOLN
+DSAM_API BOOLN
 Enable_ModuleMgr(EarObjectPtr data, BOOLN on)
 {
 	static const WChar *funcName = wxT("Enable_ModuleMgr");
@@ -486,7 +486,7 @@ GetData_ModuleMgr(EarObjectPtr data, void *inArg)
  * It only works for routines that can return a simulation.
  */
 
-DatumPtr
+DSAM_API DatumPtr
 GetSimulation_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("GetSimulation_ModuleMgr");
@@ -506,7 +506,7 @@ GetSimulation_ModuleMgr(EarObjectPtr data)
  * It only works for routines that can return a simulation.
  */
 
-DatumPtr *
+DSAM_API DatumPtr *
 GetSimPtr_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("GetSimPtr_ModuleMgr");
@@ -578,7 +578,7 @@ GetLabelledProcess_ModuleMgr(EarObjectPtr data, WChar *label)
  * This function returns the specified parameter pointer from a module
  */
 
-UniParPtr
+DSAM_API UniParPtr
 GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName)
 {
 	static const WChar *funcName = wxT("GetUniParPtr_ModuleMgr");
@@ -605,7 +605,7 @@ GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName)
  * This function returns the specified parameter list pointer from a module.
  */
 
-UniParListPtr
+DSAM_API UniParListPtr
 GetUniParListPtr_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("GetUniParListPtr_ModuleMgr");
@@ -649,7 +649,7 @@ PrintPars_ModuleMgr(EarObjectPtr data)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
 {
 	static const WChar *funcName = wxT("ReadPars_ModuleMgr");
@@ -711,7 +711,7 @@ ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 PrintSimParFile_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("PrintSimParFile_ModuleMgr");
@@ -759,7 +759,7 @@ WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data)
  * If the base file name already has an extension, then that is used.
  */
 
-BOOLN
+DSAM_API BOOLN
 WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process)
 {
 	BOOLN	ok = TRUE, addExtension;
@@ -838,7 +838,7 @@ GetParsFilePath_ModuleMgr(EarObjectPtr data)
  * This function runs the module process reset routine
  */
 
-BOOLN
+DSAM_API BOOLN
 ResetProcess_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("ResetProcess_ModuleMgr");
@@ -860,7 +860,7 @@ ResetProcess_ModuleMgr(EarObjectPtr data)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 RunProcessStandard_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunProcessStandard_ModuleMgr");
@@ -889,7 +889,7 @@ RunProcessStandard_ModuleMgr(EarObjectPtr data)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetPar_ModuleMgr(EarObjectPtr data, const WChar *parName, const WChar *value)
 {
 	static const WChar *funcName = wxT("SetPar_ModuleMgr");
@@ -965,7 +965,7 @@ SetRealArrayPar_ModuleMgr(EarObjectPtr data, const WChar *name, int index,
  * This routine sets the global 'ModuleTestDestoryFunc' function pointer.
  */
 
-void
+DSAM_API void
 SetTestDestroy_ModuleMgr(BOOLN (* Func)(void))
 {
 	TestDestroy_ModuleMgr = Func;
@@ -979,7 +979,7 @@ SetTestDestroy_ModuleMgr(BOOLN (* Func)(void))
  * This routine sets the global 'RunProcess' function pointer.
  */
 
-void
+DSAM_API void
 SetRunProcess_ModuleMgr(BOOLN (* Func)(EarObjectPtr))
 {
 	RunProcess_ModuleMgr = Func;
@@ -1012,7 +1012,7 @@ SetNull_ModuleMgr(ModulePtr theModule)
  * statement in the Free_ModuleMgr routine will actually work.
  */
 
-void
+DSAM_API void
 FreeNull_ModuleMgr(void)
 {
 	ModulePtr	tempPtr;

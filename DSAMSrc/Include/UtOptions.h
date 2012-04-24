@@ -67,10 +67,10 @@ extern int	optionsPleaseLink;
  */
 __BEGIN_DECLS
 
-void	MarkIgnore_Options(int argc, register WChar **argv, const WChar *optionString,
+DSAM_API void	MarkIgnore_Options(int argc, register WChar **argv, const WChar *optionString,
 		  OptionsArgSpecifier state);
 
-WChar	Process_Options(int ac, register WChar **av, int *optind, int *optsub,
+DSAM_API WChar	Process_Options(int ac, register WChar **av, int *optind, int *optsub,
 		  WChar **argument, const WChar *proto);
 
 __END_DECLS
