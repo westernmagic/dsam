@@ -100,7 +100,7 @@ typedef enum {
 
 /*************************** IPCUtils *****************************************/
 
-class IPCUtils {
+class DSAMEXT_API IPCUtils {
 
 	bool	inProcessConnectedFlag, outProcessConnectedFlag;
 	EarObjectPtr	outProcess, inProcess;

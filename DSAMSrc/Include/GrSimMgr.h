@@ -118,12 +118,12 @@ class SDIDocManager;
 
 /*************************** wxArrayDisplay ***********************************/
 
-WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
+DSAMG_API WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 
 /*************************** MyApp ********************************************/
 
 // Define a new application
-class MyApp: public wxApp {
+class DSAMG_API MyApp: public wxApp {
 
 	bool	audModelLoadedFlag;
 	int		displayDefaultX, displayDefaultY, helpCount;

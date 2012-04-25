@@ -179,7 +179,7 @@ SetDefault_ModuleMgr(ModulePtr module, void *(* DefaultFunc)(void))
  * and initialises it if necessary.
  */
 
-ModulePtr
+DSAM_API ModulePtr
 Init_ModuleMgr(const WChar *theModuleName)
 {
 	static const WChar *funcName = wxT("Init_ModuleMgr");
@@ -322,7 +322,7 @@ FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle theHandle)
  * This routine will not delete the global 'nullModule'.
  */
 
-void
+DSAM_API void
 Free_ModuleMgr(ModulePtr *theModule)
 {
 	if ((*theModule == NULL) || (*theModule == nullModule))

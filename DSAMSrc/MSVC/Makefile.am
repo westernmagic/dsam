@@ -29,6 +29,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= DSAMvc.sln
+EXTRA_DIST	= DSAMvc.sln DLLMain.cpp
 
-SUBDIRS		= DSAM DSAM_ext DSAM_g
+SUBDIRS		= DSAM DSAM_ext DSAM_g DLLMain DLLMain_ng

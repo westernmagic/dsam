@@ -214,7 +214,7 @@ ModuleRefPtr	CreateModuleRef_ModuleMgr(ModulePtr theModule);
 
 DSAM_API BOOLN	Enable_ModuleMgr(EarObjectPtr data, BOOLN on);
 
-void	Free_ModuleMgr(ModulePtr *theModule);
+DSAM_API void	Free_ModuleMgr(ModulePtr *theModule);
 
 void	FreeAll_ModuleMgr(void);
 
@@ -241,7 +241,7 @@ DSAM_API UniParListPtr	GetUniParListPtr_ModuleMgr(EarObjectPtr data);
 
 DSAM_API UniParPtr	GetUniParPtr_ModuleMgr(EarObjectPtr data, const WChar *parName);
 
-ModulePtr	Init_ModuleMgr(const WChar *name);
+DSAM_API ModulePtr	Init_ModuleMgr(const WChar *name);
 
 BOOLN	InLineProcess_ModuleMgr(EarObjectPtr data, BOOLN (* RunProcess)(
 		  EarObjectPtr theObject));
