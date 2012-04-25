@@ -23,9 +23,9 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PROGRAM_NAME				"AudPerSS"
+#define	PROGRAM_NAME				wxT("AudPerSS")
 #ifndef PROGRAM_VERSION
-#	define	PROGRAM_VERSION			"1.1.0"
+#	define	PROGRAM_VERSION			wxT("1.1.0")
 #endif
 #define	TEST_FREQUENCY				2000.0
 
@@ -62,10 +62,10 @@ RegisterUserModules(void)
 BOOLN
 Init(void)
 {
-	static char *funcName = PROGRAM_NAME": Init";
+	static WChar *funcName = PROGRAM_NAME wxT(": Init");
 
 	if (!GetPtr_AppInterface() && !Init_AppInterface(GLOBAL)) {
-		NotifyError("%s: Could not initialise the application interface.",
+		NotifyError(wxT("%s: Could not initialise the application interface."),
 		  funcName);
 		exit(1);
 	}
@@ -96,15 +96,15 @@ int MainSimulation(MAIN_ARGS)
 	if (!InitProcessVariables_AppInterface(Init, ARGC, ARGV))
 		return(1);
 
-	if (SetRealSimPar_AppInterface("frequency", TEST_FREQUENCY))
-		DPrint("%s: Frequency set to %g Hz by program\n", PROGRAM_NAME,
+	if (SetRealSimPar_AppInterface(wxT("frequency"), TEST_FREQUENCY))
+		DPrint(wxT("%s: Frequency set to %g Hz by program\n"), PROGRAM_NAME,
 		  TEST_FREQUENCY);
 	else
-		NotifyError("%s: Could not set frequency for simulation.",
+		NotifyError(wxT("%s: Could not set frequency for simulation."),
 		  PROGRAM_NAME);
 	PrintSimPars_AppInterface();
 
-	DPrint("Starting process...\n");
+	DPrint(wxT("Starting process...\n"));
 	ResetSim_AppInterface();
 
 	if (!RunSim_AppInterface())
@@ -123,7 +123,7 @@ int MainSimulation(MAIN_ARGS)
 	}
 	*/
 	Free_AppInterface();
-	DPrint("Finished test.\n");
+	DPrint(wxT("Finished test.\n"));
 	return(0);
 	
 }

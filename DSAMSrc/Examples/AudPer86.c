@@ -16,13 +16,13 @@
 #include <math.h>
 #include <time.h>
 
-#include "DSAM.h"
+#include <DSAM.h>
 
 /******************************************************************************/
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PARAMETERS_FILE		"AudPer86.par"	/* Name of paramters file.*/
+#define	PARAMETERS_FILE		wxT("AudPer86.par")	/* Name of paramters file.*/
 #define	NUM_CHANNELS		1			/* No. of channels for the filter. */
 #define CHANNEL				0			/* Channel no. for test. */
 
@@ -30,8 +30,8 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
-char	pEParFile[MAXLINE], bMParFile[MAXLINE], hCParFile[MAXLINE];
+WChar	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
+WChar	pEParFile[MAXLINE], bMParFile[MAXLINE], hCParFile[MAXLINE];
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -45,22 +45,22 @@ char	pEParFile[MAXLINE], bMParFile[MAXLINE], hCParFile[MAXLINE];
  */
  
 void
-ReadParsFromFile(char *fileName)
+ReadParsFromFile(WChar *fileName)
 {
 	FILE	*fp;
 	
-	if ((fp = fopen(fileName, "r")) == NULL) {
-		NotifyError("ReadTestPars: Cannot open data file '%s'.\n", fileName);
+	if ((fp = DSAM_fopen(fileName, "r")) == NULL) {
+		NotifyError(wxT("ReadTestPars: Cannot open data file '%s'.\n"), fileName);
 		exit(1);
 	}
-	printf("Reading parameters from file: %s\n", fileName);
+	DPrint(wxT("Reading parameters from file: %s\n"), fileName);
 	Init_ParFile();
-	GetPars_ParFile(fp, "%s", outputFile);
-	GetPars_ParFile(fp, "%s", stParFile);
-	GetPars_ParFile(fp, "%s", trParFile);
-	GetPars_ParFile(fp, "%s", pEParFile);
-	GetPars_ParFile(fp, "%s", bMParFile);
-	GetPars_ParFile(fp, "%s", hCParFile);
+	GetPars_ParFile(fp, wxT("%s"), outputFile);
+	GetPars_ParFile(fp, wxT("%s"), stParFile);
+	GetPars_ParFile(fp, wxT("%s"), trParFile);
+	GetPars_ParFile(fp, wxT("%s"), pEParFile);
+	GetPars_ParFile(fp, wxT("%s"), bMParFile);
+	GetPars_ParFile(fp, wxT("%s"), hCParFile);
 	fclose(fp);
 	Free_ParFile();
 	
@@ -75,21 +75,21 @@ int main(void)
 	EarObjectPtr	stimulus = NULL, gate = NULL, pEFilter = NULL;
 	EarObjectPtr	bMFilter = NULL, hairCell = NULL, intensity = NULL;
 	
-	printf("Starting Test Harness...\n");
+	DPrint(wxT("Starting Test Harness...\n"));
 	
 	ReadParsFromFile(PARAMETERS_FILE);
-	printf("\nIn this test a pure tone stimulus is presented to an\n");
-	printf("auditory periphery model.\n");
-	printf("\n");
+	DPrint(wxT("\nIn this test a pure tone stimulus is presented to an\n"));
+	DPrint(wxT("auditory periphery model.\n"));
+	DPrint(wxT("\n"));
 	
 	/* Initialise EarObjects. */
 	
-	stimulus = Init_EarObject( "null" );
-	gate = Init_EarObject( "null" );
-	pEFilter = Init_EarObject( "null" );
-	bMFilter = Init_EarObject( "null" );
-	hairCell = Init_EarObject( "null" );
-	intensity = Init_EarObject( "null" );
+	stimulus = Init_EarObject( wxT("null") );
+	gate = Init_EarObject( wxT("null") );
+	pEFilter = Init_EarObject( wxT("null") );
+	bMFilter = Init_EarObject( wxT("null") );
+	hairCell = Init_EarObject( wxT("null") );
+	intensity = Init_EarObject( wxT("null") );
 
 	/* Set up EarObject connections. */
 	
@@ -102,7 +102,7 @@ int main(void)
 
 	/* Initialise modules. */
 
-	printf("Module parameters...\n\n" );
+	DPrint(wxT("Module parameters...\n\n") );
 
 	Init_PureTone( GLOBAL );
 	ReadPars_PureTone( stParFile );
@@ -130,25 +130,25 @@ int main(void)
 
 	/* Start main process and print diagonstics. */
 	
-	printf("\nStarting main process...\n\n" );
+	DPrint(wxT("\nStarting main process...\n\n") );
 	GenerateSignal_PureTone( stimulus );
-	PrintProcessName_EarObject( "1-stimulus: '%s'.\n", stimulus );
+	PrintProcessName_EarObject( wxT("1-stimulus: '%s'.\n"), stimulus );
 	Process_Transform_Gate( gate );
-	PrintProcessName_EarObject( "2-gate: '%s'.\n", gate );
+	PrintProcessName_EarObject( wxT("2-gate: '%s'.\n"), gate );
 	Calc_Analysis_Intensity( intensity );
-	printf("\tStimulus intensity = %g dB SPL.\n",
+	DPrint(wxT("\tStimulus intensity = %g dB SPL.\n"),
 	  GetResult_EarObject(intensity, CHANNEL ));
 	RunModel_Filter_BandPass( pEFilter );
-	PrintProcessName_EarObject("3-Outer-/middle-ear: '%s'.\n", pEFilter );
+	PrintProcessName_EarObject(wxT("3-Outer-/middle-ear: '%s'.\n"), pEFilter );
 	RunModel_BasilarM_GammaT( bMFilter );
-	PrintProcessName_EarObject("4-Basilar membrane: '%s'.\n", bMFilter );
+	PrintProcessName_EarObject(wxT("4-Basilar membrane: '%s'.\n"), bMFilter );
 	RunModel_IHC_Meddis86( hairCell );
-	PrintProcessName_EarObject("5-Inner hair cell (IHC): '%s'.\n", hairCell );
+	PrintProcessName_EarObject(wxT("5-Inner hair cell (IHC): '%s'.\n"), hairCell );
 	WriteOutSignal_DataFile(outputFile, hairCell );
 
 	FreeAll_EarObject();
 
-	printf("Finished test.\n");
+	DPrint(wxT("Finished test.\n"));
     return(0);
 	
 }

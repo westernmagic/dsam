@@ -22,21 +22,21 @@
 /****************************** Constant definitions **************************/
 /******************************************************************************/
 
-#define	PARAMETERS_FILE		"AudPerGen.par"	/* Name of paramters file.*/
+#define	PARAMETERS_FILE		wxT("AudPerGen.par")	/* Name of paramters file.*/
 #define	NUM_CHANNELS		1			/* No. of channels for the filter. */
 #define CHANNEL				0			/* Channel no. for test. */
-#define	INTENSITY_MOD_NAME	"Ana_Intensity"
+#define	INTENSITY_MOD_NAME	wxT("Ana_Intensity")
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-char	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
-char	pEParFile[MAXLINE], bMParFile[MAXLINE], rPParFile[MAXLINE];
-char	hCParFile[MAXLINE];
+WChar	outputFile[MAXLINE], stParFile[MAXLINE], trParFile[MAXLINE];
+WChar	pEParFile[MAXLINE], bMParFile[MAXLINE], rPParFile[MAXLINE];
+WChar	hCParFile[MAXLINE];
 
-char	stModuleName[MAXLINE], trModuleName[MAXLINE], pEModuleName[MAXLINE];
-char	bMModuleName[MAXLINE], rPModuleName[MAXLINE], hCModuleName[MAXLINE];
+WChar	stModuleName[MAXLINE], trModuleName[MAXLINE], pEModuleName[MAXLINE];
+WChar	bMModuleName[MAXLINE], rPModuleName[MAXLINE], hCModuleName[MAXLINE];
 
 /******************************************************************************/
 /****************************** Functions and subroutines *********************/
@@ -50,23 +50,23 @@ char	bMModuleName[MAXLINE], rPModuleName[MAXLINE], hCModuleName[MAXLINE];
  */
  
 void
-ReadParsFromFile(char *fileName)
+ReadParsFromFile(WChar *fileName)
 {
 	FILE	*fp;
 	
-	if ((fp = fopen(fileName, "r")) == NULL) {
-		NotifyError("ReadTestPars: Cannot open data file '%s'.\n", fileName);
+	if ((fp = DSAM_fopen(fileName, "r")) == NULL) {
+		NotifyError(wxT("ReadTestPars: Cannot open data file '%s'.\n"), fileName);
 		exit(1);
 	}
-	printf("Reading parameters from file: %s\n", fileName);
+	DPrint(wxT("Reading parameters from file: %s\n"), fileName);
 	Init_ParFile();
-	GetPars_ParFile(fp, "%s", outputFile);
-	GetPars_ParFile(fp, "%s %s", stParFile, stModuleName);
-	GetPars_ParFile(fp, "%s %s", trParFile, trModuleName);
-	GetPars_ParFile(fp, "%s %s", pEParFile, pEModuleName);
-	GetPars_ParFile(fp, "%s %s", bMParFile, bMModuleName);
-	GetPars_ParFile(fp, "%s %s", rPParFile, rPModuleName);
-	GetPars_ParFile(fp, "%s %s", hCParFile, hCModuleName);
+	GetPars_ParFile(fp, wxT("%s"), outputFile);
+	GetPars_ParFile(fp, wxT("%s %s"), stParFile, stModuleName);
+	GetPars_ParFile(fp, wxT("%s %s"), trParFile, trModuleName);
+	GetPars_ParFile(fp, wxT("%s %s"), pEParFile, pEModuleName);
+	GetPars_ParFile(fp, wxT("%s %s"), bMParFile, bMModuleName);
+	GetPars_ParFile(fp, wxT("%s %s"), rPParFile, rPModuleName);
+	GetPars_ParFile(fp, wxT("%s %s"), hCParFile, hCModuleName);
 	fclose(fp);
 	Free_ParFile();
 	
@@ -83,19 +83,19 @@ int main(void)
 	EarObjectPtr	intensity = NULL;
 	UniParPtr		par = NULL;
 	
-	printf("Starting Test Harness...\n");
+	DPrint(wxT("Starting Test Harness...\n"));
 	
 	ReadParsFromFile(PARAMETERS_FILE);
-	printf("\nIn this test a '%s' stimulus is presented to an\n", stModuleName);
-	printf("auditory periphery model.\n");
-	printf("The model process contains the following modules:\n\n");
-	printf("\tStimulus generation:\t%s\n", stModuleName);
-	printf("\tGate transformation:\t%s\n", trModuleName);
-	printf("\tOuter-/middle-ear:\t%s\n", pEModuleName);
-	printf("\tBasilar membrane:\t%s\n", bMModuleName);
-	printf("\tIHC receptor pot.:\t%s\n", rPModuleName);
-	printf("\tInner hair cell (IHC):\t%s\n", hCModuleName);
-	printf("\n");
+	DPrint(wxT("\nIn this test a '%s' stimulus is presented to an\n"), stModuleName);
+	DPrint(wxT("auditory periphery model.\n"));
+	DPrint(wxT("The model process contains the following modules:\n\n"));
+	DPrint(wxT("\tStimulus generation:\t%s\n"), stModuleName);
+	DPrint(wxT("\tGate transformation:\t%s\n"), trModuleName);
+	DPrint(wxT("\tOuter-/middle-ear:\t%s\n"), pEModuleName);
+	DPrint(wxT("\tBasilar membrane:\t%s\n"), bMModuleName);
+	DPrint(wxT("\tIHC receptor pot.:\t%s\n"), rPModuleName);
+	DPrint(wxT("\tInner hair cell (IHC):\t%s\n"), hCModuleName);
+	DPrint(wxT("\n"));
 	
 	/* Initialise EarObjects. */
 	
@@ -119,7 +119,7 @@ int main(void)
 
 	/* Initialise modules. */
 
-	printf("Module parameters...\n\n" );
+	DPrint(wxT("Module parameters...\n\n"));
 
 	ReadPars_ModuleMgr( stimulus, stParFile);
 	PrintPars_ModuleMgr( stimulus );
@@ -139,33 +139,33 @@ int main(void)
 	ReadPars_ModuleMgr( hairCell, hCParFile);
 	PrintPars_ModuleMgr( hairCell );
 
-	par = GetUniParPtr_ModuleMgr(gate, "duration");
-	SetRealPar_ModuleMgr(intensity, "offset", *par->valuePtr.r);
+	par = GetUniParPtr_ModuleMgr(gate, wxT("duration"));
+	SetRealPar_ModuleMgr(intensity, wxT("offset"), *par->valuePtr.r);
 	PrintPars_ModuleMgr( intensity );
 	
 	/* Start main process and print diagonstics. */
 	
-	printf("\nStarting main process...\n\n" );
+	DPrint(wxT("\nStarting main process...\n\n"));
 	RunProcess_ModuleMgr( stimulus );
-	PrintProcessName_EarObject("1-stimulus: '%s'.\n", stimulus );
+	PrintProcessName_EarObject(wxT("1-stimulus: '%s'.\n"), stimulus );
 	RunProcess_ModuleMgr( gate );
-	PrintProcessName_EarObject("2-gate: '%s'.\n", gate );
+	PrintProcessName_EarObject(wxT("2-gate: '%s'.\n"), gate );
 	RunProcess_ModuleMgr( intensity );
-	printf("\tStimulus intensity = %g dB SPL.\n",
+	DPrint(wxT("\tStimulus intensity = %g dB SPL.\n"),
 	  GetResult_EarObject( intensity, CHANNEL ) );
 	RunProcess_ModuleMgr( pEFilter );
-	PrintProcessName_EarObject("3-Outer-/middle-ear: '%s'.\n", pEFilter );
+	PrintProcessName_EarObject(wxT("3-Outer-/middle-ear: '%s'.\n"), pEFilter );
 	RunProcess_ModuleMgr( bMFilter );
-	PrintProcessName_EarObject("5-Basilar membrane: '%s'.\n", bMFilter );
+	PrintProcessName_EarObject(wxT("5-Basilar membrane: '%s'.\n"), bMFilter );
 	RunProcess_ModuleMgr( recptPotn );
-	PrintProcessName_EarObject("4-IHC Receptor potential: '%s'.\n", recptPotn );
+	PrintProcessName_EarObject(wxT("4-IHC Receptor potential: '%s'.\n"), recptPotn );
 	RunProcess_ModuleMgr( hairCell );
-	PrintProcessName_EarObject("6-Inner hair cell (IHC): '%s'.\n", hairCell );
+	PrintProcessName_EarObject(wxT("6-Inner hair cell (IHC): '%s'.\n"), hairCell );
 	WriteOutSignal_DataFile(outputFile, hairCell );
 
 	FreeAll_EarObject();
 
-	printf("Finished test.\n");
+	DPrint(wxT("Finished test.\n"));
     exit(0);
 	
 }
