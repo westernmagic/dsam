@@ -146,8 +146,10 @@ DSAMEXT_API extern MainApp	*dSAMMainApp;
 /*************************** Early subroutine declarations ********************/
 /******************************************************************************/
 
-DSAMEXT_API int		DSAMStart_MainApp(int argc, char **argv);
-DSAMEXT_API int		DSAMStart_MainApp(int argc, wxChar **argv);
+DSAMEXT_API int		DSAMStart_MainApp(int (* MainSimulation)(void), int argc,
+					  char **argv);
+DSAMEXT_API int		DSAMStart_MainApp(int (* MainSimulation)(void), int argc,
+					  wxChar **argv);
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/
@@ -156,9 +158,11 @@ DSAMEXT_API int		DSAMStart_MainApp(int argc, wxChar **argv);
 #if defined(EXTENSIONS_SUPPORT) && !defined(USE_GUI)
 #	if !defined(LIBRARY_COMPILE)
 #		if defined(WIN32)
-			int main(int argc, wxChar **argv) { return(DSAMStart_MainApp(argc, argv)); }
+			int main(int argc, wxChar **argv) { return(
+			  DSAMStart_MainApp(MainSimulation, argc, argv)); }
 #		else
-			int main(int argc, char **argv) { return(DSAMStart_MainApp(argc, argv)); }
+			int main(int argc, char **argv) { return(
+			  DSAMStart_MainApp(MainSimulation, argc, argv)); }
 #		endif
 #	endif
 

@@ -847,7 +847,7 @@ MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
 /****************************** DSAMStart ************************************/
 
 DSAMEXT_API int
-DSAMStart_MainApp(int argc, wxChar **argv)
+DSAMStart_MainApp(int (* MainSimulation)(void), int argc, wxChar **argv)
 {
 	wxInitializer initializer;
 
@@ -933,12 +933,12 @@ static void FreeConvertedArgs()
 }
 
 DSAMEXT_API int
-DSAMStart_MainApp(int argc, char **argv)
+DSAMStart_MainApp(int (* MainSimulation)(void), int argc, char **argv)
 {
 	int 	myReturn;
 
 	ConvertArgsToUnicode(argc, argv);
-	myReturn = DSAMStart_MainApp(gs_initData.argc, gs_initData.argv);
+	myReturn = DSAMStart_MainApp(MainSimulation, gs_initData.argc, gs_initData.argv);
 	FreeConvertedArgs();
 	return(myReturn);
 

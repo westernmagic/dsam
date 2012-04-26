@@ -723,7 +723,6 @@ AC_CONFIG_FILES([
 	MSVC/DSAM_ext/Makefile
 	MSVC/DSAM_g/Makefile
 	MSVC/DLLMain/Makefile
-	MSVC/DLLMain_ng/Makefile
 	NSIS/Makefile
 	debian/Makefile
 ], [chmod +x dsam-config])

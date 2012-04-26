@@ -118,7 +118,7 @@ class SDIDocManager;
 
 /*************************** wxArrayDisplay ***********************************/
 
-DSAMG_API WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
+WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
 
 /*************************** MyApp ********************************************/
 
