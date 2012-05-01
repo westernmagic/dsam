@@ -46,7 +46,7 @@
 #define MAINAPP_SPACE_SUBST					'\1'
 #define	MAINAPP_NUM_BASE_ARGUMENTS			3
 
-#if defined(win32)
+#if !defined(WIN32)
 #	define MAINAPP_MAIN_SIM_INIT MainSimulation
 #else
 #	define MAINAPP_MAIN_SIM_INIT NULL
