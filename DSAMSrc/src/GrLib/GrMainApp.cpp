@@ -70,7 +70,7 @@
  */
 
 GrMainApp::GrMainApp(int theArgc, wxChar **theArgv): MainApp(theArgc, theArgv,
-  MainSimulation)
+  MainSimulation_MainApp)
 {
 
 	dSAMMainApp = this;

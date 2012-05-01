@@ -76,6 +76,28 @@
 #define SIM_MANAGER_PROGRAM_PARS_DIALOG_TITLE	wxT("Program parameters")
 
 /******************************************************************************/
+/*************************** Maco Definitions *********************************/
+/******************************************************************************/
+
+// DSAM version of the IMPLEMENT_APP related macros, so that I can link to the
+// "MainSimulation" routine.
+
+#define DSAM_IMPLEMENT_WXWIN_MAIN \
+    extern "C" int WINAPI WinMain(HINSTANCE hInstance,                    \
+                                  HINSTANCE hPrevInstance,                \
+                                  wxCmdLineArgType lpCmdLine,             \
+                                  int nCmdShow)                           \
+    {                                                                     \
+		MainSimulation_MainApp = MainSimulation;                      \
+        return wxEntry(hInstance, hPrevInstance, lpCmdLine, nCmdShow);    \
+    }                                                                     \
+    IMPLEMENT_WXWIN_MAIN_BORLAND_NONSTANDARD
+
+#define DSAM_IMPLEMENT_APP_NO_MAIN(appname)              \
+    IMPLEMENT_APP_NO_MAIN(appname)          \
+    IMPLEMENT_WX_THEME_SUPPORT
+
+/******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
 
@@ -118,7 +140,7 @@ class SDIDocManager;
 
 /*************************** wxArrayDisplay ***********************************/
 
-WX_DEFINE_ARRAY(wxFrame *, wxArrayDisplay);
+WX_DEFINE_USER_EXPORTED_ARRAY(wxFrame *, wxArrayDisplay, class DSAMG_API);
 
 /*************************** MyApp ********************************************/
 
@@ -187,13 +209,17 @@ class DSAMG_API MyApp: public wxApp {
 /*************************** External Variables *******************************/
 /******************************************************************************/
 
-DECLARE_APP(MyApp)
+DSAMG_API DECLARE_APP(MyApp)
 
 #ifdef MPI_SUPPORT
 	extern "C" MPI_Init(int *, char ***);
 	extern "C" MPI_Finalize(void);
 #endif
 extern int		MainSimulation(void); /* ?? until RunSimMgr is put back. */
+
+#if defined(WIN32) && !defined(LIBRARY_COMPILE)
+	DSAM_IMPLEMENT_WXWIN_MAIN
+#endif
 
 /******************************************************************************/
 /*************************** Subroutine declarations **************************/

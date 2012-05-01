@@ -71,7 +71,8 @@
 /****************************** Global variables ******************************/
 /******************************************************************************/
 
-DSAMEXT_API MainApp	*dSAMMainApp = NULL;
+DSAMEXT_API MainApp *dSAMMainApp = NULL;
+DSAMEXT_API int (* MainSimulation_MainApp)(void) = MAINAPP_MAIN_SIM_INIT;
 
 /******************************************************************************/
 /****************************** Methods (Subroutines) *************************/
@@ -84,22 +85,22 @@ DSAMEXT_API MainApp	*dSAMMainApp = NULL;
  * the "main" subroutine in the header file.
  */
 
-MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
-  int (* TheExternalRunSimulation)(void))
-{
+MainApp::MainApp(int theArgc, wxChar **theArgv, int(*TheExternalMain)(void),
+		int(*TheExternalRunSimulation)(void)) {
 	static const WChar *funcName = wxT("MainApp::MainApp");
 	initOk = true;
 	argc = 0;
 	argv = NULL;
 	if (!InitCommandLineArgs(theArgc, theArgv)) {
 		NotifyError(wxT("%s: Could not initialise command-line arguments.\n"),
-		  funcName);
+				funcName);
 		return;
 	}
 	ExternalMain = TheExternalMain;
-	threadedSimExecutionFlag = true;	/* should be set by command-line */
-	ExternalRunSimulation = (TheExternalRunSimulation)?
-	  TheExternalRunSimulation: TheExternalMain;
+	threadedSimExecutionFlag = true; /* should be set by command-line */
+	ExternalRunSimulation =
+			(TheExternalRunSimulation) ?
+					TheExternalRunSimulation : TheExternalMain;
 	SetReadXMLSimFile_Utility_SimScript(ReadXMLSimFile_MainApp);
 	serverFlag = false;
 	superServerFlag = false;
@@ -117,12 +118,12 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 	if (initOk)
 		CheckOptions();
 #	if USE_FFTW3_THREADS
-		if (!DSAM_FFTW_NAME(init_threads)()) {
-			NotifyError(wxT("%s: Could not initialise FFTW3 threading."), funcName);
-			return;
-		}
-		DSAM_FFTW_NAME(plan_with_nthreads)((GetPtr_AppInterface()->numThreads < 1)? 1:
-		  GetPtr_AppInterface()->numThreads);
+	if (!DSAM_FFTW_NAME(init_threads)()) {
+		NotifyError(wxT("%s: Could not initialise FFTW3 threading."), funcName);
+		return;
+	}
+	DSAM_FFTW_NAME(plan_with_nthreads)((GetPtr_AppInterface()->numThreads < 1)? 1:
+			GetPtr_AppInterface()->numThreads);
 #	endif /* USE_FFTW3_THREADS */
 	runThreadedProc = new RunThreadedProc();
 
@@ -134,16 +135,14 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int (* TheExternalMain)(void),
 // This routine does not call wxUninitialize() because there are errors with
 // trying to re-call wxInitialize() - so it needs to be only called.
 //
-
-MainApp::~MainApp(void)
-{
+MainApp::~MainApp(void) {
 	DeleteSimThread();
 	if (myClient)
 		delete myClient;
 	if (runThreadedProc)
 		delete runThreadedProc;
 #	if USE_FFTW3_THREADS
-		DSAM_FFTW_NAME(cleanup_threads)();
+	DSAM_FFTW_NAME(cleanup_threads)();
 #	endif /* USE_FFTW3_THREADS */
 	FreeArgStrings();
 	FreeSymbols_Utility_SSSymbols(&symList);
@@ -165,10 +164,8 @@ MainApp::~MainApp(void)
  * format, as this is now done in DSAMStart_MainApp if necessary.
  */
 
-bool
-MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv)
-{
-	int		i;
+bool MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv) {
+	int i;
 
 	argc = theArgc;
 	if (!InitArgv(argc)) {
@@ -177,7 +174,7 @@ MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv)
 	}
 	for (i = 0; i < argc; i++)
 		SetArgvString(i, theArgv[i], DSAM_strlen(theArgv[i]));
-	return(true);
+	return (true);
 
 }
 
@@ -186,30 +183,28 @@ MainApp::InitCommandLineArgs(int theArgc, wxChar **theArgv)
 /*
  */
 
-int
-MainApp::Main(void)
-{
+int MainApp::Main(void) {
 	static const wxChar *funcName = wxT("MainApp::Main");
-	bool	ok = false;
+	bool ok = false;
 
 	if (!initOk) {
 		NotifyWarning(wxT("%s: Program not using application interface or not ")
-		  wxT("correctly initialised.\n"), funcName);
-		return(false);
+		wxT("correctly initialised.\n"), funcName);
+		return (false);
 	}
 	if (serverFlag)
-		return(RunIPCMode());
+		return (RunIPCMode());
 	if (!InitMain(TRUE)) {
-		 NotifyError(wxT("%s: Could not initialise the main program."),
-		   funcName);
-		return(false);
+		NotifyError(wxT("%s: Could not initialise the main program."),
+				funcName);
+		return (false);
 	}
 	if (!threadedSimExecutionFlag)
-		return(RunSimulation());
+		return (RunSimulation());
 	StartSimThread(wxTHREAD_JOINABLE);
 	ok = CXX_BOOL(simThread->Wait());
 	delete simThread;
-	return(ok);
+	return (ok);
 
 }
 
@@ -222,17 +217,15 @@ MainApp::Main(void)
  * can turn them on.
  */
 
-int
-MainApp::RunIPCMode(void)
-{
+int MainApp::RunIPCMode(void) {
 	if (diagsOn)
 		SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	else
 		SetDiagMode(COMMON_OFF_DIAG_MODE);
 	InitMain(FALSE);
 	if (!CreateClient(serverHost, serverPort))
-		return(RunServer());
-	return(RunClient());
+		return (RunServer());
+	return (RunClient());
 
 }
 
@@ -244,24 +237,22 @@ MainApp::RunIPCMode(void)
  * signals and the client then asking if an input (piped) signal is required.
  */
 
-int
-MainApp::RunClient(void)
-{
+int MainApp::RunClient(void) {
 	static const wxChar *funcName = wxT("MainApp::RunClient");
 
 	if (!GetClient()->SendArguments(GetArgc(), GetArgv())) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
 	if (!GetClient()->InitSimFromFile(GetPtr_AppInterface()->simulationFile)) {
 		NotifyError(wxT("%s: Could not initialise remote simulation."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
 #	if DSAM_DEBUG
 	for (int i = 0; i < GetArgc(); i++)
-		printf("%s: %2d: %s\n", funcName, i, GetArgv()[i]);
+	printf("%s: %2d: %s\n", funcName, i, GetArgv()[i]);
 #	endif /* DSAM_DEBUG */
 // 	if (inputData) {
 // 		if (!InitInputEarObject(length)) {
@@ -282,12 +273,12 @@ MainApp::RunClient(void)
 // 	}
 	if (!GetClient()->RunSimulation()) {
 		NotifyError(wxT("%s: Could not run remote simulation."), funcName);
-		return(false);
+		return (false);
 	}
 	GetClient()->GetAllOutputFiles();
-	return(true);
+	return (true);
 
-	return(0);
+	return (0);
 
 }
 
@@ -299,9 +290,7 @@ MainApp::RunClient(void)
  * can turn them on.
  */
 
-int
-MainApp::RunServer(void)
-{
+int MainApp::RunServer(void) {
 	static const wxChar *funcName = wxT("MainApp::RunServer");
 
 	SetOnExecute_AppInterface(OnExecute_MainApp);
@@ -314,26 +303,26 @@ MainApp::RunServer(void)
 	IPCServer *server = new IPCServer(wxT(""), serverPort, superServerFlag);
 	if (!server->Ok()) {
 		NotifyError(wxT("%s: Could not start server on port %u.\n"), funcName,
-		  serverPort);
-		return(false);
+				serverPort);
+		return (false);
 	}
-	for ( ; ; ) {
-       SocketBase *socket = server->InitConnection();
-        if (!socket) {
-            NotifyError(wxT("%s: Connection failed."), funcName);
-            break;
-        }
+	for (;;) {
+		SocketBase *socket = server->InitConnection();
+		if (!socket) {
+			NotifyError(wxT("%s: Connection failed."), funcName);
+			break;
+		}
 		while (socket->IsConnected()) {
 			while (server->ProcessInput())
 				;
 			delete socket;
 			if (superServerFlag)
-				return(0);
+				return (0);
 			break;
 		}
 
 	}
-	return(0);
+	return (0);
 
 }
 
@@ -346,19 +335,17 @@ MainApp::RunServer(void)
  * server is to be run by xinetd/inetd.
  */
 
-void
-MainApp::CheckOptions(void)
-{
-	int		optInd = 1, optSub = 0;
-	wxChar	c, *argument;
+void MainApp::CheckOptions(void) {
+	int optInd = 1, optSub = 0;
+	wxChar c, *argument;
 
 	while ((c = Process_Options(argc, argv, &optInd, &optSub, &argument,
-	  wxT("R:SI:d:"))))
+			wxT("R:SI:d:"))))
 		switch (c) {
 		case 'R':
 			DSAM_strcpy(serverHost, argument);
 			wprintf(wxT("MainApp::CheckOptions: Debug: serverHost = '%S'\n"),
-			  serverHost);
+					serverHost);
 			MarkIgnore_Options(argc, argv, wxT("-R"), OPTIONS_WITH_ARG);
 			break;
 		case 'S':
@@ -395,38 +382,34 @@ MainApp::CheckOptions(void)
  * This allocates the memory for the argv pointer.
  */
 
-bool
-MainApp::InitArgv(int theArgc)
-{
+bool MainApp::InitArgv(int theArgc) {
 	static const wxChar *funcName = wxT("MainApp::InitArgv");
 
 	if (!theArgc)
-		return(true);
+		return (true);
 	argc = theArgc;
 	if ((argv = (wxChar **) calloc(argc, sizeof(wxChar *))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for argv[%d] array."), funcName,
-		  argc);
-		return(false);
+				argc);
+		return (false);
 	}
-	return(true);
+	return (true);
 
 }
 
 /****************************** SetArgvString *********************************/
 
-bool
-MainApp::SetArgvString(int index, const  wxChar *string, size_t size)
-{
+bool MainApp::SetArgvString(int index, const wxChar *string, size_t size) {
 	static const wxChar *funcName = wxT("MainApp::SetArgvString");
 
 	if (argv[index])
 		free(argv[index]);
 	if ((argv[index] = (wxChar *) calloc(size + 1, sizeof(wxChar))) == NULL) {
 		NotifyError(wxT("%s: Out of memory for argv[%d]."), funcName, index);
-		return(FALSE);
+		return (FALSE);
 	}
 	DSAM_strcpy(argv[index], string);
-	return(TRUE);
+	return (TRUE);
 
 }
 
@@ -439,30 +422,26 @@ MainApp::SetArgvString(int index, const  wxChar *string, size_t size)
  * It returns FALSE if it enounters an error.
  */
 
-
 /* ToDo: implement this using wxString. */
 
-bool
-MainApp::ProtectQuotedStr(wxChar *str)
-{
+bool MainApp::ProtectQuotedStr(wxChar *str) {
 	static const wxChar *funcName = wxT("MainApp::ProtectQuotedStr");
-	bool	quotesOn = FALSE;
-	wxChar	*p;
+	bool quotesOn = FALSE;
+	wxChar *p;
 
 	for (p = str; *p != '\0'; p++) {
 		if (*p == MAINAPP_QUOTE) {
 			quotesOn = (!quotesOn);
 			*p = ' ';
-		} else
-			if (quotesOn && (*p == ' '))
-				*p = MAINAPP_SPACE_SUBST;
+		} else if (quotesOn && (*p == ' '))
+			*p = MAINAPP_SPACE_SUBST;
 	}
 	if (quotesOn) {
 		NotifyError(wxT("%s: Incomplete quoted string in parameters."),
-		  funcName);
-		return(FALSE);
+				funcName);
+		return (FALSE);
 	}
-	return(TRUE);
+	return (TRUE);
 
 }
 
@@ -473,14 +452,13 @@ MainApp::ProtectQuotedStr(wxChar *str)
  */
 
 wxChar *
-MainApp::RestoreQuotedStr(wxChar *str)
-{
-	wxChar	*p;
+MainApp::RestoreQuotedStr(wxChar *str) {
+	wxChar *p;
 
 	for (p = str; *p != '\0'; p++)
 		if (*p == MAINAPP_SPACE_SUBST)
 			*p = ' ';
-	return(str);
+	return (str);
 
 }
 
@@ -493,17 +471,15 @@ MainApp::RestoreQuotedStr(wxChar *str)
  * It returns the number of parameters, or a negative number if an error occurs.
  */
 
-int
-MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
-  bool countOnly)
-{
+int MainApp::SetParameterOptionArgs(int indexStart,
+		const wxChar *parameterOptions, bool countOnly) {
 	static const wxChar *funcName = wxT("MainApp::SetParameterOptionArgs");
 	wxString token, workStr = parameterOptions;
-	int		count = 0;
+	int count = 0;
 
 	if (!ProtectQuotedStr((wxChar *) workStr.c_str())) {
 		NotifyError(wxT("%s; Could note protect quoted parameters."), funcName);
-		return(-1);
+		return (-1);
 	}
 	wxStringTokenizer tkz(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
 	while (tkz.HasMoreTokens()) {
@@ -511,11 +487,11 @@ MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
 		if (token.length() < 1)
 			continue;
 		if (!countOnly)
-			SetArgvString(indexStart + count, RestoreQuotedStr((wxChar *) token.
-			  c_str()), token.length());
+			SetArgvString(indexStart + count,
+					RestoreQuotedStr((wxChar *) token.c_str()), token.length());
 		count++;
 	}
-	return(count);
+	return (count);
 
 }
 
@@ -528,10 +504,8 @@ MainApp::SetParameterOptionArgs(int indexStart, const wxChar *parameterOptions,
  * offset index;
  */
 
-void
-MainApp::RemoveCommands(int offset, const wxChar *prefix)
-{
-	int		i;
+void MainApp::RemoveCommands(int offset, const wxChar *prefix) {
+	int i;
 
 	for (i = offset; i < argc; i++)
 		if (StrNCmpNoCase_Utility_String(argv[i], prefix) == 0)
@@ -545,10 +519,8 @@ MainApp::RemoveCommands(int offset, const wxChar *prefix)
  * This routine frees the argument strings.
  */
 
-void
-MainApp::FreeArgStrings(void)
-{
-	int		i;
+void MainApp::FreeArgStrings(void) {
+	int i;
 
 	if (argv) {
 		for (i = 0; i < argc; i++)
@@ -568,21 +540,19 @@ MainApp::FreeArgStrings(void)
  * nothing after the program should be run.
  */
 
-bool
-MainApp::InitRun(void)
-{
+bool MainApp::InitRun(void) {
 	static const wxChar *funcName = wxT("MainApp::InitRun");
 
 	wxCriticalSectionLocker locker(mainCritSect);
 
 	if (GetDSAMPtr_Common()->appInitialisedFlag) {
 		NotifyWarning(wxT("%s: Attempted to re-initialise application."),
-		  funcName);
-		return(TRUE);
+				funcName);
+		return (TRUE);
 	}
-	(* ExternalMain)();
+	(*ExternalMain)();
 	SetCanFreePtrFlag_AppInterface(FALSE);
-	return(CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
+	return (CXX_BOOL(GetDSAMPtr_Common()->appInitialisedFlag));
 
 }
 
@@ -593,28 +563,26 @@ MainApp::InitRun(void)
  * interface.
  */
 
-bool
-MainApp::InitMain(bool loadSimulationFlag)
-{
+bool MainApp::InitMain(bool loadSimulationFlag) {
 	static const wxChar *funcName = wxT("MainApp::InitMain");
 
 	ResetStepCount_Utility_Datum();
 	if (!GetPtr_AppInterface() || !GetPtr_AppInterface()->Init)
-		return(true);
+		return (true);
 	GetPtr_AppInterface()->PrintExtMainAppUsage = PrintUsage_MainApp;
 	ResetCommandArgFlags_AppInterface();
 	GetPtr_AppInterface()->canLoadSimulationFlag = loadSimulationFlag;
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError(wxT("%s: Could not initialise process variables."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
 	GetPtr_AppInterface()->canLoadSimulationFlag = TRUE;
 	if (runThreadedProc) {
 		runThreadedProc->SetNumThreads(GetPtr_AppInterface()->numThreads);
 		runThreadedProc->SetThreadMode(GetPtr_AppInterface()->threadMode);
 	}
-	return(true);
+	return (true);
 
 }
 
@@ -624,9 +592,7 @@ MainApp::InitMain(bool loadSimulationFlag)
  * This initialises the
  */
 
-void
-MainApp::InitXMLDocument(void)
-{
+void MainApp::InitXMLDocument(void) {
 	doc = new DSAMXMLDocument;
 
 }
@@ -637,16 +603,14 @@ MainApp::InitXMLDocument(void)
  * This routine checks that the simulation run has been initialised.
  */
 
-bool
-MainApp::LoadXMLDocument(void)
-{
+bool MainApp::LoadXMLDocument(void) {
 	static const wxChar *funcName = wxT("MainApp::LoadXMLDocument");
-	bool	ok = true;
+	bool ok = true;
 
 	InitXMLDocument();
 	if (!doc->Load(simFileName.GetFullPath())) {
 		NotifyError(wxT("%s: Could not load XML file '%s' (Error: %s)."),
-		  funcName, simFileName.GetFullPath().c_str());
+				funcName, simFileName.GetFullPath().c_str());
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {
@@ -658,7 +622,7 @@ MainApp::LoadXMLDocument(void)
 		SetSimulationFileFlag_AppInterface(FALSE);
 	}
 	delete doc;
-	return(ok);
+	return (ok);
 
 }
 
@@ -668,26 +632,24 @@ MainApp::LoadXMLDocument(void)
  * This routine checks that the simulation run has been initialised.
  */
 
-bool
-MainApp::CheckInitialisation(void)
-{
+bool MainApp::CheckInitialisation(void) {
 	static const wxChar *funcName = wxT("MainApp::CheckInitialisation");
 
 	if (!GetPtr_AppInterface()) {
 		NotifyError(wxT("%s: Application interface not initialised."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
 #	if DSAM_DEBUG
 	for (int i = 0; i < argc; i++)
-		printf(wxT("%s: %2d: %s\n"), funcName, i, argv[i]);
+	printf(wxT("%s: %2d: %s\n"), funcName, i, argv[i]);
 #	endif /* DSAM_DEBUG */
 	if (!InitProcessVariables_AppInterface(NULL, argc, argv)) {
 		NotifyError(wxT("%s: Could not initialise process variables."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
-	return(true);
+	return (true);
 
 }
 
@@ -697,9 +659,7 @@ MainApp::CheckInitialisation(void)
  * This routine starts the simulation thread.
  */
 
-void
-MainApp::StartSimThread(wxThreadKind kind)
-{
+void MainApp::StartSimThread(wxThreadKind kind) {
 	static const wxChar *funcName = wxT("MainApp::StartSimThread");
 
 	mainCritSect.Enter();
@@ -723,9 +683,7 @@ MainApp::StartSimThread(wxThreadKind kind)
  * It also waits until the simThread pointer is set to NULL.
  */
 
-void
-MainApp::DeleteSimThread(void)
-{
+void MainApp::DeleteSimThread(void) {
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (simThread) {
 		SetInterruptRequestStatus_Common(TRUE);
@@ -738,51 +696,45 @@ MainApp::DeleteSimThread(void)
 
 /****************************** ResetSimulation *******************************/
 
-bool
-MainApp::ResetSimulation(void)
-{
+bool MainApp::ResetSimulation(void) {
 	static const wxChar *funcName = wxT("MainApp::ResetSimulation");
 
 	if (simThread) {
 		wxLogWarning(wxT("%s: Running simulation not yet terminated!"),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
 	SwitchGUILocking_Common(false);
 	if (!CheckInitialisation())
-		return(false);
-	return(true);
+		return (false);
+	return (true);
 
 }
 
 /****************************** RunSimulation *********************************/
 
-bool
-MainApp::RunSimulation(void)
-{
+bool MainApp::RunSimulation(void) {
 	static const wxChar *funcName = wxT("MainApp::RunSimulation");
 
 	SetInterruptRequestStatus_Common(FALSE);
-	if (!ExternalRunSimulation){
+	if (!ExternalRunSimulation) {
 		NotifyError(wxT("%s: External run simulation function not set."),
-		  funcName);
-		return(false);
+				funcName);
+		return (false);
 	}
-	return(CXX_BOOL((* ExternalRunSimulation)()));
+	return (CXX_BOOL((* ExternalRunSimulation)()));
 
 }
 
 /****************************** GetSimProcess *********************************/
 
-EarObjectPtr
-MainApp::GetSimProcess(void)
-{
+EarObjectPtr MainApp::GetSimProcess(void) {
 	static const wxChar *funcName = wxT("MainApp::GetSimProcess");
-	EarObjectPtr	audModel;
+	EarObjectPtr audModel;
 
 	if ((audModel = GetSimProcess_AppInterface()) == NULL) {
 		NotifyError(wxT("%s: simulation did not run successfully."), funcName);
-		return(NULL);
+		return (NULL);
 	}
 	return (audModel);
 
@@ -796,13 +748,12 @@ MainApp::GetSimProcess(void)
  * Sets the application interface file and name.
  */
 
-void
-MainApp::SetSimulationFile(wxFileName &fileName)
-{
+void MainApp::SetSimulationFile(wxFileName &fileName) {
 	simFileName = fileName;
 	SetWorkingDirectory_AppInterface((wxChar *) fileName.GetPath().c_str());
-	SetSimFileType_AppInterface(GetSimFileType_Utility_SimScript((wxChar *)
-	  fileName.GetExt().c_str()));
+	SetSimFileType_AppInterface(
+			GetSimFileType_Utility_SimScript(
+					(wxChar *) fileName.GetExt().c_str()));
 	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().c_str());
 
 }
@@ -814,9 +765,7 @@ MainApp::SetSimulationFile(wxFileName &fileName)
 /*
  */
 
-bool
-MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
-{
+bool MainApp::CreateClient(wxChar * serverHost, uShort serverPort) {
 	static const wxChar *funcName = wxT("MainApp::CreateClient");
 
 	if (!myClient)
@@ -824,15 +773,15 @@ MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
 	if (!myClient->Ok()) {
 		if (diagsOn)
 			NotifyError(wxT("%s: Failed to connect to %s:%u\n"), funcName,
-			  serverHost, serverPort);
+					serverHost, serverPort);
 		delete myClient;
 		myClient = NULL;
-		return(false);
+		return (false);
 	}
 	if (diagsOn)
 		NotifyWarning(wxT("%s: Connected to %s:%u.\n"), funcName, serverHost,
-		  serverPort);
-	return(true);
+				serverPort);
+	return (true);
 
 }
 
@@ -846,105 +795,94 @@ MainApp::CreateClient(wxChar * serverHost, uShort serverPort)
 
 /****************************** DSAMStart ************************************/
 
-DSAMEXT_API int
-DSAMStart_MainApp(int (* MainSimulation)(void), int argc, wxChar **argv)
-{
+DSAMEXT_API int DSAMStart_MainApp(int(*MainSimulation)(void), int argc,
+		wxChar **argv) {
 	wxInitializer initializer;
 
 	if (!initializer) {
 		NotifyError(wxT("main: Failed to initialize the wxWidgets library, ")
-		  wxT("aborting."));
-		return(false);
+		wxT("aborting."));
+		return (false);
 	}
-	MainApp	mainApp(argc, argv, MainSimulation);
-	return(mainApp.Main());
+	MainApp mainApp(argc, argv, MainSimulation);
+	return (mainApp.Main());
 
 }
 
 #if DSAM_USE_UNICODE && !defined(WIN32)
 
-static struct InitData
-{
-    InitData()
-    {
-        nInitCount = 0;
+static struct InitData {
+	InitData() {
+		nInitCount = 0;
 
 #if wxUSE_UNICODE
-        argc = 0;
-        // argv = NULL; -- not even really needed
+		argc = 0;
+		// argv = NULL; -- not even really needed
 #endif // wxUSE_UNICODE
-    }
+	}
 
-    // critical section protecting this struct
-    wxCRIT_SECT_DECLARE_MEMBER(csInit);
+	// critical section protecting this struct
+	wxCRIT_SECT_DECLARE_MEMBER(csInit);
 
-    // number of times wxInitialize() was called minus the number of times
-    // wxUninitialize() was
-    size_t nInitCount;
+	// number of times wxInitialize() was called minus the number of times
+	// wxUninitialize() was
+	size_t nInitCount;
 
 #if wxUSE_UNICODE
-    int argc;
+	int argc;
 
-    // if we receive the command line arguments as ASCII and have to convert
-    // them to Unicode ourselves (this is the case under Unix but not Windows,
-    // for example), we remember the converted argv here because we'll have to
-    // free it when doing cleanup to avoid memory leaks
-    wchar_t **argv;
+	// if we receive the command line arguments as ASCII and have to convert
+	// them to Unicode ourselves (this is the case under Unix but not Windows,
+	// for example), we remember the converted argv here because we'll have to
+	// free it when doing cleanup to avoid memory leaks
+	wchar_t **argv;
 #endif // wxUSE_UNICODE
-
-    DECLARE_NO_COPY_CLASS(InitData)
+DECLARE_NO_COPY_CLASS(InitData)
 } gs_initData;
 
-static void ConvertArgsToUnicode(int argc, char **argv)
-{
-    gs_initData.argv = new wchar_t *[argc + 1];
-    int wargc = 0;
-    for ( int i = 0; i < argc; i++ )
-    {
-        wxWCharBuffer buf(wxConvLocal.cMB2WX(argv[i]));
-        if ( !buf )
-        {
-            wxLogWarning(_("Command line argument %d couldn't be converted to Unicode and will be ignored."),
-                         i);
-        }
-        else // converted ok
-        {
-            gs_initData.argv[wargc++] = wxStrdup(buf);
-        }
-    }
+static void ConvertArgsToUnicode(int argc, char **argv) {
+	gs_initData.argv = new wchar_t *[argc + 1];
+	int wargc = 0;
+	for (int i = 0; i < argc; i++) {
+		wxWCharBuffer buf(wxConvLocal.cMB2WX(argv[i]));
+		if (!buf) {
+			wxLogWarning(
+					_("Command line argument %d couldn't be converted to Unicode and will be ignored."),
+					i);
+		} else // converted ok
+		{
+			gs_initData.argv[wargc++] = wxStrdup(buf);
+		}
+	}
 
-    gs_initData.argc = wargc;
-    gs_initData.argv[wargc] = NULL;
+	gs_initData.argc = wargc;
+	gs_initData.argv[wargc] = NULL;
 }
 
-static void FreeConvertedArgs()
-{
-    if ( gs_initData.argv )
-    {
-        for ( int i = 0; i < gs_initData.argc; i++ )
-        {
-            free(gs_initData.argv[i]);
-        }
+static void FreeConvertedArgs() {
+	if (gs_initData.argv) {
+		for (int i = 0; i < gs_initData.argc; i++) {
+			free(gs_initData.argv[i]);
+		}
 
-        delete [] gs_initData.argv;
-        gs_initData.argv = NULL;
-        gs_initData.argc = 0;
-    }
+		delete[] gs_initData.argv;
+		gs_initData.argv = NULL;
+		gs_initData.argc = 0;
+	}
 }
 
-DSAMEXT_API int
-DSAMStart_MainApp(int (* MainSimulation)(void), int argc, char **argv)
-{
-	int 	myReturn;
+DSAMEXT_API int DSAMStart_MainApp(int(*MainSimulation)(void), int argc,
+		char **argv) {
+	int myReturn;
 
 	ConvertArgsToUnicode(argc, argv);
-	myReturn = DSAMStart_MainApp(MainSimulation, gs_initData.argc, gs_initData.argv);
+	myReturn = DSAMStart_MainApp(MainSimulation, gs_initData.argc,
+			gs_initData.argv);
 	FreeConvertedArgs();
-	return(myReturn);
+	return (myReturn);
 
 }
 #endif // DSAM_USE_UNICODE && !defined(WIN32)
-
 /****************************** ReadXMLSimFile ********************************/
 
 /*
@@ -952,18 +890,16 @@ DSAMStart_MainApp(int (* MainSimulation)(void), int argc, char **argv)
  * library code used is in C++.
  */
 
-BOOLN
-ReadXMLSimFile_MainApp(wxChar *theFileName)
-{
+BOOLN ReadXMLSimFile_MainApp(wxChar *theFileName) {
 	static const wxChar *funcName = wxT("ReadXMLSimFile_MainApp");
 
 	wxFileName fileName((wxChar *) theFileName);
 	dSAMMainApp->SetSimulationFile(fileName);
 	if (!dSAMMainApp->LoadXMLDocument()) {
 		NotifyError(wxT("%s: Could not load XML Document."), funcName);
-		return(FALSE);
+		return (FALSE);
 	}
-	return(TRUE);
+	return (TRUE);
 
 }
 
@@ -975,11 +911,9 @@ ReadXMLSimFile_MainApp(wxChar *theFileName)
  * So it cannot be a member function.
  */
 
-BOOLN
-OnExecute_MainApp(void)
-{
+BOOLN OnExecute_MainApp(void) {
 	dSAMMainApp->StartSimThread();
-	return(TRUE);
+	return (TRUE);
 
 }
 
@@ -991,13 +925,12 @@ OnExecute_MainApp(void)
  * So it cannot be a member function.
  */
 
-void
-PrintUsage_MainApp(void)
-{
-	DSAM_fprintf(stderr, wxT("\n")
-	  wxT("\t-S         : Run in server mode (add another -S with (x)inetd).\n")
-	  wxT("\t-I <x>     : Run using server ID <x>.\n")
-	  );
+void PrintUsage_MainApp(void) {
+	DSAM_fprintf(
+			stderr,
+			wxT("\n")
+			wxT("\t-S         : Run in server mode (add another -S with (x)inetd).\n")
+			wxT("\t-I <x>     : Run using server ID <x>.\n"));
 
 }
 
@@ -1007,11 +940,9 @@ PrintUsage_MainApp(void)
  * This routine prints out a diagnostic message to the system log.
  */
 
-void
-DPrintSysLog_MainApp(const wxChar *format, va_list args)
-{
+void DPrintSysLog_MainApp(const wxChar *format, va_list args) {
 #	if DSAM_USE_UNICODE
-	wxChar	src[LONG_STRING];
+	wxChar src[LONG_STRING];
 	vswprintf(src, LONG_STRING, format, args);
 	syslog(LOG_INFO, ConvUTF8_Utility_String(src));
 #	else

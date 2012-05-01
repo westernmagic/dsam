@@ -46,6 +46,12 @@
 #define MAINAPP_SPACE_SUBST					'\1'
 #define	MAINAPP_NUM_BASE_ARGUMENTS			3
 
+#if defined(win32)
+#	define MAINAPP_MAIN_SIM_INIT MainSimulation
+#else
+#	define MAINAPP_MAIN_SIM_INIT NULL
+#endif
+
 /******************************************************************************/
 /*************************** Enum definitions *********************************/
 /******************************************************************************/
@@ -141,6 +147,7 @@ class DSAMEXT_API MainApp {
 
 extern int	MainSimulation(void);
 DSAMEXT_API extern MainApp	*dSAMMainApp;
+DSAMEXT_API extern int		(* MainSimulation_MainApp)(void);
 
 /******************************************************************************/
 /*************************** Early subroutine declarations ********************/

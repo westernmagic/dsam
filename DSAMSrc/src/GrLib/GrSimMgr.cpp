@@ -122,7 +122,12 @@ int		grSimMgrPleaseLink = 0;
  * function wxGetApp() which will return the reference of the right type
  * (i.e. MyApp and not wxApp)
  */
-IMPLEMENT_APP(MyApp)
+
+#if !defined(WIN32)
+	IMPLEMENT_APP(MyApp)
+#else
+	DSAM_IMPLEMENT_APP_NO_MAIN(MyApp)
+#endif
 
 #ifdef wx_mac
 void CreateApp(void)
