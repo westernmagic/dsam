@@ -72,7 +72,7 @@
 /******************************************************************************/
 
 DSAMEXT_API MainApp *dSAMMainApp = NULL;
-DSAMEXT_API int (* MainSimulation_MainApp)(void) = MainSimulation; /*MAINAPP_MAIN_SIM_INIT;*/
+DSAMEXT_API int (* MainSimulation_MainApp)(void) = MAINAPP_MAIN_SIM_INIT;
 
 /******************************************************************************/
 /****************************** Methods (Subroutines) *************************/
