@@ -930,7 +930,7 @@ SetTimeContinuity_EarObject(EarObjectPtr data)
 DSAM_API void
 SetProcessContinuity_EarObject(EarObjectPtr data)
 {
-	if (data->outSignal->offset)
+	if (data->outSignal && data->outSignal->offset)
 		return;
 	SetTimeContinuity_EarObject(data);
 	data->updateProcessFlag = FALSE;
