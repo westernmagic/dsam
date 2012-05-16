@@ -131,6 +131,19 @@ FreeVirtualIOMemory_SndFile(DFVirtualIOPtr *p)
 
 }
 
+/**************************** ResetVirtualIOMemory *****************************/
+
+/*
+ * This routine sets the memory offset and length to zero.
+ */
+
+void
+ResetVirtualIOMemory_SndFile(DFVirtualIOPtr p)
+{
+	p->offset = 0;
+	p->length = 0;
+}
+
 /**************************** InitVirtualIOMemory *****************************/
 
 /*
@@ -162,8 +175,7 @@ InitVirtualIOMemory_SndFile(DFVirtualIOPtr *p, sf_count_t maxLength)
 			return(FALSE);
 		}
 	}
-	(*p)->offset = 0;
-	(*p)->length = 0;
+	ResetVirtualIOMemory_SndFile(*p);
 	(*p)->maxLength = maxLength;
 	return(TRUE);
 
@@ -298,7 +310,7 @@ DetermineFileSize_SndFile(SignalDataPtr signal)
 	static const WChar *funcName = wxT("DetermineFileSize_SndFile");
 	int		i;
 	double	a[][2] = {{1.0}, {1.0, 2.0}};
-	sf_count_t	length[2], headerSize, sampleSize;
+	sf_count_t	na[] = {1, 2}, length[2], headerSize, sampleSize;
 	DataFilePtr	p = dataFilePtr;
 	DFVirtualIOPtr	vIOPtr = NULL;
 	SNDFILE *	fp;
@@ -318,9 +330,10 @@ DetermineFileSize_SndFile(SignalDataPtr signal)
 			return(FALSE);
 		}
 		sf_set_string(fp, SF_STR_TITLE, p->titleString);
-		sf_write_double(fp, a[i], SND_FILE_ARRAY_LEN(a[i]));
-		sf_close(fp);
+		sf_write_double(fp, a[i], na[i]);
 		length[i] = vIOPtr->length;
+		sf_close(fp);
+		ResetVirtualIOMemory_SndFile(vIOPtr);
 	}
 	FreeVirtualIOMemory_SndFile(&vIOPtr);
 	sampleSize = length[1] - length[0];
