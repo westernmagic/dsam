@@ -147,18 +147,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\lib\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">.\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'">.\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">$(SolutionDir)..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'">$(SolutionDir)..\lib\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">.\$(Configuration)\</IntDir>
@@ -171,8 +171,8 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|Win32'">.\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">.\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|Win32'">$(SolutionDir)..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">$(SolutionDir)..\lib\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|Win32'">.\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">.\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|Win32'">true</LinkIncremental>
@@ -183,6 +183,14 @@
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">.lib</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">.dll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'">.dll</TargetExt>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">$(ProjectName)_x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName)_x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'">$(ProjectName)_x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectName)_x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|Win32'">$(ProjectName)_x86</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_x86</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'">$(ProjectName)_x86</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)_x86</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -221,7 +229,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_d$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_d$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -260,7 +268,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_d$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_d$(TargetExt)</OutputFile>
       <TargetMachine>MachineX64</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -301,7 +309,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -340,7 +348,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <TargetMachine>MachineX64</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -371,7 +379,7 @@
     <Link>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>dsam_$(ProcessorArchitecture).lib;wxmsw28u_core.lib;wxbase28u_xml.lib;wxbase28u_net.lib;wxbase28u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_$(ProcessorArchitecture)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(DSAMDIR)\lib;$(WXWIN)\lib\vc_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -379,7 +387,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <ImportLibrary>$(solutiondir)..\lib\$(TargetName)_$(ProcessorArchitecture).lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
     </Link>
     <Bscmake>
       <OutputFile>$(OutDir)$(TargetName).bsc</OutputFile>
@@ -416,14 +424,14 @@
     <Link>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>dsam_x64.lib;wxmsw28u_core.lib;wxbase28u_xml.lib;wxbase28u_net.lib;wxbase28u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_x64$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(DSAMDIR)\lib;$(WXWIN)\lib\vc_x64_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <ImportLibrary>$(solutiondir)..\lib\$(TargetName)_x64.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <Profile>true</Profile>
     </Link>
     <Bscmake>
@@ -470,7 +478,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_d$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_d$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug (DL)|x64'">
@@ -508,7 +516,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <Lib>
-      <OutputFile>$(solutiondir)..\lib\$(TargetName)_d$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_d$(TargetExt)</OutputFile>
       <TargetMachine>MachineX64</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>

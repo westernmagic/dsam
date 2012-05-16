@@ -39,7 +39,7 @@
 !include "DSAMGenUtils.nsh"
 
 !define PACKAGE_NAME	"SDK"
-!define VERSION		"2.8.30"
+!define VERSION		"2.8.36"
 !define INST_VERSION	"1"
 !define DSAMDIR_ENV	"DSAMSDKDIR"
 
@@ -147,6 +147,8 @@ Section "DSAM Library ${VERSION}"
     SetOutPath $INSTDIR\lib\x64
     File lib\*x64.lib
   ${EndIf}
+
+  Call InstallDSAMDLLs
   
 SectionEnd
 
@@ -168,7 +170,7 @@ Section "WXWIN Library ${WX_VERSION}"
     File ${WXWINDIR}\lib\vc_dll\*.lib
   ${Else}
     SetOutPath $INSTDIR\lib\x64
-    File ${WXWINDIR}\lib64\vc_dll\*.lib
+    File ${WXWINDIR}\lib\vc_x64_dll\*.lib
   ${EndIf}
   
   Call InstallWxWinDLLs
@@ -188,10 +190,10 @@ Section "LIBSNDFILE Library ${LSF_VERSION}"
   ; Set output path to the lib directory and place respective files.
   ${If} $platformArch = 32
     SetOutPath $INSTDIR\lib\x86
-    File ${LIBSNDFILEDIR}\MSVC\libsndfile\Release\libsndfile_x86.lib
+    File ${LIBSNDFILEDIR}\MSVC\Release\libsndfile_x86.lib
   ${Else}
     SetOutPath $INSTDIR\lib\x64
-    File ${LIBSNDFILEDIR}\MSVC\libsndfile\x64\Release\libsndfile_x64.lib
+    File ${LIBSNDFILEDIR}\MSVC\x64\Release\libsndfile_x64.lib
   ${EndIf}
 
   Call InstallLibSndFileDLL
@@ -211,7 +213,7 @@ Section "PORTAUDIO Library ${PA_VERSION}"
   ; Set output path to the lib directory and place respective files.
   ${If} $platformArch = 32
     SetOutPath $INSTDIR\lib\x86
-    File ${PORTAUDIODIR}\build\msvc\Win32\Release\*.lib
+    File ${PORTAUDIODIR}\build\msvc\Release\*.lib
   ${Else}
     SetOutPath $INSTDIR\lib\x64
     File ${PORTAUDIODIR}\build\msvc\x64\Release\*.lib
@@ -229,16 +231,18 @@ Section "FFTW Library ${FFTW_VERSION}"
   SetOutPath $INSTDIR\include\fftw
 
   ; Put file there
-  File /r ${FFTWDIR}\api\*.h
+  File /r ${FFTWDIR}\x86\*.h
 
   ; Set output path to the lib directory and place respective files.
   ${If} $platformArch = 32
     SetOutPath $INSTDIR\lib\x86
-    File ${FFTWDIR}\libfftw.lib
+    File ${FFTWDIR}\x86\libfftw3-3.lib
   ${Else}
     SetOutPath $INSTDIR\lib\x64
-    File ${FFTWDIR}\libfftw_x64.lib
+    File ${FFTWDIR}\x64\libfftw3-3.lib
   ${EndIf}
+
+  Call InstallLibFFTWDLL
 
 SectionEnd
 

@@ -28,7 +28,8 @@
 
 !define COMPANY_DIR	"DSAM Applications"
 !define START_MENU_GROUP	"StartMenuGroup"
-!define MSVC_REDIST_DIR	"C:\Program Files\Microsoft Visual Studio 8\VC\redist"
+;!define MSVC_REDIST_DIR	"C:\Program Files\Microsoft Visual Studio 10\VC\redist"
+!define MSVC_REDIST_DIR	"C:\Program Files\Microsoft SDKs\Windows\v7.1\redist"
 
 ###################################################################################
 #
@@ -80,29 +81,20 @@ Function InstallMSVCRedist
   ${if} $platformArch = 32
     DetailPrint "Installing 32-bit MSVCRT Support"
     SetOutPath ${DLL32DIR}
-    Push "msvcr80.dll"
+    Push "msvcr100.dll"
     Call CheckDLLStatus
     Pop $0
-     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest" \
-      ${DLL32DIR}\Microsoft.VC80.CRT.manifest ${DLL32DIR}  
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\msvcp80.dll" ${DLL32DIR}\msvcp80.dll ${DLL32DIR}  
-    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\x86\Microsoft.VC80.CRT\msvcr80.dll" ${DLL32DIR}\msvcr80.dll ${DLL32DIR}  
+      "c:\windows\system32\msvcr100.dll" ${DLL32DIR}\msvcr100.dll ${DLL32DIR}  
   ${Else}
     DetailPrint "Installing 64-bit MSVCRT Support"
     SetOutPath ${DLL64DIR}
-    Push "msvcr80.dll"
+    Push "msvcr100.dll"
     Call CheckDLLStatus
     Pop $0
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest" \
-      ${DLL64DIR}\Microsoft.VC80.CRT.manifest ${DLL64DIR}  
-    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\msvcp80.dll" ${DLL64DIR}\msvcp80.dll ${DLL64DIR}  
-    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${MSVC_REDIST_DIR}\amd64\Microsoft.VC80.CRT\msvcr80.dll" ${DLL64DIR}\msvcr80.dll ${DLL64DIR}  
+      "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Packages\Debugger\X64\msvcr100.dll" \
+	  ${DLL64DIR}\msvcr100.dll ${DLL64DIR}  
   ${EndIf}
 
   Pop $0
@@ -129,13 +121,9 @@ Function un.SetInstallMSVCRedist
     GetVersion::WindowsPlatformArchitecture
     Pop $R0
     ${If} $R0 = 32
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\Microsoft.VC80.CRT.manifest
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcp80.dll
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcr80.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcr100.dll
     ${Else}
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\Microsoft.VC80.CRT.manifest
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcp80.dll
-      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcr80.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcr100.dll
     ${EndIf}
   ${EndIf}
 
@@ -155,9 +143,11 @@ FunctionEnd
 
 Function InstallSupportDLLs
 
+  Call InstallDSAMDLLs
   Call InstallWxWinDLLs
   Call InstallLibSndFileDLL
   Call InstallPortAudioDLL
+  Call InstallLibFFTWDLL
 
 FunctionEnd
 
